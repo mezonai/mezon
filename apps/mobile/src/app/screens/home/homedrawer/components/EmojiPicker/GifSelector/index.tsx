@@ -1,9 +1,9 @@
 import { useGifs, useGifsStickersEmoji } from '@mezon/core';
-import { Metrics, size } from '@mezon/mobile-ui';
 import { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import GifCategory from './GifCategory';
 import GiftItem from './GifItem';
+import styles from './styles';
 
 type GifSelectorProps = {
 	onSelected: (url: string) => void;
@@ -49,12 +49,7 @@ export default function GifSelector({ onSelected, searchText, onScroll }: GifSel
 	}
 
 	return (
-		<ScrollView
-			scrollEventThrottle={16}
-			onScroll={onScroll}
-			style={{ maxHeight: Metrics.screenHeight / 1.07 }}
-			contentContainerStyle={{ paddingBottom: size.s_10 * 2 }}
-		>
+		<ScrollView scrollEventThrottle={16} onScroll={onScroll} style={styles.scrollViewStyle} contentContainerStyle={styles.scrollViewContent}>
 			{valueInputToCheckHandleSearch === '' ? (
 				<GifCategory loading={loadingStatusGifs === 'loading'} data={dataGifCategories} />
 			) : (

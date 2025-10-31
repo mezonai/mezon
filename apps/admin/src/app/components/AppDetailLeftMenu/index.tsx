@@ -1,11 +1,12 @@
 import { getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons, Menu } from '@mezon/ui';
-import { ApiApp } from 'mezon-js/api.gen';
+import type { ApiApp } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { ITabs } from '../../common/constants/tabSideBar';
+import type { ITabs } from '../../common/constants/tabSideBar';
 
 interface ISideBarProps {
 	tabs: ITabs[];
@@ -19,6 +20,7 @@ const AppDetailLeftMenu = ({ tabs, currentAppId }: ISideBarProps) => {
 	const dispatch = useAppDispatch();
 	const [dropdownValue, setDropdownValue] = useState<string>('Choose application');
 	const [loading, setLoading] = useState<boolean>(false);
+	const { t } = useTranslation('adminApplication');
 
 	const currentApp = useMemo(() => {
 		return allApps?.apps?.find((a) => a.id === currentAppId);
@@ -45,56 +47,64 @@ const AppDetailLeftMenu = ({ tabs, currentAppId }: ISideBarProps) => {
 		}
 	}, [currentApp, filteredApps, currentAppId]);
 
-	const onSelectApp = useCallback(async (app: ApiApp) => {
-		if (!app.appname || !app.id) return;
-		if (app.id === currentAppId) return;
+	const onSelectApp = useCallback(
+		async (app: ApiApp) => {
+			if (!app.appname || !app.id) return;
+			if (app.id === currentAppId) return;
 
-		setLoading(true);
-		setDropdownValue(app.appname);
+			setLoading(true);
+			setDropdownValue(app.appname);
 
-		try {
-			await dispatch(getApplicationDetail({ appId: app.id }));
-		} catch (error: any) {
-			if (error instanceof Error) {
-				toast.error(`Error fetching application details: ${error.message}`);
-			} else {
-				toast.error('An unknown error occurred');
+			try {
+				await dispatch(getApplicationDetail({ appId: app.id }));
+			} catch (error: any) {
+				if (error instanceof Error) {
+					toast.error(`Error fetching application details: ${error.message}`);
+				} else {
+					toast.error('An unknown error occurred');
+				}
+			} finally {
+				setLoading(false);
 			}
-		} finally {
-			setLoading(false);
-		}
-		navigate(`/developers/applications/${app.id}/information`);
-	}, [currentAppId, dispatch, navigate]);
+			navigate(`/developers/applications/${app.id}/information`);
+		},
+		[currentAppId, dispatch, navigate]
+	);
 
-	const menuContent = useMemo(() => (
-		<div className={`dark:bg-[#2b2d31] bg-white border-none py-[6px] px-[8px] max-h-[200px] overflow-y-scroll thread-scroll z-20 rounded-lg shadow-lg`}>
-			{loading ? (
-				<div className="text-center text-gray-500 py-2">Loading...</div>
-			) : (
-				filteredApps.map((app) =>
-					app?.id && app?.appname ? (
-						<Menu.Item
-							key={app.id}
-							onClick={() => onSelectApp(app)}
-							className="truncate px-3 py-2 rounded-md hover:bg-[#f3f4f6] dark:hover:bg-[#3f4147] cursor-pointer transition-colors duration-150 text-[#374151] dark:text-[#d1d5db]"
-						>
-							{app.appname}
-						</Menu.Item>
-					) : null
-				)
-			)}
-		</div>
-	), [loading, filteredApps, onSelectApp]);
+	const menuContent = useMemo(
+		() => (
+			<div
+				className={`dark:bg-[#2b2d31] bg-white border-none py-[6px] px-[8px] max-h-[200px] overflow-y-scroll thread-scroll z-20 rounded-lg shadow-lg`}
+			>
+				{loading ? (
+					<div className="text-center text-gray-500 py-2">Loading...</div>
+				) : (
+					filteredApps.map((app) =>
+						app?.id && app?.appname ? (
+							<Menu.Item
+								key={app.id}
+								onClick={() => onSelectApp(app)}
+								className="truncate px-3 py-2 rounded-md hover:bg-[#f3f4f6] dark:hover:bg-[#3f4147] cursor-pointer transition-colors duration-150 text-[#374151] dark:text-[#d1d5db]"
+							>
+								{app.appname}
+							</Menu.Item>
+						) : null
+					)
+				)}
+			</div>
+		),
+		[loading, filteredApps, onSelectApp]
+	);
 
 	return (
 		<div className="flex flex-col gap-6 items-center w-full">
 			<Link to="/developers/applications" className="w-full flex gap-1 items-center">
 				<Icons.LeftArrowIcon className="w-4" />
-				<div>Back to Applications</div>
+				<div>{t('backToApps')}</div>
 			</Link>
 
 			<div className="w-full">
-				<div className="text-[12px] font-semibold mb-1">SELECT {dropdownLabel}</div>
+				<div className="text-[12px] font-semibold mb-1">{t('selectLabel', { type: dropdownLabel })}</div>
 				<Menu
 					trigger="click"
 					menu={menuContent}
@@ -109,7 +119,7 @@ const AppDetailLeftMenu = ({ tabs, currentAppId }: ISideBarProps) => {
 			</div>
 
 			<div className="w-full">
-				<div className="text-[12px] font-semibold mb-2">SETTINGS</div>
+				<div className="text-[12px] font-semibold mb-2">{t('settings')}</div>
 				<div className="flex flex-col w-full gap-[10px]">
 					{tabs.map((tab, idx) =>
 						tab && tab.routerLink ? (

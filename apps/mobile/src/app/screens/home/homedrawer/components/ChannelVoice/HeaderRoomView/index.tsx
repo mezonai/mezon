@@ -148,18 +148,18 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 
 	return (
 		<View style={[styles.menuHeader, !isShow && { display: 'none' }]}>
-			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_20, flexGrow: 1, flexShrink: 1 }}>
+			<View style={styles.headerRowLeft}>
 				{!isGroupCall && (
 					<TouchableOpacity onPress={onPressMinimizeRoom} style={styles.buttonCircle}>
 						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} color={themeValue.white} />
 					</TouchableOpacity>
 				)}
-				<Text numberOfLines={1} style={[styles.text, { flexGrow: 1, flexShrink: 1 }]}>
+				<Text numberOfLines={1} style={[styles.text, styles.headerTextTitle]}>
 					{channelLabel}
 				</Text>
 			</View>
 
-			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
+			<View style={styles.headerRowRight}>
 				{!isGroupCall && (
 					<TouchableOpacity onPress={handleOpenEmojiPicker} style={[styles.buttonCircle]}>
 						<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_20} width={size.s_20} color={themeValue.white} />

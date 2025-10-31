@@ -1,4 +1,5 @@
-import { ToastPayload, removeToast, selectTheme, selectToasts } from '@mezon/store';
+import type { ToastPayload } from '@mezon/store';
+import { removeToast, selectTheme, selectToasts } from '@mezon/store';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast as showToast } from 'react-toastify';
@@ -29,8 +30,8 @@ const ToastController: React.FC = () => {
 	const currentTheme = isDarkMode ? 'dark' : 'light';
 
 	useEffect(() => {
-		const currentToastIds = new Set(toasts.map(toast => toast.id));
-		
+		const currentToastIds = new Set(toasts.map((toast) => toast.id));
+
 		for (const [toastId, reactToastifyId] of Object.entries(trackedToasts.current)) {
 			if (!currentToastIds.has(toastId)) {
 				showToast.dismiss(toastId);
@@ -77,9 +78,6 @@ const ToastController: React.FC = () => {
 			pauseOnHover
 			theme={currentTheme}
 			limit={5}
-			toastStyle={{
-				fontFamily: '"gg sans", "Helvetica Neue", Helvetica, Arial, sans-serif'
-			}}
 		/>
 	);
 };

@@ -2,13 +2,15 @@ import { authActions, getApplicationDetail, selectAllApps, selectTheme, useAppDi
 import { Icons, Menu } from '@mezon/ui';
 import isElectron from 'is-electron';
 import { safeJSONParse } from 'mezon-js';
-import { ApiApp } from 'mezon-js/api.gen';
+import type { ApiApp } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import CreateAppPopup from './CreateAppPopup';
 
 function ApplicationsPage() {
+	const { t } = useTranslation('adminApplication');
 	const dispatch = useAppDispatch();
 	const deepLinkUrl = safeJSONParse(localStorage.getItem('deepLinkUrl') as string);
 
@@ -30,17 +32,18 @@ function ApplicationsPage() {
 			<div>
 				<div className="mb-[40px]">
 					<div className="flex flex-row justify-between w-full">
-						<div className="text-2xl font-medium">Applications</div>
+						<div className="text-2xl font-medium">{t('applicationsPage.title')}</div>
 						<div
 							onClick={toggleCreatePopup}
 							className="text-[15px] py-[10px] px-[16px] text-white bg-[#5865F2] hover:bg-[#4752c4] cursor-pointer rounded-sm text-nowrap"
 						>
-							New Application or Bot
+							{t('applicationsPage.newApplicationButton')}
 						</div>
 					</div>
 					<div className="text-[20px] dark:text-textSecondary mt-4">
-						Develop <span className="text-blue-600 hover:underline cursor-pointer">apps</span> to customize and extend Mezon for millions
-						of users.
+						{t('applicationsPage.develop')}{' '}
+						<span className="text-blue-600 hover:underline cursor-pointer">{t('applicationsPage.appsLinkText')}</span>{' '}
+						{t('applicationsPage.subtitle')}
 					</div>
 				</div>
 				<AppPageBottom />
@@ -51,8 +54,9 @@ function ApplicationsPage() {
 }
 
 const AppPageBottom = () => {
+	const { t } = useTranslation('adminApplication');
 	const appearanceTheme = useSelector(selectTheme);
-	const [dropdownValue, setDropdownValue] = useState('Date of Creation');
+	const [dropdownValue, setDropdownValue] = useState(t('applicationsPage.sortOptions.dateOfCreation'));
 	const allApplications = useSelector(selectAllApps);
 
 	const alphabetSort = useCallback((arr: Array<ApiApp> | undefined) => {
@@ -74,8 +78,8 @@ const AppPageBottom = () => {
 	}, []);
 
 	const isChooseAZ = useMemo(() => {
-		return dropdownValue === 'A-Z';
-	}, [dropdownValue]);
+		return dropdownValue === t('applicationsPage.sortOptions.alphabetical');
+	}, [dropdownValue, t]);
 
 	const appListForDisplaying = useMemo(() => {
 		if (isChooseAZ) {
@@ -93,34 +97,45 @@ const AppPageBottom = () => {
 
 	const [isSmallSizeSort, setIsSmallSizeSort] = useState(true);
 
-	const sortMenuContent = useMemo(() => (
-		<div className={`dark:bg-[#2b2d31] bg-white border-none py-[6px] px-[8px] max-h-[200px] overflow-y-scroll ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'} z-20 rounded-lg shadow-lg`}>
-			<Menu.Item
-				onClick={() => {
-					handleDropdownValue('Date of Creation');
-				}}
-				className={`truncate px-3 py-2 rounded-md hover:bg-[#f3f4f6] dark:hover:bg-[#3f4147] cursor-pointer transition-colors duration-150 ${isChooseAZ ? 'text-[#374151] dark:text-[#d1d5db]' : 'bg-[#e5e7eb] dark:bg-[#313338] text-[#1f2937] dark:text-white font-medium'
-					}`}
+	const sortMenuContent = useMemo(
+		() => (
+			<div
+				className={`dark:bg-[#2b2d31] bg-white border-none py-[6px] px-[8px] max-h-[200px] overflow-y-scroll ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'} z-20 rounded-lg shadow-lg`}
 			>
-				Date of Creation
-			</Menu.Item>
-			<Menu.Item
-				onClick={() => {
-					handleDropdownValue('A-Z');
-				}}
-				className={`truncate px-3 py-2 rounded-md hover:bg-[#f3f4f6] dark:hover:bg-[#3f4147] cursor-pointer transition-colors duration-150 ${isChooseAZ ? 'bg-[#e5e7eb] dark:bg-[#313338] text-[#1f2937] dark:text-white font-medium' : 'text-[#374151] dark:text-[#d1d5db]'
+				<Menu.Item
+					onClick={() => {
+						handleDropdownValue(t('applicationsPage.sortOptions.dateOfCreation'));
+					}}
+					className={`truncate px-3 py-2 rounded-md hover:bg-[#f3f4f6] dark:hover:bg-[#3f4147] cursor-pointer transition-colors duration-150 ${
+						isChooseAZ
+							? 'text-[#374151] dark:text-[#d1d5db]'
+							: 'bg-[#e5e7eb] dark:bg-[#313338] text-[#1f2937] dark:text-white font-medium'
 					}`}
-			>
-				A-Z
-			</Menu.Item>
-		</div>
-	), [appearanceTheme, isChooseAZ, handleDropdownValue]);
+				>
+					{t('applicationsPage.sortOptions.dateOfCreation')}
+				</Menu.Item>
+				<Menu.Item
+					onClick={() => {
+						handleDropdownValue(t('applicationsPage.sortOptions.alphabetical'));
+					}}
+					className={`truncate px-3 py-2 rounded-md hover:bg-[#f3f4f6] dark:hover:bg-[#3f4147] cursor-pointer transition-colors duration-150 ${
+						isChooseAZ
+							? 'bg-[#e5e7eb] dark:bg-[#313338] text-[#1f2937] dark:text-white font-medium'
+							: 'text-[#374151] dark:text-[#d1d5db]'
+					}`}
+				>
+					{t('applicationsPage.sortOptions.alphabetical')}
+				</Menu.Item>
+			</div>
+		),
+		[appearanceTheme, isChooseAZ, handleDropdownValue, t]
+	);
 
 	return (
 		<div>
 			<div className="flex justify-between items-center mb-[32px] max-md:block">
 				<div className="flex gap-4 w-fit items-center">
-					<div>Sort by:</div>
+					<div>{t('applicationsPage.sortBy')}</div>
 					<Menu
 						trigger="click"
 						menu={sortMenuContent}
@@ -143,7 +158,7 @@ const AppPageBottom = () => {
 						<div className={`w-5`}>
 							<Icons.SortBySmallSizeBtn className="w-full h-fit" />
 						</div>
-						<div>Small</div>
+						<div>{t('small')}</div>
 					</div>
 					<div
 						className={`cursor-pointer flex items-center gap-3 p-3 max-md:p-3 rounded-md w-fit h-fit ${!isSmallSizeSort ? 'bg-[#e6e6e8] dark:bg-[#3f4147]' : ''}`}
@@ -152,7 +167,7 @@ const AppPageBottom = () => {
 						<div className="w-5">
 							<Icons.SortByBigSizeBtn />
 						</div>
-						<div>Large</div>
+						<div>{t('large')}</div>
 					</div>
 				</div>
 			</div>
@@ -169,6 +184,7 @@ interface IApplicationsListProps {
 }
 
 const ApplicationsList = ({ isSmallSizeSort, appListForDisplaying }: IApplicationsListProps) => {
+	const { t } = useTranslation('adminApplication');
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
@@ -211,8 +227,8 @@ const ApplicationsList = ({ isSmallSizeSort, appListForDisplaying }: IApplicatio
 
 	return (
 		<div className="flex flex-col gap-8">
-			{applications.length > 0 && renderAppList(applications, 'My Applications')}
-			{bots.length > 0 && renderAppList(bots, 'My Bots')}
+			{applications.length > 0 && renderAppList(applications, t('applicationsPage.sections.myApplications'))}
+			{bots.length > 0 && renderAppList(bots, t('applicationsPage.sections.myBots'))}
 		</div>
 	);
 };

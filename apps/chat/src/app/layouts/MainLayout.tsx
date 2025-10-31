@@ -69,7 +69,7 @@ const GlobalEventListener = () => {
 
 		if (isElectron()) {
 			if (hasUnreadChannel && !notificationCount) {
-				electronBridge?.setBadgeCount(0);
+				electronBridge?.setBadgeCount(null);
 				return;
 			}
 			electronBridge?.setBadgeCount(notificationCount);

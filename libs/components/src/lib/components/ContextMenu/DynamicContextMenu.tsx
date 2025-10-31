@@ -6,7 +6,9 @@ import {
 	selectAllAccount,
 	selectClanView,
 	selectClickedOnTopicStatus,
-	selectCurrentChannel,
+	selectCurrentChannelClanId,
+	selectCurrentChannelParentId,
+	selectCurrentChannelPrivate,
 	selectCurrentTopicId,
 	selectMemberClanByUserId,
 	selectMessageByMessageId,
@@ -64,11 +66,13 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 	const userId = useAuth();
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 	const currenTopicId = useSelector(selectCurrentTopicId);
+	const currentChannelPrivate = useSelector(selectCurrentChannelPrivate);
+	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
+	const currentChannelClanId = useSelector(selectCurrentChannelClanId);
 
 	const isClanView = useSelector(selectClanView);
-	const currentChannel = useSelector(selectCurrentChannel);
 	const currentMessage = useAppSelector((state) =>
-		selectMessageByMessageId(state, isFocusTopicBox ? currenTopicId : currentChannel?.channel_id, messageId || '')
+		selectMessageByMessageId(state, isFocusTopicBox ? currenTopicId : currentChannelId, messageId || '')
 	);
 
 	const handleClickEmoji = useCallback(
@@ -81,14 +85,14 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 				count: 1,
 				message_sender_id: userId.userId ?? '',
 				action_delete: false,
-				is_public: isPublicChannel(currentChannel),
-				clanId: currentChannel?.clan_id ?? '',
-				channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
+				is_public: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
+				clanId: currentChannelClanId ?? '',
+				channelId: isTopic ? currentChannelId || '' : (message?.channel_id ?? ''),
 				isFocusTopicBox,
 				channelIdOnMessage: currentMessage?.channel_id
 			});
 		},
-		[messageId, currentChannel, directId, isClanView, reactionMessageDispatch, userId, isFocusTopicBox, currentMessage?.channel_id]
+		[messageId, directId, isClanView, reactionMessageDispatch, userId, isFocusTopicBox, currentMessage?.channel_id]
 	);
 
 	const firstFourElements = useMemo(() => {
@@ -126,10 +130,10 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 
 			if (command.menu_type === QUICK_MENU_TYPE.QUICK_MENU) {
 				try {
-					const channelId = currentChannelId || currentChannel?.channel_id || '';
-					const clanId = currentChannel?.clan_id || '';
+					const channelId = currentChannelId || currentChannelId || '';
+					const clanId = currentChannelClanId || '';
 					const mode = getActiveMode(channelId);
-					const isPublic = isPublicChannel(currentChannel);
+					const isPublic = isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate });
 
 					await dispatch(
 						quickMenuActions.writeQuickMenuEvent({
@@ -156,7 +160,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 				onSlashCommandExecute(command);
 			}
 		},
-		[onSlashCommandExecute, dispatch, currentChannelId, currentChannel, messageId, message, isFocusTopicBox, currenTopicId]
+		[onSlashCommandExecute, dispatch, currentChannelId, messageId, message, isFocusTopicBox, currenTopicId]
 	);
 
 	const quickMenuItems = useAppSelector((state) => selectQuickMenusByChannelId(state, currentChannelId || ''));

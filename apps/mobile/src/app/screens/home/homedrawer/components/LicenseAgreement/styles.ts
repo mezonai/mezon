@@ -74,5 +74,11 @@ export const styles = StyleSheet.create({
 		fontSize: size.s_12,
 		color: baseColor.link,
 		paddingBottom: size.s_20
+	},
+	sheetContainerTablet: {
+		maxWidth: '40%'
+	},
+	spacer: {
+		width: 16
 	}
 });

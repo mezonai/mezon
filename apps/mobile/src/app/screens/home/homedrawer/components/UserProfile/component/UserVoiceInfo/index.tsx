@@ -11,20 +11,20 @@ import { style } from './styles';
 export const UserVoiceInfo = ({ userId }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue, false);
-    const { t } = useTranslation(['userProfile']);
+	const { t } = useTranslation(['userProfile']);
 	const inVoiceUser = useSelector((state) => selectStatusInVoice(state, userId));
 	const voiceChannel = useSelector((state) => selectChannelById(state, inVoiceUser));
 	const navigateToChannelVoice = async () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_ROUTER, { channel: voiceChannel });
 	};
 
-    if (!voiceChannel) {
-        return null;
-    }
+	if (!voiceChannel) {
+		return null;
+	}
 
 	return (
 		<View style={styles.userInfo}>
-			<Text style={[styles.actionText, {marginBottom: size.s_10 }]} numberOfLines={1}>
+			<Text style={[styles.actionText, { marginBottom: size.s_10 }]} numberOfLines={1}>
 				{t('voiceInfo.inVoice')}
 			</Text>
 			<View style={styles.wrapManageVoice}>

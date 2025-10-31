@@ -1,6 +1,6 @@
 import { useAppNavigation, useTagById } from '@mezon/core';
 import type { ChannelsEntity } from '@mezon/store';
-import { categoriesActions, selectClanView, selectCurrentChannel, selectThreadById, useAppDispatch, useAppSelector } from '@mezon/store';
+import { categoriesActions, selectClanView, selectCurrentChannelType, selectThreadById, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback } from 'react';
@@ -20,7 +20,7 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 	const tagId = channelHastagId?.slice(2, -1);
 	const isClanView = useSelector(selectClanView);
 	const { toChannelPage, navigate } = useAppNavigation();
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelType = useSelector(selectCurrentChannelType);
 
 	const channelById = useTagById(tagId);
 
@@ -47,10 +47,10 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 		return <ModalUnknowChannel onClose={closeUnknown} />;
 	}, []);
 
-	const isTextChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL;
-	const isStreamingChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
-	const isThreadChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD;
-	const isAppChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
+	const isTextChannel = currentChannelType === ChannelType.CHANNEL_TYPE_CHANNEL;
+	const isStreamingChannel = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
+	const isThreadChannel = currentChannelType === ChannelType.CHANNEL_TYPE_THREAD;
+	const isAppChannel = currentChannelType === ChannelType.CHANNEL_TYPE_APP;
 
 	const existHashtagAndChannelView = channelHastagId && !isClanView;
 	const isValidChannel = (isTextChannel || isStreamingChannel || isThreadChannel || existHashtagAndChannelView || isAppChannel) && channel;
@@ -59,8 +59,7 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 		isValidChannel ? (
 			<div
 				onClick={tokenClickAble}
-				style={{ textDecoration: 'none' }}
-				className={`font-medium rounded-sm  inline whitespace-nowrap cursor-pointer bg-mention color-mention${!isJumMessageEnabled ? ' hover-mention ' : `hover:none cursor-text`} `}
+				className={`no-underline font-medium rounded-sm  inline whitespace-nowrap cursor-pointer bg-mention color-mention${!isJumMessageEnabled ? ' hover-mention ' : `hover:none cursor-text`} `}
 			>
 				{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE ? (
 					<Icons.Speaker defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />

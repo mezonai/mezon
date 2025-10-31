@@ -4,9 +4,11 @@ import React, { useEffect, useRef } from 'react';
 import { Animated } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
 import { useSelector } from 'react-redux';
+import { style } from './styles';
 
 export const UnreadDMLoading = React.memo(() => {
 	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const isLoading = useSelector(selectIsLoadDMData);
 	const opacity = useRef(new Animated.Value(!isLoading ? 1 : 0)).current;
 	const containerHeight = useRef(new Animated.Value(!isLoading ? size.s_50 : 0)).current;
@@ -30,8 +32,8 @@ export const UnreadDMLoading = React.memo(() => {
 
 	// Return an animated container that will smoothly hide/show
 	return (
-		<Animated.View style={{ height: containerHeight, overflow: 'hidden' }}>
-			<Animated.View style={{ paddingVertical: size.s_20, opacity }}>
+		<Animated.View style={[styles.animatedContainer, { height: containerHeight }]}>
+			<Animated.View style={[styles.animatedInner, { opacity }]}>
 				<Flow color={themeValue.textDisabled} size={size.s_30} />
 			</Animated.View>
 		</Animated.View>

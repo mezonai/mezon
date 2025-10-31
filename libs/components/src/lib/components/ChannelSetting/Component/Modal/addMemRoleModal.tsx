@@ -199,9 +199,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && <Icons.Speaker defaultSize="w-5 5-5" />}
 					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && <Icons.Stream defaultSize="w-5 5-5" />}
 					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && <Icons.Hashtag defaultSize="w-5 h-5" />}
-					<p className=" text-[16px]" style={{ wordBreak: 'break-word' }}>
-						{channel.channel_label}
-					</p>
+					<p className=" text-[16px] break-words">{channel.channel_label}</p>
 				</div>
 				<div className="py-3">
 					<InputField

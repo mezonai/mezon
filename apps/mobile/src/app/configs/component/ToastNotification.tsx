@@ -3,7 +3,7 @@ import LottieView from 'lottie-react-native';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import { ToastConfigParams } from 'react-native-toast-message';
+import type { ToastConfigParams } from 'react-native-toast-message';
 import { NOTIFICATION_PROGRESS_BAR } from '../../../assets/lottie';
 import { style } from '../styles';
 
@@ -38,7 +38,14 @@ export const ToastNotification = memo((props: ToastConfigParams<any>) => {
 					</View>
 				</View>
 				<View style={styles.notificationProgressBarContainer}>
-					<LottieView loop={false} speed={0.4} ref={progressBarRef} source={NOTIFICATION_PROGRESS_BAR} style={styles.lottieProgressBar} />
+					<LottieView
+						loop={false}
+						speed={0.4}
+						ref={progressBarRef}
+						resizeMode="cover"
+						source={NOTIFICATION_PROGRESS_BAR}
+						style={styles.lottieProgressBar}
+					/>
 				</View>
 			</View>
 		</Pressable>

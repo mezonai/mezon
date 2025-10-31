@@ -5,8 +5,10 @@ import {
 	deleteChannel,
 	directActions,
 	directMetaActions,
+	getStore,
 	removeMemberChannel,
 	selectDirectById,
+	selectLatestMessageId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -33,7 +35,12 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHa
 		async (user?: any) => {
 			if (!user?.id) return;
 
-			const response = await createDirectMessageWithUser(user.id, user.display_name || user.username, user.username, user.avatar_url);
+			const response = await createDirectMessageWithUser(
+				user.id,
+				user?.user?.display_name || user?.user?.username,
+				user?.user?.username,
+				user?.user?.avatar_url
+			);
 
 			if (response?.channel_id) {
 				const directDM = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
@@ -46,7 +53,9 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHa
 	const handleMarkAsRead = useCallback(
 		(directId: string) => {
 			const timestamp = Date.now() / 1000;
-			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: directId, timestamp }));
+			const store = getStore();
+			const messageId = store ? selectLatestMessageId(store.getState(), directId) : undefined;
+			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: directId, timestamp, messageId }));
 			handleMarkAsReadDM(directId);
 		},
 		[dispatch, handleMarkAsReadDM]

@@ -3,7 +3,7 @@ import { useApp } from '@mezon/core';
 import { selectIsShowCreateThread, selectPositionEmojiButtonSmile, selectReactionTopState, selectStatusMenu } from '@mezon/store';
 import { EmojiPlaces } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 const HEIGHT_EMOJI_PANEL = 457;
@@ -43,6 +43,17 @@ const ReactionEmojiPanel = memo(
 
 		const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannelId));
 
+		const bottomPanelStyle = useMemo(
+			() => ({
+				top: topPositionEmojiPanel,
+				bottom: distanceToBottom < HEIGHT_EMOJI_PANEL ? '0' : 'auto',
+				left: distanceToRight < WIDTH_EMOJI_PANEL ? `${positionOfSmileButton.left - WIDTH_EMOJI_PANEL}px` : `${positionOfSmileButton.right}px`
+			}),
+			[topPositionEmojiPanel, distanceToBottom, distanceToRight, positionOfSmileButton.left, positionOfSmileButton.right]
+		);
+
+		const topicPanelStyle = useMemo(() => ({ top: topPositionEmojiPanel }), [topPositionEmojiPanel]);
+
 		return (
 			<>
 				{openEmojiRightPanelOnChannelLayout && (
@@ -58,21 +69,14 @@ const ReactionEmojiPanel = memo(
 					<div
 						className="fixed z-50 max-sm:hidden duration-300 ease-in-out animate-fly_in"
 						onMouseDown={(e) => e.stopPropagation()}
-						style={{
-							top: topPositionEmojiPanel,
-							bottom: distanceToBottom < HEIGHT_EMOJI_PANEL ? '0' : 'auto',
-							left:
-								distanceToRight < WIDTH_EMOJI_PANEL
-									? `${positionOfSmileButton.left - WIDTH_EMOJI_PANEL}px`
-									: `${positionOfSmileButton.right}px`
-						}}
+						style={bottomPanelStyle}
 					>
 						<GifStickerEmojiPopup mode={ChannelStreamMode.STREAM_MODE_CHANNEL} emojiAction={EmojiPlaces.EMOJI_REACTION} />
 					</div>
 				)}
 				{openEmojiPanelOnTopicOrThreadBox && (
 					<div
-						style={{ top: topPositionEmojiPanel }}
+						style={topicPanelStyle}
 						onMouseDown={(e) => e.stopPropagation()}
 						id="emojiPickerTopic"
 						className="z-50 absolute size-[500px] max-sm:hidden -right-[505px]"

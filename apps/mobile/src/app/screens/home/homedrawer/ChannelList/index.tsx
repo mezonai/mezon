@@ -1,9 +1,9 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
 	clansActions,
 	selectCurrentChannelId,
-	selectCurrentClan,
+	selectCurrentClanId,
 	selectIsShowEmptyCategory,
 	selectListChannelRenderByClanId,
 	useAppDispatch,
@@ -13,7 +13,7 @@ import {
 import type { ICategoryChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Platform, RefreshControl, StyleSheet, View } from 'react-native';
+import { FlatList, Platform, RefreshControl, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
@@ -29,28 +29,28 @@ import { style } from './styles';
 const ChannelList = () => {
 	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const isShowEmptyCategory = useSelector(selectIsShowEmptyCategory);
-	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClan?.clan_id));
+	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClanId));
 	const [refreshing, setRefreshing] = useState(false);
 	const dispatch = useAppDispatch();
 	const flashListRef = useRef(null);
 
 	useEffect(() => {
-		if (currentClan?.clan_id) {
+		if (currentClanId) {
 			flashListRef?.current?.scrollToOffset?.({ animated: true, offset: 0 });
 		}
-	}, [currentClan?.clan_id]);
+	}, [currentClanId]);
 	const handleRefresh = async () => {
 		setRefreshing(true);
 
 		const promise = [
-			dispatch(channelsActions.fetchChannels({ clanId: currentClan?.clan_id, noCache: true, isMobile: true })),
-			dispatch(clansActions.fetchClans({ noCache: true })),
+			dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true, isMobile: true })),
+			dispatch(clansActions.fetchClans({ noCache: true, isMobile: true })),
 			dispatch(
 				voiceActions.fetchVoiceChannelMembers({
-					clanId: currentClan?.clan_id ?? '',
+					clanId: currentClanId ?? '',
 					channelId: '',
 					channelType: ChannelType.CHANNEL_TYPE_MEZON_VOICE
 				})
@@ -94,7 +94,7 @@ const ChannelList = () => {
 				const isActive = item?.id === currentChannelId;
 				const isHaveParentActive = item?.threadIds?.includes(currentChannelId);
 				return (
-					<View key={`${item?.id}_${item?.isFavor}_${index}_ItemChannel}`} style={[item?.threadIds && { zIndex: 1 }]}>
+					<View key={`${item?.id}_${item?.isFavor}_${index}_ItemChannel}`} style={[item?.threadIds && styles.channelItemWrapper]}>
 						<ChannelListItem data={item} isChannelActive={isActive} isHaveParentActive={isHaveParentActive} />
 					</View>
 				);
@@ -138,7 +138,7 @@ const ChannelList = () => {
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={styles.absoluteFillGradient}
 			/>
 			<ChannelListScroll data={data} flashListRef={flashListRef} />
 			<FlatList
@@ -160,11 +160,9 @@ const ChannelList = () => {
 				contentOffset={{ x: 0, y: 0 }}
 				onScrollToIndexFailed={onScrollToIndexFailed}
 				disableVirtualization={false}
-				contentContainerStyle={{
-					paddingBottom: size.s_6
-				}}
+				contentContainerStyle={styles.flatListContent}
 			/>
-			{!isTabletLandscape && <View style={{ height: 80 }} />}
+			{!isTabletLandscape && <View style={styles.bottomSpacer} />}
 			<ButtonNewUnread />
 		</View>
 	);

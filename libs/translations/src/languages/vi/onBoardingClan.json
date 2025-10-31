@@ -115,7 +115,8 @@
 			"enableAndSave": "Bật & Lưu",
 			"saving": "Đang lưu...",
 			"save": "Lưu thay đổi",
-			"disable": "Tắt Cộng đồng"
+			"disable": "Tắt Cộng đồng",
+			"reset": "Đặt lại"
 		},
 		"messages": {
 			"aboutUpdated": "Đã cập nhật thông tin!",
@@ -130,7 +131,8 @@
 			"communityDisabled": "Đã tắt cộng đồng.",
 			"disableFailed": "Tắt thất bại!",
 			"bannerRemoved": "Đã xóa banner!",
-			"fillAllRequiredFields": "Vui lòng điền đầy đủ các trường bắt buộc: Banner, Giới thiệu, Mô tả, URL tùy chỉnh!"
+			"fillAllRequiredFields": "Vui lòng điền đầy đủ các trường bắt buộc: Banner, Giới thiệu, Mô tả, URL tùy chỉnh!",
+			"bannerUpdateFailed": "Cập nhật banner thất bại!"
 		}
 	},
 	"clanGuideSetting": {

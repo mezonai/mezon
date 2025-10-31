@@ -1,5 +1,5 @@
 import { useCustomNavigate } from '@mezon/core';
-import { appActions, getStore, selectBadgeCountByClanId, selectIsUseProfileDM, useAppDispatch } from '@mezon/store';
+import { appActions, getStore, selectBadgeCountByClanId, selectClanHasUnreadMessage, selectIsUseProfileDM, useAppDispatch } from '@mezon/store';
 import { Image } from '@mezon/ui';
 import type { IClan } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
@@ -22,6 +22,7 @@ export type SidebarClanItemProps = {
 const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanClick }: SidebarClanItemProps) => {
 	const [_, startTransition] = useTransition();
 	const badgeCountClan = useSelector(selectBadgeCountByClanId(option?.clan_id ?? '')) || 0;
+	const hasUnreadMessage = useSelector(selectClanHasUnreadMessage(option?.clan_id ?? ''));
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 
@@ -103,7 +104,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 				</div>
 			)}
 
-			{option?.has_unread_message && badgeCountClan === 0 && !active && (
+			{hasUnreadMessage && badgeCountClan === 0 && !active && (
 				<div className="before:content-[''] before:w-1 before:h-2 before:rounded-[0px_4px_4px_0px] before:absolute before:top-3 before:left-[-14px] before:bg-white"></div>
 			)}
 		</div>

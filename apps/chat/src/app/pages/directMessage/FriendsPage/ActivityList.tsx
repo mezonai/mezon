@@ -106,15 +106,13 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 			ref={parentRef}
 			className={`flex h-full flex-col overflow-y-auto w-full custom-member-list ${appearanceTheme === 'light' ? 'customSmallScrollLightMode' : 'thread-scroll'}`}
 			style={{
-				height,
-				overflow: 'auto'
+				height
 			}}
 		>
 			<div
+				className="w-full relative"
 				style={{
-					height: `${rowVirtualizer.getTotalSize()}px`,
-					width: '100%',
-					position: 'relative'
+					height: `${rowVirtualizer.getTotalSize()}px`
 				}}
 			>
 				{rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -122,11 +120,8 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 					return (
 						<div
 							key={virtualRow.index}
+							className="absolute top-0 left-0 w-full"
 							style={{
-								position: 'absolute',
-								top: 0,
-								left: 0,
-								width: '100%',
 								height: `${virtualRow.size}px`,
 								transform: `translateY(${virtualRow.start}px)`
 							}}

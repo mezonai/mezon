@@ -8,7 +8,8 @@ import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { EventItem } from '../../Event/EventItem';
 import { style } from './styles';
 
@@ -33,13 +34,13 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 				color: themeValue.textDisabled
 			},
 			headerLeft: () => (
-				<TouchableOpacity style={{ marginLeft: 20 }} onPress={() => navigation.goBack()}>
+				<TouchableOpacity style={styles.headerLeftButton} onPress={() => navigation.goBack()}>
 					<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={Fonts.size.s_18} width={Fonts.size.s_18} color={themeValue.textStrong} />
 				</TouchableOpacity>
 			),
 			headerRight: () => (
 				<TouchableOpacity
-					style={{ marginRight: 20 }}
+					style={styles.headerRightButton}
 					onPress={() => {
 						onGoBack?.();
 						navigation.navigate(APP_SCREEN.HOME);
@@ -63,10 +64,10 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 					channel_voice_id: channelId,
 					address: location,
 					creator_id: myUser.userId,
-					title: title,
-					description: description,
+					title,
+					description,
 					channel_id: eventChannelId,
-					logo: logo,
+					logo,
 					channel_id_old: currentEvent?.channel_id,
 					repeat_type: frequency,
 					clan_id: currentEvent?.clan_id
@@ -102,11 +103,11 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 						address: location,
 						user_ids: [],
 						creator_id: myUser.userId,
-						title: title,
-						description: description,
+						title,
+						description,
 						channel_id: eventChannelId,
 						is_private: isPrivate,
-						logo: logo
+						logo
 					}}
 					showActions={false}
 					start={startTime.toISOString()}

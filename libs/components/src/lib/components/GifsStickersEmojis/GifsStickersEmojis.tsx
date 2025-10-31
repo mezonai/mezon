@@ -3,13 +3,14 @@ import {
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
 	selectClickedOnTopicStatus,
-	selectCurrentChannel,
+	selectCurrentChannelType,
 	selectCurrentTopicId,
 	selectIdMessageRefReaction
 } from '@mezon/store';
-import { EmojiPlaces, RequestInput, SubPanelName } from '@mezon/utils';
+import type { RequestInput } from '@mezon/utils';
+import { EmojiPlaces, SubPanelName } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiChannelDescription } from 'mezon-js/api.gen';
+import type { ApiChannelDescription } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -49,7 +50,7 @@ export const GifStickerEmojiPopup = ({
 }: GifStickerEmojiPopupOptions) => {
 	const { subPanelActive, setSubPanelActive, setValueInputSearch } = useGifsStickersEmoji();
 	const idMessageRefReaction = useSelector(selectIdMessageRefReaction);
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelType = useSelector(selectCurrentChannelType);
 	const emojiRefParentDiv = useRef<HTMLDivElement>(null);
 
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
@@ -83,7 +84,7 @@ export const GifStickerEmojiPopup = ({
 
 	const isShowEmojiPicker = useMemo(() => {
 		const isMobile = window.innerWidth <= 640;
-		const isStreaming = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
+		const isStreaming = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
 
 		return (
 			(subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT && isMobile) ||
@@ -94,10 +95,10 @@ export const GifStickerEmojiPopup = ({
 			(subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT && isStreaming) ||
 			(subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM && isStreaming)
 		);
-	}, [subPanelActive, emojiAction, currentChannel?.type]);
+	}, [subPanelActive, emojiAction]);
 
 	const containerClassName = useMemo(() => {
-		const isStreaming = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
+		const isStreaming = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
 		const baseClasses = 'w-[370px] max-sm:w-full max-sm:pt-0 max-sm:rounded-none max-sm:mt-[-0.5rem]';
 		const widthClasses = isStreaming ? 'sbm:w-[430px]' : 'sbm:w-[500px]';
 		const heightClasses =
@@ -108,12 +109,12 @@ export const GifStickerEmojiPopup = ({
 					: 'min-h-[500px]';
 
 		return `${baseClasses} ${widthClasses} max-sbm:w-[calc(100dvw_-_24px)] max-sbm:rounded-lg h-fit rounded-lg text-theme-primary bg-theme-setting-primary shadow shadow-neutral-900 z-30 ${heightClasses}`;
-	}, [currentChannel?.type, emojiAction, isShowEmojiPicker]);
+	}, [emojiAction, isShowEmojiPicker]);
 
 	const contentWidthClass = useMemo(() => {
-		const isStreaming = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
+		const isStreaming = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
 		return isStreaming ? 'md:w-[430px]' : 'md:w-[500px]';
-	}, [currentChannel?.type]);
+	}, []);
 
 	return (
 		<div onClick={(e) => e.stopPropagation()} className={containerClassName}>

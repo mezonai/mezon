@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -12,5 +13,10 @@ export const style = (colors: Attributes) =>
 		titleSuggestion: {
 			fontSize: size.medium,
 			color: colors.text
+		},
+		avatarImage: {
+			width: size.s_24,
+			height: size.s_24,
+			borderRadius: 50
 		}
 	});

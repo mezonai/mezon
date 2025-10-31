@@ -1,4 +1,5 @@
-import { Attributes, baseColor, Metrics, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, isTablet: boolean) =>
@@ -6,7 +7,7 @@ export const style = (colors: Attributes, isTablet: boolean) =>
 		mainList: {
 			height: '100%',
 			flex: 1,
-			overflow: 'hidden',
+			overflow: 'hidden'
 		},
 		channelListSearch: {
 			width: '100%',
@@ -69,5 +70,17 @@ export const style = (colors: Attributes, isTablet: boolean) =>
 			padding: size.s_4,
 			bottom: isTablet ? size.s_20 : size.s_100,
 			left: '30%'
+		},
+		channelItemWrapper: {
+			zIndex: 1
+		},
+		absoluteFillGradient: {
+			...StyleSheet.absoluteFillObject
+		},
+		flatListContent: {
+			paddingBottom: size.s_6
+		},
+		bottomSpacer: {
+			height: 80
 		}
 	});

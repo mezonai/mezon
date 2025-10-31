@@ -57,6 +57,9 @@ const styles = StyleSheet.create({
 		fontSize: size.small,
 		color: '#c7c7c7',
 		textTransform: 'uppercase'
+	},
+	fileContentWrapper: {
+		maxWidth: '75%'
 	}
 });
 

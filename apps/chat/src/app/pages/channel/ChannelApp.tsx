@@ -33,7 +33,7 @@ import useMiniAppEventListener from './useMiniAppEventListener';
 function AudioConference() {
 	const tracks = useTracks([{ source: Track.Source.Microphone, withPlaceholder: true }], { onlySubscribed: false });
 	return (
-		<GridLayout tracks={tracks} style={{ height: 'calc(100vh - var(--lk-control-bar-height))' }}>
+		<GridLayout tracks={tracks} className="h-[calc(100vh-var(--lk-control-bar-height))]">
 			<ParticipantTile />
 		</GridLayout>
 	);
@@ -52,15 +52,7 @@ export function AudiRoom({ token, serverUrl }: { token: string; serverUrl: strin
 			className="w-full h-full flex justify-center items-center"
 		>
 			<RoomAudioRenderer />
-			<div
-				style={{
-					position: 'relative',
-					width: '100%',
-					height: '100%',
-					backgroundColor: '#000',
-					overflow: 'hidden'
-				}}
-			>
+			<div className="relative w-full h-full bg-black overflow-hidden">
 				<AudioConference />
 				<AudioControls />
 			</div>

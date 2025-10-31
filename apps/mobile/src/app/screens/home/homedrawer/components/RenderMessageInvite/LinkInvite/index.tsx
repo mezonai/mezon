@@ -48,7 +48,7 @@ function LinkInvite({ inviteID }: { inviteID: string }) {
 				requestAnimationFrame(async () => {
 					navigation.navigate(APP_SCREEN.HOME);
 					await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-					await store.dispatch(clansActions.fetchClans({ noCache: true }));
+					await store.dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
 					store.dispatch(clansActions.joinClan({ clanId: res?.clan_id }));
 					store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clan_id }));
 					save(STORAGE_CLAN_ID, res?.clan_id);

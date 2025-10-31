@@ -260,7 +260,7 @@ export const ProfileDetail = memo(() => {
 					)}
 
 					<Text style={styles.username} numberOfLines={1}>
-						{profileData.display_name}
+						{profileData?.display_name || profileData?.username}
 					</Text>
 				</View>
 

@@ -1135,7 +1135,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 		}, [mentionContent, refs, floatingStyles, activeMentionContext, inputWidth]);
 
 		return (
-			<div className={`mention-input ${className}`} style={{ position: 'relative', ...style }}>
+			<div className={`mention-input relative ${className} `} style={style}>
 				<div
 					ref={(node) => {
 						(inputRef as any).current = node;

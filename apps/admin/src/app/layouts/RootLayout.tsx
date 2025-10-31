@@ -1,18 +1,20 @@
 import { selectAppsFetchingLoading, selectIsLogin } from '@mezon/store';
 import React, { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { Outlet, useLoaderData, useParams } from 'react-router-dom';
-import { appDetailTabs } from '../common/constants/appDetailTabs';
-import { tabs } from '../common/constants/tabSideBar';
+import { getAppDetailTabs } from '../common/constants/appDetailTabs';
+import { getSidebarTabs } from '../common/constants/tabSideBar';
 import AppDetailLeftMenu from '../components/AppDetailLeftMenu';
 import CollapseSideBar from '../components/CollapseSideBar';
 import Header from '../components/Header';
 import SideBar from '../components/SideBar';
 import { useAppearance } from '../context/AppearanceContext';
-import { IAuthLoaderData } from '../loader/authLoader';
+import type { IAuthLoaderData } from '../loader/authLoader';
 
 const RootLayout: React.FC = () => {
-	const { isLogin: isLoginLoader, redirect } = useLoaderData() as IAuthLoaderData;
+	const { t } = useTranslation('adminApplication');
+	const { isLogin: isLoginLoader } = useLoaderData() as IAuthLoaderData;
 	const isLoginStore = useSelector(selectIsLogin);
 	const isLogin = isLoginLoader && isLoginStore;
 	const { isDarkMode } = useAppearance();
@@ -25,10 +27,10 @@ const RootLayout: React.FC = () => {
 	const param = useParams();
 	const menuItems = useMemo(() => {
 		if (param.applicationId) {
-			return appDetailTabs;
+			return getAppDetailTabs(t);
 		}
-		return tabs;
-	}, [param]);
+		return getSidebarTabs(t);
+	}, [param, t]);
 	const STATE = React.useMemo(() => {
 		const randomState = Math.random().toString(36).substring(2, 15);
 		sessionStorage.setItem('oauth_state', randomState);

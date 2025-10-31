@@ -14,5 +14,10 @@ export const styles = (themeValue?: Attributes) =>
 			fontSize: size.small,
 			color: themeValue?.textDisabled,
 			marginTop: size.s_2
+		},
+		numberLineContainer: {
+			flex: 1,
+			maxHeight: size.s_20 * 10 - size.s_10,
+			overflow: 'hidden'
 		}
 	});

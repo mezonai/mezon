@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import type { MessagesEntity } from '@mezon/store-mobile';
 import {
 	getStore,
@@ -359,14 +359,14 @@ const MessageItem = React.memo(
 								/>
 							)}
 
-							<View style={[message?.content?.fwd ? { display: 'flex' } : undefined, message?.content?.isCard && styles.cardMsg]}>
+							<View style={[message?.content?.fwd ? styles.contentDisplay : undefined, message?.content?.isCard && styles.cardMsg]}>
 								<View style={message?.content?.fwd ? styles.forwardBorder : undefined}>
 									{!!message?.content?.fwd && (
 										<Text style={styles.forward}>
 											<Entypo name="forward" size={15} color={themeValue.text} /> {t('common:forwarded')}
 										</Text>
 									)}
-									<View style={{ opacity: message.isError || message?.isErrorRetry ? 0.6 : 1 }}>
+									<View style={message.isError || message?.isErrorRetry ? styles.opacityErrorRetry : styles.opacityNormal}>
 										{isMessageSystem ? (
 											<MessageLineSystem message={message} />
 										) : isMessageCallLog ? (
@@ -487,17 +487,25 @@ const MessageItem = React.memo(
 		);
 	},
 	(prevProps, nextProps) => {
-		// Return true to skip re-render, false to re-render
 		return (
-			prevProps?.message?.id === nextProps?.message?.id &&
-			prevProps?.message?.update_time === nextProps?.message?.update_time &&
-			prevProps?.previousMessage?.id === nextProps?.previousMessage?.id &&
-			prevProps?.message?.code === nextProps?.message?.code &&
-			prevProps?.isHighlight === nextProps?.isHighlight &&
-			prevProps?.message?.reactions === nextProps?.message?.reactions &&
-			prevProps?.message?.references?.[0]?.content === nextProps?.message?.references?.[0]?.content &&
-			prevProps?.message?.content?.t === nextProps?.message?.content?.t &&
-			prevProps?.message?.attachments?.length === nextProps?.message?.attachments?.length
+			prevProps?.message?.id +
+				prevProps?.message?.update_time +
+				prevProps?.previousMessage?.id +
+				prevProps?.message?.code +
+				prevProps?.isHighlight +
+				prevProps?.message?.reactions +
+				prevProps?.message?.content?.t +
+				prevProps?.message?.attachments?.length +
+				prevProps?.message?.references?.[0]?.content ===
+			nextProps?.message?.id +
+				nextProps?.message?.update_time +
+				nextProps?.previousMessage?.id +
+				nextProps?.message?.code +
+				nextProps?.isHighlight +
+				nextProps?.message?.reactions +
+				nextProps?.message?.content?.t +
+				nextProps?.message?.attachments?.length +
+				nextProps?.message?.references?.[0]?.content
 		);
 	}
 );

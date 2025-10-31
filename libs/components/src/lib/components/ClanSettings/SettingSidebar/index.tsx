@@ -1,6 +1,6 @@
 import { usePermissionChecker } from '@mezon/core';
 import type { RootState } from '@mezon/store';
-import { authActions, selectAllAccount, selectCurrentClan, selectIsCommunityEnabled, useAppDispatch } from '@mezon/store';
+import { authActions, selectAllAccount, selectCurrentClanId, selectCurrentClanName, selectIsCommunityEnabled, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
 import { EPermission, generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
@@ -20,14 +20,14 @@ type SettingSidebarProps = {
 const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDeletePopup }: SettingSidebarProps) => {
 	const { t } = useTranslation('clanSettings');
 	const [selectedButton, setSelectedButton] = useState<string | null>(currentSetting);
-	const currentClan = useSelector(selectCurrentClan);
+	const clanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const [isClanOwner, hasClanPermission, hasChannelPermission] = usePermissionChecker([
 		EPermission.clanOwner,
 		EPermission.manageClan,
 		EPermission.manageChannel
 	]);
 	const userProfile = useSelector(selectAllAccount);
-	const clanId = currentClan?.clan_id;
 	const isCommunityEnabled = useSelector((state: RootState) => (clanId ? selectIsCommunityEnabled(state, clanId) : false));
 
 	const getTranslatedItemName = (item: ItemObjProps) => {
@@ -93,9 +93,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	return (
 		<div className="flex flex-row flex-1 justify-end">
 			<div className="w-[220px] py-[60px] pl-5 pr-[6px]">
-				<p className=" pl-[10px] pb-[6px] font-bold text-sm tracking-wider uppercase truncate text-theme-primary-active">
-					{currentClan?.clan_name}
-				</p>
+				<p className=" pl-[10px] pb-[6px] font-bold text-sm tracking-wider uppercase truncate text-theme-primary-active">{currentClanName}</p>
 				{sideBarListItemWithPermissions.map((sidebarItem, index) => (
 					<div
 						key={`${sidebarItem.title}_${index}`}

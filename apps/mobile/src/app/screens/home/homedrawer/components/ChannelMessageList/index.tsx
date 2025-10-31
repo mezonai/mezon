@@ -1,6 +1,6 @@
 import { ELoadMoreDirection } from '@mezon/chat-scroll';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { MessagesEntity } from '@mezon/store-mobile';
+import type { MessagesEntity } from '@mezon/store-mobile';
 import React, { useCallback, useMemo } from 'react';
 import { Keyboard, View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
@@ -60,10 +60,10 @@ const ChannelListMessage = React.memo(
 				onEndReachedThreshold={0.2}
 				maintainVisibleContentPosition={{
 					minIndexForVisible: 1,
-					autoscrollToTopThreshold: isLoadMoreBottom ? undefined : 100
+					autoscrollToTopThreshold: isLoadMoreBottom ? undefined : 1000
 				}}
 				ref={flatListRef}
-				onMomentumScrollEnd={handleScroll}
+				onScroll={handleScroll}
 				keyboardShouldPersistTaps={'handled'}
 				onEndReached={handleEndReached}
 				onScrollBeginDrag={() => {

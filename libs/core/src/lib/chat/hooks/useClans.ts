@@ -1,13 +1,6 @@
-import {
-	ClansEntity,
-	clansActions,
-	selectAllClans,
-	selectCurrentClan,
-	selectCurrentClanId,
-	useAppDispatch,
-	userClanProfileActions
-} from '@mezon/store';
-import { MezonUpdateClanDescBody } from 'mezon-js/api.gen';
+import type { ClansEntity } from '@mezon/store';
+import { clansActions, selectAllClans, selectCurrentClanId, useAppDispatch, userClanProfileActions } from '@mezon/store';
+import type { MezonUpdateClanDescBody } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -15,7 +8,6 @@ export function useClans() {
 	const dispatch = useAppDispatch();
 	const clans = useSelector(selectAllClans);
 	const currentClanId = useSelector(selectCurrentClanId);
-	const currentClan = useSelector(selectCurrentClan);
 
 	const setClanShowNumEvent = React.useCallback(
 		async (status: boolean) => {
@@ -88,7 +80,6 @@ export function useClans() {
 		() => ({
 			clans,
 			currentClanId,
-			currentClan,
 			setClanShowNumEvent,
 			getUserClanProfile,
 			updateUserClanProfile,
@@ -96,6 +87,6 @@ export function useClans() {
 			updateClan,
 			deleteClan
 		}),
-		[clans, currentClanId, currentClan, setClanShowNumEvent, getUserClanProfile, updateUserClanProfile, createClans, updateClan, deleteClan]
+		[clans, currentClanId, setClanShowNumEvent, getUserClanProfile, updateUserClanProfile, createClans, updateClan, deleteClan]
 	);
 }

@@ -3,9 +3,11 @@ import type { DirectEntity } from '@mezon/store';
 import {
 	directActions,
 	directMetaActions,
+	getStore,
 	selectBuzzStateByDirectId,
 	selectDirectById,
 	selectIsUnreadDMById,
+	selectLatestMessageId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -65,7 +67,9 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 		e.stopPropagation();
 		await dispatch(directActions.closeDirectMessage({ channel_id: directId }));
 		const timestamp = Date.now() / 1000;
-		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: directId, timestamp }));
+		const store = getStore();
+		const messageId = store ? selectLatestMessageId(store.getState(), directId) : undefined;
+		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: directId, timestamp, messageId }));
 		if (directId === currentDmGroupId) {
 			dispatch(directActions.setDmGroupCurrentId(''));
 			navigateToFriends();
@@ -88,8 +92,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 		<div
 			onContextMenu={handleContextMenu}
 			ref={ref}
-			style={{ height: 42 }}
-			className={`flex items-center group/itemListDm relative cursor-pointer bg-item-hover h-fit px-2 rounded-[6px] w-full ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'}`}
+			className={`flex items-center group/itemListDm relative cursor-pointer bg-item-hover h-[42px] px-2 rounded-[6px] w-full ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'}`}
 			onClick={handleClickDM}
 			data-e2e={generateE2eId(`chat.direct_message.chat_list`)}
 		>

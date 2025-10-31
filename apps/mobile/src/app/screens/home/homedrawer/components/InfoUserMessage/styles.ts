@@ -1,5 +1,6 @@
 import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
+
 export const styles = StyleSheet.create({
 	usernameMessageBox: {
 		fontSize: size.medium,

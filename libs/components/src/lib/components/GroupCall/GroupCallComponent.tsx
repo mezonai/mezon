@@ -300,8 +300,7 @@ const GroupCallComponent = memo(
 			<>
 				{groupCall.state.isShowPreCallInterface && isActiveForCurrentGroup && !groupCall.state.isAnsweringCall && (
 					<div
-						className={`w-widthThumnailAttachment  absolute top-0 right-0 ${!isOnMenu ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''} z-50`}
-						style={{ height: '240px' }}
+						className={`w-widthThumnailAttachment  absolute top-0 right-0 ${!isOnMenu ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''} z-50 h-[240px]`}
 					>
 						<PreCallInterface
 							directId={directId || ''}
@@ -313,8 +312,7 @@ const GroupCallComponent = memo(
 				)}
 
 				<div
-					className={`w-widthThumnailAttachment ${!shouldShowComponent || !isActiveForCurrentGroup || !isJoined ? 'hidden' : ''} absolute top-0 right-0 ${!isOnMenu ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''} z-30`}
-					style={{ height: '240px' }}
+					className={`w-widthThumnailAttachment ${!shouldShowComponent || !isActiveForCurrentGroup || !isJoined ? 'hidden' : ''} absolute top-0 right-0 ${!isOnMenu ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''} z-30 h-[240px]`}
 				>
 					{/* LiveKit Room when in call */}
 					{token !== '' && serverUrl && isJoined && (

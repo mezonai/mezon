@@ -2,7 +2,8 @@ import { canvasActions, selectCurrentChannelId, selectCurrentClanId } from '@mez
 import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { safeJSONParse } from 'mezon-js';
-import Quill, { Delta } from 'quill';
+import type { Delta } from 'quill';
+import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -468,24 +469,15 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 	}, []);
 
 	return (
-		<div className="note-canvas" style={{ position: 'relative' }}>
+		<div className="note-canvas relative">
 			{toolbarVisible && isEditAndDelCanvas && (
 				<div
 					ref={toolbarRef}
 					id="toolbar"
-					className="toolbar"
+					className="toolbar absolute flex items-center gap-2 bg-theme-contexify text-theme-primary rounded-[5px] z-[99] p-[5px]"
 					style={{
-						position: 'absolute',
 						top: `${toolbarPosition.top}px`,
 						left: `${toolbarPosition.left}px`,
-						padding: '5px',
-						display: 'flex',
-						alignItems: 'center',
-						gap: '8px',
-						background: 'var(--bg-theme-contexify)',
-						color: 'var(--text-theme-primary',
-						borderRadius: '5px',
-						zIndex: 99,
 						boxShadow: '0 0 0 1px #e8e8e840,0 1px 3px #00000014'
 					}}
 				>
@@ -496,10 +488,7 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 						</div>
 						<div>
 							{isOpen && (
-								<ul
-									style={{ boxShadow: '0 0 0 1px #e8e8e840,0 1px 3px #00000014' }}
-									className="absolute left-0 bg-theme-contexify pt-[12px] pr-[0] pb-[12px] pl-[0] rounded-[6px] min-w-[200px] max-w-[calc(100vh - 62px)] overflow-y-auto"
-								>
+								<ul className="absolute left-0 bg-theme-contexify pt-[12px] pr-[0] pb-[12px] pl-[0] rounded-[6px] min-w-[200px] max-w-[calc(100vh - 62px)] overflow-y-auto shadow-[0_0_0_1px_#e8e8e840,0_1px_3px_#00000014]">
 									{options.map((option) => (
 										<React.Fragment key={option.value}>
 											<li
@@ -542,10 +531,7 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 							)}
 						</div>
 					</div>
-					<span
-						className={`separator ${isLightMode ? 'bg-white' : 'bg-[#8080808f]'}`}
-						style={{ height: '20px', width: '1px', margin: '0 4px' }}
-					></span>
+					<span className={`separator h-5 w-px mx-1 ${isLightMode ? 'bg-white' : 'bg-[#8080808f]'}`}></span>
 
 					<button
 						className={`disabled:opacity-50 disabled:cursor-auto  ${activeFormats['bold'] ? 'bg-theme-contexify' : ''}`}
@@ -555,7 +541,7 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 						title="Bold"
 						disabled={activeFormats['code-block']}
 					>
-						<svg data-5iu="true" data-qa="bold" aria-hidden="true" viewBox="0 0 20 20" style={{ width: '1em', height: '1em' }}>
+						<svg data-5iu="true" data-qa="bold" aria-hidden="true" viewBox="0 0 20 20" className="w-[1em] h-[1em]">
 							<path
 								fill="currentColor"
 								fillRule="evenodd"
@@ -573,7 +559,7 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 						title="Italic"
 						disabled={activeFormats['code-block']}
 					>
-						<svg data-5iu="true" data-qa="italic" aria-hidden="true" viewBox="0 0 20 20" style={{ width: '1em', height: '1em' }}>
+						<svg data-5iu="true" data-qa="italic" aria-hidden="true" viewBox="0 0 20 20" className="w-[1em] h-[1em]">
 							<path
 								fill="currentColor"
 								fillRule="evenodd"
@@ -591,7 +577,7 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 						title="Strikethrough"
 						disabled={activeFormats['code-block']}
 					>
-						<svg data-5iu="true" data-qa="strikethrough" aria-hidden="true" viewBox="0 0 20 20" style={{ width: '1em', height: '1em' }}>
+						<svg data-5iu="true" data-qa="strikethrough" aria-hidden="true" viewBox="0 0 20 20" className="w-[1em] h-[1em]">
 							<path
 								fill="currentColor"
 								fillRule="evenodd"
@@ -601,13 +587,10 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 						</svg>
 					</button>
 
-					<span
-						className={`separator ${isLightMode ? 'bg-white' : 'bg-[#8080808f]'}`}
-						style={{ height: '20px', width: '1px', margin: '0 4px' }}
-					></span>
+					<span className={`separator h-5 w-px mx-1 ${isLightMode ? 'bg-white' : 'bg-[#8080808f]'}`}></span>
 
 					<button type="button" onClick={() => formatText('code-block')} style={getStyle('button', 'code-block')} title="Code Block">
-						<svg data-5iu="true" data-qa="code" aria-hidden="true" viewBox="0 0 20 20" style={{ width: '1em', height: '1em' }}>
+						<svg data-5iu="true" data-qa="code" aria-hidden="true" viewBox="0 0 20 20" className="w-[1em] h-[1em]">
 							<path
 								fill="currentColor"
 								fillRule="evenodd"
@@ -616,10 +599,7 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 							></path>
 						</svg>
 					</button>
-					<span
-						className={`separator ${isLightMode ? 'bg-white' : 'bg-[#8080808f]'}`}
-						style={{ height: '20px', width: '1px', margin: '0 4px' }}
-					></span>
+					<span className={`separator h-5 w-px mx-1 ${isLightMode ? 'bg-white' : 'bg-[#8080808f]'}`}></span>
 					<button
 						className="ql-link disabled:opacity-50 disabled:cursor-auto"
 						type="button"
@@ -628,7 +608,7 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 						title="Link"
 						disabled={activeFormats['code-block']}
 					>
-						<svg data-5iu="true" data-qa="link" aria-hidden="true" viewBox="0 0 20 20" style={{ width: '1em', height: '1em' }}>
+						<svg data-5iu="true" data-qa="link" aria-hidden="true" viewBox="0 0 20 20" className="w-[1em] h-[1em]">
 							<path
 								fill="currentColor"
 								fillRule="evenodd"
@@ -639,17 +619,7 @@ function CanvasContent({ isLightMode, content, idCanvas, isEditAndDelCanvas, onC
 					</button>
 				</div>
 			)}
-			<div
-				id="editor"
-				ref={editorRef}
-				style={{
-					height: 'auto',
-					width: '100%',
-					fontSize: '15px',
-					color: 'var(--text-theme-primary',
-					border: 'none'
-				}}
-			/>
+			<div id="editor" ref={editorRef} className="h-auto w-full text-[15px] text-theme-primary !border-none" />
 			<style>
 				{`
 				#editor .ql-editor.ql-blank::before {

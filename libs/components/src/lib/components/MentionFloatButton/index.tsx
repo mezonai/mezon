@@ -6,5 +6,5 @@ type MentionFloatButtonProps = {
 };
 
 export const MentionFloatButton = React.memo<MentionFloatButtonProps>(({ onClick }) => {
-	return <FloatButton content={'New mention'} backgroundColor={'#DA373C'} textColor={'white'} onClick={onClick} className={'uppercase'} />;
+	return <FloatButton content={'New mention'} onClick={onClick} className={'uppercase'} />;
 });

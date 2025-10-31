@@ -1,11 +1,12 @@
-import { useAppNavigation, useClans, useEventManagementQuantity, usePathMatch, usePermissionChecker } from '@mezon/core';
+import { useAppNavigation, useEventManagementQuantity, usePathMatch, usePermissionChecker } from '@mezon/core';
 import type { EventManagementOnGogoing } from '@mezon/store';
 import {
 	channelsActions,
+	clansActions,
 	eventManagementActions,
 	selectCurrentChannelId,
-	selectCurrentClan,
 	selectCurrentClanId,
+	selectCurrentClanIsOnboarding,
 	selectEventLoading,
 	selectMissionDone,
 	selectMissionSum,
@@ -19,7 +20,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DONE_ONBOARDING_STATUS, EPermission, generateE2eId } from '@mezon/utils';
-import { memo, useMemo } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -30,9 +31,9 @@ export const Events = memo(() => {
 	const { t } = useTranslation('channelList');
 	const ongoingEvent = useSelector(selectOngoingEvent);
 	const previewMode = useSelector(selectOnboardingMode);
-	const { setClanShowNumEvent } = useClans();
+
 	const currentClanId = useSelector(selectCurrentClanId);
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
 	const onboardingByClan = useSelector((state) => selectOnboardingByClan(state, currentClanId as string));
 	const [checkAdminPermission] = usePermissionChecker([EPermission.administrator]);
 
@@ -52,6 +53,13 @@ export const Events = memo(() => {
 		openEventModal();
 	};
 
+	const setClanShowNumEvent = useCallback(
+		async (status: boolean) => {
+			await dispatch(clansActions.setClanShowNumEvent({ clanId: currentClanId || '', status }));
+		},
+		[currentClanId]
+	);
+
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
 	const channelSettingPath = `/chat/clans/${currentClanId}/channel-setting`;
 	const serverGuidePath = `/chat/clans/${currentClanId}/guide`;
@@ -66,7 +74,7 @@ export const Events = memo(() => {
 	}, []);
 
 	const dispatch = useAppDispatch();
-	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClan?.clan_id as string));
+	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClanId as string));
 	const checkPreviewMode = useMemo(() => {
 		if (previewMode?.open && previewMode.clanId === currentClanId) {
 			return true;
@@ -75,12 +83,12 @@ export const Events = memo(() => {
 			return (
 				onboardingByClan?.sumMission &&
 				onboardingByClan?.sumMission > 0 &&
-				currentClan?.is_onboarding &&
+				currentClanIsOnboarding &&
 				selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS
 			);
 		}
 		return false;
-	}, [selectUserProcessing, onboardingByClan?.mission.length, previewMode, currentClan?.is_onboarding]);
+	}, [selectUserProcessing, onboardingByClan?.sumMission, previewMode, currentClanId, currentClanIsOnboarding]);
 	const handleClose = () => {
 		dispatch(topicsActions.setIsShowCreateTopic(false));
 		dispatch(threadsActions.setIsShowCreateThread({ channelId: currentChannelId as string, isShowCreateThread: false }));
@@ -100,7 +108,7 @@ export const Events = memo(() => {
 
 			{ongoingEvent && <EventNotification event={ongoingEvent} handleOpenDetail={handleOpenDetail} />}
 
-			{currentClan && currentClan.is_onboarding && (
+			{currentClanIsOnboarding && (
 				<Link
 					to={serverGuidePath}
 					onClick={handleClose}

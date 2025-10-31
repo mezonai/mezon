@@ -1,21 +1,12 @@
 import { useChannelMembersActions } from '@mezon/core';
-import {
-	ActionEmitEvent,
-	STORAGE_CHANNEL_CURRENT_CACHE,
-	STORAGE_CLAN_ID,
-	STORAGE_MY_USER_ID,
-	load,
-	remove,
-	save,
-	setDefaultChannelLoader
-} from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID, STORAGE_MY_USER_ID, load, remove, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
-	channelsActions,
 	clansActions,
 	getStoreAsync,
 	selectAllClans,
-	selectCurrentClan,
+	selectCurrentClanId,
+	selectCurrentClanName,
 	selectCurrentVoiceChannelId,
 	useAppDispatch
 } from '@mezon/store-mobile';
@@ -29,7 +20,8 @@ import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { styles } from './DeleteClanModal.styles';
 
 const DeleteClanModal = ({ isLeaveClan = false }: { isLeaveClan?: boolean }) => {
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const { t } = useTranslation(['deleteClan']);
 	const dispatch = useAppDispatch();
 	const clans = useSelector(selectAllClans);
@@ -40,25 +32,22 @@ const DeleteClanModal = ({ isLeaveClan = false }: { isLeaveClan?: boolean }) => 
 	const userId = useMemo(() => {
 		return load(STORAGE_MY_USER_ID);
 	}, []);
-	const currentClanName = useMemo(() => {
-		return currentClan?.clan_name;
-	}, [currentClan?.clan_name]);
 
 	const onConfirm = async () => {
 		if (isLeaveClan) {
 			await removeMemberClan({
 				channelId: currentChannelId,
-				clanId: currentClan?.clan_id,
+				clanId: currentClanId,
 				userIds: [userId]
 			});
 		} else {
-			await dispatch(clansActions.deleteClan({ clanId: currentClan?.clan_id || '' }));
+			await dispatch(clansActions.deleteClan({ clanId: currentClanId || '' }));
 		}
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		const store = await getStoreAsync();
 
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-		const indexClanJoin = currentClan?.clan_id === clans[0]?.clan_id ? 1 : 0;
+		const indexClanJoin = currentClanId === clans[0]?.clan_id ? 1 : 0;
 		if (clans?.length === 1) {
 			return;
 		}

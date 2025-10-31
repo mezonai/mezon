@@ -1,10 +1,13 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
 import { useTheme } from '@mezon/mobile-ui';
-import { channelMembersActions, ChannelMembersEntity, ChannelsEntity, directActions, useAppDispatch } from '@mezon/store-mobile';
+import type { ChannelMembersEntity, ChannelsEntity } from '@mezon/store-mobile';
+import { channelMembersActions, directActions, useAppDispatch } from '@mezon/store-mobile';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Toast from 'react-native-toast-message';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../../../componentUI/MezonMenu';
+import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../../../componentUI/MezonMenu';
+import MezonMenu from '../../../../../../../componentUI/MezonMenu';
+import { style } from './UserInfoDm.styles';
 
 export default function UserInfoDm({
 	user,
@@ -16,6 +19,7 @@ export default function UserInfoDm({
 	isShowRemoveGroup: boolean;
 }) {
 	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const { t } = useTranslation(['userProfile']);
 	const { dismiss } = useBottomSheetModal();
 	const dispatch = useAppDispatch();
@@ -26,7 +30,7 @@ export default function UserInfoDm({
 			onPress: () => {
 				handleRemoveMemberChannel();
 			},
-			styleBtn: { backgroundColor: themeValue.bgInputPrimary },
+			styleBtn: styles.kickBtnContainer,
 			isShow: isShowRemoveGroup
 		}
 	];

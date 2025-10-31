@@ -1,12 +1,6 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import {
-	MessagesEntity,
-	getFirstMessageOfTopic,
-	selectLatestMessageId,
-	selectMemberClanByUserId,
-	topicsActions,
-	useAppDispatch
-} from '@mezon/store-mobile';
+import type { MessagesEntity } from '@mezon/store-mobile';
+import { getFirstMessageOfTopic, selectLatestMessageId, selectMemberClanByUserId, topicsActions, useAppDispatch } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +39,7 @@ const MessageTopic = ({ message }: { message: MessagesEntity }) => {
 	}, [message?.content?.rpl, replyCount]);
 
 	return (
-		<View style={{ flexDirection: 'row' }}>
+		<View style={styles.outerWrapper}>
 			<TouchableOpacity onPress={handleOpenTopic} style={styles.container}>
 				<MezonAvatar
 					avatarUrl={topicCreator?.clan_avatar || topicCreator?.user?.avatar_url}

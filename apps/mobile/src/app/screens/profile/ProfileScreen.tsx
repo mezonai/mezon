@@ -278,10 +278,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 					</TouchableOpacity>
 					{isEnableWallet && (
 						<View>
-							<TouchableOpacity
-								onPress={showSendTokenBottomSheet}
-								style={styles.tokenRow}
-							>
+							<TouchableOpacity onPress={showSendTokenBottomSheet} style={styles.tokenRow}>
 								<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={size.s_20} height={size.s_20} color={baseColor.azureBlue} />
 								<View style={styles.token}>
 									<Text

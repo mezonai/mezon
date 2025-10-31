@@ -1,18 +1,21 @@
+import type { ChannelsEntity } from '@mezon/store';
 import {
 	channelMetaActions,
-	ChannelsEntity,
+	getStore,
 	messagesActions,
 	selectAllChannelMembers,
 	selectAllRolesClan,
 	selectChannelById,
 	selectCurrentClanId,
+	selectLatestMessageId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import { getMobileUploadedAttachments, getWebUploadedAttachments, IMessageSendPayload, uniqueUsers } from '@mezon/utils';
+import type { IMessageSendPayload } from '@mezon/utils';
+import { getMobileUploadedAttachments, getWebUploadedAttachments, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useChannelMembers } from './useChannelMembers';
@@ -32,7 +35,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 
 	const { clientRef, sessionRef, socketRef } = useMezon();
 	const { addMemberToThread } = useChannelMembers({
-		channelId: channelId,
+		channelId,
 		mode: ChannelStreamMode.STREAM_MODE_THREAD
 	});
 
@@ -95,7 +98,15 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 			}
 
 			const timestamp = Date.now() / 1000;
-			dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId, timestamp }));
+			const store = getStore();
+			const lastMessageId = store ? selectLatestMessageId(store.getState(), channelId) : '';
+			dispatch(
+				channelMetaActions.setChannelLastSeenTimestamp({
+					channelId,
+					timestamp,
+					messageId: lastMessageId || undefined
+				})
+			);
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[sessionRef, clientRef, socketRef, currentClanId, mode, dispatch, channelId]
@@ -106,7 +117,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 			dispatch(
 				messagesActions.sendTypingUser({
 					clanId: currentClanId || '',
-					channelId: channelId,
+					channelId,
 					mode: ChannelStreamMode.STREAM_MODE_THREAD,
 					isPublic: false,
 					username: username || ''

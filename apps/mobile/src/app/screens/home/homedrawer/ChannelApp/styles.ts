@@ -81,5 +81,15 @@ export const style = (colors: Attributes) =>
 			top: 0,
 			right: 0,
 			zIndex: 1000
+		},
+		loadingContainer: {
+			alignItems: 'center',
+			justifyContent: 'center',
+			position: 'absolute',
+			height: '100%',
+			zIndex: 1,
+			width: '100%',
+			backgroundColor: colors.primary,
+			flex: 1
 		}
 	});

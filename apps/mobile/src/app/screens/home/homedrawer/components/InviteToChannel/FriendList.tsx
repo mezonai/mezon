@@ -97,7 +97,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 				userMap.set(channelId, {
 					channel_id: itemDM?.channel_id,
 					channel_label: channelLabel,
-					channel_avatar: itemDM?.avatars?.[0] || itemDM?.channel_avatar,
+					channel_avatar: isDM ? itemDM?.avatars?.[0] : itemDM?.channel_avatar,
 					type: itemDM?.type,
 					id: itemDM?.channel_id,
 					topic: itemDM?.topic

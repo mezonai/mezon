@@ -1,7 +1,8 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ChannelMembersEntity, getStore, messagesActions, selectMemberClanByUserId, useAppDispatch } from '@mezon/store-mobile';
+import type { ChannelMembersEntity } from '@mezon/store-mobile';
+import { getStore, messagesActions, selectMemberClanByUserId, useAppDispatch } from '@mezon/store-mobile';
 import { safeJSONParse } from 'mezon-js';
-import { ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -50,8 +51,8 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 			dispatch(
 				messagesActions.jumpToMessage({
 					clanId: clanId || '',
-					messageId: messageId,
-					channelId: channelId
+					messageId,
+					channelId
 				})
 			);
 		});
@@ -85,17 +86,12 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 						<FastImage />
 					</Text>
 					{messageReferences?.has_attachment || isEmbedMessage ? (
-						<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+						<View style={styles.attachmentIconWrapper}>
 							<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')} </Text>
 							<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_12} height={size.s_12} color={themeValue.text} />
 						</View>
 					) : (
-						<DmListItemLastMessage
-							content={safeJSONParse(messageReferences?.content || '{}')}
-							styleText={{
-								fontSize: size.small
-							}}
-						/>
+						<DmListItemLastMessage content={safeJSONParse(messageReferences?.content || '{}')} styleText={styles.dmMessageStyleText} />
 					)}
 				</View>
 			</View>

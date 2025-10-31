@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { Dimensions, StyleSheet } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
@@ -125,6 +126,12 @@ export const style = (colors: Attributes) =>
 			color: colors.text,
 			fontSize: size.s_14,
 			fontWeight: '600'
+		},
+		textFilterActive: {
+			color: colors.white
+		},
+		listContainer: {
+			flexGrow: 1
 		},
 		loadMoreChannelMessage: {
 			paddingVertical: size.s_20,

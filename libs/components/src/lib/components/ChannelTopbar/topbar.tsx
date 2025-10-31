@@ -1,6 +1,13 @@
 import { ChannelTopbar } from '@mezon/components';
 import { usePathMatch } from '@mezon/core';
-import { selectCloseMenu, selectCurrentChannel, selectStatusMenu, selectVoiceInfo, selectVoiceJoined } from '@mezon/store';
+import {
+	selectCloseMenu,
+	selectCurrentChannelChannelId,
+	selectCurrentChannelClanId,
+	selectStatusMenu,
+	selectVoiceInfo,
+	selectVoiceJoined
+} from '@mezon/store';
 import type { IChannel } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
 import { memo, useMemo } from 'react';
@@ -23,10 +30,11 @@ const Topbar = memo(({ isHidden = false }: { isHidden?: boolean }) => {
 	const statusMenu = useSelector(selectStatusMenu);
 	const isJoined = useSelector(selectVoiceJoined);
 	const voiceInfo = useSelector(selectVoiceInfo);
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelClanId = useSelector(selectCurrentChannelClanId);
+	const currentChannelId = useSelector(selectCurrentChannelChannelId);
 	const isInCurrentVoiceChannel = useMemo(() => {
-		return isJoined && voiceInfo?.clanId === currentChannel?.clan_id && voiceInfo?.channelId === currentChannel?.channel_id;
-	}, [isJoined, voiceInfo, currentChannel]);
+		return isJoined && voiceInfo?.clanId === currentChannelClanId && voiceInfo?.channelId === currentChannelId;
+	}, [isJoined, voiceInfo, currentChannelClanId, currentChannelId]);
 
 	return (
 		<div

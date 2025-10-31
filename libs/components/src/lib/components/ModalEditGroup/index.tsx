@@ -106,6 +106,7 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 				<div className="absolute inset-0 bg-black/50" onClick={onClose} />
 				<div
 					className={`relative flex flex-col bg-theme-setting-primary rounded-lg shadow-2xl overflow-hidden max-w-[440px] w-full mx-4 ${className}`}
+					data-e2e={generateE2eId('chat.direct_message.edit_group')}
 				>
 					<div className="flex items-center justify-between px-4 py-4 bg-theme-setting-nav">
 						<h2 className="font-semibold text-xl text-theme-primary select-none">{t('editGroup.title')}</h2>
@@ -125,19 +126,11 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 								className="relative w-20 h-20 rounded-full cursor-pointer group transition-all duration-200 ease-out hover:shadow-lg"
 								onClick={handleImageClick}
 							>
-								{imagePreview ? (
-									<img
-										src={imagePreview || '/placeholder.svg'}
-										alt="Group"
-										className="w-full h-full rounded-full object-cover border-4 border-[#404249] group-hover:border-[#5865f2] transition-colors duration-200"
-									/>
-								) : (
-									<div className="w-full h-full rounded-full bg-[#5865f2] flex items-center justify-center border-4 border-[#404249] group-hover:border-[#4752c4] transition-colors duration-200">
-										<svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
-											<path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-										</svg>
-									</div>
-								)}
+								<img
+									src={imagePreview || 'assets/images/avatar-group.png'}
+									alt="Group"
+									className="w-full h-full rounded-full object-cover border-4 border-[#404249] group-hover:border-[#5865f2] transition-colors duration-200"
+								/>
 								<div className="absolute inset-0 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 									<div className="bg-[#313338] rounded-full p-2 shadow-lg">
 										<svg className="w-4 h-4 text-[#f2f3f5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">

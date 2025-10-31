@@ -4,7 +4,6 @@ import type { ActivitiesEntity, AttachmentEntity, ChannelsEntity, RootState, Thr
 import {
 	DMCallActions,
 	EMarkAsReadType,
-	EStateFriend,
 	accountActions,
 	acitvitiesActions,
 	appActions,
@@ -72,6 +71,8 @@ import {
 	selectDmGroupCurrentId,
 	selectIsInCall,
 	selectLastMessageByChannelId,
+	selectLastSentMessageStateByChannelId,
+	selectLatestMessageId,
 	selectLoadingStatus,
 	selectStreamMembersByChannelId,
 	selectUserCallId,
@@ -441,7 +442,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 						!isFocus;
 
 					if (isNotCurrentDirect) {
-						dispatch(directActions.openDirectMessage({ channelId: message.channel_id, clanId: message.clan_id || '' }));
 						dispatch(directMetaActions.setDirectLastSentTimestamp({ channelId: message.channel_id, timestamp }));
 						if (
 							((Array.isArray(message.mentions) && message.mentions.length === 0) ||
@@ -473,7 +473,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 									updateLast: true
 								})
 							);
-							dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: message.channel_id, timestamp }));
+							dispatch(
+								directMetaActions.setDirectLastSeenTimestamp({ channelId: message.channel_id, timestamp, messageId: message.id })
+							);
 						}
 					}
 				} else {
@@ -675,11 +677,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				}
 			}
 
-			if (currentChannel?.channel_id === (notification as any).channel_id) {
-				const timestamp = Date.now() / 1000;
-				dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: (notification as any).channel_id, timestamp }));
-			}
-
 			if (notification.code === NotificationCode.FRIEND_REQUEST || notification.code === NotificationCode.FRIEND_ACCEPT) {
 				dispatch(toastActions.addToast({ message: notification.subject, type: 'info', id: 'ACTION_FRIEND' }));
 				if (notification.code === NotificationCode.FRIEND_ACCEPT) {
@@ -842,6 +839,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					dispatch(listChannelsByUserActions.remove(userID));
 					dispatch(listChannelRenderAction.deleteChannelInListRender({ channelId: user.channel_id, clanId: user.clan_id }));
 					dispatch(directMetaActions.remove(user.channel_id));
+					dispatch(
+						appActions.clearHistoryChannel({
+							channelId: user.channel_id,
+							clanId: clanId as string
+						})
+					);
 				} else {
 					if (user.channel_type === ChannelType.CHANNEL_TYPE_GROUP) {
 						dispatch(directActions.removeGroupMember({ userId: userID, currentUserId: userId as string, channelId: user.channel_id }));
@@ -885,6 +888,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 					}
 					dispatch(clansSlice.actions.removeByClanID(user.clan_id));
 					dispatch(listChannelsByUserActions.remove(id));
+					dispatch(appActions.cleanHistoryClan(user.clan_id));
 				} else {
 					dispatch(
 						channelMembersActions.removeUserByUserIdAndClan({
@@ -1052,8 +1056,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		const store = await getStoreAsync();
 
 		const clanMemberStore = selectClanMemberByClanId(store.getState() as unknown as RootState, userJoinClan.clan_id);
+
 		if (userJoinClan?.user && clanMemberStore) {
-			const createTime = userJoinClan.user.create_time_second ? new Date(userJoinClan.user.create_time_second * 1000).toISOString() : undefined;
+			const accountCreateTime = new Date(userJoinClan?.user?.create_time_second * 1000).toISOString();
+			const joinTime = new Date().toISOString();
 			dispatch(
 				usersClanActions.add({
 					user: {
@@ -1067,7 +1073,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 							display_name: userJoinClan.user.display_name,
 							metadata: userJoinClan.user.custom_status,
 							username: userJoinClan.user.username,
-							create_time: createTime
+							create_time: accountCreateTime,
+							join_time: joinTime
 						}
 					},
 					clanId: userJoinClan.clan_id
@@ -1537,6 +1544,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 				navigate(`/chat/direct/friends`);
 				dispatch(clansSlice.actions.removeByClanID(clanDelete.clan_id));
 			}
+			dispatch(appActions.cleanHistoryClan(clanDelete.clan_id));
 		},
 		[userId]
 	);
@@ -1546,12 +1554,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			const store = await getStoreAsync();
 			const currentChannelId = selectCurrentChannelId(store.getState() as unknown as RootState);
 			const clanId = selectCurrentClanId(store.getState());
-			const allThreads = selectAllThreads(store.getState());
-
-			const newAllThreads = allThreads.filter((thread) => thread.id !== channelDeleted.channel_id);
 
 			dispatch(voiceActions.removeInVoiceInChannel(channelDeleted?.channel_id));
-
+			dispatch(appActions.clearHistoryChannel({ channelId: channelDeleted.channel_id, clanId: channelDeleted.clan_id }));
 			const isVoiceJoined = selectVoiceInfo(store.getState());
 			if (channelDeleted?.channel_id === isVoiceJoined?.channelId) {
 				//Leave Room If It's been deleted
@@ -2190,14 +2195,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 	const onblockfriend = useCallback(
 		(blockFriend: BlockFriend) => {
-			if (!blockFriend?.user_id || !userId) {
+			if (!blockFriend?.user_id) {
 				return;
 			}
 			dispatch(
 				friendsActions.updateFriendState({
 					userId: blockFriend.user_id,
-					friendState: EStateFriend.BLOCK,
-					sourceId: userId
+					sourceId: blockFriend.user_id
 				})
 			);
 		},
@@ -2211,8 +2215,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			}
 			dispatch(
 				friendsActions.updateFriendState({
-					userId: unblockFriend.user_id,
-					friendState: EStateFriend.FRIEND
+					userId: unblockFriend.user_id
 				})
 			);
 		},
@@ -2225,7 +2228,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 		const channels = selectChannelThreads(store.getState() as RootState);
 		if (!markAsReadEvent.category_id) {
 			const channelIds = channels.map((item) => item.id);
-			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelIds));
+			const channelUpdates = channelIds.map((channelId) => {
+				let messageId = selectLatestMessageId(store.getState(), channelId);
+				if (!messageId) {
+					const lastSentMsg = selectLastSentMessageStateByChannelId(store.getState(), channelId);
+					messageId = lastSentMsg?.id || '';
+				}
+				return { channelId, messageId: messageId || undefined };
+			});
+			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
 			dispatch(
 				channelsActions.resetChannelsCount({
 					clanId: markAsReadEvent.clan_id,
@@ -2249,7 +2260,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			const channelIds = allChannelsAndThreads.map((item) => item.id);
 
-			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelIds));
+			const channelUpdates = channelIds.map((channelId) => ({
+				channelId,
+				messageId: selectLatestMessageId(store.getState(), channelId) || undefined
+			}));
+			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
 			dispatch(
 				channelsActions.resetChannelsCount({
 					clanId: markAsReadEvent.clan_id as string,
@@ -2271,7 +2286,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			const channelIds = relatedChannels.map((channel) => channel.id);
 
-			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelIds));
+			const channelUpdates = channelIds.map((channelId) => ({
+				channelId,
+				messageId: selectLatestMessageId(store.getState(), channelId) || undefined
+			}));
+			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
 			dispatch(
 				channelsActions.resetChannelsCount({
 					clanId: markAsReadEvent.clan_id as string,
@@ -2297,7 +2316,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 
 			const threadIds = relatedChannels.flatMap((channel) => channel.threadIds || []);
 			if (threadIds.length) {
-				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadIds));
+				const threadUpdates = threadIds.map((channelId) => ({
+					channelId,
+					messageId: selectLatestMessageId(store.getState(), channelId) || undefined
+				}));
+				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
 			}
 
 			dispatch(listChannelsByUserActions.markAsReadChannel([markAsReadEvent.channel_id, ...threadIds]));

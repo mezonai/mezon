@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 type GuideItemLayoutProps = {
 	icon?: ReactNode;
@@ -31,7 +31,7 @@ export const GuideItemLayout = ({
 		<div
 			className={`p-4 flex items-start rounded-lg ${noNeedHover ? '' : 'bg-item-hover border-theme-primary bg-theme-setting-nav text-theme-primary-hover'} ${height ? height : 'h-full'} ${background} ${className}`}
 			style={{
-				gap: gap
+				gap
 			}}
 			onClick={onClick}
 		>

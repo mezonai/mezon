@@ -1,4 +1,4 @@
-import { selectCurrentClan } from '@mezon/store';
+import { selectCurrentClanName } from '@mezon/store';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -13,7 +13,7 @@ type ModalRemoveMemberClanProps = {
 const ModalRemoveMemberClan = ({ username, onClose, onRemoveMember }: ModalRemoveMemberClanProps) => {
 	const { t } = useTranslation('modalControls');
 	const [value, setValue] = useState<string>('');
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanName = useSelector(selectCurrentClanName);
 
 	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setValue(e.target.value);
@@ -29,13 +29,13 @@ const ModalRemoveMemberClan = ({ username, onClose, onRemoveMember }: ModalRemov
 			<div className="bg-theme-setting-primary pt-4 rounded w-[440px]">
 				<div className="px-4">
 					<h1 className="text-theme-primary-active text-xl font-semibold">
-						{t('kickMember.title', { username, clanName: currentClan?.clan_name || 'clan' })}
+						{t('kickMember.title', { username, clanName: currentClanName || 'clan' })}
 					</h1>
 				</div>
 				<div className="px-4">
 					<div className="block">
 						<p className="text-theme-primary text-base font-normal">
-							{t('kickMember.description', { username, clanName: currentClan?.clan_name || 'the clan' })}
+							{t('kickMember.description', { username, clanName: currentClanName || 'the clan' })}
 						</p>
 					</div>
 				</div>

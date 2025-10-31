@@ -41,7 +41,7 @@ export const LanguageSetting = () => {
 			<FlatList
 				data={languageList}
 				keyExtractor={(item) => item.value}
-				ItemSeparatorComponent={() => <View style={{ height: 1 }} />}
+				ItemSeparatorComponent={() => <View style={themeStyles.itemSeparator} />}
 				renderItem={({ item }) => (
 					<Pressable onPress={() => changeLanguage(item.value)} style={[themeStyles.languageItem]}>
 						<Text style={themeStyles.optionText}>{item.title}</Text>

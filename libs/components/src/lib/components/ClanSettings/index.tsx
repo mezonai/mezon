@@ -6,12 +6,12 @@ import {
 	onboardingActions,
 	selectCloseMenu,
 	selectCurrentChannel,
-	selectCurrentClan,
 	selectCurrentClanId,
+	selectCurrentClanName,
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission } from '@mezon/utils';
+import { EPermission, generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -80,7 +80,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 	const [isShowDeletePopup, setIsShowDeletePopup] = useState<boolean>(false);
 	const currentChannel = useSelector(selectCurrentChannel) || undefined;
 	const currentClanId = useSelector(selectCurrentClanId) as string;
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const navigate = useNavigate();
 	const [_isCommunityEnabled, setIsCommunityEnabled] = useState(false);
 
@@ -127,7 +127,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 		navigate('/mezon');
 	};
 	return (
-		<div ref={modalRef} tabIndex={-1} className="  flex fixed inset-0  w-screen z-30">
+		<div ref={modalRef} tabIndex={-1} className="  flex fixed inset-0  w-screen z-30" data-e2e={generateE2eId('clan_page.settings')}>
 			<div className="flex flex-row w-screen">
 				<div className="z-50 h-fit absolute top-5 right-5 block sbm:hidden">
 					<div onClick={() => onClose()} className="rounded-full p-[10px] border-theme-primary">
@@ -155,7 +155,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 					<div className="flex flex-row flex-1 justify-start h-full">
 						<div className="w-[740px] pl-7 sbm:pl-10 pr-7">
 							<div className="relative max-h-full sbm:min-h-heightRolesEdit min-h-heightRolesEditMobile text-theme-primary">
-								{!(currentSetting?.id === ItemSetting.INTEGRATIONS) ? (
+								{!(currentSetting?.id === ItemSetting.INTEGRATIONS || currentSetting?.id === ItemSetting.AUDIT_LOG) ? (
 									<h2 className="text-xl font-semibold mb-5 sbm:mt-[60px] mt-[10px] text-theme-primary-active">
 										{currentSetting?.name}
 									</h2>
@@ -169,7 +169,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 							<DeleteClanModal
 								onClose={() => setIsShowDeletePopup(false)}
 								buttonLabel="Delete clan"
-								title={`Delete '${currentClan?.clan_name}'`}
+								title={`Delete '${currentClanName}'`}
 								onClick={handleDeleteCurrentClan}
 							/>
 						)}

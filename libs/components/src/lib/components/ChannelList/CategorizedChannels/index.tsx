@@ -5,8 +5,8 @@ import {
 	defaultNotificationCategoryActions,
 	FAVORITE_CATEGORY_ID,
 	selectCategoryExpandStateByCategoryId,
-	selectCurrentChannel,
-	selectCurrentClan,
+	selectCurrentClanCreatorId,
+	selectCurrentClanId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -16,7 +16,6 @@ import { EPermission, generateE2eId, MouseButton } from '@mezon/utils';
 import React, { memo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
-import { useSelector } from 'react-redux';
 import { CategorySetting } from '../../CategorySetting';
 import type { Coords } from '../../ChannelLink';
 import ModalConfirm from '../../ModalConfirm';
@@ -41,7 +40,6 @@ interface DeleteCategoryModalProps {
 const DeleteCategoryModal: React.FC<DeleteCategoryModalProps> = ({ category, closeDeleteModal }) => {
 	const { t } = useTranslation('common');
 	const { handleDeleteCategory } = useCategory();
-	const currentChannel = useSelector(selectCurrentChannel);
 	const confirmDeleteCategory = async () => {
 		await handleDeleteCategory({
 			category: { ...category, channels: [] }
@@ -64,14 +62,15 @@ const DeleteCategoryModal: React.FC<DeleteCategoryModalProps> = ({ category, clo
 
 const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 	const { userProfile } = useAuth();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
+	const currentClanId = useAppSelector(selectCurrentClanId);
 	const categoryExpandState = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, category.id));
 	const [hasAdminPermission, hasClanPermission, hasChannelManagePermission] = usePermissionChecker([
 		EPermission.administrator,
 		EPermission.manageClan,
 		EPermission.manageChannel
 	]);
-	const isClanOwner = currentClan?.creator_id === userProfile?.user?.id;
+	const isClanOwner = currentClanCreatorId === userProfile?.user?.id;
 
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const [coords, setCoords] = useState<Coords>({
@@ -128,7 +127,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 		if (event.button === MouseButton.RIGHT) {
 			await dispatch(
 				defaultNotificationCategoryActions.getDefaultNotificationCategory({
-					clanId: currentClan?.id as string,
+					clanId: currentClanId as string,
 					categoryId: category?.id ?? ''
 				})
 			);

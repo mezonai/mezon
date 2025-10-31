@@ -3,14 +3,14 @@ import { useAuth } from '@mezon/core';
 import type { ChannelsEntity } from '@mezon/store';
 import {
 	appActions,
-	selectCurrentClan,
+	selectCurrentClanId,
+	selectCurrentClanName,
 	selectIsJoin,
 	selectIsShowChatStream,
 	selectMemberClanByUserId,
 	selectRemoteVideoStream,
 	selectStatusStream,
 	selectStreamMembersByChannelId,
-	selectTheme,
 	useAppDispatch,
 	useAppSelector,
 	usersStreamActions,
@@ -115,7 +115,7 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 			onMouseMove={handleMouseMoveOrClick}
 			onClick={handleMouseMoveOrClick}
 		>
-			<div className="custom-video-container w-full h-full" style={{ position: 'relative' }}>
+			<div className="custom-video-container w-full h-full relative">
 				{!isRemoteVideoStream && (
 					<img
 						src={currentChannel?.channel_avatar || 'assets/images/flahstream.png'}
@@ -124,17 +124,13 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 					/>
 				)}
 				<video
-					className="custom-video w-full h-full object-contain"
+					className={`custom-video w-full h-full object-contain ${isRemoteVideoStream ? 'block' : 'hidden'}`}
 					ref={videoRef}
 					autoPlay
 					playsInline
 					controls={false}
-					style={{
-						display: isRemoteVideoStream ? 'block' : 'none'
-					}}
 				/>
-			</div>
-
+			</div>{' '}
 			{/* {isLoading && (
 				<div className="absolute top-0 left-0 w-full h-full bg-gray-400 flex justify-center items-center text-white text-xl z-50">
 					Loading...
@@ -145,7 +141,6 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 					Cannot play video. Please try again later.
 				</div>
 			)}
-
 			<div
 				className={`bg-black bg-opacity-50 absolute bottom-0 flex items-center w-full justify-between p-2 transition-transform duration-300 ease-in-out ${showControls ? 'translate-y-0' : 'translate-y-full'}`}
 			>
@@ -284,7 +279,6 @@ export default function ChannelStream({
 	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || ''));
 	const streamPlay = useSelector(selectStatusStream);
 	const isJoin = useSelector(selectIsJoin);
-	const appearanceTheme = useSelector(selectTheme);
 	const { userProfile } = useAuth();
 	const { sessionRef } = useMezon();
 	const accessToken = sessionRef.current?.token;
@@ -295,14 +289,15 @@ export default function ChannelStream({
 	const hideButtonsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
 
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
 	useEffect(() => {
-		if (!currentChannel || !currentClan || !currentStreamInfo) return;
+		if (!currentChannel || !currentClanId || !currentStreamInfo) return;
 		if (currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING) return;
 		if (currentStreamInfo.streamId !== currentChannel.id || (!streamPlay && currentStreamInfo?.streamId === currentChannel.id)) {
 			dispatch(appActions.setIsShowChatStream(false));
 		}
-	}, [currentChannel, currentStreamInfo, currentClan]);
+	}, [currentChannel, currentStreamInfo, currentClanId]);
 
 	const handleLeaveChannel = async () => {
 		if (currentStreamInfo) {
@@ -317,12 +312,12 @@ export default function ChannelStream({
 	};
 
 	const handleJoinChannel = async () => {
-		if (!currentChannel || !currentClan) return;
+		if (!currentChannel || !currentClanId) return;
 		if (currentChannel.type !== ChannelType.CHANNEL_TYPE_STREAMING) return;
 		dispatch(
 			videoStreamActions.startStream({
-				clanId: currentClan.id as string,
-				clanName: currentClan.clan_name as string,
+				clanId: currentClanId as string,
+				clanName: currentClanName as string,
 				streamId: currentChannel.channel_id as string,
 				streamName: currentChannel.channel_label as string,
 				parentId: currentChannel.parent_id as string
@@ -331,7 +326,7 @@ export default function ChannelStream({
 		dispatch(videoStreamActions.setIsJoin(true));
 		disconnect();
 		handleChannelClick(
-			currentClan?.id as string,
+			currentClanId as string,
 			currentChannel?.channel_id as string,
 			userProfile?.user?.id as string,
 			currentChannel?.channel_id as string,

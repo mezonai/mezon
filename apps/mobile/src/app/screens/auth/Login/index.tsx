@@ -3,7 +3,7 @@ import { STORAGE_IS_LAST_ACTIVE_TAB_DM, save } from '@mezon/mobile-components';
 import { baseColor, size } from '@mezon/mobile-ui';
 import { authActions } from '@mezon/store';
 import { useAppDispatch } from '@mezon/store-mobile';
-import { clearSessionRefreshFromStorage, useMezon } from '@mezon/transport';
+import { useMezon } from '@mezon/transport';
 import { useFocusEffect } from '@react-navigation/native';
 import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -157,7 +157,6 @@ const LoginScreen = ({ navigation }) => {
 
 	const onLoadInit = async () => {
 		save(STORAGE_IS_LAST_ACTIVE_TAB_DM, 'false');
-		clearSessionRefreshFromStorage();
 		if (
 			clientRef?.current &&
 			(clientRef?.current?.host !== process.env.NX_CHAT_APP_API_GW_HOST || clientRef?.current?.port !== process.env.NX_CHAT_APP_API_GW_PORT)

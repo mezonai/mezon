@@ -1,4 +1,12 @@
-import { messagesActions, selectClanView, selectCurrentChannel, selectCurrentClanId, selectMessagesByChannel, useAppDispatch } from '@mezon/store';
+import {
+	getStore,
+	messagesActions,
+	selectClanView,
+	selectCurrentChannel,
+	selectCurrentClanId,
+	selectMessagesByChannel,
+	useAppDispatch
+} from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { isPublicChannel, transformPayloadWriteSocket } from '@mezon/utils';
 import React, { useMemo } from 'react';
@@ -16,12 +24,14 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 	const currentClanId = useSelector(selectCurrentClanId);
 	const isClanView = useSelector(selectClanView);
 	const { socketRef } = useMezon();
-	const channel = useSelector(selectCurrentChannel);
 	const channelMessages = useSelector((state: any) => selectMessagesByChannel(state, channelId));
 	const deleteSendMessage = React.useCallback(
 		async (messageId: string) => {
 			const socket = socketRef.current;
 			if (!socket) return;
+			const store = getStore();
+
+			const channel = selectCurrentChannel(store.getState());
 
 			try {
 				const message = channelMessages?.entities?.[messageId];
@@ -73,7 +83,7 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				console.error(e);
 			}
 		},
-		[socketRef, channelMessages?.entities, dispatch, channelId, currentClanId, channel, isClanView, isTopic, mode, hasAttachment]
+		[socketRef, channelMessages?.entities, dispatch, channelId, currentClanId, isClanView, isTopic, mode, hasAttachment]
 	);
 
 	return useMemo(

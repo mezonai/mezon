@@ -1,6 +1,13 @@
 /* eslint-disable no-console */
 import { useInvite } from '@mezon/core';
-import { fetchSystemMessageByClanId, selectClanById, selectCurrentClan, selectCurrentClanId, useAppDispatch } from '@mezon/store';
+import {
+	fetchSystemMessageByClanId,
+	selectClanById,
+	selectCurrentClanId,
+	selectCurrentClanLogo,
+	selectCurrentClanName,
+	useAppDispatch
+} from '@mezon/store';
 import { Button } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
@@ -211,7 +218,8 @@ const ModalGenerateLinkOption = ({ setExpire, expire, closeModalEdit, max, setMa
 
 const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: string }) => {
 	const { t } = useTranslation('invitation');
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanName = useSelector(selectCurrentClanName);
+	const currentClanLogo = useSelector(selectCurrentClanLogo);
 	const containerRef = useRef<HTMLDivElement | null>(null);
 
 	const handleCopyQR = async () => {
@@ -258,14 +266,10 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 			<div className="bg-theme-setting-primary rounded-xl flex flex-col px-5 py-5 gap-5 justify-center items-center">
 				<div ref={containerRef} className="p-4 rounded-md bg-white w-fit flex flex-col items-center justify-center gap-2 pt-9 relative">
 					<div className="w-10 h-10 absolute -top-3 rounded-full flex items-center justify-center bg-white">
-						{currentClan?.logo ? (
-							<img
-								src={currentClan?.logo}
-								alt={currentClan?.clan_name}
-								className="w-10 h-10 object-cover rounded-full border-4 border-white"
-							/>
+						{currentClanLogo ? (
+							<img src={currentClanLogo} alt={currentClanName} className="w-10 h-10 object-cover rounded-full border-4 border-white" />
 						) : (
-							<span>{currentClan?.clan_name?.charAt(0)}</span>
+							<span>{currentClanName?.charAt(0)}</span>
 						)}
 					</div>
 					<QRCode value={data} size={256} />

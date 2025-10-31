@@ -1,21 +1,23 @@
 import { useFriends } from '@mezon/core';
 import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import type { DirectEntity } from '@mezon/store-mobile';
 import {
-	DirectEntity,
 	EStateFriend,
 	deleteChannel,
 	directActions,
 	directMetaActions,
 	fetchDirectMessage,
 	fetchUserChannels,
+	getStore,
 	markAsReadProcessing,
 	notificationSettingActions,
 	removeMemberChannel,
 	selectAllAccount,
-	selectCurrentClan,
+	selectCurrentClanId,
 	selectCurrentUserId,
 	selectFriendById,
+	selectLatestMessageId,
 	selectNotifiSettingsEntitiesById,
 	selectRawDataUserGroup,
 	useAppDispatch,
@@ -51,7 +53,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
 	const userProfile = useSelector(selectAllAccount);
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const infoFriend = useAppSelector((state) => selectFriendById(state, messageInfo?.user_ids?.[0] || ''));
@@ -102,6 +104,11 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		return userIds?.length === 1;
 	}, [allUserGroupDM?.user_ids]);
 
+	const isChatWithMyself = useMemo(() => {
+		if (Number(messageInfo?.type) !== ChannelType.CHANNEL_TYPE_DM) return false;
+		return messageInfo?.user_ids?.[0] === currentUserId;
+	}, [messageInfo?.type, messageInfo?.user_ids, currentUserId]);
+
 	const handleShowModalLeaveGroup = useCallback(async () => {
 		dismiss();
 		await sleep(500);
@@ -132,10 +139,8 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	];
 
 	const handleAddFriend = () => {
-		addFriend({
-			ids: [messageInfo?.user_ids?.[0]],
-			usernames: [messageInfo?.usernames?.[0]]
-		});
+		const body = messageInfo?.user_ids?.[0] ? { ids: [messageInfo?.user_ids?.[0]] } : { usernames: [messageInfo?.usernames?.[0]] };
+		addFriend(body);
 		dismiss();
 	};
 
@@ -212,7 +217,8 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				!isGroup &&
 				infoFriend?.state !== EStateFriend.BLOCK &&
 				infoFriend?.state !== EStateFriend.MY_PENDING &&
-				infoFriend?.state !== EStateFriend.OTHER_PENDING,
+				infoFriend?.state !== EStateFriend.OTHER_PENDING &&
+				!isChatWithMyself,
 			icon:
 				infoFriend?.state === EStateFriend.FRIEND ? (
 					<MezonIconCDN icon={IconCDN.removeFriend} color={themeValue.textStrong} customStyle={{ marginBottom: size.s_2 }} />
@@ -223,7 +229,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: didIBlockUser ? handleUnblockFriend : handleBlockFriend,
 			title: didIBlockUser ? t('menu.unblockUser') : t('menu.blockUser'),
-			isShow: !isGroup && (infoFriend?.state === EStateFriend.FRIEND || didIBlockUser),
+			isShow: !isGroup && (infoFriend?.state === EStateFriend.FRIEND || didIBlockUser) && !isChatWithMyself,
 			icon: didIBlockUser ? (
 				<MezonIconCDN icon={IconCDN.unblockUser} color={themeValue.textStrong} />
 			) : (
@@ -235,7 +241,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const handleMarkAsRead = async (channel_id: string) => {
 		if (!channel_id) return;
 		const timestamp = Date.now() / 1000;
-		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: channel_id, timestamp }));
+		const store = getStore();
+		const messageId = store ? selectLatestMessageId(store.getState(), channel_id) : undefined;
+		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: channel_id, timestamp, messageId }));
 
 		const body: ApiMarkAsReadRequest = {
 			clan_id: '',
@@ -255,7 +263,8 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: async () => await handleMarkAsRead(messageInfo?.channel_id ?? ''),
 			title: t('menu.markAsRead'),
-			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />
+			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />,
+			isShow: !isChatWithMyself
 		}
 	];
 
@@ -263,7 +272,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		const body = {
 			channel_id: messageInfo?.channel_id || '',
 			notification_type: getNotificationChannelSelected?.notification_setting_type || 0,
-			clan_id: currentClan?.clan_id || '',
+			clan_id: currentClanId || '',
 			active
 		};
 		const response = await dispatch(notificationSettingActions.setMuteNotificationSetting(body));
@@ -290,7 +299,8 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />
 			) : (
 				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
-			)
+			),
+			isShow: !isChatWithMyself
 		}
 	];
 

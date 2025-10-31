@@ -1,4 +1,4 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -17,22 +17,13 @@ const ChannelAppHotbar = ({ channelId, clanId }: channelAppHotBarProps) => {
 
 	const openChannelApp = useCallback(async () => {
 		navigation.navigate(APP_SCREEN.CHANNEL_APP, {
-			channelId: channelId,
-			clanId: clanId
+			channelId,
+			clanId
 		});
 	}, [channelId, clanId]);
 
 	return (
-		<View
-			style={{
-				flexDirection: 'row',
-				justifyContent: 'space-between',
-				paddingVertical: size.s_6,
-				paddingHorizontal: size.s_10,
-				gap: size.s_10,
-				backgroundColor: 'transparent'
-			}}
-		>
+		<View style={styles.channelAppHotbarContainer}>
 			<TouchableOpacity style={styles.channelAppButton} onPress={openChannelApp}>
 				<Text style={styles.messageText}>Launch App</Text>
 			</TouchableOpacity>

@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -65,5 +66,16 @@ export const style = (colors: Attributes) =>
 		headerLeftBtn: {
 			marginLeft: size.s_10,
 			padding: size.s_10
+		},
+		headerTitle: {
+			color: colors.textStrong,
+			fontSize: size.medium,
+			fontWeight: '700'
+		},
+		headerSubtitle: {
+			color: colors.text,
+			fontSize: size.medium,
+			fontWeight: '400',
+			maxWidth: '90%'
 		}
 	});

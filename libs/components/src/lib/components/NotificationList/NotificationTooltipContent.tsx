@@ -1,7 +1,7 @@
 import {
 	fetchListNotification,
 	notificationActions,
-	selectCurrentClan,
+	selectCurrentClanId,
 	selectNotificationClan,
 	selectNotificationForYou,
 	selectNotificationMentions,
@@ -41,7 +41,7 @@ interface NotificationTooltipContentProps {
 
 export function NotificationTooltipContent({ onCloseTooltip }: NotificationTooltipContentProps) {
 	const { t } = useTranslation('notifications');
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const appearanceTheme = useSelector(selectTheme);
 	const [currentTabNotify, setCurrentTabNotify] = useState(InboxType.MENTIONS);
@@ -78,7 +78,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	}, [allNotificationClan]);
 
 	useEffect(() => {
-		if (!currentClan?.clan_id) return;
+		if (!currentClanId) return;
 
 		const isAllNotificationForYouEmpty = !(allNotificationForYou?.data?.length > 0);
 		const isAllNotificationClanEmpty = !(allNotificationClan?.data?.length > 0);
@@ -95,11 +95,11 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 		}
 
 		if (category) {
-			dispatch(notificationActions.fetchListNotification({ clanId: currentClan.clan_id, category }));
+			dispatch(notificationActions.fetchListNotification({ clanId: currentClanId, category }));
 		}
 	}, [
 		currentTabNotify,
-		currentClan?.clan_id,
+		currentClanId,
 		allNotificationForYou?.data?.length,
 		allNotificationClan?.data?.length,
 		allNotificationMentions?.data?.length,
@@ -121,7 +121,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 
 			dispatch(
 				fetchListNotification({
-					clanId: currentClan?.id || '',
+					clanId: currentClanId || '',
 					category,
 					notificationId: lastId
 				})

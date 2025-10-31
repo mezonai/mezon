@@ -12,7 +12,8 @@
 			"webhooks": "Webhook",
 			"security": "Bảo mật",
 			"permissionDenied": "Bạn không có quyền để chỉnh sửa",
-			"sound": "Hiệu ứng âm thanh"
+			"sound": "Hiệu ứng âm thanh",
+			"enableCommunity": "Kích hoạt cộng đồng"
 		},
 		"community": {
 			"title": "Cộng đồng",

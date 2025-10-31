@@ -5,7 +5,8 @@ import { emojiRecentActions, selectAllAccount, useAppDispatch } from '@mezon/sto
 import { FOR_SALE_CATE, ITEM_TYPE } from '@mezon/utils';
 import React, { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, FlatList, ListRenderItem, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import type { ListRenderItem } from 'react-native';
+import { DeviceEventEmitter, FlatList, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -32,7 +33,7 @@ const StickerItem = memo(({ item, onPress, isAudio, styles }: any) => {
 			{isAudio ? (
 				<>
 					{item?.source && (
-						<TouchableOpacity onPress={() => onPress(item)} style={[styles.audioContent, { margin: ITEM_MARGIN / 2 }]}>
+						<TouchableOpacity onPress={() => onPress(item)} style={[styles.audioContent, styles.itemMargin]}>
 							<RenderAudioItem audioURL={item?.source} />
 							<Text style={styles.soundName} numberOfLines={1}>
 								{item?.shortname}
@@ -41,18 +42,18 @@ const StickerItem = memo(({ item, onPress, isAudio, styles }: any) => {
 					)}
 				</>
 			) : (
-				<TouchableOpacity onPress={() => onPress(item)} style={[styles.content, { margin: ITEM_MARGIN / 2 }]}>
+				<TouchableOpacity onPress={() => onPress(item)} style={[styles.content, styles.itemMargin]}>
 					<FastImage
 						source={{
 							uri: item?.source ? item?.source : `${process.env.NX_BASE_IMG_URL}/stickers/${item?.id}.webp`,
 							cache: FastImage.cacheControl.immutable,
 							priority: FastImage.priority.high
 						}}
-						style={{ height: '100%', width: '100%' }}
+						style={styles.imageFull}
 					/>
 					{item?.is_for_sale && !item?.source && (
 						<View style={styles.wrapperIconLocked}>
-							<MezonIconCDN icon={IconCDN.lockIcon} color={'#e1e1e1'} width={size.s_30} height={size.s_30} />
+							<MezonIconCDN icon={IconCDN.lockIcon} color={styles.lockIconColor} width={size.s_30} height={size.s_30} />
 						</View>
 					)}
 				</TouchableOpacity>
@@ -191,7 +192,7 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 					getItemLayout={getItemLayout}
 					initialNumToRender={5}
 					style={styles.sessionContent}
-					columnWrapperStyle={{ justifyContent: 'space-between' }}
+					columnWrapperStyle={styles.columnWrapper}
 				/>
 			)}
 		</View>

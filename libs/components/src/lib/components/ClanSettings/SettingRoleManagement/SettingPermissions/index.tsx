@@ -5,7 +5,7 @@ import {
 	getNewNameRole,
 	getNewSelectedPermissions,
 	getSelectedRoleId,
-	selectCurrentClan,
+	selectCurrentClanId,
 	setAddPermissions,
 	setRemovePermissions,
 	setSelectedPermissions,
@@ -28,8 +28,8 @@ export type ModalSettingSave = {
 const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: RolesClanEntity[]; hasPermissionEdit: boolean }) => {
 	const dispatch = useDispatch();
 	const { t } = useTranslation('clanRoles');
-	const currentClan = useSelector(selectCurrentClan);
-	const { permissionsDefault } = useUserPolicy(currentClan?.id || '');
+	const currentClanId = useSelector(selectCurrentClanId);
+	const { permissionsDefault } = useUserPolicy(currentClanId || '');
 	const clickRole = useSelector(getSelectedRoleId);
 	const [searchTerm, setSearchTerm] = useState('');
 	const selectedPermissions = useSelector(getNewSelectedPermissions);

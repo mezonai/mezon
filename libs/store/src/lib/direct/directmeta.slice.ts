@@ -19,6 +19,7 @@ export interface DMMetaEntity {
 	last_seen_message?: ApiChannelMessageHeader;
 	active?: number;
 	is_mute?: boolean;
+	lastSeenMessageId?: string;
 }
 
 const dmMetaAdapter = createEntityAdapter<DMMetaEntity>();
@@ -41,7 +42,8 @@ function extractDMMeta(channel: DirectEntity): DMMetaEntity {
 		count_mess_unread: Number(channel.count_mess_unread || 0),
 		active: channel.active,
 		channel_label: channel.channel_label,
-		is_mute: channel.is_mute
+		is_mute: channel.is_mute,
+		lastSeenMessageId: channel?.last_seen_message?.id
 	};
 }
 
@@ -102,12 +104,14 @@ export const directMetaSlice = createSlice({
 			}
 		},
 
-		setDirectLastSeenTimestamp: (state, action: PayloadAction<{ channelId: string; timestamp: number }>) => {
+		setDirectLastSeenTimestamp: (state, action: PayloadAction<{ channelId: string; timestamp: number; messageId?: string }>) => {
+			const { channelId, timestamp, messageId } = action.payload;
 			directMetaAdapter.updateOne(state, {
-				id: action.payload.channelId,
+				id: channelId,
 				changes: {
 					count_mess_unread: 0,
-					lastSeenTimestamp: action.payload.timestamp
+					lastSeenTimestamp: timestamp,
+					...(messageId && { lastSeenMessageId: messageId })
 				}
 			});
 		},
@@ -123,7 +127,8 @@ export const directMetaSlice = createSlice({
 						sender_id: payload.sender_id,
 						timestamp_seconds: timestamp
 					},
-					count_mess_unread: 0
+					count_mess_unread: 0,
+					lastSeenMessageId: payload.id
 				}
 			});
 		},
@@ -174,10 +179,7 @@ export const selectTotalUnreadDM = createSelector(selectDirectsUnreadlist, (list
 	return listUnreadDM.reduce((total, count) => total + (count?.count_mess_unread ?? 0), 0);
 });
 
-export const selectLastSeenDM = createSelector(
-	[getDirectMetaState, selectEntitiesDirectMeta, (state, dmId) => dmId],
-	(state, entities, channelId) => {
-		const dm = entities?.[channelId];
-		return dm?.lastSeenTimestamp;
-	}
-);
+export const selectLastSeenMessageIdDM = createSelector([selectEntitiesDirectMeta, (state, dmId) => dmId], (entities, channelId) => {
+	const dm = entities?.[channelId];
+	return dm?.lastSeenMessageId;
+});

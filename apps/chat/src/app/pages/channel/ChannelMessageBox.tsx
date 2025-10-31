@@ -6,7 +6,7 @@ import {
 	onboardingActions,
 	referencesActions,
 	selectAnonymousMode,
-	selectCurrentClan,
+	selectCurrentClanIsOnboarding,
 	selectDataReferences,
 	selectMissionDone,
 	selectOnboardingByClan,
@@ -41,7 +41,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 	const anonymousMode = useSelector(selectAnonymousMode);
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, channelId ?? ''));
 	const chatboxRef = useRef<HTMLDivElement | null>(null);
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
 	const onboardingList = useSelector((state) => selectOnboardingByClan(state, clanId as string));
 
 	const handleSend = useCallback(
@@ -68,7 +68,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 		const processingClan = selectProcessingByClan(store, clanId as string);
 		if (
 			processingClan?.onboarding_step !== DONE_ONBOARDING_STATUS &&
-			currentClan?.is_onboarding &&
+			currentClanIsOnboarding &&
 			onboardingList?.mission?.[currentMission]?.channel_id === channel?.channel_id &&
 			onboardingList?.mission?.[currentMission]?.task_type === ETypeMission.SEND_MESSAGE
 		) {
@@ -92,16 +92,6 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			})
 		);
 	}, [dataReferences.message_ref_id]);
-
-	const handleBotSendMessage = useCallback(
-		(text: string) => {
-			const content: IMessageSendPayload = {
-				t: text
-			};
-			handleSend(content);
-		},
-		[handleSend]
-	);
 
 	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
 

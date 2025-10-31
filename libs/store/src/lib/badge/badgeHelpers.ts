@@ -11,6 +11,7 @@ import { selectMemberClanByUserId } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
 import { directActions } from '../direct/direct.slice';
 import { directMetaActions } from '../direct/directmeta.slice';
+import { selectLatestMessageId } from '../messages/messages.slice';
 import type { AppDispatch, RootState, Store } from '../store';
 
 export interface ResetBadgeParams {
@@ -73,18 +74,18 @@ export const getCurrentChannelBadgeCount = (store: { getState?: () => RootState 
 
 const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: { getState?: () => RootState }) => {
 	const { clanId, channelId, timestamp, messageId, badgeCount } = params;
-	if (!clanId || !channelId) {
+	if (!channelId) {
 		return;
 	}
-	cleanupOutdatedEntries();
 
 	const id = channelId + messageId;
 
-	if (isMessageAlreadyProcessed(id)) {
+	if (clanId !== '0' && isMessageAlreadyProcessed(id)) {
 		return;
 	}
 
-	if (messageId) {
+	if (clanId !== '0' && messageId) {
+		cleanupOutdatedEntries();
 		processedMessagesCache.set(id, Date.now());
 	}
 
@@ -103,7 +104,8 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 		dispatch(
 			channelMetaActions.setChannelLastSeenTimestamp({
 				channelId,
-				timestamp: now + TIME_OFFSET
+				timestamp: now + TIME_OFFSET,
+				messageId
 			})
 		);
 		dispatch(listChannelsByUserActions.resetBadgeCount({ channelId }));
@@ -123,7 +125,8 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 	} else {
 		dispatch(directActions.removeBadgeDirect({ channelId }));
 		dispatch(listChannelsByUserActions.resetBadgeCount({ channelId }));
-		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: now }));
+		const messageId = store?.getState ? selectLatestMessageId(store.getState(), channelId) : undefined;
+		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: now, messageId }));
 	}
 };
 

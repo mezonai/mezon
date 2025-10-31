@@ -1,8 +1,8 @@
 import { AvatarImage } from '@mezon/components';
 import { useAuth } from '@mezon/core';
-import { selectCurrentClan, selectMemberClanByUserId, useAppSelector } from '@mezon/store';
+import { selectCurrentClanName, selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import { Button, ButtonLoading, Icons, Modal } from '@mezon/ui';
-import { ChannelMembersEntity } from '@mezon/utils';
+import type { ChannelMembersEntity } from '@mezon/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,7 +15,7 @@ const TransferOwnerModal = ({ onClose, member, onClick }: TransferOwnerProps) =>
 	const { t } = useTranslation('transferOwner');
 	const { userProfile } = useAuth();
 	const dataInClan = useAppSelector((state) => selectMemberClanByUserId(state, userProfile?.user?.id || ''));
-	const currentClan = useAppSelector(selectCurrentClan);
+	const currentClanName = useAppSelector(selectCurrentClanName);
 	const [checkedTransfer, setCheckedTransfer] = useState(false);
 
 	const handleCheckInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,7 +33,7 @@ const TransferOwnerModal = ({ onClose, member, onClick }: TransferOwnerProps) =>
 			<div className="flex flex-col gap-6 p-3 items-center text-theme-primary">
 				<div className=" text-base ">
 					{t('description', {
-						clanName: currentClan?.clan_name,
+						clanName: currentClanName,
 						memberName: member?.clan_nick || member.user?.display_name || member?.user?.username
 					})}
 				</div>

@@ -302,5 +302,41 @@ export const style = (colors: Attributes) =>
 		},
 		bottomSheetZIndex: {
 			zIndex: 1001
+		},
+		// CallReactionHandler styles
+		animatedEmojiContainer: {
+			position: 'absolute',
+			bottom: 0,
+			left: '50%',
+			width: size.s_36,
+			height: size.s_36,
+			alignItems: 'center',
+			justifyContent: 'center',
+			zIndex: 1000
+		},
+		emojiImage: {
+			width: size.s_36,
+			height: size.s_36
+		},
+		// ButtonEndCall styles
+		endCallButton: {
+			backgroundColor: baseColor.redStrong
+		},
+		// HeaderRoomView styles
+		headerRowLeft: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_20,
+			flexGrow: 1,
+			flexShrink: 1
+		},
+		headerTextTitle: {
+			flexGrow: 1,
+			flexShrink: 1
+		},
+		headerRowRight: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_10
 		}
 	});

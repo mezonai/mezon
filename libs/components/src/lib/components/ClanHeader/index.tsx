@@ -5,8 +5,8 @@ import {
 	defaultNotificationCategoryActions,
 	emojiSuggestionSlice,
 	hasGrandchildModal,
-	selectCurrentClan,
 	selectCurrentClanId,
+	selectCurrentClanName,
 	selectCurrentVoiceChannelId,
 	selectInviteChannelId,
 	selectInviteClanId,
@@ -47,12 +47,12 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	const dispatch = useAppDispatch();
 	const params = useParams();
 	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const { t } = useTranslation('clan');
 	const [isClanOwner, canManageClan] = usePermissionChecker([EPermission.clanOwner, EPermission.manageClan]);
 	const { removeMemberClan } = useChannelMembersActions();
 	const { userProfile } = useAuth();
 	const currentChannelId = useSelector(selectCurrentVoiceChannelId);
-	const currentClan = useSelector(selectCurrentClan);
 	const navigate = useNavigate();
 	const [openSearchModal, closeSearchModal] = useModal(() => <SearchModal onClose={closeSearchModal} />);
 	const toOnboard = useSelector(selectToOnboard);
@@ -122,7 +122,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	}, []);
 
 	const handleLeaveClan = async () => {
-		await removeMemberClan({ channelId: currentChannelId, clanId: currentClan?.clan_id as string, userIds: [userProfile?.user?.id as string] });
+		await removeMemberClan({ channelId: currentChannelId, clanId: currentClanId as string, userIds: [userProfile?.user?.id as string] });
 		dispatch(emojiSuggestionSlice.actions.invalidateCache());
 		dispatch(settingClanStickerSlice.actions.invalidateCache());
 		dispatch(soundEffectActions.invalidateCache());
@@ -210,7 +210,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 				<ModalConfirm
 					handleCancel={toggleLeaveClanPopup}
 					handleConfirm={handleLeaveClan}
-					modalName={currentClan?.clan_name}
+					modalName={currentClanName}
 					title={t('leaveClanTitle')}
 					buttonName={t('leaveClan')}
 				/>

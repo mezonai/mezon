@@ -3,7 +3,7 @@ import type { DirectEntity } from '@mezon/store';
 import { selectTheme } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IEmojiOnMessage, RequestInput } from '@mezon/utils';
-import { EmojiPlaces, MAX_LENGTH_MESSAGE_BUZZ, ThemeApp, TypeMessage } from '@mezon/utils';
+import { EmojiPlaces, MAX_LENGTH_MESSAGE_BUZZ, ThemeApp, TypeMessage, generateE2eId } from '@mezon/utils';
 import type { ApiChannelDescription } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { OnChangeHandlerFunc } from 'react-mentions';
@@ -130,8 +130,14 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ currentCh
 
 			<div ref={panelRef} className="bg-theme-setting-primary p-4 rounded-lg w-[400px]">
 				<div className="flex justify-between mb-4">
-					<h3 className="text-lg font-bold ">Enter your message buzz</h3>
-					<button onClick={handleClosePopup} className=" hover:text-red-500">
+					<h3 className="text-lg font-bold " data-e2e={generateE2eId('chat.direct_message.message_buzz.header')}>
+						Enter your message buzz
+					</h3>
+					<button
+						onClick={handleClosePopup}
+						className=" hover:text-red-500"
+						data-e2e={generateE2eId('chat.direct_message.message_buzz.button.close')}
+					>
 						✕
 					</button>
 				</div>
@@ -150,6 +156,7 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ currentCh
 							return <CustomModalMentions children={children} titleModalMention={'Emoji matching'} />;
 						}}
 						maxLength={MAX_LENGTH_MESSAGE_BUZZ}
+						data-e2e={generateE2eId('chat.direct_message.message_buzz.input.message')}
 					>
 						<Mention
 							trigger=":"
@@ -174,6 +181,7 @@ const ModalInputMessageBuzz: React.FC<ModalInputMessageBuzzProps> = ({ currentCh
 					<button
 						onClick={handleSendBuzzMsg}
 						className="w-[70px] flex justify-center items-center px-4 py-2 btn-primary btn-primary-hover rounded-lg "
+						data-e2e={generateE2eId('chat.direct_message.message_buzz.button.send')}
 					>
 						Send
 					</button>

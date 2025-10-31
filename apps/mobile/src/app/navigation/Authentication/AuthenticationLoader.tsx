@@ -32,7 +32,8 @@ import type { WebrtcSignalingFwd } from 'mezon-js';
 import { WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AppState, AppStateStatus, DeviceEventEmitter, Keyboard, Linking, Platform, StatusBar } from 'react-native';
+import type { AppStateStatus } from 'react-native';
+import { AppState, DeviceEventEmitter, Keyboard, Linking, NativeModules, Platform, StatusBar } from 'react-native';
 import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
 import Sound from 'react-native-sound';
 import Toast from 'react-native-toast-message';
@@ -88,6 +89,7 @@ export const AuthenticationLoader = () => {
 				setTimeout(() => {
 					loadFileSharing();
 					initFirebaseMessaging();
+					checkCacheSizeImageIOS();
 				}, 100);
 				await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 				await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
@@ -260,13 +262,21 @@ export const AuthenticationLoader = () => {
 			const activeScreenIndex = routes[navigationState?.index]?.state?.index || 0;
 			const activeState = routes[navigationState?.index]?.state || {};
 			const currentRoute = activeState?.routes[activeScreenIndex]?.params?.screen || activeState?.routes[activeScreenIndex]?.name || '';
+			if (isTabletLandscape && currentRoute === APP_SCREEN.BOTTOM_BAR) {
+				const bottomBarIndex = activeState?.routes[activeScreenIndex]?.state?.index || 0;
+				const bottomBarRoute =
+					activeState?.routes[activeScreenIndex]?.state?.routes?.[bottomBarIndex]?.params?.screen ||
+					activeState?.routes[activeScreenIndex]?.state?.routes?.[bottomBarIndex]?.name ||
+					'';
+				if (bottomBarRoute) return bottomBarRoute;
+			}
 
 			return currentRoute;
 		} catch (error) {
 			console.warn('Error getting top route:', error);
 			return '';
 		}
-	}, [navigation]);
+	}, [isTabletLandscape, navigation]);
 
 	const initFirebaseMessaging = () => {
 		const unsubscribe = onMessage(messaging, (remoteMessage) => {
@@ -286,7 +296,10 @@ export const AuthenticationLoader = () => {
 				const topRoute = getTopRoute();
 
 				// Determine current view state for suppression decision
-				const isViewingChannel = topRoute === APP_SCREEN.HOME_DEFAULT || topRoute === APP_SCREEN.MESSAGES.CHAT_STREAMING;
+				const isViewingChannel =
+					topRoute === APP_SCREEN.HOME_DEFAULT ||
+					topRoute === APP_SCREEN.MESSAGES.CHAT_STREAMING ||
+					(topRoute === APP_SCREEN.HOME && isTabletLandscape);
 				const isViewingDirectMessage = topRoute === APP_SCREEN.MESSAGES.MESSAGE_DETAIL || topRoute === APP_SCREEN.MESSAGES.HOME;
 
 				if (
@@ -421,6 +434,19 @@ export const AuthenticationLoader = () => {
 				'mezon.mobile.sharing'
 			);
 		} catch (error) {
+			/* empty */
+		}
+	};
+
+	const checkCacheSizeImageIOS = async () => {
+		if (Platform.OS === 'android') return;
+		try {
+			const sizeCache = await NativeModules?.FastNativeImageViewManager?.getCacheSize();
+			const sizeInMB = Math.round(sizeCache.sizeInMB);
+			if (sizeInMB >= 500) {
+				NativeModules?.FastNativeImageViewManager?.clearCache(300);
+			}
+		} catch (e) {
 			/* empty */
 		}
 	};

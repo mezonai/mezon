@@ -1,7 +1,7 @@
 import { useRoomContext } from '@livekit/react-native';
-import { CallSignalingData } from '@mezon/components';
+import type { CallSignalingData } from '@mezon/components';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import {
 	getStore,
 	groupCallActions,
@@ -132,7 +132,7 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 	};
 
 	return (
-		<TouchableOpacity onPress={handleEndCall} style={{ ...styles.menuIcon, backgroundColor: baseColor.redStrong }}>
+		<TouchableOpacity onPress={handleEndCall} style={[styles.menuIcon, styles.endCallButton]}>
 			<MezonIconCDN icon={IconCDN.phoneCallIcon} />
 		</TouchableOpacity>
 	);

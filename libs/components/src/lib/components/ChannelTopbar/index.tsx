@@ -17,8 +17,14 @@ import {
 	selectAllAccount,
 	selectChannelById,
 	selectCloseMenu,
-	selectCurrentChannel,
+	selectCurrentChannelCategoryId,
+	selectCurrentChannelChannelId,
+	selectCurrentChannelClanId,
 	selectCurrentChannelId,
+	selectCurrentChannelLabel,
+	selectCurrentChannelParentId,
+	selectCurrentChannelPrivate,
+	selectCurrentChannelType,
 	selectCurrentClanId,
 	selectCurrentDM,
 	selectDefaultNotificationCategory,
@@ -100,7 +106,10 @@ const ChannelTopbar = memo(() => {
 
 const TopBarChannelText = memo(() => {
 	const { t } = useTranslation('channelTopbar');
-	const channel = useSelector(selectCurrentChannel);
+	const channelParentId = useSelector(selectCurrentChannelParentId);
+	const channelLabel = useSelector(selectCurrentChannelLabel);
+	const channelPrivate = useSelector(selectCurrentChannelPrivate);
+	const channelType = useSelector(selectCurrentChannelType);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
 	const channelPath = `/chat/clans/${currentClanId}/channel-setting`;
@@ -110,8 +119,7 @@ const TopBarChannelText = memo(() => {
 		isChannelPath: channelPath,
 		isGuidePath: guidePath
 	});
-	const channelParent =
-		useAppSelector((state) => selectChannelById(state, (channel?.parent_id ? (channel.parent_id as string) : '') ?? '')) || null;
+	const channelParent = useAppSelector((state) => selectChannelById(state, (channelParentId ? (channelParentId as string) : '') ?? '')) || null;
 	const { setStatusMenu } = useMenu();
 	const openMenu = useCallback(() => {
 		setStatusMenu(true);
@@ -186,7 +194,7 @@ const TopBarChannelText = memo(() => {
 
 	return (
 		<>
-			<div className="flex relative flex-1 min-w-0 items-center gap-2  text-theme-primary">
+			<div className="flex relative flex-1 min-w-0 items-center gap-2  text-theme-primary mr-5">
 				<div className="flex sbm:hidden pl-3 px-2 text-theme-primary" onClick={openMenu} role="button">
 					<Icons.OpenMenu />
 				</div>
@@ -195,7 +203,7 @@ const TopBarChannelText = memo(() => {
 					<p className="text-base font-semibold truncate max-sbm:max-w-[180px]">{pagePathTitle}</p>
 				) : (
 					<>
-						{!!channel && (
+						{!!channelType && (
 							<>
 								{channelParent && (
 									<div className="flex gap-1 items-center truncate max-sbm:hidden" onClick={handleNavigateToParent}>
@@ -208,9 +216,9 @@ const TopBarChannelText = memo(() => {
 									</div>
 								)}
 								<ChannelTopbarLabel
-									isPrivate={!!channel?.channel_private}
-									label={channel?.channel_label || ''}
-									type={channel?.type || ChannelType.CHANNEL_TYPE_CHANNEL}
+									isPrivate={!!channelPrivate}
+									label={channelLabel || ''}
+									type={channelType || ChannelType.CHANNEL_TYPE_CHANNEL}
 									onClick={handleCloseCanvas}
 								/>
 							</>
@@ -220,7 +228,7 @@ const TopBarChannelText = memo(() => {
 
 				{currentClanId === '0' && (
 					<div
-						className="flex items-center gap-3 flex-1 overflow-hidden relative"
+						className="flex w-full items-center gap-3 flex-1 overflow-hidden relative"
 						data-e2e={generateE2eId(`chat.direct_message.header.left_container`)}
 					>
 						<DmTopbarAvatar
@@ -237,14 +245,14 @@ const TopBarChannelText = memo(() => {
 							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
 							className={`flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area group ${
 								currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
-									? 'cursor-pointer hover:text-theme-primary-active transition-colors bg-item-theme-hover rounded-lg px-2'
+									? 'cursor-pointer hover:text-theme-primary-active transition-colors bg-item-theme-hover rounded-lg pl-2 pr-4'
 									: 'pointer-events-none cursor-default'
-							} font-medium bg-transparent outline-none leading-10 text-theme-primary max-w-[250px] min-w-0`}
+							} font-medium bg-transparent outline-none leading-10 text-theme-primary  min-w-content `}
 							onClick={handleOpenEditModal}
 							title={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP ? t('tooltips.clickToEdit') : channelDmGroupLabel}
 							data-e2e={generateE2eId(`chat.direct_message.chat_item.namegroup`)}
 						>
-							<span className="truncate">{channelDmGroupLabel}</span>
+							<span className="truncate flex-1 min-w-0">{channelDmGroupLabel}</span>
 							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
 								<svg
 									className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0"
@@ -263,13 +271,13 @@ const TopBarChannelText = memo(() => {
 			<div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
 				{!pagePathTitle && (
 					<>
-						{channel ? (
+						{channelType ? (
 							<ChannelTopbarTools
 								isPagePath={!!isMemberPath || !!isChannelPath}
-								isStream={channel?.type === ChannelType.CHANNEL_TYPE_STREAMING}
-								isVoice={channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
-								isApp={channel?.type === ChannelType.CHANNEL_TYPE_APP}
-								isThread={!!(channel?.parent_id !== '0' && channel?.parent_id)}
+								isStream={channelType === ChannelType.CHANNEL_TYPE_STREAMING}
+								isVoice={channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
+								isApp={channelType === ChannelType.CHANNEL_TYPE_APP}
+								isThread={!!(channelParentId !== '0' && channelParentId)}
 							/>
 						) : (
 							<DmTopbarTools />
@@ -278,7 +286,7 @@ const TopBarChannelText = memo(() => {
 				)}
 
 				{!isMemberPath && !isChannelPath && (
-					<SearchMessageChannel mode={channel ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_DM} />
+					<SearchMessageChannel mode={channelType ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_DM} />
 				)}
 			</div>
 
@@ -384,9 +392,10 @@ const ChannelTopbarTools = memo(
 
 		const setTurnOffThreadMessage = async () => {
 			const store = await getStoreAsync();
-			const currentChannel = selectCurrentChannel(store.getState());
-			const isShowCreateThread = selectIsShowCreateThread(store.getState() as RootState, currentChannel?.id as string);
-			const isShowCreateTopic = selectIsShowCreateTopic(store.getState() as RootState);
+			const state = store.getState();
+			const currentChannelId = selectCurrentChannelId(state);
+			const isShowCreateThread = selectIsShowCreateThread(state as RootState, currentChannelId as string);
+			const isShowCreateTopic = selectIsShowCreateTopic(state as RootState);
 			if (isShowCreateThread) {
 				dispatch(threadsActions.setOpenThreadMessageState(false));
 				dispatch(threadsActions.setValueThread(null));
@@ -400,8 +409,10 @@ const ChannelTopbarTools = memo(
 
 		const fetchCanvasChannel = async () => {
 			const store = await getStoreAsync();
-			const currentChannel = selectCurrentChannel(store.getState());
-			dispatch(canvasAPIActions.getChannelCanvasList({ channel_id: currentChannel?.channel_id || '', clan_id: currentChannel?.clan_id || '' }));
+			const state = store.getState();
+			const channelId = selectCurrentChannelChannelId(state);
+			const clanId = selectCurrentChannelClanId(state);
+			dispatch(canvasAPIActions.getChannelCanvasList({ channel_id: channelId || '', clan_id: clanId || '' }));
 			closeMenuOnMobile();
 		};
 		return (
@@ -439,7 +450,7 @@ const DmTopbarAvatar = ({ isGroup, avatar, avatarName }: { isGroup: boolean; ava
 		if (avatar) {
 			return (
 				<div className="flex items-center justify-center">
-					<img className="w-8 h-8 flex-shrink-0 rounded-full object-cover" src={avatar} alt="" />
+					<img className="w-8 h-8 flex-shrink-0 rounded-full object-cover" src={avatar} alt="" data-e2e={generateE2eId('avatar.image')} />
 				</div>
 			);
 		}
@@ -459,7 +470,7 @@ const DmTopbarAvatar = ({ isGroup, avatar, avatarName }: { isGroup: boolean; ava
 					data-e2e={generateE2eId(`avatar.image`)}
 				/>
 			) : (
-				<div className="w-8 h-8 flex-shrink-0 rounded-full uppercase flex items-center justify-center font-semibold dark:bg-bgAvatarLight dark:text-bgAvatarDark text-bgAvatarLight">
+				<div className="w-8 h-8 flex-shrink-0 rounded-full uppercase flex items-center justify-center font-semibold bg-bgAvatarDark  text-bgAvatarLight">
 					{avatarName}
 				</div>
 			)}
@@ -675,6 +686,7 @@ const DmTopbarTools = memo(() => {
 								onClick={() => handleStartCall()}
 								disabled={isGroupCallDisabled}
 								className={`text-theme-primary-hover ${isGroupCallDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+								data-e2e={generateE2eId(`chat.direct_message.header.right_container.call`)}
 							>
 								<Icons.IconPhoneDM defaultSize="size-5" />
 							</button>
@@ -683,6 +695,7 @@ const DmTopbarTools = memo(() => {
 								onClick={() => handleStartCall(true)}
 								disabled={isGroupCallDisabled}
 								className={`text-theme-primary-hover ${isGroupCallDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+								data-e2e={generateE2eId(`chat.direct_message.header.right_container.video_call`)}
 							>
 								<Icons.IconMeetDM defaultSize="size-5" />
 							</button>
@@ -823,9 +836,10 @@ function ThreadButton() {
 function MuteButton() {
 	const { t } = useTranslation('channelTopbar');
 	const [isMuteBell, setIsMuteBell] = useState<boolean>(false);
-	const currentChannel = useSelector(selectCurrentChannel);
-	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannel?.id || ''));
-	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannel?.category_id as string));
+	const currentChannelObjectId = useSelector(selectCurrentChannelId);
+	const currentChannelCategoryId = useSelector(selectCurrentChannelCategoryId);
+	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannelObjectId || ''));
+	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannelCategoryId as string));
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
 
 	useEffect(() => {
@@ -1012,7 +1026,12 @@ const AddMemberToGroupDm = memo(({ currentDmGroup }: { currentDmGroup: DirectEnt
 	};
 	const rootRef = useRef<HTMLDivElement>(null);
 	return (
-		<div onClick={handleOpenAddToGroupModal} ref={rootRef} className="none-draggable-area cursor-pointer">
+		<div
+			onClick={handleOpenAddToGroupModal}
+			ref={rootRef}
+			className="none-draggable-area cursor-pointer"
+			data-e2e={generateE2eId(`chat.direct_message.header.right_container.add_member`)}
+		>
 			{openAddToGroup && (
 				<div className="relative">
 					<CreateMessageGroup

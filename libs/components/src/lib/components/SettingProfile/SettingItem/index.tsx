@@ -23,7 +23,8 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 			return;
 		} else {
 			await dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
-			await dispatch(appActions.setIsShowSettingFooterStatus(false));
+			dispatch(appActions.setIsShowSettingFooterStatus(false));
+			dispatch(appActions.clearHistory());
 		}
 	};
 	const handleCloseModal = () => {

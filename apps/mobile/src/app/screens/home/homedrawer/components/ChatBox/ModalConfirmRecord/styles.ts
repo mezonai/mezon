@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
@@ -32,5 +33,16 @@ export const style = (colors: Attributes) =>
 		},
 		btn: {
 			padding: size.s_14
+		},
+		separator: {
+			width: '100%',
+			height: 1
+		},
+		buttonContainer: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			justifyContent: 'flex-end',
+			gap: size.s_20,
+			width: '100%'
 		}
 	});

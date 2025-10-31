@@ -4,12 +4,13 @@ import React, { useContext } from 'react';
 import { usePermissionChecker } from '@mezon/core';
 import { ENotificationActive, ETypeSearch } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { notificationSettingActions, useAppDispatch } from '@mezon/store-mobile';
+import { notificationSettingActions, selectCurrentUserId, useAppDispatch } from '@mezon/store-mobile';
 import { EOverriddenPermission, EPermission } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
 import useStatusMuteChannel from '../../../hooks/useStatusMuteChannel';
@@ -29,6 +30,7 @@ export const ActionRow = React.memo(() => {
 	const styles = style(themeValue);
 	const { t } = useTranslation(['common']);
 	const currentChannel = useContext(threadDetailContext);
+	const currentUserId = useSelector(selectCurrentUserId);
 	const navigation = useNavigation<AppStackScreenProps['navigation']>();
 	const [isChannel, setIsChannel] = useState<boolean>();
 	const [isCanManageThread, isCanManageChannel] = usePermissionChecker(
@@ -40,6 +42,11 @@ export const ActionRow = React.memo(() => {
 	const isChannelDm = useMemo(() => {
 		return [ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type);
 	}, [currentChannel]);
+
+	const isChatWithMyself = useMemo(() => {
+		if (Number(currentChannel?.type) !== ChannelType.CHANNEL_TYPE_DM) return false;
+		return currentChannel?.user_ids?.[0] === currentUserId;
+	}, [currentChannel?.type, currentChannel?.user_ids, currentUserId]);
 
 	useEffect(() => {
 		setIsChannel(!!currentChannel?.channel_label && !Number(currentChannel?.parent_id));
@@ -92,7 +99,7 @@ export const ActionRow = React.memo(() => {
 					params: { currentChannel, isCurrentChannel: true }
 				});
 			},
-			isShow: true,
+			isShow: !isChatWithMyself,
 			type: EActionRow.Mute
 		},
 		{

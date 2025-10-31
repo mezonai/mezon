@@ -184,9 +184,7 @@ export const TransactionItem = ({ item, walletAddress }: { item: Transaction; wa
 								code: item.hash?.slice?.(-TRANSACTION_ITEM.ID_LENGTH)
 							})}
 						</Text>
-						<Text style={styles.code}>
-							{moment(new Date((detailLedger?.transaction_timestamp ?? 0) * 1000)).format('DD/MM/YYYY HH:mm')}
-						</Text>
+						<Text style={styles.code}>{moment(new Date((item?.transaction_timestamp ?? 0) * 1000)).format('DD/MM/YYYY HH:mm')}</Text>
 					</View>
 				</View>
 			</View>

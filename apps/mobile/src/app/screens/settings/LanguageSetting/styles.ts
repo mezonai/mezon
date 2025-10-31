@@ -18,5 +18,8 @@ export const styles = (theme: any) =>
 			color: theme.text,
 			fontSize: size.s_14,
 			paddingVertical: size.s_3
+		},
+		itemSeparator: {
+			height: 1
 		}
 	});

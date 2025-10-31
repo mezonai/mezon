@@ -3,7 +3,9 @@ import {
 	appActions,
 	canvasActions,
 	selectCanvasIdsByChannelId,
-	selectCurrentChannel,
+	selectCurrentChannelChannelId,
+	selectCurrentChannelCreatorId,
+	selectCurrentChannelParentId,
 	selectCurrentClanId,
 	selectIdCanvas,
 	selectTheme,
@@ -11,7 +13,8 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { RefObject, useEffect, useMemo, useRef, useState } from 'react';
+import type { RefObject } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import EmptyCanvas from './EmptyCanvas';
@@ -27,14 +30,15 @@ type CanvasProps = {
 const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
-	const currentChannel = useSelector(selectCurrentChannel);
+	const channelId = useAppSelector(selectCurrentChannelChannelId);
+	const parentId = useAppSelector(selectCurrentChannelParentId);
+	const creatorChannelId = useAppSelector(selectCurrentChannelCreatorId);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const appearanceTheme = useSelector(selectTheme);
 	const [keywordSearch, setKeywordSearch] = useState('');
 	const currentIdCanvas = useSelector(selectIdCanvas);
 	const [selectedCanvasId, setSelectedCanvasId] = useState<string | null>(currentIdCanvas);
-	// const { countCanvas } = useAppSelector((state) => selectCanvasCursors(state, currentChannel?.channel_id ?? ''));
-	const canvases = useAppSelector((state) => selectCanvasIdsByChannelId(state, currentChannel?.channel_id ?? '', currentChannel?.parent_id));
+	const canvases = useAppSelector((state) => selectCanvasIdsByChannelId(state, channelId ?? '', parentId));
 	const filteredCanvases = useMemo(() => {
 		if (!keywordSearch) return canvases;
 		const lowerCaseQuery = keywordSearch.toLowerCase().trim();
@@ -48,15 +52,15 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 	}, [currentIdCanvas, selectedCanvasId]);
 
 	const handleCreateCanvas = () => {
-		const isThread = Boolean(currentChannel?.parent_id && currentChannel?.parent_id !== '0');
-		const id = isThread ? currentChannel?.channel_id : currentChannel?.channel_id;
+		const isThread = Boolean(parentId && parentId !== '0');
+		const id = channelId;
 
 		if (!id) {
-			console.error('Error: ID is undefined. Check currentChannel data:', currentChannel);
+			console.error('Error: ID is undefined. Check channel data');
 			return;
 		}
 		const type = isThread ? CANVAS_TYPES.THREAD : CANVAS_TYPES.CHANNEL;
-		dispatch(canvasActions.setParentId(isThread ? currentChannel?.parent_id || null : id));
+		dispatch(canvasActions.setParentId(isThread ? parentId || null : id));
 		dispatch(canvasActions.setType(type));
 		dispatch(appActions.setIsShowCanvas(true));
 		dispatch(canvasActions.setTitle(''));
@@ -122,9 +126,9 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 								onClose={onClose}
 								key={canvas.id}
 								canvas={canvas}
-								channelId={currentChannel?.channel_id}
+								channelId={channelId}
 								clanId={currentClanId || ''}
-								creatorIdChannel={currentChannel?.creator_id}
+								creatorIdChannel={creatorChannelId}
 								selectedCanvasId={selectedCanvasId}
 								onSelectCanvas={handleSelectCanvas}
 							/>

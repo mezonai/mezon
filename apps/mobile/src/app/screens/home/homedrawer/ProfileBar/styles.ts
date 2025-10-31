@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -33,7 +34,8 @@ export const style = (colors: Attributes) =>
 		},
 		profileWrapper: {
 			flexDirection: 'row',
-			gap: size.s_4
+			gap: size.s_8,
+			flexShrink: 1
 		},
 		settingButton: {
 			alignItems: 'center',

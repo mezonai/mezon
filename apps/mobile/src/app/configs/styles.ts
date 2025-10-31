@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -33,7 +34,10 @@ export const style = (colors: Attributes) =>
 			width: '90%',
 			height: 'auto',
 			flex: 1,
-			backgroundColor: colors.primary,
+			top: size.s_2,
+			backgroundColor: colors.secondary,
+			borderWidth: size.s_2,
+			borderColor: colors.primary,
 			borderRadius: size.s_16,
 			overflow: 'hidden',
 			shadowOffset: { width: 0, height: 0 },
@@ -56,10 +60,10 @@ export const style = (colors: Attributes) =>
 		},
 		lottieProgressBar: {
 			width: '100%',
-			height: size.s_8,
-			marginBottom: -size.s_4
+			height: size.s_8
 		},
 		toastWrapper: {
+			top: size.s_2,
 			borderRadius: size.s_20,
 			overflow: 'hidden',
 			width: '90%'
@@ -94,20 +98,22 @@ export const style = (colors: Attributes) =>
 			flex: 1
 		},
 		notificationTitle: {
-			fontSize: size.h6,
+			fontSize: size.h5,
 			marginLeft: 0,
 			marginRight: 0,
 			fontWeight: 'bold',
 			color: colors.white
 		},
 		notificationBody: {
-			fontSize: size.h7,
+			fontSize: size.h6,
 			marginLeft: 0,
 			marginRight: 0,
 			color: colors.textStrong
 		},
 		notificationProgressBarContainer: {
-			transform: [{ rotateY: '180deg' }]
+			transform: [{ rotateY: '180deg' }],
+			height: size.s_4,
+			overflow: 'hidden'
 		}
 	});
 

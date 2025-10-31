@@ -27,7 +27,7 @@ const ButtonGotoTopic = ({ message }: { message: MessagesEntity }) => {
 		});
 	};
 	return (
-		<View style={{ flexDirection: 'row' }}>
+		<View style={styles.wrapper}>
 			<TouchableOpacity onPress={handleOpenTopic} style={styles.container}>
 				<MezonIconCDN icon={IconCDN.discussionIcon} width={size.s_16} height={size.s_16} color={themeValue.text} />
 				<Text style={styles.title}>{t('goToTopic')}</Text>

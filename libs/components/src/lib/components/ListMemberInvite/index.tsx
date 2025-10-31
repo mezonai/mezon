@@ -1,7 +1,7 @@
 import { useDMInvite } from '@mezon/core';
 import type { DirectEntity, FriendsEntity } from '@mezon/store';
 import { selectAllDirectMessages, selectAllFriends, selectAllMembersInClan, selectBlockedUsers, useAppSelector } from '@mezon/store';
-import type { UsersClanEntity } from '@mezon/utils';
+import { generateE2eId, type UsersClanEntity } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -96,6 +96,7 @@ const ListMemberInvite = (props: ModalParam) => {
 				onChange={handleInputChange}
 				placeholder={t('searchPlaceholder')}
 				className="w-full h-10 mb-1 bg-theme-input  border-theme-primary rounded-lg px-[16px] py-[13px] text-[14px] outline-none"
+				data-e2e={generateE2eId('clan_page.modal.invite_people.search_input')}
 			/>
 			<div className={`py-[10px] cursor-default overflow-y-auto max-h-[200px] overflow-x-hidden thread-scroll `}>
 				{isInviteExternalCalling ? (

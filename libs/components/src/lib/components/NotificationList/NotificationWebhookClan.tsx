@@ -1,6 +1,6 @@
 import { useNotification } from '@mezon/core';
-import { channelMetaActions, selectClanById, selectTheme, useAppDispatch, useAppSelector } from '@mezon/store';
-import { INotification, NotificationCategory, TIME_OFFSET } from '@mezon/utils';
+import { selectClanById, selectTheme, useAppDispatch, useAppSelector } from '@mezon/store';
+import type { INotification, NotificationCategory } from '@mezon/utils';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import NotificationWebhookClanItem from './NotificationWebhookClanItem';
@@ -16,13 +16,6 @@ export const NotificationWebhookClan = ({ isUnreadTab, notification }: Notificat
 
 	const handleDeleteNotification = useCallback(
 		(notification: INotification) => {
-			const timestamp = Date.now() / 1000;
-			dispatch(
-				channelMetaActions.setChannelLastSeenTimestamp({
-					channelId: '0',
-					timestamp: timestamp + TIME_OFFSET
-				})
-			);
 			deleteNotify(notification.id, notification.category as NotificationCategory);
 		},
 		[deleteNotify, dispatch]

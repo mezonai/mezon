@@ -1,11 +1,14 @@
 import { useAuth } from '@mezon/core';
 import { createApplication, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ApiAddAppRequest } from 'mezon-js/api.gen';
-import { FormEvent, useEffect, useState } from 'react';
+import type { ApiAddAppRequest } from 'mezon-js/api.gen';
+import type { FormEvent } from 'react';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { APP_TYPES, AppType } from '../../../constants/constants';
+import type { AppType } from '../../../constants/constants';
+import { APP_TYPES } from '../../../constants/constants';
 
 interface ICreateAppPopup {
 	togglePopup: () => void;
@@ -13,6 +16,7 @@ interface ICreateAppPopup {
 
 type CreationType = AppType;
 const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
+	const { t } = useTranslation('adminApplication');
 	const [formValues, setFormValues] = useState({
 		name: '',
 		url: ''
@@ -38,7 +42,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 		if (!formValues.name) {
 			setNotification(
 				<div className="p-3 dark:bg-[#6b373b] bg-[#fbc5c6] border border-red-500 rounded-md">
-					A name is required to create your new {creationType}.
+					{t('createPopup.errors.nameRequired', { type: creationType })}
 				</div>
 			);
 			return;
@@ -46,17 +50,13 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 		if (typeApplication) {
 			if (!formValues.url) {
 				setNotification(
-					<div className="p-3 dark:bg-[#6b373b] bg-[#fbc5c6] border border-red-500 rounded-md">
-						URL is required to create your new application.
-					</div>
+					<div className="p-3 dark:bg-[#6b373b] bg-[#fbc5c6] border border-red-500 rounded-md">{t('createPopup.errors.urlRequired')}</div>
 				);
 				return;
 			}
 			if (!isUrlValid) {
 				setNotification(
-					<div className="p-3 dark:bg-[#6b373b] bg-[#fbc5c6] border border-red-500 rounded-md">
-						Please enter a valid URL (e.g., https://example.com).
-					</div>
+					<div className="p-3 dark:bg-[#6b373b] bg-[#fbc5c6] border border-red-500 rounded-md">{t('createPopup.errors.invalidUrl')}</div>
 				);
 				return;
 			}
@@ -85,10 +85,11 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 				navigate(`/developers/applications/${response?.payload?.id}/information`);
 				togglePopup();
 			} else {
-				toast.error(`Failed to create application or missing ID in response`);
+				toast.error(t('createPopup.errors.createFailed'));
 			}
-		} catch (error: any) {
-			toast.error(`An unexpected error occurred.${error.message}`);
+		} catch (error: unknown) {
+			const errorMessage = error instanceof Error ? error.message : '';
+			toast.error(t('createPopup.errors.unexpectedError', { message: errorMessage }));
 		} finally {
 			setIsLoading(false);
 		}
@@ -99,7 +100,18 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	};
 
 	const handleCheckForShadow = () => {
-		setIsShadowBot(!isShadowBot);
+		const newShadowBotState = !isShadowBot;
+		setIsShadowBot(newShadowBotState);
+
+		if (newShadowBotState) {
+			setNotification(
+				<div className="p-3 dark:bg-[#3a4a5c] bg-[#e3f2fd] border dark:border-blue-400 border-blue-500 rounded-md">
+					{t('createPopup.notifications.shadowModeInfo')}
+				</div>
+			);
+		} else {
+			setNotification(null);
+		}
 	};
 
 	const handleInputOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -122,10 +134,13 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	const handleCreationTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedType = e.target.value as CreationType;
 		setCreationType(selectedType);
+		setNotification(null);
 		if (selectedType === APP_TYPES.BOT) {
 			setFormValues((prev) => ({ ...prev, url: '' }));
 			setIsUrlValid(true);
+			return;
 		}
+		setIsShadowBot(false);
 	};
 	useEffect(() => {
 		const handleKeyDown = (event: KeyboardEvent) => {
@@ -144,27 +159,25 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 		<div className="fixed inset-0 flex items-center justify-center z-50 bg-[#000000c9]">
 			<form className="relative z-10 w-[450px]" onSubmit={handleSubmit}>
 				<div className="dark:bg-[#313338] bg-white pt-[16px] px-[16px] flex flex-col gap-5 pb-5 rounded-t-md">
-					<div className=" text-[20px] font-semibold">
-						Create a {typeApplication ? 'new application' : 'bot'}
-					</div>
+					<div className=" text-[20px] font-semibold">{t(typeApplication ? 'createPopup.title.application' : 'createPopup.title.bot')}</div>
 					{notification}
 					<div className="flex flex-col gap-2">
 						<div className="text-[12px] font-semibold">
-							TYPE <span className="text-red-600">*</span>
+							{t('createPopup.form.type.label')} <span className="text-red-600">*</span>
 						</div>
 						<select
 							value={creationType}
 							onChange={handleCreationTypeChange}
 							className="bg-bgLightModeThird dark:bg-[#1e1f22] outline-primary p-[10px] rounded-sm"
 						>
-							<option value={APP_TYPES.APPLICATION}>Create an application</option>
-							<option value={APP_TYPES.BOT}>Create a bot</option>
+							<option value={APP_TYPES.APPLICATION}>{t('createPopup.form.type.options.createApplication')}</option>
+							<option value={APP_TYPES.BOT}>{t('createPopup.form.type.options.createBot')}</option>
 						</select>
 					</div>
 
 					<div className="flex flex-col gap-2">
 						<div className="text-[12px] font-semibold">
-							NAME <span className="text-red-600">*</span>
+							{t('createPopup.form.name.label')} <span className="text-red-600">*</span>
 						</div>
 						<input
 							name="name"
@@ -177,7 +190,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 					{typeApplication && (
 						<div className="flex flex-col gap-2">
 							<div className="text-[12px] font-semibold">
-								URL <span className="text-red-600">*</span>
+								{t('createPopup.form.url.label')} <span className="text-red-600">*</span>
 							</div>
 							<input
 								name="url"
@@ -186,14 +199,14 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 								type="text"
 								className="bg-bgLightModeThird dark:bg-[#1e1f22] outline-primary p-[10px] rounded-sm"
 							/>
-							{!isUrlValid && <div className="text-red-500 text-sm">Please enter a valid URL (e.g., https://example.com).</div>}
+							{!isUrlValid && <div className="text-red-500 text-sm">{t('createPopup.errors.invalidUrl')}</div>}
 						</div>
 					)}
 					{typeBot && (
 						<div className="flex gap-2">
 							<input checked={isShadowBot} onChange={handleCheckForShadow} type="checkbox" className="w-6" />
 							<div className="flex-1 flex gap-1">
-								<span>Shadow Bot </span>
+								<span>{t('createPopup.form.shadowBot')} </span>
 								<Icons.ShadowBotIcon className="w-6" />
 							</div>
 						</div>
@@ -201,22 +214,23 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 					<div className="flex gap-2">
 						<input checked={isCheckedForPolicy} onChange={handleTogglePolicyCheckBox} type="checkbox" className="w-6" />
 						<div className="flex-1">
-							By clicking Create, you agree to the Mezon{' '}
-							<span className="text-blue-500 hover:underline">Developer Terms of Service</span> and{' '}
-							<span className="text-blue-500 hover:underline">Developer Policy</span>
+							{t('createPopup.form.agreement.text')}{' '}
+							<span className="text-blue-500 hover:underline">{t('createPopup.form.agreement.termsOfService')}</span>{' '}
+							{t('createPopup.form.agreement.and')}{' '}
+							<span className="text-blue-500 hover:underline">{t('createPopup.form.agreement.policy')}</span>
 						</div>
 					</div>
 				</div>
 				<div className="bg-white dark:bg-[#313338]   flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium border-t dark:border-[#1e1f22]  rounded-b-md">
 					<div className="hover:underline cursor-pointer text-zinc-800 dark:text-zinc-200" onClick={togglePopup}>
-						Cancel
+						{t('createPopup.buttons.cancel')}
 					</div>
 					<button
 						type="submit"
 						disabled={!isFormValid || isLoading}
 						className={`rounded px-[20px] py-[9px] cursor-pointer text-white ${isFormValid && !isLoading ? 'bg-blue-600 hover:bg-blue-800' : 'bg-gray-400 cursor-not-allowed'}`}
 					>
-						{isLoading ? 'Creating...' : 'Create'}
+						{isLoading ? t('createPopup.buttons.creating') : t('createPopup.buttons.create')}
 					</button>
 				</div>
 			</form>

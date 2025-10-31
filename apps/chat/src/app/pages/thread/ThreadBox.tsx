@@ -19,8 +19,9 @@ import {
 	selectAllRolesClan,
 	selectCloseMenu,
 	selectComposeInputByChannelId,
-	selectCurrentChannel,
+	selectCurrentChannelCategoryId,
 	selectCurrentChannelId,
+	selectCurrentChannelParentId,
 	selectCurrentClanId,
 	selectMemberClanByUserId,
 	selectOpenThreadMessageState,
@@ -70,7 +71,8 @@ const ThreadBox = () => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId);
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
+	const currentChannelCategoryId = useSelector(selectCurrentChannelCategoryId);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const sessionUser = useSelector(selectSession);
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, sessionUser?.user_id as string));
@@ -114,7 +116,7 @@ const ThreadBox = () => {
 
 	const createThread = useCallback(
 		async (value: ThreadValue, messageContent?: IMessageSendPayload) => {
-			const idParent = currentChannel?.parent_id !== '0' ? currentChannel?.parent_id : (currentChannelId as string);
+			const idParent = currentChannelParentId !== '0' ? currentChannelParentId : (currentChannelId as string);
 
 			if (!value.nameValueThread || !value.nameValueThread.trim()) {
 				return;
@@ -146,7 +148,7 @@ const ThreadBox = () => {
 				channel_label: value.nameValueThread,
 				channel_private: value.isPrivate,
 				parent_id: idParent,
-				category_id: currentChannel?.category_id,
+				category_id: currentChannelCategoryId,
 				type: ChannelType.CHANNEL_TYPE_THREAD,
 				lastSeenTimestamp: timestamp,
 				lastSentTimestamp: timestamp
@@ -155,7 +157,7 @@ const ThreadBox = () => {
 			const thread = await dispatch(createNewChannel(body));
 			return thread.payload;
 		},
-		[checkAttachment, currentChannel?.category_id, currentChannel?.parent_id, currentChannelId, currentClanId, dispatch, t]
+		[checkAttachment, currentChannelCategoryId, currentChannelParentId, currentChannelId, currentClanId, dispatch, t]
 	);
 
 	const handleSend = useCallback(
@@ -487,7 +489,7 @@ const ThreadBox = () => {
 								onSend={handleSendWithLimitCheck}
 								onTyping={handleTypingDebounced}
 								listMentions={UserMentionList({
-									channelID: currentChannel?.channel_id as string,
+									channelID: currentChannelId as string,
 									channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
 								})}
 								isThread={true}
@@ -510,7 +512,7 @@ const ThreadBox = () => {
 										onSend={handleSend}
 										onTyping={handleTypingDebounced}
 										listMentions={UserMentionList({
-											channelID: currentChannel?.channel_id as string,
+											channelID: currentChannelId as string,
 											channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
 										})}
 										isThreadbox

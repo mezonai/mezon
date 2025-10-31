@@ -1,6 +1,6 @@
 import { abbreviateText } from '@mezon/mobile-components';
 import { useTheme, verticalScale } from '@mezon/mobile-ui';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React from 'react';
 import { Text, View } from 'react-native';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
@@ -18,7 +18,7 @@ const AttachmentFilePreview = ({ attachment }: IProps) => {
 	return (
 		<View style={[styles.fileViewer, { backgroundColor: themeValue.secondaryLight }]}>
 			<MezonIconCDN icon={IconCDN.fileIcon} width={verticalScale(30)} height={verticalScale(30)} color={'#5a62f4'} />
-			<View style={{ maxWidth: '75%' }}>
+			<View style={styles.fileContentWrapper}>
 				<Text style={[styles.fileName, { color: themeValue.text }]} numberOfLines={1}>
 					{abbreviateText(attachment.filename)}
 				</Text>

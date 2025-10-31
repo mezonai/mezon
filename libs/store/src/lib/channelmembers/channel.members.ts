@@ -619,11 +619,7 @@ export const selectAllChannelMembersClan = createSelector(
 
 		if (!allUserClans?.length) return membersOfChannel;
 
-		let ids = isPrivate === '1' || (parentId !== '0' && parentId !== '') ? channelMembers : allUserClans.map((u: any) => u.id);
-
-		if (isPrivate === '1' && creatorId && ids && !ids.includes(creatorId)) {
-			ids = [...(ids || []), creatorId];
-		}
+		const ids = isPrivate === '1' || (parentId !== '0' && parentId !== '') ? channelMembers : allUserClans.map((u: any) => u.id);
 
 		if (!ids?.length) return membersOfChannel;
 

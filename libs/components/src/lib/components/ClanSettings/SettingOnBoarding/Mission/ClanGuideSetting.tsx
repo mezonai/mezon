@@ -1,6 +1,6 @@
 import {
 	selectChannelById,
-	selectCurrentClan,
+	selectCurrentClanCreatorId,
 	selectCurrentClanId,
 	selectFormOnboarding,
 	selectMemberClanByUserId,
@@ -9,8 +9,9 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId, titleMission } from '@mezon/utils';
-import { ApiOnboardingItem } from 'mezon-js/api.gen';
-import { ReactNode, useEffect } from 'react';
+import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { ReactNode } from 'react';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -157,8 +158,8 @@ const SectionDescription = ({ title, description }: { title: string; description
 };
 const OwnerGreeting = () => {
 	const { t } = useTranslation('onBoardingClan');
-	const currenClan = useSelector(selectCurrentClan);
-	const clanOwner = useAppSelector((state) => selectMemberClanByUserId(state, currenClan?.creator_id as string));
+	const creatorId = useSelector(selectCurrentClanCreatorId);
+	const clanOwner = useAppSelector((state) => selectMemberClanByUserId(state, creatorId as string));
 	return (
 		<div className="p-[2px] flex items-center justify-center bg-gradient-to-br from-indigo-300 to-purple-300 dark:from-[#9e9e9e] dark:to-[#494949]">
 			<div className="w-full p-4 pt-2 flex flex-col gap-2 bg-gradient-to-br bg-theme-setting-nav rounded-md">

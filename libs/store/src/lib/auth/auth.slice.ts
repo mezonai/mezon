@@ -1,10 +1,9 @@
 import { captureSentryError } from '@mezon/logger';
-import { SESSION_REFRESH_KEY } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
-import { Session, safeJSONParse } from 'mezon-js';
+import { Session } from 'mezon-js';
 import type { ApiLinkAccountConfirmRequest } from 'mezon-js/dist/api.gen';
 import { toast } from 'react-toastify';
 import { clearApiCallTracker } from '../cache-metadata';
@@ -48,7 +47,7 @@ export const initialAuthState: AuthState = {
 };
 
 function normalizeSession(session: Session): ISession {
-	return session;
+	return session as ISession;
 }
 
 export const authenticateApple = createAsyncThunk('auth/authenticateApple', async (token: string, thunkAPI) => {
@@ -99,24 +98,19 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 	const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
 	const sessionState = selectSession(thunkAPI.getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
 
-	const storageStr = localStorage.getItem(SESSION_REFRESH_KEY) || '';
-	const localRefresh = safeJSONParse(storageStr);
-
 	if (!sessionState) {
 		return thunkAPI.rejectWithValue('Invalid refreshSession');
+	}
+
+	if (!sessionState.token || !sessionState.refresh_token) {
+		return thunkAPI.rejectWithValue('Invalid session tokens');
 	}
 
 	if (mezon.sessionRef.current?.token && mezon.sessionRef.current?.token === sessionState?.token) {
 		return sessionState;
 	}
 
-	let session = new Session(
-		localRefresh?.token || sessionState?.token,
-		localRefresh?.refresh_token || sessionState?.refresh_token,
-		sessionState.created,
-		sessionState.api_url,
-		!!sessionState.is_remember
-	);
+	let session = new Session(sessionState.token, sessionState.refresh_token, sessionState.created, sessionState.api_url, !!sessionState.is_remember);
 
 	try {
 		session = (await mezon?.refreshSession({
@@ -328,8 +322,7 @@ export const authSlice = createSlice({
 			state.loadingStatusEmail = 'not loaded';
 		},
 		checkFormatSession(state) {
-			const newSession: any = state.session;
-			if (newSession.token || !state.activeAccount) {
+			if (!state.activeAccount || !state.session) {
 				state.session = null;
 				state.isLogin = false;
 				state.activeAccount = null;

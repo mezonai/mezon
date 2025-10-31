@@ -1,8 +1,8 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import {
 	selectChannelMemberByUserIds,
-	selectCurrentChannel,
 	selectCurrentChannelId,
+	selectCurrentChannelType,
 	selectDmGroupCurrentId,
 	selectMemberByUsername,
 	useAppSelector
@@ -170,8 +170,7 @@ const MentionUser = ({
 					data-entity-type="MessageEntityMentionName"
 					data-user-id={tagUserId}
 					onMouseDown={!isJumMessageEnabled || isTokenClickAble ? (e) => handleOpenShortUser(e) : () => {}}
-					style={{ textDecoration: 'none' }}
-					className={`select-all cursor-pointer outline-none font-medium px-0.1 rounded-sm whitespace-nowrap bg-mention color-mention hover-mention   ${isJumMessageEnabled ? '' : 'hover:none'}`}
+					className={`no-underline select-all cursor-pointer outline-none font-medium px-0.1 rounded-sm whitespace-nowrap bg-mention color-mention hover-mention   ${isJumMessageEnabled ? '' : 'hover:none'}`}
 					suppressContentEditableWarning={true}
 					data-e2e={generateE2eId('chat.channel_message.mention_user')}
 				>
@@ -200,8 +199,8 @@ const UserProfilePopup = ({ username, userID, channelId, mode, isDm, positionSho
 	}, [getUserByUserId, getUserByUsername]);
 	const userId = userGetByNameOrId?.id ?? userID;
 
-	const currentChannel = useSelector(selectCurrentChannel);
-	const positionStyle = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ? { right: `120px` } : { left: `${positionShortUser?.left}px` };
+	const currentChannelType = useSelector(selectCurrentChannelType);
+	const positionStyle = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING ? { right: `120px` } : { left: `${positionShortUser?.left}px` };
 	const prioritizeName = getNameForPrioritize(
 		userGetByNameOrId?.clan_nick ?? '',
 		userGetByNameOrId?.user?.display_name ?? '',

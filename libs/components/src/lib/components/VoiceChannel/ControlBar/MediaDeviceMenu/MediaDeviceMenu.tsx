@@ -1,7 +1,8 @@
 import { computeMenuPosition } from '@livekit/components-core';
 import { Icons } from '@mezon/ui';
 import type { LocalAudioTrack, LocalVideoTrack } from 'livekit-client';
-import { ButtonHTMLAttributes, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import type { ButtonHTMLAttributes } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { MediaDeviceSelect } from './MediaDeviceSelect';
 
 export interface MediaDeviceMenuProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -80,7 +81,7 @@ export function MediaDeviceMenu({
 				{props.children}
 			</button>
 			{!props.disabled && (
-				<div className="lk-device-menu" ref={tooltip} style={{ visibility: isOpen ? 'visible' : 'hidden', bottom: '0px', top: 'auto' }}>
+				<div className={`lk-device-menu bottom-0 h-fit !top-auto ${isOpen ? 'visible' : 'invisible'}`} ref={tooltip}>
 					{kind && (
 						<MediaDeviceSelect
 							initialSelection={initialSelection}

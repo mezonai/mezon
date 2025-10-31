@@ -1,5 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { DirectEntity, directActions, selectDirectById, selectDirectsUnreadlist, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import type { DirectEntity } from '@mezon/store-mobile';
+import { directActions, selectDirectById, selectDirectsUnreadlist, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
@@ -33,7 +34,7 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 									uri: createImgproxyUrl(dm?.avatars?.[0] ?? '', { width: 100, height: 100, resizeType: 'fit' })
 								}}
 								resizeMode="cover"
-								style={styles.groupAvatar}
+								style={styles.dmAvatar}
 							/>
 						) : (
 							<View style={styles.wrapperTextAvatar}>
@@ -52,11 +53,7 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 					<View style={styles.avatarWrapper}>
 						{dm?.channel_avatar && !dm?.channel_avatar?.includes('avatar-group.png') ? (
 							<View style={styles.groupAvatarWrapper}>
-								<ImageNative
-									url={createImgproxyUrl(dm?.channel_avatar ?? '')}
-									style={{ width: '100%', height: '100%' }}
-									resizeMode={'cover'}
-								/>
+								<ImageNative url={createImgproxyUrl(dm?.channel_avatar ?? '')} style={styles.imageFull} resizeMode={'cover'} />
 							</View>
 						) : (
 							<View style={styles.groupAvatar}>

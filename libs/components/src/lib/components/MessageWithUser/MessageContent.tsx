@@ -1,6 +1,5 @@
 import {
 	getFirstMessageOfTopic,
-	selectCurrentChannel,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectMemberClanByUserId,
@@ -79,8 +78,7 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 		dispatch(topicsActions.setCurrentTopicId(message?.content?.tp || ''));
 		dispatch(getFirstMessageOfTopic(message?.content?.tp || ''));
 	}, [dispatch, message]);
-	const currentChannel = useSelector(selectCurrentChannel);
-	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id as string));
+	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, message.channel_id as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 
 	const topic = useAppSelector((state) => selectTopicById(state, message?.content?.tp || ''));

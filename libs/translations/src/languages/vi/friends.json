@@ -28,7 +28,8 @@
 	"toast": {
 		"sendAddFriendSuccess": "Yêu cầu kết bạn đã được gửi thành công!",
 		"acceptAddFriendSuccess": "Chấp nhận lời mời kết bạn!",
-		"sendAddFriendFail": "Hmm, có lỗi xảy ra. Vui lòng kiểm tra lại tên người dùng có đúng không."
+		"sendAddFriendFail": "Hmm, có lỗi xảy ra. Vui lòng kiểm tra lại tên người dùng có đúng không.",
+		"somethingWentWrong": "Có lỗi xảy ra"
 	},
 	"you": "bạn"
 }

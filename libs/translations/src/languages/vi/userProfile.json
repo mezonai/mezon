@@ -15,10 +15,11 @@
 		}
 	},
 	"kickUserClanModal": {
-		"kickFromServer": "Đuổi {{username}} khỏi clan",
-		"description": "Bạn có chắc chắn muốn đuổi {{username}} khỏi clan? Họ có thể tham gia lại bằng lời mời mới.",
-		"reasonKick": "Lí do khai trừ",
-		"buttonName": "Đuổi"
+		"title": "Khai trừ thành viên",
+		"kickFromServer": "Khai trừ {{username}} ra khỏi clan",
+		"description": "Bạn có chắc chắn muốn khai trừ {{username}} ra khỏi clan? Họ có thể tham gia lại bằng lời mời mới.",
+		"reasonKick": "Lý do khai trừ",
+		"buttonName": "Khai trừ"
 	},
 	"transferOwnershipModal": {
 		"warning": "Điều này sẽ chuyển quyền sở hữu của <highlightClan>{{clanName}}</highlightClan> cho <highlightUser>{{username}}</highlightUser>. Hành động này không thể hoàn tác!",

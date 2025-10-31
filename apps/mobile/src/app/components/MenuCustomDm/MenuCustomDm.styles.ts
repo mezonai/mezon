@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -46,6 +47,14 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_14,
 			fontWeight: '600',
 			letterSpacing: 0.5
+		},
+		container: {
+			paddingHorizontal: size.s_20,
+			paddingVertical: size.s_10
+		},
+		avatarContainer: {
+			paddingVertical: size.s_20,
+			alignItems: 'center'
 		}
 	});
 

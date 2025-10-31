@@ -36,7 +36,8 @@ export function useSeenMessagePool() {
 					dispatch(
 						channelMetaActions.setChannelLastSeenTimestamp({
 							channelId: message?.channel_id,
-							timestamp: timestamp + TIME_OFFSET
+							timestamp: timestamp + TIME_OFFSET,
+							messageId: message?.id
 						})
 					);
 				}

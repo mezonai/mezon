@@ -1,4 +1,4 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import ImageNative from 'apps/mobile/src/app/components/ImageNative';
 import { ChannelType } from 'mezon-js';
@@ -46,8 +46,7 @@ function ForwardMessageItem({
 					</View>
 				);
 			case ChannelType.CHANNEL_TYPE_GROUP:
-				const isAvatar = item?.avatar && !item?.avatar?.includes('avatar-group.png');
-				return isAvatar ? (
+				return item?.avatar && !item?.avatar?.includes('avatar-group.png') ? (
 					<View style={styles.groupAvatarContainer}>
 						<ImageNative url={createImgproxyUrl(item?.avatar ?? '')} style={componentStyles.imageFullSize} resizeMode={'cover'} />
 					</View>
@@ -97,12 +96,12 @@ function ForwardMessageItem({
 				</View>
 				<View style={componentStyles.checkboxContainer}>
 					<BouncyCheckbox
-						size={20}
+						size={size.s_20}
 						isChecked={isChecked}
 						onPress={(value) => {
 							handleSelectChange(value);
 						}}
-						fillColor={componentStyles.checkboxFillColor}
+						fillColor={baseColor.bgButtonPrimary}
 						iconStyle={componentStyles.checkboxIconStyle}
 						innerIconStyle={getCheckboxInnerIconStyle(isChecked, themeValue)}
 						textStyle={{ fontFamily: 'JosefinSans-Regular' }}

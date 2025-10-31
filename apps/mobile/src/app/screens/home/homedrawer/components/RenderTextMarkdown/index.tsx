@@ -9,16 +9,16 @@ import type { TFunction } from 'i18next';
 import { ChannelType } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, Linking, StyleSheet, Text, View } from 'react-native';
+import FastImage from 'react-native-fast-image';
 import Feather from 'react-native-vector-icons/Feather';
 import CustomIcon from '../../../../../../../src/assets/CustomIcon';
-import ImageNative from '../../../../../components/ImageNative';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import LinkOptionModal from '../LinkOptions/LinkOptionModal';
 import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
-import { getMessageReplyMaxHeight, styles as componentStyles } from './index.styles';
 import RenderYoutubeVideo from './components/RenderYoutubeVideo';
+import { styles as componentStyles, getMessageReplyMaxHeight } from './index.styles';
 
 export default function openUrl(url, customCallback) {
 	if (customCallback) {
@@ -393,8 +393,8 @@ export const RenderTextMarkdownContent = ({
 				const srcEmoji = getSrcEmoji(element?.emojiid);
 				textParts.push(
 					<View key={`emoji-${index}`} style={!isOnlyContainEmoji && markdownStyles(themeValue).emojiInMessageContain}>
-						<ImageNative
-							url={srcEmoji}
+						<FastImage
+							source={{ uri: srcEmoji }}
 							style={
 								isOnlyContainEmoji ? markdownStyles(themeValue).onlyIconEmojiInMessage : markdownStyles(themeValue).iconEmojiInMessage
 							}

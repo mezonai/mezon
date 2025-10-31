@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import MezonImagePicker, { IMezonImagePickerHandler } from '../../../componentUI/MezonImagePicker';
+import type { IMezonImagePickerHandler } from '../../../componentUI/MezonImagePicker';
+import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import MezonInput from '../../../componentUI/MezonInput';
 import { IconCDN } from '../../../constants/icon_cdn';
 import style from '../MenuCustomDm.styles';
@@ -102,9 +103,9 @@ const CustomGroupDm = ({ dmGroupId, channelLabel, currentAvatar }: { dmGroupId: 
 	}, [shouldDisableRemoveAvatar, handleRemoveAvatar]);
 
 	return (
-		<View style={{ paddingHorizontal: size.s_20, paddingVertical: size.s_10 }}>
+		<View style={styles.container}>
 			<Text style={styles.headerCustomGroup}>{t('customiseGroup')}</Text>
-			<View style={{ paddingVertical: size.s_20, alignItems: 'center' }}>
+			<View style={styles.avatarContainer}>
 				<MezonImagePicker
 					ref={avatarPickerRef}
 					defaultValue={avatarUrl}

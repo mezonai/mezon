@@ -198,26 +198,24 @@ export const sendRequestDeleteFriend = createAsyncThunk(
 	}
 );
 
-export const sendRequestBlockFriend = createAsyncThunk('friends/requestBlockFriends', async ({ ids, usernames }: requestAddFriendParam, thunkAPI) => {
+export const sendRequestBlockFriend = createAsyncThunk('friends/requestBlockFriends', async ({ ids }: requestAddFriendParam, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
-	const response = await mezon.client.blockFriends(mezon.session, ids, usernames);
+
+	const response = await mezon.client.blockFriends(mezon.session, ids);
 	if (!response) {
 		return thunkAPI.rejectWithValue([]);
 	}
 	return response;
 });
 
-export const sendRequestUnblockFriend = createAsyncThunk(
-	'friends/requestUnblockFriends',
-	async ({ ids, usernames }: requestAddFriendParam, thunkAPI) => {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.unblockFriends(mezon.session, ids, usernames);
-		if (!response) {
-			return thunkAPI.rejectWithValue([]);
-		}
-		return response;
+export const sendRequestUnblockFriend = createAsyncThunk('friends/requestUnblockFriends', async ({ ids }: requestAddFriendParam, thunkAPI) => {
+	const mezon = await ensureSession(getMezonCtx(thunkAPI));
+	const response = await mezon.client.unblockFriends(mezon.session, ids);
+	if (!response) {
+		return thunkAPI.rejectWithValue([]);
 	}
-);
+	return response;
+});
 
 export const upsertFriendRequest = createAsyncThunk(
 	'friends/upsertFriendRequest',
@@ -286,18 +284,15 @@ export const friendsSlice = createSlice({
 			state,
 			action: PayloadAction<{
 				userId: string;
-				friendState: EStateFriend;
 				sourceId?: string;
 			}>
 		) => {
-			const { userId, friendState, sourceId } = action.payload;
-			const key = state?.ids?.find((key) => {
-				return state?.entities?.[key]?.source_id === userId || state?.entities?.[key]?.user?.id === userId;
-			});
-			const friend = key ? state?.entities?.[key] : null;
+			const { userId, sourceId } = action.payload;
+
+			const friend = state?.entities?.[userId];
 
 			if (friend) {
-				friend.state = friendState;
+				friend.state = friend.state === EStateFriend.BLOCK ? EStateFriend.FRIEND : EStateFriend.BLOCK;
 				if (sourceId) {
 					friend.source_id = sourceId;
 				}
@@ -354,10 +349,11 @@ export const friendsActions = {
 	upsertFriendRequest
 };
 
-const { selectAll, selectById } = friendsAdapter.getSelectors();
+const { selectAll, selectById, selectEntities } = friendsAdapter.getSelectors();
 
 export const getFriendsState = (FriendState: { [FRIEND_FEATURE_KEY]: FriendsState }): FriendsState => FriendState[FRIEND_FEATURE_KEY];
 export const selectAllFriends = createSelector(getFriendsState, selectAll);
+export const selectFriendsEntities = createSelector(getFriendsState, selectEntities);
 export const selectStatusSentMobile = createSelector(getFriendsState, (state) => state.statusSentMobile);
 export const selectFriendStatus = (userId: string) =>
 	createSelector(getFriendsState, (state) => {

@@ -70,12 +70,12 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 	}, []);
 
 	return (
-		<div className="mt-[60px]">
+		<div className="mt-[48px] overflow-hidden ">
 			<div className="flex items-center justify-between">
-				<h2 className="text-xl font-semibold  flex">
+				<h2 className="text-xl text-theme-primary-active font-semibold  flex">
 					<div>Audit Log</div>
 				</h2>
-				<div className="flex gap-4 items-center">
+				<div className="flex gap-4 items-center ">
 					<div className="relative">
 						<div onClick={handleSearchMemberClick} className="flex items-center gap-3  w-full text-[13px] line-clamp-1 break-all">
 							<div className="max-sm:hidden">Filter by User</div>
@@ -130,20 +130,23 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 							onChange={handleDateChange}
 							max={maxDate}
 							className=" 
-							bg-input-theme focus:outline-none focus:ring-0 border-theme-primary rounded-lg p-2
+							bg-input-theme  focus:outline-none focus:ring-0 border-theme-primary rounded-lg p-2
 							transition ease-in-out duration-200"
 						/>
 					</div>
 				</div>
 			</div>
+			<div className="border-b-theme-primary my-[32px]" />
 
-			<MainAuditLog
-				pageSize={pageSize}
-				setPageSize={setPageSize}
-				currentPage={currentPage}
-				setCurrentPage={setCurrentPage}
-				selectedDate={selectedDate}
-			/>
+			<div className="overflow-y-auto max-h-[calc(100vh-160px)] mt-4 thread-scroll">
+				<MainAuditLog
+					pageSize={pageSize}
+					setPageSize={setPageSize}
+					currentPage={currentPage}
+					setCurrentPage={setCurrentPage}
+					selectedDate={selectedDate}
+				/>
+			</div>
 		</div>
 	);
 };

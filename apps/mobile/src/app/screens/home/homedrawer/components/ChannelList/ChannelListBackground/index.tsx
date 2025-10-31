@@ -29,7 +29,7 @@ const ChannelListBackground = () => {
 
 	return (
 		<TouchableOpacity activeOpacity={0.8} onPress={handlePress} style={[style.container, { height: size.s_70 * 2 }]}>
-			<ImageNative url={bannerToShow} style={{ flex: 1 }} resizeMode="cover" />
+			<ImageNative url={bannerToShow} style={style.image} resizeMode="cover" />
 		</TouchableOpacity>
 	);
 };

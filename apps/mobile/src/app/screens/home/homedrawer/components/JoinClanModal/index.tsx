@@ -39,7 +39,7 @@ const JoinClanModal = () => {
 				save(STORAGE_CLAN_ID, res?.clan_id);
 				store.dispatch(clansActions.joinClan({ clanId: res?.clan_id }));
 				store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clan_id }));
-				await store.dispatch(clansActions.fetchClans({ noCache: true }));
+				await store.dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			}
 		});

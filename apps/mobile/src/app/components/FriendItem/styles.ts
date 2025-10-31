@@ -1,7 +1,8 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
-export const style = (colors: Attributes) =>
+export const style = (colors: Attributes, isChecked?: boolean, disabled?: boolean) =>
 	StyleSheet.create({
 		userItem: {
 			flexDirection: 'row',
@@ -96,5 +97,11 @@ export const style = (colors: Attributes) =>
 		checkboxWrapper: {
 			height: 20,
 			width: 20
+		},
+		innerIconStyle: {
+			borderWidth: 1.5,
+			borderColor: isChecked ? '#5865f2' : colors.borderRadio,
+			borderRadius: 5,
+			opacity: disabled ? 0.4 : 1
 		}
 	});

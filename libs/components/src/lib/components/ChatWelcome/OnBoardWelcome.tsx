@@ -1,8 +1,10 @@
 import {
 	channelsActions,
 	selectAllChannels,
-	selectCurrentChannel,
-	selectCurrentClan,
+	selectCurrentChannelId,
+	selectCurrentChannelType,
+	selectCurrentClanBanner,
+	selectCurrentClanId,
 	selectLastMessageByChannelId,
 	selectMembersClanCount,
 	useAppSelector
@@ -24,9 +26,11 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 	const { t } = useTranslation('chatWelcome');
 	const numberMemberClan = useAppSelector(selectMembersClanCount);
 	const numberChannel = useSelector(selectAllChannels);
-	const currentChannel = useSelector(selectCurrentChannel);
-	const currentClan = useSelector(selectCurrentClan);
-	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, currentChannel?.id as string));
+	const currentChannelObjectId = useSelector(selectCurrentChannelId);
+	const currentChannelType = useSelector(selectCurrentChannelType);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanBanner = useSelector(selectCurrentClanBanner);
+	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, currentChannelObjectId as string));
 	const checkLastMessage = useMemo(() => {
 		if (lastMessage?.code === TypeMessage.Indicator) {
 			return false;
@@ -47,7 +51,7 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 		if (numberChannel.length < 1) {
 			return;
 		}
-		dispatch(channelsActions.openCreateNewModalChannel({ isOpen: true, clanId: currentClan?.id as string }));
+		dispatch(channelsActions.openCreateNewModalChannel({ isOpen: true, clanId: currentClanId as string }));
 	};
 
 	useEffect(() => {
@@ -58,10 +62,10 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 
 	return (
 		<div className="w-full p-4 mb-0  flex-1 flex flex-col items-center gap-2">
-			{currentChannel?.type === ChannelType.CHANNEL_TYPE_APP ? (
+			{currentChannelType === ChannelType.CHANNEL_TYPE_APP ? (
 				<div className="w-[400px] p-4 bg-item-theme rounded-lg">
-					{currentClan?.banner ? (
-						<img src={currentClan?.banner} />
+					{currentClanBanner ? (
+						<img src={currentClanBanner} />
 					) : (
 						<div className="w-full h-28 font-bold text-2xl text-theme-primary rounded-lg flex items-center justify-center">
 							<p className="[text-shadow:_0_1px_2px_#ffffff]">{t('onboard.clickLaunchToStart')}</p>
@@ -70,10 +74,20 @@ export function OnBoardWelcome({ nextMessageId }: OnBoardWelcomeProps) {
 				</div>
 			) : (
 				<>
-					<Onboarditem icon={<Icons.AddPerson />} title={t('onboard.inviteFriends')} tick={numberMemberClan > 1} onClick={openInviteClanModal} />
+					<Onboarditem
+						icon={<Icons.AddPerson />}
+						title={t('onboard.inviteFriends')}
+						tick={numberMemberClan > 1}
+						onClick={openInviteClanModal}
+					/>
 					<Onboarditem icon={<Icons.Sent />} title={t('onboard.sendFirstMessage')} tick={checkLastMessage} onClick={handleSendMessage} />
 					<Onboarditem icon={<Icons.Download />} title={t('onboard.downloadApp')} tick={true} onClick={handleSendMessage} />
-					<Onboarditem icon={<Icons.Hashtag />} title={t('onboard.createChannel')} tick={numberChannel.length > 1} onClick={handleCreateChannel} />
+					<Onboarditem
+						icon={<Icons.Hashtag />}
+						title={t('onboard.createChannel')}
+						tick={numberChannel.length > 1}
+						onClick={handleCreateChannel}
+					/>
 				</>
 			)}
 		</div>

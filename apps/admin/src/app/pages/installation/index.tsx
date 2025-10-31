@@ -1,10 +1,12 @@
 import { getApplicationDetail, selectAppDetail, useAppDispatch } from '@mezon/store';
 import copy from 'copy-to-clipboard';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 const Installation = () => {
+	const { t } = useTranslation('adminApplication');
 	const dispatch = useAppDispatch();
 	const { applicationId } = useParams();
 	const application = useSelector(selectAppDetail);
@@ -29,11 +31,11 @@ const Installation = () => {
 	}, [applicationId, dispatch]);
 
 	if (isLoading) {
-		return <div className="text-red-500">Loading application data...</div>;
+		return <div className="text-red-500">{t('installation.loading')}</div>;
 	}
 
 	if (!application || !applicationId) {
-		return <div className="text-red-500">Application data not found</div>;
+		return <div className="text-red-500">{t('installation.notFound')}</div>;
 	}
 
 	const linkInstall = window.location.origin + (application.app_url ? '/developers/app/install/' : '/developers/bot/install/') + applicationId;
@@ -48,24 +50,18 @@ const Installation = () => {
 
 	return (
 		<div className="text-xl">
-			<h3 className="text-2xl font-semibold mb-4">Installation</h3>
-			<p className="dark:text-contentTertiary text-colorTextLightMode mb-8">
-				Choose how users will install your app. Create an installation link, choose which installation context to support, and define the
-				scopes and permissions you want to request.
-			</p>
+			<h3 className="text-2xl font-semibold mb-4">{t('installation.title')}</h3>
+			<p className="dark:text-contentTertiary text-colorTextLightMode mb-8">{t('installation.subtitle')}</p>
 			<div className="rounded dark:bg-bgSecondary bg-bgLightSecondary p-5 dark:text-textPrimary text-colorTextLightMode space-y-5">
 				<div>
-					<h4 className="font-medium mb-1">Install Link</h4>
-					<p className="text-base">
-						Use our provided install link or register a custom one. If you choose a custom link, users who add your app will be redirected
-						to your URL instead of the Add App flow in Mezon.
-					</p>
+					<h4 className="font-medium mb-1">{t('installation.installLink.title')}</h4>
+					<p className="text-base">{t('installation.installLink.description')}</p>
 				</div>
 				<select
 					name="link"
 					className="block w-full mt-1 dark:bg-black bg-bgLightTertiary rounded p-2 font-normal text-base tracking-wide outline-none"
 				>
-					<option>Mezon Provided Link</option>
+					<option>{t('installation.installLink.option')}</option>
 				</select>
 				<div className="relative">
 					<input
@@ -76,10 +72,11 @@ const Installation = () => {
 					/>
 					<button
 						onClick={handleCopyToClipboard}
-						className={`absolute right-0 bottom-0 ${idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
-							} text-white text-sm font-light px-3 py-1.5   rounded-lg mr-1 mb-1`}
+						className={`absolute right-0 bottom-0 ${
+							idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
+						} text-white text-sm font-light px-3 py-1.5   rounded-lg mr-1 mb-1`}
 					>
-						{idCopied ? 'Copied!' : 'Copy'}
+						{idCopied ? t('installation.buttons.copied') : t('installation.buttons.copy')}
 					</button>
 				</div>
 			</div>

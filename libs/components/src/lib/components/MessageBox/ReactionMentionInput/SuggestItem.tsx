@@ -2,7 +2,7 @@ import type { ChannelsEntity } from '@mezon/store';
 import { selectAllChannelsByUser, selectAllHashtagDm, selectChannelById, selectNumberMemberVoiceChannel, useAppSelector } from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
-import { createImgproxyUrl, getSrcEmoji } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId, getSrcEmoji } from '@mezon/utils';
 import type { HashtagDm } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { memo, useEffect, useMemo, useState } from 'react';
@@ -121,7 +121,10 @@ const SuggestItem = ({
 	}, []);
 
 	return (
-		<div className={`flex flex-row items-center h-[24px] w-full ${wrapSuggestItemStyle ?? 'justify-between'}`}>
+		<div
+			className={`flex flex-row items-center h-[24px] w-full ${wrapSuggestItemStyle ?? 'justify-between'}`}
+			data-e2e={generateE2eId('suggest_item')}
+		>
 			<div className="flex flex-row items-center gap-2 py-[3px] text-theme-primary text-theme-primary-hover">
 				{showAvatar && (
 					<div>
@@ -160,7 +163,10 @@ const SuggestItem = ({
 				)}
 				{checkVoiceStatus && <i className="text-[15px] font-thin text-colorDanger ">(busy)</i>}
 			</div>
-			<span className={`text-[10px] font-semibold text-theme-primary one-line ${subTextStyle}`}>
+			<span
+				className={`text-[10px] font-semibold text-theme-primary one-line ${subTextStyle}`}
+				data-e2e={generateE2eId('suggest_item.username')}
+			>
 				{getChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
 					<RenderChannelLabelForThread channel_id={getChannel?.parent_id as string} />
 				) : (

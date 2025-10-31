@@ -23,7 +23,8 @@
 		"sound": "Hiệu ứng âm thanh",
 		"createSound": "Tạo hiệu ứng âm thanh",
 		"transferOwnership": "Chuyển quyền sở hữu",
-		"manageUser": "Quản lý người dùng"
+		"manageUser": "Quản lý người dùng",
+		"enableCommunity": "Kích hoạt cộng đồng"
 	},
 	"menuChannelStack": {
 		"channelSetting": "Cài đặt kênh",

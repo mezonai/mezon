@@ -4,7 +4,10 @@ import {
 	emojiSuggestionActions,
 	referencesActions,
 	selectAddEmojiState,
-	selectCurrentChannel,
+	selectCurrentChannelClanId,
+	selectCurrentChannelId,
+	selectCurrentChannelParentId,
+	selectCurrentChannelPrivate,
 	selectMessageByMessageId,
 	selectModeResponsive,
 	selectPendingUnlockMap,
@@ -60,7 +63,10 @@ const searchEmojis = (emojis: IEmoji[], searchTerm: string) => {
 function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	const { buzzInputRequest, setBuzzInputRequest, toggleEmojiPanel, isFocusThreadBox, isFocusTopicBox, messageEmojiId, currenTopicId } = props;
 	const dispatch = useDispatch();
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannelClanId = useSelector(selectCurrentChannelClanId);
+	const currentChannelPrivate = useSelector(selectCurrentChannelPrivate);
+	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
 	const addEmojiState = useSelector(selectAddEmojiState);
 
 	const { categoryEmoji, categoriesEmoji, emojis, setAddEmojiActionChatbox, shiftPressedState, setSuggestionEmojiObjPicked, setShiftPressed } =
@@ -116,7 +122,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 		return categories;
 	}, [categoriesEmoji, categoryIcons]);
 
-	const channelID = props.isClanView ? currentChannel?.id : props.directId;
+	const channelID = props.isClanView ? currentChannelId : props.directId;
 	const currentThread = useAppSelector(selectThreadCurrentChannel);
 
 	const messageEmoji = useAppSelector((state) =>
@@ -142,9 +148,9 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 					count: 1,
 					message_sender_id: messageEmoji?.sender_id ?? '',
 					action_delete: false,
-					is_public: isPublicChannel(currentChannel),
-					clanId: currentChannel?.clan_id ?? '',
-					channelId: props.isFromTopicView ? currentChannel?.id || '' : (messageEmoji?.channel_id ?? ''),
+					is_public: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
+					clanId: currentChannelClanId ?? '',
+					channelId: props.isFromTopicView ? currentChannelId || '' : (messageEmoji?.channel_id ?? ''),
 					isFocusTopicBox: props.isFocusTopicBox,
 					channelIdOnMessage: messageEmoji?.channel_id
 				});
@@ -191,7 +197,6 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			reactionMessageDispatch,
 			messageEmoji?.sender_id,
 			messageEmoji?.channel_id,
-			currentChannel,
 			setSubPanelActive,
 			dispatch,
 			setAddEmojiActionChatbox,

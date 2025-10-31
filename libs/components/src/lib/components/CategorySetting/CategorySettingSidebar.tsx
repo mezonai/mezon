@@ -1,5 +1,5 @@
 import { useCategory } from '@mezon/core';
-import { selectCurrentChannel, selectWelcomeChannelByClanId } from '@mezon/store';
+import { selectWelcomeChannelByClanId } from '@mezon/store';
 import type { ICategoryChannel } from '@mezon/utils';
 import { generateE2eId } from '@mezon/utils';
 import { useMemo, useState } from 'react';
@@ -16,13 +16,19 @@ interface ICategorySettingSidebarProps {
 	handleMenu: (value: boolean) => void;
 	currentSetting: ItemObjProps;
 	category: ICategoryChannel;
+	displayCategoryName?: string;
 }
 
-const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({ onClickItem, handleMenu, currentSetting, category }) => {
+const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({
+	onClickItem,
+	handleMenu,
+	currentSetting,
+	category,
+	displayCategoryName
+}) => {
 	const { t } = useTranslation('clan');
 	const [showModal, setShowModal] = useState(false);
 	const { handleDeleteCategory } = useCategory();
-	const currenChannel = useSelector(selectCurrentChannel);
 	const handleClickButtonSidebar = (setting: ItemObjProps) => {
 		onClickItem(setting);
 	};
@@ -53,7 +59,9 @@ const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({ onClic
 	return (
 		<div className="flex flex-row flex-1 justify-end">
 			<div className="w-[220px] py-[60px] pl-5 pr-[6px]">
-				<p className="text-[#84ADFF] pl-[10px] pb-[6px] font-bold text-sm tracking-wider uppercase truncate">{category.category_name}</p>
+				<p className="text-[#84ADFF] pl-[10px] pb-[6px] font-bold text-sm tracking-wider uppercase truncate">
+					{displayCategoryName ?? category.category_name}
+				</p>
 				{categorySettingList.map((settingItem) => (
 					<SettingItem
 						key={settingItem.id}

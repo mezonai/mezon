@@ -24,18 +24,14 @@ const UserVoiceItem = React.memo(({ userVoice, isCategoryExpanded, index, totalM
 		if (index === 5) {
 			return (
 				<View
-					style={{
-						left: -size.s_4 * index,
-						paddingHorizontal: size.s_2,
-						minWidth: size.s_20,
-						height: size.s_20,
-						borderRadius: size.s_20,
-						backgroundColor: themeValue.primary,
-						borderWidth: 1,
-						borderColor: themeValue.text,
-						alignItems: 'center',
-						justifyContent: 'center'
-					}}
+					style={[
+						styles.collapsedCountBadge,
+						{
+							left: -size.s_4 * index,
+							backgroundColor: themeValue.primary,
+							borderColor: themeValue.text
+						}
+					]}
 				>
 					<Text style={styles.titleNumberMem}>+{totalMembers - 5}</Text>
 				</View>
@@ -43,7 +39,7 @@ const UserVoiceItem = React.memo(({ userVoice, isCategoryExpanded, index, totalM
 		}
 		if (index < 5) {
 			return (
-				<View style={{ left: -size.s_4 * index }}>
+				<View style={[styles.collapsedAvatar, { left: -size.s_4 * index }]}>
 					<MezonAvatar width={size.s_20} height={size.s_20} username={name || userVoice?.participant} avatarUrl={avatar} />
 				</View>
 			);

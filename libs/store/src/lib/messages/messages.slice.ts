@@ -32,7 +32,7 @@ import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCa
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions, selectLoadingStatus, selectShowScrollDownButton } from '../channels/channels.slice';
 import { selectUserClanProfileByClanID } from '../clanProfile/clanProfile.slice';
-import { clansActions, selectClanById, selectClansLoadingStatus } from '../clans/clans.slice';
+import { clansActions, selectClanExists, selectClanHasUnreadMessage, selectClansLoadingStatus } from '../clans/clans.slice';
 import { selectCurrentDM } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import type { MezonValueContext } from '../helpers';
@@ -194,7 +194,7 @@ export const fetchMessagesCached = async (
 ) => {
 	const state = getState();
 
-	let foundClan: boolean = clanId === '0' || !!selectClanById(clanId)(state);
+	let foundClan: boolean = clanId === '0' || selectClanExists(clanId)(state);
 	if (!foundClan) {
 		if (dispatch && clanId !== '0') {
 			const res = await dispatch(clansActions.fetchClans({ noCache: true })).unwrap();
@@ -401,11 +401,7 @@ export const fetchMessages = createAsyncThunk(
 				lastSentMessage = response.last_sent_message as ApiChannelMessageHeader;
 			}
 			const lastSentState = selectLatestMessageId(state, chlId);
-			const lastSeenState = selectLastSeenMessageStateByChannelId(state, chlId);
-			if (
-				!lastSentState ||
-				(lastSentMessage && lastSentMessage.id && (lastSentMessage?.timestamp_seconds || 0) >= (lastSeenState?.timestamp_seconds || 0))
-			) {
+			if (!lastSentState || (lastSentMessage && lastSentMessage.id && (lastSentMessage?.timestamp_seconds || 0))) {
 				thunkAPI.dispatch(
 					messagesActions.setLastMessage({
 						...lastSentMessage,
@@ -717,9 +713,9 @@ export const updateLastSeenMessage = createAsyncThunk(
 
 			if (clanId && clanId !== '0') {
 				const state = thunkAPI.getState() as RootState;
-				const clan = selectClanById(clanId)(state);
+				const hasUnread = selectClanHasUnreadMessage(clanId)(state);
 
-				if (clan?.has_unread_message) {
+				if (hasUnread) {
 					requestIdleCallback(() => {
 						thunkAPI.dispatch(clansActions.updateHasUnreadBasedOnChannels({ clanId }));
 					});
@@ -944,20 +940,14 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		try {
 			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
-			thunkAPI.dispatch(
-				channelsActions.setScrollPosition({
-					channelId,
-					messageId: undefined
-				})
-			);
-			await sendWithRetry(1);
-
-			if (!isViewingOlderMessages) {
+			const message = await sendWithRetry(1);
+			if (!isViewingOlderMessages && message) {
 				const timestamp = Date.now() / 1000;
 				thunkAPI.dispatch(
 					channelMetaActions.setChannelLastSeenTimestamp({
 						channelId,
-						timestamp
+						timestamp,
+						messageId: message.message_id
 					})
 				);
 			}
@@ -1960,7 +1950,7 @@ export const selectMessageByMessageId = createSelector(
 	}
 );
 
-export const selectLastSeenMessageStateByChannelId = createSelector(
+export const selectLastSentMessageStateByChannelId = createSelector(
 	[getMessagesState, (state, channelId: string) => channelId],
 	(state, channelId) => {
 		return state?.lastMessageByChannel?.[channelId] ?? null;

@@ -99,11 +99,12 @@ export const listChannelRenderSlice = createSlice({
 					listChannelRender.push(channel);
 				});
 			});
+
 			const favorCate: ICategoryChannel = {
 				channels: listChannelFavor,
 				id: FAVORITE_CATEGORY_ID,
 				category_id: FAVORITE_CATEGORY_ID,
-				category_name: 'Favorite Channel', // TODO: This should be i18n translated
+				category_name: 'Favorite Channel',
 				clan_id: clanId,
 				creator_id: '0',
 				category_order: 1,

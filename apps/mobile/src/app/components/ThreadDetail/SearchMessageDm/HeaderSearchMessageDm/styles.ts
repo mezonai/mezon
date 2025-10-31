@@ -1,4 +1,5 @@
-import { Attributes, size, verticalScale } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -16,5 +17,15 @@ export const style = (colors: Attributes) =>
 		input: {
 			color: colors.text,
 			flex: 1
+		},
+		headerContainer: {
+			paddingHorizontal: size.s_10,
+			paddingVertical: size.s_20,
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_20
+		},
+		iconMargin: {
+			marginRight: size.s_6
 		}
 	});

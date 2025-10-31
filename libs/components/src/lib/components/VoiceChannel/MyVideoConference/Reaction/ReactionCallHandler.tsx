@@ -127,29 +127,18 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ c
 			{displayedEmojis.map((item) => (
 				<div
 					key={item.id}
-					className="text-5xl flex flex-col gap-2 items-center"
+					className="text-5xl flex flex-col gap-2 items-center absolute h-[60px] origin-center will-change-[transform,opacity] backface-hidden contain-[layout_style_paint]"
 					style={{
-						position: 'absolute',
 						bottom: item.position?.bottom || '15%',
 						left: item.position?.left || '50%',
 						animation: `${item.position?.animationName || 'reactionFloatCurve1'} ${item.position?.duration || '3.5s'} linear forwards`,
-						animationDelay: item.position?.delay || '0ms',
-						height: '60px',
-						transformOrigin: 'center center',
-						willChange: 'transform, opacity',
-						backfaceVisibility: 'hidden',
-						contain: 'layout style paint'
+						animationDelay: item.position?.delay || '0ms'
 					}}
 				>
 					<img
 						src={getSrcEmoji(item.emojiId)}
 						alt={''}
-						className="w-10 h-10 object-contain"
-						style={{
-							filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.25))',
-							willChange: 'transform',
-							backfaceVisibility: 'hidden'
-						}}
+						className="w-10 h-10 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.25)] will-change-transform backface-hidden"
 					/>
 					{item.displayName && (
 						<div className="w-full rounded-full h-3 text-theme-primary-active bg-theme-setting-nav text-[10px] flex items-center justify-center px-2 py-1">

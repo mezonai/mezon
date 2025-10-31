@@ -82,7 +82,7 @@ const InternetStatusPopover: React.FC = () => {
 				</div>
 
 				<div className="flex-1 min-w-0 ">
-					<p className="text-sm font-medium" style={{ color: 'var(--text-theme-primary)' }}>
+					<p className="text-sm font-medium text-[var(--text-theme-primary)]">
 						{isOffline ? 'You are currently offline.' : 'Your internet connection was restored.'}
 					</p>
 				</div>

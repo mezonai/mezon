@@ -1,5 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { FriendsEntity } from '@mezon/store-mobile';
+import type { FriendsEntity } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { Pressable, Text, TouchableOpacity, View } from 'react-native';
@@ -31,7 +31,7 @@ export interface IFriendItem {
 export const FriendItem = React.memo(
 	({ friend, handleFriendAction, onSelectChange, isChecked, disabled = false, showAction = true, selectMode = false }: IFriendItem) => {
 		const { themeValue } = useTheme();
-		const styles = style(themeValue);
+		const styles = style(themeValue, isChecked, disabled);
 		const userStatus = { status: friend?.user?.online, isMobile: friend?.user?.is_mobile };
 
 		const isFriend = friend.state === 0;
@@ -125,12 +125,7 @@ export const FriendItem = React.memo(
 									onPress={(value) => onSelectChange(friend, value)}
 									fillColor={'#5865f2'}
 									iconStyle={{ borderRadius: 5 }}
-									innerIconStyle={{
-										borderWidth: 1.5,
-										borderColor: isChecked ? '#5865f2' : 'white',
-										borderRadius: 5,
-										opacity: disabled ? 0.4 : 1
-									}}
+									innerIconStyle={styles.innerIconStyle}
 									textStyle={{ fontFamily: 'JosefinSans-Regular' }}
 								/>
 							</View>

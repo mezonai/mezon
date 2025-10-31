@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, isTablet?: boolean) =>
@@ -209,11 +210,12 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 		avatarWrapper: {
 			borderRadius: size.s_50,
-			backgroundColor: colors.colorAvatarDefault,
 			height: size.s_40,
 			width: size.s_40
 		},
 		wrapperTextAvatar: {
+			backgroundColor: colors.colorAvatarDefault,
+			borderRadius: size.s_50,
 			width: size.s_40,
 			height: size.s_40,
 			justifyContent: 'center',
@@ -301,6 +303,9 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		desActivity: {
 			fontSize: size.s_10,
 			color: colors.textDisabled
+		},
+		activityTextWrapper: {
+			flexShrink: 1
 		},
 		activeDMGroupBackground: {
 			backgroundColor: colors.secondaryLight

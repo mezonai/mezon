@@ -1,7 +1,7 @@
 import { useClanOwner } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
 import { getSelectedRoleId, toggleIsShowFalse } from '@mezon/store';
-import { EVERYONE_ROLE_ID } from '@mezon/utils';
+import { EVERYONE_ROLE_ID, generateE2eId } from '@mezon/utils';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -68,6 +68,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 								handleButtonClick('Display');
 								dispatch(toggleIsShowFalse());
 							}}
+							data-e2e={generateE2eId('clan_page.settings.role.container.role_option.display')}
 						>
 							{t('roleManagement.display')}
 							<div
@@ -82,6 +83,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 							handleButtonClick('Permissions');
 							dispatch(toggleIsShowFalse());
 						}}
+						data-e2e={generateE2eId('clan_page.settings.role.container.role_option.permissions')}
 					>
 						{t('roleManagement.permissions')}
 						<div
@@ -97,6 +99,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 									handleButtonClick('Manage Members');
 									dispatch(toggleIsShowFalse());
 								}}
+								data-e2e={generateE2eId('clan_page.settings.role.container.role_option.manage_members')}
 							>
 								{t('roleManagement.manageMembers')} ({roleUsersCount > 0 ? roleUsersCount : 0})
 								<div

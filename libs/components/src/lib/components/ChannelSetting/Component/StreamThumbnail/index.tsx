@@ -1,12 +1,20 @@
 'use client';
-import { channelsActions, selectCurrentChannel, useAppDispatch } from '@mezon/store';
+import {
+	channelsActions,
+	selectChannelById,
+	selectCurrentChannelChannelId,
+	selectCurrentChannelClanId,
+	selectCurrentChannelId,
+	selectCurrentChannelLabel,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { Button, Icons } from '@mezon/ui';
 import { fileTypeImage } from '@mezon/utils';
 import type { ChangeEvent } from 'react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import { ELimitSize } from '../../../ModalValidateFile';
 import { ModalErrorTypeUpload, ModalOverData } from '../../../ModalValidateFile/ModalOverData';
 const MAX_FILE_SIZE_10MB = 10 * 1024 * 1024;
@@ -14,7 +22,11 @@ const MAX_FILE_SIZE_10MB = 10 * 1024 * 1024;
 const StreamThumbnailChannel = () => {
 	const { t } = useTranslation('streamThumbnail');
 	const dispatch = useAppDispatch();
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelId = useAppSelector(selectCurrentChannelId);
+	const channelId = useAppSelector(selectCurrentChannelChannelId);
+	const clanId = useAppSelector(selectCurrentChannelClanId);
+	const channelLabel = useAppSelector(selectCurrentChannelLabel);
+	const currentChannel = useAppSelector((state) => selectChannelById(state, currentChannelId || ''));
 	const { sessionRef, clientRef } = useMezon();
 
 	const [thumbnail, setThumbnail] = useState<string | null>(currentChannel?.channel_avatar || null);
@@ -85,7 +97,7 @@ const StreamThumbnailChannel = () => {
 	};
 
 	const handleUpload = async (file: File) => {
-		if (!currentChannel?.channel_id || !currentChannel?.clan_id) {
+		if (!channelId || !clanId) {
 			alert('Channel not found');
 			return;
 		}
@@ -97,9 +109,6 @@ const StreamThumbnailChannel = () => {
 			alert(t('errors.clientNotReady'));
 			return;
 		}
-
-		const channelId: string = currentChannel.channel_id;
-		const channelLabel = currentChannel.channel_label;
 
 		setIsUploading(true);
 		try {
@@ -137,10 +146,7 @@ const StreamThumbnailChannel = () => {
 	};
 
 	const handleConfirmRemove = async () => {
-		if (!currentChannel?.channel_id) return;
-
-		const channelId: string = currentChannel.channel_id;
-		const channelLabel = currentChannel.channel_label;
+		if (!channelId) return;
 
 		setIsUploading(true);
 		setShowRemoveModal(false);
@@ -177,7 +183,7 @@ const StreamThumbnailChannel = () => {
 						{thumbnail ? (
 							<div className="space-y-3">
 								<div className="relative group rounded-2xl overflow-hidden border border-slate-700/50 shadow-2xl bg-slate-800/50">
-									<div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+									<div className="relative w-full pb-[56.25%]">
 										<img
 											src={thumbnail || '/placeholder.svg'}
 											alt="Stream Thumbnail"
@@ -301,7 +307,7 @@ const StreamThumbnailChannel = () => {
 						<div className="p-6">
 							{previewImage && (
 								<div className="rounded-xl overflow-hidden border border-slate-700/50 mb-4 bg-slate-900/50">
-									<div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+									<div className="relative w-full pb-[56.25%]">
 										<img src={previewImage} alt="Preview" className="absolute top-0 left-0 w-full h-full object-cover" />
 									</div>
 								</div>

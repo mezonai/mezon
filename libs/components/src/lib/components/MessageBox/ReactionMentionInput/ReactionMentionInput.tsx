@@ -1002,16 +1002,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		<div className={`contain-layout relative bg-theme-surface rounded-lg ${props?.isThread && 'border-theme-primary'}`} ref={containerRef}>
 			<div className="relative">
 				<span
-					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary   pointer-events-none z-10 truncate transition-opacity duration-300 ${
+					className={`absolute left-2 top-1/2 transform -translate-y-1/2 text-theme-primary pointer-events-none z-10 truncate transition-opacity duration-300 ${
 						draftRequest?.valueTextInput ? 'hidden' : 'opacity-100'
-					} sm:opacity-100 max-sm:opacity-100`}
-					style={{
-						whiteSpace: 'nowrap',
-						overflow: 'hidden',
-						textOverflow: 'ellipsis',
-						maxWidth: 'calc(100% - 120px)',
-						paddingRight: '8px'
-					}}
+					} sm:opacity-100 max-sm:opacity-100 whitespace-nowrap overflow-hidden text-ellipsis max-w-[calc(100%-120px)] pr-2`}
 				>
 					{ephemeralTargetUserId ? t('ephemeralMessage', { username: ephemeralTargetUserDisplay }) : t('placeholder')}
 				</span>
@@ -1022,14 +1015,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					onChange={onChangeMentionInput}
 					onKeyDown={onKeyDown}
 					placeholder={ephemeralTargetUserId ? t('ephemeralMessage', { username: ephemeralTargetUserDisplay }) : t('placeholder')}
-					className={`mentions min-h-11 text-theme-message rounded-lg`}
-					style={{
-						padding: props.isThread && !threadCurrentChannel ? '10px' : '9px 120px 9px 9px',
-						border: 'none',
-						maxHeight: '350px',
-						overflow: 'auto',
-						borderRadius: '8px'
-					}}
+					className={`mentions min-h-11 text-theme-message rounded-lg border-none max-h-[350px] overflow-auto ${
+						props.isThread && !threadCurrentChannel ? 'p-2.5' : 'py-[9px] pr-[120px] pl-[9px]'
+					}`}
 					onSend={(formattedText: FormattedText) => {
 						handleSendWithFormattedText(formattedText, anonymousMode);
 					}}

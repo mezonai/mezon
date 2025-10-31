@@ -6,7 +6,8 @@ import {
 	createEditCanvas,
 	selectCanvasEntityById,
 	selectContent,
-	selectCurrentChannel,
+	selectCurrentChannelId,
+	selectCurrentChannelParentId,
 	selectCurrentClanId,
 	selectIdCanvas,
 	selectTheme,
@@ -33,9 +34,10 @@ const Canvas = () => {
 	const title = useSelector(selectTitle);
 	const content = useSelector(selectContent);
 	const idCanvas = useSelector(selectIdCanvas);
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
 	const currentClanId = useSelector(selectCurrentClanId);
-	const canvasById = useSelector((state) => selectCanvasEntityById(state, currentChannel?.id, currentChannel?.parent_id, idCanvas));
+	const canvasById = useSelector((state) => selectCanvasEntityById(state, currentChannelId, currentChannelParentId, idCanvas));
 
 	const [showLoading, setShowLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -112,14 +114,14 @@ const Canvas = () => {
 
 	const callCreateEditCanvas = useCallback(
 		async (isCreate: number) => {
-			if (currentChannel?.id && currentClanId) {
+			if (currentChannelId && currentClanId) {
 				const body = {
-					channel_id: currentChannel?.id,
+					channel_id: currentChannelId,
 					clan_id: currentClanId?.toString(),
-					content: content,
+					content,
 					...(idCanvas && { id: idCanvas }),
 					...(canvasById?.is_default && { is_default: true }),
-					title: title,
+					title,
 					status: isCreate
 				};
 				const response = await dispatch(createEditCanvas(body) as any);
@@ -128,7 +130,7 @@ const Canvas = () => {
 				}
 			}
 		},
-		[currentChannel?.id, currentClanId, content, idCanvas, canvasById?.is_default, title, dispatch]
+		[currentChannelId, currentClanId, content, idCanvas, canvasById?.is_default, title, dispatch]
 	);
 
 	const debouncedSave = useDebouncedCallback(() => {

@@ -32,10 +32,10 @@ const LicenseAgreement = () => {
 	return (
 		<Modal visible={isShowLicenseAgreement} transparent={true} supportedOrientations={['portrait', 'landscape']}>
 			<View style={styles.wrapper}>
-				<View style={[styles.sheetContainer, isTabletLandscape && { maxWidth: '40%' }]}>
+				<View style={[styles.sheetContainer, isTabletLandscape && styles.sheetContainerTablet]}>
 					<View style={styles.headerModal}>
 						<Text style={styles.headerText}>License Agreement</Text>
-						<View style={{ width: 16 }}></View>
+						<View style={styles.spacer}></View>
 					</View>
 					<ScrollView style={styles.content}>
 						<Text style={styles.header}>1. License Grant and Restrictions</Text>

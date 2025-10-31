@@ -34,7 +34,8 @@ import { ChannelStreamMode } from 'mezon-js';
 import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import type { MutableRefObject } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
-import { DeviceEventEmitter, Pressable, View } from 'react-native';
+import { DeviceEventEmitter, View } from 'react-native';
+import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
@@ -42,6 +43,7 @@ import { EMessageActionType } from '../../../enums';
 import type { IMessageActionNeedToResolve, IPayloadThreadSendMessage } from '../../../types';
 import { style } from '../ChatBoxBottomBar/style';
 import { RecordMessageSending } from './RecordMessageSending';
+import { styles as localStyles } from './styles';
 
 interface IChatMessageSendingProps {
 	isAvailableSending: boolean;
@@ -309,12 +311,7 @@ export const ChatMessageSending = memo(
 		};
 
 		return (
-			<View
-				style={{
-					alignItems: 'center',
-					justifyContent: 'center'
-				}}
-			>
+			<View style={localStyles.sendingContainer}>
 				{isAvailableSending || !!attachmentDataRef?.length ? (
 					<Pressable
 						android_ripple={{

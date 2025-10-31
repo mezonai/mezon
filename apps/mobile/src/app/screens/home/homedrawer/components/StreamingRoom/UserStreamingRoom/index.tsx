@@ -1,5 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { UsersStreamEntity } from '@mezon/store-mobile';
+import type { UsersStreamEntity } from '@mezon/store-mobile';
 import React from 'react';
 import { Text, View } from 'react-native';
 import UserItem from './UserItem';
@@ -10,11 +10,12 @@ function UserStreamingRoom({ streamChannelMember }: { streamChannelMember: Users
 	const styles = style(themeValue);
 	const remainingCount = streamChannelMember?.length - MAX_VISIBLE_USERS;
 	const visibleUsers = streamChannelMember?.slice(0, MAX_VISIBLE_USERS);
+	const isMoreThanMax = streamChannelMember?.length > MAX_VISIBLE_USERS;
 	return (
 		<View style={styles.gridContainer}>
 			{visibleUsers.map((user, index) => (
-				<View style={{ ...styles.userItem, marginRight: streamChannelMember?.length > MAX_VISIBLE_USERS ? -15 : 10 }}>
-					<UserItem user={user} key={index} />
+				<View style={[styles.userItem, styles.userItemDynamic(isMoreThanMax)]} key={index}>
+					<UserItem user={user} />
 				</View>
 			))}
 

@@ -15,6 +15,7 @@ import {
 	directActions,
 	directMetaActions,
 	e2eeActions,
+	EStateFriend,
 	gifsStickerEmojiActions,
 	selectAudioDialTone,
 	selectBlockedUsersForMessage,
@@ -24,13 +25,15 @@ import {
 	selectDirectById,
 	selectDmGroupCurrent,
 	selectDmGroupCurrentId,
+	selectFriendById,
 	selectHasKeyE2ee,
 	selectIsSearchMessage,
 	selectIsShowCreateThread,
 	selectIsShowMemberListDM,
 	selectIsUseProfileDM,
 	selectLastMessageViewportByChannelId,
-	selectLastSeenDM,
+	selectLastSeenMessageIdDM,
+	selectLastSentMessageStateByChannelId,
 	selectPositionEmojiButtonSmile,
 	selectReactionTopState,
 	selectSearchMessagesLoadingStatus,
@@ -51,23 +54,35 @@ import { ChannelTyping } from '../../channel/ChannelTyping';
 const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 	const dispatch = useAppDispatch();
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
-	const lastMessage = useAppSelector((state) => selectLastMessageViewportByChannelId(state, channelId));
-	const lastSeenTimeStamp = useAppSelector((state) => selectLastSeenDM(state, channelId));
+	const lastMessageViewport = useAppSelector((state) => selectLastMessageViewportByChannelId(state, channelId));
+	const lastMessageChannel = useAppSelector((state) => selectLastSentMessageStateByChannelId(state, channelId));
+	const lastSeenMessageId = useAppSelector((state) => selectLastSeenMessageIdDM(state, channelId));
 	const { markAsReadSeen } = useSeenMessagePool();
 
 	const isMounted = useRef(false);
 	const isWindowFocused = !isBackgroundModeActive();
 
 	const markMessageAsRead = useCallback(() => {
-		if (!lastMessage) return;
+		if (!lastMessageViewport || !lastMessageChannel) return;
 
-		if (lastMessage?.create_time_seconds && lastSeenTimeStamp && lastMessage?.create_time_seconds >= lastSeenTimeStamp - 2) {
-			const mode =
-				currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
-
-			markAsReadSeen(lastMessage, mode, 0);
+		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
+		if (lastSeenMessageId && lastMessageViewport?.id) {
+			try {
+				const distance = Math.round(Number((BigInt(lastMessageViewport.id) >> BigInt(22)) - (BigInt(lastSeenMessageId) >> BigInt(22))));
+				if (distance >= 0) {
+					markAsReadSeen(lastMessageViewport, mode, 0);
+					return;
+				}
+			} catch (error) {
+				//
+			}
 		}
-	}, [lastMessage, markAsReadSeen, currentDmGroup, lastSeenTimeStamp]);
+
+		const isLastMessage = lastMessageViewport.id === lastMessageChannel.id;
+		if (isLastMessage) {
+			markAsReadSeen(lastMessageViewport, mode, 0);
+		}
+	}, [lastMessageViewport, lastMessageChannel, lastSeenMessageId, markAsReadSeen, currentDmGroup]);
 
 	const updateChannelSeenState = useCallback(
 		(channelId: string) => {
@@ -81,17 +96,17 @@ const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 	}, [dispatch, channelId]);
 
 	useEffect(() => {
-		if (lastMessage && isWindowFocused) {
-			dispatch(directMetaActions.updateLastSeenTime(lastMessage));
+		if (lastMessageViewport && isWindowFocused) {
+			dispatch(directMetaActions.updateLastSeenTime(lastMessageViewport));
 			markMessageAsRead();
 		}
-	}, [lastMessage, isWindowFocused, markMessageAsRead, dispatch, channelId]);
+	}, [lastMessageViewport, isWindowFocused, markMessageAsRead, dispatch, channelId]);
 
 	useEffect(() => {
-		if (isMounted.current || !lastMessage) return;
+		if (isMounted.current || !lastMessageViewport) return;
 		isMounted.current = true;
 		updateChannelSeenState(channelId);
-	}, [channelId, lastMessage, updateChannelSeenState]);
+	}, [channelId, lastMessageViewport, updateChannelSeenState]);
 
 	useBackgroundMode(undefined, markMessageAsRead, isWindowFocused);
 
@@ -177,29 +192,7 @@ const DirectMessage = () => {
 		: 0;
 
 	const isDmChannel = useMemo(() => currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM, [currentDmGroup?.type]);
-
-	const isBlocked = useMemo(() => {
-		if (
-			currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM &&
-			blockListUser &&
-			blockListUser.length > 0 &&
-			currentDmGroup?.user_ids &&
-			currentDmGroup.user_ids.length > 0 &&
-			userId
-		) {
-			const otherUserId = currentDmGroup.user_ids[0];
-
-			return blockListUser.some((blockedRelation) => {
-				if (!blockedRelation?.user?.id || !blockedRelation?.source_id) return false;
-
-				const currentUserBlockedOther = blockedRelation.source_id === userId;
-				const otherUserBlockedCurrent = blockedRelation.source_id === otherUserId && blockedRelation.user.id === userId;
-
-				return currentUserBlockedOther || otherUserBlockedCurrent;
-			});
-		}
-		return false;
-	}, [currentDmGroup?.type, currentDmGroup?.user_ids, blockListUser, userId]);
+	const isBlocked = useAppSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''))?.state === EStateFriend.BLOCK;
 
 	const isDmWithoutParticipants = useMemo(() => {
 		return currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (!currentDmGroup.user_ids || currentDmGroup.user_ids.length === 0);
@@ -306,8 +299,7 @@ const DirectMessage = () => {
 						<div className="flex-shrink-0 flex flex-col bg-theme-chat  h-auto relative">
 							{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (isDmWithoutParticipants || isBlocked) ? (
 								<div
-									style={{ height: 44 }}
-									className="opacity-80 bg-theme-input  ml-4 mb-4 py-2 pl-2 w-widthInputViewChannelPermission text-theme-primary rounded one-line"
+									className="h-11 opacity-80 bg-theme-input  ml-4 mb-4 py-2 pl-2 w-widthInputViewChannelPermission text-theme-primary rounded one-line"
 									data-e2e={generateE2eId('chat.message_box.input.no_permission')}
 								>
 									You do not have permission to send message

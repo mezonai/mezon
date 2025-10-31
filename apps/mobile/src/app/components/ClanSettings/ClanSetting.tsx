@@ -1,15 +1,17 @@
 import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonMenu from '../../componentUI/MezonMenu';
 import { IconCDN } from '../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import InviteToChannel from '../../screens/home/homedrawer/components/InviteToChannel';
 import StatusBarHeight from '../StatusBarHeight/StatusBarHeight';
 import { LogoClanSelector } from './LogoClanSelector';
@@ -83,6 +85,14 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			},
 			expandable: true,
 			icon: <MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} />
+		},
+		{
+			title: t('menu.settings.enableCommunity'),
+			onPress: async () => {
+				navigation.navigate(APP_SCREEN.MENU_CLAN.ENABLE_COMMUNITY);
+			},
+			expandable: true,
+			icon: <MezonIconCDN icon={IconCDN.communityIcon} color={themeValue.text} />
 		}
 	];
 

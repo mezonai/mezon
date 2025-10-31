@@ -36,25 +36,13 @@ export const RenderDocumentsChat = React.memo(({ document, onLongPress, onPressI
 		<TouchableOpacity activeOpacity={0.8} onPress={() => Linking.openURL(document.url)} onLongPress={() => onLongPress()} disabled={isUploading}>
 			<View style={styles.fileViewer}>
 				<MezonIconCDN icon={IconCDN.fileIcon} width={verticalScale(30)} height={verticalScale(30)} color={themeValue.bgViolet} />
-				<View style={{ maxWidth: '75%' }}>
+				<View style={styles.fileNameContainer}>
 					<Text style={styles.fileName} numberOfLines={2}>
 						{document.filename}
 					</Text>
 				</View>
 				{isUploading && (
-					<View
-						style={{
-							backgroundColor: 'rgba(0,0,0,0.5)',
-							position: 'absolute',
-							top: 0,
-							left: 0,
-							right: 0,
-							bottom: 0,
-							alignItems: 'flex-end',
-							justifyContent: 'center',
-							paddingRight: 10
-						}}
-					>
+					<View style={styles.uploadingOverlay}>
 						<ActivityIndicator />
 					</View>
 				)}

@@ -1,7 +1,11 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
+		wrapper: {
+			flexDirection: 'row'
+		},
 		container: {
 			flexDirection: 'row',
 			alignItems: 'center',

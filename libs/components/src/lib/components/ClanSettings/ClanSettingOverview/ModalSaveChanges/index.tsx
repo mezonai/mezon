@@ -1,4 +1,5 @@
 import { ButtonLoading } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 
 type ModalSaveChangesProps = {
@@ -20,7 +21,7 @@ const ModalSaveChanges = ({ onSave, onReset, isLoading }: ModalSaveChangesProps)
 			<div className="flex flex-row justify-between items-center">
 				<h3>{t('modalSaveChanges.title')}</h3>
 				<div className="flex flex-row justify-end gap-[20px]">
-					<button onClick={onReset} className="rounded px-4 py-1.5 hover:underline">
+					<button onClick={onReset} className="rounded px-4 py-1.5 hover:underline" data-e2e={generateE2eId('button.base')}>
 						{t('modalSaveChanges.reset')}
 					</button>
 					<ButtonLoading

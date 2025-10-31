@@ -92,7 +92,10 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 			<div className="w-170px flex flex-col">
 				<div className="flex justify-start max-w-[170px]">
 					{renderIcon()} &nbsp;
-					<p className="text-[#84ADFF] font-bold text-sm tracking-wider max-w-[160px] overflow-x-hidden text-ellipsis uppercase one-line">
+					<p
+						className="text-[#84ADFF] font-bold text-sm tracking-wider max-w-[160px] overflow-x-hidden text-ellipsis uppercase one-line"
+						data-e2e={generateE2eId('channel_setting_page.side_bar.channel_label')}
+					>
 						{displayChannelLabel ?? currentChannel?.channel_label ?? 'Unknown Channel'}
 					</p>
 				</div>

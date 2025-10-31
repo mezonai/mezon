@@ -115,7 +115,8 @@
 			"enableAndSave": "Enable & Save",
 			"saving": "Saving...",
 			"save": "Save Changes",
-			"disable": "Disable Community"
+			"disable": "Disable Community",
+			"reset": "Reset"
 		},
 		"messages": {
 			"aboutUpdated": "About updated!",
@@ -130,7 +131,8 @@
 			"communityDisabled": "Community disabled.",
 			"disableFailed": "Disable failed!",
 			"bannerRemoved": "Banner removed!",
-			"fillAllRequiredFields": "Please fill all required fields: Banner, About, Description, Vanity URL!"
+			"fillAllRequiredFields": "Please fill all required fields: Banner, About, Description, Vanity URL!",
+			"bannerUpdateFailed": "Update banner failed!"
 		}
 	},
 	"clanGuideSetting": {

@@ -4,7 +4,8 @@ import {
 	eventManagementActions,
 	selectChannelById,
 	selectChooseEvent,
-	selectCurrentClan,
+	selectCurrentClanLogo,
+	selectCurrentClanName,
 	selectMemberClanByUserId,
 	selectMembersByUserIds,
 	useAppDispatch,
@@ -114,7 +115,8 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 	const { t } = useTranslation('eventCreator');
 	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id ?? '')) || {};
 
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanLogo = useSelector(selectCurrentClanLogo);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
 	const time = useMemo(() => timeFomat(event?.start_time || ''), [event?.start_time]);
 
@@ -155,8 +157,8 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				{event?.title}
 			</p>
 			<div className="flex items-center gap-x-3">
-				<img src={currentClan?.logo} alt={currentClan?.clan_name} className="size-5 rounded-full" />
-				<p className="hover:underline">{currentClan?.clan_name}</p>
+				<img src={currentClanLogo} alt={currentClanName} className="size-5 rounded-full" />
+				<p className="hover:underline">{currentClanName}</p>
 			</div>
 			<div
 				className="flex items-center gap-x-3 "

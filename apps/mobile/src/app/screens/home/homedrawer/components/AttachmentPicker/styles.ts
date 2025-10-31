@@ -1,4 +1,5 @@
-import { Attributes, Metrics, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -9,6 +10,7 @@ export const style = (colors: Attributes) =>
 			minHeight: Metrics.screenHeight * 0.8
 		},
 		wrapperHeader: {
+			paddingHorizontal: size.s_10,
 			flexDirection: 'row',
 			justifyContent: 'space-between',
 			gap: size.s_10,

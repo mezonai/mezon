@@ -342,7 +342,7 @@ const SettingComunity = ({
 						<p className="text-blue-100">{t('communitySettings.enableSubtitle')}</p>
 					</div>
 
-					<div className="p-6 space-y-6 bg-theme-setting-primary overflow-y-auto thread-scroll" style={{ maxHeight: '75vh' }}>
+					<div className="p-6 space-y-6 bg-theme-setting-primary overflow-y-auto thread-scroll max-h-[75vh]">
 						<div className="space-y-4">
 							<label className="flex items-center gap-2 text-lg font-semibold text-theme-primary">
 								<svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -580,7 +580,7 @@ const SettingComunity = ({
 					</div>
 				</div>
 
-				<div className="p-6 space-y-6 bg-theme-setting-nav overflow-y-auto thread-scroll" style={{ maxHeight: '75vh' }}>
+				<div className="p-6 space-y-6 bg-theme-setting-nav overflow-y-auto thread-scroll max-h-[75vh]">
 					<div className="space-y-4">
 						<label className="flex items-center gap-2 text-lg font-semibold text-theme-primary-active">
 							<svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

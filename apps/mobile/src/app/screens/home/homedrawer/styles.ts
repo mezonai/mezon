@@ -976,5 +976,39 @@ export const style = (colors: Attributes) =>
 		},
 		textAlignCenter: {
 			textAlign: 'center'
+		},
+		spacerHeight8: {
+			height: size.s_8
+		},
+		columnFlexDirection: {
+			flexDirection: 'column'
+		},
+		systemMessageContainer: {
+			marginVertical: size.s_10,
+			paddingLeft: 0
+		},
+		pressedMessageIOS: (secondaryWeight: string) => ({
+			backgroundColor: secondaryWeight,
+			opacity: 0.8
+		}),
+		contentDisplay: {
+			display: 'flex'
+		},
+		opacityErrorRetry: {
+			opacity: 0.6
+		},
+		opacityNormal: {
+			opacity: 1
+		},
+		channelAppHotbarContainer: {
+			flexDirection: 'row',
+			justifyContent: 'space-between',
+			paddingVertical: size.s_6,
+			paddingHorizontal: size.s_10,
+			gap: size.s_10,
+			backgroundColor: 'transparent'
+		},
+		channelMessagesWrapperContainer: {
+			flex: 1
 		}
 	});

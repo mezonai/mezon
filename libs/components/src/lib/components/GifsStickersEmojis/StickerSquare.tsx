@@ -4,7 +4,7 @@ import {
 	emojiRecentActions,
 	referencesActions,
 	selectAllStickerSuggestion,
-	selectCurrentClan,
+	selectCurrentClanName,
 	selectDataReferences,
 	selectPendingUnlockMap,
 	useAppDispatch,
@@ -12,8 +12,8 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { FOR_SALE_CATE, ITEM_TYPE, SubPanelName, blankReferenceObj } from '@mezon/utils';
-import { ClanSticker } from 'mezon-js';
-import { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ClanSticker } from 'mezon-js';
+import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import ModalBuyItem from './ModalBuyItem';
@@ -252,7 +252,7 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 		categoryName === FOR_SALE_CATE ? sticker.forSale : sticker.type === categoryName && !sticker.forSale
 	);
 	const [isShowStickerList, setIsShowStickerList] = useState(categoryName === FOR_SALE_CATE ? false : true);
-	const currentClan = useAppSelector(selectCurrentClan);
+	const currentClanName = useAppSelector(selectCurrentClanName);
 
 	const handleToggleButton = () => {
 		setIsShowStickerList(!isShowStickerList);
@@ -275,7 +275,7 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 				)}
 
 				<p className={'ml-2 uppercase text-left truncate text-xs font-semibold'}>
-					{categoryName !== 'custom' ? categoryName : currentClan?.clan_name}
+					{categoryName !== 'custom' ? categoryName : currentClanName}
 				</p>
 				<span className={`${isShowStickerList ? ' rotate-90' : ''}`}>
 					<Icons.ArrowRight defaultSize="w-4 h-4" />

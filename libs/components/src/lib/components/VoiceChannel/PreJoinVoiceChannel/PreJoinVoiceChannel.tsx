@@ -1,19 +1,27 @@
-import { ChannelsEntity, selectStatusMenu, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store';
+import { selectStatusMenu, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { VoiceChannelUsers } from './VoiceChannelUsers/VoiceChannelUsers';
 
 interface PreJoinVoiceChannelProps {
-	channel?: ChannelsEntity;
+	channel_label?: string;
+	channel_id?: string;
 	roomName?: string;
 	loading: boolean;
 	handleJoinRoom: () => void;
 	isCurrentChannel?: boolean;
 }
 
-export const PreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({ channel, roomName, loading, handleJoinRoom, isCurrentChannel }) => {
+export const PreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
+	channel_label,
+	channel_id,
+	roomName,
+	loading,
+	handleJoinRoom,
+	isCurrentChannel
+}) => {
 	const { t } = useTranslation('common');
-	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel?.channel_id as string));
+	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel_id as string));
 	const statusMenu = useAppSelector(selectStatusMenu);
 
 	return (
@@ -27,9 +35,7 @@ export const PreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({ channe
 					{voiceChannelMembers.length > 0 && <VoiceChannelUsers memberJoin={voiceChannelMembers} memberMax={3}></VoiceChannelUsers>}
 				</div>
 				<div className="max-w-[350px] text-center text-3xl font-bold text-gray-800 dark:text-white">
-					{channel?.channel_label && channel?.channel_label.length > 20
-						? `${channel?.channel_label.substring(0, 20)}...`
-						: channel?.channel_label}
+					{channel_label && channel_label.length > 20 ? `${channel_label.substring(0, 20)}...` : channel_label}
 				</div>
 				{voiceChannelMembers.length > 0 ? (
 					<div className="text-gray-800 dark:text-white">{t('everyoneWaitingInside')}</div>

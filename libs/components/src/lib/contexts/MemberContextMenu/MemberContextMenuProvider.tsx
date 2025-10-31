@@ -4,8 +4,11 @@ import {
 	EStateFriend,
 	channelUsersActions,
 	selectAllAccount,
-	selectCurrentChannel,
-	selectCurrentClan,
+	selectCurrentChannelCreatorId,
+	selectCurrentChannelId,
+	selectCurrentChannelType,
+	selectCurrentClanCreatorId,
+	selectCurrentClanId,
 	selectFriendStatus,
 	selectTheme,
 	useAppDispatch,
@@ -30,9 +33,13 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 	const { t } = useTranslation('contextMenu');
 	const [currentUser, setCurrentUser] = useState<ChannelMembersEntity | null>(null);
 	const userProfile = useSelector(selectAllAccount);
-	const currentClan = useAppSelector(selectCurrentClan);
-	const currentChannel = useAppSelector(selectCurrentChannel);
-	const currentChannelId = currentChannel?.id;
+	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
+	const currentClanId = useAppSelector(selectCurrentClanId);
+
+	const currentChannelId = useAppSelector(selectCurrentChannelId);
+	const currentChannelType = useAppSelector(selectCurrentChannelType);
+	const currentChannelCreatorId = useAppSelector(selectCurrentChannelCreatorId);
+
 	const [hasClanOwnerPermission, hasAdminPermission] = usePermissionChecker([EPermission.clanOwner, EPermission.administrator]);
 	const dispatch = useAppDispatch();
 	const { addFriend, deleteFriend } = useFriends();
@@ -56,11 +63,11 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 		[show]
 	);
 
-	const isThread = currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD;
+	const isThread = currentChannelType === ChannelType.CHANNEL_TYPE_THREAD;
 
-	const isCreator = userProfile?.user?.id === currentChannel?.creator_id;
+	const isCreator = userProfile?.user?.id === currentChannelCreatorId;
 
-	const memberIsClanOwner = currentUser?.user?.id === currentClan?.creator_id;
+	const memberIsClanOwner = currentUser?.user?.id === currentClanCreatorId;
 
 	const isSelf = userProfile?.user?.id === currentUser?.user?.id;
 
@@ -129,7 +136,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 						channelId: currentChannelId,
 						userId,
 						channelType: ChannelType.CHANNEL_TYPE_THREAD,
-						clanId: currentClan?.clan_id
+						clanId: currentClanId as string
 					})
 				);
 			} catch (error) {
@@ -142,7 +149,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 				});
 			}
 		},
-		[dispatch, currentClan?.clan_id, currentChannelId, isThread]
+		[dispatch, currentClanId, currentChannelId, isThread]
 	);
 
 	const createDefaultHandlers = (user?: ChannelMembersEntity): MemberContextMenuHandlers => {
@@ -170,7 +177,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 			},
 			handleAddFriend: () => {
 				if (user?.user?.username && user?.user?.id) {
-					addFriend({ usernames: [user.user.username], ids: [] });
+					addFriend({ ids: [user.user.id] });
 				}
 			},
 			handleRemoveFriend: () => {

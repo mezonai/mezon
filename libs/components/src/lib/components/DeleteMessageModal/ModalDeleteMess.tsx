@@ -8,8 +8,9 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { IMessageWithUser, TypeMessage, generateE2eId } from '@mezon/utils';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { IMessageWithUser } from '@mezon/utils';
+import { TypeMessage, generateE2eId } from '@mezon/utils';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';

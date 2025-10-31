@@ -3,7 +3,7 @@ import type { SetDefaultNotificationPayload } from '@mezon/store';
 import {
 	categoriesActions,
 	defaultNotificationCategoryActions,
-	selectCurrentClan,
+	selectCurrentClanId,
 	selectDefaultNotificationCategory,
 	useAppDispatch,
 	useAppSelector
@@ -57,7 +57,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 	const [canManageCategory] = usePermissionChecker([EPermission.manageClan]);
 	const dispatch = useAppDispatch();
 	const defaultCategoryNotificationSetting = useAppSelector((state) => selectDefaultNotificationCategory(state, category?.id as string));
-	const currentClan = useAppSelector(selectCurrentClan);
+	const currentClanId = useAppSelector(selectCurrentClanId);
 	const [muteUntil, setMuteUntil] = useState('');
 
 	const handleDeleteCategory = () => {
@@ -75,7 +75,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 		const payload: SetDefaultNotificationPayload = {
 			category_id: category?.id,
 			notification_type: notificationType,
-			clan_id: currentClan?.clan_id || ''
+			clan_id: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setDefaultNotificationCategory(payload));
 		handClosePannel();
@@ -90,14 +90,14 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 				category_id: category?.id,
 				notification_type: defaultCategoryNotificationSetting?.notification_setting_type,
 				time_mute: muteTimeISO,
-				clan_id: currentClan?.clan_id || ''
+				clan_id: currentClanId || ''
 			};
 			dispatch(defaultNotificationCategoryActions.setDefaultNotificationCategory(payload));
 		} else {
 			const payload: SetDefaultNotificationPayload = {
 				category_id: category?.id,
 				notification_type: defaultCategoryNotificationSetting?.notification_setting_type,
-				clan_id: currentClan?.clan_id || '',
+				clan_id: currentClanId || '',
 				active: 0
 			};
 			dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
@@ -108,7 +108,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 		const payload: SetDefaultNotificationPayload = {
 			category_id: category?.id,
 			notification_type: defaultCategoryNotificationSetting?.notification_setting_type,
-			clan_id: currentClan?.clan_id || '',
+			clan_id: currentClanId || '',
 			active
 		};
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
@@ -128,7 +128,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 					const payload: SetDefaultNotificationPayload = {
 						category_id: category?.id,
 						notification_type: defaultCategoryNotificationSetting?.notification_setting_type ?? NotificationType.ALL_MESSAGE,
-						clan_id: currentClan?.clan_id || '',
+						clan_id: currentClanId || '',
 						active: 1
 					};
 					dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));

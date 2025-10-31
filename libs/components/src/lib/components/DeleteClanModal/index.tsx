@@ -1,4 +1,4 @@
-import { selectCurrentClan } from '@mezon/store';
+import { selectCurrentClanName } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,15 +13,15 @@ interface DeleteClanModalProps {
 
 const DeleteClanModal: React.FC<DeleteClanModalProps> = ({ onClose, title, buttonLabel, onClick }) => {
 	const { t } = useTranslation('deleteClan');
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const [inputValue, setInputValue] = useState('');
 	const [inputValueIsMatchClanName, setInputValueIsMatchClanName] = useState(false);
 
 	const handleOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setInputValue(e.target.value);
-		if (e.target.value === currentClan?.clan_name) {
+		if (e.target.value === currentClanName) {
 			setInputValueIsMatchClanName(true);
-		} else if ((currentClan?.clan_name || '').length < e.target.value.length && e.target.value !== currentClan?.clan_name) {
+		} else if ((currentClanName || '').length < e.target.value.length && e.target.value !== currentClanName) {
 			setInputValueIsMatchClanName(false);
 		}
 	};
@@ -42,9 +42,7 @@ const DeleteClanModal: React.FC<DeleteClanModalProps> = ({ onClose, title, butto
 					<div className="text-xl font-semibold text-theme-primary-active" data-e2e="permission-denied">
 						{title}
 					</div>
-					<div className="bg-[#f0b132] text-theme-message rounded-sm p-[10px]">
-						{t('confirmMessage')}
-					</div>
+					<div className="bg-[#f0b132] text-theme-message rounded-sm p-[10px]">{t('confirmMessage')}</div>
 					<div className="mb-[15px]">
 						<div className=" text-base">{t('enterClanName')}</div>
 						<input
@@ -54,11 +52,7 @@ const DeleteClanModal: React.FC<DeleteClanModalProps> = ({ onClose, title, butto
 							onChange={handleOnchange}
 							data-e2e={generateE2eId('clan_page.settings.modal.delete_clan.input')}
 						/>
-						{!inputValueIsMatchClanName ? (
-							<div className="text-[#fa777c] text-xs font-semibold">{t('incorrectName')}</div>
-						) : (
-							''
-						)}
+						{!inputValueIsMatchClanName ? <div className="text-[#fa777c] text-xs font-semibold">{t('incorrectName')}</div> : ''}
 					</div>
 				</div>
 				<div className="bottom-block flex justify-end p-[16px]  items-center gap-[20px] font-semibold rounded-[5px]">

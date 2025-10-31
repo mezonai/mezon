@@ -23,7 +23,8 @@
 		"sound": "Sound Effect",
 		"createSound": "Create Sound Effect",
 		"transferOwnership": "Transfer Ownership",
-		"manageUser": "Manage User"
+		"manageUser": "Manage User",
+		"enableCommunity": "Enable Community"
 	},
 	"menuChannelStack": {
 		"channelSetting": "Channel Settings",

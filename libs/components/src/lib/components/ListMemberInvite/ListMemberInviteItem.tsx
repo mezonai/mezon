@@ -34,8 +34,9 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 		const store = getStore();
 		const getDirect = selectDirectById(store.getState(), directParamId);
 		setIsInviteSent(true);
-		if (userId) {
+		if (userId && !directParamId) {
 			directMessageWithUser(userId);
+			return;
 		}
 		if (directParamId && getDirect) {
 			let channelMode = 0;
@@ -75,7 +76,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 			avatar={dmGroup.type === ChannelType.CHANNEL_TYPE_GROUP ? dmGroup.topic || 'assets/images/avatar-group.png' : dmGroup.avatars?.at(0)}
 			label={dmGroup.channel_label}
 			isInviteSent={isInviteSent}
-			onHandle={() => handleButtonClick(dmGroup.channel_id || '', dmGroup.type || 0)}
+			onHandle={() => handleButtonClick(dmGroup.channel_id || '', dmGroup.type || 0, dmGroup.user_ids?.at(0))}
 			username={dmGroup.usernames?.toString()}
 		/>
 	) : null;
@@ -108,9 +109,7 @@ const ItemInviteDM = (props: ItemInviteDMProps) => {
 				srcImgProxy={createImgproxyUrl(avatar ?? '')}
 				src={avatar}
 			/>
-			<p style={{ marginRight: 'auto' }} className="px-[10px] flex-1 overflow-hidden text truncate text-theme-primary-active">
-				{label}
-			</p>
+			<p className="mr-auto px-[10px] flex-1 overflow-hidden text truncate text-theme-primary-active">{label}</p>
 			<button
 				data-e2e={generateE2eId('clan_page.modal.invite_people.user_item.button.invite')}
 				onClick={onHandle}
@@ -148,7 +147,7 @@ const ItemInviteUser = (props: ItemInviteUserProps) => {
 				srcImgProxy={createImgproxyUrl(avatar ?? '')}
 				src={avatar}
 			/>
-			<p style={{ marginRight: 'auto' }} className="pl-[10px] max-w-[300px] truncate">
+			<p className="mr-auto pl-[10px] max-w-[300px] truncate">
 				{displayName} <span className="text-xs text-gray-500">{username}</span>
 			</p>
 

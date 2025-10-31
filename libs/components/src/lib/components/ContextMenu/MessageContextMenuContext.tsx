@@ -7,9 +7,13 @@ import {
 	pinMessageActions,
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
-	selectCurrentChannel,
+	selectCurrentChannelChannelId,
+	selectCurrentChannelId,
+	selectCurrentChannelLabel,
+	selectCurrentChannelPrivate,
 	selectCurrentClanId,
 	selectCurrentTopicId,
+	selectDmGroupCurrentId,
 	selectMessageByMessageId,
 	selectThreadCurrentChannel,
 	useAppDispatch
@@ -92,16 +96,17 @@ export const MessageContextMenuContext = createContext<MessageContextMenuContext
 
 const getMessage = (appState: RootState, isTopic: boolean, messageId: string) => {
 	const isClanView = selectClanView(appState);
-	const { currentChannel, currentDm } = getCurrentChannelAndDm(appState);
 	const isFocusThreadBox = selectClickedOnThreadBoxStatus(appState);
 	const currentThread = selectThreadCurrentChannel(appState);
+	const currentChannelId = selectCurrentChannelId(appState);
+	const currentDmId = selectDmGroupCurrentId(appState);
 
-	const channelId = isFocusThreadBox ? currentThread?.channel_id : currentChannel?.id;
+	const channelId = isFocusThreadBox ? currentThread?.channel_id : currentChannelId;
 
 	const currentTopicId = selectCurrentTopicId(appState);
 	const message = selectMessageByMessageId(
 		appState,
-		isTopic ? currentTopicId : isFocusThreadBox ? channelId : isClanView ? currentChannel?.id : currentDm?.id,
+		isTopic ? currentTopicId : isFocusThreadBox ? channelId : isClanView ? currentChannelId : currentDmId,
 		messageId
 	);
 
@@ -133,7 +138,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 		const appState = store.getState() as RootState;
 		const message = getMessage(appState, isTopic, messageIdRef.current);
 		const mode = getActiveMode();
-		const currentChannel = selectCurrentChannel(appState);
+		const currentChannelLabel = selectCurrentChannelLabel(appState);
 
 		return (
 			<ModalAddPinMess
@@ -141,7 +146,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 				closeModal={closePinMessageModal}
 				handlePinMessage={handlePinMessage}
 				mode={mode || 0}
-				channelLabel={currentChannel?.channel_label || ''}
+				channelLabel={currentChannelLabel || ''}
 			/>
 		);
 	}, [messageIdRef.current]);
@@ -151,7 +156,9 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 		const appState = store.getState() as RootState;
 		const currentClanId = selectCurrentClanId(appState);
 		const message = getMessage(appState, isTopic, messageIdRef.current);
-		const { currentChannel, currentDm } = getCurrentChannelAndDm(appState);
+		const { currentDm } = getCurrentChannelAndDm(appState);
+		const currentChannelChannelId = selectCurrentChannelChannelId(appState);
+		const currentChannelPrivate = selectCurrentChannelPrivate(appState);
 		const mode = getActiveMode();
 
 		dispatch(
@@ -170,14 +177,10 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			channelId:
 				mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD
 					? currentDm?.id || ''
-					: (currentChannel?.channel_id ?? ''),
+					: (currentChannelChannelId ?? ''),
 			messageId: message?.id,
 			isPublic:
-				mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD
-					? false
-					: currentChannel
-						? !currentChannel.channel_private
-						: false,
+				mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD ? false : !currentChannelPrivate,
 			mode: mode as number,
 			senderId: message.sender_id,
 			senderUsername: message.display_name || message.username || message.user?.name || message.user?.name || '',

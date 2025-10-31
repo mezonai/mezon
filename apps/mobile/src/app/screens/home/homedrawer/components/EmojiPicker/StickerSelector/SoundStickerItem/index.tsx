@@ -65,7 +65,7 @@ const RenderAudioItem = React.memo(({ audioURL }: { audioURL: string }) => {
 
 	return (
 		<TouchableOpacity onPress={isPlaying ? pauseSound : playSound} activeOpacity={0.6} style={styles.container}>
-			<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_10 }}>
+			<View style={styles.audioField}>
 				<View style={styles.playButton}>
 					{isPlaying ? (
 						<MezonIconCDN icon={IconCDN.pauseIcon} width={size.s_16} height={size.s_16} color={baseColor.bgDeepLavender} />

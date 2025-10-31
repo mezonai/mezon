@@ -2,8 +2,10 @@ import { ModalSaveChanges } from '@mezon/components';
 import { editApplication, fetchApplications, selectAppDetail, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js/api.gen';
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import type { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js/api.gen';
+import type { ChangeEvent } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import ToggleItem from '../../components/ToggleItem';
@@ -11,6 +13,7 @@ import { APP_TYPES } from '../../constants/constants';
 import DeleteAppPopup from '../applications/DeleteAppPopup';
 
 const GeneralInformation = () => {
+	const { t } = useTranslation('adminApplication');
 	const { sessionRef, clientRef } = useMezon();
 	const appId = useParams().applicationId as string;
 	const appDetail = useSelector(selectAppDetail);
@@ -39,7 +42,7 @@ const GeneralInformation = () => {
 			const client = clientRef.current;
 			const session = sessionRef.current;
 			if (!client || !session) {
-				throw new Error('Client or file is not initialized');
+				throw new Error(t('generalInformation.errors.clientNotInitialized'));
 			}
 			handleUploadFile(client, session, '', '', e.target.files[0].name, e.target.files[0]).then((attachment: ApiMessageAttachment) => {
 				setAppLogoUrl(attachment.url);
@@ -68,19 +71,23 @@ const GeneralInformation = () => {
 	return (
 		<div className="flex flex-col gap-10">
 			<div className="flex flex-col gap-4">
-				<div className="text-[24px] font-semibold">General Information</div>
-				<div className="text-[20px]">
-					What should we call your creation? What amazing things does it do? What icon should represent it across Mezon? Tell us here!
-				</div>
+				<div className="text-[24px] font-semibold">{t('generalInformation.title')}</div>
+				<div className="text-[20px]">{t('generalInformation.subtitle')}</div>
 				<div>
-					By clicking Create, you agree to the Mezon{' '}
-					<span className="cursor-pointer text-blue-700 hover:text-blue-400 hover:underline">Admin Terms of Service</span> and{' '}
-					<span className="cursor-pointer text-blue-700 hover:text-blue-400 hover:underline">Admin Policy</span>.
+					{t('generalInformation.agreement.text')}{' '}
+					<span className="cursor-pointer text-blue-700 hover:text-blue-400 hover:underline">
+						{t('generalInformation.agreement.adminTerms')}
+					</span>{' '}
+					{t('generalInformation.agreement.and')}{' '}
+					<span className="cursor-pointer text-blue-700 hover:text-blue-400 hover:underline">
+						{t('generalInformation.agreement.adminPolicy')}
+					</span>
+					.
 				</div>
 			</div>
 			<div className="flex gap-5 max-md:flex-col">
 				<div className="flex flex-col gap-2 w-fit">
-					<div className="text-[12px] uppercase font-semibold">App Icon</div>
+					<div className="text-[12px] uppercase font-semibold">{t('generalInformation.appIcon.label')}</div>
 					<div className="w-fit flex flex-col items-center p-5 gap-4 bg-[#f2f3f5] dark:bg-[#2b2d31] border dark:border-[#4d4f52] rounded-md">
 						<input type="file" hidden ref={appLogoRef} onChange={handleChooseFile} />
 						<div className="relative w-[144px] cursor-pointer" onClick={() => appLogoRef.current?.click()}>
@@ -105,12 +112,10 @@ const GeneralInformation = () => {
 						</div>
 						{appLogoUrl ? (
 							<div className="text-blue-600 cursor-pointer" onClick={handleClearLogo}>
-								Remove
+								{t('generalInformation.appIcon.remove')}
 							</div>
 						) : (
-							<div className="text-[10px]">
-								Size: <span className="font-semibold">1024x1024</span>
-							</div>
+							<div className="text-[10px]">{t('generalInformation.appIcon.size', { size: '1024x1024' })}</div>
 						)}
 					</div>
 				</div>
@@ -127,6 +132,7 @@ interface IAppDetailRightProps {
 }
 
 const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
+	const { t } = useTranslation('adminApplication');
 	const [changeName, setChangeName] = useState(appDetail.appname);
 	const [changeUrl, setChangeUrl] = useState(appDetail.app_url);
 	const [changeAboutApp, setChangeAboutApp] = useState(appDetail.about);
@@ -145,17 +151,17 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 
 	const [shadowModified, setShadowModified] = useState(false);
 
-	const updateSaveChangeState = () => {
+	const updateSaveChangeState = useCallback(() => {
 		if (nameChanged || urlChanged || aboutChanged) {
 			setOpenSaveChange(true);
 		} else {
 			setOpenSaveChange(false);
 		}
-	};
+	}, [nameChanged, urlChanged, aboutChanged]);
 
 	useEffect(() => {
 		updateSaveChangeState();
-	}, [nameChanged, urlChanged, aboutChanged]);
+	}, [nameChanged, urlChanged, aboutChanged, updateSaveChangeState]);
 
 	useEffect(() => {
 		const savedToken = localStorage.getItem(`app_token_${appId}`);
@@ -194,12 +200,10 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 	};
 
 	const handleOpenSaveChangeForBotShadow = (value: string) => {
-
-		const checked = value === "true";
+		const checked = value === 'true';
 		setChangeBotShadow(checked);
 		setShadowModified(true);
 		setOpenSaveChange(true);
-
 	};
 
 	const handleOpenSaveChangeForUrl = (e: ChangeEvent<HTMLInputElement>) => {
@@ -260,7 +264,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			updateRequest.about = changeAboutApp;
 		}
 
-		(updateRequest as any).is_shadow = changeBotShadow ? "true" : "false";
+		(updateRequest as MezonUpdateAppBody & { is_shadow: string }).is_shadow = changeBotShadow ? 'true' : 'false';
 
 		if (Object.keys(updateRequest).length === 0) return;
 
@@ -301,7 +305,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 				setVisibleToken(response.token);
 			}
 		} catch (error) {
-			console.error('Failed to reset token:', error);
+			console.error(t('generalInformation.errors.resetTokenFailed'), error);
 		}
 	};
 
@@ -310,7 +314,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 	return (
 		<div className="flex-1 flex flex-col gap-7">
 			<div className="w-full flex flex-col gap-2">
-				<div className="text-[12px] uppercase font-semibold">Name</div>
+				<div className="text-[12px] uppercase font-semibold">{t('generalInformation.form.name')}</div>
 				<input
 					value={changeName}
 					className="w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
@@ -321,19 +325,19 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 
 			{appDetail.app_url ? (
 				<div className="w-full flex flex-col gap-2">
-					<div className="text-[12px] uppercase font-semibold">URL</div>
+					<div className="text-[12px] uppercase font-semibold">{t('generalInformation.form.url')}</div>
 					<input
 						value={changeUrl}
 						className="w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] p-[10px] outline-primary dark:bg-[#1e1f22]"
 						type="text"
 						onChange={handleOpenSaveChangeForUrl}
 					/>
-					{!isUrlValid && <div className="text-red-500 text-sm">Please enter a valid URL (e.g., https://example.com).</div>}
+					{!isUrlValid && <div className="text-red-500 text-sm">{t('generalInformation.errors.invalidUrl')}</div>}
 				</div>
 			) : (
 				<ToggleItem
-					label="Bot Shadow"
-					value={changeBotShadow ? "true" : "false"}
+					label={t('generalInformation.form.botShadow')}
+					value={changeBotShadow ? 'true' : 'false'}
 					handleToggle={handleOpenSaveChangeForBotShadow}
 				/>
 			)}
@@ -341,71 +345,71 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			{openSaveChange && isUrlValid && <ModalSaveChanges onReset={handleResetChange} onSave={handleEditAppOrBot} />}
 
 			<div className="flex flex-col gap-2">
-				<div className="text-[12px] uppercase font-semibold">Description (maximum 400 characters)</div>
-				<div className="text-[14px]">Your description will appear in the About Me section of your {setAppOrBot}</div>
+				<div className="text-[12px] uppercase font-semibold">{t('generalInformation.form.description.label')}</div>
+				<div className="text-[14px]">{t('generalInformation.form.description.subtitle', { type: setAppOrBot })}</div>
 				<textarea
 					className="w-full bg-bgLightModeThird rounded-sm border dark:border-[#4d4f52] min-h-[120px] max-h-[120px] p-[10px] outline-primary dark:bg-[#1e1f22]"
-					placeholder={`Write a short description of your ${setAppOrBot} `}
+					placeholder={t('generalInformation.form.description.placeholder', { type: setAppOrBot })}
 					onChange={handleOpenSaveChangeAboutApp}
 					value={changeAboutApp}
 				></textarea>
 			</div>
 
 			<div className="text-[12px] font-semibold flex flex-col gap-2">
-				<div className="uppercase">{setAppOrBot} ID</div>
+				<div className="uppercase">{t('generalInformation.form.appId', { type: setAppOrBot })}</div>
 				<div>{appId}</div>
 				<div
 					onClick={() => handleCopyID(appId)}
-					className={`py-[7px] px-[16px] rounded-xl ${idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
-						} cursor-pointer w-[90px] text-[15px] text-white rounded-xl flex items-center justify-center`}
+					className={`py-[7px] px-[16px] rounded-xl ${
+						idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
+					} cursor-pointer w-fit text-[15px] text-white rounded-xl flex items-center justify-center`}
 				>
-					{idCopied ? 'Copied!' : 'Copy'}
+					{idCopied ? t('generalInformation.buttons.copied') : t('generalInformation.buttons.copy')}
 				</div>
 			</div>
 
 			<div className="text-[12px] font-semibold flex flex-col gap-2">
-				<div className="uppercase">{setAppOrBot} Token</div>
+				<div className="uppercase">{t('generalInformation.form.appToken', { type: setAppOrBot })}</div>
 				{visibleToken ? (
 					<div className="text-gray-500  rounded-sm mt-1">
-						<span className="text-sm text-red-500">
-							This is your new token. Copy and store it safely, you won't be able to see it again.
-						</span>
+						<span className="text-sm text-red-500">{t('generalInformation.token.newTokenWarning')}</span>
 						<div className="mt-2 font-mono break-all">{visibleToken}</div>
 					</div>
 				) : (
 					<div className=" mt-1">
-							<span className="text-sm text-gray-500 ">
-							For security purposes, tokens can only be viewed once, when created. If you forgot or lost access to your token, please
-							regenerate a new one.
-						</span>
+						<span className="text-sm text-gray-500">{t('generalInformation.token.securityInfo')}</span>
 					</div>
 				)}{' '}
 				{visibleToken && (
 					<div
 						onClick={() => handleCopyUrl(visibleToken)}
-						className={`mt-2 py-[7px] px-[16px] ${tokenCopied ? 'bg-gray-500' : 'bg-green-600 hover:bg-green-800'
-							} flex items-center justify-center cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${openSaveChange ? 'pointer-events-none opacity-50' : ''
-							}`}
+						className={`mt-2 py-[7px] px-[16px] ${
+							tokenCopied ? 'bg-gray-500' : 'bg-green-600 hover:bg-green-800'
+						} flex items-center justify-center cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${
+							openSaveChange ? 'pointer-events-none opacity-50' : ''
+						}`}
 					>
-						{tokenCopied ? 'Copied!' : 'Copy Token'}
+						{tokenCopied ? t('generalInformation.buttons.copied') : t('generalInformation.buttons.copyToken')}
 					</div>
 				)}
 				<div
 					onClick={handleResetToken}
-					className={`py-[7px] px-[16px]  flex items-center justify-center bg-indigo-600 hover:bg-indigo-700  cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${openSaveChange ? 'pointer-events-none opacity-50' : ''
-						}`}
+					className={`py-[7px] px-[16px]  flex items-center justify-center bg-indigo-600 hover:bg-indigo-700  cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${
+						openSaveChange ? 'pointer-events-none opacity-50' : ''
+					}`}
 				>
-					Reset Token
+					{t('generalInformation.buttons.resetToken')}
 				</div>
 			</div>
 
 			<div className="flex justify-end">
 				<div
 					onClick={toggleDeletePopup}
-					className={`text-[15px] px-4 py-[10px] text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-xl w-fit ${openSaveChange ? 'pointer-events-none opacity-50' : ''
-						}`}
+					className={`text-[15px] px-4 py-[10px] text-white bg-red-600 hover:bg-red-800 cursor-pointer rounded-xl w-fit ${
+						openSaveChange ? 'pointer-events-none opacity-50' : ''
+					}`}
 				>
-					Delete {setAppOrBot}
+					{t('generalInformation.buttons.delete')} {setAppOrBot}
 				</div>
 			</div>
 			{isShowDeletePopup && <DeleteAppPopup appId={appId} appName={appDetail.appname as string} togglePopup={toggleDeletePopup} />}

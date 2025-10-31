@@ -6,8 +6,8 @@ import {
 	notificationSettingActions,
 	selectChannelCategorySettingsByCurrentClan,
 	selectCurrentChannel,
-	selectCurrentClan,
 	selectCurrentClanId,
+	selectCurrentClanName,
 	selectDefaultNotificationClan,
 	selectNotifiSettingsEntitiesById,
 	useAppDispatch,
@@ -78,13 +78,13 @@ export const customStyles = {
 const ModalNotificationSetting = (props: ModalParam) => {
 	const { t } = useTranslation('notificationSetting');
 	const notificationTypesListTranslated = createNotificationTypesListTranslated(t);
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const notificatonSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannel?.id || ''));
 
 	const channelCategorySettings = useSelector(selectChannelCategorySettingsByCurrentClan);
-	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const sortedChannelCategorySettings = React.useMemo(() => {
 		const settingsCopy = [...channelCategorySettings];
@@ -102,7 +102,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		return settingsCopy;
 	}, [channelCategorySettings]);
 	const handleNotificationClanChange = (event: any, notification: number) => {
-		dispatch(defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClan?.id, notification_type: notification }));
+		dispatch(defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClanId as string, notification_type: notification }));
 	};
 	const categorizedChannels = useCategorizedAllChannels();
 	const options = categorizedChannels.reduce<Array<{ id: string; label: string; title: string }>>((acc, category) => {
@@ -156,7 +156,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 			const payload: SetDefaultNotificationPayload = {
 				category_id: channelCategoryId || '',
 				notification_type: notificationType,
-				clan_id: currentClan?.clan_id || '',
+				clan_id: currentClanId || '',
 				active
 			};
 			dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
@@ -198,12 +198,12 @@ const ModalNotificationSetting = (props: ModalParam) => {
 			if (active === 0) {
 				const payload: SetDefaultNotificationPayload = {
 					category_id: channelCategoryId || '',
-					clan_id: currentClan?.clan_id || '',
+					clan_id: currentClanId || '',
 					active: 1
 				};
 				dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 			}
-			dispatch(defaultNotificationCategoryActions.deleteDefaultNotificationCategory({ category_id: id, clan_id: currentClan?.clan_id }));
+			dispatch(defaultNotificationCategoryActions.deleteDefaultNotificationCategory({ category_id: id, clan_id: currentClanId as string }));
 		}
 		if (title === 'channel') {
 			if (active === 0) {
@@ -237,7 +237,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 				<div className="flex-1 flex items-center justify-between border-b-theme-primary rounded-t p-4">
 					<div className="flex flex-col">
 						<p className="font-bold text-xl text-theme-primary-active">{t('title')}</p>
-						<p>{currentClan?.clan_name}</p>
+						<p>{currentClanName}</p>
 					</div>
 					<Button
 						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover"

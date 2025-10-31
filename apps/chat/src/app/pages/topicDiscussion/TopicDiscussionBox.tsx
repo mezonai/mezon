@@ -5,8 +5,10 @@ import {
 	referencesActions,
 	selectAllChannelMemberIds,
 	selectCloseMenu,
-	selectCurrentChannel,
+	selectCurrentChannelClanId,
 	selectCurrentChannelId,
+	selectCurrentChannelPrivate,
+	selectCurrentChannelType,
 	selectCurrentClanId,
 	selectCurrentTopicId,
 	selectDataReferences,
@@ -39,7 +41,9 @@ import { ChannelTyping } from '../channel/ChannelTyping';
 const TopicDiscussionBox = () => {
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId);
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelType = useSelector(selectCurrentChannelType);
+	const currentChannelClanId = useSelector(selectCurrentChannelClanId);
+	const currentChannelPrivate = useSelector(selectCurrentChannelPrivate);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const allUserIdsInChannel = useAppSelector((state) => selectAllChannelMemberIds(state, currentChannelId as string, false));
 	const sessionUser = useSelector(selectSession);
@@ -55,18 +59,18 @@ const TopicDiscussionBox = () => {
 	const isDesktop = isElectron();
 
 	const mode =
-		currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
+		currentChannelType === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
 	const handleChildContextMenu = (event: React.MouseEvent) => {
 		event.stopPropagation();
 	};
 
 	const { sendMessage, sendMessageTyping } = useChatSending({
 		mode,
-		channelOrDirect: currentChannel
+		channelOrDirect: currentChannelId
 			? {
-					channel_id: currentChannel.channel_id,
-					clan_id: currentChannel.clan_id,
-					channel_private: currentChannel.channel_private
+					channel_id: currentChannelId,
+					clan_id: currentChannelClanId,
+					channel_private: currentChannelPrivate
 				}
 			: undefined,
 		fromTopic: true
@@ -250,7 +254,7 @@ const TopicDiscussionBox = () => {
 			{(isFetchMessageDone || firstMessageOfThisTopic) && (
 				<div className={`relative flex-1 ${isElectron() ? 'h-[calc(100%_-_50px_-_30px)]' : 'h-full'}`}>
 					<MemoizedChannelMessages
-						isPrivate={currentChannel?.channel_private}
+						isPrivate={currentChannelPrivate}
 						channelId={currentTopicId as string}
 						clanId={currentClanId as string}
 						type={ChannelType.CHANNEL_TYPE_CHANNEL}
@@ -304,7 +308,7 @@ const TopicDiscussionBox = () => {
 									onSend={handleSend}
 									onTyping={handleTypingDebounced}
 									listMentions={UserMentionList({
-										channelID: currentChannel?.channel_id as string,
+										channelID: currentChannelId as string,
 										channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
 									})}
 									isTopic

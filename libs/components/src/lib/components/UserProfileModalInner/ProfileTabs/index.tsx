@@ -23,7 +23,7 @@ const ProfileTabs = ({ activeTab, onActiveTabChange }: ProfileTabsProps) => {
 
 	return (
 		<div className="mt-4 mx-4">
-			<ul className="flex gap-8 h-[25px] text-theme-primary border-b-[1px]" style={{ borderColor: 'var(--text-theme-primary)' }}>
+			<ul className="flex gap-8 h-[25px] text-theme-primary border-b-[1px] border-[var(--text-theme-primary)]">
 				{profileTabs.map((tab) => (
 					<li
 						key={tab.id}

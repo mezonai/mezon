@@ -1,7 +1,9 @@
-import { ChannelStreamMode } from 'mezon-js';
+import { useTheme } from '@mezon/mobile-ui';
+import type { ChannelStreamMode } from 'mezon-js';
 import React from 'react';
 import { View } from 'react-native';
 import ChannelMessages from './ChannelMessages';
+import { style } from './styles';
 
 type ChannelMessagesProps = {
 	channelId: string;
@@ -15,8 +17,11 @@ type ChannelMessagesProps = {
 };
 
 const ChannelMessagesWrapper = React.memo(({ channelId, topicId, clanId, mode, isPublic, isDM, topicChannelId }: ChannelMessagesProps) => {
+	const { themeValue } = useTheme();
+	const styles = style(themeValue);
+
 	return (
-		<View style={{ flex: 1 }}>
+		<View style={styles.channelMessagesWrapperContainer}>
 			<ChannelMessages
 				channelId={channelId}
 				topicId={topicId}

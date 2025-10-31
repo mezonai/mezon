@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -73,12 +74,13 @@ export const style = (colors: Attributes) =>
 			backgroundColor: baseColor.gray
 		},
 		avatarWrapper: {
-			borderRadius: 50,
-			backgroundColor: colors.colorAvatarDefault,
+			borderRadius: size.s_50,
 			height: size.s_30,
 			width: size.s_30
 		},
 		wrapperTextAvatar: {
+			backgroundColor: colors.colorAvatarDefault,
+			borderRadius: size.s_50,
 			width: size.s_30,
 			height: size.s_30,
 			justifyContent: 'center',
@@ -106,5 +108,9 @@ export const style = (colors: Attributes) =>
 			marginLeft: -size.s_2,
 			alignItems: 'center',
 			justifyContent: 'center'
+		},
+		imageFullSize: {
+			width: '100%',
+			height: '100%'
 		}
 	});

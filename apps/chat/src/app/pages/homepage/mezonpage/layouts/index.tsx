@@ -30,14 +30,7 @@ const Layout = memo((props: LayoutProps) => {
 							delay={0}
 							className="cursor-pointer border-[1px] p-[32px] max-lg:pr-[16px] max-lg:pl-[16px] flex flex-col items-center gap-[16px] border-[#4465FF4D] rounded-[12px] bg-[#0B0E2D] hover:bg-white group flex-1"
 						>
-							<div
-								className="text-[26px] leading-[30px] font-semibold text-transparent group-hover:text-black"
-								style={{
-									background: 'linear-gradient(349.47deg, #1D5AFA -9.25%, #F8E4F0 90.24%)',
-									WebkitBackgroundClip: 'text',
-									backgroundClip: 'text'
-								}}
-							>
+							<div className="text-[26px] leading-[30px] font-semibold text-transparent group-hover:text-black bg-[linear-gradient(349.47deg,#1D5AFA_-9.25%,#F8E4F0_90.24%)] bg-clip-text">
 								{t('layout.cards.workstation.title')}
 							</div>
 							<Image src={`assets/workstation.png`} className="w-[100px] h-[100px]" />
@@ -52,14 +45,7 @@ const Layout = memo((props: LayoutProps) => {
 							delay={300}
 							className="cursor-pointer border-[1px] p-[32px] max-lg:pr-[16px] max-lg:pl-[16px] flex flex-col items-center gap-[16px] border-[#4465FF4D] rounded-[12px] hover:bg-white group bg-[#0B0E2D] flex-1"
 						>
-							<div
-								className="text-[26px] leading-[30px] font-semibold text-transparent group-hover:text-black"
-								style={{
-									background: 'linear-gradient(349.47deg, #1D5AFA -9.25%, #F8E4F0 90.24%)',
-									WebkitBackgroundClip: 'text',
-									backgroundClip: 'text'
-								}}
-							>
+							<div className="text-[26px] leading-[30px] font-semibold text-transparent group-hover:text-black bg-[linear-gradient(349.47deg,#1D5AFA_-9.25%,#F8E4F0_90.24%)] bg-clip-text">
 								{t('layout.cards.ecosystem.title')}
 							</div>
 							<Image src={`assets/ecosytem.png`} className="w-[100px] h-[100px]" />
@@ -71,14 +57,7 @@ const Layout = memo((props: LayoutProps) => {
 							delay={600}
 							className="relative border-[1px] p-[32px] max-lg:pr-[16px] max-lg:pl-[16px] flex flex-col items-center gap-[16px] border-[#4465FF4D] rounded-[12px] hover:bg-white group bg-[#0B0E2D] flex-1"
 						>
-							<div
-								className="text-[26px] leading-[30px] font-semibold text-transparent group-hover:text-black"
-								style={{
-									background: 'linear-gradient(349.47deg, #1D5AFA -9.25%, #F8E4F0 90.24%)',
-									WebkitBackgroundClip: 'text',
-									backgroundClip: 'text'
-								}}
-							>
+							<div className="text-[26px] leading-[30px] font-semibold text-transparent group-hover:text-black bg-[linear-gradient(349.47deg,#1D5AFA_-9.25%,#F8E4F0_90.24%)] bg-clip-text">
 								{t('layout.cards.aiAgent.title')}
 							</div>
 							<Image src={`assets/aiagent.png`} className="w-[100px] h-[100px]" />
@@ -101,14 +80,7 @@ const Layout = memo((props: LayoutProps) => {
 						>
 							{t('layout.features.title')}
 						</h2>
-						<div
-							className="text-[26px] leading-[30px] font-light text-transparent text-center"
-							style={{
-								background: 'linear-gradient(90deg, #9C3FE9 0%, #1D5AFA 100%)',
-								WebkitBackgroundClip: 'text',
-								backgroundClip: 'text'
-							}}
-						>
+						<div className="text-[26px] leading-[30px] font-light text-transparent text-center bg-[linear-gradient(90deg,#9C3FE9_0%,#1D5AFA_100%)] bg-clip-text">
 							{t('layout.features.subtitle')}
 						</div>
 					</div>
@@ -126,14 +98,7 @@ const Layout = memo((props: LayoutProps) => {
 									className="relative w-[50%] flex flex-col max-md:w-full rounded-[12px] overflow-hidden gap-[40px] border-[4px] border-transparent hover:border-[#8D5BDF]  max-md:rounded-[12px] max-md:gap-[20px] bg-cover bg-center bg-no-repeat max-md:bg-cover max-md:bg-top max-lg:bg-cover max-lg:bg-center cursor-pointer transition-all duration-300"
 								>
 									<Image src="assets/feature-mobile-mezon.png" className="block w-full h-full object-cover rounded-[8px]" />
-									<div
-										className="absolute top-[30px] left-1/2 transform -translate-x-1/2 text-transparent text-center"
-										style={{
-											background: 'linear-gradient(90deg, #9C3FE9 0%, #1D5AFA 100%)',
-											WebkitBackgroundClip: 'text',
-											backgroundClip: 'text'
-										}}
-									>
+									<div className="absolute top-[30px] left-1/2 transform -translate-x-1/2 text-transparent text-center bg-[linear-gradient(90deg,#9C3FE9_0%,#1D5AFA_100%)] bg-clip-text">
 										<span className="text-[30px] leading-[48px] max-lg:text-[26px] font-bold">
 											{t('layout.featureCards.mezonMainnet.title')}
 										</span>
@@ -149,14 +114,7 @@ const Layout = memo((props: LayoutProps) => {
 									className="relative w-[50%] flex flex-col max-md:w-full rounded-[12px] overflow-hidden gap-[40px] border-[4px] border-transparent hover:border-[#8D5BDF]  max-md:rounded-[12px] max-md:gap-[20px] bg-cover bg-center bg-no-repeat max-md:bg-cover max-md:bg-top max-lg:bg-cover max-lg:bg-center cursor-pointer transition-all duration-300"
 								>
 									<Image src="assets/feature-chat-mezon.png" className="block w-full h-full object-cover rounded-[8px]" />
-									<div
-										className="w-full absolute top-[30px] left-1/2 transform -translate-x-1/2 font-semibold text-transparent text-center"
-										style={{
-											background: 'linear-gradient(90deg, #9C3FE9 0%, #1D5AFA 100%)',
-											WebkitBackgroundClip: 'text',
-											backgroundClip: 'text'
-										}}
-									>
+									<div className="w-full absolute top-[30px] left-1/2 transform -translate-x-1/2 font-semibold text-transparent text-center bg-[linear-gradient(90deg,#9C3FE9_0%,#1D5AFA_100%)] bg-clip-text">
 										<span className="text-[30px] max-lg:text-[26px] font-bold">
 											{t('layout.featureCards.developerApi.title')}
 										</span>
@@ -174,14 +132,7 @@ const Layout = memo((props: LayoutProps) => {
 									className="relative w-[50%] flex flex-col max-md:w-full rounded-[12px] overflow-hidden gap-[40px] border-[4px] border-transparent hover:border-[#8D5BDF]  max-md:rounded-[12px] max-md:gap-[20px] bg-cover bg-center bg-no-repeat max-md:bg-cover max-md:bg-top max-lg:bg-cover max-lg:bg-center cursor-pointer transition-all duration-300"
 								>
 									<Image src="assets/feature-gamming.png" className="block w-full h-full object-cover rounded-[8px]" />
-									<div
-										className="absolute top-[20px] right-[40px] font-semibold text-transparent text-right"
-										style={{
-											background: 'linear-gradient(90deg, #9C3FE9 0%, #1D5AFA 100%)',
-											WebkitBackgroundClip: 'text',
-											backgroundClip: 'text'
-										}}
-									>
+									<div className="absolute top-[20px] right-[40px] font-semibold text-transparent text-right bg-[linear-gradient(90deg,#9C3FE9_0%,#1D5AFA_100%)] bg-clip-text">
 										<span className="text-[45px] leading-[48px] max-lg:text-[26px] font-bold mr-20 max-lg:mr-2.5">
 											{t('layout.featureCards.gaming.title')}
 										</span>
@@ -196,14 +147,7 @@ const Layout = memo((props: LayoutProps) => {
 									className="relative w-[50%] flex flex-col max-md:w-full rounded-[12px] overflow-hidden gap-[40px] border-[4px] border-transparent hover:border-[#8D5BDF]  max-md:rounded-[12px] max-md:gap-[20px] bg-cover bg-center bg-no-repeat max-md:bg-cover max-md:bg-top max-lg:bg-cover max-lg:bg-center cursor-pointer transition-all duration-300"
 								>
 									<Image src="assets/feature-clan.png" className="block w-full h-full object-cover rounded-[8px]" />
-									<div
-										className="absolute top-[20px] left-[90px] font-semibold text-transparent text-left"
-										style={{
-											background: 'linear-gradient(90deg, #9C3FE9 0%, #1D5AFA 100%)',
-											WebkitBackgroundClip: 'text',
-											backgroundClip: 'text'
-										}}
-									>
+									<div className="absolute top-[20px] left-[90px] font-semibold text-transparent text-left bg-[linear-gradient(90deg,#9C3FE9_0%,#1D5AFA_100%)] bg-clip-text">
 										<span className="text-[30px] leading-[48px] max-lg:text-[26px] font-bold">
 											{t('layout.featureCards.customizable.title')}
 										</span>
@@ -244,11 +188,7 @@ interface HeaderFeatureProps {
 export const HeaderFeature: React.FC<HeaderFeatureProps> = ({ content, className }) => {
 	return (
 		<h3
-			className={`text-[30px] font-semibold leading-[38px] text-center max-md:text-[20px] max-md:leading-[30px] text-transparent bg-[linear-gradient(349.47deg,_#1D5AFA_-9.25%,_#F8E4F0_90.24%)] ${className}`}
-			style={{
-				WebkitBackgroundClip: 'text',
-				backgroundClip: 'text'
-			}}
+			className={`text-[30px] font-semibold leading-[38px] text-center max-md:text-[20px] max-md:leading-[30px] text-transparent bg-[linear-gradient(349.47deg,_#1D5AFA_-9.25%,_#F8E4F0_90.24%)] bg-clip-text ${className}`}
 		>
 			{content}
 		</h3>

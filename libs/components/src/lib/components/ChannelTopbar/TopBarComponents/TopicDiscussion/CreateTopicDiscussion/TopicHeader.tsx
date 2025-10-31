@@ -2,15 +2,10 @@ import { useMessageValue } from '@mezon/core';
 import { selectComposeInputByChannelId, selectCurrentChannelId, topicsActions, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import { ApiChannelDescription } from 'mezon-js/api.gen';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 
-type TopicHeaderProps = {
-	topicCurrentChannel?: ApiChannelDescription | null;
-};
-
-const TopicHeader = ({ topicCurrentChannel }: TopicHeaderProps) => {
+const TopicHeader = () => {
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId);
 

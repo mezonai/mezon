@@ -11,7 +11,7 @@ import {
 } from '@mezon/store-mobile';
 import { CURRENCY, formatBalanceToString } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
-import { Transaction } from 'mmn-client-js';
+import type { Transaction } from 'mmn-client-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -19,7 +19,8 @@ import { Flow } from 'react-native-animated-spinkit';
 import { Pressable } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
-import { API_FILTER_PARAMS, FilterType, LIMIT_WALLET, TRANSACTION_FILTERS } from '../../../constants/transaction';
+import type { FilterType } from '../../../constants/transaction';
+import { API_FILTER_PARAMS, LIMIT_WALLET, TRANSACTION_FILTERS } from '../../../constants/transaction';
 import { TransactionItem } from './TransactionItem';
 import { style } from './styles';
 
@@ -122,22 +123,22 @@ export const HistoryTransactionScreen = () => {
 					style={[styles.itemFilter, activeTab === TRANSACTION_FILTERS.ALL && styles.itemFilterActive]}
 					onPress={() => onChangeActiveTab('all')}
 				>
-					<Text style={[styles.textFilter, activeTab === TRANSACTION_FILTERS.ALL && { color: 'white' }]}>{t('all')}</Text>
+					<Text style={[styles.textFilter, activeTab === TRANSACTION_FILTERS.ALL && styles.textFilterActive]}>{t('all')}</Text>
 				</Pressable>
 				<Pressable
 					style={[styles.itemFilter, activeTab === TRANSACTION_FILTERS.RECEIVED && styles.itemFilterActive]}
 					onPress={() => onChangeActiveTab(TRANSACTION_FILTERS.RECEIVED)}
 				>
-					<Text style={[styles.textFilter, activeTab === TRANSACTION_FILTERS.RECEIVED && { color: 'white' }]}>{t('inComing')}</Text>
+					<Text style={[styles.textFilter, activeTab === TRANSACTION_FILTERS.RECEIVED && styles.textFilterActive]}>{t('inComing')}</Text>
 				</Pressable>
 				<Pressable
 					style={[styles.itemFilter, activeTab === TRANSACTION_FILTERS.SENT && styles.itemFilterActive]}
 					onPress={() => onChangeActiveTab(TRANSACTION_FILTERS.SENT)}
 				>
-					<Text style={[styles.textFilter, activeTab === TRANSACTION_FILTERS.SENT && { color: 'white' }]}>{t('outGoing')}</Text>
+					<Text style={[styles.textFilter, activeTab === TRANSACTION_FILTERS.SENT && styles.textFilterActive]}>{t('outGoing')}</Text>
 				</Pressable>
 			</View>
-			<View style={{ flexGrow: 1 }}>
+			<View style={styles.listContainer}>
 				<FlashList
 					ref={refList}
 					key={`walletLedger_${userProfile?.user?.id}`}

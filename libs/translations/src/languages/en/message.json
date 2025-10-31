@@ -189,5 +189,17 @@
 	"viewTopic": "View topic",
 	"reply": "{{number}} reply",
 	"numberReplies": "{{number}} replies",
-	"replies": "Replies"
+	"replies": "Replies",
+	"attachments": {
+		"image": "Image",
+		"video": "Video",
+		"audio": "Voice",
+		"file": "File",
+		"location": "Current Location",
+		"sticker": "Sticker",
+		"gif": "GIF",
+		"link": "Link",
+		"attachment": "Attachment",
+		"embed": "Embed"
+	}
 }

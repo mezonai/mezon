@@ -3,7 +3,10 @@ import type { ChannelsEntity, RootState } from '@mezon/store';
 import {
 	EStateFriend,
 	selectAllAccount,
-	selectCurrentChannel,
+	selectChannelById,
+	selectCurrentChannelId,
+	selectCurrentChannelLabel,
+	selectCurrentChannelType,
 	selectDirectById,
 	selectFriendById,
 	selectIsShowCreateThread,
@@ -41,7 +44,10 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 	const { directId } = useAppParams();
 	const dispatch = useAppDispatch();
 	const directChannel = useAppSelector((state) => selectDirectById(state, directId));
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannel = useAppSelector((state) => selectChannelById(state, currentChannelId || ''));
+	const currentChannelType = useSelector(selectCurrentChannelType);
+	const currentChannelLabel = useSelector(selectCurrentChannelLabel);
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
 	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(directChannel?.channel_id || '')(state));
 	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(directChannel?.channel_id || '')(state));
@@ -70,7 +76,7 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 	const isThread = mode === ChannelStreamMode.STREAM_MODE_THREAD;
 	const isDm = mode === ChannelStreamMode.STREAM_MODE_DM;
 	const isDmGroup = mode === ChannelStreamMode.STREAM_MODE_GROUP;
-	const isChatStream = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
+	const isChatStream = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
 
 	return (
 		<div className="flex flex-col gap-3">
@@ -79,7 +85,7 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 					<>
 						{isChannel && (
 							<WelComeChannel
-								name={currentChannel?.channel_label}
+								name={currentChannelLabel}
 								classNameSubtext={classNameSubtext}
 								channelPrivate={Boolean(selectedChannel?.channel_private)}
 								isChatStream={isChatStream}
@@ -147,7 +153,7 @@ const WelComeChannel = (props: WelComeChannelProps) => {
 				{isChatStream ? <Icons.Chat defaultSize="w-10 h-10 " /> : <Icons.Hashtag defaultSize="w-10 h-10" />}
 			</div>
 			<div>
-				<p className="text-xl md:text-3xl font-bold pt-1 text-theme-primary-active" style={{ wordBreak: 'break-word' }}>
+				<p className="text-xl md:text-3xl font-bold pt-1 text-theme-primary-active break-words">
 					{t('welcome.welcomeToChannel', { channelName: name })}
 				</p>
 			</div>
@@ -183,7 +189,7 @@ const WelcomeChannelThread = (props: WelcomeChannelThreadProps) => {
 				)}
 			</div>
 			<div>
-				<p className="text-xl md:text-3xl font-bold pt-1 text-theme-primary-active" style={{ wordBreak: 'break-word' }}>
+				<p className="text-xl md:text-3xl font-bold pt-1 text-theme-primary-active break-words">
 					{isShowCreateThread ? name : currentThread?.channel_label}
 				</p>
 			</div>
@@ -224,9 +230,7 @@ const WelComeDm = (props: WelComeDmProps) => {
 				classNameText="!text-4xl font-semibold"
 			/>
 			<div>
-				<p className="text-xl md:text-3xl font-bold pt-1 text-theme-primary-active" style={{ wordBreak: 'break-word' }}>
-					{name}
-				</p>
+				<p className="text-xl md:text-3xl font-bold pt-1 text-theme-primary-active break-words">{name}</p>
 			</div>
 			{!isDmGroup && <p className="font-medium text-2xl text-theme-primary">{username}</p>}
 			<div className="text-base">
@@ -313,10 +317,15 @@ const StatusFriend = memo((props: StatusFriendProps) => {
 				deleteFriend(username, userID);
 				break;
 			default:
-				addFriend({
-					ids: [userID],
-					usernames: [username]
-				});
+				addFriend(
+					userID
+						? {
+								ids: [userID]
+							}
+						: {
+								usernames: [username]
+							}
+				);
 		}
 	};
 
@@ -351,20 +360,22 @@ const StatusFriend = memo((props: StatusFriendProps) => {
 			{checkAddFriend === EStateFriend.MY_PENDING && (
 				<p className="dark:text-contentTertiary text-colorTextLightMode">{t('welcome.friendRequestSent')}</p>
 			)}
-			{title.map((button, index) => (
-				<button
-					className={`rounded-lg   border border-theme-primary px-4 py-0.5 font-medium  ${checkAddFriend === EStateFriend.OTHER_PENDING ? 'cursor-not-allowed' : ''} ${checkAddFriend === EStateFriend.FRIEND ? 'bg-button-secondary text-theme-primary text-theme-primary-hover' : 'btn-primary btn-primary-hover'}`}
-					onClick={() => handleOnClickButtonFriend(index)}
-					key={button}
-				>
-					{button}
-				</button>
-			))}
+			{userID !== userProfile?.user?.id &&
+				title.map((button, index) => (
+					<button
+						className={`rounded-lg border border-theme-primary px-4 py-0.5 font-medium ${checkAddFriend === EStateFriend.OTHER_PENDING ? 'cursor-not-allowed' : ''} ${checkAddFriend === EStateFriend.FRIEND ? 'bg-button-secondary text-theme-primary text-theme-primary-hover' : 'btn-primary btn-primary-hover'}`}
+						onClick={() => handleOnClickButtonFriend(index)}
+						key={button}
+					>
+						{button}
+					</button>
+				))}
 
 			{(isFriend || didIBlockUser) && (
 				<button
 					onClick={didIBlockUser ? handleUnblockFriend : handleBlockFriend}
 					className="rounded-lg text-theme-primary-hover border border-theme-primary bg-button-secondary px-4 py-0.5 font-medium text-theme-primary"
+					data-e2e={generateE2eId(`chat.direct_message.${didIBlockUser ? 'unblock' : 'block'}.button`)}
 				>
 					{didIBlockUser ? t('welcome.unblock') : t('welcome.block')}
 				</button>

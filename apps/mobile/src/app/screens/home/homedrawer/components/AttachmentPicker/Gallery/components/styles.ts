@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -21,6 +22,7 @@ export const style = (colors: Attributes) =>
 		imageGallery: {
 			flex: 1,
 			width: '100%',
+			zIndex: 10,
 			height: 120,
 			resizeMode: 'cover',
 			borderRadius: size.s_6
@@ -34,7 +36,8 @@ export const style = (colors: Attributes) =>
 			paddingHorizontal: size.s_6,
 			paddingVertical: size.s_2,
 			flexDirection: 'row',
-			alignItems: 'center'
+			alignItems: 'center',
+			zIndex: 10
 		},
 		videoDuration: {
 			color: baseColor.white,
@@ -49,7 +52,7 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.secondary,
 			borderRadius: size.s_20,
 			padding: size.s_4,
-			zIndex: 2
+			zIndex: 11
 		},
 		selectedOverlay: {
 			position: 'absolute',
@@ -57,7 +60,8 @@ export const style = (colors: Attributes) =>
 			left: 0,
 			width: '100%',
 			height: '100%',
-			backgroundColor: colors.selectedOverlay
+			backgroundColor: colors.selectedOverlay,
+			zIndex: 10
 		},
 		disable: {
 			opacity: 0.5
@@ -71,5 +75,14 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center',
 			alignItems: 'center',
 			backgroundColor: colors.selectedOverlay
+		},
+		itemGallerySkeleton: {
+			width: '100%',
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			height: 120,
+			borderRadius: size.s_6,
+			overflow: 'hidden'
 		}
 	});

@@ -14,10 +14,9 @@ export const EmojiMarkup: React.FC<EmojiMarkupOpt> = ({ emojiId, emojiSyntax, on
 	return srcEmoji ? (
 		<img
 			title={emojiSyntax}
-			style={{ height: onlyEmoji ? 48 : 24 }}
 			src={srcEmoji}
 			alt=""
-			className={`${onlyEmoji ? 'max-w-[48px] block pt-1' : 'max-w-[24px]'} inline-block relative -top-0.4 m-0 object-contain`}
+			className={`${onlyEmoji ? 'max-w-[48px] h-12 block pt-1' : 'max-w-[24px] h-6'} inline-block relative -top-0.4 m-0 object-contain`}
 			draggable="false"
 		/>
 	) : (

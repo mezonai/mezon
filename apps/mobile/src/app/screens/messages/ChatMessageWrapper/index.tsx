@@ -13,8 +13,9 @@ interface IChatMessageWrapperProps {
 	lastSeenMessageId: string;
 	isModeDM: boolean;
 	currentClanId: string;
+	isBlocked?: boolean;
 }
-export const ChatMessageWrapper = memo(({ directMessageId, lastSeenMessageId, isModeDM, currentClanId }: IChatMessageWrapperProps) => {
+export const ChatMessageWrapper = memo(({ directMessageId, lastSeenMessageId, isModeDM, currentClanId, isBlocked }: IChatMessageWrapperProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 
@@ -42,6 +43,7 @@ export const ChatMessageWrapper = memo(({ directMessageId, lastSeenMessageId, is
 				}}
 				isPublic={false}
 				topicChannelId={''}
+				isBlocked={isBlocked}
 			/>
 			<PanelKeyboard directMessageId={directMessageId || ''} currentChannelId={directMessageId} currentClanId={currentClanId} />
 		</KeyboardAvoidingView>

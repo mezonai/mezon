@@ -40,7 +40,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 		}
 		if (!select?.min_options && !select?.max_options) {
 			setSelectedOptions([option]);
-			setAvailableOptions(select?.options.filter((o) => o.value !== option?.value));
+			setAvailableOptions(select?.options?.filter((o) => o.value !== option?.value));
 		} else {
 			setSelectedOptions((prev) => [...prev, option]);
 			setAvailableOptions((prev) => prev.filter((o) => o.value !== option?.value));
@@ -154,10 +154,10 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 	const menu = useMemo(() => {
 		const menuItems: ReactElement[] = [];
 
-		availableOptions.map((option) =>
+		availableOptions?.map((option) =>
 			menuItems.push(
 				<Menu.Item
-					key={option.value}
+					key={option?.value}
 					onClick={() => {
 						handleOptionSelect(option);
 					}}
@@ -174,9 +174,9 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 		<Menu menu={menu} className="h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode dark:bg-bgTertiary px-2 z-20">
 			<div className="w-full max-w-[400px] h-auto rounded-md flex p-3 justify-between items-center text-sm border-theme-primary ">
 				<div>
-					{selectedOptions.length > 0 && (
+					{selectedOptions?.length > 0 && (
 						<div className="flex flex-wrap gap-2 mb-2">
-							{selectedOptions.map((option) => (
+							{selectedOptions?.map((option) => (
 								<div key={option.value} className="flex items-center px-2 py-1 ">
 									<span>{option.label}</span>
 									<button

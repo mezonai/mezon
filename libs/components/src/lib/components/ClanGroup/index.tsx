@@ -1,6 +1,13 @@
 import { useExpandedGroupDragAndDrop } from '@mezon/core';
 import type { ClanGroup as ClanGroupType, RootState } from '@mezon/store';
-import { clansActions, selectBadgeCountByClanId, selectClanView, selectClansEntities, selectCurrentClanId } from '@mezon/store';
+import {
+	clansActions,
+	selectBadgeCountByClanId,
+	selectClanHasUnreadMessage,
+	selectClanView,
+	selectClansEntities,
+	selectCurrentClanId
+} from '@mezon/store';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useDispatch, useSelector } from 'react-redux';
 import SidebarClanItem from '../ModalListClans';
@@ -52,10 +59,9 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 		}, 0);
 	});
 
-	const hasUnreadInGroup = useSelector(() => {
+	const hasUnreadInGroup = useSelector((state: RootState) => {
 		return group.clanIds.some((clanId) => {
-			const clan = allClansEntities[clanId];
-			return clan?.has_unread_message === true;
+			return selectClanHasUnreadMessage(clanId)(state);
 		});
 	});
 

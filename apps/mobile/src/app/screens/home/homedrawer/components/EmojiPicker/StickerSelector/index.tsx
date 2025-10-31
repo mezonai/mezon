@@ -1,4 +1,4 @@
-import { baseColor, Metrics, size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { MediaType, selectAllStickerSuggestion, useAppSelector } from '@mezon/store-mobile';
 import { FOR_SALE_CATE } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
@@ -94,24 +94,14 @@ const StickerSelector = ({ onSelected, onScroll, mediaType = MediaType.STICKER, 
 	}
 
 	return (
-		<ScrollView
-			scrollEventThrottle={16}
-			onScroll={onScroll}
-			style={{ maxHeight: Metrics.screenHeight / 1.07 }}
-			contentContainerStyle={styles.scrollViewContainer}
-		>
+		<ScrollView scrollEventThrottle={16} onScroll={onScroll} style={styles.scrollView} contentContainerStyle={styles.scrollViewContainer}>
 			<ScrollView horizontal contentContainerStyle={styles.btnWrap}>
 				{categoryLogo?.length > 0 &&
 					categoryLogo?.map((item, index) => (
 						<TouchableOpacity
 							key={index.toString()}
 							onPress={() => handlePressCategory(item)}
-							style={[
-								styles.btnEmo,
-								{
-									backgroundColor: item?.id === selectedCategory?.id ? baseColor.blurple : 'transparent'
-								}
-							]}
+							style={[styles.btnEmo, item?.id === selectedCategory?.id ? styles.btnEmoSelected : styles.btnEmoUnselected]}
 						>
 							<View style={styles.btnEmoImage}>
 								{item?.forSale ? (

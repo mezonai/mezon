@@ -3,9 +3,8 @@ import {
 	selectActionAuditLog,
 	selectAllAuditLogData,
 	selectChannelById,
-	selectCurrentClan,
+	selectCurrentClanId,
 	selectMemberClanByUserId,
-	selectTotalCountAuditLog,
 	selectUserAuditLog,
 	useAppDispatch,
 	useAppSelector
@@ -28,19 +27,18 @@ interface MainAuditLogProps {
 
 const MainAuditLog = ({ pageSize, setPageSize, currentPage, setCurrentPage, selectedDate }: MainAuditLogProps) => {
 	const auditLogData = useSelector(selectAllAuditLogData);
-	const totalCount = useSelector(selectTotalCountAuditLog);
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
 	const auditLogFilterAction = useSelector(selectActionAuditLog);
 	const auditLogFilterUser = useSelector(selectUserAuditLog);
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		if (currentClan?.clan_id) {
+		if (currentClanId) {
 			const body = {
 				noCache: true,
 				actionLog: auditLogFilterAction ?? '',
 				userId: auditLogFilterUser?.userId ?? '',
-				clanId: currentClan?.clan_id ?? '',
+				clanId: currentClanId,
 				date_log: selectedDate
 			};
 			dispatch(auditLogList(body));
@@ -49,7 +47,6 @@ const MainAuditLog = ({ pageSize, setPageSize, currentPage, setCurrentPage, sele
 
 	return (
 		<div className="flex flex-col">
-			<div className="border-b-theme-primary my-[32px]" />
 			{auditLogData && auditLogData.length > 0 ? (
 				auditLogData.map((log) => <AuditLogItem key={log.id} logItem={log} />)
 			) : (

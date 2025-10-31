@@ -31,9 +31,5 @@ export function ChannelTyping({ channelId, mode, isPublic, isDM }: ChannelTyping
 		return '';
 	}, [typingUsers, t]);
 
-	return (
-		<div className="text-xs dark:text-bgIconDark text-textPrimaryLight relative left-4 pl-4 w-widthMessageViewChat" style={{ height: 16 }}>
-			{typingLabel}
-		</div>
-	);
+	return <div className="text-xs dark:text-bgIconDark text-textPrimaryLight relative left-4 pl-4 w-widthMessageViewChat h-4">{typingLabel}</div>;
 }

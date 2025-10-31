@@ -109,8 +109,6 @@ export { default as MultiStepModalE2ee } from './components/ModalSendCode';
 export { default as SettingComunity } from './components/SettingComunity';
 export { WebRTCStreamProvider, useWebRTCStream } from './components/StreamContext/StreamContext';
 
-export * from './components/HtmlCanvas';
-
 export { MentionFloatButton } from './components/MentionFloatButton';
 export { AudioAttachment } from './components/ThumbnailAttachmentRender/ThumbnailAttachmentRender';
 

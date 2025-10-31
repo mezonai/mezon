@@ -4,7 +4,8 @@ import { selectCurrentChannel } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import { forwardRef, memo, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, DimensionValue, StyleProp, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
+import type { DimensionValue, StyleProp, ViewStyle } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { openCropper, openPicker } from 'react-native-image-crop-picker';
 import { launchImageLibrary } from 'react-native-image-picker';
 import Toast from 'react-native-toast-message';
@@ -188,7 +189,7 @@ export default memo(
 			} catch (error) {
 				autoCloseBottomSheet && DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				console.error('Error in handleImage:', error?.message || error);
-				if (error?.message) {
+				if (error?.message && error?.code !== 'E_PICKER_CANCELLED') {
 					Toast.show({
 						type: 'error',
 						text1: error?.message

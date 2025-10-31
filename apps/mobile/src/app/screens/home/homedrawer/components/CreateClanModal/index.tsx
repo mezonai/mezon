@@ -135,7 +135,7 @@ const CreateClanModal = memo(() => {
 				style={[StyleSheet.absoluteFillObject]}
 			/>
 
-			<View style={{ marginBottom: size.s_40, paddingTop: size.s_20 }}>
+			<View style={styles.headerContainer}>
 				<TouchableOpacity style={styles.backButton} onPress={onClose} activeOpacity={0.7}>
 					<MezonIconCDN icon={IconCDN.closeIcon} color={themeValue.text} width={size.s_30} height={size.s_30} />
 				</TouchableOpacity>

@@ -8,6 +8,9 @@ import {
 	referencesActions,
 	selectClickedOnTopicStatus,
 	selectCurrentChannel,
+	selectCurrentChannelId,
+	selectCurrentChannelParentId,
+	selectCurrentChannelType,
 	selectCurrentClanId,
 	selectIsMessageChannelIdMatched,
 	selectMessageByMessageId,
@@ -17,12 +20,10 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import type { IMessageWithUser, MenuBuilder } from '@mezon/utils';
 import {
-	AMOUNT_TOKEN,
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
-	IMessageWithUser,
-	MenuBuilder,
 	SYSTEM_NAME,
 	SYSTEM_SENDER_ID,
 	SubPanelName,
@@ -79,11 +80,13 @@ const ChannelMessageOpt = ({
 	isTopic,
 	canSendMessage
 }: ChannelMessageOptProps) => {
-	const currentChannel = useSelector(selectCurrentChannel);
-	const isAppChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
+	const currentChannelType = useSelector(selectCurrentChannelType);
+	const isAppChannel = currentChannelType === ChannelType.CHANNEL_TYPE_APP;
 	const refOpt = useRef<HTMLDivElement>(null);
-	const [canManageThread] = usePermissionChecker([EOverriddenPermission.manageThread], currentChannel?.id ?? '');
-	const isShowIconThread = !!(currentChannel && !Snowflake.isValid(currentChannel.parent_id ?? '') && canManageThread);
+	const [canManageThread] = usePermissionChecker([EOverriddenPermission.manageThread], currentChannelId ?? '');
+	const isShowIconThread = !!(currentChannelId && !Snowflake.isValid(currentChannelParentId ?? '') && canManageThread);
 	const replyMenu = useMenuReplyMenuBuilder(message, hasPermission);
 	const editMenu = useEditMenuBuilder(message);
 	const reactMenu = useReactMenuBuilder(message);
@@ -104,7 +107,7 @@ const ChannelMessageOpt = ({
 					<RecentEmoji message={message} isTopic={isTopic} />
 					{items
 						.filter((item) => {
-							return currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || item.id !== EMessageOpt.THREAD;
+							return currentChannelType !== ChannelType.CHANNEL_TYPE_STREAMING || item.id !== EMessageOpt.THREAD;
 						})
 						.map((item, index) => (
 							<button
@@ -129,8 +132,8 @@ const ChannelMessageOpt = ({
 export default memo(ChannelMessageOpt);
 
 function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: boolean) {
-	const currentChannel = useSelector(selectCurrentChannel);
-	const realTimeMessage = useAppSelector((state) => selectMessageByMessageId(state, currentChannel?.channel_id, message?.id || ''));
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const realTimeMessage = useAppSelector((state) => selectMessageByMessageId(state, currentChannelId, message?.id || ''));
 	const dispatch = useAppDispatch();
 	const clanId = useSelector(selectCurrentClanId);
 	const notAllowedType =
@@ -145,10 +148,10 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 		(isShowCreateTopic: boolean, channelId?: string) => {
 			dispatch(topicsActions.setIsShowCreateTopic(isShowCreateTopic));
 			dispatch(
-				threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannel?.id as string), isShowCreateThread: false })
+				threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannelId as string), isShowCreateThread: false })
 			);
 		},
-		[currentChannel?.id, dispatch]
+		[currentChannelId, dispatch]
 	);
 
 	const setCurrentTopicInitMessage = useCallback(
@@ -211,7 +214,6 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 	const { userId } = useAuth();
 	const { reactionMessageDispatch } = useChatReaction();
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
-	const channel = useSelector(selectCurrentChannel);
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
 
@@ -253,7 +255,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 					count: 1,
 					message_sender_id: message?.sender_id ?? '',
 					action_delete: false,
-					is_public: isPublicChannel(channel),
+					is_public: isPublicChannel(currentChannel),
 					clanId: message.clan_id ?? '',
 					channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
 					isFocusTopicBox,
@@ -270,7 +272,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 		} catch (error) {
 			console.error('Failed to give cofffee message', error);
 		}
-	}, [isFocusTopicBox, channel]);
+	}, [isFocusTopicBox]);
 
 	return useMenuBuilderPlugin((builder) => {
 		builder.when(

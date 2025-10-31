@@ -1,4 +1,5 @@
-import { Attributes, baseColor, horizontalScale, size, verticalScale } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, horizontalScale, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -61,5 +62,15 @@ export const style = (colors: Attributes) =>
 			fontSize: size.small,
 			color: '#c7c7c7',
 			textTransform: 'uppercase'
+		},
+		gradientBackground: {
+			...StyleSheet.absoluteFillObject
+		},
+		scrollViewContainer: {
+			flex: 1
+		},
+		scrollViewContent: {
+			paddingRight: verticalScale(20),
+			alignItems: 'center'
 		}
 	});

@@ -104,7 +104,10 @@ const FriendsPage = () => {
 			return;
 		}
 
-		await addFriend(requestAddFriend);
+		const payload: requestAddFriendParam =
+			requestAddFriend.ids && requestAddFriend.ids.length > 0 ? { ids: requestAddFriend.ids } : { usernames: requestAddFriend.usernames };
+
+		await addFriend(payload);
 		resetField();
 	};
 

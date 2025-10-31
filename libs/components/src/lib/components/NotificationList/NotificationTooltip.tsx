@@ -1,4 +1,4 @@
-import { selectCurrentClan, topicsActions, useAppDispatch } from '@mezon/store';
+import { selectCurrentClanBadgeCount, selectCurrentClanId, topicsActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
@@ -14,13 +14,14 @@ interface NotificationTooltipProps {
 
 export const NotificationTooltip = memo(({ isGridView, isShowMember }: NotificationTooltipProps) => {
 	const dispatch = useAppDispatch();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const badgeCount = useSelector(selectCurrentClanBadgeCount);
 	const [visible, setVisible] = useState(false);
 
 	const handleVisibleChange = (visible: boolean) => {
 		setVisible(visible);
 		if (visible) {
-			dispatch(topicsActions.fetchTopics({ clanId: currentClan?.clan_id as string }));
+			dispatch(topicsActions.fetchTopics({ clanId: currentClanId as string }));
 		}
 	};
 
@@ -67,7 +68,7 @@ export const NotificationTooltip = memo(({ isGridView, isShowMember }: Notificat
 				data-e2e={generateE2eId('chat.channel_message.header.button.inbox')}
 			>
 				<Icons.Inbox defaultSize="size-5" />
-				{(currentClan?.badge_count ?? 0) > 0 && <RedDot />}
+				{badgeCount > 0 && <RedDot />}
 			</button>
 		</Tooltip>
 	);

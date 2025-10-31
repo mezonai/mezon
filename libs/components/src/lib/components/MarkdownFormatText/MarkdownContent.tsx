@@ -283,8 +283,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				) : (
 					<div className={`py-[4px] relative bg-item-theme `}>
 						<pre
-							className={`w-full pre ${isInPinMsg ? `flex items-start  ${isLightMode ? 'pin-msg-modeLight' : 'pin-msg'}` : ''}`}
-							style={{ padding: 0, fontFamily: 'sans-serif' }}
+							className={`w-full pre p-0 font-sans ${isInPinMsg ? `flex items-start  ${isLightMode ? 'pin-msg-modeLight' : 'pin-msg'}` : ''}`}
 						>
 							<code className={`${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`}>{content}</code>
 						</pre>
@@ -306,23 +305,15 @@ type BacktickOpt = {
 	posInNotification?: boolean;
 };
 
-const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, isInPinMsg, posInNotification }) => {
+const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: _isLightMode, isInPinMsg, posInNotification }) => {
 	const posInPinOrNotification = isInPinMsg || posInNotification;
+
 	return (
-		<span
-			className={!posInPinOrNotification ? 'text-theme-primary-active rounded-md  p-2' : 'w-full'}
-			style={{ display: posInPinOrNotification ? '' : 'inline', padding: 2, margin: 0 }}
-		>
+		<span className={`${!posInPinOrNotification ? 'inline text-theme-primary-active rounded-md p-0.5 m-0' : 'w-full'}`}>
 			<code
-				className={`w-full text-sm font-sans px-2 ${
-					posInPinOrNotification ? 'whitespace-pre-wrap break-words' : ''
+				className={`w-full text-sm font-sans px-2 break-words ${
+					posInPinOrNotification ? 'whitespace-normal' : 'whitespace-break-spaces'
 				} ${posInPinOrNotification && ' text-theme-primary rounded-lg'}`}
-				style={{
-					fontFamily: 'sans-serif',
-					wordWrap: 'break-word',
-					overflowWrap: 'break-word',
-					whiteSpace: posInPinOrNotification ? 'normal' : 'break-spaces'
-				}}
 			>
 				{contentBacktick.trim() === '' ? contentBacktick : contentBacktick.trim()}
 			</code>
@@ -330,7 +321,7 @@ const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, i
 	);
 };
 
-const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, isInPinMsg }) => {
+const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: _isLightMode, isInPinMsg }) => {
 	const [copied, setCopied] = useState(false);
 
 	useEffect(() => {
@@ -341,7 +332,6 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, 
 		return () => clearTimeout(timer);
 	}, [copied]);
 
-	// TODO: continue test
 	const handleCopyClick = () => {
 		navigator.clipboard
 			.writeText(contentBacktick)
@@ -350,12 +340,12 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode, 
 	};
 
 	return (
-		<div className={`py-[4px] relative`}>
+		<div className="py-1 relative">
 			<pre
 				className={`pre whitespace-pre-wrap break-words break-all w-full p-3 bg-markdown-code border-theme-primary rounded-lg ${isInPinMsg ? `flex items-start` : ''}`}
 				style={{ wordBreak: 'break-all', overflowWrap: 'break-word' }}
 			>
-				<button className={`absolute right-2 top-3`} onClick={handleCopyClick}>
+				<button className="absolute right-2 top-3" onClick={handleCopyClick}>
 					{copied ? <Icons.PasteIcon /> : <Icons.CopyIcon />}
 				</button>
 				<code

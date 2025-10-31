@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -22,7 +23,7 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_12
 		},
 		friendText: {
-			color: '#c7c7c7',
+			color: colors.text,
 			paddingVertical: size.s_18
 		}
 	});

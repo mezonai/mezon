@@ -43,8 +43,7 @@ function ItemEmoji({ emoji, message, isTopic }: EmojiItemProps) {
 	return (
 		<Tooltip overlay={<UserReactionPanel message={message} emojiShowPanel={emoji} isTopic={isTopic} />} placement="top">
 			<div
-				style={{ height: 24 }}
-				className={`rounded-md w-fit min-w-12 gap-3 h-6 flex flex-row noselect
+				className={`h-[24px] rounded-md w-fit min-w-12 gap-3 h-6 flex flex-row noselect
           cursor-pointer justify-center  items-center relative pl-7 text-sm font-medium text-theme-primary
           ${Number(userSenderCount) > 0 ? 'highlight-react-theme' : ''}`}
 				onClick={() => reactOnExistEmoji(emoji.emojiId ?? '', emoji.message_id ?? '', emoji.emojiId ?? '', emoji.emoji ?? '', 1, false)}

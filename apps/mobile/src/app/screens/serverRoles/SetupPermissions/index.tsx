@@ -244,7 +244,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 					/>
 
 					<View style={styles.permissionPanel}>
-						<View style={{ borderRadius: size.s_10, overflow: 'hidden' }}>
+						<View style={styles.permissionListWrapper}>
 							<FlatList
 								data={filteredPermissionList}
 								keyExtractor={(item) => item.id}

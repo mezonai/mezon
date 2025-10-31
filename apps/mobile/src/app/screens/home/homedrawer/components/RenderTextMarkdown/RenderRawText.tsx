@@ -1,4 +1,4 @@
-import { size, useTheme, type Attributes } from '@mezon/mobile-ui';
+import { useTheme, type Attributes } from '@mezon/mobile-ui';
 import type { TFunction } from 'i18next';
 import { Text, View } from 'react-native';
 import { styles as rawTextStyles } from './RenderRawText.styles';
@@ -75,15 +75,7 @@ export const RenderRawText = ({ text, isEdited, translate, isNumberOfLine, isBuz
 		}
 	};
 	return (
-		<View
-			style={{
-				...(isNumberOfLine && {
-					flex: 1,
-					maxHeight: size.s_20 * 10 - size.s_10,
-					overflow: 'hidden'
-				})
-			}}
-		>
+		<View style={isNumberOfLine ? styles.numberLineContainer : undefined}>
 			<View style={styles.textPartsContainer}>
 				{renderTextPlainContain(themeValue, text, isBuzzMessage)}
 				{isEdited && (

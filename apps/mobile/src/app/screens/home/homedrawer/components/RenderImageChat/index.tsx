@@ -1,7 +1,7 @@
 import { Metrics, size, useTheme } from '@mezon/mobile-ui';
 import { EMimeTypes, createImgproxyUrl } from '@mezon/utils';
 import * as Sentry from '@sentry/react-native';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -263,11 +263,13 @@ const ImageRenderer = React.memo(
 
 				{!!remainingImagesCount && (
 					<View
-						style={{
-							...styles.overlay,
-							width: photoSize?.width / (isTablet ? 1.8 : 1),
-							height: photoSize?.height / (isTablet ? 1.8 : 1)
-						}}
+						style={[
+							styles.overlay,
+							{
+								width: photoSize?.width / (isTablet ? 1.8 : 1),
+								height: photoSize?.height / (isTablet ? 1.8 : 1)
+							}
+						]}
 					>
 						<Text style={styles.moreText}>+{remainingImagesCount}</Text>
 					</View>

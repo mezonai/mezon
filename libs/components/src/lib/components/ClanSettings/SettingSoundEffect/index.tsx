@@ -2,7 +2,7 @@ import type { MediaType } from '@mezon/store';
 import {
 	selectAllAccount,
 	selectAudioByClanId,
-	selectCurrentClan,
+	selectCurrentClanCreatorId,
 	selectCurrentClanId,
 	selectCurrentUserId,
 	selectMemberClanByUserId,
@@ -39,12 +39,12 @@ const SettingSoundEffect = () => {
 	const dispatch = useAppDispatch();
 	const currentClanId = useAppSelector(selectCurrentClanId) || '';
 	const currentUserId = useAppSelector(selectCurrentUserId) || '';
-	const currentClan = useAppSelector(selectCurrentClan);
+	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
 	const userProfile = useAppSelector(selectAllAccount);
 
 	const sounds = useAppSelector((state: any) => selectAudioByClanId(state, currentClanId));
 
-	const isClanOwner = currentClan?.creator_id === userProfile?.user?.id;
+	const isClanOwner = currentClanCreatorId === userProfile?.user?.id;
 
 	const soundList: SoundType[] = sounds.map((sound) => ({
 		id: sound.id || '',

@@ -10,6 +10,7 @@ import {
 	toggleIsShowTrue
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -76,7 +77,7 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 
 	return (
 		<div className="grid grid-cols-1 gap-4">
-			<div className="w-full flex flex-col text-[15px] pr-5">
+			<div className="w-full flex flex-col text-[15px] pr-5" data-e2e={generateE2eId('clan_page.settings.role.container.name_input')}>
 				<div className="text-xs font-bold uppercase text-theme-primary-active mb-2">
 					{t('roleManagement.roleName')}
 					<b className="text-red-600">*</b>

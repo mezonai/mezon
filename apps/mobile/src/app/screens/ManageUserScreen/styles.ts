@@ -1,11 +1,12 @@
-import { Attributes, baseColor, size, verticalScale } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (themeValue: Attributes) =>
 	StyleSheet.create({
 		container: {
 			flex: 1,
-			backgroundColor: themeValue?.primary,
+			backgroundColor: themeValue?.primary
 		},
 		headerContainer: {
 			flexDirection: 'row' as const,
@@ -94,7 +95,7 @@ export const style = (themeValue: Attributes) =>
 			gap: size.s_12
 		},
 		actionText: {
-			fontSize: verticalScale(14),
+			fontSize: verticalScale(13),
 			color: baseColor.red
 		},
 		roleCircle: {

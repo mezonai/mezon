@@ -64,7 +64,8 @@ export const style = (themeValue: any) =>
 		},
 		renderContentContainer: {
 			flexDirection: 'row',
-			padding: size.s_10,
+			alignItems: 'center',
+			height: size.s_50,
 			gap: size.s_6,
 			justifyContent: 'center'
 		},

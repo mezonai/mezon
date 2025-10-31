@@ -4,7 +4,7 @@
   "license": "MIT",
   "description": "Mezon application",
   "productName": "mezon",
-  "repository": "https://github.com/nccasia/mezon-fe",
+  "repository": "https://github.com/mezonai/mezon",
   "scripts": {
     "dev:chat": "nx run chat:serve --host=127.0.0.1 --port=4200",
     "dev:admin": "nx run admin:serve --host=127.0.0.1 --port=4200",
@@ -71,7 +71,7 @@
     "lodash.isequal": "^4.5.0",
     "mezon-active-windows": "0.1.38",
     "mezon-js": "2.13.24",
-    "mezon-js-protobuf": "1.8.48",
+    "mezon-js-protobuf": "1.8.49",
     "mmn-client-js": "1.0.10",
     "minio": "^7.1.3",
     "nx-electron": "^20.0.2",
@@ -229,5 +229,5 @@
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
-  "author": "Mezon App <mezon@ncc.asia>"
+  "author": "Mezon App <hello@mezon.vn>"
 }

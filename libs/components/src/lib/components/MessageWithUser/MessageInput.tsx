@@ -236,15 +236,12 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 					ref={editorRef}
 					value={inputValue}
 					setCaretToEnd={true}
-					className={`w-full bg-theme-surface border-theme-primary rounded-lg p-[10px] text-theme-message customScrollLightMode mt-[5px]`}
 					onSend={(formattedText: FormattedText) => {
 						handleSendWithFormattedText(formattedText);
 					}}
 					onKeyDown={handleKeyDown}
 					placeholder="Edit message..."
-					style={{
-						minHeight: '40px'
-					}}
+					className={`w-full bg-theme-surface border-theme-primary rounded-lg p-[10px] text-theme-message customScrollLightMode mt-[5px] min-h-[40px]`}
 				>
 					<Mention
 						trigger="@"
@@ -341,8 +338,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 				<div className="text-xs flex text-theme-primary">
 					<p className="pr-[3px]">escape to</p>
 					<p
-						className="pr-[3px] text-[#3297ff]"
-						style={{ cursor: 'pointer' }}
+						className="pr-[3px] text-[#3297ff] cursor-pointer"
 						onClick={() => {
 							handleCancelEdit();
 						}}
@@ -350,7 +346,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 						cancel
 					</p>
 					<p className="pr-[3px]">• enter to</p>
-					<p className="text-[#3297ff]" style={{ cursor: 'pointer' }} onClick={handleSave}>
+					<p className="text-[#3297ff] cursor-pointer" onClick={handleSave}>
 						save
 					</p>
 				</div>

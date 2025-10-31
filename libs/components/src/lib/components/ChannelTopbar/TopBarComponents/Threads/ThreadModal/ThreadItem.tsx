@@ -13,7 +13,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { ChannelMembersEntity, IChannel, IChannelMember } from '@mezon/utils';
-import { convertTimeMessage, createImgproxyUrl } from '@mezon/utils';
+import { convertTimeMessage, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { AvatarImage } from 'libs/components/src/lib/components';
 import { ChannelType } from 'mezon-js';
 import type { MutableRefObject } from 'react';
@@ -162,6 +162,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, isHasCont
 			role="button"
 			ref={panelRef}
 			onContextMenu={handlePannelThread}
+			data-e2e={generateE2eId('chat.channel_message.header.button.thread.item')}
 		>
 			<div className="flex flex-row justify-between items-center">
 				<div className="flex flex-col gap-1">

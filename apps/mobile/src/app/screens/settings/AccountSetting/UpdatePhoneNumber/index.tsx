@@ -349,7 +349,7 @@ export const UpdatePhoneNumber = memo(({ navigation, route }: { navigation: any;
 						<Text style={styles.input}>{selectedCountry.prefix}</Text>
 					</TouchableOpacity>
 
-					<View style={{ flex: 1 }}>
+					<View style={styles.phoneInputFlex}>
 						<MezonInput
 							value={phoneNumber}
 							onTextChange={handlePhoneNumberChange}

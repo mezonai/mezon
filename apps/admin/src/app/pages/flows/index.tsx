@@ -1,5 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FlowContext } from '../../context/FlowContext';
 import flowService from '../../services/flowService';
@@ -7,6 +8,7 @@ import AppTokenModal from './AppTokenModal';
 import ListFlow from './ListFlows';
 
 const Flows = () => {
+	const { t } = useTranslation('adminApplication');
 	const { applicationId } = useParams();
 	const navigate = useNavigate();
 	const { flowState } = useContext(FlowContext);
@@ -40,20 +42,20 @@ const Flows = () => {
 	return (
 		<div className="relative">
 			<div className="flex justify-between items-center">
-				<h4 className="text-xl font-semibold">Chat Flows</h4>
+				<h4 className="text-xl font-semibold">{t('flows.title')}</h4>
 				<div className="flex gap-2">
 					<button
 						onClick={() => setOpenAppTokenModal(true)}
 						className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg active:bg-indigo-600 transition-all"
 					>
-						Set Token
+						{t('flows.setToken')}
 					</button>
 					<button
 						disabled={!hasToken}
 						onClick={handleGoToAddFlowPage}
 						className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg active:bg-indigo-600 transition-all"
 					>
-						Add Flow
+						{t('flows.addFlow')}
 					</button>
 				</div>
 			</div>
@@ -64,7 +66,7 @@ const Flows = () => {
 			<AppTokenModal
 				open={openAppTokenModal}
 				onClose={() => setOpenAppTokenModal(false)}
-				title="App Token"
+				title={t('flows.appTokenModal.title')}
 				onSave={(data: { token: string }) => {
 					handleCreateApplication(data.token);
 				}}

@@ -1,7 +1,8 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import Images from 'apps/mobile/src/assets/Images';
-import { ChannelType, User } from 'mezon-js';
+import type { User } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, TouchableOpacity, View } from 'react-native';
@@ -49,8 +50,8 @@ export const FriendListItem = React.memo((props: IFriendListItemProps) => {
 							isGroupAvatar ? (
 								<View style={styles.groupAvatarWrapper}>
 									<ImageNative
-										url={createImgproxyUrl(dmGroup?.topic ?? '')}
-										style={{ width: '100%', height: '100%' }}
+										url={createImgproxyUrl(dmGroup?.channel_avatar ?? '')}
+										style={styles.imageFull}
 										resizeMode={'cover'}
 									/>
 								</View>

@@ -1,13 +1,13 @@
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { MediaType, selectAllStickerSuggestion, useAppSelector } from '@mezon/store-mobile';
-import { ClanSticker } from 'mezon-js';
+import type { ClanSticker } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { ScrollView } from 'react-native-gesture-handler';
 import EmptySticker from '../EmptySticker';
 import Sticker from '../Sticker';
-import { style } from '../styles';
+import { style } from './styles';
 
 interface StickerWithMediaType extends ClanSticker {
 	media_type?: MediaType;
@@ -80,19 +80,14 @@ const StickerSelector = ({ onSelected }: StickerSelectorProps) => {
 	}
 
 	return (
-		<ScrollView style={{ paddingHorizontal: size.s_10, paddingBottom: size.s_10 }}>
+		<ScrollView style={styles.scrollViewContainer}>
 			<ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.btnWrap}>
 				{categoryLogo?.length > 0 &&
 					categoryLogo.map((item) => (
 						<TouchableOpacity
 							key={`key_${item?.id}_${item?.type}`}
 							onPress={() => handlePressCategory(item?.type)}
-							style={[
-								styles.btnEmo,
-								{
-									backgroundColor: item?.type === selectedCategory ? baseColor.blurple : 'transparent'
-								}
-							]}
+							style={[styles.btnEmo, item?.type === selectedCategory ? styles.btnEmoSelected : styles.btnEmoUnselected]}
 						>
 							<View style={styles.btnEmoImage}>
 								{item?.url ? (
@@ -103,7 +98,7 @@ const StickerSelector = ({ onSelected }: StickerSelectorProps) => {
 											cache: FastImage.cacheControl.immutable,
 											priority: FastImage.priority.high
 										}}
-										style={{ height: '100%', width: '100%' }}
+										style={styles.imageFull}
 									/>
 								) : (
 									<View style={styles.forSaleContainer}>

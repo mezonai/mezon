@@ -16,9 +16,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useChatSending } from './useChatSending';
 
 export const useEditMessage = (channelId: string, channelLabel: string, mode: number, message: IMessageWithUser) => {
-	const clanIdInMes = useMemo(() => {
-		return message.clan_id;
-	}, [message.clan_id]);
 	const attachmentsOnMessage = useMemo(() => {
 		return message.attachments;
 	}, [message.attachments]);

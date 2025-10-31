@@ -1,5 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ClansEntity, getStore, selectChannelById } from '@mezon/store-mobile';
+import type { ClansEntity } from '@mezon/store-mobile';
+import { getStore, selectChannelById } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
@@ -55,14 +56,7 @@ const SharingSuggestItem = memo(({ item, clans, onChooseItem }: SharingSuggestIt
 	return (
 		<TouchableOpacity style={styles.itemSuggestion} onPress={handleChooseItem}>
 			{isGroupDM && !isAvatar ? (
-				<FastImage
-					source={Images.AVATAR_GROUP}
-					style={{
-						width: size.s_24,
-						height: size.s_24,
-						borderRadius: 50
-					}}
-				/>
+				<FastImage source={Images.AVATAR_GROUP} style={styles.avatarImage} />
 			) : (
 				<MezonAvatar avatarUrl={data?.avatarUrl} username={data?.name} width={size.s_24} height={size.s_24} />
 			)}

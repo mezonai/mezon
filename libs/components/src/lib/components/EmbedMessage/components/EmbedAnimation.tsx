@@ -126,11 +126,7 @@ export const EmbedAnimation = ({
 						<div
 							key={`${messageId}_animation_${index}`}
 							id={`${messageId}_animation_${index}`}
-							style={{
-								height: DEFAULT_HEIGH,
-								width: DEFAULT_WIDTH
-							}}
-							className={`box_animation_${index}_${messageId} box_resize_${index}_${messageId}`}
+							className={`h-[133px] w-[133px] box_animation_${index}_${messageId} box_resize_${index}_${messageId}`}
 						></div>
 					))}
 		</div>

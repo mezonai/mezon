@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, DeviceEventEmitter, Keyboard, TouchableOpacity } from 'react-native';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
+import { style } from './styles';
 
 export type AttachmentPickerProps = {
 	mode: string;
@@ -12,6 +13,7 @@ export type AttachmentPickerProps = {
 
 function AttachmentSwitcher({ mode: _mode, onChange }: AttachmentPickerProps) {
 	const { themeValue } = useTheme();
+	const styles = style(themeValue);
 	const rotation = useRef(new Animated.Value(0)).current; // 0 is initial value for rotation
 	const [mode, setMode] = useState<string>(_mode);
 	const onPickerPress = () => {
@@ -69,18 +71,7 @@ function AttachmentSwitcher({ mode: _mode, onChange }: AttachmentPickerProps) {
 
 	return (
 		<Animated.View style={{ transform: [{ rotate }] }}>
-			<TouchableOpacity
-				activeOpacity={0}
-				onPress={onPickerPress}
-				style={{
-					width: size.s_40,
-					height: size.s_40,
-					borderRadius: size.s_40,
-					alignItems: 'center',
-					justifyContent: 'center',
-					backgroundColor: themeValue.tertiary
-				}}
-			>
+			<TouchableOpacity activeOpacity={0} onPress={onPickerPress} style={styles.touchableButton}>
 				<MezonIconCDN
 					icon={IconCDN.plusLargeIcon}
 					width={size.s_24}

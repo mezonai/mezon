@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, widthScreen: number) =>
@@ -97,5 +98,25 @@ export const style = (colors: Attributes, widthScreen: number) =>
 		btnEmoImageFull: {
 			height: '100%',
 			width: '100%'
+		},
+		scrollView: {
+			maxHeight: Metrics.screenHeight / 1.07
+		},
+		btnEmoSelected: {
+			backgroundColor: baseColor.blurple
+		},
+		btnEmoUnselected: {
+			backgroundColor: 'transparent'
+		},
+		itemMargin: {
+			margin: 4
+		},
+		imageFull: {
+			height: '100%',
+			width: '100%'
+		},
+		lockIconColor: '#e1e1e1',
+		columnWrapper: {
+			justifyContent: 'space-between'
 		}
 	});

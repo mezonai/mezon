@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -52,5 +53,8 @@ export const style = (colors: Attributes) =>
 			fontSize: size.regular,
 			fontWeight: '700',
 			color: colors.white
-		}
+		},
+		userItemDynamic: (isMoreThanMax: boolean) => ({
+			marginRight: isMoreThanMax ? -15 : 10
+		})
 	});

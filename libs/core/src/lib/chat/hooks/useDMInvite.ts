@@ -1,31 +1,34 @@
 import {
 	channelMembersActions,
+	EStateFriend,
 	inviteActions,
 	selectAllChannels,
 	selectAllDirectMessages,
 	selectAllUserClans,
-	selectBlockedUsers,
+	selectFriendsEntities,
 	useAppDispatch
 } from '@mezon/store';
 import { ChannelType } from 'mezon-js';
 import type { ApiLinkInviteUser } from 'mezon-js/api.gen';
 import React, { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useAuth } from '../../auth/hooks/useAuth';
 
 export function useDMInvite(channelID?: string) {
 	const dispatch = useAppDispatch();
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
+	const { userId } = useAuth();
 	const usersClan = useSelector(selectAllUserClans);
 	const allChannels = useSelector(selectAllChannels);
 	const isChannelPrivate = allChannels.find((channel) => channel.channel_id === channelID)?.channel_private === 1;
-	const blockedUsers = useSelector(selectBlockedUsers);
+	const friendList = useSelector(selectFriendsEntities);
 
 	const listDMInvite = useMemo(() => {
 		const userIdInClanArray = usersClan.map((user) => user.id);
-		const blockedUserIds = blockedUsers.map((user) => user.id);
-
+		const listId = new Set<string>();
 		const filteredListUserClan = dmGroupChatList.filter((item) => {
-			const hasBlockedUser = item.user_ids?.some((userId) => blockedUserIds.includes(userId));
+			const friend = friendList[item.user_ids?.[0] || ''];
+			const hasBlockedUser = friend?.state === EStateFriend.BLOCK && (friend?.source_id === userId || friend.user?.id === userId);
 			if (hasBlockedUser) {
 				return false;
 			}
@@ -34,28 +37,29 @@ export function useDMInvite(channelID?: string) {
 				(item.user_ids && item.user_ids.length > 1) ||
 				(item.user_ids && item.user_ids.length === 1 && !userIdInClanArray.includes(item.user_ids[0]))
 			) {
+				listId.add(item.user_ids[0]);
 				return true;
 			}
 			return false;
 		});
-		if (!channelID) {
-			return filteredListUserClan;
-		}
-		const filteredListUserChannel = dmGroupChatList.filter((item) => {
-			const hasBlockedUser = item.user_ids?.some((userId) => blockedUserIds.includes(userId));
-			if (hasBlockedUser) {
-				return false;
-			}
 
-			if ((item.user_ids && item.user_ids.length > 1) || (item.user_ids && item.user_ids.length === 1)) {
-				return true;
+		Object.values(friendList).forEach((friend) => {
+			const hasBlockedUser = friend?.state === EStateFriend.BLOCK && (friend?.source_id === userId || friend.user?.id === userId);
+			if (hasBlockedUser || listId.has(friend.user?.id || '')) {
+				return;
 			}
-			return false;
+			filteredListUserClan.push({
+				id: friend.user?.id || '',
+				user_ids: [friend.user?.id || ''],
+				usernames: [friend.user?.username || ''],
+				channel_label: friend.user?.display_name || friend.user?.username || '',
+				avatars: [friend.user?.avatar_url || ''],
+				type: ChannelType.CHANNEL_TYPE_DM
+			});
+			listId.add(friend.user?.id || '');
 		});
-		if (!isChannelPrivate) {
-			return filteredListUserChannel;
-		}
-	}, [channelID, dmGroupChatList, usersClan, isChannelPrivate, blockedUsers]);
+		return filteredListUserClan;
+	}, [channelID, dmGroupChatList, usersClan, isChannelPrivate, friendList]);
 
 	const createLinkInviteUser = React.useCallback(
 		async (clan_id: string, channel_id: string, expiry_time: number) => {

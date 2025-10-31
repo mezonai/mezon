@@ -63,5 +63,8 @@ export const style = (themeValue: Attributes) =>
 		},
 		errorContainer: {
 			minHeight: size.s_30
+		},
+		phoneInputFlex: {
+			flex: 1
 		}
 	});

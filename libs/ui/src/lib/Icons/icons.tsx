@@ -1,6 +1,25 @@
 import { generateE2eId } from '@mezon/utils';
 import React, { useState } from 'react';
 
+const svgFullSizeStyle = {
+	width: '100%',
+	height: '100%',
+	transform: 'translate3d(0px, 0px, 0px)',
+	contentVisibility: 'visible'
+} as const;
+
+const displayBlockStyle = {
+	display: 'block'
+} as const;
+
+const displayNoneStyle = {
+	display: 'none'
+} as const;
+
+const maskTypeAlphaStyle = {
+	maskType: 'alpha'
+} as const;
+
 export * from './attachmentThumb';
 export * from './iconInEmojiPanel';
 export * from './iconRightClick';
@@ -716,7 +735,7 @@ export const Gif: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', isWhite = fa
 			height="24"
 			preserveAspectRatio="xMidYMid meet"
 			className={`text-theme-primary text-theme-primary-hover ${className}`}
-			style={{ width: '100%', height: '100%', transform: 'translate3d(0px, 0px, 0px)', contentVisibility: 'visible' }}
+			style={svgFullSizeStyle}
 		>
 			<defs>
 				<clipPath id="__lottie_element_129">
@@ -730,12 +749,12 @@ export const Gif: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', isWhite = fa
 						clipPath="url(#__lottie_element_139)"
 						transform="matrix(1,0,0,1,0.000030517578125,-0.000030517578125)"
 						opacity="1"
-						style={{ display: 'block' }}
+						style={displayBlockStyle}
 					>
 						<g
 							transform="matrix(24.999998092651367,0.0000197777699213475,-0.000019777766283368692,25.000003814697266,300.0060119628906,299.99285888671875)"
 							opacity="1"
-							style={{ display: 'block' }}
+							style={displayBlockStyle}
 						>
 							<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 								<path
@@ -748,7 +767,7 @@ export const Gif: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', isWhite = fa
 						<g
 							transform="matrix(24.999998092651367,0,0,25.000003814697266,299.9960021972656,299.99298095703125)"
 							opacity="1"
-							style={{ display: 'block' }}
+							style={displayBlockStyle}
 						>
 							<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 								<path
@@ -761,7 +780,7 @@ export const Gif: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', isWhite = fa
 						<g
 							transform="matrix(24.999998092651367,0,0,25.000003814697266,299.9950256347656,299.99298095703125)"
 							opacity="1"
-							style={{ display: 'block' }}
+							style={displayBlockStyle}
 						>
 							<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 								<path
@@ -793,9 +812,9 @@ export const Gif: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', isWhite = fa
 					clipPath="url(#__lottie_element_131)"
 					transform="matrix(0.03999999910593033,0,0,0.03999999910593033,0,0)"
 					opacity="1"
-					style={{ display: 'block' }}
+					style={displayBlockStyle}
 				>
-					<g mask="url(#__lottie_element_135_2)" style={{ display: 'block' }}>
+					<g mask="url(#__lottie_element_135_2)" style={displayBlockStyle}>
 						<g transform="matrix(25,0.0000018166268773711636,-0.0000018166268773711636,25,300,300)" opacity="1">
 							<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 								<path
@@ -822,7 +841,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 			height="24"
 			preserveAspectRatio="xMidYMid meet"
 			className={`text-theme-primary text-theme-primary-hover ${className} `}
-			style={{ width: '100%', height: '100%', transform: 'translate3d(0px, 0px, 0px)', contentVisibility: 'visible' }}
+			style={svgFullSizeStyle}
 		>
 			<defs>
 				<clipPath id="__lottie_element_339">
@@ -832,7 +851,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 					<path d="M0,0 L600,0 L600,600 L0,600z"></path>
 				</clipPath>
 				<g id="__lottie_element_346">
-					<g style={{ display: 'block' }} transform="matrix(25,0,0,25,300,300)" opacity="1">
+					<g style={displayBlockStyle} transform="matrix(25,0,0,25,300,300)" opacity="1">
 						<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 							<path
 								fill="currentColor"
@@ -843,9 +862,9 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 					</g>
 				</g>
 				<g id="__lottie_element_356">
-					<g clipPath="url(#__lottie_element_357)" transform="matrix(1,0,0,1,0,0)" opacity="1" style={{ display: 'none' }}>
+					<g clipPath="url(#__lottie_element_357)" transform="matrix(1,0,0,1,0,0)" opacity="1" style={displayNoneStyle}>
 						<g
-							style={{ display: 'block' }}
+							style={displayBlockStyle}
 							transform="matrix(25,0.00002699064862099476,-0.00002699064862099476,25,299.9999084472656,300.0001525878906)"
 							opacity="1"
 						>
@@ -858,7 +877,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 							</g>
 						</g>
 						<g
-							style={{ display: 'block' }}
+							style={displayBlockStyle}
 							transform="matrix(25,-0.00003855806789943017,0.00003855806789943017,25,300.0001220703125,300.0002136230469)"
 							opacity="1"
 						>
@@ -870,7 +889,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 								></path>
 							</g>
 						</g>
-						<g style={{ display: 'block' }} transform="matrix(25,0,0,25,299.99700927734375,300)" opacity="1">
+						<g style={displayBlockStyle} transform="matrix(25,0,0,25,299.99700927734375,300)" opacity="1">
 							<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 								<path
 									strokeLinecap="round"
@@ -884,7 +903,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 								></path>
 							</g>
 						</g>
-						<g style={{ display: 'block' }} transform="matrix(25,0,0,25,300.0119934082031,300.0119934082031)" opacity="1">
+						<g style={displayBlockStyle} transform="matrix(25,0,0,25,300.0119934082031,300.0119934082031)" opacity="1">
 							<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 								<path
 									strokeLinecap="butt"
@@ -898,7 +917,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 								></path>
 							</g>
 						</g>
-						<g clipPath="url(#__lottie_element_363)" style={{ display: 'block' }} transform="matrix(25,0,0,25,300,300)" opacity="1">
+						<g clipPath="url(#__lottie_element_363)" style={displayBlockStyle} transform="matrix(25,0,0,25,300,300)" opacity="1">
 							<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 								<path
 									fill="currentColor"
@@ -954,9 +973,9 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 					clipPath="url(#__lottie_element_341)"
 					transform="matrix(0.03999999910593033,0,0,0.03999999910593033,0,0)"
 					opacity="1"
-					style={{ display: 'block' }}
+					style={displayBlockStyle}
 				>
-					<g mask="url(#__lottie_element_356_2)" style={{ display: 'none' }}>
+					<g mask="url(#__lottie_element_356_2)" style={displayNoneStyle}>
 						<g transform="matrix(25,0,0,25,300,300)" opacity="1">
 							<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 								<path
@@ -967,7 +986,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 							</g>
 						</g>
 					</g>
-					<g transform="matrix(25,0,0,25,300,300)" opacity="1" style={{ display: 'none' }}>
+					<g transform="matrix(25,0,0,25,300,300)" opacity="1" style={displayNoneStyle}>
 						<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 							<path
 								fill="rgb(88,101,242)"
@@ -976,7 +995,7 @@ export const Sticker: React.FC<IconProps> = ({ className = '', defaultFill = '#A
 							></path>
 						</g>
 					</g>
-					<g mask="url(#__lottie_element_346_2)" style={{ display: 'block' }}>
+					<g mask="url(#__lottie_element_346_2)" style={displayBlockStyle}>
 						<g transform="matrix(25,0,0,25,300,300)" opacity="1">
 							<g opacity="1" transform="matrix(1,0,0,1,0,0)">
 								<path
@@ -1089,7 +1108,6 @@ export const ArrowLeft: React.FC<IconProps> = ({ defaultSize = 'w-5 h-5 min-w-4'
 		</svg>
 	);
 };
-
 
 export const LongCorner: React.FC<IconProps> = ({ className = '' }) => {
 	return (
@@ -2854,7 +2872,7 @@ export function AppDirectoryFooterRobot() {
 						d="M96.289 68.1853C96.1535 68.1853 96.0181 68.1609 95.8868 68.1122C95.2958 67.8926 94.9963 67.242 95.2179 66.6565C95.2261 66.6321 96.1617 64.0623 95.1399 62.0374C94.8567 61.4763 95.0865 60.7973 95.6488 60.5167C96.211 60.2361 96.9004 60.4638 97.1836 61.0209C98.6568 63.9403 97.4134 67.303 97.36 67.4453C97.1877 67.9007 96.7527 68.1813 96.289 68.1813V68.1853Z"
 						fill="black"
 					/>
-					<mask id="mask0_6215_282581" style={{ maskType: 'alpha' }} maskUnits="userSpaceOnUse" x="45" y="56" width="28" height="18">
+					<mask id="mask0_6215_282581" style={maskTypeAlphaStyle} maskUnits="userSpaceOnUse" x="45" y="56" width="28" height="18">
 						<path
 							d="M51.9966 59.1099C52.1731 59.9191 52.407 60.6469 52.7189 61.2893C52.7886 61.452 52.8871 61.6024 52.9651 61.7569C53.002 61.8342 53.0513 61.9074 53.1005 61.9765C53.1457 62.0497 53.1908 62.1188 53.2318 62.192C53.2811 62.2611 53.3344 62.3262 53.3837 62.3912C53.437 62.4563 53.4699 62.5295 53.5314 62.5864C53.6422 62.7084 53.7284 62.8385 53.8474 62.9442C54.2824 63.3956 54.7379 63.7656 55.2386 64.0177C55.3699 64.0705 55.4807 64.1559 55.6161 64.1966C55.6818 64.221 55.7434 64.2495 55.8049 64.2779C55.8706 64.3023 55.9403 64.3145 56.0019 64.343C56.0676 64.3633 56.1291 64.3958 56.1989 64.4121C56.2686 64.4284 56.3384 64.4446 56.4041 64.4609C56.5354 64.5097 56.6872 64.5137 56.8268 64.5422C56.8637 64.5463 56.8965 64.5625 56.9335 64.5625L57.0443 64.5707C57.1181 64.5788 57.192 64.5869 57.2659 64.5951C57.3397 64.6113 57.4218 64.5991 57.4957 64.6032C57.5737 64.6032 57.6516 64.6032 57.7296 64.6113C57.8896 64.6113 58.0538 64.5951 58.2179 64.5951C58.3862 64.5829 58.5586 64.5503 58.7268 64.5381C59.4204 64.4446 60.1714 64.2413 60.9511 63.9567C61.3409 63.8266 61.7349 63.6395 62.1371 63.4688L62.7403 63.1719C62.8429 63.1191 62.9455 63.0784 63.044 63.0215L63.3477 62.8507C64.1684 62.4238 64.981 61.883 65.8387 61.3666L66.0931 61.2121C67.9891 60.0654 70.4637 60.6591 71.6168 62.5376C72.5853 64.1112 72.3186 66.0873 71.0916 67.36C70.1846 68.3033 69.2079 69.206 68.0917 70.007L67.6772 70.312C67.5418 70.4136 67.3858 70.5031 67.2422 70.6007C66.9467 70.7877 66.6553 70.9788 66.3558 71.1618L65.416 71.6782L65.178 71.8042C65.0959 71.8449 65.0138 71.8815 64.9318 71.9222L64.4311 72.1499C63.0933 72.7516 61.6241 73.2152 60.04 73.4591C59.6379 73.5079 59.2398 73.5567 58.8335 73.5893C58.4231 73.6055 58.0128 73.6258 57.5983 73.6218L56.9704 73.5893C56.7611 73.573 56.5518 73.573 56.3425 73.5364L55.7105 73.451L55.3945 73.4022C55.2878 73.3859 55.1852 73.3575 55.0785 73.3372C54.66 73.2355 54.2373 73.1542 53.8269 73.0078L53.2113 72.8045C53.0061 72.7354 52.805 72.6419 52.604 72.5605C52.4029 72.4751 52.2018 72.3898 52.0089 72.2922L51.4303 71.9832L51.143 71.8246C51.0486 71.7717 50.9583 71.7107 50.8681 71.6497C50.6834 71.5318 50.5028 71.4098 50.3264 71.2878C50.1417 71.1699 49.9816 71.0276 49.8093 70.8934C49.641 70.7593 49.4728 70.6251 49.3086 70.4828C49.1486 70.3364 48.9926 70.19 48.8408 70.0396C48.6848 69.8891 48.533 69.7427 48.3935 69.576C48.1103 69.2548 47.823 68.9417 47.585 68.592C47.4619 68.4213 47.3347 68.2505 47.2198 68.0756L46.8915 67.543C46.7807 67.3641 46.6781 67.1852 46.5878 66.9981L46.3128 66.4411C46.2185 66.2581 46.1487 66.0629 46.0748 65.8718C46.001 65.6807 45.9271 65.4896 45.8573 65.2985C45.607 64.5259 45.41 63.7412 45.3197 62.9483C45.1227 61.3707 45.2376 59.789 45.685 58.3333C46.202 56.654 47.9913 55.7066 49.6862 56.2149C50.8393 56.5605 51.6519 57.4916 51.8899 58.5813L52.0007 59.0937L51.9966 59.1099Z"
 							fill="url(#paint5_linear_6215_282581)"
@@ -4330,8 +4348,7 @@ export function CheckedIcon(props: React.HTMLAttributes<SVGElement>) {
 			data-qa="menu_item_checkmark"
 			aria-hidden="true"
 			viewBox="0 0 20 20"
-			className="is-inline"
-			style={{ width: '1em', height: '1em', fontSize: '10px' }}
+			className="is-inline w-[1em] h-[1em] text-[10px]"
 			{...props}
 		>
 			<path
@@ -4346,15 +4363,7 @@ export function CheckedIcon(props: React.HTMLAttributes<SVGElement>) {
 
 export function H1Icon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg
-			data-315="true"
-			data-qa="heading-1"
-			aria-hidden="true"
-			viewBox="0 0 20 20"
-			className="is-inline"
-			style={{ width: '1em', height: '1em' }}
-			{...props}
-		>
+		<svg data-315="true" data-qa="heading-1" aria-hidden="true" viewBox="0 0 20 20" className="is-inline w-[1em] h-[1em]" {...props}>
 			<path
 				fill="currentColor"
 				fillRule="evenodd"
@@ -4366,15 +4375,7 @@ export function H1Icon(props: React.HTMLAttributes<SVGElement>) {
 }
 export function H2Icon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg
-			data-315="true"
-			data-qa="heading-2"
-			aria-hidden="true"
-			viewBox="0 0 20 20"
-			className="is-inline"
-			style={{ width: '1em', height: '1em' }}
-			{...props}
-		>
+		<svg data-315="true" data-qa="heading-2" aria-hidden="true" viewBox="0 0 20 20" className="is-inline w-[1em] h-[1em]" {...props}>
 			<path
 				fill="currentColor"
 				fillRule="evenodd"
@@ -4386,15 +4387,7 @@ export function H2Icon(props: React.HTMLAttributes<SVGElement>) {
 }
 export function H3Icon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg
-			data-315="true"
-			data-qa="heading-3"
-			aria-hidden="true"
-			viewBox="0 0 20 20"
-			className="is-inline"
-			style={{ width: '1em', height: '1em' }}
-			{...props}
-		>
+		<svg data-315="true" data-qa="heading-3" aria-hidden="true" viewBox="0 0 20 20" className="is-inline w-[1em] h-[1em]" {...props}>
 			<path
 				fill="currentColor"
 				fillRule="evenodd"
@@ -4407,15 +4400,7 @@ export function H3Icon(props: React.HTMLAttributes<SVGElement>) {
 
 export function CheckListIcon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg
-			data-315="true"
-			data-qa="checkbox"
-			aria-hidden="true"
-			viewBox="0 0 20 20"
-			className="is-inline"
-			style={{ width: '1em', height: '1em' }}
-			{...props}
-		>
+		<svg data-315="true" data-qa="checkbox" aria-hidden="true" viewBox="0 0 20 20" className="is-inline w-[1em] h-[1em]" {...props}>
 			<path
 				fill="currentColor"
 				fillRule="evenodd"
@@ -4428,15 +4413,7 @@ export function CheckListIcon(props: React.HTMLAttributes<SVGElement>) {
 
 export function OrderedListIcon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg
-			data-315="true"
-			data-qa="numbered-list"
-			aria-hidden="true"
-			viewBox="0 0 20 20"
-			className="is-inline"
-			style={{ width: '1em', height: '1em' }}
-			{...props}
-		>
+		<svg data-315="true" data-qa="numbered-list" aria-hidden="true" viewBox="0 0 20 20" className="is-inline w-[1em] h-[1em]" {...props}>
 			<path
 				fill="currentColor"
 				fillRule="evenodd"
@@ -4449,15 +4426,7 @@ export function OrderedListIcon(props: React.HTMLAttributes<SVGElement>) {
 
 export function BulletListIcon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg
-			data-315="true"
-			data-qa="bulleted-list"
-			aria-hidden="true"
-			viewBox="0 0 20 20"
-			className="is-inline"
-			style={{ width: '1em', height: '1em' }}
-			{...props}
-		>
+		<svg data-315="true" data-qa="bulleted-list" aria-hidden="true" viewBox="0 0 20 20" className="is-inline w-[1em] h-[1em]" {...props}>
 			<path
 				fill="currentColor"
 				fillRule="evenodd"
@@ -4470,15 +4439,7 @@ export function BulletListIcon(props: React.HTMLAttributes<SVGElement>) {
 
 export function BlockquoteIcon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg
-			data-315="true"
-			data-qa="quote"
-			aria-hidden="true"
-			viewBox="0 0 20 20"
-			className="is-inline"
-			style={{ width: '1em', height: '1em' }}
-			{...props}
-		>
+		<svg data-315="true" data-qa="quote" aria-hidden="true" viewBox="0 0 20 20" className="is-inline w-[1em] h-[1em]" {...props}>
 			<path
 				fill="currentColor"
 				fillRule="evenodd"
@@ -4491,7 +4452,7 @@ export function BlockquoteIcon(props: React.HTMLAttributes<SVGElement>) {
 
 export function ChevronDownIcon(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg data-315="true" data-qa="caret-down" aria-hidden="true" viewBox="0 0 20 20" style={{ width: '1em', height: '1em' }} {...props}>
+		<svg data-315="true" data-qa="caret-down" aria-hidden="true" viewBox="0 0 20 20" className="w-[1em] h-[1em]" {...props}>
 			<path
 				fill="currentColor"
 				fillRule="evenodd"
@@ -5292,15 +5253,7 @@ export function CalendarIcon(props: React.HTMLAttributes<SVGElement>) {
 
 export const FileIcon: React.FC<IconProps> = ({ isWhite, defaultSize = 'w-5 h-5' }) => {
 	return (
-		<svg
-			className={defaultSize}
-			data-testid="geist-icon"
-			height="16"
-			strokeLinejoin="round"
-			style={{ color: 'currentColor' }}
-			viewBox="0 0 16 16"
-			width="16"
-		>
+		<svg className={`${defaultSize} text-current`} data-testid="geist-icon" height="16" strokeLinejoin="round" viewBox="0 0 16 16" width="16">
 			<path
 				fillRule="evenodd"
 				clipRule="evenodd"

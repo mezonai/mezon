@@ -110,15 +110,6 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
-        <!-- Deep link intent filters -->
-        <intent-filter android:autoVerify="true">
-            <action android:name="android.intent.action.VIEW" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <category android:name="android.intent.category.BROWSABLE" />
-            <data android:scheme="https" android:host="mezon.ai" />
-            <data android:scheme="http" android:host="mezon.ai" />
-        </intent-filter>
-
         <intent-filter android:autoVerify="true">
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.DEFAULT" />
@@ -141,6 +132,14 @@
             <category android:name="android.intent.category.BROWSABLE" />
             <data android:scheme="https" android:host="mezon.ai" android:pathPrefix="/chat" />
             <data android:scheme="http" android:host="mezon.ai" android:pathPrefix="/chat" />
+        </intent-filter>
+
+        <intent-filter android:autoVerify="true">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" android:host="mezon.ai" android:pathPrefix="/bot/install" />
+            <data android:scheme="http" android:host="mezon.ai" android:pathPrefix="/bot/install" />
         </intent-filter>
 
         <intent-filter android:label="filter_react_native">

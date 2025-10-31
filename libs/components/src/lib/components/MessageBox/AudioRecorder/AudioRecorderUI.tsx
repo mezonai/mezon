@@ -12,42 +12,13 @@ type AudioRecorderUIProps = {
 
 export const AudioRecorderUI: React.FC<AudioRecorderUIProps> = React.memo(
 	({ isRecording, seconds, audioUrl, onStopRecording, onSendRecording, onResetRecording }) => (
-		<div style={{ paddingBottom: '10px', fontFamily: 'Arial, sans-serif' }}>
-			<div
-				style={{
-					display: 'flex',
-					alignItems: 'center',
-					gap: '10px',
-					padding: '10px',
-					borderRadius: '5px',
-					color: 'white',
-					width: '400px'
-				}}
-			>
-				<button
-					onClick={onResetRecording}
-					style={{
-						backgroundColor: 'white',
-						color: '#505cdc',
-						border: 'none',
-						borderRadius: '50%',
-						width: '30px',
-						height: '30px',
-						cursor: 'pointer'
-					}}
-				>
+		<div className="pb-2.5 font-[Arial,sans-serif]">
+			<div className="flex items-center gap-2.5 p-2.5 rounded-[5px] text-white w-[400px]">
+				<button onClick={onResetRecording} className="bg-white text-[#505cdc] border-none rounded-full w-[30px] h-[30px] cursor-pointer">
 					✖
 				</button>
 
-				<div
-					style={{
-						flex: 1,
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						gap: '10px'
-					}}
-				>
+				<div className="flex-1 flex items-center justify-center gap-2.5">
 					{isRecording ? (
 						<span>{new Date(seconds * 1000).toISOString().substring(14, 19)}</span>
 					) : audioUrl ? (
@@ -57,33 +28,14 @@ export const AudioRecorderUI: React.FC<AudioRecorderUIProps> = React.memo(
 					{isRecording && (
 						<button
 							onClick={onStopRecording}
-							style={{
-								backgroundColor: 'white',
-								color: '#505cdc',
-								border: 'none',
-								borderRadius: '50%',
-								width: '30px',
-								height: '30px',
-								cursor: 'pointer'
-							}}
+							className="bg-white text-[#505cdc] border-none rounded-full w-[30px] h-[30px] cursor-pointer"
 						>
 							⏹
 						</button>
 					)}
 				</div>
 
-				<button
-					onClick={onSendRecording}
-					style={{
-						backgroundColor: 'white',
-						color: '#505cdc',
-						border: 'none',
-						borderRadius: '50%',
-						width: '30px',
-						height: '30px',
-						cursor: 'pointer'
-					}}
-				>
+				<button onClick={onSendRecording} className="bg-white text-[#505cdc] border-none rounded-full w-[30px] h-[30px] cursor-pointer">
 					➤
 				</button>
 			</div>

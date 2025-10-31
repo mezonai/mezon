@@ -1,9 +1,16 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
-import { attachmentActions, selectAllListDocumentByChannel, selectCurrentChannel, useAppDispatch, useAppSelector } from '@mezon/store';
+import {
+	attachmentActions,
+	selectAllListDocumentByChannel,
+	selectCurrentChannelChannelId,
+	selectCurrentChannelClanId,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { RefObject, useEffect, useRef, useState } from 'react';
+import type { RefObject } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useSelector } from 'react-redux';
 import EmptyFile from './EmptyFile';
 import FileItem from './FileItem';
 import SearchFile from './SearchFile';
@@ -16,17 +23,17 @@ type FileModalProps = {
 const FileModal = ({ onClose, rootRef }: FileModalProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
-	const currentChannel = useSelector(selectCurrentChannel);
+	const channelId = useAppSelector(selectCurrentChannelChannelId);
+	const clanId = useAppSelector(selectCurrentChannelClanId);
 	const [keywordSearch, setKeywordSearch] = useState('');
 
-	const allAttachments = useAppSelector((state) => selectAllListDocumentByChannel(state, (currentChannel?.channel_id ?? '') as string));
+	const allAttachments = useAppSelector((state) => selectAllListDocumentByChannel(state, (channelId ?? '') as string));
 	const modalRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		const { channel_id: channelId, clan_id: clanId } = currentChannel || {};
 		if (!channelId || !clanId) return;
 		dispatch(attachmentActions.fetchChannelAttachments({ clanId, channelId, limit: 100 }));
-	}, []);
+	}, [channelId, clanId, dispatch]);
 
 	const filteredAttachments = allAttachments.filter(
 		(attachment) => attachment.filename && attachment.filename.toLowerCase().includes(keywordSearch.toLowerCase())

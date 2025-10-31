@@ -1,0 +1,213 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "Tạo ứng dụng mới",
+			"bot": "Tạo bot mới"
+		},
+		"form": {
+			"type": {
+				"label": "LOẠI",
+				"options": {
+					"createApplication": "Tạo ứng dụng",
+					"createBot": "Tạo bot"
+				}
+			},
+			"name": {
+				"label": "TÊN"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "Bot Ẩn",
+			"agreement": {
+				"text": "Bằng cách nhấp vào Tạo, bạn đồng ý với",
+				"termsOfService": "Điều khoản Dịch vụ Nhà phát triển",
+				"policy": "Chính sách Nhà phát triển",
+				"and": "và"
+			}
+		},
+		"buttons": {
+			"cancel": "Hủy",
+			"create": "Tạo",
+			"creating": "Đang tạo..."
+		},
+		"errors": {
+			"nameRequired": "Tên là bắt buộc để tạo {type} mới của bạn.",
+			"urlRequired": "URL là bắt buộc để tạo ứng dụng mới của bạn.",
+			"invalidUrl": "Vui lòng nhập URL hợp lệ (ví dụ: https://example.com).",
+			"createFailed": "Không thể tạo ứng dụng hoặc thiếu ID trong phản hồi",
+			"unexpectedError": "Đã xảy ra lỗi không mong muốn.{message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "Ở chế độ ẩn, bot có thể nhận tất cả tin nhắn gửi đến người tạo, nhưng không thể gửi tin nhắn."
+		}
+	},
+	"sidebar": {
+		"menu": "Thực đơn",
+		"closeMenu": "Đóng thực đơn"
+	},
+	"tabs": {
+		"generalInformation": "Thông tin chung",
+		"installation": "Cài đặt",
+		"oauth2": "OAuth2",
+		"flow": "Luồng",
+		"flowExamples": "Ví dụ luồng"
+	},
+	"generalInformation": {
+		"title": "Thông tin chung",
+		"subtitle": "Chúng tôi nên gọi sản phẩm của bạn là gì? Nó làm được những điều tuyệt vời gì? Biểu tượng nào nên đại diện cho nó trên Mezon? Hãy cho chúng tôi biết ở đây!",
+		"agreement": {
+			"text": "Bằng cách nhấp vào Tạo, bạn đồng ý với",
+			"adminTerms": "Điều khoản Dịch vụ Quản trị",
+			"adminPolicy": "Chính sách Quản trị",
+			"and": "và"
+		},
+		"appIcon": {
+			"label": "Biểu tượng ứng dụng",
+			"remove": "Xóa",
+			"size": "Kích thước: {size}"
+		},
+		"form": {
+			"name": "Tên",
+			"url": "URL",
+			"botShadow": "Bot Ẩn",
+			"description": {
+				"label": "Mô tả (tối đa 400 ký tự)",
+				"subtitle": "Mô tả của bạn sẽ xuất hiện trong phần Giới thiệu về Bot ",
+				"placeholder": "Viết mô tả ngắn về Bot của bạn"
+			},
+			"appId": "ID Bot",
+			"appToken": "Token "
+		},
+		"token": {
+			"newTokenWarning": "Đây là token mới của bạn. Hãy sao chép và lưu trữ an toàn, bạn sẽ không thể nhìn thấy nó lần nữa.",
+			"securityInfo": "Vì lý do bảo mật, token chỉ có thể được xem một lần, khi được tạo. Nếu bạn quên hoặc mất quyền truy cập vào token, vui lòng tạo lại token mới."
+		},
+		"buttons": {
+			"copy": "Sao chép",
+			"copied": "Đã sao chép!",
+			"copyToken": "Sao chép Token",
+			"resetToken": "Đặt lại Token",
+			"delete": "Xóa "
+		},
+		"errors": {
+			"invalidUrl": "Vui lòng nhập URL hợp lệ (ví dụ: https://example.com).",
+			"clientNotInitialized": "Client hoặc file chưa được khởi tạo",
+			"resetTokenFailed": "Không thể đặt lại token:"
+		}
+	},
+	"installation": {
+		"title": "Cài đặt",
+		"subtitle": "Chọn cách người dùng sẽ cài đặt ứng dụng của bạn. Tạo liên kết cài đặt, chọn ngữ cảnh cài đặt để hỗ trợ, và xác định các phạm vi cũng như quyền bạn muốn yêu cầu.",
+		"installLink": {
+			"title": "Liên kết Cài đặt",
+			"description": "Sử dụng liên kết cài đặt được cung cấp hoặc đăng ký một liên kết tùy chỉnh. Nếu bạn chọn liên kết tùy chỉnh, người dùng thêm ứng dụng của bạn sẽ được chuyển hướng đến URL của bạn thay vì quy trình Thêm Ứng dụng trong Mezon.",
+			"option": "Liên kết do Mezon cung cấp"
+		},
+		"buttons": {
+			"copy": "Sao chép",
+			"copied": "Đã sao chép!"
+		},
+		"loading": "Đang tải dữ liệu ứng dụng...",
+		"notFound": "Không tìm thấy dữ liệu ứng dụng"
+	},
+	"clientInformation": {
+		"title": "Thông tin Client",
+		"clientId": "Client ID",
+		"clientSecret": "Client Secret",
+		"hiddenForSecurity": "Ẩn vì lý do bảo mật",
+		"resetSecret": "Đặt lại secret",
+		"publicClient": {
+			"title": "Client công khai",
+			"description": "Client công khai không thể duy trì tính bảo mật của thông tin đăng nhập client (tức là ứng dụng desktop/mobile không sử dụng server để thực hiện yêu cầu)"
+		},
+		"buttons": {
+			"copy": "Sao chép",
+			"copied": "Đã sao chép!"
+		},
+		"resetSecretPopup": {
+			"title": "Tạo lại Secret Key?",
+			"warning": "Ứng dụng của bạn sẽ ngừng hoạt động cho đến khi bạn cập nhật secret key trong mã ứng dụng.",
+			"nevermind": "Thôi",
+			"confirm": "Đồng ý!"
+		},
+		"toasts": {
+			"addRedirectUri": "Vui lòng thêm ít nhất một redirect URI trước khi đặt lại secret key!"
+		}
+	},
+	"flowExamples": {
+		"title": "Ví dụ về Luồng"
+	},
+	"sidebarTabs": {
+		"applications": "Ứng dụng",
+		"teams": "Nhóm",
+		"embedDebugger": "Trình gỡ lỗi Embed",
+		"document": "Tài liệu"
+	},
+	"applicationsPage": {
+		"title": "Ứng dụng",
+		"newApplicationButton": "Tạo Ứng dụng hoặc Bot mới",
+		"develop": "Phát triển",
+		"subtitle": " để tùy chỉnh và mở rộng Mezon cho hàng triệu người dùng.",
+		"appsLinkText": "ứng dụng",
+		"sortBy": "Sắp xếp theo:",
+		"sortOptions": {
+			"dateOfCreation": "Ngày tạo",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "Nhỏ",
+			"large": "Lớn"
+		},
+		"sections": {
+			"myApplications": "Ứng dụng của tôi",
+			"myBots": "Bot của tôi"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Sử dụng Mezon như một hệ thống ủy quyền hoặc sử dụng API của chúng tôi thay mặt cho người dùng của bạn. Thêm redirect URI, chọn scope, tung xúc xắc D20 để có may mắn, và bắt đầu!",
+		"learnMore": "Tìm hiểu thêm về OAuth2",
+		"generator": {
+			"title": "Trình tạo URL OAuth2",
+			"description": "Tạo liên kết mời cho ứng dụng của bạn bằng cách chọn các phạm vi và quyền cần thiết để hoạt động. Sau đó, chia sẻ URL với người khác!",
+			"scopes": "Phạm vi"
+		},
+		"redirects": {
+			"title": "Chuyển hướng",
+			"description": "Bạn phải chỉ định ít nhất một URI để xác thực hoạt động. Nếu bạn truyền URI trong yêu cầu OAuth, nó phải khớp chính xác với một trong những URI bạn nhập ở đây.",
+			"addRedirect": "Thêm Chuyển hướng",
+			"toasts": {
+				"fillAllInputs": "Vui lòng điền tất cả các trường với URI hợp lệ!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "Có trường nhập rỗng!",
+			"invalidUris": "URI phải hợp lệ!",
+			"redirectUriRequired": "Redirect URI là bắt buộc!"
+		}
+	},
+	"backToApps": "Quay lại Ứng dụng",
+	"selectLabel": "CHỌN {{type}}",
+	"settings": "CÀI ĐẶT",
+	"flows": {
+		"title": "Luồng Chat",
+		"setToken": "Đặt Token",
+		"addFlow": "Thêm Luồng",
+		"appTokenModal": {
+			"title": "Token Ứng dụng",
+			"saveButton": "Lưu"
+		},
+		"toasts": {
+			"errorLoading": "Lỗi khi tải danh sách luồng"
+		}
+	},
+	"teams": {
+		"title": "Nhóm"
+	},
+	"embed": {
+		"title": "Trình gỡ lỗi Embed"
+	},
+	"small": "Nhỏ",
+	"large": "Lớn"
+}

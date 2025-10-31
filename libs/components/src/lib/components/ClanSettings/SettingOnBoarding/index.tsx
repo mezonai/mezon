@@ -1,5 +1,5 @@
 import { MemberProvider } from '@mezon/core';
-import { onboardingActions, selectCurrentClan, selectFormOnboarding, useAppDispatch } from '@mezon/store';
+import { onboardingActions, selectCurrentClanId, selectCurrentClanIsOnboarding, selectFormOnboarding, useAppDispatch } from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
@@ -23,9 +23,10 @@ export enum EOnboardingStep {
 const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 	const { t } = useTranslation('onBoardingClan');
 	const dispatch = useAppDispatch();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [isCommunityEnabled, setIsCommunityEnabled] = useState(!!currentClan?.is_onboarding);
+	const [isCommunityEnabled, setIsCommunityEnabled] = useState(!!currentClanIsOnboarding);
 	const [currentPage, setCurrentPage] = useState<EOnboardingStep>(EOnboardingStep.MAIN);
 	const [description, setDescription] = useState('');
 	const [about, setAbout] = useState('');
@@ -43,7 +44,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 		if (!enable) {
 			dispatch(
 				onboardingActions.enableOnboarding({
-					clan_id: currentClan?.clan_id as string,
+					clan_id: currentClanId as string,
 					onboarding: false
 				})
 			);
@@ -63,7 +64,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 			await handleCreateOnboarding();
 			await dispatch(
 				onboardingActions.enableOnboarding({
-					clan_id: currentClan?.clan_id as string,
+					clan_id: currentClanId as string,
 					onboarding: true
 				})
 			);
@@ -124,7 +125,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 
 			await dispatch(
 				onboardingActions.createOnboardingTask({
-					clan_id: currentClan?.clan_id as string,
+					clan_id: currentClanId as string,
 					content: formOnboardingData
 				})
 			);
@@ -285,12 +286,12 @@ interface IMainIndexProps {
 
 const MainIndex = ({ handleGoToPage, onCloseSetting, showOnboardingHighlight }: IMainIndexProps) => {
 	const { t } = useTranslation('onBoardingClan');
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const openOnboardingPreviewMode = () => {
 		dispatch(
 			onboardingActions.openOnboardingPreviewMode({
-				clan_id: currentClan?.id || ''
+				clan_id: currentClanId || ''
 			})
 		);
 		if (onCloseSetting) {

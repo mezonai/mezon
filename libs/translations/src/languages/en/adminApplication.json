@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "Create a new application",
+			"bot": "Create a bot"
+		},
+		"form": {
+			"type": {
+				"label": "TYPE",
+				"options": {
+					"createApplication": "Create an application",
+					"createBot": "Create a bot"
+				}
+			},
+			"name": {
+				"label": "NAME"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "Shadow Bot",
+			"agreement": {
+				"text": "By clicking Create, you agree to the Mezon",
+				"termsOfService": "Developer Terms of Service",
+				"policy": "Developer Policy",
+				"and": "and"
+			}
+		},
+		"buttons": {
+			"cancel": "Cancel",
+			"create": "Create",
+			"creating": "Creating..."
+		},
+		"errors": {
+			"nameRequired": "A name is required to create your new {type}.",
+			"urlRequired": "URL is required to create your new application.",
+			"invalidUrl": "Please enter a valid URL (e.g., https://example.com).",
+			"createFailed": "Failed to create application or missing ID in response",
+			"unexpectedError": "An unexpected error occurred.{message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "In shadow mode, the bot can receive all messages sent to the creator, but it cannot send messages."
+		}
+	},
+	"sidebar": {
+		"menu": "Menu",
+		"closeMenu": "Close menu"
+	},
+	"tabs": {
+		"generalInformation": "General Information",
+		"installation": "Installation",
+		"oauth2": "OAuth2",
+		"flow": "Flow",
+		"flowExamples": "Flow Examples"
+	},
+	"generalInformation": {
+		"title": "General Information",
+		"subtitle": "What should we call your creation? What amazing things does it do? What icon should represent it across Mezon? Tell us here!",
+		"agreement": {
+			"text": "By clicking Create, you agree to the Mezon",
+			"adminTerms": "Admin Terms of Service",
+			"adminPolicy": "Admin Policy",
+			"and": "and"
+		},
+		"appIcon": {
+			"label": "App Icon",
+			"remove": "Remove",
+			"size": "Size: {size}"
+		},
+		"form": {
+			"name": "Name",
+			"url": "URL",
+			"botShadow": "Bot Shadow",
+			"description": {
+				"label": "Description (maximum 400 characters)",
+				"subtitle": "Your description will appear in the About Me section of your Bot",
+				"placeholder": "Write a short description of your Bot"
+			},
+			"appId": "Bot ID",
+			"appToken": "Token"
+		},
+		"token": {
+			"newTokenWarning": "This is your new token. Copy and store it safely, you won't be able to see it again.",
+			"securityInfo": "For security purposes, tokens can only be viewed once, when created. If you forgot or lost access to your token, please regenerate a new one."
+		},
+		"buttons": {
+			"copy": "Copy",
+			"copied": "Copied!",
+			"copyToken": "Copy Token",
+			"resetToken": "Reset Token",
+			"delete": "Delete Bot"
+		},
+		"errors": {
+			"invalidUrl": "Please enter a valid URL (e.g., https://example.com).",
+			"clientNotInitialized": "Client or file is not initialized",
+			"resetTokenFailed": "Failed to reset token:"
+		}
+	},
+	"installation": {
+		"title": "Installation",
+		"subtitle": "Choose how users will install your app. Create an installation link, choose which installation context to support, and define the scopes and permissions you want to request.",
+		"installLink": {
+			"title": "Install Link",
+			"description": "Use our provided install link or register a custom one. If you choose a custom link, users who add your app will be redirected to your URL instead of the Add App flow in Mezon.",
+			"option": "Mezon Provided Link"
+		},
+		"buttons": {
+			"copy": "Copy",
+			"copied": "Copied!"
+		},
+		"loading": "Loading application data...",
+		"notFound": "Application data not found"
+	},
+	"clientInformation": {
+		"title": "Client information",
+		"clientId": "Client ID",
+		"clientSecret": "Client Secret",
+		"hiddenForSecurity": "Hidden for security",
+		"resetSecret": "Reset secret",
+		"publicClient": {
+			"title": "Public client",
+			"description": "Public clients cannot maintain the confidentiality of their client credentials (i.e. desktop/mobile applications that do not use a server to make requests)"
+		},
+		"buttons": {
+			"copy": "Copy",
+			"copied": "Copied!"
+		},
+		"resetSecretPopup": {
+			"title": "Regenerate Secret Key?",
+			"warning": "Your app will stop working until you update the secret key in your app code.",
+			"nevermind": "Nevermind",
+			"confirm": "Yes, do it!"
+		},
+		"toasts": {
+			"addRedirectUri": "Please add at least one redirect URI before resetting the secret key!"
+		}
+	},
+	"flowExamples": {
+		"title": "Flow Examples"
+	},
+	"sidebarTabs": {
+		"applications": "Applications",
+		"teams": "Teams",
+		"embedDebugger": "Embed Debugger",
+		"document": "Document"
+	},
+	"applicationsPage": {
+		"title": "Applications",
+		"newApplicationButton": "New Application or Bot",
+		"develop": "Develop",
+		"subtitle": "to customize and extend Mezon for millions of users.",
+		"appsLinkText": "apps",
+		"sortBy": "Sort by:",
+		"sortOptions": {
+			"dateOfCreation": "Date of Creation",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "Small",
+			"large": "Large"
+		},
+		"sections": {
+			"myApplications": "My Applications",
+			"myBots": "My Bots"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Use Mezon as an authorization system or use our API on behalf of your users. Add a redirect URI, pick your scopes, roll a D20 for good luck, and go!",
+		"learnMore": "Learn more about OAuth2",
+		"generator": {
+			"title": "OAuth2 URL Generator",
+			"description": "Generate an invite link for your application by picking the scopes and permissions it needs to function. Then, share the URL to others!",
+			"scopes": "Scopes"
+		},
+		"redirects": {
+			"title": "Redirects",
+			"description": "You must specify at least one URI for authentication to work. If you pass a URI in an OAuth request, it must exactly match one of the URIs you enter here.",
+			"addRedirect": "Add Redirect",
+			"toasts": {
+				"fillAllInputs": "Please fill all inputs with valid URIs!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "There is empty input!",
+			"invalidUris": "URIs must be valid!",
+			"redirectUriRequired": "Redirect URI is required!"
+		}
+	},
+	"backToApps": "Back to Applications",
+	"selectLabel": "SELECT {{type}}",
+	"settings": "SETTINGS",
+	"flows": {
+		"title": "Chat Flows",
+		"setToken": "Set Token",
+		"addFlow": "Add Flow",
+		"appTokenModal": {
+			"title": "App Token",
+			"saveButton": "Save"
+		},
+		"toasts": {
+			"errorLoading": "Get list flow error"
+		}
+	},
+
+	"embed": {
+		"title": "Embed Debugger"
+	},
+	"teams": {
+		"title": "Teams"
+	},
+
+	"small": "Small",
+	"large": "Large"
+}

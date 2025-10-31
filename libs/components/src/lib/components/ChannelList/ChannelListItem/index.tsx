@@ -6,7 +6,8 @@ import type { UsersStreamEntity, VoiceEntity } from '@mezon/store';
 import {
 	clansActions,
 	selectCategoryExpandStateByCategoryId,
-	selectCurrentChannel,
+	selectCurrentChannelId,
+	selectCurrentChannelParentId,
 	selectIsUnreadChannelById,
 	selectIsUnreadThreadInChannel,
 	selectStreamMembersByChannelId,
@@ -42,7 +43,8 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 	const isUnreadChannel = useSelector((state) => selectIsUnreadChannelById(state, channel.id));
 	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel.id));
 	const streamChannelMembers = useAppSelector((state) => selectStreamMembersByChannelId(state, channel.id));
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
 	const channelMemberList = useMemo(() => {
 		if (channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE || channel.type === ChannelType.CHANNEL_TYPE_APP) return voiceChannelMembers;
 		if (channel.type === ChannelType.CHANNEL_TYPE_STREAMING) return streamChannelMembers;
@@ -89,8 +91,8 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 			(isCategoryExpanded ||
 				isUnreadChannel ||
 				hasUnread ||
-				currentChannel?.id === channel.id ||
-				currentChannel?.parent_id === channel.id ||
+				currentChannelId === channel.id ||
+				currentChannelParentId === channel.id ||
 				channel?.count_mess_unread)
 		) {
 			return (

@@ -16,14 +16,16 @@ import {
 	selectChannelAppClanId,
 	selectChannelById,
 	selectCloseMenu,
-	selectCurrentChannel,
-	selectCurrentClan,
+	selectCurrentChannelId,
+	selectCurrentClanId,
+	selectCurrentClanIsOnboarding,
 	selectIsSearchMessage,
 	selectIsShowCanvas,
 	selectIsShowCreateThread,
 	selectIsShowMemberList,
 	selectLastMessageViewportByChannelId,
-	selectLastSeenChannel,
+	selectLastSeenMessageId,
+	selectLastSentMessageStateByChannelId,
 	selectMissionDone,
 	selectMissionSum,
 	selectOnboardingByClan,
@@ -64,53 +66,76 @@ import { ChannelTyping } from './ChannelTyping';
 function useChannelSeen(channelId: string) {
 	const dispatch = useAppDispatch();
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId)) || {};
-	const lastMessage = useAppSelector((state) => selectLastMessageViewportByChannelId(state, channelId));
+	const lastMessageViewport = useAppSelector((state) => selectLastMessageViewportByChannelId(state, channelId));
+	const lastMessageChannel = useAppSelector((state) => selectLastSentMessageStateByChannelId(state, channelId));
+	const lastSeenMessageId = useAppSelector((state) => selectLastSeenMessageId(state, channelId));
+	const { markAsReadSeen } = useSeenMessagePool();
 
-	const lastSeenTimeStamp = useAppSelector((state) => selectLastSeenChannel(state, channelId));
+	const isMounted = useRef(false);
+	const isWindowFocused = !isBackgroundModeActive();
 
-	const isFocus = !isBackgroundModeActive();
+	const mode =
+		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
+			? ChannelStreamMode.STREAM_MODE_CHANNEL
+			: ChannelStreamMode.STREAM_MODE_THREAD;
+
+	const markMessageAsRead = useCallback(() => {
+		if (!lastMessageViewport || !lastMessageChannel) return;
+
+		if (lastSeenMessageId && lastMessageViewport?.id) {
+			try {
+				const distance = Math.round(Number((BigInt(lastMessageViewport.id) >> BigInt(22)) - (BigInt(lastSeenMessageId) >> BigInt(22))));
+				if (distance >= 0) {
+					markAsReadSeen(lastMessageViewport, mode, currentChannel?.count_mess_unread || 0);
+					return;
+				}
+			} catch (error) {
+				//
+			}
+		}
+
+		const isLastMessage = lastMessageViewport.id === lastMessageChannel.id;
+		if (isLastMessage) {
+			markAsReadSeen(lastMessageViewport, mode, currentChannel?.count_mess_unread || 0);
+		}
+	}, [lastMessageViewport, lastMessageChannel, lastSeenMessageId, markAsReadSeen, currentChannel, mode]);
+
+	const updateChannelSeenState = useCallback(
+		(_channelId: string) => {
+			if (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD) {
+				const channelWithActive = { ...currentChannel, active: 1 };
+				dispatch(
+					channelsActions.upsertOne({
+						clanId: currentChannel?.clan_id || '',
+						channel: channelWithActive as ChannelsEntity
+					})
+				);
+			}
+		},
+		[dispatch, currentChannel]
+	);
 
 	useEffect(() => {
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
-	}, [channelId, currentChannel, dispatch, isFocus]);
-	const { markAsReadSeen } = useSeenMessagePool();
-	const handleReadMessage = useCallback(() => {
-		if (!lastMessage) {
-			return;
-		}
-		const mode =
-			currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
-				? ChannelStreamMode.STREAM_MODE_CHANNEL
-				: ChannelStreamMode.STREAM_MODE_THREAD;
-
-		if (lastMessage?.create_time_seconds && lastSeenTimeStamp && lastMessage?.create_time_seconds >= lastSeenTimeStamp - 2) {
-			markAsReadSeen(lastMessage, mode, currentChannel?.count_mess_unread || 0);
-		}
-	}, [lastMessage, currentChannel, markAsReadSeen]);
+	}, [dispatch, channelId]);
 
 	useEffect(() => {
-		if (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD) {
-			const channelWithActive = { ...currentChannel, active: 1 };
-			dispatch(
-				channelsActions.upsertOne({
-					clanId: currentChannel?.clan_id || '',
-					channel: channelWithActive as ChannelsEntity
-				})
-			);
+		if (lastMessageViewport && isWindowFocused) {
+			markMessageAsRead();
 		}
-	}, [currentChannel?.id]);
+	}, [lastMessageViewport, isWindowFocused, markMessageAsRead, channelId]);
 
 	useEffect(() => {
-		if (lastMessage && isFocus) {
-			handleReadMessage();
-		}
-	}, [lastMessage, handleReadMessage, isFocus]);
+		if (isMounted.current || !lastMessageViewport) return;
+		isMounted.current = true;
+		updateChannelSeenState(channelId);
+	}, [channelId, lastMessageViewport, updateChannelSeenState]);
 
 	const handleUpdateChannelLastMessage = useCallback(() => {
 		dispatch(messagesActions.UpdateChannelLastMessage({ channelId }));
 	}, [dispatch, channelId]);
 
-	useBackgroundMode(handleUpdateChannelLastMessage, handleReadMessage);
+	useBackgroundMode(handleUpdateChannelLastMessage, markMessageAsRead, isWindowFocused);
 }
 
 const ChannelSeenListener = memo(({ channelId }: { channelId: string }) => {
@@ -139,9 +164,10 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const [canSendMessageDelayed, setCanSendMessageDelayed] = useState(true);
 	const isAppChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 
-	const currentClan = useSelector(selectCurrentClan);
-	const missionDone = useSelector((state) => selectMissionDone(state, currentClan?.id as string));
-	const missionSum = useSelector((state) => selectMissionSum(state, currentClan?.id as string));
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
+	const missionDone = useSelector((state) => selectMissionDone(state, currentClanId as string));
+	const missionSum = useSelector((state) => selectMissionSum(state, currentClanId as string));
 	const onboardingClan = useAppSelector((state) => selectOnboardingByClan(state, currentChannel.clan_id as string));
 	const appIsOpen = useAppSelector((state) => selectToCheckAppIsOpening(state, channelId));
 	const appButtonLabel = appIsOpen ? t('resetApp') : t('launchApp');
@@ -149,7 +175,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const currentMission = useMemo(() => {
 		return onboardingClan.mission[missionDone || 0];
 	}, [missionDone, channelId, onboardingClan.mission]);
-	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClan?.clan_id as string));
+	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClanId as string));
 
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	useEffect(() => {
@@ -171,17 +197,16 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 
 	const previewMode = useSelector(selectOnboardingMode);
 	const showPreviewMode = useMemo(() => {
-		if (previewMode?.open && previewMode.clanId === currentClan?.id) {
+		if (previewMode?.open && previewMode.clanId === currentClanId) {
 			return true;
 		}
-		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && currentClan?.is_onboarding;
-	}, [selectUserProcessing?.onboarding_step, currentClan?.is_onboarding, previewMode]);
+		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && currentClanIsOnboarding;
+	}, [selectUserProcessing?.onboarding_step, currentClanIsOnboarding, previewMode, currentClanId]);
 
 	if (!canSendMessageDelayed) {
 		return (
 			<div
-				style={{ height: 44 }}
-				className="opacity-80 bg-theme-input text-theme-primary ml-4 mb-4 py-2 pl-2 w-widthInputViewChannelPermission rounded one-line"
+				className="h-11 opacity-80 bg-theme-input text-theme-primary ml-4 mb-4 py-2 pl-2 w-widthInputViewChannelPermission rounded one-line"
 				data-e2e={generateE2eId('chat.message_box.input.no_permission')}
 			>
 				{t('noPermissionToSendMessage')}
@@ -384,13 +409,10 @@ interface IChannelMainProps {
 }
 
 export default function ChannelMain({ topicChannelId }: IChannelMainProps) {
-	const currentChannel = useSelector(selectCurrentChannel);
-	let chlId = currentChannel?.id || '';
-	if (topicChannelId) {
-		chlId = topicChannelId;
-	}
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const chlId = topicChannelId || currentChannelId;
 
-	if (!currentChannel) {
+	if (!chlId) {
 		return null;
 	}
 	return (
@@ -403,7 +425,7 @@ export default function ChannelMain({ topicChannelId }: IChannelMainProps) {
 
 const SearchMessageChannel = () => {
 	const { totalResult, currentPage, searchMessages } = useSearchMessages();
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelId = useSelector(selectCurrentChannelId);
 	const isLoading = useAppSelector(selectSearchMessagesLoadingStatus) === 'loading';
 
 	return (
@@ -411,7 +433,7 @@ const SearchMessageChannel = () => {
 			searchMessages={searchMessages}
 			currentPage={currentPage}
 			totalResult={totalResult}
-			channelId={currentChannel?.id || ''}
+			channelId={currentChannelId || ''}
 			isDm={false}
 			isLoading={isLoading}
 		/>

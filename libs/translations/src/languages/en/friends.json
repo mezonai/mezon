@@ -28,7 +28,8 @@
 	"toast": {
 		"sendAddFriendSuccess": "Friend request sent successfully!",
 		"acceptAddFriendSuccess": "Accept friend request!",
-		"sendAddFriendFail": "Hm, that didn't work. Double-check that the username is correct."
+		"sendAddFriendFail": "Hm, that didn't work. Double-check that the username is correct.",
+		"somethingWentWrong": "Something went wrong"
 	},
 	"you": "you"
 }

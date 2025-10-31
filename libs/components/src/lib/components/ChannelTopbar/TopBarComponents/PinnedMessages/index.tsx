@@ -1,6 +1,6 @@
 import { ColorRoleProvider, useAppParams, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
-import { pinMessageActions, selectCurrentChannel, useAppDispatch } from '@mezon/store';
+import { pinMessageActions, selectCurrentChannelClanId, selectCurrentChannelId, useAppDispatch } from '@mezon/store';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import type { RefObject } from 'react';
 import { useRef, useState } from 'react';
@@ -28,15 +28,16 @@ const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 	const dispatch = useAppDispatch();
 
 	const { directId } = useAppParams();
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannelClanId = useSelector(selectCurrentChannelClanId);
 
 	const handleUnPinMessage = (messageId: string) => {
-		const channelId = directId || currentChannel?.id || '';
+		const channelId = directId || currentChannelId || '';
 		dispatch(
 			pinMessageActions.deleteChannelPinMessage({
 				channel_id: channelId || '',
 				message_id: messageId,
-				clan_id: currentChannel?.clan_id || '0',
+				clan_id: currentChannelClanId || '0',
 				pin_id: unpinMess?.pinMessage.id
 			})
 		);

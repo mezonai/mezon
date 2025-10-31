@@ -1,13 +1,16 @@
 import { ChannelList, ClanHeader } from '@mezon/components';
 import { useApp, useGifsStickersEmoji } from '@mezon/core';
-import type { ChannelsEntity, ClansEntity } from '@mezon/store';
 import {
 	appActions,
 	onboardingActions,
 	selectAllAccount,
 	selectCloseMenu,
-	selectCurrentChannel,
-	selectCurrentClan,
+	selectCurrentChannelId,
+	selectCurrentChannelType,
+	selectCurrentClanBanner,
+	selectCurrentClanId,
+	selectCurrentClanIsOnboarding,
+	selectCurrentClanName,
 	selectIsShowChatStream,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
@@ -30,8 +33,6 @@ import TopicDiscussionMain from '../pages/topicDiscussion';
 
 const ClanEffects: React.FC<{
 	chatStreamRef: React.RefObject<HTMLDivElement>;
-	currentChannel: ChannelsEntity | null;
-	currentClan: ClansEntity | null;
 	isShowChatStream: boolean;
 	isShowCreateThread: boolean;
 	isShowCreateTopic: boolean;
@@ -67,16 +68,20 @@ const ClanEffects: React.FC<{
 };
 
 const ClanLayout = () => {
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
+	const currentClanBanner = useSelector(selectCurrentClanBanner);
+	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
 	const userProfile = useSelector(selectAllAccount);
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
 	const location = useLocation();
 	const currentURL = isElectron() ? location.hash : location.pathname;
-	const memberPath = `/chat/clans/${currentClan?.clan_id}/member-safety`;
-	const currentChannel = useSelector(selectCurrentChannel);
-	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannel?.id as string));
+	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannelType = useSelector(selectCurrentChannelType);
+	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, currentChannelId as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	const chatStreamRef = useRef<HTMLDivElement | null>(null);
 	const dispatch = useAppDispatch();
@@ -94,33 +99,33 @@ const ClanLayout = () => {
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 
 	useEffect(() => {
-		if (!currentClan?.id) return;
-		dispatch(onboardingActions.fetchOnboarding({ clan_id: currentClan.id }));
-		if (currentClan?.is_onboarding) {
-			dispatch(onboardingActions.fetchProcessingOnboarding({ clan_id: currentClan.id }));
+		if (!currentClanId) return;
+		dispatch(onboardingActions.fetchOnboarding({ clan_id: currentClanId }));
+		if (currentClanIsOnboarding) {
+			dispatch(onboardingActions.fetchProcessingOnboarding({ clan_id: currentClanId }));
 		}
-	}, [currentClan?.is_onboarding, currentClan?.id]);
+	}, [currentClanIsOnboarding, currentClanId, dispatch]);
 
 	return (
 		<>
 			<div
 				className={`select-none h-dvh flex-col flex max-w-[272px] bg-theme-direct-message border-left-theme-primary relative overflow-hidden min-w-widthMenuMobile sbm:min-w-[272px]  ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} ${closeMenu ? (statusMenu ? 'flex' : 'hidden') : ''}`}
 			>
-				<ClanHeader name={currentClan?.clan_name} type="CHANNEL" bannerImage={currentClan?.banner} />
+				<ClanHeader name={currentClanName} type="CHANNEL" bannerImage={currentClanBanner} />
 				<ChannelList />
 			</div>
 			<div
-				className={`flex flex-1 shrink min-w-0 gap-2 bg-theme-chat h-heightWithoutTopBar mt-[50px] ${isVoiceFullScreen ? 'z-20' : ''} ${currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'bg-theme-secondary' : ''}`}
+				className={`flex flex-1 shrink min-w-0 gap-2 bg-theme-chat h-heightWithoutTopBar mt-[50px] ${isVoiceFullScreen ? 'z-20' : ''} ${currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'bg-theme-secondary' : ''}`}
 			>
 				<div
-					className={`flex flex-col flex-1 shrink ${isShowChatStream && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'max-sm:hidden' : ''} min-w-0 bg-transparent h-heightWithoutTopBar overflow-visible }`}
+					className={`flex flex-col flex-1 shrink ${isShowChatStream && currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL ? 'max-sm:hidden' : ''} min-w-0 bg-transparent h-heightWithoutTopBar overflow-visible }`}
 				>
-					{(currentChannel?.type !== ChannelType.CHANNEL_TYPE_STREAMING || memberPath === currentURL) && <Outlet />}
+					{(currentChannelType !== ChannelType.CHANNEL_TYPE_STREAMING || memberPath === currentURL) && <Outlet />}
 				</div>
 
-				{isShowChatStream && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL && (
+				{isShowChatStream && currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL && (
 					<div ref={chatStreamRef} className="flex flex-col flex-1 max-w-[480px] min-w-60 rounded-l-lg">
-						<ChatStream currentChannel={currentChannel} />
+						<ChatStream />
 					</div>
 				)}
 			</div>
@@ -140,8 +145,6 @@ const ClanLayout = () => {
 			<Setting isDM={false} />
 
 			<ClanEffects
-				currentChannel={currentChannel}
-				currentClan={currentClan}
 				chatStreamRef={chatStreamRef}
 				isShowChatStream={isShowChatStream}
 				isShowCreateThread={isShowCreateThread}

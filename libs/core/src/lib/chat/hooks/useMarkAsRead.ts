@@ -10,6 +10,8 @@ import {
 	markAsReadProcessing,
 	selectAllChannels,
 	selectChannelThreads,
+	selectLastSentMessageStateByChannelId,
+	selectLatestMessageId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -65,7 +67,19 @@ export function useMarkAsRead() {
 				setStatusMarkAsReadChannel('success');
 				const allThreadsInChannel = [channel, ...getThreadWithBadgeCount(channel)];
 				const channelIds = allThreadsInChannel.map((item) => item.id);
-				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelIds));
+				const store = getStore();
+				const channelUpdates = channelIds.map((channelId) => {
+					let messageId: string | undefined;
+					if (store) {
+						messageId = selectLatestMessageId(store.getState(), channelId);
+						if (!messageId) {
+							const lastSentMsg = selectLastSentMessageStateByChannelId(store.getState(), channelId);
+							messageId = lastSentMsg?.id;
+						}
+					}
+					return { channelId, messageId };
+				});
+				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
 				dispatch(
 					channelsActions.resetChannelsCount({
 						clanId: channel?.clan_id as string,
@@ -95,7 +109,18 @@ export function useMarkAsRead() {
 					}
 				});
 				if (threadIds.length) {
-					dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadIds));
+					const threadUpdates = threadIds.map((channelId) => {
+						let messageId: string | undefined;
+						if (store) {
+							messageId = selectLatestMessageId(store.getState(), channelId);
+							if (!messageId) {
+								const lastSentMsg = selectLastSentMessageStateByChannelId(store.getState(), channelId);
+								messageId = lastSentMsg?.id;
+							}
+						}
+						return { channelId, messageId };
+					});
+					dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
 				}
 
 				dispatch(listChannelsByUserActions.markAsReadChannel([channel.id, ...threadIds]));
@@ -126,7 +151,18 @@ export function useMarkAsRead() {
 				const allChannelsAndThreads = channelsInCategory.flatMap((channel) => [channel, ...(channel.threads || [])]);
 				setStatusMarkAsReadCategory('success');
 				const channelIds = allChannelsAndThreads.map((item) => item.id);
-				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelIds));
+				const channelUpdates = channelIds.map((channelId) => {
+					let messageId: string | undefined;
+					if (store) {
+						messageId = selectLatestMessageId(store.getState(), channelId);
+						if (!messageId) {
+							const lastSentMsg = selectLastSentMessageStateByChannelId(store.getState(), channelId);
+							messageId = lastSentMsg?.id;
+						}
+					}
+					return { channelId, messageId };
+				});
+				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
 				dispatch(
 					channelsActions.resetChannelsCount({
 						clanId: category.clan_id as string,

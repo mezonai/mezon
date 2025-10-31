@@ -24,7 +24,7 @@ export const style = (colors: Attributes) =>
 		},
 		menuFooter: {
 			position: 'absolute',
-			bottom: '5%',
+			bottom: '8%',
 			width: '100%',
 			padding: size.s_20,
 			gap: size.s_10,

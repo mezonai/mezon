@@ -1,6 +1,7 @@
-import { IApplicationEntity } from '@mezon/store';
+import type { IApplicationEntity } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 interface IRedirectsProps {
@@ -12,9 +13,11 @@ interface IRedirectsProps {
 }
 
 const Redirects = ({ currentApp, uriInputValuesRef, setInputArrLength, inputArrLength, setHasChange }: IRedirectsProps) => {
+	const { t } = useTranslation('adminApplication');
+
 	const handleAddDirectUri = () => {
 		if (uriInputValuesRef.current.includes('')) {
-			toast.warning('Please fill all inputs with valid URIs!');
+			toast.warning(t('oauth2.redirects.toasts.fillAllInputs'));
 			return;
 		}
 		setInputArrLength((prev) => prev + 1);
@@ -23,12 +26,9 @@ const Redirects = ({ currentApp, uriInputValuesRef, setInputArrLength, inputArrL
 
 	return (
 		<div className="flex flex-col gap-2 rounded-md dark:bg-bgSecondary bg-bgLightSecondary p-5 dark:text-textPrimary text-colorTextLightMode">
-			<div className="text-black dark:text-white font-medium text-xl">Redirects</div>
+			<div className="text-black dark:text-white font-medium text-xl">{t('oauth2.redirects.title')}</div>
 			<div className="flex flex-col gap-5">
-				<div>
-					You must specify at least one URI for authentication to work. If you pass a URI in an OAuth request, it must exactly match one of
-					the URIs you enter here.
-				</div>
+				<div>{t('oauth2.redirects.description')}</div>
 				<div className="flex flex-col gap-5">
 					{[...Array(inputArrLength).keys()].map((_, index) => (
 						<UriItem
@@ -46,7 +46,7 @@ const Redirects = ({ currentApp, uriInputValuesRef, setInputArrLength, inputArrL
 						onClick={handleAddDirectUri}
 						className="py-[7px] px-4 cursor-pointer bg-indigo-600 hover:bg-indigo-700 transition-colors rounded-lg w-fit select-none font-medium text-white"
 					>
-						Add Redirect
+						{t('oauth2.redirects.addRedirect')}
 					</div>
 				</div>
 			</div>

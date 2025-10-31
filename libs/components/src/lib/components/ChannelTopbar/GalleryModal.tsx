@@ -17,8 +17,8 @@ import {
 	attachmentActions,
 	galleryActions,
 	getStore,
-	selectCurrentChannel,
 	selectCurrentChannelId,
+	selectCurrentChannelLabel,
 	selectCurrentClanId,
 	selectCurrentDM,
 	selectGalleryAttachmentsByChannel,
@@ -424,8 +424,8 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			const state = getStore()?.getState();
 			const currentClanId = selectCurrentClanId(state);
 			const currentDm = selectCurrentDM(state);
-			const currentChannel = selectCurrentChannel(state);
-			const currentChannelId = currentChannel?.id;
+			const currentChannelId = selectCurrentChannelId(state);
+			const currentChannelLabel = selectCurrentChannelLabel(state);
 			const currentDmGroupId = currentDm?.id;
 			const attachmentData = attachment;
 			if (!attachmentData) return;
@@ -487,7 +487,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 					},
 					realUrl: enhancedAttachmentData.url || '',
 					channelImagesData: {
-						channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
+						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channel_label) as string,
 						images: [],
 						selectedImageIndex: 0
 					}
@@ -497,7 +497,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 					const imageListWithUploaderInfo = getAttachmentDataForWindow(listAttachmentsByChannel, currentChatUsersEntities);
 					const selectedImageIndex = listAttachmentsByChannel.findIndex((image) => image.url === enhancedAttachmentData.url);
 					const channelImagesData: IImageWindowProps = {
-						channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
+						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channel_label) as string,
 						images: imageListWithUploaderInfo,
 						selectedImageIndex
 					};

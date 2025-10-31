@@ -1,9 +1,10 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { calculateTotalCount, EmojiDataOptionals, getSrcEmoji, SenderInfoOptionals } from '@mezon/utils';
+import type { EmojiDataOptionals, SenderInfoOptionals } from '@mezon/utils';
+import { calculateTotalCount, getSrcEmoji } from '@mezon/utils';
 import React, { useCallback } from 'react';
 import { DeviceEventEmitter, Pressable, Text } from 'react-native';
-import ImageNative from '../../../../../../components/ImageNative';
-import { IReactionMessageProps } from '../index';
+import FastImage from 'react-native-fast-image';
+import type { IReactionMessageProps } from '../index';
 
 export type IReactionItem = {
 	emojiItemData: EmojiDataOptionals;
@@ -47,7 +48,7 @@ export const ReactionItem = React.memo(
 				onPress={handlePress}
 				style={[styles.reactItem, isMyReaction ? styles.myReaction : styles.otherReaction]}
 			>
-				<ImageNative url={getSrcEmoji(emojiItemData.emojiId ?? '')} style={styles.iconEmojiReaction} resizeMode="contain" />
+				<FastImage source={{ uri: getSrcEmoji(emojiItemData.emojiId ?? '') }} style={styles.iconEmojiReaction} resizeMode="contain" />
 				<Text style={styles.reactCount}>{countReacts}</Text>
 			</Pressable>
 		);

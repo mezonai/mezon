@@ -107,7 +107,7 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 		return (!noCallBackTypes.includes(callLogType) || !isMe) && callLogType !== IMessageTypeCallLog.STARTCALL;
 	};
 	return (
-		<View style={{ flexDirection: 'row' }}>
+		<View style={styles.outerWrapper}>
 			<View style={styles.container}>
 				<View style={styles.wrapper}>
 					{getTitleText() ? (
@@ -124,7 +124,7 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 					) : null}
 
 					<View style={styles.wrapperDescription}>
-						<View style={{ top: size.s_2 }}>{getIcon()}</View>
+						<View style={styles.iconWrapper}>{getIcon()}</View>
 						<Text style={styles.description}>{getDescriptionText()}</Text>
 					</View>
 				</View>

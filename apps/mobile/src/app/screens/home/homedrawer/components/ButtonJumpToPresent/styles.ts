@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -8,7 +9,7 @@ export const style = (colors: Attributes) =>
 			right: size.s_10,
 			bottom: size.s_28,
 			backgroundColor: colors.secondaryLight,
-			borderColor: colors.secondaryLight,
+			borderColor: colors.primary,
 			borderWidth: 1,
 			width: size.s_40,
 			height: size.s_40,

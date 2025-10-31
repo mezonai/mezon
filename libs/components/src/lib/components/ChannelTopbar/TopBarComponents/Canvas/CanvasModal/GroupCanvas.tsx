@@ -1,6 +1,6 @@
 import { useAuth } from '@mezon/core';
 import { appActions, canvasActions, canvasAPIActions, selectIdCanvas, useAppDispatch } from '@mezon/store';
-import { ICanvas } from '@mezon/utils';
+import type { ICanvas } from '@mezon/utils';
 import { ButtonCopy } from 'libs/components/src/lib/components';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
@@ -76,9 +76,8 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 			{!isDisableDelCanvas && (
 				<button
 					title="Delete Canvas"
-					style={{ top: '9px' }}
 					onClick={handleDeleteCanvas}
-					className="absolute top-0 right-[5px]  bg-white dark:bg-transparent text-red-600 shadow-emoji_item-delete text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full"
+					className="absolute top-[9px] right-[5px]  bg-white dark:bg-transparent text-red-600 shadow-emoji_item-delete text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full"
 				>
 					X
 				</button>

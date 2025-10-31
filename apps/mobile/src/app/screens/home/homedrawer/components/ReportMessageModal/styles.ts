@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -84,5 +85,8 @@ export const style = (colors: Attributes) =>
 		categoryTitle: {
 			marginVertical: 20,
 			gap: size.s_10
+		},
+		animatedContainer: {
+			transform: [{ translateX: 0 }]
 		}
 	});

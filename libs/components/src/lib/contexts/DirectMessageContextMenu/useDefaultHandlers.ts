@@ -5,7 +5,7 @@ import type { DirectMessageContextMenuHandlers } from './types';
 interface UseDefaultHandlersParams {
 	openUserProfile: () => void;
 	handleDirectMessageWithUser: (user?: any) => Promise<void>;
-	addFriend: (params: { usernames: string[]; ids: string[] }) => void;
+	addFriend: (params: { usernames?: string[]; ids?: string[] }) => void;
 	deleteFriend: (username: string, userId: string) => void;
 	handleMarkAsRead: (channelId: string) => void;
 	handleScheduleMute: (channelId: string, channelType: number, duration: number) => void;
@@ -55,7 +55,7 @@ export function useDefaultHandlers({
 					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
 					if (usernames.length === 0 || ids.length === 0) return;
 
-					addFriend({ usernames, ids });
+					addFriend(ids.length > 0 ? { ids } : { usernames });
 				},
 				handleRemoveFriend: () => {
 					if (!user) return;

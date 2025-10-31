@@ -93,8 +93,6 @@ const SettingPhone = ({ title, description, isLoading, onClose }: SetPhoneProps)
 			if (validate && onClose) {
 				toast.success(t('setPhoneModal.updatePhoneSuccess'));
 				onClose();
-			} else if (!validate) {
-				toast.error(t('setPhoneModal.updatePhoneFail'));
 			}
 
 			return;
@@ -146,7 +144,7 @@ const SettingPhone = ({ title, description, isLoading, onClose }: SetPhoneProps)
 					<div className="space-y-4 p-6">
 						{!openConfirm ? (
 							<div className="flex gap-2">
-								<div className="space-y-2 flex-1">
+								<div className="space-y-2 flex-1 p-1">
 									<label htmlFor="countryCode" className="block text-sm font-medium ">
 										{t('setPhoneModal.countryCode')}
 									</label>
@@ -344,7 +342,7 @@ export const SelectCountry = ({ country, setCountry }: { country: string; setCou
 					placement="bottomLeft"
 					className="border-none py-[6px] px-[8px] z-50 bg-theme-input rounded-lg shadow-lg"
 				>
-					<div className="w-full h-[40px] rounded-md flex flex-row px-3 justify-between items-center cursor-pointer text-theme-primary-active bg-theme-input border-theme-primary">
+					<div className="w-full h-[42px] rounded-md flex flex-row px-3 justify-between items-center cursor-pointer text-theme-primary-active bg-theme-input border-theme-primary">
 						<p className="truncate text-sm font-medium flex items-center gap-2">
 							{flags[country]?.flag} {flags[country]?.name} {`(${flags[country]?.dial})`}
 						</p>

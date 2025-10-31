@@ -1,7 +1,8 @@
 import { ModalSaveChanges } from '@mezon/components';
 import { editMezonOauthClient, selectApplicationById, selectCurrentAppId, useAppDispatch } from '@mezon/store';
-import { ApiMezonOauthClient } from 'mezon-js/api.gen';
+import type { ApiMezonOauthClient } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import ClientInformation from './ClientInformation/ClientInformation';
@@ -17,17 +18,16 @@ export interface IScope {
 }
 
 const OAuth2 = () => {
+	const { t } = useTranslation('adminApplication');
 	const dispatch = useAppDispatch();
 	const [hasChange, setHasChange] = useState(false);
 	const currentAppId = useSelector(selectCurrentAppId);
 	const currentApp = useSelector((state) => selectApplicationById(state, currentAppId as string)) ?? {};
 
-	//For Redirects URIs
 	const appURIes = useMemo(() => currentApp?.oAuthClient?.redirect_uris ?? [], [currentApp?.oAuthClient?.redirect_uris]);
 	const uriInputValuesRef = useRef<string[]>([...appURIes]);
 	const [inputArrLength, setInputArrLength] = useState<number>(appURIes.length);
 
-	//For scopes
 	const initialAppScopesStringArray = (currentApp?.oAuthClient?.scope || '').split(' ');
 
 	const initialScopeValues = useMemo(() => {
@@ -55,21 +55,21 @@ const OAuth2 = () => {
 	const handleSaveChanges = async () => {
 		let includeInvalidURI = false;
 		if (!uriInputValuesRef.current || uriInputValuesRef.current.includes('')) {
-			toast.warning('There is empty input!');
+			toast.warning(t('oauth2.toasts.emptyInput'));
 			return;
 		}
 
 		for (let index = 0; index < uriInputValuesRef.current.length; index++) {
 			const item = uriInputValuesRef.current[index];
 			if (!item.startsWith('http://') && !item.startsWith('https://')) {
-				toast.warning('URIs must be valid!');
+				toast.warning(t('oauth2.toasts.invalidUris'));
 				includeInvalidURI = true;
 				break;
 			}
 		}
 
 		if (!uriInputValuesRef.current.length) {
-			toast.warning('Redirect URI is required!');
+			toast.warning(t('oauth2.toasts.redirectUriRequired'));
 			return;
 		}
 
@@ -79,7 +79,7 @@ const OAuth2 = () => {
 
 		let newScope = '';
 		clientScopeValues.forEach((item) => {
-			if (item.isChecked) newScope += item.value + ' ';
+			if (item.isChecked) newScope += `${item.value} `;
 		});
 
 		const request: ApiMezonOauthClient = {
@@ -116,12 +116,9 @@ const OAuth2 = () => {
 	return (
 		<div className="flex flex-col gap-10 pb-10">
 			<div className="flex gap-5 flex-col">
-				<div className="text-2xl font-semibold">OAuth2</div>
-				<div className="text-xl dark:text-[#b5bac1] text-[#4e5058]">
-					Use Mezon as an authorization system or use our API on behalf of your users. Add a redirect URI, pick your scopes, roll a D20 for
-					good luck, and go!
-				</div>
-				<div className="text-blue-500 cursor-pointer">Learn more about OAuth2</div>
+				<div className="text-2xl font-semibold">{t('oauth2.title')}</div>
+				<div className="text-xl dark:text-[#b5bac1] text-[#4e5058]">{t('oauth2.subtitle')}</div>
+				<div className="text-blue-500 cursor-pointer">{t('oauth2.learnMore')}</div>
 			</div>
 			<ClientInformation currentApp={currentApp} />
 			<Redirects

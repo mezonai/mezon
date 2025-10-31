@@ -11,14 +11,13 @@ import {
 	groupCallActions,
 	messagesActions,
 	selectAllAccount,
-	selectBlockedUsersForMessage,
+	selectCurrentUserId,
 	selectDmGroupCurrent,
 	selectLastMessageByChannelId,
-	selectLastSeenMessageStateByChannelId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { IMessageTypeCallLog, TypeMessage, WEBRTC_SIGNALING_TYPES, createImgproxyUrl, sleep } from '@mezon/utils';
+import { IMessageTypeCallLog, TypeMessage, WEBRTC_SIGNALING_TYPES, createImgproxyUrl } from '@mezon/utils';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
@@ -41,13 +40,12 @@ interface HeaderProps {
 	styles: any;
 	themeValue: any;
 	directMessageId: string;
+	isBlocked?: boolean;
 }
 export const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 	const dispatch = useAppDispatch();
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
-	const lastMessageState = useSelector((state) => selectLastSeenMessageStateByChannelId(state, channelId as string));
-
 	const { markAsReadSeen } = useSeenMessagePool();
 
 	const isMounted = useRef(false);
@@ -55,17 +53,13 @@ export const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 	const markMessageAsRead = useCallback(() => {
 		if (!lastMessage) return;
 
-		if (
-			lastMessage?.create_time_seconds &&
-			lastMessageState?.timestamp_seconds &&
-			lastMessage?.create_time_seconds >= lastMessageState?.timestamp_seconds
-		) {
+		if (lastMessage?.create_time_seconds) {
 			const mode =
 				currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 
 			markAsReadSeen(lastMessage, mode, 0);
 		}
-	}, [lastMessage, markAsReadSeen, currentDmGroup, lastMessageState]);
+	}, [lastMessage, markAsReadSeen, currentDmGroup]);
 
 	const updateChannelSeenState = useCallback(
 		(channelId: string) => {
@@ -89,19 +83,24 @@ export const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 	return null;
 });
 
-const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, directMessageId }) => {
+const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, directMessageId, isBlocked }) => {
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
 	const dispatch = useAppDispatch();
 	const { sendSignalingToParticipants } = useSendSignaling();
-	const listBlockedUser = useSelector(selectBlockedUsersForMessage);
 
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ mode, channelOrDirect: currentDmGroup });
 	const isTypeDMGroup = useMemo(() => {
 		return Number(currentDmGroup?.type) === ChannelType.CHANNEL_TYPE_GROUP;
 	}, [currentDmGroup?.type]);
+	const currentUserId = useSelector(selectCurrentUserId);
+
+	const isChatWithMyself = useMemo(() => {
+		if (Number(currentDmGroup?.type) !== ChannelType.CHANNEL_TYPE_DM) return false;
+		return currentDmGroup?.user_ids?.[0] === currentUserId;
+	}, [currentDmGroup?.type, currentDmGroup?.user_ids, currentUserId]);
 
 	const dmLabel = useMemo(() => {
 		return (currentDmGroup?.channel_label ||
@@ -218,16 +217,6 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data: dataModal });
 	};
 
-	const isBlocked = useMemo(() => {
-		try {
-			if (currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_DM) return false;
-			const blockedUser = listBlockedUser.some((user) => user?.user && user?.user?.id === currentDmGroup?.user_ids?.[0]);
-			return blockedUser;
-		} catch (e) {
-			return false;
-		}
-	}, [currentDmGroup, listBlockedUser]);
-
 	const headerOptions: IOption[] = [
 		{
 			title: 'buzz',
@@ -268,7 +257,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 						<View style={styles.groupAvatarWrapper}>
 							<ImageNative
 								url={createImgproxyUrl(currentDmGroup?.channel_avatar ?? '')}
-								style={{ width: '100%', height: '100%' }}
+								style={styles.imageFullSize}
 								resizeMode={'cover'}
 							/>
 						</View>
@@ -283,7 +272,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 							<View style={styles.friendAvatar}>
 								<ImageNative
 									url={createImgproxyUrl(dmAvatar ?? '', { width: 100, height: 100, resizeType: 'fit' })}
-									style={{ width: '100%', height: '100%' }}
+									style={styles.imageFullSize}
 									resizeMode={'cover'}
 								/>
 							</View>
@@ -300,16 +289,21 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				</Text>
 				{!isBlocked && (
 					<View style={styles.iconWrapper}>
-						{((!isTypeDMGroup && !!currentDmGroup?.user_ids?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meeting_code)) && (
-							<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall()}>
-								<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
-							</TouchableOpacity>
+						{!isChatWithMyself && (
+							<>
+								{((!isTypeDMGroup && !!currentDmGroup?.user_ids?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meeting_code)) && (
+									<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall()}>
+										<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+									</TouchableOpacity>
+								)}
+								{!isTypeDMGroup && (
+									<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall(true)}>
+										<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+									</TouchableOpacity>
+								)}
+							</>
 						)}
-						{!isTypeDMGroup && (
-							<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall(true)}>
-								<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
-							</TouchableOpacity>
-						)}
+
 						<View style={styles.iconOption}>
 							<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />
 						</View>

@@ -45,8 +45,11 @@ const StreamingPopup = () => {
 	useEffect(() => {
 		checkOrientation();
 
-		const subscription = Dimensions.addEventListener('change', () => {
-			checkOrientation();
+		const subscription = Dimensions.addEventListener('change', (handler) => {
+			const screen = handler?.screen;
+			if (screen?.width && screen?.height) {
+				layoutRef.current = { width: screen?.width, height: screen?.height };
+			}
 			resetPosition();
 		});
 

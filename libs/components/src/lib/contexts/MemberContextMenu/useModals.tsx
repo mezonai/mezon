@@ -114,7 +114,7 @@ export const useModals = ({ currentUser }: ModalsProps): ModalsState => {
 					classBanner="rounded-tl-lg rounded-tr-lg h-[105px]"
 					avatar={avatar}
 					name={username}
-					isDM={!currentUser?.clan_nick}
+					isDM={!currentUser?.clan_id}
 					user={currentUser}
 				/>
 			</div>

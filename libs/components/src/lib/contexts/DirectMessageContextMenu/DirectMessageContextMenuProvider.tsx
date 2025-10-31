@@ -161,11 +161,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const isOwnerClanOrGroup = userProfile?.user?.id && dataMemberCreate?.createId && userProfile?.user?.id === dataMemberCreate.createId;
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentUser?.user_ids?.[0] || currentUser?.id || ''));
 	const didIBlockUser = useMemo(() => {
-		return (
-			infoFriend?.state === EStateFriend.BLOCK &&
-			infoFriend?.source_id === userProfile?.user?.id &&
-			infoFriend?.user?.id === currentUser?.user_ids?.[0]
-		);
+		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userProfile?.user?.id;
 	}, [currentUser?.user_ids, infoFriend, userProfile?.user?.id]);
 
 	const contextValue: DirectMessageContextMenuContextType = {
@@ -261,10 +257,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 							) : shouldShowMuteSubmenu ? (
 								<Submenu
 									label={
-										<span
-											className="flex truncate justify-between items-center w-full font-sans text-sm font-medium text-theme-primary text-theme-primary-hover  "
-											style={{ fontFamily: `'gg sans', 'Noto Sans', sans-serif`, padding: 6 }}
-										>
+										<span className="flex truncate justify-between items-center w-full font-sans text-sm font-medium text-theme-primary text-theme-primary-hover p-1.5">
 											{nameChildren}
 										</span>
 									}

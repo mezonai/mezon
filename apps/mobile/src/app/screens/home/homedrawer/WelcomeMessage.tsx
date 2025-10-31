@@ -49,6 +49,9 @@ const WelcomeMessage = React.memo(({ channelId }: IWelcomeMessage) => {
 	const infoFriend = useAppSelector((state) => selectFriendById(state, targetUserId || ''));
 
 	const { blockFriend, unBlockFriend } = useFriends();
+	const isMySelf = useMemo(() => {
+		return targetUserId === currentUserId;
+	}, [targetUserId, currentUserId]);
 	const isBlockedByUser = useMemo(() => {
 		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === targetUserId && infoFriend?.user?.id === currentUserId;
 	}, [infoFriend, targetUserId, currentUserId]);
@@ -109,7 +112,7 @@ const WelcomeMessage = React.memo(({ channelId }: IWelcomeMessage) => {
 	const handleAcceptFriend = async () => {
 		const store = await getStoreAsync();
 		const body = {
-			usernames: [userName],
+			usernames: [],
 			ids: [targetUserId],
 			isAcceptingRequest: true
 		};
@@ -207,7 +210,7 @@ const WelcomeMessage = React.memo(({ channelId }: IWelcomeMessage) => {
 						<Text style={styles.subTitleWelcomeMessage}>{t('chatWelcome:welcome.beginningOfDM', { userName: priorityName })}</Text>
 					)}
 
-					{!isDMGroup && !isBlockedByUser && (
+					{!isDMGroup && !isBlockedByUser && !isMySelf && (
 						<View style={styles.friendActions}>
 							{infoFriend?.state !== EStateFriend.BLOCK &&
 								(infoFriend?.state === EStateFriend.FRIEND ? (

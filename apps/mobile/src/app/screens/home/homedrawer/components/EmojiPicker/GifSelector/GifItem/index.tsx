@@ -37,7 +37,7 @@ export default function GiftItem({ loading, data, onPress }: GifItemProps) {
 									priority: FastImage.priority.high
 								}}
 								resizeMode={FastImage.resizeMode.cover}
-								style={{ height: '100%', width: '100%' }}
+								style={styles.fastImage}
 							/>
 						</TouchableOpacity>
 					);

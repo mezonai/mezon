@@ -244,5 +244,11 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			width: size.s_15,
 			height: size.s_15,
 			borderRadius: size.s_50
+		},
+		actionTextGreen: {
+			color: baseColor.green
+		},
+		actionTextYellow: {
+			color: baseColor.goldenrodYellow
 		}
 	});

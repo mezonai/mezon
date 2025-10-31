@@ -1,8 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
-import { SESSION_REFRESH_KEY } from '@mezon/transport';
 import type { IClan, LoadingStatus } from '@mezon/utils';
 import { LIMIT_CLAN_ITEM, TypeCheck } from '@mezon/utils';
-import localStorageMobile from '@react-native-async-storage/async-storage';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ClanUpdatedEvent } from 'mezon-js';
@@ -18,7 +16,7 @@ import { usersClanActions } from '../clanMembers/clan.members';
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureClient, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureClient, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx, sleep } from '../helpers';
 import { messagesActions, processQueuedLastSeenMessages } from '../messages/messages.slice';
 import { defaultNotificationCategoryActions } from '../notificationSetting/notificationSettingCategory.slice';
 import { defaultNotificationActions } from '../notificationSetting/notificationSettingClan.slice';
@@ -48,6 +46,11 @@ interface ClanMeta {
 	showNumEvent: boolean;
 }
 
+interface ClanUnreadState {
+	id: string; // clanId
+	has_unread_message: boolean;
+}
+
 export interface ClanGroup {
 	id: string;
 	name?: string;
@@ -64,6 +67,7 @@ export interface ClanGroupItem {
 }
 
 const clanMetaAdapter = createEntityAdapter<ClanMeta>();
+const clanUnreadAdapter = createEntityAdapter<ClanUnreadState>();
 const clanGroupAdapter = createEntityAdapter<ClanGroup>();
 
 function extractClanMeta(clan: ClansEntity): ClanMeta {
@@ -78,6 +82,7 @@ export interface ClansState extends EntityState<ClansEntity, string> {
 	error?: string | null;
 	currentClanId?: string | null;
 	clanMetadata: EntityState<ClanMeta, string>;
+	clanUnreadStates: EntityState<ClanUnreadState, string>; // Normalized unread state
 	invitePeople: boolean;
 	inviteChannelId?: string;
 	inviteClanId?: string;
@@ -194,38 +199,55 @@ export type FetchClansPayload = {
 	fromCache?: boolean;
 };
 
-export const fetchClans = createAsyncThunk('clans/fetchClans', async ({ noCache = false }: { noCache?: boolean }, thunkAPI) => {
-	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await fetchClansCached(thunkAPI.getState as () => RootState, mezon, LIMIT_CLAN_ITEM, 1, '', noCache);
-		if (!response.clandesc) {
-			return { clans: [], fromCache: response.fromCache };
-		}
-		const clans = response.clandesc.map(mapClanToEntity);
-		const meta = clans.map((clan: ClansEntity) => extractClanMeta(clan));
-		thunkAPI.dispatch(clansActions.updateBulkClanMetadata(meta));
+let lastUnreadIndicatorCall = 0;
+const UNREAD_DEBOUNCE_MS = 2000;
 
-		const state = thunkAPI.getState() as RootState;
-		const queuedMessages = state.messages.queuedLastSeenMessages;
-		if (queuedMessages.length > 0) {
-			thunkAPI.dispatch(processQueuedLastSeenMessages());
-		}
+export const fetchClans = createAsyncThunk(
+	'clans/fetchClans',
+	async ({ noCache = false, isMobile = false }: { noCache?: boolean; isMobile?: boolean }, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await fetchClansCached(thunkAPI.getState as () => RootState, mezon, LIMIT_CLAN_ITEM, 1, '', noCache);
+			if (!response.clandesc) {
+				return { clans: [], fromCache: response.fromCache };
+			}
+			const clans = response.clandesc.map(mapClanToEntity);
+			const meta = clans.map((clan: ClansEntity) => extractClanMeta(clan));
+			thunkAPI.dispatch(clansActions.updateBulkClanMetadata(meta));
 
-		if (!response.fromCache && clans.length > 0) {
-			const clanIds = clans.filter((clan) => clan?.id).map((clan) => clan.id);
-			thunkAPI.dispatch(listClanUnreadMsgIndicator({ clanIds }));
-		}
+			const state = thunkAPI.getState() as RootState;
+			const queuedMessages = state.messages.queuedLastSeenMessages;
+			if (queuedMessages.length > 0) {
+				thunkAPI.dispatch(processQueuedLastSeenMessages());
+			}
 
-		const payload: FetchClansPayload = {
-			clans,
-			fromCache: response.fromCache
-		};
-		return payload;
-	} catch (error) {
-		captureSentryError(error, 'clans/fetchClans');
-		return thunkAPI.rejectWithValue(error);
+			if (!response.fromCache && clans.length > 0 && !fetchListClanUnreadMsgIndicator) {
+				if (isMobile) {
+					const now = Date.now();
+					if (now - lastUnreadIndicatorCall > UNREAD_DEBOUNCE_MS) {
+						lastUnreadIndicatorCall = now;
+						const clanIds = clans.filter((clan) => clan?.id).map((clan) => clan.id);
+						queueMicrotask(() => {
+							thunkAPI.dispatch(listClanUnreadMsgIndicator({ clanIds }));
+						});
+					}
+				} else {
+					const clanIds = clans.filter((clan) => clan?.id).map((clan) => clan.id);
+					thunkAPI.dispatch(listClanUnreadMsgIndicator({ clanIds }));
+				}
+			}
+
+			const payload: FetchClansPayload = {
+				clans,
+				fromCache: response.fromCache
+			};
+			return payload;
+		} catch (error) {
+			captureSentryError(error, 'clans/fetchClans');
+			return thunkAPI.rejectWithValue(error);
+		}
 	}
-});
+);
 
 type CreatePayload = {
 	clan_name: string;
@@ -445,18 +467,16 @@ export const updateUsername = createAsyncThunk('clans/updateUsername', async ({ 
 		}
 		const sessionState = mezon?.session;
 		if (response?.refresh_token && response?.token) {
-			try {
-				localStorage.setItem(SESSION_REFRESH_KEY, JSON.stringify(response));
-			} catch (e) {
-				await localStorageMobile.setItem(SESSION_REFRESH_KEY, JSON.stringify(response));
-			}
-			return await mezon?.refreshSession({
-				...sessionState,
-				is_remember: sessionState.is_remember ?? false,
-				username,
-				refresh_token: response.refresh_token,
-				token: response.token
-			});
+			return await mezon?.refreshSession(
+				{
+					...sessionState,
+					is_remember: sessionState.is_remember ?? false,
+					username,
+					refresh_token: response.refresh_token,
+					token: response.token
+				},
+				true
+			);
 		}
 		return false;
 	} catch (error) {
@@ -479,7 +499,7 @@ export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan
 	}
 });
 
-export const updateHasUnreadBasedOnChannels = createAsyncThunk<void, { clanId: string }>(
+export const updateHasUnreadBasedOnChannels = createAsyncThunk<{ clanId: string; hasUnread: boolean }, { clanId: string }>(
 	'clans/updateHasUnreadBasedOnChannels',
 	async ({ clanId }, thunkAPI) => {
 		try {
@@ -488,8 +508,7 @@ export const updateHasUnreadBasedOnChannels = createAsyncThunk<void, { clanId: s
 
 			const clanChannelState = state.channels.byClans?.[clanId];
 			if (!clanChannelState?.entities) {
-				thunkAPI.dispatch(clansActions.setHasUnreadMessage({ clanId, hasUnread: false }));
-				return;
+				return { clanId, hasUnread: false };
 			}
 
 			const channelEntities = clanChannelState.entities.entities;
@@ -507,7 +526,7 @@ export const updateHasUnreadBasedOnChannels = createAsyncThunk<void, { clanId: s
 				}
 			}
 
-			thunkAPI.dispatch(clansActions.setHasUnreadMessage({ clanId, hasUnread }));
+			return { clanId, hasUnread };
 		} catch (error) {
 			captureSentryError(error, 'clans/updateHasUnreadBasedOnChannels');
 			return thunkAPI.rejectWithValue(error);
@@ -515,7 +534,9 @@ export const updateHasUnreadBasedOnChannels = createAsyncThunk<void, { clanId: s
 	}
 );
 
-export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: string[] }>(
+let fetchListClanUnreadMsgIndicator = false;
+
+export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: string[]; isMobile?: boolean }>(
 	'clans/listClanUnreadMsgIndicator',
 	async ({ clanIds }, thunkAPI) => {
 		try {
@@ -523,6 +544,7 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 
 			for (const clanId of clanIds) {
 				try {
+					await sleep(1000);
 					const response = await fetchDataWithSocketFallback(
 						mezon,
 						{
@@ -548,6 +570,7 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 					console.warn(`Failed to get unread indicator for clan ${clanId}:`, error);
 				}
 			}
+			fetchListClanUnreadMsgIndicator = true;
 		} catch (error) {
 			captureSentryError(error, 'clans/listClanUnreadMsgIndicator');
 			return thunkAPI.rejectWithValue(error);
@@ -560,6 +583,7 @@ export const initialClansState: ClansState = clansAdapter.getInitialState({
 	clans: [],
 	error: null,
 	clanMetadata: clanMetaAdapter.getInitialState(),
+	clanUnreadStates: clanUnreadAdapter.getInitialState(),
 	invitePeople: false,
 	inviteChannelId: undefined,
 	inviteClanId: undefined,
@@ -738,11 +762,26 @@ export const clansSlice = createSlice({
 				const finalBadgeCount = Math.max(0, newBadgeCount);
 				if (!entity.badge_count && finalBadgeCount === 0) return;
 				if (entity.badge_count !== finalBadgeCount) {
+					const newHasUnread = finalBadgeCount === 0 ? false : entity.has_unread_message;
+
+					if (finalBadgeCount === 0 && newHasUnread === false) {
+						const currentUnreadState = state.clanUnreadStates.entities[clanId];
+						if (currentUnreadState?.has_unread_message !== false) {
+							clanUnreadAdapter.updateOne(state.clanUnreadStates, {
+								id: clanId,
+								changes: {
+									has_unread_message: false
+								}
+							});
+						}
+					}
+				}
+
+				if (entity.badge_count !== finalBadgeCount) {
 					clansAdapter.updateOne(state, {
 						id: clanId,
 						changes: {
-							badge_count: finalBadgeCount,
-							has_unread_message: finalBadgeCount === 0 ? false : entity.has_unread_message
+							badge_count: finalBadgeCount
 						}
 					});
 				}
@@ -759,10 +798,15 @@ export const clansSlice = createSlice({
 		},
 		setHasUnreadMessage: (state, action: PayloadAction<{ clanId: string; hasUnread: boolean }>) => {
 			const { clanId, hasUnread } = action.payload;
-			const clan = state.entities[clanId];
+			const currentUnreadState = state.clanUnreadStates.entities[clanId];
 
-			if (clan && clan.has_unread_message !== hasUnread) {
-				clansAdapter.updateOne(state, {
+			if (!currentUnreadState) {
+				clanUnreadAdapter.addOne(state.clanUnreadStates, {
+					id: clanId,
+					has_unread_message: hasUnread
+				});
+			} else if (currentUnreadState.has_unread_message !== hasUnread) {
+				clanUnreadAdapter.updateOne(state.clanUnreadStates, {
 					id: clanId,
 					changes: {
 						has_unread_message: hasUnread
@@ -857,6 +901,23 @@ export const clansSlice = createSlice({
 				changes: { creator_id: new_clan_owner }
 			});
 		});
+		builder.addCase(updateHasUnreadBasedOnChannels.fulfilled, (state: ClansState, action) => {
+			const { clanId, hasUnread } = action.payload;
+			const currentUnreadState = state.clanUnreadStates.entities[clanId];
+			if (!currentUnreadState) {
+				clanUnreadAdapter.addOne(state.clanUnreadStates, {
+					id: clanId,
+					has_unread_message: hasUnread
+				});
+			} else if (currentUnreadState.has_unread_message !== hasUnread) {
+				clanUnreadAdapter.updateOne(state.clanUnreadStates, {
+					id: clanId,
+					changes: {
+						has_unread_message: hasUnread
+					}
+				});
+			}
+		});
 	}
 });
 
@@ -931,6 +992,14 @@ export const selectCurrentClan = createSelector(selectClansEntities, selectCurre
 	clanId ? clansEntities[clanId] : null
 );
 
+export const selectCurrentClanBanner = createSelector(selectCurrentClan, (clan) => clan?.banner);
+export const selectCurrentClanLogo = createSelector(selectCurrentClan, (clan) => clan?.logo);
+export const selectCurrentClanName = createSelector(selectCurrentClan, (clan) => clan?.clan_name);
+export const selectCurrentClanCreatorId = createSelector(selectCurrentClan, (clan) => clan?.creator_id);
+export const selectCurrentClanIsOnboarding = createSelector(selectCurrentClan, (clan) => clan?.is_onboarding);
+export const selectCurrentClanWelcomeChannelId = createSelector(selectCurrentClan, (clan) => clan?.welcome_channel_id);
+export const selectCurrentClanBadgeCount = createSelector(selectCurrentClan, (clan) => clan?.badge_count ?? 0);
+
 export const selectDefaultClanId = createSelector(selectAllClans, (clans) => (clans.length > 0 ? clans[0].id : null));
 export const selectOrderedClans = createSelector([selectAllClans, (state: RootState) => state.clans.clansOrder], (clans, order) => {
 	if (!order || order.length === 0) return clans;
@@ -974,6 +1043,18 @@ export const selectClanGroupEntities = createSelector(getClansState, (state) => 
 export const selectClanGroupById = (groupId: string) => createSelector(selectClanGroupEntities, (entities) => entities[groupId]);
 
 export const selectClanGroupOrder = createSelector(getClansState, (state) => state?.clanGroupOrder || []);
+
+export const selectClanUnreadStates = createSelector(getClansState, (state) => state.clanUnreadStates.entities);
+
+export const selectClanHasUnreadMessage = (clanId: string) =>
+	createSelector(selectClanUnreadStates, (unreadStates) => {
+		return unreadStates[clanId]?.has_unread_message ?? false;
+	});
+
+export const selectClanExists = (clanId: string) =>
+	createSelector(selectClansEntities, (clansEntities) => {
+		return !!clansEntities[clanId];
+	});
 
 export const selectOrderedClansWithGroups = createSelector([selectAllClans, selectClanGroups, selectClanGroupOrder], (clans, groups, order) => {
 	if (!order || order.length === 0) {

@@ -1,6 +1,7 @@
 import { Icons } from '@mezon/ui';
+import { useTranslation } from 'react-i18next';
 import { NavLink } from 'react-router-dom';
-import { ITabs } from '../common/constants/tabSideBar';
+import type { ITabs } from '../common/constants/tabSideBar';
 
 interface ICollapseSideBarProps {
 	isShow: boolean;
@@ -10,6 +11,7 @@ interface ICollapseSideBarProps {
 }
 
 const CollapseSideBar = ({ isShow, toggleSideBar, tabs, currentAppId }: ICollapseSideBarProps) => {
+	const { t } = useTranslation('adminApplication');
 	const collapseSideBarHeight = 'calc(100vh - 65px)';
 	return (
 		<div>
@@ -21,7 +23,7 @@ const CollapseSideBar = ({ isShow, toggleSideBar, tabs, currentAppId }: ICollaps
 				style={{ height: collapseSideBarHeight }}
 			>
 				<h5 id="drawer-navigation-label" className="text-base font-semibold text-gray-500 uppercase dark:text-gray-400">
-					Menu
+					{t('sidebar.menu')}
 				</h5>
 				<button
 					type="button"
@@ -32,7 +34,7 @@ const CollapseSideBar = ({ isShow, toggleSideBar, tabs, currentAppId }: ICollaps
 					<div className="dark:text-textDarkTheme text-textLightTheme w-6">
 						<Icons.MenuClose className="w-full" />
 					</div>
-					<span className="sr-only">Close menu</span>
+					<span className="sr-only">{t('sidebar.closeMenu')}</span>
 				</button>
 				<div className="py-4 overflow-y-auto">
 					<ul className="space-y-2 font-medium">

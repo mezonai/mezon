@@ -1,4 +1,5 @@
-import { Attributes, Metrics, baseColor, size, verticalScale } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { Metrics, baseColor, size, verticalScale } from '@mezon/mobile-ui';
 import { Platform, StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -74,5 +75,17 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_10,
 			fontWeight: 'bold'
 		},
-		buzzBadge: { marginBottom: size.s_10 }
+		buzzBadge: { marginBottom: size.s_10 },
+		cornerIconWrapper: {
+			top: -size.s_20,
+			left: -size.s_2
+		},
+		virtualConnectorLine: {
+			backgroundColor: '#535353',
+			width: 1.2,
+			height: size.s_10,
+			position: 'absolute',
+			top: -5,
+			left: 0.3
+		}
 	});

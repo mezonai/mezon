@@ -42,6 +42,7 @@ import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMPOSE_FEATURE_KEY, composeReducer } from './compose/compose.slice';
+import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
 import { directMetaReducer } from './direct/directmeta.slice';
 import { USER_STATUS_FEATURE_KEY, statusReducer } from './direct/status.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
@@ -298,6 +299,14 @@ const persistedGifsStickerEmojiReducer = persistReducer(
 	gifsStickerEmojiReducer
 );
 
+const persistedComunityReducer = persistReducer(
+	{
+		key: COMUNITY_FEATURE_KEY,
+		storage
+	},
+	comunityReducer
+);
+
 const persistedChannelMetaReducer = persistReducer(
 	{
 		key: 'channelmeta',
@@ -498,7 +507,8 @@ const reducer = {
 	[QUICK_MENU_FEATURE_KEY]: quickMenuReducer,
 	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
 	[WALLET_FEATURE_KEY]: persistedWalletStore,
-	[USER_STATUS_FEATURE_KEY]: statusReducer
+	[USER_STATUS_FEATURE_KEY]: statusReducer,
+	[COMUNITY_FEATURE_KEY]: persistedComunityReducer
 };
 
 let storeInstance = configureStore({

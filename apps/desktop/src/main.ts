@@ -88,14 +88,19 @@ ipcMain.handle(DOWNLOAD_FILE, async (event, { url, defaultFileName }) => {
 
 	try {
 		const response = await fetch(url);
+		if (!response.ok) {
+			log.error(`Download failed: ${response.status} ${response.statusText}`);
+			return null;
+		}
 		const buffer = await response.arrayBuffer();
 		fs.writeFileSync(filePath, Buffer.from(buffer));
 
 		shell.showItemInFolder(filePath);
 		return filePath;
 	} catch (error) {
-		console.error('Error downloading file:', error);
-		throw new Error('Failed to download file');
+		// Silently log error without throwing to prevent error dialogs
+		log.error('Error downloading file:', error);
+		return null;
 	}
 });
 
@@ -207,11 +212,18 @@ ipcMain.handle(OPEN_NEW_WINDOW, (event, props: any, _options?: Electron.BrowserW
 		return;
 	}
 	const newWindow = openImagePopup(props, App.mainWindow);
-	// Remove the existing listener if it exists
+
+	// Remove the existing listener if it exists to prevent memory leaks
 	ipcMain.removeAllListeners(IMAGE_WINDOW_TITLE_BAR_ACTION);
 
-	ipcMain.on(IMAGE_WINDOW_TITLE_BAR_ACTION, (event, action, _data) => {
+	const imageWindowHandler = (_event: any, action: string, _data: any) => {
 		handleWindowAction(newWindow, action);
+	};
+
+	ipcMain.on(IMAGE_WINDOW_TITLE_BAR_ACTION, imageWindowHandler);
+
+	newWindow.on('closed', () => {
+		ipcMain.removeListener(IMAGE_WINDOW_TITLE_BAR_ACTION, imageWindowHandler);
 	});
 });
 
@@ -286,12 +298,14 @@ const copyImageToClipboardElectron = async (imageUrl?: string) => {
 		});
 
 		if (!response.ok) {
-			return;
+			log.error(`Copy image failed: ${response.status} ${response.statusText}`);
+			return false;
 		}
 
 		const contentLength = response.headers.get('content-length');
 		if (contentLength && parseInt(contentLength) > 50 * 1024 * 1024) {
-			return;
+			log.warn('Image too large to copy to clipboard');
+			return false;
 		}
 		const blob = await response.blob();
 		const arrayBuffer = await blob.arrayBuffer();
@@ -299,6 +313,7 @@ const copyImageToClipboardElectron = async (imageUrl?: string) => {
 
 		return await copyBlobToClipboardElectron(buffer);
 	} catch (error) {
+		log.error('Error copying image to clipboard:', error);
 		return false;
 	}
 };

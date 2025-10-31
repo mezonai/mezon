@@ -31,16 +31,7 @@ export const MemberMenuItem: FC<MemberMenuItemProps> = ({ label, onClick, isWarn
 			}}
 		>
 			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					alignItems: 'center',
-					width: '100%',
-					fontFamily: `'gg sans', 'Noto Sans', sans-serif`,
-					fontSize: '14px',
-					fontWeight: 500
-				}}
-				className={`${isWarning ? 'text-[#E13542] ' : 'text-theme-primary-hover'} p-1`}
+				className={`flex justify-between items-center w-full font-sans text-sm font-medium p-1 ${isWarning ? 'text-[#E13542]' : 'text-theme-primary-hover'}`}
 			>
 				<span
 					className="truncate max-w-[160px] block overflow-hidden text-ellipsis whitespace-nowrap"

@@ -7,7 +7,8 @@ import {
 	selectAllApps,
 	selectChannelById,
 	selectCurrentCategory,
-	selectCurrentClan,
+	selectCurrentClanId,
+	selectCurrentClanWelcomeChannelId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
@@ -31,7 +32,8 @@ export const CreateNewChannelModal = () => {
 	const dispatch = useAppDispatch();
 	const InputRef = useRef<ChannelNameModalRef>(null);
 	const [isInputError, setIsInputError] = useState<boolean>(true);
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const welcomeChannelId = useAppSelector(selectCurrentClanWelcomeChannelId);
 	const currentCategory = useAppSelector((state) => selectCurrentCategory(state));
 	const [validate, setValidate] = useState(true);
 	const [channelName, setChannelName] = useState<string>('');
@@ -45,7 +47,7 @@ export const CreateNewChannelModal = () => {
 	const navigate = useNavigate();
 	const { toChannelPage } = useAppNavigation();
 	const isAppChannel = channelType === ChannelType.CHANNEL_TYPE_APP;
-	const channelWelcome = useAppSelector((state) => selectChannelById(state, currentClan?.welcome_channel_id as string)) || {};
+	const channelWelcome = useAppSelector((state) => selectChannelById(state, welcomeChannelId as string)) || {};
 	const allApps = useAppSelector(selectAllApps);
 
 	useEffect(() => {
@@ -79,7 +81,7 @@ export const CreateNewChannelModal = () => {
 		}
 
 		const body: ApiCreateChannelDescRequest = {
-			clan_id: currentClan?.clan_id,
+			clan_id: currentClanId as string,
 			type: channelType,
 			channel_label: channelName,
 			channel_private: isPrivate,
@@ -89,14 +91,14 @@ export const CreateNewChannelModal = () => {
 		};
 
 		const newChannelCreatedId = await dispatch(createNewChannel(body));
-		dispatch(channelsActions.invalidateCache({ clanId: currentClan?.clan_id as string }));
+		dispatch(channelsActions.invalidateCache({ clanId: currentClanId as string }));
 		const payload = newChannelCreatedId.payload as ApiCreateChannelDescRequest;
 		const channelID = payload.channel_id;
 		const typeChannel = payload.type;
 		if (currentCategory?.category_id) {
 			dispatch(
 				listChannelRenderAction.updateCategoryChannels({
-					clanId: currentClan?.clan_id as string,
+					clanId: currentClanId as string,
 					categoryId: currentCategory?.category_id,
 					channelId: channelID ?? ''
 				})
@@ -104,7 +106,7 @@ export const CreateNewChannelModal = () => {
 		}
 
 		if (newChannelCreatedId && typeChannel !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && typeChannel !== ChannelType.CHANNEL_TYPE_STREAMING) {
-			const channelPath = toChannelPage(channelID ?? '', currentClan?.clan_id ?? '');
+			const channelPath = toChannelPage(channelID ?? '', currentClanId ?? '');
 			navigate(channelPath);
 		}
 		clearDataAfterCreateNew();
@@ -115,7 +117,7 @@ export const CreateNewChannelModal = () => {
 		setIsErrorName('');
 		setIsErrorAppUrl('');
 		clearDataAfterCreateNew();
-		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClan?.clan_id as string, isOpen: false }));
+		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClanId as string, isOpen: false }));
 	};
 
 	const handleChannelNameChange = (value: string) => {
@@ -157,8 +159,8 @@ export const CreateNewChannelModal = () => {
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	const handleClose = useCallback(() => {
-		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClan?.clan_id as string, isOpen: false }));
-	}, []);
+		dispatch(channelsActions.openCreateNewModalChannel({ clanId: currentClanId as string, isOpen: false }));
+	}, [currentClanId, dispatch]);
 	useEscapeKeyClose(modalRef, handleClose);
 
 	return (

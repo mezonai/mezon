@@ -1,12 +1,16 @@
 import { captureSentryError } from '@mezon/logger';
-import { Direction_Mode, INotification, LoadingStatus, NotificationCategory, NotificationEntity } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/utils';
+import { Direction_Mode, NotificationCategory } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/api.gen';
-import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
-import { MessagesEntity } from '../messages/messages.slice';
-import { RootState } from '../store';
+import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/api.gen';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, getMezonCtx } from '../helpers';
+import type { MessagesEntity } from '../messages/messages.slice';
+import type { RootState } from '../store';
 
 export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIMIT_NOTIFICATION = 50;
@@ -110,7 +114,7 @@ export const fetchListNotification = createAsyncThunk(
 			const notifications = response.notifications.map(mapNotificationToEntity);
 			return {
 				data: notifications,
-				category: category,
+				category,
 				fromCache
 			};
 		} catch (error) {
@@ -156,7 +160,7 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 		}
 		return {
 			noti: response,
-			message: message
+			message
 		};
 	} catch (error) {
 		captureSentryError(error, 'notification/markMessageNotify');

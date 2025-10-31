@@ -210,13 +210,16 @@ interface ButtonControlVoiceProps {
 	danger?: boolean;
 	icon: ReactNode;
 }
+
+const TOOLTIP_OVERLAY_STYLE = { background: 'none', boxShadow: 'none' };
+
 const ButtonControlVoice = memo(({ onClick, overlay, danger = false, icon }: ButtonControlVoiceProps) => {
 	return (
 		<Tooltip
 			showArrow={{ className: '!bottom-1' }}
 			placement="top"
 			overlay={overlay}
-			overlayInnerStyle={{ background: 'none', boxShadow: 'none' }}
+			overlayInnerStyle={TOOLTIP_OVERLAY_STYLE}
 			overlayClassName="whitespace-nowrap z-50 !p-0 !pt-5"
 			destroyTooltipOnHide
 		>

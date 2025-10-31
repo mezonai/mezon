@@ -1,5 +1,6 @@
 import { useVirtualizer } from '@mezon/components';
-import { FriendsEntity, selectTheme } from '@mezon/store';
+import type { FriendsEntity } from '@mezon/store';
+import { selectTheme } from '@mezon/store';
 import { useRef } from 'react';
 import { useSelector } from 'react-redux';
 import FriendsListItem from './FriendsListItem';
@@ -23,31 +24,19 @@ const FriendList = ({ listFriendFilter }: ListFriendsProps) => {
 	const items = virtualizer.getVirtualItems();
 
 	return (
-		<div
-			style={{
-				height: `100%`,
-				width: '100%',
-				overflow: 'auto'
-			}}
-			ref={parentRef}
-			className={`thread-scroll ${appearanceTheme === 'light' && `customScrollLightMode`}`}
-		>
+		<div ref={parentRef} className={`h-full w-full overflow-auto thread-scroll ${appearanceTheme === 'light' && `customScrollLightMode`}`}>
 			<div
+				className="w-full relative"
 				style={{
-					height: `${virtualizer.getTotalSize()}px`,
-					width: '100%',
-					position: 'relative'
+					height: `${virtualizer.getTotalSize()}px`
 				}}
 			>
 				{items.map((virtualRow) => (
 					<div
 						key={virtualRow.key}
 						data-index={virtualRow.index}
+						className="absolute top-0 left-0 w-full"
 						style={{
-							position: 'absolute',
-							top: 0,
-							left: 0,
-							width: '100%',
 							height: `${virtualRow.size}px`,
 							transform: `translateY(${virtualRow.start}px)`
 						}}

@@ -31,12 +31,14 @@ import {
 	getIsShowPopupForward,
 	onboardingActions,
 	selectAllAppChannelsListShowOnPopUp,
+	selectChannelById,
 	selectChatStreamWidth,
 	selectClanNumber,
 	selectClanView,
 	selectClansEntities,
 	selectCloseMenu,
-	selectCurrentChannel,
+	selectCurrentChannelId,
+	selectCurrentChannelType,
 	selectCurrentClanId,
 	selectCurrentStreamInfo,
 	selectDirectsUnreadlist,
@@ -156,7 +158,9 @@ function MyApp() {
 		setOpenOptionMessageState(false);
 	}, []);
 
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannel = useSelector((state) => selectChannelById(state, currentChannelId || ''));
+	const currentChannelType = useSelector(selectCurrentChannelType);
 	const currentStreamInfo = useSelector(selectCurrentStreamInfo);
 	const isShowChatStream = useSelector(selectIsShowChatStream);
 	const chatStreamWidth = useSelector(selectChatStreamWidth);
@@ -195,7 +199,6 @@ function MyApp() {
 				<SidebarMenu openCreateClanModal={openCreateClanModal} openDiscoverPage={openDiscoverPage} />
 				<Topbar isHidden={currentClanId !== '0' ? false : !directId} />
 				<MainContent />
-
 				<FooterProfile
 					name={userProfile?.user?.display_name || userProfile?.user?.username || ''}
 					status={userProfile?.user?.online}
@@ -203,12 +206,11 @@ function MyApp() {
 					userId={userProfile?.user?.id || ''}
 					isDM={currentClanId !== '0'}
 				/>
-
 				<div
-					className={`fixed ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'} bottom-0 ${closeMenu ? (statusMenu ? 'hidden' : 'w-full') : isShowChatStream ? 'max-sm:hidden' : 'w-full'} ${currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING && currentClanId !== '0' && memberPath !== currentURL ? 'flex flex-1 justify-center items-center' : 'hidden pointer-events-none'}`}
+					className={`fixed ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'} bottom-0 ${closeMenu ? (statusMenu ? 'hidden' : 'w-full') : isShowChatStream ? 'max-sm:hidden' : 'w-full'} ${currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && currentClanId !== '0' && memberPath !== currentURL ? 'flex flex-1 justify-center items-center' : 'hidden pointer-events-none'}`}
 					style={streamStyle}
 				>
-					{isStream || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ? (
+					{isStream || currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING ? (
 						<ChannelStream
 							key={currentStreamInfo?.streamId}
 							currentChannel={currentChannel}
@@ -220,11 +222,8 @@ function MyApp() {
 						/>
 					) : null}
 				</div>
-
 				<DmCallManager userId={userProfile?.user?.id || ''} directId={directId} />
-				<GroupCallManager />
-
-				{openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
+				<GroupCallManager /> {openModalE2ee && !hasKeyE2ee && <MultiStepModalE2ee onClose={handleClose} />}
 				{openModalAttachment && <MessageModalImageWrapper />}
 				{isShowFirstJoinPopup && <FirstJoinPopup openCreateClanModal={openCreateClanModal} onclose={() => setIsShowFirstJoinPopup(false)} />}
 				{isShowPopupQuickMess && <PopupQuickMess />}

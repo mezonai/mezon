@@ -1,4 +1,4 @@
-import { OverflowY } from '@mezon/utils';
+import type { OverflowY } from '@mezon/utils';
 
 export default {
 	control: {

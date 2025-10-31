@@ -193,7 +193,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	const { userProfile } = useAuth();
 
 	return (
-		<div ref={ref} style={{ position: 'relative' }} {...elementProps}>
+		<div ref={ref} className="relative" {...elementProps}>
 			<TrackRefContextIfNeeded trackRef={trackReference}>
 				<ParticipantContextIfNeeded participant={trackReference.participant}>
 					{children ?? (

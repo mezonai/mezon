@@ -2,7 +2,8 @@ import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMessageByMessageId, useAppSelector } from '@mezon/store-mobile';
-import { EmojiDataOptionals, calculateTotalCount, getSrcEmoji } from '@mezon/utils';
+import type { EmojiDataOptionals } from '@mezon/utils';
+import { calculateTotalCount, getSrcEmoji } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -147,7 +148,7 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 					data={dataSenderEmojis}
 					renderItem={({ item, index }: { item: { sender_id: string; count: number }; index: number }) => {
 						return (
-							<View key={`${index}_${item.sender_id}_allReactionDataOnOneMessage`} style={{ marginBottom: size.s_10 }}>
+							<View key={`${index}_${item.sender_id}_allReactionDataOnOneMessage`} style={styles.reactionListItem}>
 								<ReactionMember
 									userId={item.sender_id}
 									channelId={channelId}

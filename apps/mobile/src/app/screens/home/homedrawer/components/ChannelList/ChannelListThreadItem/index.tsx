@@ -1,7 +1,7 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { selectIsUnreadChannelById, useAppSelector } from '@mezon/store-mobile';
-import { ChannelThreads } from '@mezon/utils';
+import type { ChannelThreads } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React from 'react';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -35,19 +35,10 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListTh
 	return (
 		<View key={thread.id} style={[styles.channelListLink]}>
 			<View style={[styles.threadItem]}>
-				<View style={{ top: -size.s_20, left: -size.s_2 }}>
+				<View style={styles.cornerIconWrapper}>
 					<MezonIconCDN icon={IconCDN.longCorner} height={size.s_36} width={size.s_12} color={'#535353'} />
 					{/*hardcode virtual view to connect thread lines */}
-					<View
-						style={{
-							backgroundColor: '#535353',
-							width: 1.2,
-							height: size.s_10,
-							position: 'absolute',
-							top: -5,
-							left: 0.3
-						}}
-					/>
+					<View style={styles.virtualConnectorLine} />
 				</View>
 				<TouchableOpacity
 					style={[

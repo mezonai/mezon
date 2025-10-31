@@ -224,6 +224,16 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 
 	popupWindow.loadURL(`data:text/html;charset=UTF-8,${encodeURIComponent(imageViewerHtml)}`);
 
+	popupWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
+		console.error(`Image viewer failed to load: ${validatedURL}, Error: ${errorCode} - ${errorDescription}`);
+	});
+
+	popupWindow.webContents.on('console-message', (_event, _level, message, line, sourceId) => {
+		if (message.includes('ERR_NAME_NOT_RESOLVED') || message.includes('net::ERR_')) {
+			console.error(`Image viewer network error: ${message} at ${sourceId}:${line}`);
+		}
+	});
+
 	// Add IPC handlers for window controls
 	ipcMain.removeHandler('minimize-window');
 	ipcMain.handle('minimize-window', () => {

@@ -1,10 +1,13 @@
 import { size } from '@mezon/mobile-ui';
 import { formatTimeToMMSS } from '@mezon/utils';
 import type { PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
-import React, { memo, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import React, { memo, useMemo } from 'react';
+import { Platform, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
+import LinearGradient from 'react-native-linear-gradient';
+import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
+import { FastNativeImage } from '../../../../../../../components/ImageNative/FastNativeImage';
 import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import { style } from './styles';
 
@@ -34,7 +37,6 @@ const GalleryItem = ({
 	handleRemove
 }: GalleryItemProps) => {
 	const styles = useMemo(() => style(themeValue), [themeValue]);
-	const [isLoadingImage, setIsLoadingImage] = useState(true);
 
 	const imageUri = useMemo(() => {
 		const uri = item?.node?.image?.uri;
@@ -44,12 +46,6 @@ const GalleryItem = ({
 	const durationSec = useMemo((): number | undefined => {
 		return item?.node?.image?.playableDuration ?? item?.node?.image?.duration ?? item?.node?.playableDuration ?? undefined;
 	}, [item?.node?.image?.playableDuration, item?.node?.image?.duration, item?.node?.playableDuration]);
-
-	useEffect(() => {
-		if (item?.node?.image?.uri && Platform.OS === 'ios') {
-			Image.prefetch(item?.node?.image?.uri).catch((error) => console.error('Image prefetch failed:', error));
-		}
-	}, [item?.node?.image?.uri]);
 
 	if (item?.isUseCamera) {
 		return (
@@ -69,19 +65,21 @@ const GalleryItem = ({
 
 	return (
 		<TouchableOpacity style={[styles.itemGallery, disabled && styles.disable]} onPress={handlePickGallery} disabled={disabled} activeOpacity={1}>
+			<ShimmerPlaceHolder
+				shimmerColors={[themeValue.secondaryLight, themeValue.charcoal, themeValue.jet]}
+				shimmerStyle={styles.itemGallerySkeleton}
+				LinearGradient={LinearGradient}
+			/>
 			{Platform.OS === 'android' ? (
-				<FastImage
-					source={{ uri: imageUri, cache: FastImage.cacheControl.immutable }}
-					style={styles.imageGallery}
-					onLoadEnd={() => setIsLoadingImage(false)}
-				/>
+				<FastImage source={{ uri: imageUri, cache: FastImage.cacheControl.immutable }} style={styles.imageGallery} />
 			) : (
-				<Image source={{ uri: imageUri }} style={styles.imageGallery} onLoadEnd={() => setIsLoadingImage(false)} />
-			)}
-			{isLoadingImage && (
-				<View style={styles.loadingContainer}>
-					<ActivityIndicator size="small" color={themeValue.text} />
-				</View>
+				<FastNativeImage
+					source={{
+						uri: imageUri,
+						priority: 'normal'
+					}}
+					style={styles.imageGallery}
+				/>
 			)}
 			{isVideo && (
 				<View style={styles.videoOverlay}>

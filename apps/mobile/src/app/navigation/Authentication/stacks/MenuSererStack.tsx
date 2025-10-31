@@ -13,6 +13,7 @@ import { NotificationOverrides } from '../../../components/ClanNotificationSetti
 import { ClanNotificationSetting as NotificationSettingDetail } from '../../../components/ClanNotificationSetting/NotificationSettingDetail';
 import { ClanSetting } from '../../../components/ClanSettings';
 import { ClanEmojiSetting } from '../../../components/ClanSettings/Emoji';
+import EnableCommunityScreen from '../../../components/ClanSettings/EnableCommunity';
 import { Integrations } from '../../../components/ClanSettings/Integrations';
 import { Webhooks } from '../../../components/ClanSettings/Integrations/Webhooks';
 import { WebhooksEdit } from '../../../components/ClanSettings/Integrations/Webhooks/WebhooksEdit';
@@ -25,16 +26,16 @@ import { EventCreatorDetails } from '../../../components/EventCreator/EventCreat
 import { EventCreatorPreview } from '../../../components/EventCreator/EventCreatorPreview';
 import { EventCreatorType } from '../../../components/EventCreator/EventCreatorType';
 import ManageUserScreen from '../../../screens/ManageUserScreen';
+import TransferOwnershipScreen from '../../../screens/TransferOwnershipScreen';
 import { CreateNewRole } from '../../../screens/serverRoles/CreateNewRole';
 import { RoleDetail } from '../../../screens/serverRoles/RoleDetail';
 import { ServerRoles } from '../../../screens/serverRoles/ServerRoles';
 import { SetupMembers } from '../../../screens/serverRoles/SetupMembers';
 import { SetupPermissions } from '../../../screens/serverRoles/SetupPermissions';
-import TransferOwnershipScreen from '../../../screens/TransferOwnershipScreen';
 import { APP_SCREEN } from '../../ScreenTypes';
 
 // eslint-disable-next-line no-empty-pattern
-export const MenuClanStacks = ({ }: any) => {
+export const MenuClanStacks = ({}: any) => {
 	const { themeValue } = useTheme();
 	const Stack = createStackNavigator();
 	const { t } = useTranslation(['screenStack']);
@@ -284,6 +285,13 @@ export const MenuClanStacks = ({ }: any) => {
 				component={ManageUserScreen}
 				options={{
 					headerTitle: t('menuClanStack.manageUser')
+				}}
+			/>
+			<Stack.Screen
+				name={APP_SCREEN.MENU_CLAN.ENABLE_COMMUNITY}
+				component={EnableCommunityScreen}
+				options={{
+					headerShown: false
 				}}
 			/>
 		</Stack.Navigator>

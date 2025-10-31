@@ -3,7 +3,8 @@ import { useEmojiSuggestionContext } from '@mezon/core';
 import { ActionEmitEvent, debounce } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { emojiSuggestionActions, getStore, selectCurrentChannelId, selectCurrentTopicId, selectDmGroupCurrentId } from '@mezon/store-mobile';
-import { FOR_SALE_CATE, IEmoji, RECENT_EMOJI_CATEGORY } from '@mezon/utils';
+import type { IEmoji } from '@mezon/utils';
+import { FOR_SALE_CATE, RECENT_EMOJI_CATEGORY } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Text, TextInput, View } from 'react-native';
@@ -165,7 +166,7 @@ export default function EmojiSelectorContainer({
 
 	const ListCategoryArea = useCallback(() => {
 		return (
-			<View style={{ backgroundColor: themeValue.primary }}>
+			<View style={styles.primaryBackground}>
 				<View style={styles.textInputWrapper}>
 					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 					<TextInput
@@ -273,9 +274,8 @@ export default function EmojiSelectorContainer({
 			removeClippedSubviews={true}
 			showsVerticalScrollIndicator={false}
 			keyboardShouldPersistTaps="handled"
-			disableVirtualization
-			style={{ marginBottom: -size.s_20 }}
-			contentContainerStyle={{ minHeight: '100%' }}
+			style={styles.flatListStyle}
+			contentContainerStyle={styles.flatListContentContainer}
 			onScrollToIndexFailed={(info) => {
 				if (info?.highestMeasuredFrameIndex) {
 					const wait = new Promise((resolve) => setTimeout(resolve, 100));

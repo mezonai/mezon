@@ -82,6 +82,10 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_10,
 			overflow: 'hidden'
 		},
+		permissionListWrapper: {
+			borderRadius: size.s_10,
+			overflow: 'hidden'
+		},
 		permissionItem: {
 			flexDirection: 'row',
 			alignItems: 'flex-start',

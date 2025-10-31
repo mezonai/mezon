@@ -25,11 +25,10 @@ import GalleryItem from './components/GalleryItem';
 import { style } from './styles';
 export const { height } = Dimensions.get('window');
 interface IProps {
-	onPickGallery: (files: IFile | any) => void;
 	currentChannelId: string;
 }
 
-const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
+const Gallery = ({ currentChannelId }: IProps) => {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['qrScanner', 'sharing', 'common']);
 	const [hasPermission, setHasPermission] = useState(false);
@@ -90,6 +89,28 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 			}
 		};
 	}, [isPermissionLimitIOS]);
+
+	const onPickGallery = useCallback(
+		(file: IFile) => {
+			dispatch(
+				referencesActions.setAtachmentAfterUpload({
+					channelId: currentChannelId,
+					files: [
+						{
+							filename: file.name,
+							url: file.uri,
+							filetype: file.type,
+							size: file.size as number,
+							width: file?.width,
+							height: file?.height,
+							thumbnail: file?.thumbnailPreview
+						}
+					]
+				})
+			);
+		},
+		[currentChannelId, dispatch]
+	);
 
 	const checkAndRequestPermissions = async () => {
 		const hasPermission = await requestPermission(true);
@@ -271,51 +292,44 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				}
 
 				let filePath = image?.uri;
-
-				if (Platform.OS === 'ios' && filePath.startsWith('ph://')) {
+				const ext = image.extension;
+				const isGif = type?.toLowerCase().includes('gif') || ext?.toLowerCase() === 'gif';
+				const isWebP = type?.toLowerCase().includes('webp') || ext?.toLowerCase() === 'webp';
+				const isAnimated = isGif || isWebP;
+				if (Platform.OS === 'ios' && filePath.startsWith('ph://') && isAnimated) {
 					const ms = new Date().getTime();
-					const ext = image.extension;
 					const destPath = `${RNFS.CachesDirectoryPath}/${ms}.${ext}`;
+					try {
+						const assetInfo = await CameraRoll.iosGetImageDataById(image.uri);
+						if (assetInfo?.node?.image?.filepath) {
+							const cleanFilePath = assetInfo.node.image.filepath.split('#')[0];
+							if (cleanFilePath.startsWith('file://')) {
+								const sourcePathWithoutProtocol = cleanFilePath.replace('file://', '');
+								const fileExists = await RNFS.exists(sourcePathWithoutProtocol);
 
-					const isGif = type?.toLowerCase().includes('gif') || ext?.toLowerCase() === 'gif';
-					const isWebP = type?.toLowerCase().includes('webp') || ext?.toLowerCase() === 'webp';
-					const isAnimated = isGif || isWebP;
+								if (fileExists) {
+									await RNFS.copyFile(sourcePathWithoutProtocol, destPath);
+									filePath = `file://${destPath}`;
+								} else {
+									filePath = await RNFS.copyAssetsVideoIOS(image.uri, destPath);
+								}
+							} else if (cleanFilePath.startsWith('/')) {
+								const fileExists = await RNFS.exists(cleanFilePath);
 
-					if ((isAnimated || type.startsWith('video')) && Platform.OS === 'ios') {
-						try {
-							const assetInfo = await CameraRoll.iosGetImageDataById(image.uri);
-							if (assetInfo?.node?.image?.filepath) {
-								const cleanFilePath = assetInfo.node.image.filepath.split('#')[0];
-								if (cleanFilePath.startsWith('file://')) {
-									const sourcePathWithoutProtocol = cleanFilePath.replace('file://', '');
-									const fileExists = await RNFS.exists(sourcePathWithoutProtocol);
-
-									if (fileExists) {
-										await RNFS.copyFile(sourcePathWithoutProtocol, destPath);
-										filePath = `file://${destPath}`;
-									} else {
-										filePath = await RNFS.copyAssetsVideoIOS(image.uri, destPath);
-									}
-								} else if (cleanFilePath.startsWith('/')) {
-									const fileExists = await RNFS.exists(cleanFilePath);
-
-									if (fileExists) {
-										await RNFS.copyFile(cleanFilePath, destPath);
-										filePath = `file://${destPath}`;
-									} else {
-										filePath = await RNFS.copyAssetsVideoIOS(image.uri, destPath);
-									}
+								if (fileExists) {
+									await RNFS.copyFile(cleanFilePath, destPath);
+									filePath = `file://${destPath}`;
 								} else {
 									filePath = await RNFS.copyAssetsVideoIOS(image.uri, destPath);
 								}
 							} else {
 								filePath = await RNFS.copyAssetsVideoIOS(image.uri, destPath);
 							}
-						} catch (animatedError) {
-							filePath = await RNFS.copyAssetsFileIOS(image.uri, destPath, image.width, image.height);
+						} else {
+							filePath = await RNFS.copyAssetsVideoIOS(image.uri, destPath);
 						}
-					} else {
-						filePath = await RNFS.copyAssetsFileIOS(filePath, destPath, image.width, image.height);
+					} catch (animatedError) {
+						filePath = await RNFS.copyAssetsFileIOS(image.uri, destPath, image.width, image.height);
 					}
 				}
 
@@ -433,19 +447,15 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 				numColumns={3}
 				renderItem={renderItem}
 				keyExtractor={(item, index) => `${index.toString()}_gallery_${item?.node?.id}`}
-				initialNumToRender={18}
-				maxToRenderPerBatch={18}
-				windowSize={7}
-				updateCellsBatchingPeriod={16}
+				initialNumToRender={5}
+				maxToRenderPerBatch={5}
+				windowSize={5}
+				updateCellsBatchingPeriod={5}
 				scrollEventThrottle={0}
 				removeClippedSubviews={true}
-				viewabilityConfig={{
-					itemVisiblePercentThreshold: 50,
-					minimumViewTime: 300
+				style={{
+					height: height * 0.8
 				}}
-				contentOffset={{ x: 0, y: 0 }}
-				disableVirtualization
-				style={styles.galleryFlatList}
 				onEndReached={handleLoadMore}
 				onEndReachedThreshold={0.8}
 				ListFooterComponent={() => isLoadingMoreRef?.current && <ActivityIndicator size="small" color={themeValue.text} />}
@@ -454,4 +464,4 @@ const Gallery = ({ onPickGallery, currentChannelId }: IProps) => {
 	);
 };
 
-export default Gallery;
+export default React.memo(Gallery);

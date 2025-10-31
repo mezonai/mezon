@@ -178,24 +178,19 @@ const ModalSendToken = ({
 	);
 
 	const dropdownMenu = (
-		<div className="bg-theme-surface rounded-xl shadow-lg max-h-48 overflow-y-auto thread-scroll text-theme-primary min-w-[400px]">
+		<div className="bg-theme-surface rounded-xl shadow-lg max-h-48 overflow-y-auto thread-scroll text-theme-primary min-w-[400px] w-full relative">
 			<div
 				style={{
-					height: `${filteredUsers.length * 48}px`,
-					width: '100%',
-					position: 'relative'
+					height: `${filteredUsers.length * 48}px`
 				}}
 			>
 				{filteredUsers.length > 0 ? (
 					filteredUsers.map((user, index) => (
 						<div
 							key={user.id}
+							className="absolute left-0 w-full h-[48px]"
 							style={{
-								position: 'absolute',
-								top: index * 48,
-								left: 0,
-								width: '100%',
-								height: '48px'
+								top: index * 48
 							}}
 						>
 							<div

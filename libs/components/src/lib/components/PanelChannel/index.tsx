@@ -2,6 +2,7 @@
 import { useEscapeKeyClose, useMarkAsRead, useOnClickOutside, usePermissionChecker } from '@mezon/core';
 import type { SetMuteNotificationPayload, SetNotificationPayload } from '@mezon/store';
 import {
+	FAVORITE_CATEGORY_ID,
 	channelsActions,
 	clansActions,
 	hasGrandchildModal,
@@ -11,7 +12,7 @@ import {
 	selectCategoryById,
 	selectChannelById,
 	selectCurrentChannelId,
-	selectCurrentClan,
+	selectCurrentClanId,
 	selectCurrentUserId,
 	selectDefaultNotificationCategory,
 	selectDefaultNotificationClan,
@@ -130,8 +131,8 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.id || ''));
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId);
-	const currentClan = useSelector(selectCurrentClan);
-	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, currentClan?.clan_id as string));
+	const currentClanId = useSelector(selectCurrentClanId);
+	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, currentClanId as string));
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const [positionTop, setPositionTop] = useState(false);
 	const [nameChildren, setNameChildren] = useState('');
@@ -159,14 +160,14 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	}, [favoriteChannel, channel.id]);
 
 	const maskFavoriteChannel = () => {
-		dispatch(channelsActions.addFavoriteChannel({ channel_id: channel.id, clan_id: currentClan?.id }));
-		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel.id, clanId: currentClan?.id as string, mark: true }));
+		dispatch(channelsActions.addFavoriteChannel({ channel_id: channel.id, clan_id: currentClanId as string }));
+		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel.id, clanId: currentClanId as string, mark: true }));
 		setIsShowPanelChannel(false);
 	};
 
 	const removeFavoriteChannel = () => {
-		dispatch(channelsActions.removeFavoriteChannel({ channelId: channel.id, clanId: currentClan?.id || '' }));
-		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel.id, clanId: currentClan?.id as string, mark: false }));
+		dispatch(channelsActions.removeFavoriteChannel({ channelId: channel.id, clanId: currentClanId || '' }));
+		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel.id, clanId: currentClanId as string, mark: false }));
 		setIsShowPanelChannel(false);
 	};
 
@@ -182,18 +183,18 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const handleLeaveChannel = () => {
 		dispatch(
 			threadsActions.leaveThread({
-				clanId: currentClan?.id || '',
+				clanId: currentClanId || '',
 				threadId: selectedChannel || '',
 				channelId: currentChannel.parent_id || '',
 				isPrivate: currentChannel.channel_private || 0
 			})
 		);
 		if (channel.count_mess_unread) {
-			dispatch(clansActions.updateClanBadgeCount({ clanId: currentClan?.id || '', count: -channel.count_mess_unread }));
+			dispatch(clansActions.updateClanBadgeCount({ clanId: currentClanId || '', count: -channel.count_mess_unread }));
 		}
 
 		handleCloseModalConfirm();
-		navigate(`/chat/clans/${currentClan?.id}/channels/${currentChannel.parent_id}`);
+		navigate(`/chat/clans/${currentClanId}/channels/${currentChannel.parent_id}`);
 	};
 
 	const [openModelConfirm, closeModelConfirm] = useModal(() => (
@@ -227,7 +228,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			const body: SetNotificationPayload = {
 				channel_id: channel.channel_id || '',
 				notification_type: getNotificationChannelSelected?.notification_setting_type || 0,
-				clan_id: currentClan?.clan_id || '',
+				clan_id: currentClanId || '',
 				time_mute: unmuteTimeISO,
 				is_current_channel: channel.channel_id === currentChannelId
 			};
@@ -236,7 +237,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			const body: SetMuteNotificationPayload = {
 				channel_id: channel.channel_id || '',
 				notification_type: getNotificationChannelSelected?.notification_setting_type || 0,
-				clan_id: currentClan?.clan_id || '',
+				clan_id: currentClanId || '',
 				active: 0,
 				is_current_channel: channel.channel_id === currentChannelId
 			};
@@ -248,7 +249,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		const body = {
 			channel_id: channel.channel_id || '',
 			notification_type: getNotificationChannelSelected?.notification_setting_type || 0,
-			clan_id: currentClan?.clan_id || '',
+			clan_id: currentClanId || '',
 			active,
 			is_current_channel: channel.channel_id === currentChannelId
 		};
@@ -261,7 +262,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			const body = {
 				channel_id: channel.channel_id || '',
 				notification_type: notificationType || 0,
-				clan_id: currentClan?.clan_id || '',
+				clan_id: currentClanId || '',
 				is_current_channel: channel.channel_id === currentChannelId
 			};
 			dispatch(notificationSettingActions.setNotificationSetting(body));
@@ -269,7 +270,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			dispatch(
 				notificationSettingActions.deleteNotiChannelSetting({
 					channel_id: channel.channel_id || '',
-					clan_id: currentClan?.clan_id || '',
+					clan_id: currentClanId || '',
 					is_current_channel: channel.channel_id === currentChannelId
 				})
 			);
@@ -310,7 +311,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 						const body = {
 							channel_id: currentChannelId || '',
 							notification_type: getNotificationChannelSelected?.notification_setting_type || 0,
-							clan_id: currentClan?.clan_id || '',
+							clan_id: currentClanId || '',
 							active: 1,
 							is_current_channel: channel.channel_id === currentChannelId
 						};
@@ -349,11 +350,11 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const handleOpenCreateChannelModal = () => {
 		dispatch(
 			channelsActions.setCurrentCategory({
-				clanId: currentClan?.id || '',
+				clanId: currentClanId || '',
 				category: currentCategory
 			})
 		);
-		dispatch(channelsActions.openCreateNewModalChannel({ isOpen: true, clanId: currentClan?.id as string }));
+		dispatch(channelsActions.openCreateNewModalChannel({ isOpen: true, clanId: currentClanId as string }));
 	};
 
 	const { handleMarkAsReadChannel, statusMarkAsReadChannel } = useMarkAsRead();
@@ -428,6 +429,8 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		menuOpenMute.current = false;
 	}, []);
 
+	const isFavoriteCategory = channel?.category_id === FAVORITE_CATEGORY_ID;
+
 	return (
 		<div
 			ref={panelRef}
@@ -435,19 +438,21 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 			style={{ left: coords.mouseX, bottom: positionTop ? '12px' : 'auto', top: positionTop ? 'auto' : coords.mouseY }}
 			className="outline-none fixed top-full bg-theme-contexify border-theme-primary rounded-lg shadow z-30 w-[200px] py-[10px] px-[10px]"
 		>
-			<GroupPanels>
-				<ItemPanel
-					onClick={statusMarkAsReadChannel === 'pending' ? undefined : () => handleMarkAsReadChannel(channel)}
-					disabled={statusMarkAsReadChannel === 'pending'}
-				>
-					{statusMarkAsReadChannel === 'pending' ? t('menu.notification.processing') : t('menu.watchMenu.markAsRead')}
-				</ItemPanel>
-			</GroupPanels>
+			{!isFavoriteCategory && (
+				<GroupPanels>
+					<ItemPanel
+						onClick={statusMarkAsReadChannel === 'pending' ? undefined : () => handleMarkAsReadChannel(channel)}
+						disabled={statusMarkAsReadChannel === 'pending'}
+					>
+						{statusMarkAsReadChannel === 'pending' ? t('menu.notification.processing') : t('menu.watchMenu.markAsRead')}
+					</ItemPanel>
+				</GroupPanels>
+			)}
 			<GroupPanels>
 				<ItemPanel
 					children={t('menu.inviteMenu.copyLink')}
 					onClick={() => {
-						copyChannelLink(currentClan?.id as string, channel.id);
+						copyChannelLink(currentClanId as string, channel.id);
 						handClosePannel();
 					}}
 				/>

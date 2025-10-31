@@ -134,8 +134,8 @@ const BottomSheetRootListener = () => {
 	}, []);
 
 	const isTabletLandscape = useTabletLandscape();
-	const themeValue = useTheme().themeValue;
-	const styles = useMemo(() => style(themeValue, isTabletLandscape), [isTabletLandscape, themeValue]);
+	const { themeValue, themeBasic } = useTheme();
+	const styles = useMemo(() => style(themeValue, themeBasic, isTabletLandscape), [isTabletLandscape, themeValue, themeBasic]);
 
 	const sizeConfig = useMemo(() => {
 		if (heightFitContent && snapPoints?.length <= 1) return null;

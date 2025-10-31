@@ -1,6 +1,6 @@
 import { useEscapeKeyClose, useMemberStatus, useOnClickOutside, useSettingFooter, useUserById } from '@mezon/core';
 import type { ChannelMembersEntity, RootState } from '@mezon/store';
-import { selectCurrentClan, selectCurrentUserId, selectFriendById, selectModeResponsive, useAppSelector } from '@mezon/store';
+import { selectCurrentClanId, selectCurrentUserId, selectFriendById, selectModeResponsive, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { EUserSettings, ModeResponsive } from '@mezon/utils';
@@ -71,7 +71,7 @@ const UserProfileModalInner = ({
 	const displayAvatar = userById?.clan_avatar || userById?.user?.avatar_url;
 	const displayUsername = name || userById?.clan_nick || userById?.user?.display_name || userById?.user?.username;
 	const userStatus = useMemberStatus(userId || '');
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
 
 	const handleActiveTabChange = (tabId: string) => {
 		setActiveTab(tabId);
@@ -123,7 +123,7 @@ const UserProfileModalInner = ({
 		setIsUserProfile(false);
 		setIsShowSettingFooterInitTab(EUserSettings.PROFILES);
 		setIsShowSettingProfileInitTab(EActiveType.CLAN_SETTING);
-		setClanIdSettingProfile(currentClan?.clan_id || '');
+		setClanIdSettingProfile(currentClanId || '');
 		setIsShowSettingFooterStatus(true);
 		if (onClose) {
 			onClose();

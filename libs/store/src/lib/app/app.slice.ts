@@ -1,5 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
+import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
@@ -307,6 +308,50 @@ export const appSlice = createSlice({
 				}
 				state.history.current = state.history.current + 1;
 			}
+		},
+		clearHistory: (state) => {
+			state.history = {
+				url: [],
+				current: null
+			};
+		},
+		cleanHistoryClan: (state, action: PayloadAction<string>) => {
+			const clanId = action.payload;
+			if (!state.history || !state.history?.url?.length) return;
+			const filteredHistory = state.history.url.filter((url) => !url.includes(`/clans/${clanId}/`));
+			let countCurrent = state.history?.current !== null ? state.history?.current : 0;
+			state.history.url.map((url, index) => {
+				if (index <= countCurrent && url.includes(`/clans/${clanId}/`)) {
+					if (!state.history?.current) {
+						return;
+					}
+					countCurrent = countCurrent - 1;
+				}
+			});
+			state.history = {
+				url: filteredHistory,
+				current: countCurrent
+			};
+		},
+		clearHistoryChannel: (state, action: PayloadAction<{ clanId: string; channelId: string }>) => {
+			const { clanId, channelId } = action.payload;
+			if (!state.history || !state.history?.url?.length) return;
+			const filteredHistory = state.history?.url.filter(
+				(url) => !(url.includes(`/channels/${channelId}/`) || url.includes(`/message/${channelId}/`))
+			);
+			let countCurrent = state.history?.current !== null ? state.history.current : 0;
+			state.history.url.map((url, index) => {
+				if (index <= countCurrent && (url.includes(`/channels/${channelId}/`) || url.includes(`/message/${channelId}/`))) {
+					if (!state.history.current) {
+						return;
+					}
+					countCurrent = countCurrent - 1;
+				}
+			});
+			state.history = {
+				url: filteredHistory,
+				current: countCurrent
+			};
 		},
 		setIsShowUpdateUsername: (state, action) => {
 			state.isShowUpdateUsername = action.payload;

@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/ui';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 type ItemStatusProps = {
 	children: string;
@@ -14,8 +14,7 @@ const ItemStatus = ({ children, dropdown, startIcon, type, onClick, disabled = f
 	return (
 		<div
 			onClick={!disabled ? onClick : undefined}
-			className={`flex items-center  justify-between rounded-sm text-theme-primary ${disabled ? '' : 'text-theme-primary-hover bg-item-theme-hover'} px-2`}
-			style={{ cursor: disabled ? 'default' : 'pointer' }}
+			className={`flex items-center  justify-between rounded-sm text-theme-primary ${disabled ? 'cursor-default' : 'cursor-pointer text-theme-primary-hover bg-item-theme-hover'} px-2`}
 		>
 			{startIcon && <div className="flex items-center justify-center h-[18px] w-[18px] mr-2">{startIcon}</div>}
 			<li className="text-[14px] w-full py-[6px] list-none">{children}</li>

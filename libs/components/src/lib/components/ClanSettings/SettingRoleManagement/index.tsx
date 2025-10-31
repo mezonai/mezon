@@ -10,7 +10,7 @@ import {
 	getRemovePermissions,
 	getSelectedRoleId,
 	roleSlice,
-	selectCurrentClan,
+	selectCurrentClanId,
 	selectCurrentRoleIcon,
 	setColorRoleNew,
 	setCurrentRoleIcon,
@@ -18,6 +18,7 @@ import {
 	setSelectedPermissions,
 	setSelectedRoleId
 } from '@mezon/store';
+import { generateE2eId } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -45,7 +46,7 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 	const removePermissions = useSelector(getRemovePermissions);
 	const addUsers = useSelector(getNewAddMembers);
 	const dispatch = useDispatch();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
 	const isChange = useSelector(getIsShow);
 	const isCreateNewRole = clickRole === t('roleManagement.newRoleDefault');
 
@@ -74,11 +75,11 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 			return;
 		}
 		if (isCreateNewRole) {
-			const respond = await createRole(currentClan?.id || '', nameRole, colorRole, addUsers, addPermissions);
+			const respond = await createRole(currentClanId || '', nameRole, colorRole, addUsers, addPermissions);
 			if (!hasChangeRole) dispatch(setSelectedRoleId(respond?.id || ''));
 		} else {
 			const roleIcon = newRoleIcon || currentRoleIcon || '';
-			await updateRole(currentClan?.id ?? '', clickRole, nameRole, colorRole, [], addPermissions, [], removePermissions, roleIcon);
+			await updateRole(currentClanId ?? '', clickRole, nameRole, colorRole, [], addPermissions, [], removePermissions, roleIcon);
 			dispatch(roleSlice.actions.setCurrentRoleIcon(roleIcon));
 			dispatch(roleSlice.actions.setNewRoleIcon(''));
 		}
@@ -91,7 +92,10 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 	};
 	return flagOption ? (
 		<>
-			<div className="absolute top-0 left-0 w-full h-full pl-2 flex flex-row flex-1 shrink bg-theme-setting-primary overflow-hidden sbm:pt-[-60px] pt-[10px]">
+			<div
+				className="absolute top-0 left-0 w-full h-full pl-2 flex flex-row flex-1 shrink bg-theme-setting-primary overflow-hidden sbm:pt-[-60px] pt-[10px]"
+				data-e2e={generateE2eId('clan_page.settings.role.container')}
+			>
 				<SettingListRole handleClose={props.handleClose} RolesClan={rolesClan} handleUpdateUser={() => handleUpdateUser(true)} />
 				<div className="w-2/3">
 					<div className="font-semibold pl-3 text-theme-primary-active">

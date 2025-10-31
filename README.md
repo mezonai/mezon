@@ -1,4 +1,3 @@
-
 <div align="center">
   <h1>Mezon</h1>
   
@@ -288,6 +287,7 @@ We welcome contributions from the community! Here's how you can help:
 -   [**JavaScript SDK**](https://github.com/mezonai/mezon-js) - Official JS/TS SDK
 -   [**Go SDK**](https://github.com/mezonai/mezon-go-sdk) - Official Go SDK
 -   [**Java SDK**](https://github.com/mezonai/mezon-java-sdk) - Official Java SDK
+-   [**Python SDK**](https://github.com/phuvinh010701/mezon-sdk-python) - Official Python SDK
 -   [**Mezon WebJs SDK**](https://github.com/mezonai/mezon-web-js) - SDK for channel apps integration
 -   [**MCP Integration**](https://github.com/mezonai/mezon-mcp) - AI-ready integration
 
@@ -341,6 +341,8 @@ Mezon is built on top of amazing open-source technologies:
 
 -   [webrtc](https://github.com/pion/webrtc) - Pion WebRTC A pure Go implementation of the WebRTC API
 -   [livekit](https://livekit.io) - Livekit
+-   [ScyllaDB](https://www.scylladb.com) - ScyllaDB
+-   [Redis](https://redis.io) - Redis
 -   [imgproxy](https://imgproxy.net) - imgproxy
 -   [minio](https://min.io) - minio
 -   [Ory Hydra](https://www.ory.sh/hydra) - OAuth 2.0 and OpenID Connect server

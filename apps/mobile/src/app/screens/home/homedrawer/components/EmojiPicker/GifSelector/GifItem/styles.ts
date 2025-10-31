@@ -21,6 +21,10 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 		backgroundColor: 'black'
 	},
+	fastImage: {
+		height: '100%',
+		width: '100%'
+	},
 	containerLoading: {
 		flex: 1,
 		justifyContent: 'center',

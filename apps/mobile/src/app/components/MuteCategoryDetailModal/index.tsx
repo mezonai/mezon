@@ -1,5 +1,5 @@
 import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import {
 	defaultNotificationCategoryActions,
 	selectCurrentClanId,
@@ -7,15 +7,18 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS, ICategoryChannel } from '@mezon/utils';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import type { ICategoryChannel } from '@mezon/utils';
+import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
+import type { RouteProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import type { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonMenu from '../../componentUI/MezonMenu';
 import { IconCDN } from '../../constants/icon_cdn';
 import CategoryNotificationSetting from '../CategoryNotificationSetting';
 import { style } from './styles';
@@ -93,10 +96,8 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 			headerShown: true,
 			headerTitle: () => (
 				<View>
-					<Text style={{ color: themeValue.textStrong, fontSize: size.label, fontWeight: '700' }}>
-						{t('notifySettingThreadModal.muteThisConversation')}
-					</Text>
-					<Text numberOfLines={1} style={{ color: themeValue.text, fontSize: size.medium, fontWeight: '400', width: '100%' }}>
+					<Text style={styles.headerTitle}>{t('notifySettingThreadModal.muteThisConversation')}</Text>
+					<Text numberOfLines={1} style={styles.headerSubtitle}>
 						{currentCategory.category_name}
 					</Text>
 				</View>
@@ -151,7 +152,7 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 			category_id: currentCategory?.id,
 			notification_type: defaultCategoryNotificationSetting?.notification_setting_type,
 			clan_id: currentClanId || '',
-			active: active
+			active
 		};
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(body));
 		navigateToThreadDetail();

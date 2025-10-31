@@ -35,6 +35,11 @@ export const DATA_E2E_IDENTIFIER = {
 		box: {
 			thread: '',
 			topic: ''
+		},
+		header: {
+			button: {
+				close: ''
+			}
 		}
 	},
 	panel: {
@@ -107,7 +112,20 @@ export const DATA_E2E_IDENTIFIER = {
 			}
 		},
 		member_list: {
-			user_info: ''
+			user_info: {
+				display_name: '',
+				username: ''
+			},
+			role_settings: {
+				add_role: {
+					button: '',
+					role_name: '',
+					choose_role: ''
+				},
+				exist_role: {
+					role_name: ''
+				}
+			}
 		},
 		modal: {
 			create_category: {
@@ -154,7 +172,10 @@ export const DATA_E2E_IDENTIFIER = {
 					button: { invite: '' }
 				},
 				url_invite: '',
-				container: ''
+				container: '',
+				accept_invite: {
+					button: ''
+				}
 			},
 			limit_creation: {
 				title: ''
@@ -276,6 +297,16 @@ export const DATA_E2E_IDENTIFIER = {
 				voice_sticker_input: {
 					error: ''
 				}
+			},
+			role: {
+				container: {
+					role_option: {
+						display: '',
+						permissions: '',
+						manage_members: ''
+					},
+					name_input: ''
+				}
 			}
 		},
 		channel_list: {
@@ -303,6 +334,11 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			settings: {
 				overview: ''
+			},
+			members: {
+				role: {
+					role_name: ''
+				}
 			}
 		},
 		secondary_side_bar: {
@@ -327,7 +363,8 @@ export const DATA_E2E_IDENTIFIER = {
 	},
 	channel_setting_page: {
 		side_bar: {
-			item: ''
+			item: '',
+			channel_label: ''
 		},
 		permissions: {
 			button: {
@@ -374,7 +411,10 @@ export const DATA_E2E_IDENTIFIER = {
 			header: {
 				left_container: '',
 				right_container: {
-					user_profile: ''
+					user_profile: '',
+					call: '',
+					video_call: '',
+					add_member: ''
 				}
 			},
 			chat_list_container: '',
@@ -384,6 +424,16 @@ export const DATA_E2E_IDENTIFIER = {
 				close_dm_button: '',
 				text_area: '',
 				namegroup: ''
+			},
+			message_buzz: {
+				header: '',
+				button: {
+					close: '',
+					send: ''
+				},
+				input: {
+					message: ''
+				}
 			},
 			button: {
 				add_user: '',
@@ -414,9 +464,13 @@ export const DATA_E2E_IDENTIFIER = {
 			add_to_group: {
 				button: ''
 			},
-			message: {
-				item: ''
+			unblock: {
+				button: ''
 			},
+			block: {
+				button: ''
+			},
+
 			menu: {
 				leave_group: {
 					button: ''
@@ -446,7 +500,8 @@ export const DATA_E2E_IDENTIFIER = {
 									create_thread: ''
 								}
 							}
-						}
+						},
+						item: ''
 					},
 					chat: ''
 				}
@@ -635,6 +690,17 @@ export const DATA_E2E_IDENTIFIER = {
 				okay: ''
 			}
 		}
+	},
+	message: {
+		item: ''
+	},
+	acceptModal: {
+		button: {
+			acceptInvite: ''
+		}
+	},
+	suggest_item: {
+		username: ''
 	}
 };
 type DotNestedKeys<T> = T extends object

@@ -5,5 +5,8 @@ export const style = StyleSheet.create({
 		height: 150,
 		width: '100%',
 		position: 'relative'
+	},
+	image: {
+		flex: 1
 	}
 });

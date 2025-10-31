@@ -4,7 +4,7 @@ import { Dimensions, StyleSheet } from 'react-native';
 
 const marginWidth = Dimensions.get('screen').width * 0.3;
 
-export const style = (colors: Attributes, isTabletLandscape: boolean) =>
+export const style = (colors: Attributes, themeBasic: string, isTabletLandscape: boolean) =>
 	StyleSheet.create({
 		backgroundStyle: {
 			backgroundColor: colors.primary
@@ -49,7 +49,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			justifyContent: 'flex-start'
 		},
 		handleIndicator: {
-			backgroundColor: colors.tertiary,
+			backgroundColor: themeBasic === 'light' || themeBasic === 'sunrise' ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.8)',
 			height: size.s_6,
 			top: -size.s_6,
 			marginTop: size.s_16,

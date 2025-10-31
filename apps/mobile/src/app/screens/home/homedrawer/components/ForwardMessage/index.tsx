@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import { useSendForwardMessage } from '@mezon/core';
-import { baseColor, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity, MessagesEntity } from '@mezon/store-mobile';
 import {
 	getIsFowardAll,
@@ -121,14 +121,37 @@ const ForwardMessageScreen = () => {
 			)
 			.map(mapChannelToForwardObject);
 
-		return [...listTextChannel, ...listGroupForward, ...listDMForward];
+		return [...listTextChannel, ...listDMForward, ...listGroupForward];
 	}, [store]);
 
 	const filteredForwardObjects = useMemo(() => {
 		if (searchText?.trim()?.charAt(0) === '#') {
 			return allForwardObject.filter((ob) => ob?.type === ChannelType.CHANNEL_TYPE_CHANNEL || ob?.type === ChannelType.CHANNEL_TYPE_THREAD);
 		}
-		return allForwardObject.filter((ob) => normalizeString(ob?.name).includes(normalizeString(searchText)));
+
+		const filtered = allForwardObject.filter((ob) => normalizeString(ob?.name).includes(normalizeString(searchText)));
+		if (!searchText?.trim()) {
+			return filtered;
+		}
+
+		const normalizedSearch = normalizeString(searchText);
+
+		return filtered.sort((a, b) => {
+			const normalizedA = normalizeString(a?.name);
+			const normalizedB = normalizeString(b?.name);
+
+			const isExactA = normalizedA === normalizedSearch;
+			const isExactB = normalizedB === normalizedSearch;
+			if (isExactA && !isExactB) return -1;
+			if (!isExactA && isExactB) return 1;
+
+			const startsWithA = normalizedA.startsWith(normalizedSearch);
+			const startsWithB = normalizedB.startsWith(normalizedSearch);
+			if (startsWithA && !startsWithB) return -1;
+			if (!startsWithA && startsWithB) return 1;
+
+			return normalizedA.localeCompare(normalizedB);
+		});
 	}, [searchText, allForwardObject]);
 
 	const isChecked = (forwardObject: IForwardIObject) => {
@@ -286,7 +309,7 @@ const ForwardMessageScreen = () => {
 			<View style={styles.contentWrapper}>
 				<FlashList
 					keyExtractor={(item) => `${item.channelId}_${item.type}`}
-					estimatedItemSize={70}
+					estimatedItemSize={size.s_50}
 					data={filteredForwardObjects}
 					renderItem={renderForwardObject}
 					keyboardShouldPersistTaps="handled"

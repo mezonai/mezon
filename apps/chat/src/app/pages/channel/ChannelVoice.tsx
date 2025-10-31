@@ -8,8 +8,14 @@ import {
 	generateMeetToken,
 	getStore,
 	handleParticipantVoiceState,
-	selectCurrentChannel,
-	selectCurrentClan,
+	selectCurrentChannelClanId,
+	selectCurrentChannelId,
+	selectCurrentChannelLabel,
+	selectCurrentChannelMeetingCode,
+	selectCurrentChannelPrivate,
+	selectCurrentChannelType,
+	selectCurrentClanId,
+	selectCurrentClanName,
 	selectIsShowChatVoice,
 	selectIsShowSettingFooter,
 	selectShowModelEvent,
@@ -39,8 +45,13 @@ const ChannelVoice = memo(
 		const serverUrl = process.env.NX_CHAT_APP_MEET_WS_URL;
 		const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 		const isShowChatVoice = useSelector(selectIsShowChatVoice);
-		const currentChannel = useSelector(selectCurrentChannel);
-		const isChannelMezonVoice = currentChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
+		const currentChannelType = useSelector(selectCurrentChannelType);
+		const currentChannelClanId = useSelector(selectCurrentChannelClanId);
+		const currentChannelId = useSelector(selectCurrentChannelId);
+		const currentChannelLabel = useSelector(selectCurrentChannelLabel);
+		const currentChannelMeetingCode = useSelector(selectCurrentChannelMeetingCode);
+		const currentChannelPrivate = useSelector(selectCurrentChannelPrivate);
+		const isChannelMezonVoice = currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 		const containerRef = useRef<HTMLDivElement | null>(null);
 		const { userProfile } = useAuth();
 
@@ -64,29 +75,30 @@ const ChannelVoice = memo(
 			dispatch(voiceActions.setStreamScreen(null));
 			dispatch(voiceActions.setShowMicrophone(false));
 			const store = getStore();
-			const currentClan = selectCurrentClan(store.getState());
-			if (!currentClan || !currentChannel?.meeting_code) return;
+			const currentClanId = selectCurrentClanId(store.getState());
+			const currentClanName = selectCurrentClanName(store.getState());
+			if (!currentClanId || !currentChannelMeetingCode) return;
 			setLoading(true);
 
 			try {
 				const result = await dispatch(
 					generateMeetToken({
-						channelId: currentChannel?.channel_id as string,
-						roomName: currentChannel?.meeting_code
+						channelId: currentChannelId as string,
+						roomName: currentChannelMeetingCode
 					})
 				).unwrap();
 
 				if (result) {
-					await participantMeetState(ParticipantMeetState.JOIN, currentChannel?.clan_id as string, currentChannel?.channel_id as string);
+					await participantMeetState(ParticipantMeetState.JOIN, currentChannelClanId as string, currentChannelId as string);
 					dispatch(voiceActions.setJoined(true));
 					dispatch(voiceActions.setToken(result));
 					dispatch(
 						voiceActions.setVoiceInfo({
-							clanId: currentClan?.clan_id as string,
-							clanName: currentClan?.clan_name as string,
-							channelId: currentChannel?.channel_id as string,
-							channelLabel: currentChannel?.channel_label as string,
-							channelPrivate: currentChannel?.channel_private as number
+							clanId: currentClanId as string,
+							clanName: currentClanName as string,
+							channelId: currentChannelId as string,
+							channelLabel: currentChannelLabel as string,
+							channelPrivate: currentChannelPrivate as number
 						})
 					);
 				} else {
@@ -113,7 +125,7 @@ const ChannelVoice = memo(
 			dispatch(voiceActions.setFullScreen(!isVoiceFullScreen));
 		}, [isVoiceFullScreen]);
 
-		const isShow = isJoined && voiceInfo?.clanId === currentChannel?.clan_id && voiceInfo?.channelId === currentChannel?.channel_id;
+		const isShow = isJoined && voiceInfo?.clanId === currentChannelClanId && voiceInfo?.channelId === currentChannelId;
 
 		const toggleChat = useCallback(() => {
 			dispatch(appActions.setIsShowChatVoice(!isShowChatVoice));
@@ -135,16 +147,16 @@ const ChannelVoice = memo(
 			>
 				{token === '' || !serverUrl || voiceInfo?.clanId === '0' ? (
 					<PreJoinVoiceChannel
-						channel={currentChannel || undefined}
-						roomName={currentChannel?.meeting_code}
+						channel_label={currentChannelLabel}
+						channel_id={currentChannelId as string}
+						roomName={currentChannelMeetingCode}
 						loading={loading}
 						handleJoinRoom={handleJoinRoom}
 					/>
 				) : (
 					<>
 						<PreJoinVoiceChannel
-							channel={currentChannel || undefined}
-							roomName={currentChannel?.meeting_code}
+							roomName={currentChannelMeetingCode}
 							loading={loading}
 							handleJoinRoom={handleJoinRoom}
 							isCurrentChannel={isShow}
@@ -165,18 +177,17 @@ const ChannelVoice = memo(
 								<MyVideoConference
 									token={token}
 									url={serverUrl}
-									channelLabel={currentChannel?.channel_label as string}
+									channelLabel={currentChannelLabel as string}
 									onLeaveRoom={handleLeaveRoom}
 									onFullScreen={handleFullScreen}
 									onJoinRoom={handleJoinRoom}
 									isShowChatVoice={isShowChatVoice}
 									onToggleChat={toggleChat}
-									currentChannel={currentChannel}
 								/>
 								<EmojiSuggestionProvider>
 									{isShowChatVoice && (
 										<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
-											<ChatStream currentChannel={currentChannel} />
+											<ChatStream />
 										</div>
 									)}
 								</EmojiSuggestionProvider>

@@ -1,9 +1,9 @@
 import { useRoles } from '@mezon/core';
+import type { RolesClanEntity } from '@mezon/store';
 import {
-	RolesClanEntity,
 	getSelectedRoleId,
 	selectAllUserClans,
-	selectCurrentClan,
+	selectCurrentClanId,
 	selectCurrentRoleIcon,
 	selectTheme,
 	setAddMemberRoles,
@@ -25,7 +25,7 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 	const { t } = useTranslation('clanRoles');
 	const dispatch = useDispatch();
 	const appearanceTheme = useSelector(selectTheme);
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
 	const usersClan = useSelector(selectAllUserClans);
 	const selectedRoleId = useSelector(getSelectedRoleId);
 	const currentRoleIcon = useSelector(selectCurrentRoleIcon);
@@ -83,7 +83,7 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 			dispatch(setAddMemberRoles(userIds));
 		} else {
 			await updateRole(
-				currentClan?.id ?? '',
+				currentClanId ?? '',
 				selectedRoleId,
 				selectedRole?.title ?? '',
 				selectedRole?.color ?? '',
@@ -96,12 +96,12 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 		}
 		dispatch(
 			usersClanActions.updateManyRoleIds({
-				clanId: currentClan?.id as string,
-				updates: userIds.map((id) => ({ userId: id, roleId: selectedRoleId, clanId: currentClan?.id }))
+				clanId: currentClanId as string,
+				updates: userIds.map((id) => ({ userId: id, roleId: selectedRoleId, clanId: currentClanId }))
 			})
 		);
 		onClose();
-	}, [selectedRoleId, currentClan, selectedRole, selectedUserIds]);
+	}, [selectedRoleId, currentClanId, selectedRole, selectedUserIds]);
 
 	useEffect(() => {
 		if (!isOpen) {

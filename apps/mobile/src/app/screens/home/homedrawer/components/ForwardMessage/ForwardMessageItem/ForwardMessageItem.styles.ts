@@ -1,4 +1,4 @@
-import { verticalScale } from '@mezon/mobile-ui';
+import { baseColor, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (themeValue: any) =>
@@ -20,17 +20,17 @@ export const style = (themeValue: any) =>
 			color: themeValue.textStrong
 		},
 		checkboxContainer: {
-			justifyContent: 'center'
+			paddingLeft: size.s_8,
+			width: size.s_30
 		},
 		checkboxIconStyle: {
-			borderRadius: 5
-		},
-		checkboxFillColor: '#5865f2'
+			borderRadius: size.s_6
+		}
 	});
 
 export const getCheckboxInnerIconStyle = (isChecked: boolean, themeValue: any) => ({
 	borderWidth: 1.5,
-	borderColor: isChecked ? '#5865f2' : themeValue.white,
+	borderColor: isChecked ? baseColor.bgButtonPrimary : themeValue.white,
 	borderRadius: 5,
 	opacity: 1
 });

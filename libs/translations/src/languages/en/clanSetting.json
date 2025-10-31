@@ -12,7 +12,8 @@
             "webhooks": "Webhook",
             "security": "Security",
             "permissionDenied": "You do not have permission to edit",
-            "sound": "Sound Effect"
+            "sound": "Sound Effect",
+            "enableCommunity": "Enable Community"
         },
         "community": {
             "title": "Community",

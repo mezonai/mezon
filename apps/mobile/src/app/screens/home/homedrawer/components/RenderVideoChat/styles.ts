@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 export const style = (isUploading: boolean, imageWidth: number, imageHeight: number, isMultiple: boolean) =>
     StyleSheet.create({
         container: {
-            opacity: isUploading ? 0.5 : 1,
+            opacity: isUploading ? 0.8 : 1,
             width: imageWidth,
             height: imageHeight,
             marginVertical: !isMultiple ? size.s_6 : 0
@@ -37,6 +37,10 @@ export const style = (isUploading: boolean, imageWidth: number, imageHeight: num
             alignItems: 'center'
         },
 
+        iconPlayVideoColor: {
+            color: '#eaeaea'
+        },
+
         iconFlagVideo: {
             position: 'absolute',
             top: size.s_8,
@@ -45,11 +49,22 @@ export const style = (isUploading: boolean, imageWidth: number, imageHeight: num
             padding: size.s_4
         },
 
+        iconFlagVideoColor: {
+            color: '#ffffff'
+        },
+
         skeleton: {
             width: '100%',
             height: '100%',
             alignItems: 'center',
             justifyContent: 'center',
             backgroundColor: '#5a5b5c30'
-        }
+        },
+	    uploadingImage: {
+			position: 'absolute',
+		    width: '100%',
+		    height: '100%',
+		    alignItems: 'center',
+		    justifyContent: 'center',
+	    }
     });

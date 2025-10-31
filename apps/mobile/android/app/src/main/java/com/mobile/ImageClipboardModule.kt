@@ -3,24 +3,17 @@ package com.mezon.mobile
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.util.Base64
 import androidx.core.content.FileProvider
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.Arguments
 import java.io.File
 import java.io.FileOutputStream
-import android.content.Intent
-import android.media.MediaScannerConnection
-import android.os.Build
-import android.provider.MediaStore
-import android.content.ContentValues
-import android.os.Environment
+import java.util.HashSet
 
 class ImageClipboardModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
@@ -33,58 +26,50 @@ class ImageClipboardModule(reactContext: ReactApplicationContext) : ReactContext
         try {
             val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
 
-            val contentUri: Uri? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Insert into MediaStore (scoped storage)
-                val resolver = reactApplicationContext.contentResolver
-                val values = ContentValues().apply {
-                    put(MediaStore.Images.Media.DISPLAY_NAME, "clipboard_${System.currentTimeMillis()}.png")
-                    put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-                    // optional folder inside Pictures
-                    put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_PICTURES + "/MezonClipboard")
-                    put(MediaStore.Images.Media.IS_PENDING, 1)
-                }
-                val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                if (uri != null) {
-                    resolver.openOutputStream(uri).use { out ->
-                        out?.write(decodedBytes)
-                    }
-                    // mark as not pending
-                    values.clear()
-                    values.put(MediaStore.Images.Media.IS_PENDING, 0)
-                    resolver.update(uri, values, null, null)
-                }
-                uri
-            } else {
-                // Fallback for older devices - write to public Pictures and scan
-                val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                val dir = java.io.File(picturesDir, "MezonClipboard")
-                if (!dir.exists()) dir.mkdirs()
-                val imageFile = java.io.File(dir, "clipboard_${System.currentTimeMillis()}.png")
-                FileOutputStream(imageFile).use { fos ->
-                    fos.write(decodedBytes)
-                }
-                // scan to make available in MediaStore
-                MediaScannerConnection.scanFile(reactApplicationContext, arrayOf(imageFile.absolutePath), arrayOf("image/png"), null)
-                Uri.fromFile(imageFile)
-            }
+            // Save to cache
+            val cacheDir = reactApplicationContext.cacheDir
+            val imagesDir = File(cacheDir, "clipboard_images")
+            if (!imagesDir.exists()) imagesDir.mkdirs()
+            val imageFile = File(imagesDir, "clipboard_${System.currentTimeMillis()}.png")
+            FileOutputStream(imageFile).use { it.write(decodedBytes) }
 
-            if (contentUri == null) {
-                promise.reject("ERROR", "Failed to create media uri")
-                return
-            }
+            // Get content URI via FileProvider (make sure provider is declared in manifest)
+            val contentUri = FileProvider.getUriForFile(
+                reactApplicationContext,
+                "${reactApplicationContext.packageName}.fileprovider",
+                imageFile
+            )
 
             // Put URI into clipboard
+            val clip = ClipData.newUri(reactApplicationContext.contentResolver, "Image", contentUri)
             val clipboard = reactApplicationContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val item = ClipData.Item(contentUri)
-            val mimeTypes = arrayOf("image/png")
-            val clip = ClipData("Image", mimeTypes, item)
 
             // grant temporary read permission for the uri
-            reactApplicationContext.grantUriPermission(
-                reactApplicationContext.packageName,
-                contentUri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            val pm = reactApplicationContext.packageManager
+            val probeIntents = listOf(
+                Intent(Intent.ACTION_SEND).apply { type = "image/*" },
+                Intent(Intent.ACTION_SEND).apply { type = "image/png" },
+                Intent(Intent.ACTION_VIEW).apply { setDataAndType(contentUri, "image/*") }
             )
+
+            val grantedPackages = HashSet<String>()
+            for (probe in probeIntents) {
+                val resolveInfos = pm.queryIntentActivities(probe, PackageManager.MATCH_DEFAULT_ONLY)
+                for (ri in resolveInfos) {
+                    val pkg = ri.activityInfo.packageName
+                    if (grantedPackages.add(pkg)) {
+                        try {
+                            reactApplicationContext.grantUriPermission(
+                                pkg,
+                                contentUri,
+                                Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            )
+                        } catch (_: Exception) { /* ignore per-package grant failures */ }
+                    }
+                }
+            }
+
+            // Place clip on clipboard
             clipboard.setPrimaryClip(clip)
 
             promise.resolve("Success")

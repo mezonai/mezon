@@ -1,7 +1,7 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import {
 	notificationSettingActions,
-	selectCurrentChannel,
+	selectCurrentChannelCategoryId,
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectDefaultNotificationCategory,
@@ -24,14 +24,15 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 	const { t } = useTranslation('channelTopbar');
 	const tChannelMenu = useTranslation('channelMenu').t;
 	const notificationTypesList = createNotificationTypesListTranslated(tChannelMenu);
-	const currentChannel = useSelector(selectCurrentChannel);
-	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannel?.id || ''));
+	const currentChannelObjectId = useSelector(selectCurrentChannelId);
+	const currentChannelCategoryId = useSelector(selectCurrentChannelCategoryId);
+	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannelObjectId || ''));
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const [nameChildren, setNameChildren] = useState('');
 	const [mutedUntil, setmutedUntil] = useState('');
-	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannel?.category_id as string));
+	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannelCategoryId as string));
 
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
 

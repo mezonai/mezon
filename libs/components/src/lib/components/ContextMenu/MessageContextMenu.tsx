@@ -25,7 +25,9 @@ import {
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
 	selectClickedOnTopicStatus,
-	selectCurrentChannel,
+	selectCurrentChannelId,
+	selectCurrentChannelParentId,
+	selectCurrentChannelPrivate,
 	selectCurrentClanId,
 	selectCurrentTopicId,
 	selectDefaultCanvasByChannelId,
@@ -124,9 +126,11 @@ function MessageContextMenu({
 	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 	const { setOpenThreadMessageState } = useReference();
 	const dmGroupChatList = useSelector(selectAllDirectMessages);
-	const currentChannel = useSelector(selectCurrentChannel);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentChannelPrivate = useSelector(selectCurrentChannelPrivate);
+	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
 	const currentClanId = useSelector(selectCurrentClanId);
-	const listPinMessages = useAppSelector((state) => selectPinMessageByChannelId(state, currentChannel?.id as string));
+	const listPinMessages = useAppSelector((state) => selectPinMessageByChannelId(state, currentChannelId as string));
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const isClanView = useSelector(selectClanView);
 	const currentTopicId = useSelector(selectCurrentTopicId);
@@ -137,15 +141,26 @@ function MessageContextMenu({
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
 
+	const channelOrDirect = useMemo(() => {
+		if (isClanView) {
+			return {
+				clan_id: currentClanId,
+				channel_private: currentChannelPrivate,
+				channel_id: currentChannelId
+			} as ApiChannelDescription;
+		}
+		return currentDmGroup as ApiChannelDescription;
+	}, [isClanView, currentClanId, currentChannelPrivate, currentChannelId, currentDmGroup]);
+
 	const { sendMessage: sendChatMessage } = useChatSending({
-		channelOrDirect: (isClanView ? currentChannel : currentDmGroup) as ApiChannelDescription,
+		channelOrDirect,
 		mode: activeMode || ChannelStreamMode.STREAM_MODE_CHANNEL
 	});
 
 	const message = useAppSelector((state) =>
 		selectMessageByMessageId(
 			state,
-			isTopic ? currentTopicId : isFocusThreadBox ? currentThread?.channel_id : isClanView ? currentChannel?.id : currentDmId,
+			isTopic ? currentTopicId : isFocusThreadBox ? currentThread?.channel_id : isClanView ? currentChannelId : currentDmId,
 			messageId
 		)
 	);
@@ -153,16 +168,16 @@ function MessageContextMenu({
 	const currentDm = useSelector(selectDmGroupCurrent(currentDmId || ''));
 	const modeResponsive = useSelector(selectModeResponsive);
 	const allMessagesEntities = useAppSelector((state) =>
-		selectMessageEntitiesByChannelId(state, (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannel?.channel_id : currentDm?.id) || '')
+		selectMessageEntitiesByChannelId(state, (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDm?.id) || '')
 	);
-	const allMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, (isClanView ? currentChannel?.id : currentDmId) as string));
+	const allMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, (isClanView ? currentChannelId : currentDmId) as string));
 	const dispatch = useAppDispatch();
 
 	const handleItemClick = useCallback(() => {
 		dispatch(referencesActions.setIdReferenceMessageReaction(message.id));
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.EMOJI_REACTION_RIGHT));
 	}, [dispatch]);
-	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannel?.channel_id ?? ''));
+	const defaultCanvas = useAppSelector((state) => selectDefaultCanvasByChannelId(state, currentChannelId ?? ''));
 	const messagePosition = allMessageIds.findIndex((id: string) => id === messageId);
 	const { userId } = useAuth();
 	const { posShowMenu, imageSrc } = useMessageContextMenu();
@@ -184,7 +199,7 @@ function MessageContextMenu({
 
 	const [canManageThread, canDeleteMessage, canSendMessage] = usePermissionChecker(
 		[EOverriddenPermission.manageThread, EOverriddenPermission.deleteMessage, EOverriddenPermission.sendMessage],
-		currentChannel?.id ?? ''
+		currentChannelId ?? ''
 	);
 	const hasPermissionCreateTopic =
 		(canSendMessage && activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL) ||
@@ -206,10 +221,10 @@ function MessageContextMenu({
 		message?.code !== TypeMessage.UpcomingEvent;
 
 	const handleAddToNote = useCallback(() => {
-		if (!message || !currentChannel || !currentClanId) return;
+		if (!message || !currentChannelId || !currentClanId) return;
 
 		const createCanvasBody = (content?: string, id?: string) => ({
-			channel_id: currentChannel.channel_id,
+			channel_id: currentChannelId,
 			clan_id: currentClanId.toString(),
 			content,
 			is_default: true,
@@ -277,7 +292,7 @@ function MessageContextMenu({
 		}
 
 		dispatch(createEditCanvas(createCanvasBody(formattedString, defaultCanvas?.id)));
-	}, [dispatch, message, currentChannel, currentClanId, defaultCanvas, t]);
+	}, [dispatch, message, currentClanId, defaultCanvas, t]);
 
 	const appearanceTheme = useSelector(selectTheme);
 
@@ -380,20 +395,20 @@ function MessageContextMenu({
 
 	const setIsShowCreateThread = useCallback(
 		(isShowCreateThread: boolean, channelId?: string) => {
-			dispatch(threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannel?.id as string), isShowCreateThread }));
+			dispatch(threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannelId as string), isShowCreateThread }));
 			dispatch(topicsActions.setIsShowCreateTopic(false));
 		},
-		[currentChannel?.id, dispatch]
+		[currentChannelId, dispatch]
 	);
 
 	const setIsShowCreateTopic = useCallback(
 		(isShowCreateTopic: boolean, channelId?: string) => {
 			dispatch(topicsActions.setIsShowCreateTopic(isShowCreateTopic));
 			dispatch(
-				threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannel?.id as string), isShowCreateThread: false })
+				threadsActions.setIsShowCreateThread({ channelId: channelId ? channelId : (currentChannelId as string), isShowCreateThread: false })
 			);
 		},
-		[currentChannel?.id, dispatch]
+		[currentChannelId, dispatch]
 	);
 
 	const setValueThread = useCallback(
@@ -448,7 +463,8 @@ function MessageContextMenu({
 			dispatch(
 				channelMetaActions.setChannelLastSeenTimestamp({
 					channelId: message?.channel_id as string,
-					timestamp: message.create_time_seconds || Date.now()
+					timestamp: message.create_time_seconds || Date.now(),
+					messageId: message?.id
 				})
 			);
 		} catch (error) {
@@ -498,11 +514,11 @@ function MessageContextMenu({
 
 	const [enableEditMessageItem, enableReportMessageItem] = useMemo(() => {
 		if (!checkPos) return [false, false];
-		const enableEdit = isMyMessage;
+		const enableEdit = isMyMessage && !message.content.tp;
 		const enableReport = !isMyMessage;
 
 		return [enableEdit, enableReport];
-	}, [isMyMessage, checkPos]);
+	}, [isMyMessage, checkPos, message.content.tp]);
 
 	const pinMessageStatus = useMemo(() => {
 		if (!checkPos) return undefined;
@@ -524,7 +540,7 @@ function MessageContextMenu({
 	}, [checkPos, activeMode, canManageThread]);
 
 	const enableDelMessageItem = useMemo(() => {
-		if (!checkPos) return false;
+		if (!checkPos || message.content.tp) return false;
 		if (isMyMessage) {
 			return true;
 		}
@@ -535,7 +551,7 @@ function MessageContextMenu({
 		if (activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL || activeMode === ChannelStreamMode.STREAM_MODE_THREAD) {
 			return canDeleteMessage;
 		}
-	}, [activeMode, type, canDeleteMessage, isMyMessage, checkPos, isOwnerGroupDM]);
+	}, [activeMode, type, canDeleteMessage, isMyMessage, checkPos, isOwnerGroupDM, message.content.tp]);
 
 	const checkElementIsImage = elementTarget instanceof HTMLImageElement;
 	const checkElementIsLink = elementTarget instanceof HTMLAnchorElement;
@@ -598,7 +614,7 @@ function MessageContextMenu({
 		[createDirectMessageWithUser, sendInviteMessage]
 	);
 
-	const quickMenuItems = useAppSelector((state) => selectQuickMenuByChannelId(state, currentChannel?.id || ''));
+	const quickMenuItems = useAppSelector((state) => selectQuickMenuByChannelId(state, currentChannelId || ''));
 
 	const items = useMemo<ContextMenuItem[]>(() => {
 		const builder = new MenuBuilder();
@@ -642,9 +658,9 @@ function MessageContextMenu({
 									count: 1,
 									message_sender_id: message?.sender_id ?? '',
 									action_delete: false,
-									is_public: isPublicChannel(currentChannel),
+									is_public: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
 									clanId: message.clan_id ?? '',
-									channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
+									channelId: isTopic ? currentChannelId || '' : (message?.channel_id ?? ''),
 									isFocusTopicBox,
 									channelIdOnMessage: message?.channel_id
 								});
@@ -901,7 +917,7 @@ function MessageContextMenu({
 			message={message}
 			isTopic={isTopic}
 			onSlashCommandExecute={handleSlashCommandSelect}
-			currentChannelId={currentChannel?.id}
+			currentChannelId={currentChannelId as string}
 		/>
 	);
 }

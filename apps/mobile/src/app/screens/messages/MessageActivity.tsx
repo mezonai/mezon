@@ -102,7 +102,7 @@ function MessageActivity() {
 				) : (
 					<MezonAvatar avatarUrl={''} username={item?.name} width={size.s_36} height={size.s_36} />
 				)}
-				<View style={{ flexShrink: 1 }}>
+				<View style={styles.activityTextWrapper}>
 					<Text style={styles.userNameActivity} numberOfLines={1}>
 						{item?.name}
 					</Text>

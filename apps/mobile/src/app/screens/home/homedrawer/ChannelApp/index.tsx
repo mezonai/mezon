@@ -148,18 +148,7 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 		<Modal style={styles.container} visible={true} supportedOrientations={['portrait', 'landscape']}>
 			{orientation === 'Portrait' && Platform.OS === 'ios' && <StatusBarHeight />}
 			{loading && (
-				<View
-					style={{
-						alignItems: 'center',
-						justifyContent: 'center',
-						position: 'absolute',
-						height: '100%',
-						zIndex: 1,
-						width: '100%',
-						backgroundColor: themeValue.primary,
-						flex: 1
-					}}
-				>
+				<View style={styles.loadingContainer}>
 					<Wave color={themeValue.text} />
 					<Text style={styles.textLoading}>Loading data, please wait a moment!</Text>
 				</View>

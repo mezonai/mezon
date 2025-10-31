@@ -1,6 +1,7 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useMezon } from '@mezon/transport';
-import { getSrcEmoji, getSrcSound, UsersClanEntity } from '@mezon/utils';
+import type { UsersClanEntity } from '@mezon/utils';
+import { getSrcEmoji, getSrcSound } from '@mezon/utils';
 import type { VoiceReactionSend } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, Platform, Text, View } from 'react-native';
@@ -53,27 +54,15 @@ interface ReactProps {
 const AnimatedEmoji = memo(({ item, styles }: { item: EmojiItem; styles: any }) => {
 	return (
 		<Animated.View
-			style={{
-				position: 'absolute',
-				bottom: 0,
-				left: '50%',
-				width: ANIMATION_CONFIG.EMOJI_SIZE,
-				height: ANIMATION_CONFIG.EMOJI_SIZE,
-				transform: [{ translateY: item.translateY }, { translateX: item.translateX }, { scale: item.scale }],
-				opacity: item.opacity,
-				alignItems: 'center',
-				justifyContent: 'center',
-				zIndex: ANIMATION_CONFIG.Z_INDEX
-			}}
+			style={[
+				styles.animatedEmojiContainer,
+				{
+					transform: [{ translateY: item.translateY }, { translateX: item.translateX }, { scale: item.scale }],
+					opacity: item.opacity
+				}
+			]}
 		>
-			<FastImage
-				source={{ uri: getSrcEmoji(item.emojiId) }}
-				style={{
-					width: ANIMATION_CONFIG.EMOJI_SIZE,
-					height: ANIMATION_CONFIG.EMOJI_SIZE
-				}}
-				resizeMode="contain"
-			/>
+			<FastImage source={{ uri: getSrcEmoji(item.emojiId) }} style={styles.emojiImage} resizeMode="contain" />
 			{item?.displayName && (
 				<View style={styles.reactionSenderEmojiContainer}>
 					<Text numberOfLines={1} style={styles.senderName}>

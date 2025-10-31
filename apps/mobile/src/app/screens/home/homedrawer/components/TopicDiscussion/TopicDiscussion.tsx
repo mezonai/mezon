@@ -107,7 +107,7 @@ export default function TopicDiscussion() {
 			>
 				<TopicHeader handleBack={onGoBack} />
 				<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
-					<View style={{ flex: 1 }}>
+					<View style={styles.panGestureContainer}>
 						<ChannelMessages
 							channelId={currentTopicId}
 							topicId={currentTopicId}

@@ -1,13 +1,16 @@
 import { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FlowContext } from '../../../context/FlowContext';
 import flowService from '../../../services/flowService';
 import { changeLoading } from '../../../stores/flow/flow.action';
-import { IFlow } from '../../../stores/flow/flow.interface';
+import type { IFlow } from '../../../stores/flow/flow.interface';
 
 const ListFlow = () => {
 	const { applicationId } = useParams();
+	const { t } = useTranslation('adminApplication');
+
 	const [listFlow, setListFlow] = useState<IFlow[]>([]);
 	const { flowDispatch } = useContext(FlowContext);
 	useEffect(() => {
@@ -17,7 +20,7 @@ const ListFlow = () => {
 				const res: IFlow[] = await flowService.getAllFlowByApplication(applicationId ?? '');
 				setListFlow(res);
 			} catch {
-				toast.error('Get list flow error');
+				toast.error(t('flows.toasts.errorLoading'));
 			} finally {
 				flowDispatch(changeLoading(false));
 			}

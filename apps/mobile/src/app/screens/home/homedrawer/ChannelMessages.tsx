@@ -1,8 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { ELoadMoreDirection } from '@mezon/chat-scroll';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import {
 	channelsActions,
 	getStore,
@@ -20,9 +18,9 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { Direction_Mode, sleep } from '@mezon/utils';
+import { Direction_Mode, LIMIT_MESSAGE, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelStreamMode } from 'mezon-js';
+import type { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, Keyboard, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -309,6 +307,7 @@ const ChannelMessages = React.memo(
 			dispatch(messagesActions.setIdMessageToJump(null));
 			timeOutRef.current = setTimeout(() => {
 				isLoadMore.current[ELoadMoreDirection.bottom] = false;
+				setIsShowJumpToPresent(false);
 				flatListRef?.current?.scrollToOffset?.({ animated: true, offset: 0 });
 			}, 300);
 		}, [clanId, channelId, dispatch, topicChannelId]);
@@ -359,12 +358,8 @@ const ChannelMessages = React.memo(
 					<View />
 				)}
 				{isLoadMore.current?.[ELoadMoreDirection.bottom] && <ViewLoadMore />}
-				<View
-					style={{
-						height: size.s_8
-					}}
-				/>
-				{isShowJumpToPresent && (
+				<View style={styles.spacerHeight8} />
+				{isShowJumpToPresent && messages?.length >= LIMIT_MESSAGE && (
 					<ButtonJumpToPresent
 						handleJumpToPresent={handleJumpToPresent}
 						lastSeenMessageId={lastSeenMessageId}

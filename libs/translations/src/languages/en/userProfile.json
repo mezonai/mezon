@@ -15,9 +15,10 @@
 		}
 	},
 	"kickUserClanModal": {
-		"kickFromServer": "Kick {{username}} from Clan",
+		"title": "Kick Member",
+		"kickFromServer": "Kick {{username}} From Clan",
 		"description": "Are you sure you want to kick {{username}} from the clan? They will be able to rejoin again with a new invite.",
-		"reasonKick": "Reason for kick",
+		"reasonKick": "Reason For Kick",
 		"buttonName": "Kick"
 	},
 	"transferOwnershipModal": {

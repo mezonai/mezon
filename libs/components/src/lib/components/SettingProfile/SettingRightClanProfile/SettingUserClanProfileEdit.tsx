@@ -192,8 +192,8 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 		setFlagOption(false);
 	};
 	const handleUpdateUser = async () => {
-		if (!checkValidate && (urlImage || displayName)) {
-			await updateUserClanProfile(userClansProfile?.clan_id ?? '', displayName.trim() || '', urlImage || '');
+		if (!checkValidate) {
+			await updateUserClanProfile(userClansProfile?.clan_id ?? '', displayName.trim() || userProfile?.user?.display_name || '', urlImage || '');
 		}
 		setFlagOption(false);
 	};

@@ -1,16 +1,17 @@
+import type { RolesClanEntity } from '@mezon/store';
 import {
 	channelAppActions,
 	getStore,
 	giveCoffeeActions,
-	RolesClanEntity,
 	selectAllChannels,
 	selectAllUserClans,
 	selectCurrentClan,
 	useAppDispatch
 } from '@mezon/store';
-import { ChannelMembersEntity, MiniAppEventType } from '@mezon/utils';
+import type { ChannelMembersEntity } from '@mezon/utils';
+import { MiniAppEventType } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
-import { ApiAccount, ApiChannelAppResponse } from 'mezon-js/api.gen';
+import type { ApiAccount, ApiChannelAppResponse } from 'mezon-js/api.gen';
 import { useEffect, useRef } from 'react';
 
 type GetUserHashInfo = (appId: string) => Promise<any>;
@@ -105,7 +106,7 @@ const useMiniAppEventListener = (
 							amount,
 							note,
 							extra_attribute,
-							receiver_name: receiver_name
+							receiver_name
 						})
 					);
 					dispatch(giveCoffeeActions.setShowModalSendToken(true));

@@ -184,8 +184,18 @@
 		"enableWallet": "Kích hoạt Ví",
 		"cancel": "Hủy"
 	},
-	"creator": "Người tạo",
-	"viewTopic": "Xem thảo luận ngắn",
 	"reply": "{{number}} tin nhắn",
-	"replies": "Tin nhắn"
+	"replies": "Tin nhắn",
+	"attachments": {
+		"image": "Hình ảnh",
+		"video": "Video",
+		"audio": "Tin nhắn thoại",
+		"file": "Tệp",
+		"location": "Vị trí hiện tại",
+		"sticker": "Nhãn dán",
+		"gif": "GIF",
+		"link": "Liên kết",
+		"attachment": "Tệp đính kèm",
+		"embed": "Nhúng"
+	}
 }

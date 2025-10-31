@@ -252,7 +252,7 @@ const DiscoverDetailScreen: React.FC<DiscoverDetailScreenProps> = ({ clanDetail 
 			if (payload && payload?.clan_id) {
 				await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 				save(STORAGE_CLAN_ID, payload?.clan_id);
-				await store.dispatch(clansActions.fetchClans({ noCache: true }));
+				await store.dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
 				store.dispatch(clansActions.joinClan({ clanId: payload?.clan_id }));
 				store.dispatch(clansActions.changeCurrentClan({ clanId: payload?.clan_id }));
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });

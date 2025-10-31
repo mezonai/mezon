@@ -266,7 +266,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 						<Tooltip
 							placement="left"
 							overlay={
-								<p className="text-theme-primary-active" style={{ width: 'max-content' }}>
+								<p className="text-theme-primary-active w-[max-content]">
 									{t('eventCreator:eventDetail.createdBy', { username: userCreate?.user?.username })}
 								</p>
 							}

@@ -1,6 +1,7 @@
-import { ACTIVE_TAB, ETypeSearch, IUerMention } from '@mezon/mobile-components';
+import type { ETypeSearch, IUerMention } from '@mezon/mobile-components';
+import { ACTIVE_TAB } from '@mezon/mobile-components';
+import type { DirectEntity } from '@mezon/store-mobile';
 import {
-	DirectEntity,
 	getStore,
 	listChannelsByUserActions,
 	selectAllChannelMembers,
@@ -11,7 +12,8 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { IChannel, SearchItemProps, compareObjects, normalizeString } from '@mezon/utils';
+import type { IChannel, SearchItemProps } from '@mezon/utils';
+import { compareObjects, normalizeString } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +24,7 @@ import { EmptySearchPage } from '../../../EmptySearchPage';
 import MembersSearchTab from '../../../MembersSearchTab/MembersSearchTab';
 import MessagesSearchTab from '../../../MessagesSearchTab';
 import HeaderTabSearch from './HeaderTabSearch';
+import { style } from './styles';
 
 interface ISearchMessagePageProps {
 	currentChannel: IChannel | DirectEntity;
@@ -222,9 +225,9 @@ function SearchMessagePage({ searchText, currentChannel, userMention, typeSearch
 	};
 
 	return (
-		<View style={{ flex: 1 }}>
+		<View style={style.flex}>
 			<HeaderTabSearch tabList={TabList} activeTab={activeTab} onPress={handelHeaderTabChange} />
-			<View style={{ flex: 1 }}>{isContentReady ? renderContent() : null}</View>
+			<View style={style.flex}>{isContentReady ? renderContent() : null}</View>
 		</View>
 	);
 }

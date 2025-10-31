@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { Metrics, size } from '@mezon/mobile-ui';
+import { baseColor, Metrics, size } from '@mezon/mobile-ui';
 import React, { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, DeviceEventEmitter, Image, NativeModules, Platform, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -109,7 +109,7 @@ export const RenderVideoChat = React.memo(
 			if (!thumbnailPreview) {
 				return (
 					<View style={styles.skeleton}>
-						<ActivityIndicator />
+						<ActivityIndicator color={baseColor.blurple} size={'large'} />
 					</View>
 				);
 			}
@@ -125,8 +125,8 @@ export const RenderVideoChat = React.memo(
 					) : (
 						<Image source={{ uri: thumbnailPreview || '' }} style={styles.video} />
 					)}
-					<View style={styles.iconFlagVideo}>
-						<Entypo size={size.s_16} name="video" style={{ color: '#ffffff' }} />
+					<View style={styles.uploadingImage}>
+						<ActivityIndicator color={baseColor.blurple} size={'large'} />
 					</View>
 				</>
 			);
@@ -145,7 +145,7 @@ export const RenderVideoChat = React.memo(
 						)}
 
 						<View style={styles.iconPlayVideo}>
-							<Entypo size={size.s_40} name="controller-play" style={{ color: '#eaeaea' }} />
+							<Entypo size={size.s_40} name="controller-play" style={styles.iconPlayVideoColor} />
 						</View>
 					</TouchableOpacity>
 				)}

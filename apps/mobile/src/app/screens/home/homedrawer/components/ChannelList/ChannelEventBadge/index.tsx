@@ -8,6 +8,7 @@ import { DeviceEventEmitter, Pressable, View } from 'react-native';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import JoinChannelVoiceBS from '../../ChannelVoice/JoinChannelVoiceBS';
+import { style } from './styles';
 
 type EventBadgeProps = {
 	clanId: string;
@@ -31,11 +32,7 @@ export const EventBadge = memo(({ clanId, channelId }: EventBadgeProps) => {
 
 	if (events?.length && (events?.[0]?.event_status === EEventStatus.UPCOMING || events?.[0]?.event_status === EEventStatus.ONGOING)) {
 		return (
-			<View
-				style={{
-					marginLeft: size.s_8
-				}}
-			>
+			<View style={style.container}>
 				<Pressable onPress={hanleEventChannel}>
 					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} color={colorStatusEvent} />
 				</Pressable>

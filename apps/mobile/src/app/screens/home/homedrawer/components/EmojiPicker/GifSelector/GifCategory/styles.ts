@@ -24,6 +24,10 @@ const styles = StyleSheet.create({
 		borderRadius: 10,
 		overflow: 'hidden'
 	},
+	fastImage: {
+		height: '100%',
+		width: '100%'
+	},
 	container: {
 		marginTop: 20,
 		display: 'flex',

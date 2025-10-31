@@ -1,5 +1,5 @@
 import { getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, channelsActions, createNewChannel, getStoreAsync, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -87,12 +87,12 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 			headerRight: () => (
 				<Pressable onPress={handleCreateChannel}>
 					<Text
-						style={{
-							color: baseColor.blurple,
-							fontWeight: 'bold',
-							paddingHorizontal: size.s_20,
-							opacity: channelName?.trim()?.length > 0 ? 1 : 0.5
-						}}
+						style={[
+							styles.headerCreateButton,
+							{
+								opacity: channelName?.trim()?.length > 0 ? 1 : 0.5
+							}
+						]}
 					>
 						{t('actions.create')}
 					</Text>
@@ -100,12 +100,22 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 			),
 
 			headerLeft: () => (
-				<Pressable style={{ padding: size.s_20 }} onPress={() => navigation.goBack()}>
+				<Pressable style={styles.headerBackButton} onPress={() => navigation.goBack()}>
 					<MezonIconCDN icon={IconCDN.closeLargeIcon} height={size.s_16} width={size.s_16} color={themeValue.text} />
 				</Pressable>
 			)
 		});
-	}, [channelName, navigation, t, themeValue.text, isChannelPrivate, channelType, handleCreateChannel]);
+	}, [
+		channelName,
+		navigation,
+		t,
+		themeValue.text,
+		isChannelPrivate,
+		channelType,
+		handleCreateChannel,
+		styles.headerBackButton,
+		styles.headerCreateButton
+	]);
 
 	const menuPrivate = useMemo(
 		() =>

@@ -1,4 +1,4 @@
-import { selectCurrentChannelId, selectCurrentClan, selectCurrentClanId } from '@mezon/store';
+import { selectCurrentChannelId, selectCurrentClanId, selectCurrentClanLogo, selectCurrentClanName } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { MAX_FILE_SIZE_1MB, ValidateSpecialCharacters, fileTypeImage, generateE2eId } from '@mezon/utils';
@@ -18,14 +18,15 @@ type ClanLogoNameProps = {
 const ClanLogoName = ({ onUpload, onGetClanName, resetTrigger, onResetComplete }: ClanLogoNameProps) => {
 	const { t } = useTranslation('clanSettings');
 	const { sessionRef, clientRef } = useMezon();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanLogo = useSelector(selectCurrentClanLogo);
+	const currentClanName = useSelector(selectCurrentClanName);
 
 	const currentClanId = useSelector(selectCurrentClanId) || '';
 	const currentChannelId = useSelector(selectCurrentChannelId) || '';
 
-	const [urlLogo, setUrlLogo] = useState<string | undefined>(currentClan?.logo ?? '');
-	const [clanName, setClanName] = useState<string | undefined>(currentClan?.clan_name ?? '');
-	const [checkValidate, setCheckValidate] = useState(!ValidateSpecialCharacters().test(currentClan?.clan_name || ''));
+	const [urlLogo, setUrlLogo] = useState<string | undefined>(currentClanLogo ?? '');
+	const [clanName, setClanName] = useState<string | undefined>(currentClanName ?? '');
+	const [checkValidate, setCheckValidate] = useState(!ValidateSpecialCharacters().test(currentClanName || ''));
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const [openSizeModal, setOpenSizeModal] = useState<boolean>(false);
 
@@ -88,18 +89,18 @@ const ClanLogoName = ({ onUpload, onGetClanName, resetTrigger, onResetComplete }
 	};
 
 	useEffect(() => {
-		if (clanName === currentClan?.clan_name) {
+		if (clanName === currentClanName) {
 			setCheckValidate(false);
 		}
-	}, [clanName]);
+	}, [clanName, currentClanName]);
 
 	useEffect(() => {
 		if (resetTrigger) {
-			setUrlLogo(currentClan?.logo ?? '');
-			setClanName(currentClan?.clan_name ?? '');
+			setUrlLogo(currentClanLogo ?? '');
+			setClanName(currentClanName ?? '');
 			onResetComplete?.();
 		}
-	}, [resetTrigger, currentClan?.logo, currentClan?.clan_name, onResetComplete]);
+	}, [resetTrigger, currentClanLogo, currentClanName, onResetComplete]);
 
 	return (
 		<div className="flex sbm:flex-row flex-col gap-[10px]">
@@ -118,7 +119,7 @@ const ClanLogoName = ({ onUpload, onGetClanName, resetTrigger, onResetComplete }
 												'max-w-[70px] overflow-hidden text-theme-primary-active whitespace-nowrap text-lg max-h-[100px]'
 											}
 										>
-											{currentClan?.clan_name}
+											{currentClanName}
 										</span>
 									)}
 								</div>

@@ -459,7 +459,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 			onMouseLeave={handleMouseLeave}
 			onContextMenu={onContextMenu}
 			id={`msg-${messageId}`}
-			data-e2e={generateE2eId(`chat.direct_message.message.item`)}
+			data-e2e={generateE2eId(`message.item`)}
 		>
 			{children}
 			{isHover && (

@@ -78,10 +78,7 @@ const AppDirectory = () => {
 							<div className="heading uppercase text-[44px] font-extrabold dark:text-textDarkTheme text-textLightTheme max-lg:text-center">
 								{t('appDirectory.heading')}
 							</div>
-							<div
-								className="search-bar relative w-full pr-[16px] flex dark:bg-[#1e1f22] bg-bgLightModeThird items-center rounded-md"
-								style={{ boxShadow: 'rgba(0, 0, 0, 0.24) 0px 3px 8px' }}
-							>
+							<div className="search-bar relative w-full pr-[16px] flex dark:bg-[#1e1f22] bg-bgLightModeThird items-center rounded-md shadow-[0_3px_8px_rgba(0,0,0,0.24)]">
 								<input
 									value={inputValue}
 									onChange={inputOnchange}

@@ -1,6 +1,7 @@
-import { baseColor, useTheme } from '@mezon/mobile-ui';
-import { IEmoji } from '@mezon/utils';
-import { FC, ReactNode, memo, useState } from 'react';
+import { useTheme } from '@mezon/mobile-ui';
+import type { IEmoji } from '@mezon/utils';
+import type { FC, ReactNode } from 'react';
+import { memo, useState } from 'react';
 import { Pressable, ScrollView } from 'react-native-gesture-handler';
 import { style } from '../../styles';
 
@@ -39,10 +40,7 @@ const CategoryList: FC<CategoryListProps> = ({ categoriesWithIcons, setSelectedC
 						<Pressable
 							key={`${item.name}_cate_emoji${index}`}
 							onPress={() => onPress(item?.name)}
-							style={{
-								...styles.cateItem,
-								backgroundColor: item.name === currentCate ? baseColor.blurple : 'transparent'
-							}}
+							style={[styles.cateItem, item.name === currentCate ? styles.cateItemActive : styles.cateItemInactive]}
 						>
 							{item.icon}
 						</Pressable>

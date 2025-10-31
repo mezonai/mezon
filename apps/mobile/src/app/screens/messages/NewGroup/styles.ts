@@ -1,10 +1,14 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		newGroupContainer: {
 			backgroundColor: colors.primary,
+			flex: 1
+		},
+		wrapper: {
 			flex: 1
 		},
 		contentWrapper: {
@@ -37,6 +41,9 @@ export const style = (colors: Attributes) =>
 		actionText: {
 			color: '#5a62f4',
 			fontSize: size.medium
+		},
+		actionTextDisabled: {
+			opacity: 0.6
 		},
 		searchFriend: {
 			backgroundColor: colors.secondary,

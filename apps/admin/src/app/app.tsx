@@ -1,6 +1,9 @@
 import { initStore, MezonStoreProvider } from '@mezon/store';
-import { CreateMezonClientOptions, MezonContextProvider, useMezon } from '@mezon/transport';
+import i18n from '@mezon/translations';
+import type { CreateMezonClientOptions } from '@mezon/transport';
+import { MezonContextProvider, useMezon } from '@mezon/transport';
 import { useMemo } from 'react';
+import { I18nextProvider } from 'react-i18next';
 import { createBrowserRouter } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import './app.module.scss';
@@ -60,10 +63,12 @@ export function App() {
 	}
 
 	return (
-		<MezonStoreProvider store={store} loading={null} persistor={persistor}>
-			<AppInitializer />
-			<Routes />
-		</MezonStoreProvider>
+		<I18nextProvider i18n={i18n}>
+			<MezonStoreProvider store={store} loading={null} persistor={persistor}>
+				<AppInitializer />
+				<Routes />
+			</MezonStoreProvider>
+		</I18nextProvider>
 	);
 }
 

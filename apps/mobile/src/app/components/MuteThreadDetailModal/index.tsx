@@ -1,15 +1,17 @@
 import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
+import type { DirectEntity } from '@mezon/store-mobile';
 import {
-	DirectEntity,
 	notificationSettingActions,
 	selectCurrentClanId,
 	selectNotifiSettingsEntitiesById,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS, IChannel } from '@mezon/utils';
-import { RouteProp, useNavigation } from '@react-navigation/native';
+import type { IChannel } from '@mezon/utils';
+import { FOR_15_MINUTES, FOR_1_HOUR, FOR_24_HOURS, FOR_3_HOURS, FOR_8_HOURS } from '@mezon/utils';
+import type { RouteProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
@@ -17,7 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import type { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonMenu from '../../componentUI/MezonMenu';
 import { IconCDN } from '../../constants/icon_cdn';
 import NotificationSetting from '../NotificationSetting';
 import { style } from './MuteThreadDetailModal.styles';
@@ -104,14 +107,14 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 			headerShown: true,
 			headerTitle: () => (
 				<View>
-					<Text style={{ color: themeValue.textStrong, fontSize: size.medium, fontWeight: '700' }}>
+					<Text style={styles.headerTitle}>
 						{isDMThread
 							? t('notifySettingThreadModal.muteThisConversation')
 							: isChannel
 								? t('notifySettingThreadModal.headerTitleMuteChannel')
 								: t('notifySettingThreadModal.headerTitleMuteThread')}
 					</Text>
-					<Text numberOfLines={1} style={{ color: themeValue.text, fontSize: size.medium, fontWeight: '400', maxWidth: '90%' }}>
+					<Text numberOfLines={1} style={styles.headerSubtitle}>
 						{isDMThread
 							? currentChannel?.channel_label
 							: isChannel
