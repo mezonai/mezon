@@ -287,7 +287,7 @@ const ModalUserProfile = ({
 									type="text"
 									className={`w-full border-theme-primary text-theme-primary color-text-secondary rounded-[5px] bg-theme-contexify p-[5px] `}
 									placeholder={t('placeholders.messageUser', {
-										username: userById?.clan_nick || userById?.user?.display_name || userById?.user?.username
+										username: userById?.user?.display_name || userById?.user?.username
 									})}
 									value={content}
 									onKeyPress={handleOnKeyPress}
