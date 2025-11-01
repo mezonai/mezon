@@ -1,9 +1,11 @@
 import { EmojiSuggestionProvider, useCurrentInbox } from '@mezon/core';
-import { ChannelsEntity, selectSubPanelActive } from '@mezon/store';
+import type { ChannelsEntity } from '@mezon/store';
+import { selectSubPanelActive } from '@mezon/store';
 import { EmojiPlaces, SubPanelName } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
-import { ApiChannelDescription } from 'mezon-js/api.gen';
-import React, { RefObject, useCallback, useEffect, useState } from 'react';
+import type { ChannelStreamMode } from 'mezon-js';
+import type { ApiChannelDescription } from 'mezon-js/api.gen';
+import type { RefObject } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { GifStickerEmojiPopup } from '../../GifsStickersEmojis';
@@ -38,7 +40,7 @@ export const useEmojiPopupModal = (props: EmojiPopupModalProps): EmojiPopupModal
 				onClick={(e) => {
 					e.stopPropagation();
 				}}
-				className="fixed top-0 z-20 flex items-end justify-end"
+				className="fixed top-0 z-30 flex items-end justify-end"
 				onMouseDown={(e) => {
 					e.stopPropagation();
 				}}

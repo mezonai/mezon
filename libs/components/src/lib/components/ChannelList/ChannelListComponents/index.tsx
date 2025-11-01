@@ -136,7 +136,11 @@ export const Events = memo(() => {
 							<Icons.IconEvents />
 						</div>
 						<div className="w-[99px] text-base font-medium">
-							{numberEventManagement === 0 ? t('navigation.events') : t('navigation.events', { count: numberEventManagement })}
+							{numberEventManagement === 0
+								? t('navigation.events')
+								: numberEventManagement === 1
+									? t('navigation.events_one', { count: numberEventManagement })
+									: t('navigation.events_other', { count: numberEventManagement })}
 						</div>
 					</div>
 				</div>
