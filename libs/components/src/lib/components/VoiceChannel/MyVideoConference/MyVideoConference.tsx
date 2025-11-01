@@ -201,7 +201,7 @@ export function MyVideoConference({
 				<div className="lk-video-conference-inner relative bg-gray-100 dark:bg-black group">
 					{!focusTrack ? (
 						<div className="lk-grid-layout-wrapper bg-gray-300 dark:bg-black !h-full !py-[68px]">
-							<GridLayout tracks={tracks}>
+							<GridLayout tracks={tracks} isExternalCalling={isExternalCalling}>
 								<ParticipantTile
 									room={room}
 									roomName={room?.name}

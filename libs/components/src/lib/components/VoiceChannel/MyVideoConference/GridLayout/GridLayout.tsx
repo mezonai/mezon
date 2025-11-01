@@ -1,13 +1,16 @@
 import { createInteractingObservable, type TrackReferenceOrPlaceholder } from '@livekit/components-core';
-import { TrackLoop, UseParticipantsOptions, useGridLayout, usePagination, useSwipe } from '@livekit/components-react';
-import { HTMLAttributes, ReactNode, RefAttributes, createRef, forwardRef, useEffect, useState } from 'react';
+import type { UseParticipantsOptions } from '@livekit/components-react';
+import { TrackLoop, useGridLayout, usePagination, useSwipe } from '@livekit/components-react';
+import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
+import { createRef, forwardRef, useEffect, useState } from 'react';
 
 export interface GridLayoutProps extends HTMLAttributes<HTMLDivElement>, Pick<UseParticipantsOptions, 'updateOnlyOn'> {
 	children: ReactNode;
 	tracks: TrackReferenceOrPlaceholder[];
+	isExternalCalling?: boolean;
 }
 
-export function GridLayout({ tracks, ...props }: GridLayoutProps) {
+export function GridLayout({ tracks, isExternalCalling, ...props }: GridLayoutProps) {
 	const gridEl = createRef<HTMLDivElement>();
 	const { layout } = useGridLayout(gridEl, tracks.length);
 	const pagination = usePagination(layout.maxTiles, tracks);
@@ -49,7 +52,12 @@ export function GridLayout({ tracks, ...props }: GridLayoutProps) {
 	});
 
 	return (
-		<div ref={gridEl} data-lk-pagination={pagination.totalPageCount > 1} className="lk-grid-layout" data-lk-user-interaction={interactive}>
+		<div
+			ref={gridEl}
+			data-lk-pagination={pagination.totalPageCount > 1}
+			className={`lk-grid-layout  ${isExternalCalling && '[&>*]:aspect-[16/9] gap-6 p-12 w-auto'}`}
+			data-lk-user-interaction={interactive}
+		>
 			{tracks.length > layout.maxTiles && (
 				<PaginationIndicator totalPageCount={pagination.totalPageCount} currentPage={pagination.currentPage} />
 			)}
