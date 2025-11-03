@@ -1,6 +1,6 @@
 import { useAccount } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
-import { appActions, getStore, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
+import { appActions, getStore, messagesActions, selectAllAccount, useAppDispatch, usersClanActions } from '@mezon/store-mobile';
 import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyboardAvoidingView } from 'react-native';
@@ -75,6 +75,20 @@ const UserProfile = forwardRef(function UserProfile({ navigation }: IUserProfile
 
 			dispatch(appActions.setLoadingMainMobile(false));
 			if (response && response?.status !== 400) {
+				const payload = {
+					userId: userProfile?.user?.id || '',
+					avatar: imgUrl || '',
+					display_name: displayName?.trim() === '' ? userProfile?.user?.username : displayName.trim() || ''
+				};
+
+				dispatch(messagesActions.updateCurrentUserMessages(payload));
+				dispatch(
+					usersClanActions.updateUserProfileAcrossClans({
+						...payload,
+						about_me: aboutMe
+					})
+				);
+
 				Toast.show({
 					type: 'info',
 					text1: t('updateProfileSuccess')

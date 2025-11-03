@@ -1649,6 +1649,38 @@ export const messagesSlice = createSlice({
 
 		clearQueuedLastSeenMessages: (state) => {
 			state.queuedLastSeenMessages = [];
+		},
+
+		updateCurrentUserMessages: (
+			state,
+			action: PayloadAction<{
+				userId: string;
+				avatar?: string;
+				display_name?: string;
+			}>
+		) => {
+			const { userId, avatar = '', display_name = '' } = action.payload;
+
+			Object.keys(state.channelMessages).forEach((channelId) => {
+				const channelEntity = state.channelMessages?.[channelId];
+				if (!channelEntity) return;
+
+				const messageIds = channelEntity?.ids?.filter((id) => {
+					return channelEntity?.entities?.[id]?.sender_id === userId;
+				});
+
+				if (messageIds?.length > 0) {
+					const updates = messageIds?.map((id) => ({
+						id,
+						changes: {
+							...(display_name !== undefined && { display_name }),
+							...(avatar !== undefined && { avatar })
+						}
+					}));
+
+					channelMessagesAdapter.updateMany(channelEntity, updates);
+				}
+			});
 		}
 	},
 	extraReducers: (builder) => {
