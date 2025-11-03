@@ -78,7 +78,7 @@ const UserProfile = forwardRef(function UserProfile({ navigation }: IUserProfile
 				const payload = {
 					userId: userProfile?.user?.id || '',
 					avatar: imgUrl || '',
-					display_name: displayName?.trim() === '' ? userProfile?.user?.username : displayName.trim() || ''
+					display_name: (displayName?.trim() === '' ? userProfile?.user?.username : displayName.trim()) || ''
 				};
 
 				dispatch(messagesActions.updateCurrentUserMessages(payload));
