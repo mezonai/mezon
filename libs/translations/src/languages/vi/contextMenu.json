@@ -31,6 +31,7 @@
 		"message": "Tin nhắn",
 		"addFriend": "Thêm bạn",
 		"removeFriend": "Xóa bạn",
+		"banChat": "Chặn",
 		"kick": "Đuổi",
 		"removeFromThread": "Xóa {{username}} khỏi chủ đề"
 	},

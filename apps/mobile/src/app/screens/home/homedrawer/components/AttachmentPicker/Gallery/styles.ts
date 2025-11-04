@@ -46,7 +46,6 @@ export const style = (colors: Attributes) =>
 		},
 		galleryContainer: {
 			flex: 1,
-			padding: size.s_10,
 			paddingTop: 0
 		}
 	});

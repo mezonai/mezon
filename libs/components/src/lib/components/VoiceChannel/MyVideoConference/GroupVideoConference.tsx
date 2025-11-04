@@ -25,7 +25,6 @@ interface GroupVideoConferenceProps {
 	tracks?: TrackReferenceOrPlaceholder[];
 	isShowChatVoice?: boolean;
 	onToggleChat?: () => void;
-	currentChannel?: any;
 }
 
 const TOOLTIP_OVERLAY_STYLE = { background: 'none', boxShadow: 'none' } as const;

@@ -46,6 +46,7 @@ const CachedImageWithRetryIOS = memo(
 					setHasError(true);
 					setCurrentUri(fallbackUrl);
 				} else {
+					/* empty */
 				}
 			},
 			[source?.uri, urlOriginal, hasError, currentUri]

@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { DirectEntity, getStore, selectAllChannelMembersClan, selectCurrentUserId, selectMemberByGroupId, useAppSelector } from '@mezon/store-mobile';
+import { getStore, selectAllChannelMembersClan, selectCurrentUserId, selectMemberByGroupId, useAppSelector } from '@mezon/store-mobile';
 import type { ChannelMembersEntity, UsersClanEntity } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
@@ -154,7 +154,7 @@ export const MemberListStatus = React.memo(() => {
 			{(online?.length > 0 || offline?.length > 0) && !isChatWithMyself ? (
 				<SectionList
 					sections={[
-						{ title: t('common:members'), data: online, key: 'onlineMembers' },
+						{ title: t('common:onlines'), data: online, key: 'onlineMembers' },
 						{ title: t('common:offlines'), data: offline, key: 'offlineMembers' }
 					]}
 					keyExtractor={(item, index) => `channelMember[${index}]_${item?.id}`}

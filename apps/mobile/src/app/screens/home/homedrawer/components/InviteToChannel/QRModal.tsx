@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectCurrentClan } from '@mezon/store-mobile';
+import { selectCurrentClanLogo, selectCurrentClanName } from '@mezon/store-mobile';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Share, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -17,16 +17,15 @@ interface QRModalProps {
 
 const QRModalComponent: React.FC<QRModalProps> = ({ inviteLink }) => {
 	const { themeValue } = useTheme();
-	const currentClan = useSelector(selectCurrentClan);
 	const { t } = useTranslation(['inviteToChannel']);
 	const [qrCodeUri, setQrCodeUri] = useState<string>('');
 	const { saveMediaToCameraRoll } = useImage();
-
+	const currentClanLogo = useSelector(selectCurrentClanLogo);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const qrCodeCache = useRef<Map<string, string>>(new Map());
 
 	const generateQRCode = useCallback(async () => {
 		if (!inviteLink) return;
-
 
 		if (qrCodeCache.current.has(inviteLink)) {
 			const cachedUri = qrCodeCache.current.get(inviteLink)!;
@@ -84,45 +83,47 @@ const QRModalComponent: React.FC<QRModalProps> = ({ inviteLink }) => {
 
 	const styles = useMemo(() => createStyles(themeValue), [themeValue]);
 
-	const clanInfo = useMemo(() => (
-		<View style={styles.clanInfo}>
-			{currentClan?.logo ? (
-				<View style={styles.clanAvatarWrapper}>
-					<FastImage
-						style={styles.clanAvatar}
-						resizeMode={FastImage.resizeMode.contain}
-						source={{ uri: currentClan.logo }}
-					/>
-				</View>
-			) : (
-				<View style={styles.defaultAvatar}>
-					<Text style={styles.defaultAvatarText}>{currentClan?.clan_name?.charAt(0)?.toUpperCase()}</Text>
-				</View>
-			)}
+	const clanInfo = useMemo(
+		() => (
+			<View style={styles.clanInfo}>
+				{currentClanLogo ? (
+					<View style={styles.clanAvatarWrapper}>
+						<FastImage style={styles.clanAvatar} resizeMode={FastImage.resizeMode.contain} source={{ uri: currentClanLogo }} />
+					</View>
+				) : (
+					<View style={styles.defaultAvatar}>
+						<Text style={styles.defaultAvatarText}>{currentClanName?.charAt(0)?.toUpperCase()}</Text>
+					</View>
+				)}
 
-			<Text style={styles.clanName} numberOfLines={2}>
-				{currentClan?.clan_name || t('qrModal.clanDefaultName')}
-			</Text>
-		</View>
-	), [currentClan?.logo, currentClan?.clan_name, styles, t]);
+				<Text style={styles.clanName} numberOfLines={2}>
+					{currentClanName || t('qrModal.clanDefaultName')}
+				</Text>
+			</View>
+		),
+		[currentClanLogo, currentClanName, styles, t]
+	);
 
 	const qrNoteText = useMemo(() => {
-		if (currentClan?.clan_name) {
-			return t('qrModal.scanToJoin', { clanName: currentClan.clan_name });
+		if (currentClanName) {
+			return t('qrModal.scanToJoin', { clanName: currentClanName });
 		}
 		return t('qrModal.scanToJoinDefault');
-	}, [currentClan?.clan_name, t]);
+	}, [currentClanName, t]);
 
-	const actionButtons = useMemo(() => (
-		<View style={styles.actionsRow}>
-			<TouchableOpacity style={styles.actionButton} onPress={handleDownloadQRCode}>
-				<MezonIconCDN icon={IconCDN.downloadIcon} color={themeValue.primary} />
-			</TouchableOpacity>
-			<TouchableOpacity style={styles.actionButton} onPress={handleShareQRCode} >
-				<MezonIconCDN icon={IconCDN.shareIcon} color={themeValue.primary} />
-			</TouchableOpacity>
-		</View>
-	), [handleDownloadQRCode, handleShareQRCode]);
+	const actionButtons = useMemo(
+		() => (
+			<View style={styles.actionsRow}>
+				<TouchableOpacity style={styles.actionButton} onPress={handleDownloadQRCode}>
+					<MezonIconCDN icon={IconCDN.downloadIcon} color={themeValue.primary} />
+				</TouchableOpacity>
+				<TouchableOpacity style={styles.actionButton} onPress={handleShareQRCode}>
+					<MezonIconCDN icon={IconCDN.shareIcon} color={themeValue.primary} />
+				</TouchableOpacity>
+			</View>
+		),
+		[handleDownloadQRCode, handleShareQRCode]
+	);
 
 	return (
 		<View style={styles.modalContainer}>
@@ -135,13 +136,7 @@ const QRModalComponent: React.FC<QRModalProps> = ({ inviteLink }) => {
 				<Text style={styles.qrNote}>{qrNoteText}</Text>
 				<View style={styles.qrContainer}>
 					<View style={styles.qrCodeWrapper}>
-						{!!qrCodeUri && (
-							<FastImage
-								source={{ uri: qrCodeUri }}
-								style={styles.qrCode}
-								resizeMode={FastImage.resizeMode.contain}
-							/>
-						)}
+						{!!qrCodeUri && <FastImage source={{ uri: qrCodeUri }} style={styles.qrCode} resizeMode={FastImage.resizeMode.contain} />}
 					</View>
 				</View>
 				{actionButtons}
@@ -157,7 +152,7 @@ const createStyles = (themeValue: any) =>
 		modalContainer: {
 			flex: 1,
 			justifyContent: 'center',
-			alignItems: 'center',
+			alignItems: 'center'
 		},
 		modalContent: {
 			backgroundColor: themeValue.primary,
@@ -196,7 +191,7 @@ const createStyles = (themeValue: any) =>
 		},
 		clanAvatar: {
 			width: size.s_60,
-			height: size.s_60,
+			height: size.s_60
 		},
 		defaultAvatar: {
 			width: size.s_60,
@@ -224,7 +219,7 @@ const createStyles = (themeValue: any) =>
 			marginBottom: size.s_20,
 			justifyContent: 'center',
 			alignItems: 'center',
-			borderRadius: size.s_16,
+			borderRadius: size.s_16
 		},
 		qrCodeWrapper: {
 			width: size.s_200,
@@ -263,7 +258,7 @@ const createStyles = (themeValue: any) =>
 			backgroundColor: themeValue.white
 		},
 		actionButtonDisabled: {
-			opacity: 0.5,
+			opacity: 0.5
 		},
 		actionButtonText: {
 			color: themeValue.primary,
@@ -275,23 +270,23 @@ const createStyles = (themeValue: any) =>
 			fontWeight: '600',
 			color: themeValue.white,
 			textAlign: 'center',
-			marginBottom: size.s_12,
+			marginBottom: size.s_12
 		},
 		qrNote: {
 			fontSize: size.s_12,
 			color: themeValue.white,
 			textAlign: 'center',
-			lineHeight: size.s_20,
+			lineHeight: size.s_20
 		},
 		loadingContainer: {
 			paddingVertical: size.s_40,
 			paddingHorizontal: size.s_20,
 			alignItems: 'center',
-			justifyContent: 'center',
+			justifyContent: 'center'
 		},
 		loadingText: {
 			fontSize: size.s_14,
 			color: themeValue.textGray,
-			textAlign: 'center',
+			textAlign: 'center'
 		}
 	});

@@ -9,7 +9,7 @@ export interface ITabs {
 
 export const getSidebarTabs = (t: (key: string) => string): ITabs[] => [
 	{ name: t('sidebarTabs.applications'), routerLink: 'applications' },
-	{ name: t('sidebarTabs.teams'), routerLink: 'teams' },
-	{ name: t('sidebarTabs.embedDebugger'), routerLink: 'embeds' },
+	// { name: t('sidebarTabs.teams'), routerLink: 'teams' },
+	// { name: t('sidebarTabs.embedDebugger'), routerLink: 'embeds' },
 	{ name: t('sidebarTabs.document'), routerLink: 'https://mezon.ai/docs', isExternal: true }
 ];

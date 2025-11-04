@@ -194,7 +194,7 @@ function MessageContextMenu({
 	}, [message?.content.t]);
 
 	const checkMessageInPinnedList = useMemo(() => {
-		return listPinMessages?.some((pinMessage) => pinMessage?.id === messageId);
+		return listPinMessages?.some((pinMessage) => pinMessage?.message_id === messageId);
 	}, [listPinMessages, messageId]);
 
 	const [canManageThread, canDeleteMessage, canSendMessage] = usePermissionChecker(

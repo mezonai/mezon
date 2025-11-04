@@ -10,14 +10,17 @@ import {
 	notificationSettingActions,
 	selectAllChannelsFavorite,
 	selectClanSystemMessage,
-	selectCurrentClan,
+	selectCurrentClanId,
+	selectCurrentClanLogo,
+	selectCurrentClanName,
 	selectCurrentUserId,
 	selectNotifiSettingsEntitiesById,
 	threadsActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { ChannelThreads, EOverriddenPermission, EPermission, sleep } from '@mezon/utils';
+import type { ChannelThreads } from '@mezon/utils';
+import { EOverriddenPermission, EPermission, sleep } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
@@ -28,10 +31,12 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
-import { APP_SCREEN, AppStackScreenProps } from '../../../../../../app/navigation/ScreenTypes';
+import type { AppStackScreenProps } from '../../../../../../app/navigation/ScreenTypes';
+import { APP_SCREEN } from '../../../../../../app/navigation/ScreenTypes';
 import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
+import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
+import MezonMenu from '../../../../../componentUI/MezonMenu';
 import NotificationSetting from '../../../../../components/NotificationSetting';
 import { style } from './styles';
 
@@ -44,8 +49,9 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	const { t } = useTranslation(['channelMenu']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	// const { setOpenThreadMessageState } = useReference();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanLogo = useSelector(selectCurrentClanLogo);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const dispatch = useAppDispatch();
 	const [isCanManageThread, isCanManageChannel, isAdminstrator, isClanOwner] = usePermissionChecker(
 		[EOverriddenPermission.manageThread, EPermission.manageChannel, EPermission.administrator, EPermission.clanOwner],
@@ -56,7 +62,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	useEffect(() => {
 		dispatch(notificationSettingActions.getNotificationSetting({ channelId: channel?.channel_id }));
 		dispatch(fetchSystemMessageByClanId({ clanId: channel?.clan_id }));
-	}, []);
+	}, [channel?.channel_id, channel?.clan_id, dispatch]);
 
 	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.channel_id || ''));
 
@@ -91,7 +97,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	}, [channel, handleMarkAsReadChannel]);
 
 	const handleCopyLink = () => {
-		Clipboard.setString(process.env.NX_CHAT_APP_REDIRECT_URI + `/chat/clans/${channel?.clan_id}/channels/${channel?.channel_id}`);
+		Clipboard.setString(`${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${channel?.clan_id}/channels/${channel?.channel_id}`);
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 
@@ -130,20 +136,20 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	];
 
 	const markFavoriteChannel = () => {
-		dispatch(channelsActions.addFavoriteChannel({ channel_id: channel?.id, clan_id: currentClan?.id }));
-		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel?.id, clanId: currentClan?.id as string, mark: true }));
+		dispatch(channelsActions.addFavoriteChannel({ channel_id: channel?.id, clan_id: currentClanId }));
+		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel?.id, clanId: currentClanId as string, mark: true }));
 	};
 
 	const removeFavoriteChannel = () => {
-		dispatch(channelsActions.removeFavoriteChannel({ channelId: channel?.id, clanId: currentClan?.id || '' }));
-		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel?.id, clanId: currentClan?.id as string, mark: false }));
+		dispatch(channelsActions.removeFavoriteChannel({ channelId: channel?.id, clanId: currentClanId || '' }));
+		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel?.id, clanId: currentClanId as string, mark: false }));
 	};
 
 	const muteOrUnMuteChannel = (active: ENotificationActive) => {
 		const body = {
 			channel_id: channel?.channel_id || '',
 			notification_type: getNotificationChannelSelected?.notification_setting_type || 0,
-			clan_id: currentClan?.clan_id || '',
+			clan_id: currentClanId || '',
 			active
 		};
 		dispatch(notificationSettingActions.setMuteNotificationSetting(body));
@@ -346,7 +352,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 					channelsActions.deleteChannel({ channelId: channel?.channel_id || '', clanId: channel?.clan_id || '' })
 				);
 				if (response?.meta?.requestStatus === 'rejected') {
-					throw response?.error?.message;
+					Toast.show({ type: 'error', text1: response?.error?.message });
 				}
 			}
 		} catch (error) {
@@ -359,21 +365,21 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	const handleConfirmLeaveThread = useCallback(async () => {
 		await dispatch(
 			threadsActions.leaveThread({
-				clanId: currentClan?.id || '',
+				clanId: currentClanId || '',
 				channelId: channel?.parent_id || '',
 				threadId: channel?.id || '',
 				isPrivate: channel.channel_private || 0
 			})
 		);
-		await dispatch(channelsActions.setCurrentChannelId({ clanId: currentClan?.id || '', channelId: '' }));
+		dispatch(channelsActions.setCurrentChannelId({ clanId: currentClanId || '', channelId: '' }));
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-	}, [channel?.channel_private, channel?.id, channel?.parent_id, currentClan?.id, dispatch]);
+	}, [channel?.channel_private, channel?.id, channel?.parent_id, currentClanId, dispatch]);
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.header}>
 				<View style={styles.avatarWrapper}>
-					<MezonClanAvatar alt={currentClan?.clan_name} image={currentClan?.logo} defaultColor={baseColor.blurple} />
+					<MezonClanAvatar alt={currentClanName} image={currentClanLogo} defaultColor={baseColor.blurple} />
 				</View>
 				<Text style={styles.serverName}>{channel?.channel_label}</Text>
 			</View>

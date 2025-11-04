@@ -4,6 +4,7 @@ import { useChannelMembersActions, useMemberContext, useOnClickOutside, usePermi
 import type { RolesClanEntity } from '@mezon/store';
 import {
 	clansActions,
+	rolesClanActions,
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectRolesClanEntities,
@@ -315,12 +316,44 @@ const ListOptionRole = ({
 	const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);
 	const currentClanId = useSelector(selectCurrentClanId);
 
+	const updateRoleUsersList = (role: RolesClanEntity, action: 'add' | 'remove') => {
+		const updatedRoleUsers =
+			action === 'add'
+				? [...(role.role_user_list?.role_users || []), { id: userId }]
+				: role.role_user_list?.role_users?.filter((user) => user.id !== userId) || [];
+
+		dispatch(
+			rolesClanActions.update({
+				role: {
+					...role,
+					role_user_list: {
+						...role.role_user_list,
+						role_users: updatedRoleUsers
+					}
+				},
+				clanId: currentClanId as string
+			})
+		);
+	};
+
 	const handleAddRoleMemberList = async (role: RolesClanEntity) => {
 		if (userRolesClan.usersRole[role.id]) {
 			await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [], [], [userId], [], role.role_icon || '');
+
+			await dispatch(
+				usersClanActions.removeRoleIdUser({
+					id: role.id,
+					userId,
+					clanId: currentClanId as string
+				})
+			);
+
+			updateRoleUsersList(role, 'remove');
 			return;
 		}
+
 		await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [userId], [], [], [], role.role_icon || '');
+
 		await dispatch(
 			usersClanActions.addRoleIdUser({
 				id: role.id,
@@ -328,6 +361,8 @@ const ListOptionRole = ({
 				clanId: currentClanId as string
 			})
 		);
+
+		updateRoleUsersList(role, 'add');
 	};
 
 	const roleElements = [];

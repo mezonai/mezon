@@ -41,7 +41,7 @@ const Header = ({ toggleSideBar }: IHeaderProps) => {
 
 	return (
 		<div
-			className={`sticky dark:bg-bgPrimary bg-bgLightPrimary z-40 w-full px-[42px] py-[10px] flex flex-row items-center justify-between border-b-[1px] border-solid ${isDarkMode ? 'dark:border-borderDividerLight' : 'border-bgModifierHoverLight'}`}
+			className={`sticky dark:bg-bgPrimary bg-bgLightPrimary z-20 w-full px-[42px] py-[10px] flex flex-row items-center justify-between border-b-[1px] border-solid ${isDarkMode ? 'dark:border-borderDividerLight' : 'border-bgModifierHoverLight'}`}
 		>
 			<div className="flex items-center gap-3">
 				<div onClick={toggleSideBar} className="w-8 hidden max-lg:block">

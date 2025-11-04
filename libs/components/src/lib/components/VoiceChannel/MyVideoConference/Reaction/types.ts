@@ -4,10 +4,6 @@ export interface ReactionChannelInfo {
 	channel_private: number;
 }
 
-export interface UseSendReactionParams {
-	currentChannel?: ReactionChannelInfo;
-}
-
 export enum ReactionType {
 	NONE = 0,
 	VIDEO = 1
@@ -43,6 +39,5 @@ export interface ActiveSoundReaction {
 }
 
 export interface ReactionCallHandlerProps {
-	currentChannel?: ReactionChannelInfo;
 	onSoundReaction?: (participantId: string, soundId: string) => void;
 }

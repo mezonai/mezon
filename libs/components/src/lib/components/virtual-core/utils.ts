@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-constraint
 export type NoInfer<A extends any> = [A][A extends any ? 0 : never];
 
 export type PartialKeys<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -16,7 +15,7 @@ export function memo<TDeps extends ReadonlyArray<any>, TResult>(
 	let deps = opts.initialDeps ?? [];
 	let result: TResult | undefined;
 
-	return (): TResult => {
+	function memoizedFunction(): TResult {
 		let depTime: number;
 		if (opts.key && opts.debug?.()) depTime = Date.now();
 
@@ -43,12 +42,11 @@ export function memo<TDeps extends ReadonlyArray<any>, TResult>(
 			const pad = (str: number | string, num: number) => {
 				str = String(str);
 				while (str.length < num) {
-					str = ' ' + str;
+					str = ` ${str}`;
 				}
 				return str;
 			};
 
-			// eslint-disable-next-line no-console
 			console.info(
 				`%c⏱ ${pad(resultEndTime, 5)} /${pad(depEndTime, 5)} ms`,
 				`
@@ -62,7 +60,13 @@ export function memo<TDeps extends ReadonlyArray<any>, TResult>(
 		opts?.onChange?.(result);
 
 		return result;
+	}
+
+	memoizedFunction.updateDeps = (newDeps: [...TDeps]) => {
+		deps = newDeps;
 	};
+
+	return memoizedFunction;
 }
 
 export function notUndefined<T>(value: T | undefined, msg?: string): T {
@@ -73,9 +77,8 @@ export function notUndefined<T>(value: T | undefined, msg?: string): T {
 	}
 }
 
-export const approxEqual = (a: number, b: number) => Math.abs(a - b) < 1;
+export const approxEqual = (a: number, b: number) => Math.abs(a - b) < 1.01;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export const debounce = (targetWindow: Window & typeof globalThis, fn: Function, ms: number) => {
 	let timeoutId: number;
 	return function (this: any, ...args: Array<any>) {

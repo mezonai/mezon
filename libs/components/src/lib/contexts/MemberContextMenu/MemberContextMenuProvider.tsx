@@ -103,6 +103,8 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 				return shouldShowRemoveFriend;
 			case 'markAsRead':
 				return !!currentUser;
+			case 'banChat':
+				return hasAdminPermission;
 			default:
 				return true;
 		}
@@ -152,6 +154,31 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 		[dispatch, currentClanId, currentChannelId, isThread]
 	);
 
+	const handleBanChatUser = useCallback(
+		async (userId?: string) => {
+			if (!userId || !currentChannelId || !currentClanId) return;
+
+			try {
+				await dispatch(
+					channelUsersActions.banChatUser({
+						channelId: currentChannelId,
+						userId,
+						clanId: currentClanId
+					})
+				);
+			} catch (error) {
+				dispatch({
+					type: 'ERROR_NOTIFICATION',
+					payload: {
+						message: 'Failed to ban chat member',
+						error
+					}
+				});
+			}
+		},
+		[dispatch, currentClanId, currentChannelId, isThread]
+	);
+
 	const createDefaultHandlers = (user?: ChannelMembersEntity): MemberContextMenuHandlers => {
 		return {
 			handleEnableE2EE: () => {},
@@ -193,6 +220,11 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 			handleRemoveFromThread: () => {
 				if (user?.user?.id) {
 					handleRemoveMemberFromThread(user.user.id);
+				}
+			},
+			handleBanChat: () => {
+				if (user?.user?.id) {
+					handleBanChatUser(user.user.id);
 				}
 			}
 		};
@@ -271,6 +303,14 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 							<MemberMenuItem
 								label={t('member.removeFriend')}
 								onClick={currentHandlers.handleRemoveFriend}
+								isWarning={true}
+								setWarningStatus={setWarningStatus}
+							/>
+						)}
+						{shouldShow('banChat') && (
+							<MemberMenuItem
+								label={t('member.banChat')}
+								onClick={currentHandlers.handleBanChat}
 								isWarning={true}
 								setWarningStatus={setWarningStatus}
 							/>

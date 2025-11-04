@@ -99,22 +99,18 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 		const userMap = new Map<string, Receiver>();
 		const usersClan = selectAllUserClans(store.getState());
 
-		usersClan
-			?.filter((item) => item?.user?.id !== userProfile?.user?.id)
-			?.forEach((itemUserClan) => {
-				const userId = itemUserClan?.id ?? '';
-				if (userId && !userMap.has(userId)) {
-					userMap.set(userId, {
-						id: userId,
-						username: [
-							typeof itemUserClan?.user?.username === 'string'
-								? itemUserClan?.user?.username
-								: (itemUserClan?.user?.username?.[0] ?? '')
-						] as Array<string>,
-						avatar_url: itemUserClan?.user?.avatar_url ?? ''
-					});
-				}
-			});
+		usersClan?.forEach((itemUserClan) => {
+			const userId = itemUserClan?.id ?? '';
+			if (userId && !userMap.has(userId)) {
+				userMap.set(userId, {
+					id: userId,
+					username: [
+						typeof itemUserClan?.user?.username === 'string' ? itemUserClan?.user?.username : (itemUserClan?.user?.username?.[0] ?? '')
+					] as Array<string>,
+					avatar_url: itemUserClan?.user?.avatar_url ?? ''
+				});
+			}
+		});
 
 		listDM.forEach((itemDM: DirectEntity) => {
 			const userId = itemDM?.user_ids?.[0] ?? '';
@@ -142,7 +138,8 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 			}
 		});
 
-		return Array.from(userMap.values());
+		const arrUser = Array.from(userMap.values())?.filter((user) => user?.id !== userProfile?.user?.id) || [];
+		return arrUser;
 	}, [friendList, listDM, store, userProfile?.user?.id]);
 
 	const handleEnableWallet = async () => {

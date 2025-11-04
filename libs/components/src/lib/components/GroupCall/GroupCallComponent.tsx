@@ -334,7 +334,6 @@ const GroupCallComponent = memo(
 									onFullScreen={handleFullScreen}
 									isShowChatVoice={isShowChatVoice}
 									onToggleChat={toggleChat}
-									currentChannel={currentDmGroup}
 								/>
 							</div>
 						</LiveKitRoom>

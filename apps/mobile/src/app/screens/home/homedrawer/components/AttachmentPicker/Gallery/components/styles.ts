@@ -4,25 +4,19 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		cameraPicker: {
-			width: '32%',
 			backgroundColor: colors.border,
 			borderRadius: size.s_6,
-			margin: size.s_2,
+			marginRight: size.s_14,
 			alignItems: 'center',
-			justifyContent: 'center',
-			minHeight: 120
+			justifyContent: 'center'
 		},
 		itemGallery: {
-			width: '32%',
-			margin: size.s_2,
+			marginRight: size.s_14,
 			borderRadius: size.s_6,
 			overflow: 'hidden'
 		},
 		imageGallery: {
-			flex: 1,
-			width: '100%',
 			zIndex: 10,
-			height: 120,
 			resizeMode: 'cover',
 			borderRadius: size.s_6
 		},
@@ -80,7 +74,7 @@ export const style = (colors: Attributes) =>
 			position: 'absolute',
 			top: 0,
 			left: 0,
-			height: 120,
+			height: '100%',
 			borderRadius: size.s_6,
 			overflow: 'hidden'
 		}

@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useChatSending, useCurrentInbox, useEscapeKeyClose, useGifsStickersEmoji } from '@mezon/core';
+import type { ChannelsEntity } from '@mezon/store';
 import {
 	MediaType,
 	referencesActions,
@@ -14,11 +15,10 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { SubPanelName, blankReferenceObj } from '@mezon/utils';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type ChannelMessageBoxProps = {
-	channel: ApiChannelDescription | undefined;
 	mode: number;
 	onClose: () => void;
 	isTopic?: boolean;
@@ -49,10 +49,11 @@ const searchSounds = (sounds: ExtendedApiMessageAttachment[], searchTerm: string
 	return sounds.filter((item) => item?.filename?.toLowerCase().includes(lowerCaseSearchTerm));
 };
 
-function SoundSquare({ channel, mode, onClose, isTopic = false, onSoundSelect }: ChannelMessageBoxProps) {
+function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelMessageBoxProps) {
 	const dispatch = useAppDispatch();
+	const channelOrDirect = useCurrentInbox() as ChannelsEntity;
 	const { sendMessage } = useChatSending({
-		channelOrDirect: channel,
+		channelOrDirect,
 		mode,
 		fromTopic: isTopic
 	});

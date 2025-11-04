@@ -816,36 +816,7 @@ const GalleryContent = ({
 	t
 }: GalleryContentProps) => {
 	const [isLoadingMore, setIsLoadingMore] = useState(false);
-	const scrollContainerRef = useRef<HTMLDivElement>(null);
-	const userActiveScroll = useRef<boolean>(false);
 	const lastVirtualDataLength = useRef<number>(0);
-
-	useEffect(() => {
-		const handleScroll = () => {
-			userActiveScroll.current = true;
-		};
-
-		const handleWheel = () => {
-			userActiveScroll.current = true;
-		};
-
-		const handleTouchStart = () => {
-			userActiveScroll.current = true;
-		};
-
-		const container = scrollContainerRef.current;
-		if (container) {
-			container.addEventListener('scroll', handleScroll, { passive: true });
-			container.addEventListener('wheel', handleWheel, { passive: true });
-			container.addEventListener('touchstart', handleTouchStart, { passive: true });
-
-			return () => {
-				container.removeEventListener('scroll', handleScroll);
-				container.removeEventListener('wheel', handleWheel);
-				container.removeEventListener('touchstart', handleTouchStart);
-			};
-		}
-	}, []);
 
 	useEffect(() => {
 		lastVirtualDataLength.current = virtualData.length;
@@ -859,7 +830,6 @@ const GalleryContent = ({
 
 	return (
 		<InfiniteScroll
-			ref={scrollContainerRef}
 			className="h-full overflow-y-auto thread-scroll"
 			items={virtualData}
 			itemSelector=".gallery-item"

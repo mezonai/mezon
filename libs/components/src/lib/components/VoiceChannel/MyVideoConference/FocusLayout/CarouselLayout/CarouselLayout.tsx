@@ -28,7 +28,7 @@ export function CarouselLayout({ tracks, ...props }: CarouselLayoutProps) {
 	};
 
 	useEffect(() => {
-		updateDimensions(); // Set initial size
+		updateDimensions();
 	}, []);
 
 	useWindowSize(() => {
@@ -53,6 +53,7 @@ export function CarouselLayout({ tracks, ...props }: CarouselLayoutProps) {
 	useLayoutEffect(() => {
 		if (asideEl.current) {
 			asideEl.current.style.setProperty('--lk-max-visible-tiles', maxVisibleTiles.toString());
+			updateDimensions();
 		}
 	}, [maxVisibleTiles]);
 
@@ -63,8 +64,10 @@ export function CarouselLayout({ tracks, ...props }: CarouselLayoutProps) {
 		}
 	};
 
+	const justifyClass = width === 0 || height === 0 ? '!justify-center' : tracks.length <= maxVisibleTiles ? '!justify-center' : '!justify-start';
+
 	return (
-		<aside className={`lk-carousel pb-1 cursor-pointer !justify-center !overflow-x-auto`} ref={asideEl} onWheel={handleWheelScroll} {...props}>
+		<aside className={`lk-carousel pb-1 cursor-pointer ${justifyClass} !overflow-x-auto`} ref={asideEl} onWheel={handleWheelScroll} {...props}>
 			<style>
 				{`
         .lk-carousel::-webkit-scrollbar {

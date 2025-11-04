@@ -23,7 +23,6 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_40,
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: baseColor.gray,
 			overflow: 'hidden'
 		},
 		imageWrapper: {

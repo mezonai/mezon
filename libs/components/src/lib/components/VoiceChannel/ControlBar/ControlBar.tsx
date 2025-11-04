@@ -1,5 +1,6 @@
 import { useLocalParticipant, useLocalParticipantPermissions, usePersistentUserChoices } from '@livekit/components-react';
 import {
+	selectCurrentChannelId,
 	selectGroupCallJoined,
 	selectShowCamera,
 	selectShowMicrophone,
@@ -27,7 +28,6 @@ import { toast } from 'react-toastify';
 import { GifStickerEmojiPopup } from '../../GifsStickersEmojis';
 import SoundSquare from '../../GifsStickersEmojis/SoundSquare';
 import ScreenSelectionModal from '../../ScreenSelectionModal/ScreenSelectionModal';
-import type { ReactionChannelInfo } from '../MyVideoConference/Reaction/types';
 import { useSendReaction } from '../MyVideoConference/Reaction/useSendReaction';
 import { BackgroundEffectsMenu } from './BackgroundEffectMenu';
 import { MediaDeviceMenu } from './MediaDeviceMenu/MediaDeviceMenu';
@@ -39,7 +39,6 @@ interface ControlBarProps extends React.HTMLAttributes<HTMLDivElement> {
 	onLeaveRoom: (self?: boolean) => void;
 	onFullScreen: () => void;
 	isExternalCalling?: boolean;
-	currentChannel?: ReactionChannelInfo;
 	isShowMember?: boolean;
 	isGridView?: boolean;
 }
@@ -50,7 +49,6 @@ const ControlBar = ({
 	onLeaveRoom,
 	onFullScreen,
 	isExternalCalling,
-	currentChannel,
 	isShowMember = true,
 	isGridView = true
 }: ControlBarProps) => {
@@ -61,7 +59,7 @@ const ControlBar = ({
 
 	const isGroupCall = useSelector(selectGroupCallJoined);
 
-	const { sendEmojiReaction, sendSoundReaction } = useSendReaction({ currentChannel });
+	const { sendEmojiReaction, sendSoundReaction } = useSendReaction();
 
 	const screenTrackRef = useRef<LocalTrackPublication | null>(null);
 	const isDesktop = isElectron();
@@ -78,6 +76,8 @@ const ControlBar = ({
 	const localPermissions = useLocalParticipantPermissions();
 	const localParticipant = useLocalParticipant();
 	const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
+
+	const currentChannelId = useSelector(selectCurrentChannelId);
 
 	if (!localPermissions) {
 		visibleControls.camera = false;
@@ -309,7 +309,7 @@ const ControlBar = ({
 	useEffect(() => {
 		setShowEmojiPanel(false);
 		setShowSoundPanel(false);
-	}, [currentChannel?.channel_id]);
+	}, [currentChannelId]);
 
 	useEffect(() => {
 		if (!showEmojiPanel) return;
@@ -389,7 +389,6 @@ const ControlBar = ({
 							onVisibleChange={setShowSoundPanel}
 							overlay={
 								<SoundSquare
-									channel={currentChannel as any}
 									mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
 									onClose={() => setShowSoundPanel(false)}
 									onSoundSelect={handleSoundSelect}

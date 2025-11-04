@@ -31,6 +31,7 @@ export interface MemberContextMenuHandlers {
 	handleRemoveFriend: () => void;
 	handleKick: () => void;
 	handleRemoveFromThread: () => void;
+	handleBanChat: () => void;
 }
 
 export interface MemberContextMenuOptions {

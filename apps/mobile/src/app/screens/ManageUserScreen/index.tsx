@@ -1,7 +1,14 @@
 import { useChannelMembersActions, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { selectAllAccount, selectCurrentChannel, selectCurrentClan, selectCurrentClanId, selectMemberIdsByChannelId } from '@mezon/store-mobile';
+import { useAppSelector } from '@mezon/store';
+import {
+	selectAllAccount,
+	selectCurrentChannel,
+	selectCurrentClanCreatorId,
+	selectCurrentClanId,
+	selectMemberIdsByChannelId
+} from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
@@ -26,11 +33,11 @@ const ManageUserScreen = ({ route }: ManageUserScreenProps) => {
 	const { t } = useTranslation('clanOverviewSetting');
 	const userProfile = useSelector(selectAllAccount);
 	const { removeMemberClan } = useChannelMembersActions();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentChannelId = currentChannel?.channel_id;
 	const isItMe = useMemo(() => userProfile?.user?.id === user?.user?.id, [user?.user?.id, userProfile?.user?.id]);
-	const isThatClanOwner = useMemo(() => currentClan?.creator_id === user?.user?.id, [user?.user?.id, currentClan?.creator_id]);
+	const isThatClanOwner = useMemo(() => currentClanCreatorId === user?.user?.id, [user?.user?.id, currentClanCreatorId]);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const [hasClanOwnerPermission, hasAdminPermission] = usePermissionChecker([
 		EPermission.clanOwner,

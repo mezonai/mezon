@@ -385,7 +385,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 						onClick={() => handleCopyUrl(visibleToken)}
 						className={`mt-2 py-[7px] px-[16px] ${
 							tokenCopied ? 'bg-gray-500' : 'bg-green-600 hover:bg-green-800'
-						} flex items-center justify-center cursor-pointer w-[130px] text-[15px] text-white rounded-xl ${
+						} flex items-center justify-center cursor-pointer w-fit text-[15px] text-white rounded-xl ${
 							openSaveChange ? 'pointer-events-none opacity-50' : ''
 						}`}
 					>

@@ -1,6 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
-import type { ClansEntity } from '@mezon/store-mobile';
-import { selectBadgeCountByClanId, selectCurrentClanId } from '@mezon/store-mobile';
+import { ClansEntity, selectBadgeCountByClanId, selectClanHasUnreadMessage, selectCurrentClanId } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -24,6 +23,7 @@ export const ClanIcon = memo(
 		const styles = style(themeValue);
 		const currentClanId = useSelector(selectCurrentClanId);
 		const badgeCountClan = useSelector(selectBadgeCountByClanId(props?.data?.clan_id ?? '')) || 0;
+		const isHaveUnreadMessage = useSelector(selectClanHasUnreadMessage(props?.data?.clan_id ?? '')) || false;
 
 		const isActiveCurrentClan = currentClanId === props?.data?.clan_id && !props.hideActive;
 		const onIconLayout = useCallback(
@@ -33,7 +33,6 @@ export const ClanIcon = memo(
 			},
 			[props.onLayout]
 		);
-
 		return (
 			<ScaleDecorator activeScale={1.5}>
 				<TouchableOpacity
@@ -67,7 +66,7 @@ export const ClanIcon = memo(
 							<Text style={styles.badgeText}>{badgeCountClan > 99 ? `+99` : badgeCountClan}</Text>
 						</View>
 					)}
-					{props?.data?.has_unread_message === true && <View style={styles.unreadDot} />}
+					{isHaveUnreadMessage && <View style={styles.unreadDot} />}
 					{!!isActiveCurrentClan && <View style={styles.lineActiveClan} />}
 				</TouchableOpacity>
 			</ScaleDecorator>

@@ -163,10 +163,8 @@ width : 0 !important;
 }
 
 .thumbnails-content {
-    width: fit-content;
     height: 100%;
     display: flex;
-    flex-direction: column-reverse;
     padding: 20px 0;
     overflow-y: scroll;
     scrollbar-width: none;
@@ -189,8 +187,7 @@ width : 0 !important;
 }
 
 .thumbnail-wrapper {
-    width: fit-content;
-    height: fit-content;
+    width: 88px;
 }
 
 .date-label {
@@ -200,11 +197,11 @@ width : 0 !important;
 }
 
 .thumbnail {
+    box-sizing: border-box;
     width: 88px;
-    max-width: 88px;
+	height: 88px;
     overflow: hidden;
     aspect-ratio: 1/1;
-    height: 88px;
     object-fit: cover;
     border-radius: 6px;
     cursor: pointer;
@@ -317,10 +314,7 @@ width : 0 !important;
       height : 64px;
 
   }
-  .thumbnail {
-        width: 54px;
-        height: 54px;
-    }
+
         .date-label{
         font-size : 10px;
     position : absolute;

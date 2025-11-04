@@ -6,7 +6,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } fr
 import type { ChannelStreamMode } from 'mezon-js';
 import type { ApiChannelAttachment } from 'mezon-js/dist/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
-import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx } from '../helpers';
 
@@ -32,6 +32,12 @@ export interface AttachmentState extends EntityState<AttachmentEntity, string> {
 		{
 			attachments: AttachmentEntity[];
 			cache?: CacheMetadata;
+			pagination?: {
+				isLoading: boolean;
+				hasMoreBefore: boolean;
+				hasMoreAfter: boolean;
+				limit: number;
+			};
 		}
 	>;
 }
@@ -55,6 +61,7 @@ type fetchChannelAttachmentsPayload = {
 	before?: number;
 	after?: number;
 	noCache?: boolean;
+	direction?: 'initial' | 'before' | 'after';
 };
 
 const CHANNEL_ATTACHMENTS_CACHED_TIME = 1000 * 60 * 60;
@@ -74,20 +81,41 @@ export const fetchChannelAttachmentsCached = async (
 	const currentState = getState();
 	const attachmentState = currentState[ATTACHMENT_FEATURE_KEY] as AttachmentState;
 	const channelData = attachmentState.listAttachmentsByChannel[channelId];
-	const apiKey = createApiKey('fetchChannelAttachments', clanId, channelId, fileType, state || '', limit || '', before || '', after || '');
 
-	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
+	if (!noCache && channelData?.cache && isCacheValid(channelData.cache) && channelData.attachments && channelData.attachments.length > 0) {
+		const existingAttachments = channelData.attachments;
+		let hasDataForRange = false;
 
-	if (!shouldForceCall) {
-		return {
-			attachments: channelData.attachments,
-			fromCache: true,
-			time: channelData.cache?.lastFetched || Date.now()
-		};
+		if (before !== undefined) {
+			const beforeTime = before * 1000;
+			hasDataForRange = existingAttachments.some((att) => {
+				if (!att.create_time) return false;
+				const attTime = new Date(att.create_time).getTime();
+				return attTime < beforeTime;
+			});
+		} else if (after !== undefined) {
+			const afterTime = after * 1000;
+			hasDataForRange = existingAttachments.some((att) => {
+				if (!att.create_time) return false;
+				const attTime = new Date(att.create_time).getTime();
+				return attTime > afterTime;
+			});
+		} else {
+			hasDataForRange = true;
+		}
+
+		if (hasDataForRange) {
+			return {
+				attachments: existingAttachments,
+				fromCache: true,
+				time: channelData.cache.lastFetched
+			};
+		}
 	}
 
 	const response = await mezon.client.listChannelAttachments(mezon.session, clanId, channelId, fileType, state, limit, before, after);
 
+	const apiKey = createApiKey('fetchChannelAttachments', clanId, channelId, fileType, limit || '', before || '', after || '');
 	markApiFirstCalled(apiKey);
 
 	return {
@@ -104,7 +132,10 @@ export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachmen
 
 export const fetchChannelAttachments = createAsyncThunk(
 	'attachment/fetchChannelAttachments',
-	async ({ clanId, channelId, fileType, state, limit, before, after, noCache }: fetchChannelAttachmentsPayload, thunkAPI) => {
+	async (
+		{ clanId, channelId, fileType, state, limit = 50, before, after, noCache, direction = 'initial' }: fetchChannelAttachmentsPayload,
+		thunkAPI
+	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
@@ -122,7 +153,7 @@ export const fetchChannelAttachments = createAsyncThunk(
 			);
 
 			if (!response.attachments) {
-				return { attachments: [], channelId, fromCache: response.fromCache };
+				return { attachments: [], channelId, fromCache: response.fromCache, direction };
 			}
 
 			const attachments = response.attachments.map((attachmentRes) => mapChannelAttachmentsToEntity(attachmentRes, channelId, clanId));
@@ -131,11 +162,12 @@ export const fetchChannelAttachments = createAsyncThunk(
 				return {
 					attachments,
 					channelId,
-					fromCache: true
+					fromCache: true,
+					direction
 				};
 			}
 
-			return { attachments, channelId, fromCache: response.fromCache };
+			return { attachments, channelId, fromCache: response.fromCache, direction };
 		} catch (error) {
 			captureSentryError(error, 'attachment/fetchChannelAttachments');
 			return thunkAPI.rejectWithValue(error);
@@ -144,7 +176,13 @@ export const fetchChannelAttachments = createAsyncThunk(
 );
 
 const getInitialChannelState = () => ({
-	attachments: [] as AttachmentEntity[]
+	attachments: [] as AttachmentEntity[],
+	pagination: {
+		isLoading: false,
+		hasMoreBefore: true,
+		hasMoreAfter: true,
+		limit: 50
+	}
 });
 
 export const initialAttachmentState: AttachmentState = attachmentAdapter.getInitialState({
@@ -212,37 +250,112 @@ export const attachmentSlice = createSlice({
 					delete state.listAttachmentsByChannel[channelId];
 				}
 			}
+		},
+		setAttachmentLoading: (state, action: PayloadAction<{ channelId: string; isLoading: boolean }>) => {
+			const { channelId, isLoading } = action.payload;
+			if (!state.listAttachmentsByChannel[channelId]) {
+				state.listAttachmentsByChannel[channelId] = getInitialChannelState();
+			}
+			if (state.listAttachmentsByChannel[channelId].pagination) {
+				state.listAttachmentsByChannel[channelId].pagination!.isLoading = isLoading;
+			}
+		},
+		resetAttachmentPagination: (state, action: PayloadAction<{ channelId: string }>) => {
+			const { channelId } = action.payload;
+			if (!state.listAttachmentsByChannel[channelId]) {
+				state.listAttachmentsByChannel[channelId] = getInitialChannelState();
+			}
+			state.listAttachmentsByChannel[channelId].pagination = {
+				isLoading: false,
+				hasMoreBefore: true,
+				hasMoreAfter: true,
+				limit: 50
+			};
+		},
+		clearAttachmentChannel: (state, action: PayloadAction<{ channelId: string }>) => {
+			const { channelId } = action.payload;
+			if (state.listAttachmentsByChannel[channelId]) {
+				state.listAttachmentsByChannel[channelId].attachments = [];
+			}
 		}
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchChannelAttachments.pending, (state: AttachmentState) => {
+			.addCase(fetchChannelAttachments.pending, (state: AttachmentState, action) => {
 				state.loadingStatus = 'loading';
+				const channelId = action.meta.arg.channelId;
+				if (!state.listAttachmentsByChannel[channelId]) {
+					state.listAttachmentsByChannel[channelId] = getInitialChannelState();
+				}
+				if (state.listAttachmentsByChannel[channelId].pagination) {
+					state.listAttachmentsByChannel[channelId].pagination!.isLoading = true;
+				}
 			})
-			.addCase(
-				fetchChannelAttachments.fulfilled,
-				(
-					state: AttachmentState,
-					action: PayloadAction<{ attachments: AttachmentEntity[]; channelId: string; fromCache?: boolean; append?: boolean }>
-				) => {
-					const { attachments, channelId, fromCache } = action.payload;
+			.addCase(fetchChannelAttachments.fulfilled, (state: AttachmentState, action) => {
+				const { attachments, channelId, fromCache, direction = 'initial' } = action.payload;
+				const limit = action.meta.arg.limit || 50;
 
-					if (!state.listAttachmentsByChannel[channelId]) {
-						state.listAttachmentsByChannel[channelId] = getInitialChannelState();
+				if (!state.listAttachmentsByChannel[channelId]) {
+					state.listAttachmentsByChannel[channelId] = getInitialChannelState();
+				}
+
+				const pagination = state.listAttachmentsByChannel[channelId].pagination;
+				if (!pagination) {
+					return;
+				}
+
+				if (!fromCache) {
+					if (direction === 'before') {
+						if (attachments.length === 0) {
+							pagination.hasMoreBefore = false;
+						} else {
+							const currentAttachments = state.listAttachmentsByChannel[channelId].attachments;
+							const existingUrls = new Set(currentAttachments.map((att) => att.url));
+							const newItems = attachments.filter((att) => !existingUrls.has(att.url));
+							const newAttachments = [...currentAttachments, ...newItems];
+
+							pagination.hasMoreBefore = attachments.length >= limit;
+							state.listAttachmentsByChannel[channelId].attachments = newAttachments;
+						}
+					} else if (direction === 'after') {
+						if (attachments.length === 0) {
+							pagination.hasMoreAfter = false;
+						} else {
+							const currentAttachments = state.listAttachmentsByChannel[channelId].attachments;
+							const existingUrls = new Set(currentAttachments.map((att) => att.url));
+							const newItems = attachments.filter((att) => !existingUrls.has(att.url));
+							const newAttachments = [...newItems, ...currentAttachments];
+
+							pagination.hasMoreAfter = attachments.length >= limit;
+							state.listAttachmentsByChannel[channelId].attachments = newAttachments;
+						}
+					} else {
+						if (attachments.length === 0) {
+							pagination.hasMoreBefore = false;
+							pagination.hasMoreAfter = false;
+						} else {
+							pagination.hasMoreBefore = attachments.length >= limit;
+							pagination.hasMoreAfter = attachments.length >= limit;
+						}
+						state.listAttachmentsByChannel[channelId].attachments = attachments;
 					}
 
-					if (!fromCache && attachments.length > 0) {
-						attachmentAdapter.setAll(state, attachments);
-						state.listAttachmentsByChannel[channelId].attachments = attachments;
+					if (attachments.length > 0) {
+						attachmentAdapter.setAll(state, state.listAttachmentsByChannel[channelId].attachments);
 						state.listAttachmentsByChannel[channelId].cache = createCacheMetadata(CHANNEL_ATTACHMENTS_CACHED_TIME);
 					}
-
-					state.loadingStatus = 'loaded';
 				}
-			)
+
+				pagination.isLoading = false;
+				state.loadingStatus = 'loaded';
+			})
 			.addCase(fetchChannelAttachments.rejected, (state: AttachmentState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
+				const channelId = action.meta.arg.channelId;
+				if (state.listAttachmentsByChannel[channelId]?.pagination) {
+					state.listAttachmentsByChannel[channelId].pagination!.isLoading = false;
+				}
 			});
 	}
 });
@@ -330,3 +443,25 @@ export const selectAllListDocumentByChannel = createSelector([getAttachmentState
 });
 
 export const selectAttachmentsLoadingStatus = createSelector(getAttachmentState, (state: AttachmentState) => state.loadingStatus);
+
+export const selectAttachmentPaginationByChannel = createSelector(
+	[getAttachmentState, (state, channelId: string) => channelId],
+	(state, channelId) => {
+		if (!Object.prototype.hasOwnProperty.call(state.listAttachmentsByChannel, channelId)) {
+			return {
+				isLoading: false,
+				hasMoreBefore: true,
+				hasMoreAfter: true,
+				limit: 50
+			};
+		}
+		return (
+			state.listAttachmentsByChannel[channelId]?.pagination || {
+				isLoading: false,
+				hasMoreBefore: true,
+				hasMoreAfter: true,
+				limit: 50
+			}
+		);
+	}
+);

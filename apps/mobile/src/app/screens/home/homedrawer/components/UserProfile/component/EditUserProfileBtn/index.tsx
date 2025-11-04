@@ -1,7 +1,7 @@
-import { useClans } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ChannelMembersEntity } from '@mezon/store-mobile';
+import { useAppSelector } from '@mezon/store';
+import { ChannelMembersEntity, selectCurrentClanCreatorId } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,13 +12,13 @@ import { style } from './EditUserProfileBtn.styles';
 
 const EditUserProfileBtn = ({ user }: { user: ChannelMembersEntity }) => {
 	const { themeValue } = useTheme();
-	const { currentClan } = useClans();
+	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
 	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
 	const { t } = useTranslation('profile');
 	const isClanOwner = useMemo(() => {
-		return currentClan?.creator_id === user?.user?.id;
-	}, [currentClan?.creator_id, user?.user?.id]);
+		return currentClanCreatorId === user?.user?.id;
+	}, [currentClanCreatorId, user?.user?.id]);
 
 	const navigateToUserProfileSetting = (profileTab: EProfileTab) => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
@@ -30,7 +30,7 @@ const EditUserProfileBtn = ({ user }: { user: ChannelMembersEntity }) => {
 			<TouchableOpacity onPress={() => navigateToUserProfileSetting(EProfileTab.UserProfile)} style={styles.btn}>
 				<Text style={styles.textBtn}>{t('editUser')}</Text>
 			</TouchableOpacity>
-			{isClanOwner && (
+			{!!isClanOwner && (
 				<TouchableOpacity onPress={() => navigateToUserProfileSetting(EProfileTab.ClanProfile)} style={styles.btn}>
 					<Text style={styles.textBtn}>{t('editServer')}</Text>
 				</TouchableOpacity>

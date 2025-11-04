@@ -23,7 +23,7 @@ const ItemAttachment = (props: ItemAttachmentProps) => {
 		dispatch(attachmentActions.setCurrentAttachment(attachment));
 	};
 	return (
-		<div className={` w-fit h-fit `} ref={isSelected ? selectedImageRef : null}>
+		<div className={`attachment-item w-fit h-fit `} ref={isSelected ? selectedImageRef : null}>
 			{showDate && <div className={`dark:text-white text-black mb-1 text-center`}>{previousDate}</div>}
 			<div
 				className={`rounded-md cursor-pointer ${isSelected ? 'flex items-center border-2 border-white' : 'relative'}`}

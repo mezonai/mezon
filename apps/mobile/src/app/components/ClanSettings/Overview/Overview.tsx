@@ -1,8 +1,9 @@
-import { useClans, usePermissionChecker } from '@mezon/core';
+import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent, optionNotification } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import type { ChannelsEntity } from '@mezon/store-mobile';
+import { clansActions, useAppSelector } from '@mezon/store';
 import {
+	ChannelsEntity,
 	appActions,
 	checkDuplicateNameClan,
 	createSystemMessage,
@@ -10,6 +11,13 @@ import {
 	fetchSystemMessageByClanId,
 	getStoreAsync,
 	selectAllChannels,
+	selectCurrentClanBanner,
+	selectCurrentClanCreatorId,
+	selectCurrentClanId,
+	selectCurrentClanIsOnboarding,
+	selectCurrentClanLogo,
+	selectCurrentClanName,
+	selectCurrentClanWelcomeChannelId,
 	selectDefaultNotificationClan,
 	updateSystemMessage,
 	useAppDispatch
@@ -43,11 +51,18 @@ type ClanSettingsScreen = typeof APP_SCREEN.MENU_CLAN.OVERVIEW_SETTING;
 export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSettingsScreen>) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { currentClan, updateClan } = useClans();
+	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
+	const currentClanLogo = useSelector(selectCurrentClanLogo);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
+	const currentClanBanner = useSelector(selectCurrentClanBanner);
+	const welcomeChannelId = useAppSelector(selectCurrentClanWelcomeChannelId);
+	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
+
 	const { t } = useTranslation(['clanOverviewSetting']);
 	const { t: tNotification } = useTranslation('clanNotificationsSetting');
-	const [clanName, setClanName] = useState<string>(currentClan?.clan_name ?? '');
-	const [banner, setBanner] = useState<string>(currentClan?.banner ?? '');
+	const [clanName, setClanName] = useState<string>(currentClanName ?? '');
+	const [banner, setBanner] = useState<string>(currentClanBanner ?? '');
 	const [loading, setLoading] = useState<boolean>(false);
 	const [hasAdminPermission, hasManageClanPermission, clanOwnerPermission] = usePermissionChecker([
 		EPermission.administrator,
@@ -74,14 +89,14 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const listChannelWithoutVoice = channelsList.filter(
 		(channel) =>
 			!channel?.channel_private &&
-			channel?.clan_id === currentClan?.clan_id &&
+			channel?.clan_id === currentClanId &&
 			channel?.type === ChannelType?.CHANNEL_TYPE_CHANNEL &&
 			channel?.channel_id !== selectedChannelMessage?.channel_id
 	);
 
 	useEffect(() => {
-		const isClanNameChanged = clanName !== currentClan?.clan_name;
-		const isBannerChanged = banner !== (currentClan?.banner || '');
+		const isClanNameChanged = clanName !== currentClanName;
+		const isBannerChanged = banner !== (currentClanBanner || '');
 
 		let hasSystemMessageChanged = false;
 		if (updateSystemMessageRequest && systemMessage) {
@@ -97,11 +112,21 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		}
 
 		setIsCheckValid((isClanNameChanged && validInput(clanName)) || isBannerChanged || hasSystemMessageChanged);
-	}, [clanName, banner, updateSystemMessageRequest, systemMessage, notificationSetting, defaultNotificationClan?.notification_setting_type]);
+	}, [
+		clanName,
+		banner,
+		updateSystemMessageRequest,
+		systemMessage,
+		notificationSetting,
+		defaultNotificationClan?.notification_setting_type,
+		currentClanName,
+		currentClanBanner,
+		t
+	]);
 
 	const fetchSystemMessage = async () => {
-		if (!currentClan?.clan_id) return;
-		const resultAction = await dispatch(fetchSystemMessageByClanId({ clanId: currentClan?.clan_id, noCache: true }));
+		if (!currentClanId) return;
+		const resultAction = await dispatch(fetchSystemMessageByClanId({ clanId: currentClanId, noCache: true }));
 		const message = unwrapResult(resultAction);
 		if (message) {
 			setSystemMessage(message);
@@ -115,14 +140,14 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 
 	useEffect(() => {
 		fetchSystemMessage();
-	}, [currentClan]);
+	}, [currentClanId]);
 
 	const disabled = useMemo(() => {
 		return !(hasAdminPermission || hasManageClanPermission || clanOwnerPermission);
 	}, [clanOwnerPermission, hasAdminPermission, hasManageClanPermission]);
 
 	const handleUpdateSystemMessage = async () => {
-		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClan?.clan_id && updateSystemMessageRequest) {
+		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClanId && updateSystemMessageRequest) {
 			const cachedMessageUpdate: ApiSystemMessage = {
 				channel_id: updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '' : updateSystemMessageRequest?.channel_id,
 				clan_id: systemMessage?.clan_id,
@@ -135,7 +160,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 					updateSystemMessageRequest?.welcome_sticker === systemMessage?.welcome_sticker ? '' : updateSystemMessageRequest?.welcome_sticker
 			};
 			const request = {
-				clanId: currentClan.clan_id,
+				clanId: currentClanId,
 				newMessage: cachedMessageUpdate,
 				cachedMessage: updateSystemMessageRequest
 			};
@@ -157,7 +182,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			setNotificationSetting(value);
 			dispatch(appActions.setLoadingMainMobile(true));
 			const response = await dispatch(
-				defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClan?.clan_id, notification_type: value })
+				defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClanId, notification_type: value })
 			);
 
 			if (response?.meta?.requestStatus === 'rejected') {
@@ -180,7 +205,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		setLoading(true);
 		try {
 			dispatch(appActions.setLoadingMainMobile(true));
-			const isClanNameChanged = clanName !== currentClan?.clan_name;
+			const isClanNameChanged = clanName !== currentClanName;
 
 			if (isClanNameChanged) {
 				const isDuplicateClan = await handleCheckDuplicateClanname();
@@ -191,18 +216,19 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 					throw new Error(t('menu.serverName.duplicateNameMessage'));
 				}
 			}
-
-			await updateClan({
-				clan_id: currentClan?.clan_id ?? '',
-				request: {
-					banner,
-					clan_name: clanName?.trim() || (currentClan?.clan_name ?? ''),
-					creator_id: currentClan?.creator_id ?? '',
-					is_onboarding: currentClan?.is_onboarding,
-					logo: currentClan?.logo ?? '',
-					welcome_channel_id: currentClan?.welcome_channel_id ?? ''
-				}
-			});
+			await dispatch(
+				clansActions.updateClan({
+					clan_id: currentClanId ?? '',
+					request: {
+						banner,
+						clan_name: clanName?.trim() || (currentClanName ?? ''),
+						creator_id: currentClanCreatorId ?? '',
+						is_onboarding: currentClanIsOnboarding,
+						logo: currentClanLogo ?? '',
+						welcome_channel_id: welcomeChannelId ?? ''
+					}
+				})
+			);
 
 			await handleUpdateSystemMessage();
 
@@ -221,7 +247,21 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			setLoading(false);
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [clanName, currentClan, banner, dispatch, handleCheckDuplicateClanname, updateClan, handleUpdateSystemMessage, t, navigation]);
+	}, [
+		dispatch,
+		clanName,
+		currentClanName,
+		currentClanId,
+		banner,
+		currentClanCreatorId,
+		currentClanIsOnboarding,
+		currentClanLogo,
+		welcomeChannelId,
+		handleUpdateSystemMessage,
+		t,
+		navigation,
+		handleCheckDuplicateClanname
+	]);
 
 	useLayoutEffect(() => {
 		navigation.setOptions({

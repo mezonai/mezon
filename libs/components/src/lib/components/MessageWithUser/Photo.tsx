@@ -8,7 +8,9 @@ import {
 	getMediaFormat,
 	getMediaTransferState,
 	getPhotoMediaHash,
+	useBlurredMediaThumbRef,
 	useIsIntersecting,
+	useMediaTransition,
 	useMediaWithLoadProgress,
 	usePreviousDeprecated,
 	useShowTransition
@@ -107,6 +109,11 @@ const Photo = <T,>({
 	const fullMediaData = localBlobUrl || mediaData;
 
 	const withBlurredBackground = Boolean(forcedWidth);
+	const [withThumb] = useState(!fullMediaData);
+	const noThumb = Boolean(fullMediaData);
+	const thumbRef = useBlurredMediaThumbRef(photo, false);
+	useMediaTransition(!noThumb, { ref: thumbRef, className: 'fast' });
+	const blurredBackgroundRef = useBlurredMediaThumbRef(photo, !withBlurredBackground);
 
 	const { loadProgress: downloadProgress } = useMediaWithLoadProgress(
 		!isPaidPreview ? getPhotoMediaHash(photo, 'download') : undefined,
@@ -175,6 +182,7 @@ const Photo = <T,>({
 				onClick?.(photo?.url);
 			}}
 		>
+			{withBlurredBackground && <canvas ref={blurredBackgroundRef} className="thumbnail blurred-bg" />}
 			{fullMediaData && (
 				<img
 					onContextMenu={handleContextMenu}
@@ -183,6 +191,13 @@ const Photo = <T,>({
 					alt=""
 					style={{ width: forcedWidth || width || 'auto' }}
 					draggable={!isProtected}
+				/>
+			)}
+			{!isSending && withThumb && (
+				<canvas
+					style={{ width, height }}
+					ref={thumbRef}
+					className="max-w-full max-h-full block object-cover absolute bottom-0 left-0 rounded overflow-hidden will-change-opacity"
 				/>
 			)}
 			{isProtected && <span className="protector" />}

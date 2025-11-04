@@ -75,20 +75,6 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 					{t('header.home')}
 				</a>
 				<a
-					href="#overview"
-					onClick={(event) => scrollToSection('overview', event)}
-					className="text-center px-[16px] py-[10px] text-[#F4F7F9] font-semibold text-base hover:bg-[#0C1AB2] hover:rounded-[8px] focus:rounded-[8px] focus:bg-[#281FB5]"
-				>
-					{t('header.overview')}
-				</a>
-				<a
-					href="#feature"
-					onClick={(event) => scrollToSection('feature', event)}
-					className="text-center px-[16px] py-[10px] text-[#F4F7F9] font-semibold text-base hover:bg-[#0C1AB2] hover:rounded-[8px] focus:rounded-[8px] focus:bg-[#281FB5]"
-				>
-					{t('header.features')}
-				</a>
-				<a
 					href={'developers/applications'}
 					target="_blank"
 					rel="noopener noreferrer"

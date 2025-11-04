@@ -1,6 +1,7 @@
 import { ActionEmitEvent, ETypeSearch } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { selectCurrentClan, selectMembersClanCount } from '@mezon/store-mobile';
+import { useAppSelector } from '@mezon/store';
+import { selectCurrentClanId, selectCurrentClanIsCommunity, selectCurrentClanName, selectMembersClanCount } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -17,17 +18,19 @@ import { style } from './styles';
 const ChannelListHeader = () => {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['clanMenu']);
-	const currentClan = useSelector(selectCurrentClan);
 	const navigation = useNavigation<any>();
 	const styles = style(themeValue);
 	const members = useSelector(selectMembersClanCount);
 	const previousClanName = useRef<string | null>(null);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
+	const currentClanClanIsCommunity = useAppSelector(selectCurrentClanIsCommunity);
 
 	useEffect(() => {
-		previousClanName.current = currentClan?.clan_name || '';
-	}, [currentClan?.clan_name]);
+		previousClanName.current = currentClanName || '';
+	}, [currentClanName]);
 
-	const clanName = !currentClan?.id || currentClan?.id === '0' ? previousClanName.current : currentClan?.clan_name;
+	const clanName = !currentClanId || currentClanId === '0' ? previousClanName.current : currentClanName;
 
 	const navigateToSearchPage = async () => {
 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
@@ -91,8 +94,8 @@ const ChannelListHeader = () => {
 						<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
 							{`${members} ${t('info.members')}`}
 						</Text>
-						{currentClan?.is_community && <View style={styles.dot} />}
-						{currentClan?.is_community && (
+						{currentClanClanIsCommunity && <View style={styles.dot} />}
+						{currentClanClanIsCommunity && (
 							<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>
 								{t('common.community')}
 							</Text>

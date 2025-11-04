@@ -157,6 +157,7 @@ const ChannelVoice = memo(
 					<>
 						<PreJoinVoiceChannel
 							roomName={currentChannelMeetingCode}
+							channel_id={currentChannelId as string}
 							loading={loading}
 							handleJoinRoom={handleJoinRoom}
 							isCurrentChannel={isShow}

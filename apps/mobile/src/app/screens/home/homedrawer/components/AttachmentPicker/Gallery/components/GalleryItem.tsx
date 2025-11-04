@@ -2,17 +2,17 @@ import { size } from '@mezon/mobile-ui';
 import { formatTimeToMMSS } from '@mezon/utils';
 import type { PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
 import React, { memo, useMemo } from 'react';
-import { Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import ShimmerPlaceHolder from 'react-native-shimmer-placeholder';
 import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
-import { FastNativeImage } from '../../../../../../../components/ImageNative/FastNativeImage';
 import { IconCDN } from '../../../../../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface GalleryItemProps {
 	item: any;
+	width: number;
 	index: number;
 	themeValue: any;
 	isSelected: boolean;
@@ -26,6 +26,7 @@ interface GalleryItemProps {
 
 const GalleryItem = ({
 	item,
+	width,
 	index,
 	themeValue,
 	isSelected,
@@ -36,7 +37,7 @@ const GalleryItem = ({
 	handleGalleryPress,
 	handleRemove
 }: GalleryItemProps) => {
-	const styles = useMemo(() => style(themeValue), [themeValue]);
+	const styles = style(themeValue);
 
 	const imageUri = useMemo(() => {
 		const uri = item?.node?.image?.uri;
@@ -49,7 +50,7 @@ const GalleryItem = ({
 
 	if (item?.isUseCamera) {
 		return (
-			<TouchableOpacity style={[styles.cameraPicker]} onPress={onOpenCamera}>
+			<TouchableOpacity style={[styles.cameraPicker, { width, height: width }]} onPress={onOpenCamera}>
 				<MezonIconCDN icon={IconCDN.cameraIcon} color={themeValue.text} width={size.s_24} height={size.s_24} />
 			</TouchableOpacity>
 		);
@@ -64,21 +65,28 @@ const GalleryItem = ({
 	};
 
 	return (
-		<TouchableOpacity style={[styles.itemGallery, disabled && styles.disable]} onPress={handlePickGallery} disabled={disabled} activeOpacity={1}>
+		<TouchableOpacity
+			style={[styles.itemGallery, disabled && styles.disable, { width, height: width }]}
+			onPress={handlePickGallery}
+			disabled={disabled}
+			activeOpacity={1}
+		>
 			<ShimmerPlaceHolder
 				shimmerColors={[themeValue.secondaryLight, themeValue.charcoal, themeValue.jet]}
 				shimmerStyle={styles.itemGallerySkeleton}
 				LinearGradient={LinearGradient}
 			/>
 			{Platform.OS === 'android' ? (
-				<FastImage source={{ uri: imageUri, cache: FastImage.cacheControl.immutable }} style={styles.imageGallery} />
+				<FastImage
+					source={{ uri: imageUri, cache: FastImage.cacheControl.immutable }}
+					style={[styles.imageGallery, { width, height: width }]}
+				/>
 			) : (
-				<FastNativeImage
+				<Image
 					source={{
-						uri: imageUri,
-						priority: 'normal'
+						uri: imageUri
 					}}
-					style={styles.imageGallery}
+					style={[styles.imageGallery, { width, height: width }]}
 				/>
 			)}
 			{isVideo && (
@@ -98,5 +106,5 @@ const GalleryItem = ({
 };
 
 export default memo(GalleryItem, (prevProps, nextProps) => {
-	return prevProps.isSelected === nextProps.isSelected && prevProps.disabled === nextProps.disabled;
+	return prevProps.isSelected === nextProps.isSelected && prevProps.disabled === nextProps.disabled && prevProps.width === nextProps.width;
 });

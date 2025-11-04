@@ -684,7 +684,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			isDM ||
 			!canSendMessage ||
 			currentChannelId !== message?.channel_id ||
-			isMessageSystem;
+			isMessageSystem ||
+			message?.code === TypeMessage.MessageBuzz;
 		const listOfActionOnlyMyMessage = [EMessageActionType.EditMessage];
 		const listOfActionOnlyOtherMessage = [EMessageActionType.Report];
 		const isHideActionImage = !(message?.attachments?.length === 1 && message?.attachments?.[0]?.filetype?.includes('image'));

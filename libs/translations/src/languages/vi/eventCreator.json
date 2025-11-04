@@ -132,11 +132,12 @@
 		"channelEvent": "Sự kiện Kênh",
 		"privateEvent": "Sự kiện Riêng tư",
 		"privateRoom": "Phòng riêng tư",
+		"newEvent": "Mới",
 		"share": "Chia sẻ"
 	},
 	"errorMessages": {
 		"startTimeFuture": "Thời gian bắt đầu phải ở tương lai.",
 		"endTimeAfterStart": "Thời gian kết thúc phải lớn hơn thời gian bắt đầu."
 	},
-	"selectUser": "Chọn channel để tạo sự kiện"
+	"selectUser": "Chọn kênh hoặc chủ đề để tạo sự kiện"
 }

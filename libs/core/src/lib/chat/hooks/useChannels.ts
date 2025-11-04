@@ -7,7 +7,6 @@ import {
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectDefaultChannelIdByClanId,
-	selectThreadsByParentChannelId,
 	selectWelcomeChannelByClanId,
 	threadsActions,
 	useAppDispatch
@@ -30,8 +29,6 @@ export function useChannels() {
 		const isThread = checkIsThread(channelToDelete);
 
 		if (!isThread && channelToDelete) {
-			const allThreadsInChannel = selectThreadsByParentChannelId(state, channelId);
-
 			const currentChannel = currentChannelId ? selectChannelById(state, currentChannelId) : null;
 			const isUserInChildThread = currentChannel && checkIsThread(currentChannel) && currentChannel.parent_id === channelId;
 

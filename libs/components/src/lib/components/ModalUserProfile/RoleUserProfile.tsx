@@ -1,6 +1,7 @@
 import { usePermissionChecker, useRoles, UserRestrictionZone } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
 import {
+	rolesClanActions,
 	selectAllRolesClan,
 	selectCurrentClanId,
 	selectMemberClanByUserId,
@@ -59,10 +60,33 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 
 	const dispatch = useAppDispatch();
 
+	const updateRoleUsersList = (role: RolesClanEntity | undefined, action: 'add' | 'remove') => {
+		if (!role || !userById?.user?.id) return;
+
+		const updatedRoleUsers =
+			action === 'add'
+				? [...(role.role_user_list?.role_users || []), { id: userById.user.id }]
+				: role.role_user_list?.role_users?.filter((user) => user.id !== userById?.user?.id) || [];
+
+		dispatch(
+			rolesClanActions.update({
+				role: {
+					...role,
+					role_user_list: {
+						...role.role_user_list,
+						role_users: updatedRoleUsers
+					}
+				},
+				clanId: currentClanId as string
+			})
+		);
+	};
+
 	const addRole = async (roleId: string) => {
 		setIsVisible(false);
 		const activeRole = RolesClan.find((role) => role.id === roleId);
 		const userIDArray = userById?.user?.id?.split(',');
+
 		await updateRole(currentClanId || '', roleId, activeRole?.title ?? '', activeRole?.color ?? '', userIDArray || [], [], [], []);
 		await dispatch(
 			usersClanActions.addRoleIdUser({
@@ -71,6 +95,8 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 				clanId: currentClanId as string
 			})
 		);
+
+		updateRoleUsersList(activeRole, 'add');
 	};
 
 	const deleteRole = async (roleId: string) => {
@@ -84,6 +110,8 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 				userId: userById?.user?.id as string
 			})
 		);
+
+		updateRoleUsersList(activeRole, 'remove');
 	};
 	const appearanceTheme = useSelector(selectTheme);
 	const [isVisible, setIsVisible] = useState(false);

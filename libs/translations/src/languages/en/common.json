@@ -39,6 +39,8 @@
 		"createYourOwnClan": "Create your own clan"
 	},
 	"thread": "Threads",
+	"threadLabel": "thread",
+	"channelLabel": "channel",
 	"members": "Members",
 	"gifs": "Gifs",
 	"stickers": "Stickers",
@@ -118,7 +120,8 @@
 	"category": "Category",
 	"notificationSetting": "Notification Setting",
 	"replyingTo": "Replying to",
-	"offlines": "Offlines",
+	"onlines": "Online",
+	"offlines": "Offline",
 	"media": "Media",
 	"image": "Image",
 	"files": "Files",
@@ -400,5 +403,11 @@
 			"nov": "Nov",
 			"dec": "Dec"
 		}
+	},
+	"quickMenu": {
+		"title": "Quick Menu",
+		"searchPlaceholder": "Search quick menu...",
+		"noQuickMenu": "No quick menu items found",
+		"noQuickMenuAvailable": "No quick menu items available"
 	}
 }

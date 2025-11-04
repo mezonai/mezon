@@ -5,6 +5,7 @@ import { getStore, selectAllAccount, selectMemberClanByUserId, selectStatusInVoi
 import { ChannelMembersEntity, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, EUserStatus } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useContext, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
@@ -27,6 +28,7 @@ interface IProps {
 export const MemberProfile = memo(({ user, isHideUserName, numCharCollapse = 6, nickName, creatorClanId, creatorDMId, isDMThread }: IProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const { t } = useTranslation(['userProfile']);
 	const userId = user?.id || user?.user?.id || '';
 	const userVoiceStatus = useAppSelector((state) => selectStatusInVoice(state, userId));
 	const getStatus = useMemberStatus(userId);
@@ -102,10 +104,10 @@ export const MemberProfile = memo(({ user, isHideUserName, numCharCollapse = 6, 
 									<MezonIconCDN icon={IconCDN.ownerIcon} color={themeValue.borderWarning} width={16} height={16} />
 								)}
 						</View>
-						{!!userVoiceStatus && (
+						{!!userVoiceStatus && !isDMThread && (
 							<View style={styles.voiceContainer}>
 								<MezonIconCDN icon={IconCDN.channelVoice} color={baseColor.green} width={12} height={12} />
-								<Text style={styles.voiceText}>In voice</Text>
+								<Text style={styles.voiceText}>{t('voiceInfo.inVoice')}</Text>
 							</View>
 						)}
 						{isDMThread && currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP && (

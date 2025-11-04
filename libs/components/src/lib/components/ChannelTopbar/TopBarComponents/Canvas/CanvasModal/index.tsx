@@ -76,25 +76,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
 	useOnClickOutside(modalRef, onClose, rootRef);
-	// const totalPages = countCanvas === undefined ? 0 : Math.ceil(countCanvas / 10);
-	// const [currentPage, setCurrentPage] = useState(1);
-	// const onPageChange = useCallback(
-	// 	(page: number) => {
-	// 		if (!currentChannel?.channel_id || !currentClanId) {
-	// 			return;
-	// 		}
-	// 		setCurrentPage(page);
-	// 		dispatch(
-	// 			getChannelCanvasList({
-	// 				channel_id: currentChannel?.channel_id,
-	// 				clan_id: currentClanId,
-	// 				page: page,
-	// 				noCache: true
-	// 			})
-	// 		);
-	// 	},
-	// 	[dispatch, currentChannel?.channel_id, currentClanId]
-	// );
+
 	return (
 		<div
 			ref={modalRef}

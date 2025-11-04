@@ -285,7 +285,7 @@ const TopBarChannelText = memo(() => {
 					</>
 				)}
 
-				{!isMemberPath && !isChannelPath && (
+				{!isMemberPath && !isChannelPath && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (
 					<SearchMessageChannel mode={channelType ? ChannelStreamMode.STREAM_MODE_CHANNEL : ChannelStreamMode.STREAM_MODE_DM} />
 				)}
 			</div>
@@ -493,7 +493,7 @@ const DmTopbarTools = memo(() => {
 	const isGroupCallActive = useSelector((state: RootState) => state.groupCall?.isGroupCallActive || false);
 	const voiceInfo = useSelector((state: RootState) => state.voice?.voiceInfo || null);
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''));
-
+	const userCurrent = useSelector(selectAllAccount);
 	const isBlockUser = useMemo(() => {
 		return infoFriend?.state === EStateFriend.BLOCK;
 	}, [currentDmGroup?.user_ids?.[0], infoFriend]);
@@ -675,11 +675,15 @@ const DmTopbarTools = memo(() => {
 		}
 	}, [selectOpenVoice, currentDmGroup, sendMessage]);
 
+	const isMe = useMemo(() => {
+		return currentDmGroup?.user_ids?.[0] === userCurrent?.user?.id?.toString();
+	}, [currentDmGroup, userCurrent]);
+
 	return (
 		<div className=" items-center h-full ml-auto hidden justify-end ssm:flex">
 			<div className=" items-center gap-2 flex">
 				<div className="justify-start items-center gap-[15px] flex ">
-					{!isBlockUser && (
+					{!isBlockUser && !isMe && (
 						<>
 							<button
 								title={t('tooltips.startVoiceCall')}

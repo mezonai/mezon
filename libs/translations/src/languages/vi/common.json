@@ -39,6 +39,8 @@
 		"createYourOwnClan": "Tạo clan của riêng bạn"
 	},
 	"thread": "Chủ đề",
+	"threadLabel": "chủ đề",
+	"channelLabel": "kênh",
 	"members": "Thành viên",
 	"gifs": "Gif",
 	"stickers": "Nhãn dán",
@@ -118,6 +120,7 @@
 	"category": "Danh mục",
 	"notificationSetting": "Cài đặt thông báo",
 	"replyingTo": "Đang trả lời",
+	"onlines": "Trực tuyến",
 	"offlines": "Ngoại tuyến",
 	"media": "Đa phương tiện",
 	"image": "Ảnh",
@@ -400,5 +403,11 @@
 			"nov": "thg 11",
 			"dec": "thg 12"
 		}
+	},
+	"quickMenu": {
+		"title": "Menu nhanh",
+		"searchPlaceholder": "Tìm kiếm menu nhanh...",
+		"noQuickMenu": "Không tìm thấy menu nhanh nào",
+		"noQuickMenuAvailable": "Không có menu nhanh nào đang khả dụng"
 	}
 }

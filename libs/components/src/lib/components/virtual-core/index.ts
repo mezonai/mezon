@@ -44,6 +44,11 @@ export interface Rect {
 
 //
 
+const getRect = (element: HTMLElement): Rect => {
+	const { offsetWidth, offsetHeight } = element;
+	return { width: offsetWidth, height: offsetHeight };
+};
+
 export const defaultKeyExtractor = (index: number) => index;
 
 export const defaultRangeExtractor = (range: Range) => {
@@ -74,22 +79,26 @@ export const observeElementRect = <T extends Element>(instance: Virtualizer<T, a
 		cb({ width: Math.round(width), height: Math.round(height) });
 	};
 
-	handler(element.getBoundingClientRect());
+	handler(getRect(element as unknown as HTMLElement));
 
 	if (!targetWindow.ResizeObserver) {
-		return () => {}; // eslint-disable-line @typescript-eslint/no-empty-function
+		return () => {};
 	}
 
 	const observer = new targetWindow.ResizeObserver((entries) => {
-		const entry = entries[0];
-		if (entry?.borderBoxSize) {
-			const box = entry.borderBoxSize[0];
-			if (box) {
-				handler({ width: box.inlineSize, height: box.blockSize });
-				return;
+		const run = () => {
+			const entry = entries[0];
+			if (entry?.borderBoxSize) {
+				const box = entry.borderBoxSize[0];
+				if (box) {
+					handler({ width: box.inlineSize, height: box.blockSize });
+					return;
+				}
 			}
-		}
-		handler(element.getBoundingClientRect());
+			handler(getRect(element as unknown as HTMLElement));
+		};
+
+		instance.options.useAnimationFrameWithResizeObserver ? requestAnimationFrame(run) : run();
 	});
 
 	observer.observe(element, { box: 'border-box' });
@@ -158,11 +167,15 @@ export const observeElementOffset = <T extends Element>(instance: Virtualizer<T,
 	endHandler();
 
 	element.addEventListener('scroll', handler, addEventListenerOptions);
-	element.addEventListener('scrollend', endHandler, addEventListenerOptions);
-
+	const registerScrollendEvent = instance.options.useScrollendEvent && supportsScrollend;
+	if (registerScrollendEvent) {
+		element.addEventListener('scrollend', endHandler, addEventListenerOptions);
+	}
 	return () => {
 		element.removeEventListener('scroll', handler);
-		element.removeEventListener('scrollend', endHandler);
+		if (registerScrollendEvent) {
+			element.removeEventListener('scrollend', endHandler);
+		}
 	};
 };
 
@@ -198,11 +211,15 @@ export const observeWindowOffset = (instance: Virtualizer<Window, any>, cb: Obse
 	endHandler();
 
 	element.addEventListener('scroll', handler, addEventListenerOptions);
-	element.addEventListener('scrollend', endHandler, addEventListenerOptions);
-
+	const registerScrollendEvent = instance.options.useScrollendEvent && supportsScrollend;
+	if (registerScrollendEvent) {
+		element.addEventListener('scrollend', endHandler, addEventListenerOptions);
+	}
 	return () => {
 		element.removeEventListener('scroll', handler);
-		element.removeEventListener('scrollend', endHandler);
+		if (registerScrollendEvent) {
+			element.removeEventListener('scrollend', endHandler);
+		}
 	};
 };
 
@@ -218,7 +235,8 @@ export const measureElement = <TItemElement extends Element>(
 			return size;
 		}
 	}
-	return Math.round(element.getBoundingClientRect()[instance.options.horizontal ? 'width' : 'height']);
+
+	return (element as unknown as HTMLElement)[instance.options.horizontal ? 'offsetWidth' : 'offsetHeight'];
 };
 
 export const windowScroll = <T extends Window>(
@@ -284,6 +302,7 @@ export interface VirtualizerOptions<TScrollElement extends Element | Window, TIt
 	useScrollendEvent?: boolean;
 	enabled?: boolean;
 	isRtl?: boolean;
+	useAnimationFrameWithResizeObserver?: boolean;
 }
 
 export class Virtualizer<TScrollElement extends Element | Window, TItemElement extends Element> {
@@ -292,7 +311,6 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 	scrollElement: TScrollElement | null = null;
 	targetWindow: (Window & typeof globalThis) | null = null;
 	isScrolling = false;
-	private scrollToIndexTimeoutId: number | null = null;
 	measurementsCache: Array<VirtualItem> = [];
 	private itemSizeCache = new Map<Key, number>();
 	private pendingMeasuredCacheIndexes: Array<number> = [];
@@ -318,7 +336,10 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 
 			return (_ro = new this.targetWindow.ResizeObserver((entries) => {
 				entries.forEach((entry) => {
-					this._measureElement(entry.target as TItemElement, entry);
+					const run = () => {
+						this._measureElement(entry.target as TItemElement, entry);
+					};
+					this.options.useAnimationFrameWithResizeObserver ? requestAnimationFrame(run) : run();
 				});
 			}));
 		};
@@ -354,7 +375,7 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 			horizontal: false,
 			getItemKey: defaultKeyExtractor,
 			rangeExtractor: defaultRangeExtractor,
-			onChange: () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+			onChange: () => {},
 			measureElement,
 			initialRect: { width: 0, height: 0 },
 			scrollMargin: 0,
@@ -365,7 +386,8 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 			isScrollingResetDelay: 150,
 			enabled: true,
 			isRtl: false,
-			useScrollendEvent: true,
+			useScrollendEvent: false,
+			useAnimationFrameWithResizeObserver: false,
 			...opts
 		};
 	};
@@ -585,14 +607,15 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 	);
 
 	calculateRange = memo(
-		() => [this.getMeasurements(), this.getSize(), this.getScrollOffset()],
-		(measurements, outerSize, scrollOffset) => {
+		() => [this.getMeasurements(), this.getSize(), this.getScrollOffset(), this.options.lanes],
+		(measurements, outerSize, scrollOffset, lanes) => {
 			return (this.range =
 				measurements.length > 0 && outerSize > 0
 					? calculateRange({
 							measurements,
 							outerSize,
-							scrollOffset
+							scrollOffset,
+							lanes
 						})
 					: null);
 		},
@@ -602,20 +625,30 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 		}
 	);
 
-	private getIndexes = memo(
-		() => [this.options.rangeExtractor, this.calculateRange(), this.options.overscan, this.options.count],
-		(rangeExtractor, range, overscan, count) => {
-			return range === null
+	getVirtualIndexes = memo(
+		() => {
+			let startIndex: number | null = null;
+			let endIndex: number | null = null;
+			const range = this.calculateRange();
+			if (range) {
+				startIndex = range.startIndex;
+				endIndex = range.endIndex;
+			}
+			this.maybeNotify.updateDeps([this.isScrolling, startIndex, endIndex]);
+			return [this.options.rangeExtractor, this.options.overscan, this.options.count, startIndex, endIndex];
+		},
+		(rangeExtractor, overscan, count, startIndex, endIndex) => {
+			return startIndex === null || endIndex === null
 				? []
 				: rangeExtractor({
-						startIndex: range.startIndex,
-						endIndex: range.endIndex,
+						startIndex,
+						endIndex,
 						overscan,
 						count
 					});
 		},
 		{
-			key: process.env.NODE_ENV !== 'production' && 'getIndexes',
+			key: process.env.NODE_ENV !== 'production' && 'getVirtualIndexes',
 			debug: () => this.options.debug
 		}
 	);
@@ -668,6 +701,10 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 					? this.shouldAdjustScrollPositionOnItemSizeChange(item, delta, this)
 					: item.start < this.getScrollOffset() + this.scrollAdjustments
 			) {
+				if (process.env.NODE_ENV !== 'production' && this.options.debug) {
+					console.info('correction', delta);
+				}
+
 				this._scrollToOffset(this.getScrollOffset(), {
 					adjustments: (this.scrollAdjustments += delta),
 					behavior: undefined
@@ -696,7 +733,7 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 	};
 
 	getVirtualItems = memo(
-		() => [this.getIndexes(), this.getMeasurements()],
+		() => [this.getVirtualIndexes(), this.getMeasurements()],
 		(indexes, measurements) => {
 			const virtualItems: Array<VirtualItem> = [];
 
@@ -725,28 +762,23 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 		);
 	};
 
-	getOffsetForAlignment = (toOffset: number, align: ScrollAlignment) => {
+	getOffsetForAlignment = (toOffset: number, align: ScrollAlignment, itemSize = 0) => {
 		const size = this.getSize();
 		const scrollOffset = this.getScrollOffset();
 
 		if (align === 'auto') {
-			if (toOffset >= scrollOffset + size) {
-				align = 'end';
-			}
+			align = toOffset >= scrollOffset + size ? 'end' : 'start';
 		}
 
-		if (align === 'end') {
+		if (align === 'center') {
+			// When aligning to a particular item (e.g. with scrollToIndex),
+			// adjust offset by the size of the item to center on the item
+			toOffset += (itemSize - size) / 2;
+		} else if (align === 'end') {
 			toOffset -= size;
 		}
 
-		const scrollSizeProp = this.options.horizontal ? 'scrollWidth' : 'scrollHeight';
-		const scrollSize = this.scrollElement
-			? 'document' in this.scrollElement
-				? this.scrollElement.document.documentElement[scrollSizeProp]
-				: this.scrollElement[scrollSizeProp]
-			: 0;
-
-		const maxOffset = scrollSize - size;
+		const maxOffset = this.getTotalSize() + this.options.scrollMargin - size;
 
 		return Math.max(Math.min(maxOffset, toOffset), 0);
 	};
@@ -772,30 +804,14 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 			}
 		}
 
-		const centerOffset = item.start - this.options.scrollPaddingStart + (item.size - size) / 2;
+		const toOffset = align === 'end' ? item.end + this.options.scrollPaddingEnd : item.start - this.options.scrollPaddingStart;
 
-		switch (align) {
-			case 'center':
-				return [this.getOffsetForAlignment(centerOffset, align), align] as const;
-			case 'end':
-				return [this.getOffsetForAlignment(item.end + this.options.scrollPaddingEnd, align), align] as const;
-			default:
-				return [this.getOffsetForAlignment(item.start - this.options.scrollPaddingStart, align), align] as const;
-		}
+		return [this.getOffsetForAlignment(toOffset, align, item.size), align] as const;
 	};
 
 	private isDynamicMode = () => this.elementsCache.size > 0;
 
-	private cancelScrollToIndex = () => {
-		if (this.scrollToIndexTimeoutId !== null && this.targetWindow) {
-			this.targetWindow.clearTimeout(this.scrollToIndexTimeoutId);
-			this.scrollToIndexTimeoutId = null;
-		}
-	};
-
 	scrollToOffset = (toOffset: number, { align = 'start', behavior }: ScrollToOffsetOptions = {}) => {
-		this.cancelScrollToIndex();
-
 		if (behavior === 'smooth' && this.isDynamicMode()) {
 			console.warn('The `smooth` scroll behavior is not fully supported with dynamic size.');
 		}
@@ -807,42 +823,58 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 	};
 
 	scrollToIndex = (index: number, { align: initialAlign = 'auto', behavior }: ScrollToIndexOptions = {}) => {
-		index = Math.max(0, Math.min(index, this.options.count - 1));
-
-		this.cancelScrollToIndex();
-
 		if (behavior === 'smooth' && this.isDynamicMode()) {
 			console.warn('The `smooth` scroll behavior is not fully supported with dynamic size.');
 		}
 
-		const offsetAndAlign = this.getOffsetForIndex(index, initialAlign);
-		if (!offsetAndAlign) return;
+		index = Math.max(0, Math.min(index, this.options.count - 1));
 
-		const [offset, align] = offsetAndAlign;
+		let attempts = 0;
+		const maxAttempts = 10;
 
-		this._scrollToOffset(offset, { adjustments: undefined, behavior });
+		const tryScroll = (currentAlign: ScrollAlignment) => {
+			if (!this.targetWindow) return;
 
-		if (behavior !== 'smooth' && this.isDynamicMode() && this.targetWindow) {
-			this.scrollToIndexTimeoutId = this.targetWindow.setTimeout(() => {
-				this.scrollToIndexTimeoutId = null;
+			const offsetInfo = this.getOffsetForIndex(index, currentAlign);
+			if (!offsetInfo) {
+				console.warn('Failed to get offset for index:', index);
+				return;
+			}
+			const [offset, align] = offsetInfo;
+			this._scrollToOffset(offset, { adjustments: undefined, behavior });
 
-				const elementInDOM = this.elementsCache.has(this.options.getItemKey(index));
+			this.targetWindow.requestAnimationFrame(() => {
+				const currentOffset = this.getScrollOffset();
+				const afterInfo = this.getOffsetForIndex(index, align);
+				if (!afterInfo) {
+					console.warn('Failed to get offset for index:', index);
+					return;
+				}
 
-				if (elementInDOM) {
-					const [latestOffset] = notUndefined(this.getOffsetForIndex(index, align));
-
-					if (!approxEqual(latestOffset, this.getScrollOffset())) {
-						// Only scroll if the offset is incorrect
-						this._scrollToOffset(latestOffset, { adjustments: undefined, behavior });
-					}
+				if (!approxEqual(afterInfo[0], currentOffset)) {
+					scheduleRetry(align);
 				}
 			});
-		}
+		};
+
+		const scheduleRetry = (align: ScrollAlignment) => {
+			if (!this.targetWindow) return;
+
+			attempts++;
+			if (attempts < maxAttempts) {
+				if (process.env.NODE_ENV !== 'production' && this.options.debug) {
+					console.info('Schedule retry', attempts, maxAttempts);
+				}
+				this.targetWindow.requestAnimationFrame(() => tryScroll(align));
+			} else {
+				console.warn(`Failed to scroll to index ${index} after ${maxAttempts} attempts.`);
+			}
+		};
+
+		tryScroll(initialAlign);
 	};
 
 	scrollBy = (delta: number, { behavior }: ScrollToOffsetOptions = {}) => {
-		this.cancelScrollToIndex();
-
 		if (behavior === 'smooth' && this.isDynamicMode()) {
 			console.warn('The `smooth` scroll behavior is not fully supported with dynamic size.');
 		}
@@ -858,14 +890,25 @@ export class Virtualizer<TScrollElement extends Element | Window, TItemElement e
 
 		let end: number;
 		// If there are no measurements, set the end to paddingStart
+		// If there is only one lane, use the last measurement's end
+		// Otherwise find the maximum end value among all measurements
 		if (measurements.length === 0) {
 			end = this.options.paddingStart;
+		} else if (this.options.lanes === 1) {
+			end = measurements[measurements.length - 1]?.end ?? 0;
 		} else {
-			// If lanes is 1, use the last measurement's end, otherwise find the maximum end value among all measurements
-			end =
-				this.options.lanes === 1
-					? (measurements[measurements.length - 1]?.end ?? 0)
-					: Math.max(...measurements.slice(-this.options.lanes).map((m) => m.end));
+			const endByLane = Array<number | null>(this.options.lanes).fill(null);
+			let endIndex = measurements.length - 1;
+			while (endIndex >= 0 && endByLane.some((val) => val === null)) {
+				const item = measurements[endIndex]!;
+				if (endByLane[item.lane] === null) {
+					endByLane[item.lane] = item.end;
+				}
+
+				endIndex--;
+			}
+
+			end = Math.max(...endByLane.filter((val): val is number => val !== null));
 		}
 
 		return Math.max(end - this.options.scrollMargin + this.options.paddingEnd, 0);
@@ -911,15 +954,58 @@ const findNearestBinarySearch = (low: number, high: number, getCurrentValue: (i:
 	}
 };
 
-function calculateRange({ measurements, outerSize, scrollOffset }: { measurements: Array<VirtualItem>; outerSize: number; scrollOffset: number }) {
-	const count = measurements.length - 1;
+function calculateRange({
+	measurements,
+	outerSize,
+	scrollOffset,
+	lanes
+}: {
+	measurements: Array<VirtualItem>;
+	outerSize: number;
+	scrollOffset: number;
+	lanes: number;
+}) {
+	const lastIndex = measurements.length - 1;
 	const getOffset = (index: number) => measurements[index]!.start;
 
-	const startIndex = findNearestBinarySearch(0, count, getOffset, scrollOffset);
+	// handle case when item count is less than or equal to lanes
+	if (measurements.length <= lanes) {
+		return {
+			startIndex: 0,
+			endIndex: lastIndex
+		};
+	}
+
+	let startIndex = findNearestBinarySearch(0, lastIndex, getOffset, scrollOffset);
 	let endIndex = startIndex;
 
-	while (endIndex < count && measurements[endIndex]!.end < scrollOffset + outerSize) {
-		endIndex++;
+	if (lanes === 1) {
+		while (endIndex < lastIndex && measurements[endIndex]!.end < scrollOffset + outerSize) {
+			endIndex++;
+		}
+	} else if (lanes > 1) {
+		// Expand forward until we include the visible items from all lanes
+		// which are closer to the end of the virtualizer window
+		const endPerLane = Array(lanes).fill(0);
+		while (endIndex < lastIndex && endPerLane.some((pos) => pos < scrollOffset + outerSize)) {
+			const item = measurements[endIndex]!;
+			endPerLane[item.lane] = item.end;
+			endIndex++;
+		}
+
+		// Expand backward until we include all lanes' visible items
+		// closer to the top
+		const startPerLane = Array(lanes).fill(scrollOffset + outerSize);
+		while (startIndex >= 0 && startPerLane.some((pos) => pos >= scrollOffset)) {
+			const item = measurements[startIndex]!;
+			startPerLane[item.lane] = item.start;
+			startIndex--;
+		}
+
+		// Align startIndex to the beginning of its lane
+		startIndex = Math.max(0, startIndex - (startIndex % lanes));
+		// Align endIndex to the end of its lane
+		endIndex = Math.min(lastIndex, endIndex + (lanes - 1 - (endIndex % lanes)));
 	}
 
 	return { startIndex, endIndex };

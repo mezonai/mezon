@@ -185,6 +185,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 					isVoice={isVoiceChannel}
 					messageCount={channelParent?.message_count || 0}
 					lastMessage={channelParent?.last_sent_message}
+					isStream={channelParent?.channel_type === ChannelType.CHANNEL_TYPE_STREAMING}
 				/>
 				{!isVoiceChannel && !searchFilter && (
 					<div
@@ -234,7 +235,8 @@ const ItemInfor = ({
 	channelId,
 	isVoice,
 	messageCount,
-	lastMessage
+	lastMessage,
+	isStream
 }: {
 	isThread?: boolean;
 	label: string;
@@ -246,6 +248,7 @@ const ItemInfor = ({
 	isVoice?: boolean;
 	messageCount?: number | string;
 	lastMessage?: ApiChannelMessageHeader;
+	isStream?: boolean;
 }) => {
 	const { t } = useTranslation('channelSetting');
 	const creatorChannel = useAppSelector((state) => selectMemberClanByUserId(state, creatorId));
@@ -310,6 +313,7 @@ const ItemInfor = ({
 			>
 				<div className="h-6 w-6">
 					{!isVoice &&
+						!isStream &&
 						(isThread ? (
 							privateChannel ? (
 								<Icons.ThreadIconLocker className="w-5 h-5 " />
@@ -323,6 +327,7 @@ const ItemInfor = ({
 						))}
 
 					{isVoice && <Icons.Speaker />}
+					{isStream && <Icons.Stream />}
 				</div>
 				<div className={`flex-1 box-border flex overflow-hidden`}>
 					<span className="truncate pr-8" data-e2e={generateE2eId('clan_page.channel_management.channel_item.channel_name')}>

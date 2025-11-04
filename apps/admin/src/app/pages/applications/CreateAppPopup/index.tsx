@@ -26,6 +26,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	const [isShadowBot, setIsShadowBot] = useState(false);
 	const [notification, setNotification] = useState<React.JSX.Element | null>(null);
 	const [creationType, setCreationType] = useState<CreationType>(APP_TYPES.APPLICATION);
+	const [showShadowConfirmModal, setShowShadowConfirmModal] = useState(false);
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
 	const typeApplication = creationType === APP_TYPES.APPLICATION;
@@ -100,18 +101,26 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	};
 
 	const handleCheckForShadow = () => {
-		const newShadowBotState = !isShadowBot;
-		setIsShadowBot(newShadowBotState);
-
-		if (newShadowBotState) {
-			setNotification(
-				<div className="p-3 dark:bg-[#3a4a5c] bg-[#e3f2fd] border dark:border-blue-400 border-blue-500 rounded-md">
-					{t('createPopup.notifications.shadowModeInfo')}
-				</div>
-			);
+		if (!isShadowBot) {
+			setShowShadowConfirmModal(true);
 		} else {
+			setIsShadowBot(false);
 			setNotification(null);
 		}
+	};
+
+	const confirmShadowBot = () => {
+		setIsShadowBot(true);
+		setShowShadowConfirmModal(false);
+		setNotification(
+			<div className="p-3 dark:bg-[#3a4a5c] bg-[#e3f2fd] border dark:border-blue-400 border-blue-500 rounded-md">
+				{t('createPopup.notifications.shadowModeInfo')}
+			</div>
+		);
+	};
+
+	const cancelShadowBot = () => {
+		setShowShadowConfirmModal(false);
 	};
 
 	const handleInputOnchange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,7 +165,30 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 	}, [togglePopup]);
 
 	return (
-		<div className="fixed inset-0 flex items-center justify-center z-50 bg-[#000000c9]">
+		<div className="fixed inset-0 flex items-center justify-center z-30 bg-[#000000c9]">
+			{showShadowConfirmModal && (
+				<div className="fixed inset-0 flex items-center justify-center z-[60] bg-[#000000e6]">
+					<div className="relative z-10 w-[480px] ">
+						<div className="dark:bg-[#313338] bg-white pt-[16px] px-[16px] flex flex-col gap-5 pb-5 rounded-t-md ">
+							<div className=" text-[20px] font-semibold">{t('createPopup.shadowConfirm.title')}</div>
+							<div className="text-[14px]">{t('createPopup.shadowConfirm.message')}</div>
+						</div>
+						<div className="bg-white dark:bg-[#313338] flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium border-t dark:border-[#1e1f22] rounded-b-md">
+							<div className="hover:underline cursor-pointer text-zinc-800 dark:text-zinc-200" onClick={cancelShadowBot}>
+								{t('createPopup.buttons.cancel')}
+							</div>
+							<button
+								type="button"
+								onClick={confirmShadowBot}
+								className="rounded px-[20px] py-[9px] cursor-pointer text-white bg-blue-600 hover:bg-blue-800"
+							>
+								{t('createPopup.buttons.confirm')}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+
 			<form className="relative z-10 w-[450px]" onSubmit={handleSubmit}>
 				<div className="dark:bg-[#313338] bg-white pt-[16px] px-[16px] flex flex-col gap-5 pb-5 rounded-t-md">
 					<div className=" text-[20px] font-semibold">{t(typeApplication ? 'createPopup.title.application' : 'createPopup.title.bot')}</div>
@@ -203,11 +235,13 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 						</div>
 					)}
 					{typeBot && (
-						<div className="flex gap-2">
-							<input checked={isShadowBot} onChange={handleCheckForShadow} type="checkbox" className="w-6" />
-							<div className="flex-1 flex gap-1">
-								<span>{t('createPopup.form.shadowBot')} </span>
-								<Icons.ShadowBotIcon className="w-6" />
+						<div className="flex flex-col gap-2">
+							<div className="flex gap-2">
+								<input checked={isShadowBot} onChange={handleCheckForShadow} type="checkbox" className="w-6" />
+								<div className="flex-1 flex gap-1">
+									<span>{t('createPopup.form.shadowBot')} </span>
+									<Icons.ShadowBotIcon className="w-6" />
+								</div>
 							</div>
 						</div>
 					)}

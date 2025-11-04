@@ -203,6 +203,20 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					onPress: () => {
 						bottomSheetRef?.current?.present();
 					}
+				},
+				{
+					title: t('streamBanner.title'),
+					expandable: true,
+					icon: <MezonIconCDN icon={IconCDN.channelStream} color={themeValue.text} />,
+					isShow: isChannel && channel?.type === ChannelType.CHANNEL_TYPE_STREAMING,
+					onPress: () => {
+						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
+							screen: APP_SCREEN.MENU_CHANNEL.STREAM_BANNER,
+							params: {
+								channelId
+							}
+						});
+					}
 				}
 			] satisfies IMezonMenuItemProps[],
 		[channel, channelId, currentSystemMessage?.channel_id, isChannel, navigation, t, themeValue.text]

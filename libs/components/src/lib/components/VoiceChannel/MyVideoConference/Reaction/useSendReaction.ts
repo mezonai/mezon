@@ -1,24 +1,26 @@
+import { selectCurrentChannelId } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { useCallback } from 'react';
-import { UseSendReactionParams } from './types';
+import { useSelector } from 'react-redux';
 
-export const useSendReaction = ({ currentChannel }: UseSendReactionParams) => {
+export const useSendReaction = () => {
 	const { socketRef } = useMezon();
+	const channelId = useSelector(selectCurrentChannelId);
 
 	const sendEmojiReaction = useCallback(
 		(emoji: string, emojiId: string) => {
-			if (!socketRef.current || !currentChannel?.channel_id) return;
-			socketRef.current.writeVoiceReaction([emojiId], currentChannel.channel_id);
+			if (!socketRef.current || !channelId) return;
+			socketRef.current.writeVoiceReaction([emojiId], channelId);
 		},
-		[socketRef, currentChannel]
+		[socketRef, channelId]
 	);
 
 	const sendSoundReaction = useCallback(
 		(soundId: string) => {
-			if (!socketRef.current || !currentChannel?.channel_id) return;
-			socketRef.current.writeVoiceReaction([`sound:${soundId}`], currentChannel.channel_id);
+			if (!socketRef.current || !channelId) return;
+			socketRef.current.writeVoiceReaction([`sound:${soundId}`], channelId);
 		},
-		[socketRef, currentChannel]
+		[socketRef, channelId]
 	);
 
 	return { sendEmojiReaction, sendSoundReaction };

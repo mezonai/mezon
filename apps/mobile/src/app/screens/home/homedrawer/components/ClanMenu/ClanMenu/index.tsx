@@ -4,7 +4,9 @@ import { baseColor, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
 	categoriesActions,
-	selectCurrentClan,
+	selectCurrentClanId,
+	selectCurrentClanLogo,
+	selectCurrentClanName,
 	selectDefaultNotificationClan,
 	selectIsShowEmptyCategory,
 	useAppDispatch
@@ -37,12 +39,13 @@ enum StatusMarkAsReadClan {
 }
 
 export default function ClanMenu() {
-	const currentClan = useSelector(selectCurrentClan);
 	const { t } = useTranslation(['clanMenu']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
-
+	const currentClanLogo = useSelector(selectCurrentClanLogo);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const navigation = useNavigation<AppStackScreenProps['navigation']>();
 	const dispatch = useAppDispatch();
 	const { handleMarkAsReadClan, statusMarkAsReadClan } = useMarkAsRead();
@@ -152,7 +155,7 @@ export default function ClanMenu() {
 	const watchMenu: IMezonMenuItemProps[] = [
 		{
 			onPress: async () => {
-				await handleMarkAsReadClan(currentClan?.clan_id);
+				await handleMarkAsReadClan(currentClanId);
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
 			title: t('menu.watchMenu.markAsRead')
@@ -175,9 +178,9 @@ export default function ClanMenu() {
 
 	function handleToggleEmptyCategories(value: boolean) {
 		if (value) {
-			dispatch(categoriesActions.setShowEmptyCategory(currentClan?.clan_id));
+			dispatch(categoriesActions.setShowEmptyCategory(currentClanId));
 		} else {
-			dispatch(categoriesActions.setHideEmptyCategory(currentClan?.clan_id));
+			dispatch(categoriesActions.setHideEmptyCategory(currentClanId));
 		}
 		setShowEmptyCategories(value);
 	}
@@ -190,10 +193,10 @@ export default function ClanMenu() {
 		<View style={styles.container}>
 			<View style={styles.header}>
 				<View style={styles.avatarWrapper}>
-					<MezonClanAvatar image={currentClan?.logo} alt={currentClan?.clan_name} />
+					<MezonClanAvatar image={currentClanLogo} alt={currentClanName} />
 				</View>
-				<Text style={styles.serverName}>{currentClan?.clan_name}</Text>
-				<ClanMenuInfo clan={currentClan} />
+				<Text style={styles.serverName}>{currentClanName}</Text>
+				<ClanMenuInfo />
 
 				<ScrollView contentContainerStyle={styles.actionWrapper} horizontal>
 					<MezonButtonIcon

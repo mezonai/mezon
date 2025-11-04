@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import type { ChannelUpdatedEvent } from 'mezon-js';
+import { channelMembersActions } from '../channelmembers/channel.members';
 import { selectRolesByClanId } from '../roleclan/roleclan.slice';
 import { getStoreAsync } from '../store';
 import type { ChannelsEntity } from './channels.slice';
@@ -15,6 +16,22 @@ export const switchPublicToPrivate = createAsyncThunk(
 		const hasRoleAccessPrivate = (channel.role_ids || []).some((key) => key in roleInClan);
 		const memberAccessPrivate = (channel.user_ids || []).some((user_id) => user_id === userId);
 		if (channel.creator_id === userId || hasRoleAccessPrivate || memberAccessPrivate) {
+			const userIdsToAdd = [
+				...(channel.creator_id ? [channel.creator_id] : []),
+				...(channel.role_ids || []).flatMap(
+					(roleId) => roleInClan[roleId]?.role_user_list?.role_users?.map((user) => user.id).filter((id): id is string => Boolean(id)) || []
+				)
+			];
+
+			if (userIdsToAdd.length > 0) {
+				thunkAPI.dispatch(
+					channelMembersActions.addNewMember({
+						channel_id: channel.channel_id,
+						user_ids: [...new Set(userIdsToAdd)]
+					})
+				);
+			}
+
 			thunkAPI.dispatch(
 				channelsActions.updateChannelPrivateState({
 					clanId,

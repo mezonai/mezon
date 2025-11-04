@@ -46,8 +46,8 @@ const UpdateUserName = () => {
 		try {
 			setIsError(false);
 			setIsLoading(true);
-			const responseSession = await updateUserName(userName);
-			if (responseSession) {
+			const responseSession: any = await updateUserName(userName);
+			if (responseSession?.token) {
 				dispatch(accountActions.getUserProfile({ noCache: true }));
 				dispatch(appActions.setIsShowUpdateUsername(false));
 			} else {

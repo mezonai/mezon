@@ -1,14 +1,16 @@
-import { getStoreAsync, selectMemberClanByUserId } from '@mezon/store';
+import { getStoreAsync, selectCurrentChannelId, selectMemberClanByUserId } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { getSrcEmoji, getSrcSound } from '@mezon/utils';
 import type { VoiceReactionSend } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import type { DisplayedEmoji, ReactionCallHandlerProps } from './types';
 
-export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ currentChannel, onSoundReaction }) => {
+export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ onSoundReaction }) => {
 	const [displayedEmojis, setDisplayedEmojis] = useState<DisplayedEmoji[]>([]);
 	const { socketRef } = useMezon();
 	const audioRefs = useRef<Map<string, HTMLAudioElement>>(new Map());
+	const channelId = useSelector(selectCurrentChannelId);
 
 	const generatePosition = useCallback(() => {
 		const horizontalOffset = (Math.random() - 0.5) * 40;
@@ -52,12 +54,12 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ c
 	}, []);
 
 	useEffect(() => {
-		if (!socketRef.current || !currentChannel?.channel_id) return;
+		if (!socketRef.current || !channelId) return;
 
 		const currentSocket = socketRef.current;
 
 		currentSocket.onvoicereactionmessage = (message: VoiceReactionSend) => {
-			if (currentChannel?.channel_id === message.channel_id) {
+			if (channelId === message.channel_id) {
 				try {
 					const emojis = message.emojis || [];
 					const firstEmojiId = emojis[0];
@@ -116,7 +118,7 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ c
 			});
 			audioRefs.current?.clear();
 		};
-	}, [socketRef, currentChannel, generatePosition, playSound, onSoundReaction]);
+	}, [socketRef, channelId, generatePosition, playSound, onSoundReaction]);
 
 	if (displayedEmojis.length === 0) {
 		return null;

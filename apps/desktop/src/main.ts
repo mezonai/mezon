@@ -11,6 +11,7 @@ import {
 	DOWNLOAD_FILE,
 	GET_WINDOW_STATE,
 	IMAGE_WINDOW_TITLE_BAR_ACTION,
+	LOAD_MORE_ATTACHMENTS,
 	MAC_WINDOWS_ACTION,
 	MAXIMIZE_WINDOW,
 	MINIMIZE_WINDOW,
@@ -19,7 +20,8 @@ import {
 	SENDER_ID,
 	SET_RATIO_WINDOW,
 	TITLE_BAR_ACTION,
-	UNMAXIMIZE_WINDOW
+	UNMAXIMIZE_WINDOW,
+	UPDATE_ATTACHMENTS
 } from './app/events/constants';
 import ElectronEvents from './app/events/electron.events';
 import SquirrelEvents from './app/events/squirrel.events';
@@ -252,6 +254,22 @@ ipcMain.handle(GET_WINDOW_STATE, () => {
 
 ipcMain.on(TITLE_BAR_ACTION, (event, action, _data) => {
 	handleWindowAction(App.mainWindow, action);
+});
+
+ipcMain.on(LOAD_MORE_ATTACHMENTS, (event, { direction }) => {
+	if (App.mainWindow && !App.mainWindow.isDestroyed()) {
+		App.mainWindow.webContents.send(LOAD_MORE_ATTACHMENTS, { direction });
+	}
+});
+
+ipcMain.on(UPDATE_ATTACHMENTS, (event, { attachments, hasMoreBefore, hasMoreAfter }) => {
+	if (App.imageViewerWindow && !App.imageViewerWindow.isDestroyed()) {
+		App.imageViewerWindow.webContents.send(UPDATE_ATTACHMENTS, {
+			attachments,
+			hasMoreBefore,
+			hasMoreAfter
+		});
+	}
 });
 
 async function copyBlobToClipboardElectron(blob: Buffer | null) {

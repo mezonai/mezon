@@ -6,8 +6,7 @@ export const style = ({ textStrong }: Attributes) =>
 		avatarWrapper: {
 			width: size.s_60,
 			height: size.s_60,
-			backgroundColor: baseColor.blurple,
-			borderRadius: 10,
+			borderRadius: size.s_10,
 			overflow: 'hidden'
 		},
 

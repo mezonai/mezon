@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, fileTypeImage } from '@mezon/utils';
 import type { PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
@@ -21,6 +21,7 @@ import * as ImagePicker from 'react-native-image-picker';
 import Toast from 'react-native-toast-message';
 import MezonConfirm from '../../../../../../componentUI/MezonConfirm';
 import type { IFile } from '../../../../../../componentUI/MezonImagePicker';
+import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import GalleryItem from './components/GalleryItem';
 import { style } from './styles';
 export const { height } = Dimensions.get('window');
@@ -30,6 +31,8 @@ interface IProps {
 
 const Gallery = ({ currentChannelId }: IProps) => {
 	const { themeValue } = useTheme();
+	const isTabletLandscape = useTabletLandscape();
+
 	const { t } = useTranslation(['qrScanner', 'sharing', 'common']);
 	const [hasPermission, setHasPermission] = useState(false);
 	const styles = useMemo(() => style(themeValue), [themeValue]);
@@ -40,6 +43,20 @@ const Gallery = ({ currentChannelId }: IProps) => {
 	const timerRef = useRef<any>(null);
 	const isLoadingMoreRef = useRef<boolean>(false);
 	const attachmentFilteredByChannelId = useAppSelector((state) => selectAttachmentByChannelId(state, currentChannelId ?? ''));
+	const [widthItem, setWidthItem] = useState(isTabletLandscape ? Dimensions.get('screen')?.height : Dimensions.get('screen')?.width);
+
+	useEffect(() => {
+		const subscription = Dimensions.addEventListener('change', (handler) => {
+			const screen = handler?.screen;
+			if (screen?.width) {
+				setWidthItem(isTabletLandscape ? screen?.height : screen?.width);
+			}
+		});
+
+		return () => {
+			subscription && subscription.remove();
+		};
+	}, [isTabletLandscape]);
 
 	const isDisableSelectAttachment = useMemo(() => {
 		if (!attachmentFilteredByChannelId) return false;
@@ -57,7 +74,7 @@ const Gallery = ({ currentChannelId }: IProps) => {
 		isLoadingMoreRef.current = true;
 		try {
 			const res = await CameraRoll.getPhotos({
-				first: 32,
+				first: 20,
 				assetType: 'All',
 				...(!!after && { after }),
 				include: ['filename', 'fileSize', 'fileExtension', 'imageSize', 'orientation', 'playableDuration'],
@@ -255,6 +272,7 @@ const Gallery = ({ currentChannelId }: IProps) => {
 		return (
 			<GalleryItem
 				item={item}
+				width={Math.round(widthItem / 3 - size.s_20)}
 				index={index}
 				themeValue={themeValue}
 				isSelected={isSelected}
@@ -449,12 +467,15 @@ const Gallery = ({ currentChannelId }: IProps) => {
 				keyExtractor={(item, index) => `${index.toString()}_gallery_${item?.node?.id}`}
 				initialNumToRender={5}
 				maxToRenderPerBatch={5}
-				windowSize={5}
-				updateCellsBatchingPeriod={5}
-				scrollEventThrottle={0}
+				windowSize={10}
 				removeClippedSubviews={true}
 				style={{
-					height: height * 0.8
+					height: height * 0.8,
+					paddingLeft: size.s_14
+				}}
+				contentContainerStyle={{
+					paddingBottom: widthItem / 3,
+					gap: size.s_14
 				}}
 				onEndReached={handleLoadMore}
 				onEndReachedThreshold={0.8}

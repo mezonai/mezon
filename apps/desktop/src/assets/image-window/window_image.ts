@@ -1,18 +1,15 @@
 import { BrowserWindow, ipcMain } from 'electron';
+import type { ApiChannelAttachment } from 'mezon-js/api.gen';
 import { join } from 'path';
 import App from '../../app/app';
-import image_window_css from './image-window-css';
-
-import type { ApiChannelAttachment } from 'mezon-js/api.gen';
 import { escapeHtml, sanitizeUrl } from '../../app/utils';
 import menu from '../menu-context';
-
+import image_window_css from './image-window-css';
 interface IAttachmentEntity extends ApiChannelAttachment {
 	id: string;
 	channelId?: string;
 	clanId?: string;
 }
-
 interface IAttachmentEntityWithUploader extends IAttachmentEntity {
 	uploaderData: {
 		avatar: string;
@@ -25,7 +22,6 @@ interface IImageWindowProps {
 	selectedImageIndex: number;
 	images: Array<IAttachmentEntityWithUploader>;
 }
-
 export type ImageData = {
 	filename: string;
 	size: number;
@@ -42,18 +38,13 @@ export type ImageData = {
 	realUrl: string;
 	channelImagesData: IImageWindowProps;
 };
-
 function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.mainWindow, params?: Record<string, string>) {
 	const parentBounds = parentWindow.getBounds();
 	const activeIndex = imageData.channelImagesData.selectedImageIndex;
-	// Calculate initial size (150% of parent window)
 	const width = Math.floor(parentBounds.width * 1.0);
 	const height = Math.floor(parentBounds.height * 1.0);
-
-	// Calculate position to center over parent window
 	const x = Math.floor(parentBounds.x + (parentBounds.width - width) / 2);
 	const y = Math.floor(parentBounds.y + (parentBounds.height - height) / 2);
-
 	const popupWindow = new BrowserWindow({
 		width,
 		height,
@@ -68,15 +59,13 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 			contextIsolation: true,
 			preload: join(__dirname, 'main.preload.js')
 		},
-		minWidth: 200, // Minimum window size
+		minWidth: 200,
 		minHeight: 200,
-		resizable: true, // Allow resizing
-		movable: true, // Allow moving
+		resizable: true,
+		movable: true,
 		hasShadow: true
 	});
-
 	const htmlPath = join(__dirname, 'image-viewer.html');
-
 	const imageViewerHtml = `
      <!DOCTYPE html>
 <html lang="en">
@@ -101,12 +90,12 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
   <div class="app-title">Mezon</div>
   <div class="functional-bar">
     <div id="minimize-window" class="function-button">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-button">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http:
         <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </div>
     <div id="maximize-window" class="function-button">
-      <svg viewBox="0 0 448 512" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-button zoom-button">
+      <svg viewBox="0 0 448 512" fill="none" xmlns="http:
         <path
           d="M384 80c8.8 0 16 7.2 16 16l0 320c0 8.8-7.2 16-16 16L64 432c-8.8 0-16-7.2-16-16L48 96c0-8.8 7.2-16 16-16l320 0zM64 32C28.7 32 0 60.7 0 96L0 416c0 35.3 28.7 64 64 64l320 0c35.3 0 64-28.7 64-64l0-320c0-35.3-28.7-64-64-64L64 32z"
           fill="currentColor"
@@ -114,7 +103,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
       </svg>
     </div>
     <div id="close-window" class="function-button" onclick="closeWindow()">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-button">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http:
         <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
         <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
         <g id="SVGRepo_iconCarrier">
@@ -159,24 +148,24 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
       </button>
       <div class="divider"></div>
       <button class="control-button" id="rotateLeftBtn">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http:
           <path d="M3.51018 14.9907C4.15862 16.831 5.38765 18.4108 7.01208 19.492C8.63652 20.5732 10.5684 21.0972 12.5165 20.9851C14.4647 20.873 16.3237 20.1308 17.8133 18.8704C19.303 17.61 20.3426 15.8996 20.7756 13.997C21.2086 12.0944 21.0115 10.1026 20.214 8.32177C19.4165 6.54091 18.0617 5.06746 16.3539 4.12343C14.6461 3.17941 12.6777 2.81593 10.7454 3.08779C7.48292 3.54676 5.32746 5.91142 3 8M3 8V2M3 8H9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
         </svg>
       </button>
       <button class="control-button" id="rotateRightBtn">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http:
           <path d="M20.4898 14.9907C19.8414 16.831 18.6124 18.4108 16.9879 19.492C15.3635 20.5732 13.4316 21.0972 11.4835 20.9851C9.5353 20.873 7.67634 20.1308 6.18668 18.8704C4.69703 17.61 3.65738 15.8996 3.22438 13.997C2.79138 12.0944 2.98849 10.1026 3.78602 8.32177C4.58354 6.54091 5.93827 5.06746 7.64608 4.12343C9.35389 3.17941 11.3223 2.81593 13.2546 3.08779C16.5171 3.54676 18.6725 5.91142 21 8M21 8V2M21 8H15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
         </svg>
       </button>
       <div class="divider"></div>
       <button class="control-button" id="zoomInBtn">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http:
           <path fillRule="evenodd" clipRule="evenodd" d="M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866 14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z" fill="currentColor"></path>
           <path fillRule="evenodd" clipRule="evenodd" d="M10 14C10 14.5523 10.4477 15 11 15C11.5523 15 12 14.5523 12 14V12H14C14.5523 12 15 11.5523 15 11C15 10.4477 14.5523 10 14 10H12V8C12 7.44772 11.5523 7 11 7C10.4477 7 10 7.44772 10 8V10H8C7.44772 10 7 10.4477 7 11C7 11.5523 7.44772 12 8 12H10V14Z" fill="currentColor"></path>
         </svg>
       </button>
       <button class="control-button" id="zoomOutBtn">
-          <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http:
             <path fillRule="evenodd" clipRule="evenodd" d="M4 11C4 7.13401 7.13401 4 11 4C14.866 4 18 7.13401 18 11C18 14.866 14.866 18 11 18C7.13401 18 4 14.866 4 11ZM11 2C6.02944 2 2 6.02944 2 11C2 15.9706 6.02944 20 11 20C13.125 20 15.078 19.2635 16.6177 18.0319L20.2929 21.7071C20.6834 22.0976 21.3166 22.0976 21.7071 21.7071C22.0976 21.3166 22.0976 20.6834 21.7071 20.2929L18.0319 16.6177C19.2635 15.078 20 13.125 20 11C20 6.02944 15.9706 2 11 2Z" fill="#ffffff"/>
             <path fillRule="evenodd" clipRule="evenodd" d="M7 11C7 10.4477 7.44772 10 8 10H14C14.5523 10 15 10.4477 15 11C15 11.5523 14.5523 12 14 12H8C7.44772 12 7 11.5523 7 11Z" fill="#ffffff"/>
           </svg>
@@ -184,7 +173,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
     </div>
     <div class="toggle-list">
       <button class="control-button" id="toggleListBtn">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http:
           <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
           <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
           <g id="SVGRepo_iconCarrier">
@@ -207,39 +196,22 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
   </div>
   <div id="toast" class="toast">Copied to clipboard</div>
 </div>
-
 </body>
 </html>
   `;
-	// Load the HTML content
-	// writeFileSync(htmlPath, imageViewerHtml);
-
-	// popupWindow.loadURL(
-	// 	format({
-	// 		pathname: htmlPath,
-	// 		protocol: 'file:',
-	// 		slashes: true
-	// 	})
-	// );
-
 	popupWindow.loadURL(`data:text/html;charset=UTF-8,${encodeURIComponent(imageViewerHtml)}`);
-
 	popupWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
 		console.error(`Image viewer failed to load: ${validatedURL}, Error: ${errorCode} - ${errorDescription}`);
 	});
-
 	popupWindow.webContents.on('console-message', (_event, _level, message, line, sourceId) => {
 		if (message.includes('ERR_NAME_NOT_RESOLVED') || message.includes('net::ERR_')) {
 			console.error(`Image viewer network error: ${message} at ${sourceId}:${line}`);
 		}
 	});
-
-	// Add IPC handlers for window controls
 	ipcMain.removeHandler('minimize-window');
 	ipcMain.handle('minimize-window', () => {
 		popupWindow.minimize();
 	});
-
 	ipcMain.removeHandler('maximize-window');
 	ipcMain.handle('maximize-window', () => {
 		if (popupWindow.isMaximized()) {
@@ -248,12 +220,9 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 			popupWindow.maximize();
 		}
 	});
-
-	// Show window when ready with fade-in effect
 	popupWindow.once('ready-to-show', () => {
 		popupWindow.show();
 		popupWindow.webContents.executeJavaScript(`
-
 	    const selectedImage = document.getElementById('selectedImage');
       let currentImageUrl = {
         fileName : '${imageData.filename}',
@@ -265,38 +234,29 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 		selectedImage.src = null;
     	window.electron.send('APP::IMAGE_WINDOW_TITLE_BAR_ACTION', 'APP::CLOSE_IMAGE_WINDOW');
 	});
-
 	document.getElementById('minimize-window').addEventListener('click', () => {
 		window.electron.send('APP::IMAGE_WINDOW_TITLE_BAR_ACTION', 'APP::MINIMIZE_WINDOW');
 	});
   document.getElementById('channel-label').innerHTML = '${imageData.channelImagesData.channelLabel}';
-
 	document.getElementById('maximize-window').addEventListener('click', () => {
 		window.electron.send('APP::IMAGE_WINDOW_TITLE_BAR_ACTION', 'APP::MAXIMIZE_WINDOW');
 	});
-
  document.getElementById('downloadBtn').addEventListener('click', () => {
 window.electron.handleActionShowImage('saveImage',currentImageUrl.realUrl);
 });
-
   document.getElementById('toggleListBtn').addEventListener('click', () => {
-
   if(document.getElementById('thumbnails').classList.contains('thumbnail-contain-hide')){
   document.getElementById('thumbnails').classList.remove('thumbnail-contain-hide');
   return;
   }
   document.getElementById('thumbnails').classList.add('thumbnail-contain-hide');
-
   });
-
 document.getElementById('selected-image-wrapper').addEventListener('click', (e)=>{
       window.electron.send('APP::IMAGE_WINDOW_TITLE_BAR_ACTION', 'APP::CLOSE_IMAGE_WINDOW');
 })
-
 document.getElementById('selectedImage').addEventListener('click', (e)=>{
      e.stopPropagation();
 })
-
 document.addEventListener('keydown', (e) => {
 		switch (e.key) {
 			case 'Escape':
@@ -305,29 +265,16 @@ document.addEventListener('keydown', (e) => {
 				break;
 		}
 	});
-
       ${scriptRotateAndZoom()}
       ${scriptDrag()}
-
       document.body.insertAdjacentHTML('beforeend', '${menu}');
-
 		  const menu = document.getElementById('contextMenu');
-
       document.body.addEventListener('click',()=>{
 				menu.classList.remove('visible');
-
       })
       ${scriptMenu()}
-
-
-
-
-
-
       `);
 	});
-
-	// Clean up on close
 	popupWindow.on('closed', () => {
 		ipcMain.removeHandler('minimize-window');
 		ipcMain.removeHandler('maximize-window');
@@ -337,11 +284,9 @@ document.addEventListener('keydown', (e) => {
 	App.imageViewerWindow = popupWindow;
 	return popupWindow;
 }
-
 function formatDate(dateString) {
 	return new Date(dateString).toLocaleDateString();
 }
-
 function formatDateTime(dateString) {
 	const options = {
 		year: 'numeric',
@@ -353,79 +298,595 @@ function formatDateTime(dateString) {
 	};
 	return new Date(dateString).toLocaleString('vi-VN');
 }
-
-export const listThumnails = (listImage, indexSelect) => {
-	return listImage
-		.map((image, index) => {
-			const currentDate = escapeHtml(formatDate(image.create_time));
-			const nextDate = index < listImage.length - 1 ? escapeHtml(formatDate(listImage[index + 1].create_time)) : null;
-			const dateLabel = currentDate !== nextDate ? `<div class="date-label">${currentDate}</div>` : '';
-			return ` <div class="thumbnail-wrapper" id="thumbnail-${index}"> ${dateLabel} <img class="thumbnail ${indexSelect === index ? 'active' : ''}"  src="${escapeHtml(image.url)}" alt="${escapeHtml(image.filename)}" /> </div> `;
-		})
-		.join('');
-};
-
-export const scriptThumnails = (listImage, indexSelect) => {
-	return listImage
-		.map((image, index) => {
-			const time = escapeHtml(formatDateTime(image.create_time));
-			const sanitizedUrl = sanitizeUrl(image.url);
-			const sanitizedAvatar = sanitizeUrl(image.uploaderData.avatar);
-			const escapedName = escapeHtml(image.uploaderData.name);
-			const escapedFileName = escapeHtml(image.fileName);
-			const sanitizedRealUrl = sanitizeUrl(image.realUrl || '');
-
-			return `document.getElementById('thumbnail-${index}').addEventListener('click', () => {
-        // Reset transform when changing image
-        resetTransform();
-				const selectedImage = document.getElementById('selectedImage');
-				if (selectedImage) {
-					selectedImage.src = ${JSON.stringify(sanitizedUrl)};
+const createVirtualizer = () => {
+	return `
+		const debounce = (fn, ms) => {
+			let timeoutId;
+			return function(...args) {
+				clearTimeout(timeoutId);
+				timeoutId = setTimeout(() => fn.apply(this, args), ms);
+			};
+		};
+		const approxEqual = (a, b) => Math.abs(a - b) < 1;
+		const getRect = (element) => {
+			const { offsetWidth, offsetHeight } = element;
+			return { width: offsetWidth, height: offsetHeight };
+		};
+		class ThumbnailVirtualizer {
+			constructor(container, items, options = {}) {
+				this.container = container;
+				this.items = items;
+				this.baseItemHeight = 88;
+				this.dateLabelHeight = 27;
+				this.overscan = options.overscan || 3;
+				this.scrollTop = 0;
+				this.containerHeight = 0;
+				this.visibleRange = { start: 0, end: 0 };
+				this.isLoadingBefore = false;
+				this.isLoadingAfter = false;
+				this.hasMoreBefore = true;
+				this.hasMoreAfter = true;
+				this.loadMoreThreshold = 5;
+				this.renderedItems = new Map();
+				this.itemHeights = new Map();
+				this._cumulativePositions = new Map();
+				this.currentItemId = null;
+				this.savedScrollHeight = 0;
+				this.savedScrollTop = 0;
+				this.isScrolling = false;
+				this.scrollDirection = null;
+				this.useAnimationFrame = options.useAnimationFrame ?? true;
+				this.init();
+			}
+			getItemHeight(index) {
+				if (this.itemHeights.has(index)) {
+					return this.itemHeights.get(index);
 				}
-
-				document.querySelectorAll('.thumbnail').forEach(img => img.classList.remove('active'));
-				const thumbContainer = document.getElementById('thumbnail-${index}');
-				if (thumbContainer) {
-					const thumbnail = thumbContainer.querySelector('.thumbnail');
-					if (thumbnail) {
-						thumbnail.classList.add('active');
-						thumbnail.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				const item = this.items[index];
+				if (!item) return this.baseItemHeight;
+				const currentDate = this.formatDate(item.create_time);
+				const nextItem = this.items[index + 1];
+				const nextDate = nextItem ? this.formatDate(nextItem.create_time) : null;
+				const hasDateLabel = currentDate !== nextDate;
+				const height = hasDateLabel ? this.baseItemHeight + this.dateLabelHeight : this.baseItemHeight;
+				this.itemHeights.set(index, height);
+				return height;
+			}
+			calculateHeights() {
+				let total = 0;
+				let cumulative = 0;
+				this.itemHeights.clear();
+				this._cumulativePositions = new Map();
+				this._cumulativePositions.set(0, 0);
+				for (let i = 0; i < this.items.length; i++) {
+					const height = this.getItemHeight(i);
+					this.itemHeights.set(i, height);
+					this._cumulativePositions.set(i, cumulative);
+					cumulative += height;
+					total += height;
+				}
+				return total;
+			}
+			getItemStart(index) {
+				if (this._cumulativePositions && this._cumulativePositions.has(index)) {
+					return this._cumulativePositions.get(index);
+				}
+				let start = 0;
+				for (let i = 0; i < index; i++) {
+					start += this.getItemHeight(i);
+				}
+				return start;
+			}
+			init() {
+				this.containerHeight = this.container.clientHeight;
+				this.totalHeight = this.calculateHeights();
+				this.content = document.createElement('div');
+				this.content.style.position = 'relative';
+				this.content.style.height = this.totalHeight + 'px';
+				this.container.appendChild(this.content);
+				this.debouncedCheckLoadMore = debounce(() => this.checkLoadMore(), 150);
+				this.debouncedScrollEnd = debounce(() => {
+					this.isScrolling = false;
+					this.scrollDirection = null;
+				}, 150);
+				this.container.addEventListener('scroll', () => this.handleScroll());
+				if (typeof ResizeObserver !== 'undefined') {
+					this.resizeObserver = new ResizeObserver((entries) => {
+						const run = () => {
+							const entry = entries[0];
+							let newHeight;
+							if (entry?.borderBoxSize) {
+								const box = entry.borderBoxSize[0];
+								if (box) {
+									newHeight = box.blockSize;
+								}
+							}
+							if (!newHeight) {
+								const rect = getRect(this.container);
+								newHeight = rect.height;
+							}
+							if (Math.abs(newHeight - this.containerHeight) > 1) {
+								this.containerHeight = newHeight;
+								this.render();
+							}
+						};
+						this.useAnimationFrame ? requestAnimationFrame(run) : run();
+					});
+					this.resizeObserver.observe(this.container, { box: 'border-box' });
+					this.itemResizeObserver = new ResizeObserver((entries) => {
+						const run = () => {
+							entries.forEach((entry) => {
+								const element = entry.target;
+								const indexAttr = element.getAttribute('data-index');
+								if (indexAttr !== null) {
+									const index = parseInt(indexAttr, 10);
+									if (!isNaN(index) && index >= 0) {
+										this.measureItem(index, element);
+									}
+								}
+							});
+						};
+						this.useAnimationFrame ? requestAnimationFrame(run) : run();
+					});
+				}
+				this.render();
+			}
+			measureItem(index, element) {
+				if (!element || !element.isConnected) return;
+				const actualHeight = element.offsetHeight;
+				const cachedHeight = this.itemHeights.get(index);
+				if (Math.abs(actualHeight - (cachedHeight || 0)) > 1) {
+					this.itemHeights.set(index, actualHeight);
+					this.totalHeight = this.calculateHeights();
+					this.content.style.height = this.totalHeight + 'px';
+					this.visibleRange = { start: -1, end: -1 };
+					this.render();
+				}
+			}
+			handleScroll() {
+				const currentScrollTop = this.container.scrollTop;
+				if (!approxEqual(currentScrollTop, this.previousScrollTop)) {
+					this.isScrolling = true;
+					this.scrollDirection = currentScrollTop > this.previousScrollTop ? 'forward' : 'backward';
+					this.previousScrollTop = currentScrollTop;
+				}
+				this.scrollTop = currentScrollTop;
+				this.render();
+				this.debouncedCheckLoadMore();
+				this.debouncedScrollEnd();
+			}
+			checkLoadMore() {
+				if (!this.onLoadMore || this.isLoadingBefore || this.isLoadingAfter) return;
+				const range = this.calculateVisibleRange();
+				if (range.start < 0 || range.end < 0) return;
+				if (this.hasMoreBefore && range.start <= this.loadMoreThreshold) {
+					this.isLoadingBefore = true;
+					if (this.container) {
+						this.savedScrollHeight = this.container.scrollHeight;
+						this.savedScrollTop = this.container.scrollTop;
+					}
+					this.onLoadMore('before');
+					return;
+				}
+				if (this.hasMoreAfter && range.end >= this.items.length - 1 - this.loadMoreThreshold) {
+					this.isLoadingAfter = true;
+					this.onLoadMore('after');
+				}
+			}
+			calculateVisibleRange() {
+				let start = 0;
+				let end = this.items.length - 1;
+				let left = 0;
+				let right = this.items.length - 1;
+				while (left <= right) {
+					const mid = Math.floor((left + right) / 2);
+					const itemStart = this.getItemStart(mid);
+					const itemHeight = this.getItemHeight(mid);
+					if (itemStart + itemHeight < this.scrollTop) {
+						left = mid + 1;
+					} else {
+						start = mid;
+						right = mid - 1;
 					}
 				}
-
+				start = Math.max(0, start - this.overscan);
+				const scrollBottom = this.scrollTop + this.containerHeight;
+				left = start;
+				right = this.items.length - 1;
+				while (left <= right) {
+					const mid = Math.floor((left + right) / 2);
+					const itemStart = this.getItemStart(mid);
+					if (itemStart <= scrollBottom) {
+						end = mid;
+						left = mid + 1;
+					} else {
+						right = mid - 1;
+					}
+				}
+				end = Math.min(this.items.length - 1, end + this.overscan);
+				return { start, end };
+			}
+			render() {
+				const range = this.calculateVisibleRange();
+				if (range.start === this.visibleRange.start && range.end === this.visibleRange.end) {
+					this.updateItemPositions();
+					this.updateActiveState(this.currentItemId);
+					return;
+				}
+				this.visibleRange = range;
+				const itemsToRemove = [];
+				this.renderedItems.forEach((element, index) => {
+					if (index < range.start || index > range.end) {
+						if (this.itemResizeObserver) {
+							this.itemResizeObserver.unobserve(element);
+						}
+						element.remove();
+						itemsToRemove.push(index);
+					}
+				});
+				itemsToRemove.forEach(index => this.renderedItems.delete(index));
+				this.renderedItems.forEach((element, index) => {
+					if (element && element.isConnected) {
+						element.style.top = this.getItemStart(index) + 'px';
+					}
+				});
+				for (let i = range.start; i <= range.end; i++) {
+					if (this.renderedItems.has(i)) {
+						const existingElement = this.renderedItems.get(i);
+						if (existingElement && existingElement.isConnected) {
+							existingElement.style.top = this.getItemStart(i) + 'px';
+						}
+						continue;
+					}
+					const item = this.items[i];
+					if (!item) continue;
+					const index = i;
+					const itemId = item.id || item.url;
+					const wrapper = document.createElement('div');
+					wrapper.className = 'thumbnail-wrapper';
+					wrapper.id = 'thumbnail-' + itemId;
+					wrapper.style.position = 'absolute';
+					wrapper.style.top = this.getItemStart(i) + 'px';
+					const currentDate = this.formatDate(item.create_time);
+					const nextItem = this.items[i + 1];
+					const nextDate = nextItem ? this.formatDate(nextItem.create_time) : null;
+					const hasDateLabel = currentDate !== nextDate;
+					if (hasDateLabel) {
+						const dateLabel = document.createElement('div');
+						dateLabel.className = 'date-label';
+						dateLabel.textContent = currentDate;
+						wrapper.appendChild(dateLabel);
+					}
+					const img = document.createElement('img');
+					img.className = 'thumbnail';
+					const currentIndex = this.findIndexById(this.currentItemId);
+					if (index === currentIndex && currentIndex >= 0) {
+						img.classList.add('active');
+					}
+					img.src = item.url;
+					img.alt = item.filename || '';
+					img.setAttribute('data-index', index);
+					img.setAttribute('data-id', itemId);
+					img.addEventListener('click', (e) => {
+						const itemId = e.target.getAttribute('data-id');
+						this.onThumbnailClick(itemId);
+					});
+					wrapper.appendChild(img);
+					this.content.appendChild(wrapper);
+					wrapper.setAttribute('data-index', index.toString());
+					if (this.itemResizeObserver) {
+						this.itemResizeObserver.observe(wrapper);
+					}
+					requestAnimationFrame(() => {
+						if (wrapper.isConnected) {
+							const actualHeight = wrapper.offsetHeight;
+							const estimatedHeight = this.itemHeights.get(i) || this.getItemHeight(i);
+							if (Math.abs(actualHeight - estimatedHeight) > 1) {
+								this.itemHeights.set(i, actualHeight);
+								this.totalHeight = this.calculateHeights();
+								this.content.style.height = this.totalHeight + 'px';
+								this.updateItemPositions();
+							}
+						}
+					});
+					this.renderedItems.set(i, wrapper);
+				}
+				this.updateActiveState(this.currentItemId);
+			}
+			formatDate(dateString) {
+				return new Date(dateString).toLocaleDateString();
+			}
+			findIndexById(itemId) {
+				if (!itemId) return -1;
+				const item = this.items.find((it) => {
+					const itemIdValue = it.id || it.url;
+					return itemIdValue === itemId;
+				});
+				return item ? this.items.indexOf(item) : -1;
+			}
+			updateItemPositions() {
+				this.renderedItems.forEach((wrapper, index) => {
+					if (wrapper && wrapper.isConnected) {
+						const newTop = this.getItemStart(index);
+						wrapper.style.top = newTop + 'px';
+					}
+				});
+			}
+			updateActiveState(activeItemId) {
+				if (activeItemId !== undefined && activeItemId !== null) {
+					this.currentItemId = activeItemId;
+				}
+				const currentIndex = this.findIndexById(this.currentItemId);
+				this.renderedItems.forEach((wrapper, index) => {
+					const img = wrapper.querySelector('.thumbnail');
+					if (img) {
+						if (index === currentIndex && currentIndex >= 0) {
+							img.classList.add('active');
+						} else {
+							img.classList.remove('active');
+						}
+					}
+				});
+			}
+			onThumbnailClick(itemId) {
+			}
+			onLoadMore(direction) {
+			}
+			scrollToIndex(index, smooth = false) {
+				const itemStart = this.getItemStart(index);
+				const itemHeight = this.getItemHeight(index);
+				const targetScroll = Math.max(
+					0,
+					Math.min(
+						itemStart - (this.containerHeight / 2) + (itemHeight / 2),
+						this.totalHeight - this.containerHeight
+					)
+				);
+				if (smooth) {
+					this.container.scrollTo({ top: targetScroll, behavior: 'smooth' });
+				} else {
+					this.container.scrollTop = targetScroll;
+				}
+			}
+			scrollToBottom(smooth = false) {
+				const maxScroll = this.totalHeight - this.containerHeight;
+				const targetScroll = Math.max(0, maxScroll);
+				if (smooth) {
+					this.container.scrollTo({ top: targetScroll, behavior: 'smooth' });
+				} else {
+					this.container.scrollTop = targetScroll;
+				}
+			}
+			update(items, selectedItemId, hasMoreBefore, hasMoreAfter) {
+				const previousLength = this.items.length;
+				const wasLoadingBefore = this.isLoadingBefore;
+				const wasLoadingAfter = this.isLoadingAfter;
+				const previousScrollHeight = this.container.scrollHeight;
+				const previousScrollTop = this.container.scrollTop;
+				this.renderedItems.forEach((element, index) => {
+					if (element && element.isConnected) {
+						if (this.itemResizeObserver) {
+							this.itemResizeObserver.unobserve(element);
+						}
+						element.remove();
+					}
+				});
+				this.renderedItems.clear();
+				this.itemHeights.clear();
+				this._cumulativePositions = new Map();
+				this.items = items;
+				this.totalHeight = this.calculateHeights();
+				this.content.style.height = this.totalHeight + 'px';
+				if (hasMoreBefore !== undefined) this.hasMoreBefore = hasMoreBefore;
+				if (hasMoreAfter !== undefined) this.hasMoreAfter = hasMoreAfter;
+				if (!wasLoadingBefore && !wasLoadingAfter && selectedItemId !== undefined && selectedItemId !== null) {
+					this.currentItemId = selectedItemId;
+				}
+				this.visibleRange = { start: -1, end: -1 };
+				this.render();
+				this.updateActiveState(this.currentItemId);
+				if (wasLoadingBefore && items.length > previousLength) {
+					requestAnimationFrame(() => {
+						requestAnimationFrame(() => {
+							const newScrollHeight = this.container.scrollHeight;
+							const heightDifference = newScrollHeight - previousScrollHeight;
+							if (heightDifference > 0) {
+								this.container.scrollTop = previousScrollTop + heightDifference;
+							}
+							this.savedScrollHeight = 0;
+							this.savedScrollTop = 0;
+							this.isLoadingBefore = false;
+						});
+					});
+				} else {
+					this.isLoadingBefore = false;
+					this.isLoadingAfter = false;
+				}
+				if (!wasLoadingBefore && !wasLoadingAfter && selectedItemId !== undefined && selectedItemId !== null) {
+					const selectedIndex = this.findIndexById(selectedItemId);
+					if (selectedIndex >= 0) {
+						requestAnimationFrame(() => {
+							this.scrollToIndex(selectedIndex, false);
+						});
+					}
+				}
+			}
+			setLoadingState(direction, isLoading) {
+				if (direction === 'before') {
+					this.isLoadingBefore = isLoading;
+				} else {
+					this.isLoadingAfter = isLoading;
+				}
+			}
+			destroy() {
+				this.container.removeEventListener('scroll', this.handleScroll);
+				if (this.resizeObserver) {
+					this.resizeObserver.disconnect();
+				}
+				if (this.itemResizeObserver) {
+					this.itemResizeObserver.disconnect();
+				}
+				this.renderedItems.clear();
+				this.itemHeights.clear();
+				this._cumulativePositions = null;
+				if (this.content && this.content.parentNode) {
+					this.content.remove();
+				}
+			}
+			getTotalSize() {
+				return this.totalHeight;
+			}
+			getScrollOffset() {
+				return this.scrollTop;
+			}
+			getVirtualItems() {
+				const items = [];
+				for (let i = this.visibleRange.start; i <= this.visibleRange.end; i++) {
+					if (i >= 0 && i < this.items.length) {
+						const start = this.getItemStart(i);
+						const height = this.getItemHeight(i);
+						items.push({
+							index: i,
+							start: start,
+							end: start + height,
+							size: height
+						});
+					}
+				}
+				return items;
+			}
+			scrollToOffset(offset, smooth = false) {
+				const maxOffset = Math.max(0, this.totalHeight - this.containerHeight);
+				const targetOffset = Math.max(0, Math.min(offset, maxOffset));
+				if (smooth) {
+					this.container.scrollTo({ top: targetOffset, behavior: 'smooth' });
+				} else {
+					this.container.scrollTop = targetOffset;
+				}
+			}
+			scrollBy(delta, smooth = false) {
+				this.scrollToOffset(this.scrollTop + delta, smooth);
+			}
+		}
+		window.ThumbnailVirtualizer = ThumbnailVirtualizer;
+	`;
+};
+export const listThumnails = (_listImage: IAttachmentEntityWithUploader[], _indexSelect: number) => {
+	return '';
+};
+export const scriptThumnails = (listImage: IAttachmentEntityWithUploader[], indexSelect: number) => {
+	const reversedImages = [...listImage].reverse();
+	const reversedIndexSelect = indexSelect >= 0 ? reversedImages.length - 1 - indexSelect : -1;
+	const initialImagesData = reversedImages.map((image: IAttachmentEntityWithUploader) => ({
+		id: image.id || image.url,
+		url: sanitizeUrl(image.url),
+		avatar: sanitizeUrl(image.uploaderData.avatar),
+		name: escapeHtml(image.uploaderData.name),
+		fileName: escapeHtml(image.filename),
+		realUrl: sanitizeUrl(image.realUrl || ''),
+		create_time: image.create_time,
+		time: escapeHtml(formatDateTime(image.create_time))
+	}));
+	const imagesDataStr = JSON.stringify(initialImagesData);
+	return `
+		${createVirtualizer()}
+		const thumbnailContainer = document.getElementById('thumbnails-content');
+		let imagesData = ${imagesDataStr};
+		if (thumbnailContainer && window.ThumbnailVirtualizer) {
+			const virtualizer = new window.ThumbnailVirtualizer(
+				thumbnailContainer,
+				imagesData,
+				{
+					overscan: 3,
+					useAnimationFrame: true
+				}
+			);
+			virtualizer.onThumbnailClick = function(itemId) {
+				const imageData = imagesData.find(img => (img.id || img.url) === itemId);
+				if (!imageData) return;
+				resetTransform();
+				const selectedImage = document.getElementById('selectedImage');
+				if (selectedImage) {
+					selectedImage.src = imageData.url;
+				}
 				const userAvatar = document.getElementById('userAvatar');
 				if (userAvatar) {
-					userAvatar.src = ${JSON.stringify(sanitizedAvatar)};
+					userAvatar.src = imageData.avatar;
 				}
-
 				const username = document.getElementById('username');
 				if (username) {
-					username.textContent = ${JSON.stringify(escapedName)};
+					username.textContent = imageData.name;
 				}
-
 				const timestamp = document.getElementById('timestamp');
 				if (timestamp) {
-					timestamp.textContent = ${JSON.stringify(time)};
+					timestamp.textContent = imageData.time;
 				}
-
 				currentImageUrl = {
-					fileName: ${JSON.stringify(escapedFileName)},
-					url: ${JSON.stringify(sanitizedUrl)},
-					realUrl: ${JSON.stringify(sanitizedRealUrl)}
-          };
-
-				currentIndex = ${index};
-			});`;
-		})
-		.join('');
+					fileName: imageData.fileName,
+					url: imageData.url,
+					realUrl: imageData.realUrl
+				};
+				currentItemId = itemId;
+				virtualizer.updateActiveState(itemId);
+			};
+			virtualizer.onLoadMore = function(direction) {
+				if (window.electron && window.electron.send) {
+					window.electron.send('APP::LOAD_MORE_ATTACHMENTS', { direction });
+				}
+			};
+				let currentItemId = null;
+				let currentIndex = ${reversedIndexSelect} >= 0 ? ${reversedIndexSelect} : -1;
+				if (currentIndex >= 0 && imagesData[currentIndex]) {
+					currentItemId = imagesData[currentIndex].id || imagesData[currentIndex].url;
+					virtualizer.currentItemId = currentItemId;
+					requestAnimationFrame(() => {
+						requestAnimationFrame(() => {
+							virtualizer.updateActiveState(currentItemId);
+						});
+					});
+				}
+				requestAnimationFrame(() => {
+					if (currentIndex >= 0) {
+						virtualizer.scrollToIndex(currentIndex);
+					} else {
+						virtualizer.scrollToBottom();
+					}
+				});
+			window.thumbnailVirtualizer = virtualizer;
+			if (window.electron && window.electron.on) {
+				window.electron.on('APP::UPDATE_ATTACHMENTS', (event, { attachments, hasMoreBefore, hasMoreAfter }) => {
+					if (window.thumbnailVirtualizer && attachments) {
+						const reversedAttachments = [...attachments].reverse();
+						const updatedImagesData = reversedAttachments.map(att => ({
+							id: att.id || att.url,
+							url: att.url,
+							avatar: att.uploaderData.avatar,
+							name: att.uploaderData.name,
+							fileName: att.filename,
+							realUrl: att.realUrl || att.url,
+							create_time: att.create_time,
+							time: att.create_time
+						}));
+						imagesData = updatedImagesData;
+						const preservedItemId = window.thumbnailVirtualizer.currentItemId || currentItemId;
+						window.thumbnailVirtualizer.update(updatedImagesData, undefined, hasMoreBefore, hasMoreAfter);
+						if (window.thumbnailVirtualizer.currentItemId) {
+							currentItemId = window.thumbnailVirtualizer.currentItemId;
+							const itemIndex = imagesData.findIndex(img => (img.id || img.url) === currentItemId);
+							if (itemIndex >= 0) {
+								currentIndex = itemIndex;
+							}
+						}
+					}
+				});
+			}
+		}
+	`;
 };
-
 const scriptRotateAndZoom = () => {
 	return `
  let currentRotation = 0;
  let currentZoom = 1;
-
- // Reset transform when changing image
  const resetTransform = () => {
    currentRotation = 0;
    currentZoom = 1;
@@ -439,27 +900,21 @@ const scriptRotateAndZoom = () => {
   selectedImage.classList.remove('rotate-width');
  }
  selectedImage.style.transform = \`rotate(\${currentRotation}deg) translate(0,0) scale(\${currentZoom})\`; });
-
   document.getElementById('rotateLeftBtn').addEventListener('click', () => {
  currentRotation = currentRotation - 90;
  selectedImage.style.transform = \`rotate(\${currentRotation}deg) translate(0,0) scale(\${currentZoom}) \`; });
-
  document.getElementById('zoomInBtn').addEventListener('click', () => {
   currentZoom = currentZoom + 0.25
  selectedImage.style.transform = \`rotate(\${currentRotation}deg) translate(0,0)  scale(\${currentZoom}) \`;
   });
-
 document.getElementById('zoomOutBtn').addEventListener('click', () => {
 if (currentZoom - 0.25 >= 1) {
   currentZoom = currentZoom - 0.25;
   selectedImage.style.transform = \`rotate(\${currentRotation}deg) translate(0,0)  scale(\${currentZoom}) \`;
 }
-
  });
-
  `;
 };
-
 const scriptDrag = () => {
 	return `
   let currenPosition = {
@@ -471,7 +926,6 @@ const scriptDrag = () => {
 		y: 0
 	};
 	let dragStatus = false;
-
   selectedImage.addEventListener('mousemove', (e)=>{
     if (currentZoom > 1 && dragStatus) {
 			currenPosition = {
@@ -481,7 +935,6 @@ const scriptDrag = () => {
 			selectedImage.style.transform = \`scale(\${currentZoom}) translate(\${currenPosition.x / currentZoom}px, \${currenPosition.y / currentZoom}px) rotate(\${currentRotation}deg)  \`;
 		}
   });
-
   selectedImage.addEventListener('mousedown', (event)=>{
     dragStatus = true;
 		dragstart = {
@@ -489,56 +942,42 @@ const scriptDrag = () => {
 			y: event.clientY - currenPosition.y
       };
   });
-
 	document.addEventListener('mouseup', (event)=>{
   		dragStatus = false;
 		event.stopPropagation();
-
   });
-
   selectedImage.addEventListener('dragstart', (e) => {
 		e.preventDefault();
 		e.stopPropagation();
 	});
-
   selectedImage.addEventListener('wheel', (e)=>{
   	const delta = e.deltaY * -0.001;
 		currentZoom = Math.max(1, Math.min(currentZoom + delta, 5));
  selectedImage.style.transform = \`rotate(\${currentRotation}deg) translate(0,0) scale(\${currentZoom}) \`;
-
   }, { passive: false });
-
   `;
 };
-
 const scriptMenu = () => {
 	return `
-
 document.addEventListener('contextmenu', (e) => {
 	if (e.target.matches('#selectedImage')) {
 		e.preventDefault();
 		const menu = document.getElementById('contextMenu');
 		if (!menu) return;
-
 		menu.style.left = e.pageX + 'px';
 		menu.style.top = e.pageY + 'px';
 		menu.classList.add('visible');
-
-		// Adjust position if menu goes outside viewport
 		const rect = menu.getBoundingClientRect();
 		const viewportWidth = window.innerWidth;
 		const viewportHeight = window.innerHeight;
-
 		if (rect.right > viewportWidth) {
 			menu.style.left = '\${e.pageX - rect.width}px';
 		}
 		if (rect.bottom > viewportHeight) {
 			menu.style.top = '\${e.pageY - rect.height}px';
 		}
-
 	}
 })
-
 const convertImageToBlobFile = async (urlData) => {
 	try {
 		const response = await fetch(urlData);
@@ -549,7 +988,6 @@ const convertImageToBlobFile = async (urlData) => {
 		return null;
 	}
 };
-
 const handleCopyImage = async (urlData) => {
 	try {
         const blob = await convertImageToBlobFile(urlData);
@@ -572,7 +1010,6 @@ const handleCopyImage = async (urlData) => {
         console.error('Error fetching or converting image:', error);
       }
     };
-
         function showToast() {
             const toast = document.getElementById('toast');
             toast.classList.add('show');
@@ -580,14 +1017,11 @@ const handleCopyImage = async (urlData) => {
                 toast.classList.remove('show');
             }, 2000);
         }
-
 menu.addEventListener('click', async (e) => {
 			e.stopPropagation();
 			const action = e.target.closest('.menu-item')?.dataset.action;
-
 			if (action) {
 				if (!e.currentTarget) return;
-
 				switch (action) {
 					case 'copyImage': {
 						window.electron.handleActionShowImage(action, currentImageUrl.realUrl)
@@ -612,5 +1046,4 @@ menu.addEventListener('click', async (e) => {
 		});
   `;
 };
-
 export default openImagePopup;

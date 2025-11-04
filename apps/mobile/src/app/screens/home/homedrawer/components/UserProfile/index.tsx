@@ -572,7 +572,7 @@ const UserProfile = React.memo(
 						{isCheckOwner && (
 							<View style={[styles.userAction]}>
 								<TouchableOpacity onPress={navigateToMessageDetail} style={[styles.actionItem]}>
-									<MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.text} />,
+									<MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.text} />
 									<Text style={[styles.actionText]}>{t('userAction.sendMessage')}</Text>
 								</TouchableOpacity>
 							</View>

@@ -64,7 +64,7 @@ const TopicHeader = memo(({ handleBack }: TopicHeaderProps) => {
 					<Pressable>
 						<MezonIconCDN icon={IconCDN.discussionIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />
 					</Pressable>
-					<Text style={styles.title}>Topic</Text>
+					<Text style={styles.title}>{t('actions.topicDiscussion')}</Text>
 				</View>
 				<View style={styles.spacer} />
 			</View>

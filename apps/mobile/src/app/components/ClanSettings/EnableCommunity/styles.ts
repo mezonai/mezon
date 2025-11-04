@@ -10,7 +10,8 @@ export const style = (colors: Attributes) =>
 		label: {
 			marginBottom: size.s_8,
 			marginLeft: size.s_4,
-			fontWeight: '600'
+			fontWeight: '600',
+			color: colors.textStrong
 		},
 		description: {
 			fontSize: size.s_12,
@@ -131,6 +132,9 @@ export const style = (colors: Attributes) =>
 		urlPrefix: {
 			paddingLeft: size.s_12,
 			backgroundColor: colors.secondaryLight
+		},
+		urlPrefixText: {
+			color: colors.textDisabled
 		},
 		imagePicker: {
 			marginBottom: size.s_10,

@@ -495,7 +495,7 @@ export const style = (colors: Attributes) =>
 			flex: 1
 		},
 		iconWelcomeMessage: {
-			backgroundColor: colors.primary,
+			backgroundColor: colors.secondaryLight,
 			marginBottom: size.s_10,
 			width: size.s_70,
 			height: size.s_70,
@@ -783,7 +783,7 @@ export const style = (colors: Attributes) =>
 			fontWeight: '600'
 		},
 		textPinMessage: {
-			fontSize: size.small,
+			fontSize: size.medium,
 			color: colors.white,
 			fontWeight: '700'
 		},

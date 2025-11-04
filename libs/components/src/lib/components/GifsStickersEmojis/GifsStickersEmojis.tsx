@@ -108,7 +108,7 @@ export const GifStickerEmojiPopup = ({
 					? 'min-h-[350px]'
 					: 'min-h-[500px]';
 
-		return `${baseClasses} ${widthClasses} max-sbm:w-[calc(100dvw_-_24px)] max-sbm:rounded-lg h-fit rounded-lg text-theme-primary bg-theme-setting-primary shadow shadow-neutral-900 z-30 ${heightClasses}`;
+		return `${baseClasses} ${widthClasses} max-sbm:w-[calc(100dvw_-_24px)] max-sbm:rounded-lg h-fit rounded-lg text-theme-primary bg-theme-setting-primary shadow shadow-neutral-900 z-20 ${heightClasses}`;
 	}, [emojiAction, isShowEmojiPicker]);
 
 	const contentWidthClass = useMemo(() => {
@@ -278,7 +278,7 @@ const ContentPanel = React.memo(
 		if (subPanelActive === SubPanelName.SOUNDS) {
 			return (
 				<div className={`flex h-full pr-2 w-full ${contentWidthClass}`}>
-					<SoundSquare channel={channelOrDirect} mode={channelMode as number} onClose={onClose} isTopic={isTopic} />
+					<SoundSquare mode={channelMode as number} onClose={onClose} isTopic={isTopic} />
 				</div>
 			);
 		}

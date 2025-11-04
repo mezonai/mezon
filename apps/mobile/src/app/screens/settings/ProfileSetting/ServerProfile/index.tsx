@@ -202,7 +202,7 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 					onTextChange={(newValue) => onValueChange({ displayName: newValue })}
 					placeHolder={userDisplayName}
 					maxCharacter={32}
-					label={t('fields.clanName.label')}
+					label={t('fields.clanNickname.label')}
 					errorMessage={isDuplicateClanNickname ? t('nickNameExistsError') : ''}
 					isValid={!isDuplicateClanNickname}
 					inputWrapperStyle={[{ backgroundColor: themeValue.primary }]}

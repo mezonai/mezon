@@ -1,5 +1,7 @@
 import { EMuteState } from '@mezon/utils';
 import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 import type { DirectMessageContextMenuHandlers } from './types';
 
 interface UseDefaultHandlersParams {
@@ -35,6 +37,7 @@ export function useDefaultHandlers({
 	openEditGroupModal,
 	openLeaveGroupModal
 }: UseDefaultHandlersParams) {
+	const { t } = useTranslation('friendsPage');
 	const createDefaultHandlers = useCallback(
 		(channelId: string, user?: any): DirectMessageContextMenuHandlers => {
 			return {
@@ -98,10 +101,27 @@ export function useDefaultHandlers({
 					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
 					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
 					if (usernames.length === 0 || ids.length === 0) return;
-					await blockFriend(usernames[0], ids[0]);
+					try {
+						const isBlocked = await blockFriend(usernames[0], ids[0]);
+						if (isBlocked) {
+							toast.success(t('toast.userBlockedSuccess'));
+						}
+					} catch (error) {
+						toast.error(t('toast.userBlockedFailed'));
+					}
 				},
 				handleUnblockFriend: async () => {
-					await unBlockFriend(user?.usernames?.[0], user?.user_ids?.[0]);
+					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
+					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
+					if (usernames.length === 0 || ids.length === 0) return;
+					try {
+						const isUnblocked = await unBlockFriend(usernames[0], ids[0]);
+						if (isUnblocked) {
+							toast.success(t('toast.userUnblockedSuccess'));
+						}
+					} catch (error) {
+						toast.error(t('toast.userUnblockedFailed'));
+					}
 				},
 				handleEditGroup: () => {
 					if (openEditGroupModal) {
@@ -120,10 +140,11 @@ export function useDefaultHandlers({
 			muteOrUnMuteChannel,
 			handleEnableE2ee,
 			handleRemoveMemberFromGroup,
+			openLeaveGroupModal,
 			blockFriend,
+			t,
 			unBlockFriend,
-			openEditGroupModal,
-			openLeaveGroupModal
+			openEditGroupModal
 		]
 	);
 

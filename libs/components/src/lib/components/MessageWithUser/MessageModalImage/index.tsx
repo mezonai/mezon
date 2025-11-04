@@ -1,11 +1,14 @@
 import { useAppParams, useAttachments } from '@mezon/core';
 import {
 	attachmentActions,
+	getStore,
 	selectAllListAttachmentByChannel,
 	selectAttachment,
+	selectAttachmentPaginationByChannel,
 	selectCurrentAttachmentShowImage,
 	selectCurrentChannel,
 	selectCurrentChannelId,
+	selectCurrentClanId,
 	selectDmGroupCurrent,
 	selectMemberClanByUserId,
 	selectMemberGroupByUserId,
@@ -13,12 +16,13 @@ import {
 	selectModeAttachment,
 	selectModeResponsive,
 	selectOpenModalAttachment,
+	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ModeResponsive, SHOW_POSITION, convertTimeString, createImgproxyUrl, handleSaveImage } from '@mezon/utils';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import type { MessageContextMenuProps } from '../../ContextMenu';
 import { useMessageContextMenu } from '../../ContextMenu';
 import ListAttachment from './listAttachment';
@@ -32,7 +36,9 @@ const MessageModalImage = () => {
 
 	const [showList, setShowList] = useState(true);
 	const currentChannelId = useSelector(selectCurrentChannelId);
+	const currentClanId = useSelector(selectCurrentClanId) ?? '';
 	const attachments = useSelector((state) => selectAllListAttachmentByChannel(state, (directId ?? currentChannelId) as string));
+	const paginationState = useAppSelector((state) => selectAttachmentPaginationByChannel(state, (directId ?? currentChannelId) as string));
 	const { setOpenModalAttachment } = useAttachments();
 	const openModalAttachment = useSelector(selectOpenModalAttachment);
 	const attachment = useSelector(selectAttachment);
@@ -42,10 +48,72 @@ const MessageModalImage = () => {
 
 	const mode = useSelector(selectModeAttachment);
 	const messageId = useSelector(selectMessageIdAttachment);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const handleShowList = () => {
 		setShowList(!showList);
 	};
+
+	const handleLoadMoreAttachments = useCallback(
+		async (direction: 'before' | 'after') => {
+			const channelId = (directId ?? currentChannelId) as string;
+			if (paginationState.isLoading || !channelId) {
+				return;
+			}
+
+			if (direction === 'before' && !paginationState.hasMoreBefore) {
+				return;
+			}
+			if (direction === 'after' && !paginationState.hasMoreAfter) {
+				return;
+			}
+
+			dispatch(attachmentActions.setAttachmentLoading({ channelId, isLoading: true }));
+
+			try {
+				const state = getStore()?.getState();
+				const currentAttachments = selectAllListAttachmentByChannel(state, channelId);
+				const timestamp =
+					direction === 'before' ? currentAttachments?.[currentAttachments.length - 1]?.create_time : currentAttachments?.[0]?.create_time;
+				const timestampNumber = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
+
+				const clanId = currentClanId === '0' ? '0' : currentClanId;
+
+				let beforeParam: number | undefined;
+				let afterParam: number | undefined;
+
+				if (direction === 'before') {
+					beforeParam = timestampNumber;
+				} else {
+					afterParam = timestampNumber;
+				}
+
+				await dispatch(
+					attachmentActions.fetchChannelAttachments({
+						clanId,
+						channelId,
+						limit: paginationState.limit,
+						direction,
+						...(beforeParam && { before: beforeParam }),
+						...(afterParam && { after: afterParam }),
+						noCache: true
+					})
+				);
+			} catch (error) {
+				console.error('Error loading more attachments:', error);
+				dispatch(attachmentActions.setAttachmentLoading({ channelId, isLoading: false }));
+			}
+		},
+		[
+			paginationState.isLoading,
+			paginationState.limit,
+			paginationState.hasMoreBefore,
+			paginationState.hasMoreAfter,
+			currentChannelId,
+			directId,
+			currentClanId,
+			dispatch
+		]
+	);
 
 	useEffect(() => {
 		setShowList(true);
@@ -269,6 +337,10 @@ const MessageModalImage = () => {
 						setPosition={setPosition}
 						setCurrentIndexAtt={setCurrentIndexAtt}
 						currentIndexAtt={currentIndexAtt}
+						onLoadMore={handleLoadMoreAttachments}
+						isLoading={paginationState.isLoading}
+						hasMoreBefore={paginationState.hasMoreBefore}
+						hasMoreAfter={paginationState.hasMoreAfter}
 					/>
 				)}
 			</div>

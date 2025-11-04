@@ -1,7 +1,13 @@
 import {
 	MezonStoreProvider,
 	appActions,
+	attachmentActions,
+	getStore,
 	initStore,
+	selectAllListAttachmentByChannel,
+	selectAttachmentPaginationByChannel,
+	selectCurrentChannelId,
+	selectCurrentClanId,
 	selectCurrentLanguage,
 	selectIsLogin,
 	setIsElectronDownloading,
@@ -11,17 +17,19 @@ import i18n from '@mezon/translations';
 import { MezonContextProvider, clearSessionFromStorage, clearSessionRefreshFromStorage, getMezonConfig, useMezon } from '@mezon/transport';
 
 import { PopupManagerProvider } from '@mezon/components';
-import { PermissionProvider, useActivities, useSettingFooter } from '@mezon/core';
+import { PermissionProvider, getCurrentChatData, useActivities, useSettingFooter } from '@mezon/core';
 import { captureSentryError } from '@mezon/logger';
 import {
 	ACTIVE_WINDOW,
 	DOWNLOAD_PROGRESS,
+	ETypeLinkMedia,
 	LOCK_SCREEN,
 	TRIGGER_SHORTCUT,
 	UNLOCK_SCREEN,
 	UPDATE_AVAILABLE,
 	UPDATE_ERROR,
-	electronBridge
+	electronBridge,
+	getAttachmentDataForWindow
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
@@ -107,6 +115,104 @@ const AppInitializer = () => {
 			}
 		}
 	}
+
+	useEffect(() => {
+		if (!isElectron()) {
+			return;
+		}
+
+		const handleLoadMoreFromElectron = async (_event: unknown, { direction }: { direction: 'before' | 'after' }) => {
+			try {
+				const state = getStore()?.getState();
+				if (!state) return;
+
+				const currentChannelId = selectCurrentChannelId(state);
+				const currentClanId = selectCurrentClanId(state);
+				const currentAttachments = selectAllListAttachmentByChannel(state, currentChannelId as string);
+				const paginationState = selectAttachmentPaginationByChannel(state, currentChannelId as string);
+
+				if (!currentChannelId || paginationState.isLoading) {
+					return;
+				}
+
+				if (direction === 'before' && !paginationState.hasMoreBefore) {
+					return;
+				}
+				if (direction === 'after' && !paginationState.hasMoreAfter) {
+					return;
+				}
+
+				const timestamp =
+					direction === 'before' ? currentAttachments?.[currentAttachments.length - 1]?.create_time : currentAttachments?.[0]?.create_time;
+				const timestampNumber = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
+
+				const clanId = currentClanId === '0' ? '0' : currentClanId;
+
+				let beforeParam: number | undefined;
+				let afterParam: number | undefined;
+
+				if (direction === 'before') {
+					beforeParam = timestampNumber;
+				} else {
+					afterParam = timestampNumber;
+				}
+
+				dispatch(attachmentActions.setAttachmentLoading({ channelId: currentChannelId, isLoading: true }));
+
+				try {
+					await dispatch(
+						attachmentActions.fetchChannelAttachments({
+							clanId: clanId as string,
+							channelId: currentChannelId,
+							limit: paginationState.limit,
+							direction,
+							...(beforeParam && { before: beforeParam }),
+							...(afterParam && { after: afterParam })
+						}) as any
+					);
+				} catch (error) {
+					console.error('Error fetching attachments:', error);
+					dispatch(attachmentActions.setAttachmentLoading({ channelId: currentChannelId, isLoading: false }));
+					return;
+				}
+
+				const updatedState = getStore()?.getState();
+				if (!updatedState) return;
+
+				const updatedAttachments = selectAllListAttachmentByChannel(updatedState, currentChannelId);
+				const updatedPagination = selectAttachmentPaginationByChannel(updatedState, currentChannelId);
+				const currentChatUsersEntities = getCurrentChatData()?.currentChatUsersEntities;
+
+				const imageAttachments = updatedAttachments
+					?.filter((att) => att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX))
+					.map((att) => ({
+						...att,
+						id: att.id || '',
+						channelId: currentChannelId,
+						clanId: clanId || ''
+					}));
+
+				if (imageAttachments && currentChatUsersEntities) {
+					const attachmentsWithUploaderData = getAttachmentDataForWindow(imageAttachments as any, currentChatUsersEntities);
+					window.electron?.send('APP::UPDATE_ATTACHMENTS', {
+						attachments: attachmentsWithUploaderData,
+						hasMoreBefore: updatedPagination.hasMoreBefore,
+						hasMoreAfter: updatedPagination.hasMoreAfter
+					});
+				}
+			} catch (error) {
+				console.error('Error loading more attachments from app.tsx:', error);
+			}
+		};
+
+		window.electron.on('APP::LOAD_MORE_ATTACHMENTS', handleLoadMoreFromElectron);
+
+		return () => {
+			if (window.electron?.removeListener) {
+				window.electron.removeListener('APP::LOAD_MORE_ATTACHMENTS', handleLoadMoreFromElectron);
+			}
+		};
+	}, [dispatch]);
 
 	useEffect(() => {
 		if (isElectron() && isLogin) {

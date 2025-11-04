@@ -298,7 +298,6 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 		try {
 			const fileFormats = await Promise.all(
 				dataMedia.map(async (media) => {
-					if (!media?.filePath && !media?.contentUri) return null;
 					const fileName = media?.fileName || media?.contentUri || media?.filePath;
 					// Add to preview immediately
 					setAttachmentPreview((prev) => [
@@ -343,8 +342,15 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 						? await compressVideo(media?.filePath || media?.contentUri)
 						: checkIsImage
 							? await compressImage(media?.filePath || media?.contentUri)
-							: null;
-					const fileData = await RNFS.readFile(pathCompressed || media?.contentUri || media?.filePath, 'base64');
+							: media?.filePath || media?.contentUri;
+					let cleanPath = pathCompressed || '';
+					if (Platform.OS === 'ios') {
+						cleanPath = cleanPath.replace(/^file:\/\//, '');
+						cleanPath = decodeURIComponent(cleanPath);
+					} else {
+						cleanPath = cleanPath?.replace?.('%20', ' ');
+					}
+					const fileData = await RNFS.readFile(cleanPath, 'base64');
 					let width = 600;
 					let height = 900;
 					if (checkIsImage) {
@@ -388,7 +394,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			});
 		} catch (error) {
 			console.error('log  => error compressImage', error);
-			return '';
+			return image;
 		}
 	};
 
@@ -422,7 +428,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 				});
 
 				const response = await Promise.all(promises);
-				setAttachmentUpload(response);
+				setAttachmentUpload((prev: any) => [...response, ...prev]);
 				setAttachmentPreview((prev) =>
 					prev.map((p) => {
 						const matched = response.find(
@@ -600,7 +606,10 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 						<TouchableOpacity
 							onPress={onSend}
 							disabled={!channelSelected || !isAttachmentUploaded}
-							style={[styles.sendButton, channelSelected && isAttachmentUploaded ? styles.sendButtonEnabled : styles.sendButtonDisabled]}
+							style={[
+								styles.sendButton,
+								channelSelected && isAttachmentUploaded ? styles.sendButtonEnabled : styles.sendButtonDisabled
+							]}
 						>
 							{isLoading ? (
 								<Flow size={size.s_28} color={'white'} />

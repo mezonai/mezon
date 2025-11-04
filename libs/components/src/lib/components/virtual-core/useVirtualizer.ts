@@ -41,8 +41,8 @@ export function useVirtualizer<TScrollElement extends Element, TItemElement exte
 	options: PartialKeys<VirtualizerOptions<TScrollElement, TItemElement>, 'observeElementRect' | 'observeElementOffset' | 'scrollToFn'>
 ): Virtualizer<TScrollElement, TItemElement> {
 	return useVirtualizerBase<TScrollElement, TItemElement>({
-		observeElementRect: observeElementRect,
-		observeElementOffset: observeElementOffset,
+		observeElementRect,
+		observeElementOffset,
 		scrollToFn: elementScroll,
 		...options
 	});
