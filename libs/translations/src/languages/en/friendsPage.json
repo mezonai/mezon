@@ -28,9 +28,9 @@
 		"okay": "Okay"
 	},
 	"activity": {
-		"coding": "Activity - Coding",
-		"music": "Activity - Music",
-		"gaming": "Activity - Gaming"
+		"coding": "Activity - Work",
+		"music": "Activity - Live",
+		"gaming": "Activity - Play"
 	},
 	"friendMenu": {
 		"startVideoCall": "Start Video Call",
