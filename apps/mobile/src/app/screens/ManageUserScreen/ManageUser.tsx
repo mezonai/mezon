@@ -4,7 +4,7 @@ import type { ChannelMembersEntity } from '@mezon/store-mobile';
 import {
 	rolesClanActions,
 	selectAllRolesClan,
-	selectCurrentClan,
+	selectCurrentClanId,
 	selectUserMaxPermissionLevel,
 	setAddPermissions,
 	setRemovePermissions,
@@ -37,16 +37,15 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 	const styles = style(themeValue);
 	const [editMode, setEditMode] = useState(false);
 	const rolesClan = useSelector(selectAllRolesClan);
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
 	const { maxPermissionId } = useMyRole();
 	const [selectedRole, setSelectedRole] = useState<string[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
-	const { t } = useTranslation(['message', 'common']);
+	const { t } = useTranslation(['message', 'common', 'clanRoles']);
 	const maxPermissionLevel = useSelector(selectUserMaxPermissionLevel);
 	const dispatch = useAppDispatch();
 	const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);
 
-	// Memoized checkbox styles
 	const checkboxStyles = useMemo(
 		() => ({
 			iconStyle: { borderRadius: 5 },
@@ -79,7 +78,6 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 		);
 	}, [editMode, activeRoleOfUser, editableRoleList, isClanOwner, maxPermissionLevel]);
 
-	// Memoized filtered profile settings
 	const actionableProfileSettings = useMemo(() => {
 		return memberSettings.filter((item) => item.value !== EActionSettingUserProfile.Manage && item.isShow);
 	}, [memberSettings]);
@@ -88,22 +86,19 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 		return actionableProfileSettings.length > 0;
 	}, [actionableProfileSettings]);
 
-	// Memoized callback functions
 	const handleAfterUpdate = useCallback((isSuccess: boolean) => {
 		if (isSuccess) {
 			Toast.show({
 				type: 'success',
 				props: {
-					text2: 'Changes Saved',
+					text2: t('clanRoles:roleDetail.changesSaved'),
 					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
 				}
 			});
 		} else {
 			Toast.show({
 				type: 'error',
-				props: {
-					text2: 'Failed'
-				}
+				text1: t('common:saveFailed')
 			});
 		}
 	}, []);
@@ -121,7 +116,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 						activePermissionIds: [],
 						removeUserIds: [],
 						removePermissionIds: [],
-						clanId: currentClan?.clan_id || '',
+						clanId: currentClanId || '',
 						maxPermissionId,
 						roleIcon: ''
 					})
@@ -132,7 +127,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 					dispatch(
 						usersClanActions.addRoleIdUser({
 							id: roleId,
-							clanId: currentClan?.clan_id,
+							clanId: currentClanId,
 							userId: user?.user?.id
 						})
 					);
@@ -146,7 +141,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 				setIsLoading(false);
 			}
 		},
-		[rolesClan, currentClan?.clan_id, user?.user?.id, handleAfterUpdate, dispatch]
+		[rolesClan, currentClanId, user?.user?.id, handleAfterUpdate, dispatch]
 	);
 
 	const deleteRole = useCallback(
@@ -162,7 +157,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 						activePermissionIds: [],
 						removeUserIds: [user?.user?.id],
 						removePermissionIds: [],
-						clanId: currentClan?.clan_id || '',
+						clanId: currentClanId || '',
 						maxPermissionId,
 						roleIcon: ''
 					})
@@ -174,7 +169,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 					dispatch(
 						usersClanActions.removeRoleIdUser({
 							id: roleId,
-							clanId: currentClan?.clan_id,
+							clanId: currentClanId,
 							userId: user?.user?.id
 						})
 					);
@@ -186,12 +181,12 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 				setIsLoading(false);
 			}
 		},
-		[rolesClan, currentClan?.clan_id, user?.user?.id, handleAfterUpdate, dispatch]
+		[rolesClan, currentClanId, user?.user?.id, handleAfterUpdate, dispatch]
 	);
 
 	const onSelectedRoleChange = useCallback(
 		async (value: boolean, roleId: string, roleColor: string) => {
-			if (isLoading) return; // Prevent multiple simultaneous operations
+			if (isLoading) return;
 
 			setIsLoading(true);
 			const uniqueSelectedRole = new Set(selectedRole);
@@ -234,7 +229,6 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 		}
 	}, [user?.role_id]);
 
-	// Early return if user is not available
 	if (!user?.user) {
 		return (
 			<View style={styles.container}>

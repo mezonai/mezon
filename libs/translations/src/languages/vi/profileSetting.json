@@ -11,8 +11,8 @@
 			"label": "Tên hiển thị",
 			"placeholder": ""
 		},
-		"clanName": {
-			"label": "Tên clan",
+		"clanNickname": {
+			"label": "Biệt danh Clan",
 			"placeholder": ""
 		},
 		"pronouns": {

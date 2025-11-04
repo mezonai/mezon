@@ -17,10 +17,10 @@
 		"tooltip": "Bạn có thể thêm bạn bằng tên người dùng Mezon của họ",
 		"sendRequest": "Gửi lời mời kết bạn",
 		"add": "Thêm",
-		"alreadyFriends": "Bạn đã là bạn bè với người dùng này!",
+		"alreadyFriends": "Bạn đã kết bạn với người dùng này!",
 		"waitAccept": "Bạn đã gửi yêu cầu kết bạn tới người dùng này rồi!",
 		"invalidInput": "Vui lòng chỉ sử dụng số, chữ cái, dấu gạch dưới _ hoặc dấu chấm.",
-		"waitingMessage": "Komuu đang chờ bạn bè. Nhưng bạn không cần phải chờ!"
+		"waitingMessage": "Komu đang chờ bạn. Nhưng bạn không cần phải chờ!"
 	},
 	"requestFailedPopup": {
 		"title": "Gửi lời mời kết bạn thất bại",

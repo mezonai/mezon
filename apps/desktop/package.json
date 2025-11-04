@@ -1,13 +1,13 @@
 {
-    "name": "mezon",
-    "version": "1.4.47",
-    "dependencies": {
-        "electron-log": "^5.2.0",
-        "electron-store": "8.2.0",
-        "electron-updater": "^6.3.4",
-        "tslib": "^2.7.0",
-        "mezon-active-windows": "0.1.38",
-        "universal-analytics": "^0.5.3"
-    },
-    "devDependencies": {}
+  "name": "mezon",
+  "version": "1.4.48",
+  "dependencies": {
+    "electron-log": "^5.2.0",
+    "electron-store": "8.2.0",
+    "electron-updater": "^6.3.4",
+    "tslib": "^2.7.0",
+    "mezon-active-windows": "0.1.38",
+    "universal-analytics": "^0.5.3"
+  },
+  "devDependencies": {}
 }

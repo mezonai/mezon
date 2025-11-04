@@ -58,7 +58,12 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation('accountSetting');
 	const blockedUsers = useSelector(selectBlockedUsers);
-	const blockedUsersCount = blockedUsers?.length.toString();
+	const blockedUsersCount = useMemo(() => {
+		if (!blockedUsers?.length) {
+			return '';
+		}
+		return blockedUsers.length?.toString() || '';
+	}, [blockedUsers]);
 
 	const logout = async () => {
 		const store = await getStoreAsync();

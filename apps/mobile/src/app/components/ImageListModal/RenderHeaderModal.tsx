@@ -11,6 +11,7 @@ import {
 import { convertTimeString, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
 import Share from 'react-native-share';
 import { useSelector } from 'react-redux';
@@ -36,6 +37,7 @@ export const RenderHeaderModal = React.memo(({ imageSelected, onImageSaved, onLo
 	const { downloadImage, saveMediaToCameraRoll, getImageAsBase64OrFile } = useImage();
 	const currentDirectId = useSelector(selectDmGroupCurrentId);
 	const navigation = useNavigation<any>();
+	const { t } = useTranslation(['common']);
 
 	const onClose = () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
@@ -155,7 +157,7 @@ export const RenderHeaderModal = React.memo(({ imageSelected, onImageSaved, onLo
 									: uploader?.clan_nick || uploader?.user?.display_name || uploader?.user?.username) || 'Anonymous'}
 							</Text>
 							<Text style={styles.dateMessageBox}>
-								{imageSelected?.create_time ? convertTimeString(imageSelected?.create_time) : ''}
+								{imageSelected?.create_time ? convertTimeString(imageSelected?.create_time, t) : ''}
 							</Text>
 						</View>
 					</View>

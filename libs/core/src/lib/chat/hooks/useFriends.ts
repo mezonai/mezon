@@ -71,7 +71,7 @@ export function useFriends() {
 				);
 				return true;
 			}
-			return false;
+			throw new Error('BLOCK_FRIEND_FAILED');
 		},
 		[dispatch, currentUserId]
 	);
@@ -90,7 +90,7 @@ export function useFriends() {
 				);
 				return true;
 			}
-			return false;
+			throw new Error('UNBLOCK_FRIEND_FAILED');
 		},
 		[currentUserId, dispatch]
 	);

@@ -103,6 +103,7 @@ import {
 	EEventStatus,
 	EMuteState,
 	ERepeatType,
+	EUserStatus,
 	IMessageTypeCallLog,
 	ITEM_TYPE,
 	NotificationCode,
@@ -2144,7 +2145,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			} else {
 				dispatch(accountActions.updateUserStatus(userStatusEvent.custom_status));
 			}
+
 			dispatch(statusActions.updateStatus(userStatusEvent));
+
+			dispatch(
+				friendsActions.updateOnlineFriend({
+					id: userStatusEvent.user_id,
+					online: !(userStatusEvent?.custom_status === EUserStatus.INVISIBLE)
+				})
+			);
 		},
 		[userId]
 	);

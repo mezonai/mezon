@@ -251,6 +251,20 @@ export const friendsSlice = createSlice({
 	name: FRIEND_FEATURE_KEY,
 	initialState: initialFriendsState,
 	reducers: {
+		updateOnlineFriend: (state, action: PayloadAction<{ id: string; online: boolean }>) => {
+			const friend = state?.entities?.[action.payload.id];
+			if (friend?.user) {
+				friendsAdapter.updateOne(state, {
+					id: action.payload.id,
+					changes: {
+						user: {
+							...friend.user,
+							online: action.payload.online
+						}
+					}
+				});
+			}
+		},
 		remove: (state, action: PayloadAction<string>) => {
 			const keyToRemove = state?.ids?.find((key) => state?.entities?.[key]?.user?.id === action.payload);
 			keyToRemove && friendsAdapter.removeOne(state, keyToRemove);

@@ -1,65 +1,65 @@
 {
-    "header": {
-        "save": "Save"
-    },
-    "switch": {
-        "userProfile": "User Profile",
-        "serverProfile": "Clan Profiles"
-    },
-    "fields": {
-        "displayName": {
-            "label": "Display name",
-            "placeholder": ""
-        },
-        "clanName": {
-            "label": "Clan nickname",
-            "placeholder": ""
-        },
-        "pronouns": {
-            "label": "Pronouns",
-            "placeholder": ""
-        },
-        "bio": {
-            "label": "About me",
-            "placeholder": ""
-        }
-    },
-    "changedAlert": {
-        "title": "Discard unsaved changes?",
-        "description": "You have unsaved changes. Are you sure you want to discard them?",
-        "discard": "Discard",
-        "keepEditing": "Keep Editing"
-    },
-    "selectAClan": "Select A Clan",
-    "searchClanPlaceholder": "Search Clan",
-    "updateProfileSuccess": "Update profile successfully",
-    "updateProfileError": "Update profile failed",
-    "updateClanProfileSuccess": "Update clan profile successfully",
-    "emptyUsername": "Display name cannot be blank!",
-    "duplicateClannick": "Clan nick is duplicate!",
-    "clanNickname": "CLAN NICKNAME",
-    "changeAvatar": "Change avatar",
-    "removeAvatar": "Remove avatar",
-    "avatar": "AVATAR",
-    "preview": "PREVIEW",
-    "nickNameExistsError": "The nick name already exists in the clan. Please enter another nick name.",
-    "unsavedChangesWarning": "Careful - you have unsaved changes!",
-    "reset": "Reset",
-    "saveChanges": "Save Changes",
-    "showProfilesDescription": "Show who you are with different profiles for each of your clans",
-    "chooseAClan": "CHOOSE A CLAN",
-    "editImage": "Edit Image",
-    "close": "Close",
-    "resetChanges": "Reset Changes",
-    "cancelEditing": "Cancel Editing",
-    "cancel": "Cancel",
-    "applyChanges": "Apply Changes",
-    "apply": "Apply",
-    "moveImage": "Move Image",
-    "adjustZoom": "Adjust Zoom",
-    "profiles": "Profiles",
-    "userProfile": "User Profile",
-    "clanProfiles": "Clan Profiles",
-    "directMessageIcon": "Direct Message Icon",
-    "displayName": "DISPLAY NAME"
+	"header": {
+		"save": "Save"
+	},
+	"switch": {
+		"userProfile": "User Profile",
+		"serverProfile": "Clan Profiles"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Display name",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Clan nickname",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Pronouns",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "About me",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Discard unsaved changes?",
+		"description": "You have unsaved changes. Are you sure you want to discard them?",
+		"discard": "Discard",
+		"keepEditing": "Keep Editing"
+	},
+	"selectAClan": "Select A Clan",
+	"searchClanPlaceholder": "Search Clan",
+	"updateProfileSuccess": "Update profile successfully",
+	"updateProfileError": "Update profile failed",
+	"updateClanProfileSuccess": "Update clan profile successfully",
+	"emptyUsername": "Display name cannot be blank!",
+	"duplicateClannick": "Clan nick is duplicate!",
+	"clanNickname": "CLAN NICKNAME",
+	"changeAvatar": "Change avatar",
+	"removeAvatar": "Remove avatar",
+	"avatar": "AVATAR",
+	"preview": "PREVIEW",
+	"nickNameExistsError": "The nick name already exists in the clan. Please enter another nick name.",
+	"unsavedChangesWarning": "Careful - you have unsaved changes!",
+	"reset": "Reset",
+	"saveChanges": "Save Changes",
+	"showProfilesDescription": "Show who you are with different profiles for each of your clans",
+	"chooseAClan": "CHOOSE A CLAN",
+	"editImage": "Edit Image",
+	"close": "Close",
+	"resetChanges": "Reset Changes",
+	"cancelEditing": "Cancel Editing",
+	"cancel": "Cancel",
+	"applyChanges": "Apply Changes",
+	"apply": "Apply",
+	"moveImage": "Move Image",
+	"adjustZoom": "Adjust Zoom",
+	"profiles": "Profiles",
+	"userProfile": "User Profile",
+	"clanProfiles": "Clan Profiles",
+	"directMessageIcon": "Direct Message Icon",
+	"displayName": "DISPLAY NAME"
 }

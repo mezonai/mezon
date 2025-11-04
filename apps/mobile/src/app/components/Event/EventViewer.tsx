@@ -1,4 +1,3 @@
-import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import {
@@ -9,7 +8,6 @@ import {
 	selectEventsByClanId,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { EPermission } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -24,7 +22,6 @@ import { EventMember } from './EventMember';
 import { style } from './styles';
 
 export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate: () => void }) {
-	// const { dismiss } = useBottomSheetModal()
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -44,16 +41,6 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 		);
 	}, [allEventManagement, allThreadChannelPrivateIds, userId]);
 
-	const [hasAdminPermission, hasManageClanPermission, isClanOwner] = usePermissionChecker([
-		EPermission.administrator,
-		EPermission.manageClan,
-		EPermission.clanOwner
-	]);
-
-	const isCanManageEvent = useMemo(() => {
-		return hasAdminPermission || isClanOwner || hasManageClanPermission;
-	}, [hasAdminPermission, hasManageClanPermission, isClanOwner]);
-
 	function handlePress(event: EventManagementEntity) {
 		const data = {
 			heightFitContent: true,
@@ -68,11 +55,15 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}
 
+	const countEventToShow = useMemo(() => {
+		return listEventToShow?.length > 0 ? listEventToShow?.length : '';
+	}, [listEventToShow]);
+
 	return (
 		<View style={styles.container}>
 			<View style={styles.header}>
 				<View style={[styles.section, styles.sectionRight]}></View>
-				<Text style={[styles.section, styles.sectionTitle]}>{`${listEventToShow?.length} ${t('dashboard.title')}`}</Text>
+				<Text style={[styles.section, styles.sectionTitle]}>{`${countEventToShow} ${t('dashboard.title')}`}</Text>
 				<View style={[styles.section, styles.sectionRight]}>
 					<TouchableOpacity onPress={handlePressEventCreate}>
 						<Text style={[styles.emptyText, { color: baseColor.blurple, fontWeight: 'bold' }]}>{t('dashboard.createButton')}</Text>

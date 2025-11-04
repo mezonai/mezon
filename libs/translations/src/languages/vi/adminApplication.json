@@ -29,7 +29,8 @@
 		"buttons": {
 			"cancel": "Hủy",
 			"create": "Tạo",
-			"creating": "Đang tạo..."
+			"creating": "Đang tạo...",
+			"confirm": "Xác nhận"
 		},
 		"errors": {
 			"nameRequired": "Tên là bắt buộc để tạo {type} mới của bạn.",
@@ -40,6 +41,10 @@
 		},
 		"notifications": {
 			"shadowModeInfo": "Ở chế độ ẩn, bot có thể nhận tất cả tin nhắn gửi đến người tạo, nhưng không thể gửi tin nhắn."
+		},
+		"shadowConfirm": {
+			"title": "Bạn có chắc chắn muốn bật chế độ Bot Ẩn không?",
+			"message": "Ở chế độ này, bot có thể nhận tất cả tin nhắn gửi đến người tạo nhưng không thể gửi tin nhắn."
 		}
 	},
 	"sidebar": {

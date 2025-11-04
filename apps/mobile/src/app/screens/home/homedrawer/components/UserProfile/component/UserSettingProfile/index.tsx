@@ -1,12 +1,13 @@
 import { useChannelMembersActions, usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { useAppSelector } from '@mezon/store';
 import {
 	ChannelMembersEntity,
 	channelUsersActions,
 	selectAllAccount,
 	selectCurrentChannel,
-	selectCurrentClan,
+	selectCurrentClanCreatorId,
 	selectCurrentClanId,
 	selectMemberIdsByChannelId,
 	useAppDispatch
@@ -40,12 +41,12 @@ const UserSettingProfile = ({ user, showActionOutside = true }: IUserSettingProf
 	const { t } = useTranslation('clanOverviewSetting');
 	const userProfile = useSelector(selectAllAccount);
 	const { removeMemberClan } = useChannelMembersActions();
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentChannelId = currentChannel?.channel_id;
 	const isItMe = useMemo(() => userProfile?.user?.id === user?.user?.id, [user?.user?.id, userProfile?.user?.id]);
-	const isThatClanOwner = useMemo(() => currentClan?.creator_id === user?.user?.id, [user?.user?.id, currentClan?.creator_id]);
-	const currentClanId = useSelector(selectCurrentClanId);
+	const isThatClanOwner = useMemo(() => currentClanCreatorId === user?.user?.id, [user?.user?.id, currentClanCreatorId]);
 	const [hasClanOwnerPermission, hasAdminPermission] = usePermissionChecker([
 		EPermission.clanOwner,
 		EPermission.administrator,
@@ -195,7 +196,7 @@ const UserSettingProfile = ({ user, showActionOutside = true }: IUserSettingProf
 				});
 			}
 		}
-	}, [currentClanId, removeMemberClan, user, currentChannelId]);
+	}, [user, removeMemberClan, currentClanId, currentChannelId, t]);
 
 	const handleRemoveMemberFromThread = useCallback(
 		async (userId?: string) => {
@@ -207,7 +208,7 @@ const UserSettingProfile = ({ user, showActionOutside = true }: IUserSettingProf
 						channelId: currentChannelId,
 						userId,
 						channelType: ChannelType.CHANNEL_TYPE_THREAD,
-						clanId: currentClan?.clan_id
+						clanId: currentClanId
 					})
 				);
 				Toast.show({
@@ -228,7 +229,7 @@ const UserSettingProfile = ({ user, showActionOutside = true }: IUserSettingProf
 				});
 			}
 		},
-		[dispatch, currentClan?.clan_id, currentChannelId, isThread]
+		[currentChannelId, dispatch, currentClanId, t]
 	);
 
 	const handleCloseRemoveFromThread = () => DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });

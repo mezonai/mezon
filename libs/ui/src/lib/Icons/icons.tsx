@@ -1097,6 +1097,18 @@ export const ArrowRight: React.FC<IconProps> = ({ defaultSize = 'w-5 h-5 min-w-4
 		</svg>
 	);
 };
+export const ArrowLeft: React.FC<IconProps> = ({ defaultSize = 'w-5 h-5 min-w-4' }) => {
+	return (
+		<svg viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg" className={defaultSize}>
+			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+			<g id="SVGRepo_iconCarrier">
+				<path d="M768 903.232l-50.432 56.768L256 512l461.568-448 50.432 56.768L364.928 512z" fill="currentColor" />
+			</g>
+		</svg>
+	);
+};
+
 
 export const LongCorner: React.FC<IconProps> = ({ className = '' }) => {
 	return (

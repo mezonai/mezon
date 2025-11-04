@@ -132,11 +132,12 @@
 		"channelEvent": "Channel Event",
 		"privateEvent": "Private Event",
 		"privateRoom": "Private Room",
+		"newEvent": "New",
 		"share": "Share"
 	},
 	"errorMessages": {
 		"startTimeFuture": "The start time must be in the future.",
 		"endTimeAfterStart": "The end time must be bigger than start time."
 	},
-	"selectUser": "Select channel to create event"
+	"selectUser": "Select channel or thread to create event"
 }

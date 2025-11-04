@@ -1,6 +1,3 @@
 [submodule "vendors/mezon-js"]
 	path = vendors/mezon-js
 	url = git@github.com:nccasia/mezon-js.git
-[submodule "vendors/lib-jitsi-meet"]
-	path = vendors/lib-jitsi-meet
-	url = git@github.com:nccasia/lib-jitsi-meet.git

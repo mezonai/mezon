@@ -45,5 +45,6 @@
 		"clientNotReady": "Client/session not ready",
 		"uploadFailed": "Failed to upload thumbnail. Please try again.",
 		"removeFailed": "Failed to remove thumbnail. Please try again."
-	}
+	},
+	"saved": "Thumbnail saved"
 }

@@ -5,6 +5,7 @@ import { ETokenMessage, TypeMessage, convertTimeString, parseThreadInfo } from '
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import WaveButton from '../../../components/WaveWelcome';
@@ -18,6 +19,7 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 	const { mentions = [] } = message;
 	const { t } = message?.content ?? {};
 	const navigation = useNavigation<any>();
+	const { t: translateMessage } = useTranslation('message');
 
 	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, message?.channel_id as string));
 
@@ -113,6 +115,29 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 
 	const content = useMemo(() => {
 		const formattedContent = [];
+		if (message?.code === TypeMessage.CreatePin) {
+			if (mentions?.[0]) {
+				formattedContent.push(
+					<Text style={styles.textMention} key="mention-user" onPress={() => onMention(`@${mentions[0]?.username || ''}`)}>
+						{`@${mentions[0]?.username || ''}`}
+					</Text>
+				);
+			}
+
+			formattedContent.push(
+				<Text key="pin-message">
+					{' ' + translateMessage('systemMessages.pinned') + ' '}
+					<Text onPress={handleJumpToPinMessage} style={styles.textPinMessage}>
+						{translateMessage('systemMessages.aMessage')}
+					</Text>
+					{' ' + translateMessage('systemMessages.toThisChannel') + ' ' + translateMessage('systemMessages.allPinned') + ' '}
+					{translateMessage('systemMessages.messages')}
+				</Text>
+			);
+
+			return formattedContent;
+		}
+
 		let lastIndex = 0;
 
 		const renderElement = (element, contentInElement, index) => {

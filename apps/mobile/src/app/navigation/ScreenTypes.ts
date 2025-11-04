@@ -129,7 +129,8 @@ export const APP_SCREEN = {
 		SEARCH_MESSAGE_DM: 'SEARCH_MESSAGE_DM',
 		CANVAS: 'CANVAS',
 		CALL_DIRECT: 'CALL_DIRECT',
-		QUICK_ACTION: 'QUICK_ACTION'
+		QUICK_ACTION: 'QUICK_ACTION',
+		STREAM_BANNER: 'STREAM_BANNER'
 	},
 
 	SETTINGS: {
@@ -229,6 +230,9 @@ export type MenuChannelStackParamList = {
 		canvasId: string;
 	};
 	[APP_SCREEN.MENU_CHANNEL.QUICK_ACTION]: {
+		channelId: string;
+	};
+	[APP_SCREEN.MENU_CHANNEL.STREAM_BANNER]: {
 		channelId: string;
 	};
 };

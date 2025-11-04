@@ -1,8 +1,8 @@
-import { ChannelMembersEntity, selectCurrentClan } from '@mezon/store-mobile';
+import { useAppSelector } from '@mezon/store';
+import { ChannelMembersEntity, selectCurrentClanCreatorId } from '@mezon/store-mobile';
 import { UsersClanEntity } from '@mezon/utils';
 import { memo } from 'react';
 import { Pressable } from 'react-native';
-import { useSelector } from 'react-redux';
 import { MemberProfile } from '../MemberProfile';
 
 interface IProps {
@@ -26,7 +26,7 @@ export const MemoizedMemberItem = memo((props: MemberItemProps) => {
 });
 
 export const MemberItem = memo(({ user, onPress, creatorChannelId, isDMThread }: IProps) => {
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
 
 	return (
 		<Pressable
@@ -38,7 +38,7 @@ export const MemberItem = memo(({ user, onPress, creatorChannelId, isDMThread }:
 				user={user}
 				numCharCollapse={30}
 				nickName={user?.clan_nick}
-				creatorClanId={currentClan?.creator_id}
+				creatorClanId={currentClanCreatorId}
 				creatorDMId={creatorChannelId}
 				isDMThread={isDMThread}
 			/>

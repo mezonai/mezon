@@ -197,7 +197,7 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 					onTextChange={(newValue) => onValueChange({ displayName: newValue })}
 					placeHolder={currentClanProfileValue?.username}
 					maxCharacter={32}
-					label={t('fields.clanName.label')}
+					label={t('fields.clanNickname.label')}
 					errorMessage={isDuplicateClanNickname ? 'The nick name already exists in the clan. Please enter another nick name.' : ''}
 					isValid={!isDuplicateClanNickname}
 					inputWrapperStyle={[{ backgroundColor: themeValue.primary }]}

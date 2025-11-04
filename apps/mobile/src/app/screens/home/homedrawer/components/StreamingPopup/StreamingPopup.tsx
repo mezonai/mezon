@@ -3,7 +3,8 @@ import {
 	appActions,
 	selectAllAccount,
 	selectCurrentChannel,
-	selectCurrentClan,
+	selectCurrentClanId,
+	selectCurrentClanName,
 	selectSession,
 	useAppDispatch,
 	videoStreamActions
@@ -23,7 +24,8 @@ const StreamingPopup = () => {
 	const isDragging = useRef(false);
 	const isFullScreen = useRef(true);
 	const [isAnimationComplete, setIsAnimationComplete] = useState(true);
-	const currentClan = useSelector(selectCurrentClan);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const currentClanName = useSelector(selectCurrentClanName);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const { handleChannelClick, disconnect } = useWebRTCStream();
 	const userProfile = useSelector(selectAllAccount);
@@ -113,10 +115,10 @@ const StreamingPopup = () => {
 	}, [sessionUser?.token]);
 
 	const handleJoinStreamingRoom = async () => {
-		if (currentClan && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
+		if (currentClanId && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
 			disconnect();
 			handleChannelClick(
-				currentClan?.id as string,
+				currentClanId as string,
 				currentChannel?.channel_id as string,
 				userProfile?.user?.id as string,
 				currentChannel.channel_id as string,
@@ -125,8 +127,8 @@ const StreamingPopup = () => {
 			);
 			dispatch(
 				videoStreamActions.startStream({
-					clanId: currentClan.id || '',
-					clanName: currentClan.clan_name || '',
+					clanId: currentClanId || '',
+					clanName: currentClanName || '',
 					streamId: currentChannel.channel_id || '',
 					streamName: currentChannel.channel_label || '',
 					parentId: currentChannel.parent_id || ''

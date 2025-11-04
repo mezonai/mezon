@@ -257,6 +257,7 @@ export const registrationPassword = createAsyncThunk(
 			if (!response) {
 				return thunkAPI.rejectWithValue('Failed to register password');
 			}
+			toast.success(t(`accountSetting:setPasswordAccount.toast.success`));
 			return response;
 		} catch (error: any) {
 			captureSentryError(error, `auth/registrationPassword`);

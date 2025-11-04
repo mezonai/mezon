@@ -18,6 +18,7 @@ import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import MezonInput from '../../../componentUI/MezonInput';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import StatusBarHeight from '../../StatusBarHeight/StatusBarHeight';
 import { style } from './styles';
 
 const { width } = Dimensions.get('window');
@@ -25,7 +26,7 @@ type ClanSettingsScreen = typeof APP_SCREEN.MENU_CLAN.ENABLE_COMMUNITY;
 
 const URLPrefix = React.memo(({ styles }: { styles: ReturnType<typeof style> }) => (
 	<View style={styles.urlPrefix}>
-		<Text>mezon.ai/clans/clan/</Text>
+		<Text style={styles.urlPrefixText}>mezon.ai/clans/clan/</Text>
 	</View>
 ));
 URLPrefix.displayName = 'URLPrefix';
@@ -273,7 +274,7 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 			keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight + 5}
 			style={styles.container}
 		>
-			<StatusBar barStyle="dark-content" />
+			<StatusBarHeight />
 			<View style={styles.header}>
 				<Pressable style={styles.backButton} onPress={navigation.goBack}>
 					<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />

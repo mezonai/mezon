@@ -49,6 +49,8 @@ const DirectMessage = lazy(() => import(/* webpackChunkName: "dm-pages" */ '../p
 const FriendsPage = lazy(() => import(/* webpackChunkName: "dm-pages" */ '../pages/directMessage/FriendsPage'));
 const GuideMain = lazy(() => import(/* webpackChunkName: "guide-pages" */ '../pages/guide'));
 const MezonPage = lazy(() => import(/* webpackChunkName: "homepage" */ '../pages/homepage/mezonpage'));
+const AboutMezon = lazy(() => import(/* webpackChunkName: "about" */ '../pages/aboutmezon'));
+const EconomyPage = lazy(() => import(/* webpackChunkName: "economy-page" */ '../pages/economy'));
 const InvitePage = lazy(() => import(/* webpackChunkName: "invite-pages" */ '../pages/invite'));
 const Login = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/login'));
 const LoginCallback = lazy(() => import(/* webpackChunkName: "auth-pages" */ '../pages/loginCallback'));
@@ -191,6 +193,22 @@ export const Routes = memo(() => {
 						element: (
 							<Suspense fallback={<SuspenseFallback />}>
 								<AppDirectory />
+							</Suspense>
+						)
+					},
+					{
+						path: '/economy',
+						element: (
+							<Suspense fallback={<SuspenseFallback />}>
+								<EconomyPage />
+							</Suspense>
+						)
+					},
+					{
+						path: '/about',
+						element: (
+							<Suspense fallback={<SuspenseFallback />}>
+								<AboutMezon />
 							</Suspense>
 						)
 					},

@@ -45,5 +45,6 @@
 		"clientNotReady": "Client/session chưa sẵn sàng",
 		"uploadFailed": "Tải lên ảnh bìa thất bại. Vui lòng thử lại.",
 		"removeFailed": "Xóa ảnh bìa thất bại. Vui lòng thử lại."
-	}
+	},
+	"saved": "Đã lưu ảnh bìa"
 }

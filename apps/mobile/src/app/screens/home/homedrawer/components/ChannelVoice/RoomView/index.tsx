@@ -17,7 +17,7 @@ import type { Participant, TrackPublication } from 'livekit-client';
 import { DisconnectReason, RoomEvent, Track } from 'livekit-client';
 import LottieView from 'lottie-react-native';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { ResumableZoom } from 'react-native-zoom-toolkit';
@@ -181,6 +181,26 @@ const RoomView = ({
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const screenCaptureRef = React.useRef(null);
 	const isShowPreCallInterface = useSelector(selectIsShowPreCallInterface);
+	const layoutRef = useRef({ width: 0, height: 0 });
+
+	const checkOrientation = () => {
+		const { width, height } = Dimensions.get('window');
+		layoutRef.current = { width, height };
+	};
+	useEffect(() => {
+		checkOrientation();
+
+		const subscription = Dimensions.addEventListener('change', (handler) => {
+			const screen = handler?.screen;
+			if (screen?.width && screen?.height) {
+				layoutRef.current = { width: screen?.width, height: screen?.height };
+			}
+		});
+
+		return () => {
+			subscription && subscription.remove();
+		};
+	}, []);
 
 	useEffect(() => {
 		const subscription = focusedScreenShare
@@ -223,7 +243,7 @@ const RoomView = ({
 			<View style={localStyles.focusedScreenContainer}>
 				<View style={localStyles.focusedScreenWrapper}>
 					<ResumableZoom onTap={() => setIsHiddenControl((prevState) => !prevState)} allowPinchPanning={false}>
-						<View style={localStyles.focusedScreenInner}>
+						<View style={{ height: layoutRef?.current?.height, width: layoutRef?.current?.width }}>
 							<VideoTrack
 								trackRef={focusedScreenShare}
 								objectFit={'contain'}

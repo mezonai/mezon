@@ -90,6 +90,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.ENABLE_COMMUNITY);
 			},
 			expandable: true,
+			isShow: hasManageClanPermission,
 			icon: <MezonIconCDN icon={IconCDN.communityIcon} color={themeValue.text} />
 		}
 	];

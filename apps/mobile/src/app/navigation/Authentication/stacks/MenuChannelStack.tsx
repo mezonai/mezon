@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { CanvasScreen } from '../../../components/Canvas/CanvasBoard';
 import { ChangeCategory } from '../../../components/ChangeCategory';
 import { ChannelSetting } from '../../../components/ChannelSetting';
+import StreamBannerScreen from '../../../components/StreamBanner';
 import SearchMessageChannel from '../../../components/ThreadDetail/SearchMessageChannel';
 import SearchMessageDm from '../../../components/ThreadDetail/SearchMessageDm/SearchMessageDm';
 import { ChannelPermissionSetting } from '../../../screens/channelPermissionSetting';
@@ -98,6 +99,7 @@ export function MenuChannelStacks({}: any) {
 					headerLeftLabelVisible: false
 				}}
 			/>
+			<Stack.Screen name={APP_SCREEN.MENU_CHANNEL.STREAM_BANNER} component={StreamBannerScreen} options={{ headerShown: false }} />
 		</Stack.Navigator>
 	);
 }

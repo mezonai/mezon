@@ -1,6 +1,6 @@
 import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { debounce } from '@mezon/mobile-components';
-import { baseColor, size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, useTheme } from '@mezon/mobile-ui';
 import {
 	channelUsersActions,
 	selectAllChannelMembers,
@@ -148,9 +148,7 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 			if (!type && headerTitle && isShowHeaderTitle) {
 				return (
 					<View style={styles.sectionHeader}>
-						<Text style={styles.sectionHeaderText}>
-							{headerTitle}:
-						</Text>
+						<Text style={styles.sectionHeaderText}>{headerTitle}:</Text>
 					</View>
 				);
 			}
@@ -187,25 +185,12 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 		<View style={styles.container}>
 			<View style={styles.headerContainer}>
 				<View style={styles.headerCenter}>
-					<Text style={styles.headerTitle}>
-						{t('channelPermission.bottomSheet.addMembersOrRoles')}
-					</Text>
-					<Text style={styles.headerSubtitle}>
-						#{channel?.channel_label}
-					</Text>
+					<Text style={styles.headerTitle}>{t('channelPermission.bottomSheet.addMembersOrRoles')}</Text>
+					<Text style={styles.headerSubtitle}>#{channel?.channel_label}</Text>
 				</View>
-				<TouchableOpacity
-					onPress={addMemberOrRole}
-					style={styles.addButton}
-					disabled={disableAddButton}
-				>
+				<TouchableOpacity onPress={addMemberOrRole} style={styles.addButton} disabled={disableAddButton}>
 					<View style={styles.addButtonInner}>
-						<Text
-							style={[
-								styles.addButtonText,
-								{ color: disableAddButton ? '#676b73' : baseColor.blurple }
-							]}
-						>
+						<Text style={[styles.addButtonText, { color: disableAddButton ? '#676b73' : baseColor.blurple }]}>
 							{t('channelPermission.bottomSheet.add')}
 						</Text>
 					</View>
@@ -213,7 +198,7 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 			</View>
 
 			<View style={styles.searchWrapper}>
-				<MezonInput onTextChange={debouncedSetSearchText} placeHolder={'Search Roles & Members'} />
+				<MezonInput onTextChange={debouncedSetSearchText} placeHolder={t('addMembersRoles.searchPlaceholder')} />
 			</View>
 			<View style={styles.listWrapper}>
 				<BottomSheetFlatList

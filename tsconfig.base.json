@@ -2,7 +2,7 @@
 	"compileOnSave": false,
 	"compilerOptions": {
 		"resolveJsonModule": true,
-    	"esModuleInterop": true,
+		"esModuleInterop": true,
 		"rootDir": ".",
 		"sourceMap": true,
 		"declaration": false,
@@ -24,7 +24,6 @@
 			"@mezon/assets": ["libs/assets/src/index.ts"],
 			"@mezon/components": ["libs/components/src/index.ts"],
 			"@mezon/core": ["libs/core/src/index.ts"],
-			"@mezon/lib-jitsi-meet": ["./node_modules/@mezon/lib-jitsi-meet/types"],
 			"@mezon/logger": ["libs/logger/src/index.ts"],
 			"@mezon/mobile-components": ["libs/mobile-components/src/index.ts"],
 			"@mezon/mobile-ui": ["libs/mobile-ui/src/index.ts"],

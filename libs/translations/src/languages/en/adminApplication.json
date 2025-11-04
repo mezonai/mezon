@@ -29,7 +29,8 @@
 		"buttons": {
 			"cancel": "Cancel",
 			"create": "Create",
-			"creating": "Creating..."
+			"creating": "Creating...",
+			"confirm": "Confirm"
 		},
 		"errors": {
 			"nameRequired": "A name is required to create your new {type}.",
@@ -40,6 +41,10 @@
 		},
 		"notifications": {
 			"shadowModeInfo": "In shadow mode, the bot can receive all messages sent to the creator, but it cannot send messages."
+		},
+		"shadowConfirm": {
+			"title": "Are you sure you want to enable Shadow Bot mode?",
+			"message": "In this mode, the bot can receive all messages sent to the creator but cannot send messages."
 		}
 	},
 	"sidebar": {
@@ -88,7 +93,7 @@
 			"copied": "Copied!",
 			"copyToken": "Copy Token",
 			"resetToken": "Reset Token",
-			"delete": "Delete Bot"
+			"delete": "Delete "
 		},
 		"errors": {
 			"invalidUrl": "Please enter a valid URL (e.g., https://example.com).",
