@@ -78,38 +78,35 @@ export const updateUserClanProfile = createAsyncThunk(
 
 			const currentUserClanProfile = state.userClanProfile.entities[`${clanId}${currentUser?.user?.id}`];
 			const mezon = ensureClient(getMezonCtx(thunkAPI));
+			const nickName = (username === '' ? currentUser?.user?.display_name || currentUser?.user?.username : username) || '';
 			const body: Partial<ApiUpdateClanProfileRequest> = {
 				clan_id: clanId,
-				nick_name: username,
-				avatar: avatarUrl
+				nick_name: nickName,
+				avatar: avatarUrl || ''
 			};
 
-			if (
-				(username && username !== currentUserClanProfile?.nick_name) ||
-				(avatarUrl && avatarUrl !== '' && avatarUrl !== currentUserClanProfile?.avatar)
-			) {
-				const response = await mezon.client.updateUserProfileByClan(mezon.session, clanId, body as ApiUpdateClanProfileRequest);
-				if (!response) {
-					return thunkAPI.rejectWithValue([]);
-				}
-
-				thunkAPI.dispatch(
-					userClanProfileSlice.actions.updateOne({
-						id: `${clanId}${currentUser?.user?.id}`,
-						changes: {
-							nick_name: username,
-							avatar: avatarUrl
-						}
-					})
-				);
-
-				if (avatarUrl && currentUser?.user?.id) {
-					setUserClanAvatarOverride(currentUser.user.id, clanId, avatarUrl);
-					thunkAPI.dispatch(accountActions.incrementAvatarVersion());
-				}
-
-				thunkAPI.dispatch(fetchUserClanProfile({ clanId }));
+			const response = await mezon.client.updateUserProfileByClan(mezon.session, clanId, body as ApiUpdateClanProfileRequest);
+			if (!response) {
+				return thunkAPI.rejectWithValue([]);
 			}
+
+			thunkAPI.dispatch(
+				userClanProfileSlice.actions.updateOne({
+					id: `${clanId}${currentUser?.user?.id}`,
+					changes: {
+						nick_name: nickName,
+						avatar: avatarUrl || ''
+					}
+				})
+			);
+
+			if (avatarUrl && avatarUrl !== currentUserClanProfile?.avatar && currentUser?.user?.id) {
+				setUserClanAvatarOverride(currentUser.user.id, clanId, avatarUrl);
+				thunkAPI.dispatch(accountActions.incrementAvatarVersion());
+			}
+
+			thunkAPI.dispatch(fetchUserClanProfile({ clanId }));
+
 			return true;
 		} catch (error) {
 			captureSentryError(error, 'userClanProfile/updateUserClanProfile');

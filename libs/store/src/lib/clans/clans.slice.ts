@@ -392,9 +392,8 @@ export const updateUser = createAsyncThunk(
 				body.avatar_url = avatar_url || '';
 			}
 
-			if (display_name && display_name !== currentUser?.user?.display_name) {
-				body.display_name = display_name || '';
-			}
+			const displayName = (display_name === '' ? currentUser?.user?.username : display_name) || '';
+			body.display_name = displayName;
 
 			if (about_me !== undefined && about_me !== currentUser?.user?.about_me) {
 				body.about_me = about_me || '';
@@ -428,7 +427,7 @@ export const updateUser = createAsyncThunk(
 						encrypt_private_key,
 						user: {
 							avatar_url: avatar_url || '',
-							display_name: display_name || '',
+							display_name: displayName,
 							lang_tag: 'en',
 							location: '',
 							timezone: '',

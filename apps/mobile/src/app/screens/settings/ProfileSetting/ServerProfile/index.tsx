@@ -1,8 +1,8 @@
 import { useClanProfileSetting } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
+import type { ClansEntity } from '@mezon/store-mobile';
 import {
-	ClansEntity,
 	appActions,
 	checkDuplicateClanNickName,
 	selectAllAccount,
@@ -11,12 +11,12 @@ import {
 	selectUserClanProfileByClanID
 } from '@mezon/store-mobile';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { forwardRef, memo, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, memo, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, FlatList, KeyboardAvoidingView, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
-import { IClanProfileValue, IUserProfileValue } from '..';
+import type { IClanProfileValue, IUserProfileValue } from '..';
 import { SeparatorWithLine } from '../../../../../app/components/Common';
 import MezonClanAvatar from '../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
@@ -38,7 +38,7 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 	const currentClan = useSelector(selectCurrentClan);
 	const dispatch = useDispatch();
 
-	const [isDuplicateClanNickname, setIsDuplicateClanNickname] = useState(false);
+	const [isDuplicateClanNickname, setIsDuplicateClanNickname] = useState<boolean>(false);
 	const [selectedClan, setSelectedClan] = useState<ClansEntity>(currentClan);
 	const { updateUserClanProfile } = useClanProfileSetting({ clanId: selectedClan?.id });
 	const userClansProfile = useSelector(selectUserClanProfileByClanID(selectedClan?.id, userProfile?.user?.id ?? ''));
@@ -60,6 +60,10 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 
 		setCurrentClanProfileValue(initialValue);
 	}, [userClansProfile, userProfile?.user]);
+
+	const userDisplayName = useMemo(() => {
+		return currentClanProfileValue?.displayName || userProfile?.user?.display_name || userProfile?.user?.username || '';
+	}, [currentClanProfileValue?.displayName, userProfile?.user?.display_name, userProfile?.user?.username]);
 
 	const checkIsDuplicateClanNickname = async (value: string) => {
 		try {
@@ -90,6 +94,7 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 	};
 
 	const onValueChange = (newValue: Partial<IClanProfileValue>) => {
+		if (isDuplicateClanNickname) setIsDuplicateClanNickname(false);
 		setCurrentClanProfileValue((prevValue) => ({ ...prevValue, ...newValue }));
 	};
 
@@ -188,17 +193,17 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 
 			<View style={styles.clanProfileDetail}>
 				<View style={styles.nameWrapper}>
-					<Text style={styles.displayNameText}>{currentClanProfileValue?.displayName}</Text>
+					<Text style={styles.displayNameText}>{userDisplayName}</Text>
 					<Text style={styles.usernameText}>{currentClanProfileValue?.username}</Text>
 				</View>
 
 				<MezonInput
 					value={currentClanProfileValue?.displayName}
 					onTextChange={(newValue) => onValueChange({ displayName: newValue })}
-					placeHolder={currentClanProfileValue?.username}
+					placeHolder={userDisplayName}
 					maxCharacter={32}
 					label={t('fields.clanName.label')}
-					errorMessage={isDuplicateClanNickname ? 'The nick name already exists in the clan. Please enter another nick name.' : ''}
+					errorMessage={isDuplicateClanNickname ? t('nickNameExistsError') : ''}
 					isValid={!isDuplicateClanNickname}
 					inputWrapperStyle={[{ backgroundColor: themeValue.primary }]}
 				/>
