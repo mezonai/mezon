@@ -362,6 +362,7 @@ export default class App {
 	}
 
 	private static setupWindowManager() {
+		if (!App.isActivityTrackingEnabled) return;
 		let defaultApp = null;
 		const usageThreshold = 30 * 60 * 1000;
 

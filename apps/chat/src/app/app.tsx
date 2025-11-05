@@ -96,6 +96,7 @@ const LanguageSyncProvider = () => {
 
 const AppInitializer = () => {
 	const isLogin = useSelector(selectIsLogin);
+	const isActivityTrackingEnabled = useSelector(selectIsActivityTrackingEnabled);
 	const dispatch = useDispatch();
 	const { setIsShowSettingFooterStatus } = useSettingFooter();
 	const { setUserActivity, setUserAFK } = useActivities();
@@ -277,12 +278,6 @@ const AppInitializer = () => {
 		isElectron() && isLogin && electronBridge.invoke('APP::CHECK_UPDATE');
 	}, [isLogin]);
 
-	return null;
-};
-
-const ActivityTrackingSyncProvider = () => {
-	const isActivityTrackingEnabled = useSelector(selectIsActivityTrackingEnabled);
-
 	useEffect(() => {
 		if (isElectron() && typeof window !== 'undefined' && window.electron) {
 			try {
@@ -328,7 +323,6 @@ export function App() {
 			{showLoading && <LoadingFallbackWrapper />}
 			<MezonStoreProvider store={store} loading={null} persistor={persistor}>
 				<LanguageSyncProvider />
-				<ActivityTrackingSyncProvider />
 				<PopupManagerProvider>
 					<PermissionProvider>
 						<AppInitializer />
