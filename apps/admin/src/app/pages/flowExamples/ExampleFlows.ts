@@ -1,4 +1,4 @@
-import { IFlow, IFlowDetail } from '../../stores/flow/flow.interface';
+import type { IFlow, IFlowDetail } from '../../stores/flow/flow.interface';
 
 interface IFlowMessage {
 	input: string;
@@ -16,6 +16,8 @@ const ExampleFlow: IExampleFlow[] = [
 		id: 'example-flow-1',
 		flowName: 'Command Flow Example',
 		description: 'This is an example flow 1',
+		createdAt: '2025-01-01T00:00:00.000Z',
+		updatedAt: '2025-01-01T00:00:00.000Z',
 		status: 'active',
 		flowDetail: {
 			id: '89c19669-073a-40c7-b55a-0a07c4458510',
@@ -97,6 +99,8 @@ const ExampleFlow: IExampleFlow[] = [
 		flowName: 'Api Loader Flow Example',
 		description: 'This is an example about api loader flow',
 		status: 'active',
+		createdAt: '2025-01-01T00:00:00.000Z',
+		updatedAt: '2025-01-01T00:00:00.000Z',
 		flowDetail: {
 			id: '2731557b-2b10-4aef-a07a-a7368e5a2443',
 			userId: 'a08a1932-10cc-479c-8c1c-7b14cde57fd2',
@@ -213,6 +217,8 @@ const ExampleFlow: IExampleFlow[] = [
 		flowName: 'Api loader with authorization',
 		description: 'This is an example about api loader with authorization',
 		status: 'active',
+		createdAt: '2025-01-01T00:00:00.000Z',
+		updatedAt: '2025-01-01T00:00:00.000Z',
 		flowDetail: {
 			id: '89c19669-073a-40c7-b55a-0a07c4458510',
 			userId: 'a08a1932-10cc-479c-8c1c-7b14cde57fd2',
@@ -352,6 +358,8 @@ const ExampleFlow: IExampleFlow[] = [
 		id: 'example-flow-4',
 		flowName: 'Api loader with method post',
 		description: 'This is an example about api loader with method post',
+		createdAt: '2025-01-01T00:00:00.000Z',
+		updatedAt: '2025-01-01T00:00:00.000Z',
 		status: 'active',
 		flowDetail: {
 			id: '89c19669-073a-40c7-b55a-0a07c4458510',

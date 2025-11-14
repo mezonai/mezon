@@ -54,7 +54,7 @@ const Flows = () => {
 				<div className="flex gap-2">
 					<button
 						onClick={() => setOpenAppTokenModal(true)}
-						className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg active:bg-indigo-600 transition-all"
+						className=" border border-indigo-600 text-indigo-600 px-3 py-2 rounded-lg active:bg-indigo-600 transition-all"
 					>
 						{t('flows.setToken')}
 					</button>
