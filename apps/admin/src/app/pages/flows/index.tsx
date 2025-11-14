@@ -34,7 +34,13 @@ const Flows = () => {
 
 	const handleCreateApplication = useCallback(
 		(token: string) => {
-			flowService.createApplication(applicationId as string, token);
+			if (userProfile == null) return;
+			flowService.createApplication({
+				referralId: userProfile!.user!.id!,
+				username: userProfile!.user!.username!,
+				appId: applicationId ?? '',
+				appToken: token
+			});
 		},
 		[applicationId]
 	);

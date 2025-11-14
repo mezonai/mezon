@@ -1,8 +1,15 @@
-import { IFlow, IFlowDataRequest, IFlowDetail } from '../stores/flow/flow.interface';
+import type { IFlow, IFlowDataRequest, IFlowDetail } from '../stores/flow/flow.interface';
 import { apiInstance } from './apiInstance';
 
 interface IError {
 	message: string;
+}
+
+export interface PostApplicationProps {
+	referralId: string;
+	username: string;
+	appId: string;
+	appToken: string;
 }
 
 const getAllFlowByApplication = async (applicationId: string): Promise<IFlow[]> => {
@@ -79,11 +86,11 @@ const getApplication = async (appId: string) => {
 	}
 };
 
-const createApplication = async (appId: string, appToken: string) => {
+const createApplication = async (dataCreate: PostApplicationProps) => {
 	try {
 		const response = await apiInstance(`/application`, {
 			method: 'POST',
-			body: JSON.stringify({ appId, appToken })
+			body: JSON.stringify(dataCreate)
 		});
 		return response as { id: string };
 	} catch (error) {
