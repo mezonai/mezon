@@ -1,3 +1,4 @@
+import { useAuth } from '@mezon/core';
 import { Icons } from '@mezon/ui';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +13,7 @@ const Flows = () => {
 	const { applicationId } = useParams();
 	const navigate = useNavigate();
 	const { flowState } = useContext(FlowContext);
+	const { userProfile } = useAuth();
 	const handleGoToAddFlowPage = () => {
 		navigate(`/developers/applications/${applicationId}/add-flow`);
 	};
@@ -34,7 +36,13 @@ const Flows = () => {
 
 	const handleCreateApplication = useCallback(
 		(token: string) => {
-			flowService.createApplication(applicationId as string, token);
+			if (userProfile == null) return;
+			flowService.createApplication({
+				referralId: userProfile!.user!.id!,
+				username: userProfile!.user!.username!,
+				appId: applicationId ?? '',
+				appToken: token
+			});
 		},
 		[applicationId]
 	);
@@ -53,7 +61,7 @@ const Flows = () => {
 					<button
 						disabled={!hasToken}
 						onClick={handleGoToAddFlowPage}
-						className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg active:bg-indigo-600 transition-all"
+						className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg active:bg-indigo-600 transition-all cursor-pointer"
 					>
 						{t('flows.addFlow')}
 					</button>

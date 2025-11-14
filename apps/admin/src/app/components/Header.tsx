@@ -57,13 +57,6 @@ const Header = ({ toggleSideBar }: IHeaderProps) => {
 				</Link>
 			</div>
 			<div className="flex flex-row items-center justify-center relative">
-				<button onClick={toggleDarkMode} className="mr-4">
-					<img
-						src={isDarkMode ? 'developers/assets/icons/IconDarkMode.png' : 'developers/assets/icons/IconLightMode.png'}
-						alt="Toggle Dark Mode"
-						className="w-6 h-6 bg-white"
-					/>
-				</button>
 				<div onClick={handleAvatarClick}>
 					{userProfile?.user?.avatar_url ? (
 						<img
