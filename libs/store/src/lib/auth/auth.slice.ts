@@ -546,11 +546,13 @@ export const selectAuthIsLoaded = createSelector(getAuthState, (state: AuthState
 export const selectIsLogin = createSelector(getAuthState, (state: AuthState) => state.isLogin);
 
 export const selectSession = createSelector(getAuthState, (state: AuthState) => {
-	if (state.activeAccount) {
-		return state.session?.[state.activeAccount];
+	if (state.activeAccount && state.session?.[state.activeAccount]) {
+		return state.session[state.activeAccount];
 	}
-	const key = Object.keys(state.session || [])[0];
-	return state.session?.[key];
+
+	const sessions = state.session || {};
+	const firstKey = Object?.keys?.(sessions)?.[0];
+	return firstKey ? sessions[firstKey] : null;
 });
 
 export const selectRegisteringStatus = createSelector(getAuthState, (state: AuthState) => state.isRegistering);
