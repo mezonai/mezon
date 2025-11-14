@@ -1,10 +1,11 @@
 import {
+	fetchTopics,
 	getFirstMessageOfTopic,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectMemberClanByUserId,
 	selectMessageByMessageId,
-	selectTopicById,
+	selectTopicByMessageClan,
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
@@ -15,7 +16,7 @@ import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
 import { EBacktickType, ETypeLinkMedia, addMention, convertTimeMessage, createImgproxyUrl, generateE2eId, isValidEmojiData } from '@mezon/utils';
 import i18n from 'libs/translations/src/i18n.config';
 import { safeJSONParse } from 'mezon-js';
-import React, { memo, useCallback, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
@@ -81,14 +82,25 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, message.channel_id as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 
-	const topic = useAppSelector((state) => selectTopicById(state, message?.content?.tp || ''));
+	const topicId = message?.content?.tp;
+	const messageClanId = message?.clan_id;
+
+	const topic = useAppSelector((state) => selectTopicByMessageClan(state, messageClanId || '', topicId || ''));
+
+	useEffect(() => {
+		if (topicId && messageClanId && !topic) {
+			dispatch(fetchTopics({ clanId: messageClanId }));
+		}
+		return;
+	}, [topicId, messageClanId, topic, dispatch]);
 
 	const timeMessage = useMemo(() => {
-		if (!topic) return;
+		if (!topic) return null;
 		if (topic?.last_sent_message && topic?.last_sent_message?.timestamp_seconds) {
 			const lastTime = convertTimeMessage(topic.last_sent_message.timestamp_seconds, i18n.language);
-			return lastTime;
+			return <span className="text-xs text-theme-secondary">{lastTime}</span>;
 		}
+		return null;
 	}, [topic]);
 
 	return (

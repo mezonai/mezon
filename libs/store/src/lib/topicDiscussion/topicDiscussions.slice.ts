@@ -1,17 +1,13 @@
 import { captureSentryError } from '@mezon/logger';
-import {
-	getMobileUploadedAttachments,
-	getWebUploadedAttachments,
-	IMentionOnMessage,
-	IMessageSendPayload,
-	IMessageWithUser,
-	LoadingStatus
-} from '@mezon/utils';
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
-import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic } from 'mezon-js/api.gen';
-import { ApiChannelMessageHeader, ApiSdTopicRequest } from 'mezon-js/dist/api.gen';
-import { ensureSession, ensureSocket, getMezonCtx, MezonValueContext } from '../helpers';
-import { RootState } from '../store';
+import type { IMentionOnMessage, IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
+import { getMobileUploadedAttachments, getWebUploadedAttachments } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiSdTopicRequest } from 'mezon-js/dist/api.gen';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 import { threadsActions } from '../threads/threads.slice';
 
 export const TOPIC_DISCUSSIONS_FEATURE_KEY = 'topicdiscussions';
@@ -75,7 +71,7 @@ export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanI
 		const topics = mapToTopicEntity(response.topics || []);
 		return {
 			clan_id: clanId,
-			topics: topics
+			topics
 		};
 	} catch (error) {
 		captureSentryError(error, 'topics/fetchTopics');
@@ -356,5 +352,14 @@ export const selectTopicById = createSelector(
 	(state, clanId, topicId) => {
 		if (!state.clanTopics[clanId] || !topicId) return null;
 		return state.clanTopics[clanId].entities[topicId] || null;
+	}
+);
+
+export const selectTopicByMessageClan = createSelector(
+	[getTopicsState, (_, messageClanId: string) => messageClanId, (_, messageClanId: string, topicId: string) => topicId],
+	(state, messageClanId, topicId) => {
+		if (!topicId || !messageClanId) return null;
+		const clanTopics = state.clanTopics[messageClanId];
+		return clanTopics?.entities?.[topicId] || null;
 	}
 );
