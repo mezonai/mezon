@@ -223,6 +223,7 @@ const RootListener = () => {
 
 	const mainLoader = useCallback(async () => {
 		try {
+			await profileLoader();
 			const store = getStore();
 			const currentClanId = selectCurrentClanId(store.getState() as any);
 			const promises = [];
@@ -241,7 +242,7 @@ const RootListener = () => {
 			console.error('error mainLoader', error);
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [dispatch]);
+	}, [dispatch, profileLoader]);
 
 	const mainLoaderTimeout = useCallback(
 		async ({ isFromFCM = false }) => {
@@ -274,16 +275,6 @@ const RootListener = () => {
 		},
 		[dispatch]
 	);
-
-	useEffect(() => {
-		if (isLoggedIn) {
-			requestIdleCallback(() => {
-				setTimeout(() => {
-					profileLoader();
-				}, 2000);
-			});
-		}
-	}, [isLoggedIn, profileLoader]);
 
 	return null;
 };
