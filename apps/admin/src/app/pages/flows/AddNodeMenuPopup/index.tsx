@@ -1,4 +1,4 @@
-import { INodeType } from '../../../stores/flow/flow.interface';
+import type { INodeType } from '../../../stores/flow/flow.interface';
 import MenuItem from './MenuItem';
 
 interface INodeMenu {
@@ -9,22 +9,22 @@ interface INodeMenu {
 const AddNodeMenuPopup = () => {
 	const nodeMenu: INodeMenu[] = [
 		{
-			title: 'Command Input',
-			nodeType: 'commandInput',
+			title: 'Trigger',
+			nodeType: 'trigger',
 			description: 'Listens for specific triggers to start the bot’s response.'
 		},
 		{
-			title: 'Command Output',
+			title: 'Response',
 			nodeType: 'uploadedImage',
 			description: 'Sends the bot’s reply based on the input and processing.'
 		},
 		{
-			title: 'Custom JS Function',
-			nodeType: 'formatFunction',
+			title: 'Condition',
+			nodeType: 'condition',
 			description: 'Executes custom logic or processes for flexible responses.'
 		},
 		{
-			title: 'API Loader',
+			title: 'API',
 			nodeType: 'apiLoader',
 			description: 'Fetches data from external APIs for integration into bot responses.'
 		},

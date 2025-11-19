@@ -16,7 +16,7 @@ export interface IFlowDetail {
 	connections: IEdge[];
 }
 
-export type INodeType = 'commandInput' | 'uploadedImage' | 'formatFunction' | 'apiLoader' | 'default' | 'webhook';
+export type INodeType = 'trigger' | 'uploadedImage' | 'condition' | 'apiLoader' | 'default' | 'webhook';
 
 export interface INode {
 	id: string;

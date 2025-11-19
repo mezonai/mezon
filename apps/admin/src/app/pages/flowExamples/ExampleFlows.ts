@@ -37,8 +37,8 @@ const ExampleFlow: IExampleFlow[] = [
 			nodes: [
 				{
 					id: 'e3d0ac76-5ca9-4f2f-9f8c-3464f0eaa066',
-					nodeType: 'commandInput',
-					nodeName: 'commandInput',
+					nodeType: 'trigger',
+					nodeName: 'Trigger',
 					measured: '{"width":250,"height":261}',
 					position: '{"x":-38,"y":-30}',
 					parameters: [
@@ -127,8 +127,8 @@ const ExampleFlow: IExampleFlow[] = [
 			nodes: [
 				{
 					id: '56c978da-d138-461f-8226-afdd36108d44',
-					nodeType: 'commandInput',
-					nodeName: 'commandInput',
+					nodeType: 'trigger',
+					nodeName: 'Trigger',
 					measured: '{"width":250,"height":261}',
 					position: '{"x":56,"y":-79}',
 					parameters: [
@@ -171,8 +171,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: 'de3336f0-ff1d-43d0-872f-cd2a58878dea',
-					nodeType: 'formatFunction',
-					nodeName: 'formatFunction',
+					nodeType: 'condition',
+					nodeName: 'Condition',
 					measured: '{"width":250,"height":666}',
 					position: '{"x":686,"y":-82}',
 					parameters: [
@@ -245,8 +245,8 @@ const ExampleFlow: IExampleFlow[] = [
 			nodes: [
 				{
 					id: 'ca97688b-8922-4f6e-aa29-51908d3acbe0',
-					nodeType: 'commandInput',
-					nodeName: 'commandInput',
+					nodeType: 'trigger',
+					nodeName: 'Trigger',
 					measured: '{"width":250,"height":364}',
 					position: '{"x":174,"y":-7}',
 					parameters: [
@@ -314,8 +314,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: 'a8842cc4-88df-4c49-9c8f-bd52055c4bd9',
-					nodeType: 'formatFunction',
-					nodeName: 'formatFunction',
+					nodeType: 'condition',
+					nodeName: 'Condition',
 					measured: '{"width":250,"height":486}',
 					position: '{"x":960,"y":60}',
 					parameters: [
@@ -387,8 +387,8 @@ const ExampleFlow: IExampleFlow[] = [
 			nodes: [
 				{
 					id: 'c48751ca-7e9b-4df0-80db-3f7b5b401179',
-					nodeType: 'commandInput',
-					nodeName: 'commandInput',
+					nodeType: 'trigger',
+					nodeName: 'Trigger',
 					measured: '{"width":250,"height":364}',
 					position: '{"x":176,"y":-70}',
 					parameters: [
@@ -456,8 +456,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: 'ecafe5ec-0bbf-4ba8-8189-58cc5ed018ec',
-					nodeType: 'formatFunction',
-					nodeName: 'formatFunction',
+					nodeType: 'condition',
+					nodeName: 'Condition',
 					measured: '{"width":250,"height":474}',
 					position: '{"x":869,"y":-8}',
 					parameters: [
