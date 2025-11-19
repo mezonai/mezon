@@ -10,8 +10,8 @@ import MultiImageUploadField from '../../../components/MultiImageUploadField';
 // add more node types in this list
 const NodeTypes = [
 	{
-		type: 'commandInput',
-		label: 'Command Input',
+		type: 'trigger',
+		label: 'Trigger',
 		schema: yup.object().shape({
 			commandName: yup
 				.string()
@@ -35,7 +35,7 @@ const NodeTypes = [
 			required: ['commandName']
 		},
 		anchors: {
-			source: [{ id: 'command-input-source-1', text: 'Command Output' }],
+			source: [{ id: 'command-input-source-1', text: 'Response' }],
 			target: []
 		},
 		initialValue: {
@@ -45,7 +45,7 @@ const NodeTypes = [
 	},
 	{
 		type: 'uploadedImage',
-		label: 'Command Output',
+		label: 'Response',
 		schema: yup
 			.object()
 			.shape({
@@ -72,7 +72,7 @@ const NodeTypes = [
 		},
 		anchors: {
 			source: [],
-			target: [{ id: 'command-output-target-1', text: 'Command Input' }]
+			target: [{ id: 'command-output-target-1', text: 'Trigger' }]
 		},
 		initialValue: {
 			message: '',
@@ -81,7 +81,7 @@ const NodeTypes = [
 	},
 	{
 		type: 'commandOutput',
-		label: 'Command Output',
+		label: 'Response',
 		schema: yup.object().shape({
 			message: yup
 				.string()
@@ -101,7 +101,7 @@ const NodeTypes = [
 		},
 		anchors: {
 			source: [],
-			target: [{ id: 'command-output-target-1', text: 'Command Input' }]
+			target: [{ id: 'command-output-target-1', text: 'Trigger' }]
 		},
 		initialValue: {
 			message: '',
@@ -110,7 +110,7 @@ const NodeTypes = [
 	},
 	{
 		type: 'apiLoader',
-		label: 'API Loader',
+		label: 'Api',
 		schema: yup.object().shape({
 			url: yup.string().required('Url is required'),
 			method: yup.string().required('Method is required').oneOf(['GET', 'POST'], 'Method must be either GET or POST'),
@@ -160,7 +160,7 @@ const NodeTypes = [
 			required: []
 		},
 		anchors: {
-			source: [{ id: 'api-loader-source-1', text: 'Custom JS Function' }],
+			source: [{ id: 'api-loader-source-1', text: 'Condition' }],
 			target: [{ id: 'api-loader-target-1', text: 'Splitter Text' }]
 		},
 		initialValue: {
@@ -169,8 +169,8 @@ const NodeTypes = [
 		}
 	},
 	{
-		type: 'formatFunction',
-		label: 'Custom JS Function',
+		type: 'condition',
+		label: 'Condition',
 		schema: yup.object().shape({
 			variable: yup.string().required('Variable is required'),
 			triggerUser: yup.string(),
@@ -260,7 +260,7 @@ const NodeTypes = [
 			required: ['url', 'method']
 		},
 		anchors: {
-			source: [{ id: 'webhook-source-1', text: 'Custom JS Function' }],
+			source: [{ id: 'webhook-source-1', text: 'Condition' }],
 			target: []
 		},
 		initialValue: {
