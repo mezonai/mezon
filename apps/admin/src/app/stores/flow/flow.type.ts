@@ -1,5 +1,5 @@
-import { Edge, Node } from '@xyflow/react';
-import { INodeType, ISelectedNode } from './flow.interface';
+import type { Edge, Node } from '@xyflow/react';
+import type { INodeEdit, INodeType, ISelectedNode } from './flow.interface';
 
 export enum FLOW_ACTION_TYPE {
 	SET_NODES = 'SET_NODES',
@@ -12,17 +12,23 @@ export enum FLOW_ACTION_TYPE {
 	CHANGE_NODE_TYPE = 'CHANGE_NODE_TYPE',
 	CHANGE_SELECTED_NODE = 'CHANGE_SELECTED_NODE',
 	CHANGE_OPEN_MODAL_NODE_DETAIL = 'CHANGE_OPEN_MODAL_NODE_DETAIL',
-	CHANGE_LOADING = 'CHANGE_LOADING'
+	CHANGE_OPEN_MODAL_NODE_EDITING = 'CHANGE_OPEN_MODAL_NODE_EDITING',
+	CHANGE_LOADING = 'CHANGE_LOADING',
+	SET_NODE_EDIT = 'SET_NODE_EDIT',
+	UPDATE_NODE_DATA = 'UPDATE_NODE_DATA'
 }
 export interface IFlowState {
 	nodes: Node[];
 	edges: Edge[];
 	nodeType: INodeType;
 	selectedNode: ISelectedNode | null;
+	nodeEdit: INodeEdit | null;
 	openModalNodeDetail: boolean;
+	openModalNodeEditing: boolean;
 	isLoading: boolean;
 }
 export interface FlowActionType {
 	type: FLOW_ACTION_TYPE;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	payload: any;
 }

@@ -16,7 +16,7 @@ export interface IFlowDetail {
 	connections: IEdge[];
 }
 
-export type INodeType = 'trigger' | 'uploadedImage' | 'condition' | 'apiLoader' | 'default' | 'webhook';
+export type INodeType = 'trigger' | 'uploadedImage' | 'condition' | 'api' | 'default' | 'webhook';
 
 export interface INode {
 	id: string;
@@ -77,4 +77,12 @@ export interface ISelectedNode {
 		label: string;
 		name: string;
 	}>;
+}
+
+export interface INodeEdit {
+	id: string;
+	label: string;
+	type: string;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	data: any;
 }
