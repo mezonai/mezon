@@ -1,12 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import ConnectionsAllowed from '../../pages/flows/nodes/ConnectionAlows';
-import { FLOW_ACTION_TYPE, FlowActionType, IFlowState } from './flow.type';
+import type { FlowActionType, IFlowState } from './flow.type';
+import { FLOW_ACTION_TYPE } from './flow.type';
 export const initFlowState: IFlowState = {
 	nodes: [],
 	edges: [],
 	nodeType: 'default',
 	selectedNode: null,
+	nodeEdit: null,
 	openModalNodeDetail: false,
+	openModalNodeEditing: false,
 	isLoading: false
 };
 
@@ -47,7 +50,7 @@ const flowReducer = (state = initFlowState, action: FlowActionType): IFlowState 
 		case FLOW_ACTION_TYPE.ADD_EDGE: {
 			const newEdge = action.payload;
 			newEdge.id = uuidv4();
-			// check if connection is exist
+			// check if a connection exists
 			const checkExist = state.edges.find(
 				(edge) =>
 					edge.source === newEdge.source &&
@@ -59,7 +62,7 @@ const flowReducer = (state = initFlowState, action: FlowActionType): IFlowState 
 			const checkAllowed = ConnectionsAllowed.find((item) => {
 				return item.source === newEdge.sourceHandle && item.target === newEdge.targetHandle;
 			});
-			// check if connection is limit
+			// check if connection is limited
 			const checkLimit = state.edges.find(
 				(edge) =>
 					(edge.sourceHandle === newEdge.sourceHandle && edge.source === newEdge.source) ||
@@ -80,10 +83,10 @@ const flowReducer = (state = initFlowState, action: FlowActionType): IFlowState 
 			const { nodeId, defaultValue } = action.payload;
 			const nodeToCopy = state.nodes.find((node) => node.id === nodeId);
 			if (!nodeToCopy) return state;
-			const idCopnyNode = uuidv4();
+			const idCopyNode = uuidv4();
 			const copyNode = {
 				...nodeToCopy,
-				id: idCopnyNode,
+				id: idCopyNode,
 				position: {
 					x: nodeToCopy.position.x + 50,
 					y: nodeToCopy.position.y + 50
@@ -92,7 +95,7 @@ const flowReducer = (state = initFlowState, action: FlowActionType): IFlowState 
 				data: {
 					...nodeToCopy.data,
 					defaultValue,
-					id: idCopnyNode
+					id: idCopyNode
 				}
 			};
 			return {
@@ -115,11 +118,40 @@ const flowReducer = (state = initFlowState, action: FlowActionType): IFlowState 
 				...state,
 				openModalNodeDetail: action.payload
 			};
+		case FLOW_ACTION_TYPE.CHANGE_OPEN_MODAL_NODE_EDITING:
+			return {
+				...state,
+				openModalNodeEditing: action.payload
+			};
 		case FLOW_ACTION_TYPE.CHANGE_SELECTED_NODE:
 			return {
 				...state,
 				selectedNode: action.payload
 			};
+		case FLOW_ACTION_TYPE.SET_NODE_EDIT:
+			return {
+				...state,
+				nodeEdit: action.payload
+			};
+		case FLOW_ACTION_TYPE.UPDATE_NODE_DATA: {
+			const { nodeId, data } = action.payload;
+			const updatedNodes = state.nodes.map((node) => {
+				if (node.id === nodeId) {
+					return {
+						...node,
+						data: {
+							...node.data,
+							defaultValue: data
+						}
+					};
+				}
+				return node;
+			});
+			return {
+				...state,
+				nodes: updatedNodes
+			};
+		}
 		default:
 			return state;
 	}
