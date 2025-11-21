@@ -55,13 +55,16 @@ export function MyVideoConference({
 
 	useDeepFilterNet3({ enabled: true });
 
-	const tracksFromHook = useTracks(
-		[
+	const sources = useMemo(
+		() => [
 			{ source: Track.Source.Camera, withPlaceholder: true },
 			{ source: Track.Source.ScreenShare, withPlaceholder: false }
 		],
-		{ updateOnlyOn: [RoomEvent.ActiveSpeakersChanged], onlySubscribed: false }
+		[]
 	);
+	const options = useMemo(() => ({ updateOnlyOn: [RoomEvent.ActiveSpeakersChanged], onlySubscribed: false }), []);
+
+	const tracksFromHook = useTracks(sources, options);
 
 	const tracks = propTracks || tracksFromHook;
 
@@ -101,7 +104,7 @@ export function MyVideoConference({
 		}
 	};
 
-	const userTracks = tracks.filter((track) => track.source !== 'screen_share' && track.source !== 'screen_share_audio');
+	const userTracks = useMemo(() => tracks.filter((track) => track.source !== 'screen_share' && track.source !== 'screen_share_audio'), [tracks]);
 	const room = useRoomContext();
 
 	useEffect(() => {
@@ -187,13 +190,13 @@ export function MyVideoConference({
 		}
 	}, [room?.name]);
 
-	const onToggleChatBox = () => {
+	const onToggleChatBox = useCallback(() => {
 		if (isExternalCalling) {
 			dispatch(voiceActions.setToggleChatBox());
 		} else {
 			onToggleChat?.();
 		}
-	};
+	}, [isExternalCalling, dispatch, onToggleChat]);
 
 	return (
 		<div className="lk-video-conference flex-1">

@@ -1,7 +1,7 @@
 import { useLocalParticipant, useRoomContext } from '@livekit/components-react';
 import { selectNoiseSuppressionEnabled, selectNoiseSuppressionLevel, useAppSelector } from '@mezon/store';
 import { DeepFilterNoiseFilterProcessor } from 'deepfilternet3-noise-filter';
-import type { LocalParticipant, LocalTrackPublication } from 'livekit-client';
+import type { LocalParticipant, LocalTrackPublication, Participant, TrackPublication } from 'livekit-client';
 import { RoomEvent, Track } from 'livekit-client';
 import { useEffect, useRef } from 'react';
 
@@ -80,11 +80,8 @@ export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 					}
 				});
 
-				// console.log('start set processor');
-
 				await track.setProcessor(processor);
 
-				// console.log('set process success');
 				processor.setSuppressionLevel(currentLevel);
 				processorsRef.current.set(trackSid, { processor, track: publication });
 			} catch (error) {
@@ -126,14 +123,43 @@ export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 			}
 		};
 
+		const handleTrackMuted = (publication: TrackPublication, participant: Participant) => {
+			if (participant.sid === localParticipant.sid && publication.source === Track.Source.Microphone) {
+				const processorData = processorsRef.current.get(publication.trackSid);
+				if (processorData) {
+					processorData.processor
+						.setEnabled(false)
+
+						.catch((error) => {
+							console.error('Failed to disable noise:', error);
+						});
+				}
+			}
+		};
+
+		const handleTrackUnmuted = (publication: TrackPublication, participant: Participant) => {
+			if (participant.sid === localParticipant.sid && publication.source === Track.Source.Microphone) {
+				const processorData = processorsRef.current.get(publication.trackSid);
+				if (processorData && enabled) {
+					processorData.processor.setEnabled(true).catch((error) => {
+						console.error('Failed to enable noise suppression', error);
+					});
+				}
+			}
+		};
+
 		room.on(RoomEvent.LocalTrackPublished, handleTrackPublished);
 		room.on(RoomEvent.LocalTrackUnpublished, handleTrackUnpublished);
+		room.on(RoomEvent.TrackMuted, handleTrackMuted);
+		room.on(RoomEvent.TrackUnmuted, handleTrackUnmuted);
 
 		const processorsMap = processorsRef.current;
 
 		return () => {
 			room.off(RoomEvent.LocalTrackPublished, handleTrackPublished);
 			room.off(RoomEvent.LocalTrackUnpublished, handleTrackUnpublished);
+			room.off(RoomEvent.TrackMuted, handleTrackMuted);
+			room.off(RoomEvent.TrackUnmuted, handleTrackUnmuted);
 
 			processorsMap.forEach((processorData) => {
 				try {
@@ -166,7 +192,8 @@ export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 
 	useEffect(() => {
 		processorsRef.current.forEach((processorData) => {
-			processorData.processor.setEnabled(enabled).catch((error) => {
+			const shouldEnable = enabled && !processorData.track.isMuted;
+			processorData.processor.setEnabled(shouldEnable).catch((error) => {
 				console.error('Failed to toggle noise suppression:', error);
 			});
 		});
