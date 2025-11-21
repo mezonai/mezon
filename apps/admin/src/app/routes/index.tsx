@@ -3,12 +3,14 @@ import { selectInitialPath, useAppDispatch } from '@mezon/store';
 import { ReactFlowProvider } from '@xyflow/react';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { createBrowserRouter, LoaderFunctionArgs, Navigate, Outlet, RouterProvider } from 'react-router-dom';
+import type { LoaderFunctionArgs } from 'react-router-dom';
+import { Navigate, Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
 // Layouts
 import AppLayout from '../layouts/AppLayout';
 import RootLayout from '../layouts/RootLayout';
 //loader
-import { appLoader, CustomLoaderFunction, shouldRevalidateApp } from '../loader/appLoader';
+import type { CustomLoaderFunction } from '../loader/appLoader';
+import { appLoader, shouldRevalidateApp } from '../loader/appLoader';
 import { authLoader, shouldRevalidateAuth } from '../loader/authLoader';
 // Pages
 import { applicationLoader, shouldRevalidateApplication } from '../loader/applicationLoader';
@@ -35,7 +37,7 @@ export const Routes = () => {
 				await loaderFunction({
 					...props,
 					dispatch,
-					initialPath: initialPath
+					initialPath
 				});
 		},
 		[dispatch, initialPath]

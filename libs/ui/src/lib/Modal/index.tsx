@@ -2,7 +2,7 @@ import { useEscapeKeyClose } from '@mezon/core';
 import type { IChannel } from '@mezon/utils';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import Button from '../Button';
 import { Hashtag, HashtagLocked } from '../Icons';
 

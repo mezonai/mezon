@@ -1,9 +1,12 @@
-import { CustomFile, handleUploadFile, useMezon } from '@mezon/transport';
+import type { CustomFile } from '@mezon/transport';
+import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { processFile } from '@mezon/utils';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
-import { ChangeEvent, useRef, useState } from 'react';
-import { HTMLFieldProps, connectField } from 'uniforms';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ChangeEvent } from 'react';
+import { useRef, useState } from 'react';
+import type { HTMLFieldProps } from 'uniforms';
+import { connectField } from 'uniforms';
 
 type CustomFormFieldProps = HTMLFieldProps<ApiMessageAttachment[], HTMLDivElement>;
 const MultiImageUploadField = connectField((props: CustomFormFieldProps) => {
@@ -47,6 +50,9 @@ const MultiImageUploadField = connectField((props: CustomFormFieldProps) => {
 				setError('Failed to upload files. Please try again.');
 			} finally {
 				setIsUploading(false);
+				if (fileInputRef.current) {
+					fileInputRef.current.value = '';
+				}
 			}
 		}
 	};

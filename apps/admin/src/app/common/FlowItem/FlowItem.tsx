@@ -20,6 +20,7 @@ const FlowItem = ({ applicationId, flow }: FlowItemProps) => {
 			</div>
 			{flow.updatedAt && (
 				<div className="flex justify-end mt-1">
+					{/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */}
 					<p className="text-sm text-gray-500">Last updated: {formatUpdatedTime(flow.updatedAt!)}</p>
 				</div>
 			)}

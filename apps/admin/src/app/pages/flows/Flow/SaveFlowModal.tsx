@@ -53,7 +53,7 @@ const SaveFlowModal = ({ open, onClose, title, changeFlowData, flowData }: SaveF
 			type: 'object',
 			properties: {
 				flowName: { type: 'string', uniforms: { component: CustomTextField, label: 'Flow Name', name: 'flowName' } },
-				description: { type: 'string', uniforms: { component: CustomTextField, label: 'Discription', name: 'description' } }
+				description: { type: 'string', uniforms: { component: CustomTextField, label: 'Description', name: 'description' } }
 			},
 			required: []
 		},
@@ -73,7 +73,14 @@ const SaveFlowModal = ({ open, onClose, title, changeFlowData, flowData }: SaveF
 		onClose();
 	};
 	return (
-		<Modal classNameBox='bg-slate-200 dark:bg-slate-500 rounded-lg' classNameHeader='bg-slate-300 dark:bg-slate-600 rounded-t-lg' confirmButton={confirmSave} title={title} showModal={open} onClose={onClose}>
+		<Modal
+			classNameBox="bg-slate-200 dark:bg-slate-500 rounded-lg"
+			classNameHeader="bg-slate-300 dark:bg-slate-600 rounded-t-lg"
+			confirmButton={confirmSave}
+			title={title}
+			showModal={open}
+			onClose={onClose}
+		>
 			<div className="p-4 hidden-submit-field">
 				<AutoForm onSubmit={handleSubmitForm} model={flowData} ref={submitBtnRef} schema={bridge}></AutoForm>
 			</div>

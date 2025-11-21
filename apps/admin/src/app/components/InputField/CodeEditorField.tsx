@@ -4,11 +4,13 @@ import Editor from 'react-simple-code-editor';
 
 // Import the languages you need to support
 import 'prismjs/components/prism-javascript';
-import { connectField, HTMLFieldProps } from 'uniforms';
+import type { HTMLFieldProps } from 'uniforms';
+import { connectField } from 'uniforms';
 type CustomFormFieldProps = HTMLFieldProps<string, HTMLDivElement> & {
 	label?: string;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function CodeEditorField({ onChange, value, label, errorMessage, showInlineError, fieldType, changed, hidden, ...props }: CustomFormFieldProps) {
 	const highlight = (code: string) => Prism.highlight(code, Prism.languages.javascript, 'javascript');
 	return (
