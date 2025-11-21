@@ -135,7 +135,7 @@ const ExampleFlow: IExampleFlow[] = [
 						{
 							nodeId: '56c978da-d138-461f-8226-afdd36108d44',
 							parameterKey: 'commandName',
-							parameterValue: '*exampleApiLoaderFlow',
+							parameterValue: '*exampleApiFlow',
 							id: '8f391774-12bf-476f-9fbf-01c12407fabd'
 						}
 					],
@@ -146,8 +146,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: '602ce111-4f14-47ea-a053-95fd2381a8d9',
-					nodeType: 'apiLoader',
-					nodeName: 'apiLoader',
+					nodeType: 'api',
+					nodeName: 'Api',
 					measured: '{"width":250,"height":362}',
 					position: '{"x":387,"y":-79}',
 					parameters: [
@@ -204,7 +204,7 @@ const ExampleFlow: IExampleFlow[] = [
 			]
 		},
 		message: {
-			input: '*exampleApiLoaderFlow',
+			input: '*exampleApiFlow',
 			output: {
 				message:
 					'| ID    | Title                | Is Completed |\n|-------|----------------------|------------|\n| 6     | title 6              | Yes        |\n| 7     | title 7              | Yes        |\n| 8     | title 8              | Yes        |\n| 9     | title 9              | Yes        |\n| 11    | title 11             | Yes        |\n| 12    | title 12             | Yes        |\n| 13    | title 13             | No         |\n| 14    | title 14             | No         |\n| 15    | title 15             | No         |\n| 16    | title 16             | No         |\n|',
@@ -270,8 +270,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: 'f59ae940-4b23-4f26-aeb2-de4022c9b8e5',
-					nodeType: 'apiLoader',
-					nodeName: 'apiLoader',
+					nodeType: 'api',
+					nodeName: 'Api',
 					measured: '{"width":250,"height":856}',
 					position: '{"x":575,"y":-72}',
 					parameters: [
@@ -412,8 +412,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: '44e2fff1-b8eb-426c-9041-ade67bc62660',
-					nodeType: 'apiLoader',
-					nodeName: 'apiLoader',
+					nodeType: 'api',
+					nodeName: 'Api',
 					measured: '{"width":250,"height":976}',
 					position: '{"x":530,"y":-75}',
 					parameters: [

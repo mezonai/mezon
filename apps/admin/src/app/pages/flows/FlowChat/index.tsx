@@ -1,17 +1,18 @@
 import { useAuth } from '@mezon/core';
 import { selectAppDetail } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import type { MediaFile } from '../../../services/flowService';
 import flowService from '../../../services/flowService';
 import ExampleFlow from '../../flowExamples/ExampleFlows';
 
 interface IMessage {
 	message: {
 		message: string;
-		urlImage?: string[];
+		mediaFile?: string[];
 	};
 	type: 'input' | 'output';
 }
@@ -31,10 +32,10 @@ const FlowChatPopup = () => {
 			toast.error('Please enter your message');
 			return;
 		}
-		setMessages([...messages, { message: { message: input, urlImage: undefined }, type: 'input' }]);
+		setMessages([...messages, { message: { message: input, mediaFile: undefined }, type: 'input' }]);
 		setInput('');
 		try {
-			// check if message is into an example flow, return output message of that flow.
+			// check if a message is into an example flow, return an output message of that flow.
 			const checkMessageIsIntoExampleFlow = ExampleFlow.find((flow) => flow.message.input === input?.trim());
 			if (checkMessageIsIntoExampleFlow) {
 				setMessages((prev) => [
@@ -42,31 +43,38 @@ const FlowChatPopup = () => {
 					{
 						message: {
 							message: checkMessageIsIntoExampleFlow.message.output.message,
-							urlImage: checkMessageIsIntoExampleFlow.message.output.image
+							mediaFile: checkMessageIsIntoExampleFlow.message.output.image
 						},
 						type: 'output'
 					}
 				]);
 				return;
 			}
-			const response: { message: string; urlImage: string } = await flowService.executionFlow(
+			const response: { message: string; urlImage: MediaFile[] } = await flowService.executionFlow(
 				applicationId ?? '',
 				appDetail.token ?? '',
 				input,
 				userProfile?.user?.username ?? ''
 			);
-			let urlImage: string[] | undefined = [];
-			try {
-				urlImage = JSON.parse(response.urlImage);
-			} catch {
-				urlImage = undefined;
+			// eslint-disable-next-line no-console
+			console.log('response', response);
+			let mediaFile: string[] | undefined = [];
+			if (response.urlImage) {
+				try {
+					const filesData: MediaFile[] = JSON.parse(response.urlImage as unknown as string);
+					if (Array.isArray(filesData) && filesData.length > 0) {
+						mediaFile = filesData.map((file) => file.url);
+					}
+				} catch (error) {
+					console.error('Error parsing media file URLs:', error);
+				}
 			}
-			if (!response.message && !urlImage) {
+			if (!response.message && !mediaFile) {
 				response.message = 'Sorry, I dont know';
 			}
-			setMessages((prev) => [...prev, { message: { message: response.message, urlImage: urlImage }, type: 'output' }]);
+			setMessages((prev) => [...prev, { message: { message: response.message, mediaFile }, type: 'output' }]);
 		} catch (error) {
-			setMessages((prev) => [...prev, { message: { message: "Sory, I dont't know", urlImage: undefined }, type: 'output' }]);
+			setMessages((prev) => [...prev, { message: { message: "Sory, I dont't know", mediaFile: undefined }, type: 'output' }]);
 		}
 	};
 	const scrollToBottom = () => {
@@ -76,16 +84,13 @@ const FlowChatPopup = () => {
 		}
 	};
 
-	const checkIsVideo = useCallback((url: string) => {
-		const ext = url.split('.').pop();
-		if (ext && VideoFileExtensions.includes(`.${ext}`)) {
-			return true;
-		}
-		return false;
+	const checkIsVideo = useCallback((file: string) => {
+		const ext = file.split('.').pop();
+		return !!(ext && VideoFileExtensions.includes(`.${ext}`));
 	}, []);
 
 	useEffect(() => {
-		// scroll to bottom of chat when new message is added
+		// scroll to bottom of chat when a new message is added
 		if (messages.length > 0) {
 			setTimeout(() => {
 				scrollToBottom();
@@ -113,11 +118,11 @@ const FlowChatPopup = () => {
 								style={message.type === 'output' ? { fontFamily: 'monospace', whiteSpace: 'pre' } : {}}
 								className="overflow-x-auto [&::-webkit-scrollbar]:[height:3px] [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-gray-200"
 							>
-								{typeof message.message.message === 'string' ? message.message.message : JSON.stringify(message.message.message)}
+								{message.message.message}
 							</div>
-							{message.message?.urlImage && message.message.urlImage?.length > 0 && (
+							{message.message?.mediaFile && message.message.mediaFile?.length > 0 && (
 								<div className="mt-2">
-									{message.message.urlImage?.map((img, index) => (
+									{message.message.mediaFile?.map((img, index) => (
 										<div key={index} className="p-2 shadow-inner bg-[#ebeaead4] dark:bg-[#83818169] rounded-lg mb-1">
 											{checkIsVideo(img) ? (
 												<video controls autoPlay className="w-full rounded-md">

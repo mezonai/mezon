@@ -12,6 +12,20 @@ export interface PostApplicationProps {
 	appToken: string;
 }
 
+export interface MediaFile {
+	fileName: string;
+	url: string;
+	fileType: string;
+	size: number;
+	width?: number;
+	height?: number;
+}
+
+export interface ExecutionFlowResponse {
+	message: string;
+	urlImage: MediaFile[];
+}
+
 const getAllFlowByApplication = async (applicationId: string): Promise<IFlow[]> => {
 	try {
 		const response = await apiInstance(`/flow/getAllByApplication?appId=${applicationId}`, { method: 'GET' });
@@ -63,13 +77,13 @@ const deleteFlow = async (flowId: string): Promise<IFlowDetail> => {
 	}
 };
 
-const executionFlow = async (appId: string, appToken: string, message: string, username: string): Promise<{ message: string; urlImage: string }> => {
+const executionFlow = async (appId: string, appToken: string, message: string, username: string): Promise<ExecutionFlowResponse> => {
 	try {
 		const response = await apiInstance('/execution', {
 			method: 'POST',
 			body: JSON.stringify({ appId, message, appToken, username })
 		});
-		return response as { message: string; urlImage: string };
+		return response as ExecutionFlowResponse;
 	} catch (error) {
 		throw (error as IError).message;
 	}

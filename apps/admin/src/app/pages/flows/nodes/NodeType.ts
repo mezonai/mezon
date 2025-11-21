@@ -66,7 +66,7 @@ const NodeTypes = [
 					type: 'string',
 					uniforms: { component: CustomTextField, label: 'Message', name: 'message', placeholder: 'Enter message' }
 				},
-				image: { type: 'object', uniforms: { component: MultiImageUploadField, label: 'Uploaded Image', name: 'image' } }
+				image: { type: 'array', uniforms: { component: MultiImageUploadField, label: 'Uploaded Image', name: 'image' } }
 			},
 			required: []
 		},
@@ -95,7 +95,7 @@ const NodeTypes = [
 					type: 'string',
 					uniforms: { component: CustomTextField, label: 'Message', name: 'message', placeholder: 'Enter message' }
 				},
-				image: { type: 'object', uniforms: { component: MultiImageUploadField, label: 'Uploaded Image', name: 'image' } }
+				image: { type: 'array', uniforms: { component: MultiImageUploadField, label: 'Uploaded Image', name: 'image' } }
 			},
 			required: []
 		},
@@ -109,7 +109,7 @@ const NodeTypes = [
 		}
 	},
 	{
-		type: 'apiLoader',
+		type: 'api',
 		label: 'Api',
 		schema: yup.object().shape({
 			url: yup.string().required('Url is required'),

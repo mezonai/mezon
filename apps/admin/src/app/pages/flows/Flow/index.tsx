@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
+import { ApiIcon, ConditionIcon, ResponseIcon, TriggerIcon, WebhookIcon } from '../../../../assets/icons/nodeIcons';
 import { FlowContext } from '../../../context/FlowContext';
 import flowService from '../../../services/flowService';
 import { addEdge, addNode, changeLoading, deleteNode, setEdgesContext, setNodesContext } from '../../../stores/flow/flow.action';
@@ -18,7 +19,16 @@ import CustomNode from '../nodes/CustomNode';
 import NodeTypes from '../nodes/NodeType';
 import FlowHeaderBar from './FlowHeaderBar';
 import NodeDetailModal from './NodeDetailModal';
+import NodeEditingModal from './NodeEditingModal';
 import SaveFlowModal from './SaveFlowModal';
+
+const iconByType: Record<string, React.ComponentType> = {
+	Trigger: TriggerIcon,
+	Response: ResponseIcon,
+	Webhook: WebhookIcon,
+	Api: ApiIcon,
+	Condition: ConditionIcon
+};
 
 const Flow = () => {
 	const { userProfile } = useAuth();
@@ -59,10 +69,11 @@ const Flow = () => {
 		event.dataTransfer.dropEffect = 'move';
 	}, []);
 
-	// create list node type from NodeType and CustomNode to use in ReactFlow
+	// create a list node type from NodeType and CustomNode to use in ReactFlow
 	const listNodeType = useMemo(() => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const obj: { [key: string]: (props: any) => JSX.Element } = {};
-		NodeTypes.forEach((item, index) => {
+		NodeTypes.forEach((item) => {
 			if (!obj[item.type]) {
 				obj[item.type] = (props) => {
 					if (item.type === 'webhook') {
@@ -73,12 +84,13 @@ const Flow = () => {
 							{...props}
 							schema={item.schema}
 							label={item.label}
+							Icon={iconByType[item.label]}
 							initialValue={item.initialValue}
 							bridgeSchema={item.bridgeSchema}
 							anchors={item.anchors}
 							ref={(el: HTMLElement | null) => {
 								if (el) {
-									nodeRefs.current[props.data.id] = el; // assign ref to nodeRefs when node is created
+									nodeRefs.current[props.data.id] = el; // assign ref to nodeRefs when the node is created
 								} else {
 									delete nodeRefs.current[props.data.id]; // delete ref when node is deleted
 								}
@@ -89,50 +101,52 @@ const Flow = () => {
 			}
 		});
 		return obj;
-	}, []);
+	}, [applicationId]);
 
 	const handleClickSaveFlow = React.useCallback(async () => {
 		let checkValidate = true;
-		// get data from all nodes
-		const formData: {
-			[key: string]: {
-				[key: string]: string;
-			};
-		} = Object.keys(nodeRefs.current).reduce(
-			(data, nodeId) => {
-				const nodeRef = nodeRefs.current[nodeId] as {
-					getFormData?: () => {
-						[key: string]: string;
-					};
-					checkValidate?: () => {
-						[key: string]: string;
-					};
-				};
-				data[nodeId] = nodeRef?.getFormData?.() ?? {};
-				// check validate of all nodes
-				const check = nodeRef?.checkValidate?.();
-				if (!check) checkValidate = false;
-				return data;
-			},
-			{} as {
-				[key: string]: {
-					[key: string]: string;
-				};
-			}
-		);
 
-		// check validate of all nodes, if one node is invalid, return
-		if (!checkValidate) return;
+		// Validate all nodes
+		nodes.forEach((node) => {
+			const nodeRef = nodeRefs.current[node.id] as {
+				checkValidate?: () => boolean;
+			};
+
+			// 1. Try to validate using the Ref (triggers UI error on the node if visible)
+			if (nodeRef?.checkValidate) {
+				const isValid = nodeRef.checkValidate();
+				if (!isValid) checkValidate = false;
+			} else {
+				// 2. Fallback: Validate manually if the node is off-screen (no Ref)
+				const nodeConfig = NodeTypes.find((t) => t.type === node.type);
+				if (nodeConfig?.schema) {
+					try {
+						// Validate the data from the state against the schema
+						nodeConfig.schema.validateSync(node.data.defaultValue, { abortEarly: false });
+					} catch (error) {
+						checkValidate = false;
+					}
+				}
+			}
+		});
+
+		// check validating of all nodes, if one node is invalid, return
+		if (!checkValidate) {
+			toast.error('Please check invalid nodes');
+			return;
+		}
+
 		const listNodeInFlow: INode[] = [];
 		nodes.forEach((node) => {
-			const parameters = Object.keys(formData[node.id] ?? {}).map((key) => {
-				let value = formData[node.id][key];
-				if (typeof value !== 'string' && value !== null) {
-					value = JSON.stringify(value);
-				}
+			// Use data from the 'nodes' state directly, which is synced with FlowContext
+			const nodeData = (node.data.defaultValue as Record<string, string>) || {};
+			const parameters = Object.keys(nodeData).map((key) => {
+				const value = nodeData[key];
+				// eslint-disable-next-line no-console
+				console.log('key', key, 'value', value);
 				return {
 					parameterKey: key,
-					parameterValue: value?.trim() ?? null
+					parameterValue: typeof value === 'object' ? JSON.stringify(value) : (value?.toString().trim() ?? '')
 				};
 			});
 			const newNode: INode = {
@@ -149,6 +163,7 @@ const Flow = () => {
 			};
 			listNodeInFlow.push(newNode);
 		});
+
 		// loop through all edges to get connection
 		const listEdgeInFlow: IEdge[] = [];
 		edges.forEach((edge: Edge) => {
@@ -229,7 +244,7 @@ const Flow = () => {
 		flowDispatch(setEdgesContext(edges));
 	};
 
-	// handle drop node from menu to flow, add new node to flow
+	// handle drop node from the menu to flow, add a new node to flow
 	const onDrop = useCallback(
 		(event: React.DragEvent<HTMLDivElement>) => {
 			event.preventDefault();
@@ -256,7 +271,7 @@ const Flow = () => {
 					[key: string]: string;
 				} = {};
 				node?.parameters?.forEach((param: IParameter) => {
-					let value = param.parameterValue;
+					let value: string;
 					try {
 						value = JSON.parse(param.parameterValue ?? '');
 					} catch {
@@ -294,14 +309,14 @@ const Flow = () => {
 		};
 
 		const checkIsExampleFlow = ExampleFlow.find((item) => item.id === flowId || item.id === exampleFlowId);
-		// set flow data from example flow => use example flow template to create new flow
+		// set flow data from example flow => use example flow template to create a new flow
 		if (exampleFlowId && checkIsExampleFlow) {
 			setFlowDetail(checkIsExampleFlow.flowDetail);
 			setIsExampleFlow(false);
 			return;
 		}
 
-		// set flow data is empty when flowId is empty => create new flow
+		// set flow data is empty when flowId is empty => create a new flow
 		if (!flowId) {
 			flowDispatch(setNodesContext([]));
 			flowDispatch(setEdgesContext([]));
@@ -309,7 +324,7 @@ const Flow = () => {
 			return;
 		}
 
-		// get flow detail from example flow to display in flow editor
+		// get flow detail from an example flow to display in the flow editor
 		if (checkIsExampleFlow) {
 			setFlowDetail(checkIsExampleFlow.flowDetail);
 			setIsExampleFlow(true);
@@ -334,7 +349,7 @@ const Flow = () => {
 	}, [flowId, flowDispatch, exampleFlowId]);
 
 	useEffect(() => {
-		// handle delete node when press delete key
+		// handle delete node when press deletes the key
 		const onKeyUp = (event: KeyboardEvent) => {
 			if (event.key === 'Delete') {
 				const selectedNodes = document.querySelectorAll('.selected');
@@ -422,6 +437,7 @@ const Flow = () => {
 				onClose={() => setOpenModalSaveFlow(false)}
 			/>
 			<NodeDetailModal />
+			<NodeEditingModal />
 		</div>
 	);
 };
