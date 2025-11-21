@@ -8,7 +8,9 @@ import NodeTypes from '../nodes/NodeType';
 
 const NodeEditingModal = () => {
 	const { flowState, flowDispatch } = useContext(FlowContext);
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const formRef = useRef<any>(null);
+	const isSaving = useRef(false);
 
 	const onClose = () => {
 		flowDispatch(changeOpenModalNodeEditing(false));
@@ -25,38 +27,61 @@ const NodeEditingModal = () => {
 		if (!nodeConfig) return null;
 		return new JSONSchemaBridge({
 			schema: nodeConfig.bridgeSchema,
-			validator: (model) => {
-				return null;
+			validator: (model: unknown) => {
+				try {
+					nodeConfig.schema.validateSync(model, { abortEarly: false });
+					return null;
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				} catch (e: any) {
+					if (e.inner) {
+						return {
+							// eslint-disable-next-line @typescript-eslint/no-explicit-any
+							details: e.inner.map((err: any) => ({
+								path: err.path,
+								message: err.message
+							}))
+						};
+					}
+					return { details: [] };
+				}
 			}
 		});
 	}, [nodeConfig]);
 
 	const handleSave = () => {
 		if (formRef.current) {
+			isSaving.current = true;
 			formRef.current.submit();
 		}
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const handleSubmit = (model: any) => {
+		if (!isSaving.current) return;
+
 		if (selectedNodeData && selectedNodeData.id) {
 			flowDispatch(updateNodeData(selectedNodeData.id, model));
 			onClose();
 		}
+		isSaving.current = false;
 	};
 
 	if (!selectedNodeData || !nodeConfig || !bridge) {
-		// eslint-disable-next-line no-console
-		console.log('Invalid data for NodeEditingModal', { selectedNodeData, nodeConfig, bridge });
 		return null;
 	}
 
-	const modelData = selectedNodeData.data;
+	const modelData = selectedNodeData.data || {};
 
 	return (
-		<Modal title={`Edit ${nodeConfig.label}`} showModal={flowState.openModalNodeEditing} onClose={onClose} classNameBox={'bg-white w-[500px]'}>
+		<Modal
+			title={`Edit ${nodeConfig.label}`}
+			showModal={flowState.openModalNodeEditing}
+			onClose={onClose}
+			classNameBox={'bg-white w-[500px] rounded-b-lg'}
+		>
 			<div className="p-4">
 				<div className="mt-1">
-					<div className="p-4 border border-t-0 border-gray-200 dark:border-gray-600 rounded-b-md">
+					<div className="p-6 border border-t-0 border-gray-200 dark:border-gray-600">
 						<div className="hidden-submit-field">
 							<AutoForm ref={formRef} schema={bridge} model={modelData} onSubmit={handleSubmit}></AutoForm>
 						</div>
