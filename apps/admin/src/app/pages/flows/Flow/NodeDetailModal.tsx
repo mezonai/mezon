@@ -10,7 +10,7 @@ const NodeDetailModal = () => {
 	};
 	const nodeData = flowState.selectedNode;
 	return (
-		<Modal title={nodeData?.label} showModal={flowState.openModalNodeDetail} onClose={onClose}>
+		<Modal title={nodeData?.label} showModal={flowState.openModalNodeDetail} onClose={onClose} classNameBox={'bg-white'}>
 			<div className="p-2">
 				<div className="grid grid-cols-3 font-semibold p-2 border-b-[1px] border-gray-300">
 					<div>Label</div>

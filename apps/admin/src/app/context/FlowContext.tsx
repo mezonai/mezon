@@ -1,6 +1,7 @@
-import React, { Dispatch, createContext, useReducer } from 'react';
+import type { Dispatch } from 'react';
+import React, { createContext, useReducer } from 'react';
 import flowReducer, { initFlowState } from '../stores/flow/flow.reducer';
-import { FlowActionType, IFlowState } from '../stores/flow/flow.type';
+import type { FlowActionType, IFlowState } from '../stores/flow/flow.type';
 
 type flowDispatch = Dispatch<FlowActionType>;
 

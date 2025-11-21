@@ -50,6 +50,9 @@ const MultiImageUploadField = connectField((props: CustomFormFieldProps) => {
 				setError('Failed to upload files. Please try again.');
 			} finally {
 				setIsUploading(false);
+				if (fileInputRef.current) {
+					fileInputRef.current.value = '';
+				}
 			}
 		}
 	};
