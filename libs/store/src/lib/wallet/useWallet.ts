@@ -40,19 +40,12 @@ export function useWallet(): {
 	const enableWallet = useCallback(async () => {
 		const userId = userProfile?.user?.id || '';
 		if (sessionRef.current?.token && userId) {
-			await dispatch(walletActions.fetchEphemeralKeyPair());
-			await dispatch(walletActions.fetchAddress({ userId }));
-
 			const proofInput = {
 				userId,
 				jwt: sessionRef.current.token
 			};
 
-			const res = await dispatch(walletActions.fetchZkProofs(proofInput));
-			if (res.payload) {
-				await dispatch(walletActions.setIsEnabledWallet(true));
-				await fetchWalletData();
-			}
+			await dispatch(walletActions.fetchZkProofs(proofInput));
 		}
 	}, [userProfile, sessionRef]);
 

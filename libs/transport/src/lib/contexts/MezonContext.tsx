@@ -56,6 +56,7 @@ type Sessionlike = {
 	created_at?: number;
 	username?: string;
 	user_id?: string;
+	id_token?: string;
 };
 
 const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean) => {
@@ -230,6 +231,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					session.refresh_token || '',
 					session.created || false,
 					session.api_url || '',
+					session.id_token || '',
 					sessionData.is_remember || false
 				);
 
@@ -445,7 +447,14 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				throw new Error('Mezon client not initialized');
 			}
 
-			const sessionObj = new Session(session?.token, session?.refresh_token, session.created, session.api_url, session.is_remember);
+			const sessionObj = new Session(
+				session?.token,
+				session?.refresh_token,
+				session.created,
+				session.api_url,
+				session.id_token || '',
+				session.is_remember
+			);
 
 			if (session.expires_at) {
 				sessionObj.expires_at = session.expires_at;
@@ -465,7 +474,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 
 			const newSession = await clientRef.current.sessionRefresh(
-				new Session(session?.token, session?.refresh_token, session.created, session.api_url, session.is_remember)
+				new Session(session?.token, session?.refresh_token, session.created, session.api_url, session.id_token || '', session.is_remember)
 			);
 
 			console.log('sessionRef.current = ', 'refreshSession', { token: newSession?.token, user_id: newSession?.user_id });
@@ -536,6 +545,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 									sessionRef.current.refresh_token,
 									sessionRef.current.created,
 									sessionRef.current.api_url,
+									sessionRef.current.id_token,
 									sessionRef.current.is_remember ?? false
 								)
 							);
@@ -649,6 +659,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					sessionData.refresh_token,
 					sessionData.created || false,
 					sessionData.api_url,
+					sessionData.id_token || '',
 					sessionData.is_remember || false
 				);
 

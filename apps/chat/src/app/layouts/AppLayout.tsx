@@ -112,6 +112,7 @@ const AppLayout = () => {
 					sessionData.refresh_token,
 					sessionData.created,
 					sessionData.api_url,
+					sessionData.id_token || '',
 					!!sessionData.is_remember
 				);
 				const response = await dispatch(

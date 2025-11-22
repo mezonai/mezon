@@ -63,51 +63,37 @@ const fetchEphemeralKeyPair = createAsyncThunk('wallet/fetchEphemeralKeyPair', a
 	};
 });
 
-const fetchZkProofs = createAsyncThunk(
-	'wallet/fetchZkProofs',
-	async (req: { userId: string; ephemeralKeyPair?: IEphemeralKeyPair; jwt: string }, thunkAPI) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const ephemeralKeyPair = selectEphemeralKeyPair(thunkAPI.getState() as any);
-			const address = selectAddress(thunkAPI.getState() as any);
-			if (!ephemeralKeyPair || !address) {
-				return thunkAPI.rejectWithValue('Invalid ephemeral key pair or address');
-			}
-			if (!mezon.zkClient) {
-				return thunkAPI.rejectWithValue('ZkClient not initialized');
-			}
+const fetchZkProofs = createAsyncThunk('wallet/fetchZkProofs', async (req: { userId: string; jwt: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		if (!mezon.zkClient || !mezon.mmnClient) {
+			return;
+		}
+		const ephemeralKeyPair = await mezon.mmnClient.generateEphemeralKeyPair();
+		const address = await mezon.mmnClient.getAddressFromUserId(req.userId);
+		const response = await mezon.zkClient.getZkProofs({
+			userId: req.userId,
+			jwt: req.jwt,
+			address,
+			ephemeralPublicKey: ephemeralKeyPair.publicKey
+		});
+		if (response) {
+			await thunkAPI.dispatch(walletActions.fetchWalletDetail({ userId: req.userId }));
+			thunkAPI.dispatch(walletActions.setIsEnabledWallet(true));
+		}
 
-			let jwt = mezon.session.token;
-			if (mezon.session.isexpired(Date.now() / 1000)) {
-				const session = await mezon?.refreshSession({
-					...mezon.session,
-					is_remember: mezon.session.is_remember ?? false
-				});
-				if (!session?.token) {
-					return thunkAPI.rejectWithValue('Session refresh failed');
-				}
-				jwt = session.token;
-			}
-
-			const response = await mezon.zkClient.getZkProofs({
-				userId: req.userId,
-				jwt,
-				address,
-				ephemeralPublicKey: ephemeralKeyPair?.publicKey
-			});
-			return response;
-		} catch (error) {
-			if (error instanceof Error) {
-				thunkAPI.dispatch(
-					toastActions.addToast({
-						message: error.message,
-						type: 'error'
-					})
-				);
-			}
+		return response;
+	} catch (error) {
+		if (error instanceof Error) {
+			thunkAPI.dispatch(
+				toastActions.addToast({
+					message: error.message,
+					type: 'error'
+				})
+			);
 		}
 	}
-);
+});
 
 const sendTransaction = createAsyncThunk(
 	'wallet/sendTransaction',
