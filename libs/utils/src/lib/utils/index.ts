@@ -270,12 +270,50 @@ export const convertMarkdown = (markdown: string, type: EBacktickType): string =
 	return `\n${substring}\n`;
 };
 
-export const getSrcEmoji = (id: string) => {
-	return `${process.env.NX_BASE_IMG_URL}/emojis/${id}.webp`;
+export const getSrcSticker = (id: string, creatorId?: string) => {
+	const isEmptyCreator = !creatorId || creatorId.trim() === '0';
+	const basePath = isEmptyCreator ? `${process.env.NX_BASE_IMG_URL}/stickers` : `${process.env.NX_BASE_IMG_URL}/${creatorId}`;
+	return `${basePath}/${id}.webp`;
 };
 
-export const getSrcSound = (id: string) => {
-	return `${process.env.NX_BASE_IMG_URL}/sounds/${id}.mp3`;
+type StickerLike = {
+	src?: string;
+	id?: string;
+	stickerId?: string;
+	creatorId?: string;
+	creator_id?: string;
+};
+
+export const getStickerUrl = (sticker: StickerLike | string): string => {
+	if (typeof sticker === 'string') {
+		return getSrcSticker(sticker);
+	}
+
+	const stickerId = sticker.stickerId || sticker.id || '';
+	const creatorId = sticker.creatorId || sticker.creator_id || '';
+
+	return sticker.src || getSrcSticker(stickerId, creatorId);
+};
+
+export const getSrcEmoji = (id: string, creator_id?: string) => {
+	const isEmptyCreator = !creator_id || creator_id.trim() === '0';
+	const basePath = isEmptyCreator ? `${process.env.NX_BASE_IMG_URL}/emojis` : `${process.env.NX_BASE_IMG_URL}/${creator_id}`;
+	return `${basePath}/${id}.webp`;
+};
+
+export const getEmojiUrl = (emoji: { src?: string; id?: string; emojiId?: string; creator_id?: string } | string): string => {
+	if (typeof emoji === 'string') {
+		return getSrcEmoji(emoji);
+	}
+
+	const emojiId = emoji.emojiId || emoji.id || '';
+
+	return emoji.src || getSrcEmoji(emojiId, emoji.creator_id);
+};
+
+export const getSrcSound = (id: string, creator_id?: string) => {
+	const basePath = creator_id ? `${process.env.NX_BASE_IMG_URL}/${creator_id}` : process.env.NX_BASE_IMG_URL;
+	return `${basePath}/sounds/${id}.mp3`;
 };
 
 export const checkLastChar = (text: string) => {

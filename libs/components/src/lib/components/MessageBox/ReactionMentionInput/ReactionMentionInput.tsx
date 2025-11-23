@@ -153,12 +153,12 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		(query: string) => {
 			if (!query || emojis.length === 0) return [];
 			const q = query.toLowerCase();
-			const matches: { id: string; display: string; src?: string }[] = [];
+			const matches: { id: string; display: string; src?: string; creator_id?: string }[] = [];
 
-			for (const { id, shortname, category, src } of emojis) {
+			for (const { id, shortname, category, src, creator_id } of emojis) {
 				if (category === RECENT_EMOJI_CATEGORY || !shortname || !shortname.includes(q)) continue;
 				if (!id) continue;
-				matches.push({ id, display: shortname, src });
+				matches.push({ id, display: shortname, src, creator_id });
 				if (matches.length === 20) break;
 			}
 
@@ -1114,6 +1114,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 								>
 									<SuggestItem
 										emojiId={suggestion.id}
+										creator_id={(suggestion as any).creator_id}
 										display={suggestion.display}
 										valueHightLight={search}
 										symbol={(suggestion as any).emoji}

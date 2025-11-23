@@ -1,4 +1,4 @@
-import { IEmoji, IMessageWithUser } from '@mezon/utils';
+import type { IEmoji, IMessageWithUser } from '@mezon/utils';
 import { memo } from 'react';
 import ReactionItem from '../ReactionItem';
 
@@ -20,10 +20,12 @@ const ReactionPart: React.FC<IReactionPart> = ({ emojiList, messageId, isOption,
 						key={index}
 						emojiShortCode={item.shortname || ''}
 						emojiId={item.id || ''}
+						creator_id={item.creator_id}
 						messageId={messageId}
 						isOption={isOption}
 						message={message}
 						isTopic={isTopic}
+						emojis={emojiList}
 					/>
 				))}
 		</div>

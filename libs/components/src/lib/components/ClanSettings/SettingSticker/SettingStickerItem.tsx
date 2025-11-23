@@ -1,7 +1,7 @@
 import { usePermissionChecker } from '@mezon/core';
 import { deleteSticker, selectCurrentClanId, selectCurrentUserId, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission } from '@mezon/utils';
+import { EPermission, getStickerUrl } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -35,11 +35,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 			}
 		>
 			<div className="aspect-square h-[72px]  flex justify-center">
-				<img
-					className={' w-auto h-full object-cover select-none'}
-					src={`${!sticker.source ? `${process.env.NX_BASE_IMG_URL}/stickers/${sticker.id}.webp` : sticker.source}`}
-					alt=""
-				/>
+				<img className={' w-auto h-full object-cover select-none'} src={sticker.source ? sticker.source : getStickerUrl(sticker)} alt="" />
 			</div>
 			<p
 				title={sticker.shortname}

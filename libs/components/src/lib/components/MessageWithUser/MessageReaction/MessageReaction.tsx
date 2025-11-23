@@ -1,6 +1,7 @@
 import { useIdleRender } from '@mezon/core';
-import { selectMessageByMessageId, useAppSelector } from '@mezon/store';
-import type { EmojiDataOptionals, IMessageWithUser } from '@mezon/utils';
+import { selectEmojiSuggestionEntities, selectMessageByMessageId, useAppSelector } from '@mezon/store';
+import type { EmojiDataOptionals, IEmoji, IMessageWithUser } from '@mezon/utils';
+import { getIdSaleItemFromSource } from '@mezon/utils';
 import React, { useRef, useState } from 'react';
 import ItemEmoji from './ItemEmoji';
 import ItemEmojiSkeleton from './ItemEmojiSkeleton';
@@ -38,10 +39,14 @@ const ReactionContent: React.FC<MessageReactionProps> = ({ message, isTopic }) =
 
 const MessageReaction: React.FC<MessageReactionProps> = ({ message, isTopic }) => {
 	const messageReaction = useAppSelector((state) => selectMessageByMessageId(state, message.channel_id, message.id));
+	const emojiEntities = useAppSelector(selectEmojiSuggestionEntities);
 
 	if (messageReaction?.reactions && messageReaction?.reactions?.length > 0) {
 		return (
-			<ReactionContent message={{ ...message, reactions: combineMessageReactions(messageReaction.reactions, message.id) }} isTopic={isTopic} />
+			<ReactionContent
+				message={{ ...message, reactions: combineMessageReactions(messageReaction.reactions, message.id, emojiEntities) as any }}
+				isTopic={isTopic}
+			/>
 		);
 	}
 	return null;
@@ -49,7 +54,7 @@ const MessageReaction: React.FC<MessageReactionProps> = ({ message, isTopic }) =
 
 export default MessageReaction;
 
-export function combineMessageReactions(reactions: any[], message_id: string): any[] {
+export function combineMessageReactions(reactions: any[], message_id: string, emojiEntities: Record<string, IEmoji> = {}): EmojiDataOptionals[] {
 	const dataCombined: Record<string, EmojiDataOptionals> = {};
 
 	for (const reaction of reactions) {
@@ -61,6 +66,17 @@ export function combineMessageReactions(reactions: any[], message_id: string): a
 		}
 
 		if (!dataCombined[emojiId]) {
+			let emojiMetadata: IEmoji | undefined = emojiEntities[emojiId];
+			if (!emojiMetadata) {
+				emojiMetadata = Object.values(emojiEntities).find((e) => {
+					if (e.is_for_sale && e.src) {
+						const extractedId = getIdSaleItemFromSource(e.src);
+						return extractedId === emojiId;
+					}
+					return false;
+				});
+			}
+
 			dataCombined[emojiId] = {
 				emojiId,
 				emoji,
@@ -68,7 +84,9 @@ export function combineMessageReactions(reactions: any[], message_id: string): a
 				action: false,
 				message_id,
 				id: '',
-				channel_id: ''
+				channel_id: '',
+				url: reaction.url || emojiMetadata?.src || '',
+				creator_id: reaction.creator_id || emojiMetadata?.creator_id || ''
 			};
 		}
 		//if (!reaction.sender_name) continue;

@@ -8,7 +8,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission, MAX_FILE_NAME_EMOJI, getSrcEmoji } from '@mezon/utils';
+import { EPermission, MAX_FILE_NAME_EMOJI, getEmojiUrl } from '@mezon/utils';
 import type { ClanEmoji } from 'mezon-js';
 import type { MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
 import type { ChangeEvent } from 'react';
@@ -88,7 +88,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 			<div className={`w-full h-full flex flex-row gap-1 border-b-theme-primary items-center`}>
 				<div className={'w-14 h-8'}>
 					<div className={'w-8 h-8 overflow-hidden flex items-center justify-center select-none '}>
-						<img className={'w-auto max-h-full object-cover'} src={getSrcEmoji(emoji.id as string)} alt={emoji.shortname} />
+						<img className={'w-auto max-h-full object-cover'} src={getEmojiUrl(emoji)} alt={emoji.shortname} />
 					</div>
 				</div>
 

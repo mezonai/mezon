@@ -613,6 +613,8 @@ export enum MemberProfileType {
 export type IReaction = ApiMessageReaction & {
 	id: string;
 	message_id: string;
+	url?: string;
+	creator_id?: string;
 };
 
 export type IEmoji = {
@@ -687,6 +689,8 @@ export type EmojiDataOptionals = {
 	senders: SenderInfoOptionals[];
 	channel_id?: string;
 	message_id?: string;
+	url?: string;
+	creator_id?: string;
 };
 
 export type SenderInfoOptionals = {

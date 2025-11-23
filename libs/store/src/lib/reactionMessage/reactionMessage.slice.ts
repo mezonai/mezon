@@ -27,6 +27,8 @@ export type UpdateReactionMessageArgs = {
 	count?: number;
 	sender_id?: string;
 	action?: boolean;
+	url?: string;
+	creator_id?: string;
 };
 
 export type UpdateBulkMessageReactionsArgs = {

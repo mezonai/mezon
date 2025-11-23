@@ -176,8 +176,11 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 			const idPreview = Snowflake.generate();
 			const fileBlur = await createBlurredWatermarkedImageFile(resizeFile, 'SOLD', 2);
 			const pathPreview = `${(isSticker ? 'stickers/' : 'emojis/') + idPreview}.webp`;
-			await handleUploadEmoticon(client, session, pathPreview, fileBlur as File);
-			request.id = idPreview;
+			const img = await handleUploadEmoticon(client, session, pathPreview, fileBlur as File);
+			const lastSlashIndex = img?.url?.lastIndexOf('/');
+			const lastDotIndex = img?.url?.lastIndexOf('.');
+			const id = img?.url?.substring((lastSlashIndex || 0) + 1, lastDotIndex);
+			request.id = id;
 		}
 
 		const requestData = {

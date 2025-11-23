@@ -13,6 +13,7 @@ export interface DisplayedEmoji {
 	id: string;
 	emoji: string;
 	emojiId: string;
+	creator_id?: string;
 	timestamp: number;
 	displayName?: string;
 	position?: {

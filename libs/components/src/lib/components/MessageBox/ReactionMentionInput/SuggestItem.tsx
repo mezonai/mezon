@@ -1,8 +1,15 @@
 import type { ChannelsEntity } from '@mezon/store';
-import { selectAllChannelsByUser, selectAllHashtagDm, selectChannelById, selectNumberMemberVoiceChannel, useAppSelector } from '@mezon/store';
+import {
+	selectAllChannelsByUser,
+	selectAllHashtagDm,
+	selectChannelById,
+	selectEmojiSuggestionEntities,
+	selectNumberMemberVoiceChannel,
+	useAppSelector
+} from '@mezon/store';
 import { HighlightMatchBold, Icons } from '@mezon/ui';
-import type { SearchItemProps } from '@mezon/utils';
-import { createImgproxyUrl, generateE2eId, getSrcEmoji } from '@mezon/utils';
+import type { IEmoji, SearchItemProps } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId, getEmojiUrl, getIdSaleItemFromSource } from '@mezon/utils';
 import type { HashtagDm } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { memo, useEffect, useMemo, useState } from 'react';
@@ -21,6 +28,7 @@ type SuggestItemProps = {
 	isOpenSearchModal?: boolean;
 	wrapSuggestItemStyle?: string;
 	emojiId?: string;
+	creator_id?: string;
 	display?: string;
 	isHightLight?: boolean;
 	channel?: SearchItemProps;
@@ -39,6 +47,7 @@ const SuggestItem = ({
 	showAvatar,
 	wrapSuggestItemStyle,
 	emojiId,
+	creator_id: _creator_id,
 	display,
 	isHightLight = true,
 	channel,
@@ -55,6 +64,33 @@ const SuggestItem = ({
 	const commonChannels = useSelector(selectAllHashtagDm);
 	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | HashtagDm | null>(null);
 	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string));
+	const emojiEntities = useAppSelector(selectEmojiSuggestionEntities);
+
+	// Get emoji metadata for for-sale emojis and prepare data for getEmojiUrl
+	const emojiData = useMemo(() => {
+		if (!emojiId) return null;
+
+		let metadata: IEmoji | undefined = emojiEntities[emojiId];
+
+		if (!metadata) {
+			metadata = Object.values(emojiEntities).find((e) => {
+				if (e.is_for_sale && e.src) {
+					const extractedId = getIdSaleItemFromSource(e.src);
+					return extractedId === emojiId;
+				}
+				return false;
+			});
+		}
+
+		return metadata
+			? {
+					src: metadata.src,
+					id: metadata.id,
+					emojiId,
+					creator_id: metadata.creator_id || _creator_id
+				}
+			: emojiId;
+	}, [emojiId, emojiEntities, _creator_id]);
 	const checkVoiceStatus = useMemo(() => {
 		if (channelId !== undefined && numberMembersVoice && specificChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			return numberMembersVoice >= 2;
@@ -142,8 +178,8 @@ const SuggestItem = ({
 						)}
 					</div>
 				)}
-				{emojiId && (
-					<img src={getSrcEmoji(emojiId)} alt={getSrcEmoji(emojiId)} style={{ width: '32px', height: '32px', objectFit: 'cover' }} />
+				{emojiId && emojiData && (
+					<img src={getEmojiUrl(emojiData)} alt={getEmojiUrl(emojiData)} style={{ width: '32px', height: '32px', objectFit: 'cover' }} />
 				)}
 				{channelIcon}
 
