@@ -146,6 +146,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 					isEditing={isEditing}
 					isHighlight={isHighlight}
 					popup={popup}
+					channelId={channelId}
 					onContextMenu={handleContextMenu}
 					isCombine={isCombine}
 					showDivider={isDifferentDay}

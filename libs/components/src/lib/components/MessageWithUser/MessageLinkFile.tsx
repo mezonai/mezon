@@ -1,4 +1,5 @@
-import { selectCurrentUserId, selectTheme } from '@mezon/store';
+import type { RootState } from '@mezon/store';
+import { getStore, selectBanMeInChannel, selectCurrentUserId, selectTheme } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { DOWNLOAD_FILE, EFailAttachment, EMimeTypes, electronBridge } from '@mezon/utils';
@@ -62,6 +63,13 @@ const PDFLoadingFallback = () => {
 function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 	const handleDownload = async () => {
 		// window.open(attachmentData.);
+		const store = getStore();
+		const appState = store.getState() as RootState;
+		const isBanned = selectBanMeInChannel(appState, message?.channel_id || '');
+
+		if (isBanned) {
+			return;
+		}
 		const response = await fetch(attachmentData.url as string);
 		if (!response.ok) {
 			return;

@@ -11,7 +11,7 @@ import {
 	handleParticipantVoiceState,
 	onboardingActions,
 	selectAppChannelById,
-	selectBanMemberCurrentClanById,
+	selectBanMeInChannel,
 	selectChannelAppChannelId,
 	selectChannelAppClanId,
 	selectChannelById,
@@ -204,7 +204,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		}
 		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && currentClanIsOnboarding;
 	}, [selectUserProcessing?.onboarding_step, currentClanIsOnboarding, previewMode, currentClanId]);
-	const isBanned = useAppSelector((state) => selectBanMemberCurrentClanById(state, currentChannel.id, userId as string));
+	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannel.id));
 	if (canSendMessageDelayed === null) {
 		return (
 			<div
@@ -526,7 +526,7 @@ const OnboardingGuide = ({
 	);
 };
 
-const BanCountDown = ({ banTime, clanId, channelId, userId }: { banTime: number; clanId: string; channelId: string; userId: string }) => {
+export const BanCountDown = ({ banTime, clanId, channelId, userId }: { banTime: number; clanId: string; channelId: string; userId: string }) => {
 	const dispatch = useDispatch();
 	const { t } = useTranslation('common');
 	const [time, setTime] = useState<number | null>(null);
@@ -541,7 +541,7 @@ const BanCountDown = ({ banTime, clanId, channelId, userId }: { banTime: number;
 			return t('timeFormat.timeAgo.hours', { count: Math.round(banTime / FOR_1_HOUR_SEC) });
 		}
 		return null;
-	}, []);
+	}, [banTime, t]);
 
 	useEffect(() => {
 		if (banTime < 0) {

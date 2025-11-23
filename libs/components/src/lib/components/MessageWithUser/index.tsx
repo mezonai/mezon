@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import type { MessagesEntity } from '@mezon/store';
-import { topicsActions, useAppDispatch } from '@mezon/store';
+import type { MessagesEntity, RootState } from '@mezon/store';
+import { getStore, selectBanMeInChannel, topicsActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { ObserveFn, UsersClanEntity } from '@mezon/utils';
 import {
@@ -65,6 +65,7 @@ export type MessageWithUserProps = {
 	user: UsersClanEntity;
 	isSelected?: boolean;
 	previousMessage?: MessagesEntity;
+	channelId?: string;
 };
 
 function MessageWithUser({
@@ -86,7 +87,8 @@ function MessageWithUser({
 	user,
 	observeIntersectionForLoading,
 	isSelected,
-	previousMessage
+	previousMessage,
+	channelId
 }: Readonly<MessageWithUserProps>) {
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
@@ -209,6 +211,7 @@ function MessageWithUser({
 					popup={!isEphemeralMessage ? popup : undefined}
 					onContextMenu={!isEphemeralMessage ? onContextMenu : () => {}}
 					messageId={message.id}
+					channelId={channelId || message.channel_id}
 					className={classNames(
 						'fullBoxText relative group dark:font-normal font-medium',
 						{
@@ -415,6 +418,7 @@ interface HoverStateWrapperProps {
 	className?: string;
 	create_time?: string;
 	showMessageHead?: boolean;
+	channelId: string;
 }
 const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 	children,
@@ -424,7 +428,8 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 	messageId,
 	className,
 	create_time,
-	showMessageHead
+	showMessageHead,
+	channelId
 }) => {
 	const [isHover, setIsHover] = useState(false);
 	const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -445,6 +450,17 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 		hoverTimeout.current = setTimeout(() => {
 			setIsHover(false);
 		}, 100);
+	};
+
+	const renderPopup = () => {
+		const store = getStore();
+		const appState = store.getState() as RootState;
+		const isBanned = selectBanMeInChannel(appState, channelId || '');
+
+		if (isBanned || !popup) {
+			return null;
+		}
+		return popup();
 	};
 
 	return (
@@ -468,7 +484,7 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 					{!showMessageHead && create_time && (
 						<span className="absolute text-theme-primary left-[24px] top-[4px] text-[11px]">{convertTimeHour(create_time)}</span>
 					)}
-					{popup?.()}
+					{renderPopup()}
 				</>
 			)}
 		</div>

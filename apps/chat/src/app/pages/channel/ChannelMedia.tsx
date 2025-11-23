@@ -1,6 +1,6 @@
 import { ModalInputMessageBuzz } from '@mezon/components';
 import { EmojiSuggestionProvider } from '@mezon/core';
-import type { ChannelsEntity } from '@mezon/store';
+import { selectBanMeInChannel, useAppSelector, type ChannelsEntity } from '@mezon/store';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -45,9 +45,10 @@ type KeyPressListenerProps = {
 
 const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 	const isListenerAttached = useRef(false);
+	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannel?.id || ''));
 
 	useEffect(() => {
-		if (isListenerAttached.current) return;
+		if (isListenerAttached.current || isBanned) return;
 		isListenerAttached.current = true;
 
 		const handleKeyPress = (event: KeyboardEvent) => {
@@ -63,7 +64,7 @@ const KeyPressListener = ({ currentChannel, mode }: KeyPressListenerProps) => {
 			window.removeEventListener('keydown', handleKeyPress);
 			isListenerAttached.current = false;
 		};
-	}, []);
+	}, [isBanned]);
 
 	const [openModalBuzz, closeModalBuzz] = useModal(
 		() => (

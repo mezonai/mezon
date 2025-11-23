@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import type { MessagesEntity } from '@mezon/store';
+import type { RootState } from '@mezon/store';
+import { getStore, selectBanMeInChannel, type MessagesEntity } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { TypeMessage, addMention, convertDateStringI18n, generateE2eId } from '@mezon/utils';
 import type { ReactNode } from 'react';
@@ -45,6 +46,7 @@ function MessageWithSystem({
 					onContextMenu={undefined}
 					messageId={message?.id}
 					className={'fullBoxText relative group'}
+					channelId={message.channel_id}
 				>
 					<div
 						className={`flex items-start min-h-8 relative w-full px-3 text-theme-primary pt-2 pl-5 ${isCustom ? 'pb-2' : ''}`}
@@ -89,6 +91,7 @@ interface HoverStateWrapperProps {
 	onContextMenu?: (event: React.MouseEvent<HTMLParagraphElement>) => void;
 	messageId?: string;
 	className?: string;
+	channelId: string;
 }
 const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 	children,
@@ -96,12 +99,20 @@ const HoverStateWrapper: React.FC<HoverStateWrapperProps> = ({
 	isSearchMessage: _isSearchMessage,
 	onContextMenu,
 	messageId,
-	className
+	className,
+	channelId
 }) => {
 	const [isHover, setIsHover] = useState(false);
 	const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
 
 	const handleMouseEnter = () => {
+		const store = getStore();
+		const appState = store.getState() as RootState;
+		const isBanned = selectBanMeInChannel(appState, channelId || '');
+
+		if (isBanned) {
+			return;
+		}
 		if (hoverTimeout.current) {
 			clearTimeout(hoverTimeout.current);
 		}

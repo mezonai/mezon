@@ -5,6 +5,7 @@ import {
 	getCurrentChannelAndDm,
 	getStore,
 	pinMessageActions,
+	selectBanMeInChannel,
 	selectClanView,
 	selectClickedOnThreadBoxStatus,
 	selectCurrentChannelChannelId,
@@ -238,6 +239,13 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 
 	const showContextMenu = useCallback(
 		(event: React.MouseEvent<HTMLElement>, props: MessageContextMenuProps) => {
+			const store = getStore();
+			const appState = store.getState() as RootState;
+			const isBanned = selectBanMeInChannel(appState, channelId || '');
+
+			if (isBanned) {
+				return;
+			}
 			const position = props.position || null;
 			setIsMenuVisible(true);
 			setTimeout(() => {

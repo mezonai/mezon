@@ -1,5 +1,6 @@
 import { useChatSending } from '@mezon/core';
-import { selectCurrentChannel, selectCurrentDM } from '@mezon/store';
+import type { RootState } from '@mezon/store';
+import { getStore, selectBanMeInChannel, selectCurrentChannel, selectCurrentDM } from '@mezon/store';
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
 import { MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -27,6 +28,13 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 	});
 
 	const handleSendWaveSticker = () => {
+		const store = getStore();
+		const appState = store.getState() as RootState;
+		const isBanned = selectBanMeInChannel(appState, currenChannel?.id || '');
+
+		if (isBanned) {
+			return null;
+		}
 		try {
 			const content: IMessageSendPayload = { t: '' };
 			const ref = {
