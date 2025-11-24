@@ -161,7 +161,7 @@ const NodeTypes = [
 		},
 		anchors: {
 			source: [{ id: 'api-loader-source-1', text: 'Condition' }],
-			target: [{ id: 'api-loader-target-1', text: 'Splitter Text' }]
+			target: [{ id: 'api-loader-target-1', text: 'Trigger' }]
 		},
 		initialValue: {
 			url: '',
