@@ -44,8 +44,6 @@ const Flow = () => {
 	const [nodes, setNodes, onNodesChange] = useNodesState(flowState.nodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(flowState.edges);
 
-	const nodeRefs = useRef<{ [key: string]: HTMLElement | null }>({} as { [key: string]: HTMLElement });
-
 	// --- State cho Popup ---
 	const [popupConfig, setPopupConfig] = React.useState({
 		visible: false,
@@ -57,7 +55,6 @@ const Flow = () => {
 	});
 	const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-	// Xử lý khi hover vào handle
 	const onHandleHover = useCallback((e: React.MouseEvent, nodeId: string, handleId: string, label: string) => {
 		if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
 
@@ -71,7 +68,6 @@ const Flow = () => {
 		});
 	}, []);
 
-	// Xử lý khi rời chuột (có delay để người dùng kịp di chuột sang popup)
 	const onHandleLeave = useCallback(() => {
 		hoverTimeoutRef.current = setTimeout(() => {
 			setPopupConfig((prev) => ({ ...prev, visible: false }));
@@ -86,7 +82,6 @@ const Flow = () => {
 		onHandleLeave();
 	}, [onHandleLeave]);
 
-	// Logic thêm node mới và nối dây
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const handleAddNextNode = (nodeConfig: any) => {
 		const { sourceNodeId, sourceHandleId } = popupConfig;
@@ -94,16 +89,13 @@ const Flow = () => {
 
 		if (!sourceNode) return;
 
-		// 1. Tính toán vị trí cho node mới (bên phải node cũ)
 		const newNodePosition = {
 			x: sourceNode.position.x + (sourceNode.measured?.width || 150) + 100,
 			y: sourceNode.position.y
 		};
 
-		// 2. Tạo ID cho node mới
 		const newNodeId = uuidv4();
 
-		// 3. Tạo object Node mới (tương tự logic trong flowReducer)
 		const newNode = {
 			id: newNodeId,
 			type: nodeConfig.type,
@@ -117,12 +109,9 @@ const Flow = () => {
 			measured: { width: 150, height: 80 } // Default size
 		};
 
-		// 4. Cập nhật danh sách Nodes
 		const newNodesList = [...nodes, newNode];
 		flowDispatch(setNodesContext(newNodesList));
 
-		// 5. Tạo Edge kết nối từ Source -> New Node
-		// Tìm target handle ID mặc định của node mới (nếu có)
 		const targetHandleId = nodeConfig.anchors?.target?.[0]?.id || `target-${newNodeId}`;
 
 		const newEdge: Edge = {
@@ -134,10 +123,8 @@ const Flow = () => {
 			type: 'default'
 		};
 
-		// 6. Cập nhật danh sách Edges
 		flowDispatch(addEdge(newEdge));
 
-		// Đóng popup
 		setPopupConfig((prev) => ({ ...prev, visible: false }));
 	};
 
@@ -178,7 +165,6 @@ const Flow = () => {
 					return (
 						<CustomNode
 							{...props}
-							schema={item.schema}
 							label={item.label}
 							Icon={iconByType[item.label]}
 							initialValue={item.initialValue}
@@ -186,44 +172,26 @@ const Flow = () => {
 							anchors={item.anchors}
 							onHandleHover={onHandleHover}
 							onHandleLeave={onHandleLeave}
-							ref={(el: HTMLElement | null) => {
-								if (el) {
-									nodeRefs.current[props.data.id] = el; // assign ref to nodeRefs when the node is created
-								} else {
-									delete nodeRefs.current[props.data.id]; // delete ref when node is deleted
-								}
-							}}
 						/>
 					);
 				};
 			}
 		});
 		return obj;
-	}, [applicationId, onHandleHover, onHandleLeave]); // Thêm dependency
+	}, [applicationId, onHandleHover, onHandleLeave]);
 
 	const handleClickSaveFlow = React.useCallback(async () => {
 		let checkValidate = true;
 
-		// Validate all nodes
+		// Validate all nodes directly using Schema and Data in State
 		nodes.forEach((node) => {
-			const nodeRef = nodeRefs.current[node.id] as {
-				checkValidate?: () => boolean;
-			};
-
-			// 1. Try to validate using the Ref (triggers UI error on the node if visible)
-			if (nodeRef?.checkValidate) {
-				const isValid = nodeRef.checkValidate();
-				if (!isValid) checkValidate = false;
-			} else {
-				// 2. Fallback: Validate manually if the node is off-screen (no Ref)
-				const nodeConfig = NodeTypes.find((t) => t.type === node.type);
-				if (nodeConfig?.schema) {
-					try {
-						// Validate the data from the state against the schema
-						nodeConfig.schema.validateSync(node.data.defaultValue, { abortEarly: false });
-					} catch (error) {
-						checkValidate = false;
-					}
+			const nodeConfig = NodeTypes.find((t) => t.type === node.type);
+			if (nodeConfig?.schema) {
+				try {
+					// Validate data stored in node.data.defaultValue against the schema
+					nodeConfig.schema.validateSync(node.data.defaultValue, { abortEarly: false });
+				} catch (error) {
+					checkValidate = false;
 				}
 			}
 		});
@@ -240,8 +208,6 @@ const Flow = () => {
 			const nodeData = (node.data.defaultValue as Record<string, string>) || {};
 			const parameters = Object.keys(nodeData).map((key) => {
 				const value = nodeData[key];
-				// eslint-disable-next-line no-console
-				console.log('key', key, 'value', value);
 				return {
 					parameterKey: key,
 					parameterValue: typeof value === 'object' ? JSON.stringify(value) : (value?.toString().trim() ?? '')
