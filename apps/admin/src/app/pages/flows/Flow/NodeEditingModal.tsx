@@ -77,11 +77,11 @@ const NodeEditingModal = () => {
 			title={`Edit ${nodeConfig.label}`}
 			showModal={flowState.openModalNodeEditing}
 			onClose={onClose}
-			classNameBox={'bg-white w-[500px] rounded-lg'}
+			classNameBox={'bg-white w-[500px] rounded-3xl'}
 		>
 			<div className="p-4">
 				<div className="mt-1">
-					<div className="p-6 border border-t-0 border-gray-200 dark:border-gray-600">
+					<div className="p-6 border rounded-3xl border-t-1 border-gray-200 dark:border-gray-600">
 						<div className="hidden-submit-field">
 							<AutoForm ref={formRef} schema={bridge} model={modelData} onSubmit={handleSubmit}></AutoForm>
 						</div>
