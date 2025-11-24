@@ -4,7 +4,7 @@ export interface IconProps extends React.SVGProps<SVGSVGElement> {
 	size?: number | string;
 }
 
-export const TriggerIcon: React.FC<IconProps> = ({ className = 'w-10 h-10', ...props }) => {
+export const TriggerIcon: React.FC<IconProps> = ({ className = 'w-10 h-10 text-purple-600', ...props }) => {
 	return (
 		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
 			{/* <rect width="24" height="24" fill="white" rx="4"/> */}
@@ -19,7 +19,7 @@ export const TriggerIcon: React.FC<IconProps> = ({ className = 'w-10 h-10', ...p
 	);
 };
 
-export const ApiIcon: React.FC<IconProps> = ({ className = 'w-10 h-10', ...props }) => {
+export const ApiIcon: React.FC<IconProps> = ({ className = 'w-10 h-10 text-blue-500', ...props }) => {
 	return (
 		<svg
 			viewBox="0 0 24 24"
@@ -41,7 +41,7 @@ export const ApiIcon: React.FC<IconProps> = ({ className = 'w-10 h-10', ...props
 	);
 };
 
-export const WebhookIcon: React.FC<IconProps> = ({ className = 'w-10 h-10', ...props }) => {
+export const WebhookIcon: React.FC<IconProps> = ({ className = 'w-10 h-10 text-cyan-500', ...props }) => {
 	return (
 		<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
 			<g>
@@ -78,7 +78,7 @@ export const WebhookIcon: React.FC<IconProps> = ({ className = 'w-10 h-10', ...p
 	);
 };
 
-export const ConditionIcon: React.FC<IconProps> = ({ className = 'w-10 h-10', ...props }) => {
+export const ConditionIcon: React.FC<IconProps> = ({ className = 'w-10 h-10 text-amber-500', ...props }) => {
 	return (
 		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
 			<path
@@ -91,7 +91,7 @@ export const ConditionIcon: React.FC<IconProps> = ({ className = 'w-10 h-10', ..
 	);
 };
 
-export const ResponseIcon: React.FC<IconProps> = ({ className = 'w-10 h-10', ...props }) => {
+export const ResponseIcon: React.FC<IconProps> = ({ className = 'w-10 h-10 text-emerald-500', ...props }) => {
 	return (
 		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className={className} {...props}>
 			<path
