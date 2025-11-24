@@ -16,6 +16,7 @@ import ExampleFlow from '../../flowExamples/ExampleFlows';
 import AddNodeMenuPopup from '../AddNodeMenuPopup';
 import FlowChatPopup from '../FlowChat';
 import CustomNode from '../nodes/CustomNode';
+import NextNodePopup from '../nodes/NextNodePopup';
 import NodeTypes from '../nodes/NodeType';
 import FlowHeaderBar from './FlowHeaderBar';
 import NodeDetailModal from './NodeDetailModal';
@@ -44,6 +45,101 @@ const Flow = () => {
 	const [edges, setEdges, onEdgesChange] = useEdgesState(flowState.edges);
 
 	const nodeRefs = useRef<{ [key: string]: HTMLElement | null }>({} as { [key: string]: HTMLElement });
+
+	// --- State cho Popup ---
+	const [popupConfig, setPopupConfig] = React.useState({
+		visible: false,
+		x: 0,
+		y: 0,
+		sourceNodeId: '',
+		sourceHandleId: '',
+		sourceNodeLabel: ''
+	});
+	const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+	// Xử lý khi hover vào handle
+	const onHandleHover = useCallback((e: React.MouseEvent, nodeId: string, handleId: string, label: string) => {
+		if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+
+		setPopupConfig({
+			visible: true,
+			x: e.clientX,
+			y: e.clientY,
+			sourceNodeId: nodeId,
+			sourceHandleId: handleId,
+			sourceNodeLabel: label
+		});
+	}, []);
+
+	// Xử lý khi rời chuột (có delay để người dùng kịp di chuột sang popup)
+	const onHandleLeave = useCallback(() => {
+		hoverTimeoutRef.current = setTimeout(() => {
+			setPopupConfig((prev) => ({ ...prev, visible: false }));
+		}, 300); // Delay 300ms
+	}, []);
+
+	const onPopupEnter = useCallback(() => {
+		if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+	}, []);
+
+	const onPopupLeave = useCallback(() => {
+		onHandleLeave();
+	}, [onHandleLeave]);
+
+	// Logic thêm node mới và nối dây
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const handleAddNextNode = (nodeConfig: any) => {
+		const { sourceNodeId, sourceHandleId } = popupConfig;
+		const sourceNode = nodes.find((n) => n.id === sourceNodeId);
+
+		if (!sourceNode) return;
+
+		// 1. Tính toán vị trí cho node mới (bên phải node cũ)
+		const newNodePosition = {
+			x: sourceNode.position.x + (sourceNode.measured?.width || 150) + 100,
+			y: sourceNode.position.y
+		};
+
+		// 2. Tạo ID cho node mới
+		const newNodeId = uuidv4();
+
+		// 3. Tạo object Node mới (tương tự logic trong flowReducer)
+		const newNode = {
+			id: newNodeId,
+			type: nodeConfig.type,
+			position: newNodePosition,
+			dragHandle: '.custom-drag-handle',
+			data: {
+				label: nodeConfig.label,
+				id: newNodeId,
+				defaultValue: nodeConfig.initialValue || {}
+			},
+			measured: { width: 150, height: 80 } // Default size
+		};
+
+		// 4. Cập nhật danh sách Nodes
+		const newNodesList = [...nodes, newNode];
+		flowDispatch(setNodesContext(newNodesList));
+
+		// 5. Tạo Edge kết nối từ Source -> New Node
+		// Tìm target handle ID mặc định của node mới (nếu có)
+		const targetHandleId = nodeConfig.anchors?.target?.[0]?.id || `target-${newNodeId}`;
+
+		const newEdge: Edge = {
+			id: uuidv4(),
+			source: sourceNodeId,
+			sourceHandle: sourceHandleId,
+			target: newNodeId,
+			targetHandle: targetHandleId,
+			type: 'default'
+		};
+
+		// 6. Cập nhật danh sách Edges
+		flowDispatch(addEdge(newEdge));
+
+		// Đóng popup
+		setPopupConfig((prev) => ({ ...prev, visible: false }));
+	};
 
 	const [flowData, setFlowData] = React.useState<{ flowName: string; description: string }>({
 		flowName: 'Untitled Flow',
@@ -88,6 +184,8 @@ const Flow = () => {
 							initialValue={item.initialValue}
 							bridgeSchema={item.bridgeSchema}
 							anchors={item.anchors}
+							onHandleHover={onHandleHover}
+							onHandleLeave={onHandleLeave}
 							ref={(el: HTMLElement | null) => {
 								if (el) {
 									nodeRefs.current[props.data.id] = el; // assign ref to nodeRefs when the node is created
@@ -101,7 +199,7 @@ const Flow = () => {
 			}
 		});
 		return obj;
-	}, [applicationId]);
+	}, [applicationId, onHandleHover, onHandleLeave]); // Thêm dependency
 
 	const handleClickSaveFlow = React.useCallback(async () => {
 		let checkValidate = true;
@@ -438,6 +536,15 @@ const Flow = () => {
 			/>
 			<NodeDetailModal />
 			<NodeEditingModal />
+			{/* Render Popup */}
+			<NextNodePopup
+				visible={popupConfig.visible}
+				position={{ x: popupConfig.x, y: popupConfig.y }}
+				onSelect={handleAddNextNode}
+				onMouseEnter={onPopupEnter}
+				onMouseLeave={onPopupLeave}
+				sourceNodeLabel={popupConfig.sourceNodeLabel}
+			/>
 		</div>
 	);
 };

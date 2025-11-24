@@ -77,7 +77,7 @@ const NodeEditingModal = () => {
 			title={`Edit ${nodeConfig.label}`}
 			showModal={flowState.openModalNodeEditing}
 			onClose={onClose}
-			classNameBox={'bg-white w-[500px] rounded-b-lg'}
+			classNameBox={'bg-white w-[500px] rounded-lg'}
 		>
 			<div className="p-4">
 				<div className="mt-1">
