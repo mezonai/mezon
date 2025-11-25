@@ -26,17 +26,15 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>UQ8HT4Q2XM.mezon.desktop</string>
+		<string>E9Y2J54ZH3.mezon.desktop</string>
 	</array>
 	<key>com.apple.application-identifier</key>
-	<string>UQ8HT4Q2XM.mezon.desktop</string>
+	<string>E9Y2J54ZH3.mezon.desktop</string>
 	<key>com.apple.developer.team-identifier</key>
-	<string>UQ8HT4Q2XM</string>
+	<string>E9Y2J54ZH3</string>
 	<key>com.apple.security.files.bookmarks.app-scope</key>
 	<true/>
 	<key>com.apple.security.files.bookmarks.document-scope</key>
-	<true/>
-	<key>com.apple.developer.usernotifications.communication</key>
 	<true/>
 </dict>
 </plist>

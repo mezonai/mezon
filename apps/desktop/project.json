@@ -23,15 +23,15 @@
       ],
       "mac": {
         "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-        "icon": "apps/desktop/src/assets/mac-icon.png",
-        "appId": "E9Y2J54ZH3.app.mezon.ai",
+        "icon": "apps/desktop/src/assets/mac-icon.icns",
+        "appId": "mezon.desktop",
         "category": "public.app-category.productivity",
         "target": {
           "arch": [
             "x64",
             "arm64"
           ],
-          "target": "default"
+          "target": "mas"
         },
         "publish": [
           {
@@ -39,18 +39,19 @@
             "url": "https://cdn.mezon.ai/release/"
           }
         ],
-        "identity": "Tien Pham (E9Y2J54ZH3)",
-        "hardenedRuntime": true,
-        "entitlements": "./apps/desktop/src/assets/entitlements.mac.plist",
-        "entitlementsInherit": "./apps/desktop/src/assets/entitlements.mac.inherit.plist",
-        "gatekeeperAssess": true,
-        "notarize": {
-          "teamId": "E9Y2J54ZH3"
-        },
+        "type": "distribution",
+        "hardenedRuntime": false,
+        "entitlements": "./apps/desktop/src/assets/entitlements.mas.plist",
+        "entitlementsInherit": "./apps/desktop/src/assets/entitlements.mas.inherit.plist",
+        "entitlementsLoginHelper": "./apps/desktop/src/assets/entitlements.mas.loginhelper.plist",
+        "gatekeeperAssess": false,
         "provisioningProfile": "./apps/desktop/src/assets/mezonai.provisionprofile",
+        "minimumSystemVersion": "10.15",
         "extendInfo": {
           "NSMicrophoneUsageDescription": "Mezon requires microphone access to enable audio call",
-          "NSCameraUsageDescription": "Mezon needs camera access to enable video call"
+          "NSCameraUsageDescription": "Mezon needs camera access to enable video call",
+          "ElectronTeamID": "E9Y2J54ZH3",
+          "LSMinimumSystemVersion": "10.15"
         }
       },
       "win": {
@@ -178,15 +179,15 @@
         "prepackageOnly": true,
         "mac": {
           "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "icon": "apps/desktop/src/assets/mac-icon.png",
-          "appId": "E9Y2J54ZH3.app.mezon.ai",
+          "icon": "apps/desktop/src/assets/mac-icon.icns",
+          "appId": "mezon.desktop",
           "category": "public.app-category.productivity",
           "target": {
             "arch": [
               "x64",
               "arm64"
             ],
-            "target": "default"
+            "target": "mas"
           },
           "publish": [
             {
@@ -194,18 +195,19 @@
               "url": "https://cdn.mezon.ai/release/"
             }
           ],
-          "identity": "Tien Pham (E9Y2J54ZH3)",
-          "hardenedRuntime": true,
-          "entitlements": "./apps/desktop/src/assets/entitlements.mac.plist",
-          "entitlementsInherit": "./apps/desktop/src/assets/entitlements.mac.inherit.plist",
-          "gatekeeperAssess": true,
-          "notarize": {
-            "teamId": "E9Y2J54ZH3"
-          },
+          "type": "distribution",
+          "hardenedRuntime": false,
+          "entitlements": "./apps/desktop/src/assets/entitlements.mas.plist",
+          "entitlementsInherit": "./apps/desktop/src/assets/entitlements.mas.inherit.plist",
+          "entitlementsLoginHelper": "./apps/desktop/src/assets/entitlements.mas.loginhelper.plist",
+          "gatekeeperAssess": false,
           "provisioningProfile": "./apps/desktop/src/assets/mezonai.provisionprofile",
+          "minimumSystemVersion": "10.15",
           "extendInfo": {
             "NSMicrophoneUsageDescription": "Mezon requires microphone access to enable audio call",
-            "NSCameraUsageDescription": "Mezon needs camera access to enable video call"
+            "NSCameraUsageDescription": "Mezon needs camera access to enable video call",
+            "ElectronTeamID": "E9Y2J54ZH3",
+            "LSMinimumSystemVersion": "10.15"
           }
         },
         "win": {
@@ -283,15 +285,15 @@
         "outputPath": "dist/executables",
         "mac": {
           "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "icon": "apps/desktop/src/assets/mac-icon.png",
-          "appId": "E9Y2J54ZH3.app.mezon.ai",
+          "icon": "apps/desktop/src/assets/mac-icon.icns",
+          "appId": "mezon.desktop",
           "category": "public.app-category.productivity",
           "target": {
             "arch": [
               "x64",
               "arm64"
             ],
-            "target": "default"
+            "target": "mas"
           },
           "publish": [
             {
@@ -299,18 +301,19 @@
               "url": "https://cdn.mezon.ai/release/"
             }
           ],
-          "identity": "Tien Pham (E9Y2J54ZH3)",
-          "hardenedRuntime": true,
-          "entitlements": "./apps/desktop/src/assets/entitlements.mac.plist",
-          "entitlementsInherit": "./apps/desktop/src/assets/entitlements.mac.inherit.plist",
-          "gatekeeperAssess": true,
-          "notarize": {
-            "teamId": "E9Y2J54ZH3"
-          },
+          "type": "distribution",
+          "hardenedRuntime": false,
+          "entitlements": "./apps/desktop/src/assets/entitlements.mas.plist",
+          "entitlementsInherit": "./apps/desktop/src/assets/entitlements.mas.inherit.plist",
+          "entitlementsLoginHelper": "./apps/desktop/src/assets/entitlements.mas.loginhelper.plist",
+          "gatekeeperAssess": false,
           "provisioningProfile": "./apps/desktop/src/assets/mezonai.provisionprofile",
+          "minimumSystemVersion": "10.15",
           "extendInfo": {
             "NSMicrophoneUsageDescription": "Mezon requires microphone access to enable audio call",
-            "NSCameraUsageDescription": "Mezon needs camera access to enable video call"
+            "NSCameraUsageDescription": "Mezon needs camera access to enable video call",
+            "ElectronTeamID": "E9Y2J54ZH3",
+            "LSMinimumSystemVersion": "10.15"
           }
         },
         "win": {
