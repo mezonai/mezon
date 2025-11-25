@@ -1,5 +1,4 @@
 import { ModalLayout } from '@mezon/components';
-import { safeJSONParse } from 'mezon-js';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import type { HTMLFieldProps } from 'uniforms';
@@ -8,6 +7,7 @@ import { connectField } from 'uniforms';
 type CustomFormFieldProps = HTMLFieldProps<{ [key: string]: string }, HTMLDivElement> & {
 	label?: string;
 };
+
 function CustomParamsField({ onChange, value, label, errorMessage, showInlineError, fieldType, changed, ...props }: CustomFormFieldProps) {
 	const [open, setOpen] = useState(false);
 	const [options, setOptions] = useState<Array<{ key: string; value: string }>>([]);
@@ -15,7 +15,7 @@ function CustomParamsField({ onChange, value, label, errorMessage, showInlineErr
 		if (value) {
 			let data: { [key: string]: string } = {};
 			try {
-				data = typeof value === 'string' ? safeJSONParse(value) : value;
+				data = value;
 			} catch (e) {
 				data = {};
 			}
@@ -111,8 +111,8 @@ function CustomParamsField({ onChange, value, label, errorMessage, showInlineErr
 				</div>
 			</div>
 			{open && (
-				<ModalLayout onClose={handleClose}>
-					<div className="p-4">
+				<ModalLayout onClose={handleClose} className={'backdrop-blur-sm'}>
+					<div className="p-4 z-[9999] bg-white dark:bg-gray-800 rounded-3xl shadow-lg w-[500px] max-w-[90vw] mx-auto">
 						<div className="header text-center">
 							<span className="dark:text-white font-medium text-[20px]">{props.placeholder}</span>
 						</div>
