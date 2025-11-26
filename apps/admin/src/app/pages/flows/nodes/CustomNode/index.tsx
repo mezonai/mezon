@@ -28,7 +28,6 @@ interface CustomNodeProps {
 	};
 	Icon: React.ComponentType;
 	label: string;
-	// Bỏ prop schema vì không dùng nữa
 	bridgeSchema: {
 		type: string;
 		properties: Record<string, { type: string; uniforms: { component: React.ComponentType; label: string; name: string } }>;
@@ -39,7 +38,6 @@ interface CustomNodeProps {
 		target: IAnchor[];
 	};
 	initialValue?: Record<string, unknown>;
-	// Thêm props mới để xử lý hover
 	onHandleHover?: (e: React.MouseEvent, nodeId: string, handleId: string, label: string) => void;
 	onHandleLeave?: () => void;
 }
@@ -66,13 +64,11 @@ const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, on
 
 	const handleCopyNode = (e: React.MouseEvent<HTMLButtonElement>, nodeId: string) => {
 		e.stopPropagation();
-		// Lấy dữ liệu trực tiếp từ data props, không cần qua ref hay getModel
 		const defaultValue = data.defaultValue;
 		flowDispatch(copyNode(nodeId, defaultValue));
 	};
 
 	const handleShowDetail = (e: React.MouseEvent<HTMLButtonElement>) => {
-		// ... existing code ...
 		const parameters = [];
 		for (const schema in bridgeSchema.properties) {
 			parameters.push({
