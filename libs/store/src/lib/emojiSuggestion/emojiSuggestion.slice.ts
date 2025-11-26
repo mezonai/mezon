@@ -6,6 +6,7 @@ import type { ClanEmoji } from 'mezon-js';
 import type { ApiClanEmojiCreateRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { deleteClan } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
@@ -75,7 +76,6 @@ export const fetchEmojiCached = async (getState: () => RootState, ensuredMezon: 
 		() => ensuredMezon.client.getListEmojisByUserId(ensuredMezon.session),
 		'emoji_list'
 	);
-
 	markApiFirstCalled(apiKey);
 
 	return {
@@ -95,8 +95,21 @@ export const fetchEmoji = createAsyncThunk(
 			if (!response?.emoji_list) {
 				throw new Error('Emoji list is undefined or null');
 			}
+
+			const state = thunkAPI.getState() as RootState;
+			const userClans = state.clans?.entities || {};
+			const userClanIds = new Set(
+				Object.values(userClans)
+					.filter((clan) => !!clan?.clan_id)
+					.map((clan) => clan.clan_id)
+			);
+
+			const validEmojis = response.emoji_list.filter(
+				(emoji: IEmoji) => !emoji.clan_id || emoji.clan_id === '0' || userClanIds.has(emoji.clan_id)
+			);
+
 			return {
-				emojis: response.emoji_list,
+				emojis: validEmojis,
 				fromCache: response?.fromCache
 			};
 		} catch (error) {
@@ -174,6 +187,13 @@ export const emojiSuggestionSlice = createSlice({
 		},
 		remove: emojiSuggestionAdapter.removeOne,
 		update: emojiSuggestionAdapter.updateOne,
+		removeEmojisByClanId: (state, action: PayloadAction<string>) => {
+			const clanId = action.payload;
+			const allEmojis = selectAll(state);
+			const emojiIdsToRemove = allEmojis.filter((emoji) => emoji.clan_id === clanId).map((emoji) => emoji.id);
+
+			emojiSuggestionAdapter.removeMany(state, emojiIdsToRemove);
+		},
 		setSuggestionEmojiPicked: (state, action: PayloadAction<string>) => {
 			state.emojiPicked = action.payload;
 		},
@@ -216,7 +236,9 @@ export const emojiSuggestionSlice = createSlice({
 			.addCase(fetchEmoji.fulfilled, (state, action: PayloadAction<any>) => {
 				if (!action.payload?.fromCache) state.cache = createCacheMetadata();
 
-				if (action.payload?.emojis) emojiSuggestionAdapter.setAll(state, action.payload?.emojis);
+				if (action.payload?.emojis) {
+					emojiSuggestionAdapter.upsertMany(state, action.payload.emojis);
+				}
 
 				state.loadingStatus = 'loaded';
 			})
@@ -235,6 +257,12 @@ export const emojiSuggestionSlice = createSlice({
 		});
 		builder.addCase(deleteEmojiSetting.fulfilled, (state, action) => {
 			emojiSuggestionAdapter.removeOne(state, action.payload?.id ?? '');
+		});
+		builder.addCase(deleteClan.fulfilled, (state, action) => {
+			const clanId = action.meta.arg.clanId;
+			const allEmojis = selectAll(state);
+			const emojiIdsToRemove = allEmojis.filter((emoji) => emoji.clan_id === clanId).map((emoji) => emoji.id);
+			emojiSuggestionAdapter.removeMany(state, emojiIdsToRemove);
 		});
 	}
 });

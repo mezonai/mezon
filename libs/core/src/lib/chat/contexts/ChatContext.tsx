@@ -876,6 +876,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			user?.user_ids.forEach((id: string) => {
 				dispatch(voiceActions.removeFromClanInvoice(id));
 				if (id === userId) {
+					dispatch(emojiSuggestionActions.removeEmojisByClanId(user.clan_id));
+					dispatch(stickerSettingActions.removeStickersByClanId(user.clan_id));
+				}
+				if (id === userId) {
 					if (clanId === user.clan_id) {
 						navigate(`/chat/direct/friends`);
 					}
@@ -1548,6 +1552,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children }) =
 			const store = getStore();
 			const currentClanId = selectCurrentClanId(store.getState());
 			dispatch(listChannelsByUserActions.removeByClanId({ clanId: clanDelete.clan_id }));
+			dispatch(stickerSettingActions.removeStickersByClanId(clanDelete.clan_id));
+			dispatch(emojiSuggestionActions.removeEmojisByClanId(clanDelete.clan_id));
 			dispatch(stickerSettingActions.removeStickersByClanId(clanDelete.clan_id));
 			if (clanDelete.deletor !== userId && currentClanId === clanDelete.clan_id) {
 				navigate(`/chat/direct/friends`);
@@ -2752,3 +2758,4 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider };
+
