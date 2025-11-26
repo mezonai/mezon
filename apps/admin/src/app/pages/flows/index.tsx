@@ -12,6 +12,9 @@ const Flows = () => {
 	const { applicationId } = useParams();
 	const navigate = useNavigate();
 	const { flowState } = useContext(FlowContext);
+	const { userProfile } = useAuth();
+	const [isSettingToken, setIsSettingToken] = useState(false);
+
 	const handleGoToAddFlowPage = () => {
 		navigate(`/developers/applications/${applicationId}/add-flow`);
 	};
@@ -41,6 +44,8 @@ const Flows = () => {
 				appId: applicationId ?? '',
 				appToken: token
 			});
+			setHasToken(true);
+			setIsSettingToken(false);
 		},
 		[applicationId]
 	);
@@ -54,8 +59,9 @@ const Flows = () => {
 				</div>
 				<div className="flex gap-2">
 					<button
+						disabled={isSettingToken}
 						onClick={() => setOpenAppTokenModal(true)}
-						className=" border border-indigo-600 text-indigo-600 px-3 py-2 rounded-lg active:bg-indigo-600 transition-all"
+						className=" border border-indigo-600 text-indigo-600 px-3 py-2 rounded-lg active:bg-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{t('flows.setToken')}
 					</button>
@@ -78,9 +84,7 @@ const Flows = () => {
 				open={openAppTokenModal}
 				onClose={() => setOpenAppTokenModal(false)}
 				title={t('flows.appTokenModal.title')}
-				onSave={(data: { token: string }) => {
-					handleCreateApplication(data.token);
-				}}
+				onSave={(data: { token: string }) => handleCreateApplication(data.token)}
 			/>
 		</div>
 	);
