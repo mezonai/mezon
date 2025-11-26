@@ -14,6 +14,8 @@ const Flows = () => {
 	const navigate = useNavigate();
 	const { flowState } = useContext(FlowContext);
 	const { userProfile } = useAuth();
+	const [isSettingToken, setIsSettingToken] = useState(false);
+
 	const handleGoToAddFlowPage = () => {
 		navigate(`/developers/applications/${applicationId}/add-flow`);
 	};
@@ -35,14 +37,17 @@ const Flows = () => {
 	}, [applicationId]);
 
 	const handleCreateApplication = useCallback(
-		(token: string) => {
+		async (token: string) => {
 			if (userProfile == null) return;
-			flowService.createApplication({
+			setIsSettingToken(true);
+			await flowService.createApplication({
 				referralId: userProfile!.user!.id!,
 				username: userProfile!.user!.username!,
 				appId: applicationId ?? '',
 				appToken: token
 			});
+			setHasToken(true);
+			setIsSettingToken(false);
 		},
 		[applicationId]
 	);
@@ -53,18 +58,21 @@ const Flows = () => {
 				<h4 className="text-xl font-semibold">{t('flows.title')}</h4>
 				<div className="flex gap-2">
 					<button
+						disabled={isSettingToken}
 						onClick={() => setOpenAppTokenModal(true)}
-						className=" border border-indigo-600 text-indigo-600 px-3 py-2 rounded-lg active:bg-indigo-600 transition-all"
+						className=" border border-indigo-600 text-indigo-600 px-3 py-2 rounded-lg active:bg-indigo-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{t('flows.setToken')}
 					</button>
-					<button
-						disabled={!hasToken}
-						onClick={handleGoToAddFlowPage}
-						className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg active:bg-indigo-600 transition-all cursor-pointer"
-					>
-						{t('flows.addFlow')}
-					</button>
+					{hasToken && (
+						<button
+							disabled={isSettingToken}
+							onClick={handleGoToAddFlowPage}
+							className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg active:bg-indigo-600 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							{t('flows.addFlow')}
+						</button>
+					)}
 				</div>
 			</div>
 			{flowState.isLoading && <Icons.LoadingSpinner />}
@@ -75,9 +83,7 @@ const Flows = () => {
 				open={openAppTokenModal}
 				onClose={() => setOpenAppTokenModal(false)}
 				title={t('flows.appTokenModal.title')}
-				onSave={(data: { token: string }) => {
-					handleCreateApplication(data.token);
-				}}
+				onSave={(data: { token: string }) => handleCreateApplication(data.token)}
 			/>
 		</div>
 	);

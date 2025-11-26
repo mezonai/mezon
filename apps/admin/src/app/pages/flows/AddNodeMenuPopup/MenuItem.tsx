@@ -1,14 +1,9 @@
 import React, { useContext } from 'react';
+import type { INodeMenu } from '.';
 import { FlowContext } from '../../../context/FlowContext';
 import { changeNodeType } from '../../../stores/flow/flow.action';
-import type { INodeType } from '../../../stores/flow/flow.interface';
 
-interface MenuItemProps {
-	title: string;
-	description: string;
-	nodeType: INodeType;
-}
-const MenuItem = ({ title, description, nodeType }: MenuItemProps) => {
+const MenuItem = ({ title, description, nodeType, icon }: INodeMenu) => {
 	const { flowDispatch } = useContext(FlowContext);
 	const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
 		flowDispatch(changeNodeType(nodeType));
@@ -21,9 +16,7 @@ const MenuItem = ({ title, description, nodeType }: MenuItemProps) => {
 			draggable
 		>
 			<div className="flex gap-2 items-center w-full">
-				{/* <div className="w-[50px] flex items-center justify-center">
-					<img src={imageUrl} alt="" className="rounded-full w-[40px] h-[40px] select-none" />
-				</div> */}
+				{icon && <div className="w-10 h-10">{icon}</div>}
 				<div className="flex-1 select-none">
 					<div className="text-[14px] font-semibold">{title}</div>
 					<p className="text-[12px]">{description}</p>
