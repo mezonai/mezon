@@ -1,6 +1,6 @@
-import { LoadingStatus } from '@mezon/utils';
-import { Transaction } from 'mmn-client-js';
+import type { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { Transaction } from 'mmn-client-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 
 export const TRANSACTION_HISTORY_FEATURE_KEY = 'transactionHistory';
@@ -27,7 +27,7 @@ export const fetchListTransactionHistory = createAsyncThunk(
 				page: page || 1
 			};
 		} catch (error) {
-			return thunkAPI.rejectWithValue({ error: error });
+			return thunkAPI.rejectWithValue({ error });
 		}
 	}
 );

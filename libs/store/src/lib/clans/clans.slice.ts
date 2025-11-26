@@ -106,7 +106,6 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 			const state = thunkAPI.getState() as RootState;
 			const targetClan = state.clans.entities[clanId];
 			const hasUnreadCount = (targetClan?.badge_count ?? 0) > 0;
-
 			if (hasUnreadCount && !noCache) {
 				thunkAPI.dispatch(fetchClans({ noCache: true }));
 			}

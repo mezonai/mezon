@@ -67,10 +67,10 @@ const HeaderAttachmentPicker = ({ currentChannelId, onCancel, messageAction }: H
 				type: [types.allFiles]
 			});
 			const file = res?.[0] as FileWithDimensions;
+			const isImage = isImageFile(file as any);
 			if (file && isFileSizeExceeded(file as any)) {
 				const maxSize = getMaxFileSize(file as any);
 				const maxSizeMB = Math.round(maxSize / 1024 / 1024);
-				const isImage = isImageFile(file as any);
 				const fileTypeText = isImage ? t('common:image') : t('common:files');
 
 				Toast.show({
@@ -80,7 +80,7 @@ const HeaderAttachmentPicker = ({ currentChannelId, onCancel, messageAction }: H
 				});
 				return;
 			}
-			if (!file?.width || !file?.height) {
+			if ((!file?.width || !file?.height) && isImage) {
 				const { width = 0, height = 0 } = await getImageDimension(file?.uri);
 
 				file.width = width;

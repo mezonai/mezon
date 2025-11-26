@@ -191,6 +191,22 @@ export const convertTimeMessage = (timestampSec: number, languageCode = 'en', ju
 	});
 };
 
+export const convertTimeDifference = (newerTimestamp: number, olderTimestamp: number, languageCode = 'en', justNowThreshold = 1) => {
+	const newer = new Date(Math.floor(newerTimestamp) * 1000);
+	const older = new Date(Math.floor(olderTimestamp) * 1000);
+
+	const diffSec = Math.abs(differenceInSeconds(newer, older));
+
+	if (diffSec <= justNowThreshold) {
+		return languageCode.startsWith('vi') ? 'Vừa xong' : 'Just now';
+	}
+
+	return formatDistanceToNowStrict(older, {
+		addSuffix: true,
+		locale: getDateLocale(languageCode)
+	});
+};
+
 export const isGreaterOneMonth = (timestamp: number) => {
 	const date = new Date(timestamp * 1000);
 	const now = new Date();
@@ -1353,3 +1369,7 @@ export function subBigInt(a: string, b: string): string {
 	const bigB = BigInt(b);
 	return (bigA - bigB).toString();
 }
+
+export const generateAttachmentId = (attachment: ApiMessageAttachment, messageId: string): string => {
+	return `${messageId}_${attachment.url}`;
+};

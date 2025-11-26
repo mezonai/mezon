@@ -22,7 +22,7 @@ import { inviteReducer } from './invite/invite.slice';
 import { messagesReducer } from './messages/messages.slice';
 import { referencesReducer } from './messages/references.slice';
 import { notificationReducer } from './notification/notify.slice';
-import { POLICIES_FEATURE_KEY, policiesDefaultReducer, policiesReducer } from './policies/policies.slice';
+import { POLICIES_FEATURE_KEY, policiesReducer } from './policies/policies.slice';
 import { reactionReducer } from './reactionMessage/reactionMessage.slice';
 
 import type { MezonContextValue } from '@mezon/transport';
@@ -367,7 +367,6 @@ const reducer = {
 	friends: friendsReducer,
 	direct: directReducer,
 	roleId: roleIdReducer,
-	policiesDefaultSlice: policiesDefaultReducer,
 	[OVERRIDDEN_POLICIES_FEATURE_KEY]: overriddenPoliciesReducer,
 	notificationsetting: notificationSettingReducer,
 	pinmessages: persistedPinMsgReducer,

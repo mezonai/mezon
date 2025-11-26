@@ -11,7 +11,12 @@ import ChannelFileItem from './ChannelFileItem';
 import ChannelFileSearch from './ChannelFileSearch';
 import { style } from './styles';
 
-const ChannelFiles = memo(({ currentChannelId }: { currentChannelId: string }) => {
+interface IChannelFilesProps {
+	currentChannelId: string;
+	isDM: boolean;
+}
+
+const ChannelFiles = memo(({ currentChannelId, isDM }: IChannelFilesProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [searchText, setSearchText] = useState('');
@@ -51,7 +56,7 @@ const ChannelFiles = memo(({ currentChannelId }: { currentChannelId: string }) =
 	}, [filteredAttachments, parseAttachmentDate, currentLanguage]);
 
 	const renderItem = ({ item }: { item: AttachmentEntity }) => {
-		return <ChannelFileItem file={item} />;
+		return <ChannelFileItem file={item} isDM={isDM} />;
 	};
 
 	const handleSearchChange = (text: string) => {

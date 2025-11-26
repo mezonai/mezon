@@ -19,9 +19,6 @@
 		E905645B2E828EB5006C8567 /* VideoPlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E905645A2E828EB5006C8567 /* VideoPlayerManager.swift */; };
 		E905645D2E828EC9006C8567 /* VideoPlayerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E905645C2E828EC9006C8567 /* VideoPlayerManager.m */; };
 		E905645F2E828ED9006C8567 /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E905645E2E828ED9006C8567 /* VideoPlayerView.swift */; };
-		E908EBB32D76A95200571976 /* CustomImageViewIOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908EBB22D76A95200571976 /* CustomImageViewIOS.swift */; };
-		E908EBB52D76A97400571976 /* CustomImageViewIOS.m in Sources */ = {isa = PBXBuildFile; fileRef = E908EBB42D76A97400571976 /* CustomImageViewIOS.m */; };
-		E908EBB72D76A98C00571976 /* CustomImageViewIOSManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E908EBB62D76A98C00571976 /* CustomImageViewIOSManager.swift */; };
 		E91B62B12CEF3E2F0042CB57 /* dialtone.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E91B62B02CEF3E2F0042CB57 /* dialtone.mp3 */; };
 		E925D79F2DB8D6A700C10D69 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E925D79E2DB8D69E00C10D69 /* AppDelegate.swift */; };
 		E9409A412E290BFE007867D1 /* AudioSessionModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9409A402E290BFE007867D1 /* AudioSessionModule.swift */; };
@@ -48,6 +45,8 @@
 		E9ADF8312E83C96600AE80C6 /* NotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E9ADF82A2E83C96500AE80C6 /* NotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E9BFF0C32C37AC0F003C310E /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9BFF0C22C37AC0F003C310E /* SplashScreen.storyboard */; };
 		E9DCD8C52CF5738500193E85 /* endcall.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E9DCD8C42CF5738500193E85 /* endcall.mp3 */; };
+		E9EE2EC52ED044870018084F /* ImageClipboardModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EE2EC42ED044870018084F /* ImageClipboardModule.swift */; };
+		E9FF89922ED04590000A26B3 /* ImageClipboardModule.m in Sources */ = {isa = PBXBuildFile; fileRef = E9FF89912ED04590000A26B3 /* ImageClipboardModule.m */; };
 		EB8EF22644D89E2389CBE23D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F430D579619E0B5CFD2D20E7 /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
@@ -116,9 +115,6 @@
 		E905645C2E828EC9006C8567 /* VideoPlayerManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoPlayerManager.m; sourceTree = "<group>"; };
 		E905645E2E828ED9006C8567 /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		E908EBB12D76A95200571976 /* Mobile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Mobile-Bridging-Header.h"; sourceTree = "<group>"; };
-		E908EBB22D76A95200571976 /* CustomImageViewIOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomImageViewIOS.swift; sourceTree = "<group>"; };
-		E908EBB42D76A97400571976 /* CustomImageViewIOS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CustomImageViewIOS.m; sourceTree = "<group>"; };
-		E908EBB62D76A98C00571976 /* CustomImageViewIOSManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomImageViewIOSManager.swift; sourceTree = "<group>"; };
 		E91B62B02CEF3E2F0042CB57 /* dialtone.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = dialtone.mp3; sourceTree = "<group>"; };
 		E925D79E2DB8D69E00C10D69 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E94005A02C17F0A300D5CF58 /* Mobile.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Mobile.entitlements; path = Mobile/Mobile.entitlements; sourceTree = "<group>"; };
@@ -150,6 +146,8 @@
 		E9BFF0C22C37AC0F003C310E /* SplashScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
 		E9C22F3A2BF59D4200BCBA90 /* MobileRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MobileRelease.entitlements; path = Mobile/MobileRelease.entitlements; sourceTree = "<group>"; };
 		E9DCD8C42CF5738500193E85 /* endcall.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = endcall.mp3; sourceTree = "<group>"; };
+		E9EE2EC42ED044870018084F /* ImageClipboardModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageClipboardModule.swift; sourceTree = "<group>"; };
+		E9FF89912ED04590000A26B3 /* ImageClipboardModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageClipboardModule.m; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F430D579619E0B5CFD2D20E7 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-Mobile-MobileTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		F77137FF4C9E220500E13001 /* Pods-Mobile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Mobile.release.xcconfig"; path = "Target Support Files/Pods-Mobile/Pods-Mobile.release.xcconfig"; sourceTree = "<group>"; };
@@ -237,10 +235,7 @@
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				CC2EF50EB870283F95A556F6 /* PrivacyInfo.xcprivacy */,
 				E9BFF0C22C37AC0F003C310E /* SplashScreen.storyboard */,
-				E908EBB22D76A95200571976 /* CustomImageViewIOS.swift */,
 				E908EBB12D76A95200571976 /* Mobile-Bridging-Header.h */,
-				E908EBB42D76A97400571976 /* CustomImageViewIOS.m */,
-				E908EBB62D76A98C00571976 /* CustomImageViewIOSManager.swift */,
 				E943F9F02DBA144700B81261 /* DeviceUtilsIOS.m */,
 				E9A25DD42DBA416B0056281D /* KeepAwakeIOS.swift */,
 				E9A25DD62DBA41D00056281D /* KeepAwakeIOS.m */,
@@ -257,6 +252,8 @@
 				E9945B342E83F5D900F66F29 /* BadgeModule.swift */,
 				E99410702E8423ED00ED3CDA /* BadgeModule.m */,
 				E964CE912E94BB64008824E9 /* buzz.wav */,
+				E9EE2EC42ED044870018084F /* ImageClipboardModule.swift */,
+				E9FF89912ED04590000A26B3 /* ImageClipboardModule.m */,
 			);
 			name = Mobile;
 			sourceTree = "<group>";
@@ -696,6 +693,7 @@
 				E9443C732DDF8CA7002A97D3 /* VoIPManager.swift in Sources */,
 				E943F9F12DBA144700B81261 /* DeviceUtilsIOS.m in Sources */,
 				E905645F2E828ED9006C8567 /* VideoPlayerView.swift in Sources */,
+				E9FF89922ED04590000A26B3 /* ImageClipboardModule.m in Sources */,
 				E9409A432E290C25007867D1 /* AudioSessionModule.m in Sources */,
 				E90564592E828D29006C8567 /* NativeVideoPlayerView.swift in Sources */,
 				E9443C752DDF8CCB002A97D3 /* VoIPManager.m in Sources */,
@@ -706,10 +704,8 @@
 				E99410712E8423ED00ED3CDA /* BadgeModule.m in Sources */,
 				E90564572E8261FA006C8567 /* VideoThumbnailModule.m in Sources */,
 				E905645D2E828EC9006C8567 /* VideoPlayerManager.m in Sources */,
-				E908EBB32D76A95200571976 /* CustomImageViewIOS.swift in Sources */,
-				E908EBB72D76A98C00571976 /* CustomImageViewIOSManager.swift in Sources */,
+				E9EE2EC52ED044870018084F /* ImageClipboardModule.swift in Sources */,
 				E9945B352E83F5D900F66F29 /* BadgeModule.swift in Sources */,
-				E908EBB52D76A97400571976 /* CustomImageViewIOS.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -983,7 +979,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.63;
+				MARKETING_VERSION = 1.2.71;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1163,7 +1159,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.63;
+				MARKETING_VERSION = 1.2.71;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1385,7 +1381,7 @@
 				INFOPLIST_FILE = ScreenBroadcast/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScreenBroadcast;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1433,7 +1429,7 @@
 				INFOPLIST_FILE = ScreenBroadcast/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = ScreenBroadcast;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1577,7 +1573,7 @@
 				INFOPLIST_FILE = NotificationService/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1625,7 +1621,7 @@
 				INFOPLIST_FILE = NotificationService/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = NotificationService;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

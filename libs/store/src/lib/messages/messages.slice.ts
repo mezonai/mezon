@@ -892,6 +892,11 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			const res = await doSend();
 			return res;
 		} catch (error) {
+			if (error === 'The socket timed out while waiting for a response.') {
+				const timeoutError = new Error('SOCKET_TIMEOUT');
+				timeoutError.name = 'SocketTimeoutError';
+				throw timeoutError;
+			}
 			if (retryCount > 0) {
 				const r = await sendWithRetry(retryCount - 1);
 				return r;
@@ -965,6 +970,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				);
 			}
 		} catch (error) {
+			if (error instanceof Error && error.name === 'SocketTimeoutError') {
+				return;
+			}
 			thunkAPI.dispatch(messagesActions.markAsError({ messageId: id, channelId }));
 			captureSentryError(error, 'messages/sendMessage');
 			throw error;

@@ -6,6 +6,7 @@ import {
 	ETypeLinkMedia,
 	calculateAlbumLayout,
 	createImgproxyUrl,
+	generateAttachmentId,
 	getAttachmentDataForWindow,
 	isMediaTypeNotSupported,
 	useAppLayout
@@ -19,12 +20,6 @@ import { MessageAudio } from './MessageAudio/MessageAudio';
 import MessageLinkFile from './MessageLinkFile';
 import MessageVideo from './MessageVideo';
 import Photo from './Photo';
-
-// Generate unique attachment ID consistent with store
-const generateAttachmentId = (attachment: ApiMessageAttachment, messageId: string): string => {
-	// Create unique ID from message_id + filename (or url as fallback)
-	return `${messageId}_${attachment.url}`;
-};
 
 type MessageAttachmentProps = {
 	message: IMessageWithUser;

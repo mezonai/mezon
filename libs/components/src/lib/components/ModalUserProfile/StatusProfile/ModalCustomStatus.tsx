@@ -10,9 +10,10 @@ type ModalCustomStatusProps = {
 	name: string;
 	onClose: () => void;
 	status?: string;
+	time_reset?: number;
 };
 
-const ModalCustomStatus = ({ name, status, onClose }: ModalCustomStatusProps) => {
+const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCustomStatusProps) => {
 	const { t } = useTranslation(['userProfile'], { keyPrefix: 'statusProfile.customStatusModal' });
 	const dispatch = useAppDispatch();
 
@@ -25,7 +26,23 @@ const ModalCustomStatus = ({ name, status, onClose }: ModalCustomStatusProps) =>
 		setCustomStatus(updatedStatus);
 	};
 
-	const [timeSetReset, setTimeSetReset] = useState<string>(t('timeOptions.today'));
+	function getTimeResetLabel(minutes: number, t: (key: string) => string): string {
+		switch (minutes) {
+			case 0:
+				return t('timeOptions.today');
+			case 240:
+				return t('timeOptions.fourHours');
+			case 60:
+				return t('timeOptions.oneHour');
+			case 30:
+				return t('timeOptions.thirtyMinutes');
+
+			default:
+				return t('timeOptions.today');
+		}
+	}
+
+	const [timeSetReset, setTimeSetReset] = useState<string>(getTimeResetLabel(time_reset, t));
 
 	const setStatusTimer = useCallback(
 		(minutes: number, noClear: boolean, option: string) => {
@@ -46,7 +63,7 @@ const ModalCustomStatus = ({ name, status, onClose }: ModalCustomStatusProps) =>
 	);
 	const currentClanId = useSelector(selectCurrentClanId);
 
-	const [resetTimerStatus, setResetTimerStatus] = useState<number>(0);
+	const [resetTimerStatus, setResetTimerStatus] = useState<number>(time_reset);
 	const [noClearStatus, setNoClearStatus] = useState<boolean>(false);
 	const [customStatus, setCustomStatus] = useState<string>(status ?? '');
 

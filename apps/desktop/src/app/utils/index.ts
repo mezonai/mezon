@@ -80,7 +80,8 @@ export function sanitizeUrl(url: string): string {
 		if (parsed.protocol === 'data:' && !encodedUrl.startsWith('data:image/')) {
 			return '';
 		}
-		return encodedUrl;
+
+		return encodedUrl.replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 	} catch (e) {
 		return '';
 	}

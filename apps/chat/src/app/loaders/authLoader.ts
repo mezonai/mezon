@@ -1,4 +1,4 @@
-import type { AppDispatch, ISession } from '@mezon/store';
+import type { AppDispatch } from '@mezon/store';
 import {
 	accountActions,
 	authActions,
@@ -11,14 +11,12 @@ import {
 	listChannelsByUserActions,
 	listUsersByUserActions,
 	selectCurrentClanId,
-	selectIsEnabledWallet,
 	selectSession,
 	selectVoiceOpenPopOut,
-	selectZkProofs,
 	usersClanActions,
 	walletActions
 } from '@mezon/store';
-import type { IUserAccount, IWithError } from '@mezon/utils';
+import type { IWithError } from '@mezon/utils';
 import type { CustomLoaderFunction } from './appLoader';
 import { waitForSocketConnection } from './socketUtils';
 
@@ -112,8 +110,6 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 	let isRedirectLogin = false;
 	const store = getStore();
 	const sessionUser = selectSession(store?.getState());
-	const isEnabledWallet = selectIsEnabledWallet(store?.getState());
-	const zkProofs = selectZkProofs(store?.getState());
 
 	if (!sessionUser?.token) {
 		return { isLogin: !isRedirectLogin } as IAuthLoaderData;
@@ -138,24 +134,6 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 			} else {
 				const profileResponse = await dispatch(accountActions.getUserProfile());
 				if (!(profileResponse as unknown as IWithError).error) {
-					const userId = (profileResponse.payload as IUserAccount)?.user?.id;
-					if (userId && isEnabledWallet) {
-						if (!zkProofs) {
-							await dispatch(walletActions.fetchEphemeralKeyPair());
-							await dispatch(walletActions.fetchAddress({ userId }));
-							await dispatch(
-								walletActions.fetchZkProofs({
-									userId,
-									jwt: (response.payload as ISession)?.token
-								})
-							);
-						}
-						await dispatch(
-							walletActions.fetchWalletDetail({
-								userId
-							})
-						);
-					}
 					return { isLogin: true } as IAuthLoaderData;
 				}
 				throw new Error('Session expired');

@@ -16,7 +16,6 @@ export function WebhooksEmpty() {
 				style={styles.hookEmpty}
 			/>
 			<Text style={styles.title}>{t('webhooksEmpty.noWebhooks')}</Text>
-			<Text style={styles.subTitle}>{t('webhooksEmpty.webhooksEmptyDes')}</Text>
 		</View>
 	);
 }

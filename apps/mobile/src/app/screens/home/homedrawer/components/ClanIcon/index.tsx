@@ -62,7 +62,7 @@ export const ClanIcon = memo(
 
 					{badgeCountClan > 0 && (
 						<View style={styles.badge}>
-							<Text style={styles.badgeText}>{badgeCountClan > 99 ? `+99` : badgeCountClan}</Text>
+							<Text style={styles.badgeText}>{badgeCountClan > 99 ? `99+` : badgeCountClan}</Text>
 						</View>
 					)}
 					{isHaveUnreadMessage && <View style={styles.unreadDot} />}

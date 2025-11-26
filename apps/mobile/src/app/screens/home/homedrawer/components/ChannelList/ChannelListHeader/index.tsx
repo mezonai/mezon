@@ -89,7 +89,9 @@ const ChannelListHeader = () => {
 						<Text numberOfLines={1} style={styles.titleServer}>
 							{clanName}
 						</Text>
-						<MezonIconCDN icon={IconCDN.verifyIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
+						{!!currentClanClanIsCommunity && (
+							<MezonIconCDN icon={IconCDN.verifyIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
+						)}
 					</View>
 					<View style={styles.row}>
 						<Text numberOfLines={1} style={[styles.subTitle, { color: themeValue.textStrong }]}>

@@ -7,7 +7,7 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_12,
 			color: colors.textDisabled,
 			fontWeight: '400',
-			marginBottom: size.s_10
+			marginBottom: size.s_40
 		},
 		textLink: {
 			fontSize: size.s_12,

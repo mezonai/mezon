@@ -35,8 +35,7 @@
 		"name": "Webhook name"
 	},
 	"webhooksEmpty": {
-		"noWebhooks": "NO WEBHOOKS",
-		"webhooksEmptyDes": "For now, webhook can only be created on web or desktop"
+		"noWebhooks": "NO WEBHOOKS"
 	},
 	"webhooksItem": {
 		"createdBy": "Created on {{webhookCreateTime}} by {{webhookUserOwnerName}}"

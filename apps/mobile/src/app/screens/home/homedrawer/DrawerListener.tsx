@@ -123,9 +123,9 @@ function DrawerListener({ channelId }: { channelId: string }) {
 	useEffect(() => {
 		MobileEventEmitter.addListener(ActionEmitEvent.ON_REMOVE_USER_CHANNEL, onRemoveUserChannel);
 		return () => {
-			MobileEventEmitter.removeListener(ActionEmitEvent.ON_REMOVE_USER_CHANNEL, () => {});
+			MobileEventEmitter.removeListener(ActionEmitEvent.ON_REMOVE_USER_CHANNEL, onRemoveUserChannel);
 		};
-	}, []);
+	}, [channelId]);
 
 	if (!currentChannel) {
 		return null;

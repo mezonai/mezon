@@ -5,6 +5,22 @@ import App from '../../app/app';
 import { escapeHtml, sanitizeUrl } from '../../app/utils';
 import menu from '../menu-context';
 import image_window_css from './image-window-css';
+
+function createImgProxyUrl(sourceImageUrl: string, width = 0, height = 0, resizeType = 'force'): string {
+	if (!sourceImageUrl) return '';
+
+	const sanitizedUrl = sanitizeUrl(sourceImageUrl);
+	if (!sanitizedUrl) return '';
+
+	const base = process.env.NX_IMGPROXY_BASE_URL || 'https://imgproxy.mezon.ai';
+	const key = process.env.NX_IMGPROXY_KEY || 'K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c';
+	if (!base || !key) return sanitizedUrl;
+
+	const processingOptions = `rs:${resizeType}:${width}:${height}:1/mb:2097152`;
+	const path = `/${processingOptions}/plain/${sanitizedUrl}@webp`;
+	return `${base}/${key}${path}`;
+}
+
 interface IAttachmentEntity extends ApiChannelAttachment {
 	id: string;
 	channelId?: string;
@@ -139,7 +155,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
       ${
 			imageData.isVideo || imageData.filetype?.startsWith('video') || imageData.filetype?.includes('mp4') || imageData.filetype?.includes('mov')
 				? `<video id="selectedMedia" class="selected-image" src="${sanitizeUrl(imageData.realUrl || imageData.url)}" controls autoplay style="max-width: 100%; max-height: 100%; object-fit: contain;"></video>`
-				: `<img id="selectedMedia" class="selected-image image-loading" src="${sanitizeUrl(imageData.url)}" />`
+				: `<img id="selectedMedia" class="selected-image image-loading" src="${createImgProxyUrl(imageData.url)}" />`
 		}
     </div>
     <div id="thumbnails" class="thumbnail-container">
@@ -150,7 +166,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
   </div>
   <div class="bottom-bar">
     <div class="sender-info">
-      <img id="userAvatar" src="${escapeHtml(imageData.uploaderData.avatar)}" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover">
+      <img id="userAvatar" src="${sanitizeUrl(imageData.uploaderData.avatar)}" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover">
       <div>
         <div id="username" class="username" style="font-weight: bold;">${escapeHtml(imageData.uploaderData.name)}</div>
         <div id="timestamp" class="timestamp" style="font-size: 0.8em; color: #ccc;">${escapeHtml(formatDateTime(imageData.create_time))}</div>
@@ -276,7 +292,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
         if (shouldShowSkeleton) {
           skeletonTimer = setTimeout(() => {
             if (skeletonMain) {
-              skeletonMain.style.display = 'block';
+              skeletonMain.style.display = 'flex';
               requestAnimationFrame(() => {
                 skeletonMain.classList.add('visible');
               });
@@ -312,9 +328,9 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
       }
 
       let currentImageUrl = {
-        fileName : '${imageData.filename}',
-        url : '${imageData.url}',
-          realUrl : '${imageData.realUrl}',
+        fileName : ${JSON.stringify(imageData.filename || '')},
+        url : ${JSON.stringify(imageData.url || '')},
+          realUrl : ${JSON.stringify(imageData.realUrl || '')},
           isVideo : ${imageData.isVideo || false}
       };
       let uploaderData = [];
@@ -332,7 +348,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 	document.getElementById('minimize-window').addEventListener('click', () => {
 		window.electron.send('APP::IMAGE_WINDOW_TITLE_BAR_ACTION', 'APP::MINIMIZE_WINDOW');
 	});
-  document.getElementById('channel-label').innerHTML = '${imageData.channelImagesData.channelLabel}';
+  document.getElementById('channel-label').textContent = '${imageData.channelImagesData.channelLabel}';
 	document.getElementById('maximize-window').addEventListener('click', () => {
 		window.electron.send('APP::IMAGE_WINDOW_TITLE_BAR_ACTION', 'APP::MAXIMIZE_WINDOW');
 	});
@@ -403,16 +419,51 @@ const createThumbProxyUrlScript = () => {
 	const key = process.env.NX_IMGPROXY_KEY || 'K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c';
 
 	return `
+		const sanitizeImageUrl = (url) => {
+			if (!url) return '';
+			try {
+				const decodedUrl = decodeURIComponent(url);
+				const encodedUrl = encodeURI(decodedUrl);
+				const parsed = new URL(encodedUrl);
+				if (!['http:', 'https:', 'data:'].includes(parsed.protocol)) {
+					return '';
+				}
+				if (parsed.protocol === 'data:' && !encodedUrl.startsWith('data:image/')) {
+					return '';
+				}
+				return encodedUrl.replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+			} catch (e) {
+				return '';
+			}
+		};
+
 		const createThumbProxyUrl = (sourceImageUrl) => {
 			if (!sourceImageUrl) return '';
+			const sanitized = sanitizeImageUrl(sourceImageUrl);
+			if (!sanitized) return '';
 			const width = 88;
 			const height = 88;
 			const resizeType = 'fit';
 			const processingOptions = 'rs:' + resizeType + ':' + width + ':' + height + ':1/mb:2097152';
-			const path = '/' + processingOptions + '/plain/' + sourceImageUrl + '@webp';
+			const path = '/' + processingOptions + '/plain/' + sanitized + '@webp';
 			const base = ${JSON.stringify(base)};
 			const key = ${JSON.stringify(key)};
-			if (!base || !key) return sourceImageUrl;
+			if (!base || !key) return sanitized;
+			return base + '/' + key + path;
+		};
+
+		const createImageProxyUrl = (sourceImageUrl) => {
+			if (!sourceImageUrl) return '';
+			const sanitized = sanitizeImageUrl(sourceImageUrl);
+			if (!sanitized) return '';
+			const width = 0;
+			const height = 0;
+			const resizeType = 'force';
+			const processingOptions = 'rs:' + resizeType + ':' + width + ':' + height + ':1/mb:2097152';
+			const path = '/' + processingOptions + '/plain/' + sanitized + '@webp';
+			const base = ${JSON.stringify(base)};
+			const key = ${JSON.stringify(key)};
+			if (!base || !key) return sanitized;
 			return base + '/' + key + path;
 		};
 	`;
@@ -681,6 +732,7 @@ const createVirtualizer = () => {
 
 					const skeleton = document.createElement('div');
 					skeleton.className = 'skeleton skeleton-thumbnail';
+					skeleton.innerHTML = '<svg class="skeleton-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 16 5-7 6 6.5m6.5 2.5L16 13l-4.286 6M14 10h.01M4 19h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"/></svg>';
 					wrapper.appendChild(skeleton);
 
 					if (isVideoThumbnail) {
@@ -689,7 +741,10 @@ const createVirtualizer = () => {
 						if (index === currentIndex && currentIndex >= 0) {
 							video.classList.add('active');
 						}
-						video.src = item.realUrl || item.url;
+						const videoUrl = sanitizeImageUrl(item.realUrl || item.url);
+						if (videoUrl) {
+							video.src = videoUrl;
+						}
 						video.muted = true;
 						video.playsInline = true;
 						video.preload = 'metadata';
@@ -722,7 +777,7 @@ const createVirtualizer = () => {
 							img.classList.add('active');
 						}
 						img.src = createThumbProxyUrl(item.url);
-						img.alt = item.filename || '';
+						img.alt = item.fileName || '';
 						img.setAttribute('data-index', index);
 						img.setAttribute('data-id', itemId);
 						img.addEventListener('click', (e) => {
@@ -947,7 +1002,7 @@ export const scriptThumnails = (listImage: IAttachmentEntityWithUploader[], inde
 	const reversedImages = [...listImage].reverse();
 	const reversedIndexSelect = indexSelect >= 0 ? reversedImages.length - 1 - indexSelect : -1;
 	const initialImagesData = reversedImages.map((image: IAttachmentEntityWithUploader) => ({
-		id: image.id || image.url,
+		id: escapeHtml(image.id || image.url || ''),
 		url: sanitizeUrl(image.url),
 		avatar: sanitizeUrl(image.uploaderData.avatar),
 		name: escapeHtml(image.uploaderData.name),
@@ -1029,7 +1084,10 @@ export const scriptThumnails = (listImage: IAttachmentEntityWithUploader[], inde
 								const video = document.createElement('video');
 								video.id = 'selectedMedia';
 								video.className = 'selected-image image-loaded';
-								video.src = imageData.realUrl || imageData.url;
+								const videoUrl = sanitizeImageUrl(imageData.realUrl || imageData.url);
+								if (videoUrl) {
+									video.src = videoUrl;
+								}
 								video.controls = true;
 								video.autoplay = true;
 								video.style.cssText = 'max-width: 100%; max-height: 100%; object-fit: contain;';
@@ -1042,7 +1100,7 @@ export const scriptThumnails = (listImage: IAttachmentEntityWithUploader[], inde
 								img.className = 'selected-image image-loading';
 								img.addEventListener('load', handleMediaLoaded);
 								img.addEventListener('error', handleMediaLoaded);
-								img.src = imageData.url;
+								img.src = createImageProxyUrl(imageData.url);
 								wrapper.appendChild(img);
 								if (img.complete && img.naturalHeight !== 0) {
 									handleMediaLoaded();
@@ -1051,16 +1109,19 @@ export const scriptThumnails = (listImage: IAttachmentEntityWithUploader[], inde
 						}
 					} else {
 						if (wasVideo) {
-							selectedMedia.src = imageData.realUrl || imageData.url;
-							selectedMedia.addEventListener('loadeddata', handleMediaLoaded, { once: true });
-							selectedMedia.load();
-							selectedMedia.play();
+							const videoUrl = sanitizeImageUrl(imageData.realUrl || imageData.url);
+							if (videoUrl) {
+								selectedMedia.src = videoUrl;
+								selectedMedia.addEventListener('loadeddata', handleMediaLoaded, { once: true });
+								selectedMedia.load();
+								selectedMedia.play();
+							}
 						} else {
 							selectedMedia.classList.add('image-loading');
 							selectedMedia.classList.remove('image-loaded');
 							selectedMedia.addEventListener('load', handleMediaLoaded, { once: true });
 							selectedMedia.addEventListener('error', handleMediaLoaded, { once: true });
-							selectedMedia.src = imageData.url;
+							selectedMedia.src = createImageProxyUrl(imageData.url);
 							if (selectedMedia.complete && selectedMedia.naturalHeight !== 0) {
 								handleMediaLoaded();
 							}
@@ -1069,7 +1130,7 @@ export const scriptThumnails = (listImage: IAttachmentEntityWithUploader[], inde
 				}
 				const userAvatar = document.getElementById('userAvatar');
 				if (userAvatar) {
-					userAvatar.src = imageData.avatar;
+					userAvatar.src = sanitizeImageUrl(imageData.avatar);
 				}
 				const username = document.getElementById('username');
 				if (username) {
@@ -1117,12 +1178,12 @@ export const scriptThumnails = (listImage: IAttachmentEntityWithUploader[], inde
 					if (window.thumbnailVirtualizer && attachments) {
 						const reversedAttachments = [...attachments].reverse();
 						const updatedImagesData = reversedAttachments.map(att => ({
-							id: att.id || att.url,
-							url: att.url,
-							avatar: att.uploaderData.avatar,
-							name: att.uploaderData.name,
-							fileName: att.filename,
-							realUrl: att.realUrl || att.url,
+							id: (att.id || att.url || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'),
+							url: sanitizeImageUrl(att.url),
+							avatar: sanitizeImageUrl(att.uploaderData?.avatar || ''),
+							name: (att.uploaderData?.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'),
+							fileName: (att.filename || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'),
+							realUrl: sanitizeImageUrl(att.realUrl || att.url || ''),
 							create_time: att.create_time,
 							time: att.create_time,
 							isVideo: att.isVideo,

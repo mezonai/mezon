@@ -20,10 +20,11 @@ interface IMessageReactionContentItemProps {
 	removeEmoji: (emoji: EmojiDataOptionals) => void;
 	channelId: string;
 	currentEmojiSelected?: EmojiDataOptionals;
+	currentClanId: string;
 }
 
 export const MessageReactionContentItem = memo((props: IMessageReactionContentItemProps) => {
-	const { item, userId, removeEmoji, channelId, currentEmojiSelected } = props;
+	const { item, userId, removeEmoji, channelId, currentEmojiSelected, currentClanId } = props;
 	const { themeValue } = useTheme();
 	const { t } = useTranslation('message');
 	const styles = style(themeValue);
@@ -46,6 +47,7 @@ export const MessageReactionContentItem = memo((props: IMessageReactionContentIt
 	const reactionMember = (
 		<ReactionMember
 			userId={item?.sender_id || ''}
+			currentClanId={currentClanId}
 			channelId={channelId}
 			count={item?.count || 0}
 			onSelectUserId={() => {

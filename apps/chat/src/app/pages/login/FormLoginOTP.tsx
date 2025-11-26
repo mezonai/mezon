@@ -50,7 +50,6 @@ const FormLoginOTP = ({ handleChangeMethod, onStepChange }: { handleChangeMethod
 
 	const handleEmailChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
-			console.log('step: ', step);
 			if (step) {
 				return;
 			}

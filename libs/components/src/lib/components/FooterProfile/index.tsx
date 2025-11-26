@@ -12,12 +12,14 @@ import {
 	selectIsElectronUpdateAvailable,
 	selectIsInCall,
 	selectIsJoin,
+	selectMemberCustomStatusById,
 	selectShowModalCustomStatus,
 	selectShowModalSendToken,
 	selectStatusMenu,
 	selectVoiceJoined,
 	selectWalletDetail,
 	useAppDispatch,
+	useAppSelector,
 	userClanProfileActions
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
@@ -66,6 +68,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const statusMenu = useSelector(selectStatusMenu);
 	const userWallet = useSelector(selectWalletDetail);
 	const myProfile = useAuth();
+	const userMemberStatus = useAppSelector((state) => selectMemberCustomStatusById(state, myProfile.userId as string));
 	const { t } = useTranslation(['setting', 'token']);
 	const { mmnRef } = useMezon();
 
@@ -265,8 +268,15 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		}
 	};
 	const [openSetCustomStatus, closeSetCustomStatus] = useModal(() => {
-		return <ModalCustomStatus status={userCustomStatus} name={name} onClose={handleCloseModalCustomStatus} />;
-	}, [userCustomStatus]);
+		return (
+			<ModalCustomStatus
+				status={userCustomStatus}
+				name={name}
+				onClose={handleCloseModalCustomStatus}
+				time_reset={userMemberStatus?.time_reset}
+			/>
+		);
+	}, [userCustomStatus, userMemberStatus?.time_reset]);
 
 	const [openModalSendToken, closeModalSendToken] = useModal(() => {
 		return (

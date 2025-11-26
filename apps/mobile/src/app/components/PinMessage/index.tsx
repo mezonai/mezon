@@ -1,6 +1,7 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { PinMessageEntity, pinMessageActions, selectPinMessageByChannelId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { IExtendedMessage } from '@mezon/utils';
+import type { PinMessageEntity } from '@mezon/store-mobile';
+import { pinMessageActions, selectPinMessageByChannelId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import type { IExtendedMessage } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, View } from 'react-native';
@@ -55,10 +56,15 @@ const PinMessage = memo(({ currentChannelId, currentClanId }: { currentChannelId
 			}
 
 			return (
-				<PinMessageItem pinMessageItem={item} contentMessage={contentString as IExtendedMessage} handleUnpinMessage={handleUnpinMessage} />
+				<PinMessageItem
+					pinMessageItem={item}
+					contentMessage={contentString as IExtendedMessage}
+					handleUnpinMessage={handleUnpinMessage}
+					currentClanId={currentClanId}
+				/>
 			);
 		},
-		[handleUnpinMessage]
+		[handleUnpinMessage, currentClanId]
 	);
 
 	const renderEmptyComponent = useCallback(() => {

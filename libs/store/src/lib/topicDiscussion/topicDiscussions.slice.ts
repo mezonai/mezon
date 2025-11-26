@@ -346,11 +346,3 @@ export const selectTopicsSort = createSelector(selectAllTopics, (data) => {
 });
 
 export const selectClickedOnTopicStatus = createSelector(getTopicsState, (state) => state.isFocusTopicBox);
-
-export const selectTopicById = createSelector(
-	[getTopicsState, (state: RootState) => state.clans.currentClanId as string, (_, topicId: string) => topicId],
-	(state, clanId, topicId) => {
-		if (!state.clanTopics[clanId] || !topicId) return null;
-		return state.clanTopics[clanId].entities[topicId] || null;
-	}
-);

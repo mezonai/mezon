@@ -181,8 +181,7 @@ const Notifications = ({ navigation, route }) => {
 									clanId: notify?.content?.clan_id ?? '',
 									channelId: notify?.content?.channel_id,
 									noFetchMembers: false,
-									noCache: true,
-									noFetchMessage: true
+									noCache: true
 								})
 							)
 						);

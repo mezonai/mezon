@@ -16,9 +16,12 @@ const styles = StyleSheet.create({
 		top: size.s_8,
 		zIndex: 1,
 		right: size.s_8,
-		borderRadius: size.s_50,
 		borderWidth: 1,
-		borderColor: '#242427'
+		borderColor: '#242427',
+		width: size.s_26,
+		height: size.s_26,
+		borderRadius: size.s_26,
+		overflow: 'hidden'
 	},
 	image: { width: '100%', height: '100%' },
 	video: {

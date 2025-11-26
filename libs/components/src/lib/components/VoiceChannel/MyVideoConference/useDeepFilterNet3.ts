@@ -156,7 +156,7 @@ export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 			});
 			processorsMap.clear();
 		};
-	}, [room, localParticipant, sampleRate]);
+	}, [room, localParticipant, sampleRate, enabled]);
 
 	useEffect(() => {
 		if (!enabled || !room || !localParticipant) {

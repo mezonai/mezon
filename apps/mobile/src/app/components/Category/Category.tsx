@@ -10,6 +10,7 @@ import MezonInput from '../../componentUI/MezonInput';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { validInput } from '../../utils/validate';
+import { MAX_NAME_LENGTH } from '../ClanSettings/Emoji/EmojiPreview';
 import { style } from './styles';
 
 type CreateCategoryScreen = typeof APP_SCREEN.MENU_CLAN.CREATE_CATEGORY;
@@ -68,6 +69,7 @@ export function CategoryCreator({ navigation }: MenuClanScreenProps<CreateCatego
 				placeHolder={t('fields.cateName.placeholder')}
 				errorMessage={t('fields.cateName.errorMessage')}
 				label={t('fields.cateName.title')}
+				maxCharacter={MAX_NAME_LENGTH}
 			/>
 		</View>
 	);

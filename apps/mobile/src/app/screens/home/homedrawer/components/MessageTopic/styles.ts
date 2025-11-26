@@ -34,5 +34,11 @@ export const style = (colors: Attributes) =>
 		},
 		outerWrapper: {
 			flexDirection: 'row'
+		},
+		avatarWrapper: {
+			width: size.s_20,
+			height: size.s_20,
+			borderRadius: size.s_20,
+			overflow: 'hidden'
 		}
 	});

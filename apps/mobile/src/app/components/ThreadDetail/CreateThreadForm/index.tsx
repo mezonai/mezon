@@ -212,7 +212,8 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 		if (isTabletLandscape) {
 			navigation.navigate(APP_SCREEN.HOME);
 		} else {
-			navigation.replace(APP_SCREEN.HOME_DEFAULT);
+			navigation.goBack();
+			navigation.navigate(APP_SCREEN.HOME_DEFAULT);
 		}
 	};
 

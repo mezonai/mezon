@@ -224,7 +224,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 				ref={focusRef}
 			>
 				<div className="p-2 w-full justify-between rounded-md cursor-pointer bg-item-hover items-center flex " onClick={handleRemoveMember}>
-					{t('member.menu')}
+					{t('menu')}
 				</div>
 				<div className="contexify_separator"></div>
 				{checkOpenMic && (

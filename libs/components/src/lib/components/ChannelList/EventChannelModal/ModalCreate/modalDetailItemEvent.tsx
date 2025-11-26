@@ -141,6 +141,8 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 			}
 		}
 	};
+	const avatarDefault = userCreate?.clan_avatar || userCreate?.user?.avatar_url;
+	const avatarLetter = (userCreate?.clan_nick || userCreate?.user?.display_name || userCreate?.user?.username)?.trim().charAt(0).toUpperCase();
 
 	return (
 		<div className="px-4 py-8 space-y-2 text-theme-primary max-h-[370px] h-fit hide-scrollbar overflow-auto">
@@ -218,11 +220,17 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				<p>{t('eventDetail.personInterested', { count: event?.user_ids?.length || 0 })}</p>
 			</div>
 			<div className="flex items-center gap-x-3">
-				<img
-					src={createImgproxyUrl(userCreate?.clan_avatar || userCreate?.user?.avatar_url || '')}
-					alt={userCreate?.clan_nick || userCreate?.user?.username}
-					className="size-5 rounded-full"
-				/>
+				{avatarDefault ? (
+					<img
+						src={createImgproxyUrl(avatarDefault)}
+						alt={userCreate?.clan_nick || userCreate?.user?.username}
+						className="size-5 rounded-full object-cover"
+					/>
+				) : (
+					<div className="size-5 bg-bgAvatarDark rounded-full flex justify-center items-center text-bgAvatarLight text-lg ">
+						{avatarLetter || '?'}
+					</div>
+				)}
 				<p>{t('eventDetail.createdBy', { username: userCreate?.clan_nick || userCreate?.user?.username })}</p>
 			</div>
 			<div className="break-all" data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.description')}>

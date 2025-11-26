@@ -85,11 +85,11 @@ export const EmojiDetail = forwardRef(({ item, onSwipeOpen }: ServerDetailProps,
 
 	const handleBlur = () => {
 		setIsFocused(false);
-		if (!CLAN_MEDIA_NAME_REGEX.test(emojiName) || emojiName?.length < MIN_NAME_LENGTH || emojiName?.length > MAX_NAME_LENGTH) {
+		if (!CLAN_MEDIA_NAME_REGEX.test(emojiName) || emojiName?.length < MIN_NAME_LENGTH || emojiName?.length > MAX_NAME_LENGTH - 2) {
 			setEmojiName(item?.shortname?.split(':')?.join(''));
 			Toast.show({
 				type: 'error',
-				text1: t('toast.validateName', { min: MIN_NAME_LENGTH, max: MAX_NAME_LENGTH })
+				text1: t('toast.validateName', { min: MIN_NAME_LENGTH, max: MAX_NAME_LENGTH - 2 })
 			});
 			return;
 		}

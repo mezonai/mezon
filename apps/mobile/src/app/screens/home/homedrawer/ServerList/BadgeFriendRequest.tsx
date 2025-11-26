@@ -12,7 +12,7 @@ const BadgeFriendRequest = React.memo(() => {
 	if (!quantityPendingRequest) return null;
 	return (
 		<View style={styles.badge}>
-			<Text style={styles.badgeText}>{quantityPendingRequest > 99 ? `+99` : quantityPendingRequest}</Text>
+			<Text style={styles.badgeText}>{quantityPendingRequest > 99 ? `99+` : quantityPendingRequest}</Text>
 		</View>
 	);
 });

@@ -261,8 +261,8 @@ const ButtonNoiseControl = memo(() => {
 				onClick={toggleNoiseSuppression}
 				className="flex items-center rounded-sm bg-bgSecondary bg-item-theme-hover text-theme-primary gap-2 p-[2px] text-sm bg-transparent bg-item-theme-hover"
 			>
-				<Icons.NoiseSupressionIcon className={`w-5 h-5 text-red-400`}>
-					<path d="M3 21 L21 3" stroke="white" strokeWidth="2" strokeLinecap="round" />
+				<Icons.NoiseSupressionIcon className={`w-5 h-5`}>
+					<path d="M3 21 L21 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
 				</Icons.NoiseSupressionIcon>
 			</button>
 		);

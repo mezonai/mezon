@@ -92,18 +92,6 @@ export const style = (colors: Attributes) =>
 			padding: size.s_12,
 			gap: size.s_10
 		},
-		avatarBoxDefault: {
-			width: '100%',
-			height: '100%',
-			borderRadius: size.s_50,
-			backgroundColor: 'rgba(148, 154, 164, 1)',
-			justifyContent: 'center',
-			alignItems: 'center'
-		},
-		textAvatarBoxDefault: {
-			fontSize: size.s_22,
-			color: 'white'
-		},
 		memberWrapper: {
 			flexDirection: 'row',
 			alignItems: 'center',
@@ -114,12 +102,7 @@ export const style = (colors: Attributes) =>
 			width: size.s_36,
 			height: size.s_36,
 			borderRadius: size.s_36,
-			overflow: 'hidden',
-			backgroundColor: '#676b73'
-		},
-		image: {
-			width: '100%',
-			height: '100%'
+			overflow: 'hidden'
 		},
 		memberName: {
 			fontWeight: '600',
@@ -164,7 +147,8 @@ export const style = (colors: Attributes) =>
 		emojiText: {
 			color: colors.text,
 			fontWeight: '600',
-			fontSize: size.medium
+			fontSize: size.medium,
+			flexShrink: 1
 		},
 		noActionsWrapper: {
 			flex: 1,

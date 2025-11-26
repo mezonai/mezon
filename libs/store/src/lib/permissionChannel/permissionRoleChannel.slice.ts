@@ -2,7 +2,7 @@ import type { IPermissionRoleChannel, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiPermissionUpdate } from 'mezon-js/api.gen';
+import type { ApiPermissionRoleChannel, ApiPermissionUpdate } from 'mezon-js/api.gen';
 import type { ApiPermissionRoleChannelListEventResponse } from 'mezon-js/dist/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -125,7 +125,15 @@ export const setPermissionRoleChannel = createAsyncThunk(
 				user_id: userId
 			};
 			const response = await mezon.client.setRoleChannelPermission(mezon.session, body);
-			return response;
+			if (response) {
+				return {
+					userId,
+					permission,
+					roleId,
+					channelId
+				};
+			}
+			return null;
 		} catch (error) {
 			return thunkAPI.rejectWithValue([]);
 		}
@@ -191,6 +199,28 @@ export const permissionRoleChannelSlice = createSlice({
 			.addCase(fetchPermissionRoleChannel.rejected, (state: PermissionRoleChannelState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
+			})
+			.addCase(setPermissionRoleChannel.fulfilled, (state: PermissionRoleChannelState, action) => {
+				if (!action.payload) {
+					return;
+				}
+				const { userId, roleId, permission, channelId } = action.payload;
+
+				const listUpdate: ApiPermissionRoleChannel[] = permission
+					.filter((item) => item.type)
+					.map((role) => ({
+						active: role.type === 1 ? true : false,
+						permission_id: role.permission_id
+					}));
+				state.cacheByChannels[channelId] = {
+					permissionRoleChannel: {
+						role_id: roleId,
+						user_id: userId,
+						channel_id: channelId,
+						permission_role_channel: listUpdate
+					},
+					cache: createCacheMetadata()
+				};
 			});
 	}
 });

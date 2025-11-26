@@ -2,9 +2,9 @@ import {
 	getFirstMessageOfTopic,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
+	selectLastSentMessageStateByChannelId,
 	selectMemberClanByUserId,
 	selectMessageByMessageId,
-	selectTopicById,
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
@@ -12,7 +12,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
-import { EBacktickType, ETypeLinkMedia, addMention, convertTimeMessage, createImgproxyUrl, generateE2eId, isValidEmojiData } from '@mezon/utils';
+import { EBacktickType, ETypeLinkMedia, addMention, convertTimeDifference, createImgproxyUrl, generateE2eId, isValidEmojiData } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import React, { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -68,6 +68,7 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 	const { t, i18n } = useTranslation('message');
 	const dispatch = useAppDispatch();
 	const latestMessage = useAppSelector((state) => selectMessageByMessageId(state, message.channel_id, message.id));
+	const lastSentMessageState = useAppSelector((state) => selectLastSentMessageStateByChannelId(state, message.channel_id));
 	const rplCount = latestMessage?.content?.rpl || 0;
 	const topicCreator = useAppSelector((state) => selectMemberClanByUserId(state, latestMessage?.content?.cid as string));
 	const avatarToDisplay = topicCreator?.clan_avatar ? topicCreator?.clan_avatar : topicCreator?.user?.avatar_url;
@@ -80,15 +81,12 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, message.channel_id as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 
-	const topic = useAppSelector((state) => selectTopicById(state, message?.content?.tp || ''));
-
 	const timeMessage = useMemo(() => {
-		if (!topic) return;
-		if (topic?.last_sent_message && topic?.last_sent_message?.timestamp_seconds) {
-			const lastTime = convertTimeMessage(topic.last_sent_message.timestamp_seconds, i18n.language);
-			return lastTime;
-		}
-	}, [topic, i18n.language]);
+		if (!latestMessage?.create_time_seconds || !lastSentMessageState?.timestamp_seconds) return;
+
+		const lastTime = convertTimeDifference(lastSentMessageState.timestamp_seconds, latestMessage?.create_time_seconds, i18n.language);
+		return lastTime;
+	}, [latestMessage, i18n.language, lastSentMessageState.timestamp_seconds]);
 
 	return (
 		<div

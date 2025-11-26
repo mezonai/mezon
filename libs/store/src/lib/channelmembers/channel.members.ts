@@ -45,7 +45,7 @@ export interface ChannelMembersState extends EntityState<ChannelMembersEntity, s
 	currentChannelId?: string | null;
 	followingUserIds?: string[];
 	onlineStatusUser: Record<string, boolean>;
-	customStatusUser: Record<string, string>;
+	customStatusUser: Record<string, { status: string; time_reset?: number }>;
 	toFollowUserIds: string[];
 	memberChannels: Record<
 		string,
@@ -512,9 +512,9 @@ export const channelMembers = createSlice({
 				delete state.memberChannels[channelId].cache;
 			}
 		},
-		setCustomStatusUser: (state, action: PayloadAction<{ userId: string; status: string }>) => {
-			const { userId, status } = action.payload;
-			state.customStatusUser[userId] = status;
+		setCustomStatusUser: (state, action: PayloadAction<{ userId: string; status: string; time_reset?: number }>) => {
+			const { userId, status, time_reset } = action.payload;
+			state.customStatusUser[userId] = { status, time_reset };
 		}
 	},
 	extraReducers: (builder) => {
@@ -547,7 +547,7 @@ export const channelMembers = createSlice({
 			})
 			.addCase(updateCustomStatus.fulfilled, (state: ChannelMembersState, action) => {
 				if (action.payload) {
-					state.customStatusUser[action.payload?.user_id] = action.payload.status;
+					state.customStatusUser[action.payload?.user_id] = { status: action.payload.status, time_reset: action.payload.time_reset };
 				}
 			});
 	}
@@ -606,6 +606,10 @@ export const getChannelMembersState = (rootState: { [CHANNEL_MEMBERS_FEATURE_KEY
 
 export const selectMemberStatus = createSelector(getChannelMembersState, (state) => state.onlineStatusUser);
 export const selectMemberCustomStatus = createSelector(getChannelMembersState, (state) => state.customStatusUser);
+export const selectMemberCustomStatusById = createSelector(
+	[selectMemberCustomStatus, (_: RootState, userId: string) => userId],
+	(customStatusUser, userId) => customStatusUser[userId]
+);
 
 export const selectMemberIdsByChannelId = createSelector(
 	[getChannelMembersState, (state, channelId: string) => channelId],
@@ -624,7 +628,7 @@ export const selectMemberCustomStatusByUserId = createSelector(
 	],
 	(usersClanEntities, usersStatus, userId) => {
 		const userClan = usersClanEntities[userId];
-		return usersStatus?.[userId] || userClan?.user?.user_status || '';
+		return usersStatus?.[userId]?.status || userClan?.user?.user_status || '';
 	}
 );
 

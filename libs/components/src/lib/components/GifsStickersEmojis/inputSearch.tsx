@@ -95,7 +95,7 @@ export const InputSearch: React.FC = () => {
 						onChange={handleInputChange}
 						type="text"
 						placeholder={placeHolder}
-						className="bg-theme-input outline-none bg-theme-input flex-1 p-2 rounded-md "
+						className="bg-theme-input outline-none bg-theme-input flex-1 p-2 rounded-md pr-10"
 						value={valueInput}
 						ref={searchInputRef}
 					/>

@@ -113,7 +113,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: isChannel ? t1('menuChannelStack.channelSetting') : t1('menuChannelStack.threadSetting'),
 			headerRight: () => (
-				<Pressable onPress={() => handleSaveChannelSetting()}>
+				<Pressable onPress={() => handleSaveChannelSetting()} disabled={isNotChanged}>
 					<Text style={[styles.saveChangeButton, !isNotChanged ? styles.changed : styles.notChange]}>{t('confirm.save')}</Text>
 				</Pressable>
 			)

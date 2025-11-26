@@ -505,20 +505,33 @@ type FooterButtonsModalProps = {
 
 const FooterButtonsModal = (props: FooterButtonsModalProps) => {
 	const { onClose, sentToMessage, t } = props;
+	const [loading, setLoading] = useState(false);
+
+	const handleSend = async () => {
+		setLoading(true);
+		try {
+			await sentToMessage();
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	return (
 		<div className="flex justify-end p-4 rounded-b gap-4">
 			<button
 				className="py-2 h-10 px-4 rounded-lg border-theme-primary hover:!underline focus:ring-transparent"
 				type="button"
 				onClick={onClose}
+				disabled={loading}
 			>
 				{t('modal.cancel')}
 			</button>
 			<button
-				onClick={sentToMessage}
+				onClick={handleSend}
 				className="py-2 h-10 px-4 rounded text-white bg-bgSelectItem hover:!bg-bgSelectItemHover focus:ring-transparent"
+				disabled={loading}
 			>
-				{t('modal.send')}
+				{loading ? t('modal.sending') : t('modal.send')}
 			</button>
 		</div>
 	);

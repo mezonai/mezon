@@ -34,8 +34,7 @@
 		"name": "TÊN"
 	},
 	"webhooksEmpty": {
-		"noWebhooks": "KHÔNG CÓ WEBHOOK",
-		"webhooksEmptyDes": "Hiện tại, bạn chỉ có thể tạo webhook trên phiên bản web hoặc máy tính để bàn."
+		"noWebhooks": "KHÔNG CÓ WEBHOOK"
 	},
 	"webhooksItem": {
 		"createdBy": "Được tạo vào {{webhookCreateTime}} bởi {{webhookUserOwnerName}}"

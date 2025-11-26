@@ -20,30 +20,30 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 
-	const TabList = [
-		{
-			title: t('members')
-		},
-		{
-			title: t('media')
-		},
-		{
-			title: t('files')
-		},
-		{
-			title: t('pins')
-		},
-		{
-			title: 'Canvas'
-		}
-	];
-
 	const headerTablist = useMemo(() => {
+		const tabList = [
+			{
+				title: t('members')
+			},
+			{
+				title: t('media')
+			},
+			{
+				title: t('files')
+			},
+			{
+				title: t('pins')
+			},
+			{
+				title: 'Canvas'
+			}
+		];
+
 		if (currentChannel?.type !== ChannelType.CHANNEL_TYPE_DM && currentChannel?.type !== ChannelType.CHANNEL_TYPE_GROUP) {
-			return TabList;
+			return tabList;
 		}
-		return TabList.slice(0, -1);
-	}, [TabList, currentChannel?.type]);
+		return tabList.slice(0, -1);
+	}, [currentChannel?.type, t]);
 
 	const handelHeaderTabChange = useCallback(
 		(index: number) => {
@@ -63,7 +63,10 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 				{tabActive === 0 ? (
 					<MemberListStatus />
 				) : tabActive === 1 ? (
-					<MediaChannel channelId={channelId} />
+					<MediaChannel
+						channelId={channelId}
+						isDM={[ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type)}
+					/>
 				) : tabActive === 4 ? (
 					<Canvas
 						channelId={
@@ -82,6 +85,7 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 								? currentChannel?.channel_id
 								: channelId
 						}
+						isDM={[ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type)}
 					/>
 				) : (
 					<PinMessage

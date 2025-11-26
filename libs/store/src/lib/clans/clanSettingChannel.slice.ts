@@ -145,7 +145,64 @@ export const fetchChannelSettingInClan = createAsyncThunk(
 export const settingClanChannelSlice = createSlice({
 	name: SETTING_CLAN_CHANNEL,
 	initialState: initialSettingClanChannelState,
-	reducers: {},
+	reducers: {
+		addChannelFromSocket: (state, action) => {
+			const channel = action.payload;
+			if (!channel?.id) return;
+			if (channel.parent_id && channel.parent_id !== '0') {
+				if (!state.threadsByChannel[channel.parent_id]) {
+					state.threadsByChannel[channel.parent_id] = [];
+				}
+				const existingThread = state.threadsByChannel[channel.parent_id].find((t) => t.id === channel.id);
+				if (!existingThread) {
+					state.threadsByChannel[channel.parent_id].push(channel);
+					state.threadCount += 1;
+				}
+				return;
+			}
+			channelSettingAdapter.addOne(state, channel);
+			state.channelCount += 1;
+		},
+		removeChannelFromSocket: (state, action) => {
+			const channelId = action.payload;
+			if (state.entities[channelId]) {
+				channelSettingAdapter.removeOne(state, channelId);
+				state.channelCount = Math.max(0, state.channelCount - 1);
+				return;
+			}
+			Object.keys(state.threadsByChannel).some((parentId) => {
+				const threads = state.threadsByChannel[parentId];
+				const threadExists = threads.some((t) => t.id === channelId);
+				if (threadExists) {
+					state.threadsByChannel[parentId] = threads.filter((t) => t.id !== channelId);
+					state.threadCount = Math.max(0, state.threadCount - 1);
+					return true;
+				}
+				return false;
+			});
+		},
+		updateChannelFromSocket: (state, action) => {
+			const channel = action.payload;
+			if (!channel?.id) return;
+			if (state.entities[channel.id]) {
+				channelSettingAdapter.updateOne(state, {
+					id: channel.id,
+					changes: channel
+				});
+				return;
+			}
+			if (channel.parent_id && state.threadsByChannel[channel.parent_id]) {
+				const threads = state.threadsByChannel[channel.parent_id];
+				const threadIndex = threads.findIndex((t) => t.id === channel.id);
+				if (threadIndex !== -1) {
+					state.threadsByChannel[channel.parent_id][threadIndex] = {
+						...threads[threadIndex],
+						...channel
+					};
+				}
+			}
+		}
+	},
 	extraReducers(builder) {
 		builder
 			.addCase(fetchChannelSettingInClan.fulfilled, (state: SettingClanChannelState, actions) => {

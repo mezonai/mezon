@@ -222,7 +222,7 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	thunkAPI.dispatch(walletActions.setLogout());
 	thunkAPI.dispatch(listChannelsByUserActions.removeAll());
 	clearApiCallTracker();
-	const restoreKey = ['persist:apps', 'persist:categories', 'persist:clans', 'current-theme', 'hideNotificationContent', 'i18nextLng'];
+	const restoreKey = ['persist:apps', 'current-theme', 'hideNotificationContent', 'i18nextLng'];
 	if (sessionState) {
 		restoreKey.push('mezon_session');
 	}

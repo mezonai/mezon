@@ -188,7 +188,7 @@ const RootNavigation = (props) => {
 	return (
 		<MezonStoreProvider store={store} loading={null} persistor={persistor}>
 			<ThemeProvider>
-				<ChatContextProvider>
+				<ChatContextProvider isMobile={true}>
 					<RefreshSessionWrapper>
 						<WebRTCStreamProvider>
 							<DeviceProvider>

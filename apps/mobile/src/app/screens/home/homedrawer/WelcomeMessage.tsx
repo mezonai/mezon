@@ -2,10 +2,11 @@ import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
 import { useFriends } from '@mezon/core';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	EStateFriend,
 	friendsActions,
+	getStore,
 	getStoreAsync,
 	selectAllAccount,
 	selectChannelById,
@@ -89,7 +90,11 @@ const WelcomeMessage = React.memo(({ channelId }: IWelcomeMessage) => {
 		return Number(currenChannel?.type) === ChannelType.CHANNEL_TYPE_GROUP;
 	}, [currenChannel?.type]);
 
-	const creatorUser = useAppSelector((state) => selectMemberClanByUserId(state, currenChannel?.creator_id));
+	const creatorPriorityName = useMemo(() => {
+		const store = getStore();
+		const creatorUser = selectMemberClanByUserId(store.getState(), currenChannel?.creator_id || '');
+		return creatorUser?.clan_nick || creatorUser?.user?.display_name || creatorUser?.user?.username || '';
+	}, [currenChannel?.creator_id]);
 
 	const groupDMAvatar = useMemo(() => {
 		const isAvatar = currenChannel?.channel_avatar && !currenChannel?.channel_avatar?.includes('avatar-group.png');
@@ -134,18 +139,13 @@ const WelcomeMessage = React.memo(({ channelId }: IWelcomeMessage) => {
 			if (isBlocked) {
 				Toast.show({
 					type: 'success',
-					props: {
-						text2: t('notification.blockUser.success', { ns: 'dmMessage' }),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
-					}
+					text1: t('notification.blockUser.success', { ns: 'dmMessage' }),
 				});
 			}
 		} catch (error) {
 			Toast.show({
 				type: 'error',
-				props: {
-					text2: t('notification.blockUser.error', { ns: 'dmMessage' })
-				}
+				text1: t('notification.blockUser.error', { ns: 'dmMessage' })
 			});
 		}
 	};
@@ -156,18 +156,13 @@ const WelcomeMessage = React.memo(({ channelId }: IWelcomeMessage) => {
 			if (isUnblocked) {
 				Toast.show({
 					type: 'success',
-					props: {
-						text2: t('notification.unblockUser.success', { ns: 'dmMessage' }),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
-					}
+					text1: t('notification.unblockUser.success', { ns: 'dmMessage' }),
 				});
 			}
 		} catch (error) {
 			Toast.show({
 				type: 'error',
-				props: {
-					text2: t('notification.unblockUser.error', { ns: 'dmMessage' })
-				}
+				text1: t('notification.unblockUser.error', { ns: 'dmMessage' })
 			});
 		}
 	};
@@ -261,7 +256,7 @@ const WelcomeMessage = React.memo(({ channelId }: IWelcomeMessage) => {
 					<Text style={styles.titleWelcomeMessage}>{currenChannel?.channel_label || ''}</Text>
 					<View style={styles.flexRow}>
 						<Text style={styles.subTitleWelcomeMessage}>{t('chatWelcome:welcome.startOfThread', { username: '' })}</Text>
-						<Text style={styles.subTitleWelcomeMessageWithHighlight}>{creatorUser?.user?.username || ''}</Text>
+						<Text style={styles.subTitleWelcomeMessageWithHighlight}>{creatorPriorityName}</Text>
 					</View>
 				</View>
 			)}

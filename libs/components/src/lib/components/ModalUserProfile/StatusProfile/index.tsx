@@ -1,25 +1,11 @@
 import { useAuth, useMemberStatus } from '@mezon/core';
 import type { ChannelMembersEntity } from '@mezon/store';
-import {
-	accountActions,
-	authActions,
-	giveCoffeeActions,
-	selectOthersSession,
-	selectZkProofs,
-	useAppDispatch,
-	useWallet,
-	userClanProfileActions
-} from '@mezon/store';
-import { createClient as createMezonClient } from '@mezon/transport';
+import { accountActions, giveCoffeeActions, useAppDispatch, useWallet, userClanProfileActions } from '@mezon/store';
 import { Icons, Menu } from '@mezon/ui';
 import { CURRENCY, EUserStatus, formatBalanceToString } from '@mezon/utils';
-import isElectron from 'is-electron';
 import type { ReactElement, ReactNode } from 'react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useModal } from 'react-modal-hook';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import { ButtonCopy } from '../../../components';
 import TransactionHistory from '../../TransactionHistory';
 import ItemStatus from './ItemStatus';
@@ -34,7 +20,6 @@ type StatusProfileProps = {
 const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps) => {
 	const { t } = useTranslation(['userProfile', 'message']);
 	const dispatch = useAppDispatch();
-	const allAccount = useSelector(selectOthersSession);
 	const handleCustomStatus = () => {
 		dispatch(userClanProfileActions.setShowModalCustomStatus(true));
 	};
@@ -53,8 +38,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	}, [getStatus, userProfile?.user?.status, userProfile?.user?.user_status]);
 	const [isShowModalHistory, setIsShowModalHistory] = useState<boolean>(false);
 
-	const zkProofs = useSelector(selectZkProofs);
-	const { isEnableWallet, walletDetail, enableWallet, fetchWalletData } = useWallet();
+	const { walletDetail } = useWallet();
 
 	const handleSendToken = () => {
 		dispatch(giveCoffeeActions.setShowModalSendToken(true));
@@ -66,19 +50,6 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	const handleCloseHistoryModal = () => {
 		setIsShowModalHistory(false);
 	};
-
-	const handleEnableWallet = useCallback(() => {
-		enableWallet();
-	}, [enableWallet]);
-
-	useEffect(() => {
-		if (isEnableWallet) {
-			fetchWalletData();
-			if (!zkProofs) {
-				handleEnableWallet();
-			}
-		}
-	}, [isEnableWallet, zkProofs, fetchWalletData, handleEnableWallet]);
 
 	const statusIcon = (status: string): ReactNode => {
 		switch (status) {
@@ -118,42 +89,6 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 			})
 		);
 		dispatch(accountActions.updateUserStatus(status));
-	};
-
-	const navigate = useNavigate();
-	const handleSetAccount = (email: string, password: string) => {
-		if (isElectron()) {
-			const gw_login = {
-				host: process.env.NX_CHAT_APP_API_GW_HOST as string,
-				port: process.env.NX_CHAT_APP_API_GW_PORT as string,
-				key: process.env.NX_CHAT_APP_API_KEY as string,
-				ssl: process.env.NX_CHAT_APP_API_SECURE === 'true'
-			};
-			const clientLogin = createMezonClient(gw_login);
-
-			clientLogin.authenticateEmail(email, password).then((response) => {
-				dispatch(authActions.setSession(response));
-			});
-			navigate('/chat/direct/friend');
-			closeModalAddAccount();
-			modalRef.current = false;
-		}
-	};
-
-	const [openModalAddAccount, closeModalAddAccount] = useModal(() => {
-		return <AddAccountModal handleSetAccount={handleSetAccount} handleCloseModalAddAccount={handleCloseModalAddAccount} />;
-	});
-
-	const handleOpenSwitchAccount = useCallback(() => {
-		if (isElectron()) {
-			openModalAddAccount();
-			modalRef.current = true;
-		}
-	}, [modalRef, openModalAddAccount]);
-
-	const handleCloseModalAddAccount = () => {
-		closeModalAddAccount();
-		modalRef.current = false;
 	};
 
 	const menuStatus = useMemo(() => {
@@ -203,35 +138,21 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 	return (
 		<>
 			<div className="max-md:relative">
-				{isEnableWallet ? (
-					<>
-						<ItemStatus
-							children={`${t('statusProfile.balance')}: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
-							startIcon={<Icons.Check className="text-theme-primary" />}
-							disabled={true}
-						/>
-						<ItemStatus
-							onClick={handleSendToken}
-							children={t('statusProfile.transferFunds')}
-							startIcon={<Icons.SendMoney className="text-theme-primary" />}
-						/>
-						<ItemStatus
-							onClick={handleOpenHistoryModal}
-							children={t('statusProfile.historyTransaction.title')}
-							startIcon={<Icons.History className="text-theme-primary" />}
-						/>
-					</>
-				) : (
-					<ItemStatus
-						onClick={handleEnableWallet}
-						children={t('message:wallet.enableWallet')}
-						startIcon={
-							<span className="w-5 h-5 flex items-center justify-center text-theme-primary">
-								<WalletIcon />
-							</span>
-						}
-					/>
-				)}
+				<ItemStatus
+					children={`${t('statusProfile.balance')}: ${formatBalanceToString(walletDetail?.balance ?? '0')} ${CURRENCY.SYMBOL}`}
+					startIcon={<Icons.Check className="text-theme-primary" />}
+					disabled={true}
+				/>
+				<ItemStatus
+					onClick={handleSendToken}
+					children={t('statusProfile.transferFunds')}
+					startIcon={<Icons.SendMoney className="text-theme-primary" />}
+				/>
+				<ItemStatus
+					onClick={handleOpenHistoryModal}
+					children={t('statusProfile.historyTransaction.title')}
+					startIcon={<Icons.History className="text-theme-primary" />}
+				/>
 
 				<ItemStatus
 					onClick={handleCustomStatus}

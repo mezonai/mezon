@@ -84,6 +84,9 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 		}
 
 		const { fromCache, time, ...profileData } = response;
+		if (response?.user?.id) {
+			thunkAPI.dispatch(walletActions.fetchWalletDetail({ userId: response?.user?.id }));
+		}
 		return { ...profileData, fromCache: false };
 	}
 );

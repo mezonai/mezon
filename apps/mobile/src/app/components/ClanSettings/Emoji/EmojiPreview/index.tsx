@@ -32,7 +32,7 @@ export const EmojiPreview = memo(({ isSticker = false, image, onConfirm }: IShar
 	}
 
 	function handleUploadConfirm() {
-		if (emojiName?.trim()?.length >= MIN_NAME_LENGTH && emojiName?.length <= MAX_NAME_LENGTH && CLAN_MEDIA_NAME_REGEX.test(emojiName)) {
+		if (emojiName?.trim()?.length >= MIN_NAME_LENGTH && emojiName?.length <= MAX_NAME_LENGTH - 2 && CLAN_MEDIA_NAME_REGEX.test(emojiName)) {
 			setError('');
 			if (onConfirm) {
 				onConfirm(image, emojiName, isForSale);
@@ -41,7 +41,7 @@ export const EmojiPreview = memo(({ isSticker = false, image, onConfirm }: IShar
 		} else {
 			setError(
 				t('itemClanPreview.lenghtError', {
-					max: MAX_NAME_LENGTH,
+					max: MAX_NAME_LENGTH - 2,
 					min: MIN_NAME_LENGTH,
 					type: isSticker ? t('itemClanPreview.sticker') : t('itemClanPreview.emoji')
 				})

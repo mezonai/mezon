@@ -31,10 +31,15 @@ interface FlatDataItem {
 	rowIndex?: number;
 }
 
+interface IMediaChannelProps {
+	channelId: string;
+	isDM: boolean;
+}
+
 const MAX_COLUMNS = 3;
 const ITEMS_PER_ROW = 3;
 
-const MediaChannel = memo(({ channelId }: { channelId: string }) => {
+const MediaChannel = memo(({ channelId, isDM }: IMediaChannelProps) => {
 	const widthScreen = Dimensions.get('screen').width;
 	const widthImage = useMemo(() => {
 		return (widthScreen - size.s_42) / MAX_COLUMNS;
@@ -155,13 +160,13 @@ const MediaChannel = memo(({ channelId }: { channelId: string }) => {
 				<View style={styles.rowContainer}>
 					{item.items?.map((media, idx) => (
 						<View key={`${media?.id ?? idx}_${media?.filename}`} style={styles.rowItem}>
-							<MediaItem data={media} onPress={openImage} />
+							<MediaItem data={media} onPress={openImage} isDM={isDM} />
 						</View>
 					))}
 				</View>
 			);
 		},
-		[openImage, styles]
+		[openImage, styles, isDM]
 	);
 
 	const renderListFooter = useCallback(() => {

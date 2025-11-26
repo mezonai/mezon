@@ -1,12 +1,8 @@
 import type { ApiPhoto, IAlbum, IAlbumLayout, ObserveFn } from '@mezon/utils';
-import { AlbumRectPart } from '@mezon/utils';
+import { AlbumRectPart, generateAttachmentId } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import type { FC } from 'react';
 import Photo from './Photo';
-
-const generateAttachmentId = (attachment: ApiMessageAttachment, messageId: string): string => {
-	return `${messageId}_${attachment.filename || attachment.url}`;
-};
 
 type OwnProps = {
 	album: IAlbum;

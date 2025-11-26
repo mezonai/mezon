@@ -7,7 +7,8 @@
 		"searchingChannel": "Tìm kiếm kênh",
 		"sharedContent": "Nội dung được chia sẻ",
 		"cancel": "Hủy",
-		"send": "Gửi"
+		"send": "Gửi",
+		"sending": "Đang gửi..."
 	},
 	"successMessage": "Chuyển tiếp tin nhắn thành công",
 	"errorMessage": "Không thể chuyển tiếp tin nhắn"

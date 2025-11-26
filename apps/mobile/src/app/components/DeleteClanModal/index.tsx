@@ -49,6 +49,7 @@ const DeleteClanModal = ({ isLeaveClan = false }: { isLeaveClan?: boolean }) => 
 		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 		const indexClanJoin = currentClanId === clans[0]?.clan_id ? 1 : 0;
 		if (clans?.length === 1) {
+			navigation.navigate(APP_SCREEN.HOME);
 			return;
 		}
 		if (clans?.[indexClanJoin]) {

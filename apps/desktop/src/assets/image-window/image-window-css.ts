@@ -432,6 +432,15 @@ width : 0 !important;
         position: absolute;
         top: 0;
         left: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #2e2e2e;
+    }
+
+    .skeleton-thumbnail .skeleton-icon {
+        width: 32px;
+        height: 32px;
     }
 
     .image-loading {

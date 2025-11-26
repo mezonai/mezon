@@ -1,12 +1,5 @@
 import { ChatContext } from '@mezon/core';
-import {
-	load,
-	save,
-	setCurrentClanLoader,
-	STORAGE_CLAN_ID,
-	STORAGE_IS_DISABLE_LOAD_BACKGROUND,
-	STORAGE_MY_USER_ID
-} from '@mezon/mobile-components';
+import { load, save, setCurrentClanLoader, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import {
 	accountActions,
 	appActions,

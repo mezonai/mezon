@@ -1,9 +1,8 @@
 import { useChannels, usePermissionChecker } from '@mezon/core';
-import type { ChannelsEntity } from '@mezon/store';
 import { selectChannelById, selectWelcomeChannelByClanId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
-import { EPermission, checkIsThread, generateE2eId } from '@mezon/utils';
+import { EPermission, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -32,9 +31,8 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 	const channelId = (channel?.channel_id || ('id' in channel ? (channel as { id?: string })?.id : '') || '') as string;
 	const channelFromStore = useAppSelector((state) => selectChannelById(state, channelId));
 	const currentChannel = (channelFromStore || channel) as IChannel;
-	const canEditChannelPermissions = hasManageChannelPermission;
 
-	const isThread = checkIsThread(currentChannel as ChannelsEntity);
+	const isThread = channel.type === ChannelType.CHANNEL_TYPE_THREAD;
 
 	const handleButtonClick = (buttonName: string) => {
 		setSelectedButton(buttonName);
@@ -55,7 +53,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 	};
 
 	const renderIcon = () => {
-		if (isThread) {
+		if (channel.type === ChannelType.CHANNEL_TYPE_THREAD) {
 			if (isPrivate) {
 				return <Icons.ThreadIconLocker className="w-5 h-5 -mt-1 min-w-5 block dark:text-[#AEAEAE] text-colorTextLightMode" />;
 			}
@@ -118,7 +116,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 							channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
 							channel.type !== ChannelType.CHANNEL_TYPE_APP &&
 							channel.id !== welcomeChannelId &&
-							canEditChannelPermissions && (
+							hasManageChannelPermission && (
 								<ChannelSettingItemButton
 									tabName={EChannelSettingTab.PREMISSIONS}
 									handleOnClick={handleButtonClick}
@@ -138,7 +136,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 							getTabTranslation={getTabTranslation}
 						/>
 					)}
-				{canEditChannelPermissions &&
+				{hasManageChannelPermission &&
 					channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE &&
 					channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
 					channel.type !== ChannelType.CHANNEL_TYPE_APP && (

@@ -7,117 +7,134 @@ class NotificationService: UNNotificationServiceExtension {
 	var bestAttemptContent: UNMutableNotificationContent?
 	
 	override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
-		print("NotificationService: Received notification request")
-		
 		self.contentHandler = contentHandler
 		bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
 		
-		if let bestAttemptContent = bestAttemptContent {
-			// Increment badge count first
-			incrementBadgeCount(for: bestAttemptContent)
+		guard let bestAttemptContent = bestAttemptContent else {
+			contentHandler(request.content)
+			return
+		}
+		
+		// Verify app group access
+		verifyAppGroupAccess()
+		
+		// Increment badge count first
+		incrementBadgeCount(for: bestAttemptContent)
+		
+		// Try to find image URL
+		if let imageURLString = findImageURL(in: bestAttemptContent.userInfo),
+		   let imageURL = URL(string: imageURLString) {
 			
-			var imageURLString: String?
-			
-			// Check various possible locations for image URL
-			if let imageURL = bestAttemptContent.userInfo["image"] as? String {
-				imageURLString = imageURL
-				print("NotificationService: Found image URL in 'image' field")
-			} else if let fcmOptions = bestAttemptContent.userInfo["fcm_options"] as? [String: Any],
-					  let imageURL = fcmOptions["image"] as? String {
-				imageURLString = imageURL
-				print("NotificationService: Found image URL in 'fcm_options.image' field")
-			} else if let apsDict = bestAttemptContent.userInfo["aps"] as? [String: Any],
-					  let imageURL = apsDict["image"] as? String {
-				imageURLString = imageURL
-				print("NotificationService: Found image URL in 'aps.image' field")
-			} else if let imageURL = bestAttemptContent.userInfo["imageUrl"] as? String {
-				imageURLString = imageURL
-				print("NotificationService: Found image URL in 'imageUrl' field")
-			} else if let imageURL = bestAttemptContent.userInfo["image_url"] as? String {
-				imageURLString = imageURL
-				print("NotificationService: Found image URL in 'image_url' field")
-			} else {
-				print("NotificationService: No image URL found in notification payload")
-			}
-			
-			if let imageURLString = imageURLString,
-			   let imageURL = URL(string: imageURLString) {
-				
-				print("NotificationService: Starting image download from \(imageURL)")
-				downloadImage(from: imageURL) { [weak self] (attachment) in
-					if let attachment = attachment {
-						bestAttemptContent.attachments = [attachment]
-						print("NotificationService: Image attachment added successfully")
-					} else {
-						print("NotificationService: Failed to create image attachment")
-					}
-					contentHandler(bestAttemptContent)
+			downloadImage(from: imageURL) { [weak self] (attachment) in
+				if let attachment = attachment {
+					bestAttemptContent.attachments = [attachment]
 				}
-			} else {
-				// No image URL found, deliver notification as is
-				print("NotificationService: Delivering notification without image")
 				contentHandler(bestAttemptContent)
 			}
 		} else {
-			print("NotificationService: Failed to create mutable notification content")
-			contentHandler(request.content)
+			// No image URL found, deliver notification as is
+			contentHandler(bestAttemptContent)
 		}
 	}
 	
 	override func serviceExtensionTimeWillExpire() {
-		print("NotificationService: Service extension time will expire")
 		if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
 			contentHandler(bestAttemptContent)
 		}
 	}
 	
-	private func downloadImage(from url: URL, completion: @escaping (UNNotificationAttachment?) -> Void) {
-		print("NotificationService: Starting download task for \(url)")
+	// MARK: - Helper Methods
+	
+	private func verifyAppGroupAccess() {
+		let groupIdentifier = "group.mezon.mobile"
 		
-		let task = URLSession.shared.downloadTask(with: url) { (location, response, error) in
+		if let sharedDefaults = UserDefaults(suiteName: groupIdentifier) {
+			// Test write access
+			let testKey = "extensionAccessTest"
+			let testValue = Date().timeIntervalSince1970
+			sharedDefaults.set(testValue, forKey: testKey)
+			sharedDefaults.synchronize()
+		}
+	}
+	
+	private func findImageURL(in userInfo: [AnyHashable: Any]) -> String? {
+		// Check various possible locations for image URL
+		let possibleKeys: [(path: String, extract: () -> String?)] = [
+			("image", { userInfo["image"] as? String }),
+			("imageUrl", { userInfo["imageUrl"] as? String }),
+			("image_url", { userInfo["image_url"] as? String }),
+			("fcm_options.image", {
+				guard let fcmOptions = userInfo["fcm_options"] as? [String: Any] else { return nil }
+				return fcmOptions["image"] as? String
+			}),
+			("aps.image", {
+				guard let apsDict = userInfo["aps"] as? [String: Any] else { return nil }
+				return apsDict["image"] as? String
+			}),
+			("data.image", {
+				guard let dataDict = userInfo["data"] as? [String: Any] else { return nil }
+				return dataDict["image"] as? String
+			}),
+			("gcm.notification.image", {
+				guard let gcmDict = userInfo["gcm.notification"] as? [String: Any] else { return nil }
+				return gcmDict["image"] as? String
+			})
+		]
+		
+		for (path, extract) in possibleKeys {
+			if let imageURL = extract() {
+				return imageURL
+			}
+		}
+		
+		return nil
+	}
+	
+	private func downloadImage(from url: URL, completion: @escaping (UNNotificationAttachment?) -> Void) {
+		// Add timeout configuration for iOS 15-16 compatibility
+		let config = URLSessionConfiguration.default
+		config.timeoutIntervalForRequest = 25 // Give enough time before extension expires
+		config.timeoutIntervalForResource = 25
+		let session = URLSession(configuration: config)
+		
+		let task = session.downloadTask(with: url) { (location, response, error) in
 			guard let location = location else {
-				print("NotificationService: Failed to download image: \(error?.localizedDescription ?? "Unknown error")")
 				completion(nil)
 				return
 			}
-			
-			print("NotificationService: Image downloaded successfully")
 			
 			// Get file extension from URL or response
 			var fileExtension = url.pathExtension
 			if fileExtension.isEmpty {
 				if let mimeType = response?.mimeType {
-					switch mimeType {
-					case "image/jpeg", "image/jpg":
-						fileExtension = "jpg"
-					case "image/png":
-						fileExtension = "png"
-					case "image/gif":
-						fileExtension = "gif"
-					case "image/webp":
-						fileExtension = "webp"
-					default:
-						fileExtension = "jpg"
-					}
-					print("NotificationService: Determined file extension '\(fileExtension)' from MIME type '\(mimeType)'")
+					fileExtension = self.getExtension(for: mimeType)
 				} else {
 					fileExtension = "jpg"
-					print("NotificationService: Using default file extension 'jpg'")
 				}
-			} else {
-				print("NotificationService: Using file extension '\(fileExtension)' from URL")
 			}
 			
-			// Create temporary file URL
-			let tempDirectory = URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+			// Create temporary file URL with better path handling
+			let tempDirectory = FileManager.default.temporaryDirectory
 			let fileName = UUID().uuidString + "." + fileExtension
 			let tempFileURL = tempDirectory.appendingPathComponent(fileName)
 			
-			print("NotificationService: Creating temporary file at \(tempFileURL)")
-			
 			do {
+				// Remove file if it exists (shouldn't happen with UUID, but just in case)
+				if FileManager.default.fileExists(atPath: tempFileURL.path) {
+					try FileManager.default.removeItem(at: tempFileURL)
+				}
+				
 				// Move downloaded file to temp location
 				try FileManager.default.moveItem(at: location, to: tempFileURL)
+				
+				// Verify file exists and has content
+				let fileAttributes = try FileManager.default.attributesOfItem(atPath: tempFileURL.path)
+				let fileSize = fileAttributes[.size] as? Int ?? 0
+				
+				if fileSize == 0 {
+					completion(nil)
+					return
+				}
 				
 				// Create notification attachment
 				let attachment = try UNNotificationAttachment(
@@ -128,15 +145,28 @@ class NotificationService: UNNotificationServiceExtension {
 					]
 				)
 				
-				print("NotificationService: Notification attachment created successfully")
 				completion(attachment)
 			} catch {
-				print("NotificationService: Failed to create notification attachment: \(error.localizedDescription)")
 				completion(nil)
 			}
 		}
 		
 		task.resume()
+	}
+	
+	private func getExtension(for mimeType: String) -> String {
+		switch mimeType {
+		case "image/jpeg", "image/jpg":
+			return "jpg"
+		case "image/png":
+			return "png"
+		case "image/gif":
+			return "gif"
+		case "image/webp":
+			return "webp"
+		default:
+			return "jpg"
+		}
 	}
 	
 	private func getTypeHint(for fileExtension: String) -> String {
@@ -154,12 +184,13 @@ class NotificationService: UNNotificationServiceExtension {
 			typeHint = "public.jpeg"
 		}
 		
-		print("NotificationService: Using type hint '\(typeHint)' for extension '\(fileExtension)'")
 		return typeHint
 	}
 	
 	private func incrementBadgeCount(for content: UNMutableNotificationContent) {
-		guard let sharedDefaults = UserDefaults(suiteName: "group.mezon.mobile") else {
+		let groupIdentifier = "group.mezon.mobile"
+		
+		guard let sharedDefaults = UserDefaults(suiteName: groupIdentifier) else {
 			content.badge = NSNumber(value: 1)
 			return
 		}
@@ -167,9 +198,14 @@ class NotificationService: UNNotificationServiceExtension {
 		let currentBadgeCount = sharedDefaults.integer(forKey: "badgeCount")
 		let newBadgeCount = currentBadgeCount + 1
 		
-		
 		sharedDefaults.set(newBadgeCount, forKey: "badgeCount")
-		sharedDefaults.synchronize()
+		
+		// iOS 15-16: synchronize() is deprecated but can help with reliability
+		if #available(iOS 16.0, *) {
+			// On iOS 16+, synchronize is not needed
+		} else {
+			sharedDefaults.synchronize()
+		}
 		
 		content.badge = NSNumber(value: newBadgeCount)
 	}

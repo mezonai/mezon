@@ -14,7 +14,8 @@ export const style = ({ textStrong }: Attributes) =>
 		serverName: {
 			color: textStrong,
 			fontSize: Fonts.size.h7,
-			fontWeight: '700'
+			fontWeight: '700',
+			flexShrink: 1
 		},
 
 		header: {

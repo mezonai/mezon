@@ -140,10 +140,11 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 					removeEmoji={removeEmoji}
 					channelId={channelId || ''}
 					currentEmojiSelected={currentEmojiSelected}
+					currentClanId={messageReactions?.clan_id || ''}
 				/>
 			);
 		},
-		[userId, removeEmoji, channelId, currentEmojiSelected]
+		[userId, removeEmoji, channelId, currentEmojiSelected, messageReactions?.clan_id]
 	);
 
 	return (
@@ -152,7 +153,9 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 			{allReactionDataOnOneMessage?.length ? (
 				<View style={styles.contentWrapper}>
 					<View style={styles.removeEmojiContainer}>
-						<Text style={styles.emojiText}>{currentEmojiSelected?.emoji || ''}</Text>
+						<Text numberOfLines={1} style={styles.emojiText}>
+							{currentEmojiSelected?.emoji || ''}
+						</Text>
 						<View style={styles.deleteEmojiWrapper}>
 							{isExistingMyEmoji ? (
 								<Pressable style={styles.confirmDeleteEmoji} onPress={() => removeEmoji?.(currentEmojiSelected)}>

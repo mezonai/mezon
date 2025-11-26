@@ -12,6 +12,7 @@ import { useSoundReactions } from '../../../../../hooks/useSoundReactions';
 import { CallReactionHandler } from './CallReactionHandler';
 import HeaderRoomView from './HeaderRoomView';
 import RoomView from './RoomView';
+
 const { CustomAudioModule, KeepAwake, KeepAwakeIOS, AudioSessionModule, PipModule } = NativeModules;
 
 // Audio output types
@@ -23,9 +24,11 @@ export type AudioOutput = {
 
 const ConnectionMonitor = memo(() => {
 	const connectionState = useConnectionState();
+	const startedRef = useRef(false);
 
 	useEffect(() => {
-		if (connectionState === 'connected') {
+		if (connectionState === 'connected' && !startedRef.current) {
+			startedRef.current = true;
 			startAudioCall();
 		}
 	}, [connectionState]);

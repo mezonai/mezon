@@ -7,7 +7,8 @@
 		"searchingChannel": "Searching channel",
 		"sharedContent": "Shared content",
 		"cancel": "Cancel",
-		"send": "Send"
+		"send": "Send",
+		"sending": "Sending..."
 	},
 	"successMessage": "Message forwarded successfully",
 	"errorMessage": "Failed to forward message"

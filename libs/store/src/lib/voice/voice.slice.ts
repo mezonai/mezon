@@ -231,7 +231,9 @@ export const voiceSlice = createSlice({
 			state.token = action.payload;
 		},
 		setVoiceInfo: (state, action: PayloadAction<IvoiceInfo>) => {
-			state.voiceInfo = action.payload;
+			if (state.voiceInfo?.channelId !== action.payload.channelId) {
+				state.voiceInfo = action.payload;
+			}
 		},
 		setVoiceInfoId: (state, action: PayloadAction<string>) => {
 			if (state.voiceInfo) {

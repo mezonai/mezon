@@ -8,11 +8,11 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import React, { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonAvatar from '../../../../../componentUI/MezonAvatar';
+import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
@@ -44,15 +44,16 @@ const MessageTopic = ({ message }: { message: MessagesEntity }) => {
 		return numberMessages > 99 ? '99+' : numberMessages;
 	}, [message?.content?.rpl, replyCount]);
 
+	const priorityCreatorAvatar = useMemo(() => {
+		return topicCreator?.clan_avatar || topicCreator?.user?.avatar_url || '';
+	}, [topicCreator?.clan_avatar, topicCreator?.user?.avatar_url]);
+
 	return (
 		<View style={styles.outerWrapper}>
 			<TouchableOpacity onPress={handleOpenTopic} style={styles.container}>
-				<MezonAvatar
-					avatarUrl={topicCreator?.clan_avatar || topicCreator?.user?.avatar_url}
-					username={topicCreator?.clan_nick}
-					width={size.s_20}
-					height={size.s_20}
-				/>
+				<View style={styles.avatarWrapper}>
+					<MezonClanAvatar alt={topicCreator?.user?.username || ''} image={priorityCreatorAvatar} />
+				</View>
 				<Text style={styles.repliesText}>{t('creator')}</Text>
 				<Text style={styles.dateMessageBox}>{t('viewTopic')}</Text>
 				<Text style={styles.repliesText}>{`${repliesCount} ${repliesCount > 1 ? t('replies') : t('actions.reply')}`}</Text>
@@ -62,4 +63,4 @@ const MessageTopic = ({ message }: { message: MessagesEntity }) => {
 	);
 };
 
-export default React.memo(MessageTopic);
+export default memo(MessageTopic);

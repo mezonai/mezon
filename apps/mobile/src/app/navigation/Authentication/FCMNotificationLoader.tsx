@@ -1,5 +1,5 @@
 import { ChatContext } from '@mezon/core';
-import { STORAGE_IS_DISABLE_LOAD_BACKGROUND, save } from '@mezon/mobile-components';
+import { save, STORAGE_IS_DISABLE_LOAD_BACKGROUND } from '@mezon/mobile-components';
 import { appActions, getStoreAsync } from '@mezon/store-mobile';
 import notifee, { EventType } from '@notifee/react-native';
 import { getApp } from '@react-native-firebase/app';
@@ -12,7 +12,6 @@ import { AppState, NativeModules, Platform } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import NotificationPreferences from '../../utils/NotificationPreferences';
 import { checkNotificationPermission, processNotification } from '../../utils/pushNotificationHelpers';
-import { useSessionReady } from '../RefreshSessionWrapper';
 
 const messaging = getMessaging(getApp());
 
@@ -21,7 +20,6 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 	const isTabletLandscape = useTabletLandscape();
 	const { onchannelmessage } = useContext(ChatContext);
 	const appStateRef = useRef(AppState.currentState);
-	const isSessionReady = useSessionReady();
 	const checkPermission = async () => {
 		await checkNotificationPermission();
 	};
@@ -216,8 +214,8 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 	}, []);
 
 	useEffect(() => {
-		if (isSessionReady) startupFCMRunning(navigation, isTabletLandscape);
-	}, [isTabletLandscape, navigation, isSessionReady]);
+		startupFCMRunning(navigation, isTabletLandscape);
+	}, [isTabletLandscape, navigation]);
 
 	useEffect(() => {
 		checkPermission();

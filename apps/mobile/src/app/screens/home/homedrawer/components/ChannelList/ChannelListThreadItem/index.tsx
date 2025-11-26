@@ -37,7 +37,6 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListTh
 			<View style={[styles.threadItem]}>
 				<View style={styles.cornerIconWrapper}>
 					<MezonIconCDN icon={IconCDN.longCorner} height={size.s_36} width={size.s_12} color={'#535353'} />
-					{/*hardcode virtual view to connect thread lines */}
 					<View style={styles.virtualConnectorLine} />
 				</View>
 				<TouchableOpacity
@@ -72,7 +71,7 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListTh
 
 			{Number(numberNotification || 0) > 0 && (
 				<View style={[styles.channelDotWrapper]}>
-					<Text style={styles.channelDot}>{numberNotification}</Text>
+					<Text style={styles.channelDot}>{numberNotification > 99 ? '99+' : numberNotification}</Text>
 				</View>
 			)}
 		</View>

@@ -87,10 +87,12 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 		animationTimeoutsRef.current.forEach(clearTimeout);
 		animationTimeoutsRef.current.clear();
 	}, []);
+	const displayedCountRef = useRef<number>(0);
 
 	// Optimized emoji removal with cleanup
 	const removeEmoji = useCallback((emojiId: string) => {
 		setDisplayedEmojis((prev) => prev.filter((item) => item.id !== emojiId));
+		displayedCountRef.current = Math.max(0, displayedCountRef.current - 1);
 	}, []);
 
 	// Create optimized animation sequence
@@ -244,8 +246,7 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 	// Optimized socket message handler
 	const handleVoiceReactionMessage = useCallback(
 		(message: VoiceReactionSend) => {
-			if (channelId !== message?.channel_id) return;
-
+			if (channelId !== message?.channel_id || displayedCountRef?.current >= 10) return;
 			try {
 				const emojis = message.emojis || [];
 				const emojiId = emojis[0];
@@ -267,8 +268,10 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 						createAndAnimateEmoji(emojiId, displayName);
 					}
 				}
+				displayedCountRef.current = displayedCountRef.current + 1;
 			} catch (error) {
 				console.error('Error handling voice reaction:', error);
+				displayedCountRef.current = Math.max(0, displayedCountRef.current - 1);
 			}
 		},
 		[allUserClans, channelId, createAndAnimateEmoji, onSoundReaction, playSound]

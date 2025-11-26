@@ -283,11 +283,15 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 											value={name}
 											maxLength={62}
 											onChange={(e) => setName(e.target.value)}
-											className="w-full h-full px-3 py-2 bg-transparent text-theme-messaga=e border-none rounded-md text-sm focus:outline-none focus:ring-0 focus:border-none "
+											className="w-full h-full px-3 py-2 bg-transparent text-theme-messaga=e border-none rounded-md text-sm focus:outline-none focus:ring-0 focus:border-none pr-[50px]"
 										/>
 										<div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-											<span className={`text-xs font-medium ${name.length > 25 ? 'text-[#faa61a]' : ''}`}>
-												{name.length}/62
+											<span
+												className={`text-xs font-medium ${
+													(name.length ?? 0) > 59 ? 'text-red-500' : (name.length ?? 0) > 40 ? 'text-[#faa61a]' : ''
+												}`}
+											>
+												{name.length ?? 0}/62
 											</span>
 										</div>
 									</div>
