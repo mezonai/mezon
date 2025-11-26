@@ -74,7 +74,7 @@ const FlowChatPopup = () => {
 			}
 			setMessages((prev) => [...prev, { message: { message: response.message, mediaFile }, type: 'output' }]);
 		} catch (error) {
-			setMessages((prev) => [...prev, { message: { message: "Sory, I dont't know", mediaFile: undefined }, type: 'output' }]);
+			setMessages((prev) => [...prev, { message: { message: "Sorry, I don't know", mediaFile: undefined }, type: 'output' }]);
 		}
 	};
 	const scrollToBottom = () => {
