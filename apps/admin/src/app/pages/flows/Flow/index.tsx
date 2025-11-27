@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ApiIcon, ConditionIcon, ResponseIcon, TriggerIcon, WebhookIcon } from '../../../../assets/icons/nodeIcons';
 import { FlowContext } from '../../../context/FlowContext';
 import flowService from '../../../services/flowService';
-import { addNode, changeLoading, deleteNode, setEdgesContext, setNodesContext } from '../../../stores/flow/flow.action';
+import { addEdge, addNode, changeLoading, deleteNode, setEdgesContext, setNodesContext } from '../../../stores/flow/flow.action';
 import type { IEdge, IFlowDataRequest, IFlowDetail, INode, INodeType, IParameter } from '../../../stores/flow/flow.interface';
 import ExampleFlow from '../../flowExamples/ExampleFlows';
 import AddNodeMenuPopup from '../AddNodeMenuPopup';
@@ -123,9 +123,7 @@ const Flow = () => {
 			type: 'default'
 		};
 
-		const updatedEdges = edges.filter((edge) => !(edge.source === sourceNodeId && edge.sourceHandle === sourceHandleId));
-
-		flowDispatch(setEdgesContext([...updatedEdges, newEdge]));
+		flowDispatch(addEdge(newEdge));
 
 		setPopupConfig((prev) => ({ ...prev, visible: false }));
 	};
@@ -145,11 +143,9 @@ const Flow = () => {
 	// handle drag, drop and connect nodes
 	const onConnect = useCallback(
 		(params: Connection) => {
-			const updatedEdges = edges.filter((edge) => !(edge.source === params.source && edge.sourceHandle === params.sourceHandle));
-			const newEdge = { ...params, id: uuidv4() } as Edge;
-			flowDispatch(setEdgesContext([...updatedEdges, newEdge]));
+			flowDispatch(addEdge(params as Edge));
 		},
-		[flowDispatch, edges]
+		[flowDispatch]
 	);
 	const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
 		event.preventDefault();

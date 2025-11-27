@@ -68,10 +68,12 @@ const flowReducer = (state = initFlowState, action: FlowActionType): IFlowState 
 					(edge.sourceHandle === newEdge.sourceHandle && edge.source === newEdge.source) ||
 					(edge.targetHandle === newEdge.targetHandle && edge.target === newEdge.target)
 			);
-			if (!checkAllowed || checkExist || checkLimit) return state;
+			if (!checkAllowed || checkExist) return state;
+
+			const newEdges = state.edges.filter((edge) => edge.id !== checkLimit?.id);
 			return {
 				...state,
-				edges: [...state.edges, newEdge]
+				edges: [...newEdges, newEdge]
 			};
 		}
 		case FLOW_ACTION_TYPE.CHANGE_NODE_TYPE:
