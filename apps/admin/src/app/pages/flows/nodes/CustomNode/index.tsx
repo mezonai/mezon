@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/ui';
-import { Handle, Position } from '@xyflow/react';
+import { Handle, Position, useEdges, useStore } from '@xyflow/react';
 import {
 	changeOpenModalNodeDetail,
 	changeOpenModalNodeEditing,
@@ -44,6 +44,15 @@ interface CustomNodeProps {
 
 const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, onHandleHover, onHandleLeave }: CustomNodeProps) => {
 	const { flowDispatch } = useContext(FlowContext);
+	const edges = useEdges();
+
+	const connection = useStore((state) => state.connection);
+
+	const isConnected = edges.some((edge) => edge.source === data.id);
+
+	const isConnectingFromThisNode = connection.inProgress && connection.fromNode?.id === data.id;
+
+	const hasSource = anchors.source && anchors.source.length > 0;
 
 	const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
 		e.stopPropagation();
@@ -112,6 +121,45 @@ const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, on
 				</button>
 			</div>
 
+			{/* Add Node Button (Dot with Plus Icon) connected by Edge */}
+			{hasSource && (
+				<div
+					className={`absolute right-[-70px] top-1/2 transform -translate-y-1/2 flex items-center transition-all duration-300 ease-in-out ${
+						isConnected || isConnectingFromThisNode // Ẩn nếu: Đã kết nối xong HOẶC Đang kéo dây từ chính node này
+							? 'opacity-0 -translate-x-8 pointer-events-none'
+							: 'opacity-100 translate-x-0 pointer-events-auto'
+					}`}
+				>
+					<div className="w-[50px] h-[2px] bg-gray-300 dark:bg-gray-500"></div>
+					<button
+						className="w-5 h-5 bg-blue-500 hover:bg-blue-600 rounded-md flex items-center justify-center shadow-md text-white z-50"
+						// Chỉ kích hoạt hover khi KHÔNG đang kéo dây và CHƯA kết nối
+						onMouseEnter={(e) => {
+							if (!isConnectingFromThisNode && !isConnected && anchors.source?.[0] && onHandleHover) {
+								onHandleHover(e, data.id, anchors.source[0].id, label);
+							}
+						}}
+						onMouseLeave={() => {
+							if (onHandleLeave) onHandleLeave();
+						}}
+					>
+						<svg
+							width="10"
+							height="10"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="3"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
+							<line x1="12" y1="5" x2="12" y2="19"></line>
+							<line x1="5" y1="12" x2="19" y2="12"></line>
+						</svg>
+					</button>
+				</div>
+			)}
+
 			{/* Render all source anchors */}
 			{anchors.source?.map((item, index) => {
 				return (
@@ -120,11 +168,11 @@ const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, on
 						type={'source'}
 						id={item.id}
 						position={Position.Right}
-						className={`group-hover:bg-blue-300 bg-gray-700 absolute w-[10px] h-[10px] top-auto`}
-						style={{ bottom: `${12 + index * 20}px` }}
+						className={`group-hover:bg-blue-300 bg-gray-700 absolute w-[10px] h-[10px] top-1/2`}
+						// style={{ bottom: `${12 + index * 20}px` }}
 						// Thêm sự kiện hover
-						onMouseEnter={(e) => onHandleHover && onHandleHover(e, data.id, item.id, label)}
-						onMouseLeave={() => onHandleLeave && onHandleLeave()}
+						// onMouseEnter={(e) => onHandleHover && onHandleHover(e, data.id, item.id, label)}
+						// onMouseLeave={() => onHandleLeave && onHandleLeave()}
 					/>
 				);
 			})}
@@ -136,8 +184,8 @@ const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, on
 						type={'target'}
 						id={item.id}
 						position={Position.Left}
-						className={`group-hover:bg-blue-300 bg-gray-700 absolute w-[10px] h-[10px]`}
-						style={{ top: `${12 + 20 * index}px` }}
+						className={`group-hover:bg-blue-300 bg-gray-700 absolute w-[10px] h-[10px] top-1/2`}
+						// style={{ top: `${12 + 20 * index}px` }}
 					/>
 				);
 			})}

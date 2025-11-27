@@ -147,6 +147,13 @@ const Flow = () => {
 		},
 		[flowDispatch]
 	);
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	const onConnectStart = useCallback(() => {}, []);
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	const onConnectEnd = useCallback(() => {}, []);
+
 	const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
 		event.preventDefault();
 		event.dataTransfer.dropEffect = 'move';
@@ -448,6 +455,8 @@ const Flow = () => {
 				onNodesChange={onChangeNode}
 				onEdgesChange={onChangeEdge}
 				onConnect={onConnect}
+				onConnectStart={onConnectStart}
+				onConnectEnd={onConnectEnd}
 				onDrop={onDrop}
 				onDragOver={onDragOver}
 				minZoom={0.5}
@@ -488,6 +497,7 @@ const Flow = () => {
 					<Icons.IconChat className="w-6 h-6" />
 				</button>
 			</Menu>
+
 			{flowState.isLoading && (
 				<div className="fixed top-0 left-0 pt-2 right-0 bottom-0 bg-[#83818169] z-[999] text-center">
 					<Icons.LoadingSpinner />
