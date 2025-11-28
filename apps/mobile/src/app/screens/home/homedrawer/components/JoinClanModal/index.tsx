@@ -1,4 +1,3 @@
-import { useInvite } from '@mezon/core';
 import {
 	ActionEmitEvent,
 	STORAGE_CHANNEL_CURRENT_CACHE,
@@ -9,11 +8,13 @@ import {
 	validLinkInviteRegex
 } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { clansActions, getStoreAsync } from '@mezon/store-mobile';
-import React, { useState } from 'react';
+import { clansActions, getStoreAsync, inviteActions } from '@mezon/store-mobile';
+import type { ApiInviteUserRes } from 'mezon-js/api.gen';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import Toast from 'react-native-toast-message';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../../componentUI/MezonInput';
 import { ErrorInput } from '../../../../../components/ErrorInput';
@@ -23,9 +24,8 @@ import { styles } from './JoinClanModal.styles';
 
 const JoinClanModal = () => {
 	const [inviteLink, setInviteLink] = useState<string>('');
-	const { inviteUser } = useInvite();
 	const [isValidInvite, setIsValidInvite] = useState<boolean>(true);
-	const { t } = useTranslation(['userEmptyClan']);
+	const { t } = useTranslation(['userEmptyClan', 'common']);
 	const { themeValue } = useTheme();
 
 	const joinClan = async () => {
@@ -33,17 +33,28 @@ const JoinClanModal = () => {
 		const isValidLinkInvite = Boolean(inviteId?.length === 19 && validLinkInviteRegex.test(inviteLink.trim()));
 		setIsValidInvite(isValidLinkInvite);
 		if (!isValidLinkInvite) return;
-		const store = await getStoreAsync();
-		inviteUser(inviteId).then(async (res) => {
-			if (res && res?.clan_id) {
+
+		try {
+			const store = await getStoreAsync();
+			const response = await store.dispatch(inviteActions.inviteUser({ inviteId }));
+			const payload = response?.payload as ApiInviteUserRes;
+
+			if (payload && payload?.clan_id) {
 				await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-				save(STORAGE_CLAN_ID, res?.clan_id);
-				store.dispatch(clansActions.joinClan({ clanId: res?.clan_id }));
-				store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clan_id }));
+				save(STORAGE_CLAN_ID, payload.clan_id);
+				store.dispatch(clansActions.joinClan({ clanId: payload.clan_id }));
+				store.dispatch(clansActions.changeCurrentClan({ clanId: payload.clan_id }));
 				await store.dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+			} else {
+				Toast.show({
+					type: 'error',
+					text1: t('common:cannotJoinClan')
+				});
 			}
-		});
+		} catch (error) {
+			console.error('Error joining clan:', error);
+		}
 	};
 
 	const extractIdFromUrl = (url: string) => {

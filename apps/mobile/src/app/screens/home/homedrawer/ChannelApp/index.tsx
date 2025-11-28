@@ -4,6 +4,7 @@ import { authActions, getAuthState, useAppDispatch } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dimensions, Modal, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { Wave } from 'react-native-animated-spinkit';
 import { useSelector } from 'react-redux';
@@ -18,6 +19,7 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 	const dispatch = useAppDispatch();
 	const paramsRoute = route?.params;
 	const styles = style(themeValue);
+	const { t } = useTranslation(['common']);
 	const authState = useSelector(getAuthState);
 	const session = JSON.stringify(authState.session);
 	const [loading, setLoading] = useState(true);
@@ -160,12 +162,12 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 			{loading && (
 				<View style={styles.loadingContainer}>
 					<Wave color={themeValue.text} />
-					<Text style={styles.textLoading}>Loading data, please wait a moment!</Text>
+					<Text style={styles.textLoading}>{t('loadingData')}</Text>
 				</View>
 			)}
 			<TouchableOpacity onPress={onClose} style={styles.backButton}>
 				<MezonIconCDN icon={IconCDN.closeSmallBold} height={size.s_16} width={size.s_16} />
-				<Text style={styles.buttonText}>Close</Text>
+				<Text style={styles.buttonText}>{t('close')}</Text>
 			</TouchableOpacity>
 			<WebviewBase
 				url={uri}

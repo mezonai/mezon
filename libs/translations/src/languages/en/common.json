@@ -456,5 +456,11 @@
 		"Symbols": "Symbols",
 		"Flags": "Flags",
 		"Custom": "Custom"
-	}
+	},
+	"openCanvas": "Open Canvas",
+	"successBuyItem": "Buy item successfully!",
+	"failedToBuyItem": "Failed to buy item!",
+	"loadingData": "Loading data, please wait a moment!",
+	"close": "Close",
+	"cannotJoinClan": "Cannot join clan"
 }

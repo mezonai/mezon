@@ -1,11 +1,12 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
 import { FOR_SALE_CATE, ITEM_TYPE } from '@mezon/utils';
-import React, { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, FlatList, ListRenderItem, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import type { ImageStyle, ListRenderItem } from 'react-native';
+import { DeviceEventEmitter, FlatList, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -15,7 +16,7 @@ import { IconCDN } from '../../../../../../constants/icon_cdn';
 import RenderAudioItem from './SoundStickerItem';
 import { style } from './styles';
 
-interface ISticker {
+interface IStickerProps {
 	stickerList: any[];
 	categoryName: string;
 	onClickSticker: (sticker: any) => void;
@@ -24,7 +25,6 @@ interface ISticker {
 }
 
 const NUM_COLUMNS = 5;
-const ITEM_MARGIN = 8;
 
 const StickerItem = memo(({ item, onPress, isAudio, styles }: any) => {
 	return (
@@ -33,7 +33,7 @@ const StickerItem = memo(({ item, onPress, isAudio, styles }: any) => {
 				<>
 					{item?.source && (
 						<TouchableOpacity onPress={() => onPress(item)} style={[styles.audioContent, styles.itemMargin]}>
-							<RenderAudioItem audioURL={item?.source} />
+							<RenderAudioItem audioURL={item.source} />
 							<Text style={styles.soundName} numberOfLines={1}>
 								{item?.shortname}
 							</Text>
@@ -44,7 +44,7 @@ const StickerItem = memo(({ item, onPress, isAudio, styles }: any) => {
 				<TouchableOpacity onPress={() => onPress(item)} style={[styles.content, styles.itemMargin]}>
 					<FastImage
 						source={{
-							uri: item?.source ? item?.source : `${process.env.NX_BASE_IMG_URL}/stickers/${item?.id}.webp`,
+							uri: item?.source ? item.source : `${process.env.NX_BASE_IMG_URL}/stickers/${item?.id}.webp`,
 							cache: FastImage.cacheControl.immutable,
 							priority: FastImage.priority.high
 						}}
@@ -61,14 +61,19 @@ const StickerItem = memo(({ item, onPress, isAudio, styles }: any) => {
 	);
 });
 
-export default memo(function Sticker({ stickerList, categoryName, onClickSticker, isAudio, forSale }: ISticker) {
+const Sticker = ({ stickerList, categoryName, onClickSticker, isAudio, forSale }: IStickerProps) => {
 	const { themeValue } = useTheme();
 	const widthScreen = useWindowDimensions().width;
 	const styles = style(themeValue, widthScreen);
-	const { t } = useTranslation(['token']);
+	const { t } = useTranslation(['token', 'common']);
 	const dispatch = useAppDispatch();
 	const userProfile = useSelector(selectAllAccount);
 	const [isExpanded, setIsExpanded] = useState(!(categoryName === FOR_SALE_CATE && forSale));
+
+	const displayCategoryName = useMemo(() => {
+		if (!categoryName) return '';
+		return categoryName === FOR_SALE_CATE ? t('common:emojiCategories.forsale') : categoryName;
+	}, [categoryName, t]);
 
 	const stickersListByCategoryName = useMemo(() => {
 		const data = stickerList?.filter((sticker) => {
@@ -107,22 +112,19 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 					if (!resp?.type?.includes('rejected')) {
 						Toast.show({
 							type: 'success',
-							props: {
-								text2: 'Buy item successfully!',
-								leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={30} height={17} />
-							}
+							text1: t('common:successBuyItem')
 						});
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 					} else {
-						Toast.show({ type: 'error', text1: 'Failed to buy item.' });
+						Toast.show({ type: 'error', text1: t('common:failedToBuyItem') });
 					}
 				}
 			} catch (error) {
 				console.error('Error buying sticker:', error);
-				Toast.show({ type: 'error', text1: 'Failed to buy item.' });
+				Toast.show({ type: 'error', text1: t('common:failedToBuyItem') });
 			}
 		},
-		[dispatch, userProfile?.user?.id, userProfile?.user?.username]
+		[t, userProfile?.user?.id, userProfile?.user?.username]
 	);
 
 	const onPress = useCallback(
@@ -158,24 +160,28 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 	const keyExtractor = useCallback((item: any) => `${item?.id}_${item?.clan_name}`, []);
 
 	const getItemLayout = useCallback(
-		(_: any, index: number) => ({
-			length: isAudio ? styles.audioContent.height : styles.content.height,
-			offset: (isAudio ? styles.audioContent.height : styles.content.height) * Math.floor(index / NUM_COLUMNS),
-			index
-		}),
+		(_: any, index: number) => {
+			const itemHeight = (isAudio ? styles.audioContent.height : styles.content.height) as number;
+
+			return {
+				length: itemHeight,
+				offset: itemHeight * Math.floor(index / NUM_COLUMNS),
+				index
+			};
+		},
 		[isAudio, styles.audioContent.height, styles.content.height]
 	);
 
 	return (
-		<View style={styles.session} key={`${categoryName}_stickers-parent`}>
+		<View key={`${categoryName}_stickers-parent`}>
 			<TouchableOpacity onPress={toggleExpand} style={styles.sessionHeader}>
-				<Text style={styles.sessionTitle}>{categoryName}</Text>
+				<Text style={styles.sessionTitle}>{displayCategoryName}</Text>
 				<MezonIconCDN
 					icon={isExpanded ? IconCDN.chevronDownSmallIcon : IconCDN.chevronSmallRightIcon}
 					color={themeValue.text}
 					width={size.s_16}
 					height={size.s_16}
-					customStyle={styles.chevronIcon}
+					customStyle={styles.chevronIcon as ImageStyle}
 				/>
 			</TouchableOpacity>
 			{isExpanded && (
@@ -196,4 +202,6 @@ export default memo(function Sticker({ stickerList, categoryName, onClickSticker
 			)}
 		</View>
 	);
-});
+};
+
+export default memo(Sticker);

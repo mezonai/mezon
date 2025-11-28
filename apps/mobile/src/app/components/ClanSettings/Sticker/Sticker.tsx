@@ -1,6 +1,6 @@
 import { ActionEmitEvent, QUALITY_IMAGE_UPLOAD } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { createSticker, selectCurrentClanId, selectCurrentUserId, selectStickersByClanId, useAppDispatch } from '@mezon/store-mobile';
+import { createSticker, selectCurrentClanId, selectStickersByClanId, useAppDispatch } from '@mezon/store-mobile';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { LIMIT_SIZE_UPLOAD_IMG, MAX_CLAN_ITEM_SLOTS } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
@@ -27,7 +27,6 @@ export function StickerSetting({ navigation }) {
 	const listSticker = useSelector(selectStickersByClanId(currentClanId));
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation(['clanStickerSetting', 'common']);
-	const currentUserId = useSelector(selectCurrentUserId);
 
 	const [watermarkState, setWatermarkState] = useState<{
 		isProcessing: boolean;
@@ -165,16 +164,14 @@ export function StickerSetting({ navigation }) {
 				return;
 			}
 
-			const isGif = selectedFile.mime === 'image/gif';
+			const isGif = selectedFile?.mime === 'image/gif';
 
 			let croppedFile;
 			if (isGif) {
-				// For GIFs, don't crop to preserve animation
 				croppedFile = selectedFile;
 			} else {
-				// For other images, apply cropping and compression
 				croppedFile = await openCropper({
-					path: selectedFile.path,
+					path: selectedFile?.path || '',
 					mediaType: 'photo',
 					includeBase64: true,
 					cropping: true,

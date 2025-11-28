@@ -4,6 +4,7 @@ import type { EventManagementEntity } from '@mezon/store-mobile';
 import { selectChannelById, useAppSelector } from '@mezon/store-mobile';
 import { OptionEvent } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Linking, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
@@ -17,6 +18,7 @@ interface IEventLocation {
 export function EventLocation({ event }: IEventLocation) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const { t } = useTranslation('eventCreator');
 	const option = event.address ? OptionEvent.OPTION_LOCATION : OptionEvent.OPTION_SPEAKER;
 	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id || ''));
 
@@ -43,7 +45,7 @@ export function EventLocation({ event }: IEventLocation) {
 						width={size.s_16}
 						color={themeValue.textStrong}
 					/>
-					<Text style={styles.smallText}>{channelVoice?.channel_label || 'Private Room'}</Text>
+					<Text style={styles.smallText}>{channelVoice?.channel_label || t('eventDetail.privateRoom')}</Text>
 				</TouchableOpacity>
 			)}
 

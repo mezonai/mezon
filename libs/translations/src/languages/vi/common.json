@@ -456,5 +456,11 @@
 		"Symbols": "Ký hiệu",
 		"Flags": "Cờ",
 		"Custom": "Tùy chỉnh"
-	}
+	},
+	"openCanvas": "Mở Canvas",
+	"successBuyItem": "Mua vật phẩm thành công!",
+	"failedToBuyItem": "Mua vật phẩm thất bại!",
+	"loadingData": "Đang tải dữ liệu, vui lòng chờ trong giây lát.",
+	"close": "Đóng",
+	"cannotJoinClan": "Không thể tham gia clan"
 }

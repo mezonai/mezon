@@ -4,7 +4,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { channelsActions, checkDuplicateNameClan, clansActions, getStoreAsync } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import { MAX_FILE_SIZE_1MB } from '@mezon/utils';
-import React, { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RNFS from 'react-native-fs';
@@ -173,7 +173,7 @@ const CreateClanModal = memo(() => {
 			/>
 
 			<Text style={styles.community}>
-				{t('byCreatingClan')} <Text style={styles.communityGuideLines}>Community Guidelines.</Text>
+				{t('byCreatingClan')} <Text style={styles.communityGuideLines}>{t('commutityGuide')}</Text>
 			</Text>
 			<MezonButton
 				disabled={!isCheckValid || isSubmitting}

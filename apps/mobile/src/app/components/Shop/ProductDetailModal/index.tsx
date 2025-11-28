@@ -1,9 +1,9 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
 import { ITEM_TYPE, getSrcEmoji } from '@mezon/utils';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Image, ScrollView, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Toast from 'react-native-toast-message';
@@ -23,16 +23,16 @@ export interface IProductDetail {
 	creator_id?: string;
 }
 
-interface ProductDetailModalProps {
+interface IProductDetailModalProps {
 	product: IProductDetail;
 	isHaveUnlock: boolean;
 }
 
-const ProductDetailModal = ({ product, isHaveUnlock }: ProductDetailModalProps) => {
+const ProductDetailModal = ({ product, isHaveUnlock }: IProductDetailModalProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
-	const { t } = useTranslation(['token']);
+	const { t } = useTranslation(['token', 'common']);
 	const userProfile = useSelector(selectAllAccount);
 
 	const closeModal = () => DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
@@ -53,19 +53,16 @@ const ProductDetailModal = ({ product, isHaveUnlock }: ProductDetailModalProps) 
 				if (!response?.type?.includes('rejected')) {
 					Toast.show({
 						type: 'success',
-						props: {
-							text2: 'Buy item successfully!',
-							leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={30} height={17} />
-						}
+						text1: t('common:successBuyItem')
 					});
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 				} else {
-					Toast.show({ type: 'error', text1: 'Failed to buy item.' });
+					Toast.show({ type: 'error', text1: t('common:failedToBuyItem') });
 				}
 			}
 		} catch (error) {
 			console.error('Error buying sticker:', error);
-			Toast.show({ type: 'error', text1: 'Failed to buy item.' });
+			Toast.show({ type: 'error', text1: t('common:failedToBuyItem') });
 		}
 	};
 

@@ -1,8 +1,9 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { emojiRecentActions, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
-import { IEmoji, ITEM_TYPE, getSrcEmoji } from '@mezon/utils';
-import React, { FC, memo, useCallback, useMemo } from 'react';
+import type { IEmoji } from '@mezon/utils';
+import { ITEM_TYPE, getSrcEmoji } from '@mezon/utils';
+import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
@@ -14,10 +15,10 @@ import { IconCDN } from '../../../../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../../../../hooks/useTabletLandscape';
 import { style } from '../../styles';
 
-type EmojisPanelProps = {
+interface IEmojisPanelProps {
 	emojisData: IEmoji[];
 	onEmojiSelect: (emoji: IEmoji) => void;
-};
+}
 
 const EmojiItem = memo(({ item, onPress }: { item: IEmoji; onPress: (emoji: IEmoji) => void }) => {
 	const { themeValue } = useTheme();
@@ -36,8 +37,8 @@ const EmojiItem = memo(({ item, onPress }: { item: IEmoji; onPress: (emoji: IEmo
 	);
 });
 
-const EmojisPanel: FC<EmojisPanelProps> = ({ emojisData, onEmojiSelect }) => {
-	const { t } = useTranslation(['token']);
+const EmojisPanel = ({ emojisData, onEmojiSelect }: IEmojisPanelProps) => {
+	const { t } = useTranslation(['token', 'common']);
 	const dispatch = useAppDispatch();
 	const userProfile = useSelector(selectAllAccount);
 	const COLUMNS = 9;
@@ -61,22 +62,19 @@ const EmojisPanel: FC<EmojisPanelProps> = ({ emojisData, onEmojiSelect }) => {
 					if (!resp?.type?.includes('rejected')) {
 						Toast.show({
 							type: 'success',
-							props: {
-								text2: 'Buy item successfully!',
-								leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={30} height={17} />
-							}
+							text1: t('common:successBuyItem')
 						});
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 					} else {
-						Toast.show({ type: 'error', text1: 'Failed to buy item.' });
+						Toast.show({ type: 'error', text1: t('common:failedToBuyItem') });
 					}
 				}
 			} catch (error) {
 				console.error('Error buying emoji:', emoji);
-				Toast.show({ type: 'error', text1: 'Failed to buy item.' });
+				Toast.show({ type: 'error', text1: t('common:failedToBuyItem') });
 			}
 		},
-		[dispatch, userProfile?.user?.id, userProfile?.user?.username]
+		[t, userProfile?.user?.id, userProfile?.user?.username]
 	);
 
 	const onPress = useCallback(

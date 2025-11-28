@@ -1,8 +1,16 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { FAVORITE_CATEGORY_ID, categoriesActions, selectCategoryExpandStateByCategoryId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import {
+	FAVORITE_CATEGORY_ID,
+	PUBLIC_CHANNELS_NAME,
+	categoriesActions,
+	selectCategoryExpandStateByCategoryId,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
 import type { ICategoryChannel } from '@mezon/utils';
-import React, { memo, useCallback } from 'react';
+import { memo, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
@@ -17,19 +25,29 @@ interface IChannelListSectionProps {
 const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+	const { t } = useTranslation('channelList');
 	const dispatch = useAppDispatch();
 	const categoryExpandState = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, data?.category_id));
 
+	const categoryName = useMemo(() => {
+		return data?.id === FAVORITE_CATEGORY_ID
+			? t('favoriteChannel')
+			: data?.category_name === PUBLIC_CHANNELS_NAME
+				? t('publicChannels')
+				: data?.category_name || '';
+	}, [data?.category_name, data?.id, t]);
+
 	const toggleCollapse = useCallback(
 		(category: ICategoryChannel) => {
-			const payload = {
-				clanId: category.clan_id || '',
-				categoryId: category.id,
-				expandState: !categoryExpandState
-			};
-			dispatch(categoriesActions.setCategoryExpandState(payload));
+			dispatch(
+				categoriesActions.setCategoryExpandState({
+					clanId: category.clan_id || '',
+					categoryId: category.id,
+					expandState: !categoryExpandState
+				})
+			);
 		},
-		[dispatch, categoryExpandState]
+		[categoryExpandState]
 	);
 
 	const onLongPressHeader = useCallback(() => {
@@ -44,8 +62,8 @@ const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data: dataBottomSheet });
 	}, [data]);
 
-	if (!data?.category_name?.trim()) {
-		return;
+	if (!categoryName.trim()) {
+		return null;
 	}
 
 	return (
@@ -71,7 +89,7 @@ const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
 						customStyle={[!categoryExpandState && { transform: [{ rotate: '-90deg' }] }]}
 					/>
 					<Text style={styles.channelListHeaderItemTitle} numberOfLines={1}>
-						{data?.category_name}
+						{categoryName}
 					</Text>
 				</View>
 			</TouchableOpacity>

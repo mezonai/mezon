@@ -24,7 +24,7 @@
 	"transferOwnershipModal": {
 		"warning": "Điều này sẽ chuyển quyền sở hữu của <highlightClan>{{clanName}}</highlightClan> cho <highlightUser>{{username}}</highlightUser>. Hành động này không thể hoàn tác!",
 		"sectionTitle": "Chuyển quyền sở hữu",
-		"acknowledgment": "Tôi xác nhận rằng bằng cách chuyển quyền sở hữu của cLan này cho {{username}}, nó sẽ thuộc về họ.",
+		"acknowledgment": "Tôi xác nhận rằng bằng cách chuyển quyền sở hữu của clan này cho {{username}}, nó sẽ thuộc về họ.",
 		"transferButton": "Chuyển",
 		"confirmTitle": "Chuyển quyền sở hữu?",
 		"confirmDescription": "Bạn có chắc chắn muốn chuyển quyền sở hữu của {{clanName}} cho {{username}}? Hành động này không thể hoàn tác.",
