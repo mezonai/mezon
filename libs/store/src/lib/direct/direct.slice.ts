@@ -4,7 +4,7 @@ import { ActiveDm } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelMessage, ChannelUpdatedEvent, UserProfileRedis } from 'mezon-js';
-import { ChannelType } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiChannelDescription, ApiChannelMessageHeader, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api.gen';
 import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
@@ -387,7 +387,7 @@ const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 		parent_id: '0',
 		channel_id: message.channel_id,
 		category_id: '0',
-		type: ChannelType.CHANNEL_TYPE_DM,
+		type: message?.mode === ChannelStreamMode.STREAM_MODE_GROUP ? ChannelType.CHANNEL_TYPE_GROUP : ChannelType.CHANNEL_TYPE_DM,
 		creator_id: message.sender_id,
 		channel_label: message.display_name || message.username,
 		channel_private: 1,
@@ -721,61 +721,39 @@ export const directSlice = createSlice({
 		},
 		updateMoreData: (state, action: PayloadAction<DirectEntity>) => {
 			const data = action.payload;
-			const currentData = state.entities[data.channel_id || ''];
-			if (currentData) {
-				let changes;
-				if (data?.update_time_seconds && data?.last_sent_message) {
-					changes = {
-						...currentData,
-						last_sent_message: data?.last_sent_message,
-						update_time_seconds: data?.update_time_seconds
-					};
-					if (data.type === ChannelType.CHANNEL_TYPE_GROUP) {
-						changes = {
-							...changes,
-							display_names: data?.display_names,
-							usernames: data?.usernames,
-							user_ids: data?.user_ids
-						};
-					}
-				} else {
-					changes = {
-						...data,
-						...currentData
-					};
-				}
+			const channelId = data?.channel_id || data.id;
+			const currentData = state.entities[channelId];
+			if (!currentData) return;
 
-				directAdapter.updateOne(state, {
-					id: data.channel_id || '',
-					changes
-				});
-			}
-		},
-		updateDMSocket: (state, action: PayloadAction<ChannelMessage>) => {
-			const payload = action.payload;
+			const changes: Partial<DirectEntity> = {};
 			const timestamp = Math.floor(Date.now() / 1000);
-			const dmChannel = state.entities[payload.channel_id];
+
+			if (data?.last_sent_message) {
+				changes.last_sent_message = {
+					...(currentData?.last_sent_message ?? {}),
+					...data?.last_sent_message,
+					timestamp_seconds: timestamp
+				};
+			}
+
+			if (data?.clan_id === '0' && currentData?.active !== ActiveDm.OPEN_DM) {
+				changes.active = ActiveDm.OPEN_DM;
+			}
+
+			if (data?.update_time_seconds) {
+				changes.update_time_seconds = data?.update_time_seconds;
+			}
+
+			if (currentData?.type === ChannelType.CHANNEL_TYPE_GROUP) {
+				if (data?.display_names) changes.display_names = data?.display_names;
+				if (data?.usernames) changes.usernames = data?.usernames;
+				if (data?.user_ids) changes.user_ids = data?.user_ids;
+			}
 
 			directAdapter.updateOne(state, {
-				id: payload.channel_id,
-				changes: {
-					last_sent_message: {
-						content: payload.content,
-						id: payload.id,
-						sender_id: payload.sender_id,
-						timestamp_seconds: timestamp
-					} as ApiChannelMessageHeader
-				}
+				id: channelId,
+				changes
 			});
-
-			if (payload.clan_id === '0' && dmChannel?.active !== ActiveDm.OPEN_DM) {
-				directAdapter.updateOne(state, {
-					id: payload.channel_id,
-					changes: {
-						active: ActiveDm.OPEN_DM
-					}
-				});
-			}
 		},
 		setCountMessUnread: (state, action: PayloadAction<{ channelId: string; isMention?: boolean; count?: number; isReset?: boolean }>) => {
 			const { channelId, isMention = false, count = 1, isReset = false } = action.payload;

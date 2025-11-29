@@ -447,8 +447,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				if (mess.mode === ChannelStreamMode.STREAM_MODE_DM || mess.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
 					const isContentMutation = message.code === TypeMessage.ChatUpdate || message.code === TypeMessage.ChatRemove;
 					if (!isContentMutation) {
-						const newDm = await dispatch(directActions.addDirectByMessageWS(mess)).unwrap();
-						!newDm && dispatch(directMetaActions.updateDMSocket(message));
+						await dispatch(directActions.addDirectByMessageWS(mess)).unwrap();
 					}
 
 					const isClanView = selectClanView(store.getState());
@@ -2890,3 +2889,4 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider, MobileEventEmitter };
+
