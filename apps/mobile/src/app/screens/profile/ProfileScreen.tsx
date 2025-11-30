@@ -122,14 +122,14 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 		const data = {
 			children: (
 				<AddStatusUserModal
-					userCustomStatus={userMemberStatus?.status || ''}
+					userCustomStatus={userProfile?.user?.user_status || ''}
 					handleCustomUserStatus={handleCustomUserStatus}
 					timeResetStatus={userMemberStatus?.time_reset}
 				/>
 			)
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-	}, [handleCustomUserStatus, userMemberStatus?.status, userMemberStatus?.time_reset]);
+	}, [handleCustomUserStatus, userMemberStatus?.time_reset, userProfile?.user?.user_status]);
 
 	const showUserStatusBottomSheet = () => {
 		const data = {
@@ -229,14 +229,14 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 					<View style={styles.badgeStatus}>
 						<View style={styles.badgeStatusInside} />
-						{!userMemberStatus?.status && (
+						{!userProfile?.user?.user_status && (
 							<TouchableOpacity activeOpacity={1} onPress={() => showUpdateCustomStatus()} style={styles.iconAddStatus}>
 								<MezonIconCDN icon={IconCDN.plusLargeIcon} height={size.s_12} width={size.s_12} color={themeValue.primary} />
 							</TouchableOpacity>
 						)}
 						<TouchableOpacity activeOpacity={1} onPress={() => showUpdateCustomStatus()}>
 							<Text numberOfLines={1} style={styles.textStatus}>
-								{userMemberStatus?.status ? userMemberStatus.status : t('addStatus')}
+								{userProfile?.user?.user_status ? userProfile.user.user_status : t('addStatus')}
 							</Text>
 						</TouchableOpacity>
 					</View>
