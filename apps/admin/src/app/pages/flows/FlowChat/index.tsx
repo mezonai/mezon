@@ -98,7 +98,7 @@ const FlowChatPopup = () => {
 		}
 	}, [messages]);
 	return (
-		<div className="text-sm text-gray-500 dark:text-gray-200 max-w-[350px] w-[95vw]">
+		<div className="bg-white text-sm text-gray-500 dark:text-gray-200 max-w-[350px] w-[95vw]">
 			<div className="flex items-center gap-2 p-2  bg-gray-200 dark:bg-gray-600">
 				<div className="w-[40px] h-[40px]">
 					<img alt="avt" src="../../../../assets/robot.png" className="w-[40px] h-[40px] rounded-full" />

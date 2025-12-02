@@ -1,4 +1,6 @@
+import React from 'react';
 import { ApiIcon, ConditionIcon, ResponseIcon, TriggerIcon, WebhookIcon } from '../../../../assets/icons/nodeIcons';
+import SearchInput from '../../../components/InputField/SearchInput';
 import type { INodeType } from '../../../stores/flow/flow.interface';
 import MenuItem from './MenuItem';
 
@@ -9,6 +11,7 @@ export interface INodeMenu {
 	icon?: React.ReactNode;
 }
 const AddNodeMenuPopup = () => {
+	const [searchTerm, setSearchTerm] = React.useState('');
 	const nodeMenu: INodeMenu[] = [
 		{
 			title: 'Trigger',
@@ -42,16 +45,21 @@ const AddNodeMenuPopup = () => {
 		}
 	];
 	return (
-		<div className="text-sm text-gray-500 dark:text-gray-400 w-[350px]">
+		<div className="text-sm bg-white text-gray-500 dark:text-gray-400 w-[350px]">
 			<div className="border-b border-gray-200 bg-gray-100 px-3 py-2 dark:border-gray-600 dark:bg-gray-700">
-				<h3 id="default-popover" className="font-semibold text-gray-900 dark:text-white select-none">
+				<h2 id="default-popover" className="font-semibold text-gray-900 dark:text-white select-none">
 					Add Node
-				</h3>
+				</h2>
+			</div>
+			<div className="px-5 py-3 border-b border-gray-100 flex items-center gap-3">
+				<SearchInput value={searchTerm} onChange={setSearchTerm} placeholder="Search nodes..." className="w-full" autoFocus />
 			</div>
 			<div className="p-2 max-h-[450px] overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:[width:3px] [&::-webkit-scrollbar-thumb]:bg-gray-100 transition-all">
-				{nodeMenu.map((node, index) => (
-					<MenuItem key={index} nodeType={node.nodeType} title={node.title} description={node.description} icon={node.icon} />
-				))}
+				{nodeMenu
+					.filter((node) => node.title.toLowerCase().includes(searchTerm.toLowerCase()))
+					.map((node, index) => (
+						<MenuItem key={index} nodeType={node.nodeType} title={node.title} description={node.description} icon={node.icon} />
+					))}
 			</div>
 		</div>
 	);
