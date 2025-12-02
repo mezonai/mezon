@@ -1,13 +1,17 @@
 import { useAuth } from '@mezon/core';
-import { Icons, Menu } from '@mezon/ui';
+import { Icons } from '@mezon/ui';
 import type { Connection, Edge, EdgeChange, NodeChange } from '@xyflow/react';
-import { Background, BackgroundVariant, Controls, Panel, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
+import { Background, BackgroundVariant, ReactFlow, useEdgesState, useNodesState, useReactFlow } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
 import { ApiIcon, ConditionIcon, ResponseIcon, TriggerIcon, WebhookIcon } from '../../../../assets/icons/nodeIcons';
+import Panel from '../../../components/Panel';
+import Toolbar from '../../../components/Toolbar';
+import CustomControls from '../../../components/Toolbar/CustomControls';
+import ToolbarItems from '../../../components/Toolbar/ToolbarItems';
 import { FlowContext } from '../../../context/FlowContext';
 import flowService from '../../../services/flowService';
 import { addEdge, addNode, changeLoading, deleteNode, setEdgesContext, setNodesContext } from '../../../stores/flow/flow.action';
@@ -15,6 +19,7 @@ import type { IEdge, IFlowDataRequest, IFlowDetail, INode, INodeType, IParameter
 import ExampleFlow from '../../flowExamples/ExampleFlows';
 import AddNodeMenuPopup from '../AddNodeMenuPopup';
 import FlowChatPopup from '../FlowChat';
+import FlowListNodesPopup from '../FlowListNodes';
 import CustomNode from '../nodes/CustomNode';
 import NextNodePopup from '../nodes/NextNodePopup';
 import NodeTypes from '../nodes/NodeType';
@@ -31,6 +36,8 @@ const iconByType: Record<string, React.ComponentType> = {
 	Condition: ConditionIcon
 };
 
+type PanelType = null | 'chat' | 'add' | 'search' | 'focus' | 'sticky';
+
 const Flow = () => {
 	const { userProfile } = useAuth();
 	const reactFlowWrapper = useRef(null);
@@ -43,6 +50,8 @@ const Flow = () => {
 	const [isExampleFlow, setIsExampleFlow] = React.useState(true);
 	const [nodes, setNodes, onNodesChange] = useNodesState(flowState.nodes);
 	const [edges, setEdges, onEdgesChange] = useEdgesState(flowState.edges);
+	const [locked, setLocked] = React.useState(false);
+	const [openPanel, setOpenPanel] = React.useState<PanelType>(null);
 
 	// --- State cho Popup ---
 	const [popupConfig, setPopupConfig] = React.useState({
@@ -438,9 +447,27 @@ const Flow = () => {
 		};
 	}, [nodes, edges, flowDispatch]);
 
+	const headerRef = useRef<HTMLDivElement>(null);
+	const [headerHeight, setHeaderHeight] = useState(0);
+
+	useLayoutEffect(() => {
+		if (!headerRef.current) return;
+		const updateHeight = () => {
+			const rect = headerRef.current?.getBoundingClientRect();
+			setHeaderHeight((rect?.height ?? 0) + (rect?.top ?? 0));
+		};
+
+		updateHeight(); // set initial height
+
+		const resizeObserver = new window.ResizeObserver(updateHeight);
+		resizeObserver.observe(headerRef.current);
+
+		return () => resizeObserver.disconnect();
+	}, []);
+
 	return (
-		<div ref={reactFlowWrapper} className={'w-full transition-all fixed top-0 left-0 right-0 bottom-0 z-50 h-[calc(100vh-50px)]'}>
-			<div className="px-4">
+		<div ref={reactFlowWrapper} className="w-full transition-all fixed top-0 left-0 right-0 bottom-0 z-50 h-[calc(100vh-50px)]">
+			<div className="px-4" ref={headerRef}>
 				<FlowHeaderBar
 					onSaveFlow={handleClickSaveFlow}
 					isExampleFlow={isExampleFlow}
@@ -462,47 +489,84 @@ const Flow = () => {
 				minZoom={0.5}
 				maxZoom={3}
 				defaultViewport={{ x: 100, y: 100, zoom: 1 }}
-				nodesDraggable={!isExampleFlow} // disable drag node if current flow is example flow
-				nodesConnectable={!isExampleFlow} // disable connect node if current flow is example flow
-				elementsSelectable={!isExampleFlow} // disable select node if current flow is example flow
-				zoomOnScroll={!isExampleFlow} // disable zoom on scroll if current flow is example flow
+				nodesDraggable={!locked && !isExampleFlow} // disable drag node if current flow is example flow or locked
+				nodesConnectable={!locked && !isExampleFlow} // disable connect node if current flow is example flow or locked
+				elementsSelectable={!locked && !isExampleFlow} // disable select node if current flow is example flow or locked
+				zoomOnScroll={!locked && !isExampleFlow} // disable zoom on scroll if current flow is example flow or locked
 				// fitView
 				colorMode="light"
 			>
-				{!isExampleFlow && (
-					<Panel position="top-left">
-						<Menu
-							trigger="click"
-							menu={<AddNodeMenuPopup />}
-							placement="bottomLeft"
-							className="bg-white dark:bg-[#2b2d31] rounded-lg shadow-lg border border-gray-200 dark:border-gray-600"
-						>
-							<button className="p-2 rounded-full hover:bg-[#cccccc66] shadow-md">
-								<Icons.AddIcon className="w-6 h-6" />
-							</button>
-						</Menu>
-					</Panel>
-				)}
-				<Controls />
-				<Background className="dark:bg-bgPrimary bg-bgLightPrimary text-gray-500 dark:text-gray-100" variant={BackgroundVariant.Dots} />
+				<CustomControls locked={locked} setLocked={setLocked} />
+				<Background
+					className="dark:bg-bgPrimary bg-bgLightPrimary text-gray-500 dark:text-gray-100"
+					variant={BackgroundVariant.Dots}
+					gap={8}
+					size={1}
+				/>
+				<Panel isOpen={openPanel === 'add'} onClose={() => setOpenPanel(null)} position="right" headerHeight={headerHeight}>
+					<AddNodeMenuPopup />
+				</Panel>
 			</ReactFlow>
 
-			<Menu
-				trigger="click"
-				menu={<FlowChatPopup />}
-				placement="bottomRight"
-				className="bg-white dark:bg-[#2b2d31] rounded-lg shadow-lg border border-gray-200 dark:border-gray-600"
-			>
-				<button className="p-2 rounded-full hover:bg-[#cccccc66] shadow-md absolute top-[80px] right-3">
-					<Icons.IconChat className="w-6 h-6" />
-				</button>
-			</Menu>
+			{!isExampleFlow && (
+				<Toolbar position="right">
+					<ToolbarItems
+						icon={<Icons.IconChat className={`w-6 h-6`} />}
+						label="Chat Bot"
+						isActive={openPanel === 'chat'}
+						onClick={() => {
+							setOpenPanel('chat');
+						}}
+						tooltipPosition="left"
+					/>
+					<ToolbarItems
+						icon={<Icons.AddIcon className="w-6 h-6" />}
+						label="Open node panel"
+						isActive={openPanel === 'add'}
+						onClick={() => {
+							setOpenPanel('add');
+						}}
+						tooltipPosition="left"
+					/>
+					<ToolbarItems
+						icon={<Icons.Search className={`w-6 h-6 `} />}
+						label="Command bar"
+						isActive={openPanel === 'search'}
+						onClick={() => {
+							setOpenPanel('search');
+						}}
+						tooltipPosition="left"
+					/>
+					<ToolbarItems
+						icon={<Icons.Sticker className={`w-6 h-6 `} />}
+						label="Add sticky note"
+						isActive={false}
+						onClick={() => {}}
+						tooltipPosition="left"
+					/>
+					<ToolbarItems
+						icon={<Icons.VoiceFocusIcon className={`w-6 h-6 `} />}
+						label="Open focus panel"
+						isActive={false}
+						onClick={() => {}}
+						tooltipPosition="left"
+					/>
+				</Toolbar>
+			)}
 
 			{flowState.isLoading && (
 				<div className="fixed top-0 left-0 pt-2 right-0 bottom-0 bg-[#83818169] z-[999] text-center">
 					<Icons.LoadingSpinner />
 				</div>
 			)}
+
+			<Panel isOpen={openPanel === 'chat'} onClose={() => setOpenPanel(null)} position="right" headerHeight={headerHeight}>
+				<FlowChatPopup />
+			</Panel>
+
+			<Panel isOpen={openPanel === 'search'} onClose={() => setOpenPanel(null)} position="center" headerHeight={headerHeight}>
+				<FlowListNodesPopup />
+			</Panel>
 			<SaveFlowModal
 				flowData={flowData}
 				changeFlowData={setFlowData}
