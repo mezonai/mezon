@@ -14,7 +14,7 @@ export function useSendForwardMessage() {
 	const client = clientRef.current;
 
 	const sendForwardMessage = React.useCallback(
-		async (clanid: string, channel_id: string, mode: number, isPublic: boolean, message: IMessageWithUser) => {
+		async (clanid: string, channel_id: string, mode: number, isPublic: boolean, message: IMessageWithUser, additionalMessage?: string) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
 			const socket = socketRef.current;
@@ -48,6 +48,13 @@ export function useSendForwardMessage() {
 					message.channel_id === channel_id ? message.mentions : [],
 					message.attachments
 				);
+
+				if (additionalMessage && additionalMessage.trim()) {
+					const additionalContent: IMessageSendPayload = {
+						t: additionalMessage.trim()
+					};
+					await socket.writeChatMessage(clanid, channel_id, mode, isPublic, additionalContent, [], []);
+				}
 
 				dispatch(
 					toastActions.addToast({
