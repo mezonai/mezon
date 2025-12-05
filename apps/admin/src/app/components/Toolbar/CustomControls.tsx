@@ -16,11 +16,29 @@ const CustomControls = ({ locked, setLocked }: CustomControlsProps) => {
 
 	return (
 		<div className="absolute left-4 bottom-4 flex flex-row gap-2 z-50">
-			<ToolbarItems icon={<ZoomInIcon className="w-5 h-5" />} label="Zoom in" isActive={false} onClick={zoomIn} tooltipPosition="top" />
-			<ToolbarItems icon={<ZoomOutIcon className="w-5 h-5" />} label="Zoom out" isActive={false} onClick={zoomOut} tooltipPosition="top" />
-			<ToolbarItems icon={<FitViewIcon className="w-5 h-5" />} label="Fit view" isActive={false} onClick={fitView} tooltipPosition="top" />
 			<ToolbarItems
-				icon={locked ? <LockIcon className="w-5 h-5" /> : <UnlockIcon className="w-5 h-5" />}
+				icon={<ZoomInIcon className="w-5 h-5 text-white" />}
+				label="Zoom in"
+				isActive={false}
+				onClick={zoomIn}
+				tooltipPosition="top"
+			/>
+			<ToolbarItems
+				icon={<ZoomOutIcon className="w-5 h-5 text-white" />}
+				label="Zoom out"
+				isActive={false}
+				onClick={zoomOut}
+				tooltipPosition="top"
+			/>
+			<ToolbarItems
+				icon={<FitViewIcon className="w-5 h-5 text-white" />}
+				label="Fit view"
+				isActive={false}
+				onClick={fitView}
+				tooltipPosition="top"
+			/>
+			<ToolbarItems
+				icon={locked ? <LockIcon className="w-5 h-5 text-white" /> : <UnlockIcon className="w-5 h-5 text-white" />}
 				label={locked ? 'Unlock nodes' : 'Lock nodes'}
 				isActive={locked}
 				onClick={handleToggleLock}

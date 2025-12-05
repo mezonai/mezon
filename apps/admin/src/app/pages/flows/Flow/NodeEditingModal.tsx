@@ -1,5 +1,5 @@
 import { Modal } from '@mezon/ui';
-import { useContext, useMemo, useRef } from 'react';
+import { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { JSONSchemaBridge } from 'uniforms-bridge-json-schema';
 import { AutoForm } from 'uniforms-semantic';
 import { FlowContext } from '../../../context/FlowContext';
@@ -17,11 +17,30 @@ const NodeEditingModal = () => {
 	};
 
 	const selectedNodeData = flowState.nodeEdit;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const [currentModel, setCurrentModel] = useState<any>(null);
+
+	useMemo(() => {
+		if (selectedNodeData?.data) {
+			setCurrentModel(selectedNodeData.data);
+		}
+	}, [selectedNodeData?.data]);
 
 	const nodeConfig = useMemo(() => {
 		if (!selectedNodeData?.label) return null;
-		return NodeTypes.find((item) => item.label === selectedNodeData.label);
-	}, [selectedNodeData?.label]);
+		const baseConfig = NodeTypes.find((item) => item.label === selectedNodeData.label);
+
+		if (baseConfig?.isDynamicSchema && baseConfig?.getDynamicConfig) {
+			const dynamicConfig = baseConfig.getDynamicConfig(currentModel || selectedNodeData.data);
+			return {
+				...baseConfig,
+				schema: dynamicConfig.schema,
+				bridgeSchema: dynamicConfig.bridgeSchema
+			};
+		}
+
+		return baseConfig;
+	}, [selectedNodeData?.label, selectedNodeData?.data, currentModel]);
 
 	const bridge = useMemo(() => {
 		if (!nodeConfig) return null;
@@ -66,11 +85,20 @@ const NodeEditingModal = () => {
 		isSaving.current = false;
 	};
 
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const handleModelChange = useCallback((key: string, value: any) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		setCurrentModel((prev: any) => ({
+			...prev,
+			[key]: value
+		}));
+	}, []);
+
 	if (!selectedNodeData || !nodeConfig || !bridge) {
 		return null;
 	}
 
-	const modelData = selectedNodeData.data || {};
+	const modelData = currentModel || selectedNodeData.data || {};
 
 	return (
 		<Modal
@@ -83,7 +111,7 @@ const NodeEditingModal = () => {
 				<div className="mt-1">
 					<div className="p-6 border rounded-3xl border-t-1 border-gray-200 dark:border-gray-600">
 						<div className="hidden-submit-field">
-							<AutoForm ref={formRef} schema={bridge} model={modelData} onSubmit={handleSubmit}></AutoForm>
+							<AutoForm ref={formRef} schema={bridge} model={modelData} onSubmit={handleSubmit} onChange={handleModelChange} />
 						</div>
 					</div>
 				</div>

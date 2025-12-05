@@ -1,5 +1,15 @@
 import React from 'react';
-import { ApiIcon, ConditionIcon, ResponseIcon, TriggerIcon, WebhookIcon } from '../../../../assets/icons/nodeIcons';
+import {
+	ChatIcon,
+	CodeIcon,
+	EditFieldIcon,
+	HttpRequestIcon,
+	IfIcon,
+	ResponseIcon,
+	SchedulerIcon,
+	SwitchIcon,
+	WebhookIcon
+} from '../../../../assets/icons/nodeIcons';
 import SearchInput from '../../../components/InputField/SearchInput';
 import type { INodeType } from '../../../stores/flow/flow.interface';
 import MenuItem from './MenuItem';
@@ -14,10 +24,10 @@ const AddNodeMenuPopup = () => {
 	const [searchTerm, setSearchTerm] = React.useState('');
 	const nodeMenu: INodeMenu[] = [
 		{
-			title: 'Trigger',
-			nodeType: 'trigger',
+			title: 'Chat Trigger',
+			nodeType: 'chatTrigger',
 			description: 'Listens for specific triggers to start the bot’s response.',
-			icon: <TriggerIcon />
+			icon: <ChatIcon />
 		},
 		{
 			title: 'Response',
@@ -26,22 +36,46 @@ const AddNodeMenuPopup = () => {
 			icon: <ResponseIcon />
 		},
 		{
-			title: 'Condition',
-			nodeType: 'condition',
+			title: 'If',
+			nodeType: 'if',
 			description: 'Executes custom logic or processes for flexible responses.',
-			icon: <ConditionIcon />
+			icon: <IfIcon />
 		},
 		{
-			title: 'API',
-			nodeType: 'api',
+			title: 'HTTP Request',
+			nodeType: 'httpRequest',
 			description: 'Fetches data from external APIs for integration into bot responses.',
-			icon: <ApiIcon />
+			icon: <HttpRequestIcon />
 		},
 		{
 			title: 'Webhook',
 			nodeType: 'webhook',
 			description: 'Receives updates via HTTP requests for real-time integrations.',
 			icon: <WebhookIcon />
+		},
+		{
+			title: 'Edit Field',
+			nodeType: 'editField',
+			description: 'Modifies or sets specific fields in the data flow.',
+			icon: <EditFieldIcon />
+		},
+		{
+			title: 'Schedule',
+			nodeType: 'schedule',
+			description: 'Triggers actions based on a defined schedule or interval.',
+			icon: <SchedulerIcon />
+		},
+		{
+			title: 'Embed Message',
+			nodeType: 'embedMessage',
+			description: 'Executes custom JavaScript code for advanced processing.',
+			icon: <CodeIcon />
+		},
+		{
+			title: 'Switch',
+			nodeType: 'switch',
+			description: 'Routes the flow based on multiple conditions or cases.',
+			icon: <SwitchIcon />
 		}
 	];
 	return (
@@ -54,7 +88,7 @@ const AddNodeMenuPopup = () => {
 			<div className="px-5 py-3 border-b border-gray-100 flex items-center gap-3">
 				<SearchInput value={searchTerm} onChange={setSearchTerm} placeholder="Search nodes..." className="w-full" autoFocus />
 			</div>
-			<div className="p-2 max-h-[450px] overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:[width:3px] [&::-webkit-scrollbar-thumb]:bg-gray-100 transition-all">
+			<div className="p-2 max-h-full overflow-x-hidden overflow-y-auto [&::-webkit-scrollbar]:[width:3px] [&::-webkit-scrollbar-thumb]:bg-gray-100 transition-all">
 				{nodeMenu
 					.filter((node) => node.title.toLowerCase().includes(searchTerm.toLowerCase()))
 					.map((node, index) => (

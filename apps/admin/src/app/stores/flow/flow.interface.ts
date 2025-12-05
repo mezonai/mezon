@@ -16,7 +16,17 @@ export interface IFlowDetail {
 	connections: IEdge[];
 }
 
-export type INodeType = 'trigger' | 'uploadedImage' | 'condition' | 'api' | 'default' | 'webhook';
+export type INodeType =
+	| 'chatTrigger'
+	| 'uploadedImage'
+	| 'if'
+	| 'httpRequest'
+	| 'default'
+	| 'webhook'
+	| 'editField'
+	| 'schedule'
+	| 'embedMessage'
+	| 'switch';
 
 export interface INode {
 	id: string;

@@ -60,7 +60,12 @@ const flowReducer = (state = initFlowState, action: FlowActionType): IFlowState 
 			);
 			// check if connection is not allowed
 			const checkAllowed = ConnectionsAllowed.find((item) => {
-				return item.source === newEdge.sourceHandle && item.target === newEdge.targetHandle;
+				const sourceMatch =
+					typeof item.source === 'string'
+						? item.source === newEdge.sourceHandle || item.source === '*'
+						: item.source.test(newEdge.sourceHandle || '');
+				const targetMatch = item.target === newEdge.targetHandle || item.target === '*';
+				return sourceMatch && targetMatch;
 			});
 			// check if connection is limited
 			const checkLimit = state.edges.find(

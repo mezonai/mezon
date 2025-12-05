@@ -52,11 +52,6 @@ const Panel: React.FC<PanelProps> = ({
 		style.top = headerHeight;
 		style.right = sideOffset;
 		style.height = height;
-	} else {
-		style.top = headerHeight;
-		style.left = sideOffset;
-		style.right = sideOffset;
-		style.bottom = sideOffset;
 	}
 
 	return createPortal(
@@ -81,7 +76,7 @@ const Panel: React.FC<PanelProps> = ({
 					overflow: 'auto'
 				}}
 			>
-				<div className="flex-1 pointer-events-auto">{children}</div>
+				<div className="pointer-events-auto">{children}</div>
 			</div>
 		</div>,
 		document.body

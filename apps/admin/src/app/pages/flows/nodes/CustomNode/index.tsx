@@ -48,11 +48,16 @@ const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, on
 
 	const connection = useStore((state) => state.connection);
 
-	const isConnected = edges.some((edge) => edge.source === data.id);
+	const isHandleConnected = (handleId: string) => {
+		return edges.some((edge) => edge.source === data.id && edge.sourceHandle === handleId);
+	};
 
 	const isConnectingFromThisNode = connection.inProgress && connection.fromNode?.id === data.id;
 
-	const hasSource = anchors.source && anchors.source.length > 0;
+	const hasMultipleSources = anchors.source && anchors.source.length > 1;
+	const hasSingleSource = anchors.source && anchors.source.length === 1;
+
+	const nodeHeight = hasMultipleSources ? Math.max(80, anchors.source.length * 30 + 20) : 'auto';
 
 	const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
 		e.stopPropagation();
@@ -100,9 +105,11 @@ const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, on
 	return (
 		<div
 			onDoubleClick={(e) => handleDoubleClick(e)}
-			className="w-[150px] border-2 rounded-lg bg-slate-50 dark:bg-gray-600 relative group hover:border-blue-300"
+			className="border-2 rounded-lg bg-slate-50 dark:bg-gray-600 relative group hover:border-blue-300 flex"
+			style={{ minHeight: nodeHeight }}
 		>
-			<div className="p-2 flex custom-drag-handle">
+			{/* Main Node Content */}
+			<div className="w-[150px] p-2 flex custom-drag-handle items-center">
 				<Icon />
 				<span className="ml-2 font-medium flex items-center">{label}</span>
 			</div>
@@ -121,71 +128,129 @@ const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, on
 				</button>
 			</div>
 
-			{/* Add Node Button (Dot with Plus Icon) connected by Edge */}
-			{hasSource && (
-				<div
-					className={`absolute right-[-70px] top-1/2 transform -translate-y-1/2 flex items-center transition-all duration-300 ease-in-out ${
-						isConnected || isConnectingFromThisNode // Ẩn nếu: Đã kết nối xong HOẶC Đang kéo dây từ chính node này
-							? 'opacity-0 -translate-x-8 pointer-events-none'
-							: 'opacity-100 translate-x-0 pointer-events-auto'
-					}`}
-				>
-					<div className="w-[50px] h-[2px] bg-gray-300 dark:bg-gray-500"></div>
-					<button
-						className="w-5 h-5 bg-blue-500 hover:bg-blue-600 rounded-md flex items-center justify-center shadow-md text-white z-50"
-						// Chỉ kích hoạt hover khi KHÔNG đang kéo dây và CHƯA kết nối
-						onMouseEnter={(e) => {
-							if (!isConnectingFromThisNode && !isConnected && anchors.source?.[0] && onHandleHover) {
-								onHandleHover(e, data.id, anchors.source[0].id, label);
-							}
-						}}
-						onMouseLeave={() => {
-							if (onHandleLeave) onHandleLeave();
-						}}
-					>
-						<svg
-							width="10"
-							height="10"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="3"
-							strokeLinecap="round"
-							strokeLinejoin="round"
-						>
-							<line x1="12" y1="5" x2="12" y2="19"></line>
-							<line x1="5" y1="12" x2="19" y2="12"></line>
-						</svg>
-					</button>
-				</div>
+			{hasMultipleSources && (
+				<>
+					{anchors.source.map((item, index) => {
+						const connected = isHandleConnected(item.id);
+						const totalSources = anchors.source.length;
+						const spacing = 100 / (totalSources + 1);
+						const topPosition = spacing * (index + 1);
+
+						return (
+							<React.Fragment key={index}>
+								{/* Line và button nằm ngoài node */}
+								<div
+									className={`absolute flex items-center transition-all duration-300 ease-in-out ${
+										connected || isConnectingFromThisNode ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'
+									}`}
+									style={{ top: `${topPosition}%`, right: '-70px', transform: 'translateY(-50%)' }}
+								>
+									<div className="w-[50px] h-[2px] bg-gray-300 dark:bg-gray-500"></div>
+									<button
+										className="w-5 h-5 bg-blue-500 hover:bg-blue-600 rounded-md flex items-center justify-center shadow-md text-white z-50"
+										onMouseEnter={(e) => {
+											if (!isConnectingFromThisNode && !connected && onHandleHover) {
+												onHandleHover(e, data.id, item.id, label);
+											}
+										}}
+										onMouseLeave={() => {
+											if (onHandleLeave) onHandleLeave();
+										}}
+									>
+										<svg
+											width="10"
+											height="10"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="3"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										>
+											<line x1="12" y1="5" x2="12" y2="19"></line>
+											<line x1="5" y1="12" x2="19" y2="12"></line>
+										</svg>
+									</button>
+								</div>
+								{/* Handle dot và label sát node */}
+								<div
+									className="absolute flex items-center"
+									style={{ top: `${topPosition}%`, right: 0, transform: 'translateY(-50%)' }}
+								>
+									<span className="text-xs text-gray-500 dark:text-gray-300 mr-2 min-w-[40px] text-right">{item.text}</span>
+									<Handle
+										type="source"
+										id={item.id}
+										position={Position.Right}
+										className="group-hover:bg-blue-300 bg-gray-700 w-[10px] h-[10px]"
+									/>
+								</div>
+							</React.Fragment>
+						);
+					})}
+				</>
 			)}
 
-			{/* Render all source anchors */}
-			{anchors.source?.map((item, index) => {
-				return (
+			{/* Single Source Handle */}
+			{hasSingleSource && (
+				<>
+					<div
+						className={`absolute right-[-70px] top-1/2 transform -translate-y-1/2 flex items-center transition-all duration-300 ease-in-out ${
+							isHandleConnected(anchors.source[0].id) || isConnectingFromThisNode
+								? 'opacity-0 -translate-x-8 pointer-events-none'
+								: 'opacity-100 translate-x-0 pointer-events-auto'
+						}`}
+					>
+						<div className="w-[50px] h-[2px] bg-gray-300 dark:bg-gray-500"></div>
+						<button
+							className="w-5 h-5 bg-blue-500 hover:bg-blue-600 rounded-md flex items-center justify-center shadow-md text-white z-50"
+							onMouseEnter={(e) => {
+								if (!isConnectingFromThisNode && !isHandleConnected(anchors.source[0].id) && onHandleHover) {
+									onHandleHover(e, data.id, anchors.source[0].id, label);
+								}
+							}}
+							onMouseLeave={() => {
+								if (onHandleLeave) onHandleLeave();
+							}}
+						>
+							<svg
+								width="10"
+								height="10"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="3"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<line x1="12" y1="5" x2="12" y2="19"></line>
+								<line x1="5" y1="12" x2="19" y2="12"></line>
+							</svg>
+						</button>
+					</div>
 					<Handle
-						key={index}
-						type={'source'}
-						id={item.id}
+						type="source"
+						id={anchors.source[0].id}
 						position={Position.Right}
-						className={`group-hover:bg-blue-300 bg-gray-700 absolute w-[10px] h-[10px] top-1/2`}
-						// style={{ bottom: `${12 + index * 20}px` }}
-						// Thêm sự kiện hover
-						// onMouseEnter={(e) => onHandleHover && onHandleHover(e, data.id, item.id, label)}
-						// onMouseLeave={() => onHandleLeave && onHandleLeave()}
+						className="group-hover:bg-blue-300 bg-gray-700 absolute w-[10px] h-[10px] top-1/2"
 					/>
-				);
-			})}
+				</>
+			)}
+
 			{/* Render all target anchors */}
 			{anchors.target?.map((item, index) => {
+				const totalTargets = anchors.target.length;
+				const spacing = 100 / (totalTargets + 1);
+				const topPosition = spacing * (index + 1);
+
 				return (
 					<Handle
 						key={index}
-						type={'target'}
+						type="target"
 						id={item.id}
 						position={Position.Left}
-						className={`group-hover:bg-blue-300 bg-gray-700 absolute w-[10px] h-[10px] top-1/2`}
-						// style={{ top: `${12 + 20 * index}px` }}
+						className="group-hover:bg-blue-300 bg-gray-700 absolute w-[10px] h-[10px]"
+						style={{ top: `${topPosition}%` }}
 					/>
 				);
 			})}

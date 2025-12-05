@@ -1,4 +1,5 @@
-import { connectField, HTMLFieldProps } from 'uniforms';
+import type { HTMLFieldProps } from 'uniforms';
+import { connectField } from 'uniforms';
 
 type CustomFormFieldProps = HTMLFieldProps<string, HTMLDivElement> & {
 	label?: string;
