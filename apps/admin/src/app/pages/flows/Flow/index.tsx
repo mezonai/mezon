@@ -7,7 +7,17 @@ import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useSta
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { v4 as uuidv4 } from 'uuid';
-import { ApiIcon, ConditionIcon, ResponseIcon, TriggerIcon, WebhookIcon } from '../../../../assets/icons/nodeIcons';
+import {
+	ChatIcon,
+	CodeIcon,
+	EditFieldIcon,
+	HttpRequestIcon,
+	IfIcon,
+	ResponseIcon,
+	SchedulerIcon,
+	SwitchIcon,
+	WebhookIcon
+} from '../../../../assets/icons/nodeIcons';
 import Panel from '../../../components/Panel';
 import Toolbar from '../../../components/Toolbar';
 import CustomControls from '../../../components/Toolbar/CustomControls';
@@ -29,11 +39,15 @@ import NodeEditingModal from './NodeEditingModal';
 import SaveFlowModal from './SaveFlowModal';
 
 const iconByType: Record<string, React.ComponentType> = {
-	Trigger: TriggerIcon,
+	'Chat Trigger': ChatIcon,
 	Response: ResponseIcon,
 	Webhook: WebhookIcon,
-	Api: ApiIcon,
-	Condition: ConditionIcon
+	'HTTP Request': HttpRequestIcon,
+	If: IfIcon,
+	'Edit Field': EditFieldIcon,
+	Schedule: SchedulerIcon,
+	'Embed Message': CodeIcon,
+	Switch: SwitchIcon
 };
 
 type PanelType = null | 'chat' | 'add' | 'search' | 'focus' | 'sticky';
@@ -99,8 +113,8 @@ const Flow = () => {
 		if (!sourceNode) return;
 
 		const newNodePosition = {
-			x: sourceNode.position.x + (sourceNode.measured?.width || 150) + 100,
-			y: sourceNode.position.y
+			x: sourceNode.position.x + (sourceNode.measured?.width || 150) + 199,
+			y: sourceNode.position.y + Math.floor(Math.random() * 150) - 80
 		};
 
 		const newNodeId = uuidv4();
@@ -329,8 +343,8 @@ const Flow = () => {
 		(event: React.DragEvent<HTMLDivElement>) => {
 			event.preventDefault();
 			const position = screenToFlowPosition({
-				x: event.clientX + 50,
-				y: event.clientY + 50
+				x: event.clientX,
+				y: event.clientY
 			});
 			flowDispatch(addNode(position));
 		},
@@ -511,7 +525,7 @@ const Flow = () => {
 			{!isExampleFlow && (
 				<Toolbar position="right">
 					<ToolbarItems
-						icon={<Icons.IconChat className={`w-6 h-6`} />}
+						icon={<Icons.IconChat className={`w-6 h-6 text-white`} />}
 						label="Chat Bot"
 						isActive={openPanel === 'chat'}
 						onClick={() => {
@@ -520,7 +534,7 @@ const Flow = () => {
 						tooltipPosition="left"
 					/>
 					<ToolbarItems
-						icon={<Icons.AddIcon className="w-6 h-6" />}
+						icon={<Icons.AddIcon className={`w-6 h-6 text-white`} />}
 						label="Open node panel"
 						isActive={openPanel === 'add'}
 						onClick={() => {
@@ -529,7 +543,7 @@ const Flow = () => {
 						tooltipPosition="left"
 					/>
 					<ToolbarItems
-						icon={<Icons.Search className={`w-6 h-6 `} />}
+						icon={<Icons.Search className={`w-6 h-6 text-white`} />}
 						label="Command bar"
 						isActive={openPanel === 'search'}
 						onClick={() => {
@@ -538,19 +552,19 @@ const Flow = () => {
 						tooltipPosition="left"
 					/>
 					<ToolbarItems
-						icon={<Icons.Sticker className={`w-6 h-6 `} />}
+						icon={<Icons.Sticker className={`w-6 h-6 text-white`} />}
 						label="Add sticky note"
 						isActive={false}
 						onClick={() => {}}
 						tooltipPosition="left"
 					/>
-					<ToolbarItems
-						icon={<Icons.VoiceFocusIcon className={`w-6 h-6 `} />}
+					{/* <ToolbarItems
+						icon={<Icons.VoiceFocusIcon className={`w-6 h-6 text-white`} />}
 						label="Open focus panel"
 						isActive={false}
 						onClick={() => {}}
 						tooltipPosition="left"
-					/>
+					/> */}
 				</Toolbar>
 			)}
 
@@ -565,7 +579,7 @@ const Flow = () => {
 			</Panel>
 
 			<Panel isOpen={openPanel === 'search'} onClose={() => setOpenPanel(null)} position="center" headerHeight={headerHeight}>
-				<FlowListNodesPopup />
+				<FlowListNodesPopup onClose={() => setOpenPanel(null)} />
 			</Panel>
 			<SaveFlowModal
 				flowData={flowData}

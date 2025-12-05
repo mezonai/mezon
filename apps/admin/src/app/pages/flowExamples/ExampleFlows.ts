@@ -37,8 +37,8 @@ const ExampleFlow: IExampleFlow[] = [
 			nodes: [
 				{
 					id: 'e3d0ac76-5ca9-4f2f-9f8c-3464f0eaa066',
-					nodeType: 'trigger',
-					nodeName: 'Trigger',
+					nodeType: 'chatTrigger',
+					nodeName: 'Chat Trigger',
 					measured: '{"width":250,"height":261}',
 					position: '{"x":-38,"y":-30}',
 					parameters: [
@@ -112,7 +112,7 @@ const ExampleFlow: IExampleFlow[] = [
 					sourceNodeId: '602ce111-4f14-47ea-a053-95fd2381a8d9',
 					sourceHandleId: 'api-loader-source-1',
 					targetNodeId: 'de3336f0-ff1d-43d0-872f-cd2a58878dea',
-					targetHandleId: 'format-function-target-1',
+					targetHandleId: 'condition-target-1',
 					flowId: '2731557b-2b10-4aef-a07a-a7368e5a2443'
 				},
 				{
@@ -127,8 +127,8 @@ const ExampleFlow: IExampleFlow[] = [
 			nodes: [
 				{
 					id: '56c978da-d138-461f-8226-afdd36108d44',
-					nodeType: 'trigger',
-					nodeName: 'Trigger',
+					nodeType: 'chatTrigger',
+					nodeName: 'Chat Trigger',
 					measured: '{"width":250,"height":261}',
 					position: '{"x":56,"y":-79}',
 					parameters: [
@@ -146,8 +146,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: '602ce111-4f14-47ea-a053-95fd2381a8d9',
-					nodeType: 'api',
-					nodeName: 'Api',
+					nodeType: 'httpRequest',
+					nodeName: 'HTTP Request',
 					measured: '{"width":250,"height":362}',
 					position: '{"x":387,"y":-79}',
 					parameters: [
@@ -171,8 +171,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: 'de3336f0-ff1d-43d0-872f-cd2a58878dea',
-					nodeType: 'condition',
-					nodeName: 'Condition',
+					nodeType: 'if',
+					nodeName: 'If',
 					measured: '{"width":250,"height":666}',
 					position: '{"x":686,"y":-82}',
 					parameters: [
@@ -238,15 +238,15 @@ const ExampleFlow: IExampleFlow[] = [
 					sourceNodeId: 'f59ae940-4b23-4f26-aeb2-de4022c9b8e5',
 					sourceHandleId: 'api-loader-source-1',
 					targetNodeId: 'a8842cc4-88df-4c49-9c8f-bd52055c4bd9',
-					targetHandleId: 'format-function-target-1',
+					targetHandleId: 'condition-target-1',
 					flowId: 'efafbd97-9852-41d0-91b8-950be128926e'
 				}
 			],
 			nodes: [
 				{
 					id: 'ca97688b-8922-4f6e-aa29-51908d3acbe0',
-					nodeType: 'trigger',
-					nodeName: 'Trigger',
+					nodeType: 'chatTrigger',
+					nodeName: 'Chat Trigger',
 					measured: '{"width":250,"height":364}',
 					position: '{"x":174,"y":-7}',
 					parameters: [
@@ -270,8 +270,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: 'f59ae940-4b23-4f26-aeb2-de4022c9b8e5',
-					nodeType: 'api',
-					nodeName: 'Api',
+					nodeType: 'httpRequest',
+					nodeName: 'HTTP Request',
 					measured: '{"width":250,"height":856}',
 					position: '{"x":575,"y":-72}',
 					parameters: [
@@ -314,8 +314,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: 'a8842cc4-88df-4c49-9c8f-bd52055c4bd9',
-					nodeType: 'condition',
-					nodeName: 'Condition',
+					nodeType: 'if',
+					nodeName: 'If',
 					measured: '{"width":250,"height":486}',
 					position: '{"x":960,"y":60}',
 					parameters: [
@@ -380,15 +380,15 @@ const ExampleFlow: IExampleFlow[] = [
 					sourceNodeId: '44e2fff1-b8eb-426c-9041-ade67bc62660',
 					sourceHandleId: 'api-loader-source-1',
 					targetNodeId: 'ecafe5ec-0bbf-4ba8-8189-58cc5ed018ec',
-					targetHandleId: 'format-function-target-1',
+					targetHandleId: 'condition-target-1',
 					flowId: 'ed68d03b-70e3-4008-b45a-7506d33129ef'
 				}
 			],
 			nodes: [
 				{
 					id: 'c48751ca-7e9b-4df0-80db-3f7b5b401179',
-					nodeType: 'trigger',
-					nodeName: 'Trigger',
+					nodeType: 'chatTrigger',
+					nodeName: 'Chat Trigger',
 					measured: '{"width":250,"height":364}',
 					position: '{"x":176,"y":-70}',
 					parameters: [
@@ -412,8 +412,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: '44e2fff1-b8eb-426c-9041-ade67bc62660',
-					nodeType: 'api',
-					nodeName: 'Api',
+					nodeType: 'httpRequest',
+					nodeName: 'HTTP Request',
 					measured: '{"width":250,"height":976}',
 					position: '{"x":530,"y":-75}',
 					parameters: [
@@ -456,8 +456,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: 'ecafe5ec-0bbf-4ba8-8189-58cc5ed018ec',
-					nodeType: 'condition',
-					nodeName: 'Condition',
+					nodeType: 'if',
+					nodeName: 'If',
 					measured: '{"width":250,"height":474}',
 					position: '{"x":869,"y":-8}',
 					parameters: [

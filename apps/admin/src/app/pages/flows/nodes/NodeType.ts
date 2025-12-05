@@ -1,17 +1,22 @@
 import * as yup from 'yup';
 import CodeEditorField from '../../../components/InputField/CodeEditorField';
+import CustomConditionsField from '../../../components/InputField/CustomConditionsField';
+import CustomEmbedField from '../../../components/InputField/CustomEmbedField';
 import CustomParamsField from '../../../components/InputField/CustomParamsField';
+import CustomRoutingRulesFiled from '../../../components/InputField/CustomRoutingRulesFiled';
 import CustomSelectField from '../../../components/InputField/CustomSelectField';
 import CustomTagsField from '../../../components/InputField/CustomTagsField';
 import CustomTextField from '../../../components/InputField/CustomTextField';
+import CustomToggleField from '../../../components/InputField/CustomToggleField';
 import MultiImageUploadField from '../../../components/MultiImageUploadField';
+import { scheduleSchemas } from './NodeSchemas/scheduleSchemas';
 
 // list of node types with their schema, bridge schema, and anchors. This is used to render the node in the flow editor
 // add more node types in this list
 const NodeTypes = [
 	{
-		type: 'trigger',
-		label: 'Trigger',
+		type: 'chatTrigger',
+		label: 'Chat Trigger',
 		schema: yup.object().shape({
 			commandName: yup
 				.string()
@@ -72,7 +77,7 @@ const NodeTypes = [
 		},
 		anchors: {
 			source: [],
-			target: [{ id: 'command-output-target-1', text: 'Trigger' }]
+			target: [{ id: 'command-output-target-1', text: 'Chat Trigger' }]
 		},
 		initialValue: {
 			message: '',
@@ -101,7 +106,7 @@ const NodeTypes = [
 		},
 		anchors: {
 			source: [],
-			target: [{ id: 'command-output-target-1', text: 'Trigger' }]
+			target: [{ id: 'command-output-target-1', text: 'Chat Trigger' }]
 		},
 		initialValue: {
 			message: '',
@@ -109,9 +114,10 @@ const NodeTypes = [
 		}
 	},
 	{
-		type: 'api',
-		label: 'Api',
+		type: 'httpRequest',
+		label: 'HTTP Request',
 		schema: yup.object().shape({
+			apiKey: yup.string(),
 			url: yup.string().required('Url is required'),
 			method: yup.string().required('Method is required').oneOf(['GET', 'POST'], 'Method must be either GET or POST'),
 			defaultOptions: yup.object().nullable(),
@@ -160,8 +166,8 @@ const NodeTypes = [
 			required: []
 		},
 		anchors: {
-			source: [{ id: 'api-loader-source-1', text: 'Condition' }],
-			target: [{ id: 'api-loader-target-1', text: 'Trigger' }]
+			source: [{ id: 'api-loader-source-1', text: 'If' }],
+			target: [{ id: 'api-loader-target-1', text: 'Chat Trigger' }]
 		},
 		initialValue: {
 			url: '',
@@ -169,39 +175,73 @@ const NodeTypes = [
 		}
 	},
 	{
-		type: 'condition',
-		label: 'Condition',
+		type: 'if',
+		label: 'If',
 		schema: yup.object().shape({
-			variable: yup.string().required('Variable is required'),
-			triggerUser: yup.string(),
-			functionName: yup.string().required('Function Name is required'),
-			functionBody: yup.string().required('Function Body is required')
+			conditions: yup
+				.array()
+				.of(
+					yup.object().shape({
+						left: yup.string().required('Left value is required'),
+						operator: yup.string().required('Operator is required'),
+						right: yup.string(),
+						type: yup.string().oneOf(['string', 'number', 'boolean', 'array', 'object', 'dateTime']).required('Type is required'),
+						logic: yup.string().oneOf(['AND', 'OR']).default('AND')
+					})
+				)
+				.min(1, 'At least one condition is required'),
+			convertTypes: yup.boolean().default(false),
+			options: yup
+				.array()
+				.of(
+					yup.object().shape({
+						key: yup.string().required(),
+						value: yup.string().required()
+					})
+				)
+				.nullable()
 		}),
 		bridgeSchema: {
 			type: 'object',
 			properties: {
-				functionName: { type: 'string', uniforms: { component: CustomTextField, label: 'Function Name', name: 'functionName' } },
-				variable: { type: 'string', uniforms: { component: CustomTextField, label: 'Variable', name: 'variable' } },
-				triggerUser: { type: 'string', uniforms: { component: CustomTextField, label: 'Trigger User', name: 'triggerUser' } },
-				functionBody: {
-					type: 'string',
-					uniforms: { component: CodeEditorField, label: 'Function Body', name: 'functionBody' }
+				conditions: {
+					type: 'array',
+					uniforms: {
+						component: CustomConditionsField,
+						label: 'Conditions',
+						name: 'conditions'
+					}
+				},
+				convertTypes: {
+					type: 'boolean',
+					uniforms: {
+						component: CustomToggleField,
+						label: 'Convert types where required',
+						name: 'convertTypes'
+					}
+				},
+				options: {
+					type: 'array',
+					uniforms: {
+						component: CustomParamsField,
+						label: 'Options',
+						name: 'options'
+					}
 				}
 			},
-			required: []
+			required: ['conditions']
 		},
 		anchors: {
-			source: [],
-			target: [{ id: 'format-function-target-1', text: 'Api Loader/Webhook' }]
+			source: [
+				{ id: 'if-source-1', text: 'True' },
+				{ id: 'else-source-1', text: 'False' }
+			],
+			target: [{ id: 'if-target-1', text: 'All' }]
 		},
 		initialValue: {
-			functionName: 'customResponse',
-			variable: 'data',
-			triggerUser: 'author',
-			functionBody: `return {
-  "message": data.message,
-  "attachments": data.attachments
-}`
+			conditions: [{ left: '', operator: 'is equal to', right: '', type: 'string', logic: 'AND' }],
+			convertTypes: false,
+			options: []
 		}
 	},
 	{
@@ -268,6 +308,241 @@ const NodeTypes = [
 			method: 'POST',
 			headers: {},
 			body: ''
+		}
+	},
+	{
+		type: 'editField',
+		label: 'Edit Field',
+		schema: yup.object().shape({
+			// mode: yup.string().oneOf(['manual', 'json']).required('Mode is required'),
+			includeOtherInputFields: yup.boolean(),
+			// fields: yup.array().of(
+			// 	yup.object().shape({
+			// 		name: yup.string().required('Field Name is required'),
+			// 		value: yup.string().required('Field Value is required')
+			// 	})
+			// ),
+			jsonTemplate: yup.string().nullable(),
+			options: yup.array().of(
+				yup.object().shape({
+					key: yup.string().required('Option Key is required'),
+					value: yup.string().required('Option Value is required')
+				})
+			)
+		}),
+		bridgeSchema: {
+			type: 'object',
+			properties: {
+				// mode: {
+				// 	type: 'string',
+				// 	uniforms: {
+				// 		component: CustomSelectField,
+				// 		label: 'Mode',
+				// 		name: 'mode',
+				// 		options: [
+				// 			{ label: 'Manual Mapping', value: 'manual' },
+				// 			{ label: 'JSON', value: 'json' }
+				// 		],
+				// 		placeholder: 'Select mode'
+				// 	}
+				// },
+				// fields: {
+				// 	type: 'array',
+				// 	uniforms: {
+				// 		component: CustomFieldMapping,
+				// 		label: 'Fields',
+				// 		name: 'fields',
+				// 		visibleIf: { mode: 'manual' }
+				// 	}
+				// },
+				jsonTemplate: {
+					type: 'string',
+					uniforms: {
+						component: CodeEditorField,
+						label: 'JSON',
+						name: 'jsonTemplate',
+						language: 'json'
+					}
+				},
+				// includeOtherInputFields: {
+				// 	type: 'boolean',
+				// 	uniforms: {
+				// 		component: CustomToggleField,
+				// 		label: 'Include Other Input Fields',
+				// 		name: 'includeOtherInputFields'
+				// 	}
+				// },
+				options: {
+					type: 'array',
+					uniforms: {
+						component: CustomParamsField,
+						label: 'Options',
+						placeholder: 'Add options',
+						name: 'options'
+					}
+				}
+			},
+			required: ['jsonTemplate']
+		},
+		anchors: {
+			source: [],
+			target: [{ id: 'edit-field-target-1', text: 'Api/Webhook' }]
+		},
+		initialValue: {
+			mode: 'manual',
+			fields: [],
+			jsonTemplate: '{\n "message": "text",\n "data": "data"\n}',
+			includeOtherInputFields: false,
+			options: []
+		}
+	},
+	{
+		type: 'schedule',
+		label: 'Schedule',
+		schema: yup.object().shape({
+			interval: yup.string().oneOf(['minutes', 'hours', 'days', 'weeks', 'months']).required('Interval is required')
+		}),
+		bridgeSchema: scheduleSchemas.days.bridgeSchema,
+		anchors: {
+			source: [{ id: 'schedule-source-1', text: 'Api/Webhook/Response' }],
+			target: []
+		},
+		initialValue: {
+			interval: 'days',
+			intervalValue: 1,
+			hour: 0,
+			minute: 0,
+			weekday: '',
+			month: 1,
+			enabled: true
+		},
+		isDynamicSchema: true,
+		getDynamicConfig: (data: any) => {
+			const interval = data?.interval || 'days';
+			return scheduleSchemas[interval as keyof typeof scheduleSchemas];
+		}
+	},
+	{
+		type: 'embedMessage',
+		label: 'Embed Message',
+		schema: yup.object().shape({
+			embed: yup.mixed().required('Embed is required')
+		}),
+		bridgeSchema: {
+			type: 'object',
+			properties: {
+				embed: {
+					type: 'object',
+					uniforms: {
+						component: CustomEmbedField,
+						label: 'Embeds',
+						name: 'embed'
+					}
+				}
+			},
+			required: ['embed']
+		},
+		anchors: {
+			source: [],
+			target: [{ id: 'embed-message-target-1', text: 'Input' }]
+		},
+		initialValue: {
+			embed: {
+				mode: 'fields',
+				fields: {
+					description: '',
+					author: '',
+					color: '',
+					timestamp: '',
+					title: '',
+					url: '',
+					image: '',
+					thumbnail: '',
+					video: ''
+				},
+				raw: '{}'
+			}
+		}
+	},
+	{
+		type: 'switch',
+		label: 'Switch',
+		schema: yup.object().shape({
+			routingRules: yup
+				.array()
+				.of(
+					yup.object().shape({
+						conditions: yup.object().shape({
+							left: yup.string().required('Left value is required'),
+							operator: yup.string().required('Operator is required'),
+							right: yup.string(),
+							type: yup.string().oneOf(['string', 'number', 'boolean', 'array', 'object', 'dateTime']).required('Type is required')
+						})
+						// outputName: yup.string().required('Output name is required')
+					})
+				)
+				.min(1, 'At least one condition is required'),
+			convertTypes: yup.boolean().default(false),
+			options: yup
+				.array()
+				.of(
+					yup.object().shape({
+						key: yup.string().required(),
+						value: yup.string().required()
+					})
+				)
+				.nullable()
+		}),
+		bridgeSchema: {
+			type: 'object',
+			properties: {
+				routingRules: {
+					type: 'array',
+					uniforms: {
+						component: CustomRoutingRulesFiled,
+						label: 'Routing Rules',
+						name: 'routingRules'
+					}
+				},
+				convertTypes: {
+					type: 'boolean',
+					uniforms: {
+						component: CustomToggleField,
+						label: 'Convert types where required',
+						name: 'convertTypes'
+					}
+				},
+				options: {
+					type: 'array',
+					uniforms: {
+						component: CustomParamsField,
+						label: 'Options',
+						name: 'options'
+					}
+				}
+			},
+			required: ['routingRules']
+		},
+		anchors: {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			source: (nodeData: { routingRules: any[] }) => {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				return (nodeData?.routingRules || []).map((rule, index: number) => ({
+					id: rule.id || `switch-source-${index + 1}`,
+					text: '0' || `${index + 1}`
+				}));
+			},
+			target: [{ id: 'switch-target-1', text: 'Input' }]
+		},
+		initialValue: {
+			routingRules: [
+				{
+					id: 'switch-source-1',
+					conditions: { left: '', operator: 'is equal to', right: '', type: 'string', logic: 'AND' }
+				}
+			],
+			convertTypes: false,
+			options: []
 		}
 	}
 ];
