@@ -1,6 +1,6 @@
 {
   "name": "mezon",
-  "version": "1.4.55",
+  "version": "1.4.57",
   "dependencies": {
     "electron-log": "^5.2.0",
     "electron-store": "8.2.0",

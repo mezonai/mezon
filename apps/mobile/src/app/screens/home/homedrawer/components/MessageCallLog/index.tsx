@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { DMCallActions, selectAllAccount, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
+import { DMCallActions, EStateFriend, selectCurrentUserId, selectDmGroupCurrent, selectFriendById, useAppDispatch } from '@mezon/store-mobile';
 import type { IMessageCallLog } from '@mezon/utils';
 import { IMessageTypeCallLog } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -25,11 +25,17 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 	const { callLogType, isVideo = false } = callLog || {};
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const userProfile = useSelector(selectAllAccount);
-	const isMe = useMemo(() => userProfile?.user?.id === senderId, [userProfile?.user?.id, senderId]);
 	const { t } = useTranslation('message');
-	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
 	const dispatch = useAppDispatch();
+	const currentUserId = useSelector(selectCurrentUserId);
+	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
+	const infoFriend = useSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''));
+
+	const isMe = useMemo(() => currentUserId === senderId, [currentUserId, senderId]);
+	const isBlocked = useMemo(() => {
+		if (currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_DM) return false;
+		return infoFriend?.state === EStateFriend.BLOCK;
+	}, [currentDmGroup?.type, infoFriend?.state]);
 
 	const onCallBack = () => {
 		dispatch(DMCallActions.removeAll());
@@ -98,14 +104,16 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 				return '';
 		}
 	};
+
 	const getDescriptionText = () => {
 		return callLogType === IMessageTypeCallLog.FINISHCALL ? contentMsg : isVideo ? t('callLog.videoCall') : t('callLog.audioCall');
 	};
 
-	const shouldShowCallBackButton = () => {
+	const isShowCallBackButton = useMemo(() => {
 		const noCallBackTypes = [IMessageTypeCallLog.TIMEOUTCALL, IMessageTypeCallLog.STARTCALL, IMessageTypeCallLog.FINISHCALL];
-		return (!noCallBackTypes.includes(callLogType) || !isMe) && callLogType !== IMessageTypeCallLog.STARTCALL;
-	};
+		return (!noCallBackTypes.includes(callLogType) || !isMe) && callLogType !== IMessageTypeCallLog.STARTCALL && !isBlocked;
+	}, [callLogType, isBlocked, isMe]);
+
 	return (
 		<View style={styles.outerWrapper}>
 			<View style={styles.container}>
@@ -129,7 +137,7 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 					</View>
 				</View>
 
-				{shouldShowCallBackButton() && (
+				{isShowCallBackButton && (
 					<TouchableOpacity style={styles.btnCallBack} activeOpacity={1} onPress={onCallBack}>
 						<Text style={styles.titleCallBack}>{t('callLog.callBack')}</Text>
 					</TouchableOpacity>

@@ -33,6 +33,7 @@ import MezonConfirm from '../../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import Backdrop from '../../../components/BottomSheetRootListener/backdrop';
+import { toastConfig } from '../../../configs/toastConfig';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { useImage } from '../../../hooks/useImage';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
@@ -232,7 +233,6 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				});
 			} else {
 				if (!walletAddress) {
-					// Send DM message
 					if (directMessageId) {
 						await sendInviteMessage(
 							`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
@@ -366,7 +366,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				if (!dataUri) {
 					Toast.show({
 						type: 'error',
-						text1: 'Failed to share transfer funds'
+						text1: t('toast.error.failedToShare')
 					});
 					return;
 				}
@@ -385,7 +385,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 		} catch (error) {
 			Toast.show({
 				type: 'error',
-				text1: 'Failed to share transfer funds'
+				text1: t('toast.error.failedToShare')
 			});
 		}
 	};
@@ -402,18 +402,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				return;
 			}
 			await saveMediaToCameraRoll(`file://${dataUri}`, 'png');
-			Toast.show({
-				type: 'success',
-				props: {
-					text2: t('common:savedSuccessfully'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} />
-				}
-			});
 		} catch (error) {
-			Toast.show({
-				type: 'error',
-				text1: t('common:saveFailed')
-			});
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
 	};
@@ -423,6 +412,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 		setSelectedUser(null);
 		setSearchText('');
 		setTokenCount('0');
+		setNote(t('sendToken'));
 		setShowConfirmModal(false);
 	};
 
@@ -449,7 +439,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 
 	const getItemLayout = useCallback(
 		(data, index) => ({
-			length: ITEM_HEIGHT, // Define your item height constant
+			length: ITEM_HEIGHT,
 			offset: ITEM_HEIGHT * index,
 			index
 		}),
@@ -535,6 +525,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 								</TouchableOpacity>
 							</View>
 						</View>
+						<Toast config={toastConfig} />
 					</ViewShot>
 				)}
 			</Modal>
@@ -612,7 +603,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 						<View style={styles.textField}>
 							<TextInput
 								editable={(!jsonObject?.note || canEdit) && jsonObject?.type !== 'payment'}
-								style={[styles.textInput, { height: size.s_100, paddingVertical: size.s_10, paddingTop: size.s_10 }]}
+								style={styles.textInputNote}
 								placeholderTextColor="#535353"
 								autoCapitalize="none"
 								value={note}

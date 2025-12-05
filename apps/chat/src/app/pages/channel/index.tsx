@@ -161,7 +161,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 			? ChannelStreamMode.STREAM_MODE_CHANNEL
 			: ChannelStreamMode.STREAM_MODE_THREAD;
 
-	const [canSendMessageDelayed, setCanSendMessageDelayed] = useState<boolean>(false);
+	const [canSendMessageDelayed, setCanSendMessageDelayed] = useState<boolean | null>(false);
 	const isAppChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -176,6 +176,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		return onboardingClan.mission[missionDone || 0];
 	}, [missionDone, channelId, onboardingClan.mission]);
 	const selectUserProcessing = useSelector((state) => selectProcessingByClan(state, currentClanId as string));
+	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannel.id));
 
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	useEffect(() => {
@@ -185,7 +186,13 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		}
 
 		timerRef.current = setTimeout(() => {
-			setCanSendMessageDelayed(canSendMessage);
+			if (canSendMessage && isBanned) {
+				setCanSendMessageDelayed(null);
+				return;
+			}
+			if (canSendMessage !== canSendMessageDelayed) {
+				setCanSendMessageDelayed(canSendMessage);
+			}
 		}, 500);
 
 		return () => {
@@ -193,7 +200,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 				clearTimeout(timerRef.current);
 			}
 		};
-	}, [canSendMessage]);
+	}, [canSendMessage, isBanned]);
 	const dispatch = useAppDispatch();
 
 	const previewMode = useSelector(selectOnboardingMode);
@@ -203,8 +210,8 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		}
 		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && currentClanIsOnboarding;
 	}, [selectUserProcessing?.onboarding_step, currentClanIsOnboarding, previewMode, currentClanId]);
-	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannel.id));
-	if (!canSendMessageDelayed) {
+
+	if (canSendMessageDelayed === false) {
 		return (
 			<div
 				className="h-11 opacity-80 bg-theme-input text-theme-primary ml-4 mb-4 py-2 pl-2 w-widthInputViewChannelPermission rounded one-line"
@@ -213,7 +220,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 				{t('noPermissionToSendMessage')}
 			</div>
 		);
-	} else if (isBanned) {
+	} else if (canSendMessageDelayed === null && isBanned) {
 		return (
 			<BanCountDown
 				userId={userId || ''}

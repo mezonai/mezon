@@ -9,12 +9,11 @@ import { ChannelStreamMode, ChannelType, safeJSONParse, WebrtcSignalingType } fr
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, BackHandler, DeviceEventEmitter, Linking, NativeModules, Platform } from 'react-native';
-import RNCallKeep from 'react-native-callkeep';
 import InCallManager from 'react-native-incall-manager';
 import Sound from 'react-native-sound';
 import { useSelector } from 'react-redux';
-import NotificationPreferences from '../utils/NotificationPreferences';
 import { compress, decompress } from '../utils/helpers';
+import NotificationPreferences from '../utils/NotificationPreferences';
 import { usePermission } from './useRequestPermission';
 
 const RTCConfig = {
@@ -143,9 +142,10 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 
 	const clearUpStorageCalling = async () => {
 		if (Platform.OS === 'android') {
-			await NotificationPreferences.clearValue('notificationDataCalling');
+			if (!isFromNative) {
+				await NotificationPreferences.clearValue('notificationDataCalling');
+			}
 		} else {
-			RNCallKeep.endAllCalls();
 			const VoIPManager = NativeModules?.VoIPManager;
 			if (VoIPManager) {
 				await VoIPManager.clearStoredNotificationData();
@@ -503,10 +503,6 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 			stopDialTone();
 			playEndCall();
 			stopAllTracks();
-
-			if (Platform.OS === 'ios') {
-				RNCallKeep.endAllCalls();
-			}
 			if (peerConnection?.current) {
 				peerConnection?.current.close();
 			}
@@ -742,6 +738,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		timeStartConnected,
 		isConnected,
 		candidateCache,
+		peerConnection,
 		startCall,
 		handleEndCall,
 		toggleAudio,

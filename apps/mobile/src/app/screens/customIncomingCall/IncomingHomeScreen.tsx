@@ -1,4 +1,5 @@
 import { registerGlobals } from '@livekit/react-native';
+import { save, STORAGE_LATEST_CALL_CACHE } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, DMCallActions, selectCurrentUserId, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
@@ -51,7 +52,6 @@ const IncomingHomeScreen = memo((props: any) => {
 
 	const stopAndReleaseSound = useCallback(async () => {
 		try {
-			await NotificationPreferences.clearValue('notificationDataCalling');
 			if (ringtoneRef.current) {
 				ringtoneRef.current.pause();
 				ringtoneRef.current.stop();
@@ -64,7 +64,22 @@ const IncomingHomeScreen = memo((props: any) => {
 		}
 	}, []);
 
-	const playVibration = useCallback(() => {
+	const playVibrationAndSound = useCallback(() => {
+		Sound.setCategory('Playback');
+		const sound = new Sound('ringing.mp3', Sound.MAIN_BUNDLE, (error) => {
+			if (error) {
+				console.error('failed to load the sound', error);
+				return;
+			}
+			sound.play((success) => {
+				if (!success) {
+					console.error('Sound playback failed');
+				}
+			});
+			sound.setNumberOfLoops(-1);
+			sound.setVolume(1.0);
+			ringtoneRef.current = sound;
+		});
 		Vibration.vibrate([300, 500, 300, 500], true);
 	}, []);
 
@@ -147,27 +162,11 @@ const IncomingHomeScreen = memo((props: any) => {
 						callerId: data?.callerId
 					})
 				);
-				Sound.setCategory('Ambient', false);
-				// Initialize ringtone
-				const sound = new Sound('ringing.mp3', Sound.MAIN_BUNDLE, (error) => {
-					if (error) {
-						console.error('failed to load the sound', error);
-						return;
-					}
-					sound.play((success) => {
-						if (!success) {
-							console.error('Sound playback failed');
-						}
-					});
-					sound.setNumberOfLoops(-1);
-					ringtoneRef.current = sound;
-					playVibration();
-				});
 			}
 		} catch (error) {
 			console.error('Failed to retrieve data', error);
 		}
-	}, [dispatch, playVibration, userId]);
+	}, [dispatch, userId]);
 
 	useEffect(() => {
 		notifee.stopForegroundService();
@@ -184,7 +183,7 @@ const IncomingHomeScreen = memo((props: any) => {
 
 	const onDeniedCall = async () => {
 		stopAndReleaseSound();
-		await NotificationPreferences.clearValue('notificationDataCalling');
+		save(STORAGE_LATEST_CALL_CACHE, '{}');
 		if (dataCallGroup) {
 			await buttonAnswerCallGroupRef?.current?.onDeniedCall();
 			onKillApp();
@@ -208,7 +207,7 @@ const IncomingHomeScreen = memo((props: any) => {
 	};
 
 	const onJoinCall = async () => {
-		await NotificationPreferences.clearValue('notificationDataCalling');
+		save(STORAGE_LATEST_CALL_CACHE, '{}');
 		if (Platform.OS === 'android') {
 			try {
 				NativeModules?.CallStateModule?.setIsInCall?.(true);
@@ -229,7 +228,7 @@ const IncomingHomeScreen = memo((props: any) => {
 				retryCount++;
 				const retrySuccess = await tryHandleICECandidate();
 
-				if (retrySuccess || retryCount >= maxRetries) {
+				if (retrySuccess || retryCount >= maxRetries || !!callDetailRef?.current) {
 					clearInterval(retryTimer);
 				}
 			}, retryInterval);
@@ -240,24 +239,22 @@ const IncomingHomeScreen = memo((props: any) => {
 	};
 
 	useEffect(() => {
-		let timer;
 		if (!isInCall) {
-			if (isForceAnswer && signalingData?.[signalingData?.length - 1]?.callerId) {
+			if (isForceAnswer && signalingData?.[signalingData?.length - 1]?.callerId && !!dataCalling?.callerId) {
 				onJoinCall();
 			}
 
 			if (signalingData?.[signalingData?.length - 1]?.signalingData.data_type === WebrtcSignalingType.WEBRTC_SDP_QUIT) {
+				NotificationPreferences?.clearValue?.('notificationDataCalling');
 				stopAndReleaseSound();
 				onKillApp();
 			}
 		}
 
 		return () => {
-			if (timer) {
-				clearTimeout(timer);
-			}
+			NotificationPreferences.clearValue('notificationDataCalling');
 		};
-	}, [isForceAnswer, isInCall, onKillApp, signalingData, stopAndReleaseSound]);
+	}, [isForceAnswer, isInCall, onKillApp, dataCalling, signalingData, stopAndReleaseSound]);
 
 	useEffect(() => {
 		if (isForceDecline && isSocketConnected) {
@@ -267,12 +264,11 @@ const IncomingHomeScreen = memo((props: any) => {
 	}, [isForceDecline, isSocketConnected, onDeniedCall, signalingData]);
 
 	useEffect(() => {
-		loadDataInit();
 		if (props && props?.payload) {
-			playVibration();
+			playVibrationAndSound();
 			getDataCall();
 		}
-
+		loadDataInit();
 		return () => {
 			stopAndReleaseSound();
 		};
@@ -296,6 +292,7 @@ const IncomingHomeScreen = memo((props: any) => {
 	}, [stopAndReleaseSound]);
 
 	const onIsConnected = useCallback(() => {
+		NotificationPreferences.clearValue('notificationDataCalling');
 		setIsCallConnected(true);
 	}, []);
 

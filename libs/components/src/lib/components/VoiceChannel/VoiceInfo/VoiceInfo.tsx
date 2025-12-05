@@ -65,6 +65,11 @@ const VoiceInfo = React.memo(() => {
 	};
 
 	const leaveVoice = async () => {
+		const leaveButton = document.getElementById('btn-meet-leave');
+		if (leaveButton) {
+			leaveButton.click();
+			return;
+		}
 		if (currentVoiceInfo) {
 			const isGroupCall = currentVoiceInfo.clanId === '0' || isGroupCallActive;
 
@@ -287,7 +292,7 @@ const ButtonNoiseControl = memo(() => {
 							max="100"
 							value={noiseSuppressionLevel}
 							onChange={handleNoiseSuppressionLevelChange}
-							className="w-full h-2 bg-theme-setting-nav rounded-lg appearance-none cursor-pointer border-theme-primary"
+							className="w-full h-2 bg-themxe-setting-nav rounded-lg appearance-none cursor-pointer border-theme-primary"
 							disabled={!noiseSuppressionEnabled}
 						/>
 					</div>

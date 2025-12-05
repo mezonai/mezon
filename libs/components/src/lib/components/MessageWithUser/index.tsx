@@ -134,7 +134,7 @@ function MessageWithUser({
 		return includesUser || includesRole;
 	})();
 
-	const checkMessageHasReply = !!message?.references?.length && message?.code === TypeMessage.Chat;
+	const checkMessageHasReply = !!message?.references?.length && (message?.code === TypeMessage.Chat || message?.code === TypeMessage.Topic);
 	const isEphemeralMessage = message?.code === TypeMessage.Ephemeral;
 
 	const shouldRenderMessageReply = checkMessageHasReply && !isEphemeralMessage;

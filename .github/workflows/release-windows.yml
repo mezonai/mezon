@@ -93,8 +93,8 @@ jobs:
         run: |
           yarn release:desktop
 
-      # - name: Push to MinIO
-      #   run: |
-      #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/latest.yml mezon/mezon/release/latest.yml'"
-      #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-x64.exe mezon/mezon/release/'"
-      #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-x64-portable.exe mezon/mezon/release/'"
+      - name: Push to MinIO
+        run: |
+          powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-x64-portable.exe mezon/mezon/release/'"
+        #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/latest.yml mezon/mezon/release/latest.yml'"
+        #     powershell "& 'c:\Program Files\Git\bin\bash.exe' -c 'mc cp ./dist/executables/mezon-*-win-x64.exe mezon/mezon/release/'"

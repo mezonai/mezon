@@ -1,6 +1,6 @@
 import { selectScreenSource, selectShowScreen, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import type { LocalTrackPublication, Room } from 'livekit-client';
-import { ScreenSharePresets, Track } from 'livekit-client';
+import { ScreenSharePresets, Track, VideoPresets } from 'livekit-client';
 import { useCallback, useEffect, useRef } from 'react';
 
 type PublishedScreenTracks = {
@@ -48,12 +48,17 @@ export const useScreenSharePublisher = (room?: Room | null) => {
 
 		const publishScreenShare = async () => {
 			try {
+				const resolution = VideoPresets.h720.resolution;
 				const constraints = {
 					video: {
 						mandatory: {
 							chromeMediaSource: 'desktop',
-							chromeMediaSourceId: screenSource.id
-						}
+							sharetrackId: screenSource.id
+						},
+						...(resolution && {
+							width: { ideal: resolution.width },
+							height: { ideal: resolution.height }
+						})
 					},
 					audio: screenSource.audio
 						? {
@@ -75,13 +80,28 @@ export const useScreenSharePublisher = (room?: Room | null) => {
 				stopScreenShare();
 
 				const videoPublication = await room.localParticipant.publishTrack(videoTrack, {
+					name: 'screen-share',
 					source: Track.Source.ScreenShare,
-					simulcast: true,
-					videoEncoding: {
-						maxBitrate: 5_000_000,
-						maxFramerate: 30
-					},
-					screenShareSimulcastLayers: [ScreenSharePresets.h720fps15]
+					simulcast: false,
+					screenShareSimulcastLayers: [
+						// 720p
+						{
+							...VideoPresets.h720,
+							encoding: ScreenSharePresets.h720fps30.encoding,
+							resolution: ScreenSharePresets.h720fps30.resolution
+						},
+						// 1080p
+						{
+							...VideoPresets.h1080,
+							encoding: ScreenSharePresets.h1080fps30.encoding,
+							resolution: ScreenSharePresets.h1080fps30.resolution
+						},
+						{
+							...VideoPresets.h1440,
+							encoding: ScreenSharePresets.original.encoding,
+							resolution: ScreenSharePresets.original.resolution
+						}
+					]
 				});
 
 				let audioPublication: LocalTrackPublication | undefined;

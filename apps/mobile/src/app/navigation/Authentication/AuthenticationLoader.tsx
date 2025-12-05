@@ -1,19 +1,10 @@
-import {
-	ActionEmitEvent,
-	load,
-	remove,
-	STORAGE_CHANNEL_CURRENT_CACHE,
-	STORAGE_KEY_TEMPORARY_ATTACHMENT,
-	STORAGE_MY_USER_ID
-} from '@mezon/mobile-components';
+import { ActionEmitEvent, remove, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_KEY_TEMPORARY_ATTACHMENT } from '@mezon/mobile-components';
 import {
 	appActions,
 	channelsActions,
 	directActions,
-	DMCallActions,
 	getStoreAsync,
 	messagesActions,
-	selectAllAccount,
 	selectCurrentChannel,
 	selectCurrentClan,
 	selectCurrentLanguage,
@@ -23,13 +14,11 @@ import {
 	selectVoiceFullScreen,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { useMezon } from '@mezon/transport';
 import { TypeMessage } from '@mezon/utils';
 import { getApp } from '@react-native-firebase/app';
 import { getMessaging, onMessage } from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
-import type { WebrtcSignalingFwd } from 'mezon-js';
-import { safeJSONParse, WebrtcSignalingType } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, AppStateStatus, DeviceEventEmitter, Keyboard, Linking, Platform, StatusBar } from 'react-native';
@@ -41,7 +30,6 @@ import ExpiredSessionModal from '../../components/ExpiredSessionModal/ExpiredSes
 import LoadingModal from '../../components/LoadingModal/LoadingModal';
 import { useCheckUpdatedVersion } from '../../hooks/useCheckUpdatedVersion';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
-import { DirectMessageCallMain } from '../../screens/messages/DirectMessageCall';
 import { Sharing } from '../../screens/settings/Sharing';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex, getQueryParam } from '../../utils/helpers';
 import { isShowNotification, navigateToNotification } from '../../utils/pushNotificationHelpers';
@@ -50,9 +38,7 @@ import { APP_SCREEN } from '../ScreenTypes';
 const messaging = getMessaging(getApp());
 export const AuthenticationLoader = () => {
 	const navigation = useNavigation<any>();
-	const userProfile = useSelector(selectAllAccount);
 	const currentClan = useSelector(selectCurrentClan);
-	const mezon = useMezon();
 	const isTabletLandscape = useTabletLandscape();
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentDmGroupId = useSelector(selectDmGroupCurrentId);
@@ -214,58 +200,6 @@ export const AuthenticationLoader = () => {
 	useEffect(() => {
 		voiceFullScreenRef.current = isFullVoiceScreen;
 	}, [isFullVoiceScreen]);
-
-	useEffect(() => {
-		let timer;
-		const callListener = DeviceEventEmitter.addListener(ActionEmitEvent.GO_TO_CALL_SCREEN, async ({ payload, isDecline = false }) => {
-			if (isDecline) {
-				const myUserId = load(STORAGE_MY_USER_ID);
-				await mezon.socketRef.current?.forwardWebrtcSignaling(
-					payload?.callerId,
-					WebrtcSignalingType.WEBRTC_SDP_QUIT,
-					'{}',
-					payload?.channelId,
-					myUserId
-				);
-				return;
-			}
-			dispatch(appActions.setLoadingMainMobile(true));
-			dispatch(DMCallActions.setIsInCall(true));
-			const signalingData = {
-				channel_id: payload?.channelId,
-				json_data: payload?.offer,
-				data_type: WebrtcSignalingType.WEBRTC_SDP_OFFER,
-				caller_id: payload?.callerId
-			};
-			dispatch(
-				DMCallActions.addOrUpdate({
-					calleeId: userProfile?.user?.id,
-					signalingData: signalingData as WebrtcSignalingFwd,
-					id: payload?.callerId,
-					callerId: payload?.callerId
-				})
-			);
-			timer = setTimeout(() => {
-				dispatch(appActions.setLoadingMainMobile(false));
-				const params = {
-					receiverId: payload?.callerId,
-					receiverAvatar: payload?.callerAvatar,
-					receiverName: payload?.callerName,
-					directMessageId: payload?.channelId,
-					isAnswerCall: true
-				};
-				const data = {
-					children: <DirectMessageCallMain route={{ params }} />
-				};
-				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-			}, 1000);
-		});
-
-		return () => {
-			timer && clearTimeout(timer);
-			callListener.remove();
-		};
-	}, [dispatch, navigation, userProfile?.user?.id]);
 
 	const getTopRoute = useCallback(() => {
 		try {

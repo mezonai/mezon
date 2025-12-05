@@ -112,6 +112,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
 </script>
 </head>
 <body>
+<div class="window-wrapper">
 <div class="title-bar">
   <div class="app-title">Mezon</div>
   <div class="functional-bar">
@@ -242,6 +243,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
     </div>
   </div>
   <div id="toast" class="toast">Copied to clipboard</div>
+</div>
 </div>
 </body>
 </html>

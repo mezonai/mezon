@@ -50,6 +50,14 @@ export const style = (colors: Attributes) =>
 			height: size.s_40,
 			color: colors.text
 		},
+		textInputNote: {
+			paddingHorizontal: size.s_10,
+			fontSize: size.s_12,
+			color: colors.text,
+			height: size.s_100,
+			paddingVertical: size.s_10,
+			paddingTop: size.s_10
+		},
 		wrapperButton: {
 			position: 'absolute',
 			justifyContent: 'center',

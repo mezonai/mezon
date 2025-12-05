@@ -62,7 +62,6 @@ target 'Mobile' do
   pod 'MobileVLCKit', :modular_headers => true
   pod 'RNFS', :path => '../node_modules/react-native-fs'
   pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
-  pod 'RNCallKeep', :path => '../node_modules/react-native-callkeep'
   pod 'RNScreens', :path => '../node_modules/react-native-screens'
 
   use_react_native!(

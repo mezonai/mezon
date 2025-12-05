@@ -124,7 +124,9 @@ const ControlBar = ({
 
 	return (
 		<div className="lk-control-bar !flex !justify-between !border-none !bg-transparent max-md:flex-col">
-			<ReactionControls isGroupCall={isGroupCall} isGridView={isGridView} isShowMember={isShowMember} className="max-md:hidden" />
+			{!isExternalCalling && (
+				<ReactionControls isGroupCall={isGroupCall} isGridView={isGridView} isShowMember={isShowMember} className="max-md:hidden" />
+			)}
 
 			<div className="flex justify-center gap-3 flex-1 max-md:scale-75">
 				{visibleControls.microphone && (

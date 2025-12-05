@@ -23,17 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     ) -> Bool {
 
       SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
-      DispatchQueue.global(qos: .background).async {
-        let callKeepConfig: [String: Any] = [
-            "appName": "Mezon",
-            "maximumCallGroups": 3,
-            "maximumCallsPerCallGroup": 1,
-            "ringtoneSound": "ringring.mp3",
-            "supportsVideo": false
-        ]
-        RNCallKeep.setup(callKeepConfig)
-      }
-
       // Initialize React Native
       FirebaseApp.configure()
 	  UNUserNotificationCenter.current().delegate = self

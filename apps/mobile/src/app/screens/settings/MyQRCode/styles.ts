@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -84,17 +85,6 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center',
 			justifyContent: 'center',
 			marginVertical: size.s_20
-		},
-		qrWrapper: {
-			backgroundColor: colors.primary,
-			padding: size.s_10,
-			alignSelf: 'center',
-			margin: 0,
-			marginLeft: 0,
-			marginRight: 0,
-			borderRadius: size.s_8,
-			alignItems: 'center',
-			justifyContent: 'center'
 		},
 		imageQR: {
 			width: size.s_220,

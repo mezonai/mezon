@@ -13,9 +13,10 @@ export default function setupAutoUpdates() {
 		return;
 	}
 	isUpdateCheckStarted = true;
-	autoUpdater.autoDownload = true;
-	autoUpdater.autoInstallOnAppQuit = true;
-
+	if (process.platform !== 'win32') {
+		autoUpdater.autoDownload = true;
+		autoUpdater.autoInstallOnAppQuit = true;
+	}
 	ipcMain.handle(INSTALL_UPDATE, () => {
 		if (process.platform === 'win32') {
 			shell.openExternal('ms-windows-store://pdp/?ProductId=9pf25lf1fj17');
@@ -63,5 +64,11 @@ export default function setupAutoUpdates() {
 
 autoUpdater.on('update-available', (info: UpdateInfo) => {
 	log.info(`The current version is ${app.getVersion()}. There is a new update for the app ${info.version}`);
-	autoUpdater.downloadUpdate();
+	if (process.platform === 'win32') {
+		BrowserWindow.getAllWindows().forEach((window) => {
+			window.webContents.send(UPDATE_AVAILABLE, info);
+		});
+	} else {
+		autoUpdater.downloadUpdate();
+	}
 });

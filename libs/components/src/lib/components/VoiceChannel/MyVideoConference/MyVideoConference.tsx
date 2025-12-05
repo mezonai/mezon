@@ -76,12 +76,27 @@ export const MyVideoConference = memo(
 
 		const layoutContext = useCreateLayoutContext();
 
-		const screenShareTracks = useMemo(() => {
-			return tracks.filter(isTrackReference).filter((track) => track.publication.source === Track.Source.ScreenShare);
-		}, [tracks]);
+		const screenShareTracks = useMemo(
+			() => tracks.filter(isTrackReference).filter((track) => track.publication.source === Track.Source.ScreenShare),
+			[tracks]
+		);
 
 		const focusTrack = usePinnedTracks(layoutContext)?.[0];
+
 		const carouselTracks = useMemo(() => {
+			if (!focusTrack) {
+				return tracks;
+			}
+
+			const isFocusScreenShare =
+				(isTrackReference(focusTrack) &&
+					(focusTrack.publication?.source === Track.Source.ScreenShare || focusTrack.source === ('screen_share' as Track.Source))) ||
+				focusTrack.source === 'screen_share';
+
+			if (isFocusScreenShare) {
+				return tracks;
+			}
+
 			return tracks.filter((track) => !isEqualTrackRef(track, focusTrack));
 		}, [tracks, focusTrack]);
 		const [isShowMember, setIsShowMember] = useState<boolean>(true);

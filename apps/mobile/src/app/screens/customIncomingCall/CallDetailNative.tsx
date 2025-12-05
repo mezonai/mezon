@@ -6,7 +6,6 @@ import { WebrtcSignalingType } from 'mezon-js';
 import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, BackHandler, DeviceEventEmitter, NativeModules, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import RNCallKeep from 'react-native-callkeep';
 import InCallManager from 'react-native-incall-manager';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
@@ -47,6 +46,7 @@ export const CallDetailNative = memo(
 			const { t } = useTranslation(['dmMessage']);
 
 			const {
+				peerConnection,
 				callState,
 				localMediaControl,
 				timeStartConnected,
@@ -87,7 +87,7 @@ export const CallDetailNative = memo(
 			const handleICECandidateWithRetry = useCallback(async () => {
 				const executePush = async (attempt: number): Promise<void> => {
 					const currentCandidateCache = candidateCacheRef.current;
-					if (currentCandidateCache) {
+					if (currentCandidateCache && !!peerConnection?.current) {
 						await handleICECandidate(currentCandidateCache);
 						retryCountRef.current = 0;
 						return;
@@ -114,9 +114,6 @@ export const CallDetailNative = memo(
 
 			const onCancelCall = async () => {
 				try {
-					if (Platform.OS === 'ios') {
-						RNCallKeep.endAllCalls();
-					}
 					await handleEndCall({});
 					if (!timeStartConnected?.current) {
 						await dispatch(

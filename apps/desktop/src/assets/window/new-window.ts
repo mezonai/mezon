@@ -3,7 +3,7 @@ import { join } from 'path';
 import App from '../../app/app';
 import image_window_css from '../image-window/image-window-css';
 
-function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow, title = 'Mezon App') {
+function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow) {
 	const parentBounds = parentWindow.getBounds();
 	const width = Math.floor(parentBounds.width * 0.5);
 	const height = Math.floor(parentBounds.height * 1.0);
@@ -32,6 +32,7 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
 		movable: true
 	});
 
+	const title = new URL(url).hostname.split('.')[0];
 	const windowSkeleton = `<!DOCTYPE html>
 <html lang="en">
 
@@ -79,7 +80,7 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
  		<webview id="webview" src="${url}" style="width:100%; height:100%;" allowpopups></webview>
 	</div>
 	<div class="footer-bar">
-		@${title.toLowerCase().replace(/\s+/g, '')}
+		@${title}
 	</div>
 </div>
 

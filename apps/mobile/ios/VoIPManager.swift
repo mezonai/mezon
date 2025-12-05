@@ -1,18 +1,23 @@
 import Foundation
+import AVFAudio
 import PushKit
 import CallKit
 import React
 
 @objc(VoIPManager)
-class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
+class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate, CXProviderDelegate {
 
     private var pushRegistry: PKPushRegistry?
     private var hasListeners = false
     private let notificationDataKey = "notificationDataCalling"
     private let activeCallUUIDKey = "activeCallUUID"
 
+    private var callKitProvider: CXProvider?
+    private var callKitCallController: CXCallController?
+
     override init() {
         super.init()
+        setupCallKit()
         setupPushRegistry()
     }
 
@@ -28,7 +33,9 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
         return [
             "VoIPTokenReceived",
             "VoIPNotificationReceived",
-            "VoIPCallEnded"
+            "VoIPCallEnded",
+            "VoIPCallAnswered",
+            "VoIPCallRejected"
         ]
     }
 
@@ -98,23 +105,19 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
     private func storeNotificationData(_ data: [String: Any]) {
         UserDefaults.standard.set(data, forKey: notificationDataKey)
         UserDefaults.standard.synchronize()
-        print("log  => Notification data stored: \(data)")
     }
 
     private func clearStoredNotificationDataInternal() {
          UserDefaults.standard.removeObject(forKey: notificationDataKey)
+         UserDefaults.standard.removeObject(forKey: activeCallUUIDKey)
          UserDefaults.standard.synchronize()
-         print("log  => Stored notification data cleared internally")
     }
 
-     // Helper method to store active call UUID
      private func storeActiveCallUUID(_ uuid: String) {
          UserDefaults.standard.set(uuid, forKey: activeCallUUIDKey)
          UserDefaults.standard.synchronize()
-         print("log  => Active call UUID stored: \(uuid)")
      }
 
-     // Helper method to get active call UUID
      private func getActiveCallUUID() -> String? {
          return UserDefaults.standard.string(forKey: activeCallUUIDKey)
      }
@@ -134,8 +137,6 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
             let token = pushCredentials.token
             let tokenString = token.map { String(format: "%02x", $0) }.joined()
 
-            print("log  => VoIP Token: \(tokenString)")
-
             if hasListeners {
                 sendEvent(withName: "VoIPTokenReceived", body: ["token": tokenString])
             }
@@ -143,9 +144,7 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
     }
 
     func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
-        if type == .voIP {
-            print("log  => VoIP token invalidated")
-        }
+        // Token invalidated
     }
 
     func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType, completion: @escaping () -> Void) {
@@ -163,12 +162,18 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
 
   @objc
   func endCurrentCallKeep(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
-      if let activeUUID = getActiveCallUUID() {
-          RNCallKeep.endCall(withUUID: activeUUID, reason: 6)
-          clearStoredNotificationDataInternal()
-          UserDefaults.standard.removeObject(forKey: activeCallUUIDKey)
-          UserDefaults.standard.synchronize()
-          resolve("Call ended successfully")
+      if let activeUUIDString = getActiveCallUUID(), let uuid = UUID(uuidString: activeUUIDString) {
+          let endCallAction = CXEndCallAction(call: uuid)
+          let transaction = CXTransaction(action: endCallAction)
+
+          callKitCallController?.request(transaction) { error in
+              if let error = error {
+                  reject("END_CALL_ERROR", error.localizedDescription, error)
+              } else {
+                  self.clearStoredNotificationDataInternal()
+                  resolve("Call ended successfully")
+              }
+          }
       } else {
           reject("NO_ACTIVE_CALL", "No active call UUID found", nil)
       }
@@ -212,21 +217,21 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
             callerId = offerDict["callerId"] as? String ?? ""
             channelId = offerDict["channelId"] as? String ?? ""
         } else {
-            print("log  => Unexpected format for 'offer': \(type(of: offerValue))")
-            dump(offerValue)
+            completion()
             return
         }
 
         if offer == "CANCEL_CALL" {
-            print("log  => Cancel call received")
-            if let activeUUID = getActiveCallUUID() {
-                print("log  => Ending call with UUID: \(activeUUID)")
-                RNCallKeep.endCall(withUUID: activeUUID, reason: 6)
-                clearStoredNotificationDataInternal()
+            if let activeUUIDString = getActiveCallUUID(), let uuid = UUID(uuidString: activeUUIDString) {
+                let endCallAction = CXEndCallAction(call: uuid)
+                let transaction = CXTransaction(action: endCallAction)
+                callKitCallController?.request(transaction) { _ in
+                    self.clearStoredNotificationDataInternal()
+                }
             } else {
-                print("log  => No active call UUID found, cannot end call")
                 clearStoredNotificationDataInternal()
             }
+            completion()
             return
         }
 
@@ -242,24 +247,100 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate {
 
         storeNotificationData(notificationData)
         storeActiveCallUUID(callUUID)
+
         // Report the incoming call to CallKit - THIS IS MANDATORY to avoid crash
-        RNCallKeep.reportNewIncomingCall(
-            callUUID,
-            handle: callerId.isEmpty ? callerName : callerId,
-            handleType: "generic",
-            hasVideo: true,
-            localizedCallerName: callerName,
-            supportsHolding: true,
-            supportsDTMF: true,
-            supportsGrouping: false,
-            supportsUngrouping: false,
-            fromPushKit: true,
-            payload: payloadDict,
-            withCompletionHandler: {
-                print("log  => Incoming call reported successfully with UUID: \(callUUID)")
+        let update = CXCallUpdate()
+        update.remoteHandle = CXHandle(type: .generic, value: callerId.isEmpty ? callerName : callerId)
+        update.localizedCallerName = callerName
+        update.hasVideo = true  // Set to true to require unlock, but won't show "Video" label since config.supportsVideo = false
+        update.supportsHolding = true
+        update.supportsDTMF = true
+        update.supportsGrouping = false
+        update.supportsUngrouping = false
+
+        guard let uuid = UUID(uuidString: callUUID) else {
+            completion()
+            return
+        }
+
+        callKitProvider?.reportNewIncomingCall(with: uuid, update: update) { error in
+            if error != nil {
+                self.clearStoredNotificationDataInternal()
             }
-        )
-        completion()
+            completion()
+        }
+    }
+
+    // MARK: - CallKit Setup
+
+    private func setupCallKit() {
+        // Use a short or empty string to minimize the app name in call UI
+        // This reduces "Mezon Video" to just show the caller info
+        let config = CXProviderConfiguration(localizedName: "")  // Empty to hide app name
+        config.supportsVideo = false  // Set to false to hide "Video" label
+        config.maximumCallsPerCallGroup = 1
+        config.supportedHandleTypes = [.generic]
+
+        // Optional: Add ringtone
+        config.ringtoneSound = "ringing.mp3"  // Add your custom ringtone file name
+
+        callKitProvider = CXProvider(configuration: config)
+        callKitProvider?.setDelegate(self, queue: nil)
+
+        callKitCallController = CXCallController()
+    }
+
+    // MARK: - CXProviderDelegate Methods
+
+    func providerDidReset(_ provider: CXProvider) {
+        clearStoredNotificationDataInternal()
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
+        if let data = UserDefaults.standard.object(forKey: notificationDataKey) as? [String: Any] {
+            if hasListeners {
+                sendEvent(withName: "VoIPCallAnswered", body: data)
+            }
+        }
+        action.fulfill()
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXEndCallAction) {
+        clearStoredNotificationDataInternal()
+
+        if hasListeners {
+            sendEvent(withName: "VoIPCallEnded", body: ["callUUID": action.callUUID.uuidString])
+        }
+
+        action.fulfill()
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
+        action.fulfill()
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXSetHeldCallAction) {
+        action.fulfill()
+    }
+
+    func provider(_ provider: CXProvider, perform action: CXSetMutedCallAction) {
+        action.fulfill()
+    }
+
+    func provider(_ provider: CXProvider, timedOutPerforming action: CXAction) {
+        clearStoredNotificationDataInternal()
+
+        if hasListeners {
+            sendEvent(withName: "VoIPCallEnded", body: ["callUUID": "timeout", "reason": "timeout"])
+        }
+    }
+
+    func provider(_ provider: CXProvider, didActivate audioSession: AVAudioSession) {
+        // Audio session activated
+    }
+
+    func provider(_ provider: CXProvider, didDeactivate audioSession: AVAudioSession) {
+        // Audio session deactivated
     }
 
 }

@@ -20,6 +20,7 @@ body {
     width: 100vw;
     z-index: 2;
     position: fixed;
+	padding:4px 0;
 }
 
 .footer-bar {
@@ -35,13 +36,14 @@ body {
     position: fixed;
 	padding: 4px 0;
 	bottom : 0;
+  	text-transform: lowercase;
 }
 .window-wrapper {
   width: 100%;
   height: 100%;
   border-radius: 8px;
   overflow: hidden;
-  background-color: white;
+  background-color: #1a1a1a;
   box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
 
@@ -54,15 +56,13 @@ body {
     line-height: 26px;
     -webkit-app-region: drag;
     flex: 1;
+  	text-transform: capitalize;
 }
 
 .functional-bar {
     display: flex;
 	padding : 0 12px;
 	gap:4px;
-    position: absolute;
-    top: 0;
-    right: 0;
     height: 21px;
 }
 

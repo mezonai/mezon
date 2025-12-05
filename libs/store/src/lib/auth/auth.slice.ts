@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { ensureClientAsync, ensureSession, getMezonCtx, restoreLocalStorage } from '../helpers';
+import { voiceActions } from '../voice/voice.slice';
 import { walletActions } from '../wallet/wallet.slice';
 
 export const AUTH_FEATURE_KEY = 'auth';
@@ -221,6 +222,7 @@ export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platfo
 	thunkAPI.dispatch(authActions.setLogout());
 	thunkAPI.dispatch(walletActions.setLogout());
 	thunkAPI.dispatch(listChannelsByUserActions.removeAll());
+	thunkAPI.dispatch(voiceActions.resetVoiceControl());
 	clearApiCallTracker();
 	const restoreKey = ['persist:apps', 'current-theme', 'hideNotificationContent', 'i18nextLng'];
 	if (sessionState) {

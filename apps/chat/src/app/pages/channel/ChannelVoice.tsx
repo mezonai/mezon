@@ -31,8 +31,8 @@ import {
 
 import { MyVideoConference, PreJoinVoiceChannel } from '@mezon/components';
 import { ParticipantMeetState, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
-import type { RoomConnectOptions, RoomOptions } from 'livekit-client';
-import { Room, ScreenSharePresets, VideoPresets } from 'livekit-client';
+import type { RoomConnectOptions } from 'livekit-client';
+import { Room } from 'livekit-client';
 import { ChannelType } from 'mezon-js';
 import { Suspense, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -58,23 +58,7 @@ const ChannelVoiceInner = () => {
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const { userProfile } = useAuth();
 
-	const roomOptions = useMemo(
-		(): RoomOptions => ({
-			videoCaptureDefaults: {
-				resolution: VideoPresets.h1080.resolution
-			},
-			publishDefaults: {
-				videoEncoding: { maxBitrate: 3_000_000, maxFramerate: 30 },
-				screenShareEncoding: { maxBitrate: 5_000_000, maxFramerate: 30 },
-				videoSimulcastLayers: [VideoPresets.h720, VideoPresets.h360],
-				screenShareSimulcastLayers: [ScreenSharePresets.h720fps15, ScreenSharePresets.h360fps3],
-				simulcast: true
-			}
-		}),
-		[]
-	);
-
-	const room = useMemo(() => new Room(roomOptions), [roomOptions]);
+	const room = useMemo(() => new Room(), []);
 
 	const connectOptions = useMemo(
 		(): RoomConnectOptions => ({
@@ -125,6 +109,13 @@ const ChannelVoiceInner = () => {
 		} catch (error) {
 			console.error('Failed to disconnect previous LiveKit room before joining:', error);
 		}
+
+		const currentUserChoices = loadUserChoices();
+		saveUserChoices({
+			...currentUserChoices,
+			audioEnabled: false,
+			videoEnabled: false
+		});
 
 		dispatch(voiceActions.setOpenPopOut(false));
 		dispatch(voiceActions.setShowScreen(false));
@@ -187,13 +178,6 @@ const ChannelVoiceInner = () => {
 			} catch (error) {
 				console.error('Failed to disconnect LiveKit room:', error);
 			}
-
-			const currentUserChoices = loadUserChoices();
-			saveUserChoices({
-				...currentUserChoices,
-				audioEnabled: false,
-				videoEnabled: false
-			});
 
 			dispatch(voiceActions.resetVoiceControl());
 			if (userProfile?.user?.id) {

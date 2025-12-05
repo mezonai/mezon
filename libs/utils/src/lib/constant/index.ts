@@ -186,7 +186,18 @@ export const STICKER_WAVE = {
 	LIST_STICKER: [
 		'https://cdn.mezon.ai/stickers/hellomezon.gif',
 		'https://cdn.mezon.ai/stickers/music_boy.gif',
-		'https://cdn.mezon.ai/stickers/music_girl.gif'
+		'https://cdn.mezon.ai/stickers/music_girl.gif',
+		'https://cdn.mezon.ai/stickers/d1.gif',
+		'https://cdn.mezon.ai/stickers/d2.gif',
+		'https://cdn.mezon.ai/stickers/d3.gif',
+		'https://cdn.mezon.ai/stickers/d4.gif',
+		'https://cdn.mezon.ai/stickers/d5.gif',
+		'https://cdn.mezon.ai/stickers/whatsapp.gif',
+		'https://cdn.mezon.ai/stickers/zalo.gif',
+		'https://cdn.mezon.ai/stickers/telegram.gif',
+		'https://cdn.mezon.ai/stickers/slack.gif',
+		'https://cdn.mezon.ai/stickers/discord.gif',
+		'https://cdn.mezon.ai/stickers/mezon.gif'
 	]
 };
 

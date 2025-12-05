@@ -7,7 +7,6 @@ import { WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, BackHandler, DeviceEventEmitter, NativeModules, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import RNCallKeep from 'react-native-callkeep';
 import InCallManager from 'react-native-incall-manager';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
@@ -80,9 +79,6 @@ export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) =
 
 	const onCancelCall = async () => {
 		try {
-			if (Platform.OS === 'ios') {
-				RNCallKeep.endAllCalls();
-			}
 			await handleEndCall({});
 			if (!timeStartConnected?.current) {
 				await dispatch(

@@ -1,10 +1,9 @@
 import { ActionEmitEvent, isEmpty } from '@mezon/mobile-components';
-import { DMCallActions, appActions, selectCurrentUserId, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { WEBRTC_SIGNALING_TYPES, sleep } from '@mezon/utils';
-import { WebrtcSignalingFwd, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
+import { appActions, DMCallActions, selectCurrentUserId, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { sleep, WEBRTC_SIGNALING_TYPES } from '@mezon/utils';
+import { safeJSONParse, WebrtcSignalingFwd, WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { AppState, DeviceEventEmitter, NativeModules, Platform, View } from 'react-native';
-import RNCallKeep from 'react-native-callkeep';
 import { useSelector } from 'react-redux';
 import { DirectMessageCallMain } from '../../screens/messages/DirectMessageCall';
 import { useSendSignaling } from '../CallingGroupModal';
@@ -60,7 +59,6 @@ const CallingModalWrapper = () => {
 	};
 	const getDataCall = async () => {
 		try {
-			RNCallKeep.endAllCalls();
 			const data = await getDataCallStorage();
 			if (isEmpty(data)) return;
 			const dataObj = safeJSONParse(data?.offer || '{}');
