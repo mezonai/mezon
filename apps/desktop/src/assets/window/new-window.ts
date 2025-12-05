@@ -44,9 +44,8 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
 	<link rel="stylesheet" href="../menu-context/index.css">
 	<style>
 		${image_window_css}
+
 	</style>
-
-
 
 </head>
 
@@ -94,9 +93,11 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
 	popupWindow.once('ready-to-show', () => {
 		popupWindow.show();
 		popupWindow.webContents.executeJavaScript(`	document.getElementById('close-window').addEventListener('click', () => {
+			window.electron.send('APP::CLOSE_APP_CHANNEL', 'APP::CLOSE_APP_CHANNEL');
+			});
+		`);
 
-    	window.electron.send('APP::CLOSE_APP_CHANNEL', 'APP::CLOSE_APP_CHANNEL');
-	});`);
+		popupWindow.webContents.executeJavaScript(`window.location.url = ${JSON.stringify(url)};`).catch((err) => console.error(err));
 	});
 
 	return popupWindow;
