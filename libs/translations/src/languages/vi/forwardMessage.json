@@ -8,7 +8,15 @@
 		"sharedContent": "Nội dung được chia sẻ",
 		"cancel": "Hủy",
 		"send": "Gửi",
-		"sending": "Đang gửi..."
+		"sending": "Đang gửi...",
+		"image": "ảnh",
+		"images": "ảnh",
+		"video": "video",
+		"videos": "video",
+		"file": "tệp",
+		"files": "tệp",
+		"additionalMessage": "Tin nhắn kèm theo (tùy chọn)",
+		"additionalMessagePlaceholder": "Nhập tin nhắn muốn gửi kèm..."
 	},
 	"successMessage": "Chuyển tiếp tin nhắn thành công",
 	"errorMessage": "Không thể chuyển tiếp tin nhắn"
