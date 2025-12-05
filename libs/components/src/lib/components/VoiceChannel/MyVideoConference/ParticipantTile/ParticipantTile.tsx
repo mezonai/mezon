@@ -199,11 +199,9 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 				}}
 				ref={focusRef}
 			>
-				<div className="p-2 w-full justify-between rounded-md items-center flex">{t('menu')}</div>
-				<div className="contexify_separator"></div>
 				{checkOpenMic && (
 					<div
-						className="text-[#E13542] p-2 w-full justify-between rounded-md cursor-pointer bg-item-hover items-center flex"
+						className="text-[#E13542] p-2 w-full justify-between cursor-pointer bg-item-hover items-center flex hover:bg-[#f67e882a]"
 						onClick={handleMuteMember}
 					>
 						{t('muteMic')}
@@ -212,7 +210,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 				)}
 
 				<div
-					className="text-[#E13542] p-2 w-full justify-between rounded-md cursor-pointer bg-item-hover items-center flex "
+					className="text-[#E13542] p-2 w-full justify-between cursor-pointer bg-item-hover items-center flex hover:bg-[#f67e882a]"
 					onClick={handleRemoveMember}
 				>
 					{t('member.kick')}
@@ -252,7 +250,15 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	}, [roomName, closeContextVoiceMember]);
 
 	const handleContextMenu = (event: React.MouseEvent<HTMLElement>) => {
+		event.preventDefault();
+		event.stopPropagation();
+		document.querySelectorAll('.contexify').forEach((el) => {
+			const element = el as HTMLElement;
+			element.style.display = 'none';
+		});
+
 		closeContextVoiceMember();
+
 		if (roomName && canMangeVoice && userProfile?.user?.id !== member?.id) {
 			const heightWindow = window.innerHeight;
 			const widthWindow = window.innerWidth;
@@ -260,7 +266,9 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 				y: heightWindow - event.clientY < 200 ? heightWindow - 200 : event.clientY,
 				x: widthWindow - event.clientX < 220 ? widthWindow - 220 : event.clientX
 			});
-			openContextVoiceMember();
+			setTimeout(() => {
+				openContextVoiceMember();
+			}, 10);
 		}
 	};
 	useOnClickOutside(focusRef, () => closeContextVoiceMember());

@@ -1,3 +1,4 @@
+import { ButtonCopy } from '@mezon/components';
 import { useAppNavigation, useAuth, useOnClickOutside, usePermissionChecker } from '@mezon/core';
 import type { EventManagementEntity } from '@mezon/store';
 import {
@@ -14,7 +15,6 @@ import {
 import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
-import { ButtonCopy } from '@mezon/components';
 import { ChannelType } from 'mezon-js';
 import type { ApiUserEventRequest } from 'mezon-js/api.gen';
 import Tooltip from 'rc-tooltip';
@@ -130,6 +130,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		navigator.clipboard.writeText(link).catch((err) => {
 			toast.error(err?.message || 'Failed to copy link.');
 		});
+		setOpenPanel(false);
 	}, [link]);
 
 	const handleOpenLink = useCallback(() => {

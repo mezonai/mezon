@@ -1,10 +1,11 @@
 import { useAuth, usePermissionChecker } from '@mezon/core';
-import { EventManagementEntity, selectUserMaxPermissionLevel } from '@mezon/store';
+import type { EventManagementEntity } from '@mezon/store';
+import { selectUserMaxPermissionLevel } from '@mezon/store';
 import { EPermission } from '@mezon/utils';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { Coords } from '../../../ChannelLink';
+import type { Coords } from '../../../ChannelLink';
 import ItemPanel from '../../../PanelChannel/ItemPanel';
 
 type PanelEventItemProps = {
@@ -83,7 +84,6 @@ function PanelEventItem(props: PanelEventItemProps) {
 		>
 			{canModifyEvent && (
 				<>
-					<ItemPanel children={t('actions.startEvent')} />
 					<ItemPanel children={t('actions.editEvent')} onClick={handleUpdateEvent} />
 					<ItemPanel children={t('actions.cancelEvent')} danger={true} onClick={handleDeleteEvent} />
 				</>
