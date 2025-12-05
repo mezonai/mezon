@@ -55,6 +55,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 	});
 	const [openModal, setOpenModal] = useState(false);
 	const [openModalType, setOpenModalType] = useState(false);
+	const [validFile, setValidFile] = useState<File | null>(null);
 	const currentClanId = useSelector(selectCurrentClanId) || '';
 	const dispatch = useAppDispatch();
 	const { sessionRef, clientRef } = useMezon();
@@ -77,25 +78,38 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 	const handleChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
-			if (!fileTypeImage.includes(e.target.files[0].type)) {
+			const selectedFile = e.target.files[0];
+
+			if (!fileTypeImage.includes(selectedFile.type)) {
 				setOpenModalType(true);
+				if (fileRef.current) {
+					fileRef.current.value = '';
+				}
 				return;
 			}
 
-			if (e.target.files[0]?.size > limitSize) {
+			if (selectedFile.size > limitSize) {
 				setOpenModal(true);
+				if (fileRef.current) {
+					fileRef.current.value = '';
+				}
+				return;
 				return;
 			}
 
-			const srcPreview = URL.createObjectURL(e.target.files[0]);
+			const srcPreview = URL.createObjectURL(selectedFile);
 			if (isValidPreview(srcPreview)) {
+				setValidFile(selectedFile);
 				setEditingGraphic({
 					...editingGraphic,
 					source: srcPreview,
-					fileName: e.target.files[0].name
+					fileName: selectedFile.name
 				});
 			} else {
 				console.error('Invalid preview URL.');
+				if (fileRef.current) {
+					fileRef.current.value = '';
+				}
 			}
 		} else {
 			console.error('No files selected.');
@@ -137,7 +151,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 	const handleCreateSticker = async () => {
 		const checkAvailableCreate = editingGraphic.fileName && editingGraphic.shortname && editingGraphic.source;
-		if (!fileRef.current?.files || !checkAvailableCreate) {
+		if (!validFile || !checkAvailableCreate) {
 			handleCloseModal();
 			return;
 		}
@@ -147,7 +161,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 			throw new Error('Client or file is not initialized');
 		}
 
-		const file = fileRef.current.files[0];
+		const file = validFile;
 		const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
 		if (!allowedTypes.includes(file.type)) {
 			setOpenModalType(true);
