@@ -71,7 +71,6 @@ const ModalUserProfile = ({
 	classWrapper,
 	classBanner,
 	hiddenRole,
-	showNote,
 	message,
 	showPopupLeft,
 	mode,
@@ -85,9 +84,7 @@ const ModalUserProfile = ({
 	modalControlRef
 }: ModalUserProfileProps) => {
 	const { t } = useTranslation('userProfile');
-
 	const userProfile = useSelector(selectAllAccount);
-
 	const { userId } = useAuth();
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
@@ -95,6 +92,7 @@ const ModalUserProfile = ({
 	const status = useMemberStatus(userID || '');
 	const userById = useUserById(userID);
 	const currentUserId = useUserByUserId(userID);
+	const friendData = useSelector((state) => selectFriendById(state, userID || ''));
 	const userStatusById = useMemberStatus(userID || '');
 	const userStatus = useMemo(() => {
 		if (userID === userId) {
@@ -112,7 +110,22 @@ const ModalUserProfile = ({
 	const date = new Date(userById?.user?.create_time as string | Date);
 	const { timeFormatted } = useFormatDate({ date });
 
-	const avatarByUserId = isDM ? userById?.user?.avatar_url : userById?.clan_avatar || userById?.user?.avatar_url;
+	const effectiveUserData = useMemo(() => {
+		if (userById) return userById;
+
+		if (friendData?.user) {
+			return {
+				id: friendData.user.id,
+				user: friendData.user,
+				clan_avatar: undefined,
+				clan_nick: undefined
+			} as unknown as ChannelMembersEntity;
+		}
+
+		return undefined;
+	}, [userById, friendData]);
+
+	const avatarByUserId = isDM ? effectiveUserData?.user?.avatar_url : effectiveUserData?.clan_avatar || effectiveUserData?.user?.avatar_url;
 
 	const [content, setContent] = useState<string>('');
 
@@ -124,17 +137,20 @@ const ModalUserProfile = ({
 
 	const { toDmGroupPageFromMainApp, navigate } = useAppNavigation();
 
-	const sendMessage = async (userId: string, display_name?: string, username?: string, avatar?: string) => {
-		const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-		if (response.channel_id) {
-			const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-			sendInviteMessage(content, response.channel_id, channelMode);
-			setContent('');
-			const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
-			navigate(directChat);
-		}
-		onLoading.current = false;
-	};
+	const sendMessage = useCallback(
+		async (userId: string, display_name?: string, username?: string, avatar?: string) => {
+			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
+			if (response.channel_id) {
+				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
+				sendInviteMessage(content, response.channel_id, channelMode);
+				setContent('');
+				const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+				navigate(directChat);
+			}
+			onLoading.current = false;
+		},
+		[createDirectMessageWithUser, content, sendInviteMessage, toDmGroupPageFromMainApp, navigate]
+	);
 	const handleContent = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setContent(e.target.value);
 	};
@@ -147,23 +163,27 @@ const ModalUserProfile = ({
 
 	useEffect(() => {
 		const getColor = async () => {
-			if ((isFooterProfile && checkUrl(userProfile?.user?.avatar_url)) || checkUrl(message?.avatar) || checkUrl(userById?.user?.avatar_url)) {
-				const url = userById?.user?.avatar_url;
+			if (
+				(isFooterProfile && checkUrl(userProfile?.user?.avatar_url)) ||
+				checkUrl(message?.avatar) ||
+				checkUrl(effectiveUserData?.user?.avatar_url)
+			) {
+				const url = effectiveUserData?.user?.avatar_url;
 				const colorImg = await getColorAverageFromURL(url || '');
 				if (colorImg) setColor(colorImg);
 			}
 		};
 
 		getColor();
-	}, [userProfile?.user?.avatar_url, isFooterProfile, userID, message?.avatar, userById?.user?.avatar_url]);
-	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, userById?.user?.id || ''));
+	}, [userProfile?.user?.avatar_url, isFooterProfile, userID, message?.avatar, effectiveUserData?.user?.avatar_url]);
+	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, effectiveUserData?.user?.id || ''));
 	const checkAddFriend = useMemo(() => {
 		return infoFriend?.state;
 	}, [infoFriend]);
 	const checkUser = useMemo(() => userProfile?.user?.id === userID, [userID, userProfile?.user?.id]);
 	const isBlockUser = useMemo(() => {
 		return infoFriend?.state === EStateFriend.BLOCK;
-	}, [userById?.user?.id, infoFriend]);
+	}, [infoFriend]);
 	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab } = useSettingFooter();
 	const openSetting = () => {
 		setIsShowSettingFooterStatus(true);
@@ -184,8 +204,8 @@ const ModalUserProfile = ({
 		if (isFooterProfile) {
 			return userProfile?.user?.username || currentUserId?.username;
 		}
-		if (userById) {
-			return userById?.user?.username;
+		if (effectiveUserData) {
+			return effectiveUserData?.user?.username;
 		}
 		if (checkAnonymous) {
 			return 'Anonymous';
@@ -194,17 +214,17 @@ const ModalUserProfile = ({
 			return message?.username;
 		}
 		return message?.references?.[0].message_sender_username;
-	}, [userById, userID, currentUserId?.username, userProfile?.user?.username, isFooterProfile, checkAnonymous, message]);
+	}, [effectiveUserData, userID, currentUserId?.username, userProfile?.user?.username, isFooterProfile, checkAnonymous, message]);
 
 	const handleOnKeyPress = useCallback(
 		(e: React.KeyboardEvent<HTMLInputElement>) => {
 			if (e.key === 'Enter' && content && onLoading.current === false) {
-				if (userById) {
+				if (effectiveUserData) {
 					sendMessage(
-						userById?.user?.id || '',
-						userById?.user?.display_name || userById?.user?.username,
-						userById?.user?.username,
-						userById.user?.avatar_url
+						effectiveUserData?.user?.id || '',
+						effectiveUserData?.user?.display_name || effectiveUserData?.user?.username,
+						effectiveUserData?.user?.username,
+						effectiveUserData.user?.avatar_url
 					);
 					onLoading.current = true;
 					return;
@@ -213,7 +233,7 @@ const ModalUserProfile = ({
 				onLoading.current = true;
 			}
 		},
-		[userById, content]
+		[effectiveUserData, content, sendMessage, userID, message?.sender_id, message?.references]
 	);
 
 	return (
@@ -228,7 +248,7 @@ const ModalUserProfile = ({
 						checkAddFriend={checkAddFriend}
 						openModal={openModal}
 						setOpenModal={setOpenModal}
-						user={userById as ChannelMembersEntity}
+						user={effectiveUserData as ChannelMembersEntity}
 						showPopupLeft={showPopupLeft}
 						kichUser={message?.user}
 					/>
@@ -237,9 +257,12 @@ const ModalUserProfile = ({
 			<AvatarProfile
 				avatar={avatar || avatarByUserId}
 				username={
-					(isFooterProfile && userProfile?.user?.username) || message?.username || userById?.user?.username || currentUserId?.username
+					(isFooterProfile && userProfile?.user?.username) ||
+					message?.username ||
+					effectiveUserData?.user?.username ||
+					currentUserId?.username
 				}
-				userToDisplay={isFooterProfile ? userProfile : userById}
+				userToDisplay={isFooterProfile ? userProfile : effectiveUserData}
 				customStatus={status.user_status}
 				isAnonymous={checkAnonymous}
 				userID={userID}
@@ -255,9 +278,9 @@ const ModalUserProfile = ({
 								? t('labels.unknownUser')
 								: checkAnonymous
 									? t('labels.anonymous')
-									: userById?.clan_nick ||
-										userById?.user?.display_name ||
-										userById?.user?.username ||
+									: effectiveUserData?.clan_nick ||
+										effectiveUserData?.user?.display_name ||
+										effectiveUserData?.user?.username ||
 										currentUserId?.display_name ||
 										usernameShow}
 						</p>
@@ -266,12 +289,14 @@ const ModalUserProfile = ({
 						</p>
 					</div>
 
-					{checkAddFriend === EStateFriend.MY_PENDING && !showPopupLeft && <PendingFriend user={userById as ChannelMembersEntity} />}
+					{checkAddFriend === EStateFriend.MY_PENDING && !showPopupLeft && (
+						<PendingFriend user={effectiveUserData as ChannelMembersEntity} />
+					)}
 
 					{mode !== 4 && mode !== 3 && !isFooterProfile && (
 						<UserDescription
 							title={t(`labels.${ETileDetail.AboutMe}`)}
-							detail={checkUser ? (userProfile?.user?.about_me as string) : (userById?.user?.about_me as string)}
+							detail={checkUser ? (userProfile?.user?.about_me as string) : (effectiveUserData?.user?.about_me as string)}
 						/>
 					)}
 					{mode !== 4 && mode !== 3 && !isFooterProfile && (
@@ -281,7 +306,7 @@ const ModalUserProfile = ({
 					{isFooterProfile ? (
 						<StatusProfile userById={userProfile?.user as ChannelMembersEntity} isDM={isDM} modalRef={modalRef} onClose={onClose} />
 					) : (
-						mode !== 4 && mode !== 3 && !hiddenRole && userById && <RoleUserProfile userID={userID} />
+						mode !== 4 && mode !== 3 && !hiddenRole && effectiveUserData && <RoleUserProfile userID={userID} />
 					)}
 
 					{userID !== '0' && !hiddenRole && !checkAnonymous && !isUserRemoved && !isBlockUser && userById ? (
@@ -327,7 +352,7 @@ const MemberInVoiceButton = ({ channelId }: { channelId: string }) => {
 		if (channelData?.clan_id && channelData?.channel_id) {
 			navigate(`/chat/clans/${channelData?.clan_id}/channels/${channelData?.channel_id}`);
 		}
-	}, [channelId]);
+	}, [channelData?.clan_id, channelData?.channel_id, navigate]);
 
 	return (
 		<div
