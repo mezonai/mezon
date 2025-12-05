@@ -18,7 +18,7 @@ import {
 	useParticipantTile
 } from '@livekit/components-react';
 import { useAuth, useOnClickOutside, usePermissionChecker } from '@mezon/core';
-import { selectMemberClanByUserName, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
+import { selectMemberClanByUserId, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EPermission, createImgproxyUrl } from '@mezon/utils';
 import type { Participant, Room } from 'livekit-client';
@@ -122,17 +122,17 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		},
 		[trackReference, layoutContext]
 	);
-	const usernameRaw = trackReference.participant.identity;
+	const participantId = trackReference.participant.identity;
 
-	const parsedUsername = isExtCalling ? safeJSONParse(usernameRaw as string) : undefined;
+	const parsedUsername = isExtCalling ? safeJSONParse(participantId as string) : undefined;
 
-	const usernameString = parsedUsername?.extName ? parsedUsername?.extName : usernameRaw;
+	const usernameString = parsedUsername?.extName ? parsedUsername?.extName : participantId;
 
 	const extAvatar = parsedUsername?.extAvatar ? parsedUsername?.extAvatar : undefined;
 
-	const member = useAppSelector((state) => selectMemberClanByUserName(state, usernameString));
+	const member = useAppSelector((state) => selectMemberClanByUserId(state, participantId));
 
-	const voiceUsername = member?.clan_nick || usernameString;
+	const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || usernameString;
 
 	const avatar = useMemo(() => {
 		return member?.clan_avatar || member?.user?.avatar_url || null;
