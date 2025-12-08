@@ -191,16 +191,16 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 			}
 			if (Platform.OS === 'android') {
 				NativeModules?.BadgeModule?.clearAllNotifications();
+				await notifee.cancelAllNotifications();
+				await notifee.cancelDisplayedNotifications();
 			}
-			await notifee.cancelAllNotifications();
-			await notifee.cancelDisplayedNotifications();
 		} catch (error) {
 			if (Platform.OS === 'android') {
 				NativeModules?.BadgeModule?.clearAllNotifications();
+				await deleteAllChannelGroupsNotifee();
+				await notifee.cancelAllNotifications();
+				await notifee.cancelDisplayedNotifications();
 			}
-			await deleteAllChannelGroupsNotifee();
-			await notifee.cancelAllNotifications();
-			await notifee.cancelDisplayedNotifications();
 			console.error('Error processing notifications:', error);
 		}
 	};

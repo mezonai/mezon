@@ -2,8 +2,8 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import {
 	selectChannelById,
-	selectCurrentTopicInitMessage,
 	selectDmGroupCurrent,
+	selectInitTopicMessageId,
 	topicsActions,
 	useAppDispatch,
 	useAppSelector
@@ -48,7 +48,7 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode, topicId = '', isC
 	const { sessionRef, clientRef, socketRef } = useMezon();
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
-	const initMessageOfTopic = useSelector(selectCurrentTopicInitMessage);
+	const initMessageIdOfTopic = useSelector(selectInitTopicMessageId);
 	const [recordUrl, setRecordUrl] = useState<string>('');
 	const [isPreviewRecord, setIsPreviewRecord] = useState<boolean>(false);
 	const meterSoundRef = useRef(null);
@@ -146,12 +146,12 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode, topicId = '', isC
 		const body: ApiSdTopicRequest = {
 			clan_id: currentChannelDM?.clan_id as string,
 			channel_id: currentChannelDM?.channel_id as string,
-			message_id: initMessageOfTopic?.id as string
+			message_id: initMessageIdOfTopic as string
 		};
 
 		const topic = (await dispatch(topicsActions.createTopic(body))).payload as ApiSdTopic;
 		return topic;
-	}, [currentChannelDM?.channel_id, dispatch, initMessageOfTopic?.id]);
+	}, [currentChannelDM?.channel_id, currentChannelDM?.clan_id, dispatch, initMessageIdOfTopic]);
 
 	const sendMessage = useCallback(async () => {
 		try {
@@ -170,7 +170,7 @@ export const BaseRecordAudioMessage = memo(({ channelId, mode, topicId = '', isC
 			const isPublic = !currentChannelDM?.channel_private;
 
 			let topicIdToUse = topicId;
-			if (isCreateTopic && !topicId) {
+			if (isCreateTopic && !topicId && !!initMessageIdOfTopic) {
 				const topic = (await createTopic()) as ApiSdTopic;
 				if (topic) {
 					topicIdToUse = topic?.id;

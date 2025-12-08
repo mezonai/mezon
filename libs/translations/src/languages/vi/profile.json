@@ -29,6 +29,6 @@
   "changeAvatar": "Thay đổi ảnh đại diện",
   "removeAvatar": "Xóa ảnh đại diện",
   "chooseImage": "Chọn ảnh",
-  "imageSizeLimit": "Kích thước ảnh vượt quá {{size}}MB",
+  "imageSizeLimit": "Kích thước ảnh vượt quá {{size}}{{unit}}",
   "enableWallet": "Mở ví"
 }

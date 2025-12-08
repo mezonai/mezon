@@ -18,14 +18,15 @@ import {
 	selectMessageIdsByChannelId,
 	useAppSelector
 } from '@mezon/store-mobile';
+import { useMezon } from '@mezon/transport';
 import type { ChannelThreads, IMessageWithUser } from '@mezon/utils';
-import { FORWARD_MESSAGE_TIME, normalizeString } from '@mezon/utils';
+import { FORWARD_MESSAGE_TIME, MIN_THRESHOLD_CHARS, isValidEmojiData, normalizeString } from '@mezon/utils';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
@@ -34,6 +35,8 @@ import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../../componentUI/MezonInput';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../../../constants/icon_cdn';
+import { DmListItemLastMessage } from '../../../../messages/DMListItemLastMessage';
+import { RenderForwardMedia } from '../RenderForwardMedia';
 import ForwardMessageItem from './ForwardMessageItem/ForwardMessageItem';
 import { style } from './styles';
 
@@ -49,30 +52,31 @@ export interface IForwardIObject {
 
 const ForwardMessageScreen = () => {
 	const [searchText, setSearchText] = useState('');
+	const [personalRawMessages, setPersonalRawMessages] = useState<string>('');
+	const [count, setCount] = useState('');
+
 	const navigation = useNavigation();
 	const route = useRoute();
 	const params = route.params as { message: IMessageWithUser; isPublic?: boolean };
-	const { message, isPublic } = params;
-
+	const { message } = params || {};
 	const { sendForwardMessage } = useSendForwardMessage();
 	const { t } = useTranslation('message');
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const store = getStore();
+	const mezon = useMezon();
+
 	const isForwardAll = useSelector(getIsFowardAll);
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentTopicId = useSelector(selectCurrentTopicId);
 	const selectedMessage = useSelector(getSelectedMessage);
-	const [count, setCount] = useState('');
+
 	const selectedForwardObjectsRef = useRef<IForwardIObject[]>([]);
 
-	const allMessagesEntities = useAppSelector((state) =>
-		selectMessageEntitiesByChannelId(state, (currentDmId ? currentDmId : currentTopicId ? currentTopicId : currentChannelId) || '')
-	);
-	const allMessageIds = useAppSelector((state) =>
-		selectMessageIdsByChannelId(state, (currentDmId ? currentDmId : currentTopicId ? currentTopicId : currentChannelId) || '')
-	);
+	const currentId = useMemo(() => currentDmId || currentTopicId || currentChannelId || '', [currentDmId, currentTopicId, currentChannelId]);
+	const allMessagesEntities = useAppSelector((state) => selectMessageEntitiesByChannelId(state, currentId));
+	const allMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, currentId));
 
 	const mapDirectMessageToForwardObject = (dm: DirectEntity): IForwardIObject => {
 		return {
@@ -98,6 +102,24 @@ const ForwardMessageScreen = () => {
 		};
 	};
 
+	const messageAttachments = useMemo(() => {
+		try {
+			const attachments = selectedMessage?.attachments || [];
+			return {
+				images: attachments?.filter((a) => a?.filetype?.includes('image')),
+				videos: attachments?.filter((a) => a?.filetype?.includes('video')),
+				files: attachments?.filter((a) => !a?.filetype?.includes('image') && !a?.filetype?.includes('video'))
+			};
+		} catch (error) {
+			console.error('Error processing message attachments:', error);
+			return {
+				images: [],
+				videos: [],
+				files: []
+			};
+		}
+	}, [selectedMessage?.attachments]);
+
 	const allForwardObject = useMemo(() => {
 		const listChannels = selectAllChannelsByUser(store.getState() as any);
 		const dmGroupChatList = selectDirectsOpenlist(store.getState() as any);
@@ -121,7 +143,7 @@ const ForwardMessageScreen = () => {
 			)
 			.map(mapChannelToForwardObject);
 
-		return [...listTextChannel, ...listDMForward, ...listGroupForward];
+		return [...(listTextChannel || []), ...(listDMForward || []), ...(listGroupForward || [])];
 	}, [store]);
 
 	const filteredForwardObjects = useMemo(() => {
@@ -160,43 +182,38 @@ const ForwardMessageScreen = () => {
 		return existingIndex !== -1;
 	};
 
-	const onClose = () => {
+	const onClose = useCallback(() => {
 		navigation.goBack();
-	};
+	}, [navigation]);
 
-	const handleForward = () => {
-		return isForwardAll ? handleForwardAllMessage() : sentToMessage();
-	};
+	const handleSendMessage = useCallback(
+		async (clanId: string, channelIdOrDirectId: string, mode: ChannelStreamMode, isPublic: boolean) => {
+			if (!personalRawMessages?.trim()) return;
 
-	const handleForwardAllMessage = async () => {
-		if (!selectedForwardObjectsRef.current?.length) return;
-		try {
-			const combineMessages: MessagesEntity[] = [];
-			combineMessages.push(selectedMessage);
+			await mezon.socketRef.current.writeChatMessage(
+				clanId,
+				channelIdOrDirectId,
+				mode,
+				isPublic,
+				{ t: personalRawMessages },
+				[],
+				[],
+				[],
+				false,
+				false
+			);
+		},
+		[mezon.socketRef, personalRawMessages]
+	);
 
-			const revertIds = [...(allMessageIds || [])]?.reverse();
-			const startIndex = revertIds?.findIndex((id) => id === selectedMessage?.id);
+	const sendMessagesToTargets = useCallback(
+		async (targets: IForwardIObject[], messages: MessagesEntity[]) => {
+			const currentUserId = selectCurrentUserId(store.getState());
 
-			let index = startIndex - 1;
-
-			while (index >= 0) {
-				const previousMessageEntity = allMessagesEntities?.[revertIds?.[index + 1]];
-				const messageEntity = allMessagesEntities?.[revertIds?.[index]];
-				if (!messageEntity) break;
-
-				const differentTime = Date.parse(messageEntity?.create_time) - Date.parse(previousMessageEntity?.create_time);
-
-				if (differentTime <= FORWARD_MESSAGE_TIME && messageEntity?.sender_id === selectedMessage?.user?.id) {
-					combineMessages.push(messageEntity);
-					index--;
-				} else {
-					break;
-				}
-			}
-			for (const selectedObjectSend of selectedForwardObjectsRef.current) {
-				const { type, channelId, clanId = '', name } = selectedObjectSend;
-				const currentUserId = selectCurrentUserId(store.getState());
+			for (const target of targets) {
+				const { type, channelId, clanId = '', isChannelPublic, name } = target || {};
 				const isBanFromChannel = selectBanMemberCurrentClanById(store.getState(), channelId, currentUserId);
+
 				if (isBanFromChannel) {
 					Toast.show({
 						type: 'error',
@@ -204,31 +221,68 @@ const ForwardMessageScreen = () => {
 					});
 					return;
 				}
-				switch (type) {
-					case ChannelType.CHANNEL_TYPE_DM:
-						for (const message of combineMessages) {
-							sendForwardMessage('', channelId, ChannelStreamMode.STREAM_MODE_DM, false, message);
-						}
-						break;
-					case ChannelType.CHANNEL_TYPE_GROUP:
-						for (const message of combineMessages) {
-							sendForwardMessage('', channelId, ChannelStreamMode.STREAM_MODE_GROUP, false, message);
-						}
-						break;
-					case ChannelType.CHANNEL_TYPE_CHANNEL:
-						for (const message of combineMessages) {
-							sendForwardMessage(clanId, channelId, ChannelStreamMode.STREAM_MODE_CHANNEL, isPublic, message);
-						}
-						break;
-					case ChannelType.CHANNEL_TYPE_THREAD:
-						for (const message of combineMessages) {
-							sendForwardMessage(clanId, channelId, ChannelStreamMode.STREAM_MODE_THREAD, isPublic, message);
-						}
-						break;
-					default:
-						break;
+
+				const modeMap: Record<number, ChannelStreamMode> = {
+					[ChannelType.CHANNEL_TYPE_DM]: ChannelStreamMode.STREAM_MODE_DM,
+					[ChannelType.CHANNEL_TYPE_GROUP]: ChannelStreamMode.STREAM_MODE_GROUP,
+					[ChannelType.CHANNEL_TYPE_CHANNEL]: ChannelStreamMode.STREAM_MODE_CHANNEL,
+					[ChannelType.CHANNEL_TYPE_THREAD]: ChannelStreamMode.STREAM_MODE_THREAD
+				};
+
+				const mode = modeMap[type];
+				const isPublicMessage =
+					type === ChannelType.CHANNEL_TYPE_CHANNEL || type === ChannelType.CHANNEL_TYPE_THREAD ? isChannelPublic : false;
+
+				for (const msg of messages) {
+					await sendForwardMessage(
+						type === ChannelType.CHANNEL_TYPE_CHANNEL || type === ChannelType.CHANNEL_TYPE_THREAD ? clanId : '',
+						channelId,
+						mode,
+						isPublicMessage,
+						msg
+					);
 				}
+
+				await handleSendMessage(clanId, channelId, mode, isPublicMessage);
 			}
+		},
+		[store, t, sendForwardMessage, handleSendMessage]
+	);
+
+	const getMessagesToForward = useCallback(async () => {
+		const messages: MessagesEntity[] = [selectedMessage];
+
+		if (!isForwardAll) return messages;
+
+		const revertIds = [...(allMessageIds || [])].reverse();
+		const startIndex = revertIds.findIndex((id) => id === selectedMessage?.id);
+
+		let index = startIndex - 1;
+		while (index >= 0) {
+			const previousMessageEntity = allMessagesEntities?.[revertIds?.[index + 1]];
+			const messageEntity = allMessagesEntities?.[revertIds?.[index]];
+
+			if (!messageEntity) break;
+
+			const differentTime = Date.parse(messageEntity?.create_time) - Date.parse(previousMessageEntity?.create_time);
+
+			if (differentTime <= FORWARD_MESSAGE_TIME && messageEntity?.sender_id === selectedMessage?.user?.id) {
+				messages.push(messageEntity);
+				index--;
+			} else {
+				break;
+			}
+		}
+
+		return messages;
+	}, [selectedMessage, isForwardAll, allMessageIds, allMessagesEntities]);
+
+	const handleForward = useCallback(async () => {
+		if (!selectedForwardObjectsRef.current?.length) return;
+
+		try {
+			const messages = await getMessagesToForward();
+			await sendMessagesToTargets(selectedForwardObjectsRef.current, messages);
 
 			Toast.show({
 				type: 'success',
@@ -237,55 +291,14 @@ const ForwardMessageScreen = () => {
 					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={30} height={17} />
 				}
 			});
-		} catch (error) {
-			console.error('Forward all messages log => error', error);
-		}
-		onClose();
-	};
 
-	const sentToMessage = async () => {
-		if (!selectedForwardObjectsRef.current?.length) return;
-		try {
-			for (const selectedObjectSend of selectedForwardObjectsRef.current) {
-				const { type, channelId, clanId = '', isChannelPublic, name } = selectedObjectSend;
-				const currentUserId = selectCurrentUserId(store.getState());
-				const isBanFromChannel = selectBanMemberCurrentClanById(store.getState(), channelId, currentUserId);
-				if (isBanFromChannel) {
-					Toast.show({
-						type: 'error',
-						text1: t('bannedChannel', { channelName: name })
-					});
-					return;
-				}
-				switch (type) {
-					case ChannelType.CHANNEL_TYPE_DM:
-						sendForwardMessage('', channelId, ChannelStreamMode.STREAM_MODE_DM, false, message);
-						break;
-					case ChannelType.CHANNEL_TYPE_GROUP:
-						sendForwardMessage('', channelId, ChannelStreamMode.STREAM_MODE_GROUP, false, message);
-						break;
-					case ChannelType.CHANNEL_TYPE_CHANNEL:
-						sendForwardMessage(clanId, channelId, ChannelStreamMode.STREAM_MODE_CHANNEL, isChannelPublic, message);
-						break;
-					case ChannelType.CHANNEL_TYPE_THREAD:
-						sendForwardMessage(clanId, channelId, ChannelStreamMode.STREAM_MODE_THREAD, isChannelPublic, message);
-						break;
-					default:
-						break;
-				}
-			}
-			Toast.show({
-				type: 'success',
-				props: {
-					text2: t('forwardMessagesSuccessfully'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={30} height={17} />
-				}
-			});
+			onClose();
 		} catch (error) {
-			console.error('error', error);
+			console.error('Forward error:', error);
 		}
-		onClose();
-	};
+	}, [getMessagesToForward, sendMessagesToTargets, onClose, t]);
+
+	const isOnlyContainEmoji = useMemo(() => isValidEmojiData(message.content), [message.content]);
 
 	const onSelectChange = useCallback((value: boolean, item: IForwardIObject) => {
 		if (!item || !item?.channelId) return;
@@ -310,49 +323,121 @@ const ForwardMessageScreen = () => {
 			style={styles.container}
 		>
 			<StatusBarHeight />
-			<LinearGradient
-				start={{ x: 1, y: 0 }}
-				end={{ x: 0, y: 0 }}
-				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-				style={[StyleSheet.absoluteFillObject]}
-			/>
-			<View style={styles.header}>
-				<View style={styles.headerSide}>
-					<TouchableOpacity onPress={onClose}>
-						<MezonIconCDN icon={IconCDN.closeLargeIcon} color={themeValue.textStrong} />
+			<View style={styles.wrapper}>
+				<LinearGradient
+					start={{ x: 1, y: 0 }}
+					end={{ x: 0, y: 0 }}
+					colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+					style={[StyleSheet.absoluteFillObject]}
+				/>
+				<View style={styles.header}>
+					<View style={styles.headerSide}>
+						<TouchableOpacity onPress={onClose}>
+							<MezonIconCDN icon={IconCDN.closeLargeIcon} color={themeValue.textStrong} />
+						</TouchableOpacity>
+					</View>
+					<Text style={styles.headerTitle}>{t('forwardTo')}</Text>
+					<View style={styles.headerSide} />
+				</View>
+
+				<MezonInput
+					placeHolder={t('search')}
+					onTextChange={setSearchText}
+					value={searchText}
+					prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
+					inputWrapperStyle={styles.inputWrapper}
+				/>
+
+				<View style={styles.contentWrapper}>
+					<FlashList
+						keyExtractor={(item) => `${item.channelId}_${item.type}`}
+						estimatedItemSize={size.s_50}
+						data={filteredForwardObjects}
+						renderItem={renderForwardObject}
+						keyboardShouldPersistTaps="handled"
+					/>
+				</View>
+
+				<View style={styles.containerMessage}>
+					<View style={styles.containerMessageForward}>
+						<View style={styles.messageContentContainer}>
+							{!!message?.content?.t && (
+								<View style={{ flexDirection: 'row' }}>
+									<DmListItemLastMessage content={message.content} emojiOnForward={isOnlyContainEmoji} />
+								</View>
+							)}
+							{message?.content?.embed && <Text style={styles.titleText}>{message?.content?.embed?.[0]?.title}</Text>}
+							{messageAttachments?.images?.length > 0 && (
+								<View style={styles.row}>
+									<MezonIconCDN icon={IconCDN.imageIcon} color={themeValue.textDisabled} height={size.s_16} width={size.s_16} />
+									<Text style={styles.titleText}>
+										{messageAttachments.images.length}{' '}
+										{messageAttachments.images.length > 1 ? t('attachments.images') : t('attachments.image')}
+									</Text>
+								</View>
+							)}
+							{messageAttachments?.videos?.length > 0 && (
+								<View style={styles.row}>
+									<MezonIconCDN
+										icon={IconCDN.playCircleIcon}
+										color={themeValue.textDisabled}
+										height={size.s_16}
+										width={size.s_16}
+									/>
+									<Text style={styles.titleText}>
+										{messageAttachments.videos.length}{' '}
+										{messageAttachments.videos.length > 1 ? t('attachments.videos') : t('attachments.video')}
+									</Text>
+								</View>
+							)}
+							{messageAttachments?.files?.length > 0 && (
+								<View style={styles.row}>
+									<MezonIconCDN
+										icon={IconCDN.attachmentIcon}
+										color={themeValue.textDisabled}
+										height={size.s_16}
+										width={size.s_16}
+									/>
+									<Text style={styles.titleText}>
+										{messageAttachments.files.length}{' '}
+										{messageAttachments.files.length > 1 ? t('attachments.files') : t('attachments.file')}
+									</Text>
+								</View>
+							)}
+						</View>
+						{message?.attachments?.length > 0 && (
+							<RenderForwardMedia attachment={message?.attachments?.[0]} count={message?.attachments?.length - 1} />
+						)}
+					</View>
+				</View>
+
+				<View style={styles.containerSendMessage}>
+					<View style={styles.chatInput}>
+						<TextInput
+							style={styles.textInput}
+							value={personalRawMessages}
+							onChangeText={setPersonalRawMessages}
+							placeholder={t('addAMessage')}
+							placeholderTextColor={themeValue.textDisabled}
+							maxLength={MIN_THRESHOLD_CHARS}
+						/>
+						{!!personalRawMessages?.length && (
+							<TouchableOpacity activeOpacity={0.8} onPress={() => setPersonalRawMessages('')} style={styles.iconRightInput}>
+								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} color={themeValue.text} height={size.s_18} />
+							</TouchableOpacity>
+						)}
+					</View>
+					<TouchableOpacity
+						style={[styles.btn, !selectedForwardObjectsRef.current?.length && { backgroundColor: themeValue.textDisabled }]}
+						onPress={handleForward}
+					>
+						<Text style={styles.btnText} numberOfLines={1}>
+							{t('buzz.confirmText')}
+							{count}
+						</Text>
 					</TouchableOpacity>
 				</View>
-				<Text style={styles.headerTitle}>{t('forwardTo')}</Text>
-				<View style={styles.headerSide} />
 			</View>
-
-			<MezonInput
-				placeHolder={t('search')}
-				onTextChange={setSearchText}
-				value={searchText}
-				prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
-				inputWrapperStyle={styles.inputWrapper}
-			/>
-
-			<View style={styles.contentWrapper}>
-				<FlashList
-					keyExtractor={(item) => `${item.channelId}_${item.type}`}
-					estimatedItemSize={size.s_50}
-					data={filteredForwardObjects}
-					renderItem={renderForwardObject}
-					keyboardShouldPersistTaps="handled"
-				/>
-			</View>
-
-			<TouchableOpacity
-				style={[styles.btn, !selectedForwardObjectsRef.current?.length && { backgroundColor: themeValue.textDisabled }]}
-				onPress={handleForward}
-			>
-				<Text style={styles.btnText}>
-					{t('buzz.confirmText')}
-					{count}
-				</Text>
-			</TouchableOpacity>
 		</KeyboardAvoidingView>
 	);
 };

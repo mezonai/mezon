@@ -20,9 +20,10 @@ import { style } from './styles';
 
 interface IDirectMessageCallProps {
 	route: any;
+	onCloseModal?: () => void;
 }
 
-export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) => {
+export const DirectMessageCallMain = memo(({ route, onCloseModal }: IDirectMessageCallProps) => {
 	const { themeValue } = useTheme();
 	const dispatch = useAppDispatch();
 	const styles = style(themeValue);
@@ -95,6 +96,7 @@ export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) =
 				);
 			}
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+			onCloseModal?.();
 		} catch (err) {
 			/* empty */
 		}
@@ -144,6 +146,7 @@ export const DirectMessageCallMain = memo(({ route }: IDirectMessageCallProps) =
 						return;
 					}
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+					onCloseModal?.();
 				}
 			}
 		}

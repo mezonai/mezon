@@ -19,6 +19,14 @@ export const style = (colors: Attributes) =>
 			width: size.s_12,
 			flexShrink: 0
 		},
+		emojiOnForward: {
+			height: size.s_40,
+			width: size.s_40
+		},
+		emojiWrapOnForward: {
+			height: size.s_40,
+			width: size.s_40
+		},
 		emojiWrap: {
 			height: size.s_16,
 			width: size.s_12,

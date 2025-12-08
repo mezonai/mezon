@@ -174,11 +174,11 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 					{isEditRoleMode && (
 						<TouchableOpacity onPress={openAddMemberBottomSheet}>
 							<View style={styles.addMemberButton}>
-								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} />
+								<MezonIconCDN icon={IconCDN.circlePlusPrimaryIcon} color={themeValue.text} />
 								<View style={styles.flex}>
 									<Text style={styles.text}>{t('setupMember.addMember')}</Text>
 								</View>
-								<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} />
+								<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />
 							</View>
 						</TouchableOpacity>
 					)}

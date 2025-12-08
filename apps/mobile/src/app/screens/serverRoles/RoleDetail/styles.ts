@@ -9,6 +9,9 @@ export const style = (colors: Attributes) =>
 			flex: 1,
 			paddingHorizontal: size.s_14
 		},
+		containerWrapper: {
+			flex: 1
+		},
 		nameInput: {
 			marginTop: size.s_14
 		},
@@ -68,7 +71,8 @@ export const style = (colors: Attributes) =>
 			color: colors.white
 		},
 		saveButton: {
-			paddingVertical: size.s_16
+			paddingVertical: size.s_16,
+			zIndex: 2
 		},
 		saveText: {
 			fontSize: size.medium,
@@ -79,7 +83,7 @@ export const style = (colors: Attributes) =>
 			position: 'absolute',
 			alignSelf: 'center',
 			width: '100%',
-			zIndex: -1
+			zIndex: 1
 		},
 		header: {
 			flexDirection: 'row',

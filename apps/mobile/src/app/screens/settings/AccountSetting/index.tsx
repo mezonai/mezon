@@ -18,6 +18,7 @@ import {
 	getStoreAsync,
 	listChannelsByUserActions,
 	messagesActions,
+	notificationActions,
 	selectAllAccount,
 	selectBlockedUsers,
 	useAppDispatch
@@ -70,6 +71,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 	const logout = async () => {
 		const store = await getStoreAsync();
 		store.dispatch(directActions.removeAll());
+		store.dispatch(notificationActions.removeAll());
 		store.dispatch(channelsActions.removeAll());
 		store.dispatch(messagesActions.removeAll());
 		store.dispatch(listChannelsByUserActions.removeAll());

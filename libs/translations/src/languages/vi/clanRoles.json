@@ -73,9 +73,9 @@
 		"view-channel": "Cho phép thành viên xem các kênh công khai.",
 		"manage-channel": "Cho phép thành viên tạo, chỉnh sửa hoặc xóa kênh.",
 		"manage-clan": "Cho phép thành viên kiểm soát cài đặt clan, quản lý vai trò và kênh, giám sát hoạt động của thành viên, đảm bảo quản lý hiệu quả và cộng đồng được tổ chức tốt.",
-		"manage-thread": "Cho phép thành viên tạo, chỉnh sửa, xóa các luồng trong kênh (bao gồm cả luồng riêng tư).",
-		"send-message": "Cho phép thành viên gửi tin nhắn trong các kênh công khai (bao gồm các luồng và chủ đề trong những kênh đó).",
-		"delete-message": "Cho phép thành viên xóa tin nhắn trong các kênh công khai (bao gồm các luồng và chủ đề trong những kênh đó).",
+		"manage-thread": "Cho phép thành viên tạo, chỉnh sửa, xóa các chủ đề trong kênh (bao gồm cả chủ đề riêng tư).",
+		"send-message": "Cho phép thành viên gửi tin nhắn trong các kênh công khai (bao gồm các chủ đề và thảo luận chủ đề trong những kênh đó).",
+		"delete-message": "Cho phép thành viên xóa tin nhắn trong các kênh công khai (bao gồm các chủ đề và thảo luận chủ đề trong những kênh đó).",
 		"notAvailable": "Mô tả quyền không có sẵn"
 	},
 	"mainRoles": {

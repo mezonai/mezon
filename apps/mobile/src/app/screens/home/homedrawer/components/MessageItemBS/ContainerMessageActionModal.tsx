@@ -1,7 +1,7 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 /* eslint-disable no-console */
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
-import { ActionEmitEvent, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
+import { ActionEmitEvent, formatContentEditMessage, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
@@ -34,13 +34,13 @@ import {
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	EPermission,
-	FORWARD_MESSAGE_TIME,
-	TOKEN_TO_AMOUNT,
-	ThreadStatus,
-	TypeMessage,
 	formatMoney,
+	FORWARD_MESSAGE_TIME,
 	isPublicChannel,
-	sleep
+	sleep,
+	ThreadStatus,
+	TOKEN_TO_AMOUNT,
+	TypeMessage
 } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
@@ -59,7 +59,12 @@ import { useImage } from '../../../../../hooks/useImage';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { getMessageActions } from '../../constants';
 import { EMessageActionType } from '../../enums';
-import type { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve, IReplyBottomSheet } from '../../types/message.interface';
+import type {
+	IConfirmActionPayload,
+	IMessageAction,
+	IMessageActionNeedToResolve,
+	IReplyBottomSheet
+} from '../../types/message.interface';
 import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
 import type { IReactionMessageProps } from '../MessageReaction';
@@ -403,9 +408,9 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 
 	const handleActionTopicDiscussion = async () => {
 		if (!message) return;
-		dispatch(topicsActions.setCurrentTopicInitMessage(message));
+
 		dispatch(topicsActions.setCurrentTopicId(''));
-		dispatch(topicsActions.setFirstMessageOfCurrentTopic(message));
+		dispatch(topicsActions.setInitTopicMessageId(message?.id || ''));
 		dispatch(topicsActions.setIsShowCreateTopic(true));
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 			screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION
@@ -738,7 +743,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			isHideActionImage && EMessageActionType.CopyImage,
 			isHideActionImage && EMessageActionType.ShareImage,
 			isHideActionMedia && EMessageActionType.SaveMedia,
-			(isTopicFirstMessage || message?.content?.fwd) && EMessageActionType.EditMessage
+			(isTopicFirstMessage || message?.content?.fwd || message?.code === TypeMessage.SendToken) && EMessageActionType.EditMessage
 		];
 
 		let availableMessageActions: IMessageAction[] = [];

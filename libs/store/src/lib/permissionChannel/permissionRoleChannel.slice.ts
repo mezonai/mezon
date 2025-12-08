@@ -156,7 +156,7 @@ export const permissionRoleChannelSlice = createSlice({
 			const { roleId, channelId, permissionRole } = action.payload;
 
 			if (state.cacheByChannels[channelId]?.permissionRoleChannel) {
-				const channelPermission = state.cacheByChannels[channelId].permissionRoleChannel;
+				const channelPermission = state.cacheByChannels[channelId]?.permissionRoleChannel;
 				if (!state.cacheByChannels?.[channelId]?.permissionRoleChannel) {
 					state.cacheByChannels[channelId].permissionRoleChannel = permissionRoleChannelAdapter.getInitialState();
 				}
@@ -211,13 +211,14 @@ export const permissionRoleChannelSlice = createSlice({
 						active: role.type === 1 ? true : false,
 						permission_id: role.permission_id
 					}));
-
-				permissionRoleChannelAdapter.upsertOne(state.cacheByChannels[channelId].permissionRoleChannel, {
-					role_id: roleId,
-					user_id: userId,
-					channel_id: channelId,
-					permission_role_channel: listUpdate
-				});
+				if (state.cacheByChannels[channelId]?.permissionRoleChannel) {
+					permissionRoleChannelAdapter.upsertOne(state.cacheByChannels[channelId]?.permissionRoleChannel, {
+						role_id: roleId,
+						user_id: userId,
+						channel_id: channelId,
+						permission_role_channel: listUpdate
+					});
+				}
 			});
 	}
 });

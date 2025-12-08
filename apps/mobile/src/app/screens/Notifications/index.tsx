@@ -158,9 +158,8 @@ const Notifications = ({ navigation, route }) => {
 										channelId: notify?.content?.channel_id || ''
 									})
 								),
-								store.dispatch(topicsActions.setCurrentTopicInitMessage(null)),
-								store.dispatch(getFirstMessageOfTopic(notify?.content?.topic_id || notify?.id || '')),
 								store.dispatch(topicsActions.setCurrentTopicId(notify?.content?.topic_id || notify?.id || '')),
+								store.dispatch(getFirstMessageOfTopic(notify?.content?.topic_id || notify?.id || '')),
 								store.dispatch(topicsActions.setIsShowCreateTopic(true))
 							);
 						}

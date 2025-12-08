@@ -34,10 +34,11 @@ const isHeadingText = (text?: string) => {
 };
 
 const EMOJI_KEY = '[ICON_EMOJI]';
-export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleText?: any }) => {
+export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleText?: any; emojiOnForward?: boolean }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t, ej = [] } = props.content || {};
+	const { emojiOnForward = false } = props;
 	const emojis = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
 	const elements: ElementToken[] = [...emojis].sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 
@@ -104,8 +105,8 @@ export const DmListItemLastMessage = (props: { content: IExtendedMessage; styleT
 			if (endIndex !== -1) {
 				const emojiUrl = formatEmojiInText.slice(startIndex, endIndex);
 				parts.push(
-					<View style={styles.emojiWrap} key={`${emojiUrl}_dm_item_last_${endIndex}`}>
-						<ImageNative style={styles.emoji} url={emojiUrl} resizeMode="contain" />
+					<View style={[styles.emojiWrap, emojiOnForward && styles.emojiWrapOnForward]} key={`${emojiUrl}_dm_item_last_${endIndex}`}>
+						<ImageNative style={[styles.emoji, emojiOnForward && styles.emojiOnForward]} url={emojiUrl} resizeMode="contain" />
 					</View>
 				);
 				startIndex = endIndex + EMOJI_KEY.length;

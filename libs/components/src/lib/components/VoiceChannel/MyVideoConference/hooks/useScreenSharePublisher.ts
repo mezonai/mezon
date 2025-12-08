@@ -48,17 +48,12 @@ export const useScreenSharePublisher = (room?: Room | null) => {
 
 		const publishScreenShare = async () => {
 			try {
-				const resolution = VideoPresets.h720.resolution;
 				const constraints = {
 					video: {
 						mandatory: {
 							chromeMediaSource: 'desktop',
-							sharetrackId: screenSource.id
-						},
-						...(resolution && {
-							width: { ideal: resolution.width },
-							height: { ideal: resolution.height }
-						})
+							chromeMediaSourceId: screenSource.id
+						}
 					},
 					audio: screenSource.audio
 						? {

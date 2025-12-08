@@ -21,6 +21,7 @@ body {
     z-index: 2;
     position: fixed;
 	padding:4px 0;
+	box-sizing : border-box;
 }
 
 .footer-bar {
@@ -62,7 +63,7 @@ body {
 .functional-bar {
     display: flex;
 	padding : 0 12px;
-	gap:4px;
+	gap:8px;
     height: 21px;
 }
 

@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import type { BanClanUsers, IChannelMember, LoadingStatus, RemoveChannelUsers } from '@mezon/utils';
+import { EOverriddenPermission, type BanClanUsers, type IChannelMember, type LoadingStatus, type RemoveChannelUsers } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelPresenceEvent, StatusPresenceEvent } from 'mezon-js';
@@ -15,6 +15,7 @@ import { selectDirectMessageEntities } from '../direct/direct.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
+import { selectMaxPermissionForChannel } from '../policies/overriddenPolicies.slice';
 import type { RootState } from '../store';
 import { selectMemberByGroupId } from './AllUsersChannelByAddChannel.slice';
 export const CHANNEL_MEMBERS_FEATURE_KEY = 'channelMembers';
@@ -170,8 +171,10 @@ export const fetchChannelMembers = createAsyncThunk(
 			if (repace) {
 				thunkAPI.dispatch(channelMembersActions.removeUserByChannel(channelId));
 			}
-
-			thunkAPI.dispatch(usersClanActions.upsertBanFromChannel({ channelId, clanId, users: response.channel_users }));
+			const overriddenPermissions = selectMaxPermissionForChannel(thunkAPI.getState() as RootState, channelId || '');
+			if (overriddenPermissions[EOverriddenPermission.sendMessage]) {
+				thunkAPI.dispatch(usersClanActions.upsertBanFromChannel({ channelId, clanId, users: response.channel_users }));
+			}
 			thunkAPI.dispatch(channelMembersActions.setMemberChannels({ channelId, members: response.channel_users }));
 			return { channel_users: response.channel_users, fromCache: false, channelId };
 		} catch (error) {
@@ -270,7 +273,6 @@ export const updateCustomStatus = createAsyncThunk(
 			const userId = state.account?.userProfile?.user?.id;
 
 			thunkAPI.dispatch(accountActions.setCustomStatus(customStatus));
-			thunkAPI.dispatch(accountActions.getUserProfile({ noCache: true }));
 
 			if (userId) {
 				thunkAPI.dispatch(

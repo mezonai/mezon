@@ -462,5 +462,8 @@
 	"failedToBuyItem": "Mua vật phẩm thất bại!",
 	"loadingData": "Đang tải dữ liệu, vui lòng chờ trong giây lát.",
 	"close": "Đóng",
-	"cannotJoinClan": "Không thể tham gia clan"
+	"cannotJoinClan": "Không thể tham gia clan",
+	"failedToLoad": "Không thể tải dữ liệu",
+	"goBack": "Quay lại",
+	"refresh": "Làm mới"
 }

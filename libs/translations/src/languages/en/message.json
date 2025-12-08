@@ -196,14 +196,18 @@
 	"onlyVisibleToRecipient": "Only visible to recipient",
 	"attachments": {
 		"image": "Image",
+		"images": "Images",
 		"video": "Video",
+		"videos": "Videos",
 		"audio": "Voice",
 		"file": "File",
+		"files": "Files",
 		"location": "Current Location",
 		"sticker": "Sticker",
 		"gif": "GIF",
 		"link": "Link",
 		"attachment": "Attachment"
 	},
-	"bannedChannel": "You are banned from channel {{channelName}}."
+	"bannedChannel": "You are banned from channel {{channelName}}.",
+	"addAMessage": "Add a message (Optional)"
 }

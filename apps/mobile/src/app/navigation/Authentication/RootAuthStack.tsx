@@ -12,6 +12,7 @@ import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
 import ChannelAppScreen from '../../screens/home/homedrawer/ChannelApp';
 import HomeDefaultWrapper from '../../screens/home/homedrawer/HomeDefaultWrapper';
 import ChannelRouterListener from '../../screens/home/homedrawer/components/ChannelList/ChannelRouterListener';
+import RemoveNotificationListener from '../../screens/home/homedrawer/components/ChannelList/RemoveNotificationListener';
 import InstallClanScreen from '../../screens/installClan/InstallClanScreen';
 import InviteClanScreen from '../../screens/inviteClan/InviteClanScreen';
 import { DirectMessageDetailScreen } from '../../screens/messages/DirectMessageDetail';
@@ -33,6 +34,7 @@ import { ServersStacks } from './stacks/ServersStacks';
 import { SettingStacks } from './stacks/SettingStacks';
 import { ShopStack } from './stacks/ShopStack';
 import { styles } from './styles';
+
 const RootStack = createStackNavigator();
 registerGlobals();
 
@@ -181,6 +183,7 @@ export const RootAuthStack = memo(
 				<ChannelRouterListener />
 				<ListenerLoader />
 				<BadgeAppIconLoader />
+				<RemoveNotificationListener />
 			</View>
 		);
 	}

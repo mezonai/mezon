@@ -16,7 +16,6 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
 		y,
 		frame: false,
 		transparent: true,
-		skipTaskbar: true,
 		autoHideMenuBar: true,
 		show: false,
 		backgroundColor: '#00000000',
@@ -93,10 +92,21 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
 
 	popupWindow.once('ready-to-show', () => {
 		popupWindow.show();
-		popupWindow.webContents.executeJavaScript(`	document.getElementById('close-window').addEventListener('click', () => {
+		popupWindow.webContents.executeJavaScript(`
+			document.getElementById('close-window').addEventListener('click', () => {
 
     	window.electron.send('APP::CLOSE_APP_CHANNEL', 'APP::CLOSE_APP_CHANNEL');
-	});`);
+
+		});
+
+		document.getElementById('minimize-window').addEventListener('click', () => {
+
+    	window.electron.send('APP::MINIMIZE_APP_CHANNEL', 'APP::MINIMIZE_APP_CHANNEL');
+
+		});
+
+
+	`);
 	});
 
 	return popupWindow;

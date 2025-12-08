@@ -17,7 +17,7 @@ import { style } from './styles';
 
 type NotifyProps = {
 	readonly notify: TopicDiscussionsEntity;
-	onPressNotify?: (notify: INotification) => void;
+	onPressNotify: (notify: INotification) => Promise<void>;
 };
 
 const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
@@ -59,7 +59,6 @@ const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
 		await onPressNotify(notifytoJump);
 		const store = await getStoreAsync();
 		const promises = [];
-		promises.push(store.dispatch(topicsActions.setCurrentTopicInitMessage(data)));
 		promises.push(store.dispatch(topicsActions.setCurrentTopicId(notify?.id || '')));
 		promises.push(store.dispatch(topicsActions.setIsShowCreateTopic(true)));
 

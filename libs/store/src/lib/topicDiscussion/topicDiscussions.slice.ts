@@ -276,7 +276,7 @@ export const topicsSlice = createSlice({
 				}
 			})
 			.addCase(getFirstMessageOfTopic.fulfilled, (state: TopicDiscussionsState, action) => {
-				state.initTopicMessageId = action.payload.id;
+				state.initTopicMessageId = action.payload?.message_id || '';
 			});
 	}
 });

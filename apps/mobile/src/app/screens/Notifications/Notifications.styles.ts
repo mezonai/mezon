@@ -126,5 +126,8 @@ export const style = (colors: Attributes) =>
 			height: size.s_30,
 			justifyContent: 'center',
 			alignItems: 'center'
+		},
+		warningText: {
+			color: baseColor.redStrong
 		}
 	});

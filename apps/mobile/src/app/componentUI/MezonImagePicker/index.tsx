@@ -139,9 +139,10 @@ export default memo(
 
 				if (!!imageSizeLimit && selectedFile.size > imageSizeLimit) {
 					const maxSizeMB = Math.round(imageSizeLimit / 1024 / 1024);
+					const maxSizeKB = Math.round(imageSizeLimit / 1024);
 					Toast.show({
 						type: 'error',
-						text1: t('imageSizeLimit', { size: maxSizeMB })
+						text1: t('imageSizeLimit', { size: maxSizeMB > 0 ? maxSizeMB : maxSizeKB, unit: maxSizeMB > 0 ? 'MB' : 'KB' })
 					});
 					return;
 				}

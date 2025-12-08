@@ -84,11 +84,7 @@ const ParticipantItem = memo(
 							onConfirm={() => onConfirmActionVoice(action)}
 							title={action === IActionVoiceUser.KICK ? t('kickModal.title') : t('muteModal.title')}
 							confirmText={action === IActionVoiceUser.KICK ? t('kickModal.kick') : t('muteModal.mute')}
-							content={
-								IActionVoiceUser.KICK
-									? t('kickModal.content', { userName: voiceUsername })
-									: t('muteModal.content', { userName: voiceUsername })
-							}
+							content={t(action === IActionVoiceUser.KICK ? 'kickModal.content' : 'muteModal.content', { userName: voiceUsername })}
 						/>
 					)
 				};

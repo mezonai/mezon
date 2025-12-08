@@ -18,6 +18,7 @@ import {
 	getStoreAsync,
 	listChannelsByUserActions,
 	messagesActions,
+	notificationActions,
 	selectAllAccount
 } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
@@ -49,6 +50,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 	const logout = async () => {
 		const store = await getStoreAsync();
 		store.dispatch(directActions.removeAll());
+		store.dispatch(notificationActions.removeAll());
 		store.dispatch(channelsActions.removeAll());
 		store.dispatch(messagesActions.removeAll());
 		store.dispatch(listChannelsByUserActions.removeAll());
@@ -211,7 +213,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 				const matchedItems = section.items.filter((item) => {
 					const lowerTitle = item.title.toLowerCase();
 					const lowerText = text.toLowerCase();
-					return lowerTitle.startsWith(lowerText) || lowerTitle.includes(` ${lowerText}`)
+					return lowerTitle.startsWith(lowerText) || lowerTitle.includes(` ${lowerText}`);
 				});
 				results.push(...matchedItems);
 			});

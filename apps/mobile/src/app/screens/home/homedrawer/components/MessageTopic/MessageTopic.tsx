@@ -1,12 +1,6 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import {
-	MessagesEntity,
-	getFirstMessageOfTopic,
-	selectLatestMessageId,
-	selectMemberClanByUserId,
-	topicsActions,
-	useAppDispatch
-} from '@mezon/store-mobile';
+import type { MessagesEntity } from '@mezon/store-mobile';
+import { selectLatestMessageId, selectMemberClanByUserId, topicsActions, useAppDispatch } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,9 +25,8 @@ const MessageTopic = ({ message }: { message: MessagesEntity }) => {
 	const replyCount = lastTopicMessageId ? (BigInt(lastTopicMessageId) >> BigInt(22)) - BASE_SEED_GID : 0;
 
 	const handleOpenTopic = () => {
-		dispatch(topicsActions.setCurrentTopicInitMessage(message));
 		dispatch(topicsActions.setCurrentTopicId(message?.content?.tp || ''));
-		dispatch(getFirstMessageOfTopic(message?.content?.tp || ''));
+		dispatch(topicsActions.setInitTopicMessageId(message?.id || ''));
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 			screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION
 		});

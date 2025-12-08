@@ -219,6 +219,11 @@ ipcMain.handle(LAUNCH_APP_WINDOW, (event, props: any) => {
 	App.channelAppWindow = channelApp;
 });
 
+ipcMain.on('APP::MINIMIZE_APP_CHANNEL', (event) => {
+	const win = BrowserWindow.fromWebContents(event.sender);
+	win?.minimize();
+});
+
 ipcMain.on('APP::CLOSE_APP_CHANNEL', (event) => {
 	const win = BrowserWindow.fromWebContents(event.sender);
 	win?.close();

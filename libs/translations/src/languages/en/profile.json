@@ -29,6 +29,6 @@
     "changeAvatar": "Change Avatar",
     "removeAvatar": "Remove Avatar",
     "chooseImage": "Choose an image",
-    "imageSizeLimit": "Image size limit exceeded {{size}}MB",
+    "imageSizeLimit": "Image size limit exceeded {{size}}{{unit}}",
     "enableWallet": "Enable Wallet"
 }

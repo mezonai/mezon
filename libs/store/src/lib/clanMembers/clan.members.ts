@@ -551,10 +551,6 @@ export const selectMembersByUserIds = createSelector([selectEntitesUserClans, (_
 	userIds.map((userId) => entities[userId] ?? null)
 );
 
-export const selectMemberClanByUserName = createSelector([selectAllUserClans, (_, username: string) => username], (members, username) => {
-	return members.find((member) => member.user?.username === username);
-});
-
 export const selectMembersClanCount = createSelector(
 	[getUsersClanState, (state: RootState) => state.clans.currentClanId as string],
 	(state, clanId) => {

@@ -125,7 +125,7 @@ export default function TopicDiscussion() {
 				behavior={'padding'}
 				keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : StatusBar.currentHeight}
 			>
-				<TopicHeader handleBack={onGoBack} />
+				<TopicHeader currentChannelId={currentChannel?.channel_id} handleBack={onGoBack} />
 				<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
 					<Animated.View style={styles.panGestureContainer}>
 						<ChannelMessages

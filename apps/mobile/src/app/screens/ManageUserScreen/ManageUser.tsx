@@ -125,8 +125,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 						removeUserIds: [],
 						removePermissionIds: [],
 						clanId: currentClanId || '',
-						maxPermissionId,
-						roleIcon: ''
+						maxPermissionId
 					})
 				);
 				handleAfterUpdate(Boolean(response?.payload));
@@ -166,8 +165,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 						removeUserIds: [user?.user?.id],
 						removePermissionIds: [],
 						clanId: currentClanId || '',
-						maxPermissionId,
-						roleIcon: ''
+						maxPermissionId
 					})
 				);
 

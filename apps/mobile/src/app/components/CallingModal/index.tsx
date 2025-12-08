@@ -32,7 +32,6 @@ const CallingModal = () => {
 	const mezon = useMezon();
 	const { t } = useTranslation('message');
 	const [callerInfo, setCallerInfo] = useState<any>({});
-	const [appState, setAppState] = useState(AppState.currentState);
 
 	useEffect(() => {
 		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];

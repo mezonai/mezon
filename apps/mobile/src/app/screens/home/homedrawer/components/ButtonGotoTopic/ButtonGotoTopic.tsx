@@ -1,6 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import type { MessagesEntity } from '@mezon/store-mobile';
-import { getFirstMessageOfTopic, topicsActions, useAppDispatch } from '@mezon/store-mobile';
+import { topicsActions, useAppDispatch } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,14 +18,14 @@ const ButtonGotoTopic = ({ message }: { message: MessagesEntity }) => {
 	const { t } = useTranslation('message');
 
 	const handleOpenTopic = () => {
-		dispatch(topicsActions.setCurrentTopicInitMessage(message));
 		dispatch(topicsActions.setCurrentTopicId(message?.content?.tp || ''));
-		dispatch(getFirstMessageOfTopic(message?.content?.tp || ''));
+		dispatch(topicsActions.setInitTopicMessageId(message?.id || ''));
 		dispatch(topicsActions.setIsShowCreateTopic(true));
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 			screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION
 		});
 	};
+
 	return (
 		<View style={styles.wrapper}>
 			<TouchableOpacity onPress={handleOpenTopic} style={styles.container}>

@@ -1,7 +1,8 @@
 import { useDirect } from '@mezon/core';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { getStore, selectAllAccount, selectAllActivities, selectAllFriends, selectAllUserDM } from '@mezon/store-mobile';
+import { getStore, selectAllAccount, selectAllActivities, selectAllFriends, selectAllUserDM, selectDirectsOpenlist } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, DeviceEventEmitter, Easing, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -97,6 +98,20 @@ function MessageActivity() {
 	}, [animatedHeight, data?.length]);
 
 	const onPressItem = async (item) => {
+		const listDM = selectDirectsOpenlist(store.getState() as any);
+		const directMessage = listDM
+			?.filter?.((dm) => dm.type === ChannelType.CHANNEL_TYPE_DM)
+			?.find?.((dm) => {
+				const userIds = dm?.user_ids;
+				if (!Array.isArray(userIds) || userIds.length !== 1) {
+					return false;
+				}
+				return userIds[0] === item?.id;
+			});
+		if (directMessage?.id) {
+			DeviceEventEmitter.emit('CHANGE_CHANNEL_DM_DETAIL', { dmId: directMessage?.id });
+			return;
+		}
 		const response = await createDirectMessageWithUser(item?.id, item?.display_name || item?.name, item?.username || item?.name, item?.avatar);
 		if (response?.channel_id) {
 			DeviceEventEmitter.emit('CHANGE_CHANNEL_DM_DETAIL', { dmId: response?.channel_id });

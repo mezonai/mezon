@@ -291,11 +291,12 @@ export const deleteClan = createAsyncThunk('clans/deleteClans', async (body: Cha
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.deleteClanDesc(mezon.session, body.clanId);
 		if (response) {
-			thunkAPI.dispatch(fetchClans({ noCache: true }));
 			thunkAPI.dispatch(emojiSuggestionSlice.actions.invalidateCache());
 			thunkAPI.dispatch(settingClanStickerSlice.actions.invalidateCache());
 			thunkAPI.dispatch(soundEffectActions.invalidateCache());
+			return body.clanId;
 		}
+		return null;
 	} catch (error) {
 		captureSentryError(error, 'clans/deleteClans');
 		return thunkAPI.rejectWithValue(error);
@@ -334,7 +335,6 @@ export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async (
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
 		}
-		thunkAPI.dispatch(fetchClans({ noCache: true }));
 		thunkAPI.dispatch(usersClanActions.removeUsersAndClearCache({ clanId, userIds }));
 		return response;
 	} catch (error) {
@@ -881,8 +881,11 @@ export const clansSlice = createSlice({
 		builder.addCase(deleteClan.pending, (state: ClansState) => {
 			state.loadingStatus = 'loading';
 		});
-		builder.addCase(deleteClan.fulfilled, (state: ClansState) => {
-			state.loadingStatus = 'loaded';
+		builder.addCase(deleteClan.fulfilled, (state: ClansState, action: PayloadAction<string | null>) => {
+			if (action.payload) {
+				clansAdapter.removeOne(state, action.payload);
+				state.loadingStatus = 'loaded';
+			}
 		});
 		builder.addCase(deleteClan.rejected, (state: ClansState, action) => {
 			state.loadingStatus = 'error';

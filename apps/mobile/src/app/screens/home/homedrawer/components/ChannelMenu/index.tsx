@@ -93,6 +93,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 
 	const handleMarkAsRead = useCallback(() => {
 		handleMarkAsReadChannel(channel);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_REMOVE_NOTIFY_BY_CHANNEL_ID, { channelId: channel?.channel_id });
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	}, [channel, handleMarkAsReadChannel]);
 

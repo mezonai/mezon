@@ -10,21 +10,10 @@ import {
 	STORAGE_MY_USER_ID,
 	STORAGE_OFFER_HAVE_CALL_CACHE
 } from '@mezon/mobile-components';
-import {
-	appActions,
-	channelsActions,
-	clansActions,
-	directActions,
-	getFirstMessageOfTopic,
-	getStoreAsync,
-	topicsActions
-} from '@mezon/store-mobile';
+import { appActions, channelsActions, clansActions, directActions, getFirstMessageOfTopic, getStoreAsync, topicsActions } from '@mezon/store-mobile';
 import i18n from '@mezon/translations';
 import { sleep } from '@mezon/utils';
-import notifee, {
-	AndroidLaunchActivityFlag,
-	AuthorizationStatus as NotifeeAuthorizationStatus
-} from '@notifee/react-native';
+import notifee, { AndroidLaunchActivityFlag, AuthorizationStatus as NotifeeAuthorizationStatus } from '@notifee/react-native';
 import type { NotificationAndroid } from '@notifee/react-native/src/types/NotificationAndroid';
 import {
 	AndroidBadgeIconType,
@@ -36,13 +25,7 @@ import {
 } from '@notifee/react-native/src/types/NotificationAndroid';
 import { getApp } from '@react-native-firebase/app';
 import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
-import {
-	AuthorizationStatus,
-	getMessaging,
-	getToken,
-	hasPermission,
-	requestPermission
-} from '@react-native-firebase/messaging';
+import { AuthorizationStatus, getMessaging, getToken, hasPermission, requestPermission } from '@react-native-firebase/messaging';
 import { CommonActions } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
 import React from 'react';
@@ -606,7 +589,6 @@ export const navigateToNotification = async (store: any, notification: any, navi
 const handleOpenTopicDiscustion = async (store: any, topicId: string, channelId: string, navigation: any) => {
 	await sleep(1000);
 	const promises = [];
-	promises.push(store.dispatch(topicsActions.setCurrentTopicInitMessage(null)));
 	promises.push(store.dispatch(topicsActions.setCurrentTopicId(topicId || '')));
 	promises.push(store.dispatch(topicsActions.setIsShowCreateTopic(true)));
 	promises.push(store.dispatch(getFirstMessageOfTopic(topicId || '')));

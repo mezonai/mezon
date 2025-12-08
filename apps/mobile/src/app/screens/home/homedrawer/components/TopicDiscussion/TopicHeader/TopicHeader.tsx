@@ -1,12 +1,10 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
-import { selectCurrentTopicInitMessage, selectFirstMessageOfCurrentTopic } from '@mezon/store-mobile';
+import { selectFirstMessageOfCurrentTopic, useAppSelector } from '@mezon/store-mobile';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
-import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
@@ -16,36 +14,18 @@ import { RenderTextMarkdownContent } from '../../RenderTextMarkdown';
 import { style } from './styles';
 
 type TopicHeaderProps = {
+	currentChannelId: string;
 	handleBack: () => void;
 };
 
-const TopicHeader = memo(({ handleBack }: TopicHeaderProps) => {
-	const currentTopic = useSelector(selectCurrentTopicInitMessage);
-	const firstMessage = useSelector(selectFirstMessageOfCurrentTopic);
+const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['message', 'common']);
+	const firstMessage = useAppSelector((state) => selectFirstMessageOfCurrentTopic(state, currentChannelId || ''));
 
-	const valueTopic = useMemo(() => {
-		return currentTopic || firstMessage?.message;
-	}, [currentTopic, firstMessage?.message]);
-
-	const memoizedValue = useMemo(() => {
-		if (!currentTopic && !firstMessage) return null;
-		return {
-			clanId: currentTopic?.clan_id || firstMessage?.clan_id || '',
-			channelId: currentTopic?.channel_id || firstMessage?.channel_id || '',
-			senderId: currentTopic?.sender_id || firstMessage?.message?.sender_id || '',
-			displayName: currentTopic?.display_name || currentTopic?.username || firstMessage?.message?.username || '',
-			createTime: currentTopic?.create_time || firstMessage?.message?.create_time || '',
-			embed: (typeof valueTopic?.content === 'object' ? valueTopic.content : safeJSONParse(valueTopic?.content))?.embed?.[0],
-			attachments: currentTopic?.attachments || firstMessage?.message?.attachments || [],
-			mentions: currentTopic?.mentions || firstMessage?.message?.mentions || []
-		};
-	}, [currentTopic, firstMessage]);
-
-	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(memoizedValue?.senderId || '');
-	const userRolesClan = useColorsRoleById(memoizedValue?.senderId || '');
+	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(firstMessage?.sender_id || '');
+	const userRolesClan = useColorsRoleById(firstMessage?.sender_id || '');
 
 	const colorSenderName = useMemo(() => {
 		return (
@@ -68,45 +48,38 @@ const TopicHeader = memo(({ handleBack }: TopicHeaderProps) => {
 				</View>
 				<View style={styles.spacer} />
 			</View>
-			{valueTopic && (
+			{firstMessage && (
 				<View style={styles.userInfo}>
-					<MezonAvatar avatarUrl={priorityAvatar} username={namePriority || memoizedValue?.displayName || ''} />
+					<MezonAvatar avatarUrl={priorityAvatar} username={namePriority || firstMessage?.display_name || ''} />
 					<View>
-						<Text style={[styles.name, { color: colorSenderName }]}>{namePriority || memoizedValue?.displayName || ''}</Text>
-						{memoizedValue?.createTime && (
-							<Text style={styles.dateText}>{convertTimeString(memoizedValue?.createTime as string, t)}</Text>
-						)}
+						<Text style={[styles.name, { color: colorSenderName }]}>{namePriority || firstMessage?.display_name || ''}</Text>
+						{firstMessage?.create_time && <Text style={styles.dateText}>{convertTimeString(firstMessage.create_time as string, t)}</Text>}
 					</View>
 				</View>
 			)}
-			{!valueTopic ? null : (
+			{!firstMessage ? null : (
 				<ScrollView>
 					<RenderTextMarkdownContent
 						content={{
-							...((typeof valueTopic?.content === 'object' ? valueTopic?.content : safeJSONParse(valueTopic?.content)) || {}),
-							mentions:
-								(typeof memoizedValue?.mentions === 'object' ? memoizedValue?.mentions : safeJSONParse(memoizedValue?.mentions)) || []
+							...(firstMessage?.content || {}),
+							mentions: firstMessage?.mentions || []
 						}}
 						translate={t}
 						isMessageReply={false}
 					/>
-					{memoizedValue?.attachments?.length > 0 && (
+					{firstMessage?.attachments?.length > 0 && (
 						<MessageAttachment
-							attachments={
-								typeof memoizedValue?.attachments === 'object'
-									? memoizedValue?.attachments
-									: safeJSONParse(memoizedValue?.attachments) || []
-							}
-							clanId={memoizedValue?.clanId || ''}
-							channelId={memoizedValue?.channelId || ''}
+							attachments={firstMessage?.attachments || []}
+							clanId={firstMessage?.clan_id || ''}
+							channelId={firstMessage?.channel_id || ''}
 						/>
 					)}
-					{!!memoizedValue?.embed && (
+					{!!firstMessage?.content?.embed?.[0] && (
 						<EmbedMessage
-							message_id={firstMessage?.message_id || ''}
-							channel_id={memoizedValue?.channelId || ''}
-							embed={memoizedValue?.embed}
-							key={`message_embed_${memoizedValue?.channelId}_${firstMessage?.message_id || ''}`}
+							message_id={firstMessage?.id || ''}
+							channel_id={firstMessage?.channel_id || ''}
+							embed={firstMessage.content.embed[0]}
+							key={`message_embed_${firstMessage?.channel_id}_${firstMessage?.id}`}
 						/>
 					)}
 				</ScrollView>

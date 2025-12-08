@@ -462,5 +462,8 @@
 	"failedToBuyItem": "Failed to buy item!",
 	"loadingData": "Loading data, please wait a moment!",
 	"close": "Close",
-	"cannotJoinClan": "Cannot join clan"
+	"cannotJoinClan": "Cannot join clan",
+	"failedToLoad": "Failed to load",
+	"goBack": "Go Back",
+	"refresh": "Refresh"
 }

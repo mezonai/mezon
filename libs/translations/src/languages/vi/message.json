@@ -194,14 +194,18 @@
 	"onlyVisibleToRecipient": "Chỉ hiển thị cho người nhận",
 	"attachments": {
 		"image": "Hình ảnh",
+		"images": "Hình ảnh",
 		"video": "Video",
+		"videos": "Video",
 		"audio": "Tin nhắn thoại",
 		"file": "Tệp",
+		"files": "Tệp",
 		"location": "Vị trí hiện tại",
 		"sticker": "Nhãn dán",
 		"gif": "GIF",
 		"link": "Liên kết",
 		"attachment": "Tệp đính kèm"
 	},
-	"bannedChannel": "Bạn đã bị cấm trong kênh {{channelName}}."
+	"bannedChannel": "Bạn đã bị cấm trong kênh {{channelName}}.",
+	"addAMessage": "Thêm một tin nhắn (Không bắt buộc)"
 }

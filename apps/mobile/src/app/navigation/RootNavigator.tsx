@@ -1,19 +1,27 @@
 /* eslint-disable no-console */
-import { MezonStoreProvider, appActions, initStore, selectHiddenBottomTabMobile, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import {
+	appActions,
+	initStore,
+	MezonStoreProvider,
+	selectHiddenBottomTabMobile,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { extractAndSaveConfig, useMezon } from '@mezon/transport';
 import type { LinkingOptions } from '@react-navigation/native';
-import { NavigationContainer, getStateFromPath } from '@react-navigation/native';
+import { getStateFromPath, NavigationContainer } from '@react-navigation/native';
 import React, { memo, useEffect, useMemo } from 'react';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { ChatContextProvider, EmojiSuggestionProvider, PermissionProvider } from '@mezon/core';
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { ActionEmitEvent, STORAGE_SESSION_KEY, save } from '@mezon/mobile-components';
+import { ActionEmitEvent, save, STORAGE_SESSION_KEY } from '@mezon/mobile-components';
 import { ThemeModeBase, ThemeProvider, useTheme } from '@mezon/mobile-ui';
 import type { Session } from 'mezon-js';
 import { DeviceEventEmitter, NativeModules, Platform, StatusBar, View } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
+import CallingNativeIOS from '../components/CallingNativeIOS';
 import NetInfoComp from '../components/NetworkInfo';
 import { WebRTCStreamProvider } from '../components/StreamContext/StreamContext';
 import { toastConfig } from '../configs/toastConfig';
@@ -23,6 +31,7 @@ import RootListener from './RootListener';
 import RootStack from './RootStack';
 import { APP_SCREEN } from './ScreenTypes';
 import { style } from './styles';
+
 const { NavigationBarModule } = NativeModules;
 
 const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean) => {
@@ -164,6 +173,7 @@ const NavigationMain = memo(
 				<SafeAreaProvider>
 					<SafeAreaView edges={Platform.OS === 'android' ? (isHiddenTab ? ['top', 'bottom'] : ['top']) : []} style={styles.safeAreaView}>
 						<RootStack {...props} />
+						{Platform.OS === 'ios' && <CallingNativeIOS />}
 					</SafeAreaView>
 				</SafeAreaProvider>
 			</NavigationContainer>

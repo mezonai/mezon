@@ -80,6 +80,17 @@ export async function remove(key: string) {
 	}
 }
 
+/**
+ * Removes removeAll from storage.
+ */
+export async function clearAll() {
+	try {
+		AppStorage.clearAll();
+	} catch {
+		/* empty */
+	}
+}
+
 interface Storage {
 	getItem(key: string, ...args: Array<any>): any;
 	setItem(key: string, value: any, ...args: Array<any>): any;
