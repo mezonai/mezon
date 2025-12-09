@@ -190,16 +190,7 @@ const NodeTypes = [
 					})
 				)
 				.min(1, 'At least one condition is required'),
-			convertTypes: yup.boolean().default(false),
-			options: yup
-				.array()
-				.of(
-					yup.object().shape({
-						key: yup.string().required(),
-						value: yup.string().required()
-					})
-				)
-				.nullable()
+			convertTypes: yup.boolean().default(false)
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -219,14 +210,6 @@ const NodeTypes = [
 						label: 'Convert types where required',
 						name: 'convertTypes'
 					}
-				},
-				options: {
-					type: 'array',
-					uniforms: {
-						component: CustomParamsField,
-						label: 'Options',
-						name: 'options'
-					}
 				}
 			},
 			required: ['conditions']
@@ -240,8 +223,7 @@ const NodeTypes = [
 		},
 		initialValue: {
 			conditions: [{ left: '', operator: 'is equal to', right: '', type: 'string', logic: 'AND' }],
-			convertTypes: false,
-			options: []
+			convertTypes: false
 		}
 	},
 	{
@@ -322,7 +304,18 @@ const NodeTypes = [
 			// 		value: yup.string().required('Field Value is required')
 			// 	})
 			// ),
-			jsonTemplate: yup.string().nullable(),
+			jsonTemplate: yup
+				.string()
+				.nullable()
+				.test('is-json', 'Invalid Json Format', (val) => {
+					if (!val) return true;
+					try {
+						JSON.parse(val);
+						return true;
+					} catch (error) {
+						return false;
+					}
+				}),
 			options: yup.array().of(
 				yup.object().shape({
 					key: yup.string().required('Option Key is required'),
@@ -385,7 +378,7 @@ const NodeTypes = [
 			required: ['jsonTemplate']
 		},
 		anchors: {
-			source: [],
+			source: [{ id: 'edit-field-source-1', text: 'Api/Response' }],
 			target: [{ id: 'edit-field-target-1', text: 'Api/Webhook' }]
 		},
 		initialValue: {
@@ -417,6 +410,7 @@ const NodeTypes = [
 			enabled: true
 		},
 		isDynamicSchema: true,
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		getDynamicConfig: (data: any) => {
 			const interval = data?.interval || 'days';
 			return scheduleSchemas[interval as keyof typeof scheduleSchemas];
@@ -426,7 +420,7 @@ const NodeTypes = [
 		type: 'embedMessage',
 		label: 'Embed Message',
 		schema: yup.object().shape({
-			embed: yup.mixed().required('Embed is required')
+			embed: yup.object().required('Embed configuration is required')
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -435,7 +429,7 @@ const NodeTypes = [
 					type: 'object',
 					uniforms: {
 						component: CustomEmbedField,
-						label: 'Embeds',
+						label: 'Embed Configuration',
 						name: 'embed'
 					}
 				}
@@ -448,19 +442,29 @@ const NodeTypes = [
 		},
 		initialValue: {
 			embed: {
-				mode: 'fields',
-				fields: {
-					description: '',
-					author: '',
-					color: '',
-					timestamp: '',
-					title: '',
-					url: '',
-					image: '',
-					thumbnail: '',
-					video: ''
+				color: '#202225',
+				title: '',
+				url: '',
+				author: {
+					name: '',
+					icon_url: '',
+					url: ''
 				},
-				raw: '{}'
+				description: '',
+				thumbnail: {
+					url: ''
+				},
+				image: {
+					url: '',
+					width: 0,
+					height: 0
+				},
+				footer: {
+					text: '',
+					icon_url: ''
+				},
+				timestamp: '',
+				fields: []
 			}
 		}
 	},
@@ -472,7 +476,7 @@ const NodeTypes = [
 				.array()
 				.of(
 					yup.object().shape({
-						conditions: yup.object().shape({
+						condition: yup.object().shape({
 							left: yup.string().required('Left value is required'),
 							operator: yup.string().required('Operator is required'),
 							right: yup.string(),
@@ -482,16 +486,16 @@ const NodeTypes = [
 					})
 				)
 				.min(1, 'At least one condition is required'),
-			convertTypes: yup.boolean().default(false),
-			options: yup
-				.array()
-				.of(
-					yup.object().shape({
-						key: yup.string().required(),
-						value: yup.string().required()
-					})
-				)
-				.nullable()
+			convertTypes: yup.boolean().default(false)
+			// options: yup
+			// 	.array()
+			// 	.of(
+			// 		yup.object().shape({
+			// 			key: yup.string().required(),
+			// 			value: yup.string().required()
+			// 		})
+			// 	)
+			// 	.nullable()
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -511,15 +515,15 @@ const NodeTypes = [
 						label: 'Convert types where required',
 						name: 'convertTypes'
 					}
-				},
-				options: {
-					type: 'array',
-					uniforms: {
-						component: CustomParamsField,
-						label: 'Options',
-						name: 'options'
-					}
 				}
+				// options: {
+				// 	type: 'array',
+				// 	uniforms: {
+				// 		component: CustomParamsField,
+				// 		label: 'Options',
+				// 		name: 'options'
+				// 	}
+				// }
 			},
 			required: ['routingRules']
 		},
@@ -529,7 +533,7 @@ const NodeTypes = [
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				return (nodeData?.routingRules || []).map((rule, index: number) => ({
 					id: rule.id || `switch-source-${index + 1}`,
-					text: '0' || `${index + 1}`
+					text: `${index + 1}`
 				}));
 			},
 			target: [{ id: 'switch-target-1', text: 'Input' }]
@@ -538,11 +542,11 @@ const NodeTypes = [
 			routingRules: [
 				{
 					id: 'switch-source-1',
-					conditions: { left: '', operator: 'is equal to', right: '', type: 'string', logic: 'AND' }
+					condition: { left: '', operator: 'is equal to', right: '', type: 'string' }
 				}
 			],
-			convertTypes: false,
-			options: []
+			convertTypes: false
+			// options: []
 		}
 	}
 ];

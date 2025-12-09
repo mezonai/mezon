@@ -43,12 +43,13 @@ const NextNodePopup = ({
 	if (!visible) return null;
 
 	const connectionRules: Record<string, string[]> = {
-		'Chat Trigger': ['Response', 'HTTP Request', 'Edit Field', 'If', 'Embed Message'],
-		Webhook: ['Edit Field', 'If', 'HTTP Request', 'Response', 'Embed Message'],
-		If: ['If', 'Response', 'HTTP Request', 'Edit Field', 'Embed Message'],
-		'HTTP Request': ['Edit Field', 'If', 'Embed Message', 'Response', 'Embed Message'],
-		Schedule: ['HTTP Request', 'Response', 'Edit Field', 'Embed Message'],
-		Switch: ['Response', 'HTTP Request', 'Edit Field', 'If', 'Embed Message']
+		'Chat Trigger': ['Response', 'HTTP Request', 'Edit Field', 'If', 'Embed Message', 'Switch'],
+		Webhook: ['Edit Field', 'If', 'HTTP Request', 'Response', 'Embed Message', 'Switch'],
+		If: ['If', 'Response', 'HTTP Request', 'Edit Field', 'Embed Message', 'Switch'],
+		'HTTP Request': ['Edit Field', 'If', 'Embed Message', 'Response', 'Embed Message', 'Switch'],
+		Schedule: ['HTTP Request', 'Response', 'Edit Field', 'Embed Message', 'Switch'],
+		Switch: ['Response', 'HTTP Request', 'Edit Field', 'If', 'Embed Message', 'Switch'],
+		'Edit Field': ['Response', 'HTTP Request', 'Embed Message', 'If', 'Switch']
 	};
 
 	const allowedTargetTypes = sourceNodeLabel ? connectionRules[sourceNodeLabel] : [];

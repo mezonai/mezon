@@ -189,6 +189,16 @@ const Flow = () => {
 		NodeTypes.forEach((item) => {
 			if (!obj[item.type]) {
 				obj[item.type] = (props) => {
+					let currentAnchors = item.anchors;
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					if (typeof item.anchors.source === 'function') {
+						const defaultValue = props.data.defaultValue;
+						const hasData = defaultValue && Object.keys(defaultValue).length > 0;
+						const dataToUse = hasData ? defaultValue : item.initialValue;
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						const sourceAnchor = (item.anchors.source as any)(dataToUse);
+						currentAnchors = { ...item.anchors, source: sourceAnchor };
+					}
 					if (item.type === 'webhook') {
 						item.initialValue.url = `${process.env.NX_MEZON_FLOW_URL}/webhook/${applicationId}/{flowId}`;
 					}
@@ -199,7 +209,7 @@ const Flow = () => {
 							Icon={iconByType[item.label]}
 							initialValue={item.initialValue}
 							bridgeSchema={item.bridgeSchema}
-							anchors={item.anchors}
+							anchors={currentAnchors}
 							onHandleHover={onHandleHover}
 							onHandleLeave={onHandleLeave}
 						/>

@@ -5,7 +5,7 @@ interface SearchInputProps {
 	onChange?: (value: string) => void;
 	placeholder?: string;
 	className?: string;
-	autoFocus?: boolean; // Thêm dòng này
+	autoFocus?: boolean;
 }
 
 const SearchInput: React.FC<SearchInputProps> = ({ value = '', onChange, placeholder = 'Search...', className = '', autoFocus = false }) => {
@@ -27,7 +27,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ value = '', onChange, placeho
 				placeholder={placeholder}
 				value={inputValue}
 				onChange={handleChange}
-				autoFocus={autoFocus} // Thêm dòng này
+				autoFocus={autoFocus}
 			/>
 		</div>
 	);

@@ -13,6 +13,10 @@ const ConnectionsAllowed = [
 		target: 'edit-field-target-1'
 	},
 	{
+		source: 'edit-field-source-1',
+		target: '*'
+	},
+	{
 		source: 'schedule-source-1',
 		target: 'api-loader-target-1'
 	},

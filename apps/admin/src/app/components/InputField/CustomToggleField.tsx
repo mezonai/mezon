@@ -7,7 +7,7 @@ type CustomToggleFieldProps = HTMLFieldProps<boolean, HTMLDivElement> & {
 
 function CustomToggleFieldComponent({ value = false, onChange, label, ...props }: CustomToggleFieldProps) {
 	return (
-		<div className="flex items-center justify-between py-2" {...props}>
+		<div className="flex items-center justify-between py-2">
 			{label && <span className="text-sm font-medium">{label}</span>}
 			<button
 				type="button"

@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
-import { HTMLFieldProps, connectField } from 'uniforms';
+import React, { useEffect, useState } from 'react';
+import type { HTMLFieldProps } from 'uniforms';
+import { connectField } from 'uniforms';
 
 type CustomFormFieldProps = HTMLFieldProps<string[], HTMLDivElement> & {
 	label?: string;

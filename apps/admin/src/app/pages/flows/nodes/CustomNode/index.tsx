@@ -13,6 +13,7 @@ import React, { useContext } from 'react';
 
 import { FlowContext } from '../../../../context/FlowContext';
 import type { INodeEdit, ISelectedNode } from '../../../../stores/flow/flow.interface';
+import NodeTypes from '../NodeType';
 interface IAnchor {
 	id: string;
 	text: string;
@@ -42,11 +43,28 @@ interface CustomNodeProps {
 	onHandleLeave?: () => void;
 }
 
-const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, onHandleHover, onHandleLeave }: CustomNodeProps) => {
+const CustomNode = ({ data, bridgeSchema, anchors: initialAnchors, label, Icon, initialValue, onHandleHover, onHandleLeave }: CustomNodeProps) => {
 	const { flowDispatch } = useContext(FlowContext);
 	const edges = useEdges();
 
 	const connection = useStore((state) => state.connection);
+
+	const anchors = React.useMemo(() => {
+		const nodeData = data.defaultValue || initialValue || {};
+		const nodeConfig = NodeTypes.find((t) => t.type === data.type);
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		if (nodeConfig && typeof nodeConfig.anchors.source === 'function') {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const dynamicSourceAnchors = (nodeConfig.anchors.source as any)(nodeData);
+
+			return {
+				...initialAnchors,
+				source: dynamicSourceAnchors
+			};
+		}
+		return initialAnchors;
+	}, [data.defaultValue, initialValue, data.type, initialAnchors]);
 
 	const isHandleConnected = (handleId: string) => {
 		return edges.some((edge) => edge.source === data.id && edge.sourceHandle === handleId);
@@ -130,7 +148,7 @@ const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, on
 
 			{hasMultipleSources && (
 				<>
-					{anchors.source.map((item, index) => {
+					{anchors.source.map((item: IAnchor, index: number) => {
 						const connected = isHandleConnected(item.id);
 						const totalSources = anchors.source.length;
 						const spacing = 100 / (totalSources + 1);
@@ -138,7 +156,6 @@ const CustomNode = ({ data, bridgeSchema, anchors, label, Icon, initialValue, on
 
 						return (
 							<React.Fragment key={index}>
-								{/* Line và button nằm ngoài node */}
 								<div
 									className={`absolute flex items-center transition-all duration-300 ease-in-out ${
 										connected || isConnectingFromThisNode ? 'opacity-0 pointer-events-none' : 'opacity-100 pointer-events-auto'

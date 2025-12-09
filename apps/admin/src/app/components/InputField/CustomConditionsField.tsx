@@ -199,7 +199,6 @@ const CustomConditionsField = ({
 					return { ...condition, type: newValue, operator: defaultOperator };
 				}
 				if (fieldName === 'right') {
-					// Cập nhật cả right và cache
 					return { ...condition, right: newValue, _cachedRight: newValue };
 				}
 				return { ...condition, [fieldName]: newValue };
