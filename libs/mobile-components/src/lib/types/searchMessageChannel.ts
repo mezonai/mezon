@@ -1,5 +1,5 @@
-import { SearchMessageEntity } from '@mezon/store-mobile';
-import React from 'react';
+import type { SearchMessageEntity } from '@mezon/store-mobile';
+import type React from 'react';
 
 export interface IOption {
 	title: string;
@@ -21,7 +21,6 @@ export enum ACTIVE_TAB {
 export interface ITabList {
 	title: string;
 	quantitySearch: number;
-	display: boolean;
 	index?: number;
 }
 
@@ -36,6 +35,7 @@ export enum ITypeOptionSearch {
 	FROM = '>',
 	MENTIONS = '~',
 	HAS = '&',
+	IN = '#',
 	BEFORE = 'before',
 	DURING = 'during',
 	AFTER = 'after',

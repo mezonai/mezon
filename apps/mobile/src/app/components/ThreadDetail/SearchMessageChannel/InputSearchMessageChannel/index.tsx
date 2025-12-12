@@ -1,13 +1,14 @@
-import type { IOption, IUerMention } from '@mezon/mobile-components';
+import { ACTIVE_TAB, type IOption, type IUerMention } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import debounce from 'lodash.debounce';
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { NativeSyntheticEvent, TextInputKeyPressEventData } from 'react-native';
 import { Platform, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
 import Tooltip from 'react-native-walkthrough-tooltip';
+import { SearchMessageChannelContext } from '..';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import ListOptionSearch from '../ListOptionSearch';
@@ -34,14 +35,21 @@ const InputSearchMessageChannel = ({
 	nameChannel,
 	isClearSearch = false
 }: InputSearchMessageChannelProps) => {
+	const navigation = useNavigation<any>();
+	const { activeTab } = useContext(SearchMessageChannelContext);
 	const [textInput, setTextInput] = useState<string>(inputValue);
 	const [isVisibleToolTip, setIsVisibleToolTip] = useState<boolean>(false);
 	const inputSearchRef = useRef(null);
-	const navigation = useNavigation<any>();
 	const { t } = useTranslation(['searchMessageChannel']);
 
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
+
+	const shouldShowTooltip = useMemo(() => {
+		if (nameChannel) return true;
+
+		return activeTab === ACTIVE_TAB.MESSAGES;
+	}, [nameChannel, activeTab]);
 
 	const shouldShowBadge = useMemo(
 		() => nameChannel || optionFilter?.title || userMention?.display,
@@ -139,7 +147,7 @@ const InputSearchMessageChannel = ({
 					</Pressable>
 				) : null}
 			</View>
-			{!!nameChannel && (
+			{shouldShowTooltip && (
 				<Tooltip
 					isVisible={isVisibleToolTip}
 					closeOnBackgroundInteraction={true}
@@ -154,6 +162,7 @@ const InputSearchMessageChannel = ({
 								}
 								setIsVisibleToolTip(false);
 							}}
+							isSearchGlobal={!nameChannel}
 						/>
 					}
 					contentStyle={{ minWidth: size.s_220, padding: 0, borderRadius: size.s_10, backgroundColor: themeValue.primary }}

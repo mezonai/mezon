@@ -1,8 +1,8 @@
 import { ETypeSearch } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllFriends } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import React, { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -30,8 +30,7 @@ function MessageHeader() {
 		navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {
 			screen: APP_SCREEN.MENU_CHANNEL.SEARCH_MESSAGE_CHANNEL,
 			params: {
-				typeSearch: ETypeSearch.SearchAll,
-				currentChannel: {}
+				typeSearch: ETypeSearch.SearchAll
 			}
 		});
 	};
@@ -56,21 +55,7 @@ function MessageHeader() {
 							<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
 						</View>
 						{!!quantityPendingRequest && (
-							<View
-								style={{
-									backgroundColor: baseColor.redStrong,
-									minWidth: size.s_20,
-									paddingHorizontal: size.s_2,
-									height: size.s_20,
-									alignItems: 'center',
-									justifyContent: 'center',
-									borderRadius: size.s_20,
-									position: 'absolute',
-									right: -size.s_8,
-									top: -size.s_8,
-									zIndex: 10
-								}}
-							>
+							<View style={styles.quantityPendingContainer}>
 								<Text style={styles.textQuantityPending}>{quantityPendingRequest}</Text>
 							</View>
 						)}
@@ -81,4 +66,4 @@ function MessageHeader() {
 	);
 }
 
-export default React.memo(MessageHeader);
+export default memo(MessageHeader);

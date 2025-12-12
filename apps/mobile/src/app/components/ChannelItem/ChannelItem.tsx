@@ -16,9 +16,11 @@ import style from './ChannelItem.styles';
 
 type ChannelItemProps = {
 	channelData?: ChannelUsersEntity;
+	onSelectChannel?: (channel: ChannelUsersEntity) => void;
+	isHideClanName?: boolean;
 };
 
-export const ChannelItem = memo(({ channelData }: ChannelItemProps) => {
+export const ChannelItem = memo(({ channelData, onSelectChannel, isHideClanName = false }: ChannelItemProps) => {
 	const { t } = useTranslation(['searchMessageChannel']);
 	const { themeValue } = useTheme();
 	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parent_id || ''));
@@ -27,6 +29,10 @@ export const ChannelItem = memo(({ channelData }: ChannelItemProps) => {
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
 	const handleOnPress = async () => {
+		if (onSelectChannel) {
+			onSelectChannel(channelData);
+			return;
+		}
 		const store = getStore();
 		const clanIdStore = selectCurrentClanId(store.getState());
 
@@ -40,6 +46,7 @@ export const ChannelItem = memo(({ channelData }: ChannelItemProps) => {
 			navigation.goBack();
 		}
 	};
+
 	return (
 		<TouchableOpacity onPress={handleOnPress} style={styles.channelItemContainer}>
 			{[ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD, ChannelType.CHANNEL_TYPE_APP].includes(channelData?.type) ? (
@@ -49,7 +56,7 @@ export const ChannelItem = memo(({ channelData }: ChannelItemProps) => {
 						<View style={styles.channelInfo}>
 							<Text style={styles.channelName} numberOfLines={1}>{`${channelData?.channel_label} ${parentLabel}`}</Text>
 						</View>
-						{!!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
+						{!isHideClanName && !!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
 					</View>
 				</View>
 			) : null}
@@ -63,7 +70,7 @@ export const ChannelItem = memo(({ channelData }: ChannelItemProps) => {
 									{channelData?.channel_label}
 								</Text>
 							</View>
-							{!!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
+							{!isHideClanName && !!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
 						</View>
 					</View>
 					<View style={styles.joinChannelBtn}>

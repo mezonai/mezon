@@ -1,6 +1,6 @@
-import { ITabList } from '@mezon/mobile-components';
+import type { ITabList } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import React from 'react';
+import { memo } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { styles as stylesFn } from './styles';
 interface IHeaderTabSearchProps {
@@ -11,10 +11,11 @@ interface IHeaderTabSearchProps {
 const HeaderTabSearch = ({ onPress, tabList, activeTab }: IHeaderTabSearchProps) => {
 	const { themeValue } = useTheme();
 	const styles = stylesFn(themeValue);
+
 	return (
 		<View style={styles.container}>
 			{tabList?.map((tab: ITabList, index: number) => (
-				<Pressable key={`tab_search_${index.toString()}`} onPress={() => onPress(tab?.index)} style={styles.tabButton}>
+				<Pressable key={`tab_search_${tab?.index}_${index}`} onPress={() => onPress(tab?.index)} style={styles.tabButton}>
 					<View
 						style={[
 							styles.tabContent,
@@ -29,7 +30,7 @@ const HeaderTabSearch = ({ onPress, tabList, activeTab }: IHeaderTabSearchProps)
 							numberOfLines={1}
 							ellipsizeMode="middle"
 						>
-							{tab.title} {tab?.quantitySearch ? `(${tab?.quantitySearch})` : ''}
+							{tab.title} {tab?.quantitySearch !== undefined ? `(${tab.quantitySearch})` : ''}
 						</Text>
 					</View>
 				</Pressable>
@@ -38,4 +39,4 @@ const HeaderTabSearch = ({ onPress, tabList, activeTab }: IHeaderTabSearchProps)
 	);
 };
 
-export default React.memo(HeaderTabSearch);
+export default memo(HeaderTabSearch);

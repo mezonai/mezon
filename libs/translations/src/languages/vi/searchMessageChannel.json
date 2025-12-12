@@ -13,7 +13,8 @@
 	"Messages": "Tin nhắn",
 	"filterOptions": {
 		"fromUser": "Từ một người cụ thể",
-		"mentionUser": "Đề cập ai đó"
+		"mentionUser": "Đề cập ai đó",
+		"inChannel": "Trong một kênh cụ thể"
 	},
 	"cancel": "Huỷ",
 	"searchPlaceholder": "Tìm kiếm",

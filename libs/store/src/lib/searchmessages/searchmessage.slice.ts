@@ -1,9 +1,10 @@
 import { captureSentryError } from '@mezon/logger';
-import { LoadingStatus, SearchFilter } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { LoadingStatus, SearchFilter } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { safeJSONParse } from 'mezon-js';
-import { ApiSearchMessageDocument, ApiSearchMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSearchMessageDocument, ApiSearchMessageRequest } from 'mezon-js/api.gen';
 import { ensureSession, getMezonCtx } from '../helpers';
 export const SEARCH_MESSAGES_FEATURE_KEY = 'searchMessages';
 
@@ -136,6 +137,12 @@ export const searchMessageSlice = createSlice({
 				state.byChannels[channelId] = getInitialChannelState();
 			}
 			state.byChannels[channelId].searchedRequest = value;
+		},
+		clearSearchResults: (state, action: PayloadAction<{ channelId: string }>) => {
+			const { channelId } = action.payload;
+			if (state.byChannels[channelId]) {
+				state.byChannels[channelId] = getInitialChannelState();
+			}
 		}
 	},
 

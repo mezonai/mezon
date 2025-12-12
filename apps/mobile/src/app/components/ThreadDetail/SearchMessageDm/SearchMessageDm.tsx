@@ -1,11 +1,7 @@
-import { debounce, ETypeSearch, IOption, IUerMention } from '@mezon/mobile-components';
+import type { IOption, IUerMention } from '@mezon/mobile-components';
+import { ETypeSearch, debounce } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import {
-	searchMessagesActions,
-	selectValueInputSearchMessage,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store-mobile';
+import { searchMessagesActions, selectValueInputSearchMessage, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import type { SearchFilter } from '@mezon/utils';
 import { SIZE_PAGE_SEARCH } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -131,7 +127,7 @@ export default function SearchMessageDm({ navigation, route }: any) {
 	};
 
 	return (
-		<SearchMessageChannelContext.Provider value={filtersSearch}>
+		<SearchMessageChannelContext.Provider value={{ filtersSearch }}>
 			<StatusBarHeight />
 			<View style={{ flex: 1 }}>
 				<LinearGradient

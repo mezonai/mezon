@@ -13,7 +13,8 @@
 	"Messages": "Messages",
 	"filterOptions": {
 		"fromUser": "From a specific user",
-		"mentionUser": "Mention someone"
+		"mentionUser": "Mention someone",
+		"inChannel": "In a specific channel"
 	},
 	"cancel": "Cancel",
 	"searchPlaceholder": "Search",

@@ -1,6 +1,6 @@
-import type { ETypeSearch, IUerMention } from '@mezon/mobile-components';
+import type { ETypeSearch, ITabList, IUerMention } from '@mezon/mobile-components';
 import { ACTIVE_TAB } from '@mezon/mobile-components';
-import type { DirectEntity } from '@mezon/store-mobile';
+import type { ChannelMembersEntity, DirectEntity } from '@mezon/store-mobile';
 import {
 	getStore,
 	listChannelsByUserActions,
@@ -15,7 +15,7 @@ import {
 import type { IChannel, SearchItemProps } from '@mezon/utils';
 import { compareObjects, normalizeString } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { removeDiacritics } from '../../../../utils/helpers';
@@ -27,21 +27,39 @@ import HeaderTabSearch from './HeaderTabSearch';
 import { style } from './styles';
 
 interface ISearchMessagePageProps {
-	currentChannel: IChannel | DirectEntity;
+	typeSearch: ETypeSearch;
 	searchText: string;
+	currentChannel: IChannel | DirectEntity;
 	nameChannel: string;
 	userMention: IUerMention;
-	typeSearch: ETypeSearch;
-	isSearchMessage?: boolean;
+	onActiveTabChange: (tab: number) => void;
+	channelIdFilter: string;
 }
 
-function SearchMessagePage({ searchText, currentChannel, userMention, typeSearch, isSearchMessage, nameChannel = '' }: ISearchMessagePageProps) {
+const SearchMessagePage = ({
+	typeSearch,
+	searchText,
+	currentChannel,
+	nameChannel,
+	userMention,
+	onActiveTabChange,
+	channelIdFilter
+}: ISearchMessagePageProps) => {
+	const dispatch = useAppDispatch();
 	const { t } = useTranslation(['searchMessageChannel']);
 	const [activeTab, setActiveTab] = useState<number>(ACTIVE_TAB.MEMBER);
-	const store = getStore();
-	const totalResult = useAppSelector((state) => selectTotalResultSearchMessage(state, currentChannel?.channel_id));
-	const dispatch = useAppDispatch();
 	const [isContentReady, setIsContentReady] = useState(false);
+
+	const channelId = useMemo(() => {
+		if (!currentChannel) {
+			if (channelIdFilter) return channelIdFilter;
+			return '0';
+		}
+		return currentChannel?.channel_id || currentChannel?.id;
+	}, [channelIdFilter, currentChannel]);
+
+	const store = getStore();
+	const totalResult = useAppSelector((state) => selectTotalResultSearchMessage(state, channelId));
 
 	useEffect(() => {
 		const timeout = setTimeout(() => {
@@ -57,16 +75,22 @@ function SearchMessagePage({ searchText, currentChannel, userMention, typeSearch
 
 	const channelsSearch = useMemo(() => {
 		if (nameChannel) return [];
-		const listChannels = selectAllChannelsByUser(store.getState());
+		const listChannels = selectAllChannelsByUser(store.getState()) || [];
 		if (!searchText) return listChannels;
-		return (
-			listChannels?.filter((channel) => {
-				return normalizeString(channel?.channel_label)?.toLowerCase().includes(normalizeString(searchText)?.toLowerCase());
-			}) || []
-		).sort((a: SearchItemProps, b: SearchItemProps) => compareObjects(a, b, searchText, 'channel_label'));
+
+		try {
+			return listChannels
+				.filter((channel) => {
+					return normalizeString(channel?.channel_label).toLowerCase().includes(normalizeString(searchText).toLowerCase());
+				})
+				.sort((a: SearchItemProps, b: SearchItemProps) => compareObjects(a, b, searchText, 'channel_label'));
+		} catch (err) {
+			console.error('Filter/sort channelsSearch error', err);
+			return [];
+		}
 	}, [searchText, store, nameChannel]);
 
-	const formatMemberData = useCallback((userChannels) => {
+	const formatMemberData = useCallback((userChannels: ChannelMembersEntity[]) => {
 		return (
 			userChannels?.map?.((i) => ({
 				avatar_url: i?.clan_avatar || i?.user?.avatar_url,
@@ -78,28 +102,30 @@ function SearchMessagePage({ searchText, currentChannel, userMention, typeSearch
 	}, []);
 
 	const channelMembers = useMemo(() => {
-		if (!nameChannel || !currentChannel?.channel_id) return [];
+		if (!nameChannel || !currentChannel) return [];
 
 		try {
-			const userChannels = selectAllChannelMembers(store.getState(), currentChannel.channel_id);
+			const userChannels = selectAllChannelMembers(store.getState(), channelId);
 			return formatMemberData(userChannels);
-		} catch (e) {
+		} catch {
 			return [];
 		}
-	}, [nameChannel, currentChannel?.channel_id, store, formatMemberData]);
+	}, [nameChannel, currentChannel, store, channelId, formatMemberData]);
 
 	const allUsers = useMemo(() => {
 		if (nameChannel) return [];
+
 		return selectAllUsersByUser(store.getState()) || [];
 	}, [nameChannel, store]);
 
 	const allDirectMessages = useMemo(() => {
 		if (nameChannel) return [];
-		return selectDirectsOpenlist(store.getState() as any)?.filter((dm) => Number(dm?.type) === ChannelType.CHANNEL_TYPE_GROUP) || [];
+
+		return selectDirectsOpenlist(store.getState())?.filter((dm) => Number(dm?.type) === ChannelType.CHANNEL_TYPE_GROUP) || [];
 	}, [nameChannel, store]);
 
-	const filterAndSortMembers = useCallback((members, searchTerm) => {
-		if (!searchTerm?.trim() || !members?.length) return members || [];
+	const filterAndSortMembers = useCallback((members, searchTerm: string) => {
+		if (!searchTerm.trim() || !members?.length) return members || [];
 
 		const search = searchTerm.trim().toLowerCase();
 		const searchNorm = removeDiacritics(search);
@@ -157,7 +183,8 @@ function SearchMessagePage({ searchText, currentChannel, userMention, typeSearch
 
 	const dmGroupsSearch = useMemo(() => {
 		if (nameChannel) return [];
-		if (!searchText) return allDirectMessages;
+		if (!searchText) return allDirectMessages || [];
+
 		return (
 			allDirectMessages?.filter((dmGroup) => {
 				const groupLabel = dmGroup?.channel_label || dmGroup?.usernames?.[0] || '';
@@ -167,61 +194,52 @@ function SearchMessagePage({ searchText, currentChannel, userMention, typeSearch
 	}, [searchText, nameChannel, allDirectMessages]);
 
 	const TabList = useMemo(() => {
-		const data = [
-			{
+		const data: ITabList[] = [];
+
+		if (!userMention) {
+			data.push({
 				title: t('members'),
-				quantitySearch: searchText && membersSearch?.length + dmGroupsSearch?.length,
-				display: !userMention && (!!membersSearch?.length || !!dmGroupsSearch?.length),
+				quantitySearch: membersSearch?.length + dmGroupsSearch.length,
 				index: ACTIVE_TAB.MEMBER
+			});
+
+			if (!nameChannel) {
+				data.push({
+					title: t('channels'),
+					quantitySearch: channelsSearch.length,
+					index: ACTIVE_TAB.CHANNEL
+				});
 			}
-		];
-		if (nameChannel) {
-			data.push({
-				title: t('Messages'),
-				quantitySearch: totalResult,
-				display: !!userMention || (!!totalResult && isSearchMessage),
-				index: ACTIVE_TAB.MESSAGES
-			});
-		} else {
-			data.push({
-				title: t('channels'),
-				quantitySearch: searchText && channelsSearch?.length,
-				display: !userMention && !!channelsSearch?.length,
-				index: ACTIVE_TAB.CHANNEL
-			});
 		}
-		return data?.filter((tab) => tab?.display);
-	}, [
-		t,
-		searchText,
-		membersSearch?.length,
-		dmGroupsSearch?.length,
-		userMention,
-		channelsSearch?.length,
-		totalResult,
-		isSearchMessage,
-		nameChannel
-	]);
 
-	const handelHeaderTabChange = useCallback((index: number) => {
-		setActiveTab(index);
-	}, []);
+		data.push({
+			title: t('Messages'),
+			quantitySearch: userMention || searchText.trim() ? totalResult : undefined,
+			index: ACTIVE_TAB.MESSAGES
+		});
 
-	const handleSetActiveTab = useCallback(() => {
-		const isValidActiveTab = TabList.some((tab) => tab?.index === activeTab);
-		if (!isValidActiveTab) {
-			setActiveTab(TabList[0]?.index);
-		}
-	}, [TabList]);
+		return data;
+	}, [channelsSearch.length, dmGroupsSearch.length, membersSearch?.length, nameChannel, searchText, t, totalResult, userMention]);
+
+	const handelHeaderTabChange = useCallback(
+		(index: number) => {
+			setActiveTab(index);
+			onActiveTabChange(index);
+		},
+		[onActiveTabChange]
+	);
 
 	useEffect(() => {
-		handleSetActiveTab();
-	}, [handleSetActiveTab]);
+		if (!TabList.some((t) => t.index === activeTab)) {
+			setActiveTab(TabList[0].index);
+			onActiveTabChange(TabList[0].index);
+		}
+	}, [TabList, activeTab, onActiveTabChange]);
 
 	const renderContent = () => {
 		switch (activeTab) {
 			case ACTIVE_TAB.MESSAGES:
-				return <MessagesSearchTab typeSearch={typeSearch} currentChannel={currentChannel} />;
+				return <MessagesSearchTab typeSearch={typeSearch} currentChannel={currentChannel} channelIdFilter={channelIdFilter} />;
 			case ACTIVE_TAB.MEMBER:
 				return <MembersSearchTab listMemberSearch={membersSearch} listDMGroupSearch={dmGroupsSearch} />;
 			case ACTIVE_TAB.CHANNEL:
@@ -237,6 +255,6 @@ function SearchMessagePage({ searchText, currentChannel, userMention, typeSearch
 			<View style={style.flex}>{isContentReady ? renderContent() : null}</View>
 		</View>
 	);
-}
+};
 
-export default React.memo(SearchMessagePage);
+export default memo(SearchMessagePage);

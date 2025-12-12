@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, isTablet?: boolean) =>
@@ -315,5 +316,18 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		separator: {
 			height: '100%',
 			width: size.s_4
+		},
+		quantityPendingContainer: {
+			backgroundColor: baseColor.redStrong,
+			minWidth: size.s_20,
+			paddingHorizontal: size.s_2,
+			height: size.s_20,
+			alignItems: 'center',
+			justifyContent: 'center',
+			borderRadius: size.s_20,
+			position: 'absolute',
+			right: -size.s_8,
+			top: -size.s_8,
+			zIndex: 10
 		}
 	});

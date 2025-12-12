@@ -1,11 +1,11 @@
-import type { ETypeSearch, IOption, IUerMention } from '@mezon/mobile-components';
+import { ACTIVE_TAB, type ETypeSearch, type IOption, type IUerMention } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity } from '@mezon/store-mobile';
 import { searchMessagesActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import type { IChannel, SearchFilter } from '@mezon/utils';
 import { SIZE_PAGE_SEARCH } from '@mezon/utils';
 import type { RouteProp } from '@react-navigation/native';
-import React, { createContext, memo, useCallback, useEffect, useState } from 'react';
+import { createContext, memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
@@ -24,90 +24,122 @@ type RootStackParamList = {
 };
 
 type MuteThreadDetailRouteProp = RouteProp<RootStackParamList, 'SearchMessageChannel'>;
-
-type SearchMessageChannelProps = {
+interface ISearchMessageChannelProps {
 	route: MuteThreadDetailRouteProp;
-};
+}
+
+interface ISearchMessageChannelContext {
+	filtersSearch?: SearchFilter[];
+	activeTab?: number;
+}
 
 const Backspace = 'Backspace';
+export const SearchMessageChannelContext = createContext<ISearchMessageChannelContext>({});
 
-export const SearchMessageChannelContext = createContext(null);
-
-const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
+const SearchMessageChannel = ({ route }: ISearchMessageChannelProps) => {
 	const { currentChannel, typeSearch, nameChannel, isClearSearch } = route?.params || {};
 	const { themeValue } = useTheme();
-	const [userMention, setUserMention] = useState<IUerMention>();
-	const [isSearchMessagePage, setSearchMessagePage] = useState<boolean>(true);
-	const currentClanId = useSelector(selectCurrentClanId);
-	const [filtersSearch, setFiltersSearch] = useState<SearchFilter[]>();
 	const dispatch = useAppDispatch();
-	const [optionFilter, setOptionFilter] = useState<IOption>();
-
+	const [userMention, setUserMention] = useState<IUerMention>();
 	const [searchText, setSearchText] = useState<string>('');
-	const handleSearchText = useCallback((text) => {
+	const [isSearchMessagePage, setSearchMessagePage] = useState<boolean>(true);
+	const [filtersSearch, setFiltersSearch] = useState<SearchFilter[]>();
+	const [activeTab, setActiveTab] = useState<number>(ACTIVE_TAB.MEMBER);
+	const [optionFilter, setOptionFilter] = useState<IOption>();
+	const currentClanId = useSelector(selectCurrentClanId);
+
+	const handleSearchText = useCallback((text: string) => {
 		if (!text.length) {
 			setSearchMessagePage(true);
 		}
 		setSearchText(text);
 	}, []);
 
-	const handleOptionFilter = useCallback((option) => {
+	const handleOptionFilter = useCallback((option: IOption) => {
 		setOptionFilter(option);
 		setUserMention(null);
 		if (option) setSearchMessagePage(false);
 	}, []);
 
-	const handleSelectUserInfo = useCallback((user) => {
+	const handleSelectUserInfo = useCallback((user: IUerMention) => {
 		setUserMention(user);
 		setSearchMessagePage(true);
 	}, []);
 
+	const channelId = useMemo(() => {
+		if (optionFilter?.value === 'channel_id' && userMention) {
+			return userMention?.channel_id || userMention?.id;
+		}
+		return nameChannel ? currentChannel?.channel_id || currentChannel?.id : '0';
+	}, [optionFilter?.value, userMention, nameChannel, currentChannel?.channel_id, currentChannel?.id]);
+
+	const shouldSearchMessage = useMemo(() => {
+		return (searchText?.trim()?.length > 0 || (optionFilter && userMention)) && channelId;
+	}, [searchText, optionFilter, userMention, channelId]);
+
+	const shouldClearSearch = useMemo(() => {
+		return channelId && !searchText?.trim() && !(optionFilter && userMention);
+	}, [channelId, searchText, optionFilter, userMention]);
+
 	const handleSearchMessage = useCallback(() => {
-		const filter: SearchFilter[] = [];
+		try {
+			const filter: SearchFilter[] = [
+				{ field_name: 'channel_id', field_value: channelId },
+				{ field_name: 'clan_id', field_value: currentClanId }
+			];
 
-		filter.push({ field_name: 'channel_id', field_value: currentChannel?.id }, { field_name: 'clan_id', field_value: currentClanId as string });
+			if (optionFilter && userMention && optionFilter?.value !== 'channel_id') {
+				filter.push({
+					field_name: optionFilter?.value,
+					field_value:
+						optionFilter?.value === 'mention' ? `"user_id":"${userMention?.id}"` : userMention?.subDisplay || userMention?.display
+				});
+			}
 
-		if (optionFilter && userMention) {
-			filter.push({
-				field_name: optionFilter?.value,
-				field_value: optionFilter?.value === 'mention' ? `"user_id":"${userMention?.id}"` : userMention?.subDisplay || userMention?.display
-			});
-		}
-		if (searchText?.trim()) {
-			filter.push({
-				field_name: 'content',
-				field_value: searchText
-			});
-		}
-		const payload = {
-			filters: filter,
-			from: 1,
-			size: SIZE_PAGE_SEARCH
-		};
-		setFiltersSearch(filter);
+			if (searchText.trim()) {
+				filter.push({
+					field_name: 'content',
+					field_value: searchText.trim()
+				});
+			}
 
-		if ((searchText?.trim() || (optionFilter && userMention)) && !!currentChannel?.id) {
-			dispatch(searchMessagesActions.setCurrentPage({ channelId: currentChannel?.id, page: 1 }));
-			dispatch(searchMessagesActions.fetchListSearchMessage(payload));
+			setFiltersSearch(filter);
+
+			dispatch(
+				searchMessagesActions.fetchListSearchMessage({
+					filters: filter,
+					from: 1,
+					size: SIZE_PAGE_SEARCH
+				})
+			);
+		} catch (error) {
+			console.error('Fetch list search message error', error);
 		}
-	}, [currentChannel?.id, currentClanId, dispatch, optionFilter, searchText, userMention]);
+	}, [channelId, currentClanId, optionFilter, userMention, searchText]);
 
 	useEffect(() => {
-		if (nameChannel) handleSearchMessage();
-	}, [handleSearchMessage, nameChannel]);
+		if (shouldSearchMessage) handleSearchMessage();
+	}, [shouldSearchMessage, handleSearchMessage]);
+
+	useEffect(() => {
+		if (shouldClearSearch) {
+			dispatch(searchMessagesActions.clearSearchResults({ channelId }));
+			setFiltersSearch([]);
+		}
+	}, [channelId, shouldClearSearch]);
 
 	const handleKeyPress = useCallback(
 		(e) => {
-			if (e.nativeEvent.key === Backspace && !searchText?.length) {
+			if (e.nativeEvent.key === Backspace && !searchText.length) {
 				setUserMention(null);
 				setOptionFilter(null);
 			}
 		},
-		[searchText?.length]
+		[searchText.length]
 	);
 
 	return (
-		<SearchMessageChannelContext.Provider value={filtersSearch}>
+		<SearchMessageChannelContext.Provider value={{ filtersSearch, activeTab }}>
 			<View style={{ flex: 1 }}>
 				<LinearGradient
 					start={{ x: 1, y: 0 }}
@@ -133,7 +165,8 @@ const SearchMessageChannel = ({ route }: SearchMessageChannelProps) => {
 						nameChannel={nameChannel}
 						searchText={searchText}
 						typeSearch={typeSearch}
-						isSearchMessage={Boolean(searchText?.trim())}
+						onActiveTabChange={setActiveTab}
+						channelIdFilter={channelId}
 					/>
 				) : (
 					<SearchOptionPage
