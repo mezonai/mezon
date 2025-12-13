@@ -14,7 +14,7 @@ export function useSendForwardMessage() {
 	const client = clientRef.current;
 
 	const sendForwardMessage = React.useCallback(
-		async (clanid: string, channel_id: string, mode: number, isPublic: boolean, message: IMessageWithUser) => {
+		async (clanid: string, channel_id: string, mode: number, isPublic: boolean, message: IMessageWithUser, additionalMessage?: string) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
 			const socket = socketRef.current;
@@ -48,6 +48,19 @@ export function useSendForwardMessage() {
 					message.channel_id === channel_id ? message.mentions : [],
 					message.attachments
 				);
+
+				if (additionalMessage && additionalMessage.trim()) {
+					const trimmedMessage = additionalMessage.trim();
+
+					if (trimmedMessage.length > 2000) {
+						throw new Error('Additional message is too long (max 2000 characters)');
+					}
+
+					const additionalContent: IMessageSendPayload = {
+						t: trimmedMessage
+					};
+					await socket.writeChatMessage(clanid, channel_id, mode, isPublic, additionalContent, [], []);
+				}
 
 				dispatch(
 					toastActions.addToast({

@@ -56,6 +56,7 @@ export const threadError: ThreadError = {
 export const titleMission = ['Send a message in', 'Visit a channel', 'Do anything you want'];
 
 export const MIN_THRESHOLD_CHARS = 8000;
+export const MAX_FORWARD_ADDITIONAL_MESSAGE_LENGTH = 2000;
 
 export type ITypeConvert = {
 	type: string;
@@ -71,6 +72,21 @@ export const typeConverts: ITypeConvert[] = [
 export const fileTypeVideo = ['video/mp4', 'video/webm', 'video/mpeg', 'video/x-msvideo'];
 
 export const fileTypeImage = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
+
+export const isImageFileType = (filetype?: string): boolean => {
+	if (!filetype) return false;
+	return fileTypeImage.includes(filetype) || filetype.startsWith('image/');
+};
+
+export const isVideoFileType = (filetype?: string): boolean => {
+	if (!filetype) return false;
+	return fileTypeVideo.includes(filetype) || filetype.startsWith('video/');
+};
+
+export const isFileAttachment = (filetype?: string): boolean => {
+	if (!filetype) return true;
+	return !isImageFileType(filetype) && !isVideoFileType(filetype);
+};
 
 export const failAttachment = {
 	filename: 'failAttachment',

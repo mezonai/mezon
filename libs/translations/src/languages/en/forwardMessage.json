@@ -8,7 +8,15 @@
 		"sharedContent": "Shared content",
 		"cancel": "Cancel",
 		"send": "Send",
-		"sending": "Sending..."
+		"sending": "Sending...",
+		"image": "image",
+		"images": "images",
+		"video": "video",
+		"videos": "videos",
+		"file": "file",
+		"files": "files",
+		"additionalMessage": "Additional message (optional)",
+		"additionalMessagePlaceholder": "Enter message to send with..."
 	},
 	"successMessage": "Message forwarded successfully",
 	"errorMessage": "Failed to forward message"

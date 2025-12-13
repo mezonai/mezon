@@ -20,6 +20,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { Icons } from '@mezon/ui';
 import type { ChannelThreads, UsersClanEntity } from '@mezon/utils';
 import {
 	FOR_1_HOUR_SEC,
@@ -27,6 +28,9 @@ import {
 	TypeSearch,
 	addAttributesSearchList,
 	getAvatarForPrioritize,
+	isFileAttachment,
+	isImageFileType,
+	isVideoFileType,
 	normalizeString,
 	removeDuplicatesById
 } from '@mezon/utils';
@@ -44,7 +48,7 @@ type ObjectSend = {
 	clanId?: string;
 	channelLabel?: string;
 	isPublic: boolean;
-	isFriend?: boolean; // Flag to identify friends without existing DM
+	isFriend?: boolean;
 };
 const ForwardMessageModal = () => {
 	const { t } = useTranslation('forwardMessage');
@@ -66,6 +70,10 @@ const ForwardMessageModal = () => {
 	const isForwardAll = useSelector(getIsFowardAll);
 	const [selectedObjectIdSends, setSelectedObjectIdSends] = useState<ObjectSend[]>([]);
 	const [searchText, setSearchText] = useState('');
+	const [forwardMessage, setForwardMessage] = useState('');
+
+	const remainingChars = 2000 - forwardMessage.length;
+	const isMessageTooLong = forwardMessage.length > 2000;
 
 	const allFriends = useSelector(selectAllFriends);
 	const currentChannel = useSelector(selectCurrentChannel);
@@ -92,7 +100,27 @@ const ForwardMessageModal = () => {
 		return isForwardAll ? handleForwardAllMessage() : sentToMessage();
 	};
 
+	const sendMultipleMessages = async (combineMessages: MessagesEntity[], clanId: string, channelId: string, mode: number, isPublic: boolean) => {
+		for (let i = 0; i < combineMessages.length; i++) {
+			const message = combineMessages[i];
+			const isLastMessage = i === combineMessages.length - 1;
+			await sendForwardMessage(
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				{
+					...message,
+					references: []
+				},
+				isLastMessage ? forwardMessage : undefined
+			);
+		}
+	};
+
 	const handleDirectMessageForwardAll = async (selectedObjectIdSend: ObjectSend, combineMessages: MessagesEntity[]) => {
+		let channelId = selectedObjectIdSend.id;
+
 		if (selectedObjectIdSend.isFriend) {
 			const friend = allFriends.find((f) => f?.user?.id === selectedObjectIdSend.id);
 			if (!friend?.user?.id) return;
@@ -105,55 +133,34 @@ const ForwardMessageModal = () => {
 			);
 
 			if (!response?.channel_id) return;
-
-			for (const message of combineMessages) {
-				await sendForwardMessage('', response.channel_id, ChannelStreamMode.STREAM_MODE_DM, false, {
-					...message,
-					references: []
-				});
-			}
-			return;
+			channelId = response.channel_id;
 		}
 
-		for (const message of combineMessages) {
-			await sendForwardMessage('', selectedObjectIdSend.id, ChannelStreamMode.STREAM_MODE_DM, false, {
-				...message,
-				references: []
-			});
-		}
+		await sendMultipleMessages(combineMessages, '', channelId, ChannelStreamMode.STREAM_MODE_DM, false);
 	};
 
 	const handleGroupForwardAll = async (selectedObjectIdSend: ObjectSend, combineMessages: MessagesEntity[]) => {
-		for (const message of combineMessages) {
-			await sendForwardMessage('', selectedObjectIdSend.id, ChannelStreamMode.STREAM_MODE_GROUP, false, {
-				...message,
-				references: []
-			});
-		}
+		await sendMultipleMessages(combineMessages, '', selectedObjectIdSend.id, ChannelStreamMode.STREAM_MODE_GROUP, false);
 	};
 
 	const handleChannelForwardAll = async (selectedObjectIdSend: ObjectSend, combineMessages: MessagesEntity[]) => {
-		for (const message of combineMessages) {
-			await sendForwardMessage(
-				selectedObjectIdSend.clanId || '',
-				selectedObjectIdSend.id,
-				ChannelStreamMode.STREAM_MODE_CHANNEL,
-				currentChannel ? !currentChannel.channel_private : false,
-				{ ...message, references: [] }
-			);
-		}
+		await sendMultipleMessages(
+			combineMessages,
+			selectedObjectIdSend.clanId || '',
+			selectedObjectIdSend.id,
+			ChannelStreamMode.STREAM_MODE_CHANNEL,
+			currentChannel ? !currentChannel.channel_private : false
+		);
 	};
 
 	const handleThreadForwardAll = async (selectedObjectIdSend: ObjectSend, combineMessages: MessagesEntity[]) => {
-		for (const message of combineMessages) {
-			await sendForwardMessage(
-				selectedObjectIdSend.clanId || '',
-				selectedObjectIdSend.id,
-				ChannelStreamMode.STREAM_MODE_THREAD,
-				currentChannel ? !currentChannel.channel_private : false,
-				{ ...message, references: [] }
-			);
-		}
+		await sendMultipleMessages(
+			combineMessages,
+			selectedObjectIdSend.clanId || '',
+			selectedObjectIdSend.id,
+			ChannelStreamMode.STREAM_MODE_THREAD,
+			currentChannel ? !currentChannel.channel_private : false
+		);
 	};
 
 	const forwardAllToSingleDestination = async (selectedObjectIdSend: ObjectSend, combineMessages: MessagesEntity[]) => {
@@ -222,24 +229,45 @@ const ForwardMessageModal = () => {
 
 			if (!response?.channel_id) return;
 
-			await sendForwardMessage('', response.channel_id, ChannelStreamMode.STREAM_MODE_DM, false, {
-				...selectedMessage,
-				references: []
-			});
+			await sendForwardMessage(
+				'',
+				response.channel_id,
+				ChannelStreamMode.STREAM_MODE_DM,
+				false,
+				{
+					...selectedMessage,
+					references: []
+				},
+				forwardMessage
+			);
 			return;
 		}
 
-		await sendForwardMessage('', selectedObjectIdSend.id, ChannelStreamMode.STREAM_MODE_DM, false, {
-			...selectedMessage,
-			references: []
-		});
+		await sendForwardMessage(
+			'',
+			selectedObjectIdSend.id,
+			ChannelStreamMode.STREAM_MODE_DM,
+			false,
+			{
+				...selectedMessage,
+				references: []
+			},
+			forwardMessage
+		);
 	};
 
 	const handleGroupForward = async (selectedObjectIdSend: ObjectSend) => {
-		await sendForwardMessage('', selectedObjectIdSend.id, ChannelStreamMode.STREAM_MODE_GROUP, false, {
-			...selectedMessage,
-			references: []
-		});
+		await sendForwardMessage(
+			'',
+			selectedObjectIdSend.id,
+			ChannelStreamMode.STREAM_MODE_GROUP,
+			false,
+			{
+				...selectedMessage,
+				references: []
+			},
+			forwardMessage
+		);
 	};
 
 	const handleChannelForward = async (selectedObjectIdSend: ObjectSend) => {
@@ -248,7 +276,8 @@ const ForwardMessageModal = () => {
 			selectedObjectIdSend.id,
 			ChannelStreamMode.STREAM_MODE_CHANNEL,
 			selectedObjectIdSend.isPublic,
-			{ ...selectedMessage, references: [] }
+			{ ...selectedMessage, references: [] },
+			forwardMessage
 		);
 	};
 
@@ -258,7 +287,8 @@ const ForwardMessageModal = () => {
 			selectedObjectIdSend.id,
 			ChannelStreamMode.STREAM_MODE_THREAD,
 			selectedObjectIdSend.isPublic,
-			{ ...selectedMessage, references: [] }
+			{ ...selectedMessage, references: [] },
+			forwardMessage
 		);
 	};
 
@@ -481,15 +511,131 @@ const ForwardMessageModal = () => {
 					</div>
 				</div>
 				<div className="px-4">
-					<div className="mb-2 block">
+					<div className="mb-2 flex items-center gap-2">
 						<label htmlFor="clearAfter" className="text-xs uppercase font-semibold text-theme-primary">
 							{t('modal.sharedContent')}
 						</label>
 					</div>
-					<div className={`h-20 overflow-y-auto  p-[5px] thread-scroll rounded-lg border-theme-primary bg-item-theme`}>
-						<MessageContent message={selectedMessage} />
+
+					<div className="bg-item-theme  p-3 flex items-center justify-between gap-3 border-l-4 border-[var(--text-theme-primary)]">
+						<div className="flex-1 min-w-0">
+							{selectedMessage?.content?.t && (
+								<div className="max-h-12 overflow-hidden text-sm text-theme-primary mb-2 line-clamp-2">
+									<MessageContent message={selectedMessage} />
+								</div>
+							)}
+
+							{selectedMessage?.attachments &&
+								selectedMessage.attachments.length > 0 &&
+								(() => {
+									const images = selectedMessage.attachments.filter((a) => isImageFileType(a.filetype));
+									const videos = selectedMessage.attachments.filter((a) => isVideoFileType(a.filetype));
+									const files = selectedMessage.attachments.filter((a) => isFileAttachment(a.filetype));
+
+									const imageCount = images.length > 99 ? '99+' : images.length;
+									const videoCount = videos.length > 99 ? '99+' : videos.length;
+									const fileCount = files.length > 99 ? '99+' : files.length;
+
+									return (
+										<div className="flex flex-col gap-1 text-xs text-theme-primary opacity-60">
+											{images.length > 0 && (
+												<div className="flex items-center gap-1.5">
+													<Icons.ImageUploadIcon className="w-4 h-4" />
+													<span>
+														{imageCount} {images.length === 1 ? t('modal.image') : t('modal.images')}
+													</span>
+												</div>
+											)}
+											{videos.length > 0 && (
+												<div className="flex items-center gap-1.5">
+													<Icons.PlayButton className="w-4 h-4" />
+													<span>
+														{videoCount} {videos.length === 1 ? t('modal.video') : t('modal.videos')}
+													</span>
+												</div>
+											)}
+											{files.length > 0 && (
+												<div className="flex items-center gap-1.5">
+													<Icons.FileIcon className="w-4 h-4" />
+													<span>
+														{fileCount} {files.length === 1 ? t('modal.file') : t('modal.files')}
+													</span>
+												</div>
+											)}
+										</div>
+									);
+								})()}
+						</div>
+						;|
+						{selectedMessage?.attachments &&
+							selectedMessage.attachments.length > 0 &&
+							(() => {
+								const firstImage = selectedMessage.attachments.find((a) => isImageFileType(a.filetype));
+								const firstVideo = selectedMessage.attachments.find((a) => isVideoFileType(a.filetype));
+								const attachment = firstImage || firstVideo;
+
+								if (attachment) {
+									const isVideo = isVideoFileType(attachment.filetype);
+									return (
+										<div className="relative w-20 h-20 rounded overflow-hidden bg-theme-input flex-shrink-0">
+											{isVideo ? (
+												<>
+													<video src={attachment.url} className="w-full h-full object-cover" />
+													<div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
+														<Icons.PlayButton className="w-8 h-8 text-white" />
+													</div>
+												</>
+											) : (
+												<img
+													src={attachment.url}
+													alt={attachment.filename || 'attachment'}
+													className="w-full h-full object-cover"
+												/>
+											)}
+											{selectedMessage.attachments.length > 1 && (
+												<div className="absolute bottom-1 right-1 bg-black/70 rounded-full w-6 h-6 flex items-center justify-center text-[10px] text-white font-semibold">
+													+{selectedMessage.attachments.length - 1}
+												</div>
+											)}
+										</div>
+									);
+								}
+								return null;
+							})()}
 					</div>
-					<FooterButtonsModal onClose={handleCloseModal} sentToMessage={handleForward} t={t} />
+
+					<div className="mt-4 mb-2 flex items-center justify-between">
+						<label htmlFor="forwardMessage" className="text-xs uppercase font-semibold text-theme-primary">
+							{t('modal.additionalMessage')}
+						</label>
+						{forwardMessage.length > 1800 && (
+							<span
+								className={`text-xs font-semibold ${
+									isMessageTooLong ? 'text-red-500' : remainingChars < 100 ? 'text-yellow-500' : 'text-theme-secondary'
+								}`}
+							>
+								{remainingChars}
+							</span>
+						)}
+					</div>
+					<input
+						id="forwardMessage"
+						className={`bg-theme-input outline-none w-full p-[10px] text-base rounded-lg resize-none ${
+							isMessageTooLong ? 'border-2 border-red-500' : 'border-theme-primary'
+						}`}
+						placeholder={t('modal.additionalMessagePlaceholder')}
+						value={forwardMessage}
+						onChange={(e) => setForwardMessage(e.target.value)}
+						maxLength={2000}
+					/>
+					<FooterButtonsModal
+						onClose={handleCloseModal}
+						sentToMessage={handleForward}
+						t={t}
+						hasSelectedDestination={selectedObjectIdSends.length > 0}
+						selectedCount={selectedObjectIdSends.length}
+						isMessageTooLong={isMessageTooLong}
+					/>
 				</div>
 			</div>
 		</ModalLayout>
@@ -501,11 +647,16 @@ type FooterButtonsModalProps = {
 	onClose: () => void;
 	sentToMessage: () => Promise<void>;
 	t: (key: string) => string;
+	hasSelectedDestination: boolean;
+	selectedCount: number;
+	isMessageTooLong?: boolean;
 };
 
 const FooterButtonsModal = (props: FooterButtonsModalProps) => {
-	const { onClose, sentToMessage, t } = props;
+	const { onClose, sentToMessage, t, hasSelectedDestination, selectedCount, isMessageTooLong = false } = props;
 	const [loading, setLoading] = useState(false);
+
+	const displayCount = selectedCount > 99 ? '99+' : selectedCount;
 
 	const handleSend = async () => {
 		setLoading(true);
@@ -528,10 +679,10 @@ const FooterButtonsModal = (props: FooterButtonsModalProps) => {
 			</button>
 			<button
 				onClick={handleSend}
-				className="py-2 h-10 px-4 rounded text-white bg-bgSelectItem hover:!bg-bgSelectItemHover focus:ring-transparent"
-				disabled={loading}
+				className="py-2 h-10 px-4 rounded text-white bg-bgSelectItem hover:!bg-bgSelectItemHover focus:ring-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+				disabled={loading || !hasSelectedDestination || isMessageTooLong}
 			>
-				{loading ? t('modal.sending') : t('modal.send')}
+				{loading ? t('modal.sending') : `${t('modal.send')} ${selectedCount > 0 ? `(${displayCount})` : ''}`}
 			</button>
 		</div>
 	);
