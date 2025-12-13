@@ -309,6 +309,11 @@ export const appSlice = createSlice({
 				state.history.current = state.history.current + 1;
 			}
 		},
+		setCurrentHistory: (state, action) => {
+			if (!state.history) return;
+			if (state.history.current === null) return;
+			state.history.current = action.payload;
+		},
 		clearHistory: (state) => {
 			state.history = {
 				url: [],

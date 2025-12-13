@@ -1,4 +1,4 @@
-import { ApiClanDiscover } from 'mezon-js/api.gen';
+import type { ApiClanDiscover } from 'mezon-js/api.gen';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_IMAGES } from '../constants/constants';
@@ -64,40 +64,13 @@ const ClanCard: React.FC<ClanCardProps> = ({ clan }) => {
 				<p className="text-xs sm:text-sm text-gray-700 line-clamp-2 mb-1">{clan.description || 'Community clan'}</p>
 				<div className="flex items-center text-gray-500 text-[10px] sm:text-xs  mb-1">
 					<div className="flex items-center">
-						<svg
-							className="mr-1"
-							width="12"
-							height="12"
-							viewBox="0 0 12 12"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg"
-						>
-							<circle
-								cx="6"
-								cy="6"
-								r="5"
-								stroke="#22c55e"
-								strokeWidth="2"
-								fill="none"
-							>
-								<animate
-									attributeName="r"
-									from="3"
-									to="6"
-									dur="1.5s"
-									repeatCount="indefinite"
-								/>
-								<animate
-									attributeName="opacity"
-									from="1"
-									to="0"
-									dur="1.5s"
-									repeatCount="indefinite"
-								/>
+						<svg className="mr-1" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<circle cx="6" cy="6" r="5" stroke="#22c55e" strokeWidth="2" fill="none">
+								<animate attributeName="r" from="3" to="6" dur="1.5s" repeatCount="indefinite" />
+								<animate attributeName="opacity" from="1" to="0" dur="1.5s" repeatCount="indefinite" />
 							</circle>
 							<circle cx="6" cy="6" r="3" fill="#22c55e" />
 						</svg>
-
 					</div>
 					<span>{formatNumber(clan.total_members) || (isValidId ? '100+' : '0')} Members</span>
 				</div>
