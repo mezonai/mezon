@@ -425,13 +425,13 @@ const SettingRightUser = ({
 			(valueDisplayName !== currentDisplayName && flags) ||
 			(flagsRemoveAvartar !== false && flags) ||
 			(editAboutUser !== aboutMe && flags) ? (
-				<div className="flex flex-row gap-2 border-theme-primary shadow-sm bg-modal-theme absolute max-w-[815px] w-full left-1/2 translate-x-[-50%] bottom-4 min-w-96 h-fit p-3 rounded-lg transform z-10">
-					<div className="flex-1 flex items-center text-nowrap">
-						<p className="text-theme-message">{t('unsavedChangesWarning')}</p>
+				<div className="flex flex-col sm:flex-row gap-2 border-theme-primary shadow-sm bg-modal-theme absolute max-w-[815px] w-[calc(100%-1rem)] sm:w-full left-2 sm:left-1/2 sm:translate-x-[-50%] bottom-4 min-w-0 sm:min-w-96 h-fit p-3 rounded-lg transform z-10">
+					<div className="flex-1 flex items-center min-w-0">
+						<p className="text-theme-message text-sm sm:text-base">{t('unsavedChangesWarning')}</p>
 					</div>
-					<div className="flex flex-row justify-end gap-3">
+					<div className="flex flex-row justify-end gap-3 shrink-0">
 						<button
-							className="rounded-[4px] px-2 hover:underline"
+							className="rounded-[4px] px-2 hover:underline text-sm sm:text-base"
 							onClick={() => {
 								handleClose();
 							}}
@@ -441,7 +441,7 @@ const SettingRightUser = ({
 						</button>
 
 						<button
-							className=" btn-primary btn-primary-hover rounded-lg px-2 text-nowrap py-1  "
+							className=" btn-primary btn-primary-hover rounded-lg px-2 text-nowrap py-1 text-sm sm:text-base"
 							onClick={() => {
 								handleUpdateUser();
 							}}

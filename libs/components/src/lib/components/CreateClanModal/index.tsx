@@ -131,7 +131,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 
 	return (
 		<ModalLayout onClose={handleClose}>
-			<div className="bg-theme-setting-primary rounded-xl flex flex-col" data-e2e={generateE2eId('clan_page.modal.create_clan')}>
+			<div className="bg-theme-setting-primary rounded-xl flex flex-col mx-4 md:mx-0" data-e2e={generateE2eId('clan_page.modal.create_clan')}>
 				<div className="flex-1 flex items-center justify-end border-b-theme-primary rounded-t p-4">
 					<Button
 						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover"

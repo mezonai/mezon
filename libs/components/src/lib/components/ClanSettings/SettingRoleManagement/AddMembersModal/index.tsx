@@ -115,7 +115,7 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 				className={`fixed  inset-0 flex items-center justify-center z-50 ${appearanceTheme === ThemeApp.Light && 'lightModeScrollBarMention'}`}
 			>
 				<div className="fixed inset-0 bg-black opacity-80"></div>
-				<div className=" bg-theme-setting-primary text-theme-primary relative z-10 p-6 rounded-[5px] text-center w-[440px] flex flex-col justify-between gap-y-2">
+				<div className=" bg-theme-setting-primary text-theme-primary relative z-10 p-6 rounded-[5px] text-center w-[440px] mx-4 md:mx-0 flex flex-col justify-between gap-y-2">
 					<div>
 						<h2 className="text-2xl font-semibold text-theme-primary-active">{t('setupMember.addMember')}</h2>
 						<p className=" text-[16px] mb-4 font-light inline-flex gap-x-2 items-center">

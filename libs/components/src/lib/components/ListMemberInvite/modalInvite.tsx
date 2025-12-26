@@ -97,29 +97,29 @@ const ModalInvite = (props: ModalParam) => {
 	}
 	return (
 		<ModalLayout onClose={props.onClose}>
-			<div className="bg-theme-setting-primary rounded-xl flex flex-col" data-e2e={generateE2eId('clan_page.modal.invite_people.container')}>
-				<div className="flex-1 flex items-center justify-between border-b-theme-primary rounded-t p-4">
-					<p
-						title={clan?.clan_name}
-						className="font-bold text-xl text-theme-primary-active truncate overflow-hidden whitespace-nowrap max-w-[400px]"
-					>
+			<div
+				className="bg-theme-setting-primary rounded-xl flex flex-col md:w-[480px]"
+				data-e2e={generateE2eId('clan_page.modal.invite_people.container')}
+			>
+				<div className="flex-1 flex items-center justify-between border-b-theme-primary rounded-t p-3 md:p-4 gap-2">
+					<p title={clan?.clan_name} className="font-bold text-base md:text-xl text-theme-primary-active break-words flex-1 min-w-0">
 						{t('modal.title', { target: isInviteExternalCalling ? t('modal.privateEvent') : clan?.clan_name })}
 					</p>
 
 					<Button
-						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover"
+						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover flex-shrink-0"
 						onClick={props.onClose}
 					>
 						×
 					</Button>
 				</div>
-				<div className="flex flex-col w-[480px] px-5 py-4">
+				<div className="flex flex-col w-full px-4 md:px-5 py-4">
 					<ListMemberInvite
 						isInviteExternalCalling={isInviteExternalCalling}
 						url={isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite}
 						channelID={channelID}
 					/>
-					<div className="relative ">
+					<div className="relative">
 						<p className="pt-4 pb-1 text-[12px] mb-12px cursor-default uppercase font-semibold text-theme-primary-active">
 							{t('modal.sendLinkText', { type: isInviteExternalCalling ? t('modal.privateRoom') : t('modal.clanInvite') })}
 							{!isInviteExternalCalling && (
@@ -130,25 +130,27 @@ const ModalInvite = (props: ModalParam) => {
 								</p>
 							)}
 						</p>
-						<input
-							type="text"
-							className="w-full h-11 border-theme-primary text-theme-primary-active bg-theme-input rounded-lg px-[16px] py-[13px] text-[14px] outline-none"
-							value={isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite}
-							readOnly
-							data-e2e={generateE2eId('clan_page.modal.invite_people.url_invite')}
-						/>
-						<button
-							className="absolute right-0 bottom-0 mb-1  font-semibold text-sm px-8 py-1.5
-							shadow outline-none focus:outline-none ease-linear transition-all duration-150
-							btn-primary btn-primary-hover  text-[16px] leading-6 rounded-lg mr-[8px]"
-							onClick={() => {
-								handleCopyToClipboard(urlInvite);
-								onClose();
-								setShowClanListMenuContext?.();
-							}}
-						>
-							{t('buttons.copy')}
-						</button>
+						<div className="relative">
+							<input
+								type="text"
+								className="w-full h-11 border-theme-primary text-theme-primary-active bg-theme-input rounded-lg px-[16px] py-[13px] text-[14px] outline-none pr-[70px] "
+								value={isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite}
+								readOnly
+								data-e2e={generateE2eId('clan_page.modal.invite_people.url_invite')}
+							/>
+							<button
+								className="absolute right-0 top-0 h-11 font-semibold text-sm px-4 md:px-8 py-1.5
+								shadow outline-none focus:outline-none ease-linear transition-all duration-150
+								btn-primary btn-primary-hover text-[14px] md:text-[16px] leading-6 rounded-lg whitespace-nowrap"
+								onClick={() => {
+									handleCopyToClipboard(urlInvite);
+									onClose();
+									setShowClanListMenuContext?.();
+								}}
+							>
+								{t('buttons.copy')}
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -272,7 +274,9 @@ const ModalQR = ({ closeModalEdit, data }: { closeModalEdit: () => void; data: s
 							<span>{currentClanName?.charAt(0)}</span>
 						)}
 					</div>
-					<QRCode value={data} size={256} />
+					<div className="max-w-full overflow-hidden">
+						<QRCode value={data} size={256} />
+					</div>
 				</div>
 				<div className="flex items-center justify-end gap-3">
 					<button className="px-4 py-2 rounded-lg  border-theme-primary hover:bg-opacity-85" onClick={closeModalEdit}>

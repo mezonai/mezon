@@ -237,14 +237,14 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		<ModalLayout onClose={props.onClose}>
 			<div
 				ref={modalRef}
-				className="flex flex-col bg-theme-setting-primary rounded-xl overflow-hidden max-w-[684px] w-screen"
+				className="flex flex-col bg-theme-setting-primary rounded-xl overflow-hidden max-w-[684px] w-screen mx-4 md:mx-0"
 				tabIndex={-1}
 				autoFocus
 			>
 				<div className="flex-1 flex items-center justify-between border-b-theme-primary rounded-t p-4">
 					<div className="flex flex-col">
-						<p className="font-bold text-xl text-theme-primary-active">{t('title')}</p>
-						<p>{currentClanName}</p>
+						<p className="font-bold text-base md:text-xl text-theme-primary-active">{t('title')}</p>
+						<p className="text-sm md:text-base">{currentClanName}</p>
 					</div>
 					<Button
 						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover"
@@ -254,10 +254,10 @@ const ModalNotificationSetting = (props: ModalParam) => {
 					</Button>
 				</div>
 				<div className={`px-5 py-4 max-h-[500px] overflow-y-auto hide-scrollbar`}>
-					<div className="text-xs font-bold  uppercase mb-2 text-theme-primary-active">{t('clanNotificationSettings')}</div>
+					<div className="text-[10px] md:text-xs font-bold  uppercase mb-2 text-theme-primary-active">{t('clanNotificationSettings')}</div>
 					<div className="space-y-2">
 						{notificationTypesListTranslated.map((notificationType, index) => (
-							<div key={index} className="flex items-center gap-x-3 p-[12px]  rounded text-sm">
+							<div key={index} className="flex items-center gap-x-3 p-[12px]  rounded text-xs md:text-sm">
 								<input
 									type="radio"
 									id={`notification-${index}`}
@@ -273,8 +273,8 @@ const ModalNotificationSetting = (props: ModalParam) => {
 					</div>
 
 					<hr className="border-zinc-500 my-4" />
-					<div className="text-xs font-bold  uppercase mb-2 text-theme-primary-active">{t('notificationOverrides')}</div>
-					<div className="text-sm font-normal  mb-2">{t('addChannelOverride')}</div>
+					<div className="text-[10px] md:text-xs font-bold  uppercase mb-2 text-theme-primary-active">{t('notificationOverrides')}</div>
+					<div className="text-xs md:text-sm font-normal  mb-2">{t('addChannelOverride')}</div>
 					<div className="bg-theme-setting-primary">
 						<Creatable
 							isClearable
@@ -293,21 +293,27 @@ const ModalNotificationSetting = (props: ModalParam) => {
 						<table className="w-full mt-4 hide-scrollbar overflow-hidden space-y-2">
 							<thead>
 								<tr className="grid grid-cols-7 text-theme-primary-active">
-									<th className="text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-3">
+									<th className="text-[10px] md:text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-3">
 										{t('headers.channelOrCategory')}
 									</th>
-									<th className="text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-1">{t('headers.all')}</th>
-									<th className="text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-1">
+									<th className="text-[10px] md:text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-1">
+										{t('headers.all')}
+									</th>
+									<th className="text-[10px] md:text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-1">
 										{t('headers.mentions')}
 									</th>
-									<th className="text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-1">{t('headers.nothing')}</th>
-									<th className="text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-1">{t('headers.mute')}</th>
+									<th className="text-[10px] md:text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-1">
+										{t('headers.nothing')}
+									</th>
+									<th className="text-[10px] md:text-xs font-bold  uppercase mb-2 text-theme-primary-active col-span-1">
+										{t('headers.mute')}
+									</th>
 								</tr>
 							</thead>
 							<tbody>
 								{sortedChannelCategorySettings.map((channelCategorySetting) => (
 									<tr key={channelCategorySetting.id} className="group relative grid grid-cols-7 mb-2.5  rounded p-[10px]">
-										<td className="col-span-3">{channelCategorySetting.channel_category_label}</td>
+										<td className="col-span-3 text-xs md:text-sm">{channelCategorySetting.channel_category_label}</td>
 										{notificationTypesListTranslated.map((notificationType) => (
 											<td key={notificationType.value} className="col-span-1 text-center">
 												<input

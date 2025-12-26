@@ -254,19 +254,19 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 			ref={modalRef}
 			tabIndex={-1}
 			onMouseDown={(e) => e.stopPropagation()}
-			className={`absolute top-8 right-0 z-50 outline-none bg-theme-setting-primary border-theme-primary w-[440px] text-theme-primary rounded shadow shadow-neutral-800 ${classNames}`}
+			className={`absolute top-8 right-0 z-50 outline-none bg-theme-setting-primary border-theme-primary w-[calc(100vw-2rem)] md:w-[440px] text-theme-primary rounded shadow shadow-neutral-800 ${classNames}`}
 			onClick={(e) => {
 				e.stopPropagation();
 			}}
 		>
 			<div className="cursor-default text-start">
 				<div className="p-4">
-					<h3 className="text-xl text-theme-primary-active">{t('createMessageGroup.selectFriends')}</h3>
-					<p className=" pt-1">{t('createMessageGroup.canAddMoreFriends', { count: numberCanAdd })}</p>
+					<h3 className="text-lg md:text-xl text-theme-primary-active">{t('createMessageGroup.selectFriends')}</h3>
+					<p className="text-sm md:text-base pt-1">{t('createMessageGroup.canAddMoreFriends', { count: numberCanAdd })}</p>
 					<InputField
 						type="text"
 						placeholder={t('createMessageGroup.searchPlaceholder')}
-						className="h-[34px] text-[16px] mt-[20px] border-theme-primary "
+						className="h-[34px] text-[14px] md:text-[16px] mt-[20px] border-theme-primary "
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
 						autoFocus={true}
@@ -293,11 +293,11 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 												resizeType: 'fit'
 											})}
 											src={friend.user?.avatar_url}
-											className="size-8"
-											classNameText="text-[9px] min-w-5 min-h-5 pt-[3px]"
+											className="size-6 md:size-8"
+											classNameText="text-[7px] md:text-[9px] min-w-4 min-h-4 md:min-w-5 md:min-h-5 pt-[3px]"
 										/>
 										<span
-											className={`text-base font-medium text-theme-primary-active one-line`}
+											className={`text-sm md:text-base font-medium text-theme-primary-active one-line`}
 											data-e2e={generateE2eId(`chat.direct_message.friend_list.username_friend_item`)}
 										>
 											{friend.user?.display_name}
@@ -327,7 +327,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 					<button
 						disabled={selectedFriends.length === 0 || isCreating}
 						onClick={handleCreateDM}
-						className={`h-[38px] w-full text-sm text-white rounded ${
+						className={`h-[38px] w-full text-xs md:text-sm text-white rounded ${
 							selectedFriends.length === 0 || isCreating
 								? 'bg-gray-400 cursor-not-allowed'
 								: 'bg-buttonPrimary hover:bg-bgSelectItemHover'
