@@ -97,7 +97,10 @@ const AvatarProfile = ({
 						<div className=" w-[20px] h-[20px] rounded-full absolute top-[-11px] left-[16px] shadow-md"></div>
 						<div className="absolute w-fit max-w-full shadow-lg rounded-[12px] group">
 							<div className="relative bg-theme-surface px-[16px] py-[12px] w-fit max-w-full rounded-[12px] flex items-center justify-center">
-								<span className="text-left font-medium text-[14px] text-theme-primary w-full break-words overflow-hidden transition-all duration-300 hover:line-clamp-none line-clamp-2">
+								<span
+									className="text-left font-medium text-[14px] text-theme-primary w-full break-words overflow-hidden transition-all duration-300 hover:line-clamp-none line-clamp-2"
+									data-e2e={generateE2eId('short_profile.activity_status')}
+								>
 									{activityStatus}
 								</span>
 								{isFooterProfile && (
@@ -105,12 +108,14 @@ const AvatarProfile = ({
 										<div
 											onClick={handleCustomStatus}
 											className="pl-2 pr-1 py-1 w-fit bg-item-hover rounded-l-full cursor-pointer"
+											data-e2e={generateE2eId('short_profile.activity_status.button.custom')}
 										>
 											<Icons.EditMessageRightClick defaultSize="w-4 h-4" />
 										</div>
 										<div
 											onClick={handleClearCustomStatus}
 											className="pl-1 pr-2 py-1 w-fit bg-item-hover rounded-r-full text-red-600 cursor-pointer"
+											data-e2e={generateE2eId('short_profile.activity_status.button.clear')}
 										>
 											<Icons.DeleteMessageRightClick defaultSize="w-4 h-4" />
 										</div>

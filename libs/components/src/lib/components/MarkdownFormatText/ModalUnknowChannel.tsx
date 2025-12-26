@@ -105,9 +105,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 
 						{isError ? (
 							<div className="space-y-2">
-								<h3 className="text-xl font-semibold text-theme-primary-active" data-e2e="permission-denied2">
-									{errMessage || 'Oops! Something Went Wrong'}
-								</h3>
+								<h3 className="text-xl font-semibold text-theme-primary-active">{errMessage || 'Oops! Something Went Wrong'}</h3>
 								<p className="text-theme-primary text-sm leading-relaxed">
 									{errorConfig.type === 'permission'
 										? "You don't have the necessary permissions to access this content. Please contact an administrator if you believe this is an error."

@@ -1,8 +1,8 @@
 import { useGifs, useGifsStickersEmoji } from '@mezon/core';
 import { reactionActions, referencesActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { E2eKeyType } from '@mezon/utils';
-import { ILongPressType, SubPanelName, generateE2eId } from '@mezon/utils';
+import type { ILongPressType } from '@mezon/utils';
+import { SubPanelName, generateE2eId } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 
 export type GifStickerEmojiButtonsProps = {
@@ -88,6 +88,7 @@ const GifStickerEmojiButtons = memo(
 					<div
 						{...voiceLongPress}
 						className={`w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+						data-e2e={generateE2eId('mention.button.sound')}
 					>
 						<Icons.MicEnable className={`w-5 h-5 ${isRecording ? 'text-red-600' : 'text-theme-primary text-theme-primary-hover'} `} />
 					</div>
@@ -98,7 +99,7 @@ const GifStickerEmojiButtons = memo(
 						onClick={handleOpenGifs}
 						className={`block text-theme-primary-hover
 						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-
+						data-e2e={generateE2eId('mention.button.gif')}
 					>
 						<Icons.Gif
 							className={`w-5 h-5 ${subPanelActive === SubPanelName.GIFS ? 'text-theme-primary-active' : 'text-theme-primary'}`}
@@ -111,7 +112,7 @@ const GifStickerEmojiButtons = memo(
 						onClick={handleOpenStickers}
 						className={`block text-theme-primary-hover
 						} max-sm:hidden w-5 h-5 ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-
+						data-e2e={generateE2eId('mention.button.sticker')}
 					>
 						<Icons.Sticker
 							className={`w-5 h-5 ${subPanelActive === SubPanelName.STICKERS ? 'text-theme-primary-active' : 'text-theme-primary'}`}
@@ -122,7 +123,7 @@ const GifStickerEmojiButtons = memo(
 				<div
 					onClick={handleOpenEmoji}
 					className={`w-5 h-5 text-theme-primary-hover  ${cursorPointer ? 'cursor-pointer' : 'cursor-not-allowed'}`}
-
+					data-e2e={generateE2eId('mention.button.emoji')}
 				>
 					<Icons.Smile
 						className={`w-5 h-5 ${subPanelActive === SubPanelName.EMOJI ? 'text-theme-primary-active' : 'text-theme-primary'}`}

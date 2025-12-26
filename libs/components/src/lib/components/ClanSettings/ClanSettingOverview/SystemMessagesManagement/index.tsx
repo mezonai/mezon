@@ -1,6 +1,6 @@
 import { fetchChannels, selectAllChannels, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons, Menu } from '@mezon/ui';
-import { ChannelStatusEnum } from '@mezon/utils';
+import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
 import type { ReactElement } from 'react';
@@ -90,8 +90,15 @@ const SystemMessagesManagement = ({
 							) : (
 								<Icons.Hashtag defaultSize="w-4 h-4 dark:text-channelTextLabel" />
 							)}
-							<p>{channel.channel_label ?? ''}</p>
-							<p className="uppercase ml-5 font-semibold">{channel.category_name}</p>
+							<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.channel_name')}>
+								{channel.channel_label ?? ''}
+							</p>
+							<p
+								data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.category_name')}
+								className="uppercase ml-5 font-semibold"
+							>
+								{channel.category_name}
+							</p>
 						</Menu.Item>
 					);
 				}
@@ -102,11 +109,21 @@ const SystemMessagesManagement = ({
 		<div className={'border-t-theme-primary mt-10 pt-10 flex flex-col '}>
 			<h3 className="text-sm font-bold uppercase mb-2">{t('systemMessages.title')}</h3>
 			<Menu menu={menu} className={'h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode bg-theme-input px-2 z-20'}>
-				<div className="w-full cursor-pointer  h-10 rounded-md flex flex-row p-3 justify-between items-center uppercase text-sm border border-theme-primary bg-theme-input ">
+				<div
+					className="w-full cursor-pointer  h-10 rounded-md flex flex-row p-3 justify-between items-center uppercase text-sm border border-theme-primary bg-theme-input "
+					data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel')}
+				>
 					<div className={' flex flex-row items-center'}>
 						<Icons.Hashtag defaultSize="w-4 h-4 " />
-						<p>{selectedChannel?.channel_label}</p>
-						<p className={'uppercase ml-5 font-semibold'}>{selectedChannel?.category_name}</p>
+						<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.channel_name')}>
+							{selectedChannel?.channel_label}
+						</p>
+						<p
+							className={'uppercase ml-5 font-semibold'}
+							data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.category_name')}
+						>
+							{selectedChannel?.category_name}
+						</p>
 					</div>
 					<div>
 						<Icons.ArrowDownFill />

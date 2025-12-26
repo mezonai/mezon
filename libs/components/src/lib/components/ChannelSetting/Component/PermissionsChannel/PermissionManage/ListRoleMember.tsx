@@ -2,7 +2,7 @@ import type { RolesClanEntity } from '@mezon/store';
 import { channelUsersActions, selectChannelById, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
-import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize, searchNormalizeText } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize, getNameForPrioritize, searchNormalizeText } from '@mezon/utils';
 import { memo, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -38,7 +38,7 @@ const ListRoleMember = memo((props: ListRoleMemberProps) => {
 	return (
 		<div className="basis-1/3">
 			<HeaderAddRoleMember listManageNotInChannel={listManageNotInChannel} usersClan={usersClan} channelId={channelId} />
-			<div className="mt-2">
+			<div className="mt-2" data-e2e={generateE2eId('channel_setting_page.permissions.section.list_roles_members')}>
 				{listManageInChannel.map((item) => (
 					<div
 						key={item.id}
@@ -46,6 +46,7 @@ const ListRoleMember = memo((props: ListRoleMemberProps) => {
 						className={`w-full py-1.5 px-[10px] text-[15px] text-theme-primary bg-item-hover font-medium inline-flex gap-x-2 items-center rounded ${
 							selectedItemId === item.id ? 'bg-item-theme' : ''
 						}`}
+						data-e2e={generateE2eId('channel_setting_page.permissions.section.list_roles_members.role_member_item')}
 					>
 						{item.title}
 					</div>

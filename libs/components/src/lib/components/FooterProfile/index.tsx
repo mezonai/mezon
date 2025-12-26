@@ -353,7 +353,10 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 							>
 								{name}
 							</p>
-							<p className="text-[11px] text-left line-clamp-1 leading-[14px] truncate max-w-[150px] max-sbm:max-w-[100px]">
+							<p
+								className="text-[11px] text-left line-clamp-1 leading-[14px] truncate max-w-[150px] max-sbm:max-w-[100px]"
+								data-e2e={generateE2eId('footer_profile.user_status')}
+							>
 								{userCustomStatus}
 							</p>
 						</div>

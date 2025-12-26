@@ -1,8 +1,9 @@
 import { useChatSending, useCurrentInbox, useEscapeKeyClose, useGifs, useGifsStickersEmoji } from '@mezon/core';
 import { referencesActions, selectDataReferences, useAppSelector } from '@mezon/store';
 import { Loading } from '@mezon/ui';
-import { EMimeTypes, IGifCategory, SubPanelName, blankReferenceObj } from '@mezon/utils';
-import { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
+import type { IGifCategory } from '@mezon/utils';
+import { EMimeTypes, SubPanelName, blankReferenceObj, generateE2eId } from '@mezon/utils';
+import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import FeaturedGifs from './FeaturedGifs';
@@ -109,6 +110,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 								className={`order-${index} overflow-hidden cursor-pointer`}
 								onClick={() => handleClickGif(gif.media_formats.gif.url)}
 								role="button"
+								data-e2e={generateE2eId('mention.popover.gifs.item')}
 							>
 								<img src={gif.media_formats.gif.url} alt={gif.media_formats.gif.url} className="w-full h-auto" />
 							</div>

@@ -168,7 +168,12 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 							<AddRolesComp addRole={addRole} filteredListRoleBySearch={filteredListRoleBySearch} setSearchTerm={setSearchTerm} />
 						</div>
 					) : null}
-					<button title={t('labels.addRoles')} onClick={handleOpenAddRoleModal} className="flex gap-x-1 rounded p-1 items-center">
+					<button
+						title={t('labels.addRoles')}
+						onClick={handleOpenAddRoleModal}
+						className="flex gap-x-1 rounded p-1 items-center"
+						data-e2e={generateE2eId('short_profile.role.button.add')}
+					>
 						<Icons.Plus className="size-5 select-none" />
 						<p className="text-xs m-0 font-medium select-none">{t('labels.addRole')}</p>
 					</button>
@@ -186,6 +191,7 @@ const RoleListItem = ({ role, onAddRole }: { role: RolesClanEntity; onAddRole: (
 		<div
 			className="text-base w-full  p-2 bg-transparent mr-2 bg-item-hover flex gap-2 items-center text-theme-primary"
 			onClick={() => onAddRole(role.id)}
+			data-e2e={generateE2eId('short_profile.role.popover.item')}
 		>
 			<div className="size-3 min-w-3 rounded-full" style={roleStyle}></div>
 			{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
@@ -262,6 +268,7 @@ const RoleClanItem = ({
 						style={buttonStyle}
 						onMouseEnter={() => setIsHovered(true)}
 						onMouseLeave={() => setIsHovered(false)}
+						data-e2e={generateE2eId('clan_page.channel_list.members.role.role_color')}
 					>
 						<span title={t('labels.removeRole')}>
 							<Icons.IconRemove className="size-2" fill={isHovered ? 'black' : roleColor} />

@@ -15,7 +15,7 @@ import type { RootState } from '@mezon/store';
 import { EStateFriend, selectAllAccount, selectChannelByChannelId, selectFriendById, selectStatusInVoice, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
-import { EUserStatus } from '@mezon/utils';
+import { EUserStatus, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import type { RefObject } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -250,7 +250,10 @@ const ModalUserProfile = ({
 			<div className="px-[16px]">
 				<div className=" w-full border-theme-primary p-2 my-[16px] text-theme-primary shadow rounded-[10px] flex flex-col text-justify bg-item-theme">
 					<div>
-						<p className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate">
+						<p
+							className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate"
+							data-e2e={generateE2eId('short_profile.display_name')}	
+						>
 							{isUserRemoved
 								? t('labels.unknownUser')
 								: checkAnonymous
@@ -263,7 +266,10 @@ const ModalUserProfile = ({
 											currentUserId?.display_name ||
 											usernameShow}
 						</p>
-						<p className="text-base font-semibold tracking-wide text-theme-primary my-0 truncate">
+						<p
+							className="text-base font-semibold tracking-wide text-theme-primary my-0 truncate"
+							data-e2e={generateE2eId('short_profile.username')}
+						>
 							{isUserRemoved ? t('labels.unknownUser') : usernameShow || currentUserId?.username || ''}
 						</p>
 					</div>
@@ -302,6 +308,7 @@ const ModalUserProfile = ({
 									value={content}
 									onKeyPress={handleOnKeyPress}
 									onChange={handleContent}
+									data-e2e={generateE2eId('short_profile.input.send_message')}
 								/>
 							</div>
 						) : (
@@ -313,7 +320,11 @@ const ModalUserProfile = ({
 						)
 					) : null}
 					{!isFooterProfile && checkUser && (
-						<button className="rounded bg-outside-footer py-2 hover:bg-opacity-50 mt-2" onClick={openSetting}>
+						<button
+							className="rounded bg-outside-footer py-2 hover:bg-opacity-50 mt-2"
+							onClick={openSetting}
+							data-e2e={generateE2eId('short_profile.button.edit_profile')}
+						>
 							{t('labels.editProfile')}
 						</button>
 					)}

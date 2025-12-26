@@ -13,6 +13,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -91,7 +92,11 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 					</div>
 					<SearchCanvas setKeywordSearch={setKeywordSearch} />
 					<div className="flex flex-row items-center gap-4">
-						<button onClick={handleCreateCanvas} className="px-3 h-6 rounded-lg btn-primary btn-primary-hover text-sm">
+						<button 
+							onClick={handleCreateCanvas}
+							className="px-3 h-6 rounded-lg btn-primary btn-primary-hover text-sm"
+							data-e2e={generateE2eId('chat.channel_message.header.button.canvas.modal.canvas_management.button.create_canvas')}
+						>
 							{t('modals.canvas.create')}
 						</button>
 						<button onClick={onClose} className="text-theme-primary text-theme-primary-hover">

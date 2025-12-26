@@ -1,3 +1,4 @@
+import { generateE2eId } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 export interface ButtonSwitchProps {
@@ -44,6 +45,7 @@ export const ButtonSwitch: React.FC<ButtonSwitchProps> = ({ title, duration = 10
 			className={`flex items-center p-1 rounded-sm bg-bgSecondary bg-item-theme-hover ${className ?? ''} `}
 			onClick={handleOnClickButton}
 			disabled={disabled}
+			data-e2e={generateE2eId('button.copy')}
 		>
 			{displayedIcon} {title && <p>{title}</p>}
 		</button>

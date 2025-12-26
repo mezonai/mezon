@@ -8,7 +8,8 @@ import {
 	TypeMessage,
 	addMention,
 	convertTimeString,
-	createImgproxyUrl
+	createImgproxyUrl,
+	generateE2eId
 } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
@@ -200,7 +201,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 						)}
 					</div>
 					{category === NotificationCategory.MENTIONS || category === NotificationCategory.MESSAGES ? (
-						<div className="w-[85%] max-w-[85%]">
+						<div className="w-[85%] max-w-[85%]" data-e2e={generateE2eId('chat.channel_message.inbox.mentions')}>
 							<MessageHead message={message} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
 							<MessageLine
 								messageId={message.message_id}

@@ -1,7 +1,7 @@
 import { useAuth } from '@mezon/core';
 import { appActions, canvasActions, canvasAPIActions, selectIdCanvas, useAppDispatch } from '@mezon/store';
-import { ICanvas } from '@mezon/utils';
-import { ButtonCopy } from '@mezon/components';
+import { generateE2eId, ICanvas } from '@mezon/utils';
+import { ButtonCopy } from 'libs/components/src/lib/components';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 type GroupCanvasProps = {
@@ -64,7 +64,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 			: `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`;
 
 	return (
-		<div className="w-full flex gap-2 relative">
+		<div className="w-full flex gap-2 relative" data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item')}>
 			<Link
 				className={`w-full py-2 pl-4 pr-4 cursor-pointer rounded-lg border-theme-primary ${
 					currentIdCanvas === canvasId ? 'bg-item-theme text-theme-primary-active ' : 'bg-item-hover'
@@ -73,7 +73,12 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 				to={link}
 				onClick={handleOpenCanvas}
 			>
-				<div className="h-6 text-xs one-line font-semibold leading-6 ">{canvas.title ? canvas.title : 'Untitled'}</div>
+				<div 
+					className="h-6 text-xs one-line font-semibold leading-6 "
+					data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item.title')}
+				>
+					{canvas.title ? canvas.title : 'Untitled'}
+				</div>
 			</Link>
 			<ButtonCopy
 				copyText={process.env.NX_CHAT_APP_REDIRECT_URI + link}
@@ -84,6 +89,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 					title="Delete Canvas"
 					onClick={handleDeleteCanvas}
 					className="absolute top-[9px] right-[5px]  bg-white dark:bg-transparent text-red-600 shadow-emoji_item-delete text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full"
+					data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item.button.delete')}
 				>
 					X
 				</button>

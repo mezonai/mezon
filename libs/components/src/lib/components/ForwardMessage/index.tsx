@@ -27,6 +27,7 @@ import {
 	ModeResponsive,
 	TypeSearch,
 	addAttributesSearchList,
+	generateE2eId,
 	getAvatarForPrioritize,
 	isFileAttachment,
 	isImageFileType,
@@ -473,7 +474,7 @@ const ForwardMessageModal = () => {
 
 	return (
 		<ModalLayout onClose={handleCloseModal}>
-			<div className="bg-theme-setting-primary w-[550px] text-theme-primary pt-4 rounded">
+			<div className="bg-theme-setting-primary w-[550px] text-theme-primary pt-4 rounded" data-e2e={generateE2eId('modal.forward_message')}>
 				<div>
 					<h1 className=" text-xl font-semibold text-center">{t('modal.title')}</h1>
 				</div>
@@ -484,6 +485,7 @@ const ForwardMessageModal = () => {
 						placeholder={t('modal.searchPlaceholder')}
 						onChange={(e) => setSearchText(e.target.value)}
 						onKeyDown={(e) => handleInputKeyDown(e)}
+						data-e2e={generateE2eId('modal.forward_message.input.search')}
 					/>
 					<div className={`mt-4 mb-2 overflow-y-auto h-[300px] thread-scroll `}>
 						{!normalizedSearchText.startsWith('@') && !normalizedSearchText.startsWith('#') ? (
@@ -699,6 +701,7 @@ const FooterButtonsModal = (props: FooterButtonsModalProps) => {
 				type="button"
 				onClick={onClose}
 				disabled={loading}
+				data-e2e={generateE2eId('modal.forward_message.button.cancel')}
 			>
 				{t('modal.cancel')}
 			</button>
@@ -706,6 +709,7 @@ const FooterButtonsModal = (props: FooterButtonsModalProps) => {
 				onClick={handleSend}
 				className="py-2 h-10 px-4 rounded text-white bg-bgSelectItem hover:!bg-bgSelectItemHover focus:ring-transparent disabled:opacity-50 disabled:cursor-not-allowed"
 				disabled={loading || !hasSelectedDestination || isMessageTooLong}
+				data-e2e={generateE2eId('modal.forward_message.button.send')}
 			>
 				{getButtonText()}
 			</button>

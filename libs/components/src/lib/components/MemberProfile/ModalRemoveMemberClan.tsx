@@ -1,4 +1,5 @@
 import { selectCurrentClanName } from '@mezon/store';
+import { generateE2eId } from '@mezon/utils';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -65,6 +66,7 @@ const ModalRemoveMemberClan = ({ username, onClose, onRemoveMember }: ModalRemov
 						value={value ?? ''}
 						onChange={handleChange}
 						className="text-theme-primary-active outline-none w-full h-16 p-[10px] bg-input-theme text-base rounded placeholder:text-sm"
+						data-e2e={generateE2eId('clan_page.modal.kick_member.reason_input')}
 					/>
 				</div>
 				<div className="flex justify-end gap-3 p-4 rounded-b bg-theme-setting-nav">
@@ -72,12 +74,14 @@ const ModalRemoveMemberClan = ({ username, onClose, onRemoveMember }: ModalRemov
 						className="w-20 py-2.5 h-10 text-sm font-medium text-theme-primary-active dark:text-zinc-50 bg-bgTextarea dark:bg-gray-700 border border-color-theme hover:bg-gray-300 dark:hover:bg-gray-600 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 shadow-sm"
 						type="button"
 						onClick={onClose}
+						data-e2e={generateE2eId('clan_page.modal.kick_member.button.cancel')}
 					>
 						{t('buttons.cancel')}
 					</button>
 					<button
 						onClick={handleSave}
 						className="w-20 py-2.5 h-10 text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:bg-red-700 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-50 dark:focus:ring-offset-gray-800 shadow-sm hover:shadow-md"
+						data-e2e={generateE2eId('clan_page.modal.kick_member.button.kick')}
 					>
 						{t('buttons.kick')}
 					</button>

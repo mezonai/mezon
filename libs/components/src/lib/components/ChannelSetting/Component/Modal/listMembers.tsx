@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import type { UsersClanEntity } from '@mezon/utils';
-import { createImgproxyUrl, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 
 type ListMembersProps = {
@@ -42,7 +42,10 @@ const ItemMember = (props: ItemMemberProps) => {
 	const namePrioritize = getNameForPrioritize(clanName, displayName, username);
 	const avatarPrioritize = getAvatarForPrioritize(clanAvatar, avatar);
 	return (
-		<div className={`flex justify-between py-2 rounded bg-item-hover px-[6px]`}>
+		<div
+			className={`flex justify-between py-2 rounded bg-item-hover px-[6px]`}
+			data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.member_list.member_item')}
+		>
 			<label className="flex gap-x-2 items-center w-full">
 				<div className="relative flex flex-row justify-center">
 					<input
@@ -51,6 +54,9 @@ const ItemMember = (props: ItemMemberProps) => {
 						checked={checked}
 						onChange={onChange}
 						className="peer appearance-none forced-colors:appearance-auto relative w-4 h-4  border-theme-primary rounded-lg focus:outline-none"
+						data-e2e={generateE2eId(
+							'channel_setting_page.permissions.section.member_role_management.modal.member_list.member_item.input'
+						)}
 					/>
 					<Icons.Check className="absolute invisible peer-checked:visible forced-colors:hidden w-4 h-4" />
 				</div>
@@ -62,8 +68,20 @@ const ItemMember = (props: ItemMemberProps) => {
 					src={avatarPrioritize}
 					classNameText="text-[9px] pt-[3px]"
 				/>
-				<p className="text-sm one-line text-theme-primary-active">{namePrioritize}</p>
-				<p className=" font-light">{username}</p>
+				<p
+					className="text-sm one-line text-theme-primary-active"
+					data-e2e={generateE2eId(
+						'channel_setting_page.permissions.section.member_role_management.modal.member_list.member_item.name_prioritize'
+					)}
+				>
+					{namePrioritize}
+				</p>
+				<p
+					className=" font-light"
+					data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.member_list.member_item.username')}
+				>
+					{username}
+				</p>
 			</label>
 		</div>
 	);

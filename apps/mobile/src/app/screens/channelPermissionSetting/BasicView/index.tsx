@@ -1,9 +1,9 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import type { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useAuth, useCheckOwnerForUser } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
+import type { IUpdateChannelRequest } from '@mezon/store-mobile';
 import {
-	IUpdateChannelRequest,
 	appActions,
 	channelsActions,
 	fetchUserChannels,
@@ -16,7 +16,7 @@ import {
 } from '@mezon/store-mobile';
 import { isPublicChannel } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
-import { ApiChangeChannelPrivateRequest } from 'mezon-js/api.gen';
+import type { ApiChangeChannelPrivateRequest } from 'mezon-js/api.gen';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -29,7 +29,7 @@ import { AddMemberOrRoleBS } from '../components/AddMemberOrRoleBS';
 import { MemberItem } from '../components/MemberItem';
 import { RoleItem } from '../components/RoleItem';
 import { EOverridePermissionType, ERequestStatus } from '../types/channelPermission.enum';
-import { IBasicViewProps } from '../types/channelPermission.type';
+import type { IBasicViewProps } from '../types/channelPermission.type';
 import { style } from './styles';
 
 export const BasicView = memo(({ channel }: IBasicViewProps) => {

@@ -93,7 +93,7 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 					src={avatarToDisplay}
 				/>
 				<div className="flex flex-wrap items-center gap-x-2 flex-1 min-w-0">
-					<p className="break-words color-mention min-w-0">
+					<p className="break-words color-mention min-w-0" data-e2e={generateE2eId('chat.topic.number_replies')}>
 						{rplCount > 0 &&
 							(rplCount === 1 ? t('reply', { number: 1 }) : t('numberReplies', { number: rplCount > 99 ? '99+' : rplCount }))}
 					</p>

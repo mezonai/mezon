@@ -141,7 +141,11 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 							>
 								<div className="flex justify-between items-center pb-4">
 									<p className="uppercase font-bold text-xs text-theme-primary">{t('channelPermission.whoCanAccess')}</p>
-									<button className="btn-primary btn-primary-hover px-4 py-1 rounded-lg " onClick={openAddMemRoleModal}>
+									<button
+										className="btn-primary btn-primary-hover px-4 py-1 rounded-lg "
+										onClick={openAddMemRoleModal}
+										data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.button.add')}
+									>
 										{t('channelPermission.addMemberAndRoles')}
 									</button>
 								</div>

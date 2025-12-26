@@ -2,7 +2,7 @@ import { AvatarImage } from '@mezon/components';
 import { useCustomNavigate } from '@mezon/core';
 import type { DMMetaEntity } from '@mezon/store';
 import { directActions, selectDirectById, useAppDispatch, useAppSelector } from '@mezon/store';
-import { createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
@@ -77,7 +77,7 @@ const DirectUnreadComponent = ({ directMessage, shouldAnimateOut = false, onMemb
 
 	return (
 		<NavLink to="#" onClick={handleClick} draggable="false" className={linkClassName}>
-			<div className={innerDivClassName}>
+			<div className={innerDivClassName} data-e2e={generateE2eId('chat.direct_message.side_bar.item', direct.id)}>
 				<AvatarImage draggable="false" {...avatarProps} />
 				{badgeContent && <div className={badgeClassName}>{badgeContent}</div>}
 			</div>

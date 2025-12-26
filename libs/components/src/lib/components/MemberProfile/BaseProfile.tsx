@@ -41,7 +41,14 @@ const BaseProfile = ({
 						{displayName || name}
 					</span>
 				)}
-				{userStatus && <span className="text-[11px] text-left text-theme-primary opacity-60 line-clamp-1 truncate">{userStatus}</span>}
+				{userStatus && (
+					<span
+						className="text-[11px] text-left text-theme-primary opacity-60 line-clamp-1 truncate"
+						data-e2e={generateE2eId('base_profile.user_status')}
+					>
+						{userStatus}
+					</span>
+				)}
 			</div>
 		</div>
 	);

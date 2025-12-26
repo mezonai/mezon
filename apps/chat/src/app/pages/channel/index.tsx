@@ -585,7 +585,10 @@ export const BanCountDown = ({ banTime, clanId, channelId, userId }: { banTime: 
 	}, [time]);
 
 	return (
-		<div className="flex h-12 gap-3 items-center opacity-80 bg-theme-contexify text-theme-primary-active ml-4 mb-4 p-2 w-widthInputViewChannelPermission rounded">
+		<div
+			className="flex h-12 gap-3 items-center opacity-80 bg-theme-contexify text-theme-primary-active ml-4 mb-4 p-2 w-widthInputViewChannelPermission rounded"
+			data-e2e={generateE2eId('mention.banned')}
+		>
 			<svg width="28" height="28" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
 				<path
 					fill="#e03c47"
@@ -598,7 +601,7 @@ export const BanCountDown = ({ banTime, clanId, channelId, userId }: { banTime: 
 				<span className="leading-3 text-xs">{t('timeoutDesc')}</span>
 			</div>
 
-			<span>{time ? `${time}s` : banTime !== Infinity && countdown}</span>
+			<span data-e2e={generateE2eId('mention.banned.time')}>{time ? `${time}s` : banTime !== Infinity && countdown}</span>
 		</div>
 	);
 };

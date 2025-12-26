@@ -1,5 +1,5 @@
 import { quickMenuActions, selectFlashMessagesByChannelId, selectQuickMenusByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
-import { QUICK_MENU_TYPE } from '@mezon/utils';
+import { QUICK_MENU_TYPE, generateE2eId } from '@mezon/utils';
 import type { ApiQuickMenuAccessRequest } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -138,6 +138,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 			className={`px-4 py-2 text-sm font-medium rounded-md transition-colors duration-200 flex items-center gap-2 ${
 				activeTab === tabKey ? 'bg-[#5865f2] text-white' : 'text-theme-primary hover:text-theme-primary-active hover:bg-theme-setting-nav'
 			}`}
+			data-e2e={generateE2eId('channel_setting_page.quick_menu.tab')}
 		>
 			{label}
 			<span className={`px-2 py-0.5 rounded-full text-xs ${activeTab === tabKey ? 'bg-white/20' : 'bg-theme-setting-nav text-theme-primary'}`}>
@@ -147,18 +148,35 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 	);
 
 	const renderCommandItem = (item: ApiQuickMenuAccessRequest) => (
-		<div key={item.id} className="bg-theme-setting-nav rounded-lg p-4 border-theme-primary hover:border-[#4e5156] transition-colors duration-200">
+		<div
+			key={item.id}
+			className="bg-theme-setting-nav rounded-lg p-4 border-theme-primary hover:border-[#4e5156] transition-colors duration-200"
+			data-e2e={generateE2eId('channel_setting_page.quick_menu.item')}
+		>
 			<div className="flex items-start justify-between">
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center gap-2 mb-2">
-						<span className="font-mono text-[#00d4aa] bg-[#00d4aa]/10 px-2 py-1 rounded text-sm">
+						<span
+							className="font-mono text-[#00d4aa] bg-[#00d4aa]/10 px-2 py-1 rounded text-sm"
+							data-e2e={generateE2eId('channel_setting_page.quick_menu.item.command')}
+						>
 							{activeTab === 'flash' ? `/${item.menu_name}` : item.menu_name}
 						</span>
-						<span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">
+						<span
+							className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full"
+							data-e2e={generateE2eId('channel_setting_page.quick_menu.item.type')}
+						>
 							{getQuickMenuTypeLabelTranslated(item.menu_type)}
 						</span>
 					</div>
-					{activeTab === 'flash' && item.action_msg && <p className="text-gray-400 text-sm leading-relaxed">{item.action_msg}</p>}
+					{activeTab === 'flash' && item.action_msg && (
+						<p
+							className="text-gray-400 text-sm leading-relaxed"
+							data-e2e={generateE2eId('channel_setting_page.quick_menu.item.message_content')}
+						>
+							{item.action_msg}
+						</p>
+					)}
 					{activeTab === 'menu' && <p className="text-gray-400 text-sm leading-relaxed italic">{t('quickAction.triggersBot')}</p>}
 				</div>
 				<div className="flex items-center gap-2 ml-4">
@@ -221,6 +239,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 				<button
 					onClick={openCreateModal}
 					className="bg-[#5865f2] hover:bg-[#4752c4] text-white px-3 py-1.5 text-sm rounded-md font-medium transition-colors duration-200 flex items-center gap-2"
+					data-e2e={generateE2eId('channel_setting_page.quick_menu.button.add')}
 				>
 					<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
 						<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
@@ -237,7 +256,10 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 			{currentItems.length === 0 ? renderEmptyState() : <div className="space-y-3">{currentItems.map(renderCommandItem)}</div>}
 
 			{isModalOpen && (
-				<div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+				<div
+					className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+					data-e2e={generateE2eId('channel_setting_page.quick_menu.modal')}
+				>
 					<div className="bg-theme-setting-primary text-theme-primary rounded-lg w-full max-w-md">
 						<div className="p-6 border-b-theme-primary">
 							<h2 className="text-xl font-semibold text-theme-primary-active">
@@ -263,6 +285,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 										className={`w-full bg-input-secondary border-theme-primary rounded-md px-3 py-2 ${
 											activeTab === 'flash' ? 'pl-8' : ''
 										} text-theme-message focus:border-[#5865f2] focus:outline-none transition-colors duration-200`}
+										data-e2e={generateE2eId('channel_setting_page.quick_menu.modal.input.command_name')}
 									/>
 								</div>
 								<p className="text-xs mt-1">
@@ -289,6 +312,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 										rows={3}
 										required
 										className="w-full bg-input-secondary border-theme-primary rounded-md px-3 py-2 text-theme-message focus:border-[#5865f2] focus:outline-none transition-colors duration-200 resize-none"
+										data-e2e={generateE2eId('channel_setting_page.quick_menu.modal.input.message_content')}
 									/>
 									<p className="text-xs mt-1">
 										{currentMenuType === QUICK_MENU_TYPE.QUICK_MENU
@@ -324,6 +348,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 									onClick={closeModal}
 									disabled={loading}
 									className="px-3 py-1.5 text-sm text-theme-primary-active hover:underline transition-colors duration-200 font-medium"
+									data-e2e={generateE2eId('channel_setting_page.quick_menu.modal.button.cancel')}
 								>
 									{t('quickAction.cancel')}
 								</button>
@@ -331,6 +356,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 									type="submit"
 									disabled={loading || !formData.menu_name?.trim() || (activeTab === 'flash' && !formData.action_msg?.trim())}
 									className="bg-[#5865f2] hover:bg-[#4752c4] disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-1.5 text-sm rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
+									data-e2e={generateE2eId('channel_setting_page.quick_menu.modal.button.submit')}
 								>
 									{loading && (
 										<svg width="14" height="14" viewBox="0 0 24 24" fill="none" className="animate-spin">

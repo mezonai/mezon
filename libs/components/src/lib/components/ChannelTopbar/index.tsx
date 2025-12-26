@@ -985,6 +985,7 @@ export function RedDot() {
 			className="absolute border-theme-primary
 		 w-[8px] h-[8px] rounded-full bg-colorDanger outline outline-1 outline-transparent
 		  font-bold text-[11px] flex items-center justify-center -bottom-[0.05rem] -right-[0.075rem]"
+			data-e2e={generateE2eId('chat.channel_message.header.badge')}
 		></div>
 	);
 }
@@ -1102,7 +1103,7 @@ function GalleryButton() {
 	}, []);
 
 	return (
-		<div className="relative leading-5 h-5" ref={galleryRef}>
+		<div className="relative leading-5 h-5" ref={galleryRef} data-e2e={generateE2eId('chat.channel_message.header.button.gallery')}>
 			<button
 				title={t('tooltips.gallery')}
 				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowGallery ? 'text-theme-primary-active' : ''}`}

@@ -97,7 +97,14 @@ const ModalCreateCategory = ({ onClose, onCreateCategory }: ModalCreateCategoryP
 							data-e2e={generateE2eId(`clan_page.modal.create_category.input.category_name`)}
 						/>
 					</div>
-					{checkValidate && <p className="text-[#e44141] text-xs italic font-thin">{checkValidate}</p>}
+					{checkValidate && (
+						<p
+							className="text-[#e44141] text-xs italic font-thin"
+							data-e2e={generateE2eId(`clan_page.modal.create_category.error_message`)}
+						>
+							{checkValidate}
+						</p>
+					)}
 				</div>
 				<div className=" font-semibold text-sm flex   justify-end flex-row items-center gap-4 py-4 px-6 rounded-bl-[5px] rounded-br-[5px]">
 					<button

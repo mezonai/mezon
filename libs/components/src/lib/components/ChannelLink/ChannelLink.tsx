@@ -274,6 +274,7 @@ const ChannelLinkComponent = ({
 						/>
 						<div
 							className={`absolute ml-auto w-5 h-5 text-white right-3 group-hover:hidden bg-red-600 rounded-full text-[12px] flex items-center justify-center top-2`}
+							data-e2e={generateE2eId('clan_page.channel_list.item.badge')}
 						>
 							{countNumberNotification}
 						</div>

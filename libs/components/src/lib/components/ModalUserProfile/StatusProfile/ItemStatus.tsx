@@ -1,4 +1,5 @@
 import { Icons } from '@mezon/ui';
+import { generateE2eId } from '@mezon/utils';
 import type { ReactNode } from 'react';
 
 type ItemStatusProps = {
@@ -17,6 +18,7 @@ const ItemStatus = ({ children, description, dropdown, startIcon, type, onClick,
 		<div
 			onClick={!disabled ? onClick : undefined}
 			className={`flex flex-col rounded-sm text-theme-primary ${disabled ? 'cursor-default' : 'cursor-pointer text-theme-primary-hover bg-item-theme-hover'} px-2`}
+			data-e2e={generateE2eId('short_profile.action.button.base')}
 		>
 			<div className="flex items-center justify-between">
 				{startIcon && <div className="flex items-center justify-center h-[18px] w-[18px] mr-2">{startIcon}</div>}

@@ -17,7 +17,7 @@ import {
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
-import { TypeSearch, addAttributesSearchList, filterListByName, normalizeString, sortFilteredList } from '@mezon/utils';
+import { TypeSearch, addAttributesSearchList, filterListByName, generateE2eId, normalizeString, sortFilteredList } from '@mezon/utils';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
@@ -282,8 +282,11 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 	return (
 		<ModalLayout onClose={onClose}>
-			<div className=" relative z-10 !w-[640px] px-6 py-4 rounded-[6px] shadow-shadowBorder bg-modal-theme">
-				<div className="flex flex-col">
+			<div
+				className=" relative z-10 !w-[640px] px-6 py-4 rounded-[6px] shadow-shadowBorder bg-modal-theme"
+				data-e2e={generateE2eId('modal.search')}
+			>
+				<div className="flex flex-col" data-e2e={generateE2eId('modal.search.input')}>
 					<InputField
 						type="text"
 						placeholder={t('searchModal.placeholder')}

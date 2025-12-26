@@ -1,5 +1,5 @@
 import { getNewColorRole, setColorRoleNew } from '@mezon/store';
-import { DEFAULT_ROLE_COLOR } from '@mezon/utils';
+import { DEFAULT_ROLE_COLOR, generateE2eId } from '@mezon/utils';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -87,6 +87,7 @@ const RoleColor = () => {
 								setSelectedColor(color);
 								dispatch(setColorRoleNew(color));
 							}}
+							data-e2e={generateE2eId('clan_page.settings.role.container.role_color')}
 						>
 							{selectedColor === color && !isCustoms && (
 								<span className="absolute inset-0 flex items-center justify-center text-white font-bold">✓</span>

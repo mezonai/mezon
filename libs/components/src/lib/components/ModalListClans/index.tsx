@@ -112,6 +112,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 					className={`flex items-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[-1px] right-[-2px] outline outline-[1px] outline-white  ${
 						badgeCountClan >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
 					}`}
+					data-e2e={generateE2eId('clan_page.badge')}
 				>
 					{badgeCountClan >= 100 ? '99+' : badgeCountClan}
 				</div>

@@ -70,7 +70,10 @@ export const BaseMemberProfile = ({ id, user, userMeta, username, avatar, isOwne
 
 				<div className="flex flex-col font-medium">
 					<ClanUserName userId={user?.id} name={username} isOwner={!!isOwner} />
-					<p className="text-xs text-left text-theme-primary opacity-60 line-clamp-1 truncate overflow-hidden flex-nowrap max-w-[100px] ">
+					<p
+						className="text-xs text-left text-theme-primary opacity-60 line-clamp-1 truncate overflow-hidden flex-nowrap max-w-[100px] "
+						data-e2e={generateE2eId('clan_page.secondary_side_bar.member.user_status')}
+					>
 						{userStatus}
 					</p>
 				</div>
@@ -87,7 +90,7 @@ export function ClanUserName({ name, userId, isOwner }: { name: string; userId: 
 			<span
 				style={{ color: userRolesClan.highestPermissionRoleColor }}
 				className="one-line text-start "
-				data-e2e={generateE2eId(`chat.direct_message.chat_item.username`, userId)}
+				data-e2e={generateE2eId('chat.direct_message.chat_item.username')}
 			>
 				{name}
 			</span>

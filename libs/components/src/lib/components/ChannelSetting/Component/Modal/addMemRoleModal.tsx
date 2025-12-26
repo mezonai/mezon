@@ -11,7 +11,7 @@ import {
 } from '@mezon/store';
 import { ButtonLoading, Icons, InputField } from '@mezon/ui';
 import type { IChannel, UsersClanEntity } from '@mezon/utils';
-import { ChannelStatusEnum } from '@mezon/utils';
+import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -197,7 +197,10 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	return (
 		<div ref={modalRef} tabIndex={-1} className="fixed  inset-0 flex items-center justify-center z-50 ">
 			<div className="fixed inset-0 bg-black opacity-80"></div>
-			<div className="relative z-10 p-6 bg-theme-setting-primary text-theme-primary rounded-[5px] w-[440px] text-[15px]">
+			<div
+				className="relative z-10 p-6 bg-theme-setting-primary text-theme-primary rounded-[5px] w-[440px] text-[15px]"
+				data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal')}
+			>
 				<h2 className="text-[24px] font-semibold text-center text-theme-primary-active">{t('addMembersRoles.title')}</h2>
 				<div className="flex justify-center">
 					{isPrivate === ChannelStatusEnum.isPrivate && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
@@ -225,7 +228,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 					{filterItem.listRolesNotAddChannel.length !== 0 && (
 						<div>
 							<p className="uppercase font-bold text-xs pb-4">{t('addMembersRoles.roles')}</p>
-							<div>
+							<div data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.role_list')}>
 								<ListRole
 									listItem={filterItem.listRolesNotAddChannel}
 									selectedRoleIds={selectedRoleIds}
@@ -237,7 +240,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 					{userChannelIds.length !== 0 && (
 						<div className="mt-2">
 							<p className="uppercase font-bold text-xs pb-4">{t('addMembersRoles.members')}</p>
-							<div>
+							<div data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.member_list')}>
 								<ListMembers
 									listItem={filterItem.listMembersNotInChannel}
 									selectedUserIds={selectedUserIds}

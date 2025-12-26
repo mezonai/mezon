@@ -2,7 +2,7 @@ import { getShowName, useUserById } from '@mezon/core';
 import { getStoreAsync, messagesActions, selectClanView, selectCurrentChannelId, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
-import { MEZON_AVATAR_URL, createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
+import { MEZON_AVATAR_URL, createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
 
 import { useCallback, useRef } from 'react';
 import { AvatarImage } from '../../AvatarImage/AvatarImage';
@@ -83,7 +83,11 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 	const avatarProps = getAvatarProps();
 
 	return (
-		<div className="overflow-hidden max-w-[97%] h-[24px]" ref={markUpOnReplyParent}>
+		<div
+			className="overflow-hidden max-w-[97%] h-[24px]"
+			ref={markUpOnReplyParent}
+			data-e2e={generateE2eId('replied_message.item')}
+		>
 			{message.references?.[0].message_ref_id ? (
 				<div className="rounded flex flex-row gap-1 items-center justify-start w-fit text-[14px] ml-9 mb-[-5px] replyMessage">
 					<Icons.ReplyCorner />
@@ -103,6 +107,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 							<span
 								onClick={onClick}
 								className="h-6 text-[#84ADFF] font-bold hover:underline cursor-pointer tracking-wide whitespace-nowrap"
+								data-e2e={generateE2eId('replied_message.username')}
 							>
 								{!isClanView ? message?.references?.[0]?.message_sender_display_name || messageUsernameSenderRef : nameShowed}
 							</span>

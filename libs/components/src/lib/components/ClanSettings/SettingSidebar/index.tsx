@@ -100,7 +100,10 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 						className={`${sidebarItem.listItem.length > 0 ? 'mt-[5px] border-b-theme-primary' : ''}`}
 					>
 						{sidebarItem.title && sidebarItem.listItem.length > 0 && (
-							<p className="select-none font-semibold px-[10px] py-[4px] text-xs uppercase ">
+							<p
+								className="select-none font-semibold px-[10px] py-[4px] text-xs uppercase "
+								data-e2e={generateE2eId(`clan_page.settings.sidebar.title`)}
+							>
 								{getTranslatedSectionTitle(sidebarItem.title)}
 							</p>
 						)}

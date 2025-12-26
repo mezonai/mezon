@@ -29,7 +29,15 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IImageWindowProps } from '@mezon/utils';
-import { EMimeTypes, ETypeLinkMedia, LoadMoreDirection, convertDateStringI18n, createImgproxyUrl, getAttachmentDataForWindow } from '@mezon/utils';
+import {
+	EMimeTypes,
+	ETypeLinkMedia,
+	LoadMoreDirection,
+	convertDateStringI18n,
+	createImgproxyUrl,
+	generateE2eId,
+	getAttachmentDataForWindow
+} from '@mezon/utils';
 import { endOfDay, format, getUnixTime, isSameDay, startOfDay } from 'date-fns';
 import isElectron from 'is-electron';
 import type { RefObject } from 'react';
@@ -635,6 +643,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			ref={modalRef}
 			tabIndex={-1}
 			className="absolute top-8 right-0 rounded-md dark:shadow-shadowBorder shadow-shadowInbox z-[9999] origin-top-right"
+			data-e2e={generateE2eId('clan_page.modal.gallery')}
 		>
 			<div className="flex bg-theme-setting-primary flex-col rounded-md min-h-[400px] md:w-[480px] max-h-[80vh] lg:w-[540px] shadow-sm overflow-hidden">
 				<div className="bg-theme-setting-nav flex flex-col p-[16px]">
@@ -656,6 +665,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 										? 'bg-theme-primary text-white'
 										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
 								}`}
+								data-e2e={generateE2eId('clan_page.modal.gallery.tab.all')}
 							>
 								{t('gallery.filters.all')}
 							</button>
@@ -666,6 +676,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 										? 'bg-theme-primary text-white'
 										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
 								}`}
+								data-e2e={generateE2eId('clan_page.modal.gallery.tab.image')}
 							>
 								{t('gallery.filters.images')}
 							</button>
@@ -676,6 +687,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 										? 'bg-theme-primary text-white'
 										: 'bg-theme-surface text-theme-primary hover:bg-theme-surface-hover'
 								}`}
+								data-e2e={generateE2eId('clan_page.modal.gallery.tab.video')}
 							>
 								{t('gallery.filters.videos')}
 							</button>
@@ -931,6 +943,7 @@ const ImageWithLoading = React.memo<ImageWithLoadingProps>(
 								preload="metadata"
 								muted
 								playsInline
+								data-e2e={generateE2eId('clan_page.modal.gallery.video')}
 							/>
 						) : (
 							<div className="w-full h-full bg-gray-800" />
@@ -950,6 +963,7 @@ const ImageWithLoading = React.memo<ImageWithLoadingProps>(
 						className={`w-full h-full object-cover ${isLoading ? 'opacity-0' : 'opacity-100'} ${className}`}
 						onLoad={handleLoad}
 						onError={handleError}
+						data-e2e={generateE2eId('clan_page.modal.gallery.image')}
 					/>
 				)}
 			</div>

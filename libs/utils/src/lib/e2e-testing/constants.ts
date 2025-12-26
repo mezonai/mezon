@@ -16,19 +16,77 @@ export const DATA_E2E_IDENTIFIER = {
 	},
 	footer_profile: {
 		avatar: '',
-		name: ''
+		name: '',
+		user_status: ''
 	},
 	button: {
-		base: ''
+		base: '',
+		copy: ''
 	},
 	base_profile: {
-		display_name: ''
+		display_name: '',
+		user_status: ''
+	},
+	short_profile: {
+		display_name: '',
+		username: '',
+		activity_status: {
+			button: {
+				custom: '',
+				clear: ''
+			}
+		},
+		input: {
+			send_message: ''
+		},
+		button: {
+			edit_profile: '',
+			add_role: ''
+		},
+		action: {
+			button: {
+				base: ''
+			}
+		},
+		modal: {
+			custom_status: {
+				input: '',
+				button: {
+					cancel: '',
+					save: ''
+				}
+			}
+		},
+		role: {
+			button: {
+				add: ''
+			},
+			popover: {
+				item: ''
+			}
+		}
 	},
 	mention: {
 		input: '',
 		selected_file: '',
 		text: {
 			about_me: ''
+		},
+		banned: {
+			time: ''
+		},
+		button: {
+			gif: '',
+			sticker: '',
+			emoji: '',
+			sound: ''
+		},
+		popover: {
+			gifs: {
+				trending: '',
+				category: '',
+				item: ''
+			}
 		}
 	},
 	discussion: {
@@ -90,6 +148,7 @@ export const DATA_E2E_IDENTIFIER = {
 			}
 		},
 		side_bar: {
+			DM_item: '',
 			clan_item: {
 				name: ''
 			},
@@ -138,7 +197,8 @@ export const DATA_E2E_IDENTIFIER = {
 				button: {
 					confirm: '',
 					cancel: ''
-				}
+				},
+				error_message: ''
 			},
 			create_clan: {
 				input: {
@@ -151,6 +211,12 @@ export const DATA_E2E_IDENTIFIER = {
 				button: {
 					confirm: '',
 					cancel: ''
+				},
+				template: {
+					item: {
+						create_my_own: '',
+						name: ''
+					}
 				}
 			},
 			create_channel: {
@@ -238,6 +304,23 @@ export const DATA_E2E_IDENTIFIER = {
 						}
 					}
 				}
+			},
+			kick_member: {
+				reason_input: '',
+				button: {
+					kick: '',
+					cancel: ''
+				}
+			},
+			gallery: {
+				all: '',
+				image: '',
+				video: '',
+				tab: {
+					all: '',
+					image: '',
+					video: ''
+				}
 			}
 		},
 		settings: {
@@ -247,9 +330,14 @@ export const DATA_E2E_IDENTIFIER = {
 			integrations: {
 				create_clan_webhook_button: '',
 				new_clan_webhook_button: '',
-				navigate_webhook_button: ''
+				navigate_webhook_button: '',
+				webhook_item: {
+					webhook_title: '',
+					webhook_description: ''
+				}
 			},
 			sidebar: {
+				title: '',
 				delete: '',
 				item: ''
 			},
@@ -285,6 +373,18 @@ export const DATA_E2E_IDENTIFIER = {
 			overview: {
 				input: {
 					clan_name: ''
+				},
+				system_messages_channel: {
+					selection: {
+						item: {
+							channel_name: '',
+							category_name: ''
+						},
+						selected: {
+							channel_name: '',
+							category_name: ''
+						}
+					}
 				}
 			},
 			upload: {
@@ -302,10 +402,25 @@ export const DATA_E2E_IDENTIFIER = {
 				container: {
 					role_option: {
 						display: '',
-						permissions: '',
+						permissions: {
+							item: {
+								title: '',
+								switch: ''
+							}
+						},
 						manage_members: ''
 					},
-					name_input: ''
+					name_input: '',
+					role_color: ''
+				},
+				item: {
+					role_name: '',
+					button: {
+						edit: '',
+						delete: '',
+						view: ''
+					},
+					member_count: ''
 				}
 			}
 		},
@@ -324,7 +439,8 @@ export const DATA_E2E_IDENTIFIER = {
 				user_list_collapsed: {
 					item: '',
 					item_count: ''
-				}
+				},
+				badge: ''
 			},
 			thread_item: {
 				name: ''
@@ -337,19 +453,27 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			members: {
 				role: {
-					role_name: ''
+					role_name: '',
+					role_color: ''
 				}
 			}
 		},
 		secondary_side_bar: {
 			member: {
-				in_voice: ''
+				in_voice: '',
+				user_status: ''
 			}
 		},
 		screen: {
 			voice_room: {
 				button: {
 					join_voice: ''
+				}
+			},
+			canvas_editor: {
+				input: {
+					title: '',
+					content: ''
 				}
 			}
 		},
@@ -359,7 +483,8 @@ export const DATA_E2E_IDENTIFIER = {
 				messages_count: '',
 				channel_name: ''
 			}
-		}
+		},
+		badge: ''
 	},
 	channel_setting_page: {
 		side_bar: {
@@ -372,6 +497,24 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			section: {
 				member_role_management: {
+					button: {
+						add: ''
+					},
+					modal: {
+						role_list: {
+							role_item: {
+								input: '',
+								title: ''
+							}
+						},
+						member_list: {
+							member_item: {
+								input: '',
+								name_prioritize: '',
+								username: ''
+							}
+						}
+					},
 					role_list: {
 						role_item: ''
 					},
@@ -379,7 +522,10 @@ export const DATA_E2E_IDENTIFIER = {
 						member_item: ''
 					}
 				},
-				advanced_permissions: ''
+				advanced_permissions: '',
+				list_roles_members: {
+					role_member_item: ''
+				}
 			},
 			modal: {
 				ask_change: {
@@ -398,6 +544,27 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			input: {
 				avatar_channel_webhook: ''
+			}
+		},
+		quick_menu: {
+			tab: '',
+			button: {
+				add: ''
+			},
+			modal: {
+				input: {
+					command_name: '',
+					message_content: ''
+				},
+				button: {
+					submit: '',
+					cancel: ''
+				}
+			},
+			item: {
+				command: '',
+				type: '',
+				message_content: ''
 			}
 		}
 	},
@@ -438,7 +605,8 @@ export const DATA_E2E_IDENTIFIER = {
 			button: {
 				add_user: '',
 				create_group: '',
-				button_plus: ''
+				button_plus: '',
+				search: ''
 			},
 			edit_group: {
 				button: '',
@@ -475,6 +643,9 @@ export const DATA_E2E_IDENTIFIER = {
 				leave_group: {
 					button: ''
 				}
+			},
+			side_bar: {
+				item: ''
 			}
 		},
 		channel_message: {
@@ -492,7 +663,21 @@ export const DATA_E2E_IDENTIFIER = {
 					pin: {
 						pin_badge: ''
 					},
-					canvas: '',
+					canvas: {
+						modal: {
+							canvas_management: {
+								button: {
+									create_canvas: ''
+								}
+							}
+						},
+						item: {
+							title: '',
+							button: {
+								delete: ''
+							}
+						}
+					},
 					thread: {
 						modal: {
 							thread_management: {
@@ -503,8 +688,10 @@ export const DATA_E2E_IDENTIFIER = {
 						},
 						item: ''
 					},
-					chat: ''
-				}
+					chat: '',
+					gallery: ''
+				},
+				badge: ''
 			},
 			actions: {
 				add_reaction: '',
@@ -532,6 +719,19 @@ export const DATA_E2E_IDENTIFIER = {
 				item: {
 					actions: ''
 				}
+			},
+			inbox: {
+				mentions: '',
+				topics: {
+					init_message: '',
+					last_reply_message: '',
+					button: {
+						jump: ''
+					}
+				},
+				message: '',
+				for_you: '',
+				action_tabs: ''
 			}
 		},
 		mention: {
@@ -575,7 +775,8 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			button: {
 				view_topic: ''
-			}
+			},
+			number_replies: ''
 		}
 	},
 	onboarding: {
@@ -662,6 +863,18 @@ export const DATA_E2E_IDENTIFIER = {
 			button: {
 				control_item: ''
 			}
+		},
+		forward_message: {
+			button: {
+				cancel: '',
+				send: ''
+			},
+			input: {
+				search: ''
+			}
+		},
+		search: {
+			input: ''
 		}
 	},
 	icon: {
@@ -695,6 +908,10 @@ export const DATA_E2E_IDENTIFIER = {
 	message: {
 		item: ''
 	},
+	replied_message: {
+		item: '',
+		username: ''
+	},
 	acceptModal: {
 		button: {
 			acceptInvite: ''
@@ -702,6 +919,9 @@ export const DATA_E2E_IDENTIFIER = {
 	},
 	suggest_item: {
 		username: ''
+	},
+	badge: {
+		friend_pending: ''
 	}
 };
 type DotNestedKeys<T> = T extends object

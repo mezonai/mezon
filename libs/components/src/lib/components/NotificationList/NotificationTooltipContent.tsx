@@ -11,7 +11,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
-import { NotificationCategory, sortNotificationsByDate } from '@mezon/utils';
+import { NotificationCategory, generateE2eId, sortNotificationsByDate } from '@mezon/utils';
 import type { ApiSdTopic } from 'mezon-js/dist/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -147,6 +147,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 										className={`px-2 py-[4px] rounded-[4px] text-base font-medium ${currentTabNotify === tab.value ? 'btn-primary btn-primary-hover' : ''}`}
 										tabIndex={index}
 										onClick={() => handleChangeTab(tab.value)}
+										data-e2e={generateE2eId('chat.channel_message.inbox.action_tabs')}
 									>
 										{tab.title}
 									</button>

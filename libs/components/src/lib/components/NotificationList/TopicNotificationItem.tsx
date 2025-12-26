@@ -17,7 +17,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
-import { createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import type { ApiChannelMessageHeader, ApiSdTopic } from 'mezon-js/dist/api.gen';
 import { useEffect, useMemo, useState } from 'react';
@@ -121,10 +121,11 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 	};
 
 	return (
-		<div className=" rounded-[8px] relative group">
+		<div className=" rounded-[8px] relative group" data-e2e={generateE2eId('chat.channel_message.inbox.topics')}>
 			<button
 				className="absolute py-1 px-2 bg-item-theme bottom-[10px] z-50 right-3 text-[10px] rounded-[6px] transition-all duration-300 group-hover:block hidden"
 				onClick={handleOpenTopic}
+				data-e2e={generateE2eId('chat.channel_message.inbox.topics.button.jump')}
 			>
 				{t('tooltips.jump')}
 			</button>
@@ -179,12 +180,18 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 						<div className="text-[12px] font-bold uppercase">{subject}</div>
 					</div>
 					<div>
-						<div className="text-[12px] w-fit max-w-full break-words whitespace-normal">
+						<div
+							className="text-[12px] w-fit max-w-full break-words whitespace-normal"
+							data-e2e={generateE2eId('chat.channel_message.inbox.topics.init_message')}
+						>
 							<b className="font-semibold">Replied to</b>: {messageRl ? messageRl?.t : 'Unreachable message'}
 						</div>
 					</div>
 					<div>
-						<div className="text-[13px] w-fit max-w-full break-words whitespace-normal">
+						<div
+							className="text-[13px] w-fit max-w-full break-words whitespace-normal"
+							data-e2e={generateE2eId('chat.channel_message.inbox.topics.last_reply_message')}
+						>
 							<b className="font-semibold">{lastSentUser ? lastSentUser?.user?.username : 'Sender'}</b>:{' '}
 							{lastMsgTopic ? lastMsgTopic?.t : 'Unreachable message'}
 						</div>

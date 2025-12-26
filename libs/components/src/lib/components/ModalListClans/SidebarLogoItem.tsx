@@ -12,7 +12,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Image } from '@mezon/ui';
-import { ModeResponsive, createImgproxyUrl } from '@mezon/utils';
+import { ModeResponsive, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useCallback, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import type { Coords } from '../ChannelLink';
@@ -69,7 +69,7 @@ const SidebarLogoItem = () => {
 				draggable="false"
 			>
 				<NavLinkComponent active={!isClanView}>
-					<div onContextMenu={handleMouseClick}>
+					<div onContextMenu={handleMouseClick} data-e2e={generateE2eId('clan_page.side_bar.DM_item')}>
 						<Image
 							src={
 								logoCustom

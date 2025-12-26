@@ -1,8 +1,9 @@
 import { useClanOwner, useDragAndDropRole } from '@mezon/core';
-import { RolesClanEntity, getStore, rolesClanActions, selectCurrentClanId, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store';
+import type { RolesClanEntity } from '@mezon/store';
+import { getStore, rolesClanActions, selectCurrentClanId, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { DEFAULT_ROLE_COLOR, EDragBorderPosition, SlugPermission } from '@mezon/utils';
-import { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js/api.gen';
+import { DEFAULT_ROLE_COLOR, EDragBorderPosition, SlugPermission, generateE2eId } from '@mezon/utils';
+import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js/api.gen';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -109,7 +110,10 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 						onDragEnter={() => handleDragEnter(index)}
 					>
 						<td>
-							<p className="px-2 inline-flex gap-1 items-center text-[15px] break-all whitespace-break-spaces overflow-hidden line-clamp-2 font-medium mt-1.5">
+							<p
+								className="px-2 inline-flex gap-1 items-center text-[15px] break-all whitespace-break-spaces overflow-hidden line-clamp-2 font-medium mt-1.5"
+								data-e2e={generateE2eId('clan_page.settings.role.item')}
+							>
 								{role.role_icon ? (
 									<img src={role.role_icon} alt="" className={'size-5'} />
 								) : (
@@ -117,14 +121,19 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 								)}
 
 								{!hasPermissionEdit && <Icons.IconLock defaultSize="size-3 text-contentTertiary" />}
-								<span className="one-line">{role.title}</span>
+								<span className="one-line" data-e2e={generateE2eId('clan_page.settings.role.item.role_name')}>
+									{role.title}
+								</span>
 							</p>
 						</td>
 						<td className="text-[15px] text-center">
 							{role?.slug === `everyone-${role?.clan_id}` ? (
 								<p className="inline-flex gap-x-2 items-center ">{t('allMembers')}</p>
 							) : (
-								<p className="inline-flex gap-x-2 items-center ">
+								<p
+									className="inline-flex gap-x-2 items-center "
+									data-e2e={generateE2eId('clan_page.settings.role.item.member_count')}
+								>
 									{role.role_user_list?.role_users?.length ?? 0}
 									<Icons.MemberIcon defaultSize="w-5 h-[30px] min-w-5" />
 								</p>
@@ -134,11 +143,11 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 							<div className="flex gap-x-2">
 								<div className="text-[15px] cursor-pointer bg-red-500 p-2 rounded-full opacity-0 group-hover:opacity-100 group-hover:text-white">
 									{hasPermissionEdit ? (
-										<span title={t('roleManagement.edit')}>
+										<span title={t('roleManagement.edit')} data-e2e={generateE2eId('clan_page.settings.role.item.button.edit')}>
 											<Icons.PenEdit className="size-5" />
 										</span>
 									) : (
-										<span title={t('roleManagement.view')}>
+										<span title={t('roleManagement.view')} data-e2e={generateE2eId('clan_page.settings.role.item.button.view')}>
 											<Icons.ViewRole defaultSize="size-5" />
 										</span>
 									)}
@@ -148,7 +157,10 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 										className={`text-[15px] cursor-pointer bg-red-500 p-2 text-white rounded-full ${hasPermissionEdit ? 'opacity-100' : 'opacity-20'}`}
 										onClick={(e) => handleOpenDeleteRoleModal(e, role.id)}
 									>
-										<span title={t('roleManagement.delete')}>
+										<span
+											title={t('roleManagement.delete')}
+											data-e2e={generateE2eId('clan_page.settings.role.item.button.delete')}
+										>
 											<Icons.DeleteMessageRightClick defaultSize="size-5" />
 										</span>
 									</div>

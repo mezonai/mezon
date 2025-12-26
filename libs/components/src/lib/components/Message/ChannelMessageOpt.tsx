@@ -106,6 +106,7 @@ const ChannelMessageOpt = ({
 	return (
 		<div
 			className={`chooseForText z-[1] absolute min-h-[34px] p-0.5 bg-theme-contexify rounded-lg block ${!isCombine ? (message?.references ? '-top-5' : 'top-0') : '-top-5'} ${isDifferentDay ? '-top-12 mt-1' : ''} right-6 w-fit`}
+			data-e2e={generateE2eId('chat.hover_message_actions')}
 		>
 			<div className="flex justify-between bg-theme-contexify rounded select-none">
 				<div className="w-fit h-full flex items-center justify-between" ref={refOpt}>

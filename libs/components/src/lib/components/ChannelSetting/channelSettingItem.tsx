@@ -161,6 +161,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 					onClick={() => {
 						setShowModal(true);
 					}}
+					data-e2e={generateE2eId('button.base')}
 				>
 					{isThread ? t('fields.threadDelete.delete') : t('fields.channelDelete.delete')}
 				</button>

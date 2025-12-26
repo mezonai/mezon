@@ -13,7 +13,7 @@ import {
 	toggleIsShowTrue
 } from '@mezon/store';
 import { InputField } from '@mezon/ui';
-import { EOverriddenPermission, SlugPermission } from '@mezon/utils';
+import { EOverriddenPermission, SlugPermission, generateE2eId } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -105,9 +105,13 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 						<li
 							key={permission.id}
 							className={`flex items-start justify-between p-3 rounded-lg border border-color-theme ${hasPermissionEdit ? 'cursor-pointer bg-item-hover' : 'cursor-not-allowed bg-item-hover'}`}
+							data-e2e={generateE2eId('clan_page.settings.role.container.role_option.permissions.item')}
 						>
 							<div className="flex-1 pr-4">
-								<div className="font-medium text-theme-primary-active mb-1">
+								<div
+									className="font-medium text-theme-primary-active mb-1"
+									data-e2e={generateE2eId('clan_page.settings.role.container.role_option.permissions.item.title')}
+								>
 									{permission.slug ? getPermissionTitle(permission.slug) || permission.title : permission.title}
 								</div>
 								<div className="text-xs text-theme-primary">
@@ -140,6 +144,7 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 										!hasPermissionEdit ||
 										(activeRole?.slug?.startsWith('everyone-') && permission.slug === EOverriddenPermission.sendMessage)
 									}
+									data-e2e={generateE2eId('clan_page.settings.role.container.role_option.permissions.item.switch')}
 								/>
 							</label>
 						</li>

@@ -201,7 +201,10 @@ const FriendsPage = () => {
 									{tab.title}
 								</button>
 								{tab.value === 'pending' && quantityPendingRequest !== 0 && (
-									<div className="absolute grid place-items-center w-[20px] h-[20px] rounded-full bg-colorDanger text-[10px] font-medium top-[2px] right-3">
+									<div 
+										className="absolute grid place-items-center w-[20px] h-[20px] rounded-full bg-colorDanger text-[10px] font-medium top-[2px] right-3"
+										data-e2e={generateE2eId('badge.friend_pending')}
+									>
 										{quantityPendingRequest}
 									</div>
 								)}

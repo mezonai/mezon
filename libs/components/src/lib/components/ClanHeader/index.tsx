@@ -18,7 +18,7 @@ import {
 	soundEffectActions,
 	useAppDispatch
 } from '@mezon/store';
-import { EPermission } from '@mezon/utils';
+import { EPermission, generateE2eId } from '@mezon/utils';
 import type { ApiCreateCategoryDescRequest } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -180,7 +180,10 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 	return (
 		<>
 			{type === 'direct' ? (
-				<div className="contain-strict px-3 font-semibold  h-heightHeader flex items-center border-b-theme-primary ">
+				<div
+					className="contain-strict px-3 font-semibold  h-heightHeader flex items-center border-b-theme-primary "
+					data-e2e={generateE2eId('chat.direct_message.button.search')}
+				>
 					<input
 						ref={inputRef}
 						placeholder={t('findOrStartConversation')}
