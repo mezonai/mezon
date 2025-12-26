@@ -88,7 +88,7 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 
 	return (
 		<div className="grid grid-cols-1 gap-4">
-			<div className="w-full flex flex-col text-[15px] pr-5" data-e2e={generateE2eId('clan_page.settings.role.container.name_input')}>
+			<div className="w-full flex flex-col text-[15px] pr-0 md:pr-5" data-e2e={generateE2eId('clan_page.settings.role.container.name_input')}>
 				<div className="text-xs font-bold uppercase text-theme-primary-active mb-2">
 					{t('roleManagement.roleName')}
 					<b className="text-red-600">*</b>

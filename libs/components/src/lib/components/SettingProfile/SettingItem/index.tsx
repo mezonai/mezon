@@ -37,7 +37,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 	}, [initSetting]);
 
 	return (
-		<div className=" overflow-y-auto w-1/6 xl:w-1/4 min-w-56 bg-theme-setting-nav   flex justify-end pt-96 pr-2 scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-200 2xl:flex-grow hide-scrollbar flex-grow">
+		<div className=" overflow-y-auto w-1/6 xl:w-1/4 min-w-56 bg-theme-setting-nav flex justify-center md:justify-end pt-96 pr-2 scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-200 2xl:flex-grow hide-scrollbar flex-grow">
 			<div className="w-170px ">
 				<p className="font-bold text-sm tracking-wider text-theme-primary-active">{t('setting:accountSettings.title')}</p>
 				<button

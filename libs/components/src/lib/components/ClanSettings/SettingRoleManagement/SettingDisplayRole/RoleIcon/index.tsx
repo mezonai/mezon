@@ -28,41 +28,43 @@ const RoleIcon = () => {
 	};
 
 	return (
-		<div className="w-full flex flex-col text-[15px] dark:text-textSecondary text-textSecondary800 pr-5">
+		<div className="w-full flex flex-col text-[15px] dark:text-textSecondary text-textSecondary800 pr-0 md:pr-5">
 			<div className="border-t-[1px] h-4 dark:border-borderDividerLight"></div>
 			<div className="text-xs font-bold uppercase mb-2">{t('roleManagement.roleIcon')}</div>
 			<div className="text-xs mb-2">{t('roleManagement.roleIconDescription')}</div>
-			<div className={'flex items-start gap-5'}>
+			<div className={'flex flex-col md:flex-row items-start gap-3 md:gap-5'}>
 				{iconRole ? (
-					<img src={iconRole || ''} alt="" className={'w-20 h-20'} />
+					<img src={iconRole || ''} alt="" className={'w-16 h-16 md:w-20 md:h-20'} />
 				) : (
-					<div className={'bg-theme-setting-nav flex justify-center items-center w-20 h-20'}>
-						<Icons.ImageUploadIcon className="w-6 h-6 text-theme-primary" />
+					<div className={'bg-theme-setting-nav flex justify-center items-center w-16 h-16 md:w-20 md:h-20'}>
+						<Icons.ImageUploadIcon className="w-5 h-5 md:w-6 md:h-6 text-theme-primary" />
 					</div>
 				)}
 				<input type="file" className={'hidden'} ref={fileInputRef} />
-				<button
-					className={
-						'flex justify-center items-center px-3 py-1 rounded border-[1px] ' +
-						'border-theme-primary ' +
-						'text-theme-primary-active bg-item-theme-hover'
-					}
-					onClick={handleChooseIconModal}
-				>
-					{t('roleManagement.chooseImage')}
-				</button>
-				{iconRole && (
+				<div className="flex flex-col md:flex-row gap-2 md:gap-0">
 					<button
 						className={
-							'flex justify-center items-center px-3 py-1 rounded border-[1px] ' +
-							'border-colorDanger hover:bg-colorDangerHover' +
-							'hover:text-colorDangerHover text-colorDangerHover'
+							'flex justify-center items-center px-3 py-1.5 md:py-1 rounded border-[1px] ' +
+							'border-theme-primary ' +
+							'text-theme-primary-active bg-item-theme-hover text-sm md:text-base'
 						}
-						onClick={handleRemoveIcon}
+						onClick={handleChooseIconModal}
 					>
-						{t('roleManagement.removeIcon')}
+						{t('roleManagement.chooseImage')}
 					</button>
-				)}
+					{iconRole && (
+						<button
+							className={
+								'flex justify-center items-center px-3 py-1.5 md:py-1 rounded border-[1px] ' +
+								'border-colorDanger hover:bg-colorDangerHover ' +
+								'hover:text-colorDangerHover text-colorDangerHover text-sm md:text-base md:ml-5'
+							}
+							onClick={handleRemoveIcon}
+						>
+							{t('roleManagement.removeIcon')}
+						</button>
+					)}
+				</div>
 			</div>
 		</div>
 	);

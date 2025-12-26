@@ -53,12 +53,12 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 
 	return (
 		<>
-			<div className="pr-5">
+			<div className="pr-2 sbm:pr-5">
 				<div
-					className={`w-full flex  mb-5 border-b border-gray-200 dark:border-gray-500 ${activeRole?.slug === `everyone-${activeRole?.clan_id}` ? 'justify-around' : 'justify-between'}`}
+					className={`w-full flex gap-2 sbm:gap-0 mb-3 sbm:mb-5 border-b border-gray-200 dark:border-gray-500 ${activeRole?.slug === `everyone-${activeRole?.clan_id}` ? 'justify-around' : 'justify-start sbm:justify-between'}`}
 				>
 					<button
-						className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectDisplayTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'} `}
+						className={`py-[5px] px-1 sbm:px-0 text-[12px] sbm:text-[15px] text-left transition duration-300 rounded relative tracking-normal sbm:tracking-wider font-medium group flex-shrink ${isSelectDisplayTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'} `}
 						onClick={() => {
 							if (isSelectDisplayTab) return;
 							handleButtonClick('Display');
@@ -71,7 +71,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 					</button>
 
 					<button
-						className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectPermissionTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'}`}
+						className={`py-[5px] px-1 sbm:px-0 text-[12px] sbm:text-[15px] text-left transition duration-300 rounded relative tracking-normal sbm:tracking-wider font-medium group flex-shrink ${isSelectPermissionTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'}`}
 						onClick={() => {
 							if (isSelectPermissionTab) return;
 							handleButtonClick('Permissions');
@@ -86,7 +86,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 					</button>
 					{activeRole?.slug !== `everyone-${activeRole?.clan_id}` && (
 						<button
-							className={`py-[5px] text-[15px] text-left transition duration-300 rounded relative tracking-wider font-medium group ${isSelectManageTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'} `}
+							className={`py-[5px] px-1 sbm:px-0 text-[12px] sbm:text-[15px] text-left transition duration-300 rounded relative tracking-normal sbm:tracking-wider font-medium group flex-shrink min-w-0 ${isSelectManageTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'} `}
 							onClick={() => {
 								if (isSelectManageTab) return;
 								handleButtonClick('Manage Members');
@@ -94,7 +94,9 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 							}}
 							data-e2e={generateE2eId('clan_page.settings.role.container.role_option.manage_members')}
 						>
-							{t('roleManagement.manageMembers')} ({roleUsersCount > 0 ? roleUsersCount : 0})
+							<span className="sbm:whitespace-nowrap">
+								{t('roleManagement.manageMembers')} ({roleUsersCount > 0 ? roleUsersCount : 0})
+							</span>
 							<div
 								className={`absolute inset-x-0 bottom-0 h-[2px] group-hover:bg-blue-300 ${isSelectManageTab ? 'bg-blue-400' : ''}`}
 							/>

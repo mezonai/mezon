@@ -58,9 +58,9 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 	};
 	return (
 		<div>
-			<div className="w-full flex gap-x-3 pr-5">
+			<div className="w-full flex gap-x-1.5 sbm:gap-x-3 pr-1 sbm:pr-5">
 				<InputField
-					className="flex-grow text-[15px] w-full py-[7px] px-[16px] font-normal border-theme-primary bg-input-secondary focus:outline focus:outline-1  outline-[#006ce7]"
+					className="flex-1 min-w-0 sbm:flex-grow text-[13px] sbm:text-[15px] py-[5px] sbm:py-[7px] px-[10px] sbm:px-[16px] font-normal border-theme-primary bg-input-secondary focus:outline focus:outline-1  outline-[#006ce7]"
 					type="text"
 					needOutline={true}
 					placeholder={t('setupMember.searchMembers')}
@@ -68,7 +68,7 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 					onChange={(e) => setSearchTerm(e.target.value)}
 				/>
 				<button
-					className="flex-grow text-[15px] bg-indigo-500 hover:bg-indigo-600 rounded-lg py-[3px] px-2 text-nowrap font-medium text-white"
+					className="flex-shrink-0 sbm:flex-grow text-[11px] sbm:text-[15px] bg-indigo-500 hover:bg-indigo-600 rounded-lg py-[5px] px-1.5 sbm:py-[3px] sbm:px-2 text-nowrap font-medium text-white"
 					onClick={() => {
 						handleOpenModal();
 					}}
