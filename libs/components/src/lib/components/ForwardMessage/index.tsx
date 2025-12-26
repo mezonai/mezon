@@ -471,6 +471,81 @@ const ForwardMessageModal = () => {
 		}
 	};
 
+	const allForwardAttachments = useMemo(() => {
+		if (!isForwardAll) {
+			return selectedMessage?.attachments || [];
+		}
+
+		const store = getStore();
+		const state = store.getState();
+		const channelMessageEntity =
+			state.messages.channelMessages?.[(modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) || ''];
+
+		if (!channelMessageEntity) {
+			return selectedMessage?.attachments || [];
+		}
+
+		const allMessageIds = channelMessageEntity.ids;
+		const allMessagesEntities = channelMessageEntity.entities;
+		const startIndex = allMessageIds.findIndex((id) => id === selectedMessage.id);
+
+		const combineMessages: MessagesEntity[] = [];
+		combineMessages.push(selectedMessage);
+
+		let index = startIndex + 1;
+		while (
+			index < allMessageIds.length &&
+			Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) -
+				Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) <
+				FOR_1_HOUR_SEC &&
+			allMessagesEntities?.[allMessageIds[index]]?.sender_id === selectedMessage?.user?.id
+		) {
+			combineMessages.push(allMessagesEntities?.[allMessageIds[index]]);
+			index++;
+		}
+		const allAttachments = combineMessages.flatMap((msg) => msg.attachments || []);
+		return allAttachments;
+	}, [isForwardAll, selectedMessage?.id, selectedMessage?.attachments, modeResponsive, currentChannelId, currentDmId]);
+	const { attachmentStats, previewAttachment } = useMemo(() => {
+		const images: typeof allForwardAttachments = [];
+		const videos: typeof allForwardAttachments = [];
+		const files: typeof allForwardAttachments = [];
+		let firstImage: (typeof allForwardAttachments)[0] | undefined;
+		let firstVideo: (typeof allForwardAttachments)[0] | undefined;
+		for (const attachment of allForwardAttachments) {
+			if (isImageFileType(attachment.filetype)) {
+				images.push(attachment);
+				if (!firstImage) firstImage = attachment;
+			} else if (isVideoFileType(attachment.filetype)) {
+				videos.push(attachment);
+				if (!firstVideo) firstVideo = attachment;
+			} else if (isFileAttachment(attachment.filetype)) {
+				files.push(attachment);
+			}
+		}
+
+		const stats = {
+			images,
+			videos,
+			files,
+			imageCount: images.length > 99 ? '99+' : images.length,
+			videoCount: videos.length > 99 ? '99+' : videos.length,
+			fileCount: files.length > 99 ? '99+' : files.length
+		};
+
+		const preview = (() => {
+			const attachment = firstImage || firstVideo;
+			if (!attachment) return null;
+
+			return {
+				attachment,
+				isVideo: isVideoFileType(attachment.filetype)
+			};
+		})();
+
+		return { attachmentStats: stats, previewAttachment: preview };
+	}, [allForwardAttachments]);
+
 	return (
 		<ModalLayout onClose={handleCloseModal}>
 			<div className="bg-theme-setting-primary w-[550px] text-theme-primary pt-4 rounded">
@@ -539,82 +614,60 @@ const ForwardMessageModal = () => {
 								</div>
 							)}
 
-							{selectedMessage?.attachments &&
-								selectedMessage.attachments.length > 0 &&
-								(() => {
-									const images = selectedMessage.attachments.filter((a) => isImageFileType(a.filetype));
-									const videos = selectedMessage.attachments.filter((a) => isVideoFileType(a.filetype));
-									const files = selectedMessage.attachments.filter((a) => isFileAttachment(a.filetype));
-
-									const imageCount = images.length > 99 ? '99+' : images.length;
-									const videoCount = videos.length > 99 ? '99+' : videos.length;
-									const fileCount = files.length > 99 ? '99+' : files.length;
-
-									return (
-										<div className="flex flex-col gap-1 text-xs text-theme-primary opacity-60">
-											{images.length > 0 && (
-												<div className="flex items-center gap-1.5">
-													<Icons.ImageUploadIcon className="w-4 h-4" />
-													<span>
-														{imageCount} {images.length === 1 ? t('modal.image') : t('modal.images')}
-													</span>
-												</div>
-											)}
-											{videos.length > 0 && (
-												<div className="flex items-center gap-1.5">
-													<Icons.PlayButton className="w-4 h-4" />
-													<span>
-														{videoCount} {videos.length === 1 ? t('modal.video') : t('modal.videos')}
-													</span>
-												</div>
-											)}
-											{files.length > 0 && (
-												<div className="flex items-center gap-1.5">
-													<Icons.FileIcon className="w-4 h-4" />
-													<span>
-														{fileCount} {files.length === 1 ? t('modal.file') : t('modal.files')}
-													</span>
-												</div>
-											)}
+							{allForwardAttachments.length > 0 && (
+								<div className="flex flex-col gap-1 text-xs text-theme-primary opacity-60">
+									{attachmentStats.images.length > 0 && (
+										<div className="flex items-center gap-1.5">
+											<Icons.ImageUploadIcon className="w-4 h-4" />
+											<span>
+												{attachmentStats.imageCount}{' '}
+												{attachmentStats.images.length === 1 ? t('modal.image') : t('modal.images')}
+											</span>
 										</div>
-									);
-								})()}
+									)}
+									{attachmentStats.videos.length > 0 && (
+										<div className="flex items-center gap-1.5">
+											<Icons.PlayButton className="w-4 h-4" />
+											<span>
+												{attachmentStats.videoCount}{' '}
+												{attachmentStats.videos.length === 1 ? t('modal.video') : t('modal.videos')}
+											</span>
+										</div>
+									)}
+									{attachmentStats.files.length > 0 && (
+										<div className="flex items-center gap-1.5">
+											<Icons.FileIcon className="w-4 h-4" />
+											<span>
+												{attachmentStats.fileCount} {attachmentStats.files.length === 1 ? t('modal.file') : t('modal.files')}
+											</span>
+										</div>
+									)}
+								</div>
+							)}
 						</div>
-						{selectedMessage?.attachments &&
-							selectedMessage.attachments.length > 0 &&
-							(() => {
-								const firstImage = selectedMessage.attachments.find((a) => isImageFileType(a.filetype));
-								const firstVideo = selectedMessage.attachments.find((a) => isVideoFileType(a.filetype));
-								const attachment = firstImage || firstVideo;
-
-								if (attachment) {
-									const isVideo = isVideoFileType(attachment.filetype);
-									return (
-										<div className="relative w-20 h-20 rounded overflow-hidden bg-theme-input flex-shrink-0">
-											{isVideo ? (
-												<>
-													<video src={attachment.url} className="w-full h-full object-cover" />
-													<div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
-														<Icons.PlayButton className="w-8 h-8 text-white" />
-													</div>
-												</>
-											) : (
-												<img
-													src={attachment.url}
-													alt={attachment.filename || 'attachment'}
-													className="w-full h-full object-cover"
-												/>
-											)}
-											{selectedMessage.attachments.length > 1 && (
-												<div className="absolute bottom-1 right-1 bg-black/70 rounded-full w-6 h-6 flex items-center justify-center text-[10px] text-white font-semibold">
-													+{selectedMessage.attachments.length - 1}
-												</div>
-											)}
+						{previewAttachment && (
+							<div className="relative w-20 h-20 rounded overflow-hidden bg-theme-input flex-shrink-0">
+								{previewAttachment.isVideo ? (
+									<>
+										<video src={previewAttachment.attachment.url} className="w-full h-full object-cover" />
+										<div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
+											<Icons.PlayButton className="w-8 h-8 text-white" />
 										</div>
-									);
-								}
-								return null;
-							})()}
+									</>
+								) : (
+									<img
+										src={previewAttachment.attachment.url}
+										alt={previewAttachment.attachment.filename || 'attachment'}
+										className="w-full h-full object-cover"
+									/>
+								)}
+								{allForwardAttachments.length > 1 && (
+									<div className="absolute bottom-1 right-1 bg-black/70 rounded-full w-6 h-6 flex items-center justify-center text-[10px] text-white font-semibold">
+										+{allForwardAttachments.length - 1}
+									</div>
+								)}
+							</div>
+						)}
 					</div>
 
 					<div className="mt-4 mb-2 flex items-center justify-between">
