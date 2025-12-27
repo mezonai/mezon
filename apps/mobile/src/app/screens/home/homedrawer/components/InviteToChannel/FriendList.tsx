@@ -290,7 +290,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 
 					<View style={styles.searchInviteFriendWrapper}>
 						<MezonInput
-							placeHolder={t('inviteFriendToChannel')}
+							placeHolder={channelId ? t('inviteFriendToChannel') : t('inviteFriendToClan')}
 							onTextChange={setSearchUserText}
 							value={searchUserText}
 							prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}

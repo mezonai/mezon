@@ -9,10 +9,11 @@ interface IMezonMenu {
 	menu: IMezonMenuSectionProps[];
 	marginVertical?: number | null;
 	paddingBottom?: number | null;
+	marginBottom?: number | null;
 }
 
-export default function MezonMenu({ menu, marginVertical = size.s_18, paddingBottom = size.s_18 }: IMezonMenu) {
-	const styles = useMemo(() => createContainerStyle(marginVertical, paddingBottom), [marginVertical, paddingBottom]);
+export default function MezonMenu({ menu, marginVertical = size.s_18, paddingBottom = size.s_18, marginBottom = null }: IMezonMenu) {
+	const styles = useMemo(() => createContainerStyle(marginVertical, paddingBottom, marginBottom), [marginVertical, paddingBottom, marginBottom]);
 
 	return (
 		<View style={styles.container}>
@@ -23,11 +24,6 @@ export default function MezonMenu({ menu, marginVertical = size.s_18, paddingBot
 	);
 }
 
-export const reserve = () => {
-	// Toast.show({
-	// 	type: 'info',
-	// 	text1: 'Coming soon'
-	// });
-};
+export const reserve = () => {};
 
 export { IMezonMenuItemProps, IMezonMenuSectionProps };

@@ -13,7 +13,7 @@
 			"duplicateError": "Tên chủ đề đã tồn tại trong kênh. Vui lòng nhập tên khác."
 		},
 		"channelDescription": {
-			"title": "Mô tả của kênh",
+			"title": "Chủ đề kênh",
 			"placeholder": "Hãy cho mọi người biết cách sử dụng kênh này!"
 		},
 		"threadDescription": {
@@ -155,8 +155,8 @@
 		"bottomSheet": {
 			"addMembersOrRoles": "Thêm thành viên hoặc vai trò",
 			"add": "Thêm",
-			"roles": "VAI TRÒ",
-			"members": "THÀNH VIÊN",
+			"roles": "Vai trò",
+			"members": "Thành viên",
 			"rolesMembers": "Vai trò/Thành viên",
 			"roleMemberPlaceholder": "Vai trò/Thành viên"
 		},

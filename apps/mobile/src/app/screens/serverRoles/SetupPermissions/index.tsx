@@ -290,7 +290,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 					<View style={styles.bottomButton}>
 						<TouchableOpacity onPress={() => handleNextStep()}>
 							<View style={styles.finishButton}>
-								<Text style={styles.buttonText}>{t('setupPermission.next')}</Text>
+								<Text style={styles.buttonNextText}>{t('setupPermission.next')}</Text>
 							</View>
 						</TouchableOpacity>
 

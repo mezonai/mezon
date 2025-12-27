@@ -131,7 +131,7 @@ export function QuickAction({ navigation, route }) {
 			</View>
 			{isLoading === 'loading' ? (
 				<View style={styles.loadingView}>
-					<LoadingModal isVisible={true} />
+					<LoadingModal isVisible={true} isTransparent />
 				</View>
 			) : (
 				<QuickActionList

@@ -1,5 +1,5 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelMembersEntity, ChannelsEntity } from '@mezon/store-mobile';
 import { channelMembersActions, directActions, useAppDispatch } from '@mezon/store-mobile';
 import React from 'react';
@@ -67,5 +67,5 @@ export default function UserInfoDm({
 		}
 	];
 
-	return <MezonMenu menu={menu} />;
+	return <MezonMenu menu={menu} marginVertical={0} paddingBottom={0} marginBottom={-size.s_18} />;
 }

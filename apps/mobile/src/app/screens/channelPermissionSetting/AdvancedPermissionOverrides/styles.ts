@@ -1,4 +1,4 @@
-import { Attributes, size, verticalScale } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -7,10 +7,11 @@ export const style = (colors: Attributes) =>
 			flex: 1,
 			backgroundColor: colors.primary,
 			paddingHorizontal: size.s_18,
-			gap: size.s_18
+			gap: size.s_18,
+			marginTop: size.s_10
 		},
 		headerTitle: {
-			fontSize: verticalScale(20),
+			fontSize: size.s_18,
 			marginLeft: 0,
 			marginRight: 0,
 			fontWeight: 'bold',
@@ -21,7 +22,7 @@ export const style = (colors: Attributes) =>
 			paddingVertical: size.s_10
 		},
 		saveButtonText: {
-			fontSize: verticalScale(18),
+			fontSize: size.s_16,
 			marginLeft: 0,
 			marginRight: 0,
 			color: colors.bgViolet
@@ -30,9 +31,10 @@ export const style = (colors: Attributes) =>
 			marginLeft: size.s_16
 		},
 		permissionTypeText: {
-			color: colors.textDisabled
+			color: colors.textDisabled,
+			fontSize: size.s_12
 		},
 		scrollContent: {
-			gap: size.s_28
+			gap: size.s_10
 		}
 	});

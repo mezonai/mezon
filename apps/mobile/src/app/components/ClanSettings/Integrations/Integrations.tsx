@@ -1,5 +1,5 @@
 import { usePermissionChecker } from '@mezon/core';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { fetchClanWebhooks, fetchWebhooks, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -83,9 +83,9 @@ export function Integrations({ route }) {
 	};
 
 	return (
-		<View style={{ paddingHorizontal: size.s_10, backgroundColor: themeValue.primary, width: '100%', height: '100%' }}>
+		<View style={styles.integrationsContainer}>
 			<Text style={styles.description}>
-				{t('integration.description')}
+				{t('integration.description') + ' '}
 				<Text style={styles.textLink} onPress={handleOpenDocs}>
 					{t('integration.learnMore')}
 				</Text>

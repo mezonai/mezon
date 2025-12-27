@@ -12,7 +12,7 @@
 		"description": "Đặt tên và màu sắc độc đáo cho vai trò này. Bạn luôn có thể thay đổi điều này sau.",
 		"create": "Tạo",
 		"newRole": "Nhập tên vai trò mới...",
-		"roleName": "TÊN VAI TRÒ",
+		"roleName": "Tên vai trò",
 		"createSuccess": "Tạo vai trò {{roleName}} thành công",
 		"cannotCreate": "Không thể tạo {{roleName}}"
 	},

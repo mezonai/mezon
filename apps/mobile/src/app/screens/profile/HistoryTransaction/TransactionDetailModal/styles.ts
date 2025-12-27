@@ -120,7 +120,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		},
 		noteContainer: {
 			maxHeight: size.s_100,
-			borderColor: colors.borderHighlight,
+			borderColor: colors.borderRadio,
 			borderWidth: 1,
 			borderRadius: size.s_4,
 			padding: size.s_8,

@@ -56,7 +56,7 @@ export const style = (colors: Attributes) =>
 			paddingLeft: size.s_12
 		},
 		headerItemText: {
-			fontSize: size.s_16,
+			fontSize: size.s_14,
 			color: colors.white
 		}
 	});

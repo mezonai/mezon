@@ -41,9 +41,9 @@ export const style = (colors: Attributes) =>
 			color: 'white'
 		},
 		desciptionWrapper: {
-			paddingVertical: size.s_10,
 			borderBottomWidth: 1,
-			borderBottomColor: colors.borderDim
+			borderBottomColor: colors.borderDim,
+			paddingBottom: size.s_10
 		},
 		newRole: {
 			fontSize: size.s_24,

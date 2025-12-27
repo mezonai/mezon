@@ -11,8 +11,8 @@
 		"createANewRole": "Create a new role",
 		"description": "Give this role a unique name and color. You can always change this later.",
 		"create": "Create",
-		"newRole": "new role",
-		"roleName": "ROLE NAME",
+		"newRole": "Enter new role name...",
+		"roleName": "Role Name",
 		"createSuccess": "Created {{roleName}} role successfully",
 		"cannotCreate": "Cannot create {{roleName}}"
 	},
@@ -49,8 +49,8 @@
 		"doNotSave": "Don't Save"
 	},
 	"roleColorPicker": {
-		"textBtnRole": "Role Colour",
-		"titleBS": "Pick a Colour",
+		"textBtnRole": "Role Color",
+		"titleBS": "Pick a Color",
 		"reset": "Reset",
 		"save": "Save"
 	},
@@ -84,7 +84,7 @@
 		"everyoneDescription": "@everyone • applies to all clan members",
 		"searchRoles": "Search Roles",
 		"createRole": "Create Role",
-		"membersUseColor": "Members use the colour of the highest role they have on this list. Drag roles to reorder them.",
+		"membersUseColor": "Members use the color of the highest role they have on this list. Drag roles to reorder them.",
 		"noRoles": "No Roles"
 	},
 	"roleManagement": {
@@ -98,8 +98,8 @@
 		"failedToUpdateRoleOrder": "Failed to update role order.",
 		"newRoleDefault": "New Role",
 		"roleName": "Role name",
-		"roleColour": "Role colour",
-		"membersUseColour": "Members use the colour of the highest role they have on the roles list.",
+		"roleColour": "Role color",
+		"membersUseColour": "Members use the color of the highest role they have on the roles list.",
 		"roleIcon": "Role Icon",
 		"roleIconDescription": "Upload an image under 256 KB or pick a custom emoji from this clan. We recommended at least 64x64 pixels. Members will see the icon for their highest role if they have multiple roles",
 		"chooseImage": "Choose image",

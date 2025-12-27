@@ -17,16 +17,15 @@ export const style = (colors: Attributes) =>
 		},
 
 		keyContainer: {
-			borderWidth: 1,
-			borderColor: colors.darkJade,
 			alignSelf: 'flex-start',
 			paddingHorizontal: size.s_8,
-			borderRadius: size.s_6,
-			backgroundColor: colors.darkJade
+			paddingVertical: size.s_4,
+			borderRadius: size.s_8,
+			backgroundColor: colors.darkJade + '33'
 		},
 
 		keyText: {
-			color: colors.textSuccess,
+			color: '#3ba55d',
 			fontSize: size.s_14
 		},
 
@@ -35,5 +34,9 @@ export const style = (colors: Attributes) =>
 			fontStyle: 'italic',
 			fontSize: size.s_12,
 			marginTop: size.s_6
+		},
+
+		contentContainer: {
+			flex: 1
 		}
 	});

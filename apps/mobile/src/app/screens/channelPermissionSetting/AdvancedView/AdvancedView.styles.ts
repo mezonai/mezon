@@ -1,4 +1,4 @@
-import { Attributes, size, verticalScale } from '@mezon/mobile-ui';
+import { Attributes, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = (colors: Attributes) =>
@@ -13,7 +13,7 @@ export const styles = (colors: Attributes) =>
 			marginBottom: size.s_10
 		},
 		headerText: {
-			fontSize: verticalScale(18),
+			fontSize: size.s_14,
 			color: colors.white
 		},
 		itemWrapper: {

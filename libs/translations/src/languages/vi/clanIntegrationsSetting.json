@@ -34,7 +34,7 @@
 		"name": "TÊN"
 	},
 	"webhooksEmpty": {
-		"noWebhooks": "KHÔNG CÓ WEBHOOK"
+		"noWebhooks": "Không có webhook"
 	},
 	"webhooksItem": {
 		"createdBy": "Được tạo vào {{webhookCreateTime}} bởi {{webhookUserOwnerName}}"

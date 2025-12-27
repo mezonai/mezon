@@ -10,7 +10,7 @@ import {
 	save,
 	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
 } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import type { RootState } from '@mezon/store-mobile';
 import {
 	emojiSuggestionActions,
@@ -43,17 +43,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
 import { SlashCommandSuggestions } from '../../../../../../components/Suggestions/SlashCommandSuggestions';
-import {
-	SlashCommandMessage
-} from '../../../../../../components/Suggestions/SlashCommandSuggestions/SlashCommandMessage';
+import { SlashCommandMessage } from '../../../../../../components/Suggestions/SlashCommandSuggestions/SlashCommandMessage';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
-import {
-	removeBackticks,
-	resetCachedChatbox,
-	resetCachedMessageActionNeedToResolve
-} from '../../../../../../utils/helpers';
+import { removeBackticks, resetCachedChatbox, resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
 import { EMessageActionType } from '../../../enums';
 import type { IMessageActionNeedToResolve } from '../../../types';
 import AttachmentPreview from '../../AttachmentPreview';
@@ -810,7 +804,7 @@ export const ChatBoxBottomBar = memo(
 								spellCheck={false}
 								numberOfLines={4}
 								textBreakStrategy="simple"
-								style={[styles.inputStyle, !textValueInputRef?.current && { height: size.s_40 }]}
+								style={[styles.inputStyle, !textValueInputRef?.current && styles.inputStyleEmpty]}
 								children={RenderTextContent({ text: textValueInputRef?.current })}
 								onSelectionChange={textInputProps?.onSelectionChange}
 								onPressIn={handlePressIn}

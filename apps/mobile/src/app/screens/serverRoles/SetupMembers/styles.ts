@@ -1,5 +1,5 @@
 import type { Attributes } from '@mezon/mobile-ui';
-import { size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -46,10 +46,10 @@ export const style = (colors: Attributes) =>
 			paddingTop: size.s_10
 		},
 		addMemberTitle: {
-			paddingVertical: size.s_10,
 			borderBottomWidth: 1,
 			borderBottomColor: colors.borderDim,
-			marginBottom: size.s_20
+			marginBottom: size.s_20,
+			paddingBottom: size.s_10
 		},
 		addMemberText: {
 			color: colors.white,
@@ -99,6 +99,10 @@ export const style = (colors: Attributes) =>
 		},
 		buttonText: {
 			color: colors.text,
+			textAlign: 'center'
+		},
+		buttonFinishText: {
+			color: baseColor.white,
 			textAlign: 'center'
 		},
 		cancelButton: {

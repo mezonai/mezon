@@ -10,7 +10,8 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_12,
 			color: colors.textDisabled,
 			fontWeight: '400',
-			marginBottom: size.s_10
+			marginBottom: size.s_10,
+			paddingHorizontal: size.s_6
 		},
 		textLink: {
 			fontSize: size.s_12,
@@ -41,5 +42,11 @@ export const style = (colors: Attributes) =>
 		},
 		scrollContainer: {
 			flex: 1
+		},
+		integrationsContainer: {
+			paddingHorizontal: size.s_10,
+			backgroundColor: colors.primary,
+			width: '100%',
+			height: '100%'
 		}
 	});

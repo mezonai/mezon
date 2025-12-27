@@ -1,5 +1,5 @@
 import type { Attributes } from '@mezon/mobile-ui';
-import { size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -63,9 +63,9 @@ export const style = (colors: Attributes) =>
 			flex: 1
 		},
 		permissionTitle: {
-			paddingVertical: size.s_10,
 			borderBottomWidth: 1,
 			borderBottomColor: colors.borderDim,
+			paddingBottom: size.s_10,
 			marginBottom: size.s_20
 		},
 		text: {
@@ -114,6 +114,10 @@ export const style = (colors: Attributes) =>
 		},
 		buttonText: {
 			color: colors.text,
+			textAlign: 'center'
+		},
+		buttonNextText: {
+			color: baseColor.white,
 			textAlign: 'center'
 		},
 		cancelButton: {

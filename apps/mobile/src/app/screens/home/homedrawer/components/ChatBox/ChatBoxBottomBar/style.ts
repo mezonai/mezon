@@ -76,6 +76,10 @@ export const style = (colors: Attributes) =>
 			color: colors.textStrong,
 			textAlignVertical: 'center'
 		},
+		inputStyleEmpty: {
+			height: size.s_40,
+			textAlignVertical: 'center'
+		},
 		suggestions: {
 			position: 'absolute',
 			bottom: size.s_70 + size.s_4,

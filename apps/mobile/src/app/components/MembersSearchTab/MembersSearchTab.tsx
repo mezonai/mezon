@@ -13,19 +13,18 @@ import { MemberItem } from '../MemberStatus/MemberItem';
 import { DMGroupItem } from './DMGroupItem';
 import style from './MembersSearchTab.styles';
 
-type MembersSearchTabProps = {
+interface IMembersSearchTabProps {
 	listMemberSearch: any;
 	listDMGroupSearch?: DirectEntity[];
-};
+}
 
-const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: MembersSearchTabProps) => {
+const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: IMembersSearchTabProps) => {
 	const { themeValue } = useTheme();
-	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
 	const dispatch = useAppDispatch();
 	const isTabletLandscape = useTabletLandscape();
-
-	const store = getStore();
+	const data = useMemo(() => [...(listMemberSearch ?? []), ...(listDMGroupSearch ?? [])], [listMemberSearch, listDMGroupSearch]);
+	const styles = useMemo(() => style(themeValue, data.length === 0), [themeValue, data]);
 
 	const handleNavigateToDMGroup = useCallback(
 		(id: string) => {
@@ -40,41 +39,37 @@ const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: MembersSearch
 		[navigation, dispatch, isTabletLandscape]
 	);
 
-	const onDetailMember = useCallback(
-		(user: ChannelMembersEntity) => {
-			const currentDirect = selectCurrentDM(store.getState());
-			const directId = currentDirect?.id;
-			const data = {
-				snapPoints: ['60%'],
-				heightFitContent: true,
-				hiddenHeaderIndicator: true,
-				children: (
-					<View
-						style={{
-							borderTopLeftRadius: size.s_14,
-							borderTopRightRadius: size.s_14,
-							overflow: 'hidden'
+	const onDetailMember = useCallback((user: ChannelMembersEntity) => {
+		const store = getStore();
+		const currentDirect = selectCurrentDM(store.getState());
+		const directId = currentDirect?.id;
+		const data = {
+			snapPoints: ['60%'],
+			heightFitContent: true,
+			hiddenHeaderIndicator: true,
+			children: (
+				<View
+					style={{
+						borderTopLeftRadius: size.s_14,
+						borderTopRightRadius: size.s_14,
+						overflow: 'hidden'
+					}}
+				>
+					<UserProfile
+						userId={user?.user?.id || user?.id}
+						user={user?.user || user}
+						onClose={() => {
+							DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 						}}
-					>
-						<UserProfile
-							userId={user?.user?.id || user?.id}
-							user={user?.user || user}
-							onClose={() => {
-								DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-							}}
-							showAction={!directId}
-							showRole={!directId}
-							directId={directId}
-						/>
-					</View>
-				)
-			};
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
-		},
-		[store]
-	);
-
-	const data = useMemo(() => (listMemberSearch ?? []).concat(listDMGroupSearch ?? []), [listMemberSearch, listDMGroupSearch]);
+						showAction={!directId}
+						showRole={!directId}
+						directId={directId}
+					/>
+				</View>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	}, []);
 
 	const renderItem = useCallback(
 		({ item, index }) => {
@@ -104,10 +99,7 @@ const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: MembersSearch
 			removeClippedSubviews={true}
 			keyboardShouldPersistTaps={'handled'}
 			disableVirtualization={false}
-			contentContainerStyle={{
-				backgroundColor: themeValue.secondary,
-				paddingBottom: size.s_6
-			}}
+			contentContainerStyle={styles.contentContainerStyle}
 			style={styles.boxMembers}
 			ListEmptyComponent={() => <EmptySearchPage />}
 		/>

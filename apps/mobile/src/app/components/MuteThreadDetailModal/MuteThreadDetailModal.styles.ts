@@ -41,7 +41,7 @@ export const style = (colors: Attributes) =>
 		},
 		option: {
 			color: colors.text,
-			fontSize: size.label,
+			fontSize: size.medium,
 			fontWeight: '500'
 		},
 		InfoTitle: {

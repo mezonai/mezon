@@ -218,7 +218,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 					<View style={styles.bottomButton}>
 						<TouchableOpacity onPress={() => updateMemberToRole()}>
 							<View style={styles.finishButton}>
-								<Text style={styles.buttonText}>{t('setupMember.finish')}</Text>
+								<Text style={styles.buttonFinishText}>{t('setupMember.finish')}</Text>
 							</View>
 						</TouchableOpacity>
 

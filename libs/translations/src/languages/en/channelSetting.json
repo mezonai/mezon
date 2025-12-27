@@ -157,8 +157,8 @@
 		"bottomSheet": {
 			"addMembersOrRoles": "Add members or roles",
 			"add": "Add",
-			"roles": "ROLES",
-			"members": "MEMBERS",
+			"roles": "Roles",
+			"members": "Members",
 			"rolesMembers": "Roles/Members",
 			"roleMemberPlaceholder": "Role/Member"
 		},
