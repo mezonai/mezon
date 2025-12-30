@@ -61,10 +61,10 @@ export const EmojiRolePanel: React.FC<EmojiRolePanelProps> = ({ onEmojiSelect, o
 
 	const categoriesWithIcons: { name: string; icon: JSX.Element }[] = useMemo(() => {
 		return categoriesEmoji.map((category, index) => ({
-			name: PREDEFINED_EMOJI_CATEGORIES.includes(category) ? t(`emojiCategories.${category}`) || category : category,
+			name: category,
 			icon: categoryIcons[index]
 		}));
-	}, [categoriesEmoji, categoryIcons, t]);
+	}, [categoriesEmoji, categoryIcons]);
 
 	const handleEmojiSelect = useCallback(
 		(emojiId: string, emojiShortname: string) => {

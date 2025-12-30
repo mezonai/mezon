@@ -84,44 +84,53 @@ export const transactionHistorySlice = createSlice({
 			state.transactionHistory = null;
 			state.count = 0;
 			state.hasMore = false;
+			state.loadingStatus = 'not loaded';
 		}
 	},
 	extraReducers: (builder) => {
 		builder
-			.addCase(fetchListTransactionHistory.pending, (state: TransactionHistoryState) => {
+			.addCase(fetchListTransactionHistory.pending, (state) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchListTransactionHistory.fulfilled, (state: TransactionHistoryState, action) => {
+			.addCase(fetchListTransactionHistory.fulfilled, (state, action) => {
 				const { ledgers, count, page } = action.payload;
 				state.transactionHistory = state.transactionHistory && page !== 1 ? [...state.transactionHistory, ...ledgers] : ledgers;
 				state.count = count;
 				state.loadingStatus = 'loaded';
 			})
-			.addCase(fetchListTransactionHistory.rejected, (state: TransactionHistoryState, action) => {
+			.addCase(fetchListTransactionHistory.rejected, (state, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			})
-			.addCase(fetchTransactionDetail.pending, (state: TransactionHistoryState) => {
+			.addCase(fetchTransactionDetail.pending, (state) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchTransactionDetail.fulfilled, (state: TransactionHistoryState, action) => {
+			.addCase(fetchTransactionDetail.fulfilled, (state, action) => {
 				state.detailTransaction = action.payload.detailTransaction;
-				state.loadingStatus = 'loaded';
 			})
-			.addCase(fetchTransactionDetail.rejected, (state: TransactionHistoryState, action) => {
-				state.loadingStatus = 'error';
+			.addCase(fetchTransactionDetail.rejected, (state, action) => {
 				state.error = action.error.message;
 			})
-			.addCase(fetchLoadMoreTransaction.pending, (state: TransactionHistoryState) => {
+
+			.addCase(fetchLoadMoreTransaction.pending, (state) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchLoadMoreTransaction.fulfilled, (state: TransactionHistoryState, action) => {
+			.addCase(fetchLoadMoreTransaction.fulfilled, (state, action) => {
 				const { ledgers, count, hasMore } = action.payload;
-				state.transactionHistory = [...(state.transactionHistory || []), ...ledgers];
+				const { timeStamp, lastHash } = action.meta.arg;
+				const isFirstPage = !timeStamp && !lastHash;
+
+				if (isFirstPage) {
+					state.transactionHistory = ledgers;
+				} else {
+					state.transactionHistory = [...(state.transactionHistory || []), ...ledgers];
+				}
+
 				state.count = count;
 				state.hasMore = hasMore;
+				state.loadingStatus = 'loaded';
 			})
-			.addCase(fetchLoadMoreTransaction.rejected, (state: TransactionHistoryState, action) => {
+			.addCase(fetchLoadMoreTransaction.rejected, (state, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			});
@@ -138,6 +147,5 @@ export const transactionHistoryActions = {
 	fetchLoadMoreTransaction
 };
 export const selectTransactionHistory = createSelector(getTransactionHistoryState, (state) => state.transactionHistory);
-export const selectCountTransactionHistory = createSelector(getTransactionHistoryState, (state) => state.count);
 export const selectDetailTransaction = createSelector(getTransactionHistoryState, (state) => state.detailTransaction);
 export const selectHasMore = createSelector(getTransactionHistoryState, (state) => state.hasMore);

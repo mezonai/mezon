@@ -9,7 +9,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import type { IEmoji } from '@mezon/utils';
-import { getIdSaleItemFromSource } from '@mezon/utils';
+import { PREDEFINED_EMOJI_CATEGORIES, getIdSaleItemFromSource } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -108,7 +108,7 @@ export function useEmojiSuggestion({ isMobile = false }: EmojiSuggestionProps = 
 	}, [categoryEmoji]);
 
 	const categoriesEmoji = useMemo(() => {
-		const defaultCategories = ['Recent', 'Frequently', 'People', 'Nature', 'Food', 'Activities', 'Travel', 'Objects', 'Symbols', 'Flags'];
+		const defaultCategories = PREDEFINED_EMOJI_CATEGORIES;
 		const mergedCategories = [...defaultCategories.slice(0, 2), ...clanNames, ...defaultCategories.slice(2)];
 		return [...new Set(mergedCategories)];
 	}, [clanNames]);

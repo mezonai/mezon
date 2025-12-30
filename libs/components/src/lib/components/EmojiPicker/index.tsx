@@ -121,7 +121,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 
 	const categoriesWithIcons: { name: string; icon: JSX.Element }[] = useMemo(() => {
 		const categories = categoriesEmoji.map((category, index) => ({
-			name: PREDEFINED_EMOJI_CATEGORIES.includes(category) ? t(`emojiCategories.${category}`) || category : category,
+			name: category,
 			icon: categoryIcons[index + 1]
 		}));
 		categories.splice(0, 0, {
@@ -130,7 +130,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 		});
 
 		return categories;
-	}, [categoriesEmoji, categoryIcons, t]);
+	}, [categoriesEmoji, categoryIcons]);
 
 	const channelID = props.isClanView ? currentChannelId : props.directId;
 	const currentThread = useAppSelector(selectThreadCurrentChannel);

@@ -187,10 +187,10 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 			<div className="overflow-y-auto overflow-x-hidden hide-scrollbar h-[25rem] rounded md:ml-2 ">
 				<div
 					className="w-11 max-sm:gap-x-1
-				flex flex-col max-sm:flex-row max-sm:justify-end max-sbm:justify-start gap-y-1
-				max-sm:w-full max-sbm:w-11 bg-item-theme pt-1
-				px-1 md:items-start pb-1  max-sbm:flex-col
-				items-center min-h-[25rem] rounded-tl-lg rounded-tr-lg"
+                flex flex-col max-sm:flex-row max-sm:justify-end max-sbm:justify-start gap-y-1
+                max-sm:w-full max-sbm:w-11 bg-item-theme pt-1
+                px-1 md:items-start pb-1  max-sbm:flex-col
+                items-center min-h-[25rem] rounded-tl-lg rounded-tr-lg"
 				>
 					{categoryLogo.map((avt) => (
 						<button
@@ -256,11 +256,12 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 	const [isShowStickerList, setIsShowStickerList] = useState(categoryName === FOR_SALE_CATE ? false : true);
 	const currentClanName = useAppSelector(selectCurrentClanName);
 
-	const shouldTranslate = categoryName && PREDEFINED_EMOJI_CATEGORIES.includes(categoryName);
-
 	const handleToggleButton = () => {
 		setIsShowStickerList(!isShowStickerList);
 	};
+
+	const shouldTranslate = categoryName && PREDEFINED_EMOJI_CATEGORIES.includes(categoryName);
+	const displayCategoryName = shouldTranslate ? t(`emojiCategories.${categoryName}`) || categoryName : categoryName;
 
 	return (
 		<div>
@@ -283,11 +284,7 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 				)}
 
 				<p className={'ml-2 uppercase text-left truncate text-xs font-semibold'}>
-					{categoryName !== 'custom'
-						? shouldTranslate
-							? t(`emojiCategories.${categoryName}`) || categoryName
-							: categoryName
-						: currentClanName}
+					{categoryName !== 'custom' ? displayCategoryName : currentClanName}
 				</p>
 				<span className={`${isShowStickerList ? ' rotate-90' : ''}`}>
 					<Icons.ArrowRight defaultSize="w-4 h-4" />

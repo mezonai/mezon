@@ -30,20 +30,7 @@ export const ONE_MINUTE_MS = 60000;
 export const GUEST_NAME = 'guest';
 export const FOR_SALE_CATE = 'forsale';
 
-export const PREDEFINED_EMOJI_CATEGORIES = [
-	'forsale',
-	'Recent',
-	'Frequently',
-	'People',
-	'Nature',
-	'Food',
-	'Activities',
-	'Travel',
-	'Objects',
-	'Symbols',
-	'Flags',
-	'Custom'
-];
+export const PREDEFINED_EMOJI_CATEGORIES = ['Recent', 'Frequently', 'People', 'Nature', 'Food', 'Activities', 'Travel', 'Objects', 'Symbols', 'Flags'];
 
 export const DEFAULT_ID = '0';
 export const LIMIT = 50;
