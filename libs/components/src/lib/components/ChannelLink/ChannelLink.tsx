@@ -276,11 +276,11 @@ const ChannelLinkComponent = ({
 				numberNotification && numberNotification > 0 ? (
 					<>
 						<Icons.SettingProfile
-							className={`absolute ml-auto w-4 h-4  top-[6px] right-3 cursor-pointer hidden group-hover:block text-theme-primary `}
+							className={`absolute ml-auto w-4 h-4  top-[6px] right-3 cursor-pointer block md:hidden md:group-hover:block text-theme-primary `}
 							onClick={handleOpenCreate}
 						/>
 						<div
-							className={`absolute ml-auto w-5 h-5 text-white right-3 group-hover:hidden bg-red-600 rounded-full text-[12px] flex items-center justify-center top-2`}
+							className={`absolute ml-auto w-5 h-5 text-white right-3 hidden md:flex md:group-hover:hidden bg-red-600 rounded-full text-[12px] items-center justify-center top-2`}
 							data-e2e={generateE2eId('clan_page.channel_list.item.badge')}
 						>
 							{countNumberNotification}
@@ -288,7 +288,7 @@ const ChannelLinkComponent = ({
 					</>
 				) : (
 					<Icons.SettingProfile
-						className={`absolute ml-auto w-5 h-5 top-2 right-3 ${isActive ? 'text-theme-primary-active' : 'text-transparent'} hidden group-hover:block text-theme-primary-hover cursor-pointer`}
+						className={`absolute ml-auto w-5 h-5 top-2 right-3 ${isActive ? 'text-theme-primary-active' : 'text-theme-primary-hover md:text-transparent'} block md:hidden md:group-hover:block cursor-pointer`}
 						onClick={handleOpenCreate}
 					/>
 				)

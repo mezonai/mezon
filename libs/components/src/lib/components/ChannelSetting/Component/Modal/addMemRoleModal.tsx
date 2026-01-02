@@ -198,7 +198,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 		<div ref={modalRef} tabIndex={-1} className="fixed  inset-0 flex items-center justify-center z-50 ">
 			<div className="fixed inset-0 bg-black opacity-80"></div>
 			<div
-				className="relative z-10 p-6 bg-theme-setting-primary text-theme-primary rounded-[5px] w-[440px] text-[15px]"
+				className="relative mx-4 md:mx-0 z-10 p-6 bg-theme-setting-primary text-theme-primary rounded-[5px] w-[440px] text-[15px]"
 				data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal')}
 			>
 				<h2 className="text-[24px] font-semibold text-center text-theme-primary-active">{t('addMembersRoles.title')}</h2>

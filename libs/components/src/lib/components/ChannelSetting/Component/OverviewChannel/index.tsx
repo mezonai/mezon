@@ -1,3 +1,4 @@
+import { ModalSaveChanges } from '@mezon/components';
 import type { ChannelsEntity, IUpdateChannelRequest, IUpdateSystemMessage } from '@mezon/store';
 import {
 	channelsActions,
@@ -12,11 +13,10 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons, Image, InputField, Menu as Dropdown, TextArea } from '@mezon/ui';
+import { Menu as Dropdown, Icons, Image, InputField, TextArea } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ValidateSpecialCharacters, ValidateURL, checkIsThread, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { ModalSaveChanges } from '@mezon/components';
 import { ChannelType } from 'mezon-js';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -27,10 +27,11 @@ import { useDebouncedCallback } from 'use-debounce';
 export type OverviewChannelProps = {
 	channel: IChannel;
 	onDisplayLabelChange?: (label: string) => void;
+	menuIsOpen?: boolean;
 };
 
 const OverviewChannel = (props: OverviewChannelProps) => {
-	const { channel, onDisplayLabelChange } = props;
+	const { channel, onDisplayLabelChange, menuIsOpen } = props;
 	const { t } = useTranslation('channelSetting');
 	const appearanceTheme = useSelector(selectTheme);
 
@@ -303,7 +304,9 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 	]);
 
 	return (
-		<div className="overflow-y-auto flex flex-col flex-1 shrink  w-1/2 pt-[94px] sbm:pb-7 text-theme-primary bg-theme-setting-primary sbm:pr-[10px] sbm:pl-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
+		<div
+			className={`overflow-y-auto flex flex-col flex-1 shrink  w-1/2 pt-[94px] sbm:pb-7 text-theme-primary bg-theme-setting-primary sbm:pr-[10px] sbm:pl-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar ${!menuIsOpen ? 'sbm:pt-[94px] pt-[70px]' : 'pt-[94px]'}`}
+		>
 			<div className=" text-[15px]" data-e2e={generateE2eId(`clan_page.channel_list.settings.overview`)}>
 				<h3 className="mb-4 font-bold text-xl text-theme-primary-active">{t('overview.title')}</h3>
 				<p className="text-xs font-bold uppercase mb-2">{isThread ? t('fields.threadName.title') : t('fields.channelName.title')}</p>
