@@ -19,8 +19,7 @@ import {
 	selectVoiceJoined,
 	toastActions,
 	useAppDispatch,
-	useAppSelector,
-	voiceActions
+	useAppSelector
 } from '@mezon/store';
 // eslint-disable-next-line @nx/enforce-module-boundaries
 import { Icons, Menu } from '@mezon/ui';
@@ -146,11 +145,6 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		dispatch(DMCallActions.setIsInCall(true));
 		dispatch(audioCallActions.setIsRingTone(false));
 		dispatch(DMCallActions.setIsShowMeetDM(isVideoCall));
-
-		if (isAnswer && isVoiceJoined) {
-			dispatch(voiceActions.setShowMicrophone(false));
-			dispatch(voiceActions.setShowCamera(false));
-		}
 
 		await startCall(isVideoCall, isAnswer);
 	};

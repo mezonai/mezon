@@ -1,21 +1,35 @@
-import { usePersistentUserChoices } from '@livekit/components-react';
-import { selectShowCamera, selectShowMicrophone, useAppSelector } from '@mezon/store';
-import { memo, useEffect } from 'react';
+import { useLocalParticipant } from '@livekit/components-react';
+import { selectIsInCall, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
+import { memo, useEffect, useRef } from 'react';
+
 
 export const VoiceTrackState = memo(() => {
-	const showMicrophone = useAppSelector(selectShowMicrophone);
-	const showCamera = useAppSelector(selectShowCamera);
-	const { saveAudioInputEnabled, saveVideoInputEnabled, userChoices } = usePersistentUserChoices();
+	const dispatch = useAppDispatch();
+	const { isMicrophoneEnabled, isCameraEnabled, localParticipant } = useLocalParticipant();
+	const isInCall = useAppSelector(selectIsInCall);
+	const hasMutedRef = useRef(false);
 
 	useEffect(() => {
-		if (!showMicrophone && userChoices.audioEnabled) {
-			saveAudioInputEnabled(false);
+		if (isInCall) {
+			console.log(hasMutedRef.current, 'hasMutedRef.current');
+			
+			if (!hasMutedRef.current) {
+				if (isMicrophoneEnabled) {
+					localParticipant.setMicrophoneEnabled(false);
+					dispatch(voiceActions.setShowMicrophone(false));
+				}
+				if (isCameraEnabled) {
+					localParticipant.setCameraEnabled(false);
+					dispatch(voiceActions.setShowCamera(false));
+				}
+				hasMutedRef.current = true;
+			}
+		} else {
+			hasMutedRef.current = false;
 		}
+	}, [isInCall, isMicrophoneEnabled, isCameraEnabled, localParticipant, dispatch]);
 
-		if (!showCamera && userChoices.videoEnabled) {
-			saveVideoInputEnabled(false);
-		}
-	}, [showMicrophone, showCamera, userChoices.audioEnabled, userChoices.videoEnabled, saveAudioInputEnabled, saveVideoInputEnabled]);
+
 
 	return null;
 });
