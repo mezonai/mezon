@@ -107,7 +107,7 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 							}
 							return;
 						}
-						if (firstEmojiId.startsWith('raising:')) {
+						if (firstEmojiId.startsWith('raising-up:')) {
 							const state = getStore().getState();
 							const members = selectMemberClanByUserId(state, senderId);
 							setRaisingList((prev) => [
@@ -128,6 +128,18 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 							if (audioRef.current) {
 								audioRef.current.play();
 							}
+
+							return;
+						}
+						if (firstEmojiId.startsWith('raising-down:')) {
+							const timeoutId = timeoutsRef.current.get(senderId);
+
+							if (timeoutId) {
+								clearTimeout(timeoutId);
+								timeoutsRef.current.delete(senderId);
+							}
+
+							setRaisingList((list) => list.filter((i) => i.id !== senderId));
 
 							return;
 						}
