@@ -45,7 +45,6 @@ export * from './lib/gallery/gallery.slice';
 export * from './lib/giftStickerEmojiPanel/gifs.slice';
 export * from './lib/giftStickerEmojiPanel/gifsStickerEmoji.slice';
 export * from './lib/giveCoffee/giveCoffee.slice';
-export * from './lib/giveCoffee/historyTransaction.slice';
 export * from './lib/helper/channel';
 export * from './lib/helpers';
 export * from './lib/invite/invite.slice';

@@ -453,7 +453,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			avatars,
 			onlines,
 			active: 1,
-			channel_label: existingEntity?.channel_label || label.toString(),
+			channel_label: channel_desc?.channel_label || existingEntity?.channel_label || label.toString(),
 			topic: channel_desc.topic || existingEntity?.topic,
 			member_count: channel_desc.member_count
 		};
@@ -527,6 +527,7 @@ export const directSlice = createSlice({
 					showPinBadge: existingEntity?.showPinBadge || newEntity.showPinBadge
 				};
 			});
+			console.log('entitiesWithPreservedBadges: ', entitiesWithPreservedBadges);
 			directAdapter.setAll(state, entitiesWithPreservedBadges);
 		},
 		updateOne: (state, action: PayloadAction<Partial<ChannelUpdatedEvent & { currentUserId: string }>>) => {
@@ -1003,6 +1004,7 @@ export const selectDirectsOpenlist = createSelector(selectAllDirectMessages, (di
 });
 
 export const selectDirectsOpenlistOrder = createSelector(selectDirectsOpenlist, (data) => {
+	console.log('data: ', data);
 	return data
 		.sort((a, b) => {
 			const timestampA = a.last_sent_message?.timestamp_seconds || a.create_time_seconds || 0;

@@ -17,7 +17,7 @@ interface IProps {
 	onLongPressImage?: (image?: ApiMessageAttachment) => void;
 	clanId: string;
 	channelId: string;
-	messageCreatTime: string;
+	messageCreatTime: number;
 	senderId?: string;
 }
 
@@ -69,7 +69,7 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, cl
 
 	const onPressImage = useCallback(
 		async (image: any) => {
-			const messageTimestamp = messageCreatTime ? Math.floor(new Date(messageCreatTime).getTime() / 1000) : undefined;
+			const messageTimestamp = messageCreatTime || undefined;
 			const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
 			dispatch(
 				galleryActions.fetchGalleryAttachments({
@@ -89,7 +89,7 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, cl
 							uploader: image?.uploader || senderId,
 							clanId: image?.clanId || clanId,
 							channelId: image?.channelId || channelId,
-							create_time: image?.create_time || messageCreatTime
+							create_time: image?.create_time || new Date(messageCreatTime * 1000).toISOString()
 						}}
 						disableGoback={true}
 					/>

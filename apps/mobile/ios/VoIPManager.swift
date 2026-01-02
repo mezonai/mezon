@@ -274,15 +274,12 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate, CXProviderDelegate {
     // MARK: - CallKit Setup
 
     private func setupCallKit() {
-        // Use a short or empty string to minimize the app name in call UI
-        // This reduces "Mezon Video" to just show the caller info
-        let config = CXProviderConfiguration(localizedName: "")  // Empty to hide app name
-        config.supportsVideo = false  // Set to false to hide "Video" label
+        let config = CXProviderConfiguration(localizedName: "Mezon has an incoming call")
+        config.supportsVideo = true
         config.maximumCallsPerCallGroup = 1
         config.supportedHandleTypes = [.generic]
 
-        // Optional: Add ringtone
-        config.ringtoneSound = "ringing.mp3"  // Add your custom ringtone file name
+        config.ringtoneSound = "ringing.mp3"
 
         callKitProvider = CXProvider(configuration: config)
         callKitProvider?.setDelegate(self, queue: nil)

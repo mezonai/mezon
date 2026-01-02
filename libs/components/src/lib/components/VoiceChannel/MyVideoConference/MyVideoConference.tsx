@@ -281,7 +281,7 @@ export const MyVideoConference = memo(
 			<div className="lk-video-conference flex-1">
 				<DeepFilterNetInitializer />
 				<VoiceTrackState />
-				<ReactionCallHandler onSoundReaction={handleSoundReaction} />
+				<ReactionCallHandler onSoundReaction={handleSoundReaction} onEndSound={removeActiveSoundParticipant} />
 				<LayoutContextProvider value={layoutContext}>
 					<div className="lk-video-conference-inner relative bg-gray-100 dark:bg-black group">
 						{!focusTrack ? (

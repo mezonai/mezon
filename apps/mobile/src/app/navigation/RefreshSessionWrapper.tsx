@@ -1,5 +1,5 @@
-import { ActionEmitEvent, load, save, STORAGE_QR_INVITE_CACHE, STORAGE_SESSION_KEY } from '@mezon/mobile-components';
-import { authActions, directActions, selectHasInternetMobile, selectIsLogin, useAppDispatch } from '@mezon/store-mobile';
+import { ActionEmitEvent, load, save, STORAGE_CLAN_ID, STORAGE_QR_INVITE_CACHE, STORAGE_SESSION_KEY } from '@mezon/mobile-components';
+import { authActions, channelsActions, directActions, selectHasInternetMobile, selectIsLogin, useAppDispatch } from '@mezon/store-mobile';
 import { MobileEventSessionEmitter, useMezon } from '@mezon/transport';
 import type { IWithError } from '@mezon/utils';
 import { sleep } from '@mezon/utils';
@@ -86,6 +86,8 @@ const RefreshSessionWrapper = ({ children }) => {
 					continue;
 				}
 				dispatch(directActions.fetchDirectMessage({ noCache: true }));
+				const currentClanIdCached = await load(STORAGE_CLAN_ID);
+				if (currentClanIdCached) dispatch(channelsActions.fetchChannels({ clanId: currentClanIdCached, noCache: true, isMobile: true }));
 				setIsSessionReady(true);
 				break;
 			} catch (error) {

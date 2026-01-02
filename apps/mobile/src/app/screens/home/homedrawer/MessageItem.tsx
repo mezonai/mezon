@@ -44,7 +44,7 @@ import type { IMessageActionNeedToResolve } from './types';
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
-const COMBINE_TIME_MILISECONDS = 2 * 60 * 1000;
+const COMBINE_TIME_SECONDS = 2 * 60;
 
 export type MessageItemProps = {
 	message?: MessagesEntity;
@@ -92,9 +92,9 @@ const MessageItem = React.memo(
 
 			if (!previousMessage?.content?.fwd) return true;
 
-			const timeDiff = Date.parse(message.create_time) - Date.parse(previousMessage.create_time);
+			const timeDiff = message.create_time_seconds - previousMessage.create_time_seconds;
 			const isDifferentSender = message.sender_id !== previousMessage.sender_id;
-			const isTimeGap = timeDiff > COMBINE_TIME_MILISECONDS;
+			const isTimeGap = timeDiff > COMBINE_TIME_SECONDS;
 
 			return isDifferentSender || isTimeGap;
 		}, [message, previousMessage]);
@@ -167,10 +167,10 @@ const MessageItem = React.memo(
 
 		const isTimeGreaterThan5Minutes = useMemo(
 			() =>
-				message?.create_time && previousMessage?.create_time
-					? Date.parse(message.create_time) - Date.parse(previousMessage.create_time) < COMBINE_TIME_MILISECONDS
+				message?.create_time_seconds && previousMessage?.create_time_seconds
+					? message.create_time_seconds - previousMessage.create_time_seconds < COMBINE_TIME_SECONDS
 					: false,
-			[message?.create_time, previousMessage?.create_time]
+			[message?.create_time_seconds, previousMessage?.create_time_seconds]
 		);
 
 		const isBuzzMessage = useMemo(() => message?.code === TypeMessage.MessageBuzz, [message?.code]);
@@ -205,10 +205,17 @@ const MessageItem = React.memo(
 
 		const isEdited = useMemo(
 			() =>
-				message?.update_time && !message.isError && !message.isErrorRetry
-					? new Date(message?.update_time) > new Date(message?.create_time)
+				message?.update_time_seconds && !message.isError && !message.isErrorRetry
+					? message.update_time_seconds > message.create_time_seconds
 					: message.hide_editted === false && !!message?.content?.t,
-			[message?.update_time, message?.create_time, message.isError, message.isErrorRetry, message.hide_editted, message?.content?.t]
+			[
+				message?.update_time_seconds,
+				message?.create_time_seconds,
+				message.isError,
+				message.isErrorRetry,
+				message.hide_editted,
+				message?.content?.t
+			]
 		);
 
 		const usernameMessage = useMemo(
@@ -365,7 +372,7 @@ const MessageItem = React.memo(
 									onLongPress={handleLongPressMessage}
 									senderDisplayName={senderDisplayName}
 									isShow={!isCombine || !!message?.references?.length || showUserInformation}
-									createTime={message?.create_time}
+									createTime={message?.create_time_seconds}
 									messageSenderId={message?.sender_id}
 									mode={mode}
 								/>
@@ -452,7 +459,7 @@ const MessageItem = React.memo(
 									{message?.attachments?.length > 0 && (
 										<MessageAttachment
 											attachments={message?.attachments}
-											messageCreatTime={message?.create_time}
+											messageCreatTime={message?.create_time_seconds}
 											clanId={message?.clan_id}
 											channelId={message?.channel_id}
 											onLongPressImage={onLongPressImage}
@@ -503,7 +510,7 @@ const MessageItem = React.memo(
 	(prevProps, nextProps) => {
 		return (
 			prevProps?.message?.id +
-				prevProps?.message?.update_time +
+				prevProps?.message?.update_time_seconds +
 				prevProps?.previousMessage?.id +
 				prevProps?.message?.code +
 				prevProps?.isHighlight +
@@ -513,7 +520,7 @@ const MessageItem = React.memo(
 				prevProps?.message?.references?.[0]?.content +
 				prevProps?.preventAction ===
 			nextProps?.message?.id +
-				nextProps?.message?.update_time +
+				nextProps?.message?.update_time_seconds +
 				nextProps?.previousMessage?.id +
 				nextProps?.message?.code +
 				nextProps?.isHighlight +

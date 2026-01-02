@@ -298,7 +298,6 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 			const store = getStore();
 			const rolesClan = selectAllRolesClan(store.getState());
-
 			if (checkedRequest.entities && checkedRequest.entities.length > 0) {
 				const {
 					mentions: mentionList,
@@ -963,15 +962,17 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			const currentValue = draftRequest?.content || '';
 			const newTotalLength = currentValue.length + contentToCheck.length;
 
-			if (handleConvertToFile && contentToCheck.length > MIN_THRESHOLD_CHARS) {
+			if (handleConvertToFile && contentToCheck?.length && JSON.stringify(contentToCheck)?.length > MIN_THRESHOLD_CHARS) {
 				event.preventDefault();
 				handleConvertToFile(contentToCheck);
 				return;
 			}
 
-			if (handleConvertToFile && newTotalLength > MIN_THRESHOLD_CHARS) {
+			const combinedContent = currentValue + contentToCheck;
+			const combinedContentSize = contentToCheck?.length && JSON.stringify(combinedContent)?.length || 0;
+
+			if (handleConvertToFile && combinedContentSize > MIN_THRESHOLD_CHARS) {
 				event.preventDefault();
-				const combinedContent = currentValue + contentToCheck;
 				handleConvertToFile(combinedContent);
 
 				updateDraft?.({

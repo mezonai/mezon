@@ -38,7 +38,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 			return convertTimestampToTimeAgo(timestamp, t);
 		}
 		return null;
-	}, [directMessage?.last_sent_message?.timestamp_seconds, t]);
+	}, [directMessage?.last_sent_message, t]);
 
 	return (
 		<View style={[styles.messageItem]}>

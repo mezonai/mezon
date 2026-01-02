@@ -1,9 +1,11 @@
 import type { Attributes } from '@mezon/mobile-ui';
 import { size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
+
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		imageMessageRender: {
+			marginTop: size.s_10,
 			borderRadius: verticalScale(5),
 			overflow: 'hidden'
 		},

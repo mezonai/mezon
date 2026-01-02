@@ -1,7 +1,7 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 /* eslint-disable no-console */
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
-import { ActionEmitEvent, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
+import { ActionEmitEvent, formatContentEditMessage, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
@@ -27,21 +27,20 @@ import {
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
-	useAppSelector,
-	useWallet
+	useAppSelector
 } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import {
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	EPermission,
-	FORWARD_MESSAGE_TIME,
-	TOKEN_TO_AMOUNT,
-	ThreadStatus,
-	TypeMessage,
 	formatMoney,
+	FORWARD_MESSAGE_TIME,
 	isPublicChannel,
-	sleep
+	sleep,
+	ThreadStatus,
+	TOKEN_TO_AMOUNT,
+	TypeMessage
 } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
@@ -60,7 +59,12 @@ import { useImage } from '../../../../../hooks/useImage';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { getMessageActions } from '../../constants';
 import { EMessageActionType } from '../../enums';
-import type { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve, IReplyBottomSheet } from '../../types/message.interface';
+import type {
+	IConfirmActionPayload,
+	IMessageAction,
+	IMessageActionNeedToResolve,
+	IReplyBottomSheet
+} from '../../types/message.interface';
 import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
 import type { IReactionMessageProps } from '../MessageReaction';
@@ -80,7 +84,6 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const { t } = useTranslation(['message', 'token']);
 	const [currentMessageActionType, setCurrentMessageActionType] = useState<EMessageActionType | null>(null);
 	const [isShowQuickMenuModal, setIsShowQuickMenuModal] = useState(false);
-	const { enableWallet } = useWallet();
 
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentDmId = useSelector(selectDmGroupCurrentId);
@@ -198,12 +201,6 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, payload);
 	};
 
-	const handleEnableWallet = async () => {
-		await enableWallet();
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-	};
-
 	const handleActionReportMessage = useCallback(() => {
 		const data = {
 			children: <ReportMessageModal messageId={message?.id} />
@@ -223,20 +220,6 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					sender_id: userId
 				};
 				const res = await dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
-				if ([res?.payload, res?.payload?.message].includes(t('wallet.notAvailable'))) {
-					const data = {
-						children: (
-							<MezonConfirm
-								onConfirm={() => handleEnableWallet()}
-								title={t('wallet.notAvailable')}
-								confirmText={t('wallet.enableWallet')}
-								content={t('wallet.descNotAvailable')}
-							/>
-						)
-					};
-					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-					return;
-				}
 				if (res?.meta?.requestStatus === 'rejected' || !res || !res?.payload) {
 					Toast.show({
 						type: 'error',
@@ -723,7 +706,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			const isSameSenderWithNextMessage = currentMessage?.sender_id === nextMessage?.sender_id;
 
 			const isNextMessageWithinTimeLimit = nextMessage
-				? Date.parse(nextMessage?.create_time) - Date.parse(currentMessage?.create_time) < FORWARD_MESSAGE_TIME
+				? (nextMessage?.create_time_seconds - currentMessage?.create_time_seconds) * 1000 < FORWARD_MESSAGE_TIME
 				: false;
 
 			return isSameSenderWithNextMessage && isNextMessageWithinTimeLimit;

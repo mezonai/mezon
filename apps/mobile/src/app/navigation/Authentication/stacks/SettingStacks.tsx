@@ -11,6 +11,7 @@ import { VerifyEmail } from '../../../screens/settings/AccountSetting/VerifyEmai
 import { VerifyPhoneNumber } from '../../../screens/settings/AccountSetting/VerifyPhoneNumber';
 import AppearanceSetting from '../../../screens/settings/AppearanceSetting';
 import AppThemeSetting from '../../../screens/settings/AppearanceSetting/AppTheme';
+import DeviceManage from '../../../screens/settings/DeviceManage';
 import { LanguageSetting } from '../../../screens/settings/LanguageSetting';
 import { MyQRCode } from '../../../screens/settings/MyQRCode';
 import { ProfileSetting } from '../../../screens/settings/ProfileSetting';
@@ -192,6 +193,18 @@ export const SettingStacks = ({}: any) => {
 				component={VerifyEmail}
 				options={{
 					headerTitle: t('settingStack.verifyEmail'),
+					gestureEnabled: Platform.OS === 'ios',
+					headerStyle: {
+						backgroundColor: themeValue.primary
+					}
+				}}
+			/>
+
+			<Stack.Screen
+				name={APP_SCREEN.SETTINGS.DEVICES_MANAGEMENT}
+				component={DeviceManage}
+				options={{
+					headerTitle: t('settingStack.devices'),
 					gestureEnabled: Platform.OS === 'ios',
 					headerStyle: {
 						backgroundColor: themeValue.primary

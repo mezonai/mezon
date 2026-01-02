@@ -116,7 +116,7 @@ const ForwardMessageScreen = ({ route }) => {
 
 			if (!messageEntity) break;
 
-			const differentTime = Date.parse(messageEntity?.create_time) - Date.parse(previousMessageEntity?.create_time);
+			const differentTime = (messageEntity?.create_time_seconds - previousMessageEntity?.create_time_seconds) * 1000;
 
 			if (differentTime <= FORWARD_MESSAGE_TIME && messageEntity?.sender_id === selectedMessage?.user?.id) {
 				messages.push(messageEntity);

@@ -11,7 +11,7 @@ import {
 	useWallet,
 	walletActions
 } from '@mezon/store-mobile';
-import { CURRENCY, createImgproxyUrl, formatBalanceToString } from '@mezon/utils';
+import { createImgproxyUrl, CURRENCY, formatBalanceToString } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
@@ -44,7 +44,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	const { t } = useTranslation(['profile', 'customUserStatus', 'screenStack']);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
-	const { isEnableWallet, walletDetail, enableWallet } = useWallet();
+	const { walletDetail } = useWallet();
 
 	const userCustomStatus = useMemo(() => {
 		return userProfile?.user?.user_status;
@@ -246,15 +246,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 			{isTabletLandscape && (
 				<View style={styles.buttonListLandscape}>
-					{!isEnableWallet && (
-						<MezonButton
-							containerStyle={styles.button}
-							onPress={() => enableWallet()}
-							icon={<MezonIconCDN icon={IconCDN.wallet} height={size.s_18} width={size.s_18} color={baseColor.white} />}
-							title={t('enableWallet')}
-							titleStyle={styles.whiteText}
-						/>
-					)}
 					<MezonButton
 						containerStyle={styles.button}
 						onPress={() => navigateToProfileSetting()}
@@ -274,7 +265,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 						</View>
 						<Text style={styles.text}>{userProfile?.user?.username || ''}</Text>
 					</TouchableOpacity>
-					{isEnableWallet && (
+					{!!walletDetail?.address && (
 						<View>
 							<TouchableOpacity onPress={showSendTokenBottomSheet} style={styles.tokenRow}>
 								<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={size.s_20} height={size.s_20} color={baseColor.azureBlue} />
@@ -315,15 +306,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 					{!isTabletLandscape && (
 						<View style={styles.buttonList}>
-							{!isEnableWallet && (
-								<MezonButton
-									containerStyle={styles.button}
-									onPress={() => enableWallet()}
-									icon={<MezonIconCDN icon={IconCDN.wallet} height={size.s_18} width={size.s_18} color={baseColor.white} />}
-									title={t('enableWallet')}
-									titleStyle={styles.whiteText}
-								/>
-							)}
 							<MezonButton
 								containerStyle={styles.button}
 								onPress={() => navigateToProfileSetting()}

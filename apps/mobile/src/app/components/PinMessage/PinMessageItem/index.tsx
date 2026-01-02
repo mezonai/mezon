@@ -97,7 +97,7 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 						attachments={pinMessageAttachments}
 						clanId={message?.clan_id}
 						channelId={message?.channel_id}
-						messageCreatTime={message?.create_time}
+						messageCreatTime={message?.create_time_seconds}
 						senderId={message?.sender_id}
 					/>
 				)}

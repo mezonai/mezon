@@ -50,6 +50,7 @@
 		"updatePhoneNumber": "Cập nhật số điện thoại",
 		"verifyPhoneNumber": "Xác thực số điện thoại",
 		"updateEmail": "Cập nhật email",
-		"verifyEmail": "Xác thực email"
+		"verifyEmail": "Xác thực email",
+		"devices": "Thiết bị"
 	}
 }

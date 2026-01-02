@@ -61,7 +61,7 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 				attachment: jsonAttachments,
 				avatar: message.avatar || message.clan_avatar || '',
 				content: JSON.stringify(message.content),
-				createdTime: message.create_time
+				createdTime: message.create_time_seconds ? new Date(message.create_time_seconds * 1000).toISOString() : ''
 			};
 
 			dispatch(pinMessageActions.joinPinMessage(pinBody));

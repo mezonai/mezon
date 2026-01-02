@@ -50,6 +50,7 @@
 		"updatePhoneNumber": "Update Your Phone Number",
 		"verifyPhoneNumber": "Verify Your Phone Number",
 		"updateEmail": "Update Your Email",
-		"verifyEmail": "Verify Your Email"
+		"verifyEmail": "Verify Your Email",
+		"devices": "Devices"
 	}
 }
