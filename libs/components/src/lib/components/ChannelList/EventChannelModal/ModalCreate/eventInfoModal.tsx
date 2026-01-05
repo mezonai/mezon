@@ -276,7 +276,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 				<div className="relative" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.description')}>
 					<TextArea
 						placeholder={t('fields.description.description')}
-						className="resize-none h-auto min-h-[87px] w-full bg-theme-input overflow-y-hidden outline-none py-2 pl-3 pr-5"
+						className="resize-none h-auto min-h-[87px] max-h-[150px] thread-scroll w-full bg-theme-input overflow-y-auto outline-none py-2 pl-3 pr-5"
 						value={contentSubmit.description}
 						onChange={handleChangeTextArea}
 						rows={1}
