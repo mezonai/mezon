@@ -18,13 +18,11 @@ const MessageNotification = React.memo(({ message }: IMessageNotificationProps) 
 	const { t } = useTranslation('message');
 
 	const isEdited = useMemo(() => {
-		if (message?.update_time) {
-			const updateDate = new Date(message?.update_time);
-			const createDate = new Date(message?.create_time);
-			return updateDate > createDate;
+		if (message?.update_time_seconds) {
+			return message.update_time_seconds > message.create_time_seconds;
 		}
 		return false;
-	}, [message?.update_time, message?.create_time]);
+	}, [message?.update_time_seconds, message?.create_time_seconds]);
 
 	return (
 		<View>

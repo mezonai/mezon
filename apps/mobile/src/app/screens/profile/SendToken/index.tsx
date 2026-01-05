@@ -5,6 +5,7 @@ import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity, FriendsEntity } from '@mezon/store-mobile';
 import {
 	appActions,
+	clansActions,
 	getStore,
 	getStoreAsync,
 	giveCoffeeActions,
@@ -15,7 +16,7 @@ import {
 	useAppDispatch,
 	useWallet
 } from '@mezon/store-mobile';
-import { CURRENCY, TypeMessage, formatBalanceToString, formatMoney } from '@mezon/utils';
+import { CURRENCY, formatBalanceToString, formatMoney, TypeMessage } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import debounce from 'lodash.debounce';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
@@ -29,7 +30,6 @@ import Toast from 'react-native-toast-message';
 import ViewShot from 'react-native-view-shot';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
-import MezonConfirm from '../../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import Backdrop from '../../../components/BottomSheetRootListener/backdrop';
@@ -166,21 +166,6 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 		return directMessage?.id;
 	}, [jsonObject?.receiver_id, listDM, selectedUser?.id]);
 
-	const showEnableWallet = () => {
-		const data = {
-			children: (
-				<MezonConfirm
-					onConfirm={() => handleEnableWallet()}
-					title={tMsg('wallet.notAvailable')}
-					confirmText={tMsg('wallet.enableWallet')}
-					content={tMsg('wallet.descNotAvailable')}
-					onCancel={onCancelEnableWallet}
-				/>
-			)
-		};
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-	};
-
 	const sendToken = async () => {
 		const store = await getStoreAsync();
 		try {
@@ -222,10 +207,6 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 			const res: any = await store.dispatch(giveCoffeeActions.sendToken({ tokenEvent, isSendByAddress: !!walletAddress }));
 			store.dispatch(appActions.setLoadingMainMobile(false));
 			setDisableButton(false);
-			if ([res?.payload, res?.payload?.message].includes(tMsg('wallet.notAvailable'))) {
-				showEnableWallet();
-				return;
-			}
 			if (res?.meta?.requestStatus === 'rejected' || !res) {
 				Toast.show({
 					type: 'error',
@@ -233,6 +214,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				});
 			} else {
 				if (!walletAddress) {
+					dispatch(clansActions.joinClan({ clanId: '0' }));
 					if (directMessageId) {
 						await sendInviteMessage(
 							`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,

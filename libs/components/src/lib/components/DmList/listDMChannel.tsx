@@ -70,34 +70,6 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 		[closeMenu]
 	);
 
-	useEffect(() => {
-		if (!currentDmGroupId) return;
-
-		const index = listDM.findIndex((id) => id === currentDmGroupId);
-		if (index < 0) return;
-
-		const scrollEl = parentRef.current;
-		if (!scrollEl) return;
-
-		const itemHeight = 43;
-		const scrollTop = scrollEl.scrollTop;
-		const viewportHeight = scrollEl.clientHeight;
-
-		const itemTop = index * itemHeight;
-		const itemBottom = itemTop + itemHeight;
-
-		if (itemTop >= scrollTop && itemBottom <= scrollTop + viewportHeight) {
-			return;
-		}
-
-		const targetTop = Math.max(itemTop - itemHeight * 3, 0);
-
-		scrollEl.scrollTo({
-			top: targetTop,
-			behavior: 'smooth'
-		});
-	}, [currentDmGroupId]);
-
 	const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
 
 	return (

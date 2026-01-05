@@ -3,9 +3,9 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelsEntity, RolesClanEntity, RootState } from '@mezon/store-mobile';
 import {
+	directActions,
 	DMCallActions,
 	EStateFriend,
-	directActions,
 	friendsActions,
 	getStore,
 	selectAllAccount,
@@ -471,12 +471,12 @@ const UserProfile = React.memo(
 							height={size.s_80}
 							avatarUrl={
 								!isDM
-									? (messageAvatar ??
-										userById?.clan_avatar ??
-										userById?.user?.avatar_url ??
-										user?.user?.avatar_url ??
-										user?.avatar_url)
-									: (userById?.user?.avatar_url ?? user?.user?.avatar_url ?? user?.avatar_url ?? messageAvatar)
+									? messageAvatar ||
+										userById?.clan_avatar ||
+										userById?.user?.avatar_url ||
+										user?.user?.avatar_url ||
+										user?.avatar_url
+									: userById?.user?.avatar_url || user?.user?.avatar_url || user?.avatar_url || messageAvatar
 							}
 							username={user?.user?.username || user?.username}
 							userStatus={status}

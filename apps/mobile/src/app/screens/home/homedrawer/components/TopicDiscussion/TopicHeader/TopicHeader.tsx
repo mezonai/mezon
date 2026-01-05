@@ -1,7 +1,7 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { selectFirstMessageEntityTopic, selectFirstMessageOfCurrentTopic, useAppSelector } from '@mezon/store-mobile';
-import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
+import { convertTimeString, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,7 +76,11 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) =>
 								<ImageNative url={userRolesClan.highestPermissionRoleIcon} style={styles.roleIcon} resizeMode={'contain'} />
 							)}
 						</View>
-						{firstMessage?.create_time && <Text style={styles.dateText}>{convertTimeString(firstMessage.create_time as string, t)}</Text>}
+						{firstMessage?.create_time_seconds && (
+							<Text style={styles.dateText}>
+								{convertTimeString(new Date(firstMessage.create_time_seconds * 1000).toISOString(), t)}
+							</Text>
+						)}
 					</View>
 				</View>
 			)}
@@ -101,7 +105,7 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) =>
 							}
 							clanId={firstMessage?.clan_id || ''}
 							channelId={firstMessage?.channel_id || ''}
-							messageCreatTime={firstMessage?.create_time}
+							messageCreatTime={firstMessage?.create_time_seconds}
 							senderId={firstMessage?.sender_id}
 						/>
 					)}

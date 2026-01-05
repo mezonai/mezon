@@ -453,7 +453,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			avatars,
 			onlines,
 			active: 1,
-			channel_label: existingEntity?.channel_label || label.toString(),
+			channel_label: channel_desc?.channel_label || existingEntity?.channel_label || label.toString(),
 			topic: channel_desc.topic || existingEntity?.topic,
 			member_count: channel_desc.member_count
 		};

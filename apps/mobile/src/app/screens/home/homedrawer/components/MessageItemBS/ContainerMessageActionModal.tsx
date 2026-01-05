@@ -28,8 +28,7 @@ import {
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
-	useAppSelector,
-	useWallet
+	useAppSelector
 } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import {
@@ -90,7 +89,6 @@ export const ContainerMessageActionModal = React.memo(
 		const { t } = useTranslation(['message', 'token']);
 		const [currentMessageActionType, setCurrentMessageActionType] = useState<EMessageActionType | null>(null);
 		const [isShowQuickMenuModal, setIsShowQuickMenuModal] = useState(false);
-		const { enableWallet } = useWallet();
 
 		const currentChannelId = useSelector(selectCurrentChannelId);
 		const currentDmId = useSelector(selectDmGroupCurrentId);
@@ -208,12 +206,6 @@ export const ContainerMessageActionModal = React.memo(
 			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, payload);
 		};
 
-		const handleEnableWallet = async () => {
-			await enableWallet();
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-		};
-
 		const handleActionReportMessage = useCallback(() => {
 			const data = {
 				children: <ReportMessageModal messageId={message?.id} />
@@ -233,20 +225,6 @@ export const ContainerMessageActionModal = React.memo(
 						sender_id: userId
 					};
 					const res = await dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
-					if ([res?.payload, res?.payload?.message].includes(t('wallet.notAvailable'))) {
-						const data = {
-							children: (
-								<MezonConfirm
-									onConfirm={() => handleEnableWallet()}
-									title={t('wallet.notAvailable')}
-									confirmText={t('wallet.enableWallet')}
-									content={t('wallet.descNotAvailable')}
-								/>
-							)
-						};
-						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-						return;
-					}
 					if (res?.meta?.requestStatus === 'rejected' || !res || !res?.payload) {
 						Toast.show({
 							type: 'error',
@@ -738,7 +716,7 @@ export const ContainerMessageActionModal = React.memo(
 				const isSameSenderWithNextMessage = currentMessage?.sender_id === nextMessage?.sender_id;
 
 				const isNextMessageWithinTimeLimit = nextMessage
-					? Date.parse(nextMessage?.create_time) - Date.parse(currentMessage?.create_time) < FORWARD_MESSAGE_TIME
+					? (nextMessage?.create_time_seconds - currentMessage?.create_time_seconds) * 1000 < FORWARD_MESSAGE_TIME
 					: false;
 
 				return isSameSenderWithNextMessage && isNextMessageWithinTimeLimit;
@@ -921,7 +899,7 @@ export const ContainerMessageActionModal = React.memo(
 				}
 				await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emoji_id, emoij);
 			},
-			[channelId, handleReact, isOnlyEmojiPicker, message, mode, socketRef]
+			[channelId, handleReact, isOnlyEmojiPicker, message, mode, onEmojiSelected, socketRef]
 		);
 
 		return (

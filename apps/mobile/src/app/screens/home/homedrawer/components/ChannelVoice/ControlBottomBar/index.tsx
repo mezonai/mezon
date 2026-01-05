@@ -1,21 +1,22 @@
-import { TrackReference, useLocalParticipant } from '@livekit/react-native';
+import type { TrackReference } from '@livekit/react-native';
+import { useLocalParticipant } from '@livekit/react-native';
 import {
 	ActionEmitEvent,
-	STORAGE_CLAN_ID,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
 	getUpdateOrAddClanChannelCache,
 	jumpToChannel,
 	load,
-	save
+	save,
+	STORAGE_CLAN_ID,
+	STORAGE_DATA_CLAN_CHANNEL_CACHE
 } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { clansActions, useAppDispatch } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import { Track, createLocalVideoTrack } from 'livekit-client';
+import { createLocalVideoTrack, Track } from 'livekit-client';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Linking, Platform, TouchableOpacity, View } from 'react-native';
-import { PERMISSIONS, RESULTS, check, request } from 'react-native-permissions';
+import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MezonConfirm from '../../../../../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
@@ -47,8 +48,7 @@ const ControlBottomBar = ({
 	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
-	const { isCameraEnabled, isScreenShareEnabled, localParticipant } = useLocalParticipant();
-	const screenCaptureRef = React.useRef(null);
+	const { isCameraEnabled, localParticipant } = useLocalParticipant();
 	const insets = useSafeAreaInsets();
 	const { t } = useTranslation(['common']);
 
@@ -165,10 +165,7 @@ const ControlBottomBar = ({
 		const clanIdCache = load(STORAGE_CLAN_ID);
 		if (clanIdCache !== clanId) {
 			const joinAndChangeClan = async (clanId: string) => {
-				await Promise.all([
-					dispatch(clansActions.joinClan({ clanId: clanId })),
-					dispatch(clansActions.changeCurrentClan({ clanId: clanId, noCache: true }))
-				]);
+				await Promise.all([dispatch(clansActions.joinClan({ clanId })), dispatch(clansActions.changeCurrentClan({ clanId, noCache: true }))]);
 			};
 			await joinAndChangeClan(clanId);
 		}
@@ -186,7 +183,7 @@ const ControlBottomBar = ({
 		<View
 			style={[
 				styles.menuFooter,
-				{ bottom: Platform.OS === 'ios' ? (focusedScreenShare ? size.s_20 : insets.top + size.s_60) : size.s_20, zIndex: 2 },
+				{ bottom: Platform.OS === 'ios' ? (focusedScreenShare ? size.s_20 : insets.top + size.s_80) : size.s_20, zIndex: 2 },
 				!isShow && {
 					display: 'none'
 				}

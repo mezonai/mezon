@@ -51,12 +51,12 @@ export const MESSAGES_FEATURE_KEY = 'messages';
  */
 
 export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): IMessageWithUser => {
-	const creationTime = new Date(channelMess.create_time || '');
 	const isAnonymous = channelMess?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const createTimeSeconds = channelMess.create_time_seconds || Date.now() / 1000;
 	return {
 		...channelMess,
 		isFirst: channelMess.code === EMessageCode.FIRST_MESSAGE,
-		creationTime,
+		creationTime: new Date(createTimeSeconds * 1000),
 		id: channelMess.id || channelMess.message_id || '',
 		date: new Date().toLocaleString(),
 		isAnonymous,
@@ -66,7 +66,9 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 			id: channelMess.sender_id || ''
 		},
 		lastSeen: lastSeenId === (channelMess.id || channelMess.message_id),
-		create_time_seconds: channelMess.create_time_seconds || creationTime.getTime() / 1000
+		create_time_seconds: createTimeSeconds,
+		create_time: channelMess.create_time || new Date(createTimeSeconds * 1000).toISOString(),
+		update_time: channelMess.update_time || (channelMess.update_time_seconds ? new Date(channelMess.update_time_seconds * 1000).toISOString() : undefined)
 	};
 };
 
@@ -248,6 +250,7 @@ export const fetchMessagesCached = async (
 			scope: 'channel-messages'
 		}
 	);
+
 
 	markApiFirstCalled(apiKey);
 
@@ -943,6 +946,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			// @ts-expect-error
 			content,
 			attachments,
+			create_time_seconds: clientSendTime / 1000,
 			create_time: new Date(clientSendTime).toISOString(),
 			client_send_time: clientSendTime,
 			temp_id: tempId,
@@ -1127,6 +1131,7 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 
 		return {
 			message_id: Snowflake.generate(),
+			create_time_seconds: Date.now() / 1000,
 			create_time: new Date().toISOString()
 		};
 	} catch (error) {
@@ -1457,6 +1462,7 @@ export const messagesSlice = createSlice({
 				}
 				case TypeMessage.ChatUpdate:
 				case TypeMessage.UpdateEphemeralMsg: {
+					const updateTimeSeconds = action.payload.update_time_seconds;
 					channelMessagesAdapter.updateOne(channelEntity, {
 						id: action.payload.id,
 						changes: {
@@ -1464,7 +1470,8 @@ export const messagesSlice = createSlice({
 							mentions: action.payload.mentions,
 							attachments: action.payload.attachments,
 							hide_editted: action.payload.hide_editted,
-							update_time: action.payload.update_time
+							update_time_seconds: updateTimeSeconds,
+							update_time: action.payload.update_time || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
 						}
 					});
 					const replyList = handleUpdateReplyMessage(channelEntity, action.payload.id);

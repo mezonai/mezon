@@ -2,7 +2,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { MessagesEntity } from '@mezon/store-mobile';
 import { channelsActions, messagesActions, selectAllChannelMemberIds, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { ETokenMessage, TypeMessage, convertTimeString, parseThreadInfo } from '@mezon/utils';
+import { convertTimeString, ETokenMessage, parseThreadInfo, TypeMessage } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -24,7 +24,7 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 
 	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, message?.channel_id as string));
 
-	const messageTime = convertTimeString(message?.create_time as string);
+	const messageTime = message?.create_time_seconds ? convertTimeString(new Date(message.create_time_seconds * 1000).toISOString()) : '';
 	const findThreadInText = (text: string) => {
 		let threadContent: { threadLabel?: string; threadId?: string; threadContent?: string } = {};
 		if (message?.code === TypeMessage.CreateThread && text) {
