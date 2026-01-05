@@ -35,7 +35,7 @@ function convertContentToObject(notify: INotification) {
 				reactions: notify.content.reactions ? safeJSONParse(notify.content.reactions) : null,
 				references: notify.content.references ? safeJSONParse(notify.content.references) : null,
 				attachments: notify.content.attachments ? safeJSONParse(notify.content.attachments) : null,
-				create_time: notify.create_time
+				createTime: notify.createTime
 			};
 
 			return {
@@ -52,12 +52,12 @@ function convertContentToObject(notify: INotification) {
 function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	const { t } = useTranslation('channelTopbar');
 	const parseNotify = useMemo(() => convertContentToObject(notify), [notify]);
-	const messageId = parseNotify.content.message_id;
-	const channelId = parseNotify.content.channel_id;
-	const clanId = parseNotify.content.clan_id;
+	const messageId = parseNotify.content.messageId;
+	const channelId = parseNotify.content.channelId;
+	const clanId = parseNotify.content.clanId;
 	const mode = parseNotify?.content?.mode - 1;
 
-	const topicId = parseNotify?.content?.topic_id;
+	const topicId = parseNotify?.content?.topicId;
 
 	const isTopic = Number(topicId) !== 0 || parseNotify?.content?.code === TypeMessage.Topic;
 
@@ -85,7 +85,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		message: parseNotify.content,
 		subject: parseNotify.subject,
 		category: parseNotify.category,
-		senderId: parseNotify.sender_id
+		senderId: parseNotify.senderId
 	};
 
 	return (
@@ -122,16 +122,16 @@ interface IMentionTabContent {
 function AllTabContent({ message, subject, category, senderId }: IMentionTabContent) {
 	const { t } = useTranslation('channelTopbar');
 	const contentUpdatedMention = addMention(message?.content, message?.mentions as IMentionOnMessage[]);
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.sender_id);
+	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.senderId);
 
-	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channel_id)) || {};
+	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channelId)) || {};
 	const parentChannel = useAppSelector((state) => selectChannelById(state, currentChannel.parent_id || '')) || {};
 
 	const checkMessageHasReply = useMemo(() => {
 		return message.references && message.references?.length > 0;
 	}, [message.references]);
 
-	const clan = useAppSelector(selectClanById(message.clan_id as string));
+	const clan = useAppSelector(selectClanById(message.clanId as string));
 	const user = useAppSelector((state) => selectMemberDMByUserId(state, senderId ?? ''));
 
 	const username = message.username;
@@ -156,12 +156,12 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 					alt="user avatar"
 					className="w-10 h-10 min-w-10 flex-shrink-0"
 					username={message?.username}
-					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url) ?? '', {
+					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar || user?.avatarUrl) ?? '', {
 						width: 300,
 						height: 300,
 						resizeType: 'fit'
 					})}
-					src={priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url}
+					src={priorityAvatar ? priorityAvatar : message.avatar || user?.avatarUrl}
 				/>
 
 				<div className="h-full w-full min-w-0 flex-1">
@@ -173,19 +173,19 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 										<span className="uppercase truncate max-w-[120px] overflow-hidden whitespace-nowrap">{clan.clan_name}</span>
 										<span>{'>'}</span>
 										<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap uppercase">
-											{isChannel ? message.category_name : parentChannel.category_name}
+											{isChannel ? message.categoryName : parentChannel.categoryName}
 										</span>
 									</div>
 
 									<div className="flex items-center gap-1 min-w-0 text-[13px]">
 										<span className="truncate max-w-[120px] overflow-hidden whitespace-nowrap">
-											{isChannel ? `#${message.channel_label}` : `#${parentChannel.channel_label}`}
+											{isChannel ? `#${message.channelLabel}` : `#${parentChannel.channelLabel}`}
 										</span>
 										{!isChannel && (
 											<>
 												<span>{'>'}</span>
 												<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap">
-													{`${message.channel_label}`}
+													{`${message.channelLabel}`}
 												</span>
 											</>
 										)}
@@ -204,7 +204,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 						<div className="w-[85%] max-w-[85%]" data-e2e={generateE2eId('chat.channel_message.inbox.mentions')}>
 							<MessageHead message={message} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
 							<MessageLine
-								messageId={message.message_id}
+								messageId={message.messageId}
 								isEditted={false}
 								content={contentUpdatedMention}
 								isTokenClickAble={false}
@@ -232,10 +232,10 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 					) : (
 						<div className="flex flex-col gap-1">
 							<div>
-								<span className="font-bold">{user?.display_name || username}</span>
+								<span className="font-bold">{user?.displayName || username}</span>
 								<span>{subjectText}</span>
 							</div>
-							<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.create_time as string)}</span>
+							<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.createTime as string)}</span>
 						</div>
 					)}
 				</div>
@@ -252,18 +252,18 @@ type IMessageHeadProps = {
 
 // fix later
 const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
-	const messageTime = convertTimeString(message?.create_time as string);
+	const messageTime = convertTimeString(message?.createTime as string);
 	const usernameSender = message?.username;
-	const clanNick = message?.clan_nick;
-	const displayName = message?.display_name;
-	const userRolesClan = useColorsRoleById(message?.sender_id);
+	const clanNick = message?.clanNick;
+	const displayName = message?.displayName;
+	const userRolesClan = useColorsRoleById(message?.senderId);
 	const { pendingClannick, pendingDisplayName, pendingUserName } = getPendingNames(
 		message,
 		clanNick ?? '',
 		displayName ?? '',
 		usernameSender ?? '',
-		message.clan_nick ?? '',
-		message?.display_name ?? '',
+		message.clanNick ?? '',
+		message?.displayName ?? '',
 		message?.username ?? ''
 	);
 
@@ -271,10 +271,10 @@ const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
 		clanNick ? clanNick : (pendingClannick ?? ''),
 		displayName ? displayName : (pendingDisplayName ?? ''),
 		usernameSender ? usernameSender : (pendingUserName ?? ''),
-		message?.sender_id ?? ''
+		message?.senderId ?? ''
 	);
 
-	const priorityName = message.display_name ? message.display_name : message.username;
+	const priorityName = message.displayName ? message.displayName : message.username;
 
 	return (
 		<div className="flex flex-row">

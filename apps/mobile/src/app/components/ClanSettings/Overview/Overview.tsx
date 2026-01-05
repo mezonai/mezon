@@ -91,9 +91,9 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const listChannelWithoutVoice = channelsList.filter(
 		(channel) =>
 			!channel?.channel_private &&
-			channel?.clan_id === currentClanId &&
+			channel?.clanId === currentClanId &&
 			channel?.type === ChannelType?.CHANNEL_TYPE_CHANNEL &&
-			channel?.channel_id !== selectedChannelMessage?.channel_id
+			channel?.channelId !== selectedChannelMessage?.channelId
 	);
 
 	const hasSystemMessageChanges = useMemo(() => {
@@ -122,7 +122,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			hasSystemMessageChanged =
 				systemMessage.welcome_random !== updateSystemMessageRequest.welcome_random ||
 				systemMessage.welcome_sticker !== updateSystemMessageRequest.welcome_sticker ||
-				systemMessage.channel_id !== updateSystemMessageRequest.channel_id ||
+				systemMessage.channelId !== updateSystemMessageRequest.channelId ||
 				systemMessage.hide_audit_log !== updateSystemMessageRequest.hide_audit_log;
 		}
 
@@ -152,7 +152,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 
 	useEffect(() => {
 		setUpdateSystemMessageRequest(systemMessage);
-		const selectedChannel = listChannelWithoutVoice?.find((channel) => channel?.channel_id === systemMessage?.channel_id);
+		const selectedChannel = listChannelWithoutVoice?.find((channel) => channel?.channelId === systemMessage?.channelId);
 		if (selectedChannel) {
 			setSelectedChannelMessage(selectedChannel);
 		}
@@ -169,8 +169,8 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const handleUpdateSystemMessage = useCallback(async () => {
 		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClanId && updateSystemMessageRequest) {
 			const cachedMessageUpdate: ApiSystemMessage = {
-				channel_id: updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '' : updateSystemMessageRequest?.channel_id,
-				clan_id: systemMessage?.clan_id,
+				channelId: updateSystemMessageRequest?.channelId === systemMessage?.channelId ? '' : updateSystemMessageRequest?.channelId,
+				clanId: systemMessage?.clanId,
 				id: systemMessage?.id,
 				hide_audit_log:
 					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? '' : updateSystemMessageRequest?.hide_audit_log,
@@ -202,7 +202,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			setNotificationSetting(value);
 			dispatch(appActions.setLoadingMainMobile(true));
 			const response = await dispatch(
-				defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClanId, notification_type: value })
+				defaultNotificationActions.setDefaultNotificationClan({ clanId: currentClanId, notification_type: value })
 			);
 
 			if (response?.meta?.requestStatus === 'rejected') {
@@ -238,15 +238,15 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			}
 			await dispatch(
 				clansActions.updateClan({
-					clan_id: currentClanId ?? '',
+					clanId: currentClanId ?? '',
 					request: {
 						banner,
 						clan_name: clanName?.trim() || (currentClanName ?? ''),
-						creator_id: currentClanCreatorId ?? '',
-						is_onboarding: currentClanIsOnboarding,
+						creatorId: currentClanCreatorId ?? '',
+						isOnboarding: currentClanIsOnboarding,
 						logo: currentClanLogo ?? '',
-						welcome_channel_id: welcomeChannelId ?? '',
-						prevent_anonymous: anonymousPrevented
+						welcomeChannelId: welcomeChannelId ?? '',
+						preventAnonymous: anonymousPrevented
 					}
 				})
 			);
@@ -327,7 +327,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		setSelectedChannelMessage(channel);
 		setUpdateSystemMessageRequest((prev) => ({
 			...prev,
-			channel_id: channel?.channel_id
+			channelId: channel?.channelId
 		}));
 	}, []);
 
@@ -351,7 +351,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		{
 			title: t('menu.systemMessage.channel'),
 			expandable: true,
-			component: <Text style={[styles.channelLabelText, { color: themeValue.text }]}>{selectedChannelMessage?.channel_label}</Text>,
+			component: <Text style={[styles.channelLabelText, { color: themeValue.text }]}>{selectedChannelMessage?.channelLabel}</Text>,
 			onPress: openBottomSheetSystemChannel,
 			disabled
 		},

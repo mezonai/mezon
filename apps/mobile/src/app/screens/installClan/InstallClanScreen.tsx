@@ -62,7 +62,7 @@ const InstallClanScreen = ({ route }: { route: any }) => {
 
 	const renderItem = ({ item }: { item: ClansEntity }) => {
 		return (
-			<Pressable key={`channel_event_${item.clan_id}`} onPress={() => handleSelectClan(item)} style={styles.items}>
+			<Pressable key={`channel_event_${item.clanId}`} onPress={() => handleSelectClan(item)} style={styles.items}>
 				<Text style={styles.inputValue} numberOfLines={1} ellipsizeMode="tail">
 					{item.clan_name}
 				</Text>
@@ -81,7 +81,7 @@ const InstallClanScreen = ({ route }: { route: any }) => {
 			const result = await dispatch(
 				addBotChat({
 					appId,
-					clanId: clan?.clan_id
+					clanId: clan?.clanId
 				})
 			);
 			if (result.meta.requestStatus === 'rejected') {
@@ -95,7 +95,7 @@ const InstallClanScreen = ({ route }: { route: any }) => {
 		}
 
 		onDismiss();
-	}, [appId, clan?.clan_id, dispatch]);
+	}, [appId, clan?.clanId, dispatch]);
 
 	const onDismiss = async () => {
 		navigation.navigate(APP_SCREEN.BOTTOM_BAR);
@@ -120,7 +120,7 @@ const InstallClanScreen = ({ route }: { route: any }) => {
 					</View>
 				</TouchableOpacity>
 
-				<TouchableOpacity style={styles.joinButton} activeOpacity={0.8} onPress={handleAddBotOrApp} disabled={!clan?.clan_id}>
+				<TouchableOpacity style={styles.joinButton} activeOpacity={0.8} onPress={handleAddBotOrApp} disabled={!clan?.clanId}>
 					<Text style={styles.joinButtonText}>{t('invite')}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity style={[styles.joinButton, styles.disMissButton]} onPress={onDismiss} activeOpacity={0.8}>
@@ -144,7 +144,7 @@ const InstallClanScreen = ({ route }: { route: any }) => {
 					/>
 
 					<BottomSheetFlatList
-						keyExtractor={(item) => item?.clan_id.toString()}
+						keyExtractor={(item) => item?.clanId.toString()}
 						keyboardShouldPersistTaps="handled"
 						data={filteredOptionsClan}
 						renderItem={renderItem}

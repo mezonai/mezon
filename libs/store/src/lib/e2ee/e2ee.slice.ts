@@ -96,8 +96,8 @@ export const e2eeSlice = createSlice({
 			.addCase(getPubKeys.fulfilled, (state: E2eeState, action) => {
 				state.loadingStatus = 'loaded';
 				const pubKeys =
-					action.payload.pub_keys?.map((pk: { PK?: ApiPubKey; user_id?: string }) => ({
-						id: pk.user_id || '',
+					action.payload.pub_keys?.map((pk: { PK?: ApiPubKey; userId?: string }) => ({
+						id: pk.userId || '',
 						PK: pk.PK || {}
 					})) || [];
 				e2eeAdapter.upsertMany(state, pubKeys);

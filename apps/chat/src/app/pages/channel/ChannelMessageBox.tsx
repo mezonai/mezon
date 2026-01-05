@@ -32,8 +32,8 @@ export type ChannelMessageBoxProps = {
 export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMessageBoxProps>) {
 	const currentMission = useSelector((state) => selectMissionDone(state, clanId as string));
 	const channelId = useMemo(() => {
-		return channel?.channel_id;
-	}, [channel?.channel_id]);
+		return channel?.channelId;
+	}, [channel?.channelId]);
 
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
@@ -69,12 +69,12 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 		if (
 			processingClan?.onboarding_step !== DONE_ONBOARDING_STATUS &&
 			currentClanIsOnboarding &&
-			onboardingList?.mission?.[currentMission]?.channel_id === channel?.channel_id &&
+			onboardingList?.mission?.[currentMission]?.channelId === channel?.channelId &&
 			onboardingList?.mission?.[currentMission]?.task_type === ETypeMission.SEND_MESSAGE
 		) {
-			dispatch(onboardingActions.doneMission({ clan_id: clanId as string }));
+			dispatch(onboardingActions.doneMission({ clanId: clanId as string }));
 			if (currentMission + 1 === onboardingList.mission.length) {
-				appDispatch(onboardingActions.doneOnboarding({ clan_id: clanId as string }));
+				appDispatch(onboardingActions.doneOnboarding({ clanId: clanId as string }));
 			}
 		}
 	};
@@ -91,13 +91,13 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 				dataReferences: blankReferenceObj
 			})
 		);
-	}, [dataReferences.message_ref_id]);
+	}, [dataReferences.messageRefId]);
 
-	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
+	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.messageRefId });
 
 	return (
 		<div className="mx-3 relative" ref={chatboxRef}>
-			{dataReferences.message_ref_id && <ReplyMessageBox channelId={channelId ?? ''} dataReferences={dataReferences} />}
+			{dataReferences.messageRefId && <ReplyMessageBox channelId={channelId ?? ''} dataReferences={dataReferences} />}
 			<MessageBox
 				listMentions={UserMentionList({
 					channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? (channel.parent_id ?? '') : (channelId ?? ''),

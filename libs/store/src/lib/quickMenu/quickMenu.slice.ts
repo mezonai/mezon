@@ -89,10 +89,10 @@ export const writeQuickMenuEvent = createAsyncThunk(
 				success: true,
 				eventData: {
 					menu_name: menuName,
-					clan_id: clanId,
-					channel_id: channelId,
+					clanId: clanId,
+					channelId: channelId,
 					mode,
-					is_public: isPublic,
+					isPublic: isPublic,
 					timestamp: Date.now()
 				}
 			};
@@ -112,8 +112,8 @@ export const addQuickMenuAccess = createAsyncThunk(
 			const data = {
 				id: Snowflake.generate(),
 				bot_id: '0',
-				channel_id: body.channelId,
-				clan_id: body.clanId,
+				channelId: body.channelId,
+				clanId: body.clanId,
 				menu_name: body.menu_name,
 				action_msg: body.action_msg || '',
 				menu_type: body.menu_type || QUICK_MENU_TYPE.FLASH_MESSAGE
@@ -138,8 +138,8 @@ export const updateQuickMenuAccess = createAsyncThunk(
 			const data = {
 				id: body.id,
 				bot_id: '0',
-				channel_id: body.channelId,
-				clan_id: body.clanId,
+				channelId: body.channelId,
+				clanId: body.clanId,
 				menu_name: body.menu_name,
 				action_msg: body.action_msg || '',
 				menu_type: body.menu_type || QUICK_MENU_TYPE.FLASH_MESSAGE

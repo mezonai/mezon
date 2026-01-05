@@ -40,18 +40,18 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 		const store = await getStoreAsync();
 
 		const body: ApiCreateChannelDescRequest = {
-			clan_id: currentClanId?.toString(),
+			clanId: currentClanId?.toString(),
 			type: channelType,
-			channel_label: channelName?.trim(),
+			channelLabel: channelName?.trim(),
 			channel_private: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isChannelPrivate ? 1 : 0,
-			category_id: categoryId,
+			categoryId: categoryId,
 			parent_id: '0'
 		};
 		dispatch(appActions.setLoadingMainMobile(true));
 		const newChannelCreatedId = await dispatch(createNewChannel(body));
 		const payload = newChannelCreatedId.payload as ApiCreateChannelDescRequest;
-		const channelID = payload.channel_id;
-		const clanID = payload.clan_id;
+		const channelID = payload.channelId;
+		const clanID = payload.clanId;
 
 		const error = (newChannelCreatedId as any).error;
 		if (newChannelCreatedId && error) {

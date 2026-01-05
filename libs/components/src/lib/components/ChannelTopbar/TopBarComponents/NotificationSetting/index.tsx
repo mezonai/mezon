@@ -55,18 +55,18 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 
 	const handleScheduleMute = (duration: number) => {
 		const body: MuteChannelPayload = {
-			channel_id: currentChannelId || '',
+			channelId: currentChannelId || '',
 			mute_time: duration !== Infinity ? duration : 0,
 			active: 0,
-			clan_id: currentClanId || ''
+			clanId: currentClanId || ''
 		};
 		dispatch(notificationSettingActions.setMuteChannel(body));
 	};
 
 	const muteOrUnMuteChannel = (active: number) => {
 		const body = {
-			channel_id: currentChannelId || '',
-			clan_id: currentClanId || '',
+			channelId: currentChannelId || '',
+			clanId: currentClanId || '',
 			active,
 			mute_time: 0
 		};
@@ -76,13 +76,13 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 	const setNotification = (notificationType: number) => {
 		if (notificationType) {
 			const body = {
-				channel_id: currentChannelId || '',
+				channelId: currentChannelId || '',
 				notification_type: notificationType || 0,
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			};
 			dispatch(notificationSettingActions.setNotificationSetting(body));
 		} else {
-			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channel_id: currentChannelId || '', clan_id: currentClanId || '' }));
+			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channelId: currentChannelId || '', clanId: currentClanId || '' }));
 		}
 	};
 

@@ -1,6 +1,6 @@
 export interface ReactionChannelInfo {
-	channel_id: string;
-	clan_id: string;
+	channelId: string;
+	clanId: string;
 	channel_private: number;
 }
 
@@ -13,7 +13,7 @@ export interface DisplayedEmoji {
 	id: string;
 	emoji: string;
 	emojiId: string;
-	creator_id?: string;
+	creatorId?: string;
 	timestamp: number;
 	displayName?: string;
 	position?: {

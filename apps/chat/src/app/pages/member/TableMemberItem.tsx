@@ -100,7 +100,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 				isDM={false}
 				user={{
 					id: userId,
-					user_id: userId,
+					userId: userId,
 					user: {
 						id: userId,
 						username
@@ -122,12 +122,12 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 	const member: ChannelMembersEntity = useMemo(() => {
 		return {
 			id: userId,
-			user_id: userId,
+			userId: userId,
 			user: {
 				username,
 				id: userId,
-				display_name: displayName,
-				avatar_url: avatar
+				displayName: displayName,
+				avatarUrl: avatar
 			}
 		};
 	}, [avatar, displayName, userId, username]);
@@ -204,7 +204,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 							style={{
 								color: userRolesClan.sortedRoles[0]?.color || DEFAULT_ROLE_COLOR
 							}}
-							data-e2e={generateE2eId('clan_page.member_list.user_info.display_name')}
+							data-e2e={generateE2eId('clan_page.member_list.user_info.displayName')}
 						>
 							{HighlightMatchBold(displayName, searchQuery)}
 						</p>
@@ -338,7 +338,7 @@ const ListOptionRole = ({
 
 	const handleAddRoleMemberList = async (role: RolesClanEntity) => {
 		if (userRolesClan.usersRole[role.id]) {
-			await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [], [], [userId], [], role.role_icon || '');
+			await updateRole(role.clanId || '', role.id, role.title || '', role.color || '', [], [], [userId], [], role.role_icon || '');
 
 			await dispatch(
 				usersClanActions.removeRoleIdUser({
@@ -352,7 +352,7 @@ const ListOptionRole = ({
 			return;
 		}
 
-		await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [userId], [], [], [], role.role_icon || '');
+		await updateRole(role.clanId || '', role.id, role.title || '', role.color || '', [userId], [], [], [], role.role_icon || '');
 
 		await dispatch(
 			usersClanActions.addRoleIdUser({

@@ -24,7 +24,7 @@ export function useNotificationSettings({ channelId, notificationSettings, getCh
 			if (!channelId) return;
 			dispatch(notificationSettingActions.updateNotiState({ channelId, active }));
 			const body = {
-				channel_id: channelId,
+				channelId: channelId,
 				mute_time: 0,
 				active
 			};
@@ -38,10 +38,10 @@ export function useNotificationSettings({ channelId, notificationSettings, getCh
 		(channelId: string, duration: number) => {
 			if (!channelId) return;
 			const body: MuteChannelPayload = {
-				channel_id: channelId,
+				channelId: channelId,
 				mute_time: duration,
 				active: EMuteState.MUTED,
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			};
 			dispatch(notificationSettingActions.setMuteChannel(body));
 		},

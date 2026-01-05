@@ -70,23 +70,23 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 
 	const [isCanManageThread, isCanManageChannel, isAdminstrator, isClanOwner] = usePermissionChecker(
 		[EOverriddenPermission.manageThread, EPermission.manageChannel, EPermission.administrator, EPermission.clanOwner],
-		channel?.channel_id ?? ''
+		channel?.channelId ?? ''
 	);
 
 	useEffect(() => {
-		dispatch(fetchSystemMessageByClanId({ clanId: channel?.clan_id }));
+		dispatch(fetchSystemMessageByClanId({ clanId: channel?.clanId }));
 	}, []);
 
 	const handleSaveChannelSetting = useCallback(async () => {
 		const isCheckNameChannelValue =
 			!!channelsClan?.length &&
-			channelsClan?.some((channel) => channel?.channel_id !== channelId && channel?.channel_label === currentSettingValue?.channelName);
+			channelsClan?.some((channel) => channel?.channelId !== channelId && channel?.channelLabel === currentSettingValue?.channelName);
 		setIsCheckDuplicateNameChannel(isCheckNameChannelValue);
 		const updateChannel = {
-			clan_id: channel?.clan_id,
-			channel_id: channel?.channel_id || '',
-			channel_label: currentSettingValue?.channelName,
-			category_id: channel?.category_id,
+			clanId: channel?.clanId,
+			channelId: channel?.channelId || '',
+			channelLabel: currentSettingValue?.channelName,
+			categoryId: channel?.categoryId,
 			app_url: channel?.app_url || '',
 			app_id: channel?.app_id || '',
 			age_restricted: channel?.age_restricted,
@@ -124,9 +124,9 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 	};
 
 	useEffect(() => {
-		if (channel?.channel_id) {
+		if (channel?.channelId) {
 			const initialChannelSettingValue: IChannelSettingValue = {
-				channelName: channel?.channel_label,
+				channelName: channel?.channelLabel,
 				channelTopic: channel?.topic || ''
 			};
 			setOriginSettingValue(initialChannelSettingValue);
@@ -161,7 +161,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					icon: <MezonIconCDN icon={IconCDN.bravePermission} color={themeValue.text} />,
 					isShow:
 						isChannel &&
-						currentSystemMessage?.channel_id !== channel?.channel_id &&
+						currentSystemMessage?.channelId !== channel?.channelId &&
 						channel?.type !== ChannelType.CHANNEL_TYPE_APP &&
 						channel?.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
 						channel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE,
@@ -227,13 +227,13 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 							screen: APP_SCREEN.MENU_CHANNEL.LIST_BANNED_USERS,
 							params: {
 								channelId,
-								clanId: channel?.clan_id
+								clanId: channel?.clanId
 							}
 						});
 					}
 				}
 			] satisfies IMezonMenuItemProps[],
-		[channel, channelId, currentSystemMessage?.channel_id, isAdminstrator, isChannel, navigation, t, themeValue.text]
+		[channel, channelId, currentSystemMessage?.channelId, isAdminstrator, isChannel, navigation, t, themeValue.text]
 	);
 
 	const webhookMenu = useMemo(
@@ -251,14 +251,14 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 						navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
 							screen: APP_SCREEN.MENU_CLAN.INTEGRATIONS,
 							params: {
-								channelId: channel?.channel_id,
+								channelId: channel?.channelId,
 								isClanSetting: false
 							}
 						});
 					}
 				}
 			] satisfies IMezonMenuItemProps[],
-		[channel?.channel_id, channel?.type, t, themeValue.text]
+		[channel?.channelId, channel?.type, t, themeValue.text]
 	);
 
 	const deleteMenu = useMemo(
@@ -270,7 +270,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					onPress: () => handlePressDeleteChannel(),
 					icon: <MezonIconCDN icon={IconCDN.trashIcon} color={baseColor.redStrong} />,
 					isShow:
-						(channel?.creator_id === currentUserId && (isChannel ? isCanManageChannel : isCanManageThread)) ||
+						(channel?.creatorId === currentUserId && (isChannel ? isCanManageChannel : isCanManageThread)) ||
 						isAdminstrator ||
 						isClanOwner
 				},
@@ -279,10 +279,10 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					textStyle: { color: baseColor.redStrong },
 					onPress: () => handlePressLeaveChannel(),
 					icon: <MezonIconCDN icon={IconCDN.leaveGroupIcon} color={baseColor.redStrong} />,
-					isShow: !isChannel && channel?.creator_id !== currentUserId && channel?.type !== ChannelType.CHANNEL_TYPE_APP
+					isShow: !isChannel && channel?.creatorId !== currentUserId && channel?.type !== ChannelType.CHANNEL_TYPE_APP
 				}
 			] satisfies IMezonMenuItemProps[],
-		[isChannel, t, channel?.creator_id, channel?.type, currentUserId, isCanManageChannel, isCanManageThread, isAdminstrator, isClanOwner]
+		[isChannel, t, channel?.creatorId, channel?.type, currentUserId, isCanManageChannel, isCanManageThread, isAdminstrator, isClanOwner]
 	);
 
 	const topMenu = useMemo(
@@ -302,28 +302,28 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		try {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			dispatch(appActions.setLoadingMainMobile(true));
-			if (channel?.channel_id === currentSystemMessage?.channel_id) {
+			if (channel?.channelId === currentSystemMessage?.channelId) {
 				Toast.show({ type: 'error', text1: t('confirm.delete.systemChannel') });
 				return;
 			}
 
 			const response = await dispatch(
 				channelsActions.deleteChannel({
-					channelId: channel?.channel_id,
-					clanId: channel?.clan_id
+					channelId: channel?.channelId,
+					clanId: channel?.clanId
 				})
 			);
 			if (response?.meta?.requestStatus === 'rejected') {
 				throw response?.error?.message;
-			} else if (!isChannel && channel?.parent_id && channel?.channel_id) {
-				dispatch(threadsActions.remove(channel.channel_id));
-				dispatch(threadsActions.removeThreadFromCache({ channelId: channel.parent_id, threadId: channel.channel_id }));
+			} else if (!isChannel && channel?.parent_id && channel?.channelId) {
+				dispatch(threadsActions.remove(channel.channelId));
+				dispatch(threadsActions.removeThreadFromCache({ channelId: channel.parent_id, threadId: channel.channelId }));
 			}
 			navigation.navigate(APP_SCREEN.HOME);
 			if (channel?.parent_id !== '0') {
 				await dispatch(
 					channelsActions.joinChannel({
-						clanId: channel?.clan_id,
+						clanId: channel?.clanId,
 						channelId: channel?.parent_id,
 						noFetchMembers: false
 					})
@@ -334,7 +334,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [channel?.channel_id, channel?.clan_id, channel?.parent_id, currentSystemMessage?.channel_id, isChannel]);
+	}, [channel?.channelId, channel?.clanId, channel?.parent_id, currentSystemMessage?.channelId, isChannel]);
 
 	const handleConfirmLeaveThread = useCallback(async () => {
 		try {
@@ -345,7 +345,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					channelId: channel.id,
 					userId: currentUserId,
 					channelType: channel.type,
-					clanId: channel.clan_id
+					clanId: channel.clanId
 				};
 				const response = await dispatch(channelUsersActions.removeChannelUsers(body));
 				if (response?.meta?.requestStatus === 'rejected') {
@@ -354,7 +354,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			} else {
 				const response = await dispatch(
 					threadsActions.leaveThread({
-						clanId: channel?.clan_id || '',
+						clanId: channel?.clanId || '',
 						channelId: channel?.parent_id || '',
 						threadId: channel?.id || '',
 						isPrivate: channel?.channel_private || 0
@@ -369,7 +369,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [channel?.channel_private, channel?.clan_id, channel?.id, channel?.parent_id, isChannel, currentUserId, channel?.type]);
+	}, [channel?.channel_private, channel?.clanId, channel?.id, channel?.parent_id, isChannel, currentUserId, channel?.type]);
 
 	const handlePressLeaveChannel = () => {
 		const data = {
@@ -379,7 +379,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title={t('confirm.leave.title')}
 					confirmText={t('confirm.leave.confirmText')}
 					content={t('confirm.leave.content', {
-						channelName: channel?.channel_label
+						channelName: channel?.channelLabel
 					})}
 				/>
 			)
@@ -394,7 +394,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					onConfirm={handleDeleteChannel}
 					title={isChannel ? t('confirm.deleteChannel.title') : t('confirm.deleteThread.title')}
 					confirmText={isChannel ? t('confirm.deleteChannel.confirmText') : t('confirm.deleteThread.confirmText')}
-					content={t('confirm.delete.content', { channelName: channel?.channel_label })}
+					content={t('confirm.delete.content', { channelName: channel?.channelLabel })}
 				/>
 			)
 		};

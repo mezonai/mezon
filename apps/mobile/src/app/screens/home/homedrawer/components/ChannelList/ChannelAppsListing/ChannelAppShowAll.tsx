@@ -24,8 +24,8 @@ const ChannelAppShowAll = ({ navigation }: { navigation: any }) => {
 	const openChannelApp = useCallback(
 		async (channel: ApiChannelAppResponse) => {
 			nav.navigate(APP_SCREEN.CHANNEL_APP, {
-				channelId: channel.channel_id,
-				clanId: channel.clan_id
+				channelId: channel.channelId,
+				clanId: channel.clanId
 			});
 		},
 		[nav]
@@ -89,7 +89,7 @@ const ChannelAppShowAll = ({ navigation }: { navigation: any }) => {
 			<FlatList
 				data={allChannelApp}
 				renderItem={renderAppItem}
-				keyExtractor={(item) => item.channel_id}
+				keyExtractor={(item) => item.channelId}
 				contentContainerStyle={styles.appListContent}
 				showsVerticalScrollIndicator={false}
 				ListEmptyComponent={renderEmptyState}

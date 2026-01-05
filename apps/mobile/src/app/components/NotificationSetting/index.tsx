@@ -57,7 +57,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 	const [radioBox, setRadioBox] = useState<IOptionsNotification[]>(optionNotifySetting);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.id || currentChannelId || ''));
-	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, channel?.category_id as string));
+	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, channel?.categoryId as string));
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
 	const [defaultNotifyName, setDefaultNotifyName] = useState('');
 
@@ -96,9 +96,9 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 						)
 					) {
 						const body = {
-							channel_id: channel?.channel_id || currentChannelId || '',
+							channelId: channel?.channelId || currentChannelId || '',
 							notification_type: notifyOptionSettingSelected?.value || 0,
-							clan_id: channel?.clan_id || currentClanId || ''
+							clanId: channel?.clanId || currentClanId || ''
 						};
 						const res = await dispatch(notificationSettingActions.setNotificationSetting(body));
 						if (res?.meta?.requestStatus === 'rejected') {
@@ -107,8 +107,8 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 					} else {
 						const res = await dispatch(
 							notificationSettingActions.deleteNotiChannelSetting({
-								channel_id: channel?.channel_id || currentChannelId || '',
-								clan_id: channel?.clan_id || currentClanId || ''
+								channelId: channel?.channelId || currentChannelId || '',
+								clanId: channel?.clanId || currentClanId || ''
 							})
 						);
 						if (res?.meta?.requestStatus === 'rejected') {
@@ -124,7 +124,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 				}
 			}
 		},
-		[channel?.channel_id, channel?.clan_id, currentChannelId, currentClanId, dispatch, radioBox, t]
+		[channel?.channelId, channel?.clanId, currentChannelId, currentClanId, dispatch, radioBox, t]
 	);
 
 	return (

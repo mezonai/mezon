@@ -48,8 +48,8 @@ export const MyQRCode = () => {
 				encodeURIComponent(
 					JSON.stringify({
 						id: userProfile?.user?.id,
-						avatar: userProfile?.user?.avatar_url,
-						name: userProfile?.user?.display_name
+						avatar: userProfile?.user?.avatarUrl,
+						name: userProfile?.user?.displayName
 					})
 				)
 			);
@@ -58,7 +58,7 @@ export const MyQRCode = () => {
 			console.error('Error QR Profile Payload', error);
 			return '';
 		}
-	}, [userProfile?.user?.id, userProfile?.user?.avatar_url, userProfile?.user?.username, userProfile?.user?.display_name]);
+	}, [userProfile?.user?.id, userProfile?.user?.avatarUrl, userProfile?.user?.username, userProfile?.user?.displayName]);
 
 	const transferPayload = useMemo(() => {
 		return JSON.stringify({
@@ -148,11 +148,11 @@ export const MyQRCode = () => {
 
 	const userInfo = useMemo(
 		() => ({
-			avatarUrl: userProfile?.user?.avatar_url || '',
+			avatarUrl: userProfile?.user?.avatarUrl || '',
 			username: userProfile?.user?.username || '',
-			displayName: userProfile?.user?.display_name || userProfile?.user?.username || ''
+			displayName: userProfile?.user?.displayName || userProfile?.user?.username || ''
 		}),
-		[userProfile?.user?.avatar_url, userProfile?.user?.username, userProfile?.user?.display_name]
+		[userProfile?.user?.avatarUrl, userProfile?.user?.username, userProfile?.user?.displayName]
 	);
 
 	return (

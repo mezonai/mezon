@@ -48,7 +48,7 @@ export const fetchPermissionsUser = createAsyncThunk<any, fetchPermissionsUserPa
 			{
 				api_name: 'GetRoleOfUserInTheClan',
 				permission_user_req: {
-					clan_id: clanId
+					clanId: clanId
 				}
 			},
 			() => mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId),

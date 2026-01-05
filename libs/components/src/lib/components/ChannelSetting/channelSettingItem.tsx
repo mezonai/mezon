@@ -26,9 +26,9 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 	const isPrivate = channel.channel_private;
 	const [selectedButton, setSelectedButton] = useState<string | null>('Overview');
 	const [showModal, setShowModal] = useState(false);
-	const [hasManageChannelPermission] = usePermissionChecker([EPermission.manageChannel, EPermission.manageClan], channel.channel_id ?? '');
+	const [hasManageChannelPermission] = usePermissionChecker([EPermission.manageChannel, EPermission.manageClan], channel.channelId ?? '');
 
-	const channelId = (channel?.channel_id || ('id' in channel ? (channel as { id?: string })?.id : '') || '') as string;
+	const channelId = (channel?.channelId || ('id' in channel ? (channel as { id?: string })?.id : '') || '') as string;
 	const channelFromStore = useAppSelector((state) => selectChannelById(state, channelId));
 	const currentChannel = (channelFromStore || channel) as IChannel;
 
@@ -45,7 +45,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 	};
 
 	const handleDeleteChannel = () => {
-		handleConfirmDeleteChannel(channel.channel_id as string, channel.clan_id as string);
+		handleConfirmDeleteChannel(channel.channelId as string, channel.clanId as string);
 		handleCloseModalShow();
 		if (props.onCloseModal) {
 			props.onCloseModal();
@@ -81,7 +81,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 			return <Icons.Stream defaultSize="w-5 h-5 min-w-5" />;
 		}
 	};
-	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, channel?.clan_id as string));
+	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, channel?.clanId as string));
 
 	return (
 		<div
@@ -92,9 +92,9 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 					{renderIcon()} &nbsp;
 					<p
 						className="text-[#84ADFF] font-bold text-sm tracking-wider max-w-[160px] overflow-x-hidden text-ellipsis uppercase one-line"
-						data-e2e={generateE2eId('channel_setting_page.side_bar.channel_label')}
+						data-e2e={generateE2eId('channel_setting_page.side_bar.channelLabel')}
 					>
-						{displayChannelLabel ?? currentChannel?.channel_label ?? 'Unknown Channel'}
+						{displayChannelLabel ?? currentChannel?.channelLabel ?? 'Unknown Channel'}
 					</p>
 				</div>
 
@@ -171,12 +171,12 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 					handleCancel={handleCloseModalShow}
 					handleConfirm={handleDeleteChannel}
 					title={isThread ? t('confirm.deleteThread.title') : t('confirm.deleteChannel.title')}
-					modalName={`${channel?.channel_label || 'Unknown Channel'}`}
+					modalName={`${channel?.channelLabel || 'Unknown Channel'}`}
 					message={t('confirm.cancel')}
 					customTitle={
 						isThread
-							? t('confirm.deleteThread.content', { channelName: channel?.channel_label || 'Unknown Channel' })
-							: t('confirm.deleteChannel.content', { channelName: channel?.channel_label || 'Unknown Channel' })
+							? t('confirm.deleteThread.content', { channelName: channel?.channelLabel || 'Unknown Channel' })
+							: t('confirm.deleteChannel.content', { channelName: channel?.channelLabel || 'Unknown Channel' })
 					}
 					buttonName={isThread ? t('confirm.deleteThread.confirmText') : t('confirm.deleteChannel.confirmText')}
 				/>

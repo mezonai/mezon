@@ -15,13 +15,13 @@ import { EmbedTitle } from './EmbedTitle';
 import { style } from './styles';
 
 type EmbedMessageProps = {
-	message_id: string;
+	messageId: string;
 	embed: IEmbedProps;
-	channel_id: string;
+	channelId: string;
 	onLongPress?: () => void;
 };
 
-export const EmbedMessage = memo(({ message_id, embed, channel_id, onLongPress }: EmbedMessageProps) => {
+export const EmbedMessage = memo(({ messageId, embed, channelId, onLongPress }: EmbedMessageProps) => {
 	const { color, title, url, author, description, fields, image, timestamp, footer, thumbnail } = embed;
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
@@ -32,8 +32,8 @@ export const EmbedMessage = memo(({ message_id, embed, channel_id, onLongPress }
 			...image,
 			id: '',
 			filetype: 'image/jpeg',
-			message_id,
-			channelId: channel_id
+			messageId,
+			channelId: channelId
 		};
 		const data = {
 			children: <ImageListModal channelId={''} imageSelected={imageData} />
@@ -54,7 +54,7 @@ export const EmbedMessage = memo(({ message_id, embed, channel_id, onLongPress }
 						{!!author && <EmbedAuthor {...author} />}
 						{!!title && <EmbedTitle title={title} url={url} />}
 						{!!description && <EmbedDescription description={description} />}
-						{!!fields && <EmbedFields message_id={message_id} fields={fields} />}
+						{!!fields && <EmbedFields messageId={messageId} fields={fields} />}
 					</View>
 					{!!thumbnail && (
 						<FastImage

@@ -41,16 +41,16 @@ const DeleteClanModal = ({ isLeaveClan = false }: { isLeaveClan?: boolean }) => 
 			const store = await getStoreAsync();
 
 			await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-			const indexClanJoin = currentClanId === clans[0]?.clan_id ? 1 : 0;
+			const indexClanJoin = currentClanId === clans[0]?.clanId ? 1 : 0;
 			if (clans?.length === 1) {
 				navigation.navigate(APP_SCREEN.HOME);
 				return;
 			}
 			if (clans?.[indexClanJoin]) {
 				navigation.navigate(APP_SCREEN.HOME);
-				store.dispatch(clansActions.joinClan({ clanId: clans?.[indexClanJoin]?.clan_id }));
-				store.dispatch(clansActions.changeCurrentClan({ clanId: clans[indexClanJoin]?.clan_id }));
-				save(STORAGE_CLAN_ID, clans?.[indexClanJoin]?.clan_id);
+				store.dispatch(clansActions.joinClan({ clanId: clans?.[indexClanJoin]?.clanId }));
+				store.dispatch(clansActions.changeCurrentClan({ clanId: clans[indexClanJoin]?.clanId }));
+				save(STORAGE_CLAN_ID, clans?.[indexClanJoin]?.clanId);
 			} else {
 				navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 			}

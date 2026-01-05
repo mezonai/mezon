@@ -41,7 +41,7 @@ export const giveCoffeeAdapter = createEntityAdapter<GiveCoffeeEntity>();
 
 export const updateGiveCoffee = createAsyncThunk(
 	'giveCoffee/updateGiveCoffee',
-	async ({ channel_id, clan_id, message_ref_id, receiver_id, sender_id }: ApiGiveCoffeeEvent, thunkAPI) => {
+	async ({ channelId, clanId, messageRefId, receiver_id, senderId }: ApiGiveCoffeeEvent, thunkAPI) => {
 		const state = thunkAPI.getState() as any;
 		if (!state.giveCoffee.pendingGiveCoffee) {
 			try {
@@ -52,17 +52,17 @@ export const updateGiveCoffee = createAsyncThunk(
 				const response = await thunkAPI
 					.dispatch(
 						walletActions.sendTransaction({
-							sender: sender_id,
+							sender: senderId,
 							recipient: receiver_id,
 							amount: AMOUNT_TOKEN.TEN_THOUSAND_TOKENS,
 							textData: 'givecoffee',
 							extraInfo: {
 								type: ETransferType.GiveCoffee,
-								ChannelId: channel_id || '',
-								ClanId: clan_id || '',
-								MessageRefId: message_ref_id || '',
+								ChannelId: channelId || '',
+								ClanId: clanId || '',
+								MessageRefId: messageRefId || '',
 								UserReceiverId: receiver_id || '',
-								UserSenderId: sender_id || '',
+								UserSenderId: senderId || '',
 								UserSenderUsername: mezon.session.username || ''
 							}
 						})
@@ -108,14 +108,14 @@ export const sendToken = createAsyncThunk(
 			const response = await thunkAPI
 				.dispatch(
 					walletActions.sendTransaction({
-						sender: tokenEvent.sender_id,
+						sender: tokenEvent.senderId,
 						recipient: tokenEvent.receiver_id,
 						amount: tokenEvent.amount,
 						textData: tokenEvent.note,
 						extraInfo: {
 							type: ETransferType.TransferToken,
 							UserReceiverId: tokenEvent.receiver_id || '',
-							UserSenderId: tokenEvent.sender_id || '',
+							UserSenderId: tokenEvent.senderId || '',
 							UserSenderUsername: mezon.session.username || '',
 							ExtraAttribute: tokenEvent?.extra_attribute || ''
 						},
@@ -161,12 +161,12 @@ export const giveCoffeeSlice = createSlice({
 		},
 		updateTokenUser: (state, action: PayloadAction<{ tokenEvent: ApiTokenSentEvent }>) => {
 			const { tokenEvent } = action.payload;
-			const userId = tokenEvent.sender_id;
+			const userId = tokenEvent.senderId;
 			if (!userId) return;
 			state.tokenUpdate[userId] = state.tokenUpdate[userId] ?? 0;
 			state.tokenSocket[userId] = tokenEvent ?? {};
 
-			if (userId === tokenEvent.sender_id) {
+			if (userId === tokenEvent.senderId) {
 				state.tokenUpdate[userId] -= tokenEvent.amount || 0;
 			}
 		},

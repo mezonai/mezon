@@ -98,7 +98,7 @@ export const ID_MENTION_HERE = '1775731111020111321';
 
 export const EMOJI_GIVE_COFFEE = {
 	emoji: ':coffee:',
-	emoji_id: '7280417126303261185'
+	emojiId: '7280417126303261185'
 };
 export const SYSTEM_NAME = 'System';
 export const SYSTEM_SENDER_ID = '0';

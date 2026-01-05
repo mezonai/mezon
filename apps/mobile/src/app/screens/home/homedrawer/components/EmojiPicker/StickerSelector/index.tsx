@@ -59,7 +59,7 @@ const StickerSelector = ({ onSelected, onScroll, mediaType = MediaType.STICKER, 
 
 		for (const sticker of filteredStickers) {
 			const item = {
-				id: sticker?.clan_id,
+				id: sticker?.clanId,
 				type: sticker?.clan_name,
 				url: sticker?.logo,
 				forSale: false

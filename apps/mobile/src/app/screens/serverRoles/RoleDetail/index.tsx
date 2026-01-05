@@ -52,12 +52,12 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 	}, [clanRole, isClanOwner, userMaxPermissionLevel]);
 
 	const isEveryoneRole = useMemo(() => {
-		return clanRole?.slug === `everyone-${clanRole?.clan_id}`;
-	}, [clanRole?.clan_id, clanRole.slug]);
+		return clanRole?.slug === `everyone-${clanRole?.clanId}`;
+	}, [clanRole?.clanId, clanRole.slug]);
 
 	const handleSave = useCallback(async () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-		const response = await updateRole(clanRole.clan_id, clanRole.id, currentRoleName, clanRole?.color || '', [], [], [], []);
+		const response = await updateRole(clanRole.clanId, clanRole.id, currentRoleName, clanRole?.color || '', [], [], [], []);
 		if (response) {
 			Toast.show({
 				type: 'success',
@@ -76,7 +76,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 				}
 			});
 		}
-	}, [clanRole.clan_id, clanRole?.color, clanRole.id, currentRoleName, navigation, t, updateRole]);
+	}, [clanRole.clanId, clanRole?.color, clanRole.id, currentRoleName, navigation, t, updateRole]);
 
 	const handleBack = useCallback(() => {
 		if (isNotChange) {
@@ -106,7 +106,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 					confirmText={t('confirmations:deleteRole.confirm')}
 					isDanger
 					onConfirm={async () => {
-						const response = await dispatch(rolesClanActions.fetchDeleteRole({ roleId: clanRole?.id, clanId: clanRole?.clan_id }));
+						const response = await dispatch(rolesClanActions.fetchDeleteRole({ roleId: clanRole?.id, clanId: clanRole?.clanId }));
 						if (response?.payload) {
 							navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);
 						} else {

@@ -9,14 +9,14 @@ export const useEventManagementQuantity = () => {
 
 	const allEventManagement = useAppSelector((state) => selectEventsByClanId(state, currentClanId as string));
 	const allThreadChannelPrivate = useSelector(selectAllTextChannel);
-	const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channel_id);
+	const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channelId);
 
 	const eventsByUser = useMemo(
 		() =>
 			allEventManagement.filter(
 				(event) =>
-					(!event?.is_private || event.creator_id === userId) &&
-					(!event.channel_id || event.channel_id === '0' || allThreadChannelPrivateIds.includes(event.channel_id))
+					(!event?.is_private || event.creatorId === userId) &&
+					(!event.channelId || event.channelId === '0' || allThreadChannelPrivateIds.includes(event.channelId))
 			),
 		[allEventManagement, allThreadChannelPrivateIds, userId]
 	);

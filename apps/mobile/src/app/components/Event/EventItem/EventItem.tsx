@@ -29,7 +29,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['eventMenu', 'eventCreator']);
-	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
+	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creatorId || ''));
 	const { userId } = useAuth();
 	const [isInterested, setIsInterested] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
@@ -62,8 +62,8 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 	}
 
 	useEffect(() => {
-		if (userId && event?.user_ids) {
-			setIsInterested(event.user_ids.includes(userId));
+		if (userId && event?.userIds) {
+			setIsInterested(event.userIds.includes(userId));
 		}
 	}, [userId, event]);
 
@@ -71,7 +71,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 		if (!event?.id) return;
 
 		const request: ApiUserEventRequest = {
-			clan_id: event.clan_id,
+			clanId: event.clanId,
 			event_id: event.id
 		};
 
@@ -102,7 +102,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 						<View style={styles.avatar}>
 							<FastImage
 								source={{
-									uri: createImgproxyUrl(userCreate?.user?.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fit' })
+									uri: createImgproxyUrl(userCreate?.user?.avatarUrl ?? '', { width: 100, height: 100, resizeType: 'fit' })
 								}}
 								style={{ width: '100%', height: '100%' }}
 								resizeMode="cover"
@@ -110,14 +110,14 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 						</View>
 						<View style={styles.inline}>
 							<MezonIconCDN icon={IconCDN.groupIcon} height={size.s_12} width={size.s_12} color={themeValue.text} />
-							<Text style={styles.tinyText}>{event?.user_ids?.length}</Text>
+							<Text style={styles.tinyText}>{event?.userIds?.length}</Text>
 						</View>
 					</View>
 				</View>
 
 				<View style={styles.mainArea}>
 					<View style={styles.mainSec}>
-						{!!event?.channel_id && event.channel_id !== '0' && !event?.is_private && (
+						{!!event?.channelId && event.channelId !== '0' && !event?.is_private && (
 							<View style={[styles.privatePanel, { backgroundColor: baseColor.orange }]}>
 								<Text style={styles.privateText}>{t('eventCreator:eventDetail.channelEvent')}</Text>
 							</View>
@@ -129,7 +129,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 							</View>
 						)}
 
-						{!event?.is_private && !event?.channel_id && (
+						{!event?.is_private && !event?.channelId && (
 							<View style={[styles.privatePanel, { backgroundColor: baseColor.blurple }]}>
 								<Text style={styles.privateText}>{t('eventCreator:eventDetail.clanEvent')}</Text>
 							</View>
@@ -168,7 +168,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 						)}
 					</View>
 				)}
-				{!!event.channel_id && event.channel_id !== '0' && <EventChannelDetail event={event} />}
+				{!!event.channelId && event.channelId !== '0' && <EventChannelDetail event={event} />}
 			</View>
 		</Pressable>
 	);

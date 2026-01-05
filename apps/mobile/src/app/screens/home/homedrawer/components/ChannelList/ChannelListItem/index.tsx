@@ -26,7 +26,7 @@ export const ChannelListItem = React.memo(
 		const isUnRead = useAppSelector((state) => selectIsUnreadChannelById(state, props?.data?.id));
 		const isChannelActive = props?.isChannelActive;
 		const isHaveParentActive = props?.isHaveParentActive;
-		const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, props?.data?.category_id as string));
+		const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, props?.data?.categoryId as string));
 		const isChannelVoice = useMemo(() => {
 			return (
 				props?.data?.type === ChannelType.CHANNEL_TYPE_STREAMING ||
@@ -67,7 +67,7 @@ export const ChannelListItem = React.memo(
 				{!isChannelVoice && <ChannelItem data={props?.data} isUnRead={isUnRead} isActive={isChannelActive} />}
 				{isChannelVoice && (
 					<UserListVoiceChannel
-						channelId={props?.data?.channel_id}
+						channelId={props?.data?.channelId}
 						isCategoryExpanded={isCategoryExpanded}
 						data={props?.data}
 						isUnRead={false}
@@ -79,9 +79,9 @@ export const ChannelListItem = React.memo(
 	},
 	(prevProps, nextProps) => {
 		return (
-			prevProps?.data?.channel_label === nextProps?.data?.channel_label &&
+			prevProps?.data?.channelLabel === nextProps?.data?.channelLabel &&
 			prevProps?.data?.channel_private === nextProps?.data?.channel_private &&
-			prevProps?.data?.channel_id === nextProps?.data?.channel_id &&
+			prevProps?.data?.channelId === nextProps?.data?.channelId &&
 			prevProps?.data?.count_mess_unread === nextProps?.data?.count_mess_unread &&
 			prevProps?.isChannelActive === nextProps?.isChannelActive &&
 			prevProps?.isHaveParentActive === nextProps?.isHaveParentActive

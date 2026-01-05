@@ -34,11 +34,11 @@ const UserProfile = forwardRef(function UserProfile({ navigation }: IUserProfile
 
 	useEffect(() => {
 		const userProfile = selectAllAccount(store.getState());
-		const { display_name, avatar_url, username, about_me } = userProfile?.user || {};
+		const { displayName, avatarUrl, username, about_me } = userProfile?.user || {};
 		const initialValue: IUserProfileValue = {
 			username: username || '',
-			imgUrl: avatar_url || '',
-			displayName: display_name || '',
+			imgUrl: avatarUrl || '',
+			displayName: displayName || '',
 			aboutMe: about_me || ''
 		};
 		setCurrentUserProfileValue(initialValue);

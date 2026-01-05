@@ -23,7 +23,7 @@ export const ChannelFavoriteItem = React.memo(({ channelId, onPress }: { channel
 			<View style={styles.channelItem}>
 				<ChannelStatusIcon channel={channel} />
 				<Text numberOfLines={1} style={styles.channelItemTitle}>
-					{channel?.channel_label}
+					{channel?.channelLabel}
 				</Text>
 			</View>
 			{Number(numberNotification || 0) > 0 && <ChannelBadgeUnread countMessageUnread={Number(numberNotification || 0)} />}

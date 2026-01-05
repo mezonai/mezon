@@ -125,7 +125,7 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 	const channelLabel = useMemo(() => {
 		const store = getStore();
 		const channel = selectChannelById(store.getState(), channelId);
-		return channel?.channel_label || '';
+		return channel?.channelLabel || '';
 	}, [channelId]);
 
 	const handleOpenEmojiPicker = () => {

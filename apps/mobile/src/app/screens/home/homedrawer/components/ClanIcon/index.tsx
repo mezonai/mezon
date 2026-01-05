@@ -23,8 +23,8 @@ export const ClanIcon = memo(
 	(props: IClanIconProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const badgeCountClan = useSelector(selectBadgeCountByClanId(props?.data?.clan_id ?? '')) || 0;
-		const isHaveUnreadMessage = useSelector(selectClanHasUnreadMessage(props?.data?.clan_id ?? '')) || false;
+		const badgeCountClan = useSelector(selectBadgeCountByClanId(props?.data?.clanId ?? '')) || 0;
+		const isHaveUnreadMessage = useSelector(selectClanHasUnreadMessage(props?.data?.clanId ?? '')) || false;
 		const onIconLayout = useCallback(
 			(event: any) => {
 				const { width, height } = event.nativeEvent.layout;
@@ -37,8 +37,8 @@ export const ClanIcon = memo(
 				<TouchableOpacity
 					style={[styles.wrapperClanIcon]}
 					onPress={() => {
-						if (props?.onPress && props?.data?.clan_id) {
-							props?.onPress(props?.data?.clan_id);
+						if (props?.onPress && props?.data?.clanId) {
+							props?.onPress(props?.data?.clanId);
 						}
 					}}
 					disabled={props.isActive}
@@ -73,7 +73,7 @@ export const ClanIcon = memo(
 	},
 	(prevProps, nextProps) => {
 		return (
-			prevProps.data?.clan_id === nextProps.data?.clan_id &&
+			prevProps.data?.clanId === nextProps.data?.clanId &&
 			prevProps.data?.logo === nextProps.data?.logo &&
 			prevProps.data?.clan_name === nextProps.data?.clan_name &&
 			prevProps.isActive === nextProps.isActive &&

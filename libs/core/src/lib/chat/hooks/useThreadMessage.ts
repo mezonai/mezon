@@ -82,7 +82,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 
 			await socket.writeChatMessage(
 				currentClanId,
-				thread.channel_id as string,
+				thread.channelId as string,
 				ChannelStreamMode.STREAM_MODE_THREAD,
 				thread.channel_private === 0,
 				content,

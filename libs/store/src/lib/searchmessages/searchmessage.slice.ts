@@ -20,8 +20,8 @@ export interface SearchMessageEntity extends ISearchMessage {
 export const mapSearchMessageToEntity = (searchMessage: ApiSearchMessageDocument): ISearchMessage => {
 	return {
 		...searchMessage,
-		avatar: searchMessage.avatar_url,
-		id: searchMessage.message_id || Snowflake.generate(),
+		avatar: searchMessage.avatarUrl,
+		id: searchMessage.messageId || Snowflake.generate(),
 		content: searchMessage.content ? safeJSONParse(searchMessage.content) : null
 	};
 };
@@ -50,7 +50,7 @@ export const fetchListSearchMessage = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.searchMessage(mezon.session, { filters, from, size, sorts });
-			const channelId = filters.find((filter: { field_name: string }) => filter.field_name === 'channel_id')?.field_value;
+			const channelId = filters.find((filter: { field_name: string }) => filter.field_name === 'channelId')?.field_value;
 
 			if (!response.messages) {
 				thunkAPI.dispatch(searchMessagesActions.setTotalResults({ channelId, total: isMobile ? response.total || 0 : 0 }));

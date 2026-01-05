@@ -48,7 +48,7 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 	const currenChannel = useCurrentChannel(channelId) as IChannel;
 	const userProfile = useSelector(selectAllAccount);
 	const currentUserId = userProfile?.user?.id;
-	const targetUserId = currenChannel?.user_ids?.[0];
+	const targetUserId = currenChannel?.userIds?.[0];
 	const infoFriend = useAppSelector((state) => selectFriendById(state, targetUserId || ''));
 	const selectMessagesByChannelMemoized = useAppSelector((state) => selectMessagesByChannel(state, channelId));
 	const messageCount = useMemo(() => selectMessagesByChannelMemoized?.ids?.length, [selectMessagesByChannelMemoized?.ids?.length]);
@@ -57,10 +57,10 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 		return targetUserId === currentUserId;
 	}, [targetUserId, currentUserId]);
 	const isBlockedByUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === targetUserId && infoFriend?.user?.id === currentUserId;
+		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.sourceId === targetUserId && infoFriend?.user?.id === currentUserId;
 	}, [infoFriend, targetUserId, currentUserId]);
 	const didIBlockUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === currentUserId && infoFriend?.user?.id === targetUserId;
+		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.sourceId === currentUserId && infoFriend?.user?.id === targetUserId;
 	}, [infoFriend, targetUserId, currentUserId]);
 
 	const userName: string = useMemo(() => {
@@ -98,8 +98,8 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 	}, [displayName, userName]);
 
 	const isDM = useMemo(() => {
-		return currenChannel?.clan_id === '0';
-	}, [currenChannel?.clan_id]);
+		return currenChannel?.clanId === '0';
+	}, [currenChannel?.clanId]);
 
 	const isDMGroup = useMemo(() => {
 		return Number(currenChannel?.type) === ChannelType.CHANNEL_TYPE_GROUP;
@@ -107,9 +107,9 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 
 	const creatorPriorityName = useMemo(() => {
 		const store = getStore();
-		const creatorUser = selectMemberClanByUserId(store.getState(), currenChannel?.creator_id || '');
-		return creatorUser?.clan_nick || creatorUser?.user?.display_name || creatorUser?.user?.username || '';
-	}, [currenChannel?.creator_id]);
+		const creatorUser = selectMemberClanByUserId(store.getState(), currenChannel?.creatorId || '');
+		return creatorUser?.clanNick || creatorUser?.user?.displayName || creatorUser?.user?.username || '';
+	}, [currenChannel?.creatorId]);
 
 	const groupDMAvatar = useMemo(() => {
 		const isAvatar = currenChannel?.channel_avatar && !currenChannel?.channel_avatar?.includes('avatar-group.png');
@@ -198,7 +198,7 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 				) : (
 					<View style={styles.wrapperTextAvatar}>
 						<Text style={[styles.textAvatar]}>
-							{(currenChannel?.channel_label || displayName || userName)?.charAt?.(0)?.toUpperCase()}
+							{(currenChannel?.channelLabel || displayName || userName)?.charAt?.(0)?.toUpperCase()}
 						</Text>
 					</View>
 				)
@@ -210,11 +210,11 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 
 			{isDM ? (
 				<View>
-					<Text style={[styles.titleWelcomeMessage, isDMGroup && styles.textAlignCenter]}>{currenChannel?.channel_label}</Text>
+					<Text style={[styles.titleWelcomeMessage, isDMGroup && styles.textAlignCenter]}>{currenChannel?.channelLabel}</Text>
 					{!isDMGroup && <Text style={styles.subTitleUsername}>{userName}</Text>}
 					{isDMGroup ? (
 						<Text style={styles.subTitleWelcomeMessageCenter}>
-							{t('chatWelcome:welcome.welcomeToGroup', { groupName: currenChannel?.channel_label || '' })}
+							{t('chatWelcome:welcome.welcomeToGroup', { groupName: currenChannel?.channelLabel || '' })}
 						</Text>
 					) : (
 						<Text style={styles.subTitleWelcomeMessage}>{t('chatWelcome:welcome.beginningOfDM', { userName: priorityName })}</Text>
@@ -269,18 +269,18 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 			) : isChannel ? (
 				<View>
 					<Text style={styles.titleWelcomeMessage}>
-						{t('chatWelcome:welcome.welcomeToChannel', { channelName: currenChannel?.channel_label || '' })}
+						{t('chatWelcome:welcome.welcomeToChannel', { channelName: currenChannel?.channelLabel || '' })}
 					</Text>
 					<Text style={styles.subTitleWelcomeMessage}>
 						{t('chatWelcome:welcome.startOfChannel', {
-							channelName: currenChannel?.channel_label || '',
+							channelName: currenChannel?.channelLabel || '',
 							channelType: currenChannel?.channel_private && !isMediaChannel ? t('chatWelcome:welcome.private') : ''
 						})}
 					</Text>
 				</View>
 			) : (
 				<View>
-					<Text style={styles.titleWelcomeMessage}>{currenChannel?.channel_label || ''}</Text>
+					<Text style={styles.titleWelcomeMessage}>{currenChannel?.channelLabel || ''}</Text>
 					<View style={styles.flexRow}>
 						<Text style={styles.subTitleWelcomeMessage}>{t('chatWelcome:welcome.startOfThread', { username: '' })}</Text>
 						<Text style={styles.subTitleWelcomeMessageWithHighlight}>{creatorPriorityName}</Text>

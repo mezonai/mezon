@@ -36,8 +36,8 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 	const mergeListFriendAndListUserDM = useMemo(() => {
 		return [
 			...listFriend.map((friend) => ({
-				avatar_url: friend?.user?.avatar_url,
-				display_name: friend?.user?.display_name,
+				avatarUrl: friend?.user?.avatarUrl,
+				displayName: friend?.user?.displayName,
 				id: friend?.user?.id,
 				username: friend?.user?.username,
 				online: friend?.user?.online
@@ -65,16 +65,16 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 		const userMap = new Map(listUser.map((user) => [user?.id, user]));
 
 		const visualCodes = activitiesByUserId
-			.filter((activity) => activity?.activity_type === 1 && activity?.user_id && userMap.has(activity?.user_id))
-			.map((activity) => ({ ...activity, user: userMap.get(activity?.user_id as string) }));
+			.filter((activity) => activity?.activity_type === 1 && activity?.userId && userMap.has(activity?.userId))
+			.map((activity) => ({ ...activity, user: userMap.get(activity?.userId as string) }));
 
 		const spotifys = activitiesByUserId
-			.filter((activity) => activity?.activity_type === 2 && activity?.user_id && userMap.has(activity?.user_id))
-			.map((activity) => ({ ...activity, user: userMap.get(activity?.user_id as string) }));
+			.filter((activity) => activity?.activity_type === 2 && activity?.userId && userMap.has(activity?.userId))
+			.map((activity) => ({ ...activity, user: userMap.get(activity?.userId as string) }));
 
 		const lol = activitiesByUserId
-			.filter((activity) => activity?.activity_type === 3 && activity?.user_id && userMap.has(activity?.user_id))
-			.map((activity) => ({ ...activity, user: userMap.get(activity?.user_id as string) }));
+			.filter((activity) => activity?.activity_type === 3 && activity?.userId && userMap.has(activity?.userId))
+			.map((activity) => ({ ...activity, user: userMap.get(activity?.userId as string) }));
 
 		return {
 			users: [{ visualCodeSeparate: true }, ...visualCodes, { spotifySeparate: true }, ...spotifys, { lOLSeparate: true }, ...lol],

@@ -46,7 +46,7 @@ export default function ClanDetailPage() {
 	}
 
 	const chatty = (clan as any).chatty || 'Like a busy coffee shop';
-	const createdAt = format((clan as any).create_time, 'MMMM do, yyyy') || '';
+	const createdAt = format((clan as any).createTime, 'MMMM do, yyyy') || '';
 	const features = [
 		(clan as any).feature1 || 'Try out the official features of this clan!',
 		(clan as any).feature2 || 'Weekly events and updates.',
@@ -59,10 +59,10 @@ export default function ClanDetailPage() {
 		{ icon: <RedditIcon />, url: '#' },
 		{ icon: <TwitterIcon />, url: '#' }
 	];
-	const inviteLink = `https://mezon.ai/invite/${clan?.invite_id}`;
+	const inviteLink = `https://mezon.ai/invite/${clan?.inviteId}`;
 	const handleNavigate = () => {
-		if (clan?.invite_id) {
-			window.open(`https://mezon.ai/invite/${clan.invite_id}`, '_blank');
+		if (clan?.inviteId) {
+			window.open(`https://mezon.ai/invite/${clan.inviteId}`, '_blank');
 		}
 	};
 
@@ -93,7 +93,7 @@ export default function ClanDetailPage() {
 					<ImageWithSkeleton src={clan.banner || DEFAULT_IMAGES.BANNER} alt="banner" className="w-full h-full object-cover" />
 					<div className="absolute left-8 -bottom-10 w-20 h-20 rounded-2xl bg-white flex items-center justify-center shadow-lg overflow-hidden border-4 border-white">
 						<ImageWithSkeleton
-							src={clan.clan_logo || DEFAULT_IMAGES.LOGO}
+							src={clan.clanLogo || DEFAULT_IMAGES.LOGO}
 							alt="logo"
 							className="w-full h-full object-cover"
 							skeletonClassName="rounded-2xl"
@@ -217,7 +217,7 @@ export default function ClanDetailPage() {
 							<div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg">
 								<input
 									type="text"
-									value={`https://mezon.ai/invite/${clan?.invite_id}`}
+									value={`https://mezon.ai/invite/${clan?.inviteId}`}
 									readOnly
 									className="flex-1 bg-transparent outline-none text-sm"
 								/>

@@ -42,11 +42,11 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parent_id === ChannelIsNotThread.TRUE), [allChannel]);
 	const getChannelSelect = useCallback(
 		(idChannel = '') => {
-			return parentChannelsInClan?.find((channel) => channel?.channel_id === idChannel);
+			return parentChannelsInClan?.find((channel) => channel?.channelId === idChannel);
 		},
 		[parentChannelsInClan]
 	);
-	const [webhookChannel, setWebhookChannel] = useState<ChannelsEntity>(getChannelSelect(webhook?.channel_id));
+	const [webhookChannel, setWebhookChannel] = useState<ChannelsEntity>(getChannelSelect(webhook?.channelId));
 	const [hasChange, setHasChange] = useState<boolean>(false);
 	const clanId = useSelector(selectCurrentClanId) as string;
 	const currentWebhook = useSelector((state: any) => selectClanWebhooksById(state, webhook?.id));
@@ -56,8 +56,8 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 
 	const channel = useMemo(() => {
 		return parentChannelsInClan?.map((channel) => ({
-			title: channel?.channel_label,
-			value: channel?.channel_id,
+			title: channel?.channelLabel,
+			value: channel?.channelId,
 			icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} />
 		}));
 	}, [parentChannelsInClan, themeValue.text]);
@@ -66,7 +66,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		if (hasChange) {
 			setUrlImageWebhook(webhook?.avatar);
 			setWebhookName(webhook?.webhook_name);
-			const channelSelect = getChannelSelect(webhook?.channel_id);
+			const channelSelect = getChannelSelect(webhook?.channelId);
 			setWebhookChannel(channelSelect);
 			setHasChange(false);
 		}
@@ -78,7 +78,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 				const request: MezonUpdateClanWebhookByIdBody = {
 					avatar: urlImageWebhook,
 					webhook_name: webhookName,
-					clan_id: clanId,
+					clanId: clanId,
 					reset_token: resetToken
 				};
 
@@ -115,23 +115,23 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		async (webhookId: string) => {
 			const request: MezonUpdateWebhookByIdBody = {
 				avatar: urlImageWebhook,
-				channel_id_update: webhookChannel?.channel_id,
+				channel_id_update: webhookChannel?.channelId,
 				webhook_name: webhookName,
-				channel_id: webhook?.channel_id,
-				clan_id: clanId
+				channelId: webhook?.channelId,
+				clanId: clanId
 			};
 
 			await dispatch(
 				updateWebhookBySpecificId({
 					request,
 					webhookId,
-					channelId: webhook?.channel_id,
+					channelId: webhook?.channelId,
 					clanId
 				})
 			);
-			await dispatch(fetchWebhooks({ channelId: isClanSetting ? '0' : (webhook?.channel_id ?? ''), clanId }));
+			await dispatch(fetchWebhooks({ channelId: isClanSetting ? '0' : (webhook?.channelId ?? ''), clanId }));
 		},
-		[urlImageWebhook, webhookChannel?.channel_id, webhookName, webhook?.channel_id, clanId, dispatch]
+		[urlImageWebhook, webhookChannel?.channelId, webhookName, webhook?.channelId, clanId, dispatch]
 	);
 
 	const handleEditWebhook = useCallback(async () => {
@@ -146,7 +146,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		setHasChange(false);
 
 		navigation.navigate(APP_SCREEN.MENU_CLAN.WEBHOOKS, {
-			channelId: webhook?.channel_id,
+			channelId: webhook?.channelId,
 			isClanIntegration,
 			isClanSetting,
 			clanId
@@ -157,7 +157,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		updateClanWebhookProcess,
 		updateWebhookProcess,
 		webhook?.id,
-		webhook?.channel_id,
+		webhook?.channelId,
 		navigation,
 		clanId,
 		isClanSetting
@@ -193,11 +193,11 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const channelMenu: IMezonMenuItemProps[] = useMemo(() => {
 		return [
 			{
-				title: webhookChannel?.channel_label,
+				title: webhookChannel?.channelLabel,
 				onPress: () => {
 					const data = {
 						snapPoints: ['50%'],
-						children: <MezonOption data={channel} value={webhookChannel?.channel_id} onChange={handleChangeOption} />
+						children: <MezonOption data={channel} value={webhookChannel?.channelId} onChange={handleChangeOption} />
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 					Keyboard.dismiss();
@@ -206,7 +206,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 				icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} />
 			}
 		];
-	}, [themeValue.text, webhookChannel?.channel_label, webhookChannel?.channel_id, channel]);
+	}, [themeValue.text, webhookChannel?.channelLabel, webhookChannel?.channelId, channel]);
 
 	const menu: IMezonMenuSectionProps[] = useMemo(
 		() => [
@@ -254,8 +254,8 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 					await dispatch(deleteClanWebhookById({ webhook, clanId }));
 					await dispatch(fetchClanWebhooks({ clanId }));
 				} else {
-					await dispatch(deleteWebhookById({ webhook, channelId: webhook?.channel_id as string, clanId }));
-					await dispatch(fetchWebhooks({ channelId: isClanSetting ? '0' : (webhook?.channel_id ?? ''), clanId }));
+					await dispatch(deleteWebhookById({ webhook, channelId: webhook?.channelId as string, clanId }));
+					await dispatch(fetchWebhooks({ channelId: isClanSetting ? '0' : (webhook?.channelId ?? ''), clanId }));
 				}
 
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
@@ -264,7 +264,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 					clanId,
 					isClanSetting,
 					isClanIntegration,
-					channelId: webhook?.channel_id
+					channelId: webhook?.channelId
 				});
 				Toast.show({
 					type: 'success',

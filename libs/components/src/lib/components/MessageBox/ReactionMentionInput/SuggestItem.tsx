@@ -47,7 +47,7 @@ const SuggestItem = ({
 }: SuggestItemProps) => {
 	const allChannels = useSelector(selectAllChannelsByUser);
 	const getChannel = allChannels.find((channel) => {
-		return channel.channel_id === channelId;
+		return channel.channelId === channelId;
 	});
 
 	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | HashtagDm | null>(null);
@@ -104,7 +104,7 @@ const SuggestItem = ({
 			setSpecificChannel(channel);
 		} else {
 			allChannels.map((channel) => {
-				if (channel.channel_id === channelId) {
+				if (channel.channelId === channelId) {
 					setSpecificChannel(channel);
 				}
 			});
@@ -160,7 +160,7 @@ const SuggestItem = ({
 				data-e2e={generateE2eId('suggest_item.username')}
 			>
 				{getChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					<RenderChannelLabelForThread channel_id={getChannel?.parent_id as string} />
+					<RenderChannelLabelForThread channelId={getChannel?.parent_id as string} />
 				) : (
 					<>{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}</>
 				)}
@@ -168,10 +168,10 @@ const SuggestItem = ({
 		</div>
 	);
 };
-const RenderChannelLabelForThread = ({ channel_id }: { channel_id: string }) => {
-	const channelParent = useAppSelector((state) => selectChannelById(state, channel_id ?? '')) || {};
+const RenderChannelLabelForThread = ({ channelId }: { channelId: string }) => {
+	const channelParent = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
 
-	return <>{channelParent?.channel_label || null}</>;
+	return <>{channelParent?.channelLabel || null}</>;
 };
 
 export default memo(SuggestItem);

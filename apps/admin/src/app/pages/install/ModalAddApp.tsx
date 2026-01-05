@@ -80,7 +80,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 		},
 		errorMessage: categoryError,
 		options: categories.map((mapCategoryToOption) => ({
-			label: mapCategoryToOption.category_name,
+			label: mapCategoryToOption.categoryName,
 			value: mapCategoryToOption.id
 		}))
 	};
@@ -104,10 +104,10 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 				.slice(0, 32);
 
 		const data: ApiCreateChannelDescRequest = {
-			channel_label: sanitizeLabel(labelValue) || sanitizeLabel(appDetail?.appname || ''),
+			channelLabel: sanitizeLabel(labelValue) || sanitizeLabel(appDetail?.appname || ''),
 			app_id: applicationId,
-			clan_id: clanValue,
-			category_id: categoryValue,
+			clanId: clanValue,
+			categoryId: categoryValue,
 			type: ChannelType.CHANNEL_TYPE_APP,
 			channel_private: 0,
 			parent_id: '0'

@@ -12,15 +12,15 @@ type ContentProps = {
 };
 
 const ThreadModalContent = ({ message, thread }: ThreadModalContentProps) => {
-	const checkType = useMemo(() => typeof thread.last_sent_message?.content === 'string', [thread.last_sent_message?.content]);
+	const checkType = useMemo(() => typeof thread.lastSentMessage?.content === 'string', [thread.lastSentMessage?.content]);
 
 	return (
 		<div className="w-full overflow-x-hidden">
 			<p className="text-base font-normal text-theme-primary opacity-60 whitespace-nowrap overflow-x-hidden">
 				{(message?.content?.t as string) ??
-					(thread.last_sent_message && checkType
-						? safeJSONParse(thread.last_sent_message.content || '{}')?.t || ''
-						: (thread.last_sent_message?.content as unknown as ContentProps)?.t || '')}
+					(thread.lastSentMessage && checkType
+						? safeJSONParse(thread.lastSentMessage.content || '{}')?.t || ''
+						: (thread.lastSentMessage?.content as unknown as ContentProps)?.t || '')}
 			</p>
 		</div>
 	);

@@ -61,20 +61,20 @@ function SearchModal({ onClose }: SearchModalProps) {
 			dmGroupChatList.map((itemDM: DirectEntity) => {
 				if (itemDM.active === 1) {
 					listDmSearchMap.push({
-						id: itemDM.channel_id,
+						id: itemDM.channelId,
 						name: itemDM?.usernames?.toString() ?? '',
-						displayName: itemDM.channel_label,
+						displayName: itemDM.channelLabel,
 						avatarUser: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? (itemDM?.avatars?.[0] ?? '') : itemDM?.channel_avatar,
-						idDM: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? itemDM?.user_ids?.[0] : itemDM.channel_id,
-						lastSentTimeStamp: itemDM.last_sent_message?.timestamp_seconds,
+						idDM: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? itemDM?.userIds?.[0] : itemDM.channelId,
+						lastSentTimeStamp: itemDM.lastSentMessage?.timestampSeconds,
 						typeChat: TypeSearch.Dm_Type,
 						type: itemDM.type,
 						count_messsage_unread: itemDM.count_mess_unread,
-						lastSeenTimeStamp: Number(itemDM?.last_seen_message?.timestamp_seconds || 0)
+						lastSeenTimeStamp: Number(itemDM?.lastSeenMessage?.timestampSeconds || 0)
 					});
 				}
-				if (itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
-					checkListDM.current?.add(itemDM?.user_ids?.[0]);
+				if (itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.userIds?.[0]) {
+					checkListDM.current?.add(itemDM?.userIds?.[0]);
 				}
 			});
 		}
@@ -84,21 +84,21 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const listChannelSearch = useMemo(() => {
 		const list = listChannels.map((item) => {
 			return {
-				id: item?.channel_id ?? '',
-				name: item?.channel_label ?? '',
+				id: item?.channelId ?? '',
+				name: item?.channelLabel ?? '',
 				subText: item?.clan_name ?? '',
 				icon: '#',
-				clanId: item?.clan_id ?? '',
-				channelId: item?.channel_id ?? '',
-				lastSentTimeStamp: Number(item?.last_sent_message?.timestamp_seconds || 0),
+				clanId: item?.clanId ?? '',
+				channelId: item?.channelId ?? '',
+				lastSentTimeStamp: Number(item?.lastSentMessage?.timestampSeconds || 0),
 				typeChat: TypeSearch.Channel_Type,
-				prioritizeName: item?.channel_label ?? '',
+				prioritizeName: item?.channelLabel ?? '',
 				channel_private: item.channel_private,
 				type: item.type,
 				parent_id: item.parent_id,
 				meeting_code: item.meeting_code,
 				count_messsage_unread: item?.count_mess_unread,
-				lastSeenTimeStamp: Number(item?.last_seen_message?.timestamp_seconds || 0)
+				lastSeenTimeStamp: Number(item?.lastSeenMessage?.timestampSeconds || 0)
 			};
 		});
 		return list;
@@ -112,15 +112,15 @@ function SearchModal({ onClose }: SearchModalProps) {
 			if (!checkListDM.current?.has(user?.id)) {
 				list.push({
 					id: user?.id ?? '',
-					prioritizeName: allClanUsersEntities[user?.id]?.clan_nick ?? user?.display_name ?? '',
+					prioritizeName: allClanUsersEntities[user?.id]?.clanNick ?? user?.displayName ?? '',
 					name: user?.username ?? '',
-					avatarUser: user?.avatar_url ?? '',
-					displayName: user?.display_name ?? '',
+					avatarUser: user?.avatarUrl ?? '',
+					displayName: user?.displayName ?? '',
 					lastSentTimeStamp: '0',
 					idDM: user?.id,
 					typeChat: TypeSearch.Dm_Type,
 					type: ChannelType.CHANNEL_TYPE_DM,
-					searchName: (user.list_nick_names || []).join('.')
+					searchName: (user.listNickNames || []).join('.')
 				});
 			}
 		}
@@ -230,8 +230,8 @@ function SearchModal({ onClose }: SearchModalProps) {
 				}
 			} else {
 				const response = await createDirectMessageWithUser(user.idDM || '', user.displayName || user.name, user.name, user.avatarUser);
-				if (response.channel_id) {
-					const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+				if (response.channelId) {
+					const directChat = toDmGroupPageFromMainApp(response.channelId, Number(response.type));
 					navigate(directChat);
 				}
 			}

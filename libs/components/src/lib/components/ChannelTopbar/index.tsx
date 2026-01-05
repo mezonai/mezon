@@ -136,34 +136,34 @@ const TopBarChannelText = memo(() => {
 	const dispatch = useAppDispatch();
 
 	const handleNavigateToParent = () => {
-		if (!channelParent?.id || !channelParent?.clan_id) {
+		if (!channelParent?.id || !channelParent?.clanId) {
 			return;
 		}
-		navigate(toChannelPage(channelParent.id, channelParent.clan_id));
+		navigate(toChannelPage(channelParent.id, channelParent.clanId));
 		closeMenu();
 	};
 	const currentDmGroup = useSelector(selectCurrentDM);
 	const channelDmGroupLabel = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
-			return currentDmGroup?.channel_label || currentDmGroup?.usernames?.join(',');
+			return currentDmGroup?.channelLabel || currentDmGroup?.usernames?.join(',');
 		}
-		return currentDmGroup?.channel_label;
-	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames]);
+		return currentDmGroup?.channelLabel;
+	}, [currentDmGroup?.channelLabel, currentDmGroup?.type, currentDmGroup?.usernames]);
 	const dmUserAvatar = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return currentDmGroup?.channel_avatar || 'assets/images/avatar-group.png';
 		}
 
-		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup?.user_ids) {
+		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup?.userIds) {
 			return currentDmGroup.avatars?.at(-1) || undefined;
 		}
 	}, [currentDmGroup]);
 
-	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentDmGroup?.channel_id || '')(state));
-	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentDmGroup?.channel_id || '')(state));
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentDmGroup?.channelId || '')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentDmGroup?.channelId || '')(state));
 
 	const editGroupModal = useEditGroupModal({
-		channelId: currentDmGroup?.channel_id,
+		channelId: currentDmGroup?.channelId,
 		currentGroupName: channelDmGroupLabel || '',
 		currentAvatar: currentDmGroup?.channel_avatar || ''
 	});
@@ -191,8 +191,8 @@ const TopBarChannelText = memo(() => {
 		}
 		return '';
 	}, [isChannelPath, isGuidePath, isMemberPath, t]);
-	const userStatus = useMemberStatus(currentDmGroup?.user_ids?.[0] || '');
-	const checkInvoice = useSelector((state) => selectStatusInVoice(state, currentDmGroup?.user_ids?.[0] || ''));
+	const userStatus = useMemberStatus(currentDmGroup?.userIds?.[0] || '');
+	const checkInvoice = useSelector((state) => selectStatusInVoice(state, currentDmGroup?.userIds?.[0] || ''));
 
 	return (
 		<>
@@ -211,7 +211,7 @@ const TopBarChannelText = memo(() => {
 									<div className="flex gap-1 items-center truncate max-sbm:hidden cursor-pointer" onClick={handleNavigateToParent}>
 										<ChannelTopbarLabel
 											isPrivate={!!channelParent?.channel_private}
-											label={channelParent?.channel_label || ''}
+											label={channelParent?.channelLabel || ''}
 											type={channelParent?.type || ChannelType.CHANNEL_TYPE_CHANNEL}
 										/>
 										<Icons.ArrowRight />
@@ -236,7 +236,7 @@ const TopBarChannelText = memo(() => {
 						<DmTopbarAvatar
 							isGroup={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP}
 							avatar={dmUserAvatar}
-							avatarName={currentDmGroup?.channel_label?.at(0)}
+							avatarName={currentDmGroup?.channelLabel?.at(0)}
 						/>
 						{currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_GROUP && (
 							<div className="absolute top-6 left-5 w-3 h-3">
@@ -244,7 +244,7 @@ const TopBarChannelText = memo(() => {
 							</div>
 						)}
 						<div
-							key={`${channelDmGroupLabel}_${currentDmGroup?.channel_id as string}_display`}
+							key={`${channelDmGroupLabel}_${currentDmGroup?.channelId as string}_display`}
 							className={`flex items-center gap-2 overflow-hidden whitespace-nowrap text-ellipsis none-draggable-area group ${
 								currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
 									? 'cursor-pointer hover:text-theme-primary-active transition-colors bg-item-theme-hover rounded-lg pl-2 pr-4'
@@ -421,7 +421,7 @@ const ChannelTopbarTools = memo(
 			const state = store.getState();
 			const channelId = selectCurrentChannelChannelId(state);
 			const clanId = selectCurrentChannelClanId(state);
-			dispatch(canvasAPIActions.getChannelCanvasList({ channel_id: channelId || '', clan_id: clanId || '' }));
+			dispatch(canvasAPIActions.getChannelCanvasList({ channelId: channelId || '', clanId: clanId || '' }));
 			closeMenuOnMobile();
 		};
 		return (
@@ -503,7 +503,7 @@ const DmTopbarTools = memo(() => {
 	const isInCall = useSelector(selectIsInCall);
 	const isGroupCallActive = useSelector((state: RootState) => state.groupCall?.isGroupCallActive || false);
 	const voiceInfo = useSelector((state: RootState) => state.voice?.voiceInfo || null);
-	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''));
+	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentDmGroup?.userIds?.[0] || ''));
 	const userCurrent = useSelector(selectAllAccount);
 	const isBlockUser = useMemo(() => infoFriend?.state === EStateFriend.BLOCK, [infoFriend]);
 
@@ -541,7 +541,7 @@ const DmTopbarTools = memo(() => {
 	const handleStartCall = (isVideoCall = false) => {
 		closeMenuOnMobile();
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
-			if (isGroupCallActive && (voiceInfo as any)?.channelId === currentDmGroup.channel_id) {
+			if (isGroupCallActive && (voiceInfo as any)?.channelId === currentDmGroup.channelId) {
 				dispatch(voiceActions.setOpenPopOut(false));
 				dispatch(DMCallActions.setIsShowMeetDM(isVideoCall));
 				dispatch(voiceActions.setShowCamera(isVideoCall));
@@ -554,7 +554,7 @@ const DmTopbarTools = memo(() => {
 			}
 
 			if (!isInCall && !isGroupCallActive) {
-				if (!currentDmGroup.channel_id) {
+				if (!currentDmGroup.channelId) {
 					dispatch(toastActions.addToast({ message: t('toastMessages.groupChannelIdMissing'), type: 'error', autoClose: 3000 }));
 					return;
 				}
@@ -575,31 +575,31 @@ const DmTopbarTools = memo(() => {
 
 				dispatch(
 					groupCallActions.showPreCallInterface({
-						groupId: currentDmGroup.channel_id,
+						groupId: currentDmGroup.channelId,
 						isVideo: isVideoCall
 					})
 				);
 
 				dispatch(
 					groupCallActions.setIncomingCallData({
-						groupId: currentDmGroup.channel_id,
-						groupName: currentDmGroup.channel_label || currentDmGroup.usernames?.join(',') || 'Group Call',
+						groupId: currentDmGroup.channelId,
+						groupName: currentDmGroup.channelLabel || currentDmGroup.usernames?.join(',') || 'Group Call',
 						groupAvatar: currentDmGroup.channel_avatar,
 						meetingCode: currentDmGroup.meeting_code,
-						clanId: currentDmGroup.clan_id,
-						participants: [...groupParticipants, userProfile?.user_id?.toString() as string],
+						clanId: currentDmGroup.clanId,
+						participants: [...groupParticipants, userProfile?.userId?.toString() as string],
 						callerInfo: {
-							id: userProfile?.user_id || '',
+							id: userProfile?.userId || '',
 							name: userProfile?.username || '',
 							avatar: ''
 						}
 					})
 				);
 
-				dispatch(audioCallActions.setGroupCallId(currentDmGroup.channel_id));
+				dispatch(audioCallActions.setGroupCallId(currentDmGroup.channelId));
 				dispatch(audioCallActions.setIsBusyTone(false));
 			} else {
-				const isSameGroup = (voiceInfo as any)?.channelId === currentDmGroup.channel_id;
+				const isSameGroup = (voiceInfo as any)?.channelId === currentDmGroup.channelId;
 
 				if (isSameGroup) {
 					dispatch(voiceActions.setOpenPopOut(false));
@@ -613,7 +613,7 @@ const DmTopbarTools = memo(() => {
 
 					dispatch(
 						groupCallActions.showPreCallInterface({
-							groupId: currentDmGroup.channel_id || '',
+							groupId: currentDmGroup.channelId || '',
 							isVideo: isVideoCall
 						})
 					);
@@ -630,7 +630,7 @@ const DmTopbarTools = memo(() => {
 			return;
 		}
 		if (!isInCall) {
-			startCallDM(isVideoCall, currentDmGroup?.id, currentDmGroup?.user_ids?.[0]);
+			startCallDM(isVideoCall, currentDmGroup?.id, currentDmGroup?.userIds?.[0]);
 		} else {
 			dispatch(toastActions.addToast({ message: t('toastMessages.youAreOnAnotherCall'), type: 'warning', autoClose: 3000 }));
 		}
@@ -691,8 +691,8 @@ const DmTopbarTools = memo(() => {
 
 	const isMe = useMemo(() => {
 		if (currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_DM) return false;
-		return currentDmGroup?.user_ids?.[0] === userCurrent?.user?.id?.toString();
-	}, [currentDmGroup?.type, currentDmGroup?.user_ids, userCurrent?.user?.id]);
+		return currentDmGroup?.userIds?.[0] === userCurrent?.user?.id?.toString();
+	}, [currentDmGroup?.type, currentDmGroup?.userIds, userCurrent?.user?.id]);
 
 	return (
 		<div className=" items-center h-full ml-auto hidden justify-end ssm:flex">

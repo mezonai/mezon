@@ -108,7 +108,7 @@ const getMessage = (appState: RootState, isTopic: boolean, messageId: string) =>
 	const currentChannelId = selectCurrentChannelId(appState);
 	const currentDmId = selectDmGroupCurrentId(appState);
 
-	const channelId = isFocusThreadBox ? currentThread?.channel_id : currentChannelId;
+	const channelId = isFocusThreadBox ? currentThread?.channelId : currentChannelId;
 
 	const currentTopicId = selectCurrentTopicId(appState);
 	const message = selectMessageByMessageId(
@@ -179,15 +179,15 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 
 		dispatch(
 			pinMessageActions.setChannelPinMessage({
-				clan_id: currentClanId ?? '',
-				channel_id: message?.channel_id,
-				message_id: message?.id,
+				clanId: currentClanId ?? '',
+				channelId: message?.channelId,
+				messageId: message?.id,
 				message
 			})
 		);
 		const attachments = message.attachments?.filter((attach) => isValidUrl(attach.url || '')) || [];
 		const jsonAttachments = attachments.length > 0 ? JSON.stringify(attachments) : '';
-		const createTime = new Date(message.create_time).toISOString();
+		const createTime = new Date(message.createTime).toISOString();
 		const pinBody: UpdatePinMessage = {
 			clanId: mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD ? '' : (currentClanId ?? ''),
 			channelId:
@@ -198,10 +198,10 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			isPublic:
 				mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD ? false : !currentChannelPrivate,
 			mode: mode as number,
-			senderId: message.sender_id,
-			senderUsername: message.display_name || message.username || message.user?.name || message.user?.name || '',
+			senderId: message.senderId,
+			senderUsername: message.displayName || message.username || message.user?.name || message.user?.name || '',
 			attachment: jsonAttachments,
-			avatar: message.avatar || message.clan_avatar || '',
+			avatar: message.avatar || message.clanAvatar || '',
 			content: JSON.stringify(message.content),
 			createdTime: createTime
 		};

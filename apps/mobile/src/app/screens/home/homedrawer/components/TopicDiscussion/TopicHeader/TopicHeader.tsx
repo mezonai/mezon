@@ -34,8 +34,8 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) =>
 		return firstMessageEntity;
 	}, [firstMessageByChannel, firstMessageEntity]);
 
-	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(firstMessage?.sender_id || '');
-	const userRolesClan = useColorsRoleById(firstMessage?.sender_id || '');
+	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(firstMessage?.senderId || '');
+	const userRolesClan = useColorsRoleById(firstMessage?.senderId || '');
 
 	const senderUsername = useMemo(() => {
 		return firstMessage?.user?.username || firstMessage?.username || '';
@@ -70,15 +70,15 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) =>
 
 					<View>
 						<View style={styles.nameWrapper}>
-							<Text style={[styles.name, { color: colorSenderName }]}>{namePriority || firstMessage?.display_name || ''}</Text>
+							<Text style={[styles.name, { color: colorSenderName }]}>{namePriority || firstMessage?.displayName || ''}</Text>
 
 							{userRolesClan?.highestPermissionRoleIcon && (
 								<ImageNative url={userRolesClan.highestPermissionRoleIcon} style={styles.roleIcon} resizeMode={'contain'} />
 							)}
 						</View>
-						{firstMessage?.create_time_seconds && (
+						{firstMessage?.createTimeSeconds && (
 							<Text style={styles.dateText}>
-								{convertTimeString(new Date(firstMessage.create_time_seconds * 1000).toISOString(), t)}
+								{convertTimeString(new Date(firstMessage.createTimeSeconds * 1000).toISOString(), t)}
 							</Text>
 						)}
 					</View>
@@ -103,22 +103,22 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) =>
 									? safeJSONParse(firstMessage?.attachments || '[]')
 									: firstMessage?.attachments || []
 							}
-							clanId={firstMessage?.clan_id || ''}
-							channelId={firstMessage?.channel_id || ''}
-							messageCreatTime={firstMessage?.create_time_seconds}
-							senderId={firstMessage?.sender_id}
+							clanId={firstMessage?.clanId || ''}
+							channelId={firstMessage?.channelId || ''}
+							messageCreatTime={firstMessage?.createTimeSeconds}
+							senderId={firstMessage?.senderId}
 						/>
 					)}
 					{!!firstMessage?.content?.embed?.[0] && (
 						<EmbedMessage
-							message_id={firstMessage?.id || ''}
-							channel_id={firstMessage?.channel_id || ''}
+							messageId={firstMessage?.id || ''}
+							channelId={firstMessage?.channelId || ''}
 							embed={
 								typeof firstMessage?.content?.embed === 'string'
 									? safeJSONParse(firstMessage?.content || '{}')?.embed?.[0]
 									: firstMessage?.content?.embed?.[0]
 							}
-							key={`message_embed_${firstMessage?.channel_id}_${firstMessage?.id}`}
+							key={`message_embed_${firstMessage?.channelId}_${firstMessage?.id}`}
 						/>
 					)}
 				</ScrollView>

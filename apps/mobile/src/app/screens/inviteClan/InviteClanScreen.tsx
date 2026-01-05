@@ -56,16 +56,16 @@ const InviteClanScreen = ({ route }: { route: any }) => {
 				return;
 			}
 			const res = await inviteUser(code || '');
-			if (res?.clan_id) {
+			if (res?.clanId) {
 				requestAnimationFrame(async () => {
 					navigation.navigate(APP_SCREEN.HOME);
 					await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 					await store.dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
-					store.dispatch(clansActions.joinClan({ clanId: res?.clan_id }));
-					store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clan_id }));
-					store.dispatch(emojiSuggestionActions.fetchEmoji({ clanId: res?.clan_id, noCache: true }));
-					store.dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: res?.clan_id }));
-					save(STORAGE_CLAN_ID, res?.clan_id);
+					store.dispatch(clansActions.joinClan({ clanId: res?.clanId }));
+					store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clanId }));
+					store.dispatch(emojiSuggestionActions.fetchEmoji({ clanId: res?.clanId, noCache: true }));
+					store.dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: res?.clanId }));
+					save(STORAGE_CLAN_ID, res?.clanId);
 					store.dispatch(appActions.setLoadingMainMobile(false));
 					navigation.navigate(APP_SCREEN.BOTTOM_BAR);
 				});
@@ -92,9 +92,9 @@ const InviteClanScreen = ({ route }: { route: any }) => {
 
 				{selectInvite && (
 					<View style={styles.clanInfo}>
-						{selectInvite?.clan_logo ? (
+						{selectInvite?.clanLogo ? (
 							<View style={styles.clanAvatar}>
-								<ImageNative style={styles.clanAvatar} resizeMode={'contain'} url={selectInvite.clan_logo} />
+								<ImageNative style={styles.clanAvatar} resizeMode={'contain'} url={selectInvite.clanLogo} />
 							</View>
 						) : (
 							<View style={styles.defaultAvatar}>
@@ -110,9 +110,9 @@ const InviteClanScreen = ({ route }: { route: any }) => {
 								<MezonIconCDN icon={IconCDN.verifyIcon} width={size.s_16} height={size.s_16} color={themeValue.textStrong} />
 							)}
 						</View>
-						{selectInvite?.channel_label && (
+						{selectInvite?.channelLabel && (
 							<Text style={styles.channelName} numberOfLines={1}>
-								# {selectInvite?.channel_label}
+								# {selectInvite?.channelLabel}
 							</Text>
 						)}
 					</View>

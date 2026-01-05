@@ -68,7 +68,7 @@ const Modal = (props: ModalProps) => {
 											{hasChannel.channel_private === undefined && hasChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
 												<Hashtag defaultSize="w-5 h-5" />
 											)}
-											<p>{hasChannel.channel_label}</p>
+											<p>{hasChannel.channelLabel}</p>
 										</div>
 									)}
 									<p className={`${classSubTitleBox}`}>{subTitleBox}</p>

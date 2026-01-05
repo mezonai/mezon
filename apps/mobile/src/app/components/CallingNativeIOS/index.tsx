@@ -38,7 +38,7 @@ const CallingNativeIOS = () => {
 				if (data?.offer !== 'CANCEL_CALL' && !!data?.offer && !dataObj?.isGroupCall) {
 					dispatch(appActions.setLoadingMainMobile(true));
 					const signalingData = {
-						channel_id: data?.channelId,
+						channelId: data?.channelId,
 						receiver_id: userId,
 						json_data: data?.offer,
 						data_type: WebrtcSignalingType.WEBRTC_SDP_OFFER,

@@ -102,7 +102,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		return settingsCopy;
 	}, [channelCategorySettings]);
 	const handleNotificationClanChange = (event: any, notification: number) => {
-		dispatch(defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClanId as string, notification_type: notification }));
+		dispatch(defaultNotificationActions.setDefaultNotificationClan({ clanId: currentClanId as string, notification_type: notification }));
 	};
 	const categorizedChannels = useCategorizedAllChannels();
 	const options = categorizedChannels.reduce<Array<{ id: string; label: string; title: string }>>((acc, category) => {
@@ -110,7 +110,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		if (!isAlreadySelected) {
 			acc.push({
 				id: category.id,
-				label: (category as IChannel).channel_label || category.category_name || '',
+				label: (category as IChannel).channelLabel || category.categoryName || '',
 				title: (category as ICategoryChannel).channels ? 'category' : 'channel'
 			});
 		}
@@ -124,9 +124,9 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		if (newValue?.title === 'category') {
 			dispatch(
 				defaultNotificationCategoryActions.setDefaultNotificationCategory({
-					category_id: newValue?.id,
+					categoryId: newValue?.id,
 					notification_type: defaultNotificationClan?.notification_setting_type,
-					clan_id: currentClanId || '',
+					clanId: currentClanId || '',
 					label: newValue?.label,
 					title: newValue?.title
 				})
@@ -136,9 +136,9 @@ const ModalNotificationSetting = (props: ModalParam) => {
 			if (notificatonSelected?.notification_setting_type === 0 || notificatonSelected?.notification_setting_type === undefined) {
 				dispatch(
 					notificationSettingActions.setNotificationSetting({
-						channel_id: newValue?.id,
+						channelId: newValue?.id,
 						notification_type: defaultNotificationClan?.notification_setting_type,
-						clan_id: currentClanId || '',
+						clanId: currentClanId || '',
 						label: newValue?.label,
 						title: newValue?.title
 					})
@@ -146,9 +146,9 @@ const ModalNotificationSetting = (props: ModalParam) => {
 			} else {
 				dispatch(
 					notificationSettingActions.setNotificationSetting({
-						channel_id: newValue.id,
+						channelId: newValue.id,
 						notification_type: notificatonSelected?.notification_setting_type,
-						clan_id: currentClanId || '',
+						clanId: currentClanId || '',
 						label: newValue?.label,
 						title: newValue?.title
 					})
@@ -163,16 +163,16 @@ const ModalNotificationSetting = (props: ModalParam) => {
 				id: channelCategoryId || '',
 				mute_time: 0,
 				active,
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			};
 			dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 		}
 		if (title === 'channel') {
 			const payload: MuteChannelPayload = {
-				channel_id: channelCategoryId || '',
+				channelId: channelCategoryId || '',
 				mute_time: 0,
 				active,
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			};
 			dispatch(notificationSettingActions.setMuteChannel(payload));
 		}
@@ -182,18 +182,18 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		if (title === 'category') {
 			dispatch(
 				defaultNotificationCategoryActions.setDefaultNotificationCategory({
-					category_id: channelCategoryId,
+					categoryId: channelCategoryId,
 					notification_type: notificationType,
-					clan_id: currentClanId || ''
+					clanId: currentClanId || ''
 				})
 			);
 		}
 		if (title === 'channel') {
 			dispatch(
 				notificationSettingActions.setNotificationSetting({
-					channel_id: channelCategoryId,
+					channelId: channelCategoryId,
 					notification_type: notificationType,
-					clan_id: currentClanId || ''
+					clanId: currentClanId || ''
 				})
 			);
 		}
@@ -206,22 +206,22 @@ const ModalNotificationSetting = (props: ModalParam) => {
 					id,
 					mute_time: 0,
 					active: 1,
-					clan_id: currentClanId || ''
+					clanId: currentClanId || ''
 				};
 				dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 			}
-			dispatch(defaultNotificationCategoryActions.deleteDefaultNotificationCategory({ category_id: id, clan_id: currentClanId as string }));
+			dispatch(defaultNotificationCategoryActions.deleteDefaultNotificationCategory({ categoryId: id, clanId: currentClanId as string }));
 		}
 		if (title === 'channel') {
 			if (active === 0) {
 				const body = {
-					channel_id: channelCategoryId || '',
-					clan_id: currentClanId || '',
+					channelId: channelCategoryId || '',
+					clanId: currentClanId || '',
 					active: 1
 				};
 				dispatch(notificationSettingActions.setNotificationSetting(body));
 			}
-			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channel_id: id, clan_id: currentClanId || '' }));
+			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channelId: id, clanId: currentClanId || '' }));
 		}
 	};
 	const modalRef = useRef<HTMLDivElement>(null);

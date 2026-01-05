@@ -49,8 +49,8 @@ export function useClans() {
 		async (name: string, logoUrl: string) => {
 			const action = await dispatch(clansActions.createClan({ clan_name: name, logo: logoUrl }));
 			const payload = action.payload as ClansEntity;
-			if (payload?.clan_id) {
-				changeCurrentClan(payload?.clan_id);
+			if (payload?.clanId) {
+				changeCurrentClan(payload?.clanId);
 			}
 			return payload;
 		},
@@ -58,10 +58,10 @@ export function useClans() {
 	);
 
 	const updateClan = React.useCallback(
-		async ({ clan_id, request }: { clan_id: string; request: MezonUpdateClanDescBody }) => {
+		async ({ clanId, request }: { clanId: string; request: MezonUpdateClanDescBody }) => {
 			await dispatch(
 				clansActions.updateClan({
-					clan_id,
+					clanId,
 					request
 				})
 			);

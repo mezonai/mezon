@@ -22,8 +22,8 @@ const AgeRestrictedForm = ({ onClose }: { onClose: () => void }) => {
 		if (!date) return;
 		dispatch(
 			clansActions.updateUser({
-				avatar_url: userProfile?.user?.avatar_url || '',
-				display_name: userProfile?.user?.display_name || '',
+				avatarUrl: userProfile?.user?.avatarUrl || '',
+				displayName: userProfile?.user?.displayName || '',
 				about_me: userProfile?.user?.about_me || '',
 				dob: date as any,
 				noCache: false,

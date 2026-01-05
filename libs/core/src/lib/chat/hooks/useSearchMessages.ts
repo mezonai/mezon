@@ -26,7 +26,7 @@ export function useSearchMessages() {
 	const searchedRequest = useAppSelector((state) => selectSearchedRequestByChannelId(state, currentViewChannelId));
 
 	const searchedChannelId = useMemo(() => {
-		const channelIdFilter = searchedRequest?.filters?.find((f) => f.field_name === 'channel_id');
+		const channelIdFilter = searchedRequest?.filters?.find((f) => f.field_name === 'channelId');
 		if (channelIdFilter?.field_value && channelIdFilter.field_value !== '0') {
 			return channelIdFilter.field_value;
 		}
@@ -35,7 +35,7 @@ export function useSearchMessages() {
 			return currentDirectId;
 		}
 
-		const hasOtherFilters = searchedRequest?.filters?.some((f) => f.field_name !== 'content' && f.field_name !== 'channel_id');
+		const hasOtherFilters = searchedRequest?.filters?.some((f) => f.field_name !== 'content' && f.field_name !== 'channelId');
 
 		if (hasOtherFilters) {
 			return currentViewChannelId;

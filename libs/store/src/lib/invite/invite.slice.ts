@@ -26,20 +26,20 @@ export interface InviteState extends EntityState<InvitesEntity, string> {
 export const inviteAdapter = createEntityAdapter<InvitesEntity>();
 
 export type CreateLinkInviteUser = {
-	channel_id: string;
-	clan_id: string;
-	expiry_time: number;
+	channelId: string;
+	clanId: string;
+	expiryTime: number;
 };
 
 export const createLinkInviteUser = createAsyncThunk(
 	'invite/createLinkInviteUser',
-	async ({ channel_id, clan_id, expiry_time }: CreateLinkInviteUser, thunkAPI) => {
+	async ({ channelId, clanId, expiryTime }: CreateLinkInviteUser, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				channel_id,
-				clan_id,
-				expiry_time
+				channelId,
+				clanId,
+				expiryTime
 			};
 			const response = await mezon.client.createLinkInviteUser(mezon.session, body);
 			if (!response) {
@@ -61,7 +61,7 @@ export const inviteUser = createAsyncThunk('invite/inviteUser', async ({ inviteI
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.inviteUser(mezon.session, inviteId);
-		if (!response?.clan_id) {
+		if (!response?.clanId) {
 			captureSentryError('Can not join clan', 'invite/inviteUser');
 			return thunkAPI.rejectWithValue('Can not join clan');
 		}
@@ -130,7 +130,7 @@ export const inviteSlice = createSlice({
 		},
 		removeByClanId: (state, action: PayloadAction<string>) => {
 			for (const id of state.ids) {
-				if (state.entities[id]?.clan_id === action.payload) {
+				if (state.entities[id]?.clanId === action.payload) {
 					inviteAdapter.removeOne(state, id);
 				}
 			}

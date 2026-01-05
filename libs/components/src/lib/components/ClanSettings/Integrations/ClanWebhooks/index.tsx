@@ -34,7 +34,7 @@ const ClanWebhooks = ({ allClanWebhooks }: IClanWebhooksProps) => {
 		const newWebhookReq: ApiGenerateClanWebhookRequest = {
 			webhook_name: getRandomWebhookName(),
 			avatar: getRandomAvatar(),
-			clan_id: clanId
+			clanId: clanId
 		};
 		dispatch(generateClanWebhook({ request: newWebhookReq, clanId }));
 	};

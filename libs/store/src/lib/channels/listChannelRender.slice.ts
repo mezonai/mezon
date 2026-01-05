@@ -95,7 +95,7 @@ export const listChannelRenderSlice = createSlice({
 						listFavorChannel.push({
 							...channel,
 							isFavor: true,
-							category_id: FAVORITE_CATEGORY_ID
+							categoryId: FAVORITE_CATEGORY_ID
 						});
 					}
 					listChannelRender.push(channel);
@@ -105,11 +105,11 @@ export const listChannelRenderSlice = createSlice({
 			const favorCate: ICategoryChannel = {
 				channels: listChannelFavor,
 				id: FAVORITE_CATEGORY_ID,
-				category_id: FAVORITE_CATEGORY_ID,
-				category_name: FAVORITE_CATEGORY_NAME, // This will be translated at component level
-				clan_id: clanId,
-				creator_id: '0',
-				category_order: 1,
+				categoryId: FAVORITE_CATEGORY_ID,
+				categoryName: FAVORITE_CATEGORY_NAME, // This will be translated at component level
+				clanId: clanId,
+				creatorId: '0',
+				categoryOrder: 1,
 				isFavor: true
 			};
 
@@ -119,17 +119,17 @@ export const listChannelRenderSlice = createSlice({
 		addChannelToListRender: (state, action: PayloadAction<ApiChannelDescription>) => {
 			const channelData: IChannel = {
 				...(action.payload as IChannel),
-				id: action.payload.channel_id || ''
+				id: action.payload.channelId || ''
 			};
-			const clanId = channelData.clan_id;
+			const clanId = channelData.clanId;
 
 			if (clanId && state.listChannelRender[clanId]) {
-				const isExistChannel = state.listChannelRender[clanId]?.findIndex((channel) => (channel as IChannel)?.channel_id === channelData.id);
+				const isExistChannel = state.listChannelRender[clanId]?.findIndex((channel) => (channel as IChannel)?.channelId === channelData.id);
 				if (isExistChannel !== -1) {
 					return;
 				}
 
-				const indexInsert = state.listChannelRender[clanId].findIndex((channel) => channel.id === channelData.category_id);
+				const indexInsert = state.listChannelRender[clanId].findIndex((channel) => channel.id === channelData.categoryId);
 				if (indexInsert === -1) {
 					return;
 				}
@@ -155,8 +155,8 @@ export const listChannelRenderSlice = createSlice({
 				(channel) => channel.id !== channelId && (channel as IChannel).parent_id !== channelId
 			);
 
-			if (channelToDelete?.category_id) {
-				const indexInsert = state.listChannelRender[clanId].findIndex((item) => item.id === channelToDelete.category_id);
+			if (channelToDelete?.categoryId) {
+				const indexInsert = state.listChannelRender[clanId].findIndex((item) => item.id === channelToDelete.categoryId);
 				if (indexInsert !== -1) {
 					const category = state.listChannelRender[clanId][indexInsert] as ICategoryChannel;
 					if (category.channels) {
@@ -175,7 +175,7 @@ export const listChannelRenderSlice = createSlice({
 				}
 				state.listChannelRender[clanId][indexUpdate] = {
 					...state.listChannelRender[clanId][indexUpdate],
-					channel_label: dataUpdate.channel_label || (state.listChannelRender[clanId][indexUpdate] as IChannel).channel_label,
+					channelLabel: dataUpdate.channelLabel || (state.listChannelRender[clanId][indexUpdate] as IChannel).channelLabel,
 					e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexUpdate] as IChannel).e2ee,
 					topic: dataUpdate.topic || (state.listChannelRender[clanId][indexUpdate] as IChannel).topic,
 					age_restricted: dataUpdate.age_restricted,
@@ -192,13 +192,13 @@ export const listChannelRenderSlice = createSlice({
 
 					(state.listChannelRender[clanId][indexUpdate] as IChannel).channel_avatar = safeAvatar;
 				}
-				if (state.listChannelRender[clanId][indexUpdate].category_id === FAVORITE_CATEGORY_ID) {
+				if (state.listChannelRender[clanId][indexUpdate].categoryId === FAVORITE_CATEGORY_ID) {
 					const indexNextUpdate = state.listChannelRender[clanId].findIndex(
-						(channel) => channel.id === channelId && channel.category_id !== FAVORITE_CATEGORY_ID
+						(channel) => channel.id === channelId && channel.categoryId !== FAVORITE_CATEGORY_ID
 					);
 					state.listChannelRender[clanId][indexNextUpdate] = {
 						...state.listChannelRender[clanId][indexNextUpdate],
-						channel_label: dataUpdate.channel_label || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).channel_label,
+						channelLabel: dataUpdate.channelLabel || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).channelLabel,
 						e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).e2ee,
 						topic: dataUpdate.topic || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).topic,
 						age_restricted: dataUpdate.age_restricted,
@@ -222,7 +222,7 @@ export const listChannelRenderSlice = createSlice({
 				return;
 			}
 			const oldIndexOfChannel = state.listChannelRender[clanId].findIndex(
-				(channel) => channel.id === channelId && channel?.category_id !== FAVORITE_CATEGORY_ID
+				(channel) => channel.id === channelId && channel?.categoryId !== FAVORITE_CATEGORY_ID
 			);
 			const indexOfNewCategory = state.listChannelRender[clanId].findIndex((channel) => channel.id === categoryId);
 			if (oldIndexOfChannel === -1 || indexOfNewCategory === -1) {
@@ -232,11 +232,11 @@ export const listChannelRenderSlice = createSlice({
 			const newChannelWithThreads = state.listChannelRender[clanId].filter((item) => {
 				if (
 					((item as IChannel).id === channelId || (item as IChannel).parent_id === channelId) &&
-					(item as IChannel)?.category_id !== FAVORITE_CATEGORY_ID
+					(item as IChannel)?.categoryId !== FAVORITE_CATEGORY_ID
 				) {
 					return {
 						...item,
-						category_id: categoryId
+						categoryId: categoryId
 					};
 				}
 			});
@@ -295,17 +295,17 @@ export const listChannelRenderSlice = createSlice({
 
 			if (state.listChannelRender[clanId]) {
 				state.listChannelRender[clanId] = state.listChannelRender[clanId].filter(
-					(item) => item.id !== categoryId && (item as IChannel).category_id !== categoryId
+					(item) => item.id !== categoryId && (item as IChannel).categoryId !== categoryId
 				);
 			}
 		},
 		updateCategory: (state, action: PayloadAction<{ clanId: string; cate: ApiUpdateCategoryDescRequest }>) => {
 			const { clanId, cate } = action.payload;
 			if (state.listChannelRender[clanId]) {
-				const indexUpdate = state.listChannelRender[clanId].findIndex((channel) => channel.id === cate.category_id);
+				const indexUpdate = state.listChannelRender[clanId].findIndex((channel) => channel.id === cate.categoryId);
 				state.listChannelRender[clanId][indexUpdate] = {
 					...state.listChannelRender[clanId][indexUpdate],
-					category_name: cate.category_name
+					categoryName: cate.categoryName
 				};
 			}
 		},
@@ -321,10 +321,10 @@ export const listChannelRenderSlice = createSlice({
 				return;
 			}
 
-			const isExistChannel = state.listChannelRender[clanId]?.findIndex((channel) => (channel as IChannel)?.channel_id === channelData.id);
+			const isExistChannel = state.listChannelRender[clanId]?.findIndex((channel) => (channel as IChannel)?.channelId === channelData.id);
 			if (isExistChannel === -1 && clanId) {
 				const indexInsert = state.listChannelRender[clanId]?.findIndex(
-					(channel) => (channel as IChannel)?.channel_id === channelData.parent_id && !(channel as IChannel).isFavor
+					(channel) => (channel as IChannel)?.channelId === channelData.parent_id && !(channel as IChannel).isFavor
 				);
 
 				if (indexInsert === -1) {
@@ -445,7 +445,7 @@ export const listChannelRenderSlice = createSlice({
 						return;
 					}
 					state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
-						if ((channel as IChannel).category_id === categoryId) {
+						if ((channel as IChannel).categoryId === categoryId) {
 							return {
 								...channel,
 								count_mess_unread: 0
@@ -465,7 +465,7 @@ export const listChannelRenderSlice = createSlice({
 			}
 			if (!mark) {
 				const markIndex = state.listChannelRender[clanId].findIndex(
-					(channel) => channel.id === channelId && (channel as IChannel).category_id === FAVORITE_CATEGORY_ID
+					(channel) => channel.id === channelId && (channel as IChannel).categoryId === FAVORITE_CATEGORY_ID
 				);
 				if (markIndex === -1) {
 					return;
@@ -476,14 +476,14 @@ export const listChannelRenderSlice = createSlice({
 				state.listChannelRender[clanId][0] = { ...state.listChannelRender[clanId][0], channels: listFavor as string[] };
 
 				state.listChannelRender[clanId] = state.listChannelRender[clanId].filter(
-					(channel) => !(channel.id === channelId && (channel as IChannel).category_id === FAVORITE_CATEGORY_ID)
+					(channel) => !(channel.id === channelId && (channel as IChannel).categoryId === FAVORITE_CATEGORY_ID)
 				);
 				return;
 			}
 
 			const channelMark: IChannel = {
 				...state.listChannelRender[clanId].filter((channel) => channel.id === channelId)[0],
-				category_id: FAVORITE_CATEGORY_ID
+				categoryId: FAVORITE_CATEGORY_ID
 			};
 			((state.listChannelRender[clanId][0] as ICategoryChannel).channels as string[]).push(channelId);
 			state.listChannelRender[clanId]?.splice(1, 0, channelMark);
@@ -496,7 +496,7 @@ export const listChannelRenderSlice = createSlice({
 
 			const listChannelRender: (ICategoryChannel | IChannel)[] = [];
 			listCategoryOrder.map((category) => {
-				const channelAndThread = listChannel.filter((channel) => channel.category_id === category.id || category.id === channel.id);
+				const channelAndThread = listChannel.filter((channel) => channel.categoryId === category.id || category.id === channel.id);
 				channelAndThread.map((channel) => {
 					listChannelRender.push(channel);
 				});
@@ -528,7 +528,7 @@ export const listChannelRenderSlice = createSlice({
 				const channelThreadOrder = state.listChannelRender[clanId].filter((item) => {
 					if (
 						((item as IChannel).id === itemOrder.id || (item as IChannel).parent_id === itemOrder.id) &&
-						item.category_id !== FAVORITE_CATEGORY_ID
+						item.categoryId !== FAVORITE_CATEGORY_ID
 					) {
 						return {
 							...item
@@ -538,7 +538,7 @@ export const listChannelRenderSlice = createSlice({
 				const channelThreadTarget = state.listChannelRender[clanId].filter((item) => {
 					if (
 						((item as IChannel).id === itemTarget.id || (item as IChannel).parent_id === itemTarget.id) &&
-						item.category_id !== FAVORITE_CATEGORY_ID
+						item.categoryId !== FAVORITE_CATEGORY_ID
 					) {
 						return {
 							...item
@@ -590,8 +590,8 @@ export const listChannelRenderSlice = createSlice({
 			);
 
 			channelsToDelete.forEach((channelToDelete) => {
-				if (channelToDelete?.category_id) {
-					const categoryIndex = state.listChannelRender[clanId].findIndex((item) => item.id === channelToDelete.category_id);
+				if (channelToDelete?.categoryId) {
+					const categoryIndex = state.listChannelRender[clanId].findIndex((item) => item.id === channelToDelete.categoryId);
 					if (categoryIndex !== -1) {
 						const category = state.listChannelRender[clanId][categoryIndex] as ICategoryChannel;
 						if (category.channels) {
@@ -661,8 +661,8 @@ function prioritizeChannel(channels: IChannel[]): IChannel[] {
 			return 1;
 		}
 		if (aParentId === '0' || aParentId === '') {
-			const aChannelId = a.channel_id ?? '';
-			const bChannelId = b.channel_id ?? '';
+			const aChannelId = a.channelId ?? '';
+			const bChannelId = b.channelId ?? '';
 			return aChannelId < bChannelId ? -1 : aChannelId > bChannelId ? 1 : 0;
 		}
 		return aParentId < bParentId ? -1 : aParentId > bParentId ? 1 : 0;
@@ -682,7 +682,7 @@ function sortChannels(channels: IChannel[], categoryId: string): IChannel[] {
 	const numOfParent = indexThread;
 	for (let i = 0; i < numOfParent; i++) {
 		const channel = channels[i];
-		if (channel.category_id === categoryId) {
+		if (channel.categoryId === categoryId) {
 			const newChannel = { ...channel };
 			sortedChannels.push(newChannel);
 			for (; indexThread < numOfChannel; indexThread++) {

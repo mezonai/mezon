@@ -48,7 +48,7 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 		{
 			api_name: 'ListEvents',
 			list_event_req: {
-				clan_id: clanId
+				clanId: clanId
 			}
 		},
 		() => ensuredMezon.client.listEvents(ensuredMezon.session, clanId),
@@ -68,7 +68,7 @@ export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?
 	return {
 		...eventRes,
 		id: eventRes.id || '',
-		channel_id: eventRes.channel_id === '0' || eventRes.channel_id === '' ? '' : eventRes.channel_id,
+		channelId: eventRes.channelId === '0' || eventRes.channelId === '' ? '' : eventRes.channelId,
 		channel_voice_id: eventRes.channel_voice_id === '0' || eventRes.channel_voice_id === '' ? '' : eventRes.channel_voice_id
 	};
 };
@@ -107,7 +107,7 @@ export const fetchEventManagement = createAsyncThunk(
 
 export type UpdateEventManagementPayload = {
 	event_id: string;
-	clan_id: string;
+	clanId: string;
 	channel_voice_id: string;
 	address: string;
 	title: string;
@@ -115,14 +115,14 @@ export type UpdateEventManagementPayload = {
 	end_time: string;
 	description: string;
 	logo: string;
-	creator_id: string;
-	channel_id: string;
+	creatorId: string;
+	channelId: string;
 };
 
 export type EventManagementOnGogoing = {
 	address: string;
 	channel_voice_id: string;
-	clan_id: string;
+	clanId: string;
 	description: string;
 	end_time: Date;
 	event_id: string;
@@ -130,14 +130,14 @@ export type EventManagementOnGogoing = {
 	logo: string;
 	start_time: Date;
 	title: string;
-	channel_id: string;
+	channelId: string;
 };
 
 export const fetchCreateEventManagement = createAsyncThunk(
 	'CreatEventManagement/fetchCreateEventManagement',
 	async (
 		{
-			clan_id,
+			clanId,
 			channel_voice_id,
 			address,
 			title,
@@ -145,7 +145,7 @@ export const fetchCreateEventManagement = createAsyncThunk(
 			end_time,
 			description,
 			logo,
-			channel_id,
+			channelId,
 			repeat_type,
 			is_private = false
 		}: ApiCreateEventRequest,
@@ -154,7 +154,7 @@ export const fetchCreateEventManagement = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				clan_id,
+				clanId,
 				channel_voice_id: channel_voice_id || '',
 				address: address || '',
 				title,
@@ -162,7 +162,7 @@ export const fetchCreateEventManagement = createAsyncThunk(
 				end_time,
 				description: description || '',
 				logo: logo || '',
-				channel_id,
+				channelId,
 				repeat_type: repeat_type || ERepeatType.DOES_NOT_REPEAT,
 				is_private
 			};
@@ -188,7 +188,7 @@ export const updateEventManagement = createAsyncThunk(
 	async (
 		{
 			event_id,
-			clan_id,
+			clanId,
 			channel_voice_id,
 			address,
 			title,
@@ -196,8 +196,8 @@ export const updateEventManagement = createAsyncThunk(
 			end_time,
 			description,
 			logo,
-			creator_id,
-			channel_id,
+			creatorId,
+			channelId,
 			channel_id_old,
 			repeat_type
 		}: MezonUpdateEventBody,
@@ -213,9 +213,9 @@ export const updateEventManagement = createAsyncThunk(
 				logo,
 				start_time,
 				title,
-				clan_id,
-				creator_id,
-				channel_id,
+				clanId,
+				creatorId,
+				channelId,
 				channel_id_old,
 				repeat_type
 			};
@@ -254,7 +254,7 @@ export const addUserEvent = createAsyncThunk('userEvent/addUserEvent', async (re
 export const deleteUserEvent = createAsyncThunk('userEvent/deleteUserEvent', async (request: ApiUserEventRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		await mezon.client.deleteUserEvent(mezon.session, request.clan_id, request.event_id);
+		await mezon.client.deleteUserEvent(mezon.session, request.clanId, request.event_id);
 	} catch (error) {
 		captureSentryError(error, 'userEvent/deleteUserEvent');
 		return thunkAPI.rejectWithValue(error);
@@ -314,22 +314,22 @@ export const eventManagementSlice = createSlice({
 		},
 		removeOneEvent: (state, action) => {
 			const { event_id } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clanId].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
-			eventManagementAdapter.removeOne(state.byClans[action.payload.clan_id].entities, event_id);
+			eventManagementAdapter.removeOne(state.byClans[action.payload.clanId].entities, event_id);
 			if (state.privateMeetingRooms) {
 				state.privateMeetingRooms = state.privateMeetingRooms.filter((record) => !(event_id in record));
 			}
 		},
 		updateEventStatus: (state, action) => {
 			const { event_id, event_status } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clanId].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
-			eventManagementAdapter.updateOne(state.byClans[action.payload.clan_id].entities, {
+			eventManagementAdapter.updateOne(state.byClans[action.payload.clanId].entities, {
 				id: event_id,
 				changes: {
 					event_status
@@ -337,37 +337,37 @@ export const eventManagementSlice = createSlice({
 			});
 		},
 		updateUserEvent: (state, action) => {
-			const { event_id, user_id, clan_id } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[clan_id]?.entities, event_id);
+			const { event_id, userId, clanId } = action.payload;
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[clanId]?.entities, event_id);
 
 			if (!existingEvent) {
 				return;
 			}
 
-			let updatedUserIds = [...(existingEvent.user_ids || [])];
+			let updatedUserIds = [...(existingEvent.userIds || [])];
 			if (action.payload.action === EEventAction.INTERESTED) {
-				if (!updatedUserIds.includes(user_id)) {
-					updatedUserIds.push(user_id);
+				if (!updatedUserIds.includes(userId)) {
+					updatedUserIds.push(userId);
 				}
 			} else if (action.payload.action === EEventAction.UNINTERESTED) {
-				updatedUserIds = updatedUserIds.filter((id) => id !== user_id);
+				updatedUserIds = updatedUserIds.filter((id) => id !== userId);
 			}
 
-			eventManagementAdapter.updateOne(state.byClans[clan_id].entities, {
+			eventManagementAdapter.updateOne(state.byClans[clanId].entities, {
 				id: event_id,
 				changes: {
-					user_ids: updatedUserIds
+					userIds: updatedUserIds
 				}
 			});
 		},
 
 		updateNewStartTime: (state, action) => {
 			const { event_id, start_time } = action.payload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clanId].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
-			eventManagementAdapter.updateOne(state.byClans[action.payload.clan_id].entities, {
+			eventManagementAdapter.updateOne(state.byClans[action.payload.clanId].entities, {
 				id: event_id,
 				changes: {
 					start_time
@@ -375,39 +375,39 @@ export const eventManagementSlice = createSlice({
 			});
 		},
 		addOneEvent: (state, action) => {
-			const { event_id, channel_id, event_status, channel_voice_id, ...restPayload } = action.payload;
-			const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
+			const { event_id, channelId, event_status, channel_voice_id, ...restPayload } = action.payload;
+			const normalizedChannelId = channelId === '0' || channelId === '' ? '' : channelId;
 			const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
 
-			if (!state.byClans[action.payload.clan_id]) {
-				state.byClans[action.payload.clan_id] = {
+			if (!state.byClans[action.payload.clanId]) {
+				state.byClans[action.payload.clanId] = {
 					entities: eventManagementAdapter.getInitialState()
 				};
 			}
 
-			eventManagementAdapter.addOne(state.byClans[action.payload.clan_id].entities, {
+			eventManagementAdapter.addOne(state.byClans[action.payload.clanId].entities, {
 				id: event_id,
-				channel_id: normalizedChannelId,
+				channelId: normalizedChannelId,
 				channel_voice_id: normalizedVoiceChannelId,
 				event_status,
-				user_ids: [action.payload.creator_id],
+				userIds: [action.payload.creatorId],
 				...restPayload
 			});
 		},
 		upsertEvent: (state, action) => {
-			const { event_id, channel_id, channel_voice_id, event_status, ...restPayload } = action.payload;
+			const { event_id, channelId, channel_voice_id, event_status, ...restPayload } = action.payload;
 
-			const normalizedChannelId = channel_id === '0' || channel_id === '' ? '' : channel_id;
+			const normalizedChannelId = channelId === '0' || channelId === '' ? '' : channelId;
 			const normalizedVoiceChannelId = channel_voice_id === '0' || channel_voice_id === '' ? '' : channel_voice_id;
 
 			const { event_status: _, ...restWithoutEventStatus } = restPayload;
-			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
+			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clanId].entities, event_id);
 			if (!existingEvent) {
 				return;
 			}
-			eventManagementAdapter.upsertOne(state.byClans[action.payload.clan_id].entities, {
+			eventManagementAdapter.upsertOne(state.byClans[action.payload.clanId].entities, {
 				id: event_id,
-				channel_id: normalizedChannelId,
+				channelId: normalizedChannelId,
 				channel_voice_id: normalizedVoiceChannelId,
 				...restWithoutEventStatus
 			});
@@ -503,14 +503,14 @@ export const selectEventLoading = createSelector(getEventManagementState, (state
 
 export const selectNumberEventPrivate = createSelector(
 	selectEventsByClanId,
-	(events) => events.filter((event) => event.channel_id && event.channel_id !== '0' && event.channel_id !== '').length
+	(events) => events.filter((event) => event.channelId && event.channelId !== '0' && event.channelId !== '').length
 );
 
 // check
 export const selectEventsByChannelId = createSelector(
 	[selectEventsByClanId, (state: RootState, clanId: string, channelId: string) => channelId],
 	(entities, channelId) => {
-		const filteredEntities = Object.values(entities).filter((entity: EventManagementEntity) => entity.channel_id === channelId);
+		const filteredEntities = Object.values(entities).filter((entity: EventManagementEntity) => entity.channelId === channelId);
 		const ongoingEvents = filteredEntities.filter((event) => event.event_status === EEventStatus.ONGOING);
 		if (ongoingEvents.length > 0) {
 			const oldestOngoingTime = Math.min(...ongoingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity)));

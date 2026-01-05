@@ -16,12 +16,12 @@ const ListEventManagement = (props: ListEventManagementProps) => {
 	const allThreadChannelPrivate = useSelector(selectAllTextChannel);
 	const userId = useSelector(selectAllAccount)?.user?.id;
 
-	const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channel_id);
+	const allThreadChannelPrivateIds = allThreadChannelPrivate.map((channel) => channel.channelId);
 	return allEventManagement
 		.filter(
 			(event) =>
-				(!event?.is_private || event.creator_id === userId) &&
-				(!event.channel_id || event.channel_id === '0' || allThreadChannelPrivateIds.includes(event.channel_id))
+				(!event?.is_private || event.creatorId === userId) &&
+				(!event.channelId || event.channelId === '0' || allThreadChannelPrivateIds.includes(event.channelId))
 		)
 		.map((event, index) => {
 			return (
@@ -36,10 +36,10 @@ const ListEventManagement = (props: ListEventManagementProps) => {
 						start={event.start_time || ''}
 						end={event.end_time || ''}
 						event={event}
-						createTime={event.create_time}
+						createTime={event.createTime}
 						openModelUpdate={openModelUpdate}
 						onEventUpdateId={onUpdateEventId}
-						textChannelId={event.channel_id}
+						textChannelId={event.channelId}
 						onClose={onClose}
 					/>
 				</div>

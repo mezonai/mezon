@@ -99,15 +99,15 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 				<View>
 					<Text style={styles.headerTitle}>{t('notifySettingThreadModal.muteThisConversation')}</Text>
 					<Text numberOfLines={1} style={styles.headerSubtitle}>
-						{currentCategory.category_name}
+						{currentCategory.categoryName}
 					</Text>
 				</View>
 			)
 		});
-	}, [currentCategory.category_name, navigation, t, themeValue.text, themeValue.textStrong]);
+	}, [currentCategory.categoryName, navigation, t, themeValue.text, themeValue.textStrong]);
 
 	const defaultCategoryNotificationSetting = useAppSelector((state) =>
-		selectDefaultNotificationCategory(state, currentCategory?.category_id as string)
+		selectDefaultNotificationCategory(state, currentCategory?.categoryId as string)
 	);
 
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -146,7 +146,7 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		const body = {
 			id: currentCategory?.id,
 			mute_time: 0,
-			clan_id: currentClanId || '',
+			clanId: currentClanId || '',
 			active: EMuteState.UN_MUTE
 		};
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(body));
@@ -161,7 +161,7 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		try {
 			const body = {
 				id: currentCategory?.id,
-				clan_id: currentClanId || '',
+				clanId: currentClanId || '',
 				time_mute: duration !== Infinity ? duration : null,
 				active: EMuteState.MUTED
 			};

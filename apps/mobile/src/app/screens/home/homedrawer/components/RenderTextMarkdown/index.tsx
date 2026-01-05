@@ -50,8 +50,8 @@ export const checkUrl = async (url: string, clanId: string, channelId: string) =
 	if (userClan?.id) {
 		const response = await store.dispatch(channelsActions.fetchChannels({ clanId: userClan?.id, noCache: true }));
 		if (response?.meta?.requestStatus === 'fulfilled') {
-			const targetChannel = response?.payload?.channels?.find((channel) => channel?.channel_id === channelId);
-			if (targetChannel?.channel_id) {
+			const targetChannel = response?.payload?.channels?.find((channel) => channel?.channelId === channelId);
+			if (targetChannel?.channelId) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, targetChannel);
 				return;
 			}
@@ -439,8 +439,8 @@ export const RenderTextMarkdownContent = ({
 				const usersInChannel = selectAllChannelMembers(store.getState() as RootState, currentChannelId as string);
 				const mention = MentionUser({
 					tagName: contentInElement,
-					roleId: element?.role_id || '',
-					tagUserId: element?.user_id,
+					roleId: element?.roleId || '',
+					tagUserId: element?.userId,
 					mode,
 					usersClan,
 					usersInChannel
@@ -484,31 +484,31 @@ export const RenderTextMarkdownContent = ({
 					const payloadChannel = {
 						type: Number(dataChannel?.[0] || 1),
 						id: dataChannel?.[1],
-						channel_id: dataChannel?.[1],
-						clan_id: dataChannel?.[2],
+						channelId: dataChannel?.[1],
+						clanId: dataChannel?.[2],
 						status: Number(dataChannel?.[3] || 1),
 						meeting_code: dataChannel?.[4] || '',
-						category_id: dataChannel?.[5],
-						channel_label: text || ''
+						categoryId: dataChannel?.[5],
+						channelLabel: text || ''
 					};
 
 					textParts.push(
 						<Text
 							key={`hashtag-${index}`}
 							style={[
-								themeValue && payloadChannel?.channel_id === 'undefined'
+								themeValue && payloadChannel?.channelId === 'undefined'
 									? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).privateChannel
-									: themeValue && !!payloadChannel?.channel_id
+									: themeValue && !!payloadChannel?.channelId
 										? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).hashtag
 										: {}
 							]}
 							onPress={() => {
-								if (!payloadChannel?.channel_id) return;
+								if (!payloadChannel?.channelId) return;
 								DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, payloadChannel);
 							}}
 						>
-							{renderChannelIcon(payloadChannel?.type, payloadChannel?.channel_id, themeValue)}
-							{payloadChannel?.channel_id === 'undefined' ? 'private-channel' : text}
+							{renderChannelIcon(payloadChannel?.type, payloadChannel?.channelId, themeValue)}
+							{payloadChannel?.channelId === 'undefined' ? 'private-channel' : text}
 						</Text>
 					);
 				} else {
@@ -625,31 +625,31 @@ export const RenderTextMarkdownContent = ({
 								const payloadChannel = {
 									type: Number(dataChannel?.[0] || 1),
 									id: dataChannel?.[1],
-									channel_id: dataChannel?.[1],
-									clan_id: dataChannel?.[2],
+									channelId: dataChannel?.[1],
+									clanId: dataChannel?.[2],
 									status: Number(dataChannel?.[3] || 1),
 									meeting_code: dataChannel?.[4] || '',
-									category_id: dataChannel?.[5],
-									channel_label: text || ''
+									categoryId: dataChannel?.[5],
+									channelLabel: text || ''
 								};
 
 								textParts.push(
 									<Text
 										key={`hashtag-${index}`}
 										style={[
-											themeValue && payloadChannel?.channel_id === 'undefined'
+											themeValue && payloadChannel?.channelId === 'undefined'
 												? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).privateChannel
-												: themeValue && !!payloadChannel?.channel_id
+												: themeValue && !!payloadChannel?.channelId
 													? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).hashtag
 													: {}
 										]}
 										onPress={() => {
-											if (!payloadChannel?.channel_id) return;
+											if (!payloadChannel?.channelId) return;
 											DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, payloadChannel);
 										}}
 									>
-										{renderChannelIcon(payloadChannel?.type, payloadChannel?.channel_id, themeValue)}
-										{payloadChannel?.channel_id === 'undefined' ? 'private-channel' : text}
+										{renderChannelIcon(payloadChannel?.type, payloadChannel?.channelId, themeValue)}
+										{payloadChannel?.channelId === 'undefined' ? 'private-channel' : text}
 									</Text>
 								);
 								break;

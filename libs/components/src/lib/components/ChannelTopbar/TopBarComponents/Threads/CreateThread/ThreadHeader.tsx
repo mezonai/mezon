@@ -63,7 +63,7 @@ const ThreadHeader = ({ threadCurrentChannel }: ThreadHeaderProps) => {
 			<div className="flex flex-row items-center gap-2 pointer-events-none">
 				{threadCurrentChannel?.channel_private ? <Icons.ThreadIconLocker /> : <Icons.ThreadIcon />}
 				<span className="text-base font-semibold text-theme-primary-active">
-					{threadCurrentChannel ? threadCurrentChannel.channel_label : t('createThread.newThread')}
+					{threadCurrentChannel ? threadCurrentChannel.channelLabel : t('createThread.newThread')}
 				</span>
 			</div>
 			<button onClick={handleCloseModal} className="relative right-0 text-theme-primary-hover" data-e2e={generateE2eId('discussion.header.button.close')}>

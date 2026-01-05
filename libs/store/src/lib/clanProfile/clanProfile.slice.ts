@@ -16,7 +16,7 @@ export interface UserClanProfileEntity extends IClanProfile {
 }
 
 export const mapUserClanProfileToEntity = (userClanProfileRes: ApiClanProfile) => {
-	const id = `${userClanProfileRes.clan_id}${userClanProfileRes.user_id}`;
+	const id = `${userClanProfileRes.clanId}${userClanProfileRes.userId}`;
 	return { ...userClanProfileRes, id };
 };
 
@@ -83,13 +83,13 @@ export const updateUserClanProfile = createAsyncThunk(
 			const currentUserClanProfile = state.userClanProfile.entities[`${clanId}${currentUser?.user?.id}`];
 			const mezon = ensureClient(getMezonCtx(thunkAPI));
 			const body: Partial<ApiUpdateClanProfileRequest> = {
-				clan_id: clanId,
-				nick_name: username,
+				clanId: clanId,
+				nickName: username,
 				avatar: avatarUrl
 			};
 
 			if (
-				(username && username !== currentUserClanProfile?.nick_name) ||
+				(username && username !== currentUserClanProfile?.nickName) ||
 				(avatarUrl && avatarUrl !== '' && avatarUrl !== currentUserClanProfile?.avatar)
 			) {
 				const response = await mezon.client.updateUserProfileByClan(mezon.session, clanId, body as ApiUpdateClanProfileRequest);
@@ -101,7 +101,7 @@ export const updateUserClanProfile = createAsyncThunk(
 					userClanProfileSlice.actions.updateOne({
 						id: `${clanId}${currentUser?.user?.id}`,
 						changes: {
-							nick_name: username,
+							nickName: username,
 							avatar: avatarUrl
 						}
 					})
@@ -178,7 +178,7 @@ export const getUserClanProfileState = (rootState: { [USER_CLAN_PROFILE_FEATURE_
 export const selectAllUserClanProfile = createSelector(getUserClanProfileState, selectAll);
 
 export const selectUserClanProfileByClanID = (clanId: string, userId: string) =>
-	createSelector(selectAllUserClanProfile, (profiles) => profiles.find((pr) => pr.clan_id === clanId && pr.user_id === userId));
+	createSelector(selectAllUserClanProfile, (profiles) => profiles.find((pr) => pr.clanId === clanId && pr.userId === userId));
 
 export const selectShowModalFooterProfile = createSelector(getUserClanProfileState, (state) => state.showModalFooterProfile);
 

@@ -63,27 +63,27 @@ export function QuickAction({ navigation, route }) {
 						initialFormValue={item?.action_msg || ''}
 						editKey={item?.id}
 						channelId={channelId}
-						clanId={channel?.clan_id}
+						clanId={channel?.clanId}
 						menuType={selectedTab}
 					/>
 				)
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 		},
-		[channelId, channel?.clan_id, selectedTab]
+		[channelId, channel?.clanId, selectedTab]
 	);
 
 	const deleteItem = useCallback(
 		async (id: string) => {
 			try {
-				await dispatch(deleteQuickMenuAccess({ id, channelId, clanId: channel?.clan_id }));
+				await dispatch(deleteQuickMenuAccess({ id, channelId, clanId: channel?.clanId }));
 				await dispatch(listQuickMenuAccess({ channelId, menuType: selectedTab }));
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			} catch (error) {
 				console.error('Error deleting quick menu item:', error);
 			}
 		},
-		[channelId, selectedTab, channel?.clan_id]
+		[channelId, selectedTab, channel?.clanId]
 	);
 
 	const handlePressDeleteCategory = useCallback(

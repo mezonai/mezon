@@ -36,9 +36,9 @@ export function useMarkAsRead() {
 	const handleMarkAsReadDM = useCallback(
 		async (channelId: string) => {
 			const body: ApiMarkAsReadRequest = {
-				clan_id: '',
-				category_id: '',
-				channel_id: channelId
+				clanId: '',
+				categoryId: '',
+				channelId: channelId
 			};
 
 			try {
@@ -54,9 +54,9 @@ export function useMarkAsRead() {
 	const handleMarkAsReadChannel = useCallback(
 		async (channel: ChannelsEntity) => {
 			const body: ApiMarkAsReadRequest = {
-				clan_id: channel.clan_id,
-				category_id: channel.category_id,
-				channel_id: channel.channel_id
+				clanId: channel.clanId,
+				categoryId: channel.categoryId,
+				channelId: channel.channelId
 			};
 
 			setStatusMarkAsReadChannel('pending');
@@ -82,13 +82,13 @@ export function useMarkAsRead() {
 				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
 				dispatch(
 					channelsActions.resetChannelsCount({
-						clanId: channel?.clan_id as string,
+						clanId: channel?.clanId as string,
 						channelIds
 					})
 				);
 				dispatch(
 					clansActions.updateClanBadgeCountFromChannels({
-						clanId: channel.clan_id as string,
+						clanId: channel.clanId as string,
 						channels: allThreadsInChannel.map((channel) => ({
 							channelId: channel.id,
 							count: (channel.count_mess_unread ?? 0) * -1
@@ -99,7 +99,7 @@ export function useMarkAsRead() {
 					listChannelRenderAction.handleMarkAsReadListRender({
 						type: EMarkAsReadType.CHANNEL,
 						channelId: channel.id,
-						clanId: channel.clan_id as string
+						clanId: channel.clanId as string
 					})
 				);
 				const threadIds: string[] = [];
@@ -135,14 +135,14 @@ export function useMarkAsRead() {
 	const handleMarkAsReadCategory = useCallback(
 		async (category: ICategoryChannel) => {
 			const body: ApiMarkAsReadRequest = {
-				clan_id: category.clan_id,
-				category_id: category.category_id
+				clanId: category.clanId,
+				categoryId: category.categoryId
 			};
 
 			const store = getStore();
 
 			const channelsInCategory = selectChannelThreads(store.getState() as RootState)?.filter(
-				(channel) => channel.category_id === category.category_id
+				(channel) => channel.categoryId === category.categoryId
 			);
 
 			setStatusMarkAsReadCategory('pending');
@@ -165,14 +165,14 @@ export function useMarkAsRead() {
 				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
 				dispatch(
 					channelsActions.resetChannelsCount({
-						clanId: category.clan_id as string,
+						clanId: category.clanId as string,
 						channelIds
 					})
 				);
 				dispatch(
 					listChannelRenderAction.handleMarkAsReadListRender({
 						type: EMarkAsReadType.CATEGORY,
-						clanId: category.clan_id as string,
+						clanId: category.clanId as string,
 						categoryId: category.id
 					})
 				);
@@ -180,7 +180,7 @@ export function useMarkAsRead() {
 
 				dispatch(
 					clansActions.updateHasUnreadBasedOnChannels({
-						clanId: category.clan_id as string
+						clanId: category.clanId as string
 					})
 				);
 			} catch (error) {
@@ -193,7 +193,7 @@ export function useMarkAsRead() {
 	const handleMarkAsReadClan = useCallback(
 		async (clanId: string) => {
 			const body: ApiMarkAsReadRequest = {
-				clan_id: clanId ?? ''
+				clanId: clanId ?? ''
 			};
 			setStatusMarkAsReadClan('pending');
 			try {

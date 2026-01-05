@@ -26,7 +26,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 	const { t } = useTranslation('streamThumbnail');
 	const dispatch = useAppDispatch();
 
-	const channelId = (channel?.channel_id ?? channel?.id ?? '') as string;
+	const channelId = (channel?.channelId ?? channel?.id ?? '') as string;
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
 
 	const clanId = useAppSelector(selectCurrentChannelClanId);
@@ -130,9 +130,9 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 
 			await dispatch(
 				channelsActions.updateChannel({
-					channel_id: channelId,
-					channel_label: channelLabel,
-					category_id: undefined,
+					channelId: channelId,
+					channelLabel: channelLabel,
+					categoryId: undefined,
 					app_id: '',
 					channel_avatar: attachment.url
 				})
@@ -158,9 +158,9 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 		try {
 			await dispatch(
 				channelsActions.updateChannel({
-					channel_id: channelId,
-					channel_label: channelLabel,
-					category_id: undefined,
+					channelId: channelId,
+					channelLabel: channelLabel,
+					categoryId: undefined,
 					app_id: '',
 					channel_avatar: ''
 				})

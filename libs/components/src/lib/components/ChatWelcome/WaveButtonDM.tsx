@@ -36,7 +36,7 @@ const WaveButtonDM = ({ username }: IWaveButtonDMProps) => {
 		const store = getStore();
 		const appState = store.getState() as RootState;
 		const infoFriend = selectFriendById(appState, userID?.[0] || '');
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userID?.[0] && infoFriend?.user?.id === userProfile?.user?.id;
+		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.sourceId === userID?.[0] && infoFriend?.user?.id === userProfile?.user?.id;
 	}, [userID, userProfile?.user?.id]);
 
 	const isMySelf = useMemo(() => {
@@ -46,8 +46,8 @@ const WaveButtonDM = ({ username }: IWaveButtonDMProps) => {
 	const messageIdsLength = useMemo(() => {
 		const store = getStore();
 		const appState = store.getState() as RootState;
-		return selectMessageIdsByChannelId(appState, currentDm?.channel_id || '').length;
-	}, [currentDm?.channel_id]);
+		return selectMessageIdsByChannelId(appState, currentDm?.channelId || '').length;
+	}, [currentDm?.channelId]);
 
 	const mode = useMemo(() => {
 		return isDM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
@@ -59,15 +59,15 @@ const WaveButtonDM = ({ username }: IWaveButtonDMProps) => {
 	});
 
 	const urlIcon = useMemo(() => {
-		if (!currentDm?.create_time_seconds) {
+		if (!currentDm?.createTimeSeconds) {
 			return STICKER_WAVE.LIST_STICKER[0];
 		}
-		return STICKER_WAVE.LIST_STICKER[currentDm.create_time_seconds % STICKER_WAVE.LIST_STICKER.length];
-	}, [currentDm?.create_time_seconds]);
+		return STICKER_WAVE.LIST_STICKER[currentDm.createTimeSeconds % STICKER_WAVE.LIST_STICKER.length];
+	}, [currentDm?.createTimeSeconds]);
 
 	const displayName = useMemo(() => {
-		return username || currentDm?.channel_label || '';
-	}, [username, currentDm?.channel_label]);
+		return username || currentDm?.channelLabel || '';
+	}, [username, currentDm?.channelLabel]);
 
 	const shouldShowWaveButton = useMemo(() => {
 		if (hasWaved) return false;

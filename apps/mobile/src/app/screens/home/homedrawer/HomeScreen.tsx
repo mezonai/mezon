@@ -9,7 +9,7 @@ const HomeScreen = React.memo((props: any) => {
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentDirectId = useSelector(selectDmGroupCurrentId);
 	const currentUserId = useSelector(selectCurrentUserId);
-	const isBanned = useSelector((state) => selectBanMemberCurrentClanById(state, currentChannel?.channel_id, currentUserId));
+	const isBanned = useSelector((state) => selectBanMemberCurrentClanById(state, currentChannel?.channelId, currentUserId));
 	if (!currentChannel && !currentDirectId) {
 		return <NoChannelSelected />;
 	}
@@ -19,10 +19,10 @@ const HomeScreen = React.memo((props: any) => {
 	return (
 		<HomeDefault
 			{...props}
-			channelId={currentChannel?.channel_id}
-			lastSeenMessageId={currentChannel?.last_seen_message?.id}
-			lastSentMessageId={currentChannel?.last_sent_message?.id}
-			clanId={currentChannel?.clan_id}
+			channelId={currentChannel?.channelId}
+			lastSeenMessageId={currentChannel?.lastSeenMessage?.id}
+			lastSentMessageId={currentChannel?.lastSentMessage?.id}
+			clanId={currentChannel?.clanId}
 			isPublicChannel={isPublic}
 			isThread={isThread}
 			channelType={currentChannel?.type}

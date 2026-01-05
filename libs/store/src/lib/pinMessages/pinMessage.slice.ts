@@ -127,22 +127,22 @@ export const fetchChannelPinMessages = createAsyncThunk(
 );
 
 type SetChannelPinMessagesPayload = {
-	clan_id: string;
+	clanId: string;
 	pin_id?: string;
-	channel_id: string;
-	message_id: string;
+	channelId: string;
+	messageId: string;
 	message?: IMessageWithUser;
 };
 
 export const setChannelPinMessage = createAsyncThunk(
 	'pinmessage/setChannelPinMessage',
-	async ({ clan_id, channel_id, message_id, message }: SetChannelPinMessagesPayload, thunkAPI) => {
+	async ({ clanId, channelId, messageId, message }: SetChannelPinMessagesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body: ApiPinMessageRequest = {
-				clan_id,
-				channel_id,
-				message_id
+				clanId,
+				channelId,
+				messageId
 			};
 			const response = await mezon.client.createPinMessage(mezon.session, body);
 			if (!response) {
@@ -159,17 +159,17 @@ export const setChannelPinMessage = createAsyncThunk(
 
 export const deleteChannelPinMessage = createAsyncThunk(
 	'pinmessage/deleteChannelPinMessage',
-	async ({ channel_id, message_id, pin_id, clan_id }: SetChannelPinMessagesPayload, thunkAPI) => {
+	async ({ channelId, messageId, pin_id, clanId }: SetChannelPinMessagesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deletePinMessage(mezon.session, pin_id, message_id, channel_id, clan_id);
+			const response = await mezon.client.deletePinMessage(mezon.session, pin_id, messageId, channelId, clanId);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
 			thunkAPI.dispatch(
 				pinMessageActions.removePinMessage({
-					channelId: channel_id,
-					pinId: message_id
+					channelId: channelId,
+					pinId: messageId
 				})
 			);
 			return response;
@@ -263,7 +263,7 @@ export const pinMessageSlice = createSlice({
 				return;
 			}
 
-			const pinList = state.byChannels[channelId].pinMessages?.filter((pin) => pin.message_id !== pinId);
+			const pinList = state.byChannels[channelId].pinMessages?.filter((pin) => pin.messageId !== pinId);
 			state.byChannels[channelId].pinMessages = pinList;
 			state.byChannels[channelId].cache = createCacheMetadata(CHANNEL_PIN_MESSAGES_CACHED_TIME);
 		},
@@ -272,13 +272,13 @@ export const pinMessageSlice = createSlice({
 			const channel = state.byChannels[channelId];
 			if (!channel?.pinMessages) return;
 
-			const idx = channel.pinMessages.findIndex((p) => p.message_id === pinId);
+			const idx = channel.pinMessages.findIndex((p) => p.messageId === pinId);
 			if (idx === -1) return;
 
 			const updated: PinMessageEntity = {
 				...channel.pinMessages[idx],
 				...pinMessage,
-				message_id: channel.pinMessages[idx].message_id,
+				messageId: channel.pinMessages[idx].messageId,
 				id: channel.pinMessages[idx].id,
 				content: pinMessage.content
 			};

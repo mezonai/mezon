@@ -15,14 +15,14 @@ export interface IMessageExtras {
 export interface NotificationData {
 	id: number;
 	appid: number;
-	channel_id: string;
+	channelId: string;
 	message: string;
 	title: string;
 	priority: number;
 	date: string;
 	image: string;
 	extras?: IMessageExtras;
-	sender_id?: string;
+	senderId?: string;
 }
 
 export enum NotificationPermissionStatus {
@@ -159,8 +159,8 @@ export class MezonNotificationService {
 					const { link, e2eemess } = msg?.extras ?? {};
 
 					if (
-						(msg?.channel_id && msg?.channel_id === connection.currentChannelId && isFocus) ||
-						msg?.sender_id === this.currentActiveUserId
+						(msg?.channelId && msg?.channelId === connection.currentChannelId && isFocus) ||
+						msg?.senderId === this.currentActiveUserId
 					) {
 						return;
 					}
@@ -262,9 +262,9 @@ export class MezonNotificationService {
 				icon: image ?? '',
 				data: {
 					link: link ?? '',
-					channelId: msg?.channel_id
+					channelId: msg?.channelId
 				},
-				tag: msg?.channel_id
+				tag: msg?.channelId
 			};
 
 			electronBridge.pushNotification(title, options, msg);
@@ -277,7 +277,7 @@ export class MezonNotificationService {
 			return;
 		}
 
-		const channelId = msg?.channel_id;
+		const channelId = msg?.channelId;
 		const activeNotifications = connection?.activeNotifications || new Map();
 
 		if (channelId && activeNotifications.has(channelId)) {

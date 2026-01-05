@@ -218,7 +218,7 @@ export function StickerSetting({ navigation }) {
 		const request: ApiClanStickerAddRequest = {
 			id,
 			category,
-			clan_id: currentClanId,
+			clanId: currentClanId,
 			shortname: name,
 			source: url,
 			media_type: 0,

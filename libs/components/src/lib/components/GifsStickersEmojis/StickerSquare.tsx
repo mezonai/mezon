@@ -81,9 +81,9 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 	});
 	const { valueInputToCheckHandleSearch, subPanelActive } = useGifsStickersEmoji();
 	const [searchedStickers, setSearchStickers] = useState<ClanSticker[]>([]);
-	const currentId = useCurrentInbox()?.channel_id;
+	const currentId = useCurrentInbox()?.channelId;
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
-	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
+	const isReplyAction = dataReferences.messageRefId && dataReferences.messageRefId !== '';
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
@@ -95,9 +95,9 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 		const categorizedStickers = clanStickers
 			.filter((sticker) => !sticker.is_for_sale)
 			.reduce((acc: { id?: string; type?: string; url?: string }[], sticker) => {
-				if (!acc.some((item) => item.id === sticker.clan_id)) {
+				if (!acc.some((item) => item.id === sticker.clanId)) {
 					acc.push({
-						id: sticker.clan_id,
+						id: sticker.clanId,
 						type: sticker.clan_name,
 						url: sticker.logo
 					});
@@ -113,9 +113,9 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 				url: sticker.source,
 				type: sticker.clan_name,
 				clanName: sticker.category,
-				clanId: sticker.clan_id,
+				clanId: sticker.clanId,
 				forSale: sticker.is_for_sale,
-				creatorId: sticker.creator_id,
+				creatorId: sticker.creatorId,
 				shortname: sticker.shortname || ''
 			}))
 		].filter(Boolean);

@@ -166,12 +166,12 @@ const OwnerGreeting = () => {
 				<div className="flex gap-2 md:gap-3">
 					<div className="w-12 relative">
 						<img
-							src={clanOwner?.clan_avatar || clanOwner.user?.avatar_url}
+							src={clanOwner?.clanAvatar || clanOwner.user?.avatarUrl}
 							className="w-12 aspect-square rounded-full absolute bottom-0 left-0"
 						/>
 					</div>
 					<div className="flex font-semibold text-indigo-600 dark:text-white items-center gap-1 text-sm md:text-base">
-						{clanOwner?.clan_nick ?? clanOwner.user?.display_name ?? clanOwner.user?.username} <Icons.OwnerIcon />
+						{clanOwner?.clanNick ?? clanOwner.user?.displayName ?? clanOwner.user?.username} <Icons.OwnerIcon />
 					</div>
 				</div>
 				<div className="text-sm md:text-base text-indigo-700 dark:text-white">{t('clanGuideSetting.ownerGreeting')}</div>
@@ -187,7 +187,7 @@ interface MissionItemProps {
 }
 
 const MissionItem = ({ mission, temp, setOpenModalSaveChanges }: MissionItemProps) => {
-	const channelById = useSelector((state) => selectChannelById(state, mission.channel_id as string));
+	const channelById = useSelector((state) => selectChannelById(state, mission.channelId as string));
 
 	const [openEditModal, closeEditModal] = useModal(() => {
 		return (
@@ -214,7 +214,7 @@ const MissionItem = ({ mission, temp, setOpenModalSaveChanges }: MissionItemProp
 				<span className="break-words">
 					{' '}
 					{titleMission[mission?.task_type ? mission?.task_type - 1 : 0]}{' '}
-					<span className="font-semibold text-gray-800 dark:text-white">#{channelById?.channel_label}</span>{' '}
+					<span className="font-semibold text-gray-800 dark:text-white">#{channelById?.channelLabel}</span>{' '}
 				</span>
 			}
 			action={

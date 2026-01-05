@@ -48,7 +48,7 @@ const EmojisPanel = ({ emojisData, onEmojiSelect, styles }: IEmojiRowProps) => {
 						emojiRecentActions.buyItemForSale({
 							id: emoji?.id,
 							type: ITEM_TYPE.EMOJI,
-							creatorId: emoji?.creator_id,
+							creatorId: emoji?.creatorId,
 							username: userProfile?.user?.username,
 							senderId: userProfile?.user?.id
 						})

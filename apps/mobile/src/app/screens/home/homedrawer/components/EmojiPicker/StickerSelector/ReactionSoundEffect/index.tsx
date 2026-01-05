@@ -40,10 +40,10 @@ const StickerSelector = ({ onSelected }: StickerSelectorProps) => {
 
 		try {
 			clanSoundEffect.forEach((sound) => {
-				const key = sound?.clan_id;
+				const key = sound?.clanId;
 				if (!uniqueMap.has(key)) {
 					uniqueMap.set(key, {
-						id: sound?.clan_id,
+						id: sound?.clanId,
 						type: sound?.clan_name,
 						url: sound?.logo,
 						forSale: false

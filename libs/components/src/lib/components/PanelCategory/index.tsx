@@ -72,9 +72,9 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 
 	const handleChangeSettingType = (notificationType: number) => {
 		const payload: SetDefaultNotificationPayload = {
-			category_id: category?.id,
+			categoryId: category?.id,
 			notification_type: notificationType,
-			clan_id: currentClanId || ''
+			clanId: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setDefaultNotificationCategory(payload));
 		handClosePannel();
@@ -85,7 +85,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 			id: category?.id,
 			active: EMuteState.MUTED,
 			mute_time: duration !== Infinity ? duration : 0,
-			clan_id: currentClanId || ''
+			clanId: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 	};
@@ -95,7 +95,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 			id: category?.id,
 			active,
 			mute_time: 0,
-			clan_id: currentClanId || ''
+			clanId: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 	};
@@ -130,7 +130,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 	}, [statusMarkAsReadCategory]);
 
 	const collapseAllCategory = () => {
-		dispatch(categoriesActions.setCollapseAllCategory({ clanId: category?.clan_id as string }));
+		dispatch(categoriesActions.setCollapseAllCategory({ clanId: category?.clanId as string }));
 	};
 
 	const menuOpenMute = useRef(false);

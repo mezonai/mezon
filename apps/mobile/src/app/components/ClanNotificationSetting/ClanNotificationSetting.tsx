@@ -46,7 +46,7 @@ const ClanNotificationSetting = ({ navigation }: MenuClanScreenProps<ClanNotific
 	];
 
 	const handleNotificationClanChange = (value: number) => {
-		if (value) dispatch(defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClanId, notification_type: value }));
+		if (value) dispatch(defaultNotificationActions.setDefaultNotificationClan({ clanId: currentClanId, notification_type: value }));
 	};
 
 	const handleOverridesNotification = () => {

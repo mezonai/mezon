@@ -65,12 +65,12 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListTh
 						]}
 						numberOfLines={1}
 					>
-						{thread?.channel_label}
+						{thread?.channelLabel}
 					</Text>
 				</TouchableOpacity>
 				<BuzzBadge
-					channelId={thread?.channel_id as string}
-					clanId={thread?.clan_id as string}
+					channelId={thread?.channelId as string}
+					clanId={thread?.clanId as string}
 					mode={ChannelStreamMode.STREAM_MODE_THREAD}
 					customStyles={styles.buzzBadge}
 				/>

@@ -25,7 +25,7 @@ function RoleCoLourComponent({ roleId, disable = false }: { roleId: string; disa
 	const handleSaveRoleColor = useCallback(async (colorSelected: string) => {
 		if (colorSelected && activeRole) {
 			const response = await updateRole(
-				activeRole?.clan_id || '',
+				activeRole?.clanId || '',
 				activeRole?.id,
 				activeRole?.title ?? '',
 				colorSelected ?? '',

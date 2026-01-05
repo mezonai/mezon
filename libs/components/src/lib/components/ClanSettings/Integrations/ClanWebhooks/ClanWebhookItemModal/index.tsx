@@ -28,7 +28,7 @@ const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
 	const { t } = useTranslation('clanIntegrationsSetting');
 	const { t: tCommon } = useTranslation('common');
 	const [isExpand, setIsExpand] = useState(false);
-	const webhookOwner = useAppSelector((state) => selectMemberClanByUserId(state, webhookItem.creator_id as string));
+	const webhookOwner = useAppSelector((state) => selectMemberClanByUserId(state, webhookItem.creatorId as string));
 	return (
 		<div className="bg-theme-setting-nav border-theme-primary p-[20px] border  rounded-md mb-[20px]">
 			<div className="flex gap-[20px] items-center" data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item')}>
@@ -40,7 +40,7 @@ const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
 							<Icons.ClockIcon className="text-theme-primary" />
 							<div className="text-theme-primary text-[13px]">
 								{t('webhooksItem.createdBy', {
-									webhookCreateTime: timeFormatI18n(webhookItem.create_time || '', tCommon),
+									webhookCreateTime: timeFormatI18n(webhookItem.createTime || '', tCommon),
 									webhookUserOwnerName: webhookOwner?.user?.username
 								})}
 							</div>
@@ -154,7 +154,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		const request: MezonUpdateClanWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
 			webhook_name: dataForUpdate.webhookNameInput,
-			clan_id: clanId
+			clanId: clanId
 		};
 		await dispatch(
 			updateClanWebhookById({
@@ -170,7 +170,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		const request: MezonUpdateClanWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
 			webhook_name: dataForUpdate.webhookNameInput,
-			clan_id: clanId,
+			clanId: clanId,
 			reset_token: true
 		};
 

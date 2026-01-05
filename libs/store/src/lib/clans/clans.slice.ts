@@ -37,7 +37,7 @@ export interface ClansEntity extends IClan {
 }
 
 export const mapClanToEntity = (clanRes: ApiClanDesc) => {
-	return { ...clanRes, id: clanRes.clan_id || '' };
+	return { ...clanRes, id: clanRes.clanId || '' };
 };
 
 interface ClanMeta {
@@ -47,7 +47,7 @@ interface ClanMeta {
 
 interface ClanUnreadState {
 	id: string; // clanId
-	has_unread_message: boolean;
+	hasUnreadMessage: boolean;
 }
 
 export interface ClanGroup {
@@ -257,7 +257,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 		const body = {
 			banner: '',
 			clan_name,
-			creator_id: '',
+			creatorId: '',
 			logo: logo ?? ''
 		};
 		const response = await mezon.client.createClanDesc(mezon.session, body);
@@ -307,7 +307,7 @@ export const transferClan = createAsyncThunk('clans/transferClan', async (body: 
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.transferOwnership(mezon.session, {
-			clan_id: body.clanId,
+			clanId: body.clanId,
 			new_owner_id: body.new_clan_owner
 		});
 		if (response) {
@@ -345,11 +345,11 @@ export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async (
 
 export const updateClan = createAsyncThunk(
 	'clans/updateClans',
-	async ({ clan_id, request }: { clan_id: string; request: MezonUpdateClanDescBody }, thunkAPI) => {
+	async ({ clanId, request }: { clanId: string; request: MezonUpdateClanDescBody }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.updateClanDesc(mezon.session, clan_id, request);
+			const response = await mezon.client.updateClanDesc(mezon.session, clanId, request);
 
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
@@ -363,18 +363,18 @@ export const updateClan = createAsyncThunk(
 );
 
 type UpdateLinkUser = {
-	avatar_url: string;
-	display_name: string;
+	avatarUrl: string;
+	displayName: string;
 	about_me: string;
 	dob: string;
 	noCache?: boolean;
 	logo?: string;
-	encrypt_private_key?: string;
+	encryptPrivateKey?: string;
 };
 
 export const updateUser = createAsyncThunk(
 	'clans/updateUser',
-	async ({ avatar_url, display_name, about_me, logo, noCache = false, dob, encrypt_private_key }: UpdateLinkUser, thunkAPI) => {
+	async ({ avatarUrl, displayName, about_me, logo, noCache = false, dob, encryptPrivateKey }: UpdateLinkUser, thunkAPI) => {
 		try {
 			const state = thunkAPI.getState() as RootState;
 			const currentUser = state.account?.userProfile;
@@ -383,12 +383,12 @@ export const updateUser = createAsyncThunk(
 
 			const body: Partial<ApiUpdateAccountRequest> = {};
 
-			if (avatar_url && avatar_url !== currentUser?.user?.avatar_url) {
-				body.avatar_url = avatar_url || '';
+			if (avatarUrl && avatarUrl !== currentUser?.user?.avatarUrl) {
+				body.avatarUrl = avatarUrl || '';
 			}
 
-			if (display_name !== currentUser?.user?.display_name) {
-				body.display_name = display_name || '';
+			if (displayName !== currentUser?.user?.displayName) {
+				body.displayName = displayName || '';
 			}
 
 			if (about_me !== undefined) {
@@ -403,8 +403,8 @@ export const updateUser = createAsyncThunk(
 				body.logo = logo;
 			}
 
-			if (encrypt_private_key && encrypt_private_key !== currentUser?.encrypt_private_key) {
-				body.encrypt_private_key = encrypt_private_key;
+			if (encryptPrivateKey && encryptPrivateKey !== currentUser?.encryptPrivateKey) {
+				body.encryptPrivateKey = encryptPrivateKey;
 			}
 
 			if (Object.keys(body).length === 0) {
@@ -420,11 +420,11 @@ export const updateUser = createAsyncThunk(
 				thunkAPI.dispatch(
 					accountActions.setUpdateAccount({
 						logo,
-						encrypt_private_key,
+						encryptPrivateKey,
 						user: {
-							avatar_url: avatar_url || '',
-							display_name: display_name || '',
-							lang_tag: 'en',
+							avatarUrl: avatarUrl || '',
+							displayName: displayName || '',
+							langTag: 'en',
 							location: '',
 							timezone: '',
 							about_me,
@@ -433,8 +433,8 @@ export const updateUser = createAsyncThunk(
 					})
 				);
 
-				if (avatar_url && currentUser?.user?.id && avatar_url !== currentUser?.user?.avatar_url) {
-					setUserAvatarOverride(currentUser.user.id, avatar_url);
+				if (avatarUrl && currentUser?.user?.id && avatarUrl !== currentUser?.user?.avatarUrl) {
+					setUserAvatarOverride(currentUser.user.id, avatarUrl);
 					thunkAPI.dispatch(accountActions.incrementAvatarVersion());
 				}
 
@@ -461,13 +461,13 @@ export const updateUsername = createAsyncThunk('clans/updateUsername', async ({ 
 			return thunkAPI.rejectWithValue([]);
 		}
 		const sessionState = mezon?.session;
-		if (response?.refresh_token && response?.token) {
+		if (response?.refreshToken && response?.token) {
 			return await mezon?.refreshSession(
 				{
 					...sessionState,
-					is_remember: sessionState.is_remember ?? false,
+					isRemember: sessionState.isRemember ?? false,
 					username,
-					refresh_token: response.refresh_token,
+					refreshToken: response.refreshToken,
 					token: response.token
 				},
 				true
@@ -545,15 +545,15 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 						{
 							api_name: 'ListClanUnreadMsgIndicator',
 							list_unread_msg_indicator_req: {
-								clan_id: clanId
+								clanId: clanId
 							}
 						},
 						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),
 						'unread_msg_indicator'
 					);
 
-					if (response && response.has_unread_message !== undefined) {
-						const hasUnread = response.has_unread_message || false;
+					if (response && response.hasUnreadMessage !== undefined) {
+						const hasUnread = response.hasUnreadMessage || false;
 						thunkAPI.dispatch(
 							clansActions.setHasUnreadMessage({
 								clanId,
@@ -611,7 +611,7 @@ export const clansSlice = createSlice({
 		updateClanOwner: (state, action: PayloadAction<{ clanId: string; newOwnerId: string }>) => {
 			clansAdapter.updateOne(state, {
 				id: action.payload.clanId,
-				changes: { creator_id: action.payload.newOwnerId }
+				changes: { creatorId: action.payload.newOwnerId }
 			});
 		},
 
@@ -757,15 +757,15 @@ export const clansSlice = createSlice({
 				const finalBadgeCount = Math.max(0, newBadgeCount);
 				if (!entity.badge_count && finalBadgeCount === 0) return;
 				if (entity.badge_count !== finalBadgeCount) {
-					const newHasUnread = finalBadgeCount === 0 ? false : entity.has_unread_message;
+					const newHasUnread = finalBadgeCount === 0 ? false : entity.hasUnreadMessage;
 
 					if (finalBadgeCount === 0 && newHasUnread === false) {
 						const currentUnreadState = state.clanUnreadStates.entities[clanId];
-						if (currentUnreadState?.has_unread_message !== false) {
+						if (currentUnreadState?.hasUnreadMessage !== false) {
 							clanUnreadAdapter.updateOne(state.clanUnreadStates, {
 								id: clanId,
 								changes: {
-									has_unread_message: false
+									hasUnreadMessage: false
 								}
 							});
 						}
@@ -798,13 +798,13 @@ export const clansSlice = createSlice({
 			if (!currentUnreadState) {
 				clanUnreadAdapter.addOne(state.clanUnreadStates, {
 					id: clanId,
-					has_unread_message: hasUnread
+					hasUnreadMessage: hasUnread
 				});
-			} else if (currentUnreadState.has_unread_message !== hasUnread) {
+			} else if (currentUnreadState.hasUnreadMessage !== hasUnread) {
 				clanUnreadAdapter.updateOne(state.clanUnreadStates, {
 					id: clanId,
 					changes: {
-						has_unread_message: hasUnread
+						hasUnreadMessage: hasUnread
 					}
 				});
 			}
@@ -817,24 +817,24 @@ export const clansSlice = createSlice({
 			clansAdapter.updateOne(state, {
 				id: clanId,
 				changes: {
-					is_onboarding: onboarding
+					isOnboarding: onboarding
 				}
 			});
 		},
 		update: (state, action: PayloadAction<{ dataUpdate: ClanUpdatedEvent }>) => {
 			const { dataUpdate } = action.payload;
 
-			const currentClanData = clansAdapter.getSelectors().selectById(state, dataUpdate.clan_id);
+			const currentClanData = clansAdapter.getSelectors().selectById(state, dataUpdate.clanId);
 			clansAdapter.updateOne(state, {
-				id: dataUpdate.clan_id as string,
+				id: dataUpdate.clanId as string,
 				changes: {
-					clan_id: dataUpdate.clan_id,
+					clanId: dataUpdate.clanId,
 					clan_name: dataUpdate.clan_name,
 					logo: dataUpdate.logo,
 					banner: dataUpdate.banner,
-					is_onboarding: dataUpdate.is_onboarding,
-					welcome_channel_id: dataUpdate.welcome_channel_id !== '-1' ? dataUpdate.welcome_channel_id : currentClanData.welcome_channel_id,
-					prevent_anonymous: dataUpdate?.prevent_anonymous ?? currentClanData.prevent_anonymous
+					isOnboarding: dataUpdate.isOnboarding,
+					welcomeChannelId: dataUpdate.welcomeChannelId !== '-1' ? dataUpdate.welcomeChannelId : currentClanData.welcomeChannelId,
+					preventAnonymous: dataUpdate?.preventAnonymous ?? currentClanData.preventAnonymous
 				}
 			});
 		},
@@ -897,7 +897,7 @@ export const clansSlice = createSlice({
 			const { clanId, new_clan_owner } = action.payload;
 			clansAdapter.updateOne(state, {
 				id: clanId,
-				changes: { creator_id: new_clan_owner }
+				changes: { creatorId: new_clan_owner }
 			});
 		});
 		builder.addCase(updateHasUnreadBasedOnChannels.fulfilled, (state: ClansState, action) => {
@@ -906,13 +906,13 @@ export const clansSlice = createSlice({
 			if (!currentUnreadState) {
 				clanUnreadAdapter.addOne(state.clanUnreadStates, {
 					id: clanId,
-					has_unread_message: hasUnread
+					hasUnreadMessage: hasUnread
 				});
-			} else if (currentUnreadState.has_unread_message !== hasUnread) {
+			} else if (currentUnreadState.hasUnreadMessage !== hasUnread) {
 				clanUnreadAdapter.updateOne(state.clanUnreadStates, {
 					id: clanId,
 					changes: {
-						has_unread_message: hasUnread
+						hasUnreadMessage: hasUnread
 					}
 				});
 			}
@@ -994,12 +994,12 @@ export const selectCurrentClan = createSelector(selectClansEntities, selectCurre
 export const selectCurrentClanBanner = createSelector(selectCurrentClan, (clan) => clan?.banner);
 export const selectCurrentClanLogo = createSelector(selectCurrentClan, (clan) => clan?.logo);
 export const selectCurrentClanName = createSelector(selectCurrentClan, (clan) => clan?.clan_name);
-export const selectCurrentClanCreatorId = createSelector(selectCurrentClan, (clan) => clan?.creator_id);
-export const selectCurrentClanIsOnboarding = createSelector(selectCurrentClan, (clan) => clan?.is_onboarding);
-export const selectCurrentClanWelcomeChannelId = createSelector(selectCurrentClan, (clan) => clan?.welcome_channel_id);
+export const selectCurrentClanCreatorId = createSelector(selectCurrentClan, (clan) => clan?.creatorId);
+export const selectCurrentClanIsOnboarding = createSelector(selectCurrentClan, (clan) => clan?.isOnboarding);
+export const selectCurrentClanWelcomeChannelId = createSelector(selectCurrentClan, (clan) => clan?.welcomeChannelId);
 export const selectCurrentClanBadgeCount = createSelector(selectCurrentClan, (clan) => clan?.badge_count ?? 0);
-export const selectCurrentClanIsCommunity = createSelector(selectCurrentClan, (clan) => clan?.is_community);
-export const selectCurrentClanPreventAnonymous = createSelector(selectCurrentClan, (clan) => clan?.prevent_anonymous ?? false);
+export const selectCurrentClanIsCommunity = createSelector(selectCurrentClan, (clan) => clan?.isCommunity);
+export const selectCurrentClanPreventAnonymous = createSelector(selectCurrentClan, (clan) => clan?.preventAnonymous ?? false);
 
 export const selectDefaultClanId = createSelector(selectAllClans, (clans) => (clans.length > 0 ? clans[0].id : null));
 export const selectOrderedClans = createSelector([selectAllClans, (state: RootState) => state.clans.clansOrder], (clans, order) => {
@@ -1034,7 +1034,7 @@ export const selectInvitePeopleStatus = createSelector(getClansState, (state) =>
 export const selectInviteChannelId = createSelector(getClansState, (state) => state.inviteChannelId);
 export const selectInviteClanId = createSelector(getClansState, (state) => state.inviteClanId);
 export const selectWelcomeChannelByClanId = createSelector([getClansState, (state, clanId: string) => clanId], (state, clanId) => {
-	return selectById(state, clanId)?.welcome_channel_id || null;
+	return selectById(state, clanId)?.welcomeChannelId || null;
 });
 
 export const selectClanGroups = createSelector(getClansState, (state) => clanGroupAdapter.getSelectors().selectAll(state.clanGroups));
@@ -1049,7 +1049,7 @@ export const selectClanUnreadStates = createSelector(getClansState, (state) => s
 
 export const selectClanHasUnreadMessage = (clanId: string) =>
 	createSelector(selectClanUnreadStates, (unreadStates) => {
-		return unreadStates[clanId]?.has_unread_message ?? false;
+		return unreadStates[clanId]?.hasUnreadMessage ?? false;
 	});
 
 export const selectClanExists = (clanId: string) =>

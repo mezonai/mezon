@@ -132,7 +132,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 				source: graphicSource,
 				category: graphic?.category,
 				shortname: isSticker ? editingGraphic.shortname : `:${editingGraphic.shortname}:`,
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			};
 
 			const requestData = {
@@ -181,7 +181,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 		const request: ApiClanStickerAddRequest = {
 			id: finalId,
 			category,
-			clan_id: currentClanId,
+			clanId: currentClanId,
 			source: realImage.url,
 			shortname: isSticker ? editingGraphic.shortname : `:${editingGraphic.shortname}:`,
 			is_for_sale: isForSale

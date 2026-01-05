@@ -34,7 +34,7 @@ const WebhookItemModal = ({ webhookItem, currentChannel, isClanSetting }: IWebho
 	const { t } = useTranslation('clanIntegrationsSetting');
 	const { t: tCommon } = useTranslation('common');
 	const [isExpand, setIsExpand] = useState(false);
-	const webhookOwner = useAppSelector((state) => selectMemberClanByUserId(state, webhookItem.creator_id as string));
+	const webhookOwner = useAppSelector((state) => selectMemberClanByUserId(state, webhookItem.creatorId as string));
 	return (
 		<div className="bg-theme-setting-nav border-theme-primary p-[20px]  rounded-md mb-[20px]">
 			<div className="flex gap-[20px] items-center">
@@ -46,7 +46,7 @@ const WebhookItemModal = ({ webhookItem, currentChannel, isClanSetting }: IWebho
 							<Icons.ClockIcon className="text-theme-primary" />
 							<div className="text-theme-primary text-[13px]">
 								{t('webhooksItem.createdBy', {
-									webhookCreateTime: timeFormatI18n(webhookItem.create_time || '', tCommon),
+									webhookCreateTime: timeFormatI18n(webhookItem.createTime || '', tCommon),
 									webhookUserOwnerName: webhookOwner?.user?.username
 								})}
 							</div>
@@ -107,24 +107,24 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 	const { sessionRef, clientRef } = useMezon();
 	const avatarRef = useRef<HTMLInputElement>(null);
 
-	const webhookChannel = useAppSelector((state) => selectChannelById(state, webhookItem.channel_id ?? '')) || {};
+	const webhookChannel = useAppSelector((state) => selectChannelById(state, webhookItem.channelId ?? '')) || {};
 
-	const [dropdownValue, setDropdownValue] = useState(webhookChannel.channel_label);
+	const [dropdownValue, setDropdownValue] = useState(webhookChannel.channelLabel);
 
 	const [dataForUpdate, setDataForUpdate] = useState<IDataForUpdate>({
-		channelIdForUpdate: webhookItem.channel_id,
+		channelIdForUpdate: webhookItem.channelId,
 		webhookAvatarUrl: webhookItem.avatar,
 		webhookNameInput: webhookItem.webhook_name
 	});
 
 	useEffect(() => {
 		setDataForUpdate({
-			channelIdForUpdate: webhookItem.channel_id,
+			channelIdForUpdate: webhookItem.channelId,
 			webhookAvatarUrl: webhookItem.avatar,
 			webhookNameInput: webhookItem.webhook_name
 		});
-		setDropdownValue(webhookChannel.channel_label);
-	}, [webhookItem.channel_id]);
+		setDropdownValue(webhookChannel.channelLabel);
+	}, [webhookItem.channelId]);
 
 	const [hasChange, setHasChange] = useState<boolean>(false);
 
@@ -132,7 +132,7 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 		const computeHasChanges =
 			dataForUpdate.webhookNameInput !== webhookItem.webhook_name ||
 			dataForUpdate.webhookAvatarUrl !== webhookItem.avatar ||
-			dataForUpdate.channelIdForUpdate !== webhookItem.channel_id;
+			dataForUpdate.channelIdForUpdate !== webhookItem.channelId;
 		setHasChange(computeHasChanges);
 	}, [dataForUpdate.webhookNameInput, dataForUpdate.webhookAvatarUrl, dataForUpdate.channelIdForUpdate]);
 
@@ -169,14 +169,14 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 			avatar: dataForUpdate.webhookAvatarUrl,
 			channel_id_update: dataForUpdate.channelIdForUpdate,
 			webhook_name: dataForUpdate.webhookNameInput,
-			channel_id: currentChannel?.channel_id,
-			clan_id: clanId
+			channelId: currentChannel?.channelId,
+			clanId: clanId
 		};
 		await dispatch(
 			updateWebhookBySpecificId({
 				request,
 				webhookId: webhookItem.id,
-				channelId: currentChannel?.channel_id || '',
+				channelId: currentChannel?.channelId || '',
 				clanId,
 				isClanSetting
 			})
@@ -186,11 +186,11 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 
 	const handleResetChange = () => {
 		setDataForUpdate({
-			channelIdForUpdate: webhookItem.channel_id,
+			channelIdForUpdate: webhookItem.channelId,
 			webhookAvatarUrl: webhookItem.avatar,
 			webhookNameInput: webhookItem.webhook_name
 		});
-		setDropdownValue(webhookChannel.channel_label);
+		setDropdownValue(webhookChannel.channelLabel);
 		setHasChange(false);
 	};
 
@@ -331,7 +331,7 @@ const WebhookItemChannelDropdown = ({
 		if (!hasChange) {
 			setDataForUpdate({
 				...dataForUpdate,
-				channelIdForUpdate: webhookItem.channel_id
+				channelIdForUpdate: webhookItem.channelId
 			});
 		}
 	}, [hasChange]);
@@ -339,18 +339,18 @@ const WebhookItemChannelDropdown = ({
 	const menu = useMemo(() => {
 		const menuItems: ReactElement[] = [];
 		parentChannelsInClan.map((channel) => {
-			if (webhookItem.channel_id !== channel.channel_id) {
+			if (webhookItem.channelId !== channel.channelId) {
 				menuItems.push(
 					<Menu.Item
-						key={channel.channel_id}
-						children={channel.channel_label ?? ''}
+						key={channel.channelId}
+						children={channel.channelLabel ?? ''}
 						className="truncate text-theme-primary bg-item-theme-hover-important"
 						onClick={() => {
 							setDataForUpdate({
 								...dataForUpdate,
-								channelIdForUpdate: channel.channel_id
+								channelIdForUpdate: channel.channelId
 							});
-							setDropdownValue(channel.channel_label);
+							setDropdownValue(channel.channelLabel);
 						}}
 					/>
 				);

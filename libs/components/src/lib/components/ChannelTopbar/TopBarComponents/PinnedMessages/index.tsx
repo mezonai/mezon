@@ -35,9 +35,9 @@ const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 		const channelId = directId || currentChannelId || '';
 		dispatch(
 			pinMessageActions.deleteChannelPinMessage({
-				channel_id: channelId || '',
-				message_id: messageId,
-				clan_id: currentChannelClanId || '0',
+				channelId: channelId || '',
+				messageId: messageId,
+				clanId: currentChannelClanId || '0',
 				pin_id: unpinMess?.pinMessage.id
 			})
 		);
@@ -50,7 +50,7 @@ const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 				<ModalDeletePinMess
 					pinMessage={unpinMess?.pinMessage as PinMessageEntity}
 					contentString={unpinMess?.contentString}
-					handlePinMessage={() => handleUnPinMessage(unpinMess?.pinMessage.message_id || '')}
+					handlePinMessage={() => handleUnPinMessage(unpinMess?.pinMessage.messageId || '')}
 					closeModal={closeDeletePinMessage}
 					attachments={unpinMess?.attachments as ApiMessageAttachment[]}
 					modalref={modalDeleteRef}

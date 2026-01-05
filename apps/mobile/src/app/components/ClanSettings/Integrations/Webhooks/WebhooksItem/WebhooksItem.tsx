@@ -26,7 +26,7 @@ export function WebhooksItem({ webhook, isClanIntegration, isClanSetting }: { we
 		};
 		return date.toLocaleDateString('en-GB', options);
 	};
-	const webhookOwner = useAppSelector((state) => selectMemberClanByUserId(state, webhook.creator_id as string));
+	const webhookOwner = useAppSelector((state) => selectMemberClanByUserId(state, webhook.creatorId as string));
 	const handleEditWebhooks = () => {
 		navigation.navigate(APP_SCREEN.MENU_CLAN.WEBHOOKS_EDIT, {
 			webhook,
@@ -58,7 +58,7 @@ export function WebhooksItem({ webhook, isClanIntegration, isClanSetting }: { we
 					<Text style={styles.name}>{webhook?.webhook_name}</Text>
 					<Text style={styles.textTime}>
 						{t('webhooksItem.createdBy', {
-							webhookCreateTime: convertDate(webhook.create_time || ''),
+							webhookCreateTime: convertDate(webhook.createTime || ''),
 							webhookUserOwnerName: webhookOwner?.user?.username
 						})}
 					</Text>

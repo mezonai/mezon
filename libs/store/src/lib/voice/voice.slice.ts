@@ -63,7 +63,7 @@ export const voiceAdapter = createEntityAdapter({
 });
 
 const normalizeVoiceEntity = (voice: VoiceEntity): VoiceEntity => {
-	const normalizedId = voice.id && voice.id.length > 0 ? voice.id : `${voice.user_id || ''}${voice.voice_channel_id || ''}`;
+	const normalizedId = voice.id && voice.id.length > 0 ? voice.id : `${voice.userId || ''}${voice.voice_channel_id || ''}`;
 	return {
 		...voice,
 		id: normalizedId
@@ -93,20 +93,20 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 					list_channel_users_req: {
 						limit: 100,
 						state: 1,
-						channel_type: channelType,
-						clan_id: clanId
+						channelType: channelType,
+						clanId: clanId
 					}
 				},
 				() => mezon.client.listChannelVoiceUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
 				'voice_user_list'
 			);
 
-			if (!response.voice_channel_users) {
+			if (!response.voiceChannelUsers) {
 				return { users: [] as ApiVoiceChannelUser[], clanId };
 			}
 
 			return {
-				users: response.voice_channel_users,
+				users: response.voiceChannelUsers,
 				clanId
 			};
 		} catch (error) {
@@ -138,8 +138,8 @@ export const kickVoiceMember = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const voiceInfor = selectVoiceInfo(state);
 			const response = await mezon.client.removeMezonMeetParticipant(mezon.session, {
-				clan_id: voiceInfor?.clanId as string,
-				channel_id: voiceInfor?.channelId,
+				clanId: voiceInfor?.clanId as string,
+				channelId: voiceInfor?.channelId,
 				room_name,
 				username: username as string
 			});
@@ -159,8 +159,8 @@ export const muteVoiceMember = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const voiceInfor = selectVoiceInfo(state);
 			const response = await mezon.client.muteMezonMeetParticipant(mezon.session, {
-				clan_id: voiceInfor?.clanId as string,
-				channel_id: voiceInfor?.channelId,
+				clanId: voiceInfor?.clanId as string,
+				channelId: voiceInfor?.channelId,
 				room_name,
 				username: username as string
 			});
@@ -210,7 +210,7 @@ export const voiceSlice = createSlice({
 			const normalizedVoice = normalizeVoiceEntity(action.payload);
 			const duplicateEntry = Object.values(state.entities).find(
 				(member) =>
-					member?.user_id === normalizedVoice.user_id &&
+					member?.userId === normalizedVoice.userId &&
 					member?.voice_channel_id === normalizedVoice.voice_channel_id &&
 					member?.id !== normalizedVoice.id
 			);
@@ -219,9 +219,9 @@ export const voiceSlice = createSlice({
 			}
 
 			voiceAdapter.upsertOne(state, normalizedVoice);
-			if (normalizedVoice.user_id) {
-				state.listInVoiceStatus[normalizedVoice.user_id] = {
-					clanId: normalizedVoice.clan_id,
+			if (normalizedVoice.userId) {
+				state.listInVoiceStatus[normalizedVoice.userId] = {
+					clanId: normalizedVoice.clanId,
 					channelId: normalizedVoice.voice_channel_id
 				};
 			}
@@ -237,7 +237,7 @@ export const voiceSlice = createSlice({
 			}
 
 			const entitiesAfter = voiceAdapter.getSelectors().selectAll(state);
-			const userStillInVoice = entitiesAfter.some((entity) => entity.user_id === voice.voice_user_id);
+			const userStillInVoice = entitiesAfter.some((entity) => entity.userId === voice.voice_user_id);
 			if (!userStillInVoice) {
 				delete state.listInVoiceStatus[voice.voice_user_id];
 			}
@@ -247,7 +247,7 @@ export const voiceSlice = createSlice({
 			const entitiesOfUser = voiceAdapter
 				.getSelectors()
 				.selectAll(state)
-				.filter((entity) => entity.user_id === userId);
+				.filter((entity) => entity.userId === userId);
 			if (entitiesOfUser.length === 0) {
 				delete state.listInVoiceStatus[userId];
 			}
@@ -396,21 +396,21 @@ export const voiceSlice = createSlice({
 					const { users, clanId } = action.payload;
 					state.listInVoiceStatus = {};
 					const members: VoiceEntity[] = users.map((channelRes) => {
-						if (channelRes.user_id && channelRes?.id) {
-							state.listInVoiceStatus[channelRes.user_id] = {
-								channelId: channelRes.channel_id || '',
+						if (channelRes.userId && channelRes?.id) {
+							state.listInVoiceStatus[channelRes.userId] = {
+								channelId: channelRes.channelId || '',
 								clanId
 							};
 						}
 						return {
-							user_id: channelRes.user_id || '',
-							clan_id: clanId,
-							voice_channel_id: channelRes.channel_id || '',
+							userId: channelRes.userId || '',
+							clanId: clanId,
+							voice_channel_id: channelRes.channelId || '',
 							clan_name: '',
 							participant: channelRes.participant || '',
 							voice_channel_label: '',
 							last_screenshot: '',
-							id: (channelRes.user_id || '') + (channelRes.channel_id || '')
+							id: (channelRes.userId || '') + (channelRes.channelId || '')
 						};
 					});
 					voiceAdapter.setAll(state, members);

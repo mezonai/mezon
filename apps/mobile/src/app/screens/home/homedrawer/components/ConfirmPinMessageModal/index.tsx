@@ -41,9 +41,9 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 
 			await dispatch(
 				pinMessageActions.setChannelPinMessage({
-					clan_id: message?.clan_id ?? '0',
-					channel_id: message?.channel_id,
-					message_id: message?.id,
+					clanId: message?.clanId ?? '0',
+					channelId: message?.channelId,
+					messageId: message?.id,
 					message: message
 				})
 			);
@@ -52,16 +52,16 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 			const jsonAttachments = attachments.length > 0 ? JSON.stringify(attachments) : '';
 			const pinBody: UpdatePinMessage = {
 				clanId: isDMMode ? '' : (currentClanId ?? ''),
-				channelId: isDMMode ? currentDm?.id || '' : (currentChannel?.channel_id ?? ''),
+				channelId: isDMMode ? currentDm?.id || '' : (currentChannel?.channelId ?? ''),
 				messageId: message?.id,
 				isPublic: isDMMode ? false : currentChannel ? !currentChannel.channel_private : false,
 				mode: mode as number,
-				senderId: message.sender_id,
-				senderUsername: message.display_name || message.username || message.user?.name || '',
+				senderId: message.senderId,
+				senderUsername: message.displayName || message.username || message.user?.name || '',
 				attachment: jsonAttachments,
-				avatar: message.avatar || message.clan_avatar || '',
+				avatar: message.avatar || message.clanAvatar || '',
 				content: JSON.stringify(message.content),
-				createdTime: message.create_time_seconds ? new Date(message.create_time_seconds * 1000).toISOString() : ''
+				createdTime: message.createTimeSeconds ? new Date(message.createTimeSeconds * 1000).toISOString() : ''
 			};
 
 			dispatch(pinMessageActions.joinPinMessage(pinBody));
@@ -81,9 +81,9 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 			case EMessageActionType.UnPinMessage:
 				dispatch(
 					pinMessageActions.deleteChannelPinMessage({
-						channel_id: params?.['directMessageId'] ? params?.['directMessageId'] : message?.channel_id || '',
-						message_id: message.id,
-						clan_id: message?.clan_id
+						channelId: params?.['directMessageId'] ? params?.['directMessageId'] : message?.channelId || '',
+						messageId: message.id,
+						clanId: message?.clanId
 					})
 				);
 				break;

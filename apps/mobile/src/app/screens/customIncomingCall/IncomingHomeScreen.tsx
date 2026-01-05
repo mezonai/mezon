@@ -158,7 +158,7 @@ const IncomingHomeScreen = memo(() => {
 				setDataCalling(data);
 				dispatch(appActions.setLoadingMainMobile(true));
 				const signalingData = {
-					channel_id: data?.channelId,
+					channelId: data?.channelId,
 					receiver_id: userId,
 					json_data: data?.offer,
 					data_type: WebrtcSignalingType.WEBRTC_SDP_OFFER,
@@ -222,7 +222,7 @@ const IncomingHomeScreen = memo(() => {
 			latestSignalingEntry?.callerId,
 			WebrtcSignalingType.WEBRTC_SDP_QUIT,
 			'{}',
-			latestSignalingEntry?.signalingData?.channel_id,
+			latestSignalingEntry?.signalingData?.channelId,
 			userId
 		);
 		dispatch(DMCallActions.removeAll());

@@ -277,7 +277,7 @@ const ChannelAppList = memo(() => {
 	};
 
 	const handleOpenApp = async (appChannel: ApiChannelAppResponse) => {
-		if (appChannel.app_id && appChannel.app_url && appChannel.channel_id) {
+		if (appChannel.app_id && appChannel.app_url && appChannel.channelId) {
 			const hashData = await dispatch(
 				channelAppActions.generateAppUserHash({
 					appId: appChannel.app_id
@@ -285,14 +285,14 @@ const ChannelAppList = memo(() => {
 			).unwrap();
 			if (hashData.web_app_data) {
 				const store = getStore();
-				const channel = selectChannelById(store.getState(), appChannel.channel_id);
+				const channel = selectChannelById(store.getState(), appChannel.channelId);
 				const encodedHash = encodeURIComponent(hashData.web_app_data);
 				const urlWithHash = `${appChannel.app_url}?data=${encodedHash}`;
 				if (isElectron()) {
 					window.electron.launchAppWindow(urlWithHash);
 					return;
 				}
-				window.open(urlWithHash, channel?.channel_label, 'width=900,height=700');
+				window.open(urlWithHash, channel?.channelLabel, 'width=900,height=700');
 			}
 		}
 	};

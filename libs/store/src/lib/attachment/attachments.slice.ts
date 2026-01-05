@@ -46,8 +46,8 @@ export interface AttachmentState extends EntityState<AttachmentEntity, string> {
 export const attachmentAdapter = createEntityAdapter({
 	selectId: (attachment: AttachmentEntity) => attachment.url as string,
 	sortComparer: (a: AttachmentEntity, b: AttachmentEntity) => {
-		if (a.create_time && b.create_time) {
-			return Date.parse(b.create_time) - Date.parse(a.create_time);
+		if (a.createTime && b.createTime) {
+			return Date.parse(b.createTime) - Date.parse(a.createTime);
 		}
 		return 0;
 	}
@@ -90,15 +90,15 @@ export const fetchChannelAttachmentsCached = async (
 		if (before !== undefined) {
 			const beforeTime = before * 1000;
 			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time) return false;
-				const attTime = new Date(att.create_time).getTime();
+				if (!att.createTime) return false;
+				const attTime = new Date(att.createTime).getTime();
 				return attTime < beforeTime;
 			});
 		} else if (after !== undefined) {
 			const afterTime = after * 1000;
 			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time) return false;
-				const attTime = new Date(att.create_time).getTime();
+				if (!att.createTime) return false;
+				const attTime = new Date(att.createTime).getTime();
 				return attTime > afterTime;
 			});
 		} else {
@@ -129,7 +129,7 @@ export const fetchChannelAttachmentsCached = async (
 export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachment, channelId?: string, clanId?: string) => {
 	const isVideo =
 		attachmentRes?.filetype?.startsWith('video') || attachmentRes?.filetype?.includes('mp4') || attachmentRes?.filetype?.includes('mov');
-	const uniqueId = `${attachmentRes.message_id}_${attachmentRes.url}`;
+	const uniqueId = `${attachmentRes.messageId}_${attachmentRes.url}`;
 	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: uniqueId, channelId, clanId, isVideo };
 	return attachmentEntity;
 };
@@ -248,7 +248,7 @@ export const attachmentSlice = createSlice({
 			const { messageId, channelId } = action.payload;
 			if (state.listAttachmentsByChannel[channelId]) {
 				state.listAttachmentsByChannel[channelId].attachments = state.listAttachmentsByChannel[channelId].attachments.filter(
-					(attachment) => attachment.message_id !== messageId
+					(attachment) => attachment.messageId !== messageId
 				);
 
 				if (state?.listAttachmentsByChannel[channelId].attachments.length === 0) {

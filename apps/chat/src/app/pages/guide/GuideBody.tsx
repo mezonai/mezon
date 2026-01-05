@@ -42,19 +42,19 @@ function GuideBody() {
 			if (index === missionDone || selectUserProcessing?.onboarding_step === DONE_ONBOARDING_STATUS) {
 				switch (mission.task_type) {
 					case ETypeMission.SEND_MESSAGE: {
-						const link = toChannelPage(mission.channel_id as string, currentClanId as string);
+						const link = toChannelPage(mission.channelId as string, currentClanId as string);
 						navigate(link);
 						break;
 					}
 					case ETypeMission.VISIT: {
-						const linkChannel = toChannelPage(mission.channel_id as string, currentClanId as string);
+						const linkChannel = toChannelPage(mission.channelId as string, currentClanId as string);
 						navigate(linkChannel);
-						dispatch(onboardingActions.doneMission({ clan_id: currentClanId as string }));
+						dispatch(onboardingActions.doneMission({ clanId: currentClanId as string }));
 						doneAllMission(index);
 						break;
 					}
 					case ETypeMission.DOSOMETHING: {
-						dispatch(onboardingActions.doneMission({ clan_id: currentClanId as string }));
+						dispatch(onboardingActions.doneMission({ clanId: currentClanId as string }));
 						doneAllMission(index);
 						break;
 					}
@@ -68,7 +68,7 @@ function GuideBody() {
 
 	const doneAllMission = (indexMision: number) => {
 		if (indexMision + 1 === missionSum) {
-			dispatch(onboardingActions.doneOnboarding({ clan_id: currentClanId as string }));
+			dispatch(onboardingActions.doneOnboarding({ clanId: currentClanId as string }));
 		}
 	};
 
@@ -85,7 +85,7 @@ function GuideBody() {
 	const answerPercent = totalAnswersLength > 0 ? (totalNumberAnswer * 100) / totalAnswersLength : 0;
 
 	useEffect(() => {
-		dispatch(fetchOnboarding({ clan_id: currentClanId as string }));
+		dispatch(fetchOnboarding({ clanId: currentClanId as string }));
 	}, []);
 
 	return (
@@ -208,7 +208,7 @@ type TypeItemMission = {
 };
 
 const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
-	const channelById = useSelector((state) => selectChannelById(state, mission.channel_id as string));
+	const channelById = useSelector((state) => selectChannelById(state, mission.channelId as string));
 	return (
 		<GuideItemLayout
 			key={mission.id}
@@ -221,7 +221,7 @@ const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
 			description={
 				<span className="">
 					{titleMission[mission.task_type ? mission.task_type - 1 : 0] || ''}{' '}
-					<span className="font-semibold text-theme-primary-active"> #{channelById?.channel_label} </span>{' '}
+					<span className="font-semibold text-theme-primary-active"> #{channelById?.channelLabel} </span>{' '}
 				</span>
 			}
 			action={

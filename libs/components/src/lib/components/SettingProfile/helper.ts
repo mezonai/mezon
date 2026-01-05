@@ -49,7 +49,7 @@ export const processImage = async (
 
 		if (isMounted) {
 			setUrlImage(attachment.url || '');
-			setFlagOption && setFlagOption(attachment.url !== userProfile?.user?.avatar_url);
+			setFlagOption && setFlagOption(attachment.url !== userProfile?.user?.avatarUrl);
 			setImageObject(null);
 			setImageCropped(null);
 			setIsLoading(false);

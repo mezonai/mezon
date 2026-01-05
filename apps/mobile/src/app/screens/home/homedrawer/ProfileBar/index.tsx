@@ -37,13 +37,13 @@ const ProfileBar = () => {
 					<View style={styles.imageWrapper}>
 						<MezonClanAvatar
 							alt={user?.userProfile?.user?.username || ''}
-							image={createImgproxyUrl(user?.userProfile?.user?.avatar_url ?? '', { width: 150, height: 150, resizeType: 'fit' })}
+							image={createImgproxyUrl(user?.userProfile?.user?.avatarUrl ?? '', { width: 150, height: 150, resizeType: 'fit' })}
 						/>
 					</View>
 					<UserStatus status={userStatus} iconSize={size.s_10} />
 				</View>
 				<View style={styles.userInfo}>
-					<Text style={styles.username} numberOfLines={1}>{user?.userProfile?.user?.display_name || user?.userProfile?.user?.username}</Text>
+					<Text style={styles.username} numberOfLines={1}>{user?.userProfile?.user?.displayName || user?.userProfile?.user?.username}</Text>
 					{!!currentUserCustomStatus && (
 						<Text style={styles.status} numberOfLines={1}>
 							{currentUserCustomStatus}

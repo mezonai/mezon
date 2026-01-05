@@ -71,10 +71,10 @@ type AuditLogItemProps = {
 
 const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
 	const auditLogTime = convertTimeString(logItem?.time_log as string);
-	const userAuditLogItem = useAppSelector((state) => selectMemberClanByUserId(state, logItem?.user_id ?? ''));
+	const userAuditLogItem = useAppSelector((state) => selectMemberClanByUserId(state, logItem?.userId ?? ''));
 	const username = userAuditLogItem?.user?.username;
-	const avatar = getAvatarForPrioritize(userAuditLogItem?.clan_avatar, userAuditLogItem?.user?.avatar_url);
-	const channel = useAppSelector((state) => selectChannelById(state, logItem?.channel_id || ''));
+	const avatar = getAvatarForPrioritize(userAuditLogItem?.clanAvatar, userAuditLogItem?.user?.avatarUrl);
+	const channel = useAppSelector((state) => selectChannelById(state, logItem?.channelId || ''));
 
 	return (
 		<div className=" p-[10px] flex gap-3 items-center border  rounded-md  mb-4 text-theme-primary border-theme-primary bg-item-theme ">
@@ -95,12 +95,12 @@ const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
 			</div>
 			<div>
 				<div className="">
-					{logItem?.channel_id !== '0' ? (
+					{logItem?.channelId !== '0' ? (
 						<span>
 							<span>{username}</span> <span className="lowercase">{logItem?.action_log}</span> :{' '}
 							<strong className="text-theme-primary-active font-medium"> {`${logItem?.entity_name} (${logItem?.entity_id})`}</strong> in{' '}
 							{channel?.parent_id !== '0' ? 'thread' : 'channel'}
-							<strong className="text-theme-primary-active font-medium">{` ${logItem?.channel_label} (${logItem?.channel_id})`}</strong>
+							<strong className="text-theme-primary-active font-medium">{` ${logItem?.channelLabel} (${logItem?.channelId})`}</strong>
 						</span>
 					) : (
 						<span>

@@ -127,7 +127,7 @@ export type ICategoryChannel = ICategory & {
 };
 
 export type IRole = {
-	role_id: string;
+	roleId: string;
 };
 
 export type IRoleUsers = IRole & {
@@ -167,24 +167,24 @@ export type IChannelMember = ClanUserListClanUser & {
 	id: string;
 	channelId?: string;
 	userChannelId?: string;
-	user_id?: string; // use on VoiceChannelList
+	userId?: string; // use on VoiceChannelList
 	participant?: string; // use on VoiceChannelList
 };
 
 export type IThread = {
 	id?: string | undefined;
 	/// new update
-	clan_id?: string | undefined;
+	clanId?: string | undefined;
 	parent_id?: string | undefined;
-	channel_id?: string | undefined;
-	category_id?: string | undefined;
+	channelId?: string | undefined;
+	categoryId?: string | undefined;
 	type?: number;
-	creator_id?: string | undefined;
-	channel_label?: string | undefined;
+	creatorId?: string | undefined;
+	channelLabel?: string | undefined;
 	active?: number;
-	create_time_seconds?: number | string | undefined;
-	update_time_seconds?: number | string | undefined;
-	last_sent_message?: ApiChannelMessageHeader;
+	createTimeSeconds?: number | string | undefined;
+	updateTimeSeconds?: number | string | undefined;
+	lastSentMessage?: ApiChannelMessageHeader;
 	channel_private?: number;
 };
 
@@ -443,12 +443,12 @@ export type IUser = {
 
 export type MetaDateStatusUser = {
 	status: string;
-	user_status?: string;
+	userStatus?: string;
 };
 
 export type IVoice = {
-	user_id: string;
-	clan_id: string;
+	userId: string;
+	clanId: string;
 	clan_name: string;
 	participant: string;
 	voice_channel_id: string;
@@ -457,8 +457,8 @@ export type IVoice = {
 };
 
 export type IUserStream = {
-	user_id: string;
-	clan_id: string;
+	userId: string;
+	clanId: string;
 	clan_name: string;
 	participant: string;
 	streaming_channel_id: string;
@@ -466,8 +466,8 @@ export type IUserStream = {
 };
 
 export type IChannelsStream = {
-	channel_id: string;
-	clan_id: string;
+	channelId: string;
+	clanId: string;
 	is_streaming: boolean;
 	streaming_url: string;
 };
@@ -572,23 +572,23 @@ export interface ContentNotificationChannel {
 
 export interface NotificationContent {
 	avatar?: string;
-	channel_id: string;
-	channel_label: string;
-	clan_id?: string;
+	channelId: string;
+	channelLabel: string;
+	clanId?: string;
 	code: number;
 	content: string;
-	create_time: string;
+	createTime: string;
 	reactions?: Array<ApiMessageReaction>;
 	mentions?: Array<ApiMessageMention>;
 	attachments?: Array<ApiMessageAttachment>;
 	references?: Array<ApiMessageRef>;
-	referenced_message?: ChannelMessage;
+	referencedMessage?: ChannelMessage;
 	id: string;
 	persistent?: boolean;
-	sender_id: string;
-	update_time?: { seconds: number };
-	clan_logo?: string;
-	category_name?: string;
+	senderId: string;
+	updateTime?: { seconds: number };
+	clanLogo?: string;
+	categoryName?: string;
 	username?: string;
 }
 
@@ -613,32 +613,32 @@ export enum MemberProfileType {
 
 export type IReaction = ApiMessageReaction & {
 	id: string;
-	message_id: string;
+	messageId: string;
 };
 
 export type IEmoji = {
 	category?: string;
-	creator_id?: string;
+	creatorId?: string;
 	id?: string;
 	shortname?: string;
 	src?: string;
 	logo?: string;
 	clan_name?: string;
-	clan_id?: string;
+	clanId?: string;
 	is_for_sale?: boolean;
 };
 
 export type IEmojiRecent = {
-	emoji_id?: string;
-	emoji_recents_id?: string;
-	update_time?: string;
+	emojiId?: string;
+	emojiRecentsId?: string;
+	updateTime?: string;
 };
 
 export type IChannelUser = ChannelDescription & {
 	id: string;
 	active?: number;
 	count_mess_unread?: number;
-	last_seen_message?: any;
+	lastSeenMessage?: any;
 };
 
 export type IUsers = ApiUser & {
@@ -686,17 +686,17 @@ export type EmojiDataOptionals = {
 	emojiId: string | undefined;
 	emoji: string | undefined;
 	senders: SenderInfoOptionals[];
-	channel_id?: string;
-	message_id?: string;
+	channelId?: string;
+	messageId?: string;
 };
 
 export type SenderInfoOptionals = {
-	sender_id?: string;
+	senderId?: string;
 	count: number | undefined;
 };
 
 export type ChannelDraftMessages = {
-	message_id: string;
+	messageId: string;
 	draftContent: IMessageSendPayload;
 	draftMention: ApiMessageMention[];
 	draftAttachment: ApiMessageAttachment[];
@@ -751,9 +751,9 @@ export type MentionsInputChangeEvent = {
 export type OnChangeHandlerFunc = (event: MentionsInputChangeEvent, newValue: string, newPlainTextValue: string, mentions: any) => void;
 
 export type UserMentionsOpt = {
-	user_id?: string | undefined;
+	userId?: string | undefined;
 	username?: string | undefined;
-	role_id?: string | undefined;
+	roleId?: string | undefined;
 	rolename?: string | undefined;
 };
 
@@ -789,9 +789,9 @@ export interface ChannelMembersEntity extends IChannelMember {
 	id: string; // Primary ID
 	name?: string;
 	clanNick?: string;
-	display_name?: string;
+	displayName?: string;
 	username?: string;
-	avatar_url?: string;
+	avatarUrl?: string;
 }
 
 export type SortChannel = {
@@ -872,7 +872,7 @@ export type EmojiStorage = {
 	messageId: string;
 	senderId: string;
 	action: boolean;
-	channel_id?: string;
+	channelId?: string;
 };
 
 export enum Direction_Mode {
@@ -927,7 +927,7 @@ export enum ModeResponsive {
 }
 
 export type ApiChannelMessageHeaderWithChannel = ApiChannelMessageHeader & {
-	channel_id: string;
+	channelId: string;
 };
 
 export enum ThemeApp {
@@ -945,12 +945,12 @@ export interface NotificationEntity extends INotification {
 }
 
 export type TNotificationChannel = {
-	channel_id?: string;
-	clan_logo?: string;
-	channel_label?: string;
-	clan_id?: string;
+	channelId?: string;
+	clanLogo?: string;
+	channelLabel?: string;
+	clanId?: string;
 	clan_name?: string;
-	category_name?: string;
+	categoryName?: string;
 	notifications: NotificationEntity[];
 };
 
@@ -1080,7 +1080,7 @@ export enum ENotificationTypes {
 export type PreSendAttachment = {
 	channelId?: string;
 	mode?: string;
-	clan_id?: string;
+	clanId?: string;
 	files: ApiMessageAttachment[];
 };
 
@@ -1124,12 +1124,12 @@ export enum ThreadStatus {
 
 export type ICanvas = {
 	id?: string;
-	clan_id: string;
-	channel_id: string;
+	clanId: string;
+	channelId: string;
 	title?: string;
 	content?: string;
 	is_default?: boolean;
-	creator_id?: string;
+	creatorId?: string;
 	parent_id?: string;
 };
 
@@ -1137,7 +1137,7 @@ export type CanvasUpdate = {
 	content: string;
 	id: string;
 	title: string;
-	update_time?: string;
+	updateTime?: string;
 };
 
 export type IActivity = {
@@ -1148,7 +1148,7 @@ export type IActivity = {
 	end_time?: string;
 	start_time?: string;
 	status?: number;
-	user_id?: string;
+	userId?: string;
 	id: string;
 };
 
@@ -1358,19 +1358,19 @@ export type IUserAuditLog = {
 };
 
 export type IUserProfileActivity = {
-	avatar_url?: string;
-	display_name?: string;
+	avatarUrl?: string;
+	displayName?: string;
 	id: string;
 	username?: string;
 	online?: boolean;
 	status?: string;
-	user_status?: string;
-	is_mobile?: boolean;
+	userStatus?: string;
+	isMobile?: boolean;
 };
 
 export type UserStatus = {
 	status: string;
-	user_status: string;
+	userStatus: string;
 };
 
 export type UserStatusUpdate = {
@@ -1399,7 +1399,7 @@ export type IDmCallInfo = {
 };
 
 export type ImageWindowProps = {
-	attachmentData: ApiMessageAttachment & { create_time?: string };
+	attachmentData: ApiMessageAttachment & { createTime?: string };
 	messageId: string;
 	mode: ChannelStreamMode;
 	attachmentUrl: string;
@@ -1454,7 +1454,7 @@ export type MentionReactInputProps = {
 
 export type IOtherCall = {
 	caller_id?: string;
-	channel_id?: string;
+	channelId?: string;
 };
 
 export type IPermissonMedia = 'granted' | 'denied' | 'not_found';

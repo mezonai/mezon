@@ -13,7 +13,7 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
-	const infoFriend = useSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''));
+	const infoFriend = useSelector((state) => selectFriendById(state, currentDmGroup?.userIds?.[0] || ''));
 
 	const isBlocked = useMemo(() => {
 		if (currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_DM) return false;
@@ -35,8 +35,8 @@ export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId
 			{directMessageId && (
 				<ChatMessageWrapper
 					directMessageId={directMessageId}
-					lastSeenMessageId={currentDmGroup?.last_seen_message?.id}
-					lastSentMessageId={currentDmGroup?.last_sent_message?.id}
+					lastSeenMessageId={currentDmGroup?.lastSeenMessage?.id}
+					lastSentMessageId={currentDmGroup?.lastSentMessage?.id}
 					isModeDM={isModeDM}
 					isBlocked={isBlocked}
 					dmType={dmType}

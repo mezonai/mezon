@@ -20,7 +20,7 @@ type ModalDeletePinMessProps = {
 export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 	const { pinMessage, contentString, closeModal, handlePinMessage, attachments, modalref } = props;
 	const { t } = useTranslation('channelTopbar');
-	const userSender = useAppSelector((state) => selectMemberClanByUserId(state, pinMessage.sender_id as string));
+	const userSender = useAppSelector((state) => selectMemberClanByUserId(state, pinMessage.senderId as string));
 	return (
 		<div
 			ref={modalref}
@@ -38,7 +38,7 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 						</div>
 						<div className="flex text-sm flex-col gap-1 text-left flex-1 min-w-0 pointer-events-none [&_.attachment-actions]:!hidden [&_button]:!hidden">
 							<div className="font-medium">
-								{userSender?.clan_nick || userSender?.user?.display_name || userSender?.user?.username || pinMessage.username}
+								{userSender?.clanNick || userSender?.user?.displayName || userSender?.user?.username || pinMessage.username}
 							</div>
 							{contentString && (
 								<MessageLine
@@ -47,7 +47,7 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 									isTokenClickAble={false}
 									content={safeJSONParse(pinMessage.content || '{}')}
 									isInPinMsg={true}
-									messageId={pinMessage.message_id}
+									messageId={pinMessage.messageId}
 									isSearchMessage={true}
 								/>
 							)}

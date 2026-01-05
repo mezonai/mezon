@@ -16,7 +16,7 @@ export type MezonElectronAPI = {
 	onWindowFocused: (callback: () => void) => void;
 	openImageWindow: (
 		currentImage: ApiMessageAttachment & {
-			create_time?: string;
+			createTime?: string;
 			uploaderData: { name: string; avatar: string };
 			realUrl: string;
 			channelImagesData: IImageWindowProps;

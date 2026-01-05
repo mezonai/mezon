@@ -60,9 +60,9 @@ const NotificationSettingDetail = memo(({ route }: { route: any }) => {
 			if (title === 'category') {
 				dispatch(
 					defaultNotificationCategoryActions.setDefaultNotificationCategory({
-						category_id: currentChannelId,
+						categoryId: currentChannelId,
 						notification_type: value,
-						clan_id: currentClanId || '',
+						clanId: currentClanId || '',
 						title,
 						label
 					})
@@ -71,9 +71,9 @@ const NotificationSettingDetail = memo(({ route }: { route: any }) => {
 			if (title === 'channel') {
 				dispatch(
 					notificationSettingActions.setNotificationSetting({
-						channel_id: currentChannelId,
+						channelId: currentChannelId,
 						notification_type: value,
-						clan_id: currentClanId || '',
+						clanId: currentClanId || '',
 						title,
 						label
 					})
@@ -88,13 +88,13 @@ const NotificationSettingDetail = memo(({ route }: { route: any }) => {
 		if (title === 'category') {
 			dispatch(
 				defaultNotificationCategoryActions.deleteDefaultNotificationCategory({
-					category_id: currentChannelId,
-					clan_id: currentClanId
+					categoryId: currentChannelId,
+					clanId: currentClanId
 				})
 			);
 		}
 		if (title === 'channel') {
-			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channel_id: currentChannelId, clan_id: currentClanId || '' }));
+			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channelId: currentChannelId, clanId: currentClanId || '' }));
 		}
 	}, [title, currentChannelId, currentClanId, dispatch]);
 

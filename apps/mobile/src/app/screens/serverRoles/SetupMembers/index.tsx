@@ -86,7 +86,7 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 	};
 
 	const updateMemberToRole = async () => {
-		const response = await updateRole(newRole?.clan_id, newRole?.id, newRole?.title, newRole?.color || '', selectedMemberIdList, [], [], []);
+		const response = await updateRole(newRole?.clanId, newRole?.id, newRole?.title, newRole?.color || '', selectedMemberIdList, [], [], []);
 		if (response) {
 			navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);
 			Toast.show({
@@ -111,9 +111,9 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 		const memberList = isEditRoleMode ? assignedMemberList : usersClan;
 		return memberList?.filter(
 			(it) =>
-				normalizeString(it?.user?.display_name).includes(normalizeString(searchMemberText)) ||
+				normalizeString(it?.user?.displayName).includes(normalizeString(searchMemberText)) ||
 				normalizeString(it?.user?.username).includes(normalizeString(searchMemberText)) ||
-				normalizeString(it?.clan_nick).includes(normalizeString(searchMemberText))
+				normalizeString(it?.clanNick).includes(normalizeString(searchMemberText))
 		);
 	}, [searchMemberText, assignedMemberList, isEditRoleMode, usersClan]);
 

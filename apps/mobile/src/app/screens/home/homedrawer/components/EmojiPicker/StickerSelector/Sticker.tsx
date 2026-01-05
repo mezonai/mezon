@@ -109,7 +109,7 @@ const Sticker = ({ stickerList, categoryName, onClickSticker, isAudio, forSale, 
 						emojiRecentActions.buyItemForSale({
 							id: sticker?.id,
 							type: ITEM_TYPE.STICKER,
-							creatorId: sticker?.creator_id,
+							creatorId: sticker?.creatorId,
 							username: userProfile?.user?.username,
 							senderId: userProfile?.user?.id
 						})

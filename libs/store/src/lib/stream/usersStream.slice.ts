@@ -21,7 +21,7 @@ export interface UsersStreamState extends EntityState<UsersStreamEntity, string>
 }
 
 export const userStreamAdapter = createEntityAdapter({
-	selectId: (user: UsersStreamEntity) => user.user_id || ''
+	selectId: (user: UsersStreamEntity) => user.userId || ''
 });
 
 type fetchStreamChannelMembersPayload = {
@@ -43,8 +43,8 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 					list_channel_users_req: {
 						limit: 100,
 						state: 1,
-						channel_type: channelType,
-						clan_id: clanId
+						channelType: channelType,
+						clanId: clanId
 					}
 				},
 				() => mezon.client.listStreamingChannelUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
@@ -57,9 +57,9 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 
 			const members = response.streaming_channel_users.map((channelRes) => {
 				return {
-					user_id: channelRes.user_id || '',
-					clan_id: clanId,
-					streaming_channel_id: channelRes.channel_id || '',
+					userId: channelRes.userId || '',
+					clanId: clanId,
+					streaming_channel_id: channelRes.channelId || '',
 					clan_name: '',
 					participant: channelRes.participant || '',
 					streaming_channel_label: '',

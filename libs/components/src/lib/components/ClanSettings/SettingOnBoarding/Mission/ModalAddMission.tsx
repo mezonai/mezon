@@ -47,7 +47,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 	}, [allChannel]);
 
 	const [title, setTitle] = useState(missionEdit?.title || '');
-	const [missionChannel, setMissionChannel] = useState(missionEdit?.channel_id || listMissionChannel[0]?.id || '');
+	const [missionChannel, setMissionChannel] = useState(missionEdit?.channelId || listMissionChannel[0]?.id || '');
 	const [mission, setMission] = useState<ETypeMission>(missionEdit?.task_type || ETypeMission.SEND_MESSAGE);
 	const [error, setError] = useState('');
 	const dispatch = useAppDispatch();
@@ -77,7 +77,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 			if (title !== missionEdit?.title) {
 				return true;
 			}
-			if (missionChannel !== missionEdit?.channel_id) {
+			if (missionChannel !== missionEdit?.channelId) {
 				return true;
 			}
 			if (mission !== missionEdit?.task_type) {
@@ -105,13 +105,13 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 		if (missionEdit?.id) {
 			dispatch(
 				editOnboarding({
-					clan_id: currentClanId as string,
+					clanId: currentClanId as string,
 					idOnboarding: missionEdit?.id as string,
 					content: {
 						title,
 						guide_type: EGuideType.TASK,
 						task_type: mission || 0,
-						channel_id: missionChannel
+						channelId: missionChannel
 					}
 				})
 			);
@@ -125,7 +125,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 					title,
 					guide_type: EGuideType.TASK,
 					task_type: mission || 0,
-					channel_id: missionChannel
+					channelId: missionChannel
 				},
 				update: tempId
 			})
@@ -151,7 +151,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 		}
 		dispatch(
 			onboardingActions.removeOnboardingTask({
-				clan_id: missionEdit.clan_id as string,
+				clanId: missionEdit.clanId as string,
 				idTask: missionEdit.id as string,
 				type: EGuideType.TASK
 			})
@@ -191,7 +191,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 									key={channel.id}
 									className="text-theme-primary bg-theme-setting-primary bg-item-them-hover"
 								>
-									{channel.channel_label}
+									{channel.channelLabel}
 								</option>
 							))}
 						</select>

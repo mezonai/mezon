@@ -82,7 +82,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const channelVoice = useAppSelector((state) => selectChannelById(state, voiceChannel ?? '')) || {};
 	const textChannel = useAppSelector((state) => selectChannelById(state, textChannelId ?? '')) || {};
 	const isThread = textChannel?.type === ChannelType.CHANNEL_TYPE_THREAD;
-	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
+	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creatorId || ''));
 	const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);
 	const checkOptionVoice = useMemo(() => option === OptionEvent.OPTION_SPEAKER, [option]);
 	const checkOptionLocation = useMemo(() => option === OptionEvent.OPTION_LOCATION, [option]);
@@ -123,7 +123,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		if (isPrivateEvent) {
 			return `${process.env.NX_CHAT_APP_REDIRECT_URI}${externalLink}`;
 		}
-		return `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${event?.clan_id}/channels/${event?.channel_voice_id || event?.channel_id}`;
+		return `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${event?.clanId}/channels/${event?.channel_voice_id || event?.channelId}`;
 	}, []);
 
 	const handleCopyLink = useCallback(() => {
@@ -184,7 +184,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 
 	const redirectToVoice = () => {
 		if (channelVoice) {
-			const channelUrl = toChannelPage(channelVoice.channel_id as string, channelVoice.clan_id as string);
+			const channelUrl = toChannelPage(channelVoice.channelId as string, channelVoice.clanId as string);
 			navigate(channelUrl);
 			onClose();
 		}
@@ -202,8 +202,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const [isInterested, setIsInterested] = useState(false);
 
 	useEffect(() => {
-		if (userId && event?.user_ids) {
-			setIsInterested(event.user_ids.includes(userId));
+		if (userId && event?.userIds) {
+			setIsInterested(event.userIds.includes(userId));
 		}
 	}, [userId, event]);
 
@@ -211,7 +211,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		if (!event?.id) return;
 
 		const request: ApiUserEventRequest = {
-			clan_id: event.clan_id,
+			clanId: event.clanId,
 			event_id: event.id
 		};
 
@@ -263,7 +263,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							</p>
 						)}
 					</div>
-					{event?.creator_id && (
+					{event?.creatorId && (
 						<Tooltip
 							placement="left"
 							overlay={
@@ -280,15 +280,15 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 									alt={userCreate?.user?.username || ''}
 									username={userCreate?.user?.username}
 									className="min-w-6 min-h-6 max-w-6 max-h-6"
-									srcImgProxy={createImgproxyUrl(userCreate?.user?.avatar_url ?? '')}
-									src={userCreate?.user?.avatar_url}
+									srcImgProxy={createImgproxyUrl(userCreate?.user?.avatarUrl ?? '')}
+									src={userCreate?.user?.avatarUrl}
 									classNameText="text-[9px] pt-[3px]"
 								/>
 								<div
 									className="flex items-center gap-x-1 w-full justify-end px-2 py-1 rounded-full bg-theme-primary text-theme-primary-active"
-									title={t('eventCreator:eventDetail.personInterested', { count: event?.user_ids?.length })}
+									title={t('eventCreator:eventDetail.personInterested', { count: event?.userIds?.length })}
 								>
-									<span className="text-md">{event?.user_ids?.length}</span>
+									<span className="text-md">{event?.userIds?.length}</span>
 									<Icons.MemberList defaultSize="h-4 w-4" />
 								</div>
 							</div>
@@ -343,7 +343,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							return (
 								<a {...linkProps} className="flex gap-x-2 cursor-pointer">
 									<Icons.Speaker />
-									<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
+									<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channelLabel}</p>
 								</a>
 							);
 						})()}
@@ -356,7 +356,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					{option === '' && !address && !channelVoice && (
 						<>
 							<Icons.Location />
-							<p className="hover:underline ">{channelFirst.channel_label}</p>
+							<p className="hover:underline ">{channelFirst.channelLabel}</p>
 						</>
 					)}
 					{isPrivateEvent && (
@@ -443,7 +443,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							{t('eventCreator:eventDetail.audienceConsists')}{' '}
 							{isThread ? t('eventCreator:eventDetail.thread') : t('eventCreator:eventDetail.channel')}
 							<strong className="" data-e2e={generateE2eId('clan_page.modal.create_event.review.text_channel')}>
-								{textChannel.channel_label}
+								{textChannel.channelLabel}
 							</strong>
 						</p>
 					</span>

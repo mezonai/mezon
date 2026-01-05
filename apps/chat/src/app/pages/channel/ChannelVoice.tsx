@@ -92,9 +92,9 @@ const ChannelVoiceInner = () => {
 
 			await dispatch(
 				handleParticipantVoiceState({
-					clan_id: clanId,
-					channel_id: channelId,
-					display_name: userProfile?.user?.display_name ?? '',
+					clanId: clanId,
+					channelId: channelId,
+					displayName: userProfile?.user?.displayName ?? '',
 					state,
 					room_name: self && state === ParticipantMeetState.LEAVE ? 'leave' : voiceInfo?.roomId || ''
 				})
@@ -223,8 +223,8 @@ const ChannelVoiceInner = () => {
 			>
 				{token === '' || !serverUrl || voiceInfo?.clanId === '0' ? (
 					<PreJoinVoiceChannel
-						channel_label={currentChannelLabel}
-						channel_id={currentChannelId as string}
+						channelLabel={currentChannelLabel}
+						channelId={currentChannelId as string}
 						roomName={currentChannelMeetingCode}
 						loading={loading}
 						handleJoinRoom={handleJoinRoom}
@@ -233,10 +233,10 @@ const ChannelVoiceInner = () => {
 					<>
 						<PreJoinVoiceChannel
 							roomName={currentChannelMeetingCode}
-							channel_id={currentChannelId as string}
+							channelId={currentChannelId as string}
 							loading={loading}
 							handleJoinRoom={handleJoinRoom}
-							channel_label={currentChannelLabel}
+							channelLabel={currentChannelLabel}
 							isCurrentChannel={isShow}
 						/>
 

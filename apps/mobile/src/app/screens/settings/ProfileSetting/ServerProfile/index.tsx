@@ -50,11 +50,11 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 
 	useEffect(() => {
 		const { username } = userProfile?.user || {};
-		const { nick_name } = userClansProfile || {};
+		const { nickName } = userClansProfile || {};
 		const initialValue: IUserProfileValue = {
 			username: username || '',
-			imgUrl: userClansProfile?.avatar || userProfile?.user?.avatar_url || '',
-			displayName: nick_name || '',
+			imgUrl: userClansProfile?.avatar || userProfile?.user?.avatarUrl || '',
+			displayName: nickName || '',
 			aboutMe: ''
 		};
 
@@ -96,7 +96,7 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 		}
 		try {
 			dispatch(appActions.setLoadingMainMobile(true));
-			const response = await updateUserClanProfile(selectedClan?.clan_id ?? '', displayName?.trim() || '', imgUrl || '');
+			const response = await updateUserClanProfile(selectedClan?.clanId ?? '', displayName?.trim() || '', imgUrl || '');
 
 			dispatch(appActions.setLoadingMainMobile(false));
 			if (response) {
@@ -144,7 +144,7 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 
 										<Text style={styles.clanName}>{item?.clan_name}</Text>
 									</View>
-									{item?.clan_id === selectedClan?.clan_id ? (
+									{item?.clanId === selectedClan?.clanId ? (
 										<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color="green" />
 									) : null}
 								</TouchableOpacity>
@@ -178,16 +178,16 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 			)}
 
 			<BannerAvatar
-				avatar={currentClanProfileValue?.imgUrl || userProfile?.user?.avatar_url}
+				avatar={currentClanProfileValue?.imgUrl || userProfile?.user?.avatarUrl}
 				alt={currentClanProfileValue?.username}
 				onLoad={handleAvatarChange}
-				defaultAvatar={userProfile?.user?.avatar_url || ''}
+				defaultAvatar={userProfile?.user?.avatarUrl || ''}
 			/>
 
 			<View style={styles.clanProfileDetail}>
 				<View style={styles.nameWrapper}>
 					<Text style={styles.displayNameText}>
-						{currentClanProfileValue?.displayName || userProfile?.user?.display_name || userProfile?.user?.username}
+						{currentClanProfileValue?.displayName || userProfile?.user?.displayName || userProfile?.user?.username}
 					</Text>
 					<Text style={styles.usernameText}>{currentClanProfileValue?.username}</Text>
 				</View>
@@ -195,7 +195,7 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 				<MezonInput
 					value={currentClanProfileValue?.displayName}
 					onTextChange={(newValue) => onValueChange({ displayName: newValue })}
-					placeHolder={currentClanProfileValue?.displayName || userProfile?.user?.display_name || userProfile?.user?.username}
+					placeHolder={currentClanProfileValue?.displayName || userProfile?.user?.displayName || userProfile?.user?.username}
 					maxCharacter={32}
 					label={t('fields.clanNickname.label')}
 					errorMessage={isDuplicateClanNickname ? 'The nick name already exists in the clan. Please enter another nick name.' : ''}

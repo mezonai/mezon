@@ -21,7 +21,7 @@ const DeleteWebhookPopup = ({ webhookItem, currentChannel, closeShowPopup, isCla
 		dispatch(
 			deleteWebhookById({
 				webhook,
-				channelId: currentChannel?.channel_id as string,
+				channelId: currentChannel?.channelId as string,
 				clanId: currentClanId as string,
 				isClanSetting
 			})

@@ -24,8 +24,8 @@ type ThreadLinkWrapperProps = {
 export const ThreadLinkWrapper: React.FC<ThreadLinkWrapperProps> = ({ thread, notLastThread, isActive }) => {
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
 	const threadMeta = useAppSelector((state) => selectChannelMetaById(state, thread?.id));
-	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, thread.category_id as string));
-	const allThreadBehind = useAppSelector((state) => selectAllThreadUnreadBehind(state, thread?.clan_id, thread?.parent_id, thread?.id));
+	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, thread.categoryId as string));
+	const allThreadBehind = useAppSelector((state) => selectAllThreadUnreadBehind(state, thread?.clanId, thread?.parent_id, thread?.id));
 	const channelMetadata = useSelector(selectChannelMetaEntities);
 
 	const isShowThread = (thread: IChannel) => {

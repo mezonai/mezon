@@ -31,7 +31,7 @@ export interface PermissionRoleChannelState {
 }
 
 export const permissionRoleChannelAdapter = createEntityAdapter({
-	selectId: (permission: ApiPermissionRoleChannelListEventResponse) => permission.user_id || permission.role_id || ''
+	selectId: (permission: ApiPermissionRoleChannelListEventResponse) => permission.userId || permission.roleId || ''
 });
 
 type fetchChannelsArgs = {
@@ -118,11 +118,11 @@ export const setPermissionRoleChannel = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				channel_id: channelId,
-				role_id: roleId,
+				channelId: channelId,
+				roleId: roleId,
 				permission_update: permission,
 				max_permission_id: maxPermissionId,
-				user_id: userId
+				userId: userId
 			};
 			const response = await mezon.client.setRoleChannelPermission(mezon.session, body);
 			if (response) {
@@ -177,21 +177,21 @@ export const permissionRoleChannelSlice = createSlice({
 				state.loadingStatus = 'loading';
 			})
 			.addCase(fetchPermissionRoleChannel.fulfilled, (state: PermissionRoleChannelState, action: PayloadAction<any>) => {
-				const { channel_id, fromCache } = action.payload;
+				const { channelId, fromCache } = action.payload;
 
-				if (!state.cacheByChannels[channel_id]) {
-					state.cacheByChannels[channel_id] = {
+				if (!state.cacheByChannels[channelId]) {
+					state.cacheByChannels[channelId] = {
 						permissionRoleChannel: permissionRoleChannelAdapter.getInitialState()
 					};
 				}
 
 				if (!fromCache) {
-					state.cacheByChannels[channel_id].permissionRoleChannel = permissionRoleChannelAdapter.addOne(
-						state.cacheByChannels[channel_id].permissionRoleChannel,
+					state.cacheByChannels[channelId].permissionRoleChannel = permissionRoleChannelAdapter.addOne(
+						state.cacheByChannels[channelId].permissionRoleChannel,
 						action.payload
 					);
 
-					state.cacheByChannels[channel_id].cache = createCacheMetadata();
+					state.cacheByChannels[channelId].cache = createCacheMetadata();
 				}
 				state.loadingStatus = 'loaded';
 			})
@@ -213,9 +213,9 @@ export const permissionRoleChannelSlice = createSlice({
 					}));
 				if (state.cacheByChannels[channelId]?.permissionRoleChannel) {
 					permissionRoleChannelAdapter.upsertOne(state.cacheByChannels[channelId]?.permissionRoleChannel, {
-						role_id: roleId,
-						user_id: userId,
-						channel_id: channelId,
+						roleId: roleId,
+						userId: userId,
+						channelId: channelId,
 						permission_role_channel: listUpdate
 					});
 				}

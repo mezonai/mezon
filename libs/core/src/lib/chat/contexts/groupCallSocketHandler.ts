@@ -10,7 +10,7 @@ export interface GroupCallSocketHandlerOptions {
 export interface ParsedCallData {
 	is_video?: boolean;
 	group_name?: string;
-	channel_label?: string;
+	channelLabel?: string;
 	caller_name?: string;
 	caller_display_name?: string;
 	participants?: string[];
@@ -54,7 +54,7 @@ export const handleGroupCallSocketEvent = async (
 
 		const sendBusySignal = (callData: ParsedCallData, isVideoCall: boolean) => {
 			try {
-				if (!socketRef.current || !event.caller_id || !event.channel_id) {
+				if (!socketRef.current || !event.caller_id || !event.channelId) {
 					console.warn('Cannot send busy signal: missing socket or event data');
 					return;
 				}
@@ -64,13 +64,13 @@ export const handleGroupCallSocketEvent = async (
 					13, // GROUP_CALL_JOINED_OTHER_CALL
 					JSON.stringify({
 						is_video: isVideoCall,
-						group_id: event.channel_id,
+						groupId: event.channelId,
 						caller_id: userId,
 						busy_user_id: userId,
 						timestamp: Date.now(),
 						reason: 'busy'
 					}),
-					event.channel_id,
+					event.channelId,
 					userId || ''
 				);
 			} catch (error) {
@@ -81,16 +81,16 @@ export const handleGroupCallSocketEvent = async (
 		switch (event.data_type) {
 			case 9: {
 				// GROUP_CALL_OFFER - Incoming call
-				if (!event?.channel_id) {
-					console.error('Missing channel_id in group call offer');
+				if (!event?.channelId) {
+					console.error('Missing channelId in group call offer');
 					return true;
 				}
 
-				dispatch(audioCallActions.setGroupCallId(event.channel_id));
+				dispatch(audioCallActions.setGroupCallId(event.channelId));
 				const callData = parseCallData(event?.json_data as string, 'GROUP_CALL_OFFER');
 				const isVideoCall = callData?.is_video === true;
 
-				const isInSameGroup = currentVoiceInfo?.channelId === event.channel_id && currentVoiceInfo?.clanId === '0' && isGroupCallActive;
+				const isInSameGroup = currentVoiceInfo?.channelId === event.channelId && currentVoiceInfo?.clanId === '0' && isGroupCallActive;
 
 				if (isInSameGroup) {
 					dispatch(audioCallActions.setIsRingTone(false));
@@ -102,7 +102,7 @@ export const handleGroupCallSocketEvent = async (
 					if (socketRef.current && event.caller_id) {
 						const answerData = {
 							is_video: isVideoCall,
-							group_id: event.channel_id,
+							groupId: event.channelId,
 							caller_id: userId,
 							caller_name: currentVoiceInfo?.channelLabel || 'User',
 							action: 'auto_join',
@@ -113,7 +113,7 @@ export const handleGroupCallSocketEvent = async (
 							event.caller_id,
 							10, // GROUP_CALL_ANSWER
 							JSON.stringify(answerData),
-							event.channel_id,
+							event.channelId,
 							userId || ''
 						);
 					}
@@ -130,10 +130,10 @@ export const handleGroupCallSocketEvent = async (
 
 					dispatch(
 						groupCallActions.showIncomingGroupCall({
-							groupId: event.channel_id,
+							groupId: event.channelId,
 							callData: {
 								...event,
-								groupName: callData?.group_name || callData?.channel_label || 'Group Call',
+								groupName: callData?.group_name || callData?.channelLabel || 'Group Call',
 								callerName: callData?.caller_name || callData?.caller_display_name || 'Unknown',
 								participants: callData?.participants || [],
 								timestamp: Date.now()
@@ -294,7 +294,7 @@ export const extractCallData = (event: WebrtcSignalingFwd): ParsedCallData => {
 		return {
 			...parsed,
 			is_video: Boolean(parsed?.is_video),
-			group_name: parsed?.group_name || parsed?.channel_label || 'Group Call',
+			group_name: parsed?.group_name || parsed?.channelLabel || 'Group Call',
 			caller_name: parsed?.caller_name || parsed?.caller_display_name || 'Unknown',
 			participants: Array.isArray(parsed?.participants) ? parsed.participants : [],
 			timestamp: parsed?.timestamp || Date.now()

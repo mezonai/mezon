@@ -46,7 +46,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	const directMessage = useAppSelector((state) => selectDirectById(state, id));
 	const isTypeDMGroup = Number(directMessage.type) === ChannelType.CHANNEL_TYPE_GROUP;
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
-	const buzzStateDM = useAppSelector((state) => selectBuzzStateByDirectId(state, directMessage?.channel_id ?? ''));
+	const buzzStateDM = useAppSelector((state) => selectBuzzStateByDirectId(state, directMessage?.channelId ?? ''));
 
 	const [openUnknown, closeUnknown] = useModal(() => {
 		if (isTypeDMGroup) {
@@ -60,15 +60,15 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			if (isTypeDMGroup) {
 				openUnknown();
 			} else {
-				handleLeave(e, directMessage.channel_id as string, currentDmGroupId);
+				handleLeave(e, directMessage.channelId as string, currentDmGroupId);
 			}
 		},
-		[isTypeDMGroup, directMessage.channel_id, currentDmGroupId]
+		[isTypeDMGroup, directMessage.channelId, currentDmGroupId]
 	);
 
 	const handleLeave = async (e: React.MouseEvent, directId: string, currentDmGroupId: string) => {
 		e.stopPropagation();
-		await dispatch(directActions.closeDirectMessage({ channel_id: directId }));
+		await dispatch(directActions.closeDirectMessage({ channelId: directId }));
 		const timestamp = Date.now() / 1000;
 		const store = getStore();
 		const messageId = store ? selectLatestMessageId(store.getState(), directId) : undefined;
@@ -82,8 +82,8 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	const ref = useRef<HTMLDivElement>(null);
 	const { showContextMenu } = useDirectMessageContextMenu();
 	const handleContextMenu = (event: React.MouseEvent) => {
-		if (directMessage.channel_id) {
-			showContextMenu(event, directMessage.channel_id, directMessage as ChannelMembersEntity);
+		if (directMessage.channelId) {
+			showContextMenu(event, directMessage.channelId, directMessage as ChannelMembersEntity);
 		}
 	};
 
@@ -101,7 +101,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 		>
 			<DmItemProfile
 				avatar={isTypeDMGroup ? directMessage?.channel_avatar || 'assets/images/avatar-group.png' : (directMessage?.avatars?.at(-1) ?? '')}
-				name={directMessage?.channel_label || ''}
+				name={directMessage?.channelLabel || ''}
 				number={directMessage?.member_count || 0}
 				isTypeDMGroup={isTypeDMGroup}
 				highlight={isUnReadChannel || currentDmGroupId === id}
@@ -112,7 +112,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 				<BuzzBadge
 					timestamp={buzzStateDM?.timestamp as number}
 					isReset={buzzStateDM?.isReset}
-					channelId={directMessage.channel_id as string}
+					channelId={directMessage.channelId as string}
 					senderId={buzzStateDM.senderId as string}
 					mode={directMessage.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP}
 				/>
@@ -149,7 +149,7 @@ const DmItemProfile = ({
 	direct: DirectEntity;
 	t: (key: string) => string;
 }) => {
-	const userStatus = useMemberStatus(direct.user_ids?.[0] || '');
+	const userStatus = useMemberStatus(direct.userIds?.[0] || '');
 	return (
 		<div
 			className={`relative flex gap-2 items-center text-theme-primary-hover  ${highlight ? 'text-theme-primary-active' : 'text-theme-primary'}`}
@@ -173,7 +173,7 @@ const DmItemProfile = ({
 					</p>
 				</div>
 			) : (
-				<DmInvoiceProfile name={name} directId={direct.id} userId={direct.user_ids?.[0] || ''} status={userStatus.status} />
+				<DmInvoiceProfile name={name} directId={direct.id} userId={direct.userIds?.[0] || ''} status={userStatus.status} />
 			)}
 		</div>
 	);

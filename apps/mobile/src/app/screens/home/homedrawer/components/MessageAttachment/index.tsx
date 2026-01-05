@@ -89,7 +89,7 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, cl
 							uploader: image?.uploader || senderId,
 							clanId: image?.clanId || clanId,
 							channelId: image?.channelId || channelId,
-							create_time: image?.create_time || new Date(messageCreatTime * 1000).toISOString()
+							createTime: image?.createTime || new Date(messageCreatTime * 1000).toISOString()
 						}}
 						disableGoback={true}
 					/>

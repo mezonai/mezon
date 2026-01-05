@@ -140,13 +140,13 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	const [mutedUntil, setmutedUntil] = useState('');
 	const [defaultNotifiName, setDefaultNotifiName] = useState('');
 
-	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, channel?.category_id as string));
+	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, channel?.categoryId as string));
 
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
 	const isThread = !!channel?.parent_id && channel?.parent_id !== '0';
 
 	const currentUserId = useSelector(selectCurrentUserId);
-	const currentCategory = useAppSelector((state) => selectCategoryById(state, channel?.category_id as string));
+	const currentCategory = useAppSelector((state) => selectCategoryById(state, channel?.categoryId as string));
 	const hasModalInChild = useSelector(hasGrandchildModal);
 	const favoriteChannel = useSelector(selectAllChannelsFavorite);
 	const [isFavorite, setIsFavorite] = useState<boolean>(false);
@@ -161,7 +161,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	}, [favoriteChannel, channel.id]);
 
 	const maskFavoriteChannel = () => {
-		dispatch(channelsActions.addFavoriteChannel({ channel_id: channel.id, clan_id: currentClanId as string }));
+		dispatch(channelsActions.addFavoriteChannel({ channelId: channel.id, clanId: currentClanId as string }));
 		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel.id, clanId: currentClanId as string, mark: true }));
 		setIsShowPanelChannel(false);
 	};
@@ -223,18 +223,18 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		menuOpenMute.current = false;
 
 		const body: MuteChannelPayload = {
-			channel_id: channel.channel_id || '',
+			channelId: channel.channelId || '',
 			mute_time: duration !== Infinity ? duration : 0,
 			active: EMuteState.MUTED,
-			clan_id: currentClanId || ''
+			clanId: currentClanId || ''
 		};
 		dispatch(notificationSettingActions.setMuteChannel(body));
 	};
 
 	const muteOrUnMuteChannel = (active: number) => {
 		const body: MuteChannelPayload = {
-			channel_id: channel.channel_id || '',
-			clan_id: currentClanId || '',
+			channelId: channel.channelId || '',
+			clanId: currentClanId || '',
 			active,
 			mute_time: 0
 		};
@@ -245,18 +245,18 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		menuOpenNoti.current = false;
 		if (notificationType) {
 			const body = {
-				channel_id: channel.channel_id || '',
+				channelId: channel.channelId || '',
 				notification_type: notificationType || 0,
-				clan_id: currentClanId || '',
-				is_current_channel: channel.channel_id === currentChannelId
+				clanId: currentClanId || '',
+				is_current_channel: channel.channelId === currentChannelId
 			};
 			dispatch(notificationSettingActions.setNotificationSetting(body));
 		} else {
 			dispatch(
 				notificationSettingActions.deleteNotiChannelSetting({
-					channel_id: channel.channel_id || '',
-					clan_id: currentClanId || '',
-					is_current_channel: channel.channel_id === currentChannelId
+					channelId: channel.channelId || '',
+					clanId: currentClanId || '',
+					is_current_channel: channel.channelId === currentChannelId
 				})
 			);
 		}
@@ -301,10 +301,10 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	}, [getNotificationChannelSelected, defaultNotificationCategory, defaultNotificationClan, notiLabelsTranslated]);
 	const [hasClanOwnerPermission, hasAdminPermission, canManageThread, canManageChannel] = usePermissionChecker(
 		[EPermission.clanOwner, EPermission.administrator, EOverriddenPermission.manageThread, EPermission.manageChannel],
-		channel?.channel_id ?? ''
+		channel?.channelId ?? ''
 	);
 
-	const hasManageThreadPermission = (canManageThread && channel.creator_id === currentUserId) || hasClanOwnerPermission || hasAdminPermission;
+	const hasManageThreadPermission = (canManageThread && channel.creatorId === currentUserId) || hasClanOwnerPermission || hasAdminPermission;
 	const handClosePannel = useCallback(() => {
 		setIsShowPanelChannel(false);
 	}, []);
@@ -402,7 +402,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		menuOpenMute.current = false;
 	}, []);
 
-	const isFavoriteCategory = channel?.category_id === FAVORITE_CATEGORY_ID;
+	const isFavoriteCategory = channel?.categoryId === FAVORITE_CATEGORY_ID;
 
 	return (
 		<div
@@ -542,7 +542,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 								</div>
 							</Menu>
 						)}
-						{currentChannel?.creator_id !== currentUserId && (
+						{currentChannel?.creatorId !== currentUserId && (
 							<ItemPanel onClick={handleOpenModalConfirm} children={t('menu.manageThreadMenu.leaveThread')} danger />
 						)}
 					</GroupPanels>

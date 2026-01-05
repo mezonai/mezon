@@ -73,14 +73,14 @@ const GroupCallComponent = memo(
 			groupCall.state.setLoading(true);
 
 			const storedCallData = groupCall.state.storedCallData;
-			const baseParticipants = storedCallData?.participants ?? currentDmGroup?.user_ids ?? [];
+			const baseParticipants = storedCallData?.participants ?? currentDmGroup?.userIds ?? [];
 
 			const callGroup: any = storedCallData
 				? {
-						channel_id: storedCallData.groupId,
+						channelId: storedCallData.groupId,
 						meeting_code: storedCallData.meetingCode,
-						clan_id: storedCallData.clanId,
-						channel_label: storedCallData.groupName,
+						clanId: storedCallData.clanId,
+						channelLabel: storedCallData.groupName,
 						clan_name: storedCallData.groupName
 					}
 				: currentDmGroup;
@@ -93,14 +93,14 @@ const GroupCallComponent = memo(
 			// Create call data using utility
 			const callData = createCallSignalingData({
 				isVideo: videoEnabled,
-				groupId: callGroup?.channel_id,
-				groupName: callGroup?.channel_label || callGroup?.usernames?.join(','),
+				groupId: callGroup?.channelId,
+				groupName: callGroup?.channelLabel || callGroup?.usernames?.join(','),
 				groupAvatar: callGroup?.channel_avatar?.[0],
 				callerId,
-				callerName: userProfile?.user?.display_name || userProfile?.user?.username || '',
-				callerAvatar: userProfile?.user?.avatar_url,
+				callerName: userProfile?.user?.displayName || userProfile?.user?.username || '',
+				callerAvatar: userProfile?.user?.avatarUrl,
 				meetingCode: callGroup?.meeting_code,
-				clanId: callGroup?.clan_id,
+				clanId: callGroup?.clanId,
 				participants
 			});
 
@@ -108,14 +108,14 @@ const GroupCallComponent = memo(
 			if (!groupCall.state.isAnsweringCall) {
 				// Play dial tone and send offer
 				groupCall.audio.playDialTone();
-				groupCall.signaling.sendGroupCallOffer(baseParticipants, callData, callGroup?.channel_id as string, userProfile?.user?.id as string);
+				groupCall.signaling.sendGroupCallOffer(baseParticipants, callData, callGroup?.channelId as string, userProfile?.user?.id as string);
 			} else {
 				// Stop ring tone and send answer
 				groupCall.audio.stopAllAudio();
 				groupCall.signaling.sendGroupCallAnswer(
 					groupCall.state.storedCallData?.participants || [],
 					callData,
-					callGroup?.channel_id as string,
+					callGroup?.channelId as string,
 					userProfile?.user?.id as string
 				);
 			}
@@ -123,7 +123,7 @@ const GroupCallComponent = memo(
 			try {
 				const result = await dispatch(
 					generateMeetToken({
-						channelId: callGroup?.channel_id as string,
+						channelId: callGroup?.channelId as string,
 						roomName: callGroup?.meeting_code as string
 					})
 				).unwrap();
@@ -133,7 +133,7 @@ const GroupCallComponent = memo(
 						// handleLeaveRoom();
 					}
 
-					// await participantMeetState(ParticipantMeetState.JOIN, callGroup?.clan_id as string, callGroup?.channel_id as string);
+					// await participantMeetState(ParticipantMeetState.JOIN, callGroup?.clanId as string, callGroup?.channelId as string);
 
 					dispatch(voiceActions.setShowMicrophone(true));
 					dispatch(voiceActions.setShowCamera(videoEnabled));
@@ -142,10 +142,10 @@ const GroupCallComponent = memo(
 					dispatch(voiceActions.setToken(result));
 					dispatch(
 						voiceActions.setVoiceInfo({
-							clanId: callGroup?.clan_id as string,
+							clanId: callGroup?.clanId as string,
 							clanName: callGroup?.clan_name as string,
-							channelId: callGroup?.channel_id as string,
-							channelLabel: callGroup?.channel_label as string,
+							channelId: callGroup?.channelId as string,
+							channelLabel: callGroup?.channelLabel as string,
 							channelPrivate: callGroup?.channel_private as number
 						})
 					);
@@ -161,14 +161,14 @@ const GroupCallComponent = memo(
 
 					const joinedData = createParticipantJoinedData({
 						participantId: userProfile?.user?.id || '',
-						participantName: userProfile?.user?.display_name || userProfile?.user?.username || '',
-						participantAvatar: userProfile?.user?.avatar_url
+						participantName: userProfile?.user?.displayName || userProfile?.user?.username || '',
+						participantAvatar: userProfile?.user?.avatarUrl
 					});
 
 					groupCall.signaling.sendParticipantJoined(
-						callGroup?.user_id || [],
+						callGroup?.userId || [],
 						joinedData,
-						callGroup?.channel_id as string,
+						callGroup?.channelId as string,
 						userProfile?.user?.id as string
 					);
 
@@ -203,28 +203,28 @@ const GroupCallComponent = memo(
 
 				const leftData = createParticipantLeftData({
 					participantId: userProfile?.user?.id || '',
-					participantName: userProfile?.user?.display_name || userProfile?.user?.username || ''
+					participantName: userProfile?.user?.displayName || userProfile?.user?.username || ''
 				});
 
 				groupCall.signaling.sendParticipantLeft(
-					currentDmGroup?.user_ids || [],
+					currentDmGroup?.userIds || [],
 					leftData,
-					currentDmGroup?.channel_id as string,
+					currentDmGroup?.channelId as string,
 					userProfile?.user?.id as string
 				);
 
 				const quitData = createQuitData({
 					isVideo: showCamera,
-					groupId: currentDmGroup?.channel_id || '',
+					groupId: currentDmGroup?.channelId || '',
 					callerId: userProfile?.user?.id || '',
-					callerName: userProfile?.user?.display_name || userProfile?.user?.username || '',
+					callerName: userProfile?.user?.displayName || userProfile?.user?.username || '',
 					action: 'leave'
 				}) as CallSignalingData;
 
 				groupCall.signaling.sendGroupCallQuit(
-					currentDmGroup?.user_ids || [],
+					currentDmGroup?.userIds || [],
 					quitData,
-					currentDmGroup?.channel_id as string,
+					currentDmGroup?.channelId as string,
 					userProfile?.user?.id as string
 				);
 
@@ -260,7 +260,7 @@ const GroupCallComponent = memo(
 			return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
 		}, [dispatch]);
 
-		const isShow = isJoined && voiceInfo?.channelId === currentDmGroup?.channel_id;
+		const isShow = isJoined && voiceInfo?.channelId === currentDmGroup?.channelId;
 
 		const toggleChat = () => {
 			dispatch(appActions.setIsShowChatVoice(!isShowChatVoice));
@@ -271,16 +271,16 @@ const GroupCallComponent = memo(
 
 			const cancelData = createCancelData({
 				isVideo: groupCall.state.isVideoCall,
-				groupId: currentDmGroup?.channel_id || '',
+				groupId: currentDmGroup?.channelId || '',
 				callerId: userProfile?.user?.id || '',
-				callerName: userProfile?.user?.display_name || userProfile?.user?.username || '',
+				callerName: userProfile?.user?.displayName || userProfile?.user?.username || '',
 				reason: 'cancelled'
 			}) as CallSignalingData;
 
 			groupCall.signaling.sendGroupCallCancel(
-				currentDmGroup?.user_ids || [],
+				currentDmGroup?.userIds || [],
 				cancelData,
-				currentDmGroup?.channel_id as string,
+				currentDmGroup?.channelId as string,
 				userProfile?.user?.id as string
 			);
 
@@ -328,7 +328,7 @@ const GroupCallComponent = memo(
 						>
 							<div className="flex-1 relative flex">
 								<GroupVideoConference
-									channelLabel={currentDmGroup?.channel_label as string}
+									channelLabel={currentDmGroup?.channelLabel as string}
 									onLeaveRoom={handleLeaveRoom}
 									onFullScreen={handleFullScreen}
 									isShowChatVoice={isShowChatVoice}

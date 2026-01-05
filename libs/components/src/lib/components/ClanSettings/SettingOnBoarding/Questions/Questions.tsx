@@ -144,7 +144,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 			if (question.id) {
 				dispatch(
 					onboardingActions.editOnboarding({
-						clan_id: question.clan_id as string,
+						clanId: question.clanId as string,
 						idOnboarding: question.id as string,
 						content: {
 							...question,
@@ -223,7 +223,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 		}
 		dispatch(
 			onboardingActions.editOnboarding({
-				clan_id: question.clan_id as string,
+				clanId: question.clanId as string,
 				idOnboarding: question.id as string,
 				content: {
 					...question,
@@ -250,7 +250,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 				onboardingActions.removeOnboardingTask({
 					idTask: question.id,
 					type: EGuideType.QUESTION,
-					clan_id: question.clan_id as string
+					clanId: question.clanId as string
 				})
 			);
 		}

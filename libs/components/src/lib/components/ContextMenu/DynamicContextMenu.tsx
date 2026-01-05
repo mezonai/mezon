@@ -80,19 +80,19 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			await reactionMessageDispatch({
 				id: emojiId,
 				messageId,
-				emoji_id: emojiId,
+				emojiId: emojiId,
 				emoji: emojiShortCode,
 				count: 1,
-				message_sender_id: userId.userId ?? '',
+				messageSenderId: userId.userId ?? '',
 				action_delete: false,
-				is_public: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
+				isPublic: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
 				clanId: currentChannelClanId ?? '',
-				channelId: isTopic ? currentChannelId || '' : (message?.channel_id ?? ''),
+				channelId: isTopic ? currentChannelId || '' : (message?.channelId ?? ''),
 				isFocusTopicBox,
-				channelIdOnMessage: currentMessage?.channel_id
+				channelIdOnMessage: currentMessage?.channelId
 			});
 		},
-		[messageId, directId, isClanView, reactionMessageDispatch, userId, isFocusTopicBox, currentMessage?.channel_id]
+		[messageId, directId, isClanView, reactionMessageDispatch, userId, isFocusTopicBox, currentMessage?.channelId]
 	);
 
 	const firstFourElements = useMemo(() => {
@@ -155,7 +155,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 							references: message?.references || [],
 							anonymousMessage: false,
 							mentionEveryone: false,
-							avatar: profileInClan?.clan_avatar || userProfile?.user?.avatar_url,
+							avatar: profileInClan?.clanAvatar || userProfile?.user?.avatarUrl,
 							code: 0,
 							topicId: isFocusTopicBox ? currenTopicId : undefined
 						})

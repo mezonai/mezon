@@ -45,11 +45,11 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	const notificationTypesList = createNotificationTypesListTranslated(tChannelMenu);
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const [positionTop, setPositionTop] = useState(false);
-	const isOwnerOfContextClan = useIsClanOwner(clan?.clan_id || clan?.id || '');
+	const isOwnerOfContextClan = useIsClanOwner(clan?.clanId || clan?.id || '');
 	const dispatch = useAppDispatch();
 
 	const defaultNotificationClan = useSelector((state) =>
-		clan?.clan_id ? selectDefaultNotificationClanByClanId(state as any, clan.clan_id) : selectDefaultNotificationClan(state as any)
+		clan?.clanId ? selectDefaultNotificationClanByClanId(state as any, clan.clanId) : selectDefaultNotificationClan(state as any)
 	);
 	useEffect(() => {
 		const heightPanel = panelRef.current?.clientHeight;
@@ -70,7 +70,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	const { handleMarkAsReadClan, statusMarkAsReadClan } = useMarkAsRead();
 	useEffect(() => {
 		if (statusMarkAsReadClan === 'success') {
-			const clanId = clan?.id ?? clan?.clan_id;
+			const clanId = clan?.id ?? clan?.clanId;
 			if (clanId) {
 				dispatch(clansActions.setHasUnreadMessage({ clanId, hasUnread: false }));
 			}
@@ -81,11 +81,11 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	}, [statusMarkAsReadClan, handClosePannel, dispatch, clan]);
 
 	const handleChangeSettingType = (notificationType: number) => {
-		const targetClanId = clan?.clan_id ?? clan?.id;
+		const targetClanId = clan?.clanId ?? clan?.id;
 		checkMenuOpen.current = false;
 		dispatch(
 			defaultNotificationActions.setDefaultNotificationClan({
-				clan_id: targetClanId,
+				clanId: targetClanId,
 				notification_type: notificationType
 			})
 		);
@@ -103,7 +103,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 		setIsUserProfile(false);
 		setIsShowSettingFooterInitTab(EUserSettings.PROFILES);
 		setIsShowSettingProfileInitTab(EActiveType.CLAN_SETTING);
-		setClanIdSettingProfile(clan?.clan_id || '');
+		setClanIdSettingProfile(clan?.clanId || '');
 		setIsShowSettingFooterStatus(true);
 		if (setShowClanListMenuContext) {
 			setShowClanListMenuContext();
@@ -113,8 +113,8 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	const handleRemoveLogo = () => {
 		dispatch(
 			clansActions.updateUser({
-				avatar_url: userProfile?.user?.avatar_url || '',
-				display_name: userProfile?.user?.display_name || '',
+				avatarUrl: userProfile?.user?.avatarUrl || '',
+				displayName: userProfile?.user?.displayName || '',
 				about_me: userProfile?.user?.about_me || '',
 				dob: userProfile?.user?.dob || '',
 				logo: ''
@@ -130,9 +130,9 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	};
 	const { removeMemberClan } = useChannelMembersActions();
 	const handleLeaveClan = async () => {
-		const currentClanId = await removeMemberClan({ channelId: '', clanId: clan?.clan_id as string, userIds: [] });
+		const currentClanId = await removeMemberClan({ channelId: '', clanId: clan?.clanId as string, userIds: [] });
 		toggleLeaveClanPopup();
-		if (currentClanId === clan?.clan_id) {
+		if (currentClanId === clan?.clanId) {
 			navigate('/chat/direct/friends');
 		}
 	};

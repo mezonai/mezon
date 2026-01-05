@@ -138,7 +138,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const dispatch = useAppDispatch();
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
-	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id as string));
+	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clanId as string));
 	const [mentionEveryone, setMentionEveryone] = useState(false);
 	const addEmojiState = useSelector(selectAddEmojiState);
 	const emojiPicked = useSelector(selectEmojiObjSuggestion);
@@ -207,7 +207,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		isTopic: props.isTopic || false,
 		isMenuClosed: useSelector(selectCloseMenu),
 		isStatusMenuOpen: useSelector(selectStatusMenu),
-		messageRefId: dataReferences.message_ref_id,
+		messageRefId: dataReferences.messageRefId,
 		isEmojiPickerActive: !!emojiPicked?.shortName,
 		isReactionRightActive: reactionRightState,
 		isEditMessageOpen: useSelector(selectOpenEditMessageState),
@@ -250,7 +250,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			}
 
 			const currentTime = Math.floor(Date.now() / 1000);
-			const lastMessageTimestamp = channel.last_sent_message?.timestamp_seconds;
+			const lastMessageTimestamp = channel.lastSentMessage?.timestampSeconds;
 			const isArchived = lastMessageTimestamp && currentTime - Number(lastMessageTimestamp) > THREAD_ARCHIVE_DURATION_SECONDS;
 
 			const store = getStore();
@@ -260,8 +260,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			if (isArchived) {
 				await dispatch(
 					threadsActions.writeActiveArchivedThread({
-						clanId: channel.clan_id ?? '',
-						channelId: channel.channel_id ?? ''
+						clanId: channel.clanId ?? '',
+						channelId: channel.channelId ?? ''
 					})
 				);
 			}
@@ -310,15 +310,15 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				// add member to thread
 				if (props.membersOfChild && props.membersOfParent) {
 					mentionList.forEach((mention) => {
-						if (mention.user_id) {
-							const existsInChild = props.membersOfChild?.some((member) => member.user?.id === mention.user_id);
-							const existsInParent = props.membersOfParent?.some((member) => member.user?.id === mention.user_id);
+						if (mention.userId) {
+							const existsInChild = props.membersOfChild?.some((member) => member.user?.id === mention.userId);
+							const existsInParent = props.membersOfParent?.some((member) => member.user?.id === mention.userId);
 
-							if ((!existsInChild || props.isThreadbox) && existsInParent && mention?.user_id) {
-								usersNotExistingInThreadSet.add(mention.user_id);
+							if ((!existsInChild || props.isThreadbox) && existsInParent && mention?.userId) {
+								usersNotExistingInThreadSet.add(mention.userId);
 							}
-						} else if (mention?.role_id) {
-							const role = rolesClan?.find((r) => r.id === mention.role_id);
+						} else if (mention?.roleId) {
+							const role = rolesClan?.find((r) => r.id === mention.roleId);
 							if (role?.role_user_list?.role_users) {
 								role.role_user_list.role_users.forEach((roleUser: any) => {
 									if (roleUser?.id) {
@@ -716,9 +716,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 	const hashtagData = useMemo(() => {
 		return allChannels.reduce<Array<{ id: string; display: string; subText: string }>>((acc, item) => {
-			const id = item?.channel_id ?? '';
-			const display = item?.channel_label ?? '';
-			const subText = ((item as ChannelsEntity)?.category_name || item?.clan_name) ?? '';
+			const id = item?.channelId ?? '';
+			const display = item?.channelLabel ?? '';
+			const subText = ((item as ChannelsEntity)?.categoryName || item?.clan_name) ?? '';
 
 			if (id || display || subText) {
 				acc.push({ id, display, subText });
@@ -728,8 +728,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		}, []);
 	}, [props.mode, allChannels]);
 
-	const isReplyOnChannel = dataReferences.message_ref_id && !props.isTopic ? true : false;
-	const isReplyOnTopic = dataReferencesTopic.message_ref_id && props.isTopic ? true : false;
+	const isReplyOnChannel = dataReferences.messageRefId && !props.isTopic ? true : false;
+	const isReplyOnTopic = dataReferencesTopic.messageRefId && props.isTopic ? true : false;
 	const isSendMessageOnThreadBox = openThreadMessageState && !props.isTopic ? true : false;
 
 	const [pastedContent, setPastedContent] = useState<string>('');

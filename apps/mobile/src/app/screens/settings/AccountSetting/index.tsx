@@ -90,7 +90,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
 		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
 		store.dispatch(appActions.setIsShowWelcomeMobile(false));
-		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: Platform.OS }));
+		store.dispatch(authActions.logOut({ deviceId: userProfile.user.username, platform: Platform.OS }));
 		store.dispatch(appActions.setLoadingMainMobile(false));
 	};
 
@@ -187,7 +187,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 			},
 			{
 				title: t('displayName'),
-				description: userProfile?.user?.display_name || '',
+				description: userProfile?.user?.displayName || '',
 				type: EAccountSettingType.DisplayName
 			},
 			{
@@ -225,7 +225,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 			usersOptions,
 			accountManagementOptions
 		};
-	}, [t, userProfile?.user?.username, userProfile?.user?.display_name, userProfile?.user?.phone_number, userProfile?.email, blockedUsersCount]);
+	}, [t, userProfile?.user?.username, userProfile?.user?.displayName, userProfile?.user?.phone_number, userProfile?.email, blockedUsersCount]);
 
 	return (
 		<View style={styles.container}>

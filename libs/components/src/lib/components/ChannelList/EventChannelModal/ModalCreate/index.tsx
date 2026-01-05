@@ -54,10 +54,10 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const currentEvent = useAppSelector((state) => selectEventById(state, currentClanId ?? '', eventId ?? ''));
 	// detach event type
 	const isEditEventAction = Boolean(currentEvent);
-	const isClanEvent = currentEvent?.channel_id === undefined;
-	const isChannelEvent = Boolean(currentEvent?.channel_id && currentEvent?.channel_id !== '0');
+	const isClanEvent = currentEvent?.channelId === undefined;
+	const isChannelEvent = Boolean(currentEvent?.channelId && currentEvent?.channelId !== '0');
 	const isPrivateEvent = currentEvent?.is_private;
-	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '' : '')) || {};
+	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channelId || '' : '')) || {};
 
 	const createStatus = useSelector(selectCreatingLoaded);
 	const dispatch = useAppDispatch();
@@ -72,7 +72,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 		voiceChannel: currentEvent ? currentEvent?.channel_voice_id || '' : '',
 		logo: currentEvent ? currentEvent.logo || '' : '',
 		description: currentEvent ? currentEvent.description || '' : '',
-		textChannelId: currentEvent ? currentEvent.channel_id || '' : '',
+		textChannelId: currentEvent ? currentEvent.channelId || '' : '',
 		repeatType: currentEvent ? currentEvent.repeat_type || ERepeatType.DOES_NOT_REPEAT : ERepeatType.DOES_NOT_REPEAT,
 		isPrivate: Boolean(currentEvent?.is_private)
 	});
@@ -179,7 +179,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 			voiceChannel: currentEvent.channel_voice_id ?? '',
 			logo: currentEvent.logo ?? '',
 			description: currentEvent.description ?? '',
-			textChannelId: currentEvent.channel_id ?? '',
+			textChannelId: currentEvent.channelId ?? '',
 			repeatType: currentEvent.repeat_type,
 			timeStart: formatToLocalDateString(currentEvent.start_time || ''),
 			timeEnd: formatToLocalDateString(currentEvent.end_time || '')
@@ -206,7 +206,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 		currentEvent?.channel_voice_id,
 		currentEvent?.logo,
 		currentEvent?.description,
-		currentEvent?.channel_id,
+		currentEvent?.channelId,
 		currentEvent?.repeat_type,
 		currentEvent?.start_time,
 		currentEvent?.end_time,
@@ -230,13 +230,13 @@ const ModalCreate = (props: ModalCreateProps) => {
 			const timeValueStart = handleTimeISO(contentSubmit.selectedDateStart, contentSubmit.timeStart);
 			const timeValueEnd = handleTimeISO(contentSubmit.selectedDateEnd, contentSubmit.timeEnd);
 			const voiceChannel = (eventChannel || eventId) && choiceSpeaker ? contentSubmit.voiceChannel : '';
-			const creatorId = currentEvent?.creator_id;
+			const creatorId = currentEvent?.creatorId;
 
 			const baseEventFields: Partial<Record<string, string | number | boolean>> = {
 				event_id: eventId,
-				clan_id: currentClanId as string,
-				creator_id: creatorId as string,
-				channel_id_old: currentEvent?.channel_id,
+				clanId: currentClanId as string,
+				creatorId: creatorId as string,
+				channel_id_old: currentEvent?.channelId,
 				is_private: Boolean(currentEvent?.is_private)
 			};
 
@@ -252,7 +252,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 			const additionalFields: Partial<Record<string, string | number | undefined>> = {
 				description: contentSubmit.description,
 				logo: contentSubmit.logo,
-				channel_id: contentSubmit.textChannelId
+				channelId: contentSubmit.textChannelId
 			};
 
 			const combinedUpdatedFields: Partial<Record<string, string | number | boolean>> = {

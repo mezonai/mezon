@@ -18,9 +18,9 @@ export const getStartOfDayTs = (d: Date): number => new Date(d.getFullYear(), d.
 
 // Generic helper to parse common timestamp shapes used by attachments
 export const parseAttachmentLikeDate = (obj: any): Date => {
-	const seconds = obj?.create_time_seconds || obj?.timestamp_seconds;
+	const seconds = obj?.createTimeSeconds || obj?.timestampSeconds;
 	if (typeof seconds === 'number') return new Date(seconds * 1000);
-	const tsString = obj?.create_time || obj?.timestamp || obj?.created_at;
+	const tsString = obj?.createTime || obj?.timestamp || obj?.created_at;
 	if (typeof tsString === 'string') {
 		const d = new Date(tsString);
 		if (!Number.isNaN(d.getTime())) return d;

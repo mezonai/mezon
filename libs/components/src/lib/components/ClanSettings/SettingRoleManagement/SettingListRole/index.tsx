@@ -68,9 +68,9 @@ const SettingListRole = (props: closeEditRole) => {
 		setIsLoading(true);
 		setRolesList((currentRoles) => {
 			const requestBody: ApiUpdateRoleOrderRequest = {
-				clan_id: currentClanId || '',
+				clanId: currentClanId || '',
 				roles: currentRoles.map((role, index) => ({
-					role_id: role.id,
+					roleId: role.id,
 					order: index + 1
 				}))
 			};

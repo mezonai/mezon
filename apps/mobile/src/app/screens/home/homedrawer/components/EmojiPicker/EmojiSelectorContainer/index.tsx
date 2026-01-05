@@ -98,9 +98,9 @@ export default function EmojiSelectorContainer({
 	const cateIcon = useMemo(() => {
 		const clanEmojis = categoryEmoji?.length
 			? categoryEmoji?.map((item) =>
-					item?.clan_logo ? (
+					item?.clanLogo ? (
 						<View style={styles.clanLogo}>
-							<MezonClanAvatar alt={item?.clan_name} image={item?.clan_logo} />
+							<MezonClanAvatar alt={item?.clan_name} image={item?.clanLogo} />
 						</View>
 					) : (
 						<View style={styles.clanLogoText}>

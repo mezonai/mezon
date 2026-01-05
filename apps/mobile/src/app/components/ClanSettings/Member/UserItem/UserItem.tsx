@@ -38,12 +38,12 @@ export const UserItem = memo<IUserItem>(({ userID, onMemberSelect }) => {
 	}, [userID, rolesClan]);
 
 	const displayName = useMemo(() => {
-		return user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
-	}, [user?.clan_nick, user?.user?.display_name, user?.user?.username]);
+		return user?.clanNick || user?.user?.displayName || user?.user?.username || '';
+	}, [user?.clanNick, user?.user?.displayName, user?.user?.username]);
 
 	const avatarUrl = useMemo(() => {
-		return user?.clan_avatar || user?.user?.avatar_url || '';
-	}, [user?.clan_avatar, user?.user?.avatar_url]);
+		return user?.clanAvatar || user?.user?.avatarUrl || '';
+	}, [user?.clanAvatar, user?.user?.avatarUrl]);
 
 	const onPressMemberItem = useCallback(() => {
 		if (canEditRoles && onMemberSelect && user) {

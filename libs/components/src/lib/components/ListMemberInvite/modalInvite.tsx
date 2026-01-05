@@ -52,10 +52,10 @@ const ModalInvite = (props: ModalParam) => {
 		try {
 			const welcomeChannel = await dispatch(fetchSystemMessageByClanId({ clanId: currentClanId as string })).unwrap();
 
-			const intiveIdChannel = (channelID ? channelID : welcomeChannel.channel_id) as string;
+			const intiveIdChannel = (channelID ? channelID : welcomeChannel.channelId) as string;
 			const res = await createLinkInviteUser(effectiveClanId ?? '', intiveIdChannel, 10);
-			if (res && res?.invite_link) {
-				setUrlInvite(`${isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin}/invite/${res.invite_link}`);
+			if (res && res?.inviteLink) {
+				setUrlInvite(`${isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin}/invite/${res.inviteLink}`);
 			}
 		} catch {
 			console.log(t('errors.createInviteLink'));

@@ -53,7 +53,7 @@ export const initialDMCallState: DMCallState = DMCallAdapter.getInitialState({
 		receiver_id: '',
 		data_type: 0,
 		json_data: '',
-		channel_id: '',
+		channelId: '',
 		caller_id: ''
 	},
 	listOfCalls: {},
@@ -86,7 +86,7 @@ export const DMCallSlice = createSlice({
 			} else {
 				state.otherCall = {
 					caller_id: action.payload.signalingData.caller_id,
-					channel_id: action.payload.signalingData.channel_id
+					channelId: action.payload.signalingData.channelId
 				};
 			}
 		},

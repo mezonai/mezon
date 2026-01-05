@@ -241,12 +241,12 @@ export const accountSlice = createSlice({
 		},
 		setCustomStatus(state, action: PayloadAction<string>) {
 			if (state?.userProfile?.user) {
-				state.userProfile.user.user_status = action.payload;
+				state.userProfile.user.userStatus = action.payload;
 			}
 		},
 		setWalletMetadata(state, action: PayloadAction<any>) {
 			if (state?.userProfile?.user) {
-				state.userProfile.user.user_status = action.payload;
+				state.userProfile.user.userStatus = action.payload;
 			}
 		},
 		setLogoCustom(state, action: PayloadAction<string | undefined>) {
@@ -286,7 +286,7 @@ export const accountSlice = createSlice({
 				...state.userProfile,
 				...action.payload,
 				user: { ...state.userProfile?.user, ...action.payload.user },
-				encrypt_private_key: action.payload.encrypt_private_key
+				encryptPrivateKey: action.payload.encryptPrivateKey
 			};
 		},
 		incrementAvatarVersion(state) {
@@ -299,7 +299,7 @@ export const accountSlice = createSlice({
 		},
 		setPasswordSetted(state, action: PayloadAction<boolean>) {
 			if (state?.userProfile) {
-				state.userProfile.password_setted = action.payload;
+				state.userProfile.passwordSetted = action.payload;
 			}
 		},
 		updateEmail(state, action: PayloadAction<string>) {
@@ -351,7 +351,7 @@ export const selectAnonymousMode = createSelector([getAccountState, (state, clan
 
 export const selectTopicAnonymousMode = createSelector(getAccountState, (state: AccountState) => state.topicAnonymousMode);
 
-export const selectAccountCustomStatus = createSelector(getAccountState, (state: AccountState) => state.userProfile?.user?.user_status || '');
+export const selectAccountCustomStatus = createSelector(getAccountState, (state: AccountState) => state.userProfile?.user?.userStatus || '');
 
 export const selectLogoCustom = createSelector(getAccountState, (state) => state?.userProfile?.logo);
 

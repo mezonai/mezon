@@ -53,25 +53,25 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const { navigate } = useAppNavigation();
 	const { show } = useContextMenu({ id: contextMenuId });
 
-	const getChannelId = currentUser?.channelId || currentUser?.channel_id;
+	const getChannelId = currentUser?.channelId || currentUser?.channelId;
 	const getChannelType = currentUser?.type;
 	const isDmGroup = getChannelType === ChannelType.CHANNEL_TYPE_GROUP;
 	const isDm = getChannelType === ChannelType.CHANNEL_TYPE_DM;
 	const channelId = getChannelId;
 
-	const isLastOne = (currentUser?.user_id?.length || 0) <= 1;
+	const isLastOne = (currentUser?.userId?.length || 0) <= 1;
 	const [warningStatus, setWarningStatus] = useState<string>('var(--bg-item-hover)');
 
 	const { openUserProfile } = useProfileModal({ currentUser });
 	const { openProfileItem } = useModals({
 		currentUser
 	});
-	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentUser?.channel_id || '')(state));
-	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentUser?.channel_id || '')(state));
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentUser?.channelId || '')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentUser?.channelId || '')(state));
 
 	const editGroupModal = useEditGroupModal({
-		channelId: currentUser?.channelId || currentUser?.channel_id,
-		currentGroupName: currentUser?.channel_label || 'Group',
+		channelId: currentUser?.channelId || currentUser?.channelId,
+		currentGroupName: currentUser?.channelLabel || 'Group',
 		currentAvatar: currentUser?.channel_avatar || ''
 	});
 
@@ -84,10 +84,10 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	}, []);
 
 	useEffect(() => {
-		if (currentUser?.channel_id) {
+		if (currentUser?.channelId) {
 			dispatch(directActions.fetchDirectMessage({ noCache: true }));
 		}
-	}, [currentUser?.channel_id, dispatch]);
+	}, [currentUser?.channelId, dispatch]);
 	const showMenu = useCallback(
 		(event: React.MouseEvent) => {
 			show({ event });
@@ -149,7 +149,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		openUserProfile
 	});
 
-	const isSelf = userProfile?.user?.id === currentUser?.id || currentUser?.user_ids?.includes(userProfile?.user?.id);
+	const isSelf = userProfile?.user?.id === currentUser?.id || currentUser?.userIds?.includes(userProfile?.user?.id);
 
 	const isDefaultSetting = !notificationSettings?.id || notificationSettings?.id === '0';
 	const isMuted = !isDefaultSetting && notificationSettings?.active === EMuteState.MUTED;
@@ -169,10 +169,10 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const shouldShowMuteSubmenu = !isMuted && !hasMuteTime;
 
 	const isOwnerClanOrGroup = userProfile?.user?.id && dataMemberCreate?.createId && userProfile?.user?.id === dataMemberCreate.createId;
-	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentUser?.user_ids?.[0] || currentUser?.id || ''));
+	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentUser?.userIds?.[0] || currentUser?.id || ''));
 	const didIBlockUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userProfile?.user?.id;
-	}, [currentUser?.user_ids, infoFriend, userProfile?.user?.id]);
+		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.sourceId === userProfile?.user?.id;
+	}, [currentUser?.userIds, infoFriend, userProfile?.user?.id]);
 
 	const contextValue: DirectMessageContextMenuContextType = {
 		setCurrentHandlers,

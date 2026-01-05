@@ -50,8 +50,8 @@ const SystemMessagesManagement = ({
 
 	const handleToggleSetting = (checked: boolean, type: ETypeUpdateSystemMessage, channelId?: string) => {
 		if (channelId && channelId !== channelSelectedId && type === ETypeUpdateSystemMessage.CHANNEL) {
-			setUpdateSystemMessageRequest({ ...updateSystem, channel_id: channelId });
-			setClanRequest((prev: any) => ({ ...prev, welcome_channel_id: channelId }));
+			setUpdateSystemMessageRequest({ ...updateSystem, channelId: channelId });
+			setClanRequest((prev: any) => ({ ...prev, welcomeChannelId: channelId }));
 			return;
 		}
 		switch (type) {
@@ -73,7 +73,7 @@ const SystemMessagesManagement = ({
 		channelsList
 			.filter(
 				(channel) =>
-					channel.clan_id === currentClanId &&
+					channel.clanId === currentClanId &&
 					channel.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 					channel.channel_private !== ChannelStatusEnum.isPrivate
 			)
@@ -91,13 +91,13 @@ const SystemMessagesManagement = ({
 								<Icons.Hashtag defaultSize="w-4 h-4 dark:text-channelTextLabel" />
 							)}
 							<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.channel_name')}>
-								{channel.channel_label ?? ''}
+								{channel.channelLabel ?? ''}
 							</p>
 							<p
-								data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.category_name')}
+								data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.categoryName')}
 								className="uppercase ml-5 font-semibold"
 							>
-								{channel.category_name}
+								{channel.categoryName}
 							</p>
 						</Menu.Item>
 					);
@@ -116,13 +116,13 @@ const SystemMessagesManagement = ({
 					<div className={' flex flex-row items-center'}>
 						<Icons.Hashtag defaultSize="w-4 h-4 " />
 						<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.channel_name')}>
-							{selectedChannel?.channel_label}
+							{selectedChannel?.channelLabel}
 						</p>
 						<p
 							className={'uppercase ml-5 font-semibold'}
-							data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.category_name')}
+							data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.categoryName')}
 						>
-							{selectedChannel?.category_name}
+							{selectedChannel?.categoryName}
 						</p>
 					</div>
 					<div>

@@ -19,7 +19,7 @@ export const DirectMessageDetailScreen = ({ route }: { route: any }) => {
 
 	const from = route.params?.from;
 	const currentDmGroup = useAppSelector((state) => selectDirectById(state, directMessageId));
-	const infoFriend = useSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''));
+	const infoFriend = useSelector((state) => selectFriendById(state, currentDmGroup?.userIds?.[0] || ''));
 
 	const isBlocked = useMemo(() => {
 		if (currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_DM) return false;
@@ -29,10 +29,10 @@ export const DirectMessageDetailScreen = ({ route }: { route: any }) => {
 	useEffect(() => {
 		dispatch(topicsActions.setCurrentTopicId(''));
 		// When the screen is focused, socket disconnect or some case, we want to fetch the DM group if it is not already available
-		if (!currentDmGroup?.channel_id) {
+		if (!currentDmGroup?.channelId) {
 			dispatch(directActions.fetchDirectMessage({ noCache: true }));
 		}
-	}, [currentDmGroup?.channel_id, dispatch]);
+	}, [currentDmGroup?.channelId, dispatch]);
 
 	const dmType = useMemo(() => {
 		return currentDmGroup?.type;
@@ -52,8 +52,8 @@ export const DirectMessageDetailScreen = ({ route }: { route: any }) => {
 			{directMessageId && (
 				<ChatMessageWrapper
 					directMessageId={directMessageId}
-					lastSeenMessageId={currentDmGroup?.last_seen_message?.id}
-					lastSentMessageId={currentDmGroup?.last_sent_message?.id}
+					lastSeenMessageId={currentDmGroup?.lastSeenMessage?.id}
+					lastSentMessageId={currentDmGroup?.lastSentMessage?.id}
 					isModeDM={Number(dmType) === ChannelType.CHANNEL_TYPE_DM}
 					isBlocked={isBlocked}
 					dmType={dmType}

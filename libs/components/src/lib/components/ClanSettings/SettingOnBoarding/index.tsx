@@ -44,7 +44,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 		if (!enable) {
 			dispatch(
 				onboardingActions.enableOnboarding({
-					clan_id: currentClanId as string,
+					clanId: currentClanId as string,
 					onboarding: false
 				})
 			);
@@ -64,7 +64,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 			await handleCreateOnboarding();
 			await dispatch(
 				onboardingActions.enableOnboarding({
-					clan_id: currentClanId as string,
+					clanId: currentClanId as string,
 					onboarding: true
 				})
 			);
@@ -123,7 +123,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 
 			await dispatch(
 				onboardingActions.createOnboardingTask({
-					clan_id: currentClanId as string,
+					clanId: currentClanId as string,
 					content: formOnboardingData
 				})
 			);
@@ -289,7 +289,7 @@ const MainIndex = ({ handleGoToPage, onCloseSetting, showOnboardingHighlight }: 
 	const openOnboardingPreviewMode = () => {
 		dispatch(
 			onboardingActions.openOnboardingPreviewMode({
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			})
 		);
 		if (onCloseSetting) {

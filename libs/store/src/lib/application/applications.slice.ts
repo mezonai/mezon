@@ -43,8 +43,8 @@ export const applicationInitialState: IApplicationState = applicationAdapter.get
 		id: '',
 		applogo: undefined,
 		appname: undefined,
-		creator_id: undefined,
-		disable_time: undefined,
+		creatorId: undefined,
+		disableTime: undefined,
 		is_shadow: undefined,
 		role: undefined,
 		token: undefined

@@ -17,19 +17,19 @@ const NotificationChannel = ({ unreadListConverted, isUnreadTab, notification }:
 
 	const groupedUnread = useMemo(() => {
 		return unreadListConverted.reduce((acc: Record<string, TNotificationChannel>, unreadNotification) => {
-			if (!acc[unreadNotification?.content?.channel_id]) {
-				acc[unreadNotification?.content?.channel_id] = {
-					channel_id: unreadNotification?.content?.channel_id,
-					channel_label: unreadNotification?.content?.channel_label,
-					clan_logo: unreadNotification?.content?.clan_logo,
+			if (!acc[unreadNotification?.content?.channelId]) {
+				acc[unreadNotification?.content?.channelId] = {
+					channelId: unreadNotification?.content?.channelId,
+					channelLabel: unreadNotification?.content?.channelLabel,
+					clanLogo: unreadNotification?.content?.clanLogo,
 					clan_name: unreadNotification?.content?.clan_name,
-					clan_id: unreadNotification?.content?.clan_id,
-					category_name: unreadNotification?.content?.category_name,
+					clanId: unreadNotification?.content?.clanId,
+					categoryName: unreadNotification?.content?.categoryName,
 					notifications: []
 				};
 			}
 
-			acc[unreadNotification?.content?.channel_id].notifications.push(unreadNotification);
+			acc[unreadNotification?.content?.channelId].notifications.push(unreadNotification);
 
 			return acc;
 		}, {});
@@ -48,8 +48,8 @@ const NotificationChannel = ({ unreadListConverted, isUnreadTab, notification }:
 		<>
 			{groupedUnreadArray.length > 0 &&
 				groupedUnreadArray.map((itemUnread, index) => (
-					<div key={itemUnread.channel_id} className="flex flex-col gap-2 py-3 px-3 w-full">
-						<NotificationChannelHeader isUnreadTab={isUnreadTab} itemUnread={itemUnread} clan_id={itemUnread.clan_id} />
+					<div key={itemUnread.channelId} className="flex flex-col gap-2 py-3 px-3 w-full">
+						<NotificationChannelHeader isUnreadTab={isUnreadTab} itemUnread={itemUnread} clanId={itemUnread.clanId} />
 						{itemUnread.notifications.map((notification) => (
 							<NotifyMentionItem isUnreadTab={false} notify={notification} key={`mention-${notification.id}-${index}`} />
 						))}
@@ -57,11 +57,11 @@ const NotificationChannel = ({ unreadListConverted, isUnreadTab, notification }:
 				))}
 
 			{notification && (
-				<div key={notification.content.channel_id} className="flex flex-col gap-2 py-3 px-3 w-full">
+				<div key={notification.content.channelId} className="flex flex-col gap-2 py-3 px-3 w-full">
 					<NotificationChannelHeader
 						isUnreadTab={isUnreadTab}
 						notification={notification}
-						clan_id={notification.content.clan_id}
+						clanId={notification.content.clanId}
 						onDeleteNotification={() => handleDeleteNotification(notification)}
 					/>
 					<NotifyMentionItem isUnreadTab={false} notify={notification} key={notification.id} />

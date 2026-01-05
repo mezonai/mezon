@@ -68,10 +68,10 @@ const useWebhookActions = (clanId: string, isClanSetting: boolean, isClanIntegra
 		async (channelId?: string) => {
 			try {
 				const newWebhookReq: ApiWebhookCreateRequest = {
-					channel_id: channelId,
+					channelId: channelId,
 					webhook_name: getRandomWebhookName(),
 					avatar: getRandomAvatar(),
-					clan_id: clanId
+					clanId: clanId
 				};
 				const response = await dispatch(generateWebhook({ request: newWebhookReq, channelId, clanId, isClanSetting }));
 				if (response?.meta?.requestStatus === 'rejected') {
@@ -124,7 +124,7 @@ const useWebhookActions = (clanId: string, isClanSetting: boolean, isClanIntegra
 				const newWebhookReq: ApiGenerateClanWebhookRequest = {
 					webhook_name: getRandomWebhookName(),
 					avatar: getRandomAvatar(),
-					clan_id: clanId
+					clanId: clanId
 				};
 				const response = await dispatch(generateClanWebhook({ request: newWebhookReq, clanId }));
 				if (response?.meta?.requestStatus === 'rejected') {

@@ -92,8 +92,8 @@ export const DiscoverMobileProvider: React.FC<{ children: React.ReactNode }> = (
 
 			if (isLoadMore) {
 				setAllClans((prevClans) => {
-					const existingIds = new Set(prevClans.map((clan) => clan.clan_id));
-					const uniqueNewClans = newClans.filter((clan) => !existingIds.has(clan.clan_id));
+					const existingIds = new Set(prevClans.map((clan) => clan.clanId));
+					const uniqueNewClans = newClans.filter((clan) => !existingIds.has(clan.clanId));
 					return [...prevClans, ...uniqueNewClans];
 				});
 			} else {

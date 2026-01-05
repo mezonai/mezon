@@ -111,14 +111,14 @@ export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
 
 			if (isCancel) {
 				const bodyFCMMobile = { offer: 'CANCEL_CALL' };
-				socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+				socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.groupId, currentUserId);
 				return;
 			}
 
 			const groupName = data?.group_name || 'Group Call';
 			const offerGroupCall = {
 				isGroupCall: true,
-				groupId: data.group_id,
+				groupId: data.groupId,
 				groupName,
 				groupAvatar: data.group_avatar || '',
 				meetingCode: data.meeting_code,
@@ -130,10 +130,10 @@ export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
 				callerName: `Group Call ${groupName}`,
 				callerAvatar: '',
 				callerId: currentUserId,
-				channelId: data.group_id
+				channelId: data.groupId
 			};
 
-			socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+			socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.groupId, currentUserId);
 		},
 		[mezon]
 	);

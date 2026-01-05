@@ -28,7 +28,7 @@ const ClanDiscoverItem = ({ item }: { item: ApiClanDiscover }) => {
 			<ImageNative url={item.banner} style={styles.clanBanner} resizeMode="cover" />
 			<View style={styles.contentContainer}>
 				<View style={styles.headerRow}>
-					<ImageNative url={item.clan_logo} style={styles.smallAvatar} resizeMode="cover" />
+					<ImageNative url={item.clanLogo} style={styles.smallAvatar} resizeMode="cover" />
 					<Text style={styles.clanName} numberOfLines={1}>
 						{item.clan_name}
 					</Text>
@@ -97,7 +97,7 @@ const DiscoverScreen = () => {
 			data={clans}
 			renderItem={renderItem}
 			keyboardShouldPersistTaps={'handled'}
-			keyExtractor={(item, index) => `${item.clan_id}-${index}`}
+			keyExtractor={(item, index) => `${item.clanId}-${index}`}
 			contentContainerStyle={styles.listContainer}
 			showsVerticalScrollIndicator={false}
 			ListEmptyComponent={renderEmpty}

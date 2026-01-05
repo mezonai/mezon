@@ -65,7 +65,7 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 		},
 		{ label: FIELDS.RECEIVER, value: detailLedger.receiver_username, icon: Icons.UserIcon },
 		{ label: FIELDS.NOTE, value: detailLedger.metadata || TRANSACTION_DETAIL.DEFAULT_NOTE, icon: Icons.PenEdit },
-		{ label: FIELDS.CREATED, value: formatDate(detailLedger.create_time ?? ''), icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" /> }
+		{ label: FIELDS.CREATED, value: formatDate(detailLedger.createTime ?? ''), icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" /> }
 	];
 
 	return (

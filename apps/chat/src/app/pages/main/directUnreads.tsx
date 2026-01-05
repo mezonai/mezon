@@ -30,10 +30,10 @@ const DirectUnreadComponent = ({ directMessage, shouldAnimateOut = false, onMemb
 				})
 			);
 
-			navigate(`/chat/direct/message/${direct.channel_id}/${direct.type}`);
+			navigate(`/chat/direct/message/${direct.channelId}/${direct.type}`);
 			onMemberClick?.();
 		},
-		[dispatch, direct.id, direct.type, direct.channel_id, navigate, onMemberClick]
+		[dispatch, direct.id, direct.type, direct.channelId, navigate, onMemberClick]
 	);
 
 	const isMoveOutAnimation = shouldAnimateOut || isHiding;

@@ -45,7 +45,7 @@ export function EventLocation({ event }: IEventLocation) {
 						width={size.s_16}
 						color={themeValue.textStrong}
 					/>
-					<Text style={styles.smallText}>{channelVoice?.channel_label || t('eventDetail.privateRoom')}</Text>
+					<Text style={styles.smallText}>{channelVoice?.channelLabel || t('eventDetail.privateRoom')}</Text>
 				</TouchableOpacity>
 			)}
 

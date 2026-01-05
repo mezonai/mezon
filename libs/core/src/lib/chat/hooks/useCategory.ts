@@ -33,10 +33,10 @@ export function useCategory() {
 			const state = store.getState();
 			const allChannels = selectAllChannels(state);
 			const currentChannel = currentChannelId ? allChannels.find((ch) => ch.id === currentChannelId) : null;
-			if (!currentChannel || currentChannel.category_id !== categoryId) {
+			if (!currentChannel || currentChannel.categoryId !== categoryId) {
 				return;
 			}
-			const remainingChannels = allChannels.filter((ch) => ch.category_id !== categoryId && !checkIsThread(ch));
+			const remainingChannels = allChannels.filter((ch) => ch.categoryId !== categoryId && !checkIsThread(ch));
 			if (remainingChannels.length === 0) {
 				const membersPath = toMembersPage(currentClanId as string);
 				navigate(membersPath);
@@ -56,12 +56,12 @@ export function useCategory() {
 			const channels = selectAllChannels(state);
 
 			const currentChannel = currentChannelId ? channels.find((ch) => ch.id === currentChannelId) : null;
-			const isUserInCategoryChannel = currentChannel && currentChannel.category_id === category.id;
+			const isUserInCategoryChannel = currentChannel && currentChannel.categoryId === category.id;
 
 			if (isUserInCategoryChannel) {
 				const welcomeChannelId = selectWelcomeChannelByClanId(state, currentClanId as string);
 				const defaultChannelId = selectDefaultChannelIdByClanId(state, currentClanId as string);
-				const fallbackChannelId = channels.find((ch) => ch.category_id !== category.id && !checkIsThread(ch))?.id;
+				const fallbackChannelId = channels.find((ch) => ch.categoryId !== category.id && !checkIsThread(ch))?.id;
 
 				const redirectChannelId = welcomeChannelId || defaultChannelId || fallbackChannelId;
 
@@ -71,7 +71,7 @@ export function useCategory() {
 					await new Promise((resolve) => setTimeout(resolve, 100));
 				}
 			}
-			const channelsInCategory = channels.filter((ch) => ch.category_id === category.id);
+			const channelsInCategory = channels.filter((ch) => ch.categoryId === category.id);
 
 			if (channelsInCategory.length > 0) {
 				dispatch(
@@ -84,13 +84,13 @@ export function useCategory() {
 
 			await dispatch(
 				categoriesActions.deleteCategory({
-					clanId: category.clan_id as string,
+					clanId: category.clanId as string,
 					categoryId: category.id as string,
-					categoryLabel: category.category_name as string
+					categoryLabel: category.categoryName as string
 				})
 			);
 
-			dispatch(channelCategorySettingActions.invalidateCache({ clanId: category.clan_id || '', cache: null }));
+			dispatch(channelCategorySettingActions.invalidateCache({ clanId: category.clanId || '', cache: null }));
 			navigateAfterDeleteCategory(category.id);
 		},
 		[currentChannelId, currentClanId, navigate, toChannelPage, dispatch, navigateAfterDeleteCategory]
@@ -114,7 +114,7 @@ export function useCategorizedAllChannels() {
 	const categorizedChannels = useMemo(() => {
 		const listChannelRender: (ICategoryChannel | IChannel)[] = [];
 		categories.map((category) => {
-			const categoryChannels = listChannels.filter((channel) => channel && channel.category_id === category.id) as IChannel[];
+			const categoryChannels = listChannels.filter((channel) => channel && channel.categoryId === category.id) as IChannel[];
 			const listChannelIds = categoryChannels.map((channel) => channel.id);
 			const channelSort = sortChannels(categoryChannels);
 
@@ -140,12 +140,12 @@ export function useCategorizedChannels() {
 
 	const categorizedChannels = useMemo(() => {
 		const results = categories.map((category) => {
-			const categoryChannels = listChannels.filter((channel) => channel && channel?.category_id === category.id) as IChannel[];
+			const categoryChannels = listChannels.filter((channel) => channel && channel?.categoryId === category.id) as IChannel[];
 
-			if (category.category_id && categoryIdSortChannel[category.category_id]) {
+			if (category.categoryId && categoryIdSortChannel[category.categoryId]) {
 				categoryChannels.sort((a, b) => {
-					if (a.channel_label && b.channel_label) {
-						return b.channel_label.localeCompare(a.channel_label);
+					if (a.channelLabel && b.channelLabel) {
+						return b.channelLabel.localeCompare(a.channelLabel);
 					}
 					return 0;
 				});

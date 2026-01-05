@@ -24,7 +24,7 @@ export default function SearchMessageDm({ navigation, route }: any) {
 	const [filtersSearch, setFiltersSearch] = useState<SearchFilter[]>();
 	const { currentChannel } = route?.params || {};
 	const dispatch = useAppDispatch();
-	const valueInputSearch = useAppSelector((state) => selectValueInputSearchMessage(state, currentChannel?.channel_id || ''));
+	const valueInputSearch = useAppSelector((state) => selectValueInputSearchMessage(state, currentChannel?.channelId || ''));
 	const keywordSearch = useRef<string>(valueInputSearch || '');
 	const [optionFilter, setOptionFilter] = useState<IOption>(null);
 	const [userMention, setUserMention] = useState<IUerMention>(null);
@@ -33,8 +33,8 @@ export default function SearchMessageDm({ navigation, route }: any) {
 		async (searchText: string) => {
 			try {
 				const filter = [
-					{ field_name: 'channel_id', field_value: currentChannel?.channel_id || '' },
-					{ field_name: 'clan_id', field_value: currentChannel?.clan_id || '' }
+					{ field_name: 'channelId', field_value: currentChannel?.channelId || '' },
+					{ field_name: 'clanId', field_value: currentChannel?.clanId || '' }
 				];
 
 				if (searchText?.trim()) {
@@ -44,7 +44,7 @@ export default function SearchMessageDm({ navigation, route }: any) {
 				if (userMention && optionFilter) {
 					filter.push({
 						field_name: optionFilter?.value,
-						field_value: optionFilter?.value === 'mention' ? `"user_id":"${userMention?.id}"` : userMention?.display
+						field_value: optionFilter?.value === 'mention' ? `"userId":"${userMention?.id}"` : userMention?.display
 					});
 				}
 				setFiltersSearch(filter || []);
@@ -54,12 +54,12 @@ export default function SearchMessageDm({ navigation, route }: any) {
 					size: SIZE_PAGE_SEARCH
 				};
 				await dispatch(searchMessagesActions.fetchListSearchMessage(payload));
-				dispatch(searchMessagesActions.setCurrentPage({ channelId: currentChannel?.channel_id || '', page: 1 }));
+				dispatch(searchMessagesActions.setCurrentPage({ channelId: currentChannel?.channelId || '', page: 1 }));
 			} catch (error) {
 				console.error('Fetch list search message error', error);
 			}
 		},
-		[dispatch, currentChannel?.channel_id, currentChannel?.clan_id, userMention, optionFilter]
+		[dispatch, currentChannel?.channelId, currentChannel?.clanId, userMention, optionFilter]
 	);
 
 	useEffect(() => {
@@ -79,10 +79,10 @@ export default function SearchMessageDm({ navigation, route }: any) {
 
 	const handleSetValueInputSearch = useCallback(
 		(value: string) => {
-			dispatch(searchMessagesActions.setValueInputSearch({ channelId: currentChannel?.channel_id || '', value }));
+			dispatch(searchMessagesActions.setValueInputSearch({ channelId: currentChannel?.channelId || '', value }));
 			setActiveTab(null);
 		},
-		[dispatch, currentChannel?.channel_id]
+		[dispatch, currentChannel?.channelId]
 	);
 
 	const onSelectOptionFilter = useCallback((option: IOption) => {

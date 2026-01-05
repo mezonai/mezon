@@ -79,7 +79,7 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 			}
 			dispatch(
 				editOnboarding({
-					clan_id: ruleEdit?.clan_id as string,
+					clanId: ruleEdit?.clanId as string,
 					idOnboarding: ruleEdit?.id as string,
 					content: {
 						title: ruleTitle,
@@ -127,7 +127,7 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 
 		dispatch(
 			onboardingActions.removeOnboardingTask({
-				clan_id: ruleEdit.clan_id as string,
+				clanId: ruleEdit.clanId as string,
 				idTask: ruleEdit.id as string,
 				type: EGuideType.RULE
 			})

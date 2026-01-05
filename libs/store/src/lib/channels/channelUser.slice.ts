@@ -22,7 +22,7 @@ export interface ChannelUsersEntity extends IChannelUser {
 }
 
 export const mapChannelsByUserToEntity = (channelRes: ChannelDescription) => {
-	return { ...channelRes, id: channelRes.channel_id || '', status: channelRes.meeting_code ? 1 : 0 };
+	return { ...channelRes, id: channelRes.channelId || '', status: channelRes.meeting_code ? 1 : 0 };
 };
 
 export interface ListChannelsByUserState extends EntityState<ChannelUsersEntity, string> {
@@ -126,7 +126,7 @@ export const listChannelsByUserSlice = createSlice({
 		upsertMany: listChannelsByUserAdapter.upsertMany,
 		removeByClanId: (state, action: PayloadAction<{ clanId: string }>) => {
 			const channels = listChannelsByUserAdapter.getSelectors().selectAll(state);
-			const channelsToRemove = channels.filter((channel) => channel.clan_id === action.payload.clanId).map((channel) => channel.id);
+			const channelsToRemove = channels.filter((channel) => channel.clanId === action.payload.clanId).map((channel) => channel.id);
 			listChannelsByUserAdapter.removeMany(state, channelsToRemove);
 		},
 		updateLastSentTime: (state, action: PayloadAction<{ channelId: string }>) => {
@@ -135,8 +135,8 @@ export const listChannelsByUserSlice = createSlice({
 			listChannelsByUserAdapter.updateOne(state, {
 				id: payload.channelId,
 				changes: {
-					last_sent_message: {
-						timestamp_seconds: timestamp
+					lastSentMessage: {
+						timestampSeconds: timestamp
 					}
 				}
 			});
@@ -147,8 +147,8 @@ export const listChannelsByUserSlice = createSlice({
 			listChannelsByUserAdapter.updateOne(state, {
 				id: payload.channelId,
 				changes: {
-					last_seen_message: {
-						timestamp_seconds: timestamp
+					lastSeenMessage: {
+						timestampSeconds: timestamp
 					}
 				}
 			});
@@ -174,18 +174,18 @@ export const listChannelsByUserSlice = createSlice({
 				if (entity) {
 					const newCountMessUnread = isReset ? 0 : (entity.count_mess_unread ?? 0) + count;
 					if (entity.count_mess_unread !== newCountMessUnread || isReset) {
-						const last_sent_message = state.entities[state.ids[state.ids.length - 1]]?.last_sent_message;
+						const lastSentMessage = state.entities[state.ids[state.ids.length - 1]]?.lastSentMessage;
 						listChannelsByUserAdapter.updateOne(state, {
 							id: channelId,
 							changes: {
 								count_mess_unread: newCountMessUnread,
-								last_seen_message:
+								lastSeenMessage:
 									newCountMessUnread === 0
 										? {
-												id: last_sent_message?.id,
-												timestamp_seconds: Date.now()
+												id: lastSentMessage?.id,
+												timestampSeconds: Date.now()
 											}
-										: entity.last_seen_message
+										: entity.lastSeenMessage
 							}
 						});
 					}
@@ -197,14 +197,14 @@ export const listChannelsByUserSlice = createSlice({
 		},
 		markAsReadChannel: (state, action: PayloadAction<string[]>) => {
 			const updateList = action.payload.map((id) => {
-				const last_sent_message = state.entities[id]?.last_sent_message;
+				const lastSentMessage = state.entities[id]?.lastSentMessage;
 				return {
 					id,
 					changes: {
 						count_mess_unread: 0,
-						last_seen_message: {
-							id: last_sent_message?.id,
-							timestamp_seconds: Date.now()
+						lastSeenMessage: {
+							id: lastSentMessage?.id,
+							timestampSeconds: Date.now()
 						}
 					}
 				};
@@ -296,12 +296,12 @@ export const selectEntitiesChannelsByUser = createSelector(getChannelsByUserStat
 export const selectSearchChannelById = createSelector([getChannelsByUserState, (_, id: string) => id], (state, id) => selectById(state, id));
 
 export const selectAllInfoChannels = createSelector(selectAllChannelsByUser, (channels = []) =>
-	channels?.map(({ channel_id, channel_label, channel_private, clan_name, clan_id, type, parent_id, meeting_code, id }) => ({
-		channel_id,
-		channel_label,
+	channels?.map(({ channelId, channelLabel, channel_private, clan_name, clanId, type, parent_id, meeting_code, id }) => ({
+		channelId,
+		channelLabel,
 		channel_private,
 		clan_name,
-		clan_id,
+		clanId,
 		type,
 		parent_id,
 		meeting_code,

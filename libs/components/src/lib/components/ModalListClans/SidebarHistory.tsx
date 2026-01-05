@@ -193,7 +193,7 @@ const ItemHistory = ({
 			onClick={handleClickHistory}
 		>
 			{logo}
-			<div className="flex-1 truncate">{channelDM?.channel_label || channelClan?.channel_label}</div>
+			<div className="flex-1 truncate">{channelDM?.channelLabel || channelClan?.channelLabel}</div>
 			<div className="w-4 h-4">{active && <Icons.Star defaultSize="w-4 h-4" />}</div>
 		</div>
 	);

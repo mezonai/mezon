@@ -8,8 +8,8 @@ export function useAccount() {
 		async (name: string, logoUrl: string, displayName: string, aboutMe: string, dob: string, logo: string, noCache?: boolean) => {
 			const action = await dispatch(
 				clansActions.updateUser({
-					avatar_url: logoUrl,
-					display_name: displayName,
+					avatarUrl: logoUrl,
+					displayName: displayName,
 					about_me: aboutMe,
 					dob,
 					noCache,

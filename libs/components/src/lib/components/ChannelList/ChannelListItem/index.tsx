@@ -51,7 +51,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 		return [];
 	}, [channel.type, voiceChannelMembers, streamChannelMembers]);
 
-	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, channel.category_id as string));
+	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, channel.categoryId as string));
 
 	const handleOpenInvite = () => {
 		dispatch(clansActions.toggleInvitePeople({ status: true, channelId: channel.id }));
@@ -60,9 +60,9 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 	const renderChannelLink = () => {
 		return (
 			<ChannelLink
-				clanId={channel?.clan_id}
+				clanId={channel?.clanId}
 				channel={channel}
-				key={channel.channel_id}
+				key={channel.channelId}
 				createInviteLink={handleOpenInvite}
 				isPrivate={channel.channel_private}
 				isUnReadChannel={isUnreadChannel}
@@ -111,7 +111,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 								{isExpandedPttMems ? (
 									<UserListVoiceChannel
 										isPttList
-										channelID={channel.channel_id ?? ''}
+										channelID={channel.channelId ?? ''}
 										channelType={channel?.type}
 										memberList={channelMemberList}
 									/>
@@ -129,7 +129,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 			return (
 				<>
 					{renderChannelLink()}
-					<UserListVoiceChannel channelID={channel.channel_id ?? ''} channelType={channel?.type} memberList={channelMemberList} />
+					<UserListVoiceChannel channelID={channel.channelId ?? ''} channelType={channel?.type} memberList={channelMemberList} />
 				</>
 			);
 		}
@@ -140,7 +140,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 				<CollapsedMemberList channelMemberList={channelMemberList} />
 			</>
 		) : null;
-	}, [channel.type, channel.threads, channel.channel_id, isCategoryExpanded, channelMemberList, renderChannelLink]);
+	}, [channel.type, channel.threads, channel.channelId, isCategoryExpanded, channelMemberList, renderChannelLink]);
 
 	return <>{renderChannelContent} </>;
 };
@@ -154,7 +154,7 @@ const CollapsedMemberList = ({ channelMemberList, isPttList }: ICollapsedMemberL
 	return (
 		<AvatarGroup className={`${isPttList ? 'pr-6' : 'px-6'}`}>
 			{[...channelMemberList].slice(0, 5).map((member, index) => (
-				<AvatarUserShort id={member.user_id || ''} key={(member.user_id || '') + index} />
+				<AvatarUserShort id={member.userId || ''} key={(member.userId || '') + index} />
 			))}
 			{channelMemberList && channelMemberList.length > 5 && (
 				<AvatarCount number={channelMemberList?.length - 5 > 99 ? 99 : channelMemberList?.length - 5} />

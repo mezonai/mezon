@@ -65,7 +65,7 @@ export const CallDetailNative = memo(
 				isVideoCall,
 				isFromNative: true,
 				callerName: userProfile?.user?.username,
-				callerAvatar: userProfile?.user?.avatar_url
+				callerAvatar: userProfile?.user?.avatarUrl
 			});
 
 			const retryCountRef = useRef<number>(0);

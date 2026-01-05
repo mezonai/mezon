@@ -52,12 +52,12 @@ export const fetchChannelSettingInClanCached = async (
 	parentId: string,
 	page: number,
 	limit: number,
-	channel_label: string,
+	channelLabel: string,
 	noCache = false
 ) => {
 	const currentState = getState();
 	const channelSettingState = currentState[SETTING_CLAN_CHANNEL];
-	const apiKey = createApiKey('fetchChannelSettingInClan', clanId, parentId, page, limit, channel_label);
+	const apiKey = createApiKey('fetchChannelSettingInClan', clanId, parentId, page, limit, channelLabel);
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelSettingState.cache, noCache);
 
@@ -75,14 +75,14 @@ export const fetchChannelSettingInClanCached = async (
 		mezon.session,
 		clanId,
 		parentId, // parent_id
-		undefined, // category_id
+		undefined, // categoryId
 		undefined, // private_channel
 		undefined, // active
 		undefined, // status
 		undefined, // type
 		limit, // limit
 		page,
-		channel_label // keyword search
+		channelLabel // keyword search
 	);
 
 	markApiFirstCalled(apiKey);

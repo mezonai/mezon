@@ -88,7 +88,7 @@ export const fetchRolesClanCached = async (getState: () => RootState, ensuredMez
 
 	if (!shouldForceCall) {
 		return {
-			clan_id: clanId,
+			clanId: clanId,
 			roles: {
 				roles: roles || []
 			},
@@ -103,7 +103,7 @@ export const fetchRolesClanCached = async (getState: () => RootState, ensuredMez
 			role_list_event_req: {
 				limit: 500,
 				state: 1,
-				clan_id: clanId
+				clanId: clanId
 			}
 		},
 		() => ensuredMezon.client.listRoles(ensuredMezon.session, clanId, 500, 1, ''),
@@ -234,7 +234,7 @@ export const fetchCreateRole = createAsyncThunk(
 				active_permission_ids: activePermissionIds || [],
 				add_user_ids: addUserIds || [],
 				allow_mention: 0,
-				clan_id: clanId,
+				clanId: clanId,
 				color: color ?? '',
 				description: '',
 				display_online: 0,
@@ -286,7 +286,7 @@ export const updateRole = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body: ApiUpdateRoleRequest = {
-				role_id: roleId,
+				roleId: roleId,
 				title: title ?? '',
 				color: color ?? '',
 				role_icon: roleIcon,
@@ -297,7 +297,7 @@ export const updateRole = createAsyncThunk(
 				active_permission_ids: activePermissionIds || [],
 				remove_user_ids: removeUserIds || [],
 				remove_permission_ids: removePermissionIds || [],
-				clan_id: clanId,
+				clanId: clanId,
 				max_permission_id: maxPermissionId
 			};
 			const response = await mezon.client.updateRole(mezon.session, roleId, body);
@@ -321,10 +321,10 @@ export const updateRole = createAsyncThunk(
 	}
 );
 
-export const updateRoleOrder = createAsyncThunk('UpdateRole/updateRolesOrder', async ({ clan_id, roles }: ApiUpdateRoleOrderRequest, thunkAPI) => {
+export const updateRoleOrder = createAsyncThunk('UpdateRole/updateRolesOrder', async ({ clanId, roles }: ApiUpdateRoleOrderRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		await mezon.client.updateRoleOrder(mezon.session, { clan_id, roles });
+		await mezon.client.updateRoleOrder(mezon.session, { clanId, roles });
 	} catch (e) {
 		console.error('Error', e);
 	}
@@ -558,7 +558,7 @@ export const RolesClanSlice = createSlice({
 			})
 			.addCase(updateRole.fulfilled, (state: RolesClanState, action: PayloadAction<RolesClanEntity>) => {
 				const role = action.payload;
-				const clanId = role.clan_id;
+				const clanId = role.clanId;
 
 				if (clanId && state.byClans[clanId]?.roles[role.id]) {
 					state.byClans[clanId].roles[role.id] = role;
@@ -775,10 +775,10 @@ const handleMapUpdateRole = (
 
 		userUpdate.push({
 			id: u.id,
-			avatar_url: u.clan_avatar || u.user?.avatar_url,
-			display_name: u.prioritizeName,
+			avatarUrl: u.clanAvatar || u.user?.avatarUrl,
+			displayName: u.prioritizeName,
 			username: u.user?.username,
-			lang_tag: u.user?.lang_tag,
+			langTag: u.user?.langTag,
 			location: u.user?.location,
 			online: u.user?.online
 		});

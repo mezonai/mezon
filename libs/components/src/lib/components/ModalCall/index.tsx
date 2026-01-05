@@ -57,7 +57,7 @@ const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallP
 	};
 
 	const handleCloseCall = async () => {
-		await mezon.socketRef.current?.forwardWebrtcSignaling(dataCall?.caller_id, 4, '', dataCall.channel_id ?? '', userId ?? '');
+		await mezon.socketRef.current?.forwardWebrtcSignaling(dataCall?.caller_id, 4, '', dataCall.channelId ?? '', userId ?? '');
 
 		if (clearCallState) {
 			clearCallState();
@@ -70,11 +70,11 @@ const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallP
 	};
 
 	const callerName = useMemo(() => {
-		return callerInfo?.name ?? user?.clan_nick ?? user?.user?.display_name ?? user?.user?.username ?? '';
+		return callerInfo?.name ?? user?.clanNick ?? user?.user?.displayName ?? user?.user?.username ?? '';
 	}, [callerInfo?.name, user]);
 
 	const callerAvatar = useMemo(() => {
-		return callerInfo?.avatar ?? user?.clan_avatar ?? user?.user?.avatar_url;
+		return callerInfo?.avatar ?? user?.clanAvatar ?? user?.user?.avatarUrl;
 	}, [callerInfo?.avatar, user]);
 
 	return (

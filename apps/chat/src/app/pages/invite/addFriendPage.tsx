@@ -81,18 +81,18 @@ export default function AddFriendPage() {
 		const bodyCreateDm: ApiCreateChannelDescRequest = {
 			type: ChannelType.CHANNEL_TYPE_DM,
 			channel_private: 1,
-			user_ids: [username],
-			clan_id: '0'
+			userIds: [username],
+			clanId: '0'
 		};
 		const result = await dispatch(
 			directActions.createNewDirectMessage({
 				body: bodyCreateDm,
-				username: [userProfile?.user?.display_name || userProfile?.user?.username || '', dataEncode?.name || username],
-				avatar: [userProfile?.user?.avatar_url || '', dataEncode?.avatar || '']
+				username: [userProfile?.user?.displayName || userProfile?.user?.username || '', dataEncode?.name || username],
+				avatar: [userProfile?.user?.avatarUrl || '', dataEncode?.avatar || '']
 			})
 		);
-		if ((result.payload as ApiChannelDescription).channel_id) {
-			navigate(`/chat/direct/message/${(result.payload as ApiChannelDescription).channel_id}/3`);
+		if ((result.payload as ApiChannelDescription).channelId) {
+			navigate(`/chat/direct/message/${(result.payload as ApiChannelDescription).channelId}/3`);
 		} else {
 			navigate('/chat/direct/friends');
 		}

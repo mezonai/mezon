@@ -21,18 +21,18 @@ export type PermissionsChannelProps = {
 
 const PermissionsChannel = (props: PermissionsChannelProps) => {
 	const { channel, openModalAdd, parentRef, clanId } = props;
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || ''));
+	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channelId || ''));
 	const listCategory = useSelector(selectAllCategories);
 	const categoryName = useMemo(() => {
-		if (realTimeChannel?.category_name) {
-			return realTimeChannel.category_name;
+		if (realTimeChannel?.categoryName) {
+			return realTimeChannel.categoryName;
 		}
-		if (realTimeChannel?.category_id) {
-			const category = listCategory.find((cat) => cat.id === realTimeChannel.category_id);
-			return category?.category_name || '';
+		if (realTimeChannel?.categoryId) {
+			const category = listCategory.find((cat) => cat.id === realTimeChannel.categoryId);
+			return category?.categoryName || '';
 		}
 		return '';
-	}, [realTimeChannel?.category_name, realTimeChannel?.category_id, listCategory]);
+	}, [realTimeChannel?.categoryName, realTimeChannel?.categoryId, listCategory]);
 	const { t } = useTranslation('channelSetting');
 	const [showAddMemRole, setShowAddMemRole] = useState(false);
 	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channel_private);
@@ -62,10 +62,10 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 		const updatedUserIds = userProfile?.user?.id ? [...selectedUserIds, userProfile?.user.id] : selectedUserIds;
 		await dispatch(
 			channelsActions.updateChannelPrivate({
-				clan_id: clanId,
-				channel_id: channel.id,
+				clanId: clanId,
+				channelId: channel.id,
 				channel_private: channel.channel_private || 0,
-				user_ids: updatedUserIds,
+				userIds: updatedUserIds,
 				role_ids: selectedRoleIds
 			})
 		);

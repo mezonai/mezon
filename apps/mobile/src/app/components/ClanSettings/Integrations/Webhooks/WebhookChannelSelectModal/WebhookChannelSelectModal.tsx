@@ -29,8 +29,8 @@ export function WebhookChannelSelectModal({ onConfirm, onCancel, initialChannelI
 
 	const channelOptions = useMemo(() => {
 		return parentChannelsInClan?.map((channel) => ({
-			title: channel?.channel_label,
-			value: channel?.channel_id,
+			title: channel?.channelLabel,
+			value: channel?.channelId,
 			icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} />
 		}));
 	}, [parentChannelsInClan, themeValue.text]);

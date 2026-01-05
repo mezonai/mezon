@@ -149,12 +149,12 @@ function MessageContextMenu({
 	const channelOrDirect = useMemo(() => {
 		if (isClanView) {
 			return {
-				clan_id: currentClanId,
+				clanId: currentClanId,
 				channel_private: currentChannelPrivate,
-				channel_id: currentChannelId
+				channelId: currentChannelId
 			} as ApiChannelDescription;
 		}
-		return { channel_private: dmChannelPrivate, channel_id: dmChannelId, clan_id: '0' } as ApiChannelDescription;
+		return { channel_private: dmChannelPrivate, channelId: dmChannelId, clanId: '0' } as ApiChannelDescription;
 	}, [isClanView, currentClanId, currentChannelPrivate, currentChannelId, dmChannelPrivate, dmChannelId]);
 
 	const { sendMessage: sendChatMessage } = useChatSending({
@@ -165,7 +165,7 @@ function MessageContextMenu({
 	const message = useAppSelector((state) =>
 		selectMessageByMessageId(
 			state,
-			isTopic ? currentTopicId : isFocusThreadBox ? currentThread?.channel_id : isClanView ? currentChannelId : currentDmId,
+			isTopic ? currentTopicId : isFocusThreadBox ? currentThread?.channelId : isClanView ? currentChannelId : currentDmId,
 			messageId
 		)
 	);
@@ -191,8 +191,8 @@ function MessageContextMenu({
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
 
 	const isMyMessage = useMemo(() => {
-		return message?.sender_id === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
-	}, [message?.sender_id, message?.content?.callLog?.callLogType, message?.code, userId]);
+		return message?.senderId === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
+	}, [message?.senderId, message?.content?.callLog?.callLogType, message?.code, userId]);
 
 	const isErrorMessage = useMemo(() => {
 		return message?.isError === true && isMyMessage;
@@ -203,7 +203,7 @@ function MessageContextMenu({
 	}, [message?.content.t]);
 
 	const checkMessageInPinnedList = useMemo(() => {
-		return listPinMessages?.some((pinMessage) => pinMessage?.message_id === messageId);
+		return listPinMessages?.some((pinMessage) => pinMessage?.messageId === messageId);
 	}, [listPinMessages, messageId]);
 
 	const [canManageThread, canDeleteMessage, canSendMessage] = usePermissionChecker(
@@ -233,8 +233,8 @@ function MessageContextMenu({
 		if (!message || !currentChannelId || !currentClanId) return;
 
 		const createCanvasBody = (content?: string, id?: string) => ({
-			channel_id: currentChannelId,
-			clan_id: currentClanId.toString(),
+			channelId: currentChannelId,
+			clanId: currentClanId.toString(),
 			content,
 			is_default: true,
 			...(id && { id }),
@@ -312,14 +312,14 @@ function MessageContextMenu({
 		const nextMessage = allMessagesEntities?.[allMessageIds?.[messagePosition + 1]];
 		const previousMessage = allMessagesEntities?.[allMessageIds?.[messagePosition - 1]];
 
-		const isSameSenderWithNextMessage = currentMessage?.sender_id === nextMessage?.sender_id;
-		const isSameSenderWithPreviousMessage = currentMessage?.sender_id === previousMessage?.sender_id;
+		const isSameSenderWithNextMessage = currentMessage?.senderId === nextMessage?.senderId;
+		const isSameSenderWithPreviousMessage = currentMessage?.senderId === previousMessage?.senderId;
 
 		const isNextMessageWithinTimeLimit = nextMessage
-			? Date.parse(nextMessage?.create_time) - Date.parse(currentMessage?.create_time) < FORWARD_MESSAGE_TIME
+			? Date.parse(nextMessage?.createTime) - Date.parse(currentMessage?.createTime) < FORWARD_MESSAGE_TIME
 			: false;
 		const isPreviousMessageWithinTimeLimit = previousMessage
-			? Date.parse(currentMessage?.create_time) - Date.parse(previousMessage?.create_time) < FORWARD_MESSAGE_TIME
+			? Date.parse(currentMessage?.createTime) - Date.parse(previousMessage?.createTime) < FORWARD_MESSAGE_TIME
 			: false;
 		return (isPreviousMessageWithinTimeLimit && isSameSenderWithPreviousMessage) || (isSameSenderWithNextMessage && isNextMessageWithinTimeLimit);
 	}, [allMessageIds, allMessagesEntities, messagePosition]);
@@ -329,20 +329,20 @@ function MessageContextMenu({
 		}
 		dispatch(
 			referencesActions.setDataReferences({
-				channelId: message.topic_id && message.topic_id !== '0' ? message.topic_id : message.channel_id,
+				channelId: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 				dataReferences: {
-					message_ref_id: message.id,
-					ref_type: 0,
-					message_sender_id: message.sender_id,
+					messageRefId: message.id,
+					refType: 0,
+					messageSenderId: message.senderId,
 					content: JSON.stringify(message.content ?? '{}'),
-					message_sender_username: message.username,
-					mesages_sender_avatar: message.clan_avatar ? message.clan_avatar : message.avatar,
-					message_sender_clan_nick: message.clan_nick,
-					message_sender_display_name: message.display_name,
-					has_attachment: (message.attachments && message.attachments?.length > 0) ?? false,
-					channel_id: message.topic_id && message.topic_id !== '0' ? message.topic_id : message.channel_id,
+					messageSenderUsername: message.username,
+					mesagesSenderAvatar: message.clanAvatar ? message.clanAvatar : message.avatar,
+					messageSenderClanNick: message.clanNick,
+					messageSenderDisplayName: message.displayName,
+					hasAttachment: (message.attachments && message.attachments?.length > 0) ?? false,
+					channelId: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 					mode: message.mode ?? 0,
-					channel_label: message.channel_label
+					channelLabel: message.channelLabel
 				}
 			})
 		);
@@ -356,13 +356,13 @@ function MessageContextMenu({
 		dispatch(referencesActions.setIdReferenceMessageEdit(message?.id));
 		dispatch(
 			messagesActions.setChannelDraftMessage({
-				channelId: message?.channel_id,
+				channelId: message?.channelId,
 				channelDraftMessage: {
-					message_id: message?.id,
+					messageId: message?.id,
 					draftContent: message?.content,
 					draftMention: message?.mentions ?? [],
 					draftAttachment: message?.attachments ?? [],
-					draftTopicId: message?.topic_id as string
+					draftTopicId: message?.topicId as string
 				}
 			})
 		);
@@ -390,12 +390,12 @@ function MessageContextMenu({
 	const handleUnPinMessage = useCallback(() => {
 		dispatch(
 			pinMessageActions.deleteChannelPinMessage({
-				channel_id: message?.channel_id,
-				message_id: message?.id,
-				clan_id: message?.clan_id as string
+				channelId: message?.channelId,
+				messageId: message?.id,
+				clanId: message?.clanId as string
 			})
 		);
-	}, [dispatch, message?.channel_id, message?.id]);
+	}, [dispatch, message?.channelId, message?.id]);
 
 	const setIsShowCreateThread = useCallback(
 		(isShowCreateThread: boolean, channelId?: string) => {
@@ -456,18 +456,18 @@ function MessageContextMenu({
 		try {
 			dispatch(
 				messagesActions.updateLastSeenMessage({
-					clanId: message?.clan_id || '',
-					channelId: message?.channel_id,
+					clanId: message?.clanId || '',
+					channelId: message?.channelId,
 					messageId: message?.id,
 					mode: message?.mode || 0,
 					badge_count: 0,
-					message_time: message.create_time_seconds
+					message_time: message.createTimeSeconds
 				})
 			);
 			dispatch(
 				channelMetaActions.setChannelLastSeenTimestamp({
-					channelId: message?.channel_id as string,
-					timestamp: message.create_time_seconds || Date.now(),
+					channelId: message?.channelId as string,
+					timestamp: message.createTimeSeconds || Date.now(),
 					messageId: message?.id
 				})
 			);
@@ -502,13 +502,13 @@ function MessageContextMenu({
 	);
 
 	const handleResendMessage = useCallback(async () => {
-		if (!message || !message.channel_id) return;
+		if (!message || !message.channelId) return;
 
 		try {
 			await dispatch(
 				messagesActions.resendMessage({
 					messageId: message.id,
-					channelId: message.channel_id
+					channelId: message.channelId
 				})
 			).unwrap();
 			showSimpleToast(t('messageResent'));
@@ -519,14 +519,14 @@ function MessageContextMenu({
 	}, [dispatch, message, t]);
 
 	const handleDeleteErrorMessage = useCallback(() => {
-		if (!message?.channel_id || !message?.id) return;
+		if (!message?.channelId || !message?.id) return;
 		dispatch(
 			messagesActions.remove({
-				channelId: message.channel_id,
+				channelId: message.channelId,
 				messageId: message.id
 			})
 		);
-	}, [dispatch, message?.channel_id, message?.id]);
+	}, [dispatch, message?.channelId, message?.id]);
 
 	const checkPos = useMemo(() => {
 		if (posShowMenu === SHOW_POSITION.NONE || posShowMenu === SHOW_POSITION.IN_STICKER || posShowMenu === SHOW_POSITION.IN_EMOJI) {
@@ -638,13 +638,13 @@ function MessageContextMenu({
 	}, [checkElementIsImage, checkElementIsLink, isClickedEmoji, isClickedSticker, isLinkContent, linkContent]);
 
 	const sendTransactionMessage = useCallback(
-		async (userId: string, display_name?: string, username?: string, avatar?: string) => {
-			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-			if (response.channel_id) {
+		async (userId: string, displayName?: string, username?: string, avatar?: string) => {
+			const response = await createDirectMessageWithUser(userId, displayName, username, avatar);
+			if (response.channelId) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
 					`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
-					response.channel_id,
+					response.channelId,
 					channelMode,
 					TypeMessage.SendToken
 				);
@@ -680,8 +680,8 @@ function MessageContextMenu({
 
 		builder.when(
 			checkPos &&
-				message?.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID &&
-				message?.sender_id !== SYSTEM_SENDER_ID &&
+				message?.senderId !== NX_CHAT_APP_ANNONYMOUS_USER_ID &&
+				message?.senderId !== SYSTEM_SENDER_ID &&
 				message?.username !== SYSTEM_NAME,
 			(builder) => {
 				builder.addMenuItem(
@@ -690,33 +690,33 @@ function MessageContextMenu({
 
 					async () => {
 						try {
-							if (userId !== message.sender_id) {
+							if (userId !== message.senderId) {
 								await dispatch(
 									giveCoffeeActions.updateGiveCoffee({
-										channel_id: message.channel_id,
-										clan_id: message.clan_id,
-										message_ref_id: message.id,
-										receiver_id: message.sender_id,
-										sender_id: userId
+										channelId: message.channelId,
+										clanId: message.clanId,
+										messageRefId: message.id,
+										receiver_id: message.senderId,
+										senderId: userId
 									})
 								).unwrap();
 								await reactionMessageDispatch({
-									id: EMOJI_GIVE_COFFEE.emoji_id,
+									id: EMOJI_GIVE_COFFEE.emojiId,
 									messageId: message.id ?? '',
-									emoji_id: EMOJI_GIVE_COFFEE.emoji_id,
+									emojiId: EMOJI_GIVE_COFFEE.emojiId,
 									emoji: EMOJI_GIVE_COFFEE.emoji,
 									count: 1,
-									message_sender_id: message?.sender_id ?? '',
+									messageSenderId: message?.senderId ?? '',
 									action_delete: false,
-									is_public: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
-									clanId: message.clan_id ?? '',
-									channelId: isTopic ? currentChannelId || '' : (message?.channel_id ?? ''),
+									isPublic: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
+									clanId: message.clanId ?? '',
+									channelId: isTopic ? currentChannelId || '' : (message?.channelId ?? ''),
 									isFocusTopicBox,
-									channelIdOnMessage: message?.channel_id
+									channelIdOnMessage: message?.channelId
 								});
 
 								await sendTransactionMessage(
-									message.sender_id || '',
+									message.senderId || '',
 									message.user?.name,
 									message.user?.name || message.user?.username,
 									message.avatar

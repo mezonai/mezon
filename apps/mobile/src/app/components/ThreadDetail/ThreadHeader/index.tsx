@@ -37,14 +37,14 @@ export const ThreadHeader = memo(() => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 	const channelLabel = useMemo(() => {
-		return (currentDmGroup?.channel_label ||
-			currentChannel?.channel_label ||
+		return (currentDmGroup?.channelLabel ||
+			currentChannel?.channelLabel ||
 			(typeof currentChannel?.usernames === 'string' ? currentChannel?.usernames : currentChannel?.usernames?.[0] || '')) as string;
-	}, [currentDmGroup?.channel_label, currentChannel?.channel_label, currentChannel?.usernames]);
+	}, [currentDmGroup?.channelLabel, currentChannel?.channelLabel, currentChannel?.usernames]);
 
 	const isChannel = useMemo(() => {
-		return !!currentChannel?.channel_label && !Number(currentChannel?.parent_id);
-	}, [currentChannel?.channel_label, currentChannel?.parent_id]);
+		return !!currentChannel?.channelLabel && !Number(currentChannel?.parent_id);
+	}, [currentChannel?.channelLabel, currentChannel?.parent_id]);
 
 	const groupDMAvatar = useMemo(() => {
 		const avatar = currentDmGroup?.channel_avatar;
@@ -117,7 +117,7 @@ export const ThreadHeader = memo(() => {
 								<UserStatusDM
 									isOnline={currentDmGroup?.onlines?.some(Boolean)}
 									iconSize={size.s_14}
-									userId={currentDmGroup?.user_ids?.[0]}
+									userId={currentDmGroup?.userIds?.[0]}
 								/>
 								<MezonAvatar
 									avatarUrl={

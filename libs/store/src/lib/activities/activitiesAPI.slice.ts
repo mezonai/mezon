@@ -21,7 +21,7 @@ export interface ActivitiesEntity extends IActivity {
 }
 
 export const mapActivityEntity = (activitiesRes: ApiUserActivity) => {
-	return { ...activitiesRes, id: activitiesRes.user_id || '' };
+	return { ...activitiesRes, id: activitiesRes.userId || '' };
 };
 
 export interface ActivityState extends EntityState<ActivitiesEntity, string> {
@@ -43,7 +43,7 @@ export const createActivity = createAsyncThunk('activity/createActiviy', async (
 
 		return {
 			...response,
-			id: response.user_id
+			id: response.userId
 		};
 	} catch (error) {
 		return null;

@@ -33,8 +33,8 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const activeRoles = RolesClan.filter((role) => role.active === 1);
 	const userRolesClan = useMemo(() => {
-		return userById?.role_id ? RolesClan.filter((role) => userById?.role_id?.includes(role.id)) : [];
-	}, [userById?.role_id, RolesClan]);
+		return userById?.roleId ? RolesClan.filter((role) => userById?.roleId?.includes(role.id)) : [];
+	}, [userById?.roleId, RolesClan]);
 
 	const [hasPermissionEditRole] = usePermissionChecker([EPermission.manageClan]);
 	const activeRolesWithoutUserRoles = activeRoles.filter((role) => {
@@ -50,12 +50,12 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 		return activeRolesWithoutUserRoles?.filter((role) => {
 			return (
 				role.title !== EVERYONE_ROLE_TITLE &&
-				!userById?.role_id?.includes(role.id) &&
+				!userById?.roleId?.includes(role.id) &&
 				role.title?.toLowerCase().includes(searchTerm.toLowerCase()) &&
 				(isClanOwner || Number(maxPermissionLevel) > Number(rolesClanEntity[role.id]?.max_level_permission || -1))
 			);
 		});
-	}, [activeRolesWithoutUserRoles, searchTerm, userById?.role_id, isClanOwner, maxPermissionLevel, rolesClanEntity]);
+	}, [activeRolesWithoutUserRoles, searchTerm, userById?.roleId, isClanOwner, maxPermissionLevel, rolesClanEntity]);
 
 	const dispatch = useAppDispatch();
 

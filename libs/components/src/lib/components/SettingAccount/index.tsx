@@ -21,7 +21,7 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 	const dispatch = useAppDispatch();
 	const { userProfile } = useAuth();
 	const { t } = useTranslation('accountSetting');
-	const urlImg = userProfile?.user?.avatar_url;
+	const urlImg = userProfile?.user?.avatarUrl;
 	const checkUrl = urlImg === undefined || urlImg === '';
 	const isLoadingUpdatePassword = useSelector(selectRegisteringStatus);
 	const [color, setColor] = useState<string>('#323232');
@@ -29,8 +29,8 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 	const qrCodeProfile = useMemo(() => {
 		const qrData = {
 			id: userProfile?.user?.id || '',
-			name: userProfile?.user?.display_name || userProfile?.user?.username || '',
-			avatar: userProfile?.user?.avatar_url || ''
+			name: userProfile?.user?.displayName || userProfile?.user?.username || '',
+			avatar: userProfile?.user?.avatarUrl || ''
 		};
 		const endcodeData = btoa(encodeURIComponent(JSON.stringify(qrData)));
 		const qrDataLink = `https://mezon.ai/chat/${userProfile?.user?.username}?data=${endcodeData}`;
@@ -67,10 +67,10 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 						closeSetPasswordModal();
 					}
 				}}
-				hasPassword={!!userProfile?.password_setted}
+				hasPassword={!!userProfile?.passwordSetted}
 			/>
 		);
-	}, [isLoadingUpdatePassword, userProfile?.password_setted]);
+	}, [isLoadingUpdatePassword, userProfile?.passwordSetted]);
 
 	const [openQR, closeQR] = useModal(() => {
 		return <QrProfile onClose={closeQR} qrData={qrCodeProfile} />;
@@ -107,7 +107,7 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 							src={urlImg}
 							classNameText="!text-5xl"
 						/>
-						<div className="font-semibold text-lg">{userProfile?.user?.display_name}</div>
+						<div className="font-semibold text-lg">{userProfile?.user?.displayName}</div>
 					</div>
 					<div className="flex gap-2">
 						<div onClick={openQR} className=" flex items-center justify-center p-2 bg-white mt-8 h-fit rounded-md cursor-pointer">
@@ -146,7 +146,7 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 					<div className="flex justify-between items-center mb-4">
 						<div>
 							<h4 className="uppercase font-bold text-xs  mb-1">{t('displayName')}</h4>
-							<p>{userProfile?.user?.display_name || t('noDisplayName')}</p>
+							<p>{userProfile?.user?.displayName || t('noDisplayName')}</p>
 						</div>
 						<div
 							className=" h-fit rounded-lg px-6 py-1 cursor-pointer border-theme-primary bg-theme-input text-theme-primary-hover bg-secondary-button-hover"
@@ -191,7 +191,7 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 					<div className="flex justify-between items-center">
 						<div>
 							<h4 className="uppercase font-bold text-xs mb-1">{t('password')}</h4>
-							<p>{userProfile?.password_setted ? '*********' : t('password')}</p>
+							<p>{userProfile?.passwordSetted ? '*********' : t('password')}</p>
 						</div>
 						<div
 							className=" h-fit rounded-lg px-6 py-1 cursor-pointer border-theme-primary bg-theme-input text-theme-primary-hover bg-secondary-button-hover "

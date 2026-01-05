@@ -69,7 +69,7 @@ const ClanList: React.FC<ClanListProps> = ({ clans, loading = false }) => {
 	return (
 		<div className="space-y-4">
 			{clans.map((clan, index) => {
-				const clanKey = clan?.clan_id || `clan-${Math.random()}`;
+				const clanKey = clan?.clanId || `clan-${Math.random()}`;
 
 				if (!clan || typeof clan !== 'object') {
 					return null;

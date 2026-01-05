@@ -65,7 +65,7 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 		// window.open(attachmentData.);
 		const store = getStore();
 		const appState = store.getState() as RootState;
-		const isBanned = selectBanMeInChannel(appState, message?.channel_id);
+		const isBanned = selectBanMeInChannel(appState, message?.channelId);
 
 		if (isBanned) {
 			return;
@@ -109,7 +109,7 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 
 	const appearanceTheme = useSelector(selectTheme);
 	const currentUserId = useSelector(selectCurrentUserId);
-	const isOwner = message?.sender_id === currentUserId;
+	const isOwner = message?.senderId === currentUserId;
 
 	const createPDFHeader = (closePopup: () => void, maximizeToggle: () => void) => {
 		return isPDF ? <PDFHeader filename={attachmentData.filename || 'Document'} onClose={closePopup} onMaximize={maximizeToggle} /> : undefined;

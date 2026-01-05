@@ -82,9 +82,9 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 	const handleAddMemberToGroupChat = async (listAdd: ApiCreateChannelDescRequest) => {
 		await dispatch(
 			channelUsersActions.addChannelUsers({
-				channelId: currentDM?.channel_id as string,
-				clanId: currentDM?.clan_id as string,
-				userIds: listAdd.user_ids ?? [],
+				channelId: currentDM?.channelId as string,
+				clanId: currentDM?.clanId as string,
+				userIds: listAdd.userIds ?? [],
 				channelType: currentDM?.type
 			})
 		);
@@ -99,37 +99,37 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 			const listGroupDM = selectedFriends;
 
 			const userNameGroup: string[] = [];
-			const avatarGroup: string[] = [userCurrent?.user?.avatar_url || ''];
+			const avatarGroup: string[] = [userCurrent?.user?.avatarUrl || ''];
 			dataSelectFriends.current?.map((friend) => {
-				userNameGroup.push(friend.user?.display_name || friend.user?.username || '');
-				avatarGroup.push(friend.user?.avatar_url || '');
+				userNameGroup.push(friend.user?.displayName || friend.user?.username || '');
+				avatarGroup.push(friend.user?.avatarUrl || '');
 			});
 			if (currentDM?.type === ChannelType.CHANNEL_TYPE_DM) {
-				listGroupDM.push(currentDM.user_ids?.at(0) as string);
+				listGroupDM.push(currentDM.userIds?.at(0) as string);
 				userNameGroup.push((currentDM.display_names?.at(0) || currentDM.usernames?.at(0)) as string);
 				avatarGroup.push(currentDM.channel_avatar?.at(0) as string);
 			}
 			const bodyCreateDmGroup: ApiCreateChannelDescRequest = {
 				type: selectedFriends.length > 1 ? ChannelType.CHANNEL_TYPE_GROUP : ChannelType.CHANNEL_TYPE_DM,
 				channel_private: 1,
-				user_ids: listGroupDM,
-				clan_id: '0'
+				userIds: listGroupDM,
+				clanId: '0'
 			};
 			if (currentDM?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 				await handleAddMemberToGroupChat(bodyCreateDmGroup);
 				return;
 			}
 
-			if (currentDM?.user_ids?.[0] !== userCurrent?.user?.id) {
-				userNameGroup.push(userCurrent?.user?.display_name || userCurrent?.user?.username || '');
+			if (currentDM?.userIds?.[0] !== userCurrent?.user?.id) {
+				userNameGroup.push(userCurrent?.user?.displayName || userCurrent?.user?.username || '');
 			}
 
 			const response = await dispatch(
 				directActions.createNewDirectMessage({ body: bodyCreateDmGroup, username: userNameGroup, avatar: avatarGroup })
 			);
 			const resPayload = response.payload as ApiCreateChannelDescRequest;
-			if (resPayload.channel_id) {
-				const directChat = toDmGroupPage(resPayload.channel_id, Number(resPayload.type));
+			if (resPayload.channelId) {
+				const directChat = toDmGroupPage(resPayload.channelId, Number(resPayload.type));
 				navigate(directChat);
 			}
 			resetAndCloseModal();
@@ -287,12 +287,12 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 										<AvatarImage
 											alt={''}
 											username={friend.user?.username}
-											srcImgProxy={createImgproxyUrl(friend.user?.avatar_url ?? '', {
+											srcImgProxy={createImgproxyUrl(friend.user?.avatarUrl ?? '', {
 												width: 100,
 												height: 100,
 												resizeType: 'fit'
 											})}
-											src={friend.user?.avatar_url}
+											src={friend.user?.avatarUrl}
 											className="size-6 md:size-8"
 											classNameText="text-[7px] md:text-[9px] min-w-4 min-h-4 md:min-w-5 md:min-h-5 pt-[3px]"
 										/>
@@ -300,7 +300,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 											className={`text-sm md:text-base font-medium text-theme-primary-active one-line`}
 											data-e2e={generateE2eId(`chat.direct_message.friend_list.username_friend_item`)}
 										>
-											{friend.user?.display_name}
+											{friend.user?.displayName}
 										</span>
 										<span className="  font-medium">{friend.user?.username}</span>
 									</div>

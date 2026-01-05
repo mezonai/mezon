@@ -73,7 +73,7 @@ const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
 			</div>
 			{!isCurrent && onRemove && (
 				<button
-					onClick={() => onRemove(device.device_id)}
+					onClick={() => onRemove(device.deviceId)}
 					className="w-8 h-8 flex items-center hover:text-red-500 justify-center rounded-full hover:bg-theme-setting-nav text-theme-primary hover:text-theme-primary-active transition-colors"
 					title={t('deviceSettings.removeDevice')}
 				>
@@ -141,7 +141,7 @@ const SettingDevices = ({ menuIsOpen }: SettingDevicesProps) => {
 					<h2 className="text-theme-primary-active font-semibold text-lg mb-4">{t('deviceSettings.otherDevices')}</h2>
 					<div>
 						{otherDevices.map((device) => (
-							<DeviceItem key={device.device_id} device={device} t={t} onRemove={handleRemoveDevice} />
+							<DeviceItem key={device.deviceId} device={device} t={t} onRemove={handleRemoveDevice} />
 						))}
 					</div>
 				</div>

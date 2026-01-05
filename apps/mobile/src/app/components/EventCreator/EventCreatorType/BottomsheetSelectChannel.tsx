@@ -27,7 +27,7 @@ const BottomsheetSelectChannel: React.FC<IBottomsheetSelectChannelProps> = ({ da
 	}, 500);
 
 	const filteredOptionsChannels = useMemo(() => {
-		return data.filter((user) => user.channel_label.toLowerCase().includes(searchText.toLowerCase()));
+		return data.filter((user) => user.channelLabel.toLowerCase().includes(searchText.toLowerCase()));
 	}, [searchText, data]);
 
 	const channelIcon = (type: ChannelType, isPrivate: boolean) => {
@@ -46,10 +46,10 @@ const BottomsheetSelectChannel: React.FC<IBottomsheetSelectChannelProps> = ({ da
 
 	const renderItem = ({ item }: { item: ChannelsEntity }) => {
 		return (
-			<Pressable key={`channel_event_${item.channel_id}`} onPress={() => onSelect(item)} style={styles.items}>
+			<Pressable key={`channel_event_${item.channelId}`} onPress={() => onSelect(item)} style={styles.items}>
 				{channelIcon(item.type, item.channel_private === ChannelStatusEnum.isPrivate)}
 				<Text style={styles.inputValue} numberOfLines={1} ellipsizeMode="tail">
-					{item.channel_label}
+					{item.channelLabel}
 				</Text>
 			</Pressable>
 		);

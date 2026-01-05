@@ -29,15 +29,15 @@ export type SidebarClanItemProps = {
 
 const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanClick }: SidebarClanItemProps) => {
 	const [_, startTransition] = useTransition();
-	const badgeCountClan = useSelector(selectBadgeCountByClanId(option?.clan_id ?? '')) || 0;
-	const hasUnreadMessage = useSelector(selectClanHasUnreadMessage(option?.clan_id ?? ''));
+	const badgeCountClan = useSelector(selectBadgeCountByClanId(option?.clanId ?? '')) || 0;
+	const hasUnreadMessage = useSelector(selectClanHasUnreadMessage(option?.clanId ?? ''));
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 
 	const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
 		const store = getStore();
 		const idsSelectedChannel = safeJSONParse(localStorage.getItem('remember_channel') || '{}');
-		const channelId = idsSelectedChannel[option?.id] || option?.welcome_channel_id;
+		const channelId = idsSelectedChannel[option?.id] || option?.welcomeChannelId;
 		const link = `/chat/clans/${option?.id}${channelId ? `/channels/${channelId}` : ''}`;
 		const isShowDmProfile = selectIsUseProfileDM(store.getState());
 		onClanClick?.();
@@ -70,7 +70,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 		setCoords({ mouseX, mouseY, distanceToBottom });
 		await dispatch(
 			defaultNotificationActions.getDefaultNotificationClan({
-				clanId: option.id || option.clan_id || ''
+				clanId: option.id || option.clanId || ''
 			})
 		);
 		openRightClickModal();

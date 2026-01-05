@@ -23,7 +23,7 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 	const handleClick = useCallback(() => {
 		if (!channel) return;
 
-		const channelUrl = toChannelPage(channel?.id, channel?.clan_id ?? '');
+		const channelUrl = toChannelPage(channel?.id, channel?.clanId ?? '');
 		dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
 		navigate(channelUrl);
 	}, [channel, dispatch, navigate, toChannelPage]);
@@ -73,7 +73,7 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 						<Icons.ThreadIconLocker className={`inline-block -mt-[0.2rem] w-4 h-4 `} />
 					)
 				) : null}
-				{channel.channel_label}
+				{channel.channelLabel}
 			</div>
 		) : null
 	) : (

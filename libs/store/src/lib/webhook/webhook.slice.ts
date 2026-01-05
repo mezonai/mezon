@@ -88,8 +88,8 @@ export const deleteWebhookById = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				channel_id: data.channelId,
-				clan_id: data.clanId
+				channelId: data.channelId,
+				clanId: data.clanId
 			};
 			const response = await mezon.client.deleteWebhookById(mezon.session, data.webhook.id as string, body);
 
@@ -127,16 +127,16 @@ export const integrationWebhookSlice = createSlice({
 	reducers: {
 		upsertWebhook: (state, action: PayloadAction<ApiWebhook>) => {
 			const webhook = action.payload;
-			const { clan_id } = webhook;
+			const { clanId } = webhook;
 
-			if (!clan_id) return;
+			if (!clanId) return;
 
-			if (!state.webhookList[clan_id]) {
-				state.webhookList[clan_id] = webhookAdapter.getInitialState({
-					id: clan_id
+			if (!state.webhookList[clanId]) {
+				state.webhookList[clanId] = webhookAdapter.getInitialState({
+					id: clanId
 				});
 			}
-			state.webhookList[clan_id] = webhookAdapter.upsertOne(state.webhookList[clan_id], webhook);
+			state.webhookList[clanId] = webhookAdapter.upsertOne(state.webhookList[clanId], webhook);
 		},
 		removeOneWebhook: (state, action: PayloadAction<{ clanId: string; webhookId: string }>) => {
 			const { clanId, webhookId } = action.payload;
@@ -192,6 +192,6 @@ export const selectWebhooksByChannelId = createSelector(
 		if (channelId === '0') {
 			return selectAll(state.webhookList[clanId]);
 		}
-		return selectAll(state.webhookList?.[clanId] || []).filter((entity) => entity.channel_id === channelId);
+		return selectAll(state.webhookList?.[clanId] || []).filter((entity) => entity.channelId === channelId);
 	}
 );

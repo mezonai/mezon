@@ -27,8 +27,8 @@ const CategoryOrderSetting = () => {
 		if (!over || active.id === over.id) return;
 
 		setCategoryListState((items) => {
-			const oldIndex = items.findIndex((item) => item.category_id === active.id);
-			const newIndex = items.findIndex((item) => item.category_id === over.id);
+			const oldIndex = items.findIndex((item) => item.categoryId === active.id);
+			const newIndex = items.findIndex((item) => item.categoryId === over.id);
 			if (oldIndex === -1 || newIndex === -1) return items;
 			setHasChanged(true);
 			return arrayMove(items, oldIndex, newIndex);
@@ -45,14 +45,14 @@ const CategoryOrderSetting = () => {
 					channels: []
 				});
 				return {
-					category_id: category.category_id,
+					categoryId: category.categoryId,
 					order: index + 1
 				};
 			}) || [];
 
 		dispatch(
 			categoriesActions.updateCategoriesOrder({
-				clan_id: currentClanId || '',
+				clanId: currentClanId || '',
 				categories: categoriesOrderChanges
 			})
 		);
@@ -67,14 +67,14 @@ const CategoryOrderSetting = () => {
 		setHasChanged(false);
 	};
 
-	const validCategories = categoryListState.filter((category) => category.category_id);
+	const validCategories = categoryListState.filter((category) => category.categoryId);
 
 	return (
 		<div className="overflow-y-auto">
 			<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-				<SortableContext items={validCategories.map((category) => category.category_id as string)} strategy={verticalListSortingStrategy}>
+				<SortableContext items={validCategories.map((category) => category.categoryId as string)} strategy={verticalListSortingStrategy}>
 					{validCategories.map((category, index) => (
-						<SortableCategoryRow key={category.category_id} category={category} isLast={index === validCategories.length - 1} />
+						<SortableCategoryRow key={category.categoryId} category={category} isLast={index === validCategories.length - 1} />
 					))}
 				</SortableContext>
 			</DndContext>
@@ -98,7 +98,7 @@ type SortableCategoryRowProps = {
 };
 
 const SortableCategoryRow = ({ category, isLast }: SortableCategoryRowProps) => {
-	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: category.category_id as string });
+	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: category.categoryId as string });
 
 	const style: React.CSSProperties = {
 		transform: CSS.Transform.toString(transform),
@@ -115,7 +115,7 @@ const SortableCategoryRow = ({ category, isLast }: SortableCategoryRowProps) => 
 			{...attributes}
 			{...listeners}
 		>
-			<p className="p-2 truncate uppercase">{category.category_name}</p>
+			<p className="p-2 truncate uppercase">{category.categoryName}</p>
 		</div>
 	);
 };

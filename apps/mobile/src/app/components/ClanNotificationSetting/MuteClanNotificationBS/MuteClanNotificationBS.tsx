@@ -81,8 +81,8 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 		if (!isUnmute) {
 			try {
 				const body = {
-					channel_id: currentChannel?.id || '',
-					clan_id: currentClanId || '',
+					channelId: currentChannel?.id || '',
+					clanId: currentClanId || '',
 					mute_time: 0,
 					active: EMuteState.UN_MUTE
 				};
@@ -118,8 +118,8 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 	const handleScheduleMute = async (duration: number) => {
 		try {
 			const body = {
-				channel_id: currentChannel?.id || '',
-				clan_id: currentClanId || '',
+				channelId: currentChannel?.id || '',
+				clanId: currentClanId || '',
 				mute_time: duration !== Infinity ? duration : 0,
 				active: EMuteState.MUTED
 			};
@@ -152,8 +152,8 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 					setTimeMuted(formattedDate);
 					idTimeOut = setTimeout(() => {
 						const body = {
-							channel_id: currentChannel?.id || '',
-							clan_id: currentClanId || '',
+							channelId: currentChannel?.id || '',
+							clanId: currentClanId || '',
 							mute_time: 0,
 							active: EMuteState.UN_MUTE
 						};

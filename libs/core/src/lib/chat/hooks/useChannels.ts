@@ -85,8 +85,8 @@ export function useChannels() {
 			return;
 		}
 		const nextLink = {
-			firstChannel: channels[0].channel_id,
-			secondChannel: channels[1].channel_id
+			firstChannel: channels[0].channelId,
+			secondChannel: channels[1].channelId
 		};
 		const nextChannel = channelId === nextLink.firstChannel ? nextLink.secondChannel : nextLink.firstChannel;
 		channelLink = toChannelPage(nextChannel as string, currentClanId as string);

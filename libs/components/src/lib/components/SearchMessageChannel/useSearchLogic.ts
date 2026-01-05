@@ -129,8 +129,8 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 
 				let fieldValue: string;
 				if (mappedType === 'mentions') {
-					fieldValue = `"user_id":"${mention.id}"`;
-				} else if (mappedType === 'in' || searchFieldName?.[mappedType] === 'channel_id') {
+					fieldValue = `"userId":"${mention.id}"`;
+				} else if (mappedType === 'in' || searchFieldName?.[mappedType] === 'channelId') {
 					fieldValue = mention.id;
 				} else {
 					fieldValue = convertMention?.[1] || mention.id;
@@ -166,12 +166,12 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 
 	const executeSearchWithQueue = useDebouncedCallback(() => {
 		if (searchedRequest && channelId && currentClanId) {
-			const channelIdFilter = searchedRequest.filters?.find((f) => f.field_name === 'channel_id');
+			const channelIdFilter = searchedRequest.filters?.find((f) => f.field_name === 'channelId');
 			const hasSpecificChannel = channelIdFilter && channelIdFilter.field_value && channelIdFilter.field_value !== '0';
 
-			const hasOtherFilters = searchedRequest.filters?.some((f) => f.field_name !== 'content' && f.field_name !== 'channel_id');
+			const hasOtherFilters = searchedRequest.filters?.some((f) => f.field_name !== 'content' && f.field_name !== 'channelId');
 
-			const filteredFilters = (searchedRequest.filters || []).filter((f) => f.field_name !== 'channel_id');
+			const filteredFilters = (searchedRequest.filters || []).filter((f) => f.field_name !== 'channelId');
 
 			let channelIdValue: string;
 			if (isDMMode && currentDmGroupId) {
@@ -185,8 +185,8 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 			}
 
 			const requestFilter = [
-				{ field_name: 'channel_id', field_value: channelIdValue },
-				{ field_name: 'clan_id', field_value: currentClanId },
+				{ field_name: 'channelId', field_value: channelIdValue },
+				{ field_name: 'clanId', field_value: currentClanId },
 				...filteredFilters
 			];
 
@@ -207,7 +207,7 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 				setIsShowSearchMessageModal(false);
 				dispatch(searchMessagesActions.setIsSearchMessage({ channelId, isSearchMessage: true }));
 				dispatch(searchMessagesActions.setCurrentPage({ channelId, page: 1 }));
-				setIsShowCreateThread(false, currentChannel?.parent_id !== '0' ? currentChannel?.parent_id : currentChannel.channel_id);
+				setIsShowCreateThread(false, currentChannel?.parent_id !== '0' ? currentChannel?.parent_id : currentChannel.channelId);
 
 				if (isActive) dispatch(appActions.setIsShowMemberList(!isActive));
 				if (isShowMemberListDM) dispatch(appActions.setIsShowMemberListDM(!isShowMemberListDM));

@@ -17,9 +17,9 @@ export const DMGroupItem = memo(({ dmGroupData, navigateToDirectMessage }: IDMGr
 	const styles = style(themeValue);
 
 	const dmLabel = useMemo(() => {
-		return (dmGroupData?.channel_label ||
+		return (dmGroupData?.channelLabel ||
 			(typeof dmGroupData?.usernames === 'string' ? dmGroupData?.usernames : dmGroupData?.usernames?.[0] || '')) as string;
-	}, [dmGroupData?.channel_label, dmGroupData?.usernames]);
+	}, [dmGroupData?.channelLabel, dmGroupData?.usernames]);
 
 	const dmAvatar = useMemo(() => {
 		return dmGroupData?.channel_avatar;

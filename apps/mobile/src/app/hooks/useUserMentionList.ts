@@ -43,8 +43,8 @@ const transformMemberToMention = (item: ChannelMembersEntity): MentionDataProps 
 
 	return {
 		id: item.id,
-		display: getNameForPrioritize(item?.clan_nick ?? '', item?.user?.display_name ?? '', item?.user?.username ?? ''),
-		avatarUrl: item?.clan_avatar || item?.user?.avatar_url || '',
+		display: getNameForPrioritize(item?.clanNick ?? '', item?.user?.displayName ?? '', item?.user?.username ?? ''),
+		avatarUrl: item?.clanAvatar || item?.user?.avatarUrl || '',
 		username: item?.user?.username || ''
 	};
 };
@@ -72,13 +72,13 @@ function UseMentionList({ channelDetail, channelID, channelMode }: UserMentionLi
 
 	const channelId = channelDetail?.id;
 	const parentId = channelDetail?.parent_id;
-	const clanId = channelDetail?.clan_id;
+	const clanId = channelDetail?.clanId;
 
 	const filteredRoles = useMemo(() => {
 		if (!Array.isArray(rolesInClan)) {
 			return [];
 		}
-		return rolesInClan.filter((role) => role?.id && role?.slug !== `everyone-${role?.clan_id}`);
+		return rolesInClan.filter((role) => role?.id && role?.slug !== `everyone-${role?.clanId}`);
 	}, [rolesInClan]);
 
 	const getMembersChannel = useCallback((): ChannelMembersEntity[] => {

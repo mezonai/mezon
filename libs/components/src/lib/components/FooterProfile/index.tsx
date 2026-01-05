@@ -73,9 +73,9 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const { mmnRef } = useMezon();
 
 	const userCustomStatus = useMemo(() => {
-		const userCustomStatus = myProfile.userProfile?.user?.user_status;
+		const userCustomStatus = myProfile.userProfile?.user?.userStatus;
 		return userCustomStatus;
-	}, [myProfile, myProfile.userProfile?.user?.user_status]);
+	}, [myProfile, myProfile.userProfile?.user?.userStatus]);
 
 	const userStatus = useMemo(() => {
 		const userStatus = myProfile.userProfile?.user?.status || EUserStatus.ONLINE;
@@ -124,13 +124,13 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	};
 
 	const sendNotificationMessage = useCallback(
-		async (userId: string, tokenValue: number, note: string, username?: string, avatar?: string, display_name?: string) => {
-			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-			if (response.channel_id) {
+		async (userId: string, tokenValue: number, note: string, username?: string, avatar?: string, displayName?: string) => {
+			const response = await createDirectMessageWithUser(userId, displayName, username, avatar);
+			if (response.channelId) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
 					`Funds Transferred: ${formatMoney(tokenValue)}₫ | ${note}`,
-					response.channel_id,
+					response.channelId,
 					channelMode,
 					TypeMessage.SendToken
 				);
@@ -139,7 +139,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		[createDirectMessageWithUser, sendInviteMessage]
 	);
 
-	const handleSaveSendToken = async (id?: string, username?: string, avatar?: string, display_name?: string) => {
+	const handleSaveSendToken = async (id?: string, username?: string, avatar?: string, displayName?: string) => {
 		const userId = selectedUserId !== '' ? selectedUserId : id;
 		if (userId === '') {
 			setUserSearchError('Please select a user');
@@ -161,8 +161,8 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		}
 
 		const tokenEvent: ApiTokenSentEvent = {
-			sender_id: myProfile.userId as string,
-			sender_name: myProfile?.userProfile?.user?.username as string,
+			senderId: myProfile.userId as string,
+			senderName: myProfile?.userProfile?.user?.username as string,
 			receiver_id: userId,
 			amount: token,
 			note,
@@ -174,7 +174,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			await dispatch(giveCoffeeActions.sendToken({ tokenEvent })).unwrap();
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent, status: TOKEN_SUCCESS_STATUS }));
 			if (id) {
-				await sendNotificationMessage(id, token, note ?? '', username, avatar, display_name);
+				await sendNotificationMessage(id, token, note ?? '', username, avatar, displayName);
 			}
 		} catch (err) {
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent, status: TOKEN_FAILED_STATUS }));
@@ -355,7 +355,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 							</p>
 							<p
 								className="text-[11px] text-left line-clamp-1 leading-[14px] truncate max-w-[150px] max-sbm:max-w-[100px]"
-								data-e2e={generateE2eId('footer_profile.user_status')}
+								data-e2e={generateE2eId('footer_profile.userStatus')}
 							>
 								{userCustomStatus}
 							</p>

@@ -47,8 +47,8 @@ export type ImageData = {
 	filetype: string;
 	width: number;
 	height: number;
-	sender_id: string;
-	create_time: string;
+	senderId: string;
+	createTime: string;
 	uploaderData: {
 		name: string;
 		avatar: string;
@@ -184,7 +184,7 @@ function openImagePopup(imageData: ImageData, parentWindow: BrowserWindow = App.
       <img id="userAvatar" src="${sanitizeUrl(imageData.uploaderData.avatar)}" class="user-avatar" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 8px; object-fit: cover">
       <div>
         <div id="username" class="username" style="font-weight: bold;">${escapeHtml(imageData.uploaderData.name)}</div>
-        <div id="timestamp" class="timestamp" style="font-size: 0.8em; color: #ccc;">${escapeHtml(formatDateTime(imageData.create_time))}</div>
+        <div id="timestamp" class="timestamp" style="font-size: 0.8em; color: #ccc;">${escapeHtml(formatDateTime(imageData.createTime))}</div>
       </div>
     </div>
     <div class="image-controls">
@@ -618,9 +618,9 @@ const createVirtualizer = () => {
 				}
 				const item = this.items[index];
 				if (!item) return this.baseItemHeight;
-				const currentDate = this.formatDate(item.create_time);
+				const currentDate = this.formatDate(item.createTime);
 				const nextItem = this.items[index - 1];
-				const nextDate = nextItem ? this.formatDate(nextItem.create_time) : null;
+				const nextDate = nextItem ? this.formatDate(nextItem.createTime) : null;
 				const hasDateLabel = currentDate !== nextDate;
 				const height = hasDateLabel ? this.baseItemHeight + this.dateLabelHeight : this.baseItemHeight;
 				this.itemHeights.set(index, height);
@@ -824,9 +824,9 @@ const createVirtualizer = () => {
 					wrapper.id = 'thumbnail-' + itemId;
 					wrapper.style.position = 'absolute';
 					wrapper.style.top = this.getItemStart(i) + 'px';
-					const currentDate = this.formatDate(item.create_time);
+					const currentDate = this.formatDate(item.createTime);
 					const nextItem = this.items[i - 1];
-					const nextDate = nextItem ? this.formatDate(nextItem.create_time) : null;
+					const nextDate = nextItem ? this.formatDate(nextItem.createTime) : null;
 					const hasDateLabel = currentDate !== nextDate;
 					if (hasDateLabel) {
 						const dateLabel = document.createElement('div');
@@ -1180,8 +1180,8 @@ export const scriptThumnails = (reversedImages: IAttachmentEntityWithUploader[],
 		name: escapeHtml(image.uploaderData.name),
 		fileName: escapeHtml(image.filename),
 		realUrl: sanitizeUrl(image.realUrl || ''),
-		create_time: image.create_time,
-		time: escapeHtml(formatDateTime(image.create_time)),
+		createTime: image.createTime,
+		time: escapeHtml(formatDateTime(image.createTime)),
 		isVideo: image.isVideo,
 		filetype: image.filetype,
 		width: image.width || 600,
@@ -1360,8 +1360,8 @@ export const scriptThumnails = (reversedImages: IAttachmentEntityWithUploader[],
 							name: (att.uploaderData?.name || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'),
 							fileName: (att.filename || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;'),
 							realUrl: sanitizeImageUrl(att.realUrl || att.url || ''),
-							create_time: att.create_time,
-							time: att.create_time,
+							createTime: att.createTime,
+							time: att.createTime,
 							isVideo: att.isVideo,
 							filetype: att.filetype,
 							width: att.width || 600,

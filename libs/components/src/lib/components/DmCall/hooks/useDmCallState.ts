@@ -90,10 +90,10 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 	}, [isDmCallInfo?.groupId, isDmCallInfo?.isVideo, dmCallingRef]);
 
 	useEffect(() => {
-		if (dataCall?.channel_id) {
-			dispatch(audioCallActions.setGroupCallId(dataCall?.channel_id));
+		if (dataCall?.channelId) {
+			dispatch(audioCallActions.setGroupCallId(dataCall?.channelId));
 		}
-	}, [dataCall?.channel_id, dispatch]);
+	}, [dataCall?.channelId, dispatch]);
 
 	useEffect(() => {
 		if (!signalingData?.[signalingData?.length - 1] && !isInAnyCall) {

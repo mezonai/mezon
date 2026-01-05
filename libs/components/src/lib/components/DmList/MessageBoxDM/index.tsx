@@ -17,8 +17,8 @@ interface DirectIdProps {
 }
 export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 	const directParamId = useMemo(() => {
-		return direct?.channel_id ?? '';
-	}, [direct?.channel_id]);
+		return direct?.channelId ?? '';
+	}, [direct?.channelId]);
 
 	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: direct, mode });
 	// TODO: move selector to store
@@ -57,13 +57,13 @@ export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 				dataReferences: blankReferenceObj
 			})
 		);
-	}, [dataReferences.message_ref_id]);
+	}, [dataReferences.messageRefId]);
 
-	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
+	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.messageRefId });
 
 	return (
 		<div className="mx-3 relative" ref={chatboxRef}>
-			{dataReferences.message_ref_id && <ReplyMessageBox channelId={directParamId ?? ''} dataReferences={dataReferences} />}
+			{dataReferences.messageRefId && <ReplyMessageBox channelId={directParamId ?? ''} dataReferences={dataReferences} />}
 			<MessageBox
 				onSend={handleSend}
 				currentChannelId={directParamId}

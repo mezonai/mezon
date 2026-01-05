@@ -333,7 +333,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				stream.getTracks().forEach((track) => {
 					pc.addTrack(track, stream);
 				});
-				dispatch(audioCallActions.setUserCallId(currentDmGroup?.user_ids?.[0]));
+				dispatch(audioCallActions.setUserCallId(currentDmGroup?.userIds?.[0]));
 
 				endCallTimeout.current = setTimeout(() => {
 					dispatch(

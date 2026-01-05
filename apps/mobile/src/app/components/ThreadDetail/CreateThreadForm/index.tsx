@@ -55,7 +55,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentChannelId = useSelector(selectCurrentChannelId);
-	const channelByChannelId = useSelector((state) => selectChannelById(state, channelThreads?.channel_id ?? ''));
+	const channelByChannelId = useSelector((state) => selectChannelById(state, channelThreads?.channelId ?? ''));
 
 	const validateThreadName = (name: string) => {
 		if (!name || name.trim().length === 0 || name?.length > 64) return t('errorMessage');
@@ -84,11 +84,11 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	const createThread = useCallback(
 		async (value: ThreadValue) => {
 			const body: ApiCreateChannelDescRequest = {
-				clan_id: currentClanId?.toString(),
-				channel_label: value.nameValueThread,
+				clanId: currentClanId?.toString(),
+				channelLabel: value.nameValueThread,
 				channel_private: value.isPrivate,
 				parent_id: targetParentChannel?.id || '',
-				category_id: targetParentChannel?.category_id,
+				categoryId: targetParentChannel?.categoryId,
 				type: ChannelType.CHANNEL_TYPE_THREAD
 			};
 			try {
@@ -111,7 +111,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 				});
 			}
 		},
-		[currentClanId, targetParentChannel?.id, targetParentChannel?.category_id, dispatch, t]
+		[currentClanId, targetParentChannel?.id, targetParentChannel?.categoryId, dispatch, t]
 	);
 
 	const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -136,7 +136,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 							await dispatch(
 								channelsActions.joinChat({
 									clanId: currentClanId as string,
-									channelId: thread?.channel_id as string,
+									channelId: thread?.channelId as string,
 									channelType: thread?.type as number,
 									isPublic: false
 								})
@@ -155,7 +155,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 							await sendMessageThread(content, mentions, attachments, references, thread, true);
 							await dispatch(
 								messagesActions.fetchMessages({
-									channelId: thread?.channel_id as string,
+									channelId: thread?.channelId as string,
 									isFetchingLatestMessages: true,
 									clanId: currentClanId
 								})
@@ -205,8 +205,8 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	const handleRouteData = useCallback(
 		async (thread?: IChannel) => {
 			const store = await getStoreAsync();
-			const channelId = thread?.channel_id;
-			const clanId = thread?.clan_id || currentClanId;
+			const channelId = thread?.channelId;
+			const clanId = thread?.clanId || currentClanId;
 			const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
 			save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
 			store.dispatch(channelsActions.joinChannel({ clanId: clanId ?? '', channelId, noFetchMembers: false }));
@@ -277,7 +277,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 								mode={
 									checkIsThread(targetParentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL
 								}
-								channelId={targetParentChannel?.channel_id}
+								channelId={targetParentChannel?.channelId}
 								preventAction
 							/>
 						</View>
@@ -285,15 +285,15 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 				</ScrollView>
 				<ChatBox
 					messageAction={EMessageActionType.CreateThread}
-					channelId={targetParentChannel?.channel_id}
+					channelId={targetParentChannel?.channelId}
 					mode={ChannelStreamMode.STREAM_MODE_THREAD}
 					isPublic={isPublicChannel(targetParentChannel)}
 					topicChannelId={''}
 					hiddenAdvanceFunc={true}
 				/>
 				<PanelKeyboard
-					currentChannelId={targetParentChannel?.channel_id}
-					currentClanId={targetParentChannel?.clan_id}
+					currentChannelId={targetParentChannel?.channelId}
+					currentClanId={targetParentChannel?.clanId}
 					messageAction={EMessageActionType.CreateThread}
 				/>
 			</View>

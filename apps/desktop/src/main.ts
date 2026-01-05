@@ -36,7 +36,7 @@ import openNewWindow from './assets/window/new-window';
 import { environment } from './environments/environment';
 
 export type ImageWindowProps = {
-	attachmentData: ApiMessageAttachment & { create_time?: string };
+	attachmentData: ApiMessageAttachment & { createTime?: string };
 	messageId: string;
 	mode: ChannelStreamMode;
 	attachmentUrl: string;

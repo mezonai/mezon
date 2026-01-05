@@ -246,16 +246,16 @@ const DiscoverDetailScreen: React.FC<DiscoverDetailScreenProps> = ({ clanDetail 
 		try {
 			setLoadingJoinClan(true);
 			const store = await getStoreAsync();
-			const res = await dispatch(inviteActions.inviteUser({ inviteId: clanDetail.invite_id }));
+			const res = await dispatch(inviteActions.inviteUser({ inviteId: clanDetail.inviteId }));
 			const payload = res.payload as ApiInviteUserRes;
-			if (payload && payload?.clan_id) {
+			if (payload && payload?.clanId) {
 				await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-				save(STORAGE_CLAN_ID, payload?.clan_id);
+				save(STORAGE_CLAN_ID, payload?.clanId);
 				await store.dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
-				store.dispatch(clansActions.joinClan({ clanId: payload?.clan_id }));
-				store.dispatch(clansActions.changeCurrentClan({ clanId: payload?.clan_id }));
-				store.dispatch(emojiSuggestionActions.fetchEmoji({ clanId: payload?.clan_id, noCache: true }));
-				store.dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: payload?.clan_id }));
+				store.dispatch(clansActions.joinClan({ clanId: payload?.clanId }));
+				store.dispatch(clansActions.changeCurrentClan({ clanId: payload?.clanId }));
+				store.dispatch(emojiSuggestionActions.fetchEmoji({ clanId: payload?.clanId, noCache: true }));
+				store.dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: payload?.clanId }));
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			}
 			setLoadingJoinClan(false);
@@ -278,7 +278,7 @@ const DiscoverDetailScreen: React.FC<DiscoverDetailScreenProps> = ({ clanDetail 
 				<View style={styles.contentContainer}>
 					<View style={styles.logoContainer}>
 						<View style={styles.clanLogo}>
-							<ImageNative url={clanDetail.clan_logo} style={styles.clanLogoImage} resizeMode="cover" />
+							<ImageNative url={clanDetail.clanLogo} style={styles.clanLogoImage} resizeMode="cover" />
 						</View>
 					</View>
 
@@ -322,7 +322,7 @@ const DiscoverDetailScreen: React.FC<DiscoverDetailScreenProps> = ({ clanDetail 
 							</View>
 							<View style={styles.infoContent}>
 								<Text style={styles.infoTitle}>{t('clanCreated')}</Text>
-								<Text style={styles.infoDescription}>{moment(new Date(clanDetail.create_time)).format('DD/MM/YYYY HH:mm')}</Text>
+								<Text style={styles.infoDescription}>{moment(new Date(clanDetail.createTime)).format('DD/MM/YYYY HH:mm')}</Text>
 							</View>
 						</View>
 

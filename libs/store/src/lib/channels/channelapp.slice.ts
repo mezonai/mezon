@@ -55,7 +55,7 @@ export const createChannelAppMeet = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createRoomChannelApps(mezon.session, {
-				channel_id: channelId,
+				channelId: channelId,
 				room_name: roomName
 			});
 

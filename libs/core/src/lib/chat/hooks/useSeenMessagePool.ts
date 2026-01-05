@@ -23,8 +23,8 @@ export function useSeenMessagePool() {
 			}
 			dispatch(
 				messagesActions.updateLastSeenMessage({
-					clanId: message?.clan_id || '',
-					channelId: message?.channel_id,
+					clanId: message?.clanId || '',
+					channelId: message?.channelId,
 					messageId: message?.id,
 					mode,
 					badge_count
@@ -35,7 +35,7 @@ export function useSeenMessagePool() {
 				if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) {
 					dispatch(
 						channelMetaActions.setChannelLastSeenTimestamp({
-							channelId: message?.channel_id,
+							channelId: message?.channelId,
 							timestamp: timestamp + TIME_OFFSET,
 							messageId: message?.id
 						})

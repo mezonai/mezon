@@ -21,14 +21,14 @@ type ICallingGroupProps = {
 
 interface CallSignalingData {
 	is_video: boolean;
-	group_id: string;
+	groupId: string;
 	group_name: string;
 	group_avatar?: string;
 	caller_id: string;
 	caller_name: string;
 	caller_avatar?: string;
 	meeting_code?: string;
-	clan_id?: string;
+	clanId?: string;
 	timestamp: number;
 	participants: string[];
 	action?: string;
@@ -92,14 +92,14 @@ export const useSendSignaling = () => {
 
 			if (isCancel) {
 				const bodyFCMMobile = { offer: 'CANCEL_CALL' };
-				socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+				socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.groupId, currentUserId);
 				return;
 			}
 
 			const groupName = data?.group_name || 'Group Call';
 			const offerGroupCall = {
 				isGroupCall: true,
-				groupId: data.group_id,
+				groupId: data.groupId,
 				groupName,
 				groupAvatar: data.group_avatar || '',
 				meetingCode: data.meeting_code,
@@ -111,10 +111,10 @@ export const useSendSignaling = () => {
 				callerName: `Group Call ${groupName}`,
 				callerAvatar: '',
 				callerId: currentUserId,
-				channelId: data.group_id
+				channelId: data.groupId
 			};
 
-			socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+			socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.groupId, currentUserId);
 		},
 		[mezon]
 	);
@@ -208,11 +208,11 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 		stopAndReleaseSound();
 		Vibration.cancel();
 		setIsVisible(false);
-		if (dataCall?.channel_id && callData) {
+		if (dataCall?.channelId && callData) {
 			dispatch(groupCallActions.hideIncomingGroupCall());
 			if (!callData.meeting_code) return;
 			const data = {
-				channelId: dataCall.channel_id || '',
+				channelId: dataCall.channelId || '',
 				roomName: callData?.meeting_code,
 				clanId: '',
 				isGroupCall: true
@@ -228,7 +228,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 				[dataCall?.caller_id],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_PARTICIPANT_JOINED,
 				joinAction,
-				dataCall?.channel_id || '',
+				dataCall?.channelId || '',
 				userId || ''
 			);
 		}
@@ -240,7 +240,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 		setIsVisible(false);
 		const quitAction = {
 			is_video: callData?.is_video || false,
-			group_id: dataCall?.channel_id || '',
+			groupId: dataCall?.channelId || '',
 			caller_id: userId,
 			caller_name: callData?.caller_name || '',
 			timestamp: Date.now(),
@@ -250,7 +250,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 			[dataCall?.caller_id],
 			WEBRTC_SIGNALING_TYPES.GROUP_CALL_QUIT,
 			quitAction,
-			dataCall?.channel_id || '',
+			dataCall?.channelId || '',
 			userId || ''
 		);
 		dispatch(groupCallActions.hideIncomingGroupCall());

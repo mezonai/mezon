@@ -46,7 +46,7 @@ const Canvas = () => {
 	const appearanceTheme = useSelector(selectTheme);
 	const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
 	const { userProfile } = useAuth();
-	const isEditAndDelCanvas = Boolean(canvasById?.creator_id === userProfile?.user?.id || !canvasById?.creator_id);
+	const isEditAndDelCanvas = Boolean(canvasById?.creatorId === userProfile?.user?.id || !canvasById?.creatorId);
 
 	const refreshCanvasData = useCallback(
 		async (forceRefresh = false) => {
@@ -60,8 +60,8 @@ const Canvas = () => {
 				}, 1000);
 
 				const listBody = {
-					channel_id: channelId,
-					clan_id: clanId,
+					channelId: channelId,
+					clanId: clanId,
 					noCache: forceRefresh
 				};
 				await dispatch(canvasAPIActions.getChannelCanvasList(listBody) as any);
@@ -70,8 +70,8 @@ const Canvas = () => {
 
 				const detailBody = {
 					id: canvasId,
-					channel_id: channelId,
-					clan_id: clanId,
+					channelId: channelId,
+					clanId: clanId,
 					noCache: forceRefresh
 				};
 				const results = await dispatch(canvasAPIActions.getChannelCanvasDetail(detailBody) as any);
@@ -118,8 +118,8 @@ const Canvas = () => {
 		async (isCreate: number) => {
 			if (currentChannelId && currentClanId) {
 				const body = {
-					channel_id: currentChannelId,
-					clan_id: currentClanId?.toString(),
+					channelId: currentChannelId,
+					clanId: currentClanId?.toString(),
 					content,
 					...(idCanvas && { id: idCanvas }),
 					...(canvasById?.is_default && { is_default: true }),

@@ -109,23 +109,23 @@ const AppLayout = () => {
 
 				const session = new Session(
 					sessionData.token,
-					sessionData.refresh_token,
+					sessionData.refreshToken,
 					sessionData.created,
-					sessionData.api_url,
+					sessionData.apiUrl,
 					sessionData.id_token || '',
-					!!sessionData.is_remember
+					!!sessionData.isRemember
 				);
 				const response = await dispatch(
 					fcmActions.registFcmDeviceToken({
 						session: session as Session,
-						tokenId: `${sessionData.user_id}`,
+						tokenId: `${sessionData.userId}`,
 						deviceId: sessionData.username as string,
 						platform: 'desktop'
 					})
 				);
 				const token = (response?.payload as { token: string })?.token;
 
-				notificationService.connect(token, sessionData.user_id as string);
+				notificationService.connect(token, sessionData.userId as string);
 			});
 
 			await Promise.all(tasks.map((fn) => fn()));

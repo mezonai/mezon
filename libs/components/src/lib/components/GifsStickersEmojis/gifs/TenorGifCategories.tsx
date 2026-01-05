@@ -45,9 +45,9 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 		setButtonArrowBack(true);
 	};
 
-	const currentId = useCurrentInbox()?.channel_id;
+	const currentId = useCurrentInbox()?.channelId;
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
-	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
+	const isReplyAction = dataReferences.messageRefId && dataReferences.messageRefId !== '';
 	const dispatch = useDispatch();
 
 	useEffect(() => {
@@ -85,8 +85,8 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 			<div className="mx-2 grid grid-cols-2 justify-center h-[400px] overflow-y-scroll hide-scrollbar gap-2">
 				<FeaturedGifs
 					onClickToTrending={() => ontrendingClickingStatus()}
-					channelId={channelOrDirect?.channel_id ?? ''}
-					channelLabel={channelOrDirect?.channel_id ?? ''}
+					channelId={channelOrDirect?.channelId ?? ''}
+					channelLabel={channelOrDirect?.channelId ?? ''}
 					mode={mode}
 				/>
 

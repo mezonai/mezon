@@ -289,27 +289,27 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 
 	const createTemplateChannels = async (clanId: string, template: ClanTemplate, defaultCategoryId: string) => {
 		for (const category of template.categories) {
-			let newCategory: ApiCategoryDesc = { category_id: defaultCategoryId };
+			let newCategory: ApiCategoryDesc = { categoryId: defaultCategoryId };
 			if (category.name) {
 				const res = await dispatch(
 					categoriesActions.createNewCategory({
-						clan_id: clanId,
-						category_name: category.name
+						clanId: clanId,
+						categoryName: category.name
 					})
 				);
 				newCategory = unwrapResult(res);
 			}
-			if (!newCategory.category_id) continue;
+			if (!newCategory.categoryId) continue;
 			for (const channel of category.channels) {
 				const isPrivate = channel.isPrivate ? 1 : 0;
 
 				await dispatch(
 					createNewChannel({
-						clan_id: clanId,
+						clanId: clanId,
 						type: channel.type,
-						channel_label: channel.name,
+						channelLabel: channel.name,
 						channel_private: isPrivate,
-						category_id: newCategory.category_id,
+						categoryId: newCategory.categoryId,
 						parent_id: '0'
 					})
 				);
@@ -342,13 +342,13 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 		}
 
 		const clan = await createClans(nameClan.trim(), urlImage);
-		if (clan?.clan_id) {
-			const result = await dispatch(channelsActions.fetchChannels({ clanId: clan.clan_id, noCache: true }));
+		if (clan?.clanId) {
+			const result = await dispatch(channelsActions.fetchChannels({ clanId: clan.clanId, noCache: true }));
 			const channels = (result?.payload as any)?.channels || [];
-			await navigateToNewClan(clan.clan_id, channels[0]?.channel_id);
+			await navigateToNewClan(clan.clanId, channels[0]?.channelId);
 			if (selectedTemplate) {
 				try {
-					await createTemplateChannels(clan.clan_id, selectedTemplate, channels[0]?.category_id);
+					await createTemplateChannels(clan.clanId, selectedTemplate, channels[0]?.categoryId);
 				} catch (error) {
 					console.error('Error creating template channels:', error);
 				}

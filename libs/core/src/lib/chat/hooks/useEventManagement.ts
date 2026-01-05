@@ -14,7 +14,7 @@ export function useEventManagement() {
 
 	const createEventManagement = useCallback(
 		async (
-			clan_id: string,
+			clanId: string,
 			channel_voice_id: string,
 			address: string,
 			title: string,
@@ -22,13 +22,13 @@ export function useEventManagement() {
 			end_time: string,
 			description: string,
 			logo: string,
-			channel_id: string,
+			channelId: string,
 			repeat_type: ERepeatType,
 			is_private: boolean
 		) => {
 			await dispatch(
 				eventManagementActions.fetchCreateEventManagement({
-					clan_id,
+					clanId,
 					channel_voice_id,
 					address,
 					title,
@@ -36,7 +36,7 @@ export function useEventManagement() {
 					end_time,
 					description,
 					logo,
-					channel_id,
+					channelId,
 					repeat_type,
 					is_private
 				})
@@ -46,9 +46,9 @@ export function useEventManagement() {
 	);
 
 	const deleteEventManagement = useCallback(
-		async (clan_id: string, event_id: string, creator_id: string, label: string) => {
+		async (clanId: string, event_id: string, creatorId: string, label: string) => {
 			await dispatch(
-				eventManagementActions.fetchDeleteEventManagement({ clanId: clan_id, eventID: event_id, creatorId: creator_id, eventLabel: label })
+				eventManagementActions.fetchDeleteEventManagement({ clanId: clanId, eventID: event_id, creatorId: creatorId, eventLabel: label })
 			);
 		},
 		[dispatch]

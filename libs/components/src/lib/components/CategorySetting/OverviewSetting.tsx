@@ -19,12 +19,12 @@ interface IOverViewSettingProps {
 const OverviewSetting: React.FC<IOverViewSettingProps> = ({ category, onClose, onDisplayNameChange }) => {
 	const { t } = useTranslation('clan');
 	const currentClanId = useSelector(selectCurrentClanId);
-	const [categoryNameInit, setCategoryNameInit] = useState(category?.category_name || '');
+	const [categoryNameInit, setCategoryNameInit] = useState(category?.categoryName || '');
 	const [categoryName, setCategoryName] = useState(categoryNameInit);
 	const [checkValidate, setCheckValidate] = useState('');
 	const hasChanged = useMemo(() => {
-		return categoryName !== category?.category_name;
-	}, [categoryName, category?.category_name]);
+		return categoryName !== category?.categoryName;
+	}, [categoryName, category?.categoryName]);
 	const dispatch = useAppDispatch();
 
 	const debouncedSetCategoryName = useDebouncedCallback(async (value: string) => {
@@ -68,8 +68,8 @@ const OverviewSetting: React.FC<IOverViewSettingProps> = ({ category, onClose, o
 	const handleSave = () => {
 		setCategoryNameInit(categoryName);
 		const request: ApiUpdateCategoryDescRequest = {
-			category_id: category?.category_id || '',
-			category_name: categoryName,
+			categoryId: category?.categoryId || '',
+			categoryName: categoryName,
 			ClanId: currentClanId ?? ''
 		};
 		dispatch(

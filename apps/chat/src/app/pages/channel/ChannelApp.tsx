@@ -76,7 +76,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 
 	const sendTokenEvent = useSelector(selectSendTokenEvent);
 	const userProfile = useSelector(selectAllAccount);
-	const roomId = useAppSelector((state) => selectGetRoomId(state, appChannel?.channel_id));
+	const roomId = useAppSelector((state) => selectGetRoomId(state, appChannel?.channelId));
 
 	const isJoinVoice = useSelector(selectEnableCall);
 	const token = useSelector(selectLiveToken);
@@ -88,17 +88,17 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 			dispatch(channelAppActions.setJoinChannelAppData({ dataUpdate: undefined }));
 			dispatch(
 				handleParticipantVoiceState({
-					clan_id: currentChannelAppClanId,
-					channel_id: currentChannelAppId,
-					display_name: userProfile?.user?.display_name ?? '',
+					clanId: currentChannelAppClanId,
+					channelId: currentChannelAppId,
+					displayName: userProfile?.user?.displayName ?? '',
 					state: ParticipantMeetState.LEAVE,
 					room_name: roomId as string
 				})
 			);
 		}
-		dispatch(channelAppActions.setRoomId({ channelId: appChannel?.channel_id as string, roomId: null }));
-		dispatch(channelAppActions.setChannelId(appChannel?.channel_id || ''));
-		dispatch(channelAppActions.setClanId(appChannel?.clan_id || null));
+		dispatch(channelAppActions.setRoomId({ channelId: appChannel?.channelId as string, roomId: null }));
+		dispatch(channelAppActions.setChannelId(appChannel?.channelId || ''));
+		dispatch(channelAppActions.setClanId(appChannel?.clanId || null));
 	}, []);
 
 	useEffect(() => {
@@ -108,7 +108,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 			try {
 				const result = await dispatch(
 					generateMeetToken({
-						channelId: appChannel?.channel_id as string,
+						channelId: appChannel?.channelId as string,
 						roomName: roomId
 					})
 				).unwrap();
@@ -141,9 +141,9 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 			try {
 				await dispatch(
 					handleParticipantVoiceState({
-						clan_id: appChannel.clan_id ?? '',
-						channel_id: channelId,
-						display_name: userProfile?.user?.display_name ?? '',
+						clanId: appChannel.clanId ?? '',
+						channelId: channelId,
+						displayName: userProfile?.user?.displayName ?? '',
 						state,
 						room_name: roomId as string
 					})
@@ -152,7 +152,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 				console.error('Failed to update participant state:', err);
 			}
 		},
-		[dispatch, appChannel, userProfile?.user?.display_name]
+		[dispatch, appChannel, userProfile?.user?.displayName]
 	);
 
 	useEffect(() => {
@@ -160,7 +160,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 
 		const joinRoom = async () => {
 			try {
-				await participantMeetState(ParticipantMeetState.JOIN, appChannel.channel_id as string);
+				await participantMeetState(ParticipantMeetState.JOIN, appChannel.channelId as string);
 			} catch (err) {
 				console.error('Failed to join room:', err);
 			}

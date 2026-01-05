@@ -64,14 +64,14 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 					end_time: timeValueEnd,
 					channel_voice_id: channelId,
 					address: location,
-					creator_id: myUser.userId,
+					creatorId: myUser.userId,
 					title,
 					description,
-					channel_id: eventChannelId,
+					channelId: eventChannelId,
 					logo,
-					channel_id_old: currentEvent?.channel_id,
+					channel_id_old: currentEvent?.channelId,
 					repeat_type: frequency,
-					clan_id: currentEvent?.clan_id
+					clanId: currentEvent?.clanId
 				})
 			);
 		} else {
@@ -102,11 +102,11 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 						start_time: startTime.toISOString(),
 						channel_voice_id: channelId,
 						address: location,
-						user_ids: [],
-						creator_id: myUser.userId,
+						userIds: [],
+						creatorId: myUser.userId,
 						title,
 						description,
-						channel_id: eventChannelId,
+						channelId: eventChannelId,
 						is_private: isPrivate,
 						logo
 					}}

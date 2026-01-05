@@ -67,7 +67,7 @@ export const fetchUsersClanCached = async (getState: () => RootState, ensuredMez
 		{
 			api_name: 'ListClanUsers',
 			list_clan_user_req: {
-				clan_id: clanId
+				clanId: clanId
 			}
 		},
 		() => ensuredMezon.client.listClanUsers(ensuredMezon.session, clanId),
@@ -213,8 +213,8 @@ export const UsersClanSlice = createSlice({
 				UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
 					id: userId,
 					changes: {
-						clan_nick: clanNick || dataCurrent?.clan_nick,
-						clan_avatar: clanAvt || dataCurrent?.clan_avatar
+						clanNick: clanNick || dataCurrent?.clanNick,
+						clanAvatar: clanAvt || dataCurrent?.clanAvatar
 					}
 				});
 			}
@@ -225,8 +225,8 @@ export const UsersClanSlice = createSlice({
 				const entityUpdates = updates.map(({ userId, roleId }) => ({
 					id: userId,
 					changes: {
-						role_id: state.byClans[clanId].entities.entities[userId]?.role_id
-							? [...new Set([...(state.byClans[clanId].entities.entities[userId].role_id || []), roleId])]
+						roleId: state.byClans[clanId].entities.entities[userId]?.roleId
+							? [...new Set([...(state.byClans[clanId].entities.entities[userId].roleId || []), roleId])]
 							: [roleId]
 					}
 				}));
@@ -243,7 +243,7 @@ export const UsersClanSlice = createSlice({
 							return {
 								id: userId,
 								changes: {
-									role_id: existingMember.role_id?.filter((id) => id !== roleId) || []
+									roleId: existingMember.roleId?.filter((id) => id !== roleId) || []
 								}
 							};
 						}
@@ -258,12 +258,12 @@ export const UsersClanSlice = createSlice({
 			if (state.byClans[clanId]) {
 				const entities = state.byClans[clanId].entities.entities;
 				const userToUpdate = entities[userId];
-				if (userToUpdate && userToUpdate.clan_id === clanId) {
+				if (userToUpdate && userToUpdate.clanId === clanId) {
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
 						id: userId,
 						changes: {
-							clan_nick: clanNick,
-							clan_avatar: clanAvt
+							clanNick: clanNick,
+							clanAvatar: clanAvt
 						}
 					});
 				}
@@ -274,11 +274,11 @@ export const UsersClanSlice = createSlice({
 			if (state.byClans[clanId]) {
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
-					const roleIds = existingMember.role_id || [];
+					const roleIds = existingMember.roleId || [];
 					const updatedRoleIds = [...roleIds, id];
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
 						id: userId,
-						changes: { role_id: updatedRoleIds }
+						changes: { roleId: updatedRoleIds }
 					});
 				}
 			}
@@ -288,11 +288,11 @@ export const UsersClanSlice = createSlice({
 			if (state.byClans[clanId]) {
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
-					const roleIds = existingMember.role_id || [];
+					const roleIds = existingMember.roleId || [];
 					const updatedRoleIds = roleIds.filter((roleId) => roleId !== id);
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
 						id: userId,
-						changes: { role_id: updatedRoleIds }
+						changes: { roleId: updatedRoleIds }
 					});
 				}
 			}
@@ -307,16 +307,16 @@ export const UsersClanSlice = createSlice({
 						changes: {
 							user: {
 								...existingMember.user,
-								display_name: displayName,
-								avatar_url: avatarUrl
+								displayName: displayName,
+								avatarUrl: avatarUrl
 							}
 						}
 					});
 				}
 			}
 		},
-		updateUserStatus: (state, action: PayloadAction<{ userId: string; user_status: string }>) => {
-			const { userId, user_status } = action.payload;
+		updateUserStatus: (state, action: PayloadAction<{ userId: string; userStatus: string }>) => {
+			const { userId, userStatus } = action.payload;
 			Object.keys(state.byClans).forEach((clanId) => {
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
@@ -325,7 +325,7 @@ export const UsersClanSlice = createSlice({
 						changes: {
 							user: {
 								...existingMember.user,
-								user_status
+								userStatus
 							}
 						}
 					});
@@ -334,9 +334,9 @@ export const UsersClanSlice = createSlice({
 		},
 		updateUserProfileAcrossClans: (
 			state,
-			action: PayloadAction<{ userId: string; avatar?: string; display_name?: string; about_me?: string }>
+			action: PayloadAction<{ userId: string; avatar?: string; displayName?: string; about_me?: string }>
 		) => {
-			const { userId, avatar, display_name, about_me } = action.payload;
+			const { userId, avatar, displayName, about_me } = action.payload;
 			Object.keys(state.byClans).forEach((clanId) => {
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
@@ -347,11 +347,11 @@ export const UsersClanSlice = createSlice({
 					};
 
 					if (avatar !== undefined) {
-						updates.user!.avatar_url = avatar;
+						updates.user!.avatarUrl = avatar;
 					}
 
-					if (display_name !== undefined) {
-						updates.user!.display_name = display_name;
+					if (displayName !== undefined) {
+						updates.user!.displayName = displayName;
 					}
 
 					if (about_me !== undefined) {
@@ -413,22 +413,22 @@ export const UsersClanSlice = createSlice({
 			const updates: Update<UsersClanEntity, string>[] = [];
 			for (let i = 0; i < users.length; i++) {
 				const user = users[i];
-				if (!user?.is_banned) continue;
+				if (!user?.isBanned) continue;
 
-				if (!user?.user_id) return;
-				const userEntity = clanEntities[user.user_id];
+				if (!user?.userId) return;
+				const userEntity = clanEntities[user.userId];
 				if (!userEntity) continue;
 
 				const oldBanList = userEntity.ban_list || {};
 				const newBanList = {
 					...oldBanList,
 					[channelId]: {
-						ban_time: user?.expired_ban_time ? Date.now() + (user?.expired_ban_time || 0) : undefined,
+						ban_time: user?.expiredBanTime ? Date.now() + (user?.expiredBanTime || 0) : undefined,
 						banner_id: ''
 					}
 				};
 				updates.push({
-					id: user.user_id,
+					id: user.userId,
 					changes: { ban_list: newBanList }
 				});
 			}
@@ -483,15 +483,15 @@ export const UsersClanSlice = createSlice({
 					const grouped: Record<string, Record<string, { banner_id?: string; ban_time?: number }>> = {};
 
 					for (const user of ban_list) {
-						if (!user.banned_id || !user.channel_id) continue;
+						if (!user.banned_id || !user.channelId) continue;
 						if (grouped[user.banned_id]) {
-							grouped[user.banned_id][user.channel_id] = {
+							grouped[user.banned_id][user.channelId] = {
 								banner_id: user.banner_id || '',
 								ban_time: user?.ban_time ? Date.now() + (user?.ban_time || 0) : user?.ban_time
 							};
 						} else {
 							grouped[user.banned_id] = {
-								[user.channel_id]: {
+								[user.channelId]: {
 									banner_id: user.banner_id || '',
 									ban_time: user?.ban_time ? Date.now() + (user?.ban_time || 0) : user?.ban_time
 								}
@@ -559,7 +559,7 @@ export const selectMembersClanCount = createSelector(
 );
 
 const getName = (user: UsersClanEntity) =>
-	user.clan_nick?.toLowerCase() || user.user?.display_name?.toLowerCase() || user.user?.username?.toLowerCase() || '';
+	user.clanNick?.toLowerCase() || user.user?.displayName?.toLowerCase() || user.user?.username?.toLowerCase() || '';
 
 // CHECK
 export const selectClanMemberWithStatusIds = createSelector(
@@ -579,7 +579,7 @@ export const selectClanMemberWithStatusIds = createSelector(
 			user: {
 				...item.user,
 				online: metas[item.id]?.status !== EUserStatus.INVISIBLE && !!metas[item.id]?.online,
-				is_mobile: !!metas[item.id]?.is_mobile
+				isMobile: !!metas[item.id]?.isMobile
 			}
 		})) as UsersClanEntity[];
 

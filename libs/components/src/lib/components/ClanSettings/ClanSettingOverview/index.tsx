@@ -17,10 +17,10 @@ const ClanSettingOverview = () => {
 	const [clanRequest, setClanRequest] = useState<MezonUpdateClanDescBody>({
 		banner: currentClan?.banner ?? '',
 		clan_name: currentClan?.clan_name ?? '',
-		creator_id: currentClan?.creator_id ?? '',
+		creatorId: currentClan?.creatorId ?? '',
 		logo: currentClan?.logo ?? '',
-		welcome_channel_id: currentClan?.welcome_channel_id ?? '',
-		prevent_anonymous: !!currentClan?.prevent_anonymous
+		welcomeChannelId: currentClan?.welcomeChannelId ?? '',
+		preventAnonymous: !!currentClan?.preventAnonymous
 	});
 	const { t } = useTranslation('clanSettings');
 	const [systemMessage, setSystemMessage] = useState<ApiSystemMessage | null>(null);
@@ -30,8 +30,8 @@ const ClanSettingOverview = () => {
 	const dispatch = useAppDispatch();
 
 	const fetchSystemMessage = async () => {
-		if (!currentClan?.clan_id) return;
-		const resultAction = await dispatch(fetchSystemMessageByClanId({ clanId: currentClan?.clan_id }));
+		if (!currentClan?.clanId) return;
+		const resultAction = await dispatch(fetchSystemMessageByClanId({ clanId: currentClan?.clanId }));
 		const message = unwrapResult(resultAction);
 		setSystemMessage(message);
 		setUpdateSystemMessageRequest(message);
@@ -75,7 +75,7 @@ const ClanSettingOverview = () => {
 				if (
 					typedKey !== 'description' &&
 					typedKey !== 'about' &&
-					typedKey !== 'short_url' &&
+					typedKey !== 'shortUrl' &&
 					(clanRequest[typedKey] || currentClan[typedKey])
 				) {
 					return clanRequest[typedKey] !== currentClan[typedKey];
@@ -90,10 +90,10 @@ const ClanSettingOverview = () => {
 	}, [currentClan, clanRequest]);
 
 	const handleSave = useCallback(async () => {
-		if (currentClan?.clan_id) {
+		if (currentClan?.clanId) {
 			if (hasClanChanges) {
 				await updateClan({
-					clan_id: currentClan?.clan_id as string,
+					clanId: currentClan?.clanId as string,
 					request: clanRequest
 				});
 			}
@@ -104,12 +104,12 @@ const ClanSettingOverview = () => {
 	}, [currentClan, hasSystemMessageChanges, hasClanChanges, clanRequest, updateSystemMessageRequest, systemMessage]);
 
 	const updateSystemMessages = async () => {
-		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClan?.clan_id && updateSystemMessageRequest) {
+		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClan?.clanId && updateSystemMessageRequest) {
 			const cachedMessageUpdate: ApiSystemMessage = {
 				boost_message:
 					updateSystemMessageRequest?.boost_message === systemMessage?.boost_message ? '' : updateSystemMessageRequest?.boost_message,
-				channel_id: updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '' : updateSystemMessageRequest?.channel_id,
-				clan_id: systemMessage?.clan_id,
+				channelId: updateSystemMessageRequest?.channelId === systemMessage?.channelId ? '' : updateSystemMessageRequest?.channelId,
+				clanId: systemMessage?.clanId,
 				id: systemMessage?.id,
 				hide_audit_log:
 					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? '' : updateSystemMessageRequest?.hide_audit_log,
@@ -120,7 +120,7 @@ const ClanSettingOverview = () => {
 					updateSystemMessageRequest?.welcome_sticker === systemMessage?.welcome_sticker ? '' : updateSystemMessageRequest?.welcome_sticker
 			};
 			const request = {
-				clanId: currentClan.clan_id,
+				clanId: currentClan.clanId,
 				newMessage: cachedMessageUpdate,
 				cachedMessage: updateSystemMessageRequest
 			};
@@ -143,11 +143,11 @@ const ClanSettingOverview = () => {
 		setClanRequest({
 			banner: currentClan?.banner ?? '',
 			clan_name: currentClan?.clan_name ?? '',
-			creator_id: currentClan?.creator_id ?? '',
+			creatorId: currentClan?.creatorId ?? '',
 			logo: currentClan?.logo ?? '',
-			is_onboarding: currentClan?.is_onboarding,
-			welcome_channel_id: currentClan?.welcome_channel_id ?? '',
-			prevent_anonymous: !!currentClan?.prevent_anonymous
+			isOnboarding: currentClan?.isOnboarding,
+			welcomeChannelId: currentClan?.welcomeChannelId ?? '',
+			preventAnonymous: !!currentClan?.preventAnonymous
 		});
 		setUpdateSystemMessageRequest(systemMessage);
 	};
@@ -159,7 +159,7 @@ const ClanSettingOverview = () => {
 	const handleToggleAno = (prevent: boolean) => {
 		setClanRequest({
 			...clanRequest,
-			prevent_anonymous: prevent
+			preventAnonymous: prevent
 		});
 	};
 	return (
@@ -176,14 +176,14 @@ const ClanSettingOverview = () => {
 				<SystemMessagesManagement
 					updateSystem={updateSystemMessageRequest}
 					setUpdateSystemMessageRequest={setUpdateSystemMessageRequest}
-					channelSelectedId={updateSystemMessageRequest?.channel_id as string}
+					channelSelectedId={updateSystemMessageRequest?.channelId as string}
 					setClanRequest={setClanRequest}
 				/>
 			)}
 
 			<div className={'border-t-theme-primary mt-10 pt-10 flex flex-col '}>
 				<h3 className="text-sm font-bold uppercase mb-2">{t('systemMessages.anoTitle')}</h3>
-				<ToggleItem label={t('systemMessages.anoDesc')} value={!!clanRequest.prevent_anonymous} handleToggle={handleToggleAno} />
+				<ToggleItem label={t('systemMessages.anoDesc')} value={!!clanRequest.preventAnonymous} handleToggle={handleToggleAno} />
 			</div>
 
 			{(hasClanChanges || hasSystemMessageChanges) && <ModalSaveChanges onSave={handleSave} onReset={handleReset} />}

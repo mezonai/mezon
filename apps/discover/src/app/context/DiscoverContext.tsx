@@ -97,7 +97,7 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 			);
 
 			const request: ApiClanDiscoverRequest = {
-				clan_id: clanId
+				clanId: clanId
 			};
 
 			const response = await mezon.listClanDiscover(

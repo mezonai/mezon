@@ -41,7 +41,7 @@ function MemberListGroupChat({ directMessageId, createId }: MemberListProps) {
 									<MemberItem
 										user={user}
 										directMessageId={directMessageId}
-										isMobile={user.user?.is_mobile}
+										isMobile={user.user?.isMobile}
 										isMe={userId === user.id}
 										createId={createId}
 									/>

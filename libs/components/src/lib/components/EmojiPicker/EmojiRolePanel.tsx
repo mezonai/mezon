@@ -41,8 +41,8 @@ export const EmojiRolePanel: React.FC<EmojiRolePanelProps> = ({ onEmojiSelect, o
 			<Icons.Star defaultSize="h-7 w-7" />,
 			<Icons.ClockIcon className="h-7 w-7" />,
 			...categoryEmoji.map((emoji) =>
-				emoji.clan_logo !== '' ? (
-					<img src={emoji.clan_logo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clan_name} />
+				emoji.clanLogo !== '' ? (
+					<img src={emoji.clanLogo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clan_name} />
 				) : (
 					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clan_name?.charAt(0).toUpperCase()}</div>
 				)

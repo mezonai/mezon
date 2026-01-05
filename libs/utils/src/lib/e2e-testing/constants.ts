@@ -17,18 +17,18 @@ export const DATA_E2E_IDENTIFIER = {
 	footer_profile: {
 		avatar: '',
 		name: '',
-		user_status: ''
+		userStatus: ''
 	},
 	button: {
 		base: '',
 		copy: ''
 	},
 	base_profile: {
-		display_name: '',
-		user_status: ''
+		displayName: '',
+		userStatus: ''
 	},
 	short_profile: {
-		display_name: '',
+		displayName: '',
 		username: '',
 		activity_status: {
 			button: {
@@ -172,7 +172,7 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		member_list: {
 			user_info: {
-				display_name: '',
+				displayName: '',
 				username: ''
 			},
 			role_settings: {
@@ -189,7 +189,7 @@ export const DATA_E2E_IDENTIFIER = {
 		modal: {
 			create_category: {
 				input: {
-					category_name: ''
+					categoryName: ''
 				},
 				toggle: {
 					private: ''
@@ -378,11 +378,11 @@ export const DATA_E2E_IDENTIFIER = {
 					selection: {
 						item: {
 							channel_name: '',
-							category_name: ''
+							categoryName: ''
 						},
 						selected: {
 							channel_name: '',
-							category_name: ''
+							categoryName: ''
 						}
 					}
 				}
@@ -461,7 +461,7 @@ export const DATA_E2E_IDENTIFIER = {
 		secondary_side_bar: {
 			member: {
 				in_voice: '',
-				user_status: ''
+				userStatus: ''
 			}
 		},
 		screen: {
@@ -489,7 +489,7 @@ export const DATA_E2E_IDENTIFIER = {
 	channel_setting_page: {
 		side_bar: {
 			item: '',
-			channel_label: ''
+			channelLabel: ''
 		},
 		permissions: {
 			button: {
@@ -804,10 +804,10 @@ export const DATA_E2E_IDENTIFIER = {
 			user_profile: {
 				preview: {
 					avatar: '',
-					display_name: ''
+					displayName: ''
 				},
 				input: {
-					display_name: '',
+					displayName: '',
 					about_me: ''
 				},
 				button: {

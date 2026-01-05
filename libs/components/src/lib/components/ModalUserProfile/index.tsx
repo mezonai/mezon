@@ -98,7 +98,7 @@ const ModalUserProfile = ({
 		if (userID === userId) {
 			return {
 				status: userProfile?.user?.status || EUserStatus.ONLINE,
-				user_status: userProfile?.user?.user_status || ''
+				userStatus: userProfile?.user?.userStatus || ''
 			};
 		}
 		return userStatusById;
@@ -107,10 +107,10 @@ const ModalUserProfile = ({
 	const modalRef = useRef<boolean>(false);
 	const onLoading = useRef<boolean>(false);
 
-	const date = new Date(userById?.user?.create_time as string | Date);
+	const date = new Date(userById?.user?.createTime as string | Date);
 	const { timeFormatted } = useFormatDate({ date });
 
-	const avatarByUserId = isDM ? userById?.user?.avatar_url : userById?.clan_avatar || userById?.user?.avatar_url;
+	const avatarByUserId = isDM ? userById?.user?.avatarUrl : userById?.clanAvatar || userById?.user?.avatarUrl;
 
 	const [content, setContent] = useState<string>('');
 
@@ -122,13 +122,13 @@ const ModalUserProfile = ({
 
 	const { toDmGroupPageFromMainApp, navigate } = useAppNavigation();
 
-	const sendMessage = async (userId: string, display_name?: string, username?: string, avatar?: string) => {
-		const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-		if (response.channel_id) {
+	const sendMessage = async (userId: string, displayName?: string, username?: string, avatar?: string) => {
+		const response = await createDirectMessageWithUser(userId, displayName, username, avatar);
+		if (response.channelId) {
 			const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-			sendInviteMessage(content, response.channel_id, channelMode);
+			sendInviteMessage(content, response.channelId, channelMode);
 			setContent('');
-			const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+			const directChat = toDmGroupPageFromMainApp(response.channelId, Number(response.type));
 			navigate(directChat);
 		}
 		onLoading.current = false;
@@ -145,15 +145,15 @@ const ModalUserProfile = ({
 
 	useEffect(() => {
 		const getColor = async () => {
-			if ((isFooterProfile && checkUrl(userProfile?.user?.avatar_url)) || checkUrl(message?.avatar) || checkUrl(userById?.user?.avatar_url)) {
-				const url = userById?.user?.avatar_url;
+			if ((isFooterProfile && checkUrl(userProfile?.user?.avatarUrl)) || checkUrl(message?.avatar) || checkUrl(userById?.user?.avatarUrl)) {
+				const url = userById?.user?.avatarUrl;
 				const colorImg = await getColorAverageFromURL(url || '');
 				if (colorImg) setColor(colorImg);
 			}
 		};
 
 		getColor();
-	}, [userProfile?.user?.avatar_url, isFooterProfile, userID, message?.avatar, userById?.user?.avatar_url]);
+	}, [userProfile?.user?.avatarUrl, isFooterProfile, userID, message?.avatar, userById?.user?.avatarUrl]);
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, userById?.user?.id || ''));
 	const checkAddFriend = useMemo(() => {
 		return infoFriend?.state;
@@ -188,10 +188,10 @@ const ModalUserProfile = ({
 		if (checkAnonymous) {
 			return 'Anonymous';
 		}
-		if (userID === message?.sender_id) {
+		if (userID === message?.senderId) {
 			return message?.username;
 		}
-		return message?.references?.[0].message_sender_username;
+		return message?.references?.[0].messageSenderUsername;
 	}, [userById, userID, currentUserId?.username, userProfile?.user?.username, isFooterProfile, checkAnonymous, message]);
 
 	const handleOnKeyPress = useCallback(
@@ -200,15 +200,15 @@ const ModalUserProfile = ({
 				if (userById) {
 					sendMessage(
 						isFooterProfile ? userId || userById?.user?.id || '' : userById?.user?.id || '',
-						userById?.user?.display_name || userById?.user?.username,
+						userById?.user?.displayName || userById?.user?.username,
 						userById?.user?.username,
-						userById.user?.avatar_url
+						userById.user?.avatarUrl
 					);
 					onLoading.current = true;
 					return;
 				}
 				sendMessage(
-					(isFooterProfile ? userId : userID === message?.sender_id ? message?.sender_id : message?.references?.[0].message_sender_id) || ''
+					(isFooterProfile ? userId : userID === message?.senderId ? message?.senderId : message?.references?.[0].messageSenderId) || ''
 				);
 				onLoading.current = true;
 			}
@@ -240,7 +240,7 @@ const ModalUserProfile = ({
 					(isFooterProfile && userProfile?.user?.username) || message?.username || userById?.user?.username || currentUserId?.username
 				}
 				userToDisplay={isFooterProfile ? userProfile : userById}
-				customStatus={status.user_status}
+				customStatus={status.userStatus}
 				isAnonymous={checkAnonymous}
 				userID={userID}
 				positionType={positionType}
@@ -252,18 +252,18 @@ const ModalUserProfile = ({
 					<div>
 						<p
 							className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate"
-							data-e2e={generateE2eId('short_profile.display_name')}	
+							data-e2e={generateE2eId('short_profile.displayName')}	
 						>
 							{isUserRemoved
 								? t('labels.unknownUser')
 								: checkAnonymous
 									? t('labels.anonymous')
 									: isFooterProfile
-										? userById?.user?.display_name || userProfile?.user?.display_name || userById?.user?.username
-										: userById?.clan_nick ||
-											userById?.user?.display_name ||
+										? userById?.user?.displayName || userProfile?.user?.displayName || userById?.user?.username
+										: userById?.clanNick ||
+											userById?.user?.displayName ||
 											userById?.user?.username ||
-											currentUserId?.display_name ||
+											currentUserId?.displayName ||
 											usernameShow}
 						</p>
 						<p
@@ -300,10 +300,10 @@ const ModalUserProfile = ({
 									className={`w-full border-theme-primary text-theme-primary color-text-secondary rounded-[5px] bg-theme-contexify p-[5px] `}
 									placeholder={t('placeholders.messageUser', {
 										username: isFooterProfile
-											? userById?.user?.display_name || userProfile?.user?.display_name || userById?.user?.username
+											? userById?.user?.displayName || userProfile?.user?.displayName || userById?.user?.username
 											: !isDM
-												? userById?.clan_nick || userById?.user?.display_name || userById?.user?.username || usernameShow
-												: userById?.user?.display_name || userById?.user?.username || usernameShow
+												? userById?.clanNick || userById?.user?.displayName || userById?.user?.username || usernameShow
+												: userById?.user?.displayName || userById?.user?.username || usernameShow
 									})}
 									value={content}
 									onKeyPress={handleOnKeyPress}
@@ -339,8 +339,8 @@ const MemberInVoiceButton = ({ channelId }: { channelId: string }) => {
 	const navigate = useNavigate();
 
 	const handleNavigateRoom = useCallback(() => {
-		if (channelData?.clan_id && channelData?.channel_id) {
-			navigate(`/chat/clans/${channelData?.clan_id}/channels/${channelData?.channel_id}`);
+		if (channelData?.clanId && channelData?.channelId) {
+			navigate(`/chat/clans/${channelData?.clanId}/channels/${channelData?.channelId}`);
 		}
 	}, [channelId]);
 
@@ -351,7 +351,7 @@ const MemberInVoiceButton = ({ channelId }: { channelId: string }) => {
 			data-e2e="invoice-button-component"
 		>
 			<div className="opacity-0 truncate w-0 group-hover:animate-expand flex items-center justify-center leading-4 font-medium">
-				{channelData?.channel_label}
+				{channelData?.channelLabel}
 			</div>
 			<Icons.Speaker defaultSize="w-[14px] h-[14px] text-green-500 pointer-events-none" />
 		</div>

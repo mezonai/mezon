@@ -26,7 +26,7 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 	const groupClan = useMemo(() => {
 		if (!group?.clanIds?.length || !clans?.length) return [];
 		try {
-			return clans.filter((clan) => group.clanIds.includes(clan?.clan_id));
+			return clans.filter((clan) => group.clanIds.includes(clan?.clanId));
 		} catch (error) {
 			console.error('Error in groupClan: ', error);
 			return [];
@@ -90,9 +90,9 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 				</TouchableOpacity>
 
 				{groupClan?.map((clan) => (
-					<View key={`${clan?.clan_id}-expanded-container`} style={styles.clanContainer}>
-						<ClanIcon key={`${clan?.clan_id}-expanded`} data={clan} onPress={onClanPress} drag={undefined} isActive={false} />
-						<TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveClanFromGroup(clan?.clan_id)}>
+					<View key={`${clan?.clanId}-expanded-container`} style={styles.clanContainer}>
+						<ClanIcon key={`${clan?.clanId}-expanded`} data={clan} onPress={onClanPress} drag={undefined} isActive={false} />
+						<TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveClanFromGroup(clan?.clanId)}>
 							<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_16} height={size.s_16} color={themeValue.textStrong} />
 						</TouchableOpacity>
 					</View>
@@ -107,7 +107,7 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 				<View style={styles.groupIcon}>
 					<View style={[styles.multipleClansView, groupClan.length === 1 && styles.singleClanView]}>
 						{groupClan?.slice(0, 4)?.map((clan) => (
-							<View key={`${clan?.clan_id}-collapsed`} style={styles.quarterClan}>
+							<View key={`${clan?.clanId}-collapsed`} style={styles.quarterClan}>
 								{renderClanContent(clan)}
 							</View>
 						))}

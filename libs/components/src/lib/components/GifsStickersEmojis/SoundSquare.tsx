@@ -33,9 +33,9 @@ type SoundPanel = {
 
 export interface ClanSound {
 	category?: string;
-	clan_id?: string;
-	create_time?: string;
-	creator_id?: string;
+	clanId?: string;
+	createTime?: string;
+	creatorId?: string;
 	id?: string;
 	shortname?: string;
 	source?: string;
@@ -57,9 +57,9 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 		mode,
 		fromTopic: isTopic
 	});
-	const currentId = useCurrentInbox()?.channel_id;
+	const currentId = useCurrentInbox()?.channelId;
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
-	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
+	const isReplyAction = dataReferences.messageRefId && dataReferences.messageRefId !== '';
 	const { valueInputToCheckHandleSearch, subPanelActive, setSubPanelActive } = useGifsStickersEmoji();
 
 	const currentClanId = useAppSelector(selectCurrentClanId) || '';
@@ -78,7 +78,7 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 		return allSoundsInStore.map((sound) => ({
 			clan_name: sound.clan_name || 'MY SOUNDS',
 			logo: sound.logo || '',
-			clan_id: sound.clan_id || '',
+			clanId: sound.clanId || '',
 			id: sound.id || '',
 			filename: sound.shortname || 'sound.mp3',
 			size: 100000,
@@ -110,7 +110,7 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 	const categoryLogo = useMemo(() => {
 		return userSounds
 			.map((sound) => ({
-				id: sound.clan_id,
+				id: sound.clanId,
 				type: sound.clan_name,
 				url: sound.logo
 			}))

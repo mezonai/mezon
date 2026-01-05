@@ -53,7 +53,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const isInCall = useSelector(selectIsInCall);
 	const isPlayDialTone = useSelector(selectAudioDialTone);
 	const isPlayBusyTone = useSelector(selectAudioBusyTone);
-	const dmUserId = currentDmGroup?.user_ids && currentDmGroup.user_ids.length > 0 ? currentDmGroup?.user_ids[0] : '';
+	const dmUserId = currentDmGroup?.userIds && currentDmGroup.userIds.length > 0 ? currentDmGroup?.userIds[0] : '';
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
 	const isRemoteAudio = useSelector(selectRemoteAudio);
 	const isRemoteVideo = useSelector(selectRemoteVideo);
@@ -66,8 +66,8 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		if (!isSignalDataOffer && !isInCall) {
 			return false;
 		}
-		return currentDmGroup?.user_ids?.some((i) => i === signalingData?.[0]?.callerId);
-	}, [currentDmGroup?.user_ids, isInCall, signalingData]);
+		return currentDmGroup?.userIds?.some((i) => i === signalingData?.[0]?.callerId);
+	}, [currentDmGroup?.userIds, isInCall, signalingData]);
 
 	const {
 		timeStartConnected,
@@ -91,7 +91,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		channelId: dmGroupId as string,
 		userId: userId as string,
 		callerName: userProfile?.user?.username as string,
-		callerAvatar: userProfile?.user?.avatar_url as string,
+		callerAvatar: userProfile?.user?.avatarUrl as string,
 		isInChannelCalled: isInChannelCalled as boolean
 	});
 
@@ -104,8 +104,8 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	}, [dispatch, isInCall, isJoinedCall]);
 
 	useEffect(() => {
-		if (otherCall?.caller_id && otherCall?.channel_id) {
-			handleOtherCall(otherCall?.caller_id, otherCall?.channel_id);
+		if (otherCall?.caller_id && otherCall?.channelId) {
+			handleOtherCall(otherCall?.caller_id, otherCall?.channelId);
 		}
 	}, [otherCall]);
 

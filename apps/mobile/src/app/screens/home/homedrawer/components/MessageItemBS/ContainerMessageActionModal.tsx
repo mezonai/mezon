@@ -90,7 +90,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(currentDmId ?? ''));
 	const currentTopicId = useSelector(selectCurrentTopicId);
-	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id));
+	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clanId));
 	const navigation = useNavigation<any>();
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
@@ -100,7 +100,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		message?.code === TypeMessage.CreateThread ||
 		message?.code === TypeMessage.CreatePin ||
 		message?.code === TypeMessage.AuditLog;
-	const isAnonymous = message?.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const isAnonymous = message?.senderId === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID;
 
 	const onClose = useCallback(() => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
@@ -178,7 +178,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		[EPermission.clanOwner, EOverriddenPermission.manageThread, EPermission.manageChannel, EOverriddenPermission.sendMessage],
 		currentChannelId ?? ''
 	);
-	const [isAllowDelMessage] = usePermissionChecker([EOverriddenPermission.deleteMessage], message?.channel_id ?? '');
+	const [isAllowDelMessage] = usePermissionChecker([EOverriddenPermission.deleteMessage], message?.channelId ?? '');
 	const { downloadImage, saveMediaToCameraRoll, getImageAsBase64OrFile } = useImage();
 	const allMessagesEntities = useAppSelector((state) =>
 		selectMessageEntitiesByChannelId(state, (currentDmId ? currentDmId : currentTopicId ? currentTopicId : currentChannelId) || '')
@@ -210,14 +210,14 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 
 	const handleActionGiveACoffee = async () => {
 		try {
-			if (userId !== message.sender_id) {
+			if (userId !== message.senderId) {
 				const currentClanId = selectCurrentClanId(store.getState());
 				const coffeeEvent = {
-					channel_id: message.channel_id,
-					clan_id: message.clan_id,
-					message_ref_id: message.id,
-					receiver_id: message.sender_id,
-					sender_id: userId
+					channelId: message.channelId,
+					clanId: message.clanId,
+					messageRefId: message.id,
+					receiver_id: message.senderId,
+					senderId: userId
 				};
 				const res = await dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
 				if (res?.meta?.requestStatus === 'rejected' || !res || !res?.payload) {
@@ -227,12 +227,12 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					});
 					return;
 				}
-				handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, EMOJI_GIVE_COFFEE.emoji_id, EMOJI_GIVE_COFFEE.emoji);
-				const response = await createDirectMessageWithUser(message?.sender_id, message?.user?.name, message?.user?.username, message?.avatar);
-				if (response?.channel_id) {
+				handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, EMOJI_GIVE_COFFEE.emojiId, EMOJI_GIVE_COFFEE.emoji);
+				const response = await createDirectMessageWithUser(message?.senderId, message?.user?.name, message?.user?.username, message?.avatar);
+				if (response?.channelId) {
 					sendInviteMessage(
 						`${t('tokensSent', { ns: 'token' })} ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | ${t('giveCoffeeAction', { ns: 'token' })}`,
-						response?.channel_id,
+						response?.channelId,
 						ChannelStreamMode.STREAM_MODE_DM,
 						TypeMessage.SendToken
 					);
@@ -245,7 +245,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			console.error('Failed to give cofffee message', error);
 		}
 	};
-	const listPinMessages = useAppSelector((state) => selectPinMessageByChannelId(state, message?.channel_id as string));
+	const listPinMessages = useAppSelector((state) => selectPinMessageByChannelId(state, message?.channelId as string));
 	const isDM = useMemo(() => {
 		return [ChannelStreamMode.STREAM_MODE_DM, ChannelStreamMode.STREAM_MODE_GROUP].includes(mode);
 	}, [mode]);
@@ -315,7 +315,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const handleResendMessage = async () => {
 		dispatch(
 			messagesActions.remove({
-				channelId: message.channel_id,
+				channelId: message.channelId,
 				messageId: message.id
 			})
 		);
@@ -421,22 +421,22 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 
 	const handleMarkUnread = async () => {
 		const payloadSetLastSeenTimestamp = {
-			channelId: message?.channel_id || '',
+			channelId: message?.channelId || '',
 			timestamp: 1,
 			messageId: message?.id
 		};
 		try {
 			await dispatch(
 				messagesActions.updateLastSeenMessage({
-					clanId: message?.clan_id || '',
-					channelId: message?.channel_id || '',
+					clanId: message?.clanId || '',
+					channelId: message?.channelId || '',
 					messageId: message?.id || '',
 					mode: message?.mode || 0,
 					badge_count: 0,
 					message_time: 1
 				})
 			);
-			if (message?.clan_id === '0') {
+			if (message?.clanId === '0') {
 				dispatch(directMetaActions.setDirectLastSeenTimestamp(payloadSetLastSeenTimestamp));
 			} else {
 				dispatch(channelMetaActions.setChannelLastSeenTimestamp(payloadSetLastSeenTimestamp));
@@ -669,7 +669,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		const isMyMessage = userId === message?.user?.id;
 		const isMessageError = message?.isError;
 		const isHidePinMessage = !!currentTopicId;
-		const isUnPinMessage = listPinMessages.some((pinMessage) => pinMessage?.message_id === message?.id);
+		const isUnPinMessage = listPinMessages.some((pinMessage) => pinMessage?.messageId === message?.id);
 		const isHideCreateThread =
 			isDM ||
 			((!isCanManageThread || !isCanManageChannel) && !isClanOwner) ||
@@ -682,11 +682,11 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		const isTopicFirstMessage = message?.code === TypeMessage.Topic;
 		const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage) || isTopicFirstMessage;
 		const isHideTopicDiscussion =
-			(message?.topic_id && message?.topic_id !== '0') ||
+			(message?.topicId && message?.topicId !== '0') ||
 			message?.code === TypeMessage.Topic ||
 			isDM ||
 			!canSendMessage ||
-			currentChannelId !== message?.channel_id ||
+			currentChannelId !== message?.channelId ||
 			isMessageSystem ||
 			message?.code === TypeMessage.MessageBuzz ||
 			anonymousMode;
@@ -703,10 +703,10 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			const currentMessage = allMessagesEntities?.[allMessageIds?.[messagePosition]];
 			const nextMessage = allMessagesEntities?.[allMessageIds?.[messagePosition + 1]];
 
-			const isSameSenderWithNextMessage = currentMessage?.sender_id === nextMessage?.sender_id;
+			const isSameSenderWithNextMessage = currentMessage?.senderId === nextMessage?.senderId;
 
 			const isNextMessageWithinTimeLimit = nextMessage
-				? (nextMessage?.create_time_seconds - currentMessage?.create_time_seconds) * 1000 < FORWARD_MESSAGE_TIME
+				? (nextMessage?.createTimeSeconds - currentMessage?.createTimeSeconds) * 1000 < FORWARD_MESSAGE_TIME
 				: false;
 
 			return isSameSenderWithNextMessage && isNextMessageWithinTimeLimit;
@@ -767,8 +767,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		message?.user?.id,
 		message?.isError,
 		message?.code,
-		message?.topic_id,
-		message?.channel_id,
+		message?.topicId,
+		message?.channelId,
 		message?.attachments,
 		message?.content?.fwd,
 		message?.content?.embed,
@@ -793,22 +793,22 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	]);
 
 	const handleReact = useCallback(
-		async (mode, messageId, emoji_id: string, emoji: string) => {
+		async (mode, messageId, emojiId: string, emoji: string) => {
 			if (currentChannel?.parent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
 				await dispatch(
-					threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channel_id ?? '', activeCode: ThreadStatus.joined })
+					threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channelId ?? '', activeCode: ThreadStatus.joined })
 				);
 				joinningToThread(currentChannel, [userId ?? '']);
 			}
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_REACTION_MESSAGE_ITEM, {
-				id: emoji_id,
+				id: emojiId,
 				mode: mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL,
 				messageId: messageId ?? '',
-				clanId: mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM ? '' : message?.clan_id,
-				channelId: message?.channel_id ?? '',
-				emojiId: emoji_id ?? '',
+				clanId: mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM ? '' : message?.clanId,
+				channelId: message?.channelId ?? '',
+				emojiId: emojiId ?? '',
 				emoji: emoji?.trim() ?? '',
-				senderId: message?.sender_id ?? '',
+				senderId: message?.senderId ?? '',
 				countToRemove: 1,
 				actionDelete: false,
 				topicId: currentTopicId || ''
@@ -816,7 +816,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 
 			onClose();
 		},
-		[currentChannel, currentTopicId, dispatch, joinningToThread, message?.channel_id, message?.clan_id, message?.sender_id, onClose, userId]
+		[currentChannel, currentTopicId, dispatch, joinningToThread, message?.channelId, message?.clanId, message?.senderId, onClose, userId]
 	);
 
 	const renderMessageItemActions = () => {
@@ -874,13 +874,13 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	};
 
 	const onSelectEmoji = useCallback(
-		async (emoji_id: string, emoij: string) => {
+		async (emojiId: string, emoij: string) => {
 			if (!message && isOnlyEmojiPicker) {
 				if (!socketRef.current || !channelId) return;
-				await socketRef.current.writeVoiceReaction([emoji_id], channelId);
+				await socketRef.current.writeVoiceReaction([emojiId], channelId);
 				return;
 			}
-			await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emoji_id, emoij);
+			await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emojiId, emoij);
 		},
 		[channelId, handleReact, isOnlyEmojiPicker, message, mode, socketRef]
 	);

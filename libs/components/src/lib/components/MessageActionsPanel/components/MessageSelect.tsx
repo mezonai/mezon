@@ -50,11 +50,11 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 		if (!inside) {
 			dispatch(
 				messagesActions.clickButtonMessage({
-					message_id: messageId,
-					channel_id: (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) as string,
+					messageId: messageId,
+					channelId: (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) as string,
 					button_id: buttonId,
-					sender_id: senderId,
-					user_id: currentUserId,
+					senderId: senderId,
+					userId: currentUserId,
 					extra_data: option?.value
 				})
 			);
@@ -63,7 +63,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 		if (selectedOptions.filter((item) => item.value === option.value).length > 0) {
 			dispatch(
 				embedActions.removeEmbedValuel({
-					message_id: messageId,
+					messageId: messageId,
 					data: {
 						id: buttonId,
 						value: option.value
@@ -75,7 +75,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 		}
 		dispatch(
 			embedActions.addEmbedValue({
-				message_id: messageId,
+				messageId: messageId,
 				data: {
 					id: buttonId,
 					value: option.value
@@ -86,11 +86,11 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 		);
 		dispatch(
 			messagesActions.clickButtonMessage({
-				message_id: messageId,
-				channel_id: (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) as string,
+				messageId: messageId,
+				channelId: (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) as string,
 				button_id: buttonId,
-				sender_id: senderId,
-				user_id: currentUserId,
+				senderId: senderId,
+				userId: currentUserId,
 				extra_data: option.value
 			})
 		);
@@ -113,7 +113,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 		});
 		dispatch(
 			embedActions.removeEmbedValuel({
-				message_id: messageId,
+				messageId: messageId,
 				data: {
 					id: buttonId,
 					value: option.value
@@ -173,7 +173,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 		}
 		dispatch(
 			embedActions.addEmbedValue({
-				message_id: messageId,
+				messageId: messageId,
 				data: {
 					id: buttonId,
 					value: select?.valueSelected.value

@@ -46,9 +46,9 @@ export default memo(function BannerAvatar({ avatar, onLoad, alt, defaultAvatar }
 	const userStatus = useMemo(() => {
 		return {
 			status: userProfile?.user?.status || EUserStatus.ONLINE,
-			user_status: userProfile?.user?.user_status
+			userStatus: userProfile?.user?.userStatus
 		};
-	}, [userProfile?.user?.status, userProfile?.user?.user_status]);
+	}, [userProfile?.user?.status, userProfile?.user?.userStatus]);
 
 	const menu = useMemo(
 		() =>

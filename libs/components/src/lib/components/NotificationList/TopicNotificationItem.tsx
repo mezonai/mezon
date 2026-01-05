@@ -40,7 +40,7 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 	const isShowCanvas = useSelector(selectIsShowCanvas);
 
 	const { userId } = useAuth();
-	const userIds = topic.last_sent_message?.repliers;
+	const userIds = topic.lastSentMessage?.repliers;
 	const usernames = useMemo(() => {
 		return memberClan
 			.filter((profile) => (userIds || []).includes(profile?.user?.id || '') && profile?.user?.id !== userId)
@@ -64,18 +64,18 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 		}
 		onCloseTooltip?.();
 		dispatch(notificationActions.setIsShowInbox(!isShowInbox));
-		if (topic.message_id && topic.channel_id) {
+		if (topic.messageId && topic.channelId) {
 			const state = getStore().getState();
 			const currentChannelId = selectCurrentChannelId(state);
-			if (currentChannelId !== topic.channel_id) {
-				await navigate(`/chat/clans/${topic.clan_id}/channels/${topic.channel_id}`);
+			if (currentChannelId !== topic.channelId) {
+				await navigate(`/chat/clans/${topic.clanId}/channels/${topic.channelId}`);
 			}
 
 			dispatch(
 				messagesActions.jumpToMessage({
-					clanId: topic.clan_id || '',
-					messageId: topic.message_id,
-					channelId: topic.channel_id,
+					clanId: topic.clanId || '',
+					messageId: topic.messageId,
+					channelId: topic.channelId,
 					navigate
 				})
 			);
@@ -85,7 +85,7 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 					const startTime = Date.now();
 					const checkMessage = () => {
 						const state = getStore().getState();
-						const msg = selectMessageByMessageId(state, topic.channel_id as string, topic.message_id as string);
+						const msg = selectMessageByMessageId(state, topic.channelId as string, topic.messageId as string);
 						if (msg) {
 							return resolve(msg);
 						}
@@ -108,15 +108,15 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 			}
 
 			dispatch(topicsActions.setIsShowCreateTopic(true));
-			dispatch(threadsActions.setIsShowCreateThread({ channelId: topic.channel_id as string, isShowCreateThread: false }));
+			dispatch(threadsActions.setIsShowCreateThread({ channelId: topic.channelId as string, isShowCreateThread: false }));
 			dispatch(topicsActions.setCurrentTopicId(topic.id || ''));
 		}
 	};
 	const allTabProps = {
 		messageReplied: topic?.message,
 		subject: subjectTopic,
-		senderId: topic?.last_sent_message?.sender_id,
-		lastMessageTopic: topic?.last_sent_message,
+		senderId: topic?.lastSentMessage?.senderId,
+		lastMessageTopic: topic?.lastSentMessage,
 		topic
 	};
 
@@ -151,13 +151,13 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 	const lastMsgTopic = useMemo(() => {
 		return lastMessageTopic?.content ? safeJSONParse(lastMessageTopic?.content) : null;
 	}, [lastMessageTopic]);
-	const [senderId, setSubjectTopic] = useState(topic?.last_sent_message?.sender_id ?? '');
+	const [senderId, setSubjectTopic] = useState(topic?.lastSentMessage?.senderId ?? '');
 	useEffect(() => {
-		setSubjectTopic(lastMessageTopic?.sender_id ?? '');
+		setSubjectTopic(lastMessageTopic?.senderId ?? '');
 	}, [lastMessageTopic]);
 
 	const { priorityAvatar } = useGetPriorityNameFromUserClan(senderId || '');
-	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, lastMessageTopic?.sender_id ?? ''));
+	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, lastMessageTopic?.senderId ?? ''));
 
 	return (
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg">
@@ -167,12 +167,12 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 						alt="user avatar"
 						className="w-11 h-10 rounded-full border-2 border-color-theme z-10"
 						username={lastSentUser?.user?.username}
-						srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatar_url) ?? '', {
+						srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatarUrl) ?? '', {
 							width: 300,
 							height: 300,
 							resizeType: 'fit'
 						})}
-						src={priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatar_url}
+						src={priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatarUrl}
 					/>
 				</div>
 				<div className="h-full flex-1 max-w-full min-w-0">

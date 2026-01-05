@@ -121,7 +121,7 @@ export const HistoryTransactionScreen = () => {
 				<View style={styles.cardWalletWrapper}>
 					<View style={styles.cardWalletLine}>
 						<Text style={styles.cardTitle}>{t('debitAccount')}</Text>
-						<Text style={styles.cardTitle}>{userProfile?.user?.username || userProfile?.user?.display_name}</Text>
+						<Text style={styles.cardTitle}>{userProfile?.user?.username || userProfile?.user?.displayName}</Text>
 					</View>
 					<View style={styles.cardWalletLine}>
 						<Text style={styles.cardTitle}>{t('balance')}</Text>

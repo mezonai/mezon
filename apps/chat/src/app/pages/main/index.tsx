@@ -79,7 +79,7 @@ function MyApp() {
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const { userProfile } = useAuth();
-	const calculateJoinedTime = new Date().getTime() - new Date(userProfile?.user?.create_time ?? '').getTime();
+	const calculateJoinedTime = new Date().getTime() - new Date(userProfile?.user?.createTime ?? '').getTime();
 	const isNewGuy = calculateJoinedTime <= TIME_OF_SHOWING_FIRST_POPUP;
 	const numberOfClanJoined = useSelector(selectClanNumber);
 	const isShowFirstJoinPopup = isNewGuy && numberOfClanJoined === 0;
@@ -101,7 +101,7 @@ function MyApp() {
 				const isFocusTopicBox = selectClickedOnTopicStatus(store.getState());
 				const currentTopicId = selectCurrentTopicId(store.getState());
 
-				if (currentClan?.prevent_anonymous) return;
+				if (currentClan?.preventAnonymous) return;
 				if (isFocusTopicBox && currentTopicId) {
 					dispatch(accountActions.setTopicAnonymousMode());
 					return;
@@ -190,9 +190,9 @@ function MyApp() {
 				<Topbar isHidden={currentClanId !== '0' ? false : !directId} />
 				<MainContent />
 				<FooterProfile
-					name={userProfile?.user?.display_name || userProfile?.user?.username || ''}
+					name={userProfile?.user?.displayName || userProfile?.user?.username || ''}
 					status={userProfile?.user?.online}
-					avatar={userProfile?.user?.avatar_url || ''}
+					avatar={userProfile?.user?.avatarUrl || ''}
 					userId={userProfile?.user?.id || ''}
 					isDM={currentClanId === '0'}
 				/>
@@ -520,7 +520,7 @@ const ClansList = memo(() => {
 								{item.type === 'clan' && item.clan ? (
 									<SidebarClanItem
 										option={item.clan}
-										active={isActive(item.clan.clan_id || '')}
+										active={isActive(item.clan.clanId || '')}
 										className={`transition-all duration-200 ${draggingThis ? 'opacity-30' : ''} ${
 											isGroupIntentTarget && dropZone === 'center' ? 'animate-pulse' : ''
 										}`}

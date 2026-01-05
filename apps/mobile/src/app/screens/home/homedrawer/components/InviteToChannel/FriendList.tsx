@@ -79,27 +79,27 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 				userMap.set(userId, {
 					id: userId,
 					user: itemFriend?.user,
-					channel_label: itemFriend?.user?.display_name || itemFriend?.user?.username
+					channelLabel: itemFriend?.user?.displayName || itemFriend?.user?.username
 				});
 			}
 		});
 
 		dmGroupChatList.forEach((itemDM: DirectEntity) => {
-			const userId = itemDM?.user_ids?.[0] ?? '';
+			const userId = itemDM?.userIds?.[0] ?? '';
 			const isDM = itemDM?.type === ChannelType.CHANNEL_TYPE_DM;
 			const isGroup = itemDM?.type === ChannelType.CHANNEL_TYPE_GROUP;
 			const isUserBlocked = listBlockUser?.some((user) => user?.id === userId);
 
 			if ((userId && !userIdInClanArray.includes(userId) && isDM && !isUserBlocked) || isGroup) {
-				const channelId = isDM ? userId : itemDM?.channel_id;
-				const channelLabel = itemDM?.channel_label ?? itemDM?.usernames?.[0] ?? `${itemDM?.creator_name}'s Group`;
+				const channelId = isDM ? userId : itemDM?.channelId;
+				const channelLabel = itemDM?.channelLabel ?? itemDM?.usernames?.[0] ?? `${itemDM?.creator_name}'s Group`;
 
 				userMap.set(channelId, {
-					channel_id: itemDM?.channel_id,
-					channel_label: channelLabel,
+					channelId: itemDM?.channelId,
+					channelLabel: channelLabel,
 					channel_avatar: isDM ? itemDM?.avatars?.[0] : itemDM?.channel_avatar,
 					type: itemDM?.type,
-					id: itemDM?.channel_id,
+					id: itemDM?.channelId,
 					topic: itemDM?.topic
 				});
 			}
@@ -109,7 +109,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 	}, [friendList, store]);
 
 	const userInviteList = useMemo(() => {
-		return userListInvite?.filter((dm) => normalizeString(dm?.channel_label).includes(normalizeString(searchUserText)));
+		return userListInvite?.filter((dm) => normalizeString(dm?.channelLabel).includes(normalizeString(searchUserText)));
 	}, [searchUserText, userListInvite]);
 
 	const addInviteLinkToClipboard = useCallback(() => {
@@ -153,8 +153,8 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 	}, [currentInviteLink]);
 
 	const directMessageWithUser = async (user: Receiver) => {
-		const response = await createDirectMessageWithUser(user?.user?.id, user?.user?.display_name, user?.user?.username, user?.user?.avatar_url);
-		if (response?.channel_id) {
+		const response = await createDirectMessageWithUser(user?.user?.id, user?.user?.displayName, user?.user?.username, user?.user?.avatarUrl);
+		if (response?.channelId) {
 			let channelMode = 0;
 			if (Number(response.type) === ChannelType.CHANNEL_TYPE_DM) {
 				channelMode = ChannelStreamMode.STREAM_MODE_DM;
@@ -162,7 +162,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 			if (Number(response.type) === ChannelType.CHANNEL_TYPE_GROUP) {
 				channelMode = ChannelStreamMode.STREAM_MODE_GROUP;
 			}
-			sendInviteMessage(currentInviteLinkRef?.current, response.channel_id, channelMode);
+			sendInviteMessage(currentInviteLinkRef?.current, response.channelId, channelMode);
 		}
 	};
 
@@ -199,12 +199,12 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 
 			const resp = await dispatch(fetchSystemMessageByClanId({ clanId: currentClanId, noCache: true }));
 			const welcomeChannel = resp?.payload as ApiSystemMessage;
-			const response = await createLinkInviteUser(currentClanId ?? '', welcomeChannel?.channel_id, 10);
-			if (!response || !response?.invite_link) {
+			const response = await createLinkInviteUser(currentClanId ?? '', welcomeChannel?.channelId, 10);
+			if (!response || !response?.inviteLink) {
 				return;
 			}
 
-			linkInvite = `${process.env.NX_CHAT_APP_REDIRECT_URI}/invite/${response.invite_link}`;
+			linkInvite = `${process.env.NX_CHAT_APP_REDIRECT_URI}/invite/${response.inviteLink}`;
 			setCurrentInviteLink(linkInvite);
 			currentInviteLinkRef.current = linkInvite;
 			dispatch(clansActions.joinClan({ clanId: '0' }));

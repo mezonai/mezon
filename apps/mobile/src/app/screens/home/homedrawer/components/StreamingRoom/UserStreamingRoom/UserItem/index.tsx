@@ -6,11 +6,11 @@ import { style } from './styles';
 
 const UserItem = (user) => {
 	const styles = style();
-	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user?.user?.user_id || ''));
+	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user?.user?.userId || ''));
 
 	const avatarUrl = useMemo(() => {
-		return userStream?.clan_avatar || userStream?.user?.avatar_url || '';
-	}, [userStream?.clan_avatar, userStream?.user?.avatar_url]);
+		return userStream?.clanAvatar || userStream?.user?.avatarUrl || '';
+	}, [userStream?.clanAvatar, userStream?.user?.avatarUrl]);
 
 	return (
 		<View style={styles.imgWrapper}>

@@ -146,7 +146,7 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 			const request: ApiClanEmojiCreateRequest = {
 				id,
 				category: 'Custom',
-				clan_id: currentClanId,
+				clanId: currentClanId,
 				shortname,
 				source: url,
 				is_for_sale: isForSale

@@ -60,9 +60,9 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 		setIsLoading(true);
 		setRolesList((currentRoles) => {
 			const requestBody: ApiUpdateRoleOrderRequest = {
-				clan_id: currentClanId || '',
+				clanId: currentClanId || '',
 				roles: currentRoles.map((role, index) => ({
-					role_id: role.id,
+					roleId: role.id,
 					order: index + 1
 				}))
 			};
@@ -127,7 +127,7 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 							</p>
 						</td>
 						<td className="text-[15px] text-center">
-							{role?.slug === `everyone-${role?.clan_id}` ? (
+							{role?.slug === `everyone-${role?.clanId}` ? (
 								<p className="inline-flex gap-x-2 items-center ">{t('allMembers')}</p>
 							) : (
 								<p
@@ -139,7 +139,7 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 								</p>
 							)}
 						</td>
-						<td className={` flex h-14 justify-center items-center ${role?.slug === `everyone-${role?.clan_id}` && 'ml-[2.8rem]'}`}>
+						<td className={` flex h-14 justify-center items-center ${role?.slug === `everyone-${role?.clanId}` && 'ml-[2.8rem]'}`}>
 							<div className="flex gap-x-2">
 								<div className="text-[15px] cursor-pointer bg-red-500 p-2 rounded-full opacity-0 group-hover:opacity-100 group-hover:text-white">
 									{hasPermissionEdit ? (
@@ -152,7 +152,7 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 										</span>
 									)}
 								</div>
-								{hasPermissionEdit && role?.slug !== `everyone-${role?.clan_id}` && (
+								{hasPermissionEdit && role?.slug !== `everyone-${role?.clanId}` && (
 									<div
 										className={`text-[15px] cursor-pointer bg-red-500 p-2 text-white rounded-full ${hasPermissionEdit ? 'opacity-100' : 'opacity-20'}`}
 										onClick={(e) => handleOpenDeleteRoleModal(e, role.id)}

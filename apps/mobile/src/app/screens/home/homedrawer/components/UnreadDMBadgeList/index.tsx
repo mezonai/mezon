@@ -39,7 +39,7 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 							/>
 						) : (
 							<View style={styles.wrapperTextAvatar}>
-								<Text style={styles.textAvatar}>{dm?.channel_label?.charAt?.(0)}</Text>
+								<Text style={styles.textAvatar}>{dm?.channelLabel?.charAt?.(0)}</Text>
 							</View>
 						)}
 						{numUnread > 0 && (
@@ -76,10 +76,10 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 
 	const navigateToDirectMessageMDetail = async () => {
 		if (isTabletLandscape) {
-			await dispatch(directActions.setDmGroupCurrentId(dm?.channel_id));
+			await dispatch(directActions.setDmGroupCurrentId(dm?.channelId));
 			navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 		} else {
-			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: dm?.channel_id, from: APP_SCREEN.HOME });
+			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: dm?.channelId, from: APP_SCREEN.HOME });
 		}
 	};
 

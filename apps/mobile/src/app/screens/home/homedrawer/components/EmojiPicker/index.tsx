@@ -68,7 +68,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 	const styles = style(themeValue);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentDirectMessage = useSelector(selectDmGroupCurrent(directMessageId)); //Note: prioritize DM first
-	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id));
+	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clanId));
 	const currentClanPreventAnonymous = useSelector(selectCurrentClanPreventAnonymous);
 	const [mode, setMode] = useState<ExpressionType>('emoji');
 	const [searchText, setSearchText] = useState<string>('');
@@ -118,19 +118,19 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 		if (messageActionNeedToResolve?.type === EMessageActionType.Reply) {
 			const targetMessage = messageActionNeedToResolve?.targetMessage;
 			messageRef = {
-				message_id: '',
-				message_ref_id: targetMessage?.id,
-				ref_type: 0,
-				message_sender_id: targetMessage?.sender_id,
-				message_sender_username: targetMessage?.username,
-				mesages_sender_avatar: targetMessage?.clan_avatar ? targetMessage?.clan_avatar : targetMessage?.avatar,
-				message_sender_clan_nick: targetMessage?.clan_nick,
-				message_sender_display_name: targetMessage?.display_name,
+				messageId: '',
+				messageRefId: targetMessage?.id,
+				refType: 0,
+				messageSenderId: targetMessage?.senderId,
+				messageSenderUsername: targetMessage?.username,
+				mesagesSenderAvatar: targetMessage?.clanAvatar ? targetMessage?.clanAvatar : targetMessage?.avatar,
+				messageSenderClanNick: targetMessage?.clanNick,
+				messageSenderDisplayName: targetMessage?.displayName,
 				content: JSON.stringify(targetMessage?.content),
-				has_attachment: Boolean(targetMessage?.attachments?.length),
-				channel_id: targetMessage?.channel_id ?? '',
+				hasAttachment: Boolean(targetMessage?.attachments?.length),
+				channelId: targetMessage?.channelId ?? '',
 				mode: targetMessage?.mode ?? 0,
-				channel_label: targetMessage?.channel_label
+				channelLabel: targetMessage?.channelLabel
 			};
 		} else {
 			messageRef = {};

@@ -88,7 +88,7 @@ export const fetchChannelMembersCached = async (
 	if (!shouldForceCall) {
 		const cachedChannelData = channelMembersState.memberChannels[channelId];
 		return {
-			channel_users: cachedChannelData.ids?.map((item) => ({ user_id: item })) || [],
+			channel_users: cachedChannelData.ids?.map((item) => ({ userId: item })) || [],
 			time: Date.now(),
 			fromCache: true
 		};
@@ -99,10 +99,10 @@ export const fetchChannelMembersCached = async (
 		{
 			api_name: 'ListChannelUsers',
 			list_channel_users_req: {
-				channel_id: channelId,
+				channelId: channelId,
 				limit: 2000,
-				clan_id: clanId,
-				channel_type: channelType,
+				clanId: clanId,
+				channelType: channelType,
 				state: 1
 			}
 		},
@@ -190,13 +190,13 @@ export const fetchChannelMembersPresence = createAsyncThunk(
 		try {
 			if (channelPresence.joins.length > 0) {
 				const joinUser = channelPresence.joins[0];
-				const userId = joinUser.user_id;
-				const isMobile = joinUser.is_mobile;
-				const channelId = channelPresence.channel_id;
+				const userId = joinUser.userId;
+				const isMobile = joinUser.isMobile;
+				const channelId = channelPresence.channelId;
 				const state = thunkAPI.getState() as ChannelMemberRootState;
 				const existingMember = state[CHANNEL_MEMBERS_FEATURE_KEY].memberChannels[channelId]?.ids?.findIndex((item) => item === userId);
 				if (!existingMember) {
-					thunkAPI.dispatch(channelMembersActions.addNewMember({ channel_id: channelPresence.channel_id, user_ids: [userId] }));
+					thunkAPI.dispatch(channelMembersActions.addNewMember({ channelId: channelPresence.channelId, userIds: [userId] }));
 					thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: true, isMobile }));
 				}
 			}
@@ -210,15 +210,15 @@ export const fetchChannelMembersPresence = createAsyncThunk(
 export const updateStatusUser = createAsyncThunk('channelMembers/fetchUserStatus', async (statusPresence: StatusPresenceEvent, thunkAPI) => {
 	if (statusPresence?.leaves?.length) {
 		for (const leave of statusPresence.leaves) {
-			const userId = leave.user_id;
-			const isMobile = leave.is_mobile;
+			const userId = leave.userId;
+			const isMobile = leave.isMobile;
 			thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: false, isMobile }));
 		}
 	}
 	if (statusPresence?.joins?.length) {
 		for (const join of statusPresence.joins) {
-			const userId = join.user_id;
-			const isMobile = join.is_mobile;
+			const userId = join.userId;
+			const isMobile = join.isMobile;
 			thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: true, isMobile }));
 		}
 	}
@@ -278,7 +278,7 @@ export const updateCustomStatus = createAsyncThunk(
 				thunkAPI.dispatch(
 					usersClanActions.updateUserStatus({
 						userId,
-						user_status: customStatus
+						userStatus: customStatus
 					})
 				);
 			}
@@ -357,8 +357,8 @@ export const checkBanInChannelCached = async (
 	markApiFirstCalled(apiKey);
 
 	return {
-		isBan: response.is_banned || false,
-		time: !response.is_banned ? undefined : response.expired_ban_time || Infinity,
+		isBan: response.isBanned || false,
+		time: !response.isBanned ? undefined : response.expiredBanTime || Infinity,
 		fromCache: false
 	};
 };
@@ -442,20 +442,20 @@ export const channelMembers = createSlice({
 					id: channelId
 				};
 			}
-			const memberIds = members.map((member) => member.user_id as string);
+			const memberIds = members.map((member) => member.userId as string);
 
 			const memberAddedByUserId: Record<string, IMemberAddedByUserId> = {};
 			const memberBanneds = new Set<string>();
 
 			members.forEach((member) => {
-				if (member?.user_id) {
-					memberAddedByUserId[member.user_id] = {
-						id: member.user_id,
-						addedBy: member.added_by
+				if (member?.userId) {
+					memberAddedByUserId[member.userId] = {
+						id: member.userId,
+						addedBy: member.addedBy
 					};
 				}
-				if (member.is_banned && member.user_id) {
-					memberBanneds.add(member.user_id);
+				if (member.isBanned && member.userId) {
+					memberBanneds.add(member.userId);
 				}
 			});
 			state.memberChannels[channelId] = {
@@ -465,10 +465,10 @@ export const channelMembers = createSlice({
 			};
 			state.bannedUserIds[channelId] = memberBanneds;
 		},
-		addNewMember: (state, action: PayloadAction<{ channel_id: string; user_ids: string[]; addedByUserId?: string }>) => {
+		addNewMember: (state, action: PayloadAction<{ channelId: string; userIds: string[]; addedByUserId?: string }>) => {
 			const payload = action.payload;
-			const userIds = payload.user_ids;
-			const channelId = payload.channel_id;
+			const userIds = payload.userIds;
+			const channelId = payload.channelId;
 			const addedByUserId = payload?.addedByUserId;
 
 			if (!state?.memberChannels?.[channelId]) {
@@ -550,7 +550,7 @@ export const channelMembers = createSlice({
 			})
 			.addCase(updateCustomStatus.fulfilled, (state: ChannelMembersState, action) => {
 				if (action.payload) {
-					state.customStatusUser[action.payload?.user_id] = { status: action.payload.status, time_reset: action.payload.time_reset };
+					state.customStatusUser[action.payload?.userId] = { status: action.payload.status, time_reset: action.payload.time_reset };
 				}
 			});
 	}
@@ -631,7 +631,7 @@ export const selectMemberCustomStatusByUserId = createSelector(
 	],
 	(usersClanEntities, usersStatus, userId) => {
 		const userClan = usersClanEntities[userId];
-		return usersStatus?.[userId]?.status || userClan?.user?.user_status || '';
+		return usersStatus?.[userId]?.status || userClan?.user?.userStatus || '';
 	}
 );
 
@@ -671,9 +671,9 @@ export const selectMemberStatusById = createSelector(
 		const userClan = usersClanEntities[userId];
 		const userGroup = directs?.[currentDirectMessageId];
 		if (userClan && isClanView) {
-			return { status: userClan.user?.online, isMobile: userClan.user?.is_mobile };
+			return { status: userClan.user?.online, isMobile: userClan.user?.isMobile };
 		}
-		const index = userGroup?.user_ids?.findIndex((item) => item === userId) ?? -1;
+		const index = userGroup?.userIds?.findIndex((item) => item === userId) ?? -1;
 		if (index === -1) {
 			return { status: false, isMobile: false };
 		}
@@ -732,7 +732,7 @@ export const selectAllChannelMembersClan = createSelector(
 			const channel = state?.channels?.byClans?.[currentClanId as string]?.entities?.entities?.[channelId];
 			const isPrivate = channel?.channel_private;
 			const parentId = channel?.parent_id;
-			const creatorId = channel?.creator_id;
+			const creatorId = channel?.creatorId;
 			return `${channelId},${isPrivate},${parentId},${creatorId || ''}`;
 		}
 	],
@@ -840,8 +840,8 @@ export const selectChannelMemberByUserIds = createSelector(
 					} as ChannelMembersEntity);
 					return;
 				}
-				const { channel_label, user_ids, onlines, usernames, display_names } = userInfo as DirectEntity;
-				const currentUserIndex = Array.isArray(user_ids) ? user_ids.findIndex((id) => id === userId) : -1;
+				const { channelLabel, userIds, onlines, usernames, display_names } = userInfo as DirectEntity;
+				const currentUserIndex = Array.isArray(userIds) ? userIds.findIndex((id) => id === userId) : -1;
 				if (currentUserIndex === -1) return;
 				members.push({
 					channelId,
@@ -849,7 +849,7 @@ export const selectChannelMemberByUserIds = createSelector(
 					user: {
 						online: onlines?.[currentUserIndex],
 						...dmMembers?.[userId]?.user,
-						display_name: display_names?.[currentUserIndex],
+						displayName: display_names?.[currentUserIndex],
 						username: usernames?.[currentUserIndex]
 					},
 					id: userId
@@ -898,7 +898,7 @@ export const selectUserAddedByUserId = createSelector(
 		return {
 			id: addedByInfo.addedBy,
 			username: addedByUser.user?.username,
-			display_name: addedByUser.user?.display_name
+			displayName: addedByUser.user?.displayName
 		};
 	}
 );

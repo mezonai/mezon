@@ -69,7 +69,7 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 
 		const createRequest: ApiAddAppRequest = {
 			appname: cleanedName,
-			creator_id: userProfile?.user?.id ?? '',
+			creatorId: userProfile?.user?.id ?? '',
 			role: 0,
 			is_shadow: isShadowBot,
 			app_url: typeApplication ? cleanedUrl : ''

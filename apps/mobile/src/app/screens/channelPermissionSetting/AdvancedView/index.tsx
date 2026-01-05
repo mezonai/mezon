@@ -26,17 +26,17 @@ export const AdvancedView = memo(({ isAdvancedEditMode, channel }: IAdvancedView
 	const navigation = useNavigation<any>();
 	const { t } = useTranslation('channelSetting');
 	const allClanMembers = useSelector(selectAllUserClans);
-	const listOfChannelRole = useSelector(selectRolesByChannelId(channel?.channel_id));
+	const listOfChannelRole = useSelector(selectRolesByChannelId(channel?.channelId));
 	const dispatch = useAppDispatch();
-	const listChannelMemberIds = useSelector((state) => selectUserChannelIds(state, channel.channel_id));
+	const listChannelMemberIds = useSelector((state) => selectUserChannelIds(state, channel.channelId));
 	const allUserInChannel = useMemo(() => {
 		return allClanMembers?.filter((member) => listChannelMemberIds?.includes(member?.user?.id));
 	}, [allClanMembers, listChannelMemberIds]);
 
 	useEffect(() => {
-		dispatch(rolesClanActions.fetchRolesClan({ clanId: channel?.clan_id }));
-		dispatch(fetchUserChannels({ channelId: channel?.channel_id }));
-	}, [channel?.channel_id, channel?.clan_id, dispatch]);
+		dispatch(rolesClanActions.fetchRolesClan({ clanId: channel?.clanId }));
+		dispatch(fetchUserChannels({ channelId: channel?.channelId }));
+	}, [channel?.channelId, channel?.clanId, dispatch]);
 
 	const listOfRoleAndMemberInChannel = useMemo(() => {
 		if ((!listOfChannelRole?.length && !allUserInChannel?.length) || !channel?.channel_private) {
@@ -64,13 +64,13 @@ export const AdvancedView = memo(({ isAdvancedEditMode, channel }: IAdvancedView
 				screen: APP_SCREEN.MENU_CHANNEL.ADVANCED_PERMISSION_OVERRIDES,
 				params: {
 					channelId: channel?.id,
-					clanId: channel?.clan_id,
+					clanId: channel?.clanId,
 					id,
 					type
 				}
 			});
 		},
-		[channel?.id, channel?.clan_id]
+		[channel?.id, channel?.clanId]
 	);
 
 	const renderItem = useCallback(

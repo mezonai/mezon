@@ -27,14 +27,14 @@ const LogoClanSelector = () => {
 		(logo: string) =>
 			dispatch(
 				clansActions.updateClan({
-					clan_id: currentClan?.clan_id ?? '',
+					clanId: currentClan?.clanId ?? '',
 					request: {
 						banner: currentClan?.banner ?? '',
 						clan_name: currentClan?.clan_name ?? '',
-						creator_id: currentClan?.creator_id ?? '',
-						is_onboarding: currentClan?.is_onboarding,
+						creatorId: currentClan?.creatorId ?? '',
+						isOnboarding: currentClan?.isOnboarding,
 						logo,
-						welcome_channel_id: currentClan?.welcome_channel_id ?? ''
+						welcomeChannelId: currentClan?.welcomeChannelId ?? ''
 					}
 				})
 			),

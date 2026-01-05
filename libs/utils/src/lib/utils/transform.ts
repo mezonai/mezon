@@ -11,13 +11,13 @@ export function transformPayloadWriteSocket({
 	isClanView: boolean;
 }) {
 	const payload = {
-		clan_id: clanId,
-		is_public: isPublicChannel
+		clanId: clanId,
+		isPublic: isPublicChannel
 	};
 
 	if (!isClanView) {
-		payload.clan_id = '';
-		payload.is_public = false;
+		payload.clanId = '';
+		payload.isPublic = false;
 	}
 	return payload;
 }

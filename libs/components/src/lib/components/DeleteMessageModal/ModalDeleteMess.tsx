@@ -42,7 +42,7 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 	const [isInitialRender, setIsInitialRender] = useState(isEditing);
 	const hasAttachment = !!mess?.attachments?.length;
 	const { deleteSendMessage } = useDeleteMessage({
-		channelId: mess.channel_id,
+		channelId: mess.channelId,
 		mode,
 		hasAttachment,
 		isTopic

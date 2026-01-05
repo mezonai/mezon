@@ -30,8 +30,8 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 	const { t } = useTranslation(['channelVoice', 'common']);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const channelId = useMemo(() => {
-		return channel?.channel_id || channel?.id || '';
-	}, [channel?.channel_id, channel?.id]);
+		return channel?.channelId || channel?.id || '';
+	}, [channel?.channelId, channel?.id]);
 
 	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channelId));
 	const badge = useMemo(() => (voiceChannelMembers?.length > 3 ? voiceChannelMembers.length - 3 : 0), [voiceChannelMembers]);
@@ -57,15 +57,15 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 	};
 
 	const joinChannel = async () => {
-		if (currentClanId !== channel?.clan_id) {
-			changeClan(channel.clan_id);
+		if (currentClanId !== channel?.clanId) {
+			changeClan(channel.clanId);
 		}
 		DeviceEventEmitter.emit(ActionEmitEvent.FETCH_MEMBER_CHANNEL_DM, {
 			isFetchMemberChannelDM: true
 		});
-		const dataSave = getUpdateOrAddClanChannelCache(channel?.clan_id, channelId);
+		const dataSave = getUpdateOrAddClanChannelCache(channel?.clanId, channelId);
 		save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-		await jumpToChannel(channelId, channel?.clan_id);
+		await jumpToChannel(channelId, channel?.clanId);
 		dismiss();
 	};
 
@@ -82,7 +82,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} color={themeValue.textStrong} />
 					</TouchableOpacity>
 					<Text numberOfLines={2} style={[styles.text, styles.textFlexible]}>
-						{channel?.channel_label || ''}
+						{channel?.channelLabel || ''}
 					</Text>
 				</View>
 				<TouchableOpacity
@@ -107,7 +107,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 					) : (
 						<View style={styles.avatarRow}>
 							{voiceChannelMembers?.slice?.(0, 3)?.map((m) => {
-								return <VoiceChannelAvatar key={`${m?.user_id}_user_join_voice`} userId={m?.user_id} />;
+								return <VoiceChannelAvatar key={`${m?.userId}_user_join_voice`} userId={m?.userId} />;
 							})}
 							{badge > 0 && (
 								<View style={styles.badgeContainer}>

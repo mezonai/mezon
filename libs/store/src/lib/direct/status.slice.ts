@@ -18,24 +18,24 @@ const statusAdapter = createEntityAdapter({
 
 export function convertStatusClan(user: UsersClanEntity, state: RootState): IUserProfileActivity {
 	const isMe = state?.account?.userProfile?.user?.id === user?.user?.id;
-	const isUserInvisible = user?.user?.user_status === EUserStatus.INVISIBLE;
+	const isUserInvisible = user?.user?.userStatus === EUserStatus.INVISIBLE;
 	return {
 		id: user.id,
 		online: (!isUserInvisible && !!user?.user?.online) || isMe,
-		is_mobile: !isUserInvisible && !!user?.user?.is_mobile,
+		isMobile: !isUserInvisible && !!user?.user?.isMobile,
 		status: user?.user?.online ? user?.user?.status : EUserStatus.INVISIBLE,
-		user_status: user?.user?.user_status
+		userStatus: user?.user?.userStatus
 	};
 }
 
 export function convertStatusGroup(users: ApiAllUsersAddChannelResponse): IUserProfileActivity[] {
 	const listGroup: IUserProfileActivity[] = [];
-	users.user_ids?.map((id, index) => {
+	users.userIds?.map((id, index) => {
 		if (id) {
 			listGroup.push({
 				id,
-				avatar_url: users.avatars?.[index] || '',
-				display_name: users.display_names?.[index] || '',
+				avatarUrl: users.avatars?.[index] || '',
+				displayName: users.display_names?.[index] || '',
 				online: users.onlines?.[index],
 				username: users.usernames?.[index] || ''
 			});
@@ -60,7 +60,7 @@ export const statusSlice = createSlice({
 			const user = action.payload;
 
 			statusAdapter.updateOne(state, {
-				id: user.user_id,
+				id: user.userId,
 				changes: {
 					status: user.custom_status
 				}

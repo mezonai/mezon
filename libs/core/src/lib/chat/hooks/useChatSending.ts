@@ -26,9 +26,9 @@ export type UseChatSendingOptions = {
 // TODO: separate this hook into 2 hooks for send and edit message
 export function useChatSending({ mode, channelOrDirect, fromTopic = false }: UseChatSendingOptions) {
 	const dispatch = useAppDispatch();
-	const getClanId = channelOrDirect?.clan_id;
+	const getClanId = channelOrDirect?.clanId;
 	const isPublic = !channelOrDirect?.channel_private;
-	const channelIdOrDirectId = channelOrDirect?.channel_id;
+	const channelIdOrDirectId = channelOrDirect?.channelId;
 	const currentTopicId = useSelector(selectCurrentTopicId);
 
 	const userProfile = useSelector(selectAllAccount);
@@ -36,16 +36,16 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 	const profileInTheClan = useAppSelector((state) => selectMemberClanByUserId(state, userProfile?.user?.id ?? ''));
 	const priorityAvatar =
 		mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
-			? profileInTheClan?.clan_avatar
-				? profileInTheClan?.clan_avatar
-				: userProfile?.user?.avatar_url
-			: userProfile?.user?.avatar_url;
+			? profileInTheClan?.clanAvatar
+				? profileInTheClan?.clanAvatar
+				: userProfile?.user?.avatarUrl
+			: userProfile?.user?.avatarUrl;
 
-	const priorityDisplayName = userProfile?.user?.display_name ? userProfile?.user?.display_name : userProfile?.user?.username;
+	const priorityDisplayName = userProfile?.user?.displayName ? userProfile?.user?.displayName : userProfile?.user?.username;
 	const priorityNameToShow =
 		mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
-			? profileInTheClan?.clan_nick
-				? profileInTheClan?.clan_nick
+			? profileInTheClan?.clanNick
+				? profileInTheClan?.clanNick
 				: priorityDisplayName
 			: priorityDisplayName;
 
@@ -57,9 +57,9 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 
 	const createTopic = useCallback(async () => {
 		const body: ApiSdTopicRequest = {
-			clan_id: getClanId as string,
-			channel_id: channelIdOrDirectId as string,
-			message_id: initTopicMessageId as string
+			clanId: getClanId as string,
+			channelId: channelIdOrDirectId as string,
+			messageId: initTopicMessageId as string
 		};
 
 		const topic = (await dispatch(topicsActions.createTopic(body))).payload as ApiSdTopic;
@@ -203,8 +203,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			messageId: string,
 			mentions: ApiMessageMention[],
 			attachments?: ApiMessageAttachment[],
-			hide_editted?: boolean,
-			topic_id?: string,
+			hideEditted?: boolean,
+			topicId?: string,
 			isTopic?: boolean,
 			oldMentions?: string
 		) => {
@@ -228,8 +228,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				trimContent,
 				mentions,
 				attachments,
-				hide_editted,
-				topic_id,
+				hideEditted,
+				topicId,
 				!!isTopic,
 				oldMentions
 			);

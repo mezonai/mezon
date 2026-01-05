@@ -108,7 +108,7 @@ export function CreateSoundScreen({ navigation }: MenuClanScreenProps<ClanSettin
 				const request = {
 					id: soundId,
 					category: 'Among Us',
-					clan_id: currentClanId,
+					clanId: currentClanId,
 					shortname: soundName.trim(),
 					source: attachment.url,
 					media_type: MediaType.AUDIO

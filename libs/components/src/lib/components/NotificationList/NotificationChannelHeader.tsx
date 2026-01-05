@@ -8,15 +8,15 @@ type NotificationChannelHeaderProps = {
 	itemUnread?: TNotificationChannel;
 	notification?: INotification;
 	isUnreadTab?: boolean;
-	clan_id?: string;
+	clanId?: string;
 	onDeleteNotification?: () => void;
 };
 
-const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clan_id, notification, onDeleteNotification }: NotificationChannelHeaderProps) => {
-	const clan = useAppSelector(selectClanById(clan_id as string));
+const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clanId, notification, onDeleteNotification }: NotificationChannelHeaderProps) => {
+	const clan = useAppSelector(selectClanById(clanId as string));
 	const channelId = useMemo(() => {
-		return itemUnread?.channel_id ? itemUnread.channel_id : '';
-	}, [itemUnread?.channel_id]);
+		return itemUnread?.channelId ? itemUnread.channelId : '';
+	}, [itemUnread?.channelId]);
 
 	const getChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
 
@@ -25,11 +25,11 @@ const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clan_id, notificat
 	return (
 		<div className="flex justify-between">
 			<div className="flex flex-row items-center gap-2">
-				{itemUnread?.clan_logo || notification?.content?.clan_logo ? (
+				{itemUnread?.clanLogo || notification?.content?.clanLogo ? (
 					<img
-						src={itemUnread?.clan_logo || notification?.content?.clan_logo}
+						src={itemUnread?.clanLogo || notification?.content?.clanLogo}
 						className="w-[45px] h-[45px] rounded-xl"
-						alt={itemUnread?.clan_logo || notification?.content?.clan_logo}
+						alt={itemUnread?.clanLogo || notification?.content?.clanLogo}
 					/>
 				) : (
 					<>
@@ -43,10 +43,10 @@ const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clan_id, notificat
 
 				<div className="flex flex-col gap-1">
 					<div className="font-bold text-[16px] cursor-pointer flex gap-x-1">
-						# <p className=" hover:underline">{itemUnread?.channel_label || notification?.content?.channel_label}</p>
+						# <p className=" hover:underline">{itemUnread?.channelLabel || notification?.content?.channelLabel}</p>
 					</div>
 					<div className="text-[10px] uppercase">
-						{clan?.clan_name} {'>'} {itemUnread?.category_name || notification?.content?.category_name}
+						{clan?.clan_name} {'>'} {itemUnread?.categoryName || notification?.content?.categoryName}
 					</div>
 				</div>
 			</div>

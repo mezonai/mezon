@@ -82,7 +82,7 @@ const LocationModal = (props: LocationModalProps) => {
 		label: (
 			<div className="flex items-center gap-x-2 " data-e2e={generateE2eId('clan_page.modal.create_event.location.channel.item')}>
 				{voice.channel_private ? <Icons.SpeakerLocked /> : <Icons.Speaker />}
-				<span className="truncate overflow-hidden max-w-[200px]">{voice.channel_label}</span>
+				<span className="truncate overflow-hidden max-w-[200px]">{voice.channelLabel}</span>
 			</div>
 		)
 	}));
@@ -139,7 +139,7 @@ const LocationModal = (props: LocationModalProps) => {
 					label: (
 						<div className="flex items-center gap-x-2 " data-e2e={generateE2eId('clan_page.modal.create_event.location.channel.item')}>
 							{icon}
-							{channel.channel_label}
+							{channel.channelLabel}
 						</div>
 					)
 				};

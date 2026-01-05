@@ -181,17 +181,17 @@ export const removeStickersByClanId = createAsyncThunk('settingClanSticker/remov
 	const state = thunkAPI.getState() as { settingSticker: SettingClanStickerState };
 	const stickersToRemove = state.settingSticker.entities;
 	const stickerIdsToRemove = Object.values(stickersToRemove)
-		.filter((sticker) => sticker?.clan_id === clanId)
+		.filter((sticker) => sticker?.clanId === clanId)
 		.map((sticker) => sticker?.id) as string[];
 	thunkAPI.dispatch(stickerSettingActions.removeMany(stickerIdsToRemove));
 });
 
 export const deleteSticker = createAsyncThunk(
 	'settingClanSticker/deleteSticker',
-	async (data: { stickerId: string; clan_id: string; stickerLabel: string }, thunkAPI) => {
+	async (data: { stickerId: string; clanId: string; stickerLabel: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const res = await mezon.client.deleteClanStickerById(mezon.session, data.stickerId, data.clan_id, data.stickerLabel);
+			const res = await mezon.client.deleteClanStickerById(mezon.session, data.stickerId, data.clanId, data.stickerLabel);
 			if (res) {
 				thunkAPI.dispatch(stickerSettingActions.remove(data.stickerId));
 			}
@@ -246,11 +246,11 @@ export const updateSound = createAsyncThunk('settingClanSticker/updateSound', as
 
 export const deleteSound = createAsyncThunk(
 	'settingClanSticker/deleteSound',
-	async (data: { soundId: string; clan_id: string; soundLabel: string }, thunkAPI) => {
+	async (data: { soundId: string; clanId: string; soundLabel: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const res = await mezon.client.deleteClanStickerById(mezon.session, data.soundId, data.clan_id, data.soundLabel);
+			const res = await mezon.client.deleteClanStickerById(mezon.session, data.soundId, data.clanId, data.soundLabel);
 
 			if (res) {
 				thunkAPI.dispatch(stickerSettingActions.remove(data.soundId));
@@ -336,14 +336,14 @@ export const selectStickersByClanIdSelector = createSelector(
 	(stickers, clanId) =>
 		stickers.filter(
 			(sticker) =>
-				sticker.clan_id === clanId && ((sticker as any).media_type === MediaType.STICKER || (sticker as any).media_type === undefined)
+				sticker.clanId === clanId && ((sticker as any).media_type === MediaType.STICKER || (sticker as any).media_type === undefined)
 		)
 );
 
 export const selectStickersByClanId = (clanId: string) => (state: RootState) => selectStickersByClanIdSelector(state, clanId);
 
 export const selectAudioByClanId = createSelector([selectAllStickerSuggestion, (_state: RootState, clanId: string) => clanId], (stickers, clanId) =>
-	stickers.filter((sticker) => sticker.clan_id === clanId && (sticker as any).media_type === MediaType.AUDIO)
+	stickers.filter((sticker) => sticker.clanId === clanId && (sticker as any).media_type === MediaType.AUDIO)
 );
 
 export const settingStickerReducer = settingClanStickerSlice.reducer;

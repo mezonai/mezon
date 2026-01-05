@@ -21,7 +21,7 @@ const CanvasItem = memo(({ canvas, currentUser, creatorIdChannel, onPressItem, o
 	const styles = style(themeValue);
 	const title = canvas?.title ? canvas?.title?.replace(/\n/g, ' ') : 'Untitled';
 	const isDisableDelCanvas = Boolean(
-		canvas.creator_id && canvas.creator_id !== currentUser?.user?.id && creatorIdChannel !== currentUser?.user?.id
+		canvas.creatorId && canvas.creatorId !== currentUser?.user?.id && creatorIdChannel !== currentUser?.user?.id
 	);
 
 	const handleDeleteCanvas = () => {

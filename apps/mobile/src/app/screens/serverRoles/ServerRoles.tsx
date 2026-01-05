@@ -32,7 +32,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 	}, [rolesClan, hasAdminPermission, hasManageClanPermission, isClanOwner]);
 
 	const everyoneRole = useMemo(() => {
-		return rolesClan?.find((role) => role?.slug === `everyone-${role?.clan_id}`);
+		return rolesClan?.find((role) => role?.slug === `everyone-${role?.clanId}`);
 	}, [rolesClan]);
 
 	useLayoutEffect(() => {

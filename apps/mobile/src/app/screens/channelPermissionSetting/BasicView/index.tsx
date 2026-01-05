@@ -43,16 +43,16 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 	const allClanMembers = useSelector(selectAllUserClans);
 	const [isChannelPublic, setIsChannelPublic] = useState<boolean>(isPublicChannel(channel));
 
-	const listOfChannelRole = useSelector(selectRolesByChannelId(channel?.channel_id));
-	const listChannelMemberIds = useSelector((state) => selectUserChannelIds(state, channel.channel_id));
+	const listOfChannelRole = useSelector(selectRolesByChannelId(channel?.channelId));
+	const listChannelMemberIds = useSelector((state) => selectUserChannelIds(state, channel.channelId));
 	const listOfChannelMember = useMemo(() => {
 		return allClanMembers?.filter((member) => listChannelMemberIds?.includes(member?.user?.id));
 	}, [allClanMembers, listChannelMemberIds]);
 
 	useEffect(() => {
-		dispatch(rolesClanActions.fetchRolesClan({ clanId: channel?.clan_id }));
-		dispatch(fetchUserChannels({ channelId: channel?.channel_id }));
-	}, [channel?.channel_id, channel?.clan_id, dispatch]);
+		dispatch(rolesClanActions.fetchRolesClan({ clanId: channel?.clanId }));
+		dispatch(fetchUserChannels({ channelId: channel?.channelId }));
+	}, [channel?.channelId, channel?.clanId, dispatch]);
 
 	const clanOwner = useMemo(() => {
 		return allClanMembers?.find((member) => checkClanOwner(member?.user?.id));
@@ -69,7 +69,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 		if (channel?.channel_private) {
 			return listOfChannelRole?.filter(
 				(role) =>
-					typeof role?.role_channel_active === 'number' && role?.role_channel_active === 1 && role?.slug !== `everyone-${role?.clan_id}`
+					typeof role?.role_channel_active === 'number' && role?.role_channel_active === 1 && role?.slug !== `everyone-${role?.clanId}`
 			);
 		}
 		return [];
@@ -101,10 +101,10 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 
 				const currentChannelPrivate = isPublic ? 1 : 0;
 				const updateUpdateChannelRequest: ApiChangeChannelPrivateRequest = {
-					clan_id: channel?.clan_id,
-					channel_id: channel?.channel_id || '',
+					clanId: channel?.clanId,
+					channelId: channel?.channelId || '',
 					channel_private: currentChannelPrivate,
-					user_ids: [userId],
+					userIds: [userId],
 					role_ids: []
 				};
 
@@ -112,15 +112,15 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 
 				dispatch(
 					channelsActions.updateChannelPrivateState({
-						clanId: channel?.clan_id || '',
-						channelId: channel?.channel_id || '',
+						clanId: channel?.clanId || '',
+						channelId: channel?.channelId || '',
 						channelPrivate: Number(!isPublic)
 					})
 				);
 				dispatch(
 					listChannelRenderAction.updateChannelInListRender({
-						channelId: channel?.channel_id || '',
-						clanId: channel?.clan_id || '',
+						channelId: channel?.channelId || '',
+						clanId: channel?.clanId || '',
 						dataUpdate: {
 							...updateUpdateChannelRequest,
 							channel_private: Number(!isPublic)

@@ -20,7 +20,7 @@ interface EmojiSuggestionProps {
 const filterEmojiData = (emojis: IEmoji[]) => {
 	return emojis
 		.filter((emoji) => emoji.id && emoji.shortname)
-		.map(({ id, src, shortname, category, is_for_sale, creator_id }) => {
+		.map(({ id, src, shortname, category, is_for_sale, creatorId }) => {
 			if (is_for_sale && src) {
 				const idSale = getIdSaleItemFromSource(src);
 				return {
@@ -30,7 +30,7 @@ const filterEmojiData = (emojis: IEmoji[]) => {
 					category,
 					shortname,
 					is_for_sale,
-					creator_id
+					creatorId
 				};
 			}
 			return {
@@ -40,7 +40,7 @@ const filterEmojiData = (emojis: IEmoji[]) => {
 				category,
 				shortname,
 				is_for_sale,
-				creator_id
+				creatorId
 			};
 		});
 };
@@ -96,9 +96,9 @@ export function useEmojiSuggestion({ isMobile = false }: EmojiSuggestionProps = 
 	const categoryEmoji = useMemo(() => {
 		return emojiMetadata
 			.map((emoji) => ({
-				id: emoji.clan_id,
+				id: emoji.clanId,
 				clan_name: emoji.clan_name,
-				clan_logo: emoji.logo
+				clanLogo: emoji.logo
 			}))
 			.filter((emoji, index, self) => emoji.id !== '0' && index === self.findIndex((s) => s.id === emoji.id));
 	}, [emojiMetadata]);

@@ -58,16 +58,16 @@ function LinkInvite({ inviteID }: { inviteID: string }) {
 				return;
 			}
 			const res = await inviteUser(inviteID || '');
-			if (res?.clan_id) {
+			if (res?.clanId) {
 				requestAnimationFrame(async () => {
 					navigation.navigate(APP_SCREEN.HOME);
 					await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 					await store.dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
-					store.dispatch(clansActions.joinClan({ clanId: res?.clan_id }));
-					store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clan_id }));
-					store.dispatch(emojiSuggestionActions.fetchEmoji({ clanId: res?.clan_id, noCache: true }));
-					store.dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: res?.clan_id }));
-					save(STORAGE_CLAN_ID, res?.clan_id);
+					store.dispatch(clansActions.joinClan({ clanId: res?.clanId }));
+					store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clanId }));
+					store.dispatch(emojiSuggestionActions.fetchEmoji({ clanId: res?.clanId, noCache: true }));
+					store.dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: res?.clanId }));
+					save(STORAGE_CLAN_ID, res?.clanId);
 					store.dispatch(appActions.setLoadingMainMobile(false));
 				});
 			} else {
@@ -100,10 +100,10 @@ function LinkInvite({ inviteID }: { inviteID: string }) {
 		return (
 			<>
 				<View style={styles.clanInfoRow}>
-					{selectInvite?.clan_logo ? (
+					{selectInvite?.clanLogo ? (
 						<FastImage
 							source={{
-								uri: selectInvite.clan_logo
+								uri: selectInvite.clanLogo
 							}}
 							style={styles.clanAvatar}
 							resizeMode={FastImage.resizeMode.contain}
@@ -119,9 +119,9 @@ function LinkInvite({ inviteID }: { inviteID: string }) {
 							{selectInvite?.clan_name || ''}
 						</Text>
 
-						{selectInvite?.channel_label && (
+						{selectInvite?.channelLabel && (
 							<Text style={styles.channelName} numberOfLines={1}>
-								# {selectInvite.channel_label}
+								# {selectInvite.channelLabel}
 							</Text>
 						)}
 					</View>

@@ -1,8 +1,8 @@
 /**
  * Get display name for group call
  */
-export const getGroupCallDisplayName = (group: { channel_label?: string; usernames?: string[] }): string => {
-	return group.channel_label || group.usernames?.join(',') || 'Group Call';
+export const getGroupCallDisplayName = (group: { channelLabel?: string; usernames?: string[] }): string => {
+	return group.channelLabel || group.usernames?.join(',') || 'Group Call';
 };
 
 /**

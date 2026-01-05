@@ -41,9 +41,9 @@ const StreamBannerScreen = ({ navigation, route }: MenuChannelScreenProps<Channe
 			dispatch(appActions.setLoadingMainMobile(true));
 			await dispatch(
 				channelsActions.updateChannel({
-					channel_id: channel?.channel_id,
-					channel_label: channel?.channel_label,
-					category_id: channel?.category_id,
+					channelId: channel?.channelId,
+					channelLabel: channel?.channelLabel,
+					categoryId: channel?.categoryId,
 					app_id: '',
 					channel_avatar: banner
 				})
@@ -64,7 +64,7 @@ const StreamBannerScreen = ({ navigation, route }: MenuChannelScreenProps<Channe
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [banner, channel?.category_id, channel?.channel_id, channel?.channel_label, dispatch, navigation, t]);
+	}, [banner, channel?.categoryId, channel?.channelId, channel?.channelLabel, dispatch, navigation, t]);
 
 	const handleClearBanner = () => {
 		setBanner('');

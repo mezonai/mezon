@@ -6,12 +6,12 @@ export function useInvite() {
 	const dispatch = useAppDispatch();
 
 	const createLinkInviteUser = React.useCallback(
-		async (clan_id: string, channel_id: string, expiry_time: number) => {
+		async (clanId: string, channelId: string, expiryTime: number) => {
 			const action = await dispatch(
 				inviteActions.createLinkInviteUser({
-					clan_id: clan_id,
-					channel_id: channel_id,
-					expiry_time: expiry_time
+					clanId: clanId,
+					channelId: channelId,
+					expiryTime: expiryTime
 				})
 			);
 			const payload = action.payload as ApiLinkInviteUser;
@@ -21,8 +21,8 @@ export function useInvite() {
 	);
 
 	const inviteUser = React.useCallback(
-		async (invite_id: string) => {
-			const action = await dispatch(inviteActions.inviteUser({ inviteId: invite_id }));
+		async (inviteId: string) => {
+			const action = await dispatch(inviteActions.inviteUser({ inviteId: inviteId }));
 			const payload = action.payload as ApiInviteUserRes;
 			return payload;
 		},
@@ -30,8 +30,8 @@ export function useInvite() {
 	);
 
 	const getLinkInvite = React.useCallback(
-		async (invite_id: string) => {
-			const action = await dispatch(inviteActions.getLinkInvite({ inviteId: invite_id }));
+		async (inviteId: string) => {
+			const action = await dispatch(inviteActions.getLinkInvite({ inviteId: inviteId }));
 			const payload = action.payload as ApiInviteUserRes;
 			return payload;
 		},
