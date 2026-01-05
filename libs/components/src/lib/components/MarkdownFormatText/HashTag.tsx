@@ -89,10 +89,10 @@ function PrivateChannel({ onClick, isLink }: { onClick: () => void; isLink: bool
 	return (
 		<span
 			onClick={onClick}
-			className={`px-0.1 rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
+			className={`px-0.1 items-center rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
 		>
-			<Icons.LockedPrivate className={`mt-1 w-4 h-4`} />
-			<span>{isLink ? t('unknown') : t('noAccess')}</span>
+			{isLink ? <Icons.Hashtag defaultSize={`w-4 h-4`} /> : <Icons.LockedPrivate className={`w-4 h-4`} />}
+			<span className={`${isLink ? 'italic' : ''}`}>{isLink ? t('unknown') : t('noAccess')}</span>
 		</span>
 	);
 }
