@@ -16,7 +16,7 @@ const AgeRestrictedModal = () => {
 	const styles = style(themeValue);
 	useEffect(() => {
 		const savedChannelIds = load(STORAGE_AGE_RESTRICTED_CHANNEL_IDS) || [];
-		if (!savedChannelIds?.includes(currentChannel?.channelId) && (currentChannel as ChannelsEntity)?.age_restricted === 1) {
+		if (!savedChannelIds?.includes(currentChannel?.channelId) && (currentChannel as ChannelsEntity)?.ageRestricted === 1) {
 			setIsShowAgeRestricted(true);
 		} else {
 			setIsShowAgeRestricted(false);

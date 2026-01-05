@@ -5,10 +5,10 @@ import { useFriends } from '@mezon/core';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	EStateFriend,
+	MessagesEntity,
 	friendsActions,
 	getStore,
 	getStoreAsync,
-	MessagesEntity,
 	selectAllAccount,
 	selectChannelById,
 	selectDmGroupCurrent,
@@ -112,10 +112,10 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 	}, [currenChannel?.creatorId]);
 
 	const groupDMAvatar = useMemo(() => {
-		const isAvatar = currenChannel?.channel_avatar && !currenChannel?.channel_avatar?.includes('avatar-group.png');
+		const isAvatar = currenChannel?.channelAvatar && !currenChannel?.channelAvatar?.includes('avatar-group.png');
 		if (!isAvatar) return '';
-		return currenChannel?.channel_avatar;
-	}, [currenChannel?.channel_avatar]);
+		return currenChannel?.channelAvatar;
+	}, [currenChannel?.channelAvatar]);
 
 	const handleAddFriend = async () => {
 		if (targetUserId) {

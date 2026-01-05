@@ -25,8 +25,8 @@ const SharingSuggestItem = memo(({ item, clans, onChooseItem }: ISharingSuggestI
 	}, [item?.parent_id]);
 
 	const shouldRenderDefaultAvatarGroup = useMemo(() => {
-		return item?.type === ChannelType.CHANNEL_TYPE_GROUP && item?.channel_avatar?.includes('avatar-group.png');
-	}, [item?.channel_avatar, item?.type]);
+		return item?.type === ChannelType.CHANNEL_TYPE_GROUP && item?.channelAvatar?.includes('avatar-group.png');
+	}, [item?.channelAvatar, item?.type]);
 
 	const suggestionAvatar = useMemo(() => {
 		switch (item?.type) {
@@ -34,13 +34,13 @@ const SharingSuggestItem = memo(({ item, clans, onChooseItem }: ISharingSuggestI
 				return item?.avatars?.[0] || '';
 
 			case ChannelType.CHANNEL_TYPE_GROUP:
-				return item?.channel_avatar || '';
+				return item?.channelAvatar || '';
 
 			default: {
 				return clans?.[item?.clanId]?.logo || '';
 			}
 		}
-	}, [clans, item?.avatars, item?.channel_avatar, item?.clanId, item?.type]);
+	}, [clans, item?.avatars, item?.channelAvatar, item?.clanId, item?.type]);
 
 	const suggestionUsername = useMemo(() => {
 		if (item?.type === ChannelType.CHANNEL_TYPE_DM || item?.type === ChannelType.CHANNEL_TYPE_GROUP) {

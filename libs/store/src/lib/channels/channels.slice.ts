@@ -21,7 +21,7 @@ import type {
 	ApiChannelDescription,
 	ApiCreateChannelDescRequest,
 	ApiMarkAsReadRequest
-} from 'mezon-js/api.gen';
+} from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { categoriesActions, type FetchCategoriesPayload } from '../categories/categories.slice';
@@ -405,9 +405,7 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.createChannelDesc(mezon.session, body);
 		if (response) {
-			thunkAPI.dispatch(
-				channelsActions.add({ channel: { id: response.channelId as string, ...response }, clanId: response.clanId as string })
-			);
+			thunkAPI.dispatch(channelsActions.add({ channel: { id: response.channelId as string, ...response }, clanId: response.clanId as string }));
 
 			if (response.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && response.type !== ChannelType.CHANNEL_TYPE_STREAMING) {
 				const isPublic = checkIsThread(response as ChannelsEntity) ? false : !response.channel_private;
@@ -490,12 +488,12 @@ export interface IUpdateChannelRequest {
 	categoryId: string | undefined;
 	e2ee?: number;
 	topic?: string;
-	age_restricted?: number;
+	ageRestricted?: number;
 	parent_id?: string;
 	channel_private?: number;
 	categoryName?: string;
-	app_id: string;
-	channel_avatar?: string;
+	appId: string;
+	channelAvatar?: string;
 }
 
 export const updateChannel = createAsyncThunk('channels/updateChannel', async (body: IUpdateChannelRequest, thunkAPI) => {
@@ -1777,7 +1775,7 @@ export const selectCurrentChannelLabel = createSelector(selectCurrentChannel, (c
 export const selectCurrentChannelMeetingCode = createSelector(selectCurrentChannel, (channel) => channel?.meeting_code);
 export const selectCurrentChannelChannelId = createSelector(selectCurrentChannel, (channel) => channel?.channelId);
 export const selectCurrentChannelCountMessUnread = createSelector(selectCurrentChannel, (channel) => channel?.count_mess_unread);
-export const selectCurrentChannelAgeRestricted = createSelector(selectCurrentChannel, (channel) => channel?.age_restricted);
+export const selectCurrentChannelAgeRestricted = createSelector(selectCurrentChannel, (channel) => channel?.ageRestricted);
 export const selectCurrentChannelCreatorId = createSelector(selectCurrentChannel, (channel) => channel?.creatorId);
 
 export const selectSelectedChannel = createSelector(selectChannelsEntities, selectSelectedChannelId, (clansEntities, clanId) =>

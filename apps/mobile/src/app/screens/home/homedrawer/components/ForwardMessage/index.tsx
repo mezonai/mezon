@@ -80,7 +80,7 @@ const ForwardMessageScreen = ({ route }) => {
 		return {
 			channelId: dm?.id,
 			type: dm?.type,
-			avatar: dm?.type === ChannelType.CHANNEL_TYPE_DM ? dm?.avatars?.[0] : dm?.channel_avatar,
+			avatar: dm?.type === ChannelType.CHANNEL_TYPE_DM ? dm?.avatars?.[0] : dm?.channelAvatar,
 			name: dm?.channelLabel,
 			clanId: '',
 			clanName: '',
@@ -155,8 +155,7 @@ const ForwardMessageScreen = ({ route }) => {
 		const listBlockUsers = selectBlockedUsersForMessage(store.getState() as any);
 		const listDMForward = dmGroupChatList
 			?.filter(
-				(dm) =>
-					dm?.type === ChannelType.CHANNEL_TYPE_DM && dm?.channelLabel && !listBlockUsers?.some((user) => user?.id === dm?.userIds?.[0])
+				(dm) => dm?.type === ChannelType.CHANNEL_TYPE_DM && dm?.channelLabel && !listBlockUsers?.some((user) => user?.id === dm?.userIds?.[0])
 			)
 			.map(mapDirectMessageToForwardObject);
 
@@ -167,8 +166,7 @@ const ForwardMessageScreen = ({ route }) => {
 		const listTextChannel = listChannels
 			?.filter(
 				(channel) =>
-					(channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || channel?.type === ChannelType.CHANNEL_TYPE_THREAD) &&
-					channel?.channelLabel
+					(channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || channel?.type === ChannelType.CHANNEL_TYPE_THREAD) && channel?.channelLabel
 			)
 			.map(mapChannelToForwardObject);
 

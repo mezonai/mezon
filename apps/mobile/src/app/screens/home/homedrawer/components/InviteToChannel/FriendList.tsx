@@ -17,7 +17,7 @@ import {
 } from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiSystemMessage } from 'mezon-js/api.gen';
+import type { ApiSystemMessage } from 'mezon-js/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
@@ -97,7 +97,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 				userMap.set(channelId, {
 					channelId: itemDM?.channelId,
 					channelLabel: channelLabel,
-					channel_avatar: isDM ? itemDM?.avatars?.[0] : itemDM?.channel_avatar,
+					channelAvatar: isDM ? itemDM?.avatars?.[0] : itemDM?.channelAvatar,
 					type: itemDM?.type,
 					id: itemDM?.channelId,
 					topic: itemDM?.topic

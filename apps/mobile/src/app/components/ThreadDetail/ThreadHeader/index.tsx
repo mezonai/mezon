@@ -47,7 +47,7 @@ export const ThreadHeader = memo(() => {
 	}, [currentChannel?.channelLabel, currentChannel?.parent_id]);
 
 	const groupDMAvatar = useMemo(() => {
-		const avatar = currentDmGroup?.channel_avatar;
+		const avatar = currentDmGroup?.channelAvatar;
 		const isDefaultAvatar = !avatar || avatar?.includes('avatar-group.png');
 		return !isDefaultAvatar ? (
 			<View style={styles.groupAvatarWrapper}>
@@ -58,7 +58,7 @@ export const ThreadHeader = memo(() => {
 				<MezonIconCDN icon={IconCDN.groupIcon} color={baseColor.white} />
 			</View>
 		);
-	}, [currentDmGroup?.channel_avatar, styles.groupAvatar, styles.groupAvatarWrapper]);
+	}, [currentDmGroup?.channelAvatar, styles.groupAvatar, styles.groupAvatarWrapper]);
 
 	const handlebackMessageDetail = () => {
 		if (isDMThread && !isTabletLandscape) {
@@ -72,8 +72,8 @@ export const ThreadHeader = memo(() => {
 	};
 
 	const isAgeRestrictedChannel = useMemo(() => {
-		return currentChannel?.age_restricted === 1;
-	}, [currentChannel?.age_restricted]);
+		return currentChannel?.ageRestricted === 1;
+	}, [currentChannel?.ageRestricted]);
 
 	const renderChannelIcon = () => {
 		const isPrivateChannel = currentChannel?.channel_private === ChannelStatusEnum.isPrivate;

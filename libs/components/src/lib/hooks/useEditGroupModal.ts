@@ -125,9 +125,9 @@ export const useEditGroupModal = ({ channelId, currentGroupName = '', currentAva
 				}
 			}
 
-			const payload: { channelId: string; channelLabel?: string; channel_avatar?: string } = { channelId: channelId };
+			const payload: { channelId: string; channelLabel?: string; channelAvatar?: string } = { channelId: channelId };
 			if (hasNameChanged) payload.channelLabel = value;
-			if (avatarState.action !== 'none') payload.channel_avatar = avatarUrl;
+			if (avatarState.action !== 'none') payload.channelAvatar = avatarUrl;
 
 			dispatch(directActions.updateDmGroup(payload));
 		}

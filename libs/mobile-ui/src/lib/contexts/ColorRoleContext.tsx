@@ -31,7 +31,7 @@ export const ColorRoleProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 				const newRole = {
 					roleId: role.id,
 					color: role.color || DEFAULT_ROLE_COLOR,
-					icon: role?.role_icon || '',
+					icon: role?.roleIcon || '',
 					max_level_permission: role.max_level_permission ?? 0
 				};
 

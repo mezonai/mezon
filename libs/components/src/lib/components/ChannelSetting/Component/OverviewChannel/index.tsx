@@ -1,3 +1,4 @@
+import { ModalSaveChanges } from '@mezon/components';
 import type { ChannelsEntity, IUpdateChannelRequest, IUpdateSystemMessage } from '@mezon/store';
 import {
 	channelsActions,
@@ -12,11 +13,10 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons, Image, InputField, Menu as Dropdown, TextArea } from '@mezon/ui';
+import { Menu as Dropdown, Icons, Image, InputField, TextArea } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ValidateSpecialCharacters, ValidateURL, checkIsThread, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { ModalSaveChanges } from '@mezon/components';
 import { ChannelType } from 'mezon-js';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -44,7 +44,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 	const dispatch = useAppDispatch();
 	const [channelLabelInit, setChannelLabelInit] = useState(currentChannel.channelLabel || '');
 	const [topicInit, setTopicInit] = useState(currentChannel.topic);
-	const [ageRestrictedInit, setAgeRestrictedInit] = useState(currentChannel.age_restricted);
+	const [ageRestrictedInit, setAgeRestrictedInit] = useState(currentChannel.ageRestricted);
 	const [e2eeInit, setE2eeInit] = useState(currentChannel.e2ee);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [topic, setTopic] = useState(topicInit);
@@ -70,11 +70,11 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 		setChannelLabel(currentChannel.channelLabel || '');
 		setTopicInit(currentChannel.topic);
 		setTopic(currentChannel.topic);
-		setAgeRestrictedInit(currentChannel.age_restricted);
-		setIsAgeRestricted(currentChannel.age_restricted);
+		setAgeRestrictedInit(currentChannel.ageRestricted);
+		setIsAgeRestricted(currentChannel.ageRestricted);
 		setE2eeInit(currentChannel.e2ee);
 		setIsE2ee(currentChannel.e2ee);
-	}, [currentChannel?.channelId, currentChannel?.channelLabel, currentChannel?.topic, currentChannel?.age_restricted, currentChannel?.e2ee]);
+	}, [currentChannel?.channelId, currentChannel?.channelLabel, currentChannel?.topic, currentChannel?.ageRestricted, currentChannel?.e2ee]);
 
 	const handleCheckboxAgeRestricted = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const checked = event.target.checked;
@@ -214,9 +214,9 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			channelLabel: channelLabel,
 			categoryId: currentChannel.categoryId,
 			app_url: updatedAppUrl,
-			app_id: currentChannel.app_id || '',
+			appId: currentChannel.appId || '',
 			topic,
-			age_restricted: isAgeRestricted,
+			ageRestricted: isAgeRestricted,
 			e2ee: isE2ee,
 			parent_id: currentChannel?.parent_id,
 			channel_private: currentChannel?.channel_private

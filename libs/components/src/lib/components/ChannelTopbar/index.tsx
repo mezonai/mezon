@@ -61,7 +61,7 @@ import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -151,7 +151,7 @@ const TopBarChannelText = memo(() => {
 	}, [currentDmGroup?.channelLabel, currentDmGroup?.type, currentDmGroup?.usernames]);
 	const dmUserAvatar = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
-			return currentDmGroup?.channel_avatar || 'assets/images/avatar-group.png';
+			return currentDmGroup?.channelAvatar || 'assets/images/avatar-group.png';
 		}
 
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup?.userIds) {
@@ -165,7 +165,7 @@ const TopBarChannelText = memo(() => {
 	const editGroupModal = useEditGroupModal({
 		channelId: currentDmGroup?.channelId,
 		currentGroupName: channelDmGroupLabel || '',
-		currentAvatar: currentDmGroup?.channel_avatar || ''
+		currentAvatar: currentDmGroup?.channelAvatar || ''
 	});
 
 	const handleOpenEditModal = useCallback(() => {
@@ -584,7 +584,7 @@ const DmTopbarTools = memo(() => {
 					groupCallActions.setIncomingCallData({
 						groupId: currentDmGroup.channelId,
 						groupName: currentDmGroup.channelLabel || currentDmGroup.usernames?.join(',') || 'Group Call',
-						groupAvatar: currentDmGroup.channel_avatar,
+						groupAvatar: currentDmGroup.channelAvatar,
 						meetingCode: currentDmGroup.meeting_code,
 						clanId: currentDmGroup.clanId,
 						participants: [...groupParticipants, userProfile?.userId?.toString() as string],

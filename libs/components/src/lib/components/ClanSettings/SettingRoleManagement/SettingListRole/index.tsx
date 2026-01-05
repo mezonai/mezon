@@ -19,7 +19,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EDragBorderPosition } from '@mezon/utils';
-import { ApiUpdateRoleOrderRequest } from 'mezon-js/api.gen';
+import { ApiUpdateRoleOrderRequest } from 'mezon-js/types';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -108,7 +108,7 @@ const SettingListRole = (props: closeEditRole) => {
 			dispatch(setSelectedPermissions(permissionIds));
 			setClickedRole(roleId);
 			dispatch(setSelectedRoleId(roleId));
-			dispatch(roleSlice.actions.setCurrentRoleIcon(activeRole?.role_icon || ''));
+			dispatch(roleSlice.actions.setCurrentRoleIcon(activeRole?.roleIcon || ''));
 		}
 	};
 
@@ -166,7 +166,7 @@ const SettingListRole = (props: closeEditRole) => {
 							color={role.color || ''}
 							onHandle={() => handleRoleClick(role.id)}
 							isChoose={clickedRole === role.id}
-							iconUrl={role.role_icon}
+							iconUrl={role.roleIcon}
 						/>
 					</div>
 				))}

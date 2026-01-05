@@ -36,8 +36,8 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 							id: userId,
 							username: chat.usernames?.[0] || '',
 							displayName: chat.display_names?.[0] || chat.usernames?.[0] || '',
-							avatarUrl: chat.channel_avatar?.[0] || '',
-							clanAvatar: chat.channel_avatar?.[0] || '',
+							avatarUrl: chat.channelAvatar?.[0] || '',
+							clanAvatar: chat.channelAvatar?.[0] || '',
 							clanNick: chat.display_names?.[0] || chat.usernames?.[0] || '',
 							type: ChannelType?.CHANNEL_TYPE_DM
 						} as ProcessedUser

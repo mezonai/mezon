@@ -11,7 +11,7 @@ import {
 } from '@mezon/store-mobile';
 import { getNameForPrioritize, ID_MENTION_HERE, MentionDataProps } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiRole } from 'mezon-js/api.gen';
+import { ApiRole } from 'mezon-js/types';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -58,7 +58,7 @@ const transformRoleToMention = (item: ApiRole): MentionDataProps | null => {
 	return {
 		id: item.id,
 		display: item.title,
-		avatarUrl: item?.role_icon || '',
+		avatarUrl: item?.roleIcon || '',
 		clanNick: item.title,
 		isRoleUser: true,
 		color: item.color

@@ -121,7 +121,7 @@ const HomeDefaultHeader = React.memo(
 			});
 		};
 
-		const isAgeRestrictedChannel = currentChannel?.age_restricted === 1;
+		const isAgeRestrictedChannel = currentChannel?.ageRestricted === 1;
 
 		const navigateToNotifications = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {

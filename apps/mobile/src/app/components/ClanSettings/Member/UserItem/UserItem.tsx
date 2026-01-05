@@ -71,7 +71,7 @@ export const UserItem = memo<IUserItem>(({ userID, onMemberSelect }) => {
 								{clanUserRole.map((role, index) => (
 									<View key={`role_${role?.id || index}_${role?.title || 'unknown'}`} style={styles.roleContainer}>
 										<View style={[styles.roleCircle, role?.color && { backgroundColor: role?.color }]}></View>
-										{role?.role_icon && <ImageNative url={role?.role_icon} style={styles.roleIcon} />}
+										{role?.roleIcon && <ImageNative url={role?.roleIcon} style={styles.roleIcon} />}
 										<Text style={styles.roleTitle}>{role?.title || ''}</Text>
 									</View>
 								))}

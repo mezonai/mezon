@@ -58,7 +58,7 @@ import {
 	useSyncEffect
 } from '@mezon/utils';
 import type { ChannelType } from 'mezon-js';
-import type { ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageRef } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChannelMessage, MemorizedChannelMessage } from './ChannelMessage';

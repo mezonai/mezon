@@ -32,7 +32,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 	const clanId = useAppSelector(selectCurrentChannelClanId);
 	const channelLabel = useAppSelector(selectCurrentChannelLabel);
 
-	const thumbnail = currentChannel?.channel_avatar || null;
+	const thumbnail = currentChannel?.channelAvatar || null;
 
 	const { sessionRef, clientRef } = useMezon();
 
@@ -133,8 +133,8 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 					channelId: channelId,
 					channelLabel: channelLabel,
 					categoryId: undefined,
-					app_id: '',
-					channel_avatar: attachment.url
+					appId: '',
+					channelAvatar: attachment.url
 				})
 			);
 
@@ -161,8 +161,8 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 					channelId: channelId,
 					channelLabel: channelLabel,
 					categoryId: undefined,
-					app_id: '',
-					channel_avatar: ''
+					appId: '',
+					channelAvatar: ''
 				})
 			);
 

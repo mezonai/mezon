@@ -64,7 +64,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 						id: itemDM.channelId,
 						name: itemDM?.usernames?.toString() ?? '',
 						displayName: itemDM.channelLabel,
-						avatarUser: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? (itemDM?.avatars?.[0] ?? '') : itemDM?.channel_avatar,
+						avatarUser: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? (itemDM?.avatars?.[0] ?? '') : itemDM?.channelAvatar,
 						idDM: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? itemDM?.userIds?.[0] : itemDM.channelId,
 						lastSentTimeStamp: itemDM.lastSentMessage?.timestampSeconds,
 						typeChat: TypeSearch.Dm_Type,

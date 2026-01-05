@@ -25,7 +25,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { DONE_ONBOARDING_STATUS, EPermission, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
-import type { ApiChannelAppResponse } from 'mezon-js/api.gen';
+import type { ApiChannelAppResponse } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -277,10 +277,10 @@ const ChannelAppList = memo(() => {
 	};
 
 	const handleOpenApp = async (appChannel: ApiChannelAppResponse) => {
-		if (appChannel.app_id && appChannel.app_url && appChannel.channelId) {
+		if (appChannel.appId && appChannel.app_url && appChannel.channelId) {
 			const hashData = await dispatch(
 				channelAppActions.generateAppUserHash({
-					appId: appChannel.app_id
+					appId: appChannel.appId
 				})
 			).unwrap();
 			if (hashData.web_app_data) {
@@ -338,7 +338,7 @@ const ChannelAppList = memo(() => {
 			<hr className="w-full ml-[3px] border-t-theme-primary" />
 			<div className={`grow w-full flex-row items-center gap-2 flex py-1 px-2 ${showList.length < 4 ? 'justify-start' : 'justify-center'}`}>
 				{showList.map((item) => (
-					<CustomTooltip key={item.app_id} text={item.app_name || ''}>
+					<CustomTooltip key={item.appId} text={item.app_name || ''}>
 						<div
 							className="text-theme-primary text-theme-primary-hover rounded-md aspect-square h-10 p-2 flex items-center justify-center cursor-pointer bg-item-hover"
 							onClick={() => handleOpenApp(item)}
@@ -396,7 +396,7 @@ const ListChannelApp = ({
 				<div className="grid grid-cols-4 gap-2">
 					{allChannelApp.map((item) => (
 						<div
-							key={item.app_id}
+							key={item.appId}
 							className="text-theme-primary text-theme-primary-hover rounded-md p-2 flex flex-col items-center justify-center cursor-pointer bg-item-hover gap-1"
 							onClick={() => handleOpenApp(item)}
 						>

@@ -58,7 +58,7 @@ import {
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { ApiOnboardingItem } from 'mezon-js/types';
 import type { DragEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -235,10 +235,10 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		if (isAppChannel) {
 			const store = getStore();
 			const appChannel = selectAppChannelById(store.getState(), channelId);
-			if (appChannel.app_id && appChannel.app_url) {
+			if (appChannel.appId && appChannel.app_url) {
 				const hashData = await dispatch(
 					channelAppActions.generateAppUserHash({
-						appId: appChannel.app_id
+						appId: appChannel.appId
 					})
 				).unwrap();
 				if (hashData.web_app_data) {
@@ -357,7 +357,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 	useEffect(() => {
 		const savedChannelIds = safeJSONParse(localStorage.getItem('agerestrictedchannelIds') || '[]');
-		if (!savedChannelIds.includes(currentChannel.channelId) && currentChannel.age_restricted === 1) {
+		if (!savedChannelIds.includes(currentChannel.channelId) && currentChannel.ageRestricted === 1) {
 			setIsShowAgeRestricted(true);
 		} else {
 			setIsShowAgeRestricted(false);

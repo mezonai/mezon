@@ -94,8 +94,8 @@ export const RecentInteractiveSearch = React.memo(
 		);
 
 		const isGroupDMAvatar = useMemo(
-			() => selectedChannel?.channel_avatar && !selectedChannel?.channel_avatar?.includes('avatar-group.png'),
-			[selectedChannel?.channel_avatar]
+			() => selectedChannel?.channelAvatar && !selectedChannel?.channelAvatar?.includes('avatar-group.png'),
+			[selectedChannel?.channelAvatar]
 		);
 
 		const filterLabelMap: Record<FilterType, string> = useMemo(

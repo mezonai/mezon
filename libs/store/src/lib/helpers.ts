@@ -1,7 +1,7 @@
 import type { MezonContextValue } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { Client, Session } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api.gen';
+import type { ApiFriend } from 'mezon-js/types';
 import type { IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import type { GetThunkAPIWithMezon } from './typings';
 

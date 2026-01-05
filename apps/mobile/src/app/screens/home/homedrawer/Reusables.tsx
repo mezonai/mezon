@@ -14,7 +14,7 @@ import { style } from './styles';
 export type Receiver = {
 	channelId?: string;
 	channelLabel?: string;
-	channel_avatar?: string;
+	channelAvatar?: string;
 	type?: ChannelType;
 	user?: User;
 	id?: string;
@@ -33,7 +33,7 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['inviteToChannel']);
 	const styles = style(themeValue);
-	const isGroupAvatar = !dmGroup?.channel_avatar?.includes('avatar-group.png');
+	const isGroupAvatar = !dmGroup?.channelAvatar?.includes('avatar-group.png');
 
 	const priorityName = useMemo(() => {
 		return user?.user?.displayName || user?.user?.username || '';
@@ -54,7 +54,7 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 							isGroupAvatar ? (
 								<View style={styles.groupAvatarWrapper}>
 									<ImageNative
-										url={createImgproxyUrl(dmGroup?.channel_avatar ?? '')}
+										url={createImgproxyUrl(dmGroup?.channelAvatar ?? '')}
 										style={styles.imageFull}
 										resizeMode={'cover'}
 									/>
@@ -63,7 +63,7 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 								<Image source={Images.AVATAR_GROUP} style={styles.defaultAvatar} />
 							)
 						) : (
-							<MezonAvatar avatarUrl={dmGroup?.channel_avatar} username={dmGroup?.channelLabel} height={size.s_40} width={size.s_40} />
+							<MezonAvatar avatarUrl={dmGroup?.channelAvatar} username={dmGroup?.channelLabel} height={size.s_40} width={size.s_40} />
 						)}
 						<Text style={styles.friendItemName} numberOfLines={1} ellipsizeMode="tail">
 							{dmGroup?.channelLabel}

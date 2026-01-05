@@ -3,9 +3,9 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelsEntity, RolesClanEntity, RootState } from '@mezon/store-mobile';
 import {
-	directActions,
 	DMCallActions,
 	EStateFriend,
+	directActions,
 	friendsActions,
 	getStore,
 	selectAllAccount,
@@ -98,9 +98,7 @@ const UserProfile = React.memo(
 		const { t } = useTranslation(['userProfile', 'friends']);
 		const userById = useAppSelector((state) => selectMemberClanByUserId(state, userId || user?.id));
 		const rolesClan: RolesClanEntity[] = useSelector(selectAllRolesClan);
-		const { color } = useMixImageColor(
-			messageAvatar || userById?.clanAvatar || userById?.user?.avatarUrl || userProfile?.user?.avatarUrl || ''
-		);
+		const { color } = useMixImageColor(messageAvatar || userById?.clanAvatar || userById?.user?.avatarUrl || userProfile?.user?.avatarUrl || '');
 		const navigation = useNavigation<any>();
 		const { createDirectMessageWithUser } = useDirect();
 		const listDM = useSelector(selectDirectsOpenlist);
@@ -471,11 +469,7 @@ const UserProfile = React.memo(
 							height={size.s_80}
 							avatarUrl={
 								!isDM
-									? messageAvatar ||
-										userById?.clanAvatar ||
-										userById?.user?.avatarUrl ||
-										user?.user?.avatarUrl ||
-										user?.avatarUrl
+									? messageAvatar || userById?.clanAvatar || userById?.user?.avatarUrl || user?.user?.avatarUrl || user?.avatarUrl
 									: userById?.user?.avatarUrl || user?.user?.avatarUrl || user?.avatarUrl || messageAvatar
 							}
 							username={user?.user?.username || user?.username}
@@ -616,8 +610,8 @@ const UserProfile = React.memo(
 									<View style={[styles.roles]}>
 										{userRolesClan?.map((role, index) => (
 											<View style={[styles.roleItem]} key={`${role.id}_${index}`}>
-												{role?.role_icon ? (
-													<ImageNative url={role?.role_icon} style={styles.roleIcon} />
+												{role?.roleIcon ? (
+													<ImageNative url={role?.roleIcon} style={styles.roleIcon} />
 												) : (
 													<View
 														style={[styles.roleColorDot, { backgroundColor: role?.color || DEFAULT_ROLE_COLOR }]}

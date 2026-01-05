@@ -14,8 +14,7 @@ import {
 import isElectron from 'is-electron';
 import type { Client, Session } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser } from 'mezon-js/api.gen';
-import type { RoleUserListRoleUser } from 'mezon-js/dist/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser, RoleUserListRoleUser } from 'mezon-js/types';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { electronBridge } from '../bridge';
@@ -1322,7 +1321,7 @@ export const updateMentionPositions = (mentions: MentionItem[], newValue: string
 export const mapChannelToAppEntity = (
 	payload: any
 ): {
-	app_id?: string;
+	appId?: string;
 	channelId?: string;
 	clanId?: string;
 	id?: string;
@@ -1331,7 +1330,7 @@ export const mapChannelToAppEntity = (
 	const timestamp = Date.now().toString();
 
 	return {
-		app_id: timestamp,
+		appId: timestamp,
 		channelId: payload.channelId,
 		clanId: payload.clanId,
 		id: timestamp,

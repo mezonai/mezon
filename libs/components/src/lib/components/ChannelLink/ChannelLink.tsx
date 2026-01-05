@@ -205,8 +205,8 @@ const ChannelLinkComponent = ({
 	}, [channel]);
 
 	const isAgeRestrictedChannel = useMemo(() => {
-		return channel?.age_restricted === 1;
-	}, [channel?.age_restricted]);
+		return channel?.ageRestricted === 1;
+	}, [channel?.ageRestricted]);
 	const countNumberNotification = numberNotification && numberNotification > 99 ? '99+' : (numberNotification ?? 0);
 
 	return (
@@ -314,7 +314,7 @@ export const ChannelLink = memo(
 		prev.isUnReadChannel === curr.isUnReadChannel &&
 		prev.channel?.channelLabel === curr?.channel?.channelLabel &&
 		prev.channel?.channel_private === curr?.channel?.channel_private &&
-		prev.channel?.age_restricted === curr?.channel?.age_restricted &&
+		prev.channel?.ageRestricted === curr?.channel?.ageRestricted &&
 		(prev.channel as ChannelThreads)?.threads === (curr?.channel as ChannelThreads)?.threads &&
 		prev.permissions === curr.permissions
 );

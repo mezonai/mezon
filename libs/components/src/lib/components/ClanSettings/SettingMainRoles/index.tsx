@@ -63,7 +63,7 @@ const ServerSettingMainRoles = (props: ModalOpenEdit) => {
 		dispatchRole(setRemovePermissions([]));
 		dispatchRole(setAddMemberRoles(memberIDRoles));
 		dispatchRole(setRemoveMemberRoles([]));
-		dispatchRole(setCurrentRoleIcon(activeRole?.role_icon || ''));
+		dispatchRole(setCurrentRoleIcon(activeRole?.roleIcon || ''));
 	};
 
 	const handleDeleteRole = async (roleId: string) => {

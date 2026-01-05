@@ -5,7 +5,7 @@ import { selectAllRolesClan, selectChannelById, selectRolesByChannelId, useAppSe
 import type { MentionDataProps } from '@mezon/utils';
 import { ID_MENTION_HERE, TITLE_MENTION_HERE, getNameForPrioritize } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiRole } from 'mezon-js/api.gen';
+import type { ApiRole } from 'mezon-js/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -59,7 +59,7 @@ export function UserMentionList({ channelID, channelMode }: UserMentionListProps
 			rolesToUse?.map((item: ApiRole) => ({
 				id: item.id ?? '',
 				display: item.title,
-				avatarUrl: item.role_icon || '',
+				avatarUrl: item.roleIcon || '',
 				clanNick: item.title,
 				color: item.color,
 				isRole: true

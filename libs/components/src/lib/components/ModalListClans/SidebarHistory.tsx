@@ -166,7 +166,7 @@ const ItemHistory = ({
 	const navigate = useNavigate();
 	const logo = useMemo(() => {
 		if (!clan) {
-			const avatar = channelDM.type === ChannelType.CHANNEL_TYPE_GROUP ? channelDM?.channel_avatar : channelDM?.avatars?.[0];
+			const avatar = channelDM.type === ChannelType.CHANNEL_TYPE_GROUP ? channelDM?.channelAvatar : channelDM?.avatars?.[0];
 			return (
 				<img
 					className="w-6 aspect-square rounded-md"

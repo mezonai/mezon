@@ -3,7 +3,7 @@ import type { EmojiStorage, IReaction } from '@mezon/utils';
 import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageReaction } from 'mezon-js/api.gen';
+import type { ApiMessageReaction } from 'mezon-js/types';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { toastActions } from '../toasts';
 
@@ -189,12 +189,12 @@ export const writeMessageReaction = createAsyncThunk(
 				);
 
 				const emojiLastest: EmojiStorage = {
-					emojiId: emojiId,
+					emojiId,
 					emoji,
 					messageId,
 					senderId: userId,
 					action: actionDelete,
-					channelId: channelId
+					channelId
 				};
 				saveRecentEmoji(emojiLastest);
 			} catch (error) {

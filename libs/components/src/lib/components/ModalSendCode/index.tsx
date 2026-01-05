@@ -16,7 +16,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { MessageCrypt } from '@mezon/utils';
-import type { ApiAccount, ApiPubKey } from 'mezon-js/api.gen';
+import type { ApiAccount, ApiPubKey } from 'mezon-js/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -248,7 +248,7 @@ export const ModalConfirmPin = ({
 			channelId: directId,
 			channelLabel: '',
 			categoryId: currentDmGroup.categoryId,
-			app_id: currentDmGroup.app_id || '',
+			appId: currentDmGroup.appId || '',
 			e2ee: !currentDmGroup.e2ee ? 1 : 0
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));

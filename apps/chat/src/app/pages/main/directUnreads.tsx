@@ -50,7 +50,7 @@ const DirectUnreadComponent = ({ directMessage, shouldAnimateOut = false, onMemb
 
 	const avatarProps = useMemo(() => {
 		const isDM = direct.type === ChannelType.CHANNEL_TYPE_DM;
-		const avatarSrc = isDM ? (direct?.avatars?.at(0) ?? '') : direct?.channel_avatar || 'assets/images/avatar-group.png';
+		const avatarSrc = isDM ? (direct?.avatars?.at(0) ?? '') : direct?.channelAvatar || 'assets/images/avatar-group.png';
 		const avatarProxyOptions = { width: 300, height: 300, resizeType: 'fill-down' as const };
 
 		return {
@@ -60,7 +60,7 @@ const DirectUnreadComponent = ({ directMessage, shouldAnimateOut = false, onMemb
 			srcImgProxy: createImgproxyUrl(avatarSrc, avatarProxyOptions),
 			src: avatarSrc
 		};
-	}, [direct.type, direct?.avatars, direct?.channel_avatar, direct.usernames]);
+	}, [direct.type, direct?.avatars, direct?.channelAvatar, direct.usernames]);
 
 	const badgeClassName = useMemo(
 		() =>

@@ -70,7 +70,7 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 		const isSamePermissions =
 			selectedPermissions.length === permissionIds.length && selectedPermissions.every((id) => permissionIds.includes(id));
 
-		const originalIcon = activeRole?.role_icon || '';
+		const originalIcon = activeRole?.roleIcon || '';
 		const currentIconInStore = newRoleIcon || currentRoleIcon || '';
 		const hasIconChanged = currentIconInStore !== originalIcon;
 

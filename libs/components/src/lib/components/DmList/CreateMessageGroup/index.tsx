@@ -4,7 +4,7 @@ import { channelUsersActions, directActions, selectAllAccount, selectAllFriends,
 import { Icons, InputField } from '@mezon/ui';
 import { GROUP_CHAT_MAXIMUM_MEMBERS, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import type { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiCreateChannelDescRequest } from 'mezon-js/types';
 import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -107,7 +107,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 			if (currentDM?.type === ChannelType.CHANNEL_TYPE_DM) {
 				listGroupDM.push(currentDM.userIds?.at(0) as string);
 				userNameGroup.push((currentDM.display_names?.at(0) || currentDM.usernames?.at(0)) as string);
-				avatarGroup.push(currentDM.channel_avatar?.at(0) as string);
+				avatarGroup.push(currentDM.channelAvatar?.at(0) as string);
 			}
 			const bodyCreateDmGroup: ApiCreateChannelDescRequest = {
 				type: selectedFriends.length > 1 ? ChannelType.CHANNEL_TYPE_GROUP : ChannelType.CHANNEL_TYPE_DM,

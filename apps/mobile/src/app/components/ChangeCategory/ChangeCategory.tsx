@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import type { CategoriesEntity } from '@mezon/store-mobile';
 import { appActions, channelsActions, getStore, selectAllCategories, selectAppChannelById, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
@@ -43,8 +43,8 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 				channelId: channel?.channelId ?? '',
 				channelLabel: channel?.channelLabel,
 				app_url: appUrl,
-				app_id: channel?.app_id || '',
-				age_restricted: channel?.age_restricted,
+				appId: channel?.appId || '',
+				ageRestricted: channel?.ageRestricted,
 				e2ee: channel?.e2ee,
 				topic: channel?.topic,
 				parent_id: channel?.parent_id,
@@ -122,9 +122,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (
 				<View>
-					<Text style={styles.headerTitle}>
-						{t('changeCategory.title')}
-					</Text>
+					<Text style={styles.headerTitle}>{t('changeCategory.title')}</Text>
 				</View>
 			),
 			headerLeft: () => {

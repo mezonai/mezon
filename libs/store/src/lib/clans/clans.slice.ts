@@ -5,7 +5,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ClanUpdatedEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiClanDesc, ApiUpdateAccountRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
+import type { ApiClanDesc, ApiUpdateAccountRequest, MezonUpdateClanDescBody } from 'mezon-js/types';
 import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
 import { setUserAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -545,7 +545,7 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 						{
 							api_name: 'ListClanUnreadMsgIndicator',
 							list_unread_msg_indicator_req: {
-								clanId: clanId
+								clanId
 							}
 						},
 						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),

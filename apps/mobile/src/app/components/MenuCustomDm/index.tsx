@@ -38,7 +38,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 	const navigation = useNavigation<any>();
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const currentDMGroup = useAppSelector(selectDmGroupCurrent(currentChannel?.id));
-	const currentAvatar = currentDMGroup?.channel_avatar;
+	const currentAvatar = currentDMGroup?.channelAvatar;
 	const allUserGroupDM = useSelector((state) => selectRawDataUserGroup(state, currentChannel?.id || ''));
 
 	const lastOne = useMemo(() => {

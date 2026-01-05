@@ -25,10 +25,10 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 	const appChannel = useAppSelector((state) => selectAppChannelById(state, paramsRoute?.channelId || ''));
 
 	const getUrlChannelApp = useCallback(async () => {
-		if (appChannel.app_id && appChannel.app_url) {
+		if (appChannel.appId && appChannel.app_url) {
 			const hashData = await dispatch(
 				channelAppActions.generateAppUserHash({
-					appId: appChannel.app_id
+					appId: appChannel.appId
 				})
 			).unwrap();
 			if (hashData.web_app_data) {
@@ -37,7 +37,7 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 				setUri(urlWithHash);
 			}
 		}
-	}, [appChannel?.app_id, appChannel?.app_url, dispatch]);
+	}, [appChannel?.appId, appChannel?.app_url, dispatch]);
 
 	useEffect(() => {
 		const handleOrientationChange = (handler: { screen: any }) => {

@@ -26,7 +26,7 @@ import {
 import { EMuteState, createImgproxyUrl, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import type { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
+import type { ApiMarkAsReadRequest } from 'mezon-js/types';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
@@ -82,9 +82,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	}, []);
 
 	const userName: string = useMemo(() => {
-		return (
-			messageInfo?.channelLabel || (typeof messageInfo?.usernames === 'string' ? messageInfo?.usernames : messageInfo?.usernames?.[0] || '')
-		);
+		return messageInfo?.channelLabel || (typeof messageInfo?.usernames === 'string' ? messageInfo?.usernames : messageInfo?.usernames?.[0] || '');
 	}, [messageInfo?.channelLabel, messageInfo?.usernames]);
 
 	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, messageInfo?.channelId || ''));
@@ -346,10 +344,10 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		<View style={styles.container}>
 			<View style={styles.header}>
 				{isGroup ? (
-					messageInfo?.channel_avatar && !messageInfo?.channel_avatar?.includes('avatar-group.png') ? (
+					messageInfo?.channelAvatar && !messageInfo?.channelAvatar?.includes('avatar-group.png') ? (
 						<View style={styles.groupAvatarContainer}>
 							<ImageNative
-								url={createImgproxyUrl(messageInfo?.channel_avatar ?? '')}
+								url={createImgproxyUrl(messageInfo?.channelAvatar ?? '')}
 								style={styles.imageFullSize}
 								resizeMode={'cover'}
 							/>

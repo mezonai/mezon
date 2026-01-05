@@ -1,240 +1,245 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mezon SDK Technical Documentation</title>
+		<style>
+			body {
+				font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+				line-height: 1.6;
+				margin: 0;
+				padding: 40px;
+				background-color: #36393f;
+				color: #dcddde;
+			}
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mezon SDK Technical Documentation</title>
-  <style>
-    body {
-      font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-      line-height: 1.6;
-      margin: 0;
-      padding: 40px;
-      background-color: #36393f;
-      color: #dcddde;
-    }
+			h1,
+			h2,
+			h3,
+			h4 {
+				color: #fff;
+				font-weight: 700;
+				line-height: 1.15;
+				margin-top: 2.5rem;
+				margin-bottom: 1rem;
+			}
 
-    h1,
-    h2,
-    h3,
-    h4 {
-      color: #fff;
-      font-weight: 700;
-      line-height: 1.15;
-      margin-top: 2.5rem;
-      margin-bottom: 1rem;
-    }
+			h1 {
+				font-size: 2.5rem;
+			}
 
-    h1 {
-      font-size: 2.5rem;
-    }
+			h2 {
+				font-size: 1.75rem;
+				border-bottom: 2px solid #7289da;
+				padding-bottom: 0.5rem;
+				margin-top: 3rem;
+			}
 
-    h2 {
-      font-size: 1.75rem;
-      border-bottom: 2px solid #7289da;
-      padding-bottom: 0.5rem;
-      margin-top: 3rem;
-    }
+			h3 {
+				font-size: 1.25rem;
+				margin-top: 2rem;
+			}
 
-    h3 {
-      font-size: 1.25rem;
-      margin-top: 2rem;
-    }
+			h4 {
+				font-size: 1.1rem;
+				margin-top: 1.5rem;
+			}
 
-    h4 {
-      font-size: 1.1rem;
-      margin-top: 1.5rem;
-    }
+			p {
+				margin-bottom: 1.25rem;
+				color: #dcddde;
+			}
 
-    p {
-      margin-bottom: 1.25rem;
-      color: #dcddde;
-    }
+			a {
+				color: #7289da;
+				text-decoration: none;
+			}
 
-    a {
-      color: #7289da;
-      text-decoration: none;
-    }
+			a:hover {
+				text-decoration: underline;
+			}
 
-    a:hover {
-      text-decoration: underline;
-    }
+			.code-block {
+				background-color: #2f3136;
+				padding: 1rem;
+				border-radius: 5px;
+				overflow-x: auto;
+				font-family: 'Consolas', 'Courier New', monospace;
+				font-size: 0.9rem;
+				line-height: 1.4;
+				margin-bottom: 1.25rem;
+			}
 
-    .code-block {
-      background-color: #2f3136;
-      padding: 1rem;
-      border-radius: 5px;
-      overflow-x: auto;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      margin-bottom: 1.25rem;
-    }
+			.code-line {
+				display: block;
+				color: #ebcb8b;
+				/* Light yellow for code */
+			}
 
-    .code-line {
-      display: block;
-      color: #ebcb8b;
-      /* Light yellow for code */
-    }
+			.code-line.keyword {
+				color: #81a1c1;
+				/* Light blue for keywords */
+				font-weight: bold;
+			}
 
-    .code-line.keyword {
-      color: #81a1c1;
-      /* Light blue for keywords */
-      font-weight: bold;
-    }
+			.code-line.string {
+				color: #a3be8c;
+				/* Light green for strings */
+			}
 
-    .code-line.string {
-      color: #a3be8c;
-      /* Light green for strings */
-    }
+			.code-line.comment {
+				color: #6d8687;
+				/* Grayish green for comments */
+				font-style: italic;
+			}
 
-    .code-line.comment {
-      color: #6d8687;
-      /* Grayish green for comments */
-      font-style: italic;
-    }
+			.code-line.variable {
+				color: #d08770;
+				/* Light orange for variables */
+			}
 
-    .code-line.variable {
-      color: #d08770;
-      /* Light orange for variables */
-    }
+			ul {
+				margin-bottom: 1.25rem;
+				padding-left: 2rem;
+				list-style-type: disc;
+			}
 
-    ul {
-      margin-bottom: 1.25rem;
-      padding-left: 2rem;
-      list-style-type: disc;
-    }
+			li {
+				margin-bottom: 0.75rem;
+				color: #dcddde;
+			}
 
-    li {
-      margin-bottom: 0.75rem;
-      color: #dcddde;
-    }
+			strong {
+				font-weight: 700;
+				color: #fff;
+			}
 
-    strong {
-      font-weight: 700;
-      color: #fff;
-    }
+			em {
+				font-style: italic;
+				color: #dcddde;
+			}
 
-    em {
-      font-style: italic;
-      color: #dcddde;
-    }
+			hr {
+				border: none;
+				border-top: 1px solid #7289da;
+				margin: 2rem 0;
+			}
 
-    hr {
-      border: none;
-      border-top: 1px solid #7289da;
-      margin: 2rem 0;
-    }
+			.note {
+				background-color: rgba(114, 137, 218, 0.1);
+				border-left: 5px solid #7289da;
+				padding: 1rem;
+				margin-bottom: 1.25rem;
+				border-radius: 5px;
+				color: #dcddde;
+			}
 
-    .note {
-      background-color: rgba(114, 137, 218, 0.1);
-      border-left: 5px solid #7289da;
-      padding: 1rem;
-      margin-bottom: 1.25rem;
-      border-radius: 5px;
-      color: #dcddde;
-    }
+			.note strong {
+				color: #7289da;
+			}
 
-    .note strong {
-      color: #7289da;
-    }
+			.interface-block {
+				background-color: #2f3136;
+				padding: 1rem;
+				border-radius: 5px;
+				overflow-x: auto;
+				font-family: 'Consolas', 'Courier New', monospace;
+				font-size: 0.9rem;
+				line-height: 1.4;
+				margin-bottom: 1.25rem;
+				color: #f08caa;
+				/* Pinkish color for interface */
+			}
 
-    .interface-block {
-      background-color: #2f3136;
-      padding: 1rem;
-      border-radius: 5px;
-      overflow-x: auto;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      margin-bottom: 1.25rem;
-      color: #f08caa;
-      /* Pinkish color for interface */
-    }
+			.interface-line {
+				display: block;
+			}
 
-    .interface-line {
-      display: block;
-    }
+			.interface-keyword {
+				color: #81a1c1;
+				/* Light blue for keywords */
+				font-weight: bold;
+			}
 
-    .interface-keyword {
-      color: #81a1c1;
-      /* Light blue for keywords */
-      font-weight: bold;
-    }
+			.interface-property {
+				color: #ebcb8b;
+				/* Light yellow for properties */
+			}
 
-    .interface-property {
-      color: #ebcb8b;
-      /* Light yellow for properties */
-    }
+			.interface-optional {
+				color: #d08770;
+				/* Light orange for optional */
+				font-style: italic;
+			}
 
-    .interface-optional {
-      color: #d08770;
-      /* Light orange for optional */
-      font-style: italic;
-    }
+			.interface-type {
+				color: #a3be8c;
+				/* Light green for types */
+			}
 
-    .interface-type {
-      color: #a3be8c;
-      /* Light green for types */
-    }
+			.webhook-block {
+				background-color: #2f3136;
+				padding: 1rem;
+				border-radius: 5px;
+				overflow-x: auto;
+				font-family: 'Consolas', 'Courier New', monospace;
+				font-size: 0.9rem;
+				line-height: 1.4;
+				margin-bottom: 1.25rem;
+				color: #d08770;
+				/* Light orange for curl */
+			}
+		</style>
+	</head>
 
-    .webhook-block {
-      background-color: #2f3136;
-      padding: 1rem;
-      border-radius: 5px;
-      overflow-x: auto;
-      font-family: 'Consolas', 'Courier New', monospace;
-      font-size: 0.9rem;
-      line-height: 1.4;
-      margin-bottom: 1.25rem;
-      color: #d08770;
-      /* Light orange for curl */
-    }
-  </style>
-</head>
+	<body>
+		<h1>Mezon SDK Technical Documentation</h1>
+		<p>Mezon Development Team</p>
+		<p>June 02, 2025</p>
 
-<body>
-  <h1>Mezon SDK Technical Documentation</h1>
-  <p>Mezon Development Team</p>
-  <p>June 02, 2025</p>
+		<h2>Introduction</h2>
+		<p>
+			The Mezon SDK provides developers with a simple and efficient way to interact with the Mezon platform. This document outlines the core
+			functionalities of the SDK, focusing on client initialization, event listening, and channel object retrieval.
+		</p>
 
-  <h2>Introduction</h2>
-  <p>The Mezon SDK provides developers with a simple and efficient way to interact with the Mezon platform. This
-    document outlines the core functionalities of the SDK, focusing on client initialization, event listening, and
-    channel object retrieval.</p>
+		<h2>Installation</h2>
+		<p class="note">
+			<strong>Note:</strong> Installation instructions will depend on the target environment (e.g., npm for Node.js, CDN for browser). Please
+			refer to the specific installation guide for your platform.
+		</p>
 
-  <h2>Installation</h2>
-  <p class="note"><strong>Note:</strong> Installation instructions will depend on the target environment (e.g., npm for
-    Node.js, CDN for browser). Please refer to the specific installation guide for your platform.</p>
+		<h2>Core Functionalities</h2>
 
-  <h2>Core Functionalities</h2>
+		<h3>1. Initializing the Client</h3>
+		<p>
+			The <code>MezonClient</code> class is the entry point for interacting with the Mezon platform. To begin, you need to instantiate a
+			<code>MezonClient</code> object with your authentication token.
+		</p>
 
-  <h3>1. Initializing the Client</h3>
-  <p>The <code>MezonClient</code> class is the entry point for interacting with the Mezon platform. To begin, you need
-    to instantiate a <code>MezonClient</code> object with your authentication token.</p>
-
-  <h4>Syntax</h4>
-  <pre class="code-block">
+		<h4>Syntax</h4>
+		<pre class="code-block">
         <code class="language-javascript">
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">client</span> <span class="code-keyword">=</span> <span class="code-keyword">new</span> <span class="code-variable">MezonClient</span>(<span class="code-string">"your_authentication_token"</span>);</span>
         </code>
     </pre>
 
-  <h4>Parameters</h4>
-  <ul>
-    <li><code>token</code>: A string representing your Mezon platform authentication token. This token is essential for
-      authenticating your application with the Mezon service.</li>
-  </ul>
+		<h4>Parameters</h4>
+		<ul>
+			<li>
+				<code>token</code>: A string representing your Mezon platform authentication token. This token is essential for authenticating your
+				application with the Mezon service.
+			</li>
+		</ul>
 
-  <h4>Return Value</h4>
-  <ul>
-    <li><code>client</code>: An instance of the <code>MezonClient</code> class, providing access to the SDK's
-      functionalities.</li>
-  </ul>
+		<h4>Return Value</h4>
+		<ul>
+			<li><code>client</code>: An instance of the <code>MezonClient</code> class, providing access to the SDK's functionalities.</li>
+		</ul>
 
-  <h4>Example</h4>
-  <pre class="code-block">
+		<h4>Example</h4>
+		<pre class="code-block">
         <code class="language-javascript">
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">apiKey</span> <span class="code-keyword">=</span> <span class="code-string">"abcdef1234567890"</span>;</span>
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">client</span> <span class="code-keyword">=</span> <span class="code-keyword">new</span> <span class="code-variable">MezonClient</span>(<span class="code-variable">apiKey</span>);</span>
@@ -243,13 +248,14 @@
         </code>
     </pre>
 
-  <h3>2. Listening for Events</h3>
-  <p>The <code>MezonClient</code> provides a mechanism to listen for various events emitted by the Mezon platform. The
-    <code>onMessage</code> event listener allows you to handle incoming messages.
-  </p>
+		<h3>2. Listening for Events</h3>
+		<p>
+			The <code>MezonClient</code> provides a mechanism to listen for various events emitted by the Mezon platform. The
+			<code>onMessage</code> event listener allows you to handle incoming messages.
+		</p>
 
-  <h4>Syntax</h4>
-  <pre class="code-block">
+		<h4>Syntax</h4>
+		<pre class="code-block">
         <code class="language-javascript">
             <span class="code-line"><span class="code-variable">client</span>.<span class="code-variable">onChannelMessage</span> <span class="code-keyword">=</span> (<span class="code-variable">event</span>: <span class="code-variable">ChannelMessage</span>) <span class="code-keyword">=></span> {</span>
             <span class="code-line">  <span class="code-comment">// Your message handling logic here</span></span>
@@ -258,37 +264,39 @@
         </code>
     </pre>
 
-  <h4>Parameters</h4>
-  <ul>
-    <li><code>event</code>: An object of type <code>ChannelMessage</code> containing information about the received
-      message. The structure of the <code>ChannelMessage</code> object will depend on the specific event type. Common
-      properties might include:
-      <ul>
-        <li><code>clan_id</code>: The ID of the clan the message belongs to.</li>
-        <li><code>channel_id</code>: The ID of the channel the message belongs to.</li>
-        <li><code>sender_id</code>: The ID of the entity that sent the message.</li>
-        <li><code>message_id</code>: The ID of message.</li>
-        <li><code>content</code>: The content of the message.</li>
-        <li><code>mentions</code>: The list of user mentioned in the message.</li>
-        <li><code>attachments</code>: The list of attachment attached in the message.</li>
-        <li><code>references</code>: The list of message the message is replying to.</li>
-        <li><code>create_time_seconds</code>: The timestamp of when the message was sent.</li>
-        <li><em>Other properties specific to the event type.</em></li>
-      </ul>
-    </li>
-  </ul>
+		<h4>Parameters</h4>
+		<ul>
+			<li>
+				<code>event</code>: An object of type <code>ChannelMessage</code> containing information about the received message. The structure of
+				the <code>ChannelMessage</code> object will depend on the specific event type. Common properties might include:
+				<ul>
+					<li><code>clanId</code>: The ID of the clan the message belongs to.</li>
+					<li><code>channelId</code>: The ID of the channel the message belongs to.</li>
+					<li><code>senderId</code>: The ID of the entity that sent the message.</li>
+					<li><code>message_id</code>: The ID of message.</li>
+					<li><code>content</code>: The content of the message.</li>
+					<li><code>mentions</code>: The list of user mentioned in the message.</li>
+					<li><code>attachments</code>: The list of attachment attached in the message.</li>
+					<li><code>references</code>: The list of message the message is replying to.</li>
+					<li><code>create_time_seconds</code>: The timestamp of when the message was sent.</li>
+					<li><em>Other properties specific to the event type.</em></li>
+				</ul>
+			</li>
+		</ul>
 
-  <h4>Return Value</h4>
-  <ul>
-    <li>This assignment does not return a value directly. It sets a callback function that will be executed when a
-      message event is received by the client.</li>
-  </ul>
+		<h4>Return Value</h4>
+		<ul>
+			<li>
+				This assignment does not return a value directly. It sets a callback function that will be executed when a message event is received
+				by the client.
+			</li>
+		</ul>
 
-  <h4>Example</h4>
-  <pre class="code-block">
+		<h4>Example</h4>
+		<pre class="code-block">
         <code class="language-javascript">
             <span class="code-line"><span class="code-variable">client</span>.<span class="code-variable">onChannelMessage</span> <span class="code-keyword">=</span> (<span class="code-variable">message</span>) <span class="code-keyword">=></span> {</span>
-            <span class="code-line">  <span class="code-variable">console</span>.<span class="code-variable">log</span>(<span class="code-string">`New message from channel ${message.channel_id}:`</span>, <span class="code-variable">message</span>.<span class="code-variable">content</span>);</span>
+            <span class="code-line">  <span class="code-variable">console</span>.<span class="code-variable">log</span>(<span class="code-string">`New message from channel ${message.channelId}:`</span>, <span class="code-variable">message</span>.<span class="code-variable">content</span>);</span>
             <span class="code-line">  <span class="code-comment">// Process the message data</span></span>
             <span class="code-line">  <span class="code-keyword">if</span> (<span class="code-variable">message</span>.<span class="code-variable">content</span>.<span class="code-variable">t</span> <span class="code-keyword">===</span> <span class="code-string">'hello'</span>) {</span>
             <span class="code-line">    <span class="code-variable">console</span>.<span class="code-variable">log</span>(<span class="code-string">`Chat message content: ${message.content.t}`</span>);</span>
@@ -297,33 +305,35 @@
         </code>
     </pre>
 
-  <h3>3. Initiating a Channel Object</h3>
-  <p>The <code>channel</code> object provides methods for interacting with specific channels on the Mezon platform. The
-    <code>fetch</code> method allows you to retrieve a reference to a channel using its unique identifier.
-  </p>
+		<h3>3. Initiating a Channel Object</h3>
+		<p>
+			The <code>channel</code> object provides methods for interacting with specific channels on the Mezon platform. The
+			<code>fetch</code> method allows you to retrieve a reference to a channel using its unique identifier.
+		</p>
 
-  <h4>Syntax</h4>
-  <pre class="code-block">
+		<h4>Syntax</h4>
+		<pre class="code-block">
         <code class="language-javascript">
-            <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">channel</span> <span class="code-keyword">=</span> <span class="code-variable">client</span>.<span class="code-variable">channels</span>.<span class="code-variable">fetch</span>(<span class="code-variable">channel_id</span>);</span>
+            <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">channel</span> <span class="code-keyword">=</span> <span class="code-variable">client</span>.<span class="code-variable">channels</span>.<span class="code-variable">fetch</span>(<span class="code-variable">channelId</span>);</span>
         </code>
     </pre>
 
-  <h4>Parameters</h4>
-  <ul>
-    <li><code>channel_id</code>: A string representing the unique identifier of the channel you want to interact with.
-    </li>
-  </ul>
+		<h4>Parameters</h4>
+		<ul>
+			<li><code>channelId</code>: A string representing the unique identifier of the channel you want to interact with.</li>
+		</ul>
 
-  <h4>Return Value</h4>
-  <ul>
-    <li><code>channel</code>: An object representing the specified channel. This object will likely have methods for
-      performing actions within the channel, such as sending messages, retrieving members, etc. The exact methods
-      available on the <code>channel</code> object will be detailed in further documentation.</li>
-  </ul>
+		<h4>Return Value</h4>
+		<ul>
+			<li>
+				<code>channel</code>: An object representing the specified channel. This object will likely have methods for performing actions within
+				the channel, such as sending messages, retrieving members, etc. The exact methods available on the <code>channel</code> object will be
+				detailed in further documentation.
+			</li>
+		</ul>
 
-  <h4>Example</h4>
-  <pre class="code-block">
+		<h4>Example</h4>
+		<pre class="code-block">
         <code class="language-javascript">
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myChannelId</span> <span class="code-keyword">=</span> <span class="code-string">"group-chat-123"</span>;</span>
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myChannel</span> <span class="code-keyword">=</span> <span class="code-variable">await client</span>.<span class="code-variable">channels</span>.<span class="code-variable">fetch</span>(<span class="code-variable">myChannelId</span>);</span>
@@ -333,35 +343,36 @@
         </code>
     </pre>
 
-  <h3>4. Initiating a Message Object</h3>
-  <p>The <code>message</code> object provides methods for interacting with specific message on the Mezon platform. The
-    <code>fetch</code> method allows you to retrieve a reference to a message using its unique identifier and the
-    channel it belongs to.
-  </p>
+		<h3>4. Initiating a Message Object</h3>
+		<p>
+			The <code>message</code> object provides methods for interacting with specific message on the Mezon platform. The
+			<code>fetch</code> method allows you to retrieve a reference to a message using its unique identifier and the channel it belongs to.
+		</p>
 
-  <h4>Syntax</h4>
-  <pre class="code-block">
+		<h4>Syntax</h4>
+		<pre class="code-block">
         <code class="language-javascript">
-            <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">channel</span> <span class="code-keyword">=</span> <span class="code-variable">await client</span>.<span class="code-variable">channels</span>.<span class="code-variable">fetch</span>(<span class="code-variable">channel_id</span>);</span>
+            <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">channel</span> <span class="code-keyword">=</span> <span class="code-variable">await client</span>.<span class="code-variable">channels</span>.<span class="code-variable">fetch</span>(<span class="code-variable">channelId</span>);</span>
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">message</span> <span class="code-keyword">=</span> <span class="code-variable">await channel</span>.<span class="code-variable">messages</span>.<span class="code-variable">fetch</span>(<span class="code-variable">message_id</span>);</span>
         </code>
     </pre>
 
-  <h4>Parameters</h4>
-  <ul>
-    <li><code>message_id</code>: A string representing the unique identifier of the message you want to interact with.
-    </li>
-  </ul>
+		<h4>Parameters</h4>
+		<ul>
+			<li><code>message_id</code>: A string representing the unique identifier of the message you want to interact with.</li>
+		</ul>
 
-  <h4>Return Value</h4>
-  <ul>
-    <li><code>message</code>: An object representing the specified message. This object will likely have methods for
-      performing actions within the message, such as reply, update, delete message, etc. The exact methods available on
-      the <code>message</code> object will be detailed in further documentation.</li>
-  </ul>
+		<h4>Return Value</h4>
+		<ul>
+			<li>
+				<code>message</code>: An object representing the specified message. This object will likely have methods for performing actions within
+				the message, such as reply, update, delete message, etc. The exact methods available on the <code>message</code> object will be
+				detailed in further documentation.
+			</li>
+		</ul>
 
-  <h4>Example</h4>
-  <pre class="code-block">
+		<h4>Example</h4>
+		<pre class="code-block">
         <code class="language-javascript">
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myChannelId</span> <span class="code-keyword">=</span> <span class="code-string">"group-chat-123"</span>;</span>
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myChannel</span> <span class="code-keyword">=</span> <span class="code-variable">await client</span>.<span class="code-variable">channels</span>.<span class="code-variable">fetch</span>(<span class="code-variable">myChannelId</span>);</span>
@@ -376,35 +387,36 @@
         </code>
     </pre>
 
-  <h3>5. Initiating a User Object</h3>
-  <p>The <code>user</code> object provides methods for interacting with specific user on the Mezon platform. The
-    <code>fetch</code> method allows you to retrieve a reference to a user using its unique identifier and the clan user
-    belongs to.
-  </p>
+		<h3>5. Initiating a User Object</h3>
+		<p>
+			The <code>user</code> object provides methods for interacting with specific user on the Mezon platform. The <code>fetch</code> method
+			allows you to retrieve a reference to a user using its unique identifier and the clan user belongs to.
+		</p>
 
-  <h4>Syntax</h4>
-  <pre class="code-block">
+		<h4>Syntax</h4>
+		<pre class="code-block">
         <code class="language-javascript">
-            <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">clan</span> <span class="code-keyword">=</span> <span class="code-variable">await client</span>.<span class="code-variable">clans</span>.<span class="code-variable">fetch</span>(<span class="code-variable">clan_id ?? '0'</span>); // '0' use for DM message</span>
+            <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">clan</span> <span class="code-keyword">=</span> <span class="code-variable">await client</span>.<span class="code-variable">clans</span>.<span class="code-variable">fetch</span>(<span class="code-variable">clanId ?? '0'</span>); // '0' use for DM message</span>
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">user</span> <span class="code-keyword">=</span> <span class="code-variable">await clan</span>.<span class="code-variable">users</span>.<span class="code-variable">fetch</span>(<span class="code-variable">user_id</span>);</span>
         </code>
     </pre>
 
-  <h4>Parameters</h4>
-  <ul>
-    <li><code>user_id</code>: A string representing the unique identifier of user you want to interact with.</li>
-  </ul>
+		<h4>Parameters</h4>
+		<ul>
+			<li><code>user_id</code>: A string representing the unique identifier of user you want to interact with.</li>
+		</ul>
 
-  <h4>Return Value</h4>
-  <ul>
-    <li><code>user</code>: An object representing the specified user. This object will likely have methods for
-      performing actions within the user, such as sendDM, sendToken, etc. The exact methods available on the
-      <code>user</code> object will be detailed in further documentation.
-    </li>
-  </ul>
+		<h4>Return Value</h4>
+		<ul>
+			<li>
+				<code>user</code>: An object representing the specified user. This object will likely have methods for performing actions within the
+				user, such as sendDM, sendToken, etc. The exact methods available on the <code>user</code> object will be detailed in further
+				documentation.
+			</li>
+		</ul>
 
-  <h4>Example</h4>
-  <pre class="code-block">
+		<h4>Example</h4>
+		<pre class="code-block">
         <code class="language-javascript">
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myClanId</span> <span class="code-keyword">=</span> <span class="code-string">"clan-chat-123"</span>;</span>
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myClan</span> <span class="code-keyword">=</span> <span class="code-variable">await client</span>.<span class="code-variable">clans</span>.<span class="code-variable">fetch</span>(<span class="code-variable">myClanlId</span>);</span>
@@ -415,11 +427,12 @@
         </code>
     </pre>
 
-  <h2>Embedded Message Format</h2>
-  <p>Mezon also supports sending rich messages using an embedded format. This allows for structured messages with
-    colors, titles, authors, descriptions, fields, images, and more. Below is the TypeScript interface defining the
-    structure for an embedded message.</p>
-  <pre class="interface-block">
+		<h2>Embedded Message Format</h2>
+		<p>
+			Mezon also supports sending rich messages using an embedded format. This allows for structured messages with colors, titles, authors,
+			descriptions, fields, images, and more. Below is the TypeScript interface defining the structure for an embedded message.
+		</p>
+		<pre class="interface-block">
         <code>
             <span class="interface-line"><span class="interface-keyword">export</span> <span class="interface-keyword">interface</span> <span class="interface-property">IEmbedProps</span> {</span>
             <span class="interface-line">  <span class="interface-property">color</span><span class="interface-optional">?</span>: <span class="interface-type">string</span>;</span>
@@ -449,8 +462,8 @@
             <span class="interface-line">}</span>
         </code>
     </pre>
-  <h4>Example</h4>
-  <pre class="code-block">
+		<h4>Example</h4>
+		<pre class="code-block">
         <code class="language-javascript">
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myChannelId</span> <span class="code-keyword">=</span> <span class="code-string">"group-chat-123"</span>;</span>
             <span class="code-line"><span class="code-keyword">const</span> <span class="code-variable">myChannel</span> <span class="code-keyword">=</span> <span class="code-variable">await client</span>.<span class="code-variable">channels</span>.<span class="code-variable">fetch</span>(<span class="code-variable">myChannelId</span>);</span>
@@ -463,10 +476,12 @@
         </code>
     </pre>
 
-  <h2>Webhook Format</h2>
-  <p>Mezon supports receiving messages via webhooks. Below is an example of the expected format for a webhook payload
-    sent to your registered webhook URL.</p>
-  <pre class="webhook-block">
+		<h2>Webhook Format</h2>
+		<p>
+			Mezon supports receiving messages via webhooks. Below is an example of the expected format for a webhook payload sent to your registered
+			webhook URL.
+		</p>
+		<pre class="webhook-block">
         <code>
 curl --location 'https://webhook.mezon.ai/webhooks/1839225926886363136/MTcyNzM0MDYyMTU2NTczNzQzMzoxODM5MjI1NzgyNjY1MjIwMDk2OjE4MzkyMjU5MjY4ODYzNjMxMzY.' \
 --header 'Content-Type: application/json' \
@@ -510,8 +525,8 @@ curl --location 'https://webhook.mezon.ai/webhooks/1839225926886363136/MTcyNzM0M
 }'
         </code>
     </pre>
-  <p>Clan hook</p>
-  <pre class="webhook-block">
+		<p>Clan hook</p>
+		<pre class="webhook-block">
       <code>
       {
         "content": "{\"t\": \"haha\"}",
@@ -528,14 +543,17 @@ curl --location 'https://webhook.mezon.ai/webhooks/1839225926886363136/MTcyNzM0M
       }
       </code>
     </pre>
-  <p>The <code>message</code> object within the webhook payload contains details about the received message, including
-    text, formatting, mentions, and attachments like images.</p>
+		<p>
+			The <code>message</code> object within the webhook payload contains details about the received message, including text, formatting,
+			mentions, and attachments like images.
+		</p>
 
-  <h2>Embedded Message Format</h2>
-  <p>Mezon also supports sending rich messages using an embedded format. This allows for structured messages with
-    colors, titles, authors, descriptions, fields, images, and more. Below is the TypeScript interface defining the
-    structure for an embedded message.</p>
-  <pre class="interface-block">
+		<h2>Embedded Message Format</h2>
+		<p>
+			Mezon also supports sending rich messages using an embedded format. This allows for structured messages with colors, titles, authors,
+			descriptions, fields, images, and more. Below is the TypeScript interface defining the structure for an embedded message.
+		</p>
+		<pre class="interface-block">
         <code>
 <span class="interface-line"><span class="interface-keyword">export</span> <span class="interface-keyword">interface</span> <span class="interface-property">IEmbedProps</span> </span>
 <span class="interface-line">{</span>
@@ -569,8 +587,8 @@ curl --location 'https://webhook.mezon.ai/webhooks/1839225926886363136/MTcyNzM0M
 </code>
 </pre>
 
-  <h3>Embed Animtion Example</h3>
-  <pre class="interface-block">
+		<h3>Embed Animtion Example</h3>
+		<pre class="interface-block">
 
 
     <code>
@@ -601,4 +619,5 @@ curl --location 'https://webhook.mezon.ai/webhooks/1839225926886363136/MTcyNzM0M
 <span class="interface-line">};</span>
 </code>
     </pre>
-</body>
+	</body>
+</html>

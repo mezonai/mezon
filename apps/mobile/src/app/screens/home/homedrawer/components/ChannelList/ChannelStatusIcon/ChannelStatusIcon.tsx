@@ -9,7 +9,7 @@ import { IconCDN } from '../../../../../../constants/icon_cdn';
 export const ChannelStatusIcon = memo(({ channel, isUnRead }: { channel: ChannelsEntity; isUnRead?: boolean }) => {
 	const { themeValue } = useTheme();
 
-	const isAgeRestrictedChannel = channel?.age_restricted === 1;
+	const isAgeRestrictedChannel = channel?.ageRestricted === 1;
 	return (
 		<>
 			{channel?.channel_private === ChannelStatusEnum.isPrivate &&

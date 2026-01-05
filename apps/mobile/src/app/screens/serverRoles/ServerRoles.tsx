@@ -101,8 +101,8 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 													height={size.s_32}
 													width={size.s_32}
 												/>
-												{!!item?.role_icon && (
-													<ImageNative url={item?.role_icon} style={{ height: size.s_32, width: size.s_32 }} />
+												{!!item?.roleIcon && (
+													<ImageNative url={item?.roleIcon} style={{ height: size.s_32, width: size.s_32 }} />
 												)}
 												<View style={styles.flex}>
 													<View style={styles.itemTitle}>

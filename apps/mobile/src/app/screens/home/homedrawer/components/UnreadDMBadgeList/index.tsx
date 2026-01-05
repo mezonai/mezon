@@ -52,9 +52,9 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 			case ChannelType.CHANNEL_TYPE_GROUP:
 				return (
 					<View style={styles.avatarWrapper}>
-						{dm?.channel_avatar && !dm?.channel_avatar?.includes('avatar-group.png') ? (
+						{dm?.channelAvatar && !dm?.channelAvatar?.includes('avatar-group.png') ? (
 							<View style={styles.groupAvatarWrapper}>
-								<ImageNative url={createImgproxyUrl(dm?.channel_avatar ?? '')} style={styles.imageFull} resizeMode={'cover'} />
+								<ImageNative url={createImgproxyUrl(dm?.channelAvatar ?? '')} style={styles.imageFull} resizeMode={'cover'} />
 							</View>
 						) : (
 							<View style={styles.groupAvatar}>

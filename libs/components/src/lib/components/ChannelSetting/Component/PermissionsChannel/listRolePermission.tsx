@@ -50,8 +50,8 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 				data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.role_list.role_item')}
 			>
 				<div className="flex gap-x-2 items-center">
-					{role.role_icon ? (
-						<img src={role.role_icon} alt="role icon" className="w-5 h-5 min-w-5 rounded" />
+					{role.roleIcon ? (
+						<img src={role.roleIcon} alt="role icon" className="w-5 h-5 min-w-5 rounded" />
 					) : (
 						<Icons.RoleIcon defaultSize="w-5 h-5 min-w-5" />
 					)}

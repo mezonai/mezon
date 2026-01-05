@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { ICategoryChannel, IChannel } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelDescription, ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiUpdateCategoryDescRequest } from 'mezon-js/types';
 import type { CategoriesEntity } from '../categories/categories.slice';
 import { clansActions } from '../clans/clans.slice';
 import type { RootState } from '../store';
@@ -178,7 +178,7 @@ export const listChannelRenderSlice = createSlice({
 					channelLabel: dataUpdate.channelLabel || (state.listChannelRender[clanId][indexUpdate] as IChannel).channelLabel,
 					e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexUpdate] as IChannel).e2ee,
 					topic: dataUpdate.topic || (state.listChannelRender[clanId][indexUpdate] as IChannel).topic,
-					age_restricted: dataUpdate.age_restricted,
+					ageRestricted: dataUpdate.ageRestricted,
 					channel_private: dataUpdate.channel_private
 						? dataUpdate.channel_private || (state.listChannelRender[clanId][indexUpdate] as IChannel).channel_private
 						: 0
@@ -186,11 +186,11 @@ export const listChannelRenderSlice = createSlice({
 				const existing = state.listChannelRender[clanId][indexUpdate] as IChannel;
 				if (state.listChannelRender?.[clanId]?.[indexUpdate]) {
 					const safeAvatar =
-						typeof dataUpdate?.channel_avatar === 'string' && dataUpdate?.channel_avatar?.trim() !== ''
-							? dataUpdate?.channel_avatar
-							: (existing?.channel_avatar ?? '');
+						typeof dataUpdate?.channelAvatar === 'string' && dataUpdate?.channelAvatar?.trim() !== ''
+							? dataUpdate?.channelAvatar
+							: (existing?.channelAvatar ?? '');
 
-					(state.listChannelRender[clanId][indexUpdate] as IChannel).channel_avatar = safeAvatar;
+					(state.listChannelRender[clanId][indexUpdate] as IChannel).channelAvatar = safeAvatar;
 				}
 				if (state.listChannelRender[clanId][indexUpdate].categoryId === FAVORITE_CATEGORY_ID) {
 					const indexNextUpdate = state.listChannelRender[clanId].findIndex(
@@ -201,18 +201,18 @@ export const listChannelRenderSlice = createSlice({
 						channelLabel: dataUpdate.channelLabel || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).channelLabel,
 						e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).e2ee,
 						topic: dataUpdate.topic || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).topic,
-						age_restricted: dataUpdate.age_restricted,
+						ageRestricted: dataUpdate.ageRestricted,
 						channel_private: dataUpdate.channel_private
 							? dataUpdate.channel_private || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).channel_private
 							: 0
 					};
 					const existingNext = state.listChannelRender[clanId][indexNextUpdate] as IChannel;
 					const avatarNext =
-						typeof dataUpdate?.channel_avatar === 'string' && dataUpdate?.channel_avatar?.trim() !== ''
-							? dataUpdate?.channel_avatar
-							: (existingNext?.channel_avatar ?? '');
+						typeof dataUpdate?.channelAvatar === 'string' && dataUpdate?.channelAvatar?.trim() !== ''
+							? dataUpdate?.channelAvatar
+							: (existingNext?.channelAvatar ?? '');
 
-					(state.listChannelRender[clanId][indexNextUpdate] as IChannel).channel_avatar = avatarNext;
+					(state.listChannelRender[clanId][indexNextUpdate] as IChannel).channelAvatar = avatarNext;
 				}
 			}
 		},

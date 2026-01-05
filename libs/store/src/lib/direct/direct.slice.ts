@@ -5,7 +5,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelMessage, ChannelUpdatedEvent, UserProfileRedis } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiChannelMessageHeader, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiChannelMessageHeader, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/types';
 import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
@@ -46,10 +46,10 @@ export const directAdapter = createEntityAdapter<DirectEntity>();
 
 export const mapDmGroupToEntity = (channelRes: ApiChannelDescription, existingEntity?: DirectEntity) => {
 	const mapped = { ...channelRes, id: channelRes.channelId || '' };
-	if (existingEntity?.channel_avatar && !mapped.channel_avatar) {
-		mapped.channel_avatar = existingEntity.channel_avatar;
-	} else if (!mapped.channel_avatar) {
-		mapped.channel_avatar = 'assets/images/avatar-group.png';
+	if (existingEntity?.channelAvatar && !mapped.channelAvatar) {
+		mapped.channelAvatar = existingEntity.channelAvatar;
+	} else if (!mapped.channelAvatar) {
+		mapped.channelAvatar = 'assets/images/avatar-group.png';
 	}
 
 	return mapped;
@@ -95,7 +95,7 @@ export const createNewDirectMessage = createAsyncThunk(
 						channelLabel:
 							response.channelLabel ||
 							(Array.isArray(display_names) ? display_names.join(',') : Array.isArray(username) ? username.join(',') : ''),
-						channel_avatar: response.channel_avatar || 'assets/images/avatar-group.png',
+						channelAvatar: response.channelAvatar || 'assets/images/avatar-group.png',
 						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
 						userIds: body.userIds,
 						active: 1,
@@ -151,7 +151,7 @@ export const openDirectMessage = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const dmChannel = selectDirectById(state, channelId) || {};
 			if (dmChannel?.active !== ActiveDm.OPEN_DM && clanId === '0') {
-				await mezon.client.openDirectMess(mezon.session, { channelId: channelId });
+				await mezon.client.openDirectMess(mezon.session, { channelId });
 			}
 		} catch (error) {
 			captureSentryError(error, 'direct/openDirectMessage');
@@ -258,7 +258,7 @@ export const getDmEntityByChannelId = createAsyncThunk('channels/getChannelEntit
 
 export const updateDmGroup = createAsyncThunk(
 	'direct/updateDmGroup',
-	async (body: { channelId: string; channelLabel?: string; channel_avatar?: string }, thunkAPI) => {
+	async (body: { channelId: string; channelLabel?: string; channelAvatar?: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
@@ -270,10 +270,10 @@ export const updateDmGroup = createAsyncThunk(
 			} else if (typeof current?.channelLabel !== 'undefined') {
 				updatePayload.channelLabel = current.channelLabel;
 			}
-			if (typeof body.channel_avatar !== 'undefined') {
-				updatePayload.channel_avatar = body.channel_avatar;
-			} else if (typeof current?.channel_avatar !== 'undefined') {
-				updatePayload.channel_avatar = current.channel_avatar;
+			if (typeof body.channelAvatar !== 'undefined') {
+				updatePayload.channelAvatar = body.channelAvatar;
+			} else if (typeof current?.channelAvatar !== 'undefined') {
+				updatePayload.channelAvatar = current.channelAvatar;
 			}
 
 			const response = await mezon.client.updateChannelDesc(mezon.session, body.channelId, updatePayload);
@@ -283,7 +283,7 @@ export const updateDmGroup = createAsyncThunk(
 					directActions.updateOne({
 						channelId: body.channelId,
 						...(typeof body.channelLabel !== 'undefined' ? { channelLabel: body.channelLabel } : {}),
-						...(typeof body.channel_avatar !== 'undefined' ? { channel_avatar: body.channel_avatar } : {})
+						...(typeof body.channelAvatar !== 'undefined' ? { channelAvatar: body.channelAvatar } : {})
 					})
 				);
 			}
@@ -371,7 +371,7 @@ const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 		creatorId: message.senderId,
 		channelLabel: message.displayName || message.username,
 		channel_private: 1,
-		channel_avatar: message.avatar,
+		channelAvatar: message.avatar,
 		avatars: [message.avatar as string],
 		userIds: [message.senderId],
 		lastSentMessage: {
@@ -446,10 +446,10 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		const directEntity: DirectEntity = {
 			...channel_desc,
 			id: channel_desc.channelId || '',
-			userIds: userIds,
+			userIds,
 			usernames,
 			display_names: label,
-			channel_avatar: channel_desc.channel_avatar || 'assets/images/avatar-group.png',
+			channelAvatar: channel_desc.channelAvatar || 'assets/images/avatar-group.png',
 			avatars,
 			onlines,
 			active: 1,
@@ -466,7 +466,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 					id: channel_desc.channelId,
 					onlines,
 					usernames,
-					userIds: userIds,
+					userIds,
 					channelId: channel_desc.channelId
 				}
 			})
@@ -636,14 +636,14 @@ export const directSlice = createSlice({
 		addMemberDmGroup: (state, action: PayloadAction<DirectEntity>) => {
 			const dmGroup = state.entities?.[action.payload.channelId as string];
 			if (dmGroup) {
-				const existingChannelAvatar = dmGroup.channel_avatar;
+				const existingChannelAvatar = dmGroup.channelAvatar;
 
 				dmGroup.userIds = [...(dmGroup.userIds ?? []), ...(action.payload.userIds ?? [])];
 				dmGroup.usernames = [...(dmGroup.usernames ?? []), ...(action.payload.usernames ?? [])];
 				dmGroup.avatars = [...(dmGroup.avatars ?? []), ...(action.payload.avatars ?? [])];
-				dmGroup.channel_avatar = action.payload.channel_avatar ?? '';
-				if (existingChannelAvatar && !action.payload.channel_avatar) {
-					dmGroup.channel_avatar = existingChannelAvatar;
+				dmGroup.channelAvatar = action.payload.channelAvatar ?? '';
+				if (existingChannelAvatar && !action.payload.channelAvatar) {
+					dmGroup.channelAvatar = existingChannelAvatar;
 				}
 			}
 		},
@@ -659,7 +659,7 @@ export const directSlice = createSlice({
 			const index = (dmGroup.userIds ??= []).indexOf(userId);
 			if (index === -1) return;
 
-			if (avatar && dmGroup.channel_avatar) dmGroup.channel_avatar = avatar;
+			if (avatar && dmGroup.channelAvatar) dmGroup.channelAvatar = avatar;
 
 			if (displayName && dmGroup.display_names) {
 				if (dmGroup.channelLabel) {
@@ -764,7 +764,7 @@ export const directSlice = createSlice({
 				id: channelId,
 				changes: {
 					count_mess_unread: 0,
-					lastSeenMessage: lastSeenMessage
+					lastSeenMessage
 				}
 			});
 		},
@@ -913,7 +913,7 @@ export const selectCurrentDmAvatars = createSelector(
 );
 export const selectCurrentDmChannelAvatar = createSelector(
 	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.channel_avatar
+	(state) => state.entities[state.currentDirectMessageId as string]?.channelAvatar
 );
 export const selectCurrentDmChannelLabel = createSelector(
 	getDirectState,
@@ -972,7 +972,7 @@ export const selectDmAvatarsById = createSelector(
 );
 export const selectDmChannelAvatarById = createSelector(
 	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
-	(entities, dmId) => entities[dmId]?.channel_avatar
+	(entities, dmId) => entities[dmId]?.channelAvatar
 );
 export const selectDmChannelLabelById = createSelector(
 	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],

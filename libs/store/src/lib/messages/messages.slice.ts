@@ -22,8 +22,8 @@ import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/t
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ChannelMessage } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import type { MessageButtonClicked } from 'mezon-js/socket';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
 import { getCurrentChannelBadgeCount, resetChannelBadgeCount } from '../badge/badgeHelpers';
@@ -66,9 +66,10 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 			id: channelMess.senderId || ''
 		},
 		lastSeen: lastSeenId === (channelMess.id || channelMess.messageId),
-		createTimeSeconds: createTimeSeconds,
+		createTimeSeconds,
 		createTime: channelMess.createTime || new Date(createTimeSeconds * 1000).toISOString(),
-		updateTime: channelMess.updateTime || (channelMess.updateTimeSeconds ? new Date(channelMess.updateTimeSeconds * 1000).toISOString() : undefined)
+		updateTime:
+			channelMess.updateTime || (channelMess.updateTimeSeconds ? new Date(channelMess.updateTimeSeconds * 1000).toISOString() : undefined)
 	};
 };
 
@@ -250,7 +251,6 @@ export const fetchMessagesCached = async (
 			scope: 'channel-messages'
 		}
 	);
-
 
 	markApiFirstCalled(apiKey);
 
@@ -1367,17 +1367,7 @@ export const messagesSlice = createSlice({
 		},
 
 		newMessage: (state, action: PayloadAction<MessagesEntity>) => {
-			const {
-				code,
-				channelId: channelId,
-				id: messageId,
-				isSending,
-				isMe,
-				isAnonymous,
-				content,
-				topicId,
-				referencedMessage
-			} = action.payload;
+			const { code, channelId: channelId, id: messageId, isSending, isMe, isAnonymous, content, topicId, referencedMessage } = action.payload;
 
 			if (!channelId || !messageId) return state;
 
@@ -1471,7 +1461,8 @@ export const messagesSlice = createSlice({
 							attachments: action.payload.attachments,
 							hideEditted: action.payload.hideEditted,
 							updateTimeSeconds: updateTimeSeconds,
-							updateTime: action.payload.updateTime || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
+							updateTime:
+								action.payload.updateTime || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
 						}
 					});
 					const replyList = handleUpdateReplyMessage(channelEntity, action.payload.id);

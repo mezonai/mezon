@@ -3,7 +3,7 @@ import type { RolesClanEntity } from '@mezon/store';
 import { getStore, rolesClanActions, selectCurrentClanId, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EDragBorderPosition, SlugPermission, generateE2eId } from '@mezon/utils';
-import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js/api.gen';
+import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -114,8 +114,8 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 								className="px-2 inline-flex gap-1 items-center text-[15px] break-all whitespace-break-spaces overflow-hidden line-clamp-2 font-medium mt-1.5"
 								data-e2e={generateE2eId('clan_page.settings.role.item')}
 							>
-								{role.role_icon ? (
-									<img src={role.role_icon} alt="" className={'size-5'} />
+								{role.roleIcon ? (
+									<img src={role.roleIcon} alt="" className={'size-5'} />
 								) : (
 									<Icons.RoleIcon defaultSize="w-5 h-[30px] min-w-5 mr-2" defaultFill={`${role.color || DEFAULT_ROLE_COLOR}`} />
 								)}

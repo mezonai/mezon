@@ -55,7 +55,7 @@ const PreCallInterface = memo(({ onJoinCall, onCancel, loading, directId }: PreC
 					isConnected={false}
 					participantCount={currentDmGroup?.userIds?.length || 0}
 					groupName={groupName}
-					groupAvatar={currentDmGroup.channel_avatar}
+					groupAvatar={currentDmGroup.channelAvatar}
 				/>
 
 				<CallControls onCancel={handleCancel} loading={loading} isVideo={isVideoCall} />

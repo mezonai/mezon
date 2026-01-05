@@ -368,7 +368,7 @@ const DirectMessage = () => {
 								showPopupLeft={true}
 								avatar={
 									Number(type) === ChannelType.CHANNEL_TYPE_GROUP
-										? currentDmGroup?.channel_avatar?.[0]
+										? currentDmGroup?.channelAvatar?.[0]
 										: currentDmGroup?.avatars?.at(-1)
 								}
 								isDM={true}

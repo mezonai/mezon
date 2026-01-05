@@ -194,7 +194,7 @@ const RoleListItem = ({ role, onAddRole }: { role: RolesClanEntity; onAddRole: (
 			data-e2e={generateE2eId('short_profile.role.popover.item')}
 		>
 			<div className="size-3 min-w-3 rounded-full" style={roleStyle}></div>
-			{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
+			{role?.roleIcon && <img src={role.roleIcon} alt="" className={'size-3'} />}
 			{role.title}
 		</div>
 	);
@@ -274,12 +274,12 @@ const RoleClanItem = ({
 							<Icons.IconRemove className="size-2" fill={isHovered ? 'black' : roleColor} />
 						</span>
 					</button>
-					{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
+					{role?.roleIcon && <img src={role.roleIcon} alt="" className={'size-3'} />}
 				</>
 			) : (
 				<>
 					<div className="size-2 rounded-full" style={buttonStyle}></div>
-					{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
+					{role?.roleIcon && <img src={role.roleIcon} alt="" className={'size-3'} />}
 				</>
 			)}
 			<span

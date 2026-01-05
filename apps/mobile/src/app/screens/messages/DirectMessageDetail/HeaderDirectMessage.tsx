@@ -159,7 +159,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				is_video: false,
 				groupId: currentDmGroup?.channelId,
 				group_name: currentDmGroup?.channelLabel,
-				group_avatar: currentDmGroup?.channel_avatar,
+				group_avatar: currentDmGroup?.channelAvatar,
 				caller_id: userProfile?.user?.id,
 				caller_name: userProfile?.user?.displayName || userProfile?.user?.username || '',
 				caller_avatar: userProfile?.user?.avatarUrl,
@@ -248,10 +248,10 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 			)}
 			<Pressable style={styles.channelTitle} onPress={navigateToThreadDetail}>
 				{isTypeDMGroup ? (
-					currentDmGroup?.channel_avatar && !currentDmGroup?.channel_avatar?.includes('avatar-group.png') ? (
+					currentDmGroup?.channelAvatar && !currentDmGroup?.channelAvatar?.includes('avatar-group.png') ? (
 						<View style={styles.groupAvatarWrapper}>
 							<ImageNative
-								url={createImgproxyUrl(currentDmGroup?.channel_avatar ?? '')}
+								url={createImgproxyUrl(currentDmGroup?.channelAvatar ?? '')}
 								style={styles.imageFullSize}
 								resizeMode={'cover'}
 							/>

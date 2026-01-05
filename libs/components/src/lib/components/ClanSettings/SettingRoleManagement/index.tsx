@@ -64,7 +64,7 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 			dispatch(setNameRoleNew(activeRole?.title));
 			dispatch(setColorRoleNew(activeRole?.color));
 			dispatch(setSelectedPermissions(permissionIds));
-			dispatch(setCurrentRoleIcon(activeRole?.role_icon || ''));
+			dispatch(setCurrentRoleIcon(activeRole?.roleIcon || ''));
 			dispatch(roleSlice.actions.setNewRoleIcon(null));
 		}
 	};

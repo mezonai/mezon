@@ -74,9 +74,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 
 	const roleList = useMemo(() => {
 		if (!editMode) {
-			return (
-				activeRoleOfUser?.map((role) => ({ ...role, disabled: false }))?.filter((role) => role?.slug !== `everyone-${role?.clanId}`) || []
-			);
+			return activeRoleOfUser?.map((role) => ({ ...role, disabled: false }))?.filter((role) => role?.slug !== `everyone-${role?.clanId}`) || [];
 		}
 		return (
 			editableRoleList?.map((role) => ({
@@ -298,7 +296,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 												>
 													{role?.title}
 												</Text>
-												{role?.role_icon && <ImageNative url={role?.role_icon} style={styles.roleIcon} />}
+												{role?.roleIcon && <ImageNative url={role?.roleIcon} style={styles.roleIcon} />}
 											</View>
 										</View>
 									</TouchableOpacity>

@@ -3,7 +3,7 @@ import type { IRolesClan, LoadingStatus, UsersClanEntity } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiUpdateRoleRequest } from 'mezon-js';
-import type { ApiRole, ApiRoleListEventResponse, ApiUpdateRoleOrderRequest, RoleUserListRoleUser } from 'mezon-js/api.gen';
+import type { ApiRole, ApiRoleListEventResponse, ApiUpdateRoleOrderRequest, RoleUserListRoleUser } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { selectEntitesUserClans } from '../clanMembers/clan.members';
@@ -231,15 +231,15 @@ export const fetchCreateRole = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				active_permission_ids: activePermissionIds || [],
-				add_user_ids: addUserIds || [],
-				allow_mention: 0,
+				activePermissionIds: activePermissionIds || [],
+				addUserIds: addUserIds || [],
+				allowMention: 0,
 				clanId: clanId,
 				color: color ?? '',
 				description: '',
-				display_online: 0,
+				displayOnline: 0,
 				title: title ?? '',
-				max_permission_id: maxPermissionId
+				maxPermissionId: maxPermissionId
 			};
 			const response = await mezon.client.createRole(mezon.session, body);
 			if (!response) {
@@ -289,16 +289,16 @@ export const updateRole = createAsyncThunk(
 				roleId: roleId,
 				title: title ?? '',
 				color: color ?? '',
-				role_icon: roleIcon,
+				roleIcon: roleIcon,
 				description: '',
-				display_online: 0,
-				allow_mention: 0,
-				add_user_ids: addUserIds || [],
-				active_permission_ids: activePermissionIds || [],
-				remove_user_ids: removeUserIds || [],
-				remove_permission_ids: removePermissionIds || [],
+				displayOnline: 0,
+				allowMention: 0,
+				addUserIds: addUserIds || [],
+				activePermissionIds: activePermissionIds || [],
+				removeUserIds: removeUserIds || [],
+				removePermissionIds: removePermissionIds || [],
 				clanId: clanId,
-				max_permission_id: maxPermissionId
+				maxPermissionId: maxPermissionId
 			};
 			const response = await mezon.client.updateRole(mezon.session, roleId, body);
 			if (!response) {
@@ -743,31 +743,31 @@ const handleMapUpdateRole = (
 	users: Record<string, UsersClanEntity>
 ): RolesClanEntity => {
 	const {
-		active_permission_ids = [],
-		remove_permission_ids = [],
-		add_user_ids = [],
-		remove_user_ids = [],
+		activePermissionIds = [],
+		removePermissionIds = [],
+		addUserIds = [],
+		removeUserIds = [],
 		title,
 		color,
-		role_icon,
+		roleIcon,
 		description,
-		display_online,
-		allow_mention
+		displayOnline,
+		allowMention
 	} = body;
 
-	const removePermissionSet = new Set(remove_permission_ids);
-	// const activePermissionSet = new Set(active_permission_ids);
+	const removePermissionSet = new Set(removePermissionIds);
+	// const activePermissionSet = new Set(activePermissionIds);
 
 	const permissionUpdate = (role.permission_list?.permissions || [])
 		.filter((p) => (p.id ? !removePermissionSet.has(p.id) : false))
-		.concat(active_permission_ids.map((id) => permissions[id]).filter((p): p is PermissionUserEntity => !!p && !removePermissionSet.has(p.id)));
+		.concat(activePermissionIds.map((id) => permissions[id]).filter((p): p is PermissionUserEntity => !!p && !removePermissionSet.has(p.id)));
 
-	const removeUserSet = new Set(remove_user_ids);
+	const removeUserSet = new Set(removeUserIds);
 	const existingUsers = role.role_user_list?.role_users || [];
 
 	const userUpdate = existingUsers.filter((u) => (u.id ? !removeUserSet.has(u.id) : false));
 	const existingUserIdSet = new Set(userUpdate.map((u) => u.id).filter((id): id is string => Boolean(id)));
-	for (const id of add_user_ids) {
+	for (const id of addUserIds) {
 		if (removeUserSet.has(id)) continue;
 		if (existingUserIdSet.has(id)) continue;
 		const u = users[id];
@@ -789,10 +789,10 @@ const handleMapUpdateRole = (
 		...role,
 		title: title ?? role.title,
 		color: color ?? role.color,
-		role_icon: role_icon ?? role.role_icon,
+		roleIcon: roleIcon ?? role.roleIcon,
 		description: description ?? role.description,
-		display_online: display_online ?? role.display_online,
-		allow_mention: allow_mention ?? role.allow_mention,
+		displayOnline: displayOnline ?? role.displayOnline,
+		allowMention: allowMention ?? role.allowMention,
 		permission_list: { permissions: permissionUpdate },
 		role_user_list: { role_users: userUpdate }
 	};

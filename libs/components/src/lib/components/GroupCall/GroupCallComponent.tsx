@@ -95,7 +95,7 @@ const GroupCallComponent = memo(
 				isVideo: videoEnabled,
 				groupId: callGroup?.channelId,
 				groupName: callGroup?.channelLabel || callGroup?.usernames?.join(','),
-				groupAvatar: callGroup?.channel_avatar?.[0],
+				groupAvatar: callGroup?.channelAvatar?.[0],
 				callerId,
 				callerName: userProfile?.user?.displayName || userProfile?.user?.username || '',
 				callerAvatar: userProfile?.user?.avatarUrl,

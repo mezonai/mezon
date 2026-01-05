@@ -43,9 +43,9 @@ export const DmListItem = React.memo((props: { id: string }) => {
 	return (
 		<View style={[styles.messageItem]}>
 			{isTypeDMGroup ? (
-				directMessage?.channel_avatar && !directMessage?.channel_avatar?.includes('avatar-group.png') ? (
+				directMessage?.channelAvatar && !directMessage?.channelAvatar?.includes('avatar-group.png') ? (
 					<View style={styles.groupAvatarWrapper}>
-						<ImageNative url={createImgproxyUrl(directMessage?.channel_avatar ?? '')} style={styles.imageFullSize} resizeMode={'cover'} />
+						<ImageNative url={createImgproxyUrl(directMessage?.channelAvatar ?? '')} style={styles.imageFullSize} resizeMode={'cover'} />
 					</View>
 				) : (
 					<View style={styles.groupAvatar}>

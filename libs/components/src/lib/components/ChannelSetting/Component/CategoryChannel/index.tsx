@@ -35,7 +35,7 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 				categoryName: category.categoryName,
 				channelId: realTimeChannel?.channelId ?? '',
 				channelLabel: realTimeChannel?.channelLabel ?? '',
-				app_id: '',
+				appId: '',
 				parent_id: realTimeChannel?.parent_id,
 				channel_private: realTimeChannel?.channel_private
 			};

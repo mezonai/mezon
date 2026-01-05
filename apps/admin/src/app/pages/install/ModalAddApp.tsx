@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { ChannelType } from 'mezon-js';
-import type { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiCreateChannelDescRequest } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -105,7 +105,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 
 		const data: ApiCreateChannelDescRequest = {
 			channelLabel: sanitizeLabel(labelValue) || sanitizeLabel(appDetail?.appname || ''),
-			app_id: applicationId,
+			appId: applicationId,
 			clanId: clanValue,
 			categoryId: categoryValue,
 			type: ChannelType.CHANNEL_TYPE_APP,

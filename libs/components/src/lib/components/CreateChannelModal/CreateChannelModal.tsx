@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { AlertTitleTextWarning, Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
-import type { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -86,7 +86,7 @@ export const CreateNewChannelModal = () => {
 			channelLabel: channelName,
 			channel_private: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isPrivate,
 			categoryId: currentCategory?.categoryId || channelWelcome?.categoryId,
-			...(isAppChannel && selectedApp && { app_id: selectedApp.id }),
+			...(isAppChannel && selectedApp && { appId: selectedApp.id }),
 			parent_id: '0'
 		};
 

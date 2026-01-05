@@ -116,7 +116,7 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHa
 				channelId: directId,
 				channelLabel: '',
 				categoryId: currentDirect.categoryId,
-				app_id: currentDirect.app_id || '',
+				appId: currentDirect.appId || '',
 				e2ee: !currentDirect.e2ee ? 1 : 0
 			};
 

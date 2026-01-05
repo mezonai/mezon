@@ -171,7 +171,6 @@ import type {
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
-import type { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction, ApiNotification } from 'mezon-js/api.gen';
 import type {
 	ApiChannelMessageHeader,
 	ApiClanEmoji,
@@ -182,6 +181,7 @@ import type {
 	ApiWebhook
 } from 'mezon-js/dist/api.gen';
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
+import type { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction, ApiNotification } from 'mezon-js/types';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -1431,7 +1431,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					channelLabel: channelCreated.channelLabel,
 					channel_private: channelCreated.channel_private,
 					type: channelCreated.channelType,
-					app_id: channelCreated.app_id,
+					appId: channelCreated.appId,
 					clanId: channelCreated.clanId
 				};
 				dispatch(listChannelRenderAction.addThreadToListRender({ clanId: channelCreated?.clanId as string, channel: thread }));
@@ -1449,9 +1449,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				categoryName: category?.categoryName || ''
 			};
 			dispatch(channelsActions.createChannelSocket(channelWithCategoryName));
-			dispatch(
-				listChannelsByUserActions.addOneChannel({ id: channelCreated.channelId, type: channelCreated.channelType, ...channelCreated })
-			);
+			dispatch(listChannelsByUserActions.addOneChannel({ id: channelCreated.channelId, type: channelCreated.channelType, ...channelCreated }));
 			dispatch(listChannelRenderAction.addChannelToListRender({ type: channelCreated.channelType, ...channelCreated }));
 
 			const now = Math.floor(Date.now() / 1000);
@@ -1507,7 +1505,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					channel_private: channelCreated.channel_private,
 					channelType: channelCreated.channelType,
 					creatorId: channelCreated.creatorId,
-					app_id: channelCreated.app_id
+					appId: channelCreated.appId
 				})
 			);
 		}
@@ -1850,7 +1848,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						channel_private: channelUpdated.channel_private,
 						channelType: channelUpdated.channelType,
 						creatorId: channelUpdated.creatorId,
-						app_id: channelUpdated.app_id
+						appId: channelUpdated.appId
 					})
 				);
 			}
@@ -1948,7 +1946,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				dispatch(channelsActions.updateChannelSocket(channelUpdated));
 				dispatch(listChannelsByUserActions.upsertOne({ id: channelUpdated.channelId, ...channelUpdated }));
 			}
-			if (channelUpdated.app_id) {
+			if (channelUpdated.appId) {
 				dispatch(
 					channelsActions.updateAppChannel({
 						clanId: channelUpdated.clanId,
@@ -2206,13 +2204,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							clanId: role.clanId,
 							title: role.title,
 							color: role.color,
-							role_icon: role.role_icon,
+							roleIcon: role.roleIcon,
 							slug: role.slug,
 							description: role.description,
 							creatorId: role.creatorId,
 							active: role.active,
-							display_online: role.display_online,
-							allow_mention: role.allow_mention,
+							displayOnline: role.displayOnline,
+							allowMention: role.allowMention,
 							role_channel_active: role.role_channel_active,
 							channel_ids: role.channel_ids,
 							max_level_permission: role.max_level_permission

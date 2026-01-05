@@ -3,7 +3,7 @@ import { EUserStatus, type IUserProfileActivity, type LoadingStatus } from '@mez
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { AddFriend } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api.gen';
+import type { ApiFriend } from 'mezon-js/types';
 import { toast } from 'react-toastify';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';

@@ -24,12 +24,12 @@ const StreamBannerScreen = ({ navigation, route }: MenuChannelScreenProps<Channe
 	const [banner, setBanner] = useState('');
 
 	useEffect(() => {
-		setBanner(channel?.channel_avatar || '');
-	}, [channel?.channel_avatar]);
+		setBanner(channel?.channelAvatar || '');
+	}, [channel?.channelAvatar]);
 
 	const isBannerChanged = useMemo(() => {
-		return !!(banner || channel?.channel_avatar) && banner !== channel?.channel_avatar;
-	}, [banner, channel?.channel_avatar]);
+		return !!(banner || channel?.channelAvatar) && banner !== channel?.channelAvatar;
+	}, [banner, channel?.channelAvatar]);
 	const handleLoad = async (url: string) => {
 		if (url) {
 			setBanner(url);
@@ -44,8 +44,8 @@ const StreamBannerScreen = ({ navigation, route }: MenuChannelScreenProps<Channe
 					channelId: channel?.channelId,
 					channelLabel: channel?.channelLabel,
 					categoryId: channel?.categoryId,
-					app_id: '',
-					channel_avatar: banner
+					appId: '',
+					channelAvatar: banner
 				})
 			);
 			Toast.show({
