@@ -423,7 +423,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	};
 	// Handle incoming signaling messages
 	const handleSignalingMessage = async (signalingData: any) => {
-		const dataType = signalingData.data_type;
+		const dataType = signalingData.dataType;
 		channelIdRef.current = signalingData?.channelId || '';
 		if ([WebrtcSignalingType.WEBRTC_SDP_QUIT, WebrtcSignalingType.WEBRTC_SDP_TIMEOUT].includes(dataType)) {
 			if (!timeStartConnected?.current && isMyCaller?.current) {
@@ -450,9 +450,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		}
 		if (isInChannelCalled) {
 			try {
-				switch (signalingData.data_type) {
+				switch (signalingData.dataType) {
 					case WebrtcSignalingType.WEBRTC_SDP_OFFER: {
-						const decompressedData = await decompress(signalingData.json_data);
+						const decompressedData = await decompress(signalingData.jsonData);
 						const offer = safeJSONParse(decompressedData || '{}');
 						await handleOffer(offer);
 
@@ -460,7 +460,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					}
 
 					case WebrtcSignalingType.WEBRTC_SDP_ANSWER: {
-						const decompressedData = await decompress(signalingData.json_data);
+						const decompressedData = await decompress(signalingData.jsonData);
 						const answer = safeJSONParse(decompressedData || '{}');
 						await handleAnswer(answer);
 						if (callTimeout.current) {
@@ -472,7 +472,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					}
 
 					case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE: {
-						const candidate = safeJSONParse(signalingData?.json_data || '{}');
+						const candidate = safeJSONParse(signalingData?.jsonData || '{}');
 						await handleICECandidate(candidate);
 						break;
 					}

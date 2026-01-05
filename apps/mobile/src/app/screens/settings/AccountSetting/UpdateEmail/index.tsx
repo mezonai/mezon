@@ -236,7 +236,7 @@ export const UpdateEmail = memo(({ navigation, route }: { navigation: any; route
 					isMobile: true
 				})
 			);
-			const requestId = response?.payload?.req_id;
+			const requestId = response?.payload?.reqId;
 
 			if (response?.meta?.requestStatus === 'fulfilled' && requestId) {
 				startCooldownTimer(email?.trim() || '');

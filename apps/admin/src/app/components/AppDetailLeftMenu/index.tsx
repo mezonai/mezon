@@ -29,23 +29,23 @@ const AppDetailLeftMenu = ({ tabs, currentAppId }: ISideBarProps) => {
 	const filteredApps = useMemo(() => {
 		if (!allApps?.apps) return [];
 
-		const isApp = Boolean(currentApp?.app_url);
-		const filtered = allApps.apps.filter((a) => (isApp ? Boolean(a.app_url) : !a.app_url));
+		const isApp = Boolean(currentApp?.appUrl);
+		const filtered = allApps.apps.filter((a) => (isApp ? Boolean(a.appUrl) : !a.appUrl));
 
 		return filtered.filter((a) => a.id != null).sort((a, b) => String(a.id).localeCompare(String(b.id)));
-	}, [allApps?.apps, currentApp?.app_url]);
+	}, [allApps?.apps, currentApp?.appUrl]);
 
 	const dropdownLabel = useMemo(() => {
-		return filteredApps.length > 0 && filteredApps[0]?.app_url ? 'APP' : 'BOT';
+		return filteredApps.length > 0 && filteredApps[0]?.appUrl ? 'APP' : 'BOT';
 	}, [filteredApps]);
 
 	const filteredTabs = useMemo(() => {
-		const isApp = Boolean(currentApp?.app_url);
+		const isApp = Boolean(currentApp?.appUrl);
 		if (isApp) {
 			return tabs.filter((tab) => tab.routerLink !== 'flow' && tab.routerLink !== 'flow-examples');
 		}
 		return tabs;
-	}, [tabs, currentApp?.app_url]);
+	}, [tabs, currentApp?.appUrl]);
 
 	useEffect(() => {
 		if (currentApp && filteredApps.find((a) => a.id === currentAppId) && currentApp.appname) {

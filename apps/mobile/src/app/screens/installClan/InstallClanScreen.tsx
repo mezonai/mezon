@@ -39,7 +39,7 @@ const InstallClanScreen = ({ route }: { route: any }) => {
 		if (!searchText) {
 			return clanListUser;
 		}
-		return clanListUser.filter((item) => normalizeString(item.clan_name.toLowerCase()).includes(normalizeString(searchText.toLowerCase())));
+		return clanListUser.filter((item) => normalizeString(item.clanName.toLowerCase()).includes(normalizeString(searchText.toLowerCase())));
 	}, [clanListUser, searchText]);
 
 	const handleSearchText = debounce((value: string) => {
@@ -64,7 +64,7 @@ const InstallClanScreen = ({ route }: { route: any }) => {
 		return (
 			<Pressable key={`channel_event_${item.clanId}`} onPress={() => handleSelectClan(item)} style={styles.items}>
 				<Text style={styles.inputValue} numberOfLines={1} ellipsizeMode="tail">
-					{item.clan_name}
+					{item.clanName}
 				</Text>
 			</Pressable>
 		);
@@ -114,7 +114,7 @@ const InstallClanScreen = ({ route }: { route: any }) => {
 
 				<Text style={styles.clanTitle}>{t('addToClan')}</Text>
 				<TouchableOpacity style={styles.fakeInput} onPress={handleShowBottomSheetClan}>
-					<Text style={styles.inputValue}>{clan?.clan_name || t('placeholder')} </Text>
+					<Text style={styles.inputValue}>{clan?.clanName || t('placeholder')} </Text>
 					<View style={styles.chevronDownIcon}>
 						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 					</View>

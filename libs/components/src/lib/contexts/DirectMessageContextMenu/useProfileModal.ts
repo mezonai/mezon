@@ -12,7 +12,7 @@ export function useProfileModal({ currentUser }: UseProfileModalParams) {
 		const userId = currentUser?.userIds?.[0] || currentUser?.id;
 		const directId = (currentUser as any)?.channelId || currentUser?.channelId;
 		const avatar = currentUser?.avatarUrl || currentUser?.avatars?.[0];
-		const name = currentUser?.displayName || currentUser?.username || currentUser?.display_names?.[0];
+		const name = currentUser?.displayName || currentUser?.username || currentUser?.displayNames?.[0];
 		const isOnline = !!currentUser?.online?.[0];
 		const isMobile = currentUser?.isMobile;
 

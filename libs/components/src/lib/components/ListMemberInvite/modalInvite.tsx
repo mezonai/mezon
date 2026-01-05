@@ -102,8 +102,8 @@ const ModalInvite = (props: ModalParam) => {
 				data-e2e={generateE2eId('clan_page.modal.invite_people.container')}
 			>
 				<div className="flex-1 flex items-center justify-between border-b-theme-primary rounded-t p-3 md:p-4 gap-2">
-					<p title={clan?.clan_name} className="font-bold text-base md:text-xl text-theme-primary-active break-words flex-1 min-w-0">
-						{t('modal.title', { target: isInviteExternalCalling ? t('modal.privateEvent') : clan?.clan_name })}
+					<p title={clan?.clanName} className="font-bold text-base md:text-xl text-theme-primary-active break-words flex-1 min-w-0">
+						{t('modal.title', { target: isInviteExternalCalling ? t('modal.privateEvent') : clan?.clanName })}
 					</p>
 
 					<Button

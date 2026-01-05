@@ -107,10 +107,10 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 				const ruleItem: ApiOnboardingContent = {
 					title: rule.title,
 					content: rule.content,
-					guide_type: rule.guide_type
+					guideType: rule.guideType
 				};
 				if (imageUrl[index]) {
-					ruleItem.image_url = imageUrl[index]?.url;
+					ruleItem.imageUrl = imageUrl[index]?.url;
 				}
 				return ruleItem;
 			});

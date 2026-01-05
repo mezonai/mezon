@@ -33,18 +33,18 @@ export default function SearchMessageDm({ navigation, route }: any) {
 		async (searchText: string) => {
 			try {
 				const filter = [
-					{ field_name: 'channelId', field_value: currentChannel?.channelId || '' },
-					{ field_name: 'clanId', field_value: currentChannel?.clanId || '' }
+					{ fieldName: 'channelId', fieldValue: currentChannel?.channelId || '' },
+					{ fieldName: 'clanId', fieldValue: currentChannel?.clanId || '' }
 				];
 
 				if (searchText?.trim()) {
-					filter.push({ field_name: 'content', field_value: searchText });
+					filter.push({ fieldName: 'content', fieldValue: searchText });
 					setActiveTab(ACTIVE_TAB.MESSAGES);
 				}
 				if (userMention && optionFilter) {
 					filter.push({
-						field_name: optionFilter?.value,
-						field_value: optionFilter?.value === 'mention' ? `"userId":"${userMention?.id}"` : userMention?.display
+						fieldName: optionFilter?.value,
+						fieldValue: optionFilter?.value === 'mention' ? `"userId":"${userMention?.id}"` : userMention?.display
 					});
 				}
 				setFiltersSearch(filter || []);

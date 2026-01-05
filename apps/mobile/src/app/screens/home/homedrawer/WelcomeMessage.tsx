@@ -68,14 +68,14 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 	}, [currenChannel?.usernames]);
 
 	const displayName: string = useMemo(() => {
-		return typeof currenChannel?.display_names === 'string' ? currenChannel?.display_names : currenChannel?.display_names?.[0] || '';
-	}, [currenChannel?.display_names]);
+		return typeof currenChannel?.displayNames === 'string' ? currenChannel?.displayNames : currenChannel?.displayNames?.[0] || '';
+	}, [currenChannel?.displayNames]);
 
 	const isChannel = useMemo(() => {
-		return currenChannel?.parent_id === '0';
-	}, [currenChannel?.parent_id]);
+		return currenChannel?.parentId === '0';
+	}, [currenChannel?.parentId]);
 
-	const isPrivate = useMemo(() => currenChannel?.channel_private === ChannelStatusEnum.isPrivate, [currenChannel?.channel_private]);
+	const isPrivate = useMemo(() => currenChannel?.channelPrivate === ChannelStatusEnum.isPrivate, [currenChannel?.channelPrivate]);
 
 	const isMediaChannel = useMemo(() => {
 		return [ChannelType.CHANNEL_TYPE_STREAMING, ChannelType.CHANNEL_TYPE_MEZON_VOICE, ChannelType.CHANNEL_TYPE_APP].includes(
@@ -274,7 +274,7 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 					<Text style={styles.subTitleWelcomeMessage}>
 						{t('chatWelcome:welcome.startOfChannel', {
 							channelName: currenChannel?.channelLabel || '',
-							channelType: currenChannel?.channel_private && !isMediaChannel ? t('chatWelcome:welcome.private') : ''
+							channelType: currenChannel?.channelPrivate && !isMediaChannel ? t('chatWelcome:welcome.private') : ''
 						})}
 					</Text>
 				</View>

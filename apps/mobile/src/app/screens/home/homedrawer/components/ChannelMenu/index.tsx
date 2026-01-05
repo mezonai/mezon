@@ -152,7 +152,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				channelId: channel?.channelId || '',
 				clanId: currentClanId || '',
 				active: EMuteState.UN_MUTE,
-				mute_time: 0
+				muteTime: 0
 			};
 			const response = await dispatch(notificationSettingActions.setMuteChannel(body));
 			if (response?.meta?.requestStatus === 'rejected') {
@@ -365,9 +365,9 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				);
 				if (response?.meta?.requestStatus === 'rejected') {
 					Toast.show({ type: 'error', text1: response?.error?.message });
-				} else if (!isChannel && channel?.parent_id && channel?.channelId) {
+				} else if (!isChannel && channel?.parentId && channel?.channelId) {
 					dispatch(threadsActions.remove(channel.channelId));
-					dispatch(threadsActions.removeThreadFromCache({ channelId: channel.parent_id, threadId: channel.channelId }));
+					dispatch(threadsActions.removeThreadFromCache({ channelId: channel.parentId, threadId: channel.channelId }));
 				}
 			}
 		} catch (error) {
@@ -375,20 +375,20 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [channel?.channelId, channel?.clanId, channel?.parent_id, currentSystemMessage?.channelId, t, isChannel]);
+	}, [channel?.channelId, channel?.clanId, channel?.parentId, currentSystemMessage?.channelId, t, isChannel]);
 
 	const handleConfirmLeaveThread = useCallback(async () => {
 		await dispatch(
 			threadsActions.leaveThread({
 				clanId: currentClanId || '',
-				channelId: channel?.parent_id || '',
+				channelId: channel?.parentId || '',
 				threadId: channel?.id || '',
-				isPrivate: channel.channel_private || 0
+				isPrivate: channel.channelPrivate || 0
 			})
 		);
 		dispatch(channelsActions.setCurrentChannelId({ clanId: currentClanId || '', channelId: '' }));
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-	}, [channel?.channel_private, channel?.id, channel?.parent_id, currentClanId, dispatch]);
+	}, [channel?.channelPrivate, channel?.id, channel?.parentId, currentClanId, dispatch]);
 
 	return (
 		<View style={styles.container}>

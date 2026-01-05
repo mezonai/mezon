@@ -46,7 +46,7 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 		},
 		errorMessage: clanError,
 		options: clans.map((clan) => ({
-			label: clan.clan_name,
+			label: clan.clanName,
 			value: clan.id
 		}))
 	};

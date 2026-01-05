@@ -24,7 +24,7 @@ const OAuth2 = () => {
 	const currentAppId = useSelector(selectCurrentAppId);
 	const currentApp = useSelector((state) => selectApplicationById(state, currentAppId as string)) ?? {};
 
-	const appURIes = useMemo(() => currentApp?.oAuthClient?.redirect_uris ?? [], [currentApp?.oAuthClient?.redirect_uris]);
+	const appURIes = useMemo(() => currentApp?.oAuthClient?.redirectUris ?? [], [currentApp?.oAuthClient?.redirectUris]);
 	const uriInputValuesRef = useRef<string[]>([...appURIes]);
 	const [inputArrLength, setInputArrLength] = useState<number>(appURIes.length);
 
@@ -79,7 +79,7 @@ const OAuth2 = () => {
 
 		const request: ApiMezonOauthClient = {
 			...currentApp?.oAuthClient,
-			redirect_uris: uriInputValuesRef.current,
+			redirectUris: uriInputValuesRef.current,
 			scope: newScope.trim()
 		};
 

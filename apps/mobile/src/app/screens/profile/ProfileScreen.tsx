@@ -319,10 +319,10 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 				<View style={styles.contentContainer}>
 					<View style={styles.contentGap}>
-						{userProfile?.user?.about_me ? (
+						{userProfile?.user?.aboutMe ? (
 							<View>
 								<Text style={styles.textTitle}>{t('aboutMe')}</Text>
-								<Text style={styles.text}>{userProfile.user.about_me}</Text>
+								<Text style={styles.text}>{userProfile.user.aboutMe}</Text>
 							</View>
 						) : null}
 

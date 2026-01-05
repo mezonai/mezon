@@ -39,7 +39,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 
 	const channelApp = useAppSelector((state) => selectAppChannelById(state, channelId));
 
-	const [appUrlInit, setAppUrlInit] = useState(channelApp?.app_url || '');
+	const [appUrlInit, setAppUrlInit] = useState(channelApp?.appUrl || '');
 	const [appUrl, setAppUrl] = useState(appUrlInit);
 	const dispatch = useAppDispatch();
 	const [channelLabelInit, setChannelLabelInit] = useState(currentChannel.channelLabel || '');
@@ -136,7 +136,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			if (isThread) {
 				await checkDuplicate(checkDuplicateThread, {
 					thread_name: value.trim(),
-					channelId: currentChannel.parent_id ?? ''
+					channelId: currentChannel.parentId ?? ''
 				});
 			} else {
 				await checkDuplicate(checkDuplicateChannelInCategory, {
@@ -192,10 +192,10 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 				clanId: currentChannel.clanId as string,
 				newMessage: {
 					channelId: currentChannel.channelId,
-					boost_message: currentSystemMessage.boost_message,
-					setup_tips: currentSystemMessage.setup_tips,
-					welcome_random: currentSystemMessage.welcome_random,
-					welcome_sticker: currentSystemMessage.welcome_sticker
+					boostMessage: currentSystemMessage.boostMessage,
+					setupTips: currentSystemMessage.setupTips,
+					welcomeRandom: currentSystemMessage.welcomeRandom,
+					welcomeSticker: currentSystemMessage.welcomeSticker
 				}
 			};
 			await dispatch(updateSystemMessage(request));
@@ -213,13 +213,13 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			channelId: currentChannel.channelId || '',
 			channelLabel: channelLabel,
 			categoryId: currentChannel.categoryId,
-			app_url: updatedAppUrl,
+			appUrl: updatedAppUrl,
 			appId: currentChannel.appId || '',
 			topic,
 			ageRestricted: isAgeRestricted,
 			e2ee: isE2ee,
-			parent_id: currentChannel?.parent_id,
-			channel_private: currentChannel?.channel_private
+			parentId: currentChannel?.parentId,
+			channelPrivate: currentChannel?.channelPrivate
 		} as IUpdateChannelRequest;
 
 		await dispatch(channelsActions.updateChannel(updateChannel));

@@ -32,11 +32,11 @@ import { SearchableCommandList } from './SearchableCommandList';
 interface SlashCommand {
 	id: string;
 	display: string;
-	action_msg?: string;
+	actionMsg?: string;
 	description?: string;
 	menu_id?: string;
-	menu_type?: number;
-	menu_name?: string;
+	menuType?: number;
+	menuName?: string;
 	isBuiltIn?: boolean;
 }
 
@@ -85,7 +85,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 				count: 1,
 				messageSenderId: userId.userId ?? '',
 				action_delete: false,
-				isPublic: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
+				isPublic: isPublicChannel({ parentId: currentChannelParentId, channelPrivate: currentChannelPrivate }),
 				clanId: currentChannelClanId ?? '',
 				channelId: isTopic ? currentChannelId || '' : (message?.channelId ?? ''),
 				isFocusTopicBox,
@@ -135,18 +135,18 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			const userProfile = selectAllAccount(store.getState());
 			const profileInClan = selectMemberClanByUserId(store.getState(), userProfile?.user?.id ?? '');
 
-			if (command.menu_type === QUICK_MENU_TYPE.QUICK_MENU) {
+			if (command.menuType === QUICK_MENU_TYPE.QUICK_MENU) {
 				try {
 					const channelId = currentChannelId || currentChannelId || '';
 					const clanId = currentChannelClanId || '';
 					const mode = getActiveMode(channelId);
-					const isPublic = isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate });
+					const isPublic = isPublicChannel({ parentId: currentChannelParentId, channelPrivate: currentChannelPrivate });
 
 					await dispatch(
 						quickMenuActions.writeQuickMenuEvent({
 							channelId,
 							clanId,
-							menuName: command.display || command.menu_name || '',
+							menuName: command.display || command.menuName || '',
 							mode,
 							isPublic,
 							content: message.content,
@@ -163,7 +163,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 				} catch (error) {
 					console.error('Error sending quick menu event:', error);
 				}
-			} else if (command.action_msg && onSlashCommandExecute) {
+			} else if (command.actionMsg && onSlashCommandExecute) {
 				onSlashCommandExecute(command);
 			}
 		},
@@ -179,13 +179,13 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 
 		return quickMenuItems.map((item) => ({
 			value: `quick_menu_${item.id}`,
-			label: `/${item.menu_name || ''}`,
+			label: `/${item.menuName || ''}`,
 			command: {
 				id: `quick_menu_${item.id}`,
-				display: item.menu_name || '',
-				action_msg: item.action_msg || '',
+				display: item.menuName || '',
+				actionMsg: item.actionMsg || '',
 				menu_id: item.id,
-				menu_type: item.menu_type || 1,
+				menuType: item.menuType || 1,
 				isBuiltIn: false
 			}
 		}));

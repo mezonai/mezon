@@ -20,7 +20,7 @@ const ListEventManagement = (props: ListEventManagementProps) => {
 	return allEventManagement
 		.filter(
 			(event) =>
-				(!event?.is_private || event.creatorId === userId) &&
+				(!event?.isPrivate || event.creatorId === userId) &&
 				(!event.channelId || event.channelId === '0' || allThreadChannelPrivateIds.includes(event.channelId))
 		)
 		.map((event, index) => {
@@ -28,13 +28,13 @@ const ListEventManagement = (props: ListEventManagementProps) => {
 				<div key={index} data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item')}>
 					<ItemEventManagement
 						topic={event.title || ''}
-						voiceChannel={event.channel_voice_id || ''}
+						voiceChannel={event.channelVoiceId || ''}
 						titleEvent={event.title || ''}
 						address={event.address}
 						option={event.address ? OptionEvent.OPTION_LOCATION : OptionEvent.OPTION_SPEAKER}
 						logoRight={event.logo}
-						start={event.start_time || ''}
-						end={event.end_time || ''}
+						start={event.startTime || ''}
+						end={event.endTime || ''}
 						event={event}
 						createTime={event.createTime}
 						openModelUpdate={openModelUpdate}

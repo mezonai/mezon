@@ -24,19 +24,19 @@ const NotificationSettingDetail = memo(({ route }: { route: any }) => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { t } = useTranslation(['clanNotificationsSetting']);
 	const [selectedOption, setSelectedOption] = useState(
-		notifyChannelCategorySetting?.type || notifyChannelCategorySetting?.notification_setting_type
+		notifyChannelCategorySetting?.type || notifyChannelCategorySetting?.notificationSettingType
 	);
 	const { themeValue } = useTheme();
 	const dispatch = useAppDispatch();
 	const styles = style(themeValue);
 	const title = useMemo(() => {
-		return notifyChannelCategorySetting?.channel_category_title || notifyChannelCategorySetting?.title;
+		return notifyChannelCategorySetting?.channelCategoryTitle || notifyChannelCategorySetting?.title;
 	}, [notifyChannelCategorySetting]);
 
 	const label = useMemo(() => {
 		return (
 			(notifyChannelCategorySetting as ICategoryChannelOption)?.label ||
-			(notifyChannelCategorySetting as NotiChannelCategorySettingEntity)?.channel_category_label
+			(notifyChannelCategorySetting as NotiChannelCategorySettingEntity)?.channelCategoryLabel
 		);
 	}, [notifyChannelCategorySetting]);
 
@@ -61,7 +61,7 @@ const NotificationSettingDetail = memo(({ route }: { route: any }) => {
 				dispatch(
 					defaultNotificationCategoryActions.setDefaultNotificationCategory({
 						categoryId: currentChannelId,
-						notification_type: value,
+						notificationType: value,
 						clanId: currentClanId || '',
 						title,
 						label
@@ -72,7 +72,7 @@ const NotificationSettingDetail = memo(({ route }: { route: any }) => {
 				dispatch(
 					notificationSettingActions.setNotificationSetting({
 						channelId: currentChannelId,
-						notification_type: value,
+						notificationType: value,
 						clanId: currentClanId || '',
 						title,
 						label

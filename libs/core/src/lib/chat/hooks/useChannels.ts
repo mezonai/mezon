@@ -32,7 +32,7 @@ export function useChannels() {
 
 		if (!isThread && channelToDelete) {
 			const currentChannel = currentChannelId ? selectChannelById(state, currentChannelId) : null;
-			const isUserInChildThread = currentChannel && checkIsThread(currentChannel) && currentChannel.parent_id === channelId;
+			const isUserInChildThread = currentChannel && checkIsThread(currentChannel) && currentChannel.parentId === channelId;
 
 			if (isUserInChildThread) {
 				const welcomeChannelId = selectWelcomeChannelByClanId(state, clanId);
@@ -51,7 +51,7 @@ export function useChannels() {
 
 		await dispatch(channelsActions.deleteChannel({ channelId, clanId: clanId as string }));
 
-		if (isThread && channelToDelete?.parent_id) {
+		if (isThread && channelToDelete?.parentId) {
 			if (isShowCreateThread) {
 				dispatch(
 					threadsActions.setIsShowCreateThread({
@@ -64,7 +64,7 @@ export function useChannels() {
 			await dispatch(threadsActions.remove(channelId));
 			await dispatch(
 				threadsActions.removeThreadFromCache({
-					channelId: channelToDelete.parent_id,
+					channelId: channelToDelete.parentId,
 					threadId: channelId
 				})
 			);

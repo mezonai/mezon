@@ -21,12 +21,12 @@ const ChannelSettingInforItem = ({ onClose, channelId }: ChannelSettingItemProps
 					<p className="font-semibold text-xl">{channel?.channelLabel || ''}</p>
 					<div className="h-7 w-7 overflow-hidden flex items-center justify-center ">
 						{channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
-							channel?.channel_private === ChannelStatusEnum.isPrivate ? (
+							channel?.channelPrivate === ChannelStatusEnum.isPrivate ? (
 								<Icons.HashtagLocked defaultSize="w-6 h-6 dark:text-black" />
 							) : (
 								<Icons.Hashtag defaultSize="w-6 h-6 dark:text-black" />
 							)
-						) : channel?.channel_private === ChannelStatusEnum.isPrivate ? (
+						) : channel?.channelPrivate === ChannelStatusEnum.isPrivate ? (
 							<Icons.ThreadIconLocker />
 						) : (
 							<Icons.ThreadIcon />
@@ -37,7 +37,7 @@ const ChannelSettingInforItem = ({ onClose, channelId }: ChannelSettingItemProps
 				<div className="flex w-full items-start shadow-sm flex-col justify-center gap-3">
 					<p className="font-semibold text-lg">Member List</p>
 					<div className="flex">
-						{channel?.channel_private === ChannelStatusEnum.isPrivate ? (
+						{channel?.channelPrivate === ChannelStatusEnum.isPrivate ? (
 							<div className="flex w-full flex-wrap gap-2">
 								{channelSetting.userIds?.map((userId) => <AvatarUserShort id={userId} />)}
 							</div>

@@ -135,8 +135,8 @@ export const fetchMaxChannelPermissionCached = async (
 		{
 			api_name: 'ListUserPermissionInChannel',
 			user_permission_req: {
-				channelId: channelId,
-				clanId: clanId
+				channelId,
+				clanId
 			}
 		},
 		() => mezon.client.listUserPermissionInChannel(mezon.session, clanId, channelId),

@@ -109,14 +109,14 @@ export const ChatMessageSending = memo(
 			channelId,
 			mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0
 		});
-		const parentChannelMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, currentChannel?.parent_id || ''));
+		const parentChannelMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, currentChannel?.parentId || ''));
 		const userId = useMemo(() => {
 			return load(STORAGE_MY_USER_ID);
 		}, []);
 		const isCreateTopic = useSelector(selectIsShowCreateTopic);
 		const channelOrDirect =
 			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel : currentDmGroup;
-		const isPublic = !channelOrDirect?.channel_private;
+		const isPublic = !channelOrDirect?.channelPrivate;
 		const { editSendMessage, sendMessage } = useChatSending({
 			mode,
 			channelOrDirect,

@@ -98,15 +98,15 @@ const InviteClanScreen = ({ route }: { route: any }) => {
 							</View>
 						) : (
 							<View style={styles.defaultAvatar}>
-								<Text style={styles.defaultAvatarText}>{selectInvite?.clan_name?.charAt(0)?.toUpperCase()}</Text>
+								<Text style={styles.defaultAvatarText}>{selectInvite?.clanName?.charAt(0)?.toUpperCase()}</Text>
 							</View>
 						)}
 
 						<View style={styles.clanNameRow}>
 							<Text style={styles.clanName} numberOfLines={1}>
-								{selectInvite?.clan_name}
+								{selectInvite?.clanName}
 							</Text>
-							{selectInvite?.clan_name && (
+							{selectInvite?.clanName && (
 								<MezonIconCDN icon={IconCDN.verifyIcon} width={size.s_16} height={size.s_16} color={themeValue.textStrong} />
 							)}
 						</View>

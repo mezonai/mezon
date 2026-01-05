@@ -86,8 +86,8 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 			const body: ApiCreateChannelDescRequest = {
 				clanId: currentClanId?.toString(),
 				channelLabel: value.nameValueThread,
-				channel_private: value.isPrivate,
-				parent_id: targetParentChannel?.id || '',
+				channelPrivate: value.isPrivate,
+				parentId: targetParentChannel?.id || '',
 				categoryId: targetParentChannel?.categoryId,
 				type: ChannelType.CHANNEL_TYPE_THREAD
 			};

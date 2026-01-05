@@ -46,7 +46,7 @@ const ClanNotificationSetting = ({ navigation }: MenuClanScreenProps<ClanNotific
 	];
 
 	const handleNotificationClanChange = (value: number) => {
-		if (value) dispatch(defaultNotificationActions.setDefaultNotificationClan({ clanId: currentClanId, notification_type: value }));
+		if (value) dispatch(defaultNotificationActions.setDefaultNotificationClan({ clanId: currentClanId, notificationType: value }));
 	};
 
 	const handleOverridesNotification = () => {
@@ -56,7 +56,7 @@ const ClanNotificationSetting = ({ navigation }: MenuClanScreenProps<ClanNotific
 	return (
 		<ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
 			<MezonOption
-				value={defaultNotificationClan?.notification_setting_type}
+				value={defaultNotificationClan?.notificationSettingType}
 				onChange={handleNotificationClanChange}
 				title={t('notifySettingOption.title')}
 				data={optionNotification(t)}

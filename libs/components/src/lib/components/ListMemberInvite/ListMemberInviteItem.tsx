@@ -56,7 +56,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 							channelId: response.channelId,
 							userIds: [currentUser?.id || '', userId],
 							usernames: [currentUser?.username || '', username],
-							display_names: [currentUser?.displayName || '', displayName],
+							displayNames: [currentUser?.displayName || '', displayName],
 							avatars: [currentUser?.avatarUrl || avatar, '']
 						}
 					])

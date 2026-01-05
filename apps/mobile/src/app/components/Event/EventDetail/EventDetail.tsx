@@ -58,8 +58,8 @@ export function EventDetail({ event }: IEventDetailProps) {
 			return true;
 		}
 
-		return Number(userMaxPermissionLevel) > Number(event?.max_permission);
-	}, [event?.creatorId, event?.max_permission, hasAdminPermission, hasClanPermission, isClanOwner, userMaxPermissionLevel, userProfile?.user?.id]);
+		return Number(userMaxPermissionLevel) > Number(event?.maxPermission);
+	}, [event?.creatorId, event?.maxPermission, hasAdminPermission, hasClanPermission, isClanOwner, userMaxPermissionLevel, userProfile?.user?.id]);
 	const dispatch = useAppDispatch();
 
 	function handlePress() {
@@ -90,7 +90,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 
 		const request: ApiUserEventRequest = {
 			clanId: event.clanId,
-			event_id: event.id
+			eventId: event.id
 		};
 
 		if (isInterested) {
@@ -108,7 +108,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 		<View style={styles.container}>
 			{!!event?.logo && <ImageNative url={event?.logo} style={styles.cover} resizeMode="cover" />}
 			<EventTime event={event} eventStatus={EEventStatus.CREATED} />
-			{!!event?.channelId && event.channelId !== '0' && !event?.is_private && (
+			{!!event?.channelId && event.channelId !== '0' && !event?.isPrivate && (
 				<View style={styles.privateArea}>
 					<View style={[styles.privatePanel, { backgroundColor: baseColor.orange }]}>
 						<Text style={styles.privateText}>{t('eventCreator:eventDetail.channelEvent')}</Text>
@@ -116,7 +116,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 				</View>
 			)}
 
-			{event?.is_private && (
+			{event?.isPrivate && (
 				<View style={styles.privateArea}>
 					<View style={styles.privatePanel}>
 						<Text style={styles.privateText}>{t('eventCreator:eventDetail.privateEvent')}</Text>
@@ -124,7 +124,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 				</View>
 			)}
 
-			{!event?.is_private && !event?.channelId && (
+			{!event?.isPrivate && !event?.channelId && (
 				<View style={styles.privateArea}>
 					<View style={[styles.privatePanel, { backgroundColor: baseColor.blurple }]}>
 						<Text style={styles.privateText}>{t('eventCreator:eventDetail.clanEvent')}</Text>
@@ -136,8 +136,8 @@ export function EventDetail({ event }: IEventDetailProps) {
 			<View>
 				<View style={styles.mainSection}>
 					<View style={styles.inline}>
-						<MezonAvatar avatarUrl={clans?.logo} username={clans?.clan_name} height={20} width={20} />
-						<Text style={styles.smallText}>{clans?.clan_name}</Text>
+						<MezonAvatar avatarUrl={clans?.logo} username={clans?.clanName} height={20} width={20} />
+						<Text style={styles.smallText}>{clans?.clanName}</Text>
 					</View>
 
 					<EventLocation event={event} />

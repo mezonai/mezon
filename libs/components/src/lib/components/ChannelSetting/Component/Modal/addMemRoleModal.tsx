@@ -41,7 +41,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	selectRoleIds
 }) => {
 	const { t } = useTranslation('channelSetting');
-	const isPrivate = channel.channel_private;
+	const isPrivate = channel.channelPrivate;
 	const rolesClan = useSelector(selectAllRolesClan);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const rolesChannel = useSelector(selectRolesByChannelId(channel.id));
@@ -49,7 +49,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(selectRoleIds);
 	const { userProfile } = useAuth();
 	const rolesAddChannel = useMemo(
-		() => rolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1),
+		() => rolesChannel.filter((role) => typeof role.roleChannelActive === 'number' && role.roleChannelActive === 1),
 		[rolesChannel]
 	);
 	const listRolesNotAddChannel = useMemo(
@@ -66,14 +66,14 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	const usersClan = useSelector(selectAllUserClans);
 	const userChannelIds = useSelector((state) => selectUserChannelIds(state, channel.channelId || ''));
 	const listUserInvite = useMemo(() => {
-		if (channel.channel_private !== 1) {
+		if (channel.channelPrivate !== 1) {
 			return usersClan.filter((user) => user.id !== userProfile?.user?.id && !selectedUserIds.includes(user.id));
 		}
 		const channelUserSet = new Set(userChannelIds);
 		const selectedUserSet = new Set(selectedUserIds);
 
 		return usersClan.filter((user) => !channelUserSet.has(user.id) && !selectedUserSet.has(user.id));
-	}, [usersClan, userChannelIds, channel.channel_private, userProfile?.user?.id, selectedUserIds]);
+	}, [usersClan, userChannelIds, channel.channelPrivate, userProfile?.user?.id, selectedUserIds]);
 
 	const initFilter: filterItemProps = useMemo(
 		() => ({
@@ -104,7 +104,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 
 	const handleAddMember = async () => {
 		onClose();
-		if (channel.channel_private === 1) {
+		if (channel.channelPrivate === 1) {
 			if (selectedUserIds.length > 0) {
 				const body = {
 					channelId: channel.id,

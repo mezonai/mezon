@@ -20,7 +20,7 @@ export const getStartOfDayTs = (d: Date): number => new Date(d.getFullYear(), d.
 export const parseAttachmentLikeDate = (obj: any): Date => {
 	const seconds = obj?.createTimeSeconds || obj?.timestampSeconds;
 	if (typeof seconds === 'number') return new Date(seconds * 1000);
-	const tsString = obj?.createTime || obj?.timestamp || obj?.created_at;
+	const tsString = obj?.createTime || obj?.timestamp || obj?.createdAt;
 	if (typeof tsString === 'string') {
 		const d = new Date(tsString);
 		if (!Number.isNaN(d.getTime())) return d;

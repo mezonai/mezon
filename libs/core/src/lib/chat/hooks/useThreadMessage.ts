@@ -84,7 +84,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				currentClanId,
 				thread.channelId as string,
 				ChannelStreamMode.STREAM_MODE_THREAD,
-				thread.channel_private === 0,
+				thread.channelPrivate === 0,
 				content,
 				mentions,
 				uploadedFiles,
@@ -141,7 +141,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				currentClanId,
 				channelId,
 				ChannelStreamMode.STREAM_MODE_THREAD,
-				thread ? !thread.channel_private : false,
+				thread ? !thread.channelPrivate : false,
 				messageId,
 				editMessage
 			);

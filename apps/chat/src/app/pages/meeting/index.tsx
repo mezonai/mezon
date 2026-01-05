@@ -106,7 +106,7 @@ export default function PreJoinCalling() {
 		return {
 			created: false,
 			token,
-			created_at: now,
+			createdAt: now,
 			expires_at: payload.exp,
 			refresh_expires_at: undefined,
 			username: payload.usn || payload.usr || payload.sub || GUEST_NAME,

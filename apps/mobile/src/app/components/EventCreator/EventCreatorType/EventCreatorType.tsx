@@ -128,15 +128,15 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const [location, setLocation] = useState<string>('');
 	const [eventChannel, setEventChannel] = useState<ChannelsEntity>();
 
-	const isExistChannelVoice = Boolean(currentEvent?.channel_voice_id);
+	const isExistChannelVoice = Boolean(currentEvent?.channelVoiceId);
 	const isExistAddress = Boolean(currentEvent?.address);
-	const isExistPrivateEvent = currentEvent?.is_private;
+	const isExistPrivateEvent = currentEvent?.isPrivate;
 
 	useEffect(() => {
 		if (currentEvent && currentEventChannel) {
 			if (isExistChannelVoice) {
 				setEventType(OptionEvent.OPTION_SPEAKER);
-				setChannelID(currentEvent.channel_voice_id);
+				setChannelID(currentEvent.channelVoiceId);
 			} else if (isExistAddress) {
 				setEventType(OptionEvent.OPTION_LOCATION);
 			} else if (isExistPrivateEvent) {
@@ -218,7 +218,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 							titleUppercase
 							onChange={handleChannelIDChange}
 							data={channels}
-							initValue={currentEvent?.channel_voice_id}
+							initValue={currentEvent?.channelVoiceId}
 						/>
 					)}
 
@@ -244,7 +244,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 
 					{eventType !== OptionEvent.PRIVATE_EVENT && (
 						<TouchableOpacity style={styles.fakeInput} onPress={handleOpenSelectChannel}>
-							{!!eventChannel && channelIcon(eventChannel?.type, eventChannel?.channel_private === ChannelStatusEnum.isPrivate)}
+							{!!eventChannel && channelIcon(eventChannel?.type, eventChannel?.channelPrivate === ChannelStatusEnum.isPrivate)}
 							<Text style={styles.inputValue}>{eventChannel?.channelLabel || t('fields.channel.title')} </Text>
 							<View style={styles.chevronDownIcon}>
 								<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />

@@ -41,7 +41,7 @@ const MainAuditLog = ({ pageSize, setPageSize, currentPage, setCurrentPage, sele
 				actionLog: auditLogFilterAction ?? '',
 				userId: auditLogFilterUser?.userId ?? '',
 				clanId: currentClanId,
-				date_log: selectedDate
+				dateLog: selectedDate
 			};
 			dispatch(auditLogList(body));
 		}
@@ -70,7 +70,7 @@ type AuditLogItemProps = {
 };
 
 const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
-	const auditLogTime = convertTimeString(logItem?.time_log as string);
+	const auditLogTime = convertTimeString(logItem?.timeLog as string);
 	const userAuditLogItem = useAppSelector((state) => selectMemberClanByUserId(state, logItem?.userId ?? ''));
 	const username = userAuditLogItem?.user?.username;
 	const avatar = getAvatarForPrioritize(userAuditLogItem?.clanAvatar, userAuditLogItem?.user?.avatarUrl);
@@ -97,15 +97,15 @@ const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
 				<div className="">
 					{logItem?.channelId !== '0' ? (
 						<span>
-							<span>{username}</span> <span className="lowercase">{logItem?.action_log}</span> :{' '}
-							<strong className="text-theme-primary-active font-medium"> {`${logItem?.entity_name} (${logItem?.entity_id})`}</strong> in{' '}
-							{channel?.parent_id !== '0' ? 'thread' : 'channel'}
+							<span>{username}</span> <span className="lowercase">{logItem?.actionLog}</span> :{' '}
+							<strong className="text-theme-primary-active font-medium"> {`${logItem?.entityName} (${logItem?.entityId})`}</strong> in{' '}
+							{channel?.parentId !== '0' ? 'thread' : 'channel'}
 							<strong className="text-theme-primary-active font-medium">{` ${logItem?.channelLabel} (${logItem?.channelId})`}</strong>
 						</span>
 					) : (
 						<span>
-							<span>{username}</span> <span className="lowercase">{logItem?.action_log}</span> :{' '}
-							<strong className="text-theme-primary-active font-medium">{`${logItem?.entity_name} (${logItem?.entity_id})`}</strong>
+							<span>{username}</span> <span className="lowercase">{logItem?.actionLog}</span> :{' '}
+							<strong className="text-theme-primary-active font-medium">{`${logItem?.entityName} (${logItem?.entityId})`}</strong>
 						</span>
 					)}
 				</div>

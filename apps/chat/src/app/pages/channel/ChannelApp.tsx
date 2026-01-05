@@ -55,9 +55,9 @@ export function AudiRoom({ token, serverUrl }: { token: string; serverUrl: strin
 }
 
 const buildAppUrl = (appChannel?: ApiChannelAppResponseExtend) => {
-	if (!appChannel?.app_url) return '';
+	if (!appChannel?.appUrl) return '';
 
-	const url = new URL(appChannel.app_url);
+	const url = new URL(appChannel.appUrl);
 
 	if (appChannel.subpath) {
 		url.pathname = `${url.pathname}${appChannel.subpath}`.replace(/\/\/+/g, '/');
@@ -92,7 +92,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 					channelId: currentChannelAppId,
 					displayName: userProfile?.user?.displayName ?? '',
 					state: ParticipantMeetState.LEAVE,
-					room_name: roomId as string
+					roomName: roomId as string
 				})
 			);
 		}
@@ -145,7 +145,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 						channelId: channelId,
 						displayName: userProfile?.user?.displayName ?? '',
 						state,
-						room_name: roomId as string
+						roomName: roomId as string
 					})
 				);
 			} catch (err) {
@@ -156,7 +156,7 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 	);
 
 	useEffect(() => {
-		if (!appChannel?.app_url) return;
+		if (!appChannel?.appUrl) return;
 
 		const joinRoom = async () => {
 			try {
@@ -169,12 +169,12 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 		joinRoom();
 	}, [appChannel]);
 
-	return appChannel?.app_url ? (
+	return appChannel?.appUrl ? (
 		<div className="relative w-full h-full rounded-b-lg">
 			<div className="w-full h-full">
 				<iframe
 					allow="clipboard-read; clipboard-write; camera"
-					title={appChannel?.app_url}
+					title={appChannel?.appUrl}
 					src={buildAppUrl(appChannel)}
 					className="w-full h-full rounded-b-lg"
 				/>

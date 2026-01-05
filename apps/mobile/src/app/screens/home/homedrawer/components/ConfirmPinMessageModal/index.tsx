@@ -54,7 +54,7 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 				clanId: isDMMode ? '' : (currentClanId ?? ''),
 				channelId: isDMMode ? currentDm?.id || '' : (currentChannel?.channelId ?? ''),
 				messageId: message?.id,
-				isPublic: isDMMode ? false : currentChannel ? !currentChannel.channel_private : false,
+				isPublic: isDMMode ? false : currentChannel ? !currentChannel.channelPrivate : false,
 				mode: mode as number,
 				senderId: message.senderId,
 				senderUsername: message.displayName || message.username || message.user?.name || '',

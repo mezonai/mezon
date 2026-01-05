@@ -43,8 +43,8 @@ export const ThreadHeader = memo(() => {
 	}, [currentDmGroup?.channelLabel, currentChannel?.channelLabel, currentChannel?.usernames]);
 
 	const isChannel = useMemo(() => {
-		return !!currentChannel?.channelLabel && !Number(currentChannel?.parent_id);
-	}, [currentChannel?.channelLabel, currentChannel?.parent_id]);
+		return !!currentChannel?.channelLabel && !Number(currentChannel?.parentId);
+	}, [currentChannel?.channelLabel, currentChannel?.parentId]);
 
 	const groupDMAvatar = useMemo(() => {
 		const avatar = currentDmGroup?.channelAvatar;
@@ -76,7 +76,7 @@ export const ThreadHeader = memo(() => {
 	}, [currentChannel?.ageRestricted]);
 
 	const renderChannelIcon = () => {
-		const isPrivateChannel = currentChannel?.channel_private === ChannelStatusEnum.isPrivate;
+		const isPrivateChannel = currentChannel?.channelPrivate === ChannelStatusEnum.isPrivate;
 		const isTextOrThreadChannel = [ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD].includes(currentChannel?.type);
 		const isChannelApp = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 		if (currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel) {

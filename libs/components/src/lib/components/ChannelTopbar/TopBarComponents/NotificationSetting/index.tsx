@@ -42,8 +42,8 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 			setNameChildren(t('notificationSetting.muteChannel'));
 		} else {
 			setNameChildren(t('notificationSetting.unmuteChannel'));
-			if (getNotificationChannelSelected?.time_mute) {
-				const timeMute = new Date(getNotificationChannelSelected.time_mute);
+			if (getNotificationChannelSelected?.timeMute) {
+				const timeMute = new Date(getNotificationChannelSelected.timeMute);
 				const currentTime = new Date();
 				if (timeMute > currentTime) {
 					const formattedDate = format(timeMute, 'dd/MM, HH:mm');
@@ -56,7 +56,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 	const handleScheduleMute = (duration: number) => {
 		const body: MuteChannelPayload = {
 			channelId: currentChannelId || '',
-			mute_time: duration !== Infinity ? duration : 0,
+			muteTime: duration !== Infinity ? duration : 0,
 			active: 0,
 			clanId: currentClanId || ''
 		};
@@ -68,7 +68,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 			channelId: currentChannelId || '',
 			clanId: currentClanId || '',
 			active,
-			mute_time: 0
+			muteTime: 0
 		};
 		dispatch(notificationSettingActions.setMuteChannel(body));
 	};
@@ -77,7 +77,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 		if (notificationType) {
 			const body = {
 				channelId: currentChannelId || '',
-				notification_type: notificationType || 0,
+				notificationType: notificationType || 0,
 				clanId: currentClanId || ''
 			};
 			dispatch(notificationSettingActions.setNotificationSetting(body));
@@ -173,8 +173,8 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 					name="NotificationSetting"
 					defaultNotifi={true}
 					checked={
-						getNotificationChannelSelected?.notification_setting_type === ENotificationTypes.DEFAULT ||
-						getNotificationChannelSelected?.notification_setting_type === undefined
+						getNotificationChannelSelected?.notificationSettingType === ENotificationTypes.DEFAULT ||
+						getNotificationChannelSelected?.notificationSettingType === undefined
 					}
 					onClick={() => setNotification(ENotificationTypes.DEFAULT)}
 				/>
@@ -185,7 +185,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 						type="radio"
 						name="NotificationSetting"
 						key={notification.value}
-						checked={getNotificationChannelSelected?.notification_setting_type === notification.value}
+						checked={getNotificationChannelSelected?.notificationSettingType === notification.value}
 						onClick={() => setNotification(notification.value)}
 					/>
 				))}

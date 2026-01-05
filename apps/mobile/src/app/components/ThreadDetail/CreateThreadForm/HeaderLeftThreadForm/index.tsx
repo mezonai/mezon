@@ -26,7 +26,7 @@ const HeaderLeftThreadForm = ({ currentChannel }: { currentChannel: ChannelThrea
 				<View style={styles.titleRow}>
 					{!openThreadMessageState && (
 						<View style={styles.iconContainer}>
-							{currentChannel?.channel_private === ChannelStatusEnum.isPrivate &&
+							{currentChannel?.channelPrivate === ChannelStatusEnum.isPrivate &&
 							currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
 								<MezonIconCDN icon={IconCDN.channelTextLock} width={18} height={18} color={themeValue.textStrong} />
 							) : (

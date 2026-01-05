@@ -79,7 +79,7 @@ export const fetchOnboardingCached = async (getState: () => RootState, mezon: Me
 
 	if (!shouldForceCall) {
 		return {
-			list_onboarding: clanData.onboarding,
+			listOnboarding: clanData.onboarding,
 			fromCache: true,
 			time: clanData.cache?.lastFetched || Date.now()
 		};
@@ -94,7 +94,7 @@ export const fetchOnboardingCached = async (getState: () => RootState, mezon: Me
 	markApiFirstCalled(apiKey);
 
 	return {
-		list_onboarding: response.list_onboarding,
+		listOnboarding: response.listOnboarding,
 		fromCache: false,
 		time: Date.now()
 	};
@@ -107,9 +107,9 @@ export const fetchOnboarding = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await fetchOnboardingCached(thunkAPI.getState as () => RootState, mezon, clanId, Boolean(noCache));
 
-			if (response.list_onboarding) {
+			if (response.listOnboarding) {
 				return {
-					response: response.list_onboarding,
+					response: response.listOnboarding,
 					clanId,
 					fromCache: response.fromCache
 				};
@@ -135,10 +135,10 @@ export const createOnboardingTask = createAsyncThunk(
 				clanId,
 				contents: [...content]
 			});
-			if (!response || !response?.list_onboarding) {
+			if (!response || !response?.listOnboarding) {
 				return false;
 			}
-			return { content: response.list_onboarding, clanId };
+			return { content: response.listOnboarding, clanId };
 		} catch (error) {
 			captureSentryError(error, 'onboarding/createOnboarding');
 			return thunkAPI.rejectWithValue(error);
@@ -231,7 +231,7 @@ export const fetchOnboardingStepCached = async (getState: () => RootState, mezon
 
 	if (!shouldForceCall) {
 		return {
-			list_onboarding_step: Object.values(onboardingState.entities).filter(Boolean),
+			listOnboardingStep: Object.values(onboardingState.entities).filter(Boolean),
 			fromCache: true,
 			time: onboardingState.onboardingStepCache?.lastFetched || Date.now()
 		};
@@ -246,7 +246,7 @@ export const fetchOnboardingStepCached = async (getState: () => RootState, mezon
 	markApiFirstCalled(apiKey);
 
 	return {
-		list_onboarding_step: response.list_onboarding_step || [],
+		listOnboardingStep: response.listOnboardingStep || [],
 		fromCache: false,
 		time: Date.now()
 	};
@@ -259,7 +259,7 @@ export const fetchProcessingOnboarding = createAsyncThunk(
 			const mezone = await ensureSession(getMezonCtx(thunkAPI));
 
 			const response = await fetchOnboardingStepCached(thunkAPI.getState as () => RootState, mezone, clanId, Boolean(noCache));
-			if (!response.list_onboarding_step) {
+			if (!response.listOnboardingStep) {
 				return {
 					steps: [],
 					fromCache: response.fromCache
@@ -267,7 +267,7 @@ export const fetchProcessingOnboarding = createAsyncThunk(
 			}
 
 			return {
-				steps: response.list_onboarding_step,
+				steps: response.listOnboardingStep,
 				fromCache: response.fromCache
 			};
 		} catch (error) {
@@ -281,7 +281,7 @@ export const doneOnboarding = createAsyncThunk('onboarding/doneOnboarding', asyn
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.updateOnboardingStepByClanId(mezon.session, clanId, { onboarding_step: DONE_ONBOARDING_STATUS });
+		const response = await mezon.client.updateOnboardingStepByClanId(mezon.session, clanId, { onboardingStep: DONE_ONBOARDING_STATUS });
 		if (!response) {
 			return false;
 		}
@@ -352,7 +352,7 @@ export const onboardingSlice = createSlice({
 			const sumMission = state.listOnboarding[action.payload.clanId].sumMission || 0;
 			if (
 				missionDone < sumMission &&
-				onboardingUserAdapter.getSelectors().selectById(state, action.payload.clanId)?.onboarding_step !== DONE_ONBOARDING_STATUS
+				onboardingUserAdapter.getSelectors().selectById(state, action.payload.clanId)?.onboardingStep !== DONE_ONBOARDING_STATUS
 			) {
 				state.listOnboarding[action.payload.clanId].doneMission = (state.listOnboarding[action.payload.clanId].doneMission || 0) + 1;
 			}
@@ -464,7 +464,7 @@ export const onboardingSlice = createSlice({
 						rule: []
 					};
 					response.map((onboardingItem) => {
-						switch (onboardingItem.guide_type) {
+						switch (onboardingItem.guideType) {
 							case EGuideType.GREETING:
 								onboardingClan.greeting = onboardingItem;
 								break;
@@ -516,7 +516,7 @@ export const onboardingSlice = createSlice({
 						rule: state.listOnboarding[clanId].rule
 					};
 					content.map((onboardingItem) => {
-						switch (onboardingItem.guide_type) {
+						switch (onboardingItem.guideType) {
 							case EGuideType.GREETING:
 								onboardingClan.greeting = onboardingItem;
 								break;
@@ -584,7 +584,7 @@ export const onboardingSlice = createSlice({
 				}
 				const { clanId, content, idOnboarding } = action.payload;
 				if (state.listOnboarding[clanId]) {
-					switch (content.guide_type) {
+					switch (content.guideType) {
 						case EGuideType.RULE:
 							state.listOnboarding[action.payload.clanId].rule = state.listOnboarding[action.payload.clanId].rule.map((rule) => {
 								if (rule.id === idOnboarding) {

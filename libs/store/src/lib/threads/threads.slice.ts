@@ -443,7 +443,7 @@ export const threadsSlice = createSlice({
 
 					if (!fromCache) {
 						const validThreads = threads.filter((thread) => {
-							if (thread.channel_private) {
+							if (thread.channelPrivate) {
 								const shouldKeep = thread.active === ThreadStatus.joined || thread.active === ThreadStatus.activePrivate;
 								return shouldKeep;
 							}

@@ -35,7 +35,7 @@ const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
 				<img src={webhookItem.avatar} alt="Webhook avatar" className="aspect-square w-[50px] rounded-full" />
 				<div className="flex w-full justify-between items-center text-theme-primary-active">
 					<div className="">
-						<div data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_title')}>{webhookItem.webhook_name}</div>
+						<div data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_title')}>{webhookItem.webhookName}</div>
 						<div className="flex gap-1 items-center"  data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_description')}>
 							<Icons.ClockIcon className="text-theme-primary" />
 							<div className="text-theme-primary text-[13px]">
@@ -103,13 +103,13 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 
 	const [dataForUpdate, setDataForUpdate] = useState<IDataForUpdate>({
 		webhookAvatarUrl: webhookItem.avatar,
-		webhookNameInput: webhookItem.webhook_name
+		webhookNameInput: webhookItem.webhookName
 	});
 
 	useEffect(() => {
 		setDataForUpdate({
 			webhookAvatarUrl: webhookItem.avatar,
-			webhookNameInput: webhookItem.webhook_name
+			webhookNameInput: webhookItem.webhookName
 		});
 	}, []);
 
@@ -117,10 +117,10 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 
 	useEffect(() => {
 		const computeHasChanges =
-			dataForUpdate.webhookNameInput !== webhookItem.webhook_name || dataForUpdate.webhookAvatarUrl !== webhookItem.avatar;
+			dataForUpdate.webhookNameInput !== webhookItem.webhookName || dataForUpdate.webhookAvatarUrl !== webhookItem.avatar;
 
 		setHasChange(computeHasChanges);
-	}, [dataForUpdate.webhookNameInput, dataForUpdate.webhookAvatarUrl, webhookItem.webhook_name, webhookItem.avatar]);
+	}, [dataForUpdate.webhookNameInput, dataForUpdate.webhookAvatarUrl, webhookItem.webhookName, webhookItem.avatar]);
 
 	const handleChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
@@ -153,7 +153,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 	const handleEditWebhook = async () => {
 		const request: MezonUpdateClanWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
-			webhook_name: dataForUpdate.webhookNameInput,
+			webhookName: dataForUpdate.webhookNameInput,
 			clanId: clanId
 		};
 		await dispatch(
@@ -169,9 +169,9 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 	const handleResetToken = async () => {
 		const request: MezonUpdateClanWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
-			webhook_name: dataForUpdate.webhookNameInput,
+			webhookName: dataForUpdate.webhookNameInput,
 			clanId: clanId,
-			reset_token: true
+			resetToken: true
 		};
 
 		try {
@@ -192,7 +192,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 	const handleResetChange = () => {
 		setDataForUpdate({
 			webhookAvatarUrl: webhookItem.avatar,
-			webhookNameInput: webhookItem.webhook_name
+			webhookNameInput: webhookItem.webhookName
 		});
 		setHasChange(false);
 	};

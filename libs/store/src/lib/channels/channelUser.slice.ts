@@ -22,7 +22,7 @@ export interface ChannelUsersEntity extends IChannelUser {
 }
 
 export const mapChannelsByUserToEntity = (channelRes: ChannelDescription) => {
-	return { ...channelRes, id: channelRes.channelId || '', status: channelRes.meeting_code ? 1 : 0 };
+	return { ...channelRes, id: channelRes.channelId || '', status: channelRes.meetingCode ? 1 : 0 };
 };
 
 export interface ListChannelsByUserState extends EntityState<ChannelUsersEntity, string> {
@@ -157,11 +157,11 @@ export const listChannelsByUserSlice = createSlice({
 			const payload = action.payload;
 			const existingChannel = listChannelsByUserAdapter.getSelectors().selectById(state, payload.channelId);
 
-			if (existingChannel && existingChannel.count_mess_unread !== undefined) {
+			if (existingChannel && existingChannel.countMessUnread !== undefined) {
 				listChannelsByUserAdapter.updateOne(state, {
 					id: payload.channelId,
 					changes: {
-						count_mess_unread: undefined
+						countMessUnread: undefined
 					}
 				});
 			}
@@ -172,13 +172,13 @@ export const listChannelsByUserSlice = createSlice({
 			if (state.entities) {
 				const entity = state.entities[channelId];
 				if (entity) {
-					const newCountMessUnread = isReset ? 0 : (entity.count_mess_unread ?? 0) + count;
-					if (entity.count_mess_unread !== newCountMessUnread || isReset) {
+					const newCountMessUnread = isReset ? 0 : (entity.countMessUnread ?? 0) + count;
+					if (entity.countMessUnread !== newCountMessUnread || isReset) {
 						const lastSentMessage = state.entities[state.ids[state.ids.length - 1]]?.lastSentMessage;
 						listChannelsByUserAdapter.updateOne(state, {
 							id: channelId,
 							changes: {
-								count_mess_unread: newCountMessUnread,
+								countMessUnread: newCountMessUnread,
 								lastSeenMessage:
 									newCountMessUnread === 0
 										? {
@@ -201,7 +201,7 @@ export const listChannelsByUserSlice = createSlice({
 				return {
 					id,
 					changes: {
-						count_mess_unread: 0,
+						countMessUnread: 0,
 						lastSeenMessage: {
 							id: lastSentMessage?.id,
 							timestampSeconds: Date.now()
@@ -296,15 +296,15 @@ export const selectEntitiesChannelsByUser = createSelector(getChannelsByUserStat
 export const selectSearchChannelById = createSelector([getChannelsByUserState, (_, id: string) => id], (state, id) => selectById(state, id));
 
 export const selectAllInfoChannels = createSelector(selectAllChannelsByUser, (channels = []) =>
-	channels?.map(({ channelId, channelLabel, channel_private, clan_name, clanId, type, parent_id, meeting_code, id }) => ({
+	channels?.map(({ channelId, channelLabel, channelPrivate, clanName, clanId, type, parentId, meetingCode, id }) => ({
 		channelId,
 		channelLabel,
-		channel_private,
-		clan_name,
+		channelPrivate,
+		clanName,
 		clanId,
 		type,
-		parent_id,
-		meeting_code,
+		parentId,
+		meetingCode,
 		id
 	}))
 );

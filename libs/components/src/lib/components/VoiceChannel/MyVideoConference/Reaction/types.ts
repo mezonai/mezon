@@ -1,7 +1,7 @@
 export interface ReactionChannelInfo {
 	channelId: string;
 	clanId: string;
-	channel_private: number;
+	channelPrivate: number;
 }
 
 export enum ReactionType {

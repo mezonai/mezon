@@ -98,7 +98,7 @@ export const checkMutableRelationship = createAsyncThunk('invite/getMutableRelat
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.isFollower(mezon.session, {
-			follow_id: userId
+			followId: userId
 		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);

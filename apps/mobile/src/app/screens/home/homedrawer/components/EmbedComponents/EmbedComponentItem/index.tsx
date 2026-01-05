@@ -35,10 +35,10 @@ export const EmbedComponentItem = memo(({ messageId, button, senderId, buttonId,
 				messagesActions.clickButtonMessage({
 					messageId: messageId,
 					channelId: channelId as string,
-					button_id: buttonId,
+					buttonId: buttonId,
 					senderId: senderId,
 					userId: currentUserId,
-					extra_data: data || ''
+					extraData: data || ''
 				})
 			);
 		}

@@ -96,7 +96,7 @@ export const getDefaultNotificationClan = createAsyncThunk(
 
 			const clanNotificationConfig: ApiNotificationSetting = {
 				id: response.id,
-				notification_setting_type: response.notification_setting_type
+				notificationSettingType: response.notificationSettingType
 			};
 
 			return { ...clanNotificationConfig, clanId };
@@ -109,17 +109,17 @@ export const getDefaultNotificationClan = createAsyncThunk(
 
 type SetDefaultNotificationPayload = {
 	clanId?: string;
-	notification_type?: number;
+	notificationType?: number;
 };
 
 export const setDefaultNotificationClan = createAsyncThunk(
 	'defaultnotificationclan/setDefaultNotificationClan',
-	async ({ clanId, notification_type }: SetDefaultNotificationPayload, thunkAPI) => {
+	async ({ clanId, notificationType }: SetDefaultNotificationPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
 				clanId,
-				notification_type
+				notificationType
 			};
 			const response = await mezon.client.setNotificationClan(mezon.session, body);
 			if (!response) {
@@ -175,7 +175,7 @@ export const defaultNotificationClanSlice = createSlice({
 				if (!action.payload) {
 					return;
 				}
-				const { clanId, notification_type } = action.payload;
+				const { clanId, notificationType } = action.payload;
 				if (!clanId) return;
 				if (!state.byClans[clanId]) {
 					state.byClans[clanId] = getInitialClanState();
@@ -183,7 +183,7 @@ export const defaultNotificationClanSlice = createSlice({
 				if (state.byClans[clanId].defaultNotificationClan) {
 					state.byClans[clanId].defaultNotificationClan = {
 						...state.byClans[clanId].defaultNotificationClan,
-						notification_setting_type: notification_type
+						notificationSettingType: notificationType
 					};
 				}
 			});

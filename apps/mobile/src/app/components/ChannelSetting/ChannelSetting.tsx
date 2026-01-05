@@ -87,13 +87,13 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			channelId: channel?.channelId || '',
 			channelLabel: currentSettingValue?.channelName,
 			categoryId: channel?.categoryId,
-			app_url: channel?.app_url || '',
+			appUrl: channel?.appUrl || '',
 			appId: channel?.appId || '',
 			ageRestricted: channel?.ageRestricted,
 			e2ee: channel?.e2ee,
 			topic: currentSettingValue?.channelTopic || channel?.topic,
-			parent_id: channel?.parent_id,
-			channel_private: channel?.channel_private
+			parentId: channel?.parentId,
+			channelPrivate: channel?.channelPrivate
 		};
 		if (isCheckNameChannelValue || !isCheckValid) return;
 		await dispatch(channelsActions.updateChannel(updateChannel));
@@ -198,7 +198,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 					title: t('fields.privateChannelInvite.addMember'),
 					expandable: true,
 					icon: <MezonIconCDN icon={IconCDN.bravePermission} color={themeValue.text} />,
-					isShow: isChannel && !!channel?.channel_private && channel?.type !== ChannelType.CHANNEL_TYPE_APP,
+					isShow: isChannel && !!channel?.channelPrivate && channel?.type !== ChannelType.CHANNEL_TYPE_APP,
 					onPress: () => {
 						bottomSheetRef?.current?.present();
 					}
@@ -315,16 +315,16 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			);
 			if (response?.meta?.requestStatus === 'rejected') {
 				throw response?.error?.message;
-			} else if (!isChannel && channel?.parent_id && channel?.channelId) {
+			} else if (!isChannel && channel?.parentId && channel?.channelId) {
 				dispatch(threadsActions.remove(channel.channelId));
-				dispatch(threadsActions.removeThreadFromCache({ channelId: channel.parent_id, threadId: channel.channelId }));
+				dispatch(threadsActions.removeThreadFromCache({ channelId: channel.parentId, threadId: channel.channelId }));
 			}
 			navigation.navigate(APP_SCREEN.HOME);
-			if (channel?.parent_id !== '0') {
+			if (channel?.parentId !== '0') {
 				await dispatch(
 					channelsActions.joinChannel({
 						clanId: channel?.clanId,
-						channelId: channel?.parent_id,
+						channelId: channel?.parentId,
 						noFetchMembers: false
 					})
 				);
@@ -334,7 +334,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [channel?.channelId, channel?.clanId, channel?.parent_id, currentSystemMessage?.channelId, isChannel]);
+	}, [channel?.channelId, channel?.clanId, channel?.parentId, currentSystemMessage?.channelId, isChannel]);
 
 	const handleConfirmLeaveThread = useCallback(async () => {
 		try {
@@ -355,9 +355,9 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				const response = await dispatch(
 					threadsActions.leaveThread({
 						clanId: channel?.clanId || '',
-						channelId: channel?.parent_id || '',
+						channelId: channel?.parentId || '',
 						threadId: channel?.id || '',
-						isPrivate: channel?.channel_private || 0
+						isPrivate: channel?.channelPrivate || 0
 					})
 				);
 				if (response?.meta?.requestStatus === 'rejected') {
@@ -369,7 +369,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [channel?.channel_private, channel?.clanId, channel?.id, channel?.parent_id, isChannel, currentUserId, channel?.type]);
+	}, [channel?.channelPrivate, channel?.clanId, channel?.id, channel?.parentId, isChannel, currentUserId, channel?.type]);
 
 	const handlePressLeaveChannel = () => {
 		const data = {

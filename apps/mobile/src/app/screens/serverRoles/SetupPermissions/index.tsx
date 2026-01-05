@@ -169,7 +169,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 	//Note: edit role case
 	useEffect(() => {
 		if (clanRole?.id) {
-			const selectedPermissions = clanRole?.permission_list?.permissions?.filter((it) => it?.active).map((it) => it?.id);
+			const selectedPermissions = clanRole?.permissionList?.permissions?.filter((it) => it?.active).map((it) => it?.id);
 			setOriginSelectedPermissions(selectedPermissions);
 			setSelectedPermissions(selectedPermissions);
 		}

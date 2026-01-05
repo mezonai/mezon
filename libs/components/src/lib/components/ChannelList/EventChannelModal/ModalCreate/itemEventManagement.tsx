@@ -71,8 +71,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		isPrivate
 	} = props;
 	const isChannelEvent = textChannelId && textChannelId !== '0';
-	const isPrivateEvent = !isChannelEvent && ((!isReviewEvent && event?.is_private) || (isReviewEvent && isPrivate));
-	const isClanEvent = !isChannelEvent && ((!isReviewEvent && !event?.is_private) || (isReviewEvent && !isPrivate));
+	const isPrivateEvent = !isChannelEvent && ((!isReviewEvent && event?.isPrivate) || (isReviewEvent && isPrivate));
+	const isClanEvent = !isChannelEvent && ((!isReviewEvent && !event?.isPrivate) || (isReviewEvent && !isPrivate));
 	const { t, i18n } = useTranslation(['eventMenu', 'eventCreator']);
 	const dispatch = useAppDispatch();
 
@@ -97,15 +97,15 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	});
 
 	const getPrivateMeetingRoom = useAppSelector((state) => selectMeetRoomByEventId(state, event?.id as string));
-	const eventIsUpcomming = event?.event_status === EEventStatus.UPCOMING;
-	const eventIsOngoing = event?.event_status === EEventStatus.ONGOING;
+	const eventIsUpcomming = event?.eventStatus === EEventStatus.UPCOMING;
+	const eventIsOngoing = event?.eventStatus === EEventStatus.ONGOING;
 
 	const actualEventStatus = useMemo(() => {
-		if (!event?.start_time) return { isUpcoming: eventIsUpcomming, isOngoing: eventIsOngoing };
+		if (!event?.startTime) return { isUpcoming: eventIsUpcomming, isOngoing: eventIsOngoing };
 
-		const startTime = new Date(event.start_time).getTime();
+		const startTime = new Date(event.startTime).getTime();
 		const currentTime = Date.now();
-		const endTime = event.end_time ? new Date(event.end_time).getTime() : startTime + 2 * 60 * 60 * 1000;
+		const endTime = event.endTime ? new Date(event.endTime).getTime() : startTime + 2 * 60 * 60 * 1000;
 
 		const isActuallyUpcoming = currentTime < startTime;
 		const isActuallyOngoing = currentTime >= startTime && currentTime <= endTime;
@@ -114,16 +114,16 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 			isUpcoming: isActuallyUpcoming,
 			isOngoing: isActuallyOngoing
 		};
-	}, [event?.start_time, event?.end_time, eventIsUpcomming, eventIsOngoing]);
+	}, [event?.startTime, event?.endTime, eventIsUpcomming, eventIsOngoing]);
 
-	const externalLink = event?.meet_room?.external_link || getPrivateMeetingRoom?.external_link;
+	const externalLink = event?.meetRoom?.externalLink || getPrivateMeetingRoom?.externalLink;
 	const hasLink = Boolean(externalLink);
 
 	const link = useMemo(() => {
 		if (isPrivateEvent) {
 			return `${process.env.NX_CHAT_APP_REDIRECT_URI}${externalLink}`;
 		}
-		return `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${event?.clanId}/channels/${event?.channel_voice_id || event?.channelId}`;
+		return `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${event?.clanId}/channels/${event?.channelVoiceId || event?.channelId}`;
 	}, []);
 
 	const handleCopyLink = useCallback(() => {
@@ -161,9 +161,9 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const panelRef = useRef(null);
 	useOnClickOutside(panelRef, () => setOpenPanel(false));
 	const timeUntilEvent = useMemo(() => {
-		if (!event?.start_time || !actualEventStatus.isUpcoming) return null;
+		if (!event?.startTime || !actualEventStatus.isUpcoming) return null;
 
-		const startTime = new Date(event.start_time).getTime();
+		const startTime = new Date(event.startTime).getTime();
 		const currentTime = Date.now();
 		const timeDiff = startTime - currentTime;
 		const minutesLeft = Math.ceil(timeDiff / (1000 * 60));
@@ -172,7 +172,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		}
 
 		return null;
-	}, [event?.start_time, actualEventStatus.isUpcoming, t]);
+	}, [event?.startTime, actualEventStatus.isUpcoming, t]);
 
 	const cssEventStatus = useMemo(() => {
 		if (actualEventStatus.isOngoing) return 'text-green-500';
@@ -212,7 +212,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 
 		const request: ApiUserEventRequest = {
 			clanId: event.clanId,
-			event_id: event.id
+			eventId: event.id
 		};
 
 		if (isInterested) {
@@ -231,12 +231,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				<div className="flex justify-between">
 					<div className="flex items-center gap-x-2 mb-4">
 						<Icons.IconEvents defaultSize={`font-semibold ${cssEventStatus}`} />
-						<p className={`font-semibold ${cssEventStatus}`} data-e2e={generateE2eId('clan_page.modal.create_event.review.start_time')}>
+						<p className={`font-semibold ${cssEventStatus}`} data-e2e={generateE2eId('clan_page.modal.create_event.review.startTime')}>
 							{actualEventStatus.isUpcoming
-								? timeUntilEvent || formatTimeI18n(event?.start_time || start)
+								? timeUntilEvent || formatTimeI18n(event?.startTime || start)
 								: actualEventStatus.isOngoing
 									? t('countdown.joinNow')
-									: formatTimeI18n(event?.start_time || start)}
+									: formatTimeI18n(event?.startTime || start)}
 						</p>
 						{isClanEvent && (
 							<p

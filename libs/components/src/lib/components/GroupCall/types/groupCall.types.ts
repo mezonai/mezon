@@ -40,10 +40,10 @@ export interface CallSignalingData {
 	groupId: string;
 	group_name: string;
 	group_avatar?: string;
-	caller_id: string;
+	callerId: string;
 	caller_name: string;
 	caller_avatar?: string;
-	meeting_code?: string;
+	meetingCode?: string;
 	clanId?: string;
 	timestamp: number;
 	participants: string[];

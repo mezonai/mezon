@@ -20,7 +20,7 @@ const EmojiItem = memo(({ item, onPress, styles }: { item: IEmoji; onPress: (emo
 	return (
 		<TouchableOpacity style={styles.wrapperIconEmoji} onPress={() => onPress(item)}>
 			<FastImage source={{ uri: !item.src ? getSrcEmoji(item?.id) : item.src }} style={styles.iconEmoji} resizeMode={'contain'} />
-			{item.is_for_sale && !item.src && (
+			{item.isForSale && !item.src && (
 				<View style={styles.wrapperIconEmojiLocked}>
 					<MezonIconCDN icon={IconCDN.lockIcon} color={'#e1e1e1'} width={size.s_16} height={size.s_16} />
 				</View>
@@ -73,7 +73,7 @@ const EmojisPanel = ({ emojisData, onEmojiSelect, styles }: IEmojiRowProps) => {
 
 	const onPress = useCallback(
 		(emoji: IEmoji) => {
-			if (emoji?.is_for_sale && !emoji.src) {
+			if (emoji?.isForSale && !emoji.src) {
 				const data = {
 					children: (
 						<MezonConfirm

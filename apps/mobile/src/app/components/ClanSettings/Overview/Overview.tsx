@@ -77,7 +77,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const [updateSystemMessageRequest, setUpdateSystemMessageRequest] = useState<ApiSystemMessageRequest | null>(null);
 	const [anonymousPrevented, setAnonymousPrevented] = useState<boolean>(currentClanPreventAnonymous);
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
-	const [notificationSetting, setNotificationSetting] = useState<number>(defaultNotificationClan?.notification_setting_type);
+	const [notificationSetting, setNotificationSetting] = useState<number>(defaultNotificationClan?.notificationSettingType);
 
 	const dispatch = useAppDispatch();
 
@@ -90,7 +90,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const channelsList = useSelector(selectAllChannels);
 	const listChannelWithoutVoice = channelsList.filter(
 		(channel) =>
-			!channel?.channel_private &&
+			!channel?.channelPrivate &&
 			channel?.clanId === currentClanId &&
 			channel?.type === ChannelType?.CHANNEL_TYPE_CHANNEL &&
 			channel?.channelId !== selectedChannelMessage?.channelId
@@ -120,10 +120,10 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		let hasSystemMessageChanged = false;
 		if (updateSystemMessageRequest && systemMessage) {
 			hasSystemMessageChanged =
-				systemMessage.welcome_random !== updateSystemMessageRequest.welcome_random ||
-				systemMessage.welcome_sticker !== updateSystemMessageRequest.welcome_sticker ||
+				systemMessage.welcomeRandom !== updateSystemMessageRequest.welcomeRandom ||
+				systemMessage.welcomeSticker !== updateSystemMessageRequest.welcomeSticker ||
 				systemMessage.channelId !== updateSystemMessageRequest.channelId ||
-				systemMessage.hide_audit_log !== updateSystemMessageRequest.hide_audit_log;
+				systemMessage.hideAuditLog !== updateSystemMessageRequest.hideAuditLog;
 		}
 
 		if (!validInput(clanName)) {
@@ -137,7 +137,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		updateSystemMessageRequest,
 		systemMessage,
 		notificationSetting,
-		defaultNotificationClan?.notification_setting_type,
+		defaultNotificationClan?.notificationSettingType,
 		currentClanName,
 		currentClanBanner,
 		anonymousPrevented,
@@ -172,12 +172,12 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 				channelId: updateSystemMessageRequest?.channelId === systemMessage?.channelId ? '' : updateSystemMessageRequest?.channelId,
 				clanId: systemMessage?.clanId,
 				id: systemMessage?.id,
-				hide_audit_log:
-					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? '' : updateSystemMessageRequest?.hide_audit_log,
-				welcome_random:
-					updateSystemMessageRequest?.welcome_random === systemMessage?.welcome_random ? '' : updateSystemMessageRequest?.welcome_random,
-				welcome_sticker:
-					updateSystemMessageRequest?.welcome_sticker === systemMessage?.welcome_sticker ? '' : updateSystemMessageRequest?.welcome_sticker
+				hideAuditLog:
+					updateSystemMessageRequest?.hideAuditLog === systemMessage?.hideAuditLog ? '' : updateSystemMessageRequest?.hideAuditLog,
+				welcomeRandom:
+					updateSystemMessageRequest?.welcomeRandom === systemMessage?.welcomeRandom ? '' : updateSystemMessageRequest?.welcomeRandom,
+				welcomeSticker:
+					updateSystemMessageRequest?.welcomeSticker === systemMessage?.welcomeSticker ? '' : updateSystemMessageRequest?.welcomeSticker
 			};
 			const request = {
 				clanId: currentClanId,
@@ -202,7 +202,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			setNotificationSetting(value);
 			dispatch(appActions.setLoadingMainMobile(true));
 			const response = await dispatch(
-				defaultNotificationActions.setDefaultNotificationClan({ clanId: currentClanId, notification_type: value })
+				defaultNotificationActions.setDefaultNotificationClan({ clanId: currentClanId, notificationType: value })
 			);
 
 			if (response?.meta?.requestStatus === 'rejected') {
@@ -215,7 +215,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 				text2: error?.message || String(error)
 			});
 			await sleep(50);
-			setNotificationSetting(defaultNotificationClan?.notification_setting_type);
+			setNotificationSetting(defaultNotificationClan?.notificationSettingType);
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
@@ -241,7 +241,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 					clanId: currentClanId ?? '',
 					request: {
 						banner,
-						clan_name: clanName?.trim() || (currentClanName ?? ''),
+						clanName: clanName?.trim() || (currentClanName ?? ''),
 						creatorId: currentClanCreatorId ?? '',
 						isOnboarding: currentClanIsOnboarding,
 						logo: currentClanLogo ?? '',
@@ -360,11 +360,11 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			component: (
 				<MezonSwitch
 					disabled={disabled}
-					value={systemMessage?.welcome_random === '1'}
+					value={systemMessage?.welcomeRandom === '1'}
 					onValueChange={(value) =>
 						setUpdateSystemMessageRequest((prev) => ({
 							...prev,
-							welcome_random: value ? '1' : '0'
+							welcomeRandom: value ? '1' : '0'
 						}))
 					}
 				/>
@@ -376,11 +376,11 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			component: (
 				<MezonSwitch
 					disabled={disabled}
-					value={systemMessage?.welcome_sticker === '1'}
+					value={systemMessage?.welcomeSticker === '1'}
 					onValueChange={(value) =>
 						setUpdateSystemMessageRequest((prev) => ({
 							...prev,
-							welcome_sticker: value ? '1' : '0'
+							welcomeSticker: value ? '1' : '0'
 						}))
 					}
 				/>
@@ -392,11 +392,11 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			component: (
 				<MezonSwitch
 					disabled={disabled}
-					value={systemMessage?.hide_audit_log !== '1'}
+					value={systemMessage?.hideAuditLog !== '1'}
 					onValueChange={(value) =>
 						setUpdateSystemMessageRequest((prev) => ({
 							...prev,
-							hide_audit_log: value ? '0' : '1'
+							hideAuditLog: value ? '0' : '1'
 						}))
 					}
 				/>

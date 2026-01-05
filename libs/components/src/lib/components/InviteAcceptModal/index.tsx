@@ -39,9 +39,9 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 					}
 				});
 				dispatch(clansActions.fetchClans({ noCache: true }));
-				if (selectInvite.channel_desc) {
+				if (selectInvite.channelDesc) {
 					const channel = { ...selectInvite, id: selectInvite.channelId as string };
-					dispatch(channelsActions.add({ clanId: selectInvite.channel_desc?.clanId as string, channel: { ...channel, active: 1 } }));
+					dispatch(channelsActions.add({ clanId: selectInvite.channelDesc?.clanId as string, channel: { ...channel, active: 1 } }));
 				}
 			} finally {
 				setLoading(false);
@@ -80,7 +80,7 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 							<img className="w-full h-full rounded-md object-cover" src={selectInvite.clanLogo} alt="" />
 						) : (
 							<div className="w-full h-full rounded-md bg-gray-700 flex items-center justify-center text-white text-3xl font-medium select-none">
-								{(selectInvite?.clan_name || 'M').charAt(0).toUpperCase()}
+								{(selectInvite?.clanName || 'M').charAt(0).toUpperCase()}
 							</div>
 						)}
 					</div>
@@ -90,15 +90,15 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 					<p className="text-sm mb-1">{t('acceptModal.invitedToJoin')}</p>
 					<h1
 						className="text-theme-primary-active text-3xl font-medium mb-3 truncate max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
-						title={selectInvite?.clan_name || 'XCLAN'}
+						title={selectInvite?.clanName || 'XCLAN'}
 					>
-						{selectInvite?.clan_name || 'XCLAN'}
+						{selectInvite?.clanName || 'XCLAN'}
 					</h1>
 
 					<div className="flex justify-center gap-5 text-sm">
 						<div className="flex items-center">
 							<div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-							<span>{t('acceptModal.memberCount', { count: Number(selectInvite?.member_count || 1) })}</span>
+							<span>{t('acceptModal.memberCount', { count: Number(selectInvite?.memberCount || 1) })}</span>
 						</div>
 					</div>
 				</div>

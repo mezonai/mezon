@@ -31,7 +31,7 @@ export const updateClanBadgeRender = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const listChannelRender = state.CHANNEL_LIST_RENDER.listChannelRender[clanId];
 			const channelDelete = listChannelRender.filter((channel) => channelId === channel.id);
-			thunkAPI.dispatch(clansActions.updateClanBadgeCount({ clanId, count: ((channelDelete[0] as IChannel)?.count_mess_unread || 0) * -1 }));
+			thunkAPI.dispatch(clansActions.updateClanBadgeCount({ clanId, count: ((channelDelete[0] as IChannel)?.countMessUnread || 0) * -1 }));
 		} catch (error) {
 			captureSentryError(error, 'listRender/updateClanBadge');
 			return thunkAPI.rejectWithValue(error);
@@ -47,7 +47,7 @@ export const bulkUpdateClanBadgeRender = createAsyncThunk(
 			const listChannelRender = state.CHANNEL_LIST_RENDER.listChannelRender[clanId];
 			const totalBadgeCount = channelIds.reduce((total, channelId) => {
 				const channel = listChannelRender.find((channel) => channelId === channel.id) as IChannel;
-				return total + (channel?.count_mess_unread || 0);
+				return total + (channel?.countMessUnread || 0);
 			}, 0);
 			if (totalBadgeCount > 0) {
 				thunkAPI.dispatch(clansActions.updateClanBadgeCount({ clanId, count: totalBadgeCount * -1 }));
@@ -152,7 +152,7 @@ export const listChannelRenderSlice = createSlice({
 			const channelToDelete = state.listChannelRender[clanId].find((channel) => channel.id === channelId) as IChannel;
 
 			state.listChannelRender[clanId] = state.listChannelRender[clanId].filter(
-				(channel) => channel.id !== channelId && (channel as IChannel).parent_id !== channelId
+				(channel) => channel.id !== channelId && (channel as IChannel).parentId !== channelId
 			);
 
 			if (channelToDelete?.categoryId) {
@@ -179,8 +179,8 @@ export const listChannelRenderSlice = createSlice({
 					e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexUpdate] as IChannel).e2ee,
 					topic: dataUpdate.topic || (state.listChannelRender[clanId][indexUpdate] as IChannel).topic,
 					ageRestricted: dataUpdate.ageRestricted,
-					channel_private: dataUpdate.channel_private
-						? dataUpdate.channel_private || (state.listChannelRender[clanId][indexUpdate] as IChannel).channel_private
+					channelPrivate: dataUpdate.channelPrivate
+						? dataUpdate.channelPrivate || (state.listChannelRender[clanId][indexUpdate] as IChannel).channelPrivate
 						: 0
 				};
 				const existing = state.listChannelRender[clanId][indexUpdate] as IChannel;
@@ -202,8 +202,8 @@ export const listChannelRenderSlice = createSlice({
 						e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).e2ee,
 						topic: dataUpdate.topic || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).topic,
 						ageRestricted: dataUpdate.ageRestricted,
-						channel_private: dataUpdate.channel_private
-							? dataUpdate.channel_private || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).channel_private
+						channelPrivate: dataUpdate.channelPrivate
+							? dataUpdate.channelPrivate || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).channelPrivate
 							: 0
 					};
 					const existingNext = state.listChannelRender[clanId][indexNextUpdate] as IChannel;
@@ -231,7 +231,7 @@ export const listChannelRenderSlice = createSlice({
 
 			const newChannelWithThreads = state.listChannelRender[clanId].filter((item) => {
 				if (
-					((item as IChannel).id === channelId || (item as IChannel).parent_id === channelId) &&
+					((item as IChannel).id === channelId || (item as IChannel).parentId === channelId) &&
 					(item as IChannel)?.categoryId !== FAVORITE_CATEGORY_ID
 				) {
 					return {
@@ -261,7 +261,7 @@ export const listChannelRenderSlice = createSlice({
 
 				newChannelWithThreads.forEach((channel) => {
 					const channelData = channel as IChannel;
-					if (!channelData.parent_id || channelData.parent_id === '0') {
+					if (!channelData.parentId || channelData.parentId === '0') {
 						const exists = categoryChannels.some((c) => c.id === channelData.id);
 						if (!exists) {
 							categoryChannels.push(channelData);
@@ -324,7 +324,7 @@ export const listChannelRenderSlice = createSlice({
 			const isExistChannel = state.listChannelRender[clanId]?.findIndex((channel) => (channel as IChannel)?.channelId === channelData.id);
 			if (isExistChannel === -1 && clanId) {
 				const indexInsert = state.listChannelRender[clanId]?.findIndex(
-					(channel) => (channel as IChannel)?.channelId === channelData.parent_id && !(channel as IChannel).isFavor
+					(channel) => (channel as IChannel)?.channelId === channelData.parentId && !(channel as IChannel).isFavor
 				);
 
 				if (indexInsert === -1) {
@@ -349,7 +349,7 @@ export const listChannelRenderSlice = createSlice({
 				if (channel.id === channelId) {
 					return {
 						...channel,
-						count_mess_unread: ((channel as IChannel).count_mess_unread || 0) + 1
+						countMessUnread: ((channel as IChannel).countMessUnread || 0) + 1
 					};
 				}
 				return channel;
@@ -365,11 +365,11 @@ export const listChannelRenderSlice = createSlice({
 			}
 			state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
 				if (channel.id === channelId) {
-					const currentCount = (channel as IChannel).count_mess_unread || 0;
+					const currentCount = (channel as IChannel).countMessUnread || 0;
 					const newCount = isReset ? count : Math.max(0, currentCount + count);
 					return {
 						...channel,
-						count_mess_unread: newCount
+						countMessUnread: newCount
 					};
 				}
 				return channel;
@@ -383,11 +383,11 @@ export const listChannelRenderSlice = createSlice({
 				let hasChanged = false;
 
 				const updatedChannels = channels.map((channel) => {
-					if (channel.id === channelId && (channel as any)?.count_mess_unread !== 0) {
+					if (channel.id === channelId && (channel as any)?.countMessUnread !== 0) {
 						hasChanged = true;
 						return {
 							...channel,
-							count_mess_unread: 0
+							countMessUnread: 0
 						};
 					}
 					return channel;
@@ -420,10 +420,10 @@ export const listChannelRenderSlice = createSlice({
 						return;
 					}
 					state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
-						if (channel.id === channelId || (channel as IChannel).parent_id === channelId) {
+						if (channel.id === channelId || (channel as IChannel).parentId === channelId) {
 							return {
 								...channel,
-								count_mess_unread: 0
+								countMessUnread: 0
 							};
 						}
 						return channel;
@@ -436,7 +436,7 @@ export const listChannelRenderSlice = createSlice({
 					state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
 						return {
 							...channel,
-							count_mess_unread: 0
+							countMessUnread: 0
 						};
 					});
 					break;
@@ -448,7 +448,7 @@ export const listChannelRenderSlice = createSlice({
 						if ((channel as IChannel).categoryId === categoryId) {
 							return {
 								...channel,
-								count_mess_unread: 0
+								countMessUnread: 0
 							};
 						}
 						return channel;
@@ -527,7 +527,7 @@ export const listChannelRenderSlice = createSlice({
 				const itemTarget = state.listChannelRender[clanId][indexEnd];
 				const channelThreadOrder = state.listChannelRender[clanId].filter((item) => {
 					if (
-						((item as IChannel).id === itemOrder.id || (item as IChannel).parent_id === itemOrder.id) &&
+						((item as IChannel).id === itemOrder.id || (item as IChannel).parentId === itemOrder.id) &&
 						item.categoryId !== FAVORITE_CATEGORY_ID
 					) {
 						return {
@@ -537,7 +537,7 @@ export const listChannelRenderSlice = createSlice({
 				});
 				const channelThreadTarget = state.listChannelRender[clanId].filter((item) => {
 					if (
-						((item as IChannel).id === itemTarget.id || (item as IChannel).parent_id === itemTarget.id) &&
+						((item as IChannel).id === itemTarget.id || (item as IChannel).parentId === itemTarget.id) &&
 						item.categoryId !== FAVORITE_CATEGORY_ID
 					) {
 						return {
@@ -586,7 +586,7 @@ export const listChannelRenderSlice = createSlice({
 				.filter(Boolean);
 
 			state.listChannelRender[clanId] = state.listChannelRender[clanId].filter(
-				(channel) => !channelIds.includes(channel.id) && !channelIds.includes((channel as IChannel).parent_id || '')
+				(channel) => !channelIds.includes(channel.id) && !channelIds.includes((channel as IChannel).parentId || '')
 			);
 
 			channelsToDelete.forEach((channelToDelete) => {
@@ -640,7 +640,7 @@ export const selectAllThreadUnreadBehind = createSelector(
 		const list = state.listChannelRender[clanId];
 		const index = list.findIndex((c) => c.id === threadId);
 
-		const result = list.slice(index + 1).filter((channel) => (channel as IChannel)?.parent_id === channelId);
+		const result = list.slice(index + 1).filter((channel) => (channel as IChannel)?.parentId === channelId);
 		return result;
 	}
 );
@@ -651,8 +651,8 @@ export const selectListOrderChannel = createSelector(getListChannelRenderState, 
 
 function prioritizeChannel(channels: IChannel[]): IChannel[] {
 	return channels.sort((a, b) => {
-		const aParentId = a.parent_id ?? '';
-		const bParentId = b.parent_id ?? '';
+		const aParentId = a.parentId ?? '';
+		const bParentId = b.parentId ?? '';
 
 		if ((aParentId === '0' || aParentId === '') && bParentId !== '0') {
 			return -1;
@@ -674,7 +674,7 @@ function sortChannels(channels: IChannel[], categoryId: string): IChannel[] {
 	let indexThread = channels.length;
 	const numOfChannel = channels.length;
 	for (let i = 0; i < numOfChannel; i++)
-		if (channels[i].parent_id !== '0' && channels[i].parent_id !== undefined) {
+		if (channels[i].parentId !== '0' && channels[i].parentId !== undefined) {
 			indexThread = i;
 			break;
 		}
@@ -687,8 +687,8 @@ function sortChannels(channels: IChannel[], categoryId: string): IChannel[] {
 			sortedChannels.push(newChannel);
 			for (; indexThread < numOfChannel; indexThread++) {
 				const thread = channels[indexThread];
-				const parentId = thread.parent_id || '';
-				if (thread.parent_id === channel.id) {
+				const parentId = thread.parentId || '';
+				if (thread.parentId === channel.id) {
 					sortedChannels.push(thread);
 					if (newChannel.threadIds) {
 						newChannel.threadIds = [...newChannel.threadIds, thread.id];

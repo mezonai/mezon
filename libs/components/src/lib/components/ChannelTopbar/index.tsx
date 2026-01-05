@@ -210,7 +210,7 @@ const TopBarChannelText = memo(() => {
 								{channelParent && (
 									<div className="flex gap-1 items-center truncate max-sbm:hidden cursor-pointer" onClick={handleNavigateToParent}>
 										<ChannelTopbarLabel
-											isPrivate={!!channelParent?.channel_private}
+											isPrivate={!!channelParent?.channelPrivate}
 											label={channelParent?.channelLabel || ''}
 											type={channelParent?.type || ChannelType.CHANNEL_TYPE_CHANNEL}
 										/>
@@ -585,7 +585,7 @@ const DmTopbarTools = memo(() => {
 						groupId: currentDmGroup.channelId,
 						groupName: currentDmGroup.channelLabel || currentDmGroup.usernames?.join(',') || 'Group Call',
 						groupAvatar: currentDmGroup.channelAvatar,
-						meetingCode: currentDmGroup.meeting_code,
+						meetingCode: currentDmGroup.meetingCode,
 						clanId: currentDmGroup.clanId,
 						participants: [...groupParticipants, userProfile?.userId?.toString() as string],
 						callerInfo: {
@@ -664,7 +664,7 @@ const DmTopbarTools = memo(() => {
 
 		dispatch(audioCallActions.setIsBusyTone(false));
 	};
-	const isGroupCallDisabled = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && !currentDmGroup?.meeting_code;
+	const isGroupCallDisabled = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && !currentDmGroup?.meetingCode;
 
 	const setIsUseProfileDM = useCallback(
 		async (status: boolean) => {
@@ -865,7 +865,7 @@ function MuteButton() {
 		const shouldMuteBell = (): boolean => {
 			if (
 				getNotificationChannelSelected?.active === 1 &&
-				getNotificationChannelSelected?.notification_setting_type === NotificationType.NOTHING_MESSAGE
+				getNotificationChannelSelected?.notificationSettingType === NotificationType.NOTHING_MESSAGE
 			) {
 				return true;
 			}
@@ -875,10 +875,10 @@ function MuteButton() {
 			}
 
 			if (getNotificationChannelSelected?.id === '0') {
-				if (defaultNotificationCategory?.notification_setting_type === NotificationType.NOTHING_MESSAGE) {
+				if (defaultNotificationCategory?.notificationSettingType === NotificationType.NOTHING_MESSAGE) {
 					return true;
 				}
-				return defaultNotificationClan?.notification_setting_type === NotificationType.NOTHING_MESSAGE;
+				return defaultNotificationClan?.notificationSettingType === NotificationType.NOTHING_MESSAGE;
 			}
 
 			return false;

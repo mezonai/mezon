@@ -87,8 +87,8 @@ const SettingPhone = ({ title, description, isLoading, onClose }: SetPhoneProps)
 			const validate = await dispatch(
 				accountActions.verifyPhone({
 					data: {
-						otp_code: otp.join(''),
-						req_id: validateOTP
+						otpCode: otp.join(''),
+						reqId: validateOTP
 					}
 				})
 			).unwrap();
@@ -114,14 +114,14 @@ const SettingPhone = ({ title, description, isLoading, onClose }: SetPhoneProps)
 			setOtp(Array(6).fill(''));
 			const response = await dispatch(
 				accountActions.addPhoneNumber({
-					data: { phone_number: parsePhoneVN(phone) }
+					data: { phoneNumber: parsePhoneVN(phone) }
 				})
 			).unwrap();
-			if (response?.req_id) {
+			if (response?.reqId) {
 				setErrors({});
 				setCount(60);
 				setOpenConfirm(true);
-				setValidateOTP(response.req_id);
+				setValidateOTP(response.reqId);
 			}
 			return;
 		}

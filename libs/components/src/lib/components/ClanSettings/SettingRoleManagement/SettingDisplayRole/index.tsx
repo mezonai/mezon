@@ -57,7 +57,7 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 	const selectedPermissions = useSelector(getNewSelectedPermissions);
 	const clickRole = useSelector(getSelectedRoleId);
 	const activeRole = RolesClan.find((role) => role.id === clickRole);
-	const permissionsRole = activeRole?.permission_list;
+	const permissionsRole = activeRole?.permissionList;
 	const permissions = permissionsRole?.permissions?.filter((permission) => permission.active === 1) || [];
 	const permissionIds = permissions.map((permission) => permission.id) || [];
 	const dispatch = useDispatch();

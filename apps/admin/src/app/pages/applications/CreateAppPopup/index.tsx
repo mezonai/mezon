@@ -71,8 +71,8 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 			appname: cleanedName,
 			creatorId: userProfile?.user?.id ?? '',
 			role: 0,
-			is_shadow: isShadowBot,
-			app_url: typeApplication ? cleanedUrl : ''
+			isShadow: isShadowBot,
+			appUrl: typeApplication ? cleanedUrl : ''
 		};
 
 		try {

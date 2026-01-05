@@ -174,7 +174,7 @@ function sortChannels(channels: IChannel[]): IChannel[] {
 
 	// Use forEach to sort channels
 	channels.forEach((channel) => {
-		if (!channel.parent_id || channel.parent_id === '0') {
+		if (!channel.parentId || channel.parentId === '0') {
 			sortedChannels.push(channel);
 			addChildren(channel, sortedChannels);
 		}
@@ -182,7 +182,7 @@ function sortChannels(channels: IChannel[]): IChannel[] {
 
 	function addChildren(parent: IChannel, acc: IChannel[]) {
 		channels
-			.filter((child) => child.parent_id === parent.id)
+			.filter((child) => child.parentId === parent.id)
 			.forEach((child) => {
 				acc.push(child);
 				addChildren(child, acc);

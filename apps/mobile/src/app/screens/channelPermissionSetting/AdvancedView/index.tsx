@@ -39,7 +39,7 @@ export const AdvancedView = memo(({ isAdvancedEditMode, channel }: IAdvancedView
 	}, [channel?.channelId, channel?.clanId, dispatch]);
 
 	const listOfRoleAndMemberInChannel = useMemo(() => {
-		if ((!listOfChannelRole?.length && !allUserInChannel?.length) || !channel?.channel_private) {
+		if ((!listOfChannelRole?.length && !allUserInChannel?.length) || !channel?.channelPrivate) {
 			return [];
 		}
 		return [
@@ -56,7 +56,7 @@ export const AdvancedView = memo(({ isAdvancedEditMode, channel }: IAdvancedView
 				type: EOverridePermissionType.Member
 			}))
 		];
-	}, [listOfChannelRole, allUserInChannel, channel?.channel_private, t]);
+	}, [listOfChannelRole, allUserInChannel, channel?.channelPrivate, t]);
 
 	const navigateToPermissionOverridesDetail = useCallback(
 		(id: string, type: EOverridePermissionType) => {

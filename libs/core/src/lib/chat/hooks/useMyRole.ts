@@ -16,8 +16,8 @@ export function useMyRole() {
 		let max = 0;
 		let roleId = '';
 		userRolesClan.forEach((role) => {
-			if (role?.max_level_permission && max < role?.max_level_permission) {
-				max = role?.max_level_permission;
+			if (role?.maxLevelPermission && max < role?.maxLevelPermission) {
+				max = role?.maxLevelPermission;
 				roleId = role?.id;
 			}
 		});

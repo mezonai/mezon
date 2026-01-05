@@ -18,8 +18,8 @@ export const ChatBoxListenerComponent = memo(({ mode }: IChatMessageLeftAreaProp
 		channelDetail: currentChannel,
 		channelID: currentDirectId
 			? currentDirectId
-			: mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parent_id
-				? currentChannel?.parent_id
+			: mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parentId
+				? currentChannel?.parentId
 				: currentChannel?.channelId || '',
 		channelMode: mode
 	});

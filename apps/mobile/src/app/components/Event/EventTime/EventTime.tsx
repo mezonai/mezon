@@ -40,13 +40,13 @@ export function EventTime({ event, eventStatus, minutes }: IEventTimeProps) {
 			default: {
 				color = themeValue.textStrong;
 				const localOffset = moment().utcOffset();
-				text = timeFormat(moment.utc(event?.start_time).add(localOffset, 'minutes').toISOString(), t, i18n.language as LangCode);
+				text = timeFormat(moment.utc(event?.startTime).add(localOffset, 'minutes').toISOString(), t, i18n.language as LangCode);
 				break;
 			}
 		}
 
 		return { colorStatusEvent: color, textStatusEvent: text };
-	}, [eventStatus, event.start_time, t]);
+	}, [eventStatus, event.startTime, t]);
 
 	return (
 		<View style={styles.inline}>

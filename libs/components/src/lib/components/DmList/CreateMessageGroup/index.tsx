@@ -106,12 +106,12 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 			});
 			if (currentDM?.type === ChannelType.CHANNEL_TYPE_DM) {
 				listGroupDM.push(currentDM.userIds?.at(0) as string);
-				userNameGroup.push((currentDM.display_names?.at(0) || currentDM.usernames?.at(0)) as string);
+				userNameGroup.push((currentDM.displayNames?.at(0) || currentDM.usernames?.at(0)) as string);
 				avatarGroup.push(currentDM.channelAvatar?.at(0) as string);
 			}
 			const bodyCreateDmGroup: ApiCreateChannelDescRequest = {
 				type: selectedFriends.length > 1 ? ChannelType.CHANNEL_TYPE_GROUP : ChannelType.CHANNEL_TYPE_DM,
-				channel_private: 1,
+				channelPrivate: 1,
 				userIds: listGroupDM,
 				clanId: '0'
 			};

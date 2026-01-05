@@ -72,7 +72,7 @@ export const addChannelRoles = createAsyncThunk(
 	async ({ channelId, roleIds, clanId }: addChannelRolesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.addRolesChannelDesc(mezon.session, { channelId: channelId, role_ids: roleIds });
+			const response = await mezon.client.addRolesChannelDesc(mezon.session, { channelId: channelId, roleIds: roleIds });
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}

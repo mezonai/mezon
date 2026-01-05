@@ -24,7 +24,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 	const clickRole = useSelector(getSelectedRoleId);
 	const activeRole = useMemo(() => RolesClan.find((role) => role.id === clickRole), [RolesClan, clickRole]);
 	const isClanOwner = useClanOwner();
-	const hasPermissionAdmin = useCheckHasAdministrator(activeRole?.permission_list?.permissions);
+	const hasPermissionAdmin = useCheckHasAdministrator(activeRole?.permissionList?.permissions);
 	const hasPermissionEdit = isClanOwner || !hasPermissionAdmin;
 	const dispatch = useDispatch();
 
@@ -45,7 +45,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 		}
 	}, [selectedButton, RolesClan, hasPermissionEdit, clickRole]);
 
-	const roleUsersCount = activeRole?.role_user_list?.role_users?.length || 0;
+	const roleUsersCount = activeRole?.roleUserList?.roleUsers?.length || 0;
 
 	const isSelectDisplayTab = selectedButton === RoleTabs.Display_Tab;
 	const isSelectPermissionTab = selectedButton === RoleTabs.Permission_Tab;

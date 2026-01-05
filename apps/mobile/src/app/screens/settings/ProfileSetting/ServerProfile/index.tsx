@@ -139,10 +139,10 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 								<TouchableOpacity style={styles.clanItem} onPress={() => switchClan(item)}>
 									<View style={styles.optionTitle}>
 										<View style={[styles.clanAvatarWrapper]}>
-											<MezonClanAvatar alt={item?.clan_name} image={item?.logo} />
+											<MezonClanAvatar alt={item?.clanName} image={item?.logo} />
 										</View>
 
-										<Text style={styles.clanName}>{item?.clan_name}</Text>
+										<Text style={styles.clanName}>{item?.clanName}</Text>
 									</View>
 									{item?.clanId === selectedClan?.clanId ? (
 										<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color="green" />
@@ -168,10 +168,10 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 			{!!clans?.length && (
 				<TouchableOpacity onPress={() => openBottomSheet()} style={styles.actionItem}>
 					<View style={[styles.clanAvatarWrapper]}>
-						<MezonClanAvatar image={selectedClan?.logo} alt={selectedClan?.clan_name} />
+						<MezonClanAvatar image={selectedClan?.logo} alt={selectedClan?.clanName} />
 					</View>
 					<View style={styles.clanNameWrapper}>
-						<Text style={styles.clanName}>{selectedClan?.clan_name}</Text>
+						<Text style={styles.clanName}>{selectedClan?.clanName}</Text>
 					</View>
 					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={size.s_15} width={size.s_15} color={themeValue.text} />
 				</TouchableOpacity>

@@ -141,7 +141,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 			const rawDataUserGroup = selectRawDataUserGroup(state, currentDmGroup.channelId);
 			const data = {
 				channelId: currentDmGroup.channelId || '',
-				roomName: currentDmGroup?.meeting_code,
+				roomName: currentDmGroup?.meetingCode,
 				clanId: '',
 				isGroupCall: true,
 				participantsCount: rawDataUserGroup?.userIds?.length || 0
@@ -160,10 +160,10 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				groupId: currentDmGroup?.channelId,
 				group_name: currentDmGroup?.channelLabel,
 				group_avatar: currentDmGroup?.channelAvatar,
-				caller_id: userProfile?.user?.id,
+				callerId: userProfile?.user?.id,
 				caller_name: userProfile?.user?.displayName || userProfile?.user?.username || '',
 				caller_avatar: userProfile?.user?.avatarUrl,
-				meeting_code: currentDmGroup?.meeting_code,
+				meetingCode: currentDmGroup?.meetingCode,
 				clanId: '',
 				timestamp: Date.now(),
 				participants: rawDataUserGroup?.userIds || []
@@ -289,7 +289,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 					<View style={styles.iconWrapper}>
 						{!isChatWithMyself && (
 							<>
-								{((!isTypeDMGroup && !!currentDmGroup?.userIds?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meeting_code)) && (
+								{((!isTypeDMGroup && !!currentDmGroup?.userIds?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meetingCode)) && (
 									<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall()}>
 										<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
 									</TouchableOpacity>

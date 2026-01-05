@@ -50,7 +50,7 @@ const StickerItem = memo(({ item, onPress, isAudio, styles }: any) => {
 						}}
 						style={styles.imageFull}
 					/>
-					{item?.is_for_sale && !item?.source && (
+					{item?.isForSale && !item?.source && (
 						<View style={styles.wrapperIconLocked}>
 							<MezonIconCDN icon={IconCDN.lockIcon} color={styles.lockIconColor} width={size.s_30} height={size.s_30} />
 						</View>
@@ -83,9 +83,9 @@ const Sticker = ({ stickerList, categoryName, onClickSticker, isAudio, forSale, 
 	const stickersListByCategoryName = useMemo(() => {
 		const data = stickerList?.filter((sticker) => {
 			if (categoryName === FOR_SALE_CATE && forSale) {
-				return sticker?.is_for_sale;
+				return sticker?.isForSale;
 			}
-			return sticker?.clan_name === categoryName && sticker?.source && !sticker?.is_for_sale;
+			return sticker?.clanName === categoryName && sticker?.source && !sticker?.isForSale;
 		});
 		if (!data?.length) return [];
 		const remainder = data.length % NUM_COLUMNS;
@@ -134,7 +134,7 @@ const Sticker = ({ stickerList, categoryName, onClickSticker, isAudio, forSale, 
 
 	const onPress = useCallback(
 		(sticker: any) => {
-			if (sticker?.is_for_sale && !sticker?.source) {
+			if (sticker?.isForSale && !sticker?.source) {
 				const data = {
 					children: (
 						<MezonConfirm
@@ -162,7 +162,7 @@ const Sticker = ({ stickerList, categoryName, onClickSticker, isAudio, forSale, 
 		[onPress, isAudio, styles]
 	);
 
-	const keyExtractor = useCallback((item: any) => `${item?.id}_${item?.clan_name}`, []);
+	const keyExtractor = useCallback((item: any) => `${item?.id}_${item?.clanName}`, []);
 
 	const getItemLayout = useCallback(
 		(_: any, index: number) => {

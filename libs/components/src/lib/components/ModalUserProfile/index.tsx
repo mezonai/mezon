@@ -279,7 +279,7 @@ const ModalUserProfile = ({
 					{mode !== 4 && mode !== 3 && !isFooterProfile && (
 						<UserDescription
 							title={t(`labels.${ETileDetail.AboutMe}`)}
-							detail={checkUser ? (userProfile?.user?.about_me as string) : (userById?.user?.about_me as string)}
+							detail={checkUser ? (userProfile?.user?.aboutMe as string) : (userById?.user?.aboutMe as string)}
 						/>
 					)}
 					{mode !== 4 && mode !== 3 && !isFooterProfile && (

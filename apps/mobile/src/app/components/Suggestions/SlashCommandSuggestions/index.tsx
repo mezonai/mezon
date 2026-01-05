@@ -42,7 +42,7 @@ export const SlashCommandSuggestions = memo(({ keyword, onSelectCommand, channel
 
 	const allCommands: SlashCommand[] = [
 		...slashCommands,
-		...(quickMenuList ?? []).map((item) => ({ id: item.id, display: item.menu_name, description: item.action_msg }))
+		...(quickMenuList ?? []).map((item) => ({ id: item.id, display: item.menuName, description: item.actionMsg }))
 	];
 
 	const [filteredCommands, setFilteredCommands] = useState<SlashCommand[]>(slashCommands);

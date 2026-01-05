@@ -221,8 +221,8 @@ export function StickerSetting({ navigation }) {
 			clanId: currentClanId,
 			shortname: name,
 			source: url,
-			media_type: 0,
-			is_for_sale: isForSale
+			mediaType: 0,
+			isForSale: isForSale
 		};
 		if (isForSale) {
 			const fileData = await createBlurredWatermarkedImageFile(croppedFile?.data);

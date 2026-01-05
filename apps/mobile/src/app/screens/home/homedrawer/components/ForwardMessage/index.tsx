@@ -95,8 +95,8 @@ const ForwardMessageScreen = ({ route }) => {
 			avatar: '#',
 			name: channel?.channelLabel,
 			clanId: channel?.clanId,
-			clanName: channel?.clan_name,
-			isChannelPublic: !channel?.channel_private || false
+			clanName: channel?.clanName,
+			isChannelPublic: !channel?.channelPrivate || false
 		};
 	};
 

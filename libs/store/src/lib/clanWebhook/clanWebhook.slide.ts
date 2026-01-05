@@ -50,7 +50,7 @@ export const fetchClanWebhooksCached = async (getState: () => RootState, mezon: 
 
 	if (!shouldForceCall && clanData.webhooks?.length) {
 		return {
-			list_clan_webhooks: clanData.webhooks,
+			listClanWebhooks: clanData.webhooks,
 			fromCache: true,
 			time: clanData.cache?.lastFetched || Date.now()
 		};
@@ -73,7 +73,7 @@ export const fetchClanWebhooks = createAsyncThunk('integration/fetchClanWebhooks
 		const response = await fetchClanWebhooksCached(thunkAPI.getState as () => RootState, mezon, clanId, Boolean(noCache));
 		return {
 			clanId,
-			webhooks: response.list_clan_webhooks,
+			webhooks: response.listClanWebhooks,
 			fromCache: response.fromCache
 		};
 	} catch (error) {
@@ -91,7 +91,7 @@ export const generateClanWebhook = createAsyncThunk(
 
 			if (response) {
 				thunkAPI.dispatch(fetchClanWebhooks({ clanId: data.clanId, noCache: true }));
-				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookGeneratedSuccess', { webhookName: response.webhook_name }));
+				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookGeneratedSuccess', { webhookName: response.webhookName }));
 			} else {
 				thunkAPI.rejectWithValue({});
 			}
@@ -109,7 +109,7 @@ export const deleteClanWebhookById = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.deleteClanWebhookById(mezon.session, data.webhook.id as string, data.clanId);
 			if (response) {
-				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookDeletedSuccess', { webhookName: data.webhook.webhook_name }));
+				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookDeletedSuccess', { webhookName: data.webhook.webhookName }));
 				thunkAPI.dispatch(fetchClanWebhooks({ clanId: data.clanId, noCache: true }));
 				return data.webhook;
 			}

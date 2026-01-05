@@ -56,14 +56,14 @@ const TransactionDetail: React.FC<TransactionDetailProps> = React.memo(({ detail
 	const { FIELDS } = TRANSACTION_DETAIL;
 
 	const detailFields = [
-		{ label: FIELDS.TRANSACTION_ID, value: detailLedger.trans_id, icon: Icons.Transaction },
-		{ label: FIELDS.SENDER, value: detailLedger.sender_username, icon: Icons.UserIcon },
+		{ label: FIELDS.TRANSACTION_ID, value: detailLedger.transId, icon: Icons.Transaction },
+		{ label: FIELDS.SENDER, value: detailLedger.senderUsername, icon: Icons.UserIcon },
 		{
 			label: FIELDS.AMOUNT,
 			value: `${formatNumber(detailLedger.amount, CURRENCY.CODE)} ${CURRENCY.SYMBOL}`,
 			icon: () => <Icons.DollarIcon defaultSize="w-3 h-3" isWhite />
 		},
-		{ label: FIELDS.RECEIVER, value: detailLedger.receiver_username, icon: Icons.UserIcon },
+		{ label: FIELDS.RECEIVER, value: detailLedger.receiverUsername, icon: Icons.UserIcon },
 		{ label: FIELDS.NOTE, value: detailLedger.metadata || TRANSACTION_DETAIL.DEFAULT_NOTE, icon: Icons.PenEdit },
 		{ label: FIELDS.CREATED, value: formatDate(detailLedger.createTime ?? ''), icon: () => <Icons.ClockHistory defaultSize="w-3 h-3" /> }
 	];

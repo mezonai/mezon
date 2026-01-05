@@ -274,7 +274,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				channelId: messageInfo?.channelId || '',
 				clanId: currentClanId || '',
 				active: EMuteState.UN_MUTE,
-				mute_time: 0
+				muteTime: 0
 			};
 			const response = await dispatch(notificationSettingActions.setMuteChannel(body));
 			if (response?.meta?.requestStatus === 'rejected') {
@@ -377,9 +377,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 					<Text style={styles.serverName} numberOfLines={2}>
 						{userName}
 					</Text>
-					{isGroup && messageInfo?.member_count > 0 && (
+					{isGroup && messageInfo?.memberCount > 0 && (
 						<Text style={styles.memberText}>
-							{messageInfo?.member_count} {t('members')}
+							{messageInfo?.memberCount} {t('members')}
 						</Text>
 					)}
 				</View>

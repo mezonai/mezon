@@ -96,7 +96,7 @@ const ChannelVoiceInner = () => {
 					channelId: channelId,
 					displayName: userProfile?.user?.displayName ?? '',
 					state,
-					room_name: self && state === ParticipantMeetState.LEAVE ? 'leave' : voiceInfo?.roomId || ''
+					roomName: self && state === ParticipantMeetState.LEAVE ? 'leave' : voiceInfo?.roomId || ''
 				})
 			);
 		},

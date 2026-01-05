@@ -118,7 +118,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 	return (
 		<div ref={panelRef} className="flex justify-between items-center relative" onClick={() => setShowPopup(!showPopup)}>
 			<h4 className="uppercase font-bold text-xs text-theme-primary-active">{t('channelPermission.bottomSheet.rolesMembers')}</h4>
-			{channel?.channel_private === 1 && <Icons.PlusIcon defaultSize="size-4  cursor-pointer" />}
+			{channel?.channelPrivate === 1 && <Icons.PlusIcon defaultSize="size-4  cursor-pointer" />}
 			{showPopup && (
 				<div
 					className="absolute bottom-5 w-64 rounded-lg overflow-hidden bg-theme-setting-primary border-theme-primary"

@@ -56,7 +56,7 @@ export const createChannelAppMeet = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createRoomChannelApps(mezon.session, {
 				channelId: channelId,
-				room_name: roomName
+				roomName: roomName
 			});
 
 			if (!response) {
@@ -131,7 +131,7 @@ export const channelAppSlice = createSlice({
 			})
 			.addCase(createChannelAppMeet.fulfilled, (state, action) => {
 				state.loadingStatus = 'loaded';
-				state.roomName = action.payload?.room_name ?? '';
+				state.roomName = action.payload?.roomName ?? '';
 			})
 			.addCase(createChannelAppMeet.rejected, (state) => {
 				state.loadingStatus = 'error';

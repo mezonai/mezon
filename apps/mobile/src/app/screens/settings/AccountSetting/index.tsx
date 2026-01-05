@@ -130,7 +130,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 			case EAccountSettingType.PhoneNumber:
 				navigation.navigate(APP_SCREEN.SETTINGS.STACK, {
 					screen: APP_SCREEN.SETTINGS.UPDATE_PHONE_NUMBER,
-					params: { currentPhone: userProfile?.user?.phone_number }
+					params: { currentPhone: userProfile?.user?.phoneNumber }
 				});
 				break;
 			case EAccountSettingType.BlockedUsers:
@@ -197,7 +197,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 			},
 			{
 				title: t('phoneNumberSetting.title'),
-				description: userProfile?.user?.phone_number ? maskPhoneNumber(userProfile.user.phone_number) : t('common:linkPhoneNumber'),
+				description: userProfile?.user?.phoneNumber ? maskPhoneNumber(userProfile.user.phoneNumber) : t('common:linkPhoneNumber'),
 				type: EAccountSettingType.PhoneNumber
 			}
 		];
@@ -225,7 +225,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 			usersOptions,
 			accountManagementOptions
 		};
-	}, [t, userProfile?.user?.username, userProfile?.user?.displayName, userProfile?.user?.phone_number, userProfile?.email, blockedUsersCount]);
+	}, [t, userProfile?.user?.username, userProfile?.user?.displayName, userProfile?.user?.phoneNumber, userProfile?.email, blockedUsersCount]);
 
 	return (
 		<View style={styles.container}>
@@ -239,7 +239,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 								<View style={styles.optionRightSide}>
 									{item?.description ? (
 										<View style={styles.optionDescriptionWrapper}>
-											{((item.type === EAccountSettingType.PhoneNumber && !userProfile?.user?.phone_number) ||
+											{((item.type === EAccountSettingType.PhoneNumber && !userProfile?.user?.phoneNumber) ||
 												(item.type === EAccountSettingType.Email && !userProfile?.email)) && (
 												<MezonIconCDN
 													icon={IconCDN.circleExlaimionIcon}
@@ -252,7 +252,7 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 												numberOfLines={1}
 												style={[
 													styles.optionDescription,
-													((item.type === EAccountSettingType.PhoneNumber && !userProfile?.user?.phone_number) ||
+													((item.type === EAccountSettingType.PhoneNumber && !userProfile?.user?.phoneNumber) ||
 														(item.type === EAccountSettingType.Email && !userProfile?.email)) &&
 														styles.warningLinkText
 												]}

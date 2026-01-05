@@ -84,10 +84,10 @@ export const CreateNewChannelModal = () => {
 			clanId: currentClanId as string,
 			type: channelType,
 			channelLabel: channelName,
-			channel_private: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isPrivate,
+			channelPrivate: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isPrivate,
 			categoryId: currentCategory?.categoryId || channelWelcome?.categoryId,
 			...(isAppChannel && selectedApp && { appId: selectedApp.id }),
-			parent_id: '0'
+			parentId: '0'
 		};
 
 		const newChannelCreatedId = await dispatch(createNewChannel(body));

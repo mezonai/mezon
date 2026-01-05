@@ -3,8 +3,7 @@ import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { captureSentryError } from '@mezon/logger';
-import type { ClanSticker } from 'mezon-js';
-import type { ApiClanStickerAddRequest, MezonUpdateClanStickerByIdBody } from 'mezon-js/types';
+import type { ApiClanSticker, ApiClanStickerAddRequest, MezonUpdateClanStickerByIdBody } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -19,22 +18,22 @@ export enum MediaType {
 }
 
 interface CustomRequest extends ApiClanStickerAddRequest {
-	media_type?: MediaType;
+	mediaType?: MediaType;
 }
 
 interface SoundRequest extends ApiClanStickerAddRequest {
-	media_type: MediaType;
+	mediaType: MediaType;
 }
 
 interface CustomUpdateRequest extends MezonUpdateClanStickerByIdBody {
-	media_type?: MediaType;
+	mediaType?: MediaType;
 }
 
 interface SoundUpdateRequest extends MezonUpdateClanStickerByIdBody {
-	media_type: MediaType;
+	mediaType: MediaType;
 }
 
-export interface SettingClanStickerState extends EntityState<ClanSticker, string> {
+export interface SettingClanStickerState extends EntityState<ApiClanSticker, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	hasGrandchildModal: boolean;
@@ -52,7 +51,7 @@ export interface UpdateSoundArgs {
 }
 
 export const stickerAdapter = createEntityAdapter({
-	selectId: (sticker: ClanSticker) => sticker.id || ''
+	selectId: (sticker: ApiClanSticker) => sticker.id || ''
 });
 
 export const initialSettingClanStickerState: SettingClanStickerState = stickerAdapter.getInitialState({
@@ -111,15 +110,15 @@ export const fetchStickerByUserId = createAsyncThunk(
 			if (response) {
 				const stickersWithMediaType = response.stickers || [];
 
-				const processedStickers = stickersWithMediaType.map((sticker: ClanSticker & { media_type?: MediaType }) => {
+				const processedStickers = stickersWithMediaType.map((sticker: ApiClanSticker & { mediaType?: MediaType }) => {
 					const isAudioFile =
 						sticker.source && (sticker.source.endsWith('.mp3') || sticker.source.endsWith('.wav') || sticker.source.includes('/sounds/'));
 
-					const mediaType = sticker.media_type !== undefined ? sticker.media_type : isAudioFile ? MediaType.AUDIO : MediaType.STICKER;
+					const mediaType = sticker.mediaType !== undefined ? sticker.mediaType : isAudioFile ? MediaType.AUDIO : MediaType.STICKER;
 
 					return {
 						...sticker,
-						media_type: mediaType
+						mediaType: mediaType
 					};
 				});
 
@@ -144,7 +143,7 @@ export const createSticker = createAsyncThunk(
 
 			const requestWithMediaType = {
 				...form.request,
-				media_type: form.request.media_type !== undefined ? form.request.media_type : MediaType.STICKER
+				mediaType: form.request.mediaType !== undefined ? form.request.mediaType : MediaType.STICKER
 			};
 
 			const res = await mezon.client.addClanSticker(mezon.session, requestWithMediaType);
@@ -208,7 +207,7 @@ export const createSound = createAsyncThunk('settingClanSticker/createSound', as
 
 		const soundRequest = {
 			...form.request,
-			media_type: MediaType.AUDIO
+			mediaType: MediaType.AUDIO
 		};
 
 		const res = await mezon.client.addClanSticker(mezon.session, soundRequest);
@@ -230,7 +229,7 @@ export const updateSound = createAsyncThunk('settingClanSticker/updateSound', as
 
 		const soundRequest = {
 			...request,
-			media_type: MediaType.AUDIO
+			mediaType: MediaType.AUDIO
 		};
 
 		const res = await mezon.client.updateClanStickerById(mezon.session, soundId, soundRequest);
@@ -270,7 +269,7 @@ export const fetchSoundByUserId = createAsyncThunk(
 			const state = thunkAPI.getState() as { settingSticker: SettingClanStickerState };
 
 			const allStickers = selectAllStickerSuggestion(state);
-			const sounds = allStickers.filter((sticker) => (sticker as any).media_type === MediaType.AUDIO);
+			const sounds = allStickers.filter((sticker) => (sticker as any).mediaType === MediaType.AUDIO);
 
 			return sounds;
 		} catch (error) {
@@ -335,22 +334,21 @@ export const selectStickersByClanIdSelector = createSelector(
 	[selectAllStickerSuggestion, (_state: RootState, clanId: string) => clanId],
 	(stickers, clanId) =>
 		stickers.filter(
-			(sticker) =>
-				sticker.clanId === clanId && ((sticker as any).media_type === MediaType.STICKER || (sticker as any).media_type === undefined)
+			(sticker) => sticker.clanId === clanId && ((sticker as any).mediaType === MediaType.STICKER || (sticker as any).mediaType === undefined)
 		)
 );
 
 export const selectStickersByClanId = (clanId: string) => (state: RootState) => selectStickersByClanIdSelector(state, clanId);
 
 export const selectAudioByClanId = createSelector([selectAllStickerSuggestion, (_state: RootState, clanId: string) => clanId], (stickers, clanId) =>
-	stickers.filter((sticker) => sticker.clanId === clanId && (sticker as any).media_type === MediaType.AUDIO)
+	stickers.filter((sticker) => sticker.clanId === clanId && (sticker as any).mediaType === MediaType.AUDIO)
 );
 
 export const settingStickerReducer = settingClanStickerSlice.reducer;
 export const settingClanStickerActions = { ...settingClanStickerSlice.actions, fetchStickerByUserId };
 
 export const selectStickerOnSale = createSelector([selectAllStickerSuggestion], (stickers) =>
-	stickers?.filter((sticker) => sticker?.is_for_sale === true)
+	stickers?.filter((sticker) => sticker?.isForSale === true)
 );
 
 export const soundEffectActions = {

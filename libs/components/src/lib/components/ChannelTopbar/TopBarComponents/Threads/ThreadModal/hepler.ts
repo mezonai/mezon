@@ -22,7 +22,7 @@ export const getJoinedThreadsWithinLast30Days = (threads: ThreadsEntity[]): Thre
 		const isWithin30Days =
 			thread.lastSentMessage?.timestampSeconds && currentTime - Number(thread.lastSentMessage.timestampSeconds) < thirtyDaysInSeconds;
 
-		if (!thread.channel_private) {
+		if (!thread.channelPrivate) {
 			return thread.active === ThreadStatus.joined && isWithin30Days;
 		} else {
 			return (thread.active === ThreadStatus.joined || thread.active === ThreadStatus.activePrivate) && isWithin30Days;

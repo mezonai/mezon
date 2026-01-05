@@ -32,7 +32,7 @@ const ClanWebhooks = ({ allClanWebhooks }: IClanWebhooksProps) => {
 	const clanId = useSelector(selectCurrentClanId) as string;
 	const handleAddWebhook = () => {
 		const newWebhookReq: ApiGenerateClanWebhookRequest = {
-			webhook_name: getRandomWebhookName(),
+			webhookName: getRandomWebhookName(),
 			avatar: getRandomAvatar(),
 			clanId: clanId
 		};

@@ -13,27 +13,27 @@ type AuditLogItemProps = {
 };
 //
 export const AuditLogItem = memo(({ data }: AuditLogItemProps) => {
-	const auditLogTime = convertTimeString(data?.time_log as string);
+	const auditLogTime = convertTimeString(data?.timeLog as string);
 	const userAuditLogItem = useAppSelector((state) => selectMemberClanByUserId(state, data?.userId ?? ''));
 	const username = userAuditLogItem?.user?.username;
 	const avatar = getAvatarForPrioritize(userAuditLogItem?.clanAvatar, userAuditLogItem?.user?.avatarUrl);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const userMention = useAppSelector((state) => selectMemberClanByUserId(state, data?.entity_id ?? ''));
+	const userMention = useAppSelector((state) => selectMemberClanByUserId(state, data?.entityId ?? ''));
 	const usernameMention = userMention?.user?.username;
 	const channel = useAppSelector((state) => selectChannelById(state, data?.channelId || ''));
 	const { t } = useTranslation('auditLog');
 	const isAddAction =
-		data?.action_log === ActionLog.ADD_MEMBER_CHANNEL_ACTION_AUDIT || data?.action_log === ActionLog.ADD_ROLE_CHANNEL_ACTION_AUDIT;
+		data?.actionLog === ActionLog.ADD_MEMBER_CHANNEL_ACTION_AUDIT || data?.actionLog === ActionLog.ADD_ROLE_CHANNEL_ACTION_AUDIT;
 
 	const isRemoveAction =
-		data?.action_log === ActionLog.REMOVE_MEMBER_CHANNEL_ACTION_AUDIT || data?.action_log === ActionLog.REMOVE_ROLE_CHANNEL_ACTION_AUDIT;
+		data?.actionLog === ActionLog.REMOVE_MEMBER_CHANNEL_ACTION_AUDIT || data?.actionLog === ActionLog.REMOVE_ROLE_CHANNEL_ACTION_AUDIT;
 
 	const isChannelAction = isAddAction || isRemoveAction;
 
 	const actionText = isAddAction ? t('auditLogItem.add') : t('auditLogItem.remove');
 	const targetEntity =
-		data?.action_log === ActionLog.ADD_MEMBER_CHANNEL_ACTION_AUDIT || data?.action_log === ActionLog.REMOVE_MEMBER_CHANNEL_ACTION_AUDIT
+		data?.actionLog === ActionLog.ADD_MEMBER_CHANNEL_ACTION_AUDIT || data?.actionLog === ActionLog.REMOVE_MEMBER_CHANNEL_ACTION_AUDIT
 			? usernameMention
 			: '';
 
@@ -46,7 +46,7 @@ export const AuditLogItem = memo(({ data }: AuditLogItemProps) => {
 						<Text style={styles.actionText}>
 							<Text style={styles.username}>{username}</Text>{' '}
 							<Text>
-								{actionText} {targetEntity} ({data?.entity_id}) {t('auditLogItem.toChannel')}
+								{actionText} {targetEntity} ({data?.entityId}) {t('auditLogItem.toChannel')}
 							</Text>
 							<Text>
 								{' '}
@@ -55,10 +55,10 @@ export const AuditLogItem = memo(({ data }: AuditLogItemProps) => {
 						</Text>
 					) : (
 						<Text style={styles.actionText}>
-							<Text style={styles.username}>{username}</Text> <Text style={styles.lowercase}>{data?.action_log}</Text>
+							<Text style={styles.username}>{username}</Text> <Text style={styles.lowercase}>{data?.actionLog}</Text>
 							<Text>
 								{' '}
-								#{data?.entity_name || data?.entity_id} {data?.entity_name && `(${data?.entity_id})`}
+								#{data?.entityName || data?.entityId} {data?.entityName && `(${data?.entityId})`}
 							</Text>
 						</Text>
 					)}

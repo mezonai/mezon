@@ -26,7 +26,7 @@ const ChannelsMessageSystem = ({ onSelectChannel, listChannelWithoutVoice }: Cha
 		return (
 			<TouchableOpacity style={styles.channelItem} onPress={() => selectChannel(item)}>
 				<View style={styles.containerIcon}>
-					{item?.channel_private ? (
+					{item?.channelPrivate ? (
 						<MezonIconCDN icon={IconCDN.channelTextLock} color={themeValue.text} height={size.s_20} width={size.s_20} />
 					) : (
 						<MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} height={size.s_20} width={size.s_20} />

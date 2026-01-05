@@ -54,8 +54,8 @@ function PanelEventItem(props: PanelEventItemProps) {
 			return true;
 		}
 
-		return Number(userMaxPermissionLevel) > Number(event?.max_permission);
-	}, [event?.creatorId, event?.max_permission, hasAdminPermission, hasClanPermission, isClanOwner, userMaxPermissionLevel, userProfile?.user?.id]);
+		return Number(userMaxPermissionLevel) > Number(event?.maxPermission);
+	}, [event?.creatorId, event?.maxPermission, hasAdminPermission, hasClanPermission, isClanOwner, userMaxPermissionLevel, userProfile?.user?.id]);
 
 	const handleDeleteEvent = async () => {
 		if (setOpenModalDelEvent) {

@@ -33,9 +33,9 @@ const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clanId, notificati
 					/>
 				) : (
 					<>
-						{clan?.clan_name && (
+						{clan?.clanName && (
 							<div className="w-[45px] h-[45px] bg-bgDisable flex justify-center items-center text-contentSecondary text-[20px] rounded-xl">
-								{clan?.clan_name.charAt(0).toUpperCase()}
+								{clan?.clanName.charAt(0).toUpperCase()}
 							</div>
 						)}
 					</>
@@ -46,7 +46,7 @@ const NotificationChannelHeader = ({ itemUnread, isUnreadTab, clanId, notificati
 						# <p className=" hover:underline">{itemUnread?.channelLabel || notification?.content?.channelLabel}</p>
 					</div>
 					<div className="text-[10px] uppercase">
-						{clan?.clan_name} {'>'} {itemUnread?.categoryName || notification?.content?.categoryName}
+						{clan?.clanName} {'>'} {itemUnread?.categoryName || notification?.content?.categoryName}
 					</div>
 				</div>
 			</div>

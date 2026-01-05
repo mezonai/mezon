@@ -86,7 +86,7 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 							<WelComeChannel
 								name={currentChannelLabel}
 								classNameSubtext={classNameSubtext}
-								channelPrivate={Boolean(selectedChannel?.channel_private)}
+								channelPrivate={Boolean(selectedChannel?.channelPrivate)}
 								isChatStream={isChatStream}
 								t={t}
 							/>
@@ -103,7 +103,7 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 						)}
 						{(isDm || isDmGroup) && (
 							<WelComeDm
-								name={isDmGroup ? name || `${selectedChannel?.creator_name}'s Groups` : name || username}
+								name={isDmGroup ? name || `${selectedChannel?.creatorName}'s Groups` : name || username}
 								username={username || name}
 								avatar={isDmGroup ? directChannel?.channelAvatar || 'assets/images/avatar-group.png' : avatarDM}
 								classNameSubtext={classNameSubtext}

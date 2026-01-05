@@ -91,7 +91,7 @@ export function useMarkAsRead() {
 						clanId: channel.clanId as string,
 						channels: allThreadsInChannel.map((channel) => ({
 							channelId: channel.id,
-							count: (channel.count_mess_unread ?? 0) * -1
+							count: (channel.countMessUnread ?? 0) * -1
 						}))
 					})
 				);

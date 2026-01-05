@@ -64,10 +64,10 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 	const { priorityAvatar } = useGetPriorityNameFromUserClan(notify?.senderId);
 	const messageTimeDifference = convertTimestampToTimeAgo(data?.createTime?.seconds);
 	const subjectText = useMemo(() => {
-		return clan?.clan_name && channelInfo?.channelLabel
-			? `${clan?.clan_name ? `(${clan.clan_name})` : ''} - ${channelInfo?.channelLabel || ''}`
+		return clan?.clanName && channelInfo?.channelLabel
+			? `${clan?.clanName ? `(${clan.clanName})` : ''} - ${channelInfo?.channelLabel || ''}`
 			: '';
-	}, [clan?.clan_name, channelInfo?.channelLabel]);
+	}, [clan?.clanName, channelInfo?.channelLabel]);
 
 	const username = useMemo(() => {
 		return getNameForPrioritize(notify?.content?.clanNick, notify?.content?.displayName, notify?.content?.username);

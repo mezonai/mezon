@@ -59,8 +59,8 @@ export function QuickAction({ navigation, route }) {
 			const data = {
 				children: (
 					<ModalQuickMenu
-						initialFormKey={item?.menu_name || ''}
-						initialFormValue={item?.action_msg || ''}
+						initialFormKey={item?.menuName || ''}
+						initialFormValue={item?.actionMsg || ''}
 						editKey={item?.id}
 						channelId={channelId}
 						clanId={channel?.clanId}
@@ -95,7 +95,7 @@ export function QuickAction({ navigation, route }) {
 						title={t('quickAction.deleteModal')}
 						confirmText={t('confirm.delete.confirmText')}
 						content={t('quickAction.deleteTitle', {
-							command: item.menu_name
+							command: item.menuName
 						})}
 					/>
 				)

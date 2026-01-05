@@ -104,7 +104,7 @@ export default function ClanDetailPage() {
 					<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 						<div>
 							<div className="flex items-center gap-2 mb-2">
-								<h1 className="text-2xl font-bold text-gray-900">{clan.clan_name}</h1>
+								<h1 className="text-2xl font-bold text-gray-900">{clan.clanName}</h1>
 								{clan.verified && (
 									<svg className="w-6 h-6 text-[#5865f2]" fill="currentColor" viewBox="0 0 20 20">
 										<path
@@ -126,7 +126,7 @@ export default function ClanDetailPage() {
 										<circle cx="6" cy="6" r="3" fill="#22c55e" />
 									</svg>
 								</div>
-								<span>{clan.total_members?.toLocaleString('en-US') || 0} Members</span>
+								<span>{clan.totalMembers?.toLocaleString('en-US') || 0} Members</span>
 							</div>
 						</div>
 						<div className="flex flex-col gap-2 min-w-[160px]">

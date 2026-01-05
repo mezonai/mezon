@@ -36,8 +36,8 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 				channelId: realTimeChannel?.channelId ?? '',
 				channelLabel: realTimeChannel?.channelLabel ?? '',
 				appId: '',
-				parent_id: realTimeChannel?.parent_id,
-				channel_private: realTimeChannel?.channel_private
+				parentId: realTimeChannel?.parentId,
+				channelPrivate: realTimeChannel?.channelPrivate
 			};
 			await dispatch(channelsActions.changeCategoryOfChannel(updateChannel)).then(() => {
 				const channelLink = navigator.toChannelPage(realTimeChannel?.channelId ?? '', realTimeChannel?.clanId ?? '');

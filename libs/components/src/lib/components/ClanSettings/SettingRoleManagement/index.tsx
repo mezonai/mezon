@@ -59,7 +59,7 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 		} else {
 			const activeRole = rolesClan.find((role) => role.id === clickRole);
 
-			const permissions = activeRole?.permission_list?.permissions;
+			const permissions = activeRole?.permissionList?.permissions;
 			const permissionIds = permissions ? permissions.filter((permission) => permission.active === 1).map((permission) => permission.id) : [];
 			dispatch(setNameRoleNew(activeRole?.title));
 			dispatch(setColorRoleNew(activeRole?.color));

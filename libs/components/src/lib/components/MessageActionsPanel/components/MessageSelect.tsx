@@ -52,10 +52,10 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 				messagesActions.clickButtonMessage({
 					messageId: messageId,
 					channelId: (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) as string,
-					button_id: buttonId,
+					buttonId: buttonId,
 					senderId: senderId,
 					userId: currentUserId,
-					extra_data: option?.value
+					extraData: option?.value
 				})
 			);
 			return;
@@ -88,10 +88,10 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 			messagesActions.clickButtonMessage({
 				messageId: messageId,
 				channelId: (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmId) as string,
-				button_id: buttonId,
+				buttonId: buttonId,
 				senderId: senderId,
 				userId: currentUserId,
-				extra_data: option.value
+				extraData: option.value
 			})
 		);
 	};

@@ -29,7 +29,7 @@ export const UserItem = memo<IUserItem>(({ userID, onMemberSelect }) => {
 		if (!rolesClan) return [];
 
 		return rolesClan.filter((role) => {
-			const roleUser = role?.role_user_list?.role_users;
+			const roleUser = role?.roleUserList?.roleUsers;
 			if (roleUser) {
 				return roleUser.some((roleUserItem) => roleUserItem?.id === userID);
 			}

@@ -33,8 +33,8 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 
 	const displayName = useMemo(() => {
 		if (!isDM) return '';
-		return currentDmGroup?.channelLabel || currentDmGroup?.display_names?.[0] || currentDmGroup?.usernames?.[0] || '';
-	}, [currentDmGroup?.channelLabel, currentDmGroup?.display_names?.[0], currentDmGroup?.usernames?.[0], isDM]);
+		return currentDmGroup?.channelLabel || currentDmGroup?.displayNames?.[0] || currentDmGroup?.usernames?.[0] || '';
+	}, [currentDmGroup?.channelLabel, currentDmGroup?.displayNames?.[0], currentDmGroup?.usernames?.[0], isDM]);
 
 	const { sendMessage } = useChatSending({
 		mode,

@@ -82,9 +82,9 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 		const store = getStore();
 		const channel = selectCurrentChannel(store.getState());
 		const membersOfChild = selectAllChannelMembers(store.getState(), channel?.id as string);
-		const membersOfParent = selectAllChannelMembers(store.getState(), channel?.parent_id as string);
+		const membersOfParent = selectAllChannelMembers(store.getState(), channel?.parentId as string);
 
-		if (channel?.parent_id === '0' || channel?.parent_id === '') return;
+		if (channel?.parentId === '0' || channel?.parentId === '') return;
 		const existingUserIdOfParent = membersOfParent?.some((member) => member.id === userId);
 		const existingUserIdOfChild = membersOfChild?.some((member) => member.id === userId);
 		if (existingUserIdOfParent && !existingUserIdOfChild) {

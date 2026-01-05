@@ -7,10 +7,10 @@ export const DEVICES_FEATURE_KEY = 'devices';
 
 export interface IDevice {
 	deviceId: string;
-	device_name?: string;
+	deviceName?: string;
 	ip?: string;
-	last_active?: string;
-	login_at?: string;
+	lastActive?: string;
+	loginAt?: string;
 	platform?: string;
 	status?: number;
 	is_current_device?: boolean;

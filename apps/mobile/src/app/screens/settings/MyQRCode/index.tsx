@@ -63,7 +63,7 @@ export const MyQRCode = () => {
 	const transferPayload = useMemo(() => {
 		return JSON.stringify({
 			receiver_name: userProfile?.user?.username,
-			receiver_id: userProfile?.user?.id
+			receiverId: userProfile?.user?.id
 		});
 	}, [userProfile?.user?.id, userProfile?.user?.username]);
 

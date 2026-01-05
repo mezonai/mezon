@@ -102,9 +102,9 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			<Icons.ClockIcon className="h-7 w-7" />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clanLogo !== '' ? (
-					<img src={emoji.clanLogo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clan_name} />
+					<img src={emoji.clanLogo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clanName} />
 				) : (
-					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clan_name?.charAt(0).toUpperCase()}</div>
+					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clanName?.charAt(0).toUpperCase()}</div>
 				)
 			),
 			<Icons.Smile defaultSize="w-7 h-7" />,
@@ -166,7 +166,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 					count: 1,
 					messageSenderId: messageEmoji?.senderId ?? '',
 					action_delete: false,
-					isPublic: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
+					isPublic: isPublicChannel({ parentId: currentChannelParentId, channelPrivate: currentChannelPrivate }),
 					clanId: currentChannelClanId ?? '',
 					channelId: propIsFromTopicView ? currentChannelId || '' : (messageEmoji?.channelId ?? ''),
 					isFocusTopicBox: propIsFocusTopicBox,
@@ -384,10 +384,10 @@ type DisplayByCategoriesProps = {
 
 const getEmojisByCategories = (emojis: IEmoji[], categoryParam: string) => {
 	if (categoryParam === FOR_SALE_CATE) {
-		return emojis.filter((emoji) => emoji?.is_for_sale);
+		return emojis.filter((emoji) => emoji?.isForSale);
 	}
 	return emojis
-		.filter((emoji) => !!emoji.id && emoji?.category?.includes(categoryParam) && !emoji?.is_for_sale)
+		.filter((emoji) => !!emoji.id && emoji?.category?.includes(categoryParam) && !emoji?.isForSale)
 		.map((emoji) => ({
 			...emoji,
 			category: emoji.category
@@ -482,10 +482,10 @@ const EmojisPanel = React.memo(function EmojisPanel({
 
 	const onClickEmoji = useCallback(
 		(item: IEmoji) => {
-			const { is_for_sale, src, shortname, id } = item;
+			const { isForSale, src, shortname, id } = item;
 			if (!id || !shortname) return;
 
-			if (is_for_sale) {
+			if (isForSale) {
 				return src ? onEmojiSelect(getIdSaleItemFromSource(src), shortname || '') : handleOpenUnlockItem(item);
 			}
 
@@ -520,7 +520,7 @@ const EmojisPanel = React.memo(function EmojisPanel({
 							alt={item.shortname}
 							className={'max-h-full max-w-full'}
 						/>
-						{item.is_for_sale && !item.src && (
+						{item.isForSale && !item.src && (
 							<div className="absolute left-3 flex items-center justify-center aspect-square pointer-events-none">
 								{isItemPendingUnlock ? (
 									<Icons.LoadingSpinner className="w-4 h-4 text-white block group-hover:hidden" />

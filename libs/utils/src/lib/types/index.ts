@@ -99,7 +99,7 @@ export type IDefaultNotificationClan = ApiNotificationSetting;
 
 export type IDefaultNotificationCategory = ApiNotificationSetting & {
 	active?: number;
-	time_mute?: string | null;
+	timeMute?: string | null;
 };
 
 export type IDefaultNotification = ApiNotificationSetting & {
@@ -173,7 +173,7 @@ export type IThread = {
 	id?: string | undefined;
 	/// new update
 	clanId?: string | undefined;
-	parent_id?: string | undefined;
+	parentId?: string | undefined;
 	channelId?: string | undefined;
 	categoryId?: string | undefined;
 	type?: number;
@@ -183,7 +183,7 @@ export type IThread = {
 	createTimeSeconds?: number | string | undefined;
 	updateTimeSeconds?: number | string | undefined;
 	lastSentMessage?: ApiChannelMessageHeader;
-	channel_private?: number;
+	channelPrivate?: number;
 };
 
 export type IContextMenuItemAction = 'REST';
@@ -447,27 +447,27 @@ export type MetaDateStatusUser = {
 export type IVoice = {
 	userId: string;
 	clanId: string;
-	clan_name: string;
+	clanName: string;
 	participant: string;
-	voice_channel_id: string;
-	voice_channel_label: string;
-	last_screenshot: string;
+	voiceChannelId: string;
+	voiceChannelLabel: string;
+	lastScreenshot: string;
 };
 
 export type IUserStream = {
 	userId: string;
 	clanId: string;
-	clan_name: string;
+	clanName: string;
 	participant: string;
-	streaming_channel_id: string;
-	streaming_channel_label: string;
+	streamingChannelId: string;
+	streamingChannelLabel: string;
 };
 
 export type IChannelsStream = {
 	channelId: string;
 	clanId: string;
-	is_streaming: boolean;
-	streaming_url: string;
+	isStreaming: boolean;
+	streamingUrl: string;
 };
 
 export type IStreamInfo = {
@@ -621,9 +621,9 @@ export type IEmoji = {
 	shortname?: string;
 	src?: string;
 	logo?: string;
-	clan_name?: string;
+	clanName?: string;
 	clanId?: string;
-	is_for_sale?: boolean;
+	isForSale?: boolean;
 };
 
 export type IEmojiRecent = {
@@ -635,7 +635,7 @@ export type IEmojiRecent = {
 export type IChannelUser = ChannelDescription & {
 	id: string;
 	active?: number;
-	count_mess_unread?: number;
+	countMessUnread?: number;
 	lastSeenMessage?: any;
 };
 
@@ -780,7 +780,7 @@ export type IMessageLine = {
 
 export interface UsersClanEntity extends IUsersClan {
 	id: string; // Primary ID
-	ban_list?: Record<string, { ban_time?: number; banner_id?: string }>;
+	ban_list?: Record<string, { banTime?: number; bannerId?: string }>;
 }
 
 export interface ChannelMembersEntity extends IChannelMember {
@@ -947,7 +947,7 @@ export type TNotificationChannel = {
 	clanLogo?: string;
 	channelLabel?: string;
 	clanId?: string;
-	clan_name?: string;
+	clanName?: string;
 	categoryName?: string;
 	notifications: NotificationEntity[];
 };
@@ -978,10 +978,10 @@ export type SearchItemProps = {
 	subText?: string;
 	icon?: string;
 	channelId?: string;
-	channel_private?: number;
-	parent_id?: string;
+	channelPrivate?: number;
+	parentId?: string;
 	clanId?: string;
-	meeting_code?: string;
+	meetingCode?: string;
 	searchName?: string;
 };
 
@@ -1017,8 +1017,8 @@ export enum ETokenMessage {
 	LINKYOUTUBE = 'lk_yt'
 }
 export type SearchFilter = {
-	field_name: string;
-	field_value?: string;
+	fieldName: string;
+	fieldValue?: string;
 };
 
 export enum ETypeLinkMedia {
@@ -1126,9 +1126,9 @@ export type ICanvas = {
 	channelId: string;
 	title?: string;
 	content?: string;
-	is_default?: boolean;
+	isDefault?: boolean;
 	creatorId?: string;
-	parent_id?: string;
+	parentId?: string;
 };
 
 export type CanvasUpdate = {
@@ -1139,12 +1139,12 @@ export type CanvasUpdate = {
 };
 
 export type IActivity = {
-	activity_description?: string;
-	activity_name?: string;
-	activity_type?: number;
-	application_id?: string;
-	end_time?: string;
-	start_time?: string;
+	activityDescription?: string;
+	activityName?: string;
+	activityType?: number;
+	applicationId?: string;
+	endTime?: string;
+	startTime?: string;
 	status?: number;
 	userId?: string;
 	id: string;
@@ -1374,7 +1374,7 @@ export type UserStatus = {
 export type UserStatusUpdate = {
 	status: string;
 	minutes?: number;
-	until_turn_on: boolean;
+	untilTurnOn: boolean;
 };
 
 export enum EUserStatus {
@@ -1451,7 +1451,7 @@ export type MentionReactInputProps = {
 };
 
 export type IOtherCall = {
-	caller_id?: string;
+	callerId?: string;
 	channelId?: string;
 };
 

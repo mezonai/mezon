@@ -40,7 +40,7 @@ const Questions = ({ handleGoToPage, setOpenModalSaveChanges }: IQuestionsProps)
 				data: {
 					answers: [],
 					title: '',
-					guide_type: EGuideType.QUESTION
+					guideType: EGuideType.QUESTION
 				}
 			})
 		);
@@ -150,7 +150,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 							...question,
 							title: titleQuestion,
 							answers: newAnswers,
-							task_type: EGuideType.QUESTION
+							taskType: EGuideType.QUESTION
 						}
 					})
 				);
@@ -214,7 +214,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 					data: {
 						title: titleQuestion,
 						answers,
-						guide_type: EGuideType.QUESTION
+						guideType: EGuideType.QUESTION
 					},
 					update: tempId
 				})
@@ -229,7 +229,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 					...question,
 					title: titleQuestion,
 					answers,
-					task_type: EGuideType.QUESTION
+					taskType: EGuideType.QUESTION
 				}
 			})
 		);

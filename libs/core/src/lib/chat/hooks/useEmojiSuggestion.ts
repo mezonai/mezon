@@ -20,8 +20,8 @@ interface EmojiSuggestionProps {
 const filterEmojiData = (emojis: IEmoji[]) => {
 	return emojis
 		.filter((emoji) => emoji.id && emoji.shortname)
-		.map(({ id, src, shortname, category, is_for_sale, creatorId }) => {
-			if (is_for_sale && src) {
+		.map(({ id, src, shortname, category, isForSale, creatorId }) => {
+			if (isForSale && src) {
 				const idSale = getIdSaleItemFromSource(src);
 				return {
 					id: idSale!,
@@ -29,7 +29,7 @@ const filterEmojiData = (emojis: IEmoji[]) => {
 					src,
 					category,
 					shortname,
-					is_for_sale,
+					isForSale,
 					creatorId
 				};
 			}
@@ -39,7 +39,7 @@ const filterEmojiData = (emojis: IEmoji[]) => {
 				src,
 				category,
 				shortname,
-				is_for_sale,
+				isForSale,
 				creatorId
 			};
 		});
@@ -97,14 +97,14 @@ export function useEmojiSuggestion({ isMobile = false }: EmojiSuggestionProps = 
 		return emojiMetadata
 			.map((emoji) => ({
 				id: emoji.clanId,
-				clan_name: emoji.clan_name,
+				clanName: emoji.clanName,
 				clanLogo: emoji.logo
 			}))
 			.filter((emoji, index, self) => emoji.id !== '0' && index === self.findIndex((s) => s.id === emoji.id));
 	}, [emojiMetadata]);
 
 	const clanNames = useMemo(() => {
-		return categoryEmoji.map((emoji) => emoji.clan_name || '');
+		return categoryEmoji.map((emoji) => emoji.clanName || '');
 	}, [categoryEmoji]);
 
 	const categoriesEmoji = useMemo(() => {

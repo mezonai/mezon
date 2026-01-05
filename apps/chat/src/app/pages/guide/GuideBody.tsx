@@ -39,8 +39,8 @@ function GuideBody() {
 
 	const handleDoMission = useCallback(
 		(mission: ApiOnboardingItem, index: number) => {
-			if (index === missionDone || selectUserProcessing?.onboarding_step === DONE_ONBOARDING_STATUS) {
-				switch (mission.task_type) {
+			if (index === missionDone || selectUserProcessing?.onboardingStep === DONE_ONBOARDING_STATUS) {
+				switch (mission.taskType) {
 					case ETypeMission.SEND_MESSAGE: {
 						const link = toChannelPage(mission.channelId as string, currentClanId as string);
 						navigate(link);
@@ -135,7 +135,7 @@ function GuideBody() {
 									className="shadow-sm bg-item-theme"
 									action={
 										<div className="w-[72px] aspect-square  rounded-lg flex overflow-hidden">
-											{rule.image_url && <img src={rule.image_url} className="w-full h-full object-cover" />}
+											{rule.imageUrl && <img src={rule.imageUrl} className="w-full h-full object-cover" />}
 										</div>
 									}
 								/>
@@ -173,7 +173,7 @@ function GuideBody() {
 									key={mission.id}
 									mission={mission}
 									onClick={() => handleDoMission(mission, index)}
-									tick={missionDone > index || selectUserProcessing?.onboarding_step === DONE_ONBOARDING_STATUS}
+									tick={missionDone > index || selectUserProcessing?.onboardingStep === DONE_ONBOARDING_STATUS}
 								/>
 							))
 						) : (
@@ -220,7 +220,7 @@ const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
 			background=""
 			description={
 				<span className="">
-					{titleMission[mission.task_type ? mission.task_type - 1 : 0] || ''}{' '}
+					{titleMission[mission.taskType ? mission.taskType - 1 : 0] || ''}{' '}
 					<span className="font-semibold text-theme-primary-active"> #{channelById?.channelLabel} </span>{' '}
 				</span>
 			}

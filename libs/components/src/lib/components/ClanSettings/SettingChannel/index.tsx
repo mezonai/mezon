@@ -181,13 +181,13 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 				<ItemInfor
 					creatorId={channelParent.creatorId as string}
 					label={channelParent?.channelLabel as string}
-					privateChannel={channelParent?.channel_private as number}
+					privateChannel={channelParent?.channelPrivate as number}
 					isThread={false}
 					key={channelParent?.id}
 					userIds={channelParent?.userIds || []}
 					channelId={channelParent?.id as string}
 					isVoice={isVoiceChannel}
-					messageCount={channelParent?.message_count || 0}
+					messageCount={channelParent?.messageCount || 0}
 					lastMessage={channelParent?.lastSentMessage}
 					isStream={isStreamChannel}
 				/>
@@ -207,12 +207,12 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 							<ItemInfor
 								creatorId={thread?.creatorId as string}
 								label={thread?.channelLabel as string}
-								privateChannel={thread?.channel_private as number}
+								privateChannel={thread?.channelPrivate as number}
 								isThread={thread?.channelType === ChannelType.CHANNEL_TYPE_THREAD}
 								key={`${thread?.id}_thread`}
 								userIds={thread?.userIds || []}
 								channelId={thread?.id as string}
-								messageCount={thread?.message_count || 0}
+								messageCount={thread?.messageCount || 0}
 								lastMessage={thread.lastSentMessage}
 								isVoice={thread?.channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
 								isStream={thread?.channelType === ChannelType.CHANNEL_TYPE_STREAMING}

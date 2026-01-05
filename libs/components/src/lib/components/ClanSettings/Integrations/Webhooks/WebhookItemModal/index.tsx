@@ -41,7 +41,7 @@ const WebhookItemModal = ({ webhookItem, currentChannel, isClanSetting }: IWebho
 				<img src={webhookItem.avatar} alt="Webhook avatar" className="aspect-square w-[50px] rounded-full" />
 				<div className="flex w-full justify-between items-center text-theme-primary-active">
 					<div className="">
-						<div>{webhookItem.webhook_name}</div>
+						<div>{webhookItem.webhookName}</div>
 						<div className="flex gap-1 items-center">
 							<Icons.ClockIcon className="text-theme-primary" />
 							<div className="text-theme-primary text-[13px]">
@@ -114,14 +114,14 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 	const [dataForUpdate, setDataForUpdate] = useState<IDataForUpdate>({
 		channelIdForUpdate: webhookItem.channelId,
 		webhookAvatarUrl: webhookItem.avatar,
-		webhookNameInput: webhookItem.webhook_name
+		webhookNameInput: webhookItem.webhookName
 	});
 
 	useEffect(() => {
 		setDataForUpdate({
 			channelIdForUpdate: webhookItem.channelId,
 			webhookAvatarUrl: webhookItem.avatar,
-			webhookNameInput: webhookItem.webhook_name
+			webhookNameInput: webhookItem.webhookName
 		});
 		setDropdownValue(webhookChannel.channelLabel);
 	}, [webhookItem.channelId]);
@@ -130,7 +130,7 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 
 	useEffect(() => {
 		const computeHasChanges =
-			dataForUpdate.webhookNameInput !== webhookItem.webhook_name ||
+			dataForUpdate.webhookNameInput !== webhookItem.webhookName ||
 			dataForUpdate.webhookAvatarUrl !== webhookItem.avatar ||
 			dataForUpdate.channelIdForUpdate !== webhookItem.channelId;
 		setHasChange(computeHasChanges);
@@ -167,8 +167,8 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 	const handleEditWebhook = async () => {
 		const request: MezonUpdateWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
-			channel_id_update: dataForUpdate.channelIdForUpdate,
-			webhook_name: dataForUpdate.webhookNameInput,
+			channelIdUpdate: dataForUpdate.channelIdForUpdate,
+			webhookName: dataForUpdate.webhookNameInput,
 			channelId: currentChannel?.channelId,
 			clanId: clanId
 		};
@@ -188,7 +188,7 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 		setDataForUpdate({
 			channelIdForUpdate: webhookItem.channelId,
 			webhookAvatarUrl: webhookItem.avatar,
-			webhookNameInput: webhookItem.webhook_name
+			webhookNameInput: webhookItem.webhookName
 		});
 		setDropdownValue(webhookChannel.channelLabel);
 		setHasChange(false);
@@ -323,7 +323,7 @@ const WebhookItemChannelDropdown = ({
 	const allChannel = useSelector(selectAllChannels);
 	const [parentChannelsInClan, setParentChannelsInClan] = useState<ChannelsEntity[]>([]);
 	useEffect(() => {
-		const normalChannels = allChannel.filter((channel) => channel.parent_id === ChannelIsNotThread.TRUE);
+		const normalChannels = allChannel.filter((channel) => channel.parentId === ChannelIsNotThread.TRUE);
 		setParentChannelsInClan(normalChannels);
 	}, [allChannel]);
 

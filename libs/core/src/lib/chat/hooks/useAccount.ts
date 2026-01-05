@@ -10,7 +10,7 @@ export function useAccount() {
 				clansActions.updateUser({
 					avatarUrl: logoUrl,
 					displayName: displayName,
-					about_me: aboutMe,
+					aboutMe: aboutMe,
 					dob,
 					noCache,
 					logo

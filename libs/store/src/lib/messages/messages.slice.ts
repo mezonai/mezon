@@ -673,14 +673,14 @@ type UpdateMessageArgs = {
 	channelId: string;
 	messageId: string;
 	mode: number;
-	badge_count: number;
+	badgeCount: number;
 	message_time?: number;
 	updateLast?: boolean;
 };
 
 export const updateLastSeenMessage = createAsyncThunk(
 	'messages/updateLastSeenMessage',
-	async ({ clanId, channelId, messageId, mode, badge_count, message_time, updateLast = false }: UpdateMessageArgs, thunkAPI) => {
+	async ({ clanId, channelId, messageId, mode, badgeCount, message_time, updateLast = false }: UpdateMessageArgs, thunkAPI) => {
 		try {
 			// check
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
@@ -702,7 +702,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 			const channelsLoadingStatus = selectLoadingStatus(state);
 			const clansLoadingStatus = selectClansLoadingStatus(state);
 			if (clanId !== '0' && (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading')) {
-				thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badge_count, message_time }));
+				thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badgeCount, message_time }));
 				return;
 			}
 
@@ -711,7 +711,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 				await thunkAPI.dispatch(processQueuedLastSeenMessages()).unwrap();
 			}
 
-			let badgeCount = badge_count;
+			let badgeCount = badgeCount;
 
 			if (clanId !== '0') {
 				const currentChannelBadge = getCurrentChannelBadgeCount({ getState: () => thunkAPI.getState() as RootState }, clanId, channelId);
@@ -728,7 +728,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 				{
 					clanId,
 					channelId,
-					badgeCount: badge_count,
+					badgeCount: badgeCount,
 					timestamp: message_time ?? now,
 					messageId
 				},
@@ -778,11 +778,11 @@ export const processQueuedLastSeenMessages = createAsyncThunk('messages/processQ
 
 	for (const queuedMessage of queuedMessages) {
 		const channelEntity = state.channels.byClans[queuedMessage.clanId]?.entities?.entities?.[queuedMessage.channelId];
-		const actualBadgeCount = channelEntity?.count_mess_unread || queuedMessage.badge_count;
+		const actualBadgeCount = channelEntity?.countMessUnread || queuedMessage.badgeCount;
 		await thunkAPI.dispatch(
 			updateLastSeenMessage({
 				...queuedMessage,
-				badge_count: actualBadgeCount
+				badgeCount: actualBadgeCount
 			})
 		);
 	}
@@ -1275,10 +1275,10 @@ export const sendTypingUser = createAsyncThunk(
 
 export const clickButtonMessage = createAsyncThunk(
 	'messages/clickButtonMessage',
-	async ({ messageId, channelId, button_id, senderId, userId, extra_data }: MessageButtonClicked, thunkAPI) => {
+	async ({ messageId, channelId, buttonId, senderId, userId, extraData }: MessageButtonClicked, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		try {
-			mezon.socketRef.current?.handleMessageButtonClick(messageId, channelId, button_id, senderId, userId, extra_data);
+			mezon.socketRef.current?.handleMessageButtonClick(messageId, channelId, buttonId, senderId, userId, extraData);
 		} catch (e) {
 			console.error(e);
 		}

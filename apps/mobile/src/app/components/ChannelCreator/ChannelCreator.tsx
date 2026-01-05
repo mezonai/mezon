@@ -43,9 +43,9 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 			clanId: currentClanId?.toString(),
 			type: channelType,
 			channelLabel: channelName?.trim(),
-			channel_private: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isChannelPrivate ? 1 : 0,
+			channelPrivate: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isChannelPrivate ? 1 : 0,
 			categoryId: categoryId,
-			parent_id: '0'
+			parentId: '0'
 		};
 		dispatch(appActions.setLoadingMainMobile(true));
 		const newChannelCreatedId = await dispatch(createNewChannel(body));

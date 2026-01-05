@@ -40,7 +40,7 @@ export interface ClanSound {
 	shortname?: string;
 	source?: string;
 	logo?: string;
-	clan_name?: string;
+	clanName?: string;
 }
 
 const searchSounds = (sounds: ExtendedApiMessageAttachment[], searchTerm: string) => {
@@ -66,7 +66,7 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 
 	const allStickersInStore = useAppSelector(selectAllStickerSuggestion);
 	const allSoundsInStore = useMemo(
-		() => allStickersInStore.filter((sticker) => (sticker as any).media_type === MediaType.AUDIO),
+		() => allStickersInStore.filter((sticker) => (sticker as any).mediaType === MediaType.AUDIO),
 		[allStickersInStore]
 	);
 
@@ -76,7 +76,7 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 
 	const userSounds = useMemo(() => {
 		return allSoundsInStore.map((sound) => ({
-			clan_name: sound.clan_name || 'MY SOUNDS',
+			clanName: sound.clanName || 'MY SOUNDS',
 			logo: sound.logo || '',
 			clanId: sound.clanId || '',
 			id: sound.id || '',
@@ -111,7 +111,7 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 		return userSounds
 			.map((sound) => ({
 				id: sound.clanId,
-				type: sound.clan_name,
+				type: sound.clanName,
 				url: sound.logo
 			}))
 			.filter((sound, index, self) => index === self.findIndex((s) => s.id === sound.id));
@@ -242,7 +242,7 @@ interface ICategorizedSoundProps {
 
 const CategorizedSounds: React.FC<ICategorizedSoundProps> = React.memo(
 	({ soundList, categoryName, onClickSendSound, valueInputToCheckHandleSearch }) => {
-		const soundListByCategoryName = useMemo(() => soundList.filter((sound) => sound.clan_name === categoryName), [soundList, categoryName]);
+		const soundListByCategoryName = useMemo(() => soundList.filter((sound) => sound.clanName === categoryName), [soundList, categoryName]);
 		const [isShowSoundList, setIsShowSoundList] = useState(true);
 		const currentClanName = useAppSelector(selectCurrentClanName);
 		const categoryLogo = useMemo(() => soundListByCategoryName[0]?.logo || '', [soundListByCategoryName]);

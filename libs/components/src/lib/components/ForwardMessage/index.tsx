@@ -153,7 +153,7 @@ const ForwardMessageModal = () => {
 			selectedObjectIdSend.clanId || '',
 			selectedObjectIdSend.id,
 			ChannelStreamMode.STREAM_MODE_CHANNEL,
-			currentChannel ? !currentChannel.channel_private : false
+			currentChannel ? !currentChannel.channelPrivate : false
 		);
 	};
 
@@ -163,7 +163,7 @@ const ForwardMessageModal = () => {
 			selectedObjectIdSend.clanId || '',
 			selectedObjectIdSend.id,
 			ChannelStreamMode.STREAM_MODE_THREAD,
-			currentChannel ? !currentChannel.channel_private : false
+			currentChannel ? !currentChannel.channelPrivate : false
 		);
 	};
 
@@ -442,7 +442,7 @@ const ForwardMessageModal = () => {
 				lastSentTimeStamp: item.lastSentMessage?.timestampSeconds,
 				typeSearch: TypeSearch.Channel_Type,
 				prioritizeName: item?.channelLabel ?? '',
-				isPublic: item ? !item.channel_private : false
+				isPublic: item ? !item.channelPrivate : false
 			};
 		});
 		return list;

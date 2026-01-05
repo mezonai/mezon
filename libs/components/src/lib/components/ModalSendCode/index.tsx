@@ -276,7 +276,7 @@ export const ModalConfirmPin = ({
 						clansActions.updateUser({
 							avatarUrl: userProfile?.user?.avatarUrl as string,
 							displayName: userProfile?.user?.displayName as string,
-							about_me: userProfile?.user?.about_me as string,
+							aboutMe: userProfile?.user?.aboutMe as string,
 							dob: userProfile?.user?.dob as string,
 							encryptPrivateKey: encryptWithPIN,
 							logo: userProfile?.logo || ''

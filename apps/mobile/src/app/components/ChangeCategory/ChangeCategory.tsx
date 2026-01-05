@@ -34,7 +34,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 				const store = getStore();
 				const appChannel = selectAppChannelById(store.getState(), channel.channelId as string);
 				if (appChannel) {
-					appUrl = appChannel?.app_url;
+					appUrl = appChannel?.appUrl;
 				}
 			}
 			const updateChannel = {
@@ -42,13 +42,13 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 				categoryId: category.id,
 				channelId: channel?.channelId ?? '',
 				channelLabel: channel?.channelLabel,
-				app_url: appUrl,
+				appUrl: appUrl,
 				appId: channel?.appId || '',
 				ageRestricted: channel?.ageRestricted,
 				e2ee: channel?.e2ee,
 				topic: channel?.topic,
-				parent_id: channel?.parent_id,
-				channel_private: channel?.channel_private
+				parentId: channel?.parentId,
+				channelPrivate: channel?.channelPrivate
 			};
 			await dispatch(channelsActions.updateChannel(updateChannel)).then(() => {
 				navigation.goBack();

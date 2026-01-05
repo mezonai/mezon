@@ -20,17 +20,17 @@ export function EventLocation({ event }: IEventLocation) {
 	const styles = style(themeValue);
 	const { t } = useTranslation('eventCreator');
 	const option = event.address ? OptionEvent.OPTION_LOCATION : OptionEvent.OPTION_SPEAKER;
-	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id || ''));
+	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channelVoiceId || ''));
 
 	const joinVoiceChannel = async () => {
-		if (channelVoice?.meeting_code && channelVoice?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+		if (channelVoice?.meetingCode && channelVoice?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			const data = {
 				heightFitContent: true,
 				children: <JoinChannelVoiceBS channel={channelVoice} />
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 		} else {
-			const urlPrivateVoice = `${process.env.NX_CHAT_APP_REDIRECT_URI}${event?.meet_room?.external_link}`;
+			const urlPrivateVoice = `${process.env.NX_CHAT_APP_REDIRECT_URI}${event?.meetRoom?.externalLink}`;
 			await Linking.openURL(urlPrivateVoice);
 		}
 	};
@@ -40,7 +40,7 @@ export function EventLocation({ event }: IEventLocation) {
 			{option === OptionEvent.OPTION_SPEAKER && (
 				<TouchableOpacity style={styles.inline} onPress={joinVoiceChannel}>
 					<MezonIconCDN
-						icon={event.is_private ? IconCDN.channelVoiceLock : IconCDN.channelVoice}
+						icon={event.isPrivate ? IconCDN.channelVoiceLock : IconCDN.channelVoice}
 						height={size.s_16}
 						width={size.s_16}
 						color={themeValue.textStrong}

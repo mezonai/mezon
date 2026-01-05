@@ -40,7 +40,7 @@ export type ThreadLinkRef = {
 
 const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, hasLine, isActive, currentChannelId }: ThreadLinkProps, ref) => {
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadChannelById(state, thread.id));
-	const numberNotification = thread.count_mess_unread ? thread.count_mess_unread : 0;
+	const numberNotification = thread.countMessUnread ? thread.countMessUnread : 0;
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const threadLinkRef = useRef<HTMLAnchorElement | null>(null);
 
@@ -86,7 +86,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 				rootRef={panelRef}
 			/>
 		);
-	}, [thread.count_mess_unread]);
+	}, [thread.countMessUnread]);
 
 	const [openDeleteModal, closeDeleteModal] = useModal(() => {
 		return (
@@ -119,8 +119,8 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 			navigate(link);
 		}
 		dispatch(referencesActions.setOpenEditMessageState(false));
-		if (currentChannelId === thread.parent_id) {
-			dispatch(threadsActions.setIsShowCreateThread({ channelId: thread.parent_id as string, isShowCreateThread: false }));
+		if (currentChannelId === thread.parentId) {
+			dispatch(threadsActions.setIsShowCreateThread({ channelId: thread.parentId as string, isShowCreateThread: false }));
 		}
 		if (closeMenu) {
 			setStatusMenu(false);

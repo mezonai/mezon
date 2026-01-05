@@ -126,7 +126,7 @@ export default function AuditLogComponent({ navigation }: MenuClanScreenProps<Cl
 			userId: userAuditLog?.userId ?? '',
 			clanId: currentClanId ?? '',
 			noCache: true,
-			date_log: formatDate(selectDate)
+			dateLog: formatDate(selectDate)
 		};
 		const response = await dispatch(auditLogList(body));
 		if (response) {

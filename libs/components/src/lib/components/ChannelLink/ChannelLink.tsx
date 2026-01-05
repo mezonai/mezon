@@ -144,7 +144,7 @@ const ChannelLinkComponent = ({
 		const isChannelApp = channel.type === ChannelType.CHANNEL_TYPE_APP;
 		const appIsOpening = selectToCheckAppIsOpening(store.getState(), channel.channelId as string);
 		if (channel.categoryId === FAVORITE_CATEGORY_ID) {
-			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parentId ?? '' }));
 		}
 
 		setTurnOffThreadMessage();
@@ -158,7 +158,7 @@ const ChannelLinkComponent = ({
 			);
 		}
 		dispatch(appActions.setIsShowCanvas(false));
-		if (currentMission && currentMission.channelId === channel.id && currentMission.task_type === ETypeMission.VISIT) {
+		if (currentMission && currentMission.channelId === channel.id && currentMission.taskType === ETypeMission.VISIT) {
 			dispatch(onboardingActions.doneMission({ clanId: clanId as string }));
 		}
 		if (isChannelApp && appIsOpening) {
@@ -313,7 +313,7 @@ export const ChannelLink = memo(
 		prev.numberNotification === curr.numberNotification &&
 		prev.isUnReadChannel === curr.isUnReadChannel &&
 		prev.channel?.channelLabel === curr?.channel?.channelLabel &&
-		prev.channel?.channel_private === curr?.channel?.channel_private &&
+		prev.channel?.channelPrivate === curr?.channel?.channelPrivate &&
 		prev.channel?.ageRestricted === curr?.channel?.ageRestricted &&
 		(prev.channel as ChannelThreads)?.threads === (curr?.channel as ChannelThreads)?.threads &&
 		prev.permissions === curr.permissions

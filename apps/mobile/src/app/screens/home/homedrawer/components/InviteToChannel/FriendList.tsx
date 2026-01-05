@@ -92,7 +92,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 
 			if ((userId && !userIdInClanArray.includes(userId) && isDM && !isUserBlocked) || isGroup) {
 				const channelId = isDM ? userId : itemDM?.channelId;
-				const channelLabel = itemDM?.channelLabel ?? itemDM?.usernames?.[0] ?? `${itemDM?.creator_name}'s Group`;
+				const channelLabel = itemDM?.channelLabel ?? itemDM?.usernames?.[0] ?? `${itemDM?.creatorName}'s Group`;
 
 				userMap.set(channelId, {
 					channelId: itemDM?.channelId,

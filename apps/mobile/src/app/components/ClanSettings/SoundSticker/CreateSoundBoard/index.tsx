@@ -111,7 +111,7 @@ export function CreateSoundScreen({ navigation }: MenuClanScreenProps<ClanSettin
 					clanId: currentClanId,
 					shortname: soundName.trim(),
 					source: attachment.url,
-					media_type: MediaType.AUDIO
+					mediaType: MediaType.AUDIO
 				};
 
 				await dispatch(soundEffectActions.createSound({ request, clanId: currentClanId }));

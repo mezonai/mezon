@@ -25,19 +25,19 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 	const appChannel = useAppSelector((state) => selectAppChannelById(state, paramsRoute?.channelId || ''));
 
 	const getUrlChannelApp = useCallback(async () => {
-		if (appChannel.appId && appChannel.app_url) {
+		if (appChannel.appId && appChannel.appUrl) {
 			const hashData = await dispatch(
 				channelAppActions.generateAppUserHash({
 					appId: appChannel.appId
 				})
 			).unwrap();
-			if (hashData.web_app_data) {
-				const encodedHash = encodeURIComponent(hashData.web_app_data);
-				const urlWithHash = `${appChannel.app_url}?data=${encodedHash}`;
+			if (hashData.webAppData) {
+				const encodedHash = encodeURIComponent(hashData.webAppData);
+				const urlWithHash = `${appChannel.appUrl}?data=${encodedHash}`;
 				setUri(urlWithHash);
 			}
 		}
-	}, [appChannel?.appId, appChannel?.app_url, dispatch]);
+	}, [appChannel?.appId, appChannel?.appUrl, dispatch]);
 
 	useEffect(() => {
 		const handleOrientationChange = (handler: { screen: any }) => {
@@ -122,7 +122,7 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 				<TouchableOpacity onPress={onClose} style={{ padding: size.s_8, paddingRight: size.s_2 }}>
 					<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_24} width={size.s_24} color={themeValue.text} />
 				</TouchableOpacity>
-				<Text style={styles.title}>{appChannel?.app_name}</Text>
+				<Text style={styles.title}>{appChannel?.appName}</Text>
 			</Animated.View>
 			<TouchableOpacity
 				onPress={toggleCloseButton}

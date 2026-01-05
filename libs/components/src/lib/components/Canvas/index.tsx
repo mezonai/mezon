@@ -122,7 +122,7 @@ const Canvas = () => {
 					clanId: currentClanId?.toString(),
 					content,
 					...(idCanvas && { id: idCanvas }),
-					...(canvasById?.is_default && { is_default: true }),
+					...(canvasById?.isDefault && { isDefault: true }),
 					title,
 					status: isCreate
 				};
@@ -132,7 +132,7 @@ const Canvas = () => {
 				}
 			}
 		},
-		[currentChannelId, currentClanId, content, idCanvas, canvasById?.is_default, title, dispatch]
+		[currentChannelId, currentClanId, content, idCanvas, canvasById?.isDefault, title, dispatch]
 	);
 
 	const debouncedSave = useDebouncedCallback(() => {

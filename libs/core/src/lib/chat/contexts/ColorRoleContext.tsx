@@ -21,10 +21,10 @@ export const useColorRole = () => {
 export const ColorRoleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const rolesClan = useSelector(selectAllRolesClan);
 	const userColorMap = useMemo(() => {
-		const map = new Map<string, { roleId: string; color: string; icon: string; max_level_permission: number }>();
+		const map = new Map<string, { roleId: string; color: string; icon: string; maxLevelPermission: number }>();
 
 		rolesClan.forEach((role) => {
-			role?.role_user_list?.role_users?.forEach((user) => {
+			role?.roleUserList?.roleUsers?.forEach((user) => {
 				if (!user?.id) return;
 
 				const currentRole = map.get(user.id);
@@ -32,7 +32,7 @@ export const ColorRoleProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 					roleId: role.id,
 					color: role.color || DEFAULT_ROLE_COLOR,
 					icon: role?.roleIcon || '',
-					max_level_permission: role.max_level_permission ?? 0
+					maxLevelPermission: role.maxLevelPermission ?? 0
 				};
 
 				if (!currentRole) {

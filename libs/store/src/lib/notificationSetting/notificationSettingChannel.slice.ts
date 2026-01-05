@@ -116,8 +116,8 @@ export const getNotificationSetting = createAsyncThunk(
 
 export type SetNotificationPayload = {
 	channelId?: string;
-	notification_type?: number;
-	mute_time?: number;
+	notificationType?: number;
+	muteTime?: number;
 	clanId: string;
 	is_current_channel?: boolean;
 	is_direct?: boolean;
@@ -128,25 +128,25 @@ export type SetNotificationPayload = {
 export const setNotificationSetting = createAsyncThunk(
 	'notificationsetting/setNotificationSetting',
 	async (
-		{ channelId, notification_type, mute_time, clanId, is_current_channel = true, is_direct = false, label, title }: SetNotificationPayload,
+		{ channelId, notificationType, muteTime, clanId, is_current_channel = true, is_direct = false, label, title }: SetNotificationPayload,
 		thunkAPI
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body: ApiSetNotificationRequest = {
-				channel_category_id: channelId,
-				notification_type,
+				channelCategoryId: channelId,
+				notificationType,
 				clanId
 			};
 			const response = await mezon.client.setNotificationChannel(mezon.session, body);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
-			if (mute_time) {
+			if (muteTime) {
 				if (is_direct) {
-					thunkAPI.dispatch(directActions.update({ id: channelId as string, changes: { is_mute: true } }));
+					thunkAPI.dispatch(directActions.update({ id: channelId as string, changes: { isMute: true } }));
 				} else {
-					thunkAPI.dispatch(channelsActions.update({ clanId: clanId, update: { changes: { is_mute: true }, id: channelId as string } }));
+					thunkAPI.dispatch(channelsActions.update({ clanId: clanId, update: { changes: { isMute: true }, id: channelId as string } }));
 				}
 			}
 
@@ -160,19 +160,19 @@ export const setNotificationSetting = createAsyncThunk(
 
 export type MuteChannelPayload = {
 	channelId?: string;
-	mute_time: number;
+	muteTime: number;
 	active?: number;
 	clanId?: string;
 };
 
 export const setMuteChannel = createAsyncThunk(
 	'notificationsetting/setMuteChannel',
-	async ({ channelId, mute_time, active, clanId }: MuteChannelPayload, thunkAPI) => {
+	async ({ channelId, muteTime, active, clanId }: MuteChannelPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body: ApiSetMuteRequest = {
 				id: channelId,
-				mute_time,
+				muteTime,
 				active
 			};
 			const response = await mezon.client.setMuteChannel(mezon.session, body);
@@ -183,7 +183,7 @@ export const setMuteChannel = createAsyncThunk(
 
 			return {
 				channelId,
-				mute_time,
+				muteTime,
 				active,
 				clanId
 			};
@@ -273,7 +273,7 @@ export const notificationSettingSlice = createSlice({
 					id: channelId,
 					channelId: channelId,
 					active,
-					notification_type: 0
+					notificationType: 0
 				} as INotificationUserChannel;
 				state.byChannels[channelId].notificationSetting = notificationSetting;
 			}
@@ -287,7 +287,7 @@ export const notificationSettingSlice = createSlice({
 				notificationSetting.active = active;
 			}
 			if (active === 0) {
-				notificationSetting.time_mute = undefined;
+				notificationSetting.timeMute = undefined;
 			}
 		}
 	},
@@ -327,7 +327,7 @@ export const notificationSettingSlice = createSlice({
 				state.error = action.error.message;
 			})
 			.addCase(setMuteChannel.fulfilled, (state: NotificationSettingState, action: PayloadAction<MuteChannelPayload>) => {
-				const { channelId, mute_time, active } = action.payload;
+				const { channelId, muteTime, active } = action.payload;
 				if (!channelId) return;
 
 				const channel = state.byChannels[channelId];
@@ -336,8 +336,8 @@ export const notificationSettingSlice = createSlice({
 				}
 
 				channel.notificationSetting.active = active ?? EMuteState.UN_MUTE;
-				channel.notificationSetting.time_mute =
-					active === EMuteState.MUTED && mute_time !== 0 ? new Date(Date.now() + (mute_time || 0) * 1000).toISOString() : undefined;
+				channel.notificationSetting.timeMute =
+					active === EMuteState.MUTED && muteTime !== 0 ? new Date(Date.now() + (muteTime || 0) * 1000).toISOString() : undefined;
 			});
 	}
 });

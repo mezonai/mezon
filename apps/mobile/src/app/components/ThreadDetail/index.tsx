@@ -71,7 +71,7 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 				channelId: channelThreads?.channelId
 					? channelThreads?.channelId
 					: isThread
-						? (currentChannel?.parent_id ?? '')
+						? (currentChannel?.parentId ?? '')
 						: (currentChannel?.channelId ?? ''),
 				clanId: channelThreads?.clanId ?? currentChannel?.clanId ?? '',
 				page: currentPage,
@@ -95,7 +95,7 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 			channelThreads?.clanId,
 			currentChannel?.channelId,
 			currentChannel?.clanId,
-			currentChannel?.parent_id,
+			currentChannel?.parentId,
 			dispatch,
 			isThread
 		]

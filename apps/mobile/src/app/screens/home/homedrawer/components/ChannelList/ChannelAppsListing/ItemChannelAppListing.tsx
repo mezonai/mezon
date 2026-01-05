@@ -20,9 +20,9 @@ const ItemChannelAppListing = ({
 	return (
 		<TouchableOpacity style={styles.itemContainer} onPress={() => openChannelApp(item)}>
 			<View style={styles.itemLogo}>
-				{item?.app_logo ? (
+				{item?.appLogo ? (
 					<View style={styles.itemIcon}>
-						<ImageNative url={item?.app_logo} style={styles.itemIconImg} resizeMode={'contain'} />
+						<ImageNative url={item?.appLogo} style={styles.itemIconImg} resizeMode={'contain'} />
 					</View>
 				) : (
 					<View style={[styles.itemIcon, styles.itemLogoBorder]}>
@@ -31,9 +31,9 @@ const ItemChannelAppListing = ({
 				)}
 			</View>
 
-			{!!item?.app_name && (
+			{!!item?.appName && (
 				<Text style={styles.itemName} numberOfLines={1}>
-					{item?.app_name || ''}
+					{item?.appName || ''}
 				</Text>
 			)}
 		</TouchableOpacity>

@@ -232,8 +232,8 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 	const { sendInviteMessage } = useSendInviteMessage();
 
 	const sendNotificationMessage = useCallback(
-		async (userId: string, username?: string, avatar?: string, display_names?: string) => {
-			const response = await createDirectMessageWithUser(userId, display_names, username, avatar);
+		async (userId: string, username?: string, avatar?: string, displayNames?: string) => {
+			const response = await createDirectMessageWithUser(userId, displayNames, username, avatar);
 			if (response.channelId) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
@@ -256,7 +256,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 					channelId: message.channelId,
 					clanId: message.clanId ?? '',
 					messageRefId: message.id,
-					receiver_id: message.senderId,
+					receiverId: message.senderId,
 					senderId: userId
 				})
 			).unwrap();

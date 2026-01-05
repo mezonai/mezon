@@ -90,7 +90,7 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 	return (
 		<>
 			{rolesList.map((role, index) => {
-				const hasPermissionEdit = isClanOwner || Number(userMaxPermissionLevel) > Number(role.max_level_permission);
+				const hasPermissionEdit = isClanOwner || Number(userMaxPermissionLevel) > Number(role.maxLevelPermission);
 				return (
 					<tr
 						key={role.id}
@@ -132,9 +132,9 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 							) : (
 								<p
 									className="inline-flex gap-x-2 items-center "
-									data-e2e={generateE2eId('clan_page.settings.role.item.member_count')}
+									data-e2e={generateE2eId('clan_page.settings.role.item.memberCount')}
 								>
-									{role.role_user_list?.role_users?.length ?? 0}
+									{role.roleUserList?.roleUsers?.length ?? 0}
 									<Icons.MemberIcon defaultSize="w-5 h-[30px] min-w-5" />
 								</p>
 							)}

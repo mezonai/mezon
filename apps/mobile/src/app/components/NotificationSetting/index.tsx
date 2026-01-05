@@ -62,23 +62,23 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 	const [defaultNotifyName, setDefaultNotifyName] = useState('');
 
 	useEffect(() => {
-		if (!getNotificationChannelSelected?.notification_setting_type) {
+		if (!getNotificationChannelSelected?.notificationSettingType) {
 			setRadioBox((prev) => prev.map((item) => (item.id === 0 ? { ...item, isChecked: true } : item)));
 			return;
 		}
 		setRadioBox((prev) =>
 			prev.map((item) => ({
 				...item,
-				isChecked: getNotificationChannelSelected?.notification_setting_type === item.value
+				isChecked: getNotificationChannelSelected?.notificationSettingType === item.value
 			}))
 		);
 	}, [getNotificationChannelSelected]);
 
 	useEffect(() => {
-		if (defaultNotificationCategory?.notification_setting_type) {
-			setDefaultNotifyName(getNotifyLabels(t)[defaultNotificationCategory?.notification_setting_type]);
-		} else if (defaultNotificationClan?.notification_setting_type) {
-			setDefaultNotifyName(getNotifyLabels(t)[defaultNotificationClan?.notification_setting_type]);
+		if (defaultNotificationCategory?.notificationSettingType) {
+			setDefaultNotifyName(getNotifyLabels(t)[defaultNotificationCategory?.notificationSettingType]);
+		} else if (defaultNotificationClan?.notificationSettingType) {
+			setDefaultNotifyName(getNotifyLabels(t)[defaultNotificationClan?.notificationSettingType]);
 		}
 	}, [getNotificationChannelSelected, defaultNotificationCategory, defaultNotificationClan, t]);
 
@@ -97,7 +97,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 					) {
 						const body = {
 							channelId: channel?.channelId || currentChannelId || '',
-							notification_type: notifyOptionSettingSelected?.value || 0,
+							notificationType: notifyOptionSettingSelected?.value || 0,
 							clanId: channel?.clanId || currentClanId || ''
 						};
 						const res = await dispatch(notificationSettingActions.setNotificationSetting(body));

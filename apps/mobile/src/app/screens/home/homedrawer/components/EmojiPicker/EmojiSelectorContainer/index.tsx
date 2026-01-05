@@ -78,7 +78,7 @@ export default function EmojiSelectorContainer({
 		categoriesEmoji?.forEach((cat) => map.set(cat, []));
 
 		for (const emoji of emojis) {
-			if (!emoji?.id || emoji?.is_for_sale) continue;
+			if (!emoji?.id || emoji?.isForSale) continue;
 			if (emoji?.category) {
 				categoriesEmoji.forEach((cat) => {
 					if (emoji?.category?.includes(cat)) {
@@ -89,7 +89,7 @@ export default function EmojiSelectorContainer({
 			}
 		}
 
-		const forSale = emojis.filter((e) => e?.is_for_sale);
+		const forSale = emojis.filter((e) => e?.isForSale);
 		map.set(FOR_SALE_CATE, forSale);
 
 		return map;
@@ -100,11 +100,11 @@ export default function EmojiSelectorContainer({
 			? categoryEmoji?.map((item) =>
 					item?.clanLogo ? (
 						<View style={styles.clanLogo}>
-							<MezonClanAvatar alt={item?.clan_name} image={item?.clanLogo} />
+							<MezonClanAvatar alt={item?.clanName} image={item?.clanLogo} />
 						</View>
 					) : (
 						<View style={styles.clanLogoText}>
-							<Text style={styles.clanNameText}>{item?.clan_name?.charAt(0)?.toUpperCase()}</Text>
+							<Text style={styles.clanNameText}>{item?.clanName?.charAt(0)?.toUpperCase()}</Text>
 						</View>
 					)
 				)

@@ -29,7 +29,7 @@ function MemberListGroupChat({ directMessageId, createId }: MemberListProps) {
 			<div className="w-full">
 				<p
 					className="mb-3 ml-2 font-semibold flex items-center gap-[4px] font-title text-xs tracking-wide uppercase"
-					data-e2e={generateE2eId(`chat.direct_message.member_list.member_count`)}
+					data-e2e={generateE2eId(`chat.direct_message.member_list.memberCount`)}
 				>
 					{t('members').toUpperCase()} - {rawMembers?.length}
 				</p>

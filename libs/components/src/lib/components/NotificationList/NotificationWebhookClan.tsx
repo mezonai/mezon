@@ -59,15 +59,15 @@ const NotificationClanHeader = ({ isUnreadTab, clanId, notification, onDeleteNot
 					<img src={notification?.content?.clanLogo} className="w-[45px] h-[45px] rounded-xl" alt={notification?.content?.clanLogo} />
 				) : (
 					<div>
-						{clan?.clan_name && (
+						{clan?.clanName && (
 							<div className="w-[45px] h-[45px] bg-bgDisable flex justify-center items-center text-contentSecondary text-[20px] rounded-xl">
-								{clan?.clan_name.charAt(0).toUpperCase()}
+								{clan?.clanName.charAt(0).toUpperCase()}
 							</div>
 						)}
 					</div>
 				)}
 
-				<div className="flex flex-col gap-1"> {clan?.clan_name} </div>
+				<div className="flex flex-col gap-1"> {clan?.clanName} </div>
 			</div>
 
 			<div className="flex flex-row items-center gap-3 relative">

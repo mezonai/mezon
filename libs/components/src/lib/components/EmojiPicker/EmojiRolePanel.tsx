@@ -42,9 +42,9 @@ export const EmojiRolePanel: React.FC<EmojiRolePanelProps> = ({ onEmojiSelect, o
 			<Icons.ClockIcon className="h-7 w-7" />,
 			...categoryEmoji.map((emoji) =>
 				emoji.clanLogo !== '' ? (
-					<img src={emoji.clanLogo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clan_name} />
+					<img src={emoji.clanLogo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clanName} />
 				) : (
-					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clan_name?.charAt(0).toUpperCase()}</div>
+					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clanName?.charAt(0).toUpperCase()}</div>
 				)
 			),
 			<Icons.Smile defaultSize="w-7 h-7" />,
@@ -207,7 +207,7 @@ type DisplayByCategoriesProps = {
 
 const getEmojisByCategories = (emojis: IEmoji[], categoryParam: string) => {
 	return emojis
-		.filter((emoji) => !!emoji.id && emoji?.category?.includes(categoryParam) && !emoji?.is_for_sale)
+		.filter((emoji) => !!emoji.id && emoji?.category?.includes(categoryParam) && !emoji?.isForSale)
 		.map((emoji) => ({
 			...emoji,
 			category: emoji.category

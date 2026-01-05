@@ -31,8 +31,8 @@ export const VerifyPhoneNumber = memo(({ navigation, route }: IVerifyPhoneNumber
 	const handleVerify = useCallback(
 		async (otp: string) => {
 			const payload = {
-				otp_code: otp,
-				req_id: requestId
+				otpCode: otp,
+				reqId: requestId
 			};
 
 			try {

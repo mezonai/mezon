@@ -38,7 +38,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 	const { t } = useTranslation(['eventMenu']);
 	const styles = style(themeValue, isTabletLandscape);
 	const store = getStore();
-	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id || ''));
+	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channelVoiceId || ''));
 	const [searchText, setSearchText] = useState('');
 	const selectedShareObjectsRef = useRef<IForwardIObject[]>([]);
 	const [memberCount, setMemberCount] = useState('');
@@ -63,7 +63,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 			avatar: '#',
 			name: channel?.channelLabel,
 			clanId: channel?.clanId,
-			clanName: channel?.clan_name
+			clanName: channel?.clanName
 		};
 	};
 
@@ -93,11 +93,11 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 	}, [searchText, allForwardObject]);
 
 	const shareLink = useMemo(() => {
-		if (!channelVoice?.channelId && !event?.meet_room?.external_link) return '';
+		if (!channelVoice?.channelId && !event?.meetRoom?.externalLink) return '';
 		return channelVoice.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
 			? `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${channelVoice.clanId}/channels/${channelVoice.channelId}`
-			: `${process.env.NX_CHAT_APP_REDIRECT_URI}${event?.meet_room?.external_link}`;
-	}, [channelVoice, event?.meet_room?.external_link]);
+			: `${process.env.NX_CHAT_APP_REDIRECT_URI}${event?.meetRoom?.externalLink}`;
+	}, [channelVoice, event?.meetRoom?.externalLink]);
 
 	function handleClose() {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });

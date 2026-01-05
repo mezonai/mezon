@@ -113,19 +113,19 @@ type EventInfoDetailProps = {
 const EventInfoDetail = (props: EventInfoDetailProps) => {
 	const { event, onClose, onCloseAll } = props;
 	const { t } = useTranslation('eventCreator');
-	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id ?? '')) || {};
+	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channelVoiceId ?? '')) || {};
 
 	const currentClanLogo = useSelector(selectCurrentClanLogo);
 	const currentClanName = useSelector(selectCurrentClanName);
 	const avatarClan = currentClanName?.charAt(0).toUpperCase();
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creatorId || ''));
-	const time = useMemo(() => timeFomat(event?.start_time || ''), [event?.start_time]);
+	const time = useMemo(() => timeFomat(event?.startTime || ''), [event?.startTime]);
 
 	const { toChannelPage, navigate } = useAppNavigation();
 
 	const hasAddress = !!event?.address;
-	const hasVoiceChannel = !!event?.channel_voice_id && !!channelVoice?.channelId;
-	const isPrivateEvent = event?.is_private;
+	const hasVoiceChannel = !!event?.channelVoiceId && !!channelVoice?.channelId;
+	const isPrivateEvent = event?.isPrivate;
 
 	const handleStopPropagation = (e: any) => {
 		e.stopPropagation();

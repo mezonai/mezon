@@ -63,9 +63,9 @@ const Modal = (props: ModalProps) => {
 									<h3 className="text-[22px] font-semibold text-theme-primary-active cursor-default ">{title}</h3>
 									{hasChannel && (
 										<div className="inline-flex gap-x-2">
-											{hasChannel.channel_private === ChannelStatusEnum.isPrivate &&
+											{hasChannel.channelPrivate === ChannelStatusEnum.isPrivate &&
 												hasChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL && <HashtagLocked defaultSize="w-5 h-5 " />}
-											{hasChannel.channel_private === undefined && hasChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
+											{hasChannel.channelPrivate === undefined && hasChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
 												<Hashtag defaultSize="w-5 h-5" />
 											)}
 											<p>{hasChannel.channelLabel}</p>

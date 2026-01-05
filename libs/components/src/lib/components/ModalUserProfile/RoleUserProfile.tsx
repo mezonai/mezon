@@ -52,7 +52,7 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 				role.title !== EVERYONE_ROLE_TITLE &&
 				!userById?.roleId?.includes(role.id) &&
 				role.title?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-				(isClanOwner || Number(maxPermissionLevel) > Number(rolesClanEntity[role.id]?.max_level_permission || -1))
+				(isClanOwner || Number(maxPermissionLevel) > Number(rolesClanEntity[role.id]?.maxLevelPermission || -1))
 			);
 		});
 	}, [activeRolesWithoutUserRoles, searchTerm, userById?.roleId, isClanOwner, maxPermissionLevel, rolesClanEntity]);
@@ -64,16 +64,16 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 
 		const updatedRoleUsers =
 			action === 'add'
-				? [...(role.role_user_list?.role_users || []), { id: userById.user.id }]
-				: role.role_user_list?.role_users?.filter((user) => user.id !== userById?.user?.id) || [];
+				? [...(role.roleUserList?.roleUsers || []), { id: userById.user.id }]
+				: role.roleUserList?.roleUsers?.filter((user) => user.id !== userById?.user?.id) || [];
 
 		dispatch(
 			rolesClanActions.update({
 				role: {
 					...role,
-					role_user_list: {
-						...role.role_user_list,
-						role_users: updatedRoleUsers
+					roleUserList: {
+						...role.roleUserList,
+						roleUsers: updatedRoleUsers
 					}
 				},
 				clanId: currentClanId as string

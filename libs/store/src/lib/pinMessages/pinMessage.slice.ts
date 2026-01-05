@@ -60,7 +60,7 @@ export const fetchChannelPinMessagesCached = async (
 
 	if (!shouldForceCall) {
 		return {
-			pin_messages_list: channelData.pinMessages,
+			pinMessagesList: channelData.pinMessages,
 			fromCache: true,
 			time: channelData.cache?.lastFetched || Date.now()
 		};
@@ -100,12 +100,12 @@ export const fetchChannelPinMessages = createAsyncThunk(
 			if (response.fromCache) {
 				return {
 					channelId,
-					pinMessages: (response.pin_messages_list || []) as PinMessageEntity[],
+					pinMessages: (response.pinMessagesList || []) as PinMessageEntity[],
 					fromCache: true
 				};
 			}
 
-			if (!response.pin_messages_list) {
+			if (!response.pinMessagesList) {
 				return {
 					channelId,
 					pinMessages: [] as PinMessageEntity[],
@@ -113,7 +113,7 @@ export const fetchChannelPinMessages = createAsyncThunk(
 				};
 			}
 
-			const pinMessages = response.pin_messages_list.map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes));
+			const pinMessages = response.pinMessagesList.map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes));
 			return {
 				channelId,
 				pinMessages,

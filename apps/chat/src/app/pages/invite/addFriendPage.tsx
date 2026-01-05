@@ -44,7 +44,7 @@ export default function AddFriendPage() {
 			try {
 				const result: ApiIsFollowerResponse = await dispatch(checkMutableRelationship({ userId: dataEncode?.id || username || '' })).unwrap();
 
-				if (result.is_follower) {
+				if (result.isFollower) {
 					toast.success(t('invite.canChatNow'));
 					setError(ErrorTypeMutable.MUTABLE);
 				} else if (dataEncode?.id) {
@@ -80,7 +80,7 @@ export default function AddFriendPage() {
 		if (!userProfile?.user?.id || !username) return;
 		const bodyCreateDm: ApiCreateChannelDescRequest = {
 			type: ChannelType.CHANNEL_TYPE_DM,
-			channel_private: 1,
+			channelPrivate: 1,
 			userIds: [username],
 			clanId: '0'
 		};

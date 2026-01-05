@@ -50,12 +50,12 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 	}, [leftTimeSeconds, start]);
 
 	const eventStatus = useMemo(() => {
-		if (event?.event_status) return event.event_status;
+		if (event?.eventStatus) return event.eventStatus;
 		if (!start) return EEventStatus.CREATED;
 		if (leftTimeSeconds <= 0) return EEventStatus.ONGOING;
 		if (leftTimeSeconds <= 60 * 10) return EEventStatus.UPCOMING;
 		return EEventStatus.CREATED;
-	}, [event?.event_status, leftTimeSeconds, start]);
+	}, [event?.eventStatus, leftTimeSeconds, start]);
 
 	function handlePress() {
 		onPress && onPress();
@@ -72,7 +72,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 
 		const request: ApiUserEventRequest = {
 			clanId: event.clanId,
-			event_id: event.id
+			eventId: event.id
 		};
 
 		if (isInterested) {
@@ -117,19 +117,19 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 
 				<View style={styles.mainArea}>
 					<View style={styles.mainSec}>
-						{!!event?.channelId && event.channelId !== '0' && !event?.is_private && (
+						{!!event?.channelId && event.channelId !== '0' && !event?.isPrivate && (
 							<View style={[styles.privatePanel, { backgroundColor: baseColor.orange }]}>
 								<Text style={styles.privateText}>{t('eventCreator:eventDetail.channelEvent')}</Text>
 							</View>
 						)}
 
-						{event?.is_private && (
+						{event?.isPrivate && (
 							<View style={styles.privatePanel}>
 								<Text style={styles.privateText}>{t('eventCreator:eventDetail.privateEvent')}</Text>
 							</View>
 						)}
 
-						{!event?.is_private && !event?.channelId && (
+						{!event?.isPrivate && !event?.channelId && (
 							<View style={[styles.privatePanel, { backgroundColor: baseColor.blurple }]}>
 								<Text style={styles.privateText}>{t('eventCreator:eventDetail.clanEvent')}</Text>
 							</View>

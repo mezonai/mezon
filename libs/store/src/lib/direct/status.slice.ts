@@ -35,7 +35,7 @@ export function convertStatusGroup(users: ApiAllUsersAddChannelResponse): IUserP
 			listGroup.push({
 				id,
 				avatarUrl: users.avatars?.[index] || '',
-				displayName: users.display_names?.[index] || '',
+				displayName: users.displayNames?.[index] || '',
 				online: users.onlines?.[index],
 				username: users.usernames?.[index] || ''
 			});
@@ -62,7 +62,7 @@ export const statusSlice = createSlice({
 			statusAdapter.updateOne(state, {
 				id: user.userId,
 				changes: {
-					status: user.custom_status
+					status: user.customStatus
 				}
 			});
 		},

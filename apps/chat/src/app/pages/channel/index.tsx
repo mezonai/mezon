@@ -90,7 +90,7 @@ function useChannelSeen(channelId: string) {
 			try {
 				const distance = Math.round(Number((BigInt(lastMessageViewport.id) >> BigInt(22)) - (BigInt(lastSeenMessageId) >> BigInt(22))));
 				if (distance >= 0) {
-					markAsReadSeen(lastMessageViewport, mode, currentChannel?.count_mess_unread || 0);
+					markAsReadSeen(lastMessageViewport, mode, currentChannel?.countMessUnread || 0);
 					return;
 				}
 			} catch (error) {
@@ -100,7 +100,7 @@ function useChannelSeen(channelId: string) {
 
 		const isLastMessage = lastMessageViewport.id === lastMessageChannel.id;
 		if (isLastMessage) {
-			markAsReadSeen(lastMessageViewport, mode, currentChannel?.count_mess_unread || 0);
+			markAsReadSeen(lastMessageViewport, mode, currentChannel?.countMessUnread || 0);
 		}
 	}, [lastMessageViewport, lastMessageChannel, lastSeenMessageId, markAsReadSeen, currentChannel, mode]);
 
@@ -208,8 +208,8 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		if (previewMode?.open && previewMode.clanId === currentClanId) {
 			return true;
 		}
-		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && currentClanIsOnboarding;
-	}, [selectUserProcessing?.onboarding_step, currentClanIsOnboarding, previewMode, currentClanId]);
+		return selectUserProcessing?.onboardingStep !== DONE_ONBOARDING_STATUS && currentClanIsOnboarding;
+	}, [selectUserProcessing?.onboardingStep, currentClanIsOnboarding, previewMode, currentClanId]);
 
 	if (canSendMessageDelayed === false) {
 		return (
@@ -226,7 +226,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 				userId={userId || ''}
 				clanId={currentClanId || ''}
 				channelId={currentChannel.id}
-				banTime={isBanned.ban_time ? isBanned.ban_time - Date.now() : Infinity}
+				banTime={isBanned.banTime ? isBanned.banTime - Date.now() : Infinity}
 			/>
 		);
 	}
@@ -235,15 +235,15 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		if (isAppChannel) {
 			const store = getStore();
 			const appChannel = selectAppChannelById(store.getState(), channelId);
-			if (appChannel.appId && appChannel.app_url) {
+			if (appChannel.appId && appChannel.appUrl) {
 				const hashData = await dispatch(
 					channelAppActions.generateAppUserHash({
 						appId: appChannel.appId
 					})
 				).unwrap();
-				if (hashData.web_app_data) {
-					const encodedHash = encodeURIComponent(hashData.web_app_data);
-					const urlWithHash = `${appChannel.app_url}?data=${encodedHash}`;
+				if (hashData.webAppData) {
+					const encodedHash = encodeURIComponent(hashData.webAppData);
+					const urlWithHash = `${appChannel.appUrl}?data=${encodedHash}`;
 					if (isElectron()) {
 						window.electron.launchAppWindow(urlWithHash);
 						return;
@@ -274,7 +274,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 				</div>
 			)}
 			{currentChannel && currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE ? (
-				<ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel?.channel_private : false} />
+				<ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel?.channelPrivate : false} />
 			) : (
 				<div className="h-4"></div>
 			)}
@@ -340,7 +340,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 					channelId: currentChannelAppId,
 					displayName: userProfile?.user?.displayName ?? '',
 					state: ParticipantMeetState.LEAVE,
-					room_name: currentChannelAppId
+					roomName: currentChannelAppId
 				})
 			);
 		}
@@ -472,7 +472,7 @@ const OnboardingGuide = ({
 
 	const handleDoNextMission = useCallback(() => {
 		if (currentMission) {
-			switch (currentMission.task_type) {
+			switch (currentMission.taskType) {
 				case ETypeMission.SEND_MESSAGE: {
 					const link = toChannelPage(currentMission.channelId as string, currentMission.clanId as string);
 					navigate(link);
@@ -515,7 +515,7 @@ const OnboardingGuide = ({
 						<div className="text-base font-semibold text-theme-primary">{currentMission.title} </div>
 						<div className="text-[10px] font-normal text-theme-primary">
 							{' '}
-							{titleMission[currentMission.task_type ? currentMission.task_type - 1 : 0]}{' '}
+							{titleMission[currentMission.taskType ? currentMission.taskType - 1 : 0]}{' '}
 							<strong className="text-theme-primary">#{channelMission?.channelLabel}</strong>{' '}
 						</div>
 					</div>

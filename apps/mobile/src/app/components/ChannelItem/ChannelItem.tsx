@@ -23,7 +23,7 @@ type ChannelItemProps = {
 export const ChannelItem = memo(({ channelData, onSelectChannel, isHideClanName = false }: ChannelItemProps) => {
 	const { t } = useTranslation(['searchMessageChannel']);
 	const { themeValue } = useTheme();
-	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parent_id || ''));
+	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parentId || ''));
 	const parentLabel = useMemo(() => (parentChannel?.channelLabel ? `(${parentChannel.channelLabel})` : ''), [parentChannel]);
 	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
@@ -51,26 +51,26 @@ export const ChannelItem = memo(({ channelData, onSelectChannel, isHideClanName 
 		<TouchableOpacity onPress={handleOnPress} style={styles.channelItemContainer}>
 			{[ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD, ChannelType.CHANNEL_TYPE_APP].includes(channelData?.type) ? (
 				<View style={styles.channelRow}>
-					<IconChannel channelPrivate={channelData?.channel_private} type={channelData?.type} />
+					<IconChannel channelPrivate={channelData?.channelPrivate} type={channelData?.type} />
 					<View>
 						<View style={styles.channelInfo}>
 							<Text style={styles.channelName} numberOfLines={1}>{`${channelData?.channelLabel} ${parentLabel}`}</Text>
 						</View>
-						{!isHideClanName && !!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
+						{!isHideClanName && !!channelData?.clanName && <Text style={styles.categoryChannel}>{channelData?.clanName}</Text>}
 					</View>
 				</View>
 			) : null}
 			{[ChannelType.CHANNEL_TYPE_STREAMING, ChannelType.CHANNEL_TYPE_MEZON_VOICE].includes(channelData?.type) ? (
 				<View style={styles.voiceChannelContainer}>
 					<View style={styles.channelRow}>
-						<IconChannel channelPrivate={channelData?.channel_private} type={channelData?.type} />
+						<IconChannel channelPrivate={channelData?.channelPrivate} type={channelData?.type} />
 						<View style={styles.channelNameWrapper}>
 							<View style={styles.channelInfo}>
 								<Text style={styles.channelName} numberOfLines={1}>
 									{channelData?.channelLabel}
 								</Text>
 							</View>
-							{!isHideClanName && !!channelData?.clan_name && <Text style={styles.categoryChannel}>{channelData?.clan_name}</Text>}
+							{!isHideClanName && !!channelData?.clanName && <Text style={styles.categoryChannel}>{channelData?.clanName}</Text>}
 						</View>
 					</View>
 					<View style={styles.joinChannelBtn}>

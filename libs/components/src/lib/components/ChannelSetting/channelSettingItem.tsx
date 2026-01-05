@@ -23,7 +23,7 @@ export type ChannelSettingItemProps = {
 const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 	const { onItemClick, channel, stateMenu, stateClose, displayChannelLabel, getTabTranslation } = props;
 	const { t } = useTranslation('channelSetting');
-	const isPrivate = channel.channel_private;
+	const isPrivate = channel.channelPrivate;
 	const [selectedButton, setSelectedButton] = useState<string | null>('Overview');
 	const [showModal, setShowModal] = useState(false);
 	const [hasManageChannelPermission] = usePermissionChecker([EPermission.manageChannel, EPermission.manageClan], channel.channelId ?? '');

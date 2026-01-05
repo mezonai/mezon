@@ -84,22 +84,22 @@ const SearchMessageChannel = ({ route }: ISearchMessageChannelProps) => {
 	const handleSearchMessage = useCallback(() => {
 		try {
 			const filter: SearchFilter[] = [
-				{ field_name: 'channelId', field_value: channelId },
-				{ field_name: 'clanId', field_value: currentClanId }
+				{ fieldName: 'channelId', fieldValue: channelId },
+				{ fieldName: 'clanId', fieldValue: currentClanId }
 			];
 
 			if (optionFilter && userMention && optionFilter?.value !== 'channelId') {
 				filter.push({
-					field_name: optionFilter?.value,
-					field_value:
+					fieldName: optionFilter?.value,
+					fieldValue:
 						optionFilter?.value === 'mention' ? `"userId":"${userMention?.id}"` : userMention?.subDisplay || userMention?.display
 				});
 			}
 
 			if (searchText.trim()) {
 				filter.push({
-					field_name: 'content',
-					field_value: searchText.trim()
+					fieldName: 'content',
+					fieldValue: searchText.trim()
 				});
 			}
 

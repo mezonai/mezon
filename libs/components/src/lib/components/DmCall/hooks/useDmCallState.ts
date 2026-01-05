@@ -104,7 +104,7 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 		const lastSignaling = signalingData?.[signalingData?.length - 1]?.signalingData;
 		if (!lastSignaling) return;
 
-		switch (lastSignaling.data_type) {
+		switch (lastSignaling.dataType) {
 			case WebrtcSignalingType.WEBRTC_SDP_OFFER:
 				if (!isInAnyCall && !isJoinedCall) {
 					dispatch(audioCallActions.setIsRingTone(true));

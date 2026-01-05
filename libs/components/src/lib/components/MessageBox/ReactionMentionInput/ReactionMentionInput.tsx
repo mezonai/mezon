@@ -73,7 +73,7 @@ import { getCanvasTitles } from './utils/canvas';
 
 interface SlashCommand extends MentionData {
 	description: string;
-	action_msg?: string;
+	actionMsg?: string;
 }
 
 // This needs to be a function that accepts t function to be dynamic
@@ -319,8 +319,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 							}
 						} else if (mention?.roleId) {
 							const role = rolesClan?.find((r) => r.id === mention.roleId);
-							if (role?.role_user_list?.role_users) {
-								role.role_user_list.role_users.forEach((roleUser: any) => {
+							if (role?.roleUserList?.roleUsers) {
+								role.roleUserList.roleUsers.forEach((roleUser: any) => {
 									if (roleUser?.id) {
 										const existsInChild = props.membersOfChild?.some((member) => member.user?.id === roleUser.id);
 										const existsInParent = props.membersOfParent?.some((member) => member.user?.id === roleUser.id);
@@ -718,7 +718,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		return allChannels.reduce<Array<{ id: string; display: string; subText: string }>>((acc, item) => {
 			const id = item?.channelId ?? '';
 			const display = item?.channelLabel ?? '';
-			const subText = ((item as ChannelsEntity)?.categoryName || item?.clan_name) ?? '';
+			const subText = ((item as ChannelsEntity)?.categoryName || item?.clanName) ?? '';
 
 			if (id || display || subText) {
 				acc.push({ id, display, subText });
@@ -856,12 +856,12 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			const builtInCommands = createSlashCommands(t).filter((cmd) => cmd.display.toLowerCase().includes(search.toLowerCase()));
 
 			const quickMenuCommands: SlashCommand[] = channelQuickMenuItems
-				.filter((item) => item.menu_name?.toLowerCase().includes(search.toLowerCase()) && item.menu_type === QUICK_MENU_TYPE.FLASH_MESSAGE)
+				.filter((item) => item.menuName?.toLowerCase().includes(search.toLowerCase()) && item.menuType === QUICK_MENU_TYPE.FLASH_MESSAGE)
 				.map((item) => ({
 					id: `quick_menu_${item.id}`,
-					display: item.menu_name || '',
-					description: item.action_msg || '',
-					action_msg: item.action_msg || ''
+					display: item.menuName || '',
+					description: item.actionMsg || '',
+					actionMsg: item.actionMsg || ''
 				}));
 
 			return [...builtInCommands, ...quickMenuCommands];
@@ -920,8 +920,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 				const quickMenuItem = channelQuickMenuItems.find((item) => item.id === quickMenuItemId);
 
-				if (quickMenuItem && quickMenuItem.action_msg) {
-					editorRef.current?.insertMentionCommand(quickMenuItem.action_msg, true);
+				if (quickMenuItem && quickMenuItem.actionMsg) {
+					editorRef.current?.insertMentionCommand(quickMenuItem.actionMsg, true);
 				}
 			}
 		},

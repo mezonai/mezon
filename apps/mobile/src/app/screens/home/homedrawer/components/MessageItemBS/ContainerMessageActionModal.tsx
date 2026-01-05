@@ -216,7 +216,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					channelId: message.channelId,
 					clanId: message.clanId,
 					messageRefId: message.id,
-					receiver_id: message.senderId,
+					receiverId: message.senderId,
 					senderId: userId
 				};
 				const res = await dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
@@ -432,7 +432,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					channelId: message?.channelId || '',
 					messageId: message?.id || '',
 					mode: message?.mode || 0,
-					badge_count: 0,
+					badgeCount: 0,
 					message_time: 1
 				})
 			);
@@ -794,7 +794,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 
 	const handleReact = useCallback(
 		async (mode, messageId, emojiId: string, emoji: string) => {
-			if (currentChannel?.parent_id !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
+			if (currentChannel?.parentId !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
 				await dispatch(
 					threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channelId ?? '', activeCode: ThreadStatus.joined })
 				);

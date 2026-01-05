@@ -1,5 +1,5 @@
-export const isPublicChannel = (channel: { parent_id?: string; channel_private?: number } | null) =>
-	(!channel?.parent_id || channel?.parent_id === '0') && !channel?.channel_private;
+export const isPublicChannel = (channel: { parentId?: string; channelPrivate?: number } | null) =>
+	(!channel?.parentId || channel?.parentId === '0') && !channel?.channelPrivate;
 
 export function transformPayloadWriteSocket({
 	clanId,

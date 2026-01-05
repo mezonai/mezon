@@ -47,7 +47,7 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 	const isNewRole = clickRole === t('roleManagement.newRoleDefault');
 	useEffect(() => {
 		if (!isNewRole) {
-			const memberIDRoles = activeRole?.role_user_list?.role_users?.map((member) => member.id) || [];
+			const memberIDRoles = activeRole?.roleUserList?.roleUsers?.map((member) => member.id) || [];
 			dispatchRole(setAddMemberRoles(memberIDRoles));
 		}
 	}, [activeRole, clickRole, dispatchRole]);

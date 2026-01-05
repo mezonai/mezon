@@ -325,7 +325,7 @@ export default function ChannelStream({
 				clanName: currentClanName as string,
 				streamId: currentChannel.channelId as string,
 				streamName: currentChannel.channelLabel as string,
-				parentId: currentChannel.parent_id as string
+				parentId: currentChannel.parentId as string
 			})
 		);
 		dispatch(videoStreamActions.setIsJoin(true));

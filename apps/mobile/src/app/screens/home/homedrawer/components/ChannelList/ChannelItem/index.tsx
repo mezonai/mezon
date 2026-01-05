@@ -22,7 +22,7 @@ interface IChannelItemProps {
 function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue, themeBasic);
-	const countMessageUnread = Number(data?.count_mess_unread) || 0;
+	const countMessageUnread = Number(data?.countMessUnread) || 0;
 
 	const isUnReadChannel = useMemo(() => {
 		return isUnRead || countMessageUnread > 0;
@@ -78,10 +78,10 @@ function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
 }
 export default memo(ChannelItem, (prevProps, nextProps) => {
 	return (
-		prevProps?.data?.channel_private === nextProps?.data?.channel_private &&
+		prevProps?.data?.channelPrivate === nextProps?.data?.channelPrivate &&
 		prevProps?.data?.channelLabel === nextProps?.data?.channelLabel &&
 		prevProps?.data?.channelId === nextProps?.data?.channelId &&
-		prevProps?.data?.count_mess_unread === nextProps?.data?.count_mess_unread &&
+		prevProps?.data?.countMessUnread === nextProps?.data?.countMessUnread &&
 		prevProps?.isUnRead === nextProps?.isUnRead &&
 		prevProps?.isActive === nextProps?.isActive
 	);

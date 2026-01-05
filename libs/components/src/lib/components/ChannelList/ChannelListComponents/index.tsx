@@ -90,7 +90,7 @@ export const Events = memo(() => {
 				onboardingByClan?.sumMission &&
 				onboardingByClan?.sumMission > 0 &&
 				currentClanIsOnboarding &&
-				selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS
+				selectUserProcessing?.onboardingStep !== DONE_ONBOARDING_STATUS
 			);
 		}
 		return false;
@@ -277,17 +277,17 @@ const ChannelAppList = memo(() => {
 	};
 
 	const handleOpenApp = async (appChannel: ApiChannelAppResponse) => {
-		if (appChannel.appId && appChannel.app_url && appChannel.channelId) {
+		if (appChannel.appId && appChannel.appUrl && appChannel.channelId) {
 			const hashData = await dispatch(
 				channelAppActions.generateAppUserHash({
 					appId: appChannel.appId
 				})
 			).unwrap();
-			if (hashData.web_app_data) {
+			if (hashData.webAppData) {
 				const store = getStore();
 				const channel = selectChannelById(store.getState(), appChannel.channelId);
-				const encodedHash = encodeURIComponent(hashData.web_app_data);
-				const urlWithHash = `${appChannel.app_url}?data=${encodedHash}`;
+				const encodedHash = encodeURIComponent(hashData.webAppData);
+				const urlWithHash = `${appChannel.appUrl}?data=${encodedHash}`;
 				if (isElectron()) {
 					window.electron.launchAppWindow(urlWithHash);
 					return;
@@ -338,13 +338,13 @@ const ChannelAppList = memo(() => {
 			<hr className="w-full ml-[3px] border-t-theme-primary" />
 			<div className={`grow w-full flex-row items-center gap-2 flex py-1 px-2 ${showList.length < 4 ? 'justify-start' : 'justify-center'}`}>
 				{showList.map((item) => (
-					<CustomTooltip key={item.appId} text={item.app_name || ''}>
+					<CustomTooltip key={item.appId} text={item.appName || ''}>
 						<div
 							className="text-theme-primary text-theme-primary-hover rounded-md aspect-square h-10 p-2 flex items-center justify-center cursor-pointer bg-item-hover"
 							onClick={() => handleOpenApp(item)}
 						>
-							{item.app_logo ? (
-								<img src={item.app_logo} className="w-full h-full" alt={item.app_name} />
+							{item.appLogo ? (
+								<img src={item.appLogo} className="w-full h-full" alt={item.appName} />
 							) : (
 								<svg className="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 									<g>
@@ -401,8 +401,8 @@ const ListChannelApp = ({
 							onClick={() => handleOpenApp(item)}
 						>
 							<div className="w-10 h-10 flex items-center justify-center">
-								{item.app_logo ? (
-									<img src={item.app_logo} className="w-full h-full" alt={item.app_name} />
+								{item.appLogo ? (
+									<img src={item.appLogo} className="w-full h-full" alt={item.appName} />
 								) : (
 									<svg className="fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
 										<g>
@@ -418,8 +418,8 @@ const ListChannelApp = ({
 									</svg>
 								)}
 							</div>
-							<span className="text-xs text-center truncate w-full" title={item.app_name}>
-								{item.app_name}
+							<span className="text-xs text-center truncate w-full" title={item.appName}>
+								{item.appName}
 							</span>
 						</div>
 					))}

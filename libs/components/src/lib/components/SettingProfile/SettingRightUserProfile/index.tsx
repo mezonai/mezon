@@ -227,7 +227,7 @@ const SettingRightUser = ({
 				clansActions.updateUser({
 					avatarUrl: urlImage,
 					displayName: valueDisplayName,
-					about_me: editAboutUser,
+					aboutMe: editAboutUser,
 					dob,
 					logo: attachment.url
 				})
@@ -361,7 +361,7 @@ const SettingRightUser = ({
 								value={editAboutUser}
 								rows={4}
 								maxLength={128}
-								data-e2e={generateE2eId('user_setting.profile.user_profile.input.about_me')}
+								data-e2e={generateE2eId('user_setting.profile.user_profile.input.aboutMe')}
 							></textarea>
 							<div className="w-full flex justify-end">
 								<span

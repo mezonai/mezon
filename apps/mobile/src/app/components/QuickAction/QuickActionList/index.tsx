@@ -27,7 +27,7 @@ export const QuickActionList = memo(({ data, themeValue, openModal, handleDelete
 	return (
 		<FlatList
 			data={data}
-			keyExtractor={(item, index) => `item_quick_action_${item?.id}_${item?.menu_name}_${index}`}
+			keyExtractor={(item, index) => `item_quick_action_${item?.id}_${item?.menuName}_${index}`}
 			renderItem={renderItem}
 			ListEmptyComponent={ListEmptyComponent}
 			initialNumToRender={10}

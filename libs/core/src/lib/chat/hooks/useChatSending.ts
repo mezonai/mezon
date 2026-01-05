@@ -27,7 +27,7 @@ export type UseChatSendingOptions = {
 export function useChatSending({ mode, channelOrDirect, fromTopic = false }: UseChatSendingOptions) {
 	const dispatch = useAppDispatch();
 	const getClanId = channelOrDirect?.clanId;
-	const isPublic = !channelOrDirect?.channel_private;
+	const isPublic = !channelOrDirect?.channelPrivate;
 	const channelIdOrDirectId = channelOrDirect?.channelId;
 	const currentTopicId = useSelector(selectCurrentTopicId);
 

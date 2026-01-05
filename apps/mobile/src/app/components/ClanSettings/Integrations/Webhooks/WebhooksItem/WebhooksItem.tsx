@@ -55,7 +55,7 @@ export function WebhooksItem({ webhook, isClanIntegration, isClanSetting }: { we
 					}}
 				/>
 				<View style={{ flex: 1 }}>
-					<Text style={styles.name}>{webhook?.webhook_name}</Text>
+					<Text style={styles.name}>{webhook?.webhookName}</Text>
 					<Text style={styles.textTime}>
 						{t('webhooksItem.createdBy', {
 							webhookCreateTime: convertDate(webhook.createTime || ''),

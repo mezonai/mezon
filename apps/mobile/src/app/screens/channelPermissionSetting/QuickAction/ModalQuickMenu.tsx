@@ -46,9 +46,9 @@ const ModalQuickMenu = React.memo(({ initialFormKey, initialFormValue, editKey, 
 						id: editKey,
 						channelId,
 						clanId,
-						menu_name: formKey,
-						action_msg: formValue || t('quickAction.botEventTrigger'),
-						menu_type: menuType
+						menuName: formKey,
+						actionMsg: formValue || t('quickAction.botEventTrigger'),
+						menuType: menuType
 					})
 				).unwrap();
 			} else {
@@ -56,9 +56,9 @@ const ModalQuickMenu = React.memo(({ initialFormKey, initialFormValue, editKey, 
 					addQuickMenuAccess({
 						channelId,
 						clanId,
-						menu_name: formKey,
-						action_msg: formValue || t('quickAction.botEventTrigger'),
-						menu_type: menuType
+						menuName: formKey,
+						actionMsg: formValue || t('quickAction.botEventTrigger'),
+						menuType: menuType
 					})
 				).unwrap();
 			}

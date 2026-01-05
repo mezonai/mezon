@@ -65,15 +65,15 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 		const userMap = new Map(listUser.map((user) => [user?.id, user]));
 
 		const visualCodes = activitiesByUserId
-			.filter((activity) => activity?.activity_type === 1 && activity?.userId && userMap.has(activity?.userId))
+			.filter((activity) => activity?.activityType === 1 && activity?.userId && userMap.has(activity?.userId))
 			.map((activity) => ({ ...activity, user: userMap.get(activity?.userId as string) }));
 
 		const spotifys = activitiesByUserId
-			.filter((activity) => activity?.activity_type === 2 && activity?.userId && userMap.has(activity?.userId))
+			.filter((activity) => activity?.activityType === 2 && activity?.userId && userMap.has(activity?.userId))
 			.map((activity) => ({ ...activity, user: userMap.get(activity?.userId as string) }));
 
 		const lol = activitiesByUserId
-			.filter((activity) => activity?.activity_type === 3 && activity?.userId && userMap.has(activity?.userId))
+			.filter((activity) => activity?.activityType === 3 && activity?.userId && userMap.has(activity?.userId))
 			.map((activity) => ({ ...activity, user: userMap.get(activity?.userId as string) }));
 
 		return {

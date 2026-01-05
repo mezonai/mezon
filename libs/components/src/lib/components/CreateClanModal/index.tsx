@@ -308,9 +308,9 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 						clanId: clanId,
 						type: channel.type,
 						channelLabel: channel.name,
-						channel_private: isPrivate,
+						channelPrivate: isPrivate,
 						categoryId: newCategory.categoryId,
-						parent_id: '0'
+						parentId: '0'
 					})
 				);
 				await new Promise((resolve) => setTimeout(resolve, 400));
@@ -460,7 +460,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 						className="mb-2 mt-4 py-2"
 						placeholder={t('createClanModal.placeholder')}
 						maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
-						data-e2e={generateE2eId('clan_page.modal.create_clan.input.clan_name')}
+						data-e2e={generateE2eId('clan_page.modal.create_clan.input.clanName')}
 					/>
 					{validationState !== EValidateListMessage.VALIDATED && (
 						<p className="text-[#e44141] text-xs italic font-thin">

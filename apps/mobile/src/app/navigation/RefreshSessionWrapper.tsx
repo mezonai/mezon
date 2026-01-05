@@ -110,7 +110,7 @@ const RefreshSessionWrapper = ({ children }) => {
 					session.refreshToken,
 					session.created || false,
 					session.apiUrl,
-					session?.id_token || '',
+					session?.idToken || '',
 					session?.isRemember || false
 				);
 				dispatch(authActions.updateSession(newSession));

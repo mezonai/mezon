@@ -131,7 +131,7 @@ const StreamingPopup = () => {
 					clanName: currentClanName || '',
 					streamId: currentChannel.channelId || '',
 					streamName: currentChannel.channelLabel || '',
-					parentId: currentChannel.parent_id || ''
+					parentId: currentChannel.parentId || ''
 				})
 			);
 			dispatch(appActions.setIsShowChatStream(false));

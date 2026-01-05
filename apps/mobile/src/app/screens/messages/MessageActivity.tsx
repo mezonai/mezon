@@ -64,9 +64,9 @@ function MessageActivity() {
 				.reduce((acc, user) => {
 					const info = activityMap.get(user.id);
 					if (info && user.id !== userId) {
-						const activityName = info?.activity_description
-							? `${info?.activity_name} - ${info.activity_description}`
-							: info?.activity_name;
+						const activityName = info?.activityDescription
+							? `${info?.activityName} - ${info.activityDescription}`
+							: info?.activityName;
 
 						acc.push({
 							activityName,

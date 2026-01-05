@@ -25,7 +25,7 @@ export function useNotificationSettings({ channelId, notificationSettings, getCh
 			dispatch(notificationSettingActions.updateNotiState({ channelId, active }));
 			const body = {
 				channelId: channelId,
-				mute_time: 0,
+				muteTime: 0,
 				active
 			};
 
@@ -39,7 +39,7 @@ export function useNotificationSettings({ channelId, notificationSettings, getCh
 			if (!channelId) return;
 			const body: MuteChannelPayload = {
 				channelId: channelId,
-				mute_time: duration,
+				muteTime: duration,
 				active: EMuteState.MUTED,
 				clanId: currentClanId || ''
 			};
@@ -65,7 +65,7 @@ export function useNotificationSettings({ channelId, notificationSettings, getCh
 		const hasActiveMuteTime = notificationSettings?.active === EMuteState.MUTED;
 		setNameChildren(hasActiveMuteTime ? t('contextMenu.unmute') : t('contextMenu.mute'));
 
-		const timeMute = notificationSettings?.time_mute;
+		const timeMute = notificationSettings?.timeMute;
 		const isValidTimeMute = timeMute && timeMute !== null && timeMute !== undefined;
 
 		setMutedUntilText(

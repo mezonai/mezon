@@ -17,7 +17,7 @@ interface ModalCallProps {
 }
 
 const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
-	const user = useAppSelector((state) => selectMemberDMByUserId(state, dataCall?.caller_id));
+	const user = useAppSelector((state) => selectMemberDMByUserId(state, dataCall?.callerId));
 	const isJoinedCall = useSelector(selectJoinedCall);
 	const isGroupCallActive = useSelector(selectIsGroupCallActive);
 
@@ -26,8 +26,8 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 	const groupCallSignaling = useGroupCallSignaling();
 
 	const callData = useMemo(() => {
-		return parseSignalingData(dataCall?.json_data as string);
-	}, [dataCall?.json_data]);
+		return parseSignalingData(dataCall?.jsonData as string);
+	}, [dataCall?.jsonData]);
 
 	const { groupName, memberCount, isVideoCall } = useMemo(
 		() => ({
@@ -51,11 +51,11 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 				groupId: dataCall.channelId,
 				groupName: callData.group_name || 'Group Call',
 				groupAvatar: callData.group_avatar,
-				meetingCode: callData.meeting_code,
+				meetingCode: callData.meetingCode,
 				clanId: callData.clanId,
 				participants: callData.participants || [],
 				callerInfo: {
-					id: callData.caller_id,
+					id: callData.callerId,
 					name: callData.caller_name,
 					avatar: callData.caller_avatar
 				}
@@ -68,7 +68,7 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 	};
 
 	const handleCloseCall = async () => {
-		if (callData && dataCall?.caller_id) {
+		if (callData && dataCall?.callerId) {
 			const quitData = createQuitData({
 				isVideo: callData.is_video,
 				groupId: dataCall.channelId || '',
@@ -77,7 +77,7 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 				action: 'decline'
 			}) as CallSignalingData;
 
-			groupCallSignaling.sendGroupCallQuit([dataCall.caller_id], quitData, dataCall.channelId ?? '', userId ?? '');
+			groupCallSignaling.sendGroupCallQuit([dataCall.callerId], quitData, dataCall.channelId ?? '', userId ?? '');
 		}
 
 		groupCallState.hideIncomingGroupCall();

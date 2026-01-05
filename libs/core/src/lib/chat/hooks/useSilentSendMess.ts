@@ -9,7 +9,7 @@ export function useSilentSendMess() {
 		async (userId: string) => {
 			const bodyCreateDm: ApiCreateChannelDescRequest = {
 				type: ChannelType.CHANNEL_TYPE_DM,
-				channel_private: 1,
+				channelPrivate: 1,
 				userIds: [userId],
 				clanId: '0'
 			};

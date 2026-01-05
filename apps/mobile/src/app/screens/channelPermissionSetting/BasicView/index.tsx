@@ -59,21 +59,21 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 	}, [allClanMembers, checkClanOwner]);
 
 	const availableMemberList = useMemo(() => {
-		if (channel?.channel_private) {
+		if (channel?.channelPrivate) {
 			return listOfChannelMember;
 		}
 		return [clanOwner];
-	}, [channel?.channel_private, clanOwner, listOfChannelMember]);
+	}, [channel?.channelPrivate, clanOwner, listOfChannelMember]);
 
 	const availableRoleList = useMemo(() => {
-		if (channel?.channel_private) {
+		if (channel?.channelPrivate) {
 			return listOfChannelRole?.filter(
 				(role) =>
-					typeof role?.role_channel_active === 'number' && role?.role_channel_active === 1 && role?.slug !== `everyone-${role?.clanId}`
+					typeof role?.roleChannelActive === 'number' && role?.roleChannelActive === 1 && role?.slug !== `everyone-${role?.clanId}`
 			);
 		}
 		return [];
-	}, [listOfChannelRole, channel?.channel_private]);
+	}, [listOfChannelRole, channel?.channelPrivate]);
 
 	const combineWhoCanAccessList = useMemo(() => {
 		return [
@@ -103,9 +103,9 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 				const updateUpdateChannelRequest: ApiChangeChannelPrivateRequest = {
 					clanId: channel?.clanId,
 					channelId: channel?.channelId || '',
-					channel_private: currentChannelPrivate,
+					channelPrivate: currentChannelPrivate,
 					userIds: [userId],
-					role_ids: []
+					roleIds: []
 				};
 
 				const response = await dispatch(channelsActions.updateChannelPrivate(updateUpdateChannelRequest));
@@ -123,7 +123,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 						clanId: channel?.clanId || '',
 						dataUpdate: {
 							...updateUpdateChannelRequest,
-							channel_private: Number(!isPublic)
+							channelPrivate: Number(!isPublic)
 						} as IUpdateChannelRequest
 					})
 				);
@@ -191,7 +191,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 				</View>
 			</TouchableOpacity>
 
-			{Boolean(channel?.channel_private) && (
+			{Boolean(channel?.channelPrivate) && (
 				<View>
 					<Text style={styles.descriptionText}>{t('channelPermission.basicViewDescription')}</Text>
 

@@ -25,7 +25,7 @@ const CategoryNotificationSetting = ({ category }: { category: ICategoryChannel 
 	const handleNotificationClanChange = (value: number) => {
 		const body = {
 			categoryId: category?.id,
-			notification_type: value,
+			notificationType: value,
 			clanId: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setDefaultNotificationCategory(body));
@@ -34,7 +34,7 @@ const CategoryNotificationSetting = ({ category }: { category: ICategoryChannel 
 	return (
 		<ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: size.s_50 }}>
 			<MezonOption
-				value={defaultCategoryNotificationSetting?.notification_setting_type}
+				value={defaultCategoryNotificationSetting?.notificationSettingType}
 				onChange={handleNotificationClanChange}
 				data={optionNotification(t)}
 			/>

@@ -153,7 +153,7 @@ const UnreadDMLoading = memo(() => {
 			{showData &&
 				!!unReadDM?.length &&
 				unReadDM?.map((dm: DirectEntity, index) => {
-					return <UnreadDMBadgeItem key={`${dm?.id}_${index}`} dmId={dm?.id} numUnread={dm?.count_mess_unread || 0} />;
+					return <UnreadDMBadgeItem key={`${dm?.id}_${index}`} dmId={dm?.id} numUnread={dm?.countMessUnread || 0} />;
 				})}
 			{showData && !!unReadDM?.length && <View style={styles.lineBottom} />}
 		</View>

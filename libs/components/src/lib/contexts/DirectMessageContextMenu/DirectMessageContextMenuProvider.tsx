@@ -154,10 +154,10 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const isDefaultSetting = !notificationSettings?.id || notificationSettings?.id === '0';
 	const isMuted = !isDefaultSetting && notificationSettings?.active === EMuteState.MUTED;
 	const hasMuteTime =
-		!isDefaultSetting && notificationSettings?.time_mute
+		!isDefaultSetting && notificationSettings?.timeMute
 			? (() => {
 					try {
-						const muteDate = new Date(notificationSettings.time_mute);
+						const muteDate = new Date(notificationSettings.timeMute);
 						return !isNaN(muteDate.getTime()) && muteDate > new Date();
 					} catch {
 						return false;

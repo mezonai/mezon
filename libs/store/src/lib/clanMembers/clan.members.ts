@@ -74,7 +74,7 @@ export const fetchUsersClanCached = async (getState: () => RootState, ensuredMez
 		'clan_user_list'
 	);
 
-	const users = response?.clan_users?.map(mapUsersClanToEntity) || [];
+	const users = response?.clanUsers?.map(mapUsersClanToEntity) || [];
 
 	markApiFirstCalled(apiKey);
 
@@ -130,7 +130,7 @@ export const fetchListBanMembersCached = async (
 	markApiFirstCalled(apiKey);
 
 	return {
-		ban_list: response.banned_users,
+		ban_list: response.bannedUsers,
 		fromCache: false
 	};
 };
@@ -334,9 +334,9 @@ export const UsersClanSlice = createSlice({
 		},
 		updateUserProfileAcrossClans: (
 			state,
-			action: PayloadAction<{ userId: string; avatar?: string; displayName?: string; about_me?: string }>
+			action: PayloadAction<{ userId: string; avatar?: string; displayName?: string; aboutMe?: string }>
 		) => {
-			const { userId, avatar, displayName, about_me } = action.payload;
+			const { userId, avatar, displayName, aboutMe } = action.payload;
 			Object.keys(state.byClans).forEach((clanId) => {
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
@@ -354,8 +354,8 @@ export const UsersClanSlice = createSlice({
 						updates.user!.displayName = displayName;
 					}
 
-					if (about_me !== undefined) {
-						updates.user!.about_me = about_me;
+					if (aboutMe !== undefined) {
+						updates.user!.aboutMe = aboutMe;
 					}
 
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
@@ -367,9 +367,9 @@ export const UsersClanSlice = createSlice({
 		},
 		addBannedUser: (
 			state,
-			action: PayloadAction<{ clanId: string; channelId: string; userIds: string[]; banner_id?: string; ban_time?: number }>
+			action: PayloadAction<{ clanId: string; channelId: string; userIds: string[]; bannerId?: string; banTime?: number }>
 		) => {
-			const { clanId, channelId, userIds, banner_id, ban_time } = action.payload;
+			const { clanId, channelId, userIds, bannerId, banTime } = action.payload;
 			const banList: Update<UsersClanEntity, string>[] = userIds.map((id) => {
 				const oldBanList = state.byClans?.[clanId]?.entities?.entities[id].ban_list || {};
 				return {
@@ -378,8 +378,8 @@ export const UsersClanSlice = createSlice({
 						ban_list: {
 							...oldBanList,
 							[channelId]: {
-								banner_id,
-								ban_time: ban_time ? Date.now() + (ban_time || 0) : ban_time
+								bannerId,
+								banTime: banTime ? Date.now() + (banTime || 0) : banTime
 							}
 						}
 					}
@@ -423,8 +423,8 @@ export const UsersClanSlice = createSlice({
 				const newBanList = {
 					...oldBanList,
 					[channelId]: {
-						ban_time: user?.expiredBanTime ? Date.now() + (user?.expiredBanTime || 0) : undefined,
-						banner_id: ''
+						banTime: user?.expiredBanTime ? Date.now() + (user?.expiredBanTime || 0) : undefined,
+						bannerId: ''
 					}
 				};
 				updates.push({
@@ -480,27 +480,27 @@ export const UsersClanSlice = createSlice({
 					if (!state.byClans[clanId]) {
 						state.byClans[clanId] = getInitialClanState();
 					}
-					const grouped: Record<string, Record<string, { banner_id?: string; ban_time?: number }>> = {};
+					const grouped: Record<string, Record<string, { bannerId?: string; banTime?: number }>> = {};
 
 					for (const user of ban_list) {
-						if (!user.banned_id || !user.channelId) continue;
-						if (grouped[user.banned_id]) {
-							grouped[user.banned_id][user.channelId] = {
-								banner_id: user.banner_id || '',
-								ban_time: user?.ban_time ? Date.now() + (user?.ban_time || 0) : user?.ban_time
+						if (!user.bannedId || !user.channelId) continue;
+						if (grouped[user.bannedId]) {
+							grouped[user.bannedId][user.channelId] = {
+								bannerId: user.bannerId || '',
+								banTime: user?.banTime ? Date.now() + (user?.banTime || 0) : user?.banTime
 							};
 						} else {
-							grouped[user.banned_id] = {
+							grouped[user.bannedId] = {
 								[user.channelId]: {
-									banner_id: user.banner_id || '',
-									ban_time: user?.ban_time ? Date.now() + (user?.ban_time || 0) : user?.ban_time
+									bannerId: user.bannerId || '',
+									banTime: user?.banTime ? Date.now() + (user?.banTime || 0) : user?.banTime
 								}
 							};
 						}
 					}
 					if (state.byClans[clanId]?.entities) {
-						const banList: Update<UsersClanEntity, string>[] = Object.entries(grouped).map(([banned_id, channelSet]) => ({
-							id: banned_id,
+						const banList: Update<UsersClanEntity, string>[] = Object.entries(grouped).map(([bannedId, channelSet]) => ({
+							id: bannedId,
 							changes: {
 								ban_list: channelSet
 							}

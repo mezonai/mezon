@@ -56,13 +56,13 @@ const SystemMessagesManagement = ({
 		}
 		switch (type) {
 			case ETypeUpdateSystemMessage.HIDE_AUDIT_LOG:
-				setUpdateSystemMessageRequest({ ...updateSystem, hide_audit_log: checked ? '0' : '1' });
+				setUpdateSystemMessageRequest({ ...updateSystem, hideAuditLog: checked ? '0' : '1' });
 				break;
 			case ETypeUpdateSystemMessage.SETUP_TIPS:
-				setUpdateSystemMessageRequest({ ...updateSystem, setup_tips: checked ? '1' : '0' });
+				setUpdateSystemMessageRequest({ ...updateSystem, setupTips: checked ? '1' : '0' });
 				break;
 			case ETypeUpdateSystemMessage.WELCOME_RANDOM:
-				setUpdateSystemMessageRequest({ ...updateSystem, welcome_random: checked ? '1' : '0' });
+				setUpdateSystemMessageRequest({ ...updateSystem, welcomeRandom: checked ? '1' : '0' });
 				break;
 			default:
 				break;
@@ -75,7 +75,7 @@ const SystemMessagesManagement = ({
 				(channel) =>
 					channel.clanId === currentClanId &&
 					channel.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
-					channel.channel_private !== ChannelStatusEnum.isPrivate
+					channel.channelPrivate !== ChannelStatusEnum.isPrivate
 			)
 			.map((channel) => {
 				if (channel.id !== selectedChannel?.id) {
@@ -85,7 +85,7 @@ const SystemMessagesManagement = ({
 							className="flex flex-row items-center rounded-sm text-sm w-full py-2 px-4 text-left cursor-pointer"
 							onClick={() => handleToggleSetting(true, ETypeUpdateSystemMessage.CHANNEL, channel.id)}
 						>
-							{channel?.channel_private ? (
+							{channel?.channelPrivate ? (
 								<Icons.HashtagLocked defaultSize="w-4 h-4 dark:text-channelTextLabel" />
 							) : (
 								<Icons.Hashtag defaultSize="w-4 h-4 dark:text-channelTextLabel" />
@@ -133,17 +133,17 @@ const SystemMessagesManagement = ({
 			<p className={'text-sm py-2'}>{t('systemMessages.description')}</p>
 			<ToggleItem
 				label={t('systemMessages.welcomeRandom')}
-				value={updateSystem?.welcome_random === '1'}
+				value={updateSystem?.welcomeRandom === '1'}
 				handleToggle={(e) => handleToggleSetting(e, ETypeUpdateSystemMessage.WELCOME_RANDOM)}
 			/>
 			<ToggleItem
 				label={t('systemMessages.setupTips')}
-				value={updateSystem?.setup_tips === '1'}
+				value={updateSystem?.setupTips === '1'}
 				handleToggle={(e) => handleToggleSetting(e, ETypeUpdateSystemMessage.SETUP_TIPS)}
 			/>
 			<ToggleItem
 				label={t('systemMessages.auditLog')}
-				value={updateSystem?.hide_audit_log !== '1'}
+				value={updateSystem?.hideAuditLog !== '1'}
 				handleToggle={(e) => handleToggleSetting(e, ETypeUpdateSystemMessage.HIDE_AUDIT_LOG)}
 			/>
 		</div>

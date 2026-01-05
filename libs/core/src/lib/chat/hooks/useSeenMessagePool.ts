@@ -16,7 +16,7 @@ export function useSeenMessagePool() {
 	const isFocus = !isBackgroundModeActive();
 
 	const markAsReadSeen = useCallback(
-		(message: MessagesEntity, mode: number, badge_count: number) => {
+		(message: MessagesEntity, mode: number, badgeCount: number) => {
 			// if message is sending, do not mark as seen
 			if (message?.isSending) {
 				return;
@@ -27,7 +27,7 @@ export function useSeenMessagePool() {
 					channelId: message?.channelId,
 					messageId: message?.id,
 					mode,
-					badge_count
+					badgeCount
 				})
 			);
 			if (isFocus) {

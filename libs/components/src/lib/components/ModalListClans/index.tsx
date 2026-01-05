@@ -82,7 +82,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 			onContextMenu={handleMouseClick}
 			data-id={option?.id}
 			className={`relative h-[40px] ${className}`}
-			title={option?.clan_name}
+			title={option?.clanName}
 			data-e2e={generateE2eId('clan_page.side_bar.clan_item')}
 		>
 			<button onClick={handleClick} draggable="false">
@@ -95,12 +95,12 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 							className="w-[40px] h-[40px] object-cover rounded-lg clan"
 						/>
 					) : (
-						option?.clan_name && (
+						option?.clanName && (
 							<div
 								className="w-[40px] h-[40px] bg-add-clan-hover theme-base-color rounded-xl flex justify-center items-center text-theme-primary text-theme-primary-hover hover:text-white text-[20px] clan"
 								data-e2e={generateE2eId('clan_page.side_bar.clan_item.name')}
 							>
-								{(option?.clan_name || '').charAt(0).toUpperCase()}
+								{(option?.clanName || '').charAt(0).toUpperCase()}
 							</div>
 						)
 					)}

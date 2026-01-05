@@ -414,15 +414,15 @@ const UserProfile = React.memo(
 		}, [currentChannel?.creatorId, dmChannel?.creatorId, userProfile?.user?.id]);
 
 		const isShowUserContent = useMemo(() => {
-			return !!userById?.user?.about_me || (showRole && userRolesClan?.length) || showAction || (isDMGroup && isChannelOwner && !isCheckOwner);
-		}, [userById?.user?.about_me, showAction, showRole, userRolesClan, isDMGroup, isCheckOwner, isChannelOwner]);
+			return !!userById?.user?.aboutMe || (showRole && userRolesClan?.length) || showAction || (isDMGroup && isChannelOwner && !isCheckOwner);
+		}, [userById?.user?.aboutMe, showAction, showRole, userRolesClan, isDMGroup, isCheckOwner, isChannelOwner]);
 
 		const handleTransferFunds = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
 				isShow: false
 			});
 			const payload = JSON.stringify({
-				receiver_id: userId ? userId : user?.id,
+				receiverId: userId ? userId : user?.id,
 				receiver_name: user?.user?.username || userById?.user?.username || user?.username,
 				amount: 10000,
 				note: t('userAction.transferFunds'),
@@ -598,10 +598,10 @@ const UserProfile = React.memo(
 									</Text>
 								</View>
 							)}
-							{!!userById?.user?.about_me && (
+							{!!userById?.user?.aboutMe && (
 								<View style={styles.aboutMeContainer}>
 									<Text style={[styles.aboutMe]}>{t('aboutMe.headerTitle')}</Text>
-									<Text style={[styles.aboutMeText]}>{userById?.user?.about_me}</Text>
+									<Text style={[styles.aboutMeText]}>{userById?.user?.aboutMe}</Text>
 								</View>
 							)}
 							{userRolesClan?.length && showRole && !isDM ? (

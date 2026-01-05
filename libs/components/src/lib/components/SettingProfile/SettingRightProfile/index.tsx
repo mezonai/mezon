@@ -71,7 +71,7 @@ const SettingRightProfile = ({ menuIsOpen, isDM }: SettingRightProfileProps) => 
 						name={userProfile?.user?.username || ''}
 						avatar={userProfile?.user?.avatarUrl || ''}
 						currentDisplayName={userProfile?.user?.displayName || ''}
-						aboutMe={userProfile?.user?.about_me || ''}
+						aboutMe={userProfile?.user?.aboutMe || ''}
 						isDM={isDM}
 						dob={userProfile?.user?.dob || ''}
 						logo={userProfile?.logo || ''}

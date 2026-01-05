@@ -137,7 +137,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 			const requestData = {
 				...updateData,
-				media_type: 0
+				mediaType: 0
 			};
 
 			isSticker
@@ -184,7 +184,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 			clanId: currentClanId,
 			source: realImage.url,
 			shortname: isSticker ? editingGraphic.shortname : `:${editingGraphic.shortname}:`,
-			is_for_sale: isForSale
+			isForSale: isForSale
 		};
 		if (isForSale) {
 			const idPreview = Snowflake.generate();
@@ -195,7 +195,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 		const requestData = {
 			...request,
-			media_type: 0
+			mediaType: 0
 		};
 
 		isSticker

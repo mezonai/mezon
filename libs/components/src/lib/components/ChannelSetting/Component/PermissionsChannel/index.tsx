@@ -35,7 +35,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 	}, [realTimeChannel?.categoryName, realTimeChannel?.categoryId, listCategory]);
 	const { t } = useTranslation('channelSetting');
 	const [showAddMemRole, setShowAddMemRole] = useState(false);
-	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channel_private);
+	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channelPrivate);
 	const [valueToggle, setValueToggle] = useState(valueToggleInit);
 	const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
@@ -64,9 +64,9 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 			channelsActions.updateChannelPrivate({
 				clanId: clanId,
 				channelId: channel.id,
-				channel_private: channel.channel_private || 0,
+				channelPrivate: channel.channelPrivate || 0,
 				userIds: updatedUserIds,
-				role_ids: selectedRoleIds
+				roleIds: selectedRoleIds
 			})
 		);
 	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel]);
@@ -177,7 +177,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 					<hr className="border-t border-solid dark:border-gray-700 border-bgModifierHoverLight mt-10 mb-[30px]" />
 					<PermissionManage
 						channelId={channel.id}
-						channelPrivate={channel.channel_private === 1}
+						channelPrivate={channel.channelPrivate === 1}
 						setIsPrivateChannel={setValueToggle}
 						setPermissionsListHasChanged={setPermissionsListHasChanged}
 						saveTriggerRef={saveTriggerRef}

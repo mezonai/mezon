@@ -78,14 +78,14 @@ const GroupCallComponent = memo(
 			const callGroup: any = storedCallData
 				? {
 						channelId: storedCallData.groupId,
-						meeting_code: storedCallData.meetingCode,
+						meetingCode: storedCallData.meetingCode,
 						clanId: storedCallData.clanId,
 						channelLabel: storedCallData.groupName,
-						clan_name: storedCallData.groupName
+						clanName: storedCallData.groupName
 					}
 				: currentDmGroup;
 
-			if (!callGroup?.meeting_code) return;
+			if (!callGroup?.meetingCode) return;
 
 			const callerId = userProfile?.user?.id || '';
 			const participants = [...baseParticipants, callerId.toString()];
@@ -99,7 +99,7 @@ const GroupCallComponent = memo(
 				callerId,
 				callerName: userProfile?.user?.displayName || userProfile?.user?.username || '',
 				callerAvatar: userProfile?.user?.avatarUrl,
-				meetingCode: callGroup?.meeting_code,
+				meetingCode: callGroup?.meetingCode,
 				clanId: callGroup?.clanId,
 				participants
 			});
@@ -124,7 +124,7 @@ const GroupCallComponent = memo(
 				const result = await dispatch(
 					generateMeetToken({
 						channelId: callGroup?.channelId as string,
-						roomName: callGroup?.meeting_code as string
+						roomName: callGroup?.meetingCode as string
 					})
 				).unwrap();
 
@@ -143,10 +143,10 @@ const GroupCallComponent = memo(
 					dispatch(
 						voiceActions.setVoiceInfo({
 							clanId: callGroup?.clanId as string,
-							clanName: callGroup?.clan_name as string,
+							clanName: callGroup?.clanName as string,
 							channelId: callGroup?.channelId as string,
 							channelLabel: callGroup?.channelLabel as string,
-							channelPrivate: callGroup?.channel_private as number
+							channelPrivate: callGroup?.channelPrivate as number
 						})
 					);
 

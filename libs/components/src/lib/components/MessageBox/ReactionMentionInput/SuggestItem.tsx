@@ -61,34 +61,34 @@ const SuggestItem = ({
 	const channelIcon = useMemo(() => {
 		if (!specificChannel) return null;
 
-		const { channel_private, type } = specificChannel;
+		const { channelPrivate, type } = specificChannel;
 
 		if (type === ChannelType.CHANNEL_TYPE_CHANNEL) {
-			if (!channel_private || channel_private === 0) {
+			if (!channelPrivate || channelPrivate === 0) {
 				return <Icons.Hashtag defaultSize="w-5 h-5" />;
 			}
-			if (channel_private === 1) {
+			if (channelPrivate === 1) {
 				return <Icons.HashtagLocked defaultSize="w-5 h-5" />;
 			}
 		}
 
 		if (type === ChannelType.CHANNEL_TYPE_THREAD) {
-			if (!channel_private || channel_private === 0) {
+			if (!channelPrivate || channelPrivate === 0) {
 				return <Icons.ThreadIcon defaultSize="w-5 h-5 text-theme-primary " />;
 			}
-			if (channel_private === 1) {
+			if (channelPrivate === 1) {
 				return <Icons.ThreadIconLocker className="w-5 h-5 text-theme-primary " />;
 			}
 		}
 
 		if (type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
-			if (!channel_private || channel_private === 0) {
+			if (!channelPrivate || channelPrivate === 0) {
 				return <Icons.Speaker defaultSize="w-5 5-5" />;
 			}
 			return <Icons.SpeakerLocked defaultSize="w-5 h-5" />;
 		}
 
-		if (type === ChannelType.CHANNEL_TYPE_STREAMING && (!channel_private || channel_private === 0)) {
+		if (type === ChannelType.CHANNEL_TYPE_STREAMING && (!channelPrivate || channelPrivate === 0)) {
 			return <Icons.Stream defaultSize="w-5 5-5" />;
 		}
 
@@ -160,7 +160,7 @@ const SuggestItem = ({
 				data-e2e={generateE2eId('suggest_item.username')}
 			>
 				{getChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					<RenderChannelLabelForThread channelId={getChannel?.parent_id as string} />
+					<RenderChannelLabelForThread channelId={getChannel?.parentId as string} />
 				) : (
 					<>{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}</>
 				)}

@@ -25,7 +25,7 @@ export function WebhookChannelSelectModal({ onConfirm, onCancel, initialChannelI
 	const allChannel = useSelector(selectAllChannels);
 	const [selectedChannelId, setSelectedChannelId] = useState<string>(initialChannelId || '');
 
-	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parent_id === ChannelIsNotThread.TRUE), [allChannel]);
+	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parentId === ChannelIsNotThread.TRUE), [allChannel]);
 
 	const channelOptions = useMemo(() => {
 		return parentChannelsInClan?.map((channel) => ({

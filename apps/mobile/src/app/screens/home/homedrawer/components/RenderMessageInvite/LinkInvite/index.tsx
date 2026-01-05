@@ -110,13 +110,13 @@ function LinkInvite({ inviteID }: { inviteID: string }) {
 						/>
 					) : (
 						<View style={styles.defaultAvatar}>
-							<Text style={styles.defaultAvatarText}>{selectInvite?.clan_name?.charAt(0)?.toUpperCase() || ''}</Text>
+							<Text style={styles.defaultAvatarText}>{selectInvite?.clanName?.charAt(0)?.toUpperCase() || ''}</Text>
 						</View>
 					)}
 
 					<View style={styles.clanTextInfo}>
 						<Text style={styles.clanName} numberOfLines={1}>
-							{selectInvite?.clan_name || ''}
+							{selectInvite?.clanName || ''}
 						</Text>
 
 						{selectInvite?.channelLabel && (

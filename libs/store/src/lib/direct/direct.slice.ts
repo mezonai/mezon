@@ -78,8 +78,8 @@ export const createNewDirectMessage = createAsyncThunk(
 			body,
 			username,
 			avatar,
-			display_names
-		}: { body: ApiCreateChannelDescRequest; display_names?: string | string[]; username?: string | string[]; avatar?: string | string[] },
+			displayNames
+		}: { body: ApiCreateChannelDescRequest; displayNames?: string | string[]; username?: string | string[]; avatar?: string | string[] },
 		thunkAPI
 	) => {
 		try {
@@ -91,10 +91,10 @@ export const createNewDirectMessage = createAsyncThunk(
 						id: response.channelId || '',
 						...response,
 						usernames: Array.isArray(username) ? username : username ? [username] : [],
-						display_names: Array.isArray(display_names) ? display_names : display_names ? [display_names] : [],
+						displayNames: Array.isArray(displayNames) ? displayNames : displayNames ? [displayNames] : [],
 						channelLabel:
 							response.channelLabel ||
-							(Array.isArray(display_names) ? display_names.join(',') : Array.isArray(username) ? username.join(',') : ''),
+							(Array.isArray(displayNames) ? displayNames.join(',') : Array.isArray(username) ? username.join(',') : ''),
 						channelAvatar: response.channelAvatar || 'assets/images/avatar-group.png',
 						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
 						userIds: body.userIds,
@@ -220,7 +220,7 @@ export const fetchDirectMessage = createAsyncThunk(
 						id: channel.channelId || '',
 						channelId: channel.channelId || '',
 						avatars: [userProfile?.avatarUrl || '', channel.avatars?.[0] || ''],
-						display_names: [userProfile?.displayName || '', channel.display_names?.[0] || ''],
+						displayNames: [userProfile?.displayName || '', channel.displayNames?.[0] || ''],
 						usernames: [userProfile?.username || '', channel.usernames?.[0] || ''],
 						onlines: [true, !!channel?.onlines?.[0]],
 						userIds: [userProfile?.id || '', channel.userIds?.[0] || '']
@@ -304,7 +304,7 @@ function mapChannelsToUsers(channels: ApiChannelDescription[]): IUserProfileActi
 				id: channel.userIds?.[0] || '',
 				avatarUrl: channel.avatars?.[0],
 				online: channel.onlines?.[0],
-				displayName: channel.display_names?.[0],
+				displayName: channel.displayNames?.[0],
 				username: channel.usernames?.[0]
 			});
 		}
@@ -364,13 +364,13 @@ const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 	return {
 		id: message.channelId,
 		clanId: '0',
-		parent_id: '0',
+		parentId: '0',
 		channelId: message.channelId,
 		categoryId: '0',
 		type: message?.mode === ChannelStreamMode.STREAM_MODE_GROUP ? ChannelType.CHANNEL_TYPE_GROUP : ChannelType.CHANNEL_TYPE_DM,
 		creatorId: message.senderId,
 		channelLabel: message.displayName || message.username,
-		channel_private: 1,
+		channelPrivate: 1,
 		channelAvatar: message.avatar,
 		avatars: [message.avatar as string],
 		userIds: [message.senderId],
@@ -391,8 +391,8 @@ const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 		onlines: [true],
 		active: ActiveDm.OPEN_DM,
 		usernames: [message.username as string],
-		display_names: [message.displayName as string],
-		creator_name: message.username as string,
+		displayNames: [message.displayName as string],
+		creatorName: message.username as string,
 		createTimeSeconds: message.createTimeSeconds,
 		updateTimeSeconds: message.createTimeSeconds
 	};
@@ -419,13 +419,13 @@ export const addDirectByMessageWS = createAsyncThunk('direct/addDirectByMessageW
 });
 
 interface AddGroupUserWSPayload {
-	channel_desc: ApiChannelDescription;
+	channelDesc: ApiChannelDescription;
 	users: UserProfileRedis[];
 }
 
 export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (payload: AddGroupUserWSPayload, thunkAPI) => {
 	try {
-		const { channel_desc, users } = payload;
+		const { channelDesc, users } = payload;
 		const userIds: string[] = [];
 		const usernames: string[] = [];
 		const avatars: string[] = [];
@@ -441,33 +441,33 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		}
 
 		const state = thunkAPI.getState() as RootState;
-		const existingEntity = selectAllDirectMessages(state).find((entity) => entity.id === channel_desc.channelId);
+		const existingEntity = selectAllDirectMessages(state).find((entity) => entity.id === channelDesc.channelId);
 
 		const directEntity: DirectEntity = {
-			...channel_desc,
-			id: channel_desc.channelId || '',
+			...channelDesc,
+			id: channelDesc.channelId || '',
 			userIds,
 			usernames,
-			display_names: label,
-			channelAvatar: channel_desc.channelAvatar || 'assets/images/avatar-group.png',
+			displayNames: label,
+			channelAvatar: channelDesc.channelAvatar || 'assets/images/avatar-group.png',
 			avatars,
 			onlines,
 			active: 1,
-			channelLabel: channel_desc?.channelLabel || existingEntity?.channelLabel || label.toString(),
-			topic: channel_desc.topic || existingEntity?.topic,
-			member_count: channel_desc.member_count
+			channelLabel: channelDesc?.channelLabel || existingEntity?.channelLabel || label.toString(),
+			topic: channelDesc.topic || existingEntity?.topic,
+			memberCount: channelDesc.memberCount
 		};
 		thunkAPI.dispatch(
 			userChannelsActions.update({
-				id: channel_desc.channelId || '',
+				id: channelDesc.channelId || '',
 				changes: {
 					avatars,
-					display_names: label,
-					id: channel_desc.channelId,
+					displayNames: label,
+					id: channelDesc.channelId,
 					onlines,
 					usernames,
 					userIds,
-					channelId: channel_desc.channelId
+					channelId: channelDesc.channelId
 				}
 			})
 		);
@@ -561,7 +561,7 @@ export const directSlice = createSlice({
 			directAdapter.updateOne(state, {
 				id: action.payload.channelId,
 				changes: {
-					member_count: (currentDirect?.member_count || 0) > 0 ? (currentDirect?.member_count || 1) - 1 : 0
+					memberCount: (currentDirect?.memberCount || 0) > 0 ? (currentDirect?.memberCount || 1) - 1 : 0
 				}
 			});
 		},
@@ -649,9 +649,9 @@ export const directSlice = createSlice({
 		},
 		updateMemberDMGroup: (
 			state,
-			action: PayloadAction<{ dmId: string; userId: string; avatar: string; displayName: string; about_me?: string }>
+			action: PayloadAction<{ dmId: string; userId: string; avatar: string; displayName: string; aboutMe?: string }>
 		) => {
-			const { dmId, userId, avatar, displayName, about_me } = action.payload;
+			const { dmId, userId, avatar, displayName, aboutMe } = action.payload;
 			const dmGroup = state.entities?.[dmId];
 
 			if (!dmGroup || !userId) return;
@@ -661,13 +661,13 @@ export const directSlice = createSlice({
 
 			if (avatar && dmGroup.channelAvatar) dmGroup.channelAvatar = avatar;
 
-			if (displayName && dmGroup.display_names) {
+			if (displayName && dmGroup.displayNames) {
 				if (dmGroup.channelLabel) {
 					const labels = dmGroup.channelLabel.split(',');
-					if (labels[index] === dmGroup.display_names[index]) labels[index] = displayName;
+					if (labels[index] === dmGroup.displayNames[index]) labels[index] = displayName;
 					dmGroup.channelLabel = labels.join(',');
 				}
-				dmGroup.display_names[index] = displayName;
+				dmGroup.displayNames[index] = displayName;
 			}
 		},
 		setDmActiveStatus: (state, action: PayloadAction<{ dmId: string; isActive: boolean }>) => {
@@ -678,23 +678,23 @@ export const directSlice = createSlice({
 		},
 		addBadgeDirect: (state, action: PayloadAction<{ channelId: string }>) => {
 			const channelId = action.payload.channelId;
-			const currentBadge = state.entities[channelId]?.count_mess_unread || 0;
+			const currentBadge = state.entities[channelId]?.countMessUnread || 0;
 			if (currentBadge !== currentBadge + 1) {
 				directAdapter.updateOne(state, {
 					id: channelId,
 					changes: {
-						count_mess_unread: currentBadge + 1
+						countMessUnread: currentBadge + 1
 					}
 				});
 			}
 		},
 		removeBadgeDirect: (state, action: PayloadAction<{ channelId: string }>) => {
-			const currentBadge = state.entities[action.payload.channelId]?.count_mess_unread || 0;
+			const currentBadge = state.entities[action.payload.channelId]?.countMessUnread || 0;
 			if (currentBadge) {
 				directAdapter.updateOne(state, {
 					id: action.payload.channelId,
 					changes: {
-						count_mess_unread: 0
+						countMessUnread: 0
 					}
 				});
 			}
@@ -725,7 +725,7 @@ export const directSlice = createSlice({
 			}
 
 			if (currentData?.type === ChannelType.CHANNEL_TYPE_GROUP) {
-				if (data?.display_names) changes.display_names = data?.display_names;
+				if (data?.displayNames) changes.displayNames = data?.displayNames;
 				if (data?.usernames) changes.usernames = data?.usernames;
 				if (data?.userIds) changes.userIds = data?.userIds;
 			}
@@ -738,13 +738,13 @@ export const directSlice = createSlice({
 		setCountMessUnread: (state, action: PayloadAction<{ channelId: string; isMention?: boolean; count?: number; isReset?: boolean }>) => {
 			const { channelId, isMention = false, count = 1, isReset = false } = action.payload;
 			const entity = state.entities[channelId];
-			if (entity?.is_mute !== true || isMention === true) {
-				const newCountMessUnread = isReset ? 0 : (entity?.count_mess_unread || 0) + count;
+			if (entity?.isMute !== true || isMention === true) {
+				const newCountMessUnread = isReset ? 0 : (entity?.countMessUnread || 0) + count;
 				const finalCount = Math.max(0, newCountMessUnread);
 				directAdapter.updateOne(state, {
 					id: channelId,
 					changes: {
-						count_mess_unread: finalCount
+						countMessUnread: finalCount
 					}
 				});
 			}
@@ -763,7 +763,7 @@ export const directSlice = createSlice({
 			directAdapter.updateOne(state, {
 				id: channelId,
 				changes: {
-					count_mess_unread: 0,
+					countMessUnread: 0,
 					lastSeenMessage
 				}
 			});
@@ -785,7 +785,7 @@ export const directSlice = createSlice({
 						senderId: payload.senderId,
 						timestampSeconds: timestamp
 					} as ApiChannelMessageHeader,
-					count_mess_unread: 0
+					countMessUnread: 0
 				}
 			});
 		},
@@ -817,7 +817,7 @@ export const directSlice = createSlice({
 			directAdapter.updateOne(state, {
 				id: payload.channelId,
 				changes: {
-					is_mute: payload.isMute
+					isMute: payload.isMute
 				}
 			});
 		}
@@ -905,7 +905,7 @@ export const selectCurrentDmUsernames = createSelector(
 );
 export const selectCurrentDmDisplayNames = createSelector(
 	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.display_names || []
+	(state) => state.entities[state.currentDirectMessageId as string]?.displayNames || []
 );
 export const selectCurrentDmAvatars = createSelector(
 	getDirectState,
@@ -921,7 +921,7 @@ export const selectCurrentDmChannelLabel = createSelector(
 );
 export const selectCurrentDmChannelPrivate = createSelector(
 	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.channel_private
+	(state) => state.entities[state.currentDirectMessageId as string]?.channelPrivate
 );
 export const selectCurrentDmCreatorId = createSelector(
 	getDirectState,
@@ -934,7 +934,7 @@ export const selectCurrentDmChannelId = createSelector(
 export const selectCurrentDmId = createSelector(getDirectState, (state) => state.entities[state.currentDirectMessageId as string]?.id || '');
 export const selectCurrentDmMeetingCode = createSelector(
 	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.meeting_code
+	(state) => state.entities[state.currentDirectMessageId as string]?.meetingCode
 );
 export const selectCurrentDmClanId = createSelector(getDirectState, (state) => state.entities[state.currentDirectMessageId as string]?.clanId || '');
 
@@ -964,7 +964,7 @@ export const selectDmUsernamesById = createSelector(
 );
 export const selectDmDisplayNamesById = createSelector(
 	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
-	(entities, dmId) => entities[dmId]?.display_names || []
+	(entities, dmId) => entities[dmId]?.displayNames || []
 );
 export const selectDmAvatarsById = createSelector(
 	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
@@ -980,7 +980,7 @@ export const selectDmChannelLabelById = createSelector(
 );
 export const selectDmChannelPrivateById = createSelector(
 	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
-	(entities, dmId) => entities[dmId]?.channel_private
+	(entities, dmId) => entities[dmId]?.channelPrivate
 );
 export const selectDmCreatorIdById = createSelector(
 	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
@@ -1021,7 +1021,7 @@ export const selectAllUserDM = createSelector(selectAllDirectMessages, (directMe
 				if (!acc.some((existingUser) => existingUser.id === userId)) {
 					const user = {
 						avatarUrl: dm?.avatars ? dm?.avatars[index] : '',
-						displayName: dm?.display_names ? dm?.display_names[index] : '',
+						displayName: dm?.displayNames ? dm?.displayNames[index] : '',
 						id: userId,
 						username: dm?.usernames ? dm?.usernames[index] : '',
 						online: dm?.onlines ? dm?.onlines[index] : false
@@ -1053,7 +1053,7 @@ export const selectIsShowPinBadgeByDmId = createSelector([getDirectState, (state
 
 export const selectDirectsUnreadlist = createSelector(selectAllDirectMessages, (state) => {
 	return state.filter((item) => {
-		return item?.count_mess_unread && item?.is_mute !== true;
+		return item?.countMessUnread && item?.isMute !== true;
 	});
 });
 
@@ -1079,7 +1079,7 @@ export const selectIsUnreadDMById = createSelector([selectDirectMessageEntities,
 });
 
 export const selectTotalUnreadDM = createSelector(selectDirectsUnreadlist, (listUnreadDM) => {
-	return listUnreadDM.reduce((total, count) => total + (count?.count_mess_unread ?? 0), 0);
+	return listUnreadDM.reduce((total, count) => total + (count?.countMessUnread ?? 0), 0);
 });
 
 export const selectLastSeenMessageIdDM = createSelector([selectDirectMessageEntities, (state, dmId: string) => dmId], (entities, channelId) => {

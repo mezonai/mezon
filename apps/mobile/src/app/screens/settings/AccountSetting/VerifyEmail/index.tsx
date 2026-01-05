@@ -40,8 +40,8 @@ export const VerifyEmail = memo(({ navigation, route }: IVerifyEmailProps) => {
 	const handleVerify = useCallback(
 		async (otp: string) => {
 			const payload = {
-				otp_code: otp,
-				req_id: requestId
+				otpCode: otp,
+				reqId: requestId
 			};
 
 			try {

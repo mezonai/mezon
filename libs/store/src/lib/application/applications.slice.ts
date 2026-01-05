@@ -36,8 +36,8 @@ export const applicationInitialState: IApplicationState = applicationAdapter.get
 	error: null,
 	appsData: {
 		apps: [],
-		next_cursor: undefined,
-		total_count: undefined
+		nextCursor: undefined,
+		totalCount: undefined
 	},
 	appDetail: {
 		id: '',
@@ -45,7 +45,7 @@ export const applicationInitialState: IApplicationState = applicationAdapter.get
 		appname: undefined,
 		creatorId: undefined,
 		disableTime: undefined,
-		is_shadow: undefined,
+		isShadow: undefined,
 		role: undefined,
 		token: undefined
 	},
@@ -243,12 +243,12 @@ export const adminApplicationSlice = createSlice({
 			};
 		});
 		builder.addCase(fetchMezonOauthClient.fulfilled, (state, action: PayloadAction<ApiMezonOauthClient>) => {
-			const clientId = action.payload.client_id ?? '';
+			const clientId = action.payload.clientId ?? '';
 			if (!state.entities[clientId]) return;
 			state.entities[clientId].oAuthClient = action.payload;
 		});
 		builder.addCase(editMezonOauthClient.fulfilled, (state, action: PayloadAction<ApiMezonOauthClient>) => {
-			const clientId = action.payload.client_id ?? '';
+			const clientId = action.payload.clientId ?? '';
 			if (!state.entities[clientId]) return;
 			state.entities[clientId].oAuthClient = action.payload;
 		});

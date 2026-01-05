@@ -27,7 +27,7 @@ export const DirectMessageLogo = memo(() => {
 				clansActions.updateUser({
 					avatarUrl: userProfile.user.avatarUrl,
 					displayName: userProfile.user.displayName,
-					about_me: userProfile.user.about_me,
+					aboutMe: userProfile.user.aboutMe,
 					dob: userProfile.user.dob,
 					logo: url
 				})
@@ -56,7 +56,7 @@ export const DirectMessageLogo = memo(() => {
 			clansActions.updateUser({
 				avatarUrl: userProfile.user.avatarUrl,
 				displayName: userProfile.user.displayName,
-				about_me: userProfile.user.about_me,
+				aboutMe: userProfile.user.aboutMe,
 				dob: userProfile.user.dob,
 				logo: ''
 			})

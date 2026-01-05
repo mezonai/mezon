@@ -293,12 +293,12 @@ export const UpdatePhoneNumber = memo(({ navigation, route }: { navigation: any;
 			const response = await dispatch(
 				accountActions.addPhoneNumber({
 					data: {
-						phone_number: fullPhoneNumber
+						phoneNumber: fullPhoneNumber
 					} as ApiLinkAccountMezon,
 					isMobile: true
 				})
 			);
-			const requestId = response?.payload?.req_id;
+			const requestId = response?.payload?.reqId;
 
 			if (response?.meta?.requestStatus === 'fulfilled' && requestId) {
 				startCooldownTimer(fullPhoneNumber);

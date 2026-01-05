@@ -126,8 +126,8 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		if (defaultCategoryNotificationSetting?.active === ENotificationActive.ON) {
 			setTimeMuted('');
 		} else if (defaultCategoryNotificationSetting?.active !== ENotificationActive.ON) {
-			if (defaultCategoryNotificationSetting?.time_mute) {
-				const timeMute = new Date(defaultCategoryNotificationSetting.time_mute);
+			if (defaultCategoryNotificationSetting?.timeMute) {
+				const timeMute = new Date(defaultCategoryNotificationSetting.timeMute);
 				const currentTime = new Date();
 				if (timeMute > currentTime) {
 					const timeDifference = timeMute.getTime() - currentTime.getTime();
@@ -145,7 +145,7 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	const muteOrUnMuteChannel = () => {
 		const body = {
 			id: currentCategory?.id,
-			mute_time: 0,
+			muteTime: 0,
 			clanId: currentClanId || '',
 			active: EMuteState.UN_MUTE
 		};
@@ -162,7 +162,7 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 			const body = {
 				id: currentCategory?.id,
 				clanId: currentClanId || '',
-				time_mute: duration !== Infinity ? duration : null,
+				timeMute: duration !== Infinity ? duration : null,
 				active: EMuteState.MUTED
 			};
 			const response = await dispatch(defaultNotificationCategoryActions.setMuteCategory(body));

@@ -158,10 +158,10 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		const tokenEvent: ApiTokenSentEvent = {
 			senderId: myProfile.userId as string,
 			senderName: myProfile?.userProfile?.user?.username as string,
-			receiver_id: userId,
+			receiverId: userId,
 			amount: token,
 			note,
-			extra_attribute: infoSendToken?.extra_attribute ?? extraAttribute
+			extraAttribute: infoSendToken?.extraAttribute ?? extraAttribute
 		};
 
 		setIsButtonDisabled(true);
@@ -207,12 +207,12 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	useEffect(() => {
 		if (showModalSendToken && infoSendToken) {
 			setToken(infoSendToken.amount ?? 0);
-			setSelectedUserId(infoSendToken.receiver_id ?? '');
+			setSelectedUserId(infoSendToken.receiverId ?? '');
 			setNote(infoSendToken.note ?? 'Transfer funds');
-			setExtraAttribute(infoSendToken.extra_attribute ?? '');
+			setExtraAttribute(infoSendToken.extraAttribute ?? '');
 			setSendTokenInputsState({
 				isSendTokenInputDisabled: infoSendToken.amount !== 0,
-				isUserSelectionDisabled: infoSendToken.receiver_id !== ''
+				isUserSelectionDisabled: infoSendToken.receiverId !== ''
 			});
 			const timer = setTimeout(() => {
 				handleClosePopup();
@@ -268,10 +268,10 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 				status={userCustomStatus}
 				name={name}
 				onClose={handleCloseModalCustomStatus}
-				time_reset={userMemberStatus?.time_reset}
+				timeReset={userMemberStatus?.timeReset}
 			/>
 		);
-	}, [userCustomStatus, userMemberStatus?.time_reset]);
+	}, [userCustomStatus, userMemberStatus?.timeReset]);
 
 	const [openModalSendToken, closeModalSendToken] = useModal(() => {
 		return (

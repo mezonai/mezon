@@ -78,7 +78,7 @@ const TopicDiscussionBox = () => {
 			? {
 					channelId: currentChannelId,
 					clanId: currentChannelClanId,
-					channel_private: currentChannelPrivate
+					channelPrivate: currentChannelPrivate
 				}
 			: undefined,
 		fromTopic: true
@@ -280,7 +280,7 @@ const TopicDiscussionBox = () => {
 			<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative ${isDesktop && 'pb-5'}`}>
 				{isBanned ? (
 					<BanCountDown
-						banTime={isBanned.ban_time ? isBanned.ban_time - Date.now() : Infinity}
+						banTime={isBanned.banTime ? isBanned.banTime - Date.now() : Infinity}
 						channelId={currentChannelId || ''}
 						clanId={currentClanId || ''}
 						userId={sessionUser?.userId || ''}

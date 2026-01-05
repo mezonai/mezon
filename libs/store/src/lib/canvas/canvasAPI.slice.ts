@@ -100,7 +100,7 @@ const fetchCanvasListCached = async (
 	if (!shouldForceCall) {
 		const entities = selectCachedCanvasByChannel(state, channelId);
 		return {
-			channel_canvases: entities,
+			channelCanvases: entities,
 			count: channelData.countCanvas || 0,
 			fromCache: true
 		};
@@ -167,7 +167,7 @@ export const createEditCanvas = createAsyncThunk('canvas/editChannelCanvases', a
 			channelId: body.channelId,
 			title: body.title,
 			content: body.content,
-			is_default: body.is_default,
+			isDefault: body.isDefault,
 			createTime: new Date().toISOString()
 		};
 
@@ -363,7 +363,7 @@ export const canvasAPISlice = createSlice({
 				state.loadingStatus = 'loaded';
 				if (action.payload.fromCache) return;
 				const channelId = action.payload.channelId;
-				const reversedCanvas = action.payload.channel_canvases;
+				const reversedCanvas = action.payload.channelCanvases;
 				const countCanvas = action.payload.count;
 				handleSetManyCanvas({
 					state,
@@ -503,7 +503,7 @@ export const selectDefaultCanvasByChannelId = createSelector([getCanvasApiState,
 	const entities = canvasState.channelCanvas[channelId]?.entities;
 	if (!entities) return null;
 	const canvasEntities = Object.values(entities);
-	const defaultCanvas = canvasEntities.find((canvas) => canvas.is_default === true);
+	const defaultCanvas = canvasEntities.find((canvas) => canvas.isDefault === true);
 
 	return defaultCanvas || null;
 });

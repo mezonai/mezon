@@ -24,7 +24,7 @@ const ClanCard: React.FC<ClanCardProps> = ({ clan }) => {
 	};
 	const clanId = clan.clanId;
 	const isValidId = typeof clanId === 'string' && clanId.length > 0;
-	const clanName = clan.clan_name || 'Unnamed Clan';
+	const clanName = clan.clanName || 'Unnamed Clan';
 
 	const handleBannerError = () => {
 		setBannerError(true);
@@ -72,7 +72,7 @@ const ClanCard: React.FC<ClanCardProps> = ({ clan }) => {
 							<circle cx="6" cy="6" r="3" fill="#22c55e" />
 						</svg>
 					</div>
-					<span>{formatNumber(clan.total_members) || (isValidId ? '100+' : '0')} Members</span>
+					<span>{formatNumber(clan.totalMembers) || (isValidId ? '100+' : '0')} Members</span>
 				</div>
 				<div className="mt-1">
 					<span

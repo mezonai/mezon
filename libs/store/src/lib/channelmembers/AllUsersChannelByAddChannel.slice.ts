@@ -141,7 +141,7 @@ export const userChannelsSlice = createSlice({
 
 			if (existingChannel) {
 				const userIds = existingChannel.userIds;
-				const display_names = existingChannel.display_names;
+				const displayNames = existingChannel.displayNames;
 				const usernames = existingChannel.usernames;
 				const onlines = existingChannel.onlines;
 				const avatars = existingChannel.avatars;
@@ -149,7 +149,7 @@ export const userChannelsSlice = createSlice({
 					const indexRemove = userIds?.indexOf(user);
 					if (indexRemove !== -1 && indexRemove !== undefined) {
 						userIds?.splice(indexRemove, 1);
-						display_names?.splice(indexRemove, 1);
+						displayNames?.splice(indexRemove, 1);
 						usernames?.splice(indexRemove, 1);
 						onlines?.splice(indexRemove, 1);
 						avatars?.splice(indexRemove, 1);
@@ -160,7 +160,7 @@ export const userChannelsSlice = createSlice({
 					id: channelId,
 					changes: {
 						userIds,
-						display_names,
+						displayNames,
 						avatars,
 						onlines,
 						usernames
@@ -234,7 +234,7 @@ export const selectMemberByGroupId = createSelector([getUserChannelsState, (stat
 			user: {
 				id,
 				username: entities.usernames?.[index] || '',
-				displayName: entities.display_names?.[index] || '',
+				displayName: entities.displayNames?.[index] || '',
 				avatarUrl: entities.avatars?.[index] || '',
 				online: entities.onlines?.[index]
 			}

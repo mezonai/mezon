@@ -15,7 +15,7 @@ export const useEventManagementQuantity = () => {
 		() =>
 			allEventManagement.filter(
 				(event) =>
-					(!event?.is_private || event.creatorId === userId) &&
+					(!event?.isPrivate || event.creatorId === userId) &&
 					(!event.channelId || event.channelId === '0' || allThreadChannelPrivateIds.includes(event.channelId))
 			),
 		[allEventManagement, allThreadChannelPrivateIds, userId]
@@ -25,10 +25,10 @@ export const useEventManagementQuantity = () => {
 
 	const eventUpcoming = useMemo(
 		() => eventsByUser.filter((event) => {
-			if (!event.start_time) {
+			if (!event.startTime) {
 				return false;
 			}
-			const startTime = new Date(event.start_time).getTime();
+			const startTime = new Date(event.startTime).getTime();
 			const currentTime = Date.now();
 			const timeDiff = startTime - currentTime;
 			const minutesLeft = Math.ceil(timeDiff / (1000 * 60));

@@ -102,7 +102,7 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 					clanId: currentClanId,
 					shortname: name.trim(),
 					source: sound.url,
-					media_type: MediaType.AUDIO
+					mediaType: MediaType.AUDIO
 				};
 
 				await dispatch(
@@ -135,7 +135,7 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 					clanId: currentClanId,
 					shortname: name.trim(),
 					source: attachment.url,
-					media_type: MediaType.AUDIO
+					mediaType: MediaType.AUDIO
 				};
 
 				if (sound) {

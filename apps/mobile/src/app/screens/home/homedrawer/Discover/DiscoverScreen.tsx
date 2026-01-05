@@ -30,7 +30,7 @@ const ClanDiscoverItem = ({ item }: { item: ApiClanDiscover }) => {
 				<View style={styles.headerRow}>
 					<ImageNative url={item.clanLogo} style={styles.smallAvatar} resizeMode="cover" />
 					<Text style={styles.clanName} numberOfLines={1}>
-						{item.clan_name}
+						{item.clanName}
 					</Text>
 				</View>
 
@@ -42,7 +42,7 @@ const ClanDiscoverItem = ({ item }: { item: ApiClanDiscover }) => {
 					<View style={styles.membersContainer}>
 						<View style={styles.memberDot} />
 						<Text style={styles.memberText}>
-							{item.total_members} {t('members')}
+							{item.totalMembers} {t('members')}
 						</Text>
 					</View>
 					<View style={styles.verifiedBadge}>

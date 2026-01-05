@@ -487,7 +487,7 @@ export const RenderTextMarkdownContent = ({
 						channelId: dataChannel?.[1],
 						clanId: dataChannel?.[2],
 						status: Number(dataChannel?.[3] || 1),
-						meeting_code: dataChannel?.[4] || '',
+						meetingCode: dataChannel?.[4] || '',
 						categoryId: dataChannel?.[5],
 						channelLabel: text || ''
 					};
@@ -628,7 +628,7 @@ export const RenderTextMarkdownContent = ({
 									channelId: dataChannel?.[1],
 									clanId: dataChannel?.[2],
 									status: Number(dataChannel?.[3] || 1),
-									meeting_code: dataChannel?.[4] || '',
+									meetingCode: dataChannel?.[4] || '',
 									categoryId: dataChannel?.[5],
 									channelLabel: text || ''
 								};

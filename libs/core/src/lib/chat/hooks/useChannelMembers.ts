@@ -22,7 +22,7 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 	const userProfile = useAppSelector(selectAllAccount);
 
 	const membersOfChild = useAppSelector((state) => (channelId ? selectAllChannelMembers(state, channelId as string) : null));
-	const membersOfParent = useAppSelector((state) => (channel?.parent_id ? selectAllChannelMembers(state, channel.parent_id as string) : null));
+	const membersOfParent = useAppSelector((state) => (channel?.parentId ? selectAllChannelMembers(state, channel.parentId as string) : null));
 
 	const dispatch = useAppDispatch();
 
@@ -77,13 +77,13 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 	return useMemo(
 		() => ({
 			membersOfParent:
-				(mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) && channel?.parent_id !== '0'
+				(mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) && channel?.parentId !== '0'
 					? membersOfParent
 					: membersOfChild,
 			membersOfChild,
 			addMemberToThread,
 			joinningToThread
 		}),
-		[membersOfChild, membersOfParent, mode, channel?.parent_id, addMemberToThread, joinningToThread]
+		[membersOfChild, membersOfParent, mode, channel?.parentId, addMemberToThread, joinningToThread]
 	);
 }

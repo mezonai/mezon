@@ -138,7 +138,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 
 	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClanId as string));
 	const firstChannelWithBadgeCount = useMemo(() => {
-		return listChannelRender?.find((item) => (item as IChannel)?.count_mess_unread && ((item as IChannel)?.count_mess_unread || 0) > 0) || null;
+		return listChannelRender?.find((item) => (item as IChannel)?.countMessUnread && ((item as IChannel)?.countMessUnread || 0) > 0) || null;
 	}, [listChannelRender]);
 
 	const [height, setHeight] = useState(0);
@@ -472,7 +472,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 										</div>
 									);
 								} else {
-									if (!(item as IChannel)?.parent_id || (item as IChannel).parent_id === '0') {
+									if (!(item as IChannel)?.parentId || (item as IChannel).parentId === '0') {
 										return (
 											<div
 												key={virtualRow.key}
@@ -501,7 +501,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 													thread={item}
 													notLastThread={
 														data[virtualRow.index + 1] &&
-														(data[virtualRow.index + 1] as IChannel)?.parent_id !== '0' &&
+														(data[virtualRow.index + 1] as IChannel)?.parentId !== '0' &&
 														!(data[virtualRow.index + 1] as ICategoryChannel)?.channels
 													}
 												/>

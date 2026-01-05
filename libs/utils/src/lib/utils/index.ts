@@ -149,8 +149,8 @@ export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] 
 
 	const allRoleUsers = rolesClan.reduce<RoleUserListRoleUser[]>((acc, role) => {
 		const isMentionedRole = mentions.some((mention) => mention.roleId === role.id);
-		if (isMentionedRole && role.role_user_list?.role_users) {
-			acc.push(...role.role_user_list.role_users);
+		if (isMentionedRole && role.roleUserList?.roleUsers) {
+			acc.push(...role.roleUserList.roleUsers);
 		}
 		return acc;
 	}, []);
@@ -896,7 +896,7 @@ export const sortChannelsByLastActivity = (channels: IChannel[]): IChannel[] => 
 	});
 };
 export const checkIsThread = (channel?: IChannel) => {
-	return channel?.parent_id !== '0' && channel?.parent_id !== '';
+	return channel?.parentId !== '0' && channel?.parentId !== '';
 };
 
 export const isWindowsDesktop = getPlatform() === Platform.WINDOWS && isElectron();
@@ -1334,7 +1334,7 @@ export const mapChannelToAppEntity = (
 		channelId: payload.channelId,
 		clanId: payload.clanId,
 		id: timestamp,
-		url: payload.app_url
+		url: payload.appUrl
 	};
 };
 
@@ -1352,7 +1352,7 @@ export const saveParseUserStatus = (userStatus: string): { status: string; userS
 };
 
 export const getParentChannelIdIfHas = (channel: IChannel) => {
-	const channelId = channel?.parent_id && channel?.parent_id !== '0' ? channel?.parent_id : channel?.channelId;
+	const channelId = channel?.parentId && channel?.parentId !== '0' ? channel?.parentId : channel?.channelId;
 	return channelId;
 };
 

@@ -46,7 +46,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 
 		for (const key in rolesClanEntity) {
 			const role = rolesClanEntity[key];
-			const checkHasRole = rolesClanEntity[key].role_user_list?.role_users?.some((listUser) => listUser.id === userId);
+			const checkHasRole = rolesClanEntity[key].roleUserList?.roleUsers?.some((listUser) => listUser.id === userId);
 			if (checkHasRole) {
 				activeRole[key] = key;
 				userRoleLength++;
@@ -57,18 +57,18 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 		userRoles
 			.map((role, index) => ({ ...role, originalIndex: index }))
 			.sort((a, b) => {
-				// If both roles have 'order_role', sort by its value
-				if (a.order_role !== undefined && b.order_role !== undefined) {
-					return a.order_role - b.order_role;
+				// If both roles have 'orderRole', sort by its value
+				if (a.orderRole !== undefined && b.orderRole !== undefined) {
+					return a.orderRole - b.orderRole;
 				}
 
-				// If neither role has 'order_role', maintain their original order
-				if (a.order_role === undefined && b.order_role === undefined) {
+				// If neither role has 'orderRole', maintain their original order
+				if (a.orderRole === undefined && b.orderRole === undefined) {
 					return a.originalIndex - b.originalIndex;
 				}
 
-				// If only one role has 'order_role', prioritize it
-				return a.order_role !== undefined ? -1 : 1;
+				// If only one role has 'orderRole', prioritize it
+				return a.orderRole !== undefined ? -1 : 1;
 			});
 
 		return {
@@ -319,16 +319,16 @@ const ListOptionRole = ({
 	const updateRoleUsersList = (role: RolesClanEntity, action: 'add' | 'remove') => {
 		const updatedRoleUsers =
 			action === 'add'
-				? [...(role.role_user_list?.role_users || []), { id: userId }]
-				: role.role_user_list?.role_users?.filter((user) => user.id !== userId) || [];
+				? [...(role.roleUserList?.roleUsers || []), { id: userId }]
+				: role.roleUserList?.roleUsers?.filter((user) => user.id !== userId) || [];
 
 		dispatch(
 			rolesClanActions.update({
 				role: {
 					...role,
-					role_user_list: {
-						...role.role_user_list,
-						role_users: updatedRoleUsers
+					roleUserList: {
+						...role.roleUserList,
+						roleUsers: updatedRoleUsers
 					}
 				},
 				clanId: currentClanId as string
@@ -369,7 +369,7 @@ const ListOptionRole = ({
 	for (const key in rolesClanEntity) {
 		if (
 			rolesClanEntity[key]?.title !== EVERYONE_ROLE_TITLE &&
-			(isClanOwner || Number(maxPermissionLevel) > Number(rolesClanEntity[key]?.max_level_permission || -1))
+			(isClanOwner || Number(maxPermissionLevel) > Number(rolesClanEntity[key]?.maxLevelPermission || -1))
 		) {
 			roleElements.push(
 				<div

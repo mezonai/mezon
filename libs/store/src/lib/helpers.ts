@@ -323,8 +323,8 @@ export async function fetchDataWithSocketFallback<T>(
 			}
 
 			if (socketRequest.api_name === 'ListClanUsers') {
-				if (responseKey && data?.[responseKey]?.clan_users) {
-					data[responseKey].clan_users = data[responseKey]?.clan_users?.map((item: ApiFriend) => ({
+				if (responseKey && data?.[responseKey]?.clanUsers) {
+					data[responseKey].clanUsers = data[responseKey]?.clanUsers?.map((item: ApiFriend) => ({
 						...item
 					}));
 				}

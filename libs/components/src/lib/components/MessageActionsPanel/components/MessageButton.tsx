@@ -43,10 +43,10 @@ export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button,
 				messagesActions.clickButtonMessage({
 					messageId: messageId,
 					channelId: channelId,
-					button_id: buttonId,
+					buttonId: buttonId,
 					senderId: senderId,
 					userId: currentUserId,
-					extra_data: data
+					extraData: data
 				})
 			);
 		}

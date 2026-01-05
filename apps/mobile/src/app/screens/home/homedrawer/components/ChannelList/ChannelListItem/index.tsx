@@ -42,7 +42,7 @@ export const ChannelListItem = React.memo(
 			isChannelActive ||
 			isHaveParentActive ||
 			hasUnread ||
-			props?.data?.count_mess_unread > 0;
+			props?.data?.countMessUnread > 0;
 
 		const isChildHaveUnRead = useMemo(() => {
 			try {
@@ -80,9 +80,9 @@ export const ChannelListItem = React.memo(
 	(prevProps, nextProps) => {
 		return (
 			prevProps?.data?.channelLabel === nextProps?.data?.channelLabel &&
-			prevProps?.data?.channel_private === nextProps?.data?.channel_private &&
+			prevProps?.data?.channelPrivate === nextProps?.data?.channelPrivate &&
 			prevProps?.data?.channelId === nextProps?.data?.channelId &&
-			prevProps?.data?.count_mess_unread === nextProps?.data?.count_mess_unread &&
+			prevProps?.data?.countMessUnread === nextProps?.data?.countMessUnread &&
 			prevProps?.isChannelActive === nextProps?.isChannelActive &&
 			prevProps?.isHaveParentActive === nextProps?.isHaveParentActive
 		);

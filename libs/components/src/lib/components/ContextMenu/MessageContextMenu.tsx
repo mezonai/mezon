@@ -150,11 +150,11 @@ function MessageContextMenu({
 		if (isClanView) {
 			return {
 				clanId: currentClanId,
-				channel_private: currentChannelPrivate,
+				channelPrivate: currentChannelPrivate,
 				channelId: currentChannelId
 			} as ApiChannelDescription;
 		}
-		return { channel_private: dmChannelPrivate, channelId: dmChannelId, clanId: '0' } as ApiChannelDescription;
+		return { channelPrivate: dmChannelPrivate, channelId: dmChannelId, clanId: '0' } as ApiChannelDescription;
 	}, [isClanView, currentClanId, currentChannelPrivate, currentChannelId, dmChannelPrivate, dmChannelId]);
 
 	const { sendMessage: sendChatMessage } = useChatSending({
@@ -236,7 +236,7 @@ function MessageContextMenu({
 			channelId: currentChannelId,
 			clanId: currentClanId.toString(),
 			content,
-			is_default: true,
+			isDefault: true,
 			...(id && { id }),
 			title: defaultCanvas?.title || t('note'),
 			status: defaultCanvas ? 0 : EEventAction.CREATED
@@ -460,7 +460,7 @@ function MessageContextMenu({
 					channelId: message?.channelId,
 					messageId: message?.id,
 					mode: message?.mode || 0,
-					badge_count: 0,
+					badgeCount: 0,
 					message_time: message.createTimeSeconds
 				})
 			);
@@ -482,9 +482,9 @@ function MessageContextMenu({
 
 	const handleSlashCommandSelect = useCallback(
 		(command: ApiQuickMenuAccessRequest) => {
-			if (command.action_msg) {
+			if (command.actionMsg) {
 				const payload = {
-					t: command.action_msg.trim(),
+					t: command.actionMsg.trim(),
 					hg: [],
 					ej: [],
 					mk: []
@@ -494,7 +494,7 @@ function MessageContextMenu({
 					sendChatMessage(payload, [], [], undefined, false, false);
 				} catch (error) {
 					console.error(t('errors.errorSendingSlashCommand'), error);
-					toast.error(`Failed to execute command "${command.menu_name}"`);
+					toast.error(`Failed to execute command "${command.menuName}"`);
 				}
 			}
 		},
@@ -696,7 +696,7 @@ function MessageContextMenu({
 										channelId: message.channelId,
 										clanId: message.clanId,
 										messageRefId: message.id,
-										receiver_id: message.senderId,
+										receiverId: message.senderId,
 										senderId: userId
 									})
 								).unwrap();
@@ -708,7 +708,7 @@ function MessageContextMenu({
 									count: 1,
 									messageSenderId: message?.senderId ?? '',
 									action_delete: false,
-									isPublic: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
+									isPublic: isPublicChannel({ parentId: currentChannelParentId, channelPrivate: currentChannelPrivate }),
 									clanId: message.clanId ?? '',
 									channelId: isTopic ? currentChannelId || '' : (message?.channelId ?? ''),
 									isFocusTopicBox,

@@ -38,7 +38,7 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 
 		try {
 			return groupClan.reduce((total, clan) => {
-				return total + (clan?.badge_count || 0);
+				return total + (clan?.badgeCount || 0);
 			}, 0);
 		} catch (error) {
 			console.error('Error in totalBadgeCount: ', error);
@@ -75,7 +75,7 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 					</View>
 				) : (
 					<View style={styles.clanIcon}>
-						<Text style={styles.clanIconText}>{clan?.clan_name?.charAt(0)?.toUpperCase()}</Text>
+						<Text style={styles.clanIconText}>{clan?.clanName?.charAt(0)?.toUpperCase()}</Text>
 					</View>
 				)}
 			</View>

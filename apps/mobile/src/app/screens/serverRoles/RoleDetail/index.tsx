@@ -48,7 +48,7 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 
 	const isCanEditRole = useMemo(() => {
 		if (!clanRole) return false;
-		return isClanOwner || Number(userMaxPermissionLevel) > Number(clanRole?.max_level_permission || 0);
+		return isClanOwner || Number(userMaxPermissionLevel) > Number(clanRole?.maxLevelPermission || 0);
 	}, [clanRole, isClanOwner, userMaxPermissionLevel]);
 
 	const isEveryoneRole = useMemo(() => {

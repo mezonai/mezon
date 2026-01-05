@@ -29,7 +29,7 @@ export interface AuthState {
 export interface ISession {
 	readonly created: boolean;
 	token: string;
-	readonly created_at: number;
+	readonly createdAt: number;
 	expires_at?: number;
 	refresh_expires_at?: number;
 	refreshToken: string;
@@ -38,7 +38,7 @@ export interface ISession {
 	vars?: object;
 	isRemember?: boolean;
 	apiUrl: string;
-	id_token?: string;
+	idToken?: string;
 }
 
 export const initialAuthState: AuthState = {
@@ -79,10 +79,10 @@ export type AuthenticatePhoneSMSOTPRequestPayload = {
 export const authenticateEmail = createAsyncThunk('auth/authenticateEmail', async ({ email, password }: AuthenticateEmailPayload, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	const session = await mezon?.authenticateEmail(email, password);
-	if (session && session?.id_token && session?.userId) {
+	if (session && session?.idToken && session?.userId) {
 		const proofInput = {
 			userId: session?.userId?.toString() || '',
-			jwt: session.id_token
+			jwt: session.idToken
 		};
 
 		await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
@@ -100,10 +100,10 @@ export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', asyn
 			console.error(data.message);
 		});
 	});
-	if (session && session.id_token && session.userId) {
+	if (session && session.idToken && session.userId) {
 		const proofInput = {
 			userId: session.userId,
-			jwt: session.id_token
+			jwt: session.idToken
 		};
 
 		await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
@@ -132,7 +132,7 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 		sessionState.refreshToken,
 		sessionState.created,
 		sessionState.apiUrl,
-		sessionState.id_token || '',
+		sessionState.idToken || '',
 		!!sessionState.isRemember
 	);
 
@@ -191,10 +191,10 @@ export const authenticateEmailOTPRequest = createAsyncThunk(
 export const confirmAuthenticateOTP = createAsyncThunk('auth/confirmAuthenticateOTP', async (data: ApiLinkAccountConfirmRequest, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	const session = await mezon?.confirmAuthenticateOTP(data);
-	if (session && session?.id_token && session?.userId) {
+	if (session && session?.idToken && session?.userId) {
 		const proofInput = {
 			userId: session.userId?.toString() || '',
-			jwt: session.id_token
+			jwt: session.idToken
 		};
 		await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
 	}
@@ -248,12 +248,12 @@ export const checkLoginRequest = createAsyncThunk(
 	async ({ loginId, isRemember }: { loginId: string; isRemember: boolean }, thunkAPI) => {
 		const mezon = getMezonCtx(thunkAPI);
 
-		const session = await mezon?.checkLoginRequest({ login_id: loginId, isRemember: isRemember });
+		const session = await mezon?.checkLoginRequest({ loginId: loginId, isRemember: isRemember });
 		if (session) {
-			if (session.id_token && session.userId) {
+			if (session.idToken && session.userId) {
 				const proofInput = {
 					userId: session.userId,
-					jwt: session.id_token
+					jwt: session.idToken
 				};
 
 				await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
@@ -267,11 +267,11 @@ export const checkLoginRequest = createAsyncThunk(
 export const confirmLoginRequest = createAsyncThunk('auth/confirmLoginRequest', async ({ loginId }: { loginId: string }, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 
-	const session = await mezon?.confirmLoginRequest({ login_id: loginId });
-	if (session?.id_token && session?.userId) {
+	const session = await mezon?.confirmLoginRequest({ loginId: loginId });
+	if (session?.idToken && session?.userId) {
 		const proofInput = {
 			userId: session.userId,
-			jwt: session.id_token
+			jwt: session.idToken
 		};
 
 		await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));

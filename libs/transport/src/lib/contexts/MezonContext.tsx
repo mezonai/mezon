@@ -53,10 +53,10 @@ type Sessionlike = {
 	apiUrl: string;
 	expires_at?: number;
 	refresh_expires_at?: number;
-	created_at?: number;
+	createdAt?: number;
 	username?: string;
 	userId?: string;
-	id_token?: string;
+	idToken?: string;
 };
 
 const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean) => {
@@ -240,7 +240,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					session.refreshToken || '',
 					session.created || false,
 					session.apiUrl || '',
-					session.id_token || '',
+					session.idToken || '',
 					sessionData.isRemember || false
 				);
 
@@ -464,7 +464,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				session?.refreshToken,
 				session.created,
 				session.apiUrl,
-				session.id_token || '',
+				session.idToken || '',
 				session.isRemember
 			);
 
@@ -486,7 +486,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 
 			const newSession = await clientRef.current.sessionRefresh(
-				new Session(session?.token, session?.refreshToken, session.created, session.apiUrl, session.id_token || '', session.isRemember)
+				new Session(session?.token, session?.refreshToken, session.created, session.apiUrl, session.idToken || '', session.isRemember)
 			);
 
 			sessionRef.current = newSession;
@@ -555,7 +555,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 									sessionRef.current.refreshToken,
 									sessionRef.current.created,
 									sessionRef.current.apiUrl,
-									sessionRef.current.id_token,
+									sessionRef.current.idToken,
 									sessionRef.current.isRemember ?? false
 								)
 							);
@@ -669,7 +669,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					sessionData.refreshToken,
 					sessionData.created || false,
 					sessionData.apiUrl,
-					sessionData.id_token || '',
+					sessionData.idToken || '',
 					sessionData.isRemember || false
 				);
 

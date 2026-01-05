@@ -66,7 +66,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 		},
 		errorMessage: clanError,
 		options: clans.map((clan) => ({
-			label: clan.clan_name,
+			label: clan.clanName,
 			value: clan.id
 		}))
 	};
@@ -109,8 +109,8 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 			clanId: clanValue,
 			categoryId: categoryValue,
 			type: ChannelType.CHANNEL_TYPE_APP,
-			channel_private: 0,
-			parent_id: '0'
+			channelPrivate: 0,
+			parentId: '0'
 		};
 
 		try {

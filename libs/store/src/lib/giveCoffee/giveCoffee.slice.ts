@@ -40,7 +40,7 @@ export const giveCoffeeAdapter = createEntityAdapter<GiveCoffeeEntity>();
 
 export const updateGiveCoffee = createAsyncThunk(
 	'giveCoffee/updateGiveCoffee',
-	async ({ channelId, clanId, messageRefId, receiver_id, senderId }: ApiGiveCoffeeEvent, thunkAPI) => {
+	async ({ channelId, clanId, messageRefId, receiverId, senderId }: ApiGiveCoffeeEvent, thunkAPI) => {
 		const state = thunkAPI.getState() as any;
 		if (!state.giveCoffee.pendingGiveCoffee) {
 			try {
@@ -52,7 +52,7 @@ export const updateGiveCoffee = createAsyncThunk(
 					.dispatch(
 						walletActions.sendTransaction({
 							sender: senderId,
-							recipient: receiver_id,
+							recipient: receiverId,
 							amount: AMOUNT_TOKEN.TEN_THOUSAND_TOKENS,
 							textData: 'givecoffee',
 							extraInfo: {
@@ -60,7 +60,7 @@ export const updateGiveCoffee = createAsyncThunk(
 								ChannelId: channelId || '',
 								ClanId: clanId || '',
 								MessageRefId: messageRefId || '',
-								UserReceiverId: receiver_id || '',
+								UserReceiverId: receiverId || '',
 								UserSenderId: senderId || '',
 								UserSenderUsername: mezon.session.username || ''
 							}
@@ -108,15 +108,15 @@ export const sendToken = createAsyncThunk(
 				.dispatch(
 					walletActions.sendTransaction({
 						sender: tokenEvent.senderId,
-						recipient: tokenEvent.receiver_id,
+						recipient: tokenEvent.receiverId,
 						amount: tokenEvent.amount,
 						textData: tokenEvent.note,
 						extraInfo: {
 							type: ETransferType.TransferToken,
-							UserReceiverId: tokenEvent.receiver_id || '',
+							UserReceiverId: tokenEvent.receiverId || '',
 							UserSenderId: tokenEvent.senderId || '',
 							UserSenderUsername: mezon.session.username || '',
-							ExtraAttribute: tokenEvent?.extra_attribute || ''
+							ExtraAttribute: tokenEvent?.extraAttribute || ''
 						},
 						isSendByAddress
 					})
@@ -172,12 +172,12 @@ export const giveCoffeeSlice = createSlice({
 		handleSocketToken: (state, action: PayloadAction<{ currentUserId: string; tokenEvent: ApiTokenSentEvent }>) => {
 			const { currentUserId, tokenEvent } = action.payload;
 			if (!currentUserId) return;
-			if (currentUserId !== tokenEvent.receiver_id) return;
+			if (currentUserId !== tokenEvent.receiverId) return;
 
 			state.tokenUpdate[currentUserId] = state.tokenUpdate[currentUserId] ?? 0;
 			state.tokenSocket[currentUserId] = tokenEvent ?? {};
 
-			if (currentUserId === tokenEvent.receiver_id) {
+			if (currentUserId === tokenEvent.receiverId) {
 				state.tokenUpdate[currentUserId] += tokenEvent.amount || 0;
 			}
 		},

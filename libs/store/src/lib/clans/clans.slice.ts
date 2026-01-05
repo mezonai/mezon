@@ -105,7 +105,7 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 		try {
 			const state = thunkAPI.getState() as RootState;
 			const targetClan = state.clans.entities[clanId];
-			const hasUnreadCount = (targetClan?.badge_count ?? 0) > 0;
+			const hasUnreadCount = (targetClan?.badgeCount ?? 0) > 0;
 			if (hasUnreadCount && !noCache) {
 				thunkAPI.dispatch(fetchClans({ noCache: true }));
 			}
@@ -247,16 +247,16 @@ export const fetchClans = createAsyncThunk(
 );
 
 type CreatePayload = {
-	clan_name: string;
+	clanName: string;
 	logo?: string;
 };
 
-export const createClan = createAsyncThunk('clans/createClans', async ({ clan_name, logo }: CreatePayload, thunkAPI) => {
+export const createClan = createAsyncThunk('clans/createClans', async ({ clanName, logo }: CreatePayload, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const body = {
 			banner: '',
-			clan_name,
+			clanName,
 			creatorId: '',
 			logo: logo ?? ''
 		};
@@ -271,10 +271,10 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 	}
 });
 
-export const checkDuplicateNameClan = createAsyncThunk('clans/duplicateNameClan', async (clan_name: string, thunkAPI) => {
+export const checkDuplicateNameClan = createAsyncThunk('clans/duplicateNameClan', async (clanName: string, thunkAPI) => {
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clan_name, '', TypeCheck.TYPECLAN, '0');
+		const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clanName, '', TypeCheck.TYPECLAN, '0');
 
 		if (isDuplicateName?.type === TypeCheck.TYPECLAN) {
 			return isDuplicateName.exist;
@@ -308,7 +308,7 @@ export const transferClan = createAsyncThunk('clans/transferClan', async (body: 
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.transferOwnership(mezon.session, {
 			clanId: body.clanId,
-			new_owner_id: body.new_clan_owner
+			newOwnerId: body.new_clan_owner
 		});
 		if (response) {
 			return {
@@ -365,7 +365,7 @@ export const updateClan = createAsyncThunk(
 type UpdateLinkUser = {
 	avatarUrl: string;
 	displayName: string;
-	about_me: string;
+	aboutMe: string;
 	dob: string;
 	noCache?: boolean;
 	logo?: string;
@@ -374,7 +374,7 @@ type UpdateLinkUser = {
 
 export const updateUser = createAsyncThunk(
 	'clans/updateUser',
-	async ({ avatarUrl, displayName, about_me, logo, noCache = false, dob, encryptPrivateKey }: UpdateLinkUser, thunkAPI) => {
+	async ({ avatarUrl, displayName, aboutMe, logo, noCache = false, dob, encryptPrivateKey }: UpdateLinkUser, thunkAPI) => {
 		try {
 			const state = thunkAPI.getState() as RootState;
 			const currentUser = state.account?.userProfile;
@@ -391,8 +391,8 @@ export const updateUser = createAsyncThunk(
 				body.displayName = displayName || '';
 			}
 
-			if (about_me !== undefined) {
-				body.about_me = about_me || '';
+			if (aboutMe !== undefined) {
+				body.aboutMe = aboutMe || '';
 			}
 
 			if (dob && dob !== currentUser?.user?.dob) {
@@ -427,7 +427,7 @@ export const updateUser = createAsyncThunk(
 							langTag: 'en',
 							location: '',
 							timezone: '',
-							about_me,
+							aboutMe,
 							dob
 						}
 					})
@@ -753,10 +753,10 @@ export const clansSlice = createSlice({
 			const { clanId, count, isReset } = action.payload;
 			const entity = state.entities[clanId];
 			if (entity) {
-				const newBadgeCount = !isReset ? (entity.badge_count ?? 0) + count : 0;
+				const newBadgeCount = !isReset ? (entity.badgeCount ?? 0) + count : 0;
 				const finalBadgeCount = Math.max(0, newBadgeCount);
-				if (!entity.badge_count && finalBadgeCount === 0) return;
-				if (entity.badge_count !== finalBadgeCount) {
+				if (!entity.badgeCount && finalBadgeCount === 0) return;
+				if (entity.badgeCount !== finalBadgeCount) {
 					const newHasUnread = finalBadgeCount === 0 ? false : entity.hasUnreadMessage;
 
 					if (finalBadgeCount === 0 && newHasUnread === false) {
@@ -772,11 +772,11 @@ export const clansSlice = createSlice({
 					}
 				}
 
-				if (entity.badge_count !== finalBadgeCount) {
+				if (entity.badgeCount !== finalBadgeCount) {
 					clansAdapter.updateOne(state, {
 						id: clanId,
 						changes: {
-							badge_count: finalBadgeCount
+							badgeCount: finalBadgeCount
 						}
 					});
 				}
@@ -788,7 +788,7 @@ export const clansSlice = createSlice({
 
 			if (clan) {
 				const totalCount = channels.reduce((sum, { count }) => sum + count, 0);
-				clan.badge_count = Math.max(0, (clan.badge_count ?? 0) + totalCount);
+				clan.badgeCount = Math.max(0, (clan.badgeCount ?? 0) + totalCount);
 			}
 		},
 		setHasUnreadMessage: (state, action: PayloadAction<{ clanId: string; hasUnread: boolean }>) => {
@@ -829,7 +829,7 @@ export const clansSlice = createSlice({
 				id: dataUpdate.clanId as string,
 				changes: {
 					clanId: dataUpdate.clanId,
-					clan_name: dataUpdate.clan_name,
+					clanName: dataUpdate.clanName,
 					logo: dataUpdate.logo,
 					banner: dataUpdate.banner,
 					isOnboarding: dataUpdate.isOnboarding,
@@ -993,11 +993,11 @@ export const selectCurrentClan = createSelector(selectClansEntities, selectCurre
 
 export const selectCurrentClanBanner = createSelector(selectCurrentClan, (clan) => clan?.banner);
 export const selectCurrentClanLogo = createSelector(selectCurrentClan, (clan) => clan?.logo);
-export const selectCurrentClanName = createSelector(selectCurrentClan, (clan) => clan?.clan_name);
+export const selectCurrentClanName = createSelector(selectCurrentClan, (clan) => clan?.clanName);
 export const selectCurrentClanCreatorId = createSelector(selectCurrentClan, (clan) => clan?.creatorId);
 export const selectCurrentClanIsOnboarding = createSelector(selectCurrentClan, (clan) => clan?.isOnboarding);
 export const selectCurrentClanWelcomeChannelId = createSelector(selectCurrentClan, (clan) => clan?.welcomeChannelId);
-export const selectCurrentClanBadgeCount = createSelector(selectCurrentClan, (clan) => clan?.badge_count ?? 0);
+export const selectCurrentClanBadgeCount = createSelector(selectCurrentClan, (clan) => clan?.badgeCount ?? 0);
 export const selectCurrentClanIsCommunity = createSelector(selectCurrentClan, (clan) => clan?.isCommunity);
 export const selectCurrentClanPreventAnonymous = createSelector(selectCurrentClan, (clan) => clan?.preventAnonymous ?? false);
 
@@ -1021,13 +1021,13 @@ export const selectShowNumEvent = (clanId: string) =>
 	});
 
 export const selectBadgeCountAllClan = createSelector(selectAllClans, (clan) => {
-	return clan.reduce((total, count) => total + (count.badge_count ?? 0), 0);
+	return clan.reduce((total, count) => total + (count.badgeCount ?? 0), 0);
 });
 
 export const selectBadgeCountByClanId = (clanId: string) =>
 	createSelector(getClansState, (state) => {
 		const clan = state.entities[clanId];
-		return clan?.badge_count || 0;
+		return clan?.badgeCount || 0;
 	});
 
 export const selectInvitePeopleStatus = createSelector(getClansState, (state) => state.invitePeople);

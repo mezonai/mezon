@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ModalUploadSound from './ModalUploadSound';
 interface ExtendedClanSticker extends ClanSticker {
-	media_type?: MediaType;
+	mediaType?: MediaType;
 }
 
 export type SoundType = {

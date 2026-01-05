@@ -30,7 +30,7 @@ const LogoClanSelector = () => {
 					clanId: currentClan?.clanId ?? '',
 					request: {
 						banner: currentClan?.banner ?? '',
-						clan_name: currentClan?.clan_name ?? '',
+						clanName: currentClan?.clanName ?? '',
 						creatorId: currentClan?.creatorId ?? '',
 						isOnboarding: currentClan?.isOnboarding,
 						logo,
@@ -75,7 +75,7 @@ const LogoClanSelector = () => {
 					defaultValue={currentClan?.logo}
 					onLoad={handleLoad}
 					autoUpload={true}
-					alt={currentClan?.clan_name}
+					alt={currentClan?.clanName}
 					disabled={!isHavePermission}
 					imageSizeLimit={MAX_FILE_SIZE_1MB}
 				/>
@@ -85,7 +85,7 @@ const LogoClanSelector = () => {
 					</TouchableOpacity>
 				)}
 			</View>
-			<Text style={styles.clanName}>{currentClan?.clan_name}</Text>
+			<Text style={styles.clanName}>{currentClan?.clanName}</Text>
 		</View>
 	);
 };

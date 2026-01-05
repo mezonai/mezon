@@ -48,7 +48,7 @@ export const fetchEmojiRecentCached = async (getState: () => RootState, ensuredM
 	if (!shouldForceCall) {
 		const emojis = selectCachedEmojiRecent(state);
 		return {
-			emoji_recents: emojis,
+			emojiRecents: emojis,
 			time: Date.now(),
 			fromCache: true
 		};
@@ -73,7 +73,7 @@ export const fetchEmojiRecent = createAsyncThunk('emoji/fetchEmojiRecent', async
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchEmojiRecentCached(thunkAPI.getState as () => RootState, mezon, noCache);
 
-		if (!response?.emoji_recents) {
+		if (!response?.emojiRecents) {
 			thunkAPI.dispatch(emojiRecentActions.setLastEmojiRecent({ emojiRecentsId: '0', emojiId: '' }));
 			return {
 				emojis: [],
@@ -82,12 +82,12 @@ export const fetchEmojiRecent = createAsyncThunk('emoji/fetchEmojiRecent', async
 		}
 		thunkAPI.dispatch(
 			emojiRecentActions.setLastEmojiRecent({
-				emojiRecentsId: response.emoji_recents[0]?.emojiRecentsId,
-				emojiId: response.emoji_recents[0]?.emojiId
+				emojiRecentsId: response.emojiRecents[0]?.emojiRecentsId,
+				emojiId: response.emojiRecents[0]?.emojiId
 			})
 		);
 		return {
-			emojis: response.emoji_recents,
+			emojis: response.emojiRecents,
 			fromCache: response?.fromCache
 		};
 	} catch (error) {

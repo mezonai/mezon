@@ -17,7 +17,7 @@ const ButtonNewUnread = React.memo(() => {
 	const channelsInClan = useAppSelector(selectAllChannels);
 	const dispatch = useAppDispatch();
 
-	const findFirstChannelWithBadgeCount = (channels = []) => channels?.find((item) => item?.count_mess_unread > 0) || null;
+	const findFirstChannelWithBadgeCount = (channels = []) => channels?.find((item) => item?.countMessUnread > 0) || null;
 
 	const firstChannelBadgeCount = useMemo(() => {
 		return findFirstChannelWithBadgeCount(channelsInClan);

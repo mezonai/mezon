@@ -47,7 +47,7 @@ const BottomsheetSelectChannel: React.FC<IBottomsheetSelectChannelProps> = ({ da
 	const renderItem = ({ item }: { item: ChannelsEntity }) => {
 		return (
 			<Pressable key={`channel_event_${item.channelId}`} onPress={() => onSelect(item)} style={styles.items}>
-				{channelIcon(item.type, item.channel_private === ChannelStatusEnum.isPrivate)}
+				{channelIcon(item.type, item.channelPrivate === ChannelStatusEnum.isPrivate)}
 				<Text style={styles.inputValue} numberOfLines={1} ellipsizeMode="tail">
 					{item.channelLabel}
 				</Text>

@@ -83,7 +83,7 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 				const body = {
 					channelId: currentChannel?.id || '',
 					clanId: currentClanId || '',
-					mute_time: 0,
+					muteTime: 0,
 					active: EMuteState.UN_MUTE
 				};
 				const response = await dispatch(notificationSettingActions.setMuteChannel(body));
@@ -120,7 +120,7 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 			const body = {
 				channelId: currentChannel?.id || '',
 				clanId: currentClanId || '',
-				mute_time: duration !== Infinity ? duration : 0,
+				muteTime: duration !== Infinity ? duration : 0,
 				active: EMuteState.MUTED
 			};
 			const response = await dispatch(notificationSettingActions.setMuteChannel(body));
@@ -143,8 +143,8 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 		if (notificationChannelSelected?.active === ENotificationActive.ON) {
 			setTimeMuted('');
 		} else if (notificationChannelSelected?.active !== ENotificationActive.ON) {
-			if (notificationChannelSelected?.time_mute) {
-				const timeMute = new Date(notificationChannelSelected.time_mute);
+			if (notificationChannelSelected?.timeMute) {
+				const timeMute = new Date(notificationChannelSelected.timeMute);
 				const currentTime = new Date();
 				if (timeMute > currentTime) {
 					const timeDifference = timeMute.getTime() - currentTime.getTime();
@@ -154,7 +154,7 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 						const body = {
 							channelId: currentChannel?.id || '',
 							clanId: currentClanId || '',
-							mute_time: 0,
+							muteTime: 0,
 							active: EMuteState.UN_MUTE
 						};
 						dispatch(notificationSettingActions.setMuteChannel(body));
@@ -171,8 +171,8 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 				<TouchableOpacity onPress={handleMuteOrUnmute} style={styles.wrapperUnmuteBox}>
 					<Text style={styles.option}>
 						{`${isUnmute ? t('bottomSheet.mute') : t('bottomSheet.unMute')} #${
-							(currentChannel as NotiChannelCategorySettingEntity)?.channel_category_label ||
-							(currentChannel as NotiChannelCategorySettingEntity)?.channel_category_label ||
+							(currentChannel as NotiChannelCategorySettingEntity)?.channelCategoryLabel ||
+							(currentChannel as NotiChannelCategorySettingEntity)?.channelCategoryLabel ||
 							(currentChannel as ICategoryChannelOption)?.label ||
 							''
 						}`}

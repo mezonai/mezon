@@ -17,16 +17,16 @@ interface UserMentionListProps {
 export function UserMentionList({ channelID, channelMode }: UserMentionListProps): MentionDataProps[] {
 	const { membersOfParent } = useChannelMembers({ channelId: channelID, mode: channelMode ?? 0 });
 	const channel = useAppSelector((state) => selectChannelById(state, channelID)) || {};
-	const channelparent = useAppSelector((state) => selectChannelById(state, channel?.parent_id || '')) || {};
-	const rolesChannel = useSelector(selectRolesByChannelId(channel?.parent_id));
+	const channelparent = useAppSelector((state) => selectChannelById(state, channel?.parentId || '')) || {};
+	const rolesChannel = useSelector(selectRolesByChannelId(channel?.parentId));
 	const rolesInClan = useSelector(selectAllRolesClan);
 	const rolesToUse = useMemo(() => {
-		if (channel?.parent_id !== '0' && channelparent?.channel_private === 1) {
+		if (channel?.parentId !== '0' && channelparent?.channelPrivate === 1) {
 			return rolesChannel;
 		} else {
 			return rolesInClan;
 		}
-	}, [channel?.parent_id, channelparent?.channel_private, rolesChannel, rolesInClan]);
+	}, [channel?.parentId, channelparent?.channelPrivate, rolesChannel, rolesInClan]);
 
 	const newUserMentionList = useMemo(() => {
 		if (!membersOfParent || membersOfParent.length === 0) {

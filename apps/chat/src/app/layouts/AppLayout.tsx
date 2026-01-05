@@ -112,7 +112,7 @@ const AppLayout = () => {
 					sessionData.refreshToken,
 					sessionData.created,
 					sessionData.apiUrl,
-					sessionData.id_token || '',
+					sessionData.idToken || '',
 					!!sessionData.isRemember
 				);
 				const response = await dispatch(

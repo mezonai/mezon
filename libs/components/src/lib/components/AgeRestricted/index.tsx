@@ -20,7 +20,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 			userProfile?.user?.username || '',
 			userProfile?.user?.avatarUrl || '',
 			userProfile?.user?.displayName || '',
-			userProfile?.user?.about_me || '',
+			userProfile?.user?.aboutMe || '',
 			dob,
 			userProfile?.logo || ''
 		);

@@ -63,9 +63,9 @@ export const fetchChannelSettingInClanCached = async (
 
 	if (!shouldForceCall) {
 		return {
-			channel_setting_list: Object.values(channelSettingState.entities),
-			channel_count: channelSettingState.channelCount,
-			thread_count: channelSettingState.threadCount,
+			channelSettingList: Object.values(channelSettingState.entities),
+			channelCount: channelSettingState.channelCount,
+			threadCount: channelSettingState.threadCount,
 			fromCache: true,
 			time: channelSettingState.cache?.lastFetched || Date.now()
 		};
@@ -74,7 +74,7 @@ export const fetchChannelSettingInClanCached = async (
 	const response = await mezon.client.getChannelSettingInClan(
 		mezon.session,
 		clanId,
-		parentId, // parent_id
+		parentId, // parentId
 		undefined, // categoryId
 		undefined, // private_channel
 		undefined, // active
@@ -152,13 +152,13 @@ export const settingClanChannelSlice = createSlice({
 		addChannelFromSocket: (state, action) => {
 			const channel = action.payload;
 			if (!channel?.id) return;
-			if (channel.parent_id && channel.parent_id !== '0') {
-				if (!state.threadsByChannel[channel.parent_id]) {
-					state.threadsByChannel[channel.parent_id] = [];
+			if (channel.parentId && channel.parentId !== '0') {
+				if (!state.threadsByChannel[channel.parentId]) {
+					state.threadsByChannel[channel.parentId] = [];
 				}
-				const existingThread = state.threadsByChannel[channel.parent_id].find((t) => t.id === channel.id);
+				const existingThread = state.threadsByChannel[channel.parentId].find((t) => t.id === channel.id);
 				if (!existingThread) {
-					state.threadsByChannel[channel.parent_id].push(channel);
+					state.threadsByChannel[channel.parentId].push(channel);
 					state.threadCount += 1;
 				}
 				return;
@@ -194,8 +194,8 @@ export const settingClanChannelSlice = createSlice({
 				});
 				return;
 			}
-			if (channel.parent_id && state.threadsByChannel[channel.parent_id]) {
-				const threads = state.threadsByChannel[channel.parent_id];
+			if (channel.parentId && state.threadsByChannel[channel.parentId]) {
+				const threads = state.threadsByChannel[channel.parentId];
 				const index = threads.findIndex((t) => t.id === channel.id);
 				if (index !== -1) {
 					threads[index] = { ...threads[index], ...channel };
@@ -212,9 +212,9 @@ export const settingClanChannelSlice = createSlice({
 				}
 			}
 
-			if (channel.parent_id && channel.parent_id !== '0') {
-				state.threadsByChannel[channel.parent_id] ??= [];
-				state.threadsByChannel[channel.parent_id].push(channel);
+			if (channel.parentId && channel.parentId !== '0') {
+				state.threadsByChannel[channel.parentId] ??= [];
+				state.threadsByChannel[channel.parentId].push(channel);
 			} else {
 				channelSettingAdapter.addOne(state, channel);
 			}
@@ -227,7 +227,7 @@ export const settingClanChannelSlice = createSlice({
 
 				if (!fromCache && response) {
 					state.loadingStatus = 'loaded';
-					const cleanedList = (response.channel_setting_list || []).map(cleanUndefinedFields);
+					const cleanedList = (response.channelSettingList || []).map(cleanUndefinedFields);
 					switch (typeFetch) {
 						case ETypeFetchChannelSetting.FETCH_CHANNEL:
 							channelSettingAdapter.upsertMany(state, cleanedList);
@@ -236,16 +236,16 @@ export const settingClanChannelSlice = createSlice({
 							channelSettingAdapter.upsertMany(state, cleanedList);
 							break;
 						case ETypeFetchChannelSetting.FETCH_THREAD:
-							state.threadsByChannel[actions.payload.parentId] = response.channel_setting_list || [];
+							state.threadsByChannel[actions.payload.parentId] = response.channelSettingList || [];
 							break;
 						case ETypeFetchChannelSetting.SEARCH_CHANNEL:
-							state.listSearchChannel = response.channel_setting_list || [];
+							state.listSearchChannel = response.channelSettingList || [];
 							break;
 						default:
-							channelSettingAdapter.setAll(state, response.channel_setting_list || []);
+							channelSettingAdapter.setAll(state, response.channelSettingList || []);
 					}
-					state.channelCount = response.channel_count || 0;
-					state.threadCount = response.thread_count || 0;
+					state.channelCount = response.channelCount || 0;
+					state.threadCount = response.threadCount || 0;
 					state.cache = createCacheMetadata();
 				}
 

@@ -38,7 +38,7 @@ export function useChannelMembersActions() {
 						channelId: currentVoice.channelId,
 						displayName: userProfile?.user?.displayName ?? '',
 						state: ParticipantMeetState.LEAVE,
-						room_name: currentVoice.roomId || 'leave'
+						roomName: currentVoice.roomId || 'leave'
 					})
 				);
 			}

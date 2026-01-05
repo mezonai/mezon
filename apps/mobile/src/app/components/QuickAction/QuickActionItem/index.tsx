@@ -18,8 +18,8 @@ interface QuickActionItemProps {
 export const QuickActionItem = memo(({ item, themeValue, openModal, handleDelete, selectedTab }: QuickActionItemProps) => {
 	const styles = style(themeValue);
 	const menuName = useMemo(() => {
-		return selectedTab === QUICK_MENU_TYPE.FLASH_MESSAGE ? `/${item?.menu_name}` : item?.menu_name;
-	}, [selectedTab, item?.menu_name]);
+		return selectedTab === QUICK_MENU_TYPE.FLASH_MESSAGE ? `/${item?.menuName}` : item?.menuName;
+	}, [selectedTab, item?.menuName]);
 
 	return (
 		<View style={styles.item}>
@@ -28,7 +28,7 @@ export const QuickActionItem = memo(({ item, themeValue, openModal, handleDelete
 					<Text style={styles.keyText}>{menuName}</Text>
 				</View>
 				<Text numberOfLines={1} style={styles.valueText}>
-					{item?.action_msg}
+					{item?.actionMsg}
 				</Text>
 			</View>
 			<TouchableOpacity onPress={() => openModal(item)}>

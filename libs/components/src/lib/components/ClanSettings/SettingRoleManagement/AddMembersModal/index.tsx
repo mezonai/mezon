@@ -40,7 +40,7 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 	}, [RolesClan, selectedRoleId]);
 
 	const userIdsInSelectedRole = useMemo(() => {
-		return selectedRole?.role_user_list?.role_users?.reduce<Record<string, boolean>>((ids, user) => {
+		return selectedRole?.roleUserList?.roleUsers?.reduce<Record<string, boolean>>((ids, user) => {
 			if (user.id) {
 				ids[user.id] = true;
 			}

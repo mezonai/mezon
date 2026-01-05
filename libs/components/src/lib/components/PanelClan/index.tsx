@@ -86,16 +86,16 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 		dispatch(
 			defaultNotificationActions.setDefaultNotificationClan({
 				clanId: targetClanId,
-				notification_type: notificationType
+				notificationType: notificationType
 			})
 		);
 		handClosePannel();
 	};
 
 	const notificationLabel = useMemo(() => {
-		const notificationType = notificationTypesList.find((type) => type.value === defaultNotificationClan?.notification_setting_type);
+		const notificationType = notificationTypesList.find((type) => type.value === defaultNotificationClan?.notificationSettingType);
 		return notificationType ? notificationType.label : null;
-	}, [defaultNotificationClan?.notification_setting_type]);
+	}, [defaultNotificationClan?.notificationSettingType]);
 
 	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile, setIsShowSettingProfileInitTab, setClanIdSettingProfile } =
 		useSettingFooter();
@@ -115,7 +115,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 			clansActions.updateUser({
 				avatarUrl: userProfile?.user?.avatarUrl || '',
 				displayName: userProfile?.user?.displayName || '',
-				about_me: userProfile?.user?.about_me || '',
+				aboutMe: userProfile?.user?.aboutMe || '',
 				dob: userProfile?.user?.dob || '',
 				logo: ''
 			})
@@ -149,7 +149,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 					name={t('notificationSetting')}
 					key={notification.value}
 					onClick={() => handleChangeSettingType(notification.value)}
-					checked={(defaultNotificationClan?.notification_setting_type || 1) === notification.value}
+					checked={(defaultNotificationClan?.notificationSettingType || 1) === notification.value}
 				/>
 			)
 		);
@@ -217,7 +217,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 				<ModalConfirm
 					handleCancel={toggleLeaveClanPopup}
 					handleConfirm={handleLeaveClan}
-					modalName={clan?.clan_name}
+					modalName={clan?.clanName}
 					title={t('leave')}
 					buttonName={t('leaveClan')}
 				/>

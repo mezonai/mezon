@@ -10,7 +10,7 @@ import Sticker from '../Sticker';
 import { style } from './styles';
 
 interface StickerWithMediaType extends ClanSticker {
-	media_type?: MediaType;
+	mediaType?: MediaType;
 }
 
 type StickerSelectorProps = {
@@ -27,7 +27,7 @@ const StickerSelector = ({ onSelected }: StickerSelectorProps) => {
 		if (!allStickers?.length) return [];
 
 		try {
-			return allStickers.filter((sticker: StickerWithMediaType) => sticker?.media_type === MediaType.AUDIO);
+			return allStickers.filter((sticker: StickerWithMediaType) => sticker?.mediaType === MediaType.AUDIO);
 		} catch (error) {
 			console.error('Error get list clanSoundEffect:', error);
 			return [];
@@ -44,7 +44,7 @@ const StickerSelector = ({ onSelected }: StickerSelectorProps) => {
 				if (!uniqueMap.has(key)) {
 					uniqueMap.set(key, {
 						id: sound?.clanId,
-						type: sound?.clan_name,
+						type: sound?.clanName,
 						url: sound?.logo,
 						forSale: false
 					});

@@ -28,7 +28,7 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 	const listEventToShow = useMemo(() => {
 		return allEventManagement?.filter(
 			(event) =>
-				(!event?.is_private || event?.creatorId === userId) &&
+				(!event?.isPrivate || event?.creatorId === userId) &&
 				(!event?.channelId || event?.channelId === '0' || allThreadChannelPrivateIds?.includes(event?.channelId))
 		);
 	}, [allEventManagement, allThreadChannelPrivateIds, userId]);
@@ -58,7 +58,7 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 			</View>
 			{listEventToShow?.length > 0 ? (
 				listEventToShow?.map((event, index) => (
-					<EventItem event={event} start={event?.start_time} key={index.toString()} onPress={() => handlePress(event)} />
+					<EventItem event={event} start={event?.startTime} key={index.toString()} onPress={() => handlePress(event)} />
 				))
 			) : (
 				<View style={styles.emptyView}>

@@ -119,7 +119,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 													<Text style={styles.normalText}>
 														{item?.id === everyoneRole?.id
 															? t('allMembers')
-															: `${item?.role_user_list?.role_users?.length || '0'} - ${t('members')}`}
+															: `${item?.roleUserList?.roleUsers?.length || '0'} - ${t('members')}`}
 													</Text>
 												</View>
 												<View>

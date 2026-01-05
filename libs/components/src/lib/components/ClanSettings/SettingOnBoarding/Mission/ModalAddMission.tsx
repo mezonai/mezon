@@ -43,12 +43,12 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 	const currentClanId = useSelector(selectCurrentClanId);
 	const allChannel = useAppSelector(selectAllChannels);
 	const listMissionChannel = useMemo(() => {
-		return allChannel.filter((channel) => channel.channel_private !== ChannelStatusEnum.isPrivate && channel.id);
+		return allChannel.filter((channel) => channel.channelPrivate !== ChannelStatusEnum.isPrivate && channel.id);
 	}, [allChannel]);
 
 	const [title, setTitle] = useState(missionEdit?.title || '');
 	const [missionChannel, setMissionChannel] = useState(missionEdit?.channelId || listMissionChannel[0]?.id || '');
-	const [mission, setMission] = useState<ETypeMission>(missionEdit?.task_type || ETypeMission.SEND_MESSAGE);
+	const [mission, setMission] = useState<ETypeMission>(missionEdit?.taskType || ETypeMission.SEND_MESSAGE);
 	const [error, setError] = useState('');
 	const dispatch = useAppDispatch();
 	const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
@@ -80,7 +80,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 			if (missionChannel !== missionEdit?.channelId) {
 				return true;
 			}
-			if (mission !== missionEdit?.task_type) {
+			if (mission !== missionEdit?.taskType) {
 				return true;
 			}
 			return false;
@@ -109,8 +109,8 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 					idOnboarding: missionEdit?.id as string,
 					content: {
 						title,
-						guide_type: EGuideType.TASK,
-						task_type: mission || 0,
+						guideType: EGuideType.TASK,
+						taskType: mission || 0,
 						channelId: missionChannel
 					}
 				})
@@ -123,8 +123,8 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 			onboardingActions.addMission({
 				data: {
 					title,
-					guide_type: EGuideType.TASK,
-					task_type: mission || 0,
+					guideType: EGuideType.TASK,
+					taskType: mission || 0,
 					channelId: missionChannel
 				},
 				update: tempId

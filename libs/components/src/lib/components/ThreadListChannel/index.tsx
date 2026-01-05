@@ -25,13 +25,13 @@ export const ThreadLinkWrapper: React.FC<ThreadLinkWrapperProps> = ({ thread, no
 	const currentChannelId = useAppSelector(selectCurrentChannelId);
 	const threadMeta = useAppSelector((state) => selectChannelMetaById(state, thread?.id));
 	const isCategoryExpanded = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, thread.categoryId as string));
-	const allThreadBehind = useAppSelector((state) => selectAllThreadUnreadBehind(state, thread?.clanId, thread?.parent_id, thread?.id));
+	const allThreadBehind = useAppSelector((state) => selectAllThreadUnreadBehind(state, thread?.clanId, thread?.parentId, thread?.id));
 	const channelMetadata = useSelector(selectChannelMetaEntities);
 
 	const isShowThread = (thread: IChannel) => {
 		return (
 			(threadMeta?.isMute !== true && threadMeta?.lastSeenTimestamp < threadMeta?.lastSentTimestamp) ||
-			(thread?.count_mess_unread ?? 0) > 0 ||
+			(thread?.countMessUnread ?? 0) > 0 ||
 			thread.id === currentChannelId
 		);
 	};
@@ -46,7 +46,7 @@ export const ThreadLinkWrapper: React.FC<ThreadLinkWrapperProps> = ({ thread, no
 			return (
 				channel.id === currentChannelId ||
 				(threadMetaEntities?.isMute !== true && threadMetaEntities?.lastSeenTimestamp < threadMetaEntities?.lastSentTimestamp) ||
-				((channel as IChannel)?.count_mess_unread ?? 0) > 0
+				((channel as IChannel)?.countMessUnread ?? 0) > 0
 			);
 		});
 	}, [allThreadBehind, channelMetadata, isCategoryExpanded, currentChannelId]);

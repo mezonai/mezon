@@ -61,7 +61,7 @@ export const fetchEmojiCached = async (getState: () => RootState, ensuredMezon: 
 	if (!shouldForceCall) {
 		const emojis = selectCachedEmoji(state);
 		return {
-			emoji_list: emojis,
+			emojiList: emojis,
 			time: Date.now(),
 			fromCache: true
 		};
@@ -73,7 +73,7 @@ export const fetchEmojiCached = async (getState: () => RootState, ensuredMezon: 
 			api_name: 'GetListEmojisByUserId'
 		},
 		() => ensuredMezon.client.getListEmojisByUserId(ensuredMezon.session),
-		'emoji_list'
+		'emojiList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -92,11 +92,11 @@ export const fetchEmoji = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await fetchEmojiCached(thunkAPI.getState as () => RootState, mezon, noCache, clanId);
 
-			if (!response?.emoji_list) {
+			if (!response?.emojiList) {
 				throw new Error('Emoji list is undefined or null');
 			}
 			return {
-				emojis: response.emoji_list,
+				emojis: response.emojiList,
 				fromCache: response?.fromCache
 			};
 		} catch (error) {
@@ -278,4 +278,4 @@ export const selectEmojiByClanId = createSelector(
 	}
 );
 
-export const selectEmojiOnSale = createSelector([selectAllEmojiSuggestion], (emojis) => emojis?.filter((emoji) => emoji?.is_for_sale === true));
+export const selectEmojiOnSale = createSelector([selectAllEmojiSuggestion], (emojis) => emojis?.filter((emoji) => emoji?.isForSale === true));

@@ -99,7 +99,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	}, [currentChannel]);
 
 	useEffect(() => {
-		setIsChannel(!!currentChannel?.channelLabel && !Number(currentChannel?.parent_id));
+		setIsChannel(!!currentChannel?.channelLabel && !Number(currentChannel?.parentId));
 	}, [currentChannel]);
 
 	useLayoutEffect(() => {
@@ -149,8 +149,8 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		if (getNotificationChannelSelected?.active === ENotificationActive.ON) {
 			setTimeMuted('');
 		} else if (getNotificationChannelSelected?.active !== ENotificationActive.ON) {
-			if (getNotificationChannelSelected?.time_mute) {
-				const timeMute = new Date(getNotificationChannelSelected.time_mute);
+			if (getNotificationChannelSelected?.timeMute) {
+				const timeMute = new Date(getNotificationChannelSelected.timeMute);
 				const currentTime = new Date();
 				if (timeMute > currentTime) {
 					const timeDifference = timeMute.getTime() - currentTime.getTime();
@@ -171,7 +171,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 				channelId: currentChannel?.channelId || '',
 				clanId: currentClanId || '',
 				active: EMuteState.UN_MUTE,
-				mute_time: 0
+				muteTime: 0
 			};
 			const response = await dispatch(notificationSettingActions.setMuteChannel(body));
 			if (response?.meta?.requestStatus === 'rejected') {
@@ -197,7 +197,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 			const body = {
 				channelId: currentChannel?.channelId || '',
 				clanId: isDMThread ? '' : currentClanId || '',
-				mute_time: duration !== Infinity ? duration : 0,
+				muteTime: duration !== Infinity ? duration : 0,
 				active: EMuteState.MUTED
 			};
 			const response = await dispatch(notificationSettingActions.setMuteChannel(body));

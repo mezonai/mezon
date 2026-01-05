@@ -33,7 +33,7 @@ const ChannelSeen = memo(
 				currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
 					? ChannelStreamMode.STREAM_MODE_CHANNEL
 					: ChannelStreamMode.STREAM_MODE_THREAD;
-			markAsReadSeen(lastMessage, mode, currentChannel?.count_mess_unread || 0);
+			markAsReadSeen(lastMessage, mode, currentChannel?.countMessUnread || 0);
 		}, [lastMessage, currentChannel, markAsReadSeen]);
 
 		useEffect(() => {
@@ -76,11 +76,11 @@ function DrawerListener({ channelId }: { channelId: string }) {
 		await dispatch(
 			channelMembersActions.fetchChannelMembers({
 				clanId: currentChannel.clanId || '',
-				channelId: (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel.parent_id : currentChannel.channelId) || '',
+				channelId: (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel.parentId : currentChannel.channelId) || '',
 				channelType: ChannelType.CHANNEL_TYPE_CHANNEL
 			})
 		);
-	}, [currentChannel?.clanId, currentChannel?.type, currentChannel?.parent_id, currentChannel?.channelId, dispatch]);
+	}, [currentChannel?.clanId, currentChannel?.type, currentChannel?.parentId, currentChannel?.channelId, dispatch]);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -102,7 +102,7 @@ function DrawerListener({ channelId }: { channelId: string }) {
 			) {
 				if (channelType === ChannelType.CHANNEL_TYPE_THREAD) {
 					await dispatch(
-						channelsActions.setCurrentChannelId({ clanId: currentChannel?.clanId || '', channelId: currentChannel?.parent_id || '' })
+						channelsActions.setCurrentChannelId({ clanId: currentChannel?.clanId || '', channelId: currentChannel?.parentId || '' })
 					);
 					if (isTabletLandscape) {
 						navigation.navigate(APP_SCREEN.HOME);

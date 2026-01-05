@@ -37,8 +37,8 @@ const ChannelAppShowAll = ({ navigation }: { navigation: any }) => {
 				<TouchableOpacity style={styles.appItemContainer} onPress={() => openChannelApp(item)} activeOpacity={0.7}>
 					<View style={styles.appItemContent}>
 						<View style={styles.appItemLogo}>
-							{item?.app_logo ? (
-								<FastImage source={{ uri: item?.app_logo }} style={styles.appItemIcon} resizeMode={FastImage.resizeMode.contain} />
+							{item?.appLogo ? (
+								<FastImage source={{ uri: item?.appLogo }} style={styles.appItemIcon} resizeMode={FastImage.resizeMode.contain} />
 							) : (
 								<View style={[styles.appItemIcon, styles.appItemIconPlaceholder]}>
 									<MezonIconCDN icon={IconCDN.channelApp} width={size.s_32} height={size.s_32} color={themeValue.textDisabled} />
@@ -47,7 +47,7 @@ const ChannelAppShowAll = ({ navigation }: { navigation: any }) => {
 						</View>
 						<View style={styles.appItemInfo}>
 							<Text style={styles.appItemName} numberOfLines={1}>
-								{item?.app_name || ''}
+								{item?.appName || ''}
 							</Text>
 							{/*<Text style={styles.appItemDescription} numberOfLines={2}></Text>*/}
 						</View>

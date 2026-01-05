@@ -65,15 +65,15 @@ const DirectUnreadComponent = ({ directMessage, shouldAnimateOut = false, onMemb
 	const badgeClassName = useMemo(
 		() =>
 			`flex items-center text-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[-1px] right-[-2px] ${
-				(directMessage?.count_mess_unread || 0) >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
+				(directMessage?.countMessUnread || 0) >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
 			}`,
-		[directMessage?.count_mess_unread]
+		[directMessage?.countMessUnread]
 	);
 
 	const badgeContent = useMemo(() => {
-		if (!directMessage?.count_mess_unread) return null;
-		return directMessage.count_mess_unread >= 100 ? '99+' : directMessage.count_mess_unread;
-	}, [directMessage?.count_mess_unread]);
+		if (!directMessage?.countMessUnread) return null;
+		return directMessage.countMessUnread >= 100 ? '99+' : directMessage.countMessUnread;
+	}, [directMessage?.countMessUnread]);
 
 	return (
 		<NavLink to="#" onClick={handleClick} draggable="false" className={linkClassName}>
@@ -88,7 +88,7 @@ const DirectUnreadComponent = ({ directMessage, shouldAnimateOut = false, onMemb
 const arePropsEqual = (prevProps: DirectMessUnreadProp, nextProps: DirectMessUnreadProp) => {
 	return (
 		prevProps.directMessage.id === nextProps.directMessage.id &&
-		prevProps.directMessage.count_mess_unread === nextProps.directMessage.count_mess_unread &&
+		prevProps.directMessage.countMessUnread === nextProps.directMessage.countMessUnread &&
 		prevProps.shouldAnimateOut === nextProps.shouldAnimateOut &&
 		prevProps.isHiding === nextProps.isHiding &&
 		prevProps.onMemberClick === nextProps.onMemberClick

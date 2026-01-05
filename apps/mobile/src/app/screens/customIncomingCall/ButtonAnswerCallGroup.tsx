@@ -27,7 +27,7 @@ const ButtonAnswerCallGroup = memo(
 			const quitAction = {
 				is_video: false,
 				groupId: dataCallGroup.groupId || '',
-				caller_id: userId,
+				callerId: userId,
 				caller_name: dataCallGroup.groupName || '',
 				timestamp: Date.now(),
 				action: 'decline'

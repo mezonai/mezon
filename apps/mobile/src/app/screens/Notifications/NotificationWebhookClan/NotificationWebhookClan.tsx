@@ -28,10 +28,10 @@ const NotificationWebhookClan = ({ notify, onLongPressNotify }: NotifyProps) => 
 						<MezonClanAvatar alt={notify?.content?.displayName} image={notify?.content?.avatar} />
 					</View>
 					<View style={styles.notifyContent}>
-						{clan?.clan_name && (
+						{clan?.clanName && (
 							<Text numberOfLines={2} style={styles.notifyHeaderTitle}>
 								<Text style={styles.username}>{notify?.content?.displayName} </Text>
-								{clan?.clan_name}
+								{clan?.clanName}
 							</Text>
 						)}
 						<View style={styles.contentMessage}>{<MessageWebhookClan message={data} />}</View>

@@ -48,7 +48,7 @@ const isMessageAlreadyProcessed = (id: string): boolean => {
 const getCurrentClanBadgeCount = (store: { getState?: () => RootState }, clanId: string): number => {
 	try {
 		const state = store?.getState?.();
-		return state?.clans?.entities?.[clanId]?.badge_count ?? 0;
+		return state?.clans?.entities?.[clanId]?.badgeCount ?? 0;
 	} catch (error) {
 		console.warn('Failed to get clan badge count:', error);
 		return 0;
@@ -64,7 +64,7 @@ export const getCurrentChannelBadgeCount = (store: { getState?: () => RootState 
 		}
 
 		const channel = listChannelRender.find((ch) => ch.id === channelId) as IChannel;
-		return channel?.count_mess_unread ?? 0;
+		return channel?.countMessUnread ?? 0;
 	} catch (error) {
 		console.warn('Failed to get channel badge count:', error);
 		return 0;
@@ -202,8 +202,8 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 			dmMeta &&
 			!Number.isNaN(lastSeenTimestamp) &&
 			messageTimestamp > lastSeenTimestamp &&
-			dmMeta.count_mess_unread !== undefined &&
-			dmMeta.count_mess_unread > 0
+			dmMeta.countMessUnread !== undefined &&
+			dmMeta.countMessUnread > 0
 		) {
 			dispatch(directMetaActions.setCountMessUnread({ channelId: message.channelId, count: -1 }));
 		}
@@ -211,18 +211,18 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 		const state = store.getState();
 		const channelMeta = state.channelmeta?.entities?.[message.channelId];
 		const channel = state.channels?.byClans?.[message.clanId]?.entities?.entities?.[message.channelId];
-		const currentClanBadge = state.clans?.entities?.[message.clanId]?.badge_count ?? 0;
+		const currentClanBadge = state.clans?.entities?.[message.clanId]?.badgeCount ?? 0;
 		const lastSeenTimestamp = channelMeta?.lastSeenTimestamp;
 
 		const shouldDecrease =
 			channel &&
 			lastSeenTimestamp &&
 			messageTimestamp > lastSeenTimestamp &&
-			(channel.count_mess_unread || 0) > 0 &&
+			(channel.countMessUnread || 0) > 0 &&
 			isMessageMentionOrReply(message, userId, store);
 
 		if (shouldDecrease) {
-			const channelBadgeCount = channel.count_mess_unread || 0;
+			const channelBadgeCount = channel.countMessUnread || 0;
 			if (channelBadgeCount > 0) {
 				dispatch(
 					listChannelRenderAction.updateChannelUnreadCount({

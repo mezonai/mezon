@@ -69,7 +69,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 							clanName: '',
 							streamId: channelId,
 							streamName: channel?.channelLabel || '',
-							parentId: channel?.parent_id || ''
+							parentId: channel?.parentId || ''
 						})
 					);
 				}

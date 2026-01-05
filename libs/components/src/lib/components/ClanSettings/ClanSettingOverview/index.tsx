@@ -16,7 +16,7 @@ const ClanSettingOverview = () => {
 
 	const [clanRequest, setClanRequest] = useState<MezonUpdateClanDescBody>({
 		banner: currentClan?.banner ?? '',
-		clan_name: currentClan?.clan_name ?? '',
+		clanName: currentClan?.clanName ?? '',
 		creatorId: currentClan?.creatorId ?? '',
 		logo: currentClan?.logo ?? '',
 		welcomeChannelId: currentClan?.welcomeChannelId ?? '',
@@ -50,7 +50,7 @@ const ClanSettingOverview = () => {
 	};
 
 	const handleChangeName = (clanName: string) => {
-		setClanRequest({ ...clanRequest, clan_name: clanName ?? '' });
+		setClanRequest({ ...clanRequest, clanName: clanName ?? '' });
 	};
 	const hasSystemMessageChanges = useMemo(() => {
 		if (!systemMessage && updateSystemMessageRequest) {
@@ -106,18 +106,18 @@ const ClanSettingOverview = () => {
 	const updateSystemMessages = async () => {
 		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClan?.clanId && updateSystemMessageRequest) {
 			const cachedMessageUpdate: ApiSystemMessage = {
-				boost_message:
-					updateSystemMessageRequest?.boost_message === systemMessage?.boost_message ? '' : updateSystemMessageRequest?.boost_message,
+				boostMessage:
+					updateSystemMessageRequest?.boostMessage === systemMessage?.boostMessage ? '' : updateSystemMessageRequest?.boostMessage,
 				channelId: updateSystemMessageRequest?.channelId === systemMessage?.channelId ? '' : updateSystemMessageRequest?.channelId,
 				clanId: systemMessage?.clanId,
 				id: systemMessage?.id,
-				hide_audit_log:
-					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? '' : updateSystemMessageRequest?.hide_audit_log,
-				setup_tips: updateSystemMessageRequest?.setup_tips === systemMessage?.setup_tips ? '' : updateSystemMessageRequest?.setup_tips,
-				welcome_random:
-					updateSystemMessageRequest?.welcome_random === systemMessage?.welcome_random ? '' : updateSystemMessageRequest?.welcome_random,
-				welcome_sticker:
-					updateSystemMessageRequest?.welcome_sticker === systemMessage?.welcome_sticker ? '' : updateSystemMessageRequest?.welcome_sticker
+				hideAuditLog:
+					updateSystemMessageRequest?.hideAuditLog === systemMessage?.hideAuditLog ? '' : updateSystemMessageRequest?.hideAuditLog,
+				setupTips: updateSystemMessageRequest?.setupTips === systemMessage?.setupTips ? '' : updateSystemMessageRequest?.setupTips,
+				welcomeRandom:
+					updateSystemMessageRequest?.welcomeRandom === systemMessage?.welcomeRandom ? '' : updateSystemMessageRequest?.welcomeRandom,
+				welcomeSticker:
+					updateSystemMessageRequest?.welcomeSticker === systemMessage?.welcomeSticker ? '' : updateSystemMessageRequest?.welcomeSticker
 			};
 			const request = {
 				clanId: currentClan.clanId,
@@ -142,7 +142,7 @@ const ClanSettingOverview = () => {
 		setResetTrigger(true);
 		setClanRequest({
 			banner: currentClan?.banner ?? '',
-			clan_name: currentClan?.clan_name ?? '',
+			clanName: currentClan?.clanName ?? '',
 			creatorId: currentClan?.creatorId ?? '',
 			logo: currentClan?.logo ?? '',
 			isOnboarding: currentClan?.isOnboarding,

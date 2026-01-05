@@ -179,7 +179,7 @@ const ItemHistory = ({
 			return <img className="w-6 aspect-square rounded-md" src={createImgproxyUrl(clan.logo, { width: 24, height: 24, resizeType: 'fit' })} />;
 		}
 
-		return <div className="h-6 aspect-square flex items-center justify-center bg-theme-primary uppercase rounded-md">{clan.clan_name?.[0]}</div>;
+		return <div className="h-6 aspect-square flex items-center justify-center bg-theme-primary uppercase rounded-md">{clan.clanName?.[0]}</div>;
 	}, [clan]);
 
 	const handleClickHistory = () => {

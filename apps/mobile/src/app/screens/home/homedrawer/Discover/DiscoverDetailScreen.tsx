@@ -282,7 +282,7 @@ const DiscoverDetailScreen: React.FC<DiscoverDetailScreenProps> = ({ clanDetail 
 						</View>
 					</View>
 
-					<Text style={styles.clanName}>{clanDetail.clan_name}</Text>
+					<Text style={styles.clanName}>{clanDetail.clanName}</Text>
 
 					<Text style={styles.description} numberOfLines={3}>
 						{clanDetail.description}
@@ -291,7 +291,7 @@ const DiscoverDetailScreen: React.FC<DiscoverDetailScreenProps> = ({ clanDetail 
 					<View style={styles.membersRow}>
 						<View style={styles.memberDot} />
 						<Text style={styles.memberText}>
-							{clanDetail.total_members} {t('members')}
+							{clanDetail.totalMembers} {t('members')}
 						</Text>
 					</View>
 

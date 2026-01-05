@@ -131,7 +131,7 @@ export const RecentInteractiveSearch = React.memo(
 			}
 
 			// Find child channels in a single pass
-			const childChannels = dataSource.filter((item) => item?.parent_id && matchChannelIds.has(item.parent_id));
+			const childChannels = dataSource.filter((item) => item?.parentId && matchChannelIds.has(item.parentId));
 
 			return [...matchChannels, ...childChannels];
 		}, []);
@@ -235,7 +235,7 @@ export const RecentInteractiveSearch = React.memo(
 								) : (
 									<MezonAvatar
 										avatarUrl={selectedChannel?.avatars?.[0] || clans?.[selectedChannel?.clanId]?.logo}
-										username={clans?.[selectedChannel?.clanId]?.clan_name || selectedChannel?.channelLabel}
+										username={clans?.[selectedChannel?.clanId]?.clanName || selectedChannel?.channelLabel}
 										width={size.s_18}
 										height={size.s_18}
 									/>

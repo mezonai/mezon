@@ -71,7 +71,7 @@ function UseMentionList({ channelDetail, channelID, channelMode }: UserMentionLi
 	const dispatch = useAppDispatch();
 
 	const channelId = channelDetail?.id;
-	const parentId = channelDetail?.parent_id;
+	const parentId = channelDetail?.parentId;
 	const clanId = channelDetail?.clanId;
 
 	const filteredRoles = useMemo(() => {

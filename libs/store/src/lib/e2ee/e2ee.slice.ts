@@ -96,7 +96,7 @@ export const e2eeSlice = createSlice({
 			.addCase(getPubKeys.fulfilled, (state: E2eeState, action) => {
 				state.loadingStatus = 'loaded';
 				const pubKeys =
-					action.payload.pub_keys?.map((pk: { PK?: ApiPubKey; userId?: string }) => ({
+					action.payload.pubKeys?.map((pk: { PK?: ApiPubKey; userId?: string }) => ({
 						id: pk.userId || '',
 						PK: pk.PK || {}
 					})) || [];

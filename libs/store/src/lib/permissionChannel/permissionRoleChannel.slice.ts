@@ -88,17 +88,17 @@ export const fetchPermissionRoleChannel = createAsyncThunk(
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 		const response = await fetchPermissionRoleChannelCached(thunkAPI.getState as () => RootState, mezon, roleId, channelId, userId, noCache);
-		if (!response || !response?.permission_role_channel) {
+		if (!response || !response?.permissionRoleChannel) {
 			return [];
 		}
 
-		const updatedPermissionRoleChannel = response.permission_role_channel.map((channel) => {
-			if (channel.permission_id && channel.active === undefined) {
+		const updatedPermissionRoleChannel = response.permissionRoleChannel.map((channel) => {
+			if (channel.permissionId && channel.active === undefined) {
 				return { ...channel, active: false };
 			}
 			return channel;
 		});
-		return { ...response, permission_role_channel: updatedPermissionRoleChannel, fromCache: response?.fromCache };
+		return { ...response, permissionRoleChannel: updatedPermissionRoleChannel, fromCache: response?.fromCache };
 	}
 );
 
@@ -119,7 +119,7 @@ export const setPermissionRoleChannel = createAsyncThunk(
 			const body = {
 				channelId: channelId,
 				roleId: roleId,
-				permission_update: permission,
+				permissionUpdate: permission,
 				maxPermissionId: maxPermissionId,
 				userId: userId
 			};
@@ -163,7 +163,7 @@ export const permissionRoleChannelSlice = createSlice({
 					permissionRoleChannelAdapter.updateOne(channelPermission, {
 						id: roleId,
 						changes: {
-							permission_role_channel: permissionRole
+							permissionRoleChannel: permissionRole
 						}
 					});
 				}
@@ -208,14 +208,14 @@ export const permissionRoleChannelSlice = createSlice({
 					.filter((item) => item.type)
 					.map((role) => ({
 						active: role.type === 1 ? true : false,
-						permission_id: role.permission_id
+						permissionId: role.permissionId
 					}));
 				if (state.cacheByChannels[channelId]?.permissionRoleChannel) {
 					permissionRoleChannelAdapter.upsertOne(state.cacheByChannels[channelId]?.permissionRoleChannel, {
 						roleId: roleId,
 						userId: userId,
 						channelId: channelId,
-						permission_role_channel: listUpdate
+						permissionRoleChannel: listUpdate
 					});
 				}
 			});

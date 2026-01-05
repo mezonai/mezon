@@ -14,7 +14,7 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 	const { t } = useTranslation('onboardingRules');
 	const [ruleTitle, setRuleTitle] = useState(ruleEdit?.title || '');
 	const [ruleDescription, setRuleDescription] = useState(ruleEdit?.content || '');
-	const [ruleImage, setRuleImage] = useState<null | string>(ruleEdit?.image_url || null);
+	const [ruleImage, setRuleImage] = useState<null | string>(ruleEdit?.imageUrl || null);
 	const [file, setFile] = useState<null | File>(null);
 	const [error, setError] = useState('');
 	const [openModal, setOpenModal] = useState<boolean>(false);
@@ -66,14 +66,14 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 			return;
 		}
 		if (ruleEdit?.id) {
-			let image_url = ruleEdit?.image_url;
+			let imageUrl = ruleEdit?.imageUrl;
 			if (file) {
 				if (clientRef.current && sessionRef.current) {
 					const id = Snowflake.generate();
 					const path = `onboarding/${id}.webp`;
 					const uploadResponse = await handleUploadEmoticon(clientRef.current, sessionRef.current, path, file);
 					if (uploadResponse) {
-						image_url = uploadResponse?.url;
+						imageUrl = uploadResponse?.url;
 					}
 				}
 			}
@@ -84,8 +84,8 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 					content: {
 						title: ruleTitle,
 						content: ruleDescription,
-						guide_type: EGuideType.RULE,
-						image_url
+						guideType: EGuideType.RULE,
+						imageUrl
 					}
 				})
 			);
@@ -98,7 +98,7 @@ const ModalAddRules = ({ onClose, ruleEdit, tempId }: { onClose: () => void; rul
 				rule: {
 					title: ruleTitle,
 					content: ruleDescription,
-					guide_type: EGuideType.RULE,
+					guideType: EGuideType.RULE,
 					file: file ? file : undefined
 				},
 				update: tempId

@@ -125,7 +125,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.senderId);
 
 	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channelId)) || {};
-	const parentChannel = useAppSelector((state) => selectChannelById(state, currentChannel.parent_id || '')) || {};
+	const parentChannel = useAppSelector((state) => selectChannelById(state, currentChannel.parentId || '')) || {};
 
 	const checkMessageHasReply = useMemo(() => {
 		return message.references && message.references?.length > 0;
@@ -167,10 +167,10 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 				<div className="h-full w-full min-w-0 flex-1">
 					<div className="flex flex-col gap-[2px] text-[12px] font-bold ">
 						{category === NotificationCategory.MENTIONS ? (
-							clan?.clan_name ? (
+							clan?.clanName ? (
 								<div className="flex flex-col text-sm min-w-0">
 									<div className="flex items-center gap-1 min-w-0">
-										<span className="uppercase truncate max-w-[120px] overflow-hidden whitespace-nowrap">{clan.clan_name}</span>
+										<span className="uppercase truncate max-w-[120px] overflow-hidden whitespace-nowrap">{clan.clanName}</span>
 										<span>{'>'}</span>
 										<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap uppercase">
 											{isChannel ? message.categoryName : parentChannel.categoryName}
@@ -195,7 +195,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 								t('directMessage')
 							)
 						) : category === NotificationCategory.MESSAGES ? (
-							clan?.clan_name
+							clan?.clanName
 						) : (
 							''
 						)}

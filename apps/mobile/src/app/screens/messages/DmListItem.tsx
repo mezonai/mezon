@@ -85,7 +85,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 						style={[styles.defaultText, styles.channelLabel, { color: isUnReadChannel ? themeValue.white : themeValue.textDisabled }]}
 					>
 						{(directMessage?.channelLabel || directMessage?.usernames) ??
-							(directMessage?.creator_name ? `${directMessage.creator_name}'s Group` : '')}
+							(directMessage?.creatorName ? `${directMessage.creatorName}'s Group` : '')}
 					</Text>
 					<BuzzBadge
 						channelId={directMessage?.channelId}
@@ -111,7 +111,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 				<MessagePreviewLastest
 					isUnReadChannel={isUnReadChannel}
 					type={directMessage?.type}
-					senderName={directMessage?.display_names?.[0] || directMessage.usernames?.[0]}
+					senderName={directMessage?.displayNames?.[0] || directMessage.usernames?.[0]}
 					userId={directMessage?.userIds?.[0] || ''}
 					senderId={directMessage?.lastSentMessage?.senderId}
 					lastSentMessageStr={JSON.stringify(directMessage?.lastSentMessage)}

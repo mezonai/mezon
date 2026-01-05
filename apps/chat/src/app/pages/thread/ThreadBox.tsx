@@ -75,7 +75,7 @@ const ThreadBox = () => {
 		mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0
 	});
 	const membersOfParent = useAppSelector((state) =>
-		threadCurrentChannel?.parent_id ? selectAllChannelMembers(state, threadCurrentChannel?.parent_id as string) : null
+		threadCurrentChannel?.parentId ? selectAllChannelMembers(state, threadCurrentChannel?.parentId as string) : null
 	);
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
@@ -88,7 +88,7 @@ const ThreadBox = () => {
 	}, [attachmentFilteredByChannelId]);
 
 	const { sendMessageThread, sendMessageTyping } = useThreadMessage({
-		channelId: threadCurrentChannel?.parent_id || currentChannelId || '',
+		channelId: threadCurrentChannel?.parentId || currentChannelId || '',
 		mode: ChannelStreamMode.STREAM_MODE_THREAD,
 		username: sessionUser?.username
 	});
@@ -131,8 +131,8 @@ const ThreadBox = () => {
 			const body: Record<string, unknown> = {
 				clanId: currentClanId?.toString(),
 				channelLabel: value.nameValueThread,
-				channel_private: value.isPrivate,
-				parent_id: idParent,
+				channelPrivate: value.isPrivate,
+				parentId: idParent,
 				categoryId: currentChannelCategoryId,
 				type: ChannelType.CHANNEL_TYPE_THREAD,
 				lastSeenTimestamp: timestamp,
@@ -377,7 +377,7 @@ const ThreadBox = () => {
 						channelLabel={threadCurrentChannel.channelLabel}
 						type={ChannelType.CHANNEL_TYPE_THREAD}
 						mode={ChannelStreamMode.STREAM_MODE_THREAD}
-						isPrivate={threadCurrentChannel.channel_private}
+						isPrivate={threadCurrentChannel.channelPrivate}
 					/>
 				</div>
 			)}

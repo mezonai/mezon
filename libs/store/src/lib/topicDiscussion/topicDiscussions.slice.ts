@@ -11,7 +11,7 @@ import type {
 	ApiMessageRef,
 	ApiSdTopic,
 	ApiSdTopicRequest
-} from 'mezon-js/types/index';
+} from 'mezon-js/types';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { selectMessageEntitiesByChannelId } from '../messages/messages.slice';
@@ -82,7 +82,7 @@ export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanI
 
 		const topics = mapToTopicEntity(response.topics || []);
 		return {
-			clanId: clanId,
+			clanId,
 			topics
 		};
 	} catch (error) {

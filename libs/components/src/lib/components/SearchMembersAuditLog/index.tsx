@@ -97,7 +97,7 @@ const SearchMemberAuditLogModal = ({
 				actionLog: actionFilter ? actionFilter : '',
 				userId: user?.userId ?? '',
 				clanId: currentClanId ?? '',
-				date_log: selectedDate
+				dateLog: selectedDate
 			};
 			dispatch(auditLogList(body));
 		}

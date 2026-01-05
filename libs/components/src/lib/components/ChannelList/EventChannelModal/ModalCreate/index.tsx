@@ -56,7 +56,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const isEditEventAction = Boolean(currentEvent);
 	const isClanEvent = currentEvent?.channelId === undefined;
 	const isChannelEvent = Boolean(currentEvent?.channelId && currentEvent?.channelId !== '0');
-	const isPrivateEvent = currentEvent?.is_private;
+	const isPrivateEvent = currentEvent?.isPrivate;
 	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channelId || '' : '')) || {};
 
 	const createStatus = useSelector(selectCreatingLoaded);
@@ -65,16 +65,16 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const [contentSubmit, setContentSubmit] = useState<ContenSubmitEventProps>({
 		topic: currentEvent ? currentEvent.title || '' : '',
 		address: currentEvent ? currentEvent?.address || '' : '',
-		timeStart: currentEvent ? currentEvent.start_time || '00:00' : '00:00',
-		timeEnd: currentEvent ? currentEvent.end_time || '00:00' : '00:00',
-		selectedDateStart: currentEvent ? new Date(formatToLocalDateString(currentEvent.start_time || '')) : new Date(),
-		selectedDateEnd: currentEvent ? new Date(formatToLocalDateString(currentEvent.end_time || '')) : new Date(),
-		voiceChannel: currentEvent ? currentEvent?.channel_voice_id || '' : '',
+		timeStart: currentEvent ? currentEvent.startTime || '00:00' : '00:00',
+		timeEnd: currentEvent ? currentEvent.endTime || '00:00' : '00:00',
+		selectedDateStart: currentEvent ? new Date(formatToLocalDateString(currentEvent.startTime || '')) : new Date(),
+		selectedDateEnd: currentEvent ? new Date(formatToLocalDateString(currentEvent.endTime || '')) : new Date(),
+		voiceChannel: currentEvent ? currentEvent?.channelVoiceId || '' : '',
 		logo: currentEvent ? currentEvent.logo || '' : '',
 		description: currentEvent ? currentEvent.description || '' : '',
 		textChannelId: currentEvent ? currentEvent.channelId || '' : '',
-		repeatType: currentEvent ? currentEvent.repeat_type || ERepeatType.DOES_NOT_REPEAT : ERepeatType.DOES_NOT_REPEAT,
-		isPrivate: Boolean(currentEvent?.is_private)
+		repeatType: currentEvent ? currentEvent.repeatType || ERepeatType.DOES_NOT_REPEAT : ERepeatType.DOES_NOT_REPEAT,
+		isPrivate: Boolean(currentEvent?.isPrivate)
 	});
 	const [buttonWork, setButtonWork] = useState(true);
 	const [errorOption, setErrorOption] = useState(false);
@@ -84,9 +84,9 @@ const ModalCreate = (props: ModalCreateProps) => {
 
 	const [option, setOption] = useState<string>('');
 
-	const isExistChannelVoice = Boolean(currentEvent?.channel_voice_id);
+	const isExistChannelVoice = Boolean(currentEvent?.channelVoiceId);
 	const isExistAddress = Boolean(currentEvent?.address);
-	const isExistPrivateEvent = currentEvent?.is_private;
+	const isExistPrivateEvent = currentEvent?.isPrivate;
 
 	useEffect(() => {
 		if (currentEvent && eventChannel) {
@@ -176,13 +176,13 @@ const ModalCreate = (props: ModalCreateProps) => {
 		const formattedCurrentEvent = {
 			topic: currentEvent.title,
 			address: currentEvent.address ?? '',
-			voiceChannel: currentEvent.channel_voice_id ?? '',
+			voiceChannel: currentEvent.channelVoiceId ?? '',
 			logo: currentEvent.logo ?? '',
 			description: currentEvent.description ?? '',
 			textChannelId: currentEvent.channelId ?? '',
-			repeatType: currentEvent.repeat_type,
-			timeStart: formatToLocalDateString(currentEvent.start_time || ''),
-			timeEnd: formatToLocalDateString(currentEvent.end_time || '')
+			repeatType: currentEvent.repeatType,
+			timeStart: formatToLocalDateString(currentEvent.startTime || ''),
+			timeEnd: formatToLocalDateString(currentEvent.endTime || '')
 		};
 
 		const submittedContent = {
@@ -197,19 +197,19 @@ const ModalCreate = (props: ModalCreateProps) => {
 			timeEnd: formatToLocalDateString(contentSubmit.selectedDateEnd || '')
 		};
 		const changeTime =
-			formatTimeStringToHourFormat(currentEvent.start_time || '') !== contentSubmit.timeStart ||
-			formatTimeStringToHourFormat(currentEvent.end_time || '') !== contentSubmit.timeEnd;
+			formatTimeStringToHourFormat(currentEvent.startTime || '') !== contentSubmit.timeStart ||
+			formatTimeStringToHourFormat(currentEvent.endTime || '') !== contentSubmit.timeEnd;
 		return !isEqual(submittedContent, formattedCurrentEvent) || changeTime;
 	}, [
 		currentEvent?.title,
 		currentEvent?.address,
-		currentEvent?.channel_voice_id,
+		currentEvent?.channelVoiceId,
 		currentEvent?.logo,
 		currentEvent?.description,
 		currentEvent?.channelId,
-		currentEvent?.repeat_type,
-		currentEvent?.start_time,
-		currentEvent?.end_time,
+		currentEvent?.repeatType,
+		currentEvent?.startTime,
+		currentEvent?.endTime,
 
 		contentSubmit?.topic,
 		contentSubmit?.address,
@@ -233,20 +233,20 @@ const ModalCreate = (props: ModalCreateProps) => {
 			const creatorId = currentEvent?.creatorId;
 
 			const baseEventFields: Partial<Record<string, string | number | boolean>> = {
-				event_id: eventId,
+				eventId: eventId,
 				clanId: currentClanId as string,
 				creatorId: creatorId as string,
-				channel_id_old: currentEvent?.channelId,
-				is_private: Boolean(currentEvent?.is_private)
+				channelIdOld: currentEvent?.channelId,
+				isPrivate: Boolean(currentEvent?.isPrivate)
 			};
 
 			const updatedEventFields: Partial<Record<string, string | number | undefined>> = {
-				channel_voice_id: contentSubmit.voiceChannel === currentEvent.channel_voice_id ? undefined : voiceChannel,
+				channelVoiceId: contentSubmit.voiceChannel === currentEvent.channelVoiceId ? undefined : voiceChannel,
 				address: contentSubmit.address === currentEvent.address ? undefined : address,
 				title: contentSubmit.topic === currentEvent.title ? undefined : contentSubmit.topic,
-				start_time: timeValueStart === convertToLongUTCFormat(currentEvent.start_time as string) ? undefined : timeValueStart,
-				end_time: timeValueEnd === convertToLongUTCFormat(currentEvent.end_time as string) ? undefined : timeValueEnd,
-				repeat_type: contentSubmit.repeatType === currentEvent.repeat_type ? ERepeatType.DOES_NOT_REPEAT : contentSubmit.repeatType
+				startTime: timeValueStart === convertToLongUTCFormat(currentEvent.startTime as string) ? undefined : timeValueStart,
+				endTime: timeValueEnd === convertToLongUTCFormat(currentEvent.endTime as string) ? undefined : timeValueEnd,
+				repeatType: contentSubmit.repeatType === currentEvent.repeatType ? ERepeatType.DOES_NOT_REPEAT : contentSubmit.repeatType
 			};
 
 			const additionalFields: Partial<Record<string, string | number | undefined>> = {
@@ -317,8 +317,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 			setContentSubmit((prev) => ({ ...prev, timeStart: defaultTimeStart }));
 			setContentSubmit((prev) => ({ ...prev, timeEnd: defaultTimeEnd }));
 		} else {
-			setContentSubmit((prev) => ({ ...prev, timeStart: formatTimeStringToHourFormat(currentEvent.start_time || '') }));
-			setContentSubmit((prev) => ({ ...prev, timeEnd: formatTimeStringToHourFormat(currentEvent.end_time || '') }));
+			setContentSubmit((prev) => ({ ...prev, timeStart: formatTimeStringToHourFormat(currentEvent.startTime || '') }));
+			setContentSubmit((prev) => ({ ...prev, timeEnd: formatTimeStringToHourFormat(currentEvent.endTime || '') }));
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -353,8 +353,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 					onClose={onClose}
 					contentSubmit={contentSubmit}
 					choiceLocation={choiceLocation}
-					timeStartDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.start_time || '') : defaultTimeStart}
-					timeEndDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.end_time || '') : defaultTimeEnd}
+					timeStartDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.startTime || '') : defaultTimeStart}
+					timeEndDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.endTime || '') : defaultTimeEnd}
 					setContentSubmit={setContentSubmit}
 					setErrorTime={(status: boolean) => setErrorTime(status)}
 				/>

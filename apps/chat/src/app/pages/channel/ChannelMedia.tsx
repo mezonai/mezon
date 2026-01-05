@@ -27,7 +27,7 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 					clanId={currentChannel?.clanId || ''}
 					channelId={currentChannel?.id}
 					channelLabel={currentChannel.channelLabel}
-					isPrivate={currentChannel.channel_private}
+					isPrivate={currentChannel.channelPrivate}
 					type={currentChannel?.type}
 					mode={mode}
 				/>

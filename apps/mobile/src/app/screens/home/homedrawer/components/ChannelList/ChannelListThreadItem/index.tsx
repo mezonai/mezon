@@ -21,7 +21,7 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListTh
 	const styles = style(themeValue);
 
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadChannelById(state, thread?.id));
-	const numberNotification = thread?.count_mess_unread ? thread.count_mess_unread : 0;
+	const numberNotification = thread?.countMessUnread ? thread.countMessUnread : 0;
 
 	const isHideThread = useMemo(() => {
 		return thread?.active !== 1 && !isActive && !isUnReadChannel;

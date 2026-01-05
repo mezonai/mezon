@@ -35,10 +35,10 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 						{
 							id: userId,
 							username: chat.usernames?.[0] || '',
-							displayName: chat.display_names?.[0] || chat.usernames?.[0] || '',
+							displayName: chat.displayNames?.[0] || chat.usernames?.[0] || '',
 							avatarUrl: chat.channelAvatar?.[0] || '',
 							clanAvatar: chat.channelAvatar?.[0] || '',
-							clanNick: chat.display_names?.[0] || chat.usernames?.[0] || '',
+							clanNick: chat.displayNames?.[0] || chat.usernames?.[0] || '',
 							type: ChannelType?.CHANNEL_TYPE_DM
 						} as ProcessedUser
 					];
@@ -48,7 +48,7 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 				return [
 					{
 						id: chat?.channelId || '',
-						username: `${chat?.usernames?.join(',')}, ${chat.creator_name || ''}`,
+						username: `${chat?.usernames?.join(',')}, ${chat.creatorName || ''}`,
 						displayName: chat?.channelLabel || '',
 						avatarUrl: 'assets/images/avatar-group.png',
 						clanAvatar: 'assets/images/avatar-group.png',

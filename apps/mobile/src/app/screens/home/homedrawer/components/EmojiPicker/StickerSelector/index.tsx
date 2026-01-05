@@ -29,9 +29,9 @@ const StickerSelector = ({ onSelected, onScroll, mediaType = MediaType.STICKER, 
 
 	const clanStickers = useMemo(() => {
 		if (mediaType === MediaType.AUDIO) {
-			return allStickers?.filter((sticker) => (sticker as any).media_type === MediaType.AUDIO);
+			return allStickers?.filter((sticker) => (sticker as any).mediaType === MediaType.AUDIO);
 		}
-		return allStickers?.filter((sticker) => (sticker as any).media_type === undefined || (sticker as any).media_type === MediaType.STICKER);
+		return allStickers?.filter((sticker) => (sticker as any).mediaType === undefined || (sticker as any).mediaType === MediaType.STICKER);
 	}, [mediaType, allStickers]);
 
 	const filteredStickers = useMemo(() => {
@@ -60,7 +60,7 @@ const StickerSelector = ({ onSelected, onScroll, mediaType = MediaType.STICKER, 
 		for (const sticker of filteredStickers) {
 			const item = {
 				id: sticker?.clanId,
-				type: sticker?.clan_name,
+				type: sticker?.clanName,
 				url: sticker?.logo,
 				forSale: false
 			};

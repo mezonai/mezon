@@ -46,9 +46,9 @@ const formatDeviceDate = (date: string | Date | undefined, t: (key: string) => s
 };
 
 const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
-	const { platform, device_name, location, last_active } = device;
+	const { platform, deviceName, location, lastActive } = device;
 
-	const formattedLastActive = formatDeviceDate(last_active, t);
+	const formattedLastActive = formatDeviceDate(lastActive, t);
 	const platformLabel = getPlatformLabel(platform);
 
 	return (
@@ -58,9 +58,9 @@ const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
 				<div>
 					<div className="flex items-center gap-2">
 						<span className="text-theme-primary-active font-semibold text-sm">{platformLabel}</span>
-						{device_name && (
+						{deviceName && (
 							<span className="btn-primary text-theme-primary-active  text-xs px-2 py-0.5 rounded font-medium">
-								{device_name.toUpperCase()}
+								{deviceName.toUpperCase()}
 							</span>
 						)}
 					</div>

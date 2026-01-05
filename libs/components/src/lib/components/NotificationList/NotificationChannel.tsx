@@ -22,7 +22,7 @@ const NotificationChannel = ({ unreadListConverted, isUnreadTab, notification }:
 					channelId: unreadNotification?.content?.channelId,
 					channelLabel: unreadNotification?.content?.channelLabel,
 					clanLogo: unreadNotification?.content?.clanLogo,
-					clan_name: unreadNotification?.content?.clan_name,
+					clanName: unreadNotification?.content?.clanName,
 					clanId: unreadNotification?.content?.clanId,
 					categoryName: unreadNotification?.content?.categoryName,
 					notifications: []

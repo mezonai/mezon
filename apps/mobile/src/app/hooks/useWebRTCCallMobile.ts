@@ -480,9 +480,9 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	// Handle incoming signaling messages
 	const handleSignalingMessage = async (signalingData: any) => {
 		try {
-			switch (signalingData.data_type) {
+			switch (signalingData.dataType) {
 				case WebrtcSignalingType.WEBRTC_SDP_OFFER: {
-					const decompressedData = await decompress(signalingData.json_data);
+					const decompressedData = await decompress(signalingData.jsonData);
 					const offer = safeJSONParse(decompressedData || '{}');
 					if (isFromNative) {
 						setOfferCache(offer);
@@ -494,7 +494,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				}
 
 				case WebrtcSignalingType.WEBRTC_SDP_ANSWER: {
-					const decompressedData = await decompress(signalingData.json_data);
+					const decompressedData = await decompress(signalingData.jsonData);
 					const answer = safeJSONParse(decompressedData || '{}');
 					await handleAnswer(answer);
 
@@ -502,7 +502,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				}
 
 				case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE: {
-					const candidate = safeJSONParse(signalingData?.json_data || '{}');
+					const candidate = safeJSONParse(signalingData?.jsonData || '{}');
 					await handleICECandidate(candidate);
 
 					break;

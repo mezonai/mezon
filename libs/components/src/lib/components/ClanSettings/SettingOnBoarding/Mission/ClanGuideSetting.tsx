@@ -213,7 +213,7 @@ const MissionItem = ({ mission, temp, setOpenModalSaveChanges }: MissionItemProp
 			description={
 				<span className="break-words">
 					{' '}
-					{titleMission[mission?.task_type ? mission?.task_type - 1 : 0]}{' '}
+					{titleMission[mission?.taskType ? mission?.taskType - 1 : 0]}{' '}
 					<span className="font-semibold text-gray-800 dark:text-white">#{channelById?.channelLabel}</span>{' '}
 				</span>
 			}

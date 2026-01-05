@@ -55,7 +55,7 @@ export const ClanIcon = memo(
 							</View>
 						) : (
 							<View style={[styles.clanIcon, props?.isActiveCurrentClan && styles.logoClanActive]}>
-								<Text style={styles.textLogoClanIcon}>{props?.data?.clan_name?.charAt(0)?.toUpperCase()}</Text>
+								<Text style={styles.textLogoClanIcon}>{props?.data?.clanName?.charAt(0)?.toUpperCase()}</Text>
 							</View>
 						)}
 					</View>
@@ -75,7 +75,7 @@ export const ClanIcon = memo(
 		return (
 			prevProps.data?.clanId === nextProps.data?.clanId &&
 			prevProps.data?.logo === nextProps.data?.logo &&
-			prevProps.data?.clan_name === nextProps.data?.clan_name &&
+			prevProps.data?.clanName === nextProps.data?.clanName &&
 			prevProps.isActive === nextProps.isActive &&
 			prevProps.isActiveCurrentClan === nextProps.isActiveCurrentClan
 		);

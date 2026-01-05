@@ -69,7 +69,7 @@ const useWebhookActions = (clanId: string, isClanSetting: boolean, isClanIntegra
 			try {
 				const newWebhookReq: ApiWebhookCreateRequest = {
 					channelId: channelId,
-					webhook_name: getRandomWebhookName(),
+					webhookName: getRandomWebhookName(),
 					avatar: getRandomAvatar(),
 					clanId: clanId
 				};
@@ -122,7 +122,7 @@ const useWebhookActions = (clanId: string, isClanSetting: boolean, isClanIntegra
 		if (isClanIntegration) {
 			try {
 				const newWebhookReq: ApiGenerateClanWebhookRequest = {
-					webhook_name: getRandomWebhookName(),
+					webhookName: getRandomWebhookName(),
 					avatar: getRandomAvatar(),
 					clanId: clanId
 				};

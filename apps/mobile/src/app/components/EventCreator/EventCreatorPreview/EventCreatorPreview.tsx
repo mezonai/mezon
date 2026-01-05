@@ -59,18 +59,18 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 		if (currentEvent) {
 			await dispatch(
 				eventManagementActions.updateEventManagement({
-					event_id: currentEvent?.id,
-					start_time: timeValueStart,
-					end_time: timeValueEnd,
-					channel_voice_id: channelId,
+					eventId: currentEvent?.id,
+					startTime: timeValueStart,
+					endTime: timeValueEnd,
+					channelVoiceId: channelId,
 					address: location,
 					creatorId: myUser.userId,
 					title,
 					description,
 					channelId: eventChannelId,
 					logo,
-					channel_id_old: currentEvent?.channelId,
-					repeat_type: frequency,
+					channelIdOld: currentEvent?.channelId,
+					repeatType: frequency,
 					clanId: currentEvent?.clanId
 				})
 			);
@@ -99,15 +99,15 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 				<EventItem
 					event={{
 						id: '',
-						start_time: startTime.toISOString(),
-						channel_voice_id: channelId,
+						startTime: startTime.toISOString(),
+						channelVoiceId: channelId,
 						address: location,
 						userIds: [],
 						creatorId: myUser.userId,
 						title,
 						description,
 						channelId: eventChannelId,
-						is_private: isPrivate,
+						isPrivate: isPrivate,
 						logo
 					}}
 					showActions={false}

@@ -20,7 +20,7 @@ export function useDMInvite(channelID?: string) {
 	const { userId } = useAuth();
 	const usersClan = useSelector(selectAllUserClans);
 	const allChannels = useSelector(selectAllChannels);
-	const isChannelPrivate = allChannels.find((channel) => channel.channelId === channelID)?.channel_private === 1;
+	const isChannelPrivate = allChannels.find((channel) => channel.channelId === channelID)?.channelPrivate === 1;
 	const friendList = useSelector(selectFriendsEntities);
 
 	const listDMInvite = useMemo(() => {

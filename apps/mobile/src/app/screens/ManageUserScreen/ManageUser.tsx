@@ -79,7 +79,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 		return (
 			editableRoleList?.map((role) => ({
 				...role,
-				disabled: isClanOwner ? false : maxPermissionLevel <= (role?.max_level_permission || 0)
+				disabled: isClanOwner ? false : maxPermissionLevel <= (role?.maxLevelPermission || 0)
 			})) || []
 		);
 	}, [editMode, activeRoleOfUser, editableRoleList, isClanOwner, maxPermissionLevel]);

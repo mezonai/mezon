@@ -142,7 +142,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({ navigatio
 			try {
 				if (otpConfirm?.length === 6) {
 					setIsLoading(true);
-					const resp: any = await confirmAuthenticateOTP({ otp_code: otpConfirm, req_id: reqIdSent });
+					const resp: any = await confirmAuthenticateOTP({ otpCode: otpConfirm, reqId: reqIdSent });
 
 					if (!resp) {
 						Toast.show({
@@ -187,7 +187,7 @@ const OTPVerificationScreen: React.FC<OTPVerificationScreenProps> = ({ navigatio
 			}
 			const payload = resp?.payload as ApiLinkAccountConfirmRequest;
 
-			const reqId = payload?.req_id;
+			const reqId = payload?.reqId;
 			if (reqId) {
 				setReqIdSent(reqId);
 				setResetTrigger((prev) => prev + 1);

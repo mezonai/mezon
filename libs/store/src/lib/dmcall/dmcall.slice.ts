@@ -50,11 +50,11 @@ export const initialDMCallState: DMCallState = DMCallAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
 	signalingData: {
-		receiver_id: '',
-		data_type: 0,
-		json_data: '',
+		receiverId: '',
+		dataType: 0,
+		jsonData: '',
 		channelId: '',
-		caller_id: ''
+		callerId: ''
 	},
 	listOfCalls: {},
 	isMuteMicrophone: false,
@@ -85,7 +85,7 @@ export const DMCallSlice = createSlice({
 				DMCallAdapter.addOne(state, action);
 			} else {
 				state.otherCall = {
-					caller_id: action.payload.signalingData.caller_id,
+					callerId: action.payload.signalingData.callerId,
 					channelId: action.payload.signalingData.channelId
 				};
 			}
@@ -180,9 +180,9 @@ export const selectDMVoiceEntities = createSelector(getDMCallState, selectEntiti
 export const selectSignalingDataByUserId = createSelector([selectDMVoiceEntities, (state, userId) => userId], (entities, userId) => {
 	const dmcalls = Object.values(entities);
 	return dmcalls.filter((dmcall) => {
-		const isForUser = (dmcall && dmcall.signalingData?.receiver_id === userId) || dmcall.calleeId === userId;
-		// Only include DM call events (data_type <= 8), exclude group call events (>= 9)
-		const isDMCallEvent = dmcall?.signalingData?.data_type <= 8;
+		const isForUser = (dmcall && dmcall.signalingData?.receiverId === userId) || dmcall.calleeId === userId;
+		// Only include DM call events (dataType <= 8), exclude group call events (>= 9)
+		const isDMCallEvent = dmcall?.signalingData?.dataType <= 8;
 		return isForUser && isDMCallEvent;
 	});
 });

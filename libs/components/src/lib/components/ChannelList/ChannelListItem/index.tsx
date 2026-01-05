@@ -64,9 +64,9 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 				channel={channel}
 				key={channel.channelId}
 				createInviteLink={handleOpenInvite}
-				isPrivate={channel.channel_private}
+				isPrivate={channel.channelPrivate}
 				isUnReadChannel={isUnreadChannel}
-				numberNotification={channel.count_mess_unread}
+				numberNotification={channel.countMessUnread}
 				channelType={channel?.type}
 				isActive={isActive}
 				permissions={permissions}
@@ -93,7 +93,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 				hasUnread ||
 				currentChannelId === channel.id ||
 				currentChannelParentId === channel.id ||
-				channel?.count_mess_unread)
+				channel?.countMessUnread)
 		) {
 			return (
 				<>

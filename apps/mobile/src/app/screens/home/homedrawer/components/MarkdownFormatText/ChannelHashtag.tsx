@@ -11,7 +11,7 @@ export const ChannelHashtag = ({ channelHashtagId, channelEntity }: IChannelHash
 		channelLabel: 'unknown'
 	};
 
-	const dataPress = `${channel.type}***${channel.channelId}***${channel.clanId}***${channel.status}***${channel.meeting_code}***${channel.categoryId}`;
+	const dataPress = `${channel.type}***${channel.channelId}***${channel.clanId}***${channel.status}***${channel.meetingCode}***${channel.categoryId}`;
 
 	if (channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 		return `[${channel.channelLabel}](##voice${JSON.stringify(dataPress)})`;
@@ -22,7 +22,7 @@ export const ChannelHashtag = ({ channelHashtagId, channelEntity }: IChannelHash
 	if (channel.type === ChannelType.CHANNEL_TYPE_APP) {
 		return `[${channel.channelLabel}](#app${JSON.stringify(dataPress)})`;
 	}
-	if (channel.parent_id !== '0') {
+	if (channel.parentId !== '0') {
 		return `[${channel.channelLabel}](#thread${JSON.stringify(dataPress)})`;
 	}
 	return channel['channelId']

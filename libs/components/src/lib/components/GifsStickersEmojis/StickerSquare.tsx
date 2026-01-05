@@ -70,7 +70,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 	const { userProfile } = useAuth();
 	const allStickers = useAppSelector(selectAllStickerSuggestion);
 	const clanStickers = useMemo(
-		() => allStickers.filter((sticker) => (sticker as any).media_type === undefined || (sticker as any).media_type === MediaType.STICKER),
+		() => allStickers.filter((sticker) => (sticker as any).mediaType === undefined || (sticker as any).mediaType === MediaType.STICKER),
 		[allStickers]
 	);
 
@@ -93,12 +93,12 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 
 	const categoryLogo = useMemo(() => {
 		const categorizedStickers = clanStickers
-			.filter((sticker) => !sticker.is_for_sale)
+			.filter((sticker) => !sticker.isForSale)
 			.reduce((acc: { id?: string; type?: string; url?: string }[], sticker) => {
 				if (!acc.some((item) => item.id === sticker.clanId)) {
 					acc.push({
 						id: sticker.clanId,
-						type: sticker.clan_name,
+						type: sticker.clanName,
 						url: sticker.logo
 					});
 				}
@@ -111,10 +111,10 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 			...searchedStickers.map((sticker) => ({
 				id: sticker.id,
 				url: sticker.source,
-				type: sticker.clan_name,
+				type: sticker.clanName,
 				clanName: sticker.category,
 				clanId: sticker.clanId,
-				forSale: sticker.is_for_sale,
+				forSale: sticker.isForSale,
 				creatorId: sticker.creatorId,
 				shortname: sticker.shortname || ''
 			}))

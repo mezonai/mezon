@@ -62,8 +62,8 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 			);
 
 			const request: ApiClanDiscoverRequest = {
-				page_number: page,
-				item_per_page: PAGINATION.ITEMS_PER_PAGE
+				pageNumber: page,
+				itemPerPage: PAGINATION.ITEMS_PER_PAGE
 			};
 
 			const response = await mezon.listClanDiscover(
@@ -74,9 +74,9 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 				throw new Error('No response from API');
 			}
 
-			const newClans = response.clan_discover || [];
+			const newClans = response.clanDiscover || [];
 			setClans(newClans);
-			setTotalPages(response.page_count || 1);
+			setTotalPages(response.pageCount || 1);
 
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(newClans));
 		} catch (err) {
@@ -108,7 +108,7 @@ export const DiscoverProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 				throw new Error('No response from API');
 			}
 
-			const clans = response.clan_discover || [];
+			const clans = response.clanDiscover || [];
 			return clans.length > 0 ? clans[0] : null;
 		} catch (err) {
 			console.error('Failed to fetch single clan:', err);

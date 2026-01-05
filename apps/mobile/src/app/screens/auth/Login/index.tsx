@@ -187,7 +187,7 @@ const LoginScreen = ({ navigation }) => {
 				setIsLoading(true);
 				const resp: any = await dispatch(authActions.authenticateEmailOTPRequest({ email }));
 				const payload = resp?.payload as ApiLinkAccountConfirmRequest;
-				const reqId = payload?.req_id;
+				const reqId = payload?.reqId;
 				if (reqId) {
 					setLastOTPSentTime((prev) => ({
 						...prev,
@@ -238,7 +238,7 @@ const LoginScreen = ({ navigation }) => {
 			setIsLoading(true);
 			const resp: any = await dispatch(authActions.authenticatePhoneSMSOTPRequest({ phone: fullPhoneNumber }));
 			const payload = resp?.payload as ApiLinkAccountConfirmRequest;
-			const reqId = payload?.req_id;
+			const reqId = payload?.reqId;
 			if (reqId) {
 				setLastOTPSentTime((prev) => ({
 					...prev,

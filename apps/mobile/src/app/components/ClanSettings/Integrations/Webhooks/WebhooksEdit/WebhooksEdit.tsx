@@ -37,9 +37,9 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const styles = useMemo(() => style(themeValue), [themeValue]);
 	const { webhook, isClanIntegration, isClanSetting } = route.params || {};
 	const [urlImageWebhook, setUrlImageWebhook] = useState<string>(webhook?.avatar || '');
-	const [webhookName, setWebhookName] = useState<string>(webhook?.webhook_name || '');
+	const [webhookName, setWebhookName] = useState<string>(webhook?.webhookName || '');
 	const allChannel = useSelector(selectAllChannels);
-	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parent_id === ChannelIsNotThread.TRUE), [allChannel]);
+	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parentId === ChannelIsNotThread.TRUE), [allChannel]);
 	const getChannelSelect = useCallback(
 		(idChannel = '') => {
 			return parentChannelsInClan?.find((channel) => channel?.channelId === idChannel);
@@ -65,7 +65,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const handleResetChange = useCallback(() => {
 		if (hasChange) {
 			setUrlImageWebhook(webhook?.avatar);
-			setWebhookName(webhook?.webhook_name);
+			setWebhookName(webhook?.webhookName);
 			const channelSelect = getChannelSelect(webhook?.channelId);
 			setWebhookChannel(channelSelect);
 			setHasChange(false);
@@ -77,9 +77,9 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 			try {
 				const request: MezonUpdateClanWebhookByIdBody = {
 					avatar: urlImageWebhook,
-					webhook_name: webhookName,
+					webhookName: webhookName,
 					clanId: clanId,
-					reset_token: resetToken
+					resetToken: resetToken
 				};
 
 				const response = await dispatch(
@@ -115,8 +115,8 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		async (webhookId: string) => {
 			const request: MezonUpdateWebhookByIdBody = {
 				avatar: urlImageWebhook,
-				channel_id_update: webhookChannel?.channelId,
-				webhook_name: webhookName,
+				channelIdUpdate: webhookChannel?.channelId,
+				webhookName: webhookName,
 				channelId: webhook?.channelId,
 				clanId: clanId
 			};
@@ -295,7 +295,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 						<Text style={styles.confirmText}>
 							{t('webhooksEdit.deleteWebhookConfirmation', {
 								ns: 'clanIntegrationsSetting',
-								webhookName: webhook?.webhook_name
+								webhookName: webhook?.webhookName
 							})}
 						</Text>
 					}
@@ -304,7 +304,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 			)
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-	}, [t, themeValue.white, webhook?.webhook_name, handleDeleteWebhook, webhook]);
+	}, [t, themeValue.white, webhook?.webhookName, handleDeleteWebhook, webhook]);
 
 	return (
 		<View style={styles.wrapper}>

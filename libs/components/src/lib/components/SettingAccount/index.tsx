@@ -207,7 +207,7 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 					<div className="flex justify-between items-center">
 						<div>
 							<h4 className="uppercase font-bold text-xs mb-1">{t('phoneNumber')}</h4>
-							<p>{userProfile?.user?.phone_number ? `********${userProfile?.user?.phone_number.slice(-4)}` : t('phoneNumber')}</p>
+							<p>{userProfile?.user?.phoneNumber ? `********${userProfile?.user?.phoneNumber.slice(-4)}` : t('phoneNumber')}</p>
 						</div>
 						<div
 							className=" h-fit rounded-lg px-6 py-1 cursor-pointer border-theme-primary bg-theme-input text-theme-primary-hover bg-secondary-button-hover "

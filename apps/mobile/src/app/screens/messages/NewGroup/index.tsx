@@ -128,7 +128,7 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 		if (isFriendListEmpty) return;
 		const bodyCreateDmGroup: ApiCreateChannelDescRequest = {
 			type: friendIdSelectedList?.length > 1 ? ChannelType.CHANNEL_TYPE_GROUP : ChannelType.CHANNEL_TYPE_DM,
-			channel_private: 1,
+			channelPrivate: 1,
 			userIds: friendIdSelectedList,
 			clanId: '0'
 		};

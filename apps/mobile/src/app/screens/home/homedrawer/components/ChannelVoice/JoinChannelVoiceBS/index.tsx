@@ -37,11 +37,11 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 	const badge = useMemo(() => (voiceChannelMembers?.length > 3 ? voiceChannelMembers.length - 3 : 0), [voiceChannelMembers]);
 
 	const handleJoinVoice = async () => {
-		if (!channel?.meeting_code) return;
+		if (!channel?.meetingCode) return;
 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, {
 			channelId: channelId,
-			roomName: channel.meeting_code,
+			roomName: channel.meetingCode,
 			clanId: currentClanId
 		});
 		dismiss();

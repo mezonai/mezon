@@ -158,17 +158,17 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				return false;
 			}
 			const firstUserId = userIds[0];
-			const targetId = jsonObject?.receiver_id || selectedUser?.id;
+			const targetId = jsonObject?.receiverId || selectedUser?.id;
 			return firstUserId === targetId;
 		});
 		return directMessage?.id;
-	}, [jsonObject?.receiver_id, listDM, selectedUser?.id]);
+	}, [jsonObject?.receiverId, listDM, selectedUser?.id]);
 
 	const sendToken = async () => {
 		const store = await getStoreAsync();
 		try {
 			const walletAddress = jsonObject?.wallet_address;
-			if (!selectedUser && !jsonObject?.receiver_id && !walletAddress) {
+			if (!selectedUser && !jsonObject?.receiverId && !walletAddress) {
 				Toast.show({
 					type: 'error',
 					text1: t('toast.error.mustSelectUser')
@@ -197,8 +197,8 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 			const tokenEvent: ApiTokenSentEvent = {
 				senderId: walletAddress ? walletDetail?.address : userProfile?.user?.id || '',
 				senderName: walletAddress ? walletDetail?.address : userProfile?.user?.username?.[0] || userProfile?.user?.username || '',
-				receiver_id: walletAddress ? walletAddress : jsonObject?.receiver_id || selectedUser?.id || '',
-				extra_attribute: jsonObject?.extra_attribute || '',
+				receiverId: walletAddress ? walletAddress : jsonObject?.receiverId || selectedUser?.id || '',
+				extraAttribute: jsonObject?.extraAttribute || '',
 				amount: Number(plainTokenCount || 1),
 				note: note?.replace?.(/\s+/g, ' ')?.trim() || ''
 			};
@@ -221,9 +221,9 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 							TypeMessage.SendToken
 						);
 					} else {
-						const receiver = (mergeUser?.find((user) => user?.id === jsonObject?.receiver_id) || selectedUser || jsonObject) as any;
+						const receiver = (mergeUser?.find((user) => user?.id === jsonObject?.receiverId) || selectedUser || jsonObject) as any;
 						const response = await createDirectMessageWithUser(
-							receiver?.id || receiver?.receiver_id,
+							receiver?.id || receiver?.receiverId,
 							receiver?.username?.[0] || receiver?.receiver_name,
 							receiver?.username?.[0] || receiver?.receiver_name,
 							receiver?.avatarUrl
@@ -542,14 +542,14 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 					<View>
 						<Text style={styles.title}>{jsonObject?.wallet_address ? t('sendTokenToAddress') : t('sendTokenTo')}</Text>
 						<TouchableOpacity
-							disabled={!!jsonObject?.receiver_id || jsonObject?.type === 'payment' || !!jsonObject?.wallet_address}
+							disabled={!!jsonObject?.receiverId || jsonObject?.type === 'payment' || !!jsonObject?.wallet_address}
 							style={[styles.textField, styles.selectSendTokenTo]}
 							onPress={handleOpenBottomSheet}
 						>
 							<Text style={styles.username} numberOfLines={1}>
 								{jsonObject?.wallet_address
 									? jsonObject?.wallet_address
-									: jsonObject?.receiver_id
+									: jsonObject?.receiverId
 										? jsonObject?.receiver_name || ''
 										: selectedUser?.username || t('selectAccount')}
 							</Text>
@@ -557,7 +557,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 								<TouchableOpacity style={styles.btnCopyAddress} onPress={handleCopyAddress}>
 									<MezonIconCDN icon={IconCDN.copyIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 								</TouchableOpacity>
-							) : !jsonObject?.receiver_id ? (
+							) : !jsonObject?.receiverId ? (
 								<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 							) : (
 								<View />
@@ -568,7 +568,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 						<Text style={styles.title}>{t('token')}</Text>
 						<View style={styles.textField}>
 							<TextInput
-								autoFocus={!!jsonObject?.receiver_id || !!jsonObject?.wallet_address}
+								autoFocus={!!jsonObject?.receiverId || !!jsonObject?.wallet_address}
 								editable={(!jsonObject?.amount || canEdit) && jsonObject?.type !== 'payment'}
 								style={styles.textInput}
 								value={tokenCount}

@@ -149,7 +149,7 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 				clanId: currentClanId,
 				shortname,
 				source: url,
-				is_for_sale: isForSale
+				isForSale: isForSale
 			};
 
 			if (isForSale) {

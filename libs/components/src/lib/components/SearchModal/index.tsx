@@ -69,7 +69,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 						lastSentTimeStamp: itemDM.lastSentMessage?.timestampSeconds,
 						typeChat: TypeSearch.Dm_Type,
 						type: itemDM.type,
-						count_messsage_unread: itemDM.count_mess_unread,
+						count_messsage_unread: itemDM.countMessUnread,
 						lastSeenTimeStamp: Number(itemDM?.lastSeenMessage?.timestampSeconds || 0)
 					});
 				}
@@ -86,18 +86,18 @@ function SearchModal({ onClose }: SearchModalProps) {
 			return {
 				id: item?.channelId ?? '',
 				name: item?.channelLabel ?? '',
-				subText: item?.clan_name ?? '',
+				subText: item?.clanName ?? '',
 				icon: '#',
 				clanId: item?.clanId ?? '',
 				channelId: item?.channelId ?? '',
 				lastSentTimeStamp: Number(item?.lastSentMessage?.timestampSeconds || 0),
 				typeChat: TypeSearch.Channel_Type,
 				prioritizeName: item?.channelLabel ?? '',
-				channel_private: item.channel_private,
+				channelPrivate: item.channelPrivate,
 				type: item.type,
-				parent_id: item.parent_id,
-				meeting_code: item.meeting_code,
-				count_messsage_unread: item?.count_mess_unread,
+				parentId: item.parentId,
+				meetingCode: item.meetingCode,
+				count_messsage_unread: item?.countMessUnread,
 				lastSeenTimeStamp: Number(item?.lastSeenMessage?.timestampSeconds || 0)
 			};
 		});
@@ -247,7 +247,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 			dispatch(appActions.setIsShowSettingFooterStatus(false));
 			dispatch(categoriesActions.setCtrlKSelectedChannelId(channel?.id ?? ''));
 			const channelUrl = toChannelPage(channel?.id ?? '', channel?.clanId ?? '');
-			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parentId ?? '' }));
 			navigate(channelUrl);
 		},
 		[dispatch, navigate, toChannelPage]

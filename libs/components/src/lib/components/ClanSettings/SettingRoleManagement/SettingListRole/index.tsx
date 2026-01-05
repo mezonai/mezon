@@ -96,9 +96,9 @@ const SettingListRole = (props: closeEditRole) => {
 		if (!isChange || isNewRole) {
 			if (isNewRole) handleUpdateUser();
 			const activeRole = RolesClan.find((role) => role.id === roleId);
-			const memberIDRoles = activeRole?.role_user_list?.role_users?.map((member) => member.id) || [];
+			const memberIDRoles = activeRole?.roleUserList?.roleUsers?.map((member) => member.id) || [];
 
-			const permissionsRole = activeRole?.permission_list;
+			const permissionsRole = activeRole?.permissionList;
 			const permissions = permissionsRole?.permissions?.filter((permission) => permission.active === 1) || [];
 			const permissionIds = permissions.map((permission) => permission.id) || [];
 

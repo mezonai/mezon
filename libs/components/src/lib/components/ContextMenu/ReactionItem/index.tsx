@@ -34,7 +34,7 @@ const ReactionItem: React.FC<IReactionItem> = ({ emojiShortCode, emojiId, messag
 			count: 1,
 			messageSenderId: (message.senderId || userProfile?.user?.id) ?? '',
 			action_delete: false,
-			isPublic: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
+			isPublic: isPublicChannel({ parentId: currentChannelParentId, channelPrivate: currentChannelPrivate }),
 			clanId: message?.clanId ?? '',
 			channelId: isTopic ? currentChannelObjectId || '' : (message?.channelId ?? ''),
 			isFocusTopicBox: isTopic,
