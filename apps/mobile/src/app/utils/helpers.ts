@@ -1,5 +1,29 @@
-import { load, save, STORAGE_KEY_TEMPORARY_INPUT_MESSAGES, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
+import {
+	load,
+	remove,
+	save,
+	STORAGE_CHANNEL_CURRENT_CACHE,
+	STORAGE_DATA_CLAN_CHANNEL_CACHE,
+	STORAGE_KEY_TEMPORARY_ATTACHMENT,
+	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES,
+	STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE
+} from '@mezon/mobile-components';
+import {
+	accountActions,
+	appActions,
+	authActions,
+	channelsActions,
+	clansActions,
+	directActions,
+	getStore,
+	listChannelsByUserActions,
+	listUsersByUserActions,
+	messagesActions,
+	notificationActions,
+	selectAllAccount
+} from '@mezon/store-mobile';
 import type { EmojiDataOptionals } from '@mezon/utils';
+import { Platform } from 'react-native';
 import { deflate, inflate } from 'react-native-gzip';
 
 export const sleep = (milliseconds: number) => {
@@ -219,4 +243,30 @@ export const removeBackticks = (text: string) => {
 		i++;
 	}
 	return result;
+};
+
+export const logoutGlobal = async () => {
+	const store = getStore();
+	const userProfile = selectAllAccount(store.getState());
+	store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: Platform.OS }));
+	store.dispatch(directActions.removeAll());
+	store.dispatch(notificationActions.removeAll());
+	store.dispatch(channelsActions.removeAll());
+	store.dispatch(messagesActions.removeAll());
+	store.dispatch(listChannelsByUserActions.removeAll());
+	store.dispatch(clansActions.setCurrentClanId(''));
+	store.dispatch(clansActions.removeAll());
+	store.dispatch(clansActions.collapseAllGroups());
+	store.dispatch(clansActions.clearClanGroups());
+	store.dispatch(clansActions.refreshStatus());
+	store.dispatch(accountActions.resetAllState());
+	store.dispatch(notificationActions.resetAllState());
+	store.dispatch(listUsersByUserActions.removeAll());
+
+	await remove(STORAGE_DATA_CLAN_CHANNEL_CACHE);
+	await remove(STORAGE_CHANNEL_CURRENT_CACHE);
+	await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
+	await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
+	store.dispatch(appActions.setIsShowWelcomeMobile(false));
+	store.dispatch(appActions.setLoadingMainMobile(false));
 };

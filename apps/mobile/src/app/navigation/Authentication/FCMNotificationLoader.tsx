@@ -7,7 +7,6 @@ import { getMessaging, onNotificationOpenedApp } from '@react-native-firebase/me
 import { useNavigation } from '@react-navigation/native';
 import type { ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import moment from 'moment/moment';
 import { useCallback, useContext, useEffect, useRef } from 'react';
 import { AppState, DeviceEventEmitter, Platform } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
@@ -34,15 +33,8 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 					if (extraMessage) {
 						const message = safeJSONParse(extraMessage);
 						if (message && typeof message === 'object' && message?.channel_id) {
-							const createTimeSeconds = message?.create_time_seconds;
+							const createTimeSeconds = message?.create_time_seconds || Math.floor(Date.now() / 1000);
 							const updateTimeSeconds = message?.update_time_seconds;
-
-							const createTime = createTimeSeconds
-								? moment.unix(createTimeSeconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
-								: new Date().toISOString();
-							const updateTime = updateTimeSeconds
-								? moment.unix(updateTimeSeconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
-								: new Date().toISOString();
 
 							let codeValue = 0;
 							if (message?.code) {
@@ -68,8 +60,8 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 								mentions: safeJSONParse(message?.mentions || '[]'),
 								references: safeJSONParse(message?.references || '[]'),
 								reactions: safeJSONParse(message?.reactions || '[]'),
-								create_time: createTime,
-								update_time: updateTime
+								create_time_seconds: createTimeSeconds,
+								update_time_seconds: updateTimeSeconds
 							};
 							onchannelmessage(messageData as ChannelMessage);
 						} else {
