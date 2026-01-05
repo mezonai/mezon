@@ -98,7 +98,7 @@ const ModalInvite = (props: ModalParam) => {
 	return (
 		<ModalLayout onClose={props.onClose}>
 			<div
-				className="bg-theme-setting-primary rounded-xl flex flex-col md:w-[480px]"
+				className="bg-theme-setting-primary rounded-xl flex flex-col w-[calc(100vw-32px)] max-w-[480px] md:w-[480px]"
 				data-e2e={generateE2eId('clan_page.modal.invite_people.container')}
 			>
 				<div className="flex-1 flex items-center justify-between border-b-theme-primary rounded-t p-3 md:p-4 gap-2">
@@ -113,13 +113,13 @@ const ModalInvite = (props: ModalParam) => {
 						×
 					</Button>
 				</div>
-				<div className="flex flex-col w-full px-4 md:px-5 py-4">
+				<div className="flex flex-col w-full px-3 md:px-5 py-4 overflow-hidden">
 					<ListMemberInvite
 						isInviteExternalCalling={isInviteExternalCalling}
 						url={isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite}
 						channelID={channelID}
 					/>
-					<div className="relative">
+					<div className="relative w-full">
 						<p className="pt-4 pb-1 text-[12px] mb-12px cursor-default uppercase font-semibold text-theme-primary-active">
 							{t('modal.sendLinkText', { type: isInviteExternalCalling ? t('modal.privateRoom') : t('modal.clanInvite') })}
 							{!isInviteExternalCalling && (
@@ -141,7 +141,7 @@ const ModalInvite = (props: ModalParam) => {
 							<button
 								className="absolute right-0 top-0 h-11 font-semibold text-sm px-4 md:px-8 py-1.5
 								shadow outline-none focus:outline-none ease-linear transition-all duration-150
-								btn-primary btn-primary-hover text-[14px] md:text-[16px] leading-6 rounded-lg whitespace-nowrap"
+								 btn-primary btn-primary-hover text-[14px] md:text-[16px] leading-6 rounded-lg whitespace-nowrap"
 								onClick={() => {
 									handleCopyToClipboard(urlInvite);
 									onClose();
