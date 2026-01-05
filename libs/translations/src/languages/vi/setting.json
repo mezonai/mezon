@@ -11,10 +11,11 @@
 		"clip": "Clip",
 		"friendRequests": "Yêu cầu kết bạn",
 		"QRScan": "Quét mã QR",
-		"MyQRCode": "Mã QR của tôi"
+		"MyQRCode": "Mã QR của tôi",
+		"devices": "Thiết bị"
 	},
 	"deviceSettings": {
-		"description1": "Đây là tất cả các thiết bị đang đăng nhập vào tài khoản của bạn. Bạn có thể đăng xuất từng thiết bị",
+		"description1": "Đây là tất cả các thiết bị đang đăng nhập vào tài khoản của bạn. Bạn có thể đăng xuất từng thiết bị.",
 		"description2": "Nếu bạn nhìn thấy một lượt đăng nhập mà bạn không biết, hãy đăng xuất khỏi thiết bị đó và thay đổi mật khẩu tài khoản của bạn ngay lập tức.",
 		"currentDevice": "Thiết bị hiện tại",
 		"otherDevices": "Thiết bị khác",

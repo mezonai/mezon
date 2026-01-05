@@ -1,8 +1,20 @@
-import { mediaDevices, MediaStream, RTCIceCandidate, RTCPeerConnection, RTCSessionDescription } from '@livekit/react-native-webrtc';
+import {
+	mediaDevices,
+	MediaStream,
+	RTCIceCandidate,
+	RTCPeerConnection,
+	RTCSessionDescription
+} from '@livekit/react-native-webrtc';
 import { useChatSending } from '@mezon/core';
 import { ActionEmitEvent, sessionConstraints } from '@mezon/mobile-components';
 import type { RootState } from '@mezon/store-mobile';
-import { audioCallActions, DMCallActions, selectAllAccount, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
+import {
+	audioCallActions,
+	DMCallActions,
+	selectAllAccount,
+	selectDmGroupCurrent,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { IMessageTypeCallLog, sleep } from '@mezon/utils';
@@ -369,6 +381,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 						channelId,
 						userId
 					);
+					await toggleSpeaker();
 				}
 			} else {
 				// if is answer call, need to cancel call native on mobile

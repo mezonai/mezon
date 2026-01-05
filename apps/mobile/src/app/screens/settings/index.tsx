@@ -141,6 +141,16 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					expandable: true,
 					title: t('accountSettings.QRScan'),
 					icon: <MezonIconCDN icon={IconCDN.myQRcodeIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+				},
+				{
+					onPress: () => {
+						navigation.navigate(APP_SCREEN.SETTINGS.STACK, {
+							screen: APP_SCREEN.SETTINGS.DEVICES_MANAGEMENT
+						});
+					},
+					expandable: true,
+					title: t('accountSettings.devices'),
+					icon: <MezonIconCDN icon={IconCDN.mobileDeviceIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[navigation, t, themeValue.textStrong]

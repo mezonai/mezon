@@ -36,9 +36,9 @@ export const useSendReaction = () => {
 	);
 
 	const sendRaisingHand = useCallback(
-		(userId: string) => {
+		(userId: string, hand: boolean) => {
 			if (!socketRef.current || !channelId || !canSend()) return;
-			socketRef.current.writeVoiceReaction([`raising:${userId}`], channelId);
+			socketRef.current.writeVoiceReaction([hand ? `raising-up:${userId}` : `raising-down:${userId}`], channelId);
 		},
 		[socketRef, channelId, canSend]
 	);
