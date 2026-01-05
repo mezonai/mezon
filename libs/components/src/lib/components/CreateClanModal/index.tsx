@@ -13,7 +13,7 @@ import { Button, ButtonLoading, Icons, InputField } from '@mezon/ui';
 import { DEBOUNCE_TYPING_TIME, LIMIT_SIZE_UPLOAD_IMG, ValidateSpecialCharacters, checkClanLimit, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
-import type { ApiCategoryDesc } from 'mezon-js/api.gen';
+import type { ApiCategoryDesc } from 'mezon-js/types';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

@@ -2,7 +2,7 @@
 import { load, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { accountActions, appActions, useAppDispatch } from '@mezon/store-mobile';
-import type { ApiLinkAccountMezon } from 'mezon-js/api.gen';
+import type { ApiLinkAccountMezon } from 'mezon-js/types';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';

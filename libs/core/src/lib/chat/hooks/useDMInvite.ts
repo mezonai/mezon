@@ -9,7 +9,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { ChannelType } from 'mezon-js';
-import type { ApiLinkInviteUser } from 'mezon-js/api.gen';
+import type { ApiLinkInviteUser } from 'mezon-js/types';
 import React, { useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../../auth/hooks/useAuth';

@@ -2,7 +2,7 @@ import { useAuth } from '@mezon/core';
 import { checkMutableRelationship, directActions, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
 import { Button, Icons } from '@mezon/ui';
 import { ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js/types';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';

@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IDefaultNotification, IDefaultNotificationClan, LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiNotificationSetting } from 'mezon-js/api.gen';
+import type { ApiNotificationSetting } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';

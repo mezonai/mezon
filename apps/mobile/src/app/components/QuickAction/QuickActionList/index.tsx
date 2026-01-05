@@ -1,6 +1,6 @@
 import { size } from '@mezon/mobile-ui';
 import type { QuickMenuType } from '@mezon/utils';
-import type { ApiQuickMenuAccess } from 'mezon-js/api.gen';
+import type { ApiQuickMenuAccess } from 'mezon-js/types';
 import { memo, useCallback } from 'react';
 import { FlatList } from 'react-native';
 import { EmptyQuickAction } from '../QuickActionEmpty';

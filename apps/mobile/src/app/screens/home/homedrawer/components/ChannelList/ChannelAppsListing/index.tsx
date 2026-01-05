@@ -1,7 +1,7 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAppChannelsList } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import type { ApiChannelAppResponse } from 'mezon-js/api.gen';
+import type { ApiChannelAppResponse } from 'mezon-js/types';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';

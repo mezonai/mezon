@@ -5,7 +5,7 @@ import { authActions } from '@mezon/store';
 import { useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { useFocusEffect } from '@react-navigation/native';
-import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api.gen';
+import type { ApiLinkAccountConfirmRequest } from 'mezon-js/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

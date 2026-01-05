@@ -15,7 +15,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { SubPanelName, blankReferenceObj } from '@mezon/utils';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type ChannelMessageBoxProps = {

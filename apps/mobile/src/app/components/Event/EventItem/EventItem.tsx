@@ -3,7 +3,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { EventManagementEntity, addUserEvent, deleteUserEvent, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { EEventStatus, createImgproxyUrl, sleep } from '@mezon/utils';
-import { ApiUserEventRequest } from 'mezon-js/api.gen';
+import { ApiUserEventRequest } from 'mezon-js/types';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';

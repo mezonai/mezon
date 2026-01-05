@@ -20,7 +20,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DONE_ONBOARDING_STATUS, titleMission } from '@mezon/utils';
-import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { ApiOnboardingItem } from 'mezon-js/types';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

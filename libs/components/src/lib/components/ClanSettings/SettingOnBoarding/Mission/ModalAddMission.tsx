@@ -9,7 +9,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { ChannelStatusEnum } from '@mezon/utils';
-import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { ApiOnboardingItem } from 'mezon-js/types';
 import type { ChangeEvent } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

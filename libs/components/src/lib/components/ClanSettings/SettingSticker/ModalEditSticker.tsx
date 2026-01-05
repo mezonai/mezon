@@ -6,7 +6,7 @@ import { Button, ButtonLoading, Checkbox, Icons, InputField } from '@mezon/ui';
 import { LIMIT_SIZE_UPLOAD_IMG, fileTypeImage, generateE2eId, getIdSaleItemFromSource, resizeFileImage, sanitizeUrlSecure } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ClanEmoji, ClanSticker } from 'mezon-js';
-import type { ApiClanStickerAddRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
+import type { ApiClanStickerAddRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/types';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -2,7 +2,7 @@ import { BrowserWindow, app, clipboard, desktopCapturer, dialog, ipcMain, native
 import log from 'electron-log/main';
 import fs from 'fs';
 import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import App from './app/app';
 import {
 	ACTION_SHOW_IMAGE,

@@ -4,7 +4,7 @@ import { EMimeTypes, ETypeLinkMedia } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelAttachment } from 'mezon-js/dist/api.gen';
+import type { ApiChannelAttachment } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';

@@ -1,6 +1,6 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { CanvasAPIEntity } from '@mezon/store-mobile';
-import { ApiAccount } from 'mezon-js/api.gen';
+import { ApiAccount } from 'mezon-js/types';
 import { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';

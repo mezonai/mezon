@@ -3,7 +3,7 @@ import { referencesActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { blankReferenceObj } from '@mezon/utils';
 import classNames from 'classnames';
-import type { ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageRef } from 'mezon-js/types';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 

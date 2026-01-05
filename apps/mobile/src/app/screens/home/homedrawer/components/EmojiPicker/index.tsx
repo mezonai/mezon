@@ -16,7 +16,7 @@ import {
 import type { IMessageSendPayload } from '@mezon/utils';
 import { checkIsThread } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import type { MutableRefObject } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

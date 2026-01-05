@@ -2,7 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelMembersEntity } from '@mezon/store-mobile';
 import { getStore, messagesActions, selectMemberClanByUserId, useAppDispatch } from '@mezon/store-mobile';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageRef } from 'mezon-js/types';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';

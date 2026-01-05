@@ -16,11 +16,11 @@ import {
 	useAppDispatch,
 	useWallet
 } from '@mezon/store-mobile';
-import { CURRENCY, formatBalanceToString, formatMoney, TypeMessage } from '@mezon/utils';
+import { CURRENCY, TypeMessage, formatBalanceToString, formatMoney } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import debounce from 'lodash.debounce';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiTokenSentEvent } from 'mezon-js/types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Modal, Platform, Pressable, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -132,9 +132,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				userMap.set(userId, {
 					id: userId,
 					username: [
-						typeof itemFriend?.user?.displayName === 'string'
-							? itemFriend?.user?.displayName
-							: (itemFriend?.user?.displayName?.[0] ?? '')
+						typeof itemFriend?.user?.displayName === 'string' ? itemFriend?.user?.displayName : (itemFriend?.user?.displayName?.[0] ?? '')
 					] as Array<string>,
 					avatarUrl: itemFriend?.user?.avatarUrl ?? ''
 				});

@@ -16,7 +16,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { ChannelThreads, ICategoryChannel } from '@mezon/utils';
-import type { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
+import type { ApiMarkAsReadRequest } from 'mezon-js/types';
 import { useCallback, useMemo, useState } from 'react';
 
 export function useMarkAsRead() {

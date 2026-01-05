@@ -9,7 +9,7 @@ import {
 } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { clansActions, emojiSuggestionActions, getStoreAsync, inviteActions, settingClanStickerActions } from '@mezon/store-mobile';
-import type { ApiInviteUserRes } from 'mezon-js/api.gen';
+import type { ApiInviteUserRes } from 'mezon-js/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';

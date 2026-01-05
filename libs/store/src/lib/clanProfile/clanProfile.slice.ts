@@ -4,7 +4,7 @@ import { TypeCheck } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiUpdateClanProfileRequest } from 'mezon-js';
-import type { ApiClanProfile } from 'mezon-js/api.gen';
+import type { ApiClanProfile } from 'mezon-js/types';
 import { accountActions } from '../account/account.slice';
 import { setUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
 import { ensureClient, ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';

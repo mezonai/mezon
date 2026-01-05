@@ -1,7 +1,7 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 import { useTheme } from '@mezon/mobile-ui';
 import { accountActions, appActions, useAppDispatch } from '@mezon/store-mobile';
-import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api.gen';
+import type { ApiLinkAccountConfirmRequest } from 'mezon-js/types';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';

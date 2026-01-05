@@ -37,7 +37,7 @@ import {
 	generateE2eId
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiTokenSentEvent } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -128,12 +128,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			const response = await createDirectMessageWithUser(userId, displayName, username, avatar);
 			if (response.channelId) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-				sendInviteMessage(
-					`Funds Transferred: ${formatMoney(tokenValue)}₫ | ${note}`,
-					response.channelId,
-					channelMode,
-					TypeMessage.SendToken
-				);
+				sendInviteMessage(`Funds Transferred: ${formatMoney(tokenValue)}₫ | ${note}`, response.channelId, channelMode, TypeMessage.SendToken);
 			}
 		},
 		[createDirectMessageWithUser, sendInviteMessage]

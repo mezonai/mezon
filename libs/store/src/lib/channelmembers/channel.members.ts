@@ -4,7 +4,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelPresenceEvent, StatusPresenceEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ChannelUserListChannelUser } from 'mezon-js/dist/api.gen';
+import type { ChannelUserListChannelUser } from 'mezon-js/types';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -99,10 +99,10 @@ export const fetchChannelMembersCached = async (
 		{
 			api_name: 'ListChannelUsers',
 			list_channel_users_req: {
-				channelId: channelId,
+				channelId,
 				limit: 2000,
-				clanId: clanId,
-				channelType: channelType,
+				clanId,
+				channelType,
 				state: 1
 			}
 		},

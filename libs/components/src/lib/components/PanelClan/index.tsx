@@ -18,7 +18,7 @@ import {
 import { Menu } from '@mezon/ui';
 import type { IClan } from '@mezon/utils';
 import { EUserSettings } from '@mezon/utils';
-import type { ApiAccount } from 'mezon-js/dist/api.gen';
+import type { ApiAccount } from 'mezon-js/types';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

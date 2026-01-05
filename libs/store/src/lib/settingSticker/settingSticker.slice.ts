@@ -4,7 +4,7 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } fr
 
 import { captureSentryError } from '@mezon/logger';
 import type { ClanSticker } from 'mezon-js';
-import type { ApiClanStickerAddRequest, MezonUpdateClanStickerByIdBody } from 'mezon-js/api.gen';
+import type { ApiClanStickerAddRequest, MezonUpdateClanStickerByIdBody } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';

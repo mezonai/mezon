@@ -2,7 +2,7 @@ import { authActions, getApplicationDetail, selectAllApps, selectTheme, useAppDi
 import { Icons, Menu } from '@mezon/ui';
 import isElectron from 'is-electron';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiApp } from 'mezon-js/api.gen';
+import type { ApiApp } from 'mezon-js/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

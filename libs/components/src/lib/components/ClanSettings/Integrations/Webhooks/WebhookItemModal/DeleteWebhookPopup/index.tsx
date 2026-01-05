@@ -1,7 +1,7 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import { deleteWebhookById, hasGrandchildModal, selectCurrentClanId, settingClanStickerActions, useAppDispatch } from '@mezon/store';
 import type { IChannel } from '@mezon/utils';
-import type { ApiWebhook } from 'mezon-js/api.gen';
+import type { ApiWebhook } from 'mezon-js/types';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

@@ -33,7 +33,7 @@ import type {
 } from '@mezon/utils';
 import { THREAD_ARCHIVE_DURATION_SECONDS, ThreadStatus, checkIsThread, filterEmptyArrays, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import type { MutableRefObject } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';

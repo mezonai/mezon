@@ -1,7 +1,7 @@
 import { isEqual } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, selectCategoryById, useAppDispatch } from '@mezon/store-mobile';
-import { ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
+import { ApiUpdateCategoryDescRequest } from 'mezon-js/types';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text } from 'react-native';

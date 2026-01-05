@@ -1,5 +1,5 @@
 import { BrowserWindow, ipcMain, screen } from 'electron';
-import type { ApiChannelAttachment } from 'mezon-js/api.gen';
+import type { ApiChannelAttachment } from 'mezon-js/types';
 import { join } from 'path';
 import App from '../../app/app';
 import { escapeHtml, sanitizeUrl } from '../../app/utils';

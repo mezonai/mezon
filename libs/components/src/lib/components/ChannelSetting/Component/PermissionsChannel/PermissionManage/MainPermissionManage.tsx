@@ -12,7 +12,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ApiPermissionUpdate } from 'mezon-js/api.gen';
+import type { ApiPermissionUpdate } from 'mezon-js/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { TypeChoose } from './ItemPermission';

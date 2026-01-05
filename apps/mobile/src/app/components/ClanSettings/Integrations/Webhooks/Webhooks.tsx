@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import MezonIconCDN from 'apps/mobile/src/app/componentUI/MezonIconCDN';
 import { IconCDN } from 'apps/mobile/src/app/constants/icon_cdn';
 import { APP_SCREEN } from 'apps/mobile/src/app/navigation/ScreenTypes';
-import { ApiGenerateClanWebhookRequest, ApiWebhookCreateRequest } from 'mezon-js/api.gen';
+import { ApiGenerateClanWebhookRequest, ApiWebhookCreateRequest } from 'mezon-js/types';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, Pressable, Text, View } from 'react-native';

@@ -25,7 +25,7 @@ import {
 } from '@mezon/store-mobile';
 import { EPermission, MAX_FILE_SIZE_10MB, sleep } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/types';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Platform, Pressable, ScrollView, Text, View } from 'react-native';

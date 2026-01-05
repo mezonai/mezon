@@ -1,6 +1,6 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
-import { ApiCreateCategoryDescRequest } from 'mezon-js/api.gen';
+import { ApiCreateCategoryDescRequest } from 'mezon-js/types';
 import { useCallback, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';

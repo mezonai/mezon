@@ -1,7 +1,7 @@
 import { ColorRoleProvider, useAppParams, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
 import { pinMessageActions, selectCurrentChannelClanId, selectCurrentChannelId, useAppDispatch } from '@mezon/store';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import type { RefObject } from 'react';
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

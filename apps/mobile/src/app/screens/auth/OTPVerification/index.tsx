@@ -3,7 +3,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
 import { appActions, authActions } from '@mezon/store';
 import { useAppDispatch } from '@mezon/store-mobile';
-import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api.gen';
+import type { ApiLinkAccountConfirmRequest } from 'mezon-js/types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

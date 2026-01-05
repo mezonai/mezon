@@ -3,7 +3,7 @@ import type { LoadingStatus, UsersClanEntity } from '@mezon/utils';
 import { EUserStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js/api.gen';
+import type { ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js/types';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';

@@ -5,7 +5,7 @@ import type { NotiChannelCategorySettingEntity } from '@mezon/store-mobile';
 import { notificationSettingActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { EMuteState, FOR_15_MINUTES_SEC, FOR_1_HOUR_SEC, FOR_24_HOURS_SEC, FOR_3_HOURS_SEC, FOR_8_HOURS_SEC } from '@mezon/utils';
 import { format } from 'date-fns';
-import type { ApiNotificationUserChannel } from 'mezon-js/api.gen';
+import type { ApiNotificationUserChannel } from 'mezon-js/types';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';

@@ -1,7 +1,7 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAppChannelsList } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import type { ApiChannelAppResponse } from 'mezon-js/api.gen';
+import type { ApiChannelAppResponse } from 'mezon-js/types';
 import { useCallback } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';

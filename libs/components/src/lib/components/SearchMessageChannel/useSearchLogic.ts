@@ -19,7 +19,7 @@ import {
 import type { OnChangeHandlerFunc, SearchFilter } from '@mezon/utils';
 import { Platform, SIZE_PAGE_SEARCH, getPlatform } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiSearchMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSearchMessageRequest } from 'mezon-js/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';

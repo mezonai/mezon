@@ -3,7 +3,7 @@ import type { IEmojiRecent } from '@mezon/utils';
 import { RECENT_EMOJI_CATEGORY } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiClanEmoji } from 'mezon-js/dist/api.gen';
+import type { ApiClanEmoji } from 'mezon-js/types';
 import type { AddTxResponse } from 'mmn-client-js';
 import { ETransferType } from 'mmn-client-js';
 import type { CacheMetadata } from '../cache-metadata';

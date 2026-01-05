@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import type { ApiClanDiscover } from 'mezon-js/api.gen';
+import type { ApiClanDiscover } from 'mezon-js/types';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, DeviceEventEmitter, FlatList, Text, TouchableOpacity, View } from 'react-native';

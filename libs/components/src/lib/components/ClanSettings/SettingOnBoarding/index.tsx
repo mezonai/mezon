@@ -4,7 +4,7 @@ import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import type { ApiOnboardingContent } from 'mezon-js/api.gen';
+import type { ApiOnboardingContent } from 'mezon-js/types';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

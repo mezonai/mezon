@@ -1,6 +1,6 @@
 import type { ClansEntity } from '@mezon/store';
 import { clansActions, selectAllClans, selectCurrentClanId, useAppDispatch, userClanProfileActions } from '@mezon/store';
-import type { MezonUpdateClanDescBody } from 'mezon-js/api.gen';
+import type { MezonUpdateClanDescBody } from 'mezon-js/types';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 

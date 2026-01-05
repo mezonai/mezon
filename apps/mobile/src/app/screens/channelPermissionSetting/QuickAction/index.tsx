@@ -12,7 +12,7 @@ import {
 } from '@mezon/store-mobile';
 import type { QuickMenuType } from '@mezon/utils';
 import { QUICK_MENU_TYPE } from '@mezon/utils';
-import type { ApiQuickMenuAccess } from 'mezon-js/api.gen';
+import type { ApiQuickMenuAccess } from 'mezon-js/types';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';

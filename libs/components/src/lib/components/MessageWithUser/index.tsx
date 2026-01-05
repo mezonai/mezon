@@ -17,7 +17,7 @@ import {
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import type { ApiMessageMention } from 'mezon-js/api.gen';
+import type { ApiMessageMention } from 'mezon-js/types';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

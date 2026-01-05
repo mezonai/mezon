@@ -1,5 +1,5 @@
 import { Client } from 'mezon-js';
-import type { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/api.gen';
+import type { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/types';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';

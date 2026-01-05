@@ -5,7 +5,7 @@ import type { IMessageWithUser } from '@mezon/utils';
 import { DOWNLOAD_FILE, EFailAttachment, EMimeTypes, electronBridge } from '@mezon/utils';
 import isElectron from 'is-electron';
 import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import { Suspense, lazy, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';

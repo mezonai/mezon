@@ -15,7 +15,7 @@ import {
 } from '@mezon/store-mobile';
 import { ChannelIsNotThread, MAX_FILE_SIZE_8MB } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
-import type { ApiWebhook, MezonUpdateClanWebhookByIdBody, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiWebhook, MezonUpdateClanWebhookByIdBody, MezonUpdateWebhookByIdBody } from 'mezon-js/types';
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';

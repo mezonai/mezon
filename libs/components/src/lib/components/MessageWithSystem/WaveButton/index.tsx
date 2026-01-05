@@ -4,7 +4,7 @@ import { getStore, selectBanMeInChannel, selectCurrentChannel, selectCurrentDM }
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
 import { MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelDescription } from 'mezon-js/api.gen';
+import type { ApiChannelDescription } from 'mezon-js/types';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

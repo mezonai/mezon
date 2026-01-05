@@ -4,7 +4,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiSearchMessageDocument, ApiSearchMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSearchMessageDocument, ApiSearchMessageRequest } from 'mezon-js/types';
 import { ensureSession, getMezonCtx } from '../helpers';
 export const SEARCH_MESSAGES_FEATURE_KEY = 'searchMessages';
 

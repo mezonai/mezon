@@ -2,7 +2,7 @@ import { useMessageValue } from '@mezon/core';
 import { selectComposeInputByChannelId, selectCurrentChannelId, threadsActions, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import { ApiChannelDescription } from 'mezon-js/api.gen';
+import { ApiChannelDescription } from 'mezon-js/types';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

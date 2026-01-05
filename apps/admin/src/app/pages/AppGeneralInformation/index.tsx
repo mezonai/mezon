@@ -2,7 +2,7 @@ import { ModalSaveChanges } from '@mezon/components';
 import { editApplication, fetchApplications, selectAppDetail, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import type { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js/api.gen';
+import type { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js/types';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

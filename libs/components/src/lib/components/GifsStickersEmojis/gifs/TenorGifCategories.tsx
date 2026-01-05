@@ -3,7 +3,7 @@ import { referencesActions, selectDataReferences, useAppSelector } from '@mezon/
 import { Loading } from '@mezon/ui';
 import type { IGifCategory } from '@mezon/utils';
 import { EMimeTypes, SubPanelName, blankReferenceObj, generateE2eId } from '@mezon/utils';
-import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/types';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import FeaturedGifs from './FeaturedGifs';

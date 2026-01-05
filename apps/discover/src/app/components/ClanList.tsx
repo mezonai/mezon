@@ -1,4 +1,4 @@
-import { ApiClanDiscover } from 'mezon-js/api.gen';
+import { ApiClanDiscover } from 'mezon-js/types';
 import React from 'react';
 import ClanCard from './ClanCard';
 

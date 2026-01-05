@@ -2,7 +2,7 @@ import { editOnboarding, EGuideType, onboardingActions, useAppDispatch } from '@
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { fileTypeImage, generateE2eId, MAX_FILE_SIZE_10MB } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { ApiOnboardingItem } from 'mezon-js/types';
 import type { ChangeEvent } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

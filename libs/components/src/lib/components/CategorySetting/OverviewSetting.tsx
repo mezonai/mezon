@@ -3,7 +3,7 @@ import { categoriesActions, checkDuplicateCategoryInClan, selectCurrentClanId, u
 import type { ICategory } from '@mezon/utils';
 import { KEY_KEYBOARD, ValidateSpecialCharacters } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import type { ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
+import type { ApiUpdateCategoryDescRequest } from 'mezon-js/types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

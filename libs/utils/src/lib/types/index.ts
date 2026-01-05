@@ -2,6 +2,7 @@ import type { ChannelDescription, ChannelMessage, ChannelStreamMode, ChannelType
 import { NotificationType } from 'mezon-js';
 import type {
 	ApiAccount,
+	ApiAllUsersAddChannelResponse,
 	ApiCategoryDesc,
 	ApiChannelAppResponse,
 	ApiChannelAttachment,
@@ -15,10 +16,13 @@ import type {
 	ApiMessageMention,
 	ApiMessageReaction,
 	ApiMessageRef,
+	ApiNotifiReactMessage,
 	ApiNotification,
+	ApiNotificationChannelCategorySetting,
 	ApiNotificationSetting,
 	ApiNotificationUserChannel,
 	ApiPermission,
+	ApiPermissionRoleChannel,
 	ApiPinMessage,
 	ApiRole,
 	ApiSearchMessageDocument,
@@ -26,13 +30,7 @@ import type {
 	ApiUser,
 	ClanUserListClanUser,
 	RoleUserListRoleUser
-} from 'mezon-js/api.gen';
-import type {
-	ApiAllUsersAddChannelResponse,
-	ApiNotifiReactMessage,
-	ApiNotificationChannelCategorySetting,
-	ApiPermissionRoleChannel
-} from 'mezon-js/dist/api.gen';
+} from 'mezon-js/types';
 import type { HTMLInputTypeAttribute } from 'react';
 import type { ILongPressType } from '../hooks';
 import type { CanvasDataResponse } from './htmlCanvas';

@@ -1,7 +1,7 @@
 import { useAuth } from '@mezon/core';
 import { createApplication, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { ApiAddAppRequest } from 'mezon-js/api.gen';
+import type { ApiAddAppRequest } from 'mezon-js/types';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { format } from 'date-fns';
-import type { ApiClanDiscover } from 'mezon-js/api.gen';
+import type { ApiClanDiscover } from 'mezon-js/types';
 import { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { useParams } from 'react-router-dom';

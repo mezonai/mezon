@@ -19,7 +19,7 @@ import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { IMessageTypeCallLog, sleep } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse, WebrtcSignalingType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, BackHandler, DeviceEventEmitter, Linking, NativeModules, Platform } from 'react-native';
 import InCallManager from 'react-native-incall-manager';

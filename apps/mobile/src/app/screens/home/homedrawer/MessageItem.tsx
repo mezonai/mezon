@@ -13,7 +13,7 @@ import {
 } from '@mezon/store-mobile';
 import { ETypeLinkMedia, ID_MENTION_HERE, isValidEmojiData, TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/types';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, DeviceEventEmitter, PanResponder, Platform, Pressable, Text, View } from 'react-native';

@@ -3,7 +3,7 @@ import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
 import { TOPBARS_MAX_WIDTH } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import { useTranslation } from 'react-i18next';
 import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';

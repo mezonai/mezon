@@ -4,7 +4,7 @@ import { useTheme } from '@mezon/mobile-ui';
 import type { FriendsEntity } from '@mezon/store-mobile';
 import { DMCallActions, getStore, selectAllFriends, selectDirectsOpenlist, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
-import type { ApiUser } from 'mezon-js/api.gen';
+import type { ApiUser } from 'mezon-js/types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, Text, TextInput, View } from 'react-native';

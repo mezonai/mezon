@@ -14,7 +14,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { CallLog, IMessageCallLog, IMessageSendPayload, IMessageTypeCallLog } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 

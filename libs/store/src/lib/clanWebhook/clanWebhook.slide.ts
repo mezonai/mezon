@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import i18n from '@mezon/translations';
 import { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiClanWebhook, ApiGenerateClanWebhookRequest, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api.gen';
+import { ApiClanWebhook, ApiGenerateClanWebhookRequest, MezonUpdateClanWebhookByIdBody } from 'mezon-js/types';
 import { toast } from 'react-toastify';
 import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';

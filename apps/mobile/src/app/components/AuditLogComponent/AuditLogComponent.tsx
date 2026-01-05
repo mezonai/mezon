@@ -12,7 +12,7 @@ import {
 } from '@mezon/store-mobile';
 import { ActionLog, UserAuditLog } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
-import type { MezonapiListAuditLog } from 'mezon-js/api.gen';
+import type { MezonapiListAuditLog } from 'mezon-js/types';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';

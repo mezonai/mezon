@@ -18,7 +18,7 @@ import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload, ThreadValue } from '@mezon/utils';
 import { DONE_ONBOARDING_STATUS, blankReferenceObj } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';

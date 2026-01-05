@@ -2,7 +2,7 @@ import { ActionEmitEvent, remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_C
 import type { Attributes } from '@mezon/mobile-ui';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { clansActions, emojiSuggestionActions, getStoreAsync, inviteActions, settingClanStickerActions, useAppDispatch } from '@mezon/store-mobile';
-import type { ApiClanDiscover, ApiInviteUserRes } from 'mezon-js/api.gen';
+import type { ApiClanDiscover, ApiInviteUserRes } from 'mezon-js/types';
 import moment from 'moment/moment';
 import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

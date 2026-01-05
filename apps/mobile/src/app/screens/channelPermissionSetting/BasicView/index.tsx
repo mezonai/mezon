@@ -16,7 +16,7 @@ import {
 } from '@mezon/store-mobile';
 import { isPublicChannel } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
-import type { ApiChangeChannelPrivateRequest } from 'mezon-js/api.gen';
+import type { ApiChangeChannelPrivateRequest } from 'mezon-js/types';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';

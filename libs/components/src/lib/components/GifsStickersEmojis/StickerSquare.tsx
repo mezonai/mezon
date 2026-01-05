@@ -13,7 +13,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { FOR_SALE_CATE, ITEM_TYPE, PREDEFINED_EMOJI_CATEGORIES, SubPanelName, blankReferenceObj } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';

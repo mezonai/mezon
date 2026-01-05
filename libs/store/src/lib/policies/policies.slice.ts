@@ -1,7 +1,7 @@
 import type { IPermissionUser, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPermission, ApiRole } from 'mezon-js/api.gen';
+import type { ApiPermission, ApiRole } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { ThunkConfigWithError } from '../errors';

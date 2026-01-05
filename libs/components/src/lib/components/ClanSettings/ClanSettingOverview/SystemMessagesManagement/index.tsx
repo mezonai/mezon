@@ -2,7 +2,7 @@ import { fetchChannels, selectAllChannels, selectCurrentClanId, useAppDispatch, 
 import { Icons, Menu } from '@mezon/ui';
 import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/types';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

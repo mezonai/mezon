@@ -1,6 +1,6 @@
 import { load, save } from '@mezon/mobile-components';
 import { Client } from 'mezon-js';
-import type { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/api.gen';
+import type { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/types';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 export const PAGINATION = {

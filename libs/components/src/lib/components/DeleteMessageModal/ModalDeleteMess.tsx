@@ -10,7 +10,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { TypeMessage, generateE2eId } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';

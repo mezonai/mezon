@@ -4,7 +4,7 @@ import type { IVoice, IvoiceInfo, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelType, VoiceLeavedEvent } from 'mezon-js';
-import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser } from 'mezon-js/api.gen';
+import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser } from 'mezon-js/types';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 

@@ -1,6 +1,6 @@
 import { ModalSaveChanges } from '@mezon/components';
 import { editMezonOauthClient, selectApplicationById, selectCurrentAppId, useAppDispatch } from '@mezon/store';
-import type { ApiMezonOauthClient } from 'mezon-js/api.gen';
+import type { ApiMezonOauthClient } from 'mezon-js/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

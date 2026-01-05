@@ -10,7 +10,7 @@ import { Icons, Menu, Pagination } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
 import { formatDistance } from 'date-fns';
 import { ChannelType } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/types';
 import type { ReactElement } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

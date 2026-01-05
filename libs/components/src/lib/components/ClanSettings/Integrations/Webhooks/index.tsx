@@ -2,7 +2,7 @@ import { generateWebhook, selectCurrentClanId, useAppDispatch } from '@mezon/sto
 import { Image } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiWebhook, ApiWebhookCreateRequest } from 'mezon-js/api.gen';
+import type { ApiWebhook, ApiWebhookCreateRequest } from 'mezon-js/types';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import WebhookItemModal from './WebhookItemModal';

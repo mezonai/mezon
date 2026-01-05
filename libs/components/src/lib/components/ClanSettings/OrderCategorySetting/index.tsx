@@ -4,7 +4,7 @@ import { CSS } from '@dnd-kit/utilities';
 import type { CategoriesEntity } from '@mezon/store';
 import { categoriesActions, listChannelRenderAction, selectAllCategories, selectCurrentClanId, useAppDispatch, useAppSelector } from '@mezon/store';
 import type { ICategoryChannel } from '@mezon/utils';
-import type { ApiCategoryOrderUpdate } from 'mezon-js/api.gen';
+import type { ApiCategoryOrderUpdate } from 'mezon-js/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

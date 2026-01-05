@@ -1,5 +1,5 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import type { ApiChannelAppResponse } from 'mezon-js/api.gen';
+import type { ApiChannelAppResponse } from 'mezon-js/types';
 import { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';

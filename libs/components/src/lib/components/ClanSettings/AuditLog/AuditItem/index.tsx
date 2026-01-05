@@ -11,7 +11,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { convertTimeString, createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
-import type { ApiAuditLog } from 'mezon-js/api.gen';
+import type { ApiAuditLog } from 'mezon-js/types';
 import type { Dispatch, SetStateAction } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';

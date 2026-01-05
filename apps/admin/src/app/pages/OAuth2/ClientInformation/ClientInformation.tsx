@@ -1,6 +1,6 @@
 import type { IApplicationEntity } from '@mezon/store';
 import { editMezonOauthClient, fetchMezonOauthClient, useAppDispatch } from '@mezon/store';
-import type { ApiMezonOauthClient } from 'mezon-js/api.gen';
+import type { ApiMezonOauthClient } from 'mezon-js/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';

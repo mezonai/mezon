@@ -8,7 +8,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { ApiOnboardingItem, OnboardingAnswer } from 'mezon-js/api.gen';
+import type { ApiOnboardingItem, OnboardingAnswer } from 'mezon-js/types';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';

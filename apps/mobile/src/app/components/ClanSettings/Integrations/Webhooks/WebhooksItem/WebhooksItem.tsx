@@ -2,7 +2,7 @@ import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import { ApiWebhook } from 'mezon-js/api.gen';
+import { ApiWebhook } from 'mezon-js/types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';

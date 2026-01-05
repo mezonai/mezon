@@ -58,7 +58,7 @@ import {
 	searchMentionsHashtag
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import type { ReactElement, RefObject } from 'react';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

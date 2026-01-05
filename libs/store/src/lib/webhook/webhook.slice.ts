@@ -3,7 +3,7 @@ import i18n from '@mezon/translations';
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiWebhook, ApiWebhookCreateRequest, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiWebhook, ApiWebhookCreateRequest, MezonUpdateWebhookByIdBody } from 'mezon-js/types';
 import { toast } from 'react-toastify';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx } from '../helpers';

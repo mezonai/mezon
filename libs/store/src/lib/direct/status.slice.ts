@@ -2,7 +2,7 @@ import { EUserStatus, type IUserProfileActivity, type UsersClanEntity } from '@m
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { UserStatusEvent } from 'mezon-js';
-import type { ApiAllUsersAddChannelResponse } from 'mezon-js/api.gen';
+import type { ApiAllUsersAddChannelResponse } from 'mezon-js/types';
 import type { RootState } from '../store';
 
 export const USER_STATUS_FEATURE_KEY = 'USER_STATUS_FEATURE_KEY';

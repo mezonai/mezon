@@ -1,5 +1,5 @@
 import { inviteActions, useAppDispatch } from '@mezon/store';
-import { ApiInviteUserRes, ApiLinkInviteUser } from 'mezon-js/api.gen';
+import { ApiInviteUserRes, ApiLinkInviteUser } from 'mezon-js/types';
 import React, { useMemo } from 'react';
 
 export function useInvite() {

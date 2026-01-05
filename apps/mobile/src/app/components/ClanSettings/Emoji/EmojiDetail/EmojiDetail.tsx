@@ -4,7 +4,7 @@ import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiSuggestionActions, selectCurrentUserId, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { EPermission, getSrcEmoji } from '@mezon/utils';
 import type { ClanEmoji } from 'mezon-js';
-import type { MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
+import type { MezonUpdateClanEmojiByIdBody } from 'mezon-js/types';
 import type { Ref } from 'react';
 import { forwardRef, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

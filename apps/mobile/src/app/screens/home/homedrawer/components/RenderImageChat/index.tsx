@@ -1,7 +1,7 @@
 import { Metrics, size, useTheme } from '@mezon/mobile-ui';
 import { EMimeTypes, createImgproxyUrl } from '@mezon/utils';
 import * as Sentry from '@sentry/react-native';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Dimensions, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';

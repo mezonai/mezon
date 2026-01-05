@@ -1,6 +1,6 @@
 import { getApplicationDetail, selectAllApps, selectTheme, useAppDispatch } from '@mezon/store';
 import { Icons, Menu } from '@mezon/ui';
-import type { ApiApp } from 'mezon-js/api.gen';
+import type { ApiApp } from 'mezon-js/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

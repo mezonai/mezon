@@ -1,6 +1,6 @@
 import { quickMenuActions, selectFlashMessagesByChannelId, selectQuickMenusByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { QUICK_MENU_TYPE, generateE2eId } from '@mezon/utils';
-import type { ApiQuickMenuAccessRequest } from 'mezon-js/api.gen';
+import type { ApiQuickMenuAccessRequest } from 'mezon-js/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

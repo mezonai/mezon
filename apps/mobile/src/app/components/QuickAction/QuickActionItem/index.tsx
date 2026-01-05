@@ -1,6 +1,6 @@
 import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { QUICK_MENU_TYPE, QuickMenuType } from '@mezon/utils';
-import { ApiQuickMenuAccess } from 'mezon-js/api.gen';
+import { ApiQuickMenuAccess } from 'mezon-js/types';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';

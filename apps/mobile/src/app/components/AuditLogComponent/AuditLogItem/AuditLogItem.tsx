@@ -1,7 +1,7 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectMemberClanByUserId, useAppSelector } from '@mezon/store-mobile';
 import { ActionLog, convertTimeString, getAvatarForPrioritize } from '@mezon/utils';
-import { ApiAuditLog } from 'mezon-js/api.gen';
+import { ApiAuditLog } from 'mezon-js/types';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
