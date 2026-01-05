@@ -1,10 +1,9 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { EFriendRequest } from '..';
-import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../constants/icon_cdn';
+import Images from '../../../../../assets/Images';
 import { style } from './styles';
 
 export const EmptyFriendRequest = ({ type }: { type: EFriendRequest }) => {
@@ -26,7 +25,7 @@ export const EmptyFriendRequest = ({ type }: { type: EFriendRequest }) => {
 
 	return (
 		<View style={styles.emptyContainer}>
-			<MezonIconCDN icon={IconCDN.peopleIcon} width={size.s_80} height={size.s_80} color={themeValue.textDisabled} />
+			<Image style={styles.imageBg} source={Images.EMPTY_FRIEND} />
 			<Text style={styles.emptyTitle}>{emptyData.title}</Text>
 			<Text style={styles.emptyDescription}>{emptyData.description}</Text>
 		</View>

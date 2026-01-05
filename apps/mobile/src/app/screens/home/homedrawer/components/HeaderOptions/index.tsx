@@ -1,9 +1,10 @@
-import { IOption } from '@mezon/mobile-components';
+import type { IOption } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { style } from './styles';
 
 export const OptionChannelHeader = {
+	QuickReaction: 'QuickReaction',
 	Anonymous: 'Anonymous',
 	Buzz: 'Buzz'
 };
