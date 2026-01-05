@@ -360,6 +360,7 @@ export const MessageLine = ({
 									isTokenClickAble={isTokenClickAble}
 									isJumMessageEnabled={isJumMessageEnabled}
 									channelHastagId={channelId}
+									isLink={true}
 								/>
 							);
 						}

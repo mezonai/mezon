@@ -3,6 +3,7 @@ import { categoriesActions, selectClanView, selectCurrentChannelType, useAppDisp
 import { Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalUnknowChannel from './ModalUnknowChannel';
@@ -10,9 +11,10 @@ type ChannelHashtagProps = {
 	channelHastagId: string;
 	isJumMessageEnabled: boolean;
 	isTokenClickAble: boolean;
+	isLink?: boolean;
 };
 
-const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble }: ChannelHashtagProps) => {
+const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble, isLink }: ChannelHashtagProps) => {
 	const dispatch = useAppDispatch();
 	const isClanView = useSelector(selectClanView);
 	const { toChannelPage, navigate } = useAppNavigation();
@@ -77,19 +79,20 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 			</div>
 		) : null
 	) : (
-		<PrivateChannel onClick={openUnknown} />
+		<PrivateChannel onClick={openUnknown} isLink={!!isLink} />
 	);
 };
 
 export default memo(ChannelHashtag);
-function PrivateChannel({ onClick }: { onClick: () => void }) {
+function PrivateChannel({ onClick, isLink }: { onClick: () => void; isLink: boolean }) {
+	const { t } = useTranslation('message');
 	return (
 		<span
 			onClick={onClick}
 			className={`px-0.1 rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
 		>
 			<Icons.LockedPrivate className={`mt-1 w-4 h-4`} />
-			<span>private-channel</span>
+			<span>{isLink ? t('unknown') : t('noAccess')}</span>
 		</span>
 	);
 }
