@@ -1,6 +1,6 @@
 import { directActions, useAppDispatch } from '@mezon/store';
 import { ChannelType } from 'mezon-js';
-import { ApiCreateChannelDescRequest } from 'mezon-js/types';
+import type { ApiCreateChannelDescRequest } from 'mezon-js/types';
 import { useCallback, useMemo } from 'react';
 
 export function useSilentSendMess() {

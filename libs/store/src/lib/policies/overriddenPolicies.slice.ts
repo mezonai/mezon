@@ -174,7 +174,7 @@ export const fetchMaxChannelPermission = createAsyncThunk(
 			if (response && 'permissions' in response && response.permissions?.permissions) {
 				const channelPermission: ChannelPermission = {
 					channelId,
-					maxPermissions: response.permissions.permissions.reduce<Record<EOverriddenPermission, ApiPermission>>(
+					maxPermissions: (response.permissions.permissions as ApiPermission[]).reduce(
 						(acc: Record<EOverriddenPermission, ApiPermission>, perm: ApiPermission) => {
 							if (perm.slug) {
 								acc[perm.slug as EOverriddenPermission] = perm;

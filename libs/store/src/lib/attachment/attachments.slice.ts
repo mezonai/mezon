@@ -160,7 +160,9 @@ export const fetchChannelAttachments = createAsyncThunk(
 				return { attachments: [], channelId, fromCache: response.fromCache, direction };
 			}
 
-			const attachments = response.attachments.map((attachmentRes) => mapChannelAttachmentsToEntity(attachmentRes, channelId, clanId));
+			const attachments: IAttachmentEntity[] = response.attachments.map((attachmentRes: ApiChannelAttachment) =>
+				mapChannelAttachmentsToEntity(attachmentRes, channelId, clanId)
+			);
 
 			if (response.fromCache) {
 				return {

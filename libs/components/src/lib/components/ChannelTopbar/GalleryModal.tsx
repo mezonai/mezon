@@ -562,7 +562,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 				if (listAttachmentsByChannel) {
 					const imageListWithUploaderInfo = getAttachmentDataForWindow(listAttachmentsByChannel, currentChatUsersEntities);
-					const selectedImageIndex = listAttachmentsByChannel.findIndex((image) => image.url === enhancedAttachmentData.url);
+					const selectedImageIndex = listAttachmentsByChannel.findIndex((image: any) => image.url === enhancedAttachmentData.url);
 					const channelImagesData: IImageWindowProps = {
 						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channelLabel) as string,
 						images: imageListWithUploaderInfo,

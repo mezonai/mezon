@@ -248,7 +248,7 @@ export const checkLoginRequest = createAsyncThunk(
 	async ({ loginId, isRemember }: { loginId: string; isRemember: boolean }, thunkAPI) => {
 		const mezon = getMezonCtx(thunkAPI);
 
-		const session = await mezon?.checkLoginRequest({ loginId: loginId, isRemember: isRemember });
+		const session = await mezon?.checkLoginRequest({ loginId, isRemember });
 		if (session) {
 			if (session.idToken && session.userId) {
 				const proofInput = {
@@ -267,7 +267,7 @@ export const checkLoginRequest = createAsyncThunk(
 export const confirmLoginRequest = createAsyncThunk('auth/confirmLoginRequest', async ({ loginId }: { loginId: string }, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 
-	const session = await mezon?.confirmLoginRequest({ loginId: loginId });
+	const session = await mezon?.confirmLoginRequest({ loginId });
 	if (session?.idToken && session?.userId) {
 		const proofInput = {
 			userId: session.userId,

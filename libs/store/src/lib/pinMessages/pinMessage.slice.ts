@@ -113,7 +113,7 @@ export const fetchChannelPinMessages = createAsyncThunk(
 				};
 			}
 
-			const pinMessages = response.pinMessagesList.map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes));
+			const pinMessages = response.pinMessagesList.map((pinMessageRes: ApiPinMessage) => mapChannelPinMessagesToEntity(pinMessageRes));
 			return {
 				channelId,
 				pinMessages,

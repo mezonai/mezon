@@ -53,7 +53,7 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 		{
 			api_name: 'ListEvents',
 			list_event_req: {
-				clanId: clanId
+				clanId
 			}
 		},
 		() => ensuredMezon.client.listEvents(ensuredMezon.session, clanId),
@@ -101,7 +101,7 @@ export const fetchEventManagement = createAsyncThunk(
 					fromCache: true
 				};
 			}
-			const events = response.events.map((eventRes) => mapEventManagementToEntity(eventRes, clanId));
+			const events = response.events.map((eventRes: ApiEventManagement) => mapEventManagementToEntity(eventRes, clanId));
 			return { events, clanId, fromCache: response?.fromCache };
 		} catch (error) {
 			captureSentryError(error, 'eventManagement/fetchEventManagement');

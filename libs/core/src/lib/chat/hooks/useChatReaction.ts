@@ -92,7 +92,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 		}
 	}, []);
 
-	const emojiRecentId = useCallback(async (emojiId: string) => {
+	const getEmojiRecentId = useCallback(async (emojiId: string) => {
 		const store = getStore();
 		const allEmojiRecent = selectAllEmojiRecent(store.getState());
 		const lastEmojiRecent = selectLastEmojiRecent(store.getState() as unknown as RootState);
@@ -131,7 +131,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 				isPublicChannel: isPublic,
 				isClanView: isClanView as boolean
 			});
-			const emojiRecentId = await emojiRecentId(emojiId);
+			const emojiRecentId = await getEmojiRecentId(emojiId);
 
 			const payloadDispatchReaction: WriteMessageReactionArgs = {
 				id,
@@ -142,7 +142,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 				emojiId,
 				emoji,
 				count,
-				messageSenderId: messageSenderId,
+				messageSenderId,
 				actionDelete: action_delete,
 				isPublic: payload.isPublic,
 				userId: userId as string,
@@ -152,7 +152,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 			};
 			return dispatch(reactionActions.writeMessageReaction(payloadDispatchReaction)).unwrap();
 		},
-		[userId, userName, emojiRecentId, addMemberToThread]
+		[userId, userName, getEmojiRecentId, addMemberToThread]
 	);
 
 	return useMemo(

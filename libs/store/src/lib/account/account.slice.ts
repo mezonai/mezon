@@ -168,8 +168,7 @@ export const verifyPhone = createAsyncThunk(
 	async ({ data, isMobile = false }: { data: ApiLinkAccountConfirmRequest; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.confirmLinkMezonOTP(mezon.session, data);
-			return response;
+			await mezon.client.confirmLinkMezonOTP(mezon.session, data);
 		} catch (error) {
 			captureSentryError(error, 'account/verifyPhone');
 			toast.error(t('accountSetting:setPhoneModal.updatePhoneFail'));

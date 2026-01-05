@@ -209,7 +209,7 @@ export const enableOnboarding = createAsyncThunk(
 			}
 			thunkAPI.dispatch(
 				clansActions.updateOnboardingMode({
-					clanId: clanId,
+					clanId,
 					onboarding
 				})
 			);
@@ -463,7 +463,7 @@ export const onboardingSlice = createSlice({
 						question: [],
 						rule: []
 					};
-					response.map((onboardingItem) => {
+					response.map((onboardingItem: any) => {
 						switch (onboardingItem.guideType) {
 							case EGuideType.GREETING:
 								onboardingClan.greeting = onboardingItem;
@@ -515,7 +515,7 @@ export const onboardingSlice = createSlice({
 						question: state.listOnboarding[clanId].question,
 						rule: state.listOnboarding[clanId].rule
 					};
-					content.map((onboardingItem) => {
+					content.map((onboardingItem: any) => {
 						switch (onboardingItem.guideType) {
 							case EGuideType.GREETING:
 								onboardingClan.greeting = onboardingItem;
@@ -597,17 +597,15 @@ export const onboardingSlice = createSlice({
 							});
 							break;
 						case EGuideType.TASK:
-							state.listOnboarding[action.payload.clanId].mission = state.listOnboarding[action.payload.clanId].mission.map(
-								(task) => {
-									if (task.id === idOnboarding) {
-										return {
-											...task,
-											...content
-										};
-									}
-									return task;
+							state.listOnboarding[action.payload.clanId].mission = state.listOnboarding[action.payload.clanId].mission.map((task) => {
+								if (task.id === idOnboarding) {
+									return {
+										...task,
+										...content
+									};
 								}
-							);
+								return task;
+							});
 							break;
 						default:
 							break;

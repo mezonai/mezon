@@ -1,6 +1,7 @@
 import { accountActions, useAppDispatch } from '@mezon/store';
 import { Button, FormError, Icons, Input, Menu } from '@mezon/ui';
 import { ECountryCode, parsePhoneVN, validatePhoneNumber, type LoadingStatus } from '@mezon/utils';
+import type { ApiLinkAccountConfirmRequest } from 'mezon-js';
 import type { ChangeEvent, ClipboardEvent, Dispatch, KeyboardEvent, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -84,15 +85,19 @@ const SettingPhone = ({ title, description, isLoading, onClose }: SetPhoneProps)
 				toast.warning(t('setPhoneModal.emptyOtp'));
 				return;
 			}
-			const validate = await dispatch(
+
+			const payload: ApiLinkAccountConfirmRequest = {
+				otpCode: otp.join(''),
+				reqId: validateOTP
+			};
+
+			const response = await dispatch(
 				accountActions.verifyPhone({
-					data: {
-						otpCode: otp.join(''),
-						reqId: validateOTP
-					}
+					data: payload
 				})
-			).unwrap();
-			if (validate && onClose) {
+			);
+
+			if (response?.meta?.requestStatus === 'fulfilled' && onClose) {
 				toast.success(t('setPhoneModal.updatePhoneSuccess'));
 				dispatch(accountActions.updatePhoneNumber(parsePhoneVN(phone)));
 				onClose();

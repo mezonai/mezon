@@ -92,7 +92,7 @@ export const fetchPermissionRoleChannel = createAsyncThunk(
 			return [];
 		}
 
-		const updatedPermissionRoleChannel = response.permissionRoleChannel.map((channel) => {
+		const updatedPermissionRoleChannel = response.permissionRoleChannel.map((channel: any) => {
 			if (channel.permissionId && channel.active === undefined) {
 				return { ...channel, active: false };
 			}
@@ -117,11 +117,11 @@ export const setPermissionRoleChannel = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				channelId: channelId,
-				roleId: roleId,
+				channelId,
+				roleId,
 				permissionUpdate: permission,
-				maxPermissionId: maxPermissionId,
-				userId: userId
+				maxPermissionId,
+				userId
 			};
 			const response = await mezon.client.setRoleChannelPermission(mezon.session, body);
 			if (response) {
@@ -212,9 +212,9 @@ export const permissionRoleChannelSlice = createSlice({
 					}));
 				if (state.cacheByChannels[channelId]?.permissionRoleChannel) {
 					permissionRoleChannelAdapter.upsertOne(state.cacheByChannels[channelId]?.permissionRoleChannel, {
-						roleId: roleId,
-						userId: userId,
-						channelId: channelId,
+						roleId,
+						userId,
+						channelId,
 						permissionRoleChannel: listUpdate
 					});
 				}

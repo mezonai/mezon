@@ -36,7 +36,7 @@ export interface ClansEntity extends IClan {
 	id: string; // Primary ID
 }
 
-export const mapClanToEntity = (clanRes: ApiClanDesc) => {
+export const mapClanToEntity = (clanRes: ApiClanDesc): ClansEntity => {
 	return { ...clanRes, id: clanRes.clanId || '' };
 };
 
@@ -208,7 +208,7 @@ export const fetchClans = createAsyncThunk(
 			if (!response.clandesc) {
 				return { clans: [], fromCache: response.fromCache };
 			}
-			const clans = response.clandesc.map(mapClanToEntity);
+			const clans: ClansEntity[] = response.clandesc.map(mapClanToEntity);
 			const meta = clans.map((clan: ClansEntity) => extractClanMeta(clan));
 			thunkAPI.dispatch(clansActions.updateBulkClanMetadata(meta));
 

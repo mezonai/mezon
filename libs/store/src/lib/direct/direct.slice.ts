@@ -179,7 +179,7 @@ export const fetchDirectMessage = createAsyncThunk(
 				return [];
 			}
 			if (Date.now() - response.time < 100) {
-				const listStatusUnreadDM = response.channeldesc.map((channel) => {
+				const listStatusUnreadDM = response.channeldesc.map((channel: any) => {
 					const status = getStatusUnread(
 						Number(channel.lastSeenMessage?.timestampSeconds),
 						Number(channel.lastSentMessage?.timestampSeconds)
@@ -228,7 +228,7 @@ export const fetchDirectMessage = createAsyncThunk(
 				}
 			});
 
-			const channels = sorted.map((channelRes) => {
+			const channels = sorted.map((channelRes: ApiChannelDescription) => {
 				const existingEntity = existingEntities.find((entity) => entity.id === channelRes.channelId);
 				return mapDmGroupToEntity(channelRes, existingEntity);
 			});

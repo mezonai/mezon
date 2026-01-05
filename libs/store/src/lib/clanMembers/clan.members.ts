@@ -67,7 +67,7 @@ export const fetchUsersClanCached = async (getState: () => RootState, ensuredMez
 		{
 			api_name: 'ListClanUsers',
 			list_clan_user_req: {
-				clanId: clanId
+				clanId
 			}
 		},
 		() => ensuredMezon.client.listClanUsers(ensuredMezon.session, clanId),
@@ -95,7 +95,7 @@ export const fetchUsersClan = createAsyncThunk('UsersClan/fetchUsersClan', async
 		const { users, fromCache } = response;
 		if (!fromCache) {
 			const state = thunkAPI.getState() as RootState;
-			thunkAPI.dispatch(statusActions.updateBulkStatus(users.map((item) => convertStatusClan(item, state))));
+			thunkAPI.dispatch(statusActions.updateBulkStatus(users.map((item: any) => convertStatusClan(item, state))));
 		}
 
 		return { users, fromCache, clanId };
@@ -262,7 +262,7 @@ export const UsersClanSlice = createSlice({
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
 						id: userId,
 						changes: {
-							clanNick: clanNick,
+							clanNick,
 							clanAvatar: clanAvt
 						}
 					});
@@ -307,8 +307,8 @@ export const UsersClanSlice = createSlice({
 						changes: {
 							user: {
 								...existingMember.user,
-								displayName: displayName,
-								avatarUrl: avatarUrl
+								displayName,
+								avatarUrl
 							}
 						}
 					});
@@ -332,10 +332,7 @@ export const UsersClanSlice = createSlice({
 				}
 			});
 		},
-		updateUserProfileAcrossClans: (
-			state,
-			action: PayloadAction<{ userId: string; avatar?: string; displayName?: string; aboutMe?: string }>
-		) => {
+		updateUserProfileAcrossClans: (state, action: PayloadAction<{ userId: string; avatar?: string; displayName?: string; aboutMe?: string }>) => {
 			const { userId, avatar, displayName, aboutMe } = action.payload;
 			Object.keys(state.byClans).forEach((clanId) => {
 				const existingMember = state.byClans[clanId].entities.entities[userId];

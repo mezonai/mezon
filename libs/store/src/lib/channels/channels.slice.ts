@@ -206,8 +206,8 @@ export const fetchChannelsCached = async (
 			list_channel_req: {
 				limit,
 				state,
-				channelType: channelType,
-				clanId: clanId
+				channelType,
+				clanId
 			}
 		},
 		() => ensuredMezon.client.listChannelDescs(ensuredMezon.session, limit, state, '', clanId, channelType),
@@ -244,7 +244,7 @@ export const fetchListFavoriteChannelCached = async (getState: () => RootState, 
 		{
 			api_name: 'GetListFavoriteChannel',
 			favorite_channel_req: {
-				clanId: clanId
+				clanId
 			}
 		},
 		() => ensuredMezon.client.getListFavoriteChannel(ensuredMezon.session, clanId),
@@ -280,7 +280,7 @@ export const fetchAppChannelCached = async (getState: () => RootState, ensuredMe
 		{
 			api_name: 'ListChannelApps',
 			list_apps_req: {
-				clanId: clanId
+				clanId
 			}
 		},
 		() => ensuredMezon.client.listChannelApps(ensuredMezon.session, clanId),
@@ -752,12 +752,12 @@ export const fetchChannels = createAsyncThunk(
 				thunkAPI.dispatch(fetchAppChannels({ clanId, noCache: Boolean(noCache) }));
 				if (Date.now() - response.time < 100) {
 					const lastChannelMessages =
-						response.channeldesc?.map((channel) => ({
+						response.channeldesc?.map((channel: any) => ({
 							...channel.lastSentMessage,
 							channelId: channel.channelId
 						})) ?? [];
 
-					const lastChannelMessagesTruthy = lastChannelMessages.filter((message) => message);
+					const lastChannelMessagesTruthy = lastChannelMessages.filter((message: any) => message);
 
 					thunkAPI.dispatch(messagesActions.setManyLastMessages(lastChannelMessagesTruthy as ApiChannelMessageHeaderWithChannel[]));
 				}
@@ -767,7 +767,7 @@ export const fetchChannels = createAsyncThunk(
 				const currentChannelId = state.channels?.byClans[clanId]?.currentChannelId;
 
 				try {
-					if (currentChannelId && !response?.channeldesc?.some((item) => item.channelId === currentChannelId)) {
+					if (currentChannelId && !response?.channeldesc?.some((item: any) => item.channelId === currentChannelId)) {
 						const data = await thunkAPI
 							.dispatch(
 								threadsActions.fetchThread({
@@ -795,7 +795,7 @@ export const fetchChannels = createAsyncThunk(
 				}
 
 				const clanData = selectClansEntities(thunkAPI.getState() as RootState)[clanId];
-				const channels = response.channeldesc.map((channel) => ({
+				const channels: ChannelsEntity[] = response.channeldesc.map((channel: any) => ({
 					...mapChannelToEntity(channel),
 					lastSeenMessage: channel.lastSeenMessage ? channel.lastSeenMessage : { timestampSeconds: 0 },
 					clanName: clanData?.clanName || ''
@@ -1034,7 +1034,7 @@ export const channelsSlice = createSlice({
 			channelsAdapter.updateOne(state.byClans[clanId].entities, {
 				id: channelId,
 				changes: {
-					channelPrivate: channelPrivate
+					channelPrivate
 				}
 			});
 		},
@@ -1589,12 +1589,15 @@ export const channelsSlice = createSlice({
 			if (!state.byClans[clanId]) {
 				state.byClans[clanId] = getInitialClanState();
 			}
-			state.byClans[clanId].appChannelsList = action.payload.reduce<Record<string, ApiChannelAppResponse>>((acc, appChannel) => {
-				if (appChannel.channelId) {
-					acc[appChannel.channelId] = appChannel;
-				}
-				return acc;
-			}, {});
+			state.byClans[clanId].appChannelsList = action.payload.reduce(
+				(acc: Record<string, ApiChannelAppResponse>, appChannel: ApiChannelAppResponse) => {
+					if (appChannel.channelId) {
+						acc[appChannel.channelId] = appChannel;
+					}
+					return acc;
+				},
+				{}
+			);
 			state.byClans[clanId].appChannelsCache = createCacheMetadata(LIST_CHANNEL_CACHED_TIME);
 		});
 

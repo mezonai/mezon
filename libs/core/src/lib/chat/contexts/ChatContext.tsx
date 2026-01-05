@@ -776,10 +776,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			resetChannelBadgeCount(
 				dispatch,
 				{
-					clanId: clanId,
-					channelId: channelId,
-					badgeCount: badgeCount,
-					messageId: messageId
+					clanId,
+					channelId,
+					badgeCount,
+					messageId
 				},
 				store
 			);
@@ -954,7 +954,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const { channelDesc, users, clanId, createTimeSecond, caller } = userAdds;
 
 			const store = await getStoreAsync();
-			const clanId = selectCurrentClanId(store.getState());
 			const currentClanId = selectCurrentClanId(store.getState());
 
 			const userIds = users.map((u) => u.userId);
@@ -1025,7 +1024,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 								channelId: channelDesc.channelId,
 								active: 1,
 								channelLabel: channelDesc.channelLabel,
-								clanId: channelDesc.clanId || (clanId as string),
+								clanId: channelDesc.clanId || (currentClanId as string),
 								parentId: channelDesc.parentId,
 								creatorId: caller?.userId || '',
 								lastSentMessage: {
@@ -1054,7 +1053,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 				dispatch(
 					channelsActions.joinChat({
-						clanId: clanId,
+						clanId,
 						channelId: channelDesc.channelId as string,
 						channelType: channelDesc.type as number,
 						isPublic: !channelDesc.channelPrivate
@@ -1072,7 +1071,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				dispatch(
 					channelMembersActions.addNewMember({
 						channelId: channelDesc.channelId as string,
-						userIds: userIds,
+						userIds,
 						addedByUserId: caller?.userId
 					})
 				);
@@ -1095,12 +1094,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						}
 					}));
 
-				dispatch(usersClanActions.upsertMany({ users: members, clanId: clanId }));
+				dispatch(usersClanActions.upsertMany({ users: members, clanId }));
 
 				dispatch(
 					channelMembersActions.addNewMember({
 						channelId: channelDesc.channelId as string,
-						userIds: userIds,
+						userIds,
 						addedByUserId: caller?.userId
 					})
 				);
@@ -1134,7 +1133,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							metadata: userJoinClan.user.customStatus,
 							username: userJoinClan.user.username,
 							createTime: accountCreateTime,
-							joinTime: joinTime
+							joinTime
 						}
 					},
 					clanId: userJoinClan.clanId

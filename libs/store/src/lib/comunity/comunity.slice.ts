@@ -30,7 +30,7 @@ export const getCommunityInfo = createAsyncThunk('comunity/getCommunityInfo', as
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.listClanDescs(mezon.session);
-		const clan = response.clandesc?.find((c) => c.clanId === clanId);
+		const clan = response.clandesc?.find((c: any) => c.clanId === clanId);
 		if (!clan) {
 			return thunkAPI.rejectWithValue('Clan not found');
 		}

@@ -620,7 +620,7 @@ export const jumpToMessage = createAsyncThunk(
 					)
 					.unwrap();
 
-				found = response?.messages?.some((item) => item.id === messageId);
+				found = response?.messages?.some((item: any) => item.id === messageId);
 				if (!found) {
 					thunkAPI.dispatch(messagesActions.setIdMessageToJump(null));
 				}
@@ -711,14 +711,20 @@ export const updateLastSeenMessage = createAsyncThunk(
 				await thunkAPI.dispatch(processQueuedLastSeenMessages()).unwrap();
 			}
 
-			let badgeCount = badgeCount;
+			let currentChannelBadge = badgeCount;
 
 			if (clanId !== '0') {
-				const currentChannelBadge = getCurrentChannelBadgeCount({ getState: () => thunkAPI.getState() as RootState }, clanId, channelId);
-				badgeCount = currentChannelBadge;
+				currentChannelBadge = getCurrentChannelBadgeCount({ getState: () => thunkAPI.getState() as RootState }, clanId, channelId);
 			}
 
-			const response = await mezon.socketRef.current?.writeLastSeenMessage(clanId, channelId, mode, messageId, message_time ?? now, badgeCount);
+			const response = await mezon.socketRef.current?.writeLastSeenMessage(
+				clanId,
+				channelId,
+				mode,
+				messageId,
+				message_time ?? now,
+				currentChannelBadge
+			);
 
 			if (response?.channelId !== channelId) {
 				return;
@@ -728,7 +734,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 				{
 					clanId,
 					channelId,
-					badgeCount: badgeCount,
+					badgeCount,
 					timestamp: message_time ?? now,
 					messageId
 				},

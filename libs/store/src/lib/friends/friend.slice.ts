@@ -131,7 +131,7 @@ export const fetchListFriends = createAsyncThunk('friends/fetchListFriends', asy
 
 	const state = thunkAPI.getState() as RootState;
 	const currentUserId = selectAllAccount(state)?.user?.id || '';
-	const listFriends = response.friends.map((friend) => mapFriendToEntity(friend, currentUserId));
+	const listFriends = response.friends.map((friend: ApiFriend) => mapFriendToEntity(friend, currentUserId));
 	thunkAPI.dispatch(statusActions.updateBulkStatus(mapFriendToStatus(response.friends)));
 	return { friends: listFriends, fromCache: response.fromCache };
 });

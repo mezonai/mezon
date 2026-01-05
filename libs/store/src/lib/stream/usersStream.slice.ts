@@ -43,8 +43,8 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 					list_channel_users_req: {
 						limit: 100,
 						state: 1,
-						channelType: channelType,
-						clanId: clanId
+						channelType,
+						clanId
 					}
 				},
 				() => mezon.client.listStreamingChannelUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
@@ -55,10 +55,10 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 				return [];
 			}
 
-			const members = response.streamingChannelUsers.map((channelRes) => {
+			const members = response.streamingChannelUsers.map((channelRes: any) => {
 				return {
 					userId: channelRes.userId || '',
-					clanId: clanId,
+					clanId,
 					streamingChannelId: channelRes.channelId || '',
 					clanName: '',
 					participant: channelRes.participant || '',

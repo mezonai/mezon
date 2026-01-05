@@ -105,13 +105,9 @@ export const updateSystemMessage = createAsyncThunk(
 	async ({ clanId, newMessage, cachedMessage }: IUpdateSystemMessage, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response: ApiSystemMessage = await mezon.client.updateSystemMessage(mezon.session, clanId, newMessage);
-			if (response) {
-				// Force refresh cache after update
-				thunkAPI.dispatch(fetchSystemMessageByClanId({ clanId, noCache: true }));
-				return cachedMessage || response;
-			}
-			return response;
+			await mezon.client.updateSystemMessage(mezon.session, clanId, newMessage);
+			thunkAPI.dispatch(fetchSystemMessageByClanId({ clanId, noCache: true }));
+			return cachedMessage;
 		} catch (error) {
 			captureSentryError(error, 'systemMessages/updateSystemMessage');
 			return thunkAPI.rejectWithValue(error);
