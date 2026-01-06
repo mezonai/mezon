@@ -21,7 +21,7 @@ const DeviceItem = ({ item }: DeviceItemProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['setting']);
-	const formattedLastActive = formatDeviceDate(item?.last_active, t);
+	const formattedLastActive = formatDeviceDate(item?.lastActive, t);
 	const platformLabel = getPlatformLabel(item?.platform);
 	return (
 		<View style={styles.container}>
@@ -30,7 +30,7 @@ const DeviceItem = ({ item }: DeviceItemProps) => {
 				<View style={styles.platformInfo}>
 					<Text style={styles.platformName}>{platformLabel}</Text>
 					<View style={styles.deviceName}>
-						<Text style={styles.deviceText}>{item?.device_name}</Text>
+						<Text style={styles.deviceText}>{item?.deviceName}</Text>
 					</View>
 				</View>
 				<View style={styles.platformInfo}>

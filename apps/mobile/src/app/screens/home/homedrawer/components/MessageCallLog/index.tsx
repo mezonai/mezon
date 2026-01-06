@@ -29,7 +29,7 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 	const dispatch = useAppDispatch();
 	const currentUserId = useSelector(selectCurrentUserId);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
-	const infoFriend = useSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''));
+	const infoFriend = useSelector((state) => selectFriendById(state, currentDmGroup?.userIds?.[0] || ''));
 
 	const isMe = useMemo(() => currentUserId === senderId, [currentUserId, senderId]);
 	const isBlocked = useMemo(() => {
@@ -39,10 +39,10 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 
 	const onCallBack = () => {
 		dispatch(DMCallActions.removeAll());
-		const receiverId = currentDmGroup?.user_ids?.[0];
+		const receiverId = currentDmGroup?.userIds?.[0];
 		if (receiverId) {
 			const receiverAvatar = currentDmGroup?.avatars?.[0];
-			const receiverName = currentDmGroup?.channel_label;
+			const receiverName = currentDmGroup?.channelLabel;
 			const params = {
 				receiverId: receiverId as string,
 				receiverName: receiverName as string,

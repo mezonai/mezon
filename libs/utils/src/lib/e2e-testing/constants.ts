@@ -17,18 +17,18 @@ export const DATA_E2E_IDENTIFIER = {
 	footer_profile: {
 		avatar: '',
 		name: '',
-		user_status: ''
+		userStatus: ''
 	},
 	button: {
 		base: '',
 		copy: ''
 	},
 	base_profile: {
-		display_name: '',
-		user_status: ''
+		displayName: '',
+		userStatus: ''
 	},
 	short_profile: {
-		display_name: '',
+		displayName: '',
 		username: '',
 		activity_status: {
 			button: {
@@ -49,7 +49,7 @@ export const DATA_E2E_IDENTIFIER = {
 			}
 		},
 		modal: {
-			custom_status: {
+			customStatus: {
 				input: '',
 				button: {
 					cancel: '',
@@ -70,7 +70,7 @@ export const DATA_E2E_IDENTIFIER = {
 		input: '',
 		selected_file: '',
 		text: {
-			about_me: ''
+			aboutMe: ''
 		},
 		banned: {
 			time: ''
@@ -135,7 +135,7 @@ export const DATA_E2E_IDENTIFIER = {
 	clan_page: {
 		header: {
 			title: {
-				clan_name: ''
+				clanName: ''
 			},
 			modal_panel: {
 				item: '',
@@ -172,7 +172,7 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		member_list: {
 			user_info: {
-				display_name: '',
+				displayName: '',
 				username: ''
 			},
 			role_settings: {
@@ -189,7 +189,7 @@ export const DATA_E2E_IDENTIFIER = {
 		modal: {
 			create_category: {
 				input: {
-					category_name: ''
+					categoryName: ''
 				},
 				toggle: {
 					private: ''
@@ -202,7 +202,7 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			create_clan: {
 				input: {
-					clan_name: '',
+					clanName: '',
 					upload_avatar_clan: ''
 				},
 				toggle: {
@@ -225,7 +225,7 @@ export const DATA_E2E_IDENTIFIER = {
 					channel_name: ''
 				},
 				toggle: {
-					is_private: ''
+					isPrivate: ''
 				},
 				button: {
 					confirm: '',
@@ -270,9 +270,9 @@ export const DATA_E2E_IDENTIFIER = {
 					input: {
 						event_topic: '',
 						start_date: '',
-						start_time: '',
+						startTime: '',
 						end_date: '',
-						end_time: '',
+						endTime: '',
 						event_frequency: '',
 						description: ''
 					}
@@ -283,7 +283,7 @@ export const DATA_E2E_IDENTIFIER = {
 						channel: '',
 						private: ''
 					},
-					start_time: '',
+					startTime: '',
 					event_topic: '',
 					description: '',
 					voice_channel: '',
@@ -372,17 +372,17 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			overview: {
 				input: {
-					clan_name: ''
+					clanName: ''
 				},
 				system_messages_channel: {
 					selection: {
 						item: {
 							channel_name: '',
-							category_name: ''
+							categoryName: ''
 						},
 						selected: {
 							channel_name: '',
-							category_name: ''
+							categoryName: ''
 						}
 					}
 				}
@@ -420,7 +420,7 @@ export const DATA_E2E_IDENTIFIER = {
 						delete: '',
 						view: ''
 					},
-					member_count: ''
+					memberCount: ''
 				}
 			}
 		},
@@ -461,7 +461,7 @@ export const DATA_E2E_IDENTIFIER = {
 		secondary_side_bar: {
 			member: {
 				in_voice: '',
-				user_status: ''
+				userStatus: ''
 			}
 		},
 		screen: {
@@ -489,7 +489,7 @@ export const DATA_E2E_IDENTIFIER = {
 	channel_setting_page: {
 		side_bar: {
 			item: '',
-			channel_label: ''
+			channelLabel: ''
 		},
 		permissions: {
 			button: {
@@ -554,7 +554,7 @@ export const DATA_E2E_IDENTIFIER = {
 			modal: {
 				input: {
 					command_name: '',
-					message_content: ''
+					messageContent: ''
 				},
 				button: {
 					submit: '',
@@ -564,7 +564,7 @@ export const DATA_E2E_IDENTIFIER = {
 			item: {
 				command: '',
 				type: '',
-				message_content: ''
+				messageContent: ''
 			}
 		}
 	},
@@ -627,7 +627,7 @@ export const DATA_E2E_IDENTIFIER = {
 			},
 			member_list: {
 				button: '',
-				member_count: ''
+				memberCount: ''
 			},
 			add_to_group: {
 				button: ''
@@ -804,11 +804,11 @@ export const DATA_E2E_IDENTIFIER = {
 			user_profile: {
 				preview: {
 					avatar: '',
-					display_name: ''
+					displayName: ''
 				},
 				input: {
-					display_name: '',
-					about_me: ''
+					displayName: '',
+					aboutMe: ''
 				},
 				button: {
 					reset: '',

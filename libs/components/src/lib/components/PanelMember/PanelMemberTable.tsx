@@ -50,12 +50,12 @@ const PanelMemberTable = ({ coords, member, onClose, onOpenProfile, kichMember, 
 	const handleDirectMessageWithUser = async () => {
 		const response = await createDirectMessageWithUser(
 			member?.user?.id || '',
-			member?.user?.display_name,
+			member?.user?.displayName,
 			member?.user?.username,
-			member?.user?.avatar_url
+			member?.user?.avatarUrl
 		);
-		if (response?.channel_id) {
-			const directDM = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+		if (response?.channelId) {
+			const directDM = toDmGroupPageFromMainApp(response.channelId, Number(response.type));
 			navigate(directDM);
 		}
 	};

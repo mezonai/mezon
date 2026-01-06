@@ -47,7 +47,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 		return friendList.filter(
 			(friend) =>
 				normalizeString(friend?.user?.username || '').includes(normalizeString(searchText)) ||
-				normalizeString(friend?.user?.display_name || '').includes(normalizeString(searchText))
+				normalizeString(friend?.user?.displayName || '').includes(normalizeString(searchText))
 		);
 	}, [friendList, searchText]);
 
@@ -56,7 +56,7 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 			const listDM = selectDirectsOpenlist(store.getState() as any);
 
 			const directMessage = listDM.find((dm) => {
-				const userIds = dm?.user_ids;
+				const userIds = dm?.userIds;
 				return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === user?.user?.id;
 			});
 			if (directMessage?.id) {
@@ -70,17 +70,17 @@ export const NewMessageScreen = ({ navigation }: { navigation: any }) => {
 			}
 			const response = await createDirectMessageWithUser(
 				user?.user?.id || '',
-				user?.user?.display_name || '',
+				user?.user?.displayName || '',
 				user?.user?.username || '',
-				user?.user?.avatar_url || ''
+				user?.user?.avatarUrl || ''
 			);
-			if (response?.channel_id) {
+			if (response?.channelId) {
 				await checkNotificationPermissionAndNavigate(() => {
 					if (isTabletLandscape) {
-						dispatch(directActions.setDmGroupCurrentId(response?.channel_id));
+						dispatch(directActions.setDmGroupCurrentId(response?.channelId));
 						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 					} else {
-						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
+						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channelId });
 					}
 				});
 			}

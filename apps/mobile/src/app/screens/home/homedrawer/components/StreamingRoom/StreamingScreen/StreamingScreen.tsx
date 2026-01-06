@@ -32,9 +32,9 @@ export function StreamingScreen({ isAnimationComplete = true }: IStreamingScreen
 			{remoteStream && isStream ? (
 				<View style={styles.streamContainer}>
 					{!isRemoteVideoStream &&
-						(currentChannel?.channel_avatar ? (
+						(currentChannel?.channelAvatar ? (
 							<FastImage
-								source={{ uri: currentChannel?.channel_avatar }}
+								source={{ uri: currentChannel?.channelAvatar }}
 								style={styles.imageFullSize}
 								resizeMode={isAnimationComplete ? 'contain' : 'cover'}
 							/>

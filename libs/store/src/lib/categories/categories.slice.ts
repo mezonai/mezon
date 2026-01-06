@@ -3,7 +3,7 @@ import type { ICategory, LoadingStatus, SortChannel } from '@mezon/utils';
 import { TypeCheck } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiCategoryDesc, ApiCreateCategoryDescRequest, ApiUpdateCategoryDescRequest, ApiUpdateCategoryOrderRequest } from 'mezon-js/api.gen';
+import type { ApiCategoryDesc, ApiCreateCategoryDescRequest, ApiUpdateCategoryDescRequest, ApiUpdateCategoryOrderRequest } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
@@ -22,7 +22,7 @@ export interface CategoriesEntity extends ICategory {
 }
 
 export const mapCategoryToEntity = (categoriesRes: ApiCategoryDesc) => {
-	const id = (categoriesRes as unknown as any).category_id;
+	const id = (categoriesRes as unknown as any).categoryId;
 	return { ...categoriesRes, id };
 };
 
@@ -95,7 +95,7 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 		{
 			api_name: 'ListCategoryDescs',
 			list_category_req: {
-				clan_id: clanId
+				clanId: clanId
 			}
 		},
 		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
@@ -184,20 +184,20 @@ export const deleteCategory = createAsyncThunk(
 
 export const updateCategoriesOrder = createAsyncThunk(
 	'categories/updateCategoriesOrder',
-	async ({ clan_id, categories }: ApiUpdateCategoryOrderRequest, thunkAPI) => {
+	async ({ clanId, categories }: ApiUpdateCategoryOrderRequest, thunkAPI) => {
 		try {
-			if (!categories?.length || !clan_id) return;
+			if (!categories?.length || !clanId) return;
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateCategoryOrder(mezon.session, {
-				clan_id,
+				clanId,
 				categories
 			});
 
 			const state = thunkAPI.getState() as RootState;
-			const currentCategories = selectCachedCategoriesByClan(state, clan_id as string);
+			const currentCategories = selectCachedCategoriesByClan(state, clanId as string);
 
 			const updatedCategories = currentCategories.map((cat) => {
-				const updatedOrder = categories.find((c) => c.category_id === cat.id);
+				const updatedOrder = categories.find((c) => c.categoryId === cat.id);
 				return {
 					...cat,
 					order: updatedOrder?.order
@@ -208,7 +208,7 @@ export const updateCategoriesOrder = createAsyncThunk(
 
 			thunkAPI.dispatch(
 				categoriesActions.setAll({
-					clanId: clan_id,
+					clanId: clanId,
 					categories: sortedCategories
 				})
 			);
@@ -224,11 +224,11 @@ export const updateCategory = createAsyncThunk('categories/updateCategory', asyn
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const _response = await mezon.client.updateCategory(mezon.session, clanId, request);
 
-		if (request.category_id && _response) {
+		if (request.categoryId && _response) {
 			const updatedCategory: CategoriesEntity = {
-				id: request.category_id,
-				category_name: request.category_name || '',
-				clan_id: clanId
+				id: request.categoryId,
+				categoryName: request.categoryName || '',
+				clanId: clanId
 			};
 
 			thunkAPI.dispatch(
@@ -241,7 +241,7 @@ export const updateCategory = createAsyncThunk('categories/updateCategory', asyn
 			return { clanId, category: updatedCategory };
 		}
 
-		return { clanId, categoryId: request.category_id };
+		return { clanId, categoryId: request.categoryId };
 	} catch (error) {
 		captureSentryError(error, 'categories/updateCategory');
 		return thunkAPI.rejectWithValue(error);

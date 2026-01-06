@@ -21,7 +21,7 @@ const ChatBoxStream = ({ navigation }: AppStackScreenProps<ChatBoxStreamScreen>)
 	const styles = style(themeValue);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentUserId = useSelector(selectCurrentUserId);
-	const isBanned = useSelector((state) => selectBanMemberCurrentClanById(state, currentChannel?.channel_id, currentUserId));
+	const isBanned = useSelector((state) => selectBanMemberCurrentClanById(state, currentChannel?.channelId, currentUserId));
 
 	const onHandlerStateChange = useCallback((event: { nativeEvent: { translationX: any; velocityX: any } }) => {
 		const { translationX, velocityX } = event.nativeEvent;
@@ -41,8 +41,8 @@ const ChatBoxStream = ({ navigation }: AppStackScreenProps<ChatBoxStreamScreen>)
 			<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
 				<Animated.View style={styles.messageContainer}>
 					<ChannelMessages
-						channelId={currentChannel?.channel_id}
-						clanId={currentChannel?.clan_id}
+						channelId={currentChannel?.channelId}
+						clanId={currentChannel?.clanId}
 						isPublic={isPublicChannel(currentChannel)}
 						mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 						isBanned={!!isBanned}
@@ -51,13 +51,13 @@ const ChatBoxStream = ({ navigation }: AppStackScreenProps<ChatBoxStreamScreen>)
 			</PanGestureHandler>
 
 			<ChatBox
-				channelId={currentChannel?.channel_id}
+				channelId={currentChannel?.channelId}
 				mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 				isPublic={isPublicChannel(currentChannel)}
 				topicChannelId={''}
 				isBanned={!!isBanned}
 			/>
-			<PanelKeyboard currentChannelId={currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
+			<PanelKeyboard currentChannelId={currentChannel?.channelId} currentClanId={currentChannel?.clanId} />
 		</View>
 	);
 };

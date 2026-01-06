@@ -3,8 +3,15 @@ import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezo
 import { getMobileUploadedAttachments, getWebUploadedAttachments } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelMessage, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic } from 'mezon-js/api.gen';
-import type { ApiChannelMessageHeader, ApiSdTopicRequest } from 'mezon-js/dist/api.gen';
+import type {
+	ApiChannelMessage,
+	ApiChannelMessageHeader,
+	ApiMessageAttachment,
+	ApiMessageMention,
+	ApiMessageRef,
+	ApiSdTopic,
+	ApiSdTopicRequest
+} from 'mezon-js/types';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { selectMessageEntitiesByChannelId } from '../messages/messages.slice';
@@ -75,7 +82,7 @@ export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanI
 
 		const topics = mapToTopicEntity(response.topics || []);
 		return {
-			clan_id: clanId,
+			clanId,
 			topics
 		};
 	} catch (error) {
@@ -123,7 +130,7 @@ export const handleTopicNotification = createAsyncThunk('topics/handleTopicNotif
 		thunkAPI.dispatch(topicsActions.setIsShowCreateTopic(true));
 		thunkAPI.dispatch(
 			threadsActions.setIsShowCreateThread({
-				channelId: msg.channel_id as string,
+				channelId: msg.channelId as string,
 				isShowCreateThread: false
 			})
 		);
@@ -219,15 +226,15 @@ export const topicsSlice = createSlice({
 		setTopicLastSent: (state, action: PayloadAction<{ clanId: string; topicId: string; lastSentMess: ApiChannelMessageHeader }>) => {
 			const topic = state.clanTopics[action.payload.clanId]?.entities?.[action.payload.topicId];
 			if (topic) {
-				if (!topic.last_sent_message) {
-					topic.last_sent_message = {} as ApiChannelMessageHeader;
+				if (!topic.lastSentMessage) {
+					topic.lastSentMessage = {} as ApiChannelMessageHeader;
 				}
 
-				const { content, sender_id, timestamp_seconds } = action.payload.lastSentMess;
+				const { content, senderId, timestampSeconds } = action.payload.lastSentMess;
 
-				topic.last_sent_message.content = typeof content === 'object' ? JSON.stringify(content) : content || '';
-				topic.last_sent_message.sender_id = sender_id;
-				topic.last_sent_message.timestamp_seconds = timestamp_seconds;
+				topic.lastSentMessage.content = typeof content === 'object' ? JSON.stringify(content) : content || '';
+				topic.lastSentMessage.senderId = senderId;
+				topic.lastSentMessage.timestampSeconds = timestampSeconds;
 			}
 		},
 		setFocusTopicBox(state, action: PayloadAction<boolean>) {
@@ -251,7 +258,7 @@ export const topicsSlice = createSlice({
 			})
 			.addCase(fetchTopics.fulfilled, (state: TopicDiscussionsState, action: PayloadAction<any>) => {
 				if (action.payload?.fromCache) return;
-				const clanId = action.payload.clan_id;
+				const clanId = action.payload.clanId;
 				if (!clanId) {
 					return;
 				}
@@ -268,7 +275,7 @@ export const topicsSlice = createSlice({
 			})
 			.addCase(createTopic.fulfilled, (state: TopicDiscussionsState, action) => {
 				const newTopic = action.payload as ApiSdTopic;
-				const clanId = newTopic.clan_id;
+				const clanId = newTopic.clanId;
 
 				if (clanId && newTopic.id) {
 					if (!state.clanTopics[clanId]) {
@@ -285,8 +292,8 @@ export const topicsSlice = createSlice({
 			})
 			.addCase(getFirstMessageOfTopic.fulfilled, (state: TopicDiscussionsState, action) => {
 				const { data, isMobile } = action.payload;
-				const { message, message_id } = data || {};
-				state.initTopicMessageId = message_id || '';
+				const { message, messageId } = data || {};
+				state.initTopicMessageId = messageId || '';
 				if (message && isMobile) {
 					state.firstMessageTopic = message;
 				}
@@ -366,8 +373,8 @@ export const selectFirstMessageEntityTopic = createSelector(getTopicsState, (sta
 
 export const selectTopicsSort = createSelector(selectAllTopics, (data) => {
 	return data.sort((a, b) => {
-		const timestampA = a?.last_sent_message?.timestamp_seconds || 0;
-		const timestampB = b?.last_sent_message?.timestamp_seconds || 0;
+		const timestampA = a?.lastSentMessage?.timestampSeconds || 0;
+		const timestampB = b?.lastSentMessage?.timestampSeconds || 0;
 		return timestampB - timestampA;
 	});
 });

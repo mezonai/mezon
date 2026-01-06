@@ -33,20 +33,20 @@ function LeaveGroupModal({ groupWillBeLeave, onClose, navigateToFriends }: Leave
 
 	const handleLeaveAndClose = async (e: React.MouseEvent<HTMLDivElement>) => {
 		e.stopPropagation();
-		if (groupWillBeLeave.channel_id) {
+		if (groupWillBeLeave.channelId) {
 			await dispatch(
 				channelMembersActions.removeMemberChannel({
-					channelId: groupWillBeLeave.channel_id,
+					channelId: groupWillBeLeave.channelId,
 					userIds: [userProfile?.user?.id || ''],
 					kickMember: false
 				})
 			);
-			dispatch(directActions.remove(groupWillBeLeave.channel_id));
+			dispatch(directActions.remove(groupWillBeLeave.channelId));
 			const timestamp = Date.now() / 1000;
 			const store = getStore();
-			const messageId = store ? selectLatestMessageId(store.getState(), groupWillBeLeave.channel_id) : undefined;
-			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: groupWillBeLeave.channel_id, timestamp, messageId }));
-			if (groupWillBeLeave.channel_id === currentDmGroupId) {
+			const messageId = store ? selectLatestMessageId(store.getState(), groupWillBeLeave.channelId) : undefined;
+			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: groupWillBeLeave.channelId, timestamp, messageId }));
+			if (groupWillBeLeave.channelId === currentDmGroupId) {
 				dispatch(directActions.setDmGroupCurrentId(''));
 				navigateToFriends();
 			}
@@ -60,9 +60,9 @@ function LeaveGroupModal({ groupWillBeLeave, onClose, navigateToFriends }: Leave
 			<form className="relative z-10 bg-theme-setting-primary rounded-[5px] w-[500px]">
 				<div className="top-block p-[16px]  text-theme-primary-active flex flex-col gap-[15px]">
 					<div className="text-xl font-semibold break-words whitespace-normal overflow-wrap-break-word">
-						{t('title', { groupName: groupWillBeLeave?.channel_label })}
+						{t('title', { groupName: groupWillBeLeave?.channelLabel })}
 					</div>
-					<div className="text-lg break-all">{t('confirmMessage', { groupName: groupWillBeLeave?.channel_label })}</div>
+					<div className="text-lg break-all">{t('confirmMessage', { groupName: groupWillBeLeave?.channelLabel })}</div>
 
 					{isshowcheckbox && (
 						<div className="flex items-center gap-[10px]">

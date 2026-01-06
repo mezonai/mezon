@@ -26,7 +26,7 @@ const ChannelsMessageSystem = ({ onSelectChannel, listChannelWithoutVoice }: Cha
 		return (
 			<TouchableOpacity style={styles.channelItem} onPress={() => selectChannel(item)}>
 				<View style={styles.containerIcon}>
-					{item?.channel_private ? (
+					{item?.channelPrivate ? (
 						<MezonIconCDN icon={IconCDN.channelTextLock} color={themeValue.text} height={size.s_20} width={size.s_20} />
 					) : (
 						<MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} height={size.s_20} width={size.s_20} />
@@ -35,10 +35,10 @@ const ChannelsMessageSystem = ({ onSelectChannel, listChannelWithoutVoice }: Cha
 
 				<View style={styles.containerText}>
 					<Text style={styles.channelItemText} numberOfLines={1} ellipsizeMode="tail">
-						{item?.channel_label}
+						{item?.channelLabel}
 					</Text>
 					<Text style={styles.channelItemText} numberOfLines={1} ellipsizeMode="tail">
-						{item?.category_name}
+						{item?.categoryName}
 					</Text>
 				</View>
 			</TouchableOpacity>
@@ -49,7 +49,7 @@ const ChannelsMessageSystem = ({ onSelectChannel, listChannelWithoutVoice }: Cha
 		<View style={{ height: size.s_615 }}>
 			<FlatList
 				data={listChannelWithoutVoice}
-				keyExtractor={(item, index) => `channel_system:${item?.channel_id}_${index}`}
+				keyExtractor={(item, index) => `channel_system:${item?.channelId}_${index}`}
 				initialNumToRender={1}
 				maxToRenderPerBatch={1}
 				windowSize={2}

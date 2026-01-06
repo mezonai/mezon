@@ -34,9 +34,9 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 		}
 		return {
 			status: userProfile?.user?.status || EUserStatus.ONLINE,
-			user_status: userProfile?.user?.user_status
+			userStatus: userProfile?.user?.userStatus
 		};
-	}, [getStatus, userProfile?.user?.status, userProfile?.user?.user_status]);
+	}, [getStatus, userProfile?.user?.status, userProfile?.user?.userStatus]);
 	const [isShowModalHistory, setIsShowModalHistory] = useState<boolean>(false);
 
 	const { walletDetail } = useWallet();
@@ -86,7 +86,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 			accountActions.updateAccountStatus({
 				status,
 				minutes,
-				until_turn_on: untilTurnOn
+				untilTurnOn: untilTurnOn
 			})
 		);
 		dispatch(accountActions.updateUserStatus(status));
@@ -157,7 +157,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 
 				<ItemStatus
 					onClick={handleCustomStatus}
-					children={status.user_status ? t('statusProfile.editCustomStatus') : t('statusProfile.setCustomStatus')}
+					children={status.userStatus ? t('statusProfile.editCustomStatus') : t('statusProfile.setCustomStatus')}
 					startIcon={<Icons.SmilingFace className="text-theme-primary" />}
 				/>
 				<Menu

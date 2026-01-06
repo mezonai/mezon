@@ -38,9 +38,9 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 
 		const baseData = {
 			is_video: false,
-			group_id: currentDmGroup?.channel_id || '',
-			caller_id: userProfile?.user?.id,
-			caller_name: userProfile?.user?.display_name || userProfile?.user?.username || '',
+			groupId: currentDmGroup?.channelId || '',
+			callerId: userProfile?.user?.id,
+			caller_name: userProfile?.user?.displayName || userProfile?.user?.username || '',
 			timestamp: Date.now()
 		};
 
@@ -48,7 +48,7 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 			if (room?.numParticipants === 1) {
 				dispatch(
 					messagesActions.sendMessage({
-						channelId: currentDmGroup?.channel_id,
+						channelId: currentDmGroup?.channelId,
 						clanId: '0',
 						mode: ChannelStreamMode.STREAM_MODE_GROUP,
 						isPublic: true,
@@ -62,17 +62,17 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 						},
 						anonymous: false,
 						senderId: userProfile?.user?.id || '',
-						avatar: userProfile?.user?.avatar_url || '',
+						avatar: userProfile?.user?.avatarUrl || '',
 						isMobile: true,
-						username: currentDmGroup?.channel_label || ''
+						username: currentDmGroup?.channelLabel || ''
 					})
 				);
 			}
 			sendSignalingToParticipants(
-				currentDmGroup?.user_ids || [],
+				currentDmGroup?.userIds || [],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_QUIT,
 				baseData as CallSignalingData,
-				currentDmGroup?.channel_id || '',
+				currentDmGroup?.channelId || '',
 				userProfile?.user?.id || ''
 			);
 			// if (isFromNativeCall) {
@@ -84,16 +84,16 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 				reason: 'cancelled'
 			};
 			sendSignalingToParticipants(
-				currentDmGroup?.user_ids || [],
+				currentDmGroup?.userIds || [],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_CANCEL,
 				cancelAction as CallSignalingData,
-				currentDmGroup?.channel_id || '',
+				currentDmGroup?.channelId || '',
 				userProfile?.user?.id || ''
 			);
 			groupCallActions.hidePreCallInterface();
 			dispatch(
 				messagesActions.sendMessage({
-					channelId: currentDmGroup?.channel_id,
+					channelId: currentDmGroup?.channelId,
 					clanId: '',
 					mode: ChannelStreamMode.STREAM_MODE_GROUP,
 					isPublic: true,
@@ -107,16 +107,16 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 					},
 					anonymous: false,
 					senderId: userProfile?.user?.id || '',
-					avatar: userProfile?.user?.avatar_url || '',
+					avatar: userProfile?.user?.avatarUrl || '',
 					isMobile: true,
-					username: currentDmGroup?.channel_label || ''
+					username: currentDmGroup?.channelLabel || ''
 				})
 			);
 		}
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, {
 			isEndCall: true,
 			clanId: '',
-			channelId: currentDmGroup?.channel_id,
+			channelId: currentDmGroup?.channelId,
 			roomId: room?.roomInfo?.sid
 		});
 	};

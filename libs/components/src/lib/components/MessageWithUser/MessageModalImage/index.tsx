@@ -92,7 +92,7 @@ const MessageModalImage = () => {
 				const state = getStore()?.getState();
 				const currentAttachments = selectAllListAttachmentByChannel(state, channelId);
 				const timestamp =
-					direction === 'before' ? currentAttachments?.[currentAttachments.length - 1]?.create_time : currentAttachments?.[0]?.create_time;
+					direction === 'before' ? currentAttachments?.[currentAttachments.length - 1]?.createTime : currentAttachments?.[0]?.createTime;
 				const timestampNumber = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
 
 				const clanId = currentClanId === '0' ? '0' : currentClanId;
@@ -534,17 +534,17 @@ const SenderUser = () => {
 		<div className="flex gap-2 overflow-hidden ">
 			<div className="w-10 aspect-square object-cover overflow-hidden">
 				<img
-					src={createImgproxyUrl(user?.clan_avatar ?? user?.user?.avatar_url ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+					src={createImgproxyUrl(user?.clanAvatar ?? user?.user?.avatarUrl ?? '', { width: 300, height: 300, resizeType: 'fit' })}
 					alt="user-avatar"
 					className="w-10 rounded-full aspect-square object-cover"
 				/>
 			</div>
 			<div className="flex flex-col justify-between ">
 				<div className="text-[14px] font-semibold text-textDarkTheme truncate max-sm:w-12">
-					{user?.clan_nick ?? user?.user?.display_name ?? user?.user?.username}
+					{user?.clanNick ?? user?.user?.displayName ?? user?.user?.username}
 				</div>
 				<div className="text-[12px] text-bgTextarea truncate max-sm:w-12">
-					{attachment?.create_time ? convertTimeString(attachment.create_time) : 'N/A'}
+					{attachment?.createTime ? convertTimeString(attachment.createTime) : 'N/A'}
 				</div>
 			</div>
 		</div>

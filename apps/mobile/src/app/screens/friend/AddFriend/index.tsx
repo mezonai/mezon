@@ -2,7 +2,7 @@ import { useFriends } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import type { FriendsEntity } from '@mezon/store-mobile';
-import type { ApiUser } from 'mezon-js/api.gen';
+import type { ApiUser } from 'mezon-js/types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, Text, TouchableOpacity, View } from 'react-native';

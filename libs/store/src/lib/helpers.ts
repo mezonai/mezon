@@ -1,7 +1,7 @@
 import type { MezonContextValue } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { Client, Session } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api.gen';
+import type { ApiFriend } from 'mezon-js/types';
 import type { IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import type { GetThunkAPIWithMezon } from './typings';
 
@@ -323,8 +323,8 @@ export async function fetchDataWithSocketFallback<T>(
 			}
 
 			if (socketRequest.api_name === 'ListClanUsers') {
-				if (responseKey && data?.[responseKey]?.clan_users) {
-					data[responseKey].clan_users = data[responseKey]?.clan_users?.map((item: ApiFriend) => ({
+				if (responseKey && data?.[responseKey]?.clanUsers) {
+					data[responseKey].clanUsers = data[responseKey]?.clanUsers?.map((item: ApiFriend) => ({
 						...item
 					}));
 				}

@@ -128,14 +128,14 @@ const FriendsPage = () => {
 	const listFriendFilter = filterStatus(friends)
 		.filter((obj) => {
 			const normalizedUsername = (obj.user?.username || '').toLowerCase();
-			const normalizedDisplayName = (obj.user?.display_name || '').toLowerCase();
+			const normalizedDisplayName = (obj.user?.displayName || '').toLowerCase();
 			const normalizedSearchText = textSearch.toLowerCase();
 
 			return normalizedUsername.includes(normalizedSearchText) || normalizedDisplayName.includes(normalizedSearchText);
 		})
 		.sort((start, next) => {
-			const nameStart = (start.user?.display_name || start.user?.username) ?? '';
-			const nameNext = (next.user?.display_name || next.user?.username) ?? '';
+			const nameStart = (start.user?.displayName || start.user?.username) ?? '';
+			const nameNext = (next.user?.displayName || next.user?.username) ?? '';
 			return nameStart.localeCompare(nameNext);
 		});
 

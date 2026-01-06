@@ -47,13 +47,13 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const avatarImages = currentDmGroup?.avatars || [];
-	const nameImages = currentDmGroup?.display_names || [];
+	const nameImages = currentDmGroup?.displayNames || [];
 	const isMuteMicrophone = useSelector(selectIsMuteMicrophone);
 	const isShowMeetDM = useSelector(selectIsShowMeetDM);
 	const isInCall = useSelector(selectIsInCall);
 	const isPlayDialTone = useSelector(selectAudioDialTone);
 	const isPlayBusyTone = useSelector(selectAudioBusyTone);
-	const dmUserId = currentDmGroup?.user_ids && currentDmGroup.user_ids.length > 0 ? currentDmGroup?.user_ids[0] : '';
+	const dmUserId = currentDmGroup?.userIds && currentDmGroup.userIds.length > 0 ? currentDmGroup?.userIds[0] : '';
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
 	const isRemoteAudio = useSelector(selectRemoteAudio);
 	const isRemoteVideo = useSelector(selectRemoteVideo);
@@ -62,12 +62,12 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const otherCall = useSelector(selectOtherCall);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
 	const isInChannelCalled = useMemo(() => {
-		const isSignalDataOffer = signalingData?.[0]?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER;
+		const isSignalDataOffer = signalingData?.[0]?.signalingData?.dataType === WebrtcSignalingType.WEBRTC_SDP_OFFER;
 		if (!isSignalDataOffer && !isInCall) {
 			return false;
 		}
-		return currentDmGroup?.user_ids?.some((i) => i === signalingData?.[0]?.callerId);
-	}, [currentDmGroup?.user_ids, isInCall, signalingData]);
+		return currentDmGroup?.userIds?.some((i) => i === signalingData?.[0]?.callerId);
+	}, [currentDmGroup?.userIds, isInCall, signalingData]);
 
 	const {
 		timeStartConnected,
@@ -91,7 +91,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 		channelId: dmGroupId as string,
 		userId: userId as string,
 		callerName: userProfile?.user?.username as string,
-		callerAvatar: userProfile?.user?.avatar_url as string,
+		callerAvatar: userProfile?.user?.avatarUrl as string,
 		isInChannelCalled: isInChannelCalled as boolean
 	});
 
@@ -104,8 +104,8 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	}, [dispatch, isInCall, isJoinedCall]);
 
 	useEffect(() => {
-		if (otherCall?.caller_id && otherCall?.channel_id) {
-			handleOtherCall(otherCall?.caller_id, otherCall?.channel_id);
+		if (otherCall?.callerId && otherCall?.channelId) {
+			handleOtherCall(otherCall?.callerId, otherCall?.channelId);
 		}
 	}, [otherCall]);
 
@@ -119,7 +119,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	useEffect(() => {
 		const lastSignalingData = signalingData?.[signalingData.length - 1]?.signalingData;
 
-		if (lastSignalingData && (isInCall || lastSignalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_QUIT)) {
+		if (lastSignalingData && (isInCall || lastSignalingData?.dataType === WebrtcSignalingType.WEBRTC_SDP_QUIT)) {
 			handleSignalingMessage(lastSignalingData);
 		}
 	}, [isInCall, signalingData]);

@@ -6,11 +6,11 @@ import { ensureSession, getMezonCtx } from '../helpers';
 export const DEVICES_FEATURE_KEY = 'devices';
 
 export interface IDevice {
-	device_id: string;
-	device_name?: string;
+	deviceId: string;
+	deviceName?: string;
 	ip?: string;
-	last_active?: string;
-	login_at?: string;
+	lastActive?: string;
+	loginAt?: string;
 	platform?: string;
 	status?: number;
 	is_current_device?: boolean;
@@ -24,7 +24,7 @@ export interface DevicesState extends EntityState<IDevice, string> {
 }
 
 export const devicesAdapter = createEntityAdapter<IDevice, string>({
-	selectId: (device) => device.device_id
+	selectId: (device) => device.deviceId
 });
 
 export const initialDevicesState: DevicesState = devicesAdapter.getInitialState({
@@ -72,7 +72,7 @@ export const devicesSlice = createSlice({
 
 				const currentDevice = action.payload.find((device) => device.is_current_device);
 				if (currentDevice) {
-					state.currentDeviceId = currentDevice.device_id;
+					state.currentDeviceId = currentDevice.deviceId;
 				}
 			})
 			.addCase(fetchListLoggedDevices.rejected, (state, action) => {
@@ -109,7 +109,7 @@ export const selectCurrentDevice = createSelector([getDevicesState, selectCurren
 });
 
 export const selectOtherDevices = createSelector([selectAllDevices, selectCurrentDeviceId], (devices, currentDeviceId) => {
-	return devices.filter((device) => device.device_id !== currentDeviceId);
+	return devices.filter((device) => device.deviceId !== currentDeviceId);
 });
 
 export const selectDeviceById = (deviceId: string) => createSelector(getDevicesState, (state) => selectById(state, deviceId));

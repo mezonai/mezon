@@ -10,7 +10,7 @@ import {
 } from '@mezon/store';
 import type { IMessageSendPayload, IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/types';
 import { useCallback, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useChatSending } from './useChatSending';
@@ -49,7 +49,7 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 	const setChannelDraftMessage = useCallback(
 		(
 			channelId: string,
-			message_id: string,
+			messageId: string,
 			draftContent: IMessageSendPayload,
 			draftMention: ApiMessageMention[],
 			attachmentsOnMessage: ApiMessageAttachment[],
@@ -59,7 +59,7 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 				messagesActions.setChannelDraftMessage({
 					channelId: channelId as string,
 					channelDraftMessage: {
-						message_id,
+						messageId,
 						draftContent,
 						draftMention,
 						draftAttachment: attachmentsOnMessage,
@@ -72,10 +72,10 @@ export const useEditMessage = (channelId: string, channelLabel: string, mode: nu
 	);
 
 	const handleSend = useCallback(
-		(editMessage: IMessageSendPayload, messageId: string, draftMention: ApiMessageMention[], topic_id: string, isTopic?: boolean) => {
+		(editMessage: IMessageSendPayload, messageId: string, draftMention: ApiMessageMention[], topicId: string, isTopic?: boolean) => {
 			const oldMentions = oldMentionsString;
-			editSendMessage(editMessage, messageId, draftMention, attachmentsOnMessage, false, topic_id, isTopic, oldMentions);
-			setChannelDraftMessage(channelId, messageId, editMessage, draftMention, attachmentsOnMessage ?? [], topic_id as string);
+			editSendMessage(editMessage, messageId, draftMention, attachmentsOnMessage, false, topicId, isTopic, oldMentions);
+			setChannelDraftMessage(channelId, messageId, editMessage, draftMention, attachmentsOnMessage ?? [], topicId as string);
 			dispatch(referencesActions.setOpenEditMessageState(false));
 		},
 		[editSendMessage, attachmentsOnMessage, setChannelDraftMessage, channelId, dispatch, oldMentionsString]

@@ -37,13 +37,13 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHa
 
 			const response = await createDirectMessageWithUser(
 				user.id,
-				user?.user?.display_name || user?.user?.username,
+				user?.user?.displayName || user?.user?.username,
 				user?.user?.username,
-				user?.user?.avatar_url
+				user?.user?.avatarUrl
 			);
 
-			if (response?.channel_id) {
-				const directDM = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+			if (response?.channelId) {
+				const directDM = toDmGroupPageFromMainApp(response.channelId, Number(response.type));
 				navigate(directDM);
 			}
 		},
@@ -113,10 +113,10 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHa
 			if (!directId || !currentDirect) return;
 
 			const updateChannel = {
-				channel_id: directId,
-				channel_label: '',
-				category_id: currentDirect.category_id,
-				app_id: currentDirect.app_id || '',
+				channelId: directId,
+				channelLabel: '',
+				categoryId: currentDirect.categoryId,
+				appId: currentDirect.appId || '',
 				e2ee: !currentDirect.e2ee ? 1 : 0
 			};
 

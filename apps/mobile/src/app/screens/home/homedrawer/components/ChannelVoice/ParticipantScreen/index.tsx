@@ -47,9 +47,9 @@ const ParticipantItem = memo(
 		const { t } = useTranslation(['channelVoice']);
 		const member = useAppSelector((state) => selectMemberClanByUserId(state, userId));
 		const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
-		const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || '';
+		const voiceUsername = member?.clanNick || member?.user?.displayName || member?.user?.username || '';
 		const avatar = useMemo(() => {
-			return member?.clan_avatar || member?.user?.avatar_url || '';
+			return member?.clanAvatar || member?.user?.avatarUrl || '';
 		}, [member]);
 		const dispatch = useAppDispatch();
 
@@ -73,9 +73,9 @@ const ParticipantItem = memo(
 		const onConfirmActionVoice = useCallback(
 			(action: IActionVoiceUser) => {
 				if (action === IActionVoiceUser.MUTE) {
-					dispatch(voiceActions.muteVoiceMember({ room_name: room, username: userId || '' }));
+					dispatch(voiceActions.muteVoiceMember({ roomName: room, username: userId || '' }));
 				} else {
-					dispatch(voiceActions.kickVoiceMember({ room_name: room, username: userId || '' }));
+					dispatch(voiceActions.kickVoiceMember({ roomName: room, username: userId || '' }));
 				}
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });

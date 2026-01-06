@@ -1,7 +1,7 @@
 import { usePermissionChecker } from '@mezon/core';
 import { Icons } from '@mezon/ui';
 import { EPermission, generateE2eId } from '@mezon/utils';
-import type { ApiClanWebhook } from 'mezon-js/api.gen';
+import type { ApiClanWebhook } from 'mezon-js/types';
 import { useTranslation } from 'react-i18next';
 
 interface IClanIntegrationProps {

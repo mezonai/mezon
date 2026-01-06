@@ -1,6 +1,6 @@
 import { quickMenuActions, selectFlashMessagesByChannelId, selectQuickMenusByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { QUICK_MENU_TYPE, generateE2eId } from '@mezon/utils';
-import type { ApiQuickMenuAccessRequest } from 'mezon-js/api.gen';
+import type { ApiQuickMenuAccessRequest } from 'mezon-js/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -27,9 +27,9 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 	const [editingItem, setEditingItem] = useState<ApiQuickMenuAccessRequest | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [formData, setFormData] = useState<ApiQuickMenuAccessRequest & { channelId: string; clanId: string }>({
-		menu_name: '',
-		action_msg: '',
-		menu_type: QUICK_MENU_TYPE.FLASH_MESSAGE,
+		menuName: '',
+		actionMsg: '',
+		menuType: QUICK_MENU_TYPE.FLASH_MESSAGE,
 		channelId,
 		clanId
 	});
@@ -44,9 +44,9 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 	const handleSubmit = useCallback(
 		async (e: React.FormEvent) => {
 			e.preventDefault();
-			if (!formData.menu_name?.trim()) return;
+			if (!formData.menuName?.trim()) return;
 
-			if (activeTab === 'flash' && !formData.action_msg?.trim()) {
+			if (activeTab === 'flash' && !formData.actionMsg?.trim()) {
 				return;
 			}
 
@@ -54,8 +54,8 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 			try {
 				const submitData = {
 					...formData,
-					menu_type: currentMenuType,
-					action_msg: currentMenuType === QUICK_MENU_TYPE.QUICK_MENU ? 'bot_event' : formData.action_msg
+					menuType: currentMenuType,
+					actionMsg: currentMenuType === QUICK_MENU_TYPE.QUICK_MENU ? 'bot_event' : formData.actionMsg
 				};
 
 				if (editingItem) {
@@ -70,7 +70,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 				}
 				setIsModalOpen(false);
 				setEditingItem(null);
-				setFormData({ menu_name: '', action_msg: '', menu_type: currentMenuType, channelId, clanId });
+				setFormData({ menuName: '', actionMsg: '', menuType: currentMenuType, channelId, clanId });
 			} catch (error) {
 				console.error('Error saving quick menu item:', error);
 			} finally {
@@ -84,9 +84,9 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 		(item: ApiQuickMenuAccessRequest) => {
 			setEditingItem(item);
 			setFormData({
-				menu_name: item.menu_name || '',
-				action_msg: item.action_msg || '',
-				menu_type: item.menu_type || QUICK_MENU_TYPE.FLASH_MESSAGE,
+				menuName: item.menuName || '',
+				actionMsg: item.actionMsg || '',
+				menuType: item.menuType || QUICK_MENU_TYPE.FLASH_MESSAGE,
 				channelId,
 				clanId
 			});
@@ -122,14 +122,14 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 
 	const openCreateModal = useCallback(() => {
 		setEditingItem(null);
-		setFormData({ menu_name: '', action_msg: '', menu_type: currentMenuType, channelId, clanId });
+		setFormData({ menuName: '', actionMsg: '', menuType: currentMenuType, channelId, clanId });
 		setIsModalOpen(true);
 	}, [channelId, clanId, currentMenuType]);
 
 	const closeModal = useCallback(() => {
 		setIsModalOpen(false);
 		setEditingItem(null);
-		setFormData({ menu_name: '', action_msg: '', menu_type: currentMenuType, channelId, clanId });
+		setFormData({ menuName: '', actionMsg: '', menuType: currentMenuType, channelId, clanId });
 	}, [channelId, clanId, currentMenuType]);
 
 	const renderTabButton = (tabKey: 'flash' | 'menu', label: string, count: number) => (
@@ -160,21 +160,21 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 							className="font-mono text-[#00d4aa] bg-[#00d4aa]/10 px-2 py-1 rounded text-sm"
 							data-e2e={generateE2eId('channel_setting_page.quick_menu.item.command')}
 						>
-							{activeTab === 'flash' ? `/${item.menu_name}` : item.menu_name}
+							{activeTab === 'flash' ? `/${item.menuName}` : item.menuName}
 						</span>
 						<span
 							className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full"
 							data-e2e={generateE2eId('channel_setting_page.quick_menu.item.type')}
 						>
-							{getQuickMenuTypeLabelTranslated(item.menu_type)}
+							{getQuickMenuTypeLabelTranslated(item.menuType)}
 						</span>
 					</div>
-					{activeTab === 'flash' && item.action_msg && (
+					{activeTab === 'flash' && item.actionMsg && (
 						<p
 							className="text-gray-400 text-sm leading-relaxed"
-							data-e2e={generateE2eId('channel_setting_page.quick_menu.item.message_content')}
+							data-e2e={generateE2eId('channel_setting_page.quick_menu.item.messageContent')}
 						>
-							{item.action_msg}
+							{item.actionMsg}
 						</p>
 					)}
 					{activeTab === 'menu' && <p className="text-gray-400 text-sm leading-relaxed italic">{t('quickAction.triggersBot')}</p>}
@@ -278,8 +278,8 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 									{activeTab === 'flash' && <span className="absolute left-3 top-1/2 transform -translate-y-1/2 font-mono">/</span>}
 									<input
 										type="text"
-										value={formData.menu_name || ''}
-										onChange={(e) => setFormData({ ...formData, menu_name: e.target.value })}
+										value={formData.menuName || ''}
+										onChange={(e) => setFormData({ ...formData, menuName: e.target.value })}
 										placeholder={activeTab === 'flash' ? 'example' : 'menu-name'}
 										required
 										className={`w-full bg-input-secondary border-theme-primary rounded-md px-3 py-2 ${
@@ -302,8 +302,8 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 										<span className="text-red-400">*</span>
 									</label>
 									<textarea
-										value={formData.action_msg || ''}
-										onChange={(e) => setFormData({ ...formData, action_msg: e.target.value })}
+										value={formData.actionMsg || ''}
+										onChange={(e) => setFormData({ ...formData, actionMsg: e.target.value })}
 										placeholder={
 											currentMenuType === QUICK_MENU_TYPE.QUICK_MENU
 												? t('quickAction.menuActionPlaceholder')
@@ -312,7 +312,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 										rows={3}
 										required
 										className="w-full bg-input-secondary border-theme-primary rounded-md px-3 py-2 text-theme-message focus:border-[#5865f2] focus:outline-none transition-colors duration-200 resize-none"
-										data-e2e={generateE2eId('channel_setting_page.quick_menu.modal.input.message_content')}
+										data-e2e={generateE2eId('channel_setting_page.quick_menu.modal.input.messageContent')}
 									/>
 									<p className="text-xs mt-1">
 										{currentMenuType === QUICK_MENU_TYPE.QUICK_MENU
@@ -354,7 +354,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 								</button>
 								<button
 									type="submit"
-									disabled={loading || !formData.menu_name?.trim() || (activeTab === 'flash' && !formData.action_msg?.trim())}
+									disabled={loading || !formData.menuName?.trim() || (activeTab === 'flash' && !formData.actionMsg?.trim())}
 									className="bg-[#5865f2] hover:bg-[#4752c4] disabled:bg-gray-600 disabled:cursor-not-allowed text-white px-4 py-1.5 text-sm rounded-lg font-medium transition-colors duration-200 flex items-center gap-2"
 									data-e2e={generateE2eId('channel_setting_page.quick_menu.modal.button.submit')}
 								>
@@ -388,7 +388,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 							</h2>
 							<p className="text-gray-400 mb-6">
 								{t('quickAction.deleteTitle', {
-									command: activeTab === 'flash' ? `/${itemToDelete?.menu_name}` : itemToDelete?.menu_name
+									command: activeTab === 'flash' ? `/${itemToDelete?.menuName}` : itemToDelete?.menuName
 								})}
 							</p>
 							<div className="flex justify-end gap-3">

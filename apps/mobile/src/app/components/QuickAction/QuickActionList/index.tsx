@@ -1,6 +1,6 @@
 import { size } from '@mezon/mobile-ui';
 import type { QuickMenuType } from '@mezon/utils';
-import type { ApiQuickMenuAccess } from 'mezon-js/api.gen';
+import type { ApiQuickMenuAccess } from 'mezon-js/types';
 import { memo, useCallback } from 'react';
 import { FlatList } from 'react-native';
 import { EmptyQuickAction } from '../QuickActionEmpty';
@@ -27,7 +27,7 @@ export const QuickActionList = memo(({ data, themeValue, openModal, handleDelete
 	return (
 		<FlatList
 			data={data}
-			keyExtractor={(item, index) => `item_quick_action_${item?.id}_${item?.menu_name}_${index}`}
+			keyExtractor={(item, index) => `item_quick_action_${item?.id}_${item?.menuName}_${index}`}
 			renderItem={renderItem}
 			ListEmptyComponent={ListEmptyComponent}
 			initialNumToRender={10}

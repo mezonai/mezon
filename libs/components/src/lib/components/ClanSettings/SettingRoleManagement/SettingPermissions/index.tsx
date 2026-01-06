@@ -37,7 +37,7 @@ const SettingPermissions = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 	const colorRole = useSelector(getNewColorRole);
 
 	const activeRole = RolesClan.find((role) => role.id === clickRole);
-	const permissionsRole = activeRole?.permission_list;
+	const permissionsRole = activeRole?.permissionList;
 	const permissions = useMemo(() => permissionsRole?.permissions?.filter((permission) => permission.active === 1) || [], [permissionsRole]);
 	const permissionIds = useMemo(() => permissions.map((permission) => permission.id) || [], [permissions]);
 

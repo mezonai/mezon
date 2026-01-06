@@ -72,7 +72,7 @@ export const addChannelRoles = createAsyncThunk(
 	async ({ channelId, roleIds, clanId }: addChannelRolesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.addRolesChannelDesc(mezon.session, { channel_id: channelId, role_ids: roleIds });
+			const response = await mezon.client.addRolesChannelDesc(mezon.session, { channelId: channelId, roleIds: roleIds });
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -102,7 +102,7 @@ export const removeChannelRole = createAsyncThunk(
 	async ({ channelId, clanId, roleId }: removeChannelRolePayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteRoleChannelDesc(mezon.session, { clan_id: clanId, channel_id: channelId, role_id: roleId });
+			const response = await mezon.client.deleteRoleChannelDesc(mezon.session, { clanId: clanId, channelId: channelId, roleId: roleId });
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}

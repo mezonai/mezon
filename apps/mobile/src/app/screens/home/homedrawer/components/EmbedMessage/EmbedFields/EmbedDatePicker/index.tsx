@@ -30,7 +30,7 @@ export const EmbedDatePicker = memo(({ input, buttonId, messageId }: EmbedInputP
 		const formattedDate = moment(value).format('YYYY-MM-DD');
 		dispatch(
 			embedActions.addEmbedValue({
-				message_id: messageId,
+				messageId: messageId,
 				data: {
 					id: buttonId,
 					value: formattedDate

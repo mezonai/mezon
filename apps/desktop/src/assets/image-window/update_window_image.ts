@@ -7,7 +7,7 @@ import { listThumnails, scriptThumnails } from './window_image';
 function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 	const activeIndex = imageData.channelImagesData.selectedImageIndex;
 
-	const time = escapeHtml(formatDateTime(imageData.create_time));
+	const time = escapeHtml(formatDateTime(imageData.createTime));
 	const reversedImages = [...imageData.channelImagesData.images].reverse();
 	const reversedIndexSelect = activeIndex >= 0 ? reversedImages.length - 1 - activeIndex : -1;
 	const thumbnailsData = reversedImages.map((image) => ({
@@ -17,8 +17,8 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 		name: escapeHtml(image.uploaderData.name),
 		fileName: escapeHtml(image.filename),
 		realUrl: sanitizeUrl(image.realUrl || ''),
-		create_time: image.create_time,
-		time: escapeHtml(formatDateTime(image.create_time)),
+		createTime: image.createTime,
+		time: escapeHtml(formatDateTime(image.createTime)),
 		isVideo: image.isVideo,
 		filetype: image.filetype,
 		width: image.width || 600,

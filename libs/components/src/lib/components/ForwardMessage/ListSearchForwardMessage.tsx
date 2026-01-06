@@ -109,7 +109,7 @@ const ItemChannel = (props: ItemChannelProps) => {
 			<div className="flex-1 mr-1" onClick={handleToggle}>
 				<SuggestItem
 					display={name}
-					subText={clanByClanId?.clan_name || ''}
+					subText={clanByClanId?.clanName || ''}
 					channelId={id}
 					valueHightLight={searchText}
 					subTextStyle="uppercase"

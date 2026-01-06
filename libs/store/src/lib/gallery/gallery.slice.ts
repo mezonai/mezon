@@ -3,6 +3,7 @@ import type { LoadingStatus } from '@mezon/utils';
 import { ETypeLinkMedia } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiChannelAttachmentList } from 'mezon-js';
 import type { AttachmentEntity } from '../attachment/attachments.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createCacheMetadata } from '../cache-metadata';
@@ -61,7 +62,16 @@ export const fetchGalleryAttachments = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.listChannelAttachments(mezon.session, clanId, channelId, fileType, undefined, limit, before, after);
+			const response: ApiChannelAttachmentList = await mezon.client.listChannelAttachments(
+				mezon.session,
+				clanId,
+				channelId,
+				fileType,
+				undefined,
+				limit,
+				before,
+				after
+			);
 
 			if (!response.attachments) {
 				return { attachments: [], channelId, direction };
@@ -86,8 +96,8 @@ export const fetchGalleryAttachments = createAsyncThunk(
 					isVideo: attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX)
 				}))
 				.sort((a, b) => {
-					if (a.create_time && b.create_time) {
-						return Date.parse(b.create_time) - Date.parse(a.create_time);
+					if (a.createTime && b.createTime) {
+						return Date.parse(b.createTime) - Date.parse(a.createTime);
 					}
 					return 0;
 				}) as AttachmentEntity[];
@@ -181,8 +191,8 @@ export const gallerySlice = createSlice({
 
 			state.galleryByChannel[channelId].attachments.push(...newAttachments);
 			state.galleryByChannel[channelId].attachments.sort((a, b) => {
-				if (a.create_time && b.create_time) {
-					return Date.parse(b.create_time) - Date.parse(a.create_time);
+				if (a.createTime && b.createTime) {
+					return Date.parse(b.createTime) - Date.parse(a.createTime);
 				}
 				return 0;
 			});

@@ -1,4 +1,4 @@
-import { ApiPubKey } from 'mezon-js/api.gen';
+import { ApiPubKey } from 'mezon-js/types';
 import { IMessageWithUser } from '../types';
 import { KeyStore, KeyStoreError } from './keystore';
 import { arrayBufferEqual, concatArrayBuffers, eqSet } from './utils';

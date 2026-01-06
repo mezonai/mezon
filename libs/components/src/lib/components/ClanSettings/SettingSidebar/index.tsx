@@ -78,7 +78,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 	const [openModal, setOpenModal] = useState<boolean>(false);
 	const dispatch = useAppDispatch();
 	const handleLogOut = () => {
-		dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
+		dispatch(authActions.logOut({ deviceId: userProfile?.user?.username || '', platform: 'desktop' }));
 	};
 	const handleCloseModal = () => {
 		setOpenModal(false);

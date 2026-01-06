@@ -50,7 +50,7 @@ const UserSettingProfile = ({ user, showActionOutside = true }: IUserSettingProf
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
 	const currentChannel = useSelector(selectCurrentChannel);
-	const currentChannelId = currentChannel?.channel_id;
+	const currentChannelId = currentChannel?.channelId;
 	const isBannedUser = useSelector((state) => selectBanMemberCurrentClanById(state, currentChannelId, user?.id as string));
 	const isItMe = useMemo(() => userProfile?.user?.id === user?.user?.id, [user?.user?.id, userProfile?.user?.id]);
 	const isThatClanOwner = useMemo(() => currentClanCreatorId === user?.user?.id, [user?.user?.id, currentClanCreatorId]);
@@ -78,7 +78,7 @@ const UserSettingProfile = ({ user, showActionOutside = true }: IUserSettingProf
 
 	useEffect(() => {
 		if (hasAdminPermission && !!currentChannel) {
-			dispatch(usersClanActions.fetchListBanUser({ clanId: currentChannel?.clan_id, channelId: currentChannel?.channel_id }));
+			dispatch(usersClanActions.fetchListBanUser({ clanId: currentChannel?.clanId, channelId: currentChannel?.channelId }));
 		}
 	}, []);
 

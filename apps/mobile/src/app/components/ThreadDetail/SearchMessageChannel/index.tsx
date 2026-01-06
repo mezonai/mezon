@@ -67,11 +67,11 @@ const SearchMessageChannel = ({ route }: ISearchMessageChannelProps) => {
 	}, []);
 
 	const channelId = useMemo(() => {
-		if (optionFilter?.value === 'channel_id' && userMention) {
-			return userMention?.channel_id || userMention?.id;
+		if (optionFilter?.value === 'channelId' && userMention) {
+			return userMention?.channelId || userMention?.id;
 		}
-		return nameChannel ? currentChannel?.channel_id || currentChannel?.id : '0';
-	}, [optionFilter?.value, userMention, nameChannel, currentChannel?.channel_id, currentChannel?.id]);
+		return nameChannel ? currentChannel?.channelId || currentChannel?.id : '0';
+	}, [optionFilter?.value, userMention, nameChannel, currentChannel?.channelId, currentChannel?.id]);
 
 	const shouldSearchMessage = useMemo(() => {
 		return (searchText?.trim()?.length > 0 || (optionFilter && userMention)) && channelId;
@@ -84,22 +84,22 @@ const SearchMessageChannel = ({ route }: ISearchMessageChannelProps) => {
 	const handleSearchMessage = useCallback(() => {
 		try {
 			const filter: SearchFilter[] = [
-				{ field_name: 'channel_id', field_value: channelId },
-				{ field_name: 'clan_id', field_value: currentClanId }
+				{ fieldName: 'channelId', fieldValue: channelId },
+				{ fieldName: 'clanId', fieldValue: currentClanId }
 			];
 
-			if (optionFilter && userMention && optionFilter?.value !== 'channel_id') {
+			if (optionFilter && userMention && optionFilter?.value !== 'channelId') {
 				filter.push({
-					field_name: optionFilter?.value,
-					field_value:
-						optionFilter?.value === 'mention' ? `"user_id":"${userMention?.id}"` : userMention?.subDisplay || userMention?.display
+					fieldName: optionFilter?.value,
+					fieldValue:
+						optionFilter?.value === 'mention' ? `"userId":"${userMention?.id}"` : userMention?.subDisplay || userMention?.display
 				});
 			}
 
 			if (searchText.trim()) {
 				filter.push({
-					field_name: 'content',
-					field_value: searchText.trim()
+					fieldName: 'content',
+					fieldValue: searchText.trim()
 				});
 			}
 

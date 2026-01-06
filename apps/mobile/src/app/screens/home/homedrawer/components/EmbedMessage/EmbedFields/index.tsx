@@ -10,11 +10,11 @@ import { EmbedSelect } from './EmbedSelect';
 import { style } from './styles';
 
 interface EmbedFieldsProps {
-	message_id: string;
+	messageId: string;
 	fields: IFieldEmbed[];
 }
 
-export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
+export const EmbedFields = memo(({ messageId, fields }: EmbedFieldsProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const groupedFields = useMemo(() => {
@@ -47,7 +47,7 @@ export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
 										<View>
 											{fieldItem?.inputs?.type === EMessageComponentType.INPUT && (
 												<EmbedInput
-													messageId={message_id}
+													messageId={messageId}
 													input={fieldItem?.inputs?.component}
 													buttonId={fieldItem?.inputs?.id}
 												/>
@@ -55,7 +55,7 @@ export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
 											{fieldItem?.inputs?.type === EMessageComponentType.SELECT && (
 												<EmbedSelect
 													select={fieldItem?.inputs?.component}
-													messageId={message_id}
+													messageId={messageId}
 													buttonId={fieldItem?.inputs?.id}
 												/>
 											)}
@@ -63,21 +63,21 @@ export const EmbedFields = memo(({ message_id, fields }: EmbedFieldsProps) => {
 											{fieldItem?.inputs?.type === EMessageComponentType.DATEPICKER && (
 												<EmbedDatePicker
 													input={fieldItem?.inputs?.component}
-													messageId={message_id}
+													messageId={messageId}
 													buttonId={fieldItem?.inputs?.id}
 												/>
 											)}
 											{fieldItem?.inputs?.type === EMessageComponentType.RADIO && fieldItem?.inputs?.component?.length && (
 												<EmbedRadioGroup
 													options={fieldItem?.inputs?.component}
-													message_id={message_id}
+													messageId={messageId}
 													idRadio={fieldItem?.inputs?.id}
 													max_options={fieldItem?.inputs?.max_options}
 												/>
 											)}
 											{fieldItem?.inputs?.type === EMessageComponentType.ANIMATION && fieldItem?.inputs?.component && (
 												<EmbedAnimation
-													key={`embed_animation_${message_id}`}
+													key={`embed_animation_${messageId}`}
 													animationOptions={fieldItem?.inputs?.component}
 													themeValue={themeValue}
 												/>

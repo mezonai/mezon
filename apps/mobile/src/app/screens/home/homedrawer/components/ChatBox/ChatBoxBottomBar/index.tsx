@@ -366,7 +366,7 @@ export const ChatBoxBottomBar = memo(
 
 				const words = convertedHashtag?.split?.(mentionRegexSplit);
 
-				const mentionList: Array<{ user_id: string; s: number; e: number }> = [];
+				const mentionList: Array<{ userId: string; s: number; e: number }> = [];
 				const hashtagList: Array<{ channelid: string; s: number; e: number }> = [];
 
 				let mentionBeforeCount = 0;
@@ -384,7 +384,7 @@ export const ChatBoxBottomBar = memo(
 							indexOfLastMention = startindex + 1;
 
 							mentionList.push({
-								user_id: mention.id?.toString() ?? '',
+								userId: mention.id?.toString() ?? '',
 								s: startindex - (mentionBeforeHashtagCount * 2 + (mentionBeforeCount - 1) * 2),
 								e: startindex + word.length - (mentionBeforeHashtagCount * 2 + mentionBeforeCount * 2)
 							});
@@ -408,7 +408,7 @@ export const ChatBoxBottomBar = memo(
 							indexOfLastHashtag = startindex + 1;
 
 							hashtagList?.push?.({
-								channelid: channelInfo?.channel_id?.toString() ?? '',
+								channelid: channelInfo?.channelId?.toString() ?? '',
 								s: startindex - (mentionBeforeCount * 2 + (mentionBeforeHashtagCount - 1) * 2),
 								e: startindex + channelName.length - (mentionBeforeHashtagCount * 2 + mentionBeforeCount * 2)
 							});
@@ -610,8 +610,8 @@ export const ChatBoxBottomBar = memo(
 		useEffect(() => {
 			if (
 				messageActionNeedToResolve !== null &&
-				(messageActionNeedToResolve?.targetMessage?.channel_id === channelId ||
-					messageActionNeedToResolve?.targetMessage?.channel_id === topicChannelId)
+				(messageActionNeedToResolve?.targetMessage?.channelId === channelId ||
+					messageActionNeedToResolve?.targetMessage?.channelId === topicChannelId)
 			) {
 				const { isStillShowKeyboard } = messageActionNeedToResolve;
 				if (!isStillShowKeyboard) {

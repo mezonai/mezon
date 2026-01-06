@@ -40,17 +40,17 @@ export function EventTime({ event, eventStatus, minutes }: IEventTimeProps) {
 			default: {
 				color = themeValue.textStrong;
 				const localOffset = moment().utcOffset();
-				text = timeFormat(moment.utc(event?.start_time).add(localOffset, 'minutes').toISOString(), t, i18n.language as LangCode);
+				text = timeFormat(moment.utc(event?.startTime).add(localOffset, 'minutes').toISOString(), t, i18n.language as LangCode);
 				break;
 			}
 		}
 
 		return { colorStatusEvent: color, textStatusEvent: text };
-	}, [eventStatus, event.start_time, t]);
+	}, [eventStatus, event.startTime, t]);
 
 	return (
 		<View style={styles.inline}>
-			{isSameDay(event.create_time as string) && <MezonBadge title={t('eventDetail.newEvent')} type="success" />}
+			{isSameDay(event.createTime as string) && <MezonBadge title={t('eventDetail.newEvent')} type="success" />}
 			<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_20} width={size.s_20} color={colorStatusEvent} />
 			<Text style={[styles.smallText, { color: colorStatusEvent }]}>{textStatusEvent}</Text>
 		</View>

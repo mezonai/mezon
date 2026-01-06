@@ -11,8 +11,8 @@ type generateMeetTokenPayload = {
 
 const generateMeetTokenCached = async (mezon: MezonValueContext, channelId: string, roomName: string) => {
 	const body = {
-		channel_id: channelId,
-		room_name: roomName
+		channelId: channelId,
+		roomName: roomName
 	};
 	return await mezon.client.generateMeetToken(mezon.session, body);
 };
@@ -34,10 +34,10 @@ export const generateMeetToken = createAsyncThunk('meet/generateMeetToken', asyn
 
 export const handleParticipantVoiceState = createAsyncThunk(
 	'meet/handleParticipantVoiceState',
-	async ({ clan_id, channel_id, display_name, state, room_name }: HandleParticipantMeetStateEvent, thunkAPI) => {
+	async ({ clanId, channelId, displayName, state, roomName }: HandleParticipantMeetStateEvent, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const response = await mezon.socketRef.current?.handleParticipantMeetState(clan_id, channel_id, display_name, state, room_name);
+			const response = await mezon.socketRef.current?.handleParticipantMeetState(clanId, channelId, displayName, state, roomName);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'meet/handleParticipantMeetState');

@@ -3,7 +3,7 @@ import type { IEmoji } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ClanEmoji } from 'mezon-js';
-import type { ApiClanEmojiCreateRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
+import type { ApiClanEmojiCreateRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -61,7 +61,7 @@ export const fetchEmojiCached = async (getState: () => RootState, ensuredMezon: 
 	if (!shouldForceCall) {
 		const emojis = selectCachedEmoji(state);
 		return {
-			emoji_list: emojis,
+			emojiList: emojis,
 			time: Date.now(),
 			fromCache: true
 		};
@@ -73,7 +73,7 @@ export const fetchEmojiCached = async (getState: () => RootState, ensuredMezon: 
 			api_name: 'GetListEmojisByUserId'
 		},
 		() => ensuredMezon.client.getListEmojisByUserId(ensuredMezon.session),
-		'emoji_list'
+		'emojiList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -92,11 +92,11 @@ export const fetchEmoji = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await fetchEmojiCached(thunkAPI.getState as () => RootState, mezon, noCache, clanId);
 
-			if (!response?.emoji_list) {
+			if (!response?.emojiList) {
 				throw new Error('Emoji list is undefined or null');
 			}
 			return {
-				emojis: response.emoji_list,
+				emojis: response.emojiList,
 				fromCache: response?.fromCache
 			};
 		} catch (error) {
@@ -137,10 +137,10 @@ export const updateEmojiSetting = createAsyncThunk('settingClanEmoji/updateEmoji
 
 export const deleteEmojiSetting = createAsyncThunk(
 	'settingClanEmoji/deleteEmoji',
-	async (data: { emoji: ClanEmoji; clan_id: string; label: string }, thunkAPI) => {
+	async (data: { emoji: ClanEmoji; clanId: string; label: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const res = await mezon.client.deleteByIdClanEmoji(mezon.session, data.emoji.id || '', data.clan_id, data.label);
+			const res = await mezon.client.deleteByIdClanEmoji(mezon.session, data.emoji.id || '', data.clanId, data.label);
 			if (res) {
 				return data.emoji;
 			}
@@ -274,8 +274,8 @@ export const selectEmojiByClanId = createSelector(
 	[(state: RootState) => state[EMOJI_SUGGESTION_FEATURE_KEY], (state: RootState, clanId: string) => clanId],
 	(emojisState, clanId) => {
 		const emojis = selectAll(emojisState);
-		return emojis.filter((emoji) => emoji.clan_id === clanId);
+		return emojis.filter((emoji) => emoji.clanId === clanId);
 	}
 );
 
-export const selectEmojiOnSale = createSelector([selectAllEmojiSuggestion], (emojis) => emojis?.filter((emoji) => emoji?.is_for_sale === true));
+export const selectEmojiOnSale = createSelector([selectAllEmojiSuggestion], (emojis) => emojis?.filter((emoji) => emoji?.isForSale === true));

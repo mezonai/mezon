@@ -119,9 +119,9 @@ const StreamingPopup = () => {
 			disconnect();
 			handleChannelClick(
 				currentClanId as string,
-				currentChannel?.channel_id as string,
+				currentChannel?.channelId as string,
 				userProfile?.user?.id as string,
-				currentChannel.channel_id as string,
+				currentChannel.channelId as string,
 				userProfile?.user?.username as string,
 				sessionUser?.token as string
 			);
@@ -129,9 +129,9 @@ const StreamingPopup = () => {
 				videoStreamActions.startStream({
 					clanId: currentClanId || '',
 					clanName: currentClanName || '',
-					streamId: currentChannel.channel_id || '',
-					streamName: currentChannel.channel_label || '',
-					parentId: currentChannel.parent_id || ''
+					streamId: currentChannel.channelId || '',
+					streamName: currentChannel.channelLabel || '',
+					parentId: currentChannel.parentId || ''
 				})
 			);
 			dispatch(appActions.setIsShowChatStream(false));

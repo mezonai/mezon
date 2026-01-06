@@ -106,7 +106,7 @@ const TransferOwnershipScreen = ({ route }: TransferOwnershipScreenProps) => {
 						<MezonAvatar
 							width={size.s_90}
 							height={size.s_90}
-							avatarUrl={currentOwner?.user?.avatar_url}
+							avatarUrl={currentOwner?.user?.avatarUrl}
 							username={currentOwner?.user?.username || ''}
 							isBorderBoxImage={true}
 						/>
@@ -115,7 +115,7 @@ const TransferOwnershipScreen = ({ route }: TransferOwnershipScreenProps) => {
 						<MezonAvatar
 							width={size.s_90}
 							height={size.s_90}
-							avatarUrl={user?.user?.avatar_url}
+							avatarUrl={user?.user?.avatarUrl}
 							username={user?.user?.username || ''}
 							isBorderBoxImage={true}
 						/>

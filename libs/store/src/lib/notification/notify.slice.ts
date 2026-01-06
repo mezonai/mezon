@@ -4,7 +4,7 @@ import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -153,11 +153,11 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.createMessage2Inbox(mezon.session, {
-			message_id: message.id,
+			messageId: message.id,
 			content: JSON.stringify(message.content),
 			avatar: message.avatar,
-			clan_id: message.clan_id,
-			channel_id: message.channel_id,
+			clanId: message.clanId,
+			channelId: message.channelId,
 			attachments: JSON.stringify(message.attachments),
 			mentions: JSON.stringify(message.mentions),
 			reactions: JSON.stringify(message.reactions),
@@ -294,7 +294,7 @@ export const notificationSlice = createSlice({
 							...message,
 							id: noti.id || '',
 							...noti,
-							create_time: new Date().toISOString(),
+							createTime: new Date().toISOString(),
 							content: safeJSONParse(noti.content || ''),
 							category: NotificationCategory.MESSAGES
 						};

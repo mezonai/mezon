@@ -74,9 +74,9 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 		if (mode !== ChannelStreamMode.STREAM_MODE_GROUP && mode !== ChannelStreamMode.STREAM_MODE_DM) {
 			return channels.map((item) => {
 				return {
-					id: item?.channel_id ?? '',
-					display: item?.channel_label ?? '',
-					subText: item?.category_name ?? ''
+					id: item?.channelId ?? '',
+					display: item?.channelLabel ?? '',
+					subText: item?.categoryName ?? ''
 				};
 			});
 		} else {

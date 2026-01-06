@@ -25,8 +25,8 @@ export const ActionMessageSelected = memo(({ messageActionNeedToResolve, onClose
 		switch (type) {
 			case EMessageActionType.EditMessage:
 				onClose();
-				resetCachedMessageActionNeedToResolve(messageActionNeedToResolve?.targetMessage?.channel_id);
-				resetCachedChatbox(messageActionNeedToResolve?.targetMessage?.channel_id);
+				resetCachedMessageActionNeedToResolve(messageActionNeedToResolve?.targetMessage?.channelId);
+				resetCachedChatbox(messageActionNeedToResolve?.targetMessage?.channelId);
 				DeviceEventEmitter.emit(ActionEmitEvent.CLEAR_TEXT_INPUT);
 				break;
 			case EMessageActionType.Reply:

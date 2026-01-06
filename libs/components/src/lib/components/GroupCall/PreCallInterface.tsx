@@ -45,7 +45,7 @@ const PreCallInterface = memo(({ onJoinCall, onCancel, loading, directId }: PreC
 
 	if (!isDmGroup && !isDm) return null;
 
-	const groupName = currentDmGroup?.channel_label || currentDmGroup?.usernames?.join(',') || 'Group Call';
+	const groupName = currentDmGroup?.channelLabel || currentDmGroup?.usernames?.join(',') || 'Group Call';
 
 	return (
 		<div className="flex flex-col w-full h-full bg-black/95 items-center justify-center text-white p-4">
@@ -53,16 +53,16 @@ const PreCallInterface = memo(({ onJoinCall, onCancel, loading, directId }: PreC
 				<CallStatus
 					isConnecting={isConnecting || loading}
 					isConnected={false}
-					participantCount={currentDmGroup?.user_ids?.length || 0}
+					participantCount={currentDmGroup?.userIds?.length || 0}
 					groupName={groupName}
-					groupAvatar={currentDmGroup.channel_avatar}
+					groupAvatar={currentDmGroup.channelAvatar}
 				/>
 
 				<CallControls onCancel={handleCancel} loading={loading} isVideo={isVideoCall} />
 
 				{isDmGroup && (
 					<div className="text-center text-gray-400">
-						<p>{currentDmGroup?.user_ids?.length || 0} members will be notified</p>
+						<p>{currentDmGroup?.userIds?.length || 0} members will be notified</p>
 					</div>
 				)}
 			</div>

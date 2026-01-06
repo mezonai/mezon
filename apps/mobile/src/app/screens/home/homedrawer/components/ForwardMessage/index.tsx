@@ -80,8 +80,8 @@ const ForwardMessageScreen = ({ route }) => {
 		return {
 			channelId: dm?.id,
 			type: dm?.type,
-			avatar: dm?.type === ChannelType.CHANNEL_TYPE_DM ? dm?.avatars?.[0] : dm?.channel_avatar,
-			name: dm?.channel_label,
+			avatar: dm?.type === ChannelType.CHANNEL_TYPE_DM ? dm?.avatars?.[0] : dm?.channelAvatar,
+			name: dm?.channelLabel,
 			clanId: '',
 			clanName: '',
 			isChannelPublic: false
@@ -93,10 +93,10 @@ const ForwardMessageScreen = ({ route }) => {
 			channelId: channel?.id,
 			type: channel?.type,
 			avatar: '#',
-			name: channel?.channel_label,
-			clanId: channel?.clan_id,
-			clanName: channel?.clan_name,
-			isChannelPublic: !channel?.channel_private || false
+			name: channel?.channelLabel,
+			clanId: channel?.clanId,
+			clanName: channel?.clanName,
+			isChannelPublic: !channel?.channelPrivate || false
 		};
 	};
 
@@ -116,9 +116,9 @@ const ForwardMessageScreen = ({ route }) => {
 
 			if (!messageEntity) break;
 
-			const differentTime = (messageEntity?.create_time_seconds - previousMessageEntity?.create_time_seconds) * 1000;
+			const differentTime = (messageEntity?.createTimeSeconds - previousMessageEntity?.createTimeSeconds) * 1000;
 
-			if (differentTime <= FORWARD_MESSAGE_TIME && messageEntity?.sender_id === selectedMessage?.user?.id) {
+			if (differentTime <= FORWARD_MESSAGE_TIME && messageEntity?.senderId === selectedMessage?.user?.id) {
 				messages.push(messageEntity);
 				index--;
 			} else {
@@ -155,20 +155,18 @@ const ForwardMessageScreen = ({ route }) => {
 		const listBlockUsers = selectBlockedUsersForMessage(store.getState() as any);
 		const listDMForward = dmGroupChatList
 			?.filter(
-				(dm) =>
-					dm?.type === ChannelType.CHANNEL_TYPE_DM && dm?.channel_label && !listBlockUsers?.some((user) => user?.id === dm?.user_ids?.[0])
+				(dm) => dm?.type === ChannelType.CHANNEL_TYPE_DM && dm?.channelLabel && !listBlockUsers?.some((user) => user?.id === dm?.userIds?.[0])
 			)
 			.map(mapDirectMessageToForwardObject);
 
 		const listGroupForward = dmGroupChatList
-			?.filter((groupChat) => groupChat?.type === ChannelType.CHANNEL_TYPE_GROUP && groupChat?.channel_label)
+			?.filter((groupChat) => groupChat?.type === ChannelType.CHANNEL_TYPE_GROUP && groupChat?.channelLabel)
 			.map(mapDirectMessageToForwardObject);
 
 		const listTextChannel = listChannels
 			?.filter(
 				(channel) =>
-					(channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || channel?.type === ChannelType.CHANNEL_TYPE_THREAD) &&
-					channel?.channel_label
+					(channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || channel?.type === ChannelType.CHANNEL_TYPE_THREAD) && channel?.channelLabel
 			)
 			.map(mapChannelToForwardObject);
 

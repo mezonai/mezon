@@ -45,7 +45,7 @@ const SettingUserClanProfileCard = (props: propProfilesform) => {
 
 			<div style={{ backgroundColor: color }} className="h-[105px] rounded-tr-[10px] rounded-tl-[10px] "></div>
 			<AvatarProfile
-				avatar={profiles.urlImage || userProfile?.user?.avatar_url || ''}
+				avatar={profiles.urlImage || userProfile?.user?.avatarUrl || ''}
 				username={userProfile?.user?.username}
 				userToDisplay={true}
 				customStatus={userStatusProfile}
@@ -59,7 +59,7 @@ const SettingUserClanProfileCard = (props: propProfilesform) => {
 					<div className="w-[300px]">
 						<p
 							className="font-bold tracking-wider text-xl one-line"
-							data-e2e={generateE2eId('user_setting.profile.user_profile.preview.display_name')}
+							data-e2e={generateE2eId('user_setting.profile.user_profile.preview.displayName')}
 						>
 							{profiles.displayName || currentDisplayName || userProfile?.user?.username}
 						</p>

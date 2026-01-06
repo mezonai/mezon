@@ -5,7 +5,7 @@ import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { LIMIT_SIZE_UPLOAD_IMG, MAX_CLAN_ITEM_SLOTS } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { Buffer as BufferMobile } from 'buffer';
-import type { ApiClanEmojiCreateRequest } from 'mezon-js/api.gen';
+import type { ApiClanEmojiCreateRequest } from 'mezon-js/types';
 import { useCallback, useLayoutEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Platform, Pressable, Text, View } from 'react-native';
@@ -146,10 +146,10 @@ export function ClanEmojiSetting({ navigation }: MenuClanScreenProps<ClanSetting
 			const request: ApiClanEmojiCreateRequest = {
 				id,
 				category: 'Custom',
-				clan_id: currentClanId,
+				clanId: currentClanId,
 				shortname,
 				source: url,
-				is_for_sale: isForSale
+				isForSale: isForSale
 			};
 
 			if (isForSale) {

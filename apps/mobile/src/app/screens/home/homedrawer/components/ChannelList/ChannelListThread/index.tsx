@@ -20,7 +20,7 @@ const ListChannelThread = React.memo(({ threads, onPress, onLongPress }: IListCh
 		<View style={styles.containerThreadList}>
 			{threads.map((thread, index) => {
 				const isFirstThread = threads.indexOf(thread) === 0;
-				const isActive = currentChanelId === thread.channel_id;
+				const isActive = currentChanelId === thread.channelId;
 
 				return (
 					<ChannelListThreadItem
