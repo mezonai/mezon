@@ -36,7 +36,7 @@ export const UnbanUserChannelModal = memo((props: IBuzzMessageModalProps) => {
 				<Text style={styles.modalTitle}>{t('ban.unbanTitle')}</Text>
 				<View>
 					<Text style={[styles.title, { marginBottom: size.s_20 }]}>
-						{t('ban.unBanDescription', { userName: user?.clan_nick || user.user?.display_name || user.user?.username })}
+						{t('ban.unBanDescription', { userName: user?.clanNick || user.user?.displayName || user.user?.username })}
 					</Text>
 				</View>
 				<TouchableOpacity onPress={onUnbanUser} style={styles.yesButton}>

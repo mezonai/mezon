@@ -33,7 +33,7 @@ import type {
 } from '@mezon/utils';
 import { THREAD_ARCHIVE_DURATION_SECONDS, ThreadStatus, checkIsThread, filterEmptyArrays, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import type { MutableRefObject } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
@@ -109,14 +109,14 @@ export const ChatMessageSending = memo(
 			channelId,
 			mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0
 		});
-		const parentChannelMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, currentChannel?.parent_id || ''));
+		const parentChannelMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, currentChannel?.parentId || ''));
 		const userId = useMemo(() => {
 			return load(STORAGE_MY_USER_ID);
 		}, []);
 		const isCreateTopic = useSelector(selectIsShowCreateTopic);
 		const channelOrDirect =
 			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel : currentDmGroup;
-		const isPublic = !channelOrDirect?.channel_private;
+		const isPublic = !channelOrDirect?.channelPrivate;
 		const { editSendMessage, sendMessage } = useChatSending({
 			mode,
 			channelOrDirect,
@@ -161,7 +161,7 @@ export const ChatMessageSending = memo(
 		const getUsersNotExistingInThread = (mentions) => {
 			const rolesInClan = selectAllRolesClan(store.getState() as any);
 			const usersNotExistingInThread = uniqueUsers(mentions, parentChannelMemberIds, rolesInClan, [
-				messageActionNeedToResolve?.targetMessage?.sender_id || ''
+				messageActionNeedToResolve?.targetMessage?.senderId || ''
 			]) as string[];
 
 			return usersNotExistingInThread || [];
@@ -170,7 +170,7 @@ export const ChatMessageSending = memo(
 		const handleThreadActivation = useCallback(
 			async (channel: ChannelsEntity | null | undefined) => {
 				const currentTime = Math.floor(Date.now() / 1000);
-				const lastMessageTimestamp = channel.last_sent_message?.timestamp_seconds;
+				const lastMessageTimestamp = channel.lastSentMessage?.timestampSeconds;
 				const isArchived = lastMessageTimestamp && currentTime - Number(lastMessageTimestamp) > THREAD_ARCHIVE_DURATION_SECONDS;
 				const userIds = selectMemberIdsByChannelId(store.getState(), channel?.id as string);
 				const needsJoin = !userId ? false : !userIds.includes(userId);
@@ -178,8 +178,8 @@ export const ChatMessageSending = memo(
 				if (isArchived || (needsJoin && joinningToThread)) {
 					await dispatch(
 						threadsActions.writeActiveArchivedThread({
-							clanId: channel.clan_id ?? '',
-							channelId: channel.channel_id ?? ''
+							clanId: channel.clanId ?? '',
+							channelId: channel.channelId ?? ''
 						})
 					);
 				}
@@ -209,17 +209,17 @@ export const ChatMessageSending = memo(
 			const simplifiedMentionList = !mentionsOnMessage?.current
 				? []
 				: mentionsOnMessage?.current?.map?.((mention) => {
-						const isRole = doesIdRoleExist(mention?.user_id ?? '', roleList ?? []);
+						const isRole = doesIdRoleExist(mention?.userId ?? '', roleList ?? []);
 						if (isRole) {
-							const role = roleList?.find((role) => role.roleId === mention.user_id);
+							const role = roleList?.find((role) => role.roleId === mention.userId);
 							return {
-								role_id: role?.roleId,
+								roleId: role?.roleId,
 								s: mention.s,
 								e: mention.e
 							};
 						} else {
 							return {
-								user_id: mention.user_id,
+								userId: mention.userId,
 								s: mention.s,
 								e: mention.e
 							};
@@ -262,22 +262,22 @@ export const ChatMessageSending = memo(
 				const profileInTheClan = selectMemberClanByUserId(store.getState(), userProfile?.user?.id ?? '');
 				const priorityAvatar =
 					mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
-						? profileInTheClan?.clan_avatar
-							? profileInTheClan?.clan_avatar
-							: userProfile?.user?.avatar_url
-						: userProfile?.user?.avatar_url;
+						? profileInTheClan?.clanAvatar
+							? profileInTheClan?.clanAvatar
+							: userProfile?.user?.avatarUrl
+						: userProfile?.user?.avatarUrl;
 
-				const priorityDisplayName = userProfile?.user?.display_name ? userProfile?.user?.display_name : userProfile?.user?.username;
+				const priorityDisplayName = userProfile?.user?.displayName ? userProfile?.user?.displayName : userProfile?.user?.username;
 				const priorityNameToShow =
 					mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
-						? profileInTheClan?.clan_nick
-							? profileInTheClan?.clan_nick
+						? profileInTheClan?.clanNick
+							? profileInTheClan?.clanNick
 							: priorityDisplayName
 						: priorityDisplayName;
 				const payloadEphemeral = {
 					receiverId: ephemeralTargetUserId,
 					channelId: currentTopicId || channelId,
-					clanId: currentChannel?.clan_id || '',
+					clanId: currentChannel?.clanId || '',
 					mode,
 					isPublic,
 					content: payloadSendMessage,
@@ -297,19 +297,19 @@ export const ChatMessageSending = memo(
 			const reference = targetMessage
 				? ([
 						{
-							message_id: '',
-							message_ref_id: targetMessage.id,
-							ref_type: 0,
-							message_sender_id: targetMessage?.sender_id,
-							message_sender_username: targetMessage?.username,
-							mesages_sender_avatar: targetMessage.clan_avatar ? targetMessage.clan_avatar : targetMessage.avatar,
-							message_sender_clan_nick: targetMessage?.clan_nick,
-							message_sender_display_name: targetMessage?.display_name,
+							messageId: '',
+							messageRefId: targetMessage.id,
+							refType: 0,
+							messageSenderId: targetMessage?.senderId,
+							messageSenderUsername: targetMessage?.username,
+							mesagesSenderAvatar: targetMessage.clanAvatar ? targetMessage.clanAvatar : targetMessage.avatar,
+							messageSenderClanNick: targetMessage?.clanNick,
+							messageSenderDisplayName: targetMessage?.displayName,
 							content: JSON.stringify(targetMessage.content),
-							has_attachment: Boolean(targetMessage?.attachments?.length),
-							channel_id: targetMessage.channel_id ?? '',
+							hasAttachment: Boolean(targetMessage?.attachments?.length),
+							channelId: targetMessage.channelId ?? '',
 							mode: targetMessage.mode ?? 0,
-							channel_label: targetMessage.channel_label
+							channelLabel: targetMessage.channelLabel
 						}
 					] as Array<ApiMessageRef>)
 				: undefined;
@@ -339,7 +339,7 @@ export const ChatMessageSending = memo(
 							filteredMentionList || []
 						);
 					} else {
-						const isMentionEveryOne = filteredMentionList?.some?.((mention) => mention.user_id === ID_MENTION_HERE);
+						const isMentionEveryOne = filteredMentionList?.some?.((mention) => mention.userId === ID_MENTION_HERE);
 						await sendMessage(
 							filterEmptyArrays(payloadSendMessage),
 							filteredMentionList || [],

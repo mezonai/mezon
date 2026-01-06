@@ -33,7 +33,7 @@ const ChannelSeen = memo(
 				currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING
 					? ChannelStreamMode.STREAM_MODE_CHANNEL
 					: ChannelStreamMode.STREAM_MODE_THREAD;
-			markAsReadSeen(lastMessage, mode, currentChannel?.count_mess_unread || 0);
+			markAsReadSeen(lastMessage, mode, currentChannel?.countMessUnread || 0);
 		}, [lastMessage, currentChannel, markAsReadSeen]);
 
 		useEffect(() => {
@@ -41,7 +41,7 @@ const ChannelSeen = memo(
 				const channelWithActive = { ...currentChannel, active: 1 };
 				dispatch(
 					channelsActions.upsertOne({
-						clanId: currentChannel?.clan_id || '',
+						clanId: currentChannel?.clanId || '',
 						channel: channelWithActive as ChannelsEntity
 					})
 				);
@@ -75,20 +75,20 @@ function DrawerListener({ channelId }: { channelId: string }) {
 		}
 		await dispatch(
 			channelMembersActions.fetchChannelMembers({
-				clanId: currentChannel.clan_id || '',
-				channelId: (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel.parent_id : currentChannel.channel_id) || '',
+				clanId: currentChannel.clanId || '',
+				channelId: (currentChannel.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel.parentId : currentChannel.channelId) || '',
 				channelType: ChannelType.CHANNEL_TYPE_CHANNEL
 			})
 		);
-	}, [currentChannel?.clan_id, currentChannel?.type, currentChannel?.parent_id, currentChannel?.channel_id, dispatch]);
+	}, [currentChannel?.clanId, currentChannel?.type, currentChannel?.parentId, currentChannel?.channelId, dispatch]);
 
 	useFocusEffect(
 		useCallback(() => {
-			if (prevChannelIdRef.current !== currentChannel?.channel_id) {
+			if (prevChannelIdRef.current !== currentChannel?.channelId) {
 				fetchMemberChannel();
 			}
-			prevChannelIdRef.current = currentChannel?.channel_id || '';
-		}, [currentChannel?.channel_id, fetchMemberChannel])
+			prevChannelIdRef.current = currentChannel?.channelId || '';
+		}, [currentChannel?.channelId, fetchMemberChannel])
 	);
 
 	const onRemoveUserChannel = useCallback(
@@ -102,7 +102,7 @@ function DrawerListener({ channelId }: { channelId: string }) {
 			) {
 				if (channelType === ChannelType.CHANNEL_TYPE_THREAD) {
 					await dispatch(
-						channelsActions.setCurrentChannelId({ clanId: currentChannel?.clan_id || '', channelId: currentChannel?.parent_id || '' })
+						channelsActions.setCurrentChannelId({ clanId: currentChannel?.clanId || '', channelId: currentChannel?.parentId || '' })
 					);
 					if (isTabletLandscape) {
 						navigation.navigate(APP_SCREEN.HOME);
@@ -124,7 +124,7 @@ function DrawerListener({ channelId }: { channelId: string }) {
 					};
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 					if (!isRemoveClan) {
-						dispatch(channelsActions.setCurrentChannelId({ clanId: currentChannel.clan_id || '', channelId: '' }));
+						dispatch(channelsActions.setCurrentChannelId({ clanId: currentChannel.clanId || '', channelId: '' }));
 					}
 					navigation.navigate(APP_SCREEN.BOTTOM_BAR);
 				}

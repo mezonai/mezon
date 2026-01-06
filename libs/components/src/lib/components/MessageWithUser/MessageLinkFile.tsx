@@ -5,7 +5,7 @@ import type { IMessageWithUser } from '@mezon/utils';
 import { DOWNLOAD_FILE, EFailAttachment, EMimeTypes, electronBridge } from '@mezon/utils';
 import isElectron from 'is-electron';
 import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import { Suspense, lazy, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -65,7 +65,7 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 		// window.open(attachmentData.);
 		const store = getStore();
 		const appState = store.getState() as RootState;
-		const isBanned = selectBanMeInChannel(appState, message?.channel_id);
+		const isBanned = selectBanMeInChannel(appState, message?.channelId);
 
 		if (isBanned) {
 			return;
@@ -109,7 +109,7 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 
 	const appearanceTheme = useSelector(selectTheme);
 	const currentUserId = useSelector(selectCurrentUserId);
-	const isOwner = message?.sender_id === currentUserId;
+	const isOwner = message?.senderId === currentUserId;
 
 	const createPDFHeader = (closePopup: () => void, maximizeToggle: () => void) => {
 		return isPDF ? <PDFHeader filename={attachmentData.filename || 'Document'} onClose={closePopup} onMaximize={maximizeToggle} /> : undefined;

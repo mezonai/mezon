@@ -1,6 +1,6 @@
 import { load, save } from '@mezon/mobile-components';
 import { Client } from 'mezon-js';
-import type { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/api.gen';
+import type { ApiClanDiscover, ApiClanDiscoverRequest } from 'mezon-js/types';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 export const PAGINATION = {
@@ -54,7 +54,7 @@ export const DiscoverMobileProvider: React.FC<{ children: React.ReactNode }> = (
 
 		const lowerSearchTerm = searchTerm.toLowerCase().trim();
 		return allClans.filter(
-			(clan) => clan.clan_name?.toLowerCase().includes(lowerSearchTerm) || clan.description?.toLowerCase().includes(lowerSearchTerm)
+			(clan) => clan.clanName?.toLowerCase().includes(lowerSearchTerm) || clan.description?.toLowerCase().includes(lowerSearchTerm)
 		);
 	}, [allClans, searchTerm]);
 
@@ -74,8 +74,8 @@ export const DiscoverMobileProvider: React.FC<{ children: React.ReactNode }> = (
 			);
 
 			const request: ApiClanDiscoverRequest = {
-				page_number: page,
-				item_per_page: PAGINATION.ITEMS_PER_PAGE
+				pageNumber: page,
+				itemPerPage: PAGINATION.ITEMS_PER_PAGE
 			};
 
 			const response = await mezon.listClanDiscover(
@@ -83,17 +83,17 @@ export const DiscoverMobileProvider: React.FC<{ children: React.ReactNode }> = (
 				request
 			);
 
-			const newClans = response?.clan_discover || [];
-			const pageCount = response?.page_count || 1;
-			const pageNumber = response?.page_number || page;
+			const newClans = response?.clanDiscover || [];
+			const pageCount = response?.pageCount || 1;
+			const pageNumber = response?.pageNumber || page;
 
 			setTotalPages(pageCount);
 			setCurrentPage(pageNumber);
 
 			if (isLoadMore) {
 				setAllClans((prevClans) => {
-					const existingIds = new Set(prevClans.map((clan) => clan.clan_id));
-					const uniqueNewClans = newClans.filter((clan) => !existingIds.has(clan.clan_id));
+					const existingIds = new Set(prevClans.map((clan) => clan.clanId));
+					const uniqueNewClans = newClans.filter((clan) => !existingIds.has(clan.clanId));
 					return [...prevClans, ...uniqueNewClans];
 				});
 			} else {

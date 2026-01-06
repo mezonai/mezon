@@ -30,8 +30,8 @@ const Canvas = memo(({ channelId, clanId }: { channelId: string; clanId: string 
 	const fetchCanvas = async () => {
 		if (channelId && clanId) {
 			const body = {
-				channel_id: channelId,
-				clan_id: clanId,
+				channelId: channelId,
+				clanId: clanId,
 				noCache: false
 			};
 			await dispatch(canvasAPIActions.getChannelCanvasList(body));
@@ -53,8 +53,8 @@ const Canvas = memo(({ channelId, clanId }: { channelId: string; clanId: string 
 		if (canvasId && channelId && clanId) {
 			const body = {
 				id: canvasId,
-				channel_id: channelId,
-				clan_id: clanId
+				channelId: channelId,
+				clanId: clanId
 			};
 			await dispatch(canvasAPIActions.deleteCanvas(body));
 			dispatch(canvasAPIActions.removeOneCanvas({ channelId, canvasId }));
@@ -87,7 +87,7 @@ const Canvas = memo(({ channelId, clanId }: { channelId: string; clanId: string 
 				onPressDelete={handleDeleteCanvas}
 				onCopyLink={handleCopyLink}
 				currentUser={userProfile}
-				creatorIdChannel={item?.creator_id}
+				creatorIdChannel={item?.creatorId}
 			/>
 		);
 	};

@@ -16,7 +16,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { MessageCrypt } from '@mezon/utils';
-import type { ApiAccount, ApiPubKey } from 'mezon-js/api.gen';
+import type { ApiAccount, ApiPubKey } from 'mezon-js/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -245,10 +245,10 @@ export const ModalConfirmPin = ({
 	const handleEnableE2ee = useCallback(async (directId?: string, e2ee?: number) => {
 		if (!directId) return;
 		const updateChannel: IUpdateChannelRequest = {
-			channel_id: directId,
-			channel_label: '',
-			category_id: currentDmGroup.category_id,
-			app_id: currentDmGroup.app_id || '',
+			channelId: directId,
+			channelLabel: '',
+			categoryId: currentDmGroup.categoryId,
+			appId: currentDmGroup.appId || '',
 			e2ee: !currentDmGroup.e2ee ? 1 : 0
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));
@@ -258,8 +258,8 @@ export const ModalConfirmPin = ({
 		const otpCode = otp.join('');
 		const pinCode = pin.join('');
 		try {
-			if (userProfile?.encrypt_private_key) {
-				await MessageCrypt.decryptPrivateKeyWithPIN(userProfile?.encrypt_private_key, otpCode, userProfile?.user?.id as string);
+			if (userProfile?.encryptPrivateKey) {
+				await MessageCrypt.decryptPrivateKeyWithPIN(userProfile?.encryptPrivateKey, otpCode, userProfile?.user?.id as string);
 				onClose(true);
 				clearApiCallTracker();
 				dispatch(e2eeActions.setHasKey(true));
@@ -274,11 +274,11 @@ export const ModalConfirmPin = ({
 					const encryptWithPIN = await MessageCrypt.encryptPrivateKeyWithPIN(userProfile?.user?.id as string, otpCode);
 					dispatch(
 						clansActions.updateUser({
-							avatar_url: userProfile?.user?.avatar_url as string,
-							display_name: userProfile?.user?.display_name as string,
-							about_me: userProfile?.user?.about_me as string,
+							avatarUrl: userProfile?.user?.avatarUrl as string,
+							displayName: userProfile?.user?.displayName as string,
+							aboutMe: userProfile?.user?.aboutMe as string,
 							dob: userProfile?.user?.dob as string,
-							encrypt_private_key: encryptWithPIN,
+							encryptPrivateKey: encryptWithPIN,
 							logo: userProfile?.logo || ''
 						})
 					);
@@ -314,9 +314,9 @@ export const ModalConfirmPin = ({
 		>
 			<div className="flex flex-col items-center max-w-sm mx-auto bg-white shadow-md rounded-md relative">
 				<div
-					className={`w-full dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black flex ${userProfile?.encrypt_private_key ? 'justify-end' : 'justify-between'} items-center p-4 rounded-t`}
+					className={`w-full dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black flex ${userProfile?.encryptPrivateKey ? 'justify-end' : 'justify-between'} items-center p-4 rounded-t`}
 				>
-					{!userProfile?.encrypt_private_key && (
+					{!userProfile?.encryptPrivateKey && (
 						<button className="text-5xl leading-3 dark:hover:text-white hover:text-black" onClick={onBack}>
 							<Icons.LeftArrowIcon className="w-full" />
 						</button>
@@ -327,7 +327,7 @@ export const ModalConfirmPin = ({
 				</div>
 				<div className="flex flex-col items-center gap-2 px-4 pb-4 dark:bg-[#1E1F22] bg-bgLightModeSecond dark:text-white text-black rounded-b">
 					<h2 className="text-lg font-semibold">Confirm Your PIN</h2>
-					{!userProfile?.encrypt_private_key ? (
+					{!userProfile?.encryptPrivateKey ? (
 						<p className="text-gray-600 text-center">Make it memorable. You'll need it when you switch to a new device</p>
 					) : (
 						<p className="text-gray-600 text-center">Enter pin to decrypt conversation</p>
@@ -385,7 +385,7 @@ const MultiStepModalE2ee = ({ onClose }: ModalSendCodeProps) => {
 	};
 
 	useEffect(() => {
-		if (userProfile?.encrypt_private_key) {
+		if (userProfile?.encryptPrivateKey) {
 			setStep(3);
 		} else {
 			if (!hasKeyE2ee) {
@@ -403,8 +403,8 @@ const MultiStepModalE2ee = ({ onClose }: ModalSendCodeProps) => {
 
 	return (
 		<>
-			{step === 1 && !userProfile?.encrypt_private_key && <ModalIntro onNext={handleNext} onClose={handleClose} />}
-			{step === 2 && !userProfile?.encrypt_private_key && (
+			{step === 1 && !userProfile?.encryptPrivateKey && <ModalIntro onNext={handleNext} onClose={handleClose} />}
+			{step === 2 && !userProfile?.encryptPrivateKey && (
 				<ModalCreatePin onNext={handleNext} onBack={handleBack} onClose={handleClose} setPin={setPin} />
 			)}
 			{step === 3 && <ModalConfirmPin onClose={handleClose} onBack={handleBack} pin={pin} userProfile={userProfile} />}

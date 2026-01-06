@@ -3,9 +3,9 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelsEntity, RolesClanEntity, RootState } from '@mezon/store-mobile';
 import {
-	directActions,
 	DMCallActions,
 	EStateFriend,
+	directActions,
 	friendsActions,
 	getStore,
 	selectAllAccount,
@@ -98,9 +98,7 @@ const UserProfile = React.memo(
 		const { t } = useTranslation(['userProfile', 'friends']);
 		const userById = useAppSelector((state) => selectMemberClanByUserId(state, userId || user?.id));
 		const rolesClan: RolesClanEntity[] = useSelector(selectAllRolesClan);
-		const { color } = useMixImageColor(
-			messageAvatar || userById?.clan_avatar || userById?.user?.avatar_url || userProfile?.user?.avatar_url || ''
-		);
+		const { color } = useMixImageColor(messageAvatar || userById?.clanAvatar || userById?.user?.avatarUrl || userProfile?.user?.avatarUrl || '');
 		const navigation = useNavigation<any>();
 		const { createDirectMessageWithUser } = useDirect();
 		const listDM = useSelector(selectDirectsOpenlist);
@@ -123,9 +121,9 @@ const UserProfile = React.memo(
 			}
 			return {
 				status: userProfile?.user?.status || EUserStatus.ONLINE,
-				user_status: userProfile?.user?.user_status
+				userStatus: userProfile?.user?.userStatus
 			};
-		}, [getStatus, user?.id, userId, userProfile?.user?.id, userProfile?.user?.status, userProfile?.user?.user_status]);
+		}, [getStatus, user?.id, userId, userProfile?.user?.id, userProfile?.user?.status, userProfile?.user?.userStatus]);
 
 		const isDM = useMemo(() => {
 			return currentChannel?.type === ChannelType.CHANNEL_TYPE_DM || currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP;
@@ -208,10 +206,10 @@ const UserProfile = React.memo(
 		}, [infoFriend?.state]);
 
 		const userRolesClan = useMemo(() => {
-			return userById?.role_id
-				? rolesClan?.filter?.((role) => userById?.role_id?.includes(role.id) && role?.slug !== `everyone-${role?.clan_id}`)
+			return userById?.roleId
+				? rolesClan?.filter?.((role) => userById?.roleId?.includes(role.id) && role?.slug !== `everyone-${role?.clanId}`)
 				: [];
-		}, [userById?.role_id, rolesClan]);
+		}, [userById?.roleId, rolesClan]);
 
 		const isCheckOwner = useMemo(() => {
 			const userId = userById?.user?.id;
@@ -226,7 +224,7 @@ const UserProfile = React.memo(
 				});
 				if (!isCheckOwner) {
 					const directMessage = listDM?.find?.((dm) => {
-						const userIds = dm?.user_ids;
+						const userIds = dm?.userIds;
 						const isDM = dm.type === ChannelType.CHANNEL_TYPE_DM;
 						return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === userId && isDM;
 					});
@@ -242,18 +240,18 @@ const UserProfile = React.memo(
 				}
 				const response = await createDirectMessageWithUser(
 					userId,
-					user?.user?.display_name || user?.display_name || userById?.user?.display_name,
+					user?.user?.displayName || user?.displayName || userById?.user?.displayName,
 					user?.user?.username || user?.username || userById?.user?.username,
-					user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url
+					user?.avatarUrl || user?.user?.avatarUrl || userById?.user?.avatarUrl
 				);
 
-				if (response?.channel_id) {
+				if (response?.channelId) {
 					await checkNotificationPermissionAndNavigate(() => {
 						if (isTabletLandscape) {
-							dispatch(directActions.setDmGroupCurrentId(response?.channel_id || ''));
+							dispatch(directActions.setDmGroupCurrentId(response?.channelId || ''));
 							navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 						} else {
-							navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
+							navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channelId });
 						}
 					});
 				} else {
@@ -274,14 +272,14 @@ const UserProfile = React.memo(
 				listDM,
 				navigation,
 				t,
-				user?.avatar_url,
-				user?.display_name,
-				user?.user?.avatar_url,
-				user?.user?.display_name,
+				user?.avatarUrl,
+				user?.displayName,
+				user?.user?.avatarUrl,
+				user?.user?.displayName,
 				user?.user?.username,
 				user?.username,
-				userById?.user?.avatar_url,
-				userById?.user?.display_name,
+				userById?.user?.avatarUrl,
+				userById?.user?.displayName,
 				userById?.user?.username
 			]
 		);
@@ -301,14 +299,14 @@ const UserProfile = React.memo(
 					isShow: false
 				});
 				const directMessage = listDM?.find?.((dm) => {
-					const userIds = dm?.user_ids;
+					const userIds = dm?.userIds;
 					return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === userId;
 				});
 				if (directMessage?.id) {
 					const params = {
 						receiverId: userId,
-						receiverAvatar: user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url,
-						receiverName: user?.user?.display_name || user?.display_name || userById?.user?.display_name,
+						receiverAvatar: user?.avatarUrl || user?.user?.avatarUrl || userById?.user?.avatarUrl,
+						receiverName: user?.user?.displayName || user?.displayName || userById?.user?.displayName,
 						directMessageId: directMessage?.id
 					};
 					const data = {
@@ -319,17 +317,17 @@ const UserProfile = React.memo(
 				}
 				const response = await createDirectMessageWithUser(
 					userId,
-					user?.user?.display_name || user?.display_name || userById?.user?.display_name,
+					user?.user?.displayName || user?.displayName || userById?.user?.displayName,
 					user?.user?.username || user?.username || userById?.user?.username,
-					user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url
+					user?.avatarUrl || user?.user?.avatarUrl || userById?.user?.avatarUrl
 				);
-				if (response?.channel_id) {
+				if (response?.channelId) {
 					dispatch(DMCallActions.removeAll());
 					const params = {
 						receiverId: userId,
-						receiverAvatar: user?.avatar_url || user?.user?.avatar_url || userById?.user?.avatar_url,
-						receiverName: user?.user?.display_name || user?.display_name || userById?.user?.display_name,
-						directMessageId: response?.channel_id
+						receiverAvatar: user?.avatarUrl || user?.user?.avatarUrl || userById?.user?.avatarUrl,
+						receiverName: user?.user?.displayName || user?.displayName || userById?.user?.displayName,
+						directMessageId: response?.channelId
 					};
 					const data = {
 						children: <DirectMessageCallMain route={{ params }} />
@@ -341,14 +339,14 @@ const UserProfile = React.memo(
 				createDirectMessageWithUser,
 				dispatch,
 				listDM,
-				user?.avatar_url,
-				user?.display_name,
-				user?.user?.avatar_url,
-				user?.user?.display_name,
+				user?.avatarUrl,
+				user?.displayName,
+				user?.user?.avatarUrl,
+				user?.user?.displayName,
 				user?.user?.username,
 				user?.username,
-				userById?.user?.avatar_url,
-				userById?.user?.display_name,
+				userById?.user?.avatarUrl,
+				userById?.user?.displayName,
 				userById?.user?.username
 			]
 		);
@@ -409,22 +407,22 @@ const UserProfile = React.memo(
 			dispatch(friendsActions.sendRequestDeleteFriend(body));
 		};
 		const isChannelOwner = useMemo(() => {
-			if (dmChannel?.creator_id) {
-				return dmChannel?.creator_id === userProfile?.user?.id;
+			if (dmChannel?.creatorId) {
+				return dmChannel?.creatorId === userProfile?.user?.id;
 			}
-			return currentChannel?.creator_id === userProfile?.user?.id;
-		}, [currentChannel?.creator_id, dmChannel?.creator_id, userProfile?.user?.id]);
+			return currentChannel?.creatorId === userProfile?.user?.id;
+		}, [currentChannel?.creatorId, dmChannel?.creatorId, userProfile?.user?.id]);
 
 		const isShowUserContent = useMemo(() => {
-			return !!userById?.user?.about_me || (showRole && userRolesClan?.length) || showAction || (isDMGroup && isChannelOwner && !isCheckOwner);
-		}, [userById?.user?.about_me, showAction, showRole, userRolesClan, isDMGroup, isCheckOwner, isChannelOwner]);
+			return !!userById?.user?.aboutMe || (showRole && userRolesClan?.length) || showAction || (isDMGroup && isChannelOwner && !isCheckOwner);
+		}, [userById?.user?.aboutMe, showAction, showRole, userRolesClan, isDMGroup, isCheckOwner, isChannelOwner]);
 
 		const handleTransferFunds = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
 				isShow: false
 			});
 			const payload = JSON.stringify({
-				receiver_id: userId ? userId : user?.id,
+				receiverId: userId ? userId : user?.id,
 				receiver_name: user?.user?.username || userById?.user?.username || user?.username,
 				amount: 10000,
 				note: t('userAction.transferFunds'),
@@ -454,7 +452,7 @@ const UserProfile = React.memo(
 
 		return (
 			<View style={styles.wrapper}>
-				<View style={[styles.backdrop, { backgroundColor: userById || user?.avatar_url ? color : baseColor.gray }]}>
+				<View style={[styles.backdrop, { backgroundColor: userById || user?.avatarUrl ? color : baseColor.gray }]}>
 					{!isCheckOwner && (
 						<View style={styles.rowContainer}>
 							<TouchableOpacity onPress={iconFriend?.action} style={styles.topActionButton}>
@@ -471,12 +469,8 @@ const UserProfile = React.memo(
 							height={size.s_80}
 							avatarUrl={
 								!isDM
-									? messageAvatar ||
-										userById?.clan_avatar ||
-										userById?.user?.avatar_url ||
-										user?.user?.avatar_url ||
-										user?.avatar_url
-									: userById?.user?.avatar_url || user?.user?.avatar_url || user?.avatar_url || messageAvatar
+									? messageAvatar || userById?.clanAvatar || userById?.user?.avatarUrl || user?.user?.avatarUrl || user?.avatarUrl
+									: userById?.user?.avatarUrl || user?.user?.avatarUrl || user?.avatarUrl || messageAvatar
 							}
 							username={user?.user?.username || user?.username}
 							userStatus={status}
@@ -485,13 +479,13 @@ const UserProfile = React.memo(
 							statusUserStyles={styles.statusUser}
 						/>
 					</View>
-					{status?.user_status ? (
+					{status?.userStatus ? (
 						<>
 							<View style={styles.badgeStatusTemp} />
 							<View style={styles.badgeStatus}>
 								<View style={styles.badgeStatusInside} />
 								<Text numberOfLines={3} style={styles.customStatusText}>
-									{status?.user_status}
+									{status?.userStatus}
 								</Text>
 							</View>
 						</>
@@ -532,26 +526,26 @@ const UserProfile = React.memo(
 						<Text style={[styles.username]}>
 							{userById
 								? !isDM
-									? userById?.clan_nick ||
-										userById?.user?.display_name ||
+									? userById?.clanNick ||
+										userById?.user?.displayName ||
 										userById?.user?.username ||
-										user?.clan_nick ||
-										user?.user?.display_name ||
+										user?.clanNick ||
+										user?.user?.displayName ||
 										user?.user?.username
-									: userById?.user?.display_name || userById?.user?.username
-								: user?.display_name ||
-									user?.user?.display_name ||
+									: userById?.user?.displayName || userById?.user?.username
+								: user?.displayName ||
+									user?.user?.displayName ||
 									user?.username ||
 									user?.user?.username ||
 									(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						<Text style={[styles.subUserName]}>
 							{userById
-								? userById?.user?.username || userById?.user?.display_name
+								? userById?.user?.username || userById?.user?.displayName
 								: user?.username ||
 									user?.user?.username ||
-									user?.display_name ||
-									user?.user?.display_name ||
+									user?.displayName ||
+									user?.user?.displayName ||
 									(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						{isCheckOwner && <EditUserProfileBtn user={userById || (user as any)} />}
@@ -596,18 +590,18 @@ const UserProfile = React.memo(
 
 					{isShowUserContent && (
 						<View style={styles.roleGroup}>
-							{!isDMGroup && (userById?.user?.create_time || user?.create_time || user?.user?.create_time) && (
+							{!isDMGroup && (userById?.user?.createTime || user?.createTime || user?.user?.createTime) && (
 								<View style={styles.memberSince}>
 									<Text style={styles.title}>{t('userInfoDM.mezonMemberSince')}</Text>
 									<Text style={styles.subUserName}>
-										{formatDate(userById?.user?.create_time || user?.create_time || user?.user?.create_time)}
+										{formatDate(userById?.user?.createTime || user?.createTime || user?.user?.createTime)}
 									</Text>
 								</View>
 							)}
-							{!!userById?.user?.about_me && (
+							{!!userById?.user?.aboutMe && (
 								<View style={styles.aboutMeContainer}>
 									<Text style={[styles.aboutMe]}>{t('aboutMe.headerTitle')}</Text>
-									<Text style={[styles.aboutMeText]}>{userById?.user?.about_me}</Text>
+									<Text style={[styles.aboutMeText]}>{userById?.user?.aboutMe}</Text>
 								</View>
 							)}
 							{userRolesClan?.length && showRole && !isDM ? (
@@ -616,8 +610,8 @@ const UserProfile = React.memo(
 									<View style={[styles.roles]}>
 										{userRolesClan?.map((role, index) => (
 											<View style={[styles.roleItem]} key={`${role.id}_${index}`}>
-												{role?.role_icon ? (
-													<ImageNative url={role?.role_icon} style={styles.roleIcon} />
+												{role?.roleIcon ? (
+													<ImageNative url={role?.roleIcon} style={styles.roleIcon} />
 												) : (
 													<View
 														style={[styles.roleColorDot, { backgroundColor: role?.color || DEFAULT_ROLE_COLOR }]}
@@ -636,7 +630,7 @@ const UserProfile = React.memo(
 									<UserInfoDm
 										currentChannel={dmChannel || (currentChannel as ChannelsEntity)}
 										user={userById || (user as any)}
-										isShowRemoveGroup={dmChannel?.creator_id !== (userId || user?.id)}
+										isShowRemoveGroup={dmChannel?.creatorId !== (userId || user?.id)}
 									/>
 								</View>
 							)}

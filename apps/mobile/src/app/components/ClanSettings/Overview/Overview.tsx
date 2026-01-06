@@ -25,7 +25,7 @@ import {
 } from '@mezon/store-mobile';
 import { EPermission, MAX_FILE_SIZE_10MB, sleep } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/types';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -77,7 +77,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const [updateSystemMessageRequest, setUpdateSystemMessageRequest] = useState<ApiSystemMessageRequest | null>(null);
 	const [anonymousPrevented, setAnonymousPrevented] = useState<boolean>(currentClanPreventAnonymous);
 	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
-	const [notificationSetting, setNotificationSetting] = useState<number>(defaultNotificationClan?.notification_setting_type);
+	const [notificationSetting, setNotificationSetting] = useState<number>(defaultNotificationClan?.notificationSettingType);
 
 	const dispatch = useAppDispatch();
 
@@ -90,10 +90,10 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const channelsList = useSelector(selectAllChannels);
 	const listChannelWithoutVoice = channelsList.filter(
 		(channel) =>
-			!channel?.channel_private &&
-			channel?.clan_id === currentClanId &&
+			!channel?.channelPrivate &&
+			channel?.clanId === currentClanId &&
 			channel?.type === ChannelType?.CHANNEL_TYPE_CHANNEL &&
-			channel?.channel_id !== selectedChannelMessage?.channel_id
+			channel?.channelId !== selectedChannelMessage?.channelId
 	);
 
 	const hasSystemMessageChanges = useMemo(() => {
@@ -120,10 +120,10 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		let hasSystemMessageChanged = false;
 		if (updateSystemMessageRequest && systemMessage) {
 			hasSystemMessageChanged =
-				systemMessage.welcome_random !== updateSystemMessageRequest.welcome_random ||
-				systemMessage.welcome_sticker !== updateSystemMessageRequest.welcome_sticker ||
-				systemMessage.channel_id !== updateSystemMessageRequest.channel_id ||
-				systemMessage.hide_audit_log !== updateSystemMessageRequest.hide_audit_log;
+				systemMessage.welcomeRandom !== updateSystemMessageRequest.welcomeRandom ||
+				systemMessage.welcomeSticker !== updateSystemMessageRequest.welcomeSticker ||
+				systemMessage.channelId !== updateSystemMessageRequest.channelId ||
+				systemMessage.hideAuditLog !== updateSystemMessageRequest.hideAuditLog;
 		}
 
 		if (!validInput(clanName)) {
@@ -137,7 +137,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		updateSystemMessageRequest,
 		systemMessage,
 		notificationSetting,
-		defaultNotificationClan?.notification_setting_type,
+		defaultNotificationClan?.notificationSettingType,
 		currentClanName,
 		currentClanBanner,
 		anonymousPrevented,
@@ -152,7 +152,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 
 	useEffect(() => {
 		setUpdateSystemMessageRequest(systemMessage);
-		const selectedChannel = listChannelWithoutVoice?.find((channel) => channel?.channel_id === systemMessage?.channel_id);
+		const selectedChannel = listChannelWithoutVoice?.find((channel) => channel?.channelId === systemMessage?.channelId);
 		if (selectedChannel) {
 			setSelectedChannelMessage(selectedChannel);
 		}
@@ -169,15 +169,15 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const handleUpdateSystemMessage = useCallback(async () => {
 		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClanId && updateSystemMessageRequest) {
 			const cachedMessageUpdate: ApiSystemMessage = {
-				channel_id: updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '' : updateSystemMessageRequest?.channel_id,
-				clan_id: systemMessage?.clan_id,
+				channelId: updateSystemMessageRequest?.channelId === systemMessage?.channelId ? '' : updateSystemMessageRequest?.channelId,
+				clanId: systemMessage?.clanId,
 				id: systemMessage?.id,
-				hide_audit_log:
-					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? '' : updateSystemMessageRequest?.hide_audit_log,
-				welcome_random:
-					updateSystemMessageRequest?.welcome_random === systemMessage?.welcome_random ? '' : updateSystemMessageRequest?.welcome_random,
-				welcome_sticker:
-					updateSystemMessageRequest?.welcome_sticker === systemMessage?.welcome_sticker ? '' : updateSystemMessageRequest?.welcome_sticker
+				hideAuditLog:
+					updateSystemMessageRequest?.hideAuditLog === systemMessage?.hideAuditLog ? '' : updateSystemMessageRequest?.hideAuditLog,
+				welcomeRandom:
+					updateSystemMessageRequest?.welcomeRandom === systemMessage?.welcomeRandom ? '' : updateSystemMessageRequest?.welcomeRandom,
+				welcomeSticker:
+					updateSystemMessageRequest?.welcomeSticker === systemMessage?.welcomeSticker ? '' : updateSystemMessageRequest?.welcomeSticker
 			};
 			const request = {
 				clanId: currentClanId,
@@ -202,7 +202,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			setNotificationSetting(value);
 			dispatch(appActions.setLoadingMainMobile(true));
 			const response = await dispatch(
-				defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClanId, notification_type: value })
+				defaultNotificationActions.setDefaultNotificationClan({ clanId: currentClanId, notificationType: value })
 			);
 
 			if (response?.meta?.requestStatus === 'rejected') {
@@ -215,7 +215,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 				text2: error?.message || String(error)
 			});
 			await sleep(50);
-			setNotificationSetting(defaultNotificationClan?.notification_setting_type);
+			setNotificationSetting(defaultNotificationClan?.notificationSettingType);
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
@@ -238,15 +238,15 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			}
 			await dispatch(
 				clansActions.updateClan({
-					clan_id: currentClanId ?? '',
+					clanId: currentClanId ?? '',
 					request: {
 						banner,
-						clan_name: clanName?.trim() || (currentClanName ?? ''),
-						creator_id: currentClanCreatorId ?? '',
-						is_onboarding: currentClanIsOnboarding,
+						clanName: clanName?.trim() || (currentClanName ?? ''),
+						creatorId: currentClanCreatorId ?? '',
+						isOnboarding: currentClanIsOnboarding,
 						logo: currentClanLogo ?? '',
-						welcome_channel_id: welcomeChannelId ?? '',
-						prevent_anonymous: anonymousPrevented
+						welcomeChannelId: welcomeChannelId ?? '',
+						preventAnonymous: anonymousPrevented
 					}
 				})
 			);
@@ -327,7 +327,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		setSelectedChannelMessage(channel);
 		setUpdateSystemMessageRequest((prev) => ({
 			...prev,
-			channel_id: channel?.channel_id
+			channelId: channel?.channelId
 		}));
 	}, []);
 
@@ -351,7 +351,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 		{
 			title: t('menu.systemMessage.channel'),
 			expandable: true,
-			component: <Text style={[styles.channelLabelText, { color: themeValue.text }]}>{selectedChannelMessage?.channel_label}</Text>,
+			component: <Text style={[styles.channelLabelText, { color: themeValue.text }]}>{selectedChannelMessage?.channelLabel}</Text>,
 			onPress: openBottomSheetSystemChannel,
 			disabled
 		},
@@ -360,11 +360,11 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			component: (
 				<MezonSwitch
 					disabled={disabled}
-					value={systemMessage?.welcome_random === '1'}
+					value={systemMessage?.welcomeRandom === '1'}
 					onValueChange={(value) =>
 						setUpdateSystemMessageRequest((prev) => ({
 							...prev,
-							welcome_random: value ? '1' : '0'
+							welcomeRandom: value ? '1' : '0'
 						}))
 					}
 				/>
@@ -376,11 +376,11 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			component: (
 				<MezonSwitch
 					disabled={disabled}
-					value={systemMessage?.welcome_sticker === '1'}
+					value={systemMessage?.welcomeSticker === '1'}
 					onValueChange={(value) =>
 						setUpdateSystemMessageRequest((prev) => ({
 							...prev,
-							welcome_sticker: value ? '1' : '0'
+							welcomeSticker: value ? '1' : '0'
 						}))
 					}
 				/>
@@ -392,11 +392,11 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			component: (
 				<MezonSwitch
 					disabled={disabled}
-					value={systemMessage?.hide_audit_log !== '1'}
+					value={systemMessage?.hideAuditLog !== '1'}
 					onValueChange={(value) =>
 						setUpdateSystemMessageRequest((prev) => ({
 							...prev,
-							hide_audit_log: value ? '0' : '1'
+							hideAuditLog: value ? '0' : '1'
 						}))
 					}
 				/>

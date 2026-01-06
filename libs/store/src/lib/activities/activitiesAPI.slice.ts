@@ -3,7 +3,7 @@ import type { IActivity, LoadingStatus } from '@mezon/utils';
 import { FOR_24_HOURS_SEC } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiCreateActivityRequest, ApiUserActivity } from 'mezon-js/api.gen';
+import type { ApiCreateActivityRequest, ApiUserActivity } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -21,7 +21,7 @@ export interface ActivitiesEntity extends IActivity {
 }
 
 export const mapActivityEntity = (activitiesRes: ApiUserActivity) => {
-	return { ...activitiesRes, id: activitiesRes.user_id || '' };
+	return { ...activitiesRes, id: activitiesRes.userId || '' };
 };
 
 export interface ActivityState extends EntityState<ActivitiesEntity, string> {
@@ -43,7 +43,7 @@ export const createActivity = createAsyncThunk('activity/createActiviy', async (
 
 		return {
 			...response,
-			id: response.user_id
+			id: response.userId
 		};
 	} catch (error) {
 		return null;
@@ -144,7 +144,7 @@ export const activitiesSlice = createSlice({
 			.addCase(createActivity.fulfilled, (state: ActivityState, action: PayloadAction<any>) => {
 				state.loadingStatus = 'loaded';
 				// acitvitiesActions.add(action.payload);
-				if (action.payload?.activity_name) {
+				if (action.payload?.activityName) {
 					activityAdapter.upsertOne(state, action.payload);
 				} else {
 					activityAdapter.removeOne(state, action.payload?.id);

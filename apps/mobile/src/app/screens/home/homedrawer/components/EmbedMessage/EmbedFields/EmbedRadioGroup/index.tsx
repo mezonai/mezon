@@ -6,13 +6,13 @@ import { EmbedRadioButton } from '../EmbedRadioItem';
 
 interface EmbedOptionRatioProps {
 	options: IMessageRatioOption[];
-	message_id: string;
+	messageId: string;
 	idRadio: string;
 	max_options?: number;
 	disabled?: boolean;
 }
 
-export const EmbedRadioGroup = ({ options, message_id, idRadio, max_options, disabled = false }: EmbedOptionRatioProps) => {
+export const EmbedRadioGroup = ({ options, messageId, idRadio, max_options, disabled = false }: EmbedOptionRatioProps) => {
 	const [checked, setChecked] = useState<string[]>([]);
 	const dispatch = useAppDispatch();
 
@@ -44,7 +44,7 @@ export const EmbedRadioGroup = ({ options, message_id, idRadio, max_options, dis
 		(value: string, id: string) => {
 			dispatch(
 				embedActions.addEmbedValue({
-					message_id: message_id,
+					messageId: messageId,
 					data: {
 						id: id,
 						value: value

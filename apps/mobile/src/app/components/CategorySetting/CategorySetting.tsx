@@ -1,7 +1,7 @@
 import { isEqual } from '@mezon/mobile-components';
 import { baseColor, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, selectCategoryById, useAppDispatch } from '@mezon/store-mobile';
-import { ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
+import { ApiUpdateCategoryDescRequest } from 'mezon-js/types';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text } from 'react-native';
@@ -34,13 +34,13 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 
 	const handleSaveCategorySetting = useCallback(async () => {
 		const request: ApiUpdateCategoryDescRequest = {
-			category_id: category?.category_id || '',
-			category_name: currentSettingValue,
+			categoryId: category?.categoryId || '',
+			categoryName: currentSettingValue,
 			ClanId: ''
 		};
 		dispatch(
 			categoriesActions.updateCategory({
-				clanId: category?.clan_id || '',
+				clanId: category?.clanId || '',
 				request
 			})
 		);
@@ -53,7 +53,7 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} />
 			}
 		});
-	}, [category?.category_id, category?.clan_id, currentSettingValue, dispatch, navigation, t]);
+	}, [category?.categoryId, category?.clanId, currentSettingValue, dispatch, navigation, t]);
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
@@ -67,9 +67,9 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 	}, [navigation, isNotChanged, styles, t, handleSaveCategorySetting]);
 
 	useEffect(() => {
-		if (category?.category_id) {
-			setCategorySettingValue(category?.category_name);
-			setCurrentSettingValue(category?.category_name);
+		if (category?.categoryId) {
+			setCategorySettingValue(category?.categoryName);
+			setCurrentSettingValue(category?.categoryName);
 		}
 	}, [category]);
 

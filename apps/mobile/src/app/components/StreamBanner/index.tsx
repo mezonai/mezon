@@ -24,12 +24,12 @@ const StreamBannerScreen = ({ navigation, route }: MenuChannelScreenProps<Channe
 	const [banner, setBanner] = useState('');
 
 	useEffect(() => {
-		setBanner(channel?.channel_avatar || '');
-	}, [channel?.channel_avatar]);
+		setBanner(channel?.channelAvatar || '');
+	}, [channel?.channelAvatar]);
 
 	const isBannerChanged = useMemo(() => {
-		return !!(banner || channel?.channel_avatar) && banner !== channel?.channel_avatar;
-	}, [banner, channel?.channel_avatar]);
+		return !!(banner || channel?.channelAvatar) && banner !== channel?.channelAvatar;
+	}, [banner, channel?.channelAvatar]);
 	const handleLoad = async (url: string) => {
 		if (url) {
 			setBanner(url);
@@ -41,11 +41,11 @@ const StreamBannerScreen = ({ navigation, route }: MenuChannelScreenProps<Channe
 			dispatch(appActions.setLoadingMainMobile(true));
 			await dispatch(
 				channelsActions.updateChannel({
-					channel_id: channel?.channel_id,
-					channel_label: channel?.channel_label,
-					category_id: channel?.category_id,
-					app_id: '',
-					channel_avatar: banner
+					channelId: channel?.channelId,
+					channelLabel: channel?.channelLabel,
+					categoryId: channel?.categoryId,
+					appId: '',
+					channelAvatar: banner
 				})
 			);
 			Toast.show({
@@ -64,7 +64,7 @@ const StreamBannerScreen = ({ navigation, route }: MenuChannelScreenProps<Channe
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [banner, channel?.category_id, channel?.channel_id, channel?.channel_label, dispatch, navigation, t]);
+	}, [banner, channel?.categoryId, channel?.channelId, channel?.channelLabel, dispatch, navigation, t]);
 
 	const handleClearBanner = () => {
 		setBanner('');

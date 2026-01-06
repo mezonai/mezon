@@ -10,13 +10,13 @@ import { EmbedTitle } from './components/EmbedTitle';
 interface EmbedMessageProps {
 	embed: IEmbedProps;
 	senderId?: string;
-	message_id?: string;
+	messageId?: string;
 	onClick?: () => void;
 	channelId: string;
 	observeIntersectionForLoading?: ObserveFn;
 }
 
-export function EmbedMessage({ embed, message_id, senderId, onClick, channelId, observeIntersectionForLoading }: EmbedMessageProps) {
+export function EmbedMessage({ embed, messageId, senderId, onClick, channelId, observeIntersectionForLoading }: EmbedMessageProps) {
 	const { color, title, url, author, description, fields, image, timestamp, footer, thumbnail } = embed;
 	return (
 		<div className="max-w-[520px] shadow-sm rounded-lg text-left relative mt-2  bg-theme-setting-primary border-theme-primary text-theme-message">
@@ -30,7 +30,7 @@ export function EmbedMessage({ embed, message_id, senderId, onClick, channelId, 
 						{fields && (
 							<EmbedFields
 								fields={fields}
-								message_id={message_id as string}
+								messageId={messageId as string}
 								senderId={senderId as string}
 								channelId={channelId}
 								observeIntersectionForLoading={observeIntersectionForLoading}

@@ -44,8 +44,8 @@ const HomeDefaultHeader = React.memo(
 		const styles = style(themeValue);
 		const { t } = useTranslation('message');
 		const currentChannel = useSelector(selectCurrentChannel);
-		const parent = useAppSelector((state) => selectChannelById(state, currentChannel?.parent_id || ''));
-		const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id));
+		const parent = useAppSelector((state) => selectChannelById(state, currentChannel?.parentId || ''));
+		const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clanId));
 		const currentClanPreventAnonymous = useAppSelector(selectCurrentClanPreventAnonymous);
 		const dispatch = useAppDispatch();
 		const mode =
@@ -95,10 +95,10 @@ const HomeDefaultHeader = React.memo(
 		};
 
 		const handleToggleAnnonymous = () => {
-			dispatch(accountActions.setAnonymousMode(currentChannel?.clan_id));
+			dispatch(accountActions.setAnonymousMode(currentChannel?.clanId));
 		};
 
-		const parentChannelLabel = parent?.channel_label || '';
+		const parentChannelLabel = parent?.channelLabel || '';
 		const navigateMenuThreadDetail = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
 				isShow: false
@@ -115,13 +115,13 @@ const HomeDefaultHeader = React.memo(
 				params: {
 					typeSearch: ETypeSearch.SearchChannel,
 					currentChannel,
-					nameChannel: currentChannel?.channel_label,
+					nameChannel: currentChannel?.channelLabel,
 					isClearSearch: true
 				}
 			});
 		};
 
-		const isAgeRestrictedChannel = currentChannel?.age_restricted === 1;
+		const isAgeRestrictedChannel = currentChannel?.ageRestricted === 1;
 
 		const navigateToNotifications = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
@@ -133,27 +133,27 @@ const HomeDefaultHeader = React.memo(
 		};
 
 		const renderChannelIcon = () => {
-			if (currentChannel?.channel_private === ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
+			if (currentChannel?.channelPrivate === ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
 				return <MezonIconCDN icon={IconCDN.threadLockIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />;
 			}
 
-			if (!!currentChannel?.channel_label && currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
+			if (!!currentChannel?.channelLabel && currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
 				return <MezonIconCDN icon={IconCDN.threadIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />;
 			}
 
 			if (
-				currentChannel?.channel_private === ChannelStatusEnum.isPrivate &&
+				currentChannel?.channelPrivate === ChannelStatusEnum.isPrivate &&
 				currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 				!isAgeRestrictedChannel
 			) {
 				return <MezonIconCDN icon={IconCDN.channelTextLock} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />;
 			}
 
-			if (currentChannel?.channel_private !== ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
+			if (currentChannel?.channelPrivate !== ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
 				return <MezonIconCDN icon={IconCDN.channelStream} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />;
 			}
 
-			if (currentChannel?.channel_private !== ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_APP) {
+			if (currentChannel?.channelPrivate !== ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_APP) {
 				return <MezonIconCDN icon={IconCDN.channelApp} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />;
 			}
 
@@ -178,13 +178,13 @@ const HomeDefaultHeader = React.memo(
 								<MezonIconCDN icon={IconCDN.backArrowLarge} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 							</TouchableOpacity>
 						)}
-						{!!currentChannel?.channel_label && (
+						{!!currentChannel?.channelLabel && (
 							<View style={[styles.channelContainer, isTabletLandscape && { paddingBottom: size.s_8, paddingLeft: size.s_8 }]}>
 								{renderChannelIcon()}
 								<View>
 									<View style={styles.threadHeaderBox}>
 										<Text style={styles.threadHeaderLabel} numberOfLines={1}>
-											{currentChannel?.channel_label}
+											{currentChannel?.channelLabel}
 										</Text>
 									</View>
 									{!!parentChannelLabel && (
@@ -202,7 +202,7 @@ const HomeDefaultHeader = React.memo(
 						<MezonIconCDN icon={IconCDN.inbox} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				)}
-				{!!currentChannel?.channel_label && !!Number(currentChannel?.parent_id) ? (
+				{!!currentChannel?.channelLabel && !!Number(currentChannel?.parentId) ? (
 					<TouchableOpacity style={styles.iconBell} onPress={() => openBottomSheet()}>
 						<NotificationBell color={themeValue.textStrong} />
 					</TouchableOpacity>

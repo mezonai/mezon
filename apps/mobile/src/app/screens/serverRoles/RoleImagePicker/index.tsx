@@ -22,7 +22,7 @@ function RoleImagePicker({ roleId, disable = false }: { roleId: string; disable?
 
 	const handleOnLoad = async (url) => {
 		if (url) {
-			const response = await updateRole(activeRole?.clan_id, activeRole?.id, activeRole?.title, activeRole?.color || '', [], [], [], [], url);
+			const response = await updateRole(activeRole?.clanId, activeRole?.id, activeRole?.title, activeRole?.color || '', [], [], [], [], url);
 			if (response) {
 				return;
 			} else {
@@ -38,7 +38,7 @@ function RoleImagePicker({ roleId, disable = false }: { roleId: string; disable?
 	};
 
 	const handleRemoveIcon = async () => {
-		const response = await updateRole(activeRole?.clan_id, activeRole?.id, activeRole?.title, activeRole?.color || '', [], [], [], [], '');
+		const response = await updateRole(activeRole?.clanId, activeRole?.id, activeRole?.title, activeRole?.color || '', [], [], [], [], '');
 		if (response) {
 			return;
 		} else {
@@ -57,13 +57,13 @@ function RoleImagePicker({ roleId, disable = false }: { roleId: string; disable?
 			<View style={styles.roleButton}>
 				<Text style={styles.textBtn}>{t('roleImagePicker')}</Text>
 				<View style={styles.tailButton}>
-					{!!activeRole?.role_icon && !disable && (
+					{!!activeRole?.roleIcon && !disable && (
 						<TouchableOpacity style={styles.deleteButton} onPress={handleRemoveIcon}>
 							<Text style={styles.deleteText}>{t('removeImage')}</Text>
 						</TouchableOpacity>
 					)}
 					<MezonImagePicker
-						defaultValue={activeRole?.role_icon}
+						defaultValue={activeRole?.roleIcon}
 						height={size.s_50}
 						width={size.s_50}
 						onLoad={handleOnLoad}

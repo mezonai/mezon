@@ -2,7 +2,7 @@ import { useAuth } from '@mezon/core';
 import { checkMutableRelationship, directActions, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
 import { Button, Icons } from '@mezon/ui';
 import { ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js/types';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
@@ -44,7 +44,7 @@ export default function AddFriendPage() {
 			try {
 				const result: ApiIsFollowerResponse = await dispatch(checkMutableRelationship({ userId: dataEncode?.id || username || '' })).unwrap();
 
-				if (result.is_follower) {
+				if (result.isFollower) {
 					toast.success(t('invite.canChatNow'));
 					setError(ErrorTypeMutable.MUTABLE);
 				} else if (dataEncode?.id) {
@@ -80,19 +80,19 @@ export default function AddFriendPage() {
 		if (!userProfile?.user?.id || !username) return;
 		const bodyCreateDm: ApiCreateChannelDescRequest = {
 			type: ChannelType.CHANNEL_TYPE_DM,
-			channel_private: 1,
-			user_ids: [username],
-			clan_id: '0'
+			channelPrivate: 1,
+			userIds: [username],
+			clanId: '0'
 		};
 		const result = await dispatch(
 			directActions.createNewDirectMessage({
 				body: bodyCreateDm,
-				username: [userProfile?.user?.display_name || userProfile?.user?.username || '', dataEncode?.name || username],
-				avatar: [userProfile?.user?.avatar_url || '', dataEncode?.avatar || '']
+				username: [userProfile?.user?.displayName || userProfile?.user?.username || '', dataEncode?.name || username],
+				avatar: [userProfile?.user?.avatarUrl || '', dataEncode?.avatar || '']
 			})
 		);
-		if ((result.payload as ApiChannelDescription).channel_id) {
-			navigate(`/chat/direct/message/${(result.payload as ApiChannelDescription).channel_id}/3`);
+		if ((result.payload as ApiChannelDescription).channelId) {
+			navigate(`/chat/direct/message/${(result.payload as ApiChannelDescription).channelId}/3`);
 		} else {
 			navigate('/chat/direct/friends');
 		}

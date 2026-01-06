@@ -51,11 +51,11 @@ const SearchInput = ({
 			.filter(
 				(channel) =>
 					(channel.type === ChannelType.CHANNEL_TYPE_CHANNEL || channel.type === ChannelType.CHANNEL_TYPE_THREAD) &&
-					channel.clan_id === currentClanId
+					channel.clanId === currentClanId
 			)
 			.map((channel) => ({
-				id: channel.channel_id || channel.id,
-				display: channel.channel_label || ''
+				id: channel.channelId || channel.id,
+				display: channel.channelLabel || ''
 			}));
 
 		return [...textChannels];

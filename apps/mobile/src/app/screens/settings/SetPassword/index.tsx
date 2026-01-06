@@ -25,7 +25,7 @@ const SetPassword = ({ navigation }) => {
 	const dispatch = useAppDispatch();
 
 	const userProfile = useSelector(selectAllAccount);
-	const hasPassword = !!userProfile?.password_setted;
+	const hasPassword = !!userProfile?.passwordSetted;
 
 	const handleCurrentPasswordChange = (currentPasswordText: string) => {
 		setCurrentPassword(currentPasswordText);

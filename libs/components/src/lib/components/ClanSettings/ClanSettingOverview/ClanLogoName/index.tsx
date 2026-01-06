@@ -158,7 +158,7 @@ const ClanLogoName = ({ onUpload, onGetClanName, resetTrigger, onResetComplete, 
 						value={clanName}
 						onChange={(e) => handleChangeClanName(e.target.value)}
 						className=" outline-none w-full h-10 p-[10px] bg-theme-input text-base rounded placeholder:text-sm"
-						data-e2e={generateE2eId('clan_page.settings.overview.input.clan_name')}
+						data-e2e={generateE2eId('clan_page.settings.overview.input.clanName')}
 						placeholder={t('clanLogo.namePlaceholder')}
 						maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
 					/>

@@ -41,7 +41,7 @@ const ListMemberPermission = (props: ListMemberPermissionProps) => {
 			key={id}
 			id={id}
 			onDelete={() => deleteMember(id as string)}
-			channelOwner={channel.creator_id === id}
+			channelOwner={channel.creatorId === id}
 			selectedUserIds={props.selectedUserIds}
 			setSelectedUserIds={props.setSelectedUserIds}
 		/>
@@ -66,8 +66,8 @@ type ItemMemberPermissionProps = {
 const ItemMemberPermission = (props: ItemMemberPermissionProps) => {
 	const { id = '', onDelete, channelOwner, selectedUserIds = [], setSelectedUserIds } = props;
 	const user = useSelector((state) => selectMemberClanByUserId(state, id));
-	const namePrioritize = getNameForPrioritize(user?.clan_nick, user?.user?.display_name, user?.user?.username);
-	const avatarPrioritize = getAvatarForPrioritize(user?.clan_avatar, user?.user?.avatar_url);
+	const namePrioritize = getNameForPrioritize(user?.clanNick, user?.user?.displayName, user?.user?.username);
+	const avatarPrioritize = getAvatarForPrioritize(user?.clanAvatar, user?.user?.avatarUrl);
 
 	const handleDelete = () => {
 		if (setSelectedUserIds && selectedUserIds) {

@@ -46,7 +46,7 @@ const MessagesSearchTab = memo(({ typeSearch, currentChannel, channelIdFilter }:
 			if (channelIdFilter) return channelIdFilter;
 			return '0';
 		}
-		return currentChannel?.channel_id || currentChannel?.id;
+		return currentChannel?.channelId || currentChannel?.id;
 	}, [channelIdFilter, currentChannel]);
 
 	const searchMessages = useAppSelector((state) => selectMessageSearchByChannelId(state, channelId));
@@ -60,18 +60,18 @@ const MessagesSearchTab = memo(({ typeSearch, currentChannel, channelIdFilter }:
 		let groupedMessages: GroupedMessages = [];
 		if (typeSearch === ETypeSearch.SearchChannel && searchMessages?.length > 0) {
 			groupedMessages?.push({
-				label: searchMessages?.[0]?.channel_label,
+				label: searchMessages?.[0]?.channelLabel,
 				messages: searchMessages
 			});
 		} else if (typeSearch === ETypeSearch.SearchAll && searchMessages?.length > 0) {
 			groupedMessages = searchMessages?.reduce((acc, message) => {
-				const existingGroup = acc.find((group) => group?.label === message?.channel_label && group?.channel_id === message?.channel_id);
+				const existingGroup = acc.find((group) => group?.label === message?.channelLabel && group?.channelId === message?.channelId);
 				if (existingGroup) {
 					existingGroup?.messages?.push(message);
 				} else {
 					acc.push({
-						label: message?.channel_label ?? '',
-						channel_id: message?.channel_id ?? '',
+						label: message?.channelLabel ?? '',
+						channelId: message?.channelId ?? '',
 						messages: [message]
 					});
 				}
@@ -113,20 +113,20 @@ const MessagesSearchTab = memo(({ typeSearch, currentChannel, channelIdFilter }:
 	};
 
 	const handleJumpMessage = async (message: MessagesEntity) => {
-		if (channelId !== message?.channel_id) {
-			handleJoinChannel(message?.clan_id, message?.channel_id);
+		if (channelId !== message?.channelId) {
+			handleJoinChannel(message?.clanId, message?.channelId);
 		}
-		if (message?.message_id && message?.channel_id) {
+		if (message?.messageId && message?.channelId) {
 			dispatch(
 				messagesActions.jumpToMessage({
-					clanId: message?.clan_id,
-					messageId: message.message_id,
-					channelId: message.channel_id
+					clanId: message?.clanId,
+					messageId: message.messageId,
+					channelId: message.channelId
 				})
 			);
 		}
 		if (isDM) {
-			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: message?.channel_id });
+			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: message?.channelId });
 		} else {
 			if (isTabletLandscape) {
 				await sleep(200);
@@ -154,7 +154,7 @@ const MessagesSearchTab = memo(({ typeSearch, currentChannel, channelIdFilter }:
 					return (
 						<Pressable
 							onPress={() => handleJumpMessage(message)}
-							key={`message_${message?.channel_id}_${message?.id}`}
+							key={`message_${message?.channelId}_${message?.id}`}
 							style={styles.messageItem}
 						>
 							<MessageItem
@@ -198,7 +198,7 @@ const MessagesSearchTab = memo(({ typeSearch, currentChannel, channelIdFilter }:
 	return (
 		<FlatList
 			style={styles.container}
-			keyExtractor={(item, index) => `group_${item?.channel_id}_${index}`}
+			keyExtractor={(item, index) => `group_${item?.channelId}_${index}`}
 			showsVerticalScrollIndicator={false}
 			data={searchMessagesData}
 			keyboardShouldPersistTaps={'handled'}

@@ -3,7 +3,7 @@ import type { IEmojiRecent } from '@mezon/utils';
 import { RECENT_EMOJI_CATEGORY } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiClanEmoji } from 'mezon-js/dist/api.gen';
+import type { ApiClanEmoji } from 'mezon-js/types';
 import type { AddTxResponse } from 'mmn-client-js';
 import { ETransferType } from 'mmn-client-js';
 import type { CacheMetadata } from '../cache-metadata';
@@ -23,14 +23,14 @@ export interface EmojiRecentEntity extends IEmojiRecent {
 
 export interface EmojiRecentState extends EntityState<EmojiRecentEntity, string> {
 	loadingStatus: 'not loaded' | 'loading' | 'loaded' | 'error';
-	lastEmojiRecent: { emoji_recents_id: string; emoji_id?: string };
+	lastEmojiRecent: { emojiRecentsId: string; emojiId?: string };
 	cache?: CacheMetadata;
 	// Track emojis that are pending unlock (used to show loading overlays)
 	pendingUnlockMap?: Record<string, boolean>;
 }
 
 export const emojiRecentAdapter = createEntityAdapter({
-	selectId: (emo: EmojiRecentEntity) => emo.emoji_id || ''
+	selectId: (emo: EmojiRecentEntity) => emo.emojiId || ''
 });
 
 const { selectAll: selectAllEmojiRecentEntities } = emojiRecentAdapter.getSelectors();
@@ -48,7 +48,7 @@ export const fetchEmojiRecentCached = async (getState: () => RootState, ensuredM
 	if (!shouldForceCall) {
 		const emojis = selectCachedEmojiRecent(state);
 		return {
-			emoji_recents: emojis,
+			emojiRecents: emojis,
 			time: Date.now(),
 			fromCache: true
 		};
@@ -73,8 +73,8 @@ export const fetchEmojiRecent = createAsyncThunk('emoji/fetchEmojiRecent', async
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchEmojiRecentCached(thunkAPI.getState as () => RootState, mezon, noCache);
 
-		if (!response?.emoji_recents) {
-			thunkAPI.dispatch(emojiRecentActions.setLastEmojiRecent({ emoji_recents_id: '0', emoji_id: '' }));
+		if (!response?.emojiRecents) {
+			thunkAPI.dispatch(emojiRecentActions.setLastEmojiRecent({ emojiRecentsId: '0', emojiId: '' }));
 			return {
 				emojis: [],
 				fromCache: response?.fromCache
@@ -82,12 +82,12 @@ export const fetchEmojiRecent = createAsyncThunk('emoji/fetchEmojiRecent', async
 		}
 		thunkAPI.dispatch(
 			emojiRecentActions.setLastEmojiRecent({
-				emoji_recents_id: response.emoji_recents[0]?.emoji_recents_id,
-				emoji_id: response.emoji_recents[0]?.emoji_id
+				emojiRecentsId: response.emojiRecents[0]?.emojiRecentsId,
+				emojiId: response.emojiRecents[0]?.emojiId
 			})
 		);
 		return {
-			emojis: response.emoji_recents,
+			emojis: response.emojiRecents,
 			fromCache: response?.fromCache
 		};
 	} catch (error) {
@@ -134,7 +134,7 @@ const buyItemForSale = createAsyncThunk(
 );
 export const initialEmojiRecentState: EmojiRecentState = emojiRecentAdapter.getInitialState({
 	loadingStatus: 'not loaded',
-	lastEmojiRecent: { emoji_recents_id: '0' }
+	lastEmojiRecent: { emojiRecentsId: '0' }
 });
 
 export const emojiRecentSlice = createSlice({
@@ -155,13 +155,13 @@ export const emojiRecentSlice = createSlice({
 		addFirstEmojiRecent: (state, action: PayloadAction<any>) => {
 			const emoji = action.payload;
 
-			const existingIndex = state.ids.indexOf(emoji.emoji_id);
+			const existingIndex = state.ids.indexOf(emoji.emojiId);
 			if (existingIndex !== -1) {
 				state.ids.splice(existingIndex, 1);
 			}
 
-			state.ids.unshift(emoji.emoji_id);
-			state.entities[emoji.emoji_id] = emoji;
+			state.ids.unshift(emoji.emojiId);
+			state.entities[emoji.emojiId] = emoji;
 
 			if (state.ids.length > 20) {
 				const removedId = state.ids.pop();
@@ -217,7 +217,7 @@ export const selectAllEmojiRecent = createSelector([selectAllEmojiSuggestion, ge
 				shortname: emoji.shortname ?? '',
 				src: emoji.src ?? '',
 				category: RECENT_EMOJI_CATEGORY,
-				emoji_recents_id: recentEmoji?.emoji_recents_id ?? ''
+				emojiRecentsId: recentEmoji?.emojiRecentsId ?? ''
 			} as ApiClanEmoji;
 		})
 		.filter((emoji): emoji is ApiClanEmoji => emoji !== null);

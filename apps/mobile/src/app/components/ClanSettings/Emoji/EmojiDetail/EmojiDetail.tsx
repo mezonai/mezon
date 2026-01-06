@@ -4,7 +4,7 @@ import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { emojiSuggestionActions, selectCurrentUserId, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { EPermission, getSrcEmoji } from '@mezon/utils';
 import type { ClanEmoji } from 'mezon-js';
-import type { MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
+import type { MezonUpdateClanEmojiByIdBody } from 'mezon-js/types';
 import type { Ref } from 'react';
 import { forwardRef, useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -29,7 +29,7 @@ export const EmojiDetail = forwardRef(({ item, onSwipeOpen }: ServerDetailProps,
 	const styles = style(themeValue);
 	const { t } = useTranslation(['clanEmojiSetting']);
 	const dispatch = useAppDispatch();
-	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, item?.creator_id ?? ''));
+	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, item?.creatorId ?? ''));
 	const [emojiName, setEmojiName] = useState(item?.shortname?.split(':')?.join(''));
 	const [isFocused, setIsFocused] = useState(false);
 	const textInputRef = useRef<TextInput>(null);
@@ -40,16 +40,16 @@ export const EmojiDetail = forwardRef(({ item, onSwipeOpen }: ServerDetailProps,
 		EPermission.clanOwner
 	]);
 	const hasDeleteOrEditPermission = useMemo(() => {
-		return hasAdminPermission || isClanOwner || hasManageClanPermission || currentUserId === item?.creator_id;
-	}, [hasAdminPermission, isClanOwner, hasManageClanPermission, currentUserId, item?.creator_id]);
+		return hasAdminPermission || isClanOwner || hasManageClanPermission || currentUserId === item?.creatorId;
+	}, [hasAdminPermission, isClanOwner, hasManageClanPermission, currentUserId, item?.creatorId]);
 
 	const authorDisplayName = useMemo(() => {
-		return dataAuthor?.clan_nick || dataAuthor?.user?.display_name || dataAuthor?.user?.username || '';
-	}, [dataAuthor?.clan_nick, dataAuthor?.user?.display_name, dataAuthor?.user?.username]);
+		return dataAuthor?.clanNick || dataAuthor?.user?.displayName || dataAuthor?.user?.username || '';
+	}, [dataAuthor?.clanNick, dataAuthor?.user?.displayName, dataAuthor?.user?.username]);
 
 	const authorAvatarUrl = useMemo(() => {
-		return dataAuthor?.clan_avatar || dataAuthor?.user?.avatar_url || '';
-	}, [dataAuthor?.clan_avatar, dataAuthor?.user?.avatar_url]);
+		return dataAuthor?.clanAvatar || dataAuthor?.user?.avatarUrl || '';
+	}, [dataAuthor?.clanAvatar, dataAuthor?.user?.avatarUrl]);
 
 	const emojiImageSrc = useMemo(() => {
 		return (!item?.src ? getSrcEmoji(item?.id) : item.src) || '';
@@ -60,13 +60,13 @@ export const EmojiDetail = forwardRef(({ item, onSwipeOpen }: ServerDetailProps,
 			source: item?.src || '',
 			shortname: `:${emojiName}:`,
 			category: item?.category || '',
-			clan_id: item?.clan_id || ''
+			clanId: item?.clanId || ''
 		};
 		await dispatch(emojiSuggestionActions.updateEmojiSetting({ request, emojiId: item?.id || '' }));
 	};
 
 	const handleDeleteEmoji = async () => {
-		dispatch(emojiSuggestionActions.deleteEmojiSetting({ emoji: item, clan_id: (item?.clan_id as string) || '', label: item?.shortname }));
+		dispatch(emojiSuggestionActions.deleteEmojiSetting({ emoji: item, clanId: (item?.clanId as string) || '', label: item?.shortname }));
 	};
 
 	const focusTextInput = () => {

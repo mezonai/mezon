@@ -1,4 +1,4 @@
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import type { IImageWindowProps } from '../../types';
 
 export type ElectronBridgeHandler = (...args: any[]) => void;
@@ -16,7 +16,7 @@ export type MezonElectronAPI = {
 	onWindowFocused: (callback: () => void) => void;
 	openImageWindow: (
 		currentImage: ApiMessageAttachment & {
-			create_time?: string;
+			createTime?: string;
 			uploaderData: { name: string; avatar: string };
 			realUrl: string;
 			channelImagesData: IImageWindowProps;

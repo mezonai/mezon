@@ -19,7 +19,7 @@ export type IReactionItem = {
 };
 export const ReactionItem = React.memo(
 	({ emojiItemData, userId, preventAction, onReactItemLongPress, message, mode, styles, topicId = '' }: IReactionItem) => {
-		const isMyReaction = emojiItemData?.senders?.find?.((sender: SenderInfoOptionals) => sender.sender_id === userId);
+		const isMyReaction = emojiItemData?.senders?.find?.((sender: SenderInfoOptionals) => sender.senderId === userId);
 		const countReacts = calculateTotalCount(emojiItemData.senders);
 
 		const [flyingEmojis, setFlyingEmojis] = useState<
@@ -83,10 +83,10 @@ export const ReactionItem = React.memo(
 				id: emojiItemData.id ?? '',
 				mode,
 				messageId: message?.id ?? '',
-				channelId: message?.channel_id ?? '',
+				channelId: message?.channelId ?? '',
 				emojiId: emojiItemData?.emojiId ?? '',
 				emoji: emojiItemData.emoji ?? '',
-				senderId: message?.sender_id ?? '',
+				senderId: message?.senderId ?? '',
 				countToRemove: 1,
 				actionDelete: false,
 				topicId: topicId || ''

@@ -99,7 +99,7 @@ const CallingModalWrapper = () => {
 				[dataCall?.callerId],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_PARTICIPANT_JOINED,
 				joinAction,
-				dataCall?.channel_id || '',
+				dataCall?.channelId || '',
 				userId || ''
 			);
 		}

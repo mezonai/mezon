@@ -22,8 +22,8 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 	const dispatch = useAppDispatch();
 
 	const isChatWithMyself = useMemo(() => {
-		return currentChannel?.type === ChannelType.CHANNEL_TYPE_DM && currentChannel?.user_ids?.[0] === currentUserId;
-	}, [currentChannel?.type, currentChannel?.user_ids?.[0], currentUserId]);
+		return currentChannel?.type === ChannelType.CHANNEL_TYPE_DM && currentChannel?.userIds?.[0] === currentUserId;
+	}, [currentChannel?.type, currentChannel?.userIds?.[0], currentUserId]);
 
 	const actualTabIndex = useMemo(() => {
 		if (isChatWithMyself) {
@@ -101,10 +101,10 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 				) : actualTabIndex === 4 ? (
 					<Canvas
 						channelId={
-							currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD && currentChannel?.parent_id
-								? currentChannel?.parent_id
+							currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD && currentChannel?.parentId
+								? currentChannel?.parentId
 								: [ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type)
-									? currentChannel?.channel_id
+									? currentChannel?.channelId
 									: channelId
 						}
 						clanId={currentClanId}
@@ -113,7 +113,7 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 					<ChannelFiles
 						currentChannelId={
 							[ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type)
-								? currentChannel?.channel_id
+								? currentChannel?.channelId
 								: channelId
 						}
 						isDM={[ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type)}
@@ -122,7 +122,7 @@ export const AssetsViewer = React.memo(({ channelId }: { channelId: string }) =>
 					<PinMessage
 						currentChannelId={
 							[ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type)
-								? currentChannel?.channel_id
+								? currentChannel?.channelId
 								: channelId
 						}
 						currentClanId={

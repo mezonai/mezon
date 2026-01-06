@@ -2,14 +2,14 @@ import { safeJSONParse } from 'mezon-js';
 
 export interface CallSignalingData {
 	is_video: boolean;
-	group_id: string;
+	groupId: string;
 	group_name: string;
 	group_avatar?: string;
-	caller_id: string;
+	callerId: string;
 	caller_name: string;
 	caller_avatar?: string;
-	meeting_code?: string;
-	clan_id?: string;
+	meetingCode?: string;
+	clanId?: string;
 	timestamp: number;
 	participants: string[];
 	action?: string;
@@ -48,14 +48,14 @@ export const createCallSignalingData = (params: {
 	reason?: string;
 }): CallSignalingData => ({
 	is_video: params.isVideo,
-	group_id: params.groupId,
+	groupId: params.groupId,
 	group_name: params.groupName,
 	group_avatar: params.groupAvatar,
-	caller_id: params.callerId,
+	callerId: params.callerId,
 	caller_name: params.callerName,
 	caller_avatar: params.callerAvatar,
-	meeting_code: params.meetingCode,
-	clan_id: params.clanId,
+	meetingCode: params.meetingCode,
+	clanId: params.clanId,
 	timestamp: Date.now(),
 	participants: params.participants,
 	action: params.action,
@@ -79,14 +79,14 @@ export const parseSignalingData = (jsonData?: string): CallSignalingData | null 
  * Create group call data from signaling
  */
 export const createGroupCallDataFromSignaling = (signaling: CallSignalingData): GroupCallData => ({
-	groupId: signaling.group_id,
+	groupId: signaling.groupId,
 	groupName: signaling.group_name || 'Group Call',
 	groupAvatar: signaling.group_avatar,
-	meetingCode: signaling.meeting_code,
-	clanId: signaling.clan_id,
+	meetingCode: signaling.meetingCode,
+	clanId: signaling.clanId,
 	participants: signaling.participants || [],
 	callerInfo: {
-		id: signaling.caller_id,
+		id: signaling.callerId,
 		name: signaling.caller_name,
 		avatar: signaling.caller_avatar
 	}
@@ -116,8 +116,8 @@ export const createParticipantLeftData = (params: { participantId: string; parti
  */
 export const createCancelData = (params: { isVideo: boolean; groupId: string; callerId: string; callerName: string; reason?: string }) => ({
 	is_video: params.isVideo,
-	group_id: params.groupId,
-	caller_id: params.callerId,
+	groupId: params.groupId,
+	callerId: params.callerId,
 	caller_name: params.callerName,
 	timestamp: Date.now(),
 	reason: params.reason || 'cancelled'
@@ -128,8 +128,8 @@ export const createCancelData = (params: { isVideo: boolean; groupId: string; ca
  */
 export const createQuitData = (params: { isVideo: boolean; groupId: string; callerId: string; callerName: string; action: string }) => ({
 	is_video: params.isVideo,
-	group_id: params.groupId,
-	caller_id: params.callerId,
+	groupId: params.groupId,
+	callerId: params.callerId,
 	caller_name: params.callerName,
 	timestamp: Date.now(),
 	action: params.action

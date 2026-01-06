@@ -5,7 +5,7 @@ import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { LIMIT_SIZE_UPLOAD_IMG, MAX_CLAN_ITEM_SLOTS } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { Buffer as BufferMobile } from 'buffer';
-import type { ApiClanStickerAddRequest } from 'mezon-js/api.gen';
+import type { ApiClanStickerAddRequest } from 'mezon-js/types';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
@@ -55,30 +55,30 @@ export function StickerSetting({ navigation }) {
 						const canvas = document.getElementById('canvas');
 						const ctx = canvas.getContext('2d');
 						const img = new Image();
-						
+
 						img.onload = function() {
 							canvas.width = img.width;
 							canvas.height = img.height;
 							ctx.filter = 'blur(2px)';
 							ctx.drawImage(img, 0, 0);
-							
+
 							ctx.filter = 'none';
 							const fontSize = Math.floor(canvas.width / 2);
 							ctx.font = 'bold ' + fontSize + 'px sans-serif';
 							ctx.fillStyle = 'rgba(128, 128, 128, 0.75)';
 							ctx.textAlign = 'center';
 							ctx.textBaseline = 'middle';
-							
+
 							ctx.save();
 							ctx.translate(canvas.width / 2, canvas.height / 2);
 							ctx.rotate((45 * Math.PI) / 180);
 							ctx.fillText('${watermarkText}', 0, 0);
 							ctx.restore();
-							
+
 							const dataURL = canvas.toDataURL('image/png', 1);
 							window.ReactNativeWebView.postMessage(dataURL);
 						};
-						
+
 						img.onerror = () => window.ReactNativeWebView.postMessage('ERROR: Image load failed');
 						img.src = '${dataUri}';
 					</script>
@@ -218,11 +218,11 @@ export function StickerSetting({ navigation }) {
 		const request: ApiClanStickerAddRequest = {
 			id,
 			category,
-			clan_id: currentClanId,
+			clanId: currentClanId,
 			shortname: name,
 			source: url,
-			media_type: 0,
-			is_for_sale: isForSale
+			mediaType: 0,
+			isForSale: isForSale
 		};
 		if (isForSale) {
 			const fileData = await createBlurredWatermarkedImageFile(croppedFile?.data);

@@ -29,12 +29,12 @@ export const BaseMemberProfile = ({ id, user, userMeta, username, avatar, isOwne
 			...user,
 			id,
 			prioritizeName: username,
-			clan_avatar: avatar,
+			clanAvatar: avatar,
 			user: {
 				...user?.user,
 				username: user?.user?.username,
-				display_name: user?.user?.display_name,
-				avatar_url: user?.user?.avatar_url
+				displayName: user?.user?.displayName,
+				avatarUrl: user?.user?.avatarUrl
 			}
 		};
 		onContextMenu(event, (currentDmId as string) || '', userTemplate);
@@ -72,7 +72,7 @@ export const BaseMemberProfile = ({ id, user, userMeta, username, avatar, isOwne
 					<ClanUserName userId={user?.id} name={username} isOwner={!!isOwner} />
 					<p
 						className="text-xs text-left text-theme-primary opacity-60 line-clamp-1 truncate overflow-hidden flex-nowrap max-w-[100px] "
-						data-e2e={generateE2eId('clan_page.secondary_side_bar.member.user_status')}
+						data-e2e={generateE2eId('clan_page.secondary_side_bar.member.userStatus')}
 					>
 						{userStatus}
 					</p>

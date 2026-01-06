@@ -68,9 +68,9 @@ const Header = ({ toggleSideBar, isShowSideBar }: IHeaderProps) => {
 					/>
 				</button>
 				<div onClick={handleAvatarClick}>
-					{userProfile?.user?.avatar_url ? (
+					{userProfile?.user?.avatarUrl ? (
 						<img
-							src={createImgproxyUrl(userProfile?.user?.avatar_url ?? '', { width: 300, height: 300, resizeType: 'fit' })}
+							src={createImgproxyUrl(userProfile?.user?.avatarUrl ?? '', { width: 300, height: 300, resizeType: 'fit' })}
 							className="w-[40px] h-[40px] rounded-full object-cover cursor-pointer"
 							alt=""
 						/>

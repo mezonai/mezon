@@ -3,7 +3,7 @@ import type { IUserAccount, LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
-import type { ApiAccountEmail, ApiLinkAccountConfirmRequest, ApiLinkAccountMezon, ApiUserStatusUpdate } from 'mezon-js/api.gen';
+import type { ApiAccountEmail, ApiLinkAccountConfirmRequest, ApiLinkAccountMezon, ApiUserStatusUpdate } from 'mezon-js/types';
 import { toast } from 'react-toastify';
 import { authActions } from '../auth/auth.slice';
 import type { CacheMetadata } from '../cache-metadata';
@@ -118,7 +118,7 @@ export const addPhoneNumber = createAsyncThunk(
 	async ({ data, isMobile = false }: { data: ApiLinkAccountMezon; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.linkMezon(mezon.session, data);
+			const response = await mezon.client.linkSMS(mezon.session, data);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'account/addPhoneNumber');
@@ -168,8 +168,7 @@ export const verifyPhone = createAsyncThunk(
 	async ({ data, isMobile = false }: { data: ApiLinkAccountConfirmRequest; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.confirmLinkMezonOTP(mezon.session, data);
-			return response;
+			await mezon.client.confirmLinkMezonOTP(mezon.session, data);
 		} catch (error) {
 			captureSentryError(error, 'account/verifyPhone');
 			toast.error(t('accountSetting:setPhoneModal.updatePhoneFail'));
@@ -241,12 +240,12 @@ export const accountSlice = createSlice({
 		},
 		setCustomStatus(state, action: PayloadAction<string>) {
 			if (state?.userProfile?.user) {
-				state.userProfile.user.user_status = action.payload;
+				state.userProfile.user.userStatus = action.payload;
 			}
 		},
 		setWalletMetadata(state, action: PayloadAction<any>) {
 			if (state?.userProfile?.user) {
-				state.userProfile.user.user_status = action.payload;
+				state.userProfile.user.userStatus = action.payload;
 			}
 		},
 		setLogoCustom(state, action: PayloadAction<string | undefined>) {
@@ -286,7 +285,7 @@ export const accountSlice = createSlice({
 				...state.userProfile,
 				...action.payload,
 				user: { ...state.userProfile?.user, ...action.payload.user },
-				encrypt_private_key: action.payload.encrypt_private_key
+				encryptPrivateKey: action.payload.encryptPrivateKey
 			};
 		},
 		incrementAvatarVersion(state) {
@@ -294,12 +293,12 @@ export const accountSlice = createSlice({
 		},
 		updatePhoneNumber(state, action: PayloadAction<string>) {
 			if (state?.userProfile?.user) {
-				state.userProfile.user.phone_number = action.payload;
+				state.userProfile.user.phoneNumber = action.payload;
 			}
 		},
 		setPasswordSetted(state, action: PayloadAction<boolean>) {
 			if (state?.userProfile) {
-				state.userProfile.password_setted = action.payload;
+				state.userProfile.passwordSetted = action.payload;
 			}
 		},
 		updateEmail(state, action: PayloadAction<string>) {
@@ -351,7 +350,7 @@ export const selectAnonymousMode = createSelector([getAccountState, (state, clan
 
 export const selectTopicAnonymousMode = createSelector(getAccountState, (state: AccountState) => state.topicAnonymousMode);
 
-export const selectAccountCustomStatus = createSelector(getAccountState, (state: AccountState) => state.userProfile?.user?.user_status || '');
+export const selectAccountCustomStatus = createSelector(getAccountState, (state: AccountState) => state.userProfile?.user?.userStatus || '');
 
 export const selectLogoCustom = createSelector(getAccountState, (state) => state?.userProfile?.logo);
 

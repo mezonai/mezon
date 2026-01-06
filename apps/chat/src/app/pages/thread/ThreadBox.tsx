@@ -44,7 +44,7 @@ import {
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -61,9 +61,9 @@ const ThreadBox = () => {
 	const currentChannelCategoryId = useSelector(selectCurrentChannelCategoryId);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const sessionUser = useSelector(selectSession);
-	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, sessionUser?.user_id as string));
+	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, sessionUser?.userId as string));
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
-	const currentInputChannelId = threadCurrentChannel?.channel_id || CREATING_THREAD;
+	const currentInputChannelId = threadCurrentChannel?.channelId || CREATING_THREAD;
 	const { removeAttachmentByIndex, checkAttachment, attachmentFilteredByChannelId } = useReference(currentInputChannelId);
 	const { setOverUploadingState } = useDragAndDrop();
 	const { messageThreadError, isPrivate, nameValueThread, valueThread, setNameValueThread } = useThreads();
@@ -75,7 +75,7 @@ const ThreadBox = () => {
 		mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0
 	});
 	const membersOfParent = useAppSelector((state) =>
-		threadCurrentChannel?.parent_id ? selectAllChannelMembers(state, threadCurrentChannel?.parent_id as string) : null
+		threadCurrentChannel?.parentId ? selectAllChannelMembers(state, threadCurrentChannel?.parentId as string) : null
 	);
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
@@ -88,7 +88,7 @@ const ThreadBox = () => {
 	}, [attachmentFilteredByChannelId]);
 
 	const { sendMessageThread, sendMessageTyping } = useThreadMessage({
-		channelId: threadCurrentChannel?.parent_id || currentChannelId || '',
+		channelId: threadCurrentChannel?.parentId || currentChannelId || '',
 		mode: ChannelStreamMode.STREAM_MODE_THREAD,
 		username: sessionUser?.username
 	});
@@ -115,7 +115,7 @@ const ThreadBox = () => {
 			}
 
 			const isDuplicate = await dispatch(
-				checkDuplicateThread({ thread_name: value.nameValueThread, channel_id: idParent as string, clan_id: currentClanId as string })
+				checkDuplicateThread({ thread_name: value.nameValueThread, channelId: idParent as string, clanId: currentClanId as string })
 			);
 			if (isDuplicate?.payload) {
 				toast(t('createThread.toast.threadNameExists'));
@@ -129,11 +129,11 @@ const ThreadBox = () => {
 
 			const timestamp = Date.now() / 1000;
 			const body: Record<string, unknown> = {
-				clan_id: currentClanId?.toString(),
-				channel_label: value.nameValueThread,
-				channel_private: value.isPrivate,
-				parent_id: idParent,
-				category_id: currentChannelCategoryId,
+				clanId: currentClanId?.toString(),
+				channelLabel: value.nameValueThread,
+				channelPrivate: value.isPrivate,
+				parentId: idParent,
+				categoryId: currentChannelCategoryId,
 				type: ChannelType.CHANNEL_TYPE_THREAD,
 				lastSeenTimestamp: timestamp,
 				lastSentTimestamp: timestamp
@@ -166,7 +166,7 @@ const ThreadBox = () => {
 						await dispatch(
 							channelsActions.joinChat({
 								clanId: currentClanId as string,
-								channelId: thread.channel_id as string,
+								channelId: thread.channelId as string,
 								channelType: ChannelType.CHANNEL_TYPE_THREAD,
 								isPublic: false
 							})
@@ -180,7 +180,7 @@ const ThreadBox = () => {
 						await dispatch(
 							messagesActions.fetchMessages({
 								clanId: currentClanId || '',
-								channelId: thread.channel_id as string,
+								channelId: thread.channelId as string,
 								isFetchingLatestMessages: true
 							})
 						);
@@ -371,13 +371,13 @@ const ThreadBox = () => {
 					<MemoizedChannelMessages
 						isThreadBox={true}
 						userIdsFromThreadBox={mapToMemberIds}
-						key={threadCurrentChannel.channel_id}
+						key={threadCurrentChannel.channelId}
 						clanId={currentClanId || ''}
-						channelId={threadCurrentChannel.channel_id as string}
-						channelLabel={threadCurrentChannel.channel_label}
+						channelId={threadCurrentChannel.channelId as string}
+						channelLabel={threadCurrentChannel.channelLabel}
 						type={ChannelType.CHANNEL_TYPE_THREAD}
 						mode={ChannelStreamMode.STREAM_MODE_THREAD}
-						isPrivate={threadCurrentChannel.channel_private}
+						isPrivate={threadCurrentChannel.channelPrivate}
 					/>
 				</div>
 			)}

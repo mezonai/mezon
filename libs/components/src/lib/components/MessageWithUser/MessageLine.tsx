@@ -33,8 +33,8 @@ export interface ElementToken {
 	s?: number;
 	e?: number;
 	kindOf: ETokenMessage;
-	user_id?: string;
-	role_id?: string;
+	userId?: string;
+	roleId?: string;
 	channelid?: string;
 	emojiid?: string;
 	type?: EBacktickType;
@@ -264,7 +264,7 @@ export const MessageLine = ({
 					/>
 				);
 			} else if (
-				(element.kindOf === ETokenMessage.MENTIONS && element.user_id) ||
+				(element.kindOf === ETokenMessage.MENTIONS && element.userId) ||
 				(element.kindOf === ETokenMessage.MENTIONS && element.username)
 			) {
 				formattedContent.push(
@@ -280,7 +280,7 @@ export const MessageLine = ({
 						mention={element.username}
 					/>
 				);
-			} else if (element.kindOf === ETokenMessage.MENTIONS && element.role_id) {
+			} else if (element.kindOf === ETokenMessage.MENTIONS && element.roleId) {
 				formattedContent.push(
 					<RoleMentionContent
 						key={`mentionRole-${s}-${messageId}`}
@@ -576,7 +576,7 @@ export const MentionContent = ({
 			isTokenClickAble={isTokenClickAble}
 			isJumMessageEnabled={isJumMessageEnabled}
 			tagUserName={contentInElement ?? ''}
-			tagUserId={element.user_id}
+			tagUserId={element.userId}
 			mode={mode}
 			mention={mention}
 		/>
@@ -599,7 +599,7 @@ export const RoleMentionContent = ({ element, contentInElement, isTokenClickAble
 			isTokenClickAble={isTokenClickAble}
 			isJumMessageEnabled={isJumMessageEnabled}
 			tagRoleName={contentInElement ?? ''}
-			tagRoleId={element.role_id}
+			tagRoleId={element.roleId}
 			mode={mode}
 		/>
 	);

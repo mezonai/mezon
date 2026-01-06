@@ -105,8 +105,8 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 		return listChannels.current
 			?.filter((channel) => channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE)
 			.sort((a, b) => {
-				const aLastSeen = a?.last_seen_message?.timestamp_seconds || 0;
-				const bLastSeen = b?.last_seen_message?.timestamp_seconds || 0;
+				const aLastSeen = a?.lastSeenMessage?.timestampSeconds || 0;
+				const bLastSeen = b?.lastSeenMessage?.timestampSeconds || 0;
 				return bLastSeen - aLastSeen;
 			});
 	}, []);
@@ -116,13 +116,13 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			const data = (
 				listDM?.filter?.(
 					(channel) =>
-						!!channel?.channel_label &&
+						!!channel?.channelLabel &&
 						channel?.id !== topUserSuggestionId &&
-						!listBlockUsers?.some((user) => user?.id === channel?.user_ids?.[0])
+						!listBlockUsers?.some((user) => user?.id === channel?.userIds?.[0])
 				) || []
 			).sort((a, b) => {
-				const aLastSeen = a?.last_seen_message?.timestamp_seconds || 0;
-				const bLastSeen = b?.last_seen_message?.timestamp_seconds || 0;
+				const aLastSeen = a?.lastSeenMessage?.timestampSeconds || 0;
+				const bLastSeen = b?.lastSeenMessage?.timestampSeconds || 0;
 				return bLastSeen - aLastSeen;
 			});
 
@@ -155,7 +155,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			store.dispatch(
 				directActions.joinDirectMessage({
 					directMessageId: channel?.id,
-					channelName: channel?.channel_label,
+					channelName: channel?.channelLabel,
 					type: channel?.type
 				})
 			);
@@ -170,7 +170,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			await store.dispatch(
 				channelsActions.joinChat({
 					clanId: '0',
-					channelId: channelSelected?.channel_id || '',
+					channelId: channelSelected?.channelId || '',
 					channelType: channelSelected?.type,
 					isPublic: false
 				})
@@ -197,47 +197,47 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	const sendToChannel = async (dataSend: { text: any; links: any[] }, attachments: any) => {
 		const clanIdStore = selectCurrentClanId(store.getState());
 		const isPublic = channelSelected ? isPublicChannel(channelSelected) : false;
-		const isDiffClan = clanIdStore !== channelSelected?.clan_id;
+		const isDiffClan = clanIdStore !== channelSelected?.clanId;
 		const currentUserId = selectCurrentUserId(store.getState());
-		const isBannedChannel = selectBanMemberCurrentClanById(store.getState(), channelSelected?.channel_id, currentUserId);
+		const isBannedChannel = selectBanMemberCurrentClanById(store.getState(), channelSelected?.channelId, currentUserId);
 
 		if (isBannedChannel) {
 			Toast.show({
 				type: 'error',
-				text1: t('bannedChannel', { channelName: channelSelected?.channel_label })
+				text1: t('bannedChannel', { channelName: channelSelected?.channelLabel })
 			});
 			return;
 		}
 
 		requestAnimationFrame(async () => {
 			if (isDiffClan) {
-				await store.dispatch(clansActions.joinClan({ clanId: channelSelected?.clan_id }));
-				await store.dispatch(clansActions.changeCurrentClan({ clanId: channelSelected?.clan_id }));
+				await store.dispatch(clansActions.joinClan({ clanId: channelSelected?.clanId }));
+				await store.dispatch(clansActions.changeCurrentClan({ clanId: channelSelected?.clanId }));
 			}
 			await store.dispatch(
 				channelsActions.joinChannel({
-					clanId: channelSelected?.clan_id ?? '',
-					channelId: channelSelected?.channel_id,
+					clanId: channelSelected?.clanId ?? '',
+					channelId: channelSelected?.channelId,
 					noFetchMembers: false,
 					noCache: true
 				})
 			);
 		});
-		const dataSave = getUpdateOrAddClanChannelCache(channelSelected?.clan_id, channelSelected?.channel_id);
+		const dataSave = getUpdateOrAddClanChannelCache(channelSelected?.clanId, channelSelected?.channelId);
 		save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-		save(STORAGE_CLAN_ID, channelSelected?.clan_id);
+		save(STORAGE_CLAN_ID, channelSelected?.clanId);
 		await store.dispatch(
 			channelsActions.joinChat({
-				clanId: channelSelected?.clan_id,
-				channelId: channelSelected?.channel_id,
+				clanId: channelSelected?.clanId,
+				channelId: channelSelected?.channelId,
 				channelType: channelSelected?.type,
 				isPublic
 			})
 		);
 
 		await mezon.socketRef.current.writeChatMessage(
-			channelSelected?.clan_id,
-			channelSelected?.channel_id,
+			channelSelected?.clanId,
+			channelSelected?.channelId,
 			checkIsThread(channelSelected) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL,
 			isPublic,
 			{
@@ -251,7 +251,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			false //mentionEveryone
 		);
 		const timestamp = Date.now() / 1000;
-		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: channelSelected.channel_id, timestamp }));
+		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: channelSelected.channelId, timestamp }));
 	};
 
 	const processText = (inputString: string) => {
@@ -489,7 +489,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	const renderItemSuggest = useCallback(({ item, index }) => {
 		return (
 			<SharingSuggestItem
-				key={`${item?.channel_id}_${index}_share_suggest_item`}
+				key={`${item?.channelId}_${index}_share_suggest_item`}
 				item={item}
 				clans={clans.current}
 				onChooseItem={onChooseSuggestion}

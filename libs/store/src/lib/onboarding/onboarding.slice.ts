@@ -3,7 +3,7 @@ import type { AnswerByClanArgs } from '@mezon/utils';
 import { DONE_ONBOARDING_STATUS } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiOnboardingContent, ApiOnboardingItem, ApiOnboardingSteps } from 'mezon-js/api.gen';
+import type { ApiOnboardingContent, ApiOnboardingItem, ApiOnboardingSteps } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { clansActions } from '../clans/clans.slice';
@@ -62,30 +62,30 @@ export interface OnboardingState extends EntityState<ApiOnboardingSteps, string>
 }
 
 export const onboardingUserAdapter = createEntityAdapter({
-	selectId: (a: ApiOnboardingSteps) => a.clan_id || ''
+	selectId: (a: ApiOnboardingSteps) => a.clanId || ''
 });
 
 const getInitialOnboardingState = () => ({
 	onboarding: []
 });
 
-export const fetchOnboardingCached = async (getState: () => RootState, mezon: MezonValueContext, clan_id: string, noCache = false) => {
+export const fetchOnboardingCached = async (getState: () => RootState, mezon: MezonValueContext, clanId: string, noCache = false) => {
 	const currentState = getState();
 	const onboardingState = currentState[ONBOARDING_FEATURE_KEY];
-	const clanData = onboardingState.onboardingCache[clan_id] || getInitialOnboardingState();
+	const clanData = onboardingState.onboardingCache[clanId] || getInitialOnboardingState();
 
-	const apiKey = createApiKey('fetchOnboarding', clan_id, mezon.session.username || '');
+	const apiKey = createApiKey('fetchOnboarding', clanId, mezon.session.username || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, clanData.cache, noCache);
 
 	if (!shouldForceCall) {
 		return {
-			list_onboarding: clanData.onboarding,
+			listOnboarding: clanData.onboarding,
 			fromCache: true,
 			time: clanData.cache?.lastFetched || Date.now()
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.listOnboarding(mezon.session, clan_id, undefined, 100), {
+	const response = await withRetry(() => mezon.client.listOnboarding(mezon.session, clanId, undefined, 100), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'list-clan-onboarding'
@@ -94,7 +94,7 @@ export const fetchOnboardingCached = async (getState: () => RootState, mezon: Me
 	markApiFirstCalled(apiKey);
 
 	return {
-		list_onboarding: response.list_onboarding,
+		listOnboarding: response.listOnboarding,
 		fromCache: false,
 		time: Date.now()
 	};
@@ -102,21 +102,21 @@ export const fetchOnboardingCached = async (getState: () => RootState, mezon: Me
 
 export const fetchOnboarding = createAsyncThunk(
 	'onboarding/fetchOnboarding',
-	async ({ clan_id, noCache }: { clan_id: string; noCache?: boolean }, thunkAPI) => {
+	async ({ clanId, noCache }: { clanId: string; noCache?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await fetchOnboardingCached(thunkAPI.getState as () => RootState, mezon, clan_id, Boolean(noCache));
+			const response = await fetchOnboardingCached(thunkAPI.getState as () => RootState, mezon, clanId, Boolean(noCache));
 
-			if (response.list_onboarding) {
+			if (response.listOnboarding) {
 				return {
-					response: response.list_onboarding,
-					clan_id,
+					response: response.listOnboarding,
+					clanId,
 					fromCache: response.fromCache
 				};
 			}
 			return {
 				response: [],
-				clan_id,
+				clanId,
 				fromCache: response.fromCache
 			};
 		} catch (error) {
@@ -128,17 +128,17 @@ export const fetchOnboarding = createAsyncThunk(
 
 export const createOnboardingTask = createAsyncThunk(
 	'onboarding/createOnboarding',
-	async ({ content, clan_id }: { content: ApiOnboardingContent[]; clan_id: string }, thunkAPI) => {
+	async ({ content, clanId }: { content: ApiOnboardingContent[]; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createOnboarding(mezon.session, {
-				clan_id,
+				clanId,
 				contents: [...content]
 			});
-			if (!response || !response?.list_onboarding) {
+			if (!response || !response?.listOnboarding) {
 				return false;
 			}
-			return { content: response.list_onboarding, clan_id };
+			return { content: response.listOnboarding, clanId };
 		} catch (error) {
 			captureSentryError(error, 'onboarding/createOnboarding');
 			return thunkAPI.rejectWithValue(error);
@@ -148,17 +148,17 @@ export const createOnboardingTask = createAsyncThunk(
 
 export const editOnboarding = createAsyncThunk(
 	'onboarding/editOnboarding',
-	async ({ content, idOnboarding, clan_id }: { content: ApiOnboardingContent; idOnboarding: string; clan_id: string }, thunkAPI) => {
+	async ({ content, idOnboarding, clanId }: { content: ApiOnboardingContent; idOnboarding: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.updateOnboarding(mezon.session, idOnboarding, {
-				clan_id,
+				clanId,
 				...content
 			});
 			if (!response) {
 				return false;
 			}
-			return { content, clan_id, idOnboarding };
+			return { content, clanId, idOnboarding };
 		} catch (error) {
 			captureSentryError(error, 'onboarding/createOnboarding');
 			return thunkAPI.rejectWithValue(error);
@@ -168,21 +168,21 @@ export const editOnboarding = createAsyncThunk(
 
 export const removeOnboardingTask = createAsyncThunk(
 	'onboarding/removeOnboardingTask',
-	async ({ idTask, clan_id, type }: { idTask: string; clan_id: string; type: EGuideType }, thunkAPI) => {
+	async ({ idTask, clanId, type }: { idTask: string; clanId: string; type: EGuideType }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.deleteOnboarding(mezon.session, idTask, clan_id);
+			const response = await mezon.client.deleteOnboarding(mezon.session, idTask, clanId);
 			if (!response) {
 				return {
-					clan_id: null,
+					clanId: null,
 					idTask: null,
 					type: null
 				};
 			}
 
 			return {
-				clan_id,
+				clanId,
 				idTask,
 				type
 			};
@@ -195,12 +195,12 @@ export const removeOnboardingTask = createAsyncThunk(
 
 export const enableOnboarding = createAsyncThunk(
 	'clans/updateClans',
-	async ({ clan_id, onboarding, banner }: { clan_id: string; onboarding: boolean; banner?: string }, thunkAPI) => {
+	async ({ clanId, onboarding, banner }: { clanId: string; onboarding: boolean; banner?: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.updateClanDesc(mezon.session, clan_id, {
-				is_onboarding: onboarding,
+			const response = await mezon.client.updateClanDesc(mezon.session, clanId, {
+				isOnboarding: onboarding,
 				banner
 			});
 
@@ -209,7 +209,7 @@ export const enableOnboarding = createAsyncThunk(
 			}
 			thunkAPI.dispatch(
 				clansActions.updateOnboardingMode({
-					clanId: clan_id,
+					clanId,
 					onboarding
 				})
 			);
@@ -221,23 +221,23 @@ export const enableOnboarding = createAsyncThunk(
 	}
 );
 
-export const fetchOnboardingStepCached = async (getState: () => RootState, mezon: MezonValueContext, clan_id?: string, noCache = false) => {
+export const fetchOnboardingStepCached = async (getState: () => RootState, mezon: MezonValueContext, clanId?: string, noCache = false) => {
 	const currentState = getState();
 	const onboardingState = currentState[ONBOARDING_FEATURE_KEY];
 
-	const apiKey = createApiKey('fetchOnboardingStep', mezon.session.username || '', clan_id || '');
+	const apiKey = createApiKey('fetchOnboardingStep', mezon.session.username || '', clanId || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, onboardingState.onboardingStepCache, noCache);
 
 	if (!shouldForceCall) {
 		return {
-			list_onboarding_step: Object.values(onboardingState.entities).filter(Boolean),
+			listOnboardingStep: Object.values(onboardingState.entities).filter(Boolean),
 			fromCache: true,
 			time: onboardingState.onboardingStepCache?.lastFetched || Date.now()
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.listOnboardingStep(mezon.session, clan_id), {
+	const response = await withRetry(() => mezon.client.listOnboardingStep(mezon.session, clanId), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'clan-onboarding-steps'
@@ -246,7 +246,7 @@ export const fetchOnboardingStepCached = async (getState: () => RootState, mezon
 	markApiFirstCalled(apiKey);
 
 	return {
-		list_onboarding_step: response.list_onboarding_step || [],
+		listOnboardingStep: response.listOnboardingStep || [],
 		fromCache: false,
 		time: Date.now()
 	};
@@ -254,12 +254,12 @@ export const fetchOnboardingStepCached = async (getState: () => RootState, mezon
 
 export const fetchProcessingOnboarding = createAsyncThunk(
 	'onboarding/fetchProcessing',
-	async ({ clan_id, noCache }: { clan_id?: string; noCache?: boolean } = {}, thunkAPI) => {
+	async ({ clanId, noCache }: { clanId?: string; noCache?: boolean } = {}, thunkAPI) => {
 		try {
 			const mezone = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await fetchOnboardingStepCached(thunkAPI.getState as () => RootState, mezone, clan_id, Boolean(noCache));
-			if (!response.list_onboarding_step) {
+			const response = await fetchOnboardingStepCached(thunkAPI.getState as () => RootState, mezone, clanId, Boolean(noCache));
+			if (!response.listOnboardingStep) {
 				return {
 					steps: [],
 					fromCache: response.fromCache
@@ -267,7 +267,7 @@ export const fetchProcessingOnboarding = createAsyncThunk(
 			}
 
 			return {
-				steps: response.list_onboarding_step,
+				steps: response.listOnboardingStep,
 				fromCache: response.fromCache
 			};
 		} catch (error) {
@@ -277,16 +277,16 @@ export const fetchProcessingOnboarding = createAsyncThunk(
 	}
 );
 
-export const doneOnboarding = createAsyncThunk('onboarding/doneOnboarding', async ({ clan_id }: { clan_id: string }, thunkAPI) => {
+export const doneOnboarding = createAsyncThunk('onboarding/doneOnboarding', async ({ clanId }: { clanId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.updateOnboardingStepByClanId(mezon.session, clan_id, { onboarding_step: DONE_ONBOARDING_STATUS });
+		const response = await mezon.client.updateOnboardingStepByClanId(mezon.session, clanId, { onboardingStep: DONE_ONBOARDING_STATUS });
 		if (!response) {
 			return false;
 		}
 
-		return clan_id;
+		return clanId;
 	} catch (error) {
 		captureSentryError(error, 'clans/updateClans');
 		return thunkAPI.rejectWithValue(error);
@@ -331,10 +331,10 @@ export const onboardingSlice = createSlice({
 	name: ONBOARDING_FEATURE_KEY,
 	initialState: initialOnboardingState,
 	reducers: {
-		openOnboardingPreviewMode: (state, action: PayloadAction<{ clan_id: string }>) => {
+		openOnboardingPreviewMode: (state, action: PayloadAction<{ clanId: string }>) => {
 			state.onboardingPreviewMode = {
 				open: true,
-				clanId: action.payload.clan_id
+				clanId: action.payload.clanId
 			};
 		},
 		closeOnboardingPreviewMode: (state) => {
@@ -347,14 +347,14 @@ export const onboardingSlice = createSlice({
 		closeToOnboard: (state) => {
 			state.toOnboard = false;
 		},
-		doneMission: (state, action: PayloadAction<{ clan_id: string }>) => {
-			const missionDone = state.listOnboarding[action.payload.clan_id].doneMission || 0;
-			const sumMission = state.listOnboarding[action.payload.clan_id].sumMission || 0;
+		doneMission: (state, action: PayloadAction<{ clanId: string }>) => {
+			const missionDone = state.listOnboarding[action.payload.clanId].doneMission || 0;
+			const sumMission = state.listOnboarding[action.payload.clanId].sumMission || 0;
 			if (
 				missionDone < sumMission &&
-				onboardingUserAdapter.getSelectors().selectById(state, action.payload.clan_id)?.onboarding_step !== DONE_ONBOARDING_STATUS
+				onboardingUserAdapter.getSelectors().selectById(state, action.payload.clanId)?.onboardingStep !== DONE_ONBOARDING_STATUS
 			) {
-				state.listOnboarding[action.payload.clan_id].doneMission = (state.listOnboarding[action.payload.clan_id].doneMission || 0) + 1;
+				state.listOnboarding[action.payload.clanId].doneMission = (state.listOnboarding[action.payload.clanId].doneMission || 0) + 1;
 			}
 		},
 		addGreeting: (state, action: PayloadAction<ApiOnboardingContent>) => {
@@ -454,17 +454,17 @@ export const onboardingSlice = createSlice({
 	extraReducers: (builder) => {
 		builder
 			.addCase(fetchOnboarding.fulfilled, (state, action) => {
-				const { clan_id, response, fromCache } = action.payload;
+				const { clanId, response, fromCache } = action.payload;
 
-				if (!fromCache && !Object.prototype.hasOwnProperty.call(state.listOnboarding, clan_id)) {
+				if (!fromCache && !Object.prototype.hasOwnProperty.call(state.listOnboarding, clanId)) {
 					const onboardingClan: OnboardingClanType = {
 						greeting: undefined,
 						mission: [],
 						question: [],
 						rule: []
 					};
-					response.map((onboardingItem) => {
-						switch (onboardingItem.guide_type) {
+					response.map((onboardingItem: any) => {
+						switch (onboardingItem.guideType) {
 							case EGuideType.GREETING:
 								onboardingClan.greeting = onboardingItem;
 								break;
@@ -482,15 +482,15 @@ export const onboardingSlice = createSlice({
 						}
 					});
 
-					state.listOnboarding[clan_id] = onboardingClan;
-					state.listOnboarding[clan_id].sumMission = onboardingClan.mission.length;
+					state.listOnboarding[clanId] = onboardingClan;
+					state.listOnboarding[clanId].sumMission = onboardingClan.mission.length;
 
-					if (!state.onboardingCache[clan_id]) {
-						state.onboardingCache[clan_id] = getInitialOnboardingState();
+					if (!state.onboardingCache[clanId]) {
+						state.onboardingCache[clanId] = getInitialOnboardingState();
 					}
 
-					state.onboardingCache[clan_id].onboarding = response;
-					state.onboardingCache[clan_id].cache = {
+					state.onboardingCache[clanId].onboarding = response;
+					state.onboardingCache[clanId].cache = {
 						lastFetched: Date.now(),
 						expiresAt: Date.now() + 1000 * 60 * 60,
 						isFirstLoad: false
@@ -507,16 +507,16 @@ export const onboardingSlice = createSlice({
 					questions: [],
 					task: []
 				};
-				const { content, clan_id } = action.payload;
-				if (clan_id) {
+				const { content, clanId } = action.payload;
+				if (clanId) {
 					const onboardingClan: OnboardingClanType = {
-						greeting: state.listOnboarding[clan_id].greeting,
-						mission: state.listOnboarding[clan_id].mission,
-						question: state.listOnboarding[clan_id].question,
-						rule: state.listOnboarding[clan_id].rule
+						greeting: state.listOnboarding[clanId].greeting,
+						mission: state.listOnboarding[clanId].mission,
+						question: state.listOnboarding[clanId].question,
+						rule: state.listOnboarding[clanId].rule
 					};
-					content.map((onboardingItem) => {
-						switch (onboardingItem.guide_type) {
+					content.map((onboardingItem: any) => {
+						switch (onboardingItem.guideType) {
 							case EGuideType.GREETING:
 								onboardingClan.greeting = onboardingItem;
 								break;
@@ -539,27 +539,27 @@ export const onboardingSlice = createSlice({
 								break;
 						}
 					});
-					state.listOnboarding[clan_id] = onboardingClan;
+					state.listOnboarding[clanId] = onboardingClan;
 				}
 			})
 			.addCase(removeOnboardingTask.fulfilled, (state, action) => {
-				if (action.payload.clan_id) {
+				if (action.payload.clanId) {
 					switch (action.payload.type) {
 						case EGuideType.GREETING:
-							state.listOnboarding[action.payload.clan_id].greeting = undefined;
+							state.listOnboarding[action.payload.clanId].greeting = undefined;
 							break;
 						case EGuideType.RULE:
-							state.listOnboarding[action.payload.clan_id].rule = state.listOnboarding[action.payload.clan_id].rule.filter(
+							state.listOnboarding[action.payload.clanId].rule = state.listOnboarding[action.payload.clanId].rule.filter(
 								(task) => task.id !== action.payload.idTask
 							);
 							break;
 						case EGuideType.QUESTION:
-							state.listOnboarding[action.payload.clan_id].question = state.listOnboarding[action.payload.clan_id].question.filter(
+							state.listOnboarding[action.payload.clanId].question = state.listOnboarding[action.payload.clanId].question.filter(
 								(task) => task.id !== action.payload.idTask
 							);
 							break;
 						case EGuideType.TASK:
-							state.listOnboarding[action.payload.clan_id].mission = state.listOnboarding[action.payload.clan_id].mission.filter(
+							state.listOnboarding[action.payload.clanId].mission = state.listOnboarding[action.payload.clanId].mission.filter(
 								(task) => task.id !== action.payload.idTask
 							);
 							break;
@@ -582,11 +582,11 @@ export const onboardingSlice = createSlice({
 				if (!action.payload) {
 					return;
 				}
-				const { clan_id, content, idOnboarding } = action.payload;
-				if (state.listOnboarding[clan_id]) {
-					switch (content.guide_type) {
+				const { clanId, content, idOnboarding } = action.payload;
+				if (state.listOnboarding[clanId]) {
+					switch (content.guideType) {
 						case EGuideType.RULE:
-							state.listOnboarding[action.payload.clan_id].rule = state.listOnboarding[action.payload.clan_id].rule.map((rule) => {
+							state.listOnboarding[action.payload.clanId].rule = state.listOnboarding[action.payload.clanId].rule.map((rule) => {
 								if (rule.id === idOnboarding) {
 									return {
 										...rule,
@@ -597,17 +597,15 @@ export const onboardingSlice = createSlice({
 							});
 							break;
 						case EGuideType.TASK:
-							state.listOnboarding[action.payload.clan_id].mission = state.listOnboarding[action.payload.clan_id].mission.map(
-								(task) => {
-									if (task.id === idOnboarding) {
-										return {
-											...task,
-											...content
-										};
-									}
-									return task;
+							state.listOnboarding[action.payload.clanId].mission = state.listOnboarding[action.payload.clanId].mission.map((task) => {
+								if (task.id === idOnboarding) {
+									return {
+										...task,
+										...content
+									};
 								}
-							);
+								return task;
+							});
 							break;
 						default:
 							break;
@@ -637,19 +635,19 @@ export const getOnboardingState = (rootState: { [ONBOARDING_FEATURE_KEY]: Onboar
 export const selectOnboardingMode = createSelector(getOnboardingState, (state) => state.onboardingPreviewMode);
 export const selectToOnboard = createSelector(getOnboardingState, (state) => state.toOnboard);
 
-export const selectMissionDone = createSelector([getOnboardingState, (state, clan_id: string) => clan_id], (state, clan_id) => {
-	return state.listOnboarding[clan_id]?.doneMission || 0;
+export const selectMissionDone = createSelector([getOnboardingState, (state, clanId: string) => clanId], (state, clanId) => {
+	return state.listOnboarding[clanId]?.doneMission || 0;
 });
 
-export const selectMissionSum = createSelector([getOnboardingState, (state, clan_id: string) => clan_id], (state, clan_id) => {
-	return state.listOnboarding[clan_id]?.sumMission || 0;
+export const selectMissionSum = createSelector([getOnboardingState, (state, clanId: string) => clanId], (state, clanId) => {
+	return state.listOnboarding[clanId]?.sumMission || 0;
 });
 
 export const selectFormOnboarding = createSelector(getOnboardingState, (state) => state.formOnboarding);
 
-export const selectOnboardingByClan = createSelector([getOnboardingState, (state, clan_id: string) => clan_id], (state, clan_id) => {
+export const selectOnboardingByClan = createSelector([getOnboardingState, (state, clanId: string) => clanId], (state, clanId) => {
 	return (
-		state.listOnboarding[clan_id] || {
+		state.listOnboarding[clanId] || {
 			greeting: null,
 			mission: [],
 			question: [],
@@ -659,14 +657,14 @@ export const selectOnboardingByClan = createSelector([getOnboardingState, (state
 	);
 });
 
-export const selectProcessingByClan = createSelector([getOnboardingState, (state, clan_id: string) => clan_id], (state, clan_id) => {
-	return selectById(state, clan_id);
+export const selectProcessingByClan = createSelector([getOnboardingState, (state, clanId: string) => clanId], (state, clanId) => {
+	return selectById(state, clanId);
 });
 export const selectCurrentMission = createSelector(
-	[getOnboardingState, (state, clan_id: string) => clan_id, selectMissionDone],
-	(state, clan_id, missionIndex) => {
-		if (state.listOnboarding[clan_id]?.mission) {
-			return state.listOnboarding[clan_id].mission[missionIndex];
+	[getOnboardingState, (state, clanId: string) => clanId, selectMissionDone],
+	(state, clanId, missionIndex) => {
+		if (state.listOnboarding[clanId]?.mission) {
+			return state.listOnboarding[clanId].mission[missionIndex];
 		}
 		return null;
 	}

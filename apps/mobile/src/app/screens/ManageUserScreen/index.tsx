@@ -35,7 +35,7 @@ const ManageUserScreen = ({ route }: ManageUserScreenProps) => {
 	const { removeMemberClan } = useChannelMembersActions();
 	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
 	const currentChannel = useSelector(selectCurrentChannel);
-	const currentChannelId = currentChannel?.channel_id;
+	const currentChannelId = currentChannel?.channelId;
 	const isItMe = useMemo(() => userProfile?.user?.id === user?.user?.id, [user?.user?.id, userProfile?.user?.id]);
 	const isThatClanOwner = useMemo(() => currentClanCreatorId === user?.user?.id, [user?.user?.id, currentClanCreatorId]);
 	const currentClanId = useSelector(selectCurrentClanId);

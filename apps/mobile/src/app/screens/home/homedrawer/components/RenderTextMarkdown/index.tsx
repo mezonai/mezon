@@ -45,8 +45,8 @@ export const checkUrl = async (url: string, clanId: string, channelId: string) =
 	if (userClan?.id) {
 		const response = await store.dispatch(channelsActions.fetchChannels({ clanId: userClan?.id, noCache: true }));
 		if (response?.meta?.requestStatus === 'fulfilled') {
-			const targetChannel = response?.payload?.channels?.find((channel) => channel?.channel_id === channelId);
-			if (targetChannel?.channel_id) {
+			const targetChannel = response?.payload?.channels?.find((channel) => channel?.channelId === channelId);
+			if (targetChannel?.channelId) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, targetChannel);
 				return;
 			}
@@ -414,8 +414,8 @@ export const RenderTextMarkdownContent = ({
 				const usersInChannel = selectAllChannelMembers(store.getState() as RootState, currentChannelId as string);
 				const mention = MentionUser({
 					tagName: contentInElement,
-					roleId: element?.role_id || '',
-					tagUserId: element?.user_id,
+					roleId: element?.roleId || '',
+					tagUserId: element?.userId,
 					mode,
 					usersClan,
 					usersInChannel

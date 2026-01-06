@@ -20,23 +20,23 @@ export function useMessageParser(message: IMessageWithUser) {
 	}, [content]);
 
 	const messageTime = useMemo(() => {
-		if (!message?.create_time_seconds) return '';
-		return convertTimeString(new Date(message.create_time_seconds * 1000).toISOString());
+		if (!message?.createTimeSeconds) return '';
+		return convertTimeString(new Date(message.createTimeSeconds * 1000).toISOString());
 	}, [message]);
 
 	const messageDate = useMemo(() => {
-		if (!message?.create_time_seconds) return '';
-		return convertDateString(new Date(message.create_time_seconds * 1000).toISOString());
+		if (!message?.createTimeSeconds) return '';
+		return convertDateString(new Date(message.createTimeSeconds * 1000).toISOString());
 	}, [message]);
 
 	const messageHour = useMemo(() => {
-		if (!message?.create_time_seconds) return '';
-		return convertTimeHour(new Date(message.create_time_seconds * 1000).toISOString());
+		if (!message?.createTimeSeconds) return '';
+		return convertTimeHour(new Date(message.createTimeSeconds * 1000).toISOString());
 	}, [message]);
 
 	const messageTimeDifference = useMemo(() => {
-		if (!message?.create_time_seconds) return '';
-		return getTimeDifferenceDate(new Date(message.create_time_seconds * 1000).toISOString());
+		if (!message?.createTimeSeconds) return '';
+		return getTimeDifferenceDate(new Date(message.createTimeSeconds * 1000).toISOString());
 	}, [message]);
 
 	return {

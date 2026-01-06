@@ -98,7 +98,7 @@ export const ID_MENTION_HERE = '1775731111020111321';
 
 export const EMOJI_GIVE_COFFEE = {
 	emoji: ':coffee:',
-	emoji_id: '7280417126303261185'
+	emojiId: '7280417126303261185'
 };
 export const SYSTEM_NAME = 'System';
 export const SYSTEM_SENDER_ID = '0';
@@ -221,3 +221,6 @@ export const ITEM_TYPE = {
 };
 
 export const MAX_CLAN_ITEM_SLOTS = 250;
+
+export const NOISE_SUPPRESSION_NORMALIZATION_FACTOR = 0.6;
+export const INITIAL_NOISE_SUPPRESSION_PERCENTAGE = 20;

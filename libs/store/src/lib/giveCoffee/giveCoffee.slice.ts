@@ -4,8 +4,7 @@ import type { LoadingStatus } from '@mezon/utils';
 import { AMOUNT_TOKEN } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
-import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiGiveCoffeeEvent, ApiTokenSentEvent } from 'mezon-js/types';
 import type { AddTxResponse } from 'mmn-client-js';
 import { ETransferType } from 'mmn-client-js';
 import { ensureSession, getMezonCtx } from '../helpers';
@@ -41,7 +40,7 @@ export const giveCoffeeAdapter = createEntityAdapter<GiveCoffeeEntity>();
 
 export const updateGiveCoffee = createAsyncThunk(
 	'giveCoffee/updateGiveCoffee',
-	async ({ channel_id, clan_id, message_ref_id, receiver_id, sender_id }: ApiGiveCoffeeEvent, thunkAPI) => {
+	async ({ channelId, clanId, messageRefId, receiverId, senderId }: ApiGiveCoffeeEvent, thunkAPI) => {
 		const state = thunkAPI.getState() as any;
 		if (!state.giveCoffee.pendingGiveCoffee) {
 			try {
@@ -52,17 +51,17 @@ export const updateGiveCoffee = createAsyncThunk(
 				const response = await thunkAPI
 					.dispatch(
 						walletActions.sendTransaction({
-							sender: sender_id,
-							recipient: receiver_id,
+							sender: senderId,
+							recipient: receiverId,
 							amount: AMOUNT_TOKEN.TEN_THOUSAND_TOKENS,
 							textData: 'givecoffee',
 							extraInfo: {
 								type: ETransferType.GiveCoffee,
-								ChannelId: channel_id || '',
-								ClanId: clan_id || '',
-								MessageRefId: message_ref_id || '',
-								UserReceiverId: receiver_id || '',
-								UserSenderId: sender_id || '',
+								ChannelId: channelId || '',
+								ClanId: clanId || '',
+								MessageRefId: messageRefId || '',
+								UserReceiverId: receiverId || '',
+								UserSenderId: senderId || '',
 								UserSenderUsername: mezon.session.username || ''
 							}
 						})
@@ -108,16 +107,16 @@ export const sendToken = createAsyncThunk(
 			const response = await thunkAPI
 				.dispatch(
 					walletActions.sendTransaction({
-						sender: tokenEvent.sender_id,
-						recipient: tokenEvent.receiver_id,
+						sender: tokenEvent.senderId,
+						recipient: tokenEvent.receiverId,
 						amount: tokenEvent.amount,
 						textData: tokenEvent.note,
 						extraInfo: {
 							type: ETransferType.TransferToken,
-							UserReceiverId: tokenEvent.receiver_id || '',
-							UserSenderId: tokenEvent.sender_id || '',
+							UserReceiverId: tokenEvent.receiverId || '',
+							UserSenderId: tokenEvent.senderId || '',
 							UserSenderUsername: mezon.session.username || '',
-							ExtraAttribute: tokenEvent?.extra_attribute || ''
+							ExtraAttribute: tokenEvent?.extraAttribute || ''
 						},
 						isSendByAddress
 					})
@@ -161,24 +160,24 @@ export const giveCoffeeSlice = createSlice({
 		},
 		updateTokenUser: (state, action: PayloadAction<{ tokenEvent: ApiTokenSentEvent }>) => {
 			const { tokenEvent } = action.payload;
-			const userId = tokenEvent.sender_id;
+			const userId = tokenEvent.senderId;
 			if (!userId) return;
 			state.tokenUpdate[userId] = state.tokenUpdate[userId] ?? 0;
 			state.tokenSocket[userId] = tokenEvent ?? {};
 
-			if (userId === tokenEvent.sender_id) {
+			if (userId === tokenEvent.senderId) {
 				state.tokenUpdate[userId] -= tokenEvent.amount || 0;
 			}
 		},
 		handleSocketToken: (state, action: PayloadAction<{ currentUserId: string; tokenEvent: ApiTokenSentEvent }>) => {
 			const { currentUserId, tokenEvent } = action.payload;
 			if (!currentUserId) return;
-			if (currentUserId !== tokenEvent.receiver_id) return;
+			if (currentUserId !== tokenEvent.receiverId) return;
 
 			state.tokenUpdate[currentUserId] = state.tokenUpdate[currentUserId] ?? 0;
 			state.tokenSocket[currentUserId] = tokenEvent ?? {};
 
-			if (currentUserId === tokenEvent.receiver_id) {
+			if (currentUserId === tokenEvent.receiverId) {
 				state.tokenUpdate[currentUserId] += tokenEvent.amount || 0;
 			}
 		},

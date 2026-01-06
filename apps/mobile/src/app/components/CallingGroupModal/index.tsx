@@ -21,14 +21,14 @@ type ICallingGroupProps = {
 
 interface CallSignalingData {
 	is_video: boolean;
-	group_id: string;
+	groupId: string;
 	group_name: string;
 	group_avatar?: string;
-	caller_id: string;
+	callerId: string;
 	caller_name: string;
 	caller_avatar?: string;
-	meeting_code?: string;
-	clan_id?: string;
+	meetingCode?: string;
+	clanId?: string;
 	timestamp: number;
 	participants: string[];
 	action?: string;
@@ -92,17 +92,17 @@ export const useSendSignaling = () => {
 
 			if (isCancel) {
 				const bodyFCMMobile = { offer: 'CANCEL_CALL' };
-				socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+				socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.groupId, currentUserId);
 				return;
 			}
 
 			const groupName = data?.group_name || 'Group Call';
 			const offerGroupCall = {
 				isGroupCall: true,
-				groupId: data.group_id,
+				groupId: data.groupId,
 				groupName,
 				groupAvatar: data.group_avatar || '',
-				meetingCode: data.meeting_code,
+				meetingCode: data.meetingCode,
 				callerId: currentUserId
 			};
 
@@ -111,10 +111,10 @@ export const useSendSignaling = () => {
 				callerName: `Group Call ${groupName}`,
 				callerAvatar: '',
 				callerId: currentUserId,
-				channelId: data.group_id
+				channelId: data.groupId
 			};
 
-			socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+			socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.groupId, currentUserId);
 		},
 		[mezon]
 	);
@@ -143,8 +143,8 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 	const { t } = useTranslation('message');
 
 	const callData = useMemo(() => {
-		return parseSignalingData(dataCall?.json_data as string);
-	}, [dataCall?.json_data]);
+		return parseSignalingData(dataCall?.jsonData as string);
+	}, [dataCall?.jsonData]);
 
 	const stopAndReleaseSound = () => {
 		if (ringtoneRef.current) {
@@ -170,7 +170,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 	}, []);
 
 	useEffect(() => {
-		if (dataCall?.caller_id && callData) {
+		if (dataCall?.callerId && callData) {
 			setIsVisible(true);
 			Sound.setCategory(Platform.OS === 'ios' ? 'Playback' : 'Ambient', Platform.OS === 'ios');
 
@@ -194,7 +194,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 			stopAndReleaseSound();
 			Vibration.cancel();
 		}
-	}, [callData, dataCall?.caller_id]);
+	}, [callData, dataCall?.callerId]);
 
 	const playVibration = () => {
 		const pattern = Platform.select({
@@ -208,12 +208,12 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 		stopAndReleaseSound();
 		Vibration.cancel();
 		setIsVisible(false);
-		if (dataCall?.channel_id && callData) {
+		if (dataCall?.channelId && callData) {
 			dispatch(groupCallActions.hideIncomingGroupCall());
-			if (!callData.meeting_code) return;
+			if (!callData.meetingCode) return;
 			const data = {
-				channelId: dataCall.channel_id || '',
-				roomName: callData?.meeting_code,
+				channelId: dataCall.channelId || '',
+				roomName: callData?.meetingCode,
 				clanId: '',
 				isGroupCall: true
 			};
@@ -225,10 +225,10 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 				timestamp: Date.now()
 			};
 			sendSignalingToParticipants(
-				[dataCall?.caller_id],
+				[dataCall?.callerId],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_PARTICIPANT_JOINED,
 				joinAction,
-				dataCall?.channel_id || '',
+				dataCall?.channelId || '',
 				userId || ''
 			);
 		}
@@ -240,17 +240,17 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 		setIsVisible(false);
 		const quitAction = {
 			is_video: callData?.is_video || false,
-			group_id: dataCall?.channel_id || '',
-			caller_id: userId,
+			groupId: dataCall?.channelId || '',
+			callerId: userId,
 			caller_name: callData?.caller_name || '',
 			timestamp: Date.now(),
 			action: 'decline'
 		};
 		sendSignalingToParticipants(
-			[dataCall?.caller_id],
+			[dataCall?.callerId],
 			WEBRTC_SIGNALING_TYPES.GROUP_CALL_QUIT,
 			quitAction,
-			dataCall?.channel_id || '',
+			dataCall?.channelId || '',
 			userId || ''
 		);
 		dispatch(groupCallActions.hideIncomingGroupCall());
