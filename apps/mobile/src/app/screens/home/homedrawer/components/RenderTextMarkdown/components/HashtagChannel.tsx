@@ -82,8 +82,8 @@ const HashtagChannelComponent = ({
 			const channelParent = selectChannelById(store.getState(), element?.parentId);
 			return !!channelParent;
 		}
-		return !!channelFoundFromStore;
-	}, [channelFoundFromStore, channelLabel, element]);
+		return !!channelFound;
+	}, [channelFound, channelLabel, element]);
 
 	const mention = useMemo(
 		() =>
@@ -145,7 +145,7 @@ const HashtagChannelComponent = ({
 			return styles.hashtag;
 		}
 		return {};
-	}, [themeValue, payloadChannel?.channel_id, isUnReadChannel, isLastMessage, isBuzzMessage]);
+	}, [themeValue, isUnReadChannel, isLastMessage, isBuzzMessage, payloadChannel]);
 
 	const icon = useMemo(
 		() =>
