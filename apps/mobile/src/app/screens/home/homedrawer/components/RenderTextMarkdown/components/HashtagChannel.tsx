@@ -119,16 +119,16 @@ const HashtagChannelComponent = ({
 		const payload = {
 			type: Number(dataChannel?.[0] || 1),
 			id: channelId,
-			channel_id: channelId,
-			clan_id: clanId,
+			channelId,
+			clanId,
 			status: Number(dataChannel?.[3] || 1),
-			meeting_code: dataChannel?.[4] || '',
-			category_id: dataChannel?.[5],
-			channel_label: text ? text : channelLabel && targetChannelId ? channelLabel : ''
+			meetingCode: dataChannel?.[4] || '',
+			categoryId: dataChannel?.[5],
+			channelLabel: text ? text : channelLabel && targetChannelId ? channelLabel : ''
 		};
 
 		const type = payload?.type ? payload?.type : channelLabel && channelId ? ChannelType.CHANNEL_TYPE_THREAD : 0;
-		const display = payload?.channel_id === 'undefined' || !payload?.channel_id ? 'private-channel' : channelLabel ? channelLabel : text;
+		const display = payload?.channelId === 'undefined' || !payload?.channelId ? 'private-channel' : channelLabel ? channelLabel : text;
 
 		return { payloadChannel: payload, channelType: type, displayText: display };
 	}, [link, isHaveAccessChannel, channelLabel, targetChannelId, clanIdOverride, element?.clanId, text]);
@@ -138,10 +138,10 @@ const HashtagChannelComponent = ({
 
 		const styles = markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage);
 
-		if (payloadChannel?.channel_id === 'undefined') {
+		if (payloadChannel?.channelId === 'undefined') {
 			return styles.privateChannel;
 		}
-		if (payloadChannel?.channel_id) {
+		if (payloadChannel?.channelId) {
 			return styles.hashtag;
 		}
 		return {};
@@ -151,17 +151,17 @@ const HashtagChannelComponent = ({
 		() =>
 			renderChannelIcon(
 				channelType,
-				payloadChannel?.channel_id,
+				payloadChannel?.channelId,
 				themeValue,
-				(!channelLabel && !payloadChannel?.channel_label) || channelFound?.channel_private === ChannelStatusEnum.isPrivate
+				(!channelLabel && !payloadChannel?.channelLabel) || channelFound?.channel_private === ChannelStatusEnum.isPrivate
 			),
-		[channelType, payloadChannel?.channel_id, payloadChannel?.channel_label, themeValue, channelLabel, channelFound?.channel_private]
+		[channelType, payloadChannel?.channelId, payloadChannel?.channelLabel, themeValue, channelLabel, channelFound?.channel_private]
 	);
 
 	const handlePress = useCallback(async () => {
-		if (!payloadChannel?.channel_id || !payloadChannel?.clan_id) return;
+		if (!payloadChannel?.channelId || !payloadChannel?.clanId) return;
 		let threadPublishNotJoined = undefined;
-		const res = await dispatch(channelsActions.addThreadToChannels({ channelId: payloadChannel?.channel_id, clanId: payloadChannel?.clan_id }));
+		const res = await dispatch(channelsActions.addThreadToChannels({ channelId: payloadChannel?.channelId, clanId: payloadChannel?.clanId }));
 		if (res?.payload) threadPublishNotJoined = res?.payload;
 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, threadPublishNotJoined || payloadChannel);
