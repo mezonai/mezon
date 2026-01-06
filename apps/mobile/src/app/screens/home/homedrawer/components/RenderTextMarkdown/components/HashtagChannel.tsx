@@ -1,0 +1,170 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
+import { useAppDispatch } from '@mezon/store';
+import { channelsActions, selectChannelById } from '@mezon/store-mobile';
+import { ChannelStatusEnum } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
+import { memo, useCallback, useMemo } from 'react';
+import { DeviceEventEmitter, Text } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
+import { useSelector } from 'react-redux';
+import CustomIcon from '../../../../../../../../src/assets/CustomIcon';
+import { ChannelHashtag } from '../../MarkdownFormatText/ChannelHashtag';
+import { markdownStyles } from '../index';
+import { styles as componentStyles } from '../index.styles';
+
+export interface HashtagChannelProps {
+	element: any;
+	index: number;
+	themeValue: Attributes;
+	isUnReadChannel?: boolean;
+	isLastMessage?: boolean;
+	isBuzzMessage?: boolean;
+	channelIdOverride?: string;
+	clanIdOverride?: string;
+	channelEntityOverride?: any;
+}
+
+const renderChannelIcon = (channelType: number, channelId: string, themeValue: Attributes, isThreadPrivate?: boolean) => {
+	const iconStyle = componentStyles().channelIcon;
+	if (channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+		return <CustomIcon name="voice" size={size.s_14} color={baseColor.link} style={iconStyle} />;
+	}
+	if (channelType === ChannelType.CHANNEL_TYPE_THREAD) {
+		return <CustomIcon name={isThreadPrivate ? 'threadPrivate' : 'thread'} size={size.s_14} color={baseColor.link} style={iconStyle} />;
+	}
+	if (channelType === ChannelType.CHANNEL_TYPE_STREAMING) {
+		return <CustomIcon name="stream" size={size.s_14} color={baseColor.link} style={iconStyle} />;
+	}
+	if (channelType === ChannelType.CHANNEL_TYPE_APP) {
+		return <CustomIcon name="app" size={size.s_14} color={baseColor.link} style={iconStyle} />;
+	}
+	if (channelId === 'undefined') {
+		return <Feather name="lock" size={size.s_14} color={themeValue.text} style={iconStyle} />;
+	}
+	return null;
+};
+
+function parseMarkdownLink(text: string) {
+	const bracketMatch = text.match(/\[(.*?)\]/);
+	const parenthesesMatch = text.match(/\((.*?)\)/);
+
+	return {
+		text: bracketMatch?.[1] || '',
+		link: parenthesesMatch?.[1] || ''
+	};
+}
+
+const HashtagChannelComponent = ({
+	element,
+	index,
+	themeValue,
+	isUnReadChannel = false,
+	isLastMessage = false,
+	isBuzzMessage = false,
+	channelIdOverride,
+	clanIdOverride,
+	channelEntityOverride
+}: HashtagChannelProps) => {
+	const dispatch = useAppDispatch();
+
+	const targetChannelId = useMemo(() => channelIdOverride ?? element?.channelid, [channelIdOverride, element?.channelid]);
+
+	const channelFoundFromStore = useSelector((state: any) => (!channelEntityOverride ? selectChannelById(state, targetChannelId) : null));
+
+	const channelFound = useMemo(() => channelEntityOverride ?? channelFoundFromStore, [channelEntityOverride, channelFoundFromStore]);
+
+	const channelLabel = useMemo(() => element?.channelLabel || '', [element?.channelLabel]);
+
+	const mention = useMemo(
+		() =>
+			ChannelHashtag({
+				channelHashtagId: targetChannelId,
+				channelEntity: channelFound
+			}),
+		[targetChannelId, channelFound]
+	);
+
+	const { text, link } = useMemo(() => parseMarkdownLink(mention), [mention]);
+
+	const { payloadChannel, channelType, displayText } = useMemo(() => {
+		const urlFormat = link.replace(/##voice|#thread|#stream|#app|#%22|%22|"|#/g, '');
+		const dataChannel = urlFormat?.split?.('***');
+
+		let channelId = 'undefined';
+		if (dataChannel?.[1] && dataChannel?.[1] !== 'undefined') {
+			channelId = dataChannel?.[1];
+		} else if (channelLabel && targetChannelId) {
+			channelId = targetChannelId;
+		}
+
+		let clanId = '';
+		if (clanIdOverride) {
+			clanId = clanIdOverride;
+		} else if (dataChannel?.[2] && dataChannel?.[2] !== 'undefined') {
+			clanId = dataChannel?.[2];
+		} else if (element?.clanId) {
+			channelId = element?.clanId;
+		}
+
+		const payload = {
+			type: Number(dataChannel?.[0] || 1),
+			id: channelId,
+			channel_id: channelId,
+			clan_id: clanId,
+			status: Number(dataChannel?.[3] || 1),
+			meeting_code: dataChannel?.[4] || '',
+			category_id: dataChannel?.[5],
+			channel_label: text ? text : channelLabel && targetChannelId ? channelLabel : ''
+		};
+
+		const type = payload?.type ? payload?.type : channelLabel && channelId ? ChannelType.CHANNEL_TYPE_THREAD : 0;
+		const display = channelLabel ? channelLabel : payload?.channel_id === 'undefined' || !payload?.channel_id ? 'private-channel' : text;
+
+		return { payloadChannel: payload, channelType: type, displayText: display };
+	}, [link, channelLabel, targetChannelId, clanIdOverride, element?.clanId, text]);
+
+	const textStyle = useMemo(() => {
+		if (!themeValue) return {};
+
+		const styles = markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage);
+
+		if (payloadChannel?.channel_id === 'undefined') {
+			return styles.privateChannel;
+		}
+		if (payloadChannel?.channel_id) {
+			return styles.hashtag;
+		}
+		return {};
+	}, [themeValue, payloadChannel?.channel_id, isUnReadChannel, isLastMessage, isBuzzMessage]);
+
+	const icon = useMemo(
+		() =>
+			renderChannelIcon(
+				channelType,
+				payloadChannel?.channel_id,
+				themeValue,
+				(!channelLabel && !payloadChannel?.channel_label) || channelFound?.channel_private === ChannelStatusEnum.isPrivate
+			),
+		[channelType, payloadChannel?.channel_id, payloadChannel?.channel_label, themeValue, channelLabel, channelFound?.channel_private]
+	);
+
+	const handlePress = useCallback(async () => {
+		if (!payloadChannel?.channel_id || !payloadChannel?.clan_id) return;
+		let threadPublishNotJoined = undefined;
+		const res = await dispatch(channelsActions.addThreadToChannels({ channelId: payloadChannel?.channel_id, clanId: payloadChannel?.clan_id }));
+		if (res?.payload) threadPublishNotJoined = res?.payload;
+
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, threadPublishNotJoined || payloadChannel);
+	}, [dispatch, payloadChannel]);
+
+	return (
+		<Text key={`hashtag-${index}`} style={textStyle} onPress={handlePress}>
+			{icon}
+			{displayText}
+		</Text>
+	);
+};
+
+export const HashtagChannel = memo(HashtagChannelComponent);
