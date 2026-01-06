@@ -5,8 +5,7 @@ import { selectChannelById, selectCurrentUserId, selectDmGroupCurrent, useAppSel
 import { getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import type { LayoutChangeEvent } from 'react-native';
-import { Dimensions, View } from 'react-native';
+import { Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { clamp, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
@@ -17,6 +16,7 @@ interface QuickReactionButtonProps {
 	channelId: string;
 	mode: ChannelStreamMode;
 	isShowJumpToPresent: boolean;
+	windowWidth: number;
 	windowHeight: number;
 }
 
@@ -25,14 +25,13 @@ interface QuickReactionEmoji {
 	shortname: string;
 }
 
-const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowHeight }: QuickReactionButtonProps) => {
+const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth, windowHeight }: QuickReactionButtonProps) => {
 	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
 	const currentDmGroup = useAppSelector(selectDmGroupCurrent(channelId));
 	const [quickReactionEmoji, setQuickReactionEmoji] = useState<QuickReactionEmoji | null>(null);
-	const [layoutWidth, setLayoutWidth] = useState<number>(0);
 	const [hasCustomPosition, setHasCustomPosition] = useState<boolean>(false);
 
 	const computedEntitySize = useMemo(() => {
@@ -67,12 +66,12 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowHeigh
 
 	const initialBounds = useMemo(() => {
 		return {
-			MAX_X: layoutWidth - computedEntitySize.button - size.s_10,
+			MAX_X: windowWidth - computedEntitySize.button - size.s_10,
 			MIN_Y: -windowHeight,
-			DEFAULT_X: layoutWidth - computedEntitySize.button - size.s_20,
+			DEFAULT_X: windowWidth - computedEntitySize.button - size.s_20,
 			DEFAULT_Y: isShowJumpToPresent ? -size.s_90 : -size.s_28
 		};
-	}, [layoutWidth, computedEntitySize.button, isShowJumpToPresent, windowHeight]);
+	}, [windowWidth, computedEntitySize.button, isShowJumpToPresent, windowHeight]);
 
 	const translateX = useSharedValue(initialBounds.DEFAULT_X);
 	const translateY = useSharedValue(initialBounds.DEFAULT_Y);
@@ -108,11 +107,6 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowHeigh
 		return () => {
 			subscription?.remove();
 		};
-	}, []);
-
-	const handleLayout = useCallback((event: LayoutChangeEvent) => {
-		const { width } = event.nativeEvent.layout;
-		setLayoutWidth(width);
 	}, []);
 
 	const { sendMessage } = useChatSending({
@@ -178,18 +172,14 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowHeigh
 		transform: [{ translateX: translateX.value }, { translateY: translateY.value }, { scale: scale.value }] as const
 	}));
 
-	if (!quickReactionEmoji?.emojiId) return null;
+	if (!quickReactionEmoji?.emojiId || !windowWidth || !windowHeight) return null;
 
 	return (
-		<View onLayout={handleLayout} pointerEvents="box-none">
-			{layoutWidth > 0 && (
-				<GestureDetector gesture={gesture}>
-					<Animated.View style={[styles.quickReactionContainer, animatedStyle]}>
-						<FastImage source={{ uri: getSrcEmoji(quickReactionEmoji.emojiId) }} style={styles.quickReactionEmoji} resizeMode="contain" />
-					</Animated.View>
-				</GestureDetector>
-			)}
-		</View>
+		<GestureDetector gesture={gesture}>
+			<Animated.View style={[styles.quickReactionContainer, animatedStyle]}>
+				<FastImage source={{ uri: getSrcEmoji(quickReactionEmoji.emojiId) }} style={styles.quickReactionEmoji} resizeMode="contain" />
+			</Animated.View>
+		</GestureDetector>
 	);
 };
 
