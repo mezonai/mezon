@@ -679,6 +679,7 @@ export const addThreadToChannels = createAsyncThunk(
 					})
 				);
 			}
+			return data?.threads?.[0];
 		} else {
 			thunkAPI.dispatch(
 				listChannelRenderAction.addThreadToListRender({
@@ -686,6 +687,7 @@ export const addThreadToChannels = createAsyncThunk(
 					channel: channelData
 				})
 			);
+			return channelData;
 		}
 	}
 );
