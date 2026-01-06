@@ -12,9 +12,9 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { ChannelStatusEnum, sleep, TypeMessage } from '@mezon/utils';
+import { ChannelStatusEnum, TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -111,27 +111,28 @@ const HomeDefaultHeader = React.memo(
 			sendMessage({ t: text || 'Buzz!!' }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
 		};
 
-		const handleEmojiSelected = (emojiId: string, shortname: string) => {
-			if (!currentUserId || !channelId) return;
+		const handleEmojiSelected = useCallback(
+			(emojiId: string, shortname: string) => {
+				if (!currentUserId || !channelId) return;
 
-			try {
-				const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
+				try {
+					const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
 
-				if (!currentData[currentUserId]) {
-					currentData[currentUserId] = {};
+					if (!currentData[currentUserId]) {
+						currentData[currentUserId] = {};
+					}
+
+					currentData[currentUserId][channelId] = { emojiId, shortname };
+					save(STORAGE_USERS_QUICK_REACTION, currentData);
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				} catch (error) {
+					console.error('Error setting quick reaction:', error);
 				}
-
-				currentData[currentUserId][channelId] = { emojiId, shortname };
-				save(STORAGE_USERS_QUICK_REACTION, currentData);
-				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-			} catch (error) {
-				console.error('Error setting quick reaction:', error);
-			}
-		};
+			},
+			[currentUserId, channelId]
+		);
 
 		const handleOpenQuickReactionModal = async () => {
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-			await sleep(500);
 			const data = {
 				snapPoints: ['90%'],
 				children: (

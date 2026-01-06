@@ -6,7 +6,7 @@ import { getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
-import { Dimensions, Keyboard, Platform, View } from 'react-native';
+import { Dimensions, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { clamp, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
@@ -17,6 +17,7 @@ interface QuickReactionButtonProps {
 	channelId: string;
 	mode: ChannelStreamMode;
 	isShowJumpToPresent: boolean;
+	windowHeight: number;
 }
 
 interface QuickReactionEmoji {
@@ -24,20 +25,15 @@ interface QuickReactionEmoji {
 	shortname: string;
 }
 
-const MIN_X = size.s_10;
-const MAX_Y = -size.s_10;
-
-const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent }: QuickReactionButtonProps) => {
+const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowHeight }: QuickReactionButtonProps) => {
 	const { themeValue } = useTheme();
-	const windowHeight = Dimensions.get('window').height;
 	const isTabletLandscape = useTabletLandscape();
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
 	const currentDmGroup = useAppSelector(selectDmGroupCurrent(channelId));
 	const [quickReactionEmoji, setQuickReactionEmoji] = useState<QuickReactionEmoji | null>(null);
-	const [layout, setLayout] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+	const [layoutWidth, setLayoutWidth] = useState<number>(0);
 	const [hasCustomPosition, setHasCustomPosition] = useState<boolean>(false);
-	const [keyboardHeight, setKeyboardHeight] = useState<number>(0);
 
 	const computedEntitySize = useMemo(() => {
 		return {
@@ -69,37 +65,14 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent }: QuickReac
 		};
 	}, [currentUserId, computedChannelId]);
 
-	useEffect(() => {
-		const showKeyboardEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
-		const hideKeyboardEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
-
-		const handleKeyboardShow = (e: any) => {
-			const height = e?.endCoordinates?.height ? e.endCoordinates.height : Platform.OS === 'ios' ? 365 : 300;
-			const validHeight = Math.max(0, height);
-			setKeyboardHeight(validHeight);
-		};
-
-		const handleKeyboardHide = () => {
-			setKeyboardHeight(0);
-		};
-
-		const showKeyboardSubscription = Keyboard.addListener(showKeyboardEvent, handleKeyboardShow);
-		const hideKeyboardSubscription = Keyboard.addListener(hideKeyboardEvent, handleKeyboardHide);
-
-		return () => {
-			showKeyboardSubscription?.remove();
-			hideKeyboardSubscription?.remove();
-		};
-	}, []);
-
 	const initialBounds = useMemo(() => {
 		return {
-			MAX_X: layout?.width - computedEntitySize.button - size.s_10,
-			MIN_Y: -windowHeight + size.s_150 + keyboardHeight,
-			DEFAULT_X: layout?.width - computedEntitySize.button - size.s_20,
+			MAX_X: layoutWidth - computedEntitySize.button - size.s_10,
+			MIN_Y: -windowHeight,
+			DEFAULT_X: layoutWidth - computedEntitySize.button - size.s_20,
 			DEFAULT_Y: isShowJumpToPresent ? -size.s_90 : -size.s_28
 		};
-	}, [layout?.width, computedEntitySize.button, windowHeight, isShowJumpToPresent, keyboardHeight]);
+	}, [layoutWidth, computedEntitySize.button, isShowJumpToPresent, windowHeight]);
 
 	const translateX = useSharedValue(initialBounds.DEFAULT_X);
 	const translateY = useSharedValue(initialBounds.DEFAULT_Y);
@@ -138,8 +111,8 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent }: QuickReac
 	}, []);
 
 	const handleLayout = useCallback((event: LayoutChangeEvent) => {
-		const { width, height } = event.nativeEvent.layout;
-		setLayout({ width, height });
+		const { width } = event.nativeEvent.layout;
+		setLayoutWidth(width);
 	}, []);
 
 	const { sendMessage } = useChatSending({
@@ -173,8 +146,8 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent }: QuickReac
 					if (Math.abs(changeX) > 0 || Math.abs(changeY) > 0) {
 						hasMoved.value = true;
 					}
-					translateX.value = clamp(translateX.value + changeX, MIN_X, initialBounds.MAX_X);
-					translateY.value = clamp(translateY.value + changeY, initialBounds.MIN_Y, MAX_Y);
+					translateX.value = clamp(translateX.value + changeX, 0, initialBounds.MAX_X);
+					translateY.value = clamp(translateY.value + changeY, initialBounds.MIN_Y, 0);
 				})
 				.onFinalize(() => {
 					if (hasMoved.value) {
@@ -209,7 +182,7 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent }: QuickReac
 
 	return (
 		<View onLayout={handleLayout} pointerEvents="box-none">
-			{layout?.width > 0 && (
+			{layoutWidth > 0 && (
 				<GestureDetector gesture={gesture}>
 					<Animated.View style={[styles.quickReactionContainer, animatedStyle]}>
 						<FastImage source={{ uri: getSrcEmoji(quickReactionEmoji.emojiId) }} style={styles.quickReactionEmoji} resizeMode="contain" />

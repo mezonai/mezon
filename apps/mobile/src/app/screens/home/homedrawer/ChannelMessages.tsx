@@ -87,6 +87,7 @@ const ChannelMessages = React.memo(
 		const lastMessageId = useMemo(() => lastMessage?.id, [lastMessage]);
 		const userId = useSelector(selectAllAccount)?.user?.id;
 		const [haveScrollToBottom, setHaveScrollToBottom] = useState<boolean>(false);
+		const [listMessageHeight, setListMessageHeight] = useState<number>(0);
 
 		useEffect(() => {
 			const event = DeviceEventEmitter.addListener(ActionEmitEvent.SCROLL_TO_BOTTOM_CHAT, () => {
@@ -329,8 +330,13 @@ const ChannelMessages = React.memo(
 			[handleSetShowJumpLast, isDisableLoadMore, isCanLoadMore, onLoadMore]
 		);
 
+		const handleLayout = useCallback((event) => {
+			const { height } = event.nativeEvent.layout;
+			setListMessageHeight(height);
+		}, []);
+
 		return (
-			<View style={styles.wrapperChannelMessage}>
+			<View style={styles.wrapperChannelMessage} onLayout={handleLayout}>
 				<TopAlert />
 
 				<ChannelMessageLoading isFromTopic={isFromTopic} channelId={channelId} isDM={isDM} dmType={dmType} isEmptyMsg={!messages?.length} />
@@ -350,7 +356,7 @@ const ChannelMessages = React.memo(
 				)}
 				{isLoadMore.current?.[ELoadMoreDirection.bottom] && <ViewLoadMore />}
 				<View style={styles.spacerHeight8} />
-				<QuickReactionButton channelId={channelId} mode={mode} isShowJumpToPresent={isShowJumpToPresent} />
+				<QuickReactionButton channelId={channelId} mode={mode} isShowJumpToPresent={isShowJumpToPresent} windowHeight={listMessageHeight} />
 				{isShowJumpToPresent && (
 					<ButtonJumpToPresent
 						handleJumpToPresent={handleJumpToPresent}

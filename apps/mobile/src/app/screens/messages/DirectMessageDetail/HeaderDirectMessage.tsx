@@ -18,7 +18,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { IMessageTypeCallLog, TypeMessage, WEBRTC_SIGNALING_TYPES, createImgproxyUrl, sleep } from '@mezon/utils';
+import { IMessageTypeCallLog, TypeMessage, WEBRTC_SIGNALING_TYPES, createImgproxyUrl } from '@mezon/utils';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
@@ -234,27 +234,28 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		}
 	];
 
-	const handleEmojiSelected = (emojiId: string, shortname: string) => {
-		if (!currentUserId || !channelId) return;
+	const handleEmojiSelected = useCallback(
+		(emojiId: string, shortname: string) => {
+			if (!currentUserId || !channelId) return;
 
-		try {
-			const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
+			try {
+				const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
 
-			if (!currentData[currentUserId]) {
-				currentData[currentUserId] = {};
+				if (!currentData[currentUserId]) {
+					currentData[currentUserId] = {};
+				}
+
+				currentData[currentUserId][channelId] = { emojiId, shortname };
+				save(STORAGE_USERS_QUICK_REACTION, currentData);
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+			} catch (error) {
+				console.error('Error setting quick reaction:', error);
 			}
-
-			currentData[currentUserId][channelId] = { emojiId, shortname };
-			save(STORAGE_USERS_QUICK_REACTION, currentData);
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-		} catch (error) {
-			console.error('Error setting quick reaction:', error);
-		}
-	};
+		},
+		[currentUserId, channelId]
+	);
 
 	const handleOpenQuickReactionModal = async () => {
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-		await sleep(500);
 		const data = {
 			snapPoints: ['90%'],
 			children: (
