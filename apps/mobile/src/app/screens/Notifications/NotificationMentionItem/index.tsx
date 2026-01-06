@@ -62,7 +62,7 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 	const data = parseObject(notify?.content);
 	const clan = useAppSelector(selectClanById(notify?.content?.clan_id as string));
 	const { priorityAvatar } = useGetPriorityNameFromUserClan(notify?.sender_id);
-	const messageTimeDifference = convertTimestampToTimeAgo(data?.create_time?.seconds);
+	const messageTimeDifference = convertTimestampToTimeAgo(data?.create_time_seconds);
 	const subjectText = useMemo(() => {
 		return clan?.clan_name && channelInfo?.channel_label
 			? `${clan?.clan_name ? `(${clan.clan_name})` : ''} - ${channelInfo?.channel_label || ''}`
