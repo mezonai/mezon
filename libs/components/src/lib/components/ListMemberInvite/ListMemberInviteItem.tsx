@@ -35,7 +35,6 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 	const handleButtonClick = async (directParamId?: string, type?: number, userId?: string) => {
 		const store = getStore();
 		const getDirect = selectDirectById(store.getState(), directParamId);
-		setIsInviteSent(true);
 
 		if (userId && !directParamId) {
 			const username = usersInviteExternal?.username || dmGroup?.usernames?.toString() || '';
@@ -64,7 +63,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 			}
 			return;
 		}
-		if (directParamId && getDirect) {
+		if (directParamId && !getDirect) {
 			let channelMode = 0;
 			if (type === ChannelType.CHANNEL_TYPE_DM) {
 				channelMode = ChannelStreamMode.STREAM_MODE_DM;
@@ -89,7 +88,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 			isInviteSent={isInviteSent}
 			onHandle={() =>
 				handleButtonClick(
-					usersInviteExternal?.id,
+					usersInviteExternal?.dmId,
 					usersInviteExternal?.type,
 					usersInviteExternal?.type === ChannelType.CHANNEL_TYPE_GROUP ? '' : usersInviteExternal?.id
 				)
