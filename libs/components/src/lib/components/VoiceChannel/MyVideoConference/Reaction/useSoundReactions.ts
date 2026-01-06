@@ -35,10 +35,14 @@ export function useSoundReactions() {
 			return updatedMap;
 		});
 	};
+	const clearAllSound = () => {
+		setActiveSoundReactions(new Map());
+	};
 
 	return {
 		activeSoundReactions,
 		handleSoundReaction,
-		removeActiveSoundParticipant
+		removeActiveSoundParticipant,
+		clearAllSound
 	};
 }

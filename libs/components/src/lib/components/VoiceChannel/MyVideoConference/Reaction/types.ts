@@ -47,4 +47,5 @@ export interface ActiveSoundReaction {
 export interface ReactionCallHandlerProps {
 	onSoundReaction?: (participantId: string, soundId: string) => void;
 	onEndSound?: (userId: string) => void;
+	clearAllSound: () => void;
 }
