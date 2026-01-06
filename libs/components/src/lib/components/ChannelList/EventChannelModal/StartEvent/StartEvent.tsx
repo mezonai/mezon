@@ -1,7 +1,10 @@
-import { useEventManagementQuantity } from '@mezon/core';
+import { useEscapeKeyClose, useEventManagementQuantity } from '@mezon/core';
+import { selectShowModelDetailEvent } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import ListEventManagement from './ListEventManagement';
 
 type StartEventModalProps = {
@@ -14,9 +17,18 @@ export const StartEventModal = (props: StartEventModalProps) => {
 	const { onClose, onOpenCreate, onEventUpdateId } = props;
 	const { numberEventManagement, eventsByUser } = useEventManagementQuantity();
 	const { t } = useTranslation(['eventCreator']);
+	const modalRef = useRef<HTMLDivElement>(null);
+	const showModalDetailEvent = useSelector(selectShowModelDetailEvent);
+	useEscapeKeyClose(modalRef, onClose);
+
+	useEffect(() => {
+		if (!showModalDetailEvent && modalRef.current) {
+			modalRef.current.focus();
+		}
+	}, [showModalDetailEvent]);
 
 	return (
-		<>
+		<div ref={modalRef} tabIndex={-1} className="outline-none">
 			<div className=" flex justify-between items-center p-4 border-b-theme-primary">
 				<div className="flex items-center gap-x-4">
 					<div className="gap-x-2 flex items-center">
@@ -70,6 +82,6 @@ export const StartEventModal = (props: StartEventModalProps) => {
 					<p className="text-theme-primary text-sm">{t('emptyState.description2')}</p>
 				</div>
 			)}
-		</>
+		</div>
 	);
 };

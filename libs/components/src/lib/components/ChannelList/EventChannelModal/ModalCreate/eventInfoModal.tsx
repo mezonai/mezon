@@ -27,10 +27,14 @@ export type EventInfoModalProps = {
 const EventInfoModal = (props: EventInfoModalProps) => {
 	const { contentSubmit, timeStartDefault, setErrorTime, setContentSubmit, choiceLocation, onClose } = props;
 	const { t } = useTranslation('eventCreator');
-	const [countCharacterDescription, setCountCharacterDescription] = useState(1000);
+	const [countCharacterDescription, setCountCharacterDescription] = useState(255);
 	const [errorStart, setErrorStart] = useState(false);
 	const [errorEnd, setErrorEnd] = useState(false);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+
+	useEffect(() => {
+		setCountCharacterDescription(255 - (contentSubmit.description?.length || 0));
+	}, []);
 
 	const startDate = contentSubmit.selectedDateStart.getDate();
 	const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -113,7 +117,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 
 	const handleChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setContentSubmit((prev) => ({ ...prev, description: e.target.value }));
-		setCountCharacterDescription(1000 - e.target.value.length);
+		setCountCharacterDescription(255 - e.target.value.length);
 	};
 
 	const handleFrequencyChange = useCallback(
@@ -281,7 +285,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						onChange={handleChangeTextArea}
 						rows={1}
 						refTextArea={textAreaRef}
-						maxLength={1000}
+						maxLength={255}
 					></TextArea>
 					<p className="absolute bottom-2 right-2 ">{countCharacterDescription}</p>
 				</div>

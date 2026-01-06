@@ -118,6 +118,7 @@
 		"eventInfo": "Thông tin sự kiện",
 		"interested": "{{count}} Quan tâm",
 		"personInterested": "{{count}} người quan tâm",
+		"personInteresteds": "{{count}} người quan tâm",
 		"createdBy": "Được tạo bởi {{username}}",
 		"inviteFriends": "Mời bạn bè tham gia sự kiện?",
 		"shareLink": "Chia sẻ liên kết này với người khác để cấp quyền truy cập vào máy chủ này",

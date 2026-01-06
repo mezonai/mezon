@@ -286,9 +286,11 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								/>
 								<div
 									className="flex items-center gap-x-1 w-full justify-end px-2 py-1 rounded-full bg-theme-primary text-theme-primary-active"
-									title={t('eventCreator:eventDetail.personInterested', { count: event?.user_ids?.length })}
+									title={t('eventCreator:eventDetail.personInterested', {
+										count: (event?.user_ids?.filter((id) => id !== '0')?.length || '') as any
+									})}
 								>
-									<span className="text-md">{event?.user_ids?.length}</span>
+									<span className="text-md">{event?.user_ids?.filter((id) => id !== '0')?.length || '0'}</span>
 									<Icons.MemberList defaultSize="h-4 w-4" />
 								</div>
 							</div>
