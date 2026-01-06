@@ -81,7 +81,7 @@
 		},
 		"description": {
 			"title": "Description",
-			"description": "Tell people a little more about your event. Markdown, new lines, and links are supported."
+			"description": "Tell people a little more about your event."
 		},
 		"cover": "Cover Image"
 	},
@@ -121,6 +121,7 @@
 		"eventInfo": "Event Info",
 		"interested": "{{count}} Interested",
 		"personInterested": "{{count}} person is interested",
+		"personInteresteds": "{{count}} people are interested",
 		"createdBy": "Created by {{username}}",
 		"inviteFriends": "Invite friends to event?",
 		"shareLink": "Share this link with others to grant access to this clan",

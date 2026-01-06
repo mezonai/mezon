@@ -1,4 +1,4 @@
-import { useAppNavigation, useOnClickOutside } from '@mezon/core';
+import { useAppNavigation, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import type { EventManagementEntity, RootState } from '@mezon/store';
 import {
 	eventManagementActions,
@@ -13,7 +13,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { timeFomat } from '../timeFomatEvent';
@@ -42,26 +42,12 @@ const ModalDetailItemEvent = (props?: ModalDetailItemEventProps) => {
 	const panelRef = useRef(null);
 	const modalRef = useRef<HTMLDivElement>(null);
 	useOnClickOutside(panelRef, clearChooseEvent);
-
-	useEffect(() => {
-		if (modalRef.current) {
-			modalRef.current.focus();
-		}
-	}, []);
-
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === 'Escape') {
-			e.preventDefault();
-			e.stopPropagation();
-			clearChooseEvent();
-		}
-	};
+	useEscapeKeyClose(modalRef, clearChooseEvent);
 
 	return (
 		<div
 			ref={modalRef}
 			tabIndex={-1}
-			onKeyDown={handleKeyDown}
 			className="outline-none w-[100vw] h-[100vh] overflow-hidden fixed top-0 left-0 z-50 bg-black bg-opacity-80 flex flex-row justify-center items-center"
 		>
 			<div
@@ -83,7 +69,7 @@ const ModalDetailItemEvent = (props?: ModalDetailItemEventProps) => {
 								className={`pb-4 ${currentTab === tabs.interest ? 'text-theme-primary-active border-b border-white' : 'text-zinc-400'}`}
 								onClick={() => setCurrentTab(tabs.interest)}
 							>
-								{t('eventDetail.interested', { count: event?.user_ids?.length || 0 })}
+								{t('eventDetail.interested', { count: event?.user_ids?.filter((id) => id !== '0')?.length || 0 })}
 							</h4>
 						</div>
 					</div>
@@ -96,7 +82,7 @@ const ModalDetailItemEvent = (props?: ModalDetailItemEventProps) => {
 					</span>
 				</div>
 				{currentTab === tabs.event && <EventInfoDetail event={event} onClose={clearChooseEvent} onCloseAll={onCloseAll} />}
-				{currentTab === tabs.interest && <InterestedDetail userIds={event?.user_ids || []} />}
+				{currentTab === tabs.interest && <InterestedDetail userIds={event?.user_ids?.filter((id) => id !== '0') || []} />}
 			</div>
 		</div>
 	);
@@ -218,7 +204,14 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 			</div>
 			<div className="flex items-center gap-x-3">
 				<Icons.MemberList />
-				<p>{t('eventDetail.personInterested', { count: event?.user_ids?.length || 0 })}</p>
+				<p>
+					{t(
+						(event?.user_ids?.filter((id) => id !== '0')?.length || 0) > 1
+							? 'eventDetail.personInteresteds'
+							: 'eventDetail.personInterested',
+						{ count: event?.user_ids?.filter((id) => id !== '0')?.length || 0 }
+					)}
+				</p>
 			</div>
 			<div className="flex items-center gap-x-3">
 				{avatarDefault ? (
