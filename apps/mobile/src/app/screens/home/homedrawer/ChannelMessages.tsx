@@ -30,6 +30,7 @@ import ButtonJumpToPresent from './components/ButtonJumpToPresent';
 import ChannelMessageList, { ViewLoadMore } from './components/ChannelMessageList';
 import { ChannelMessageLoading } from './components/ChannelMessageLoading';
 import { MessageUserTyping } from './components/MessageUserTyping';
+import QuickReactionButton from './components/QuickReaction';
 import { style } from './styles';
 
 type ChannelMessagesProps = {
@@ -349,6 +350,7 @@ const ChannelMessages = React.memo(
 				)}
 				{isLoadMore.current?.[ELoadMoreDirection.bottom] && <ViewLoadMore />}
 				<View style={styles.spacerHeight8} />
+				<QuickReactionButton channelId={channelId} mode={mode} isShowJumpToPresent={isShowJumpToPresent} />
 				{isShowJumpToPresent && (
 					<ButtonJumpToPresent
 						handleJumpToPresent={handleJumpToPresent}
