@@ -2,7 +2,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import type { Attributes } from '@mezon/mobile-ui';
 import { baseColor, size } from '@mezon/mobile-ui';
 import { useAppDispatch } from '@mezon/store';
-import { channelsActions, selectChannelById } from '@mezon/store-mobile';
+import { channelsActions, getStore, selectChannelById } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo } from 'react';
@@ -31,7 +31,7 @@ const renderChannelIcon = (channelType: number, channelId: string, themeValue: A
 	if (channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 		return <CustomIcon name="voice" size={size.s_14} color={baseColor.link} style={iconStyle} />;
 	}
-	if (channelType === ChannelType.CHANNEL_TYPE_THREAD) {
+	if (channelType === ChannelType.CHANNEL_TYPE_THREAD && channelId !== 'undefined') {
 		return <CustomIcon name={isThreadPrivate ? 'threadPrivate' : 'thread'} size={size.s_14} color={baseColor.link} style={iconStyle} />;
 	}
 	if (channelType === ChannelType.CHANNEL_TYPE_STREAMING) {
@@ -76,6 +76,14 @@ const HashtagChannelComponent = ({
 	const channelFound = useMemo(() => channelEntityOverride ?? channelFoundFromStore, [channelEntityOverride, channelFoundFromStore]);
 
 	const channelLabel = useMemo(() => element?.channelLabel || '', [element?.channelLabel]);
+	const isHaveAccessChannel = useMemo(() => {
+		const store = getStore();
+		if (channelLabel && element?.parentId) {
+			const channelParent = selectChannelById(store.getState(), element?.parentId);
+			return !!channelParent;
+		}
+		return !!channelFoundFromStore;
+	}, [channelFoundFromStore, channelLabel, element]);
 
 	const mention = useMemo(
 		() =>
@@ -93,9 +101,9 @@ const HashtagChannelComponent = ({
 		const dataChannel = urlFormat?.split?.('***');
 
 		let channelId = 'undefined';
-		if (dataChannel?.[1] && dataChannel?.[1] !== 'undefined') {
+		if (isHaveAccessChannel && dataChannel?.[1] && dataChannel?.[1] !== 'undefined') {
 			channelId = dataChannel?.[1];
-		} else if (channelLabel && targetChannelId) {
+		} else if (isHaveAccessChannel && channelLabel && targetChannelId) {
 			channelId = targetChannelId;
 		}
 
@@ -120,10 +128,10 @@ const HashtagChannelComponent = ({
 		};
 
 		const type = payload?.type ? payload?.type : channelLabel && channelId ? ChannelType.CHANNEL_TYPE_THREAD : 0;
-		const display = channelLabel ? channelLabel : payload?.channel_id === 'undefined' || !payload?.channel_id ? 'private-channel' : text;
+		const display = payload?.channel_id === 'undefined' || !payload?.channel_id ? 'private-channel' : channelLabel ? channelLabel : text;
 
 		return { payloadChannel: payload, channelType: type, displayText: display };
-	}, [link, channelLabel, targetChannelId, clanIdOverride, element?.clanId, text]);
+	}, [link, isHaveAccessChannel, channelLabel, targetChannelId, clanIdOverride, element?.clanId, text]);
 
 	const textStyle = useMemo(() => {
 		if (!themeValue) return {};
