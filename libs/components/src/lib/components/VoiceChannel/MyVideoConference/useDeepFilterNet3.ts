@@ -1,5 +1,6 @@
 import { useLocalParticipant, useRoomContext } from '@livekit/components-react';
 import { selectNoiseSuppressionEnabled, selectNoiseSuppressionLevel, useAppSelector } from '@mezon/store';
+import { NOISE_SUPPRESSION_NORMALIZATION_FACTOR } from '@mezon/utils';
 import { DeepFilterNoiseFilterProcessor } from 'deepfilternet3-noise-filter';
 import type { LocalParticipant, LocalTrackPublication, Participant, TrackPublication } from 'livekit-client';
 import { RoomEvent, Track } from 'livekit-client';
@@ -17,16 +18,16 @@ interface ProcessorData {
 export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 	const noiseSuppressionEnabled = useAppSelector(selectNoiseSuppressionEnabled);
 	const level = useAppSelector(selectNoiseSuppressionLevel);
-
+	const normalizedLevel = level * NOISE_SUPPRESSION_NORMALIZATION_FACTOR;
 	const enabled = options?.enabled === false ? false : noiseSuppressionEnabled;
 	const sampleRate = 48000;
 	const room = useRoomContext();
 	const { localParticipant } = useLocalParticipant();
 	const processorsRef = useRef<Map<string, ProcessorData>>(new Map());
-	const levelRef = useRef<number>(level);
+	const levelRef = useRef<number>(normalizedLevel);
 
 	useEffect(() => {
-		levelRef.current = level;
+		levelRef.current = normalizedLevel;
 	}, [level]);
 
 	const enabledRef = useRef<boolean>(enabled);
@@ -156,7 +157,7 @@ export const useDeepFilterNet3 = (options?: UseDeepFilterNet3Options) => {
 		}
 		processorsRef.current.forEach((processorData) => {
 			try {
-				processorData.processor.setSuppressionLevel(level);
+				processorData.processor.setSuppressionLevel(normalizedLevel);
 			} catch (error) {
 				console.error('Failed to update suppression level:', error);
 			}
