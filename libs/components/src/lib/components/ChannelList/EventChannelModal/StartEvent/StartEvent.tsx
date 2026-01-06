@@ -55,8 +55,19 @@ export const StartEventModal = (props: StartEventModalProps) => {
 					/>
 				</div>
 			) : (
-				<div className=" h-80 flex justify-center items-center">
-					<Icons.IconEvents defaultSize="size-[100px] " />
+				<div className="h-80 flex flex-col justify-center items-center text-center px-8">
+					<div className="relative mb-4">
+						<Icons.IconEvents defaultSize="size-[60px]" />
+						<span className="absolute -bottom-2 -left-2 text-yellow-400 text-lg">✦</span>
+						<span className="absolute -top-1 -right-3 text-cyan-400 text-xs">✦</span>
+						<span className="absolute top-0 right-0 w-1.5 h-1.5 bg-cyan-400 rounded-full"></span>
+						<span className="absolute -bottom-1 right-2 w-1 h-1 bg-cyan-400 rounded-full"></span>
+					</div>
+					<h3 className="text-theme-primary-active font-semibold text-lg mb-2">{t('emptyState.title')}</h3>
+					<p className="text-theme-primary text-sm mb-1">
+						{t('emptyState.description1')} <span className=" text-sm text-theme-primary">{t('emptyState.clan')}</span>.
+					</p>
+					<p className="text-theme-primary text-sm">{t('emptyState.description2')}</p>
 				</div>
 			)}
 		</>

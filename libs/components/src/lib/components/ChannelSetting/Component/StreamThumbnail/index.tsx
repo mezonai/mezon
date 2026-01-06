@@ -19,10 +19,11 @@ const MAX_FILE_SIZE_10MB = 10 * 1024 * 1024;
 
 export type StreamThumbnailChannelProps = {
 	channel: IChannel;
+	menuIsOpen?: boolean;
 };
 
 const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
-	const { channel } = props;
+	const { channel, menuIsOpen } = props;
 	const { t } = useTranslation('streamThumbnail');
 	const dispatch = useAppDispatch();
 
@@ -179,7 +180,9 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 	};
 
 	return (
-		<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] pb-7 pr-[10px] pl-[40px] overflow-x-hidden min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
+		<div
+			className={`overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] pb-7 pr-[10px] pl-[40px] overflow-x-hidden min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar ${!menuIsOpen ? 'sbm:pt-[94px] pt-[70px]' : 'pt-[94px]'}`}
+		>
 			<h2 className="font-bold text-xl text-theme-primary-active">{t('title')}</h2>
 			<div className="w-full mx-auto px-6 py-12">
 				<div className="max-w-[650px]">

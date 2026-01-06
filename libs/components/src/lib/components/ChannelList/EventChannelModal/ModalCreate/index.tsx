@@ -401,8 +401,9 @@ const ModalCreate = (props: ModalCreateProps) => {
 						)
 					) : (
 						<button
-							className={`px-4 py-2 rounded font-semibold text-white bg-primary ${(!buttonWork || errorTime || errorOption) && ' bg-opacity-50'}`}
+							className={`px-4 py-2 rounded font-semibold text-white bg-primary ${(!buttonWork || errorTime || errorOption || !option) && ' bg-opacity-50 cursor-not-allowed'}`}
 							onClick={() => handleNext(currentModal)}
+							disabled={!option || !buttonWork || errorTime || errorOption}
 							data-e2e={generateE2eId('clan_page.modal.create_event.next')}
 						>
 							{t('actions.next')}

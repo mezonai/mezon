@@ -154,8 +154,9 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				{time}
 			</h4>
 			<p
-				className="font-bold text-theme-primary-active text-lg"
+				className="font-bold text-theme-primary-active text-lg truncate"
 				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.topic')}
+				title={event?.title}
 			>
 				{event?.title}
 			</p>
@@ -250,24 +251,30 @@ const InterestedDetail = ({ userIds }: InterestedDetailProps) => {
 
 	return (
 		<div className="p-4 space-y-1 dark:text-zinc-300 text-colorTextLightMode text-base font-semibold max-h-[250px] h-[250px] hide-scrollbar overflow-auto">
-			{userData.map((user, index) => {
-				const name = user?.clanNick || user?.user?.displayName || user?.user?.username;
-				const avatarUrl = user?.clanAvatar || user?.user?.avatarUrl;
-				const avatarLetter = name?.trim().charAt(0).toUpperCase();
+			{userData.length === 0 ? (
+				<div className="flex items-center justify-center py-4 h-full">
+					<p className="text-center text-theme-primary py-4">{t('eventDetail.noOneInterested')}</p>
+				</div>
+			) : (
+				userData.map((user, index) => {
+					const name = user?.clanNick || user?.user?.displayName || user?.user?.username;
+					const avatarUrl = user?.clanAvatar || user?.user?.avatarUrl;
+					const avatarLetter = name?.trim().charAt(0).toUpperCase();
 
-				return (
-					<div key={index} className="flex items-center gap-x-3 rounded bg-item-theme-hover p-2">
-						{avatarUrl ? (
-							<img src={createImgproxyUrl(avatarUrl)} alt={name} className="size-7 rounded-full object-cover" />
-						) : (
-							<div className="size-7 bg-bgAvatarDark rounded-full flex justify-center items-center text-bgAvatarLight">
-								{avatarLetter || '?'}
-							</div>
-						)}
-						<p className="text-theme-primary">{name}</p>
-					</div>
-				);
-			})}
+					return (
+						<div key={index} className="flex items-center gap-x-3 rounded bg-item-theme-hover p-2">
+							{avatarUrl ? (
+								<img src={createImgproxyUrl(avatarUrl)} alt={name} className="size-7 rounded-full object-cover" />
+							) : (
+								<div className="size-7 bg-bgAvatarDark rounded-full flex justify-center items-center text-bgAvatarLight">
+									{avatarLetter || '?'}
+								</div>
+							)}
+							<p className="text-theme-primary">{name}</p>
+						</div>
+					);
+				})
+			)}
 		</div>
 	);
 };

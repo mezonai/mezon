@@ -84,9 +84,7 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 	const welcomeChannelId = useSelector((state) => selectWelcomeChannelByClanId(state, channel?.clanId as string));
 
 	return (
-		<div
-			className={`overflow-y-auto w-1/6 xl:w-1/4 min-w-56 text-theme-primary bg-theme-setting-nav flex justify-end pt-96 pr-2 scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-200 2xl:flex-grow hide-scrollbar flex-grow  ${stateClose && !stateMenu ? 'hidden' : 'flex'}`}
-		>
+		<div className="overflow-y-auto w-full text-theme-primary bg-theme-setting-nav flex justify-center md:justify-end pt-96 pr-2 scrollbar-thin scrollbar-thumb-black scrollbar-track-gray-200 2xl:flex-grow hide-scrollbar flex-grow">
 			<div className="w-170px flex flex-col">
 				<div className="flex justify-start max-w-[170px]">
 					{renderIcon()} &nbsp;

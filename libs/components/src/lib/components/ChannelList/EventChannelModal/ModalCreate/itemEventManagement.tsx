@@ -299,7 +299,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				<div className="flex justify-between gap-4 select-text">
 					<div className={`${isReviewEvent || !logoRight ? 'w-full' : 'w-3/5'} `}>
 						<p
-							className="hover:underline font-bold  text-base"
+							className="hover:underline font-bold text-base truncate"
 							data-e2e={generateE2eId('clan_page.modal.create_event.review.event_topic')}
 						>
 							{topic}
