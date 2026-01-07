@@ -5,6 +5,7 @@ import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity, FriendsEntity } from '@mezon/store-mobile';
 import {
 	appActions,
+	clansActions,
 	getStore,
 	getStoreAsync,
 	giveCoffeeActions,
@@ -19,7 +20,7 @@ import { CURRENCY, TypeMessage, formatBalanceToString, formatMoney } from '@mezo
 import Clipboard from '@react-native-clipboard/clipboard';
 import debounce from 'lodash.debounce';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiTokenSentEvent } from 'mezon-js/types';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Modal, Platform, Pressable, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -29,7 +30,6 @@ import Toast from 'react-native-toast-message';
 import ViewShot from 'react-native-view-shot';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
-import MezonConfirm from '../../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import Backdrop from '../../../components/BottomSheetRootListener/backdrop';
@@ -44,7 +44,7 @@ import { style } from './styles';
 type Receiver = {
 	id?: string;
 	username?: Array<string>;
-	avatar_url?: string;
+	avatarUrl?: string;
 };
 const formatTokenAmount = (amount: any) => {
 	let sanitizedText = String(amount).replace(/[^0-9]/g, '');
@@ -110,18 +110,18 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 					username: [
 						typeof itemUserClan?.user?.username === 'string' ? itemUserClan?.user?.username : (itemUserClan?.user?.username?.[0] ?? '')
 					] as Array<string>,
-					avatar_url: itemUserClan?.user?.avatar_url ?? ''
+					avatarUrl: itemUserClan?.user?.avatarUrl ?? ''
 				});
 			}
 		});
 
 		listDM.forEach((itemDM: DirectEntity) => {
-			const userId = itemDM?.user_ids?.[0] ?? '';
+			const userId = itemDM?.userIds?.[0] ?? '';
 			if (userId && !userMap.has(userId)) {
 				userMap.set(userId, {
 					id: userId,
 					username: [typeof itemDM?.usernames === 'string' ? itemDM?.usernames : (itemDM?.usernames?.[0] ?? '')] as Array<string>,
-					avatar_url: itemDM?.avatars?.[0] ?? ''
+					avatarUrl: itemDM?.avatars?.[0] ?? ''
 				});
 			}
 		});
@@ -132,11 +132,9 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				userMap.set(userId, {
 					id: userId,
 					username: [
-						typeof itemFriend?.user?.display_name === 'string'
-							? itemFriend?.user?.display_name
-							: (itemFriend?.user?.display_name?.[0] ?? '')
+						typeof itemFriend?.user?.displayName === 'string' ? itemFriend?.user?.displayName : (itemFriend?.user?.displayName?.[0] ?? '')
 					] as Array<string>,
-					avatar_url: itemFriend?.user?.avatar_url ?? ''
+					avatarUrl: itemFriend?.user?.avatarUrl ?? ''
 				});
 			}
 		});
@@ -155,37 +153,22 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 	};
 	const directMessageId = useMemo(() => {
 		const directMessage = listDM?.find?.((dm) => {
-			const userIds = dm?.user_ids;
+			const userIds = dm?.userIds;
 			if (!Array.isArray(userIds) || userIds.length !== 1) {
 				return false;
 			}
 			const firstUserId = userIds[0];
-			const targetId = jsonObject?.receiver_id || selectedUser?.id;
+			const targetId = jsonObject?.receiverId || selectedUser?.id;
 			return firstUserId === targetId;
 		});
 		return directMessage?.id;
-	}, [jsonObject?.receiver_id, listDM, selectedUser?.id]);
-
-	const showEnableWallet = () => {
-		const data = {
-			children: (
-				<MezonConfirm
-					onConfirm={() => handleEnableWallet()}
-					title={tMsg('wallet.notAvailable')}
-					confirmText={tMsg('wallet.enableWallet')}
-					content={tMsg('wallet.descNotAvailable')}
-					onCancel={onCancelEnableWallet}
-				/>
-			)
-		};
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-	};
+	}, [jsonObject?.receiverId, listDM, selectedUser?.id]);
 
 	const sendToken = async () => {
 		const store = await getStoreAsync();
 		try {
 			const walletAddress = jsonObject?.wallet_address;
-			if (!selectedUser && !jsonObject?.receiver_id && !walletAddress) {
+			if (!selectedUser && !jsonObject?.receiverId && !walletAddress) {
 				Toast.show({
 					type: 'error',
 					text1: t('toast.error.mustSelectUser')
@@ -212,20 +195,16 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 			setDisableButton(true);
 
 			const tokenEvent: ApiTokenSentEvent = {
-				sender_id: walletAddress ? walletDetail?.address : userProfile?.user?.id || '',
-				sender_name: walletAddress ? walletDetail?.address : userProfile?.user?.username?.[0] || userProfile?.user?.username || '',
-				receiver_id: walletAddress ? walletAddress : jsonObject?.receiver_id || selectedUser?.id || '',
-				extra_attribute: jsonObject?.extra_attribute || '',
+				senderId: walletAddress ? walletDetail?.address : userProfile?.user?.id || '',
+				senderName: walletAddress ? walletDetail?.address : userProfile?.user?.username?.[0] || userProfile?.user?.username || '',
+				receiverId: walletAddress ? walletAddress : jsonObject?.receiverId || selectedUser?.id || '',
+				extraAttribute: jsonObject?.extraAttribute || '',
 				amount: Number(plainTokenCount || 1),
 				note: note?.replace?.(/\s+/g, ' ')?.trim() || ''
 			};
 			const res: any = await store.dispatch(giveCoffeeActions.sendToken({ tokenEvent, isSendByAddress: !!walletAddress }));
 			store.dispatch(appActions.setLoadingMainMobile(false));
 			setDisableButton(false);
-			if ([res?.payload, res?.payload?.message].includes(tMsg('wallet.notAvailable'))) {
-				showEnableWallet();
-				return;
-			}
 			if (res?.meta?.requestStatus === 'rejected' || !res) {
 				Toast.show({
 					type: 'error',
@@ -233,6 +212,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				});
 			} else {
 				if (!walletAddress) {
+					dispatch(clansActions.joinClan({ clanId: '0' }));
 					if (directMessageId) {
 						await sendInviteMessage(
 							`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
@@ -241,17 +221,17 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 							TypeMessage.SendToken
 						);
 					} else {
-						const receiver = (mergeUser?.find((user) => user?.id === jsonObject?.receiver_id) || selectedUser || jsonObject) as any;
+						const receiver = (mergeUser?.find((user) => user?.id === jsonObject?.receiverId) || selectedUser || jsonObject) as any;
 						const response = await createDirectMessageWithUser(
-							receiver?.id || receiver?.receiver_id,
+							receiver?.id || receiver?.receiverId,
 							receiver?.username?.[0] || receiver?.receiver_name,
 							receiver?.username?.[0] || receiver?.receiver_name,
-							receiver?.avatar_url
+							receiver?.avatarUrl
 						);
-						if (response?.channel_id) {
+						if (response?.channelId) {
 							sendInviteMessage(
 								`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
-								response?.channel_id,
+								response?.channelId,
 								ChannelStreamMode.STREAM_MODE_DM,
 								TypeMessage.SendToken
 							);
@@ -430,7 +410,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 	const renderItem = useCallback(
 		({ item }) => (
 			<Pressable key={`token_receiver_${item.id}`} style={[styles.userItem, { height: ITEM_HEIGHT }]} onPress={() => handleSelectUser(item)}>
-				<MezonAvatar avatarUrl={item?.avatar_url} username={item?.username?.[0]} height={size.s_34} width={size.s_34} />
+				<MezonAvatar avatarUrl={item?.avatarUrl} username={item?.username?.[0]} height={size.s_34} width={size.s_34} />
 				<Text style={styles.title}>{item.username}</Text>
 			</Pressable>
 		),
@@ -549,7 +529,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 						<View style={styles.cardWalletWrapper}>
 							<View style={styles.cardWalletLine}>
 								<Text style={styles.cardTitle}>{t('debitAccount')}</Text>
-								<Text style={styles.cardTitle}>{userProfile?.user?.username || userProfile?.user?.display_name}</Text>
+								<Text style={styles.cardTitle}>{userProfile?.user?.username || userProfile?.user?.displayName}</Text>
 							</View>
 							<View style={styles.cardWalletLine}>
 								<Text style={styles.cardTitle}>{t('balance')}</Text>
@@ -562,14 +542,14 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 					<View>
 						<Text style={styles.title}>{jsonObject?.wallet_address ? t('sendTokenToAddress') : t('sendTokenTo')}</Text>
 						<TouchableOpacity
-							disabled={!!jsonObject?.receiver_id || jsonObject?.type === 'payment' || !!jsonObject?.wallet_address}
+							disabled={!!jsonObject?.receiverId || jsonObject?.type === 'payment' || !!jsonObject?.wallet_address}
 							style={[styles.textField, styles.selectSendTokenTo]}
 							onPress={handleOpenBottomSheet}
 						>
 							<Text style={styles.username} numberOfLines={1}>
 								{jsonObject?.wallet_address
 									? jsonObject?.wallet_address
-									: jsonObject?.receiver_id
+									: jsonObject?.receiverId
 										? jsonObject?.receiver_name || ''
 										: selectedUser?.username || t('selectAccount')}
 							</Text>
@@ -577,7 +557,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 								<TouchableOpacity style={styles.btnCopyAddress} onPress={handleCopyAddress}>
 									<MezonIconCDN icon={IconCDN.copyIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 								</TouchableOpacity>
-							) : !jsonObject?.receiver_id ? (
+							) : !jsonObject?.receiverId ? (
 								<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
 							) : (
 								<View />
@@ -588,7 +568,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 						<Text style={styles.title}>{t('token')}</Text>
 						<View style={styles.textField}>
 							<TextInput
-								autoFocus={!!jsonObject?.receiver_id || !!jsonObject?.wallet_address}
+								autoFocus={!!jsonObject?.receiverId || !!jsonObject?.wallet_address}
 								editable={(!jsonObject?.amount || canEdit) && jsonObject?.type !== 'payment'}
 								style={styles.textInput}
 								value={tokenCount}

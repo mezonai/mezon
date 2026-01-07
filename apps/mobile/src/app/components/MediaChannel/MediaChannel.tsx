@@ -71,9 +71,9 @@ const MediaChannel = memo(({ channelId, isDM }: IMediaChannelProps) => {
 		const groups = new Map<string, AttachmentEntity[]>();
 
 		for (const attachment of attachments) {
-			if (!attachment.create_time) continue;
+			if (!attachment.createTime) continue;
 
-			const date = new Date(attachment.create_time);
+			const date = new Date(attachment.createTime);
 			const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 			if (!groups.has(dateKey)) {
@@ -131,7 +131,7 @@ const MediaChannel = memo(({ channelId, isDM }: IMediaChannelProps) => {
 		if (!paginationState?.hasMoreBefore) return;
 
 		const lastAttachment = attachments[attachments.length - 1];
-		const timestamp = lastAttachment?.create_time;
+		const timestamp = lastAttachment?.createTime;
 		const beforeTs = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
 		if (!beforeTs) return;
 

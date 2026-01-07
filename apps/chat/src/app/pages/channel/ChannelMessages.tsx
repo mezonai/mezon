@@ -58,7 +58,7 @@ import {
 	useSyncEffect
 } from '@mezon/utils';
 import type { ChannelType } from 'mezon-js';
-import type { ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageRef } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ChannelMessage, MemorizedChannelMessage } from './ChannelMessage';
@@ -405,7 +405,7 @@ function ChannelMessages({
 	}, []);
 
 	useEffect(() => {
-		if (dataReferences?.message_ref_id && getChatScrollBottomOffset() <= 100) {
+		if (dataReferences?.messageRefId && getChatScrollBottomOffset() <= 100) {
 			scrollToLastMessage();
 		}
 	}, [dataReferences, lastMessage, scrollToLastMessage, getChatScrollBottomOffset]);
@@ -556,7 +556,7 @@ const ScrollDownButton = memo(
 		const currentUserId = useAppSelector(selectCurrentUserId);
 
 		const unreadCount = useMemo(() => {
-			if (lastSent?.sender_id === currentUserId) {
+			if (lastSent?.senderId === currentUserId) {
 				return 0;
 			}
 
@@ -754,9 +754,9 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 
 		const getIsEditing = useCallback(
 			(messageId: string) => {
-				return channelDraftMessage?.message_id === messageId ? openEditMessageState : openEditMessageState && idMessageRefEdit === messageId;
+				return channelDraftMessage?.messageId === messageId ? openEditMessageState : openEditMessageState && idMessageRefEdit === messageId;
 			},
-			[channelDraftMessage?.message_id, openEditMessageState, idMessageRefEdit]
+			[channelDraftMessage?.messageId, openEditMessageState, idMessageRefEdit]
 		);
 
 		const scrollPositionRef = useRef<{ messageId?: string; offset?: number } | null>(null);
@@ -1000,9 +1000,9 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						isJumpingToPresentRef.current ||
 						(!isLoadingMoreBottomRef.current &&
 							((!isFirstJoinLoadRef.current && isAtBottom) || (userActiveScroll.current && isAtBottom))) ||
-						(user?.user?.id === lastMessage?.sender_id &&
-							lastMessage?.create_time &&
-							new Date().getTime() - new Date(lastMessage.create_time).getTime() < 1000)
+						(user?.user?.id === lastMessage?.senderId &&
+							lastMessage?.createTime &&
+							new Date().getTime() - new Date(lastMessage.createTime).getTime() < 1000)
 					) {
 						newScrollTop = scrollHeight;
 						shouldUpdateScrollPosition = !message?.isSending;
@@ -1137,13 +1137,13 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			const baseUnreadMessageId = lastSeenAtBottomRef.current || lastMessageUnreadId;
 			return messageIds.map((messageId, index) => {
 				const checkMessageTargetToMoved = msgIdJumpHightlight.current === messageId && messageId !== lastMessageId;
-				const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
+				const messageReplyHighlight = (dataReferences?.messageRefId && dataReferences?.messageRefId === messageId) || false;
 				const isSelected = selectedMessageId === messageId;
 				const isEditing = getIsEditing(messageId);
 				const previousMessageId = messageIds[index - 1];
 				const isPreviousMessageLastSeen =
 					baseUnreadMessageId && Boolean(previousMessageId === baseUnreadMessageId && previousMessageId !== lastMessageId);
-				const shouldShowUnreadBreak = isPreviousMessageLastSeen && entities[messageId]?.sender_id !== user?.user?.id;
+				const shouldShowUnreadBreak = isPreviousMessageLastSeen && entities[messageId]?.senderId !== user?.user?.id;
 
 				return (
 					<MemorizedChannelMessage
@@ -1179,7 +1179,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			canSendMessage,
 			channelId,
 			channelLabel,
-			dataReferences?.message_ref_id,
+			dataReferences?.messageRefId,
 			entities,
 			idMessageNotified,
 			idMessageToJump?.id,
@@ -1260,7 +1260,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 				>
 					<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end">
 						{isTopic && firstMsgOfThisTopic && (
-							<div className={`fullBoxText relative group ${firstMsgOfThisTopic?.references?.[0]?.message_ref_id ? 'pt-3' : ''}`}>
+							<div className={`fullBoxText relative group ${firstMsgOfThisTopic?.references?.[0]?.messageRefId ? 'pt-3' : ''}`}>
 								<MessageWithUser
 									isTopic={isTopic}
 									allowDisplayShortProfile={true}

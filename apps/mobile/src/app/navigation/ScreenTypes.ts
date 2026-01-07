@@ -11,7 +11,7 @@ import type { ChannelThreads, ICategoryChannel, IChannel, IMessageWithUser, Opti
 import type { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { StackScreenProps } from '@react-navigation/stack';
-import type { ApiWebhook } from 'mezon-js/api.gen';
+import type { ApiWebhook } from 'mezon-js/types';
 
 export const APP_SCREEN = {
 	UN_AUTHORIZE: 'UN_AUTHORIZE',
@@ -152,7 +152,8 @@ export const APP_SCREEN = {
 		UPDATE_PHONE_NUMBER: 'ROUTES.SETTINGS.UPDATE_PHONE_NUMBER',
 		VERIFY_PHONE_NUMBER: 'ROUTES.SETTINGS.VERIFY_PHONE_NUMBER',
 		UPDATE_EMAIL: 'ROUTES.SETTINGS.UPDATE_EMAIL',
-		VERIFY_EMAIL: 'ROUTES.SETTINGS.VERIFY_EMAIL'
+		VERIFY_EMAIL: 'ROUTES.SETTINGS.VERIFY_EMAIL',
+		DEVICES_MANAGEMENT: 'ROUTES.SETTINGS.DEVICES_MANAGEMENT'
 	}
 } as const;
 
@@ -344,6 +345,7 @@ type SettingStackParamList = {
 		email?: string;
 		requestId?: string;
 	};
+	[APP_SCREEN.SETTINGS.DEVICES_MANAGEMENT]: undefined;
 };
 
 type ChannelAppParamList = {

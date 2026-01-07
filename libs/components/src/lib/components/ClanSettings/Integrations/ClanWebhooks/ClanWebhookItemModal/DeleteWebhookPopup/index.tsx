@@ -1,6 +1,6 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import { deleteClanWebhookById, hasGrandchildModal, selectCurrentClanId, settingClanStickerActions, useAppDispatch } from '@mezon/store';
-import type { ApiClanWebhook, ApiWebhook } from 'mezon-js/api.gen';
+import type { ApiClanWebhook, ApiWebhook } from 'mezon-js/types';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -44,7 +44,7 @@ const DeleteClanWebhookPopup = ({ webhookItem, closeShowPopup }: IDeleteClanWebh
 			<div className="relative z-10 w-[440px]">
 				<div className="bg-theme-setting-primary pt-[16px] px-[16px]">
 					<div className=" text-[20px] font-semibold pb-[16px]">{t('webhooksEdit.deleteCaptionHook')}</div>
-					<div className=" pb-[20px]">{t('webhooksEdit.deleteWebhookConfirmation', { webhookName: webhookItem.webhook_name })}</div>
+					<div className=" pb-[20px]">{t('webhooksEdit.deleteWebhookConfirmation', { webhookName: webhookItem.webhookName })}</div>
 				</div>
 				<div className="bg-theme-setting-nav  flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium">
 					<div onClick={closeShowPopup} className="hover:underline cursor-pointer">

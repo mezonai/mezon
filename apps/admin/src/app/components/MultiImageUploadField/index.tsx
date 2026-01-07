@@ -2,7 +2,7 @@ import type { CustomFile } from '@mezon/transport';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { processFile } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import type { ChangeEvent } from 'react';
 import { useRef, useState } from 'react';
 import type { HTMLFieldProps } from 'uniforms';

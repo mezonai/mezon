@@ -42,8 +42,8 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 			setNameChildren(t('notificationSetting.muteChannel'));
 		} else {
 			setNameChildren(t('notificationSetting.unmuteChannel'));
-			if (getNotificationChannelSelected?.time_mute) {
-				const timeMute = new Date(getNotificationChannelSelected.time_mute);
+			if (getNotificationChannelSelected?.timeMute) {
+				const timeMute = new Date(getNotificationChannelSelected.timeMute);
 				const currentTime = new Date();
 				if (timeMute > currentTime) {
 					const formattedDate = format(timeMute, 'dd/MM, HH:mm');
@@ -55,20 +55,20 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 
 	const handleScheduleMute = (duration: number) => {
 		const body: MuteChannelPayload = {
-			channel_id: currentChannelId || '',
-			mute_time: duration !== Infinity ? duration : 0,
+			channelId: currentChannelId || '',
+			muteTime: duration !== Infinity ? duration : 0,
 			active: 0,
-			clan_id: currentClanId || ''
+			clanId: currentClanId || ''
 		};
 		dispatch(notificationSettingActions.setMuteChannel(body));
 	};
 
 	const muteOrUnMuteChannel = (active: number) => {
 		const body = {
-			channel_id: currentChannelId || '',
-			clan_id: currentClanId || '',
+			channelId: currentChannelId || '',
+			clanId: currentClanId || '',
 			active,
-			mute_time: 0
+			muteTime: 0
 		};
 		dispatch(notificationSettingActions.setMuteChannel(body));
 	};
@@ -76,13 +76,13 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 	const setNotification = (notificationType: number) => {
 		if (notificationType) {
 			const body = {
-				channel_id: currentChannelId || '',
-				notification_type: notificationType || 0,
-				clan_id: currentClanId || ''
+				channelId: currentChannelId || '',
+				notificationType: notificationType || 0,
+				clanId: currentClanId || ''
 			};
 			dispatch(notificationSettingActions.setNotificationSetting(body));
 		} else {
-			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channel_id: currentChannelId || '', clan_id: currentClanId || '' }));
+			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channelId: currentChannelId || '', clanId: currentClanId || '' }));
 		}
 	};
 
@@ -173,8 +173,8 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 					name="NotificationSetting"
 					defaultNotifi={true}
 					checked={
-						getNotificationChannelSelected?.notification_setting_type === ENotificationTypes.DEFAULT ||
-						getNotificationChannelSelected?.notification_setting_type === undefined
+						getNotificationChannelSelected?.notificationSettingType === ENotificationTypes.DEFAULT ||
+						getNotificationChannelSelected?.notificationSettingType === undefined
 					}
 					onClick={() => setNotification(ENotificationTypes.DEFAULT)}
 				/>
@@ -185,7 +185,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 						type="radio"
 						name="NotificationSetting"
 						key={notification.value}
-						checked={getNotificationChannelSelected?.notification_setting_type === notification.value}
+						checked={getNotificationChannelSelected?.notificationSettingType === notification.value}
 						onClick={() => setNotification(notification.value)}
 					/>
 				))}

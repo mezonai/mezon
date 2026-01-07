@@ -33,12 +33,12 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 	}, [disabled, isSelectMode]);
 
 	const memberAvatarUrl = useMemo(() => {
-		return member?.clan_avatar || member?.user?.avatar_url || '';
-	}, [member?.clan_avatar, member?.user?.avatar_url]);
+		return member?.clanAvatar || member?.user?.avatarUrl || '';
+	}, [member?.clanAvatar, member?.user?.avatarUrl]);
 
 	const memberName = useMemo(() => {
-		return member?.clan_nick || member?.user?.display_name || member?.user?.username || '';
-	}, [member?.clan_nick, member?.user?.display_name, member?.user?.username]);
+		return member?.clanNick || member?.user?.displayName || member?.user?.username || '';
+	}, [member?.clanNick, member?.user?.displayName, member?.user?.username]);
 
 	const onPressMemberItem = useCallback(() => {
 		if (isDisable) return;
@@ -48,7 +48,7 @@ export const MemberItem = memo((props: IMemberItemProps) => {
 	}, [isDisable, isSelectMode, isSelected, member?.id, onSelectChange]);
 
 	const onDeleteMember = useCallback(async () => {
-		const response = await updateRole(role?.clan_id, role?.id, role?.title, role?.color || '', [], [], [member?.id], []);
+		const response = await updateRole(role?.clanId, role?.id, role?.title, role?.color || '', [], [], [member?.id], []);
 
 		if (response) {
 			Toast.show({

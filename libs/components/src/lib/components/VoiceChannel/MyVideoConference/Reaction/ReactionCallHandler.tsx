@@ -9,7 +9,7 @@ import type { DisplayedEmoji, DisplayedHand, ReactionCallHandlerProps } from './
 const MAX_EMOJIS_DISPLAYED = 20;
 const EMOJI_RATE_LIMIT_MS = 150;
 
-export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ onSoundReaction, onEndSound }) => {
+export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ onSoundReaction, onEndSound, clearAllSound }) => {
 	const [displayedEmojis, setDisplayedEmojis] = useState<DisplayedEmoji[]>([]);
 	const [raisingList, setRaisingList] = useState<DisplayedHand[]>([]);
 	const timeoutsRef = useRef<Map<string, number>>(new Map());
@@ -91,11 +91,11 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 		const audioMap = audioRefs.current;
 
 		currentSocket.onvoicereactionmessage = (message: VoiceReactionSend) => {
-			if (channelId === message.channel_id) {
+			if (channelId === message.channelId) {
 				try {
 					const emojis = message.emojis || [];
 					const firstEmojiId = emojis[0];
-					const senderId = message.sender_id;
+					const senderId = message.senderId;
 
 					if (firstEmojiId) {
 						if (firstEmojiId.startsWith('sound:')) {
@@ -107,15 +107,15 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 							}
 							return;
 						}
-						if (firstEmojiId.startsWith('raising:')) {
+						if (firstEmojiId.startsWith('raising-up:')) {
 							const state = getStore().getState();
 							const members = selectMemberClanByUserId(state, senderId);
 							setRaisingList((prev) => [
 								...prev,
 								{
 									id: senderId,
-									avatar: members?.clan_avatar || members?.user?.avatar_url || '',
-									name: members.clan_nick || members.user?.display_name || members.user?.username || ''
+									avatar: members?.clanAvatar || members?.user?.avatarUrl || '',
+									name: members.clanNick || members.user?.displayName || members.user?.username || ''
 								}
 							]);
 
@@ -128,6 +128,18 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 							if (audioRef.current) {
 								audioRef.current.play();
 							}
+
+							return;
+						}
+						if (firstEmojiId.startsWith('raising-down:')) {
+							const timeoutId = timeoutsRef.current.get(senderId);
+
+							if (timeoutId) {
+								clearTimeout(timeoutId);
+								timeoutsRef.current.delete(senderId);
+							}
+
+							setRaisingList((list) => list.filter((i) => i.id !== senderId));
 
 							return;
 						}
@@ -146,7 +158,7 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 								emoji: '',
 								emojiId: firstEmojiId,
 								timestamp: now,
-								displayName: members?.clan_nick || members?.user?.display_name || members?.user?.username || '',
+								displayName: members?.clanNick || members?.user?.displayName || members?.user?.username || '',
 								position
 							};
 
@@ -171,6 +183,7 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 			audioMap.forEach((audio) => {
 				audio.pause();
 			});
+			clearAllSound();
 			audioMap.clear();
 		};
 	}, [socketRef, channelId, generatePosition, playSound, onSoundReaction]);

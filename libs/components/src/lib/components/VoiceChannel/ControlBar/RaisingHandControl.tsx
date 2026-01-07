@@ -8,27 +8,47 @@ export const RaisingHandControls = memo(() => {
 	const [hand, setHand] = useState(false);
 
 	const timeoutRef = useRef<number | null>(null);
+	const timeCount = useRef<number>(0);
+	const resetCountTimeoutRef = useRef<number | null>(null);
 
 	const handleRaisingHand = useCallback(() => {
-		if (hand || !userId) return;
+		if (!userId) return;
+		if (timeCount.current >= 10) return;
 
-		setHand(true);
-		sendRaisingHand(userId);
+		setHand(!hand);
+		sendRaisingHand(userId, !hand);
 
-		if (timeoutRef.current) {
+		if (timeoutRef.current && hand) {
 			clearTimeout(timeoutRef.current);
 		}
+		if (!hand) {
+			timeCount.current++;
+		}
 
-		timeoutRef.current = window.setTimeout(() => {
-			setHand(false);
-			timeoutRef.current = null;
-		}, 10000);
+		if (hand) {
+			timeoutRef.current = window.setTimeout(() => {
+				setHand(false);
+				timeoutRef.current = null;
+			}, 10000);
+		}
+
+		if (timeCount.current === 10) {
+			if (resetCountTimeoutRef.current) clearTimeout(resetCountTimeoutRef.current);
+
+			resetCountTimeoutRef.current = window.setTimeout(() => {
+				timeCount.current = 0;
+				resetCountTimeoutRef.current = null;
+			}, 10000);
+		}
 	}, [hand, sendRaisingHand, userId]);
 
 	useEffect(() => {
 		return () => {
 			if (timeoutRef.current) {
 				clearTimeout(timeoutRef.current);
+			}
+			if (resetCountTimeoutRef.current) {
+				clearTimeout(resetCountTimeoutRef.current);
 			}
 		};
 	}, []);

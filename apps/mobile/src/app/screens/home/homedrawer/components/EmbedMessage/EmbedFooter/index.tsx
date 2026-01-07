@@ -7,20 +7,20 @@ import { style } from './styles';
 
 interface EmbedFooterProps {
 	text?: string;
-	icon_url?: string;
+	iconUrl?: string;
 	timestamp?: string;
 }
 
-export const EmbedFooter = memo(({ text, icon_url, timestamp }: EmbedFooterProps) => {
+export const EmbedFooter = memo(({ text, iconUrl, timestamp }: EmbedFooterProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const date = new Date(timestamp).toLocaleDateString();
 	return (
 		<View style={styles.container}>
-			{!!icon_url && (
+			{!!iconUrl && (
 				<FastImage
 					source={{
-						uri: createImgproxyUrl(icon_url ?? '', { width: 100, height: 100, resizeType: 'fit' })
+						uri: createImgproxyUrl(iconUrl ?? '', { width: 100, height: 100, resizeType: 'fit' })
 					}}
 					style={styles.imageWrapper}
 				/>

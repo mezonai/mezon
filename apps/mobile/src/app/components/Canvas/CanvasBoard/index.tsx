@@ -22,7 +22,7 @@ export function CanvasScreen({ navigation, route }: MenuChannelScreenProps<Scree
 
 	const uri = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/canvas-mobile/${clanId}/${channelId}/${canvasId}`;
 
-	const mezon_session = JSON.stringify({
+	const mezonSession = JSON.stringify({
 		host: process.env.NX_CHAT_APP_API_HOST as string,
 		port: process.env.NX_CHAT_APP_API_PORT as string,
 		ssl: true
@@ -37,7 +37,7 @@ export function CanvasScreen({ navigation, route }: MenuChannelScreenProps<Scree
 		"_persist": JSON.stringify({"version":-1,"rehydrated":true})
 	};
     localStorage.setItem('persist:auth', JSON.stringify(authData));
-	localStorage.setItem('mezon_session', JSON.stringify(${mezon_session}));
+	localStorage.setItem('mezon_session', JSON.stringify(${mezonSession}));
     })();
 	true;
 	(function() {

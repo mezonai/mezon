@@ -51,8 +51,8 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 		});
 	}, [navigation, onGoBack, t, themeValue.textDisabled, themeValue.textStrong]);
 
-	const currentStartDate = currentEvent?.start_time ? new Date(currentEvent?.start_time) : undefined;
-	const currentEndDate = currentEvent?.end_time ? new Date(currentEvent?.end_time) : undefined;
+	const currentStartDate = currentEvent?.startTime ? new Date(currentEvent?.startTime) : undefined;
+	const currentEndDate = currentEvent?.endTime ? new Date(currentEvent?.endTime) : undefined;
 
 	const [eventTitle, setEventTitle] = useState<string>(currentEvent?.title || '');
 	const [eventDescription, setEventDescription] = useState<string>(currentEvent?.description || '');
@@ -62,7 +62,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 	const [combinedEndDateTime, setCombinedEndDateTime] = useState(new Date());
 	const [endDate, setEndDate] = useState<Date>(currentEndDate || getNearTime(240));
 	const [endTime, setEndTime] = useState<Date>(currentEndDate || getNearTime(240));
-	const [eventFrequency, setEventFrequency] = useState<number>(currentEvent?.repeat_type || 0);
+	const [eventFrequency, setEventFrequency] = useState<number>(currentEvent?.repeatType || 0);
 	const [eventLogo, setEventLogo] = useState<string>(currentEvent?.logo || '');
 	const [isValidEventTitle, setIsValidEventTitle] = useState<boolean>(true);
 

@@ -7,7 +7,7 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 	const markdown: IMarkdownOnMessage[] = [];
 
 	entities.forEach((entity: any) => {
-		const { type, offset, length, userId, id, documentId, role_id } = entity;
+		const { type, offset, length, userId, id, documentId, roleId } = entity;
 
 		const s = offset;
 		const e = offset + length;
@@ -18,8 +18,8 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 				if (userId) {
 					const isRole = rolesClan.some((role) => role.roleId === userId);
 					mentions.push({
-						role_id: isRole ? userId : undefined,
-						user_id: !isRole ? userId : undefined,
+						roleId: isRole ? userId : undefined,
+						userId: !isRole ? userId : undefined,
 						s,
 						e,
 						display
@@ -29,7 +29,7 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 
 			case 'MessageEntityMentionRole':
 				mentions.push({
-					role_id: role_id,
+					roleId: roleId,
 					s,
 					e,
 					display

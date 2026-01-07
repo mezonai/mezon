@@ -80,7 +80,7 @@ export default function SetEmail({ submitButtonText, isLoading, onClose }: SetEm
 
 	const handleSendOtp = useCallback(async (otp: string) => {
 		if (reqId) {
-			await dispatch(authActions.confirmAuthenticateOTP({ otp_code: otp, req_id: reqId })).unwrap();
+			await dispatch(authActions.confirmAuthenticateOTP({ otpCode: otp, reqId: reqId })).unwrap();
 			return;
 		}
 		onClose?.();
@@ -100,8 +100,8 @@ export default function SetEmail({ submitButtonText, isLoading, onClose }: SetEm
 					}
 				})
 			).unwrap();
-			if (response && response?.req_id) {
-				setReqId(response.req_id);
+			if (response && response?.reqId) {
+				setReqId(response.reqId);
 				setCount(60);
 			} else {
 				toast.error('');

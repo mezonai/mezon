@@ -52,10 +52,10 @@ const ModalInvite = (props: ModalParam) => {
 		try {
 			const welcomeChannel = await dispatch(fetchSystemMessageByClanId({ clanId: currentClanId as string })).unwrap();
 
-			const intiveIdChannel = (channelID ? channelID : welcomeChannel.channel_id) as string;
+			const intiveIdChannel = (channelID ? channelID : welcomeChannel.channelId) as string;
 			const res = await createLinkInviteUser(effectiveClanId ?? '', intiveIdChannel, 10);
-			if (res && res?.invite_link) {
-				setUrlInvite(`${isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin}/invite/${res.invite_link}`);
+			if (res && res?.inviteLink) {
+				setUrlInvite(`${isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin}/invite/${res.inviteLink}`);
 			}
 		} catch {
 			console.log(t('errors.createInviteLink'));
@@ -98,12 +98,12 @@ const ModalInvite = (props: ModalParam) => {
 	return (
 		<ModalLayout onClose={props.onClose}>
 			<div
-				className="bg-theme-setting-primary rounded-xl flex flex-col w-[calc(100vw-32px)] max-w-[480px] md:w-[480px]"
+				className="bg-theme-setting-primary rounded-xl flex flex-col mx-4 md:mx-0 w-full md:w-[480px]"
 				data-e2e={generateE2eId('clan_page.modal.invite_people.container')}
 			>
 				<div className="flex-1 flex items-center justify-between border-b-theme-primary rounded-t p-3 md:p-4 gap-2">
-					<p title={clan?.clan_name} className="font-bold text-base md:text-xl text-theme-primary-active break-words flex-1 min-w-0">
-						{t('modal.title', { target: isInviteExternalCalling ? t('modal.privateEvent') : clan?.clan_name })}
+					<p title={clan?.clanName} className="font-bold text-base md:text-xl text-theme-primary-active break-words flex-1 min-w-0">
+						{t('modal.title', { target: isInviteExternalCalling ? t('modal.privateEvent') : clan?.clanName })}
 					</p>
 
 					<Button

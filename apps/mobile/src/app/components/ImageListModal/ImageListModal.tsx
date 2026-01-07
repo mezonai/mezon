@@ -3,7 +3,7 @@ import { baseColor, size } from '@mezon/mobile-ui';
 import type { AttachmentEntity } from '@mezon/store-mobile';
 import { selectGalleryAttachmentsByChannel, sleep, useAppSelector } from '@mezon/store-mobile';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Text, useWindowDimensions, View } from 'react-native';

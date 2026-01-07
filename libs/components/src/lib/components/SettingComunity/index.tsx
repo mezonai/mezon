@@ -40,7 +40,7 @@ const SettingComunity = ({
 
 	useEffect(() => {
 		if (clanId) {
-			dispatch(comunityActions.getCommunityInfo({ clan_id: clanId }));
+			dispatch(comunityActions.getCommunityInfo({ clanId: clanId }));
 		}
 	}, [dispatch, clanId]);
 
@@ -100,7 +100,7 @@ const SettingComunity = ({
 		if (isEnabled && aboutText !== initialAbout) {
 			setIsSaving(true);
 			try {
-				await dispatch(comunityActions.updateCommunityAbout({ clan_id: clanId, about: aboutText })).unwrap();
+				await dispatch(comunityActions.updateCommunityAbout({ clanId: clanId, about: aboutText })).unwrap();
 				setInitialAbout(aboutText);
 				toast.success(t('communitySettings.messages.aboutUpdated'));
 			} catch {
@@ -127,7 +127,7 @@ const SettingComunity = ({
 		if (isEnabled && descriptionText !== initialDescription) {
 			setIsSaving(true);
 			try {
-				await dispatch(comunityActions.updateCommunityDescription({ clan_id: clanId, description: descriptionText })).unwrap();
+				await dispatch(comunityActions.updateCommunityDescription({ clanId: clanId, description: descriptionText })).unwrap();
 				setInitialDescription(descriptionText);
 				toast.success(t('communitySettings.messages.descriptionUpdated'));
 			} catch {
@@ -141,7 +141,7 @@ const SettingComunity = ({
 		if (isEnabled && vanityUrl !== initialVanityUrl) {
 			setIsSaving(true);
 			try {
-				await dispatch(comunityActions.updateCommunityShortUrl({ clan_id: clanId, short_url: vanityUrl })).unwrap();
+				await dispatch(comunityActions.updateCommunityShortUrl({ clanId: clanId, shortUrl: vanityUrl })).unwrap();
 				setInitialVanityUrl(vanityUrl);
 				toast.success(t('communitySettings.messages.vanityUrlUpdated'));
 			} catch {
@@ -182,7 +182,7 @@ const SettingComunity = ({
 		}
 		setIsSaving(true);
 		try {
-			await dispatch(comunityActions.updateCommunityStatus({ clan_id: clanId, enabled: true })).unwrap();
+			await dispatch(comunityActions.updateCommunityStatus({ clanId: clanId, enabled: true })).unwrap();
 			let bannerUrl = bannerPreview;
 			if (bannerFile) {
 				const client = clientRef.current;
@@ -192,17 +192,17 @@ const SettingComunity = ({
 				const attachment = await handleUploadEmoticon(client, session, path, bannerFile);
 				if (attachment && attachment.url) {
 					bannerUrl = attachment.url;
-					await dispatch(comunityActions.updateCommunityBanner({ clan_id: clanId, bannerUrl })).unwrap();
+					await dispatch(comunityActions.updateCommunityBanner({ clanId: clanId, bannerUrl })).unwrap();
 				}
 			}
 			if (aboutText) {
-				await dispatch(comunityActions.updateCommunityAbout({ clan_id: clanId, about: aboutText })).unwrap();
+				await dispatch(comunityActions.updateCommunityAbout({ clanId: clanId, about: aboutText })).unwrap();
 			}
 			if (descriptionText) {
-				await dispatch(comunityActions.updateCommunityDescription({ clan_id: clanId, description: descriptionText })).unwrap();
+				await dispatch(comunityActions.updateCommunityDescription({ clanId: clanId, description: descriptionText })).unwrap();
 			}
 			if (vanityUrl) {
-				await dispatch(comunityActions.updateCommunityShortUrl({ clan_id: clanId, short_url: vanityUrl })).unwrap();
+				await dispatch(comunityActions.updateCommunityShortUrl({ clanId: clanId, shortUrl: vanityUrl })).unwrap();
 			}
 			setInitialAbout(aboutText);
 			setInitialDescription(descriptionText);
@@ -272,19 +272,19 @@ const SettingComunity = ({
 				const attachment = await handleUploadEmoticon(client, session, path, bannerFile);
 				if (attachment && attachment.url) {
 					bannerUrl = attachment.url;
-					await dispatch(comunityActions.updateCommunityBanner({ clan_id: clanId, bannerUrl })).unwrap();
+					await dispatch(comunityActions.updateCommunityBanner({ clanId: clanId, bannerUrl })).unwrap();
 				}
 			}
 			if (aboutText !== initialAbout) {
-				await dispatch(comunityActions.updateCommunityAbout({ clan_id: clanId, about: aboutText })).unwrap();
+				await dispatch(comunityActions.updateCommunityAbout({ clanId: clanId, about: aboutText })).unwrap();
 				setInitialAbout(aboutText);
 			}
 			if (descriptionText !== initialDescription) {
-				await dispatch(comunityActions.updateCommunityDescription({ clan_id: clanId, description: descriptionText })).unwrap();
+				await dispatch(comunityActions.updateCommunityDescription({ clanId: clanId, description: descriptionText })).unwrap();
 				setInitialDescription(descriptionText);
 			}
 			if (vanityUrl !== initialVanityUrl) {
-				await dispatch(comunityActions.updateCommunityShortUrl({ clan_id: clanId, short_url: vanityUrl })).unwrap();
+				await dispatch(comunityActions.updateCommunityShortUrl({ clanId: clanId, shortUrl: vanityUrl })).unwrap();
 				setInitialVanityUrl(vanityUrl);
 			}
 			setInitialBanner(bannerUrl);
@@ -301,7 +301,7 @@ const SettingComunity = ({
 	const handleDisable = async () => {
 		setIsSaving(true);
 		try {
-			await dispatch(comunityActions.updateCommunityStatus({ clan_id: clanId, enabled: false })).unwrap();
+			await dispatch(comunityActions.updateCommunityStatus({ clanId: clanId, enabled: false })).unwrap();
 			setAboutText('');
 			setDescriptionText('');
 			setVanityUrl('');
@@ -326,7 +326,7 @@ const SettingComunity = ({
 		setBannerPreview(null);
 		setOpenSaveChange(true);
 		if (isEnabled) {
-			await dispatch(comunityActions.updateCommunityBanner({ clan_id: clanId, bannerUrl: '' })).unwrap();
+			await dispatch(comunityActions.updateCommunityBanner({ clanId: clanId, bannerUrl: '' })).unwrap();
 			setInitialBanner('');
 			toast.success(t('communitySettings.messages.bannerRemoved'));
 		}

@@ -3,7 +3,7 @@ import { createClient } from '@mezon/transport';
 import type { IInvite, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiInviteUserRes, ApiLinkInviteUser } from 'mezon-js/api.gen';
+import type { ApiInviteUserRes, ApiLinkInviteUser } from 'mezon-js/types';
 import { ensureSession, getMezonCtx } from '../helpers';
 
 export const INVITE_FEATURE_KEY = 'invite';
@@ -26,20 +26,21 @@ export interface InviteState extends EntityState<InvitesEntity, string> {
 export const inviteAdapter = createEntityAdapter<InvitesEntity>();
 
 export type CreateLinkInviteUser = {
-	channel_id: string;
-	clan_id: string;
-	expiry_time: number;
+	channelId: string;
+	clanId: string;
+	expiryTime: number;
 };
 
 export const createLinkInviteUser = createAsyncThunk(
 	'invite/createLinkInviteUser',
-	async ({ channel_id, clan_id, expiry_time }: CreateLinkInviteUser, thunkAPI) => {
+	async ({ channelId, clanId, expiryTime }: CreateLinkInviteUser, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				channel_id,
-				clan_id,
-				expiry_time
+				$typeName: 'mezon.api.LinkInviteUserRequest' as const,
+				channelId,
+				clanId,
+				expiryTime
 			};
 			const response = await mezon.client.createLinkInviteUser(mezon.session, body);
 			if (!response) {
@@ -61,7 +62,7 @@ export const inviteUser = createAsyncThunk('invite/inviteUser', async ({ inviteI
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.inviteUser(mezon.session, inviteId);
-		if (!response?.clan_id) {
+		if (!response?.clanId) {
 			captureSentryError('Can not join clan', 'invite/inviteUser');
 			return thunkAPI.rejectWithValue('Can not join clan');
 		}
@@ -98,7 +99,8 @@ export const checkMutableRelationship = createAsyncThunk('invite/getMutableRelat
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.isFollower(mezon.session, {
-			follow_id: userId
+			$typeName: 'mezon.api.IsFollowerRequest' as const,
+			followId: userId
 		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
@@ -130,7 +132,7 @@ export const inviteSlice = createSlice({
 		},
 		removeByClanId: (state, action: PayloadAction<string>) => {
 			for (const id of state.ids) {
-				if (state.entities[id]?.clan_id === action.payload) {
+				if (state.entities[id]?.clanId === action.payload) {
 					inviteAdapter.removeOne(state, id);
 				}
 			}

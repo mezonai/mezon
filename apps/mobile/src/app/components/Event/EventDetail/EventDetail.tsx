@@ -12,7 +12,7 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { EEventStatus, EPermission, sleep } from '@mezon/utils';
-import type { ApiUserEventRequest } from 'mezon-js/api.gen';
+import type { ApiUserEventRequest } from 'mezon-js/types';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
@@ -37,11 +37,11 @@ export function EventDetail({ event }: IEventDetailProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['eventMenu', 'eventCreator']);
-	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
-	const clans = useSelector(selectClanById(event?.clan_id || ''));
+	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creatorId || ''));
+	const clans = useSelector(selectClanById(event?.clanId || ''));
 	const { userId, userProfile } = useAuth();
 	const [isInterested, setIsInterested] = useState<boolean>(false);
-	const [eventInterested, setEventInterested] = useState<number>(event?.user_ids?.length || 0);
+	const [eventInterested, setEventInterested] = useState<number>(event?.userIds?.length || 0);
 	const [isClanOwner, hasClanPermission, hasAdminPermission] = usePermissionChecker([
 		EPermission.clanOwner,
 		EPermission.manageClan,
@@ -53,13 +53,13 @@ export function EventDetail({ event }: IEventDetailProps) {
 		if (isClanOwner || hasClanPermission || hasAdminPermission) {
 			return true;
 		}
-		const isEventICreated = event?.creator_id === userProfile?.user?.id;
+		const isEventICreated = event?.creatorId === userProfile?.user?.id;
 		if (isEventICreated) {
 			return true;
 		}
 
-		return Number(userMaxPermissionLevel) > Number(event?.max_permission);
-	}, [event?.creator_id, event?.max_permission, hasAdminPermission, hasClanPermission, isClanOwner, userMaxPermissionLevel, userProfile?.user?.id]);
+		return Number(userMaxPermissionLevel) > Number(event?.maxPermission);
+	}, [event?.creatorId, event?.maxPermission, hasAdminPermission, hasClanPermission, isClanOwner, userMaxPermissionLevel, userProfile?.user?.id]);
 	const dispatch = useAppDispatch();
 
 	function handlePress() {
@@ -80,8 +80,8 @@ export function EventDetail({ event }: IEventDetailProps) {
 	};
 
 	useEffect(() => {
-		if (userId && event?.user_ids) {
-			setIsInterested(event.user_ids.includes(userId));
+		if (userId && event?.userIds) {
+			setIsInterested(event.userIds.includes(userId));
 		}
 	}, [userId, event]);
 
@@ -89,8 +89,8 @@ export function EventDetail({ event }: IEventDetailProps) {
 		if (!event?.id) return;
 
 		const request: ApiUserEventRequest = {
-			clan_id: event.clan_id,
-			event_id: event.id
+			clanId: event.clanId,
+			eventId: event.id
 		};
 
 		if (isInterested) {
@@ -108,7 +108,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 		<View style={styles.container}>
 			{!!event?.logo && <ImageNative url={event?.logo} style={styles.cover} resizeMode="cover" />}
 			<EventTime event={event} eventStatus={EEventStatus.CREATED} />
-			{!!event?.channel_id && event.channel_id !== '0' && !event?.is_private && (
+			{!!event?.channelId && event.channelId !== '0' && !event?.isPrivate && (
 				<View style={styles.privateArea}>
 					<View style={[styles.privatePanel, { backgroundColor: baseColor.orange }]}>
 						<Text style={styles.privateText}>{t('eventCreator:eventDetail.channelEvent')}</Text>
@@ -116,7 +116,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 				</View>
 			)}
 
-			{event?.is_private && (
+			{event?.isPrivate && (
 				<View style={styles.privateArea}>
 					<View style={styles.privatePanel}>
 						<Text style={styles.privateText}>{t('eventCreator:eventDetail.privateEvent')}</Text>
@@ -124,7 +124,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 				</View>
 			)}
 
-			{!event?.is_private && !event?.channel_id && (
+			{!event?.isPrivate && !event?.channelId && (
 				<View style={styles.privateArea}>
 					<View style={[styles.privatePanel, { backgroundColor: baseColor.blurple }]}>
 						<Text style={styles.privateText}>{t('eventCreator:eventDetail.clanEvent')}</Text>
@@ -136,8 +136,8 @@ export function EventDetail({ event }: IEventDetailProps) {
 			<View>
 				<View style={styles.mainSection}>
 					<View style={styles.inline}>
-						<MezonAvatar avatarUrl={clans?.logo} username={clans?.clan_name} height={20} width={20} />
-						<Text style={styles.smallText}>{clans?.clan_name}</Text>
+						<MezonAvatar avatarUrl={clans?.logo} username={clans?.clanName} height={20} width={20} />
+						<Text style={styles.smallText}>{clans?.clanName}</Text>
 					</View>
 
 					<EventLocation event={event} />
@@ -148,7 +148,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 					</View>
 
 					<View style={styles.inline}>
-						<MezonAvatar avatarUrl={userCreate?.user?.avatar_url} username={userCreate?.user?.username} height={20} width={20} />
+						<MezonAvatar avatarUrl={userCreate?.user?.avatarUrl} username={userCreate?.user?.username} height={20} width={20} />
 						<Text style={styles.smallText}>
 							{t('detail.createdBy')}
 							<Text style={styles.highlight}>{userCreate?.user?.username}</Text>
@@ -187,7 +187,7 @@ export function EventDetail({ event }: IEventDetailProps) {
 				)}
 			</View>
 
-			{!!event?.channel_id && event.channel_id !== '0' && <EventChannelDetail event={event} />}
+			{!!event?.channelId && event.channelId !== '0' && <EventChannelDetail event={event} />}
 		</View>
 	);
 }

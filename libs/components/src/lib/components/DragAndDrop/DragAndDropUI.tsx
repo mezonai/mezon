@@ -55,7 +55,7 @@ function DragAndDropUI({ onDrop }: DragAndDropUIProps) {
 					<div className="flex flex-col justify-center mt-14">
 						<div className=" w-full flex flex-row justify-center">
 							<h1 className=" font-bold text-2xl mt-[1rem] text-center truncate">
-								{t('uploadToChannel', { channelName: currentChannel?.channel_label })}
+								{t('uploadToChannel', { channelName: currentChannel?.channelLabel })}
 							</h1>
 						</div>
 						<div className=" w-full flex flex-row justify-center text-center mt-[1rem]">

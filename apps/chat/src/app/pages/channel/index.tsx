@@ -58,7 +58,7 @@ import {
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { ApiOnboardingItem } from 'mezon-js/types';
 import type { DragEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -90,7 +90,7 @@ function useChannelSeen(channelId: string) {
 			try {
 				const distance = Math.round(Number((BigInt(lastMessageViewport.id) >> BigInt(22)) - (BigInt(lastSeenMessageId) >> BigInt(22))));
 				if (distance >= 0) {
-					markAsReadSeen(lastMessageViewport, mode, currentChannel?.count_mess_unread || 0);
+					markAsReadSeen(lastMessageViewport, mode, currentChannel?.countMessUnread || 0);
 					return;
 				}
 			} catch (error) {
@@ -100,7 +100,7 @@ function useChannelSeen(channelId: string) {
 
 		const isLastMessage = lastMessageViewport.id === lastMessageChannel.id;
 		if (isLastMessage) {
-			markAsReadSeen(lastMessageViewport, mode, currentChannel?.count_mess_unread || 0);
+			markAsReadSeen(lastMessageViewport, mode, currentChannel?.countMessUnread || 0);
 		}
 	}, [lastMessageViewport, lastMessageChannel, lastSeenMessageId, markAsReadSeen, currentChannel, mode]);
 
@@ -110,7 +110,7 @@ function useChannelSeen(channelId: string) {
 				const channelWithActive = { ...currentChannel, active: 1 };
 				dispatch(
 					channelsActions.upsertOne({
-						clanId: currentChannel?.clan_id || '',
+						clanId: currentChannel?.clanId || '',
 						channel: channelWithActive as ChannelsEntity
 					})
 				);
@@ -168,7 +168,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
 	const missionDone = useSelector((state) => selectMissionDone(state, currentClanId as string));
 	const missionSum = useSelector((state) => selectMissionSum(state, currentClanId as string));
-	const onboardingClan = useAppSelector((state) => selectOnboardingByClan(state, currentChannel.clan_id as string));
+	const onboardingClan = useAppSelector((state) => selectOnboardingByClan(state, currentChannel.clanId as string));
 	const appIsOpen = useAppSelector((state) => selectToCheckAppIsOpening(state, channelId));
 	const appButtonLabel = appIsOpen ? t('resetApp') : t('launchApp');
 
@@ -208,8 +208,8 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		if (previewMode?.open && previewMode.clanId === currentClanId) {
 			return true;
 		}
-		return selectUserProcessing?.onboarding_step !== DONE_ONBOARDING_STATUS && currentClanIsOnboarding;
-	}, [selectUserProcessing?.onboarding_step, currentClanIsOnboarding, previewMode, currentClanId]);
+		return selectUserProcessing?.onboardingStep !== DONE_ONBOARDING_STATUS && currentClanIsOnboarding;
+	}, [selectUserProcessing?.onboardingStep, currentClanIsOnboarding, previewMode, currentClanId]);
 
 	if (canSendMessageDelayed === false) {
 		return (
@@ -226,7 +226,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 				userId={userId || ''}
 				clanId={currentClanId || ''}
 				channelId={currentChannel.id}
-				banTime={isBanned.ban_time ? isBanned.ban_time - Date.now() : Infinity}
+				banTime={isBanned.banTime ? isBanned.banTime - Date.now() : Infinity}
 			/>
 		);
 	}
@@ -235,20 +235,20 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 		if (isAppChannel) {
 			const store = getStore();
 			const appChannel = selectAppChannelById(store.getState(), channelId);
-			if (appChannel.app_id && appChannel.app_url) {
+			if (appChannel.appId && appChannel.appUrl) {
 				const hashData = await dispatch(
 					channelAppActions.generateAppUserHash({
-						appId: appChannel.app_id
+						appId: appChannel.appId
 					})
 				).unwrap();
-				if (hashData.web_app_data) {
-					const encodedHash = encodeURIComponent(hashData.web_app_data);
-					const urlWithHash = `${appChannel.app_url}?data=${encodedHash}`;
+				if (hashData.webAppData) {
+					const encodedHash = encodeURIComponent(hashData.webAppData);
+					const urlWithHash = `${appChannel.appUrl}?data=${encodedHash}`;
 					if (isElectron()) {
 						window.electron.launchAppWindow(urlWithHash);
 						return;
 					}
-					window.open(urlWithHash, currentChannel?.channel_label, 'width=900,height=700');
+					window.open(urlWithHash, currentChannel?.channelLabel, 'width=900,height=700');
 				}
 			}
 		}
@@ -257,7 +257,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	return (
 		<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative ${isShowMemberList ? 'w-full' : ''}`}>
 			{showPreviewMode && <OnboardingGuide currentMission={currentMission} missionSum={missionSum} missionDone={missionDone} />}
-			{currentChannel && <ChannelMessageBox clanId={currentChannel?.clan_id} channel={currentChannel} mode={mode} />}
+			{currentChannel && <ChannelMessageBox clanId={currentChannel?.clanId} channel={currentChannel} mode={mode} />}
 			{isAppChannel && (
 				<div className="flex gap-2 px-3 pt-2 text-theme-primary">
 					<div
@@ -274,7 +274,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 				</div>
 			)}
 			{currentChannel && currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE ? (
-				<ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel?.channel_private : false} />
+				<ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel?.channelPrivate : false} />
 			) : (
 				<div className="h-4"></div>
 			)}
@@ -309,7 +309,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const appChannel = useAppSelector((state) => selectAppChannelById(state, channelId as string));
 
 	const [openUploadFileModal, closeUploadFileModal] = useModal(() => {
-		return <FileUploadByDnD currentId={currentChannel?.channel_id ?? ''} />;
+		return <FileUploadByDnD currentId={currentChannel?.channelId ?? ''} />;
 	}, [currentChannel]);
 
 	const handleDragEnter = (e: DragEvent<HTMLElement>) => {
@@ -336,11 +336,11 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 			dispatch(channelAppActions.setJoinChannelAppData({ dataUpdate: undefined }));
 			dispatch(
 				handleParticipantVoiceState({
-					clan_id: currentChannelAppClanId,
-					channel_id: currentChannelAppId,
-					display_name: userProfile?.user?.display_name ?? '',
+					clanId: currentChannelAppClanId,
+					channelId: currentChannelAppId,
+					displayName: userProfile?.user?.displayName ?? '',
 					state: ParticipantMeetState.LEAVE,
-					room_name: currentChannelAppId
+					roomName: currentChannelAppId
 				})
 			);
 		}
@@ -348,7 +348,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 		if (isChannelApp) {
 			dispatch(channelAppActions.setChannelId(channelId));
-			dispatch(channelAppActions.setClanId(currentChannel?.clan_id || null));
+			dispatch(channelAppActions.setClanId(currentChannel?.clanId || null));
 		} else {
 			dispatch(channelAppActions.setChannelId(null));
 			dispatch(channelAppActions.setClanId(null));
@@ -357,7 +357,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 
 	useEffect(() => {
 		const savedChannelIds = safeJSONParse(localStorage.getItem('agerestrictedchannelIds') || '[]');
-		if (!savedChannelIds.includes(currentChannel.channel_id) && currentChannel.age_restricted === 1) {
+		if (!savedChannelIds.includes(currentChannel.channelId) && currentChannel.ageRestricted === 1) {
 			setIsShowAgeRestricted(true);
 		} else {
 			setIsShowAgeRestricted(false);
@@ -388,7 +388,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 							>
 								<ChannelMedia currentChannel={currentChannel} />
 							</div>
-							<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
+							<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channelId as string} />
 						</div>
 					)}
 					{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
@@ -472,21 +472,21 @@ const OnboardingGuide = ({
 
 	const handleDoNextMission = useCallback(() => {
 		if (currentMission) {
-			switch (currentMission.task_type) {
+			switch (currentMission.taskType) {
 				case ETypeMission.SEND_MESSAGE: {
-					const link = toChannelPage(currentMission.channel_id as string, currentMission.clan_id as string);
+					const link = toChannelPage(currentMission.channelId as string, currentMission.clanId as string);
 					navigate(link);
 					break;
 				}
 				case ETypeMission.VISIT: {
-					const linkChannel = toChannelPage(currentMission.channel_id as string, currentMission.clan_id as string);
+					const linkChannel = toChannelPage(currentMission.channelId as string, currentMission.clanId as string);
 					navigate(linkChannel);
-					dispatch(onboardingActions.doneMission({ clan_id: currentMission.clan_id as string }));
+					dispatch(onboardingActions.doneMission({ clanId: currentMission.clanId as string }));
 					doneAllMission();
 					break;
 				}
 				case ETypeMission.DOSOMETHING: {
-					dispatch(onboardingActions.doneMission({ clan_id: currentMission.clan_id as string }));
+					dispatch(onboardingActions.doneMission({ clanId: currentMission.clanId as string }));
 					doneAllMission();
 					break;
 				}
@@ -496,10 +496,10 @@ const OnboardingGuide = ({
 		}
 	}, [currentMission?.id, missionDone]);
 
-	const channelMission = useSelector((state) => selectChannelById(state, currentMission?.channel_id as string));
+	const channelMission = useSelector((state) => selectChannelById(state, currentMission?.channelId as string));
 	const doneAllMission = useCallback(() => {
 		if (missionDone + 1 === missionSum) {
-			dispatch(onboardingActions.doneOnboarding({ clan_id: currentMission?.clan_id as string }));
+			dispatch(onboardingActions.doneOnboarding({ clanId: currentMission?.clanId as string }));
 		}
 	}, [missionDone]);
 	return (
@@ -515,8 +515,8 @@ const OnboardingGuide = ({
 						<div className="text-base font-semibold text-theme-primary">{currentMission.title} </div>
 						<div className="text-[10px] font-normal text-theme-primary">
 							{' '}
-							{titleMission[currentMission.task_type ? currentMission.task_type - 1 : 0]}{' '}
-							<strong className="text-theme-primary">#{channelMission?.channel_label}</strong>{' '}
+							{titleMission[currentMission.taskType ? currentMission.taskType - 1 : 0]}{' '}
+							<strong className="text-theme-primary">#{channelMission?.channelLabel}</strong>{' '}
 						</div>
 					</div>
 				</div>

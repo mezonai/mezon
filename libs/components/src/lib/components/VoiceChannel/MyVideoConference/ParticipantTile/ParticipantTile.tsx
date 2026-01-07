@@ -144,10 +144,10 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		return clanMember;
 	}, [groupMembers, clanMember, participantId]);
 
-	const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || usernameString;
+	const voiceUsername = member?.clanNick || member?.user?.displayName || member?.user?.username || usernameString;
 
 	const avatar = useMemo(() => {
-		return member?.clan_avatar || member?.user?.avatar_url || null;
+		return member?.clanAvatar || member?.user?.avatarUrl || null;
 	}, [member]);
 
 	const resolvedAvatar = extAvatar ?? avatar;

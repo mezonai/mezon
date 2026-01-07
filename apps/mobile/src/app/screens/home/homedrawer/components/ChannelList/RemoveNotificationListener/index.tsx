@@ -34,7 +34,7 @@ const RemoveNotificationListener = () => {
 
 	useEffect(() => {
 		const removeNotificationsByChannelId = async () => {
-			const channelId = currentDirectId || currentChannel?.channel_id;
+			const channelId = currentDirectId || currentChannel?.channelId;
 
 			if (!channelId) {
 				return;
@@ -43,7 +43,7 @@ const RemoveNotificationListener = () => {
 		};
 
 		removeNotificationsByChannelId();
-	}, [currentChannel?.channel_id, currentDirectId, triggerRemoveByChannelId]);
+	}, [currentChannel?.channelId, currentDirectId, triggerRemoveByChannelId]);
 
 	useEffect(() => {
 		const onRemoveNotifyListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_REMOVE_NOTIFY_BY_CHANNEL_ID, ({ channelId = '' }) => {

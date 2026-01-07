@@ -55,31 +55,31 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 	const currentSystemMessage = useSelector(selectClanSystemMessage);
 
 	const isHasSystemChannel = useMemo(() => {
-		return category?.channels?.some((channel) => channel === currentSystemMessage?.channel_id);
-	}, [category?.channels, currentSystemMessage?.channel_id]);
+		return category?.channels?.some((channel) => channel === currentSystemMessage?.channelId);
+	}, [category?.channels, currentSystemMessage?.channelId]);
 
 	const handleRemoveCategory = useCallback(() => {
 		try {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			dispatch(appActions.setLoadingMainMobile(true));
 			if (isHasSystemChannel) {
-				Toast.show({ type: 'error', text1: t('menu.toast.systemChannel', { categoryName: category?.category_name }) });
+				Toast.show({ type: 'error', text1: t('menu.toast.systemChannel', { categoryName: category?.categoryName }) });
 				return;
 			}
 			dispatch(
 				categoriesActions.deleteCategory({
-					clanId: category?.clan_id as string,
+					clanId: category?.clanId as string,
 					categoryId: category?.id as string,
-					categoryLabel: category?.category_name as string
+					categoryLabel: category?.categoryName as string
 				})
 			);
-			dispatch(channelsActions.fetchChannels({ clanId: category?.clan_id, noCache: true, isMobile: true }));
+			dispatch(channelsActions.fetchChannels({ clanId: category?.clanId, noCache: true, isMobile: true }));
 		} catch (error) {
 			Toast.show({ type: 'error', text1: t('menu.toast.error', { error }) });
 		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
-	}, [category?.category_name, category?.clan_id, category?.id, dispatch, isHasSystemChannel]);
+	}, [category?.categoryName, category?.clanId, category?.id, dispatch, isHasSystemChannel]);
 
 	const handleMarkAsRead = useCallback(async () => {
 		handleMarkAsReadCategory(category);
@@ -90,8 +90,8 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 	}, [dispatch, statusMarkAsReadCategory]);
 
 	useEffect(() => {
-		dispatch(defaultNotificationCategoryActions.getDefaultNotificationCategory({ categoryId: category?.id, clanId: category?.clan_id }));
-		dispatch(fetchSystemMessageByClanId({ clanId: category.clan_id }));
+		dispatch(defaultNotificationCategoryActions.getDefaultNotificationCategory({ categoryId: category?.id, clanId: category?.clanId }));
+		dispatch(fetchSystemMessageByClanId({ clanId: category.clanId }));
 	}, []);
 
 	const openBottomSheet = () => {
@@ -169,7 +169,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 				navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
 					screen: APP_SCREEN.MENU_CLAN.CATEGORY_SETTING,
 					params: {
-						categoryId: category?.category_id
+						categoryId: category?.categoryId
 					}
 				});
 			},
@@ -183,7 +183,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 				navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
 					screen: APP_SCREEN.MENU_CLAN.CREATE_CHANNEL,
 					params: {
-						categoryId: category?.category_id
+						categoryId: category?.categoryId
 					}
 				});
 			},
@@ -219,7 +219,7 @@ export default function CategoryMenu({ category }: ICategoryMenuProps) {
 				<View style={styles.avatarWrapper}>
 					<MezonClanAvatar defaultColor={baseColor.blurple} alt={currentClanName} image={currentClanLogo} />
 				</View>
-				<Text style={styles.serverName}>{category?.category_name}</Text>
+				<Text style={styles.serverName}>{category?.categoryName}</Text>
 			</View>
 
 			<View>

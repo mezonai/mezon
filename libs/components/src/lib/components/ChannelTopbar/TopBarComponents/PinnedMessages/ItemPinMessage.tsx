@@ -12,7 +12,7 @@ import {
 import type { IMessageWithUser } from '@mezon/utils';
 import { TOPBARS_MAX_WIDTH, convertTimeString, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -34,25 +34,25 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const { pinMessage, contentString, handleUnPinMessage, onClose, mode } = props;
 
 	const getValidCreateTime = () => {
-		if (pinMessage?.create_time) return pinMessage.create_time;
-		if (pinMessage?.create_time_seconds) return new Date(pinMessage.create_time_seconds * 1000).toISOString();
+		if (pinMessage?.createTime) return pinMessage.createTime;
+		if (pinMessage?.createTimeSeconds) return new Date(pinMessage.createTimeSeconds * 1000).toISOString();
 		return new Date().toISOString();
 	};
 	const isShowCanvas = useSelector(selectIsShowCanvas);
 
 	const validCreateTime = getValidCreateTime();
 	const messageTime = convertTimeString(validCreateTime);
-	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(pinMessage.sender_id || '');
+	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(pinMessage.senderId || '');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const pinMessageAttachments = safeJSONParse(pinMessage?.attachment || '[]');
 	const handleJumpMess = () => {
-		if (pinMessage.message_id && pinMessage.channel_id) {
+		if (pinMessage.messageId && pinMessage.channelId) {
 			dispatch(
 				messagesActions.jumpToMessage({
 					clanId: currentClanId || '0',
-					messageId: pinMessage.message_id,
-					channelId: pinMessage.channel_id
+					messageId: pinMessage.messageId,
+					channelId: pinMessage.channelId
 				})
 			);
 		}
@@ -62,7 +62,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		}
 		onClose();
 	};
-	const message = useAppSelector((state) => selectMessageByMessageId(state, pinMessage?.channel_id, pinMessage?.message_id as string));
+	const message = useAppSelector((state) => selectMessageByMessageId(state, pinMessage?.channelId, pinMessage?.messageId as string));
 	const messageContentObject = useMemo(() => {
 		try {
 			return safeJSONParse(pinMessage.content || '{}') || {};
@@ -118,9 +118,9 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 						(() => {
 							const enhancedAttachments = pinMessageAttachments.map((att: ApiMessageAttachment) => ({
 								...att,
-								create_time: validCreateTime,
-								sender_id: pinMessage.sender_id,
-								message_id: pinMessage.message_id
+								createTime: validCreateTime,
+								senderId: pinMessage.senderId,
+								messageId: pinMessage.messageId
 							}));
 							return (
 								<MessageAttachment

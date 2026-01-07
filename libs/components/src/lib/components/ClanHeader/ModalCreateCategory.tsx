@@ -94,7 +94,7 @@ const ModalCreateCategory = ({ onClose, onCreateCategory }: ModalCreateCategoryP
 							placeholder={t('createCategoryModal.namePlaceholder')}
 							className="py-[8px] border-theme-primary bg-theme-input-primary text-[14px] mt-2 mb-0 border-blue-600 border"
 							value={nameCate}
-							data-e2e={generateE2eId(`clan_page.modal.create_category.input.category_name`)}
+							data-e2e={generateE2eId(`clan_page.modal.create_category.input.categoryName`)}
 						/>
 					</div>
 					{checkValidate && (

@@ -7,7 +7,7 @@ export interface MentionData {
 	src?: string;
 	category?: string;
 	shortname?: string;
-	is_for_sale?: boolean;
+	isForSale?: boolean;
 	emoji?: string;
 	[key: string]: unknown;
 }

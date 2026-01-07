@@ -75,7 +75,7 @@ const UpdateUserName = () => {
 	const handleGoBack = async () => {
 		const store = await getStoreAsync();
 		store.dispatch(appActions.setIsShowWelcomeMobile(false));
-		await store.dispatch(authActions.logOut({ device_id: '', platform: Platform.OS }));
+		await store.dispatch(authActions.logOut({ deviceId: '', platform: Platform.OS }));
 		store.dispatch(appActions.setIsShowUpdateUsername(false));
 	};
 

@@ -24,7 +24,7 @@ export type IReactionMessageProps = {
 
 export const MessageAction = React.memo((props: IMessageReactionProps) => {
 	const { message } = props || {};
-	const messageReactions = useAppSelector((state) => selectMessageByMessageId(state, message.channel_id, message.id));
+	const messageReactions = useAppSelector((state) => selectMessageByMessageId(state, message.channelId, message.id));
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const combineReactions = combineMessageReactions(messageReactions?.reactions, message?.id);

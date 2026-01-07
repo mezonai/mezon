@@ -70,7 +70,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
 		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
 		store.dispatch(appActions.setIsShowWelcomeMobile(false));
-		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: Platform.OS }));
+		store.dispatch(authActions.logOut({ deviceId: userProfile.user.username, platform: Platform.OS }));
 		store.dispatch(appActions.setLoadingMainMobile(false));
 		setLinkRedirectLogout('');
 	};
@@ -141,6 +141,16 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					expandable: true,
 					title: t('accountSettings.QRScan'),
 					icon: <MezonIconCDN icon={IconCDN.myQRcodeIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+				},
+				{
+					onPress: () => {
+						navigation.navigate(APP_SCREEN.SETTINGS.STACK, {
+							screen: APP_SCREEN.SETTINGS.DEVICES_MANAGEMENT
+						});
+					},
+					expandable: true,
+					title: t('accountSettings.devices'),
+					icon: <MezonIconCDN icon={IconCDN.mobileDeviceIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[navigation, t, themeValue.textStrong]

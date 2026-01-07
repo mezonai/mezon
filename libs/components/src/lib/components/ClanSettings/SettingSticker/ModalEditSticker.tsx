@@ -6,7 +6,7 @@ import { Button, ButtonLoading, Checkbox, Icons, InputField } from '@mezon/ui';
 import { LIMIT_SIZE_UPLOAD_IMG, fileTypeImage, generateE2eId, getIdSaleItemFromSource, resizeFileImage, sanitizeUrlSecure } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ClanEmoji, ClanSticker } from 'mezon-js';
-import type { ApiClanStickerAddRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
+import type { ApiClanStickerAddRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/types';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -132,12 +132,12 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 				source: graphicSource,
 				category: graphic?.category,
 				shortname: isSticker ? editingGraphic.shortname : `:${editingGraphic.shortname}:`,
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			};
 
 			const requestData = {
 				...updateData,
-				media_type: 0
+				mediaType: 0
 			};
 
 			isSticker
@@ -181,10 +181,10 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 		const request: ApiClanStickerAddRequest = {
 			id: finalId,
 			category,
-			clan_id: currentClanId,
+			clanId: currentClanId,
 			source: realImage.url,
 			shortname: isSticker ? editingGraphic.shortname : `:${editingGraphic.shortname}:`,
-			is_for_sale: isForSale
+			isForSale: isForSale
 		};
 		if (isForSale) {
 			const idPreview = Snowflake.generate();
@@ -195,7 +195,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 
 		const requestData = {
 			...request,
-			media_type: 0
+			mediaType: 0
 		};
 
 		isSticker

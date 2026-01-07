@@ -11,7 +11,7 @@ import {
 	useWallet,
 	walletActions
 } from '@mezon/store-mobile';
-import { CURRENCY, createImgproxyUrl, formatBalanceToString } from '@mezon/utils';
+import { createImgproxyUrl, CURRENCY, formatBalanceToString } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
@@ -40,15 +40,15 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue, isTabletLandscape);
 	const allUser = useSelector(selectAllFriends);
-	const { color } = useMixImageColor(userProfile?.user?.avatar_url);
+	const { color } = useMixImageColor(userProfile?.user?.avatarUrl);
 	const { t } = useTranslation(['profile', 'customUserStatus', 'screenStack']);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
-	const { isEnableWallet, walletDetail, enableWallet } = useWallet();
+	const { walletDetail } = useWallet();
 
 	const userCustomStatus = useMemo(() => {
-		return userProfile?.user?.user_status;
-	}, [userProfile?.user?.user_status]);
+		return userProfile?.user?.userStatus;
+	}, [userProfile?.user?.userStatus]);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -85,19 +85,19 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	};
 
 	const displayName = useMemo(() => {
-		return userProfile?.user?.display_name || userProfile?.user?.username || '';
-	}, [userProfile?.user?.display_name, userProfile?.user?.username]);
+		return userProfile?.user?.displayName || userProfile?.user?.username || '';
+	}, [userProfile?.user?.displayName, userProfile?.user?.username]);
 
 	const firstFriendImageList = useMemo(() => {
 		return friendList.slice(0, 5).map((friend) => ({
-			avatarUrl: friend?.user?.avatar_url || '',
-			username: friend?.user?.username || friend?.user?.display_name || ''
+			avatarUrl: friend?.user?.avatarUrl || '',
+			username: friend?.user?.username || friend?.user?.displayName || ''
 		}));
 	}, [friendList]);
 
 	const memberSince = useMemo(() => {
-		return moment(userProfile?.user?.create_time).format('MMM DD, YYYY');
-	}, [userProfile?.user?.create_time]);
+		return moment(userProfile?.user?.createTime).format('MMM DD, YYYY');
+	}, [userProfile?.user?.createTime]);
 
 	const handleCustomUserStatus = useCallback(
 		(customStatus = '', duration?: number, noClearStatus?: boolean) => {
@@ -202,18 +202,18 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 				<View style={styles.viewImageProfile}>
 					<TouchableOpacity onPress={showUserStatusBottomSheet} style={styles.imageProfile}>
-						{userProfile?.user?.avatar_url ? (
+						{userProfile?.user?.avatarUrl ? (
 							isTabletLandscape ? (
 								<Image
 									source={{
-										uri: createImgproxyUrl(userProfile.user.avatar_url, { width: 300, height: 300, resizeType: 'fit' })
+										uri: createImgproxyUrl(userProfile.user.avatarUrl, { width: 300, height: 300, resizeType: 'fit' })
 									}}
 									style={styles.imgWrapper}
 								/>
 							) : (
 								<View style={styles.imgWrapper}>
 									<ImageNative
-										url={createImgproxyUrl(userProfile.user.avatar_url, { width: 300, height: 300, resizeType: 'fit' })}
+										url={createImgproxyUrl(userProfile.user.avatarUrl, { width: 300, height: 300, resizeType: 'fit' })}
 										style={styles.imgWrapper}
 									/>
 								</View>
@@ -246,15 +246,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 			{isTabletLandscape && (
 				<View style={styles.buttonListLandscape}>
-					{!isEnableWallet && (
-						<MezonButton
-							containerStyle={styles.button}
-							onPress={() => enableWallet()}
-							icon={<MezonIconCDN icon={IconCDN.wallet} height={size.s_18} width={size.s_18} color={baseColor.white} />}
-							title={t('enableWallet')}
-							titleStyle={styles.whiteText}
-						/>
-					)}
 					<MezonButton
 						containerStyle={styles.button}
 						onPress={() => navigateToProfileSetting()}
@@ -274,7 +265,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 						</View>
 						<Text style={styles.text}>{userProfile?.user?.username || ''}</Text>
 					</TouchableOpacity>
-					{isEnableWallet && (
+					{!!walletDetail?.address && (
 						<View>
 							<TouchableOpacity onPress={showSendTokenBottomSheet} style={styles.tokenRow}>
 								<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={size.s_20} height={size.s_20} color={baseColor.azureBlue} />
@@ -315,15 +306,6 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 					{!isTabletLandscape && (
 						<View style={styles.buttonList}>
-							{!isEnableWallet && (
-								<MezonButton
-									containerStyle={styles.button}
-									onPress={() => enableWallet()}
-									icon={<MezonIconCDN icon={IconCDN.wallet} height={size.s_18} width={size.s_18} color={baseColor.white} />}
-									title={t('enableWallet')}
-									titleStyle={styles.whiteText}
-								/>
-							)}
 							<MezonButton
 								containerStyle={styles.button}
 								onPress={() => navigateToProfileSetting()}
@@ -337,10 +319,10 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 				<View style={styles.contentContainer}>
 					<View style={styles.contentGap}>
-						{userProfile?.user?.about_me ? (
+						{userProfile?.user?.aboutMe ? (
 							<View>
 								<Text style={styles.textTitle}>{t('aboutMe')}</Text>
-								<Text style={styles.text}>{userProfile.user.about_me}</Text>
+								<Text style={styles.text}>{userProfile.user.aboutMe}</Text>
 							</View>
 						) : null}
 

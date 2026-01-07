@@ -6,10 +6,10 @@ import { ChannelType } from 'mezon-js';
 export interface ProcessedUser {
 	id?: string;
 	username?: string;
-	display_name?: string;
-	avatar_url?: string;
-	clan_avatar?: string;
-	clan_nick?: string;
+	displayName?: string;
+	avatarUrl?: string;
+	clanAvatar?: string;
+	clanNick?: string;
 	type?: ChannelType;
 }
 export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList: DirectEntity[], friends: FriendsEntity[]): ProcessedUser[] {
@@ -18,27 +18,27 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 	const usersFromAllClans: ProcessedUser[] = membersClan.map((user) => ({
 		id: user.id || '',
 		username: user.user?.username || '',
-		display_name: user?.user?.display_name || '',
-		avatar_url: user?.user?.avatar_url || '',
-		clan_avatar: user?.clan_avatar || user?.user?.avatar_url || '',
-		clan_nick: user?.clan_nick || user?.user?.display_name || user.user?.username || '',
+		displayName: user?.user?.displayName || '',
+		avatarUrl: user?.user?.avatarUrl || '',
+		clanAvatar: user?.clanAvatar || user?.user?.avatarUrl || '',
+		clanNick: user?.clanNick || user?.user?.displayName || user.user?.username || '',
 		type: ChannelType?.CHANNEL_TYPE_DM
 	}));
 
 	const usersFromDmGroupChat: ProcessedUser[] = dmGroupChatList
 		.flatMap((chat) => {
 			if (chat.type === ChannelType.CHANNEL_TYPE_DM) {
-				const userId = chat?.user_ids?.[0];
+				const userId = chat?.userIds?.[0];
 				if (userId && !existingIds.has(userId)) {
 					existingIds.add(userId);
 					return [
 						{
 							id: userId,
 							username: chat.usernames?.[0] || '',
-							display_name: chat.display_names?.[0] || chat.usernames?.[0] || '',
-							avatar_url: chat.channel_avatar?.[0] || '',
-							clan_avatar: chat.channel_avatar?.[0] || '',
-							clan_nick: chat.display_names?.[0] || chat.usernames?.[0] || '',
+							displayName: chat.displayNames?.[0] || chat.usernames?.[0] || '',
+							avatarUrl: chat.channelAvatar?.[0] || '',
+							clanAvatar: chat.channelAvatar?.[0] || '',
+							clanNick: chat.displayNames?.[0] || chat.usernames?.[0] || '',
 							type: ChannelType?.CHANNEL_TYPE_DM
 						} as ProcessedUser
 					];
@@ -47,12 +47,12 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 			} else if (chat.type === ChannelType.CHANNEL_TYPE_GROUP) {
 				return [
 					{
-						id: chat?.channel_id || '',
-						username: `${chat?.usernames?.join(',')}, ${chat.creator_name || ''}`,
-						display_name: chat?.channel_label || '',
-						avatar_url: 'assets/images/avatar-group.png',
-						clan_avatar: 'assets/images/avatar-group.png',
-						clan_nick: chat?.channel_label || '',
+						id: chat?.channelId || '',
+						username: `${chat?.usernames?.join(',')}, ${chat.creatorName || ''}`,
+						displayName: chat?.channelLabel || '',
+						avatarUrl: 'assets/images/avatar-group.png',
+						clanAvatar: 'assets/images/avatar-group.png',
+						clanNick: chat?.channelLabel || '',
 						type: ChannelType?.CHANNEL_TYPE_GROUP
 					} as ProcessedUser
 				];
@@ -66,10 +66,10 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 		.map((friend) => ({
 			id: friend?.user?.id || '',
 			username: friend?.user?.username || '',
-			display_name: friend?.user?.display_name || '',
-			avatar_url: friend?.user?.avatar_url || '',
-			clan_avatar: friend?.user?.avatar_url || '',
-			clan_nick: friend?.user?.display_name || friend?.user?.username || '',
+			displayName: friend?.user?.displayName || '',
+			avatarUrl: friend?.user?.avatarUrl || '',
+			clanAvatar: friend?.user?.avatarUrl || '',
+			clanNick: friend?.user?.displayName || friend?.user?.username || '',
 			type: ChannelType?.CHANNEL_TYPE_DM
 		}));
 

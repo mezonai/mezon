@@ -2,7 +2,7 @@ import { TouchableOpacity } from '@gorhom/bottom-sheet';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import { ApiWebhook } from 'mezon-js/api.gen';
+import { ApiWebhook } from 'mezon-js/types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Image, Text, View } from 'react-native';
@@ -26,7 +26,7 @@ export function WebhooksItem({ webhook, isClanIntegration, isClanSetting }: { we
 		};
 		return date.toLocaleDateString('en-GB', options);
 	};
-	const webhookOwner = useAppSelector((state) => selectMemberClanByUserId(state, webhook.creator_id as string));
+	const webhookOwner = useAppSelector((state) => selectMemberClanByUserId(state, webhook.creatorId as string));
 	const handleEditWebhooks = () => {
 		navigation.navigate(APP_SCREEN.MENU_CLAN.WEBHOOKS_EDIT, {
 			webhook,
@@ -55,10 +55,10 @@ export function WebhooksItem({ webhook, isClanIntegration, isClanSetting }: { we
 					}}
 				/>
 				<View style={{ flex: 1 }}>
-					<Text style={styles.name}>{webhook?.webhook_name}</Text>
+					<Text style={styles.name}>{webhook?.webhookName}</Text>
 					<Text style={styles.textTime}>
 						{t('webhooksItem.createdBy', {
-							webhookCreateTime: convertDate(webhook.create_time || ''),
+							webhookCreateTime: convertDate(webhook.createTime || ''),
 							webhookUserOwnerName: webhookOwner?.user?.username
 						})}
 					</Text>

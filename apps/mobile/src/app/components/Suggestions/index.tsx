@@ -159,10 +159,10 @@ const HashtagSuggestions: FC<MentionHashtagSuggestionsProps> = memo(({ keyword, 
 		}
 		return channelsMention?.map((item) => ({
 			...item,
-			id: item?.channel_id ?? '',
-			display: item?.channel_label ?? '',
-			subText: (item?.category_name || item?.clan_name) ?? '',
-			name: item?.channel_label ?? ''
+			id: item?.channelId ?? '',
+			display: item?.channelLabel ?? '',
+			subText: (item?.categoryName || item?.clanName) ?? '',
+			name: item?.channelLabel ?? ''
 		}));
 	}, [channels, commonChannelDms, mode]);
 

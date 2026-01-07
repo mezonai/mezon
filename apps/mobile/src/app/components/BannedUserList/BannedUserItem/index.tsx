@@ -31,14 +31,14 @@ const BannedUserItem = memo(({ user, channelId, clanId }: BannedUserItemProps) =
 			<View style={styles.userWrapper}>
 				<View style={styles.userAvatar}>
 					<MezonClanAvatar
-						image={user?.clan_avatar || user?.user?.avatar_url}
-						alt={user?.clan_nick || user?.user?.display_name || user?.user?.username}
+						image={user?.clanAvatar || user?.user?.avatarUrl}
+						alt={user?.clanNick || user?.user?.displayName || user?.user?.username}
 						imageHeight={100}
 						imageWidth={100}
 					/>
 				</View>
 				<Text style={styles.userName} numberOfLines={1}>
-					{user?.clan_nick || user?.user?.display_name || user?.user?.username}
+					{user?.clanNick || user?.user?.displayName || user?.user?.username}
 				</Text>
 			</View>
 			<TouchableOpacity style={styles.unbanButton} onPress={handleUnbanUser}>

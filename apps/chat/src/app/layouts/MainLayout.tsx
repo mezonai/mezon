@@ -108,7 +108,7 @@ const GlobalEventListener = () => {
 	}, [allNotificationReplyMentionAllClan, totalUnreadMessages, quantityPendingRequest, hasUnreadChannel]);
 
 	useEffect(() => {
-		if (user?.encrypt_private_key) {
+		if (user?.encryptPrivateKey) {
 			MessageCrypt.checkExistingKeys(user?.user?.id as string)
 				.then((found) => {
 					if (found) {
@@ -119,10 +119,10 @@ const GlobalEventListener = () => {
 					console.error(error);
 				});
 		}
-	}, [dispatch, user?.encrypt_private_key, user?.user?.id]);
+	}, [dispatch, user?.encryptPrivateKey, user?.user?.id]);
 
 	useEffect(() => {
-		if (!user?.encrypt_private_key) {
+		if (!user?.encryptPrivateKey) {
 			MessageCrypt.checkExistingKeys(user?.user?.id as string)
 				.then((found) => {
 					if (found) {

@@ -46,8 +46,8 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 	const userProfile = useSelector(selectAllAccount);
 	const sessionUser = useSelector(selectSession);
 	const channelId = useMemo(() => {
-		return channel?.channel_id || channel?.id || '';
-	}, [channel?.channel_id, channel?.id]);
+		return channel?.channelId || channel?.id || '';
+	}, [channel?.channelId, channel?.id]);
 	const memberJoin = useSelector((state) => selectStreamMembersByChannelId(state, channelId));
 	const badge = useMemo(() => (memberJoin?.length > 3 ? memberJoin.length - 3 : 0), [memberJoin]);
 
@@ -56,7 +56,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 			if (channel?.type === ChannelType.CHANNEL_TYPE_STREAMING) {
 				if (currentStreamInfo?.streamId !== channelId || (!playStream && currentStreamInfo?.streamId === channelId)) {
 					handleChannelClick(
-						channel?.clan_id,
+						channel?.clanId,
 						channelId,
 						userProfile?.user?.id,
 						channelId,
@@ -65,11 +65,11 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 					);
 					dispatch(
 						videoStreamActions.startStream({
-							clanId: channel?.clan_id || '',
+							clanId: channel?.clanId || '',
 							clanName: '',
 							streamId: channelId,
-							streamName: channel?.channel_label || '',
-							parentId: channel?.parent_id || ''
+							streamName: channel?.channelLabel || '',
+							parentId: channel?.parentId || ''
 						})
 					);
 				}
@@ -88,15 +88,15 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 	};
 
 	const joinChannel = async () => {
-		if (currentClanId !== channel?.clan_id) {
-			changeClan(channel.clan_id);
+		if (currentClanId !== channel?.clanId) {
+			changeClan(channel.clanId);
 		}
 		DeviceEventEmitter.emit(ActionEmitEvent.FETCH_MEMBER_CHANNEL_DM, {
 			isFetchMemberChannelDM: true
 		});
-		const dataSave = getUpdateOrAddClanChannelCache(channel?.clan_id, channelId);
+		const dataSave = getUpdateOrAddClanChannelCache(channel?.clanId, channelId);
 		save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-		await jumpToChannel(channelId, channel?.clan_id);
+		await jumpToChannel(channelId, channel?.clanId);
 		dismiss();
 	};
 
@@ -113,7 +113,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} color={themeValue.textStrong} />
 					</TouchableOpacity>
 					<Text numberOfLines={2} style={[styles.text, styles.textFlexible]}>
-						{channel?.channel_label || ''}
+						{channel?.channelLabel || ''}
 					</Text>
 				</View>
 				<TouchableOpacity
@@ -138,7 +138,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 					) : (
 						<View style={styles.avatarRow}>
 							{memberJoin?.slice?.(0, 3)?.map((m) => {
-								return <VoiceChannelAvatar key={`${m?.user_id}_user_join_streaming`} userId={m?.user_id} />;
+								return <VoiceChannelAvatar key={`${m?.userId}_user_join_streaming`} userId={m?.userId} />;
 							})}
 							{badge > 0 && (
 								<View style={styles.badgeContainer}>

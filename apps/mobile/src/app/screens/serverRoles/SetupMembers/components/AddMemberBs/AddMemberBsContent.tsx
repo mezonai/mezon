@@ -33,9 +33,9 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 	const filteredMemberList = useMemo(() => {
 		return memberList?.filter(
 			(it) =>
-				normalizeString(it?.user?.display_name).includes(normalizeString(searchMemberText)) ||
+				normalizeString(it?.user?.displayName).includes(normalizeString(searchMemberText)) ||
 				normalizeString(it?.user?.username).includes(normalizeString(searchMemberText)) ||
-				normalizeString(it?.clan_nick).includes(normalizeString(searchMemberText))
+				normalizeString(it?.clanNick).includes(normalizeString(searchMemberText))
 		);
 	}, [searchMemberText, memberList]);
 
@@ -54,7 +54,7 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 	);
 
 	const handleAddMemberToRole = useCallback(async () => {
-		const response = await updateRole(role?.clan_id, role?.id, role?.title, role?.color || '', selectedMemberIdList, [], [], []);
+		const response = await updateRole(role?.clanId, role?.id, role?.title, role?.color || '', selectedMemberIdList, [], [], []);
 		onClose && onClose();
 		if (response) {
 			Toast.show({
@@ -73,7 +73,7 @@ export const AddMemberBsContent = memo((props: IAddMemberBsContentProps) => {
 				}
 			});
 		}
-	}, [updateRole, role?.clan_id, role?.id, role?.title, role?.color, selectedMemberIdList, onClose, t]);
+	}, [updateRole, role?.clanId, role?.id, role?.title, role?.color, selectedMemberIdList, onClose, t]);
 
 	const componentStyles = localStyles(themeValue);
 

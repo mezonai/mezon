@@ -263,7 +263,6 @@ const ControlBar = ({
 			)}
 
 			<div className="flex justify-center gap-3 flex-1 max-md:scale-75">
-				<RaisingHandControls />
 				{visibleControls.microphone && (
 					<MicrophoneControl
 						isShowMember={isShowMember}
@@ -341,7 +340,7 @@ const ControlBar = ({
 						onDesktopScreenShare={handleOpenScreenSelection}
 					/>
 				)}
-
+				{!isExternalCalling && <RaisingHandControls />}
 				{visibleControls.leave && <LeaveButton onLeaveRoom={handleLeaveRoom} />}
 			</div>
 

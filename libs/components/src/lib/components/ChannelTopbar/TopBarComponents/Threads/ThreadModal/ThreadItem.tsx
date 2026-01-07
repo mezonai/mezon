@@ -34,14 +34,14 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 	const navigate = useNavigate();
 	const { toChannelPage } = useAppNavigation();
 	const dispatch = useAppDispatch();
-	const threadMembers = useSelector((state) => selectAllChannelMembers(state, thread?.channel_id || ''));
+	const threadMembers = useSelector((state) => selectAllChannelMembers(state, thread?.channelId || ''));
 
-	const messageId = useAppSelector((state) => selectLastMessageIdByChannelId(state, thread.channel_id as string));
+	const messageId = useAppSelector((state) => selectLastMessageIdByChannelId(state, thread.channelId as string));
 	const message = useAppSelector((state) =>
-		selectMessageEntityById(state, thread.channel_id as string, messageId || thread?.last_sent_message?.id)
+		selectMessageEntityById(state, thread.channelId as string, messageId || thread?.lastSentMessage?.id)
 	);
 	const user = useAppSelector((state) =>
-		selectMemberClanByUserId(state, (message?.user?.id || thread?.last_sent_message?.sender_id || thread?.creator_id) as string)
+		selectMemberClanByUserId(state, (message?.user?.id || thread?.lastSentMessage?.senderId || thread?.creatorId) as string)
 	) as IChannelMember;
 	const { avatarImg, username } = useMessageSender(user);
 
@@ -68,12 +68,12 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 	}, [threadMembers]);
 
 	const timeMessage = useMemo(() => {
-		if (message && message.create_time_seconds) {
-			const lastTime = convertTimeMessage(message.create_time_seconds, i18n.language);
+		if (message && message.createTimeSeconds) {
+			const lastTime = convertTimeMessage(message.createTimeSeconds, i18n.language);
 			return lastTime;
 		} else {
-			if (thread && thread.last_sent_message && thread.last_sent_message.timestamp_seconds) {
-				const lastTime = convertTimeMessage(thread.last_sent_message.timestamp_seconds, i18n.language);
+			if (thread && thread.lastSentMessage && thread.lastSentMessage.timestampSeconds) {
+				const lastTime = convertTimeMessage(thread.lastSentMessage.timestampSeconds, i18n.language);
 				return lastTime;
 			}
 		}
@@ -89,28 +89,28 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 
 	return (
 		<div
-			onClick={() => handleLinkThread(thread.channel_id as string, thread.clan_id || '')}
+			onClick={() => handleLinkThread(thread.channelId as string, thread.clanId || '')}
 			className="relative overflow-y-hidden p-4 mb-2 cursor-pointer rounded-lg h-[72px] bg-item-theme"
 			role="button"
 			data-e2e={generateE2eId('chat.channel_message.header.button.thread.item')}
 		>
 			<div className="flex flex-row justify-between items-center">
 				<div className="flex flex-col gap-1">
-					<p className="text-base font-semibold leading-5 one-line">{thread?.channel_label}</p>
+					<p className="text-base font-semibold leading-5 one-line">{thread?.channelLabel}</p>
 					<div className="flex flex-row items-center h-6">
 						<AvatarImage
 							alt={`${user?.user?.username}'s avatar`}
 							username={user?.user?.username}
 							className="size-4 rounded-md object-cover mr-2"
-							srcImgProxy={createImgproxyUrl(user?.clan_avatar || user?.user?.avatar_url || '', {
+							srcImgProxy={createImgproxyUrl(user?.clanAvatar || user?.user?.avatarUrl || '', {
 								width: 300,
 								height: 300,
 								resizeType: 'fit'
 							})}
-							src={user?.clan_avatar || avatarImg}
+							src={user?.clanAvatar || avatarImg}
 						/>
 						<span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-[#17AC86] text-sm font-semibold leading-4">
-							{user?.clan_nick || user?.user?.display_name || username}:&nbsp;
+							{user?.clanNick || user?.user?.displayName || username}:&nbsp;
 						</span>
 						<div className="overflow-hidden max-w-[140px]">
 							<ThreadModalContent message={message} thread={thread as ChannelsEntity} />
@@ -127,8 +127,8 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 						<AvatarGroup className="flex justify-end items-center">
 							{previewAvatarList?.map((avatar, index) => (
 								<img
-									key={(avatar.clan_avatar || avatar.user?.avatar_url || avatar.id) + index}
-									src={avatar.clan_avatar || avatar.user?.avatar_url}
+									key={(avatar.clanAvatar || avatar.user?.avatarUrl || avatar.id) + index}
+									src={avatar.clanAvatar || avatar.user?.avatarUrl}
 									className="object-cover h-6 aspect-square rounded-full"
 									alt=""
 								/>

@@ -12,12 +12,12 @@ export const checkCanEditPermission = ({ isClanOwner, userPermissionsStatus, rol
 		return true;
 	}
 
-	const adminPermission = role?.permission_list?.permissions?.find((r) => r.slug === EPermission.administrator);
+	const adminPermission = role?.permissionList?.permissions?.find((r) => r.slug === EPermission.administrator);
 	if (adminPermission?.active) {
 		return false;
 	}
 
-	const manageClanPermission = role?.permission_list?.permissions?.find((r) => r.slug === EPermission.manageClan);
+	const manageClanPermission = role?.permissionList?.permissions?.find((r) => r.slug === EPermission.manageClan);
 	if (userPermissionsStatus.administrator || (userPermissionsStatus.hasManageClan && !manageClanPermission?.active)) {
 		return true;
 	}

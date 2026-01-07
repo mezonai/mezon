@@ -2,7 +2,7 @@ import { useMessageValue } from '@mezon/core';
 import { selectComposeInputByChannelId, selectCurrentChannelId, threadsActions, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import { ApiChannelDescription } from 'mezon-js/api.gen';
+import { ApiChannelDescription } from 'mezon-js/types';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -61,9 +61,9 @@ const ThreadHeader = ({ threadCurrentChannel }: ThreadHeaderProps) => {
 	return (
 		<div className="flex flex-row items-center justify-between px-4 h-[48px] min-h-[50px] border-b-theme-primary  z-10 bg-theme-chat">
 			<div className="flex flex-row items-center gap-2 pointer-events-none">
-				{threadCurrentChannel?.channel_private ? <Icons.ThreadIconLocker /> : <Icons.ThreadIcon />}
+				{threadCurrentChannel?.channelPrivate ? <Icons.ThreadIconLocker /> : <Icons.ThreadIcon />}
 				<span className="text-base font-semibold text-theme-primary-active">
-					{threadCurrentChannel ? threadCurrentChannel.channel_label : t('createThread.newThread')}
+					{threadCurrentChannel ? threadCurrentChannel.channelLabel : t('createThread.newThread')}
 				</span>
 			</div>
 			<button onClick={handleCloseModal} className="relative right-0 text-theme-primary-hover" data-e2e={generateE2eId('discussion.header.button.close')}>

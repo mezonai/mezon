@@ -99,7 +99,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	}, [currentChannel]);
 
 	useEffect(() => {
-		setIsChannel(!!currentChannel?.channel_label && !Number(currentChannel?.parent_id));
+		setIsChannel(!!currentChannel?.channelLabel && !Number(currentChannel?.parentId));
 	}, [currentChannel]);
 
 	useLayoutEffect(() => {
@@ -117,10 +117,10 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 					</Text>
 					<Text numberOfLines={1} style={styles.headerSubtitle}>
 						{isDMThread
-							? currentChannel?.channel_label
+							? currentChannel?.channelLabel
 							: isChannel
-								? `#${currentChannel?.channel_label}`
-								: `"${currentChannel?.channel_label}"`}
+								? `#${currentChannel?.channelLabel}`
+								: `"${currentChannel?.channelLabel}"`}
 					</Text>
 				</View>
 			),
@@ -130,9 +130,9 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 				</TouchableOpacity>
 			)
 		});
-	}, [currentChannel?.channel_label, isChannel, isDMThread, navigation, styles.headerLeftBtn, t, themeValue.text, themeValue.textStrong]);
+	}, [currentChannel?.channelLabel, isChannel, isDMThread, navigation, styles.headerLeftBtn, t, themeValue.text, themeValue.textStrong]);
 
-	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannel?.channel_id || ''));
+	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannel?.channelId || ''));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 
@@ -149,8 +149,8 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		if (getNotificationChannelSelected?.active === ENotificationActive.ON) {
 			setTimeMuted('');
 		} else if (getNotificationChannelSelected?.active !== ENotificationActive.ON) {
-			if (getNotificationChannelSelected?.time_mute) {
-				const timeMute = new Date(getNotificationChannelSelected.time_mute);
+			if (getNotificationChannelSelected?.timeMute) {
+				const timeMute = new Date(getNotificationChannelSelected.timeMute);
 				const currentTime = new Date();
 				if (timeMute > currentTime) {
 					const timeDifference = timeMute.getTime() - currentTime.getTime();
@@ -163,15 +163,15 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 				}
 			}
 		}
-	}, [getNotificationChannelSelected, dispatch, currentChannel?.channel_id, currentClanId]);
+	}, [getNotificationChannelSelected, dispatch, currentChannel?.channelId, currentClanId]);
 
 	const handleUnmuteChannel = async () => {
 		try {
 			const body = {
-				channel_id: currentChannel?.channel_id || '',
-				clan_id: currentClanId || '',
+				channelId: currentChannel?.channelId || '',
+				clanId: currentClanId || '',
 				active: EMuteState.UN_MUTE,
-				mute_time: 0
+				muteTime: 0
 			};
 			const response = await dispatch(notificationSettingActions.setMuteChannel(body));
 			if (response?.meta?.requestStatus === 'rejected') {
@@ -195,9 +195,9 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	const handleScheduleMute = async (duration: number) => {
 		try {
 			const body = {
-				channel_id: currentChannel?.channel_id || '',
-				clan_id: isDMThread ? '' : currentClanId || '',
-				mute_time: duration !== Infinity ? duration : 0,
+				channelId: currentChannel?.channelId || '',
+				clanId: isDMThread ? '' : currentClanId || '',
+				muteTime: duration !== Infinity ? duration : 0,
 				active: EMuteState.MUTED
 			};
 			const response = await dispatch(notificationSettingActions.setMuteChannel(body));
@@ -226,7 +226,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 						<MezonIconCDN icon={IconCDN.bellSlashIcon} width={20} height={20} customStyle={{ marginRight: 20 }} color={themeValue.text} />
 						<Text
 							style={styles.option}
-						>{`${t('bottomSheet.unMute')} ${isDMThread ? currentChannel?.channel_label : isChannel ? `#${currentChannel?.channel_label}` : `"${currentChannel?.channel_label}"`} `}</Text>
+						>{`${t('bottomSheet.unMute')} ${isDMThread ? currentChannel?.channelLabel : isChannel ? `#${currentChannel?.channelLabel}` : `"${currentChannel?.channelLabel}"`} `}</Text>
 					</TouchableOpacity>
 				</View>
 			)}

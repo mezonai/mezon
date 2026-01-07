@@ -1,12 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
-import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiMezonOauthClient, MezonUpdateAppBody } from 'mezon-js/api.gen';
+import type { ApiAddAppRequest, ApiApp, ApiAppList, ApiMezonOauthClient, MezonUpdateAppBody } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, withRetry } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const ADMIN_APPLICATIONS = 'adminApplication';
@@ -36,16 +36,16 @@ export const applicationInitialState: IApplicationState = applicationAdapter.get
 	error: null,
 	appsData: {
 		apps: [],
-		next_cursor: undefined,
-		total_count: undefined
+		nextCursor: undefined,
+		totalCount: undefined
 	},
 	appDetail: {
 		id: '',
 		applogo: undefined,
 		appname: undefined,
-		creator_id: undefined,
-		disable_time: undefined,
-		is_shadow: undefined,
+		creatorId: undefined,
+		disableTime: undefined,
+		isShadow: undefined,
 		role: undefined,
 		token: undefined
 	},
@@ -119,7 +119,18 @@ export const getApplicationDetail = createAsyncThunk('adminApplication/getApplic
 export const createApplication = createAsyncThunk('adminApplication/createApplication', async (data: { request: ApiAddAppRequest }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.addApp(mezon.session, data.request);
+		const requestWithTypeName = {
+			$typeName: 'mezon.api.AddAppRequest' as const,
+			appname: data.request.appname || '',
+			token: data.request.token || '',
+			creatorId: data.request.creatorId || '',
+			role: data.request.role ?? 0,
+			isShadow: data.request.isShadow ?? false,
+			appUrl: data.request.appUrl || '',
+			appLogo: data.request.appLogo || '',
+			aboutMe: data.request.aboutMe || ''
+		};
+		const response = await mezon.client.addApp(mezon.session, requestWithTypeName);
 		if (response) {
 			await thunkAPI.dispatch(fetchApplications({ noCache: true }));
 			return response;
@@ -147,7 +158,18 @@ export const editApplication = createAsyncThunk(
 	async (data: { request: MezonUpdateAppBody; appId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateApp(mezon.session, data.appId, data.request);
+			const requestWithTypeName = {
+				$typeName: 'mezon.api.UpdateAppRequest' as const,
+				id: data.appId,
+				about: data.request.about || '',
+				appUrl: data.request.appUrl || '',
+				isShadow: data.request.isShadow || '',
+				appname: data.request.appname,
+				metadata: data.request.metadata,
+				applogo: data.request.applogo,
+				token: data.request.token
+			};
+			const response = await mezon.client.updateApp(mezon.session, data.appId, requestWithTypeName);
 			if (response) {
 				return response;
 			}
@@ -192,7 +214,55 @@ export const editMezonOauthClient = createAsyncThunk(
 	async ({ body }: { body: ApiMezonOauthClient }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateMezonOauthClient(mezon.session, body);
+			const bodyWithTypeName = {
+				$typeName: 'mezon.api.MezonOauthClient' as const,
+				accessTokenStrategy: body.accessTokenStrategy || '',
+				allowedCorsOrigins: body.allowedCorsOrigins || [],
+				audience: body.audience || [],
+				authorizationCodeGrantAccessTokenLifespan: body.authorizationCodeGrantAccessTokenLifespan || '',
+				authorizationCodeGrantIdTokenLifespan: body.authorizationCodeGrantIdTokenLifespan || '',
+				authorizationCodeGrantRefreshTokenLifespan: body.authorizationCodeGrantRefreshTokenLifespan || '',
+				backchannelLogoutSessionRequired: body.backchannelLogoutSessionRequired ?? false,
+				backchannelLogoutUri: body.backchannelLogoutUri || '',
+				clientCredentialsGrantAccessTokenLifespan: body.clientCredentialsGrantAccessTokenLifespan || '',
+				clientId: body.clientId || '',
+				clientName: body.clientName || '',
+				clientSecret: body.clientSecret || '',
+				clientSecretExpiresAt: body.clientSecretExpiresAt ?? 0,
+				clientUri: body.clientUri || '',
+				contacts: body.contacts || [],
+				frontchannelLogoutSessionRequired: body.frontchannelLogoutSessionRequired ?? false,
+				frontchannelLogoutUri: body.frontchannelLogoutUri || '',
+				grantTypes: body.grantTypes || [],
+				implicitGrantAccessTokenLifespan: body.implicitGrantAccessTokenLifespan || '',
+				implicitGrantIdTokenLifespan: body.implicitGrantIdTokenLifespan || '',
+				jwks: body.jwks || [],
+				jwksUri: body.jwksUri || '',
+				jwtBearerGrantAccessTokenLifespan: body.jwtBearerGrantAccessTokenLifespan || '',
+				logoUri: body.logoUri || '',
+				owner: body.owner || '',
+				policyUri: body.policyUri || '',
+				postLogoutRedirectUris: body.postLogoutRedirectUris || [],
+				redirectUris: body.redirectUris || [],
+				refreshTokenGrantAccessTokenLifespan: body.refreshTokenGrantAccessTokenLifespan || '',
+				refreshTokenGrantIdTokenLifespan: body.refreshTokenGrantIdTokenLifespan || '',
+				refreshTokenGrantRefreshTokenLifespan: body.refreshTokenGrantRefreshTokenLifespan || '',
+				requestObjectSigningAlg: body.requestObjectSigningAlg || '',
+				requestUris: body.requestUris || [],
+				responseTypes: body.responseTypes || [],
+				scope: body.scope || '',
+				sectorIdentifierUri: body.sectorIdentifierUri || '',
+				skipConsent: body.skipConsent ?? false,
+				skipLogoutConsent: body.skipLogoutConsent ?? false,
+				subjectType: body.subjectType || '',
+				tokenEndpointAuthMethod: body.tokenEndpointAuthMethod || '',
+				tokenEndpointAuthSigningAlg: body.tokenEndpointAuthSigningAlg || '',
+				tosUri: body.tosUri || '',
+				userinfoSignedResponseAlg: body.userinfoSignedResponseAlg || '',
+				registrationAccessToken: body.registrationAccessToken || '',
+				registrationClientUri: body.registrationClientUri || ''
+			};
+			const response = await mezon.client.updateMezonOauthClient(mezon.session, bodyWithTypeName);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'adminApplication/editMezonOauthClient');
@@ -219,38 +289,62 @@ export const adminApplicationSlice = createSlice({
 		builder.addCase(fetchApplications.pending, (state) => {
 			state.loadingStatus = 'loading';
 		});
-		builder.addCase(fetchApplications.fulfilled, (state, action: PayloadAction<ApiAppList & { fromCache?: boolean }>) => {
+		builder.addCase(fetchApplications.fulfilled, (state, action) => {
 			const { fromCache, ...appsData } = action.payload;
 
 			state.loadingStatus = 'loaded';
 
 			if (!fromCache) {
-				state.appsData = appsData;
+				state.appsData = {
+					...appsData,
+					apps: (appsData.apps || []).map((app) => ({
+						...app,
+						disableTime: timestampToString((app as any).disableTime)
+					})) as ApiApp[]
+				};
 				state.cache = createCacheMetadata();
-				applicationAdapter.setAll(state, (appsData.apps as IApplicationEntity[]) || []);
+				const apps = (state.appsData.apps || []).map((app) => ({
+					...app,
+					id: app.id || ''
+				})) as IApplicationEntity[];
+				applicationAdapter.setAll(state, apps);
 			}
 		});
 		builder.addCase(fetchApplications.rejected, (state) => {
 			state.loadingStatus = 'not loaded';
 		});
 		builder.addCase(getApplicationDetail.fulfilled, (state, action) => {
-			state.appDetail = action.payload;
+			state.appDetail = {
+				...action.payload,
+				disableTime: timestampToString(action.payload.disableTime)
+			} as ApiApp;
 		});
 		builder.addCase(editApplication.fulfilled, (state, action) => {
-			state.appDetail = {
-				...state.appDetail,
-				...action.payload
-			};
+			if (action.payload) {
+				state.appDetail = {
+					...state.appDetail,
+					...action.payload,
+					disableTime: timestampToString((action.payload as any).disableTime)
+				} as ApiApp;
+			}
 		});
-		builder.addCase(fetchMezonOauthClient.fulfilled, (state, action: PayloadAction<ApiMezonOauthClient>) => {
-			const clientId = action.payload.client_id ?? '';
+		builder.addCase(fetchMezonOauthClient.fulfilled, (state, action) => {
+			const clientId = action.payload.clientId ?? '';
 			if (!state.entities[clientId]) return;
-			state.entities[clientId].oAuthClient = action.payload;
+			state.entities[clientId].oAuthClient = {
+				...action.payload,
+				createdAt: timestampToString(action.payload.createdAt),
+				updatedAt: timestampToString(action.payload.updatedAt)
+			} as ApiMezonOauthClient;
 		});
-		builder.addCase(editMezonOauthClient.fulfilled, (state, action: PayloadAction<ApiMezonOauthClient>) => {
-			const clientId = action.payload.client_id ?? '';
+		builder.addCase(editMezonOauthClient.fulfilled, (state, action) => {
+			const clientId = action.payload.clientId ?? '';
 			if (!state.entities[clientId]) return;
-			state.entities[clientId].oAuthClient = action.payload;
+			state.entities[clientId].oAuthClient = {
+				...action.payload,
+				createdAt: timestampToString(action.payload.createdAt),
+				updatedAt: timestampToString(action.payload.updatedAt)
+			} as ApiMezonOauthClient;
 		});
 	}
 });

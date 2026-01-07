@@ -1,7 +1,7 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAppChannelsList } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import type { ApiChannelAppResponse } from 'mezon-js/api.gen';
+import type { ApiChannelAppResponse } from 'mezon-js/types';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -24,8 +24,8 @@ const ChannelAppsListing = () => {
 	const openChannelApp = useCallback(
 		async (channel: ApiChannelAppResponse) => {
 			navigation.navigate(APP_SCREEN.CHANNEL_APP, {
-				channelId: channel.channel_id,
-				clanId: channel.clan_id
+				channelId: channel.channelId,
+				clanId: channel.clanId
 			});
 		},
 		[navigation]
@@ -77,7 +77,7 @@ const ChannelAppsListing = () => {
 				horizontal
 				showsHorizontalScrollIndicator={false}
 				contentContainerStyle={styles.listContent}
-				keyExtractor={(item, index) => item?.channel_id || `show-all-${index}`}
+				keyExtractor={(item, index) => item?.channelId || `show-all-${index}`}
 			/>
 		</View>
 	);

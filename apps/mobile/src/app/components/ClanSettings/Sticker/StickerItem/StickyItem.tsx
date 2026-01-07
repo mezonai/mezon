@@ -27,7 +27,7 @@ interface IStickerItem {
 export const StickerSettingItem = forwardRef(({ data, clanID, onSwipeOpen }: IStickerItem, ref: Ref<SwipeableMethods>) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const user = useAppSelector((state) => selectMemberClanByUserId(state, data?.creator_id ?? ''));
+	const user = useAppSelector((state) => selectMemberClanByUserId(state, data?.creatorId ?? ''));
 	const [stickerName, setStickerName] = useState<string>(data?.shortname || '');
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation(['clanStickerSetting']);
@@ -42,16 +42,16 @@ export const StickerSettingItem = forwardRef(({ data, clanID, onSwipeOpen }: ISt
 
 	const [hasAdminPermission, isClanOwner, hasManageClanPermission] = usePermissionChecker([EPermission.administrator, EPermission.clanOwner]);
 	const hasDeleteOrEditPermission = useMemo(() => {
-		return hasAdminPermission || isClanOwner || hasManageClanPermission || currentUserId === data?.creator_id;
-	}, [hasAdminPermission, isClanOwner, hasManageClanPermission, currentUserId, data?.creator_id]);
+		return hasAdminPermission || isClanOwner || hasManageClanPermission || currentUserId === data?.creatorId;
+	}, [hasAdminPermission, isClanOwner, hasManageClanPermission, currentUserId, data?.creatorId]);
 
 	const authorDisplayName = useMemo(() => {
-		return user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
-	}, [user?.clan_nick, user?.user?.display_name, user?.user?.username]);
+		return user?.clanNick || user?.user?.displayName || user?.user?.username || '';
+	}, [user?.clanNick, user?.user?.displayName, user?.user?.username]);
 
 	const authorAvatarUrl = useMemo(() => {
-		return user?.clan_avatar || user?.user?.avatar_url || '';
-	}, [user?.clan_avatar, user?.user?.avatar_url]);
+		return user?.clanAvatar || user?.user?.avatarUrl || '';
+	}, [user?.clanAvatar, user?.user?.avatarUrl]);
 
 	const stickerImageSrc = useMemo(() => {
 		return (sticker?.source ? sticker.source : `${process.env.NX_BASE_IMG_URL}/stickers/${sticker?.id}.webp`) || '';
@@ -77,7 +77,7 @@ export const StickerSettingItem = forwardRef(({ data, clanID, onSwipeOpen }: ISt
 			const result = (await dispatch(
 				deleteSticker({
 					stickerId: data?.id || '',
-					clan_id: clanID || '',
+					clanId: clanID || '',
 					stickerLabel: ''
 				})
 			)) as any;
@@ -114,7 +114,7 @@ export const StickerSettingItem = forwardRef(({ data, clanID, onSwipeOpen }: ISt
 					stickerId: sticker?.id ?? '',
 					request: {
 						...sticker,
-						clan_id: clanID || '',
+						clanId: clanID || '',
 						shortname: stickerName
 					}
 				})

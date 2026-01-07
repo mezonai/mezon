@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { VoiceChannelUsers } from './VoiceChannelUsers/VoiceChannelUsers';
 
 interface PreJoinVoiceChannelProps {
-	channel_label?: string;
-	channel_id?: string;
+	channelLabel?: string;
+	channelId?: string;
 	roomName?: string;
 	loading: boolean;
 	handleJoinRoom: () => void;
@@ -13,15 +13,15 @@ interface PreJoinVoiceChannelProps {
 }
 
 export const PreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
-	channel_label,
-	channel_id,
+	channelLabel,
+	channelId,
 	roomName,
 	loading,
 	handleJoinRoom,
 	isCurrentChannel
 }) => {
 	const { t } = useTranslation('common');
-	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel_id as string));
+	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channelId as string));
 	const statusMenu = useAppSelector(selectStatusMenu);
 
 	return (
@@ -35,7 +35,7 @@ export const PreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 					{voiceChannelMembers.length > 0 && <VoiceChannelUsers memberJoin={voiceChannelMembers} memberMax={3}></VoiceChannelUsers>}
 				</div>
 				<div className="max-w-[350px] text-center text-3xl font-bold text-gray-800 dark:text-white">
-					{channel_label && channel_label.length > 20 ? `${channel_label.substring(0, 20)}...` : channel_label}
+					{channelLabel && channelLabel.length > 20 ? `${channelLabel.substring(0, 20)}...` : channelLabel}
 				</div>
 				{voiceChannelMembers.length > 0 ? (
 					<div className="text-gray-800 dark:text-white">{t('everyoneWaitingInside')}</div>

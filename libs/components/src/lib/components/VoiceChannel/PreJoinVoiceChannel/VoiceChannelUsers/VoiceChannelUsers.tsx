@@ -49,7 +49,7 @@ export function VoiceChannelUsers({ memberJoin = [], memberMax, isShowChat }: Vo
 		<div className="flex items-center gap-2">
 			{displayedMembers.map((item: IChannelMember) => (
 				<div key={item.id} className="flex items-center">
-					<VoiceUserItem userId={item.user_id || ''} />
+					<VoiceUserItem userId={item.userId || ''} />
 				</div>
 			))}
 			{remainingCount > 0 && (
@@ -64,7 +64,7 @@ export function VoiceChannelUsers({ memberJoin = [], memberMax, isShowChat }: Vo
 export function VoiceUserItem({ userId }: { userId: string }) {
 	const userVoice = useAppSelector((state) => selectMemberClanByUserId(state, userId));
 	const username = userVoice?.user?.username;
-	const avatar = getAvatarForPrioritize(userVoice?.clan_avatar, userVoice?.user?.avatar_url);
+	const avatar = getAvatarForPrioritize(userVoice?.clanAvatar, userVoice?.user?.avatarUrl);
 	const avatarUrl = createImgproxyUrl(avatar ?? '', {
 		width: 300,
 		height: 300,

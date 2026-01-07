@@ -28,12 +28,12 @@ const FormLoginOTP = ({ handleChangeMethod, onStepChange }: { handleChangeMethod
 
 	const handleSubmit = useCallback(async () => {
 		if (reqId) {
-			const response = await dispatch(authActions.confirmAuthenticateOTP({ otp_code: otp.join(''), req_id: reqId })).unwrap();
+			const response = await dispatch(authActions.confirmAuthenticateOTP({ otpCode: otp.join(''), reqId: reqId })).unwrap();
 			return;
 		}
 
 		const response = await dispatch(authActions.authenticateEmailOTPRequest({ email })).unwrap();
-		setReqId(response.req_id || '');
+		setReqId(response.reqId || '');
 		setStep(true);
 		setCount(60);
 	}, [email, otp, reqId]);

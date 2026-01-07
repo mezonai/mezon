@@ -44,7 +44,7 @@ export const DeleteModal: React.FC<DeleteModalProps> = ({ onClose, onCloseModal,
 		await dispatch(channelsActions.deleteChannel({ channelId, clanId: currentClanId as string }));
 
 		if (isThread) {
-			const parentChannelId = (selectedChannel?.parent_id as string) || '';
+			const parentChannelId = (selectedChannel?.parentId as string) || '';
 			const threadId = selectedChannel?.id as string;
 			if (parentChannelId && threadId) {
 				await dispatch(threadsActions.remove(threadId));

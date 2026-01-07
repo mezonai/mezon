@@ -5,9 +5,9 @@ import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize, getNameForPri
 import { AvatarImage } from '../../components';
 
 function UserListItem({ user, channelID, isPttList }: { user: IChannelMember; channelID: string; isPttList?: boolean }) {
-	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user.user_id ?? ''));
-	const name = getNameForPrioritize(userStream?.clan_nick, userStream?.user?.display_name, userStream?.user?.username);
-	const avatar = getAvatarForPrioritize(userStream?.clan_avatar, userStream?.user?.avatar_url);
+	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user.userId ?? ''));
+	const name = getNameForPrioritize(userStream?.clanNick, userStream?.user?.displayName, userStream?.user?.username);
+	const avatar = getAvatarForPrioritize(userStream?.clanAvatar, userStream?.user?.avatarUrl);
 
 	return (
 		<div
@@ -31,7 +31,7 @@ function UserListItem({ user, channelID, isPttList }: { user: IChannelMember; ch
 			</div>
 			<div>
 				{userStream ? (
-					<NameComponent id={user.user_id || ''} name={name || ''} />
+					<NameComponent id={user.userId || ''} name={name || ''} />
 				) : (
 					<p className="text-sm font-medium ">{user.participant}</p>
 				)}

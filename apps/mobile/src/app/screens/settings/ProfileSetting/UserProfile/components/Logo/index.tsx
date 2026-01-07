@@ -25,9 +25,9 @@ export const DirectMessageLogo = memo(() => {
 			dispatch(appActions.setLoadingMainMobile(true));
 			await dispatch(
 				clansActions.updateUser({
-					avatar_url: userProfile.user.avatar_url,
-					display_name: userProfile.user.display_name,
-					about_me: userProfile.user.about_me,
+					avatarUrl: userProfile.user.avatarUrl,
+					displayName: userProfile.user.displayName,
+					aboutMe: userProfile.user.aboutMe,
 					dob: userProfile.user.dob,
 					logo: url
 				})
@@ -54,9 +54,9 @@ export const DirectMessageLogo = memo(() => {
 		dispatch(appActions.setLoadingMainMobile(true));
 		await dispatch(
 			clansActions.updateUser({
-				avatar_url: userProfile.user.avatar_url,
-				display_name: userProfile.user.display_name,
-				about_me: userProfile.user.about_me,
+				avatarUrl: userProfile.user.avatarUrl,
+				displayName: userProfile.user.displayName,
+				aboutMe: userProfile.user.aboutMe,
 				dob: userProfile.user.dob,
 				logo: ''
 			})

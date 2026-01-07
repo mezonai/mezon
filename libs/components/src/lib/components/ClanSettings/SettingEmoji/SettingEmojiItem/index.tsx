@@ -10,7 +10,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { EPermission, MAX_FILE_NAME_EMOJI, getSrcEmoji } from '@mezon/utils';
 import type { ClanEmoji } from 'mezon-js';
-import type { MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
+import type { MezonUpdateClanEmojiByIdBody } from 'mezon-js/types';
 import type { ChangeEvent } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -28,15 +28,15 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 	const [nameEmoji, setNameEmoji] = useState<string>(emoji.shortname?.slice(1, -1) || '');
 	const [originalNameEmoji] = useState<string>(emoji.shortname?.slice(1, -1) || '');
 	const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
-	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, emoji.creator_id ?? ''));
+	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, emoji.creatorId ?? ''));
 	const [hasManageClanPermission] = usePermissionChecker([EPermission.manageClan]);
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const hasDeleteOrEditPermission = useMemo(() => {
-		return hasManageClanPermission || currentUserId === emoji.creator_id;
-	}, [hasManageClanPermission, currentUserId, emoji.creator_id]);
+		return hasManageClanPermission || currentUserId === emoji.creatorId;
+	}, [hasManageClanPermission, currentUserId, emoji.creatorId]);
 
 	const handleDelete = () => {
-		dispatch(emojiSuggestionActions.deleteEmojiSetting({ emoji, clan_id: clanId as string, label: emoji.shortname as string }));
+		dispatch(emojiSuggestionActions.deleteEmojiSetting({ emoji, clanId: clanId as string, label: emoji.shortname as string }));
 	};
 	const handleOnMouseLeave = () => {
 		setShowDelete(false);
@@ -57,7 +57,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 				source: emoji.src,
 				shortname: `:${cleanName}:`,
 				category: emoji.category,
-				clan_id: clanId as string
+				clanId: clanId as string
 			};
 			await dispatch(emojiSuggestionActions.updateEmojiSetting({ request, emojiId: emoji.id || '' }));
 			inputRef.current?.blur();
@@ -74,9 +74,9 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 			handleUpdateEmoji();
 		}
 	};
-	const avatarDefault = dataAuthor?.clan_nick || dataAuthor?.user?.display_name || dataAuthor?.user?.username || '';
+	const avatarDefault = dataAuthor?.clanNick || dataAuthor?.user?.displayName || dataAuthor?.user?.username || '';
 	const avatarLetter = avatarDefault?.trim().charAt(0).toUpperCase();
-	const avatarUrl = dataAuthor?.clan_avatar || dataAuthor?.user?.avatar_url;
+	const avatarUrl = dataAuthor?.clanAvatar || dataAuthor?.user?.avatarUrl;
 	const handleInputFocus = () => {
 		setIsInputFocused(true);
 	};
@@ -143,7 +143,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 						{avatarUrl ? (
 							<img
 								className={'w-full h-auto object-cover'}
-								src={dataAuthor?.clan_avatar || dataAuthor?.user?.avatar_url}
+								src={dataAuthor?.clanAvatar || dataAuthor?.user?.avatarUrl}
 								alt="User avatar"
 							/>
 						) : (
@@ -152,7 +152,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 							</div>
 						)}
 					</div>
-					<p className={'text-sm h-auto leading-6'}>{dataAuthor?.clan_nick || dataAuthor?.user?.username}</p>
+					<p className={'text-sm h-auto leading-6'}>{dataAuthor?.clanNick || dataAuthor?.user?.username}</p>
 				</div>
 
 				{showDelete && (
@@ -166,7 +166,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 					</div>
 				)}
 			</div>
-			{emoji.is_for_sale && <Icons.MarketIcons className="absolute top-6 right-6 w-4 h-4 text-yellow-300" />}
+			{emoji.isForSale && <Icons.MarketIcons className="absolute top-6 right-6 w-4 h-4 text-yellow-300" />}
 		</div>
 	);
 };

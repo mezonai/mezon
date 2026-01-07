@@ -160,7 +160,7 @@ const SearchActionAuditLogModal = ({
 				actionLog: action?.originalKey === ActionLog.ALL_ACTION_AUDIT ? '' : action?.originalKey,
 				userId: userFilter?.userId ?? '',
 				clanId: currentClanId ?? '',
-				date_log: selectedDate
+				dateLog: selectedDate
 			};
 			dispatch(auditLogList(body));
 		}

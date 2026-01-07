@@ -1,12 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
-import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAuditLog, MezonapiListAuditLog } from 'mezon-js/api.gen';
+import type { ApiAuditLog, MezonapiListAuditLog } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, withRetry } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const AUDIT_LOG_FEATURE_KEY = 'auditlog';
@@ -27,15 +27,15 @@ type getAuditLogListPayload = {
 	actionLog: string;
 	userId: string;
 	clanId: string;
-	date_log: string;
+	dateLog: string;
 	noCache?: boolean;
 };
 
 export const auditLogAdapter = createEntityAdapter({
 	selectId: (auditLog: ApiAuditLog) => auditLog.id || '',
 	sortComparer: (a: ApiAuditLog, b: ApiAuditLog) => {
-		if (a.time_log && b.time_log) {
-			return Date.parse(b.time_log) - Date.parse(a.time_log);
+		if (a.timeLog && b.timeLog) {
+			return Date.parse(b.timeLog) - Date.parse(a.timeLog);
 		}
 		return 0;
 	}
@@ -47,12 +47,12 @@ export const fetchAuditLogCached = async (
 	actionLog: string,
 	userId: string,
 	clanId: string,
-	date_log: string,
+	dateLog: string,
 	noCache = false
 ) => {
 	const currentState = getState();
 	const auditLogState = currentState[AUDIT_LOG_FEATURE_KEY];
-	const apiKey = createApiKey('fetchAuditLog', actionLog, userId, clanId, date_log);
+	const apiKey = createApiKey('fetchAuditLog', actionLog, userId, clanId, dateLog);
 
 	const shouldForceCall = shouldForceApiCall(apiKey, auditLogState.cache, noCache);
 
@@ -64,7 +64,7 @@ export const fetchAuditLogCached = async (
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.listAuditLog(mezon.session, actionLog, userId, clanId, date_log), {
+	const response = await withRetry(() => mezon.client.listAuditLog(mezon.session, actionLog, userId, clanId, dateLog), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'audit-log'
@@ -81,7 +81,7 @@ export const fetchAuditLogCached = async (
 
 export const auditLogList = createAsyncThunk(
 	'auditLog/auditLogList',
-	async ({ actionLog, userId, clanId, date_log, noCache }: getAuditLogListPayload, thunkAPI) => {
+	async ({ actionLog, userId, clanId, dateLog, noCache }: getAuditLogListPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
@@ -91,7 +91,7 @@ export const auditLogList = createAsyncThunk(
 				actionLog,
 				userId,
 				clanId,
-				date_log,
+				dateLog,
 				Boolean(noCache)
 			);
 
@@ -132,11 +132,18 @@ export const auditLogSlice = createSlice({
 			.addCase(auditLogList.pending, (state: IAuditLogState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(auditLogList.fulfilled, (state: IAuditLogState, action: PayloadAction<MezonapiListAuditLog & { fromCache?: boolean }>) => {
+			.addCase(auditLogList.fulfilled, (state: IAuditLogState, action) => {
 				const { fromCache, ...auditLogData } = action.payload;
 
-				if (!fromCache) {
-					state.auditLogData = auditLogData;
+				if (!fromCache && 'logs' in auditLogData) {
+					const convertedLogs = (auditLogData.logs || []).map((log: any) => ({
+						...log,
+						timeLog: timestampToString(log.timeLog)
+					}));
+					state.auditLogData = {
+						...auditLogData,
+						logs: convertedLogs as ApiAuditLog[]
+					} as MezonapiListAuditLog;
 					state.cache = createCacheMetadata(FETCH_AUDIT_LOG_CACHED_TIME);
 				}
 
@@ -163,5 +170,5 @@ export const selectAllAuditLogData = createSelector(getAuditLogState, (state) =>
 	return state.auditLogData.logs || [];
 });
 export const selectTotalCountAuditLog = createSelector(getAuditLogState, (state) => {
-	return state.auditLogData.total_count || 0;
+	return state.auditLogData.totalCount || 0;
 });

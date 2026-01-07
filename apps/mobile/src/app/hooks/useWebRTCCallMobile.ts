@@ -1,13 +1,25 @@
-import { mediaDevices, MediaStream, RTCIceCandidate, RTCPeerConnection, RTCSessionDescription } from '@livekit/react-native-webrtc';
+import {
+	mediaDevices,
+	MediaStream,
+	RTCIceCandidate,
+	RTCPeerConnection,
+	RTCSessionDescription
+} from '@livekit/react-native-webrtc';
 import { useChatSending } from '@mezon/core';
 import { ActionEmitEvent, sessionConstraints } from '@mezon/mobile-components';
 import type { RootState } from '@mezon/store-mobile';
-import { audioCallActions, DMCallActions, selectAllAccount, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
+import {
+	audioCallActions,
+	DMCallActions,
+	selectAllAccount,
+	selectDmGroupCurrent,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { IMessageTypeCallLog, sleep } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse, WebrtcSignalingType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Alert, BackHandler, DeviceEventEmitter, Linking, NativeModules, Platform } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
@@ -321,7 +333,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				stream.getTracks().forEach((track) => {
 					pc.addTrack(track, stream);
 				});
-				dispatch(audioCallActions.setUserCallId(currentDmGroup?.user_ids?.[0]));
+				dispatch(audioCallActions.setUserCallId(currentDmGroup?.userIds?.[0]));
 
 				endCallTimeout.current = setTimeout(() => {
 					dispatch(
@@ -369,6 +381,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 						channelId,
 						userId
 					);
+					await toggleSpeaker();
 				}
 			} else {
 				// if is answer call, need to cancel call native on mobile
@@ -467,9 +480,9 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	// Handle incoming signaling messages
 	const handleSignalingMessage = async (signalingData: any) => {
 		try {
-			switch (signalingData.data_type) {
+			switch (signalingData.dataType) {
 				case WebrtcSignalingType.WEBRTC_SDP_OFFER: {
-					const decompressedData = await decompress(signalingData.json_data);
+					const decompressedData = await decompress(signalingData.jsonData);
 					const offer = safeJSONParse(decompressedData || '{}');
 					if (isFromNative) {
 						setOfferCache(offer);
@@ -481,7 +494,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				}
 
 				case WebrtcSignalingType.WEBRTC_SDP_ANSWER: {
-					const decompressedData = await decompress(signalingData.json_data);
+					const decompressedData = await decompress(signalingData.jsonData);
 					const answer = safeJSONParse(decompressedData || '{}');
 					await handleAnswer(answer);
 
@@ -489,7 +502,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				}
 
 				case WebrtcSignalingType.WEBRTC_ICE_CANDIDATE: {
-					const candidate = safeJSONParse(signalingData?.json_data || '{}');
+					const candidate = safeJSONParse(signalingData?.jsonData || '{}');
 					await handleICECandidate(candidate);
 
 					break;

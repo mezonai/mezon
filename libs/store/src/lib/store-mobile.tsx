@@ -42,6 +42,7 @@ import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMPOSE_FEATURE_KEY, composeReducer } from './compose/compose.slice';
 import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
+import { DEVICES_FEATURE_KEY, devicesReducer } from './devices/devices.slice';
 import { USER_STATUS_FEATURE_KEY, statusReducer } from './direct/status.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
 import { DMCallReducer } from './dmcall/dmcall.slice';
@@ -55,7 +56,6 @@ import { fcmReducer } from './fcm/fcm.slice';
 import { popupForwardReducer } from './forwardMessage/forwardMessage.slice';
 import { galleryReducer } from './gallery/gallery.slice';
 import { giveCoffeeReducer } from './giveCoffee/giveCoffee.slice';
-import { walletLedgerReducer } from './giveCoffee/historyTransaction.slice';
 import { EMBED_MESSAGE, embedReducer } from './messages/embedMessage.slice';
 import { channelCategorySettingReducer, defaultNotificationCategoryReducer } from './notificationSetting/notificationSettingCategory.slice';
 import { notificationSettingReducer } from './notificationSetting/notificationSettingChannel.slice';
@@ -496,7 +496,6 @@ const reducer = {
 	dmcall: DMCallReducer,
 	[E2EE_FEATURE_KEY]: e2eeReducer,
 	[EMBED_MESSAGE]: embedReducer,
-	walletLedger: walletLedgerReducer,
 	[CHANNEL_LIST_RENDER]: persistListChannelRenderReducer,
 	[COMPOSE_FEATURE_KEY]: persistedCompose,
 	groupCall: groupCallReducer,
@@ -504,7 +503,8 @@ const reducer = {
 	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
 	[WALLET_FEATURE_KEY]: persistedWalletStore,
 	[USER_STATUS_FEATURE_KEY]: statusReducer,
-	[COMUNITY_FEATURE_KEY]: persistedComunityReducer
+	[COMUNITY_FEATURE_KEY]: persistedComunityReducer,
+	[DEVICES_FEATURE_KEY]: devicesReducer
 };
 
 let storeInstance = configureStore({

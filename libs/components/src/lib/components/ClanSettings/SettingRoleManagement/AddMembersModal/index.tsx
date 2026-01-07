@@ -40,7 +40,7 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 	}, [RolesClan, selectedRoleId]);
 
 	const userIdsInSelectedRole = useMemo(() => {
-		return selectedRole?.role_user_list?.role_users?.reduce<Record<string, boolean>>((ids, user) => {
+		return selectedRole?.roleUserList?.roleUsers?.reduce<Record<string, boolean>>((ids, user) => {
 			if (user.id) {
 				ids[user.id] = true;
 			}
@@ -58,8 +58,8 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 	const displayUsers = useMemo(() => {
 		const lowerCaseSearchTerm = searchTerm.toLowerCase();
 		return usersNotInSelectedRole.filter((user) => {
-			const clanName = user?.clan_nick?.toLowerCase();
-			const displayName = user.user?.display_name?.toLowerCase();
+			const clanName = user?.clanNick?.toLowerCase();
+			const displayName = user.user?.displayName?.toLowerCase();
 			const username = user.user?.username?.toLowerCase();
 			return clanName?.includes(lowerCaseSearchTerm) || displayName?.includes(lowerCaseSearchTerm) || username?.includes(lowerCaseSearchTerm);
 		});
@@ -139,10 +139,10 @@ export const AddMembersModal: React.FC<ModalProps> = ({ isOpen, RolesClan, onClo
 										key={user?.id}
 										id={user?.id}
 										username={user?.user?.username}
-										displayName={user?.user?.display_name}
-										clanName={user?.clan_nick}
-										clanAvatar={user.clan_avatar}
-										avatar={user?.user?.avatar_url}
+										displayName={user?.user?.displayName}
+										clanName={user?.clanNick}
+										clanAvatar={user.clanAvatar}
+										avatar={user?.user?.avatarUrl}
 										checked={Boolean(selectedUserIds[user.id])}
 										onHandle={(checked: boolean) => handleUserToggle(user.id, checked)}
 									/>

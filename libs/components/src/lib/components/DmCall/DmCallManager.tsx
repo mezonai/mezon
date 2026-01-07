@@ -17,8 +17,8 @@ export const DmCallManager = memo(({ userId, directId }: DmCallManagerProps) => 
 			{isPlayRingTone &&
 				!!dataCall &&
 				!isInAnyCall &&
-				directId !== dataCall?.channel_id &&
-				dataCall?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER && (
+				directId !== dataCall?.channelId &&
+				dataCall?.dataType === WebrtcSignalingType.WEBRTC_SDP_OFFER && (
 					<ModalCall dataCall={dataCall} userId={userId} triggerCall={triggerCall} clearCallState={clearCallState} />
 				)}
 

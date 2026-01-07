@@ -1,7 +1,7 @@
 import { useAuth } from '@mezon/core';
 import { createApplication, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { ApiAddAppRequest } from 'mezon-js/api.gen';
+import type { ApiAddAppRequest } from 'mezon-js/types';
 import type { FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -69,10 +69,10 @@ const CreateAppPopup = ({ togglePopup }: ICreateAppPopup) => {
 
 		const createRequest: ApiAddAppRequest = {
 			appname: cleanedName,
-			creator_id: userProfile?.user?.id ?? '',
+			creatorId: userProfile?.user?.id ?? '',
 			role: 0,
-			is_shadow: isShadowBot,
-			app_url: typeApplication ? cleanedUrl : ''
+			isShadow: isShadowBot,
+			appUrl: typeApplication ? cleanedUrl : ''
 		};
 
 		try {

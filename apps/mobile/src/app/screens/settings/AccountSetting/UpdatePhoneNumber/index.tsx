@@ -2,7 +2,7 @@
 import { load, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { accountActions, appActions, useAppDispatch } from '@mezon/store-mobile';
-import type { ApiLinkAccountMezon } from 'mezon-js/api.gen';
+import type { ApiLinkAccountMezon } from 'mezon-js/types';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -293,12 +293,12 @@ export const UpdatePhoneNumber = memo(({ navigation, route }: { navigation: any;
 			const response = await dispatch(
 				accountActions.addPhoneNumber({
 					data: {
-						phone_number: fullPhoneNumber
+						phoneNumber: fullPhoneNumber
 					} as ApiLinkAccountMezon,
 					isMobile: true
 				})
 			);
-			const requestId = response?.payload?.req_id;
+			const requestId = response?.payload?.reqId;
 
 			if (response?.meta?.requestStatus === 'fulfilled' && requestId) {
 				startCooldownTimer(fullPhoneNumber);

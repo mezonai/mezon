@@ -22,7 +22,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 			window.location.href = `${process.env.NX_CHAT_APP_OAUTH2_LOG_OUT}`;
 			return;
 		} else {
-			await dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
+			await dispatch(authActions.logOut({ deviceId: userProfile?.user?.username || '', platform: 'desktop' }));
 			dispatch(appActions.setIsShowSettingFooterStatus(false));
 			dispatch(appActions.clearHistory());
 		}

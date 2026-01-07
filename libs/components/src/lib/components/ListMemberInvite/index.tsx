@@ -34,7 +34,7 @@ const ListMemberInvite = (props: ModalParam) => {
 			if (dmGroup.usernames?.toString()?.toLowerCase().includes(searchTerm.toLowerCase())) {
 				return dmGroup.usernames?.toString()?.toLowerCase().includes(searchTerm.toLowerCase());
 			}
-			return dmGroup.channel_label?.toLowerCase().includes(searchTerm.toLowerCase());
+			return dmGroup.channelLabel?.toLowerCase().includes(searchTerm.toLowerCase());
 		});
 		setFilterListSearch(listSearch);
 	}, [searchTerm, listDMInvite]);
@@ -84,7 +84,7 @@ const ListMemberInvite = (props: ModalParam) => {
 		return dataUserToInvite.filter(
 			(item) =>
 				item?.username?.toLowerCase().includes(searchTerm?.toLowerCase()) ||
-				item?.clan_nick?.toLowerCase().includes(searchTerm?.toLowerCase())
+				item?.clanNick?.toLowerCase().includes(searchTerm?.toLowerCase())
 		);
 	}, [searchTerm, dataUserToInvite]);
 

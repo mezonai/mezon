@@ -13,7 +13,7 @@ import {
 } from '@mezon/store-mobile';
 import { ETypeLinkMedia, ID_MENTION_HERE, isValidEmojiData, TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/types';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Animated, DeviceEventEmitter, PanResponder, Platform, Pressable, Text, View } from 'react-native';
@@ -44,7 +44,7 @@ import type { IMessageActionNeedToResolve } from './types';
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
-const COMBINE_TIME_MILISECONDS = 2 * 60 * 1000;
+const COMBINE_TIME_SECONDS = 2 * 60;
 
 export type MessageItemProps = {
 	message?: MessagesEntity;
@@ -92,9 +92,9 @@ const MessageItem = React.memo(
 
 			if (!previousMessage?.content?.fwd) return true;
 
-			const timeDiff = Date.parse(message.create_time) - Date.parse(previousMessage.create_time);
-			const isDifferentSender = message.sender_id !== previousMessage.sender_id;
-			const isTimeGap = timeDiff > COMBINE_TIME_MILISECONDS;
+			const timeDiff = message.createTimeSeconds - previousMessage.createTimeSeconds;
+			const isDifferentSender = message.senderId !== previousMessage.senderId;
+			const isTimeGap = timeDiff > COMBINE_TIME_SECONDS;
 
 			return isDifferentSender || isTimeGap;
 		}, [message, previousMessage]);
@@ -105,10 +105,10 @@ const MessageItem = React.memo(
 		const isMessageCallLog = useMemo(() => !!message?.content?.callLog, [message?.content?.callLog]);
 		const isGoogleMapsLink = useMemo(() => Array.isArray(lk) && validLinkGoogleMapRegex.test(contentMessage), [lk, contentMessage]);
 
-		const checkAnonymous = useMemo(() => message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID, [message?.sender_id]);
+		const checkAnonymous = useMemo(() => message?.senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID, [message?.senderId]);
 		const checkSystem = useMemo(
-			() => message?.sender_id === '0' && message?.username?.toLowerCase() === 'system',
-			[message?.sender_id, message?.username]
+			() => message?.senderId === '0' && message?.username?.toLowerCase() === 'system',
+			[message?.senderId, message?.username]
 		);
 
 		const isMessageSystem = useMemo(
@@ -126,9 +126,9 @@ const MessageItem = React.memo(
 		const senderDisplayName = useMemo(
 			() =>
 				isDM
-					? message?.display_name || message?.username || ''
-					: message?.clan_nick || message?.display_name || message?.user?.username || (checkAnonymous ? 'Anonymous' : message?.username),
-			[isDM, message?.display_name, message?.username, message?.clan_nick, message?.user?.username, checkAnonymous]
+					? message?.displayName || message?.username || ''
+					: message?.clanNick || message?.displayName || message?.user?.username || (checkAnonymous ? 'Anonymous' : message?.username),
+			[isDM, message?.displayName, message?.username, message?.clanNick, message?.user?.username, checkAnonymous]
 		);
 
 		const onReplyMessage = useCallback(() => {
@@ -148,29 +148,29 @@ const MessageItem = React.memo(
 			const currentClanUser = selectMemberClanByUserId(store.getState(), userId as string);
 
 			if (typeof message?.content?.t === 'string') {
-				if (message?.mentions?.some((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
+				if (message?.mentions?.some((mention) => mention?.userId === ID_MENTION_HERE)) return true;
 			}
 
 			if (typeof message?.mentions === 'string') {
 				const parsedMentions = safeJSONParse(message?.mentions) as ApiMessageMention[] | undefined;
-				const includesUser = parsedMentions?.some((mention) => mention?.user_id === userId);
-				const includesRole = parsedMentions?.some((item) => currentClanUser?.role_id?.includes(item?.role_id as string));
+				const includesUser = parsedMentions?.some((mention) => mention?.userId === userId);
+				const includesRole = parsedMentions?.some((item) => currentClanUser?.roleId?.includes(item?.roleId as string));
 				return includesUser || includesRole;
 			}
 
-			const includesUser = message?.mentions?.some((mention) => mention?.user_id === userId);
-			const includesRole = message?.mentions?.some((item) => currentClanUser?.role_id?.includes(item?.role_id as string));
-			const checkReplied = userId && message?.references && message?.references[0]?.message_sender_id === userId;
+			const includesUser = message?.mentions?.some((mention) => mention?.userId === userId);
+			const includesRole = message?.mentions?.some((item) => currentClanUser?.roleId?.includes(item?.roleId as string));
+			const checkReplied = userId && message?.references && message?.references[0]?.messageSenderId === userId;
 
 			return includesUser || includesRole || checkReplied;
 		}, [userId, message?.content?.t, message?.mentions, message?.references]);
 
 		const isTimeGreaterThan5Minutes = useMemo(
 			() =>
-				message?.create_time && previousMessage?.create_time
-					? Date.parse(message.create_time) - Date.parse(previousMessage.create_time) < COMBINE_TIME_MILISECONDS
+				message?.createTimeSeconds && previousMessage?.createTimeSeconds
+					? message.createTimeSeconds - previousMessage.createTimeSeconds < COMBINE_TIME_SECONDS
 					: false,
-			[message?.create_time, previousMessage?.create_time]
+			[message?.createTimeSeconds, previousMessage?.createTimeSeconds]
 		);
 
 		const isBuzzMessage = useMemo(() => message?.code === TypeMessage.MessageBuzz, [message?.code]);
@@ -183,9 +183,9 @@ const MessageItem = React.memo(
 		const messageAvatar = useMemo(
 			() =>
 				mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
-					? message?.clan_avatar || message?.avatar
+					? message?.clanAvatar || message?.avatar
 					: message?.avatar,
-			[mode, message?.clan_avatar, message?.avatar]
+			[mode, message?.clanAvatar, message?.avatar]
 		);
 
 		const firstAttachment = useMemo(
@@ -205,16 +205,23 @@ const MessageItem = React.memo(
 
 		const isEdited = useMemo(
 			() =>
-				message?.update_time && !message.isError && !message.isErrorRetry
-					? new Date(message?.update_time) > new Date(message?.create_time)
-					: message.hide_editted === false && !!message?.content?.t,
-			[message?.update_time, message?.create_time, message.isError, message.isErrorRetry, message.hide_editted, message?.content?.t]
+				message?.updateTimeSeconds && !message.isError && !message.isErrorRetry
+					? message.updateTimeSeconds > message.createTimeSeconds
+					: message.hideEditted === false && !!message?.content?.t,
+			[
+				message?.updateTimeSeconds,
+				message?.createTimeSeconds,
+				message.isError,
+				message.isErrorRetry,
+				message.hideEditted,
+				message?.content?.t
+			]
 		);
 
 		const usernameMessage = useMemo(
 			() =>
-				isDM ? message?.display_name || message?.user?.username : checkAnonymous ? 'Anonymous' : message?.user?.username || message?.username,
-			[isDM, message?.display_name, message?.user?.username, checkAnonymous, message?.username]
+				isDM ? message?.displayName || message?.user?.username : checkAnonymous ? 'Anonymous' : message?.user?.username || message?.username,
+			[isDM, message?.displayName, message?.user?.username, checkAnonymous, message?.username]
 		);
 
 		const isSendTokenLog = useMemo(() => message?.code === TypeMessage.SendToken, [message?.code]);
@@ -290,7 +297,7 @@ const MessageItem = React.memo(
 			return Boolean(t && !embed && !mentions?.length && !hg?.length && !ej?.length && !mk?.length);
 		}, [message?.content, message?.mentions]);
 
-		if (message?.sender_id === '0' && !message?.content?.t && message?.username?.toLowerCase() === 'system') {
+		if (message?.senderId === '0' && !message?.content?.t && message?.username?.toLowerCase() === 'system') {
 			return <WelcomeMessage channelId={props.channelId} message={message} />;
 		}
 
@@ -365,8 +372,8 @@ const MessageItem = React.memo(
 									onLongPress={handleLongPressMessage}
 									senderDisplayName={senderDisplayName}
 									isShow={!isCombine || !!message?.references?.length || showUserInformation}
-									createTime={message?.create_time}
-									messageSenderId={message?.sender_id}
+									createTime={message?.createTimeSeconds}
+									messageSenderId={message?.senderId}
 									mode={mode}
 								/>
 							)}
@@ -384,10 +391,10 @@ const MessageItem = React.memo(
 										) : isMessageCallLog ? (
 											<MessageCallLog
 												contentMsg={message?.content?.t}
-												channelId={message?.channel_id}
-												senderId={message?.sender_id}
+												channelId={message?.channelId}
+												senderId={message?.senderId}
 												callLog={message?.content?.callLog}
-												username={message?.display_name || message?.username || ''}
+												username={message?.displayName || message?.username || ''}
 											/>
 										) : isSendTokenLog ? (
 											<MessageSendTokenLog messageContent={message?.content?.t} />
@@ -420,8 +427,8 @@ const MessageItem = React.memo(
 										{!!message?.content?.embed?.length &&
 											message?.content?.embed?.map((embed, index) => (
 												<EmbedMessage
-													message_id={message?.id}
-													channel_id={message?.channel_id}
+													messageId={message?.id}
+													channelId={message?.channelId}
 													embed={embed}
 													key={`message_embed_${message?.id}_${index}`}
 													onLongPress={handleLongPressMessage}
@@ -433,8 +440,8 @@ const MessageItem = React.memo(
 													key={`message_embed_component_${message?.id}_${index}`}
 													actionRow={component}
 													messageId={message?.id}
-													senderId={message?.sender_id}
-													channelId={message?.channel_id || ''}
+													senderId={message?.senderId}
+													channelId={message?.channelId || ''}
 												/>
 											))}
 									</View>
@@ -452,11 +459,11 @@ const MessageItem = React.memo(
 									{message?.attachments?.length > 0 && (
 										<MessageAttachment
 											attachments={message?.attachments}
-											messageCreatTime={message?.create_time}
-											clanId={message?.clan_id}
-											channelId={message?.channel_id}
+											messageCreatTime={message?.createTimeSeconds}
+											clanId={message?.clanId}
+											channelId={message?.channelId}
 											onLongPressImage={onLongPressImage}
-											senderId={message?.sender_id}
+											senderId={message?.senderId}
 										/>
 									)}
 									{isEphemeralMessage && (
@@ -503,7 +510,7 @@ const MessageItem = React.memo(
 	(prevProps, nextProps) => {
 		return (
 			prevProps?.message?.id +
-				prevProps?.message?.update_time +
+				prevProps?.message?.updateTimeSeconds +
 				prevProps?.previousMessage?.id +
 				prevProps?.message?.code +
 				prevProps?.isHighlight +
@@ -513,7 +520,7 @@ const MessageItem = React.memo(
 				prevProps?.message?.references?.[0]?.content +
 				prevProps?.preventAction ===
 			nextProps?.message?.id +
-				nextProps?.message?.update_time +
+				nextProps?.message?.updateTimeSeconds +
 				nextProps?.previousMessage?.id +
 				nextProps?.message?.code +
 				nextProps?.isHighlight +

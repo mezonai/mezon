@@ -38,7 +38,7 @@ const Installation = () => {
 		return <div className="text-red-500">{t('installation.notFound')}</div>;
 	}
 
-	const linkInstall = window.location.origin + (application.app_url ? '/developers/app/install/' : '/developers/bot/install/') + applicationId;
+	const linkInstall = window.location.origin + (application.appUrl ? '/developers/app/install/' : '/developers/bot/install/') + applicationId;
 
 	const handleCopyToClipboard = () => {
 		copy(linkInstall);
