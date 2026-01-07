@@ -9,7 +9,7 @@ import type { DisplayedEmoji, DisplayedHand, ReactionCallHandlerProps } from './
 const MAX_EMOJIS_DISPLAYED = 20;
 const EMOJI_RATE_LIMIT_MS = 150;
 
-export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ onSoundReaction, onEndSound }) => {
+export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ onSoundReaction, onEndSound, clearAllSound }) => {
 	const [displayedEmojis, setDisplayedEmojis] = useState<DisplayedEmoji[]>([]);
 	const [raisingList, setRaisingList] = useState<DisplayedHand[]>([]);
 	const timeoutsRef = useRef<Map<string, number>>(new Map());
@@ -183,6 +183,7 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 			audioMap.forEach((audio) => {
 				audio.pause();
 			});
+			clearAllSound();
 			audioMap.clear();
 		};
 	}, [socketRef, channelId, generatePosition, playSound, onSoundReaction]);
