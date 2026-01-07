@@ -26,7 +26,7 @@ const AboutMe = ({ createTime, userId }: AboutMeProps) => {
 		<div className="flex flex-col gap-[20px]">
 			<div className="flex flex-col gap-2">
 				<p className="max-w-[400px] text-sm font-normal text-theme-primary break-words">
-					{checkUser ? userProfile?.user?.about_me : userById?.user?.about_me}
+					{checkUser ? userProfile?.user?.aboutMe : userById?.user?.aboutMe}
 				</p>
 				<p className="text-xs font-semibold text-theme-primary">{t('userProfile.memberSince')}</p>
 				<span className="text-sm font-normal text-theme-primary">{formatCreateTime()}</span>

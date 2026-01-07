@@ -41,31 +41,31 @@ export const MemberProfile = memo(({ user, creatorClanId, isDM, currentChannel, 
 
 		return {
 			status: currentUserProfile?.user?.status || EUserStatus.ONLINE,
-			user_status: currentUserProfile?.user?.user_status
+			userStatus: currentUserProfile?.user?.userStatus
 		};
-	}, [currentUserProfile?.user?.id, currentUserProfile?.user?.status, currentUserProfile?.user?.user_status, getStatus, userId]);
+	}, [currentUserProfile?.user?.id, currentUserProfile?.user?.status, currentUserProfile?.user?.userStatus, getStatus, userId]);
 
 	const priorityMemberAvatar = useMemo(() => {
-		const avatar = userProfile?.avatar_url || user?.user?.avatar_url || user?.avatar_url || user?.avatars?.[0] || '';
+		const avatar = userProfile?.avatarUrl || user?.user?.avatarUrl || user?.avatarUrl || user?.avatars?.[0] || '';
 		if (isDM) {
 			return avatar;
 		}
 
-		return clanProfile?.clan_avatar || user?.clan_avatar || avatar;
-	}, [isDM, userProfile?.avatar_url, user?.user?.avatar_url, user?.avatar_url, user?.avatars?.[0], clanProfile?.clan_avatar, user?.clan_avatar]);
+		return clanProfile?.clanAvatar || user?.clanAvatar || avatar;
+	}, [isDM, userProfile?.avatarUrl, user?.user?.avatarUrl, user?.avatarUrl, user?.avatars?.[0], clanProfile?.clanAvatar, user?.clanAvatar]);
 
 	const memberUsername = useMemo(() => {
 		return userProfile?.username || user?.username || user?.user?.username || '';
 	}, [userProfile?.username, user?.username, user?.user?.username]);
 
 	const priorityMemberName = useMemo(() => {
-		const name = userProfile?.display_name || user?.display_name || user?.user?.display_name || memberUsername;
+		const name = userProfile?.displayName || user?.displayName || user?.user?.displayName || memberUsername;
 		if (isDM) {
 			return name;
 		}
 
-		return clanProfile?.clan_nick || user?.clan_nick || name;
-	}, [userProfile?.display_name, user?.display_name, user?.clan_nick, memberUsername, isDM, clanProfile?.clan_nick]);
+		return clanProfile?.clanNick || user?.clanNick || name;
+	}, [userProfile?.displayName, user?.displayName, user?.clanNick, memberUsername, isDM, clanProfile?.clanNick]);
 
 	const colorUsername = useMemo(() => {
 		return !isDM
@@ -80,9 +80,9 @@ export const MemberProfile = memo(({ user, creatorClanId, isDM, currentChannel, 
 	const isShowOwnerIcon = useMemo(() => {
 		return (
 			currentChannel?.type !== ChannelType.CHANNEL_TYPE_DM &&
-			(currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP ? currentChannel?.creator_id : creatorClanId) === userId
+			(currentChannel?.type === ChannelType.CHANNEL_TYPE_GROUP ? currentChannel?.creatorId : creatorClanId) === userId
 		);
-	}, [currentChannel?.type, currentChannel?.creator_id, creatorClanId, userId]);
+	}, [currentChannel?.type, currentChannel?.creatorId, creatorClanId, userId]);
 
 	return (
 		<View style={styles.container}>

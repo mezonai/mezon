@@ -31,7 +31,7 @@ export const MessageInput: React.FC<MessageRatioButtonProps> = ({ input, message
 	const debouncedChangeInput = useDebouncedCallback(async (value: string) => {
 		dispatch(
 			embedActions.addEmbedValue({
-				message_id: messageId,
+				messageId: messageId,
 				data: {
 					id: buttonId,
 					value

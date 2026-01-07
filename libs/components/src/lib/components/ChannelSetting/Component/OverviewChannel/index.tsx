@@ -35,17 +35,17 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 	const { t } = useTranslation('channelSetting');
 	const appearanceTheme = useSelector(selectTheme);
 
-	const channelId = (channel?.channel_id || (channel as any)?.id || '') as string;
+	const channelId = (channel?.channelId || (channel as any)?.id || '') as string;
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
 
 	const channelApp = useAppSelector((state) => selectAppChannelById(state, channelId));
 
-	const [appUrlInit, setAppUrlInit] = useState(channelApp?.app_url || '');
+	const [appUrlInit, setAppUrlInit] = useState(channelApp?.appUrl || '');
 	const [appUrl, setAppUrl] = useState(appUrlInit);
 	const dispatch = useAppDispatch();
-	const [channelLabelInit, setChannelLabelInit] = useState(currentChannel.channel_label || '');
+	const [channelLabelInit, setChannelLabelInit] = useState(currentChannel.channelLabel || '');
 	const [topicInit, setTopicInit] = useState(currentChannel.topic);
-	const [ageRestrictedInit, setAgeRestrictedInit] = useState(currentChannel.age_restricted);
+	const [ageRestrictedInit, setAgeRestrictedInit] = useState(currentChannel.ageRestricted);
 	const [e2eeInit, setE2eeInit] = useState(currentChannel.e2ee);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 	const [topic, setTopic] = useState(topicInit);
@@ -58,24 +58,24 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 	const [isE2ee, setIsE2ee] = useState(e2eeInit);
 
 	const fetchSystemMessage = async () => {
-		if (!currentChannel.clan_id) return;
-		await dispatch(fetchSystemMessageByClanId({ clanId: currentChannel.clan_id }));
+		if (!currentChannel.clanId) return;
+		await dispatch(fetchSystemMessageByClanId({ clanId: currentChannel.clanId }));
 	};
 
 	useEffect(() => {
 		fetchSystemMessage();
-	}, [currentChannel.channel_id]);
+	}, [currentChannel.channelId]);
 	useEffect(() => {
 		if (!currentChannel) return;
-		setChannelLabelInit(currentChannel.channel_label || '');
-		setChannelLabel(currentChannel.channel_label || '');
+		setChannelLabelInit(currentChannel.channelLabel || '');
+		setChannelLabel(currentChannel.channelLabel || '');
 		setTopicInit(currentChannel.topic);
 		setTopic(currentChannel.topic);
-		setAgeRestrictedInit(currentChannel.age_restricted);
-		setIsAgeRestricted(currentChannel.age_restricted);
+		setAgeRestrictedInit(currentChannel.ageRestricted);
+		setIsAgeRestricted(currentChannel.ageRestricted);
 		setE2eeInit(currentChannel.e2ee);
 		setIsE2ee(currentChannel.e2ee);
-	}, [currentChannel?.channel_id, currentChannel?.channel_label, currentChannel?.topic, currentChannel?.age_restricted, currentChannel?.e2ee]);
+	}, [currentChannel?.channelId, currentChannel?.channelLabel, currentChannel?.topic, currentChannel?.ageRestricted, currentChannel?.e2ee]);
 
 	const handleCheckboxAgeRestricted = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const checked = event.target.checked;
@@ -90,8 +90,8 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 	const [isCheckForSystemMsg, setIsCheckForSystemMsg] = useState(false);
 	const currentSystemMessage = useSelector(selectClanSystemMessage);
 	const thisIsSystemMessageChannel = useMemo(() => {
-		return currentChannel.channel_id === currentSystemMessage;
-	}, [currentChannel.channel_id, currentSystemMessage]);
+		return currentChannel.channelId === currentSystemMessage;
+	}, [currentChannel.channelId, currentSystemMessage]);
 
 	const label = useMemo(() => {
 		return isThread ? 'thread' : 'channel';
@@ -137,12 +137,12 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			if (isThread) {
 				await checkDuplicate(checkDuplicateThread, {
 					thread_name: value.trim(),
-					channel_id: currentChannel.parent_id ?? ''
+					channelId: currentChannel.parentId ?? ''
 				});
 			} else {
 				await checkDuplicate(checkDuplicateChannelInCategory, {
 					channelName: value.trim(),
-					categoryId: currentChannel.category_id ?? ''
+					categoryId: currentChannel.categoryId ?? ''
 				});
 			}
 			return;
@@ -190,13 +190,13 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 
 		if (isCheckForSystemMsg) {
 			const request: IUpdateSystemMessage = {
-				clanId: currentChannel.clan_id as string,
+				clanId: currentChannel.clanId as string,
 				newMessage: {
-					channel_id: currentChannel.channel_id,
-					boost_message: currentSystemMessage.boost_message,
-					setup_tips: currentSystemMessage.setup_tips,
-					welcome_random: currentSystemMessage.welcome_random,
-					welcome_sticker: currentSystemMessage.welcome_sticker
+					channelId: currentChannel.channelId,
+					boostMessage: currentSystemMessage.boostMessage,
+					setupTips: currentSystemMessage.setupTips,
+					welcomeRandom: currentSystemMessage.welcomeRandom,
+					welcomeSticker: currentSystemMessage.welcomeSticker
 				}
 			};
 			await dispatch(updateSystemMessage(request));
@@ -210,17 +210,17 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 		setE2eeInit(isE2ee);
 
 		const updateChannel = {
-			clan_id: currentChannel.clan_id,
-			channel_id: currentChannel.channel_id || '',
-			channel_label: channelLabel,
-			category_id: currentChannel.category_id,
-			app_url: updatedAppUrl,
-			app_id: currentChannel.app_id || '',
+			clanId: currentChannel.clanId,
+			channelId: currentChannel.channelId || '',
+			channelLabel: channelLabel,
+			categoryId: currentChannel.categoryId,
+			appUrl: updatedAppUrl,
+			appId: currentChannel.appId || '',
 			topic,
-			age_restricted: isAgeRestricted,
+			ageRestricted: isAgeRestricted,
 			e2ee: isE2ee,
-			parent_id: currentChannel?.parent_id,
-			channel_private: currentChannel?.channel_private
+			parentId: currentChannel?.parentId,
+			channelPrivate: currentChannel?.channelPrivate
 		} as IUpdateChannelRequest;
 
 		await dispatch(channelsActions.updateChannel(updateChannel));

@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { SHOW_POSITION, fileTypeImage, fileTypeVideo } from '@mezon/utils';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
+import { ApiMessageAttachment } from 'mezon-js/types';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
 import { MessageAudioControl } from '../MessageWithUser/MessageAudio/MessageAudioControl';

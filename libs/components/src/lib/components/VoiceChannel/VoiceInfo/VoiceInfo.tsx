@@ -55,11 +55,11 @@ const VoiceInfo = React.memo(() => {
 	const participantMeetState = async (state: ParticipantMeetState, clanId: string, channelId: string, roomId: string): Promise<void> => {
 		await dispatch(
 			handleParticipantVoiceState({
-				clan_id: clanId,
-				channel_id: channelId,
-				display_name: userProfile?.user?.display_name ?? '',
+				clanId: clanId,
+				channelId: channelId,
+				displayName: userProfile?.user?.displayName ?? '',
 				state,
-				room_name: state === ParticipantMeetState.LEAVE ? 'leave' : roomId || ''
+				roomName: state === ParticipantMeetState.LEAVE ? 'leave' : roomId || ''
 			})
 		);
 	};
@@ -76,15 +76,15 @@ const VoiceInfo = React.memo(() => {
 			if (isGroupCall) {
 				groupCallState.endGroupCall();
 
-				if (currentDmGroup?.user_ids && userProfile?.user?.id) {
+				if (currentDmGroup?.userIds && userProfile?.user?.id) {
 					const participantLeftData = {
 						userId: userProfile.user.id,
-						userName: userProfile.user.display_name || userProfile.user.username,
+						userName: userProfile.user.displayName || userProfile.user.username,
 						timestamp: Date.now()
 					};
 
 					groupCallSignaling.sendParticipantLeft(
-						currentDmGroup.user_ids,
+						currentDmGroup.userIds,
 						participantLeftData,
 						currentVoiceInfo.channelId,
 						userProfile.user.id

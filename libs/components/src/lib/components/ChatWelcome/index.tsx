@@ -48,12 +48,12 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const currentChannelLabel = useSelector(selectCurrentChannelLabel);
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
-	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(directChannel?.channel_id || '')(state));
-	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(directChannel?.channel_id || '')(state));
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(directChannel?.channelId || '')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(directChannel?.channelId || '')(state));
 	const editGroupModal = useEditGroupModal({
-		channelId: directChannel?.channel_id,
-		currentGroupName: name || directChannel?.channel_label || 'Group',
-		currentAvatar: directChannel?.channel_avatar || ''
+		channelId: directChannel?.channelId,
+		currentGroupName: name || directChannel?.channelLabel || 'Group',
+		currentAvatar: directChannel?.channelAvatar || ''
 	});
 
 	const handleOpenEditModal = useCallback(() => {
@@ -67,8 +67,8 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 				? threadCurrentChannel || currentChannel
 				: currentChannel;
 
-	const user = useAppSelector((state) => selectMemberClanByUserId(state, selectedChannel?.creator_id as string));
-	const preferredUserName = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
+	const user = useAppSelector((state) => selectMemberClanByUserId(state, selectedChannel?.creatorId as string));
+	const preferredUserName = user?.clanNick || user?.user?.displayName || user?.user?.username || '';
 	const classNameSubtext = 'text-theme-primary opacity-60 text-sm';
 
 	const isChannel = mode === ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -86,7 +86,7 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 							<WelComeChannel
 								name={currentChannelLabel}
 								classNameSubtext={classNameSubtext}
-								channelPrivate={Boolean(selectedChannel?.channel_private)}
+								channelPrivate={Boolean(selectedChannel?.channelPrivate)}
 								isChatStream={isChatStream}
 								t={t}
 							/>
@@ -103,9 +103,9 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 						)}
 						{(isDm || isDmGroup) && (
 							<WelComeDm
-								name={isDmGroup ? name || `${selectedChannel?.creator_name}'s Groups` : name || username}
+								name={isDmGroup ? name || `${selectedChannel?.creatorName}'s Groups` : name || username}
 								username={username || name}
-								avatar={isDmGroup ? directChannel?.channel_avatar || 'assets/images/avatar-group.png' : avatarDM}
+								avatar={isDmGroup ? directChannel?.channelAvatar || 'assets/images/avatar-group.png' : avatarDM}
 								classNameSubtext={classNameSubtext}
 								isDmGroup={isDmGroup}
 								onEditGroup={isDmGroup ? handleOpenEditModal : undefined}
@@ -189,7 +189,7 @@ const WelcomeChannelThread = (props: WelcomeChannelThreadProps) => {
 			</div>
 			<div>
 				<p className="text-xl md:text-3xl font-bold pt-1 text-theme-primary-active break-words">
-					{isShowCreateThread ? name : currentThread?.channel_label}
+					{isShowCreateThread ? name : currentThread?.channelLabel}
 				</p>
 			</div>
 			<p className={classNameSubtext}>{t('welcome.startOfThread', { username })}</p>
@@ -279,10 +279,10 @@ const StatusFriend = memo((props: StatusFriendProps) => {
 		return infoFriend?.state === EStateFriend.FRIEND;
 	}, [infoFriend]);
 	const isBlockedByUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userID && infoFriend?.user?.id === userProfile?.user?.id;
+		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.sourceId === userID && infoFriend?.user?.id === userProfile?.user?.id;
 	}, [userProfile?.user?.id, infoFriend, userID]);
 	const didIBlockUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userProfile?.user?.id && infoFriend?.user?.id === userID;
+		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.sourceId === userProfile?.user?.id && infoFriend?.user?.id === userID;
 	}, [userProfile?.user?.id, infoFriend, userID]);
 	const { acceptFriend, deleteFriend, addFriend, blockFriend, unBlockFriend } = useFriends();
 

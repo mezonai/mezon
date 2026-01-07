@@ -76,13 +76,13 @@ export const RenderHeaderModal = memo(
 				return 'Anonymous';
 			}
 
-			const displayName = uploader?.user?.display_name || uploader?.user?.username || '';
-			return currentDirectId ? displayName : uploader?.clan_nick || displayName;
-		}, [currentDirectId, isAnonymous, uploader?.clan_nick, uploader?.user?.display_name, uploader?.user?.username]);
+			const displayName = uploader?.user?.displayName || uploader?.user?.username || '';
+			return currentDirectId ? displayName : uploader?.clanNick || displayName;
+		}, [currentDirectId, isAnonymous, uploader?.clanNick, uploader?.user?.displayName, uploader?.user?.username]);
 
 		const prioritySenderAvatar = useMemo(() => {
-			return (currentDirectId ? uploader?.user?.avatar_url : uploader?.clan_avatar || uploader?.user?.avatar_url) || '';
-		}, [currentDirectId, uploader?.clan_avatar, uploader?.user?.avatar_url]);
+			return (currentDirectId ? uploader?.user?.avatarUrl : uploader?.clanAvatar || uploader?.user?.avatarUrl) || '';
+		}, [currentDirectId, uploader?.clanAvatar, uploader?.user?.avatarUrl]);
 
 		const handleDownloadImage = async () => {
 			setShowTooltip((prev) => !prev);
@@ -158,11 +158,11 @@ export const RenderHeaderModal = memo(
 
 		const handleForwardMessage = async () => {
 			setShowTooltip((prev) => !prev);
-			if (!imageSelected?.message_id) return;
+			if (!imageSelected?.messageId) return;
 
 			try {
 				const store = getStore();
-				const message = selectMessageByMessageId(store.getState(), imageSelected?.channelId, imageSelected.message_id);
+				const message = selectMessageByMessageId(store.getState(), imageSelected?.channelId, imageSelected.messageId);
 				if (message) {
 					onClose();
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
@@ -180,7 +180,7 @@ export const RenderHeaderModal = memo(
 		};
 		const handleJumpToMessage = async () => {
 			setShowTooltip((prev) => !prev);
-			if (!imageSelected?.message_id) return;
+			if (!imageSelected?.messageId) return;
 
 			try {
 				onClose();
@@ -192,7 +192,7 @@ export const RenderHeaderModal = memo(
 				dispatch(
 					messagesActions.jumpToMessage({
 						clanId: currentDirectId ? '0' : imageSelected?.clanId,
-						messageId: imageSelected?.message_id ?? '',
+						messageId: imageSelected?.messageId ?? '',
 						channelId: imageSelected?.channelId ?? ''
 					})
 				);
@@ -223,7 +223,7 @@ export const RenderHeaderModal = memo(
 								{prioritySenderName}
 							</Text>
 							<Text style={styles.dateMessageBox}>
-								{imageSelected?.create_time ? convertTimeString(imageSelected.create_time, t) : ''}
+								{imageSelected?.createTime ? convertTimeString(imageSelected.createTime, t) : ''}
 							</Text>
 						</View>
 					</View>

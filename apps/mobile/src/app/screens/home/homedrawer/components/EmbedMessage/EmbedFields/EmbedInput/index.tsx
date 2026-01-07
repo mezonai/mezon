@@ -30,7 +30,7 @@ export const EmbedInput = memo(({ input, buttonId, messageId }: EmbedInputProps)
 	const debouncedChangeInput = debounce(async (value: string) => {
 		dispatch(
 			embedActions.addEmbedValue({
-				message_id: messageId,
+				messageId: messageId,
 				data: {
 					id: buttonId,
 					value: value

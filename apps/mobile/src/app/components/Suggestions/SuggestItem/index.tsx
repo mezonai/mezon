@@ -31,7 +31,7 @@ const SuggestItem = memo(
 		const emojiSrc = emojiSrcUnlock ? emojiSrcUnlock : getSrcEmoji(emojiId) || '';
 		const { t } = useTranslation(['clan']);
 		const { isChannelPrivate, isChannelText, isThread, isChannelVoice, isChannelStream, isChannelApp } = useMemo(() => {
-			const isChannelPrivate = channel?.channel_private === ChannelStatusEnum.isPrivate;
+			const isChannelPrivate = channel?.channelPrivate === ChannelStatusEnum.isPrivate;
 			const isChannelText = channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL;
 
 			const isThread = channel?.type === ChannelType.CHANNEL_TYPE_THREAD;

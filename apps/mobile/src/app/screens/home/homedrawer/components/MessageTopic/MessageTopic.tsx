@@ -40,8 +40,8 @@ const MessageTopic = ({ message }: { message: MessagesEntity }) => {
 	}, [message?.content?.rpl, replyCount]);
 
 	const priorityCreatorAvatar = useMemo(() => {
-		return topicCreator?.clan_avatar || topicCreator?.user?.avatar_url || '';
-	}, [topicCreator?.clan_avatar, topicCreator?.user?.avatar_url]);
+		return topicCreator?.clanAvatar || topicCreator?.user?.avatarUrl || '';
+	}, [topicCreator?.clanAvatar, topicCreator?.user?.avatarUrl]);
 
 	return (
 		<View style={styles.outerWrapper}>

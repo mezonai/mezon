@@ -16,7 +16,7 @@ export const MessageDatePicker: React.FC<MessageDatePcikerProps> = ({ datepicker
 	const handleChangeDate = (e: React.ChangeEvent<HTMLInputElement>) => {
 		dispatch(
 			embedActions.addEmbedValue({
-				message_id: messageId,
+				messageId: messageId,
 				data: {
 					id: buttonId,
 					value: e.target.value

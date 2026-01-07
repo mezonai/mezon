@@ -52,17 +52,17 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	const getIdMessageToJump = useCallback(
 		(e: React.MouseEvent<HTMLDivElement | HTMLSpanElement>) => {
 			e.stopPropagation();
-			if (message?.references && message?.references[0]?.message_ref_id) {
+			if (message?.references && message?.references[0]?.messageRefId) {
 				dispatch(
 					messagesActions.jumpToMessage({
-						clanId: message?.clan_id || '',
-						messageId: message?.references[0]?.message_ref_id,
-						channelId: message?.channel_id
+						clanId: message?.clanId || '',
+						messageId: message?.references[0]?.messageRefId,
+						channelId: message?.channelId
 					})
 				);
 			}
 		},
-		[dispatch, message?.channel_id, message?.clan_id, message?.references]
+		[dispatch, message?.channelId, message?.clanId, message?.references]
 	);
 
 	const isCustom = message.code === TypeMessage.CreateThread || message.code === TypeMessage.CreatePin;
@@ -81,14 +81,14 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 				formattedContent.push(<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}`} text={t?.slice(lastindex, s) ?? ''} />);
 			}
 
-			if (element.kindOf === ETokenMessage.MENTIONS && element.user_id) {
+			if (element.kindOf === ETokenMessage.MENTIONS && element.userId) {
 				formattedContent.push(
 					<MentionUser
 						isTokenClickAble={isTokenClickAble}
 						isJumMessageEnabled={isJumMessageEnabled}
-						key={`mentionUser-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
+						key={`mentionUser-${index}-${s}-${contentInElement}-${element.userId}-${element.roleId}`}
 						tagUserName={contentInElement ?? ''}
-						tagUserId={element.user_id}
+						tagUserId={element.userId}
 						mode={mode}
 					/>
 				);
@@ -115,8 +115,8 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 
 	const handelJumpToChannel = async () => {
 		if (threadId) {
-			await dispatch(channelsActions.addThreadToChannels({ channelId: threadId, clanId: message?.clan_id as string }));
-			navigate(`/chat/clans/${message?.clan_id}/channels/${threadId}`);
+			await dispatch(channelsActions.addThreadToChannels({ channelId: threadId, clanId: message?.clanId as string }));
+			navigate(`/chat/clans/${message?.clanId}/channels/${threadId}`);
 		}
 	};
 
@@ -125,7 +125,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	};
 
 	const handleShowPinMessage = async () => {
-		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channel_id, clanId: message.clan_id || '' }));
+		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channelId, clanId: message.clanId || '' }));
 		dispatch(pinMessageActions.togglePinModal());
 	};
 
@@ -185,7 +185,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 					))}
 			</div>
 			<div className="ml-1 max-2xl:ml-0 pt-[5px]  max-2xl:pt-0 text-theme-primary text-[10px] cursor-default">
-				{convertTimeStringI18n(message?.create_time as string, translateCommon, i18n.language)}
+				{convertTimeStringI18n(message?.createTime as string, translateCommon, i18n.language)}
 			</div>
 		</div>
 	);

@@ -47,8 +47,8 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 		},
 		[setDraftProfile]
 	);
-	const setDisplayName = (nick_name: string) => {
-		setDraftProfile((prevState) => (prevState ? { ...prevState, nick_name } : prevState));
+	const setDisplayName = (nickName: string) => {
+		setDraftProfile((prevState) => (prevState ? { ...prevState, nickName } : prevState));
 	};
 
 	const editProfile = useMemo(() => {
@@ -56,8 +56,8 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 			displayName: '',
 			urlImage: ''
 		};
-		if (draftProfile?.nick_name) {
-			profileVaile.displayName = draftProfile?.nick_name;
+		if (draftProfile?.nickName) {
+			profileVaile.displayName = draftProfile?.nickName;
 		}
 		if (draftProfile?.avatar) {
 			profileVaile.urlImage = draftProfile.avatar;
@@ -118,7 +118,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 
 			const attachment = await handleUploadFile(clientRef.current, sessionRef.current, file.name, file);
 			setUrlImage(attachment.url || '');
-			setFlagOption(attachment.url !== userProfile?.user?.avatar_url);
+			setFlagOption(attachment.url !== userProfile?.user?.avatarUrl);
 			setIsLoading(false);
 		} else {
 			const newImageObject: ImageSourceObject = {
@@ -135,7 +135,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 	};
 
 	const debouncedSetCategoryName = useDebouncedCallback(async (value: string) => {
-		if (value === userClansProfile?.nick_name) {
+		if (value === userClansProfile?.nickName) {
 			setCheckValidate(false);
 			setFlagOption(false);
 			return;
@@ -173,22 +173,22 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 
 	const handleRemoveButtonClick = () => {
 		setFlagOption(true);
-		setUrlImage(userProfile?.user?.avatar_url || '');
+		setUrlImage(userProfile?.user?.avatarUrl || '');
 	};
 
 	const handleClose = () => {
-		if (userClansProfile?.nick_name || userClansProfile?.avatar) {
-			setDisplayName(userClansProfile.nick_name || '');
+		if (userClansProfile?.nickName || userClansProfile?.avatar) {
+			setDisplayName(userClansProfile.nickName || '');
 			setUrlImage(userClansProfile.avatar || '');
 		} else {
 			setDisplayName(userProfile?.user?.username || '');
-			setUrlImage(userProfile?.user?.avatar_url || '');
+			setUrlImage(userProfile?.user?.avatarUrl || '');
 		}
 		setFlagOption(false);
 	};
 	const handleUpdateUser = async () => {
 		if (!checkValidate) {
-			await updateUserClanProfile(userClansProfile?.clan_id ?? '', displayName.trim() || userProfile?.user?.display_name || '', urlImage || '');
+			await updateUserClanProfile(userClansProfile?.clanId ?? '', displayName.trim() || userProfile?.user?.displayName || '', urlImage || '');
 		}
 		setFlagOption(false);
 	};
@@ -213,7 +213,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 							onChange={handleDisplayName}
 							type="text"
 							className="rounded-lg w-full border-theme-primary px-4 py-2 mt-2 outline-none font-normal text-sm tracking-wide"
-							placeholder={userProfile?.user?.display_name || userProfile?.user?.username}
+							placeholder={userProfile?.user?.displayName || userProfile?.user?.username}
 							value={displayName}
 							maxLength={32}
 						/>
@@ -242,7 +242,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 					<p className="mt-[20px] font-bold tracking-wide text-sm">{t('preview')}</p>
 					<PreviewSetting
 						profiles={editProfile}
-						currentDisplayName={!displayName ? userProfile?.user?.display_name : ''}
+						currentDisplayName={!displayName ? userProfile?.user?.displayName : ''}
 						isLoading={isLoading}
 					/>
 				</div>

@@ -1,5 +1,5 @@
 import type { Dispatch } from '@reduxjs/toolkit';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import { IMAGE_MAX_FILE_SIZE, MAX_FILE_SIZE, fileTypeImage } from '../constant';
 import type { IMentionOnMessage, IRolesClan, IStartEndIndex, MentionDataProps, MentionItem, MentionReactInputProps, RequestInput } from '../types';
 
@@ -154,9 +154,9 @@ export const convertMentionOnfile = (roles: IRolesClan[], contentString: string,
 			const e = s + display.length;
 			const isRole = roleIds.has(id);
 			if (isRole) {
-				mentions.push({ role_id: id, s, e });
+				mentions.push({ roleId: id, s, e });
 			} else {
-				mentions.push({ user_id: id, s, e });
+				mentions.push({ userId: id, s, e });
 			}
 		}
 	});

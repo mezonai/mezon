@@ -27,7 +27,7 @@ export const useClickUpToEditMessage = ({ editorRef, currentChannelId, userId, d
 				messagesActions.setChannelDraftMessage({
 					channelId: currentChannelId,
 					channelDraftMessage: {
-						message_id: idRefMessage,
+						messageId: idRefMessage,
 						draftContent: lastMessageByUserId?.content,
 						draftMention: lastMessageByUserId.mentions ?? [],
 						draftAttachment: lastMessageByUserId.attachments ?? [],

@@ -1,8 +1,7 @@
 import type { IPermissionRoleChannel, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPermissionRoleChannel, ApiPermissionUpdate } from 'mezon-js/api.gen';
-import type { ApiPermissionRoleChannelListEventResponse } from 'mezon-js/dist/api.gen';
+import type { ApiPermissionRoleChannel, ApiPermissionRoleChannelListEventResponse, ApiPermissionUpdate } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -31,7 +30,7 @@ export interface PermissionRoleChannelState {
 }
 
 export const permissionRoleChannelAdapter = createEntityAdapter({
-	selectId: (permission: ApiPermissionRoleChannelListEventResponse) => permission.user_id || permission.role_id || ''
+	selectId: (permission: ApiPermissionRoleChannelListEventResponse) => permission.userId || permission.roleId || ''
 });
 
 type fetchChannelsArgs = {
@@ -89,17 +88,17 @@ export const fetchPermissionRoleChannel = createAsyncThunk(
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 		const response = await fetchPermissionRoleChannelCached(thunkAPI.getState as () => RootState, mezon, roleId, channelId, userId, noCache);
-		if (!response || !response?.permission_role_channel) {
+		if (!response || !response?.permissionRoleChannel) {
 			return [];
 		}
 
-		const updatedPermissionRoleChannel = response.permission_role_channel.map((channel) => {
-			if (channel.permission_id && channel.active === undefined) {
+		const updatedPermissionRoleChannel = response.permissionRoleChannel.map((channel: any) => {
+			if (channel.permissionId && channel.active === undefined) {
 				return { ...channel, active: false };
 			}
 			return channel;
 		});
-		return { ...response, permission_role_channel: updatedPermissionRoleChannel, fromCache: response?.fromCache };
+		return { ...response, permissionRoleChannel: updatedPermissionRoleChannel, fromCache: response?.fromCache };
 	}
 );
 
@@ -117,12 +116,20 @@ export const setPermissionRoleChannel = createAsyncThunk(
 	async ({ channelId, roleId, permission, maxPermissionId, userId, clanId }: SetPermissionRoleChannel, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const permissionUpdateWithTypeName = permission.map((perm) => ({
+				$typeName: 'mezon.api.PermissionUpdate' as const,
+				permissionId: perm.permissionId || '',
+				slug: perm.slug || '',
+				type: perm.type ?? 0
+			}));
 			const body = {
-				channel_id: channelId,
-				role_id: roleId,
-				permission_update: permission,
-				max_permission_id: maxPermissionId,
-				user_id: userId
+				$typeName: 'mezon.api.UpdateRoleChannelRequest' as const,
+				channelId,
+				roleId: roleId || '',
+				permissionUpdate: permissionUpdateWithTypeName,
+				maxPermissionId,
+				userId,
+				roleLabel: ''
 			};
 			const response = await mezon.client.setRoleChannelPermission(mezon.session, body);
 			if (response) {
@@ -164,7 +171,7 @@ export const permissionRoleChannelSlice = createSlice({
 					permissionRoleChannelAdapter.updateOne(channelPermission, {
 						id: roleId,
 						changes: {
-							permission_role_channel: permissionRole
+							permissionRoleChannel: permissionRole
 						}
 					});
 				}
@@ -177,21 +184,21 @@ export const permissionRoleChannelSlice = createSlice({
 				state.loadingStatus = 'loading';
 			})
 			.addCase(fetchPermissionRoleChannel.fulfilled, (state: PermissionRoleChannelState, action: PayloadAction<any>) => {
-				const { channel_id, fromCache } = action.payload;
+				const { channelId, fromCache } = action.payload;
 
-				if (!state.cacheByChannels[channel_id]) {
-					state.cacheByChannels[channel_id] = {
+				if (!state.cacheByChannels[channelId]) {
+					state.cacheByChannels[channelId] = {
 						permissionRoleChannel: permissionRoleChannelAdapter.getInitialState()
 					};
 				}
 
 				if (!fromCache) {
-					state.cacheByChannels[channel_id].permissionRoleChannel = permissionRoleChannelAdapter.addOne(
-						state.cacheByChannels[channel_id].permissionRoleChannel,
+					state.cacheByChannels[channelId].permissionRoleChannel = permissionRoleChannelAdapter.addOne(
+						state.cacheByChannels[channelId].permissionRoleChannel,
 						action.payload
 					);
 
-					state.cacheByChannels[channel_id].cache = createCacheMetadata();
+					state.cacheByChannels[channelId].cache = createCacheMetadata();
 				}
 				state.loadingStatus = 'loaded';
 			})
@@ -209,14 +216,14 @@ export const permissionRoleChannelSlice = createSlice({
 					.filter((item) => item.type)
 					.map((role) => ({
 						active: role.type === 1 ? true : false,
-						permission_id: role.permission_id
+						permissionId: role.permissionId
 					}));
 				if (state.cacheByChannels[channelId]?.permissionRoleChannel) {
 					permissionRoleChannelAdapter.upsertOne(state.cacheByChannels[channelId]?.permissionRoleChannel, {
-						role_id: roleId,
-						user_id: userId,
-						channel_id: channelId,
-						permission_role_channel: listUpdate
+						roleId,
+						userId,
+						channelId,
+						permissionRoleChannel: listUpdate
 					});
 				}
 			});

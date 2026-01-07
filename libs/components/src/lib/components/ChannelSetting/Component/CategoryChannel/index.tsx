@@ -16,32 +16,32 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 	const { channel, menuIsOpen } = props;
 	const { t } = useTranslation('channelSetting');
 	const listCategory = useSelector(selectAllCategories);
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || ''));
+	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channelId || ''));
 	const categoryName = useMemo(() => {
-		if (realTimeChannel?.category_name) {
-			return realTimeChannel.category_name;
+		if (realTimeChannel?.categoryName) {
+			return realTimeChannel.categoryName;
 		}
-		if (realTimeChannel?.category_id) {
-			const category = listCategory.find((cat) => cat.id === realTimeChannel.category_id);
-			return category?.category_name || '';
+		if (realTimeChannel?.categoryId) {
+			const category = listCategory.find((cat) => cat.id === realTimeChannel.categoryId);
+			return category?.categoryName || '';
 		}
 		return '';
-	}, [realTimeChannel?.category_name, realTimeChannel?.category_id, listCategory]);
+	}, [realTimeChannel?.categoryName, realTimeChannel?.categoryId, listCategory]);
 	const dispatch = useAppDispatch();
 	const navigator = useAppNavigation();
 	const handleMoveChannelToNewCategory = useCallback(
 		async (category: CategoriesEntity) => {
 			const updateChannel: IUpdateChannelRequest = {
-				category_id: category.id,
-				category_name: category.category_name,
-				channel_id: realTimeChannel?.channel_id ?? '',
-				channel_label: realTimeChannel?.channel_label ?? '',
-				app_id: '',
-				parent_id: realTimeChannel?.parent_id,
-				channel_private: realTimeChannel?.channel_private
+				categoryId: category.id,
+				categoryName: category.categoryName,
+				channelId: realTimeChannel?.channelId ?? '',
+				channelLabel: realTimeChannel?.channelLabel ?? '',
+				appId: '',
+				parentId: realTimeChannel?.parentId,
+				channelPrivate: realTimeChannel?.channelPrivate
 			};
 			await dispatch(channelsActions.changeCategoryOfChannel(updateChannel)).then(() => {
-				const channelLink = navigator.toChannelPage(realTimeChannel?.channel_id ?? '', realTimeChannel?.clan_id ?? '');
+				const channelLink = navigator.toChannelPage(realTimeChannel?.channelId ?? '', realTimeChannel?.clanId ?? '');
 				navigator.navigate(channelLink);
 			});
 		},
@@ -49,8 +49,8 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 	);
 
 	const listCateUpdate = useMemo(() => {
-		return listCategory.filter((cate) => cate.id !== realTimeChannel?.category_id);
-	}, [listCategory, channel.category_id, realTimeChannel?.category_id]);
+		return listCategory.filter((cate) => cate.id !== realTimeChannel?.categoryId);
+	}, [listCategory, channel.categoryId, realTimeChannel?.categoryId]);
 
 	const menu = useMemo(() => {
 		const menuItems: ReactElement[] = [];
@@ -62,7 +62,7 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 					className={'bg-item-theme-hover text-theme-primary-hover uppercase font-medium text-left cursor-pointer truncate'}
 					onClick={() => handleMoveChannelToNewCategory(category)}
 				>
-					{category.category_name ?? ''}
+					{category.categoryName ?? ''}
 				</Menu.Item>
 			);
 		});
@@ -79,7 +79,7 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 
 				<p className="text-xs font-bold text-theme-primary">{t('categoryManagement.channelName')}</p>
 				<div className="bg-input-secondary border-theme-primary rounded-lg pl-3 py-2 w-full  outline-none text-theme-message">
-					{realTimeChannel.channel_label}
+					{realTimeChannel.channelLabel}
 				</div>
 				<p className="text-xs font-bold text-theme-primary mt-4">{t('categoryManagement.category')}</p>
 

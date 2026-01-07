@@ -12,25 +12,25 @@ type SettingEmojiListProps = {
 };
 
 const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) => {
-	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, sticker.creator_id ?? ''));
+	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, sticker.creatorId ?? ''));
 	const dispatch = useAppDispatch();
 	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const hasDeleteOrEditPermission = useMemo(() => {
-		return canManageClan || currentUserId === sticker.creator_id;
-	}, [currentUserId, sticker.creator_id]);
+		return canManageClan || currentUserId === sticker.creatorId;
+	}, [currentUserId, sticker.creatorId]);
 	const clanId = useSelector(selectCurrentClanId);
 	const handleUpdateSticker = () => {
 		updateSticker(sticker);
 	};
 	const handleDeleteSticker = async () => {
 		if (sticker.id) {
-			await dispatch(deleteSticker({ stickerId: sticker.id, clan_id: clanId as string, stickerLabel: sticker.shortname as string }));
+			await dispatch(deleteSticker({ stickerId: sticker.id, clanId: clanId as string, stickerLabel: sticker.shortname as string }));
 		}
 	};
-	const avatarDefault = dataAuthor?.clan_nick || dataAuthor?.user?.display_name || dataAuthor?.user?.username;
+	const avatarDefault = dataAuthor?.clanNick || dataAuthor?.user?.displayName || dataAuthor?.user?.username;
 	const avatarLetter = avatarDefault?.trim().charAt(0).toUpperCase();
-	const avatarUrl = dataAuthor?.clan_avatar || dataAuthor?.user?.avatar_url;
+	const avatarUrl = dataAuthor?.clanAvatar || dataAuthor?.user?.avatarUrl;
 	return (
 		<div
 			className={
@@ -59,7 +59,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 						{avatarLetter}
 					</div>
 				)}
-				<p className=" max-w-20 truncate">{dataAuthor?.clan_nick || dataAuthor?.user?.username}</p>
+				<p className=" max-w-20 truncate">{dataAuthor?.clanNick || dataAuthor?.user?.username}</p>
 			</div>
 			{hasDeleteOrEditPermission && (
 				<div className="group-hover:flex absolute flex-col right-[-12px] top-[-12px] gap-1 hidden select-none">
@@ -77,7 +77,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 					</button>
 				</div>
 			)}
-			{sticker.is_for_sale && <Icons.MarketIcons className="absolute top-1 right-1 w-4 h-4 text-yellow-300" />}
+			{sticker.isForSale && <Icons.MarketIcons className="absolute top-1 right-1 w-4 h-4 text-yellow-300" />}
 		</div>
 	);
 };

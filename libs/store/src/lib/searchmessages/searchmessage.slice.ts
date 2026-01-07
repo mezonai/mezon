@@ -4,7 +4,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiSearchMessageDocument, ApiSearchMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSearchMessageDocument, ApiSearchMessageRequest } from 'mezon-js/types';
 import { ensureSession, getMezonCtx } from '../helpers';
 export const SEARCH_MESSAGES_FEATURE_KEY = 'searchMessages';
 
@@ -18,11 +18,16 @@ export interface SearchMessageEntity extends ISearchMessage {
 }
 
 export const mapSearchMessageToEntity = (searchMessage: ApiSearchMessageDocument): ISearchMessage => {
+	const attachments = searchMessage.attachments?.map((att) => ({
+		...att,
+		size: typeof att.size === 'bigint' ? Number(att.size) : att.size
+	}));
 	return {
 		...searchMessage,
-		avatar: searchMessage.avatar_url,
-		id: searchMessage.message_id || Snowflake.generate(),
-		content: searchMessage.content ? safeJSONParse(searchMessage.content) : null
+		avatar: searchMessage.avatarUrl,
+		id: searchMessage.messageId || Snowflake.generate(),
+		content: searchMessage.content ? safeJSONParse(searchMessage.content) : null,
+		attachments
 	};
 };
 
@@ -49,15 +54,21 @@ export const fetchListSearchMessage = createAsyncThunk(
 	async ({ filters, from, size, sorts, isMobile = false }: any, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.searchMessage(mezon.session, { filters, from, size, sorts });
-			const channelId = filters.find((filter: { field_name: string }) => filter.field_name === 'channel_id')?.field_value;
+			const response = await mezon.client.searchMessage(mezon.session, {
+				$typeName: 'mezon.api.SearchMessageRequest' as const,
+				filters,
+				from,
+				size,
+				sorts
+			});
+			const channelId = filters.find((filter: { fieldName: string }) => filter.fieldName === 'channelId')?.fieldValue;
 
 			if (!response.messages) {
 				thunkAPI.dispatch(searchMessagesActions.setTotalResults({ channelId, total: isMobile ? response.total || 0 : 0 }));
 				return { searchMessage: [], isMobile, channelId };
 			}
 
-			const searchMessage = response.messages.map(mapSearchMessageToEntity);
+			const searchMessage = response.messages.map((msg) => mapSearchMessageToEntity(msg as unknown as ApiSearchMessageDocument));
 			thunkAPI.dispatch(searchMessagesActions.setTotalResults({ channelId, total: response.total ?? 0 }));
 
 			return {

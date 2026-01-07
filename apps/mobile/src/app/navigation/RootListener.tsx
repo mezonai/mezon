@@ -1,12 +1,5 @@
 import { ChatContext } from '@mezon/core';
-import {
-	load,
-	save,
-	setCurrentClanLoader,
-	STORAGE_CLAN_ID,
-	STORAGE_IS_DISABLE_LOAD_BACKGROUND,
-	STORAGE_MY_USER_ID
-} from '@mezon/mobile-components';
+import { load, save, setCurrentClanLoader, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import {
 	accountActions,
 	appActions,
@@ -203,11 +196,11 @@ const RootListener = () => {
 
 			const sessionMain = new Session(
 				session?.token,
-				session?.refresh_token,
+				session?.refreshToken,
 				session.created,
-				session.api_url,
-				session.id_token || '',
-				!!session.is_remember
+				session.apiUrl,
+				session.idToken || '',
+				!!session.isRemember
 			);
 			const profileResponse = await dispatch(accountActions.getUserProfile());
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -260,8 +253,8 @@ const RootListener = () => {
 				const currentClanIdCached = await load(STORAGE_CLAN_ID);
 				const payload = response?.payload as FetchClansPayload;
 				const clans = payload?.clans ?? [];
-				const isExistClanId = clans?.some((clan) => clan?.clan_id?.toString() === currentClanId);
-				const clanId = !isExistClanId ? clans?.[0]?.clan_id : currentClanId?.toString() !== '0' ? currentClanId : currentClanIdCached;
+				const isExistClanId = clans?.some((clan) => clan?.clanId?.toString() === currentClanId);
+				const clanId = !isExistClanId ? clans?.[0]?.clanId : currentClanId?.toString() !== '0' ? currentClanId : currentClanIdCached;
 				const promises = [];
 				if (!isFromFCM && clanId) {
 					save(STORAGE_CLAN_ID, clanId);

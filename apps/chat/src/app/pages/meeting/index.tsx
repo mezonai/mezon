@@ -64,8 +64,8 @@ const PermissionsPopup = React.memo(({ onClose }: { onClose: () => void }) => {
 export default function PreJoinCalling() {
 	const { t } = useTranslation('common');
 	const account = useSelector(selectAllAccount);
-	const getDisplayName = account?.user?.display_name || account?.user?.username;
-	const getAvatar = account?.user?.avatar_url;
+	const getDisplayName = account?.user?.displayName || account?.user?.username;
+	const getAvatar = account?.user?.avatarUrl;
 	const [cameraOn, setCameraOn] = useState(false);
 	const [username, setUsername] = useState(getDisplayName || '');
 	const [avatar, setAvatar] = useState('');
@@ -106,13 +106,13 @@ export default function PreJoinCalling() {
 		return {
 			created: false,
 			token,
-			created_at: now,
+			createdAt: now,
 			expires_at: payload.exp,
 			refresh_expires_at: undefined,
 			username: payload.usn || payload.usr || payload.sub || GUEST_NAME,
-			user_id: payload.uid?.toString(),
+			userId: payload.uid?.toString(),
 			vars: payload.vrs || {},
-			is_remember: false
+			isRemember: false
 		};
 	}
 

@@ -41,7 +41,7 @@ export default function UserInfoDm({
 			dismiss();
 			const userIds = [user?.id ?? ''];
 			try {
-				const response = await dispatch(channelMembersActions.removeMemberChannel({ channelId: currentChannel?.channel_id, userIds }));
+				const response = await dispatch(channelMembersActions.removeMemberChannel({ channelId: currentChannel?.channelId, userIds }));
 				if (response?.meta?.requestStatus === 'rejected') {
 					throw new Error('removeMemberChannel failed');
 				} else {

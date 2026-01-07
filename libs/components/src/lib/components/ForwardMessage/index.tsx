@@ -84,9 +84,9 @@ const ForwardMessageModal = () => {
 
 	useEffect(() => {
 		if (isLoading === 'loaded') {
-			dispatch(channelsActions.openCreateNewModalChannel({ isOpen: false, clanId: currentChannel?.clan_id as string }));
+			dispatch(channelsActions.openCreateNewModalChannel({ isOpen: false, clanId: currentChannel?.clanId as string }));
 		}
-	}, [dispatch, isLoading, currentChannel?.clan_id]);
+	}, [dispatch, isLoading, currentChannel?.clanId]);
 
 	const handleCloseModal = () => {
 		dispatch(toggleIsShowPopupForwardFalse());
@@ -131,13 +131,13 @@ const ForwardMessageModal = () => {
 
 			const response = await createDirectMessageWithUser(
 				friend.user.id,
-				friend.user.display_name || friend.user.username,
+				friend.user.displayName || friend.user.username,
 				friend.user.username,
-				friend.user.avatar_url
+				friend.user.avatarUrl
 			);
 
-			if (!response?.channel_id) return;
-			channelId = response.channel_id;
+			if (!response?.channelId) return;
+			channelId = response.channelId;
 		}
 
 		await sendMultipleMessages(combineMessages, '', channelId, ChannelStreamMode.STREAM_MODE_DM, false);
@@ -153,7 +153,7 @@ const ForwardMessageModal = () => {
 			selectedObjectIdSend.clanId || '',
 			selectedObjectIdSend.id,
 			ChannelStreamMode.STREAM_MODE_CHANNEL,
-			currentChannel ? !currentChannel.channel_private : false
+			currentChannel ? !currentChannel.channelPrivate : false
 		);
 	};
 
@@ -163,7 +163,7 @@ const ForwardMessageModal = () => {
 			selectedObjectIdSend.clanId || '',
 			selectedObjectIdSend.id,
 			ChannelStreamMode.STREAM_MODE_THREAD,
-			currentChannel ? !currentChannel.channel_private : false
+			currentChannel ? !currentChannel.channelPrivate : false
 		);
 	};
 
@@ -203,10 +203,10 @@ const ForwardMessageModal = () => {
 		let index = startIndex + 1;
 		while (
 			index < allMessageIds.length &&
-			Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) -
-				Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) <
+			Date.parse(allMessagesEntities?.[allMessageIds[index]]?.createTime) -
+				Date.parse(allMessagesEntities?.[allMessageIds[index]]?.createTime) <
 				FOR_1_HOUR_SEC &&
-			allMessagesEntities?.[allMessageIds[index]]?.sender_id === selectedMessage?.user?.id
+			allMessagesEntities?.[allMessageIds[index]]?.senderId === selectedMessage?.user?.id
 		) {
 			combineMessages.push(allMessagesEntities?.[allMessageIds[index]]);
 			index++;
@@ -231,16 +231,16 @@ const ForwardMessageModal = () => {
 
 			const response = await createDirectMessageWithUser(
 				friend.user.id,
-				friend.user.display_name || friend.user.username,
+				friend.user.displayName || friend.user.username,
 				friend.user.username,
-				friend.user.avatar_url
+				friend.user.avatarUrl
 			);
 
-			if (!response?.channel_id) return;
+			if (!response?.channelId) return;
 
 			await sendForwardMessage(
 				'',
-				response.channel_id,
+				response.channelId,
 				ChannelStreamMode.STREAM_MODE_DM,
 				false,
 				{
@@ -343,16 +343,16 @@ const ForwardMessageModal = () => {
 	const listMemSearch = useMemo(() => {
 		const listDMSearch = listDM.length
 			? listDM
-					.filter((itemDM) => !blockedUserIds.has(itemDM?.user_ids?.[0] ?? ''))
+					.filter((itemDM) => !blockedUserIds.has(itemDM?.userIds?.[0] ?? ''))
 					.map((itemDM: DirectEntity) => {
 						return {
-							id: itemDM?.user_ids?.[0] ?? '',
+							id: itemDM?.userIds?.[0] ?? '',
 							name: itemDM?.usernames?.toString() ?? '',
 							avatarUser: itemDM?.avatars?.[0] ?? '',
 							idDM: itemDM?.id ?? '',
 							typeChat: ChannelType.CHANNEL_TYPE_DM,
-							displayName: itemDM.channel_label,
-							lastSentTimeStamp: itemDM.last_sent_message?.timestamp_seconds,
+							displayName: itemDM.channelLabel,
+							lastSentTimeStamp: itemDM.lastSentMessage?.timestampSeconds,
 							typeSearch: TypeSearch.Dm_Type
 						};
 					})
@@ -360,13 +360,13 @@ const ForwardMessageModal = () => {
 		const listGroupSearch = listGroup.length
 			? listGroup.map((itemGr: DirectEntity) => {
 					return {
-						id: itemGr?.channel_id ?? '',
-						name: itemGr?.channel_label ?? '',
-						avatarUser: itemGr?.channel_avatar || 'assets/images/avatar-group.png',
+						id: itemGr?.channelId ?? '',
+						name: itemGr?.channelLabel ?? '',
+						avatarUser: itemGr?.channelAvatar || 'assets/images/avatar-group.png',
 						idDM: itemGr?.id ?? '',
 						typeChat: ChannelType.CHANNEL_TYPE_GROUP,
-						displayName: itemGr.channel_label,
-						lastSentTimeStamp: itemGr.last_sent_message?.timestamp_seconds,
+						displayName: itemGr.channelLabel,
+						lastSentTimeStamp: itemGr.lastSentMessage?.timestampSeconds,
 						typeSearch: TypeSearch.Dm_Type
 					};
 				})
@@ -377,9 +377,9 @@ const ForwardMessageModal = () => {
 					return {
 						id: itemUserClan?.id ?? '',
 						name: itemUserClan?.user?.username ?? '',
-						avatarUser: getAvatarForPrioritize(itemUserClan.clan_avatar, itemUserClan?.user?.avatar_url),
-						displayName: itemUserClan?.user?.display_name ?? '',
-						clanNick: itemUserClan?.clan_nick ?? '',
+						avatarUser: getAvatarForPrioritize(itemUserClan.clanAvatar, itemUserClan?.user?.avatarUrl),
+						displayName: itemUserClan?.user?.displayName ?? '',
+						clanNick: itemUserClan?.clanNick ?? '',
 						lastSentTimeStamp: '0',
 						idDM: '',
 						type: TypeSearch.Dm_Type
@@ -394,14 +394,14 @@ const ForwardMessageModal = () => {
 						return {
 							id: friend?.user?.id ?? '',
 							name: friend?.user?.username ?? '',
-							avatarUser: friend?.user?.avatar_url ?? '',
+							avatarUser: friend?.user?.avatarUrl ?? '',
 							idDM: friend?.user?.id ?? '',
 							typeChat: ChannelType.CHANNEL_TYPE_DM,
-							displayName: friend?.user?.display_name ?? friend?.user?.username ?? '',
+							displayName: friend?.user?.displayName ?? friend?.user?.username ?? '',
 							lastSentTimeStamp: '0',
 							typeSearch: TypeSearch.Dm_Type,
 							isFriend: true,
-							prioritizeName: friend?.user?.display_name ?? friend?.user?.username ?? ''
+							prioritizeName: friend?.user?.displayName ?? friend?.user?.username ?? ''
 						};
 					})
 			: [];
@@ -433,16 +433,16 @@ const ForwardMessageModal = () => {
 		const list = listChannelForward.map((item: ChannelThreads) => {
 			return {
 				id: item?.id ?? '',
-				name: item?.channel_label ?? '',
-				subText: item?.category_name ?? '',
+				name: item?.channelLabel ?? '',
+				subText: item?.categoryName ?? '',
 				icon: '#',
 				type: item?.type ?? '',
-				clanId: item?.clan_id ?? '',
-				channelLabel: item?.channel_label ?? '',
-				lastSentTimeStamp: item.last_sent_message?.timestamp_seconds,
+				clanId: item?.clanId ?? '',
+				channelLabel: item?.channelLabel ?? '',
+				lastSentTimeStamp: item.lastSentMessage?.timestampSeconds,
 				typeSearch: TypeSearch.Channel_Type,
-				prioritizeName: item?.channel_label ?? '',
-				isPublic: item ? !item.channel_private : false
+				prioritizeName: item?.channelLabel ?? '',
+				isPublic: item ? !item.channelPrivate : false
 			};
 		});
 		return list;
@@ -496,10 +496,10 @@ const ForwardMessageModal = () => {
 		let index = startIndex + 1;
 		while (
 			index < allMessageIds.length &&
-			Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) -
-				Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) <
+			Date.parse(allMessagesEntities?.[allMessageIds[index]]?.createTime) -
+				Date.parse(allMessagesEntities?.[allMessageIds[index]]?.createTime) <
 				FOR_1_HOUR_SEC &&
-			allMessagesEntities?.[allMessageIds[index]]?.sender_id === selectedMessage?.user?.id
+			allMessagesEntities?.[allMessageIds[index]]?.senderId === selectedMessage?.user?.id
 		) {
 			combineMessages.push(allMessagesEntities?.[allMessageIds[index]]);
 			index++;

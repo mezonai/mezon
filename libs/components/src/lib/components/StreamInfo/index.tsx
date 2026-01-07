@@ -38,7 +38,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 	const streamChannelMember = useAppSelector((state) => selectStreamMembersByChannelId(state, currentStreamInfo?.streamId || ''));
 	const groupCallId = useSelector(selectGroupCallId);
 	const currentDmGroup = useSelector(selectDmGroupCurrent(groupCallId ?? ''));
-	const dmUserId = currentDmGroup?.user_ids?.[0] || '';
+	const dmUserId = currentDmGroup?.userIds?.[0] || '';
 	const direct = useAppSelector((state) => selectDirectById(state, groupCallId)) || {};
 	const isJoinedCall = useSelector(selectJoinedCall);
 	const { disconnect } = useWebRTCStream();
@@ -47,7 +47,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 		channelId: groupCallId as string,
 		userId: userProfile?.user?.id as string,
 		callerName: userProfile?.user?.username as string,
-		callerAvatar: userProfile?.user?.avatar_url as string,
+		callerAvatar: userProfile?.user?.avatarUrl as string,
 		isInChannelCalled: false
 	});
 
@@ -59,7 +59,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 				type: direct.type
 			})
 		);
-		navigate(`/chat/direct/message/${direct?.channel_id}/${direct?.type}`);
+		navigate(`/chat/direct/message/${direct?.channelId}/${direct?.type}`);
 	};
 
 	const redirectToStream = () => {
@@ -87,7 +87,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 			disconnect();
 			dispatch(videoStreamActions.stopStream());
 			dispatch(videoStreamActions.setIsJoin(false));
-			const userStreamId = streamChannelMember?.find((member) => member?.user_id === userProfile?.user?.id)?.id;
+			const userStreamId = streamChannelMember?.find((member) => member?.userId === userProfile?.user?.id)?.id;
 			dispatch(usersStreamActions.remove(userStreamId || ''));
 		}
 	};

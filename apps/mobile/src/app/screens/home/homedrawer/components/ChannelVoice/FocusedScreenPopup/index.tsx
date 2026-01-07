@@ -28,9 +28,9 @@ const FocusedScreenPopup = () => {
 	const randomParticipant = participants[0];
 	const identity = randomParticipant.identity;
 	const member = useAppSelector((state) => selectMemberClanByUserId(state, identity));
-	const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || '';
+	const voiceUsername = member?.clanNick || member?.user?.displayName || member?.user?.username || '';
 	const avatar = useMemo(() => {
-		return member?.clan_avatar || member?.user?.avatar_url || '';
+		return member?.clanAvatar || member?.user?.avatarUrl || '';
 	}, [member]);
 
 	const screenShareOther = otherParticipants.find((p) => p.isScreenShareEnabled);

@@ -33,12 +33,12 @@ const ChannelListMessage = React.memo(
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
 		const hasJumpedToLastSeen = useRef(false);
-		const keyExtractor = useCallback((message) => `${message?.id}_${message?.channel_id}`, []);
+		const keyExtractor = useCallback((message) => `${message?.id}_${message?.channelId}`, []);
 
 		const isCannotLoadMore = useMemo(() => {
 			const lastMessage = messages?.[messages?.length - 1];
 
-			return lastMessage?.sender_id === '0' && !lastMessage?.content?.t && lastMessage?.username?.toLowerCase() === 'system';
+			return lastMessage?.senderId === '0' && !lastMessage?.content?.t && lastMessage?.username?.toLowerCase() === 'system';
 		}, [messages]);
 
 		const handleEndReached = () => {

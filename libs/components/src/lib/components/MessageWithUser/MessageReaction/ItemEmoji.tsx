@@ -18,7 +18,7 @@ function ItemEmoji({ emoji, message, isTopic }: EmojiItemProps) {
 	const getUrlItem = getSrcEmoji(emoji.emojiId || '');
 	const count = calculateTotalCount(emoji.senders);
 	const userId = useSelector(selectAllAccount)?.user?.id as string;
-	const userSenderCount = emoji.senders?.find((sender: SenderInfoOptionals) => sender.sender_id === userId)?.count;
+	const userSenderCount = emoji.senders?.find((sender: SenderInfoOptionals) => sender.senderId === userId)?.count;
 
 	async function reactOnExistEmoji(id: string, messageId: string, emojiId: string, emoji: string, count: number, action_delete: boolean) {
 		const store = getStore();
@@ -27,16 +27,16 @@ function ItemEmoji({ emoji, message, isTopic }: EmojiItemProps) {
 		await reactionMessageDispatch({
 			id,
 			messageId: messageId ?? '',
-			emoji_id: emojiId ?? '',
+			emojiId: emojiId ?? '',
 			emoji: emoji ?? '',
 			count: 1,
-			message_sender_id: userId ?? '',
+			messageSenderId: userId ?? '',
 			action_delete: false,
-			is_public: isPublicChannel(currentChannel),
-			clanId: message?.clan_id ?? '',
-			channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
+			isPublic: isPublicChannel(currentChannel),
+			clanId: message?.clanId ?? '',
+			channelId: isTopic ? currentChannel?.id || '' : (message?.channelId ?? ''),
 			isFocusTopicBox: isTopic,
-			channelIdOnMessage: message?.channel_id
+			channelIdOnMessage: message?.channelId
 		});
 	}
 
@@ -46,7 +46,7 @@ function ItemEmoji({ emoji, message, isTopic }: EmojiItemProps) {
 				className={`h-[24px] rounded-md w-fit min-w-12 gap-3 h-6 flex flex-row noselect
           cursor-pointer justify-center  items-center relative pl-7 text-sm font-medium text-theme-primary
           ${Number(userSenderCount) > 0 ? 'highlight-react-theme' : ''}`}
-				onClick={() => reactOnExistEmoji(emoji.emojiId ?? '', emoji.message_id ?? '', emoji.emojiId ?? '', emoji.emoji ?? '', 1, false)}
+				onClick={() => reactOnExistEmoji(emoji.emojiId ?? '', emoji.messageId ?? '', emoji.emojiId ?? '', emoji.emoji ?? '', 1, false)}
 			>
 				<img src={getUrlItem} className="absolute left-[5px] w-4 h-4 object-scale-down " alt="" />
 				{formatCount(count)}

@@ -25,51 +25,51 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const message =
-		useAppSelector((state) => selectMessageByMessageId(state, pinMessageItem?.channel_id, pinMessageItem?.message_id)) ||
+		useAppSelector((state) => selectMessageByMessageId(state, pinMessageItem?.channelId, pinMessageItem?.messageId)) ||
 		({} as IMessageWithUser);
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
-	const senderUser = useAppSelector((state) => selectMemberClanByUserId(state, pinMessageItem?.sender_id || ''));
+	const senderUser = useAppSelector((state) => selectMemberClanByUserId(state, pinMessageItem?.senderId || ''));
 
 	const prioritySenderName = useMemo(() => {
-		if (pinMessageItem?.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
+		if (pinMessageItem?.senderId === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
 			return 'Anonymous';
 		}
-		const displayName = senderUser?.user?.display_name || senderUser?.user?.username || pinMessageItem?.username || '';
+		const displayName = senderUser?.user?.displayName || senderUser?.user?.username || pinMessageItem?.username || '';
 
 		if (currentClanId === '0') {
 			return displayName;
 		}
-		return senderUser?.clan_nick || displayName;
+		return senderUser?.clanNick || displayName;
 	}, [
-		pinMessageItem?.sender_id,
+		pinMessageItem?.senderId,
 		pinMessageItem?.username,
-		senderUser?.user?.display_name,
+		senderUser?.user?.displayName,
 		senderUser?.user?.username,
-		senderUser?.clan_nick,
+		senderUser?.clanNick,
 		currentClanId
 	]);
 
 	const prioritySenderAvatar = useMemo(() => {
-		const userAvatar = senderUser?.user?.avatar_url || pinMessageItem?.avatar || '';
+		const userAvatar = senderUser?.user?.avatarUrl || pinMessageItem?.avatar || '';
 		if (currentClanId === '0') {
 			return userAvatar;
 		}
-		return senderUser?.clan_avatar || userAvatar;
-	}, [currentClanId, pinMessageItem?.avatar, senderUser?.clan_avatar, senderUser?.user?.avatar_url]);
+		return senderUser?.clanAvatar || userAvatar;
+	}, [currentClanId, pinMessageItem?.avatar, senderUser?.clanAvatar, senderUser?.user?.avatarUrl]);
 
 	const handleJumpMess = () => {
-		if (pinMessageItem?.message_id && pinMessageItem?.channel_id) {
+		if (pinMessageItem?.messageId && pinMessageItem?.channelId) {
 			dispatch(
 				messagesActions.jumpToMessage({
 					clanId: currentClanId,
-					messageId: pinMessageItem.message_id ?? '',
-					channelId: pinMessageItem.channel_id ?? ''
+					messageId: pinMessageItem.messageId ?? '',
+					channelId: pinMessageItem.channelId ?? ''
 				})
 			);
 		}
 		if (currentClanId === '0') {
-			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: pinMessageItem?.channel_id });
+			navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: pinMessageItem?.channelId });
 		} else {
 			navigation.goBack();
 		}
@@ -95,10 +95,10 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 				{pinMessageAttachments?.length > 0 && (
 					<MessageAttachment
 						attachments={pinMessageAttachments}
-						clanId={message?.clan_id}
-						channelId={message?.channel_id}
-						messageCreatTime={message?.create_time_seconds}
-						senderId={message?.sender_id}
+						clanId={message?.clanId}
+						channelId={message?.channelId}
+						messageCreatTime={message?.createTimeSeconds}
+						senderId={message?.senderId}
 					/>
 				)}
 			</View>

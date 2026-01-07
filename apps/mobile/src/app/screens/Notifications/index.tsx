@@ -145,14 +145,14 @@ const Notifications = ({ navigation, route }) => {
 			return new Promise<void>((resolve) => {
 				requestAnimationFrame(async () => {
 					const state = store.getState();
-					const clanById = selectClanById(notify?.content?.clan_id || '')(state);
-					const directById = selectDirectById(state, notify?.content?.channel_id || '');
+					const clanById = selectClanById(notify?.content?.clanId || '')(state);
+					const directById = selectDirectById(state, notify?.content?.channelId || '');
 					if (!clanById && !directById && notify?.content?.mode !== ChannelStreamMode.STREAM_MODE_DM) {
 						Toast.show({ type: 'error', text1: t('unknowClan') });
 						return resolve();
 					}
 					const isTopic =
-						Number(notify?.content?.topic_id) !== 0 ||
+						Number(notify?.content?.topicId) !== 0 ||
 						notify?.content?.code === TypeMessage.Topic ||
 						notify?.message?.code === TypeMessage.Topic;
 
@@ -160,27 +160,27 @@ const Notifications = ({ navigation, route }) => {
 
 					if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM || notify?.content?.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
 						promises.push(store.dispatch(directActions.fetchDirectMessage({})));
-						promises.push(store.dispatch(directActions.setDmGroupCurrentId(notify?.content?.channel_id)));
+						promises.push(store.dispatch(directActions.setDmGroupCurrentId(notify?.content?.channelId)));
 					} else {
 						if (isTopic) {
 							promises.push(
 								store.dispatch(
 									channelsActions.addThreadToChannels({
-										clanId: notify?.content?.clan_id ?? '',
-										channelId: notify?.content?.channel_id || ''
+										clanId: notify?.content?.clanId ?? '',
+										channelId: notify?.content?.channelId || ''
 									})
 								),
-								store.dispatch(topicsActions.setCurrentTopicId(notify?.content?.topic_id || notify?.id || '')),
-								store.dispatch(getFirstMessageOfTopic({ topicId: notify?.content?.topic_id || notify?.id || '', isMobile: true })),
+								store.dispatch(topicsActions.setCurrentTopicId(notify?.content?.topicId || notify?.id || '')),
+								store.dispatch(getFirstMessageOfTopic({ topicId: notify?.content?.topicId || notify?.id || '', isMobile: true })),
 								store.dispatch(topicsActions.setIsShowCreateTopic(true))
 							);
 						}
 
-						if (notify?.content?.clan_id !== currentClanId) {
+						if (notify?.content?.clanId !== currentClanId) {
 							promises.push(
 								store.dispatch(
 									clansActions.changeCurrentClan({
-										clanId: notify?.content?.clan_id
+										clanId: notify?.content?.clanId
 									})
 								)
 							);
@@ -189,8 +189,8 @@ const Notifications = ({ navigation, route }) => {
 						promises.push(
 							store.dispatch(
 								channelsActions.joinChannel({
-									clanId: notify?.content?.clan_id ?? '',
-									channelId: notify?.content?.channel_id,
+									clanId: notify?.content?.clanId ?? '',
+									channelId: notify?.content?.channelId,
 									noFetchMembers: false,
 									noCache: true
 								})
@@ -225,8 +225,8 @@ const Notifications = ({ navigation, route }) => {
 							screen: APP_SCREEN.MESSAGES.TOPIC_DISCUSSION
 						});
 					} else {
-						const dataSave = getUpdateOrAddClanChannelCache(notify?.content?.clan_id, notify?.content?.channel_id);
-						save(STORAGE_CLAN_ID, notify?.content?.clan_id);
+						const dataSave = getUpdateOrAddClanChannelCache(notify?.content?.clanId, notify?.content?.channelId);
+						save(STORAGE_CLAN_ID, notify?.content?.clanId);
 						save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
 
 						if (isTabletLandscape) {
@@ -244,9 +244,9 @@ const Notifications = ({ navigation, route }) => {
 					timeoutRef.current = setTimeout(() => {
 						store.dispatch(
 							messagesActions.jumpToMessage({
-								clanId: notify?.content?.clan_id,
-								channelId: notify?.content?.channel_id,
-								messageId: notify?.content?.message_id
+								clanId: notify?.content?.clanId,
+								channelId: notify?.content?.channelId,
+								messageId: notify?.content?.messageId
 							})
 						);
 					}, 200);
@@ -260,7 +260,7 @@ const Notifications = ({ navigation, route }) => {
 
 	const handleOnPressNotify = useCallback(
 		async (notify: INotification) => {
-			if (!notify?.content?.channel_id) return;
+			if (!notify?.content?.channelId) return;
 
 			const store = await getStoreAsync();
 			await handleNotification(notify, currentClanId, store, navigation);

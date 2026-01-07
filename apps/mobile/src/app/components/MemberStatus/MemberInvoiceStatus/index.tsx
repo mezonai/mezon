@@ -26,9 +26,9 @@ export const MemberInvoiceStatus = ({ userId }: MemberInvoiceStatusProps) => {
 		}
 		return {
 			status: currentUserProfile?.user?.status || EUserStatus.ONLINE,
-			user_status: currentUserProfile?.user?.user_status
+			userStatus: currentUserProfile?.user?.userStatus
 		};
-	}, [currentUserProfile?.user?.id, currentUserProfile?.user?.status, currentUserProfile?.user?.user_status, getStatus, userId]);
+	}, [currentUserProfile?.user?.id, currentUserProfile?.user?.status, currentUserProfile?.user?.userStatus, getStatus, userId]);
 
 	if (!userVoiceStatus || infoMemberStatus?.status === EUserStatus.INVISIBLE) {
 		return null;

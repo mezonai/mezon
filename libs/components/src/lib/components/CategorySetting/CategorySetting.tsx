@@ -15,15 +15,15 @@ interface ICategorySettingProps {
 export const CategorySetting: React.FC<ICategorySettingProps> = ({ onClose, category }) => {
 	const [menu, setMenu] = useState(true);
 	const [currentSetting, setCurrentSetting] = useState<ItemObjProps>(categorySettingList[0]);
-	const [displayCategoryName, setDisplayCategoryName] = useState<string>(category?.category_name || '');
+	const [displayCategoryName, setDisplayCategoryName] = useState<string>(category?.categoryName || '');
 
 	const handleSettingItemClick = (settingItem: ItemObjProps) => {
 		setCurrentSetting(settingItem);
 	};
 
 	useEffect(() => {
-		setDisplayCategoryName(category?.category_name || '');
-	}, [category?.category_name]);
+		setDisplayCategoryName(category?.categoryName || '');
+	}, [category?.categoryName]);
 
 	return (
 		<div className="flex fixed inset-0  w-screen z-30" onMouseDown={(event) => event.stopPropagation()}>

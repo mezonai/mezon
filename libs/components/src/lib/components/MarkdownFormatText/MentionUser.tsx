@@ -202,11 +202,11 @@ const UserProfilePopup = ({ username, userID, channelId, mode, isDm, positionSho
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const positionStyle = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING ? { right: `120px` } : { left: `${positionShortUser?.left}px` };
 	const prioritizeName = getNameForPrioritize(
-		userGetByNameOrId?.clan_nick ?? '',
-		userGetByNameOrId?.user?.display_name ?? '',
+		userGetByNameOrId?.clanNick ?? '',
+		userGetByNameOrId?.user?.displayName ?? '',
 		userGetByNameOrId?.user?.username ?? ''
 	);
-	const prioritizeAvt = userGetByNameOrId?.clan_avatar ? userGetByNameOrId?.clan_avatar : userGetByNameOrId?.user?.avatar_url;
+	const prioritizeAvt = userGetByNameOrId?.clanAvatar ? userGetByNameOrId?.clanAvatar : userGetByNameOrId?.user?.avatarUrl;
 
 	const updatedUserByUserId = {
 		...userGetByNameOrId,

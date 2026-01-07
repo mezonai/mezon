@@ -64,7 +64,7 @@ export const useModals = ({ currentUser }: ModalsProps): ModalsState => {
 	const [showUserProfileModal, hideUserProfileModal] = useModal(() => {
 		if (!currentUser) return null;
 
-		const avatar = currentUser.clan_avatar ? currentUser.clan_avatar : (currentUser?.user?.avatar_url ?? '');
+		const avatar = currentUser.clanAvatar ? currentUser.clanAvatar : (currentUser?.user?.avatarUrl ?? '');
 		modalState.current.userProfile = true;
 
 		return (
@@ -85,8 +85,8 @@ export const useModals = ({ currentUser }: ModalsProps): ModalsState => {
 		if (!currentUser || !positionShortUser) return null;
 		modalState.current.profileItem = true;
 
-		const avatar = currentUser.clan_avatar ? currentUser.clan_avatar : (currentUser?.user?.avatar_url ?? '');
-		const username = currentUser?.clan_nick || currentUser?.user?.display_name || currentUser?.user?.username || '';
+		const avatar = currentUser.clanAvatar ? currentUser.clanAvatar : (currentUser?.user?.avatarUrl ?? '');
+		const username = currentUser?.clanNick || currentUser?.user?.displayName || currentUser?.user?.username || '';
 
 		return (
 			<div
@@ -106,7 +106,7 @@ export const useModals = ({ currentUser }: ModalsProps): ModalsState => {
 					classBanner="rounded-tl-lg rounded-tr-lg h-[105px]"
 					avatar={avatar}
 					name={username}
-					isDM={!currentUser?.clan_id}
+					isDM={!currentUser?.clanId}
 					user={currentUser}
 				/>
 			</div>

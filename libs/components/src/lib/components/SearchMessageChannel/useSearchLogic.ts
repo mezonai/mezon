@@ -19,7 +19,7 @@ import {
 import type { OnChangeHandlerFunc, SearchFilter } from '@mezon/utils';
 import { Platform, SIZE_PAGE_SEARCH, getPlatform } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiSearchMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSearchMessageRequest } from 'mezon-js/types';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
@@ -108,8 +108,8 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 
 			if (cleanedValue) {
 				filter.push({
-					field_name: 'content',
-					field_value: cleanedValue
+					fieldName: 'content',
+					fieldValue: cleanedValue
 				});
 			}
 
@@ -129,16 +129,16 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 
 				let fieldValue: string;
 				if (mappedType === 'mentions') {
-					fieldValue = `"user_id":"${mention.id}"`;
-				} else if (mappedType === 'in' || searchFieldName?.[mappedType] === 'channel_id') {
+					fieldValue = `"userId":"${mention.id}"`;
+				} else if (mappedType === 'in' || searchFieldName?.[mappedType] === 'channelId') {
 					fieldValue = mention.id;
 				} else {
 					fieldValue = convertMention?.[1] || mention.id;
 				}
 
 				filter.push({
-					field_name: searchFieldName?.[mappedType] || searchFieldName?.[mentionType],
-					field_value: fieldValue
+					fieldName: searchFieldName?.[mappedType] || searchFieldName?.[mentionType],
+					fieldValue: fieldValue
 				});
 			}
 			const search: ApiSearchMessageRequest = { ...searchedRequest, filters: filter };
@@ -166,18 +166,18 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 
 	const executeSearchWithQueue = useDebouncedCallback(() => {
 		if (searchedRequest && channelId && currentClanId) {
-			const channelIdFilter = searchedRequest.filters?.find((f) => f.field_name === 'channel_id');
-			const hasSpecificChannel = channelIdFilter && channelIdFilter.field_value && channelIdFilter.field_value !== '0';
+			const channelIdFilter = searchedRequest.filters?.find((f) => f.fieldName === 'channelId');
+			const hasSpecificChannel = channelIdFilter && channelIdFilter.fieldValue && channelIdFilter.fieldValue !== '0';
 
-			const hasOtherFilters = searchedRequest.filters?.some((f) => f.field_name !== 'content' && f.field_name !== 'channel_id');
+			const hasOtherFilters = searchedRequest.filters?.some((f) => f.fieldName !== 'content' && f.fieldName !== 'channelId');
 
-			const filteredFilters = (searchedRequest.filters || []).filter((f) => f.field_name !== 'channel_id');
+			const filteredFilters = (searchedRequest.filters || []).filter((f) => f.fieldName !== 'channelId');
 
 			let channelIdValue: string;
 			if (isDMMode && currentDmGroupId) {
 				channelIdValue = currentDmGroupId;
-			} else if (hasSpecificChannel && channelIdFilter?.field_value) {
-				channelIdValue = channelIdFilter.field_value;
+			} else if (hasSpecificChannel && channelIdFilter?.fieldValue) {
+				channelIdValue = channelIdFilter.fieldValue;
 			} else if (hasOtherFilters) {
 				channelIdValue = channelId;
 			} else {
@@ -185,8 +185,8 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 			}
 
 			const requestFilter = [
-				{ field_name: 'channel_id', field_value: channelIdValue },
-				{ field_name: 'clan_id', field_value: currentClanId },
+				{ fieldName: 'channelId', fieldValue: channelIdValue },
+				{ fieldName: 'clanId', fieldValue: currentClanId },
 				...filteredFilters
 			];
 
@@ -207,7 +207,7 @@ export const useSearchLogic = (mode?: ChannelStreamMode) => {
 				setIsShowSearchMessageModal(false);
 				dispatch(searchMessagesActions.setIsSearchMessage({ channelId, isSearchMessage: true }));
 				dispatch(searchMessagesActions.setCurrentPage({ channelId, page: 1 }));
-				setIsShowCreateThread(false, currentChannel?.parent_id !== '0' ? currentChannel?.parent_id : currentChannel.channel_id);
+				setIsShowCreateThread(false, currentChannel?.parentId !== '0' ? currentChannel?.parentId : currentChannel.channelId);
 
 				if (isActive) dispatch(appActions.setIsShowMemberList(!isActive));
 				if (isShowMemberListDM) dispatch(appActions.setIsShowMemberListDM(!isShowMemberListDM));

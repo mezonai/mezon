@@ -27,21 +27,21 @@ const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
 	const styles = style(themeValue);
 	const { t } = useTranslation('channelList');
 	const dispatch = useAppDispatch();
-	const categoryExpandState = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, data?.category_id));
+	const categoryExpandState = useAppSelector((state) => selectCategoryExpandStateByCategoryId(state, data?.categoryId));
 
 	const categoryName = useMemo(() => {
 		return data?.id === FAVORITE_CATEGORY_ID
 			? t('favoriteChannel')
-			: data?.category_name === PUBLIC_CHANNELS_NAME
+			: data?.categoryName === PUBLIC_CHANNELS_NAME
 				? t('publicChannels')
-				: data?.category_name || '';
-	}, [data?.category_name, data?.id, t]);
+				: data?.categoryName || '';
+	}, [data?.categoryName, data?.id, t]);
 
 	const toggleCollapse = useCallback(
 		(category: ICategoryChannel) => {
 			dispatch(
 				categoriesActions.setCategoryExpandState({
-					clanId: category.clan_id || '',
+					clanId: category.clanId || '',
 					categoryId: category.id,
 					expandState: !categoryExpandState
 				})
@@ -51,7 +51,7 @@ const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
 	);
 
 	const onLongPressHeader = useCallback(() => {
-		if (data?.category_id === FAVORITE_CATEGORY_ID) {
+		if (data?.categoryId === FAVORITE_CATEGORY_ID) {
 			return;
 		}
 

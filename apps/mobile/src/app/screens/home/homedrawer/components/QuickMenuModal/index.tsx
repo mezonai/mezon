@@ -19,7 +19,7 @@ interface QuickMenuModalProps {
 const QuickMenuItem = memo(({ item, onSelect, styles, themeValue }: { item: any; onSelect: (item: any) => void; styles: any; themeValue: any }) => (
 	<Pressable android_ripple={{ color: themeValue.secondaryLight }} style={styles.quickMenuItem} onPress={() => onSelect(item)}>
 		<View style={styles.quickMenuContent}>
-			<Text style={styles.quickMenuTitle}>{item.menu_name}</Text>
+			<Text style={styles.quickMenuTitle}>{item.menuName}</Text>
 		</View>
 		<Text style={styles.quickMenuBotTag}>Bot</Text>
 	</Pressable>
@@ -56,7 +56,7 @@ export const QuickMenuModal = React.memo(({ channelId, isVisible, onClose }: Qui
 		if (!debouncedSearchText.trim()) {
 			return quickMenus;
 		}
-		return quickMenus.filter((item) => item.menu_name?.toLowerCase().includes(debouncedSearchText.toLowerCase()));
+		return quickMenus.filter((item) => item.menuName?.toLowerCase().includes(debouncedSearchText.toLowerCase()));
 	}, [quickMenus, debouncedSearchText]);
 
 	useEffect(() => {

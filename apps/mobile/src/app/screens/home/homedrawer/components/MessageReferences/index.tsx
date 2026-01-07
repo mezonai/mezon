@@ -2,7 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelMembersEntity } from '@mezon/store-mobile';
 import { getStore, messagesActions, selectMemberClanByUserId, useAppDispatch } from '@mezon/store-mobile';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageRef } from 'mezon-js/types';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -28,13 +28,13 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation('message');
 	const avatarSender = useMemo(() => {
-		if (messageReferences?.mesages_sender_avatar) {
-			return messageReferences?.mesages_sender_avatar;
+		if (messageReferences?.mesagesSenderAvatar) {
+			return messageReferences?.mesagesSenderAvatar;
 		}
 		const store = getStore();
 		const state = store.getState();
-		const messageSender = selectMemberClanByUserId(state, messageReferences?.message_sender_id ?? '') as unknown as ChannelMembersEntity;
-		return messageSender?.clan_avatar || messageSender?.user?.avatar_url || '';
+		const messageSender = selectMemberClanByUserId(state, messageReferences?.messageSenderId ?? '') as unknown as ChannelMembersEntity;
+		return messageSender?.clanAvatar || messageSender?.user?.avatarUrl || '';
 	}, [messageReferences]);
 	const isEmbedMessage = useMemo(() => {
 		try {
@@ -60,7 +60,7 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 
 	const onPressAvatar = () => {
 		if (!preventAction) {
-			handleJumpToMessage(messageReferences?.message_ref_id);
+			handleJumpToMessage(messageReferences?.messageRefId);
 		}
 	};
 
@@ -72,20 +72,20 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 			<View style={styles.repliedMessageWrapper}>
 				<MezonAvatar
 					avatarUrl={avatarSender}
-					username={messageReferences?.message_sender_username}
+					username={messageReferences?.messageSenderUsername}
 					height={size.s_20}
 					width={size.s_20}
 					customFontSizeAvatarCharacter={size.h8}
 				/>
 				<View style={styles.replyContentWrapper}>
 					<Text style={styles.replyDisplayName}>
-						{messageReferences?.message_sender_clan_nick ||
-							messageReferences?.message_sender_display_name ||
-							messageReferences?.message_sender_username ||
+						{messageReferences?.messageSenderClanNick ||
+							messageReferences?.messageSenderDisplayName ||
+							messageReferences?.messageSenderUsername ||
 							'Anonymous'}
 						<FastImage />
 					</Text>
-					{messageReferences?.has_attachment || isEmbedMessage ? (
+					{messageReferences?.hasAttachment || isEmbedMessage ? (
 						<View style={styles.attachmentIconWrapper}>
 							<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')} </Text>
 							<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_12} height={size.s_12} color={themeValue.text} />

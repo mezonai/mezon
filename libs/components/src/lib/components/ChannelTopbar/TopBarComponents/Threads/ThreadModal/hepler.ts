@@ -7,7 +7,7 @@ export const getActiveThreads = (threads: ThreadsEntity[]): ThreadsEntity[] => {
 	const currentTime = Math.floor(Date.now() / 1000);
 
 	const result = threads.filter((thread) => {
-		const lastMessageTimestamp = thread?.last_sent_message?.timestamp_seconds;
+		const lastMessageTimestamp = thread?.lastSentMessage?.timestampSeconds;
 		const isWithin30Days = lastMessageTimestamp && currentTime - Number(lastMessageTimestamp) < thirtyDaysInSeconds;
 		return thread.active === ThreadStatus.activePublic && isWithin30Days;
 	});
@@ -20,9 +20,9 @@ export const getJoinedThreadsWithinLast30Days = (threads: ThreadsEntity[]): Thre
 
 	const result = threads.filter((thread) => {
 		const isWithin30Days =
-			thread.last_sent_message?.timestamp_seconds && currentTime - Number(thread.last_sent_message.timestamp_seconds) < thirtyDaysInSeconds;
+			thread.lastSentMessage?.timestampSeconds && currentTime - Number(thread.lastSentMessage.timestampSeconds) < thirtyDaysInSeconds;
 
-		if (!thread.channel_private) {
+		if (!thread.channelPrivate) {
 			return thread.active === ThreadStatus.joined && isWithin30Days;
 		} else {
 			return (thread.active === ThreadStatus.joined || thread.active === ThreadStatus.activePrivate) && isWithin30Days;
@@ -38,7 +38,7 @@ export const getThreadsOlderThan30Days = (threads: ThreadsEntity[]): ThreadsEnti
 
 	const result = threads.filter(
 		(thread) =>
-			thread.last_sent_message?.timestamp_seconds && currentTime - Number(thread.last_sent_message.timestamp_seconds) > thirtyDaysInSeconds
+			thread.lastSentMessage?.timestampSeconds && currentTime - Number(thread.lastSentMessage.timestampSeconds) > thirtyDaysInSeconds
 	);
 
 	return result;

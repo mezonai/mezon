@@ -32,7 +32,7 @@ const SettingRightClan: React.FC<SettingUserClanProfileEditProps> = ({ clanId })
 				classNamePrefix="select"
 				value={
 					clans.find((clan) => clan.id === selectedClanId)
-						? { value: selectedClanId, label: clans.find((clan) => clan.id === selectedClanId)?.clan_name }
+						? { value: selectedClanId, label: clans.find((clan) => clan.id === selectedClanId)?.clanName }
 						: null
 				}
 				isDisabled={flagOption}
@@ -41,7 +41,7 @@ const SettingRightClan: React.FC<SettingUserClanProfileEditProps> = ({ clanId })
 				isRtl={false}
 				isSearchable={true}
 				name="clan"
-				options={clans.map((clan) => ({ value: clan.id, label: clan.clan_name }))}
+				options={clans.map((clan) => ({ value: clan.id, label: clan.clanName }))}
 				onChange={(option: any) => setSelectedClanId(option.value)}
 				styles={{
 					control: (provided: any) => ({

@@ -33,8 +33,8 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const activeRoles = RolesClan.filter((role) => role.active === 1);
 	const userRolesClan = useMemo(() => {
-		return userById?.role_id ? RolesClan.filter((role) => userById?.role_id?.includes(role.id)) : [];
-	}, [userById?.role_id, RolesClan]);
+		return userById?.roleId ? RolesClan.filter((role) => userById?.roleId?.includes(role.id)) : [];
+	}, [userById?.roleId, RolesClan]);
 
 	const [hasPermissionEditRole] = usePermissionChecker([EPermission.manageClan]);
 	const activeRolesWithoutUserRoles = activeRoles.filter((role) => {
@@ -50,12 +50,12 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 		return activeRolesWithoutUserRoles?.filter((role) => {
 			return (
 				role.title !== EVERYONE_ROLE_TITLE &&
-				!userById?.role_id?.includes(role.id) &&
+				!userById?.roleId?.includes(role.id) &&
 				role.title?.toLowerCase().includes(searchTerm.toLowerCase()) &&
-				(isClanOwner || Number(maxPermissionLevel) > Number(rolesClanEntity[role.id]?.max_level_permission || -1))
+				(isClanOwner || Number(maxPermissionLevel) > Number(rolesClanEntity[role.id]?.maxLevelPermission || -1))
 			);
 		});
-	}, [activeRolesWithoutUserRoles, searchTerm, userById?.role_id, isClanOwner, maxPermissionLevel, rolesClanEntity]);
+	}, [activeRolesWithoutUserRoles, searchTerm, userById?.roleId, isClanOwner, maxPermissionLevel, rolesClanEntity]);
 
 	const dispatch = useAppDispatch();
 
@@ -64,16 +64,16 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 
 		const updatedRoleUsers =
 			action === 'add'
-				? [...(role.role_user_list?.role_users || []), { id: userById.user.id }]
-				: role.role_user_list?.role_users?.filter((user) => user.id !== userById?.user?.id) || [];
+				? [...(role.roleUserList?.roleUsers || []), { id: userById.user.id }]
+				: role.roleUserList?.roleUsers?.filter((user) => user.id !== userById?.user?.id) || [];
 
 		dispatch(
 			rolesClanActions.update({
 				role: {
 					...role,
-					role_user_list: {
-						...role.role_user_list,
-						role_users: updatedRoleUsers
+					roleUserList: {
+						...role.roleUserList,
+						roleUsers: updatedRoleUsers
 					}
 				},
 				clanId: currentClanId as string
@@ -194,7 +194,7 @@ const RoleListItem = ({ role, onAddRole }: { role: RolesClanEntity; onAddRole: (
 			data-e2e={generateE2eId('short_profile.role.popover.item')}
 		>
 			<div className="size-3 min-w-3 rounded-full" style={roleStyle}></div>
-			{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
+			{role?.roleIcon && <img src={role.roleIcon} alt="" className={'size-3'} />}
 			{role.title}
 		</div>
 	);
@@ -274,12 +274,12 @@ const RoleClanItem = ({
 							<Icons.IconRemove className="size-2" fill={isHovered ? 'black' : roleColor} />
 						</span>
 					</button>
-					{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
+					{role?.roleIcon && <img src={role.roleIcon} alt="" className={'size-3'} />}
 				</>
 			) : (
 				<>
 					<div className="size-2 rounded-full" style={buttonStyle}></div>
-					{role?.role_icon && <img src={role.role_icon} alt="" className={'size-3'} />}
+					{role?.roleIcon && <img src={role.roleIcon} alt="" className={'size-3'} />}
 				</>
 			)}
 			<span

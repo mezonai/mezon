@@ -49,7 +49,12 @@ const PanelKeyboard = React.memo((props: IProps) => {
 
 			const handleKeyboardShow = (e: any) => {
 				const height = e?.endCoordinates?.height ? e?.endCoordinates?.height : Platform.OS === 'ios' ? 365 : 300;
-				const validHeight = Math.max(0, height);
+				const validHeight = Math.max(0, Math.ceil(height));
+				Animated.timing(spacerHeightAnim, {
+					toValue: validHeight,
+					duration: 200,
+					useNativeDriver: false
+				}).start();
 				if (heightKeyboardShowRef.current !== validHeight) {
 					heightKeyboardShowRef.current = validHeight;
 					setHeightKeyboardShow(validHeight);
@@ -62,12 +67,6 @@ const PanelKeyboard = React.memo((props: IProps) => {
 						bottomPickerRef?.current?.dismiss();
 						bottomPickerRef?.current?.close();
 					}
-
-					Animated.timing(spacerHeightAnim, {
-						toValue: validHeight,
-						duration: 200,
-						useNativeDriver: false
-					}).start();
 				}
 			};
 

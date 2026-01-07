@@ -1,4 +1,4 @@
-import { IMessageWithUser, convertDateString, convertTimeHour, convertTimeString, getTimeDifferenceDate } from '@mezon/utils';
+import { convertDateString, convertTimeHour, convertTimeString, getTimeDifferenceDate, IMessageWithUser } from '@mezon/utils';
 import { useMemo } from 'react';
 
 export function useMessageParser(message: IMessageWithUser) {
@@ -20,23 +20,23 @@ export function useMessageParser(message: IMessageWithUser) {
 	}, [content]);
 
 	const messageTime = useMemo(() => {
-		if (!message?.create_time) return '';
-		return convertTimeString(message?.create_time as string);
+		if (!message?.createTimeSeconds) return '';
+		return convertTimeString(new Date(message.createTimeSeconds * 1000).toISOString());
 	}, [message]);
 
 	const messageDate = useMemo(() => {
-		if (!message?.create_time) return '';
-		return convertDateString(message?.create_time as string);
+		if (!message?.createTimeSeconds) return '';
+		return convertDateString(new Date(message.createTimeSeconds * 1000).toISOString());
 	}, [message]);
 
 	const messageHour = useMemo(() => {
-		if (!message?.create_time) return '';
-		return convertTimeHour(message?.create_time || ('' as string));
+		if (!message?.createTimeSeconds) return '';
+		return convertTimeHour(new Date(message.createTimeSeconds * 1000).toISOString());
 	}, [message]);
 
 	const messageTimeDifference = useMemo(() => {
-		if (!message?.create_time) return '';
-		return getTimeDifferenceDate(message?.create_time as string);
+		if (!message?.createTimeSeconds) return '';
+		return getTimeDifferenceDate(new Date(message.createTimeSeconds * 1000).toISOString());
 	}, [message]);
 
 	return {

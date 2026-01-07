@@ -41,8 +41,8 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 	const allClanMembers = useSelector(selectAllUserClans);
 	const allClanRoles = useSelector(selectAllRolesClan);
 
-	const listOfChannelMember = useAppSelector((state) => selectAllChannelMembers(state, channel?.channel_id as string));
-	const listOfChannelRole = useSelector(selectRolesByChannelId(channel?.channel_id));
+	const listOfChannelMember = useAppSelector((state) => selectAllChannelMembers(state, channel?.channelId as string));
+	const listOfChannelRole = useSelector(selectRolesByChannelId(channel?.channelId));
 
 	const listOfMemberCanAdd = useMemo(() => {
 		const addedMemberIdList = listOfChannelMember?.filter((member) => member?.userChannelId !== '0')?.map((member) => member?.user?.id) || [];
@@ -54,7 +54,7 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 	const listOfRoleCanAdd = useMemo(() => {
 		const addedRoleIdList = listOfChannelRole?.map((role) => role?.id) || [];
 		return allClanRoles
-			?.filter((role) => !addedRoleIdList.includes(role?.id) && role?.slug !== `everyone-${role?.clan_id}`)
+			?.filter((role) => !addedRoleIdList.includes(role?.id) && role?.slug !== `everyone-${role?.clanId}`)
 			?.map((role) => ({ ...role, type: EOverridePermissionType.Role }));
 	}, [listOfChannelRole, allClanRoles]);
 
@@ -67,7 +67,7 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 		const roleList = listOfRoleCanAdd?.filter((role) => normalizeString(role?.title)?.includes(normalizeString(searchText)));
 		const memberList = listOfMemberCanAdd?.filter(
 			(member) =>
-				normalizeString(member?.user?.display_name)?.includes(normalizeString(searchText)) ||
+				normalizeString(member?.user?.displayName)?.includes(normalizeString(searchText)) ||
 				normalizeString(member?.user?.username).includes(normalizeString(searchText))
 		);
 		return [
@@ -190,7 +190,7 @@ export const AddMemberOrRoleContent = memo(({ channel, onDismiss }: IAddMemberOr
 			<View style={styles.headerContainer}>
 				<View style={styles.headerCenter}>
 					<Text style={styles.headerTitle}>{t('channelPermission.bottomSheet.addMembersOrRoles')}</Text>
-					<Text style={styles.headerSubtitle}>#{channel?.channel_label}</Text>
+					<Text style={styles.headerSubtitle}>#{channel?.channelLabel}</Text>
 				</View>
 				<TouchableOpacity onPress={addMemberOrRole} style={styles.addButton} disabled={disableAddButton}>
 					<View style={styles.addButtonInner}>

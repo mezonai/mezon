@@ -29,7 +29,7 @@ const ListOptionSearch = ({ onPressOption, isSearchGlobal = false }: IListOption
 			options.push({
 				title: ITypeOptionSearch.IN,
 				content: t('filterOptions.inChannel'),
-				value: 'channel_id',
+				value: 'channelId',
 				icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} width={20} height={20} />
 			});
 		} else {

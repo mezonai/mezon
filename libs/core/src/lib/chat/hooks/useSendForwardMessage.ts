@@ -15,14 +15,14 @@ export function useSendForwardMessage() {
 	const client = clientRef.current;
 
 	const sendForwardMessage = React.useCallback(
-		async (clanid: string, channel_id: string, mode: number, isPublic: boolean, message: IMessageWithUser, additionalMessage?: string) => {
+		async (clanid: string, channelId: string, mode: number, isPublic: boolean, message: IMessageWithUser, additionalMessage?: string) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
 			const socket = socketRef.current;
 
-			if (!client || !session || !socket || !channel_id) {
+			if (!client || !session || !socket || !channelId) {
 				// eslint-disable-next-line no-console
-				console.log(client, session, socket, channel_id);
+				console.log(client, session, socket, channelId);
 				throw new Error('Client is not initialized');
 			}
 
@@ -39,14 +39,14 @@ export function useSendForwardMessage() {
 					...(message.content as IMessageSendPayload),
 					fwd: true
 				};
-				await socket.joinChat(clanid, channel_id, type, isPublic);
+				await socket.joinChat(clanid, channelId, type, isPublic);
 				await socket.writeChatMessage(
 					clanid,
-					channel_id,
+					channelId,
 					mode,
 					isPublic,
 					validatedContent,
-					message.channel_id === channel_id ? message.mentions : [],
+					message.channelId === channelId ? message.mentions : [],
 					message.attachments
 				);
 
@@ -60,7 +60,7 @@ export function useSendForwardMessage() {
 					const additionalContent: IMessageSendPayload = {
 						t: trimmedMessage
 					};
-					await socket.writeChatMessage(clanid, channel_id, mode, isPublic, additionalContent, [], []);
+					await socket.writeChatMessage(clanid, channelId, mode, isPublic, additionalContent, [], []);
 				}
 
 				dispatch(

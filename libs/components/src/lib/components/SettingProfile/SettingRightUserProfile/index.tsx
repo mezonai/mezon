@@ -225,9 +225,9 @@ const SettingRightUser = ({
 		handleUploadFile(client, session, e.target.files[0].name || '', e.target.files[0]).then((attachment) => {
 			dispatch(
 				clansActions.updateUser({
-					avatar_url: urlImage,
-					display_name: valueDisplayName,
-					about_me: editAboutUser,
+					avatarUrl: urlImage,
+					displayName: valueDisplayName,
+					aboutMe: editAboutUser,
 					dob,
 					logo: attachment.url
 				})
@@ -267,8 +267,8 @@ const SettingRightUser = ({
 	const qrCodeProfile = useMemo(() => {
 		const qrData = {
 			id: userProfile?.user?.id || '',
-			name: userProfile?.user?.display_name || userProfile?.user?.username || '',
-			avatar: userProfile?.user?.avatar_url || ''
+			name: userProfile?.user?.displayName || userProfile?.user?.username || '',
+			avatar: userProfile?.user?.avatarUrl || ''
 		};
 		const endcodeData = btoa(encodeURIComponent(JSON.stringify(qrData)));
 		const qrDataLink = `https://mezon.ai/chat/${userProfile?.user?.username}?data=${endcodeData}`;
@@ -320,7 +320,7 @@ const SettingRightUser = ({
 		<>
 			<div className="flex-1 flex z-0 gap-x-8 sbm:flex-row flex-col">
 				<div className="flex-1 ">
-					<div data-e2e={generateE2eId(`user_setting.profile.user_profile.input.display_name`)}>
+					<div data-e2e={generateE2eId(`user_setting.profile.user_profile.input.displayName`)}>
 						<label htmlFor="inputField" className="font-semibold tracking-wide text-sm">
 							{t('displayName')}
 						</label>
@@ -361,7 +361,7 @@ const SettingRightUser = ({
 								value={editAboutUser}
 								rows={4}
 								maxLength={128}
-								data-e2e={generateE2eId('user_setting.profile.user_profile.input.about_me')}
+								data-e2e={generateE2eId('user_setting.profile.user_profile.input.aboutMe')}
 							></textarea>
 							<div className="w-full flex justify-end">
 								<span

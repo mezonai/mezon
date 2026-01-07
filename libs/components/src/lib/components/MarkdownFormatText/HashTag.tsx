@@ -25,8 +25,8 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 	const handleClick = useCallback(() => {
 		if (!channel) return;
 
-		const channelUrl = toChannelPage(channel?.id, channel?.clan_id ?? '');
-		dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
+		const channelUrl = toChannelPage(channel?.id, channel?.clanId ?? '');
+		dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parentId ?? '' }));
 		navigate(channelUrl);
 	}, [channel, dispatch, navigate, toChannelPage]);
 
@@ -63,19 +63,19 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 				) : channel.type === ChannelType.CHANNEL_TYPE_APP ? (
 					<Icons.AppChannelIcon className={`inline mt-[-0.2rem] w-4 h-4`} />
 				) : channel.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
-					!channel.channel_private || channel.channel_private === 0 ? (
+					!channel.channelPrivate || channel.channelPrivate === 0 ? (
 						<Icons.Hashtag defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
 					) : (
 						<Icons.HashtagLocked defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
 					)
 				) : channel.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					!channel.channel_private || channel.channel_private === 0 ? (
+					!channel.channelPrivate || channel.channelPrivate === 0 ? (
 						<Icons.ThreadIcon defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
 					) : (
 						<Icons.ThreadIconLocker className={`inline-block -mt-[0.2rem] w-4 h-4 `} />
 					)
 				) : null}
-				{channel.channel_label}
+				{channel.channelLabel}
 			</div>
 		) : null
 	) : (

@@ -82,7 +82,7 @@ export const BanUserChannelModal = memo((props: IBuzzMessageModalProps) => {
 	return (
 		<View style={styles.main}>
 			<View style={[styles.container]}>
-				<Text style={styles.modalTitle}>{`${t('ban.title')} ${user?.clan_nick || user?.user?.display_name || user?.user?.username}`}</Text>
+				<Text style={styles.modalTitle}>{`${t('ban.title')} ${user?.clanNick || user?.user?.displayName || user?.user?.username}`}</Text>
 				<MezonOption title={t('ban.time.title')} value={timeOption} data={timeOptions} onChange={handleTimeOptionChange} />
 				<TouchableOpacity onPress={onConfirm} style={styles.yesButton}>
 					<Text style={styles.buttonText}>{t('ban.banButton')}</Text>

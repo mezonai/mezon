@@ -83,7 +83,7 @@ const ModalDetailItemEvent = (props?: ModalDetailItemEventProps) => {
 								className={`pb-4 ${currentTab === tabs.interest ? 'text-theme-primary-active border-b border-white' : 'text-zinc-400'}`}
 								onClick={() => setCurrentTab(tabs.interest)}
 							>
-								{t('eventDetail.interested', { count: event?.user_ids?.length || 0 })}
+								{t('eventDetail.interested', { count: event?.userIds?.length || 0 })}
 							</h4>
 						</div>
 					</div>
@@ -96,7 +96,7 @@ const ModalDetailItemEvent = (props?: ModalDetailItemEventProps) => {
 					</span>
 				</div>
 				{currentTab === tabs.event && <EventInfoDetail event={event} onClose={clearChooseEvent} onCloseAll={onCloseAll} />}
-				{currentTab === tabs.interest && <InterestedDetail userIds={event?.user_ids || []} />}
+				{currentTab === tabs.interest && <InterestedDetail userIds={event?.userIds || []} />}
 			</div>
 		</div>
 	);
@@ -113,27 +113,27 @@ type EventInfoDetailProps = {
 const EventInfoDetail = (props: EventInfoDetailProps) => {
 	const { event, onClose, onCloseAll } = props;
 	const { t } = useTranslation('eventCreator');
-	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id ?? '')) || {};
+	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channelVoiceId ?? '')) || {};
 
 	const currentClanLogo = useSelector(selectCurrentClanLogo);
 	const currentClanName = useSelector(selectCurrentClanName);
 	const avatarClan = currentClanName?.charAt(0).toUpperCase();
-	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
-	const time = useMemo(() => timeFomat(event?.start_time || ''), [event?.start_time]);
+	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creatorId || ''));
+	const time = useMemo(() => timeFomat(event?.startTime || ''), [event?.startTime]);
 
 	const { toChannelPage, navigate } = useAppNavigation();
 
 	const hasAddress = !!event?.address;
-	const hasVoiceChannel = !!event?.channel_voice_id && !!channelVoice?.channel_id;
-	const isPrivateEvent = event?.is_private;
+	const hasVoiceChannel = !!event?.channelVoiceId && !!channelVoice?.channelId;
+	const isPrivateEvent = event?.isPrivate;
 
 	const handleStopPropagation = (e: any) => {
 		e.stopPropagation();
 	};
 
 	const redirectToVoice = () => {
-		if (channelVoice && channelVoice.channel_id) {
-			const channelUrl = toChannelPage(channelVoice.channel_id as string, channelVoice.clan_id as string);
+		if (channelVoice && channelVoice.channelId) {
+			const channelUrl = toChannelPage(channelVoice.channelId as string, channelVoice.clanId as string);
 			navigate(channelUrl);
 			onClose();
 			if (onCloseAll) {
@@ -141,8 +141,8 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 			}
 		}
 	};
-	const avatarDefault = userCreate?.clan_avatar || userCreate?.user?.avatar_url;
-	const avatarLetter = (userCreate?.clan_nick || userCreate?.user?.display_name || userCreate?.user?.username)?.trim().charAt(0).toUpperCase();
+	const avatarDefault = userCreate?.clanAvatar || userCreate?.user?.avatarUrl;
+	const avatarLetter = (userCreate?.clanNick || userCreate?.user?.displayName || userCreate?.user?.username)?.trim().charAt(0).toUpperCase();
 
 	return (
 		<div className="px-4 py-8 space-y-2 text-theme-primary max-h-[370px] h-fit hide-scrollbar overflow-auto">
@@ -194,7 +194,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 						return (
 							<a {...linkProps} className="flex gap-x-3 cursor-pointer items-center">
 								<Icons.Speaker />
-								<p className="hover:underline">{channelVoice?.channel_label}</p>
+								<p className="hover:underline">{channelVoice?.channelLabel}</p>
 							</a>
 						);
 					}
@@ -218,13 +218,13 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 			</div>
 			<div className="flex items-center gap-x-3">
 				<Icons.MemberList />
-				<p>{t('eventDetail.personInterested', { count: event?.user_ids?.length || 0 })}</p>
+				<p>{t('eventDetail.personInterested', { count: event?.userIds?.length || 0 })}</p>
 			</div>
 			<div className="flex items-center gap-x-3">
 				{avatarDefault ? (
 					<img
 						src={createImgproxyUrl(avatarDefault)}
-						alt={userCreate?.clan_nick || userCreate?.user?.username}
+						alt={userCreate?.clanNick || userCreate?.user?.username}
 						className="size-5 rounded-full object-cover"
 					/>
 				) : (
@@ -232,7 +232,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 						{avatarLetter || '?'}
 					</div>
 				)}
-				<p>{t('eventDetail.createdBy', { username: userCreate?.clan_nick || userCreate?.user?.username })}</p>
+				<p>{t('eventDetail.createdBy', { username: userCreate?.clanNick || userCreate?.user?.username })}</p>
 			</div>
 			<div className="break-all" data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.description')}>
 				{event?.description}
@@ -257,8 +257,8 @@ const InterestedDetail = ({ userIds }: InterestedDetailProps) => {
 				</div>
 			) : (
 				userData.map((user, index) => {
-					const name = user?.clan_nick || user?.user?.display_name || user?.user?.username;
-					const avatarUrl = user?.clan_avatar || user?.user?.avatar_url;
+					const name = user?.clanNick || user?.user?.displayName || user?.user?.username;
+					const avatarUrl = user?.clanAvatar || user?.user?.avatarUrl;
 					const avatarLetter = name?.trim().charAt(0).toUpperCase();
 
 					return (

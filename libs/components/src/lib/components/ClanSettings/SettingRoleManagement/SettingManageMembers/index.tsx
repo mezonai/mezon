@@ -35,8 +35,8 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 
 	useEffect(() => {
 		const results = commonUsers.filter((member) => {
-			const clanName = member?.clan_nick?.toLowerCase();
-			const displayName = member.user?.display_name?.toLowerCase();
+			const clanName = member?.clanNick?.toLowerCase();
+			const displayName = member.user?.displayName?.toLowerCase();
 			const username = member.user?.username?.toLowerCase();
 			const lowerCaseSearchTerm = searchTerm.toLowerCase();
 			return clanName?.includes(lowerCaseSearchTerm) || displayName?.includes(lowerCaseSearchTerm) || username?.includes(lowerCaseSearchTerm);
@@ -47,7 +47,7 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 	const isNewRole = clickRole === t('roleManagement.newRoleDefault');
 	useEffect(() => {
 		if (!isNewRole) {
-			const memberIDRoles = activeRole?.role_user_list?.role_users?.map((member) => member.id) || [];
+			const memberIDRoles = activeRole?.roleUserList?.roleUsers?.map((member) => member.id) || [];
 			dispatchRole(setAddMemberRoles(memberIDRoles));
 		}
 	}, [activeRole, clickRole, dispatchRole]);
@@ -85,10 +85,10 @@ const SettingManageMembers = ({ RolesClan, hasPermissionEdit }: { RolesClan: Rol
 							key={member?.user?.id}
 							id={member?.user?.id}
 							username={member?.user?.username}
-							displayName={member?.user?.display_name}
-							clanName={member?.clan_nick}
-							clanAvatar={member.clan_avatar}
-							avatar={member?.user?.avatar_url}
+							displayName={member?.user?.displayName}
+							clanName={member?.clanNick}
+							clanAvatar={member.clanAvatar}
+							avatar={member?.user?.avatarUrl}
 							isNewRole={isNewRole}
 							onRemove={() => handleRemoveMember(member?.user?.id || '')}
 						/>

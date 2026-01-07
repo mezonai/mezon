@@ -31,7 +31,7 @@ function SearchOptionPage({ searchText, onSelect, optionFilter }: ISeachOptionPa
 
 	const userListData = UseMentionList({
 		channelDetail: currentChannel,
-		channelID: (currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel?.parent_id : currentChannel?.channel_id) || '',
+		channelID: (currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? currentChannel?.parentId : currentChannel?.channelId) || '',
 		channelMode: currentChannel?.type
 	});
 
@@ -58,7 +58,7 @@ function SearchOptionPage({ searchText, onSelect, optionFilter }: ISeachOptionPa
 		if (!searchText) return listChannels;
 
 		try {
-			return listChannels.filter((channel) => (channel?.channel_label ?? '').toLowerCase().includes(searchText.toLowerCase().trim())) || [];
+			return listChannels.filter((channel) => (channel?.channelLabel ?? '').toLowerCase().includes(searchText.toLowerCase().trim())) || [];
 		} catch (error) {
 			console.error('Filter search channel list error', error);
 			return [];
@@ -69,8 +69,8 @@ function SearchOptionPage({ searchText, onSelect, optionFilter }: ISeachOptionPa
 		(channel: ChannelUsersEntity) => {
 			try {
 				onSelect({
-					id: (channel?.channel_id || channel?.id) ?? '',
-					display: channel?.channel_label ?? '',
+					id: (channel?.channelId || channel?.id) ?? '',
+					display: channel?.channelLabel ?? '',
 					avatarUrl: '',
 					subDisplay: ''
 				});

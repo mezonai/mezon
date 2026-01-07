@@ -20,13 +20,13 @@ const SharingSuggestItem = memo(({ item, clans, onChooseItem }: ISharingSuggestI
 	const parentLabel = useMemo(() => {
 		const store = getStore();
 		const state = store.getState();
-		const parentChannel = selectChannelById(state, item?.parent_id || '');
-		return parentChannel?.channel_label ? `(${parentChannel.channel_label})` : '';
-	}, [item?.parent_id]);
+		const parentChannel = selectChannelById(state, item?.parentId || '');
+		return parentChannel?.channelLabel ? `(${parentChannel.channelLabel})` : '';
+	}, [item?.parentId]);
 
 	const shouldRenderDefaultAvatarGroup = useMemo(() => {
-		return item?.type === ChannelType.CHANNEL_TYPE_GROUP && item?.channel_avatar?.includes('avatar-group.png');
-	}, [item?.channel_avatar, item?.type]);
+		return item?.type === ChannelType.CHANNEL_TYPE_GROUP && item?.channelAvatar?.includes('avatar-group.png');
+	}, [item?.channelAvatar, item?.type]);
 
 	const suggestionAvatar = useMemo(() => {
 		switch (item?.type) {
@@ -34,20 +34,20 @@ const SharingSuggestItem = memo(({ item, clans, onChooseItem }: ISharingSuggestI
 				return item?.avatars?.[0] || '';
 
 			case ChannelType.CHANNEL_TYPE_GROUP:
-				return item?.channel_avatar || '';
+				return item?.channelAvatar || '';
 
 			default: {
-				return clans?.[item?.clan_id]?.logo || '';
+				return clans?.[item?.clanId]?.logo || '';
 			}
 		}
-	}, [clans, item?.avatars, item?.channel_avatar, item?.clan_id, item?.type]);
+	}, [clans, item?.avatars, item?.channelAvatar, item?.clanId, item?.type]);
 
 	const suggestionUsername = useMemo(() => {
 		if (item?.type === ChannelType.CHANNEL_TYPE_DM || item?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return item?.usernames?.[0] || '';
 		}
-		return clans?.[item?.clan_id]?.clan_name || '';
-	}, [clans, item?.clan_id, item?.type, item?.usernames]);
+		return clans?.[item?.clanId]?.clanName || '';
+	}, [clans, item?.clanId, item?.type, item?.usernames]);
 
 	return (
 		<TouchableOpacity style={styles.itemSuggestion} onPress={() => onChooseItem(item)}>
@@ -58,7 +58,7 @@ const SharingSuggestItem = memo(({ item, clans, onChooseItem }: ISharingSuggestI
 					<MezonClanAvatar image={suggestionAvatar} alt={suggestionUsername} customFontSizeAvatarCharacter={size.h5} />
 				</View>
 			)}
-			<Text style={styles.titleSuggestion} numberOfLines={1}>{`${item?.channel_label} ${parentLabel}`}</Text>
+			<Text style={styles.titleSuggestion} numberOfLines={1}>{`${item?.channelLabel} ${parentLabel}`}</Text>
 		</TouchableOpacity>
 	);
 });

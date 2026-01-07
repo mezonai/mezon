@@ -26,7 +26,7 @@ export const RoleItem = memo(
 
 		const deleteRole = async () => {
 			const body = {
-				channelId: channel?.channel_id || '',
+				channelId: channel?.channelId || '',
 				clanId: currentClanId || '',
 				roleId: role?.id || '',
 				channelType: channel?.type
@@ -34,7 +34,7 @@ export const RoleItem = memo(
 			const response = await dispatch(channelUsersActions.removeChannelRole(body));
 			const isError = response?.meta?.requestStatus === ERequestStatus.Rejected;
 			if (!isError) {
-				dispatch(rolesClanActions.removeChannelRole({ channelId: channel?.channel_id, clanId: currentClanId, roleId: role?.id }));
+				dispatch(rolesClanActions.removeChannelRole({ channelId: channel?.channelId, clanId: currentClanId, roleId: role?.id }));
 			}
 			Toast.show({
 				type: 'success',

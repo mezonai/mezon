@@ -48,8 +48,8 @@ const ChannelRouterListener = () => {
 			} else {
 				navigation.navigate(APP_SCREEN.HOME_DEFAULT);
 			}
-			const channelId = channel?.channel_id || '';
-			const clanId = channel?.clan_id || '';
+			const channelId = channel?.channelId || '';
+			const clanId = channel?.clanId || '';
 			const store = await getStoreAsync();
 			store.dispatch(topicsActions.setCurrentTopicId(''));
 			store.dispatch(directActions.setDmGroupCurrentId(''));
@@ -65,8 +65,8 @@ const ChannelRouterListener = () => {
 			);
 			const dataSave = getUpdateOrAddClanChannelCache(clanId, channelId);
 			save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
-			if (isFromSearch && channel?.channel_id) {
-				DeviceEventEmitter.emit(ActionEmitEvent.SCROLL_TO_ACTIVE_CHANNEL, channel?.channel_id);
+			if (isFromSearch && channel?.channelId) {
+				DeviceEventEmitter.emit(ActionEmitEvent.SCROLL_TO_ACTIVE_CHANNEL, channel?.channelId);
 			}
 		});
 	};

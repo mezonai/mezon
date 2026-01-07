@@ -40,7 +40,7 @@ export type ThreadLinkRef = {
 
 const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, hasLine, isActive, currentChannelId }: ThreadLinkProps, ref) => {
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadChannelById(state, thread.id));
-	const numberNotification = thread.count_mess_unread ? thread.count_mess_unread : 0;
+	const numberNotification = thread.countMessUnread ? thread.countMessUnread : 0;
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const threadLinkRef = useRef<HTMLAnchorElement | null>(null);
 
@@ -50,9 +50,9 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 		distanceToBottom: 0
 	});
 
-	const channelPath = `/chat/clans/${thread.clan_id}/channels/${thread.channel_id}`;
-	const buzzState = useAppSelector((state) => selectBuzzStateByChannelId(state, thread?.channel_id ?? ''));
-	const events = useAppSelector((state) => selectEventsByChannelId(state, thread?.clan_id ?? '', thread?.channel_id ?? ''));
+	const channelPath = `/chat/clans/${thread.clanId}/channels/${thread.channelId}`;
+	const buzzState = useAppSelector((state) => selectBuzzStateByChannelId(state, thread?.channelId ?? ''));
+	const events = useAppSelector((state) => selectEventsByChannelId(state, thread?.clanId ?? '', thread?.channelId ?? ''));
 
 	const state = isActive ? 'active' : thread?.unread ? 'inactiveUnread' : 'inactiveRead';
 
@@ -86,18 +86,18 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 				rootRef={panelRef}
 			/>
 		);
-	}, [thread.count_mess_unread]);
+	}, [thread.countMessUnread]);
 
 	const [openDeleteModal, closeDeleteModal] = useModal(() => {
 		return (
 			<ModalConfirmComponent
 				handleCancel={closeDeleteModal}
-				channelId={thread.channel_id as string}
-				clanId={thread.clan_id as string}
-				modalName={`${thread?.channel_label || 'Unknown Channel'}`}
+				channelId={thread.channelId as string}
+				clanId={thread.clanId as string}
+				modalName={`${thread?.channelLabel || 'Unknown Channel'}`}
 			/>
 		);
-	}, [thread.channel_id, thread?.channel_label]);
+	}, [thread.channelId, thread?.channelLabel]);
 
 	const handleDeleteChannel = useCallback(() => {
 		openDeleteModal();
@@ -106,7 +106,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 
 	const [openSettingModal, closeSettingModal] = useModal(() => {
 		return <SettingChannel onClose={closeSettingModal} channel={thread} />;
-	}, [thread.channel_label]);
+	}, [thread.channelLabel]);
 
 	const closeMenu = useAppSelector(selectCloseMenu);
 	const { setStatusMenu } = useMenu();
@@ -115,12 +115,12 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 		if (e.shiftKey || e.ctrlKey || e.metaKey) {
 			e.preventDefault();
 			e.stopPropagation();
-			const link = toChannelPage(thread.id, thread.clan_id as string);
+			const link = toChannelPage(thread.id, thread.clanId as string);
 			navigate(link);
 		}
 		dispatch(referencesActions.setOpenEditMessageState(false));
-		if (currentChannelId === thread.parent_id) {
-			dispatch(threadsActions.setIsShowCreateThread({ channelId: thread.parent_id as string, isShowCreateThread: false }));
+		if (currentChannelId === thread.parentId) {
+			dispatch(threadsActions.setIsShowCreateThread({ channelId: thread.parentId as string, isShowCreateThread: false }));
 		}
 		if (closeMenu) {
 			setStatusMenu(false);
@@ -147,7 +147,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 				draggable="false"
 				ref={threadLinkRef}
 				to={channelPath}
-				key={thread.channel_id}
+				key={thread.channelId}
 				className={`${classes[state]} ml-10 w-full leading-[24px] rounded-lg font-medium text-theme-primary-hover  text-[16px] max-w-full one-line ${isActive || isUnReadChannel || numberNotification > 0 ? 'dark:font-medium font-semibold text-theme-primary-active ' : ' '} ${isActive ? 'bg-item-hover text-theme-primary-active bg-item-theme' : 'text-theme-primary'}`}
 				onClick={(e) => {
 					handleClickLink(e, thread);
@@ -157,11 +157,11 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 					{events[0] && <EventSchedule event={events[0]} className="inline" />}
 
 					<span
-						title={thread?.channel_label && thread?.channel_label?.length >= 15 ? thread?.channel_label : ''}
+						title={thread?.channelLabel && thread?.channelLabel?.length >= 15 ? thread?.channelLabel : ''}
 						className="truncate"
 						data-e2e={generateE2eId('clan_page.channel_list.thread_item.name')}
 					>
-						{thread.channel_label}
+						{thread.channelLabel}
 					</span>
 				</div>
 			</Link>
@@ -175,7 +175,7 @@ const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, h
 				<BuzzBadge
 					timestamp={buzzState?.timestamp as number}
 					isReset={buzzState?.isReset}
-					channelId={thread.channel_id as string}
+					channelId={thread.channelId as string}
 					senderId={buzzState.senderId as string}
 					mode={ChannelStreamMode.STREAM_MODE_THREAD}
 				/>

@@ -41,7 +41,7 @@ export default memo(function ChannelListUserVoice({ channelId, isCategoryExpande
 				<View style={[!isCategoryExpanded && styles.channelListUserVoiceWrapper]}>
 					{combinedMembers.map((member, index) => (
 						<MemoizedUserVoiceItem
-							key={`${index}_${member?.participant || member?.user_id}`}
+							key={`${index}_${member?.participant || member?.userId}`}
 							userVoice={member}
 							index={index}
 							isCategoryExpanded={isCategoryExpanded}

@@ -70,7 +70,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
 		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
 		store.dispatch(appActions.setIsShowWelcomeMobile(false));
-		store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: Platform.OS }));
+		store.dispatch(authActions.logOut({ deviceId: userProfile.user.username, platform: Platform.OS }));
 		store.dispatch(appActions.setLoadingMainMobile(false));
 		setLinkRedirectLogout('');
 	};

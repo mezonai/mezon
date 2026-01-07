@@ -5,7 +5,7 @@ import type { NotiChannelCategorySettingEntity } from '@mezon/store-mobile';
 import { notificationSettingActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { EMuteState, FOR_15_MINUTES_SEC, FOR_1_HOUR_SEC, FOR_24_HOURS_SEC, FOR_3_HOURS_SEC, FOR_8_HOURS_SEC } from '@mezon/utils';
 import { format } from 'date-fns';
-import type { ApiNotificationUserChannel } from 'mezon-js/api.gen';
+import type { ApiNotificationUserChannel } from 'mezon-js/types';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -81,9 +81,9 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 		if (!isUnmute) {
 			try {
 				const body = {
-					channel_id: currentChannel?.id || '',
-					clan_id: currentClanId || '',
-					mute_time: 0,
+					channelId: currentChannel?.id || '',
+					clanId: currentClanId || '',
+					muteTime: 0,
 					active: EMuteState.UN_MUTE
 				};
 				const response = await dispatch(notificationSettingActions.setMuteChannel(body));
@@ -118,9 +118,9 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 	const handleScheduleMute = async (duration: number) => {
 		try {
 			const body = {
-				channel_id: currentChannel?.id || '',
-				clan_id: currentClanId || '',
-				mute_time: duration !== Infinity ? duration : 0,
+				channelId: currentChannel?.id || '',
+				clanId: currentClanId || '',
+				muteTime: duration !== Infinity ? duration : 0,
 				active: EMuteState.MUTED
 			};
 			const response = await dispatch(notificationSettingActions.setMuteChannel(body));
@@ -143,8 +143,8 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 		if (notificationChannelSelected?.active === ENotificationActive.ON) {
 			setTimeMuted('');
 		} else if (notificationChannelSelected?.active !== ENotificationActive.ON) {
-			if (notificationChannelSelected?.time_mute) {
-				const timeMute = new Date(notificationChannelSelected.time_mute);
+			if (notificationChannelSelected?.timeMute) {
+				const timeMute = new Date(notificationChannelSelected.timeMute);
 				const currentTime = new Date();
 				if (timeMute > currentTime) {
 					const timeDifference = timeMute.getTime() - currentTime.getTime();
@@ -152,9 +152,9 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 					setTimeMuted(formattedDate);
 					idTimeOut = setTimeout(() => {
 						const body = {
-							channel_id: currentChannel?.id || '',
-							clan_id: currentClanId || '',
-							mute_time: 0,
+							channelId: currentChannel?.id || '',
+							clanId: currentClanId || '',
+							muteTime: 0,
 							active: EMuteState.UN_MUTE
 						};
 						dispatch(notificationSettingActions.setMuteChannel(body));
@@ -171,8 +171,8 @@ export const MuteClanNotificationBS = ({ currentChannel, description = '', notif
 				<TouchableOpacity onPress={handleMuteOrUnmute} style={styles.wrapperUnmuteBox}>
 					<Text style={styles.option}>
 						{`${isUnmute ? t('bottomSheet.mute') : t('bottomSheet.unMute')} #${
-							(currentChannel as NotiChannelCategorySettingEntity)?.channel_category_label ||
-							(currentChannel as NotiChannelCategorySettingEntity)?.channel_category_label ||
+							(currentChannel as NotiChannelCategorySettingEntity)?.channelCategoryLabel ||
+							(currentChannel as NotiChannelCategorySettingEntity)?.channelCategoryLabel ||
 							(currentChannel as ICategoryChannelOption)?.label ||
 							''
 						}`}

@@ -13,7 +13,7 @@ const LogoutCallback = () => {
 		const logout = async () => {
 			await dispatch(
 				authActions.logOut({
-					device_id: userProfile?.user?.username || '',
+					deviceId: userProfile?.user?.username || '',
 					platform: 'desktop'
 				})
 			);
