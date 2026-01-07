@@ -1,7 +1,7 @@
 import { convertTimestampToTimeAgo } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import type { TopicDiscussionsEntity } from '@mezon/store-mobile';
-import { getStoreAsync, selectMemberClanByUserId, topicsActions, useAppSelector } from '@mezon/store-mobile';
+import { getFirstMessageOfTopic, getStoreAsync, selectMemberClanByUserId, topicsActions, useAppSelector } from '@mezon/store-mobile';
 import type { INotification } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
@@ -79,6 +79,7 @@ const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
 			const promises = [];
 			promises.push(store.dispatch(topicsActions.setCurrentTopicId(notify?.id || '')));
 			promises.push(store.dispatch(topicsActions.setIsShowCreateTopic(true)));
+			promises.push(store.dispatch(getFirstMessageOfTopic({ topicId: notify?.id || '', isMobile: true })));
 
 			await Promise.allSettled(promises);
 
