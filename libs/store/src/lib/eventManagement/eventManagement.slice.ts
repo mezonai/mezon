@@ -511,8 +511,6 @@ export const selectEventsByClanId = createSelector(
 	(events, clanId) => selectAll(events.byClans[clanId]?.entities ?? eventManagementAdapter.getInitialState())
 );
 
-export const selectNumberEvent = createSelector(selectEventsByClanId, (events) => events?.length);
-
 export const selectChooseEvent = createSelector(getEventManagementState, (state) => state.chooseEvent);
 
 export const selectShowModelEvent = createSelector(getEventManagementState, (state) => state.showModalEvent);
@@ -524,12 +522,6 @@ export const selectOngoingEvent = createSelector(getEventManagementState, (state
 export const selectCreatingLoaded = createSelector(getEventManagementState, (state) => state.creatingStatus);
 
 export const selectEventLoading = createSelector(getEventManagementState, (state) => state.loadingStatus);
-
-export const selectNumberEventPrivate = createSelector(
-	selectEventsByClanId,
-	(events) => events.filter((event) => event.channelId && event.channelId !== '0' && event.channelId !== '').length
-);
-
 // check
 export const selectEventsByChannelId = createSelector(
 	[selectEventsByClanId, (state: RootState, clanId: string, channelId: string) => channelId],

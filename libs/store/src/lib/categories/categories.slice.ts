@@ -488,8 +488,6 @@ export const selectCategoryById = createSelector(
 	(state, clanId, id) => state.byClans[clanId]?.entities.entities[id]
 );
 
-export const selectCtrlKSelectedChannelId = createSelector(getCategoriesState, (state) => state.ctrlKSelectedChannelId);
-
 export const selectCtrlKFocusChannel = createSelector(getCategoriesState, (state) => state.ctrlKFocusChannel);
 
 export const selectCategoryExpandStateByCategoryId = createSelector(

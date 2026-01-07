@@ -363,11 +363,8 @@ export const notificationSettingActions = {
 	setMuteChannel
 };
 
-const { selectEntities } = NotificationSettingsAdapter.getSelectors();
 export const getNotificationSettingState = (rootState: { [NOTIFICATION_SETTING_FEATURE_KEY]: NotificationSettingState }): NotificationSettingState =>
 	rootState[NOTIFICATION_SETTING_FEATURE_KEY];
-
-export const selectNotifiSettingEntities = createSelector(getNotificationSettingState, selectEntities);
 
 export const selectNotifiSettingsEntitiesById = createSelector(
 	[getNotificationSettingState, (state: RootState, channelId: string) => channelId],

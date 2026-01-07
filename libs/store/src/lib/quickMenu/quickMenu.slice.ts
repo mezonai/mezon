@@ -327,11 +327,6 @@ export const selectQuickMenuByChannelId = createSelector(
 	}
 );
 
-export const selectQuickMenuByChannelIdAndType = createSelector(
-	[getQuickMenuState, (_state: RootState, channelId: string) => channelId, (_state: RootState, _channelId: string, menuType: number) => menuType],
-	(quickMenuState, channelId, menuType) => quickMenuState?.byChannels?.[channelId]?.[menuType] || []
-);
-
 export const selectFlashMessagesByChannelId = createSelector(
 	[getQuickMenuState, (_state: RootState, channelId: string) => channelId],
 	(quickMenuState, channelId) => quickMenuState?.byChannels?.[channelId]?.[QUICK_MENU_TYPE.FLASH_MESSAGE] || []
@@ -343,5 +338,3 @@ export const selectQuickMenusByChannelId = createSelector(
 );
 
 export const selectQuickMenuLoadingStatus = createSelector(getQuickMenuState, (state) => state?.loadingStatus || 'not loaded');
-
-export const selectQuickMenuError = createSelector(getQuickMenuState, (state) => state?.error || null);

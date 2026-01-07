@@ -169,6 +169,3 @@ export const selectAllAuditLog = createSelector(getAuditLogState, selectAll);
 export const selectAllAuditLogData = createSelector(getAuditLogState, (state) => {
 	return state.auditLogData.logs || [];
 });
-export const selectTotalCountAuditLog = createSelector(getAuditLogState, (state) => {
-	return state.auditLogData.totalCount || 0;
-});

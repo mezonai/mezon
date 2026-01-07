@@ -1,6 +1,8 @@
-import { AttachmentTypeUpload, IMessage, MAX_FILE_ATTACHMENTS, PreSendAttachment } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiMessageRef } from 'mezon-js/types';
+import type { IMessage, PreSendAttachment } from '@mezon/utils';
+import { AttachmentTypeUpload, MAX_FILE_ATTACHMENTS } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiMessageRef } from 'mezon-js/types';
 
 export const REFERENCES_FEATURE_KEY = 'references';
 
@@ -103,8 +105,8 @@ export const referencesSlice = createSlice({
 
 			if (!state.attachmentAfterUpload[channelId] && files?.length <= MAX_FILE_ATTACHMENTS) {
 				state.attachmentAfterUpload[channelId] = {
-					channelId: channelId,
-					files: files
+					channelId,
+					files
 				};
 			} else {
 				if (
@@ -173,7 +175,7 @@ export const referencesSlice = createSlice({
 
 			if (!state.attachmentAfterUpload[channelId]) {
 				state.attachmentAfterUpload[channelId] = {
-					channelId: channelId,
+					channelId,
 					files: []
 				};
 			}
@@ -236,13 +238,7 @@ export const referencesActions = {
 	...referencesSlice.actions
 };
 
-const { selectAll, selectEntities } = referencesAdapter.getSelectors();
-
 export const getReferencesState = (rootState: { [REFERENCES_FEATURE_KEY]: ReferencesState }): ReferencesState => rootState[REFERENCES_FEATURE_KEY];
-
-export const selectAllReferences = createSelector(getReferencesState, selectAll);
-
-export const selectReferencesEntities = createSelector(getReferencesState, selectEntities);
 
 export const selectDataReferences = createSelector([getReferencesState, (_, channelId: string) => channelId], (state: ReferencesState, channelId) => {
 	return state.dataReferences[channelId] || '';
@@ -254,13 +250,9 @@ export const selectIdMessageRefReaction = createSelector(getReferencesState, (st
 
 export const selectIdMessageRefEdit = createSelector(getReferencesState, (state: ReferencesState) => state.idMessageRefEdit);
 
-export const selectMessageMetionId = createSelector(getReferencesState, (state: ReferencesState) => state.idMessageMention);
-
 export const selectAttachmentAfterUpload = createSelector(getReferencesState, (state: ReferencesState) => state?.attachmentAfterUpload);
 
 export const selectAttachmentByChannelId = createSelector(
 	[selectAttachmentAfterUpload, (_, channelId: string) => channelId],
 	(attachmentAfterUpload, channelId) => attachmentAfterUpload[channelId] || null
 );
-
-export const selectGeolocation = createSelector(getReferencesState, (state: ReferencesState) => state.geoLocation);

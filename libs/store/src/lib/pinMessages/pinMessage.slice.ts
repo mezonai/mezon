@@ -367,24 +367,13 @@ export const pinMessageActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectEntities } = pinMessageAdapter.getSelectors();
-
 export const getPinMessageState = (rootState: { [PIN_MESSAGE_FEATURE_KEY]: PinMessageState }): PinMessageState => rootState[PIN_MESSAGE_FEATURE_KEY];
-export const selectPinMessageEntities = createSelector(getPinMessageState, selectEntities);
 
 export const selectPinMessageByChannelId = createSelector(
 	[getPinMessageState, (state: RootState, channelId: string) => channelId],
 	(state, channelId) => {
 		if (!channelId) return [];
 		return state.byChannels[channelId]?.pinMessages || [];
-	}
-);
-
-export const selectLastPinMessageByChannelId = createSelector(
-	[getPinMessageState, (state: RootState, channelId: string) => channelId],
-	(state, channelId) => {
-		const pinMessages = state.byChannels[channelId]?.pinMessages || [];
-		return pinMessages[pinMessages.length - 1]?.id || null;
 	}
 );
 

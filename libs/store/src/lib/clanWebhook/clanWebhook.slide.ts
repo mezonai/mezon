@@ -188,11 +188,6 @@ export const getClanWebHookState = (rootState: { [INTEGRATION_CLAN_WEBHOOK]: ICl
 	rootState[INTEGRATION_CLAN_WEBHOOK];
 export const selectAllClanWebhooks = createSelector(getClanWebHookState, (state) => state?.clanWebhookList || []);
 
-export const selectClanWebhooksByClanId = createSelector(
-	[getClanWebHookState, (state: RootState, clanId: string) => clanId],
-	(state, clanId) => state?.byClan[clanId]?.webhooks || []
-);
-
 export const selectClanWebhooksById = createSelector(
 	[getClanWebHookState, (state: RootState, webhookId: string) => webhookId],
 	(state, webhookId) => state?.clanWebhookList?.find((webhook) => webhook.id === webhookId) || null
