@@ -11,10 +11,10 @@ type ModalCustomStatusProps = {
 	name: string;
 	onClose: () => void;
 	status?: string;
-	time_reset?: number;
+	timeReset?: number;
 };
 
-const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCustomStatusProps) => {
+const ModalCustomStatus = ({ name, status, onClose, timeReset = 0 }: ModalCustomStatusProps) => {
 	const { t } = useTranslation(['userProfile'], { keyPrefix: 'statusProfile.customStatusModal' });
 	const dispatch = useAppDispatch();
 
@@ -43,8 +43,8 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCusto
 		}
 	}
 
-	const [timeSetReset, setTimeSetReset] = useState<string>(getTimeResetLabel(time_reset, t));
-	const [resetTimerStatus, setResetTimerStatus] = useState<number>(time_reset);
+	const [timeSetReset, setTimeSetReset] = useState<string>(getTimeResetLabel(timeReset, t));
+	const [resetTimerStatus, setResetTimerStatus] = useState<number>(timeReset);
 	const [noClearStatus, setNoClearStatus] = useState<boolean>(false);
 	const [customStatus, setCustomStatus] = useState<string>(status ?? '');
 
@@ -119,7 +119,7 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCusto
 
 	return (
 		<ModalLayout onClose={onClose}>
-			<div className="bg-theme-setting-primary pt-4 rounded w-[90%] md:w-[440px] " data-e2e={generateE2eId('short_profile.modal.custom_status')}>
+			<div className="bg-theme-setting-primary pt-4 rounded w-[90%] md:w-[440px] " data-e2e={generateE2eId('short_profile.modal.customStatus')}>
 				<div>
 					<h1 className="text-theme-primary-active text-xl font-semibold text-center">{t('title')}</h1>
 				</div>
@@ -136,7 +136,7 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCusto
 							maxLength={128}
 							autoFocus
 							onChange={handleChangeCustomStatus}
-							data-e2e={generateE2eId('short_profile.modal.custom_status.input')}
+							data-e2e={generateE2eId('short_profile.modal.customStatus.input')}
 						/>
 					</div>
 					<div className="px-4">
@@ -155,7 +155,7 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCusto
 							className="py-2 h-10 px-4 rounded-lg  hover:underline text-theme-primary"
 							type="button"
 							onClick={onClose}
-							data-e2e={generateE2eId('short_profile.modal.custom_status.button.cancel')}
+							data-e2e={generateE2eId('short_profile.modal.customStatus.button.cancel')}
 						>
 							{t('buttons.cancel')}
 						</button>
@@ -163,7 +163,7 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCusto
 							className="py-2 h-10 px-4 rounded-lg text-white !bg-[#5265ec] hover:!bg-[#4654c0]"
 							type="button"
 							onClick={handleSaveCustomStatus}
-							data-e2e={generateE2eId('short_profile.modal.custom_status.button.save')}
+							data-e2e={generateE2eId('short_profile.modal.customStatus.button.save')}
 						>
 							{t('buttons.save')}
 						</button>

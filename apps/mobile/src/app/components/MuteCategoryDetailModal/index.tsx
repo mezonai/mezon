@@ -99,15 +99,15 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 				<View>
 					<Text style={styles.headerTitle}>{t('notifySettingThreadModal.muteThisConversation')}</Text>
 					<Text numberOfLines={1} style={styles.headerSubtitle}>
-						{currentCategory.category_name}
+						{currentCategory.categoryName}
 					</Text>
 				</View>
 			)
 		});
-	}, [currentCategory.category_name, navigation, t, themeValue.text, themeValue.textStrong]);
+	}, [currentCategory.categoryName, navigation, t, themeValue.text, themeValue.textStrong]);
 
 	const defaultCategoryNotificationSetting = useAppSelector((state) =>
-		selectDefaultNotificationCategory(state, currentCategory?.category_id as string)
+		selectDefaultNotificationCategory(state, currentCategory?.categoryId as string)
 	);
 
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -126,8 +126,8 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		if (defaultCategoryNotificationSetting?.active === ENotificationActive.ON) {
 			setTimeMuted('');
 		} else if (defaultCategoryNotificationSetting?.active !== ENotificationActive.ON) {
-			if (defaultCategoryNotificationSetting?.time_mute) {
-				const timeMute = new Date(defaultCategoryNotificationSetting.time_mute);
+			if (defaultCategoryNotificationSetting?.timeMute) {
+				const timeMute = new Date(defaultCategoryNotificationSetting.timeMute);
 				const currentTime = new Date();
 				if (timeMute > currentTime) {
 					const timeDifference = timeMute.getTime() - currentTime.getTime();
@@ -145,8 +145,8 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	const muteOrUnMuteChannel = () => {
 		const body = {
 			id: currentCategory?.id,
-			mute_time: 0,
-			clan_id: currentClanId || '',
+			muteTime: 0,
+			clanId: currentClanId || '',
 			active: EMuteState.UN_MUTE
 		};
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(body));
@@ -161,8 +161,8 @@ const MuteCategoryDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		try {
 			const body = {
 				id: currentCategory?.id,
-				clan_id: currentClanId || '',
-				time_mute: duration !== Infinity ? duration : null,
+				clanId: currentClanId || '',
+				timeMute: duration !== Infinity ? duration : null,
 				active: EMuteState.MUTED
 			};
 			const response = await dispatch(defaultNotificationCategoryActions.setMuteCategory(body));

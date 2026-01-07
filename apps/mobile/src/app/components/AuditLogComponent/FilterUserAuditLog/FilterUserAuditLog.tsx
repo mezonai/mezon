@@ -33,13 +33,13 @@ export default function FilterUserAuditLog() {
 					value: ''
 				},
 				...(usersClan || []).map((item: UsersClanEntity) => ({
-					title: item?.user?.display_name ? item?.user?.display_name : item?.user?.username,
+					title: item?.user?.displayName ? item?.user?.displayName : item?.user?.username,
 					icon: (
 						<MezonAvatar
 							height={size.s_30}
 							width={size.s_30}
-							avatarUrl={item?.user?.avatar_url}
-							username={item?.user?.display_name ? item?.user?.display_name : item?.user?.username}
+							avatarUrl={item?.user?.avatarUrl}
+							username={item?.user?.displayName ? item?.user?.displayName : item?.user?.username}
 						/>
 					),
 					value: item?.user?.id || ''

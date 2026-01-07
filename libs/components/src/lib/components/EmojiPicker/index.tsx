@@ -101,10 +101,10 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			<Icons.Star defaultSize="h-7 w-7" />,
 			<Icons.ClockIcon className="h-7 w-7" />,
 			...categoryEmoji.map((emoji) =>
-				emoji.clan_logo !== '' ? (
-					<img src={emoji.clan_logo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clan_name} />
+				emoji.clanLogo !== '' ? (
+					<img src={emoji.clanLogo} className="max-w-7 max-h-7 w-full rounded-full aspect-square object-cover" alt={emoji.clanName} />
 				) : (
-					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clan_name?.charAt(0).toUpperCase()}</div>
+					<div className="dark:text-textDarkTheme text-textLightTheme">{emoji.clanName?.charAt(0).toUpperCase()}</div>
 				)
 			),
 			<Icons.Smile defaultSize="w-7 h-7" />,
@@ -138,7 +138,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 	const messageEmoji = useAppSelector((state) =>
 		selectMessageByMessageId(
 			state,
-			isFocusTopicBox ? currenTopicId : isFocusThreadBox ? currentThread?.channel_id : channelID,
+			isFocusTopicBox ? currenTopicId : isFocusThreadBox ? currentThread?.channelId : channelID,
 			messageEmojiId || ''
 		)
 	);
@@ -161,16 +161,16 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 				await reactionMessageDispatch({
 					id: emojiId,
 					messageId: propMessageEmojiId ?? '',
-					emoji_id: emojiId.trim(),
+					emojiId: emojiId.trim(),
 					emoji: emojiPicked.trim(),
 					count: 1,
-					message_sender_id: messageEmoji?.sender_id ?? '',
+					messageSenderId: messageEmoji?.senderId ?? '',
 					action_delete: false,
-					is_public: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
+					isPublic: isPublicChannel({ parentId: currentChannelParentId, channelPrivate: currentChannelPrivate }),
 					clanId: currentChannelClanId ?? '',
-					channelId: propIsFromTopicView ? currentChannelId || '' : (messageEmoji?.channel_id ?? ''),
+					channelId: propIsFromTopicView ? currentChannelId || '' : (messageEmoji?.channelId ?? ''),
 					isFocusTopicBox: propIsFocusTopicBox,
-					channelIdOnMessage: messageEmoji?.channel_id
+					channelIdOnMessage: messageEmoji?.channelId
 				});
 				setSubPanelActive(SubPanelName.NONE);
 				dispatch(referencesActions.setIdReferenceMessageReaction(''));
@@ -214,8 +214,8 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 			propIsFromTopicView,
 			propOnEmojiSelect,
 			reactionMessageDispatch,
-			messageEmoji?.sender_id,
-			messageEmoji?.channel_id,
+			messageEmoji?.senderId,
+			messageEmoji?.channelId,
 			setSubPanelActive,
 			dispatch,
 			setAddEmojiActionChatbox,
@@ -374,7 +374,7 @@ function EmojiCustomPanel(props: EmojiCustomPanelOptions) {
 
 type DisplayByCategoriesProps = {
 	readonly categoryName?: string;
-	readonly onEmojiSelect: (emoji_id: string, emoji: string) => void;
+	readonly onEmojiSelect: (emojiId: string, emoji: string) => void;
 	readonly onEmojiHover: (item: IEmoji) => void;
 	readonly emojisData: IEmoji[];
 	onClickAddButton?: () => void;
@@ -384,10 +384,10 @@ type DisplayByCategoriesProps = {
 
 const getEmojisByCategories = (emojis: IEmoji[], categoryParam: string) => {
 	if (categoryParam === FOR_SALE_CATE) {
-		return emojis.filter((emoji) => emoji?.is_for_sale);
+		return emojis.filter((emoji) => emoji?.isForSale);
 	}
 	return emojis
-		.filter((emoji) => !!emoji.id && emoji?.category?.includes(categoryParam) && !emoji?.is_for_sale)
+		.filter((emoji) => !!emoji.id && emoji?.category?.includes(categoryParam) && !emoji?.isForSale)
 		.map((emoji) => ({
 			...emoji,
 			category: emoji.category
@@ -461,7 +461,7 @@ const EmojisPanel = React.memo(function EmojisPanel({
 				emojiRecentActions.buyItemForSale({
 					id: itemUnlock.id || '',
 					type: ITEM_TYPE.EMOJI,
-					creatorId: itemUnlock.creator_id,
+					creatorId: itemUnlock.creatorId,
 					senderId: userProfile?.user?.id,
 					username: userProfile?.user?.username
 				})
@@ -482,10 +482,10 @@ const EmojisPanel = React.memo(function EmojisPanel({
 
 	const onClickEmoji = useCallback(
 		(item: IEmoji) => {
-			const { is_for_sale, src, shortname, id } = item;
+			const { isForSale, src, shortname, id } = item;
 			if (!id || !shortname) return;
 
-			if (is_for_sale) {
+			if (isForSale) {
 				return src ? onEmojiSelect(getIdSaleItemFromSource(src), shortname || '') : handleOpenUnlockItem(item);
 			}
 
@@ -520,7 +520,7 @@ const EmojisPanel = React.memo(function EmojisPanel({
 							alt={item.shortname}
 							className={'max-h-full max-w-full'}
 						/>
-						{item.is_for_sale && !item.src && (
+						{item.isForSale && !item.src && (
 							<div className="absolute left-3 flex items-center justify-center aspect-square pointer-events-none">
 								{isItemPendingUnlock ? (
 									<Icons.LoadingSpinner className="w-4 h-4 text-white block group-hover:hidden" />

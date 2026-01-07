@@ -65,17 +65,17 @@ const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending
 export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 	const { t, i18n } = useTranslation('message');
 	const dispatch = useAppDispatch();
-	const latestMessage = useAppSelector((state) => selectMessageByMessageId(state, message.channel_id, message.id));
+	const latestMessage = useAppSelector((state) => selectMessageByMessageId(state, message.channelId, message.id));
 	const rplCount = latestMessage?.content?.rpl || 0;
 	const topicCreator = useAppSelector((state) => selectMemberClanByUserId(state, latestMessage?.content?.cid as string));
-	const avatarToDisplay = topicCreator?.clan_avatar ? topicCreator?.clan_avatar : topicCreator?.user?.avatar_url;
+	const avatarToDisplay = topicCreator?.clanAvatar ? topicCreator?.clanAvatar : topicCreator?.user?.avatarUrl;
 	const handleOpenTopic = useCallback(() => {
 		dispatch(topicsActions.setIsShowCreateTopic(true));
-		dispatch(threadsActions.setIsShowCreateThread({ channelId: message.channel_id as string, isShowCreateThread: false }));
+		dispatch(threadsActions.setIsShowCreateThread({ channelId: message.channelId as string, isShowCreateThread: false }));
 		dispatch(topicsActions.setCurrentTopicId(message?.content?.tp || ''));
 		dispatch(topicsActions.setInitTopicMessageId(message.id));
 	}, [dispatch, message]);
-	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, message.channel_id as string));
+	const isShowCreateThread = useSelector((state) => selectIsShowCreateThread(state, message.channelId as string));
 	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 
 	return (
@@ -154,7 +154,7 @@ const MessageText = ({
 		attachmentOnMessage?.length === 1 &&
 		attachmentOnMessage[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
 		attachmentOnMessage[0].url === contentToMessage?.trim();
-	const showEditted = !message.hide_editted && !isSearchMessage;
+	const showEditted = !message.hideEditted && !isSearchMessage;
 
 	const linkFromMarkdown = patchedContent?.mk?.find?.((item) => item?.type === EBacktickType.LINK);
 	let displayLine = lines;

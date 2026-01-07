@@ -32,7 +32,7 @@ export default function TopicDiscussion() {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentUserId = useSelector(selectCurrentUserId);
-	const isBanned = useSelector((state) => selectBanMemberCurrentClanById(state, currentChannel?.channel_id, currentUserId));
+	const isBanned = useSelector((state) => selectBanMemberCurrentClanById(state, currentChannel?.channelId, currentUserId));
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 	const topicIdRef = useRef<string>('');
@@ -68,7 +68,7 @@ export default function TopicDiscussion() {
 		const fetchMsgResult = async () => {
 			await dispatch(
 				messagesActions.fetchMessages({
-					channelId: currentChannel?.channel_id || '',
+					channelId: currentChannel?.channelId || '',
 					clanId: currentClanId || '',
 					topicId: currentTopicId || ''
 				})
@@ -77,7 +77,7 @@ export default function TopicDiscussion() {
 		if (currentTopicId !== '') {
 			fetchMsgResult();
 		}
-	}, [currentChannel?.channel_id, currentClanId, currentTopicId, dispatch]);
+	}, [currentChannel?.channelId, currentClanId, currentTopicId, dispatch]);
 
 	useEffect(() => {
 		DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);
@@ -95,7 +95,7 @@ export default function TopicDiscussion() {
 				mode: 'text'
 			});
 		};
-	}, [currentChannel?.channel_id, dispatch]);
+	}, [currentChannel?.channelId, dispatch]);
 
 	const onHandlerStateChange = useCallback(
 		(event: { nativeEvent: { translationX: any; velocityX: any } }) => {
@@ -121,30 +121,30 @@ export default function TopicDiscussion() {
 				style={[StyleSheet.absoluteFillObject]}
 			/>
 			<View style={styles.channelView}>
-				<TopicHeader currentChannelId={currentChannel?.channel_id} handleBack={onGoBack} />
+				<TopicHeader currentChannelId={currentChannel?.channelId} handleBack={onGoBack} />
 				<PanGestureHandler failOffsetY={[-5, 5]} onHandlerStateChange={onHandlerStateChange}>
 					<Animated.View style={styles.panGestureContainer}>
 						<ChannelMessages
 							channelId={currentTopicId}
 							topicId={currentTopicId}
 							clanId={currentClanId}
-							lastSeenMessageId={currentChannel?.last_seen_message?.id}
+							lastSeenMessageId={currentChannel?.lastSeenMessage?.id}
 							isPublic={isPublicChannel(currentChannel)}
 							mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
-							topicChannelId={currentChannel?.channel_id}
+							topicChannelId={currentChannel?.channelId}
 							isBanned={!!isBanned}
 							isFromTopic={true}
 						/>
 					</Animated.View>
 				</PanGestureHandler>
 				<ChatBox
-					channelId={currentChannel?.channel_id}
+					channelId={currentChannel?.channelId}
 					mode={checkIsThread(currentChannel) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL}
 					isPublic={isPublicChannel(currentChannel)}
 					topicChannelId={currentTopicId}
 					isBanned={!!isBanned}
 				/>
-				<PanelKeyboard currentChannelId={currentTopicId || currentChannel?.channel_id} currentClanId={currentChannel?.clan_id} />
+				<PanelKeyboard currentChannelId={currentTopicId || currentChannel?.channelId} currentClanId={currentChannel?.clanId} />
 			</View>
 		</View>
 	);

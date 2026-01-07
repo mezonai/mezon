@@ -56,16 +56,16 @@ export const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 		if (!lastMessage) return;
 
 		if (
-			lastMessage?.create_time_seconds &&
-			lastMessageState?.timestamp_seconds &&
-			lastMessage?.create_time_seconds >= lastMessageState?.timestamp_seconds
+			lastMessage?.createTimeSeconds &&
+			lastMessageState?.timestampSeconds &&
+			lastMessage?.createTimeSeconds >= lastMessageState?.timestampSeconds
 		) {
 			const mode =
 				currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 
 			markAsReadSeen(lastMessage, mode, 0);
 		}
-	}, [lastMessage, lastMessageState?.timestamp_seconds, currentDmGroup?.type, markAsReadSeen]);
+	}, [lastMessage, lastMessageState?.timestampSeconds, currentDmGroup?.type, markAsReadSeen]);
 
 	useEffect(() => {
 		if (lastMessage) {
@@ -92,13 +92,13 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 
 	const isChatWithMyself = useMemo(() => {
 		if (Number(currentDmGroup?.type) !== ChannelType.CHANNEL_TYPE_DM) return false;
-		return currentDmGroup?.user_ids?.[0] === currentUserId;
-	}, [currentDmGroup?.type, currentDmGroup?.user_ids, currentUserId]);
+		return currentDmGroup?.userIds?.[0] === currentUserId;
+	}, [currentDmGroup?.type, currentDmGroup?.userIds, currentUserId]);
 
 	const dmLabel = useMemo(() => {
-		return (currentDmGroup?.channel_label ||
+		return (currentDmGroup?.channelLabel ||
 			(typeof currentDmGroup?.usernames === 'string' ? currentDmGroup?.usernames : currentDmGroup?.usernames?.[0] || '')) as string;
-	}, [currentDmGroup?.channel_label, currentDmGroup?.usernames]);
+	}, [currentDmGroup?.channelLabel, currentDmGroup?.usernames]);
 
 	const dmAvatar = useMemo(() => {
 		return currentDmGroup?.avatars?.[0];
@@ -138,46 +138,46 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		if (isTypeDMGroup) {
 			const store = getStore();
 			const state = store.getState();
-			const rawDataUserGroup = selectRawDataUserGroup(state, currentDmGroup.channel_id);
+			const rawDataUserGroup = selectRawDataUserGroup(state, currentDmGroup.channelId);
 			const data = {
-				channelId: currentDmGroup.channel_id || '',
-				roomName: currentDmGroup?.meeting_code,
+				channelId: currentDmGroup.channelId || '',
+				roomName: currentDmGroup?.meetingCode,
 				clanId: '',
 				isGroupCall: true,
-				participantsCount: rawDataUserGroup?.user_ids?.length || 0
+				participantsCount: rawDataUserGroup?.userIds?.length || 0
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
 
 			const userProfile = selectAllAccount(state);
 			dispatch(
 				groupCallActions.showPreCallInterface({
-					groupId: currentDmGroup?.channel_id,
+					groupId: currentDmGroup?.channelId,
 					isVideo: false
 				})
 			);
 			const callOfferAction = {
 				is_video: false,
-				group_id: currentDmGroup?.channel_id,
-				group_name: currentDmGroup?.channel_label,
-				group_avatar: currentDmGroup?.channel_avatar,
-				caller_id: userProfile?.user?.id,
-				caller_name: userProfile?.user?.display_name || userProfile?.user?.username || '',
-				caller_avatar: userProfile?.user?.avatar_url,
-				meeting_code: currentDmGroup?.meeting_code,
-				clan_id: '',
+				groupId: currentDmGroup?.channelId,
+				group_name: currentDmGroup?.channelLabel,
+				group_avatar: currentDmGroup?.channelAvatar,
+				callerId: userProfile?.user?.id,
+				caller_name: userProfile?.user?.displayName || userProfile?.user?.username || '',
+				caller_avatar: userProfile?.user?.avatarUrl,
+				meetingCode: currentDmGroup?.meetingCode,
+				clanId: '',
 				timestamp: Date.now(),
-				participants: rawDataUserGroup?.user_ids || []
+				participants: rawDataUserGroup?.userIds || []
 			};
 			sendSignalingToParticipants(
-				rawDataUserGroup?.user_ids || [],
+				rawDataUserGroup?.userIds || [],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_OFFER,
 				callOfferAction as CallSignalingData,
-				currentDmGroup?.channel_id || '',
+				currentDmGroup?.channelId || '',
 				userProfile?.user?.id || ''
 			);
 			dispatch(
 				messagesActions.sendMessage({
-					channelId: currentDmGroup?.channel_id,
+					channelId: currentDmGroup?.channelId,
 					clanId: '',
 					mode: ChannelStreamMode.STREAM_MODE_GROUP,
 					isPublic: true,
@@ -191,16 +191,16 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 					},
 					anonymous: false,
 					senderId: userProfile?.user?.id || '',
-					avatar: userProfile?.user?.avatar_url || '',
+					avatar: userProfile?.user?.avatarUrl || '',
 					isMobile: true,
-					username: currentDmGroup?.channel_label || ''
+					username: currentDmGroup?.channelLabel || ''
 				})
 			);
 			return;
 		}
 		dispatch(DMCallActions.removeAll());
 		const params = {
-			receiverId: currentDmGroup?.user_ids?.[0],
+			receiverId: currentDmGroup?.userIds?.[0],
 			receiverAvatar: dmAvatar,
 			receiverName: dmLabel,
 			directMessageId,
@@ -248,10 +248,10 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 			)}
 			<Pressable style={styles.channelTitle} onPress={navigateToThreadDetail}>
 				{isTypeDMGroup ? (
-					currentDmGroup?.channel_avatar && !currentDmGroup?.channel_avatar?.includes('avatar-group.png') ? (
+					currentDmGroup?.channelAvatar && !currentDmGroup?.channelAvatar?.includes('avatar-group.png') ? (
 						<View style={styles.groupAvatarWrapper}>
 							<ImageNative
-								url={createImgproxyUrl(currentDmGroup?.channel_avatar ?? '')}
+								url={createImgproxyUrl(currentDmGroup?.channelAvatar ?? '')}
 								style={styles.imageFullSize}
 								resizeMode={'cover'}
 							/>
@@ -276,20 +276,20 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 								<Text style={[styles.textAvatar]}>{dmLabel?.charAt?.(0)?.toUpperCase()}</Text>
 							</View>
 						)}
-						<UserStatusDM isOnline={currentDmGroup?.onlines?.some(Boolean)} userId={currentDmGroup?.user_ids?.[0]} />
+						<UserStatusDM isOnline={currentDmGroup?.onlines?.some(Boolean)} userId={currentDmGroup?.userIds?.[0]} />
 					</View>
 				)}
 				<View style={{ flex: 1 }}>
 					<Text style={styles.titleText} numberOfLines={1}>
 						{dmLabel}
 					</Text>
-					{!isTypeDMGroup && <MemberInvoiceStatus userId={currentDmGroup?.user_ids?.[0] || ''} />}
+					{!isTypeDMGroup && <MemberInvoiceStatus userId={currentDmGroup?.userIds?.[0] || ''} />}
 				</View>
 				{!isBlocked && (
 					<View style={styles.iconWrapper}>
 						{!isChatWithMyself && (
 							<>
-								{((!isTypeDMGroup && !!currentDmGroup?.user_ids?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meeting_code)) && (
+								{((!isTypeDMGroup && !!currentDmGroup?.userIds?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meetingCode)) && (
 									<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall()}>
 										<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
 									</TouchableOpacity>

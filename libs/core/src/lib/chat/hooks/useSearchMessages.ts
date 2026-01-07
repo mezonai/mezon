@@ -12,7 +12,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ApiSearchMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSearchMessageRequest } from 'mezon-js/types';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -26,16 +26,16 @@ export function useSearchMessages() {
 	const searchedRequest = useAppSelector((state) => selectSearchedRequestByChannelId(state, currentViewChannelId));
 
 	const searchedChannelId = useMemo(() => {
-		const channelIdFilter = searchedRequest?.filters?.find((f) => f.field_name === 'channel_id');
-		if (channelIdFilter?.field_value && channelIdFilter.field_value !== '0') {
-			return channelIdFilter.field_value;
+		const channelIdFilter = searchedRequest?.filters?.find((f) => f.fieldName === 'channelId');
+		if (channelIdFilter?.fieldValue && channelIdFilter.fieldValue !== '0') {
+			return channelIdFilter.fieldValue;
 		}
 
 		if (!isClanView && currentDirectId) {
 			return currentDirectId;
 		}
 
-		const hasOtherFilters = searchedRequest?.filters?.some((f) => f.field_name !== 'content' && f.field_name !== 'channel_id');
+		const hasOtherFilters = searchedRequest?.filters?.some((f) => f.fieldName !== 'content' && f.fieldName !== 'channelId');
 
 		if (hasOtherFilters) {
 			return currentViewChannelId;

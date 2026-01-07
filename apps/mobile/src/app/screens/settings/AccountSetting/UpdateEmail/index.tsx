@@ -3,7 +3,7 @@ import { load, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { accountActions, appActions, useAppDispatch } from '@mezon/store-mobile';
 import { ErrorInput } from 'apps/mobile/src/app/components/ErrorInput';
-import type { ApiAccountEmail } from 'mezon-js/api.gen';
+import type { ApiAccountEmail } from 'mezon-js/types';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
@@ -236,7 +236,7 @@ export const UpdateEmail = memo(({ navigation, route }: { navigation: any; route
 					isMobile: true
 				})
 			);
-			const requestId = response?.payload?.req_id;
+			const requestId = response?.payload?.reqId;
 
 			if (response?.meta?.requestStatus === 'fulfilled' && requestId) {
 				startCooldownTimer(email?.trim() || '');

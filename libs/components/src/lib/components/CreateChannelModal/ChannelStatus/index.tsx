@@ -40,7 +40,7 @@ export const ChannelStatusModal: React.FC<ChannelStatusModalProps> = ({ channelN
 						value={1}
 						id="id-c01"
 						onChange={handleToggle}
-						data-e2e={generateE2eId('clan_page.modal.create_channel.toggle.is_private')}
+						data-e2e={generateE2eId('clan_page.modal.create_channel.toggle.isPrivate')}
 					/>
 				</div>
 			</div>

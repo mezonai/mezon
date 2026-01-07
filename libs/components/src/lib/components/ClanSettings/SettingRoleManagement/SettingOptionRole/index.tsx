@@ -24,7 +24,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 	const clickRole = useSelector(getSelectedRoleId);
 	const activeRole = useMemo(() => RolesClan.find((role) => role.id === clickRole), [RolesClan, clickRole]);
 	const isClanOwner = useClanOwner();
-	const hasPermissionAdmin = useCheckHasAdministrator(activeRole?.permission_list?.permissions);
+	const hasPermissionAdmin = useCheckHasAdministrator(activeRole?.permissionList?.permissions);
 	const hasPermissionEdit = isClanOwner || !hasPermissionAdmin;
 	const dispatch = useDispatch();
 
@@ -45,7 +45,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 		}
 	}, [selectedButton, RolesClan, hasPermissionEdit, clickRole]);
 
-	const roleUsersCount = activeRole?.role_user_list?.role_users?.length || 0;
+	const roleUsersCount = activeRole?.roleUserList?.roleUsers?.length || 0;
 
 	const isSelectDisplayTab = selectedButton === RoleTabs.Display_Tab;
 	const isSelectPermissionTab = selectedButton === RoleTabs.Permission_Tab;
@@ -55,7 +55,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 		<>
 			<div className="pr-2 sbm:pr-5">
 				<div
-					className={`w-full flex gap-2 sbm:gap-0 mb-3 sbm:mb-5 border-b border-gray-200 dark:border-gray-500 ${activeRole?.slug === `everyone-${activeRole?.clan_id}` ? 'justify-around' : 'justify-start sbm:justify-between'}`}
+					className={`w-full flex gap-2 sbm:gap-0 mb-3 sbm:mb-5 border-b border-gray-200 dark:border-gray-500 ${activeRole?.slug === `everyone-${activeRole?.clanId}` ? 'justify-around' : 'justify-start sbm:justify-between'}`}
 				>
 					<button
 						className={`py-[5px] px-1 sbm:px-0 text-[12px] sbm:text-[15px] text-left transition duration-300 rounded relative tracking-normal sbm:tracking-wider font-medium group flex-shrink ${isSelectDisplayTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'} `}
@@ -84,7 +84,7 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 							className={`absolute inset-x-0 bottom-0 h-[2px] group-hover:bg-blue-300 ${isSelectPermissionTab ? 'bg-blue-400' : ''}`}
 						/>
 					</button>
-					{activeRole?.slug !== `everyone-${activeRole?.clan_id}` && (
+					{activeRole?.slug !== `everyone-${activeRole?.clanId}` && (
 						<button
 							className={`py-[5px] px-1 sbm:px-0 text-[12px] sbm:text-[15px] text-left transition duration-300 rounded relative tracking-normal sbm:tracking-wider font-medium group flex-shrink min-w-0 ${isSelectManageTab ? 'text-theme-primary-active text-bold' : 'text-theme-primary'} `}
 							onClick={() => {

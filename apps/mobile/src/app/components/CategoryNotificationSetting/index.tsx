@@ -18,15 +18,15 @@ const CategoryNotificationSetting = ({ category }: { category: ICategoryChannel 
 	const { themeValue } = useTheme();
 	const { t } = useTranslation('clanNotificationsSetting');
 	const styles = style(themeValue);
-	const defaultCategoryNotificationSetting = useAppSelector((state) => selectDefaultNotificationCategory(state, category?.category_id as string));
+	const defaultCategoryNotificationSetting = useAppSelector((state) => selectDefaultNotificationCategory(state, category?.categoryId as string));
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
 
 	const handleNotificationClanChange = (value: number) => {
 		const body = {
-			category_id: category?.id,
-			notification_type: value,
-			clan_id: currentClanId || ''
+			categoryId: category?.id,
+			notificationType: value,
+			clanId: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setDefaultNotificationCategory(body));
 	};
@@ -34,7 +34,7 @@ const CategoryNotificationSetting = ({ category }: { category: ICategoryChannel 
 	return (
 		<ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: size.s_50 }}>
 			<MezonOption
-				value={defaultCategoryNotificationSetting?.notification_setting_type}
+				value={defaultCategoryNotificationSetting?.notificationSettingType}
 				onChange={handleNotificationClanChange}
 				data={optionNotification(t)}
 			/>

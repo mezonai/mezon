@@ -32,9 +32,9 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 					const extraMessage = data?.message;
 					if (extraMessage) {
 						const message = safeJSONParse(extraMessage);
-						if (message && typeof message === 'object' && message?.channel_id) {
-							const createTimeSeconds = message?.create_time_seconds || Math.floor(Date.now() / 1000);
-							const updateTimeSeconds = message?.update_time_seconds;
+						if (message && typeof message === 'object' && message?.channelId) {
+							const createTimeSeconds = message?.createTimeSeconds || Math.floor(Date.now() / 1000);
+							const updateTimeSeconds = message?.updateTimeSeconds;
 
 							let codeValue = 0;
 							if (message?.code) {
@@ -45,7 +45,7 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 								}
 							}
 
-							const messageId = message?.message_id || message?.id;
+							const messageId = message?.messageId || message?.id;
 							if (!messageId) {
 								console.warn('onNotificationOpenedApp: Message missing id');
 								continue;
@@ -65,7 +65,7 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 							};
 							onchannelmessage(messageData as ChannelMessage);
 						} else {
-							console.warn('onNotificationOpenedApp: Invalid message structure or missing channel_id');
+							console.warn('onNotificationOpenedApp: Invalid message structure or missing channelId');
 						}
 					}
 				}

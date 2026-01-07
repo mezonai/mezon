@@ -33,7 +33,7 @@ export const MemberItem = memo(
 				channelId: channel.id,
 				userId: member?.user?.id,
 				channelType: channel.type,
-				clanId: channel.clan_id
+				clanId: channel.clanId
 			};
 			const response = await dispatch(channelUsersActions.removeChannelUsers(body));
 			const isError = response?.meta?.requestStatus === ERequestStatus.Rejected;
@@ -95,7 +95,7 @@ export const MemberItem = memo(
 			<TouchableOpacity onPress={onPressMemberItem} disabled={disabled}>
 				<View style={styles.container}>
 					<MezonAvatar
-						avatarUrl={createImgproxyUrl(member?.user?.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fit' })}
+						avatarUrl={createImgproxyUrl(member?.user?.avatarUrl ?? '', { width: 100, height: 100, resizeType: 'fit' })}
 						username={member.user.username}
 						width={size.s_40}
 						height={size.s_40}
@@ -103,7 +103,7 @@ export const MemberItem = memo(
 					/>
 					<View style={styles.userInfoContainer}>
 						<View style={styles.nameRow}>
-							<Text style={styles.nameText}>{member?.user?.display_name || member?.user?.username}</Text>
+							<Text style={styles.nameText}>{member?.user?.displayName || member?.user?.username}</Text>
 							{isClanOwner && <MezonIconCDN icon={IconCDN.ownerIcon} color={themeValue.borderWarning} width={16} height={16} />}
 						</View>
 						{!isAdvancedSetting && <Text style={styles.usernameText}>{member?.user?.username}</Text>}

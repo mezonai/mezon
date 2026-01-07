@@ -13,7 +13,7 @@ type ModalSendTokenProps = {
 	token: number;
 	setToken: (token: number) => void;
 	setSelectedUserId: (id: string) => void;
-	handleSaveSendToken: (id?: string, username?: string, avatar?: string, display_name?: string) => void;
+	handleSaveSendToken: (id?: string, username?: string, avatar?: string, displayName?: string) => void;
 	setNote: (note: string) => void;
 	error: string | null;
 	userSearchError: string | null;
@@ -31,9 +31,9 @@ type ModalSendTokenProps = {
 type User = {
 	id: string;
 	username: string;
-	avatar_url: string;
+	avatarUrl: string;
 	search_key?: string;
-	display_name?: string;
+	displayName?: string;
 };
 
 const ModalSendToken = ({
@@ -126,9 +126,9 @@ const ModalSendToken = ({
 				userMap.set(userId, {
 					id: userId,
 					username: itemUserClan?.username ?? '',
-					avatar_url: itemUserClan?.avatar_url ?? '',
-					search_key: itemUserClan.list_nick_names?.join('./'),
-					display_name: itemUserClan.display_name
+					avatarUrl: itemUserClan?.avatarUrl ?? '',
+					search_key: itemUserClan.listNickNames?.join('./'),
+					displayName: itemUserClan.displayName
 				});
 			}
 		});
@@ -138,9 +138,9 @@ const ModalSendToken = ({
 			if (userId && !userMap.has(userId)) {
 				userMap.set(userId, {
 					id: userId,
-					username: (itemDM?.user?.display_name || itemDM?.user?.username) ?? '',
-					avatar_url: itemDM?.user?.avatar_url ?? '',
-					display_name: (itemDM?.user?.display_name || itemDM?.user?.username) ?? ''
+					username: (itemDM?.user?.displayName || itemDM?.user?.username) ?? '',
+					avatarUrl: itemDM?.user?.avatarUrl ?? '',
+					displayName: (itemDM?.user?.displayName || itemDM?.user?.username) ?? ''
 				});
 			}
 		});
@@ -180,12 +180,12 @@ const ModalSendToken = ({
 								<AvatarImage
 									alt={user?.username ?? ''}
 									username={user?.username ?? ''}
-									srcImgProxy={createImgproxyUrl(user.avatar_url ?? '', {
+									srcImgProxy={createImgproxyUrl(user.avatarUrl ?? '', {
 										width: 100,
 										height: 100,
 										resizeType: 'fit'
 									})}
-									src={user.avatar_url}
+									src={user.avatarUrl}
 									className="w-8 h-8"
 									classNameText="text-xs w-8 h-8"
 								/>
@@ -212,7 +212,7 @@ const ModalSendToken = ({
 
 	const handleSendToken = () => {
 		const userData = mergedUsers.find((user) => user.id === selectedUserId);
-		handleSaveSendToken(userData?.id, userData?.username, userData?.avatar_url, userData?.display_name);
+		handleSaveSendToken(userData?.id, userData?.username, userData?.avatarUrl, userData?.displayName);
 	};
 
 	const amountRef = useRef<HTMLInputElement | null>(null);

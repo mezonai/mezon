@@ -85,7 +85,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 			const listAddPermissions = selectedPermissions?.filter((permission) => !originSelectedPermissions?.includes(permission));
 			const removePermissionList = originSelectedPermissions?.filter((id) => !selectedPermissions?.includes(id));
 			const response = await updateRole(
-				clanRole?.clan_id,
+				clanRole?.clanId,
 				clanRole?.id,
 				clanRole?.title,
 				clanRole?.color || '',
@@ -119,7 +119,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
 	}, [
-		clanRole?.clan_id,
+		clanRole?.clanId,
 		clanRole?.color,
 		clanRole?.id,
 		clanRole?.title,
@@ -152,7 +152,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 	}, []);
 
 	const handleNextStep = async () => {
-		const response = await updateRole(newRole?.clan_id, newRole?.id, newRole?.title, newRole?.color || '', [], selectedPermissions, [], []);
+		const response = await updateRole(newRole?.clanId, newRole?.id, newRole?.title, newRole?.color || '', [], selectedPermissions, [], []);
 		if (response) {
 			navigation.navigate(APP_SCREEN.MENU_CLAN.SETUP_ROLE_MEMBERS);
 		} else {
@@ -169,7 +169,7 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 	//Note: edit role case
 	useEffect(() => {
 		if (clanRole?.id) {
-			const selectedPermissions = clanRole?.permission_list?.permissions?.filter((it) => it?.active).map((it) => it?.id);
+			const selectedPermissions = clanRole?.permissionList?.permissions?.filter((it) => it?.active).map((it) => it?.id);
 			setOriginSelectedPermissions(selectedPermissions);
 			setSelectedPermissions(selectedPermissions);
 		}

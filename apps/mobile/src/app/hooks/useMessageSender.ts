@@ -3,11 +3,11 @@ import { useMemo } from 'react';
 
 export function useMessageSender(user?: IChannelMember | null) {
 	const avatarImg = useMemo(() => {
-		return user?.user?.avatar_url || '';
+		return user?.user?.avatarUrl || '';
 	}, [user]);
 
 	const hasAvatar = useMemo(() => {
-		return Boolean(user?.user?.avatar_url);
+		return Boolean(user?.user?.avatarUrl);
 	}, [user]);
 
 	const username = useMemo(() => {

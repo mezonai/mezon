@@ -55,7 +55,7 @@ const SearchMessagePage = ({
 			if (channelIdFilter) return channelIdFilter;
 			return '0';
 		}
-		return currentChannel?.channel_id || currentChannel?.id;
+		return currentChannel?.channelId || currentChannel?.id;
 	}, [channelIdFilter, currentChannel]);
 
 	const store = getStore();
@@ -81,9 +81,9 @@ const SearchMessagePage = ({
 		try {
 			return listChannels
 				.filter((channel) => {
-					return normalizeString(channel?.channel_label).toLowerCase().includes(normalizeString(searchText).toLowerCase());
+					return normalizeString(channel?.channelLabel).toLowerCase().includes(normalizeString(searchText).toLowerCase());
 				})
-				.sort((a: SearchItemProps, b: SearchItemProps) => compareObjects(a, b, searchText, 'channel_label'));
+				.sort((a: SearchItemProps, b: SearchItemProps) => compareObjects(a, b, searchText, 'channelLabel'));
 		} catch (err) {
 			console.error('Filter/sort channelsSearch error', err);
 			return [];
@@ -93,8 +93,8 @@ const SearchMessagePage = ({
 	const formatMemberData = useCallback((userChannels: ChannelMembersEntity[]) => {
 		return (
 			userChannels?.map?.((i) => ({
-				avatar_url: i?.clan_avatar || i?.user?.avatar_url,
-				display_name: i?.clan_nick || i?.user?.display_name || i?.user?.username,
+				avatarUrl: i?.clanAvatar || i?.user?.avatarUrl,
+				displayName: i?.clanNick || i?.user?.displayName || i?.user?.username,
 				id: i?.id,
 				username: i?.user?.username
 			})) || []
@@ -133,7 +133,7 @@ const SearchMessagePage = ({
 		return members
 			.map((member) => {
 				const username = (member?.username || '').toLowerCase();
-				const displayName = (member?.display_name || '').toLowerCase();
+				const displayName = (member?.displayName || '').toLowerCase();
 				const usernameNorm = removeDiacritics(username);
 				const displayNorm = removeDiacritics(displayName);
 
@@ -187,10 +187,10 @@ const SearchMessagePage = ({
 
 		return (
 			allDirectMessages?.filter((dmGroup) => {
-				const groupLabel = dmGroup?.channel_label || dmGroup?.usernames?.[0] || '';
+				const groupLabel = dmGroup?.channelLabel || dmGroup?.usernames?.[0] || '';
 				return normalizeString(groupLabel)?.toLowerCase().includes(normalizeString(searchText)?.toLowerCase());
 			}) || []
-		).sort((a: SearchItemProps, b: SearchItemProps) => compareObjects(a, b, searchText, 'channel_label'));
+		).sort((a: SearchItemProps, b: SearchItemProps) => compareObjects(a, b, searchText, 'channelLabel'));
 	}, [searchText, nameChannel, allDirectMessages]);
 
 	const TabList = useMemo(() => {

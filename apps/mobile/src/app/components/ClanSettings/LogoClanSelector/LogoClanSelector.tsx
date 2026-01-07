@@ -27,14 +27,14 @@ const LogoClanSelector = () => {
 		(logo: string) =>
 			dispatch(
 				clansActions.updateClan({
-					clan_id: currentClan?.clan_id ?? '',
+					clanId: currentClan?.clanId ?? '',
 					request: {
 						banner: currentClan?.banner ?? '',
-						clan_name: currentClan?.clan_name ?? '',
-						creator_id: currentClan?.creator_id ?? '',
-						is_onboarding: currentClan?.is_onboarding,
+						clanName: currentClan?.clanName ?? '',
+						creatorId: currentClan?.creatorId ?? '',
+						isOnboarding: currentClan?.isOnboarding,
 						logo,
-						welcome_channel_id: currentClan?.welcome_channel_id ?? ''
+						welcomeChannelId: currentClan?.welcomeChannelId ?? ''
 					}
 				})
 			),
@@ -75,7 +75,7 @@ const LogoClanSelector = () => {
 					defaultValue={currentClan?.logo}
 					onLoad={handleLoad}
 					autoUpload={true}
-					alt={currentClan?.clan_name}
+					alt={currentClan?.clanName}
 					disabled={!isHavePermission}
 					imageSizeLimit={MAX_FILE_SIZE_1MB}
 				/>
@@ -85,7 +85,7 @@ const LogoClanSelector = () => {
 					</TouchableOpacity>
 				)}
 			</View>
-			<Text style={styles.clanName}>{currentClan?.clan_name}</Text>
+			<Text style={styles.clanName}>{currentClan?.clanName}</Text>
 		</View>
 	);
 };

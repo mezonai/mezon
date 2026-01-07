@@ -2,7 +2,7 @@ import { ModalSaveChanges } from '@mezon/components';
 import { editApplication, fetchApplications, selectAppDetail, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import type { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js/api.gen';
+import type { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js/types';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -134,7 +134,7 @@ interface IAppDetailRightProps {
 const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 	const { t } = useTranslation('adminApplication');
 	const [changeName, setChangeName] = useState(appDetail.appname);
-	const [changeUrl, setChangeUrl] = useState(appDetail.app_url);
+	const [changeUrl, setChangeUrl] = useState(appDetail.appUrl);
 	const [changeAboutApp, setChangeAboutApp] = useState(appDetail.about);
 	const [changeBotShadow, setChangeBotShadow] = useState<boolean>(false);
 	const [isShowDeletePopup, setIsShowDeletePopup] = useState(false);
@@ -173,12 +173,12 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 
 	useEffect(() => {
 		setChangeName(appDetail.appname);
-		setChangeUrl(appDetail.app_url);
+		setChangeUrl(appDetail.appUrl);
 		setChangeAboutApp(appDetail.about);
 
 		if (!shadowModified) {
 			let isShadow = false;
-			if (appDetail.is_shadow === true) {
+			if (appDetail.isShadow === true) {
 				isShadow = true;
 			}
 			setChangeBotShadow(isShadow);
@@ -217,7 +217,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			setIsUrlValid(false);
 		}
 
-		const isChanged = value !== appDetail.app_url;
+		const isChanged = value !== appDetail.appUrl;
 		setUrlChanged(isChanged);
 	};
 
@@ -231,11 +231,11 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 
 	const handleResetChange = () => {
 		setChangeName(appDetail.appname);
-		setChangeUrl(appDetail.app_url);
+		setChangeUrl(appDetail.appUrl);
 		setChangeAboutApp(appDetail.about);
 
 		let isShadow = false;
-		if (appDetail.is_shadow === true) {
+		if (appDetail.isShadow === true) {
 			isShadow = true;
 		}
 		setChangeBotShadow(isShadow);
@@ -256,15 +256,15 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 			updateRequest.appname = changeName;
 		}
 
-		if (changeUrl !== appDetail.app_url) {
-			updateRequest.app_url = changeUrl;
+		if (changeUrl !== appDetail.appUrl) {
+			updateRequest.appUrl = changeUrl;
 		}
 
 		if (changeAboutApp !== appDetail.about) {
 			updateRequest.about = changeAboutApp;
 		}
 
-		(updateRequest as MezonUpdateAppBody & { is_shadow: string }).is_shadow = changeBotShadow ? 'true' : 'false';
+		(updateRequest as MezonUpdateAppBody & { isShadow: string }).isShadow = changeBotShadow ? 'true' : 'false';
 
 		if (Object.keys(updateRequest).length === 0) return;
 
@@ -309,7 +309,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 		}
 	};
 
-	const setAppOrBot = appDetail.app_url ? APP_TYPES.APPLICATION : APP_TYPES.BOT;
+	const setAppOrBot = appDetail.appUrl ? APP_TYPES.APPLICATION : APP_TYPES.BOT;
 
 	return (
 		<div className="flex-1 flex flex-col gap-7">
@@ -323,7 +323,7 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 				/>
 			</div>
 
-			{appDetail.app_url ? (
+			{appDetail.appUrl ? (
 				<div className="w-full flex flex-col gap-2">
 					<div className="text-[12px] uppercase font-semibold">{t('generalInformation.form.url')}</div>
 					<input

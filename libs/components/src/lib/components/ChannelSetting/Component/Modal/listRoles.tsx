@@ -29,7 +29,7 @@ const ListRole = (props: ListRoleProps) => {
 					/>
 					<Icons.Check className="absolute invisible peer-checked:visible forced-colors:hidden w-4 h-4" />
 				</div>
-				{role.role_icon ? <img src={role.role_icon} alt="" className={'size-5'} /> : <Icons.RoleIcon defaultSize="w-5 h-5 min-w-5" />}
+				{role.roleIcon ? <img src={role.roleIcon} alt="" className={'size-5'} /> : <Icons.RoleIcon defaultSize="w-5 h-5 min-w-5" />}
 				<p
 					className="text-sm one-line"
 					data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.role_list.role_item.title')}

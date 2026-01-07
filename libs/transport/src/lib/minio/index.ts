@@ -1,6 +1,6 @@
 import { Buffer as BufferMobile } from 'buffer';
 import type { Client, Session } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 
 export class CustomFile extends File {
 	url?: string;

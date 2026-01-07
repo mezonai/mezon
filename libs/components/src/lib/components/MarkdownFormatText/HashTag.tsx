@@ -3,6 +3,7 @@ import { categoriesActions, selectClanView, selectCurrentChannelType, useAppDisp
 import { Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalUnknowChannel from './ModalUnknowChannel';
@@ -10,9 +11,10 @@ type ChannelHashtagProps = {
 	channelHastagId: string;
 	isJumMessageEnabled: boolean;
 	isTokenClickAble: boolean;
+	isLink?: boolean;
 };
 
-const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble }: ChannelHashtagProps) => {
+const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble, isLink }: ChannelHashtagProps) => {
 	const dispatch = useAppDispatch();
 	const isClanView = useSelector(selectClanView);
 	const { toChannelPage, navigate } = useAppNavigation();
@@ -23,8 +25,8 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 	const handleClick = useCallback(() => {
 		if (!channel) return;
 
-		const channelUrl = toChannelPage(channel?.id, channel?.clan_id ?? '');
-		dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
+		const channelUrl = toChannelPage(channel?.id, channel?.clanId ?? '');
+		dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parentId ?? '' }));
 		navigate(channelUrl);
 	}, [channel, dispatch, navigate, toChannelPage]);
 
@@ -61,35 +63,36 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 				) : channel.type === ChannelType.CHANNEL_TYPE_APP ? (
 					<Icons.AppChannelIcon className={`inline mt-[-0.2rem] w-4 h-4`} />
 				) : channel.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
-					!channel.channel_private || channel.channel_private === 0 ? (
+					!channel.channelPrivate || channel.channelPrivate === 0 ? (
 						<Icons.Hashtag defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
 					) : (
 						<Icons.HashtagLocked defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
 					)
 				) : channel.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					!channel.channel_private || channel.channel_private === 0 ? (
+					!channel.channelPrivate || channel.channelPrivate === 0 ? (
 						<Icons.ThreadIcon defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
 					) : (
 						<Icons.ThreadIconLocker className={`inline-block -mt-[0.2rem] w-4 h-4 `} />
 					)
 				) : null}
-				{channel.channel_label}
+				{channel.channelLabel}
 			</div>
 		) : null
 	) : (
-		<PrivateChannel onClick={openUnknown} />
+		<PrivateChannel onClick={openUnknown} isLink={!!isLink} />
 	);
 };
 
 export default memo(ChannelHashtag);
-function PrivateChannel({ onClick }: { onClick: () => void }) {
+function PrivateChannel({ onClick, isLink }: { onClick: () => void; isLink: boolean }) {
+	const { t } = useTranslation('message');
 	return (
 		<span
 			onClick={onClick}
-			className={`px-0.1 rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
+			className={`px-0.1 items-center rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
 		>
-			<Icons.LockedPrivate className={`mt-1 w-4 h-4`} />
-			<span>private-channel</span>
+			{isLink ? <Icons.Hashtag defaultSize={`w-4 h-4`} /> : <Icons.LockedPrivate className={`w-4 h-4`} />}
+			<span className={`${isLink ? 'italic' : ''}`}>{isLink ? t('unknown') : t('noAccess')}</span>
 		</span>
 	);
 }

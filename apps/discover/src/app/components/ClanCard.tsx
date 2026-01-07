@@ -1,4 +1,4 @@
-import type { ApiClanDiscover } from 'mezon-js/api.gen';
+import type { ApiClanDiscover } from 'mezon-js/types';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_IMAGES } from '../constants/constants';
@@ -22,9 +22,9 @@ const ClanCard: React.FC<ClanCardProps> = ({ clan }) => {
 	const formatNumber = (num: number | undefined) => {
 		return num?.toLocaleString('en-US') || '0';
 	};
-	const clanId = clan.clan_id;
+	const clanId = clan.clanId;
 	const isValidId = typeof clanId === 'string' && clanId.length > 0;
-	const clanName = clan.clan_name || 'Unnamed Clan';
+	const clanName = clan.clanName || 'Unnamed Clan';
 
 	const handleBannerError = () => {
 		setBannerError(true);
@@ -37,7 +37,7 @@ const ClanCard: React.FC<ClanCardProps> = ({ clan }) => {
 	return (
 		<div
 			className="flex bg-gray-100 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer overflow-hidden mb-2"
-			onClick={() => navigate(`/clans/clan/${clan.short_url || clan.clan_id}`)}
+			onClick={() => navigate(`/clans/clan/${clan.shortUrl || clan.clanId}`)}
 		>
 			<div className="flex-shrink-0 w-24 sm:w-40 h-24 sm:h-28 md:w-48 md:h-32 bg-gray-200 flex items-center justify-center">
 				<ImageWithSkeleton
@@ -52,7 +52,7 @@ const ClanCard: React.FC<ClanCardProps> = ({ clan }) => {
 				<div className="flex items-center gap-2 min-w-0 mb-1">
 					<div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-white border border-gray-200 shadow flex items-center justify-center overflow-hidden flex-shrink-0">
 						<ImageWithSkeleton
-							src={clan.clan_logo && !logoError ? clan.clan_logo : DEFAULT_IMAGES.LOGO}
+							src={clan.clanLogo && !logoError ? clan.clanLogo : DEFAULT_IMAGES.LOGO}
 							alt={`${clanName} logo`}
 							className="w-full h-full object-cover"
 							skeletonClassName="rounded-full"
@@ -72,7 +72,7 @@ const ClanCard: React.FC<ClanCardProps> = ({ clan }) => {
 							<circle cx="6" cy="6" r="3" fill="#22c55e" />
 						</svg>
 					</div>
-					<span>{formatNumber(clan.total_members) || (isValidId ? '100+' : '0')} Members</span>
+					<span>{formatNumber(clan.totalMembers) || (isValidId ? '100+' : '0')} Members</span>
 				</div>
 				<div className="mt-1">
 					<span

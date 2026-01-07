@@ -166,7 +166,7 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 										<button
 											onClick={(e) => handleRemoveClanFromGroup(e, clan.id)}
 											className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 transform hover:scale-110 z-10 bg-gray-100 hover:bg-gray-200  dark:hover:bg-gray-600 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 shadow-sm"
-											title={`Remove ${clan.clan_name} from group`}
+											title={`Remove ${clan.clanName} from group`}
 										>
 											<CloseIcon className="w-2.5 h-2.5 stroke-2" />
 										</button>
@@ -219,17 +219,17 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 		>
 			<div className="w-[40px] h-[40px] rounded-lg relative overflow-hidden dark:bg-bgSecondary bg-bgLightMode hover:dark:bg-bgSecondary600 hover:bg-bgLightModeButton transition-all duration-200">
 				{displayClans.length === 1 && displayClans[0] ? (
-					<div className="w-full h-full" title={displayClans[0]?.clan_name}>
+					<div className="w-full h-full" title={displayClans[0]?.clanName}>
 						{displayClans[0].logo ? (
 							<img
 								src={createImgproxyUrl(displayClans[0].logo || '', { width: 100, height: 100, resizeType: 'fill-down' })}
-								alt={displayClans[0].clan_name || ''}
+								alt={displayClans[0].clanName || ''}
 								className="w-full h-full object-cover rounded-lg"
 								draggable="false"
 							/>
 						) : (
 							<div className="w-full h-full dark:bg-bgSecondary bg-bgLightMode rounded-lg flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[20px]">
-								{(displayClans[0].clan_name || '').charAt(0).toUpperCase()}
+								{(displayClans[0].clanName || '').charAt(0).toUpperCase()}
 							</div>
 						)}
 					</div>
@@ -238,17 +238,17 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 						{displayClans.slice(0, 2).map(
 							(clan, index) =>
 								clan && (
-									<div key={clan.id} className="w-1/2 h-full" title={clan?.clan_name}>
+									<div key={clan.id} className="w-1/2 h-full" title={clan?.clanName}>
 										{clan.logo ? (
 											<img
 												src={createImgproxyUrl(clan.logo, { width: 100, height: 100, resizeType: 'fill-down' })}
-												alt={clan.clan_name || ''}
+												alt={clan.clanName || ''}
 												className="w-full h-full object-cover"
 												draggable="false"
 											/>
 										) : (
 											<div className="w-full h-full dark:bg-bgSecondary bg-bgLightMode flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[10px]">
-												{(clan.clan_name || '').charAt(0).toUpperCase()}
+												{(clan.clanName || '').charAt(0).toUpperCase()}
 											</div>
 										)}
 									</div>
@@ -260,17 +260,17 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 						{displayClans.slice(0, 4).map(
 							(clan, index) =>
 								clan && (
-									<div key={clan.id} className="w-full h-full" title={clan?.clan_name}>
+									<div key={clan.id} className="w-full h-full" title={clan?.clanName}>
 										{clan.logo ? (
 											<img
 												src={createImgproxyUrl(clan.logo || '', { width: 100, height: 100, resizeType: 'fill-down' })}
-												alt={clan.clan_name || ''}
+												alt={clan.clanName || ''}
 												className="w-full h-full object-cover"
 												draggable="false"
 											/>
 										) : (
 											<div className="w-full h-full dark:bg-bgSecondary bg-bgLightMode flex justify-center items-center dark:text-contentSecondary text-textLightTheme text-[8px]">
-												{(clan.clan_name || '').charAt(0).toUpperCase()}
+												{(clan.clanName || '').charAt(0).toUpperCase()}
 											</div>
 										)}
 									</div>

@@ -35,8 +35,8 @@ const TempMemberItem = memo(({ id, isOwner }: TempMemberItemProps) => {
 	const userMeta = useMemberStatus(id);
 	const currentChannelID = useAppSelector(selectCurrentChannelId);
 	const userCustomStatus = useAppSelector((state) => selectMemberCustomStatusByUserId(state, user.user?.id || ''));
-	const avatar = user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '');
-	const username = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
+	const avatar = user.clanAvatar ? user.clanAvatar : (user?.user?.avatarUrl ?? '');
+	const username = user?.clanNick || user?.user?.displayName || user?.user?.username || '';
 
 	return (
 		<div className="cursor-pointer flex items-center gap-[9px] relative ">
@@ -74,8 +74,8 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 	const userMeta = useMemberStatus(id);
 	const userCustomStatus = useAppSelector((state) => selectMemberCustomStatusByUserId(state, user?.user?.id || ''));
 	const userVoiceStatus = useAppSelector((state) => selectStatusInVoice(state, user.user?.id || ''));
-	const avatar = user.clan_avatar ? user.clan_avatar : (user?.user?.avatar_url ?? '');
-	const username = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
+	const avatar = user.clanAvatar ? user.clanAvatar : (user?.user?.avatarUrl ?? '');
+	const username = user?.clanNick || user?.user?.displayName || user?.user?.username || '';
 	const { showContextMenu, openProfileItem, setCurrentUser } = useMemberContextMenu();
 	const handleClick = (event: React.MouseEvent) => {
 		setCurrentUser(user);

@@ -64,7 +64,7 @@ export const DirectMessageCallMain = memo(({ route, onCloseModal }: IDirectMessa
 		isVideoCall,
 		isFromNative,
 		callerName: userProfile?.user?.username,
-		callerAvatar: userProfile?.user?.avatar_url
+		callerAvatar: userProfile?.user?.avatarUrl
 	});
 
 	useEffect(() => {
@@ -158,7 +158,7 @@ export const DirectMessageCallMain = memo(({ route, onCloseModal }: IDirectMessa
 	useEffect(() => {
 		const lastSignalingData = signalingData?.[signalingData.length - 1]?.signalingData;
 		if (lastSignalingData) {
-			const dataType = lastSignalingData?.data_type;
+			const dataType = lastSignalingData?.dataType;
 
 			if ([WebrtcSignalingType.WEBRTC_SDP_QUIT, WebrtcSignalingType.WEBRTC_SDP_TIMEOUT].includes(dataType)) {
 				if (!timeStartConnected?.current) {

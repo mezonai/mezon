@@ -18,9 +18,9 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 	const handleSubmit = async () => {
 		await updateUser(
 			userProfile?.user?.username || '',
-			userProfile?.user?.avatar_url || '',
-			userProfile?.user?.display_name || '',
-			userProfile?.user?.about_me || '',
+			userProfile?.user?.avatarUrl || '',
+			userProfile?.user?.displayName || '',
+			userProfile?.user?.aboutMe || '',
 			dob,
 			userProfile?.logo || ''
 		);

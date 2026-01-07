@@ -120,7 +120,7 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 			<div className="custom-video-container w-full h-full relative">
 				{!isRemoteVideoStream && (
 					<img
-						src={currentChannel?.channel_avatar || 'assets/images/flahstream.png'}
+						src={currentChannel?.channelAvatar || 'assets/images/flahstream.png'}
 						alt={t('streamThumbnail')}
 						className="w-full h-full object-cover"
 					/>
@@ -239,8 +239,8 @@ export function UserListStreamChannel({ memberJoin = [], memberMax, isShowChat }
 }
 
 function UserItem({ user }: { user: IChannelMember }) {
-	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user.user_id ?? ''));
-	const avatar = getAvatarForPrioritize(userStream?.clan_avatar, userStream?.user?.avatar_url);
+	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user.userId ?? ''));
+	const avatar = getAvatarForPrioritize(userStream?.clanAvatar, userStream?.user?.avatarUrl);
 
 	return (
 		<div className="w-14 h-14 rounded-full">
@@ -281,7 +281,7 @@ export default function ChannelStream({
 	isStream
 }: ChannelStreamProps) {
 	const { t } = useTranslation('channelStream');
-	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || ''));
+	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channelId || ''));
 	const streamPlay = useSelector(selectStatusStream);
 	const isJoin = useSelector(selectIsJoin);
 	const { userProfile } = useAuth();
@@ -310,7 +310,7 @@ export default function ChannelStream({
 		}
 		dispatch(videoStreamActions.setIsJoin(false));
 		disconnect();
-		const idStreamByMe = memberJoin?.find((member) => member?.user_id === userProfile?.user?.id)?.id;
+		const idStreamByMe = memberJoin?.find((member) => member?.userId === userProfile?.user?.id)?.id;
 		dispatch(usersStreamActions.remove(idStreamByMe || ''));
 		dispatch(appActions.setIsShowChatStream(false));
 		setShowMembers(true);
@@ -323,18 +323,18 @@ export default function ChannelStream({
 			videoStreamActions.startStream({
 				clanId: currentClanId as string,
 				clanName: currentClanName as string,
-				streamId: currentChannel.channel_id as string,
-				streamName: currentChannel.channel_label as string,
-				parentId: currentChannel.parent_id as string
+				streamId: currentChannel.channelId as string,
+				streamName: currentChannel.channelLabel as string,
+				parentId: currentChannel.parentId as string
 			})
 		);
 		dispatch(videoStreamActions.setIsJoin(true));
 		disconnect();
 		handleChannelClick(
 			currentClanId as string,
-			currentChannel?.channel_id as string,
+			currentChannel?.channelId as string,
 			userProfile?.user?.id as string,
-			currentChannel?.channel_id as string,
+			currentChannel?.channelId as string,
 			userProfile?.user?.username as string,
 			accessToken as string
 		);
@@ -372,16 +372,16 @@ export default function ChannelStream({
 
 	return (
 		<>
-			{(currentStreamInfo?.streamId !== currentChannel?.channel_id || !isJoin) && (
+			{(currentStreamInfo?.streamId !== currentChannel?.channelId || !isJoin) && (
 				<div className="w-full h-full bg-gray-300 dark:bg-black flex justify-center items-center">
 					<div className="flex flex-col justify-center items-center gap-4 w-full">
 						<div className="w-full flex gap-2 justify-center p-2">
 							{memberJoin.length > 0 && <UserListStreamChannel memberJoin={memberJoin} memberMax={3}></UserListStreamChannel>}
 						</div>
 						<div className="max-w-[350px] text-center text-3xl font-bold text-gray-800 dark:text-white">
-							{currentChannel?.channel_label && currentChannel.channel_label.length > 20
-								? `${currentChannel.channel_label.substring(0, 20)}...`
-								: currentChannel?.channel_label}
+							{currentChannel?.channelLabel && currentChannel.channelLabel.length > 20
+								? `${currentChannel.channelLabel.substring(0, 20)}...`
+								: currentChannel?.channelLabel}
 						</div>
 						{memberJoin.length > 0 ? (
 							<div className="text-gray-800 dark:text-white">{t('everyoneWaiting')}</div>
@@ -399,7 +399,7 @@ export default function ChannelStream({
 				</div>
 			)}
 			<div
-				className={`${currentStreamInfo?.streamId !== currentChannel?.channel_id || !isJoin ? 'w-0 h-0 overflow-hidden' : 'w-full h-full'} flex relative group`}
+				className={`${currentStreamInfo?.streamId !== currentChannel?.channelId || !isJoin ? 'w-0 h-0 overflow-hidden' : 'w-full h-full'} flex relative group`}
 				onMouseMove={handleMouseMoveOrClick}
 				onClick={handleMouseMoveOrClick}
 			>

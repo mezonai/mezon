@@ -2,7 +2,7 @@ import { authActions, getApplicationDetail, selectAllApps, selectTheme, useAppDi
 import { Icons, Menu } from '@mezon/ui';
 import isElectron from 'is-electron';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiApp } from 'mezon-js/api.gen';
+import type { ApiApp } from 'mezon-js/types';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -193,8 +193,8 @@ const ApplicationsList = ({ isSmallSizeSort, appListForDisplaying }: IApplicatio
 		navigate(id);
 	};
 
-	const applications = appListForDisplaying.filter((app) => app.app_url && app.app_url.trim() !== '');
-	const bots = appListForDisplaying.filter((app) => !app.app_url || app.app_url.trim() === '');
+	const applications = appListForDisplaying.filter((app) => app.appUrl && app.appUrl.trim() !== '');
+	const bots = appListForDisplaying.filter((app) => !app.appUrl || app.appUrl.trim() === '');
 
 	const renderAppList = (items: ApiApp[], title: string) => (
 		<div className="flex flex-col gap-5">
@@ -204,9 +204,9 @@ const ApplicationsList = ({ isSmallSizeSort, appListForDisplaying }: IApplicatio
 					<div
 						onClick={() => goToAppDetailPage(value.id as string)}
 						key={index}
-						className={`relative p-[10px] rounded-md cursor-pointer hover:-translate-y-2 duration-200 hover:shadow-2xl ${isSmallSizeSort ? 'w-[128px] applicationItemSmallSort' : 'w-[206px] applicationItemLargeSort'} ${value.is_shadow ? 'dark:bg-[#474a51] dark:hover:bg-[#393a40] bg-[#c6ccd2] hover:bg-[#adaeaf]' : 'dark:bg-[#2b2d31] dark:hover:bg-[#1e1f22] bg-bgLightModeSecond hover:bg-[#e3e5e8]'}`}
+						className={`relative p-[10px] rounded-md cursor-pointer hover:-translate-y-2 duration-200 hover:shadow-2xl ${isSmallSizeSort ? 'w-[128px] applicationItemSmallSort' : 'w-[206px] applicationItemLargeSort'} ${value.isShadow ? 'dark:bg-[#474a51] dark:hover:bg-[#393a40] bg-[#c6ccd2] hover:bg-[#adaeaf]' : 'dark:bg-[#2b2d31] dark:hover:bg-[#1e1f22] bg-bgLightModeSecond hover:bg-[#e3e5e8]'}`}
 					>
-						{value.is_shadow && (
+						{value.isShadow && (
 							<div className="w-fit p-[6px] rounded-full dark:bg-bgLightPrimary bg-bgPrimary top-1 left-1 absolute">
 								<Icons.ShadowBotIcon className="w-6 dark:text-textPrimaryLight text-textPrimary" />
 							</div>

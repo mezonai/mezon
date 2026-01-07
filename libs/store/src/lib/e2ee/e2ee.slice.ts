@@ -1,7 +1,7 @@
 import { captureSentryError } from '@mezon/logger';
 import { LoadingStatus } from '@mezon/utils';
 import { EntityState, GetThunkAPI, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiPubKey } from 'mezon-js/api.gen';
+import { ApiPubKey } from 'mezon-js/types';
 import { selectDirectById } from '../direct/direct.slice';
 import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
 import { RootState } from '../store';
@@ -96,8 +96,8 @@ export const e2eeSlice = createSlice({
 			.addCase(getPubKeys.fulfilled, (state: E2eeState, action) => {
 				state.loadingStatus = 'loaded';
 				const pubKeys =
-					action.payload.pub_keys?.map((pk: { PK?: ApiPubKey; user_id?: string }) => ({
-						id: pk.user_id || '',
+					action.payload.pubKeys?.map((pk: { PK?: ApiPubKey; userId?: string }) => ({
+						id: pk.userId || '',
 						PK: pk.PK || {}
 					})) || [];
 				e2eeAdapter.upsertMany(state, pubKeys);

@@ -64,7 +64,7 @@ export const ChannelOnboarding = memo(() => {
 					navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
 						screen: APP_SCREEN.MENU_CLAN.CREATE_CHANNEL,
 						params: {
-							categoryId: channel?.category_id
+							categoryId: channel?.categoryId
 						}
 					});
 				}
@@ -120,7 +120,7 @@ export const ChannelOnboarding = memo(() => {
 
 	return (
 		<View>
-			{availableStep < NUM_OF_STEP && userId === clan?.creator_id && (
+			{availableStep < NUM_OF_STEP && userId === clan?.creatorId && (
 				<TouchableOpacity style={styles.container} onPress={handlePressOnboarding}>
 					<LinearGradient
 						start={{ x: 1, y: 0 }}

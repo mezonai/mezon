@@ -26,8 +26,8 @@ const ButtonAnswerCallGroup = memo(
 		const onDeniedCall = async () => {
 			const quitAction = {
 				is_video: false,
-				group_id: dataCallGroup.groupId || '',
-				caller_id: userId,
+				groupId: dataCallGroup.groupId || '',
+				callerId: userId,
 				caller_name: dataCallGroup.groupName || '',
 				timestamp: Date.now(),
 				action: 'decline'
@@ -63,7 +63,7 @@ const ButtonAnswerCallGroup = memo(
 					[dataCall?.callerId],
 					WEBRTC_SIGNALING_TYPES.GROUP_CALL_PARTICIPANT_JOINED,
 					joinAction,
-					dataCall?.channel_id || '',
+					dataCall?.channelId || '',
 					userId || ''
 				);
 			}

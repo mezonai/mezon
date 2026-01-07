@@ -15,7 +15,7 @@ import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { getMobileUploadedAttachments, getWebUploadedAttachments, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useChannelMembers } from './useChannelMembers';
@@ -82,9 +82,9 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 
 			await socket.writeChatMessage(
 				currentClanId,
-				thread.channel_id as string,
+				thread.channelId as string,
 				ChannelStreamMode.STREAM_MODE_THREAD,
-				thread.channel_private === 0,
+				thread.channelPrivate === 0,
 				content,
 				mentions,
 				uploadedFiles,
@@ -141,7 +141,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				currentClanId,
 				channelId,
 				ChannelStreamMode.STREAM_MODE_THREAD,
-				thread ? !thread.channel_private : false,
+				thread ? !thread.channelPrivate : false,
 				messageId,
 				editMessage
 			);

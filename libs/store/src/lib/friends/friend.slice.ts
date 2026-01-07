@@ -3,7 +3,7 @@ import { EUserStatus, type IUserProfileActivity, type LoadingStatus } from '@mez
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { AddFriend } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api.gen';
+import type { ApiFriend } from 'mezon-js/types';
 import { toast } from 'react-toastify';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
@@ -38,8 +38,8 @@ export enum EStateFriend {
 export const mapFriendToEntity = (FriendRes: ApiFriend, myId: string) => {
 	return {
 		...FriendRes,
-		id: myId === FriendRes.source_id ? FriendRes?.user?.id || '' : FriendRes?.source_id || '',
-		source_id: FriendRes?.source_id || ''
+		id: myId === FriendRes.sourceId ? FriendRes?.user?.id || '' : FriendRes?.sourceId || '',
+		sourceId: FriendRes?.sourceId || ''
 	};
 };
 
@@ -48,12 +48,12 @@ const mapFriendToStatus = (friends: ApiFriend[]): IUserProfileActivity[] => {
 	friends.map((friend) => {
 		listFriend.push({
 			id: friend.user?.id || '',
-			avatar_url: friend.user?.avatar_url || '',
-			display_name: friend.user?.display_name,
+			avatarUrl: friend.user?.avatarUrl || '',
+			displayName: friend.user?.displayName,
 			online: friend.user?.online,
-			is_mobile: friend.user?.is_mobile,
+			isMobile: friend.user?.isMobile,
 			status: friend.user?.online ? friend.user?.status || EUserStatus.ONLINE : EUserStatus.INVISIBLE,
-			user_status: friend.user?.user_status,
+			userStatus: friend.user?.userStatus,
 			username: friend.user?.username
 		});
 	});
@@ -131,7 +131,7 @@ export const fetchListFriends = createAsyncThunk('friends/fetchListFriends', asy
 
 	const state = thunkAPI.getState() as RootState;
 	const currentUserId = selectAllAccount(state)?.user?.id || '';
-	const listFriends = response.friends.map((friend) => mapFriendToEntity(friend, currentUserId));
+	const listFriends = response.friends.map((friend: ApiFriend) => mapFriendToEntity(friend, currentUserId));
 	thunkAPI.dispatch(statusActions.updateBulkStatus(mapFriendToStatus(response.friends)));
 	return { friends: listFriends, fromCache: response.fromCache };
 });
@@ -167,7 +167,7 @@ export const sendRequestAddFriend = createAsyncThunk(
 						thunkAPI.dispatch(
 							friendsActions.upsertFriend({
 								id: data?.ids?.[0] || '',
-								source_id: currentUserId,
+								sourceId: currentUserId,
 								state: EStateFriend.OTHER_PENDING,
 								user: {
 									username: usernames?.[0],
@@ -221,17 +221,17 @@ export const upsertFriendRequest = createAsyncThunk(
 	'friends/upsertFriendRequest',
 	async ({ user, myId }: { user: AddFriend; myId: string }, thunkAPI) => {
 		const state = thunkAPI.getState() as RootState;
-		const currentFriendApi = friendsAdapter.getSelectors().selectById(state.friends, `${user.user_id}`);
+		const currentFriendApi = friendsAdapter.getSelectors().selectById(state.friends, `${user.userId}`);
 
 		const friend: FriendsEntity = {
 			state: currentFriendApi ? EStateFriend.FRIEND : EStateFriend.MY_PENDING,
-			id: user.user_id,
-			source_id: myId,
+			id: user.userId,
+			sourceId: myId,
 			user: {
-				id: user.user_id,
+				id: user.userId,
 				username: user.username,
-				avatar_url: user.avatar,
-				display_name: user.display_name
+				avatarUrl: user.avatar,
+				displayName: user.displayName
 			}
 		};
 		thunkAPI.dispatch(friendsActions.upsertFriend(friend));
@@ -281,12 +281,12 @@ export const friendsSlice = createSlice({
 				const friend = key ? state?.entities?.[key] : null;
 				if (friend?.user && statusUser) {
 					friend.user.online = statusUser.online;
-					friend.user.is_mobile = statusUser.isMobile;
+					friend.user.isMobile = statusUser.isMobile;
 				}
 			});
 		},
-		updateUserStatus: (state, action: PayloadAction<{ userId: string; user_status: any }>) => {
-			const { userId, user_status } = action.payload;
+		updateUserStatus: (state, action: PayloadAction<{ userId: string; userStatus: any }>) => {
+			const { userId, userStatus } = action.payload;
 			const key = state?.ids?.find((key) => state?.entities?.[key]?.user?.id === userId);
 			const friendMeta = key ? state?.entities?.[key] : null;
 			if (friendMeta) {
@@ -308,12 +308,12 @@ export const friendsSlice = createSlice({
 			if (friend) {
 				friend.state = friend.state === EStateFriend.BLOCK ? EStateFriend.FRIEND : EStateFriend.BLOCK;
 				if (sourceId) {
-					friend.source_id = sourceId;
+					friend.sourceId = sourceId;
 				}
 			}
 		},
 		upsertFriend: (state, action: PayloadAction<FriendsEntity>) => {
-			const friendEntity = mapFriendToEntity(action.payload, action.payload.source_id || '');
+			const friendEntity = mapFriendToEntity(action.payload, action.payload.sourceId || '');
 			friendsAdapter.upsertOne(state, friendEntity);
 		},
 		acceptFriend: (state, action: PayloadAction<string>) => {
@@ -376,7 +376,7 @@ export const selectFriendStatus = (userId: string) =>
 		return friend?.state;
 	});
 export const selectBlockedUsers = createSelector([selectAllFriends, selectCurrentUserId], (friends, currentUserId) =>
-	friends.filter((friend) => friend?.state === EStateFriend.BLOCK && friend?.user?.id !== currentUserId && friend?.source_id === currentUserId)
+	friends.filter((friend) => friend?.state === EStateFriend.BLOCK && friend?.user?.id !== currentUserId && friend?.sourceId === currentUserId)
 );
 export const selectBlockedUsersForMessage = createSelector([selectAllFriends], (friends) =>
 	friends.filter((friend) => friend?.state === EStateFriend.BLOCK)

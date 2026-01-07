@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { ChannelType } from 'mezon-js';
-import type { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiCreateChannelDescRequest } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -41,6 +41,8 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 	const [clanError, setClanError] = useState<string>();
 	const [categoryValue, setCategoryValue] = useState('');
 	const [categoryError, setCategoryError] = useState<string>();
+	const activeSince = appDetail?.create_time;
+	const activeSincecv = activeSince ? new Date(activeSince).toLocaleDateString() : '';
 	useEffect(() => {
 		if (clanValue) {
 			dispatch(categoriesActions.fetchCategories({ clanId: clanValue }));
@@ -66,7 +68,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 		},
 		errorMessage: clanError,
 		options: clans.map((clan) => ({
-			label: clan.clan_name,
+			label: clan.clanName,
 			value: clan.id
 		}))
 	};
@@ -80,7 +82,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 		},
 		errorMessage: categoryError,
 		options: categories.map((mapCategoryToOption) => ({
-			label: mapCategoryToOption.category_name,
+			label: mapCategoryToOption.categoryName,
 			value: mapCategoryToOption.id
 		}))
 	};
@@ -104,13 +106,13 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 				.slice(0, 32);
 
 		const data: ApiCreateChannelDescRequest = {
-			channel_label: sanitizeLabel(labelValue) || sanitizeLabel(appDetail?.appname || ''),
-			app_id: applicationId,
-			clan_id: clanValue,
-			category_id: categoryValue,
+			channelLabel: sanitizeLabel(labelValue) || sanitizeLabel(appDetail?.appname || ''),
+			appId: applicationId,
+			clanId: clanValue,
+			categoryId: categoryValue,
 			type: ChannelType.CHANNEL_TYPE_APP,
-			channel_private: 0,
-			parent_id: '0'
+			channelPrivate: 0,
+			parentId: '0'
 		};
 
 		try {
@@ -136,18 +138,18 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 					{appDetail.applogo ? (
 						<img src={appDetail.applogo} alt={appDetail.appname} className="w-16 h-16 rounded-full object-cover mb-2" />
 					) : (
-						<span className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold mb-2">
+						<span className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold mb-2 truncate overflow-hidden max-w-[300px]">
 							{appDetail.appname?.[0]}
 						</span>
 					)}
-					<p className="text-xl font-semibold">{appDetail.appname}</p>
+					<p className="text-xl font-semibold truncate overflow-hidden max-w-[300px]">{appDetail.appname}</p>
 				</div>
 			)}
 			<HeaderModal name={appDetail?.appname || ''} username={account?.user?.username} />
 			<SelectField uppercase={true} {...clanConfig} />
 			{clanValue && <SelectField {...categoryConfig} />}
 			<TextField label="Channel Name" value={labelValue} onChange={(v) => setLabelValue(v)} placeholder={appDetail?.appname || ''} />
-			<FooterModal name={appDetail?.appname || ''} />
+			<FooterModal activeSince={activeSincecv} name={appDetail?.appname || ''} />
 			<ModalAsk handelBack={handleOpenModal} handleAddBotOrApp={handleAdd} />
 		</div>
 	);

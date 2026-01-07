@@ -36,7 +36,7 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const isThread = checkIsThread(currentChannel as ChannelsEntity);
-	const currentChannelId = isThread ? (currentChannel?.parent_id ?? '') : (currentChannel?.channel_id ?? '');
+	const currentChannelId = isThread ? (currentChannel?.parentId ?? '') : (currentChannel?.channelId ?? '');
 
 	const setIsShowCreateThread = useCallback(
 		(isShowCreateThread: boolean, channelId?: string) => {
@@ -52,14 +52,14 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 
 	const handleCreateThread = () => {
 		setOpenThreadMessageState(false);
-		if (currentChannel && currentChannel?.parent_id !== '0') {
-			navigate(toChannelPage(currentChannel.parent_id as string, currentChannel.clan_id as string));
+		if (currentChannel && currentChannel?.parentId !== '0') {
+			navigate(toChannelPage(currentChannel.parentId as string, currentChannel.clanId as string));
 		}
 		onClose();
-		setIsShowCreateThread(true, currentChannel?.parent_id !== '0' ? currentChannel?.parent_id : currentChannel.channel_id);
+		setIsShowCreateThread(true, currentChannel?.parentId !== '0' ? currentChannel?.parentId : currentChannel.channelId);
 		dispatch(threadsActions.setNameThreadError(''));
 		dispatch(threadsActions.setMessageThreadError(''));
-		dispatch(searchMessagesActions.setIsSearchMessage({ channelId: currentChannel?.channel_id as string, isSearchMessage: false }));
+		dispatch(searchMessagesActions.setIsSearchMessage({ channelId: currentChannel?.channelId as string, isSearchMessage: false }));
 	};
 
 	const modalRef = useRef<HTMLDivElement>(null);

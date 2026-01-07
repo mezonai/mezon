@@ -26,7 +26,7 @@ import {
 import { EMuteState, createImgproxyUrl, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import type { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
+import type { ApiMarkAsReadRequest } from 'mezon-js/types';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
@@ -56,38 +56,36 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const userProfile = useSelector(selectAllAccount);
 	const currentUserId = useAppSelector(selectCurrentUserId);
-	const infoFriend = useAppSelector((state) => selectFriendById(state, messageInfo?.user_ids?.[0] || ''));
+	const infoFriend = useAppSelector((state) => selectFriendById(state, messageInfo?.userIds?.[0] || ''));
 	const didIBlockUser = useMemo(() => {
 		return (
 			infoFriend?.state === EStateFriend.BLOCK &&
-			infoFriend?.source_id === userProfile?.user?.id &&
-			infoFriend?.user?.id === messageInfo?.user_ids?.[0]
+			infoFriend?.sourceId === userProfile?.user?.id &&
+			infoFriend?.user?.id === messageInfo?.userIds?.[0]
 		);
-	}, [infoFriend?.source_id, infoFriend?.state, infoFriend?.user?.id, messageInfo?.user_ids, userProfile?.user?.id]);
+	}, [infoFriend?.sourceId, infoFriend?.state, infoFriend?.user?.id, messageInfo?.userIds, userProfile?.user?.id]);
 	const { blockFriend, unBlockFriend, deleteFriend, addFriend } = useFriends();
-	const allUserGroupDM = useSelector((state) => selectRawDataUserGroup(state, messageInfo?.channel_id || ''));
+	const allUserGroupDM = useSelector((state) => selectRawDataUserGroup(state, messageInfo?.channelId || ''));
 
 	useEffect(() => {
-		if (messageInfo?.channel_id) {
-			dispatch(fetchUserChannels({ channelId: messageInfo.channel_id, isGroup: true }));
+		if (messageInfo?.channelId) {
+			dispatch(fetchUserChannels({ channelId: messageInfo.channelId, isGroup: true }));
 		}
-	}, [messageInfo?.channel_id]);
+	}, [messageInfo?.channelId]);
 
 	const dismiss = () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 
 	useEffect(() => {
-		dispatch(notificationSettingActions.getNotificationSetting({ channelId: messageInfo?.channel_id }));
+		dispatch(notificationSettingActions.getNotificationSetting({ channelId: messageInfo?.channelId }));
 	}, []);
 
 	const userName: string = useMemo(() => {
-		return (
-			messageInfo?.channel_label || (typeof messageInfo?.usernames === 'string' ? messageInfo?.usernames : messageInfo?.usernames?.[0] || '')
-		);
-	}, [messageInfo?.channel_label, messageInfo?.usernames]);
+		return messageInfo?.channelLabel || (typeof messageInfo?.usernames === 'string' ? messageInfo?.usernames : messageInfo?.usernames?.[0] || '');
+	}, [messageInfo?.channelLabel, messageInfo?.usernames]);
 
-	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, messageInfo?.channel_id || ''));
+	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, messageInfo?.channelId || ''));
 
 	const isDmUnmute = useMemo(() => {
 		return (
@@ -100,14 +98,14 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	}, [messageInfo?.type]);
 
 	const lastOne = useMemo(() => {
-		const userIds = allUserGroupDM?.user_ids || [];
+		const userIds = allUserGroupDM?.userIds || [];
 		return userIds?.length === 1;
-	}, [allUserGroupDM?.user_ids]);
+	}, [allUserGroupDM?.userIds]);
 
 	const isChatWithMyself = useMemo(() => {
 		if (Number(messageInfo?.type) !== ChannelType.CHANNEL_TYPE_DM) return false;
-		return messageInfo?.user_ids?.[0] === currentUserId;
-	}, [messageInfo?.type, messageInfo?.user_ids, currentUserId]);
+		return messageInfo?.userIds?.[0] === currentUserId;
+	}, [messageInfo?.type, messageInfo?.userIds, currentUserId]);
 
 	const handleShowModalLeaveGroup = useCallback(async () => {
 		dismiss();
@@ -117,17 +115,17 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				<MezonConfirm
 					onConfirm={handleLeaveGroupConfirm}
 					title={t('confirm.title', {
-						groupName: messageInfo?.channel_label
+						groupName: messageInfo?.channelLabel
 					})}
 					content={t('confirm.content', {
-						groupName: messageInfo?.channel_label
+						groupName: messageInfo?.channelLabel
 					})}
 					confirmText={t('confirm.confirmText')}
 				/>
 			)
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-	}, [messageInfo?.channel_label, t]);
+	}, [messageInfo?.channelLabel, t]);
 
 	const leaveGroupMenu: IMezonMenuItemProps[] = [
 		{
@@ -139,19 +137,19 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	];
 
 	const handleAddFriend = () => {
-		const body = messageInfo?.user_ids?.[0] ? { ids: [messageInfo?.user_ids?.[0]] } : { usernames: [messageInfo?.usernames?.[0]] };
+		const body = messageInfo?.userIds?.[0] ? { ids: [messageInfo?.userIds?.[0]] } : { usernames: [messageInfo?.usernames?.[0]] };
 		addFriend(body);
 		dismiss();
 	};
 
 	const handleDeleteFriend = () => {
-		deleteFriend(messageInfo?.usernames?.[0], messageInfo?.user_ids?.[0]);
+		deleteFriend(messageInfo?.usernames?.[0], messageInfo?.userIds?.[0]);
 		dismiss();
 	};
 
 	const handleBlockFriend = async () => {
 		try {
-			const isBlocked = await blockFriend(messageInfo?.usernames?.[0], messageInfo?.user_ids?.[0]);
+			const isBlocked = await blockFriend(messageInfo?.usernames?.[0], messageInfo?.userIds?.[0]);
 			if (isBlocked) {
 				Toast.show({
 					type: 'success',
@@ -175,7 +173,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 
 	const handleUnblockFriend = async () => {
 		try {
-			const isUnblocked = await unBlockFriend(messageInfo?.usernames?.[0], messageInfo?.user_ids?.[0]);
+			const isUnblocked = await unBlockFriend(messageInfo?.usernames?.[0], messageInfo?.userIds?.[0]);
 			if (isUnblocked) {
 				Toast.show({
 					type: 'success',
@@ -201,7 +199,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const profileMenu: IMezonMenuItemProps[] = [
 		{
 			onPress: async () => {
-				await dispatch(directActions.closeDirectMessage({ channel_id: messageInfo?.channel_id }));
+				await dispatch(directActions.closeDirectMessage({ channelId: messageInfo?.channelId }));
 				await dispatch(directActions.setDmGroupCurrentId(''));
 				dismiss();
 			},
@@ -240,17 +238,17 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		}
 	];
 
-	const handleMarkAsRead = async (channel_id: string) => {
-		if (!channel_id) return;
+	const handleMarkAsRead = async (channelId: string) => {
+		if (!channelId) return;
 		const timestamp = Date.now() / 1000;
 		const store = getStore();
-		const messageId = store ? selectLatestMessageId(store.getState(), channel_id) : undefined;
-		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: channel_id, timestamp, messageId }));
+		const messageId = store ? selectLatestMessageId(store.getState(), channelId) : undefined;
+		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: channelId, timestamp, messageId }));
 
 		const body: ApiMarkAsReadRequest = {
-			clan_id: '',
-			category_id: '',
-			channel_id
+			clanId: '',
+			categoryId: '',
+			channelId
 		};
 		try {
 			await dispatch(markAsReadProcessing(body));
@@ -263,7 +261,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 
 	const markAsReadMenu: IMezonMenuItemProps[] = [
 		{
-			onPress: async () => await handleMarkAsRead(messageInfo?.channel_id ?? ''),
+			onPress: async () => await handleMarkAsRead(messageInfo?.channelId ?? ''),
 			title: t('menu.markAsRead'),
 			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />,
 			isShow: !isChatWithMyself
@@ -273,10 +271,10 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const handleUnmuteConversation = async () => {
 		try {
 			const body = {
-				channel_id: messageInfo?.channel_id || '',
-				clan_id: currentClanId || '',
+				channelId: messageInfo?.channelId || '',
+				clanId: currentClanId || '',
 				active: EMuteState.UN_MUTE,
-				mute_time: 0
+				muteTime: 0
 			};
 			const response = await dispatch(notificationSettingActions.setMuteChannel(body));
 			if (response?.meta?.requestStatus === 'rejected') {
@@ -331,8 +329,8 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 
 	const handleLeaveGroupConfirm = useCallback(async () => {
 		const isLeaveOrDeleteGroup = lastOne
-			? await dispatch(deleteChannel({ clanId: '0', channelId: messageInfo?.channel_id ?? '', isDmGroup: true }))
-			: await dispatch(removeMemberChannel({ channelId: messageInfo?.channel_id || '', userIds: [currentUserId], kickMember: false }));
+			? await dispatch(deleteChannel({ clanId: '0', channelId: messageInfo?.channelId ?? '', isDmGroup: true }))
+			: await dispatch(removeMemberChannel({ channelId: messageInfo?.channelId || '', userIds: [currentUserId], kickMember: false }));
 		if (!isLeaveOrDeleteGroup) {
 			return;
 		}
@@ -340,16 +338,16 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 
 		await dispatch(fetchDirectMessage({ noCache: true }));
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-	}, [currentUserId, dispatch, lastOne, messageInfo?.channel_id]);
+	}, [currentUserId, dispatch, lastOne, messageInfo?.channelId]);
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.header}>
 				{isGroup ? (
-					messageInfo?.channel_avatar && !messageInfo?.channel_avatar?.includes('avatar-group.png') ? (
+					messageInfo?.channelAvatar && !messageInfo?.channelAvatar?.includes('avatar-group.png') ? (
 						<View style={styles.groupAvatarContainer}>
 							<ImageNative
-								url={createImgproxyUrl(messageInfo?.channel_avatar ?? '')}
+								url={createImgproxyUrl(messageInfo?.channelAvatar ?? '')}
 								style={styles.imageFullSize}
 								resizeMode={'cover'}
 							/>
@@ -379,9 +377,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 					<Text style={styles.serverName} numberOfLines={2}>
 						{userName}
 					</Text>
-					{isGroup && messageInfo?.member_count > 0 && (
+					{isGroup && messageInfo?.memberCount > 0 && (
 						<Text style={styles.memberText}>
-							{messageInfo?.member_count} {t('members')}
+							{messageInfo?.memberCount} {t('members')}
 						</Text>
 					)}
 				</View>

@@ -9,7 +9,7 @@ export interface CommandOption {
 		display: string;
 		description?: string;
 		isBuiltIn?: boolean;
-		menu_type?: number;
+		menuType?: number;
 	};
 }
 
@@ -74,7 +74,7 @@ export const SearchableCommandList: React.FC<SearchableCommandListProps> = ({
 			<div className="flex items-start gap-2 w-full">
 				<div className="flex-1 min-w-0">
 					<div className="flex items-center gap-2 mb-1">
-						{option.command?.menu_type === 2 && (
+						{option.command?.menuType === 2 && (
 							<span className="px-1.5 py-0.5 text-xs bg-green-500 text-white rounded font-medium">BOT</span>
 						)}
 						<span className="font-medium text-sm text-theme-primary">{option.command?.display}</span>

@@ -1,6 +1,6 @@
 import type { ChannelsEntity } from '@mezon/store-mobile';
 import type { IMessageSendPayload } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js/dist/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import { STORAGE_KEY_TEMPORARY_ATTACHMENT } from '../../constant';
 import { load, save } from '../storage';
 

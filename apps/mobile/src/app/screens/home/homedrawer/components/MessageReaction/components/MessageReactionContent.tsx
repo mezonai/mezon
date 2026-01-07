@@ -25,7 +25,7 @@ interface IMessageReactionContentProps {
 }
 
 type ReactionSenderItem = {
-	sender_id: string;
+	senderId: string;
 	count: number;
 };
 
@@ -76,7 +76,7 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 	}, [selectedTabId, allReactionDataOnOneMessage]);
 
 	const isExistingMyEmoji = useMemo(() => {
-		return currentEmojiSelected?.senders?.length > 0 && currentEmojiSelected.senders.find((sender) => sender?.sender_id === userId)?.count > 0;
+		return currentEmojiSelected?.senders?.length > 0 && currentEmojiSelected.senders.find((sender) => sender?.senderId === userId)?.count > 0;
 	}, [currentEmojiSelected, userId]);
 
 	const checkToFocusOtherEmoji = useCallback(() => {
@@ -140,11 +140,11 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 					removeEmoji={removeEmoji}
 					channelId={channelId || ''}
 					currentEmojiSelected={currentEmojiSelected}
-					currentClanId={messageReactions?.clan_id || ''}
+					currentClanId={messageReactions?.clanId || ''}
 				/>
 			);
 		},
-		[userId, removeEmoji, channelId, currentEmojiSelected, messageReactions?.clan_id]
+		[userId, removeEmoji, channelId, currentEmojiSelected, messageReactions?.clanId]
 	);
 
 	return (
@@ -168,7 +168,7 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 						data={dataSenderEmojis || []}
 						renderItem={renderItem}
 						estimatedItemSize={size.s_50}
-						keyExtractor={(item, index) => `${index}_${item?.sender_id}_allReactionDataOnOneMessage`}
+						keyExtractor={(item, index) => `${index}_${item?.senderId}_allReactionDataOnOneMessage`}
 					/>
 				</View>
 			) : (

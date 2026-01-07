@@ -10,37 +10,38 @@ import { useSelector } from 'react-redux';
 
 export type CategoryChannelProps = {
 	channel: IChannel;
+	menuIsOpen?: boolean;
 };
 const SettingCategoryChannel = (props: CategoryChannelProps) => {
-	const { channel } = props;
+	const { channel, menuIsOpen } = props;
 	const { t } = useTranslation('channelSetting');
 	const listCategory = useSelector(selectAllCategories);
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || ''));
+	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channelId || ''));
 	const categoryName = useMemo(() => {
-		if (realTimeChannel?.category_name) {
-			return realTimeChannel.category_name;
+		if (realTimeChannel?.categoryName) {
+			return realTimeChannel.categoryName;
 		}
-		if (realTimeChannel?.category_id) {
-			const category = listCategory.find((cat) => cat.id === realTimeChannel.category_id);
-			return category?.category_name || '';
+		if (realTimeChannel?.categoryId) {
+			const category = listCategory.find((cat) => cat.id === realTimeChannel.categoryId);
+			return category?.categoryName || '';
 		}
 		return '';
-	}, [realTimeChannel?.category_name, realTimeChannel?.category_id, listCategory]);
+	}, [realTimeChannel?.categoryName, realTimeChannel?.categoryId, listCategory]);
 	const dispatch = useAppDispatch();
 	const navigator = useAppNavigation();
 	const handleMoveChannelToNewCategory = useCallback(
 		async (category: CategoriesEntity) => {
 			const updateChannel: IUpdateChannelRequest = {
-				category_id: category.id,
-				category_name: category.category_name,
-				channel_id: realTimeChannel?.channel_id ?? '',
-				channel_label: realTimeChannel?.channel_label ?? '',
-				app_id: '',
-				parent_id: realTimeChannel?.parent_id,
-				channel_private: realTimeChannel?.channel_private
+				categoryId: category.id,
+				categoryName: category.categoryName,
+				channelId: realTimeChannel?.channelId ?? '',
+				channelLabel: realTimeChannel?.channelLabel ?? '',
+				appId: '',
+				parentId: realTimeChannel?.parentId,
+				channelPrivate: realTimeChannel?.channelPrivate
 			};
 			await dispatch(channelsActions.changeCategoryOfChannel(updateChannel)).then(() => {
-				const channelLink = navigator.toChannelPage(realTimeChannel?.channel_id ?? '', realTimeChannel?.clan_id ?? '');
+				const channelLink = navigator.toChannelPage(realTimeChannel?.channelId ?? '', realTimeChannel?.clanId ?? '');
 				navigator.navigate(channelLink);
 			});
 		},
@@ -48,8 +49,8 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 	);
 
 	const listCateUpdate = useMemo(() => {
-		return listCategory.filter((cate) => cate.id !== realTimeChannel?.category_id);
-	}, [listCategory, channel.category_id, realTimeChannel?.category_id]);
+		return listCategory.filter((cate) => cate.id !== realTimeChannel?.categoryId);
+	}, [listCategory, channel.categoryId, realTimeChannel?.categoryId]);
 
 	const menu = useMemo(() => {
 		const menuItems: ReactElement[] = [];
@@ -61,7 +62,7 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 					className={'bg-item-theme-hover text-theme-primary-hover uppercase font-medium text-left cursor-pointer truncate'}
 					onClick={() => handleMoveChannelToNewCategory(category)}
 				>
-					{category.category_name ?? ''}
+					{category.categoryName ?? ''}
 				</Menu.Item>
 			);
 		});
@@ -70,13 +71,15 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 	}, [listCateUpdate, handleMoveChannelToNewCategory]);
 
 	return (
-		<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] pb-7 pr-[10px] pl-[40px] overflow-x-hidden min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
+		<div
+			className={`overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] sbm:pb-7 text-theme-primary sbm:pr-[10px] sbm:pl-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar ${!menuIsOpen ? 'sbm:pt-[94px] pt-[70px]' : 'pt-[94px]'}`}
+		>
 			<div className="text-theme-primary text-[15px] flex flex-col gap-4">
 				<h3 className="font-bold text-xl text-theme-primary-active">{t('categoryManagement.title')}</h3>
 
 				<p className="text-xs font-bold text-theme-primary">{t('categoryManagement.channelName')}</p>
 				<div className="bg-input-secondary border-theme-primary rounded-lg pl-3 py-2 w-full  outline-none text-theme-message">
-					{realTimeChannel.channel_label}
+					{realTimeChannel.channelLabel}
 				</div>
 				<p className="text-xs font-bold text-theme-primary mt-4">{t('categoryManagement.category')}</p>
 
