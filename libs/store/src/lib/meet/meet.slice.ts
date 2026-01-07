@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import type { HandleParticipantMeetStateEvent } from 'mezon-js';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, type MezonMessage } from '../helpers';
 
 type generateMeetTokenPayload = {
 	channelId: string;
@@ -10,9 +10,10 @@ type generateMeetTokenPayload = {
 };
 
 const generateMeetTokenCached = async (mezon: MezonValueContext, channelId: string, roomName: string) => {
-	const body = {
-		channelId: channelId,
-		roomName: roomName
+	const body: MezonMessage<'mezon.api.GenerateMeetTokenRequest', { channelId: string; roomName: string }> = {
+		$typeName: 'mezon.api.GenerateMeetTokenRequest' as const,
+		channelId,
+		roomName
 	};
 	return await mezon.client.generateMeetToken(mezon.session, body);
 };

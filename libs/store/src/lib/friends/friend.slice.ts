@@ -11,7 +11,7 @@ import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCa
 import type { StatusUserArgs } from '../channelmembers/channel.members';
 import { statusActions } from '../direct/status.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
 import type { RootState } from '../store';
 export const FRIEND_FEATURE_KEY = 'friends';
 const LIMIT_FRIEND = 1000;
@@ -39,7 +39,8 @@ export const mapFriendToEntity = (FriendRes: ApiFriend, myId: string) => {
 	return {
 		...FriendRes,
 		id: myId === FriendRes.sourceId ? FriendRes?.user?.id || '' : FriendRes?.sourceId || '',
-		sourceId: FriendRes?.sourceId || ''
+		sourceId: FriendRes?.sourceId || '',
+		updateTime: timestampToString(FriendRes.updateTime)
 	};
 };
 
@@ -131,8 +132,8 @@ export const fetchListFriends = createAsyncThunk('friends/fetchListFriends', asy
 
 	const state = thunkAPI.getState() as RootState;
 	const currentUserId = selectAllAccount(state)?.user?.id || '';
-	const listFriends = response.friends.map((friend: ApiFriend) => mapFriendToEntity(friend, currentUserId));
-	thunkAPI.dispatch(statusActions.updateBulkStatus(mapFriendToStatus(response.friends)));
+	const listFriends = response.friends.map((friend) => mapFriendToEntity(friend as ApiFriend, currentUserId));
+	thunkAPI.dispatch(statusActions.updateBulkStatus(mapFriendToStatus(response.friends as ApiFriend[])));
 	return { friends: listFriends, fromCache: response.fromCache };
 });
 

@@ -2,11 +2,11 @@ import { captureSentryError } from '@mezon/logger';
 import type { IMessageWithUser, IPinMessage, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPinMessage, ApiPinMessageRequest } from 'mezon-js/types';
+import type { ApiPinMessage } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, timestampToString } from '../helpers';
 import type { RootState } from '../store';
 
 export const PIN_MESSAGE_FEATURE_KEY = 'pinmessages';
@@ -78,7 +78,11 @@ export const fetchChannelPinMessagesCached = async (
 };
 
 export const mapChannelPinMessagesToEntity = (pinMessageRes: ApiPinMessage) => {
-	return { ...pinMessageRes, id: pinMessageRes.id || '' };
+	return {
+		...pinMessageRes,
+		id: pinMessageRes.id || '',
+		createTime: timestampToString(pinMessageRes.createTime)
+	};
 };
 
 export const fetchChannelPinMessages = createAsyncThunk(
@@ -113,7 +117,7 @@ export const fetchChannelPinMessages = createAsyncThunk(
 				};
 			}
 
-			const pinMessages = response.pinMessagesList.map((pinMessageRes: ApiPinMessage) => mapChannelPinMessagesToEntity(pinMessageRes));
+			const pinMessages = response.pinMessagesList.map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes as ApiPinMessage));
 			return {
 				channelId,
 				pinMessages,
@@ -139,7 +143,8 @@ export const setChannelPinMessage = createAsyncThunk(
 	async ({ clanId, channelId, messageId, message }: SetChannelPinMessagesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const body: ApiPinMessageRequest = {
+			const body = {
+				$typeName: 'mezon.api.PinMessageRequest' as const,
 				clanId,
 				channelId,
 				messageId

@@ -192,11 +192,12 @@ export async function uploadFile(
 				fn = client.uploadOauthFile.bind(client);
 			}
 			const data = await fn(session, {
+				$typeName: 'mezon.api.UploadAttachmentRequest' as const,
 				filename,
 				filetype: type,
 				size,
-				width,
-				height
+				width: width ?? 0,
+				height: height ?? 0
 			});
 			if (!data?.url) {
 				reject(new Error('Failed to upload file. URL not available.'));

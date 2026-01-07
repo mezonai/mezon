@@ -44,7 +44,7 @@ const fetchWebhooksCached = async (mezon: MezonValueContext, channelId: string, 
 
 export const fetchWebhooks = createAsyncThunk(
 	'integration/fetchWebhooks',
-	async ({ channelId, clanId, noCache }: IFetchWebhooksByChannelIdArg, thunkAPI) => {
+	async ({ channelId, clanId, noCache: _noCache }: IFetchWebhooksByChannelIdArg, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
@@ -68,7 +68,14 @@ export const generateWebhook = createAsyncThunk(
 	async (data: { request: ApiWebhookCreateRequest; channelId: string; clanId: string; isClanSetting?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.generateWebhookLink(mezon.session, data.request);
+			const request = {
+				$typeName: 'mezon.api.WebhookCreateRequest' as const,
+				webhookName: data.request.webhookName || '',
+				channelId: data.request.channelId || data.channelId,
+				avatar: data.request.avatar || '',
+				clanId: data.clanId
+			};
+			const response = await mezon.client.generateWebhookLink(mezon.session, request);
 			if (response) {
 				thunkAPI.dispatch(fetchWebhooks({ channelId: data?.isClanSetting ? '0' : data?.channelId, clanId: data.clanId, noCache: true }));
 				toast.success(i18n.t('integrations:toast.generateSuccess', { name: response.hookName }));
@@ -88,8 +95,10 @@ export const deleteWebhookById = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				channelId: data.channelId,
-				clanId: data.clanId
+				$typeName: 'mezon.api.WebhookDeleteRequestById' as const,
+				id: data.webhook.id as string,
+				clanId: data.clanId,
+				channelId: data.channelId
 			};
 			const response = await mezon.client.deleteWebhookById(mezon.session, data.webhook.id as string, body);
 
@@ -113,7 +122,16 @@ export const updateWebhookBySpecificId = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateWebhookById(mezon.session, data.webhookId as string, data.request);
+			const request = {
+				$typeName: 'mezon.api.WebhookUpdateRequestById' as const,
+				id: data.webhookId as string,
+				webhookName: data.request.webhookName || '',
+				channelIdUpdate: data.request.channelIdUpdate || '',
+				avatar: data.request.avatar || '',
+				channelId: data.request.channelId || data.channelId,
+				clanId: data.clanId
+			};
+			await mezon.client.updateWebhookById(mezon.session, data.webhookId as string, request);
 		} catch (error) {
 			captureSentryError(error, 'integration/editWebhook');
 			return thunkAPI.rejectWithValue(error);

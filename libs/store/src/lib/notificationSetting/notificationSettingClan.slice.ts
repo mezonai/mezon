@@ -59,7 +59,7 @@ export const fetchDefaultNotificationClanCached = async (getState: () => RootSta
 		{
 			api_name: 'GetNotificationClancase',
 			notification_clan: {
-				clanId: clanId
+				clanId
 			}
 		},
 		() => mezon.client.getNotificationClan(mezon.session, clanId),
@@ -118,8 +118,10 @@ export const setDefaultNotificationClan = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				clanId,
-				notificationType
+				$typeName: 'mezon.api.SetDefaultNotificationRequest' as const,
+				clanId: clanId || '',
+				notificationType: notificationType ?? 0,
+				categoryId: ''
 			};
 			const response = await mezon.client.setNotificationClan(mezon.session, body);
 			if (!response) {

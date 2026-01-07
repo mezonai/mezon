@@ -18,11 +18,16 @@ export interface SearchMessageEntity extends ISearchMessage {
 }
 
 export const mapSearchMessageToEntity = (searchMessage: ApiSearchMessageDocument): ISearchMessage => {
+	const attachments = searchMessage.attachments?.map((att) => ({
+		...att,
+		size: typeof att.size === 'bigint' ? Number(att.size) : att.size
+	}));
 	return {
 		...searchMessage,
 		avatar: searchMessage.avatarUrl,
 		id: searchMessage.messageId || Snowflake.generate(),
-		content: searchMessage.content ? safeJSONParse(searchMessage.content) : null
+		content: searchMessage.content ? safeJSONParse(searchMessage.content) : null,
+		attachments
 	};
 };
 
@@ -49,7 +54,13 @@ export const fetchListSearchMessage = createAsyncThunk(
 	async ({ filters, from, size, sorts, isMobile = false }: any, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.searchMessage(mezon.session, { filters, from, size, sorts });
+			const response = await mezon.client.searchMessage(mezon.session, {
+				$typeName: 'mezon.api.SearchMessageRequest' as const,
+				filters,
+				from,
+				size,
+				sorts
+			});
 			const channelId = filters.find((filter: { fieldName: string }) => filter.fieldName === 'channelId')?.fieldValue;
 
 			if (!response.messages) {
@@ -57,7 +68,7 @@ export const fetchListSearchMessage = createAsyncThunk(
 				return { searchMessage: [], isMobile, channelId };
 			}
 
-			const searchMessage = response.messages.map(mapSearchMessageToEntity);
+			const searchMessage = response.messages.map((msg) => mapSearchMessageToEntity(msg as unknown as ApiSearchMessageDocument));
 			thunkAPI.dispatch(searchMessagesActions.setTotalResults({ channelId, total: response.total ?? 0 }));
 
 			return {

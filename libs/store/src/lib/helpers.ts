@@ -347,3 +347,46 @@ export async function fetchDataWithSocketFallback<T>(
 	}
 	return response;
 }
+
+/**
+ * Helper type to create mezon-js Message types with $typeName property
+ * @example
+ * const request: MezonMessage<'mezon.api.GenerateMeetTokenRequest', ApiGenerateMeetTokenRequest> = {
+ *   $typeName: 'mezon.api.GenerateMeetTokenRequest',
+ *   channelId: '123',
+ *   roomName: 'room1'
+ * };
+ */
+export type MezonMessage<T extends string, P extends Record<string, any>> = Required<P> & {
+	$typeName: T;
+};
+
+/**
+ * Helper function to create mezon-js Message objects with $typeName property
+ * @example
+ * const request = createMezonMessage('mezon.api.GenerateMeetTokenRequest', {
+ *   channelId: '123',
+ *   roomName: 'room1'
+ * });
+ */
+export function createMezonMessage<T extends string, P extends Record<string, any>>(typeName: T, payload: Required<P>): MezonMessage<T, P> {
+	return {
+		$typeName: typeName,
+		...payload
+	} as MezonMessage<T, P>;
+}
+
+export function timestampToString(timestamp: any): string | undefined {
+	if (!timestamp) {
+		return undefined;
+	}
+	if (typeof timestamp === 'string') {
+		return timestamp;
+	}
+	if (typeof timestamp === 'object' && 'seconds' in timestamp) {
+		const seconds = Number(timestamp.seconds);
+		const nanos = timestamp.nanos ? Number(timestamp.nanos) / 1e9 : 0;
+		return new Date(seconds * 1000 + nanos).toISOString();
+	}
+	return undefined;
+}

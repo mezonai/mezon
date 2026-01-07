@@ -37,6 +37,7 @@ export const createLinkInviteUser = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
+				$typeName: 'mezon.api.LinkInviteUserRequest' as const,
 				channelId,
 				clanId,
 				expiryTime
@@ -98,6 +99,7 @@ export const checkMutableRelationship = createAsyncThunk('invite/getMutableRelat
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.isFollower(mezon.session, {
+			$typeName: 'mezon.api.IsFollowerRequest' as const,
 			followId: userId
 		});
 		if (!response) {

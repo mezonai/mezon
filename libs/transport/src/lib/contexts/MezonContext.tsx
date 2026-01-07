@@ -387,7 +387,13 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				throw new Error('Mezon client not initialized');
 			}
 
-			const session = await clientRef.current.confirmAuthenticateOTP(data);
+			const request = {
+				$typeName: 'mezon.api.LinkAccountConfirmRequest' as const,
+				reqId: data.reqId || '',
+				status: data.status || 0,
+				otpCode: data.otpCode || ''
+			};
+			const session = await clientRef.current.confirmAuthenticateOTP(request);
 			sessionRef.current = session;
 
 			const config = extractAndSaveConfig(session);

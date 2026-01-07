@@ -93,8 +93,8 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 					list_channel_users_req: {
 						limit: 100,
 						state: 1,
-						channelType: channelType,
-						clanId: clanId
+						channelType,
+						clanId
 					}
 				},
 				() => mezon.client.listChannelVoiceUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
@@ -138,9 +138,10 @@ export const kickVoiceMember = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const voiceInfor = selectVoiceInfo(state);
 			const response = await mezon.client.removeMezonMeetParticipant(mezon.session, {
+				$typeName: 'mezon.api.MeetParticipantRequest' as const,
 				clanId: voiceInfor?.clanId as string,
-				channelId: voiceInfor?.channelId,
-				roomName,
+				channelId: voiceInfor?.channelId as string,
+				roomName: roomName || '',
 				username: username as string
 			});
 			return response;
@@ -159,9 +160,10 @@ export const muteVoiceMember = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const voiceInfor = selectVoiceInfo(state);
 			const response = await mezon.client.muteMezonMeetParticipant(mezon.session, {
+				$typeName: 'mezon.api.MeetParticipantRequest' as const,
 				clanId: voiceInfor?.clanId as string,
-				channelId: voiceInfor?.channelId,
-				roomName,
+				channelId: voiceInfor?.channelId as string,
+				roomName: roomName || '',
 				username: username as string
 			});
 			return response;
@@ -404,7 +406,7 @@ export const voiceSlice = createSlice({
 						}
 						return {
 							userId: channelRes.userId || '',
-							clanId: clanId,
+							clanId,
 							voiceChannelId: channelRes.channelId || '',
 							clanName: '',
 							participant: channelRes.participant || '',

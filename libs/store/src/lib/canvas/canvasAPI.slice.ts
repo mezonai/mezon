@@ -159,8 +159,17 @@ const fetchCanvasDetailCached = async (
 export const createEditCanvas = createAsyncThunk('canvas/editChannelCanvases', async (body: ApiEditChannelCanvasRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
-		const response = await mezon.client.editChannelCanvases(mezon.session, body);
+		const bodyWithTypeName = {
+			$typeName: 'mezon.api.EditChannelCanvasRequest' as const,
+			id: body.id,
+			channelId: body.channelId || '',
+			clanId: body.clanId || '',
+			title: body.title || '',
+			content: body.content || '',
+			isDefault: body.isDefault ?? false,
+			status: body.status ?? 0
+		};
+		const response = await mezon.client.editChannelCanvases(mezon.session, bodyWithTypeName);
 
 		const result = {
 			...response,
@@ -241,7 +250,7 @@ export const deleteCanvas = createAsyncThunk('canvas/deleteCanvas', async ({ id,
 		if (channelId && id) {
 			thunkAPI.dispatch(
 				canvasAPIActions.removeOneCanvas({
-					channelId: channelId,
+					channelId,
 					canvasId: id
 				})
 			);

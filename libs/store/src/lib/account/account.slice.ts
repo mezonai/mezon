@@ -81,16 +81,19 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 		}
 
 		if (response.fromCache) {
-			return {
-				fromCache: true
-			} as IUserAccount & { fromCache: boolean };
+			const state = thunkAPI.getState() as RootState;
+			const cachedProfile = state.account?.userProfile;
+			if (cachedProfile) {
+				return { ...cachedProfile, fromCache: true };
+			}
+			return thunkAPI.rejectWithValue('No cached profile available');
 		}
 
-		const { fromCache, time, ...profileData } = response;
+		const { fromCache: _fromCache, time: _time, ...profileData } = response;
 		if (response?.user?.id) {
 			thunkAPI.dispatch(walletActions.fetchWalletDetail({ userId: response?.user?.id }));
 		}
-		return { ...profileData, fromCache: false };
+		return { ...profileData, fromCache: false } as IUserAccount & { fromCache: boolean };
 	}
 );
 
@@ -118,7 +121,12 @@ export const addPhoneNumber = createAsyncThunk(
 	async ({ data, isMobile = false }: { data: ApiLinkAccountMezon; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.linkSMS(mezon.session, data);
+			const dataWithTypeName = {
+				$typeName: 'mezon.api.AccountMezon' as const,
+				phoneNumber: data.phoneNumber || '',
+				vars: data.vars || {}
+			};
+			const response = await mezon.client.linkSMS(mezon.session, dataWithTypeName);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'account/addPhoneNumber');
@@ -143,7 +151,14 @@ export const linkEmail = createAsyncThunk(
 	async ({ data, isMobile = false }: { data: ApiAccountEmail; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.linkEmail(mezon.session, data);
+			const dataWithTypeName = {
+				$typeName: 'mezon.api.AccountEmail' as const,
+				email: data.email || '',
+				password: data.password || '',
+				prevEmail: data.prevEmail || '',
+				vars: data.vars || {}
+			};
+			const response = await mezon.client.linkEmail(mezon.session, dataWithTypeName);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'account/linkEmail');
@@ -168,7 +183,13 @@ export const verifyPhone = createAsyncThunk(
 	async ({ data, isMobile = false }: { data: ApiLinkAccountConfirmRequest; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.confirmLinkMezonOTP(mezon.session, data);
+			const dataWithTypeName = {
+				$typeName: 'mezon.api.LinkAccountConfirmRequest' as const,
+				reqId: data.reqId || '',
+				status: data.status ?? 0,
+				otpCode: data.otpCode || ''
+			};
+			await mezon.client.confirmLinkMezonOTP(mezon.session, dataWithTypeName);
 		} catch (error) {
 			captureSentryError(error, 'account/verifyPhone');
 			toast.error(t('accountSetting:setPhoneModal.updatePhoneFail'));
@@ -189,8 +210,13 @@ export const verifyPhone = createAsyncThunk(
 export const updateAccountStatus = createAsyncThunk('userstatusapi/updateUserStatus', async (request: ApiUserStatusUpdate, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
-		const response = await mezon.client.updateUserStatus(mezon.session, request);
+		const requestWithTypeName = {
+			$typeName: 'mezon.api.UserStatusUpdate' as const,
+			status: request.status || '',
+			minutes: request.minutes ?? 0,
+			untilTurnOn: request.untilTurnOn ?? false
+		};
+		const response = await mezon.client.updateUserStatus(mezon.session, requestWithTypeName);
 		if (!response) {
 			return '';
 		}

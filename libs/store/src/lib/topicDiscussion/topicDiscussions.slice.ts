@@ -13,7 +13,7 @@ import type {
 	ApiSdTopicRequest
 } from 'mezon-js/types';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, timestampToString } from '../helpers';
 import { selectMessageEntitiesByChannelId } from '../messages/messages.slice';
 import type { RootState } from '../store';
 import { threadsActions } from '../threads/threads.slice';
@@ -57,7 +57,8 @@ const fetchTopicsCached = async (mezon: MezonValueContext, clanId: string) => {
 const mapToTopicEntity = (topics: ApiSdTopic[]) => {
 	return topics.map((topic) => ({
 		...topic,
-		id: topic.id || ''
+		id: topic.id || '',
+		createTime: timestampToString(topic.createTime)
 	}));
 };
 
@@ -67,7 +68,8 @@ export const getFirstMessageOfTopic = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.getTopicDetail(mezon.session, topicId);
-			return { data: response, isMobile };
+			const message = response?.message ? ({ ...response.message, id: (response.message as any).id || '' } as ApiChannelMessage) : undefined;
+			return { data: { ...response, message }, isMobile };
 		} catch (error) {
 			captureSentryError(error, 'topics/getFirstMessageOfTopic');
 			return thunkAPI.rejectWithValue(error);
@@ -80,7 +82,7 @@ export const fetchTopics = createAsyncThunk('topics/fetchTopics', async ({ clanI
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchTopicsCached(mezon, clanId);
 
-		const topics = mapToTopicEntity(response.topics || []);
+		const topics = mapToTopicEntity((response.topics || []) as ApiSdTopic[]);
 		return {
 			clanId,
 			topics
@@ -108,7 +110,13 @@ export const initialTopicsState: TopicDiscussionsState = topicsAdapter.getInitia
 export const createTopic = createAsyncThunk('topics/createTopic', async (body: ApiSdTopicRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.createSdTopic(mezon.session, body);
+		const requestWithTypeName = {
+			$typeName: 'mezon.api.SdTopicRequest' as const,
+			messageId: body.messageId || '',
+			clanId: body.clanId || '',
+			channelId: body.channelId || ''
+		};
+		const response = await mezon.client.createSdTopic(mezon.session, requestWithTypeName);
 		if (response) {
 			return response;
 		} else {

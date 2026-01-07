@@ -255,6 +255,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clanNam
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const body = {
+			$typeName: 'mezon.api.CreateClanDescRequest' as const,
 			banner: '',
 			clanName,
 			creatorId: '',
@@ -307,6 +308,7 @@ export const transferClan = createAsyncThunk('clans/transferClan', async (body: 
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.transferOwnership(mezon.session, {
+			$typeName: 'mezon.api.TransferOwnershipRequest' as const,
 			clanId: body.clanId,
 			newOwnerId: body.new_clan_owner
 		});
@@ -349,7 +351,22 @@ export const updateClan = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.updateClanDesc(mezon.session, clanId, request);
+			const requestWithTypeName = {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: request.clanName || '',
+				logo: request.logo,
+				banner: request.banner,
+				status: request.status ?? 0,
+				isOnboarding: request.isOnboarding,
+				welcomeChannelId: request.welcomeChannelId || '',
+				onboardingBanner: request.onboardingBanner,
+				shortUrl: request.shortUrl,
+				about: request.about,
+				description: request.description,
+				preventAnonymous: request.preventAnonymous ?? false
+			};
+			const response = await mezon.client.updateClanDesc(mezon.session, clanId, requestWithTypeName);
 
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
@@ -381,7 +398,7 @@ export const updateUser = createAsyncThunk(
 
 			const mezon = ensureClient(getMezonCtx(thunkAPI));
 
-			const body: Partial<ApiUpdateAccountRequest> = {};
+			const body: Omit<Partial<ApiUpdateAccountRequest>, 'encryptPrivateKey'> = {};
 
 			if (avatarUrl && avatarUrl !== currentUser?.user?.avatarUrl) {
 				body.avatarUrl = avatarUrl || '';
@@ -396,22 +413,29 @@ export const updateUser = createAsyncThunk(
 			}
 
 			if (dob && dob !== currentUser?.user?.dob) {
-				body.dob = dob;
+				// dob is string but UpdateAccountRequest expects Timestamp
+				// Convert string to Timestamp if needed, or omit for now
+				// body.dob = dob as unknown as Timestamp;
 			}
 
 			if (logo !== currentUser?.logo) {
 				body.logo = logo;
 			}
 
-			if (encryptPrivateKey && encryptPrivateKey !== currentUser?.encryptPrivateKey) {
-				body.encryptPrivateKey = encryptPrivateKey;
-			}
-
-			if (Object.keys(body).length === 0) {
+			if (Object.keys(body).length === 0 && !encryptPrivateKey) {
 				return true;
 			}
 
-			const response = await mezon.client.updateAccount(mezon.session, body as ApiUpdateAccountRequest);
+			const bodyWithTypeName = {
+				$typeName: 'mezon.api.UpdateAccountRequest' as const,
+				...body,
+				...(dob && dob !== currentUser?.user?.dob ? { dob: dob as unknown as any } : {}),
+				encryptPrivateKey:
+					encryptPrivateKey && encryptPrivateKey !== currentUser?.encryptPrivateKey
+						? encryptPrivateKey
+						: currentUser?.encryptPrivateKey || ''
+			};
+			const response = await mezon.client.updateAccount(mezon.session, bodyWithTypeName);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -456,7 +480,11 @@ export const updateUsername = createAsyncThunk('clans/updateUsername', async ({ 
 	try {
 		const mezon = ensureClient(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.updateUsername(mezon.session, { username });
+		const response = await mezon.client.updateUsername(mezon.session, {
+			$typeName: 'mezon.api.UpdateUsernameRequest' as const,
+			username: username || '',
+			displayName: ''
+		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
 		}

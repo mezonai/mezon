@@ -38,8 +38,16 @@ export const activityAdapter = createEntityAdapter({
 export const createActivity = createAsyncThunk('activity/createActiviy', async (body: ApiCreateActivityRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
-		const response = await mezon.client.createActiviy(mezon.session, body);
+		const bodyWithTypeName = {
+			$typeName: 'mezon.api.CreateActivityRequest' as const,
+			activityName: body.activityName || '',
+			activityType: body.activityType ?? 0,
+			activityDescription: body.activityDescription || '',
+			applicationId: body.applicationId || '',
+			status: body.status ?? 0,
+			...(body.startTime ? { startTime: body.startTime as any } : {})
+		};
+		const response = await mezon.client.createActiviy(mezon.session, bodyWithTypeName);
 
 		return {
 			...response,
