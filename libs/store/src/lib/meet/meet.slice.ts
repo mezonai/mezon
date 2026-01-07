@@ -41,7 +41,7 @@ export const createExternalMezonMeet = createAsyncThunk('meet/createExternalMezo
 		if (!response) {
 			return;
 		}
-		return response.external_link;
+		return response.externalLink;
 	} catch (error) {
 		captureSentryError(error, 'meet/createExternalMezonMeet');
 		return thunkAPI.rejectWithValue(error);
