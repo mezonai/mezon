@@ -1,32 +1,10 @@
-import {
-	ActionEmitEvent,
-	debounce,
-	remove,
-	STORAGE_CHANNEL_CURRENT_CACHE,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	STORAGE_KEY_TEMPORARY_ATTACHMENT,
-	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
-} from '@mezon/mobile-components';
+import { ActionEmitEvent, debounce } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import {
-	accountActions,
-	appActions,
-	authActions,
-	channelsActions,
-	clansActions,
-	directActions,
-	getAuthState,
-	getStoreAsync,
-	listChannelsByUserActions,
-	listUsersByUserActions,
-	messagesActions,
-	notificationActions,
-	selectAllAccount
-} from '@mezon/store-mobile';
+import { appActions, getAuthState, getStoreAsync } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Platform, ScrollView, View } from 'react-native';
+import { DeviceEventEmitter, ScrollView, View } from 'react-native';
 import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../componentUI/MezonConfirm';
@@ -36,6 +14,7 @@ import MezonMenu from '../../componentUI/MezonMenu';
 import MezonSearch from '../../componentUI/MezonSearch';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
+import { logoutGlobal } from '../../utils/helpers';
 import { style } from './styles';
 
 export const Settings = ({ navigation }: { navigation: any }) => {
@@ -48,30 +27,8 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 	const [linkRedirectLogout, setLinkRedirectLogout] = useState<string>('');
 	const authState = useSelector(getAuthState);
 	const session = JSON.stringify(authState.session);
-	const userProfile = useSelector(selectAllAccount);
 	const logout = async () => {
-		const store = await getStoreAsync();
-		store.dispatch(directActions.removeAll());
-		store.dispatch(notificationActions.removeAll());
-		store.dispatch(channelsActions.removeAll());
-		store.dispatch(messagesActions.removeAll());
-		store.dispatch(listChannelsByUserActions.removeAll());
-		store.dispatch(clansActions.setCurrentClanId(''));
-		store.dispatch(clansActions.removeAll());
-		store.dispatch(clansActions.collapseAllGroups());
-		store.dispatch(clansActions.clearClanGroups());
-		store.dispatch(clansActions.refreshStatus());
-		store.dispatch(accountActions.resetAllState());
-		store.dispatch(notificationActions.resetAllState());
-		store.dispatch(listUsersByUserActions.removeAll());
-
-		await remove(STORAGE_DATA_CLAN_CHANNEL_CACHE);
-		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
-		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-		store.dispatch(appActions.setIsShowWelcomeMobile(false));
-		store.dispatch(authActions.logOut({ deviceId: userProfile.user.username, platform: Platform.OS }));
-		store.dispatch(appActions.setLoadingMainMobile(false));
+		await logoutGlobal();
 		setLinkRedirectLogout('');
 	};
 

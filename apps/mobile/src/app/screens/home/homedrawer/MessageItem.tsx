@@ -515,6 +515,8 @@ const MessageItem = React.memo(
 				prevProps?.message?.code +
 				prevProps?.isHighlight +
 				prevProps?.message?.reactions +
+				prevProps?.message?.isError +
+				prevProps?.message?.isErrorRetry +
 				prevProps?.message?.content?.t +
 				prevProps?.message?.attachments?.length +
 				prevProps?.message?.references?.[0]?.content +
@@ -525,6 +527,8 @@ const MessageItem = React.memo(
 				nextProps?.message?.code +
 				nextProps?.isHighlight +
 				nextProps?.message?.reactions +
+				nextProps?.message?.isError +
+				nextProps?.message?.isErrorRetry +
 				nextProps?.message?.content?.t +
 				nextProps?.message?.attachments?.length +
 				nextProps?.message?.references?.[0]?.content +

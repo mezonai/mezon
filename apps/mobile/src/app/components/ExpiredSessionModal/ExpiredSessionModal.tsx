@@ -1,62 +1,15 @@
-import {
-	ActionEmitEvent,
-	remove,
-	STORAGE_CHANNEL_CURRENT_CACHE,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	STORAGE_KEY_TEMPORARY_ATTACHMENT,
-	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
-} from '@mezon/mobile-components';
-import {
-	accountActions,
-	appActions,
-	authActions,
-	channelsActions,
-	clansActions,
-	directActions,
-	getStoreAsync,
-	listChannelsByUserActions,
-	listUsersByUserActions,
-	messagesActions,
-	notificationActions,
-	selectAllAccount,
-	selectHasInternetMobile
-} from '@mezon/store-mobile';
-import React, { useCallback, useEffect } from 'react';
+import { ActionEmitEvent } from '@mezon/mobile-components';
+import { selectHasInternetMobile } from '@mezon/store-mobile';
+import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Platform } from 'react-native';
+import { DeviceEventEmitter } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../componentUI/MezonConfirm';
+import { logoutGlobal } from '../../utils/helpers';
 
 const ExpiredSessionModal = () => {
-	const userProfile = useSelector(selectAllAccount);
 	const hasInternet = useSelector(selectHasInternetMobile);
 	const { t } = useTranslation(['common']);
-
-	const logout = useCallback(async () => {
-		const store = await getStoreAsync();
-		store.dispatch(directActions.removeAll());
-		store.dispatch(notificationActions.removeAll());
-		store.dispatch(channelsActions.removeAll());
-		store.dispatch(messagesActions.removeAll());
-		store.dispatch(listChannelsByUserActions.removeAll());
-		store.dispatch(clansActions.setCurrentClanId(''));
-		store.dispatch(clansActions.removeAll());
-		store.dispatch(clansActions.collapseAllGroups());
-		store.dispatch(clansActions.clearClanGroups());
-		store.dispatch(clansActions.refreshStatus());
-		store.dispatch(accountActions.resetAllState());
-		store.dispatch(notificationActions.resetAllState());
-		store.dispatch(listUsersByUserActions.removeAll());
-
-		await remove(STORAGE_DATA_CLAN_CHANNEL_CACHE);
-		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
-		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-		store.dispatch(appActions.setIsShowWelcomeMobile(false));
-		store.dispatch(authActions.logOut({ deviceId: userProfile.user.username, platform: Platform.OS }));
-		store.dispatch(appActions.setLoadingMainMobile(false));
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-	}, [userProfile?.user?.username]);
 
 	useEffect(() => {
 		const listener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_SHOW_POPUP_SESSION_EXPIRED, () => {
@@ -64,7 +17,7 @@ const ExpiredSessionModal = () => {
 			const data = {
 				children: (
 					<MezonConfirm
-						onConfirm={logout}
+						onConfirm={logoutGlobal}
 						title={t('sessionExpired.title')}
 						confirmText={t('sessionExpired.confirm')}
 						content={t('sessionExpired.content')}
@@ -77,7 +30,7 @@ const ExpiredSessionModal = () => {
 		return () => {
 			listener.remove();
 		};
-	}, [hasInternet, logout, t]);
+	}, [hasInternet, t]);
 	return null;
 };
 
