@@ -1,10 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
-import { LoadingStatus } from '@mezon/utils';
-import { EntityState, GetThunkAPI, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiPubKey } from 'mezon-js/types';
+import type { LoadingStatus } from '@mezon/utils';
+import type { EntityState, GetThunkAPI } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiPubKey } from 'mezon-js/types';
 import { selectDirectById } from '../direct/direct.slice';
-import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 
 export const E2EE_FEATURE_KEY = 'e2ee';
 
@@ -31,7 +33,12 @@ export const e2eeAdapter = createEntityAdapter<PubKeyEntity>();
 export const pushPubKey = createAsyncThunk('e2ee/pushPubKey', async (body: ApiPubKey, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.pushPubKey(mezon.session, body);
+		const bodyWithTypeName = {
+			$typeName: 'mezon.api.PubKey' as const,
+			encr: typeof body.encr === 'string' ? Uint8Array.from(atob(body.encr), (c) => c.charCodeAt(0)) : body.encr || new Uint8Array(),
+			sign: typeof body.sign === 'string' ? Uint8Array.from(atob(body.sign), (c) => c.charCodeAt(0)) : body.sign || new Uint8Array()
+		};
+		const response = await mezon.client.pushPubKey(mezon.session, bodyWithTypeName);
 		return response;
 	} catch (error) {
 		captureSentryError(error, 'e2ee/pushPubKey');
@@ -96,9 +103,9 @@ export const e2eeSlice = createSlice({
 			.addCase(getPubKeys.fulfilled, (state: E2eeState, action) => {
 				state.loadingStatus = 'loaded';
 				const pubKeys =
-					action.payload.pubKeys?.map((pk: { PK?: ApiPubKey; userId?: string }) => ({
+					action.payload.pubKeys?.map((pk: any) => ({
 						id: pk.userId || '',
-						PK: pk.PK || {}
+						PK: pk.PK ? { ...pk.PK, encr: typeof pk.PK.encr === 'string' ? pk.PK.encr : '' } : {}
 					})) || [];
 				e2eeAdapter.upsertMany(state, pubKeys);
 			})

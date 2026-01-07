@@ -2,13 +2,13 @@ import { captureSentryError } from '@mezon/logger';
 import { EMuteState, type INotificationUserChannel, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiNotificationUserChannel, ApiSetMuteRequest, ApiSetNotificationRequest } from 'mezon-js/types';
+import type { ApiNotificationUserChannel } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
 import { directActions } from '../direct/direct.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
 import type { RootState } from '../store';
 
 export const NOTIFICATION_SETTING_FEATURE_KEY = 'notificationsetting';
@@ -67,7 +67,7 @@ export const fetchNotificationSettingCached = async (getState: () => RootState, 
 		{
 			api_name: 'GetNotificationChannel',
 			notification_channel: {
-				channelId: channelId
+				channelId
 			}
 		},
 		() => mezon.client.getNotificationChannel(mezon.session, channelId),
@@ -102,9 +102,14 @@ export const getNotificationSetting = createAsyncThunk(
 				};
 			}
 
+			const notifiSetting = {
+				...response,
+				timeMute: timestampToString((response as any).timeMute)
+			};
+
 			return {
 				channelId,
-				notifiSetting: response,
+				notifiSetting: notifiSetting as ApiNotificationUserChannel,
 				fromCache: false
 			};
 		} catch (error) {
@@ -133,10 +138,11 @@ export const setNotificationSetting = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const body: ApiSetNotificationRequest = {
-				channelCategoryId: channelId,
-				notificationType,
-				clanId
+			const body = {
+				$typeName: 'mezon.api.SetNotificationRequest' as const,
+				channelCategoryId: channelId || '',
+				notificationType: notificationType || 0,
+				clanId: clanId || ''
 			};
 			const response = await mezon.client.setNotificationChannel(mezon.session, body);
 			if (!response) {
@@ -146,7 +152,7 @@ export const setNotificationSetting = createAsyncThunk(
 				if (is_direct) {
 					thunkAPI.dispatch(directActions.update({ id: channelId as string, changes: { isMute: true } }));
 				} else {
-					thunkAPI.dispatch(channelsActions.update({ clanId: clanId, update: { changes: { isMute: true }, id: channelId as string } }));
+					thunkAPI.dispatch(channelsActions.update({ clanId, update: { changes: { isMute: true }, id: channelId as string } }));
 				}
 			}
 
@@ -170,10 +176,12 @@ export const setMuteChannel = createAsyncThunk(
 	async ({ channelId, muteTime, active, clanId }: MuteChannelPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const body: ApiSetMuteRequest = {
-				id: channelId,
-				muteTime,
-				active
+			const body = {
+				$typeName: 'mezon.api.SetMuteRequest' as const,
+				id: channelId || '',
+				muteTime: muteTime ?? 0,
+				active: active ?? 0,
+				clanId: clanId || ''
 			};
 			const response = await mezon.client.setMuteChannel(mezon.session, body);
 
@@ -271,7 +279,7 @@ export const notificationSettingSlice = createSlice({
 			if (!notificationSetting) {
 				notificationSetting = {
 					id: channelId,
-					channelId: channelId,
+					channelId,
 					active,
 					notificationType: 0
 				} as INotificationUserChannel;

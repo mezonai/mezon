@@ -8,7 +8,7 @@ import type { ApiChannelAttachment } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString } from '../helpers';
 
 export const ATTACHMENT_FEATURE_KEY = 'attachments';
 
@@ -130,7 +130,14 @@ export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachmen
 	const isVideo =
 		attachmentRes?.filetype?.startsWith('video') || attachmentRes?.filetype?.includes('mp4') || attachmentRes?.filetype?.includes('mov');
 	const uniqueId = `${attachmentRes.messageId}_${attachmentRes.url}`;
-	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: uniqueId, channelId, clanId, isVideo };
+	const attachmentEntity: IAttachmentEntity = {
+		...attachmentRes,
+		id: uniqueId,
+		channelId,
+		clanId,
+		isVideo,
+		createTime: timestampToString(attachmentRes.createTime as any)
+	};
 	return attachmentEntity;
 };
 
@@ -160,7 +167,7 @@ export const fetchChannelAttachments = createAsyncThunk(
 				return { attachments: [], channelId, fromCache: response.fromCache, direction };
 			}
 
-			const attachments: IAttachmentEntity[] = response.attachments.map((attachmentRes: ApiChannelAttachment) =>
+			const attachments: IAttachmentEntity[] = (response.attachments as ApiChannelAttachment[]).map((attachmentRes) =>
 				mapChannelAttachmentsToEntity(attachmentRes, channelId, clanId)
 			);
 

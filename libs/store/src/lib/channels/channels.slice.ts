@@ -403,12 +403,25 @@ export const joinChannel = createAsyncThunk(
 export const createNewChannel = createAsyncThunk('channels/createNewChannel', async (body: ApiCreateChannelDescRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.createChannelDesc(mezon.session, body);
+		const bodyWithTypeName = {
+			$typeName: 'mezon.api.CreateChannelDescRequest' as const,
+			clanId: body.clanId || '',
+			parentId: body.parentId || '',
+			channelId: body.channelId || '',
+			categoryId: body.categoryId || '',
+			channelLabel: body.channelLabel || '',
+			channelPrivate: body.channelPrivate ?? 0,
+			userIds: body.userIds || [],
+			appId: body.appId || '',
+			type: body.type
+		};
+		const response = await mezon.client.createChannelDesc(mezon.session, bodyWithTypeName);
 		if (response) {
 			thunkAPI.dispatch(channelsActions.add({ channel: { id: response.channelId as string, ...response }, clanId: response.clanId as string }));
 
 			if (response.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && response.type !== ChannelType.CHANNEL_TYPE_STREAMING) {
-				const isPublic = checkIsThread(response as ChannelsEntity) ? false : !response.channelPrivate;
+				const channelEntity = { id: response.channelId as string, ...response } as ChannelsEntity;
+				const isPublic = checkIsThread(channelEntity) ? false : !response.channelPrivate;
 				thunkAPI.dispatch(
 					channelsActions.joinChat({
 						clanId: response.clanId as string,
@@ -501,7 +514,22 @@ export const updateChannel = createAsyncThunk('channels/updateChannel', async (b
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const state = thunkAPI.getState() as RootState;
 		const clanId = state.clans.currentClanId;
-		const response = await mezon.client.updateChannelDesc(mezon.session, body.channelId, body);
+		const bodyWithTypeName = {
+			$typeName: 'mezon.api.UpdateChannelDescRequest' as const,
+			clanId: clanId || '',
+			channelId: body.channelId || '',
+			channelLabel: body.channelLabel || '',
+			categoryId: body.categoryId,
+			appId: body.appId || '',
+			topic: body.topic || '',
+			ageRestricted: body.ageRestricted ?? 0,
+			e2ee: body.e2ee ?? 0,
+			channelAvatar: body.channelAvatar,
+			parentId: body.parentId,
+			channelPrivate: body.channelPrivate,
+			categoryName: body.categoryName
+		};
+		const response = await mezon.client.updateChannelDesc(mezon.session, body.channelId, bodyWithTypeName);
 		if (response) {
 			if (body.categoryId !== '0') {
 				thunkAPI.dispatch(
@@ -529,10 +557,13 @@ export const changeCategoryOfChannel = createAsyncThunk('channels/changeCategory
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const state = thunkAPI.getState() as RootState;
 		const clanId = state.clans.currentClanId;
-		const response = await mezon.client.changeChannelCategory(mezon.session, request.categoryId as string, {
+		const requestWithTypeName = {
+			$typeName: 'mezon.api.ChangeChannelCategoryRequest' as const,
 			channelId: request.channelId,
-			clanId: clanId as string
-		});
+			clanId: clanId as string,
+			newCategoryId: request.categoryId as string
+		};
+		const response = await mezon.client.changeChannelCategory(mezon.session, request.categoryId as string, requestWithTypeName);
 		if (!response) {
 			return;
 		}
@@ -561,7 +592,15 @@ export const changeCategoryOfChannel = createAsyncThunk('channels/changeCategory
 export const updateChannelPrivate = createAsyncThunk('channels/updateChannelPrivate', async (body: ApiChangeChannelPrivateRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.updateChannelPrivate(mezon.session, body);
+		const requestWithTypeName = {
+			$typeName: 'mezon.api.ChangeChannelPrivateRequest' as const,
+			clanId: body.clanId || '',
+			channelId: body.channelId || '',
+			channelPrivate: body.channelPrivate ?? 0,
+			userIds: body.userIds || [],
+			roleIds: body.roleIds || []
+		};
+		const response = await mezon.client.updateChannelPrivate(mezon.session, requestWithTypeName);
 
 		if (response) {
 			thunkAPI.dispatch(
@@ -778,7 +817,9 @@ export const fetchChannels = createAsyncThunk(
 							)
 							.unwrap();
 						if (data?.threads?.length > 0) {
-							response.channeldesc.push({ ...data.threads[0], active: 1 } as ChannelsEntity);
+							const threadData = data.threads[0];
+							const thread = { ...threadData, id: threadData.channelId || '', active: 1 } as ChannelsEntity;
+							(response.channeldesc as unknown as ChannelsEntity[]).push(thread);
 						}
 					}
 				} catch (error) {
@@ -809,7 +850,7 @@ export const fetchChannels = createAsyncThunk(
 				thunkAPI.dispatch(
 					listChannelRenderAction.mapListChannelRender({
 						clanId,
-						listChannelFavor: favorChannels.payload.channelIds || [],
+						listChannelFavor: ((favorChannels.payload as any)?.channelIds || []) as string[],
 						listCategory: (listCategory.payload as FetchCategoriesPayload)?.categories || [],
 						listChannel: channels,
 						isMobile
@@ -859,9 +900,10 @@ export const markAsReadProcessing = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.markAsRead(mezon.session, {
-				clanId,
-				categoryId,
-				channelId
+				$typeName: 'mezon.api.MarkAsReadRequest' as const,
+				clanId: clanId || '',
+				categoryId: categoryId || '',
+				channelId: channelId || ''
 			});
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
@@ -1605,19 +1647,18 @@ export const channelsSlice = createSlice({
 			.addCase(fetchListFavoriteChannel.pending, (state) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(
-				fetchListFavoriteChannel.fulfilled,
-				(state, action: PayloadAction<{ channelIds: string[]; clanId: string; fromCache?: boolean }>) => {
-					if (!action?.payload || action.payload?.fromCache) return;
-					const { clanId } = action.payload;
-					if (!state.byClans[clanId]) {
-						state.byClans[clanId] = getInitialClanState();
-					}
-					state.byClans[clanId].favoriteChannels = action.payload.channelIds;
-					state.byClans[clanId].fetchChannelSuccess = true;
-					state.byClans[clanId].favoriteChannelsCache = createCacheMetadata(LIST_CHANNEL_CACHED_TIME);
+			.addCase(fetchListFavoriteChannel.fulfilled, (state, action) => {
+				const payload = action.payload as { channelIds?: string[]; clanId?: string; fromCache?: boolean };
+				if (!payload || payload.fromCache) return;
+				const clanId = payload.clanId;
+				if (!clanId) return;
+				if (!state.byClans[clanId]) {
+					state.byClans[clanId] = getInitialClanState();
 				}
-			)
+				state.byClans[clanId].favoriteChannels = payload.channelIds || [];
+				state.byClans[clanId].fetchChannelSuccess = true;
+				state.byClans[clanId].favoriteChannelsCache = createCacheMetadata(LIST_CHANNEL_CACHED_TIME);
+			})
 			.addCase(fetchListFavoriteChannel.rejected, (state, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;

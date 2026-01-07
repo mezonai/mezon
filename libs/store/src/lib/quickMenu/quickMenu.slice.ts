@@ -88,11 +88,11 @@ export const writeQuickMenuEvent = createAsyncThunk(
 			return {
 				success: true,
 				eventData: {
-					menuName: menuName,
-					clanId: clanId,
-					channelId: channelId,
+					menuName,
+					clanId,
+					channelId,
 					mode,
-					isPublic: isPublic,
+					isPublic,
 					timestamp: Date.now()
 				}
 			};
@@ -110,11 +110,13 @@ export const addQuickMenuAccess = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const data = {
+				$typeName: 'mezon.api.QuickMenuAccess' as const,
 				id: Snowflake.generate(),
 				botId: '0',
 				channelId: body.channelId,
 				clanId: body.clanId,
-				menuName: body.menuName,
+				menuName: body.menuName || '',
+				background: '',
 				actionMsg: body.actionMsg || '',
 				menuType: body.menuType || QUICK_MENU_TYPE.FLASH_MESSAGE
 			};
@@ -136,11 +138,13 @@ export const updateQuickMenuAccess = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const data = {
-				id: body.id,
+				$typeName: 'mezon.api.QuickMenuAccess' as const,
+				id: body.id || '',
 				botId: '0',
 				channelId: body.channelId,
 				clanId: body.clanId,
-				menuName: body.menuName,
+				menuName: body.menuName || '',
+				background: body.background || '',
 				actionMsg: body.actionMsg || '',
 				menuType: body.menuType || QUICK_MENU_TYPE.FLASH_MESSAGE
 			};

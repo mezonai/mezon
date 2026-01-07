@@ -84,7 +84,19 @@ export const createNewDirectMessage = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.createChannelDesc(mezon.session, body);
+			const bodyWithTypeName = {
+				$typeName: 'mezon.api.CreateChannelDescRequest' as const,
+				clanId: body.clanId || '',
+				parentId: body.parentId || '',
+				channelId: body.channelId || '',
+				categoryId: body.categoryId || '',
+				channelLabel: body.channelLabel || '',
+				channelPrivate: body.channelPrivate ?? 0,
+				userIds: body.userIds || [],
+				appId: body.appId || '',
+				type: body.type
+			};
+			const response = await mezon.client.createChannelDesc(mezon.session, bodyWithTypeName);
 			if (response) {
 				thunkAPI.dispatch(
 					directActions.upsertOne({
@@ -129,7 +141,12 @@ export const createNewDirectMessage = createAsyncThunk(
 export const closeDirectMessage = createAsyncThunk('direct/closeDirectMessage', async (body: ApiDeleteChannelDescRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.closeDirectMess(mezon.session, body);
+		const bodyWithTypeName = {
+			$typeName: 'mezon.api.DeleteChannelDescRequest' as const,
+			clanId: body.clanId || '',
+			channelId: body.channelId || ''
+		};
+		const response = await mezon.client.closeDirectMess(mezon.session, bodyWithTypeName);
 		if (response) {
 			thunkAPI.dispatch(directActions.setDmActiveStatus({ dmId: body.channelId as string, isActive: false }));
 			return response;
@@ -151,7 +168,11 @@ export const openDirectMessage = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const dmChannel = selectDirectById(state, channelId) || {};
 			if (dmChannel?.active !== ActiveDm.OPEN_DM && clanId === '0') {
-				await mezon.client.openDirectMess(mezon.session, { channelId });
+				await mezon.client.openDirectMess(mezon.session, {
+					$typeName: 'mezon.api.DeleteChannelDescRequest' as const,
+					clanId: '',
+					channelId
+				});
 			}
 		} catch (error) {
 			captureSentryError(error, 'direct/openDirectMessage');

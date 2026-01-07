@@ -111,7 +111,16 @@ export const createEmojiSetting = createAsyncThunk(
 	async (form: { request: ApiClanEmojiCreateRequest; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const res = await mezon.client.createClanEmoji(mezon.session, form.request);
+			const requestWithTypeName = {
+				$typeName: 'mezon.api.ClanEmojiCreateRequest' as const,
+				clanId: form.clanId,
+				source: form.request.source || '',
+				shortname: form.request.shortname || '',
+				category: form.request.category || '',
+				id: form.request.id || '',
+				isForSale: form.request.isForSale ?? false
+			};
+			const res = await mezon.client.createClanEmoji(mezon.session, requestWithTypeName);
 			if (!res) {
 				return thunkAPI.rejectWithValue({});
 			}
@@ -125,7 +134,14 @@ export const createEmojiSetting = createAsyncThunk(
 export const updateEmojiSetting = createAsyncThunk('settingClanEmoji/updateEmoji', async ({ request, emojiId }: UpdateEmojiRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const res = await mezon.client.updateClanEmojiById(mezon.session, emojiId, request);
+		const requestWithTypeName = {
+			$typeName: 'mezon.api.ClanEmojiUpdateRequest' as const,
+			id: emojiId,
+			shortname: request.shortname || '',
+			clanId: request.clanId || '',
+			...request
+		};
+		const res = await mezon.client.updateClanEmojiById(mezon.session, emojiId, requestWithTypeName);
 		if (res) {
 			return { request, emojiId };
 		}

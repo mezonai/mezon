@@ -25,8 +25,12 @@ export interface SettingClanChannelState extends EntityState<ApiChannelSettingIt
 export const channelSettingAdapter = createEntityAdapter({
 	selectId: (channel: ApiChannelSettingItem) => channel.id || ''
 });
-const cleanUndefinedFields = (item: ApiChannelSettingItem): ApiChannelSettingItem => {
-	return Object.fromEntries(Object.entries(item).filter(([_, value]) => value !== undefined)) as ApiChannelSettingItem;
+const cleanUndefinedFields = (item: ApiChannelSettingItem | any): ApiChannelSettingItem => {
+	const cleaned = Object.fromEntries(Object.entries(item).filter(([_, value]) => value !== undefined)) as any;
+	if (cleaned.messageCount !== undefined && typeof cleaned.messageCount === 'bigint') {
+		cleaned.messageCount = String(cleaned.messageCount);
+	}
+	return cleaned as ApiChannelSettingItem;
 };
 
 export const initialSettingClanChannelState: SettingClanChannelState = channelSettingAdapter.getInitialState({
@@ -227,7 +231,7 @@ export const settingClanChannelSlice = createSlice({
 
 				if (!fromCache && response) {
 					state.loadingStatus = 'loaded';
-					const cleanedList = (response.channelSettingList || []).map(cleanUndefinedFields);
+					const cleanedList = (response.channelSettingList || []).map(cleanUndefinedFields) as ApiChannelSettingItem[];
 					switch (typeFetch) {
 						case ETypeFetchChannelSetting.FETCH_CHANNEL:
 							channelSettingAdapter.upsertMany(state, cleanedList);
@@ -236,13 +240,13 @@ export const settingClanChannelSlice = createSlice({
 							channelSettingAdapter.upsertMany(state, cleanedList);
 							break;
 						case ETypeFetchChannelSetting.FETCH_THREAD:
-							state.threadsByChannel[actions.payload.parentId] = response.channelSettingList || [];
+							state.threadsByChannel[actions.payload.parentId] = cleanedList;
 							break;
 						case ETypeFetchChannelSetting.SEARCH_CHANNEL:
-							state.listSearchChannel = response.channelSettingList || [];
+							state.listSearchChannel = cleanedList;
 							break;
 						default:
-							channelSettingAdapter.setAll(state, response.channelSettingList || []);
+							channelSettingAdapter.setAll(state, cleanedList);
 					}
 					state.channelCount = response.channelCount || 0;
 					state.threadCount = response.threadCount || 0;

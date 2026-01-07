@@ -3,11 +3,10 @@ import type { LoadingStatus } from '@mezon/utils';
 import { ETypeLinkMedia } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelAttachmentList } from 'mezon-js';
 import type { AttachmentEntity } from '../attachment/attachments.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createCacheMetadata } from '../cache-metadata';
-import { ensureSession, getMezonCtx } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString } from '../helpers';
 
 export const GALLERY_FEATURE_KEY = 'gallery';
 
@@ -62,22 +61,17 @@ export const fetchGalleryAttachments = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response: ApiChannelAttachmentList = await mezon.client.listChannelAttachments(
-				mezon.session,
-				clanId,
-				channelId,
-				fileType,
-				undefined,
-				limit,
-				before,
-				after
-			);
+			const response = await mezon.client.listChannelAttachments(mezon.session, clanId, channelId, fileType, undefined, limit, before, after);
 
 			if (!response.attachments) {
 				return { attachments: [], channelId, direction };
 			}
 
 			const attachments = response.attachments
+				.map((att) => ({
+					...att,
+					createTime: timestampToString(att.createTime)
+				}))
 				.filter((att) => {
 					if (mediaFilter === 'all') {
 						return att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);

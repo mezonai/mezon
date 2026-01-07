@@ -74,7 +74,7 @@ export const fetchUsersClanCached = async (getState: () => RootState, ensuredMez
 		'clan_user_list'
 	);
 
-	const users = response?.clanUsers?.map(mapUsersClanToEntity) || [];
+	const users = response?.clanUsers?.map((user) => mapUsersClanToEntity(user as ClanUserListClanUser)) || [];
 
 	markApiFirstCalled(apiKey);
 

@@ -3,7 +3,6 @@ import type { IClanProfile, LoadingStatus } from '@mezon/utils';
 import { TypeCheck } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiUpdateClanProfileRequest } from 'mezon-js';
 import type { ApiClanProfile } from 'mezon-js/types';
 import { accountActions } from '../account/account.slice';
 import { setUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -82,17 +81,18 @@ export const updateUserClanProfile = createAsyncThunk(
 
 			const currentUserClanProfile = state.userClanProfile.entities[`${clanId}${currentUser?.user?.id}`];
 			const mezon = ensureClient(getMezonCtx(thunkAPI));
-			const body: Partial<ApiUpdateClanProfileRequest> = {
-				clanId: clanId,
-				nickName: username,
-				avatar: avatarUrl
-			};
 
 			if (
 				(username && username !== currentUserClanProfile?.nickName) ||
 				(avatarUrl && avatarUrl !== '' && avatarUrl !== currentUserClanProfile?.avatar)
 			) {
-				const response = await mezon.client.updateUserProfileByClan(mezon.session, clanId, body as ApiUpdateClanProfileRequest);
+				const body = {
+					$typeName: 'mezon.api.UpdateClanProfileRequest' as const,
+					clanId,
+					nickName: username,
+					avatar: avatarUrl
+				};
+				const response = await mezon.client.updateUserProfileByClan(mezon.session, clanId, body);
 				if (!response) {
 					return thunkAPI.rejectWithValue([]);
 				}

@@ -1,8 +1,10 @@
+import type { Timestamp } from '@bufbuild/protobuf/wkt';
 import { captureSentryError } from '@mezon/logger';
 import type { IEventManagement, LoadingStatus } from '@mezon/utils';
 import { EEventAction, EEventStatus, ERepeatType } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { Snowflake } from '@theinternetfolks/snowflake';
 import type {
 	ApiCreateEventRequest,
 	ApiEventManagement,
@@ -10,10 +12,11 @@ import type {
 	ApiUserEventRequest,
 	MezonUpdateEventBody
 } from 'mezon-js/types';
+import { selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
 import type { RootState } from '../store';
 
 export const EVENT_MANAGEMENT_FEATURE_KEY = 'eventmanagement';
@@ -69,12 +72,14 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 	};
 };
 
-export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?: string) => {
+export const mapEventManagementToEntity = (eventRes: ApiEventManagement, _clanId?: string) => {
 	return {
 		...eventRes,
 		id: eventRes.id || '',
 		channelId: eventRes.channelId === '0' || eventRes.channelId === '' ? '' : eventRes.channelId,
-		channelVoiceId: eventRes.channelVoiceId === '0' || eventRes.channelVoiceId === '' ? '' : eventRes.channelVoiceId
+		channelVoiceId: eventRes.channelVoiceId === '0' || eventRes.channelVoiceId === '' ? '' : eventRes.channelVoiceId,
+		startTime: timestampToString(eventRes.startTime),
+		endTime: timestampToString(eventRes.endTime)
 	};
 };
 
@@ -101,7 +106,7 @@ export const fetchEventManagement = createAsyncThunk(
 					fromCache: true
 				};
 			}
-			const events = response.events.map((eventRes: ApiEventManagement) => mapEventManagementToEntity(eventRes, clanId));
+			const events = response.events.map((eventRes) => mapEventManagementToEntity(eventRes as ApiEventManagement, clanId));
 			return { events, clanId, fromCache: response?.fromCache };
 		} catch (error) {
 			captureSentryError(error, 'eventManagement/fetchEventManagement');
@@ -158,17 +163,25 @@ export const fetchCreateEventManagement = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const state = thunkAPI.getState() as RootState;
+			const userId = selectCurrentUserId(state);
 			const body = {
-				clanId,
+				$typeName: 'mezon.api.CreateEventRequest' as const,
+				clanId: clanId || '',
 				channelVoiceId: channelVoiceId || '',
 				address: address || '',
-				title,
-				startTime,
-				endTime,
+				title: title || '',
+				startTime: startTime as unknown as Timestamp | undefined,
+				endTime: endTime as unknown as Timestamp | undefined,
 				description: description || '',
 				logo: logo || '',
-				channelId,
+				channelId: channelId || '',
 				repeatType: repeatType || ERepeatType.DOES_NOT_REPEAT,
+				eventId: Snowflake.generate(),
+				eventStatus: EEventStatus.UPCOMING,
+				action: EEventAction.CREATED,
+				creatorId: userId,
+				userId,
 				isPrivate
 			};
 			const response = await mezon.client.createEvent(mezon.session, body);
@@ -209,23 +222,24 @@ export const updateEventManagement = createAsyncThunk(
 		thunkAPI
 	) => {
 		try {
-			const body: MezonUpdateEventBody = {
-				address,
-				channelVoiceId,
-				eventId,
-				description,
-				endTime,
-				logo,
-				startTime,
-				title,
-				clanId,
-				creatorId,
-				channelId,
-				channelIdOld,
-				repeatType
+			const body = {
+				$typeName: 'mezon.api.UpdateEventRequest' as const,
+				address: address || '',
+				channelVoiceId: channelVoiceId || '',
+				eventId: eventId || '',
+				description: description || '',
+				endTime: endTime as unknown as Timestamp | undefined,
+				logo: logo || '',
+				startTime: startTime as unknown as Timestamp | undefined,
+				title: title || '',
+				channelId: channelId || '',
+				clanId: clanId || '',
+				creatorId: creatorId || '',
+				channelIdOld: channelIdOld || '',
+				repeatType: repeatType || ERepeatType.DOES_NOT_REPEAT
 			};
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateEvent(mezon.session, eventId ?? '', body);
+			await mezon.client.updateEvent(mezon.session, eventId ?? '', body);
 		} catch (error) {
 			captureSentryError(error, 'updateEventManagement/updateEventManagement');
 			return thunkAPI.rejectWithValue(error);
@@ -238,7 +252,7 @@ export const fetchDeleteEventManagement = createAsyncThunk(
 	async (body: fetchDeleteEventManagementPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteEvent(mezon.session, body.eventID, body.clanId, body.creatorId, body.eventLabel);
+			await mezon.client.deleteEvent(mezon.session, body.eventID, body.clanId, body.creatorId, body.eventLabel);
 		} catch (error) {
 			captureSentryError(error, 'deleteEventManagement/fetchDeleteEventManagement');
 			return thunkAPI.rejectWithValue(error);
@@ -249,7 +263,12 @@ export const fetchDeleteEventManagement = createAsyncThunk(
 export const addUserEvent = createAsyncThunk('userEvent/addUserEvent', async (request: ApiUserEventRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		await mezon.client.addUserEvent(mezon.session, request);
+		const requestWithTypeName = {
+			$typeName: 'mezon.api.UserEventRequest' as const,
+			clanId: request.clanId || '',
+			eventId: request.eventId || ''
+		};
+		await mezon.client.addUserEvent(mezon.session, requestWithTypeName);
 	} catch (error) {
 		captureSentryError(error, 'userEvent/addUserEvent');
 		return thunkAPI.rejectWithValue(error);
@@ -400,7 +419,7 @@ export const eventManagementSlice = createSlice({
 			});
 		},
 		upsertEvent: (state, action) => {
-			const { eventId, channelId, channelVoiceId, eventStatus, ...restPayload } = action.payload;
+			const { eventId, channelId, channelVoiceId, eventStatus: _eventStatus, ...restPayload } = action.payload;
 
 			const normalizedChannelId = channelId === '0' || channelId === '' ? '' : channelId;
 			const normalizedVoiceChannelId = channelVoiceId === '0' || channelVoiceId === '' ? '' : channelVoiceId;
@@ -418,7 +437,7 @@ export const eventManagementSlice = createSlice({
 			});
 		},
 
-		clearOngoingEvent: (state, action) => {
+		clearOngoingEvent: (state, _action) => {
 			state.ongoingEvent = null;
 		}
 	},

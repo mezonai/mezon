@@ -64,6 +64,12 @@ export const updateCommunity = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
 				isCommunity: enabled,
 				communityBanner: bannerUrl,
 				about,
@@ -84,6 +90,12 @@ export const updateCommunityStatus = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
 				isCommunity: enabled
 			});
 			return { clanId, enabled };
@@ -100,6 +112,12 @@ export const updateCommunityBanner = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
 				communityBanner: bannerUrl
 			});
 			return { clanId, bannerUrl };
@@ -116,6 +134,12 @@ export const updateCommunityAbout = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
 				about
 			});
 			return { clanId, about };
@@ -132,6 +156,12 @@ export const updateCommunityDescription = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
 				description
 			});
 			return { clanId, description };
@@ -148,6 +178,12 @@ export const updateCommunityShortUrl = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
 				shortUrl,
 				isCommunity: true
 			});

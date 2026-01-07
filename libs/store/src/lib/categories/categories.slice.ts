@@ -95,7 +95,7 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 		{
 			api_name: 'ListCategoryDescs',
 			list_category_req: {
-				clanId: clanId
+				clanId
 			}
 		},
 		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
@@ -134,7 +134,12 @@ export const fetchCategories = createAsyncThunk('categories/fetchCategories', as
 export const createNewCategory = createAsyncThunk('categories/createCategories', async (body: ApiCreateCategoryDescRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.createCategoryDesc(mezon.session, body);
+		const bodyWithTypeName = {
+			$typeName: 'mezon.api.CreateCategoryDescRequest' as const,
+			categoryName: body.categoryName || '',
+			clanId: body.clanId || ''
+		};
+		const response = await mezon.client.createCategoryDesc(mezon.session, bodyWithTypeName);
 		if (response) {
 			return response;
 		} else {
@@ -189,8 +194,13 @@ export const updateCategoriesOrder = createAsyncThunk(
 			if (!categories?.length || !clanId) return;
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateCategoryOrder(mezon.session, {
+				$typeName: 'mezon.api.UpdateCategoryOrderRequest' as const,
 				clanId,
-				categories
+				categories: categories.map((cat) => ({
+					$typeName: 'mezon.api.CategoryOrderUpdate' as const,
+					categoryId: cat.categoryId || '',
+					order: cat.order ?? 0
+				}))
 			});
 
 			const state = thunkAPI.getState() as RootState;
@@ -208,7 +218,7 @@ export const updateCategoriesOrder = createAsyncThunk(
 
 			thunkAPI.dispatch(
 				categoriesActions.setAll({
-					clanId: clanId,
+					clanId,
 					categories: sortedCategories
 				})
 			);
@@ -222,13 +232,19 @@ export const updateCategoriesOrder = createAsyncThunk(
 export const updateCategory = createAsyncThunk('categories/updateCategory', async ({ clanId, request }: updatCategoryPayload, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const _response = await mezon.client.updateCategory(mezon.session, clanId, request);
+		const requestWithTypeName = {
+			$typeName: 'mezon.api.UpdateCategoryDescRequest' as const,
+			categoryId: request.categoryId || '',
+			categoryName: request.categoryName || '',
+			clanId
+		};
+		const _response = await mezon.client.updateCategory(mezon.session, clanId, requestWithTypeName);
 
 		if (request.categoryId && _response) {
 			const updatedCategory: CategoriesEntity = {
 				id: request.categoryId,
 				categoryName: request.categoryName || '',
-				clanId: clanId
+				clanId
 			};
 
 			thunkAPI.dispatch(

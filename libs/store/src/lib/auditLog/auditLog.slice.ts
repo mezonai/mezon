@@ -1,12 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
-import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiAuditLog, MezonapiListAuditLog } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, withRetry } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const AUDIT_LOG_FEATURE_KEY = 'auditlog';
@@ -132,11 +132,18 @@ export const auditLogSlice = createSlice({
 			.addCase(auditLogList.pending, (state: IAuditLogState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(auditLogList.fulfilled, (state: IAuditLogState, action: PayloadAction<MezonapiListAuditLog & { fromCache?: boolean }>) => {
+			.addCase(auditLogList.fulfilled, (state: IAuditLogState, action) => {
 				const { fromCache, ...auditLogData } = action.payload;
 
-				if (!fromCache) {
-					state.auditLogData = auditLogData;
+				if (!fromCache && 'logs' in auditLogData) {
+					const convertedLogs = (auditLogData.logs || []).map((log: any) => ({
+						...log,
+						timeLog: timestampToString(log.timeLog)
+					}));
+					state.auditLogData = {
+						...auditLogData,
+						logs: convertedLogs as ApiAuditLog[]
+					} as MezonapiListAuditLog;
 					state.cache = createCacheMetadata(FETCH_AUDIT_LOG_CACHED_TIME);
 				}
 

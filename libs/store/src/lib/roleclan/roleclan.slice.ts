@@ -88,7 +88,7 @@ export const fetchRolesClanCached = async (getState: () => RootState, ensuredMez
 
 	if (!shouldForceCall) {
 		return {
-			clanId: clanId,
+			clanId,
 			roles: {
 				roles: roles || []
 			},
@@ -103,12 +103,12 @@ export const fetchRolesClanCached = async (getState: () => RootState, ensuredMez
 			role_list_event_req: {
 				limit: 500,
 				state: 1,
-				clanId: clanId
+				clanId
 			}
 		},
 		() => ensuredMezon.client.listRoles(ensuredMezon.session, clanId, 500, 1, ''),
 		'role_event_list'
-	)) as ApiRoleListEventResponse;
+	)) as unknown as ApiRoleListEventResponse;
 
 	markApiFirstCalled(apiKey);
 
@@ -231,15 +231,18 @@ export const fetchCreateRole = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
+				$typeName: 'mezon.api.CreateRoleRequest' as const,
 				activePermissionIds: activePermissionIds || [],
 				addUserIds: addUserIds || [],
 				allowMention: 0,
-				clanId: clanId,
+				clanId,
 				color: color ?? '',
+				roleIcon: '',
 				description: '',
 				displayOnline: 0,
 				title: title ?? '',
-				maxPermissionId: maxPermissionId
+				maxPermissionId,
+				orderRole: 0
 			};
 			const response = await mezon.client.createRole(mezon.session, body);
 			if (!response) {
@@ -285,11 +288,12 @@ export const updateRole = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const body: ApiUpdateRoleRequest = {
-				roleId: roleId,
+			const body = {
+				$typeName: 'mezon.api.UpdateRoleRequest' as const,
+				roleId,
 				title: title ?? '',
 				color: color ?? '',
-				roleIcon: roleIcon,
+				roleIcon,
 				description: '',
 				displayOnline: 0,
 				allowMention: 0,
@@ -297,8 +301,8 @@ export const updateRole = createAsyncThunk(
 				activePermissionIds: activePermissionIds || [],
 				removeUserIds: removeUserIds || [],
 				removePermissionIds: removePermissionIds || [],
-				clanId: clanId,
-				maxPermissionId: maxPermissionId
+				clanId,
+				maxPermissionId
 			};
 			const response = await mezon.client.updateRole(mezon.session, roleId, body);
 			if (!response) {
@@ -324,7 +328,16 @@ export const updateRole = createAsyncThunk(
 export const updateRoleOrder = createAsyncThunk('UpdateRole/updateRolesOrder', async ({ clanId, roles }: ApiUpdateRoleOrderRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		await mezon.client.updateRoleOrder(mezon.session, { clanId, roles });
+		const rolesWithTypeName = (roles || []).map((role) => ({
+			$typeName: 'mezon.api.RoleOrderUpdate' as const,
+			roleId: role.roleId || '',
+			order: role.order || 0
+		}));
+		await mezon.client.updateRoleOrder(mezon.session, {
+			$typeName: 'mezon.api.UpdateRoleOrderRequest' as const,
+			clanId: clanId || '',
+			roles: rolesWithTypeName
+		});
 	} catch (e) {
 		console.error('Error', e);
 	}

@@ -2,11 +2,11 @@ import { captureSentryError } from '@mezon/logger';
 import { EMuteState, type IChannelCategorySetting, type IDefaultNotificationCategory, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiNotificationChannelCategorySetting, ApiSetNotificationRequest } from 'mezon-js/types';
+import type { ApiNotificationChannelCategorySetting } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
 import type { RootState } from '../store';
 import { deleteNotiChannelSetting, setMuteChannel, setNotificationSetting } from './notificationSettingChannel.slice';
 
@@ -67,7 +67,7 @@ export const fetchDefaultNotificationCategoryCached = async (
 		{
 			api_name: 'GetNotificationCategory',
 			notification_category: {
-				categoryId: categoryId
+				categoryId
 			}
 		},
 		() => mezon.client.getNotificationCategory(mezon.session, categoryId),
@@ -113,7 +113,10 @@ export const getDefaultNotificationCategory = createAsyncThunk(
 				id: response.id,
 				notificationSettingType: response.notificationSettingType,
 				active: response.active,
-				timeMute: response.timeMute
+				timeMute:
+					response.timeMute && typeof response.timeMute === 'object' && 'seconds' in response.timeMute
+						? new Date((response.timeMute as any).seconds * 1000).toISOString()
+						: (response.timeMute as string | null | undefined)
 			};
 
 			return { ...apiNotificationSetting, categoryId, clanId };
@@ -137,10 +140,11 @@ export const setDefaultNotificationCategory = createAsyncThunk(
 	async ({ categoryId, notificationType, clanId, label, title }: SetDefaultNotificationPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const body: ApiSetNotificationRequest = {
-				channelCategoryId: categoryId,
-				notificationType,
-				clanId
+			const body = {
+				$typeName: 'mezon.api.SetNotificationRequest' as const,
+				channelCategoryId: categoryId || '',
+				notificationType: notificationType || 0,
+				clanId: clanId || ''
 			};
 			const response = await mezon.client.setNotificationCategory(mezon.session, body);
 			if (!response) {
@@ -188,10 +192,11 @@ export const setMuteCategory = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.setMuteCategory(mezon.session, {
-				active,
-				id,
-				muteTime,
-				clanId
+				$typeName: 'mezon.api.SetMuteRequest' as const,
+				active: active ?? 0,
+				id: id || '',
+				muteTime: muteTime ?? 0,
+				clanId: clanId || ''
 			});
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
@@ -295,7 +300,12 @@ export interface NotiChannelCategorySettingEntity extends IChannelCategorySettin
 
 export const mapChannelCategorySettingToEntity = (ChannelCategorySettingRes: ApiNotificationChannelCategorySetting) => {
 	const id = (ChannelCategorySettingRes as unknown as { id: string }).id;
-	return { ...ChannelCategorySettingRes, id };
+	const res = ChannelCategorySettingRes as any;
+	return {
+		...ChannelCategorySettingRes,
+		id,
+		timeMute: timestampToString(res.timeMute)
+	};
 };
 
 export interface ChannelCategorySettingState {
@@ -339,7 +349,7 @@ export const fetchChannelCategorySettingCached = async (getState: () => RootStat
 		{
 			api_name: 'GetChannelCategoryNotiSettingsList',
 			notification_clan: {
-				clanId: clanId
+				clanId
 			}
 		},
 		() => mezon.client.getChannelCategoryNotiSettingsList(mezon.session, clanId),
@@ -371,7 +381,8 @@ export const fetchChannelCategorySetting = createAsyncThunk(
 				};
 			}
 
-			if (!response?.notificationChannelCategorySettingsList) {
+			const res = response as any;
+			if (!res?.notificationChannelCategorySettingsList) {
 				return {
 					fromCache: response.fromCache,
 					clanId,
@@ -382,8 +393,7 @@ export const fetchChannelCategorySetting = createAsyncThunk(
 			return {
 				fromCache: response.fromCache,
 				clanId,
-				notificationChannelCategorySettingsList:
-					response.notificationChannelCategorySettingsList.map(mapChannelCategorySettingToEntity)
+				notificationChannelCategorySettingsList: res.notificationChannelCategorySettingsList.map(mapChannelCategorySettingToEntity)
 			};
 		} catch (error) {
 			captureSentryError(error, 'channelCategorySetting/fetchChannelCategorySetting');

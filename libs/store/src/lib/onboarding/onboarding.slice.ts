@@ -6,9 +6,9 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } fr
 import type { ApiOnboardingContent, ApiOnboardingItem, ApiOnboardingSteps } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { clansActions } from '../clans/clans.slice';
+import { clansActions, selectClanById } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, withRetry } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const ONBOARDING_FEATURE_KEY = 'ONBOARDING_FEATURE_KEY';
@@ -131,9 +131,26 @@ export const createOnboardingTask = createAsyncThunk(
 	async ({ content, clanId }: { content: ApiOnboardingContent[]; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const contentsWithTypeName = content.map((item) => ({
+				$typeName: 'mezon.api.OnboardingContent' as const,
+				guideType: item.guideType ?? 0,
+				taskType: item.taskType ?? 0,
+				channelId: item.channelId || '',
+				title: item.title || '',
+				content: item.content || '',
+				imageUrl: item.imageUrl || '',
+				answers: (item.answers || []).map((ans) => ({
+					$typeName: 'mezon.api.OnboardingAnswer' as const,
+					title: ans.title || '',
+					description: ans.description || '',
+					emoji: ans.emoji || '',
+					imageUrl: ans.imageUrl || ''
+				}))
+			}));
 			const response = await mezon.client.createOnboarding(mezon.session, {
+				$typeName: 'mezon.api.CreateOnboardingRequest' as const,
 				clanId,
-				contents: [...content]
+				contents: contentsWithTypeName
 			});
 			if (!response || !response?.listOnboarding) {
 				return false;
@@ -152,8 +169,21 @@ export const editOnboarding = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.updateOnboarding(mezon.session, idOnboarding, {
+				$typeName: 'mezon.api.UpdateOnboardingRequest' as const,
+				id: idOnboarding,
 				clanId,
-				...content
+				taskType: content.taskType ?? 0,
+				channelId: content.channelId || '',
+				title: content.title || '',
+				content: content.content || '',
+				imageUrl: content.imageUrl || '',
+				answers: (content.answers || []).map((ans) => ({
+					$typeName: 'mezon.api.OnboardingAnswer' as const,
+					title: ans.title || '',
+					description: ans.description || '',
+					emoji: ans.emoji || '',
+					imageUrl: ans.imageUrl || ''
+				}))
 			});
 			if (!response) {
 				return false;
@@ -198,8 +228,16 @@ export const enableOnboarding = createAsyncThunk(
 	async ({ clanId, onboarding, banner }: { clanId: string; onboarding: boolean; banner?: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const state = thunkAPI.getState() as RootState;
+			const clan = selectClanById(clanId)(state);
 
 			const response = await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: clan?.clanName || '',
+				status: clan?.status ?? 0,
+				welcomeChannelId: clan?.welcomeChannelId || '',
+				preventAnonymous: clan?.preventAnonymous ?? false,
 				isOnboarding: onboarding,
 				banner
 			});
@@ -281,7 +319,11 @@ export const doneOnboarding = createAsyncThunk('onboarding/doneOnboarding', asyn
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.updateOnboardingStepByClanId(mezon.session, clanId, { onboardingStep: DONE_ONBOARDING_STATUS });
+		const response = await mezon.client.updateOnboardingStepByClanId(mezon.session, clanId, {
+			$typeName: 'mezon.api.UpdateOnboardingStepRequest' as const,
+			clanId,
+			onboardingStep: DONE_ONBOARDING_STATUS
+		});
 		if (!response) {
 			return false;
 		}
@@ -489,7 +531,11 @@ export const onboardingSlice = createSlice({
 						state.onboardingCache[clanId] = getInitialOnboardingState();
 					}
 
-					state.onboardingCache[clanId].onboarding = response;
+					state.onboardingCache[clanId].onboarding = response.map((item) => ({
+						...item,
+						createTime: timestampToString(item.createTime),
+						updateTime: timestampToString((item as any).updateTime)
+					}));
 					state.onboardingCache[clanId].cache = {
 						lastFetched: Date.now(),
 						expiresAt: Date.now() + 1000 * 60 * 60,

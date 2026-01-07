@@ -7,7 +7,7 @@ import type { ApiClanSticker, ApiClanStickerAddRequest, MezonUpdateClanStickerBy
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
 import type { RootState } from '../store';
 
 export const SETTING_CLAN_STICKER = 'settingSticker';
@@ -110,15 +110,19 @@ export const fetchStickerByUserId = createAsyncThunk(
 			if (response) {
 				const stickersWithMediaType = response.stickers || [];
 
-				const processedStickers = stickersWithMediaType.map((sticker: ApiClanSticker & { mediaType?: MediaType }) => {
+				const processedStickers = stickersWithMediaType.map((sticker) => {
+					const stickerTyped = sticker as ApiClanSticker & { mediaType?: MediaType };
 					const isAudioFile =
-						sticker.source && (sticker.source.endsWith('.mp3') || sticker.source.endsWith('.wav') || sticker.source.includes('/sounds/'));
+						stickerTyped.source &&
+						(stickerTyped.source.endsWith('.mp3') || stickerTyped.source.endsWith('.wav') || stickerTyped.source.includes('/sounds/'));
 
-					const mediaType = sticker.mediaType !== undefined ? sticker.mediaType : isAudioFile ? MediaType.AUDIO : MediaType.STICKER;
+					const mediaType =
+						stickerTyped.mediaType !== undefined ? stickerTyped.mediaType : isAudioFile ? MediaType.AUDIO : MediaType.STICKER;
 
 					return {
-						...sticker,
-						mediaType: mediaType
+						...stickerTyped,
+						mediaType,
+						createTime: timestampToString(stickerTyped.createTime)
 					};
 				});
 
@@ -142,8 +146,14 @@ export const createSticker = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 			const requestWithMediaType = {
-				...form.request,
-				mediaType: form.request.mediaType !== undefined ? form.request.mediaType : MediaType.STICKER
+				$typeName: 'mezon.api.ClanStickerAddRequest' as const,
+				source: form.request.source || '',
+				shortname: form.request.shortname || '',
+				category: form.request.category || '',
+				clanId: form.clanId,
+				id: form.request.id || '',
+				mediaType: (form.request.mediaType !== undefined ? form.request.mediaType : MediaType.STICKER) as number,
+				isForSale: form.request.isForSale ?? false
 			};
 
 			const res = await mezon.client.addClanSticker(mezon.session, requestWithMediaType);
@@ -164,7 +174,14 @@ export const updateSticker = createAsyncThunk('settingClanSticker/updateSticker'
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-		const requestWithMediaType = request;
+		const requestWithMediaType = {
+			$typeName: 'mezon.api.ClanStickerUpdateByIdRequest' as const,
+			id: stickerId,
+			source: request.source || '',
+			shortname: request.shortname || '',
+			category: request.category || '',
+			clanId: request.clanId || ''
+		};
 
 		const res = await mezon.client.updateClanStickerById(mezon.session, stickerId, requestWithMediaType);
 		if (res) {
@@ -206,8 +223,14 @@ export const createSound = createAsyncThunk('settingClanSticker/createSound', as
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 		const soundRequest = {
-			...form.request,
-			mediaType: MediaType.AUDIO
+			$typeName: 'mezon.api.ClanStickerAddRequest' as const,
+			source: form.request.source || '',
+			shortname: form.request.shortname || '',
+			category: form.request.category || '',
+			clanId: form.clanId,
+			id: form.request.id || '',
+			mediaType: MediaType.AUDIO as number,
+			isForSale: form.request.isForSale ?? false
 		};
 
 		const res = await mezon.client.addClanSticker(mezon.session, soundRequest);
@@ -228,8 +251,12 @@ export const updateSound = createAsyncThunk('settingClanSticker/updateSound', as
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 		const soundRequest = {
-			...request,
-			mediaType: MediaType.AUDIO
+			$typeName: 'mezon.api.ClanStickerUpdateByIdRequest' as const,
+			id: soundId,
+			source: request.source || '',
+			shortname: request.shortname || '',
+			category: request.category || '',
+			clanId: request.clanId || ''
 		};
 
 		const res = await mezon.client.updateClanStickerById(mezon.session, soundId, soundRequest);

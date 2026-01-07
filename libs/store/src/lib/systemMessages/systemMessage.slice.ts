@@ -91,7 +91,17 @@ export const fetchSystemMessageByClanId = createAsyncThunk(
 
 export const createSystemMessage = createAsyncThunk('systemMessages/createSystemMessage', async (newMessage: ApiSystemMessageRequest, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
-	const response: ApiSystemMessage = await mezon.client.createSystemMessage(mezon.session, newMessage);
+	const requestWithTypeName = {
+		$typeName: 'mezon.api.SystemMessageRequest' as const,
+		clanId: newMessage.clanId || '',
+		channelId: newMessage.channelId || '',
+		welcomeRandom: newMessage.welcomeRandom || '',
+		welcomeSticker: newMessage.welcomeSticker || '',
+		boostMessage: newMessage.boostMessage || '',
+		setupTips: newMessage.setupTips || '',
+		hideAuditLog: newMessage.hideAuditLog || ''
+	};
+	const response: ApiSystemMessage = await mezon.client.createSystemMessage(mezon.session, requestWithTypeName);
 	return response;
 });
 
@@ -105,7 +115,17 @@ export const updateSystemMessage = createAsyncThunk(
 	async ({ clanId, newMessage, cachedMessage }: IUpdateSystemMessage, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateSystemMessage(mezon.session, clanId, newMessage);
+			const requestWithTypeName = {
+				$typeName: 'mezon.api.SystemMessageRequest' as const,
+				clanId,
+				channelId: newMessage.channelId || '',
+				welcomeRandom: newMessage.welcomeRandom || '',
+				welcomeSticker: newMessage.welcomeSticker || '',
+				boostMessage: newMessage.boostMessage || '',
+				setupTips: newMessage.setupTips || '',
+				hideAuditLog: newMessage.hideAuditLog || ''
+			};
+			await mezon.client.updateSystemMessage(mezon.session, clanId, requestWithTypeName);
 			thunkAPI.dispatch(fetchSystemMessageByClanId({ clanId, noCache: true }));
 			return cachedMessage;
 		} catch (error) {
