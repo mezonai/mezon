@@ -35,6 +35,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 	const handleButtonClick = async (directParamId?: string, type?: number, userId?: string) => {
 		const store = getStore();
 		const getDirect = selectDirectById(store.getState(), directParamId);
+		setIsInviteSent(true);
 
 		if (userId && !directParamId) {
 			const username = usersInviteExternal?.username || dmGroup?.usernames?.toString() || '';
