@@ -1,4 +1,4 @@
-import { useSendInviteMessage, useSilentSendMess } from '@mezon/core';
+import { useDirect, useSendInviteMessage } from '@mezon/core';
 import type { DirectEntity } from '@mezon/store';
 import { getStore, selectAllAccount, selectDirectById, useAppDispatch, userChannelsActions } from '@mezon/store';
 import type { UsersClanEntity } from '@mezon/utils';
@@ -22,11 +22,11 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 	const { dmGroup, isSent, url, onSend, usersInviteExternal, isExternalCalling } = props;
 	const [isInviteSent, setIsInviteSent] = useState(isSent);
 	const { sendInviteMessage } = useSendInviteMessage();
-	const { createSilentSendMess } = useSilentSendMess();
+	const { createDirectMessageWithUser } = useDirect({ autoFetch: false });
 	const dispatch = useAppDispatch();
-	const directMessageWithUser = async (userId: string) => {
-		const response = await createSilentSendMess(userId);
-		if (response.channelId) {
+	const directMessageWithUser = async (userId: string, username?: string, displayName?: string, avatar?: string) => {
+		const response = await createDirectMessageWithUser(userId, displayName, username, avatar);
+		if (response.channelId && url) {
 			sendInviteMessage(url, response.channelId, ChannelStreamMode.STREAM_MODE_DM);
 		}
 		return response;
@@ -45,7 +45,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 					? dmGroup?.topic || 'assets/images/avatar-group.png'
 					: dmGroup?.avatars?.at(0) || '';
 
-			const response = await directMessageWithUser(userId);
+			const response = await directMessageWithUser(userId, username, displayName, avatar);
 
 			if (response?.channelId) {
 				const currentUser = selectAllAccount(store.getState())?.user;
@@ -57,14 +57,15 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 							userIds: [currentUser?.id || '', userId],
 							usernames: [currentUser?.username || '', username],
 							displayNames: [currentUser?.displayName || '', displayName],
-							avatars: [currentUser?.avatarUrl || avatar, '']
+							avatars: [currentUser?.avatarUrl || avatar, ''],
+							onlines: [true, false]
 						}
 					])
 				);
 			}
 			return;
 		}
-		if (directParamId && getDirect) {
+		if (directParamId && getDirect && url) {
 			let channelMode = 0;
 			if (type === ChannelType.CHANNEL_TYPE_DM) {
 				channelMode = ChannelStreamMode.STREAM_MODE_DM;
@@ -89,9 +90,9 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 			isInviteSent={isInviteSent}
 			onHandle={() =>
 				handleButtonClick(
-					usersInviteExternal?.id,
+					usersInviteExternal?.type === ChannelType.CHANNEL_TYPE_GROUP ? usersInviteExternal?.id : undefined,
 					usersInviteExternal?.type,
-					usersInviteExternal?.type === ChannelType.CHANNEL_TYPE_GROUP ? '' : usersInviteExternal?.id
+					usersInviteExternal?.type === ChannelType.CHANNEL_TYPE_GROUP ? undefined : usersInviteExternal?.id
 				)
 			}
 		/>
@@ -121,7 +122,7 @@ type ItemInviteDMProps = {
 
 const ItemInviteDM = (props: ItemInviteDMProps) => {
 	const { t } = useTranslation('invitation');
-	const { channelID = '', type = '', avatar = '', label = '', isInviteSent = false, username = '', onHandle } = props;
+	const { channelID = '', avatar = '', label = '', isInviteSent = false, username = '', onHandle } = props;
 	return (
 		<div
 			key={channelID}
