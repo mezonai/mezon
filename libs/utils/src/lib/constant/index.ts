@@ -30,7 +30,18 @@ export const ONE_MINUTE_MS = 60000;
 export const GUEST_NAME = 'guest';
 export const FOR_SALE_CATE = 'forsale';
 
-export const PREDEFINED_EMOJI_CATEGORIES = ['Recent', 'Frequently', 'People', 'Nature', 'Food', 'Activities', 'Travel', 'Objects', 'Symbols', 'Flags'];
+export const PREDEFINED_EMOJI_CATEGORIES = [
+	'Recent',
+	'Frequently',
+	'People',
+	'Nature',
+	'Food',
+	'Activities',
+	'Travel',
+	'Objects',
+	'Symbols',
+	'Flags'
+];
 
 export const DEFAULT_ID = '0';
 export const LIMIT = 50;
@@ -98,7 +109,7 @@ export const ID_MENTION_HERE = '1775731111020111321';
 
 export const EMOJI_GIVE_COFFEE = {
 	emoji: ':coffee:',
-	emoji_id: '7280417126303261185'
+	emojiId: '7280417126303261185'
 };
 export const SYSTEM_NAME = 'System';
 export const SYSTEM_SENDER_ID = '0';

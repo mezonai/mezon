@@ -2,7 +2,7 @@ import { channelMembersActions, selectCurrentClanId, useAppDispatch, userClanPro
 import { Icons } from '@mezon/ui';
 import type { ChannelMembersEntity, EUserStatus, IUserAccount } from '@mezon/utils';
 import { ActivitiesType, createImgproxyUrl, generateE2eId } from '@mezon/utils';
-import type { ApiUserActivity } from 'mezon-js/api.gen';
+import type { ApiUserActivity } from 'mezon-js/types';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
@@ -58,7 +58,7 @@ const AvatarProfile = ({
 	const activityStatus = useMemo(() => {
 		return typeof customStatus === 'string'
 			? customStatus
-			: JSON.stringify(customStatus) || activityNames[activityByUserId?.activity_type as number];
+			: JSON.stringify(customStatus) || activityNames[activityByUserId?.activityType as number];
 	}, [activityByUserId, customStatus, activityNames]);
 
 	return (

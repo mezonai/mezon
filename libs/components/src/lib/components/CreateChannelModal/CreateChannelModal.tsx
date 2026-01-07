@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { AlertTitleTextWarning, Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
-import type { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -81,25 +81,25 @@ export const CreateNewChannelModal = () => {
 		}
 
 		const body: ApiCreateChannelDescRequest = {
-			clan_id: currentClanId as string,
+			clanId: currentClanId as string,
 			type: channelType,
-			channel_label: channelName,
-			channel_private: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isPrivate,
-			category_id: currentCategory?.category_id || channelWelcome?.category_id,
-			...(isAppChannel && selectedApp && { app_id: selectedApp.id }),
-			parent_id: '0'
+			channelLabel: channelName,
+			channelPrivate: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isPrivate,
+			categoryId: currentCategory?.categoryId || channelWelcome?.categoryId,
+			...(isAppChannel && selectedApp && { appId: selectedApp.id }),
+			parentId: '0'
 		};
 
 		const newChannelCreatedId = await dispatch(createNewChannel(body));
 		dispatch(channelsActions.invalidateCache({ clanId: currentClanId as string }));
 		const payload = newChannelCreatedId.payload as ApiCreateChannelDescRequest;
-		const channelID = payload.channel_id;
+		const channelID = payload.channelId;
 		const typeChannel = payload.type;
-		if (currentCategory?.category_id) {
+		if (currentCategory?.categoryId) {
 			dispatch(
 				listChannelRenderAction.updateCategoryChannels({
 					clanId: currentClanId as string,
-					categoryId: currentCategory?.category_id,
+					categoryId: currentCategory?.categoryId,
 					channelId: channelID ?? ''
 				})
 			);
@@ -179,7 +179,7 @@ export const CreateNewChannelModal = () => {
 								<ChannelLableModal labelProp={t('header.title')} />
 								<span>
 									<p className="self-stretch  text-sm font-bold leading-normal uppercase text-cyan-500">
-										{currentCategory?.category_name || channelWelcome?.category_name}
+										{currentCategory?.categoryName || channelWelcome?.categoryName}
 									</p>
 								</span>
 								<div className="absolute right-1 top-[-10px]">
@@ -227,8 +227,8 @@ export const CreateNewChannelModal = () => {
 									onHandleChangeValue={handleChangeValue}
 									placeholder={t('labels.placeholder')}
 									shouldValidate={true}
-									categoryId={currentCategory?.category_id || channelWelcome?.category_id}
-									clanId={currentCategory?.clan_id as string}
+									categoryId={currentCategory?.categoryId || channelWelcome?.categoryId}
+									clanId={currentCategory?.clanId as string}
 								/>
 							)}
 							{channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && (

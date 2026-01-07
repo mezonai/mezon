@@ -36,7 +36,7 @@ export const ChatBoxTyping = memo(
 					channelId,
 					mode,
 					isPublic,
-					username: userClanProfile?.clan_nick || userProfile?.user?.display_name || userProfile?.user?.username,
+					username: userClanProfile?.clanNick || userProfile?.user?.displayName || userProfile?.user?.username,
 					topicId: topicChannelId || ''
 				})
 			);
@@ -50,7 +50,7 @@ export const ChatBoxTyping = memo(
 						channelId,
 						mode,
 						isPublic: false,
-						username: userProfile?.user?.display_name || userProfile?.user?.username
+						username: userProfile?.user?.displayName || userProfile?.user?.username
 					})
 				)
 			]);

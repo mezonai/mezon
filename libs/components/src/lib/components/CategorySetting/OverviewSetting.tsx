@@ -3,7 +3,7 @@ import { categoriesActions, checkDuplicateCategoryInClan, selectCurrentClanId, u
 import type { ICategory } from '@mezon/utils';
 import { KEY_KEYBOARD, ValidateSpecialCharacters } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import type { ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
+import type { ApiUpdateCategoryDescRequest } from 'mezon-js/types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -19,12 +19,12 @@ interface IOverViewSettingProps {
 const OverviewSetting: React.FC<IOverViewSettingProps> = ({ category, onClose, onDisplayNameChange }) => {
 	const { t } = useTranslation('clan');
 	const currentClanId = useSelector(selectCurrentClanId);
-	const [categoryNameInit, setCategoryNameInit] = useState(category?.category_name || '');
+	const [categoryNameInit, setCategoryNameInit] = useState(category?.categoryName || '');
 	const [categoryName, setCategoryName] = useState(categoryNameInit);
 	const [checkValidate, setCheckValidate] = useState('');
 	const hasChanged = useMemo(() => {
-		return categoryName !== category?.category_name;
-	}, [categoryName, category?.category_name]);
+		return categoryName !== category?.categoryName;
+	}, [categoryName, category?.categoryName]);
 	const dispatch = useAppDispatch();
 
 	const debouncedSetCategoryName = useDebouncedCallback(async (value: string) => {
@@ -68,8 +68,8 @@ const OverviewSetting: React.FC<IOverViewSettingProps> = ({ category, onClose, o
 	const handleSave = () => {
 		setCategoryNameInit(categoryName);
 		const request: ApiUpdateCategoryDescRequest = {
-			category_id: category?.category_id || '',
-			category_name: categoryName,
+			categoryId: category?.categoryId || '',
+			categoryName: categoryName,
 			ClanId: currentClanId ?? ''
 		};
 		dispatch(

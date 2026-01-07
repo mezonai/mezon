@@ -9,15 +9,15 @@ export function useMyRole() {
 	const RolesClan = useSelector(selectAllRolesClan);
 
 	const userRolesClan = useMemo(() => {
-		return userById?.role_id ? RolesClan.filter((role) => userById?.role_id?.includes(role.id)) : [];
-	}, [userById?.role_id, RolesClan]);
+		return userById?.roleId ? RolesClan.filter((role) => userById?.roleId?.includes(role.id)) : [];
+	}, [userById?.roleId, RolesClan]);
 
 	const maxPermissionId = useMemo(() => {
 		let max = 0;
 		let roleId = '';
 		userRolesClan.forEach((role) => {
-			if (role?.max_level_permission && max < role?.max_level_permission) {
-				max = role?.max_level_permission;
+			if (role?.maxLevelPermission && max < role?.maxLevelPermission) {
+				max = role?.maxLevelPermission;
 				roleId = role?.id;
 			}
 		});

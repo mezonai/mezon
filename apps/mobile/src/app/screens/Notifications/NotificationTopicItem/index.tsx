@@ -24,19 +24,19 @@ const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
 	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
 	const dataMessage = parseObject(notify?.message);
-	const messageTimeDifference = convertTimestampToTimeAgo(notify?.last_sent_message?.timestamp_seconds);
-	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, notify?.last_sent_message?.sender_id ?? ''));
+	const messageTimeDifference = convertTimestampToTimeAgo(notify?.lastSentMessage?.timestampSeconds);
+	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, notify?.lastSentMessage?.senderId ?? ''));
 
 	const lastSentMessage = useMemo(() => {
 		const content = (
-			typeof notify?.last_sent_message?.content === 'string'
-				? safeJSONParse(notify.last_sent_message.content || '{}')
-				: notify?.last_sent_message?.content
+			typeof notify?.lastSentMessage?.content === 'string'
+				? safeJSONParse(notify.lastSentMessage.content || '{}')
+				: notify?.lastSentMessage?.content
 		)?.t;
 		const attachments =
-			(typeof notify?.last_sent_message?.attachment === 'string'
-				? safeJSONParse(notify.last_sent_message.attachment || '[]')
-				: notify?.last_sent_message?.attachment) || [];
+			(typeof notify?.lastSentMessage?.attachment === 'string'
+				? safeJSONParse(notify.lastSentMessage.attachment || '[]')
+				: notify?.lastSentMessage?.attachment) || [];
 
 		if (content) {
 			return content;
@@ -45,33 +45,33 @@ const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
 		} else {
 			return '';
 		}
-	}, [notify?.last_sent_message?.attachment, notify?.last_sent_message?.content, t]);
+	}, [notify?.lastSentMessage?.attachment, notify?.lastSentMessage?.content, t]);
 
 	const priorityAvatar = useMemo(() => {
-		return lastSentUser?.clan_avatar || lastSentUser?.user?.avatar_url || '';
-	}, [lastSentUser?.clan_avatar, lastSentUser?.user?.avatar_url]);
+		return lastSentUser?.clanAvatar || lastSentUser?.user?.avatarUrl || '';
+	}, [lastSentUser?.clanAvatar, lastSentUser?.user?.avatarUrl]);
 
 	const priorityUsername = useMemo(() => {
-		if (notify?.last_sent_message?.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
+		if (notify?.lastSentMessage?.senderId === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
 			return 'Anonymous';
 		}
 		return lastSentUser?.user?.username || '';
-	}, [lastSentUser?.user?.username, notify?.last_sent_message?.sender_id]);
+	}, [lastSentUser?.user?.username, notify?.lastSentMessage?.senderId]);
 
 	const priorityDisplayName = useMemo(() => {
-		if (notify?.last_sent_message?.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
+		if (notify?.lastSentMessage?.senderId === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
 			return 'Anonymous';
 		}
 
-		return lastSentUser?.clan_nick || lastSentUser?.user?.display_name || lastSentUser?.user?.username || '';
-	}, [lastSentUser?.clan_nick, lastSentUser?.user?.display_name, lastSentUser?.user?.username, notify?.last_sent_message?.sender_id]);
+		return lastSentUser?.clanNick || lastSentUser?.user?.displayName || lastSentUser?.user?.username || '';
+	}, [lastSentUser?.clanNick, lastSentUser?.user?.displayName, lastSentUser?.user?.username, notify?.lastSentMessage?.senderId]);
 
 	const handlePressNotify = async () => {
 		try {
 			const content = Object.assign({}, notify?.message || {}, {
-				channel_id: notify?.channel_id,
-				clan_id: notify?.clan_id,
-				message_id: notify?.message_id
+				channelId: notify?.channelId,
+				clanId: notify?.clanId,
+				messageId: notify?.messageId
 			});
 			const notifytoJump = Object.assign({}, notify, { content });
 			await onPressNotify(notifytoJump);

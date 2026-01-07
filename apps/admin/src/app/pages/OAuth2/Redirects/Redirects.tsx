@@ -15,7 +15,7 @@ interface IRedirectsProps {
 const Redirects = ({ currentApp, uriInputValuesRef, setInputArrLength, inputArrLength, setHasChange }: IRedirectsProps) => {
 	const { t } = useTranslation('adminApplication');
 
-	const appURIes = currentApp?.oAuthClient?.redirect_uris ?? [];
+	const appURIes = currentApp?.oAuthClient?.redirectUris ?? [];
 
 	if (!uriInputValuesRef.current.length && appURIes.length && inputArrLength === 0) {
 		uriInputValuesRef.current = [...appURIes];
@@ -72,7 +72,7 @@ interface IUriItemProps {
 
 const UriItem = ({ index, uriInputValuesRef, setInputArrLength, inputArrLength, currentApp, setHasChange }: IUriItemProps) => {
 	const [uriInput, setUriInput] = useState(uriInputValuesRef.current[index] ?? '');
-	const appURIes = currentApp?.oAuthClient?.redirect_uris ?? [];
+	const appURIes = currentApp?.oAuthClient?.redirectUris ?? [];
 
 	useEffect(() => {
 		const isSameURIArray =

@@ -27,15 +27,16 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import type { IHashtagOnMessage, IMentionOnMessage, MentionDataProps } from '@mezon/utils';
-import { MIN_THRESHOLD_CHARS } from '@mezon/utils';
+import { ChannelStatusEnum, MIN_THRESHOLD_CHARS } from '@mezon/utils';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 // eslint-disable-next-line
 import { useMezon } from '@mezon/transport';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { ChannelStreamMode } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, EmitterSubscription, Platform, StyleSheet, TextInput, View } from 'react-native';
+import type { EmitterSubscription } from 'react-native';
+import { DeviceEventEmitter, Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { TriggersConfig } from 'react-native-controlled-mentions';
 import { useMentions } from 'react-native-controlled-mentions';
 import RNFS from 'react-native-fs';
@@ -43,11 +44,17 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
 import { SlashCommandSuggestions } from '../../../../../../components/Suggestions/SlashCommandSuggestions';
-import { SlashCommandMessage } from '../../../../../../components/Suggestions/SlashCommandSuggestions/SlashCommandMessage';
+import {
+	SlashCommandMessage
+} from '../../../../../../components/Suggestions/SlashCommandSuggestions/SlashCommandMessage';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
-import { removeBackticks, resetCachedChatbox, resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
+import {
+	removeBackticks,
+	resetCachedChatbox,
+	resetCachedMessageActionNeedToResolve
+} from '../../../../../../utils/helpers';
 import { EMessageActionType } from '../../../enums';
 import type { IMessageActionNeedToResolve } from '../../../types';
 import AttachmentPreview from '../../AttachmentPreview';
@@ -366,7 +373,7 @@ export const ChatBoxBottomBar = memo(
 
 				const words = convertedHashtag?.split?.(mentionRegexSplit);
 
-				const mentionList: Array<{ user_id: string; s: number; e: number }> = [];
+				const mentionList: Array<{ userId: string; s: number; e: number }> = [];
 				const hashtagList: Array<{ channelid: string; s: number; e: number }> = [];
 
 				let mentionBeforeCount = 0;
@@ -384,7 +391,7 @@ export const ChatBoxBottomBar = memo(
 							indexOfLastMention = startindex + 1;
 
 							mentionList.push({
-								user_id: mention.id?.toString() ?? '',
+								userId: mention.id?.toString() ?? '',
 								s: startindex - (mentionBeforeHashtagCount * 2 + (mentionBeforeCount - 1) * 2),
 								e: startindex + word.length - (mentionBeforeHashtagCount * 2 + mentionBeforeCount * 2)
 							});
@@ -400,7 +407,8 @@ export const ChatBoxBottomBar = memo(
 						const listChannelHashtagDm = selectAllChannelsByUser(store.getState() as RootState);
 						const channelLabel = channelName?.slice?.(2, -1);
 						const channelInfo = getChannelHashtag(listChannelHashtagDm, listChannel, mode, channelLabel);
-
+						const isThreadPublish =
+							channelInfo?.type === ChannelType.CHANNEL_TYPE_THREAD && channelInfo?.channel_private !== ChannelStatusEnum.isPrivate;
 						mentionBeforeHashtagCount++;
 
 						if (channelInfo) {
@@ -408,7 +416,10 @@ export const ChatBoxBottomBar = memo(
 							indexOfLastHashtag = startindex + 1;
 
 							hashtagList?.push?.({
-								channelid: channelInfo?.channel_id?.toString() ?? '',
+								channelid: channelInfo?.channelId?.toString() ?? '',
+								parentId: channelInfo?.parent_id?.toString() ?? '',
+								clanId: channelInfo?.clan_id?.toString() ?? '',
+								channelLabel: isThreadPublish && channelLabel ? channelLabel : '',
 								s: startindex - (mentionBeforeCount * 2 + (mentionBeforeHashtagCount - 1) * 2),
 								e: startindex + channelName.length - (mentionBeforeHashtagCount * 2 + mentionBeforeCount * 2)
 							});
@@ -610,8 +621,8 @@ export const ChatBoxBottomBar = memo(
 		useEffect(() => {
 			if (
 				messageActionNeedToResolve !== null &&
-				(messageActionNeedToResolve?.targetMessage?.channel_id === channelId ||
-					messageActionNeedToResolve?.targetMessage?.channel_id === topicChannelId)
+				(messageActionNeedToResolve?.targetMessage?.channelId === channelId ||
+					messageActionNeedToResolve?.targetMessage?.channelId === topicChannelId)
 			) {
 				const { isStillShowKeyboard } = messageActionNeedToResolve;
 				if (!isStillShowKeyboard) {

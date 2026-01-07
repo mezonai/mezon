@@ -88,7 +88,7 @@ export function EventMenu({ event }: IEventMenuProps) {
 	];
 
 	const handleCancelEventConfirm = async () => {
-		await deleteEventManagement(event?.clan_id || '', event?.id || '', event?.creator_id || '', event?.title || '');
+		await deleteEventManagement(event?.clanId || '', event?.id || '', event?.creatorId || '', event?.title || '');
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	};
 

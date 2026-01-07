@@ -6,10 +6,10 @@ import { ChannelType } from 'mezon-js';
 export interface ProcessedUser {
 	id?: string;
 	username?: string;
-	display_name?: string;
-	avatar_url?: string;
-	clan_avatar?: string;
-	clan_nick?: string;
+	displayName?: string;
+	avatarUrl?: string;
+	clanAvatar?: string;
+	clanNick?: string;
 	type?: ChannelType;
 	dmId?: string;
 }
@@ -25,7 +25,7 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 
 	const usersFromDmGroupChat: ProcessedUser[] = dmGroupChatList.reduce<ProcessedUser[]>((acc, chat) => {
 		if (chat.type === ChannelType.CHANNEL_TYPE_DM) {
-			const userId = chat.user_ids?.[0];
+			const userId = chat.userIds?.[0];
 			if (!userId) return acc;
 
 			const clanData = existingUserMap.get(userId);
@@ -33,10 +33,10 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 			acc.push({
 				id: userId,
 				username: chat.usernames?.[0] || '',
-				display_name: clanData?.clan_nick || clanData?.prioritizeName || chat.display_names?.[0] || chat.usernames?.[0] || '',
-				avatar_url: clanData?.clan_avatar || chat.avatars?.[0] || '',
-				clan_avatar: clanData?.clan_avatar || chat.avatars?.[0] || '',
-				clan_nick: clanData?.clan_nick || clanData?.prioritizeName || chat.display_names?.[0] || chat.usernames?.[0] || '',
+				displayName: clanData?.clanNick || clanData?.prioritizeName || chat.displayNames?.[0] || chat.usernames?.[0] || '',
+				avatarUrl: clanData?.clanAvatar || chat.avatars?.[0] || '',
+				clanAvatar: clanData?.clanAvatar || chat.avatars?.[0] || '',
+				clanNick: clanData?.clanNick || clanData?.prioritizeName || chat.displayNames?.[0] || chat.usernames?.[0] || '',
 				type: ChannelType.CHANNEL_TYPE_DM,
 				dmId: chat.id
 			});
@@ -46,12 +46,12 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 
 		if (chat.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			acc.push({
-				id: chat.channel_id || '',
-				username: `${chat.usernames?.join(',') || ''}${chat.creator_name ? `, ${chat.creator_name}` : ''}`,
-				display_name: chat.channel_label || '',
-				avatar_url: 'assets/images/avatar-group.png',
-				clan_avatar: 'assets/images/avatar-group.png',
-				clan_nick: chat.channel_label || '',
+				id: chat.channelId || '',
+				username: `${chat.usernames?.join(',') || ''}${chat.creatorName ? `, ${chat.creatorName}` : ''}`,
+				displayName: chat.channelLabel || '',
+				avatarUrl: 'assets/images/avatar-group.png',
+				clanAvatar: 'assets/images/avatar-group.png',
+				clanNick: chat.channelLabel || '',
 				type: ChannelType.CHANNEL_TYPE_GROUP
 			});
 			return acc;
@@ -66,10 +66,10 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 			acc.push({
 				id: user.id || '',
 				username: user.user?.username || '',
-				display_name: user.user?.display_name || '',
-				avatar_url: user.user?.avatar_url || '',
-				clan_avatar: user.clan_avatar || user.user?.avatar_url || '',
-				clan_nick: user.clan_nick || user.user?.display_name || user.user?.username || '',
+				displayName: user.user?.displayName || '',
+				avatarUrl: user.user?.avatarUrl || '',
+				clanAvatar: user.clanAvatar || user.user?.avatarUrl || '',
+				clanNick: user.clanNick || user.user?.displayName || user.user?.username || '',
 				type: ChannelType.CHANNEL_TYPE_DM
 			});
 		}
@@ -85,10 +85,10 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 			const data: ProcessedUser = {
 				id: user.id,
 				username: user.username || '',
-				display_name: user.display_name || '',
-				avatar_url: user.avatar_url || '',
-				clan_avatar: user.avatar_url || '',
-				clan_nick: user.display_name || user.username || '',
+				displayName: user.displayName || '',
+				avatarUrl: user.avatarUrl || '',
+				clanAvatar: user.avatarUrl || '',
+				clanNick: user.displayName || user.username || '',
 				type: ChannelType.CHANNEL_TYPE_DM
 			};
 			acc.push(data);

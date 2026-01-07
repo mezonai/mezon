@@ -1,6 +1,6 @@
 import type { IApplicationEntity } from '@mezon/store';
 import { editMezonOauthClient, fetchMezonOauthClient, useAppDispatch } from '@mezon/store';
-import type { ApiMezonOauthClient } from 'mezon-js/api.gen';
+import type { ApiMezonOauthClient } from 'mezon-js/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
@@ -21,7 +21,7 @@ const ClientInformation = ({ currentApp }: IClientInformationProps) => {
 	}, [currentApp?.id, currentApp?.appname, dispatch]);
 
 	const toggleResetSecretePopup = () => {
-		const redirectUris = currentApp?.oAuthClient?.redirect_uris;
+		const redirectUris = currentApp?.oAuthClient?.redirectUris;
 		if (!redirectUris || redirectUris.length === 0 || redirectUris.every((uri) => !uri || uri.trim() === '')) {
 			toast.warning(t('clientInformation.toasts.addRedirectUri'));
 			return;
@@ -47,9 +47,9 @@ const ClientInformation = ({ currentApp }: IClientInformationProps) => {
 				<div className="flex gap-5 max-md:flex-col">
 					<div className="flex flex-col gap-2 xl:w-1/3 max-xl:w-1/2">
 						<div className="uppercase text-black dark:text-white font-bold text-xs">{t('clientInformation.clientId')}</div>
-						<div className="text-black dark:text-white font-bold text-xs">{currentApp?.oAuthClient?.client_id}</div>
+						<div className="text-black dark:text-white font-bold text-xs">{currentApp?.oAuthClient?.clientId}</div>
 						<button
-							onClick={() => handleCopyUrl(currentApp?.oAuthClient?.client_id as string)}
+							onClick={() => handleCopyUrl(currentApp?.oAuthClient?.clientId as string)}
 							className={`py-[7px] px-4 cursor-pointer ${
 								idCopied ? 'bg-gray-500' : 'bg-indigo-600  hover:bg-indigo-700'
 							} transition-colors rounded-lg w-fit select-none font-medium text-white`}
@@ -127,7 +127,7 @@ const ResetSecretPopup = ({ handleClosePopup, currentApp, handleCopyKey: _handle
 	const handleSaveSecretKey = async () => {
 		const request: ApiMezonOauthClient = {
 			...currentApp?.oAuthClient,
-			client_secret: newSecretKey
+			clientSecret: newSecretKey
 		};
 		await dispatch(editMezonOauthClient({ body: request }));
 		handleClosePopup();

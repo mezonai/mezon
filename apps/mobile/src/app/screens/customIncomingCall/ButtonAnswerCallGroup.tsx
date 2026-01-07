@@ -25,10 +25,10 @@ const ButtonAnswerCallGroup = memo(
 
 		const onDeniedCall = async () => {
 			const quitAction = {
-				is_video: false,
-				group_id: dataCallGroup.groupId || '',
-				caller_id: userId,
-				caller_name: dataCallGroup.groupName || '',
+				isVideo: false,
+				groupId: dataCallGroup.groupId || '',
+				callerId: userId,
+				callerName: dataCallGroup.groupName || '',
 				timestamp: Date.now(),
 				action: 'decline'
 			};
@@ -54,16 +54,16 @@ const ButtonAnswerCallGroup = memo(
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
 				const joinAction = {
-					participant_id: userId,
-					participant_name: '',
-					participant_avatar: '',
+					participantId: userId,
+					participantName: '',
+					participantAvatar: '',
 					timestamp: Date.now()
 				};
 				sendSignalingToParticipants(
 					[dataCall?.callerId],
 					WEBRTC_SIGNALING_TYPES.GROUP_CALL_PARTICIPANT_JOINED,
 					joinAction,
-					dataCall?.channel_id || '',
+					dataCall?.channelId || '',
 					userId || ''
 				);
 			}

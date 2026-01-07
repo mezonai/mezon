@@ -12,20 +12,20 @@ export const useGetPriorityNameFromUserClan = (senderId: string) => {
 	}, [userClan?.user?.username]);
 
 	const clanNick = useMemo(() => {
-		return userClan?.clan_nick;
-	}, [userClan?.clan_nick]);
+		return userClan?.clanNick;
+	}, [userClan?.clanNick]);
 
 	const displayName = useMemo(() => {
-		return userClan?.user?.display_name;
-	}, [userClan?.user?.display_name]);
+		return userClan?.user?.displayName;
+	}, [userClan?.user?.displayName]);
 
 	const clanAvatar = useMemo(() => {
-		return userClan?.clan_avatar;
-	}, [userClan?.clan_avatar]);
+		return userClan?.clanAvatar;
+	}, [userClan?.clanAvatar]);
 
 	const generalAvatar = useMemo(() => {
-		return userClan?.user?.avatar_url;
-	}, [userClan?.user?.avatar_url]);
+		return userClan?.user?.avatarUrl;
+	}, [userClan?.user?.avatarUrl]);
 
 	const namePriority = getShowName(clanNick ?? '', displayName ?? '', usernameSender ?? '', senderId);
 

@@ -212,7 +212,7 @@ export default function ClanMenu() {
 						title={t('actions.notifications')}
 						icon={
 							<MezonIconCDN
-								icon={defaultNotificationClan?.notification_setting_type === 3 ? IconCDN.bellSlashIcon : IconCDN.bellIcon}
+								icon={defaultNotificationClan?.notificationSettingType === 3 ? IconCDN.bellSlashIcon : IconCDN.bellIcon}
 								color={themeValue.textStrong}
 							/>
 						}

@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { size, useTheme, verticalScale } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import type { CategoriesEntity } from '@mezon/store-mobile';
 import { appActions, channelsActions, getStore, selectAllCategories, selectAppChannelById, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
@@ -32,23 +32,23 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 			dispatch(appActions.setLoadingMainMobile(true));
 			if (channel?.type === ChannelType.CHANNEL_TYPE_APP) {
 				const store = getStore();
-				const appChannel = selectAppChannelById(store.getState(), channel.channel_id as string);
+				const appChannel = selectAppChannelById(store.getState(), channel.channelId as string);
 				if (appChannel) {
-					appUrl = appChannel?.app_url;
+					appUrl = appChannel?.appUrl;
 				}
 			}
 			const updateChannel = {
-				clan_id: channel?.clan_id,
-				category_id: category.id,
-				channel_id: channel?.channel_id ?? '',
-				channel_label: channel?.channel_label,
-				app_url: appUrl,
-				app_id: channel?.app_id || '',
-				age_restricted: channel?.age_restricted,
+				clanId: channel?.clanId,
+				categoryId: category.id,
+				channelId: channel?.channelId ?? '',
+				channelLabel: channel?.channelLabel,
+				appUrl: appUrl,
+				appId: channel?.appId || '',
+				ageRestricted: channel?.ageRestricted,
 				e2ee: channel?.e2ee,
 				topic: channel?.topic,
-				parent_id: channel?.parent_id,
-				channel_private: channel?.channel_private
+				parentId: channel?.parentId,
+				channelPrivate: channel?.channelPrivate
 			};
 			await dispatch(channelsActions.updateChannel(updateChannel)).then(() => {
 				navigation.goBack();
@@ -56,8 +56,8 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 			await dispatch(channelsActions.changeCategoryOfChannel(updateChannel));
 			dispatch(
 				channelsActions.setCurrentChannelId({
-					channelId: channel.channel_id,
-					clanId: channel.clan_id
+					channelId: channel.channelId,
+					clanId: channel.clanId
 				})
 			);
 		} catch (error) {
@@ -72,7 +72,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 	};
 
 	const listOtherCategories = useMemo(() => {
-		return listCategory.filter((category) => category.id !== channel.category_id);
+		return listCategory.filter((category) => category.id !== channel.categoryId);
 	}, [listCategory]);
 
 	const handleShowComfirmMoveChannel = useCallback(
@@ -86,9 +86,9 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 						children={
 							<Text style={styles.confirmText}>
 								{t('changeCategory.confirmFirstContent')}
-								<Text style={styles.boldText}> {channel?.channel_label} </Text>
+								<Text style={styles.boldText}> {channel?.channelLabel} </Text>
 								{t('changeCategory.confirmLastContent')}
-								<Text style={styles.boldText}> {category?.category_name}</Text>?
+								<Text style={styles.boldText}> {category?.categoryName}</Text>?
 							</Text>
 						}
 					/>
@@ -96,7 +96,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 		},
-		[channel?.channel_label, t, styles]
+		[channel?.channelLabel, t, styles]
 	);
 
 	const CategoryList = useMemo(
@@ -104,7 +104,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 			listOtherCategories.map((category) => {
 				return {
 					onPress: () => handleShowComfirmMoveChannel(category),
-					title: category.category_name ?? ''
+					title: category.categoryName ?? ''
 				};
 			}) satisfies IMezonMenuItemProps[],
 		[]
@@ -112,7 +112,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 
 	const menu: IMezonMenuSectionProps[] = [
 		{
-			title: t('changeCategory.label', { currentChannel: channel?.category_name }),
+			title: t('changeCategory.label', { currentChannel: channel?.categoryName }),
 			items: CategoryList
 		}
 	];
@@ -122,9 +122,7 @@ export const ChangeCategory = ({ navigation, route }: MenuChannelScreenProps<Cha
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerTitle: () => (
 				<View>
-					<Text style={styles.headerTitle}>
-						{t('changeCategory.title')}
-					</Text>
+					<Text style={styles.headerTitle}>{t('changeCategory.title')}</Text>
 				</View>
 			),
 			headerLeft: () => {

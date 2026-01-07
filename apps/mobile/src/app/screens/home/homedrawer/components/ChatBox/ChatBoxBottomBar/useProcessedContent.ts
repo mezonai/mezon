@@ -1,7 +1,10 @@
-import { selectEmojiObjSuggestion } from '@mezon/store-mobile';
-import { EBacktickType, IEmojiOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage, isYouTubeLink } from '@mezon/utils';
+import { type ChannelsEntity, getStore, selectChannelById, selectEmojiObjSuggestion } from '@mezon/store-mobile';
+import type { IEmojiOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage } from '@mezon/utils';
+import { ChannelStatusEnum, EBacktickType, isYouTubeLink } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { clanAndChannelIdLinkRegex } from '../../../../../../utils/helpers';
 
 const useProcessedContent = (inputText: string) => {
 	const emojiList = useRef<IEmojiOnMessage[]>([]);
@@ -149,7 +152,23 @@ const processText = (rawInputString: string, emojiObjPicked: any) => {
 					} as ILinkVoiceRoomOnMessage);
 				} else {
 					const isYouTube = isYouTubeLink(link);
+					const channelMessageMatch = link.match(clanAndChannelIdLinkRegex);
+					const clanId = channelMessageMatch?.[1] || '';
+					const channelId = channelMessageMatch?.[2] || '';
+					let isThreadPublish = false;
+					let channelName = '';
+					if (channelId) {
+						const store = getStore();
+						const channel = selectChannelById(store.getState(), channelId as string) as ChannelsEntity;
+						isThreadPublish =
+							channel?.type === ChannelType.CHANNEL_TYPE_THREAD && channel?.channel_private !== ChannelStatusEnum.isPrivate;
+						channelName = channel?.channel_label || '';
+					}
+
 					links.push({
+						channelid: channelId ? channelId : '',
+						clanId: clanId ? clanId : '',
+						channelLabel: isThreadPublish && channelName ? channelName : '',
 						type: isYouTube ? EBacktickType.LINKYOUTUBE : EBacktickType.LINK,
 						s: startindex - shift,
 						e: endindex - shift

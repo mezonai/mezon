@@ -76,7 +76,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 				}
 
 				if (item?.type === GROUP && item?.group?.clanIds?.length > 0) {
-					const validClanIds = item.group.clanIds.filter((clanId) => clans?.find((c) => c?.clan_id === clanId));
+					const validClanIds = item.group.clanIds.filter((clanId) => clans?.find((c) => c?.clanId === clanId));
 
 					if (validClanIds.length > 0) {
 						acc.push({
@@ -124,7 +124,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 			currentThreshold !== null && currentDragDistance !== null && fromItem?.type === CLAN && currentDragDistance < currentThreshold;
 		canGroup
 			? setGroupPreviewMap({
-					[toItem?.clan?.clan_id ?? toItem?.group?.id]: placeholderIndexRef.current
+					[toItem?.clan?.clanId ?? toItem?.group?.id]: placeholderIndexRef.current
 				})
 			: setGroupPreviewMap({});
 	};
@@ -212,7 +212,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 				const fromItem = groupClans[from];
 				const toItem = groupClans[to];
 
-				if (fromItem?.type === GROUP || groupPreviewMap?.[toItem?.clan?.clan_id ?? toItem?.group?.id] === undefined) {
+				if (fromItem?.type === GROUP || groupPreviewMap?.[toItem?.clan?.clanId ?? toItem?.group?.id] === undefined) {
 					const newClanGroupOrder = data?.map((item) => {
 						if (item?.type === GROUP) {
 							return {
@@ -224,25 +224,25 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 							return {
 								type: CLAN,
 								id: item?.id,
-								clanId: item?.clan?.clan_id
+								clanId: item?.clan?.clanId
 							};
 						}
 					});
 
 					dispatch(clansActions.updateClanGroupOrder(newClanGroupOrder));
-				} else if (groupPreviewMap?.[toItem?.clan?.clan_id ?? toItem?.group?.id] !== undefined) {
+				} else if (groupPreviewMap?.[toItem?.clan?.clanId ?? toItem?.group?.id] !== undefined) {
 					requestAnimationFrame(() => {
 						if (toItem?.type === GROUP) {
 							dispatch(
 								clansActions.addClanToGroup({
 									groupId: toItem?.group?.id,
-									clanId: fromItem?.clan?.clan_id
+									clanId: fromItem?.clan?.clanId
 								})
 							);
 						} else if (toItem?.type === CLAN) {
 							dispatch(
 								clansActions.createClanGroup({
-									clanIds: [fromItem?.clan?.clan_id, toItem?.clan?.clan_id]
+									clanIds: [fromItem?.clan?.clanId, toItem?.clan?.clanId]
 								})
 							);
 						}
@@ -280,7 +280,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 	);
 
 	const renderItem = ({ item, drag, isActive }) => {
-		const isActiveCurrentClan = currentClanId === item?.clan?.clan_id;
+		const isActiveCurrentClan = currentClanId === item?.clan?.clanId;
 		if (item?.type === GROUP) {
 			return (
 				<>
@@ -301,7 +301,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 			return (
 				<>
 					<ClanIcon
-						key={`clan-${item?.clan?.clan_id}`}
+						key={`clan-${item?.clan?.clanId}`}
 						data={item?.clan}
 						onPress={handleChangeClan}
 						drag={drag}
@@ -310,7 +310,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 						onLayout={getIconLayout}
 						hideActive={hideActive}
 					/>
-					{groupPreviewMap?.[item?.clan?.clan_id] !== undefined && (
+					{groupPreviewMap?.[item?.clan?.clanId] !== undefined && (
 						<ClanGroupPreview targetItem={item} dragItem={groupClans[dragIndexRef.current]} clans={clans} />
 					)}
 				</>

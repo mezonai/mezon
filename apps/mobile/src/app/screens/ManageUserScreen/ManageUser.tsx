@@ -55,12 +55,12 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 	);
 
 	const displayName = useMemo(() => {
-		return user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
-	}, [user?.clan_nick, user?.user?.display_name, user?.user?.username]);
+		return user?.clanNick || user?.user?.displayName || user?.user?.username || '';
+	}, [user?.clanNick, user?.user?.displayName, user?.user?.username]);
 
 	const avatarUrl = useMemo(() => {
-		return user?.clan_avatar || user?.user?.avatar_url || '';
-	}, [user?.clan_avatar, user?.user?.avatar_url]);
+		return user?.clanAvatar || user?.user?.avatarUrl || '';
+	}, [user?.clanAvatar, user?.user?.avatarUrl]);
 
 	const activeRoleOfUser = useMemo(() => {
 		if (!rolesClan) return [];
@@ -69,19 +69,17 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 
 	const editableRoleList = useMemo(() => {
 		if (!rolesClan) return [];
-		return rolesClan.filter((role) => role?.slug !== `everyone-${role?.clan_id}`);
+		return rolesClan.filter((role) => role?.slug !== `everyone-${role?.clanId}`);
 	}, [rolesClan]);
 
 	const roleList = useMemo(() => {
 		if (!editMode) {
-			return (
-				activeRoleOfUser?.map((role) => ({ ...role, disabled: false }))?.filter((role) => role?.slug !== `everyone-${role?.clan_id}`) || []
-			);
+			return activeRoleOfUser?.map((role) => ({ ...role, disabled: false }))?.filter((role) => role?.slug !== `everyone-${role?.clanId}`) || [];
 		}
 		return (
 			editableRoleList?.map((role) => ({
 				...role,
-				disabled: isClanOwner ? false : maxPermissionLevel <= (role?.max_level_permission || 0)
+				disabled: isClanOwner ? false : maxPermissionLevel <= (role?.maxLevelPermission || 0)
 			})) || []
 		);
 	}, [editMode, activeRoleOfUser, editableRoleList, isClanOwner, maxPermissionLevel]);
@@ -229,11 +227,11 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 	);
 
 	useEffect(() => {
-		if (user?.role_id) {
+		if (user?.roleId) {
 			setIsLoading(false);
-			setSelectedRole(user.role_id);
+			setSelectedRole(user.roleId);
 		}
-	}, [user?.role_id]);
+	}, [user?.roleId]);
 
 	if (!user?.user) {
 		return (
@@ -298,7 +296,7 @@ export const ManageUser = memo<IManageUserProp>(({ user, onClose, memberSettings
 												>
 													{role?.title}
 												</Text>
-												{role?.role_icon && <ImageNative url={role?.role_icon} style={styles.roleIcon} />}
+												{role?.roleIcon && <ImageNative url={role?.roleIcon} style={styles.roleIcon} />}
 											</View>
 										</View>
 									</TouchableOpacity>

@@ -7,11 +7,11 @@ export function useActivities() {
 	const setUserActivity = useCallback(
 		(info: ActivitiesInfo) => {
 			const body = {
-				activity_description: info?.windowTitle,
-				activity_name: info?.appName,
-				activity_type: info?.typeActivity,
-				application_id: '0',
-				start_time: info?.startTime,
+				activityDescription: info?.windowTitle,
+				activityName: info?.appName,
+				activityType: info?.typeActivity,
+				applicationId: '0',
+				startTime: info?.startTime,
 				status: 1
 			};
 			dispatch(acitvitiesActions.createActivity(body));
@@ -21,8 +21,8 @@ export function useActivities() {
 	const setUserAFK = useCallback(
 		(status: number) => {
 			const body = {
-				activity_name: 'AFK',
-				activity_type: 4,
+				activityName: 'AFK',
+				activityType: 4,
 				status
 			};
 			dispatch(acitvitiesActions.createActivity(body));

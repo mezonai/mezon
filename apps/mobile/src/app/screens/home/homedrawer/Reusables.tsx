@@ -12,9 +12,9 @@ import ImageNative from '../../../components/ImageNative';
 import { style } from './styles';
 
 export type Receiver = {
-	channel_id?: string;
-	channel_label?: string;
-	channel_avatar?: string;
+	channelId?: string;
+	channelLabel?: string;
+	channelAvatar?: string;
 	type?: ChannelType;
 	user?: User;
 	id?: string;
@@ -33,19 +33,19 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['inviteToChannel']);
 	const styles = style(themeValue);
-	const isGroupAvatar = !dmGroup?.channel_avatar?.includes('avatar-group.png');
+	const isGroupAvatar = !dmGroup?.channelAvatar?.includes('avatar-group.png');
 
 	const priorityName = useMemo(() => {
-		return user?.user?.display_name || user?.user?.username || '';
-	}, [user?.user?.display_name, user?.user?.username]);
+		return user?.user?.displayName || user?.user?.username || '';
+	}, [user?.user?.displayName, user?.user?.username]);
 
 	return (
 		<View>
-			{dmGroup?.channel_id ? (
+			{dmGroup?.channelId ? (
 				<TouchableOpacity
 					disabled={isSent}
 					onPress={() => {
-						onPress(dmGroup.channel_id || '', dmGroup?.type || 0, dmGroup);
+						onPress(dmGroup.channelId || '', dmGroup?.type || 0, dmGroup);
 					}}
 					style={[styles.friendItemWrapper, isSent && styles.friendItemWrapperInvited]}
 				>
@@ -54,7 +54,7 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 							isGroupAvatar ? (
 								<View style={styles.groupAvatarWrapper}>
 									<ImageNative
-										url={createImgproxyUrl(dmGroup?.channel_avatar ?? '')}
+										url={createImgproxyUrl(dmGroup?.channelAvatar ?? '')}
 										style={styles.imageFull}
 										resizeMode={'cover'}
 									/>
@@ -63,10 +63,10 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 								<Image source={Images.AVATAR_GROUP} style={styles.defaultAvatar} />
 							)
 						) : (
-							<MezonAvatar avatarUrl={dmGroup?.channel_avatar} username={dmGroup?.channel_label} height={size.s_40} width={size.s_40} />
+							<MezonAvatar avatarUrl={dmGroup?.channelAvatar} username={dmGroup?.channelLabel} height={size.s_40} width={size.s_40} />
 						)}
 						<Text style={styles.friendItemName} numberOfLines={1} ellipsizeMode="tail">
-							{dmGroup?.channel_label}
+							{dmGroup?.channelLabel}
 						</Text>
 					</View>
 					<MezonButton
@@ -74,7 +74,7 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 						containerStyle={[styles.inviteButton]}
 						disabled={isSent}
 						onPress={() => {
-							onPress(dmGroup.channel_id || '', dmGroup?.type || 0, dmGroup);
+							onPress(dmGroup.channelId || '', dmGroup?.type || 0, dmGroup);
 						}}
 					/>
 				</TouchableOpacity>
@@ -87,7 +87,7 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 					style={[styles.friendItemWrapper, isSent && styles.friendItemWrapperInvited]}
 				>
 					<View style={styles.friendItemContent}>
-						<MezonAvatar username={user?.user?.username} avatarUrl={user?.user?.avatar_url} />
+						<MezonAvatar username={user?.user?.username} avatarUrl={user?.user?.avatarUrl} />
 						<Text style={styles.friendItemName} numberOfLines={1} ellipsizeMode="tail">
 							{priorityName}
 						</Text>

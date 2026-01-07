@@ -21,17 +21,17 @@ export const RenderMessageItemRef = ({ channelId, message, preventAction, isSear
 	const { t } = useTranslation('message');
 	const styles = style(themeValue);
 	const messageReferences = message?.references?.[0];
-	const isMessageReplyDeleted = message?.references?.length && !message.references?.[0]?.message_ref_id;
+	const isMessageReplyDeleted = message?.references?.length && !message.references?.[0]?.messageRefId;
 
 	return (
 		<>
-			{!!messageReferences && !!messageReferences?.message_ref_id && !isSearchTab && (
+			{!!messageReferences && !!messageReferences?.messageRefId && !isSearchTab && (
 				<MessageReferences
 					messageReferences={messageReferences}
 					preventAction={preventAction}
 					isMessageReply={true}
-					channelId={channelId ?? message?.channel_id}
-					clanId={message.clan_id}
+					channelId={channelId ?? message?.channelId}
+					clanId={message.clanId}
 					onLongPress={onLongPress}
 				/>
 			)}

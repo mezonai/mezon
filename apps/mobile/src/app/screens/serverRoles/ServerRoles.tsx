@@ -32,7 +32,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 	}, [rolesClan, hasAdminPermission, hasManageClanPermission, isClanOwner]);
 
 	const everyoneRole = useMemo(() => {
-		return rolesClan?.find((role) => role?.slug === `everyone-${role?.clan_id}`);
+		return rolesClan?.find((role) => role?.slug === `everyone-${role?.clanId}`);
 	}, [rolesClan]);
 
 	useLayoutEffect(() => {
@@ -101,8 +101,8 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 													height={size.s_32}
 													width={size.s_32}
 												/>
-												{!!item?.role_icon && (
-													<ImageNative url={item?.role_icon} style={{ height: size.s_32, width: size.s_32 }} />
+												{!!item?.roleIcon && (
+													<ImageNative url={item?.roleIcon} style={{ height: size.s_32, width: size.s_32 }} />
 												)}
 												<View style={styles.flex}>
 													<View style={styles.itemTitle}>
@@ -119,7 +119,7 @@ export const ServerRoles = ({ navigation }: MenuClanScreenProps<ClanSettingsScre
 													<Text style={styles.normalText}>
 														{item?.id === everyoneRole?.id
 															? t('allMembers')
-															: `${item?.role_user_list?.role_users?.length || '0'} - ${t('members')}`}
+															: `${item?.roleUserList?.roleUsers?.length || '0'} - ${t('members')}`}
 													</Text>
 												</View>
 												<View>

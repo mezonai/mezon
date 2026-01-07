@@ -4,7 +4,7 @@ import { QUICK_MENU_TYPE } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiQuickMenuAccess, ApiQuickMenuAccessRequest } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiQuickMenuAccess, ApiQuickMenuAccessRequest } from 'mezon-js/types';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
@@ -88,11 +88,11 @@ export const writeQuickMenuEvent = createAsyncThunk(
 			return {
 				success: true,
 				eventData: {
-					menu_name: menuName,
-					clan_id: clanId,
-					channel_id: channelId,
+					menuName,
+					clanId,
+					channelId,
 					mode,
-					is_public: isPublic,
+					isPublic,
 					timestamp: Date.now()
 				}
 			};
@@ -110,13 +110,15 @@ export const addQuickMenuAccess = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const data = {
+				$typeName: 'mezon.api.QuickMenuAccess' as const,
 				id: Snowflake.generate(),
-				bot_id: '0',
-				channel_id: body.channelId,
-				clan_id: body.clanId,
-				menu_name: body.menu_name,
-				action_msg: body.action_msg || '',
-				menu_type: body.menu_type || QUICK_MENU_TYPE.FLASH_MESSAGE
+				botId: '0',
+				channelId: body.channelId,
+				clanId: body.clanId,
+				menuName: body.menuName || '',
+				background: '',
+				actionMsg: body.actionMsg || '',
+				menuType: body.menuType || QUICK_MENU_TYPE.FLASH_MESSAGE
 			};
 			const response = await mezon.client.addQuickMenuAccess(mezon.session, data);
 			if (response) {
@@ -136,13 +138,15 @@ export const updateQuickMenuAccess = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const data = {
-				id: body.id,
-				bot_id: '0',
-				channel_id: body.channelId,
-				clan_id: body.clanId,
-				menu_name: body.menu_name,
-				action_msg: body.action_msg || '',
-				menu_type: body.menu_type || QUICK_MENU_TYPE.FLASH_MESSAGE
+				$typeName: 'mezon.api.QuickMenuAccess' as const,
+				id: body.id || '',
+				botId: '0',
+				channelId: body.channelId,
+				clanId: body.clanId,
+				menuName: body.menuName || '',
+				background: body.background || '',
+				actionMsg: body.actionMsg || '',
+				menuType: body.menuType || QUICK_MENU_TYPE.FLASH_MESSAGE
 			};
 			const response = await mezon.client.updateQuickMenuAccess(mezon.session, data);
 			if (response) {
@@ -193,7 +197,7 @@ export const listQuickMenuAccess = createAsyncThunk(
 				scope: 'channel-quick-menu'
 			});
 
-			return { channelId, menuType, quickMenuItems: response.list_menus || [], fromCache: false };
+			return { channelId, menuType, quickMenuItems: response.listMenus || [], fromCache: false };
 		} catch (error) {
 			captureSentryError(error, 'quickMenu/listQuickMenuAccess');
 			return thunkAPI.rejectWithValue(error);
@@ -247,14 +251,14 @@ export const quickMenuSlice = createSlice({
 			.addCase(addQuickMenuAccess.fulfilled, (state, action) => {
 				state.loadingStatus = 'loaded';
 				const { channelId, data } = action.payload;
-				if (data && data.menu_type !== undefined) {
+				if (data && data.menuType !== undefined) {
 					if (!state.byChannels[channelId]) {
 						state.byChannels[channelId] = {};
 					}
-					if (!state.byChannels[channelId][data.menu_type]) {
-						state.byChannels[channelId][data.menu_type] = [];
+					if (!state.byChannels[channelId][data.menuType]) {
+						state.byChannels[channelId][data.menuType] = [];
 					}
-					state.byChannels[channelId][data.menu_type].push(data);
+					state.byChannels[channelId][data.menuType].push(data);
 				}
 			})
 			.addCase(addQuickMenuAccess.rejected, (state, action) => {
@@ -267,11 +271,11 @@ export const quickMenuSlice = createSlice({
 			.addCase(updateQuickMenuAccess.fulfilled, (state, action) => {
 				state.loadingStatus = 'loaded';
 				const { channelId, data } = action.payload;
-				if (data && data.menu_type !== undefined) {
-					if (state.byChannels[channelId]?.[data.menu_type]) {
-						const indexUpdate = state.byChannels[channelId][data.menu_type].findIndex((item) => item.id === data.id);
+				if (data && data.menuType !== undefined) {
+					if (state.byChannels[channelId]?.[data.menuType]) {
+						const indexUpdate = state.byChannels[channelId][data.menuType].findIndex((item) => item.id === data.id);
 						if (indexUpdate !== -1) {
-							state.byChannels[channelId][data.menu_type][indexUpdate] = data;
+							state.byChannels[channelId][data.menuType][indexUpdate] = data;
 						}
 					}
 				}

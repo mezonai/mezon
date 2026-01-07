@@ -36,7 +36,7 @@ const DeviceManage = () => {
 				)}
 				{loadingStatus === 'loaded' && !allDevices?.length && <Text style={styles.noDevices}>{t('deviceSettings.noDevices')}</Text>}
 				{loadingStatus === 'loaded' && allDevices?.length > 0 && (
-					<FlatList data={allDevices} keyExtractor={(item) => item?.device_id} renderItem={renderItem} />
+					<FlatList data={allDevices} keyExtractor={(item) => item?.deviceId} renderItem={renderItem} />
 				)}
 			</View>
 		</View>

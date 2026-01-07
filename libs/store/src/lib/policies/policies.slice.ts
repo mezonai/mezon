@@ -1,7 +1,7 @@
 import type { IPermissionUser, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPermission, ApiRole } from 'mezon-js/api.gen';
+import type { ApiPermission, ApiRole } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { ThunkConfigWithError } from '../errors';
@@ -17,7 +17,7 @@ export const POLICIES_FEATURE_KEY = 'policies';
 
 export interface PermissionUserEntity extends IPermissionUser {
 	id: string; // Primary ID
-	max_level_permission?: number;
+	maxLevelPermission?: number;
 }
 
 export const mapPermissionUserToEntity = (userPermissions: ApiPermission) => {
@@ -48,7 +48,7 @@ export const fetchPermissionsUser = createAsyncThunk<any, fetchPermissionsUserPa
 			{
 				api_name: 'GetRoleOfUserInTheClan',
 				permission_user_req: {
-					clan_id: clanId
+					clanId: clanId
 				}
 			},
 			() => mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId),
@@ -58,7 +58,7 @@ export const fetchPermissionsUser = createAsyncThunk<any, fetchPermissionsUserPa
 		if (!response.roles) {
 			return [];
 		}
-		return response.max_level_permission || 0;
+		return response.maxLevelPermission || 0;
 	}
 );
 
@@ -85,7 +85,7 @@ export const fetchPermissionCached = async (getState: () => RootState, mezon: Me
 			api_name: 'GetListPermission'
 		},
 		() => mezon.client.getListPermission(mezon.session),
-		'permission_list'
+		'permissionList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -146,7 +146,7 @@ export const policiesSlice = createSlice({
 			} else {
 				policiesAdapter.addOne(state, {
 					id,
-					max_level_permission: changes.max_level_permission,
+					maxLevelPermission: changes.maxLevelPermission,
 					title: changes.title,
 					slug: changes.slug
 				});
@@ -157,8 +157,8 @@ export const policiesSlice = createSlice({
 		},
 		addPermissionCurrentClan: (state, action: PayloadAction<ApiRole>) => {
 			const role = action.payload;
-			if (role.max_level_permission && role.max_level_permission > state.maxPermissionUser) {
-				state.maxPermissionUser = role.max_level_permission;
+			if (role.maxLevelPermission && role.maxLevelPermission > state.maxPermissionUser) {
+				state.maxPermissionUser = role.maxLevelPermission;
 			}
 			state.cache = createCacheMetadata(LIST_PERMISSION_CACHED_TIME);
 		}

@@ -56,12 +56,12 @@ const CreateClanModal = memo(() => {
 		setIsSubmitting(true);
 		createClans(nameClan?.trim?.(), urlImage)
 			.then(async (res) => {
-				if (res && res?.clan_id) {
-					store.dispatch(clansActions.joinClan({ clanId: res?.clan_id }));
-					save(STORAGE_CLAN_ID, res?.clan_id);
-					store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clan_id }));
-					const respChannel = await store.dispatch(channelsActions.fetchChannels({ clanId: res?.clan_id }));
-					await setDefaultChannelLoader(respChannel.payload, res?.clan_id);
+				if (res && res?.clanId) {
+					store.dispatch(clansActions.joinClan({ clanId: res?.clanId }));
+					save(STORAGE_CLAN_ID, res?.clanId);
+					store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clanId }));
+					const respChannel = await store.dispatch(channelsActions.fetchChannels({ clanId: res?.clanId }));
+					await setDefaultChannelLoader(respChannel.payload, res?.clanId);
 					onClose();
 				}
 			})

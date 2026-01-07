@@ -30,7 +30,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
 			(window as any).gtag('event', 'Login Button', {
 				event_category: 'Login Button',
-				event_label: action,
+				eventLabel: action,
 				custom_parameter_1: 'mezon_header_login'
 			});
 		}

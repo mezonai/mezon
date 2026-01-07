@@ -22,21 +22,21 @@ export type PermissionsChannelProps = {
 
 const PermissionsChannel = (props: PermissionsChannelProps) => {
 	const { channel, openModalAdd, parentRef, clanId, menuIsOpen } = props;
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || ''));
+	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channelId || ''));
 	const listCategory = useSelector(selectAllCategories);
 	const categoryName = useMemo(() => {
-		if (realTimeChannel?.category_name) {
-			return realTimeChannel.category_name;
+		if (realTimeChannel?.categoryName) {
+			return realTimeChannel.categoryName;
 		}
-		if (realTimeChannel?.category_id) {
-			const category = listCategory.find((cat) => cat.id === realTimeChannel.category_id);
-			return category?.category_name || '';
+		if (realTimeChannel?.categoryId) {
+			const category = listCategory.find((cat) => cat.id === realTimeChannel.categoryId);
+			return category?.categoryName || '';
 		}
 		return '';
-	}, [realTimeChannel?.category_name, realTimeChannel?.category_id, listCategory]);
+	}, [realTimeChannel?.categoryName, realTimeChannel?.categoryId, listCategory]);
 	const { t } = useTranslation('channelSetting');
 	const [showAddMemRole, setShowAddMemRole] = useState(false);
-	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channel_private);
+	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channelPrivate);
 	const [valueToggle, setValueToggle] = useState(valueToggleInit);
 	const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
@@ -63,11 +63,11 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 		const updatedUserIds = userProfile?.user?.id ? [...selectedUserIds, userProfile?.user.id] : selectedUserIds;
 		await dispatch(
 			channelsActions.updateChannelPrivate({
-				clan_id: clanId,
-				channel_id: channel.id,
-				channel_private: channel.channel_private || 0,
-				user_ids: updatedUserIds,
-				role_ids: selectedRoleIds
+				clanId,
+				channelId: channel.id,
+				channelPrivate: channel.channelPrivate || 0,
+				userIds: updatedUserIds,
+				roleIds: selectedRoleIds
 			})
 		);
 	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel]);
@@ -180,7 +180,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 					<hr className="border-t border-solid dark:border-gray-700 border-bgModifierHoverLight mt-10 mb-[30px]" />
 					<PermissionManage
 						channelId={channel.id}
-						channelPrivate={channel.channel_private === 1}
+						channelPrivate={channel.channelPrivate === 1}
 						setIsPrivateChannel={setValueToggle}
 						setPermissionsListHasChanged={setPermissionsListHasChanged}
 						saveTriggerRef={saveTriggerRef}

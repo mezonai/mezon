@@ -21,7 +21,7 @@ export interface UsersStreamState extends EntityState<UsersStreamEntity, string>
 }
 
 export const userStreamAdapter = createEntityAdapter({
-	selectId: (user: UsersStreamEntity) => user.user_id || ''
+	selectId: (user: UsersStreamEntity) => user.userId || ''
 });
 
 type fetchStreamChannelMembersPayload = {
@@ -43,32 +43,32 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 					list_channel_users_req: {
 						limit: 100,
 						state: 1,
-						channel_type: channelType,
-						clan_id: clanId
+						channelType,
+						clanId
 					}
 				},
 				() => mezon.client.listStreamingChannelUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
 				'voice_user_list'
 			);
 
-			if (!response.streaming_channel_users) {
+			if (!response.streamingChannelUsers) {
 				return [];
 			}
 
-			const members = response.streaming_channel_users.map((channelRes) => {
+			const members = response.streamingChannelUsers.map((channelRes: any) => {
 				return {
-					user_id: channelRes.user_id || '',
-					clan_id: clanId,
-					streaming_channel_id: channelRes.channel_id || '',
-					clan_name: '',
+					userId: channelRes.userId || '',
+					clanId,
+					streamingChannelId: channelRes.channelId || '',
+					clanName: '',
 					participant: channelRes.participant || '',
-					streaming_channel_label: '',
+					streamingChannelLabel: '',
 					id: channelRes.id || ''
 				};
 			});
 
 			thunkAPI.dispatch(usersStreamActions.addMany(members));
-			const streams = response.streaming_channel_users;
+			const streams = response.streamingChannelUsers;
 			return streams;
 		} catch (error) {
 			captureSentryError(error, 'stream/fetchStreamChannelMembers');
@@ -97,7 +97,7 @@ export const usersStreamSlice = createSlice({
 		streamEnded: (state, action: PayloadAction<string>) => {
 			const channelId = action.payload;
 			const idsToRemove = Object.values(state.entities)
-				.filter((member) => member?.streaming_channel_id === channelId)
+				.filter((member) => member?.streamingChannelId === channelId)
 				.map((member) => member?.id);
 			userStreamAdapter.removeMany(state, idsToRemove);
 		}
@@ -169,5 +169,5 @@ export const getUsersStreamState = (rootState: { [USERS_STREAM_FEATURE_KEY]: Use
 export const selectAllUsersStream = createSelector(getUsersStreamState, selectAll);
 
 export const selectStreamMembersByChannelId = createSelector([selectAllUsersStream, (_, channelId: string) => channelId], (entities, channelId) => {
-	return entities.filter((member) => member && member.streaming_channel_id === channelId);
+	return entities.filter((member) => member && member.streamingChannelId === channelId);
 });

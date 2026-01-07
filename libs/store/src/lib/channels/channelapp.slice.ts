@@ -1,7 +1,9 @@
 import { captureSentryError } from '@mezon/logger';
-import { DEFAULT_POSITION, INIT_SIZE, LoadingStatus } from '@mezon/utils';
-import { PayloadAction, createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import { JoinChannelAppData } from 'mezon-js';
+import type { LoadingStatus } from '@mezon/utils';
+import { DEFAULT_POSITION, INIT_SIZE } from '@mezon/utils';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { JoinChannelAppData } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 
 type CreateChannelAppMeetPayload = {
@@ -55,8 +57,9 @@ export const createChannelAppMeet = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createRoomChannelApps(mezon.session, {
-				channel_id: channelId,
-				room_name: roomName
+				$typeName: 'mezon.api.CreateRoomChannelApps' as const,
+				channelId,
+				roomName
 			});
 
 			if (!response) {
@@ -131,7 +134,7 @@ export const channelAppSlice = createSlice({
 			})
 			.addCase(createChannelAppMeet.fulfilled, (state, action) => {
 				state.loadingStatus = 'loaded';
-				state.roomName = action.payload?.room_name ?? '';
+				state.roomName = action.payload?.roomName ?? '';
 			})
 			.addCase(createChannelAppMeet.rejected, (state) => {
 				state.loadingStatus = 'error';

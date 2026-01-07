@@ -28,18 +28,18 @@ export const ReactionMember = memo((props: IReactionMemberProps) => {
 
 	const reactionMemberAvatar = useMemo(() => {
 		if (currentClanId === '0') {
-			return reactionMember?.user?.avatar_url || '';
+			return reactionMember?.user?.avatarUrl || '';
 		}
-		return reactionMember?.clan_avatar || reactionMember?.user?.avatar_url || '';
-	}, [currentClanId, reactionMember?.clan_avatar, reactionMember?.user?.avatar_url]);
+		return reactionMember?.clanAvatar || reactionMember?.user?.avatarUrl || '';
+	}, [currentClanId, reactionMember?.clanAvatar, reactionMember?.user?.avatarUrl]);
 
 	const reactionMemberName = useMemo(() => {
-		const displayName = reactionMember?.user?.display_name || reactionMember?.user?.username || '';
+		const displayName = reactionMember?.user?.displayName || reactionMember?.user?.username || '';
 		if (currentClanId === '0') {
 			return displayName;
 		}
-		return reactionMember?.clan_nick || displayName;
-	}, [currentClanId, reactionMember?.clan_nick, reactionMember?.user?.display_name, reactionMember?.user?.username]);
+		return reactionMember?.clanNick || displayName;
+	}, [currentClanId, reactionMember?.clanNick, reactionMember?.user?.displayName, reactionMember?.user?.username]);
 
 	const showUserInformation = () => {
 		onSelectUserId(userId);

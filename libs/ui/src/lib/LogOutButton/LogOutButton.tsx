@@ -14,7 +14,7 @@ export function LogOutButton() {
 		setOpenModal(true);
 	};
 	const handleLogOut = () => {
-		dispatch(authActions.logOut({ device_id: userProfile?.user?.username || '', platform: 'desktop' }));
+		dispatch(authActions.logOut({ deviceId: userProfile?.user?.username || '', platform: 'desktop' }));
 	};
 	const handleCloseModal = () => {
 		setOpenModal(false);

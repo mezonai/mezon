@@ -166,7 +166,7 @@ const ItemHistory = ({
 	const navigate = useNavigate();
 	const logo = useMemo(() => {
 		if (!clan) {
-			const avatar = channelDM.type === ChannelType.CHANNEL_TYPE_GROUP ? channelDM?.channel_avatar : channelDM?.avatars?.[0];
+			const avatar = channelDM.type === ChannelType.CHANNEL_TYPE_GROUP ? channelDM?.channelAvatar : channelDM?.avatars?.[0];
 			return (
 				<img
 					className="w-6 aspect-square rounded-md"
@@ -179,7 +179,7 @@ const ItemHistory = ({
 			return <img className="w-6 aspect-square rounded-md" src={createImgproxyUrl(clan.logo, { width: 24, height: 24, resizeType: 'fit' })} />;
 		}
 
-		return <div className="h-6 aspect-square flex items-center justify-center bg-theme-primary uppercase rounded-md">{clan.clan_name?.[0]}</div>;
+		return <div className="h-6 aspect-square flex items-center justify-center bg-theme-primary uppercase rounded-md">{clan.clanName?.[0]}</div>;
 	}, [clan]);
 
 	const handleClickHistory = () => {
@@ -193,7 +193,7 @@ const ItemHistory = ({
 			onClick={handleClickHistory}
 		>
 			{logo}
-			<div className="flex-1 truncate">{channelDM?.channel_label || channelClan?.channel_label}</div>
+			<div className="flex-1 truncate">{channelDM?.channelLabel || channelClan?.channelLabel}</div>
 			<div className="w-4 h-4">{active && <Icons.Star defaultSize="w-4 h-4" />}</div>
 		</div>
 	);

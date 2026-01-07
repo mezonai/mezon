@@ -31,14 +31,14 @@ export enum EChannelSettingTab {
 const SettingChannel = (props: ModalSettingProps) => {
 	const { onClose, channel } = props;
 	const { t } = useTranslation('channelSetting');
-	const channelId = (channel?.channel_id || (channel as any)?.id || '') as string;
+	const channelId = (channel?.channelId || (channel as any)?.id || '') as string;
 	const channelFromStore = useAppSelector((state) => selectChannelById(state, channelId));
 	const currentChannel = (channelFromStore || channel) as IChannel;
 
 	const [currentSetting, setCurrentSetting] = useState<string>(EChannelSettingTab.OVERVIEW);
 	const [menu, setMenu] = useState(true);
 	const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
-	const [displayChannelLabel, setDisplayChannelLabel] = useState<string>(currentChannel?.channel_label || '');
+	const [displayChannelLabel, setDisplayChannelLabel] = useState<string>(currentChannel?.channelLabel || '');
 
 	const closeMenu = useSelector(selectCloseMenu);
 	const dispatch = useAppDispatch();
@@ -74,8 +74,8 @@ const SettingChannel = (props: ModalSettingProps) => {
 	};
 
 	useEffect(() => {
-		dispatch(fetchUserChannels({ channelId: channel.channel_id as string }));
-	}, [channel?.channel_id, dispatch]);
+		dispatch(fetchUserChannels({ channelId: channel.channelId as string }));
+	}, [channel?.channelId, dispatch]);
 
 	const openModalAdd = useRef(false);
 
@@ -91,8 +91,8 @@ const SettingChannel = (props: ModalSettingProps) => {
 	useOnClickOutside(modalRef, handleClose);
 
 	useEffect(() => {
-		setDisplayChannelLabel(currentChannel?.channel_label || '');
-	}, [currentChannel?.channel_id, currentChannel?.channel_label]);
+		setDisplayChannelLabel(currentChannel?.channelLabel || '');
+	}, [currentChannel?.channelId, currentChannel?.channelLabel]);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -157,7 +157,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 						channel={channel}
 						openModalAdd={openModalAdd}
 						parentRef={modalRef}
-						clanId={channel.clan_id}
+						clanId={channel.clanId}
 						menuIsOpen={menuIsOpen}
 					/>
 				)}
@@ -169,7 +169,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 					<div
 						className={`overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] sbm:pb-7 sbm:pr-[10px] sbm:pl-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar ${!menuIsOpen ? 'sbm:pt-[94px] pt-[70px]' : 'pt-[94px]'}`}
 					>
-						<QuickMenuAccessManager channelId={channel.channel_id || ''} clanId={channel.clan_id || ''} />
+						<QuickMenuAccessManager channelId={channel.channelId || ''} clanId={channel.clanId || ''} />
 					</div>
 				)}
 

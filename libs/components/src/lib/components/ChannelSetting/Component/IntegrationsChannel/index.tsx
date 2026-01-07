@@ -12,7 +12,7 @@ const IntegrationsChannel = ({ currentChannel, menuIsOpen }: IIntegrationsChanne
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
-		dispatch(fetchWebhooks({ channelId: currentChannel?.channel_id as string, clanId: currentChannel?.clan_id as string }));
+		dispatch(fetchWebhooks({ channelId: currentChannel?.channelId as string, clanId: currentChannel?.clanId as string }));
 	}, []);
 
 	return (

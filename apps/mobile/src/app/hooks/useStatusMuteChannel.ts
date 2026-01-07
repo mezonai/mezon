@@ -15,7 +15,7 @@ const useStatusMuteChannel = () => {
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentDmId = useSelector(selectDmGroupCurrentId);
 	const [statusMute, setStatusMute] = useState<ENotificationActive>(ENotificationActive.ON);
-	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannel?.category_id as string));
+	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannel?.categoryId as string));
 	const getNotificationChannelSelected = useAppSelector((state) =>
 		selectNotifiSettingsEntitiesById(state, currentDmId || currentChannel?.id || '')
 	);
@@ -24,7 +24,7 @@ const useStatusMuteChannel = () => {
 	useEffect(() => {
 		if (
 			getNotificationChannelSelected?.active === ENotificationActive.ON &&
-			getNotificationChannelSelected?.notification_setting_type === NotificationType.NOTHING_MESSAGE
+			getNotificationChannelSelected?.notificationSettingType === NotificationType.NOTHING_MESSAGE
 		) {
 			setStatusMute(ENotificationActive.OFF);
 		} else if (
@@ -33,9 +33,9 @@ const useStatusMuteChannel = () => {
 		) {
 			setStatusMute(ENotificationActive.OFF);
 		} else if (getNotificationChannelSelected?.id === ENotificationChannelId.Default) {
-			if (defaultNotificationCategory?.notification_setting_type === NotificationType.NOTHING_MESSAGE) {
+			if (defaultNotificationCategory?.notificationSettingType === NotificationType.NOTHING_MESSAGE) {
 				setStatusMute(ENotificationActive.OFF);
-			} else if (defaultNotificationClan?.notification_setting_type === NotificationType.NOTHING_MESSAGE) {
+			} else if (defaultNotificationClan?.notificationSettingType === NotificationType.NOTHING_MESSAGE) {
 				setStatusMute(ENotificationActive.OFF);
 			} else {
 				setStatusMute(ENotificationActive.ON);

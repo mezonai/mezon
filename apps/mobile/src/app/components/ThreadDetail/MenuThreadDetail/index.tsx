@@ -40,7 +40,7 @@ export default function MenuThreadDetail(props: { route: any }) {
 				<View style={styles.container}>
 					<ThreadHeader />
 					<ActionRow />
-					<AssetsViewer channelId={channel?.channel_id} />
+					<AssetsViewer channelId={channel?.channelId} />
 				</View>
 			</View>
 		</threadDetailContext.Provider>

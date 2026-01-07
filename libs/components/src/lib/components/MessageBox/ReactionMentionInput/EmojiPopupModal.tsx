@@ -2,7 +2,7 @@ import { EmojiSuggestionProvider, useCurrentInbox } from '@mezon/core';
 import { selectSubPanelActive } from '@mezon/store';
 import { EmojiPlaces, SubPanelName } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelDescription } from 'mezon-js/api.gen';
+import type { ApiChannelDescription } from 'mezon-js/types';
 import type { RefObject } from 'react';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useModal } from 'react-modal-hook';

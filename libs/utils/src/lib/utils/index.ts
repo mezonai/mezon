@@ -14,8 +14,7 @@ import {
 import isElectron from 'is-electron';
 import type { Client, Session } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser } from 'mezon-js/api.gen';
-import type { RoleUserListRoleUser } from 'mezon-js/dist/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser, RoleUserListRoleUser } from 'mezon-js/types';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { electronBridge } from '../bridge';
@@ -140,8 +139,8 @@ export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] 
 	const uniqueUserId1s = Array.from(
 		new Set(
 			mentions.reduce<string[]>((acc, mention) => {
-				if (mention.user_id && mention.user_id !== ID_MENTION_HERE) {
-					acc.push(mention.user_id);
+				if (mention.userId && mention.userId !== ID_MENTION_HERE) {
+					acc.push(mention.userId);
 				}
 				return acc;
 			}, [])
@@ -149,9 +148,9 @@ export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] 
 	);
 
 	const allRoleUsers = rolesClan.reduce<RoleUserListRoleUser[]>((acc, role) => {
-		const isMentionedRole = mentions.some((mention) => mention.role_id === role.id);
-		if (isMentionedRole && role.role_user_list?.role_users) {
-			acc.push(...role.role_user_list.role_users);
+		const isMentionedRole = mentions.some((mention) => mention.roleId === role.id);
+		if (isMentionedRole && role.roleUserList?.roleUsers) {
+			acc.push(...role.roleUserList.roleUsers);
 		}
 		return acc;
 	}, []);
@@ -171,7 +170,7 @@ export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] 
 		new Set([...(uniqueUserId1s || []), ...(uniqueUserId2s || []), ...(refereceSenderId ? [refereceSenderId] : [])])
 	);
 
-	const userIdsNotInChannel = combinedUniqueUserIds.filter((user_id) => Array.isArray(memUserIds) && memUserIds.includes(user_id as string));
+	const userIdsNotInChannel = combinedUniqueUserIds.filter((userId) => Array.isArray(memUserIds) && memUserIds.includes(userId as string));
 
 	return userIdsNotInChannel;
 };
@@ -432,7 +431,7 @@ export const resizeFileImage = (file: File, maxWidth: number, maxHeight: number,
 export function findClanAvatarByUserId(userId: string, data: ClanUserListClanUser[]) {
 	for (const item of data) {
 		if (item?.user?.id === userId) {
-			return item.clan_avatar;
+			return item.clanAvatar;
 		}
 	}
 	return '';
@@ -441,7 +440,7 @@ export function findClanAvatarByUserId(userId: string, data: ClanUserListClanUse
 export function findClanNickByUserId(userId: string, data: ClanUserListClanUser[]) {
 	for (const item of data) {
 		if (item?.user?.id === userId) {
-			return item.clan_nick;
+			return item.clanNick;
 		}
 	}
 	return '';
@@ -450,7 +449,7 @@ export function findClanNickByUserId(userId: string, data: ClanUserListClanUser[
 export function findDisplayNameByUserId(userId: string, data: ClanUserListClanUser[]) {
 	for (const item of data) {
 		if (item?.user?.id === userId) {
-			return item.user.display_name;
+			return item.user.displayName;
 		}
 	}
 	return '';
@@ -562,10 +561,10 @@ export const createFormattedString = (data: IExtendedMessage): string => {
 		const contentInElement = t?.substring(startindex, endindex);
 		switch (element.kindOf) {
 			case ETokenMessage.MENTIONS: {
-				if (element.user_id) {
-					result += `@[${contentInElement.slice(1)}](${element.user_id})`;
-				} else if (element.role_id) {
-					result += `@[${contentInElement.slice(1)}](${element.role_id})`;
+				if (element.userId) {
+					result += `@[${contentInElement.slice(1)}](${element.userId})`;
+				} else if (element.roleId) {
+					result += `@[${contentInElement.slice(1)}](${element.roleId})`;
 				}
 				break;
 			}
@@ -807,19 +806,19 @@ export async function getMobileUploadedAttachments(payload: {
 }
 
 export const blankReferenceObj: ApiMessageRef = {
-	message_id: '',
-	message_ref_id: '',
-	ref_type: 0,
-	message_sender_id: '',
-	message_sender_username: '',
-	mesages_sender_avatar: '',
-	message_sender_clan_nick: '',
-	message_sender_display_name: '',
+	messageId: '',
+	messageRefId: '',
+	refType: 0,
+	messageSenderId: '',
+	messageSenderUsername: '',
+	mesagesSenderAvatar: '',
+	messageSenderClanNick: '',
+	messageSenderDisplayName: '',
 	content: '',
-	has_attachment: false,
-	channel_id: '',
+	hasAttachment: false,
+	channelId: '',
 	mode: 0,
-	channel_label: ''
+	channelLabel: ''
 };
 
 export const handleShowShortProfile = (
@@ -877,8 +876,8 @@ export const handleShowShortProfile = (
 
 export const sortNotificationsByDate = (notifications: NotificationEntity[]) => {
 	return notifications.sort((a, b) => {
-		const dateA = a.create_time ? new Date(a.create_time).getTime() : 0;
-		const dateB = b.create_time ? new Date(b.create_time).getTime() : 0;
+		const dateA = a.createTime ? new Date(a.createTime).getTime() : 0;
+		const dateB = b.createTime ? new Date(b.createTime).getTime() : 0;
 		return dateB - dateA;
 	});
 };
@@ -891,13 +890,13 @@ export function removeUndefinedAndEmpty(obj: Record<string, any[]>) {
 
 export const sortChannelsByLastActivity = (channels: IChannel[]): IChannel[] => {
 	return channels.sort((a, b) => {
-		const timestampA = a.last_sent_message?.timestamp_seconds || a.create_time_seconds || 0;
-		const timestampB = b.last_sent_message?.timestamp_seconds || b.create_time_seconds || 0;
+		const timestampA = a.lastSentMessage?.timestampSeconds || a.createTimeSeconds || 0;
+		const timestampB = b.lastSentMessage?.timestampSeconds || b.createTimeSeconds || 0;
 		return timestampB - timestampA;
 	});
 };
 export const checkIsThread = (channel?: IChannel) => {
-	return channel?.parent_id !== '0' && channel?.parent_id !== '';
+	return channel?.parentId !== '0' && channel?.parentId !== '';
 };
 
 export const isWindowsDesktop = getPlatform() === Platform.WINDOWS && isElectron();
@@ -1073,30 +1072,30 @@ export const transformTextWithMentions = (
 	let offsetAdjustment = 0;
 
 	for (const mention of mentions) {
-		const { s, e, user_id, role_id } = mention;
+		const { s, e, userId, roleId } = mention;
 		const start = (s || 0) + offsetAdjustment;
 		const end = (e as number) + offsetAdjustment;
 
-		if (role_id) {
-			const role = clanRoles?.[role_id as string];
+		if (roleId) {
+			const role = clanRoles?.[roleId as string];
 			if (role) {
 				const roleName = role.title || '';
-				const replacement = `@[${roleName}](${role_id})`;
+				const replacement = `@[${roleName}](${roleId})`;
 				text = text.slice(0, start) + replacement + text.slice(end);
 				offsetAdjustment += replacement.length - (end - start);
 			}
 		}
 
-		const user = usersEntities?.[user_id as string];
+		const user = usersEntities?.[userId as string];
 		if (user) {
-			const name = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
-			const replacement = `@[${name}](${user_id})`;
+			const name = user?.clanNick || user?.user?.displayName || user?.user?.username || '';
+			const replacement = `@[${name}](${userId})`;
 			text = text.slice(0, start) + replacement + text.slice(end);
 			offsetAdjustment += replacement.length - (end - start);
 		}
 
-		if (user_id === ID_MENTION_HERE) {
-			const replacement = `@[here](${user_id})`;
+		if (userId === ID_MENTION_HERE) {
+			const replacement = `@[here](${userId})`;
 			text = text.slice(0, start) + replacement + text.slice(end);
 			offsetAdjustment += replacement.length - (end - start);
 		}
@@ -1113,10 +1112,10 @@ export const generateMentionItems = (
 ): MentionItem[] => {
 	return mentions
 		.map((mention) => {
-			const user = usersEntities?.[mention.user_id as string];
+			const user = usersEntities?.[mention.userId as string];
 			if (user) {
-				const name = user.clan_nick || user.user?.display_name || user.user?.username || '';
-				const mentionText = `@[${name}](${mention.user_id})`;
+				const name = user.clanNick || user.user?.displayName || user.user?.username || '';
+				const mentionText = `@[${name}](${mention.userId})`;
 				const index = transformedText.indexOf(mentionText);
 				return {
 					display: name,
@@ -1142,10 +1141,10 @@ export const getMarkupInsertIndex = (
 	let totalInsertedLength = 0;
 
 	mentionsBeforeInsert.forEach((mention) => {
-		const { user_id, role_id } = mention;
+		const { userId, roleId } = mention;
 
-		if (role_id) {
-			const role = clanRoles?.[role_id as string];
+		if (roleId) {
+			const role = clanRoles?.[roleId as string];
 			if (role) {
 				// Plain text: @name
 				// Mention markup format: @[name](id)
@@ -1155,12 +1154,12 @@ export const getMarkupInsertIndex = (
 			return;
 		}
 
-		const user = usersEntities?.[mention.user_id as string];
+		const user = usersEntities?.[mention.userId as string];
 		if (user) {
 			// Plain text: @name
 			// Mention markup format: @[name](id)
 			// => Adding 4 extra characters: `[`, `]`, `(`, `)`
-			totalInsertedLength += 4 + (user_id?.length || 0);
+			totalInsertedLength += 4 + (userId?.length || 0);
 		}
 	});
 
@@ -1214,10 +1213,10 @@ export const getAttachmentDataForWindow = (
 		return {
 			...image,
 			uploaderData: {
-				avatar: (uploader?.clan_avatar ||
-					uploader?.user?.avatar_url ||
+				avatar: (uploader?.clanAvatar ||
+					uploader?.user?.avatarUrl ||
 					`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string,
-				name: uploader?.clan_nick || uploader?.user?.display_name || uploader?.user?.username || 'Anonymous'
+				name: uploader?.clanNick || uploader?.user?.displayName || uploader?.user?.username || 'Anonymous'
 			},
 			url: image.url,
 			realUrl: image.url || '',
@@ -1322,20 +1321,20 @@ export const updateMentionPositions = (mentions: MentionItem[], newValue: string
 export const mapChannelToAppEntity = (
 	payload: any
 ): {
-	app_id?: string;
-	channel_id?: string;
-	clan_id?: string;
+	appId?: string;
+	channelId?: string;
+	clanId?: string;
 	id?: string;
 	url?: string;
 } => {
 	const timestamp = Date.now().toString();
 
 	return {
-		app_id: timestamp,
-		channel_id: payload.channel_id,
-		clan_id: payload.clan_id,
+		appId: timestamp,
+		channelId: payload.channelId,
+		clanId: payload.clanId,
 		id: timestamp,
-		url: payload.app_url
+		url: payload.appUrl
 	};
 };
 
@@ -1345,15 +1344,15 @@ export const getIdSaleItemFromSource = (src: string) => {
 	return idFromSource;
 };
 
-export const saveParseUserStatus = (user_status: string): { status: string; user_status: EUserStatus } => {
+export const saveParseUserStatus = (userStatus: string): { status: string; userStatus: EUserStatus } => {
 	return {
-		status: user_status,
-		user_status: EUserStatus.ONLINE
+		status: userStatus,
+		userStatus: EUserStatus.ONLINE
 	};
 };
 
 export const getParentChannelIdIfHas = (channel: IChannel) => {
-	const channelId = channel?.parent_id && channel?.parent_id !== '0' ? channel?.parent_id : channel?.channel_id;
+	const channelId = channel?.parentId && channel?.parentId !== '0' ? channel?.parentId : channel?.channelId;
 	return channelId;
 };
 

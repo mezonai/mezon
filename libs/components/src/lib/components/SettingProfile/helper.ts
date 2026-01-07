@@ -1,7 +1,7 @@
 import { toastActions } from '@mezon/store';
 import { handleUploadFile } from '@mezon/transport';
 import { MAX_FILE_SIZE_1MB } from '@mezon/utils';
-import type { ApiAccount } from 'mezon-js/api.gen';
+import type { ApiAccount } from 'mezon-js/types';
 import { toast } from 'react-toastify';
 
 export const processImage = async (
@@ -49,7 +49,7 @@ export const processImage = async (
 
 		if (isMounted) {
 			setUrlImage(attachment.url || '');
-			setFlagOption && setFlagOption(attachment.url !== userProfile?.user?.avatar_url);
+			setFlagOption && setFlagOption(attachment.url !== userProfile?.user?.avatarUrl);
 			setImageObject(null);
 			setImageCropped(null);
 			setIsLoading(false);

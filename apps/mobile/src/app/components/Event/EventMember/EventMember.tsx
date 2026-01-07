@@ -27,12 +27,12 @@ const Avatar = ({ id, index }: { id: string; index: number }) => {
 				key={index.toString()}
 				height={40}
 				width={40}
-				avatarUrl={user?.clan_avatar || user?.user?.avatar_url}
-				username={user?.clan_nick || user?.user?.display_name || user?.user?.username}
+				avatarUrl={user?.clanAvatar || user?.user?.avatarUrl}
+				username={user?.clanNick || user?.user?.displayName || user?.user?.username}
 				userStatus={userStatus}
 				customStatus={customStatus}
 			/>
-			<Text style={styles.text}>{user?.clan_nick || user?.user?.display_name || user?.user?.username}</Text>
+			<Text style={styles.text}>{user?.clanNick || user?.user?.displayName || user?.user?.username}</Text>
 		</View>
 	);
 };
@@ -40,7 +40,7 @@ const Avatar = ({ id, index }: { id: string; index: number }) => {
 export function EventMember({ event }: IEventMemberProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const currentEvent = useAppSelector((state) => selectEventById(state, event?.clan_id ?? '', event?.id ?? ''));
+	const currentEvent = useAppSelector((state) => selectEventById(state, event?.clanId ?? '', event?.id ?? ''));
 
-	return <View style={styles.container}>{currentEvent?.user_ids?.map((uid, index) => <Avatar key={uid} id={uid} index={index} />)}</View>;
+	return <View style={styles.container}>{currentEvent?.userIds?.map((uid, index) => <Avatar key={uid} id={uid} index={index} />)}</View>;
 }

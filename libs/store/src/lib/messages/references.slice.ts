@@ -1,6 +1,6 @@
 import { AttachmentTypeUpload, IMessage, MAX_FILE_ATTACHMENTS, PreSendAttachment } from '@mezon/utils';
 import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiMessageRef } from 'mezon-js/api.gen';
+import { ApiMessageRef } from 'mezon-js/types';
 
 export const REFERENCES_FEATURE_KEY = 'references';
 

@@ -4,7 +4,7 @@ import { INITIAL_NOISE_SUPPRESSION_PERCENTAGE, type IVoice, type IvoiceInfo, typ
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelType, VoiceLeavedEvent } from 'mezon-js';
-import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser } from 'mezon-js/api.gen';
+import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser } from 'mezon-js/types';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 
@@ -63,7 +63,7 @@ export const voiceAdapter = createEntityAdapter({
 });
 
 const normalizeVoiceEntity = (voice: VoiceEntity): VoiceEntity => {
-	const normalizedId = voice.id && voice.id.length > 0 ? voice.id : `${voice.user_id || ''}${voice.voice_channel_id || ''}`;
+	const normalizedId = voice.id && voice.id.length > 0 ? voice.id : `${voice.userId || ''}${voice.voiceChannelId || ''}`;
 	return {
 		...voice,
 		id: normalizedId
@@ -77,8 +77,8 @@ type fetchVoiceChannelMembersPayload = {
 };
 
 export interface ApiGenerateMeetTokenResponseExtend extends ApiGenerateMeetTokenResponse {
-	guest_user_id?: string;
-	guest_access_token?: string;
+	guestUserId?: string;
+	guestAccessToken?: string;
 }
 export const fetchVoiceChannelMembers = createAsyncThunk(
 	'voice/fetchVoiceChannelMembers',
@@ -93,20 +93,20 @@ export const fetchVoiceChannelMembers = createAsyncThunk(
 					list_channel_users_req: {
 						limit: 100,
 						state: 1,
-						channel_type: channelType,
-						clan_id: clanId
+						channelType,
+						clanId
 					}
 				},
 				() => mezon.client.listChannelVoiceUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
 				'voice_user_list'
 			);
 
-			if (!response.voice_channel_users) {
+			if (!response.voiceChannelUsers) {
 				return { users: [] as ApiVoiceChannelUser[], clanId };
 			}
 
 			return {
-				users: response.voice_channel_users,
+				users: response.voiceChannelUsers,
 				clanId
 			};
 		} catch (error) {
@@ -132,15 +132,16 @@ export const generateMeetTokenExternal = createAsyncThunk(
 
 export const kickVoiceMember = createAsyncThunk(
 	'meet/kickVoiceMember',
-	async ({ room_name, username }: { room_name?: string; username?: string }, thunkAPI) => {
+	async ({ roomName, username }: { roomName?: string; username?: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
 			const state = thunkAPI.getState() as RootState;
 			const voiceInfor = selectVoiceInfo(state);
 			const response = await mezon.client.removeMezonMeetParticipant(mezon.session, {
-				clan_id: voiceInfor?.clanId as string,
-				channel_id: voiceInfor?.channelId,
-				room_name,
+				$typeName: 'mezon.api.MeetParticipantRequest' as const,
+				clanId: voiceInfor?.clanId as string,
+				channelId: voiceInfor?.channelId as string,
+				roomName: roomName || '',
 				username: username as string
 			});
 			return response;
@@ -153,15 +154,16 @@ export const kickVoiceMember = createAsyncThunk(
 
 export const muteVoiceMember = createAsyncThunk(
 	'meet/muteVoiceMember',
-	async ({ room_name, username }: { room_name?: string; username?: string }, thunkAPI) => {
+	async ({ roomName, username }: { roomName?: string; username?: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureClientAsync(getMezonCtx(thunkAPI));
 			const state = thunkAPI.getState() as RootState;
 			const voiceInfor = selectVoiceInfo(state);
 			const response = await mezon.client.muteMezonMeetParticipant(mezon.session, {
-				clan_id: voiceInfor?.clanId as string,
-				channel_id: voiceInfor?.channelId,
-				room_name,
+				$typeName: 'mezon.api.MeetParticipantRequest' as const,
+				clanId: voiceInfor?.clanId as string,
+				channelId: voiceInfor?.channelId as string,
+				roomName: roomName || '',
 				username: username as string
 			});
 			return response;
@@ -210,8 +212,8 @@ export const voiceSlice = createSlice({
 			const normalizedVoice = normalizeVoiceEntity(action.payload);
 			const duplicateEntry = Object.values(state.entities).find(
 				(member) =>
-					member?.user_id === normalizedVoice.user_id &&
-					member?.voice_channel_id === normalizedVoice.voice_channel_id &&
+					member?.userId === normalizedVoice.userId &&
+					member?.voiceChannelId === normalizedVoice.voiceChannelId &&
 					member?.id !== normalizedVoice.id
 			);
 			if (duplicateEntry?.id) {
@@ -219,16 +221,16 @@ export const voiceSlice = createSlice({
 			}
 
 			voiceAdapter.upsertOne(state, normalizedVoice);
-			if (normalizedVoice.user_id) {
-				state.listInVoiceStatus[normalizedVoice.user_id] = {
-					clanId: normalizedVoice.clan_id,
-					channelId: normalizedVoice.voice_channel_id
+			if (normalizedVoice.userId) {
+				state.listInVoiceStatus[normalizedVoice.userId] = {
+					clanId: normalizedVoice.clanId,
+					channelId: normalizedVoice.voiceChannelId
 				};
 			}
 		},
 		remove: (state, action: PayloadAction<VoiceLeavedEvent>) => {
 			const voice = action.payload;
-			const keyRemove = voice.voice_user_id + voice.voice_channel_id;
+			const keyRemove = voice.voiceUserId + voice.voiceChannelId;
 			const entities = voiceAdapter.getSelectors().selectEntities(state);
 			if (entities[keyRemove]) {
 				voiceAdapter.removeOne(state, keyRemove);
@@ -237,9 +239,9 @@ export const voiceSlice = createSlice({
 			}
 
 			const entitiesAfter = voiceAdapter.getSelectors().selectAll(state);
-			const userStillInVoice = entitiesAfter.some((entity) => entity.user_id === voice.voice_user_id);
+			const userStillInVoice = entitiesAfter.some((entity) => entity.userId === voice.voiceUserId);
 			if (!userStillInVoice) {
-				delete state.listInVoiceStatus[voice.voice_user_id];
+				delete state.listInVoiceStatus[voice.voiceUserId];
 			}
 		},
 		removeFromClanInvoice: (state, action: PayloadAction<string>) => {
@@ -247,7 +249,7 @@ export const voiceSlice = createSlice({
 			const entitiesOfUser = voiceAdapter
 				.getSelectors()
 				.selectAll(state)
-				.filter((entity) => entity.user_id === userId);
+				.filter((entity) => entity.userId === userId);
 			if (entitiesOfUser.length === 0) {
 				delete state.listInVoiceStatus[userId];
 			}
@@ -255,8 +257,8 @@ export const voiceSlice = createSlice({
 		voiceEnded: (state, action: PayloadAction<string>) => {
 			const channelId = action.payload;
 			const idsToRemove = Object.values(state.entities)
-				.filter((member) => member?.voice_channel_id === channelId)
-				.map((member) => member?.id + member?.voice_channel_id);
+				.filter((member) => member?.voiceChannelId === channelId)
+				.map((member) => member?.id + member?.voiceChannelId);
 			voiceAdapter.removeMany(state, idsToRemove);
 		},
 		setJoined: (state, action) => {
@@ -396,21 +398,21 @@ export const voiceSlice = createSlice({
 					const { users, clanId } = action.payload;
 					state.listInVoiceStatus = {};
 					const members: VoiceEntity[] = users.map((channelRes) => {
-						if (channelRes.user_id && channelRes?.id) {
-							state.listInVoiceStatus[channelRes.user_id] = {
-								channelId: channelRes.channel_id || '',
+						if (channelRes.userId && channelRes?.id) {
+							state.listInVoiceStatus[channelRes.userId] = {
+								channelId: channelRes.channelId || '',
 								clanId
 							};
 						}
 						return {
-							user_id: channelRes.user_id || '',
-							clan_id: clanId,
-							voice_channel_id: channelRes.channel_id || '',
-							clan_name: '',
+							userId: channelRes.userId || '',
+							clanId,
+							voiceChannelId: channelRes.channelId || '',
+							clanName: '',
 							participant: channelRes.participant || '',
-							voice_channel_label: '',
-							last_screenshot: '',
-							id: (channelRes.user_id || '') + (channelRes.channel_id || '')
+							voiceChannelLabel: '',
+							lastScreenshot: '',
+							id: (channelRes.userId || '') + (channelRes.channelId || '')
 						};
 					});
 					voiceAdapter.setAll(state, members);
@@ -426,8 +428,8 @@ export const voiceSlice = createSlice({
 			})
 			.addCase(generateMeetTokenExternal.fulfilled, (state: VoiceState, action: PayloadAction<ApiGenerateMeetTokenResponseExtend>) => {
 				state.externalToken = action.payload.token;
-				state.guestAccessToken = action.payload.guest_access_token || undefined;
-				state.guestUserId = action.payload.guest_user_id;
+				state.guestAccessToken = action.payload.guestAccessToken || undefined;
+				state.guestUserId = action.payload.guestUserId;
 				state.joinCallExtStatus = 'loaded';
 			})
 			.addCase(generateMeetTokenExternal.rejected, (state: VoiceState, action) => {
@@ -520,7 +522,7 @@ export const selectVoiceFullScreen = createSelector(getVoiceState, (state) => st
 const selectChannelId = (_: RootState, channelId: string) => channelId;
 
 export const selectVoiceChannelMembersByChannelId = createSelector([selectAllVoice, selectChannelId], (members, channelId) => {
-	return members.filter((member) => member && member.voice_channel_id === channelId);
+	return members.filter((member) => member && member.voiceChannelId === channelId);
 });
 export const selectStreamScreen = createSelector(getVoiceState, (state) => state.stream);
 

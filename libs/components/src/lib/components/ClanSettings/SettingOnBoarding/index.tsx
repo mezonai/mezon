@@ -4,7 +4,7 @@ import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import type { ApiOnboardingContent } from 'mezon-js/api.gen';
+import type { ApiOnboardingContent } from 'mezon-js/types';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -44,7 +44,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 		if (!enable) {
 			dispatch(
 				onboardingActions.enableOnboarding({
-					clan_id: currentClanId as string,
+					clanId: currentClanId as string,
 					onboarding: false
 				})
 			);
@@ -64,7 +64,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 			await handleCreateOnboarding();
 			await dispatch(
 				onboardingActions.enableOnboarding({
-					clan_id: currentClanId as string,
+					clanId: currentClanId as string,
 					onboarding: true
 				})
 			);
@@ -107,10 +107,10 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 				const ruleItem: ApiOnboardingContent = {
 					title: rule.title,
 					content: rule.content,
-					guide_type: rule.guide_type
+					guideType: rule.guideType
 				};
 				if (imageUrl[index]) {
-					ruleItem.image_url = imageUrl[index]?.url;
+					ruleItem.imageUrl = imageUrl[index]?.url;
 				}
 				return ruleItem;
 			});
@@ -123,7 +123,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 
 			await dispatch(
 				onboardingActions.createOnboardingTask({
-					clan_id: currentClanId as string,
+					clanId: currentClanId as string,
 					content: formOnboardingData
 				})
 			);
@@ -289,7 +289,7 @@ const MainIndex = ({ handleGoToPage, onCloseSetting, showOnboardingHighlight }: 
 	const openOnboardingPreviewMode = () => {
 		dispatch(
 			onboardingActions.openOnboardingPreviewMode({
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			})
 		);
 		if (onCloseSetting) {

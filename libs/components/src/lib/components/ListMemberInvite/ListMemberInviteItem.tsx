@@ -26,8 +26,8 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 	const dispatch = useAppDispatch();
 	const directMessageWithUser = async (userId: string) => {
 		const response = await createSilentSendMess(userId);
-		if (response.channel_id) {
-			sendInviteMessage(url, response.channel_id, ChannelStreamMode.STREAM_MODE_DM);
+		if (response.channelId) {
+			sendInviteMessage(url, response.channelId, ChannelStreamMode.STREAM_MODE_DM);
 		}
 		return response;
 	};
@@ -38,25 +38,25 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 
 		if (userId && !directParamId) {
 			const username = usersInviteExternal?.username || dmGroup?.usernames?.toString() || '';
-			const displayName = usersInviteExternal?.clan_nick || dmGroup?.channel_label || '';
+			const displayName = usersInviteExternal?.clanNick || dmGroup?.channelLabel || '';
 			const avatar =
-				usersInviteExternal?.clan_avatar || dmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
+				usersInviteExternal?.clanAvatar || dmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
 					? dmGroup?.topic || 'assets/images/avatar-group.png'
 					: dmGroup?.avatars?.at(0) || '';
 
 			const response = await directMessageWithUser(userId);
 
-			if (response?.channel_id) {
+			if (response?.channelId) {
 				const currentUser = selectAllAccount(store.getState())?.user;
 				dispatch(
 					userChannelsActions.upsertMany([
 						{
-							id: response.channel_id,
-							channel_id: response.channel_id,
-							user_ids: [currentUser?.id || '', userId],
+							id: response.channelId,
+							channelId: response.channelId,
+							userIds: [currentUser?.id || '', userId],
 							usernames: [currentUser?.username || '', username],
-							display_names: [currentUser?.display_name || '', displayName],
-							avatars: [currentUser?.avatar_url || avatar, '']
+							displayNames: [currentUser?.displayName || '', displayName],
+							avatars: [currentUser?.avatarUrl || avatar, '']
 						}
 					])
 				);
@@ -82,8 +82,8 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 	return isExternalCalling ? (
 		<ItemInviteUser
 			userId={usersInviteExternal?.id}
-			avatar={usersInviteExternal?.clan_avatar}
-			displayName={usersInviteExternal?.clan_nick}
+			avatar={usersInviteExternal?.clanAvatar}
+			displayName={usersInviteExternal?.clanNick}
 			username={usersInviteExternal?.username}
 			isInviteSent={isInviteSent}
 			onHandle={() =>
@@ -96,12 +96,12 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 		/>
 	) : dmGroup ? (
 		<ItemInviteDM
-			channelID={dmGroup.channel_id}
+			channelID={dmGroup.channelId}
 			type={Number(dmGroup.type)}
 			avatar={dmGroup.type === ChannelType.CHANNEL_TYPE_GROUP ? dmGroup.topic || 'assets/images/avatar-group.png' : dmGroup.avatars?.at(0)}
-			label={dmGroup.channel_label}
+			label={dmGroup.channelLabel}
 			isInviteSent={isInviteSent}
-			onHandle={() => handleButtonClick(dmGroup.channel_id || '', dmGroup.type || 0, dmGroup.user_ids?.at(0))}
+			onHandle={() => handleButtonClick(dmGroup.channelId || '', dmGroup.type || 0, dmGroup.userIds?.at(0))}
 			username={dmGroup.usernames?.toString()}
 		/>
 	) : null;

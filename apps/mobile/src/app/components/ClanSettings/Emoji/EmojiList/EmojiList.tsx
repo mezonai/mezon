@@ -9,7 +9,7 @@ type EmojiListProps = {
 	ListHeaderComponent: any;
 };
 
-type ListItem = ClanEmoji | { id: string; clan_id?: string };
+type ListItem = ClanEmoji | { id: string; clanId?: string };
 
 const MemoizedEmojiDetail = memo(EmojiDetail);
 
@@ -38,7 +38,7 @@ export const EmojiList = ({ emojiList, ListHeaderComponent }: EmojiListProps) =>
 		[ITEM_HEIGHT]
 	);
 
-	const keyExtractor = useCallback((item: ListItem) => `emoji_${item?.clan_id || 'text'}_${item?.id}`, []);
+	const keyExtractor = useCallback((item: ListItem) => `emoji_${item?.clanId || 'text'}_${item?.id}`, []);
 
 	const renderItem: ListRenderItem<ListItem> = useCallback(
 		({ item }) => {

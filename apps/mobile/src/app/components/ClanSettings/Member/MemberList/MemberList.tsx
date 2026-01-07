@@ -28,7 +28,7 @@ export const MemberList = memo((props: IMemberListProps) => {
 		}
 		return clanUserList?.filter((member) => {
 			return (
-				normalizeString(member.user.display_name).includes(normalizeString(searchMemberText)) ||
+				normalizeString(member.user.displayName).includes(normalizeString(searchMemberText)) ||
 				normalizeString(member.user.username).includes(normalizeString(searchMemberText))
 			);
 		});

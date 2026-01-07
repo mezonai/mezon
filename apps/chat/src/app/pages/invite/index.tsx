@@ -19,13 +19,13 @@ export default function InvitePage() {
 	const [error, setError] = useState<string | null>(null);
 
 	const clanId = useMemo(() => {
-		return selectInvite?.clan_id || '';
+		return selectInvite?.clanId || '';
 	}, [selectInvite]);
 	const channeId = useMemo(() => {
-		return selectInvite?.channel_id || '';
+		return selectInvite?.channelId || '';
 	}, [selectInvite]);
 	const userJoined = useMemo(() => {
-		return selectInvite?.user_joined;
+		return selectInvite?.userJoined;
 	}, [selectInvite]);
 
 	const joinChannel = async () => {
@@ -34,14 +34,14 @@ export default function InvitePage() {
 			setError(null);
 			try {
 				await inviteUser(inviteIdParam).then((res) => {
-					if (res?.channel_id && res?.clan_id) {
-						navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id}`);
+					if (res?.channelId && res?.clanId) {
+						navigate(`/chat/clans/${res.clanId}/channels/${res.channelId}`);
 					}
 				});
 				dispatch(clansActions.fetchClans({ noCache: true }));
-				if (selectInvite.channel_desc) {
-					const channel = { ...selectInvite, id: selectInvite.channel_id as string };
-					dispatch(channelsActions.add({ clanId: selectInvite.channel_desc?.clan_id as string, channel: { ...channel, active: 1 } }));
+				if (selectInvite.channelDesc) {
+					const channel = { ...selectInvite, id: selectInvite.channelId as string };
+					dispatch(channelsActions.add({ clanId: selectInvite.channelDesc?.clanId as string, channel: { ...channel, active: 1 } }));
 				}
 			} catch (err) {
 				setError(t('invite.failedToJoin'));
@@ -92,11 +92,11 @@ export default function InvitePage() {
 			<div className="bg-theme-setting-primary border-theme-primary text-theme-primary rounded-md p-6 w-full max-w-[440px] flex flex-col items-center shadow-xl">
 				<div className="flex items-center justify-center mb-3">
 					<div className="relative w-12 h-12 flex items-center justify-center">
-						{selectInvite?.clan_logo ? (
-							<img className="w-full h-full rounded-md object-cover" src={selectInvite.clan_logo} alt="" />
+						{selectInvite?.clanLogo ? (
+							<img className="w-full h-full rounded-md object-cover" src={selectInvite.clanLogo} alt="" />
 						) : (
 							<div className="w-full h-full rounded-md bg-gray-700 flex items-center justify-center text-white text-3xl font-medium select-none">
-								{(selectInvite?.clan_name || 'M').charAt(0).toUpperCase()}
+								{(selectInvite?.clanName || 'M').charAt(0).toUpperCase()}
 							</div>
 						)}
 					</div>
@@ -106,9 +106,9 @@ export default function InvitePage() {
 					<p className="text-sm mb-1">{t('invite.invitedToJoin')}</p>
 					<h1
 						className="truncate text-theme-primary-active text-3xl font-medium mb-3 max-w-full"
-						title={selectInvite?.clan_name || t('invite.defaultClanName')}
+						title={selectInvite?.clanName || t('invite.defaultClanName')}
 					>
-						{selectInvite?.clan_name || t('invite.defaultClanName')}
+						{selectInvite?.clanName || t('invite.defaultClanName')}
 					</h1>
 
 					<div className="flex justify-center gap-5 text-sm">
@@ -116,8 +116,8 @@ export default function InvitePage() {
 							<div className="flex items-center">
 								<div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
 								<span className="">
-									{Number(selectInvite?.member_count || 1).toLocaleString()}{' '}
-									{t('invite.member', { count: selectInvite?.member_count || 1 })}
+									{Number(selectInvite?.memberCount || 1).toLocaleString()}{' '}
+									{t('invite.member', { count: selectInvite?.memberCount || 1 })}
 								</span>
 							</div>
 						</div>

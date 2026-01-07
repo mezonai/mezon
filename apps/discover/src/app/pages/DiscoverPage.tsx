@@ -18,7 +18,7 @@ export default function DiscoverPage() {
 
 	const filteredClans = clans.filter((clan) => {
 		if (!clan) return false;
-		const clanName = clan.clan_name || '';
+		const clanName = clan.clanName || '';
 		return clanName.toLowerCase().includes(searchTerm.toLowerCase());
 	});
 

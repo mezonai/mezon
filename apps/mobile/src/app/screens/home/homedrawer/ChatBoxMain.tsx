@@ -46,8 +46,8 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 			if (value?.type === EMessageActionType.EditMessage) {
 				saveMessageActionNeedToResolve(value);
 			} else {
-				if (!value?.targetMessage?.channel_id) return;
-				resetCachedMessageActionNeedToResolve(value?.targetMessage?.channel_id);
+				if (!value?.targetMessage?.channelId) return;
+				resetCachedMessageActionNeedToResolve(value?.targetMessage?.channelId);
 			}
 		});
 		return () => {
@@ -66,7 +66,7 @@ export const ChatBoxMain = memo((props: IChatBoxProps) => {
 		const allCachedMessage = load(STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE) || {};
 		save(STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE, {
 			...allCachedMessage,
-			[messageAction?.targetMessage?.channel_id]: messageAction
+			[messageAction?.targetMessage?.channelId]: messageAction
 		});
 	};
 	const deleteMessageActionNeedToResolve = useCallback(() => {

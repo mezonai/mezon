@@ -27,13 +27,13 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 	const { t } = useTranslation('streamThumbnail');
 	const dispatch = useAppDispatch();
 
-	const channelId = (channel?.channel_id ?? channel?.id ?? '') as string;
+	const channelId = (channel?.channelId ?? channel?.id ?? '') as string;
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
 
 	const clanId = useAppSelector(selectCurrentChannelClanId);
 	const channelLabel = useAppSelector(selectCurrentChannelLabel);
 
-	const thumbnail = currentChannel?.channel_avatar || null;
+	const thumbnail = currentChannel?.channelAvatar || null;
 
 	const { sessionRef, clientRef } = useMezon();
 
@@ -131,11 +131,11 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 
 			await dispatch(
 				channelsActions.updateChannel({
-					channel_id: channelId,
-					channel_label: channelLabel,
-					category_id: undefined,
-					app_id: '',
-					channel_avatar: attachment.url
+					channelId: channelId,
+					channelLabel: channelLabel,
+					categoryId: undefined,
+					appId: '',
+					channelAvatar: attachment.url
 				})
 			);
 
@@ -159,11 +159,11 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 		try {
 			await dispatch(
 				channelsActions.updateChannel({
-					channel_id: channelId,
-					channel_label: channelLabel,
-					category_id: undefined,
-					app_id: '',
-					channel_avatar: ''
+					channelId: channelId,
+					channelLabel: channelLabel,
+					categoryId: undefined,
+					appId: '',
+					channelAvatar: ''
 				})
 			);
 

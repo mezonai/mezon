@@ -12,7 +12,7 @@ import {
 } from '@mezon/store-mobile';
 import type { User } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiCreateChannelDescRequest } from 'mezon-js/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Keyboard, Pressable, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
@@ -63,7 +63,7 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 		return friendList.filter(
 			(friend) =>
 				normalizeString(friend?.user?.username).includes(normalizeString(searchText)) ||
-				normalizeString(friend?.user?.display_name).includes(normalizeString(searchText))
+				normalizeString(friend?.user?.displayName).includes(normalizeString(searchText))
 		);
 	}, [friendList, searchText]);
 
@@ -79,10 +79,10 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 
 	useEffect(() => {
 		if (currentDirectMessage?.id) {
-			setSelectedFriendDefault(allUserGroupDM?.user_ids || []);
+			setSelectedFriendDefault(allUserGroupDM?.userIds || []);
 			setFriendIdSelectedList([]);
 		}
-	}, [currentDirectMessage?.id, allUserGroupDM?.user_ids]);
+	}, [currentDirectMessage?.id, allUserGroupDM?.userIds]);
 
 	const onSelectedChange = useCallback(
 		(friendIdSelected: string[]) => {
@@ -107,11 +107,11 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 	const handleAddMemberToGroupChat = async (listAdd: ApiCreateChannelDescRequest) => {
 		try {
 			dispatch(appActions.setLoadingMainMobile(true));
-			const listMembersAdd = listAdd?.user_ids?.filter((userId) => !currentDirectMessage?.user_ids?.includes(userId)) ?? [];
+			const listMembersAdd = listAdd?.userIds?.filter((userId) => !currentDirectMessage?.userIds?.includes(userId)) ?? [];
 			await dispatch(
 				channelUsersActions.addChannelUsers({
-					channelId: currentDirectMessage?.channel_id as string,
-					clanId: currentDirectMessage?.clan_id as string,
+					channelId: currentDirectMessage?.channelId as string,
+					clanId: currentDirectMessage?.clanId as string,
 					userIds: listMembersAdd,
 					channelType: currentDirectMessage?.type
 				})
@@ -128,9 +128,9 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 		if (isFriendListEmpty) return;
 		const bodyCreateDmGroup: ApiCreateChannelDescRequest = {
 			type: friendIdSelectedList?.length > 1 ? ChannelType.CHANNEL_TYPE_GROUP : ChannelType.CHANNEL_TYPE_DM,
-			channel_private: 1,
-			user_ids: friendIdSelectedList,
-			clan_id: '0'
+			channelPrivate: 1,
+			userIds: friendIdSelectedList,
+			clanId: '0'
 		};
 
 		if (currentDirectMessage?.type === ChannelType.CHANNEL_TYPE_GROUP) {
@@ -144,36 +144,36 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 		friendIdSelectedList?.forEach((friendId) => {
 			const friend = friendList?.find((item) => item?.id === friendId);
 			if (friend?.user) {
-				userNameGroup.push(friend.user?.display_name || friend.user?.username || '');
-				avatarGroup.push(friend.user?.avatar_url || '');
+				userNameGroup.push(friend.user?.displayName || friend.user?.username || '');
+				avatarGroup.push(friend.user?.avatarUrl || '');
 			}
 		});
 
 		if (currentUser?.user) {
-			userNameGroup.push(currentUser.user?.display_name || currentUser.user?.username || '');
-			avatarGroup.push(currentUser.user?.avatar_url || '');
+			userNameGroup.push(currentUser.user?.displayName || currentUser.user?.username || '');
+			avatarGroup.push(currentUser.user?.avatarUrl || '');
 		}
 
 		const response = await dispatch(
 			directActions.createNewDirectMessage({ body: bodyCreateDmGroup, username: userNameGroup, avatar: avatarGroup })
 		);
 		const resPayload = response.payload as ApiCreateChannelDescRequest;
-		if (resPayload.channel_id) {
+		if (resPayload.channelId) {
 			await checkNotificationPermissionAndNavigate(() => {
 				if (isTabletLandscape) {
-					dispatch(directActions.setDmGroupCurrentId(resPayload?.channel_id || ''));
+					dispatch(directActions.setDmGroupCurrentId(resPayload?.channelId || ''));
 					navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 				} else {
-					directMessageIdRef.current = resPayload?.channel_id || '';
+					directMessageIdRef.current = resPayload?.channelId || '';
 					if (fromUser) {
 						navigation.popToTop();
 						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
-							directMessageId: resPayload.channel_id,
+							directMessageId: resPayload.channelId,
 							from: APP_SCREEN.MESSAGES.NEW_GROUP
 						});
 					} else {
 						navigation.replace(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
-							directMessageId: resPayload.channel_id,
+							directMessageId: resPayload.channelId,
 							from: APP_SCREEN.MESSAGES.NEW_GROUP
 						});
 					}

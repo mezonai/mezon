@@ -18,9 +18,9 @@ export const ChatBoxListenerComponent = memo(({ mode }: IChatMessageLeftAreaProp
 		channelDetail: currentChannel,
 		channelID: currentDirectId
 			? currentDirectId
-			: mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parent_id
-				? currentChannel?.parent_id
-				: currentChannel?.channel_id || '',
+			: mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parentId
+				? currentChannel?.parentId
+				: currentChannel?.channelId || '',
 		channelMode: mode
 	});
 	const previousListMentions = useRef(null);
@@ -36,7 +36,7 @@ export const ChatBoxListenerComponent = memo(({ mode }: IChatMessageLeftAreaProp
 		return () => {
 			if (timeoout) clearTimeout(timeoout);
 		};
-	}, [listMentions, currentChannel?.channel_id]);
+	}, [listMentions, currentChannel?.channelId]);
 
 	return null;
 });
