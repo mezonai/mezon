@@ -433,7 +433,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					messageId: message?.id || '',
 					mode: message?.mode || 0,
 					badgeCount: 0,
-					message_time: 1
+					messageTime: 1
 				})
 			);
 			if (message?.clanId === '0') {

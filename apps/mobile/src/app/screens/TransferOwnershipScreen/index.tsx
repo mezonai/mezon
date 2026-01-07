@@ -52,7 +52,7 @@ const TransferOwnershipScreen = ({ route }: TransferOwnershipScreenProps) => {
 				const response = await dispatch(
 					clansActions.transferClan({
 						clanId: currentClanId,
-						new_clan_owner: newOwnerId
+						newClanOwner: newOwnerId
 					})
 				);
 

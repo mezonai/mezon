@@ -1,6 +1,6 @@
 import { ActionEmitEvent, isEmpty } from '@mezon/mobile-components';
 import { appActions, selectCurrentUserId, selectSignalingDataByUserId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { WEBRTC_SIGNALING_TYPES, sleep } from '@mezon/utils';
+import { sleep, WEBRTC_SIGNALING_TYPES } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
 import { AppState, DeviceEventEmitter, NativeModules, Platform, View } from 'react-native';
@@ -90,9 +90,9 @@ const CallingModalWrapper = () => {
 			dispatch(appActions.setLoadingMainMobile(false));
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
 			const joinAction = {
-				participant_id: userId,
-				participant_name: '',
-				participant_avatar: '',
+				participantId: userId,
+				participantName: '',
+				participantAvatar: '',
 				timestamp: Date.now()
 			};
 			sendSignalingToParticipants(

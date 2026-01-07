@@ -3,9 +3,9 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelsEntity, RolesClanEntity, RootState } from '@mezon/store-mobile';
 import {
+	directActions,
 	DMCallActions,
 	EStateFriend,
-	directActions,
 	friendsActions,
 	getStore,
 	selectAllAccount,
@@ -423,7 +423,7 @@ const UserProfile = React.memo(
 			});
 			const payload = JSON.stringify({
 				receiverId: userId ? userId : user?.id,
-				receiver_name: user?.user?.username || userById?.user?.username || user?.username,
+				receiverName: user?.user?.username || userById?.user?.username || user?.username,
 				amount: 10000,
 				note: t('userAction.transferFunds'),
 				canEdit: true

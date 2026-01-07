@@ -390,11 +390,11 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 	const actionHandlers = useMemo(
 		() => ({
 			location: handleLinkGoogleMap,
-			create_thread: handleCreateThread,
+			createThread: handleCreateThread,
 			buzz: handleActionBuzzMessage,
 			anonymous: handleToggleAnonymous,
-			transfer_funds: handleTransferFunds,
-			quick_messages: () => DeviceEventEmitter.emit(ActionEmitEvent.ON_SEND_ACTION_FROM_ADVANCED_MENU, 'quickMessage'),
+			transferFunds: handleTransferFunds,
+			quickMessages: () => DeviceEventEmitter.emit(ActionEmitEvent.ON_SEND_ACTION_FROM_ADVANCED_MENU, 'quickMessage'),
 			ephemeral: () => DeviceEventEmitter.emit(ActionEmitEvent.ON_SEND_ACTION_FROM_ADVANCED_MENU, 'ephemeral'),
 			poll: handlePoll,
 			pickFiles: onPickFiles

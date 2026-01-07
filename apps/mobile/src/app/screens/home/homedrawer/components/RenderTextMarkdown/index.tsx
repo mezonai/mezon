@@ -27,7 +27,7 @@ import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
 import RenderYoutubeVideo from './components/RenderYoutubeVideo';
-import { styles as componentStyles, getMessageReplyMaxHeight } from './index.styles';
+import { getMessageReplyMaxHeight, styles as componentStyles } from './index.styles';
 
 export default function openUrl(url, customCallback) {
 	if (customCallback) {
@@ -129,14 +129,14 @@ export const markdownStyles = (
 			paddingTop: 0,
 			paddingBottom: 0
 		},
-		code_block: {
+		codeBlock: {
 			color: colors.text,
 			borderColor: colors.secondary,
 			fontSize: size.h7,
 			lineHeight: size.s_24,
 			paddingHorizontal: size.s_10
 		},
-		code_inline: {
+		codeInline: {
 			color: colors.text,
 			backgroundColor: colors.secondaryLight,
 			fontSize: size.medium
@@ -522,7 +522,7 @@ export const RenderTextMarkdownContent = ({
 					case EBacktickType.SINGLE:
 					case EBacktickType.CODE:
 						textParts.push(
-							<Text key={`code-${index}`} style={themeValue ? markdownStyles(themeValue).code_inline : {}}>
+							<Text key={`code-${index}`} style={themeValue ? markdownStyles(themeValue).codeInline : {}}>
 								{' '}
 								{contentInElement?.startsWith('`') && contentInElement?.endsWith('`')
 									? contentInElement?.slice(1, -1)
@@ -552,7 +552,7 @@ export const RenderTextMarkdownContent = ({
 												: {}
 										}
 									>
-										<Text style={themeValue ? markdownStyles(themeValue).code_block : {}}>
+										<Text style={themeValue ? markdownStyles(themeValue).codeBlock : {}}>
 											{(contentInElement?.startsWith('```') && contentInElement?.endsWith('```')
 												? contentInElement?.slice(3, -3)
 												: contentInElement
@@ -563,7 +563,7 @@ export const RenderTextMarkdownContent = ({
 							</Text>
 						);
 						textTripleParts.push(
-							<Text key={`code-triple-${index}`} style={themeValue ? markdownStyles(themeValue).code_block : {}}>
+							<Text key={`code-triple-${index}`} style={themeValue ? markdownStyles(themeValue).codeBlock : {}}>
 								{(contentInElement?.startsWith('```') && contentInElement?.endsWith('```')
 									? contentInElement?.slice(3, -3)
 									: contentInElement

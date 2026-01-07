@@ -1,6 +1,7 @@
 import type { Attributes } from '@mezon/mobile-ui';
-import { Fonts, Metrics, baseColor, horizontalScale, size, verticalScale } from '@mezon/mobile-ui';
+import { baseColor, Fonts, horizontalScale, Metrics, size, verticalScale } from '@mezon/mobile-ui';
 import { Dimensions, Platform, StyleSheet } from 'react-native';
+
 const width = Dimensions.get('window').width;
 const inputWidth = width * 0.6;
 export const style = (colors: Attributes) =>
@@ -656,7 +657,7 @@ export const style = (colors: Attributes) =>
 			fontSize: size.medium,
 			maxWidth: '85%'
 		},
-		mb_10: {
+		mb10: {
 			marginBottom: verticalScale(10)
 		},
 		aboveMessageDeleteReply: {
