@@ -20,13 +20,13 @@ type ICallingGroupProps = {
 };
 
 interface CallSignalingData {
-	is_video: boolean;
+	isVideo: boolean;
 	groupId: string;
-	group_name: string;
-	group_avatar?: string;
+	groupName: string;
+	groupAvatar?: string;
 	callerId: string;
-	caller_name: string;
-	caller_avatar?: string;
+	callerName: string;
+	callerAvatar?: string;
 	meetingCode?: string;
 	clanId?: string;
 	timestamp: number;
@@ -96,12 +96,12 @@ export const useSendSignaling = () => {
 				return;
 			}
 
-			const groupName = data?.group_name || 'Group Call';
+			const groupName = data?.groupName || 'Group Call';
 			const offerGroupCall = {
 				isGroupCall: true,
 				groupId: data.groupId,
 				groupName,
-				groupAvatar: data.group_avatar || '',
+				groupAvatar: data.groupAvatar || '',
 				meetingCode: data.meetingCode,
 				callerId: currentUserId
 			};
@@ -219,9 +219,9 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
 			const joinAction = {
-				participant_id: userId,
-				participant_name: '',
-				participant_avatar: '',
+				participantId: userId,
+				participantName: '',
+				participantAvatar: '',
 				timestamp: Date.now()
 			};
 			sendSignalingToParticipants(
@@ -239,10 +239,10 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 		Vibration.cancel();
 		setIsVisible(false);
 		const quitAction = {
-			is_video: callData?.is_video || false,
+			isVideo: callData?.isVideo || false,
 			groupId: dataCall?.channelId || '',
 			callerId: userId,
-			caller_name: callData?.caller_name || '',
+			callerName: callData?.callerName || '',
 			timestamp: Date.now(),
 			action: 'decline'
 		};
@@ -277,7 +277,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 				</View>
 
 				<Text style={styles.username}>
-					{callData.caller_name || ''}
+					{callData.callerName || ''}
 					{' is inviting you to join '}
 				</Text>
 				<Text numberOfLines={1} style={styles.memberInGroup}>

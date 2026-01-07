@@ -8,11 +8,11 @@ interface EmbedOptionRatioProps {
 	options: IMessageRatioOption[];
 	messageId: string;
 	idRadio: string;
-	max_options?: number;
+	maxOptions?: number;
 	disabled?: boolean;
 }
 
-export const EmbedRadioGroup = ({ options, messageId, idRadio, max_options, disabled = false }: EmbedOptionRatioProps) => {
+export const EmbedRadioGroup = ({ options, messageId, idRadio, maxOptions, disabled = false }: EmbedOptionRatioProps) => {
 	const [checked, setChecked] = useState<string[]>([]);
 	const dispatch = useAppDispatch();
 
@@ -28,7 +28,7 @@ export const EmbedRadioGroup = ({ options, messageId, idRadio, max_options, disa
 			}
 			return [...prev, option?.value];
 		});
-		if (!max_options || checked.length < max_options || !checkMultiple || checked?.includes(option?.value)) {
+		if (!maxOptions || checked.length < maxOptions || !checkMultiple || checked?.includes(option?.value)) {
 			handleRadioValue(option?.value, radioId);
 		}
 	};

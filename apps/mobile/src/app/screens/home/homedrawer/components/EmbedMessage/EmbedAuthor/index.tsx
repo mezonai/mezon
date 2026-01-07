@@ -7,11 +7,11 @@ import { style } from './styles';
 
 interface EmbedAuthorProps {
 	name: string;
-	icon_url?: string;
+	iconUrl?: string;
 	url?: string;
 }
 
-export const EmbedAuthor = memo(({ name, icon_url, url }: EmbedAuthorProps) => {
+export const EmbedAuthor = memo(({ name, iconUrl, url }: EmbedAuthorProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	return (

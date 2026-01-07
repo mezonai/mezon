@@ -4,8 +4,8 @@ import type { IOption } from '@mezon/mobile-components';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
 import {
-	DMCallActions,
 	directMetaActions,
+	DMCallActions,
 	getStore,
 	groupCallActions,
 	messagesActions,
@@ -18,7 +18,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { IMessageTypeCallLog, TypeMessage, WEBRTC_SIGNALING_TYPES, createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, IMessageTypeCallLog, TypeMessage, WEBRTC_SIGNALING_TYPES } from '@mezon/utils';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
@@ -156,13 +156,13 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				})
 			);
 			const callOfferAction = {
-				is_video: false,
+				isVideo: false,
 				groupId: currentDmGroup?.channelId,
-				group_name: currentDmGroup?.channelLabel,
-				group_avatar: currentDmGroup?.channelAvatar,
+				groupName: currentDmGroup?.channelLabel,
+				groupAvatar: currentDmGroup?.channelAvatar,
 				callerId: userProfile?.user?.id,
-				caller_name: userProfile?.user?.displayName || userProfile?.user?.username || '',
-				caller_avatar: userProfile?.user?.avatarUrl,
+				callerName: userProfile?.user?.displayName || userProfile?.user?.username || '',
+				callerAvatar: userProfile?.user?.avatarUrl,
 				meetingCode: currentDmGroup?.meetingCode,
 				clanId: '',
 				timestamp: Date.now(),

@@ -25,10 +25,10 @@ const ButtonAnswerCallGroup = memo(
 
 		const onDeniedCall = async () => {
 			const quitAction = {
-				is_video: false,
+				isVideo: false,
 				groupId: dataCallGroup.groupId || '',
 				callerId: userId,
-				caller_name: dataCallGroup.groupName || '',
+				callerName: dataCallGroup.groupName || '',
 				timestamp: Date.now(),
 				action: 'decline'
 			};
@@ -54,9 +54,9 @@ const ButtonAnswerCallGroup = memo(
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, data);
 				const joinAction = {
-					participant_id: userId,
-					participant_name: '',
-					participant_avatar: '',
+					participantId: userId,
+					participantName: '',
+					participantAvatar: '',
 					timestamp: Date.now()
 				};
 				sendSignalingToParticipants(

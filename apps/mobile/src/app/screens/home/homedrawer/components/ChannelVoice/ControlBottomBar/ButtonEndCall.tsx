@@ -37,10 +37,10 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 		const userProfile = selectAllAccount(state);
 
 		const baseData = {
-			is_video: false,
+			isVideo: false,
 			groupId: currentDmGroup?.channelId || '',
 			callerId: userProfile?.user?.id,
-			caller_name: userProfile?.user?.displayName || userProfile?.user?.username || '',
+			callerName: userProfile?.user?.displayName || userProfile?.user?.username || '',
 			timestamp: Date.now()
 		};
 

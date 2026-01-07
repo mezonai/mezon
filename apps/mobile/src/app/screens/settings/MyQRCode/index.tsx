@@ -1,6 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllAccount, useWallet } from '@mezon/store-mobile';
-import { CURRENCY, createImgproxyUrl, formatBalanceToString } from '@mezon/utils';
+import { createImgproxyUrl, CURRENCY, formatBalanceToString } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -62,7 +62,7 @@ export const MyQRCode = () => {
 
 	const transferPayload = useMemo(() => {
 		return JSON.stringify({
-			receiver_name: userProfile?.user?.username,
+			receiverName: userProfile?.user?.username,
 			receiverId: userProfile?.user?.id
 		});
 	}, [userProfile?.user?.id, userProfile?.user?.username]);

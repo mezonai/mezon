@@ -14,7 +14,7 @@
       },
       "oauth_client": [
         {
-          "clientId": "285548761692-as4klbkvq5nphb0paupcf2g5ms456b5t.apps.googleusercontent.com",
+          "client_id": "285548761692-as4klbkvq5nphb0paupcf2g5ms456b5t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.mezon.mobile",
@@ -22,7 +22,7 @@
           }
         },
         {
-          "clientId": "285548761692-i672579oq9k4b80np8bkjre6o8ikgl95.apps.googleusercontent.com",
+          "client_id": "285548761692-i672579oq9k4b80np8bkjre6o8ikgl95.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -35,11 +35,11 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "clientId": "285548761692-i672579oq9k4b80np8bkjre6o8ikgl95.apps.googleusercontent.com",
+              "client_id": "285548761692-i672579oq9k4b80np8bkjre6o8ikgl95.apps.googleusercontent.com",
               "client_type": 3
             },
             {
-              "clientId": "285548761692-3k9ubkdhl8bbvbal78j9v2905kjhg3tj.apps.googleusercontent.com",
+              "client_id": "285548761692-3k9ubkdhl8bbvbal78j9v2905kjhg3tj.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "mezon.mobile",
