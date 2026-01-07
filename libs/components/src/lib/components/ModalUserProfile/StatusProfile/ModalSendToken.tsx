@@ -158,7 +158,7 @@ const ModalSendToken = ({
 	);
 
 	const dropdownMenu = (
-		<div className="bg-theme-surface rounded-xl shadow-lg max-h-48 overflow-y-auto thread-scroll text-theme-primary min-w-[400px] w-full relative">
+		<div className="bg-theme-surface rounded-xl shadow-lg max-h-48 overflow-y-auto thread-scroll text-theme-primary w-full md:min-w-[400px] md:w-auto relative">
 			<div
 				style={{
 					height: `${filteredUsers.length * 48}px`

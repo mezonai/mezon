@@ -98,7 +98,7 @@ const ModalInvite = (props: ModalParam) => {
 	return (
 		<ModalLayout onClose={props.onClose}>
 			<div
-				className="bg-theme-setting-primary rounded-xl flex flex-col md:w-[480px]"
+				className="bg-theme-setting-primary rounded-xl flex flex-col mx-4 md:mx-0 w-full md:w-[480px]"
 				data-e2e={generateE2eId('clan_page.modal.invite_people.container')}
 			>
 				<div className="flex-1 flex items-center justify-between border-b-theme-primary rounded-t p-3 md:p-4 gap-2">
