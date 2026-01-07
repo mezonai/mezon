@@ -10,12 +10,13 @@ type ModalSuccessProps = {
 };
 
 const ModalSuccess = ({ name, clan }: ModalSuccessProps) => {
-	const { toClanPage } = useAppNavigation();
+	const { toChannelPage, toClanPage } = useAppNavigation();
 	const navigate = useNavigate();
 
 	const handleNavigate = () => {
 		if (clan?.clanId) {
-			window.location.href = `${process.env.NX_CHAT_APP_REDIRECT_URI}${toClanPage(clan.clanId)}`;
+			const targetPath = clan.channelId ? toChannelPage(clan.channelId, clan.clanId) : toClanPage(clan.clanId);
+			window.location.href = `${process.env.NX_CHAT_APP_REDIRECT_URI}${targetPath}`;
 		}
 	};
 
