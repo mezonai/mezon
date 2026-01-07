@@ -33,6 +33,21 @@ export const generateMeetToken = createAsyncThunk('meet/generateMeetToken', asyn
 	}
 });
 
+export const createExternalMezonMeet = createAsyncThunk('meet/createExternalMezonMeet', async (_, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		const response = await mezon.client.createExternalMezonMeet(mezon.session);
+		if (!response) {
+			return;
+		}
+		return response.external_link;
+	} catch (error) {
+		captureSentryError(error, 'meet/createExternalMezonMeet');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const handleParticipantVoiceState = createAsyncThunk(
 	'meet/handleParticipantVoiceState',
 	async ({ clanId, channelId, displayName, state, roomName }: HandleParticipantMeetStateEvent, thunkAPI) => {

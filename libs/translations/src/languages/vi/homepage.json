@@ -139,5 +139,14 @@
 			"tokenomics": "Tokenomics",
 			"team": "Đội Ngũ"
 		}
+	},
+	"externalMeet": {
+		"title": "Cuộc Họp",
+		"creatingMeeting": "Cuộc họp đã được tạo thành công!",
+		"invite": "Mời",
+		"joinMeeting": "Tham Gia Cuộc Họp",
+		"copyLink": "Sao Chép Liên Kết",
+		"toastSuccess": "Liên kết đã được sao chép!",
+		"toastFail": "Sao chép thất bại."
 	}
 }

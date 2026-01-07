@@ -1,32 +1,10 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import {
-	ActionEmitEvent,
-	remove,
-	STORAGE_CHANNEL_CURRENT_CACHE,
-	STORAGE_DATA_CLAN_CHANNEL_CACHE,
-	STORAGE_KEY_TEMPORARY_ATTACHMENT,
-	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
-} from '@mezon/mobile-components';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import {
-	accountActions,
-	appActions,
-	authActions,
-	channelsActions,
-	clansActions,
-	directActions,
-	getStoreAsync,
-	listChannelsByUserActions,
-	listUsersByUserActions,
-	messagesActions,
-	notificationActions,
-	selectAllAccount,
-	selectBlockedUsers,
-	useAppDispatch
-} from '@mezon/store-mobile';
+import { accountActions, selectAllAccount, selectBlockedUsers, useAppDispatch } from '@mezon/store-mobile';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
@@ -34,7 +12,7 @@ import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
 import type { SettingScreenProps } from '../../../navigation/ScreenTypes';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
-import { maskEmail, maskPhoneNumber } from '../../../utils/helpers';
+import { logoutGlobal, maskEmail, maskPhoneNumber } from '../../../utils/helpers';
 import { style } from './styles';
 
 enum EAccountSettingType {
@@ -69,37 +47,12 @@ export const AccountSetting = ({ navigation }: SettingScreenProps<AccountSetting
 		return blockedUsers.length?.toString() || '';
 	}, [blockedUsers]);
 
-	const logout = async () => {
-		const store = await getStoreAsync();
-		store.dispatch(directActions.removeAll());
-		store.dispatch(notificationActions.removeAll());
-		store.dispatch(channelsActions.removeAll());
-		store.dispatch(messagesActions.removeAll());
-		store.dispatch(listChannelsByUserActions.removeAll());
-		store.dispatch(clansActions.setCurrentClanId(''));
-		store.dispatch(clansActions.removeAll());
-		store.dispatch(clansActions.collapseAllGroups());
-		store.dispatch(clansActions.clearClanGroups());
-		store.dispatch(clansActions.refreshStatus());
-		store.dispatch(accountActions.resetAllState());
-		store.dispatch(notificationActions.resetAllState());
-		store.dispatch(listUsersByUserActions.removeAll());
-
-		await remove(STORAGE_DATA_CLAN_CHANNEL_CACHE);
-		await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-		await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
-		await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
-		store.dispatch(appActions.setIsShowWelcomeMobile(false));
-		store.dispatch(authActions.logOut({ deviceId: userProfile.user.username, platform: Platform.OS }));
-		store.dispatch(appActions.setLoadingMainMobile(false));
-	};
-
 	const handleDeleteAccount = async () => {
 		try {
 			const response = await dispatch(accountActions.deleteAccount());
 
 			if (response?.meta?.requestStatus === 'fulfilled') {
-				await logout();
+				await logoutGlobal();
 				Toast.show({
 					type: 'success',
 					text1: t('toast.deleteAccount.success')
