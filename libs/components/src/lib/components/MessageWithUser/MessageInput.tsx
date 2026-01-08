@@ -95,7 +95,7 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 
 		const extendedMessage = {
 			t: message.content.t || '',
-			mentions: message.mentions || [],
+			mentions: Array.isArray(message.mentions) ? message.mentions : [],
 			hg: message.content.hg || [],
 			ej: message.content.ej || [],
 			mk: message.content.mk || []

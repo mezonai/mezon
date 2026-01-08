@@ -17,7 +17,7 @@ const AboutMe = ({ createTime, userId }: AboutMeProps) => {
 	const checkUser = useMemo(() => userProfile?.user?.id === userId, [userId, userProfile?.user?.id]);
 
 	const formatCreateTime = () => {
-		if (!createTime) return '';
+		if (!createTime || (typeof createTime !== 'string' && typeof createTime !== 'number')) return '';
 		const timestamp = typeof createTime === 'number' ? (createTime.toString().length <= 10 ? createTime * 1000 : createTime) : createTime;
 		return formatDateI18n(new Date(timestamp), 'en', 'MMMM d, yyyy');
 	};

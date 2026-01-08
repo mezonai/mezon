@@ -84,7 +84,7 @@ export * from './windowEnvironment';
 export * from './windowSize';
 
 export const convertTimeString = (dateString: string, t?: (key: string, options?: any) => string) => {
-	if (!dateString) {
+	if (!dateString || typeof dateString !== 'string') {
 		return '';
 	}
 	const codeTime = new Date(dateString);
