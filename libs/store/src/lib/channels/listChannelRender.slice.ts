@@ -107,7 +107,7 @@ export const listChannelRenderSlice = createSlice({
 				id: FAVORITE_CATEGORY_ID,
 				categoryId: FAVORITE_CATEGORY_ID,
 				categoryName: FAVORITE_CATEGORY_NAME, // This will be translated at component level
-				clanId: clanId,
+				clanId,
 				creatorId: '0',
 				categoryOrder: 1,
 				isFavor: true
@@ -236,7 +236,7 @@ export const listChannelRenderSlice = createSlice({
 				) {
 					return {
 						...item,
-						categoryId: categoryId
+						categoryId
 					};
 				}
 			});
@@ -644,10 +644,6 @@ export const selectAllThreadUnreadBehind = createSelector(
 		return result;
 	}
 );
-
-export const selectListOrderChannel = createSelector(getListChannelRenderState, (state) => {
-	return state.listOrderChannelByCate;
-});
 
 function prioritizeChannel(channels: IChannel[]): IChannel[] {
 	return channels.sort((a, b) => {

@@ -1,5 +1,6 @@
-import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
+import type { RootState } from '../store';
 
 export interface GroupCallData {
 	groupId: string;
@@ -142,8 +143,6 @@ export const selectIsGroupCallLoading = createSelector([getGroupCallState], (gro
 export const selectShouldAutoJoinRoom = createSelector([getGroupCallState], (groupCallState) => groupCallState?.shouldAutoJoinRoom);
 
 export const selectIsAnsweringCall = createSelector([getGroupCallState], (groupCallState) => groupCallState?.isAnsweringCall);
-
-export const selectGroupCallStartTime = createSelector([getGroupCallState], (groupCallState) => groupCallState?.callStartTime);
 
 export const selectStoredCallData = createSelector([getGroupCallState], (groupCallState) => groupCallState?.storedCallData);
 

@@ -515,8 +515,6 @@ export const selectNoiseSuppressionEnabled = createSelector(getVoiceState, (stat
 
 export const selectNoiseSuppressionLevel = createSelector(getVoiceState, (state) => state.noiseSuppressionLevel);
 
-export const selectStatusCall = createSelector(getVoiceState, (state) => state.statusCall);
-
 export const selectVoiceFullScreen = createSelector(getVoiceState, (state) => state.fullScreen);
 
 const selectChannelId = (_: RootState, channelId: string) => channelId;
@@ -524,7 +522,6 @@ const selectChannelId = (_: RootState, channelId: string) => channelId;
 export const selectVoiceChannelMembersByChannelId = createSelector([selectAllVoice, selectChannelId], (members, channelId) => {
 	return members.filter((member) => member && member.voiceChannelId === channelId);
 });
-export const selectStreamScreen = createSelector(getVoiceState, (state) => state.stream);
 
 export const selectScreenSource = createSelector(getVoiceState, (state) => state.screenSource);
 
@@ -533,9 +530,6 @@ export const selectShowSelectScreenModal = createSelector(getVoiceState, (state)
 export const selectNumberMemberVoiceChannel = createSelector([selectVoiceChannelMembersByChannelId], (members) => members.length);
 
 export const selectVoiceContextMenu = createSelector(getVoiceState, (state) => state.contextMenu);
-
-export const selectVoiceConnectionState = createSelector(getVoiceState, (state) => state.voiceConnectionState);
-
 ///
 export const selectJoinCallExtStatus = createSelector(getVoiceState, (state) => state.joinCallExtStatus);
 export const selectExternalToken = createSelector(getVoiceState, (state) => state.externalToken);

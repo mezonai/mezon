@@ -360,8 +360,6 @@ export const selectMessageTopicError = createSelector(getTopicsState, (state) =>
 
 export const selectCurrentTopicInitMessage = createSelector(getTopicsState, (state) => state.currentTopicInitMessage);
 
-export const selectOpenTopicMessageState = createSelector(getTopicsState, (state: TopicDiscussionsState) => state.openTopicMessageState);
-
 export const selectCurrentTopicId = createSelector(getTopicsState, (state: TopicDiscussionsState) => state.currentTopicId);
 
 export const selectIsMessageChannelIdMatched = createSelector(

@@ -905,7 +905,7 @@ const getStatusUnread = (lastSeenStamp: number, lastSentStamp: number) => {
 	return true;
 };
 
-const { selectAll, selectEntities, selectIds } = directAdapter.getSelectors();
+const { selectAll, selectEntities } = directAdapter.getSelectors();
 
 export const getDirectState = (rootState: { [DIRECT_FEATURE_KEY]: DirectState }): DirectState => rootState[DIRECT_FEATURE_KEY];
 export const selectDirectMessageEntities = createSelector(getDirectState, selectEntities);
@@ -915,49 +915,10 @@ export const selectDmGroupCurrentId = createSelector(getDirectState, (state) => 
 
 export const selectCurrentDM = createSelector(getDirectState, (state) => state.entities[state.currentDirectMessageId as string]);
 
-export const selectCurrentDmType = createSelector(getDirectState, (state) => state.entities[state.currentDirectMessageId as string]?.type);
-export const selectCurrentDmUserIds = createSelector(
-	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.userIds || []
-);
-export const selectCurrentDmUsernames = createSelector(
-	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.usernames || []
-);
-export const selectCurrentDmDisplayNames = createSelector(
-	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.displayNames || []
-);
-export const selectCurrentDmAvatars = createSelector(
-	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.avatars || []
-);
-export const selectCurrentDmChannelAvatar = createSelector(
-	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.channelAvatar
-);
-export const selectCurrentDmChannelLabel = createSelector(
-	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.channelLabel || ''
-);
-export const selectCurrentDmChannelPrivate = createSelector(
-	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.channelPrivate
-);
-export const selectCurrentDmCreatorId = createSelector(
-	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.creatorId || ''
-);
 export const selectCurrentDmChannelId = createSelector(
 	getDirectState,
 	(state) => state.entities[state.currentDirectMessageId as string]?.channelId || ''
 );
-export const selectCurrentDmId = createSelector(getDirectState, (state) => state.entities[state.currentDirectMessageId as string]?.id || '');
-export const selectCurrentDmMeetingCode = createSelector(
-	getDirectState,
-	(state) => state.entities[state.currentDirectMessageId as string]?.meetingCode
-);
-export const selectCurrentDmClanId = createSelector(getDirectState, (state) => state.entities[state.currentDirectMessageId as string]?.clanId || '');
 
 export const selectDmGroupCurrentType = createSelector(getDirectState, (state) => state.currentDirectMessageType);
 
@@ -970,31 +931,6 @@ export const selectIsLoadDMData = createSelector(getDirectState, (state) => stat
 
 export const selectDmGroupCurrent = (dmId: string) => createSelector(selectDirectMessageEntities, (channelEntities) => channelEntities[dmId]);
 
-// Fine-grained selectors for DM/group properties
-export const selectDmTypeById = createSelector(
-	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
-	(entities, dmId) => entities[dmId]?.type
-);
-export const selectDmUserIdsById = createSelector(
-	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
-	(entities, dmId) => entities[dmId]?.userIds || []
-);
-export const selectDmUsernamesById = createSelector(
-	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
-	(entities, dmId) => entities[dmId]?.usernames || []
-);
-export const selectDmDisplayNamesById = createSelector(
-	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
-	(entities, dmId) => entities[dmId]?.displayNames || []
-);
-export const selectDmAvatarsById = createSelector(
-	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
-	(entities, dmId) => entities[dmId]?.avatars || []
-);
-export const selectDmChannelAvatarById = createSelector(
-	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
-	(entities, dmId) => entities[dmId]?.channelAvatar
-);
 export const selectDmChannelLabelById = createSelector(
 	[selectDirectMessageEntities, (_: RootState, dmId: string) => dmId],
 	(entities, dmId) => entities[dmId]?.channelLabel || ''
@@ -1107,5 +1043,3 @@ export const selectLastSeenMessageIdDM = createSelector([selectDirectMessageEnti
 	const dm = entities?.[channelId];
 	return dm?.lastSeenMessage?.id;
 });
-
-export const selectEntitiesDirectMeta = selectDirectMessageEntities;

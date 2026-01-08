@@ -54,7 +54,7 @@ export const fetchUserChannelsCached = async (
 		{
 			api_name: 'ListChannelUsersUC',
 			list_channel_users_uc_req: {
-				channelId: channelId,
+				channelId,
 				limit
 			}
 		},
@@ -211,9 +211,8 @@ export const userChannelsReducer = userChannelsSlice.reducer;
 
 export const getUserChannelsState = (rootState: { [ALL_USERS_BY_ADD_CHANNEL]: UsersByAddChannelState }): UsersByAddChannelState =>
 	rootState[ALL_USERS_BY_ADD_CHANNEL];
-const { selectEntities, selectById } = UserChannelAdapter.getSelectors();
+const { selectById } = UserChannelAdapter.getSelectors();
 
-export const selectUserChannelUCEntities = createSelector(getUserChannelsState, selectEntities);
 export const selectUserChannelIds = createSelector(
 	[getUserChannelsState, (state, channelId: string) => channelId],
 	(state, channelId) => selectById(state, channelId)?.userIds || []

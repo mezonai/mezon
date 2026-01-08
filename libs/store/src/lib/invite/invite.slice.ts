@@ -201,15 +201,12 @@ export const inviteActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities } = inviteAdapter.getSelectors();
+const { selectEntities } = inviteAdapter.getSelectors();
 
 export const getInviteState = (rootState: { [INVITE_FEATURE_KEY]: InviteState }): InviteState => rootState[INVITE_FEATURE_KEY];
-export const selectAllInvite = createSelector(getInviteState, selectAll);
 
 export const selectInviteEntities = createSelector(getInviteState, selectEntities);
 
 export const selectInviteById = (id: string) => createSelector(selectInviteEntities, (inviteEntities) => inviteEntities[id]);
-
-export const selectIsClickInvite = createSelector(getInviteState, (state) => state.isClickInvite);
 
 export const selectInviteLoadingById = (inviteId: string) => createSelector(getInviteState, (state) => state.loadingById[inviteId]);

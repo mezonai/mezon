@@ -716,8 +716,6 @@ export const selectCurrentMission = createSelector(
 	}
 );
 
-export const selectRuleImages = createSelector(getOnboardingState, (state) => state.fileRules);
-
 export const selectAnswerByQuestionId = createSelector([getOnboardingState, (state, questionId: string) => questionId], (state, questionId) => {
 	return state.keepAnswers[questionId] || [];
 });

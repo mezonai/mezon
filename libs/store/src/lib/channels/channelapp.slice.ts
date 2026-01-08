@@ -145,19 +145,13 @@ export const channelAppSlice = createSlice({
 // Selectors
 export const getChannelAppState = (rootState: { [CHANNEL_APP]: ChannelAppState }): ChannelAppState => rootState[CHANNEL_APP];
 
-export const selectLoadingStatusChannelApp = createSelector(getChannelAppState, (state) => state.loadingStatus);
 export const selectEnableVideo = createSelector(getChannelAppState, (state) => state.enableVideo);
 export const selectGetRoomId = createSelector([getChannelAppState, (state, channelId) => channelId], (state, channelId) => state.roomId?.[channelId]);
 export const selectEnableMic = createSelector(getChannelAppState, (state) => state.enableMic);
 export const selectEnableCall = createSelector(getChannelAppState, (state) => state.enableCall);
-export const selectRoomName = createSelector(getChannelAppState, (state) => state.roomName);
 export const selectLiveToken = createSelector(getChannelAppState, (state) => state.roomToken);
 export const selectChannelAppChannelId = createSelector(getChannelAppState, (state) => state.channelId);
 export const selectChannelAppClanId = createSelector(getChannelAppState, (state) => state.clanId);
-export const selectJoinChannelAppData = createSelector(getChannelAppState, (state) => state.joinChannelAppData);
-
-export const selectPostionPopupApps = createSelector(getChannelAppState, (state) => state.position);
-export const selectSizePopupApps = createSelector(getChannelAppState, (state) => state.size);
 
 export const channelAppReducer = channelAppSlice.reducer;
 
