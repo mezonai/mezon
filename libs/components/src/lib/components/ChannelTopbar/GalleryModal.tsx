@@ -549,7 +549,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 							'Anonymous',
 						avatar: (currentImageUploader?.clanAvatar ||
 							currentImageUploader?.user?.avatarUrl ||
-							`${window.location.origin}/assets/images/anonymous-avatar.png`) as string
+							`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
 					},
 					realUrl: enhancedAttachmentData.url || '',
 					channelImagesData: {
@@ -594,7 +594,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 								'Anonymous',
 							avatar: (currentImageUploader?.clanAvatar ||
 								currentImageUploader?.user?.avatarUrl ||
-								`${window.location.origin}/assets/images/anonymous-avatar.png`) as string
+								`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
 						},
 						realUrl: enhancedAttachmentData.url || '',
 						channelImagesData,

@@ -11,7 +11,7 @@ import {
 	setSelectedMessage,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { ETypeLinkMedia, ID_MENTION_HERE, isValidEmojiData, TypeMessage } from '@mezon/utils';
+import { ETypeLinkMedia, ID_MENTION_HERE, TypeMessage, isValidEmojiData } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/types';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -208,14 +208,7 @@ const MessageItem = React.memo(
 				message?.updateTimeSeconds && !message.isError && !message.isErrorRetry
 					? message.updateTimeSeconds > message.createTimeSeconds
 					: message.hideEditted === false && !!message?.content?.t,
-			[
-				message?.updateTimeSeconds,
-				message?.createTimeSeconds,
-				message.isError,
-				message.isErrorRetry,
-				message.hideEditted,
-				message?.content?.t
-			]
+			[message?.updateTimeSeconds, message?.createTimeSeconds, message.isError, message.isErrorRetry, message.hideEditted, message?.content?.t]
 		);
 
 		const usernameMessage = useMemo(

@@ -1,5 +1,5 @@
-import { DirectEntity, FriendsEntity } from '@mezon/store';
-import { UsersClanEntity } from '@mezon/utils';
+import type { DirectEntity, FriendsEntity } from '@mezon/store';
+import type { UsersClanEntity } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 
 // Define the return type for clarity
@@ -11,67 +11,90 @@ export interface ProcessedUser {
 	clanAvatar?: string;
 	clanNick?: string;
 	type?: ChannelType;
+	dmId?: string;
 }
 export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList: DirectEntity[], friends: FriendsEntity[]): ProcessedUser[] {
-	const existingIds = new Set(membersClan.map((user) => user.id));
+	const existingUserMap = new Map<string, UsersClanEntity>();
 
-	const usersFromAllClans: ProcessedUser[] = membersClan.map((user) => ({
-		id: user.id || '',
-		username: user.user?.username || '',
-		displayName: user?.user?.displayName || '',
-		avatarUrl: user?.user?.avatarUrl || '',
-		clanAvatar: user?.clanAvatar || user?.user?.avatarUrl || '',
-		clanNick: user?.clanNick || user?.user?.displayName || user.user?.username || '',
-		type: ChannelType?.CHANNEL_TYPE_DM
-	}));
+	membersClan.forEach((user) => {
+		const userId = user?.id;
+		if (!userId) return;
 
-	const usersFromDmGroupChat: ProcessedUser[] = dmGroupChatList
-		.flatMap((chat) => {
-			if (chat.type === ChannelType.CHANNEL_TYPE_DM) {
-				const userId = chat?.userIds?.[0];
-				if (userId && !existingIds.has(userId)) {
-					existingIds.add(userId);
-					return [
-						{
-							id: userId,
-							username: chat.usernames?.[0] || '',
-							displayName: chat.displayNames?.[0] || chat.usernames?.[0] || '',
-							avatarUrl: chat.channelAvatar?.[0] || '',
-							clanAvatar: chat.channelAvatar?.[0] || '',
-							clanNick: chat.displayNames?.[0] || chat.usernames?.[0] || '',
-							type: ChannelType?.CHANNEL_TYPE_DM
-						} as ProcessedUser
-					];
-				}
-				return [];
-			} else if (chat.type === ChannelType.CHANNEL_TYPE_GROUP) {
-				return [
-					{
-						id: chat?.channelId || '',
-						username: `${chat?.usernames?.join(',')}, ${chat.creatorName || ''}`,
-						displayName: chat?.channelLabel || '',
-						avatarUrl: 'assets/images/avatar-group.png',
-						clanAvatar: 'assets/images/avatar-group.png',
-						clanNick: chat?.channelLabel || '',
-						type: ChannelType?.CHANNEL_TYPE_GROUP
-					} as ProcessedUser
-				];
-			}
-			return [];
-		})
-		.filter(Boolean) as ProcessedUser[];
+		existingUserMap.set(userId, user);
+	});
 
-	const usersFromFriends: ProcessedUser[] = friends
-		.filter((friend) => friend?.user?.id && !existingIds.has(friend?.user?.id))
-		.map((friend) => ({
-			id: friend?.user?.id || '',
-			username: friend?.user?.username || '',
-			displayName: friend?.user?.displayName || '',
-			avatarUrl: friend?.user?.avatarUrl || '',
-			clanAvatar: friend?.user?.avatarUrl || '',
-			clanNick: friend?.user?.displayName || friend?.user?.username || '',
-			type: ChannelType?.CHANNEL_TYPE_DM
-		}));
+	const usersFromDmGroupChat: ProcessedUser[] = dmGroupChatList.reduce<ProcessedUser[]>((acc, chat) => {
+		if (chat.type === ChannelType.CHANNEL_TYPE_DM) {
+			const userId = chat.userIds?.[0];
+			if (!userId) return acc;
+
+			const clanData = existingUserMap.get(userId);
+			existingUserMap.set(userId, chat);
+			acc.push({
+				id: userId,
+				username: chat.usernames?.[0] || '',
+				displayName: clanData?.clanNick || clanData?.prioritizeName || chat.displayNames?.[0] || chat.usernames?.[0] || '',
+				avatarUrl: clanData?.clanAvatar || chat.avatars?.[0] || '',
+				clanAvatar: clanData?.clanAvatar || chat.avatars?.[0] || '',
+				clanNick: clanData?.clanNick || clanData?.prioritizeName || chat.displayNames?.[0] || chat.usernames?.[0] || '',
+				type: ChannelType.CHANNEL_TYPE_DM,
+				dmId: chat.id
+			});
+
+			return acc;
+		}
+
+		if (chat.type === ChannelType.CHANNEL_TYPE_GROUP) {
+			acc.push({
+				id: chat.channelId || '',
+				username: `${chat.usernames?.join(',') || ''}${chat.creatorName ? `, ${chat.creatorName}` : ''}`,
+				displayName: chat.channelLabel || '',
+				avatarUrl: 'assets/images/avatar-group.png',
+				clanAvatar: 'assets/images/avatar-group.png',
+				clanNick: chat.channelLabel || '',
+				type: ChannelType.CHANNEL_TYPE_GROUP
+			});
+			return acc;
+		}
+		return acc;
+	}, []);
+
+	const usersFromAllClans = membersClan.reduce<ProcessedUser[]>((acc, user) => {
+		const direct = existingUserMap.get(user.id);
+
+		if (!direct) {
+			acc.push({
+				id: user.id || '',
+				username: user.user?.username || '',
+				displayName: user.user?.displayName || '',
+				avatarUrl: user.user?.avatarUrl || '',
+				clanAvatar: user.clanAvatar || user.user?.avatarUrl || '',
+				clanNick: user.clanNick || user.user?.displayName || user.user?.username || '',
+				type: ChannelType.CHANNEL_TYPE_DM
+			});
+		}
+		return acc;
+	}, []);
+
+	const usersFromFriends: ProcessedUser[] = friends.reduce<ProcessedUser[]>((acc, friend) => {
+		const user = friend.user;
+
+		if (!user?.id) return acc;
+		const direct = existingUserMap.get(user.id);
+		if (!direct) {
+			const data: ProcessedUser = {
+				id: user.id,
+				username: user.username || '',
+				displayName: user.displayName || '',
+				avatarUrl: user.avatarUrl || '',
+				clanAvatar: user.avatarUrl || '',
+				clanNick: user.displayName || user.username || '',
+				type: ChannelType.CHANNEL_TYPE_DM
+			};
+			acc.push(data);
+		}
+		return acc;
+	}, []);
 
 	return [...usersFromAllClans, ...usersFromFriends, ...usersFromDmGroupChat];
 }

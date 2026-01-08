@@ -1215,7 +1215,7 @@ export const getAttachmentDataForWindow = (
 			uploaderData: {
 				avatar: (uploader?.clanAvatar ||
 					uploader?.user?.avatarUrl ||
-					`${window.location.origin}/assets/images/anonymous-avatar.png`) as string,
+					`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string,
 				name: uploader?.clanNick || uploader?.user?.displayName || uploader?.user?.username || 'Anonymous'
 			},
 			url: image.url,
