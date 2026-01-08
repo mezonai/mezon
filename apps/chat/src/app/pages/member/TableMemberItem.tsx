@@ -100,7 +100,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 				isDM={false}
 				user={{
 					id: userId,
-					userId: userId,
+					userId,
 					user: {
 						id: userId,
 						username
@@ -122,11 +122,11 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 	const member: ChannelMembersEntity = useMemo(() => {
 		return {
 			id: userId,
-			userId: userId,
+			userId,
 			user: {
 				username,
 				id: userId,
-				displayName: displayName,
+				displayName,
 				avatarUrl: avatar
 			}
 		};
@@ -216,7 +216,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 			</div>
 			<div className="flex-1 p-1 text-center">
 				<span className="text-xs  font-medium uppercase">
-					{clanJoinTime ? formatDistance(clanJoinTime as string, new Date(), { addSuffix: true }) : '-'}
+					{clanJoinTime && typeof clanJoinTime === 'string' ? formatDistance(clanJoinTime as string, new Date(), { addSuffix: true }) : '-'}
 				</span>
 			</div>
 			<div className="flex-1 p-1 text-center">

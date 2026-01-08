@@ -54,7 +54,7 @@ export const formatDateRange = (startDate: Date, endDate: Date, languageCode: st
 };
 
 export const convertTimeStringI18n = (dateString: string, t: (key: string) => string, languageCode = 'en') => {
-	if (!dateString) {
+	if (!dateString || typeof dateString !== 'string') {
 		return '';
 	}
 
@@ -75,6 +75,7 @@ export const convertTimeStringI18n = (dateString: string, t: (key: string) => st
 };
 
 export const convertDateStringI18n = (dateString: string, t: (key: string) => string, languageCode = 'en', options?: { dateOnly?: boolean }) => {
+	if (!dateString || typeof dateString !== 'string') return '';
 	const codeTime = new Date(dateString);
 	const currentDate = new Date();
 	const locale = getDateLocale(languageCode);

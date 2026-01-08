@@ -41,7 +41,7 @@ type DeviceItemProps = {
 
 const formatDeviceDate = (date: string | Date | undefined, t: (key: string) => string): string => {
 	if (!date) return '';
-	const dateStr = date instanceof Date ? date.toISOString() : String(date);
+	const dateStr = date instanceof Date ? date.toISOString() : date;
 	return convertTimeString(dateStr, t);
 };
 
