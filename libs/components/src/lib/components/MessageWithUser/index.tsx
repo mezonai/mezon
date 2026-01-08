@@ -16,8 +16,7 @@ import {
 	generateE2eId
 } from '@mezon/utils';
 import classNames from 'classnames';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import type { ApiMessageMention } from 'mezon-js/types';
+import { ChannelStreamMode } from 'mezon-js';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -119,14 +118,10 @@ function MessageWithUser({
 	const hasIncludeMention = (() => {
 		if (!userId) return false;
 		if (typeof message?.content?.t == 'string') {
-			if (message?.mentions?.some((mention) => mention?.userId === ID_MENTION_HERE)) return true;
+			if (Array.isArray(message?.mentions) && message?.mentions?.some((mention) => mention?.userId === ID_MENTION_HERE)) return true;
 		}
-		if (typeof message?.mentions === 'string') {
-			const parsedMentions = safeJSONParse(message?.mentions) as ApiMessageMention[] | undefined;
-			const userIdMention = userId;
-			const includesUser = parsedMentions?.some((mention) => mention?.userId === userIdMention);
-			const includesRole = parsedMentions?.some((item) => user?.roleId?.includes(item?.roleId as string));
-			return includesUser || includesRole;
+		if (!Array.isArray(message?.mentions)) {
+			return false;
 		}
 		const userIdMention = userId;
 		const includesUser = message?.mentions?.some((mention) => mention?.userId === userIdMention);
