@@ -15,11 +15,11 @@ type IMessageAvatarProps = {
 
 const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 	useAppSelector(selectAvatarVersion);
-	const clanAvatar = message?.clan_avatar;
+	const clanAvatar = message?.clanAvatar;
 	const generalAvatar = message?.avatar;
 
 	const overrideAvatar = getUserAvatarOverride(message.user?.id || '');
-	const overrideClanAvatar = message.clan_id ? getUserClanAvatarOverride(message.user?.id || '', message.clan_id as string) : undefined;
+	const overrideClanAvatar = message.clanId ? getUserClanAvatarOverride(message.user?.id || '', message.clanId as string) : undefined;
 	const { pendingUserAvatar, pendingClanAvatar } = getPendingNames(
 		message,
 		undefined,
@@ -31,7 +31,7 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 		message?.avatar,
 		generalAvatar,
 		clanAvatar,
-		message?.clan_avatar
+		message?.clanAvatar
 	);
 
 	const avatarUrl =
@@ -54,7 +54,7 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 			src={avatarUrl}
 			className="min-w-10 min-h-10 absolute left-[16px] select-none"
 			classNameText="font-semibold"
-			isAnonymous={message.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID}
+			isAnonymous={message.senderId === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID}
 			onClick={onClick}
 		/>
 	);
@@ -62,5 +62,5 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 
 export default memo(
 	MessageAvatar,
-	(prev, curr) => prev.message.clan_avatar === curr.message.clan_avatar && prev.message.avatar === curr.message.avatar
+	(prev, curr) => prev.message.clanAvatar === curr.message.clanAvatar && prev.message.avatar === curr.message.avatar
 );

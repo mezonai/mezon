@@ -63,7 +63,7 @@ export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, obser
 					key={index}
 					embed={embed}
 					senderId={senderId}
-					message_id={messageId}
+					messageId={messageId}
 					onClick={() => onEmbedClick(embed)}
 					channelId={channelId}
 					observeIntersectionForLoading={observeIntersectionForLoading}

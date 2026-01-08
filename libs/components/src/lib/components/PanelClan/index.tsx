@@ -18,7 +18,7 @@ import {
 import { Menu } from '@mezon/ui';
 import type { IClan } from '@mezon/utils';
 import { EUserSettings } from '@mezon/utils';
-import type { ApiAccount } from 'mezon-js/dist/api.gen';
+import type { ApiAccount } from 'mezon-js/types';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,11 +45,11 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	const notificationTypesList = createNotificationTypesListTranslated(tChannelMenu);
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const [positionTop, setPositionTop] = useState(false);
-	const isOwnerOfContextClan = useIsClanOwner(clan?.clan_id || clan?.id || '');
+	const isOwnerOfContextClan = useIsClanOwner(clan?.clanId || clan?.id || '');
 	const dispatch = useAppDispatch();
 
 	const defaultNotificationClan = useSelector((state) =>
-		clan?.clan_id ? selectDefaultNotificationClanByClanId(state as any, clan.clan_id) : selectDefaultNotificationClan(state as any)
+		clan?.clanId ? selectDefaultNotificationClanByClanId(state as any, clan.clanId) : selectDefaultNotificationClan(state as any)
 	);
 	useEffect(() => {
 		const heightPanel = panelRef.current?.clientHeight;
@@ -70,7 +70,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	const { handleMarkAsReadClan, statusMarkAsReadClan } = useMarkAsRead();
 	useEffect(() => {
 		if (statusMarkAsReadClan === 'success') {
-			const clanId = clan?.id ?? clan?.clan_id;
+			const clanId = clan?.id ?? clan?.clanId;
 			if (clanId) {
 				dispatch(clansActions.setHasUnreadMessage({ clanId, hasUnread: false }));
 			}
@@ -81,21 +81,21 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	}, [statusMarkAsReadClan, handClosePannel, dispatch, clan]);
 
 	const handleChangeSettingType = (notificationType: number) => {
-		const targetClanId = clan?.clan_id ?? clan?.id;
+		const targetClanId = clan?.clanId ?? clan?.id;
 		checkMenuOpen.current = false;
 		dispatch(
 			defaultNotificationActions.setDefaultNotificationClan({
-				clan_id: targetClanId,
-				notification_type: notificationType
+				clanId: targetClanId,
+				notificationType: notificationType
 			})
 		);
 		handClosePannel();
 	};
 
 	const notificationLabel = useMemo(() => {
-		const notificationType = notificationTypesList.find((type) => type.value === defaultNotificationClan?.notification_setting_type);
+		const notificationType = notificationTypesList.find((type) => type.value === defaultNotificationClan?.notificationSettingType);
 		return notificationType ? notificationType.label : null;
-	}, [defaultNotificationClan?.notification_setting_type]);
+	}, [defaultNotificationClan?.notificationSettingType]);
 
 	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile, setIsShowSettingProfileInitTab, setClanIdSettingProfile } =
 		useSettingFooter();
@@ -103,7 +103,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 		setIsUserProfile(false);
 		setIsShowSettingFooterInitTab(EUserSettings.PROFILES);
 		setIsShowSettingProfileInitTab(EActiveType.CLAN_SETTING);
-		setClanIdSettingProfile(clan?.clan_id || '');
+		setClanIdSettingProfile(clan?.clanId || '');
 		setIsShowSettingFooterStatus(true);
 		if (setShowClanListMenuContext) {
 			setShowClanListMenuContext();
@@ -113,9 +113,9 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	const handleRemoveLogo = () => {
 		dispatch(
 			clansActions.updateUser({
-				avatar_url: userProfile?.user?.avatar_url || '',
-				display_name: userProfile?.user?.display_name || '',
-				about_me: userProfile?.user?.about_me || '',
+				avatarUrl: userProfile?.user?.avatarUrl || '',
+				displayName: userProfile?.user?.displayName || '',
+				aboutMe: userProfile?.user?.aboutMe || '',
 				dob: userProfile?.user?.dob || '',
 				logo: ''
 			})
@@ -130,9 +130,9 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	};
 	const { removeMemberClan } = useChannelMembersActions();
 	const handleLeaveClan = async () => {
-		const currentClanId = await removeMemberClan({ channelId: '', clanId: clan?.clan_id as string, userIds: [] });
+		const currentClanId = await removeMemberClan({ channelId: '', clanId: clan?.clanId as string, userIds: [] });
 		toggleLeaveClanPopup();
-		if (currentClanId === clan?.clan_id) {
+		if (currentClanId === clan?.clanId) {
 			navigate('/chat/direct/friends');
 		}
 	};
@@ -149,7 +149,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 					name={t('notificationSetting')}
 					key={notification.value}
 					onClick={() => handleChangeSettingType(notification.value)}
-					checked={(defaultNotificationClan?.notification_setting_type || 1) === notification.value}
+					checked={(defaultNotificationClan?.notificationSettingType || 1) === notification.value}
 				/>
 			)
 		);
@@ -217,7 +217,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 				<ModalConfirm
 					handleCancel={toggleLeaveClanPopup}
 					handleConfirm={handleLeaveClan}
-					modalName={clan?.clan_name}
+					modalName={clan?.clanName}
 					title={t('leave')}
 					buttonName={t('leaveClan')}
 				/>

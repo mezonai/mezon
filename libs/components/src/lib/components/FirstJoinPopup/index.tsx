@@ -30,8 +30,8 @@ const FirstJoinPopup = ({ openCreateClanModal }: IFirstJoinPopup) => {
 			const idInvite = inputValue.split('/').pop();
 			if (idInvite && idInvite.length === lengthInviteCode && idInvite.match('\\d+')) {
 				await inviteUser(idInvite).then((res) => {
-					if (res?.channel_id && res?.clan_id) {
-						navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id}`);
+					if (res?.channelId && res?.clanId) {
+						navigate(`/chat/clans/${res.clanId}/channels/${res.channelId}`);
 						handleClose();
 					}
 				});

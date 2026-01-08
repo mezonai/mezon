@@ -4,12 +4,11 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelPresenceEvent, StatusPresenceEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ChannelUserListChannelUser } from 'mezon-js/dist/api.gen';
+import type { ChannelUserListChannelUser } from 'mezon-js/types';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { USERS_CLANS_FEATURE_KEY, selectAllUserClans, selectEntitesUserClans, usersClanActions } from '../clanMembers/clan.members';
-import { selectClanView } from '../clans/clans.slice';
 import type { DirectEntity } from '../direct/direct.slice';
 import { selectDirectMessageEntities } from '../direct/direct.slice';
 import type { MezonValueContext } from '../helpers';
@@ -46,7 +45,7 @@ export interface ChannelMembersState extends EntityState<ChannelMembersEntity, s
 	currentChannelId?: string | null;
 	followingUserIds?: string[];
 	onlineStatusUser: Record<string, boolean>;
-	customStatusUser: Record<string, { status: string; time_reset?: number }>;
+	customStatusUser: Record<string, { status: string; timeReset?: number }>;
 	toFollowUserIds: string[];
 	memberChannels: Record<
 		string,
@@ -88,7 +87,7 @@ export const fetchChannelMembersCached = async (
 	if (!shouldForceCall) {
 		const cachedChannelData = channelMembersState.memberChannels[channelId];
 		return {
-			channel_users: cachedChannelData.ids?.map((item) => ({ user_id: item })) || [],
+			channelUsers: cachedChannelData.ids?.map((item) => ({ userId: item })) || [],
 			time: Date.now(),
 			fromCache: true
 		};
@@ -99,10 +98,10 @@ export const fetchChannelMembersCached = async (
 		{
 			api_name: 'ListChannelUsers',
 			list_channel_users_req: {
-				channel_id: channelId,
+				channelId,
 				limit: 2000,
-				clan_id: clanId,
-				channel_type: channelType,
+				clanId,
+				channelType,
 				state: 1
 			}
 		},
@@ -142,30 +141,30 @@ export const fetchChannelMembers = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const currentChannel = state?.channels?.byClans?.[clanId as string]?.entities?.entities[channelId] || {};
 
-			if (currentChannel?.parent_id && currentChannel.parent_id !== '0' && !state?.channelMembers?.entities?.[currentChannel.parent_id]) {
+			if (currentChannel?.parentId && currentChannel.parentId !== '0' && !state?.channelMembers?.entities?.[currentChannel.parentId]) {
 				const response = await fetchChannelMembersCached(
 					thunkAPI.getState as () => RootState,
 					mezon,
 					clanId,
-					currentChannel.parent_id,
+					currentChannel.parentId,
 					channelType
 				);
 
 				if (!response.fromCache && !response.fromCache) {
 					thunkAPI.dispatch(
-						channelMembersActions.setMemberChannels({ channelId: currentChannel.parent_id, members: response.channel_users ?? [] })
+						channelMembersActions.setMemberChannels({ channelId: currentChannel.parentId, members: response.channelUsers ?? [] })
 					);
 				}
 			}
 
 			const response = await fetchChannelMembersCached(thunkAPI.getState as () => RootState, mezon, clanId, channelId, channelType, noCache);
 
-			if (response.fromCache && response.channel_users) {
-				return { channel_users: response.channel_users || [], fromCache: true, channelId };
+			if (response.fromCache && response.channelUsers) {
+				return { channelUsers: response.channelUsers || [], fromCache: true, channelId };
 			}
 
-			if (!response.channel_users) {
-				return { channel_users: [], fromCache: false, channelId };
+			if (!response.channelUsers) {
+				return { channelUsers: [], fromCache: false, channelId };
 			}
 
 			if (repace) {
@@ -173,10 +172,10 @@ export const fetchChannelMembers = createAsyncThunk(
 			}
 			const overriddenPermissions = selectMaxPermissionForChannel(thunkAPI.getState() as RootState, channelId || '');
 			if (overriddenPermissions[EOverriddenPermission.sendMessage]) {
-				thunkAPI.dispatch(usersClanActions.upsertBanFromChannel({ channelId, clanId, users: response.channel_users }));
+				thunkAPI.dispatch(usersClanActions.upsertBanFromChannel({ channelId, clanId, users: response.channelUsers }));
 			}
-			thunkAPI.dispatch(channelMembersActions.setMemberChannels({ channelId, members: response.channel_users }));
-			return { channel_users: response.channel_users, fromCache: false, channelId };
+			thunkAPI.dispatch(channelMembersActions.setMemberChannels({ channelId, members: response.channelUsers }));
+			return { channelUsers: response.channelUsers, fromCache: false, channelId };
 		} catch (error) {
 			captureSentryError(error, 'channelMembers/fetchChannelMembers');
 			return thunkAPI.rejectWithValue(error);
@@ -190,13 +189,13 @@ export const fetchChannelMembersPresence = createAsyncThunk(
 		try {
 			if (channelPresence.joins.length > 0) {
 				const joinUser = channelPresence.joins[0];
-				const userId = joinUser.user_id;
-				const isMobile = joinUser.is_mobile;
-				const channelId = channelPresence.channel_id;
+				const userId = joinUser.userId;
+				const isMobile = joinUser.isMobile;
+				const channelId = channelPresence.channelId;
 				const state = thunkAPI.getState() as ChannelMemberRootState;
 				const existingMember = state[CHANNEL_MEMBERS_FEATURE_KEY].memberChannels[channelId]?.ids?.findIndex((item) => item === userId);
 				if (!existingMember) {
-					thunkAPI.dispatch(channelMembersActions.addNewMember({ channel_id: channelPresence.channel_id, user_ids: [userId] }));
+					thunkAPI.dispatch(channelMembersActions.addNewMember({ channelId: channelPresence.channelId, userIds: [userId] }));
 					thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: true, isMobile }));
 				}
 			}
@@ -210,15 +209,15 @@ export const fetchChannelMembersPresence = createAsyncThunk(
 export const updateStatusUser = createAsyncThunk('channelMembers/fetchUserStatus', async (statusPresence: StatusPresenceEvent, thunkAPI) => {
 	if (statusPresence?.leaves?.length) {
 		for (const leave of statusPresence.leaves) {
-			const userId = leave.user_id;
-			const isMobile = leave.is_mobile;
+			const userId = leave.userId;
+			const isMobile = leave.isMobile;
 			thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: false, isMobile }));
 		}
 	}
 	if (statusPresence?.joins?.length) {
 		for (const join of statusPresence.joins) {
-			const userId = join.user_id;
-			const isMobile = join.is_mobile;
+			const userId = join.userId;
+			const isMobile = join.isMobile;
 			thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: true, isMobile }));
 		}
 	}
@@ -278,7 +277,7 @@ export const updateCustomStatus = createAsyncThunk(
 				thunkAPI.dispatch(
 					usersClanActions.updateUserStatus({
 						userId,
-						user_status: customStatus
+						userStatus: customStatus
 					})
 				);
 			}
@@ -302,7 +301,7 @@ export const banUserChannel = createAsyncThunk(
 			if (!response) {
 				return;
 			}
-			thunkAPI.dispatch(usersClanActions.addBannedUser({ clanId, channelId, userIds, banner_id: '', ban_time: banTime }));
+			thunkAPI.dispatch(usersClanActions.addBannedUser({ clanId, channelId, userIds, bannerId: '', banTime }));
 			return true;
 		} catch (error) {
 			captureSentryError(error, 'channelMembers/banUserChannel');
@@ -347,7 +346,7 @@ export const checkBanInChannelCached = async (
 		const isBanned = clanMemberState.byClans?.[clanId]?.entities?.entities?.[userId]?.ban_list?.[channelId];
 		return {
 			isBan: !!isBanned,
-			time: !isBanned ? undefined : isBanned.ban_time || Infinity,
+			time: !isBanned ? undefined : isBanned.banTime || Infinity,
 			fromCache: true
 		};
 	}
@@ -357,8 +356,8 @@ export const checkBanInChannelCached = async (
 	markApiFirstCalled(apiKey);
 
 	return {
-		isBan: response.is_banned || false,
-		time: !response.is_banned ? undefined : response.expired_ban_time || Infinity,
+		isBan: response.isBanned || false,
+		time: !response.isBanned ? undefined : response.expiredBanTime || Infinity,
 		fromCache: false
 	};
 };
@@ -377,7 +376,7 @@ export const checkBanInChannel = createAsyncThunk(
 				return;
 			}
 			if (response.isBan) {
-				thunkAPI.dispatch(usersClanActions.addBannedUser({ clanId, channelId, userIds: [userId], banner_id: '', ban_time: response.time }));
+				thunkAPI.dispatch(usersClanActions.addBannedUser({ clanId, channelId, userIds: [userId], bannerId: '', banTime: response.time }));
 			}
 			return true;
 		} catch (error) {
@@ -442,20 +441,20 @@ export const channelMembers = createSlice({
 					id: channelId
 				};
 			}
-			const memberIds = members.map((member) => member.user_id as string);
+			const memberIds = members.map((member) => member.userId as string);
 
 			const memberAddedByUserId: Record<string, IMemberAddedByUserId> = {};
 			const memberBanneds = new Set<string>();
 
 			members.forEach((member) => {
-				if (member?.user_id) {
-					memberAddedByUserId[member.user_id] = {
-						id: member.user_id,
-						addedBy: member.added_by
+				if (member?.userId) {
+					memberAddedByUserId[member.userId] = {
+						id: member.userId,
+						addedBy: member.addedBy
 					};
 				}
-				if (member.is_banned && member.user_id) {
-					memberBanneds.add(member.user_id);
+				if (member.isBanned && member.userId) {
+					memberBanneds.add(member.userId);
 				}
 			});
 			state.memberChannels[channelId] = {
@@ -465,10 +464,10 @@ export const channelMembers = createSlice({
 			};
 			state.bannedUserIds[channelId] = memberBanneds;
 		},
-		addNewMember: (state, action: PayloadAction<{ channel_id: string; user_ids: string[]; addedByUserId?: string }>) => {
+		addNewMember: (state, action: PayloadAction<{ channelId: string; userIds: string[]; addedByUserId?: string }>) => {
 			const payload = action.payload;
-			const userIds = payload.user_ids;
-			const channelId = payload.channel_id;
+			const userIds = payload.userIds;
+			const channelId = payload.channelId;
 			const addedByUserId = payload?.addedByUserId;
 
 			if (!state?.memberChannels?.[channelId]) {
@@ -515,9 +514,9 @@ export const channelMembers = createSlice({
 				delete state.memberChannels[channelId].cache;
 			}
 		},
-		setCustomStatusUser: (state, action: PayloadAction<{ userId: string; status: string; time_reset?: number }>) => {
-			const { userId, status, time_reset } = action.payload;
-			state.customStatusUser[userId] = { status, time_reset };
+		setCustomStatusUser: (state, action: PayloadAction<{ userId: string; status: string; timeReset?: number }>) => {
+			const { userId, status, timeReset } = action.payload;
+			state.customStatusUser[userId] = { status, timeReset };
 		}
 	},
 	extraReducers: (builder) => {
@@ -529,11 +528,11 @@ export const channelMembers = createSlice({
 				fetchChannelMembers.fulfilled,
 				(
 					state: ChannelMembersState,
-					action: PayloadAction<{ channel_users: ChannelUserListChannelUser[]; fromCache: boolean; channelId: string }>
+					action: PayloadAction<{ channelUsers: ChannelUserListChannelUser[]; fromCache: boolean; channelId: string }>
 				) => {
-					const { channel_users, fromCache, channelId } = action.payload;
+					const { channelUsers, fromCache, channelId } = action.payload;
 
-					if (channel_users !== null) {
+					if (channelUsers !== null) {
 						state.loadingStatus = 'loaded';
 
 						if (!fromCache && state.memberChannels[channelId]) {
@@ -550,7 +549,7 @@ export const channelMembers = createSlice({
 			})
 			.addCase(updateCustomStatus.fulfilled, (state: ChannelMembersState, action) => {
 				if (action.payload) {
-					state.customStatusUser[action.payload?.user_id] = { status: action.payload.status, time_reset: action.payload.time_reset };
+					state.customStatusUser[action.payload?.userId] = { status: action.payload.status, timeReset: action.payload.timeReset };
 				}
 			});
 	}
@@ -607,7 +606,6 @@ export const getChannelMembersState = (rootState: { [CHANNEL_MEMBERS_FEATURE_KEY
 	return rootState[CHANNEL_MEMBERS_FEATURE_KEY];
 };
 
-export const selectMemberStatus = createSelector(getChannelMembersState, (state) => state.onlineStatusUser);
 export const selectMemberCustomStatus = createSelector(getChannelMembersState, (state) => state.customStatusUser);
 export const selectMemberCustomStatusById = createSelector(
 	[selectMemberCustomStatus, (_: RootState, userId: string) => userId],
@@ -631,7 +629,7 @@ export const selectMemberCustomStatusByUserId = createSelector(
 	],
 	(usersClanEntities, usersStatus, userId) => {
 		const userClan = usersClanEntities[userId];
-		return usersStatus?.[userId]?.status || userClan?.user?.user_status || '';
+		return usersStatus?.[userId]?.status || userClan?.user?.userStatus || '';
 	}
 );
 
@@ -657,30 +655,6 @@ export const selectMemberGroupByUserId = createSelector(
 	}
 );
 
-export const selectMemberStatusById = createSelector(
-	[
-		selectEntitesUserClans,
-		selectDirectMessageEntities,
-		selectClanView,
-		(state, userId: string) => {
-			return `${userId},${state?.direct.currentDirectMessageId}`;
-		}
-	],
-	(usersClanEntities, directs, isClanView, payload) => {
-		const [userId, currentDirectMessageId] = payload.split(',');
-		const userClan = usersClanEntities[userId];
-		const userGroup = directs?.[currentDirectMessageId];
-		if (userClan && isClanView) {
-			return { status: userClan.user?.online, isMobile: userClan.user?.is_mobile };
-		}
-		const index = userGroup?.user_ids?.findIndex((item) => item === userId) ?? -1;
-		if (index === -1) {
-			return { status: false, isMobile: false };
-		}
-		return { status: userGroup?.onlines?.[index] || false, isMobile: false };
-	}
-);
-
 export const selectAllChannelMembers = createSelector(
 	[
 		selectMemberIdsByChannelId,
@@ -690,8 +664,8 @@ export const selectAllChannelMembers = createSelector(
 		(state: RootState, channelId: string) => {
 			const currentClanId = state.clans?.currentClanId;
 			const channel = state?.channels?.byClans?.[currentClanId as string]?.entities?.entities?.[channelId];
-			const isPrivate = channel?.channel_private;
-			const parentId = channel?.parent_id;
+			const isPrivate = channel?.channelPrivate;
+			const parentId = channel?.parentId;
 			const isDm = state.direct?.currentDirectMessageId === channelId || '';
 			return `${channelId},${isPrivate},${isDm},${parentId}`;
 		}
@@ -730,9 +704,9 @@ export const selectAllChannelMembersClan = createSelector(
 		(state: RootState, channelId: string) => {
 			const currentClanId = state.clans?.currentClanId;
 			const channel = state?.channels?.byClans?.[currentClanId as string]?.entities?.entities?.[channelId];
-			const isPrivate = channel?.channel_private;
-			const parentId = channel?.parent_id;
-			const creatorId = channel?.creator_id;
+			const isPrivate = channel?.channelPrivate;
+			const parentId = channel?.parentId;
+			const creatorId = channel?.creatorId;
 			return `${channelId},${isPrivate},${parentId},${creatorId || ''}`;
 		}
 	],
@@ -762,8 +736,8 @@ export const selectMemberByUsername = createSelector(
 		(state: RootState, channelId: string, username: string) => {
 			const currentClanId = state.clans?.currentClanId;
 			const channel = state.channels?.byClans[currentClanId as string]?.entities?.entities?.[channelId];
-			const isPrivate = channel?.channel_private;
-			const parentId = channel?.parent_id;
+			const isPrivate = channel?.channelPrivate;
+			const parentId = channel?.parentId;
 			return `${channelId},${isPrivate},${parentId},${username}`;
 		}
 	],
@@ -795,8 +769,8 @@ export const selectAllChannelMemberIds = createSelector(
 		(state: RootState, channelId: string, isDm?: boolean) => {
 			const currentClanId = state.clans?.currentClanId;
 			const channel = state.channels?.byClans[currentClanId as string]?.entities?.entities?.[channelId];
-			const isPrivate = channel?.channel_private;
-			const parentId = channel?.parent_id;
+			const isPrivate = channel?.channelPrivate;
+			const parentId = channel?.parentId;
 			return `${channelId},${isPrivate},${isDm ? 1 : ''},${parentId}`;
 		}
 	],
@@ -840,8 +814,8 @@ export const selectChannelMemberByUserIds = createSelector(
 					} as ChannelMembersEntity);
 					return;
 				}
-				const { channel_label, user_ids, onlines, usernames, display_names } = userInfo as DirectEntity;
-				const currentUserIndex = Array.isArray(user_ids) ? user_ids.findIndex((id) => id === userId) : -1;
+				const { channelLabel, userIds, onlines, usernames, displayNames } = userInfo as DirectEntity;
+				const currentUserIndex = Array.isArray(userIds) ? userIds.findIndex((id) => id === userId) : -1;
 				if (currentUserIndex === -1) return;
 				members.push({
 					channelId,
@@ -849,7 +823,7 @@ export const selectChannelMemberByUserIds = createSelector(
 					user: {
 						online: onlines?.[currentUserIndex],
 						...dmMembers?.[userId]?.user,
-						display_name: display_names?.[currentUserIndex],
+						displayName: displayNames?.[currentUserIndex],
 						username: usernames?.[currentUserIndex]
 					},
 					id: userId
@@ -898,7 +872,7 @@ export const selectUserAddedByUserId = createSelector(
 		return {
 			id: addedByInfo.addedBy,
 			username: addedByUser.user?.username,
-			display_name: addedByUser.user?.display_name
+			displayName: addedByUser.user?.displayName
 		};
 	}
 );

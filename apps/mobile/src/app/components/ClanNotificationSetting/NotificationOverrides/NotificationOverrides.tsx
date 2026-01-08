@@ -21,10 +21,10 @@ const NotificationOverrides = () => {
 		if (!categorizedChannels?.length) return [];
 		return categorizedChannels?.flatMap((category) => [
 			{
-				id: (category as IChannel)?.channel_id || category.id,
-				label: (category as IChannel)?.channel_label || category.category_name,
-				title: (category as IChannel)?.channel_id ? 'channel' : 'category',
-				type: (category as IChannel)?.channel_id ? EOptionOverridesType.Channel : EOptionOverridesType.Category
+				id: (category as IChannel)?.channelId || category.id,
+				label: (category as IChannel)?.channelLabel || category.categoryName,
+				title: (category as IChannel)?.channelId ? 'channel' : 'category',
+				type: (category as IChannel)?.channelId ? EOptionOverridesType.Channel : EOptionOverridesType.Category
 			}
 		]);
 	}, [categorizedChannels]);

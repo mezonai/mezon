@@ -40,7 +40,7 @@ function GuideMain() {
 				</div>
 				<div className=" flex gap-3 items-end h-28">
 					<div className="text-[32px] font-bold leading-8 truncate overflow-hidden max-w-[70%]" title="">
-						{currentClanName ?? `${clanOwner?.user?.display_name ?? clanOwner?.user?.username}'s ${t('guide.clan')}`}
+						{currentClanName ?? `${clanOwner?.user?.displayName ?? clanOwner?.user?.username}'s ${t('guide.clan')}`}
 					</div>
 					<div className="relative h-6 w-6 text-theme-primary">
 						<svg className="absolute" role="img" width="24" height="24" viewBox="0 0 16 15.2">

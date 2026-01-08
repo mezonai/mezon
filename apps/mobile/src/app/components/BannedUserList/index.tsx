@@ -37,8 +37,8 @@ const BannedUserListScreen = ({ navigation, route }: MenuChannelScreenProps<Chan
 		() =>
 			listUserClanBanned?.filter((user) => {
 				return (
-					normalizeString(user?.clan_nick)?.includes(normalizeString(searchText)) ||
-					normalizeString(user?.user?.display_name)?.includes(normalizeString(searchText))
+					normalizeString(user?.clanNick)?.includes(normalizeString(searchText)) ||
+					normalizeString(user?.user?.displayName)?.includes(normalizeString(searchText))
 				);
 			}) || [],
 		[listUserClanBanned, searchText]

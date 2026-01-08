@@ -257,7 +257,7 @@ const ChannelMessages = React.memo(
 					messages.length > 2 &&
 					lastSeenMessageId &&
 					previousMessage;
-				const shouldShowUnreadBreak = isPreviousMessageLastSeen && item?.sender_id !== userId && !haveScrollToBottom;
+				const shouldShowUnreadBreak = isPreviousMessageLastSeen && item?.senderId !== userId && !haveScrollToBottom;
 				return (
 					<>
 						<MessageItem

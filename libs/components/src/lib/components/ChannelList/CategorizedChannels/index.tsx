@@ -36,7 +36,7 @@ export interface IChannelLinkPermission {
 }
 
 interface DeleteCategoryModalProps {
-	category: { category_name: string; id: string; channels?: IChannel[] };
+	category: { categoryName: string; id: string; channels?: IChannel[] };
 	closeDeleteModal: () => void;
 }
 
@@ -53,7 +53,7 @@ const DeleteCategoryModal: React.FC<DeleteCategoryModalProps> = ({ category, clo
 	return (
 		<ModalConfirm
 			handleCancel={closeDeleteModal}
-			modalName={category.category_name || ''}
+			modalName={category.categoryName || ''}
 			handleConfirm={confirmDeleteCategory}
 			title="delete"
 			buttonName={t('deleteCategory')}
@@ -86,7 +86,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 	const [openDeleteCategoryModal, closeDeleteModal] = useModal(() => {
 		return (
 			<DeleteCategoryModal
-				category={{ ...category, category_name: category.category_name || 'Default Name', channels: [] }}
+				category={{ ...category, categoryName: category.categoryName || 'Default Name', channels: [] }}
 				closeDeleteModal={closeDeleteModal}
 			/>
 		);
@@ -98,8 +98,8 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 	const isShowCreateChannel = isClanOwner || hasAdminPermission || hasChannelManagePermission || hasClanPermission;
 
 	const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-		id: category.category_id as string,
-		disabled: category.id === FAVORITE_CATEGORY_ID || !category.category_id
+		id: category.categoryId as string,
+		disabled: category.id === FAVORITE_CATEGORY_ID || !category.categoryId
 	});
 
 	const style: React.CSSProperties = {
@@ -154,7 +154,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 
 	const handleToggleCategory = () => {
 		const payload = {
-			clanId: category.clan_id || '',
+			clanId: category.clanId || '',
 			categoryId: category.id,
 			expandState: !categoryExpandState
 		};
@@ -166,10 +166,10 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 	};
 
 	const openModalCreateNewChannel = (paramCategory: ICategory) => {
-		dispatch(channelsActions.openCreateNewModalChannel({ clanId: paramCategory.clan_id as string, isOpen: true }));
+		dispatch(channelsActions.openCreateNewModalChannel({ clanId: paramCategory.clanId as string, isOpen: true }));
 		dispatch(
 			channelsActions.setCurrentCategory({
-				clanId: paramCategory.clan_id as string,
+				clanId: paramCategory.clanId as string,
 				category: paramCategory
 			})
 		);
@@ -177,7 +177,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 
 	const handleOpenCreateChannelModal = (category: ICategoryChannel) => {
 		const payload = {
-			clanId: category.clan_id || '',
+			clanId: category.clanId || '',
 			categoryId: category.id,
 			expandState: true
 		};
@@ -186,7 +186,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 	};
 
 	return (
-		category.category_name && (
+		category.categoryName && (
 			<div
 				ref={setNodeRef}
 				style={style}
@@ -205,9 +205,9 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 					<span className="one-line" data-e2e={generateE2eId('clan_page.side_bar.channel_list.category.name')}>
 						{category.id === FAVORITE_CATEGORY_ID
 							? t('favoriteChannel')
-							: category.category_name === PUBLIC_CHANNELS_NAME
+							: category.categoryName === PUBLIC_CHANNELS_NAME
 								? t('publicChannels')
-								: category.category_name}
+								: category.categoryName}
 					</span>
 				</button>
 

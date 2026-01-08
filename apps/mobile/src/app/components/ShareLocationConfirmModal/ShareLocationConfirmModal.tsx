@@ -90,8 +90,8 @@ const ShareLocationConfirmModal = ({
 					<Text style={styles.headerText}>
 						{t('shareLocationModal.sendThisLocation')}{' '}
 						{mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
-							? currentChannel?.channel_label
-							: currentDmGroup?.channel_label}
+							? currentChannel?.channelLabel
+							: currentDmGroup?.channelLabel}
 					</Text>
 				</View>
 				<View style={styles.modalContent}>

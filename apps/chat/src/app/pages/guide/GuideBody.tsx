@@ -20,7 +20,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DONE_ONBOARDING_STATUS, titleMission } from '@mezon/utils';
-import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { ApiOnboardingItem } from 'mezon-js/types';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -39,22 +39,22 @@ function GuideBody() {
 
 	const handleDoMission = useCallback(
 		(mission: ApiOnboardingItem, index: number) => {
-			if (index === missionDone || selectUserProcessing?.onboarding_step === DONE_ONBOARDING_STATUS) {
-				switch (mission.task_type) {
+			if (index === missionDone || selectUserProcessing?.onboardingStep === DONE_ONBOARDING_STATUS) {
+				switch (mission.taskType) {
 					case ETypeMission.SEND_MESSAGE: {
-						const link = toChannelPage(mission.channel_id as string, currentClanId as string);
+						const link = toChannelPage(mission.channelId as string, currentClanId as string);
 						navigate(link);
 						break;
 					}
 					case ETypeMission.VISIT: {
-						const linkChannel = toChannelPage(mission.channel_id as string, currentClanId as string);
+						const linkChannel = toChannelPage(mission.channelId as string, currentClanId as string);
 						navigate(linkChannel);
-						dispatch(onboardingActions.doneMission({ clan_id: currentClanId as string }));
+						dispatch(onboardingActions.doneMission({ clanId: currentClanId as string }));
 						doneAllMission(index);
 						break;
 					}
 					case ETypeMission.DOSOMETHING: {
-						dispatch(onboardingActions.doneMission({ clan_id: currentClanId as string }));
+						dispatch(onboardingActions.doneMission({ clanId: currentClanId as string }));
 						doneAllMission(index);
 						break;
 					}
@@ -68,7 +68,7 @@ function GuideBody() {
 
 	const doneAllMission = (indexMision: number) => {
 		if (indexMision + 1 === missionSum) {
-			dispatch(onboardingActions.doneOnboarding({ clan_id: currentClanId as string }));
+			dispatch(onboardingActions.doneOnboarding({ clanId: currentClanId as string }));
 		}
 	};
 
@@ -85,7 +85,7 @@ function GuideBody() {
 	const answerPercent = totalAnswersLength > 0 ? (totalNumberAnswer * 100) / totalAnswersLength : 0;
 
 	useEffect(() => {
-		dispatch(fetchOnboarding({ clan_id: currentClanId as string }));
+		dispatch(fetchOnboarding({ clanId: currentClanId as string }));
 	}, []);
 
 	return (
@@ -135,7 +135,7 @@ function GuideBody() {
 									className="shadow-sm bg-item-theme"
 									action={
 										<div className="w-[72px] aspect-square  rounded-lg flex overflow-hidden">
-											{rule.image_url && <img src={rule.image_url} className="w-full h-full object-cover" />}
+											{rule.imageUrl && <img src={rule.imageUrl} className="w-full h-full object-cover" />}
 										</div>
 									}
 								/>
@@ -173,7 +173,7 @@ function GuideBody() {
 									key={mission.id}
 									mission={mission}
 									onClick={() => handleDoMission(mission, index)}
-									tick={missionDone > index || selectUserProcessing?.onboarding_step === DONE_ONBOARDING_STATUS}
+									tick={missionDone > index || selectUserProcessing?.onboardingStep === DONE_ONBOARDING_STATUS}
 								/>
 							))
 						) : (
@@ -208,7 +208,7 @@ type TypeItemMission = {
 };
 
 const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
-	const channelById = useSelector((state) => selectChannelById(state, mission.channel_id as string));
+	const channelById = useSelector((state) => selectChannelById(state, mission.channelId as string));
 	return (
 		<GuideItemLayout
 			key={mission.id}
@@ -220,8 +220,8 @@ const GuideItemMission = ({ mission, onClick, tick }: TypeItemMission) => {
 			background=""
 			description={
 				<span className="">
-					{titleMission[mission.task_type ? mission.task_type - 1 : 0] || ''}{' '}
-					<span className="font-semibold text-theme-primary-active"> #{channelById?.channel_label} </span>{' '}
+					{titleMission[mission.taskType ? mission.taskType - 1 : 0] || ''}{' '}
+					<span className="font-semibold text-theme-primary-active"> #{channelById?.channelLabel} </span>{' '}
 				</span>
 			}
 			action={

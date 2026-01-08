@@ -94,8 +94,8 @@ export const RecentInteractiveSearch = React.memo(
 		);
 
 		const isGroupDMAvatar = useMemo(
-			() => selectedChannel?.channel_avatar && !selectedChannel?.channel_avatar?.includes('avatar-group.png'),
-			[selectedChannel?.channel_avatar]
+			() => selectedChannel?.channelAvatar && !selectedChannel?.channelAvatar?.includes('avatar-group.png'),
+			[selectedChannel?.channelAvatar]
 		);
 
 		const filterLabelMap: Record<FilterType, string> = useMemo(
@@ -116,7 +116,7 @@ export const RecentInteractiveSearch = React.memo(
 
 			// Single pass to find matching channels and collect their IDs
 			for (const channel of dataSource) {
-				const channelLabel = channel?.channel_label?.toString()?.toLowerCase();
+				const channelLabel = channel?.channelLabel?.toString()?.toLowerCase();
 				// Check if channel has user information for DM channels
 				const hasUserMatch = channel?.usernames?.some?.((username: string) => username?.toLowerCase()?.includes(normalizedSearch));
 
@@ -124,14 +124,14 @@ export const RecentInteractiveSearch = React.memo(
 
 				if (isMatch) {
 					matchChannels.push(channel);
-					if (channel?.channel_id) {
-						matchChannelIds.add(channel.channel_id);
+					if (channel?.channelId) {
+						matchChannelIds.add(channel.channelId);
 					}
 				}
 			}
 
 			// Find child channels in a single pass
-			const childChannels = dataSource.filter((item) => item?.parent_id && matchChannelIds.has(item.parent_id));
+			const childChannels = dataSource.filter((item) => item?.parentId && matchChannelIds.has(item.parentId));
 
 			return [...matchChannels, ...childChannels];
 		}, []);
@@ -234,8 +234,8 @@ export const RecentInteractiveSearch = React.memo(
 									)
 								) : (
 									<MezonAvatar
-										avatarUrl={selectedChannel?.avatars?.[0] || clans?.[selectedChannel?.clan_id]?.logo}
-										username={clans?.[selectedChannel?.clan_id]?.clan_name || selectedChannel?.channel_label}
+										avatarUrl={selectedChannel?.avatars?.[0] || clans?.[selectedChannel?.clanId]?.logo}
+										username={clans?.[selectedChannel?.clanId]?.clanName || selectedChannel?.channelLabel}
 										width={size.s_18}
 										height={size.s_18}
 									/>
@@ -255,7 +255,7 @@ export const RecentInteractiveSearch = React.memo(
 
 						{selectedChannel ? (
 							<Text style={styles.textChannelSelected} numberOfLines={1}>
-								{selectedChannel?.channel_label}
+								{selectedChannel?.channelLabel}
 							</Text>
 						) : (
 							<TextInput

@@ -90,7 +90,7 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 				<MezonAvatar
 					width={size.s_34}
 					height={size.s_34}
-					avatarUrl={targetUser?.user?.avatar_url || ''}
+					avatarUrl={targetUser?.user?.avatarUrl || ''}
 					username={userName}
 					isBorderBoxImage={false}
 				/>

@@ -1,6 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllAccount, useWallet } from '@mezon/store-mobile';
-import { CURRENCY, createImgproxyUrl, formatBalanceToString } from '@mezon/utils';
+import { createImgproxyUrl, CURRENCY, formatBalanceToString } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -48,8 +48,8 @@ export const MyQRCode = () => {
 				encodeURIComponent(
 					JSON.stringify({
 						id: userProfile?.user?.id,
-						avatar: userProfile?.user?.avatar_url,
-						name: userProfile?.user?.display_name
+						avatar: userProfile?.user?.avatarUrl,
+						name: userProfile?.user?.displayName
 					})
 				)
 			);
@@ -58,12 +58,12 @@ export const MyQRCode = () => {
 			console.error('Error QR Profile Payload', error);
 			return '';
 		}
-	}, [userProfile?.user?.id, userProfile?.user?.avatar_url, userProfile?.user?.username, userProfile?.user?.display_name]);
+	}, [userProfile?.user?.id, userProfile?.user?.avatarUrl, userProfile?.user?.username, userProfile?.user?.displayName]);
 
 	const transferPayload = useMemo(() => {
 		return JSON.stringify({
-			receiver_name: userProfile?.user?.username,
-			receiver_id: userProfile?.user?.id
+			receiverName: userProfile?.user?.username,
+			receiverId: userProfile?.user?.id
 		});
 	}, [userProfile?.user?.id, userProfile?.user?.username]);
 
@@ -148,11 +148,11 @@ export const MyQRCode = () => {
 
 	const userInfo = useMemo(
 		() => ({
-			avatarUrl: userProfile?.user?.avatar_url || '',
+			avatarUrl: userProfile?.user?.avatarUrl || '',
 			username: userProfile?.user?.username || '',
-			displayName: userProfile?.user?.display_name || userProfile?.user?.username || ''
+			displayName: userProfile?.user?.displayName || userProfile?.user?.username || ''
 		}),
-		[userProfile?.user?.avatar_url, userProfile?.user?.username, userProfile?.user?.display_name]
+		[userProfile?.user?.avatarUrl, userProfile?.user?.username, userProfile?.user?.displayName]
 	);
 
 	return (

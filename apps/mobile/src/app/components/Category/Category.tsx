@@ -1,6 +1,6 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
-import { ApiCreateCategoryDescRequest } from 'mezon-js/api.gen';
+import { ApiCreateCategoryDescRequest } from 'mezon-js/types';
 import { useCallback, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text, View } from 'react-native';
@@ -25,8 +25,8 @@ export function CategoryCreator({ navigation }: MenuClanScreenProps<CreateCatego
 		if (!validInput(categoryName)) return;
 
 		const body: ApiCreateCategoryDescRequest = {
-			clan_id: currentClanId?.toString(),
-			category_name: categoryName?.trim()
+			clanId: currentClanId?.toString(),
+			categoryName: categoryName?.trim()
 		};
 		await dispatch(categoriesActions.createNewCategory(body));
 		setCategoryName('');

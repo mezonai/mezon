@@ -35,7 +35,7 @@ export const CustomStatusUser = ({ userStatus, handleCustomUserStatus, currentUs
 			accountActions.updateAccountStatus({
 				status: value,
 				minutes: 0,
-				until_turn_on: true
+				untilTurnOn: true
 			})
 		);
 

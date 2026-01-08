@@ -9,7 +9,7 @@ import {
 } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { clansActions, emojiSuggestionActions, getStoreAsync, inviteActions, settingClanStickerActions } from '@mezon/store-mobile';
-import type { ApiInviteUserRes } from 'mezon-js/api.gen';
+import type { ApiInviteUserRes } from 'mezon-js/types';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -39,13 +39,13 @@ const JoinClanModal = () => {
 			const response = await store.dispatch(inviteActions.inviteUser({ inviteId }));
 			const payload = response?.payload as ApiInviteUserRes;
 
-			if (payload && payload?.clan_id) {
+			if (payload && payload?.clanId) {
 				await remove(STORAGE_CHANNEL_CURRENT_CACHE);
-				save(STORAGE_CLAN_ID, payload.clan_id);
-				store.dispatch(clansActions.joinClan({ clanId: payload.clan_id }));
-				store.dispatch(clansActions.changeCurrentClan({ clanId: payload.clan_id }));
-				store.dispatch(emojiSuggestionActions.fetchEmoji({ clanId: payload?.clan_id, noCache: true }));
-				store.dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: payload?.clan_id }));
+				save(STORAGE_CLAN_ID, payload.clanId);
+				store.dispatch(clansActions.joinClan({ clanId: payload.clanId }));
+				store.dispatch(clansActions.changeCurrentClan({ clanId: payload.clanId }));
+				store.dispatch(emojiSuggestionActions.fetchEmoji({ clanId: payload?.clanId, noCache: true }));
+				store.dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: payload?.clanId }));
 				await store.dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			} else {

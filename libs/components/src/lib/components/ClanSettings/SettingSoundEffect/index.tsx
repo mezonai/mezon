@@ -17,14 +17,14 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ModalUploadSound from './ModalUploadSound';
 interface ExtendedClanSticker extends ClanSticker {
-	media_type?: MediaType;
+	mediaType?: MediaType;
 }
 
 export type SoundType = {
 	id: string;
 	name: string;
 	url: string;
-	creator_id?: string;
+	creatorId?: string;
 };
 
 const isAudioFile = (url: string): boolean => {
@@ -50,7 +50,7 @@ const SettingSoundEffect = () => {
 		id: sound.id || '',
 		name: sound.shortname || '',
 		url: sound.source || '',
-		creator_id: sound.creator_id || ''
+		creatorId: sound.creatorId || ''
 	}));
 
 	useEffect(() => {
@@ -73,7 +73,7 @@ const SettingSoundEffect = () => {
 			await dispatch(
 				soundEffectActions.deleteSound({
 					soundId,
-					clan_id: currentClanId,
+					clanId: currentClanId,
 					soundLabel: soundName
 				})
 			);
@@ -133,7 +133,7 @@ const SettingSoundEffect = () => {
 						>
 							<div className="flex items-center justify-between mb-3">
 								<p className="font-semibold truncate w-full text-center text-theme-primary-active">{sound.name}</p>
-								{canManageSound(sound.creator_id || '') && (
+								{canManageSound(sound.creatorId || '') && (
 									<div className="flex items-center gap-1">
 										<button
 											className="aspect-square w-6 rounded-full text-theme-primary-active bg-theme-setting-primary flex items-center justify-center shadow-sm"
@@ -151,7 +151,7 @@ const SettingSoundEffect = () => {
 								)}
 							</div>
 							<audio controls src={sound.url} className="w-full rounded-full border dark:border-borderDivider border-gray-200 mb-2" />
-							{sound.creator_id && <CreatorInfo creatorId={sound.creator_id} />}
+							{sound.creatorId && <CreatorInfo creatorId={sound.creatorId} />}
 						</div>
 					))}
 				</div>
@@ -172,16 +172,16 @@ const SettingSoundEffect = () => {
 
 const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
 	const creator = useAppSelector((state) => selectMemberClanByUserId(state, creatorId));
-	const avatarDefault = creator?.clan_nick || creator?.user?.display_name || creator?.user?.username || '';
+	const avatarDefault = creator?.clanNick || creator?.user?.displayName || creator?.user?.username || '';
 	const avatarLetter = avatarDefault?.trim().charAt(0).toUpperCase();
-	const avatarUrl = creator?.clan_avatar || creator?.user?.avatar_url;
+	const avatarUrl = creator?.clanAvatar || creator?.user?.avatarUrl;
 	if (!creator) return null;
 	return (
 		<div className="flex items-center justify-center gap-1 mt-1">
 			{avatarUrl ? (
 				<img
 					className="w-4 h-4 rounded-full select-none object-cover"
-					src={(creator?.clan_avatar || creator?.user?.avatar_url || '') ?? process.env.NX_LOGO_MEZON}
+					src={(creator?.clanAvatar || creator?.user?.avatarUrl || '') ?? process.env.NX_LOGO_MEZON}
 					alt="User avatar"
 				/>
 			) : (
@@ -190,7 +190,7 @@ const CreatorInfo = ({ creatorId }: { creatorId: string }) => {
 				</div>
 			)}
 
-			<p className="text-xs text-theme-primary max-w-20 truncate">{creator?.clan_nick || creator?.user?.username}</p>
+			<p className="text-xs text-theme-primary max-w-20 truncate">{creator?.clanNick || creator?.user?.username}</p>
 		</div>
 	);
 };

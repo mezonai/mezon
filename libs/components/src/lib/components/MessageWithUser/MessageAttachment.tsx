@@ -13,7 +13,7 @@ import {
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import { memo, useCallback, useMemo } from 'react';
 import Album from './Album';
 import { MessageAudio } from './MessageAudio/MessageAudio';
@@ -33,7 +33,7 @@ type MessageAttachmentProps = {
 
 const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMessageWithUser) => {
 	const videos: ApiMessageAttachment[] = [];
-	const images: (ApiMessageAttachment & { create_time?: string })[] = [];
+	const images: (ApiMessageAttachment & { createTime?: string })[] = [];
 	const documents: ApiMessageAttachment[] = [];
 	const audio: ApiMessageAttachment[] = [];
 
@@ -59,10 +59,10 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 				!attachment.filetype?.includes('svg+xml')) ||
 			attachment.url?.endsWith('.gif')
 		) {
-			const resultAttach: ApiMessageAttachment & { create_time?: string } = {
+			const resultAttach: ApiMessageAttachment & { createTime?: string } = {
 				...attachment,
-				sender_id: message.sender_id,
-				create_time: (attachment as any).create_time || message.create_time
+				senderId: message.senderId,
+				createTime: (attachment as any).createTime || message.createTime
 			};
 			images.push(resultAttach);
 			return;
@@ -167,7 +167,7 @@ const ImageAlbum = memo(
 		defaultMaxWidth,
 		isMobile
 	}: {
-		images: (ApiMessageAttachment & { create_time?: string })[];
+		images: (ApiMessageAttachment & { createTime?: string })[];
 		message: IMessageWithUser;
 		mode?: ChannelStreamMode;
 		onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
@@ -194,14 +194,14 @@ const ImageAlbum = memo(
 
 				const enhancedAttachmentData = {
 					...attachmentData,
-					create_time: attachmentData.create_time || message.create_time || new Date().toISOString()
+					createTime: attachmentData.createTime || message.createTime || new Date().toISOString()
 				};
 
 				if (isElectron()) {
 					const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
 					const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
 
-					const messageTimestamp = message.create_time ? Math.floor(new Date(message.create_time).getTime() / 1000) : undefined;
+					const messageTimestamp = message.createTime ? Math.floor(new Date(message.createTime).getTime() / 1000) : undefined;
 					const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
 					const data = await dispatch(
 						attachmentActions.fetchChannelAttachments({
@@ -232,13 +232,13 @@ const ImageAlbum = memo(
 								attachmentRes?.filetype?.includes(EMimeTypes.mov)
 						}))
 						.sort((a, b) => {
-							if (a.create_time && b.create_time) {
-								return Date.parse(b.create_time) - Date.parse(a.create_time);
+							if (a.createTime && b.createTime) {
+								return Date.parse(b.createTime) - Date.parse(a.createTime);
 							}
 							return 0;
 						});
 
-					const currentImageUploader = currentChatUsersEntities?.[attachmentData.sender_id as string];
+					const currentImageUploader = currentChatUsersEntities?.[attachmentData.senderId as string];
 
 					window.electron.openImageWindow({
 						...enhancedAttachmentData,
@@ -249,17 +249,17 @@ const ImageAlbum = memo(
 						}),
 						uploaderData: {
 							name:
-								currentImageUploader?.clan_nick ||
-								currentImageUploader?.user?.display_name ||
+								currentImageUploader?.clanNick ||
+								currentImageUploader?.user?.displayName ||
 								currentImageUploader?.user?.username ||
 								'Anonymous',
-							avatar: (currentImageUploader?.clan_avatar ||
-								currentImageUploader?.user?.avatar_url ||
-								`${window.location.origin}/assets/images/anonymous-avatar.png`) as string
+							avatar: (currentImageUploader?.clanAvatar ||
+								currentImageUploader?.user?.avatarUrl ||
+								`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
 						},
 						realUrl: enhancedAttachmentData.url || '',
 						channelImagesData: {
-							channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
+							channelLabel: (currentChannelId ? currentChannel?.channelLabel : currentDm.channelLabel) as string,
 							images: [],
 							selectedImageIndex: 0
 						}
@@ -269,7 +269,7 @@ const ImageAlbum = memo(
 							const imageListWithUploaderInfo = getAttachmentDataForWindow(listAttachmentsByChannel, currentChatUsersEntities);
 							const selectedImageIndex = listAttachmentsByChannel.findIndex((image) => image.url === enhancedAttachmentData.url);
 							const channelImagesData: IImageWindowProps = {
-								channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,
+								channelLabel: (currentChannelId ? currentChannel?.channelLabel : currentDm.channelLabel) as string,
 								images: imageListWithUploaderInfo,
 								selectedImageIndex
 							};
@@ -291,13 +291,13 @@ const ImageAlbum = memo(
 								}),
 								uploaderData: {
 									name:
-										currentImageUploader?.clan_nick ||
-										currentImageUploader?.user?.display_name ||
+										currentImageUploader?.clanNick ||
+										currentImageUploader?.user?.displayName ||
 										currentImageUploader?.user?.username ||
 										'Anonymous',
-									avatar: (currentImageUploader?.clan_avatar ||
-										currentImageUploader?.user?.avatar_url ||
-										`${window.location.origin}/assets/images/anonymous-avatar.png`) as string
+									avatar: (currentImageUploader?.clanAvatar ||
+										currentImageUploader?.user?.avatarUrl ||
+										`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
 								},
 								realUrl: enhancedAttachmentData.url || '',
 								channelImagesData
@@ -314,8 +314,8 @@ const ImageAlbum = memo(
 					attachmentActions.setCurrentAttachment({
 						...enhancedAttachmentData,
 						id: generateAttachmentId(attachmentData, message.id),
-						uploader: enhancedAttachmentData.sender_id || message.sender_id,
-						create_time: enhancedAttachmentData.create_time
+						uploader: enhancedAttachmentData.senderId || message.senderId,
+						createTime: enhancedAttachmentData.createTime
 					})
 				);
 
@@ -325,7 +325,7 @@ const ImageAlbum = memo(
 				if ((currentClanId && currentChannelId) || currentDmGroupId) {
 					const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
 					const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
-					const messageTimestamp = message.create_time ? Math.floor(new Date(message.create_time).getTime() / 1000) : undefined;
+					const messageTimestamp = message.createTime ? Math.floor(new Date(message.createTime).getTime() / 1000) : undefined;
 					const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
 					dispatch(
 						attachmentActions.fetchChannelAttachments({

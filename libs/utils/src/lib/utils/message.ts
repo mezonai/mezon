@@ -3,32 +3,32 @@ import { EMessageCode, IMessageWithUser } from '../types';
 
 interface MessagesEntity extends IMessageWithUser {
 	id: string; // Primary ID
-	channel_id: string;
+	channelId: string;
 	isStartedMessageGroup?: boolean;
 	isStartedMessageOfTheDay?: boolean;
-	hide_editted?: boolean;
+	hideEditted?: boolean;
 	code: number;
 }
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
 const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): IMessageWithUser => {
-	const creationTime = new Date(channelMess.create_time || '');
-	const isAnonymous = channelMess?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const creationTime = new Date(channelMess.createTime || '');
+	const isAnonymous = channelMess?.senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 	return {
 		...channelMess,
 		isFirst: channelMess.code === EMessageCode.FIRST_MESSAGE,
 		creationTime,
-		id: channelMess.id || channelMess.message_id || '',
+		id: channelMess.id || channelMess.messageId || '',
 		date: new Date().toLocaleString(),
 		isAnonymous,
 		user: {
 			name: channelMess.username || '',
 			username: channelMess.username || '',
-			id: channelMess.sender_id || ''
+			id: channelMess.senderId || ''
 		},
-		lastSeen: lastSeenId === (channelMess.id || channelMess.message_id),
-		create_time_seconds: channelMess.create_time_seconds || creationTime.getTime() / 1000
+		lastSeen: lastSeenId === (channelMess.id || channelMess.messageId),
+		createTimeSeconds: channelMess.createTimeSeconds || creationTime.getTime() / 1000
 	};
 };
 

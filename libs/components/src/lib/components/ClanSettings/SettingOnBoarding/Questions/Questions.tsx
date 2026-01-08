@@ -8,7 +8,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { ApiOnboardingItem, OnboardingAnswer } from 'mezon-js/api.gen';
+import type { ApiOnboardingItem, OnboardingAnswer } from 'mezon-js/types';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -40,7 +40,7 @@ const Questions = ({ handleGoToPage, setOpenModalSaveChanges }: IQuestionsProps)
 				data: {
 					answers: [],
 					title: '',
-					guide_type: EGuideType.QUESTION
+					guideType: EGuideType.QUESTION
 				}
 			})
 		);
@@ -144,13 +144,13 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 			if (question.id) {
 				dispatch(
 					onboardingActions.editOnboarding({
-						clan_id: question.clan_id as string,
+						clanId: question.clanId as string,
 						idOnboarding: question.id as string,
 						content: {
 							...question,
 							title: titleQuestion,
 							answers: newAnswers,
-							task_type: EGuideType.QUESTION
+							taskType: EGuideType.QUESTION
 						}
 					})
 				);
@@ -214,7 +214,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 					data: {
 						title: titleQuestion,
 						answers,
-						guide_type: EGuideType.QUESTION
+						guideType: EGuideType.QUESTION
 					},
 					update: tempId
 				})
@@ -223,13 +223,13 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 		}
 		dispatch(
 			onboardingActions.editOnboarding({
-				clan_id: question.clan_id as string,
+				clanId: question.clanId as string,
 				idOnboarding: question.id as string,
 				content: {
 					...question,
 					title: titleQuestion,
 					answers,
-					task_type: EGuideType.QUESTION
+					taskType: EGuideType.QUESTION
 				}
 			})
 		);
@@ -250,7 +250,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 				onboardingActions.removeOnboardingTask({
 					idTask: question.id,
 					type: EGuideType.QUESTION,
-					clan_id: question.clan_id as string
+					clanId: question.clanId as string
 				})
 			);
 		}

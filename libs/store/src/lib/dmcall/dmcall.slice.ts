@@ -1,8 +1,9 @@
-import { IDMCall, IMessageSendPayload, IOtherCall, LoadingStatus } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { WebrtcSignalingFwd } from 'mezon-js';
+import type { IDMCall, IMessageSendPayload, IOtherCall, LoadingStatus } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { WebrtcSignalingFwd } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { RootState } from '../store';
 
 export const DMCALL_FEATURE_KEY = 'dmcall';
 
@@ -50,11 +51,11 @@ export const initialDMCallState: DMCallState = DMCallAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
 	signalingData: {
-		receiver_id: '',
-		data_type: 0,
-		json_data: '',
-		channel_id: '',
-		caller_id: ''
+		receiverId: '',
+		dataType: 0,
+		jsonData: '',
+		channelId: '',
+		callerId: ''
 	},
 	listOfCalls: {},
 	isMuteMicrophone: false,
@@ -85,8 +86,8 @@ export const DMCallSlice = createSlice({
 				DMCallAdapter.addOne(state, action);
 			} else {
 				state.otherCall = {
-					caller_id: action.payload.signalingData.caller_id,
-					channel_id: action.payload.signalingData.channel_id
+					callerId: action.payload.signalingData.callerId,
+					channelId: action.payload.signalingData.channelId
 				};
 			}
 		},
@@ -169,31 +170,25 @@ export const DMCallActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities } = DMCallAdapter.getSelectors();
+const { selectEntities } = DMCallAdapter.getSelectors();
 
 export const getDMCallState = (rootState: { [DMCALL_FEATURE_KEY]: DMCallState }): DMCallState => rootState[DMCALL_FEATURE_KEY];
-
-export const selectAllDMCallVoice = createSelector(getDMCallState, selectAll);
 
 export const selectDMVoiceEntities = createSelector(getDMCallState, selectEntities);
 
 export const selectSignalingDataByUserId = createSelector([selectDMVoiceEntities, (state, userId) => userId], (entities, userId) => {
 	const dmcalls = Object.values(entities);
 	return dmcalls.filter((dmcall) => {
-		const isForUser = (dmcall && dmcall.signalingData?.receiver_id === userId) || dmcall.calleeId === userId;
-		// Only include DM call events (data_type <= 8), exclude group call events (>= 9)
-		const isDMCallEvent = dmcall?.signalingData?.data_type <= 8;
+		const isForUser = (dmcall && dmcall.signalingData?.receiverId === userId) || dmcall.calleeId === userId;
+		// Only include DM call events (dataType <= 8), exclude group call events (>= 9)
+		const isDMCallEvent = dmcall?.signalingData?.dataType <= 8;
 		return isForUser && isDMCallEvent;
 	});
 });
 
 export const selectIsMuteMicrophone = createSelector(getDMCallState, (state: DMCallState) => state.isMuteMicrophone);
 
-export const selectIsShowShareScreen = createSelector(getDMCallState, (state: DMCallState) => state.isShowShareScreen);
-
 export const selectIsShowMeetDM = createSelector(getDMCallState, (state: DMCallState) => state.isShowMeetDM);
-
-export const selectLocalStream = createSelector(getDMCallState, (state: DMCallState) => state.localStream);
 
 export const selectIsInCall = createSelector(getDMCallState, (state) => state.isInCall);
 

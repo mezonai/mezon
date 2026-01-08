@@ -201,7 +201,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			dispatch(galleryActions.setGalleryLoading({ channelId: currentChannelId, isLoading: true }));
 
 			try {
-				const timestamp = direction === 'before' ? attachments?.[attachments.length - 1]?.create_time : attachments?.[0]?.create_time;
+				const timestamp = direction === 'before' ? attachments?.[attachments.length - 1]?.createTime : attachments?.[0]?.createTime;
 				const timestampNumber = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
 
 				const { startTimestamp, endTimestamp } = calculateTimestamps(startDate, endDate);
@@ -301,9 +301,9 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 		const groupedAttachments = filteredAttachments.reduce(
 			(groups, attachment) => {
-				if (!attachment.create_time) return groups;
+				if (!attachment.createTime) return groups;
 
-				const date = new Date(attachment.create_time);
+				const date = new Date(attachment.createTime);
 				const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 				if (!groups[dateKey]) {
@@ -475,7 +475,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			if (!attachmentData) return;
 			const enhancedAttachmentData = {
 				...attachmentData,
-				create_time: attachmentData.create_time || new Date().toISOString()
+				createTime: attachmentData.createTime || new Date().toISOString()
 			};
 
 			const isVideo =
@@ -487,8 +487,8 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 				const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
 				const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
 
-				const messageTimestamp = enhancedAttachmentData.create_time
-					? Math.floor(new Date(enhancedAttachmentData.create_time).getTime() / 1000)
+				const messageTimestamp = enhancedAttachmentData.createTime
+					? Math.floor(new Date(enhancedAttachmentData.createTime).getTime() / 1000)
 					: undefined;
 				const beforeTimestamp = messageTimestamp ? messageTimestamp + 1 : undefined;
 
@@ -521,8 +521,8 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 							attachmentRes?.filetype?.includes(EMimeTypes.mov)
 					}))
 					.sort((a, b) => {
-						if (a.create_time && b.create_time) {
-							return Date.parse(b.create_time) - Date.parse(a.create_time);
+						if (a.createTime && b.createTime) {
+							return Date.parse(b.createTime) - Date.parse(a.createTime);
 						}
 						return 0;
 					});
@@ -543,17 +543,17 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 							}),
 					uploaderData: {
 						name:
-							currentImageUploader?.clan_nick ||
-							currentImageUploader?.user?.display_name ||
+							currentImageUploader?.clanNick ||
+							currentImageUploader?.user?.displayName ||
 							currentImageUploader?.user?.username ||
 							'Anonymous',
-						avatar: (currentImageUploader?.clan_avatar ||
-							currentImageUploader?.user?.avatar_url ||
-							`${window.location.origin}/assets/images/anonymous-avatar.png`) as string
+						avatar: (currentImageUploader?.clanAvatar ||
+							currentImageUploader?.user?.avatarUrl ||
+							`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
 					},
 					realUrl: enhancedAttachmentData.url || '',
 					channelImagesData: {
-						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channel_label) as string,
+						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channelLabel) as string,
 						images: [],
 						selectedImageIndex: 0
 					},
@@ -562,9 +562,9 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 				if (listAttachmentsByChannel) {
 					const imageListWithUploaderInfo = getAttachmentDataForWindow(listAttachmentsByChannel, currentChatUsersEntities);
-					const selectedImageIndex = listAttachmentsByChannel.findIndex((image) => image.url === enhancedAttachmentData.url);
+					const selectedImageIndex = listAttachmentsByChannel.findIndex((image: any) => image.url === enhancedAttachmentData.url);
 					const channelImagesData: IImageWindowProps = {
-						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channel_label) as string,
+						channelLabel: (currentChannelId ? currentChannelLabel : currentDm.channelLabel) as string,
 						images: imageListWithUploaderInfo,
 						selectedImageIndex
 					};
@@ -588,13 +588,13 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 								}),
 						uploaderData: {
 							name:
-								currentImageUploader?.clan_nick ||
-								currentImageUploader?.user?.display_name ||
+								currentImageUploader?.clanNick ||
+								currentImageUploader?.user?.displayName ||
 								currentImageUploader?.user?.username ||
 								'Anonymous',
-							avatar: (currentImageUploader?.clan_avatar ||
-								currentImageUploader?.user?.avatar_url ||
-								`${window.location.origin}/assets/images/anonymous-avatar.png`) as string
+							avatar: (currentImageUploader?.clanAvatar ||
+								currentImageUploader?.user?.avatarUrl ||
+								`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
 						},
 						realUrl: enhancedAttachmentData.url || '',
 						channelImagesData,
@@ -607,9 +607,9 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			dispatch(
 				attachmentActions.setCurrentAttachment({
 					...enhancedAttachmentData,
-					id: enhancedAttachmentData.message_id as string,
+					id: enhancedAttachmentData.messageId as string,
 					uploader: enhancedAttachmentData.uploader,
-					create_time: enhancedAttachmentData.create_time
+					createTime: enhancedAttachmentData.createTime
 				})
 			);
 
@@ -619,8 +619,8 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			if ((currentClanId && currentChannelId) || currentDmGroupId) {
 				const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
 				const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
-				const messageTimestamp = enhancedAttachmentData.create_time
-					? Math.floor(new Date(enhancedAttachmentData.create_time).getTime() / 1000)
+				const messageTimestamp = enhancedAttachmentData.createTime
+					? Math.floor(new Date(enhancedAttachmentData.createTime).getTime() / 1000)
 					: undefined;
 				const beforeTimestamp = messageTimestamp ? messageTimestamp + 1 : undefined;
 
@@ -1050,7 +1050,7 @@ const GalleryContent = ({
 						return (
 							<div key={`${item.dateKey}-grid`} className="gallery-item grid grid-cols-3 gap-3">
 								{item.attachments.map((attachment: AttachmentEntity, attachmentIndex: number) => {
-									const cacheKey = attachment.id || attachment.message_id || `${item.dateKey}-${attachment.url}-${attachmentIndex}`;
+									const cacheKey = attachment.id || attachment.messageId || `${item.dateKey}-${attachment.url}-${attachmentIndex}`;
 									const isVideo = attachment.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
 									return (
 										<ImageWithLoading

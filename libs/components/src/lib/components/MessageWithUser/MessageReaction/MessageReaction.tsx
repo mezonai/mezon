@@ -37,7 +37,7 @@ const ReactionContent: React.FC<MessageReactionProps> = ({ message, isTopic }) =
 };
 
 const MessageReaction: React.FC<MessageReactionProps> = ({ message, isTopic }) => {
-	const messageReaction = useAppSelector((state) => selectMessageByMessageId(state, message.channel_id, message.id));
+	const messageReaction = useAppSelector((state) => selectMessageByMessageId(state, message.channelId, message.id));
 
 	if (messageReaction?.reactions && messageReaction?.reactions?.length > 0) {
 		return (
@@ -49,11 +49,11 @@ const MessageReaction: React.FC<MessageReactionProps> = ({ message, isTopic }) =
 
 export default MessageReaction;
 
-export function combineMessageReactions(reactions: any[], message_id: string): any[] {
+export function combineMessageReactions(reactions: any[], messageId: string): any[] {
 	const dataCombined: Record<string, EmojiDataOptionals> = {};
 
 	for (const reaction of reactions) {
-		const emojiId = reaction.emoji_id || ('' as string);
+		const emojiId = reaction.emojiId || ('' as string);
 		const emoji = reaction.emoji || ('' as string);
 
 		if (reaction.count < 1) {
@@ -66,19 +66,19 @@ export function combineMessageReactions(reactions: any[], message_id: string): a
 				emoji,
 				senders: [],
 				action: false,
-				message_id,
+				messageId,
 				id: '',
-				channel_id: ''
+				channelId: ''
 			};
 		}
-		//if (!reaction.sender_name) continue;
+		//if (!reaction.senderName) continue;
 		const newSender = {
-			sender_id: reaction.sender_id,
+			senderId: reaction.senderId,
 			count: reaction.count
 		};
 
 		const reactionData = dataCombined[emojiId];
-		const senderIndex = reactionData.senders.findIndex((sender) => sender.sender_id === newSender.sender_id);
+		const senderIndex = reactionData.senders.findIndex((sender) => sender.senderId === newSender.senderId);
 
 		if (senderIndex === -1) {
 			reactionData.senders.push(newSender);

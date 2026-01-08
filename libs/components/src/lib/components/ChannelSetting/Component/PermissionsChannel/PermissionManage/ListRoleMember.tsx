@@ -109,8 +109,8 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 		}
 		return usersClan.filter(
 			(user) =>
-				searchNormalizeText(user?.clan_nick || '', search) ||
-				searchNormalizeText(user.user?.display_name || '', search) ||
+				searchNormalizeText(user?.clanNick || '', search) ||
+				searchNormalizeText(user.user?.displayName || '', search) ||
 				searchNormalizeText(user.user?.username || '', search)
 		);
 	}, [search]);
@@ -118,7 +118,7 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 	return (
 		<div ref={panelRef} className="flex justify-between items-center relative" onClick={() => setShowPopup(!showPopup)}>
 			<h4 className="uppercase font-bold text-xs text-theme-primary-active">{t('channelPermission.bottomSheet.rolesMembers')}</h4>
-			{channel?.channel_private === 1 && <Icons.PlusIcon defaultSize="size-4  cursor-pointer" />}
+			{channel?.channelPrivate === 1 && <Icons.PlusIcon defaultSize="size-4  cursor-pointer" />}
 			{showPopup && (
 				<div
 					className="absolute bottom-5 w-64 rounded-lg overflow-hidden bg-theme-setting-primary border-theme-primary"
@@ -155,10 +155,10 @@ const HeaderAddRoleMember = memo((props: HeaderAddRoleMemberProps) => {
 									<div key={item.id} onClick={() => addUser(item.id)}>
 										<ItemUser
 											username={item.user?.username}
-											displayName={item.user?.display_name}
-											clanName={item.clan_nick}
-											avatar={item.user?.avatar_url}
-											avatarClan={item.clan_avatar}
+											displayName={item.user?.displayName}
+											clanName={item.clanNick}
+											avatar={item.user?.avatarUrl}
+											avatarClan={item.clanAvatar}
 										/>
 									</div>
 								))}

@@ -17,8 +17,8 @@ export enum EBacktickType {
 }
 
 export interface IMention {
-	user_id?: string | undefined;
-	role_id?: string | undefined;
+	userId?: string | undefined;
+	roleId?: string | undefined;
 	username?: string | undefined;
 	display?: string;
 }

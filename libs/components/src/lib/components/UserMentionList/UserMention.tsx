@@ -5,7 +5,7 @@ import { selectAllRolesClan, selectChannelById, selectRolesByChannelId, useAppSe
 import type { MentionDataProps } from '@mezon/utils';
 import { ID_MENTION_HERE, TITLE_MENTION_HERE, getNameForPrioritize } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiRole } from 'mezon-js/api.gen';
+import type { ApiRole } from 'mezon-js/types';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -17,16 +17,16 @@ interface UserMentionListProps {
 export function UserMentionList({ channelID, channelMode }: UserMentionListProps): MentionDataProps[] {
 	const { membersOfParent } = useChannelMembers({ channelId: channelID, mode: channelMode ?? 0 });
 	const channel = useAppSelector((state) => selectChannelById(state, channelID)) || {};
-	const channelparent = useAppSelector((state) => selectChannelById(state, channel?.parent_id || '')) || {};
-	const rolesChannel = useSelector(selectRolesByChannelId(channel?.parent_id));
+	const channelparent = useAppSelector((state) => selectChannelById(state, channel?.parentId || '')) || {};
+	const rolesChannel = useSelector(selectRolesByChannelId(channel?.parentId));
 	const rolesInClan = useSelector(selectAllRolesClan);
 	const rolesToUse = useMemo(() => {
-		if (channel?.parent_id !== '0' && channelparent?.channel_private === 1) {
+		if (channel?.parentId !== '0' && channelparent?.channelPrivate === 1) {
 			return rolesChannel;
 		} else {
 			return rolesInClan;
 		}
-	}, [channel?.parent_id, channelparent?.channel_private, rolesChannel, rolesInClan]);
+	}, [channel?.parentId, channelparent?.channelPrivate, rolesChannel, rolesInClan]);
 
 	const newUserMentionList = useMemo(() => {
 		if (!membersOfParent || membersOfParent.length === 0) {
@@ -37,8 +37,8 @@ export function UserMentionList({ channelID, channelMode }: UserMentionListProps
 		const mentionList =
 			userMentionRaw?.map((item: ChannelMembersEntity) => ({
 				id: item?.id ?? '',
-				display: getNameForPrioritize(item?.clan_nick ?? '', item?.user?.display_name ?? '', item?.user?.username ?? ''),
-				avatarUrl: item?.clan_avatar ? item?.clan_avatar : (item?.user?.avatar_url ?? ''),
+				display: getNameForPrioritize(item?.clanNick ?? '', item?.user?.displayName ?? '', item?.user?.username ?? ''),
+				avatarUrl: item?.clanAvatar ? item?.clanAvatar : (item?.user?.avatarUrl ?? ''),
 				username: item?.user?.username
 			})) ?? [];
 		const hardcodedUser: MentionDataProps = {
@@ -59,7 +59,7 @@ export function UserMentionList({ channelID, channelMode }: UserMentionListProps
 			rolesToUse?.map((item: ApiRole) => ({
 				id: item.id ?? '',
 				display: item.title,
-				avatarUrl: item.role_icon || '',
+				avatarUrl: item.roleIcon || '',
 				clanNick: item.title,
 				color: item.color,
 				isRole: true

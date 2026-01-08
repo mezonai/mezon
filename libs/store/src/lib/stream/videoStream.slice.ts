@@ -58,6 +58,4 @@ export const selectStatusStream = createSelector(getVideoStreamState, (state) =>
 
 export const selectRemoteVideoStream = createSelector(getVideoStreamState, (state) => state.isRemoteVideoStream);
 
-export const selectRemoteAudioStream = createSelector(getVideoStreamState, (state) => state.isRemoteAudioStream);
-
 export const selectIsJoin = createSelector(getVideoStreamState, (state) => state.isJoin);

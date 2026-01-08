@@ -2,7 +2,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { galleryActions, useAppDispatch } from '@mezon/store-mobile';
 import { notImplementForGifOrStickerSendFromPanel } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
 import { ImageListModal } from '../../../../../components/ImageListModal';
@@ -89,7 +89,7 @@ export const MessageAttachment = React.memo(({ attachments, onLongPressImage, cl
 							uploader: image?.uploader || senderId,
 							clanId: image?.clanId || clanId,
 							channelId: image?.channelId || channelId,
-							create_time: image?.create_time || new Date(messageCreatTime * 1000).toISOString()
+							createTime: image?.createTime || new Date(messageCreatTime * 1000).toISOString()
 						}}
 						disableGoback={true}
 					/>

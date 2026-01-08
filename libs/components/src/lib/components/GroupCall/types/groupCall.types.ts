@@ -37,14 +37,14 @@ export interface AudioSettings {
 
 export interface CallSignalingData {
 	is_video: boolean;
-	group_id: string;
+	groupId: string;
 	group_name: string;
 	group_avatar?: string;
-	caller_id: string;
+	callerId: string;
 	caller_name: string;
 	caller_avatar?: string;
-	meeting_code?: string;
-	clan_id?: string;
+	meetingCode?: string;
+	clanId?: string;
 	timestamp: number;
 	participants: string[];
 	action?: 'decline' | 'leave' | 'cancel';

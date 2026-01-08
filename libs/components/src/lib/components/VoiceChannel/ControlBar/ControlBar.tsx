@@ -340,8 +340,7 @@ const ControlBar = ({
 						onDesktopScreenShare={handleOpenScreenSelection}
 					/>
 				)}
-
-				<RaisingHandControls />
+				{!isExternalCalling && <RaisingHandControls />}
 				{visibleControls.leave && <LeaveButton onLeaveRoom={handleLeaveRoom} />}
 			</div>
 

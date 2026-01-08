@@ -2,7 +2,7 @@ import { EUserStatus, type IUserProfileActivity, type UsersClanEntity } from '@m
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { UserStatusEvent } from 'mezon-js';
-import type { ApiAllUsersAddChannelResponse } from 'mezon-js/api.gen';
+import type { ApiAllUsersAddChannelResponse } from 'mezon-js/types';
 import type { RootState } from '../store';
 
 export const USER_STATUS_FEATURE_KEY = 'USER_STATUS_FEATURE_KEY';
@@ -18,24 +18,24 @@ const statusAdapter = createEntityAdapter({
 
 export function convertStatusClan(user: UsersClanEntity, state: RootState): IUserProfileActivity {
 	const isMe = state?.account?.userProfile?.user?.id === user?.user?.id;
-	const isUserInvisible = user?.user?.user_status === EUserStatus.INVISIBLE;
+	const isUserInvisible = user?.user?.userStatus === EUserStatus.INVISIBLE;
 	return {
 		id: user.id,
 		online: (!isUserInvisible && !!user?.user?.online) || isMe,
-		is_mobile: !isUserInvisible && !!user?.user?.is_mobile,
+		isMobile: !isUserInvisible && !!user?.user?.isMobile,
 		status: user?.user?.online ? user?.user?.status : EUserStatus.INVISIBLE,
-		user_status: user?.user?.user_status
+		userStatus: user?.user?.userStatus
 	};
 }
 
 export function convertStatusGroup(users: ApiAllUsersAddChannelResponse): IUserProfileActivity[] {
 	const listGroup: IUserProfileActivity[] = [];
-	users.user_ids?.map((id, index) => {
+	users.userIds?.map((id, index) => {
 		if (id) {
 			listGroup.push({
 				id,
-				avatar_url: users.avatars?.[index] || '',
-				display_name: users.display_names?.[index] || '',
+				avatarUrl: users.avatars?.[index] || '',
+				displayName: users.displayNames?.[index] || '',
 				online: users.onlines?.[index],
 				username: users.usernames?.[index] || ''
 			});
@@ -60,9 +60,9 @@ export const statusSlice = createSlice({
 			const user = action.payload;
 
 			statusAdapter.updateOne(state, {
-				id: user.user_id,
+				id: user.userId,
 				changes: {
-					status: user.custom_status
+					status: user.customStatus
 				}
 			});
 		},
@@ -85,11 +85,9 @@ export const statusActions = {
 /*
  * Export selectors to query state. For use with the `useSelector` hook.
  */
-const { selectAll, selectEntities, selectById } = statusAdapter.getSelectors();
+const { selectEntities, selectById } = statusAdapter.getSelectors();
 
 export const getstatusState = (rootState: { [USER_STATUS_FEATURE_KEY]: UserStatusState }): UserStatusState => rootState[USER_STATUS_FEATURE_KEY];
-
-export const selectAllstatus = createSelector(getstatusState, selectAll);
 
 export const selectStatusEntities = createSelector(getstatusState, selectEntities);
 

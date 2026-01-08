@@ -28,7 +28,7 @@ const CallingNativeIOS = () => {
 		async (ignoreCheckOffer = false) => {
 			try {
 				const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
-				if (latestSignalingEntry?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER && !ignoreCheckOffer) return;
+				if (latestSignalingEntry?.signalingData?.dataType === WebrtcSignalingType.WEBRTC_SDP_OFFER && !ignoreCheckOffer) return;
 				const data = await getDataCallStorage();
 				if (isEmpty(data)) return;
 				const dataObj = safeJSONParse(data?.offer || '{}');
@@ -38,11 +38,11 @@ const CallingNativeIOS = () => {
 				if (data?.offer !== 'CANCEL_CALL' && !!data?.offer && !dataObj?.isGroupCall) {
 					dispatch(appActions.setLoadingMainMobile(true));
 					const signalingData = {
-						channel_id: data?.channelId,
-						receiver_id: userId,
-						json_data: data?.offer,
-						data_type: WebrtcSignalingType.WEBRTC_SDP_OFFER,
-						caller_id: data?.callerId
+						channelId: data?.channelId,
+						receiverId: userId,
+						jsonData: data?.offer,
+						dataType: WebrtcSignalingType.WEBRTC_SDP_OFFER,
+						callerId: data?.callerId
 					};
 					dispatch(
 						DMCallActions.addOrUpdate({

@@ -15,13 +15,13 @@ interface IUserVoiceItemProps {
 const UserVoiceItem = memo(({ userVoice, isCategoryExpanded, index, totalMembers }: IUserVoiceItemProps) => {
 	const { themeValue } = useTheme();
 	const styles = useMemo(() => style(themeValue, index), [themeValue, index]);
-	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, userVoice?.user_id ?? ''));
+	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, userVoice?.userId ?? ''));
 	const priorityName = useMemo(() => {
-		return userStream?.clan_nick || userStream?.user?.display_name || userStream?.user?.username || '';
-	}, [userStream?.clan_nick, userStream?.user?.display_name, userStream?.user?.username]);
+		return userStream?.clanNick || userStream?.user?.displayName || userStream?.user?.username || '';
+	}, [userStream?.clanNick, userStream?.user?.displayName, userStream?.user?.username]);
 	const priorityAvatar = useMemo(() => {
-		return userStream?.clan_avatar || userStream?.user?.avatar_url || '';
-	}, [userStream?.clan_avatar, userStream?.user?.avatar_url]);
+		return userStream?.clanAvatar || userStream?.user?.avatarUrl || '';
+	}, [userStream?.clanAvatar, userStream?.user?.avatarUrl]);
 
 	if (!isCategoryExpanded) {
 		if (index === 5) {

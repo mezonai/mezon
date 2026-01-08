@@ -46,7 +46,7 @@ export type ApiMessageEntityMentionRole = {
 	type: ApiMessageEntityTypes.MentionRole;
 	offset: number;
 	length: number;
-	role_id: string;
+	roleId: string;
 };
 
 export type ApiMessageEntityBlockquote = {
@@ -424,7 +424,7 @@ function getEntityDataFromNode(node: ChildNode, rawText: string, textIndex: numb
 				type,
 				offset,
 				length,
-				role_id: (node as HTMLAnchorElement).dataset.userId!
+				roleId: (node as HTMLAnchorElement).dataset.userId!
 			}
 		};
 	}

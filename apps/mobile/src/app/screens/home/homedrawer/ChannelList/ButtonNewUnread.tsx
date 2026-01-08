@@ -17,7 +17,7 @@ const ButtonNewUnread = React.memo(() => {
 	const channelsInClan = useAppSelector(selectAllChannels);
 	const dispatch = useAppDispatch();
 
-	const findFirstChannelWithBadgeCount = (channels = []) => channels?.find((item) => item?.count_mess_unread > 0) || null;
+	const findFirstChannelWithBadgeCount = (channels = []) => channels?.find((item) => item?.countMessUnread > 0) || null;
 
 	const firstChannelBadgeCount = useMemo(() => {
 		return findFirstChannelWithBadgeCount(channelsInClan);
@@ -25,7 +25,7 @@ const ButtonNewUnread = React.memo(() => {
 
 	if (firstChannelBadgeCount) {
 		const onPressNewUnread = async () => {
-			DeviceEventEmitter.emit(ActionEmitEvent.SCROLL_TO_ACTIVE_CHANNEL, firstChannelBadgeCount?.channel_id);
+			DeviceEventEmitter.emit(ActionEmitEvent.SCROLL_TO_ACTIVE_CHANNEL, firstChannelBadgeCount?.channelId);
 			await dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true, isMobile: true }));
 		};
 		return (

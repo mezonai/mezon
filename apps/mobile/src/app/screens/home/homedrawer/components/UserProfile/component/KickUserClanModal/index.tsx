@@ -46,7 +46,7 @@ const KickUserClanModal = ({ user, onRemoveUserClan }: { user: ChannelMembersEnt
 							<Text style={styles.textError}>
 								{t('kickUserClanModal.kickFromServer', { username: user?.user?.username || user?.['username'] })}
 							</Text>
-							<Text style={styles.clanName}>{currentClan?.clan_name}</Text>
+							<Text style={styles.clanName}>{currentClan?.clanName}</Text>
 						</View>
 						<Text style={styles.description}>
 							{t('kickUserClanModal.description', { username: user?.user?.username || user?.['username'] })}

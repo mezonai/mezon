@@ -96,7 +96,7 @@ export const SoundList = ({ soundList, ListHeaderComponent }: SoundListProps) =>
 		[currentSoundId, handleSwipe, onPlaySound, row]
 	);
 
-	const keyExtractor = useCallback((item: ClanSticker) => `sound_sticker_${item?.clan_id}_${item?.id}`, []);
+	const keyExtractor = useCallback((item: ClanSticker) => `sound_sticker_${item?.clanId}_${item?.id}`, []);
 
 	const getItemLayout = useCallback(
 		(_: any, index: number) => ({

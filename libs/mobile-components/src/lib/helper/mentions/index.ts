@@ -50,9 +50,9 @@ export const convertMentionsToData = (text: string) => {
 
 export const getChannelHashtag = (hashtagDmEntities: HashtagDm[], channelsEntities: ChannelsEntity[], mode: number, channelLabel: string) => {
 	if ([ChannelStreamMode.STREAM_MODE_DM].includes(mode)) {
-		return hashtagDmEntities?.find((item) => item?.channel_label === channelLabel);
+		return hashtagDmEntities?.find((item) => item?.channelLabel === channelLabel);
 	} else {
-		return channelsEntities?.find((item) => item?.channel_label === channelLabel);
+		return channelsEntities?.find((item) => item?.channelLabel === channelLabel);
 	}
 };
 
@@ -88,8 +88,8 @@ export const createFormattedString = (data: IExtendedMessage) => {
 
 		switch (element.kindOf) {
 			case ETokenMessage.MENTIONS:
-				if (element.user_id || element.role_id) {
-					const id = element.user_id ?? element.role_id;
+				if (element.userId || element.roleId) {
+					const id = element.userId ?? element.roleId;
 					formatContentDraft += `{@}[${contentInElement.slice(1)}](${id})`;
 				}
 				break;

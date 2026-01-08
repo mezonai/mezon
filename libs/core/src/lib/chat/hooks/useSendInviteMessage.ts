@@ -9,7 +9,7 @@ export function useSendInviteMessage() {
 	const client = clientRef.current;
 
 	const sendInviteMessage = React.useCallback(
-		async (url: string, channel_id: string, channelMode: number, code?: number) => {
+		async (url: string, channelId: string, channelMode: number, code?: number) => {
 			const { links, markdowns } = processText(url);
 			const linkInMk: { type: EBacktickType; e?: number; s?: number }[] = [];
 
@@ -31,18 +31,18 @@ export function useSendInviteMessage() {
 			const client = clientRef.current;
 			const socket = socketRef.current;
 
-			if (!client || !session || !socket || !channel_id) {
-				console.error(client, session, socket, channel_id);
+			if (!client || !session || !socket || !channelId) {
+				console.error(client, session, socket, channelId);
 				throw new Error('Client is not initialized');
 			}
 
 			const store = getStore();
-			const foundDM = selectDirectById(store.getState(), channel_id);
+			const foundDM = selectDirectById(store.getState(), channelId);
 			if (!foundDM) {
 				await sleep(100);
 			}
 
-			await socket.writeChatMessage('0', channel_id, channelMode, false, content, [], [], [], undefined, undefined, undefined, code);
+			await socket.writeChatMessage('0', channelId, channelMode, false, content, [], [], [], undefined, undefined, undefined, code);
 		},
 		[sessionRef, clientRef, socketRef]
 	);

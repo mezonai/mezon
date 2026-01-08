@@ -30,8 +30,8 @@ export function getInfoChannelByClanId(data: ClanChannelPair[], clanId: string) 
 	return pairIndex !== -1 ? data[pairIndex] : null;
 }
 
-export const setCurrentClanLoader = async (clans: any, clan_id?: string, autoJoinChannel = true) => {
-	const targetClanId = clan_id ? clan_id : clans?.[0]?.clan_id;
+export const setCurrentClanLoader = async (clans: any, clanId?: string, autoJoinChannel = true) => {
+	const targetClanId = clanId ? clanId : clans?.[0]?.clanId;
 	const store = await getStoreAsync();
 	if (targetClanId) {
 		save(STORAGE_CLAN_ID, targetClanId);
@@ -60,17 +60,17 @@ export const setDefaultChannelLoader = async (dataChannel: any, clanId: string, 
 	} else {
 		const data = dataChannel?.channels || dataChannel || [];
 		const dataChannelSort = data?.sort?.((a: any, b: any) => {
-			if (a.category_name && b.category_name) {
-				return a.category_name.localeCompare(b.category_name);
+			if (a.categoryName && b.categoryName) {
+				return a.categoryName.localeCompare(b.categoryName);
 			}
 			return 0;
 		});
 		const firstChannelText = dataChannelSort?.find?.(
-			(channel: { type: ChannelType; parent_id: string }) => channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && channel?.parent_id === '0'
+			(channel: { type: ChannelType; parentId: string }) => channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && channel?.parentId === '0'
 		);
 		if (firstChannelText) {
-			const firstChannelId = firstChannelText?.channel_id;
-			const firstClanId = firstChannelText?.clan_id;
+			const firstChannelId = firstChannelText?.channelId;
+			const firstClanId = firstChannelText?.clanId;
 			if (firstChannelId && firstClanId) {
 				const dataSave = getUpdateOrAddClanChannelCache(firstClanId, firstChannelId);
 				save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
@@ -95,13 +95,13 @@ export const cleanChannelData = (channels: any[]) => {
 	return channels.map((channel) => {
 		return {
 			...channel,
-			last_sent_message: undefined,
-			last_seen_message: undefined,
+			lastSentMessage: undefined,
+			lastSeenMessage: undefined,
 			threads: channel.threads.map((thread: any) => {
 				return {
 					...thread,
-					last_sent_message: undefined,
-					last_seen_message: undefined
+					lastSentMessage: undefined,
+					lastSeenMessage: undefined
 				};
 			})
 		};

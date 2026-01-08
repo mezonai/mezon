@@ -8,9 +8,9 @@ import { ENotifyBsToShow } from '../types';
 import { style } from './NotificationIndividualItem.styles';
 
 const NotificationIndividualItem = ({ notify, onLongPressNotify }: NotifyProps) => {
-	const user = useAppSelector((state) => selectMemberClanByUserId(state, notify?.sender_id ?? ''));
+	const user = useAppSelector((state) => selectMemberClanByUserId(state, notify?.senderId ?? ''));
 	const username = notify?.content?.username || user?.user?.username;
-	const unixTimestamp = Math.floor(new Date(notify?.create_time).getTime() / 1000);
+	const unixTimestamp = Math.floor(new Date(notify?.createTime).getTime() / 1000);
 	const messageTimeDifference = convertTimestampToTimeAgo(unixTimestamp);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -34,7 +34,7 @@ const NotificationIndividualItem = ({ notify, onLongPressNotify }: NotifyProps) 
 		>
 			<View style={styles.notifyContainer}>
 				<View style={styles.notifyHeader}>
-					<MezonAvatar avatarUrl={user?.user?.avatar_url || ''} username={username}></MezonAvatar>
+					<MezonAvatar avatarUrl={user?.user?.avatarUrl || ''} username={username}></MezonAvatar>
 					<View style={styles.notifyContent}>
 						<Text numberOfLines={2} style={styles.notifyHeaderTitle}>
 							<Text numberOfLines={2} style={styles.notifyUserName}>

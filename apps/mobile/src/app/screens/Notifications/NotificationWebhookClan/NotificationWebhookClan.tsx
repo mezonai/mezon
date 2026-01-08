@@ -11,12 +11,12 @@ import MessageWebhookClan from './MessageWebhookClan';
 import { style } from './styles';
 
 const NotificationWebhookClan = ({ notify, onLongPressNotify }: NotifyProps) => {
-	const clan = useAppSelector(selectClanById(notify?.content?.clan_id as string));
+	const clan = useAppSelector(selectClanById(notify?.content?.clanId as string));
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const unixTimestamp = useMemo(() => {
-		return notify?.content?.create_time_seconds || Math.floor(new Date(notify?.create_time).getTime() / 1000);
-	}, [notify?.content?.create_time_seconds, notify?.create_time]);
+		return notify?.content?.createTimeSeconds || Math.floor(new Date(notify?.createTime).getTime() / 1000);
+	}, [notify?.content?.createTimeSeconds, notify?.createTime]);
 	const messageTimeDifference = convertTimestampToTimeAgo(unixTimestamp);
 	const data = parseObject(notify?.content);
 
@@ -25,13 +25,13 @@ const NotificationWebhookClan = ({ notify, onLongPressNotify }: NotifyProps) => 
 			<View style={styles.notifyContainer}>
 				<View style={styles.notifyHeader}>
 					<View style={styles.boxImage}>
-						<MezonClanAvatar alt={notify?.content?.display_name} image={notify?.content?.avatar} />
+						<MezonClanAvatar alt={notify?.content?.displayName} image={notify?.content?.avatar} />
 					</View>
 					<View style={styles.notifyContent}>
-						{clan?.clan_name && (
+						{clan?.clanName && (
 							<Text numberOfLines={2} style={styles.notifyHeaderTitle}>
-								<Text style={styles.username}>{notify?.content?.display_name} </Text>
-								{clan?.clan_name}
+								<Text style={styles.username}>{notify?.content?.displayName} </Text>
+								{clan?.clanName}
 							</Text>
 						)}
 						<View style={styles.contentMessage}>{<MessageWebhookClan message={data} />}</View>

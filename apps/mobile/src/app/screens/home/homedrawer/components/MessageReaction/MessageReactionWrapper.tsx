@@ -44,22 +44,22 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 	const removeEmoji = useCallback(
 		async (emojiData: EmojiDataOptionals) => {
 			const { id, emoji, senders, emojiId } = emojiData;
-			const countToRemove = senders?.find?.((sender) => sender.sender_id === userId)?.count;
+			const countToRemove = senders?.find?.((sender) => sender.senderId === userId)?.count;
 
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_REACTION_MESSAGE_ITEM, {
 				id,
 				mode: mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL,
 				messageId: message?.id ?? '',
-				channelId: message?.channel_id ?? '',
+				channelId: message?.channelId ?? '',
 				emojiId: emojiId ?? '',
 				emoji: emoji?.trim() ?? '',
-				senderId: message?.sender_id ?? '',
+				senderId: message?.senderId ?? '',
 				countToRemove,
 				actionDelete: true,
 				topicId: currentTopicId || ''
 			} as IReactionMessageProps);
 		},
-		[mode, message?.id, message?.channel_id, message?.sender_id, currentTopicId, userId]
+		[mode, message?.id, message?.channelId, message?.senderId, currentTopicId, userId]
 	);
 
 	const onReactItemLongPress = useCallback(
@@ -72,7 +72,7 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 						emojiSelectedId={emojiId}
 						userId={userId}
 						removeEmoji={removeEmoji}
-						channelId={message?.channel_id}
+						channelId={message?.channelId}
 						messageId={message?.id}
 					/>
 				)
@@ -80,7 +80,7 @@ export const MessageReactionWrapper = React.memo((props: IMessageReactionProps) 
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			Keyboard.dismiss();
 		},
-		[message?.channel_id, message?.id, messageReactions, removeEmoji, userId]
+		[message?.channelId, message?.id, messageReactions, removeEmoji, userId]
 	);
 
 	const renderedReactions = useMemo(() => {

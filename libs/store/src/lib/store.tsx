@@ -438,7 +438,7 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 
 					const newSession = sessionData && activeAccount ? sessionData[activeAccount] : null;
 					const hasSessionChanged =
-						newSession?.token !== currentSession?.token || newSession?.refresh_token !== currentSession?.refresh_token;
+						newSession?.token !== currentSession?.token || newSession?.refreshToken !== currentSession?.refreshToken;
 
 					if (hasSessionChanged) {
 						if (newSession) {

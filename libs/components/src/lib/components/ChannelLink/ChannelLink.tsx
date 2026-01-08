@@ -92,8 +92,8 @@ const ChannelLinkComponent = ({
 		mouseY: 0,
 		distanceToBottom: 0
 	});
-	const buzzState = useAppSelector((state) => selectBuzzStateByChannelId(state, channel?.channel_id ?? ''));
-	const events = useAppSelector((state) => selectEventsByChannelId(state, channel.clan_id ?? '', channel?.channel_id ?? ''));
+	const buzzState = useAppSelector((state) => selectBuzzStateByChannelId(state, channel?.channelId ?? ''));
+	const events = useAppSelector((state) => selectEventsByChannelId(state, channel.clanId ?? '', channel?.channelId ?? ''));
 
 	const handleOpenCreate = () => {
 		openSettingModal();
@@ -110,7 +110,7 @@ const ChannelLinkComponent = ({
 
 		await dispatch(
 			notificationSettingActions.getNotificationSetting({
-				channelId: channel.channel_id || '',
+				channelId: channel.channelId || '',
 				isCurrentChannel: isActive
 			})
 		);
@@ -142,9 +142,9 @@ const ChannelLinkComponent = ({
 		}
 		const store = getStore();
 		const isChannelApp = channel.type === ChannelType.CHANNEL_TYPE_APP;
-		const appIsOpening = selectToCheckAppIsOpening(store.getState(), channel.channel_id as string);
-		if (channel.category_id === FAVORITE_CATEGORY_ID) {
-			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
+		const appIsOpening = selectToCheckAppIsOpening(store.getState(), channel.channelId as string);
+		if (channel.categoryId === FAVORITE_CATEGORY_ID) {
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parentId ?? '' }));
 		}
 
 		setTurnOffThreadMessage();
@@ -152,17 +152,17 @@ const ChannelLinkComponent = ({
 		if (channel.type !== ChannelType.CHANNEL_TYPE_STREAMING) {
 			dispatch(
 				channelsActions.setCurrentChannelId({
-					clanId: channel.clan_id as string,
+					clanId: channel.clanId as string,
 					channelId: channel.id
 				})
 			);
 		}
 		dispatch(appActions.setIsShowCanvas(false));
-		if (currentMission && currentMission.channel_id === channel.id && currentMission.task_type === ETypeMission.VISIT) {
-			dispatch(onboardingActions.doneMission({ clan_id: clanId as string }));
+		if (currentMission && currentMission.channelId === channel.id && currentMission.taskType === ETypeMission.VISIT) {
+			dispatch(onboardingActions.doneMission({ clanId: clanId as string }));
 		}
 		if (isChannelApp && appIsOpening) {
-			const appChannel = selectAppChannelById(store.getState(), channel.channel_id as string);
+			const appChannel = selectAppChannelById(store.getState(), channel.channelId as string);
 			dispatch(channelsActions.setAppChannelFocus({ app: appChannel as ApiChannelAppResponseExtend }));
 		}
 	};
@@ -193,20 +193,20 @@ const ChannelLinkComponent = ({
 		return (
 			<ModalConfirmComponent
 				handleCancel={closeDeleteModal}
-				channelId={channel.channel_id as string}
+				channelId={channel.channelId as string}
 				clanId={clanId as string}
-				modalName={`${channel?.channel_label || 'Unknown Channel'}`}
+				modalName={`${channel?.channelLabel || 'Unknown Channel'}`}
 			/>
 		);
-	}, [channel.channel_id, channel?.channel_label]);
+	}, [channel.channelId, channel?.channelLabel]);
 
 	const [openSettingModal, closeSettingModal] = useModal(() => {
 		return <SettingChannel onClose={closeSettingModal} channel={channel} />;
 	}, [channel]);
 
 	const isAgeRestrictedChannel = useMemo(() => {
-		return channel?.age_restricted === 1;
-	}, [channel?.age_restricted]);
+		return channel?.ageRestricted === 1;
+	}, [channel?.ageRestricted]);
 	const countNumberNotification = numberNotification && numberNotification > 99 ? '99+' : (numberNotification ?? 0);
 
 	return (
@@ -219,7 +219,7 @@ const ChannelLinkComponent = ({
 			{
 				<Link
 					to={channelPath}
-					id={`${channel.category_id}-${channel.id}`}
+					id={`${channel.categoryId}-${channel.id}`}
 					onClick={handleClick}
 					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'}`}
 					draggable="false"
@@ -252,19 +252,19 @@ const ChannelLinkComponent = ({
 						{events[0] && <EventSchedule event={events[0]} className="ml-0.2 mt-0.5" />}
 						<p
 							className={`ml-2 w-full pointer-events-none text-base focus:bg-bgModifierHover`}
-							title={channel.channel_label && channel?.channel_label.length > 20 ? channel?.channel_label : undefined}
+							title={channel.channelLabel && channel?.channelLabel.length > 20 ? channel?.channelLabel : undefined}
 							data-e2e={generateE2eId('clan_page.channel_list.item.name')}
 						>
-							{channel.channel_label && channel?.channel_label.length > 20
-								? `${channel?.channel_label.substring(0, 20)}...`
-								: channel?.channel_label}
+							{channel.channelLabel && channel?.channelLabel.length > 20
+								? `${channel?.channelLabel.substring(0, 20)}...`
+								: channel?.channelLabel}
 						</p>
 					</span>
 					{buzzState?.isReset ? (
 						<BuzzBadge
 							timestamp={buzzState?.timestamp as number}
 							isReset={buzzState?.isReset}
-							channelId={channel.channel_id as string}
+							channelId={channel.channelId as string}
 							senderId={buzzState.senderId as string}
 							mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
 						/>
@@ -276,11 +276,11 @@ const ChannelLinkComponent = ({
 				numberNotification && numberNotification > 0 ? (
 					<>
 						<Icons.SettingProfile
-							className={`absolute ml-auto w-4 h-4  top-[6px] right-3 cursor-pointer hidden group-hover:block text-theme-primary `}
+							className={`absolute ml-auto w-4 h-4  top-[6px] right-3 cursor-pointer block md:hidden md:group-hover:block text-theme-primary `}
 							onClick={handleOpenCreate}
 						/>
 						<div
-							className={`absolute ml-auto w-5 h-5 text-white right-3 group-hover:hidden bg-red-600 rounded-full text-[12px] flex items-center justify-center top-2`}
+							className={`absolute ml-auto w-5 h-5 text-white right-3 hidden md:flex md:group-hover:hidden bg-red-600 rounded-full text-[12px] items-center justify-center top-2`}
 							data-e2e={generateE2eId('clan_page.channel_list.item.badge')}
 						>
 							{countNumberNotification}
@@ -288,7 +288,7 @@ const ChannelLinkComponent = ({
 					</>
 				) : (
 					<Icons.SettingProfile
-						className={`absolute ml-auto w-5 h-5 top-2 right-3 ${isActive ? 'text-theme-primary-active' : 'text-transparent'} hidden group-hover:block text-theme-primary-hover cursor-pointer`}
+						className={`absolute ml-auto w-5 h-5 top-2 right-3 ${isActive ? 'text-theme-primary-active' : 'text-theme-primary-hover md:text-transparent'} block md:hidden md:group-hover:block cursor-pointer`}
 						onClick={handleOpenCreate}
 					/>
 				)
@@ -312,9 +312,9 @@ export const ChannelLink = memo(
 		prev.isActive === curr.isActive &&
 		prev.numberNotification === curr.numberNotification &&
 		prev.isUnReadChannel === curr.isUnReadChannel &&
-		prev.channel?.channel_label === curr?.channel?.channel_label &&
-		prev.channel?.channel_private === curr?.channel?.channel_private &&
-		prev.channel?.age_restricted === curr?.channel?.age_restricted &&
+		prev.channel?.channelLabel === curr?.channel?.channelLabel &&
+		prev.channel?.channelPrivate === curr?.channel?.channelPrivate &&
+		prev.channel?.ageRestricted === curr?.channel?.ageRestricted &&
 		(prev.channel as ChannelThreads)?.threads === (curr?.channel as ChannelThreads)?.threads &&
 		prev.permissions === curr.permissions
 );

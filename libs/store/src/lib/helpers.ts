@@ -1,7 +1,7 @@
 import type { MezonContextValue } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { Client, Session } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api.gen';
+import type { ApiFriend } from 'mezon-js/types';
 import type { IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import type { GetThunkAPIWithMezon } from './typings';
 
@@ -323,8 +323,8 @@ export async function fetchDataWithSocketFallback<T>(
 			}
 
 			if (socketRequest.api_name === 'ListClanUsers') {
-				if (responseKey && data?.[responseKey]?.clan_users) {
-					data[responseKey].clan_users = data[responseKey]?.clan_users?.map((item: ApiFriend) => ({
+				if (responseKey && data?.[responseKey]?.clanUsers) {
+					data[responseKey].clanUsers = data[responseKey]?.clanUsers?.map((item: ApiFriend) => ({
 						...item
 					}));
 				}
@@ -346,4 +346,47 @@ export async function fetchDataWithSocketFallback<T>(
 		response = await withRetry(restApiFallback, { ...retryConfig, scope: socketRequest.api_name });
 	}
 	return response;
+}
+
+/**
+ * Helper type to create mezon-js Message types with $typeName property
+ * @example
+ * const request: MezonMessage<'mezon.api.GenerateMeetTokenRequest', ApiGenerateMeetTokenRequest> = {
+ *   $typeName: 'mezon.api.GenerateMeetTokenRequest',
+ *   channelId: '123',
+ *   roomName: 'room1'
+ * };
+ */
+export type MezonMessage<T extends string, P extends Record<string, any>> = Required<P> & {
+	$typeName: T;
+};
+
+/**
+ * Helper function to create mezon-js Message objects with $typeName property
+ * @example
+ * const request = createMezonMessage('mezon.api.GenerateMeetTokenRequest', {
+ *   channelId: '123',
+ *   roomName: 'room1'
+ * });
+ */
+export function createMezonMessage<T extends string, P extends Record<string, any>>(typeName: T, payload: Required<P>): MezonMessage<T, P> {
+	return {
+		$typeName: typeName,
+		...payload
+	} as MezonMessage<T, P>;
+}
+
+export function timestampToString(timestamp: any): string | undefined {
+	if (!timestamp) {
+		return undefined;
+	}
+	if (typeof timestamp === 'string') {
+		return timestamp;
+	}
+	if (typeof timestamp === 'object' && 'seconds' in timestamp) {
+		const seconds = Number(timestamp.seconds);
+		const nanos = timestamp.nanos ? Number(timestamp.nanos) / 1e9 : 0;
+		return new Date(seconds * 1000 + nanos).toISOString();
+	}
+	return undefined;
 }

@@ -20,10 +20,10 @@ export function useWallet(): {
 
 	const enableWallet = useCallback(async () => {
 		const userId = userProfile?.user?.id || '';
-		if (sessionRef.current?.id_token && userId) {
+		if (sessionRef.current?.idToken && userId) {
 			const proofInput = {
 				userId,
-				jwt: sessionRef.current.id_token
+				jwt: sessionRef.current.idToken
 			};
 
 			await dispatch(walletActions.fetchZkProofs(proofInput));

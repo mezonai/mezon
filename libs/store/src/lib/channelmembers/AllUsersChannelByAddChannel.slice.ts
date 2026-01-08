@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IUserChannel, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiAllUsersAddChannelResponse } from 'mezon-js/api.gen';
+import type { ApiAllUsersAddChannelResponse } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { convertStatusGroup, statusActions } from '../direct/status.slice';
@@ -20,7 +20,7 @@ export interface UsersByAddChannelState extends EntityState<IUserChannel, string
 }
 
 export const UserChannelAdapter = createEntityAdapter({
-	selectId: (userChannel: IUserChannel) => userChannel.channel_id || ''
+	selectId: (userChannel: IUserChannel) => userChannel.channelId || ''
 });
 
 export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapter.getInitialState({
@@ -54,7 +54,7 @@ export const fetchUserChannelsCached = async (
 		{
 			api_name: 'ListChannelUsersUC',
 			list_channel_users_uc_req: {
-				channel_id: channelId,
+				channelId,
 				limit
 			}
 		},
@@ -82,7 +82,7 @@ export const fetchUserChannels = createAsyncThunk(
 			if (response.fromCache || Date.now() - response.time > 1000) {
 				return {
 					channelId,
-					user_ids: response,
+					userIds: response,
 					fromCache: response.fromCache || true
 				};
 			}
@@ -91,7 +91,7 @@ export const fetchUserChannels = createAsyncThunk(
 			}
 			return {
 				channelId,
-				user_ids: response,
+				userIds: response,
 				fromCache: false
 			};
 		} catch (error) {
@@ -118,18 +118,18 @@ export const userChannelsSlice = createSlice({
 			const existingChannel = state.entities[channelId];
 
 			if (existingChannel) {
-				const updatedUserIds = Array.from(new Set([...(existingChannel?.user_ids || []), ...userAdds]));
+				const updatedUserIds = Array.from(new Set([...(existingChannel?.userIds || []), ...userAdds]));
 
 				UserChannelAdapter.updateOne(state, {
 					id: channelId,
 					changes: {
-						user_ids: updatedUserIds
+						userIds: updatedUserIds
 					}
 				});
 			} else {
 				UserChannelAdapter.addOne(state, {
 					id: channelId,
-					user_ids: userAdds
+					userIds: userAdds
 				});
 			}
 		},
@@ -140,16 +140,16 @@ export const userChannelsSlice = createSlice({
 			const existingChannel = state.entities[channelId];
 
 			if (existingChannel) {
-				const user_ids = existingChannel.user_ids;
-				const display_names = existingChannel.display_names;
+				const userIds = existingChannel.userIds;
+				const displayNames = existingChannel.displayNames;
 				const usernames = existingChannel.usernames;
 				const onlines = existingChannel.onlines;
 				const avatars = existingChannel.avatars;
 				userRemoves.forEach((user) => {
-					const indexRemove = user_ids?.indexOf(user);
+					const indexRemove = userIds?.indexOf(user);
 					if (indexRemove !== -1 && indexRemove !== undefined) {
-						user_ids?.splice(indexRemove, 1);
-						display_names?.splice(indexRemove, 1);
+						userIds?.splice(indexRemove, 1);
+						displayNames?.splice(indexRemove, 1);
 						usernames?.splice(indexRemove, 1);
 						onlines?.splice(indexRemove, 1);
 						avatars?.splice(indexRemove, 1);
@@ -159,8 +159,8 @@ export const userChannelsSlice = createSlice({
 				UserChannelAdapter.updateOne(state, {
 					id: channelId,
 					changes: {
-						user_ids,
-						display_names,
+						userIds,
+						displayNames,
 						avatars,
 						onlines,
 						usernames
@@ -175,19 +175,19 @@ export const userChannelsSlice = createSlice({
 				fetchUserChannels.fulfilled,
 				(
 					state: UsersByAddChannelState,
-					action: PayloadAction<{ channelId: string; user_ids: ApiAllUsersAddChannelResponse; fromCache?: boolean }>
+					action: PayloadAction<{ channelId: string; userIds: ApiAllUsersAddChannelResponse; fromCache?: boolean }>
 				) => {
-					const { channelId, user_ids, fromCache } = action.payload;
+					const { channelId, userIds, fromCache } = action.payload;
 					state.loadingStatus = 'loaded';
 
-					if (!fromCache && user_ids) {
+					if (!fromCache && userIds) {
 						const userIdsEntity = {
 							id: channelId,
-							...user_ids
+							...userIds
 						};
 						UserChannelAdapter.upsertOne(state, userIdsEntity);
 						state.cacheByChannels[channelId] = createCacheMetadata();
-					} else if (!user_ids) {
+					} else if (!userIds) {
 						state.error = 'No data received';
 					}
 				}
@@ -211,12 +211,11 @@ export const userChannelsReducer = userChannelsSlice.reducer;
 
 export const getUserChannelsState = (rootState: { [ALL_USERS_BY_ADD_CHANNEL]: UsersByAddChannelState }): UsersByAddChannelState =>
 	rootState[ALL_USERS_BY_ADD_CHANNEL];
-const { selectEntities, selectById } = UserChannelAdapter.getSelectors();
+const { selectById } = UserChannelAdapter.getSelectors();
 
-export const selectUserChannelUCEntities = createSelector(getUserChannelsState, selectEntities);
 export const selectUserChannelIds = createSelector(
 	[getUserChannelsState, (state, channelId: string) => channelId],
-	(state, channelId) => selectById(state, channelId)?.user_ids || []
+	(state, channelId) => selectById(state, channelId)?.userIds || []
 );
 
 export const selectRawDataUserGroup = createSelector([getUserChannelsState, (state, channelId: string) => channelId], (state, channelId) =>
@@ -228,14 +227,14 @@ export const selectMemberByGroupId = createSelector([getUserChannelsState, (stat
 		return undefined;
 	}
 	const listMember: ChannelMembersEntity[] = [];
-	entities?.user_ids?.map((id, index) => {
+	entities?.userIds?.map((id, index) => {
 		listMember.push({
 			id,
 			user: {
 				id,
 				username: entities.usernames?.[index] || '',
-				display_name: entities.display_names?.[index] || '',
-				avatar_url: entities.avatars?.[index] || '',
+				displayName: entities.displayNames?.[index] || '',
+				avatarUrl: entities.avatars?.[index] || '',
 				online: entities.onlines?.[index]
 			}
 		});

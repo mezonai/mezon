@@ -139,5 +139,14 @@
 			"tokenomics": "Tokenomics",
 			"team": "Team"
 		}
+	},
+	"externalMeet": {
+		"title": "Mezon External Meeting",
+		"creatingMeeting": "Meeting created successfully!",
+		"invite": "Invite",
+		"joinMeeting": "Join Meeting",
+		"copyLink": "Copy Link",
+		"toastSuccess": "Meeting link copied to clipboard!",
+		"toastFail": "Failed to copy link."
 	}
 }
