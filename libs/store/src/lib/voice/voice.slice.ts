@@ -5,6 +5,9 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelType, VoiceLeavedEvent } from 'mezon-js';
 import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser } from 'mezon-js/types';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { MezonValueContext } from '../helpers';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 
@@ -56,6 +59,7 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 		openedParticipantId: string | null;
 		position: { x: number; y: number };
 	} | null;
+	voiceChannelMembersCache?: Record<string, CacheMetadata>;
 }
 
 export const voiceAdapter = createEntityAdapter({
@@ -74,41 +78,91 @@ type fetchVoiceChannelMembersPayload = {
 	clanId: string;
 	channelId: string;
 	channelType: ChannelType;
+	noCache?: boolean;
+};
+
+type FetchVoiceChannelMembersResult = {
+	users: ApiVoiceChannelUser[];
+	clanId: string;
+	channelId: string;
+	channelType: ChannelType;
+	fromCache?: boolean;
+	time?: number;
+};
+
+const VOICE_CHANNEL_MEMBERS_CACHED_TIME = 1000 * 60 * 5;
+
+const fetchVoiceChannelMembersCached = async (
+	getState: () => RootState,
+	mezon: MezonValueContext,
+	clanId: string,
+	channelId: string,
+	channelType: ChannelType,
+	noCache = false
+): Promise<FetchVoiceChannelMembersResult> => {
+	const voiceState = (getState() as RootState)[VOICE_FEATURE_KEY];
+	const cacheKey = channelId ? `${clanId}_${channelId}_${channelType}` : `${clanId}_${channelType}`;
+	const apiKey = createApiKey('fetchVoiceChannelMembers', clanId, channelId || 'all', channelType.toString());
+	const channelCache = voiceState.voiceChannelMembersCache?.[cacheKey];
+	const shouldForceCall = shouldForceApiCall(apiKey, channelCache, noCache);
+
+	if (!shouldForceCall && channelCache) {
+		const cachedMembers = voiceAdapter
+			.getSelectors()
+			.selectAll(voiceState)
+			.filter((member) => member.clanId === clanId);
+		return {
+			users: cachedMembers.map((member) => ({
+				userId: member.userId,
+				channelId: member.voiceChannelId,
+				participant: member.participant
+			})) as ApiVoiceChannelUser[],
+			clanId,
+			channelId,
+			channelType,
+			fromCache: true,
+			time: channelCache.lastFetched || Date.now()
+		};
+	}
+
+	const response = await fetchDataWithSocketFallback(
+		mezon,
+		{
+			api_name: 'ListChannelVoiceUsers',
+			list_channel_users_req: {
+				limit: 100,
+				state: 1,
+				channelType,
+				clanId
+			}
+		},
+		() => mezon.client.listChannelVoiceUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
+		'voice_user_list'
+	);
+
+	markApiFirstCalled(apiKey);
+
+	return {
+		users: response.voiceChannelUsers || [],
+		clanId,
+		channelId,
+		channelType,
+		fromCache: false,
+		time: Date.now()
+	};
 };
 
 export interface ApiGenerateMeetTokenResponseExtend extends ApiGenerateMeetTokenResponse {
 	guestUserId?: string;
 	guestAccessToken?: string;
 }
-export const fetchVoiceChannelMembers = createAsyncThunk(
+
+export const fetchVoiceChannelMembers = createAsyncThunk<FetchVoiceChannelMembersResult, fetchVoiceChannelMembersPayload>(
 	'voice/fetchVoiceChannelMembers',
-	async ({ clanId, channelId, channelType }: fetchVoiceChannelMembersPayload, thunkAPI) => {
+	async ({ clanId, channelId, channelType, noCache }: fetchVoiceChannelMembersPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
-			const response = await fetchDataWithSocketFallback(
-				mezon,
-				{
-					api_name: 'ListChannelVoiceUsers',
-					list_channel_users_req: {
-						limit: 100,
-						state: 1,
-						channelType,
-						clanId
-					}
-				},
-				() => mezon.client.listChannelVoiceUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
-				'voice_user_list'
-			);
-
-			if (!response.voiceChannelUsers) {
-				return { users: [] as ApiVoiceChannelUser[], clanId };
-			}
-
-			return {
-				users: response.voiceChannelUsers,
-				clanId
-			};
+			return fetchVoiceChannelMembersCached(thunkAPI.getState as () => RootState, mezon, clanId, channelId, channelType, Boolean(noCache));
 		} catch (error) {
 			captureSentryError(error, 'voice/fetchVoiceChannelMembers');
 			return thunkAPI.rejectWithValue(error);
@@ -391,11 +445,11 @@ export const voiceSlice = createSlice({
 			.addCase(fetchVoiceChannelMembers.pending, (state: VoiceState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(
-				fetchVoiceChannelMembers.fulfilled,
-				(state: VoiceState, action: PayloadAction<{ users: ApiVoiceChannelUser[]; clanId: string }>) => {
-					state.loadingStatus = 'loaded';
-					const { users, clanId } = action.payload;
+			.addCase(fetchVoiceChannelMembers.fulfilled, (state: VoiceState, action: PayloadAction<FetchVoiceChannelMembersResult>) => {
+				state.loadingStatus = 'loaded';
+				const { users, clanId, channelId, channelType, fromCache } = action.payload;
+
+				if (!fromCache) {
 					state.listInVoiceStatus = {};
 					const members: VoiceEntity[] = users.map((channelRes) => {
 						if (channelRes.userId && channelRes?.id) {
@@ -416,8 +470,14 @@ export const voiceSlice = createSlice({
 						};
 					});
 					voiceAdapter.setAll(state, members);
+
+					const cacheKey = channelId ? `${clanId}_${channelId}_${channelType}` : `${clanId}_${channelType}`;
+					if (!state.voiceChannelMembersCache) {
+						state.voiceChannelMembersCache = {};
+					}
+					state.voiceChannelMembersCache[cacheKey] = createCacheMetadata(VOICE_CHANNEL_MEMBERS_CACHED_TIME);
 				}
-			)
+			})
 			.addCase(fetchVoiceChannelMembers.rejected, (state: VoiceState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
