@@ -103,11 +103,11 @@ export const fetchRolesClanCached = async (getState: () => RootState, ensuredMez
 			role_list_event_req: {
 				limit: 500,
 				state: 1,
-				clanId
+				clan_id: clanId
 			}
 		},
 		() => ensuredMezon.client.listRoles(ensuredMezon.session, clanId, 500, 1, ''),
-		'role_event_list'
+		'roleEventList'
 	)) as unknown as ApiRoleListEventResponse;
 
 	markApiFirstCalled(apiKey);

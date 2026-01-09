@@ -54,12 +54,12 @@ export const fetchUserChannelsCached = async (
 		{
 			api_name: 'ListChannelUsersUC',
 			list_channel_users_uc_req: {
-				channelId,
+				channel_id: channelId,
 				limit
 			}
 		},
 		() => ensuredMezon.client.listChannelUsersUC(ensuredMezon.session, channelId, limit),
-		'channel_users_uc_list'
+		'channelUsersUcList'
 	);
 
 	markApiFirstCalled(apiKey);

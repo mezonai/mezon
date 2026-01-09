@@ -79,7 +79,7 @@ export const fetchActivitiesCached = async (getState: () => any, mezon: MezonVal
 			api_name: 'ListActivity'
 		},
 		() => mezon.client.listActivity(mezon.session),
-		'user_activity_list'
+		'userActivityList'
 	);
 
 	markApiFirstCalled(apiKey);

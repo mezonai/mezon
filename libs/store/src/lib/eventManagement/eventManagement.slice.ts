@@ -56,11 +56,11 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 		{
 			api_name: 'ListEvents',
 			list_event_req: {
-				clanId
+				clan_id: clanId
 			}
 		},
 		() => ensuredMezon.client.listEvents(ensuredMezon.session, clanId),
-		'event_list'
+		'eventList'
 	);
 
 	markApiFirstCalled(apiKey);

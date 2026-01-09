@@ -59,11 +59,11 @@ export const fetchDefaultNotificationClanCached = async (getState: () => RootSta
 		{
 			api_name: 'GetNotificationClancase',
 			notification_clan: {
-				clanId
+				clan_id: clanId
 			}
 		},
 		() => mezon.client.getNotificationClan(mezon.session, clanId),
-		'notification_setting'
+		'notificationSetting'
 	);
 
 	markApiFirstCalled(apiKey);

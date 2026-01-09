@@ -67,11 +67,11 @@ export const fetchNotificationSettingCached = async (getState: () => RootState, 
 		{
 			api_name: 'GetNotificationChannel',
 			notification_channel: {
-				channelId
+				channel_id: channelId
 			}
 		},
 		() => mezon.client.getNotificationChannel(mezon.session, channelId),
-		'notificaion_user_channel'
+		'notificaionUserChannel'
 	);
 
 	markApiFirstCalled(apiKey);
