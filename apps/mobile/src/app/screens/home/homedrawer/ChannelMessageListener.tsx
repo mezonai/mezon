@@ -9,6 +9,7 @@ import {
 	selectAllRolesClan,
 	selectAllUserClans,
 	selectCurrentClanId,
+	selectCurrentDM,
 	selectCurrentTopicId,
 	selectDmGroupCurrentId,
 	selectMemberByGroupId,
@@ -35,8 +36,9 @@ const ChannelMessageListener = React.memo(() => {
 			try {
 				const tagName = mentionedUser?.slice(1);
 				let listUser = [];
-				const currentDirectId = selectDmGroupCurrentId(store.getState());
-				if (!!currentDirectId && currentDirectId !== '0') {
+				const currentDirect = selectCurrentDM(store.getState());
+				const currentDirectId = currentDirect?.channel_id || currentDirect?.id;
+				if (currentDirect) {
 					listUser = selectMemberByGroupId(store.getState(), currentDirectId);
 				} else {
 					listUser = selectAllUserClans(store.getState());
@@ -49,7 +51,14 @@ const ChannelMessageListener = React.memo(() => {
 				const data = {
 					snapPoints: ['50%', '80%'],
 					hiddenHeaderIndicator: true,
-					children: <UserProfile userId={clanUser?.user?.id} user={clanUser?.user} directId={currentDirectId} />
+					children: (
+						<UserProfile
+							userId={clanUser?.user?.id}
+							user={clanUser?.user}
+							directId={currentDirectId}
+							currentChannel={{ type: currentDirect?.type }}
+						/>
+					)
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			} catch (error) {
