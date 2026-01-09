@@ -235,7 +235,9 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 								<span className="font-bold">{user?.displayName || username}</span>
 								<span>{subjectText}</span>
 							</div>
-							<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.createTime as string)}</span>
+							{message?.createTimeSeconds && (
+								<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.createTimeSeconds)}</span>
+							)}
 						</div>
 					)}
 				</div>
@@ -252,7 +254,7 @@ type IMessageHeadProps = {
 
 // fix later
 const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
-	const messageTime = convertTimeString(message?.createTime as string);
+	const messageTime = message?.createTimeSeconds ? convertTimeString(message?.createTimeSeconds) : '';
 	const usernameSender = message?.username;
 	const clanNick = message?.clanNick;
 	const displayName = message?.displayName;

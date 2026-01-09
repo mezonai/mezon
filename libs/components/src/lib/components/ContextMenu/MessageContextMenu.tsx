@@ -315,12 +315,16 @@ function MessageContextMenu({
 		const isSameSenderWithNextMessage = currentMessage?.senderId === nextMessage?.senderId;
 		const isSameSenderWithPreviousMessage = currentMessage?.senderId === previousMessage?.senderId;
 
-		const isNextMessageWithinTimeLimit = nextMessage
-			? Date.parse(nextMessage?.createTime) - Date.parse(currentMessage?.createTime) < FORWARD_MESSAGE_TIME
-			: false;
-		const isPreviousMessageWithinTimeLimit = previousMessage
-			? Date.parse(currentMessage?.createTime) - Date.parse(previousMessage?.createTime) < FORWARD_MESSAGE_TIME
-			: false;
+		const isNextMessageWithinTimeLimit =
+			nextMessage?.createTimeSeconds &&
+			currentMessage?.createTimeSeconds &&
+			nextMessage?.createTimeSeconds - currentMessage?.createTimeSeconds < FORWARD_MESSAGE_TIME;
+
+		const isPreviousMessageWithinTimeLimit =
+			previousMessage.createTimeSeconds &&
+			currentMessage?.createTimeSeconds &&
+			currentMessage?.createTimeSeconds - previousMessage?.createTimeSeconds < FORWARD_MESSAGE_TIME;
+
 		return (isPreviousMessageWithinTimeLimit && isSameSenderWithPreviousMessage) || (isSameSenderWithNextMessage && isNextMessageWithinTimeLimit);
 	}, [allMessageIds, allMessagesEntities, messagePosition]);
 	const handleReplyMessage = useCallback(() => {

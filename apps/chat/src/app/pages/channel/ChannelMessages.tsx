@@ -1001,8 +1001,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						(!isLoadingMoreBottomRef.current &&
 							((!isFirstJoinLoadRef.current && isAtBottom) || (userActiveScroll.current && isAtBottom))) ||
 						(user?.user?.id === lastMessage?.senderId &&
-							lastMessage?.createTime &&
-							new Date().getTime() - new Date(lastMessage.createTime).getTime() < 1000)
+							lastMessage?.createTimeSeconds &&
+							new Date().getTime() - lastMessage.createTimeSeconds < 1000)
 					) {
 						newScrollTop = scrollHeight;
 						shouldUpdateScrollPosition = !message?.isSending;

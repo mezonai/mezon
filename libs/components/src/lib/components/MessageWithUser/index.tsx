@@ -106,7 +106,7 @@ function MessageWithUser({
 
 		if (!previousMessage?.content?.fwd) return true;
 
-		const timeDiff = Date.parse(message.createTime) - Date.parse(previousMessage.createTime);
+		const timeDiff = (message.createTimeSeconds || 0) - (previousMessage.createTimeSeconds || 0);
 		const isDifferentSender = message.senderId !== previousMessage.senderId;
 		const isTimeGap = timeDiff > 600000;
 
@@ -236,7 +236,7 @@ function MessageWithUser({
 							'max-w-[37rem] bg-tertiary border-theme-primary rounded-lg mx-2 my-1 p-3': message.content?.isCard
 						}
 					)}
-					createTime={message.createTime}
+					createTime={message.createTimeSeconds || 0}
 					showMessageHead={showMessageHead}
 				>
 					{shouldRenderMessageReply && (
@@ -396,7 +396,7 @@ function MessageWithUser({
 
 const MessageDateDivider = ({ message }: { message: MessagesEntity }) => {
 	const { t, i18n } = useTranslation('common');
-	const messageDate = !message.createTime ? '' : convertDateStringI18n(message.createTime as string, t, i18n.language);
+	const messageDate = !message.createTimeSeconds ? '' : convertDateStringI18n(message.createTimeSeconds, t, i18n.language);
 	return (
 		<div className="mt-5 mb-2  w-full h-px flex items-center justify-center border-b-theme-primary">
 			<span className="px-4 bg-item text-theme-primary text-xs font-semibold bg-theme-primary rounded-lg ">{messageDate}</span>
@@ -411,7 +411,7 @@ interface HoverStateWrapperProps {
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 	messageId?: string;
 	className?: string;
-	createTime?: string;
+	createTime?: number;
 	showMessageHead?: boolean;
 	channelId: string;
 }

@@ -533,7 +533,7 @@ export const onboardingSlice = createSlice({
 
 					state.onboardingCache[clanId].onboarding = response.map((item) => ({
 						...item,
-						createTime: timestampToString(item.createTime),
+						createTime: timestampToString((item as any).createTime),
 						updateTime: timestampToString((item as any).updateTime)
 					}));
 					state.onboardingCache[clanId].cache = {

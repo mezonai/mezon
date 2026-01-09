@@ -83,8 +83,8 @@ export * from './transform';
 export * from './windowEnvironment';
 export * from './windowSize';
 
-export const convertTimeString = (dateString: string, t?: (key: string, options?: any) => string) => {
-	if (!dateString || typeof dateString !== 'string') {
+export const convertTimeString = (dateString: string | number, t?: (key: string, options?: any) => string) => {
+	if (!dateString || (typeof dateString !== 'string' && typeof dateString !== 'number')) {
 		return '';
 	}
 	const codeTime = new Date(dateString);
@@ -102,7 +102,7 @@ export const convertTimeString = (dateString: string, t?: (key: string, options?
 	}
 };
 
-export const convertTimeHour = (dateString: string) => {
+export const convertTimeHour = (dateString: number) => {
 	const codeTime = new Date(dateString);
 	const formattedTime = format(codeTime, 'HH:mm');
 	return formattedTime;
@@ -118,13 +118,6 @@ export const convertDateString = (dateString: string) => {
 
 	const formattedDate = format(codeTime, 'eee, dd MMMM yyyy');
 	return formattedDate;
-};
-
-export const getTimeDifferenceInSeconds = (startTimeString: string, endTimeString: string) => {
-	const startTime = new Date(startTimeString);
-	const endTime = new Date(endTimeString);
-	const timeDifferenceInSeconds = differenceInSeconds(endTime, startTime);
-	return timeDifferenceInSeconds;
 };
 
 export const checkSameDay = (startTimeString: string, endTimeString: string) => {

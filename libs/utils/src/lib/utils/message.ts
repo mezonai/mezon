@@ -1,5 +1,7 @@
-import { ChannelMessage, safeJSONParse } from 'mezon-js';
-import { EMessageCode, IMessageWithUser } from '../types';
+import type { ChannelMessage } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
+import type { IMessageWithUser } from '../types';
+import { EMessageCode } from '../types';
 
 interface MessagesEntity extends IMessageWithUser {
 	id: string; // Primary ID
@@ -13,12 +15,10 @@ interface MessagesEntity extends IMessageWithUser {
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
 const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): IMessageWithUser => {
-	const creationTime = new Date(channelMess.createTime || '');
 	const isAnonymous = channelMess?.senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 	return {
 		...channelMess,
 		isFirst: channelMess.code === EMessageCode.FIRST_MESSAGE,
-		creationTime,
 		id: channelMess.id || channelMess.messageId || '',
 		date: new Date().toLocaleString(),
 		isAnonymous,
@@ -28,7 +28,7 @@ const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: str
 			id: channelMess.senderId || ''
 		},
 		lastSeen: lastSeenId === (channelMess.id || channelMess.messageId),
-		createTimeSeconds: channelMess.createTimeSeconds || creationTime.getTime() / 1000
+		createTimeSeconds: channelMess.createTimeSeconds
 	};
 };
 

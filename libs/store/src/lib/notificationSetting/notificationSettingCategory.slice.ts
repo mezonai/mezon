@@ -113,10 +113,7 @@ export const getDefaultNotificationCategory = createAsyncThunk(
 				id: response.id,
 				notificationSettingType: response.notificationSettingType,
 				active: response.active,
-				timeMute:
-					response.timeMute && typeof response.timeMute === 'object' && 'seconds' in response.timeMute
-						? new Date((response.timeMute as any).seconds * 1000).toISOString()
-						: (response.timeMute as string | null | undefined)
+				timeMute: response.time ? new Date(response.time).toISOString() : ''
 			};
 
 			return { ...apiNotificationSetting, categoryId, clanId };

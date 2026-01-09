@@ -416,7 +416,12 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 		};
 		const response = await mezon.client.createChannelDesc(mezon.session, bodyWithTypeName);
 		if (response) {
-			thunkAPI.dispatch(channelsActions.add({ channel: { id: response.channelId as string, ...response }, clanId: response.clanId as string }));
+			thunkAPI.dispatch(
+				channelsActions.add({
+					channel: { id: response.channelId as string, ...response, lastSeenMessage: {}, lastSentMessage: {} },
+					clanId: response.clanId as string
+				})
+			);
 
 			if (response.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && response.type !== ChannelType.CHANNEL_TYPE_STREAMING) {
 				const channelEntity = { id: response.channelId as string, ...response } as ChannelsEntity;

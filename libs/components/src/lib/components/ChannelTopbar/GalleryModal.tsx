@@ -340,7 +340,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 
 	const formatDate = useCallback(
 		(date: Date) => {
-			return convertDateStringI18n(date.toISOString(), t, i18n.language, { dateOnly: true });
+			return convertDateStringI18n(date.getTime(), t, i18n.language, { dateOnly: true });
 		},
 		[t, i18n.language]
 	);

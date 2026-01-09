@@ -68,7 +68,12 @@ export const getFirstMessageOfTopic = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.getTopicDetail(mezon.session, topicId);
-			const message = response?.message ? ({ ...response.message, id: (response.message as any).id || '' } as ApiChannelMessage) : undefined;
+			const message = response?.message
+				? {
+						...response.message,
+						id: response.message.messageId || ''
+					}
+				: undefined;
 			return { data: { ...response, message }, isMobile };
 		} catch (error) {
 			captureSentryError(error, 'topics/getFirstMessageOfTopic');
@@ -303,7 +308,14 @@ export const topicsSlice = createSlice({
 				const { message, messageId } = data || {};
 				state.initTopicMessageId = messageId || '';
 				if (message && isMobile) {
-					state.firstMessageTopic = message;
+					state.firstMessageTopic = {
+						...message,
+						attachments: undefined,
+						mentions: undefined,
+						reactions: undefined,
+						references: undefined,
+						referencedMessage: undefined
+					};
 				}
 			});
 	}

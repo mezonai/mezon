@@ -100,8 +100,8 @@ export const createNewDirectMessage = createAsyncThunk(
 			if (response) {
 				thunkAPI.dispatch(
 					directActions.upsertOne({
-						id: response.channelId || '',
 						...response,
+						id: response.channelId || '',
 						usernames: Array.isArray(username) ? username : username ? [username] : [],
 						displayNames: Array.isArray(displayNames) ? displayNames : displayNames ? [displayNames] : [],
 						channelLabel:
@@ -111,9 +111,8 @@ export const createNewDirectMessage = createAsyncThunk(
 						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
 						userIds: body.userIds,
 						active: 1,
-						lastSentMessage: {
-							timestampSeconds: Date.now()
-						}
+						lastSeenMessage: undefined,
+						lastSentMessage: undefined
 					})
 				);
 
@@ -217,7 +216,7 @@ export const fetchDirectMessage = createAsyncThunk(
 			const existingEntities = selectAllDirectMessages(state);
 			const userProfile = selectAllAccount(state)?.user;
 			const listDM: IUserChannel[] = [];
-			const sorted = response.channeldesc.sort((a: ApiChannelDescription, b: ApiChannelDescription) => {
+			const sorted = response.channeldesc.sort((a, b) => {
 				if (
 					a === undefined ||
 					b === undefined ||
@@ -235,7 +234,7 @@ export const fetchDirectMessage = createAsyncThunk(
 				return -1;
 			});
 
-			response.channeldesc.map((channel: ApiChannelDescription) => {
+			response.channeldesc.map((channel) => {
 				if (channel.type === ChannelType.CHANNEL_TYPE_DM) {
 					listDM.push({
 						id: channel.channelId || '',

@@ -1,5 +1,6 @@
 import { getShowName, useColorsRoleById } from '@mezon/core';
-import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, IMessageWithUser, convertTimeStringI18n, generateE2eId } from '@mezon/utils';
+import type { IMessageWithUser } from '@mezon/utils';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeStringI18n, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useTranslation } from 'react-i18next';
 import getPendingNames from './usePendingNames';
@@ -19,7 +20,7 @@ const BaseMessageHead = ({
 	userRolesClan
 }: IMessageHeadProps & { userRolesClan?: ReturnType<typeof useColorsRoleById> }) => {
 	const { t, i18n } = useTranslation('common');
-	const messageTime = convertTimeStringI18n(message?.createTime as string, t, i18n.language);
+	const messageTime = message?.createTimeSeconds ? convertTimeStringI18n(message?.createTimeSeconds, t, i18n.language) : '';
 	const usernameSender = message?.username;
 	const clanNick = message?.clanNick;
 	const displayName = message?.displayName;
@@ -65,7 +66,7 @@ const BaseMessageHead = ({
 						<img loading="lazy" src={userRolesClan.highestPermissionRoleIcon} alt="" className="'w-5 h-5 ml-1" />
 					)}
 			</div>
-			<div className="pl-1 pt-[5px] text-theme-primary text-[12px] font-medium">{messageTime}</div>
+			{messageTime && <div className="pl-1 pt-[5px] text-theme-primary text-[12px] font-medium">{messageTime}</div>}
 		</>
 	);
 };

@@ -1,3 +1,4 @@
+import type { Timestamp } from '@bufbuild/protobuf/dist/cjs/wkt/gen/google/protobuf/timestamp_pb';
 import type { MezonContextValue } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { Client, Session } from 'mezon-js';
@@ -389,4 +390,12 @@ export function timestampToString(timestamp: any): string | undefined {
 		return new Date(seconds * 1000 + nanos).toISOString();
 	}
 	return undefined;
+}
+
+export function convertGoogleTimestamp(timestamp: string | number): Timestamp {
+	const ts = typeof timestamp === 'string' ? Date.parse(timestamp) / 1000 : Number(timestamp);
+	const seconds = BigInt(Math.floor(ts));
+	const nanos = Math.floor((ts - Number(seconds)) * 1_000_000_000);
+
+	return { $typeName: 'google.protobuf.Timestamp', seconds, nanos };
 }
