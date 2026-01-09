@@ -180,7 +180,7 @@ export const fetchClansCached = async (
 			}
 		},
 		() => ensuredMezon.client.listClanDescs(ensuredMezon.session, limit, state, cursor || ''),
-		'clan_desc_list'
+		'clanDescList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -573,11 +573,11 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 						{
 							api_name: 'ListClanUnreadMsgIndicator',
 							list_unread_msg_indicator_req: {
-								clanId
+								clan_id: clanId
 							}
 						},
 						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),
-						'unread_msg_indicator'
+						'unreadMsgIndicator'
 					);
 
 					if (response && response.hasUnreadMessage !== undefined) {

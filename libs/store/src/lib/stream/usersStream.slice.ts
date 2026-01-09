@@ -79,12 +79,12 @@ const fetchStreamChannelMembersCached = async (
 			list_channel_users_req: {
 				limit: 100,
 				state: 1,
-				channelType,
-				clanId
+				channel_type: channelType,
+				clan_id: clanId
 			}
 		},
 		() => mezon.client.listStreamingChannelUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
-		'voice_user_list'
+		'streamUserList'
 	);
 
 	markApiFirstCalled(apiKey);
