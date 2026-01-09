@@ -35,6 +35,7 @@ import {
 	selectDmChannelPrivateById,
 	selectDmCreatorIdById,
 	selectDmGroupCurrentId,
+	selectInitTopicMessageId,
 	selectMessageByMessageId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId,
@@ -176,6 +177,7 @@ function MessageContextMenu({
 		selectMessageEntitiesByChannelId(state, (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmChannelId) || '')
 	);
 	const allMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, (isClanView ? currentChannelId : currentDmId) as string));
+	const topicMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, currentTopicId || ''));
 	const dispatch = useAppDispatch();
 
 	const handleItemClick = useCallback(() => {
@@ -189,6 +191,7 @@ function MessageContextMenu({
 	const isOwnerGroupDM = useIsOwnerGroupDM();
 	const { reactionMessageDispatch } = useChatReaction();
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
+	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 
 	const isMyMessage = useMemo(() => {
 		return message?.sender_id === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
@@ -572,6 +575,8 @@ function MessageContextMenu({
 
 	const enableDelMessageItem = useMemo(() => {
 		if (!checkPos || message?.content?.tp) return false;
+		if (messageId === initTopicMessageId) return false;
+		if (isTopic && topicMessageIds?.length > 0 && messageId === topicMessageIds[0]) return false;
 		if (isMyMessage) {
 			return true;
 		}
@@ -582,7 +587,19 @@ function MessageContextMenu({
 		if (activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL || activeMode === ChannelStreamMode.STREAM_MODE_THREAD) {
 			return canDeleteMessage;
 		}
-	}, [activeMode, type, canDeleteMessage, isMyMessage, checkPos, isOwnerGroupDM, message?.content?.tp]);
+	}, [
+		activeMode,
+		type,
+		canDeleteMessage,
+		isMyMessage,
+		checkPos,
+		isOwnerGroupDM,
+		message?.content?.tp,
+		messageId,
+		initTopicMessageId,
+		isTopic,
+		topicMessageIds
+	]);
 
 	const checkElementIsImage = elementTarget instanceof HTMLImageElement;
 	const checkElementIsLink = elementTarget instanceof HTMLAnchorElement;
