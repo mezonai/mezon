@@ -433,7 +433,13 @@ export const updateUser = createAsyncThunk(
 				encryptPrivateKey:
 					encryptPrivateKey && encryptPrivateKey !== currentUser?.encryptPrivateKey
 						? encryptPrivateKey
-						: currentUser?.encryptPrivateKey || ''
+						: currentUser?.encryptPrivateKey || '',
+				dobSeconds:
+					dob && dob !== currentUser?.user?.dob
+						? new Date(dob).getTime()
+						: currentUser?.user?.dob
+							? new Date(currentUser?.user?.dob).getTime()
+							: 0
 			};
 			const response = await mezon.client.updateAccount(mezon.session, bodyWithTypeName);
 			if (!response) {

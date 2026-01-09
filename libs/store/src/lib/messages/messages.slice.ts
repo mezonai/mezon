@@ -67,9 +67,7 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 		},
 		lastSeen: lastSeenId === (channelMess.id || channelMess.messageId),
 		createTimeSeconds,
-		createTime: channelMess.createTime || new Date(createTimeSeconds * 1000).toISOString(),
-		updateTime:
-			channelMess.updateTime || (channelMess.updateTimeSeconds ? new Date(channelMess.updateTimeSeconds * 1000).toISOString() : undefined)
+		updateTimeSeconds: channelMess.updateTimeSeconds
 	};
 };
 
@@ -1466,9 +1464,7 @@ export const messagesSlice = createSlice({
 							mentions: action.payload.mentions,
 							attachments: action.payload.attachments,
 							hideEditted: action.payload.hideEditted,
-							updateTimeSeconds: updateTimeSeconds,
-							updateTime:
-								action.payload.updateTime || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
+							updateTimeSeconds: updateTimeSeconds
 						}
 					});
 					const replyList = handleUpdateReplyMessage(channelEntity, action.payload.id);

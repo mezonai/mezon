@@ -1,4 +1,3 @@
-import type { Timestamp } from '@bufbuild/protobuf/wkt';
 import { captureSentryError } from '@mezon/logger';
 import type { IEventManagement, LoadingStatus } from '@mezon/utils';
 import { EEventAction, EEventStatus, ERepeatType } from '@mezon/utils';
@@ -171,8 +170,8 @@ export const fetchCreateEventManagement = createAsyncThunk(
 				channelVoiceId: channelVoiceId || '',
 				address: address || '',
 				title: title || '',
-				startTime: startTime as unknown as Timestamp | undefined,
-				endTime: endTime as unknown as Timestamp | undefined,
+				endTimeSeconds: startTime ? new Date(startTime).getTime() : 0,
+				startTimeSeconds: endTime ? new Date(endTime).getTime() : 0,
 				description: description || '',
 				logo: logo || '',
 				channelId: channelId || '',
@@ -228,9 +227,9 @@ export const updateEventManagement = createAsyncThunk(
 				channelVoiceId: channelVoiceId || '',
 				eventId: eventId || '',
 				description: description || '',
-				endTime: endTime as unknown as Timestamp | undefined,
+				endTimeSeconds: endTime ? new Date(endTime).getTime() : 0,
 				logo: logo || '',
-				startTime: startTime as unknown as Timestamp | undefined,
+				startTimeSeconds: startTime ? new Date(startTime).getTime() : 0,
 				title: title || '',
 				channelId: channelId || '',
 				clanId: clanId || '',

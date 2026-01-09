@@ -76,7 +76,7 @@ function MessageWithSystem({
 
 const MessageDateDivider = ({ message }: { message: MessagesEntity }) => {
 	const { t, i18n } = useTranslation('common');
-	const messageDate = !message?.createTime ? '' : convertDateStringI18n(message?.createTime as string, t, i18n.language);
+	const messageDate = !message?.createTimeSeconds ? '' : convertDateStringI18n(message?.createTimeSeconds, t, i18n.language);
 	return (
 		<div className="mt-5 mb-2  w-full h-px flex items-center justify-center border-b-theme-primary">
 			<span className="px-4 bg-item text-theme-primary text-xs font-semibold bg-theme-primary rounded-lg ">{messageDate}</span>

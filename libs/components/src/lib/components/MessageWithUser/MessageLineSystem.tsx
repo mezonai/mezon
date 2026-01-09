@@ -184,9 +184,11 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 						<>{threadContent}</>
 					))}
 			</div>
-			<div className="ml-1 max-2xl:ml-0 pt-[5px]  max-2xl:pt-0 text-theme-primary text-[10px] cursor-default">
-				{convertTimeStringI18n(message?.createTime as string, translateCommon, i18n.language)}
-			</div>
+			{message?.createTimeSeconds && (
+				<div className="ml-1 max-2xl:ml-0 pt-[5px]  max-2xl:pt-0 text-theme-primary text-[10px] cursor-default">
+					{convertTimeStringI18n(message?.createTimeSeconds, translateCommon, i18n.language)}
+				</div>
+			)}
 		</div>
 	);
 };

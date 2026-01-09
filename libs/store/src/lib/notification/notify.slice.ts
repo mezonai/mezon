@@ -164,10 +164,10 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 			avatar: message.avatar || '',
 			clanId: message.clanId || '',
 			channelId: message.channelId,
-			attachments: JSON.stringify(message.attachments),
-			mentions: JSON.stringify(message.mentions),
-			reactions: JSON.stringify(message.reactions),
-			references: JSON.stringify(message.references)
+			attachments: new TextEncoder().encode(JSON.stringify([])),
+			mentions: new TextEncoder().encode(JSON.stringify([])),
+			reactions: new TextEncoder().encode(JSON.stringify([])),
+			references: new TextEncoder().encode(JSON.stringify([]))
 		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);

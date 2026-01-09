@@ -45,7 +45,8 @@ export const createActivity = createAsyncThunk('activity/createActiviy', async (
 			activityDescription: body.activityDescription || '',
 			applicationId: body.applicationId || '',
 			status: body.status ?? 0,
-			...(body.startTime ? { startTime: body.startTime as any } : {})
+			...(body.startTime ? { startTime: body.startTime as any } : {}),
+			startTimeSeconds: body.startTime ? new Date(body.startTime).getTime() : Date.now()
 		};
 		const response = await mezon.client.createActiviy(mezon.session, bodyWithTypeName);
 
