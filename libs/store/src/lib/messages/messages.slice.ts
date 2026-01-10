@@ -1355,14 +1355,14 @@ export const messagesSlice = createSlice({
 		},
 
 		updateMessageReactions: (state, action: PayloadAction<ReactionEntity>) => {
-			const { channelId, messageId, emojiId, senderId, action: remove } = action.payload;
+			const { channel_id, messageId, emoji_id, sender_id, action: remove } = action.payload;
 
-			if (!state.channelMessages[channelId]?.entities[messageId]) return;
-			const message = state.channelMessages[channelId].entities[messageId];
+			if (!state.channelMessages[channel_id]?.entities[messageId]) return;
+			const message = state.channelMessages[channel_id].entities[messageId];
 			if (!message.reactions) {
 				message.reactions = [];
 			}
-			const existingReactionIndex = message.reactions.findIndex((r) => r.emojiId === emojiId && r.senderId === senderId);
+			const existingReactionIndex = message.reactions.findIndex((r) => r.emoji_id === emoji_id && r.sender_id === sender_id);
 			if (existingReactionIndex !== -1) {
 				!remove ? message.reactions[existingReactionIndex].count++ : (message.reactions[existingReactionIndex].count = 0);
 			} else {
@@ -2210,7 +2210,7 @@ const updateReferenceMessage = ({ state, channelId, listMessageIds }: { state: M
 					{
 						...(channelEntity.entities[id].references?.[0] as ApiMessageRef),
 						content: '{"t":"Original message was deleted"}',
-						messageRefId: undefined
+						message_ref_id: undefined
 					}
 				]
 			}
@@ -2225,9 +2225,9 @@ const handleAddOneMessage = ({ state, channelId, adapterPayload }: { state: Mess
 	}
 };
 
-const handleUpdateReplyMessage = (channelEntity: EntityState<MessagesEntity, string> & { id: string }, messageRefId: string) => {
+const handleUpdateReplyMessage = (channelEntity: EntityState<MessagesEntity, string> & { id: string }, message_ref_id: string) => {
 	return channelMessagesAdapter
 		.getSelectors()
 		.selectAll(channelEntity)
-		.filter((message) => message.references?.[0]?.messageRefId === messageRefId);
+		.filter((message) => message.references?.[0]?.message_ref_id === message_ref_id);
 };

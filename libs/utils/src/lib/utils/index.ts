@@ -799,19 +799,19 @@ export async function getMobileUploadedAttachments(payload: {
 }
 
 export const blankReferenceObj: ApiMessageRef = {
-	messageId: '',
-	messageRefId: '',
-	refType: 0,
-	messageSenderId: '',
-	messageSenderUsername: '',
-	mesagesSenderAvatar: '',
-	messageSenderClanNick: '',
-	messageSenderDisplayName: '',
+	message_id: '',
+	message_ref_id: '',
+	ref_type: 0,
+	message_sender_id: '',
+	message_sender_username: '',
+	mesages_sender_avatar: '',
+	message_sender_clan_nick: '',
+	message_sender_display_name: '',
 	content: '',
-	hasAttachment: false,
-	channelId: '',
+	has_attachment: false,
+	channel_id: '',
 	mode: 0,
-	channelLabel: ''
+	channel_label: ''
 };
 
 export const handleShowShortProfile = (
@@ -1065,30 +1065,30 @@ export const transformTextWithMentions = (
 	let offsetAdjustment = 0;
 
 	for (const mention of mentions) {
-		const { s, e, userId, roleId } = mention;
+		const { s, e, user_id, role_id } = mention;
 		const start = (s || 0) + offsetAdjustment;
 		const end = (e as number) + offsetAdjustment;
 
-		if (roleId) {
-			const role = clanRoles?.[roleId as string];
+		if (role_id) {
+			const role = clanRoles?.[role_id as string];
 			if (role) {
 				const roleName = role.title || '';
-				const replacement = `@[${roleName}](${roleId})`;
+				const replacement = `@[${roleName}](${role_id})`;
 				text = text.slice(0, start) + replacement + text.slice(end);
 				offsetAdjustment += replacement.length - (end - start);
 			}
 		}
 
-		const user = usersEntities?.[userId as string];
+		const user = usersEntities?.[user_id as string];
 		if (user) {
 			const name = user?.clanNick || user?.user?.displayName || user?.user?.username || '';
-			const replacement = `@[${name}](${userId})`;
+			const replacement = `@[${name}](${user_id})`;
 			text = text.slice(0, start) + replacement + text.slice(end);
 			offsetAdjustment += replacement.length - (end - start);
 		}
 
-		if (userId === ID_MENTION_HERE) {
-			const replacement = `@[here](${userId})`;
+		if (user_id === ID_MENTION_HERE) {
+			const replacement = `@[here](${user_id})`;
 			text = text.slice(0, start) + replacement + text.slice(end);
 			offsetAdjustment += replacement.length - (end - start);
 		}
@@ -1105,10 +1105,10 @@ export const generateMentionItems = (
 ): MentionItem[] => {
 	return mentions
 		.map((mention) => {
-			const user = usersEntities?.[mention.userId as string];
+			const user = usersEntities?.[mention.user_id as string];
 			if (user) {
 				const name = user.clanNick || user.user?.displayName || user.user?.username || '';
-				const mentionText = `@[${name}](${mention.userId})`;
+				const mentionText = `@[${name}](${mention.user_id})`;
 				const index = transformedText.indexOf(mentionText);
 				return {
 					display: name,

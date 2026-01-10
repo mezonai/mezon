@@ -22,12 +22,12 @@ type MessageReplyProps = {
 // TODO: refactor component for message lines
 const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, isAnonymousReplied }) => {
 	const { t } = useTranslation('message');
-	const senderIdMessageRef = message?.references?.[0]?.messageSenderId as string;
-	const messageIdRef = message?.references?.[0]?.messageRefId;
-	const messageUsernameSenderRef = message?.references?.[0]?.messageSenderUsername ?? '';
+	const senderIdMessageRef = message?.references?.[0]?.message_sender_id as string;
+	const messageIdRef = message?.references?.[0]?.message_ref_id;
+	const messageUsernameSenderRef = message?.references?.[0]?.message_sender_username ?? '';
 	const messageSender = useUserById(senderIdMessageRef);
 	const content = safeJSONParse(message?.references?.[0]?.content ?? '{}');
-	const hasAttachmentInMessageRef = message?.references?.[0]?.hasAttachment;
+	const hasAttachmentInMessageRef = message?.references?.[0]?.has_attachment;
 	const isEmbedMessage = !content?.t && content?.embed;
 
 	const dispatch = useAppDispatch();
@@ -54,8 +54,8 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 	const markUpOnReplyParent = useRef<HTMLDivElement | null>(null);
 
 	const nameShowed = getShowName(
-		message?.references?.[0]?.messageSenderClanNick ?? '',
-		message?.references?.[0]?.messageSenderDisplayName ?? '',
+		message?.references?.[0]?.message_sender_clan_nick ?? '',
+		message?.references?.[0]?.message_sender_display_name ?? '',
 		messageUsernameSenderRef ?? '',
 		senderIdMessageRef ?? ''
 	);
@@ -70,7 +70,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 			};
 		}
 
-		const messageRefAvatar = message?.references?.[0]?.mesagesSenderAvatar ?? '';
+		const messageRefAvatar = message?.references?.[0]?.mesages_sender_avatar ?? '';
 		const userAvatar = getAvatarForPrioritize(messageSender?.clanAvatar, messageSender?.user?.avatarUrl) || '';
 
 		const finalAvatar = !isClanView ? messageRefAvatar : userAvatar || messageRefAvatar;
@@ -83,12 +83,8 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 	const avatarProps = getAvatarProps();
 
 	return (
-		<div
-			className="overflow-hidden max-w-[97%] h-[24px]"
-			ref={markUpOnReplyParent}
-			data-e2e={generateE2eId('replied_message.item')}
-		>
-			{message.references?.[0].messageRefId ? (
+		<div className="overflow-hidden max-w-[97%] h-[24px]" ref={markUpOnReplyParent} data-e2e={generateE2eId('replied_message.item')}>
+			{message.references?.[0].message_ref_id ? (
 				<div className="rounded flex flex-row gap-1 items-center justify-start w-fit text-[14px] ml-9 mb-[-5px] replyMessage">
 					<Icons.ReplyCorner />
 					<div className="flex flex-row gap-1 pr-12 items-center w-full h-[33px] pb-[4px]">
@@ -109,7 +105,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 								className="h-6 text-[#84ADFF] font-bold hover:underline cursor-pointer tracking-wide whitespace-nowrap"
 								data-e2e={generateE2eId('replied_message.username')}
 							>
-								{!isClanView ? message?.references?.[0]?.messageSenderDisplayName || messageUsernameSenderRef : nameShowed}
+								{!isClanView ? message?.references?.[0]?.message_sender_username || messageUsernameSenderRef : nameShowed}
 							</span>
 							{hasAttachmentInMessageRef || isEmbedMessage ? (
 								<div className=" flex flex-row items-center text-theme-primary">

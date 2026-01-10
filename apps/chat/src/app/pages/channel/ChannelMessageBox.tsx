@@ -91,13 +91,13 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 				dataReferences: blankReferenceObj
 			})
 		);
-	}, [dataReferences.messageRefId]);
+	}, [dataReferences.message_ref_id]);
 
-	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.messageRefId });
+	useEscapeKey(handleCloseReplyMessageBox, { preventEvent: !dataReferences.message_ref_id });
 
 	return (
 		<div className="mx-3 relative" ref={chatboxRef}>
-			{dataReferences.messageRefId && <ReplyMessageBox channelId={channelId ?? ''} dataReferences={dataReferences} />}
+			{dataReferences.message_ref_id && <ReplyMessageBox channelId={channelId ?? ''} dataReferences={dataReferences} />}
 			<MessageBox
 				listMentions={UserMentionList({
 					channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? (channel.parentId ?? '') : (channelId ?? ''),

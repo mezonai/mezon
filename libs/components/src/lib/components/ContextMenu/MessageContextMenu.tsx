@@ -335,18 +335,18 @@ function MessageContextMenu({
 			referencesActions.setDataReferences({
 				channelId: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 				dataReferences: {
-					messageRefId: message.id,
-					refType: 0,
-					messageSenderId: message.senderId,
+					message_ref_id: message.id,
+					ref_type: 0,
+					message_sender_id: message.senderId,
 					content: JSON.stringify(message.content ?? '{}'),
-					messageSenderUsername: message.username,
-					mesagesSenderAvatar: message.clanAvatar ? message.clanAvatar : message.avatar,
-					messageSenderClanNick: message.clanNick,
-					messageSenderDisplayName: message.displayName,
-					hasAttachment: (message.attachments && message.attachments?.length > 0) ?? false,
-					channelId: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
+					message_sender_username: message.username,
+					mesages_sender_avatar: message.clanAvatar ? message.clanAvatar : message.avatar,
+					message_sender_clan_nick: message.clanNick,
+					message_sender_display_name: message.displayName,
+					has_attachment: (message.attachments && message.attachments?.length > 0) ?? false,
+					channel_id: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 					mode: message.mode ?? 0,
-					channelLabel: message.channelLabel
+					channel_label: message.channelLabel
 				}
 			})
 		);

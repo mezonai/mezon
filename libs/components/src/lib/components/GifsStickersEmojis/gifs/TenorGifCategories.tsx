@@ -47,7 +47,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 
 	const currentId = useCurrentInbox()?.channelId;
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
-	const isReplyAction = dataReferences.messageRefId && dataReferences.messageRefId !== '';
+	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
 	const dispatch = useDispatch();
 
 	useEffect(() => {

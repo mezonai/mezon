@@ -96,7 +96,7 @@ function MessageWithUser({
 	const shortUserId = useRef('');
 	const isClickReply = useRef(false);
 	const checkAnonymous = message?.senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID;
-	const checkAnonymousOnReplied = message?.references && message?.references[0]?.messageSenderId === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const checkAnonymousOnReplied = message?.references && message?.references[0]?.message_sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 	const showMessageHead = !(message?.references?.length === 0 && isCombine && !isShowFull);
 
 	const shouldShowForwardedText = useMemo(() => {
@@ -113,19 +113,19 @@ function MessageWithUser({
 		return isDifferentSender || isTimeGap;
 	}, [message, previousMessage]);
 
-	const checkReplied = userId && message?.references && message?.references[0]?.messageSenderId === userId;
+	const checkReplied = userId && message?.references && message?.references[0]?.message_sender_id === userId;
 
 	const hasIncludeMention = (() => {
 		if (!userId) return false;
 		if (typeof message?.content?.t == 'string') {
-			if (Array.isArray(message?.mentions) && message?.mentions?.some((mention) => mention?.userId === ID_MENTION_HERE)) return true;
+			if (Array.isArray(message?.mentions) && message?.mentions?.some((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
 		}
 		if (!Array.isArray(message?.mentions)) {
 			return false;
 		}
 		const userIdMention = userId;
-		const includesUser = message?.mentions?.some((mention) => mention?.userId === userIdMention);
-		const includesRole = message?.mentions?.some((item) => user?.roleId?.includes(item?.roleId as string));
+		const includesUser = message?.mentions?.some((mention) => mention?.user_id === userIdMention);
+		const includesRole = message?.mentions?.some((item) => user?.roleId?.includes(item?.role_id as string));
 		return includesUser || includesRole;
 	})();
 
@@ -186,7 +186,7 @@ function MessageWithUser({
 					classBanner="rounded-tl-lg rounded-tr-lg h-[105px]"
 					message={message}
 					mode={mode}
-					avatar={isClickReply.current ? message?.references?.[0]?.mesagesSenderAvatar : message?.clanAvatar || message?.avatar}
+					avatar={isClickReply.current ? message?.references?.[0]?.mesages_sender_avatar : message?.clanAvatar || message?.avatar}
 					name={message?.clanNick || message?.displayName || message?.username}
 					isDM={isDM}
 					checkAnonymous={isAnonymousOnModal}
@@ -213,7 +213,7 @@ function MessageWithUser({
 							'mt-[10px]': !isCombine
 						},
 						{
-							'pt-3': !isCombine || (message.code !== TypeMessage.CreatePin && message.references?.[0]?.messageRefId)
+							'pt-3': !isCombine || (message.code !== TypeMessage.CreatePin && message.references?.[0]?.message_ref_id)
 						},
 						{
 							'bg-highlight-no-hover':
@@ -248,7 +248,7 @@ function MessageWithUser({
 									? () => {}
 									: (e) => {
 											isClickReply.current = true;
-											handleOpenShortUser(e, message?.references?.[0]?.messageSenderId as string, checkAnonymousOnReplied);
+											handleOpenShortUser(e, message?.references?.[0]?.message_sender_id as string, checkAnonymousOnReplied);
 										}
 							}
 							isAnonymousReplied={checkAnonymousOnReplied}

@@ -172,14 +172,14 @@ const isMessageMentionOrReply = (msg: ChannelMessage, currentUserId: string, sto
 		}
 
 		// Special @here mention
-		const includesHere = mentions?.some((m) => m?.userId === ID_MENTION_HERE) ?? false;
-		const includesUser = mentions?.some((mention) => mention?.userId === currentUserId) ?? false;
-		const includesRole = mentions?.some((item) => (currentClanUser?.roleId as string | undefined)?.includes(item?.roleId as string)) ?? false;
+		const includesHere = mentions?.some((m) => m?.user_id === ID_MENTION_HERE) ?? false;
+		const includesUser = mentions?.some((mention) => mention?.user_id === currentUserId) ?? false;
+		const includesRole = mentions?.some((item) => (currentClanUser?.roleId as string | undefined)?.includes(item?.role_id as string)) ?? false;
 
 		return includesHere || includesUser || includesRole;
 	})();
 
-	const isReply = msg.references?.some((ref) => ref.messageSenderId === currentUserId) ?? false;
+	const isReply = msg.references?.some((ref) => ref.message_sender_id === currentUserId) ?? false;
 
 	return hasMention || isReply;
 };
@@ -191,8 +191,7 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 		return;
 	}
 
-	const messageTimestamp =
-		message.updateTimeSeconds && message.updateTimeSeconds > 0 ? message.updateTimeSeconds : message.createTimeSeconds || 0;
+	const messageTimestamp = message.updateTimeSeconds && message.updateTimeSeconds > 0 ? message.updateTimeSeconds : message.createTimeSeconds || 0;
 
 	// Handle direct messages (DM/Group)
 	if (!message.clanId || message.clanId === '0') {

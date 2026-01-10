@@ -287,7 +287,7 @@ const TopicDiscussionBox = () => {
 					/>
 				) : (
 					<>
-						{dataReferences.messageRefId && (
+						{dataReferences.message_ref_id && (
 							<div className="w-full ">
 								<ReplyMessageBox channelId={currentTopicId ?? ''} dataReferences={dataReferences} />
 							</div>
@@ -315,7 +315,7 @@ const TopicDiscussionBox = () => {
 						<div className="mx-3 relative">
 							<div
 								className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
-						bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || (dataReferences && dataReferences.messageRefId) ? 'rounded-t-none' : 'rounded-t-lg'}
+						bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || (dataReferences && dataReferences.message_ref_id) ? 'rounded-t-none' : 'rounded-t-lg'}
 						${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
 							>
 								<FileSelectionButton currentChannelId={currentInputChannelId} />

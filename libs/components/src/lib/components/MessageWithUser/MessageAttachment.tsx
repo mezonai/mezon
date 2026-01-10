@@ -61,7 +61,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 		) {
 			const resultAttach: ApiMessageAttachment & { createTime?: number } = {
 				...attachment,
-				senderId: message.senderId,
+				sender_id: message.senderId,
 				createTime: (attachment as any).createTime || message.createTimeSeconds
 			};
 			images.push(resultAttach);
@@ -238,7 +238,7 @@ const ImageAlbum = memo(
 							return 0;
 						});
 
-					const currentImageUploader = currentChatUsersEntities?.[attachmentData.senderId as string];
+					const currentImageUploader = currentChatUsersEntities?.[attachmentData.sender_id as string];
 
 					window.electron.openImageWindow({
 						...enhancedAttachmentData,
@@ -316,7 +316,7 @@ const ImageAlbum = memo(
 					attachmentActions.setCurrentAttachment({
 						...enhancedAttachmentData,
 						id: generateAttachmentId(attachmentData, message.id),
-						uploader: enhancedAttachmentData.senderId || message.senderId,
+						uploader: enhancedAttachmentData.sender_id || message.senderId,
 						createTime: new Date(enhancedAttachmentData.createTime).toISOString()
 					})
 				);

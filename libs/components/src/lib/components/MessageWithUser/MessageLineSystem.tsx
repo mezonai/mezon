@@ -52,11 +52,11 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	const getIdMessageToJump = useCallback(
 		(e: React.MouseEvent<HTMLDivElement | HTMLSpanElement>) => {
 			e.stopPropagation();
-			if (message?.references && message?.references[0]?.messageRefId) {
+			if (message?.references && message?.references[0]?.message_ref_id) {
 				dispatch(
 					messagesActions.jumpToMessage({
 						clanId: message?.clanId || '',
-						messageId: message?.references[0]?.messageRefId,
+						messageId: message?.references[0]?.message_ref_id,
 						channelId: message?.channelId
 					})
 				);
