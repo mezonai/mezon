@@ -869,8 +869,8 @@ export const handleShowShortProfile = (
 
 export const sortNotificationsByDate = (notifications: NotificationEntity[]) => {
 	return notifications.sort((a, b) => {
-		const dateA = a.createTime ? new Date(a.createTime).getTime() : 0;
-		const dateB = b.createTime ? new Date(b.createTime).getTime() : 0;
+		const dateA = a.createTimeSeconds || 0;
+		const dateB = b.createTimeSeconds || 0;
 		return dateB - dateA;
 	});
 };

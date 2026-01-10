@@ -8,7 +8,7 @@ import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import type { RootState } from '../store';
 
@@ -20,7 +20,7 @@ export const mapNotificationToEntity = (notifyRes: ApiNotification): INotificati
 		...notifyRes,
 		id: notifyRes.id || '',
 		content: notifyRes.content,
-		createTime: timestampToString(notifyRes.createTime)
+		createTimeSeconds: notifyRes.createTimeSeconds
 	};
 };
 
@@ -124,9 +124,8 @@ export const fetchListNotification = createAsyncThunk(
 				};
 			}
 
-			const notifications = response.notifications.map((notify) => mapNotificationToEntity(notify as ApiNotification));
 			return {
-				data: notifications,
+				data: response.notifications as INotification[],
 				category,
 				fromCache
 			};
@@ -300,7 +299,7 @@ export const notificationSlice = createSlice({
 							...message,
 							id: noti.id || '',
 							...noti,
-							createTime: new Date().toISOString(),
+							createTimeSeconds: new Date().getTime(),
 							content: safeJSONParse(noti.content || ''),
 							category: NotificationCategory.MESSAGES
 						};

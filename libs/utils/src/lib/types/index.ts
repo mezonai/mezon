@@ -936,7 +936,6 @@ export enum ThemeApp {
 
 export interface INotification extends ApiNotification {
 	id: string;
-	content?: any;
 }
 export interface NotificationEntity extends INotification {
 	id: string;
