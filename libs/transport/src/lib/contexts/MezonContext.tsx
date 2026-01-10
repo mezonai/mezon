@@ -465,6 +465,12 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				throw new Error('Mezon client not initialized');
 			}
 
+			const storedConfig = localStorage.getItem(SESSION_STORAGE_KEY);
+			if (!storedConfig) {
+				await logOutMezon();
+				return;
+			}
+
 			const sessionObj = new Session(
 				session?.token,
 				session?.refreshToken,
