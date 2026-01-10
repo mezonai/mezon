@@ -159,7 +159,7 @@ const UserProfileModalInner = ({
 					<div className="flex absolute bottom-[-60px] w-full">
 						<AvatarProfile
 							avatar={avatar || displayAvatar}
-							username={displayUsername || notify?.content?.username}
+							username={displayUsername}
 							userToDisplay={userById}
 							customStatus={customStatus || (userStatus.userStatus as string)}
 							userID={userId}
@@ -194,11 +194,9 @@ const UserProfileModalInner = ({
 					<div className="flex flex-col gap-3 h-full">
 						<div className="mt-4">
 							<h3 className="text-2xl font-semibold text-theme-primary">
-								{name || userById?.clanNick || userById?.user?.displayName || userById?.user?.username || notify?.content?.username}
+								{name || userById?.clanNick || userById?.user?.displayName || userById?.user?.username}
 							</h3>
-							<p className="text-sm font-normal text-theme-primary">
-								{usernameAva || userById?.user?.username || notify?.content?.username}
-							</p>
+							<p className="text-sm font-normal text-theme-primary">{usernameAva || userById?.user?.username}</p>
 						</div>
 						<div className="flex-1 bg-theme-setting-primary rounded-lg shadow-shadowInbox">
 							<ProfileTabs activeTab={activeTab} onActiveTabChange={handleActiveTabChange} />

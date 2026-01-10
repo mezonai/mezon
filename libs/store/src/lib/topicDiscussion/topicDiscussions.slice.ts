@@ -3,15 +3,8 @@ import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezo
 import { getMobileUploadedAttachments, getWebUploadedAttachments } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type {
-	ApiChannelMessage,
-	ApiChannelMessageHeader,
-	ApiMessageAttachment,
-	ApiMessageMention,
-	ApiMessageRef,
-	ApiSdTopic,
-	ApiSdTopicRequest
-} from 'mezon-js/types';
+import type { SdTopic } from 'mezon-js/dist/proto/gen/api/api_pb';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/types';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, timestampToString } from '../helpers';
 import { selectMessageEntitiesByChannelId } from '../messages/messages.slice';
@@ -36,7 +29,7 @@ export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntit
 	openTopicMessageState: boolean;
 	currentTopicId?: string;
 	initTopicMessageId?: string;
-	firstMessageTopic?: ApiChannelMessage;
+	firstMessageTopic?: SdTopic;
 	isFocusTopicBox: boolean;
 	channelTopics: Record<string, string>;
 	clanTopics: Record<string, EntityState<TopicDiscussionsEntity, string>>;
@@ -68,13 +61,8 @@ export const getFirstMessageOfTopic = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.getTopicDetail(mezon.session, topicId);
-			const message = response?.message
-				? {
-						...response.message,
-						id: response.message.messageId || ''
-					}
-				: undefined;
-			return { data: { ...response, message }, isMobile };
+
+			return { data: { ...response }, isMobile };
 		} catch (error) {
 			captureSentryError(error, 'topics/getFirstMessageOfTopic');
 			return thunkAPI.rejectWithValue(error);
@@ -305,17 +293,10 @@ export const topicsSlice = createSlice({
 			})
 			.addCase(getFirstMessageOfTopic.fulfilled, (state: TopicDiscussionsState, action) => {
 				const { data, isMobile } = action.payload;
-				const { message, messageId } = data || {};
+				const { messageId } = data || {};
 				state.initTopicMessageId = messageId || '';
-				if (message && isMobile) {
-					state.firstMessageTopic = {
-						...message,
-						attachments: undefined,
-						mentions: undefined,
-						reactions: undefined,
-						references: undefined,
-						referencedMessage: undefined
-					};
+				if (data && isMobile) {
+					state.firstMessageTopic = data;
 				}
 			});
 	}

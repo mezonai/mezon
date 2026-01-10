@@ -26,16 +26,11 @@ export type NotifyMentionProps = {
 };
 
 function convertContentToObject(notify: INotification) {
-	if (notify && notify.content && typeof notify.content === 'object') {
+	if (notify && notify.content) {
 		try {
 			const parsedContent = {
-				...notify.content,
-				content: notify.content.content ? safeJSONParse(notify.content.content) : null,
-				mentions: notify.content.mentions ? safeJSONParse(notify.content.mentions) : null,
-				reactions: notify.content.reactions ? safeJSONParse(notify.content.reactions) : null,
-				references: notify.content.references ? safeJSONParse(notify.content.references) : null,
-				attachments: notify.content.attachments ? safeJSONParse(notify.content.attachments) : null,
-				createTime: notify.createTime
+				content: safeJSONParse(notify.content),
+				createTime: notify.createTimeSeconds
 			};
 
 			return {
@@ -52,14 +47,15 @@ function convertContentToObject(notify: INotification) {
 function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	const { t } = useTranslation('channelTopbar');
 	const parseNotify = useMemo(() => convertContentToObject(notify), [notify]);
-	const messageId = parseNotify.content.messageId;
-	const channelId = parseNotify.content.channelId;
-	const clanId = parseNotify.content.clanId;
-	const mode = parseNotify?.content?.mode - 1;
+	const message = (parseNotify?.content as any).content as IMessageWithUser;
+	const messageId = message.messageId;
+	const channelId = message?.content;
+	const clanId = message?.clanId;
+	const mode = message?.mode;
 
-	const topicId = parseNotify?.content?.topicId;
+	const topicId = message?.topicId;
 
-	const isTopic = Number(topicId) !== 0 || parseNotify?.content?.code === TypeMessage.Topic;
+	const isTopic = Number(topicId) !== 0 || message.code === TypeMessage.Topic;
 
 	const { handleClickJump } = useNotificationJump({
 		messageId,
@@ -82,10 +78,10 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	};
 
 	const allTabProps = {
-		message: parseNotify.content,
-		subject: parseNotify.subject,
-		category: parseNotify.category,
-		senderId: parseNotify.senderId
+		message,
+		subject: notify.subject,
+		category: notify.category,
+		senderId: message.senderId
 	};
 
 	return (
@@ -128,7 +124,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 	const parentChannel = useAppSelector((state) => selectChannelById(state, currentChannel.parentId || '')) || {};
 
 	const checkMessageHasReply = useMemo(() => {
-		return message.references && message.references?.length > 0;
+		return Array.isArray(message.references) && message.references?.length > 0;
 	}, [message.references]);
 
 	const clan = useAppSelector(selectClanById(message.clanId as string));
@@ -206,7 +202,15 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 							<MessageLine
 								messageId={message.messageId}
 								isEditted={false}
-								content={contentUpdatedMention}
+								content={{
+									mentions:
+										typeof message.mentions === 'string'
+											? safeJSONParse(message.mentions)
+											: Array.isArray(message.mentions)
+												? message.mentions
+												: [],
+									t: safeJSONParse(message.content).t
+								}}
 								isTokenClickAble={false}
 								isJumMessageEnabled={false}
 							/>

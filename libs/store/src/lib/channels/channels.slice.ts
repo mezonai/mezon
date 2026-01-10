@@ -412,7 +412,7 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 			channelPrivate: body.channelPrivate ?? 0,
 			userIds: body.userIds || [],
 			appId: body.appId || '',
-			type: body.type
+			type: body.type || 0
 		};
 		const response = await mezon.client.createChannelDesc(mezon.session, bodyWithTypeName);
 		if (response) {
