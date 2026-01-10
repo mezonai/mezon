@@ -528,7 +528,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 				if (message?.code === TypeMessage.ChatRemove) {
 					const replyData = selectDataReferences(store.getState(), message.channelId);
-					if (replyData && replyData.messageRefId === message.id) {
+					if (replyData && replyData.message_ref_id === message.id) {
 						dispatch(referencesActions.resetAfterReply(message.channelId));
 					}
 					if (message.messageId) {
@@ -1384,16 +1384,16 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onmessagereaction = useCallback(
 		async (e: ApiMessageReaction) => {
-			if (e.senderId === userId) {
-				dispatch(emojiRecentActions.setLastEmojiRecent({ emojiRecentsId: e.emojiRecentId, emojiId: e.emojiId }));
-				dispatch(emojiRecentActions.addFirstEmojiRecent({ emojiRecentsId: e.emojiRecentId, emojiId: e.emojiId }));
+			if (e.sender_id === userId) {
+				dispatch(emojiRecentActions.setLastEmojiRecent({ emojiRecentsId: e.emoji_recent_id, emojiId: e.emoji_id }));
+				dispatch(emojiRecentActions.addFirstEmojiRecent({ emojiRecentsId: e.emoji_recent_id, emojiId: e.emoji_id }));
 			}
 			const reactionEntity = mapReactionToEntity(e);
 			const store = await getStoreAsync();
 			const isFocusTopicBox = selectClickedOnTopicStatus(store.getState());
 			const currenTopicId = selectCurrentTopicId(store.getState());
-			if (reactionEntity.topicId && reactionEntity.topicId !== '0' && isFocusTopicBox && currenTopicId) {
-				reactionEntity.channelId = reactionEntity.topicId ?? '';
+			if (reactionEntity.topic_id && reactionEntity.topic_id !== '0' && isFocusTopicBox && currenTopicId) {
+				reactionEntity.channel_id = reactionEntity.topic_id ?? '';
 			}
 
 			dispatch(messagesActions.updateMessageReactions(reactionEntity));

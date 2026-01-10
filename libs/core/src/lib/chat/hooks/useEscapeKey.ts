@@ -15,7 +15,7 @@ export const useEscapeKey = (handler: () => void, options: Partial<{ preventEven
 				dispatch(
 					referencesActions.setDataReferences({
 						channelId: '',
-						dataReferences: { hasAttachment: false, channelId: '', mode: 0, channelLabel: '' }
+						dataReferences: { has_attachment: false, channel_id: '', mode: 0, channel_label: '' }
 					})
 				);
 				handler();

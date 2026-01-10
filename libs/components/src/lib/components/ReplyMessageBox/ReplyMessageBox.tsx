@@ -17,10 +17,10 @@ export function ReplyMessageBox({ channelId, dataReferences, className }: Messag
 	const { t } = useTranslation('common');
 	const dispatch = useDispatch();
 	const nameShowed = getShowName(
-		dataReferences.messageSenderClanNick ?? '',
-		dataReferences.messageSenderDisplayName ?? '',
-		dataReferences.messageSenderUsername ?? '',
-		dataReferences.messageSenderId ?? ''
+		dataReferences.message_sender_clan_nick ?? '',
+		dataReferences.message_sender_display_name ?? '',
+		dataReferences.message_sender_username ?? '',
+		dataReferences.message_sender_id ?? ''
 	);
 
 	const handleRemoveReply = () => {

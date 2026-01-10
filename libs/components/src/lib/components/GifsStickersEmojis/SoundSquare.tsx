@@ -59,7 +59,7 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 	});
 	const currentId = useCurrentInbox()?.channelId;
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
-	const isReplyAction = dataReferences.messageRefId && dataReferences.messageRefId !== '';
+	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
 	const { valueInputToCheckHandleSearch, subPanelActive, setSubPanelActive } = useGifsStickersEmoji();
 
 	const currentClanId = useAppSelector(selectCurrentClanId) || '';

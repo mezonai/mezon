@@ -207,7 +207,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		isTopic: props.isTopic || false,
 		isMenuClosed: useSelector(selectCloseMenu),
 		isStatusMenuOpen: useSelector(selectStatusMenu),
-		messageRefId: dataReferences.messageRefId,
+		message_ref_id: dataReferences.message_ref_id,
 		isEmojiPickerActive: !!emojiPicked?.shortName,
 		isReactionRightActive: reactionRightState,
 		isEditMessageOpen: useSelector(selectOpenEditMessageState),
@@ -728,8 +728,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		}, []);
 	}, [props.mode, allChannels]);
 
-	const isReplyOnChannel = dataReferences.messageRefId && !props.isTopic ? true : false;
-	const isReplyOnTopic = dataReferencesTopic.messageRefId && props.isTopic ? true : false;
+	const isReplyOnChannel = dataReferences.message_ref_id && !props.isTopic ? true : false;
+	const isReplyOnTopic = dataReferencesTopic.message_ref_id && props.isTopic ? true : false;
 	const isSendMessageOnThreadBox = openThreadMessageState && !props.isTopic ? true : false;
 
 	const [pastedContent, setPastedContent] = useState<string>('');
@@ -969,7 +969,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			}
 
 			const combinedContent = currentValue + contentToCheck;
-			const combinedContentSize = contentToCheck?.length && JSON.stringify(combinedContent)?.length || 0;
+			const combinedContentSize = (contentToCheck?.length && JSON.stringify(combinedContent)?.length) || 0;
 
 			if (handleConvertToFile && combinedContentSize > MIN_THRESHOLD_CHARS) {
 				event.preventDefault();

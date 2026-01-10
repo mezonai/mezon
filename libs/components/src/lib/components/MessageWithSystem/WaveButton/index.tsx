@@ -48,20 +48,21 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 		try {
 			const content: IMessageSendPayload = { t: '' };
 			const ref = {
-				messageId: '',
-				messageRefId: message.id,
-				refType: 0,
-				messageSenderId: message?.senderId,
-				messageSenderUsername: WAVE_SENDER_NAME,
-				mesagesSenderAvatar: MEZON_AVATAR_URL,
-				messageSenderClanNick: WAVE_SENDER_NAME,
-				messageSenderDisplayName: WAVE_SENDER_NAME,
+				message_id: '',
+				message_ref_id: message.id,
+				ref_type: 0,
+				message_sender_id: message?.senderId,
+				message_sender_username: WAVE_SENDER_NAME,
+				message_sender_avatar: MEZON_AVATAR_URL,
+				message_sender_clan_nick: WAVE_SENDER_NAME,
+				message_sender_display_name: WAVE_SENDER_NAME,
 				content: JSON.stringify(message.content),
-				hasAttachment: false,
-				channelId: message.channelId ?? '',
+				has_attachment: false,
+				channel_id: message.channelId ?? '',
 				mode: message.mode ?? 0,
-				channelLabel: message.channelLabel
+				channel_label: message.channelLabel
 			};
+
 			const attachments = [
 				{
 					url: urlIcon,

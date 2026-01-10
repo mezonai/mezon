@@ -9,10 +9,12 @@ import { toastActions } from '../toasts';
 
 export const REACTION_FEATURE_KEY = 'reaction';
 
-export const mapReactionToEntity = (reaction: UpdateReactionMessageArgs) => {
+export const mapReactionToEntity = (reaction: ApiMessageReaction): ReactionEntity => {
 	return {
-		...reaction
-	} as ReactionEntity;
+		...reaction,
+		id: reaction.id || '',
+		messageId: reaction.message_id || ''
+	};
 };
 
 export interface ReactionEntity extends IReaction {
