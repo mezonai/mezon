@@ -13,6 +13,7 @@ const CanvasLayout = () => {
 		// Helper function to set client configuration
 		const configureClient = (config: any) => {
 			if (clientRef?.current && config) {
+				console.log(config, 'config CanvasLayout');
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
 		};
