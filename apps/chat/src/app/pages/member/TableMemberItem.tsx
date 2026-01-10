@@ -183,7 +183,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 
 	return (
 		<div
-			className="flex flex-row justify-between items-center h-[48px]  bg-item-hover cursor-pointer  border-b-theme-primary "
+			className="flex flex-row justify-between items-center h-[48px]  bg-item-hover cursor-pointer  border-b-theme-primary no-divider-last "
 			onContextMenu={handleContextMenu}
 			onClick={handleClickItem}
 			ref={itemRef}
