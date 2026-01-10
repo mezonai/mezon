@@ -25,12 +25,12 @@ export function WebhookChannelSelectModal({ onConfirm, onCancel, initialChannelI
 	const allChannel = useSelector(selectAllChannels);
 	const [selectedChannelId, setSelectedChannelId] = useState<string>(initialChannelId || '');
 
-	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parent_id === ChannelIsNotThread.TRUE), [allChannel]);
+	const parentChannelsInClan = useMemo(() => allChannel?.filter((channel) => channel?.parentId === ChannelIsNotThread.TRUE), [allChannel]);
 
 	const channelOptions = useMemo(() => {
 		return parentChannelsInClan?.map((channel) => ({
-			title: channel?.channel_label,
-			value: channel?.channel_id,
+			title: channel?.channelLabel,
+			value: channel?.channelId,
 			icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} />
 		}));
 	}, [parentChannelsInClan, themeValue.text]);

@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IUsers, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiUser } from 'mezon-js/api.gen';
+import type { ApiUser } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -83,7 +83,7 @@ export const fetchListUsersByUser = createAsyncThunk(
 				return { users: [], fromCache: response.fromCache };
 			}
 
-			const users = response?.users.map(mapUsersToEntity);
+			const users = response?.users.map((user) => mapUsersToEntity(user as ApiUser));
 			return { users, fromCache: response.fromCache };
 		} catch (error) {
 			captureSentryError(error, 'usersByUser/fetchListUsersByUser');

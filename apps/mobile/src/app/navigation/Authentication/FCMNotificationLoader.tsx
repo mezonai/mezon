@@ -7,7 +7,6 @@ import { getMessaging, onNotificationOpenedApp } from '@react-native-firebase/me
 import { useNavigation } from '@react-navigation/native';
 import type { ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import moment from 'moment/moment';
 import { useCallback, useContext, useEffect, useRef } from 'react';
 import { AppState, DeviceEventEmitter, Platform } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
@@ -33,16 +32,9 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 					const extraMessage = data?.message;
 					if (extraMessage) {
 						const message = safeJSONParse(extraMessage);
-						if (message && typeof message === 'object' && message?.channel_id) {
-							const createTimeSeconds = message?.create_time_seconds;
-							const updateTimeSeconds = message?.update_time_seconds;
-
-							const createTime = createTimeSeconds
-								? moment.unix(createTimeSeconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
-								: new Date().toISOString();
-							const updateTime = updateTimeSeconds
-								? moment.unix(updateTimeSeconds).utc().format('YYYY-MM-DDTHH:mm:ss.SSS[Z]')
-								: new Date().toISOString();
+						if (message && typeof message === 'object' && message?.channelId) {
+							const createTimeSeconds = message?.createTimeSeconds || Math.floor(Date.now() / 1000);
+							const updateTimeSeconds = message?.updateTimeSeconds;
 
 							let codeValue = 0;
 							if (message?.code) {
@@ -53,7 +45,7 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 								}
 							}
 
-							const messageId = message?.message_id || message?.id;
+							const messageId = message?.messageId || message?.id;
 							if (!messageId) {
 								console.warn('onNotificationOpenedApp: Message missing id');
 								continue;
@@ -68,12 +60,12 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 								mentions: safeJSONParse(message?.mentions || '[]'),
 								references: safeJSONParse(message?.references || '[]'),
 								reactions: safeJSONParse(message?.reactions || '[]'),
-								create_time: createTime,
-								update_time: updateTime
+								create_time_seconds: createTimeSeconds,
+								update_time_seconds: updateTimeSeconds
 							};
 							onchannelmessage(messageData as ChannelMessage);
 						} else {
-							console.warn('onNotificationOpenedApp: Invalid message structure or missing channel_id');
+							console.warn('onNotificationOpenedApp: Invalid message structure or missing channelId');
 						}
 					}
 				}

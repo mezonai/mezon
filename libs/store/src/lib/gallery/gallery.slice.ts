@@ -68,6 +68,7 @@ export const fetchGalleryAttachments = createAsyncThunk(
 			}
 
 			const attachments = response.attachments
+
 				.filter((att) => {
 					if (mediaFilter === 'all') {
 						return att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
@@ -86,8 +87,8 @@ export const fetchGalleryAttachments = createAsyncThunk(
 					isVideo: attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX)
 				}))
 				.sort((a, b) => {
-					if (a.create_time && b.create_time) {
-						return Date.parse(b.create_time) - Date.parse(a.create_time);
+					if (a.createTimeSeconds && b.createTimeSeconds) {
+						return b.createTimeSeconds - a.createTimeSeconds;
 					}
 					return 0;
 				}) as AttachmentEntity[];
@@ -181,8 +182,8 @@ export const gallerySlice = createSlice({
 
 			state.galleryByChannel[channelId].attachments.push(...newAttachments);
 			state.galleryByChannel[channelId].attachments.sort((a, b) => {
-				if (a.create_time && b.create_time) {
-					return Date.parse(b.create_time) - Date.parse(a.create_time);
+				if (a.createTime && b.createTime) {
+					return Date.parse(b.createTime) - Date.parse(a.createTime);
 				}
 				return 0;
 			});

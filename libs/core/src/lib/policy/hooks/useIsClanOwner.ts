@@ -7,7 +7,7 @@ export const useIsClanOwner = (clanId: string) => {
 	const userProfile = useSelector(selectAllAccount);
 
 	const isClanOwner = useMemo(() => {
-		return getClan?.creator_id === userProfile?.user?.id;
+		return getClan?.creatorId === userProfile?.user?.id;
 	}, [getClan, userProfile]);
 	return isClanOwner;
 };

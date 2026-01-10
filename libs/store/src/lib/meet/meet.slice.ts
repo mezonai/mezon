@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import type { HandleParticipantMeetStateEvent } from 'mezon-js';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, type MezonMessage } from '../helpers';
 
 type generateMeetTokenPayload = {
 	channelId: string;
@@ -10,9 +10,10 @@ type generateMeetTokenPayload = {
 };
 
 const generateMeetTokenCached = async (mezon: MezonValueContext, channelId: string, roomName: string) => {
-	const body = {
-		channel_id: channelId,
-		room_name: roomName
+	const body: MezonMessage<'mezon.api.GenerateMeetTokenRequest', { channelId: string; roomName: string }> = {
+		$typeName: 'mezon.api.GenerateMeetTokenRequest' as const,
+		channelId,
+		roomName
 	};
 	return await mezon.client.generateMeetToken(mezon.session, body);
 };
@@ -32,12 +33,27 @@ export const generateMeetToken = createAsyncThunk('meet/generateMeetToken', asyn
 	}
 });
 
+export const createExternalMezonMeet = createAsyncThunk('meet/createExternalMezonMeet', async (_, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		const response = await mezon.client.createExternalMezonMeet(mezon.session);
+		if (!response) {
+			return;
+		}
+		return response.externalLink;
+	} catch (error) {
+		captureSentryError(error, 'meet/createExternalMezonMeet');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const handleParticipantVoiceState = createAsyncThunk(
 	'meet/handleParticipantVoiceState',
-	async ({ clan_id, channel_id, display_name, state, room_name }: HandleParticipantMeetStateEvent, thunkAPI) => {
+	async ({ clanId, channelId, displayName, state, roomName }: HandleParticipantMeetStateEvent, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const response = await mezon.socketRef.current?.handleParticipantMeetState(clan_id, channel_id, display_name, state, room_name);
+			const response = await mezon.socketRef.current?.handleParticipantMeetState(clanId, channelId, displayName, state, roomName);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'meet/handleParticipantMeetState');

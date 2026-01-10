@@ -34,12 +34,12 @@ const UserProfile = forwardRef(function UserProfile({ navigation }: IUserProfile
 
 	useEffect(() => {
 		const userProfile = selectAllAccount(store.getState());
-		const { display_name, avatar_url, username, about_me } = userProfile?.user || {};
+		const { displayName, avatarUrl, username, aboutMe } = userProfile?.user || {};
 		const initialValue: IUserProfileValue = {
 			username: username || '',
-			imgUrl: avatar_url || '',
-			displayName: display_name || '',
-			aboutMe: about_me || ''
+			imgUrl: avatarUrl || '',
+			displayName: displayName || '',
+			aboutMe: aboutMe || ''
 		};
 		setCurrentUserProfileValue(initialValue);
 	}, []);
@@ -79,7 +79,7 @@ const UserProfile = forwardRef(function UserProfile({ navigation }: IUserProfile
 				dispatch(
 					usersClanActions.updateUserProfileAcrossClans({
 						userId: userProfile?.user?.id || '',
-						about_me: aboutMe || ''
+						aboutMe: aboutMe || ''
 					})
 				);
 				Toast.show({

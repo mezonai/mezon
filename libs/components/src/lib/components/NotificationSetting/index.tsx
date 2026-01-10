@@ -89,11 +89,11 @@ const ModalNotificationSetting = (props: ModalParam) => {
 	const sortedChannelCategorySettings = React.useMemo(() => {
 		const settingsCopy = [...channelCategorySettings];
 		settingsCopy.sort((a, b) => {
-			if (a.channel_category_label && b.channel_category_label) {
-				if (a.channel_category_label < b.channel_category_label) {
+			if (a.channelCategoryLabel && b.channelCategoryLabel) {
+				if (a.channelCategoryLabel < b.channelCategoryLabel) {
 					return -1;
 				}
-				if (a.channel_category_label > b.channel_category_label) {
+				if (a.channelCategoryLabel > b.channelCategoryLabel) {
 					return 1;
 				}
 			}
@@ -102,7 +102,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		return settingsCopy;
 	}, [channelCategorySettings]);
 	const handleNotificationClanChange = (event: any, notification: number) => {
-		dispatch(defaultNotificationActions.setDefaultNotificationClan({ clan_id: currentClanId as string, notification_type: notification }));
+		dispatch(defaultNotificationActions.setDefaultNotificationClan({ clanId: currentClanId as string, notificationType: notification }));
 	};
 	const categorizedChannels = useCategorizedAllChannels();
 	const options = categorizedChannels.reduce<Array<{ id: string; label: string; title: string }>>((acc, category) => {
@@ -110,7 +110,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		if (!isAlreadySelected) {
 			acc.push({
 				id: category.id,
-				label: (category as IChannel).channel_label || category.category_name || '',
+				label: (category as IChannel).channelLabel || category.categoryName || '',
 				title: (category as ICategoryChannel).channels ? 'category' : 'channel'
 			});
 		}
@@ -124,21 +124,21 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		if (newValue?.title === 'category') {
 			dispatch(
 				defaultNotificationCategoryActions.setDefaultNotificationCategory({
-					category_id: newValue?.id,
-					notification_type: defaultNotificationClan?.notification_setting_type,
-					clan_id: currentClanId || '',
+					categoryId: newValue?.id,
+					notificationType: defaultNotificationClan?.notificationSettingType,
+					clanId: currentClanId || '',
 					label: newValue?.label,
 					title: newValue?.title
 				})
 			);
 		}
 		if (newValue?.title === 'channel') {
-			if (notificatonSelected?.notification_setting_type === 0 || notificatonSelected?.notification_setting_type === undefined) {
+			if (notificatonSelected?.notificationSettingType === 0 || notificatonSelected?.notificationSettingType === undefined) {
 				dispatch(
 					notificationSettingActions.setNotificationSetting({
-						channel_id: newValue?.id,
-						notification_type: defaultNotificationClan?.notification_setting_type,
-						clan_id: currentClanId || '',
+						channelId: newValue?.id,
+						notificationType: defaultNotificationClan?.notificationSettingType,
+						clanId: currentClanId || '',
 						label: newValue?.label,
 						title: newValue?.title
 					})
@@ -146,9 +146,9 @@ const ModalNotificationSetting = (props: ModalParam) => {
 			} else {
 				dispatch(
 					notificationSettingActions.setNotificationSetting({
-						channel_id: newValue.id,
-						notification_type: notificatonSelected?.notification_setting_type,
-						clan_id: currentClanId || '',
+						channelId: newValue.id,
+						notificationType: notificatonSelected?.notificationSettingType,
+						clanId: currentClanId || '',
 						label: newValue?.label,
 						title: newValue?.title
 					})
@@ -161,18 +161,18 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		if (title === 'category') {
 			const payload: MuteCatePayload = {
 				id: channelCategoryId || '',
-				mute_time: 0,
+				muteTime: 0,
 				active,
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			};
 			dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 		}
 		if (title === 'channel') {
 			const payload: MuteChannelPayload = {
-				channel_id: channelCategoryId || '',
-				mute_time: 0,
+				channelId: channelCategoryId || '',
+				muteTime: 0,
 				active,
-				clan_id: currentClanId || ''
+				clanId: currentClanId || ''
 			};
 			dispatch(notificationSettingActions.setMuteChannel(payload));
 		}
@@ -182,18 +182,18 @@ const ModalNotificationSetting = (props: ModalParam) => {
 		if (title === 'category') {
 			dispatch(
 				defaultNotificationCategoryActions.setDefaultNotificationCategory({
-					category_id: channelCategoryId,
-					notification_type: notificationType,
-					clan_id: currentClanId || ''
+					categoryId: channelCategoryId,
+					notificationType: notificationType,
+					clanId: currentClanId || ''
 				})
 			);
 		}
 		if (title === 'channel') {
 			dispatch(
 				notificationSettingActions.setNotificationSetting({
-					channel_id: channelCategoryId,
-					notification_type: notificationType,
-					clan_id: currentClanId || ''
+					channelId: channelCategoryId,
+					notificationType: notificationType,
+					clanId: currentClanId || ''
 				})
 			);
 		}
@@ -204,24 +204,24 @@ const ModalNotificationSetting = (props: ModalParam) => {
 			if (active === 0) {
 				const payload: MuteCatePayload = {
 					id,
-					mute_time: 0,
+					muteTime: 0,
 					active: 1,
-					clan_id: currentClanId || ''
+					clanId: currentClanId || ''
 				};
 				dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 			}
-			dispatch(defaultNotificationCategoryActions.deleteDefaultNotificationCategory({ category_id: id, clan_id: currentClanId as string }));
+			dispatch(defaultNotificationCategoryActions.deleteDefaultNotificationCategory({ categoryId: id, clanId: currentClanId as string }));
 		}
 		if (title === 'channel') {
 			if (active === 0) {
 				const body = {
-					channel_id: channelCategoryId || '',
-					clan_id: currentClanId || '',
+					channelId: channelCategoryId || '',
+					clanId: currentClanId || '',
 					active: 1
 				};
 				dispatch(notificationSettingActions.setNotificationSetting(body));
 			}
-			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channel_id: id, clan_id: currentClanId || '' }));
+			dispatch(notificationSettingActions.deleteNotiChannelSetting({ channelId: id, clanId: currentClanId || '' }));
 		}
 	};
 	const modalRef = useRef<HTMLDivElement>(null);
@@ -264,7 +264,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 									name="notification-setting"
 									value={notificationType.label}
 									className="relative disabled:bg-slate-500  float-left mr-1 mt-0.5 h-5 w-5 appearance-none rounded-full border-2 border-solid border-neutral-300 before:pointer-events-none before:absolute before:h-4 before:w-4 before:scale-0 before:rounded-full before:bg-transparent before:opacity-0 before:shadow-[0px_0px_0px_13px_transparent] before:content-[''] after:absolute after:z-[1] after:block after:h-4 after:w-4 after:rounded-full after:content-[''] checked:border-primary checked:before:opacity-[0.16] checked:after:absolute checked:after:left-1/2 checked:after:top-1/2 checked:after:h-[0.625rem] checked:after:w-[0.625rem] checked:after:rounded-full checked:after:border-primary checked:after:bg-primary checked:after:content-[''] checked:after:[transform:translate(-50%,-50%)] hover:cursor-pointer hover:before:opacity-[0.04] hover:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:shadow-none focus:outline-none focus:ring-0 focus:before:scale-100 focus:before:opacity-[0.12] focus:before:shadow-[0px_0px_0px_13px_rgba(0,0,0,0.6)] focus:before:transition-[box-shadow_0.2s,transform_0.2s] checked:focus:border-primary checked:focus:before:scale-100 checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca] checked:focus:before:transition-[box-shadow_0.2s,transform_0.2s] dark:border-neutral-600 dark:checked:border-primary dark:checked:after:border-primary dark:checked:after:bg-primary dark:focus:before:shadow-[0px_0px_0px_13px_rgba(255,255,255,0.4)] dark:checked:focus:border-primary dark:checked:focus:before:shadow-[0px_0px_0px_13px_#3b71ca]"
-									checked={notificationType.value === defaultNotificationClan?.notification_setting_type}
+									checked={notificationType.value === defaultNotificationClan?.notificationSettingType}
 									onChange={(event) => handleNotificationClanChange(event, Number(notificationType.value))}
 								/>
 								<label htmlFor={`notification-${index}`}>{notificationType.label}</label>
@@ -313,19 +313,19 @@ const ModalNotificationSetting = (props: ModalParam) => {
 							<tbody>
 								{sortedChannelCategorySettings.map((channelCategorySetting) => (
 									<tr key={channelCategorySetting.id} className="group relative grid grid-cols-7 mb-2.5  rounded p-[10px]">
-										<td className="col-span-3 text-xs md:text-sm">{channelCategorySetting.channel_category_label}</td>
+										<td className="col-span-3 text-xs md:text-sm">{channelCategorySetting.channelCategoryLabel}</td>
 										{notificationTypesListTranslated.map((notificationType) => (
 											<td key={notificationType.value} className="col-span-1 text-center">
 												<input
 													type="radio"
 													name={`notification-${channelCategorySetting.id}`}
-													checked={notificationType.value === channelCategorySetting.notification_setting_type}
+													checked={notificationType.value === channelCategorySetting.notificationSettingType}
 													className="cursor-pointer"
 													onChange={() =>
 														handleDefaultNotificationChange(
 															notificationType.value,
 															channelCategorySetting.id,
-															channelCategorySetting.channel_category_title || ''
+															channelCategorySetting.channelCategoryTitle || ''
 														)
 													}
 												/>
@@ -339,7 +339,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 												onChange={() =>
 													handleMuteChange(
 														channelCategorySetting.id,
-														channelCategorySetting.channel_category_title || '',
+														channelCategorySetting.channelCategoryTitle || '',
 														channelCategorySetting.action === 1 ? 0 : 1
 													)
 												}
@@ -348,7 +348,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 												className="absolute top-0 right-0 text-red-500 rounded-full  size-[15px] justify-center items-center hidden group-hover:flex px-3 py-3"
 												onClick={() =>
 													handleRemoveOverride(
-														channelCategorySetting.channel_category_title || '',
+														channelCategorySetting.channelCategoryTitle || '',
 														channelCategorySetting.id || '',
 														channelCategorySetting.action === 1 ? 1 : 0,
 														channelCategorySetting.id

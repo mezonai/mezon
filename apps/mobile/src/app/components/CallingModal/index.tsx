@@ -36,7 +36,7 @@ const CallingModal = () => {
 	useEffect(() => {
 		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
 		const getCallerInfo = async () => {
-			const jsonData = latestSignalingEntry?.signalingData?.json_data;
+			const jsonData = latestSignalingEntry?.signalingData?.jsonData;
 
 			if (jsonData) {
 				try {
@@ -63,7 +63,7 @@ const CallingModal = () => {
 			}
 		};
 
-		latestSignalingEntry?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER && getCallerInfo();
+		latestSignalingEntry?.signalingData?.dataType === WebrtcSignalingType.WEBRTC_SDP_OFFER && getCallerInfo();
 	}, [signalingData, usersClan]);
 
 	const stopAndReleaseSound = () => {
@@ -91,7 +91,7 @@ const CallingModal = () => {
 
 	useEffect(() => {
 		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
-		const dataType = latestSignalingEntry?.signalingData?.data_type;
+		const dataType = latestSignalingEntry?.signalingData?.dataType;
 		if (!isInCall && dataType === WebrtcSignalingType.WEBRTC_SDP_OFFER) {
 			setIsVisible(true);
 			Sound.setCategory(Platform.OS === 'ios' ? 'Playback' : 'Ambient', Platform.OS === 'ios');
@@ -126,7 +126,7 @@ const CallingModal = () => {
 
 		const processSignaling = (currentState) => {
 			const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
-			const dataType = latestSignalingEntry?.signalingData?.data_type;
+			const dataType = latestSignalingEntry?.signalingData?.dataType;
 			if (currentState === 'background') {
 				if (!isInCall && dataType === WebrtcSignalingType.WEBRTC_SDP_OFFER && callerInfo?.name) {
 					displayCallerNotificationAndroid(latestSignalingEntry);
@@ -165,8 +165,8 @@ const CallingModal = () => {
 		setIsVisible(false);
 		const params = {
 			receiverId: signalingData?.[signalingData?.length - 1]?.callerId,
-			receiverAvatar: callerInfo?.avatar || callerInfo?.user?.avatar_url || '',
-			receiverName: callerInfo?.name || callerInfo?.user?.display_name || callerInfo?.user?.username || '',
+			receiverAvatar: callerInfo?.avatar || callerInfo?.user?.avatarUrl || '',
+			receiverName: callerInfo?.name || callerInfo?.user?.displayName || callerInfo?.user?.username || '',
 			isAnswerCall: true
 		};
 		const data = {
@@ -186,7 +186,7 @@ const CallingModal = () => {
 			latestSignalingEntry?.callerId,
 			WebrtcSignalingType.WEBRTC_SDP_QUIT,
 			'{}',
-			latestSignalingEntry?.signalingData?.channel_id,
+			latestSignalingEntry?.signalingData?.channelId,
 			userId
 		);
 	};
@@ -212,10 +212,10 @@ const CallingModal = () => {
 			return;
 		}
 		const data = {
-			offer: signalingEntry.signalingData.json_data,
+			offer: signalingEntry.signalingData.jsonData,
 			callerName: callerInfo?.name,
 			callerAvatar: callerInfo?.avatar,
-			channelId: signalingEntry.signalingData.channel_id,
+			channelId: signalingEntry.signalingData.channelId,
 			callerId: signalingEntry.callerId
 		};
 		displayNativeCalling({ offer: JSON.stringify(data) }, true);

@@ -17,25 +17,26 @@ export type PermissionsChannelProps = {
 	openModalAdd: MutableRefObject<boolean>;
 	parentRef: RefObject<HTMLDivElement>;
 	clanId?: string;
+	menuIsOpen?: boolean;
 };
 
 const PermissionsChannel = (props: PermissionsChannelProps) => {
-	const { channel, openModalAdd, parentRef, clanId } = props;
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || ''));
+	const { channel, openModalAdd, parentRef, clanId, menuIsOpen } = props;
+	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channelId || ''));
 	const listCategory = useSelector(selectAllCategories);
 	const categoryName = useMemo(() => {
-		if (realTimeChannel?.category_name) {
-			return realTimeChannel.category_name;
+		if (realTimeChannel?.categoryName) {
+			return realTimeChannel.categoryName;
 		}
-		if (realTimeChannel?.category_id) {
-			const category = listCategory.find((cat) => cat.id === realTimeChannel.category_id);
-			return category?.category_name || '';
+		if (realTimeChannel?.categoryId) {
+			const category = listCategory.find((cat) => cat.id === realTimeChannel.categoryId);
+			return category?.categoryName || '';
 		}
 		return '';
-	}, [realTimeChannel?.category_name, realTimeChannel?.category_id, listCategory]);
+	}, [realTimeChannel?.categoryName, realTimeChannel?.categoryId, listCategory]);
 	const { t } = useTranslation('channelSetting');
 	const [showAddMemRole, setShowAddMemRole] = useState(false);
-	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channel_private);
+	const [valueToggleInit, setValueToggleInit] = useState(!!channel.channelPrivate);
 	const [valueToggle, setValueToggle] = useState(valueToggleInit);
 	const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>([]);
@@ -62,11 +63,11 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 		const updatedUserIds = userProfile?.user?.id ? [...selectedUserIds, userProfile?.user.id] : selectedUserIds;
 		await dispatch(
 			channelsActions.updateChannelPrivate({
-				clan_id: clanId,
-				channel_id: channel.id,
-				channel_private: channel.channel_private || 0,
-				user_ids: updatedUserIds,
-				role_ids: selectedRoleIds
+				clanId,
+				channelId: channel.id,
+				channelPrivate: channel.channelPrivate || 0,
+				userIds: updatedUserIds,
+				roleIds: selectedRoleIds
 			})
 		);
 	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel]);
@@ -103,7 +104,9 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 
 	return (
 		<>
-			<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] sbm:pb-7 sbm:px-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar relative">
+			<div
+				className={`overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] sbm:pb-7 sbm:px-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar relative ${!menuIsOpen ? 'sbm:pt-[94px] pt-[70px]' : 'pt-[94px]'}`}
+			>
 				<div className="dark:text-white text-[15px] text-black">
 					<HeaderModal name={categoryName} />
 					<div className="rounded-md overflow-hidden mt-4">
@@ -177,7 +180,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 					<hr className="border-t border-solid dark:border-gray-700 border-bgModifierHoverLight mt-10 mb-[30px]" />
 					<PermissionManage
 						channelId={channel.id}
-						channelPrivate={channel.channel_private === 1}
+						channelPrivate={channel.channelPrivate === 1}
 						setIsPrivateChannel={setValueToggle}
 						setPermissionsListHasChanged={setPermissionsListHasChanged}
 						saveTriggerRef={saveTriggerRef}

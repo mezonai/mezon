@@ -167,8 +167,8 @@ const DirectMessage = () => {
 	const isPlayDialTone = useSelector(selectAudioDialTone);
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
 	const isHaveCallInChannel = useMemo(() => {
-		return currentDmGroup?.user_ids?.some((i) => i === signalingData?.[0]?.callerId);
-	}, [currentDmGroup?.user_ids, signalingData]);
+		return currentDmGroup?.userIds?.some((i) => i === signalingData?.[0]?.callerId);
+	}, [currentDmGroup?.userIds, signalingData]);
 
 	const HEIGHT_EMOJI_PANEL = 457;
 	const WIDTH_EMOJI_PANEL = 500;
@@ -206,11 +206,11 @@ const DirectMessage = () => {
 		: 0;
 
 	const isDmChannel = useMemo(() => currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM, [currentDmGroup?.type]);
-	const isBlocked = useAppSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''))?.state === EStateFriend.BLOCK;
+	const isBlocked = useAppSelector((state) => selectFriendById(state, currentDmGroup?.userIds?.[0] || ''))?.state === EStateFriend.BLOCK;
 
 	const isDmWithoutParticipants = useMemo(() => {
-		return currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (!currentDmGroup.user_ids || currentDmGroup.user_ids.length === 0);
-	}, [currentDmGroup?.type, currentDmGroup?.user_ids]);
+		return currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (!currentDmGroup.userIds || currentDmGroup.userIds.length === 0);
+	}, [currentDmGroup?.type, currentDmGroup?.userIds]);
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	const handleClose = useCallback(() => {}, []);
@@ -235,7 +235,7 @@ const DirectMessage = () => {
 
 	return (
 		<>
-			{draggingState && <FileUploadByDnD currentId={currentDmGroup?.channel_id ?? ''} />}
+			{draggingState && <FileUploadByDnD currentId={currentDmGroup?.channelId ?? ''} />}
 			<div
 				className={` flex flex-col flex-1 shrink min-w-0 bg-transparent h-heightWithoutTopBar overflow-visible relative mt-[50px] bg-theme-chat text-theme-text`}
 				onDragEnter={handleDragEnter}
@@ -255,8 +255,8 @@ const DirectMessage = () => {
 									clanId="0"
 									isDM={true}
 									channelId={directId || currentDirectId || ''}
-									isPrivate={currentDmGroup?.channel_private}
-									channelLabel={currentDmGroup?.channel_label}
+									isPrivate={currentDmGroup?.channelPrivate}
+									channelLabel={currentDmGroup?.channelLabel}
 									username={isDmChannel ? currentDmGroup?.usernames?.at(-1) : undefined}
 									type={isDmChannel ? ChannelType.CHANNEL_TYPE_DM : ChannelType.CHANNEL_TYPE_GROUP}
 									mode={isDmChannel ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP}
@@ -347,12 +347,12 @@ const DirectMessage = () => {
 					{Number(type) === ChannelType.CHANNEL_TYPE_GROUP && isShowMemberListDM && (
 						<DirectMessageContextMenuProvider
 							contextMenuId={DMCT_GROUP_CHAT_ID}
-							dataMemberCreate={{ createId: currentDmGroup?.creator_id || '' }}
+							dataMemberCreate={{ createId: currentDmGroup?.creatorId || '' }}
 						>
 							<div
 								className={`contain-strict text-theme-primary bg-active-friend-list overflow-y-scroll h-[calc(100vh_-_50px)] thread-scroll ${isShowMemberListDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-[241px]'}`}
 							>
-								<MemberListGroupChat directMessageId={directId} createId={currentDmGroup?.creator_id} />
+								<MemberListGroupChat directMessageId={directId} createId={currentDmGroup?.creatorId} />
 							</div>
 						</DirectMessageContextMenuProvider>
 					)}
@@ -361,14 +361,14 @@ const DirectMessage = () => {
 						<div className={`bg-active-friend-list ${isUseProfileDM ? 'flex' : 'hidden'} ${closeMenu ? 'w-full' : 'w-widthDmProfile'}`}>
 							<ModalUserProfile
 								onClose={handleClose}
-								userID={Array.isArray(currentDmGroup?.user_ids) ? currentDmGroup?.user_ids[0] : currentDmGroup?.user_ids}
+								userID={Array.isArray(currentDmGroup?.userIds) ? currentDmGroup?.userIds[0] : currentDmGroup?.userIds}
 								classWrapper="w-full"
 								classBanner="h-[120px]"
 								showNote={true}
 								showPopupLeft={true}
 								avatar={
 									Number(type) === ChannelType.CHANNEL_TYPE_GROUP
-										? currentDmGroup?.channel_avatar?.[0]
+										? currentDmGroup?.channelAvatar?.[0]
 										: currentDmGroup?.avatars?.at(-1)
 								}
 								isDM={true}

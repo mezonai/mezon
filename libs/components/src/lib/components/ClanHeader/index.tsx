@@ -19,7 +19,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { EPermission, generateE2eId } from '@mezon/utils';
-import type { ApiCreateCategoryDescRequest } from 'mezon-js/api.gen';
+import type { ApiCreateCategoryDescRequest } from 'mezon-js/types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -86,8 +86,8 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 
 	const handleCreateCate = async (nameCate: string) => {
 		const body: ApiCreateCategoryDescRequest = {
-			clan_id: currentClanId?.toString(),
-			category_name: nameCate
+			clanId: currentClanId?.toString(),
+			categoryName: nameCate
 		};
 		await dispatch(categoriesActions.createNewCategory(body));
 		onClose();

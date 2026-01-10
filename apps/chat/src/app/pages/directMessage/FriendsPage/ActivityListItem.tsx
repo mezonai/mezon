@@ -21,10 +21,10 @@ const ActivityListItem = ({ user }: ActivityProps) => {
 };
 
 const ActivityItem = ({ user, activity }: { user?: IUserProfileActivity; activity?: ActivitiesEntity }) => {
-	const avatar = user?.avatar_url ?? '';
-	const username = user?.display_name || user?.username || '';
-	const activityDescription = activity?.activity_description;
-	const activityName = activity?.activity_name;
+	const avatar = user?.avatarUrl ?? '';
+	const username = user?.displayName || user?.username || '';
+	const activityDescription = activity?.activityDescription;
+	const activityName = activity?.activityName;
 
 	return (
 		<div className="w-full text-theme-primary">

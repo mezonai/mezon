@@ -4,7 +4,7 @@ import { getStore, selectBanMeInChannel, selectCurrentChannel, selectCurrentDM }
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
 import { MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelDescription } from 'mezon-js/api.gen';
+import type { ApiChannelDescription } from 'mezon-js/types';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -18,8 +18,8 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 	const currenChannel = useSelector(selectCurrentChannel);
 	const currentDm = useSelector(selectCurrentDM);
 	const mode = useMemo(() => {
-		return message?.clan_id === '0' ? ChannelStreamMode.STREAM_MODE_GROUP : ChannelStreamMode.STREAM_MODE_CHANNEL;
-	}, [message?.clan_id]);
+		return message?.clanId === '0' ? ChannelStreamMode.STREAM_MODE_GROUP : ChannelStreamMode.STREAM_MODE_CHANNEL;
+	}, [message?.clanId]);
 	const channelOrDirect = useMemo(() => {
 		return mode === ChannelStreamMode.STREAM_MODE_GROUP ? currentDm : currenChannel;
 	}, [currenChannel, currentDm, mode]);
@@ -30,12 +30,12 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 	});
 
 	const urlIcon = useMemo(() => {
-		if (!message.create_time_seconds) {
+		if (!message.createTimeSeconds) {
 			return STICKER_WAVE.LIST_STICKER[0];
 		}
 
-		return STICKER_WAVE.LIST_STICKER[message.create_time_seconds % STICKER_WAVE.LIST_STICKER.length];
-	}, [message.create_time_seconds]);
+		return STICKER_WAVE.LIST_STICKER[message.createTimeSeconds % STICKER_WAVE.LIST_STICKER.length];
+	}, [message.createTimeSeconds]);
 
 	const handleSendWaveSticker = () => {
 		const store = getStore();
@@ -48,19 +48,19 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 		try {
 			const content: IMessageSendPayload = { t: '' };
 			const ref = {
-				message_id: '',
-				message_ref_id: message.id,
-				ref_type: 0,
-				message_sender_id: message?.sender_id,
-				message_sender_username: WAVE_SENDER_NAME,
-				mesages_sender_avatar: MEZON_AVATAR_URL,
-				message_sender_clan_nick: WAVE_SENDER_NAME,
-				message_sender_display_name: WAVE_SENDER_NAME,
+				messageId: '',
+				messageRefId: message.id,
+				refType: 0,
+				messageSenderId: message?.senderId,
+				messageSenderUsername: WAVE_SENDER_NAME,
+				mesagesSenderAvatar: MEZON_AVATAR_URL,
+				messageSenderClanNick: WAVE_SENDER_NAME,
+				messageSenderDisplayName: WAVE_SENDER_NAME,
 				content: JSON.stringify(message.content),
-				has_attachment: false,
-				channel_id: message.channel_id ?? '',
+				hasAttachment: false,
+				channelId: message.channelId ?? '',
 				mode: message.mode ?? 0,
-				channel_label: message.channel_label
+				channelLabel: message.channelLabel
 			};
 			const attachments = [
 				{

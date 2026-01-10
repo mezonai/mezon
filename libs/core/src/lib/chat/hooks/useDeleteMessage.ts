@@ -54,10 +54,10 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 
 				if (isTopic) {
 					await socket.removeChatMessage(
-						payload.clan_id,
-						channel?.channel_id || '',
+						payload.clanId,
+						channel?.channelId || '',
 						mode,
-						payload.is_public,
+						payload.isPublic,
 						messageId,
 						hasAttachment,
 						channelId,
@@ -69,10 +69,10 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				}
 
 				await socket.removeChatMessage(
-					payload.clan_id,
+					payload.clanId,
 					channelId,
 					mode,
-					payload.is_public,
+					payload.isPublic,
 					messageId,
 					hasAttachment,
 					undefined,

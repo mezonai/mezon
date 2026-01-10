@@ -59,12 +59,12 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 		} else {
 			const activeRole = rolesClan.find((role) => role.id === clickRole);
 
-			const permissions = activeRole?.permission_list?.permissions;
+			const permissions = activeRole?.permissionList?.permissions;
 			const permissionIds = permissions ? permissions.filter((permission) => permission.active === 1).map((permission) => permission.id) : [];
 			dispatch(setNameRoleNew(activeRole?.title));
 			dispatch(setColorRoleNew(activeRole?.color));
 			dispatch(setSelectedPermissions(permissionIds));
-			dispatch(setCurrentRoleIcon(activeRole?.role_icon || ''));
+			dispatch(setCurrentRoleIcon(activeRole?.roleIcon || ''));
 			dispatch(roleSlice.actions.setNewRoleIcon(null));
 		}
 	};
@@ -93,7 +93,7 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 	return flagOption ? (
 		<>
 			<div
-				className="absolute top-0 left-0 w-full h-full pl-2 flex flex-row flex-1 shrink bg-theme-setting-primary overflow-hidden sbm:pt-[-60px] pt-[10px]"
+				className="absolute top-0 left-0 w-full h-full pl-2 flex flex-row flex-1 shrink bg-theme-setting-primary overflow-hidden pt-[70px] md:pt-[10px]"
 				data-e2e={generateE2eId('clan_page.settings.role.container')}
 			>
 				<SettingListRole handleClose={props.handleClose} RolesClan={rolesClan} handleUpdateUser={() => handleUpdateUser(true)} />

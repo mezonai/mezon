@@ -31,13 +31,17 @@ export enum EChannelSettingTab {
 const SettingChannel = (props: ModalSettingProps) => {
 	const { onClose, channel } = props;
 	const { t } = useTranslation('channelSetting');
-	const channelId = (channel?.channel_id || (channel as any)?.id || '') as string;
+	const channelId = (channel?.channelId || (channel as any)?.id || '') as string;
 	const channelFromStore = useAppSelector((state) => selectChannelById(state, channelId));
 	const currentChannel = (channelFromStore || channel) as IChannel;
 
 	const [currentSetting, setCurrentSetting] = useState<string>(EChannelSettingTab.OVERVIEW);
 	const [menu, setMenu] = useState(true);
-	const [displayChannelLabel, setDisplayChannelLabel] = useState<string>(currentChannel?.channel_label || '');
+	const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+	const [displayChannelLabel, setDisplayChannelLabel] = useState<string>(currentChannel?.channelLabel || '');
+
+	const closeMenu = useSelector(selectCloseMenu);
+	const dispatch = useAppDispatch();
 
 	const getTabTranslation = useCallback(
 		(tabKey: string) => {
@@ -60,14 +64,18 @@ const SettingChannel = (props: ModalSettingProps) => {
 		if (closeMenu) {
 			setMenu(false);
 		}
+		if (window.innerWidth < 768) {
+			setMenuIsOpen(false);
+		}
 	};
-	const dispatch = useAppDispatch();
+
+	const handleMenuBtn = () => {
+		setMenuIsOpen(!menuIsOpen);
+	};
 
 	useEffect(() => {
-		dispatch(fetchUserChannels({ channelId: channel.channel_id as string }));
-	}, [channel?.channel_id]);
-
-	const closeMenu = useSelector(selectCloseMenu);
+		dispatch(fetchUserChannels({ channelId: channel.channelId as string }));
+	}, [channel?.channelId, dispatch]);
 
 	const openModalAdd = useRef(false);
 
@@ -75,7 +83,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 		if (!openModalAdd.current) {
 			onClose();
 		}
-	}, []);
+	}, [onClose]);
 
 	const modalRef = useRef<HTMLDivElement>(null);
 
@@ -83,56 +91,85 @@ const SettingChannel = (props: ModalSettingProps) => {
 	useOnClickOutside(modalRef, handleClose);
 
 	useEffect(() => {
-		setDisplayChannelLabel(currentChannel?.channel_label || '');
-	}, [currentChannel?.channel_id, currentChannel?.channel_label]);
+		setDisplayChannelLabel(currentChannel?.channelLabel || '');
+	}, [currentChannel?.channelId, currentChannel?.channelLabel]);
+
+	useEffect(() => {
+		const handleResize = () => {
+			if (window.innerWidth >= 768) {
+				setMenuIsOpen(true);
+			} else {
+				setMenuIsOpen(false);
+			}
+		};
+		handleResize();
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
+	}, []);
 
 	return (
 		<div
 			ref={modalRef}
 			tabIndex={-1}
-			className="flex fixed inset-0  w-screen z-30 cursor-default"
+			className="flex fixed inset-0  w-screen z-30 cursor-default bg-theme-setting-primary text-theme-primary"
 			onMouseDown={(event) => event.stopPropagation()}
 			role="button"
 		>
 			<div className="flex text-gray- w-screen relative text-white">
-				<div className="h-fit absolute top-5 right-5 block sbm:hidden z-[1]">
-					<div
-						onClick={() => onClose()}
-						className="rounded-full p-[10px] border-2 dark:border-[#a8a6a6] border-black cursor-pointer dark:text-[#a8a6a6] text-black"
-					>
-						<Icons.CloseButton className="w-4" />
+				{menuIsOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 sbm:hidden" onClick={() => setMenuIsOpen(false)} />}
+				<div
+					className={`${
+						!menuIsOpen ? 'hidden sbm:flex' : 'flex fixed sbm:relative left-0 top-0 h-full z-50 sbm:z-auto'
+					} w-1/6 xl:w-1/4 min-w-56 relative bg-theme-setting-nav`}
+				>
+					<ChannelSettingItem
+						onItemClick={handleSettingItemClick}
+						channel={channel}
+						onCloseModal={onClose}
+						stateClose={closeMenu}
+						stateMenu={menu}
+						displayChannelLabel={displayChannelLabel}
+						getTabTranslation={getTabTranslation}
+					/>
+				</div>
+				<div className="flex sbm:hidden fixed top-0 left-0 right-0 justify-between items-center z-[60] bg-theme-setting-primary pb-4 pt-4 px-4">
+					<div className="absolute inset-0 bg-gradient-to-b from-theme-setting-primary via-theme-setting-primary/95 to-transparent pointer-events-none" />
+					<div className="relative z-10">
+						{!menuIsOpen ? (
+							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
+								<Icons.OpenMenu className="w-full h-full" />
+							</button>
+						) : (
+							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
+								<Icons.ArrowLeftCircleActive className="w-full h-full" />
+							</button>
+						)}
+					</div>
+					<div onClick={onClose} className="relative z-10 cursor-pointer">
+						<Icons.CloseIcon className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover" />
 					</div>
 				</div>
-				<div className="h-fit absolute top-5 left-5 block sbm:hidden z-[1]">
-					<button
-						className={`bg-[#AEAEAE] w-[30px] h-[30px] rounded-[50px] font-bold transform hover:scale-105 hover:bg-slate-400 transition duration-300 ease-in-out flex justify-center items-center ${menu ? 'rotate-90' : '-rotate-90'}`}
-						onClick={() => setMenu(!menu)}
-					>
-						<Icons.ArrowDown defaultFill="white" defaultSize="w-[20px] h-[30px]" />
-					</button>
-				</div>
-				<ChannelSettingItem
-					onItemClick={handleSettingItemClick}
-					channel={channel}
-					onCloseModal={onClose}
-					stateClose={closeMenu}
-					stateMenu={menu}
-					displayChannelLabel={displayChannelLabel}
-					getTabTranslation={getTabTranslation}
-				/>
 				{currentSetting === EChannelSettingTab.OVERVIEW && (
-					<OverviewChannel channel={channel} onDisplayLabelChange={setDisplayChannelLabel} />
+					<OverviewChannel channel={channel} onDisplayLabelChange={setDisplayChannelLabel} menuIsOpen={menuIsOpen} />
 				)}
 				{currentSetting === EChannelSettingTab.PREMISSIONS && (
-					<PermissionsChannel channel={channel} openModalAdd={openModalAdd} parentRef={modalRef} clanId={channel.clan_id} />
+					<PermissionsChannel
+						channel={channel}
+						openModalAdd={openModalAdd}
+						parentRef={modalRef}
+						clanId={channel.clanId}
+						menuIsOpen={menuIsOpen}
+					/>
 				)}
-				{currentSetting === EChannelSettingTab.INVITES && <InvitesChannel />}
-				{currentSetting === EChannelSettingTab.INTEGRATIONS && <IntegrationsChannel currentChannel={channel} />}
-				{currentSetting === EChannelSettingTab.CATEGORY && <SettingCategoryChannel channel={channel} />}
-				{currentSetting === EChannelSettingTab.STREAM_THUMBNAIL && <StreamThumbnailChannel channel={channel} />}
+				{currentSetting === EChannelSettingTab.INVITES && <InvitesChannel menuIsOpen={menuIsOpen} />}
+				{currentSetting === EChannelSettingTab.INTEGRATIONS && <IntegrationsChannel currentChannel={channel} menuIsOpen={menuIsOpen} />}
+				{currentSetting === EChannelSettingTab.CATEGORY && <SettingCategoryChannel channel={channel} menuIsOpen={menuIsOpen} />}
+				{currentSetting === EChannelSettingTab.STREAM_THUMBNAIL && <StreamThumbnailChannel channel={channel} menuIsOpen={menuIsOpen} />}
 				{currentSetting === EChannelSettingTab.QUICK_MENU && (
-					<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] sbm:pb-7 sbm:pr-[10px] sbm:pl-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
-						<QuickMenuAccessManager channelId={channel.channel_id || ''} clanId={channel.clan_id || ''} />
+					<div
+						className={`overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] sbm:pb-7 sbm:pr-[10px] sbm:pl-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar ${!menuIsOpen ? 'sbm:pt-[94px] pt-[70px]' : 'pt-[94px]'}`}
+					>
+						<QuickMenuAccessManager channelId={channel.channelId || ''} clanId={channel.clanId || ''} />
 					</div>
 				)}
 

@@ -50,23 +50,23 @@ export const ProfileDetail = memo(() => {
 			const decodedData = JSON.parse(decodeURIComponent(atob(routeRawData)));
 			return {
 				username,
-				avatar_url: decodedData?.avatar,
-				display_name: decodedData?.name,
-				user_id: decodedData?.id || ''
+				avatarUrl: decodedData?.avatar,
+				displayName: decodedData?.name,
+				userId: decodedData?.id || ''
 			};
 		} catch (error) {
 			return null;
 		}
 	}, [routeRawData, username]);
 
-	const infoFriend = useAppSelector((state) => selectFriendById(state, profileData?.user_id));
+	const infoFriend = useAppSelector((state) => selectFriendById(state, profileData?.userId));
 	const listDM = useAppSelector(selectDirectsOpenlist);
 	const youSelf = useMemo(() => {
-		return profileData?.user_id === userId;
-	}, [profileData?.user_id, userId]);
+		return profileData?.userId === userId;
+	}, [profileData?.userId, userId]);
 
 	const userRelationshipStatus = useMemo(() => {
-		if (!profileData?.user_id) return UserRelationshipStatus.NOT_FRIENDS;
+		if (!profileData?.userId) return UserRelationshipStatus.NOT_FRIENDS;
 
 		const isFriend = infoFriend?.state === EStateFriend.FRIEND;
 		if (isFriend) return UserRelationshipStatus.FRIENDS;
@@ -81,18 +81,18 @@ export const ProfileDetail = memo(() => {
 		if (isBlocked) return UserRelationshipStatus.BLOCKED;
 
 		return UserRelationshipStatus.NOT_FRIENDS;
-	}, [profileData?.user_id, infoFriend]);
+	}, [profileData?.userId, infoFriend]);
 
 	const navigateToMessageDetail = useCallback(async () => {
-		if (!profileData?.user_id) return;
+		if (!profileData?.userId) return;
 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
 			isShow: false
 		});
 
 		const directMessage = listDM?.find?.((dm) => {
-			const userIds = dm?.user_ids;
-			return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === profileData.user_id;
+			const userIds = dm?.userIds;
+			return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === profileData.userId;
 		});
 
 		if (directMessage?.id) {
@@ -106,27 +106,27 @@ export const ProfileDetail = memo(() => {
 		}
 
 		const response = await createDirectMessageWithUser(
-			profileData.user_id,
-			profileData.display_name || profileData.username,
+			profileData.userId,
+			profileData.displayName || profileData.username,
 			profileData.username,
-			profileData.avatar_url
+			profileData.avatarUrl
 		);
 
-		if (response?.channel_id) {
+		if (response?.channelId) {
 			await checkNotificationPermissionAndNavigate(() => {
 				if (isTabletLandscape) {
-					dispatch(directActions.setDmGroupCurrentId(response?.channel_id || ''));
+					dispatch(directActions.setDmGroupCurrentId(response?.channelId || ''));
 					navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 				} else {
-					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
+					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channelId });
 				}
 			});
 		}
 	}, [
-		profileData?.user_id,
-		profileData?.display_name,
+		profileData?.userId,
+		profileData?.displayName,
 		profileData?.username,
-		profileData?.avatar_url,
+		profileData?.avatarUrl,
 		listDM,
 		isTabletLandscape,
 		dispatch,
@@ -135,23 +135,23 @@ export const ProfileDetail = memo(() => {
 	]);
 
 	const handleCallUser = useCallback(async () => {
-		if (!profileData?.user_id) return;
+		if (!profileData?.userId) return;
 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
 			isShow: false
 		});
 
 		const directMessage = listDM?.find?.((dm) => {
-			const userIds = dm?.user_ids;
-			return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === profileData.user_id;
+			const userIds = dm?.userIds;
+			return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === profileData.userId;
 		});
 
 		if (directMessage?.id) {
 			dispatch(DMCallActions.removeAll());
 			const params = {
-				receiverId: profileData.user_id,
-				receiverAvatar: profileData.avatar_url,
-				receiverName: profileData.display_name || profileData.username,
+				receiverId: profileData.userId,
+				receiverAvatar: profileData.avatarUrl,
+				receiverName: profileData.displayName || profileData.username,
 				directMessageId: directMessage?.id
 			};
 			const data = {
@@ -162,19 +162,19 @@ export const ProfileDetail = memo(() => {
 		}
 
 		const response = await createDirectMessageWithUser(
-			profileData.user_id,
-			profileData.display_name || profileData.username,
+			profileData.userId,
+			profileData.displayName || profileData.username,
 			profileData.username,
-			profileData.avatar_url
+			profileData.avatarUrl
 		);
 
-		if (response?.channel_id) {
+		if (response?.channelId) {
 			dispatch(DMCallActions.removeAll());
 			const params = {
-				receiverId: profileData.user_id,
-				receiverAvatar: profileData.avatar_url,
-				receiverName: profileData.display_name || profileData.username,
-				directMessageId: response?.channel_id
+				receiverId: profileData.userId,
+				receiverAvatar: profileData.avatarUrl,
+				receiverName: profileData.displayName || profileData.username,
+				directMessageId: response?.channelId
 			};
 			const data = {
 				children: <DirectMessageCallMain route={{ params }} />
@@ -182,38 +182,38 @@ export const ProfileDetail = memo(() => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 		}
 	}, [
-		profileData?.user_id,
-		profileData?.display_name,
+		profileData?.userId,
+		profileData?.displayName,
 		profileData?.username,
-		profileData?.avatar_url,
+		profileData?.avatarUrl,
 		listDM,
 		navigation,
 		createDirectMessageWithUser
 	]);
 
 	const handleAddFriend = useCallback(() => {
-		const userIdToAddFriend = profileData?.user_id;
+		const userIdToAddFriend = profileData?.userId;
 		if (userIdToAddFriend) {
 			addFriend({
 				usernames: [],
 				ids: [userIdToAddFriend]
 			});
 		}
-	}, [profileData?.user_id, addFriend]);
+	}, [profileData?.userId, addFriend]);
 
 	const handleAcceptRequest = useCallback(() => {
-		const userIdToAcceptRequest = profileData?.user_id;
+		const userIdToAcceptRequest = profileData?.userId;
 		if (userIdToAcceptRequest) {
 			acceptFriend(profileData?.username, userIdToAcceptRequest);
 		}
-	}, [profileData?.user_id, profileData?.username, acceptFriend]);
+	}, [profileData?.userId, profileData?.username, acceptFriend]);
 
 	const handleCancelRequest = useCallback(() => {
-		const userIdToCancelRequest = profileData?.user_id;
+		const userIdToCancelRequest = profileData?.userId;
 		if (userIdToCancelRequest) {
 			deleteFriend(profileData?.username, userIdToCancelRequest);
 		}
-	}, [profileData?.user_id, profileData?.username, deleteFriend]);
+	}, [profileData?.userId, profileData?.username, deleteFriend]);
 
 	const handleDismiss = useCallback(() => {
 		navigation.goBack();
@@ -244,23 +244,23 @@ export const ProfileDetail = memo(() => {
 				<Text style={styles.profileTitle}>{t('userProfile', 'USER PROFILE')}</Text>
 
 				<View style={styles.userInfo}>
-					{profileData.avatar_url ? (
+					{profileData.avatarUrl ? (
 						<FastImage
 							source={{
-								uri: createImgproxyUrl(profileData.avatar_url, { width: 200, height: 200, resizeType: 'fit' })
+								uri: createImgproxyUrl(profileData.avatarUrl, { width: 200, height: 200, resizeType: 'fit' })
 							}}
 							style={styles.profileImage}
 						/>
 					) : (
 						<View style={styles.defaultAvatar}>
 							<Text style={styles.defaultAvatarText}>
-								{profileData.display_name?.charAt(0)?.toUpperCase() || profileData.username?.charAt(0)?.toUpperCase()}
+								{profileData.displayName?.charAt(0)?.toUpperCase() || profileData.username?.charAt(0)?.toUpperCase()}
 							</Text>
 						</View>
 					)}
 
 					<Text style={styles.username} numberOfLines={1}>
-						{profileData?.display_name || profileData?.username}
+						{profileData?.displayName || profileData?.username}
 					</Text>
 				</View>
 

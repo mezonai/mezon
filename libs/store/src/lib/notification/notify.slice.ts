@@ -4,11 +4,11 @@ import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, withRetry } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import type { RootState } from '../store';
 
@@ -16,7 +16,12 @@ export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIMIT_NOTIFICATION = 50;
 
 export const mapNotificationToEntity = (notifyRes: ApiNotification): INotification => {
-	return { ...notifyRes, id: notifyRes.id || '', content: notifyRes.content };
+	return {
+		...notifyRes,
+		id: notifyRes.id || '',
+		content: notifyRes.content,
+		createTime: timestampToString(notifyRes.createTime)
+	};
 };
 
 export interface FetchNotificationArgs {
@@ -119,7 +124,7 @@ export const fetchListNotification = createAsyncThunk(
 				};
 			}
 
-			const notifications = response.notifications.map(mapNotificationToEntity);
+			const notifications = response.notifications.map((notify) => mapNotificationToEntity(notify as ApiNotification));
 			return {
 				data: notifications,
 				category,
@@ -153,15 +158,16 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.createMessage2Inbox(mezon.session, {
-			message_id: message.id,
+			$typeName: 'mezon.api.Message2InboxRequest' as const,
+			messageId: message.id,
 			content: JSON.stringify(message.content),
-			avatar: message.avatar,
-			clan_id: message.clan_id,
-			channel_id: message.channel_id,
-			attachments: JSON.stringify(message.attachments),
-			mentions: JSON.stringify(message.mentions),
-			reactions: JSON.stringify(message.reactions),
-			references: JSON.stringify(message.references)
+			avatar: message.avatar || '',
+			clanId: message.clanId || '',
+			channelId: message.channelId,
+			attachments: new TextEncoder().encode(JSON.stringify([])),
+			mentions: new TextEncoder().encode(JSON.stringify([])),
+			reactions: new TextEncoder().encode(JSON.stringify([])),
+			references: new TextEncoder().encode(JSON.stringify([]))
 		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
@@ -294,7 +300,7 @@ export const notificationSlice = createSlice({
 							...message,
 							id: noti.id || '',
 							...noti,
-							create_time: new Date().toISOString(),
+							createTime: new Date().toISOString(),
 							content: safeJSONParse(noti.content || ''),
 							category: NotificationCategory.MESSAGES
 						};

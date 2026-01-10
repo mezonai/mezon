@@ -2,7 +2,7 @@ import { fetchChannels, selectAllChannels, selectCurrentClanId, useAppDispatch, 
 import { Icons, Menu } from '@mezon/ui';
 import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/types';
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -50,19 +50,19 @@ const SystemMessagesManagement = ({
 
 	const handleToggleSetting = (checked: boolean, type: ETypeUpdateSystemMessage, channelId?: string) => {
 		if (channelId && channelId !== channelSelectedId && type === ETypeUpdateSystemMessage.CHANNEL) {
-			setUpdateSystemMessageRequest({ ...updateSystem, channel_id: channelId });
-			setClanRequest((prev: any) => ({ ...prev, welcome_channel_id: channelId }));
+			setUpdateSystemMessageRequest({ ...updateSystem, channelId: channelId });
+			setClanRequest((prev: any) => ({ ...prev, welcomeChannelId: channelId }));
 			return;
 		}
 		switch (type) {
 			case ETypeUpdateSystemMessage.HIDE_AUDIT_LOG:
-				setUpdateSystemMessageRequest({ ...updateSystem, hide_audit_log: checked ? '0' : '1' });
+				setUpdateSystemMessageRequest({ ...updateSystem, hideAuditLog: checked ? '0' : '1' });
 				break;
 			case ETypeUpdateSystemMessage.SETUP_TIPS:
-				setUpdateSystemMessageRequest({ ...updateSystem, setup_tips: checked ? '1' : '0' });
+				setUpdateSystemMessageRequest({ ...updateSystem, setupTips: checked ? '1' : '0' });
 				break;
 			case ETypeUpdateSystemMessage.WELCOME_RANDOM:
-				setUpdateSystemMessageRequest({ ...updateSystem, welcome_random: checked ? '1' : '0' });
+				setUpdateSystemMessageRequest({ ...updateSystem, welcomeRandom: checked ? '1' : '0' });
 				break;
 			default:
 				break;
@@ -73,9 +73,9 @@ const SystemMessagesManagement = ({
 		channelsList
 			.filter(
 				(channel) =>
-					channel.clan_id === currentClanId &&
+					channel.clanId === currentClanId &&
 					channel.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
-					channel.channel_private !== ChannelStatusEnum.isPrivate
+					channel.channelPrivate !== ChannelStatusEnum.isPrivate
 			)
 			.map((channel) => {
 				if (channel.id !== selectedChannel?.id) {
@@ -85,19 +85,19 @@ const SystemMessagesManagement = ({
 							className="flex flex-row items-center rounded-sm text-sm w-full py-2 px-4 text-left cursor-pointer"
 							onClick={() => handleToggleSetting(true, ETypeUpdateSystemMessage.CHANNEL, channel.id)}
 						>
-							{channel?.channel_private ? (
+							{channel?.channelPrivate ? (
 								<Icons.HashtagLocked defaultSize="w-4 h-4 dark:text-channelTextLabel" />
 							) : (
 								<Icons.Hashtag defaultSize="w-4 h-4 dark:text-channelTextLabel" />
 							)}
 							<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.channel_name')}>
-								{channel.channel_label ?? ''}
+								{channel.channelLabel ?? ''}
 							</p>
 							<p
-								data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.category_name')}
+								data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.categoryName')}
 								className="uppercase ml-5 font-semibold"
 							>
-								{channel.category_name}
+								{channel.categoryName}
 							</p>
 						</Menu.Item>
 					);
@@ -116,13 +116,13 @@ const SystemMessagesManagement = ({
 					<div className={' flex flex-row items-center'}>
 						<Icons.Hashtag defaultSize="w-4 h-4 " />
 						<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.channel_name')}>
-							{selectedChannel?.channel_label}
+							{selectedChannel?.channelLabel}
 						</p>
 						<p
 							className={'uppercase ml-5 font-semibold'}
-							data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.category_name')}
+							data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.categoryName')}
 						>
-							{selectedChannel?.category_name}
+							{selectedChannel?.categoryName}
 						</p>
 					</div>
 					<div>
@@ -133,17 +133,17 @@ const SystemMessagesManagement = ({
 			<p className={'text-sm py-2'}>{t('systemMessages.description')}</p>
 			<ToggleItem
 				label={t('systemMessages.welcomeRandom')}
-				value={updateSystem?.welcome_random === '1'}
+				value={updateSystem?.welcomeRandom === '1'}
 				handleToggle={(e) => handleToggleSetting(e, ETypeUpdateSystemMessage.WELCOME_RANDOM)}
 			/>
 			<ToggleItem
 				label={t('systemMessages.setupTips')}
-				value={updateSystem?.setup_tips === '1'}
+				value={updateSystem?.setupTips === '1'}
 				handleToggle={(e) => handleToggleSetting(e, ETypeUpdateSystemMessage.SETUP_TIPS)}
 			/>
 			<ToggleItem
 				label={t('systemMessages.auditLog')}
-				value={updateSystem?.hide_audit_log !== '1'}
+				value={updateSystem?.hideAuditLog !== '1'}
 				handleToggle={(e) => handleToggleSetting(e, ETypeUpdateSystemMessage.HIDE_AUDIT_LOG)}
 			/>
 		</div>

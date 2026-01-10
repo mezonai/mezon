@@ -37,17 +37,17 @@ export const ThreadHeader = memo(() => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 	const channelLabel = useMemo(() => {
-		return (currentDmGroup?.channel_label ||
-			currentChannel?.channel_label ||
+		return (currentDmGroup?.channelLabel ||
+			currentChannel?.channelLabel ||
 			(typeof currentChannel?.usernames === 'string' ? currentChannel?.usernames : currentChannel?.usernames?.[0] || '')) as string;
-	}, [currentDmGroup?.channel_label, currentChannel?.channel_label, currentChannel?.usernames]);
+	}, [currentDmGroup?.channelLabel, currentChannel?.channelLabel, currentChannel?.usernames]);
 
 	const isChannel = useMemo(() => {
-		return !!currentChannel?.channel_label && !Number(currentChannel?.parent_id);
-	}, [currentChannel?.channel_label, currentChannel?.parent_id]);
+		return !!currentChannel?.channelLabel && !Number(currentChannel?.parentId);
+	}, [currentChannel?.channelLabel, currentChannel?.parentId]);
 
 	const groupDMAvatar = useMemo(() => {
-		const avatar = currentDmGroup?.channel_avatar;
+		const avatar = currentDmGroup?.channelAvatar;
 		const isDefaultAvatar = !avatar || avatar?.includes('avatar-group.png');
 		return !isDefaultAvatar ? (
 			<View style={styles.groupAvatarWrapper}>
@@ -58,7 +58,7 @@ export const ThreadHeader = memo(() => {
 				<MezonIconCDN icon={IconCDN.groupIcon} color={baseColor.white} />
 			</View>
 		);
-	}, [currentDmGroup?.channel_avatar, styles.groupAvatar, styles.groupAvatarWrapper]);
+	}, [currentDmGroup?.channelAvatar, styles.groupAvatar, styles.groupAvatarWrapper]);
 
 	const handlebackMessageDetail = () => {
 		if (isDMThread && !isTabletLandscape) {
@@ -72,11 +72,11 @@ export const ThreadHeader = memo(() => {
 	};
 
 	const isAgeRestrictedChannel = useMemo(() => {
-		return currentChannel?.age_restricted === 1;
-	}, [currentChannel?.age_restricted]);
+		return currentChannel?.ageRestricted === 1;
+	}, [currentChannel?.ageRestricted]);
 
 	const renderChannelIcon = () => {
-		const isPrivateChannel = currentChannel?.channel_private === ChannelStatusEnum.isPrivate;
+		const isPrivateChannel = currentChannel?.channelPrivate === ChannelStatusEnum.isPrivate;
 		const isTextOrThreadChannel = [ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD].includes(currentChannel?.type);
 		const isChannelApp = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 		if (currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel) {
@@ -117,7 +117,7 @@ export const ThreadHeader = memo(() => {
 								<UserStatusDM
 									isOnline={currentDmGroup?.onlines?.some(Boolean)}
 									iconSize={size.s_14}
-									userId={currentDmGroup?.user_ids?.[0]}
+									userId={currentDmGroup?.userIds?.[0]}
 								/>
 								<MezonAvatar
 									avatarUrl={

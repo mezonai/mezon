@@ -51,7 +51,7 @@ const ModalConfirm = ({
 	return (
 		<div ref={modalRef} tabIndex={-1} className="fixed inset-0 flex items-center justify-center z-50" onClick={handleCancel}>
 			<div className="fixed inset-0 bg-black opacity-80 " />
-			<div className="relative z-10 w-[440px]" onClick={(e) => e.stopPropagation()}>
+			<div className="relative z-10 p-4 md:p-0 w-[440px]" onClick={(e) => e.stopPropagation()}>
 				<div className="bg-theme-setting-primary pt-[16px] px-[16px] rounded-t-md">
 					<div className=" text-theme-primary-active text-[20px] font-semibold pb-[16px]">
 						<span className="capitalize mr-1">{defaultTitle}</span>

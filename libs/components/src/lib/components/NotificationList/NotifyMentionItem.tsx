@@ -41,23 +41,23 @@ function NotifyMentionItem({ notify, isUnreadTab }: NotifyMentionProps) {
 
 	const messageId = useMemo(() => {
 		if (parseNotify.content) {
-			return parseNotify.content.message_id;
+			return parseNotify.content.messageId;
 		}
-	}, [parseNotify.content.message_id]);
+	}, [parseNotify.content.messageId]);
 
 	const channelId = useMemo(() => {
 		if (parseNotify.content) {
-			return parseNotify.content.channel_id;
+			return parseNotify.content.channelId;
 		}
-	}, [parseNotify.content.channel_id]);
+	}, [parseNotify.content.channelId]);
 
 	const clanId = useMemo(() => {
 		if (parseNotify.content) {
-			return parseNotify.content.clan_id;
+			return parseNotify.content.clanId;
 		}
-	}, [parseNotify.content.clan_id]);
+	}, [parseNotify.content.clanId]);
 
-	const topicId = parseNotify?.content?.topic_id;
+	const topicId = parseNotify?.content?.topicId;
 
 	const isTopic = Number(topicId) !== 0 || parseNotify?.content?.code === TypeMessage.Topic || parseNotify?.message?.code === TypeMessage.Topic;
 
@@ -91,7 +91,7 @@ interface IMentionTabContent {
 
 function MentionTabContent({ message }: IMentionTabContent) {
 	const contentUpdatedMention = addMention(message?.content, message?.mentions as IMentionOnMessage[]);
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.sender_id);
+	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.senderId);
 	const checkMessageHasReply = useMemo(() => {
 		return message.references && message.references?.length > 0;
 	}, [message.references]);
@@ -120,7 +120,7 @@ function MentionTabContent({ message }: IMentionTabContent) {
 				<div className="h-full w-full">
 					<MessageHead message={message} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
 					<MessageLine
-						messageId={message.message_id}
+						messageId={message.messageId}
 						isEditted={false}
 						content={contentUpdatedMention}
 						isTokenClickAble={false}

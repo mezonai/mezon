@@ -74,7 +74,7 @@ export const FriendListByAlphabet = memo(
 			if (!friendList?.length) return [];
 
 			const groupedByCharacter = friendList.reduce((acc, friend) => {
-				const priorityName = friend?.user?.display_name || friend?.user?.username || '';
+				const priorityName = friend?.user?.displayName || friend?.user?.username || '';
 				const firstNameCharacter = priorityName.charAt(0).toUpperCase();
 				if (!acc[firstNameCharacter]) {
 					acc[firstNameCharacter] = [];

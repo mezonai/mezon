@@ -41,7 +41,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	selectRoleIds
 }) => {
 	const { t } = useTranslation('channelSetting');
-	const isPrivate = channel.channel_private;
+	const isPrivate = channel.channelPrivate;
 	const rolesClan = useSelector(selectAllRolesClan);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const rolesChannel = useSelector(selectRolesByChannelId(channel.id));
@@ -49,7 +49,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	const [selectedRoleIds, setSelectedRoleIds] = useState<string[]>(selectRoleIds);
 	const { userProfile } = useAuth();
 	const rolesAddChannel = useMemo(
-		() => rolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1),
+		() => rolesChannel.filter((role) => typeof role.roleChannelActive === 'number' && role.roleChannelActive === 1),
 		[rolesChannel]
 	);
 	const listRolesNotAddChannel = useMemo(
@@ -57,23 +57,23 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 			rolesClan.filter(
 				(role) =>
 					!rolesAddChannel.map((roleAddChannel) => roleAddChannel.id).includes(role.id) &&
-					role.creator_id !== '0' &&
+					role.creatorId !== '0' &&
 					!selectedRoleIds.includes(role.id)
 			),
 		[rolesClan, rolesAddChannel, selectedRoleIds]
 	);
 
 	const usersClan = useSelector(selectAllUserClans);
-	const userChannelIds = useSelector((state) => selectUserChannelIds(state, channel.channel_id || ''));
+	const userChannelIds = useSelector((state) => selectUserChannelIds(state, channel.channelId || ''));
 	const listUserInvite = useMemo(() => {
-		if (channel.channel_private !== 1) {
+		if (channel.channelPrivate !== 1) {
 			return usersClan.filter((user) => user.id !== userProfile?.user?.id && !selectedUserIds.includes(user.id));
 		}
 		const channelUserSet = new Set(userChannelIds);
 		const selectedUserSet = new Set(selectedUserIds);
 
 		return usersClan.filter((user) => !channelUserSet.has(user.id) && !selectedUserSet.has(user.id));
-	}, [usersClan, userChannelIds, channel.channel_private, userProfile?.user?.id, selectedUserIds]);
+	}, [usersClan, userChannelIds, channel.channelPrivate, userProfile?.user?.id, selectedUserIds]);
 
 	const initFilter: filterItemProps = useMemo(
 		() => ({
@@ -104,7 +104,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 
 	const handleAddMember = async () => {
 		onClose();
-		if (channel.channel_private === 1) {
+		if (channel.channelPrivate === 1) {
 			if (selectedUserIds.length > 0) {
 				const body = {
 					channelId: channel.id,
@@ -145,8 +145,8 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 				const searchValue = inputData.substring(1);
 				const filteredMembers = listUserInvite.filter((member) => {
 					const user = member.user;
-					const clanName = member?.clan_nick?.toLowerCase();
-					const displayName = user?.display_name?.toLowerCase();
+					const clanName = member?.clanNick?.toLowerCase();
+					const displayName = user?.displayName?.toLowerCase();
 					const username = user?.username?.toLowerCase();
 					return (
 						(clanName?.includes(searchValue) || displayName?.includes(searchValue) || username?.includes(searchValue)) &&
@@ -161,8 +161,8 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 			}
 			const filteredMembers = listUserInvite.filter((member) => {
 				const user = member.user;
-				const clanName = member?.clan_nick?.toLowerCase();
-				const displayName = user?.display_name?.toLowerCase();
+				const clanName = member?.clanNick?.toLowerCase();
+				const displayName = user?.displayName?.toLowerCase();
 				const username = user?.username?.toLowerCase();
 				return (
 					(clanName?.includes(inputData) || displayName?.includes(inputData) || username?.includes(inputData)) &&
@@ -172,7 +172,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 			const filteredRoles = listRolesNotAddChannel.filter(
 				(item) =>
 					item?.title?.toLowerCase().trim().includes(inputData.toLowerCase().trim()) &&
-					item?.creator_id !== '0' &&
+					item?.creatorId !== '0' &&
 					!selectedRoleIds.includes(item.id)
 			);
 			setFilterItem({
@@ -198,7 +198,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 		<div ref={modalRef} tabIndex={-1} className="fixed  inset-0 flex items-center justify-center z-50 ">
 			<div className="fixed inset-0 bg-black opacity-80"></div>
 			<div
-				className="relative z-10 p-6 bg-theme-setting-primary text-theme-primary rounded-[5px] w-[440px] text-[15px]"
+				className="relative mx-4 md:mx-0 z-10 p-6 bg-theme-setting-primary text-theme-primary rounded-[5px] w-[440px] text-[15px]"
 				data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal')}
 			>
 				<h2 className="text-[24px] font-semibold text-center text-theme-primary-active">{t('addMembersRoles.title')}</h2>
@@ -212,7 +212,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && <Icons.Speaker defaultSize="w-5 5-5" />}
 					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_STREAMING && <Icons.Stream defaultSize="w-5 5-5" />}
 					{isPrivate === undefined && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && <Icons.Hashtag defaultSize="w-5 h-5" />}
-					<p className=" text-[16px] break-words">{channel.channel_label}</p>
+					<p className=" text-[16px] break-words">{channel.channelLabel}</p>
 				</div>
 				<div className="py-3">
 					<InputField

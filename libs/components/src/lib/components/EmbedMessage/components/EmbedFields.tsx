@@ -19,13 +19,13 @@ import { EmbedGrid } from './EmbedGrid';
 import { EmbedOptionRatio } from './EmbedOptionRatio';
 interface EmbedFieldsProps {
 	fields: IFieldEmbed[];
-	message_id: string;
+	messageId: string;
 	senderId: string;
 	channelId: string;
 	observeIntersectionForLoading?: ObserveFn;
 }
 
-export function EmbedFields({ fields, message_id, senderId, channelId, observeIntersectionForLoading }: EmbedFieldsProps) {
+export function EmbedFields({ fields, messageId, senderId, channelId, observeIntersectionForLoading }: EmbedFieldsProps) {
 	const groupedFields = useMemo(() => {
 		return fields.reduce<IFieldEmbed[][]>((acc, field) => {
 			if (!field.inline) {
@@ -59,7 +59,7 @@ export function EmbedFields({ fields, message_id, senderId, channelId, observeIn
 								<div className="flex flex-col gap-1 w-max-[500px]">
 									<InputEmbedByType
 										component={field.inputs}
-										messageId={message_id}
+										messageId={messageId}
 										senderId={senderId}
 										max_options={field.inputs?.max_options || 1}
 										channelId={channelId}
@@ -71,7 +71,7 @@ export function EmbedFields({ fields, message_id, senderId, channelId, observeIn
 								<div className="flex flex-col gap-1 w-max-[500px]">
 									<ShapeEmbedMessage
 										shape={field.shape}
-										messageId={message_id}
+										messageId={messageId}
 										senderId={senderId}
 										channelId={channelId}
 										observeIntersectionForLoading={observeIntersectionForLoading}
@@ -88,7 +88,7 @@ export function EmbedFields({ fields, message_id, senderId, channelId, observeIn
 											button={button.component}
 											buttonId={button.id}
 											senderId={senderId}
-											messageId={message_id}
+											messageId={messageId}
 											channelId={channelId}
 										/>
 									))}
@@ -124,7 +124,7 @@ const InputEmbedByType = ({ messageId, senderId, component, max_options, channel
 					key={component.id}
 					idRadio={component.id}
 					options={component.component}
-					message_id={messageId}
+					messageId={messageId}
 					max_options={max_options}
 				/>
 			);

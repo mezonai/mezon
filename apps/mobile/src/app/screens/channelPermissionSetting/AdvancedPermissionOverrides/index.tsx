@@ -44,7 +44,7 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 		const permissionValueList = channelPermissionList?.reduce((acc, permission) => {
 			const { slug, id } = permission;
 			const permissionValue = {
-				permission_id: id,
+				permissionId: id,
 				type: currentChannelPermissionValues[id],
 				slug
 			};
@@ -136,8 +136,8 @@ export const AdvancedPermissionOverrides = ({ navigation, route }: MenuChannelSc
 	);
 
 	const setInitialPermissionValues = () => {
-		const nonDefaultValues = changedChannelPermissionList?.permission_role_channel?.reduce((acc, permission) => {
-			return { ...acc, [permission.permission_id]: permission?.active ? EPermissionStatus.Allow : EPermissionStatus.Deny };
+		const nonDefaultValues = changedChannelPermissionList?.permissionRoleChannel?.reduce((acc, permission) => {
+			return { ...acc, [permission.permissionId]: permission?.active ? EPermissionStatus.Allow : EPermissionStatus.Deny };
 		}, {});
 		const initialPermissionValue = channelPermissionList?.reduce((acc, permission) => {
 			if (nonDefaultValues?.[permission?.id]) {

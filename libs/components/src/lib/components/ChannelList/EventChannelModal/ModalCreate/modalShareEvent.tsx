@@ -57,7 +57,7 @@ const ModalShareEvent = (props: ModalShareEventProps) => {
 					</div>
 					<div className="pb-4 flex gap-x-2">
 						<Icons.Speaker />
-						<p>{channel.channel_label}</p>
+						<p>{channel.channelLabel}</p>
 					</div>
 					<p className="pb-4">{t('eventDetail.shareLink')}</p>
 					<div className={`flex items-center dark:bg-black bg-gray-300 py-2 px-1 pr-2 rounded-lg border `}>

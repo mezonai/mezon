@@ -12,7 +12,7 @@ export function useMemberStatus(memberId: string) {
 				: memberStatus?.online
 					? (memberStatus.status as EUserStatus) || EUserStatus.ONLINE
 					: EUserStatus.INVISIBLE,
-		user_status: userProfile?.user?.id === memberId ? userProfile?.user?.user_status : memberStatus?.user_status,
+		userStatus: userProfile?.user?.id === memberId ? userProfile?.user?.userStatus : memberStatus?.userStatus,
 		isMobile: false,
 		online:
 			(userProfile?.user?.id === memberId && (userProfile?.user?.status as EUserStatus) === EUserStatus.INVISIBLE) ||

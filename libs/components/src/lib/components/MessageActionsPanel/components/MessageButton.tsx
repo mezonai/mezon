@@ -41,12 +41,12 @@ export const MessageButton: React.FC<MessageButtonProps> = ({ messageId, button,
 			const data = JSON.stringify(embedData);
 			dispatch(
 				messagesActions.clickButtonMessage({
-					message_id: messageId,
-					channel_id: channelId,
-					button_id: buttonId,
-					sender_id: senderId,
-					user_id: currentUserId,
-					extra_data: data
+					messageId: messageId,
+					channelId: channelId,
+					buttonId: buttonId,
+					senderId: senderId,
+					userId: currentUserId,
+					extraData: data
 				})
 			);
 		}

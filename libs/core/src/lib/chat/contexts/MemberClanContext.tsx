@@ -28,7 +28,7 @@ export const MemberProvider = ({ children }: { children: React.ReactNode }) => {
 	const usersClan = useSelector(selectAllUserClans);
 	const usersWithPrioritizeName = usersClan.map((member: UsersClanEntity) => ({
 		...member,
-		prioritizeName: getNameForPrioritize(member.clan_nick ?? '', member.user?.display_name ?? '', member.user?.username ?? '')
+		prioritizeName: getNameForPrioritize(member.clanNick ?? '', member.user?.displayName ?? '', member.user?.username ?? '')
 	}));
 
 	const filteredMembers = useMemo(() => {

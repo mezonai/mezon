@@ -138,7 +138,7 @@ const Footer = ({ downloadUrl, universalUrl, portableUrl }: FooterProps) => {
 		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
 			(window as any).gtag('event', 'download_click', {
 				event_category: 'Footer Downloads',
-				event_label: platform,
+				eventLabel: platform,
 				download_type: downloadType,
 				custom_parameter_1: 'mezon_footer'
 			});

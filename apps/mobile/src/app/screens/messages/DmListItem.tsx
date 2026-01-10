@@ -24,8 +24,8 @@ export const DmListItem = React.memo((props: { id: string }) => {
 	const isUnReadChannel = useMemo(() => {
 		const myUserId = load(STORAGE_MY_USER_ID);
 
-		return isUnreadDMById && directMessage?.last_sent_message?.sender_id !== myUserId;
-	}, [isUnreadDMById, directMessage?.last_sent_message?.sender_id]);
+		return isUnreadDMById && directMessage?.lastSentMessage?.senderId !== myUserId;
+	}, [isUnreadDMById, directMessage?.lastSentMessage?.senderId]);
 	const { t } = useTranslation(['message', 'common']);
 
 	const isTypeDMGroup = useMemo(() => {
@@ -33,19 +33,19 @@ export const DmListItem = React.memo((props: { id: string }) => {
 	}, [directMessage?.type]);
 
 	const lastMessageTime = useMemo(() => {
-		if (directMessage?.last_sent_message?.timestamp_seconds) {
-			const timestamp = Number(directMessage?.last_sent_message?.timestamp_seconds);
+		if (directMessage?.lastSentMessage?.timestampSeconds) {
+			const timestamp = Number(directMessage?.lastSentMessage?.timestampSeconds);
 			return convertTimestampToTimeAgo(timestamp, t);
 		}
 		return null;
-	}, [directMessage?.last_sent_message, t]);
+	}, [directMessage?.lastSentMessage, t]);
 
 	return (
 		<View style={[styles.messageItem]}>
 			{isTypeDMGroup ? (
-				directMessage?.channel_avatar && !directMessage?.channel_avatar?.includes('avatar-group.png') ? (
+				directMessage?.channelAvatar && !directMessage?.channelAvatar?.includes('avatar-group.png') ? (
 					<View style={styles.groupAvatarWrapper}>
-						<ImageNative url={createImgproxyUrl(directMessage?.channel_avatar ?? '')} style={styles.imageFullSize} resizeMode={'cover'} />
+						<ImageNative url={createImgproxyUrl(directMessage?.channelAvatar ?? '')} style={styles.imageFullSize} resizeMode={'cover'} />
 					</View>
 				) : (
 					<View style={styles.groupAvatar}>
@@ -66,7 +66,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 						<View style={styles.wrapperTextAvatar}>
 							<Text style={styles.textAvatar}>
 								{(
-									directMessage?.channel_label ||
+									directMessage?.channelLabel ||
 									(typeof directMessage?.usernames === 'string' ? directMessage?.usernames : directMessage?.usernames?.[0] || '')
 								)
 									?.charAt?.(0)
@@ -74,7 +74,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 							</Text>
 						</View>
 					)}
-					<UserStatusDM isOnline={directMessage?.onlines?.some(Boolean)} userId={directMessage?.user_ids?.[0]} />
+					<UserStatusDM isOnline={directMessage?.onlines?.some(Boolean)} userId={directMessage?.userIds?.[0]} />
 				</View>
 			)}
 
@@ -84,11 +84,11 @@ export const DmListItem = React.memo((props: { id: string }) => {
 						numberOfLines={1}
 						style={[styles.defaultText, styles.channelLabel, { color: isUnReadChannel ? themeValue.white : themeValue.textDisabled }]}
 					>
-						{(directMessage?.channel_label || directMessage?.usernames) ??
-							(directMessage?.creator_name ? `${directMessage.creator_name}'s Group` : '')}
+						{(directMessage?.channelLabel || directMessage?.usernames) ??
+							(directMessage?.creatorName ? `${directMessage.creatorName}'s Group` : '')}
 					</Text>
 					<BuzzBadge
-						channelId={directMessage?.channel_id}
+						channelId={directMessage?.channelId}
 						clanId={'0'}
 						mode={
 							directMessage?.type === ChannelType.CHANNEL_TYPE_DM
@@ -111,10 +111,10 @@ export const DmListItem = React.memo((props: { id: string }) => {
 				<MessagePreviewLastest
 					isUnReadChannel={isUnReadChannel}
 					type={directMessage?.type}
-					senderName={directMessage?.display_names?.[0] || directMessage.usernames?.[0]}
-					userId={directMessage?.user_ids?.[0] || ''}
-					senderId={directMessage?.last_sent_message?.sender_id}
-					lastSentMessageStr={JSON.stringify(directMessage?.last_sent_message)}
+					senderName={directMessage?.displayNames?.[0] || directMessage.usernames?.[0]}
+					userId={directMessage?.userIds?.[0] || ''}
+					senderId={directMessage?.lastSentMessage?.senderId}
+					lastSentMessageStr={JSON.stringify(directMessage?.lastSentMessage)}
 				/>
 			</View>
 		</View>

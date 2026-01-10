@@ -18,15 +18,15 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 	const RolesChannel = useSelector(selectRolesByChannelId(channel.id));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const RolesClan = useSelector(selectAllRolesClan);
-	const RolesAddChannel = RolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1);
+	const RolesAddChannel = RolesChannel.filter((role) => typeof role.roleChannelActive === 'number' && role.roleChannelActive === 1);
 	const RolesNotAddChannel = RolesClan.filter((role) => !RolesAddChannel.map((RoleAddChannel) => RoleAddChannel.id).includes(role.id));
 
 	const listRolesInChannel = useMemo(() => {
-		if (channel.channel_private === 0 || channel.channel_private === undefined) {
+		if (channel.channelPrivate === 0 || channel.channelPrivate === undefined) {
 			const filteredRoles = RolesNotAddChannel.filter((role) => props.selectedRoleIds.includes(role.id));
 			return filteredRoles;
 		}
-		return RolesChannel.filter((role) => typeof role.role_channel_active === 'number' && role.role_channel_active === 1);
+		return RolesChannel.filter((role) => typeof role.roleChannelActive === 'number' && role.roleChannelActive === 1);
 	}, [RolesChannel, props.selectedRoleIds]);
 
 	const deleteRole = async (roleId: string) => {
@@ -50,8 +50,8 @@ const ListRolePermission = (props: ListRolePermissionProps) => {
 				data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.role_list.role_item')}
 			>
 				<div className="flex gap-x-2 items-center">
-					{role.role_icon ? (
-						<img src={role.role_icon} alt="role icon" className="w-5 h-5 min-w-5 rounded" />
+					{role.roleIcon ? (
+						<img src={role.roleIcon} alt="role icon" className="w-5 h-5 min-w-5 rounded" />
 					) : (
 						<Icons.RoleIcon defaultSize="w-5 h-5 min-w-5" />
 					)}

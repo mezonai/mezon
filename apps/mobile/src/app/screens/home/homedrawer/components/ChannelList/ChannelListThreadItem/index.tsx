@@ -21,7 +21,7 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListTh
 	const styles = style(themeValue);
 
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadChannelById(state, thread?.id));
-	const numberNotification = thread?.count_mess_unread ? thread.count_mess_unread : 0;
+	const numberNotification = thread?.countMessUnread ? thread.countMessUnread : 0;
 
 	const isHideThread = useMemo(() => {
 		return thread?.active !== 1 && !isActive && !isUnReadChannel;
@@ -65,12 +65,12 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive }: IChannelListTh
 						]}
 						numberOfLines={1}
 					>
-						{thread?.channel_label}
+						{thread?.channelLabel}
 					</Text>
 				</TouchableOpacity>
 				<BuzzBadge
-					channelId={thread?.channel_id as string}
-					clanId={thread?.clan_id as string}
+					channelId={thread?.channelId as string}
+					clanId={thread?.clanId as string}
 					mode={ChannelStreamMode.STREAM_MODE_THREAD}
 					customStyles={styles.buzzBadge}
 				/>

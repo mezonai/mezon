@@ -46,7 +46,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 
 		for (const key in rolesClanEntity) {
 			const role = rolesClanEntity[key];
-			const checkHasRole = rolesClanEntity[key].role_user_list?.role_users?.some((listUser) => listUser.id === userId);
+			const checkHasRole = rolesClanEntity[key].roleUserList?.roleUsers?.some((listUser) => listUser.id === userId);
 			if (checkHasRole) {
 				activeRole[key] = key;
 				userRoleLength++;
@@ -57,18 +57,18 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 		userRoles
 			.map((role, index) => ({ ...role, originalIndex: index }))
 			.sort((a, b) => {
-				// If both roles have 'order_role', sort by its value
-				if (a.order_role !== undefined && b.order_role !== undefined) {
-					return a.order_role - b.order_role;
+				// If both roles have 'orderRole', sort by its value
+				if (a.orderRole !== undefined && b.orderRole !== undefined) {
+					return a.orderRole - b.orderRole;
 				}
 
-				// If neither role has 'order_role', maintain their original order
-				if (a.order_role === undefined && b.order_role === undefined) {
+				// If neither role has 'orderRole', maintain their original order
+				if (a.orderRole === undefined && b.orderRole === undefined) {
 					return a.originalIndex - b.originalIndex;
 				}
 
-				// If only one role has 'order_role', prioritize it
-				return a.order_role !== undefined ? -1 : 1;
+				// If only one role has 'orderRole', prioritize it
+				return a.orderRole !== undefined ? -1 : 1;
 			});
 
 		return {
@@ -100,7 +100,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 				isDM={false}
 				user={{
 					id: userId,
-					user_id: userId,
+					userId,
 					user: {
 						id: userId,
 						username
@@ -122,12 +122,12 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 	const member: ChannelMembersEntity = useMemo(() => {
 		return {
 			id: userId,
-			user_id: userId,
+			userId,
 			user: {
 				username,
 				id: userId,
-				display_name: displayName,
-				avatar_url: avatar
+				displayName,
+				avatarUrl: avatar
 			}
 		};
 	}, [avatar, displayName, userId, username]);
@@ -204,7 +204,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 							style={{
 								color: userRolesClan.sortedRoles[0]?.color || DEFAULT_ROLE_COLOR
 							}}
-							data-e2e={generateE2eId('clan_page.member_list.user_info.display_name')}
+							data-e2e={generateE2eId('clan_page.member_list.user_info.displayName')}
 						>
 							{HighlightMatchBold(displayName, searchQuery)}
 						</p>
@@ -216,7 +216,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 			</div>
 			<div className="flex-1 p-1 text-center">
 				<span className="text-xs  font-medium uppercase">
-					{clanJoinTime ? formatDistance(clanJoinTime as string, new Date(), { addSuffix: true }) : '-'}
+					{clanJoinTime && typeof clanJoinTime === 'string' ? formatDistance(clanJoinTime as string, new Date(), { addSuffix: true }) : '-'}
 				</span>
 			</div>
 			<div className="flex-1 p-1 text-center">
@@ -229,7 +229,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 							<RoleNameCard
 								roleName={userRolesClan.sortedRoles[0].title || ''}
 								roleColor={userRolesClan.sortedRoles[0].color || ''}
-								roleIcon={userRolesClan.sortedRoles[0].role_icon || ''}
+								roleIcon={userRolesClan.sortedRoles[0].roleIcon || ''}
 							/>
 							{userRolesClan.length > 1 && (
 								<span className="inline-flex gap-x-1 items-center text-xs rounded p-1 bg-opacity-50  hoverIconBlackImportant ml-1">
@@ -241,7 +241,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 														<RoleNameCard
 															roleName={userRole.title || ''}
 															roleColor={userRole.color || ''}
-															roleIcon={userRole.role_icon || ''}
+															roleIcon={userRole.roleIcon || ''}
 														/>
 													</div>
 												))}
@@ -319,16 +319,16 @@ const ListOptionRole = ({
 	const updateRoleUsersList = (role: RolesClanEntity, action: 'add' | 'remove') => {
 		const updatedRoleUsers =
 			action === 'add'
-				? [...(role.role_user_list?.role_users || []), { id: userId }]
-				: role.role_user_list?.role_users?.filter((user) => user.id !== userId) || [];
+				? [...(role.roleUserList?.roleUsers || []), { id: userId }]
+				: role.roleUserList?.roleUsers?.filter((user) => user.id !== userId) || [];
 
 		dispatch(
 			rolesClanActions.update({
 				role: {
 					...role,
-					role_user_list: {
-						...role.role_user_list,
-						role_users: updatedRoleUsers
+					roleUserList: {
+						...role.roleUserList,
+						roleUsers: updatedRoleUsers
 					}
 				},
 				clanId: currentClanId as string
@@ -338,7 +338,7 @@ const ListOptionRole = ({
 
 	const handleAddRoleMemberList = async (role: RolesClanEntity) => {
 		if (userRolesClan.usersRole[role.id]) {
-			await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [], [], [userId], [], role.role_icon || '');
+			await updateRole(role.clanId || '', role.id, role.title || '', role.color || '', [], [], [userId], [], role.roleIcon || '');
 
 			await dispatch(
 				usersClanActions.removeRoleIdUser({
@@ -352,7 +352,7 @@ const ListOptionRole = ({
 			return;
 		}
 
-		await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [userId], [], [], [], role.role_icon || '');
+		await updateRole(role.clanId || '', role.id, role.title || '', role.color || '', [userId], [], [], [], role.roleIcon || '');
 
 		await dispatch(
 			usersClanActions.addRoleIdUser({
@@ -369,7 +369,7 @@ const ListOptionRole = ({
 	for (const key in rolesClanEntity) {
 		if (
 			rolesClanEntity[key]?.title !== EVERYONE_ROLE_TITLE &&
-			(isClanOwner || Number(maxPermissionLevel) > Number(rolesClanEntity[key]?.max_level_permission || -1))
+			(isClanOwner || Number(maxPermissionLevel) > Number(rolesClanEntity[key]?.maxLevelPermission || -1))
 		) {
 			roleElements.push(
 				<div

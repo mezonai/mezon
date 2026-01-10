@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import type { ApiClanDiscover } from 'mezon-js/api.gen';
+import type { ApiClanDiscover } from 'mezon-js/types';
 import React, { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, DeviceEventEmitter, FlatList, Text, TouchableOpacity, View } from 'react-native';
@@ -28,9 +28,9 @@ const ClanDiscoverItem = ({ item }: { item: ApiClanDiscover }) => {
 			<ImageNative url={item.banner} style={styles.clanBanner} resizeMode="cover" />
 			<View style={styles.contentContainer}>
 				<View style={styles.headerRow}>
-					<ImageNative url={item.clan_logo} style={styles.smallAvatar} resizeMode="cover" />
+					<ImageNative url={item.clanLogo} style={styles.smallAvatar} resizeMode="cover" />
 					<Text style={styles.clanName} numberOfLines={1}>
-						{item.clan_name}
+						{item.clanName}
 					</Text>
 				</View>
 
@@ -42,7 +42,7 @@ const ClanDiscoverItem = ({ item }: { item: ApiClanDiscover }) => {
 					<View style={styles.membersContainer}>
 						<View style={styles.memberDot} />
 						<Text style={styles.memberText}>
-							{item.total_members} {t('members')}
+							{item.totalMembers} {t('members')}
 						</Text>
 					</View>
 					<View style={styles.verifiedBadge}>
@@ -97,7 +97,7 @@ const DiscoverScreen = () => {
 			data={clans}
 			renderItem={renderItem}
 			keyboardShouldPersistTaps={'handled'}
-			keyExtractor={(item, index) => `${item.clan_id}-${index}`}
+			keyExtractor={(item, index) => `${item.clanId}-${index}`}
 			contentContainerStyle={styles.listContainer}
 			showsVerticalScrollIndicator={false}
 			ListEmptyComponent={renderEmpty}

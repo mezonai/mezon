@@ -1,6 +1,7 @@
-import { RequestInput } from '@mezon/utils';
-import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../store';
+import type { RequestInput } from '@mezon/utils';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
+import type { RootState } from '../store';
 
 export const COMPOSE_FEATURE_KEY = 'compose';
 
@@ -52,5 +53,3 @@ export const selectComposeInputByChannelId = createSelector(
 	[getComposeState, (state: RootState, channelId: string) => channelId],
 	(state, channelId) => state.byChannelId[channelId] ?? null
 );
-
-export const selectLastUpdatedChannelId = createSelector([getComposeState], (state) => state.lastUpdatedChannelId);

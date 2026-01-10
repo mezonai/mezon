@@ -119,11 +119,11 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 		if (!clanId || !channelId || !userProfile?.user?.id) return;
 		await dispatch(
 			handleParticipantVoiceState({
-				clan_id: clanId,
-				channel_id: channelId,
-				display_name: userProfile?.user?.display_name ?? '',
+				clanId: clanId,
+				channelId: channelId,
+				displayName: userProfile?.user?.displayName ?? '',
 				state,
-				room_name: state === ParticipantMeetState.LEAVE ? 'leave' : roomId || ''
+				roomName: state === ParticipantMeetState.LEAVE ? 'leave' : roomId || ''
 			})
 		);
 	};

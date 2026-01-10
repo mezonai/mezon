@@ -43,7 +43,7 @@ interface IMentionTabContent {
 
 function MentionTabContent({ message }: IMentionTabContent) {
 	const contentUpdatedMention = addMention(message?.content, message?.mentions as IMentionOnMessage[]);
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.sender_id);
+	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.senderId);
 
 	return (
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg ">
@@ -64,7 +64,7 @@ function MentionTabContent({ message }: IMentionTabContent) {
 					<MessageHead message={message} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
 					{message?.content && (
 						<MessageLine
-							messageId={message.message_id}
+							messageId={message.messageId}
 							isEditted={false}
 							content={contentUpdatedMention}
 							isTokenClickAble={false}

@@ -14,7 +14,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { CallLog, IMessageCallLog, IMessageSendPayload, IMessageTypeCallLog } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -141,7 +141,7 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 			);
 			dispatch(audioCallActions.startDmCall({ groupId: channelId, isVideo: callLog.isVideo }));
 			dispatch(audioCallActions.setGroupCallId(channelId));
-			dispatch(audioCallActions.setUserCallId(currentDmGroup?.user_ids?.[0]));
+			dispatch(audioCallActions.setUserCallId(currentDmGroup?.userIds?.[0]));
 			dispatch(audioCallActions.setIsBusyTone(false));
 		} else {
 			dispatch(toastActions.addToast({ message: 'You are on another call', type: 'warning', autoClose: 3000 }));

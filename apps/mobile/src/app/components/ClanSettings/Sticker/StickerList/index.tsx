@@ -34,7 +34,7 @@ export const StickerList = memo(({ listSticker, clanID, ListHeaderComponent }: S
 		[closeRow]
 	);
 
-	const keyExtractor = useCallback((item: ClanSticker) => `sticker_${item?.clan_id}_${item?.id}`, []);
+	const keyExtractor = useCallback((item: ClanSticker) => `sticker_${item?.clanId}_${item?.id}`, []);
 
 	const handleRef = useCallback(
 		(id: string) => (ref: any) => {

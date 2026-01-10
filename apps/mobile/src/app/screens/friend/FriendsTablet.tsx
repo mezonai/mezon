@@ -52,7 +52,7 @@ export const FriendsTablet = React.memo(({ navigation }: { navigation: any }) =>
 		async (user: FriendsEntity) => {
 			const listDM = selectDirectsOpenlist(store.getState() as any);
 			const directMessage = listDM.find((dm) => {
-				const userIds = dm?.user_ids;
+				const userIds = dm?.userIds;
 				return Array.isArray(userIds) && userIds.length === 1 && userIds[0] === user?.user?.id;
 			});
 			dispatch(directActions.setDmGroupCurrentId(directMessage?.id));
@@ -62,11 +62,11 @@ export const FriendsTablet = React.memo(({ navigation }: { navigation: any }) =>
 			}
 			const response = await createDirectMessageWithUser(
 				user?.user?.id || '',
-				user?.user?.display_name,
+				user?.user?.displayName,
 				user?.user?.username,
-				user?.user?.avatar_url
+				user?.user?.avatarUrl
 			);
-			dispatch(directActions.setDmGroupCurrentId(response?.channel_id));
+			dispatch(directActions.setDmGroupCurrentId(response?.channelId));
 		},
 		[createDirectMessageWithUser, navigation]
 	);
@@ -75,7 +75,7 @@ export const FriendsTablet = React.memo(({ navigation }: { navigation: any }) =>
 		async (user: FriendsEntity) => {
 			const listDM = selectDirectsOpenlist(store.getState() as any);
 			const directMessage = listDM?.find?.((dm) => {
-				const userIds = dm?.user_ids;
+				const userIds = dm?.userIds;
 				if (!Array.isArray(userIds) || userIds.length !== 1) {
 					return false;
 				}
@@ -85,8 +85,8 @@ export const FriendsTablet = React.memo(({ navigation }: { navigation: any }) =>
 				dispatch(DMCallActions.removeAll());
 				const params = {
 					receiverId: user?.user?.id,
-					receiverAvatar: user?.user?.avatar_url,
-					receiverName: user?.user?.display_name || user?.user?.username,
+					receiverAvatar: user?.user?.avatarUrl,
+					receiverName: user?.user?.displayName || user?.user?.username,
 					directMessageId: directMessage?.id
 				};
 				const dataModal = {
@@ -97,17 +97,17 @@ export const FriendsTablet = React.memo(({ navigation }: { navigation: any }) =>
 			}
 			const response = await createDirectMessageWithUser(
 				user?.user?.id,
-				user?.user?.display_name,
+				user?.user?.displayName,
 				user?.user?.username,
-				user?.user?.avatar_url
+				user?.user?.avatarUrl
 			);
-			if (response?.channel_id) {
+			if (response?.channelId) {
 				dispatch(DMCallActions.removeAll());
 				const params = {
 					receiverId: user?.user?.id,
-					receiverAvatar: user?.user?.avatar_url,
-					receiverName: user?.user?.display_name || user?.user?.username,
-					directMessageId: response?.channel_id
+					receiverAvatar: user?.user?.avatarUrl,
+					receiverName: user?.user?.displayName || user?.user?.username,
+					directMessageId: response?.channelId
 				};
 				const dataModal = {
 					children: <DirectMessageCallMain route={{ params }} />

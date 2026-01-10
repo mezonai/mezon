@@ -22,7 +22,7 @@ type AvatarUserProps = {
 const AvatarUser = ({ user }: AvatarUserProps) => {
 	const userClan = useAppSelector((state) => selectMemberClanByUserId(state, user?.id ?? ''));
 	const username = userClan?.user?.username;
-	const avatar = getAvatarForPrioritize(userClan?.clan_avatar, userClan?.user?.avatar_url);
+	const avatar = getAvatarForPrioritize(userClan?.clanAvatar, userClan?.user?.avatarUrl);
 	return (
 		<div className="w-6 h-6 rounded-full">
 			<div className="w-6 h-6">
@@ -77,7 +77,7 @@ const SearchMemberAuditLogModal = ({
 	const users: Users[] = [
 		{ name: t('allUsers'), icon: <Icons.MemberList isWhite={true} />, userId: '' },
 		...usersClan.map((item: UsersClanEntity) => ({
-			name: item?.user?.display_name || '',
+			name: item?.user?.displayName || '',
 			icon: <AvatarUser user={item} />,
 			userId: item?.user?.id || ''
 		}))
@@ -97,7 +97,7 @@ const SearchMemberAuditLogModal = ({
 				actionLog: actionFilter ? actionFilter : '',
 				userId: user?.userId ?? '',
 				clanId: currentClanId ?? '',
-				date_log: selectedDate
+				dateLog: selectedDate
 			};
 			dispatch(auditLogList(body));
 		}

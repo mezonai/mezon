@@ -22,7 +22,7 @@ function MemberListSearchDm({ searchText, onSelect, optionFilter, currentChannel
 
 	const userListData = UseMentionList({
 		channelDetail: currentChannel,
-		channelID: currentChannel?.channel_id,
+		channelID: currentChannel?.channelId,
 		channelMode: currentChannel?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP
 	});
 

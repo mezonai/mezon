@@ -32,7 +32,7 @@ const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({
 	const handleClickButtonSidebar = (setting: ItemObjProps) => {
 		onClickItem(setting);
 	};
-	const welcomeChannel = useSelector((state) => selectWelcomeChannelByClanId(state, category.clan_id as string));
+	const welcomeChannel = useSelector((state) => selectWelcomeChannelByClanId(state, category.clanId as string));
 
 	const openModalDeleteCategory = () => {
 		if (hasWelcomeChannel) {
@@ -60,7 +60,7 @@ const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({
 		<div className="flex flex-row flex-1 justify-end">
 			<div className="w-[220px] py-[60px] pl-5 pr-[6px]">
 				<p className="text-[#84ADFF] pl-[10px] pb-[6px] font-bold text-sm tracking-wider uppercase truncate">
-					{displayCategoryName ?? category.category_name}
+					{displayCategoryName ?? category.categoryName}
 				</p>
 				{categorySettingList.map((settingItem) => (
 					<SettingItem
@@ -82,7 +82,7 @@ const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({
 				{showModal && (
 					<ModalConfirm
 						handleCancel={() => setShowModal(false)}
-						modalName={category?.category_name || ''}
+						modalName={category?.categoryName || ''}
 						handleConfirm={confirmDeleteCategory}
 						title={t('categoryOverview.deleteCategoryTitle')}
 						buttonName={t('categoryOverview.deleteCategoryButton')}

@@ -22,11 +22,11 @@ export const ClanGroupPreview = memo(({ targetItem, dragItem, clans }: GroupPrev
 
 				return {
 					...targetItem.group,
-					clanIds: [...existingClanIds, dragItem?.clan?.clan_id]
+					clanIds: [...existingClanIds, dragItem?.clan?.clanId]
 				};
 			} else if (targetItem?.type === CLAN) {
-				const dragClanId = dragItem?.clan?.clan_id;
-				const targetClanId = targetItem?.clan?.clan_id;
+				const dragClanId = dragItem?.clan?.clanId;
+				const targetClanId = targetItem?.clan?.clanId;
 				return {
 					id: `preview-group-${targetClanId}-${dragClanId}`,
 					clanIds: [targetClanId, dragClanId],

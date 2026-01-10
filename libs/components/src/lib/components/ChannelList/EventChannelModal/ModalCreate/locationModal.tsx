@@ -82,8 +82,8 @@ const LocationModal = (props: LocationModalProps) => {
 		value: voice.id,
 		label: (
 			<div className="flex items-center gap-x-2 " data-e2e={generateE2eId('clan_page.modal.create_event.location.channel.item')}>
-				{voice.channel_private ? <Icons.SpeakerLocked /> : <Icons.Speaker />}
-				<span className="truncate overflow-hidden max-w-[200px]">{voice.channel_label}</span>
+				{voice.channelPrivate ? <Icons.SpeakerLocked /> : <Icons.Speaker />}
+				<span className="truncate overflow-hidden max-w-[200px]">{voice.channelLabel}</span>
 			</div>
 		)
 	}));
@@ -119,7 +119,7 @@ const LocationModal = (props: LocationModalProps) => {
 			textChannels.map((channel) => {
 				const isTextChannel = channel.type === ChannelType.CHANNEL_TYPE_CHANNEL;
 				const isThread = channel.type === ChannelType.CHANNEL_TYPE_THREAD;
-				const isPrivateChannel = channel.channel_private;
+				const isPrivateChannel = channel.channelPrivate;
 
 				const icon = isTextChannel ? (
 					isPrivateChannel ? (
@@ -140,7 +140,7 @@ const LocationModal = (props: LocationModalProps) => {
 					label: (
 						<div className="flex items-center gap-x-2 " data-e2e={generateE2eId('clan_page.modal.create_event.location.channel.item')}>
 							{icon}
-							{channel.channel_label}
+							{channel.channelLabel}
 						</div>
 					)
 				};
@@ -208,14 +208,17 @@ const LocationModal = (props: LocationModalProps) => {
 					value={options.find((option) => option.value === contentSubmit.voiceChannel)}
 					onChange={handleChangeVoice}
 					styles={customStyles}
-					placeholder={t('fields.channel.title')}
+					placeholder={t('fields.VoiceChannel.title')}
 					filterOption={memoizedFilterOption}
 					noOptionsMessage={() => t('invitation:noResults', 'No result')}
 				/>
 			)}
 			{choiceLocation && (
 				<div>
-					<h3 className="uppercase text-[11px] font-semibold  ">{t('fields.address.title')}</h3>
+					<h3 className="uppercase text-[11px] font-semibold">
+						{t('fields.address.title')}
+						<span className="text-red-500 ml-1">*</span>
+					</h3>
 					<input
 						type="text"
 						name="location"

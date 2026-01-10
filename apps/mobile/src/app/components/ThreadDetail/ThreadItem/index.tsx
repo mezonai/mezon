@@ -35,22 +35,22 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 	const navigation = useNavigation<NavigationProp<AppStackParamList>>();
 	const { t } = useTranslation('message');
 	const isTabletLandscape = useTabletLandscape();
-	const messageId = useAppSelector((state) => selectLastMessageIdByChannelId(state, thread?.channel_id));
+	const messageId = useAppSelector((state) => selectLastMessageIdByChannelId(state, thread?.channelId));
 	const message = useAppSelector(
-		(state) => selectMessageEntityById(state, thread?.channel_id, messageId || thread?.last_sent_message?.id) as MessagesEntity
+		(state) => selectMessageEntityById(state, thread?.channelId, messageId || thread?.lastSentMessage?.id) as MessagesEntity
 	);
 	const user = useAppSelector((state) =>
-		selectMemberClanByUserId(state, message?.user?.id || thread?.last_sent_message?.sender_id)
+		selectMemberClanByUserId(state, message?.user?.id || thread?.lastSentMessage?.senderId)
 	) as IChannelMember;
 
 	const prioritySenderName = useMemo(() => {
-		if (thread?.last_sent_message?.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
+		if (thread?.lastSentMessage?.senderId === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
 			return 'Anonymous';
 		}
 
 		return (
-			user?.clan_nick ||
-			user?.user?.display_name ||
+			user?.clanNick ||
+			user?.user?.displayName ||
 			user?.user?.username ||
 			message?.user?.name ||
 			message?.user?.username ||
@@ -61,9 +61,9 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 		message?.user?.name,
 		message?.user?.username,
 		message?.username,
-		thread?.last_sent_message?.sender_id,
-		user?.clan_nick,
-		user?.user?.display_name,
+		thread?.lastSentMessage?.senderId,
+		user?.clanNick,
+		user?.user?.displayName,
 		user?.user?.username
 	]);
 
@@ -76,36 +76,36 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 		}
 		store.dispatch(
 			listChannelRenderAction.addThreadToListRender({
-				clanId: thread?.clan_id ?? '',
+				clanId: thread?.clanId ?? '',
 				channel: thread as ChannelsEntity
 			})
 		);
 		requestAnimationFrame(async () => {
-			store.dispatch(channelsActions.upsertOne({ clanId: thread?.clan_id ?? '', channel: thread as ChannelsEntity }));
+			store.dispatch(channelsActions.upsertOne({ clanId: thread?.clanId ?? '', channel: thread as ChannelsEntity }));
 			await store.dispatch(
-				channelsActions.joinChannel({ clanId: thread?.clan_id ?? '', channelId: thread?.channel_id || '', noFetchMembers: false })
+				channelsActions.joinChannel({ clanId: thread?.clanId ?? '', channelId: thread?.channelId || '', noFetchMembers: false })
 			);
 		});
-		const dataSave = getUpdateOrAddClanChannelCache(thread?.clan_id, thread?.channel_id);
+		const dataSave = getUpdateOrAddClanChannelCache(thread?.clanId, thread?.channelId);
 		save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
 	};
 
 	const lastTimeMessage = useMemo(() => {
-		if (message?.create_time_seconds) {
-			return convertTimeMessage(message.create_time_seconds, i18n.language);
-		} else if (thread?.last_sent_message?.timestamp_seconds) {
-			return convertTimeMessage(thread.last_sent_message.timestamp_seconds, i18n.language);
+		if (message?.createTimeSeconds) {
+			return convertTimeMessage(message.createTimeSeconds, i18n.language);
+		} else if (thread?.lastSentMessage?.timestampSeconds) {
+			return convertTimeMessage(thread.lastSentMessage.timestampSeconds, i18n.language);
 		}
-	}, [message?.create_time_seconds, thread?.last_sent_message?.timestamp_seconds]);
+	}, [message?.createTimeSeconds, thread?.lastSentMessage?.timestampSeconds]);
 
 	const lastSentMessage = useMemo(() => {
 		const textMsg =
 			(message?.content?.t as string) ??
-			(typeof thread?.last_sent_message?.content === 'string'
-				? safeJSONParse(thread.last_sent_message.content || '{}')?.t
-				: (thread?.last_sent_message?.content as any)?.t || '');
+			(typeof thread?.lastSentMessage?.content === 'string'
+				? safeJSONParse(thread.lastSentMessage.content || '{}')?.t
+				: (thread?.lastSentMessage?.content as any)?.t || '');
 		return textMsg ? textMsg : `[${t('attachments.attachment')}]`;
-	}, [message?.content?.t, t, thread?.last_sent_message?.content]);
+	}, [message?.content?.t, t, thread?.lastSentMessage?.content]);
 
 	return (
 		<Pressable
@@ -115,7 +115,7 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 			style={styles.threadItemWrapper}
 		>
 			<View style={styles.flex1}>
-				<Text style={styles.threadName}>{thread?.channel_label}</Text>
+				<Text style={styles.threadName}>{thread?.channelLabel}</Text>
 				<View style={styles.threadContent}>
 					<View style={styles.username}>
 						{prioritySenderName && (

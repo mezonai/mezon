@@ -20,30 +20,30 @@ const UserReactionPanel = forwardRef(({ emojiShowPanel, message, isTopic }: User
 	const { reactionMessageDispatch } = useChatReaction();
 	const userId = useAuth();
 
-	const removeEmojiSender = async (id: string, emoji_id: string, emoji: string, message_sender_id: string, countRemoved: number) => {
+	const removeEmojiSender = async (id: string, emojiId: string, emoji: string, messageSenderId: string, countRemoved: number) => {
 		const store = getStore();
 		const currentChannel = selectCurrentChannel(store.getState());
 
 		await reactionMessageDispatch({
 			id,
 			messageId: message?.id,
-			emoji_id: emojiShowPanel?.emojiId ?? '',
+			emojiId: emojiShowPanel?.emojiId ?? '',
 			emoji: emojiShowPanel?.emoji ?? '',
 			count: countRemoved,
-			message_sender_id,
+			messageSenderId,
 			action_delete: true,
-			is_public: isPublicChannel(currentChannel),
-			clanId: currentChannel?.clan_id ?? '',
-			channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
+			isPublic: isPublicChannel(currentChannel),
+			clanId: currentChannel?.clanId ?? '',
+			channelId: isTopic ? currentChannel?.id || '' : (message?.channelId ?? ''),
 			isFocusTopicBox,
-			channelIdOnMessage: message?.channel_id
+			channelIdOnMessage: message?.channelId
 		});
 	};
 
 	const hideSenderOnPanel = useCallback((emojiData: EmojiDataOptionals, senderId: string) => {
 		const newEmojiData = { ...emojiData };
 		if (newEmojiData.senders) {
-			newEmojiData.senders = newEmojiData.senders.filter((sender) => sender.sender_id !== senderId);
+			newEmojiData.senders = newEmojiData.senders.filter((sender) => sender.senderId !== senderId);
 		}
 		return newEmojiData;
 	}, []);
@@ -64,7 +64,7 @@ const UserReactionPanel = forwardRef(({ emojiShowPanel, message, isTopic }: User
 							{emojiShowPanel?.senders.map((sender: SenderInfoOptionals, index: number) => {
 								if (sender.count && sender.count > 0) {
 									return (
-										<Fragment key={`${index}_${sender.sender_id}`}>
+										<Fragment key={`${index}_${sender.senderId}`}>
 											<SenderItem
 												sender={sender}
 												emojiShowPanel={emojiShowPanel}
@@ -113,7 +113,7 @@ type SenderItemProps = {
 	sender: any;
 	emojiShowPanel: any;
 	userId: any;
-	removeEmojiSender: (id: string, emoji_id: string, emoji: string, message_sender_id: string, countRemoved: number) => Promise<void>;
+	removeEmojiSender: (id: string, emojiId: string, emoji: string, messageSenderId: string, countRemoved: number) => Promise<void>;
 	hideSenderOnPanel: (emojiData: any, senderId: string) => void;
 };
 
@@ -124,14 +124,14 @@ const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId,
 			emojiShowPanel?.id ?? '',
 			emojiShowPanel?.emojiId ?? '',
 			emojiShowPanel?.emoji ?? '',
-			sender?.sender_id ?? '',
+			sender?.senderId ?? '',
 			sender?.count ?? 0
 		);
 
-		hideSenderOnPanel(emojiShowPanel, sender.sender_id ?? '');
+		hideSenderOnPanel(emojiShowPanel, sender.senderId ?? '');
 	};
 
-	const user = useUserById(sender.sender_id);
+	const user = useUserById(sender.senderId);
 
 	return (
 		<div className="m-2 flex flex-row justify-start mb-2 items-center gap-2 relative  ">
@@ -139,19 +139,19 @@ const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId,
 				<AvatarImage
 					className="w-8 h-8"
 					alt="user avatar"
-					username={user?.clan_nick || user?.user?.display_name || user?.user?.username}
-					srcImgProxy={createImgproxyUrl((user?.clan_avatar || user?.user?.avatar_url) ?? '', {
+					username={user?.clanNick || user?.user?.displayName || user?.user?.username}
+					srcImgProxy={createImgproxyUrl((user?.clanAvatar || user?.user?.avatarUrl) ?? '', {
 						width: 300,
 						height: 300,
 						resizeType: 'fit'
 					})}
-					src={user?.clan_avatar || user?.user?.avatar_url}
+					src={user?.clanAvatar || user?.user?.avatarUrl}
 				/>
 			</div>
 
-			<NameComponent id={sender.sender_id ?? ''} name={user?.clan_nick || user?.user?.display_name || user?.user?.username} />
+			<NameComponent id={sender.senderId ?? ''} name={user?.clanNick || user?.user?.displayName || user?.user?.username} />
 			<p className="text-xs absolute right-8 text-theme-primary-hover text-theme-primary ">{sender.count}</p>
-			{sender.sender_id === userId.userId && sender.count && sender.count > 0 && (
+			{sender.senderId === userId.userId && sender.count && sender.count > 0 && (
 				<div onClick={handleRemoveEmojiSender} className="right-1 absolute cursor-pointer text-theme-primary hover:text-red-500">
 					<Icons.Close defaultSize="w-3 h-3" />
 				</div>

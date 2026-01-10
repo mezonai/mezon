@@ -100,9 +100,9 @@ const ClanLayout = () => {
 
 	useEffect(() => {
 		if (!currentClanId) return;
-		dispatch(onboardingActions.fetchOnboarding({ clan_id: currentClanId }));
+		dispatch(onboardingActions.fetchOnboarding({ clanId: currentClanId }));
 		if (currentClanIsOnboarding) {
-			dispatch(onboardingActions.fetchProcessingOnboarding({ clan_id: currentClanId }));
+			dispatch(onboardingActions.fetchProcessingOnboarding({ clanId: currentClanId }));
 		}
 	}, [currentClanIsOnboarding, currentClanId, dispatch]);
 

@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import MezonIconCDN from 'apps/mobile/src/app/componentUI/MezonIconCDN';
 import { IconCDN } from 'apps/mobile/src/app/constants/icon_cdn';
 import { APP_SCREEN } from 'apps/mobile/src/app/navigation/ScreenTypes';
-import { ApiGenerateClanWebhookRequest, ApiWebhookCreateRequest } from 'mezon-js/api.gen';
+import { ApiGenerateClanWebhookRequest, ApiWebhookCreateRequest } from 'mezon-js/types';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, Pressable, Text, View } from 'react-native';
@@ -68,10 +68,10 @@ const useWebhookActions = (clanId: string, isClanSetting: boolean, isClanIntegra
 		async (channelId?: string) => {
 			try {
 				const newWebhookReq: ApiWebhookCreateRequest = {
-					channel_id: channelId,
-					webhook_name: getRandomWebhookName(),
+					channelId: channelId,
+					webhookName: getRandomWebhookName(),
 					avatar: getRandomAvatar(),
-					clan_id: clanId
+					clanId: clanId
 				};
 				const response = await dispatch(generateWebhook({ request: newWebhookReq, channelId, clanId, isClanSetting }));
 				if (response?.meta?.requestStatus === 'rejected') {
@@ -122,9 +122,9 @@ const useWebhookActions = (clanId: string, isClanSetting: boolean, isClanIntegra
 		if (isClanIntegration) {
 			try {
 				const newWebhookReq: ApiGenerateClanWebhookRequest = {
-					webhook_name: getRandomWebhookName(),
+					webhookName: getRandomWebhookName(),
 					avatar: getRandomAvatar(),
-					clan_id: clanId
+					clanId: clanId
 				};
 				const response = await dispatch(generateClanWebhook({ request: newWebhookReq, clanId }));
 				if (response?.meta?.requestStatus === 'rejected') {

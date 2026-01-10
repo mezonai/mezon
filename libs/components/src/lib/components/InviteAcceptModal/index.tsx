@@ -22,10 +22,10 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const clanId = selectInvite?.clan_id || '';
-	const channelId = selectInvite?.channel_id || '';
+	const clanId = selectInvite?.clanId || '';
+	const channelId = selectInvite?.channelId || '';
 
-	const userJoined = selectInvite?.user_joined;
+	const userJoined = selectInvite?.userJoined;
 
 	const joinChannel = async () => {
 		if (inviteId) {
@@ -33,15 +33,15 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 			setError(null);
 			try {
 				await inviteUser(inviteId).then((res) => {
-					if (res?.channel_id && res?.clan_id) {
-						navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id}`);
+					if (res?.channelId && res?.clanId) {
+						navigate(`/chat/clans/${res.clanId}/channels/${res.channelId}`);
 						onClose();
 					}
 				});
 				dispatch(clansActions.fetchClans({ noCache: true }));
-				if (selectInvite.channel_desc) {
-					const channel = { ...selectInvite, id: selectInvite.channel_id as string };
-					dispatch(channelsActions.add({ clanId: selectInvite.channel_desc?.clan_id as string, channel: { ...channel, active: 1 } }));
+				if (selectInvite.channelDesc) {
+					const channel = { ...selectInvite, id: selectInvite.channelId as string };
+					dispatch(channelsActions.add({ clanId: selectInvite.channelDesc?.clanId as string, channel: { ...channel, active: 1 } }));
 				}
 			} finally {
 				setLoading(false);
@@ -76,11 +76,11 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 			<div className="bg-theme-setting-primary text-theme-primary rounded-md p-6 w-full max-w-[440px] flex flex-col items-center">
 				<div className="flex items-center justify-center mb-3">
 					<div className="relative w-12 h-12 flex items-center justify-center">
-						{selectInvite?.clan_logo ? (
-							<img className="w-full h-full rounded-md object-cover" src={selectInvite.clan_logo} alt="" />
+						{selectInvite?.clanLogo ? (
+							<img className="w-full h-full rounded-md object-cover" src={selectInvite.clanLogo} alt="" />
 						) : (
 							<div className="w-full h-full rounded-md bg-gray-700 flex items-center justify-center text-white text-3xl font-medium select-none">
-								{(selectInvite?.clan_name || 'M').charAt(0).toUpperCase()}
+								{(selectInvite?.clanName || 'M').charAt(0).toUpperCase()}
 							</div>
 						)}
 					</div>
@@ -90,15 +90,15 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 					<p className="text-sm mb-1">{t('acceptModal.invitedToJoin')}</p>
 					<h1
 						className="text-theme-primary-active text-3xl font-medium mb-3 truncate max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
-						title={selectInvite?.clan_name || 'XCLAN'}
+						title={selectInvite?.clanName || 'XCLAN'}
 					>
-						{selectInvite?.clan_name || 'XCLAN'}
+						{selectInvite?.clanName || 'XCLAN'}
 					</h1>
 
 					<div className="flex justify-center gap-5 text-sm">
 						<div className="flex items-center">
 							<div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-							<span>{t('acceptModal.memberCount', { count: Number(selectInvite?.member_count || 1) })}</span>
+							<span>{t('acceptModal.memberCount', { count: Number(selectInvite?.memberCount || 1) })}</span>
 						</div>
 					</div>
 				</div>
