@@ -13,7 +13,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { FOR_SALE_CATE, ITEM_TYPE, PREDEFINED_EMOJI_CATEGORIES, SubPanelName, blankReferenceObj } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/types';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -70,7 +70,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 	const { userProfile } = useAuth();
 	const allStickers = useAppSelector(selectAllStickerSuggestion);
 	const clanStickers = useMemo(
-		() => allStickers.filter((sticker) => (sticker as any).media_type === undefined || (sticker as any).media_type === MediaType.STICKER),
+		() => allStickers.filter((sticker) => (sticker as any).mediaType === undefined || (sticker as any).mediaType === MediaType.STICKER),
 		[allStickers]
 	);
 
@@ -81,9 +81,9 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 	});
 	const { valueInputToCheckHandleSearch, subPanelActive } = useGifsStickersEmoji();
 	const [searchedStickers, setSearchStickers] = useState<ClanSticker[]>([]);
-	const currentId = useCurrentInbox()?.channel_id;
+	const currentId = useCurrentInbox()?.channelId;
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
-	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
+	const isReplyAction = dataReferences.messageRefId && dataReferences.messageRefId !== '';
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
@@ -93,12 +93,12 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 
 	const categoryLogo = useMemo(() => {
 		const categorizedStickers = clanStickers
-			.filter((sticker) => !sticker.is_for_sale)
+			.filter((sticker) => !sticker.isForSale)
 			.reduce((acc: { id?: string; type?: string; url?: string }[], sticker) => {
-				if (!acc.some((item) => item.id === sticker.clan_id)) {
+				if (!acc.some((item) => item.id === sticker.clanId)) {
 					acc.push({
-						id: sticker.clan_id,
-						type: sticker.clan_name,
+						id: sticker.clanId,
+						type: sticker.clanName,
 						url: sticker.logo
 					});
 				}
@@ -111,11 +111,11 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 			...searchedStickers.map((sticker) => ({
 				id: sticker.id,
 				url: sticker.source,
-				type: sticker.clan_name,
+				type: sticker.clanName,
 				clanName: sticker.category,
-				clanId: sticker.clan_id,
-				forSale: sticker.is_for_sale,
-				creatorId: sticker.creator_id,
+				clanId: sticker.clanId,
+				forSale: sticker.isForSale,
+				creatorId: sticker.creatorId,
 				shortname: sticker.shortname || ''
 			}))
 		].filter(Boolean);

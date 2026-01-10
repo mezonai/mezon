@@ -37,11 +37,11 @@ export const MediaItem = memo(({ data, onPress, isDM }: IMediaItemProps) => {
 
 	const prioritySenderAvatar = useMemo(() => {
 		if (isDM) {
-			return userProfile?.avatar_url || '';
+			return userProfile?.avatarUrl || '';
 		}
 
-		return clanProfile?.clan_avatar || clanProfile?.user?.avatar_url || '';
-	}, [clanProfile?.clan_avatar, clanProfile?.user?.avatar_url, isDM, userProfile?.avatar_url]);
+		return clanProfile?.clanAvatar || clanProfile?.user?.avatarUrl || '';
+	}, [clanProfile?.clanAvatar, clanProfile?.user?.avatarUrl, isDM, userProfile?.avatarUrl]);
 
 	const handlePress = useCallback(() => {
 		onPress(data);

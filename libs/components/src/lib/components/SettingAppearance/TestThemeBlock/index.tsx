@@ -7,8 +7,8 @@ const TestThemeBlock = () => {
 	const { t } = useTranslation('common');
 	const { userProfile } = useAuth();
 
-	const avatarUrl = userProfile?.user?.avatar_url;
-	const imgproxyUrl = createImgproxyUrl(userProfile?.user?.avatar_url || '', { width: 300, height: 300, resizeType: 'fit' });
+	const avatarUrl = userProfile?.user?.avatarUrl;
+	const imgproxyUrl = createImgproxyUrl(userProfile?.user?.avatarUrl || '', { width: 300, height: 300, resizeType: 'fit' });
 
 	const date = new Date();
 	const realTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
@@ -28,7 +28,7 @@ const TestThemeBlock = () => {
 					</div>
 					<div className="test-right ml-3">
 						<div className="test-right-top flex gap-3 items-center">
-							<div className={`test-right-top-username font-semibold `}>{userProfile?.user?.display_name}</div>
+							<div className={`test-right-top-username font-semibold `}>{userProfile?.user?.displayName}</div>
 							<div className="test-right-top-time text-[12px]  ">
 								{t('todayAt')} {realTime}
 							</div>
@@ -48,7 +48,7 @@ const TestThemeBlock = () => {
 					</div>
 					<div className="test-right ml-3">
 						<div className="test-right-top flex gap-3 items-center">
-							<div className={`test-right-top-username font-semibold `}>{userProfile?.user?.display_name}</div>
+							<div className={`test-right-top-username font-semibold `}>{userProfile?.user?.displayName}</div>
 							<div className="test-right-top-time text-[12px]  ">
 								{t('todayAt')} {realTime}
 							</div>
@@ -68,7 +68,7 @@ const TestThemeBlock = () => {
 					</div>
 					<div className="test-right ml-3">
 						<div className="test-right-top flex gap-3 items-center">
-							<div className={`test-right-top-username font-semibold `}>{userProfile?.user?.display_name}</div>
+							<div className={`test-right-top-username font-semibold `}>{userProfile?.user?.displayName}</div>
 							<div className="test-right-top-time text-[12px]  ">
 								{t('todayAt')} {realTime}
 							</div>

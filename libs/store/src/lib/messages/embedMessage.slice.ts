@@ -23,44 +23,44 @@ export const embedSlice = createSlice({
 	name: EMBED_MESSAGE,
 	initialState: initialEmbedState,
 	reducers: {
-		addEmbedValue: (state, action: PayloadAction<{ message_id: string; data: FormDataEmbed; multiple?: boolean; onlyChooseOne?: boolean }>) => {
-			const { message_id, data, multiple, onlyChooseOne } = action.payload;
+		addEmbedValue: (state, action: PayloadAction<{ messageId: string; data: FormDataEmbed; multiple?: boolean; onlyChooseOne?: boolean }>) => {
+			const { messageId, data, multiple, onlyChooseOne } = action.payload;
 			if (multiple) {
-				if (!state.formDataEmbed[message_id]) {
-					state.formDataEmbed[message_id] = {
+				if (!state.formDataEmbed[messageId]) {
+					state.formDataEmbed[messageId] = {
 						[data.id]: [data.value]
 					};
 				} else {
-					const dataCurrent = state.formDataEmbed[message_id][data.id];
+					const dataCurrent = state.formDataEmbed[messageId][data.id];
 					if (Array.isArray(dataCurrent) && dataCurrent.includes(data.value)) {
-						state.formDataEmbed[message_id][data.id] = dataCurrent.filter((item) => item !== data.value);
+						state.formDataEmbed[messageId][data.id] = dataCurrent.filter((item) => item !== data.value);
 						return;
 					}
-					state.formDataEmbed[message_id][data.id] = dataCurrent ? [...dataCurrent, data.value] : [data.value];
+					state.formDataEmbed[messageId][data.id] = dataCurrent ? [...dataCurrent, data.value] : [data.value];
 				}
 				return;
 			} else {
-				if (!state.formDataEmbed[message_id]) {
-					state.formDataEmbed[message_id] = {
+				if (!state.formDataEmbed[messageId]) {
+					state.formDataEmbed[messageId] = {
 						[data.id]: data.value
 					};
 					return;
 				}
-				state.formDataEmbed[message_id] = {
-					...state.formDataEmbed[message_id],
+				state.formDataEmbed[messageId] = {
+					...state.formDataEmbed[messageId],
 					[data.id]: data.value
 				};
 				return;
 			}
 		},
-		removeEmbedValuel: (state, action: PayloadAction<{ message_id: string; data: FormDataEmbed; multiple?: boolean }>) => {
-			const { message_id, data, multiple } = action.payload;
-			if (state.formDataEmbed[message_id]?.[data.id] && multiple) {
-				state.formDataEmbed[message_id][data.id] = [...state.formDataEmbed[message_id][data.id]].filter((item) => item !== data.value);
+		removeEmbedValuel: (state, action: PayloadAction<{ messageId: string; data: FormDataEmbed; multiple?: boolean }>) => {
+			const { messageId, data, multiple } = action.payload;
+			if (state.formDataEmbed[messageId]?.[data.id] && multiple) {
+				state.formDataEmbed[messageId][data.id] = [...state.formDataEmbed[messageId][data.id]].filter((item) => item !== data.value);
 				return;
 			}
-			if (state.formDataEmbed[message_id][data.id]) {
-				state.formDataEmbed[message_id][data.id] = [];
+			if (state.formDataEmbed[messageId][data.id]) {
+				state.formDataEmbed[messageId][data.id] = [];
 			}
 		}
 	}
@@ -74,6 +74,6 @@ export const embedActions = {
 
 export const getEmbedState = (rootState: { [EMBED_MESSAGE]: EmbedState }): EmbedState => rootState[EMBED_MESSAGE];
 
-export const selectDataFormEmbedByMessageId = createSelector([getEmbedState, (state, message_id: string) => message_id], (state, message_id) => {
-	return state.formDataEmbed?.[message_id];
+export const selectDataFormEmbedByMessageId = createSelector([getEmbedState, (state, messageId: string) => messageId], (state, messageId) => {
+	return state.formDataEmbed?.[messageId];
 });

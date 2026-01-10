@@ -1,5 +1,29 @@
-import { load, save, STORAGE_KEY_TEMPORARY_INPUT_MESSAGES, STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE } from '@mezon/mobile-components';
+import {
+	load,
+	remove,
+	save,
+	STORAGE_CHANNEL_CURRENT_CACHE,
+	STORAGE_DATA_CLAN_CHANNEL_CACHE,
+	STORAGE_KEY_TEMPORARY_ATTACHMENT,
+	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES,
+	STORAGE_MESSAGE_ACTION_NEED_TO_RESOLVE
+} from '@mezon/mobile-components';
+import {
+	accountActions,
+	appActions,
+	authActions,
+	channelsActions,
+	clansActions,
+	directActions,
+	getStore,
+	listChannelsByUserActions,
+	listUsersByUserActions,
+	messagesActions,
+	notificationActions,
+	selectAllAccount
+} from '@mezon/store-mobile';
 import type { EmojiDataOptionals } from '@mezon/utils';
+import { Platform } from 'react-native';
 import { deflate, inflate } from 'react-native-gzip';
 
 export const sleep = (milliseconds: number) => {
@@ -56,13 +80,13 @@ export const resetCachedChatbox = (channelId: string) => {
 	}
 };
 
-export function combineMessageReactions(reactions: any[], message_id: string): any[] {
+export function combineMessageReactions(reactions: any[], messageId: string): any[] {
 	const dataCombined: Record<string, EmojiDataOptionals> = {};
 
 	if (!reactions) return [];
 
 	for (const reaction of reactions) {
-		const emojiId = reaction?.emoji_id || ('' as string);
+		const emojiId = reaction?.emojiId || ('' as string);
 		const emoji = reaction?.emoji || ('' as string);
 
 		if (reaction?.count < 1) {
@@ -75,19 +99,19 @@ export function combineMessageReactions(reactions: any[], message_id: string): a
 				emoji,
 				senders: [],
 				action: false,
-				message_id,
+				messageId,
 				id: '',
-				channel_id: ''
+				channelId: ''
 			};
 		}
-		//if (!reaction?.sender_name) continue;
+		//if (!reaction?.senderName) continue;
 		const newSender = {
-			sender_id: reaction?.sender_id,
+			senderId: reaction?.senderId,
 			count: reaction?.count
 		};
 
 		const reactionData = dataCombined?.[emojiId];
-		const senderIndex = reactionData?.senders?.findIndex((sender) => sender?.sender_id === newSender?.sender_id);
+		const senderIndex = reactionData?.senders?.findIndex((sender) => sender?.senderId === newSender?.senderId);
 
 		if (senderIndex === -1) {
 			reactionData?.senders?.push(newSender);
@@ -219,4 +243,30 @@ export const removeBackticks = (text: string) => {
 		i++;
 	}
 	return result;
+};
+
+export const logoutGlobal = async () => {
+	const store = getStore();
+	const userProfile = selectAllAccount(store.getState());
+	store.dispatch(authActions.logOut({ deviceId: userProfile.user.username, platform: Platform.OS }));
+	store.dispatch(directActions.removeAll());
+	store.dispatch(notificationActions.removeAll());
+	store.dispatch(channelsActions.removeAll());
+	store.dispatch(messagesActions.removeAll());
+	store.dispatch(listChannelsByUserActions.removeAll());
+	store.dispatch(clansActions.setCurrentClanId(''));
+	store.dispatch(clansActions.removeAll());
+	store.dispatch(clansActions.collapseAllGroups());
+	store.dispatch(clansActions.clearClanGroups());
+	store.dispatch(clansActions.refreshStatus());
+	store.dispatch(accountActions.resetAllState());
+	store.dispatch(notificationActions.resetAllState());
+	store.dispatch(listUsersByUserActions.removeAll());
+
+	await remove(STORAGE_DATA_CLAN_CHANNEL_CACHE);
+	await remove(STORAGE_CHANNEL_CURRENT_CACHE);
+	await remove(STORAGE_KEY_TEMPORARY_INPUT_MESSAGES);
+	await remove(STORAGE_KEY_TEMPORARY_ATTACHMENT);
+	store.dispatch(appActions.setIsShowWelcomeMobile(false));
+	store.dispatch(appActions.setLoadingMainMobile(false));
 };

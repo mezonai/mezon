@@ -1,7 +1,7 @@
 import { useDragAndDrop } from '@mezon/core';
 import { referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, processFile } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import type { DragEvent } from 'react';
 import DragAndDropUI from './DragAndDropUI';
 

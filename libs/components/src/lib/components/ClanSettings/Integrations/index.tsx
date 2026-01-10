@@ -19,7 +19,7 @@ const Integrations = ({ isClanSetting }: IIntegrationsProps) => {
 	const currentChannel = useSelector(selectCurrentChannel) || undefined;
 
 	const allWebhooks = useAppSelector((state) =>
-		selectWebhooksByChannelId(state, isClanSetting ? '0' : (currentChannel?.channel_id ?? ''), currentChannel?.clan_id ?? '')
+		selectWebhooksByChannelId(state, isClanSetting ? '0' : (currentChannel?.channelId ?? ''), currentChannel?.clanId ?? '')
 	);
 	const allClanWebhooks = useSelector(selectAllClanWebhooks);
 

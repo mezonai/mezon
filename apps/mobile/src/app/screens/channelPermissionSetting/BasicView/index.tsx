@@ -16,7 +16,7 @@ import {
 } from '@mezon/store-mobile';
 import { isPublicChannel } from '@mezon/utils';
 import { FlashList } from '@shopify/flash-list';
-import type { ApiChangeChannelPrivateRequest } from 'mezon-js/api.gen';
+import type { ApiChangeChannelPrivateRequest } from 'mezon-js/types';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -43,37 +43,37 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 	const allClanMembers = useSelector(selectAllUserClans);
 	const [isChannelPublic, setIsChannelPublic] = useState<boolean>(isPublicChannel(channel));
 
-	const listOfChannelRole = useSelector(selectRolesByChannelId(channel?.channel_id));
-	const listChannelMemberIds = useSelector((state) => selectUserChannelIds(state, channel.channel_id));
+	const listOfChannelRole = useSelector(selectRolesByChannelId(channel?.channelId));
+	const listChannelMemberIds = useSelector((state) => selectUserChannelIds(state, channel.channelId));
 	const listOfChannelMember = useMemo(() => {
 		return allClanMembers?.filter((member) => listChannelMemberIds?.includes(member?.user?.id));
 	}, [allClanMembers, listChannelMemberIds]);
 
 	useEffect(() => {
-		dispatch(rolesClanActions.fetchRolesClan({ clanId: channel?.clan_id }));
-		dispatch(fetchUserChannels({ channelId: channel?.channel_id }));
-	}, [channel?.channel_id, channel?.clan_id, dispatch]);
+		dispatch(rolesClanActions.fetchRolesClan({ clanId: channel?.clanId }));
+		dispatch(fetchUserChannels({ channelId: channel?.channelId }));
+	}, [channel?.channelId, channel?.clanId, dispatch]);
 
 	const clanOwner = useMemo(() => {
 		return allClanMembers?.find((member) => checkClanOwner(member?.user?.id));
 	}, [allClanMembers, checkClanOwner]);
 
 	const availableMemberList = useMemo(() => {
-		if (channel?.channel_private) {
+		if (channel?.channelPrivate) {
 			return listOfChannelMember;
 		}
 		return [clanOwner];
-	}, [channel?.channel_private, clanOwner, listOfChannelMember]);
+	}, [channel?.channelPrivate, clanOwner, listOfChannelMember]);
 
 	const availableRoleList = useMemo(() => {
-		if (channel?.channel_private) {
+		if (channel?.channelPrivate) {
 			return listOfChannelRole?.filter(
 				(role) =>
-					typeof role?.role_channel_active === 'number' && role?.role_channel_active === 1 && role?.slug !== `everyone-${role?.clan_id}`
+					typeof role?.roleChannelActive === 'number' && role?.roleChannelActive === 1 && role?.slug !== `everyone-${role?.clanId}`
 			);
 		}
 		return [];
-	}, [listOfChannelRole, channel?.channel_private]);
+	}, [listOfChannelRole, channel?.channelPrivate]);
 
 	const combineWhoCanAccessList = useMemo(() => {
 		return [
@@ -101,29 +101,29 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 
 				const currentChannelPrivate = isPublic ? 1 : 0;
 				const updateUpdateChannelRequest: ApiChangeChannelPrivateRequest = {
-					clan_id: channel?.clan_id,
-					channel_id: channel?.channel_id || '',
-					channel_private: currentChannelPrivate,
-					user_ids: [userId],
-					role_ids: []
+					clanId: channel?.clanId,
+					channelId: channel?.channelId || '',
+					channelPrivate: currentChannelPrivate,
+					userIds: [userId],
+					roleIds: []
 				};
 
 				const response = await dispatch(channelsActions.updateChannelPrivate(updateUpdateChannelRequest));
 
 				dispatch(
 					channelsActions.updateChannelPrivateState({
-						clanId: channel?.clan_id || '',
-						channelId: channel?.channel_id || '',
+						clanId: channel?.clanId || '',
+						channelId: channel?.channelId || '',
 						channelPrivate: Number(!isPublic)
 					})
 				);
 				dispatch(
 					listChannelRenderAction.updateChannelInListRender({
-						channelId: channel?.channel_id || '',
-						clanId: channel?.clan_id || '',
+						channelId: channel?.channelId || '',
+						clanId: channel?.clanId || '',
 						dataUpdate: {
 							...updateUpdateChannelRequest,
-							channel_private: Number(!isPublic)
+							channelPrivate: Number(!isPublic)
 						} as IUpdateChannelRequest
 					})
 				);
@@ -191,7 +191,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 				</View>
 			</TouchableOpacity>
 
-			{Boolean(channel?.channel_private) && (
+			{Boolean(channel?.channelPrivate) && (
 				<View>
 					<Text style={styles.descriptionText}>{t('channelPermission.basicViewDescription')}</Text>
 

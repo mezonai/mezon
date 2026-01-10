@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { EOverriddenPermission } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPermission } from 'mezon-js/api.gen';
+import type { ApiPermission } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -140,7 +140,7 @@ export const fetchMaxChannelPermissionCached = async (
 			}
 		},
 		() => mezon.client.listUserPermissionInChannel(mezon.session, clanId, channelId),
-		'user_permission_list'
+		'userPermissionList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -174,7 +174,7 @@ export const fetchMaxChannelPermission = createAsyncThunk(
 			if (response && 'permissions' in response && response.permissions?.permissions) {
 				const channelPermission: ChannelPermission = {
 					channelId,
-					maxPermissions: response.permissions.permissions.reduce<Record<EOverriddenPermission, ApiPermission>>(
+					maxPermissions: (response.permissions.permissions as ApiPermission[]).reduce(
 						(acc: Record<EOverriddenPermission, ApiPermission>, perm: ApiPermission) => {
 							if (perm.slug) {
 								acc[perm.slug as EOverriddenPermission] = perm;

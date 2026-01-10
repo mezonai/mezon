@@ -4,7 +4,7 @@ import { selectTheme } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IEmojiOnMessage, RequestInput } from '@mezon/utils';
 import { EmojiPlaces, MAX_LENGTH_MESSAGE_BUZZ, ThemeApp, TypeMessage, generateE2eId } from '@mezon/utils';
-import type { ApiChannelDescription } from 'mezon-js/api.gen';
+import type { ApiChannelDescription } from 'mezon-js/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { OnChangeHandlerFunc } from 'react-mentions';

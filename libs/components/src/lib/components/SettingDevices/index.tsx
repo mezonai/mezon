@@ -41,14 +41,14 @@ type DeviceItemProps = {
 
 const formatDeviceDate = (date: string | Date | undefined, t: (key: string) => string): string => {
 	if (!date) return '';
-	const dateStr = date instanceof Date ? date.toISOString() : String(date);
+	const dateStr = date instanceof Date ? date.toISOString() : date;
 	return convertTimeString(dateStr, t);
 };
 
 const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
-	const { platform, device_name, location, last_active } = device;
+	const { platform, deviceName, location, lastActive } = device;
 
-	const formattedLastActive = formatDeviceDate(last_active, t);
+	const formattedLastActive = formatDeviceDate(lastActive, t);
 	const platformLabel = getPlatformLabel(platform);
 
 	return (
@@ -58,9 +58,9 @@ const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
 				<div>
 					<div className="flex items-center gap-2">
 						<span className="text-theme-primary-active font-semibold text-sm">{platformLabel}</span>
-						{device_name && (
+						{deviceName && (
 							<span className="btn-primary text-theme-primary-active  text-xs px-2 py-0.5 rounded font-medium">
-								{device_name.toUpperCase()}
+								{deviceName.toUpperCase()}
 							</span>
 						)}
 					</div>
@@ -73,7 +73,7 @@ const DeviceItem = ({ device, isCurrent, t, onRemove }: DeviceItemProps) => {
 			</div>
 			{!isCurrent && onRemove && (
 				<button
-					onClick={() => onRemove(device.device_id)}
+					onClick={() => onRemove(device.deviceId)}
 					className="w-8 h-8 flex items-center hover:text-red-500 justify-center rounded-full hover:bg-theme-setting-nav text-theme-primary hover:text-theme-primary-active transition-colors"
 					title={t('deviceSettings.removeDevice')}
 				>
@@ -141,7 +141,7 @@ const SettingDevices = ({ menuIsOpen }: SettingDevicesProps) => {
 					<h2 className="text-theme-primary-active font-semibold text-lg mb-4">{t('deviceSettings.otherDevices')}</h2>
 					<div>
 						{otherDevices.map((device) => (
-							<DeviceItem key={device.device_id} device={device} t={t} onRemove={handleRemoveDevice} />
+							<DeviceItem key={device.deviceId} device={device} t={t} onRemove={handleRemoveDevice} />
 						))}
 					</div>
 				</div>

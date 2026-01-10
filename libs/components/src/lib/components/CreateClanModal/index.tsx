@@ -13,7 +13,7 @@ import { Button, ButtonLoading, Icons, InputField } from '@mezon/ui';
 import { DEBOUNCE_TYPING_TIME, LIMIT_SIZE_UPLOAD_IMG, ValidateSpecialCharacters, checkClanLimit, fileTypeImage, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { ChannelType } from 'mezon-js';
-import type { ApiCategoryDesc } from 'mezon-js/api.gen';
+import type { ApiCategoryDesc } from 'mezon-js/types';
 import React, { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -289,28 +289,28 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 
 	const createTemplateChannels = async (clanId: string, template: ClanTemplate, defaultCategoryId: string) => {
 		for (const category of template.categories) {
-			let newCategory: ApiCategoryDesc = { category_id: defaultCategoryId };
+			let newCategory: ApiCategoryDesc = { categoryId: defaultCategoryId };
 			if (category.name) {
 				const res = await dispatch(
 					categoriesActions.createNewCategory({
-						clan_id: clanId,
-						category_name: category.name
+						clanId: clanId,
+						categoryName: category.name
 					})
 				);
 				newCategory = unwrapResult(res);
 			}
-			if (!newCategory.category_id) continue;
+			if (!newCategory.categoryId) continue;
 			for (const channel of category.channels) {
 				const isPrivate = channel.isPrivate ? 1 : 0;
 
 				await dispatch(
 					createNewChannel({
-						clan_id: clanId,
+						clanId: clanId,
 						type: channel.type,
-						channel_label: channel.name,
-						channel_private: isPrivate,
-						category_id: newCategory.category_id,
-						parent_id: '0'
+						channelLabel: channel.name,
+						channelPrivate: isPrivate,
+						categoryId: newCategory.categoryId,
+						parentId: '0'
 					})
 				);
 				await new Promise((resolve) => setTimeout(resolve, 400));
@@ -342,13 +342,13 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 		}
 
 		const clan = await createClans(nameClan.trim(), urlImage);
-		if (clan?.clan_id) {
-			const result = await dispatch(channelsActions.fetchChannels({ clanId: clan.clan_id, noCache: true }));
+		if (clan?.clanId) {
+			const result = await dispatch(channelsActions.fetchChannels({ clanId: clan.clanId, noCache: true }));
 			const channels = (result?.payload as any)?.channels || [];
-			await navigateToNewClan(clan.clan_id, channels[0]?.channel_id);
+			await navigateToNewClan(clan.clanId, channels[0]?.channelId);
 			if (selectedTemplate) {
 				try {
-					await createTemplateChannels(clan.clan_id, selectedTemplate, channels[0]?.category_id);
+					await createTemplateChannels(clan.clanId, selectedTemplate, channels[0]?.categoryId);
 				} catch (error) {
 					console.error('Error creating template channels:', error);
 				}
@@ -460,7 +460,7 @@ const ModalCreateClans = (props: ModalCreateClansProps) => {
 						className="mb-2 mt-4 py-2"
 						placeholder={t('createClanModal.placeholder')}
 						maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
-						data-e2e={generateE2eId('clan_page.modal.create_clan.input.clan_name')}
+						data-e2e={generateE2eId('clan_page.modal.create_clan.input.clanName')}
 					/>
 					{validationState !== EValidateListMessage.VALIDATED && (
 						<p className="text-[#e44141] text-xs italic font-thin">

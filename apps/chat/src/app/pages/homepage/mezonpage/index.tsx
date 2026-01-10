@@ -94,7 +94,7 @@ function MezonPage() {
 		if (typeof window !== 'undefined' && typeof (window as Window & { gtag?: (...args: unknown[]) => void }).gtag !== 'undefined') {
 			(window as Window & { gtag?: (...args: unknown[]) => void }).gtag?.('event', 'download_click', {
 				event_category: 'Downloads',
-				event_label: platform,
+				eventLabel: platform,
 				download_type: downloadType,
 				app_version: version,
 				custom_parameter_1: 'mezon_homepage'

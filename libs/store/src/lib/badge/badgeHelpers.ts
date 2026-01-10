@@ -2,7 +2,7 @@ import type { IChannel } from '@mezon/utils';
 import { ID_MENTION_HERE, TIME_OFFSET, TypeMessage, debounce } from '@mezon/utils';
 import type { ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageMention } from 'mezon-js/api.gen';
+import type { ApiMessageMention } from 'mezon-js/types';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
@@ -48,7 +48,7 @@ const isMessageAlreadyProcessed = (id: string): boolean => {
 const getCurrentClanBadgeCount = (store: { getState?: () => RootState }, clanId: string): number => {
 	try {
 		const state = store?.getState?.();
-		return state?.clans?.entities?.[clanId]?.badge_count ?? 0;
+		return state?.clans?.entities?.[clanId]?.badgeCount ?? 0;
 	} catch (error) {
 		console.warn('Failed to get clan badge count:', error);
 		return 0;
@@ -64,7 +64,7 @@ export const getCurrentChannelBadgeCount = (store: { getState?: () => RootState 
 		}
 
 		const channel = listChannelRender.find((ch) => ch.id === channelId) as IChannel;
-		return channel?.count_mess_unread ?? 0;
+		return channel?.countMessUnread ?? 0;
 	} catch (error) {
 		console.warn('Failed to get channel badge count:', error);
 		return 0;
@@ -172,14 +172,14 @@ const isMessageMentionOrReply = (msg: ChannelMessage, currentUserId: string, sto
 		}
 
 		// Special @here mention
-		const includesHere = mentions?.some((m) => m?.user_id === ID_MENTION_HERE) ?? false;
-		const includesUser = mentions?.some((mention) => mention?.user_id === currentUserId) ?? false;
-		const includesRole = mentions?.some((item) => (currentClanUser?.role_id as string | undefined)?.includes(item?.role_id as string)) ?? false;
+		const includesHere = mentions?.some((m) => m?.userId === ID_MENTION_HERE) ?? false;
+		const includesUser = mentions?.some((mention) => mention?.userId === currentUserId) ?? false;
+		const includesRole = mentions?.some((item) => (currentClanUser?.roleId as string | undefined)?.includes(item?.roleId as string)) ?? false;
 
 		return includesHere || includesUser || includesRole;
 	})();
 
-	const isReply = msg.references?.some((ref) => ref.message_sender_id === currentUserId) ?? false;
+	const isReply = msg.references?.some((ref) => ref.messageSenderId === currentUserId) ?? false;
 
 	return hasMention || isReply;
 };
@@ -187,62 +187,62 @@ const isMessageMentionOrReply = (msg: ChannelMessage, currentUserId: string, sto
 export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: DecreaseChannelBadgeParams) => {
 	const { message, userId, store } = params;
 
-	if (!message || message?.code !== TypeMessage.ChatRemove || message.sender_id === userId) {
+	if (!message || message?.code !== TypeMessage.ChatRemove || message.senderId === userId) {
 		return;
 	}
 
 	const messageTimestamp =
-		message.update_time_seconds && message.update_time_seconds > 0 ? message.update_time_seconds : message.create_time_seconds || 0;
+		message.updateTimeSeconds && message.updateTimeSeconds > 0 ? message.updateTimeSeconds : message.createTimeSeconds || 0;
 
 	// Handle direct messages (DM/Group)
-	if (!message.clan_id || message.clan_id === '0') {
-		const dmMeta = store.getState().direct?.entities?.[message.channel_id];
-		const lastSeenTimestamp = Number(dmMeta?.last_seen_message?.timestamp_seconds ?? Number.NaN);
+	if (!message.clanId || message.clanId === '0') {
+		const dmMeta = store.getState().direct?.entities?.[message.channelId];
+		const lastSeenTimestamp = Number(dmMeta?.lastSeenMessage?.timestampSeconds ?? Number.NaN);
 		if (
 			dmMeta &&
 			!Number.isNaN(lastSeenTimestamp) &&
 			messageTimestamp > lastSeenTimestamp &&
-			dmMeta.count_mess_unread !== undefined &&
-			dmMeta.count_mess_unread > 0
+			dmMeta.countMessUnread !== undefined &&
+			dmMeta.countMessUnread > 0
 		) {
-			dispatch(directMetaActions.setCountMessUnread({ channelId: message.channel_id, count: -1 }));
+			dispatch(directMetaActions.setCountMessUnread({ channelId: message.channelId, count: -1 }));
 		}
 	} else {
 		const state = store.getState();
-		const channelMeta = state.channelmeta?.entities?.[message.channel_id];
-		const channel = state.channels?.byClans?.[message.clan_id]?.entities?.entities?.[message.channel_id];
-		const currentClanBadge = state.clans?.entities?.[message.clan_id]?.badge_count ?? 0;
+		const channelMeta = state.channelmeta?.entities?.[message.channelId];
+		const channel = state.channels?.byClans?.[message.clanId]?.entities?.entities?.[message.channelId];
+		const currentClanBadge = state.clans?.entities?.[message.clanId]?.badgeCount ?? 0;
 		const lastSeenTimestamp = channelMeta?.lastSeenTimestamp;
 
 		const shouldDecrease =
 			channel &&
 			lastSeenTimestamp &&
 			messageTimestamp > lastSeenTimestamp &&
-			(channel.count_mess_unread || 0) > 0 &&
+			(channel.countMessUnread || 0) > 0 &&
 			isMessageMentionOrReply(message, userId, store);
 
 		if (shouldDecrease) {
-			const channelBadgeCount = channel.count_mess_unread || 0;
+			const channelBadgeCount = channel.countMessUnread || 0;
 			if (channelBadgeCount > 0) {
 				dispatch(
 					listChannelRenderAction.updateChannelUnreadCount({
-						channelId: message.channel_id,
-						clanId: message.clan_id,
+						channelId: message.channelId,
+						clanId: message.clanId,
 						count: -1
 					})
 				);
 
 				dispatch(
 					channelsActions.updateChannelBadgeCount({
-						clanId: message.clan_id,
-						channelId: message.channel_id,
+						clanId: message.clanId,
+						channelId: message.channelId,
 						count: -1
 					})
 				);
 
 				dispatch(
 					listChannelsByUserActions.updateChannelBadgeCount({
-						channelId: message.channel_id,
+						channelId: message.channelId,
 						count: -1
 					})
 				);
@@ -250,7 +250,7 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 				if (currentClanBadge > 0) {
 					dispatch(
 						clansActions.updateClanBadgeCount({
-							clanId: message.clan_id,
+							clanId: message.clanId,
 							count: -1
 						})
 					);

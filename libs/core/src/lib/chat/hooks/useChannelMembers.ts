@@ -22,7 +22,7 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 	const userProfile = useAppSelector(selectAllAccount);
 
 	const membersOfChild = useAppSelector((state) => (channelId ? selectAllChannelMembers(state, channelId as string) : null));
-	const membersOfParent = useAppSelector((state) => (channel?.parent_id ? selectAllChannelMembers(state, channel.parent_id as string) : null));
+	const membersOfParent = useAppSelector((state) => (channel?.parentId ? selectAllChannelMembers(state, channel.parentId as string) : null));
 
 	const dispatch = useAppDispatch();
 
@@ -30,7 +30,7 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 		const timestamp = Date.now() / 1000;
 
 		const body = {
-			channelId: currentChannel?.channel_id as string,
+			channelId: currentChannel?.channelId as string,
 			channelType: currentChannel?.type,
 			userIds,
 			clanId
@@ -41,16 +41,16 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 			dispatch(
 				channelMetaActions.updateBulkChannelMetadata([
 					{
-						id: currentChannel?.channel_id ?? '',
+						id: currentChannel?.channelId ?? '',
 						lastSeenTimestamp: timestamp,
 						lastSentTimestamp: timestamp,
-						clanId: currentChannel?.clan_id ?? '',
+						clanId: currentChannel?.clanId ?? '',
 						isMute: false,
-						senderId: currentChannel?.last_sent_message?.sender_id || ''
+						senderId: currentChannel?.lastSentMessage?.senderId || ''
 					}
 				])
 			);
-			dispatch(channelMembersActions.addNewMember({ channel_id: currentChannel?.channel_id ?? '', user_ids: userIds }));
+			dispatch(channelMembersActions.addNewMember({ channelId: currentChannel?.channelId ?? '', userIds: userIds }));
 		} catch (error) {
 			console.error(error);
 		}
@@ -61,7 +61,7 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 			const currentUserId = userProfile?.user?.id;
 			const filteredUserIds = currentUserId ? notExistingUserIds.filter((userId) => userId !== currentUserId) : notExistingUserIds;
 			if (filteredUserIds.length > 0) {
-				await updateChannelUsers(currentChannel, filteredUserIds, currentChannel?.clan_id as string);
+				await updateChannelUsers(currentChannel, filteredUserIds, currentChannel?.clanId as string);
 			}
 		},
 		[dispatch, membersOfChild, userProfile?.user?.id]
@@ -69,7 +69,7 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 
 	const joinningToThread = useCallback(
 		async (targetThread: ThreadsEntity | null, user: string[]) => {
-			await updateChannelUsers(targetThread as ChannelsEntity, user, targetThread?.clan_id as string);
+			await updateChannelUsers(targetThread as ChannelsEntity, user, targetThread?.clanId as string);
 		},
 		[dispatch]
 	);
@@ -77,13 +77,13 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 	return useMemo(
 		() => ({
 			membersOfParent:
-				(mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) && channel?.parent_id !== '0'
+				(mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) && channel?.parentId !== '0'
 					? membersOfParent
 					: membersOfChild,
 			membersOfChild,
 			addMemberToThread,
 			joinningToThread
 		}),
-		[membersOfChild, membersOfParent, mode, channel?.parent_id, addMemberToThread, joinningToThread]
+		[membersOfChild, membersOfParent, mode, channel?.parentId, addMemberToThread, joinningToThread]
 	);
 }

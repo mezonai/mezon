@@ -21,7 +21,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 	const isDisableDelCanvas = Boolean(
-		canvas.creator_id && canvas.creator_id !== userProfile?.user?.id && creatorIdChannel !== userProfile?.user?.id
+		canvas.creatorId && canvas.creatorId !== userProfile?.user?.id && creatorIdChannel !== userProfile?.user?.id
 	);
 
 	const handleOpenCanvas = async () => {
@@ -41,15 +41,15 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 		if (canvasId && channelId && clanId) {
 			const body = {
 				id: canvasId,
-				channel_id: channelId,
-				clan_id: clanId
+				channelId: channelId,
+				clanId: clanId
 			};
 			await dispatch(canvasAPIActions.deleteCanvas(body));
 			dispatch(canvasAPIActions.removeOneCanvas({ channelId, canvasId }));
 			if (currentIdCanvas === canvasId) {
 				dispatch(appActions.setIsShowCanvas(false));
 				const redirectPath =
-					canvas.parent_id && canvas.parent_id !== '0'
+					canvas.parentId && canvas.parentId !== '0'
 						? `/chat/clans/${clanId}/threads/${channelId}`
 						: `/chat/clans/${clanId}/channels/${channelId}`;
 				navigate(redirectPath);
@@ -59,7 +59,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 
 	const isSelected = selectedCanvasId === canvasId && canvasId;
 	const link =
-		canvas.parent_id && canvas.parent_id !== '0'
+		canvas.parentId && canvas.parentId !== '0'
 			? `/chat/clans/${clanId}/threads/${channelId}/canvas/${canvasId}`
 			: `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`;
 

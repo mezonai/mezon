@@ -103,7 +103,7 @@ export function useFriends() {
 						return false;
 					}
 
-					if (friend.user?.display_name?.toUpperCase().includes(searchTerm) || friend.user?.username?.toUpperCase().includes(searchTerm)) {
+					if (friend.user?.displayName?.toUpperCase().includes(searchTerm) || friend.user?.username?.toUpperCase().includes(searchTerm)) {
 						if (!groupDmMember || !Object.values(groupDmMember)?.some((user) => user.id === friend.id)) {
 							return friend;
 						}
@@ -113,7 +113,7 @@ export function useFriends() {
 			return friends.filter(
 				(friend) =>
 					friend.state !== EStateFriend.BLOCK &&
-					(friend.user?.display_name?.toUpperCase().includes(searchTerm) || friend.user?.username?.toUpperCase().includes(searchTerm))
+					(friend.user?.displayName?.toUpperCase().includes(searchTerm) || friend.user?.username?.toUpperCase().includes(searchTerm))
 			);
 		},
 		[friends, groupDmMember]

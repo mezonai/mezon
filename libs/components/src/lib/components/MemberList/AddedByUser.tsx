@@ -15,8 +15,8 @@ function AddedByUser({ groupId, userId }: MemberItemProps) {
 
 	const nameUserAdded = useMemo(() => {
 		if (addedByUser?.id === userProfile?.user?.id) return 'you';
-		return addedByUser?.display_name || addedByUser?.username;
-	}, [addedByUser?.display_name, addedByUser?.id, addedByUser?.username, userProfile?.user?.id]);
+		return addedByUser?.displayName || addedByUser?.username;
+	}, [addedByUser?.displayName, addedByUser?.id, addedByUser?.username, userProfile?.user?.id]);
 
 	if (!nameUserAdded) return;
 	return (

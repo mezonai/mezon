@@ -11,7 +11,7 @@ import type { ChannelThreads, ICategoryChannel, IChannel, IMessageWithUser, Opti
 import type { CompositeScreenProps, NavigatorScreenParams } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { StackScreenProps } from '@react-navigation/stack';
-import type { ApiWebhook } from 'mezon-js/api.gen';
+import type { ApiWebhook } from 'mezon-js/types';
 
 export const APP_SCREEN = {
 	UN_AUTHORIZE: 'UN_AUTHORIZE',

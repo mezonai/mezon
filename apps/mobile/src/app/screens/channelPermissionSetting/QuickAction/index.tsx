@@ -12,7 +12,7 @@ import {
 } from '@mezon/store-mobile';
 import type { QuickMenuType } from '@mezon/utils';
 import { QUICK_MENU_TYPE } from '@mezon/utils';
-import type { ApiQuickMenuAccess } from 'mezon-js/api.gen';
+import type { ApiQuickMenuAccess } from 'mezon-js/types';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';
@@ -59,31 +59,31 @@ export function QuickAction({ navigation, route }) {
 			const data = {
 				children: (
 					<ModalQuickMenu
-						initialFormKey={item?.menu_name || ''}
-						initialFormValue={item?.action_msg || ''}
+						initialFormKey={item?.menuName || ''}
+						initialFormValue={item?.actionMsg || ''}
 						editKey={item?.id}
 						channelId={channelId}
-						clanId={channel?.clan_id}
+						clanId={channel?.clanId}
 						menuType={selectedTab}
 					/>
 				)
 			};
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 		},
-		[channelId, channel?.clan_id, selectedTab]
+		[channelId, channel?.clanId, selectedTab]
 	);
 
 	const deleteItem = useCallback(
 		async (id: string) => {
 			try {
-				await dispatch(deleteQuickMenuAccess({ id, channelId, clanId: channel?.clan_id }));
+				await dispatch(deleteQuickMenuAccess({ id, channelId, clanId: channel?.clanId }));
 				await dispatch(listQuickMenuAccess({ channelId, menuType: selectedTab }));
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 			} catch (error) {
 				console.error('Error deleting quick menu item:', error);
 			}
 		},
-		[channelId, selectedTab, channel?.clan_id]
+		[channelId, selectedTab, channel?.clanId]
 	);
 
 	const handlePressDeleteCategory = useCallback(
@@ -95,7 +95,7 @@ export function QuickAction({ navigation, route }) {
 						title={t('quickAction.deleteModal')}
 						confirmText={t('confirm.delete.confirmText')}
 						content={t('quickAction.deleteTitle', {
-							command: item.menu_name
+							command: item.menuName
 						})}
 					/>
 				)

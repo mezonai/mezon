@@ -177,7 +177,7 @@ export const QRScanner = () => {
 			try {
 				const valueObj = safeJSONParse(value || '{}');
 				// case Transfer funds
-				if (valueObj?.receiver_id || valueObj?.wallet_address) {
+				if (valueObj?.receiverId || valueObj?.wallet_address) {
 					navigation.push(APP_SCREEN.WALLET, {
 						activeScreen: 'transfer',
 						formValue: value

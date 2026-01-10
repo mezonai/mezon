@@ -55,7 +55,7 @@ export function useDefaultHandlers({
 					if (!user) return;
 
 					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
-					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
+					const ids = user?.userIds || (user?.user ? [user.user.id] : []);
 					if (usernames.length === 0 || ids.length === 0) return;
 
 					addFriend(ids.length > 0 ? { ids } : { usernames });
@@ -64,7 +64,7 @@ export function useDefaultHandlers({
 					if (!user) return;
 
 					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
-					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
+					const ids = user?.userIds || (user?.user ? [user.user.id] : []);
 					if (usernames.length === 0 || ids.length === 0) return;
 
 					deleteFriend(usernames[0], ids[0]);
@@ -99,7 +99,7 @@ export function useDefaultHandlers({
 				},
 				handleBlockFriend: async () => {
 					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
-					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
+					const ids = user?.userIds || (user?.user ? [user.user.id] : []);
 					if (usernames.length === 0 || ids.length === 0) return;
 					try {
 						const isBlocked = await blockFriend(usernames[0], ids[0]);
@@ -112,7 +112,7 @@ export function useDefaultHandlers({
 				},
 				handleUnblockFriend: async () => {
 					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
-					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
+					const ids = user?.userIds || (user?.user ? [user.user.id] : []);
 					if (usernames.length === 0 || ids.length === 0) return;
 					try {
 						const isUnblocked = await unBlockFriend(usernames[0], ids[0]);

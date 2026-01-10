@@ -11,7 +11,7 @@ export interface ComunityClanState {
 	communityBanner: string | null;
 	about: string;
 	description: string;
-	short_url: string;
+	shortUrl: string;
 }
 
 export interface ComunityState {
@@ -26,21 +26,21 @@ export const initialComunityState: ComunityState = {
 	error: null
 };
 
-export const getCommunityInfo = createAsyncThunk('comunity/getCommunityInfo', async ({ clan_id }: { clan_id: string }, thunkAPI) => {
+export const getCommunityInfo = createAsyncThunk('comunity/getCommunityInfo', async ({ clanId }: { clanId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.listClanDescs(mezon.session);
-		const clan = response.clandesc?.find((c) => c.clan_id === clan_id);
+		const clan = response.clandesc?.find((c: any) => c.clanId === clanId);
 		if (!clan) {
 			return thunkAPI.rejectWithValue('Clan not found');
 		}
 		return {
-			clan_id,
-			isCommunityEnabled: clan.is_community || false,
-			communityBanner: clan.community_banner || null,
+			clanId,
+			isCommunityEnabled: clan.isCommunity || false,
+			communityBanner: clan.communityBanner || null,
 			about: clan.about || '',
 			description: clan.description || '',
-			short_url: clan.short_url || ''
+			shortUrl: clan.shortUrl || ''
 		};
 	} catch (error) {
 		captureSentryError(error, 'comunity/getCommunityInfo');
@@ -52,25 +52,31 @@ export const updateCommunity = createAsyncThunk(
 	'comunity/updateCommunity',
 	async (
 		{
-			clan_id,
+			clanId,
 			enabled,
 			bannerUrl,
 			about,
 			description,
-			short_url
-		}: { clan_id: string; enabled: boolean; bannerUrl: string; about: string; description: string; short_url: string },
+			shortUrl
+		}: { clanId: string; enabled: boolean; bannerUrl: string; about: string; description: string; shortUrl: string },
 		thunkAPI
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
-				is_community: enabled,
-				community_banner: bannerUrl,
+			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
+				isCommunity: enabled,
+				communityBanner: bannerUrl,
 				about,
 				description,
-				short_url
+				shortUrl
 			});
-			return { clan_id, enabled, bannerUrl, about, description, short_url };
+			return { clanId, enabled, bannerUrl, about, description, shortUrl };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunity');
 			return thunkAPI.rejectWithValue('Failed to update community');
@@ -80,13 +86,19 @@ export const updateCommunity = createAsyncThunk(
 
 export const updateCommunityStatus = createAsyncThunk(
 	'comunity/updateCommunityStatus',
-	async ({ clan_id, enabled }: { clan_id: string; enabled: boolean }, thunkAPI) => {
+	async ({ clanId, enabled }: { clanId: string; enabled: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
-				is_community: enabled
+			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
+				isCommunity: enabled
 			});
-			return { clan_id, enabled };
+			return { clanId, enabled };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityStatus');
 			return thunkAPI.rejectWithValue('Failed to update community status');
@@ -96,13 +108,19 @@ export const updateCommunityStatus = createAsyncThunk(
 
 export const updateCommunityBanner = createAsyncThunk(
 	'comunity/updateCommunityBanner',
-	async ({ clan_id, bannerUrl }: { clan_id: string; bannerUrl: string }, thunkAPI) => {
+	async ({ clanId, bannerUrl }: { clanId: string; bannerUrl: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
-				community_banner: bannerUrl
+			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
+				communityBanner: bannerUrl
 			});
-			return { clan_id, bannerUrl };
+			return { clanId, bannerUrl };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityBanner');
 			return thunkAPI.rejectWithValue('Failed to update community banner');
@@ -112,13 +130,19 @@ export const updateCommunityBanner = createAsyncThunk(
 
 export const updateCommunityAbout = createAsyncThunk(
 	'comunity/updateCommunityAbout',
-	async ({ clan_id, about }: { clan_id: string; about: string }, thunkAPI) => {
+	async ({ clanId, about }: { clanId: string; about: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
 				about
 			});
-			return { clan_id, about };
+			return { clanId, about };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityAbout');
 			return thunkAPI.rejectWithValue('Failed to update community about');
@@ -128,13 +152,19 @@ export const updateCommunityAbout = createAsyncThunk(
 
 export const updateCommunityDescription = createAsyncThunk(
 	'comunity/updateCommunityDescription',
-	async ({ clan_id, description }: { clan_id: string; description: string }, thunkAPI) => {
+	async ({ clanId, description }: { clanId: string; description: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
 				description
 			});
-			return { clan_id, description };
+			return { clanId, description };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityDescription');
 			return thunkAPI.rejectWithValue('Failed to update community description');
@@ -144,14 +174,20 @@ export const updateCommunityDescription = createAsyncThunk(
 
 export const updateCommunityShortUrl = createAsyncThunk(
 	'comunity/updateCommunityShortUrl',
-	async ({ clan_id, short_url }: { clan_id: string; short_url: string }, thunkAPI) => {
+	async ({ clanId, shortUrl }: { clanId: string; shortUrl: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
-				short_url,
-				is_community: true
+			await mezon.client.updateClanDesc(mezon.session, clanId, {
+				$typeName: 'mezon.api.UpdateClanDescRequest' as const,
+				clanId,
+				clanName: '',
+				status: 0,
+				welcomeChannelId: '',
+				preventAnonymous: false,
+				shortUrl,
+				isCommunity: true
 			});
-			return { clan_id, short_url };
+			return { clanId, shortUrl };
 		} catch (error) {
 			captureSentryError(error, 'comunity/updateCommunityShortUrl');
 			return thunkAPI.rejectWithValue('Failed to update community short url');
@@ -171,13 +207,13 @@ export const comunitySlice = createSlice({
 		setCommunityBanner: (state, action: PayloadAction<{ clanId: string; banner: string | null }>) => {
 			const { clanId, banner } = action.payload;
 			if (!state.byClanId[clanId])
-				state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', short_url: '' };
+				state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', shortUrl: '' };
 			state.byClanId[clanId].communityBanner = banner;
 		},
 		setCommunityAbout: (state, action: PayloadAction<{ clanId: string; about: string; description?: string }>) => {
 			const { clanId, about, description = '' } = action.payload;
 			if (!state.byClanId[clanId])
-				state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', short_url: '' };
+				state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', shortUrl: '' };
 			state.byClanId[clanId].about = about;
 			state.byClanId[clanId].description = description;
 		}
@@ -189,13 +225,13 @@ export const comunitySlice = createSlice({
 				state.error = null;
 			})
 			.addCase(getCommunityInfo.fulfilled, (state, action) => {
-				const { clan_id, isCommunityEnabled, communityBanner, about, description, short_url } = action.payload;
-				state.byClanId[clan_id] = {
+				const { clanId, isCommunityEnabled, communityBanner, about, description, shortUrl } = action.payload;
+				state.byClanId[clanId] = {
 					isCommunityEnabled,
 					communityBanner,
 					about,
 					description,
-					short_url
+					shortUrl
 				};
 				state.isLoading = false;
 			})
@@ -208,22 +244,22 @@ export const comunitySlice = createSlice({
 				state.error = null;
 			})
 			.addCase(updateCommunity.fulfilled, (state, action) => {
-				const { clan_id, enabled, bannerUrl, about, description, short_url } = action.payload;
-				if (!state.byClanId[clan_id]) {
-					state.byClanId[clan_id] = {
+				const { clanId, enabled, bannerUrl, about, description, shortUrl } = action.payload;
+				if (!state.byClanId[clanId]) {
+					state.byClanId[clanId] = {
 						isCommunityEnabled: false,
 						communityBanner: null,
 						about: '',
 						description: '',
-						short_url: ''
+						shortUrl: ''
 					};
 				}
 				// Update all fields
-				state.byClanId[clan_id].isCommunityEnabled = enabled;
-				state.byClanId[clan_id].communityBanner = bannerUrl;
-				state.byClanId[clan_id].about = about;
-				state.byClanId[clan_id].description = description;
-				state.byClanId[clan_id].short_url = short_url;
+				state.byClanId[clanId].isCommunityEnabled = enabled;
+				state.byClanId[clanId].communityBanner = bannerUrl;
+				state.byClanId[clanId].about = about;
+				state.byClanId[clanId].description = description;
+				state.byClanId[clanId].shortUrl = shortUrl;
 				state.isLoading = false;
 			})
 			.addCase(updateCommunity.rejected, (state, action) => {
@@ -235,10 +271,10 @@ export const comunitySlice = createSlice({
 				state.error = null;
 			})
 			.addCase(updateCommunityStatus.fulfilled, (state, action) => {
-				const { clan_id, enabled } = action.payload;
-				if (!state.byClanId[clan_id])
-					state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', short_url: '' };
-				state.byClanId[clan_id].isCommunityEnabled = enabled;
+				const { clanId, enabled } = action.payload;
+				if (!state.byClanId[clanId])
+					state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', shortUrl: '' };
+				state.byClanId[clanId].isCommunityEnabled = enabled;
 				state.isLoading = false;
 			})
 			.addCase(updateCommunityStatus.rejected, (state, action) => {
@@ -250,10 +286,10 @@ export const comunitySlice = createSlice({
 				state.error = null;
 			})
 			.addCase(updateCommunityBanner.fulfilled, (state, action) => {
-				const { clan_id, bannerUrl } = action.payload;
-				if (!state.byClanId[clan_id])
-					state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', short_url: '' };
-				state.byClanId[clan_id].communityBanner = bannerUrl;
+				const { clanId, bannerUrl } = action.payload;
+				if (!state.byClanId[clanId])
+					state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', shortUrl: '' };
+				state.byClanId[clanId].communityBanner = bannerUrl;
 				state.isLoading = false;
 			})
 			.addCase(updateCommunityBanner.rejected, (state, action) => {
@@ -265,10 +301,10 @@ export const comunitySlice = createSlice({
 				state.error = null;
 			})
 			.addCase(updateCommunityAbout.fulfilled, (state, action) => {
-				const { clan_id, about } = action.payload;
-				if (!state.byClanId[clan_id])
-					state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', short_url: '' };
-				state.byClanId[clan_id].about = about;
+				const { clanId, about } = action.payload;
+				if (!state.byClanId[clanId])
+					state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', shortUrl: '' };
+				state.byClanId[clanId].about = about;
 				state.isLoading = false;
 			})
 			.addCase(updateCommunityAbout.rejected, (state, action) => {
@@ -280,10 +316,10 @@ export const comunitySlice = createSlice({
 				state.error = null;
 			})
 			.addCase(updateCommunityDescription.fulfilled, (state, action) => {
-				const { clan_id, description } = action.payload;
-				if (!state.byClanId[clan_id])
-					state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', short_url: '' };
-				state.byClanId[clan_id].description = description;
+				const { clanId, description } = action.payload;
+				if (!state.byClanId[clanId])
+					state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', shortUrl: '' };
+				state.byClanId[clanId].description = description;
 				state.isLoading = false;
 			})
 			.addCase(updateCommunityDescription.rejected, (state, action) => {
@@ -295,10 +331,10 @@ export const comunitySlice = createSlice({
 				state.error = null;
 			})
 			.addCase(updateCommunityShortUrl.fulfilled, (state, action) => {
-				const { clan_id, short_url } = action.payload;
-				if (!state.byClanId[clan_id])
-					state.byClanId[clan_id] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', short_url: '' };
-				state.byClanId[clan_id].short_url = short_url;
+				const { clanId, shortUrl } = action.payload;
+				if (!state.byClanId[clanId])
+					state.byClanId[clanId] = { isCommunityEnabled: false, communityBanner: null, about: '', description: '', shortUrl: '' };
+				state.byClanId[clanId].shortUrl = shortUrl;
 				state.isLoading = false;
 			})
 			.addCase(updateCommunityShortUrl.rejected, (state, action) => {
@@ -320,10 +356,6 @@ export const comunityActions = {
 	updateCommunityDescription,
 	updateCommunityShortUrl
 };
-export const selectComunityDescription = createSelector(
-	[(state: RootState, clanId: string) => selectComunityState(state).byClanId?.[clanId]?.description],
-	(description) => description ?? ''
-);
 
 export const selectComunityState = (state: RootState) => state[COMUNITY_FEATURE_KEY] as ComunityState;
 
@@ -347,11 +379,11 @@ export const selectComunityLoading = createSelector([selectComunityState], (stat
 export const selectComunityError = createSelector([selectComunityState], (state) => state.error);
 
 export const selectComunityShortUrl = createSelector(
-	[(state: RootState, clanId: string) => selectComunityState(state).byClanId?.[clanId]?.short_url],
-	(short_url) => short_url ?? ''
+	[(state: RootState, clanId: string) => selectComunityState(state).byClanId?.[clanId]?.shortUrl],
+	(shortUrl) => shortUrl ?? ''
 );
 
 export const selectCommunityStateByClanId = createSelector(
 	[(state: RootState, clanId: string) => selectComunityState(state)?.byClanId?.[clanId]],
-	(community): ComunityClanState => community ?? { isCommunityEnabled: false, communityBanner: null, about: '', description: '', short_url: '' }
+	(community): ComunityClanState => community ?? { isCommunityEnabled: false, communityBanner: null, about: '', description: '', shortUrl: '' }
 );

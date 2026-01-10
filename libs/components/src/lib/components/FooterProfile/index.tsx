@@ -37,7 +37,7 @@ import {
 	generateE2eId
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiTokenSentEvent } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -73,9 +73,9 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	const { mmnRef } = useMezon();
 
 	const userCustomStatus = useMemo(() => {
-		const userCustomStatus = myProfile.userProfile?.user?.user_status;
+		const userCustomStatus = myProfile.userProfile?.user?.userStatus;
 		return userCustomStatus;
-	}, [myProfile, myProfile.userProfile?.user?.user_status]);
+	}, [myProfile, myProfile.userProfile?.user?.userStatus]);
 
 	const userStatus = useMemo(() => {
 		const userStatus = myProfile.userProfile?.user?.status || EUserStatus.ONLINE;
@@ -124,22 +124,17 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	};
 
 	const sendNotificationMessage = useCallback(
-		async (userId: string, tokenValue: number, note: string, username?: string, avatar?: string, display_name?: string) => {
-			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-			if (response.channel_id) {
+		async (userId: string, tokenValue: number, note: string, username?: string, avatar?: string, displayName?: string) => {
+			const response = await createDirectMessageWithUser(userId, displayName, username, avatar);
+			if (response.channelId) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-				sendInviteMessage(
-					`Funds Transferred: ${formatMoney(tokenValue)}₫ | ${note}`,
-					response.channel_id,
-					channelMode,
-					TypeMessage.SendToken
-				);
+				sendInviteMessage(`Funds Transferred: ${formatMoney(tokenValue)}₫ | ${note}`, response.channelId, channelMode, TypeMessage.SendToken);
 			}
 		},
 		[createDirectMessageWithUser, sendInviteMessage]
 	);
 
-	const handleSaveSendToken = async (id?: string, username?: string, avatar?: string, display_name?: string) => {
+	const handleSaveSendToken = async (id?: string, username?: string, avatar?: string, displayName?: string) => {
 		const userId = selectedUserId !== '' ? selectedUserId : id;
 		if (userId === '') {
 			setUserSearchError('Please select a user');
@@ -161,12 +156,12 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 		}
 
 		const tokenEvent: ApiTokenSentEvent = {
-			sender_id: myProfile.userId as string,
-			sender_name: myProfile?.userProfile?.user?.username as string,
-			receiver_id: userId,
+			senderId: myProfile.userId as string,
+			senderName: myProfile?.userProfile?.user?.username as string,
+			receiverId: userId,
 			amount: token,
 			note,
-			extra_attribute: infoSendToken?.extra_attribute ?? extraAttribute
+			extraAttribute: infoSendToken?.extraAttribute ?? extraAttribute
 		};
 
 		setIsButtonDisabled(true);
@@ -174,7 +169,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 			await dispatch(giveCoffeeActions.sendToken({ tokenEvent })).unwrap();
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent, status: TOKEN_SUCCESS_STATUS }));
 			if (id) {
-				await sendNotificationMessage(id, token, note ?? '', username, avatar, display_name);
+				await sendNotificationMessage(id, token, note ?? '', username, avatar, displayName);
 			}
 		} catch (err) {
 			dispatch(giveCoffeeActions.setSendTokenEvent({ tokenEvent, status: TOKEN_FAILED_STATUS }));
@@ -212,12 +207,12 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 	useEffect(() => {
 		if (showModalSendToken && infoSendToken) {
 			setToken(infoSendToken.amount ?? 0);
-			setSelectedUserId(infoSendToken.receiver_id ?? '');
+			setSelectedUserId(infoSendToken.receiverId ?? '');
 			setNote(infoSendToken.note ?? 'Transfer funds');
-			setExtraAttribute(infoSendToken.extra_attribute ?? '');
+			setExtraAttribute(infoSendToken.extraAttribute ?? '');
 			setSendTokenInputsState({
 				isSendTokenInputDisabled: infoSendToken.amount !== 0,
-				isUserSelectionDisabled: infoSendToken.receiver_id !== ''
+				isUserSelectionDisabled: infoSendToken.receiverId !== ''
 			});
 			const timer = setTimeout(() => {
 				handleClosePopup();
@@ -273,10 +268,10 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 				status={userCustomStatus}
 				name={name}
 				onClose={handleCloseModalCustomStatus}
-				time_reset={userMemberStatus?.time_reset}
+				timeReset={userMemberStatus?.timeReset}
 			/>
 		);
-	}, [userCustomStatus, userMemberStatus?.time_reset]);
+	}, [userCustomStatus, userMemberStatus?.timeReset]);
 
 	const [openModalSendToken, closeModalSendToken] = useModal(() => {
 		return (
@@ -355,7 +350,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 							</p>
 							<p
 								className="text-[11px] text-left line-clamp-1 leading-[14px] truncate max-w-[150px] max-sbm:max-w-[100px]"
-								data-e2e={generateE2eId('footer_profile.user_status')}
+								data-e2e={generateE2eId('footer_profile.userStatus')}
 							>
 								{userCustomStatus}
 							</p>

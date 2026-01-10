@@ -30,8 +30,8 @@ const PanelCanvas: React.FC<IPanelCanvasProps> = ({ coords, channelId, clanId, c
 		if (canvasId && channelId && clanId) {
 			const body = {
 				id: canvasId,
-				channel_id: channelId,
-				clan_id: clanId
+				channelId: channelId,
+				clanId: clanId
 			};
 			const results = await dispatch(canvasAPIActions.deleteCanvas(body));
 			dispatch(canvasAPIActions.removeOneCanvas({ channelId, canvasId: canvasId }));

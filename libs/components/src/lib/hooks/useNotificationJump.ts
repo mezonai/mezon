@@ -52,12 +52,12 @@ export const useNotificationJump = ({ messageId, channelId, clanId, topicId, isT
 				return;
 			}
 
-			const topicDetail = topicDetailResult.payload as { message?: { message_id?: string }; message_id?: string };
+			const topicDetail = topicDetailResult.payload as { message?: { messageId?: string }; messageId?: string };
 
-			const originalMessageId = topicDetail?.message?.message_id || topicDetail?.message_id;
+			const originalMessageId = topicDetail?.message?.messageId || topicDetail?.messageId;
 
 			if (!originalMessageId) {
-				console.warn('Cannot find original message_id from topic, using provided messageId');
+				console.warn('Cannot find original messageId from topic, using provided messageId');
 			}
 
 			const messageIdToJump = originalMessageId || messageId;

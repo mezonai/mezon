@@ -34,7 +34,7 @@ export const ActionRow = React.memo(() => {
 	const navigation = useNavigation<AppStackScreenProps['navigation']>();
 	const [isCanManageThread, isCanManageChannel] = usePermissionChecker(
 		[EOverriddenPermission.manageThread, EPermission.manageChannel],
-		currentChannel?.channel_id ?? ''
+		currentChannel?.channelId ?? ''
 	);
 	const { statusMute } = useStatusMuteChannel();
 	const dispatch = useAppDispatch();
@@ -44,15 +44,15 @@ export const ActionRow = React.memo(() => {
 
 	const isChatWithMyself = useMemo(() => {
 		if (Number(currentChannel?.type) !== ChannelType.CHANNEL_TYPE_DM) return false;
-		return currentChannel?.user_ids?.[0] === currentUserId;
-	}, [currentChannel?.type, currentChannel?.user_ids, currentUserId]);
+		return currentChannel?.userIds?.[0] === currentUserId;
+	}, [currentChannel?.type, currentChannel?.userIds, currentUserId]);
 
 	const isChannel = useMemo(() => {
-		return !!currentChannel?.channel_label && currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL;
+		return !!currentChannel?.channelLabel && currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL;
 	}, [currentChannel]);
 
 	useEffect(() => {
-		dispatch(notificationSettingActions.getNotificationSetting({ channelId: currentChannel?.channel_id }));
+		dispatch(notificationSettingActions.getNotificationSetting({ channelId: currentChannel?.channelId }));
 	}, []);
 
 	const actionList = useMemo(
@@ -73,7 +73,7 @@ export const ActionRow = React.memo(() => {
 							params: {
 								typeSearch: ETypeSearch.SearchChannel,
 								currentChannel,
-								nameChannel: currentChannel?.channel_label
+								nameChannel: currentChannel?.channelLabel
 							}
 						});
 					}
@@ -108,7 +108,7 @@ export const ActionRow = React.memo(() => {
 					navigation.push(APP_SCREEN.MENU_CHANNEL.STACK, {
 						screen: APP_SCREEN.MENU_CHANNEL.SETTINGS,
 						params: {
-							channelId: currentChannel?.channel_id
+							channelId: currentChannel?.channelId
 						}
 					});
 				},
@@ -121,11 +121,11 @@ export const ActionRow = React.memo(() => {
 	);
 
 	const filteredActionList = useMemo(() => {
-		if (currentChannel?.clan_id === '0') {
+		if (currentChannel?.clanId === '0') {
 			return actionList.filter((item) => [t('muteNotification'), t('search')].includes(item.title));
 		}
 		return actionList;
-	}, [actionList, currentChannel?.clan_id, t]);
+	}, [actionList, currentChannel?.clanId, t]);
 	return (
 		<View style={styles.container}>
 			{filteredActionList.map((action, index) =>

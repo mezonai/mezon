@@ -2,12 +2,11 @@ import { captureSentryError } from '@mezon/logger';
 import { EMuteState, type IChannelCategorySetting, type IDefaultNotificationCategory, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiSetNotificationRequest } from 'mezon-js/api.gen';
-import type { ApiNotificationChannelCategorySetting } from 'mezon-js/dist/api.gen';
+import type { ApiNotificationChannelCategorySetting } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
 import type { RootState } from '../store';
 import { deleteNotiChannelSetting, setMuteChannel, setNotificationSetting } from './notificationSettingChannel.slice';
 
@@ -72,7 +71,7 @@ export const fetchDefaultNotificationCategoryCached = async (
 			}
 		},
 		() => mezon.client.getNotificationCategory(mezon.session, categoryId),
-		'notificaion_user_channel'
+		'notificationUserChannel'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -112,9 +111,9 @@ export const getDefaultNotificationCategory = createAsyncThunk(
 
 			const apiNotificationSetting: IDefaultNotificationCategory = {
 				id: response.id,
-				notification_setting_type: response.notification_setting_type,
+				notificationSettingType: response.notificationSettingType,
 				active: response.active,
-				time_mute: response.time_mute
+				timeMute: response.time ? new Date(response.time).toISOString() : ''
 			};
 
 			return { ...apiNotificationSetting, categoryId, clanId };
@@ -126,28 +125,29 @@ export const getDefaultNotificationCategory = createAsyncThunk(
 );
 
 export type SetDefaultNotificationPayload = {
-	category_id?: string;
-	notification_type?: number;
-	clan_id?: string;
+	categoryId?: string;
+	notificationType?: number;
+	clanId?: string;
 	label?: string;
 	title?: string;
 };
 
 export const setDefaultNotificationCategory = createAsyncThunk(
 	'defaultnotificationcategory/setDefaultNotificationCategory',
-	async ({ category_id, notification_type, clan_id, label, title }: SetDefaultNotificationPayload, thunkAPI) => {
+	async ({ categoryId, notificationType, clanId, label, title }: SetDefaultNotificationPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const body: ApiSetNotificationRequest = {
-				channel_category_id: category_id,
-				notification_type,
-				clan_id
+			const body = {
+				$typeName: 'mezon.api.SetNotificationRequest' as const,
+				channelCategoryId: categoryId || '',
+				notificationType: notificationType || 0,
+				clanId: clanId || ''
 			};
 			const response = await mezon.client.setNotificationCategory(mezon.session, body);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
-			return { ...body, clan_id, label, title };
+			return { ...body, clanId, label, title };
 		} catch (error) {
 			captureSentryError(error, 'defaultnotificationcategory/setDefaultNotificationCategory');
 			return thunkAPI.rejectWithValue(error);
@@ -156,16 +156,16 @@ export const setDefaultNotificationCategory = createAsyncThunk(
 );
 
 type DeleteDefaultNotificationPayload = {
-	category_id?: string;
-	clan_id?: string;
+	categoryId?: string;
+	clanId?: string;
 };
 
 export const deleteDefaultNotificationCategory = createAsyncThunk(
 	'defaultnotificationcategory/deleteDefaultNotificationCategory',
-	async ({ category_id, clan_id: _clan_id }: DeleteDefaultNotificationPayload, thunkAPI) => {
+	async ({ categoryId, clanId: _clan_id }: DeleteDefaultNotificationPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteNotificationCategory(mezon.session, category_id || '');
+			const response = await mezon.client.deleteNotificationCategory(mezon.session, categoryId || '');
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -180,19 +180,20 @@ export const deleteDefaultNotificationCategory = createAsyncThunk(
 export type MuteCatePayload = {
 	active?: number;
 	id?: string;
-	mute_time?: number;
-	clan_id: string;
+	muteTime?: number;
+	clanId: string;
 };
 export const setMuteCategory = createAsyncThunk(
 	'defaultnotificationcategory/setMuteCategory',
-	async ({ id, active, mute_time, clan_id }: MuteCatePayload, thunkAPI) => {
+	async ({ id, active, muteTime, clanId }: MuteCatePayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.setMuteCategory(mezon.session, {
-				active,
-				id,
-				mute_time,
-				clan_id
+				$typeName: 'mezon.api.SetMuteRequest' as const,
+				active: active ?? 0,
+				id: id || '',
+				muteTime: muteTime ?? 0,
+				clanId: clanId || ''
 			});
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
@@ -201,8 +202,8 @@ export const setMuteCategory = createAsyncThunk(
 			return {
 				active,
 				id,
-				mute_time,
-				clan_id
+				muteTime,
+				clanId
 			};
 		} catch (error) {
 			captureSentryError(error, 'defaultnotificationcategory/setMuteCategory');
@@ -226,7 +227,7 @@ export const defaultNotificationCategorySlice = createSlice({
 			const { categoryId, clanId } = action.payload;
 			if (state.byClans[clanId]?.categoriesSettings[categoryId]) {
 				state.byClans[clanId].categoriesSettings[categoryId].active = EMuteState.UN_MUTE;
-				state.byClans[clanId].categoriesSettings[categoryId].time_mute = null;
+				state.byClans[clanId].categoriesSettings[categoryId].timeMute = null;
 			}
 		}
 	},
@@ -260,29 +261,29 @@ export const defaultNotificationCategorySlice = createSlice({
 				state.error = action.error.message;
 			})
 			.addCase(setDefaultNotificationCategory.fulfilled, (state, action) => {
-				const { channel_category_id, notification_type, clan_id } = action.payload;
-				if (!clan_id || !channel_category_id) {
+				const { channelCategoryId, notificationType, clanId } = action.payload;
+				if (!clanId || !channelCategoryId) {
 					return;
 				}
-				if (!state.byClans[clan_id]) {
-					state.byClans[clan_id] = getInitialClanState();
+				if (!state.byClans[clanId]) {
+					state.byClans[clanId] = getInitialClanState();
 				}
-				if (state.byClans[clan_id]?.categoriesSettings[channel_category_id]) {
-					state.byClans[clan_id].categoriesSettings[channel_category_id].notification_setting_type = notification_type;
+				if (state.byClans[clanId]?.categoriesSettings[channelCategoryId]) {
+					state.byClans[clanId].categoriesSettings[channelCategoryId].notificationSettingType = notificationType;
 				}
 			})
 			.addCase(setMuteCategory.fulfilled, (state, action) => {
-				const { id, active, mute_time, clan_id } = action.payload;
+				const { id, active, muteTime, clanId } = action.payload;
 				if (!id) {
 					return;
 				}
-				if (!state.byClans[clan_id]) {
-					state.byClans[clan_id] = getInitialClanState();
+				if (!state.byClans[clanId]) {
+					state.byClans[clanId] = getInitialClanState();
 				}
-				if (state.byClans[clan_id]?.categoriesSettings[id]) {
-					state.byClans[clan_id].categoriesSettings[id].active = active ? EMuteState.UN_MUTE : EMuteState.MUTED;
-					state.byClans[clan_id].categoriesSettings[id].time_mute =
-						mute_time === 0 && active === EMuteState.MUTED ? null : new Date(Date.now() + (mute_time || 0) * 1000).toISOString();
+				if (state.byClans[clanId]?.categoriesSettings[id]) {
+					state.byClans[clanId].categoriesSettings[id].active = active ? EMuteState.UN_MUTE : EMuteState.MUTED;
+					state.byClans[clanId].categoriesSettings[id].timeMute =
+						muteTime === 0 && active === EMuteState.MUTED ? null : new Date(Date.now() + (muteTime || 0) * 1000).toISOString();
 				}
 			});
 	}
@@ -296,7 +297,12 @@ export interface NotiChannelCategorySettingEntity extends IChannelCategorySettin
 
 export const mapChannelCategorySettingToEntity = (ChannelCategorySettingRes: ApiNotificationChannelCategorySetting) => {
 	const id = (ChannelCategorySettingRes as unknown as { id: string }).id;
-	return { ...ChannelCategorySettingRes, id };
+	const res = ChannelCategorySettingRes as any;
+	return {
+		...ChannelCategorySettingRes,
+		id,
+		timeMute: timestampToString(res.timeMute)
+	};
 };
 
 export interface ChannelCategorySettingState {
@@ -344,7 +350,7 @@ export const fetchChannelCategorySettingCached = async (getState: () => RootStat
 			}
 		},
 		() => mezon.client.getChannelCategoryNotiSettingsList(mezon.session, clanId),
-		'notification_list'
+		'notificationList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -368,23 +374,23 @@ export const fetchChannelCategorySetting = createAsyncThunk(
 				return {
 					fromCache: true,
 					clanId,
-					notification_channel_category_settings_list: []
+					notificationChannelCategorySettingsList: []
 				};
 			}
 
-			if (!response?.notification_channel_category_settings_list) {
+			const res = response as any;
+			if (!res?.notificationChannelCategorySettingsList) {
 				return {
 					fromCache: response.fromCache,
 					clanId,
-					notification_channel_category_settings_list: []
+					notificationChannelCategorySettingsList: []
 				};
 			}
 
 			return {
 				fromCache: response.fromCache,
 				clanId,
-				notification_channel_category_settings_list:
-					response.notification_channel_category_settings_list.map(mapChannelCategorySettingToEntity)
+				notificationChannelCategorySettingsList: res.notificationChannelCategorySettingsList.map(mapChannelCategorySettingToEntity)
 			};
 		} catch (error) {
 			captureSentryError(error, 'channelCategorySetting/fetchChannelCategorySetting');
@@ -427,10 +433,10 @@ export const channelCategorySettingSlice = createSlice({
 					action: PayloadAction<{
 						clanId: string;
 						fromCache?: boolean;
-						notification_channel_category_settings_list: IChannelCategorySetting[];
+						notificationChannelCategorySettingsList: IChannelCategorySetting[];
 					}>
 				) => {
-					const { clanId, fromCache, notification_channel_category_settings_list } = action.payload;
+					const { clanId, fromCache, notificationChannelCategorySettingsList } = action.payload;
 
 					if (!state.byClans[clanId]) {
 						state.byClans[clanId] = {
@@ -440,7 +446,7 @@ export const channelCategorySettingSlice = createSlice({
 					}
 
 					if (!fromCache) {
-						channelCategorySettingAdapter.setAll(state.byClans[clanId].list, notification_channel_category_settings_list);
+						channelCategorySettingAdapter.setAll(state.byClans[clanId].list, notificationChannelCategorySettingsList);
 						state.byClans[clanId].cache = createCacheMetadata(CHANNEL_CATEGORY_SETTING_CACHE_TIME);
 					}
 
@@ -449,77 +455,77 @@ export const channelCategorySettingSlice = createSlice({
 			)
 
 			.addCase(setDefaultNotificationCategory.fulfilled, (state: ChannelCategorySettingState, action) => {
-				const { channel_category_id, notification_type, clan_id, label, title } = action.payload;
+				const { channelCategoryId, notificationType, clanId, label, title } = action.payload;
 
-				if (!clan_id || !channel_category_id) {
+				if (!clanId || !channelCategoryId) {
 					return;
 				}
 
-				const existingEntity = state.byClans[clan_id]?.list.entities[channel_category_id];
+				const existingEntity = state.byClans[clanId]?.list.entities[channelCategoryId];
 				if (existingEntity) {
-					channelCategorySettingAdapter.updateOne(state.byClans[clan_id].list, {
-						id: channel_category_id,
+					channelCategorySettingAdapter.updateOne(state.byClans[clanId].list, {
+						id: channelCategoryId,
 						changes: {
-							notification_setting_type: notification_type
+							notificationSettingType: notificationType
 						}
 					});
 				} else {
-					channelCategorySettingAdapter.addOne(state.byClans[clan_id].list, {
-						id: channel_category_id,
-						notification_setting_type: notification_type,
-						channel_category_label: label,
-						channel_category_title: title
+					channelCategorySettingAdapter.addOne(state.byClans[clanId].list, {
+						id: channelCategoryId,
+						notificationSettingType: notificationType,
+						channelCategoryLabel: label,
+						channelCategoryTitle: title
 					});
 				}
 			})
 			.addCase(setNotificationSetting.fulfilled, (state: ChannelCategorySettingState, action) => {
 				const payload = action.payload as unknown as {
-					channel_category_id?: string;
-					notification_type?: number;
-					clan_id?: string;
+					channelCategoryId?: string;
+					notificationType?: number;
+					clanId?: string;
 					label?: string;
 					title?: string;
 				};
-				const { channel_category_id, notification_type, clan_id, label, title } = payload;
-				if (!clan_id || !channel_category_id || !notification_type) {
+				const { channelCategoryId, notificationType, clanId, label, title } = payload;
+				if (!clanId || !channelCategoryId || !notificationType) {
 					return;
 				}
 
-				if (!state?.byClans?.[clan_id]) {
-					state.byClans[clan_id] = {
+				if (!state?.byClans?.[clanId]) {
+					state.byClans[clanId] = {
 						loadingStatus: 'not loaded',
 						list: channelCategorySettingAdapter.getInitialState()
 					};
 				}
 
-				const existingEntity = state.byClans[clan_id]?.list.entities[channel_category_id];
+				const existingEntity = state.byClans[clanId]?.list.entities[channelCategoryId];
 				if (existingEntity) {
-					channelCategorySettingAdapter.updateOne(state.byClans[clan_id].list, {
-						id: channel_category_id,
+					channelCategorySettingAdapter.updateOne(state.byClans[clanId].list, {
+						id: channelCategoryId,
 						changes: {
-							notification_setting_type: notification_type
+							notificationSettingType: notificationType
 						}
 					});
 				} else {
-					channelCategorySettingAdapter.addOne(state.byClans[clan_id].list, {
-						id: channel_category_id,
-						notification_setting_type: notification_type,
-						channel_category_label: label,
-						channel_category_title: title
+					channelCategorySettingAdapter.addOne(state.byClans[clanId].list, {
+						id: channelCategoryId,
+						notificationSettingType: notificationType,
+						channelCategoryLabel: label,
+						channelCategoryTitle: title
 					});
 				}
 			})
 			.addCase(setMuteChannel.fulfilled, (state: ChannelCategorySettingState, action) => {
-				const payload = action.payload as unknown as { channel_id?: string; active?: number; clan_id?: string };
-				const { channel_id, active, clan_id } = payload;
-				if (!clan_id || !channel_id) {
+				const payload = action.payload as unknown as { channelId?: string; active?: number; clanId?: string };
+				const { channelId, active, clanId } = payload;
+				if (!clanId || !channelId) {
 					return;
 				}
 
-				const existingEntity = state.byClans[clan_id].list.entities[channel_id];
+				const existingEntity = state.byClans[clanId].list.entities[channelId];
 				if (existingEntity) {
-					channelCategorySettingAdapter.updateOne(state.byClans[clan_id].list, {
-						id: channel_id,
+					channelCategorySettingAdapter.updateOne(state.byClans[clanId].list, {
+						id: channelId,
 						changes: {
 							action: active
 						}
@@ -527,15 +533,15 @@ export const channelCategorySettingSlice = createSlice({
 				}
 			})
 			.addCase(setMuteCategory.fulfilled, (state: ChannelCategorySettingState, action) => {
-				const payload = action.payload as unknown as { id?: string; active?: number; clan_id?: string };
-				const { id, active, clan_id } = payload;
-				if (!clan_id || !id) {
+				const payload = action.payload as unknown as { id?: string; active?: number; clanId?: string };
+				const { id, active, clanId } = payload;
+				if (!clanId || !id) {
 					return;
 				}
 
-				const existingEntity = state.byClans[clan_id]?.list?.entities[id];
+				const existingEntity = state.byClans[clanId]?.list?.entities[id];
 				if (existingEntity) {
-					channelCategorySettingAdapter.updateOne(state.byClans[clan_id].list, {
+					channelCategorySettingAdapter.updateOne(state.byClans[clanId].list, {
 						id,
 						changes: {
 							action: active
@@ -544,22 +550,22 @@ export const channelCategorySettingSlice = createSlice({
 				}
 			})
 			.addCase(deleteDefaultNotificationCategory.fulfilled, (state: ChannelCategorySettingState, action) => {
-				const { category_id, clan_id } = action.meta.arg;
-				if (!clan_id || !category_id) {
+				const { categoryId, clanId } = action.meta.arg;
+				if (!clanId || !categoryId) {
 					return;
 				}
 
-				if (state.byClans[clan_id]) {
-					channelCategorySettingAdapter.removeOne(state.byClans[clan_id].list, category_id);
+				if (state.byClans[clanId]) {
+					channelCategorySettingAdapter.removeOne(state.byClans[clanId].list, categoryId);
 				}
 			})
 			.addCase(deleteNotiChannelSetting.fulfilled, (state: ChannelCategorySettingState, action) => {
-				const { channel_id, clan_id } = action.meta.arg;
-				if (!clan_id || !channel_id) {
+				const { channelId, clanId } = action.meta.arg;
+				if (!clanId || !channelId) {
 					return;
 				}
-				if (state.byClans[clan_id]) {
-					channelCategorySettingAdapter.removeOne(state.byClans[clan_id].list, channel_id);
+				if (state.byClans[clanId]) {
+					channelCategorySettingAdapter.removeOne(state.byClans[clanId].list, channelId);
 				}
 			})
 
@@ -600,18 +606,11 @@ export const selectDefaultNotificationCategory = createSelector(
 	(state, clanId, categoryId) => state.byClans[clanId]?.categoriesSettings[categoryId]
 );
 
-const { selectAll, selectEntities } = channelCategorySettingAdapter.getSelectors();
+const { selectAll } = channelCategorySettingAdapter.getSelectors();
 
 export const getchannelCategorySettingListState = (rootState: {
 	['notichannelcategorysetting']: ChannelCategorySettingState;
 }): ChannelCategorySettingState => rootState['notichannelcategorysetting'];
-
-export const selectEntiteschannelCategorySetting = createSelector(
-	[getchannelCategorySettingListState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => {
-		return selectEntities(state.byClans[clanId]?.list);
-	}
-);
 
 export const selectAllchannelCategorySetting = createSelector(
 	[getchannelCategorySettingListState, (state: RootState) => state.clans.currentClanId as string],

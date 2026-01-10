@@ -30,7 +30,7 @@ export const UserVoiceInfo = ({ userId }) => {
 			<View style={styles.wrapManageVoice}>
 				<MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} width={size.s_20} height={size.s_20} />
 				<Text style={[styles.actionText]} numberOfLines={1}>
-					{voiceChannel.channel_label}
+					{voiceChannel.channelLabel}
 				</Text>
 			</View>
 			<TouchableOpacity onPress={navigateToChannelVoice} style={styles.voiceJoinButton}>

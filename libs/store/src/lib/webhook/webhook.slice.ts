@@ -3,7 +3,7 @@ import i18n from '@mezon/translations';
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiWebhook, ApiWebhookCreateRequest, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiWebhook, ApiWebhookCreateRequest, MezonUpdateWebhookByIdBody } from 'mezon-js/types';
 import { toast } from 'react-toastify';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx } from '../helpers';
@@ -44,7 +44,7 @@ const fetchWebhooksCached = async (mezon: MezonValueContext, channelId: string, 
 
 export const fetchWebhooks = createAsyncThunk(
 	'integration/fetchWebhooks',
-	async ({ channelId, clanId, noCache }: IFetchWebhooksByChannelIdArg, thunkAPI) => {
+	async ({ channelId, clanId, noCache: _noCache }: IFetchWebhooksByChannelIdArg, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
@@ -68,10 +68,17 @@ export const generateWebhook = createAsyncThunk(
 	async (data: { request: ApiWebhookCreateRequest; channelId: string; clanId: string; isClanSetting?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.generateWebhookLink(mezon.session, data.request);
+			const request = {
+				$typeName: 'mezon.api.WebhookCreateRequest' as const,
+				webhookName: data.request.webhookName || '',
+				channelId: data.request.channelId || data.channelId,
+				avatar: data.request.avatar || '',
+				clanId: data.clanId
+			};
+			const response = await mezon.client.generateWebhookLink(mezon.session, request);
 			if (response) {
 				thunkAPI.dispatch(fetchWebhooks({ channelId: data?.isClanSetting ? '0' : data?.channelId, clanId: data.clanId, noCache: true }));
-				toast.success(i18n.t('integrations:toast.generateSuccess', { name: response.hook_name }));
+				toast.success(i18n.t('integrations:toast.generateSuccess', { name: response.hookName }));
 			} else {
 				thunkAPI.rejectWithValue({});
 			}
@@ -88,15 +95,17 @@ export const deleteWebhookById = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				channel_id: data.channelId,
-				clan_id: data.clanId
+				$typeName: 'mezon.api.WebhookDeleteRequestById' as const,
+				id: data.webhook.id as string,
+				clanId: data.clanId,
+				channelId: data.channelId
 			};
 			const response = await mezon.client.deleteWebhookById(mezon.session, data.webhook.id as string, body);
 
 			if (!response) {
 				return thunkAPI.rejectWithValue({});
 			}
-			toast.success(i18n.t('integrations:toast.deleteSuccess', { name: data.webhook.webhook_name }));
+			toast.success(i18n.t('integrations:toast.deleteSuccess', { name: data.webhook.webhookName }));
 			thunkAPI.dispatch(webhookActions.removeOneWebhook({ clanId: data.clanId, webhookId: data.webhook.id || '' }));
 		} catch (error) {
 			captureSentryError(error, 'integration/deleteWebhook');
@@ -113,7 +122,16 @@ export const updateWebhookBySpecificId = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateWebhookById(mezon.session, data.webhookId as string, data.request);
+			const request = {
+				$typeName: 'mezon.api.WebhookUpdateRequestById' as const,
+				id: data.webhookId as string,
+				webhookName: data.request.webhookName || '',
+				channelIdUpdate: data.request.channelIdUpdate || '',
+				avatar: data.request.avatar || '',
+				channelId: data.request.channelId || data.channelId,
+				clanId: data.clanId
+			};
+			await mezon.client.updateWebhookById(mezon.session, data.webhookId as string, request);
 		} catch (error) {
 			captureSentryError(error, 'integration/editWebhook');
 			return thunkAPI.rejectWithValue(error);
@@ -127,16 +145,16 @@ export const integrationWebhookSlice = createSlice({
 	reducers: {
 		upsertWebhook: (state, action: PayloadAction<ApiWebhook>) => {
 			const webhook = action.payload;
-			const { clan_id } = webhook;
+			const { clanId } = webhook;
 
-			if (!clan_id) return;
+			if (!clanId) return;
 
-			if (!state.webhookList[clan_id]) {
-				state.webhookList[clan_id] = webhookAdapter.getInitialState({
-					id: clan_id
+			if (!state.webhookList[clanId]) {
+				state.webhookList[clanId] = webhookAdapter.getInitialState({
+					id: clanId
 				});
 			}
-			state.webhookList[clan_id] = webhookAdapter.upsertOne(state.webhookList[clan_id], webhook);
+			state.webhookList[clanId] = webhookAdapter.upsertOne(state.webhookList[clanId], webhook);
 		},
 		removeOneWebhook: (state, action: PayloadAction<{ clanId: string; webhookId: string }>) => {
 			const { clanId, webhookId } = action.payload;
@@ -192,6 +210,6 @@ export const selectWebhooksByChannelId = createSelector(
 		if (channelId === '0') {
 			return selectAll(state.webhookList[clanId]);
 		}
-		return selectAll(state.webhookList?.[clanId] || []).filter((entity) => entity.channel_id === channelId);
+		return selectAll(state.webhookList?.[clanId] || []).filter((entity) => entity.channelId === channelId);
 	}
 );

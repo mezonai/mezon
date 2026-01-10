@@ -52,10 +52,10 @@ const ModalInvite = (props: ModalParam) => {
 		try {
 			const welcomeChannel = await dispatch(fetchSystemMessageByClanId({ clanId: currentClanId as string })).unwrap();
 
-			const intiveIdChannel = (channelID ? channelID : welcomeChannel.channel_id) as string;
+			const intiveIdChannel = (channelID ? channelID : welcomeChannel.channelId) as string;
 			const res = await createLinkInviteUser(effectiveClanId ?? '', intiveIdChannel, 10);
-			if (res && res?.invite_link) {
-				setUrlInvite(`${isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin}/invite/${res.invite_link}`);
+			if (res && res?.inviteLink) {
+				setUrlInvite(`${isElectron() ? process.env.NX_CHAT_APP_REDIRECT_URI : window.location.origin}/invite/${res.inviteLink}`);
 			}
 		} catch {
 			console.log(t('errors.createInviteLink'));
@@ -98,12 +98,12 @@ const ModalInvite = (props: ModalParam) => {
 	return (
 		<ModalLayout onClose={props.onClose}>
 			<div
-				className="bg-theme-setting-primary rounded-xl flex flex-col md:w-[480px]"
+				className="bg-theme-setting-primary rounded-xl flex flex-col mx-4 md:mx-0 w-full md:w-[480px]"
 				data-e2e={generateE2eId('clan_page.modal.invite_people.container')}
 			>
 				<div className="flex-1 flex items-center justify-between border-b-theme-primary rounded-t p-3 md:p-4 gap-2">
-					<p title={clan?.clan_name} className="font-bold text-base md:text-xl text-theme-primary-active break-words flex-1 min-w-0">
-						{t('modal.title', { target: isInviteExternalCalling ? t('modal.privateEvent') : clan?.clan_name })}
+					<p title={clan?.clanName} className="font-bold text-base md:text-xl text-theme-primary-active break-words flex-1 min-w-0">
+						{t('modal.title', { target: isInviteExternalCalling ? t('modal.privateEvent') : clan?.clanName })}
 					</p>
 
 					<Button
@@ -113,13 +113,13 @@ const ModalInvite = (props: ModalParam) => {
 						×
 					</Button>
 				</div>
-				<div className="flex flex-col w-full px-4 md:px-5 py-4">
+				<div className="flex flex-col w-full px-3 md:px-5 py-4 overflow-hidden">
 					<ListMemberInvite
 						isInviteExternalCalling={isInviteExternalCalling}
 						url={isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite}
 						channelID={channelID}
 					/>
-					<div className="relative">
+					<div className="relative w-full">
 						<p className="pt-4 pb-1 text-[12px] mb-12px cursor-default uppercase font-semibold text-theme-primary-active">
 							{t('modal.sendLinkText', { type: isInviteExternalCalling ? t('modal.privateRoom') : t('modal.clanInvite') })}
 							{!isInviteExternalCalling && (
@@ -141,7 +141,7 @@ const ModalInvite = (props: ModalParam) => {
 							<button
 								className="absolute right-0 top-0 h-11 font-semibold text-sm px-4 md:px-8 py-1.5
 								shadow outline-none focus:outline-none ease-linear transition-all duration-150
-								btn-primary btn-primary-hover text-[14px] md:text-[16px] leading-6 rounded-lg whitespace-nowrap"
+								 btn-primary btn-primary-hover text-[14px] md:text-[16px] leading-6 rounded-lg whitespace-nowrap"
 								onClick={() => {
 									handleCopyToClipboard(urlInvite);
 									onClose();

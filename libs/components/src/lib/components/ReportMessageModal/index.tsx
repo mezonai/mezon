@@ -29,11 +29,11 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 	const dispatch = useAppDispatch();
 	const userId = useSelector(selectAllAccount)?.user?.id;
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, userId as string));
-	const friendStatus = useAppSelector((state) => selectFriendStatus(mess?.sender_id || '')(state));
+	const friendStatus = useAppSelector((state) => selectFriendStatus(mess?.senderId || '')(state));
 	const modalRef = useRef<HTMLDivElement>(null);
 	const { blockFriend } = useFriends();
 
-	const reportedUserName = mess?.clan_nick || mess?.display_name || mess?.username;
+	const reportedUserName = mess?.clanNick || mess?.displayName || mess?.username;
 
 	const reportReasons = [
 		{ id: 'spam', label: t('reportMessageModal.reasons.spam') },
@@ -77,20 +77,20 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 	}, [closeModal]);
 
 	const handleBlockUser = useCallback(async () => {
-		if (!mess?.sender_id || !mess?.username) return;
+		if (!mess?.senderId || !mess?.username) return;
 		if (friendStatus !== EStateFriend.FRIEND) {
 			toast.error(t('reportMessageModal.canOnlyBlockFriends'));
 			return;
 		}
 
 		try {
-			await blockFriend(mess.username, mess.sender_id);
+			await blockFriend(mess.username, mess.senderId);
 			toast.success(t('reportMessageModal.userBlockedSuccess'));
 			closeModal();
 		} catch (error) {
 			toast.error(t('reportMessageModal.userBlockedFailed'));
 		}
-	}, [mess?.sender_id, mess?.username, friendStatus, blockFriend, closeModal, t]);
+	}, [mess?.senderId, mess?.username, friendStatus, blockFriend, closeModal, t]);
 
 	const handleSkipActions = useCallback(() => {
 		closeModal();

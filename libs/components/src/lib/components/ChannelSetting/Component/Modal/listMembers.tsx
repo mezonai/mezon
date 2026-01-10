@@ -15,10 +15,10 @@ const ListMembers = (props: ListMembersProps) => {
 		<ItemMember
 			key={user?.id}
 			username={user?.user?.username}
-			displayName={user?.user?.display_name}
-			clanAvatar={user.clan_avatar}
-			avatar={user?.clan_avatar || user.user?.avatar_url}
-			clanName={user.clan_nick}
+			displayName={user?.user?.displayName}
+			clanAvatar={user.clanAvatar}
+			avatar={user?.clanAvatar || user.user?.avatarUrl}
+			clanName={user.clanNick}
 			checked={selectedUserIds.includes(user?.id || '')}
 			onChange={(event: React.ChangeEvent<HTMLInputElement>) => handleCheckboxUserChange(event, user?.id || '')}
 		/>

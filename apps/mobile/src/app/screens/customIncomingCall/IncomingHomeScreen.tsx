@@ -158,11 +158,11 @@ const IncomingHomeScreen = memo(() => {
 				setDataCalling(data);
 				dispatch(appActions.setLoadingMainMobile(true));
 				const signalingData = {
-					channel_id: data?.channelId,
-					receiver_id: userId,
-					json_data: data?.offer,
-					data_type: WebrtcSignalingType.WEBRTC_SDP_OFFER,
-					caller_id: data?.callerId
+					channelId: data?.channelId,
+					receiverId: userId,
+					jsonData: data?.offer,
+					dataType: WebrtcSignalingType.WEBRTC_SDP_OFFER,
+					callerId: data?.callerId
 				};
 				dispatch(
 					DMCallActions.addOrUpdate({
@@ -222,7 +222,7 @@ const IncomingHomeScreen = memo(() => {
 			latestSignalingEntry?.callerId,
 			WebrtcSignalingType.WEBRTC_SDP_QUIT,
 			'{}',
-			latestSignalingEntry?.signalingData?.channel_id,
+			latestSignalingEntry?.signalingData?.channelId,
 			userId
 		);
 		dispatch(DMCallActions.removeAll());
@@ -267,7 +267,7 @@ const IncomingHomeScreen = memo(() => {
 				onJoinCall();
 			}
 
-			const latestType = signalingData?.[signalingData.length - 1]?.signalingData?.data_type;
+			const latestType = signalingData?.[signalingData.length - 1]?.signalingData?.dataType;
 			if (
 				latestType === WebrtcSignalingType.WEBRTC_SDP_QUIT ||
 				latestType === WebrtcSignalingType.WEBRTC_ICE_CANDIDATE ||

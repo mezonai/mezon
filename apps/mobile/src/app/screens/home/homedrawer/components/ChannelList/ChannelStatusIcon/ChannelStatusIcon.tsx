@@ -9,10 +9,10 @@ import { IconCDN } from '../../../../../../constants/icon_cdn';
 export const ChannelStatusIcon = memo(({ channel, isUnRead }: { channel: ChannelsEntity; isUnRead?: boolean }) => {
 	const { themeValue } = useTheme();
 
-	const isAgeRestrictedChannel = channel?.age_restricted === 1;
+	const isAgeRestrictedChannel = channel?.ageRestricted === 1;
 	return (
 		<>
-			{channel?.channel_private === ChannelStatusEnum.isPrivate &&
+			{channel?.channelPrivate === ChannelStatusEnum.isPrivate &&
 				channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 				!isAgeRestrictedChannel && (
 					<MezonIconCDN
@@ -30,7 +30,7 @@ export const ChannelStatusIcon = memo(({ channel, isUnRead }: { channel: Channel
 					color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
 				/>
 			)}
-			{channel?.channel_private !== ChannelStatusEnum.isPrivate &&
+			{channel?.channelPrivate !== ChannelStatusEnum.isPrivate &&
 				channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 				!isAgeRestrictedChannel && (
 					<MezonIconCDN
@@ -48,7 +48,7 @@ export const ChannelStatusIcon = memo(({ channel, isUnRead }: { channel: Channel
 					color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
 				/>
 			)}
-			{channel?.channel_private !== ChannelStatusEnum.isPrivate && channel?.type === ChannelType.CHANNEL_TYPE_APP && (
+			{channel?.channelPrivate !== ChannelStatusEnum.isPrivate && channel?.type === ChannelType.CHANNEL_TYPE_APP && (
 				<MezonIconCDN
 					icon={IconCDN.channelApp}
 					height={size.s_18}

@@ -16,12 +16,12 @@ type EventBadgeProps = {
 };
 export const EventBadge = memo(({ clanId, channelId }: EventBadgeProps) => {
 	const events = useAppSelector((state) => selectEventsByChannelId(state, clanId ?? '', channelId ?? ''));
-	const channelVoice = useAppSelector((state) => selectChannelById(state, events?.[0]?.channel_voice_id ?? ''));
-	const colorStatusEvent = events?.[0]?.event_status === EEventStatus.UPCOMING ? baseColor.blurple : baseColor.bgSuccess;
+	const channelVoice = useAppSelector((state) => selectChannelById(state, events?.[0]?.channelVoiceId ?? ''));
+	const colorStatusEvent = events?.[0]?.eventStatus === EEventStatus.UPCOMING ? baseColor.blurple : baseColor.bgSuccess;
 
 	const hanleEventChannel = async () => {
-		if (!events?.[0] && !events?.[0]?.channel_voice_id) return;
-		if (channelVoice?.meeting_code && channelVoice?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+		if (!events?.[0] && !events?.[0]?.channelVoiceId) return;
+		if (channelVoice?.meetingCode && channelVoice?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			const data = {
 				heightFitContent: true,
 				children: <JoinChannelVoiceBS channel={channelVoice} />
@@ -30,7 +30,7 @@ export const EventBadge = memo(({ clanId, channelId }: EventBadgeProps) => {
 		}
 	};
 
-	if (events?.length && (events?.[0]?.event_status === EEventStatus.UPCOMING || events?.[0]?.event_status === EEventStatus.ONGOING)) {
+	if (events?.length && (events?.[0]?.eventStatus === EEventStatus.UPCOMING || events?.[0]?.eventStatus === EEventStatus.ONGOING)) {
 		return (
 			<View style={style.container}>
 				<Pressable onPress={hanleEventChannel}>

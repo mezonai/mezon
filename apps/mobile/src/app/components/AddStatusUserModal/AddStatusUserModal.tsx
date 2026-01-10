@@ -25,7 +25,7 @@ export const AddStatusUserModal = ({ userCustomStatus, handleCustomUserStatus, u
 	const { themeValue } = useTheme();
 	const { t } = useTranslation(['customUserStatus']);
 	const userMemberStatus = useAppSelector((state) => selectMemberCustomStatusById(state, userId || ''));
-	const timeResetStatus = userMemberStatus?.time_reset;
+	const timeResetStatus = userMemberStatus?.timeReset;
 	const [lineStatus, setLineStatus] = useState<string>(userCustomStatus);
 	const [statusDuration, setStatusDuration] = useState<number>(STATUS_DURATION_MINUTES.includes(timeResetStatus) ? timeResetStatus : -1);
 	const timeOptions = useMemo(

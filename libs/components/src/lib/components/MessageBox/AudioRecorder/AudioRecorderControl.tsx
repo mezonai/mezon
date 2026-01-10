@@ -2,7 +2,7 @@ import { useChatSending, useCurrentInbox } from '@mezon/core';
 import { referencesActions } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { blobToFile, getChannelMode, processFile } from '@mezon/utils';
-import type { ApiChannelDescription, ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageAttachment } from 'mezon-js/types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { AudioRecorderUI } from './AudioRecorderUI';

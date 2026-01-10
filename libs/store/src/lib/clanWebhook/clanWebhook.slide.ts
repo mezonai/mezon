@@ -1,12 +1,14 @@
 import { captureSentryError } from '@mezon/logger';
 import i18n from '@mezon/translations';
-import { LoadingStatus } from '@mezon/utils';
+import type { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiClanWebhook, ApiGenerateClanWebhookRequest, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiClanWebhook, ApiGenerateClanWebhookRequest, MezonUpdateClanWebhookByIdBody } from 'mezon-js/types';
 import { toast } from 'react-toastify';
-import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 
 export const INTEGRATION_CLAN_WEBHOOK = 'integrationClanWebhook';
 
@@ -50,7 +52,7 @@ export const fetchClanWebhooksCached = async (getState: () => RootState, mezon: 
 
 	if (!shouldForceCall && clanData.webhooks?.length) {
 		return {
-			list_clan_webhooks: clanData.webhooks,
+			listClanWebhooks: clanData.webhooks,
 			fromCache: true,
 			time: clanData.cache?.lastFetched || Date.now()
 		};
@@ -73,7 +75,7 @@ export const fetchClanWebhooks = createAsyncThunk('integration/fetchClanWebhooks
 		const response = await fetchClanWebhooksCached(thunkAPI.getState as () => RootState, mezon, clanId, Boolean(noCache));
 		return {
 			clanId,
-			webhooks: response.list_clan_webhooks,
+			webhooks: response.listClanWebhooks,
 			fromCache: response.fromCache
 		};
 	} catch (error) {
@@ -87,11 +89,17 @@ export const generateClanWebhook = createAsyncThunk(
 	async (data: { request: ApiGenerateClanWebhookRequest; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.generateClanWebhook(mezon.session, data.request);
+			const requestWithTypeName = {
+				$typeName: 'mezon.api.GenerateClanWebhookRequest' as const,
+				clanId: data.clanId,
+				webhookName: data.request.webhookName || '',
+				avatar: data.request.avatar || ''
+			};
+			const response = await mezon.client.generateClanWebhook(mezon.session, requestWithTypeName);
 
 			if (response) {
 				thunkAPI.dispatch(fetchClanWebhooks({ clanId: data.clanId, noCache: true }));
-				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookGeneratedSuccess', { webhookName: response.webhook_name }));
+				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookGeneratedSuccess', { webhookName: response.webhookName }));
 			} else {
 				thunkAPI.rejectWithValue({});
 			}
@@ -109,7 +117,7 @@ export const deleteClanWebhookById = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.deleteClanWebhookById(mezon.session, data.webhook.id as string, data.clanId);
 			if (response) {
-				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookDeletedSuccess', { webhookName: data.webhook.webhook_name }));
+				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookDeletedSuccess', { webhookName: data.webhook.webhookName }));
 				thunkAPI.dispatch(fetchClanWebhooks({ clanId: data.clanId, noCache: true }));
 				return data.webhook;
 			}
@@ -126,7 +134,15 @@ export const updateClanWebhookById = createAsyncThunk(
 	async (data: { request: MezonUpdateClanWebhookByIdBody; webhookId: string | undefined; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateClanWebhookById(mezon.session, data.webhookId as string, data.request);
+			const requestWithTypeName = {
+				$typeName: 'mezon.api.UpdateClanWebhookRequest' as const,
+				id: data.webhookId || '',
+				clanId: data.clanId,
+				webhookName: data.request.webhookName || '',
+				avatar: data.request.avatar || '',
+				resetToken: data.request.resetToken ?? false
+			};
+			const response = await mezon.client.updateClanWebhookById(mezon.session, data.webhookId as string, requestWithTypeName);
 			if (response) {
 				thunkAPI.dispatch(fetchClanWebhooks({ clanId: data.clanId, noCache: true }));
 			}
@@ -171,11 +187,6 @@ export const integrationClanWebhookSlice = createSlice({
 export const getClanWebHookState = (rootState: { [INTEGRATION_CLAN_WEBHOOK]: IClanWebHookState }): IClanWebHookState =>
 	rootState[INTEGRATION_CLAN_WEBHOOK];
 export const selectAllClanWebhooks = createSelector(getClanWebHookState, (state) => state?.clanWebhookList || []);
-
-export const selectClanWebhooksByClanId = createSelector(
-	[getClanWebHookState, (state: RootState, clanId: string) => clanId],
-	(state, clanId) => state?.byClan[clanId]?.webhooks || []
-);
 
 export const selectClanWebhooksById = createSelector(
 	[getClanWebHookState, (state: RootState, webhookId: string) => webhookId],

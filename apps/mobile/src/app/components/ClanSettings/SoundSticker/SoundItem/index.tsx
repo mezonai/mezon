@@ -34,7 +34,7 @@ const SoundItemComponent = forwardRef(({ item, onSwipeOpen, isPlaying = false, o
 	const styles = style(themeValue);
 	const { t } = useTranslation(['clanEmojiSetting']);
 	const dispatch = useAppDispatch();
-	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, item?.creator_id ?? ''));
+	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, item?.creatorId ?? ''));
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const [hasAdminPermission, hasManageClanPermission, isClanOwner] = usePermissionChecker([
 		EPermission.administrator,
@@ -42,23 +42,23 @@ const SoundItemComponent = forwardRef(({ item, onSwipeOpen, isPlaying = false, o
 		EPermission.clanOwner
 	]);
 	const hasDeleteOrEditPermission = useMemo(() => {
-		return hasAdminPermission || isClanOwner || hasManageClanPermission || currentUserId === item?.creator_id;
-	}, [hasAdminPermission, isClanOwner, hasManageClanPermission, currentUserId, item?.creator_id]);
+		return hasAdminPermission || isClanOwner || hasManageClanPermission || currentUserId === item?.creatorId;
+	}, [hasAdminPermission, isClanOwner, hasManageClanPermission, currentUserId, item?.creatorId]);
 
 	const authorDisplayName = useMemo(() => {
-		return dataAuthor?.clan_nick || dataAuthor?.user?.display_name || dataAuthor?.user?.username || '';
-	}, [dataAuthor?.clan_nick, dataAuthor?.user?.display_name, dataAuthor?.user?.username]);
+		return dataAuthor?.clanNick || dataAuthor?.user?.displayName || dataAuthor?.user?.username || '';
+	}, [dataAuthor?.clanNick, dataAuthor?.user?.displayName, dataAuthor?.user?.username]);
 
 	const authorAvatarUrl = useMemo(() => {
-		return dataAuthor?.clan_avatar || dataAuthor?.user?.avatar_url || '';
-	}, [dataAuthor?.clan_avatar, dataAuthor?.user?.avatar_url]);
+		return dataAuthor?.clanAvatar || dataAuthor?.user?.avatarUrl || '';
+	}, [dataAuthor?.clanAvatar, dataAuthor?.user?.avatarUrl]);
 
 	const handleDeleteSound = async () => {
 		try {
 			await dispatch(
 				soundEffectActions.deleteSound({
 					soundId: item?.id || '',
-					clan_id: item?.clan_id || '',
+					clanId: item?.clanId || '',
 					soundLabel: item?.shortname || ''
 				})
 			);

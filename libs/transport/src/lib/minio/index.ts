@@ -1,6 +1,6 @@
 import { Buffer as BufferMobile } from 'buffer';
 import type { Client, Session } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 
 export class CustomFile extends File {
 	url?: string;
@@ -192,11 +192,12 @@ export async function uploadFile(
 				fn = client.uploadOauthFile.bind(client);
 			}
 			const data = await fn(session, {
+				$typeName: 'mezon.api.UploadAttachmentRequest' as const,
 				filename,
 				filetype: type,
 				size,
-				width,
-				height
+				width: width ?? 0,
+				height: height ?? 0
 			});
 			if (!data?.url) {
 				reject(new Error('Failed to upload file. URL not available.'));

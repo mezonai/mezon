@@ -128,14 +128,14 @@ const FriendsPage = () => {
 	const listFriendFilter = filterStatus(friends)
 		.filter((obj) => {
 			const normalizedUsername = (obj.user?.username || '').toLowerCase();
-			const normalizedDisplayName = (obj.user?.display_name || '').toLowerCase();
+			const normalizedDisplayName = (obj.user?.displayName || '').toLowerCase();
 			const normalizedSearchText = textSearch.toLowerCase();
 
 			return normalizedUsername.includes(normalizedSearchText) || normalizedDisplayName.includes(normalizedSearchText);
 		})
 		.sort((start, next) => {
-			const nameStart = (start.user?.display_name || start.user?.username) ?? '';
-			const nameNext = (next.user?.display_name || next.user?.username) ?? '';
+			const nameStart = (start.user?.displayName || start.user?.username) ?? '';
+			const nameNext = (next.user?.displayName || next.user?.username) ?? '';
 			return nameStart.localeCompare(nameNext);
 		});
 
@@ -201,7 +201,7 @@ const FriendsPage = () => {
 									{tab.title}
 								</button>
 								{tab.value === 'pending' && quantityPendingRequest !== 0 && (
-									<div 
+									<div
 										className="absolute grid place-items-center w-[20px] h-[20px] rounded-full bg-colorDanger text-[10px] font-medium top-[2px] right-3"
 										data-e2e={generateE2eId('badge.friend_pending')}
 									>

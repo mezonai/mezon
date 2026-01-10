@@ -27,17 +27,17 @@ const ChannelFileItem = memo(({ file, isDM }: ChannelFileItemProps) => {
 		}
 
 		if (isDM) {
-			return userProfile?.display_name || userProfile?.username || '';
+			return userProfile?.displayName || userProfile?.username || '';
 		}
 
-		return clanProfile?.clan_nick || clanProfile?.user?.display_name || clanProfile?.user?.username || '';
+		return clanProfile?.clanNick || clanProfile?.user?.displayName || clanProfile?.user?.username || '';
 	}, [
-		clanProfile?.clan_nick,
-		clanProfile?.user?.display_name,
+		clanProfile?.clanNick,
+		clanProfile?.user?.displayName,
 		clanProfile?.user?.username,
 		file?.uploader,
 		isDM,
-		userProfile?.display_name,
+		userProfile?.displayName,
 		userProfile?.username
 	]);
 
@@ -57,7 +57,7 @@ const ChannelFileItem = memo(({ file, isDM }: ChannelFileItemProps) => {
 						{t('sharedBy', { username: prioritySenderName })}
 					</Text>
 					<Text style={styles.footerTime} numberOfLines={1}>
-						{convertTimeHour(file?.create_time as string)}
+						{convertTimeHour(file?.createTime as string)}
 					</Text>
 				</View>
 			</View>

@@ -1,6 +1,6 @@
 import type { MentionItem } from '@mezon/utils';
 import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiSearchMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSearchMessageRequest } from 'mezon-js/types';
 
 export type OnChangeHandlerFunc = (
 	event: { target: { value: string } },

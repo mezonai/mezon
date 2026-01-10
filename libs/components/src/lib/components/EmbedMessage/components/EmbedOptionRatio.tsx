@@ -8,14 +8,14 @@ import { EmbedTitle } from './EmbedTitle';
 
 interface EmbedOptionRatioProps {
 	options: IMessageRatioOption[];
-	message_id: string;
+	messageId: string;
 	idRadio: string;
 	max_options?: number;
 	disabled?: boolean;
 }
 
-export function EmbedOptionRatio({ options, message_id, idRadio, max_options, disabled = false }: EmbedOptionRatioProps) {
-	const embedData = useSelector((state) => selectDataFormEmbedByMessageId(state, message_id))?.[idRadio];
+export function EmbedOptionRatio({ options, messageId, idRadio, max_options, disabled = false }: EmbedOptionRatioProps) {
+	const embedData = useSelector((state) => selectDataFormEmbedByMessageId(state, messageId))?.[idRadio];
 	const [checked, setChecked] = useState<string[]>(embedData ? (Array.isArray(embedData) ? embedData : [embedData]) : []);
 	const handleCheckedOption = (value: string) => {
 		if (disabled) return;
@@ -37,7 +37,7 @@ export function EmbedOptionRatio({ options, message_id, idRadio, max_options, di
 		(value: string) => {
 			dispatch(
 				embedActions.addEmbedValue({
-					message_id,
+					messageId,
 					data: {
 						id: idRadio,
 						value
@@ -54,9 +54,9 @@ export function EmbedOptionRatio({ options, message_id, idRadio, max_options, di
 		<>
 			{options.map((option, index) => (
 				<EmbedOptionRatioItem
-					key={option.value + message_id}
+					key={option.value + messageId}
 					setChecked={setChecked}
-					message_id={message_id}
+					messageId={messageId}
 					option={option}
 					checkMultiple={checkMultiple}
 					checked={checked.includes(option.value)}
@@ -70,7 +70,7 @@ export function EmbedOptionRatio({ options, message_id, idRadio, max_options, di
 
 const EmbedOptionRatioItem = ({
 	option,
-	message_id,
+	messageId,
 	setChecked,
 	checkMultiple,
 	handleCheckedOption,
@@ -79,7 +79,7 @@ const EmbedOptionRatioItem = ({
 }: {
 	setChecked: React.Dispatch<React.SetStateAction<string[]>>;
 	option: IMessageRatioOption;
-	message_id: string;
+	messageId: string;
 	handleCheckedOption: () => void;
 	checkMultiple: boolean;
 	checked: boolean;
@@ -106,8 +106,8 @@ const EmbedOptionRatioItem = ({
 				<EmbedDescription description={option.description || ''} />
 			</div>
 			<MessageRatioButton
-				key={`${option.name ? `${option.name + message_id}_${checked}` : `ratio_button${message_id}_${checked}`}`}
-				name={option.name ? option.name + message_id : `ratio_button${message_id}`}
+				key={`${option.name ? `${option.name + messageId}_${checked}` : `ratio_button${messageId}_${checked}`}`}
+				name={option.name ? option.name + messageId : `ratio_button${messageId}`}
 				onCheckRatio={handleCheckedOptionItem}
 				checked={checked}
 				color={option.style}

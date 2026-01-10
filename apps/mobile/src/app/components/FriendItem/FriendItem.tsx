@@ -32,7 +32,7 @@ export const FriendItem = React.memo(
 	({ friend, handleFriendAction, onSelectChange, isChecked, disabled = false, showAction = true, selectMode = false }: IFriendItem) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue, isChecked, disabled);
-		const userStatus = { status: friend?.user?.online, isMobile: friend?.user?.is_mobile };
+		const userStatus = { status: friend?.user?.online, isMobile: friend?.user?.isMobile };
 
 		const isFriend = friend.state === 0;
 		const isSentRequestFriend = friend.state === 1;
@@ -52,8 +52,8 @@ export const FriendItem = React.memo(
 		};
 
 		const isShowDisplayName = useMemo(() => {
-			return (isPendingFriendRequest || !showAction) && friend?.user?.display_name;
-		}, [friend?.user?.display_name, isPendingFriendRequest, showAction]);
+			return (isPendingFriendRequest || !showAction) && friend?.user?.displayName;
+		}, [friend?.user?.displayName, isPendingFriendRequest, showAction]);
 
 		return (
 			<TouchableOpacity
@@ -62,10 +62,10 @@ export const FriendItem = React.memo(
 				onLongPress={() => onLongPress()}
 			>
 				<View style={styles.avatarWrapper}>
-					{friend?.user?.avatar_url ? (
+					{friend?.user?.avatarUrl ? (
 						<View style={[styles.friendAvatar, disabled && styles.avatarDisabled]}>
 							<ImageNative
-								url={createImgproxyUrl(friend?.user?.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fit' })}
+								url={createImgproxyUrl(friend?.user?.avatarUrl ?? '', { width: 100, height: 100, resizeType: 'fit' })}
 								style={{ width: '100%', height: '100%' }}
 								resizeMode={'cover'}
 							/>
@@ -84,11 +84,11 @@ export const FriendItem = React.memo(
 						<View style={styles.displayName}>
 							{isShowDisplayName ? (
 								<Text style={[styles.defaultText, (isPendingFriendRequest || !showAction) && styles.whiteText]}>
-									{friend?.user?.display_name}
+									{friend?.user?.displayName}
 								</Text>
 							) : null}
 							<Text style={[styles.defaultText, disabled && styles.disabled]}>
-								{isShowDisplayName ? friend?.user?.username : friend?.user?.display_name || friend?.user?.username}
+								{isShowDisplayName ? friend?.user?.username : friend?.user?.displayName || friend?.user?.username}
 							</Text>
 						</View>
 						{isFriend && showAction && !selectMode ? (

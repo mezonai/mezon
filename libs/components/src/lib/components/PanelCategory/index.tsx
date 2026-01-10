@@ -72,9 +72,9 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 
 	const handleChangeSettingType = (notificationType: number) => {
 		const payload: SetDefaultNotificationPayload = {
-			category_id: category?.id,
-			notification_type: notificationType,
-			clan_id: currentClanId || ''
+			categoryId: category?.id,
+			notificationType: notificationType,
+			clanId: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setDefaultNotificationCategory(payload));
 		handClosePannel();
@@ -84,8 +84,8 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 		const payload: MuteCatePayload = {
 			id: category?.id,
 			active: EMuteState.MUTED,
-			mute_time: duration !== Infinity ? duration : 0,
-			clan_id: currentClanId || ''
+			muteTime: duration !== Infinity ? duration : 0,
+			clanId: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 	};
@@ -94,15 +94,15 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 		const payload: MuteCatePayload = {
 			id: category?.id,
 			active,
-			mute_time: 0,
-			clan_id: currentClanId || ''
+			muteTime: 0,
+			clanId: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 	};
 
 	useEffect(() => {
-		if (defaultCategoryNotificationSetting?.time_mute) {
-			const muteTime = new Date(defaultCategoryNotificationSetting.time_mute);
+		if (defaultCategoryNotificationSetting?.timeMute) {
+			const muteTime = new Date(defaultCategoryNotificationSetting.timeMute);
 			const now = new Date();
 			if (muteTime > now) {
 				const formattedTimeDifference = format(muteTime, 'dd/MM, HH:mm');
@@ -130,7 +130,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 	}, [statusMarkAsReadCategory]);
 
 	const collapseAllCategory = () => {
-		dispatch(categoriesActions.setCollapseAllCategory({ clanId: category?.clan_id as string }));
+		dispatch(categoriesActions.setCollapseAllCategory({ clanId: category?.clanId as string }));
 	};
 
 	const menuOpenMute = useRef(false);
@@ -156,8 +156,8 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 				defaultNotifi={true}
 				onClick={() => handleChangeSettingType(ENotificationTypes.DEFAULT)}
 				checked={
-					defaultCategoryNotificationSetting?.notification_setting_type === ENotificationTypes.DEFAULT ||
-					defaultCategoryNotificationSetting?.notification_setting_type === undefined
+					defaultCategoryNotificationSetting?.notificationSettingType === ENotificationTypes.DEFAULT ||
+					defaultCategoryNotificationSetting?.notificationSettingType === undefined
 				}
 			>
 				{t('useClanDefault')}
@@ -172,7 +172,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 					name="NotificationSetting"
 					key={notification.value}
 					onClick={() => handleChangeSettingType(notification.value)}
-					checked={defaultCategoryNotificationSetting?.notification_setting_type === notification.value}
+					checked={defaultCategoryNotificationSetting?.notificationSettingType === notification.value}
 				>
 					{notification.label}
 				</ItemPanel>
@@ -180,7 +180,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 		);
 
 		return <>{menuItems}</>;
-	}, [notificationTypesList, defaultCategoryNotificationSetting?.notification_setting_type, t]);
+	}, [notificationTypesList, defaultCategoryNotificationSetting?.notificationSettingType, t]);
 
 	const handleOpenMenuMute = useCallback((visible: boolean) => {
 		menuOpenMute.current = visible;
@@ -247,11 +247,11 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 						<ItemPanel
 							dropdown="change here"
 							subText={
-								defaultCategoryNotificationSetting?.notification_setting_type === ENotificationTypes.DEFAULT ||
-								defaultCategoryNotificationSetting?.notification_setting_type === undefined
+								defaultCategoryNotificationSetting?.notificationSettingType === ENotificationTypes.DEFAULT ||
+								defaultCategoryNotificationSetting?.notificationSettingType === undefined
 									? t('useClanDefault')
 									: notificationTypesList.find(
-											(type) => type.value === defaultCategoryNotificationSetting?.notification_setting_type
+											(type) => type.value === defaultCategoryNotificationSetting?.notificationSettingType
 										)?.label || ''
 							}
 						>

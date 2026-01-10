@@ -4,7 +4,7 @@ import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { ILongPressType, IMessageSendPayload, MentionDataProps, ThreadValue } from '@mezon/utils';
 import { EOverriddenPermission, MAX_FILE_ATTACHMENTS, UploadLimitReason, processFile, useLongPress } from '@mezon/utils';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import type { ReactElement } from 'react';
 import { Fragment, memo, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -42,7 +42,7 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 	const { removeAttachmentByIndex, checkAttachment, attachmentFilteredByChannelId } = useReference(props.currentChannelId);
 	const hasReplyMessage = useSelector((state) => {
 		const dataRefs = selectDataReferences(state, currentChannelId ?? '');
-		return !!dataRefs?.message_ref_id;
+		return !!dataRefs?.messageRefId;
 	});
 
 	const { setOverUploadingState } = useDragAndDrop();

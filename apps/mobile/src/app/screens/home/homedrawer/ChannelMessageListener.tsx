@@ -72,8 +72,8 @@ const ChannelMessageListener = React.memo(() => {
 		async (channel: ChannelsEntity) => {
 			try {
 				const type = channel?.type;
-				const channelId = channel?.channel_id;
-				const clanId = channel?.clan_id;
+				const channelId = channel?.channelId;
+				const clanId = channel?.clanId;
 				const clanIdStore = selectCurrentClanId(store.getState());
 				const currentDirectId = selectDmGroupCurrentId(store.getState());
 				const currentClanId = currentDirectId ? '0' : clanIdStore;

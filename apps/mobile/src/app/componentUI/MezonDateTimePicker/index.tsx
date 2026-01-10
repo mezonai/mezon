@@ -45,7 +45,7 @@ export default memo(function MezonDateTimePicker({
 	}, [value]);
 	const handleChange = useCallback(() => {
 		if (keepTime && !isModeTime && value) {
-			const new_date = new Date(
+			const newDate = new Date(
 				dateRef.current.getFullYear(),
 				dateRef.current.getMonth(),
 				dateRef.current.getDate(),
@@ -53,8 +53,8 @@ export default memo(function MezonDateTimePicker({
 				value.getMinutes(),
 				value.getSeconds()
 			);
-			setCurrentDate(new_date);
-			onChange && onChange(new_date);
+			setCurrentDate(newDate);
+			onChange && onChange(newDate);
 		} else {
 			setCurrentDate(dateRef.current);
 			onChange && onChange(dateRef.current);

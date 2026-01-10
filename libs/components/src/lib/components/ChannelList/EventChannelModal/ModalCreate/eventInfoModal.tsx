@@ -218,7 +218,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						/>
 					</Suspense>
 				</div>
-				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.start_time')}>
+				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.startTime')}>
 					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
 						{t('fields.startTime.title')}
 						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
@@ -243,7 +243,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						/>
 					</Suspense>
 				</div>
-				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.end_time')}>
+				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.endTime')}>
 					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
 						{t('fields.endTime.title')}
 						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
@@ -276,7 +276,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 				<div className="relative" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.description')}>
 					<TextArea
 						placeholder={t('fields.description.description')}
-						className="resize-none h-auto min-h-[87px] w-full bg-theme-input overflow-y-hidden outline-none py-2 pl-3 pr-5"
+						className="resize-none h-auto min-h-[87px] max-h-[150px] thread-scroll w-full bg-theme-input overflow-y-auto outline-none py-2 pl-3 pr-5"
 						value={contentSubmit.description}
 						onChange={handleChangeTextArea}
 						rows={1}

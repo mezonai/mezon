@@ -22,7 +22,7 @@ interface IChannelItemProps {
 function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue, themeBasic);
-	const countMessageUnread = Number(data?.count_mess_unread) || 0;
+	const countMessageUnread = Number(data?.countMessUnread) || 0;
 
 	const isUnReadChannel = useMemo(() => {
 		return isUnRead || countMessageUnread > 0;
@@ -64,12 +64,12 @@ function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
 					{isUnReadChannel && <View style={styles.dotIsNew} />}
 
 					<ChannelStatusIcon channel={data} isUnRead={isUnReadChannel} />
-					<EventBadge clanId={data?.clan_id} channelId={data?.channel_id} />
+					<EventBadge clanId={data?.clanId} channelId={data?.channelId} />
 					<Text style={[styles.channelListItemTitle, isUnReadChannel && styles.channelListItemTitleActive]} numberOfLines={1}>
-						{data?.channel_label || ''}
+						{data?.channelLabel || ''}
 					</Text>
 				</View>
-				<BuzzBadge channelId={data?.channel_id} clanId={data?.clan_id} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
+				<BuzzBadge channelId={data?.channelId} clanId={data?.clanId} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
 
 				{countMessageUnread > 0 && <ChannelBadgeUnread countMessageUnread={countMessageUnread} />}
 			</TouchableOpacity>
@@ -78,10 +78,10 @@ function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
 }
 export default memo(ChannelItem, (prevProps, nextProps) => {
 	return (
-		prevProps?.data?.channel_private === nextProps?.data?.channel_private &&
-		prevProps?.data?.channel_label === nextProps?.data?.channel_label &&
-		prevProps?.data?.channel_id === nextProps?.data?.channel_id &&
-		prevProps?.data?.count_mess_unread === nextProps?.data?.count_mess_unread &&
+		prevProps?.data?.channelPrivate === nextProps?.data?.channelPrivate &&
+		prevProps?.data?.channelLabel === nextProps?.data?.channelLabel &&
+		prevProps?.data?.channelId === nextProps?.data?.channelId &&
+		prevProps?.data?.countMessUnread === nextProps?.data?.countMessUnread &&
 		prevProps?.isUnRead === nextProps?.isUnRead &&
 		prevProps?.isActive === nextProps?.isActive
 	);

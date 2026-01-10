@@ -3,7 +3,7 @@ import type { IMessageWithUser, IThread, LoadingStatus } from '@mezon/utils';
 import { LIMIT, ThreadStatus, TypeCheck, getParentChannelIdIfHas } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelDescription } from 'mezon-js/api.gen';
+import type { ApiChannelDescription } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions, selectCurrentChannel } from '../channels/channels.slice';
@@ -45,8 +45,8 @@ export interface ThreadsState extends EntityState<ThreadsEntity, string> {
 export const threadsAdapter = createEntityAdapter({
 	selectId: (thread: ThreadsEntity) => thread.id || '',
 	sortComparer: (a: ThreadsEntity, b: ThreadsEntity) => {
-		if (a.last_sent_message && b.last_sent_message) {
-			return (b.last_sent_message.timestamp_seconds || 0) - (a.last_sent_message.timestamp_seconds || 0);
+		if (a.lastSentMessage && b.lastSentMessage) {
+			return (b.lastSentMessage.timestampSeconds || 0) - (a.lastSentMessage.timestampSeconds || 0);
 		}
 		return 0;
 	}
@@ -135,7 +135,7 @@ const updateCacheOnThreadCreation = createAsyncThunk(
 const mapToThreadEntity = (threads: ApiChannelDescription[]) => {
 	return threads.map((thread) => ({
 		...thread,
-		id: thread.channel_id as string
+		id: thread.channelId as string
 	}));
 };
 
@@ -249,10 +249,10 @@ export const initialThreadsState: ThreadsState = threadsAdapter.getInitialState(
 
 export const checkDuplicateThread = createAsyncThunk(
 	'thread/duplicateNameCthread',
-	async ({ thread_name, channel_id, clan_id }: { thread_name: string; channel_id: string; clan_id: string }, thunkAPI) => {
+	async ({ thread_name, channelId, clanId }: { thread_name: string; channelId: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(thread_name, channel_id, TypeCheck.TYPETHREAD, clan_id);
+			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(thread_name, channelId, TypeCheck.TYPETHREAD, clanId);
 			if (isDuplicateName?.type === TypeCheck.TYPETHREAD) {
 				return isDuplicateName.exist;
 			}
@@ -375,9 +375,9 @@ export const threadsSlice = createSlice({
 				threadsAdapter.updateOne(state, {
 					id: channelId,
 					changes: {
-						last_sent_message: {
-							...entity.last_sent_message,
-							timestamp_seconds: lastSentTime
+						lastSentMessage: {
+							...entity.lastSentMessage,
+							timestampSeconds: lastSentTime
 						}
 					}
 				});
@@ -443,7 +443,7 @@ export const threadsSlice = createSlice({
 
 					if (!fromCache) {
 						const validThreads = threads.filter((thread) => {
-							if (thread.channel_private) {
+							if (thread.channelPrivate) {
 								const shouldKeep = thread.active === ThreadStatus.joined || thread.active === ThreadStatus.activePrivate;
 								return shouldKeep;
 							}
@@ -550,15 +550,11 @@ export const threadsActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities } = threadsAdapter.getSelectors();
+const { selectAll } = threadsAdapter.getSelectors();
 
 export const getThreadsState = (rootState: { [THREADS_FEATURE_KEY]: ThreadsState }): ThreadsState => rootState[THREADS_FEATURE_KEY];
 
 export const selectAllThreads = createSelector(getThreadsState, selectAll);
-
-export const selectThreadsEntities = createSelector(getThreadsState, selectEntities);
-
-export const selectThreadById = createSelector([selectThreadsEntities, (state, threadId: string) => threadId], (state, threadId) => state[threadId]);
 
 export const selectIsPrivate = createSelector(getThreadsState, (state) => state.isPrivate);
 
@@ -571,8 +567,6 @@ export const selectListThreadId = createSelector(getThreadsState, (state) => sta
 export const selectValueThread = createSelector(getThreadsState, (state) => state.valueThread);
 
 export const selectOpenThreadMessageState = createSelector(getThreadsState, (state: ThreadsState) => state.openThreadMessageState);
-
-export const selectCurrentThread = createSelector(getThreadsState, (state: ThreadsState) => state.currentThread);
 
 export const selectNameValueThread = (channelId: string) =>
 	createSelector(getThreadsState, (state) => {
@@ -609,5 +603,3 @@ export const selectThreadsByParentChannelId = createSelector(
 		return selectAll(channelState);
 	}
 );
-
-export const selectShouldTriggerSendFromThreadName = createSelector(getThreadsState, (state) => state.shouldTriggerSendFromThreadName);

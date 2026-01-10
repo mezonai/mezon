@@ -28,14 +28,14 @@ enum EActionButton {
 }
 
 export const getName = (user: UsersClanEntity) =>
-	user.clan_nick?.toLowerCase() || user.user?.display_name?.toLowerCase() || user.user?.username?.toLowerCase() || '';
+	user.clanNick?.toLowerCase() || user.user?.displayName?.toLowerCase() || user.user?.username?.toLowerCase() || '';
 
 export const MemberListStatus = memo(({ currentChannel, currentUserId }: IMemberListStatusProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
-	const groupMembers = useAppSelector((state) => selectMemberByGroupId(state, currentChannel?.channel_id));
-	const channelMembers = useAppSelector((state) => selectAllChannelMembersClan(state, currentChannel?.channel_id));
+	const groupMembers = useAppSelector((state) => selectMemberByGroupId(state, currentChannel?.channelId));
+	const channelMembers = useAppSelector((state) => selectAllChannelMembersClan(state, currentChannel?.channelId));
 	const statusEntities = useAppSelector(selectStatusEntities);
 
 	const [selectedUser, setSelectedUser] = useState<ChannelMembersEntity | null>(null);
@@ -48,8 +48,8 @@ export const MemberListStatus = memo(({ currentChannel, currentUserId }: IMember
 
 	const isChatWithMyself = useMemo(() => {
 		if (Number(currentChannel?.type) !== ChannelType.CHANNEL_TYPE_DM) return false;
-		return currentChannel?.user_ids?.[0] === currentUserId;
-	}, [currentChannel?.type, currentChannel?.user_ids, currentUserId]);
+		return currentChannel?.userIds?.[0] === currentUserId;
+	}, [currentChannel?.type, currentChannel?.userIds, currentUserId]);
 
 	const isDM = useMemo(() => {
 		return [ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type);
@@ -114,9 +114,9 @@ export const MemberListStatus = memo(({ currentChannel, currentUserId }: IMember
 
 	const shouldShowNewGroupButton = useMemo(() => {
 		return (
-			currentChannel?.type === ChannelType.CHANNEL_TYPE_DM && currentChannel?.usernames?.[0] && currentChannel?.user_ids?.[0] !== currentUserId
+			currentChannel?.type === ChannelType.CHANNEL_TYPE_DM && currentChannel?.usernames?.[0] && currentChannel?.userIds?.[0] !== currentUserId
 		);
-	}, [currentChannel?.type, currentChannel?.user_ids?.[0], currentChannel?.usernames?.[0], currentUserId]);
+	}, [currentChannel?.type, currentChannel?.userIds?.[0], currentChannel?.usernames?.[0], currentUserId]);
 
 	const { online, offline } = membersByStatus;
 
@@ -127,7 +127,7 @@ export const MemberListStatus = memo(({ currentChannel, currentUserId }: IMember
 	const navigateToNewGroupScreen = () => {
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 			screen: APP_SCREEN.MESSAGES.NEW_GROUP,
-			params: { directMessageId: currentChannel?.id || currentChannel?.channel_id || '', fromUser: true }
+			params: { directMessageId: currentChannel?.id || currentChannel?.channelId || '', fromUser: true }
 		});
 	};
 
@@ -156,7 +156,7 @@ export const MemberListStatus = memo(({ currentChannel, currentUserId }: IMember
 					<View style={{ flex: 1 }}>
 						<Text style={styles.actionTitle}>{t('message:newMessage.newGroup')}</Text>
 						<Text style={styles.newGroupContent} numberOfLines={1}>
-							{t('message:newMessage.createGroupWith')} {currentChannel?.channel_label}
+							{t('message:newMessage.createGroupWith')} {currentChannel?.channelLabel}
 						</Text>
 					</View>
 					<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} height={size.s_12} width={size.s_12} color={themeValue.text} />

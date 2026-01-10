@@ -3,7 +3,7 @@ import type { RolesClanEntity } from '@mezon/store';
 import { getStore, rolesClanActions, selectCurrentClanId, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EDragBorderPosition, SlugPermission, generateE2eId } from '@mezon/utils';
-import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js/api.gen';
+import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js/types';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -60,9 +60,9 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 		setIsLoading(true);
 		setRolesList((currentRoles) => {
 			const requestBody: ApiUpdateRoleOrderRequest = {
-				clan_id: currentClanId || '',
+				clanId: currentClanId || '',
 				roles: currentRoles.map((role, index) => ({
-					role_id: role.id,
+					roleId: role.id,
 					order: index + 1
 				}))
 			};
@@ -90,7 +90,7 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 	return (
 		<>
 			{rolesList.map((role, index) => {
-				const hasPermissionEdit = isClanOwner || Number(userMaxPermissionLevel) > Number(role.max_level_permission);
+				const hasPermissionEdit = isClanOwner || Number(userMaxPermissionLevel) > Number(role.maxLevelPermission);
 				return (
 					<tr
 						key={role.id}
@@ -114,8 +114,8 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 								className="px-2 inline-flex gap-1 items-center text-[15px] break-all whitespace-break-spaces overflow-hidden line-clamp-2 font-medium mt-1.5"
 								data-e2e={generateE2eId('clan_page.settings.role.item')}
 							>
-								{role.role_icon ? (
-									<img src={role.role_icon} alt="" className={'size-5'} />
+								{role.roleIcon ? (
+									<img src={role.roleIcon} alt="" className={'size-5'} />
 								) : (
 									<Icons.RoleIcon defaultSize="w-5 h-[30px] min-w-5 mr-2" defaultFill={`${role.color || DEFAULT_ROLE_COLOR}`} />
 								)}
@@ -127,19 +127,19 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 							</p>
 						</td>
 						<td className="text-[15px] text-center">
-							{role?.slug === `everyone-${role?.clan_id}` ? (
+							{role?.slug === `everyone-${role?.clanId}` ? (
 								<p className="inline-flex gap-x-2 items-center ">{t('allMembers')}</p>
 							) : (
 								<p
 									className="inline-flex gap-x-2 items-center "
-									data-e2e={generateE2eId('clan_page.settings.role.item.member_count')}
+									data-e2e={generateE2eId('clan_page.settings.role.item.memberCount')}
 								>
-									{role.role_user_list?.role_users?.length ?? 0}
+									{role.roleUserList?.roleUsers?.length ?? 0}
 									<Icons.MemberIcon defaultSize="w-5 h-[30px] min-w-5" />
 								</p>
 							)}
 						</td>
-						<td className={` flex h-14 justify-center items-center ${role?.slug === `everyone-${role?.clan_id}` && 'ml-[2.8rem]'}`}>
+						<td className={` flex h-14 justify-center items-center ${role?.slug === `everyone-${role?.clanId}` && 'ml-[2.8rem]'}`}>
 							<div className="flex gap-x-2">
 								<div className="text-[15px] cursor-pointer bg-red-500 p-2 rounded-full opacity-0 group-hover:opacity-100 group-hover:text-white">
 									{hasPermissionEdit ? (
@@ -152,7 +152,7 @@ const ListActiveRole = (props: ListActiveRoleProps) => {
 										</span>
 									)}
 								</div>
-								{hasPermissionEdit && role?.slug !== `everyone-${role?.clan_id}` && (
+								{hasPermissionEdit && role?.slug !== `everyone-${role?.clanId}` && (
 									<div
 										className={`text-[15px] cursor-pointer bg-red-500 p-2 text-white rounded-full ${hasPermissionEdit ? 'opacity-100' : 'opacity-20'}`}
 										onClick={(e) => handleOpenDeleteRoleModal(e, role.id)}

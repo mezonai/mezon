@@ -9,7 +9,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { ChannelStatusEnum } from '@mezon/utils';
-import type { ApiOnboardingItem } from 'mezon-js/api.gen';
+import type { ApiOnboardingItem } from 'mezon-js/types';
 import type { ChangeEvent } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,12 +43,12 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 	const currentClanId = useSelector(selectCurrentClanId);
 	const allChannel = useAppSelector(selectAllChannels);
 	const listMissionChannel = useMemo(() => {
-		return allChannel.filter((channel) => channel.channel_private !== ChannelStatusEnum.isPrivate && channel.id);
+		return allChannel.filter((channel) => channel.channelPrivate !== ChannelStatusEnum.isPrivate && channel.id);
 	}, [allChannel]);
 
 	const [title, setTitle] = useState(missionEdit?.title || '');
-	const [missionChannel, setMissionChannel] = useState(missionEdit?.channel_id || listMissionChannel[0]?.id || '');
-	const [mission, setMission] = useState<ETypeMission>(missionEdit?.task_type || ETypeMission.SEND_MESSAGE);
+	const [missionChannel, setMissionChannel] = useState(missionEdit?.channelId || listMissionChannel[0]?.id || '');
+	const [mission, setMission] = useState<ETypeMission>(missionEdit?.taskType || ETypeMission.SEND_MESSAGE);
 	const [error, setError] = useState('');
 	const dispatch = useAppDispatch();
 	const handleChangeTitle = (e: ChangeEvent<HTMLInputElement>) => {
@@ -77,10 +77,10 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 			if (title !== missionEdit?.title) {
 				return true;
 			}
-			if (missionChannel !== missionEdit?.channel_id) {
+			if (missionChannel !== missionEdit?.channelId) {
 				return true;
 			}
-			if (mission !== missionEdit?.task_type) {
+			if (mission !== missionEdit?.taskType) {
 				return true;
 			}
 			return false;
@@ -105,13 +105,13 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 		if (missionEdit?.id) {
 			dispatch(
 				editOnboarding({
-					clan_id: currentClanId as string,
+					clanId: currentClanId as string,
 					idOnboarding: missionEdit?.id as string,
 					content: {
 						title,
-						guide_type: EGuideType.TASK,
-						task_type: mission || 0,
-						channel_id: missionChannel
+						guideType: EGuideType.TASK,
+						taskType: mission || 0,
+						channelId: missionChannel
 					}
 				})
 			);
@@ -123,9 +123,9 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 			onboardingActions.addMission({
 				data: {
 					title,
-					guide_type: EGuideType.TASK,
-					task_type: mission || 0,
-					channel_id: missionChannel
+					guideType: EGuideType.TASK,
+					taskType: mission || 0,
+					channelId: missionChannel
 				},
 				update: tempId
 			})
@@ -151,7 +151,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 		}
 		dispatch(
 			onboardingActions.removeOnboardingTask({
-				clan_id: missionEdit.clan_id as string,
+				clanId: missionEdit.clanId as string,
 				idTask: missionEdit.id as string,
 				type: EGuideType.TASK
 			})
@@ -191,7 +191,7 @@ const ModalAddMission = ({ onClose, missionEdit, tempId }: { onClose: () => void
 									key={channel.id}
 									className="text-theme-primary bg-theme-setting-primary bg-item-them-hover"
 								>
-									{channel.channel_label}
+									{channel.channelLabel}
 								</option>
 							))}
 						</select>

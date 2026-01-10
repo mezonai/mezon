@@ -22,9 +22,9 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 	const navigation = useNavigation<any>();
 	const { t: translateMessage } = useTranslation('message');
 
-	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, message?.channel_id as string));
+	const getMemberIds = useAppSelector((state) => selectAllChannelMemberIds(state, message?.channelId as string));
 
-	const messageTime = message?.create_time_seconds ? convertTimeString(new Date(message.create_time_seconds * 1000).toISOString()) : '';
+	const messageTime = message?.createTimeSeconds ? convertTimeString(new Date(message.createTimeSeconds * 1000).toISOString()) : '';
 	const findThreadInText = (text: string) => {
 		let threadContent: { threadLabel?: string; threadId?: string; threadContent?: string } = {};
 		if (message?.code === TypeMessage.CreateThread && text) {
@@ -84,17 +84,17 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 	const allUserIdsInChannel = getMemberIds;
 	const handleJumpToPinMessage = useCallback(
 		(e) => {
-			if (message?.references && message?.references[0]?.message_ref_id) {
+			if (message?.references && message?.references[0]?.messageRefId) {
 				dispatch(
 					messagesActions.jumpToMessage({
-						clanId: message?.clan_id || '',
-						messageId: message?.references[0]?.message_ref_id,
-						channelId: message?.channel_id
+						clanId: message?.clanId || '',
+						messageId: message?.references[0]?.messageRefId,
+						channelId: message?.channelId
 					})
 				);
 			}
 		},
-		[dispatch, message?.channel_id, message?.clan_id, message?.references]
+		[dispatch, message?.channelId, message?.clanId, message?.references]
 	);
 
 	const handleJumpToThread = async (threadInfo) => {
@@ -102,10 +102,10 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 			const payloadThread = {
 				type: ChannelType.CHANNEL_TYPE_THREAD,
 				id: threadInfo?.threadId,
-				channel_id: threadInfo?.threadId,
-				clan_id: message?.clan_id
+				channelId: threadInfo?.threadId,
+				clanId: message?.clanId
 			};
-			await dispatch(channelsActions.addThreadToChannels({ channelId: threadInfo?.threadId, clanId: message?.clan_id }));
+			await dispatch(channelsActions.addThreadToChannels({ channelId: threadInfo?.threadId, clanId: message?.clanId }));
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, payloadThread);
 		}
 	};
@@ -145,9 +145,9 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 		const renderElement = (element, contentInElement, index) => {
 			switch (element.kindOf) {
 				case ETokenMessage.MENTIONS:
-					if (element?.user_id) {
+					if (element?.userId) {
 						formattedContent.push(
-							allUserIdsInChannel?.includes(element?.user_id) || contentInElement === '@here' ? (
+							allUserIdsInChannel?.includes(element?.userId) || contentInElement === '@here' ? (
 								<Text key={`plain-${index}`}>
 									<Text style={styles.textMention} key={`mention-${index}`} onPress={() => onMention(`@${element?.username}`)}>
 										{contentInElement?.trim()}

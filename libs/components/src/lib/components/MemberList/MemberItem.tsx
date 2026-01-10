@@ -30,14 +30,14 @@ function MemberItem({ user, directMessageId, isDM = true, isMe, createId }: Memb
 			<BaseMemberProfile
 				id={user?.user?.id || ''}
 				user={user}
-				avatar={user.user?.avatar_url || ''}
-				username={user.user?.display_name || user.user?.username || ''}
+				avatar={user.user?.avatarUrl || ''}
+				username={user.user?.displayName || user.user?.username || ''}
 				userMeta={{
 					online: !!userMetaById?.online || !!isMe,
 					status: userMetaById?.status
 				}}
 				isOwner={createId === user?.user?.id}
-				userStatus={isMe ? currentUserCustomStatus : status.user_status}
+				userStatus={isMe ? currentUserCustomStatus : status.userStatus}
 				onContextMenu={showContextMenu}
 				onClick={handleClick}
 			/>

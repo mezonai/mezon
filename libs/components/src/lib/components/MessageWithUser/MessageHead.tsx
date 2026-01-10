@@ -1,5 +1,6 @@
 import { getShowName, useColorsRoleById } from '@mezon/core';
-import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, IMessageWithUser, convertTimeStringI18n, generateE2eId } from '@mezon/utils';
+import type { IMessageWithUser } from '@mezon/utils';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeStringI18n, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useTranslation } from 'react-i18next';
 import getPendingNames from './usePendingNames';
@@ -19,18 +20,18 @@ const BaseMessageHead = ({
 	userRolesClan
 }: IMessageHeadProps & { userRolesClan?: ReturnType<typeof useColorsRoleById> }) => {
 	const { t, i18n } = useTranslation('common');
-	const messageTime = convertTimeStringI18n(message?.create_time as string, t, i18n.language);
+	const messageTime = message?.createTimeSeconds ? convertTimeStringI18n(message?.createTimeSeconds, t, i18n.language) : '';
 	const usernameSender = message?.username;
-	const clanNick = message?.clan_nick;
-	const displayName = message?.display_name;
+	const clanNick = message?.clanNick;
+	const displayName = message?.displayName;
 
 	const { pendingClannick, pendingDisplayName, pendingUserName } = getPendingNames(
 		message,
 		clanNick ?? '',
 		displayName ?? '',
 		usernameSender ?? '',
-		message.clan_nick ?? '',
-		message?.display_name ?? '',
+		message.clanNick ?? '',
+		message?.displayName ?? '',
 		message?.username ?? ''
 	);
 
@@ -38,10 +39,10 @@ const BaseMessageHead = ({
 		clanNick ? clanNick : (pendingClannick ?? ''),
 		displayName ? displayName : (pendingDisplayName ?? ''),
 		usernameSender ? usernameSender : (pendingUserName ?? ''),
-		message?.sender_id ?? ''
+		message?.senderId ?? ''
 	);
 
-	const priorityName = message.display_name ? message.display_name : message.username;
+	const priorityName = message.displayName ? message.displayName : message.username;
 
 	return (
 		<>
@@ -56,7 +57,7 @@ const BaseMessageHead = ({
 							? (userRolesClan?.highestPermissionRoleColor ?? DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR)
 							: DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR
 				}}
-				data-e2e={generateE2eId('base_profile.display_name')}
+				data-e2e={generateE2eId('base_profile.displayName')}
 			>
 				{mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? nameShowed : priorityName}
 				{userRolesClan?.highestPermissionRoleIcon &&
@@ -65,7 +66,7 @@ const BaseMessageHead = ({
 						<img loading="lazy" src={userRolesClan.highestPermissionRoleIcon} alt="" className="'w-5 h-5 ml-1" />
 					)}
 			</div>
-			<div className="pl-1 pt-[5px] text-theme-primary text-[12px] font-medium">{messageTime}</div>
+			{messageTime && <div className="pl-1 pt-[5px] text-theme-primary text-[12px] font-medium">{messageTime}</div>}
 		</>
 	);
 };
@@ -75,7 +76,7 @@ export const DMMessageHead = (props: Omit<IMessageHeadProps, 'isDM'>) => {
 };
 
 export const ClanMessageHead = (props: Omit<IMessageHeadProps, 'isDM'>) => {
-	const userRolesClan = useColorsRoleById(props.message?.sender_id);
+	const userRolesClan = useColorsRoleById(props.message?.senderId);
 	return <BaseMessageHead {...props} isDM={false} userRolesClan={userRolesClan} />;
 };
 

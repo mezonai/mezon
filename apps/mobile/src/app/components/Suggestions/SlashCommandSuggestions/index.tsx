@@ -2,7 +2,7 @@ import { debounce, KEY_SLASH_COMMAND_EPHEMERAL } from '@mezon/mobile-components'
 import { size, useTheme } from '@mezon/mobile-ui';
 import { listQuickMenuAccess, selectQuickMenuByChannelId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { QUICK_MENU_TYPE } from '@mezon/utils';
-import type { ApiQuickMenuAccess } from 'mezon-js/api.gen';
+import type { ApiQuickMenuAccess } from 'mezon-js/types';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -42,7 +42,7 @@ export const SlashCommandSuggestions = memo(({ keyword, onSelectCommand, channel
 
 	const allCommands: SlashCommand[] = [
 		...slashCommands,
-		...(quickMenuList ?? []).map((item) => ({ id: item.id, display: item.menu_name, description: item.action_msg }))
+		...(quickMenuList ?? []).map((item) => ({ id: item.id, display: item.menuName, description: item.actionMsg }))
 	];
 
 	const [filteredCommands, setFilteredCommands] = useState<SlashCommand[]>(slashCommands);

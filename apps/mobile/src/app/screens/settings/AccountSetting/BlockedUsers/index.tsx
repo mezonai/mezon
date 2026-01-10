@@ -46,14 +46,14 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 	const renderBlockedUser = ({ item }: { item: FriendsEntity }) => (
 		<View style={styles.userItem}>
 			<View style={styles.userInfo}>
-				{item?.user?.avatar_url ? (
-					<Image source={{ uri: createImgproxyUrl(item?.user?.avatar_url) }} style={styles.avatar} />
+				{item?.user?.avatarUrl ? (
+					<Image source={{ uri: createImgproxyUrl(item?.user?.avatarUrl) }} style={styles.avatar} />
 				) : (
 					<View style={styles.avatarPlaceholder}>
 						<Text style={styles.avatarText}>{(item?.user?.username?.[0] || '').toUpperCase()}</Text>
 					</View>
 				)}
-				<Text style={styles.username}>{item?.user?.display_name || item?.user?.username}</Text>
+				<Text style={styles.username}>{item?.user?.displayName || item?.user?.username}</Text>
 			</View>
 
 			<TouchableOpacity style={styles.unblockButton} onPress={() => handleUnblockFriend(item)}>
