@@ -70,7 +70,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 			};
 		}
 
-		const messageRefAvatar = message?.references?.[0]?.mesages_sender_avatar ?? '';
+		const messageRefAvatar = message?.references?.[0]?.message_sender_avatar ?? '';
 		const userAvatar = getAvatarForPrioritize(messageSender?.clanAvatar, messageSender?.user?.avatarUrl) || '';
 
 		const finalAvatar = !isClanView ? messageRefAvatar : userAvatar || messageRefAvatar;

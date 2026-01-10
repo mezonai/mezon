@@ -61,8 +61,8 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 						messageId,
 						hasAttachment,
 						channelId,
-						mentionsString,
-						referencesString
+						new Uint8Array([]),
+						new Uint8Array([])
 					);
 
 					return;
@@ -76,8 +76,8 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 					messageId,
 					hasAttachment,
 					undefined,
-					mentionsString,
-					referencesString
+					new Uint8Array([]),
+					new Uint8Array([])
 				);
 			} catch (e) {
 				console.error(e);

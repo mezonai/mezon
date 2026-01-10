@@ -324,7 +324,7 @@ function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) 
 					message_sender_id: message.senderId,
 					content: JSON.stringify(message.content),
 					message_sender_username: message.username,
-					mesages_sender_avatar: message.clanAvatar ? message.clanAvatar : message.avatar,
+					message_sender_avatar: message.clanAvatar ? message.clanAvatar : message.avatar,
 					message_sender_clan_nick: message.clanNick,
 					message_sender_display_name: message.displayName,
 					has_attachment: (message.attachments && message.attachments?.length > 0) ?? false,
