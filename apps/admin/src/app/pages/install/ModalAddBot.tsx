@@ -24,7 +24,7 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 	const dispatch = useAppDispatch();
 	const account = useSelector(selectAllAccount);
 	const appDetail = useSelector(selectAppDetail);
-	const activeSince = appDetail?.create_time;
+	const activeSince = appDetail?.createTime;
 	const activeSincecv = activeSince ? new Date(activeSince).toLocaleDateString() : '';
 	const [openSuccess, setOpenSuccess] = useState(false);
 	const toggleSuccess = () => setOpenSuccess((s) => !s);
