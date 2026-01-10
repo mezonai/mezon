@@ -176,7 +176,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 	}, [channelParent.channelType]);
 
 	return (
-		<div className="flex flex-col border-b-[1px] border-b-theme-primary last:border-b-0">
+		<div className="flex flex-col border-b-theme-primary last:border-b-0">
 			<div className="relative" onClick={handleFetchThreads}>
 				<ItemInfor
 					creatorId={channelParent.creatorId as string}
@@ -314,7 +314,7 @@ const ItemInfor = ({
 			onContextMenu={handleCopyChannelId}
 		>
 			<div
-				className="cursor-pointer px-3 py-2 pr-12 flex gap-3 items-center w-full bg-item-hover"
+				className="cursor-pointer px-3 py-2 pr-12 flex gap-3 items-center w-full bg-item-hover "
 				data-e2e={generateE2eId('clan_page.channel_management.channel_item')}
 			>
 				<div className="h-6 w-6">
