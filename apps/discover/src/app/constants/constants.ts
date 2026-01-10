@@ -1,7 +1,6 @@
 import Mezon_Dark from '../assets/Logo_mezon_dark.png';
 import Mezon_Light from '../assets/Logo_mezon_light.png';
 import No_Banner from '../assets/no_banner.jpg';
-import No_Logo from '../assets/no_logo.png';
 
 export const NAVIGATION_LINKS = {
 	HOME: {
@@ -58,7 +57,7 @@ export const CATEGORY_TYPES = {
 
 export const DEFAULT_IMAGES = {
 	BANNER: No_Banner,
-	LOGO: No_Logo
+	LOGO: 'https://cdn.mezon.ai/landing-page-mezon/logodefault.webp'
 };
 
 export const PAGINATION = {
