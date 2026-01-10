@@ -37,8 +37,9 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				const message = channelMessages?.entities?.[messageId];
 				const mentions = message?.mentions || [];
 				const references = message?.references || [];
-				const mentionsString = JSON.stringify(mentions);
-				const referencesString = JSON.stringify(references);
+				const mentionsBytes = mentions.length > 0 ? new Uint8Array(1) : new Uint8Array();
+				const referencesBytes = references.length > 0 ? new Uint8Array(1) : new Uint8Array();
+
 				dispatch(
 					messagesActions.remove({
 						channelId,
@@ -61,8 +62,8 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 						messageId,
 						hasAttachment,
 						channelId,
-						mentionsString,
-						referencesString
+						mentionsBytes,
+						referencesBytes
 					);
 
 					return;
@@ -76,8 +77,8 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 					messageId,
 					hasAttachment,
 					undefined,
-					mentionsString,
-					referencesString
+					mentionsBytes,
+					referencesBytes
 				);
 			} catch (e) {
 				console.error(e);
