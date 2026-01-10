@@ -147,7 +147,7 @@ async function checkInternetConnectionCached(): Promise<boolean> {
 
 	sharedConnectionCheckPromise = (async () => {
 		try {
-			const response = await fetch('https://mezon.ai/assets/favicon.ico', {
+			const response = await fetch(`${window.origin}/assets/favicon.ico`, {
 				method: 'HEAD',
 				cache: 'no-cache',
 				signal: AbortSignal.timeout(5000)
@@ -312,6 +312,11 @@ export async function fetchDataWithSocketFallback<T>(
 	if (socket?.isOpen()) {
 		try {
 			const data = await socket.listDataSocket(socketRequest);
+
+			if (socketRequest.api_name === 'ListClanBadgeCount') {
+				console.log(socketRequest, 'socketRequest');
+				console.log(data, 'data');
+			}
 
 			if (socketRequest.api_name === 'ListFriends') {
 				if (responseKey && data?.[responseKey]?.friends) {

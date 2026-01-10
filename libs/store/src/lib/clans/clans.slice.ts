@@ -107,7 +107,7 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 			const targetClan = state.clans.entities[clanId];
 			const hasUnreadCount = (targetClan?.badgeCount ?? 0) > 0;
 			if (hasUnreadCount && !noCache) {
-				thunkAPI.dispatch(fetchClans({ noCache: true }));
+				thunkAPI.dispatch(listClanBadgeCount({ clanId }));
 			}
 
 			batch(() => {
@@ -607,6 +607,36 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 	}
 );
 
+export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('clans/listClanBadgeCount', async ({ clanId }, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		const response = await fetchDataWithSocketFallback(
+			mezon,
+			{
+				api_name: 'ListClanBadgeCount',
+				list_clan_badge_count_req: {
+					clan_id: clanId
+				}
+			},
+			() => (mezon.client as any).listClanBadgeCount?.(mezon.session, clanId),
+			'clanBadgeCount'
+		);
+
+		if (response && (response as any).badgeCount !== undefined) {
+			thunkAPI.dispatch(
+				clansActions.setClanBadgeCount({
+					clanId,
+					badgeCount: (response as any).badgeCount
+				})
+			);
+		}
+	} catch (error) {
+		captureSentryError(error, 'clans/listClanBadgeCount');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const initialClansState: ClansState = clansAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	clans: [],
@@ -782,6 +812,18 @@ export const clansSlice = createSlice({
 		},
 		removeByClanID: (state, action: PayloadAction<string>) => {
 			clansAdapter.removeOne(state, action.payload);
+		},
+		setClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; badgeCount: number }>) => {
+			const { clanId, badgeCount } = action.payload;
+			const entity = state.entities[clanId];
+			if (entity) {
+				clansAdapter.updateOne(state, {
+					id: clanId,
+					changes: {
+						badgeCount: Math.max(0, badgeCount)
+					}
+				});
+			}
 		},
 		updateClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; count: number; isReset?: boolean }>) => {
 			const { clanId, count, isReset } = action.payload;
@@ -990,7 +1032,8 @@ export const clansActions = {
 	joinClan,
 	transferClan,
 	updateHasUnreadBasedOnChannels,
-	listClanUnreadMsgIndicator
+	listClanUnreadMsgIndicator,
+	listClanBadgeCount
 };
 
 /*
