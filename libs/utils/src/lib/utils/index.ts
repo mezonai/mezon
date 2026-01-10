@@ -804,7 +804,7 @@ export const blankReferenceObj: ApiMessageRef = {
 	ref_type: 0,
 	message_sender_id: '',
 	message_sender_username: '',
-	mesages_sender_avatar: '',
+	message_sender_avatar: '',
 	message_sender_clan_nick: '',
 	message_sender_display_name: '',
 	content: '',

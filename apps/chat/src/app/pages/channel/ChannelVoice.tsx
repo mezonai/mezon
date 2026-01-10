@@ -92,8 +92,8 @@ const ChannelVoiceInner = () => {
 
 			await dispatch(
 				handleParticipantVoiceState({
-					clanId: clanId,
-					channelId: channelId,
+					clanId,
+					channelId,
 					displayName: userProfile?.user?.displayName ?? '',
 					state,
 					roomName: self && state === ParticipantMeetState.LEAVE ? 'leave' : voiceInfo?.roomId || ''

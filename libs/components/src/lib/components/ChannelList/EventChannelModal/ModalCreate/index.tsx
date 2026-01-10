@@ -65,10 +65,10 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const [contentSubmit, setContentSubmit] = useState<ContenSubmitEventProps>({
 		topic: currentEvent ? currentEvent.title || '' : '',
 		address: currentEvent ? currentEvent?.address || '' : '',
-		timeStart: currentEvent ? currentEvent.startTime || '00:00' : '00:00',
-		timeEnd: currentEvent ? currentEvent.endTime || '00:00' : '00:00',
-		selectedDateStart: currentEvent ? new Date(formatToLocalDateString(currentEvent.startTime || '')) : new Date(),
-		selectedDateEnd: currentEvent ? new Date(formatToLocalDateString(currentEvent.endTime || '')) : new Date(),
+		timeStart: currentEvent.startTimeSeconds ? new Date(currentEvent.startTimeSeconds * 1000).toISOString() : '00:00',
+		timeEnd: currentEvent.endTimeSeconds ? new Date(currentEvent.endTimeSeconds * 1000).toISOString() : '00:00',
+		selectedDateStart: currentEvent.startTimeSeconds ? new Date(currentEvent.startTimeSeconds) : new Date(),
+		selectedDateEnd: currentEvent.endTimeSeconds ? new Date(currentEvent.endTimeSeconds) : new Date(),
 		voiceChannel: currentEvent ? currentEvent?.channelVoiceId || '' : '',
 		logo: currentEvent ? currentEvent.logo || '' : '',
 		description: currentEvent ? currentEvent.description || '' : '',
@@ -181,8 +181,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 			description: currentEvent.description ?? '',
 			textChannelId: currentEvent.channelId ?? '',
 			repeatType: currentEvent.repeatType,
-			timeStart: formatToLocalDateString(currentEvent.startTime || ''),
-			timeEnd: formatToLocalDateString(currentEvent.endTime || '')
+			timeStart: new Date(currentEvent.startTimeSeconds || '').toLocaleString(),
+			timeEnd: new Date(currentEvent.endTimeSeconds || '').toLocaleString()
 		};
 
 		const submittedContent = {
@@ -197,8 +197,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 			timeEnd: formatToLocalDateString(contentSubmit.selectedDateEnd || '')
 		};
 		const changeTime =
-			formatTimeStringToHourFormat(currentEvent.startTime || '') !== contentSubmit.timeStart ||
-			formatTimeStringToHourFormat(currentEvent.endTime || '') !== contentSubmit.timeEnd;
+			currentEvent.startTimeSeconds !== Math.round(contentSubmit.selectedDateStart.getTime() / 1000) ||
+			currentEvent.endTimeSeconds !== Math.round(contentSubmit.selectedDateEnd.getTime() / 1000);
 		return !isEqual(submittedContent, formattedCurrentEvent) || changeTime;
 	}, [
 		currentEvent?.title,
@@ -233,7 +233,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 			const creatorId = currentEvent?.creatorId;
 
 			const baseEventFields: Partial<Record<string, string | number | boolean>> = {
-				eventId: eventId,
+				eventId,
 				clanId: currentClanId as string,
 				creatorId: creatorId as string,
 				channelIdOld: currentEvent?.channelId,

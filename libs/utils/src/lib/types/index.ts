@@ -17,7 +17,6 @@ import type {
 	ApiMessageReaction,
 	ApiMessageRef,
 	ApiNotifiReactMessage,
-	ApiNotification,
 	ApiNotificationChannelCategorySetting,
 	ApiNotificationSetting,
 	ApiNotificationUserChannel,
@@ -29,6 +28,7 @@ import type {
 	ApiSystemMessage,
 	ApiUser,
 	ClanUserListClanUser,
+	Notification,
 	RoleUserListRoleUser
 } from 'mezon-js/types';
 import type { HTMLInputTypeAttribute } from 'react';
@@ -934,7 +934,7 @@ export enum ThemeApp {
 	System = 'system'
 }
 
-export interface INotification extends ApiNotification {
+export interface INotification extends Notification {
 	id: string;
 }
 export interface NotificationEntity extends INotification {

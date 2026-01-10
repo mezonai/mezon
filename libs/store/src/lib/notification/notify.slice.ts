@@ -3,8 +3,9 @@ import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/ut
 import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { Notification } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/types';
+import type { ApiChannelMessageHeader } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -15,11 +16,10 @@ import type { RootState } from '../store';
 export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIMIT_NOTIFICATION = 50;
 
-export const mapNotificationToEntity = (notifyRes: ApiNotification): INotification => {
+export const mapNotificationToEntity = (notifyRes: INotification): Notification => {
 	return {
 		...notifyRes,
 		id: notifyRes.id || '',
-		content: notifyRes.content,
 		createTimeSeconds: notifyRes.createTimeSeconds
 	};
 };
@@ -301,7 +301,11 @@ export const notificationSlice = createSlice({
 							...noti,
 							createTimeSeconds: new Date().getTime(),
 							content: safeJSONParse(noti.content || ''),
-							category: NotificationCategory.MESSAGES
+							category: NotificationCategory.MESSAGES,
+							channelType: 0,
+							avatarUrl: message?.avatar?.[0] || '',
+							clanId: message.clanId || '',
+							topicId: message.topicId || ''
 						};
 						state.notifications[NotificationCategory.MESSAGES].data = [
 							...state.notifications[NotificationCategory.MESSAGES].data,
