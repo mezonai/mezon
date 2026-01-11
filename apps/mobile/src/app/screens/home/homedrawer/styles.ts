@@ -988,10 +988,6 @@ export const style = (colors: Attributes) =>
 			marginVertical: size.s_10,
 			paddingLeft: 0
 		},
-		pressedMessageIOS: (secondaryWeight: string) => ({
-			backgroundColor: secondaryWeight,
-			opacity: 0.8
-		}),
 		contentDisplay: {
 			display: 'flex'
 		},

@@ -28,12 +28,12 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation('message');
 	const avatarSender = useMemo(() => {
-		if (messageReferences?.mesagesSenderAvatar) {
-			return messageReferences?.mesagesSenderAvatar;
+		if (messageReferences?.message_sender_avatar) {
+			return messageReferences?.message_sender_avatar;
 		}
 		const store = getStore();
 		const state = store.getState();
-		const messageSender = selectMemberClanByUserId(state, messageReferences?.messageSenderId ?? '') as unknown as ChannelMembersEntity;
+		const messageSender = selectMemberClanByUserId(state, messageReferences?.message_sender_id ?? '') as unknown as ChannelMembersEntity;
 		return messageSender?.clanAvatar || messageSender?.user?.avatarUrl || '';
 	}, [messageReferences]);
 	const isEmbedMessage = useMemo(() => {
@@ -60,7 +60,7 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 
 	const onPressAvatar = () => {
 		if (!preventAction) {
-			handleJumpToMessage(messageReferences?.messageRefId);
+			handleJumpToMessage(messageReferences?.message_ref_id);
 		}
 	};
 
@@ -72,20 +72,20 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 			<View style={styles.repliedMessageWrapper}>
 				<MezonAvatar
 					avatarUrl={avatarSender}
-					username={messageReferences?.messageSenderUsername}
+					username={messageReferences?.message_sender_username}
 					height={size.s_20}
 					width={size.s_20}
 					customFontSizeAvatarCharacter={size.h8}
 				/>
 				<View style={styles.replyContentWrapper}>
 					<Text style={styles.replyDisplayName}>
-						{messageReferences?.messageSenderClanNick ||
-							messageReferences?.messageSenderDisplayName ||
-							messageReferences?.messageSenderUsername ||
+						{messageReferences?.message_sender_clan_nick ||
+							messageReferences?.message_sender_display_name ||
+							messageReferences?.message_sender_username ||
 							'Anonymous'}
 						<FastImage />
 					</Text>
-					{messageReferences?.hasAttachment || isEmbedMessage ? (
+					{messageReferences?.has_attachment || isEmbedMessage ? (
 						<View style={styles.attachmentIconWrapper}>
 							<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')} </Text>
 							<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_12} height={size.s_12} color={themeValue.text} />

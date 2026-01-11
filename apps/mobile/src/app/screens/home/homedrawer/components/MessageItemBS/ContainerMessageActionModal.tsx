@@ -121,9 +121,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			const currentClanId = selectCurrentClanId(store.getState());
 			const mentions = message?.mentions || [];
 			const references = message?.references || [];
-			const mentionsString = JSON.stringify(mentions);
-			const referencesString = JSON.stringify(references);
-
+			const mentionsBytes = mentions.length > 0 ? new Uint8Array(1) : new Uint8Array();
+			const referencesBytes = references.length > 0 ? new Uint8Array(1) : new Uint8Array();
 			dispatch(
 				messagesActions.remove({
 					channelId: currentDmId ? currentDmId : currentTopicId || currentChannelId,
@@ -138,8 +137,8 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				messageId,
 				!!message?.attachments,
 				currentTopicId,
-				mentionsString,
-				referencesString
+				mentionsBytes,
+				referencesBytes
 			);
 		},
 		[currentChannel, currentChannelId, currentDmId, currentTopicId, dispatch, message, mode, socketRef, store]
@@ -433,7 +432,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 					messageId: message?.id || '',
 					mode: message?.mode || 0,
 					badgeCount: 0,
-					messageTime: 1
+					message_time: 1
 				})
 			);
 			if (message?.clanId === '0') {
@@ -795,9 +794,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 	const handleReact = useCallback(
 		async (mode, messageId, emojiId: string, emoji: string) => {
 			if (currentChannel?.parentId !== '0' && currentChannel?.active === ThreadStatus.activePublic) {
-				await dispatch(
-					threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channelId ?? '', activeCode: ThreadStatus.joined })
-				);
+				dispatch(threadsActions.updateActiveCodeThread({ channelId: currentChannel?.channelId ?? '', activeCode: ThreadStatus.joined }));
 				joinningToThread(currentChannel, [userId ?? '']);
 			}
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_REACTION_MESSAGE_ITEM, {
