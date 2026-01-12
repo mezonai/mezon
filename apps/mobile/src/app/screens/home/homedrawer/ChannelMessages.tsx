@@ -30,6 +30,7 @@ import ButtonJumpToPresent from './components/ButtonJumpToPresent';
 import ChannelMessageList, { ViewLoadMore } from './components/ChannelMessageList';
 import { ChannelMessageLoading } from './components/ChannelMessageLoading';
 import { MessageUserTyping } from './components/MessageUserTyping';
+import QuickReactionButton from './components/QuickReaction';
 import { style } from './styles';
 
 type ChannelMessagesProps = {
@@ -86,6 +87,7 @@ const ChannelMessages = React.memo(
 		const lastMessageId = useMemo(() => lastMessage?.id, [lastMessage]);
 		const userId = useSelector(selectAllAccount)?.user?.id;
 		const [haveScrollToBottom, setHaveScrollToBottom] = useState<boolean>(false);
+		const [listMessageLayout, setListMessageLayout] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
 		useEffect(() => {
 			const event = DeviceEventEmitter.addListener(ActionEmitEvent.SCROLL_TO_BOTTOM_CHAT, () => {
@@ -328,8 +330,13 @@ const ChannelMessages = React.memo(
 			[handleSetShowJumpLast, isDisableLoadMore, isCanLoadMore, onLoadMore]
 		);
 
+		const handleLayout = useCallback((event) => {
+			const { width, height } = event.nativeEvent.layout;
+			setListMessageLayout({ width, height });
+		}, []);
+
 		return (
-			<View style={styles.wrapperChannelMessage}>
+			<View style={styles.wrapperChannelMessage} onLayout={handleLayout}>
 				<TopAlert />
 
 				<ChannelMessageLoading isFromTopic={isFromTopic} channelId={channelId} isDM={isDM} dmType={dmType} isEmptyMsg={!messages?.length} />
@@ -349,6 +356,13 @@ const ChannelMessages = React.memo(
 				)}
 				{isLoadMore.current?.[ELoadMoreDirection.bottom] && <ViewLoadMore />}
 				<View style={styles.spacerHeight8} />
+				<QuickReactionButton
+					channelId={channelId}
+					mode={mode}
+					isShowJumpToPresent={isShowJumpToPresent}
+					windowWidth={listMessageLayout.width}
+					windowHeight={listMessageLayout.height}
+				/>
 				{isShowJumpToPresent && (
 					<ButtonJumpToPresent
 						handleJumpToPresent={handleJumpToPresent}
