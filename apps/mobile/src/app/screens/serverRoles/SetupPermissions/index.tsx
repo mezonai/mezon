@@ -1,7 +1,7 @@
 import { usePermissionChecker, useRoles } from '@mezon/core';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, selectAllPermissionsDefault, selectAllRolesClan, useAppDispatch } from '@mezon/store-mobile';
-import { EPermission } from '@mezon/utils';
+import { EOverriddenPermission, EPermission } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Platform, Pressable, StatusBar, Text, TouchableOpacity, View } from 'react-native';
@@ -64,11 +64,13 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 					return !isClanOwner || !isCanEditRole;
 				case EPermission.manageClan:
 					return (!isClanOwner && !hasAdminPermission) || !isCanEditRole;
+				case EOverriddenPermission.sendMessage:
+					return clanRole?.slug === `everyone-${clanRole?.clanId}`;
 				default:
 					return !isCanEditRole;
 			}
 		},
-		[hasAdminPermission, isClanOwner, isCanEditRole]
+		[isClanOwner, isCanEditRole, hasAdminPermission, clanRole?.slug, clanRole?.clanId]
 	);
 
 	const permissionList = useMemo(() => {
@@ -288,8 +290,8 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 
 				{!isEditRoleMode ? (
 					<View style={styles.bottomButton}>
-						<TouchableOpacity onPress={() => handleNextStep()}>
-							<View style={styles.finishButton}>
+						<TouchableOpacity disabled={isNotChange} onPress={() => handleNextStep()}>
+							<View style={[styles.finishButton, isNotChange && styles.buttonDisabled]}>
 								<Text style={styles.buttonNextText}>{t('setupPermission.next')}</Text>
 							</View>
 						</TouchableOpacity>

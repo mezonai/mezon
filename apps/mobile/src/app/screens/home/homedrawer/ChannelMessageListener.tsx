@@ -9,6 +9,7 @@ import {
 	selectAllRolesClan,
 	selectAllUserClans,
 	selectCurrentClanId,
+	selectCurrentDM,
 	selectCurrentTopicId,
 	selectDmGroupCurrentId,
 	selectMemberByGroupId,
@@ -35,7 +36,8 @@ const ChannelMessageListener = React.memo(() => {
 			try {
 				const tagName = mentionedUser?.slice(1);
 				let listUser = [];
-				const currentDirectId = selectDmGroupCurrentId(store.getState());
+				const currentDM = selectCurrentDM(store.getState());
+				const currentDirectId = currentDM?.channelId || currentDM?.id;
 				if (!!currentDirectId && currentDirectId !== '0') {
 					listUser = selectMemberByGroupId(store.getState(), currentDirectId);
 				} else {
@@ -49,11 +51,11 @@ const ChannelMessageListener = React.memo(() => {
 				const data = {
 					snapPoints: ['50%', '80%'],
 					hiddenHeaderIndicator: true,
-					children: <UserProfile userId={clanUser?.user?.id} user={clanUser?.user} directId={currentDirectId} />
+					children: <UserProfile userId={clanUser?.user?.id} user={clanUser?.user} directId={currentDirectId} currentChannel={{ type: currentDM?.type } as ChannelsEntity} />
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			} catch (error) {
-				/* empty */
+				console.error("Failed to onMention", error);
 			}
 		},
 		[store]
@@ -104,7 +106,7 @@ const ChannelMessageListener = React.memo(() => {
 					});
 				}
 			} catch (error) {
-				/* empty */
+				console.error("Failed to onChannelMention", error);
 			}
 		},
 		[dispatch, navigation, store, userProfile?.user?.id, userProfile?.user?.username]

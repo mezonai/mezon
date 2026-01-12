@@ -10,6 +10,7 @@ export const style = (colors: Attributes) =>
 			paddingHorizontal: size.s_14
 		},
 		header: {
+			backgroundColor: colors.primary,
 			flexDirection: 'row',
 			justifyContent: 'space-between',
 			width: '100%'
@@ -96,6 +97,9 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.bgViolet,
 			paddingVertical: size.s_14,
 			borderRadius: size.s_8
+		},
+		buttonDisabled: {
+			backgroundColor: colors.textDisabled
 		},
 		buttonText: {
 			color: colors.text,

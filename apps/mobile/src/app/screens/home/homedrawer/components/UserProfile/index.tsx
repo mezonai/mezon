@@ -590,7 +590,7 @@ const UserProfile = React.memo(
 
 					{isShowUserContent && (
 						<View style={styles.roleGroup}>
-							{!isDMGroup && (userById?.user?.createTime || user?.createTime || user?.user?.createTime) && (
+							{!!(userById?.user?.createTime || user?.createTime || user?.user?.createTime) && (
 								<View style={styles.memberSince}>
 									<Text style={styles.title}>{t('userInfoDM.mezonMemberSince')}</Text>
 									<Text style={styles.subUserName}>
