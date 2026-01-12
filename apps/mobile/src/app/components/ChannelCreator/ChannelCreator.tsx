@@ -26,7 +26,6 @@ type CreateChannelScreen = typeof APP_SCREEN.MENU_CLAN.CREATE_CHANNEL;
 export function ChannelCreator({ navigation, route }: MenuClanScreenProps<CreateChannelScreen>) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const hasInternet = useSelector(selectHasInternetMobile);
 	const [isChannelPrivate, setChannelPrivate] = useState<boolean>(false);
 	const [channelName, setChannelName] = useState<string>('');
 	const [channelType, setChannelType] = useState<ChannelType>(ChannelType.CHANNEL_TYPE_CHANNEL);
@@ -52,12 +51,10 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 		const payload = response?.payload as ApiCreateChannelDescRequest;
 		
 		if ((response as any)?.error) {
-			if (hasInternet) {
 				Toast.show({
 					type: 'error',
-					text1: t('fields.channelName.duplicateChannelName')
+					text1: payload?.message || 'Something went wrong'
 				});
-			}
 			dispatch(appActions.setLoadingMainMobile(false));
 			return;
 		}
@@ -78,7 +75,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 
 		setChannelName('');
 		dispatch(appActions.setLoadingMainMobile(false));
-	}, [channelName, currentClanId, isChannelPrivate, channelType, categoryId, dispatch, navigation, t, hasInternet]);
+	}, [channelName, currentClanId, isChannelPrivate, channelType, categoryId, dispatch, navigation, t]);
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
