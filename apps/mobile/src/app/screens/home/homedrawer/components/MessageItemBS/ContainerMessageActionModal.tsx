@@ -1,7 +1,7 @@
 /* eslint-disable @nx/enforce-module-boundaries */
 /* eslint-disable no-console */
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
-import { ActionEmitEvent, formatContentEditMessage, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	appActions,
@@ -34,13 +34,13 @@ import {
 	EMOJI_GIVE_COFFEE,
 	EOverriddenPermission,
 	EPermission,
-	formatMoney,
 	FORWARD_MESSAGE_TIME,
-	isPublicChannel,
-	sleep,
-	ThreadStatus,
 	TOKEN_TO_AMOUNT,
-	TypeMessage
+	ThreadStatus,
+	TypeMessage,
+	formatMoney,
+	isPublicChannel,
+	sleep
 } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
@@ -59,12 +59,7 @@ import { useImage } from '../../../../../hooks/useImage';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { getMessageActions } from '../../constants';
 import { EMessageActionType } from '../../enums';
-import type {
-	IConfirmActionPayload,
-	IMessageAction,
-	IMessageActionNeedToResolve,
-	IReplyBottomSheet
-} from '../../types/message.interface';
+import type { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve, IReplyBottomSheet } from '../../types/message.interface';
 import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
 import type { IReactionMessageProps } from '../MessageReaction';
@@ -678,8 +673,9 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 				ChannelType.CHANNEL_TYPE_STREAMING,
 				ChannelType.CHANNEL_TYPE_THREAD
 			].includes(currentChannel?.type);
-		const isTopicFirstMessage = message?.code === TypeMessage.Topic;
-		const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage) || isTopicFirstMessage;
+		const isTopicInitMessage = message?.code === TypeMessage.Topic;
+		const isFirstMessageInTopic = messagePosition === 0 && !!currentTopicId;
+		const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage) || isTopicInitMessage || isFirstMessageInTopic;
 		const isHideTopicDiscussion =
 			(message?.topicId && message?.topicId !== '0') ||
 			message?.code === TypeMessage.Topic ||
@@ -724,7 +720,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			isHideActionImage && EMessageActionType.CopyImage,
 			isHideActionImage && EMessageActionType.ShareImage,
 			isHideActionMedia && EMessageActionType.SaveMedia,
-			(isTopicFirstMessage || message?.content?.fwd || message?.code === TypeMessage.SendToken) && EMessageActionType.EditMessage
+			(isTopicInitMessage || message?.content?.fwd || message?.code === TypeMessage.SendToken) && EMessageActionType.EditMessage
 		];
 
 		let availableMessageActions: IMessageAction[] = [];
@@ -779,13 +775,13 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 		isCanManageChannel,
 		isClanOwner,
 		currentChannel?.type,
+		messagePosition,
 		isAllowDelMessage,
 		canSendMessage,
 		currentChannelId,
 		isMessageSystem,
 		anonymousMode,
 		isAnonymous,
-		messagePosition,
 		allMessagesEntities,
 		allMessageIds,
 		t
