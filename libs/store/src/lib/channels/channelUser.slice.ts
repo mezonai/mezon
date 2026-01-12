@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IChannelUser, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ChannelDescription } from 'mezon-js';
+import type { ApiChannelDescription } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -21,7 +21,7 @@ export interface ChannelUsersEntity extends IChannelUser {
 	id: string; // Primary ID
 }
 
-export const mapChannelsByUserToEntity = (channelRes: ChannelDescription) => {
+export const mapChannelsByUserToEntity = (channelRes: ApiChannelDescription) => {
 	return { ...channelRes, id: channelRes.channelId || '' };
 };
 

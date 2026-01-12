@@ -1,4 +1,4 @@
-import type { ChannelDescription, ChannelMessage, ChannelStreamMode, ChannelType, HashtagDm, WebrtcSignalingFwd } from 'mezon-js';
+import type { ApiChannelDescription, ChannelMessage, ChannelStreamMode, ChannelType, HashtagDm, WebrtcSignalingFwd } from 'mezon-js';
 import { NotificationType } from 'mezon-js';
 import type {
 	ApiAccount,
@@ -6,7 +6,6 @@ import type {
 	ApiCategoryDesc,
 	ApiChannelAppResponse,
 	ApiChannelAttachment,
-	ApiChannelDescription,
 	ApiChannelMessageHeader,
 	ApiClanDesc,
 	ApiClanProfile,
@@ -632,7 +631,7 @@ export type IEmojiRecent = {
 	updateTime?: string;
 };
 
-export type IChannelUser = ChannelDescription & {
+export type IChannelUser = ApiChannelDescription & {
 	id: string;
 	active?: number;
 	countMessUnread?: number;

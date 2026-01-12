@@ -900,17 +900,17 @@ export const clansSlice = createSlice({
 		update: (state, action: PayloadAction<{ dataUpdate: ClanUpdatedEvent }>) => {
 			const { dataUpdate } = action.payload;
 
-			const currentClanData = clansAdapter.getSelectors().selectById(state, dataUpdate.clanId);
+			const currentClanData = clansAdapter.getSelectors().selectById(state, dataUpdate.clan_id);
 			clansAdapter.updateOne(state, {
-				id: dataUpdate.clanId as string,
+				id: dataUpdate.clan_id as string,
 				changes: {
-					clanId: dataUpdate.clanId,
-					clanName: dataUpdate.clanName,
+					clanId: dataUpdate.clan_id,
+					clanName: dataUpdate.clan_name,
 					logo: dataUpdate.logo,
 					banner: dataUpdate.banner,
-					isOnboarding: dataUpdate.isOnboarding,
-					welcomeChannelId: dataUpdate.welcomeChannelId !== '-1' ? dataUpdate.welcomeChannelId : currentClanData.welcomeChannelId,
-					preventAnonymous: dataUpdate?.preventAnonymous ?? currentClanData.preventAnonymous
+					isOnboarding: dataUpdate.is_onboarding,
+					welcomeChannelId: dataUpdate.welcome_channel_id !== '-1' ? dataUpdate.welcome_channel_id : currentClanData.welcomeChannelId,
+					preventAnonymous: dataUpdate?.prevent_anonymous ?? currentClanData.preventAnonymous
 				}
 			});
 		},

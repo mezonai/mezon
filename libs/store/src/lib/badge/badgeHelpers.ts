@@ -2,6 +2,7 @@ import type { IChannel } from '@mezon/utils';
 import { ID_MENTION_HERE, TIME_OFFSET, TypeMessage, debounce } from '@mezon/utils';
 import type { ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
+import type { SocketChannelMessage } from 'mezon-js/socket';
 import type { ApiMessageMention } from 'mezon-js/types';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
@@ -10,7 +11,7 @@ import { listChannelRenderAction } from '../channels/listChannelRender.slice';
 import { selectMemberClanByUserId } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
 import { directMetaActions } from '../direct/direct.slice';
-import { selectLatestMessageId } from '../messages/messages.slice';
+import { mapMessageChannelToEntity, selectLatestMessageId } from '../messages/messages.slice';
 import type { AppDispatch, RootState, Store } from '../store';
 
 export interface ResetBadgeParams {
@@ -151,7 +152,7 @@ export const resetChannelBadgeCount = (dispatch: AppDispatch, params: ResetBadge
 };
 
 export interface DecreaseChannelBadgeParams {
-	message: ChannelMessage;
+	message: SocketChannelMessage;
 	userId: string;
 	store: Store;
 }
@@ -187,15 +188,16 @@ const isMessageMentionOrReply = (msg: ChannelMessage, currentUserId: string, sto
 export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: DecreaseChannelBadgeParams) => {
 	const { message, userId, store } = params;
 
-	if (!message || message?.code !== TypeMessage.ChatRemove || message.senderId === userId) {
+	if (!message || message?.code !== TypeMessage.ChatRemove || message.sender_id === userId) {
 		return;
 	}
 
-	const messageTimestamp = message.updateTimeSeconds && message.updateTimeSeconds > 0 ? message.updateTimeSeconds : message.createTimeSeconds || 0;
+	const messageTimestamp =
+		message.update_time_seconds && message.update_time_seconds > 0 ? message.update_time_seconds : message.create_time_seconds || 0;
 
 	// Handle direct messages (DM/Group)
-	if (!message.clanId || message.clanId === '0') {
-		const dmMeta = store.getState().direct?.entities?.[message.channelId];
+	if (!message.clan_id || message.clan_id === '0') {
+		const dmMeta = store.getState().direct?.entities?.[message.channel_id];
 		const lastSeenTimestamp = Number(dmMeta?.lastSeenMessage?.timestampSeconds ?? Number.NaN);
 		if (
 			dmMeta &&
@@ -204,13 +206,13 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 			dmMeta.countMessUnread !== undefined &&
 			dmMeta.countMessUnread > 0
 		) {
-			dispatch(directMetaActions.setCountMessUnread({ channelId: message.channelId, count: -1 }));
+			dispatch(directMetaActions.setCountMessUnread({ channelId: message.channel_id, count: -1 }));
 		}
 	} else {
 		const state = store.getState();
-		const channelMeta = state.channelmeta?.entities?.[message.channelId];
-		const channel = state.channels?.byClans?.[message.clanId]?.entities?.entities?.[message.channelId];
-		const currentClanBadge = state.clans?.entities?.[message.clanId]?.badgeCount ?? 0;
+		const channelMeta = state.channelmeta?.entities?.[message.channel_id];
+		const channel = state.channels?.byClans?.[message.clan_id]?.entities?.entities?.[message.channel_id];
+		const currentClanBadge = state.clans?.entities?.[message.clan_id]?.badgeCount ?? 0;
 		const lastSeenTimestamp = channelMeta?.lastSeenTimestamp;
 
 		const shouldDecrease =
@@ -218,30 +220,30 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 			lastSeenTimestamp &&
 			messageTimestamp > lastSeenTimestamp &&
 			(channel.countMessUnread || 0) > 0 &&
-			isMessageMentionOrReply(message, userId, store);
+			isMessageMentionOrReply(mapMessageChannelToEntity(message), userId, store);
 
 		if (shouldDecrease) {
 			const channelBadgeCount = channel.countMessUnread || 0;
 			if (channelBadgeCount > 0) {
 				dispatch(
 					listChannelRenderAction.updateChannelUnreadCount({
-						channelId: message.channelId,
-						clanId: message.clanId,
+						channelId: message.channel_id,
+						clanId: message.clan_id,
 						count: -1
 					})
 				);
 
 				dispatch(
 					channelsActions.updateChannelBadgeCount({
-						clanId: message.clanId,
-						channelId: message.channelId,
+						clanId: message.clan_id,
+						channelId: message.channel_id,
 						count: -1
 					})
 				);
 
 				dispatch(
 					listChannelsByUserActions.updateChannelBadgeCount({
-						channelId: message.channelId,
+						channelId: message.channel_id,
 						count: -1
 					})
 				);
@@ -249,7 +251,7 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 				if (currentClanBadge > 0) {
 					dispatch(
 						clansActions.updateClanBadgeCount({
-							clanId: message.clanId,
+							clanId: message.clan_id,
 							count: -1
 						})
 					);

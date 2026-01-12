@@ -3,7 +3,6 @@ import { selectAllChannelsByUser, selectChannelById, selectNumberMemberVoiceChan
 import { HighlightMatchBold, Icons } from '@mezon/ui';
 import type { SearchItemProps } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId, getSrcEmoji } from '@mezon/utils';
-import type { HashtagDm } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import { memo, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -50,7 +49,7 @@ const SuggestItem = ({
 		return channel?.channelId === channelId;
 	});
 
-	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | HashtagDm | null>(null);
+	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | SearchItemProps | null>(null);
 	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string));
 	const checkVoiceStatus = useMemo(() => {
 		if (channelId !== undefined && numberMembersVoice && specificChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {

@@ -60,9 +60,9 @@ export const statusSlice = createSlice({
 			const user = action.payload;
 
 			statusAdapter.updateOne(state, {
-				id: user.userId,
+				id: user.user_id,
 				changes: {
-					status: user.customStatus
+					status: user.custom_status
 				}
 			});
 		},

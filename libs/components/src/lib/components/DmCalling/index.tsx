@@ -62,7 +62,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const otherCall = useSelector(selectOtherCall);
 	const isVoiceJoined = useSelector(selectVoiceJoined);
 	const isInChannelCalled = useMemo(() => {
-		const isSignalDataOffer = signalingData?.[0]?.signalingData?.dataType === WebrtcSignalingType.WEBRTC_SDP_OFFER;
+		const isSignalDataOffer = signalingData?.[0]?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER;
 		if (!isSignalDataOffer && !isInCall) {
 			return false;
 		}
@@ -119,7 +119,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	useEffect(() => {
 		const lastSignalingData = signalingData?.[signalingData.length - 1]?.signalingData;
 
-		if (lastSignalingData && (isInCall || lastSignalingData?.dataType === WebrtcSignalingType.WEBRTC_SDP_QUIT)) {
+		if (lastSignalingData && (isInCall || lastSignalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_QUIT)) {
 			handleSignalingMessage(lastSignalingData);
 		}
 	}, [isInCall, signalingData]);

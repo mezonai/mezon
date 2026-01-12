@@ -22,7 +22,7 @@ import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/t
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ChannelMessage } from 'mezon-js';
-import type { MessageButtonClicked } from 'mezon-js/socket';
+import type { MessageButtonClicked, SocketChannelMessage } from 'mezon-js/socket';
 import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -50,24 +50,37 @@ export const MESSAGES_FEATURE_KEY = 'messages';
  * Update these interfaces according to your requirements.
  */
 
-export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): IMessageWithUser => {
-	const isAnonymous = channelMess?.senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID;
-	const createTimeSeconds = channelMess.createTimeSeconds || Date.now() / 1000;
+export const mapMessageChannelToEntity = (channelMess: SocketChannelMessage, lastSeenId?: string): IMessageWithUser => {
+	const isAnonymous = channelMess?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const createTimeSeconds = channelMess.create_time_seconds || Date.now() / 1000;
 	return {
 		...channelMess,
 		isFirst: channelMess.code === EMessageCode.FIRST_MESSAGE,
 		creationTime: new Date(createTimeSeconds * 1000),
-		id: channelMess.id || channelMess.messageId || '',
+		id: channelMess.id || channelMess.message_id || '',
 		date: new Date().toLocaleString(),
 		isAnonymous,
 		user: {
 			name: channelMess.username || '',
 			username: channelMess.username || '',
-			id: channelMess.senderId || ''
+			id: channelMess.sender_id || ''
 		},
-		lastSeen: lastSeenId === (channelMess.id || channelMess.messageId),
+		lastSeen: lastSeenId === (channelMess.id || channelMess.message_id),
 		createTimeSeconds,
-		updateTimeSeconds: channelMess.updateTimeSeconds
+		updateTimeSeconds: channelMess.update_time_seconds,
+		channelId: channelMess.channel_id,
+		channelLabel: channelMess.channel_label,
+		senderId: channelMess.sender_id,
+		categoryName: channelMess.category_name,
+		clanAvatar: channelMess.clan_avatar,
+		clanId: channelMess.clan_id,
+		clanLogo: channelMess.clan_logo,
+		clanNick: channelMess.clan_nick,
+		displayName: channelMess.display_name,
+		hideEditted: channelMess.hide_editted,
+		isPublic: channelMess.is_public,
+		topicId: channelMess.topic_id,
+		messageId: channelMess.message_id
 	};
 };
 
@@ -161,10 +174,10 @@ function getMessagesRootState(thunkAPI: GetThunkAPI<unknown>): MessagesRootState
 export const mapMessageChannelToEntityAction = createAsyncThunk(
 	'messages/mapMessageChannelToEntity',
 	async (
-		{ message, lock = false, isSystem = false }: { message: ChannelMessage; lock?: boolean; isSystem?: boolean },
+		{ message, lock = false, isSystem = false }: { message: SocketChannelMessage; lock?: boolean; isSystem?: boolean },
 		thunkAPI: GetThunkAPI<unknown>
 	): Promise<IMessageWithUser> => {
-		const checkEnableE2EE = checkE2EE(message.clanId as string, message.channelId, thunkAPI);
+		const checkEnableE2EE = checkE2EE(message.clan_id as string, message.channel_id, thunkAPI);
 		const currentUser = selectAllAccount(thunkAPI.getState() as RootState);
 		const mapMessage = mapMessageChannelToEntity(message);
 
@@ -439,7 +452,27 @@ export const fetchMessages = createAsyncThunk(
 			}
 
 			let messages = response.messages.map((item: ChannelMessage) => {
-				return mapMessageChannelToEntity(item, response.lastSeenMessage?.id);
+				return mapMessageChannelToEntity(
+					{
+						...item,
+						channel_id: item.channelId,
+						channel_label: item.channelLabel,
+						sender_id: item.senderId,
+						category_name: item.categoryName,
+						clan_avatar: item.clanAvatar,
+						clan_id: item.clanId,
+						clan_logo: item.clanLogo,
+						clan_nick: item.clanNick,
+						message_id: item.messageId,
+						create_time_seconds: item.createTimeSeconds,
+						topic_id: item.topicId,
+						display_name: item.displayName,
+						hide_editted: item.hideEditted,
+						update_time_seconds: item.updateTimeSeconds,
+						is_public: item.isPublic
+					},
+					response.lastSeenMessage?.id
+				);
 			});
 
 			if (clanId === '0' || !clanId) {
@@ -724,7 +757,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 				currentChannelBadge
 			);
 
-			if (response?.channelId !== channelId) {
+			if (response?.channel_id !== channelId) {
 				return;
 			}
 			resetChannelBadgeCount(
@@ -942,7 +975,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		const finalAvatar = overrideAvatar || avatar;
 
-		const fakeMessage: ChannelMessageWithClientMeta = {
+		const fakeMessage: SocketChannelMessage & { client_send_time?: number; temp_id?: string } = {
 			id,
 			code: code || 0, // Add new message
 			channelId: channelId,
@@ -963,7 +996,10 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			references: references?.filter((item) => item) || [],
 			isMe: true,
 			hideEditted: true,
-			isAnonymous: anonymous
+			isAnonymous: anonymous,
+			channel_id: channelId,
+			channel_label: '',
+			sender_id: anonymous ? NX_CHAT_APP_ANNONYMOUS_USER_ID : senderId
 		};
 		const fakeMess = await thunkAPI
 			.dispatch(
@@ -1279,10 +1315,10 @@ export const sendTypingUser = createAsyncThunk(
 
 export const clickButtonMessage = createAsyncThunk(
 	'messages/clickButtonMessage',
-	async ({ messageId, channelId, buttonId, senderId, userId, extraData }: MessageButtonClicked, thunkAPI) => {
+	async ({ message_id, channel_id, button_id, sender_id, user_id, extra_data }: MessageButtonClicked, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		try {
-			mezon.socketRef.current?.handleMessageButtonClick(messageId, channelId, buttonId, senderId, userId, extraData);
+			mezon.socketRef.current?.handleMessageButtonClick(message_id, channel_id, button_id, sender_id, user_id, extra_data);
 		} catch (e) {
 			console.error(e);
 		}

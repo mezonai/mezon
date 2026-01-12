@@ -92,11 +92,11 @@ const ChannelVoiceInner = () => {
 
 			await dispatch(
 				handleParticipantVoiceState({
-					clanId,
-					channelId,
-					displayName: userProfile?.user?.displayName ?? '',
+					clan_id: clanId,
+					channel_id: channelId,
+					display_name: userProfile?.user?.displayName ?? '',
 					state,
-					roomName: self && state === ParticipantMeetState.LEAVE ? 'leave' : voiceInfo?.roomId || ''
+					room_name: self && state === ParticipantMeetState.LEAVE ? 'leave' : voiceInfo?.roomId || ''
 				})
 			);
 		},

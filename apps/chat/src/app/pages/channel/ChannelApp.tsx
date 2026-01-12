@@ -88,11 +88,11 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 			dispatch(channelAppActions.setJoinChannelAppData({ dataUpdate: undefined }));
 			dispatch(
 				handleParticipantVoiceState({
-					clanId: currentChannelAppClanId,
-					channelId: currentChannelAppId,
-					displayName: userProfile?.user?.displayName ?? '',
+					clan_id: currentChannelAppClanId,
+					channel_id: currentChannelAppId,
+					display_name: userProfile?.user?.displayName ?? '',
 					state: ParticipantMeetState.LEAVE,
-					roomName: roomId as string
+					room_name: roomId as string
 				})
 			);
 		}
@@ -141,11 +141,11 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 			try {
 				await dispatch(
 					handleParticipantVoiceState({
-						clanId: appChannel.clanId ?? '',
-						channelId: channelId,
-						displayName: userProfile?.user?.displayName ?? '',
+						clan_id: appChannel.clanId ?? '',
+						channel_id: appChannel.channelId ?? '',
+						display_name: userProfile?.user?.displayName ?? '',
 						state,
-						roomName: roomId as string
+						room_name: roomId as string
 					})
 				);
 			} catch (err) {

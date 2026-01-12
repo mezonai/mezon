@@ -336,11 +336,11 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 			dispatch(channelAppActions.setJoinChannelAppData({ dataUpdate: undefined }));
 			dispatch(
 				handleParticipantVoiceState({
-					clanId: currentChannelAppClanId,
-					channelId: currentChannelAppId,
-					displayName: userProfile?.user?.displayName ?? '',
+					clan_id: currentChannelAppClanId,
+					channel_id: currentChannelAppId,
+					display_name: userProfile?.user?.displayName ?? '',
 					state: ParticipantMeetState.LEAVE,
-					roomName: currentChannelAppId
+					room_name: currentChannelAppId
 				})
 			);
 		}

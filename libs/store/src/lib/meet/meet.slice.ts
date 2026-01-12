@@ -50,10 +50,10 @@ export const createExternalMezonMeet = createAsyncThunk('meet/createExternalMezo
 
 export const handleParticipantVoiceState = createAsyncThunk(
 	'meet/handleParticipantVoiceState',
-	async ({ clanId, channelId, displayName, state, roomName }: HandleParticipantMeetStateEvent, thunkAPI) => {
+	async ({ clan_id, channel_id, display_name, state, room_name }: HandleParticipantMeetStateEvent, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const response = await mezon.socketRef.current?.handleParticipantMeetState(clanId, channelId, displayName, state, roomName);
+			const response = await mezon.socketRef.current?.handleParticipantMeetState(clan_id, channel_id, display_name, state, room_name);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'meet/handleParticipantMeetState');

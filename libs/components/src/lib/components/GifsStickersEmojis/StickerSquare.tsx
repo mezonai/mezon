@@ -111,11 +111,11 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 			...searchedStickers.map((sticker) => ({
 				id: sticker.id,
 				url: sticker.source,
-				type: sticker.clanName,
+				type: sticker.clan_name,
 				clanName: sticker.category,
-				clanId: sticker.clanId,
-				forSale: sticker.isForSale,
-				creatorId: sticker.creatorId,
+				clanId: sticker.clan_id,
+				forSale: sticker.is_for_sale,
+				creatorId: sticker.creator_id,
 				shortname: sticker.shortname || ''
 			}))
 		].filter(Boolean);

@@ -189,13 +189,13 @@ export const fetchChannelMembersPresence = createAsyncThunk(
 		try {
 			if (channelPresence.joins.length > 0) {
 				const joinUser = channelPresence.joins[0];
-				const userId = joinUser.userId;
-				const isMobile = joinUser.isMobile;
-				const channelId = channelPresence.channelId;
+				const userId = joinUser.user_id;
+				const isMobile = joinUser.is_mobile;
+				const channelId = channelPresence.channel_id;
 				const state = thunkAPI.getState() as ChannelMemberRootState;
 				const existingMember = state[CHANNEL_MEMBERS_FEATURE_KEY].memberChannels[channelId]?.ids?.findIndex((item) => item === userId);
 				if (!existingMember) {
-					thunkAPI.dispatch(channelMembersActions.addNewMember({ channelId: channelPresence.channelId, userIds: [userId] }));
+					thunkAPI.dispatch(channelMembersActions.addNewMember({ channelId: channelPresence.channel_id, userIds: [userId] }));
 					thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: true, isMobile }));
 				}
 			}
@@ -209,15 +209,15 @@ export const fetchChannelMembersPresence = createAsyncThunk(
 export const updateStatusUser = createAsyncThunk('channelMembers/fetchUserStatus', async (statusPresence: StatusPresenceEvent, thunkAPI) => {
 	if (statusPresence?.leaves?.length) {
 		for (const leave of statusPresence.leaves) {
-			const userId = leave.userId;
-			const isMobile = leave.isMobile;
+			const userId = leave.user_id;
+			const isMobile = leave.is_mobile;
 			thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: false, isMobile }));
 		}
 	}
 	if (statusPresence?.joins?.length) {
 		for (const join of statusPresence.joins) {
-			const userId = join.userId;
-			const isMobile = join.isMobile;
+			const userId = join.user_id;
+			const isMobile = join.is_mobile;
 			thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: true, isMobile }));
 		}
 	}
@@ -549,7 +549,7 @@ export const channelMembers = createSlice({
 			})
 			.addCase(updateCustomStatus.fulfilled, (state: ChannelMembersState, action) => {
 				if (action.payload) {
-					state.customStatusUser[action.payload?.userId] = { status: action.payload.status, timeReset: action.payload.timeReset };
+					state.customStatusUser[action.payload?.user_id] = { status: action.payload.status, timeReset: action.payload.time_reset };
 				}
 			});
 	}

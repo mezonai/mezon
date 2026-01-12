@@ -28,12 +28,12 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 	const [nameEmoji, setNameEmoji] = useState<string>(emoji.shortname?.slice(1, -1) || '');
 	const [originalNameEmoji] = useState<string>(emoji.shortname?.slice(1, -1) || '');
 	const [isInputFocused, setIsInputFocused] = useState<boolean>(false);
-	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, emoji.creatorId ?? ''));
+	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, emoji.creator_id ?? ''));
 	const [hasManageClanPermission] = usePermissionChecker([EPermission.manageClan]);
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const hasDeleteOrEditPermission = useMemo(() => {
-		return hasManageClanPermission || currentUserId === emoji.creatorId;
-	}, [hasManageClanPermission, currentUserId, emoji.creatorId]);
+		return hasManageClanPermission || currentUserId === emoji.creator_id;
+	}, [hasManageClanPermission, currentUserId, emoji.creator_id]);
 
 	const handleDelete = () => {
 		dispatch(emojiSuggestionActions.deleteEmojiSetting({ emoji, clanId: clanId as string, label: emoji.shortname as string }));
@@ -166,7 +166,7 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 					</div>
 				)}
 			</div>
-			{emoji.isForSale && <Icons.MarketIcons className="absolute top-6 right-6 w-4 h-4 text-yellow-300" />}
+			{emoji.is_for_sale && <Icons.MarketIcons className="absolute top-6 right-6 w-4 h-4 text-yellow-300" />}
 		</div>
 	);
 };

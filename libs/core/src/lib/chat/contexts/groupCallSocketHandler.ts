@@ -1,5 +1,7 @@
-import { AppDispatch, RootState, audioCallActions, groupCallActions, selectIsGroupCallActive, selectIsInCall, selectVoiceInfo } from '@mezon/store';
-import { Socket, WebrtcSignalingFwd, safeJSONParse } from 'mezon-js';
+import type { AppDispatch, RootState } from '@mezon/store';
+import { audioCallActions, groupCallActions, selectIsGroupCallActive, selectIsInCall, selectVoiceInfo } from '@mezon/store';
+import type { Socket, WebrtcSignalingFwd } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
 
 export interface GroupCallSocketHandlerOptions {
 	dispatch: AppDispatch;
@@ -27,12 +29,12 @@ export const handleGroupCallSocketEvent = async (
 	state: RootState,
 	options: GroupCallSocketHandlerOptions
 ): Promise<boolean> => {
-	if (!event || typeof event.dataType !== 'number') {
+	if (!event || typeof event.data_type !== 'number') {
 		console.warn('Invalid WebRTC signaling event received');
 		return false;
 	}
 
-	if (event.dataType < 9) {
+	if (event.data_type < 9) {
 		return false;
 	}
 
@@ -54,23 +56,23 @@ export const handleGroupCallSocketEvent = async (
 
 		const sendBusySignal = (callData: ParsedCallData, isVideoCall: boolean) => {
 			try {
-				if (!socketRef.current || !event.callerId || !event.channelId) {
+				if (!socketRef.current || !event.caller_id || !event.channel_id) {
 					console.warn('Cannot send busy signal: missing socket or event data');
 					return;
 				}
 
 				socketRef.current.forwardWebrtcSignaling(
-					event.callerId,
+					event.caller_id,
 					13, // GROUP_CALL_JOINED_OTHER_CALL
 					JSON.stringify({
 						is_video: isVideoCall,
-						groupId: event.channelId,
+						groupId: event.channel_id,
 						callerId: userId,
 						busy_user_id: userId,
 						timestamp: Date.now(),
 						reason: 'busy'
 					}),
-					event.channelId,
+					event.channel_id,
 					userId || ''
 				);
 			} catch (error) {
@@ -78,19 +80,19 @@ export const handleGroupCallSocketEvent = async (
 			}
 		};
 
-		switch (event.dataType) {
+		switch (event.data_type) {
 			case 9: {
 				// GROUP_CALL_OFFER - Incoming call
-				if (!event?.channelId) {
+				if (!event?.channel_id) {
 					console.error('Missing channelId in group call offer');
 					return true;
 				}
 
-				dispatch(audioCallActions.setGroupCallId(event.channelId));
-				const callData = parseCallData(event?.jsonData as string, 'GROUP_CALL_OFFER');
+				dispatch(audioCallActions.setGroupCallId(event.channel_id));
+				const callData = parseCallData(event?.json_data as string, 'GROUP_CALL_OFFER');
 				const isVideoCall = callData?.is_video === true;
 
-				const isInSameGroup = currentVoiceInfo?.channelId === event.channelId && currentVoiceInfo?.clanId === '0' && isGroupCallActive;
+				const isInSameGroup = currentVoiceInfo?.channelId === event.channel_id && currentVoiceInfo?.clanId === '0' && isGroupCallActive;
 
 				if (isInSameGroup) {
 					dispatch(audioCallActions.setIsRingTone(false));
@@ -99,10 +101,10 @@ export const handleGroupCallSocketEvent = async (
 					dispatch(audioCallActions.setIsDialTone(false));
 					dispatch(groupCallActions.startGroupCall());
 
-					if (socketRef.current && event.callerId) {
+					if (socketRef.current && event.caller_id) {
 						const answerData = {
 							is_video: isVideoCall,
-							groupId: event.channelId,
+							groupId: event.channel_id,
 							callerId: userId,
 							caller_name: currentVoiceInfo?.channelLabel || 'User',
 							action: 'auto_join',
@@ -110,10 +112,10 @@ export const handleGroupCallSocketEvent = async (
 						};
 
 						socketRef.current.forwardWebrtcSignaling(
-							event.callerId,
+							event.caller_id,
 							10, // GROUP_CALL_ANSWER
 							JSON.stringify(answerData),
-							event.channelId,
+							event.channel_id,
 							userId || ''
 						);
 					}
@@ -130,7 +132,7 @@ export const handleGroupCallSocketEvent = async (
 
 					dispatch(
 						groupCallActions.showIncomingGroupCall({
-							groupId: event.channelId,
+							groupId: event.channel_id,
 							callData: {
 								...event,
 								groupName: callData?.group_name || callData?.channelLabel || 'Group Call',
@@ -154,7 +156,7 @@ export const handleGroupCallSocketEvent = async (
 				dispatch(audioCallActions.setIsDialTone(false));
 				dispatch(audioCallActions.setIsJoinedCall(true));
 
-				const answerData = parseCallData(event?.jsonData as string, 'GROUP_CALL_ANSWER');
+				const answerData = parseCallData(event?.json_data as string, 'GROUP_CALL_ANSWER');
 				if (answerData?.callerId) {
 					dispatch(groupCallActions.addParticipant(answerData.callerId));
 				}
@@ -163,7 +165,7 @@ export const handleGroupCallSocketEvent = async (
 
 			case 11: {
 				// GROUP_CALL_QUIT - Call ended/declined/left
-				const quitData = parseCallData(event?.jsonData as string, 'GROUP_CALL_QUIT');
+				const quitData = parseCallData(event?.json_data as string, 'GROUP_CALL_QUIT');
 				const isCurrentUser = quitData?.callerId === userId;
 
 				switch (quitData?.action) {
@@ -211,7 +213,7 @@ export const handleGroupCallSocketEvent = async (
 
 			case 14: {
 				// GROUP_CALL_STATUS_REMOTE_MEDIA - Remote media status update
-				const mediaData = parseCallData(event?.jsonData as string, 'GROUP_CALL_STATUS_REMOTE_MEDIA');
+				const mediaData = parseCallData(event?.json_data as string, 'GROUP_CALL_STATUS_REMOTE_MEDIA');
 				if (mediaData?.micEnabled !== undefined) {
 					dispatch(audioCallActions.setIsRemoteAudio(mediaData.micEnabled));
 				}
@@ -240,7 +242,7 @@ export const handleGroupCallSocketEvent = async (
 
 			case 17: {
 				// GROUP_CALL_PARTICIPANT_JOINED - New participant joined
-				const joinData = parseCallData(event?.jsonData as string, 'GROUP_CALL_PARTICIPANT_JOINED');
+				const joinData = parseCallData(event?.json_data as string, 'GROUP_CALL_PARTICIPANT_JOINED');
 				if (joinData?.participant_id) {
 					dispatch(groupCallActions.addParticipant(joinData.participant_id));
 				}
@@ -249,7 +251,7 @@ export const handleGroupCallSocketEvent = async (
 
 			case 18: {
 				// GROUP_CALL_PARTICIPANT_LEFT - Participant left
-				const leftData = parseCallData(event?.jsonData as string, 'GROUP_CALL_PARTICIPANT_LEFT');
+				const leftData = parseCallData(event?.json_data as string, 'GROUP_CALL_PARTICIPANT_LEFT');
 				if (leftData?.participant_id) {
 					dispatch(groupCallActions.removeParticipant(leftData.participant_id));
 				}
@@ -257,7 +259,7 @@ export const handleGroupCallSocketEvent = async (
 			}
 
 			default:
-				console.warn('Unhandled group call event type:', event.dataType, event);
+				console.warn('Unhandled group call event type:', event.data_type, event);
 				break;
 		}
 
@@ -274,12 +276,12 @@ export const validateGroupCallEvent = (event: WebrtcSignalingFwd): boolean => {
 		return false;
 	}
 
-	if (typeof event.dataType !== 'number') {
-		console.warn('Group call event dataType is not a number:', event.dataType);
+	if (typeof event.data_type !== 'number') {
+		console.warn('Group call event dataType is not a number:', event.data_type);
 		return false;
 	}
 
-	if (event.dataType < 9) {
+	if (event.data_type < 9) {
 		return false;
 	}
 
@@ -288,7 +290,7 @@ export const validateGroupCallEvent = (event: WebrtcSignalingFwd): boolean => {
 
 export const extractCallData = (event: WebrtcSignalingFwd): ParsedCallData => {
 	try {
-		const jsonData = event?.jsonData as string;
+		const jsonData = event?.json_data as string;
 		const parsed = safeJSONParse(jsonData || '{}');
 
 		return {

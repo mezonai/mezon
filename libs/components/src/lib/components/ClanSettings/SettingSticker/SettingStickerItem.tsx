@@ -12,13 +12,13 @@ type SettingEmojiListProps = {
 };
 
 const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) => {
-	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, sticker.creatorId ?? ''));
+	const dataAuthor = useAppSelector((state) => selectMemberClanByUserId(state, sticker.creator_id ?? ''));
 	const dispatch = useAppDispatch();
 	const [canManageClan] = usePermissionChecker([EPermission.manageClan]);
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const hasDeleteOrEditPermission = useMemo(() => {
-		return canManageClan || currentUserId === sticker.creatorId;
-	}, [currentUserId, sticker.creatorId]);
+		return canManageClan || currentUserId === sticker.creator_id;
+	}, [currentUserId, sticker.creator_id]);
 	const clanId = useSelector(selectCurrentClanId);
 	const handleUpdateSticker = () => {
 		updateSticker(sticker);
@@ -77,7 +77,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 					</button>
 				</div>
 			)}
-			{sticker.isForSale && <Icons.MarketIcons className="absolute top-1 right-1 w-4 h-4 text-yellow-300" />}
+			{sticker.is_for_sale && <Icons.MarketIcons className="absolute top-1 right-1 w-4 h-4 text-yellow-300" />}
 		</div>
 	);
 };

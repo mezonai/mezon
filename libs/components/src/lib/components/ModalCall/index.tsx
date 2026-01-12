@@ -21,7 +21,7 @@ type ICallerInfo = {
 };
 
 const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallProps) => {
-	const user = useUserByUserId(dataCall?.callerId);
+	const user = useUserByUserId(dataCall?.caller_id);
 	const [callerInfo, setCallerInfo] = useState<ICallerInfo>({ name: '', avatar: '' });
 	const mezon = useMezon();
 	const dispatch = useAppDispatch();
@@ -31,7 +31,7 @@ const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallP
 	useEffect(() => {
 		const getCallerInfo = async () => {
 			try {
-				const dataCalDecompress = await decompress(dataCall?.jsonData);
+				const dataCalDecompress = await decompress(dataCall?.json_data);
 				const dataCallObj = safeJSONParse(dataCalDecompress) as { callerName: string; callerAvatar: string };
 				setCallerInfo({
 					name: (dataCallObj?.callerName as string) || '',
@@ -41,7 +41,7 @@ const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallP
 				return;
 			}
 		};
-		!!dataCall?.jsonData && getCallerInfo();
+		!!dataCall?.json_data && getCallerInfo();
 	}, [dataCall]);
 
 	useEffect(() => {
@@ -57,7 +57,7 @@ const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallP
 	};
 
 	const handleCloseCall = async () => {
-		await mezon.socketRef.current?.forwardWebrtcSignaling(dataCall?.callerId, 4, '', dataCall.channelId ?? '', userId ?? '');
+		await mezon.socketRef.current?.forwardWebrtcSignaling(dataCall?.caller_id, 4, '', dataCall.channel_id ?? '', userId ?? '');
 
 		if (clearCallState) {
 			clearCallState();

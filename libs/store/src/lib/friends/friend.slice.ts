@@ -222,17 +222,17 @@ export const upsertFriendRequest = createAsyncThunk(
 	'friends/upsertFriendRequest',
 	async ({ user, myId }: { user: AddFriend; myId: string }, thunkAPI) => {
 		const state = thunkAPI.getState() as RootState;
-		const currentFriendApi = friendsAdapter.getSelectors().selectById(state.friends, `${user.userId}`);
+		const currentFriendApi = friendsAdapter.getSelectors().selectById(state.friends, `${user.user_id}`);
 
 		const friend: FriendsEntity = {
 			state: currentFriendApi ? EStateFriend.FRIEND : EStateFriend.MY_PENDING,
-			id: user.userId,
+			id: user.user_id,
 			sourceId: myId,
 			user: {
-				id: user.userId,
+				id: user.user_id,
 				username: user.username,
 				avatarUrl: user.avatar,
-				displayName: user.displayName
+				displayName: user.display_name
 			}
 		};
 		thunkAPI.dispatch(friendsActions.upsertFriend(friend));
