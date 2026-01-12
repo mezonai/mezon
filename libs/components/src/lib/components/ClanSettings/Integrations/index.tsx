@@ -24,7 +24,7 @@ const Integrations = ({ isClanSetting }: IIntegrationsProps) => {
 	const allClanWebhooks = useSelector(selectAllClanWebhooks);
 
 	return (
-		<div className="mt-[60px]">
+		<div className="mt-0 md:mt-10">
 			<h2 className="text-xl font-semibold mb-5 flex text-theme-primary-active">
 				<div
 					onClick={() => {

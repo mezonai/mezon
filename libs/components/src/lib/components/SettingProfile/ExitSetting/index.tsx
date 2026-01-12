@@ -1,6 +1,6 @@
 import { auditLogFilterActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { generateE2eId, UserAuditLog } from '@mezon/utils';
+import { UserAuditLog, generateE2eId } from '@mezon/utils';
 
 export type ModalExitProps = {
 	onClose: () => void;
@@ -20,7 +20,7 @@ const ExitSetting = (props: ModalExitProps) => {
 	};
 
 	return (
-		<div className="relative w-1/12 xl:w-1/5 flex-grow hidden sbm:block">
+		<div className="relative w-1/12 xl:w-1/5 flex-grow hidden lg:block">
 			<div className="fixed w-1/4 xl:ml-5 pt-[94px]">
 				<div className="w-fit flex flex-col items-center gap-2 text-theme-primary text-theme-primary-hover">
 					<div

@@ -92,7 +92,7 @@ const SettingSidebar = ({ onClickItem, handleMenu, currentSetting, setIsShowDele
 
 	return (
 		<div className="flex flex-row flex-1 justify-end max-sbm:justify-start">
-			<div className="w-[220px] pt-[80px] pb-[60px] sbm:py-[60px] pl-5 pr-5">
+			<div className="w-[220px] lg:py-[60px] py-[80px] px-5">
 				<p className=" pl-[10px] pb-[6px] font-bold text-sm tracking-wider uppercase truncate text-theme-primary-active">{currentClanName}</p>
 				{sideBarListItemWithPermissions.map((sidebarItem, index) => (
 					<div

@@ -67,7 +67,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 
 	const handleSettingItemClick = (settingItem: ItemObjProps) => {
 		setCurrentSettingId(settingItem.id);
-		if (window.innerWidth < 768) {
+		if (isNarrowLayout) {
 			setIsSidebarOpen(false);
 		}
 		if (settingItem.id === ItemSetting.INTEGRATIONS) {
@@ -84,6 +84,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 	const closeMenu = useSelector(selectCloseMenu);
 	const [isShowDeletePopup, setIsShowDeletePopup] = useState<boolean>(false);
 	const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
+	const [isNarrowLayout, setIsNarrowLayout] = useState<boolean>(false);
 	const currentClanId = useSelector(selectCurrentClanId) as string;
 	const currentClanName = useSelector(selectCurrentClanName);
 	const navigate = useNavigate();
@@ -95,11 +96,10 @@ const ClanSetting = (props: ModalSettingProps) => {
 
 	useEffect(() => {
 		const handleResize = () => {
-			if (window.innerWidth >= 768) {
-				setIsSidebarOpen(true);
-			} else {
-				setIsSidebarOpen(false);
-			}
+			const isNarrow = window.innerWidth <= 768;
+			setIsNarrowLayout(isNarrow);
+			// On narrow layout (mobile/tablet) hide sidebar by default, on wider screens show it
+			setIsSidebarOpen(!isNarrow);
 		};
 		handleResize();
 		window.addEventListener('resize', handleResize);
@@ -151,32 +151,46 @@ const ClanSetting = (props: ModalSettingProps) => {
 	return (
 		<div ref={modalRef} tabIndex={-1} className="  flex fixed inset-0  w-screen z-30" data-e2e={generateE2eId('clan_page.settings')}>
 			<div className="flex flex-col w-screen h-full">
-				<div className="flex sbm:hidden fixed top-0 left-0 right-0 justify-between items-center z-[60] bg-theme-setting-primary pb-4 pt-4 px-4">
-					<div className="absolute inset-0 bg-gradient-to-b from-theme-setting-primary via-theme-setting-primary/95 to-transparent pointer-events-none" />
-					<div className="relative z-10">
-						{!isSidebarOpen ? (
-							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
-								<Icons.OpenMenu className="w-full h-full" />
-							</button>
-						) : (
-							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
-								<Icons.ArrowLeftCircleActive className="w-full h-full" />
-							</button>
-						)}
+				{isNarrowLayout && (
+					<div className="flex fixed top-0 left-0 right-0 justify-between items-center z-[60] bg-theme-setting-primary pb-3 pt-3 px-4">
+						<div className="absolute inset-0 bg-gradient-to-b from-theme-setting-primary via-theme-setting-primary/95 to-transparent pointer-events-none" />
+						<div className="relative z-10">
+							{!isSidebarOpen ? (
+								<button
+									className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer"
+									onClick={handleMenuBtn}
+								>
+									<Icons.OpenMenu className="w-full h-full" />
+								</button>
+							) : (
+								<button
+									className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer"
+									onClick={handleMenuBtn}
+								>
+									<Icons.ArrowLeftCircleActive className="w-full h-full" />
+								</button>
+							)}
+						</div>
+						<div onClick={onClose} className="relative z-10 cursor-pointer">
+							<Icons.CloseIcon className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover" />
+						</div>
 					</div>
-					<div onClick={onClose} className="relative z-10 cursor-pointer">
-						<Icons.CloseIcon className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover" />
-					</div>
-				</div>
+				)}
 
 				<div className="flex flex-row flex-1 w-screen overflow-hidden">
-					{isSidebarOpen && (
-						<div className="fixed inset-0 bg-black bg-opacity-50 z-40 sbm:hidden" onClick={() => setIsSidebarOpen(false)} />
+					{isSidebarOpen && isNarrowLayout && (
+						<div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setIsSidebarOpen(false)} />
 					)}
 					<div
 						className={`${
-							!isSidebarOpen ? 'hidden sbm:flex' : 'flex fixed sbm:relative left-0 top-0 h-full z-50 sbm:z-auto'
-						} w-1/6 xl:w-1/4 min-w-56 relative bg-theme-setting-nav text-theme-primary ${closeMenu && !menu && window.innerWidth >= 768 ? 'hidden' : ''}`}
+							isNarrowLayout
+								? !isSidebarOpen
+									? 'hidden'
+									: 'flex fixed left-0 top-0 h-full z-50'
+								: 'flex fixed sbm:relative left-0 top-0 h-full z-50 sbm:z-auto'
+						} w-1/6 xl:w-1/4 min-w-56 relative bg-theme-setting-nav text-theme-primary ${
+							closeMenu && !menu && window.innerWidth >= 768 ? 'hidden' : ''
+						}`}
 					>
 						<div className="overflow-y-auto sbm:h-auto sbm:flex-1 h-full">
 							<SettingSidebar
@@ -191,7 +205,7 @@ const ClanSetting = (props: ModalSettingProps) => {
 					<div className="flex-3 bg-theme-setting-primary text-theme-primary overflow-y-auto hide-scrollbar">
 						<div className="flex flex-row flex-1 justify-start h-full">
 							<div className="w-full max-w-[740px] pl-4 pr-4 sbm:pl-10 sbm:pr-7">
-								<div className="relative max-h-full sbm:min-h-heightRolesEdit min-h-heightRolesEditMobile text-theme-primary pt-[70px] sbm:pt-0">
+								<div className="relative max-h-full sbm:min-h-heightRolesEdit min-h-heightRolesEditMobile text-theme-primary sbm:pt-[70px] md:pt-8 lg:pt-0">
 									{!(currentSetting?.id === ItemSetting.INTEGRATIONS || currentSetting?.id === ItemSetting.AUDIT_LOG) ? (
 										<h2 className="text-xl font-semibold mb-5 sbm:mt-[60px] mt-[10px] text-theme-primary-active">
 											{currentSetting?.name}

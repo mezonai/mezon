@@ -38,6 +38,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 	const [currentSetting, setCurrentSetting] = useState<string>(EChannelSettingTab.OVERVIEW);
 	const [menu, setMenu] = useState(true);
 	const [menuIsOpen, setMenuIsOpen] = useState<boolean>(false);
+	const [isNarrowLayout, setIsNarrowLayout] = useState<boolean>(false);
 	const [displayChannelLabel, setDisplayChannelLabel] = useState<string>(currentChannel?.channelLabel || '');
 
 	const closeMenu = useSelector(selectCloseMenu);
@@ -64,7 +65,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 		if (closeMenu) {
 			setMenu(false);
 		}
-		if (window.innerWidth < 768) {
+		if (isNarrowLayout) {
 			setMenuIsOpen(false);
 		}
 	};
@@ -96,11 +97,10 @@ const SettingChannel = (props: ModalSettingProps) => {
 
 	useEffect(() => {
 		const handleResize = () => {
-			if (window.innerWidth >= 768) {
-				setMenuIsOpen(true);
-			} else {
-				setMenuIsOpen(false);
-			}
+			const isNarrow = window.innerWidth <= 768;
+			setIsNarrowLayout(isNarrow);
+			// On narrow layout (mobile/tablet) hide sidebar by default, on wider screens show it
+			setMenuIsOpen(!isNarrow);
 		};
 		handleResize();
 		window.addEventListener('resize', handleResize);
@@ -116,10 +116,14 @@ const SettingChannel = (props: ModalSettingProps) => {
 			role="button"
 		>
 			<div className="flex text-gray- w-screen relative text-white">
-				{menuIsOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 sbm:hidden" onClick={() => setMenuIsOpen(false)} />}
+				{menuIsOpen && isNarrowLayout && <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setMenuIsOpen(false)} />}
 				<div
 					className={`${
-						!menuIsOpen ? 'hidden sbm:flex' : 'flex fixed sbm:relative left-0 top-0 h-full z-50 sbm:z-auto'
+						isNarrowLayout
+							? !menuIsOpen
+								? 'hidden'
+								: 'flex fixed left-0 top-0 h-full z-50'
+							: 'flex fixed sbm:relative left-0 top-0 h-full z-50 sbm:z-auto'
 					} w-1/6 xl:w-1/4 min-w-56 relative bg-theme-setting-nav`}
 				>
 					<ChannelSettingItem
@@ -132,23 +136,31 @@ const SettingChannel = (props: ModalSettingProps) => {
 						getTabTranslation={getTabTranslation}
 					/>
 				</div>
-				<div className="flex sbm:hidden fixed top-0 left-0 right-0 justify-between items-center z-[60] bg-theme-setting-primary pb-4 pt-4 px-4">
-					<div className="absolute inset-0 bg-gradient-to-b from-theme-setting-primary via-theme-setting-primary/95 to-transparent pointer-events-none" />
-					<div className="relative z-10">
-						{!menuIsOpen ? (
-							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
-								<Icons.OpenMenu className="w-full h-full" />
-							</button>
-						) : (
-							<button className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer" onClick={handleMenuBtn}>
-								<Icons.ArrowLeftCircleActive className="w-full h-full" />
-							</button>
-						)}
+				{isNarrowLayout && (
+					<div className="flex fixed top-0 left-0 right-0 justify-between items-center z-[60] bg-theme-setting-primary pb-4 pt-4 px-4">
+						<div className="absolute inset-0 bg-gradient-to-b from-theme-setting-primary via-theme-setting-primary/95 to-transparent pointer-events-none" />
+						<div className="relative z-10">
+							{!menuIsOpen ? (
+								<button
+									className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer"
+									onClick={handleMenuBtn}
+								>
+									<Icons.OpenMenu className="w-full h-full" />
+								</button>
+							) : (
+								<button
+									className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover cursor-pointer"
+									onClick={handleMenuBtn}
+								>
+									<Icons.ArrowLeftCircleActive className="w-full h-full" />
+								</button>
+							)}
+						</div>
+						<div onClick={onClose} className="relative z-10 cursor-pointer">
+							<Icons.CloseIcon className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover" />
+						</div>
 					</div>
-					<div onClick={onClose} className="relative z-10 cursor-pointer">
-						<Icons.CloseIcon className="text-theme-primary w-[30px] h-[30px] text-theme-primary-hover" />
-					</div>
-				</div>
+				)}
 				{currentSetting === EChannelSettingTab.OVERVIEW && (
 					<OverviewChannel channel={channel} onDisplayLabelChange={setDisplayChannelLabel} menuIsOpen={menuIsOpen} />
 				)}
