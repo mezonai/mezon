@@ -1,6 +1,6 @@
 import { getUpdateOrAddClanChannelCache, save, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { appActions, channelsActions, createNewChannel, getStoreAsync, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
+import { appActions, channelsActions, createNewChannel, getStoreAsync, selectCurrentClanId, selectHasInternetMobile, useAppDispatch } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { ApiCreateChannelDescRequest } from 'mezon-js/types';
@@ -32,44 +32,40 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { categoryId } = route.params;
 
-	const { t } = useTranslation(['channelCreator']);
+	const { t } = useTranslation(['channelCreator', 'common']);
 	const dispatch = useAppDispatch();
 
 	const handleCreateChannel = useCallback(async () => {
 		if (!validInput(channelName, true)) return;
 		const store = await getStoreAsync();
 
-		const body: ApiCreateChannelDescRequest = {
+		dispatch(appActions.setLoadingMainMobile(true));
+		const response = await dispatch(createNewChannel({
 			clanId: currentClanId?.toString(),
 			type: channelType,
 			channelLabel: channelName?.trim(),
 			channelPrivate: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isChannelPrivate ? 1 : 0,
 			categoryId: categoryId,
 			parentId: '0'
-		};
-		dispatch(appActions.setLoadingMainMobile(true));
-		const newChannelCreatedId = await dispatch(createNewChannel(body));
-		const payload = newChannelCreatedId.payload as ApiCreateChannelDescRequest;
-		const channelID = payload.channelId;
-		const clanID = payload.clanId;
-
-		const error = (newChannelCreatedId as any).error;
-		if (newChannelCreatedId && error) {
-			Toast.show({
-				type: 'error',
-				text1: t('fields.channelName.duplicateChannelName')
-			});
+		}));
+		const payload = response?.payload as ApiCreateChannelDescRequest;
+		
+		if ((response as any)?.error) {
+				Toast.show({
+					type: 'error',
+					text1: payload?.message || t('common:somethingWentWrong')
+				});
 			dispatch(appActions.setLoadingMainMobile(false));
 			return;
 		}
 
 		await checkNotificationPermissionAndNavigate(async () => {
-			if (newChannelCreatedId && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+			if (response && channelType !== ChannelType.CHANNEL_TYPE_STREAMING && channelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 				navigation.replace(APP_SCREEN.HOME_DEFAULT);
 				requestAnimationFrame(async () => {
-					await store.dispatch(channelsActions.joinChannel({ clanId: clanID ?? '', channelId: channelID, noFetchMembers: false }));
+					await store.dispatch(channelsActions.joinChannel({ clanId: payload?.clanId ?? '', channelId: payload?.channelId, noFetchMembers: false }));
 				});
-				const dataSave = getUpdateOrAddClanChannelCache(clanID, channelID);
+				const dataSave = getUpdateOrAddClanChannelCache(payload?.clanId, payload?.channelId);
 				save(STORAGE_DATA_CLAN_CHANNEL_CACHE, dataSave);
 				await sleep(1000);
 			} else {

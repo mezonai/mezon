@@ -483,6 +483,7 @@
 	"share": "Share",
 	"download": "Download",
 	"jumpToMessage": "Jump to Message",
+	"somethingWentWrong": "Something went wrong",
 	"quickReaction": {
 		"title": "Set Quick Reaction",
 		"toast": {
