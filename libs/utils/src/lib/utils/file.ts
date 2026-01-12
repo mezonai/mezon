@@ -154,9 +154,9 @@ export const convertMentionOnfile = (roles: IRolesClan[], contentString: string,
 			const e = s + display.length;
 			const isRole = roleIds.has(id);
 			if (isRole) {
-				mentions.push({ roleId: id, s, e });
+				mentions.push({ role_id: id, s, e });
 			} else {
-				mentions.push({ userId: id, s, e });
+				mentions.push({ user_id: id, s, e });
 			}
 		}
 	});
