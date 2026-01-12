@@ -1,4 +1,5 @@
-import { EBacktickType, IEmojiOnMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
+import type { IEmojiOnMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
+import { EBacktickType } from '../types';
 
 export const processEntitiesDirectly = (entities: any[], content: string, rolesClan: any[]) => {
 	const mentions: IMentionOnMessage[] = [];
@@ -7,7 +8,7 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 	const markdown: IMarkdownOnMessage[] = [];
 
 	entities.forEach((entity: any) => {
-		const { type, offset, length, userId, id, documentId, roleId } = entity;
+		const { type, offset, length, user_id, id, document_id, role_id } = entity;
 
 		const s = offset;
 		const e = offset + length;
@@ -15,11 +16,11 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 
 		switch (type) {
 			case 'MessageEntityMentionName':
-				if (userId) {
-					const isRole = rolesClan.some((role) => role.roleId === userId);
+				if (user_id) {
+					const isRole = rolesClan.some((role) => role.roleId === user_id);
 					mentions.push({
-						roleId: isRole ? userId : undefined,
-						userId: !isRole ? userId : undefined,
+						role_id: isRole ? user_id : undefined,
+						user_id: !isRole ? user_id : undefined,
 						s,
 						e,
 						display
@@ -29,7 +30,7 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 
 			case 'MessageEntityMentionRole':
 				mentions.push({
-					roleId: roleId,
+					role_id,
 					s,
 					e,
 					display
@@ -47,11 +48,11 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 				break;
 
 			case 'MessageEntityCustomEmoji':
-				if (documentId) {
+				if (document_id) {
 					emojis.push({
 						s,
 						e,
-						emojiid: documentId
+						emojiid: document_id
 					});
 				}
 				break;
