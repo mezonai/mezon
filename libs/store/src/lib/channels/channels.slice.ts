@@ -1014,7 +1014,18 @@ export const updateChannelPrivateSocket = createAsyncThunk(
 					listChannelRenderAction.updateChannelInListRender({
 						channelId: action.channel_id,
 						clanId: action.clan_id as string,
-						dataUpdate: { ...action }
+						dataUpdate: {
+							...action,
+							appId: action.app_id,
+							categoryId: action.category_id,
+							channelId: action.channel_id,
+							channelLabel: action.channel_label,
+							ageRestricted: action.age_restricted,
+							channelAvatar: action.channel_avatar,
+							channelPrivate: action.channel_private,
+							topic: action.topic,
+							parentId: action.parent_id
+						}
 					})
 				);
 				return false;

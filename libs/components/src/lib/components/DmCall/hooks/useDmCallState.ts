@@ -90,10 +90,10 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 	}, [isDmCallInfo?.groupId, isDmCallInfo?.isVideo, dmCallingRef]);
 
 	useEffect(() => {
-		if (dataCall?.channelId) {
-			dispatch(audioCallActions.setGroupCallId(dataCall?.channelId));
+		if (dataCall?.channel_id) {
+			dispatch(audioCallActions.setGroupCallId(dataCall?.channel_id));
 		}
-	}, [dataCall?.channelId, dispatch]);
+	}, [dataCall?.channel_id, dispatch]);
 
 	useEffect(() => {
 		if (!signalingData?.[signalingData?.length - 1] && !isInAnyCall) {
@@ -104,7 +104,7 @@ export const useDmCallState = ({ userId, dmCallingRef }: DmCallStateHookParams):
 		const lastSignaling = signalingData?.[signalingData?.length - 1]?.signalingData;
 		if (!lastSignaling) return;
 
-		switch (lastSignaling.dataType) {
+		switch (lastSignaling.data_type) {
 			case WebrtcSignalingType.WEBRTC_SDP_OFFER:
 				if (!isInAnyCall && !isJoinedCall) {
 					dispatch(audioCallActions.setIsRingTone(true));

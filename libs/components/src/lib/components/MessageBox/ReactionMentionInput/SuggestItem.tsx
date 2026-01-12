@@ -47,7 +47,7 @@ const SuggestItem = ({
 }: SuggestItemProps) => {
 	const allChannels = useSelector(selectAllChannelsByUser);
 	const getChannel = allChannels.find((channel) => {
-		return channel?.channelId === channelId;
+		return channel?.channel_id === channelId;
 	});
 
 	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | HashtagDm | null>(null);
@@ -61,34 +61,34 @@ const SuggestItem = ({
 	const channelIcon = useMemo(() => {
 		if (!specificChannel) return null;
 
-		const { channelPrivate, type } = specificChannel;
+		const { channel_private, type } = specificChannel;
 
 		if (type === ChannelType.CHANNEL_TYPE_CHANNEL) {
-			if (!channelPrivate || channelPrivate === 0) {
+			if (!channel_private || channel_private === 0) {
 				return <Icons.Hashtag defaultSize="w-5 h-5" />;
 			}
-			if (channelPrivate === 1) {
+			if (channel_private === 1) {
 				return <Icons.HashtagLocked defaultSize="w-5 h-5" />;
 			}
 		}
 
 		if (type === ChannelType.CHANNEL_TYPE_THREAD) {
-			if (!channelPrivate || channelPrivate === 0) {
+			if (!channel_private || channel_private === 0) {
 				return <Icons.ThreadIcon defaultSize="w-5 h-5 text-theme-primary " />;
 			}
-			if (channelPrivate === 1) {
+			if (channel_private === 1) {
 				return <Icons.ThreadIconLocker className="w-5 h-5 text-theme-primary " />;
 			}
 		}
 
 		if (type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
-			if (!channelPrivate || channelPrivate === 0) {
+			if (!channel_private || channel_private === 0) {
 				return <Icons.Speaker defaultSize="w-5 5-5" />;
 			}
 			return <Icons.SpeakerLocked defaultSize="w-5 h-5" />;
 		}
 
-		if (type === ChannelType.CHANNEL_TYPE_STREAMING && (!channelPrivate || channelPrivate === 0)) {
+		if (type === ChannelType.CHANNEL_TYPE_STREAMING && (!channel_private || channel_private === 0)) {
 			return <Icons.Stream defaultSize="w-5 5-5" />;
 		}
 
@@ -104,7 +104,7 @@ const SuggestItem = ({
 			setSpecificChannel(channel);
 		} else {
 			allChannels.map((channel) => {
-				if (channel.channelId === channelId) {
+				if (channel.channel_id === channelId) {
 					setSpecificChannel(channel);
 				}
 			});
@@ -160,7 +160,7 @@ const SuggestItem = ({
 				data-e2e={generateE2eId('suggest_item.username')}
 			>
 				{getChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					<RenderChannelLabelForThread channelId={getChannel?.parentId as string} />
+					<RenderChannelLabelForThread channelId={getChannel?.parent_id as string} />
 				) : (
 					<>{HighlightMatchBold(subText ?? '', valueHightLight ?? '')}</>
 				)}

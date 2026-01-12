@@ -43,7 +43,18 @@ export const switchPublicToPrivate = createAsyncThunk(
 				listChannelRenderAction.updateChannelInListRender({
 					channelId: channel.channel_id,
 					clanId: channel.clan_id as string,
-					dataUpdate: { ...channel }
+					dataUpdate: {
+						...channel,
+						appId: channel.app_id,
+						categoryId: channel.category_id,
+						channelId: channel.channel_id,
+						channelLabel: channel.channel_label,
+						ageRestricted: channel.age_restricted,
+						channelAvatar: channel.channel_avatar,
+						channelPrivate: channel.channel_private,
+						topic: channel.topic,
+						parentId: channel.parent_id
+					}
 				})
 			);
 			return false;
@@ -73,7 +84,18 @@ export const switchPrivateToPublic = createAsyncThunk(
 			listChannelRenderAction.updateChannelInListRender({
 				channelId: channel.channel_id,
 				clanId: channel.clan_id as string,
-				dataUpdate: { ...channel }
+				dataUpdate: {
+					...channel,
+					appId: channel.app_id,
+					categoryId: channel.category_id,
+					channelId: channel.channel_id,
+					channelLabel: channel.channel_label,
+					ageRestricted: channel.age_restricted,
+					channelAvatar: channel.channel_avatar,
+					channelPrivate: channel.channel_private,
+					topic: channel.topic,
+					parentId: channel.parent_id
+				}
 			})
 		);
 	}

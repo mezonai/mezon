@@ -1914,7 +1914,18 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					listChannelRenderAction.updateChannelInListRender({
 						channelId: channelUpdated.channel_id,
 						clanId: channelUpdated.clan_id as string,
-						dataUpdate: { ...channelUpdated }
+						dataUpdate: {
+							...channelUpdated,
+							appId: channelUpdated.app_id,
+							categoryId: channelUpdated.category_id,
+							channelId: channelUpdated.channel_id,
+							channelLabel: channelUpdated.channel_label,
+							ageRestricted: channelUpdated.age_restricted,
+							channelAvatar: channelUpdated.channel_avatar,
+							channelPrivate: channelUpdated.channel_private,
+							topic: channelUpdated.topic,
+							parentId: channelUpdated.parent_id
+						}
 					})
 				);
 			}
@@ -1985,7 +1996,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					channelsActions.updateAppChannel({
 						clanId: channelUpdated.clan_id,
 						channelId: channelUpdated.channel_id,
-						changes: { ...channelUpdated }
+						changes: {
+							...channelUpdated,
+							appId: channelUpdated.app_id,
+							channelId: channelUpdated.channel_id
+						}
 					})
 				);
 			}

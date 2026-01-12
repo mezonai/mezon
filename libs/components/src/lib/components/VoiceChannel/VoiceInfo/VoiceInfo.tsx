@@ -57,9 +57,9 @@ const VoiceInfo = React.memo(() => {
 			handleParticipantVoiceState({
 				clan_id: clanId,
 				channel_id: channelId,
-				displayName: userProfile?.user?.displayName ?? '',
+				display_name: userProfile?.user?.displayName ?? '',
 				state,
-				roomName: state === ParticipantMeetState.LEAVE ? 'leave' : roomId || ''
+				room_name: state === ParticipantMeetState.LEAVE ? 'leave' : roomId || ''
 			})
 		);
 	};
