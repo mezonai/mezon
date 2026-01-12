@@ -56,8 +56,8 @@ const ExampleFlow: IExampleFlow[] = [
 				},
 				{
 					id: '1f076ab8-034a-4f3c-b8e3-963c269e9586',
-					nodeType: 'uploadedImage',
-					nodeName: 'uploadedImage',
+					nodeType: 'combineMessage',
+					nodeName: 'Response',
 					measured: '{"width":250,"height":510}',
 					position: '{"x":374,"y":-43}',
 					parameters: [

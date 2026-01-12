@@ -182,13 +182,24 @@ const Flow = () => {
 		event.dataTransfer.dropEffect = 'move';
 	}, []);
 
-	// create a list node type from NodeType and CustomNode to use in ReactFlow
+	const nodeTypesCache = useRef<{ [key: string]: React.ComponentType<any> }>({});
+	const prevApplicationId = useRef(applicationId);
+
 	const listNodeType = useMemo(() => {
+		if (prevApplicationId.current !== applicationId) {
+			prevApplicationId.current = applicationId;
+			nodeTypesCache.current = {};
+		}
+
+		if (Object.keys(nodeTypesCache.current).length > 0) {
+			return nodeTypesCache.current;
+		}
+
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		const obj: { [key: string]: (props: any) => JSX.Element } = {};
+		const obj: { [key: string]: React.ComponentType<any> } = {};
 		NodeTypes.forEach((item) => {
 			if (!obj[item.type]) {
-				obj[item.type] = (props) => {
+				obj[item.type] = React.memo((props) => {
 					let currentAnchors = item.anchors;
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					if (typeof item.anchors.source === 'function') {
@@ -199,36 +210,40 @@ const Flow = () => {
 						const sourceAnchor = (item.anchors.source as any)(dataToUse);
 						currentAnchors = { ...item.anchors, source: sourceAnchor };
 					}
-					if (item.type === 'webhook') {
-						item.initialValue.url = `${process.env.NX_MEZON_FLOW_URL}/webhook/${applicationId}/{flowId}`;
-					}
+
+					const nodeInitialValue =
+						item.type === 'webhook'
+							? { ...item.initialValue, url: `${process.env.NX_MEZON_FLOW_URL}/webhook/${applicationId}/{flowId}` }
+							: item.initialValue;
+
 					return (
 						<CustomNode
 							{...props}
 							label={item.label}
 							Icon={iconByType[item.label]}
-							initialValue={item.initialValue}
+							initialValue={nodeInitialValue}
 							bridgeSchema={item.bridgeSchema}
 							anchors={currentAnchors}
 							onHandleHover={onHandleHover}
 							onHandleLeave={onHandleLeave}
 						/>
 					);
-				};
+				});
 			}
 		});
+
+		nodeTypesCache.current = obj;
 		return obj;
-	}, [applicationId, onHandleHover, onHandleLeave]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [applicationId]); // onHandleHover and onHandleLeave are stable (useCallback with empty deps)
 
 	const handleClickSaveFlow = React.useCallback(async () => {
 		let checkValidate = true;
 
-		// Validate all nodes directly using Schema and Data in State
 		nodes.forEach((node) => {
 			const nodeConfig = NodeTypes.find((t) => t.type === node.type);
 			if (nodeConfig?.schema) {
 				try {
-					// Validate data stored in node.data.defaultValue against the schema
 					nodeConfig.schema.validateSync(node.data.defaultValue, { abortEarly: false });
 				} catch (error) {
 					checkValidate = false;
@@ -236,7 +251,6 @@ const Flow = () => {
 			}
 		});
 
-		// check validating of all nodes, if one node is invalid, return
 		if (!checkValidate) {
 			toast.error('Please check invalid nodes');
 			return;
@@ -513,10 +527,10 @@ const Flow = () => {
 				minZoom={0.5}
 				maxZoom={3}
 				defaultViewport={{ x: 100, y: 100, zoom: 1 }}
-				nodesDraggable={!locked && !isExampleFlow} // disable drag node if current flow is example flow or locked
-				nodesConnectable={!locked && !isExampleFlow} // disable connect node if current flow is example flow or locked
-				elementsSelectable={!locked && !isExampleFlow} // disable select node if current flow is example flow or locked
-				zoomOnScroll={!locked && !isExampleFlow} // disable zoom on scroll if current flow is example flow or locked
+				nodesDraggable={!locked && !isExampleFlow}
+				nodesConnectable={!locked && !isExampleFlow}
+				elementsSelectable={!locked && !isExampleFlow}
+				zoomOnScroll={!locked && !isExampleFlow}
 				// fitView
 				colorMode="light"
 			>

@@ -672,7 +672,16 @@ input:-webkit-autofill:active {
 }
 
 .hidden-submit-field {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+
 	.ui.form {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		min-height: 0;
+
 		.ui.button[type='submit'] {
 			display: none;
 		}
@@ -681,6 +690,76 @@ input:-webkit-autofill:active {
 		color: red;
 		font-size: 12px;
 	}
+}
+
+/* Custom Scrollbar Styles for Better UX */
+.custom-scrollbar {
+	/* Firefox */
+	scrollbar-width: thin;
+	scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+
+	/* Webkit browsers (Chrome, Safari, Edge) */
+	&::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: rgba(243, 244, 246, 0.5);
+		border-radius: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: rgba(156, 163, 175, 0.5);
+		border-radius: 4px;
+		transition: background 0.2s ease;
+
+		&:hover {
+			background: rgba(107, 114, 128, 0.7);
+		}
+
+		&:active {
+			background: rgba(75, 85, 99, 0.9);
+		}
+	}
+
+	/* Always show scrollbar */
+	overflow-y: scroll;
+}
+
+/* Variant with auto-hide scrollbar */
+.custom-scrollbar-auto {
+	/* Firefox */
+	scrollbar-width: thin;
+	scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+
+	/* Webkit browsers (Chrome, Safari, Edge) */
+	&::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+
+	&::-webkit-scrollbar-track {
+		background: transparent;
+		border-radius: 4px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: rgba(156, 163, 175, 0.4);
+		border-radius: 4px;
+		transition: all 0.2s ease;
+
+		&:hover {
+			background: rgba(107, 114, 128, 0.6);
+		}
+
+		&:active {
+			background: rgba(75, 85, 99, 0.8);
+		}
+	}
+
+	/* Auto show/hide */
+	overflow-y: auto;
 }
 
 @media (max-width: 924px) {

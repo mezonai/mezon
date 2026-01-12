@@ -1,6 +1,8 @@
+import { EmbedMessage } from '@mezon/components';
 import { useAuth } from '@mezon/core';
 import { selectAppDetail } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import type { IEmbedProps } from '@mezon/utils';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
@@ -15,6 +17,7 @@ interface IMessage {
 		mediaFile?: string[];
 	};
 	type: 'input' | 'output';
+	embed?: IEmbedProps;
 }
 
 const VideoFileExtensions = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.flv'];
@@ -26,63 +29,86 @@ const FlowChatPopup = () => {
 	const { userProfile } = useAuth();
 	const [messages, setMessages] = useState<IMessage[]>([]);
 	const messagesEndRef = useRef<HTMLDivElement | null>(null);
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		if (!input) {
-			toast.error('Please enter your message');
-			return;
-		}
-		setMessages([...messages, { message: { message: input, mediaFile: undefined }, type: 'input' }]);
-		setInput('');
-		try {
-			// check if a message is into an example flow, return an output message of that flow.
-			const checkMessageIsIntoExampleFlow = ExampleFlow.find((flow) => flow.message.input === input?.trim());
-			if (checkMessageIsIntoExampleFlow) {
+
+	const handleSubmit = useCallback(
+		async (e: React.FormEvent<HTMLFormElement>) => {
+			e.preventDefault();
+			if (!input) {
+				toast.error('Please enter your message');
+				return;
+			}
+			const userInput = input;
+			setMessages((prev) => [...prev, { message: { message: userInput, mediaFile: undefined }, type: 'input' }]);
+			setInput('');
+			try {
+				const checkMessageIsIntoExampleFlow = ExampleFlow.find((flow) => flow.message.input === userInput?.trim());
+				if (checkMessageIsIntoExampleFlow) {
+					setMessages((prev) => [
+						...prev,
+						{
+							message: {
+								message: checkMessageIsIntoExampleFlow.message.output.message,
+								mediaFile: checkMessageIsIntoExampleFlow.message.output.image
+							},
+							type: 'output'
+						}
+					]);
+					return;
+				}
+				const response = await flowService.executionFlow(
+					applicationId ?? '',
+					appDetail.token ?? '',
+					userInput,
+					userProfile?.user?.username ?? ''
+				);
+				// eslint-disable-next-line no-console
+				console.log('response', response);
+				let mediaFile: string[] = [];
+
+				if (response.attachments && Array.isArray(response.attachments) && response.attachments.length > 0) {
+					mediaFile = response.attachments.map((file: any) => file.url);
+				} else if (response.urlImage) {
+					try {
+						const filesData: MediaFile[] = JSON.parse(response.urlImage as unknown as string);
+						if (Array.isArray(filesData) && filesData.length > 0) {
+							mediaFile = filesData.map((file) => file.url);
+						}
+					} catch (error) {
+						console.error('Error parsing media file URLs:', error);
+					}
+				}
+
+				const hasMedia = mediaFile && mediaFile.length > 0;
+				const hasEmbed = !!response.embed;
+				const hasRealMessage = response.message && response.message.trim() !== '' && response.message !== "Sorry, I don't know";
+
+				let finalMessage = response.message || '';
+				if (!hasRealMessage && !hasMedia && !hasEmbed) {
+					finalMessage = "Sorry, I don't know";
+				} else if (!hasRealMessage && (hasMedia || hasEmbed)) {
+					finalMessage = '';
+				}
+
 				setMessages((prev) => [
 					...prev,
 					{
-						message: {
-							message: checkMessageIsIntoExampleFlow.message.output.message,
-							mediaFile: checkMessageIsIntoExampleFlow.message.output.image
-						},
-						type: 'output'
+						message: { message: finalMessage, mediaFile },
+						type: 'output',
+						embed: response.embed
 					}
 				]);
-				return;
+			} catch (error) {
+				setMessages((prev) => [...prev, { message: { message: "Sorry, I don't know", mediaFile: undefined }, type: 'output' }]);
 			}
-			const response: { message: string; urlImage: MediaFile[] } = await flowService.executionFlow(
-				applicationId ?? '',
-				appDetail.token ?? '',
-				input,
-				userProfile?.user?.username ?? ''
-			);
-			// eslint-disable-next-line no-console
-			console.log('response', response);
-			let mediaFile: string[] | undefined = [];
-			if (response.urlImage) {
-				try {
-					const filesData: MediaFile[] = JSON.parse(response.urlImage as unknown as string);
-					if (Array.isArray(filesData) && filesData.length > 0) {
-						mediaFile = filesData.map((file) => file.url);
-					}
-				} catch (error) {
-					console.error('Error parsing media file URLs:', error);
-				}
-			}
-			if (!response.message && !mediaFile) {
-				response.message = 'Sorry, I dont know';
-			}
-			setMessages((prev) => [...prev, { message: { message: response.message, mediaFile }, type: 'output' }]);
-		} catch (error) {
-			setMessages((prev) => [...prev, { message: { message: "Sorry, I don't know", mediaFile: undefined }, type: 'output' }]);
-		}
-	};
-	const scrollToBottom = () => {
-		// scroll to bottom of chat
+		},
+		[applicationId, appDetail.token, input, userProfile?.user?.username]
+	);
+
+	const scrollToBottom = useCallback(() => {
 		if (messagesEndRef.current) {
 			messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
 		}
-	};
+	}, []);
 
 	const checkIsVideo = useCallback((file: string) => {
 		const ext = file.split('.').pop();
@@ -90,13 +116,12 @@ const FlowChatPopup = () => {
 	}, []);
 
 	useEffect(() => {
-		// scroll to bottom of chat when a new message is added
 		if (messages.length > 0) {
 			setTimeout(() => {
 				scrollToBottom();
 			}, 0);
 		}
-	}, [messages]);
+	}, [messages, scrollToBottom]);
 	return (
 		<div className="bg-white text-sm text-gray-500 dark:text-gray-200 max-w-[350px] w-[95vw]">
 			<div className="flex items-center gap-2 p-2  bg-gray-200 dark:bg-gray-600">
@@ -114,12 +139,14 @@ const FlowChatPopup = () => {
 						className={`p-2 shadow-inner flex ${message.type === 'input' ? 'bg-gray-50 dark:bg-gray-600 justify-end text-end' : 'bg-gray-100 dark:bg-gray-700 justify-start'}`}
 					>
 						<div className="w-[75%]">
-							<div
-								style={message.type === 'output' ? { fontFamily: 'monospace', whiteSpace: 'pre' } : {}}
-								className="overflow-x-auto [&::-webkit-scrollbar]:[height:3px] [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-gray-200"
-							>
-								{message.message.message}
-							</div>
+							{message.message.message && message.message.message.trim() !== '' && (
+								<div
+									style={message.type === 'output' ? { fontFamily: 'monospace', whiteSpace: 'pre' } : {}}
+									className="overflow-x-auto [&::-webkit-scrollbar]:[height:3px] [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-gray-200"
+								>
+									{message.message.message}
+								</div>
+							)}
 							{message.message?.mediaFile && message.message.mediaFile?.length > 0 && (
 								<div className="mt-2">
 									{message.message.mediaFile?.map((img, index) => (
@@ -135,6 +162,7 @@ const FlowChatPopup = () => {
 									))}
 								</div>
 							)}
+							{message.embed && <EmbedMessage embed={message.embed} channelId={flowId ?? ''} />}
 						</div>
 					</div>
 				))}

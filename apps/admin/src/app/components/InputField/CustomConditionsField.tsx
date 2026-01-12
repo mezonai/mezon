@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { connectField } from 'uniforms';
+import { OperatorsByType, SingleParamOperators, TypeOptions } from '../../common/constants/conditionOperators';
 
 interface Condition {
 	left: string;
@@ -32,92 +33,13 @@ interface CustomConditionsFieldProps {
 	[key: string]: any;
 }
 
-const singleParamOperators = ['exists', 'does not exist', 'is empty', 'is not empty', 'is true', 'is false'];
-
-// Operators by data type
-const operatorsByType: Record<string, { label: string; value: string }[]> = {
-	string: [
-		{ label: 'exists', value: 'exists' },
-		{ label: 'does not exist', value: 'does not exist' },
-		{ label: 'is empty', value: 'is empty' },
-		{ label: 'is not empty', value: 'is not empty' },
-		{ label: 'is equal to', value: 'is equal to' },
-		{ label: 'is not equal to', value: 'is not equal to' },
-		{ label: 'contains', value: 'contains' },
-		{ label: 'does not contain', value: 'does not contain' },
-		{ label: 'starts with', value: 'starts with' },
-		{ label: 'does not start with', value: 'does not start with' },
-		{ label: 'ends with', value: 'ends with' },
-		{ label: 'does not end with', value: 'does not end with' },
-		{ label: 'matches regex', value: 'matches regex' },
-		{ label: 'does not match regex', value: 'does not match regex' }
-	],
-	number: [
-		{ label: 'exists', value: 'exists' },
-		{ label: 'does not exist', value: 'does not exist' },
-		{ label: 'is empty', value: 'is empty' },
-		{ label: 'is not empty', value: 'is not empty' },
-		{ label: 'is equal to', value: 'is equal to' },
-		{ label: 'is not equal to', value: 'is not equal to' },
-		{ label: 'is greater than', value: 'is greater than' },
-		{ label: 'is less than', value: 'is less than' },
-		{ label: 'is greater than or equal', value: 'is greater than or equal' },
-		{ label: 'is less than or equal', value: 'is less than or equal' }
-	],
-	boolean: [
-		{ label: 'exists', value: 'exists' },
-		{ label: 'does not exist', value: 'does not exist' },
-		{ label: 'is true', value: 'is true' },
-		{ label: 'is false', value: 'is false' },
-		{ label: 'is equal to', value: 'is equal to' },
-		{ label: 'is not equal to', value: 'is not equal to' }
-	],
-	array: [
-		{ label: 'exists', value: 'exists' },
-		{ label: 'does not exist', value: 'does not exist' },
-		{ label: 'is empty', value: 'is empty' },
-		{ label: 'is not empty', value: 'is not empty' },
-		{ label: 'contains', value: 'contains' },
-		{ label: 'does not contain', value: 'does not contain' },
-		{ label: 'length equal to', value: 'length equal to' },
-		{ label: 'length not equal to', value: 'length not equal to' },
-		{ label: 'length greater than', value: 'length greater than' },
-		{ label: 'length less than', value: 'length less than' }
-	],
-	object: [
-		{ label: 'exists', value: 'exists' },
-		{ label: 'does not exist', value: 'does not exist' },
-		{ label: 'is empty', value: 'is empty' },
-		{ label: 'is not empty', value: 'is not empty' }
-	],
-	dateTime: [
-		{ label: 'exists', value: 'exists' },
-		{ label: 'does not exist', value: 'does not exist' },
-		{ label: 'is equal to', value: 'is equal to' },
-		{ label: 'is not equal to', value: 'is not equal to' },
-		{ label: 'is after', value: 'is after' },
-		{ label: 'is before', value: 'is before' },
-		{ label: 'is after or equal', value: 'is after or equal' },
-		{ label: 'is before or equal', value: 'is before or equal' }
-	]
-};
-
-const typeOptions = [
-	{ label: 'String', value: 'string', icon: 'T' },
-	{ label: 'Number', value: 'number', icon: '#' },
-	{ label: 'Date & Time', value: 'dateTime', icon: '📅' },
-	{ label: 'Boolean', value: 'boolean', icon: '☑' },
-	{ label: 'Array', value: 'array', icon: '≡' },
-	{ label: 'Object', value: 'object', icon: '⚙' }
-];
-
 const logicOptions = [
 	{ label: 'AND', value: 'AND' },
 	{ label: 'OR', value: 'OR' }
 ];
 
 const needsRightValue = (operator: string): boolean => {
-	return !singleParamOperators.includes(operator);
+	return !SingleParamOperators.includes(operator);
 };
 
 const normalizeConditions = (conditions: InternalCondition[]): Condition[] => {
@@ -146,7 +68,7 @@ const CustomConditionsField = ({
 	name,
 	placeholder,
 	readOnly,
-	...restProps
+	...props
 }: CustomConditionsFieldProps) => {
 	const [openDropdownIndex, setOpenDropdownIndex] = useState<number | null>(null);
 	const [hoveredType, setHoveredType] = useState<string | null>(null);
@@ -194,7 +116,7 @@ const CustomConditionsField = ({
 		const newConditions = internalConditions.map((condition, i) => {
 			if (i === index) {
 				if (fieldName === 'type') {
-					const defaultOperator = operatorsByType[newValue]?.[0]?.value || 'is equal to';
+					const defaultOperator = OperatorsByType[newValue]?.[0]?.value || 'is equal to';
 					// Giữ nguyên cached right, chỉ đổi type và operator
 					return { ...condition, type: newValue, operator: defaultOperator };
 				}
@@ -292,7 +214,12 @@ const CustomConditionsField = ({
 										disabled={disabled}
 										className="flex items-center gap-2 bg-gray-700 text-white text-sm rounded px-3 py-2 border border-gray-600 hover:border-blue-500 min-w-[180px]"
 									>
-										<span className="text-gray-400">{typeOptions.find((t) => t.value === condition.type)?.icon || 'T'}</span>
+										<span className="text-gray-400">
+											{(() => {
+												const Icon = TypeOptions.find((type) => type.value === condition.type)?.icon;
+												return Icon ? <Icon /> : null;
+											})()}
+										</span>
 										<span className="flex-1 text-left">{condition.operator}</span>
 										<span className="text-gray-400">▼</span>
 									</button>
@@ -302,7 +229,7 @@ const CustomConditionsField = ({
 										<div className="absolute top-full left-0 mt-1 z-50 flex bg-gray-800 rounded-lg shadow-lg border border-gray-600">
 											{/* Type list */}
 											<div className="w-36 border-r border-gray-600">
-												{typeOptions.map((type) => (
+												{TypeOptions.map((type) => (
 													<div
 														key={type.value}
 														onMouseEnter={() => setHoveredType(type.value)}
@@ -310,7 +237,9 @@ const CustomConditionsField = ({
 															condition.type === type.value ? 'text-orange-400' : 'text-white'
 														}`}
 													>
-														<span>{type.icon}</span>
+														<span>
+															<type.icon />
+														</span>
 														<span>{type.label}</span>
 														<span className="ml-auto text-gray-400">›</span>
 													</div>
@@ -320,7 +249,7 @@ const CustomConditionsField = ({
 											{/* Operator list */}
 											{hoveredType && (
 												<div className="w-48 max-h-64 overflow-y-auto">
-													{operatorsByType[hoveredType]?.map((op) => (
+													{OperatorsByType[hoveredType]?.map((op) => (
 														<div
 															key={op.value}
 															onClick={() => handleSelectTypeAndOperator(index, hoveredType, op.value)}

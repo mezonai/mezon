@@ -2,7 +2,6 @@ import React from 'react';
 import {
 	ChatIcon,
 	CodeIcon,
-	EditFieldIcon,
 	HttpRequestIcon,
 	IfIcon,
 	ResponseIcon,
@@ -31,7 +30,7 @@ const AddNodeMenuPopup = () => {
 		},
 		{
 			title: 'Response',
-			nodeType: 'uploadedImage',
+			nodeType: 'combineMessage',
 			description: 'Sends the bot’s reply based on the input and processing.',
 			icon: <ResponseIcon />
 		},
@@ -52,12 +51,6 @@ const AddNodeMenuPopup = () => {
 			nodeType: 'webhook',
 			description: 'Receives updates via HTTP requests for real-time integrations.',
 			icon: <WebhookIcon />
-		},
-		{
-			title: 'Edit Field',
-			nodeType: 'editField',
-			description: 'Modifies or sets specific fields in the data flow.',
-			icon: <EditFieldIcon />
 		},
 		{
 			title: 'Schedule',

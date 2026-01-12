@@ -18,7 +18,7 @@ export interface IFlowDetail {
 
 export type INodeType =
 	| 'chatTrigger'
-	| 'uploadedImage'
+	| 'combineMessage'
 	| 'if'
 	| 'httpRequest'
 	| 'default'

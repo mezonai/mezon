@@ -23,7 +23,16 @@ export interface MediaFile {
 
 export interface ExecutionFlowResponse {
 	message: string;
-	urlImage: MediaFile[];
+	urlImage?: MediaFile[];
+	attachments?: Array<{
+		filename: string;
+		url: string;
+		filetype: string;
+		size: number;
+		width?: number;
+		height?: number;
+	}>;
+	embed?: object;
 }
 
 const getAllFlowByApplication = async (applicationId: string): Promise<IFlow[]> => {
@@ -112,6 +121,17 @@ const createApplication = async (dataCreate: PostApplicationProps) => {
 	}
 };
 
+const getChannelsByApplication = async (applicationId: string): Promise<{ channel_id: string; channel_name: string }[]> => {
+	try {
+		const response = await apiInstance(`/application/${applicationId}/channels`, {
+			method: 'GET'
+		});
+		return response?.data as { channel_id: string; channel_name: string }[];
+	} catch (error) {
+		throw (error as IError).message;
+	}
+};
+
 const flowService = {
 	getAllFlowByApplication,
 	getFlowDetail,
@@ -120,7 +140,8 @@ const flowService = {
 	deleteFlow,
 	executionFlow,
 	getApplication,
-	createApplication
+	createApplication,
+	getChannelsByApplication
 };
 
 export default flowService;

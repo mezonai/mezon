@@ -2,7 +2,6 @@ import React from 'react';
 import {
 	ChatIcon,
 	CodeIcon,
-	EditFieldIcon,
 	HttpRequestIcon,
 	IfIcon,
 	ResponseIcon,
@@ -18,7 +17,6 @@ const iconByLabel: Record<string, React.ComponentType> = {
 	Webhook: WebhookIcon,
 	'HTTP Request': HttpRequestIcon,
 	If: IfIcon,
-	'Edit Field': EditFieldIcon,
 	Schedule: SchedulerIcon,
 	'Embed Message': CodeIcon,
 	Switch: SwitchIcon
@@ -43,13 +41,12 @@ const NextNodePopup = ({
 	if (!visible) return null;
 
 	const connectionRules: Record<string, string[]> = {
-		'Chat Trigger': ['Response', 'HTTP Request', 'Edit Field', 'If', 'Embed Message', 'Switch'],
+		'Chat Trigger': ['Response', 'HTTP Request', 'If', 'Embed Message', 'Switch'],
 		Webhook: ['Edit Field', 'If', 'HTTP Request', 'Response', 'Embed Message', 'Switch'],
-		If: ['If', 'Response', 'HTTP Request', 'Edit Field', 'Embed Message', 'Switch'],
+		If: ['If', 'Response', 'HTTP Request', 'Embed Message', 'Switch'],
 		'HTTP Request': ['Edit Field', 'If', 'Embed Message', 'Response', 'Embed Message', 'Switch'],
-		Schedule: ['HTTP Request', 'Response', 'Edit Field', 'Embed Message', 'Switch'],
-		Switch: ['Response', 'HTTP Request', 'Edit Field', 'If', 'Embed Message', 'Switch'],
-		'Edit Field': ['Response', 'HTTP Request', 'Embed Message', 'If', 'Switch']
+		Schedule: ['HTTP Request', 'Response', 'Embed Message', 'Switch'],
+		Switch: ['Response', 'HTTP Request', 'If', 'Embed Message', 'Switch']
 	};
 
 	const allowedTargetTypes = sourceNodeLabel ? connectionRules[sourceNodeLabel] : [];

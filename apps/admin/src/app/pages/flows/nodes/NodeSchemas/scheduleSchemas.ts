@@ -1,52 +1,14 @@
 import * as yup from 'yup';
+import CustomChannelSelectField from '../../../../components/InputField/CustomChannelSelectField';
 import CustomSelectField from '../../../../components/InputField/CustomSelectField';
 import CustomTextField from '../../../../components/InputField/CustomTextField';
 
 export const scheduleSchemas = {
-	seconds: {
-		schema: yup.object().shape({
-			interval: yup.string().oneOf(['seconds']).required(),
-			intervalValue: yup.number().min(1).max(59).required('Must be range 1-59')
-		}),
-		bridgeSchema: {
-			type: 'object',
-			properties: {
-				interval: {
-					type: 'string',
-					uniforms: {
-						component: CustomSelectField,
-						label: 'Trigger Interval',
-						name: 'interval',
-						options: [
-							{ label: 'Seconds', value: 'seconds' },
-							{ label: 'Minutes', value: 'minutes' },
-							{ label: 'Hours', value: 'hours' },
-							{ label: 'Days', value: 'days' },
-							{ label: 'Weeks', value: 'weeks' },
-							{ label: 'Months', value: 'months' },
-							{ label: 'Custom (Cron)', value: 'custom' }
-						]
-					}
-				},
-				intervalValue: {
-					type: 'number',
-					uniforms: {
-						component: CustomTextField,
-						label: 'Seconds Between Triggers',
-						name: 'intervalValue',
-						placeholder: 'e.g. 5',
-						min: 1,
-						max: 59
-					}
-				}
-			},
-			required: ['interval', 'intervalValue']
-		}
-	},
 	minutes: {
 		schema: yup.object().shape({
 			interval: yup.string().oneOf(['minutes']).required(),
-			intervalValue: yup.number().min(1).max(59).required('Must be range 1-59')
+			intervalValue: yup.number().min(1).max(59).required('Must be range 1-59'),
+			channelId: yup.string().required('Channel is required')
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -59,7 +21,6 @@ export const scheduleSchemas = {
 						name: 'interval',
 						options: [
 							{ label: 'Minutes', value: 'minutes' },
-							{ label: 'Seconds', value: 'seconds' },
 							{ label: 'Hours', value: 'hours' },
 							{ label: 'Days', value: 'days' },
 							{ label: 'Weeks', value: 'weeks' },
@@ -78,16 +39,25 @@ export const scheduleSchemas = {
 						min: 1,
 						max: 59
 					}
+				},
+				channelId: {
+					type: 'string',
+					uniforms: {
+						component: CustomChannelSelectField,
+						label: 'Channel',
+						name: 'channelId'
+					}
 				}
 			},
-			required: ['interval', 'intervalValue']
+			required: ['interval', 'intervalValue', 'channelId']
 		}
 	},
 	hours: {
 		schema: yup.object().shape({
 			interval: yup.string().oneOf(['hours']).required(),
 			intervalValue: yup.number().min(1).required('Interval value is required'),
-			minute: yup.number().min(0).max(59).required('Minute is required')
+			minute: yup.number().min(0).max(59).required('Minute is required'),
+			channelId: yup.string().required('Channel is required')
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -99,7 +69,6 @@ export const scheduleSchemas = {
 						label: 'Trigger Interval',
 						name: 'interval',
 						options: [
-							{ label: 'Seconds', value: 'seconds' },
 							{ label: 'Minutes', value: 'minutes' },
 							{ label: 'Hours', value: 'hours' },
 							{ label: 'Days', value: 'days' },
@@ -130,9 +99,17 @@ export const scheduleSchemas = {
 						min: 0,
 						max: 59
 					}
+				},
+				channelId: {
+					type: 'string',
+					uniforms: {
+						component: CustomChannelSelectField,
+						label: 'Channel',
+						name: 'channelId'
+					}
 				}
 			},
-			required: ['interval', 'intervalValue', 'minute']
+			required: ['interval', 'intervalValue', 'minute', 'channelId']
 		}
 	},
 	days: {
@@ -140,7 +117,8 @@ export const scheduleSchemas = {
 			interval: yup.string().oneOf(['days']).required(),
 			intervalValue: yup.number().min(1).required('Interval value is required'),
 			hour: yup.number().min(0).max(23).required('Hour is required'),
-			minute: yup.number().min(0).max(59).required('Minute is required')
+			minute: yup.number().min(0).max(59).required('Minute is required'),
+			channelId: yup.string().required('Channel is required')
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -152,7 +130,6 @@ export const scheduleSchemas = {
 						label: 'Trigger Interval',
 						name: 'interval',
 						options: [
-							{ label: 'Seconds', value: 'seconds' },
 							{ label: 'Minutes', value: 'minutes' },
 							{ label: 'Hours', value: 'hours' },
 							{ label: 'Days', value: 'days' },
@@ -195,9 +172,17 @@ export const scheduleSchemas = {
 						min: 0,
 						max: 59
 					}
+				},
+				channelId: {
+					type: 'string',
+					uniforms: {
+						component: CustomChannelSelectField,
+						label: 'Channel',
+						name: 'channelId'
+					}
 				}
 			},
-			required: ['interval', 'intervalValue', 'hour', 'minute']
+			required: ['interval', 'intervalValue', 'hour', 'minute', 'channelId']
 		}
 	},
 	weeks: {
@@ -206,7 +191,8 @@ export const scheduleSchemas = {
 			intervalValue: yup.number().min(1).required('Interval value is required'),
 			weekday: yup.string().required('Weekday is required'),
 			hour: yup.number().min(0).max(23).required('Hour is required'),
-			minute: yup.number().min(0).max(59).required('Minute is required')
+			minute: yup.number().min(0).max(59).required('Minute is required'),
+			channelId: yup.string().required('Channel is required')
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -218,7 +204,6 @@ export const scheduleSchemas = {
 						label: 'Trigger Interval',
 						name: 'interval',
 						options: [
-							{ label: 'Seconds', value: 'seconds' },
 							{ label: 'Minutes', value: 'minutes' },
 							{ label: 'Hours', value: 'hours' },
 							{ label: 'Days', value: 'days' },
@@ -278,9 +263,17 @@ export const scheduleSchemas = {
 						min: 0,
 						max: 59
 					}
+				},
+				channelId: {
+					type: 'string',
+					uniforms: {
+						component: CustomChannelSelectField,
+						label: 'Channel',
+						name: 'channelId'
+					}
 				}
 			},
-			required: ['interval', 'intervalValue', 'weekday', 'hour', 'minute']
+			required: ['interval', 'intervalValue', 'weekday', 'hour', 'minute', 'channelId']
 		}
 	},
 	months: {
@@ -289,7 +282,8 @@ export const scheduleSchemas = {
 			intervalValue: yup.number().min(1).required('Interval value is required'),
 			day: yup.number().min(1).max(31).required('Day of month is required'),
 			hour: yup.number().min(0).max(23).required('Hour is required'),
-			minute: yup.number().min(0).max(59).required('Minute is required')
+			minute: yup.number().min(0).max(59).required('Minute is required'),
+			channelId: yup.string().required('Channel is required')
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -354,15 +348,24 @@ export const scheduleSchemas = {
 						min: 0,
 						max: 59
 					}
+				},
+				channelId: {
+					type: 'string',
+					uniforms: {
+						component: CustomChannelSelectField,
+						label: 'Channel',
+						name: 'channelId'
+					}
 				}
 			},
-			required: ['interval', 'intervalValue', 'day', 'hour', 'minute']
+			required: ['interval', 'intervalValue', 'day', 'hour', 'minute', 'channelId']
 		}
 	},
 	custom: {
 		schema: yup.object().shape({
 			interval: yup.string().oneOf(['custom']).required(),
-			cronExpression: yup.string().required('Cron expression is required')
+			cronExpression: yup.string().required('Cron expression is required'),
+			channelId: yup.string().required('Channel is required')
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -374,7 +377,6 @@ export const scheduleSchemas = {
 						label: 'Trigger Interval',
 						name: 'interval',
 						options: [
-							{ label: 'Seconds', value: 'seconds' },
 							{ label: 'Minutes', value: 'minutes' },
 							{ label: 'Hours', value: 'hours' },
 							{ label: 'Days', value: 'days' },
@@ -392,9 +394,17 @@ export const scheduleSchemas = {
 						name: 'cronExpression',
 						placeholder: 'e.g. */5 * * * *'
 					}
+				},
+				channelId: {
+					type: 'string',
+					uniforms: {
+						component: CustomChannelSelectField,
+						label: 'Channel',
+						name: 'channelId'
+					}
 				}
 			},
-			required: ['interval', 'cronExpression']
+			required: ['interval', 'cronExpression', 'channelId']
 		}
 	}
 };

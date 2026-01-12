@@ -1,14 +1,14 @@
 import * as yup from 'yup';
 import CodeEditorField from '../../../components/InputField/CodeEditorField';
 import CustomConditionsField from '../../../components/InputField/CustomConditionsField';
-import CustomEmbedField from '../../../components/InputField/CustomEmbedField';
+import { CustomEmbedField } from '../../../components/InputField/CustomEmbedField';
 import CustomParamsField from '../../../components/InputField/CustomParamsField';
 import CustomRoutingRulesFiled from '../../../components/InputField/CustomRoutingRulesFiled';
 import CustomSelectField from '../../../components/InputField/CustomSelectField';
 import CustomTagsField from '../../../components/InputField/CustomTagsField';
 import CustomTextField from '../../../components/InputField/CustomTextField';
 import CustomToggleField from '../../../components/InputField/CustomToggleField';
-import MultiImageUploadField from '../../../components/MultiImageUploadField';
+import MultiMediaUploadField from '../../../components/MultiMediaUploadField';
 import { scheduleSchemas } from './NodeSchemas/scheduleSchemas';
 
 // list of node types with their schema, bridge schema, and anchors. This is used to render the node in the flow editor
@@ -49,7 +49,7 @@ const NodeTypes = [
 		}
 	},
 	{
-		type: 'uploadedImage',
+		type: 'combineMessage',
 		label: 'Response',
 		schema: yup
 			.object()
@@ -57,11 +57,11 @@ const NodeTypes = [
 				message: yup
 					.string()
 					.test('no-starts-with-asterisk', 'Message can not start with an asterisk (*)', (value) => !value || !value.startsWith('*')),
-				image: yup.array().nullable()
+				media: yup.array().nullable()
 			})
 			.test('at-least-one-value', 'Either message or image must be provided', (value) => {
 				const hasMessage = !!value?.message && value.message.trim() !== '';
-				const hasImage = Array.isArray(value?.image) && value.image.length > 0;
+				const hasImage = Array.isArray(value?.media) && value.media.length > 0;
 				return hasMessage || hasImage;
 			}),
 		bridgeSchema: {
@@ -69,9 +69,9 @@ const NodeTypes = [
 			properties: {
 				message: {
 					type: 'string',
-					uniforms: { component: CustomTextField, label: 'Message', name: 'message', placeholder: 'Enter message' }
+					uniforms: { component: CustomTextField, label: 'Message', name: 'message', placeholder: 'Enter message', multiline: true }
 				},
-				image: { type: 'array', uniforms: { component: MultiImageUploadField, label: 'Uploaded Image', name: 'image' } }
+				media: { type: 'array', uniforms: { component: MultiMediaUploadField, label: 'Uploaded Media', name: 'media' } }
 			},
 			required: []
 		},
@@ -81,36 +81,7 @@ const NodeTypes = [
 		},
 		initialValue: {
 			message: '',
-			image: []
-		}
-	},
-	{
-		type: 'commandOutput',
-		label: 'Response',
-		schema: yup.object().shape({
-			message: yup
-				.string()
-				.test('no-starts-with-asterisk', 'Message can not start with an asterisk (*)', (value) => !!value && !value.startsWith('*')),
-			image: yup.array().nullable()
-		}),
-		bridgeSchema: {
-			type: 'object',
-			properties: {
-				message: {
-					type: 'string',
-					uniforms: { component: CustomTextField, label: 'Message', name: 'message', placeholder: 'Enter message' }
-				},
-				image: { type: 'array', uniforms: { component: MultiImageUploadField, label: 'Uploaded Image', name: 'image' } }
-			},
-			required: []
-		},
-		anchors: {
-			source: [],
-			target: [{ id: 'command-output-target-1', text: 'Chat Trigger' }]
-		},
-		initialValue: {
-			message: '',
-			image: []
+			media: []
 		}
 	},
 	{
@@ -127,7 +98,8 @@ const NodeTypes = [
 		bridgeSchema: {
 			type: 'object',
 			properties: {
-				url: { type: 'string', uniforms: { component: CustomTextField, label: 'Api Url', name: 'url' } },
+				url: { type: 'string', uniforms: { component: CustomTextField, type: 'text', label: 'Api Url', name: 'url' } },
+				apiKey: { type: 'string', uniforms: { component: CustomTextField, type: 'text', label: 'Api Key', name: 'apiKey' } },
 				method: {
 					type: 'string',
 					uniforms: {
@@ -293,103 +265,6 @@ const NodeTypes = [
 		}
 	},
 	{
-		type: 'editField',
-		label: 'Edit Field',
-		schema: yup.object().shape({
-			// mode: yup.string().oneOf(['manual', 'json']).required('Mode is required'),
-			includeOtherInputFields: yup.boolean(),
-			// fields: yup.array().of(
-			// 	yup.object().shape({
-			// 		name: yup.string().required('Field Name is required'),
-			// 		value: yup.string().required('Field Value is required')
-			// 	})
-			// ),
-			jsonTemplate: yup
-				.string()
-				.nullable()
-				.test('is-json', 'Invalid Json Format', (val) => {
-					if (!val) return true;
-					try {
-						JSON.parse(val);
-						return true;
-					} catch (error) {
-						return false;
-					}
-				}),
-			options: yup.array().of(
-				yup.object().shape({
-					key: yup.string().required('Option Key is required'),
-					value: yup.string().required('Option Value is required')
-				})
-			)
-		}),
-		bridgeSchema: {
-			type: 'object',
-			properties: {
-				// mode: {
-				// 	type: 'string',
-				// 	uniforms: {
-				// 		component: CustomSelectField,
-				// 		label: 'Mode',
-				// 		name: 'mode',
-				// 		options: [
-				// 			{ label: 'Manual Mapping', value: 'manual' },
-				// 			{ label: 'JSON', value: 'json' }
-				// 		],
-				// 		placeholder: 'Select mode'
-				// 	}
-				// },
-				// fields: {
-				// 	type: 'array',
-				// 	uniforms: {
-				// 		component: CustomFieldMapping,
-				// 		label: 'Fields',
-				// 		name: 'fields',
-				// 		visibleIf: { mode: 'manual' }
-				// 	}
-				// },
-				jsonTemplate: {
-					type: 'string',
-					uniforms: {
-						component: CodeEditorField,
-						label: 'JSON',
-						name: 'jsonTemplate',
-						language: 'json'
-					}
-				},
-				// includeOtherInputFields: {
-				// 	type: 'boolean',
-				// 	uniforms: {
-				// 		component: CustomToggleField,
-				// 		label: 'Include Other Input Fields',
-				// 		name: 'includeOtherInputFields'
-				// 	}
-				// },
-				options: {
-					type: 'array',
-					uniforms: {
-						component: CustomParamsField,
-						label: 'Options',
-						placeholder: 'Add options',
-						name: 'options'
-					}
-				}
-			},
-			required: ['jsonTemplate']
-		},
-		anchors: {
-			source: [{ id: 'edit-field-source-1', text: 'Api/Response' }],
-			target: [{ id: 'edit-field-target-1', text: 'Api/Webhook' }]
-		},
-		initialValue: {
-			mode: 'manual',
-			fields: [],
-			jsonTemplate: '{\n "message": "text",\n "data": "data"\n}',
-			includeOtherInputFields: false,
-			options: []
-		}
-	},
-	{
 		type: 'schedule',
 		label: 'Schedule',
 		schema: yup.object().shape({
@@ -407,7 +282,8 @@ const NodeTypes = [
 			minute: 0,
 			weekday: '',
 			month: 1,
-			enabled: true
+			enabled: true,
+			channelId: ''
 		},
 		isDynamicSchema: true,
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -463,8 +339,8 @@ const NodeTypes = [
 					text: '',
 					icon_url: ''
 				},
-				timestamp: '',
-				fields: []
+				fields: [],
+				components: []
 			}
 		}
 	},
@@ -482,20 +358,10 @@ const NodeTypes = [
 							right: yup.string(),
 							type: yup.string().oneOf(['string', 'number', 'boolean', 'array', 'object', 'dateTime']).required('Type is required')
 						})
-						// outputName: yup.string().required('Output name is required')
 					})
 				)
 				.min(1, 'At least one condition is required'),
 			convertTypes: yup.boolean().default(false)
-			// options: yup
-			// 	.array()
-			// 	.of(
-			// 		yup.object().shape({
-			// 			key: yup.string().required(),
-			// 			value: yup.string().required()
-			// 		})
-			// 	)
-			// 	.nullable()
 		}),
 		bridgeSchema: {
 			type: 'object',
@@ -516,14 +382,6 @@ const NodeTypes = [
 						name: 'convertTypes'
 					}
 				}
-				// options: {
-				// 	type: 'array',
-				// 	uniforms: {
-				// 		component: CustomParamsField,
-				// 		label: 'Options',
-				// 		name: 'options'
-				// 	}
-				// }
 			},
 			required: ['routingRules']
 		},
@@ -546,7 +404,6 @@ const NodeTypes = [
 				}
 			],
 			convertTypes: false
-			// options: []
 		}
 	}
 ];

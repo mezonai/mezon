@@ -8,9 +8,10 @@ import { useAppearance } from '../context/AppearanceContext';
 
 interface IHeaderProps {
 	toggleSideBar: () => void;
+	isShowSideBar: boolean;
 }
 
-const Header = ({ toggleSideBar }: IHeaderProps) => {
+const Header = ({ toggleSideBar, isShowSideBar }: IHeaderProps) => {
 	const { userProfile } = useAuth();
 	const [showMenu, setShowMenu] = useState(false);
 	const menuRef = useRef<HTMLDivElement>(null);
