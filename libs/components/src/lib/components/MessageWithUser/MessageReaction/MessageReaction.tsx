@@ -15,7 +15,6 @@ const ReactionContent: React.FC<MessageReactionProps> = ({ message, isTopic }) =
 	const smileButtonRef = useRef<HTMLDivElement | null>(null);
 	const [showIconSmile, setShowIconSmile] = useState<boolean>(false);
 	const shouldRender = useIdleRender();
-
 	return (
 		<div
 			className="pl-[72px] w-fit flex flex-wrap gap-2 whitespace-pre-wrap"
@@ -53,7 +52,7 @@ export function combineMessageReactions(reactions: any[], messageId: string): an
 	const dataCombined: Record<string, EmojiDataOptionals> = {};
 
 	for (const reaction of reactions) {
-		const emojiId = reaction.emojiId || ('' as string);
+		const emojiId = reaction.emoji_id || ('' as string);
 		const emoji = reaction.emoji || ('' as string);
 
 		if (reaction.count < 1) {
@@ -71,14 +70,14 @@ export function combineMessageReactions(reactions: any[], messageId: string): an
 				channelId: ''
 			};
 		}
-		//if (!reaction.senderName) continue;
+		//if (!reaction.sender_name) continue;
 		const newSender = {
-			senderId: reaction.senderId,
+			sender_id: reaction.sender_id,
 			count: reaction.count
 		};
 
 		const reactionData = dataCombined[emojiId];
-		const senderIndex = reactionData.senders.findIndex((sender) => sender.senderId === newSender.senderId);
+		const senderIndex = reactionData.senders.findIndex((sender) => sender.senderId === newSender.sender_id);
 
 		if (senderIndex === -1) {
 			reactionData.senders.push(newSender);
