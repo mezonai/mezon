@@ -39,12 +39,7 @@ export function EventLocation({ event }: IEventLocation) {
 		<View style={styles.container}>
 			{option === OptionEvent.OPTION_SPEAKER && (
 				<TouchableOpacity style={styles.inline} onPress={joinVoiceChannel}>
-					<MezonIconCDN
-						icon={event.is_private ? IconCDN.channelVoiceLock : IconCDN.channelVoice}
-						height={size.s_16}
-						width={size.s_16}
-						color={themeValue.textStrong}
-					/>
+					<MezonIconCDN icon={IconCDN.channelVoice} height={size.s_16} width={size.s_16} color={themeValue.textStrong} />
 					<Text style={styles.smallText}>{channelVoice?.channel_label || t('eventDetail.privateRoom')}</Text>
 				</TouchableOpacity>
 			)}

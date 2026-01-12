@@ -14,6 +14,8 @@ import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 
+const EVENT_MAX_LENGTH = 255;
+
 type CreateEventScreenDetails = typeof APP_SCREEN.MENU_CLAN.CREATE_EVENT_DETAILS;
 export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<CreateEventScreenDetails>) {
 	const { themeValue } = useTheme();
@@ -116,6 +118,12 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 	const isErrorEndTime = useMemo(() => {
 		return startDate.getDate() >= endDate.getDate() && startTime.getTime() >= endTime.getTime();
 	}, [endDate, endTime, startDate, startTime]);
+
+	const isDisableNextButton = useMemo(() => {
+		return (
+			isErrorStartDate || isErrorStartTime || (type !== OptionEvent.OPTION_LOCATION && (isErrorEndDate || isErrorEndTime)) || !isValidEventTitle
+		);
+	}, [isErrorEndDate, isErrorEndTime, isErrorStartDate, isErrorStartTime, isValidEventTitle, type]);
 
 	function handlePressNext() {
 		setIsValidEventTitle(!!eventTitle?.trim()?.length);
@@ -241,6 +249,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 							onTextChange={setEventDescription}
 							textarea
 							placeHolder={t('fields.description.description')}
+							maxCharacter={EVENT_MAX_LENGTH}
 						/>
 						<MezonSelect
 							title={t('fields.eventFrequency.title')}
@@ -272,8 +281,9 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 					title={t('actions.next')}
 					titleStyle={styles.titleMezonBtn}
 					type={EMezonButtonTheme.SUCCESS}
-					containerStyle={styles.mezonBtn}
+					containerStyle={isDisableNextButton ? styles.buttonDisabled : styles.mezonBtn}
 					onPress={handlePressNext}
+					disabled={isDisableNextButton}
 				/>
 			</View>
 		</View>

@@ -49,6 +49,14 @@ export function EventDetail({ event }: IEventDetailProps) {
 	]);
 	const userMaxPermissionLevel = useSelector(selectUserMaxPermissionLevel);
 
+	const userDisplaynameToShow = useMemo(() => {
+		return userCreate?.clan_nick || userCreate?.user?.display_name || userCreate?.user?.username;
+	}, [userCreate?.clan_nick, userCreate?.user?.display_name, userCreate?.user?.username]);
+
+	const userAvatarToShow = useMemo(() => {
+		return userCreate?.clan_avatar || userCreate?.user?.avatar_url;
+	}, [userCreate?.clan_avatar, userCreate?.user?.avatar_url]);
+
 	const canModifyEvent = useMemo(() => {
 		if (isClanOwner || hasClanPermission || hasAdminPermission) {
 			return true;
@@ -144,14 +152,20 @@ export function EventDetail({ event }: IEventDetailProps) {
 
 					<View style={styles.inline}>
 						<MezonIconCDN icon={IconCDN.bellIcon} height={16} width={16} color={themeValue.text} />
-						<Text style={styles.smallText}>{t('detail.personInterested', { count: eventInterested })}</Text>
+						<Text style={styles.smallText}>
+							{eventInterested === 0
+								? t('detail.noOneInterested')
+								: eventInterested === 1
+									? t('detail.onePersonInterested')
+									: t('detail.personInterested', { count: eventInterested })}
+						</Text>
 					</View>
 
 					<View style={styles.inline}>
-						<MezonAvatar avatarUrl={userCreate?.user?.avatar_url} username={userCreate?.user?.username} height={20} width={20} />
+						<MezonAvatar avatarUrl={userAvatarToShow} username={userDisplaynameToShow} height={20} width={20} />
 						<Text style={styles.smallText}>
 							{t('detail.createdBy')}
-							<Text style={styles.highlight}>{userCreate?.user?.username}</Text>
+							<Text style={styles.highlight}>{userDisplaynameToShow}</Text>
 						</Text>
 					</View>
 				</View>
