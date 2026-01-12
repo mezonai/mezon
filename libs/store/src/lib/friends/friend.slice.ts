@@ -11,7 +11,7 @@ import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCa
 import type { StatusUserArgs } from '../channelmembers/channel.members';
 import { statusActions } from '../direct/status.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { RootState } from '../store';
 export const FRIEND_FEATURE_KEY = 'friends';
 const LIMIT_FRIEND = 1000;
@@ -101,15 +101,9 @@ export const fetchListFriendsCached = async (
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListFriends',
-			list_friend_req: {}
-		},
-		() => ensuredMezon.client.listFriends(ensuredMezon.session),
-		'friendList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.listFriends(ensuredMezon.session), {
+		scope: 'ListFriends'
+	});
 
 	markApiFirstCalled(apiKey);
 

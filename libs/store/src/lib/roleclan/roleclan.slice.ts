@@ -8,7 +8,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { selectEntitesUserClans } from '../clanMembers/clan.members';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, withRetry } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { PermissionUserEntity } from '../policies/policies.slice';
 import { selectAllPermissionsDefaultEntities } from '../policies/policies.slice';
 import type { RootState } from '../store';
@@ -96,19 +96,9 @@ export const fetchRolesClanCached = async (getState: () => RootState, ensuredMez
 		};
 	}
 
-	const response = (await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListRoles',
-			role_list_event_req: {
-				limit: 500,
-				state: 1,
-				clan_id: clanId
-			}
-		},
-		() => ensuredMezon.client.listRoles(ensuredMezon.session, clanId, 500, 1, ''),
-		'roleEventList'
-	)) as unknown as ApiRoleListEventResponse;
+	const response = (await withRetry(() => ensuredMezon.client.listRoles(ensuredMezon.session, clanId, 500, 1, ''), {
+		scope: 'ListRoles'
+	})) as unknown as ApiRoleListEventResponse;
 
 	markApiFirstCalled(apiKey);
 

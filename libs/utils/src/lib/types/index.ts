@@ -688,7 +688,7 @@ export type EmojiDataOptionals = {
 };
 
 export type SenderInfoOptionals = {
-	senderId?: string;
+	sender_id?: string;
 	count: number | undefined;
 };
 

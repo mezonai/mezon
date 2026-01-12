@@ -9,7 +9,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { convertStatusClan, selectStatusEntities, statusActions } from '../direct/status.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 export const USERS_CLANS_FEATURE_KEY = 'usersClan';
 
@@ -62,17 +62,9 @@ export const fetchUsersClanCached = async (getState: () => RootState, ensuredMez
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListClanUsers',
-			list_clan_user_req: {
-				clan_id: clanId
-			}
-		},
-		() => ensuredMezon.client.listClanUsers(ensuredMezon.session, clanId),
-		'clanUserList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.listClanUsers(ensuredMezon.session, clanId), {
+		scope: 'ListClanUsers'
+	});
 
 	const users = response?.clanUsers?.map((user) => mapUsersClanToEntity(user as ClanUserListClanUser)) || [];
 

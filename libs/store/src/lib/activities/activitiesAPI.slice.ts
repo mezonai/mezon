@@ -7,7 +7,7 @@ import type { ApiCreateActivityRequest, ApiUserActivity } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 
 export const ACTIVITIES_API_FEATURE_KEY = 'activitiesapi';
 
@@ -74,14 +74,9 @@ export const fetchActivitiesCached = async (getState: () => any, mezon: MezonVal
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		mezon,
-		{
-			api_name: 'ListActivity'
-		},
-		() => mezon.client.listActivity(mezon.session),
-		'userActivityList'
-	);
+	const response = await withRetry(() => mezon.client.listActivity(mezon.session), {
+		scope: 'ListActivity'
+	});
 
 	markApiFirstCalled(apiKey);
 

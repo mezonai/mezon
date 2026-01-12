@@ -43,7 +43,7 @@ const UserReactionPanel = forwardRef(({ emojiShowPanel, message, isTopic }: User
 	const hideSenderOnPanel = useCallback((emojiData: EmojiDataOptionals, senderId: string) => {
 		const newEmojiData = { ...emojiData };
 		if (newEmojiData.senders) {
-			newEmojiData.senders = newEmojiData.senders.filter((sender) => sender.senderId !== senderId);
+			newEmojiData.senders = newEmojiData.senders.filter((sender) => sender.sender_id !== senderId);
 		}
 		return newEmojiData;
 	}, []);
@@ -64,7 +64,7 @@ const UserReactionPanel = forwardRef(({ emojiShowPanel, message, isTopic }: User
 							{emojiShowPanel?.senders.map((sender: SenderInfoOptionals, index: number) => {
 								if (sender.count && sender.count > 0) {
 									return (
-										<Fragment key={`${index}_${sender.senderId}`}>
+										<Fragment key={`${index}_${sender.sender_id}`}>
 											<SenderItem
 												sender={sender}
 												emojiShowPanel={emojiShowPanel}
@@ -124,14 +124,14 @@ const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId,
 			emojiShowPanel?.id ?? '',
 			emojiShowPanel?.emojiId ?? '',
 			emojiShowPanel?.emoji ?? '',
-			sender?.senderId ?? '',
+			sender?.sender_id ?? '',
 			sender?.count ?? 0
 		);
 
-		hideSenderOnPanel(emojiShowPanel, sender.senderId ?? '');
+		hideSenderOnPanel(emojiShowPanel, sender.sender_id ?? '');
 	};
 
-	const user = useUserById(sender.senderId);
+	const user = useUserById(sender.sender_id);
 
 	return (
 		<div className="m-2 flex flex-row justify-start mb-2 items-center gap-2 relative  ">
@@ -149,9 +149,9 @@ const SenderItem: React.FC<SenderItemProps> = ({ sender, emojiShowPanel, userId,
 				/>
 			</div>
 
-			<NameComponent id={sender.senderId ?? ''} name={user?.clanNick || user?.user?.displayName || user?.user?.username} />
+			<NameComponent id={sender.sender_id ?? ''} name={user?.clanNick || user?.user?.displayName || user?.user?.username} />
 			<p className="text-xs absolute right-8 text-theme-primary-hover text-theme-primary ">{sender.count}</p>
-			{sender.senderId === userId.userId && sender.count && sender.count > 0 && (
+			{sender.sender_id === userId.userId && sender.count && sender.count > 0 && (
 				<div onClick={handleRemoveEmojiSender} className="right-1 absolute cursor-pointer text-theme-primary hover:text-red-500">
 					<Icons.Close defaultSize="w-3 h-3" />
 				</div>

@@ -8,7 +8,7 @@ import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCa
 import { channelsActions } from '../channels/channels.slice';
 import { directActions } from '../direct/direct.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const NOTIFICATION_SETTING_FEATURE_KEY = 'notificationsetting';
@@ -62,17 +62,9 @@ export const fetchNotificationSettingCached = async (getState: () => RootState, 
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		mezon,
-		{
-			api_name: 'GetNotificationChannel',
-			notification_channel: {
-				channel_id: channelId
-			}
-		},
-		() => mezon.client.getNotificationChannel(mezon.session, channelId),
-		'notificaionUserChannel'
-	);
+	const response = await withRetry(() => mezon.client.getNotificationChannel(mezon.session, channelId), {
+		scope: 'GetNotificationChannel'
+	});
 
 	markApiFirstCalled(apiKey);
 

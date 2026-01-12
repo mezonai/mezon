@@ -6,7 +6,7 @@ import type { ApiNotificationSetting } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const DEFAULT_NOTIFICATION_CLAN_FEATURE_KEY = 'defaultnotificationclan';
@@ -54,17 +54,9 @@ export const fetchDefaultNotificationClanCached = async (getState: () => RootSta
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		mezon,
-		{
-			api_name: 'GetNotificationClancase',
-			notification_clan: {
-				clan_id: clanId
-			}
-		},
-		() => mezon.client.getNotificationClan(mezon.session, clanId),
-		'notificationSetting'
-	);
+	const response = await withRetry(() => mezon.client.getNotificationClan(mezon.session, clanId), {
+		scope: 'GetNotificationClancase'
+	});
 
 	markApiFirstCalled(apiKey);
 

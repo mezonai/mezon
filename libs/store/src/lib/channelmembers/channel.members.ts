@@ -12,7 +12,7 @@ import { USERS_CLANS_FEATURE_KEY, selectAllUserClans, selectEntitesUserClans, us
 import type { DirectEntity } from '../direct/direct.slice';
 import { selectDirectMessageEntities } from '../direct/direct.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
 import { selectMaxPermissionForChannel } from '../policies/overriddenPolicies.slice';
 import type { RootState } from '../store';
@@ -93,21 +93,9 @@ export const fetchChannelMembersCached = async (
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListChannelUsers',
-			list_channel_users_req: {
-				channel_id: channelId,
-				limit: 2000,
-				clan_id: clanId,
-				channel_type: channelType,
-				state: 1
-			}
-		},
-		() => ensuredMezon.client.listChannelUsers(ensuredMezon.session, clanId, channelId, channelType, 1, 2000, ''),
-		'channelUserList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.listChannelUsers(ensuredMezon.session, clanId, channelId, channelType, 1, 2000, ''), {
+		scope: 'ListChannelUsers'
+	});
 
 	markApiFirstCalled(apiKey);
 

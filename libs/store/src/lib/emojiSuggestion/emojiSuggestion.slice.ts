@@ -7,7 +7,7 @@ import type { ApiClanEmojiCreateRequest, MezonUpdateClanEmojiByIdBody } from 'me
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const EMOJI_SUGGESTION_FEATURE_KEY = 'suggestionEmoji';
@@ -67,14 +67,9 @@ export const fetchEmojiCached = async (getState: () => RootState, ensuredMezon: 
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'GetListEmojisByUserId'
-		},
-		() => ensuredMezon.client.getListEmojisByUserId(ensuredMezon.session),
-		'emojiList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.getListEmojisByUserId(ensuredMezon.session), {
+		scope: 'GetListEmojisByUserId'
+	});
 
 	markApiFirstCalled(apiKey);
 

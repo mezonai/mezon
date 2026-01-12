@@ -8,7 +8,7 @@ import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser } from 'mezon-js
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureClientAsync, ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const VOICE_FEATURE_KEY = 'voice';
@@ -125,20 +125,9 @@ const fetchVoiceChannelMembersCached = async (
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		mezon,
-		{
-			api_name: 'ListChannelVoiceUsers',
-			list_channel_users_req: {
-				limit: 100,
-				state: 1,
-				channel_type: channelType,
-				clan_id: clanId
-			}
-		},
-		() => mezon.client.listChannelVoiceUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
-		'voiceUserList'
-	);
+	const response = await withRetry(() => mezon.client.listChannelVoiceUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''), {
+		scope: 'ListChannelVoiceUsers'
+	});
 
 	markApiFirstCalled(apiKey);
 

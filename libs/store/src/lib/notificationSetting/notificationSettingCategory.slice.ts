@@ -6,7 +6,7 @@ import type { ApiNotificationChannelCategorySetting } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { RootState } from '../store';
 import { deleteNotiChannelSetting, setMuteChannel, setNotificationSetting } from './notificationSettingChannel.slice';
 
@@ -62,17 +62,9 @@ export const fetchDefaultNotificationCategoryCached = async (
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		mezon,
-		{
-			api_name: 'GetNotificationCategory',
-			notification_category: {
-				category_id: categoryId
-			}
-		},
-		() => mezon.client.getNotificationCategory(mezon.session, categoryId),
-		'notificationUserChannel'
-	);
+	const response = await withRetry(() => mezon.client.getNotificationCategory(mezon.session, categoryId), {
+		scope: 'GetNotificationCategory'
+	});
 
 	markApiFirstCalled(apiKey);
 
@@ -341,17 +333,9 @@ export const fetchChannelCategorySettingCached = async (getState: () => RootStat
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		mezon,
-		{
-			api_name: 'GetChannelCategoryNotiSettingsList',
-			notification_clan: {
-				clan_id: clanId
-			}
-		},
-		() => mezon.client.getChannelCategoryNotiSettingsList(mezon.session, clanId),
-		'notificationList'
-	);
+	const response = await withRetry(() => mezon.client.getChannelCategoryNotiSettingsList(mezon.session, clanId), {
+		scope: 'GetChannelCategoryNotiSettingsList'
+	});
 
 	markApiFirstCalled(apiKey);
 
