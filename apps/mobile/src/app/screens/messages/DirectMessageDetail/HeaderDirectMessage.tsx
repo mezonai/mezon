@@ -1,7 +1,7 @@
 import type { CallSignalingData } from '@mezon/components';
 import { useChatSending, useSeenMessagePool } from '@mezon/core';
 import type { IOption } from '@mezon/mobile-components';
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_USERS_QUICK_REACTION, load, save } from '@mezon/mobile-components';
 import { size } from '@mezon/mobile-ui';
 import {
 	DMCallActions,
@@ -22,6 +22,7 @@ import { IMessageTypeCallLog, TypeMessage, WEBRTC_SIGNALING_TYPES, createImgprox
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { BackHandler, DeviceEventEmitter, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -34,6 +35,7 @@ import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { ConfirmBuzzMessageModal } from '../../home/homedrawer/components/ConfirmBuzzMessage';
 import { OptionChannelHeader } from '../../home/homedrawer/components/HeaderOptions';
 import HeaderTooltip from '../../home/homedrawer/components/HeaderTooltip';
+import { ContainerMessageActionModal } from '../../home/homedrawer/components/MessageItemBS/ContainerMessageActionModal';
 import { DirectMessageCallMain } from '../DirectMessageCall';
 import { UserStatusDM } from '../UserStatusDM';
 
@@ -77,11 +79,16 @@ export const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 });
 
 const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, directMessageId, isBlocked }) => {
+	const { t } = useTranslation('common');
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
 	const dispatch = useAppDispatch();
 	const { sendSignalingToParticipants } = useSendSignaling();
+
+	const channelId = useMemo(() => {
+		return currentDmGroup?.channelId || currentDmGroup?.id || '';
+	}, [currentDmGroup?.channelId, currentDmGroup?.id]);
 
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ mode, channelOrDirect: currentDmGroup });
@@ -214,16 +221,61 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 
 	const headerOptions: IOption[] = [
 		{
+			title: 'quickReaction',
+			content: t('quickReaction.title'),
+			value: OptionChannelHeader.QuickReaction,
+			icon: <MezonIconCDN icon={IconCDN.reactionIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />
+		},
+		{
 			title: 'buzz',
 			content: 'Buzz',
 			value: OptionChannelHeader.Buzz,
-			icon: <MezonIconCDN icon={IconCDN.buzz} color={themeValue.textStrong} height={size.s_18} width={size.s_18} />
+			icon: <MezonIconCDN icon={IconCDN.buzz} color={themeValue.text} height={size.s_18} width={size.s_18} />
 		}
 	];
+
+	const handleEmojiSelected = useCallback(
+		(emojiId: string, shortname: string) => {
+			if (!currentUserId || !channelId) return;
+
+			try {
+				const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
+
+				if (!currentData[currentUserId]) {
+					currentData[currentUserId] = {};
+				}
+
+				currentData[currentUserId][channelId] = { emojiId, shortname };
+				save(STORAGE_USERS_QUICK_REACTION, currentData);
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+			} catch (error) {
+				console.error('Error setting quick reaction:', error);
+			}
+		},
+		[currentUserId, channelId]
+	);
+
+	const handleOpenQuickReactionModal = async () => {
+		const data = {
+			snapPoints: ['90%'],
+			children: (
+				<ContainerMessageActionModal
+					message={undefined}
+					mode={mode}
+					isOnlyEmojiPicker
+					channelId={channelId}
+					onEmojiSelected={handleEmojiSelected}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
 
 	const onPressOption = (option: IOption) => {
 		if (option?.value === OptionChannelHeader.Buzz) {
 			handleActionBuzzMessage();
+		} else {
+			handleOpenQuickReactionModal();
 		}
 	};
 

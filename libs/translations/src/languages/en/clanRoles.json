@@ -11,7 +11,7 @@
 		"createANewRole": "Create a new role",
 		"description": "Give this role a unique name and color. You can always change this later.",
 		"create": "Create",
-		"newRole": "Enter new role name...",
+		"newRole": "New role",
 		"roleName": "Role Name",
 		"createSuccess": "Created {{roleName}} role successfully",
 		"cannotCreate": "Cannot create {{roleName}}"

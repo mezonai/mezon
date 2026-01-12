@@ -1,4 +1,5 @@
 const Images = {
+	EMPTY_FRIEND: require('./images/empty-friend.png'),
 	ICON_GOOGLE: require('./images/icon_google.jpg'),
 	AVATAR_GROUP: require('./images/avatar-group.png'),
 	CHAT_PANA: require('./images/chat-pana.png'),
