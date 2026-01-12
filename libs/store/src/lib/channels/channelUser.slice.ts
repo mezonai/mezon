@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IChannelUser, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ChannelDescription } from 'mezon-js';
+import type { ApiChannelDescription } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -21,8 +21,8 @@ export interface ChannelUsersEntity extends IChannelUser {
 	id: string; // Primary ID
 }
 
-export const mapChannelsByUserToEntity = (channelRes: ChannelDescription) => {
-	return { ...channelRes, id: channelRes.channel_id || '' };
+export const mapChannelsByUserToEntity = (channelRes: ApiChannelDescription) => {
+	return { ...channelRes, id: channelRes.channelId || '' };
 };
 
 export interface ListChannelsByUserState extends EntityState<ChannelUsersEntity, string> {
@@ -126,7 +126,7 @@ export const listChannelsByUserSlice = createSlice({
 		upsertMany: listChannelsByUserAdapter.upsertMany,
 		removeByClanId: (state, action: PayloadAction<{ clanId: string }>) => {
 			const channels = listChannelsByUserAdapter.getSelectors().selectAll(state);
-			const channelsToRemove = channels.filter((channel) => channel.clan_id === action.payload.clanId).map((channel) => channel.id);
+			const channelsToRemove = channels.filter((channel) => channel.clanId === action.payload.clanId).map((channel) => channel.id);
 			listChannelsByUserAdapter.removeMany(state, channelsToRemove);
 		},
 		updateLastSentTime: (state, action: PayloadAction<{ channelId: string }>) => {
@@ -135,7 +135,7 @@ export const listChannelsByUserSlice = createSlice({
 			listChannelsByUserAdapter.updateOne(state, {
 				id: payload.channelId,
 				changes: {
-					last_sent_message: {
+					lastSentMessage: {
 						timestampSeconds: timestamp
 					}
 				}
@@ -174,7 +174,7 @@ export const listChannelsByUserSlice = createSlice({
 				if (entity) {
 					const newCountMessUnread = isReset ? 0 : (entity.countMessUnread ?? 0) + count;
 					if (entity.countMessUnread !== newCountMessUnread || isReset) {
-						const lastSentMessage = state.entities[state.ids[state.ids.length - 1]]?.last_sent_message;
+						const lastSentMessage = state.entities[state.ids[state.ids.length - 1]]?.lastSentMessage;
 						listChannelsByUserAdapter.updateOne(state, {
 							id: channelId,
 							changes: {
@@ -197,7 +197,7 @@ export const listChannelsByUserSlice = createSlice({
 		},
 		markAsReadChannel: (state, action: PayloadAction<string[]>) => {
 			const updateList = action.payload.map((id) => {
-				const lastSentMessage = state.entities[id]?.last_sent_message;
+				const lastSentMessage = state.entities[id]?.lastSentMessage;
 				return {
 					id,
 					changes: {

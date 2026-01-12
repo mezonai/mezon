@@ -84,19 +84,19 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const listChannelSearch = useMemo(() => {
 		const list = listChannels.map((item) => {
 			return {
-				id: item?.channel_id ?? '',
-				name: item?.channel_label ?? '',
-				subText: item?.clan_name ?? '',
+				id: item?.channelId ?? '',
+				name: item?.channelLabel ?? '',
+				subText: item?.clanName ?? '',
 				icon: '#',
-				clanId: item?.clan_id ?? '',
-				channelId: item?.channel_id ?? '',
-				lastSentTimeStamp: Number(item?.last_sent_message?.timestampSeconds || 0),
+				clanId: item?.clanId ?? '',
+				channelId: item?.channelId ?? '',
+				lastSentTimeStamp: Number(item?.lastSentMessage?.timestampSeconds || 0),
 				typeChat: TypeSearch.Channel_Type,
-				prioritizeName: item?.channel_label ?? '',
-				channelPrivate: item.channel_private,
+				prioritizeName: item?.channelLabel ?? '',
+				channelPrivate: item.channelPrivate,
 				type: item.type,
-				parentId: item.parent_id,
-				meetingCode: item.meeting_code,
+				parentId: item.parentId,
+				meetingCode: item.meetingCode,
 				count_messsage_unread: item?.countMessUnread,
 				lastSeenTimeStamp: Number(item?.lastSeenMessage?.timestampSeconds || 0)
 			};
