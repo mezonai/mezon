@@ -133,8 +133,8 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 			return {
 				e: message.positionE?.[index],
 				s: message.positionS?.[index],
-				roleId: message.isMentionRole?.[index] ? item : '',
-				userId: message.isMentionRole?.[index] ? '' : item
+				role_id: message.isMentionRole?.[index] ? item : '',
+				user_id: message.isMentionRole?.[index] ? '' : item
 			};
 		});
 		return mention || [];

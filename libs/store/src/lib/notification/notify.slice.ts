@@ -258,11 +258,20 @@ export const notificationSlice = createSlice({
 						notificationAdapter.setMany(state, action.payload.data);
 
 						const { data, category, fromCache } = action.payload;
-
+						const dataParse = data.map((item) => {
+							return {
+								...item,
+								content: {
+									...item.content,
+									content:
+										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content
+								}
+							};
+						});
 						if (state.notifications[category]) {
-							state.notifications[category].data = [...state.notifications[category].data, ...data];
+							state.notifications[category].data = [...state.notifications[category].data, ...dataParse];
 						} else {
-							state.notifications[category] = { data: [...data], lastId: '', cache: undefined };
+							state.notifications[category] = { data: [...dataParse], lastId: '', cache: undefined };
 						}
 
 						if (!fromCache) {
