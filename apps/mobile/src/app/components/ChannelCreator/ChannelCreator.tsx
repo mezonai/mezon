@@ -32,7 +32,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { categoryId } = route.params;
 
-	const { t } = useTranslation(['channelCreator']);
+	const { t } = useTranslation(['channelCreator', 'common']);
 	const dispatch = useAppDispatch();
 
 	const handleCreateChannel = useCallback(async () => {
@@ -53,7 +53,7 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 		if ((response as any)?.error) {
 				Toast.show({
 					type: 'error',
-					text1: payload?.message || 'Something went wrong'
+					text1: payload?.message || t('common:somethingWentWrong')
 				});
 			dispatch(appActions.setLoadingMainMobile(false));
 			return;
