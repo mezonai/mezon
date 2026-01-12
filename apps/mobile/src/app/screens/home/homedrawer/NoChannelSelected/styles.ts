@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -6,22 +7,18 @@ export const style = (colors: Attributes) =>
 		wrapper: {
 			flex: 1,
 			height: '100%',
-			borderTopLeftRadius: 20,
 			overflow: 'hidden',
+			borderTopLeftRadius: 20,
 			backgroundColor: colors.primary,
 			paddingHorizontal: size.s_20,
-			marginTop: size.s_50
-		},
-		headerText: {
-			fontSize: size.s_20,
-			color: colors.white,
-			fontWeight: '600'
+			justifyContent: 'center',
+			alignItems: 'center'
 		},
 		imageBg: {
-			width: '100%',
-			height: '40%',
+			width: size.s_200,
+			height: size.s_200,
 			resizeMode: 'contain',
-			marginVertical: size.s_30
+			marginBottom: size.s_30
 		},
 		title: {
 			fontSize: size.h6,

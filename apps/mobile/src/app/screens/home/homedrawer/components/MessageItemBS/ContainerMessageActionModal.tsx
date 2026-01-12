@@ -12,6 +12,7 @@ import {
 	getStore,
 	giveCoffeeActions,
 	messagesActions,
+	MessagesEntity,
 	notificationActions,
 	selectAnonymousMode,
 	selectCurrentChannel,
@@ -62,8 +63,7 @@ import { EMessageActionType } from '../../enums';
 import type {
 	IConfirmActionPayload,
 	IMessageAction,
-	IMessageActionNeedToResolve,
-	IReplyBottomSheet
+	IMessageActionNeedToResolve
 } from '../../types/message.interface';
 import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
@@ -73,11 +73,20 @@ import { ReportMessageModal } from '../ReportMessageModal';
 import { RecentEmojiMessageAction } from './RecentEmojiMessageAction';
 import { style } from './styles';
 
-export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet) => {
+interface IContainerMessageActionModalProps {
+	message: MessagesEntity;
+	mode?: ChannelStreamMode;
+	isOnlyEmojiPicker?: boolean;
+	senderDisplayName?: string;
+	channelId?: string;
+	onEmojiSelected?: (emojiId: string, shortname: string) => void;
+}
+
+export const ContainerMessageActionModal = React.memo(
+	({ message, mode, isOnlyEmojiPicker = false, senderDisplayName = '', channelId, onEmojiSelected }: IContainerMessageActionModalProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
-	const { message, mode, isOnlyEmojiPicker = false, senderDisplayName = '', channelId } = props;
 	const { socketRef } = useMezon();
 	const store = getStore();
 
@@ -872,6 +881,11 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 
 	const onSelectEmoji = useCallback(
 		async (emojiId: string, emoij: string) => {
+			if (onEmojiSelected) {
+				onEmojiSelected(emojiId, emoij);
+				return;
+			}
+
 			if (!message && isOnlyEmojiPicker) {
 				if (!socketRef.current || !channelId) return;
 				await socketRef.current.writeVoiceReaction([emojiId], channelId);
@@ -879,7 +893,7 @@ export const ContainerMessageActionModal = React.memo((props: IReplyBottomSheet)
 			}
 			await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emojiId, emoij);
 		},
-		[channelId, handleReact, isOnlyEmojiPicker, message, mode, socketRef]
+		[channelId, handleReact, isOnlyEmojiPicker, message, mode, socketRef, onEmojiSelected]
 	);
 
 	return (
