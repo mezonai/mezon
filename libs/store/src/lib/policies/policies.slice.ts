@@ -6,7 +6,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { ThunkConfigWithError } from '../errors';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const POLICIES_FEATURE_KEY = 'policies';
@@ -65,17 +65,9 @@ const fetchPermissionsUserCached = async (
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		mezon,
-		{
-			api_name: 'GetRoleOfUserInTheClan',
-			permission_user_req: {
-				clan_id: clanId
-			}
-		},
-		() => mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId),
-		'roleList'
-	);
+	const response = await withRetry(() => mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId), {
+		scope: 'GetRoleOfUserInTheClan'
+	});
 
 	markApiFirstCalled(apiKey);
 
@@ -112,14 +104,9 @@ export const fetchPermissionCached = async (getState: () => RootState, mezon: Me
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		mezon,
-		{
-			api_name: 'GetListPermission'
-		},
-		() => mezon.client.getListPermission(mezon.session),
-		'permissionList'
-	);
+	const response = await withRetry(() => mezon.client.getListPermission(mezon.session), {
+		scope: 'GetListPermission'
+	});
 
 	markApiFirstCalled(apiKey);
 

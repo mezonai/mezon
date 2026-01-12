@@ -16,7 +16,7 @@ import { usersClanActions } from '../clanMembers/clan.members';
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureClient, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx, sleep } from '../helpers';
+import { ensureClient, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx, sleep, withRetry } from '../helpers';
 import { messagesActions, processQueuedLastSeenMessages } from '../messages/messages.slice';
 import { defaultNotificationActions } from '../notificationSetting/notificationSettingClan.slice';
 import { policiesActions } from '../policies/policies.slice';
@@ -170,18 +170,9 @@ export const fetchClansCached = async (
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListClanDescs',
-			list_clan_req: {
-				limit,
-				state: 1
-			}
-		},
-		() => ensuredMezon.client.listClanDescs(ensuredMezon.session, limit, state, cursor || ''),
-		'clanDescList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.listClanDescs(ensuredMezon.session, limit, state, cursor || ''), {
+		scope: 'ListClanDescs'
+	});
 
 	markApiFirstCalled(apiKey);
 
@@ -583,11 +574,11 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 							}
 						},
 						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),
-						'unreadMsgIndicator'
+						'unread_msg_indicator'
 					);
 
-					if (response && response.hasUnreadMessage !== undefined) {
-						const hasUnread = response.hasUnreadMessage || false;
+					if (response && (response as any).has_unread_message !== undefined) {
+						const hasUnread = (response as any).has_unread_message || false;
 						thunkAPI.dispatch(
 							clansActions.setHasUnreadMessage({
 								clanId,
@@ -620,14 +611,14 @@ export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('cl
 				}
 			},
 			() => (mezon.client as any).listClanBadgeCount?.(mezon.session, clanId),
-			'clanBadgeCount'
+			'clan_badge_count'
 		);
 
-		if (response && (response as any).badgeCount !== undefined) {
+		if (response && (response as any).badge_count !== undefined) {
 			thunkAPI.dispatch(
 				clansActions.setClanBadgeCount({
 					clanId,
-					badgeCount: (response as any).badgeCount
+					badgeCount: (response as any).badge_count
 				})
 			);
 		}

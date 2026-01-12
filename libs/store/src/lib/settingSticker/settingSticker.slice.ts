@@ -7,7 +7,7 @@ import type { ApiClanSticker, ApiClanStickerAddRequest, MezonUpdateClanStickerBy
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
+import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const SETTING_CLAN_STICKER = 'settingSticker';
@@ -81,14 +81,9 @@ export const fetchStickerByUserIdCached = async (getState: () => RootState, ensu
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'GetListStickersByUserId'
-		},
-		() => ensuredMezon.client.getListStickersByUserId(ensuredMezon.session),
-		'stickerList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.getListStickersByUserId(ensuredMezon.session), {
+		scope: 'GetListStickersByUserId'
+	});
 
 	markApiFirstCalled(apiKey);
 

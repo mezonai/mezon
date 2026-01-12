@@ -15,7 +15,7 @@ import { selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { convertGoogleTimestamp, ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
+import { convertGoogleTimestamp, ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const EVENT_MANAGEMENT_FEATURE_KEY = 'eventmanagement';
@@ -50,17 +50,9 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListEvents',
-			list_event_req: {
-				clan_id: clanId
-			}
-		},
-		() => ensuredMezon.client.listEvents(ensuredMezon.session, clanId),
-		'eventList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.listEvents(ensuredMezon.session, clanId), {
+		scope: 'ListEvents'
+	});
 
 	markApiFirstCalled(apiKey);
 

@@ -29,7 +29,7 @@ import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChann
 import { channelMembersActions } from '../channelmembers/channel.members';
 import { selectClansEntities } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import { messagesActions, processQueuedLastSeenMessages } from '../messages/messages.slice';
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
 import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice';
@@ -198,20 +198,9 @@ export const fetchChannelsCached = async (
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListChannelDescs',
-			list_channel_req: {
-				limit,
-				state,
-				channel_type: channelType,
-				clan_id: clanId
-			}
-		},
-		() => ensuredMezon.client.listChannelDescs(ensuredMezon.session, limit, state, '', clanId, channelType),
-		'channelDescList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.listChannelDescs(ensuredMezon.session, limit, state, '', clanId, channelType), {
+		scope: 'ListChannelDescs'
+	});
 
 	markApiFirstCalled(apiKey);
 
@@ -238,17 +227,9 @@ export const fetchListFavoriteChannelCached = async (getState: () => RootState, 
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'GetListFavoriteChannel',
-			favorite_channel_req: {
-				clan_id: clanId
-			}
-		},
-		() => ensuredMezon.client.getListFavoriteChannel(ensuredMezon.session, clanId),
-		'favoriteChannelList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.getListFavoriteChannel(ensuredMezon.session, clanId), {
+		scope: 'GetListFavoriteChannel'
+	});
 
 	markApiFirstCalled(apiKey);
 
@@ -274,17 +255,9 @@ export const fetchAppChannelCached = async (getState: () => RootState, ensuredMe
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListChannelApps',
-			list_apps_req: {
-				clan_id: clanId
-			}
-		},
-		() => ensuredMezon.client.listChannelApps(ensuredMezon.session, clanId),
-		'channelAppsList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.listChannelApps(ensuredMezon.session, clanId), {
+		scope: 'ListChannelApps'
+	});
 
 	markApiFirstCalled(apiKey);
 

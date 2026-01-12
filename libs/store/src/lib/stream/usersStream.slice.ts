@@ -6,7 +6,7 @@ import type { ChannelType } from 'mezon-js';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const USERS_STREAM_FEATURE_KEY = 'usersstream';
@@ -72,20 +72,9 @@ const fetchStreamChannelMembersCached = async (
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		mezon,
-		{
-			api_name: 'ListStreamingChannelUsers',
-			list_channel_users_req: {
-				limit: 100,
-				state: 1,
-				channel_type: channelType,
-				clan_id: clanId
-			}
-		},
-		() => mezon.client.listStreamingChannelUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
-		'streamUserList'
-	);
+	const response = await withRetry(() => mezon.client.listStreamingChannelUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''), {
+		scope: 'ListStreamingChannelUsers'
+	});
 
 	markApiFirstCalled(apiKey);
 

@@ -8,7 +8,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 
 export const CATEGORIES_FEATURE_KEY = 'categories';
@@ -90,17 +90,9 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListCategoryDescs',
-			list_category_req: {
-				clan_id: clanId
-			}
-		},
-		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
-		'categoryList'
-	);
+	const response = await withRetry(() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId), {
+		scope: 'ListCategoryDescs'
+	});
 
 	markApiFirstCalled(apiKey);
 
