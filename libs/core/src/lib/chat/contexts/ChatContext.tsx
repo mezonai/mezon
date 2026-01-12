@@ -1183,14 +1183,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		async (eventEmoji: EventEmoji) => {
 			if (eventEmoji.action === EEventAction.CREATED) {
 				const newEmoji: ApiClanEmoji = {
-					category: eventEmoji.clanName,
-					clanId: eventEmoji.clanId,
-					creatorId: eventEmoji.userId,
+					category: eventEmoji.clan_name || '',
+					clanId: eventEmoji.clan_id || '',
+					creatorId: eventEmoji.user_id || '',
 					id: eventEmoji.id,
-					shortname: eventEmoji.shortName,
-					src: eventEmoji.userId === userId || !eventEmoji.isForSale ? eventEmoji.source : undefined,
+					shortname: eventEmoji.short_name || '',
+					src: eventEmoji.user_id === userId || !eventEmoji.is_for_sale ? eventEmoji.source : undefined,
 					logo: eventEmoji.logo,
-					clanName: eventEmoji.clanName
+					clanName: eventEmoji.clan_name || ''
 				};
 
 				dispatch(emojiSuggestionActions.add(newEmoji));
@@ -1199,7 +1199,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					emojiSuggestionActions.update({
 						id: eventEmoji.id,
 						changes: {
-							shortname: eventEmoji.shortName
+							shortname: eventEmoji.short_name || ''
 						}
 					})
 				);
