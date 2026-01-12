@@ -125,10 +125,10 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 
 			if ((response as unknown as IWithError).error) {
 				const errorPayload = response.payload;
-				// if (isServerError500(errorPayload)) {
-				// 	console.error('Server error (500), logging out immediately');
-				// 	return handleLogoutWithRedirect(dispatch, initialPath);
-				// }
+				if (isServerError500(errorPayload)) {
+					console.error('Server error (500), logging out immediately');
+					return handleLogoutWithRedirect(dispatch, initialPath);
+				}
 
 				throw new Error('Session refresh failed');
 			} else {
@@ -139,10 +139,10 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 				throw new Error('Session expired');
 			}
 		} catch (error) {
-			// if ((await checkInternetConnection()) && error instanceof Error && !error.message.includes('Session expired')) {
-			// 	console.error('Non-retryable error, logging out:', error);
-			// 	return handleLogoutWithRedirect(dispatch, initialPath);
-			// }
+			if ((await checkInternetConnection()) && error instanceof Error && !error.message.includes('Session expired')) {
+				console.error('Non-retryable error, logging out:', error);
+				return handleLogoutWithRedirect(dispatch, initialPath);
+			}
 
 			console.error(`Error in refreshSession, retrying... (${6 - retries + 1}/6)`, error);
 		}

@@ -54,14 +54,34 @@ export const fetchListSearchMessage = createAsyncThunk(
 	async ({ filters, from, size, sorts, isMobile = false }: any, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const toSnakeCase = (str: string) => str.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
+			const normalizedFilters =
+				filters?.map((filter: any) => {
+					const fieldName = filter.fieldName || filter.field_name || '';
+					const fieldValue = filter.fieldValue || filter.field_value || '';
+
+					return {
+						$typeName: 'mezon.api.FilterParam' as const,
+						fieldName: toSnakeCase(fieldName),
+						fieldValue
+					};
+				}) || [];
+
 			const response = await mezon.client.searchMessage(mezon.session, {
 				$typeName: 'mezon.api.SearchMessageRequest' as const,
-				filters,
+				filters: normalizedFilters,
 				from,
 				size,
-				sorts
+				sorts: sorts || []
 			});
-			const channelId = filters.find((filter: { fieldName: string }) => filter.fieldName === 'channelId')?.fieldValue;
+
+			const channelId =
+				filters.find(
+					(filter: { fieldName?: string; field_name?: string }) => filter.fieldName === 'channelId' || filter.field_name === 'channelId'
+				)?.fieldValue ||
+				filters.find(
+					(filter: { fieldName?: string; field_name?: string }) => filter.fieldName === 'channelId' || filter.field_name === 'channelId'
+				)?.field_value;
 
 			if (!response.messages) {
 				thunkAPI.dispatch(searchMessagesActions.setTotalResults({ channelId, total: isMobile ? response.total || 0 : 0 }));
