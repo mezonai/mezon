@@ -3,16 +3,18 @@ import type { EmojiStorage, IReaction } from '@mezon/utils';
 import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageReaction } from 'mezon-js/api.gen';
+import type { ApiMessageReaction } from 'mezon-js/types';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { toastActions } from '../toasts';
 
 export const REACTION_FEATURE_KEY = 'reaction';
 
-export const mapReactionToEntity = (reaction: UpdateReactionMessageArgs) => {
+export const mapReactionToEntity = (reaction: ApiMessageReaction): ReactionEntity => {
 	return {
-		...reaction
-	} as ReactionEntity;
+		...reaction,
+		id: reaction.id || '',
+		messageId: reaction.message_id || ''
+	};
 };
 
 export interface ReactionEntity extends IReaction {
@@ -21,12 +23,12 @@ export interface ReactionEntity extends IReaction {
 
 export type UpdateReactionMessageArgs = {
 	id?: string;
-	channel_id?: string;
-	message_id?: string;
-	emoji_id: string;
+	channelId?: string;
+	messageId?: string;
+	emojiId: string;
 	emoji: string;
 	count?: number;
-	sender_id?: string;
+	senderId?: string;
 	action?: boolean;
 };
 
@@ -34,7 +36,7 @@ export type UpdateBulkMessageReactionsArgs = {
 	messages: {
 		id: string;
 		reactions?: ApiMessageReaction[] | undefined;
-		channel_id?: string;
+		channelId?: string;
 	}[];
 };
 
@@ -62,16 +64,16 @@ export type WriteMessageReactionArgs = {
 	channelId: string;
 	mode: number;
 	messageId: string;
-	emoji_id: string;
+	emojiId: string;
 	emoji: string;
 	count: number;
 	messageSenderId: string;
 	actionDelete: boolean;
 	isPublic: boolean;
 	userId: string;
-	topic_id?: string;
-	emoji_recent_id?: string;
-	sender_name?: string;
+	topicId?: string;
+	emojiRecentId?: string;
+	senderName?: string;
 };
 
 const reactionQueue: Array<() => Promise<void>> = [];
@@ -137,16 +139,16 @@ export const writeMessageReaction = createAsyncThunk(
 			channelId,
 			mode,
 			messageId,
-			emoji_id,
+			emojiId,
 			emoji,
 			count,
 			messageSenderId,
 			actionDelete,
 			isPublic,
 			userId,
-			topic_id,
-			emoji_recent_id,
-			sender_name
+			topicId,
+			emojiRecentId,
+			senderName
 		}: WriteMessageReactionArgs,
 		thunkAPI
 	) => {
@@ -171,14 +173,14 @@ export const writeMessageReaction = createAsyncThunk(
 								mode,
 								isPublic,
 								messageId,
-								emoji_id,
+								emojiId,
 								emoji,
 								count,
 								messageSenderId,
 								actionDelete,
-								topic_id,
-								emoji_recent_id,
-								sender_name
+								topicId,
+								emojiRecentId,
+								senderName
 							),
 							2000,
 							'Message reaction operation timed out'
@@ -189,12 +191,12 @@ export const writeMessageReaction = createAsyncThunk(
 				);
 
 				const emojiLastest: EmojiStorage = {
-					emojiId: emoji_id,
+					emojiId,
 					emoji,
 					messageId,
 					senderId: userId,
 					action: actionDelete,
-					channel_id: channelId
+					channelId
 				};
 				saveRecentEmoji(emojiLastest);
 			} catch (error) {

@@ -1,7 +1,8 @@
+import type { Timestamp } from '@bufbuild/protobuf/dist/cjs/wkt/gen/google/protobuf/timestamp_pb';
 import type { MezonContextValue } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { Client, Session } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api.gen';
+import type { ApiFriend } from 'mezon-js/types';
 import type { IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import type { GetThunkAPIWithMezon } from './typings';
 
@@ -146,7 +147,7 @@ async function checkInternetConnectionCached(): Promise<boolean> {
 
 	sharedConnectionCheckPromise = (async () => {
 		try {
-			const response = await fetch('https://mezon.ai/assets/favicon.ico', {
+			const response = await fetch(`${window.origin}/assets/favicon.ico`, {
 				method: 'HEAD',
 				cache: 'no-cache',
 				signal: AbortSignal.timeout(5000)
@@ -312,6 +313,11 @@ export async function fetchDataWithSocketFallback<T>(
 		try {
 			const data = await socket.listDataSocket(socketRequest);
 
+			if (socketRequest.api_name === 'ListClanBadgeCount') {
+				console.log(socketRequest, 'socketRequest');
+				console.log(data, 'data');
+			}
+
 			if (socketRequest.api_name === 'ListFriends') {
 				if (responseKey && data?.[responseKey]?.friends) {
 					data[responseKey].friends = data[responseKey]?.friends?.map((item: ApiFriend) => ({
@@ -323,8 +329,8 @@ export async function fetchDataWithSocketFallback<T>(
 			}
 
 			if (socketRequest.api_name === 'ListClanUsers') {
-				if (responseKey && data?.[responseKey]?.clan_users) {
-					data[responseKey].clan_users = data[responseKey]?.clan_users?.map((item: ApiFriend) => ({
+				if (responseKey && data?.[responseKey]?.clanUsers) {
+					data[responseKey].clanUsers = data[responseKey]?.clanUsers?.map((item: ApiFriend) => ({
 						...item
 					}));
 				}
@@ -346,4 +352,55 @@ export async function fetchDataWithSocketFallback<T>(
 		response = await withRetry(restApiFallback, { ...retryConfig, scope: socketRequest.api_name });
 	}
 	return response;
+}
+
+/**
+ * Helper type to create mezon-js Message types with $typeName property
+ * @example
+ * const request: MezonMessage<'mezon.api.GenerateMeetTokenRequest', ApiGenerateMeetTokenRequest> = {
+ *   $typeName: 'mezon.api.GenerateMeetTokenRequest',
+ *   channelId: '123',
+ *   roomName: 'room1'
+ * };
+ */
+export type MezonMessage<T extends string, P extends Record<string, any>> = Required<P> & {
+	$typeName: T;
+};
+
+/**
+ * Helper function to create mezon-js Message objects with $typeName property
+ * @example
+ * const request = createMezonMessage('mezon.api.GenerateMeetTokenRequest', {
+ *   channelId: '123',
+ *   roomName: 'room1'
+ * });
+ */
+export function createMezonMessage<T extends string, P extends Record<string, any>>(typeName: T, payload: Required<P>): MezonMessage<T, P> {
+	return {
+		$typeName: typeName,
+		...payload
+	} as MezonMessage<T, P>;
+}
+
+export function timestampToString(timestamp: any): string | undefined {
+	if (!timestamp) {
+		return undefined;
+	}
+	if (typeof timestamp === 'string') {
+		return timestamp;
+	}
+	if (typeof timestamp === 'object' && 'seconds' in timestamp) {
+		const seconds = Number(timestamp.seconds);
+		const nanos = timestamp.nanos ? Number(timestamp.nanos) / 1e9 : 0;
+		return new Date(seconds * 1000 + nanos).toISOString();
+	}
+	return undefined;
+}
+
+export function convertGoogleTimestamp(timestamp: string | number): Timestamp {
+	const ts = typeof timestamp === 'string' ? Date.parse(timestamp) / 1000 : Number(timestamp);
+	const seconds = BigInt(Math.floor(ts));
+	const nanos = Math.floor((ts - Number(seconds)) * 1_000_000_000);
+
+	return { $typeName: 'google.protobuf.Timestamp', seconds, nanos };
 }

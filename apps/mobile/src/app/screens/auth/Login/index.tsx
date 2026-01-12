@@ -5,7 +5,7 @@ import { authActions } from '@mezon/store';
 import { useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { useFocusEffect } from '@react-navigation/native';
-import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api.gen';
+import type { ApiLinkAccountConfirmRequest } from 'mezon-js/types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -187,7 +187,7 @@ const LoginScreen = ({ navigation }) => {
 				setIsLoading(true);
 				const resp: any = await dispatch(authActions.authenticateEmailOTPRequest({ email }));
 				const payload = resp?.payload as ApiLinkAccountConfirmRequest;
-				const reqId = payload?.req_id;
+				const reqId = payload?.reqId;
 				if (reqId) {
 					setLastOTPSentTime((prev) => ({
 						...prev,
@@ -238,7 +238,7 @@ const LoginScreen = ({ navigation }) => {
 			setIsLoading(true);
 			const resp: any = await dispatch(authActions.authenticatePhoneSMSOTPRequest({ phone: fullPhoneNumber }));
 			const payload = resp?.payload as ApiLinkAccountConfirmRequest;
-			const reqId = payload?.req_id;
+			const reqId = payload?.reqId;
 			if (reqId) {
 				setLastOTPSentTime((prev) => ({
 					...prev,

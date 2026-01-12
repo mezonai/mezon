@@ -11,7 +11,7 @@ import UserProfile from '../../UserProfile';
 import { style } from '../styles';
 import { ReactionMember } from './ReactionMember';
 type ReactionSenderItem = {
-	sender_id: string;
+	senderId: string;
 	count: number;
 };
 interface IMessageReactionContentItemProps {
@@ -31,7 +31,7 @@ export const MessageReactionContentItem = memo((props: IMessageReactionContentIt
 
 	const renderRightActions = useCallback(
 		(item: ReactionSenderItem) => {
-			if (item?.sender_id !== userId) {
+			if (item?.senderId !== userId) {
 				return null;
 			}
 			return (
@@ -46,7 +46,7 @@ export const MessageReactionContentItem = memo((props: IMessageReactionContentIt
 
 	const reactionMember = (
 		<ReactionMember
-			userId={item?.sender_id || ''}
+			userId={item?.senderId || ''}
 			currentClanId={currentClanId}
 			channelId={channelId}
 			count={item?.count || 0}
@@ -54,7 +54,7 @@ export const MessageReactionContentItem = memo((props: IMessageReactionContentIt
 				const data = {
 					snapPoints: ['60%', '90%'],
 					hiddenHeaderIndicator: true,
-					children: <UserProfile userId={item?.sender_id || ''} showAction={true} showRole={true} currentChannel={null} />
+					children: <UserProfile userId={item?.senderId || ''} showAction={true} showRole={true} currentChannel={null} />
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			}}
@@ -63,7 +63,7 @@ export const MessageReactionContentItem = memo((props: IMessageReactionContentIt
 
 	return (
 		<View style={styles.reactionListItem}>
-			{item?.sender_id === userId ? (
+			{item?.senderId === userId ? (
 				<Swipeable renderRightActions={() => renderRightActions(item)}>{reactionMember}</Swipeable>
 			) : (
 				<View>{reactionMember}</View>

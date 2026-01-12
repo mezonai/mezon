@@ -3,8 +3,7 @@ import type { IClanProfile, LoadingStatus } from '@mezon/utils';
 import { TypeCheck } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiUpdateClanProfileRequest } from 'mezon-js';
-import type { ApiClanProfile } from 'mezon-js/api.gen';
+import type { ApiClanProfile } from 'mezon-js/types';
 import { accountActions } from '../account/account.slice';
 import { setUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
 import { ensureClient, ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
@@ -16,7 +15,7 @@ export interface UserClanProfileEntity extends IClanProfile {
 }
 
 export const mapUserClanProfileToEntity = (userClanProfileRes: ApiClanProfile) => {
-	const id = `${userClanProfileRes.clan_id}${userClanProfileRes.user_id}`;
+	const id = `${userClanProfileRes.clanId}${userClanProfileRes.userId}`;
 	return { ...userClanProfileRes, id };
 };
 
@@ -82,17 +81,18 @@ export const updateUserClanProfile = createAsyncThunk(
 
 			const currentUserClanProfile = state.userClanProfile.entities[`${clanId}${currentUser?.user?.id}`];
 			const mezon = ensureClient(getMezonCtx(thunkAPI));
-			const body: Partial<ApiUpdateClanProfileRequest> = {
-				clan_id: clanId,
-				nick_name: username,
-				avatar: avatarUrl
-			};
 
 			if (
-				(username && username !== currentUserClanProfile?.nick_name) ||
+				(username && username !== currentUserClanProfile?.nickName) ||
 				(avatarUrl && avatarUrl !== '' && avatarUrl !== currentUserClanProfile?.avatar)
 			) {
-				const response = await mezon.client.updateUserProfileByClan(mezon.session, clanId, body as ApiUpdateClanProfileRequest);
+				const body = {
+					$typeName: 'mezon.api.UpdateClanProfileRequest' as const,
+					clanId,
+					nickName: username,
+					avatar: avatarUrl
+				};
+				const response = await mezon.client.updateUserProfileByClan(mezon.session, clanId, body);
 				if (!response) {
 					return thunkAPI.rejectWithValue([]);
 				}
@@ -101,7 +101,7 @@ export const updateUserClanProfile = createAsyncThunk(
 					userClanProfileSlice.actions.updateOne({
 						id: `${clanId}${currentUser?.user?.id}`,
 						changes: {
-							nick_name: username,
+							nickName: username,
 							avatar: avatarUrl
 						}
 					})
@@ -170,16 +170,14 @@ export const userClanProfileActions = {
 	updateUserClanProfile
 };
 
-const { selectAll } = userClanProfileAdapter.getSelectors();
+const { selectEntities } = userClanProfileAdapter.getSelectors();
 
 export const getUserClanProfileState = (rootState: { [USER_CLAN_PROFILE_FEATURE_KEY]: UserClanProfileState }): UserClanProfileState =>
 	rootState[USER_CLAN_PROFILE_FEATURE_KEY];
 
-export const selectAllUserClanProfile = createSelector(getUserClanProfileState, selectAll);
+export const selectAllUserClanProfile = createSelector(getUserClanProfileState, selectEntities);
 
 export const selectUserClanProfileByClanID = (clanId: string, userId: string) =>
-	createSelector(selectAllUserClanProfile, (profiles) => profiles.find((pr) => pr.clan_id === clanId && pr.user_id === userId));
-
-export const selectShowModalFooterProfile = createSelector(getUserClanProfileState, (state) => state.showModalFooterProfile);
+	createSelector(selectAllUserClanProfile, (profiles) => profiles[`${clanId}${userId}`]);
 
 export const selectShowModalCustomStatus = createSelector(getUserClanProfileState, (state) => state.showModalCustomStatus);

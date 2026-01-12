@@ -2,7 +2,7 @@ import { useChatSending, useEscapeKey } from '@mezon/core';
 import { referencesActions, selectDataReferences, selectSession, useAppDispatch, useAppSelector } from '@mezon/store';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { blankReferenceObj } from '@mezon/utils';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
@@ -17,8 +17,8 @@ interface DirectIdProps {
 }
 export function DirectMessageBox({ mode, direct }: DirectIdProps) {
 	const directParamId = useMemo(() => {
-		return direct?.channel_id ?? '';
-	}, [direct?.channel_id]);
+		return direct?.channelId ?? '';
+	}, [direct?.channelId]);
 
 	const { sendMessage, sendMessageTyping } = useChatSending({ channelOrDirect: direct, mode });
 	// TODO: move selector to store

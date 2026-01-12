@@ -11,7 +11,7 @@ import {
 } from '@mezon/store-mobile';
 import { getNameForPrioritize, ID_MENTION_HERE, MentionDataProps } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiRole } from 'mezon-js/api.gen';
+import { ApiRole } from 'mezon-js/types';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -43,8 +43,8 @@ const transformMemberToMention = (item: ChannelMembersEntity): MentionDataProps 
 
 	return {
 		id: item.id,
-		display: getNameForPrioritize(item?.clan_nick ?? '', item?.user?.display_name ?? '', item?.user?.username ?? ''),
-		avatarUrl: item?.clan_avatar || item?.user?.avatar_url || '',
+		display: getNameForPrioritize(item?.clanNick ?? '', item?.user?.displayName ?? '', item?.user?.username ?? ''),
+		avatarUrl: item?.clanAvatar || item?.user?.avatarUrl || '',
 		username: item?.user?.username || ''
 	};
 };
@@ -58,7 +58,7 @@ const transformRoleToMention = (item: ApiRole): MentionDataProps | null => {
 	return {
 		id: item.id,
 		display: item.title,
-		avatarUrl: item?.role_icon || '',
+		avatarUrl: item?.roleIcon || '',
 		clanNick: item.title,
 		isRoleUser: true,
 		color: item.color
@@ -71,14 +71,14 @@ function UseMentionList({ channelDetail, channelID, channelMode }: UserMentionLi
 	const dispatch = useAppDispatch();
 
 	const channelId = channelDetail?.id;
-	const parentId = channelDetail?.parent_id;
-	const clanId = channelDetail?.clan_id;
+	const parentId = channelDetail?.parentId;
+	const clanId = channelDetail?.clanId;
 
 	const filteredRoles = useMemo(() => {
 		if (!Array.isArray(rolesInClan)) {
 			return [];
 		}
-		return rolesInClan.filter((role) => role?.id && role?.slug !== `everyone-${role?.clan_id}`);
+		return rolesInClan.filter((role) => role?.id && role?.slug !== `everyone-${role?.clanId}`);
 	}, [rolesInClan]);
 
 	const getMembersChannel = useCallback((): ChannelMembersEntity[] => {

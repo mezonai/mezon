@@ -40,15 +40,15 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 				const currentChannelId = selectCurrentChannelId(store.getState());
 				dispatch(
 					messagesActions.jumpToMessage({
-						clanId: message?.clan_id || '',
+						clanId: message?.clanId || '',
 						messageId: messageIdRef,
-						channelId: currentChannelId || message?.channel_id || '',
-						topicId: isTopic ? message?.channel_id || '' : undefined
+						channelId: currentChannelId || message?.channelId || '',
+						topicId: isTopic ? message?.channelId || '' : undefined
 					})
 				);
 			}
 		},
-		[dispatch, message?.channel_id, message?.clan_id, messageIdRef, isTopic]
+		[dispatch, message?.channelId, message?.clanId, messageIdRef, isTopic]
 	);
 
 	const markUpOnReplyParent = useRef<HTMLDivElement | null>(null);
@@ -70,8 +70,8 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 			};
 		}
 
-		const messageRefAvatar = message?.references?.[0]?.mesages_sender_avatar ?? '';
-		const userAvatar = getAvatarForPrioritize(messageSender?.clan_avatar, messageSender?.user?.avatar_url) || '';
+		const messageRefAvatar = message?.references?.[0]?.message_sender_avatar ?? '';
+		const userAvatar = getAvatarForPrioritize(messageSender?.clanAvatar, messageSender?.user?.avatarUrl) || '';
 
 		const finalAvatar = !isClanView ? messageRefAvatar : userAvatar || messageRefAvatar;
 		return {
@@ -83,11 +83,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 	const avatarProps = getAvatarProps();
 
 	return (
-		<div
-			className="overflow-hidden max-w-[97%] h-[24px]"
-			ref={markUpOnReplyParent}
-			data-e2e={generateE2eId('replied_message.item')}
-		>
+		<div className="overflow-hidden max-w-[97%] h-[24px]" ref={markUpOnReplyParent} data-e2e={generateE2eId('replied_message.item')}>
 			{message.references?.[0].message_ref_id ? (
 				<div className="rounded flex flex-row gap-1 items-center justify-start w-fit text-[14px] ml-9 mb-[-5px] replyMessage">
 					<Icons.ReplyCorner />
@@ -109,7 +105,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 								className="h-6 text-[#84ADFF] font-bold hover:underline cursor-pointer tracking-wide whitespace-nowrap"
 								data-e2e={generateE2eId('replied_message.username')}
 							>
-								{!isClanView ? message?.references?.[0]?.message_sender_display_name || messageUsernameSenderRef : nameShowed}
+								{!isClanView ? message?.references?.[0]?.message_sender_username || messageUsernameSenderRef : nameShowed}
 							</span>
 							{hasAttachmentInMessageRef || isEmbedMessage ? (
 								<div className=" flex flex-row items-center text-theme-primary">

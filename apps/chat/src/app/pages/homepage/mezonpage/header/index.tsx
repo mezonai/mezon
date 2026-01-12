@@ -1,4 +1,4 @@
-import { selectIsLogin } from '@mezon/store';
+import { authActions, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { Icons, Image } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { throttle } from 'lodash';
@@ -30,7 +30,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 		if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
 			(window as any).gtag('event', 'Login Button', {
 				event_category: 'Login Button',
-				event_label: action,
+				eventLabel: action,
 				custom_parameter_1: 'mezon_header_login'
 			});
 		}
@@ -65,6 +65,9 @@ const HeaderMezon = memo((props: HeaderProps) => {
 			{label}
 		</a>
 	);
+
+	const dispatch = useAppDispatch();
+
 	return (
 		<div
 			className={`layout fixed flex flex-col items-center w-full z-50 bg-gradient-to-r from-[#8960e0] via-[#8960e0] to-[#8960e0] h-[80px] max-md:h-[72px]`}
@@ -125,7 +128,18 @@ const HeaderMezon = memo((props: HeaderProps) => {
 							</a>
 						</div>
 					</div>
-					<div className={`w-fit lg:pl-5 min-[1505px]:pl-0 flex items-center`}>
+					<div className={`w-fit lg:pl-5 min-[1505px]:pl-0 flex items-center gap-3`}>
+						<Link
+							to={isLogin ? '/meet' : '/mezon'}
+							className="hidden lg:block px-[16px] py-[10px] bg-white rounded-xl text-[#6E4A9E] text-[16px] leading-[24px] font-bold whitespace-nowrap hover:opacity-90 transition-opacity"
+							onClick={() => {
+								if (!isLogin) {
+									dispatch(authActions.setRedirectUrl('/meet'));
+								}
+							}}
+						>
+							Quick Meeting
+						</Link>
 						<Link
 							className="hidden lg:block px-[16px] py-[10px] bg-[url(assets/button_openmezon.png)] bg-no-repeat rounded-xl text-[#6E4A9E] text-[16px] leading-[24px] font-bold whitespace-nowrap hover:opacity-90 transition-opacity"
 							to={'/mezon'}

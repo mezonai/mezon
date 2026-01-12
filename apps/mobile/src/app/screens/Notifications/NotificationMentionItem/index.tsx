@@ -58,19 +58,19 @@ export function parseObject(obj: any) {
 const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify }: NotifyProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const channelInfo = useAppSelector((state) => selectChannelById(state, notify?.content?.channel_id || ''));
+	const channelInfo = useAppSelector((state) => selectChannelById(state, notify?.content?.channelId || ''));
 	const data = parseObject(notify?.content);
-	const clan = useAppSelector(selectClanById(notify?.content?.clan_id as string));
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(notify?.sender_id);
-	const messageTimeDifference = convertTimestampToTimeAgo(data?.create_time?.seconds);
+	const clan = useAppSelector(selectClanById(notify?.content?.clanId as string));
+	const { priorityAvatar } = useGetPriorityNameFromUserClan(notify?.senderId);
+	const messageTimeDifference = convertTimestampToTimeAgo(data?.createTimeSeconds);
 	const subjectText = useMemo(() => {
-		return clan?.clan_name && channelInfo?.channel_label
-			? `${clan?.clan_name ? `(${clan.clan_name})` : ''} - ${channelInfo?.channel_label || ''}`
+		return clan?.clanName && channelInfo?.channelLabel
+			? `${clan?.clanName ? `(${clan.clanName})` : ''} - ${channelInfo?.channelLabel || ''}`
 			: '';
-	}, [clan?.clan_name, channelInfo?.channel_label]);
+	}, [clan?.clanName, channelInfo?.channelLabel]);
 
 	const username = useMemo(() => {
-		return getNameForPrioritize(notify?.content?.clan_nick, notify?.content?.display_name, notify?.content?.username);
+		return getNameForPrioritize(notify?.content?.clanNick, notify?.content?.displayName, notify?.content?.username);
 	}, [notify]);
 
 	return (

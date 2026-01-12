@@ -1,12 +1,13 @@
 import { CHANNEL_INPUT_ID, GENERAL_INPUT_ID } from '@mezon/utils';
-import { RefObject, useEffect } from 'react';
+import type { RefObject } from 'react';
+import { useEffect } from 'react';
 
 interface UseFocusManagerProps {
 	editorRef: RefObject<HTMLDivElement>;
 	isTopic: boolean;
 	isMenuClosed: boolean;
 	isStatusMenuOpen: boolean;
-	messageRefId?: string;
+	message_ref_id?: string;
 	isEmojiPickerActive: boolean;
 	isReactionRightActive: boolean;
 	isEditMessageOpen: boolean;
@@ -21,7 +22,7 @@ export const useFocusManager = ({
 	isTopic,
 	isMenuClosed,
 	isStatusMenuOpen,
-	messageRefId,
+	message_ref_id,
 	isEmojiPickerActive,
 	isReactionRightActive,
 	isEditMessageOpen,
@@ -53,10 +54,10 @@ export const useFocusManager = ({
 			return;
 		}
 
-		if (messageRefId || (isEmojiPickerActive && !isReactionRightActive) || (!isEditMessageOpen && !editMessageId)) {
+		if (message_ref_id || (isEmojiPickerActive && !isReactionRightActive) || (!isEditMessageOpen && !editMessageId)) {
 			focusEditor();
 		}
-	}, [messageRefId, isEditMessageOpen, editMessageId, isEmojiPickerActive, isReactionRightActive, isMenuClosed, isStatusMenuOpen]);
+	}, [message_ref_id, isEditMessageOpen, editMessageId, isEmojiPickerActive, isReactionRightActive, isMenuClosed, isStatusMenuOpen]);
 
 	// Handle focus when channel or DM group changes
 	useEffect(() => {

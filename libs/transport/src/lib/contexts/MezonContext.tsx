@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import type { Client, Socket } from 'mezon-js';
 import { Session } from 'mezon-js';
 import { WebSocketAdapterPb } from 'mezon-js-protobuf';
-import type { ApiConfirmLoginRequest, ApiLinkAccountConfirmRequest, ApiLoginIDResponse, ApiSession } from 'mezon-js/dist/api.gen';
+import type { ApiConfirmLoginRequest, ApiLinkAccountConfirmRequest, ApiLoginIDResponse, ApiSession } from 'mezon-js/types';
 import type { IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import React, { useCallback } from 'react';
 import type { CreateMezonClientOptions } from '../mezon';
@@ -47,16 +47,16 @@ type MezonContextProviderProps = {
 
 type Sessionlike = {
 	token: string;
-	refresh_token: string;
+	refreshToken: string;
 	created: boolean;
-	is_remember: boolean;
-	api_url: string;
+	isRemember: boolean;
+	apiUrl: string;
 	expires_at?: number;
 	refresh_expires_at?: number;
-	created_at?: number;
+	createdAt?: number;
 	username?: string;
-	user_id?: string;
-	id_token?: string;
+	userId?: string;
+	idToken?: string;
 };
 
 const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean) => {
@@ -115,9 +115,9 @@ export const getMezonConfig = (): CreateMezonClientOptions => {
 };
 
 export const extractAndSaveConfig = (session: Session | null, isFromMobile?: boolean) => {
-	if (!session || !session.api_url) return null;
+	if (!session || !session.apiUrl) return null;
 	try {
-		const url = new URL(session.api_url);
+		const url = new URL(session.apiUrl);
 		const host = url.hostname;
 		const port = url.port;
 		const useSSL = url.protocol === 'https:';
@@ -154,7 +154,7 @@ export type MezonContextValue = {
 	confirmAuthenticateOTP: (data: ApiLinkAccountConfirmRequest) => Promise<Session>;
 	authenticateSMSOTPRequest: (phone: string) => Promise<ApiLinkAccountConfirmRequest>;
 
-	logOutMezon: (device_id?: string, platform?: string, clearSession?: boolean) => Promise<void>;
+	logOutMezon: (deviceId?: string, platform?: string, clearSession?: boolean) => Promise<void>;
 	refreshSession: (session: Sessionlike, isSetNewUsername?: boolean) => Promise<Session | undefined>;
 	connectWithSession: (session: Sessionlike) => Promise<Session>;
 	createSocket: () => Promise<Socket>;
@@ -237,11 +237,11 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				const sessionData = session;
 				const newSession = new Session(
 					session.token || '',
-					session.refresh_token || '',
+					session.refreshToken || '',
 					session.created || false,
-					session.api_url || '',
-					session.id_token || '',
-					sessionData.is_remember || false
+					session.apiUrl || '',
+					session.idToken || '',
+					sessionData.isRemember || false
 				);
 
 				sessionRef.current = newSession;
@@ -293,6 +293,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		const session = await clientRef.current.checkLoginRequest(LoginRequest);
 		const config = extractAndSaveConfig(session, isFromMobile);
 		if (config) {
+			console.log(config, 'config checkLoginRequest');
 			clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 		}
 
@@ -327,6 +328,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 			const config = extractAndSaveConfig(session, isFromMobile);
 			if (config) {
+				console.log(config, 'config authenticateMezon');
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
 
@@ -354,6 +356,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 			const config = extractAndSaveConfig(session);
 			if (config) {
+				console.log(config, 'config authenticateEmail');
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
 
@@ -387,11 +390,18 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				throw new Error('Mezon client not initialized');
 			}
 
-			const session = await clientRef.current.confirmAuthenticateOTP(data);
+			const request = {
+				$typeName: 'mezon.api.LinkAccountConfirmRequest' as const,
+				reqId: data.reqId || '',
+				status: data.status || 0,
+				otpCode: data.otpCode || ''
+			};
+			const session = await clientRef.current.confirmAuthenticateOTP(request);
 			sessionRef.current = session;
 
 			const config = extractAndSaveConfig(session);
 			if (config) {
+				console.log(config, 'config confirmAuthenticateOTP');
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
 
@@ -420,7 +430,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 	);
 
 	const logOutMezon = useCallback(
-		async (device_id?: string, platform?: string, clearSession?: boolean) => {
+		async (deviceId?: string, platform?: string, clearSession?: boolean) => {
 			clearSessionRefreshFromStorage();
 			if (socketRef.current) {
 				socketRef.current.ondisconnect = () => {
@@ -434,14 +444,15 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				await clientRef.current.sessionLogout(
 					sessionRef.current,
 					sessionRef.current?.token,
-					sessionRef.current?.refresh_token,
-					device_id || '',
+					sessionRef.current?.refreshToken,
+					deviceId || '',
 					platform || ''
 				);
 
 				sessionRef.current = null;
 				if (clearSession) {
 					clearSessionFromStorage();
+					console.log('setBasePath logout');
 					clientRef.current.setBasePath(
 						process.env.NX_CHAT_APP_API_GW_HOST as string,
 						process.env.NX_CHAT_APP_API_GW_PORT as string,
@@ -461,11 +472,11 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 			const sessionObj = new Session(
 				session?.token,
-				session?.refresh_token,
+				session?.refreshToken,
 				session.created,
-				session.api_url,
-				session.id_token || '',
-				session.is_remember
+				session.apiUrl,
+				session.idToken || '',
+				session.isRemember
 			);
 
 			if (session.expires_at) {
@@ -486,7 +497,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 
 			const newSession = await clientRef.current.sessionRefresh(
-				new Session(session?.token, session?.refresh_token, session.created, session.api_url, session.id_token || '', session.is_remember)
+				new Session(session?.token, session?.refreshToken, session.created, session.apiUrl, session.idToken || '', session.isRemember)
 			);
 
 			sessionRef.current = newSession;
@@ -548,15 +559,15 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 						const socket = await createSocket();
 
 						let newSession = null;
-						if (sessionRef.current.refresh_token && sessionRef.current.isexpired(Date.now() / 1000)) {
+						if (sessionRef.current.refreshToken && sessionRef.current.isexpired(Date.now() / 1000)) {
 							newSession = await clientRef.current.sessionRefresh(
 								new Session(
 									sessionRef.current.token,
-									sessionRef.current.refresh_token,
+									sessionRef.current.refreshToken,
 									sessionRef.current.created,
-									sessionRef.current.api_url,
-									sessionRef.current.id_token,
-									sessionRef.current.is_remember ?? false
+									sessionRef.current.apiUrl,
+									sessionRef.current.idToken,
+									sessionRef.current.isRemember ?? false
 								)
 							);
 						}
@@ -666,15 +677,15 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (sessionData && sessionRef.current?.token !== sessionData.token) {
 				const newSession = new Session(
 					sessionData.token,
-					sessionData.refresh_token,
+					sessionData.refreshToken,
 					sessionData.created || false,
-					sessionData.api_url,
-					sessionData.id_token || '',
-					sessionData.is_remember || false
+					sessionData.apiUrl,
+					sessionData.idToken || '',
+					sessionData.isRemember || false
 				);
 
 				if (sessionData.username) newSession.username = sessionData.username;
-				if (sessionData.user_id) newSession.user_id = sessionData.user_id;
+				if (sessionData.userId) newSession.userId = sessionData.userId;
 				if (sessionData.vars) newSession.vars = sessionData.vars;
 				if (sessionData.expires_at) newSession.expires_at = sessionData.expires_at;
 				if (sessionData.refresh_expires_at) newSession.refresh_expires_at = sessionData.refresh_expires_at;

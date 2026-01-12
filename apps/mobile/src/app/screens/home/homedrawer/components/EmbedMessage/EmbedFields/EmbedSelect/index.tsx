@@ -32,7 +32,7 @@ export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectPro
 	const handleChangeDataInput = (value: string, id?: string) => {
 		dispatch(
 			embedActions.addEmbedValue({
-				message_id: messageId,
+				messageId: messageId,
 				data: {
 					id,
 					value
@@ -53,7 +53,7 @@ export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectPro
 		if (selectedOptions?.filter((item) => item?.value === option?.value)?.length > 0) {
 			dispatch(
 				embedActions.removeEmbedValuel({
-					message_id: messageId,
+					messageId: messageId,
 					data: {
 						id: buttonId,
 						value: option?.value
@@ -70,7 +70,7 @@ export const EmbedSelect = memo(({ select, messageId, buttonId }: EmbedSelectPro
 		setSelectedOptions((prev) => prev.filter((opt) => opt?.value !== option?.value));
 		dispatch(
 			embedActions.removeEmbedValuel({
-				message_id: messageId,
+				messageId: messageId,
 				data: {
 					id: buttonId,
 					value: option?.value

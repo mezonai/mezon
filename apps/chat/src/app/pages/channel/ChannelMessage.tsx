@@ -74,9 +74,13 @@ export const ChannelMessage: ChannelMessageComponent = ({
 }: Readonly<MessageProps>) => {
 	const isSameUser = message?.user?.id === previousMessage?.user?.id;
 	const isTimeGreaterThan60Minutes =
-		!!message?.create_time && Date.parse(message.create_time) - Date.parse(previousMessage?.create_time) < TIME_COMBINE_MS;
+		!!message?.createTimeSeconds &&
+		!!previousMessage?.createTimeSeconds &&
+		(message.createTimeSeconds - previousMessage?.createTimeSeconds || 0) < TIME_COMBINE_MS;
 	const isDifferentDay =
-		!!message?.create_time && !!previousMessage?.create_time && !isSameDay(new Date(message.create_time), new Date(previousMessage?.create_time));
+		!!message?.createTimeSeconds &&
+		!!previousMessage?.createTimeSeconds &&
+		!isSameDay(message.createTimeSeconds, previousMessage?.createTimeSeconds);
 
 	const isCombine = isSameUser && isTimeGreaterThan60Minutes;
 
@@ -165,7 +169,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 
 export const MemorizedChannelMessage = memo(ChannelMessage, (prev, curr) => {
 	return (
-		prev.messageId + prev?.message?.update_time === curr.messageId + curr?.message?.update_time &&
+		prev.messageId + prev?.message?.updateTimeSeconds === curr.messageId + curr?.message?.updateTimeSeconds &&
 		prev.channelId === curr.channelId &&
 		prev.messageReplyHighlight === curr.messageReplyHighlight &&
 		prev.checkMessageTargetToMoved === curr.checkMessageTargetToMoved &&

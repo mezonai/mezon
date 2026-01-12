@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IDefaultNotification, IDefaultNotificationClan, LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiNotificationSetting } from 'mezon-js/api.gen';
+import type { ApiNotificationSetting } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -63,7 +63,7 @@ export const fetchDefaultNotificationClanCached = async (getState: () => RootSta
 			}
 		},
 		() => mezon.client.getNotificationClan(mezon.session, clanId),
-		'notification_setting'
+		'notificationSetting'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -96,7 +96,7 @@ export const getDefaultNotificationClan = createAsyncThunk(
 
 			const clanNotificationConfig: ApiNotificationSetting = {
 				id: response.id,
-				notification_setting_type: response.notification_setting_type
+				notificationSettingType: response.notificationSettingType
 			};
 
 			return { ...clanNotificationConfig, clanId };
@@ -108,18 +108,20 @@ export const getDefaultNotificationClan = createAsyncThunk(
 );
 
 type SetDefaultNotificationPayload = {
-	clan_id?: string;
-	notification_type?: number;
+	clanId?: string;
+	notificationType?: number;
 };
 
 export const setDefaultNotificationClan = createAsyncThunk(
 	'defaultnotificationclan/setDefaultNotificationClan',
-	async ({ clan_id, notification_type }: SetDefaultNotificationPayload, thunkAPI) => {
+	async ({ clanId, notificationType }: SetDefaultNotificationPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				clan_id,
-				notification_type
+				$typeName: 'mezon.api.SetDefaultNotificationRequest' as const,
+				clanId: clanId || '',
+				notificationType: notificationType ?? 0,
+				categoryId: ''
 			};
 			const response = await mezon.client.setNotificationClan(mezon.session, body);
 			if (!response) {
@@ -175,15 +177,15 @@ export const defaultNotificationClanSlice = createSlice({
 				if (!action.payload) {
 					return;
 				}
-				const { clan_id, notification_type } = action.payload;
-				if (!clan_id) return;
-				if (!state.byClans[clan_id]) {
-					state.byClans[clan_id] = getInitialClanState();
+				const { clanId, notificationType } = action.payload;
+				if (!clanId) return;
+				if (!state.byClans[clanId]) {
+					state.byClans[clanId] = getInitialClanState();
 				}
-				if (state.byClans[clan_id].defaultNotificationClan) {
-					state.byClans[clan_id].defaultNotificationClan = {
-						...state.byClans[clan_id].defaultNotificationClan,
-						notification_setting_type: notification_type
+				if (state.byClans[clanId].defaultNotificationClan) {
+					state.byClans[clanId].defaultNotificationClan = {
+						...state.byClans[clanId].defaultNotificationClan,
+						notificationSettingType: notificationType
 					};
 				}
 			});

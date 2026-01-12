@@ -38,13 +38,13 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 	const navigation = useNavigation<any>();
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const currentDMGroup = useAppSelector(selectDmGroupCurrent(currentChannel?.id));
-	const currentAvatar = currentDMGroup?.channel_avatar;
+	const currentAvatar = currentDMGroup?.channelAvatar;
 	const allUserGroupDM = useSelector((state) => selectRawDataUserGroup(state, currentChannel?.id || ''));
 
 	const lastOne = useMemo(() => {
-		const userIds = allUserGroupDM?.user_ids || [];
+		const userIds = allUserGroupDM?.userIds || [];
 		return userIds?.length === 1;
-	}, [allUserGroupDM?.user_ids]);
+	}, [allUserGroupDM?.userIds]);
 
 	const menuSetting: IMezonMenuItemProps[] = [
 		{
@@ -75,11 +75,11 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 						<MezonConfirm
 							onConfirm={handleLeaveGroupConfirm}
 							title={t('confirm.title', {
-								groupName: currentChannel?.channel_label,
+								groupName: currentChannel?.channelLabel,
 								ns: 'dmMessage'
 							})}
 							content={t('confirm.content', {
-								groupName: currentChannel?.channel_label,
+								groupName: currentChannel?.channelLabel,
 								ns: 'dmMessage'
 							})}
 							confirmText={t('confirm.confirmText', { ns: 'dmMessage' })}
@@ -105,7 +105,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 					icon: <MezonIconCDN icon={IconCDN.circleXIcon} width={size.s_18} height={size.s_18} color={baseColor.red} />,
 					textStyle: [styles.label, styles.redText],
 					onPress: async () => {
-						await dispatch(directActions.closeDirectMessage({ channel_id: currentChannel?.channel_id }));
+						await dispatch(directActions.closeDirectMessage({ channelId: currentChannel?.channelId }));
 						navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 					}
@@ -119,8 +119,8 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 			dispatch(directActions.setDmGroupCurrentId(''));
 
 			const resultLeaveOrDeleteGroup = lastOne
-				? await dispatch(deleteChannel({ clanId: '0', channelId: currentChannel?.channel_id ?? '', isDmGroup: true }))
-				: await dispatch(removeMemberChannel({ channelId: currentChannel?.channel_id || '', userIds: [currentUserId], kickMember: false }));
+				? await dispatch(deleteChannel({ clanId: '0', channelId: currentChannel?.channelId ?? '', isDmGroup: true }))
+				: await dispatch(removeMemberChannel({ channelId: currentChannel?.channelId || '', userIds: [currentUserId], kickMember: false }));
 
 			if (resultLeaveOrDeleteGroup?.meta?.requestStatus === 'rejected') {
 				throw new Error(resultLeaveOrDeleteGroup?.meta?.requestStatus);
@@ -137,7 +137,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 		} finally {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		}
-	}, [currentChannel?.channel_id, currentChannel?.id, currentUserId, dispatch, lastOne, navigation, t]);
+	}, [currentChannel?.channelId, currentChannel?.id, currentUserId, dispatch, lastOne, navigation, t]);
 
 	return (
 		<View style={{ paddingVertical: size.s_10, paddingHorizontal: size.s_20 }}>

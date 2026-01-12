@@ -17,7 +17,7 @@ const AboutMe = ({ createTime, userId }: AboutMeProps) => {
 	const checkUser = useMemo(() => userProfile?.user?.id === userId, [userId, userProfile?.user?.id]);
 
 	const formatCreateTime = () => {
-		if (!createTime) return '';
+		if (!createTime || (typeof createTime !== 'string' && typeof createTime !== 'number')) return '';
 		const timestamp = typeof createTime === 'number' ? (createTime.toString().length <= 10 ? createTime * 1000 : createTime) : createTime;
 		return formatDateI18n(new Date(timestamp), 'en', 'MMMM d, yyyy');
 	};
@@ -26,7 +26,7 @@ const AboutMe = ({ createTime, userId }: AboutMeProps) => {
 		<div className="flex flex-col gap-[20px]">
 			<div className="flex flex-col gap-2">
 				<p className="max-w-[400px] text-sm font-normal text-theme-primary break-words">
-					{checkUser ? userProfile?.user?.about_me : userById?.user?.about_me}
+					{checkUser ? userProfile?.user?.aboutMe : userById?.user?.aboutMe}
 				</p>
 				<p className="text-xs font-semibold text-theme-primary">{t('userProfile.memberSince')}</p>
 				<span className="text-sm font-normal text-theme-primary">{formatCreateTime()}</span>

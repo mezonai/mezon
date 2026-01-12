@@ -32,7 +32,7 @@ const ItemStatusUpdate = ({ children, statusValue, dropdown, startIcon, onClick,
 				accountActions.updateAccountStatus({
 					status,
 					minutes,
-					until_turn_on: untilTurnOn
+					untilTurnOn: untilTurnOn
 				})
 			);
 			dispatch(accountActions.updateUserStatus(status));

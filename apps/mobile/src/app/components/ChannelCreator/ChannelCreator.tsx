@@ -3,7 +3,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, channelsActions, createNewChannel, getStoreAsync, selectCurrentClanId, useAppDispatch } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import type { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiCreateChannelDescRequest } from 'mezon-js/types';
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -40,18 +40,18 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 		const store = await getStoreAsync();
 
 		const body: ApiCreateChannelDescRequest = {
-			clan_id: currentClanId?.toString(),
+			clanId: currentClanId?.toString(),
 			type: channelType,
-			channel_label: channelName?.trim(),
-			channel_private: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isChannelPrivate ? 1 : 0,
-			category_id: categoryId,
-			parent_id: '0'
+			channelLabel: channelName?.trim(),
+			channelPrivate: channelType !== ChannelType.CHANNEL_TYPE_CHANNEL ? 0 : isChannelPrivate ? 1 : 0,
+			categoryId: categoryId,
+			parentId: '0'
 		};
 		dispatch(appActions.setLoadingMainMobile(true));
 		const newChannelCreatedId = await dispatch(createNewChannel(body));
 		const payload = newChannelCreatedId.payload as ApiCreateChannelDescRequest;
-		const channelID = payload.channel_id;
-		const clanID = payload.clan_id;
+		const channelID = payload.channelId;
+		const clanID = payload.clanId;
 
 		const error = (newChannelCreatedId as any).error;
 		if (newChannelCreatedId && error) {

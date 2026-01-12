@@ -10,9 +10,9 @@ type EventScheduleProps = {
 };
 
 const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
-	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id ?? '')) || {};
-	const eventIsUpcoming = event?.event_status === EEventStatus.UPCOMING;
-	const eventIsOngoing = event?.event_status === EEventStatus.ONGOING;
+	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channelVoiceId ?? '')) || {};
+	const eventIsUpcoming = event?.eventStatus === EEventStatus.UPCOMING;
+	const eventIsOngoing = event?.eventStatus === EEventStatus.ONGOING;
 	const nearestEventAvaiable = eventIsUpcoming || eventIsOngoing;
 	if (!nearestEventAvaiable) return null;
 	const eventStatusNotice = eventIsUpcoming
@@ -24,8 +24,8 @@ const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 	const cssEventStatus = eventIsUpcoming ? 'text-purple-500' : eventIsOngoing ? 'text-green-500' : '';
 
 	const handleOpenVoiceChannel = () => {
-		if (channelVoice?.meeting_code) {
-			openVoiceChannel(channelVoice.meeting_code);
+		if (channelVoice?.meetingCode) {
+			openVoiceChannel(channelVoice.meetingCode);
 		}
 	};
 
@@ -33,7 +33,7 @@ const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 		<div
 			className={className}
 			onClick={handleOpenVoiceChannel}
-			title={`Event: ${event.title}\n${eventStatusNotice}\n${timeFomat(event.start_time ?? '')}`}
+			title={`Event: ${event.title}\n${eventStatusNotice}\n${timeFomat(event.startTime ?? '')}`}
 		>
 			<Icons.IconEvents defaultSize={`w-4 h-4 ${cssEventStatus}`} />
 		</div>

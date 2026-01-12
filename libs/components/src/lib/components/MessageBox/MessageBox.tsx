@@ -4,7 +4,7 @@ import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { ILongPressType, IMessageSendPayload, MentionDataProps, ThreadValue } from '@mezon/utils';
 import { EOverriddenPermission, MAX_FILE_ATTACHMENTS, UploadLimitReason, processFile, useLongPress } from '@mezon/utils';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import type { ReactElement } from 'react';
 import { Fragment, memo, useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';

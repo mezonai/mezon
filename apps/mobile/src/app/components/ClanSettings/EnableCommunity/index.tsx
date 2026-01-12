@@ -56,7 +56,7 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 	});
 
 	useEffect(() => {
-		dispatch(comunityActions.getCommunityInfo({ clan_id: clanId }));
+		dispatch(comunityActions.getCommunityInfo({ clanId: clanId }));
 	}, []);
 
 	useEffect(() => {
@@ -64,7 +64,7 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 			bannerUri: communityState?.communityBanner ?? null,
 			description: communityState?.description ?? '',
 			about: communityState?.about ?? '',
-			vanityUrl: communityState?.short_url ?? ''
+			vanityUrl: communityState?.shortUrl ?? ''
 		});
 	}, [communityState]);
 
@@ -75,7 +75,7 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 			(communityState.communityBanner !== communityData?.bannerUri ||
 				(communityState.description ?? '') !== communityData?.description.trim() ||
 				(communityState.about ?? '') !== communityData?.about.trim() ||
-				(communityState.short_url ?? '') !== communityData?.vanityUrl.trim())
+				(communityState.shortUrl ?? '') !== communityData?.vanityUrl.trim())
 		);
 	}, [communityData, communityState, isEnabled]);
 
@@ -97,11 +97,11 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 		try {
 			await dispatch(
 				comunityActions.updateCommunity({
-					clan_id: clanId,
+					clanId: clanId,
 					bannerUrl: communityData?.bannerUri,
 					description: communityData?.description.trim(),
 					about: communityData?.about.trim(),
-					short_url: communityData?.vanityUrl.trim(),
+					shortUrl: communityData?.vanityUrl.trim(),
 					enabled: true
 				})
 			)
@@ -124,7 +124,7 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 	const onDisable = useCallback(async () => {
 		setSubmitting(true);
 		try {
-			await dispatch(comunityActions.updateCommunityStatus({ clan_id: clanId, enabled: false }))
+			await dispatch(comunityActions.updateCommunityStatus({ clanId: clanId, enabled: false }))
 				.unwrap()
 				.then(() => {
 					Toast.show({ type: 'success', text1: t('communitySettings.messages.communityDisabled') });
@@ -155,7 +155,7 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 				promises.push(
 					dispatch(
 						comunityActions.updateCommunityBanner({
-							clan_id: clanId,
+							clanId: clanId,
 							bannerUrl: communityData?.bannerUri
 						})
 					)
@@ -171,7 +171,7 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 				promises.push(
 					dispatch(
 						comunityActions.updateCommunityDescription({
-							clan_id: clanId,
+							clanId: clanId,
 							description: communityData?.description.trim()
 						})
 					)
@@ -187,7 +187,7 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 				promises.push(
 					dispatch(
 						comunityActions.updateCommunityAbout({
-							clan_id: clanId,
+							clanId: clanId,
 							about: communityData?.about.trim()
 						})
 					)
@@ -199,12 +199,12 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 				);
 			}
 
-			if (communityState.short_url !== communityData?.vanityUrl) {
+			if (communityState.shortUrl !== communityData?.vanityUrl) {
 				promises.push(
 					dispatch(
 						comunityActions.updateCommunityShortUrl({
-							clan_id: clanId,
-							short_url: communityData?.vanityUrl.trim()
+							clanId: clanId,
+							shortUrl: communityData?.vanityUrl.trim()
 						})
 					)
 						.unwrap()
@@ -265,7 +265,7 @@ const EnableCommunityScreen = ({ navigation }: MenuClanScreenProps<ClanSettingsS
 			bannerUri: communityState?.communityBanner ?? null,
 			description: communityState?.description ?? '',
 			about: communityState?.about ?? '',
-			vanityUrl: communityState?.short_url ?? ''
+			vanityUrl: communityState?.shortUrl ?? ''
 		});
 	}, [communityState]);
 	return (

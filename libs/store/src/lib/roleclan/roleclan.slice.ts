@@ -3,7 +3,7 @@ import type { IRolesClan, LoadingStatus, UsersClanEntity } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiUpdateRoleRequest } from 'mezon-js';
-import type { ApiRole, ApiRoleListEventResponse, ApiUpdateRoleOrderRequest, RoleUserListRoleUser } from 'mezon-js/api.gen';
+import type { ApiRole, ApiRoleListEventResponse, ApiUpdateRoleOrderRequest, RoleUserListRoleUser } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { selectEntitesUserClans } from '../clanMembers/clan.members';
@@ -88,7 +88,7 @@ export const fetchRolesClanCached = async (getState: () => RootState, ensuredMez
 
 	if (!shouldForceCall) {
 		return {
-			clan_id: clanId,
+			clanId,
 			roles: {
 				roles: roles || []
 			},
@@ -107,8 +107,8 @@ export const fetchRolesClanCached = async (getState: () => RootState, ensuredMez
 			}
 		},
 		() => ensuredMezon.client.listRoles(ensuredMezon.session, clanId, 500, 1, ''),
-		'role_event_list'
-	)) as ApiRoleListEventResponse;
+		'roleEventList'
+	)) as unknown as ApiRoleListEventResponse;
 
 	markApiFirstCalled(apiKey);
 
@@ -138,18 +138,18 @@ export const fetchRolesClan = createAsyncThunk(
 				.filter((role) => role?.active)
 				.map((role, index) => ({ ...role, originalIndex: index }))
 				.sort((role_1, role_2) => {
-					// If both roles have 'order_role', sort by its value
-					if (role_1.order_role !== undefined && role_2.order_role !== undefined) {
-						return role_1.order_role - role_2.order_role;
+					// If both roles have 'orderRole', sort by its value
+					if (role_1.orderRole !== undefined && role_2.orderRole !== undefined) {
+						return role_1.orderRole - role_2.orderRole;
 					}
 
-					// If neither role has 'order_role', maintain their original order
-					if (role_1.order_role === undefined && role_2.order_role === undefined) {
+					// If neither role has 'orderRole', maintain their original order
+					if (role_1.orderRole === undefined && role_2.orderRole === undefined) {
 						return role_1.originalIndex - role_2.originalIndex;
 					}
 
-					// If only one role has 'order_role', prioritize it
-					return role_1.order_role !== undefined ? -1 : 1;
+					// If only one role has 'orderRole', prioritize it
+					return role_1.orderRole !== undefined ? -1 : 1;
 				})
 				.map(mapRolesClanToEntity);
 
@@ -183,13 +183,13 @@ export const fetchMembersRole = createAsyncThunk('MembersRole/fetchMembersRole',
 			initialDelay: 1000,
 			scope: 'clan-role-users'
 		});
-		if (!response.role_users) {
+		if (!response.roleUsers) {
 			return thunkAPI.rejectWithValue([]);
 		}
 		return {
 			roleID: roleId,
 			clanId,
-			members: response.role_users
+			members: response.roleUsers
 		} as FetchReturnMembersRole & { clanId: string };
 	} catch (error) {
 		captureSentryError(error, 'MembersRole/fetchMembersRole');
@@ -231,15 +231,18 @@ export const fetchCreateRole = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				active_permission_ids: activePermissionIds || [],
-				add_user_ids: addUserIds || [],
-				allow_mention: 0,
-				clan_id: clanId,
+				$typeName: 'mezon.api.CreateRoleRequest' as const,
+				activePermissionIds: activePermissionIds || [],
+				addUserIds: addUserIds || [],
+				allowMention: 0,
+				clanId,
 				color: color ?? '',
+				roleIcon: '',
 				description: '',
-				display_online: 0,
+				displayOnline: 0,
 				title: title ?? '',
-				max_permission_id: maxPermissionId
+				maxPermissionId,
+				orderRole: 0
 			};
 			const response = await mezon.client.createRole(mezon.session, body);
 			if (!response) {
@@ -285,20 +288,21 @@ export const updateRole = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const body: ApiUpdateRoleRequest = {
-				role_id: roleId,
+			const body = {
+				$typeName: 'mezon.api.UpdateRoleRequest' as const,
+				roleId,
 				title: title ?? '',
 				color: color ?? '',
-				role_icon: roleIcon,
+				roleIcon,
 				description: '',
-				display_online: 0,
-				allow_mention: 0,
-				add_user_ids: addUserIds || [],
-				active_permission_ids: activePermissionIds || [],
-				remove_user_ids: removeUserIds || [],
-				remove_permission_ids: removePermissionIds || [],
-				clan_id: clanId,
-				max_permission_id: maxPermissionId
+				displayOnline: 0,
+				allowMention: 0,
+				addUserIds: addUserIds || [],
+				activePermissionIds: activePermissionIds || [],
+				removeUserIds: removeUserIds || [],
+				removePermissionIds: removePermissionIds || [],
+				clanId,
+				maxPermissionId
 			};
 			const response = await mezon.client.updateRole(mezon.session, roleId, body);
 			if (!response) {
@@ -321,10 +325,19 @@ export const updateRole = createAsyncThunk(
 	}
 );
 
-export const updateRoleOrder = createAsyncThunk('UpdateRole/updateRolesOrder', async ({ clan_id, roles }: ApiUpdateRoleOrderRequest, thunkAPI) => {
+export const updateRoleOrder = createAsyncThunk('UpdateRole/updateRolesOrder', async ({ clanId, roles }: ApiUpdateRoleOrderRequest, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		await mezon.client.updateRoleOrder(mezon.session, { clan_id, roles });
+		const rolesWithTypeName = (roles || []).map((role) => ({
+			$typeName: 'mezon.api.RoleOrderUpdate' as const,
+			roleId: role.roleId || '',
+			order: role.order || 0
+		}));
+		await mezon.client.updateRoleOrder(mezon.session, {
+			$typeName: 'mezon.api.UpdateRoleOrderRequest' as const,
+			clanId: clanId || '',
+			roles: rolesWithTypeName
+		});
 	} catch (e) {
 		console.error('Error', e);
 	}
@@ -342,8 +355,8 @@ export const updatePermissionUserByRoleId = createAsyncThunk(
 			const state = thunkAPI.getState() as { rolesclan: RolesClanState };
 			const roles = state.rolesclan.entities;
 			const role = roles[roleId];
-			if (role?.role_user_list?.role_users) {
-				const userExists = role.role_user_list.role_users.some((user) => user.id === userId);
+			if (role?.roleUserList?.roleUsers) {
+				const userExists = role.roleUserList.roleUsers.some((user) => user.id === userId);
 				return userExists;
 			}
 			return false;
@@ -384,16 +397,16 @@ export const RolesClanSlice = createSlice({
 			const changes: Partial<{
 				title: string;
 				color: string;
-				permission_list: typeof role.permission_list;
-				role_user_list: typeof role.role_user_list;
+				permissionList: typeof role.permissionList;
+				roleUserList: typeof role.roleUserList;
 			}> = {};
 			changes.title = role.title;
 			changes.color = role.color;
-			if (role.permission_list?.permissions) {
-				changes.permission_list = role.permission_list;
+			if (role.permissionList?.permissions) {
+				changes.permissionList = role.permissionList;
 			}
-			if (role.role_user_list?.role_users) {
-				changes.role_user_list = role.role_user_list;
+			if (role.roleUserList?.roleUsers) {
+				changes.roleUserList = role.roleUserList;
 			}
 
 			if (state.byClans[clanId]?.roles[role.id || '']) {
@@ -435,23 +448,23 @@ export const RolesClanSlice = createSlice({
 			if (!clanData) return;
 
 			Object.values(clanData.roles).forEach((role) => {
-				if (role && role.role_user_list?.role_users) {
-					const updatedRoleUsers = role.role_user_list.role_users.filter((user) => user.id !== userId);
-					if (updatedRoleUsers.length !== role.role_user_list.role_users.length) {
+				if (role && role.roleUserList?.roleUsers) {
+					const updatedRoleUsers = role.roleUserList.roleUsers.filter((user) => user.id !== userId);
+					if (updatedRoleUsers.length !== role.roleUserList.roleUsers.length) {
 						clanData.roles[role.id] = {
 							...role,
-							role_user_list: {
-								...role.role_user_list,
-								role_users: updatedRoleUsers
+							roleUserList: {
+								...role.roleUserList,
+								roleUsers: updatedRoleUsers
 							}
 						};
 
 						RolesClanAdapter.updateOne(state, {
 							id: role.id,
 							changes: {
-								role_user_list: {
-									...role.role_user_list,
-									role_users: updatedRoleUsers
+								roleUserList: {
+									...role.roleUserList,
+									roleUsers: updatedRoleUsers
 								}
 							}
 						});
@@ -465,8 +478,8 @@ export const RolesClanSlice = createSlice({
 			if (!clanData) return;
 
 			const updatedRoles = Object.values(clanData.roles).filter((role) => {
-				if (role.channel_ids) {
-					return !role.channel_ids.includes(channelId);
+				if (role.channelIds) {
+					return !role.channelIds.includes(channelId);
 				}
 				return true;
 			});
@@ -487,9 +500,9 @@ export const RolesClanSlice = createSlice({
 				const role = clanData?.roles?.[roleId];
 				if (!role) continue;
 
-				const channels = Array.isArray(role?.channel_ids) ? role?.channel_ids : [];
+				const channels = Array.isArray(role?.channelIds) ? role?.channelIds : [];
 				if (!channels?.includes(channelId)) {
-					role.channel_ids = [...channels, channelId];
+					role.channelIds = [...channels, channelId];
 				}
 			}
 		},
@@ -498,7 +511,7 @@ export const RolesClanSlice = createSlice({
 			const role = state?.byClans?.[clanId]?.roles?.[roleId];
 			if (!role) return;
 
-			role.channel_ids = Array.isArray(role?.channel_ids) ? role?.channel_ids?.filter((id) => id && id !== channelId) : [];
+			role.channelIds = Array.isArray(role?.channelIds) ? role?.channelIds?.filter((id) => id && id !== channelId) : [];
 		},
 		setCurrentRoleId: (state, action: PayloadAction<string>) => {
 			state.currentRoleId = action.payload;
@@ -558,7 +571,7 @@ export const RolesClanSlice = createSlice({
 			})
 			.addCase(updateRole.fulfilled, (state: RolesClanState, action: PayloadAction<RolesClanEntity>) => {
 				const role = action.payload;
-				const clanId = role.clan_id;
+				const clanId = role.clanId;
 
 				if (clanId && state.byClans[clanId]?.roles[role.id]) {
 					state.byClans[clanId].roles[role.id] = role;
@@ -715,7 +728,7 @@ export const selectAllRolesClan = createSelector([getRolesClanState, (state: Roo
 
 export const selectRolesByChannelId = (channelId?: string | null) =>
 	createSelector(selectAllRolesClan, (roles) => {
-		return roles.filter((role) => role?.channel_ids?.includes(channelId!));
+		return roles.filter((role) => role?.channelIds?.includes(channelId!));
 	});
 
 export const selectCurrentRoleId = createSelector(getRolesClanState, (state) => state.currentRoleId);
@@ -743,31 +756,31 @@ const handleMapUpdateRole = (
 	users: Record<string, UsersClanEntity>
 ): RolesClanEntity => {
 	const {
-		active_permission_ids = [],
-		remove_permission_ids = [],
-		add_user_ids = [],
-		remove_user_ids = [],
+		activePermissionIds = [],
+		removePermissionIds = [],
+		addUserIds = [],
+		removeUserIds = [],
 		title,
 		color,
-		role_icon,
+		roleIcon,
 		description,
-		display_online,
-		allow_mention
+		displayOnline,
+		allowMention
 	} = body;
 
-	const removePermissionSet = new Set(remove_permission_ids);
-	// const activePermissionSet = new Set(active_permission_ids);
+	const removePermissionSet = new Set(removePermissionIds);
+	// const activePermissionSet = new Set(activePermissionIds);
 
-	const permissionUpdate = (role.permission_list?.permissions || [])
+	const permissionUpdate = (role.permissionList?.permissions || [])
 		.filter((p) => (p.id ? !removePermissionSet.has(p.id) : false))
-		.concat(active_permission_ids.map((id) => permissions[id]).filter((p): p is PermissionUserEntity => !!p && !removePermissionSet.has(p.id)));
+		.concat(activePermissionIds.map((id) => permissions[id]).filter((p): p is PermissionUserEntity => !!p && !removePermissionSet.has(p.id)));
 
-	const removeUserSet = new Set(remove_user_ids);
-	const existingUsers = role.role_user_list?.role_users || [];
+	const removeUserSet = new Set(removeUserIds);
+	const existingUsers = role.roleUserList?.roleUsers || [];
 
 	const userUpdate = existingUsers.filter((u) => (u.id ? !removeUserSet.has(u.id) : false));
 	const existingUserIdSet = new Set(userUpdate.map((u) => u.id).filter((id): id is string => Boolean(id)));
-	for (const id of add_user_ids) {
+	for (const id of addUserIds) {
 		if (removeUserSet.has(id)) continue;
 		if (existingUserIdSet.has(id)) continue;
 		const u = users[id];
@@ -775,10 +788,10 @@ const handleMapUpdateRole = (
 
 		userUpdate.push({
 			id: u.id,
-			avatar_url: u.clan_avatar || u.user?.avatar_url,
-			display_name: u.prioritizeName,
+			avatarUrl: u.clanAvatar || u.user?.avatarUrl,
+			displayName: u.prioritizeName,
 			username: u.user?.username,
-			lang_tag: u.user?.lang_tag,
+			langTag: u.user?.langTag,
 			location: u.user?.location,
 			online: u.user?.online
 		});
@@ -789,11 +802,11 @@ const handleMapUpdateRole = (
 		...role,
 		title: title ?? role.title,
 		color: color ?? role.color,
-		role_icon: role_icon ?? role.role_icon,
+		roleIcon: roleIcon ?? role.roleIcon,
 		description: description ?? role.description,
-		display_online: display_online ?? role.display_online,
-		allow_mention: allow_mention ?? role.allow_mention,
-		permission_list: { permissions: permissionUpdate },
-		role_user_list: { role_users: userUpdate }
+		displayOnline: displayOnline ?? role.displayOnline,
+		allowMention: allowMention ?? role.allowMention,
+		permissionList: { permissions: permissionUpdate },
+		roleUserList: { roleUsers: userUpdate }
 	};
 };

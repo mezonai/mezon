@@ -57,7 +57,7 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 	const selectedPermissions = useSelector(getNewSelectedPermissions);
 	const clickRole = useSelector(getSelectedRoleId);
 	const activeRole = RolesClan.find((role) => role.id === clickRole);
-	const permissionsRole = activeRole?.permission_list;
+	const permissionsRole = activeRole?.permissionList;
 	const permissions = permissionsRole?.permissions?.filter((permission) => permission.active === 1) || [];
 	const permissionIds = permissions.map((permission) => permission.id) || [];
 	const dispatch = useDispatch();
@@ -70,7 +70,7 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 		const isSamePermissions =
 			selectedPermissions.length === permissionIds.length && selectedPermissions.every((id) => permissionIds.includes(id));
 
-		const originalIcon = activeRole?.role_icon || '';
+		const originalIcon = activeRole?.roleIcon || '';
 		const currentIconInStore = newRoleIcon || currentRoleIcon || '';
 		const hasIconChanged = currentIconInStore !== originalIcon;
 
@@ -97,12 +97,12 @@ const SettingDisplayRole = ({ RolesClan, hasPermissionEdit }: { RolesClan: Roles
 
 				<InputField
 					needOutline={true}
-					className={` text-[15px] w-full  p-[7px] font-normal border-theme-primary text-theme-message bg-input-secondary rounded-lg  focus:outline focus:outline-1  outline-[#006ce7] ${!hasPermissionEdit || activeRole?.slug === `everyone-${activeRole?.clan_id}` ? 'cursor-not-allowed' : ''}`}
+					className={` text-[15px] w-full  p-[7px] font-normal border-theme-primary text-theme-message bg-input-secondary rounded-lg  focus:outline focus:outline-1  outline-[#006ce7] ${!hasPermissionEdit || activeRole?.slug === `everyone-${activeRole?.clanId}` ? 'cursor-not-allowed' : ''}`}
 					type="text"
 					value={nameRole}
 					onChange={handleDisplayName}
 					maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED)}
-					disabled={!hasPermissionEdit || activeRole?.slug === `everyone-${activeRole?.clan_id}`}
+					disabled={!hasPermissionEdit || activeRole?.slug === `everyone-${activeRole?.clanId}`}
 				/>
 			</div>
 			<RoleColor />

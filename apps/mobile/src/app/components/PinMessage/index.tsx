@@ -35,9 +35,9 @@ const PinMessage = memo(({ currentChannelId, currentClanId }: { currentChannelId
 		(message: PinMessageEntity) => {
 			dispatch(
 				pinMessageActions.deleteChannelPinMessage({
-					channel_id: currentChannelId,
-					message_id: message?.message_id || message?.id,
-					clan_id: currentClanId
+					channelId: currentChannelId,
+					messageId: message?.messageId || message?.id,
+					clanId: currentClanId
 				})
 			);
 		},

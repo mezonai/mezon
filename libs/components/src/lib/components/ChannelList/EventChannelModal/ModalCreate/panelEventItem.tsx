@@ -49,13 +49,13 @@ function PanelEventItem(props: PanelEventItemProps) {
 		if (isClanOwner || hasClanPermission || hasAdminPermission) {
 			return true;
 		}
-		const isEventICreated = event?.creator_id === userProfile?.user?.id;
+		const isEventICreated = event?.creatorId === userProfile?.user?.id;
 		if (isEventICreated) {
 			return true;
 		}
 
-		return Number(userMaxPermissionLevel) > Number(event?.max_permission);
-	}, [event?.creator_id, event?.max_permission, hasAdminPermission, hasClanPermission, isClanOwner, userMaxPermissionLevel, userProfile?.user?.id]);
+		return Number(userMaxPermissionLevel) > Number(event?.maxPermission);
+	}, [event?.creatorId, event?.maxPermission, hasAdminPermission, hasClanPermission, isClanOwner, userMaxPermissionLevel, userProfile?.user?.id]);
 
 	const handleDeleteEvent = async () => {
 		if (setOpenModalDelEvent) {

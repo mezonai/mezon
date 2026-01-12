@@ -26,7 +26,7 @@ const HeaderLeftThreadForm = ({ currentChannel }: { currentChannel: ChannelThrea
 				<View style={styles.titleRow}>
 					{!openThreadMessageState && (
 						<View style={styles.iconContainer}>
-							{currentChannel?.channel_private === ChannelStatusEnum.isPrivate &&
+							{currentChannel?.channelPrivate === ChannelStatusEnum.isPrivate &&
 							currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
 								<MezonIconCDN icon={IconCDN.channelTextLock} width={18} height={18} color={themeValue.textStrong} />
 							) : (
@@ -35,7 +35,7 @@ const HeaderLeftThreadForm = ({ currentChannel }: { currentChannel: ChannelThrea
 						</View>
 					)}
 					<Text style={[styles.titleText, { color: themeValue.textStrong }]}>
-						{openThreadMessageState ? t('newThread', { ns: 'createThread' }) : currentChannel?.channel_label}
+						{openThreadMessageState ? t('newThread', { ns: 'createThread' }) : currentChannel?.channelLabel}
 					</Text>
 					<MezonIconCDN
 						icon={IconCDN.chevronSmallRightIcon}
@@ -47,7 +47,7 @@ const HeaderLeftThreadForm = ({ currentChannel }: { currentChannel: ChannelThrea
 				</View>
 				{openThreadMessageState && (
 					<Text numberOfLines={1} style={[styles.subtitleText, { color: themeValue.text }]}>
-						{currentChannel?.channel_label}
+						{currentChannel?.channelLabel}
 					</Text>
 				)}
 			</View>

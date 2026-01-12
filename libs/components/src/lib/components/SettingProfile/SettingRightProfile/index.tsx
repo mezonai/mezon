@@ -69,9 +69,9 @@ const SettingRightProfile = ({ menuIsOpen, isDM }: SettingRightProfileProps) => 
 					<SettingRightUser
 						onClanProfileClick={handleClanProfileClick}
 						name={userProfile?.user?.username || ''}
-						avatar={userProfile?.user?.avatar_url || ''}
-						currentDisplayName={userProfile?.user?.display_name || ''}
-						aboutMe={userProfile?.user?.about_me || ''}
+						avatar={userProfile?.user?.avatarUrl || ''}
+						currentDisplayName={userProfile?.user?.displayName || ''}
+						aboutMe={userProfile?.user?.aboutMe || ''}
 						isDM={isDM}
 						dob={userProfile?.user?.dob || ''}
 						logo={userProfile?.logo || ''}

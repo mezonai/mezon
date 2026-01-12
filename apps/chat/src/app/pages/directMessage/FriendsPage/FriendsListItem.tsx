@@ -124,19 +124,19 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 	const directMessageWithUser = useCallback(async () => {
 		if (currentTabStatus === ETabUserStatus.PENDING) return;
 		const userID = friend?.user?.id ?? '';
-		const name = friend?.user?.display_name || friend.user?.username;
-		const avatar = friend.user?.avatar_url;
+		const name = friend?.user?.displayName || friend.user?.username;
+		const avatar = friend.user?.avatarUrl;
 
 		const response = await createDirectMessageWithUser(userID, name, friend.user?.username, avatar);
-		if (response.channel_id) {
-			return response.channel_id;
+		if (response.channelId) {
+			return response.channelId;
 		}
 		return;
 	}, [friend]);
 
 	const handleAcceptFriend = (username: string, id: string, avatar?: string, displayName?: string) => {
 		acceptFriend(username, id);
-		dispatch(listUsersByUserActions.updateUserInList({ id, avatar_url: avatar, display_name: displayName, username }));
+		dispatch(listUsersByUserActions.updateUserInList({ id, avatarUrl: avatar, displayName: displayName, username }));
 	};
 
 	const handleDeleteFriend = (username: string, id: string) => {
@@ -209,16 +209,16 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 			>
 				<div key={friend?.user?.id} className="flex-1 min-w-0 pr-2">
 					<BaseProfile
-						avatar={friend?.user?.avatar_url ?? ''}
-						name={(friend?.user?.display_name || friend?.user?.username) ?? ''}
+						avatar={friend?.user?.avatarUrl ?? ''}
+						name={(friend?.user?.displayName || friend?.user?.username) ?? ''}
 						displayName={
 							<>
-								{friend?.user?.display_name || friend?.user?.username}{' '}
+								{friend?.user?.displayName || friend?.user?.username}{' '}
 								<span className="group-hover:inline-block hidden text-theme-primary-hover">{friend?.user?.username}</span>
 							</>
 						}
 						status={userStatus?.status}
-						userStatus={userStatus?.user_status}
+						userStatus={userStatus?.userStatus}
 					/>
 				</div>
 				<div className="flex-shrink-0 w-auto min-w-fit" onClick={(e) => e.stopPropagation()}>
@@ -257,8 +257,8 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 									handleAcceptFriend(
 										friend?.user?.username as string,
 										friend?.user?.id as string,
-										friend?.user?.avatar_url as string,
-										friend?.user?.display_name as string
+										friend?.user?.avatarUrl as string,
+										friend?.user?.displayName as string
 									)
 								}
 								data-e2e={generateE2eId('friend_page.button.accept_friend_request')}

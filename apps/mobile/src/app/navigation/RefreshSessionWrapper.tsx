@@ -107,11 +107,11 @@ const RefreshSessionWrapper = ({ children }) => {
 			if (session) {
 				const newSession = new Session(
 					session.token,
-					session.refresh_token,
+					session.refreshToken,
 					session.created || false,
-					session.api_url,
-					session?.id_token || '',
-					session?.is_remember || false
+					session.apiUrl,
+					session?.idToken || '',
+					session?.isRemember || false
 				);
 				dispatch(authActions.updateSession(newSession));
 			}

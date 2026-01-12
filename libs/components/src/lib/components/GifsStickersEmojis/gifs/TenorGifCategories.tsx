@@ -3,7 +3,7 @@ import { referencesActions, selectDataReferences, useAppSelector } from '@mezon/
 import { Loading } from '@mezon/ui';
 import type { IGifCategory } from '@mezon/utils';
 import { EMimeTypes, SubPanelName, blankReferenceObj, generateE2eId } from '@mezon/utils';
-import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/types';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import FeaturedGifs from './FeaturedGifs';
@@ -45,7 +45,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 		setButtonArrowBack(true);
 	};
 
-	const currentId = useCurrentInbox()?.channel_id;
+	const currentId = useCurrentInbox()?.channelId;
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
 	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
 	const dispatch = useDispatch();
@@ -85,8 +85,8 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 			<div className="mx-2 grid grid-cols-2 justify-center h-[400px] overflow-y-scroll hide-scrollbar gap-2">
 				<FeaturedGifs
 					onClickToTrending={() => ontrendingClickingStatus()}
-					channelId={channelOrDirect?.channel_id ?? ''}
-					channelLabel={channelOrDirect?.channel_id ?? ''}
+					channelId={channelOrDirect?.channelId ?? ''}
+					channelLabel={channelOrDirect?.channelId ?? ''}
 					mode={mode}
 				/>
 

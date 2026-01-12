@@ -35,6 +35,7 @@ import {
 	selectDmChannelPrivateById,
 	selectDmCreatorIdById,
 	selectDmGroupCurrentId,
+	selectInitTopicMessageId,
 	selectMessageByMessageId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId,
@@ -75,7 +76,7 @@ import {
 	showSimpleToast
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiChannelDescription, ApiQuickMenuAccessRequest } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiQuickMenuAccessRequest } from 'mezon-js/types';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -149,12 +150,12 @@ function MessageContextMenu({
 	const channelOrDirect = useMemo(() => {
 		if (isClanView) {
 			return {
-				clan_id: currentClanId,
-				channel_private: currentChannelPrivate,
-				channel_id: currentChannelId
+				clanId: currentClanId,
+				channelPrivate: currentChannelPrivate,
+				channelId: currentChannelId
 			} as ApiChannelDescription;
 		}
-		return { channel_private: dmChannelPrivate, channel_id: dmChannelId, clan_id: '0' } as ApiChannelDescription;
+		return { channelPrivate: dmChannelPrivate, channelId: dmChannelId, clanId: '0' } as ApiChannelDescription;
 	}, [isClanView, currentClanId, currentChannelPrivate, currentChannelId, dmChannelPrivate, dmChannelId]);
 
 	const { sendMessage: sendChatMessage } = useChatSending({
@@ -165,7 +166,7 @@ function MessageContextMenu({
 	const message = useAppSelector((state) =>
 		selectMessageByMessageId(
 			state,
-			isTopic ? currentTopicId : isFocusThreadBox ? currentThread?.channel_id : isClanView ? currentChannelId : currentDmId,
+			isTopic ? currentTopicId : isFocusThreadBox ? currentThread?.channelId : isClanView ? currentChannelId : currentDmId,
 			messageId
 		)
 	);
@@ -176,6 +177,7 @@ function MessageContextMenu({
 		selectMessageEntitiesByChannelId(state, (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmChannelId) || '')
 	);
 	const allMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, (isClanView ? currentChannelId : currentDmId) as string));
+	const topicMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, currentTopicId || ''));
 	const dispatch = useAppDispatch();
 
 	const handleItemClick = useCallback(() => {
@@ -189,10 +191,11 @@ function MessageContextMenu({
 	const isOwnerGroupDM = useIsOwnerGroupDM();
 	const { reactionMessageDispatch } = useChatReaction();
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
+	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 
 	const isMyMessage = useMemo(() => {
-		return message?.sender_id === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
-	}, [message?.sender_id, message?.content?.callLog?.callLogType, message?.code, userId]);
+		return message?.senderId === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
+	}, [message?.senderId, message?.content?.callLog?.callLogType, message?.code, userId]);
 
 	const isErrorMessage = useMemo(() => {
 		return message?.isError === true && isMyMessage;
@@ -203,7 +206,7 @@ function MessageContextMenu({
 	}, [message?.content.t]);
 
 	const checkMessageInPinnedList = useMemo(() => {
-		return listPinMessages?.some((pinMessage) => pinMessage?.message_id === messageId);
+		return listPinMessages?.some((pinMessage) => pinMessage?.messageId === messageId);
 	}, [listPinMessages, messageId]);
 
 	const [canManageThread, canDeleteMessage, canSendMessage] = usePermissionChecker(
@@ -233,10 +236,10 @@ function MessageContextMenu({
 		if (!message || !currentChannelId || !currentClanId) return;
 
 		const createCanvasBody = (content?: string, id?: string) => ({
-			channel_id: currentChannelId,
-			clan_id: currentClanId.toString(),
+			channelId: currentChannelId,
+			clanId: currentClanId.toString(),
 			content,
-			is_default: true,
+			isDefault: true,
 			...(id && { id }),
 			title: defaultCanvas?.title || t('note'),
 			status: defaultCanvas ? 0 : EEventAction.CREATED
@@ -312,15 +315,19 @@ function MessageContextMenu({
 		const nextMessage = allMessagesEntities?.[allMessageIds?.[messagePosition + 1]];
 		const previousMessage = allMessagesEntities?.[allMessageIds?.[messagePosition - 1]];
 
-		const isSameSenderWithNextMessage = currentMessage?.sender_id === nextMessage?.sender_id;
-		const isSameSenderWithPreviousMessage = currentMessage?.sender_id === previousMessage?.sender_id;
+		const isSameSenderWithNextMessage = currentMessage?.senderId === nextMessage?.senderId;
+		const isSameSenderWithPreviousMessage = currentMessage?.senderId === previousMessage?.senderId;
 
-		const isNextMessageWithinTimeLimit = nextMessage
-			? Date.parse(nextMessage?.create_time) - Date.parse(currentMessage?.create_time) < FORWARD_MESSAGE_TIME
-			: false;
-		const isPreviousMessageWithinTimeLimit = previousMessage
-			? Date.parse(currentMessage?.create_time) - Date.parse(previousMessage?.create_time) < FORWARD_MESSAGE_TIME
-			: false;
+		const isNextMessageWithinTimeLimit =
+			nextMessage?.createTimeSeconds &&
+			currentMessage?.createTimeSeconds &&
+			nextMessage?.createTimeSeconds - currentMessage?.createTimeSeconds < FORWARD_MESSAGE_TIME;
+
+		const isPreviousMessageWithinTimeLimit =
+			previousMessage.createTimeSeconds &&
+			currentMessage?.createTimeSeconds &&
+			currentMessage?.createTimeSeconds - previousMessage?.createTimeSeconds < FORWARD_MESSAGE_TIME;
+
 		return (isPreviousMessageWithinTimeLimit && isSameSenderWithPreviousMessage) || (isSameSenderWithNextMessage && isNextMessageWithinTimeLimit);
 	}, [allMessageIds, allMessagesEntities, messagePosition]);
 	const handleReplyMessage = useCallback(() => {
@@ -329,20 +336,20 @@ function MessageContextMenu({
 		}
 		dispatch(
 			referencesActions.setDataReferences({
-				channelId: message.topic_id && message.topic_id !== '0' ? message.topic_id : message.channel_id,
+				channelId: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 				dataReferences: {
 					message_ref_id: message.id,
 					ref_type: 0,
-					message_sender_id: message.sender_id,
+					message_sender_id: message.senderId,
 					content: JSON.stringify(message.content ?? '{}'),
 					message_sender_username: message.username,
-					mesages_sender_avatar: message.clan_avatar ? message.clan_avatar : message.avatar,
-					message_sender_clan_nick: message.clan_nick,
-					message_sender_display_name: message.display_name,
+					message_sender_avatar: message.clanAvatar ? message.clanAvatar : message.avatar,
+					message_sender_clan_nick: message.clanNick,
+					message_sender_display_name: message.displayName,
 					has_attachment: (message.attachments && message.attachments?.length > 0) ?? false,
-					channel_id: message.topic_id && message.topic_id !== '0' ? message.topic_id : message.channel_id,
+					channel_id: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 					mode: message.mode ?? 0,
-					channel_label: message.channel_label
+					channel_label: message.channelLabel
 				}
 			})
 		);
@@ -356,13 +363,13 @@ function MessageContextMenu({
 		dispatch(referencesActions.setIdReferenceMessageEdit(message?.id));
 		dispatch(
 			messagesActions.setChannelDraftMessage({
-				channelId: message?.channel_id,
+				channelId: message?.channelId,
 				channelDraftMessage: {
-					message_id: message?.id,
+					messageId: message?.id,
 					draftContent: message?.content,
 					draftMention: message?.mentions ?? [],
 					draftAttachment: message?.attachments ?? [],
-					draftTopicId: message?.topic_id as string
+					draftTopicId: message?.topicId as string
 				}
 			})
 		);
@@ -390,12 +397,12 @@ function MessageContextMenu({
 	const handleUnPinMessage = useCallback(() => {
 		dispatch(
 			pinMessageActions.deleteChannelPinMessage({
-				channel_id: message?.channel_id,
-				message_id: message?.id,
-				clan_id: message?.clan_id as string
+				channelId: message?.channelId,
+				messageId: message?.id,
+				clanId: message?.clanId as string
 			})
 		);
-	}, [dispatch, message?.channel_id, message?.id]);
+	}, [dispatch, message?.channelId, message?.id]);
 
 	const setIsShowCreateThread = useCallback(
 		(isShowCreateThread: boolean, channelId?: string) => {
@@ -456,18 +463,18 @@ function MessageContextMenu({
 		try {
 			dispatch(
 				messagesActions.updateLastSeenMessage({
-					clanId: message?.clan_id || '',
-					channelId: message?.channel_id,
+					clanId: message?.clanId || '',
+					channelId: message?.channelId,
 					messageId: message?.id,
 					mode: message?.mode || 0,
-					badge_count: 0,
-					message_time: message.create_time_seconds
+					badgeCount: 0,
+					message_time: message.createTimeSeconds
 				})
 			);
 			dispatch(
 				channelMetaActions.setChannelLastSeenTimestamp({
-					channelId: message?.channel_id as string,
-					timestamp: message.create_time_seconds || Date.now(),
+					channelId: message?.channelId as string,
+					timestamp: message.createTimeSeconds || Date.now(),
 					messageId: message?.id
 				})
 			);
@@ -482,9 +489,9 @@ function MessageContextMenu({
 
 	const handleSlashCommandSelect = useCallback(
 		(command: ApiQuickMenuAccessRequest) => {
-			if (command.action_msg) {
+			if (command.actionMsg) {
 				const payload = {
-					t: command.action_msg.trim(),
+					t: command.actionMsg.trim(),
 					hg: [],
 					ej: [],
 					mk: []
@@ -494,7 +501,7 @@ function MessageContextMenu({
 					sendChatMessage(payload, [], [], undefined, false, false);
 				} catch (error) {
 					console.error(t('errors.errorSendingSlashCommand'), error);
-					toast.error(`Failed to execute command "${command.menu_name}"`);
+					toast.error(`Failed to execute command "${command.menuName}"`);
 				}
 			}
 		},
@@ -502,13 +509,13 @@ function MessageContextMenu({
 	);
 
 	const handleResendMessage = useCallback(async () => {
-		if (!message || !message.channel_id) return;
+		if (!message || !message.channelId) return;
 
 		try {
 			await dispatch(
 				messagesActions.resendMessage({
 					messageId: message.id,
-					channelId: message.channel_id
+					channelId: message.channelId
 				})
 			).unwrap();
 			showSimpleToast(t('messageResent'));
@@ -519,14 +526,14 @@ function MessageContextMenu({
 	}, [dispatch, message, t]);
 
 	const handleDeleteErrorMessage = useCallback(() => {
-		if (!message?.channel_id || !message?.id) return;
+		if (!message?.channelId || !message?.id) return;
 		dispatch(
 			messagesActions.remove({
-				channelId: message.channel_id,
+				channelId: message.channelId,
 				messageId: message.id
 			})
 		);
-	}, [dispatch, message?.channel_id, message?.id]);
+	}, [dispatch, message?.channelId, message?.id]);
 
 	const checkPos = useMemo(() => {
 		if (posShowMenu === SHOW_POSITION.NONE || posShowMenu === SHOW_POSITION.IN_STICKER || posShowMenu === SHOW_POSITION.IN_EMOJI) {
@@ -572,6 +579,8 @@ function MessageContextMenu({
 
 	const enableDelMessageItem = useMemo(() => {
 		if (!checkPos || message?.content?.tp) return false;
+		if (messageId === initTopicMessageId) return false;
+		if (isTopic && topicMessageIds?.length > 0 && messageId === topicMessageIds[0]) return false;
 		if (isMyMessage) {
 			return true;
 		}
@@ -582,7 +591,19 @@ function MessageContextMenu({
 		if (activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL || activeMode === ChannelStreamMode.STREAM_MODE_THREAD) {
 			return canDeleteMessage;
 		}
-	}, [activeMode, type, canDeleteMessage, isMyMessage, checkPos, isOwnerGroupDM, message?.content?.tp]);
+	}, [
+		activeMode,
+		type,
+		canDeleteMessage,
+		isMyMessage,
+		checkPos,
+		isOwnerGroupDM,
+		message?.content?.tp,
+		messageId,
+		initTopicMessageId,
+		isTopic,
+		topicMessageIds
+	]);
 
 	const checkElementIsImage = elementTarget instanceof HTMLImageElement;
 	const checkElementIsLink = elementTarget instanceof HTMLAnchorElement;
@@ -638,13 +659,13 @@ function MessageContextMenu({
 	}, [checkElementIsImage, checkElementIsLink, isClickedEmoji, isClickedSticker, isLinkContent, linkContent]);
 
 	const sendTransactionMessage = useCallback(
-		async (userId: string, display_name?: string, username?: string, avatar?: string) => {
-			const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
-			if (response.channel_id) {
+		async (userId: string, displayName?: string, username?: string, avatar?: string) => {
+			const response = await createDirectMessageWithUser(userId, displayName, username, avatar);
+			if (response.channelId) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
 					`Funds Transferred: ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | Give coffee action`,
-					response.channel_id,
+					response.channelId,
 					channelMode,
 					TypeMessage.SendToken
 				);
@@ -680,8 +701,8 @@ function MessageContextMenu({
 
 		builder.when(
 			checkPos &&
-				message?.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID &&
-				message?.sender_id !== SYSTEM_SENDER_ID &&
+				message?.senderId !== NX_CHAT_APP_ANNONYMOUS_USER_ID &&
+				message?.senderId !== SYSTEM_SENDER_ID &&
 				message?.username !== SYSTEM_NAME,
 			(builder) => {
 				builder.addMenuItem(
@@ -690,33 +711,33 @@ function MessageContextMenu({
 
 					async () => {
 						try {
-							if (userId !== message.sender_id) {
+							if (userId !== message.senderId) {
 								await dispatch(
 									giveCoffeeActions.updateGiveCoffee({
-										channel_id: message.channel_id,
-										clan_id: message.clan_id,
-										message_ref_id: message.id,
-										receiver_id: message.sender_id,
-										sender_id: userId
+										channelId: message.channelId,
+										clanId: message.clanId,
+										messageRefId: message.id,
+										receiverId: message.senderId,
+										senderId: userId
 									})
 								).unwrap();
 								await reactionMessageDispatch({
-									id: EMOJI_GIVE_COFFEE.emoji_id,
+									id: EMOJI_GIVE_COFFEE.emojiId,
 									messageId: message.id ?? '',
-									emoji_id: EMOJI_GIVE_COFFEE.emoji_id,
+									emojiId: EMOJI_GIVE_COFFEE.emojiId,
 									emoji: EMOJI_GIVE_COFFEE.emoji,
 									count: 1,
-									message_sender_id: message?.sender_id ?? '',
+									messageSenderId: message?.senderId ?? '',
 									action_delete: false,
-									is_public: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
-									clanId: message.clan_id ?? '',
-									channelId: isTopic ? currentChannelId || '' : (message?.channel_id ?? ''),
+									isPublic: isPublicChannel({ parentId: currentChannelParentId, channelPrivate: currentChannelPrivate }),
+									clanId: message.clanId ?? '',
+									channelId: isTopic ? currentChannelId || '' : (message?.channelId ?? ''),
 									isFocusTopicBox,
-									channelIdOnMessage: message?.channel_id
+									channelIdOnMessage: message?.channelId
 								});
 
 								await sendTransactionMessage(
-									message.sender_id || '',
+									message.senderId || '',
 									message.user?.name,
 									message.user?.name || message.user?.username,
 									message.avatar

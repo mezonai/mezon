@@ -24,7 +24,7 @@ import {
 } from '@mezon/store';
 import type { ChannelThreads, ICategoryChannel, IChannel } from '@mezon/utils';
 import { EPermission, createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
-import type { ApiCategoryOrderUpdate } from 'mezon-js/api.gen';
+import type { ApiCategoryOrderUpdate } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -78,7 +78,7 @@ function ChannelList() {
 		<div onContextMenu={(event) => event.preventDefault()} id="channelList" className="contain-strict h-full">
 			<div className={`flex-1 relative`}>
 				<div
-					className={`absolute inset-0 transition-opacity duration-300 border-left-theme-primary  ${shouldShowSkeleton ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+					className={`absolute inset-0 transition-opacity duration-300 ${shouldShowSkeleton ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
 				>
 					<ChannelListSkeleton />
 				</div>
@@ -138,7 +138,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 
 	const listChannelRender = useAppSelector((state) => selectListChannelRenderByClanId(state, currentClanId as string));
 	const firstChannelWithBadgeCount = useMemo(() => {
-		return listChannelRender?.find((item) => (item as IChannel)?.count_mess_unread && ((item as IChannel)?.count_mess_unread || 0) > 0) || null;
+		return listChannelRender?.find((item) => (item as IChannel)?.countMessUnread && ((item as IChannel)?.countMessUnread || 0) > 0) || null;
 	}, [listChannelRender]);
 
 	const [height, setHeight] = useState(0);
@@ -204,7 +204,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 
 	const findScrollIndex = () => {
 		const channelId = firstChannelWithBadgeCount?.id;
-		const index = data.findIndex((item) => item.id === channelId && item.category_id !== FAVORITE_CATEGORY_ID);
+		const index = data.findIndex((item) => item.id === channelId && item.categoryId !== FAVORITE_CATEGORY_ID);
 		const currentScrollIndex = virtualizer.getVirtualItems().findIndex((item) => item.index === index);
 		const currentScrollPosition = virtualizer.scrollElement?.scrollTop;
 		const targetScrollPosition = virtualizer.getVirtualItems()[currentScrollIndex]?.start;
@@ -218,7 +218,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 
 		const focusChannel = ctrlKFocusChannel;
 		const { id } = focusChannel as { id: string; parentId: string };
-		const index = data.findIndex((item) => item.id === id && item.category_id !== FAVORITE_CATEGORY_ID);
+		const index = data.findIndex((item) => item.id === id && item.categoryId !== FAVORITE_CATEGORY_ID);
 		if (index <= 0) return;
 
 		const currentScrollIndex = virtualizer.getVirtualItems().findIndex((item) => item.index === index);
@@ -267,11 +267,11 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 			dragInfor.current = data[index];
 
 			const dragChannel = data[index] as IChannel;
-			if (dragChannel?.category_id && dragChannel?.clan_id) {
+			if (dragChannel?.categoryId && dragChannel?.clanId) {
 				dispatch(
 					categoriesActions.setCategoryExpandState({
-						clanId: dragChannel.clan_id,
-						categoryId: dragChannel.category_id,
+						clanId: dragChannel.clanId,
+						categoryId: dragChannel.categoryId,
 						expandState: false
 					})
 				);
@@ -283,7 +283,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 	const handleDragEnter = useCallback(
 		(index: number, e: React.DragEvent<HTMLDivElement>, id: string) => {
 			const target = e.target as HTMLDivElement;
-			if (!target.id || dragItemIndex.current?.idElement === target.id || dragInfor.current?.category_id !== data[index]?.category_id) return;
+			if (!target.id || dragItemIndex.current?.idElement === target.id || dragInfor.current?.categoryId !== data[index]?.categoryId) return;
 			const currentEl = document.getElementById(id);
 			const previousEl = document.getElementById(dragItemIndex.current!.idElement);
 			if (currentEl) currentEl.style.borderBottom = '3px solid #22c55e';
@@ -329,8 +329,8 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 			if (dragIndex - dragItemIndex.current!.indexEnd >= 2 || dragIndex < dragItemIndex.current!.indexEnd) {
 				dispatch(
 					listChannelRenderAction.sortChannelInCategory({
-						categoryId: data[dragIndex].category_id as string,
-						clanId: data[dragIndex].clan_id as string,
+						categoryId: data[dragIndex].categoryId as string,
+						clanId: data[dragIndex].clanId as string,
 						indexEnd: dragItemIndex.current!.indexEnd - 1 + countEmptyCategory,
 						indexStart: dragIndex - 1 + countEmptyCategory
 					})
@@ -352,17 +352,17 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 	}, [data]);
 
 	const categoryIds = useMemo(() => {
-		return categories.map((cat) => cat.category_id).filter((id): id is string => !!id);
+		return categories.map((cat) => cat.categoryId).filter((id): id is string => !!id);
 	}, [categories]);
 
 	const handleCategoryDragStart = useCallback(
 		(event: DragStartEvent) => {
 			const categoryId = event.active.id as string;
-			const category = categories.find((cat) => cat.category_id === categoryId);
-			if (category?.clan_id) {
+			const category = categories.find((cat) => cat.categoryId === categoryId);
+			if (category?.clanId) {
 				dispatch(
 					categoriesActions.setCategoryExpandState({
-						clanId: category.clan_id,
+						clanId: category.clanId,
 						categoryId: category.id,
 						expandState: false
 					})
@@ -379,8 +379,8 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 				return;
 			}
 
-			const oldIndex = categories.findIndex((cat) => cat.category_id === active.id);
-			const newIndex = categories.findIndex((cat) => cat.category_id === over.id);
+			const oldIndex = categories.findIndex((cat) => cat.categoryId === active.id);
+			const newIndex = categories.findIndex((cat) => cat.categoryId === over.id);
 
 			if (oldIndex === -1 || newIndex === -1) {
 				return;
@@ -390,15 +390,15 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 
 			let orderCounter = 1;
 			const categoriesOrderChanges: ApiCategoryOrderUpdate[] = reordered
-				.filter((category: ICategoryChannel) => category.id !== FAVORITE_CATEGORY_ID && category.category_id !== 'favorCate')
+				.filter((category: ICategoryChannel) => category.id !== FAVORITE_CATEGORY_ID && category.categoryId !== 'favorCate')
 				.map((category: ICategoryChannel) => ({
-					category_id: category.category_id as string,
+					categoryId: category.categoryId as string,
 					order: orderCounter++
 				}));
 
 			dispatch(
 				categoriesActions.updateCategoriesOrder({
-					clan_id: currentClanId as string,
+					clanId: currentClanId as string,
 					categories: categoriesOrderChanges
 				})
 			);
@@ -464,15 +464,15 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 											key={virtualRow.key}
 											data-index={virtualRow.index}
 											ref={virtualizer.measureElement}
-											id={`${item.category_id}-${item.id}`}
-											onDragEnter={(e) => handleDragEnter(virtualRow.index, e, `${item.category_id}-${item.id}`)}
+											id={`${item.categoryId}-${item.id}`}
+											onDragEnter={(e) => handleDragEnter(virtualRow.index, e, `${item.categoryId}-${item.id}`)}
 											onDragEnd={() => handleDragEnd(virtualRow.index)}
 										>
 											<CategorizedItem key={item.id} category={item} />
 										</div>
 									);
 								} else {
-									if (!(item as IChannel)?.parent_id || (item as IChannel).parent_id === '0') {
+									if (!(item as IChannel)?.parentId || (item as IChannel).parentId === '0') {
 										return (
 											<div
 												key={virtualRow.key}
@@ -483,12 +483,12 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 												data-e2e={generateE2eId('clan_page.channel_list.item')}
 											>
 												<ChannelListItem
-													isActive={currentChannelId === (item as IChannel).channel_id && !(item as IChannel).isFavor}
+													isActive={currentChannelId === (item as IChannel).channelId && !(item as IChannel).isFavor}
 													key={item.id}
 													channel={item as ChannelThreads}
 													permissions={permissions}
-													dragStart={(e) => handleDragStart(virtualRow.index, e, `${item.category_id}-${item.id}`)}
-													dragEnter={(e) => handleDragEnter(virtualRow.index, e, `${item.category_id}-${item.id}`)}
+													dragStart={(e) => handleDragStart(virtualRow.index, e, `${item.categoryId}-${item.id}`)}
+													dragEnter={(e) => handleDragEnter(virtualRow.index, e, `${item.categoryId}-${item.id}`)}
 												/>
 											</div>
 										);
@@ -501,7 +501,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 													thread={item}
 													notLastThread={
 														data[virtualRow.index + 1] &&
-														(data[virtualRow.index + 1] as IChannel)?.parent_id !== '0' &&
+														(data[virtualRow.index + 1] as IChannel)?.parentId !== '0' &&
 														!(data[virtualRow.index + 1] as ICategoryChannel)?.channels
 													}
 												/>

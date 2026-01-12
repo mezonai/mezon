@@ -46,7 +46,7 @@ function MessageWithSystem({
 					onContextMenu={undefined}
 					messageId={message?.id}
 					className={'fullBoxText relative group'}
-					channelId={message.channel_id}
+					channelId={message.channelId}
 				>
 					<div
 						className={`flex items-start min-h-8 relative w-full px-3 text-theme-primary pt-2 pl-5 ${isCustom ? 'pb-2' : ''}`}
@@ -76,7 +76,7 @@ function MessageWithSystem({
 
 const MessageDateDivider = ({ message }: { message: MessagesEntity }) => {
 	const { t, i18n } = useTranslation('common');
-	const messageDate = !message?.create_time ? '' : convertDateStringI18n(message?.create_time as string, t, i18n.language);
+	const messageDate = !message?.createTimeSeconds ? '' : convertDateStringI18n(message?.createTimeSeconds, t, i18n.language);
 	return (
 		<div className="mt-5 mb-2  w-full h-px flex items-center justify-center border-b-theme-primary">
 			<span className="px-4 bg-item text-theme-primary text-xs font-semibold bg-theme-primary rounded-lg ">{messageDate}</span>

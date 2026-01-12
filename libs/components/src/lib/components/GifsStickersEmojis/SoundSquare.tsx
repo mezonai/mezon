@@ -15,7 +15,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { SubPanelName, blankReferenceObj } from '@mezon/utils';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type ChannelMessageBoxProps = {
@@ -33,14 +33,14 @@ type SoundPanel = {
 
 export interface ClanSound {
 	category?: string;
-	clan_id?: string;
-	create_time?: string;
-	creator_id?: string;
+	clanId?: string;
+	createTime?: string;
+	creatorId?: string;
 	id?: string;
 	shortname?: string;
 	source?: string;
 	logo?: string;
-	clan_name?: string;
+	clanName?: string;
 }
 
 const searchSounds = (sounds: ExtendedApiMessageAttachment[], searchTerm: string) => {
@@ -57,7 +57,7 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 		mode,
 		fromTopic: isTopic
 	});
-	const currentId = useCurrentInbox()?.channel_id;
+	const currentId = useCurrentInbox()?.channelId;
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentId ?? ''));
 	const isReplyAction = dataReferences.message_ref_id && dataReferences.message_ref_id !== '';
 	const { valueInputToCheckHandleSearch, subPanelActive, setSubPanelActive } = useGifsStickersEmoji();
@@ -66,7 +66,7 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 
 	const allStickersInStore = useAppSelector(selectAllStickerSuggestion);
 	const allSoundsInStore = useMemo(
-		() => allStickersInStore.filter((sticker) => (sticker as any).media_type === MediaType.AUDIO),
+		() => allStickersInStore.filter((sticker) => (sticker as any).mediaType === MediaType.AUDIO),
 		[allStickersInStore]
 	);
 
@@ -76,9 +76,9 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 
 	const userSounds = useMemo(() => {
 		return allSoundsInStore.map((sound) => ({
-			clan_name: sound.clan_name || 'MY SOUNDS',
+			clanName: sound.clanName || 'MY SOUNDS',
 			logo: sound.logo || '',
-			clan_id: sound.clan_id || '',
+			clanId: sound.clanId || '',
 			id: sound.id || '',
 			filename: sound.shortname || 'sound.mp3',
 			size: 100000,
@@ -110,8 +110,8 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 	const categoryLogo = useMemo(() => {
 		return userSounds
 			.map((sound) => ({
-				id: sound.clan_id,
-				type: sound.clan_name,
+				id: sound.clanId,
+				type: sound.clanName,
 				url: sound.logo
 			}))
 			.filter((sound, index, self) => index === self.findIndex((s) => s.id === sound.id));
@@ -242,7 +242,7 @@ interface ICategorizedSoundProps {
 
 const CategorizedSounds: React.FC<ICategorizedSoundProps> = React.memo(
 	({ soundList, categoryName, onClickSendSound, valueInputToCheckHandleSearch }) => {
-		const soundListByCategoryName = useMemo(() => soundList.filter((sound) => sound.clan_name === categoryName), [soundList, categoryName]);
+		const soundListByCategoryName = useMemo(() => soundList.filter((sound) => sound.clanName === categoryName), [soundList, categoryName]);
 		const [isShowSoundList, setIsShowSoundList] = useState(true);
 		const currentClanName = useAppSelector(selectCurrentClanName);
 		const categoryLogo = useMemo(() => soundListByCategoryName[0]?.logo || '', [soundListByCategoryName]);

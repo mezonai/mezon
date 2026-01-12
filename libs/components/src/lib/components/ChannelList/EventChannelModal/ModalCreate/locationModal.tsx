@@ -51,6 +51,7 @@ const LocationModal = (props: LocationModalProps) => {
 		isChannelEvent = false,
 		isPrivateEvent = false
 	} = props;
+
 	const { t } = useTranslation('eventCreator');
 	const [errorVoice, setErrorVoice] = useState(false);
 
@@ -81,8 +82,8 @@ const LocationModal = (props: LocationModalProps) => {
 		value: voice.id,
 		label: (
 			<div className="flex items-center gap-x-2 " data-e2e={generateE2eId('clan_page.modal.create_event.location.channel.item')}>
-				{voice.channel_private ? <Icons.SpeakerLocked /> : <Icons.Speaker />}
-				<span className="truncate overflow-hidden max-w-[200px]">{voice.channel_label}</span>
+				{voice.channelPrivate ? <Icons.SpeakerLocked /> : <Icons.Speaker />}
+				<span className="truncate overflow-hidden max-w-[200px]">{voice.channelLabel}</span>
 			</div>
 		)
 	}));
@@ -118,7 +119,7 @@ const LocationModal = (props: LocationModalProps) => {
 			textChannels.map((channel) => {
 				const isTextChannel = channel.type === ChannelType.CHANNEL_TYPE_CHANNEL;
 				const isThread = channel.type === ChannelType.CHANNEL_TYPE_THREAD;
-				const isPrivateChannel = channel.channel_private;
+				const isPrivateChannel = channel.channelPrivate;
 
 				const icon = isTextChannel ? (
 					isPrivateChannel ? (
@@ -139,7 +140,7 @@ const LocationModal = (props: LocationModalProps) => {
 					label: (
 						<div className="flex items-center gap-x-2 " data-e2e={generateE2eId('clan_page.modal.create_event.location.channel.item')}>
 							{icon}
-							{channel.channel_label}
+							{channel.channelLabel}
 						</div>
 					)
 				};
@@ -171,7 +172,8 @@ const LocationModal = (props: LocationModalProps) => {
 						desc={t('fields.channelType.voiceChannel.description')}
 						choose={choiceSpeaker}
 						id="Speaker"
-						onChange={voicesChannel.length > 0 ? () => handleOption(OptionEvent.OPTION_SPEAKER) : () => {}}
+						onChange={() => handleOption(OptionEvent.OPTION_SPEAKER)}
+						disabled={voicesChannel.length === 0}
 					/>
 				)}
 
@@ -268,7 +270,8 @@ const TitleOptionEvent = ({
 	choose,
 	icon,
 	onChange,
-	id
+	id,
+	disabled = false
 }: {
 	title: string;
 	desc: string;
@@ -276,9 +279,13 @@ const TitleOptionEvent = ({
 	icon: JSX.Element;
 	onChange?: () => void;
 	id: string;
+	disabled?: boolean;
 }) => {
 	return (
-		<label className="w-full bg-item-theme rounded flex justify-between items-center p-2 cursor-pointer" htmlFor={id}>
+		<label
+			className={`w-full bg-item-theme rounded flex justify-between items-center p-2 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+			htmlFor={disabled ? undefined : id}
+		>
 			<div className={`flex items-center gap-x-2 ${choose ? 'text-theme-primary-active' : ''} `}>
 				{icon}
 				<div>
@@ -288,7 +295,15 @@ const TitleOptionEvent = ({
 					<p>{desc}</p>
 				</div>
 			</div>
-			<input type="radio" checked={choose} id={id} value={id} className="focus:outline-none focus:ring-0" onChange={onChange} />
+			<input
+				type="radio"
+				checked={choose}
+				id={id}
+				value={id}
+				className="focus:outline-none focus:ring-0"
+				onChange={onChange}
+				disabled={disabled}
+			/>
 		</label>
 	);
 };

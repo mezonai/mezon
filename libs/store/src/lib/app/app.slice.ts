@@ -379,8 +379,6 @@ export const selectTheme = createSelector(getAppState, (state: AppState) => stat
 
 export const selectCurrentLanguage = createSelector(getAppState, (state: AppState) => state.currentLanguage || 'en');
 
-export const selectError = createSelector(getAppState, (state: AppState) => state.error);
-
 export const selectIsShowMemberList = createSelector(getAppState, (state: AppState) => state.isShowMemberList);
 
 export const selectIsShowChatStream = createSelector(getAppState, (state: AppState) => state.isShowChatStream);
@@ -391,8 +389,6 @@ export const selectChatStreamWidth = createSelector(getAppState, (state: AppStat
 export const selectIsShowCanvas = createSelector(getAppState, (state: AppState) => state.isShowCanvas);
 
 export const selectInitialPath = createCachedSelector(getAppState, (state: AppState) => state.initialPath);
-
-export const selectInitialParams = createCachedSelector(getAppState, (state: AppState) => state.initialParams);
 
 export const selectCloseMenu = createSelector(getAppState, (state: AppState) => state.closeMenu);
 

@@ -1,5 +1,16 @@
-import { addBotChat, getApplicationDetail, selectAllAccount, selectAllClans, selectAppDetail, useAppDispatch } from '@mezon/store';
-import { memo, useCallback, useEffect, useState } from 'react';
+import {
+	addBotChat,
+	fetchChannels,
+	getApplicationDetail,
+	selectAllAccount,
+	selectAllClans,
+	selectAppDetail,
+	selectChannelsByClanId,
+	useAppDispatch,
+	type ChannelsEntity
+} from '@mezon/store';
+import { ChannelType } from 'mezon-js';
+import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
@@ -24,7 +35,7 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 	const dispatch = useAppDispatch();
 	const account = useSelector(selectAllAccount);
 	const appDetail = useSelector(selectAppDetail);
-	const activeSince = appDetail?.create_time;
+	const activeSince = appDetail?.createTime;
 	const activeSincecv = activeSince ? new Date(activeSince).toLocaleDateString() : '';
 	const [openSuccess, setOpenSuccess] = useState(false);
 	const toggleSuccess = () => setOpenSuccess((s) => !s);
@@ -32,13 +43,23 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 	const [clanValue, setClanValue] = useState('');
 	const [clanError, setClanError] = useState<string>();
 
+	const channels = useSelector((state: unknown) => (clanValue ? selectChannelsByClanId(state as never, clanValue) : []));
+
+	const defaultChannelId = useMemo(() => {
+		if (!clanValue || channels.length === 0) return null;
+		const defaultChannel = channels.find(
+			(channel: ChannelsEntity) => channel.parentId === '0' && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL
+		);
+		return defaultChannel ? defaultChannel.id : null;
+	}, [clanValue, channels]);
+
 	useEffect(() => {
 		if (applicationId) {
 			dispatch(getApplicationDetail({ appId: applicationId }));
 		}
 	}, [applicationId, dispatch]);
 
-	const clanConfig: SelectFieldConfig<any> = {
+	const clanConfig: SelectFieldConfig<string> = {
 		label: 'Add to clan',
 		value: clanValue,
 		onChange: (v) => {
@@ -47,7 +68,7 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 		},
 		errorMessage: clanError,
 		options: clans.map((clan) => ({
-			label: clan.clan_name,
+			label: clan.clanName,
 			value: clan.id
 		}))
 	};
@@ -72,18 +93,35 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 			);
 
 			if (resp.meta.requestStatus === RequestStatusSuccess.Fulfill) {
+				try {
+					await dispatch(fetchChannels({ clanId: cleanClanId, noCache: false })).unwrap();
+				} catch (channelError) {
+					console.error('Failed to fetch channels:', channelError);
+				}
+
 				toggleSuccess();
 			} else {
 				toast.error('You are not the owner of this clan. Please choose your own clan.');
 			}
-		} catch (error: any) {
+		} catch (error: unknown) {
 			console.error('Add bot failed:', error);
 			toast.error('Add bot failed. Refresh the page and try again.');
 		}
 	}, [applicationId, clanValue, dispatch]);
 
 	if (openSuccess) {
-		return <ModalSuccess name={appDetail?.appname || ''} clan={{ clanId: clanValue, clanName: '', isEmpty: false }} />;
+		const selectedClan = clans.find((clan) => clan.id === clanValue);
+		return (
+			<ModalSuccess
+				name={appDetail?.appname || ''}
+				clan={{
+					clanId: clanValue,
+					clanName: selectedClan?.clanName || '',
+					channelId: defaultChannelId || undefined,
+					isEmpty: false
+				}}
+			/>
+		);
 	}
 
 	return (

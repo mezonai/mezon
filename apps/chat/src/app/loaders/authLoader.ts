@@ -84,7 +84,7 @@ const handleLogoutWithRedirect = (dispatch: AppDispatch, initialPath: string): I
 
 async function checkInternetConnection() {
 	try {
-		const response = await fetch('https://mezon.ai/assets/favicon.ico', {
+		const response = await fetch(`${window.origin}/assets/favicon.ico`, {
 			method: 'HEAD',
 			cache: 'no-cache'
 		});
@@ -125,10 +125,10 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 
 			if ((response as unknown as IWithError).error) {
 				const errorPayload = response.payload;
-				if (isServerError500(errorPayload)) {
-					console.error('Server error (500), logging out immediately');
-					return handleLogoutWithRedirect(dispatch, initialPath);
-				}
+				// if (isServerError500(errorPayload)) {
+				// 	console.error('Server error (500), logging out immediately');
+				// 	return handleLogoutWithRedirect(dispatch, initialPath);
+				// }
 
 				throw new Error('Session refresh failed');
 			} else {
@@ -139,10 +139,10 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 				throw new Error('Session expired');
 			}
 		} catch (error) {
-			if ((await checkInternetConnection()) && error instanceof Error && !error.message.includes('Session expired')) {
-				console.error('Non-retryable error, logging out:', error);
-				return handleLogoutWithRedirect(dispatch, initialPath);
-			}
+			// if ((await checkInternetConnection()) && error instanceof Error && !error.message.includes('Session expired')) {
+			// 	console.error('Non-retryable error, logging out:', error);
+			// 	return handleLogoutWithRedirect(dispatch, initialPath);
+			// }
 
 			console.error(`Error in refreshSession, retrying... (${6 - retries + 1}/6)`, error);
 		}
@@ -174,6 +174,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 		const currentClanId = selectCurrentClanId(store.getState());
 		dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId as string }));
 	}
+
 	const session = await refreshSession({ dispatch, initialPath: initialPath as string });
 	await dispatch(waitForSocketConnection());
 

@@ -9,8 +9,8 @@ import { style } from './styles';
 export const ChannelFavoriteItem = React.memo(({ channelId, onPress }: { channelId: string; onPress: (channel: ChannelsEntity) => void }) => {
 	const channel = useAppSelector((state) => selectChannelById(state, channelId || ''));
 	const numberNotification = useMemo(() => {
-		return channel?.count_mess_unread ? channel?.count_mess_unread : 0;
-	}, [channel?.count_mess_unread]);
+		return channel?.countMessUnread ? channel?.countMessUnread : 0;
+	}, [channel?.countMessUnread]);
 
 	const styles = style(useTheme().themeValue);
 	return (
@@ -23,7 +23,7 @@ export const ChannelFavoriteItem = React.memo(({ channelId, onPress }: { channel
 			<View style={styles.channelItem}>
 				<ChannelStatusIcon channel={channel} />
 				<Text numberOfLines={1} style={styles.channelItemTitle}>
-					{channel?.channel_label}
+					{channel?.channelLabel}
 				</Text>
 			</View>
 			{Number(numberNotification || 0) > 0 && <ChannelBadgeUnread countMessageUnread={Number(numberNotification || 0)} />}

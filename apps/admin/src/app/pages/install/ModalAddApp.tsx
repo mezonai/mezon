@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { ChannelType } from 'mezon-js';
-import type { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiCreateChannelDescRequest } from 'mezon-js/types';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -21,9 +21,6 @@ import ModalSuccess from './components/ModalSuccess';
 import type { SelectFieldConfig } from './components/SelectField';
 import SelectField from './components/SelectField';
 import TextField from './components/TextField';
-enum RequestStatusSuccess {
-	Fulfill = 'fulfilled'
-}
 
 type ModalAddAppProps = {
 	applicationId: string;
@@ -41,7 +38,8 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 	const [clanError, setClanError] = useState<string>();
 	const [categoryValue, setCategoryValue] = useState('');
 	const [categoryError, setCategoryError] = useState<string>();
-	const activeSince = appDetail?.create_time;
+	const [createdChannelId, setCreatedChannelId] = useState<string>('');
+	const activeSince = appDetail?.createTime;
 	const activeSincecv = activeSince ? new Date(activeSince).toLocaleDateString() : '';
 	useEffect(() => {
 		if (clanValue) {
@@ -68,7 +66,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 		},
 		errorMessage: clanError,
 		options: clans.map((clan) => ({
-			label: clan.clan_name,
+			label: clan.clanName,
 			value: clan.id
 		}))
 	};
@@ -82,7 +80,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 		},
 		errorMessage: categoryError,
 		options: categories.map((mapCategoryToOption) => ({
-			label: mapCategoryToOption.category_name,
+			label: mapCategoryToOption.categoryName,
 			value: mapCategoryToOption.id
 		}))
 	};
@@ -106,17 +104,20 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 				.slice(0, 32);
 
 		const data: ApiCreateChannelDescRequest = {
-			channel_label: sanitizeLabel(labelValue) || sanitizeLabel(appDetail?.appname || ''),
-			app_id: applicationId,
-			clan_id: clanValue,
-			category_id: categoryValue,
+			channelLabel: sanitizeLabel(labelValue) || sanitizeLabel(appDetail?.appname || ''),
+			appId: applicationId,
+			clanId: clanValue,
+			categoryId: categoryValue,
 			type: ChannelType.CHANNEL_TYPE_APP,
-			channel_private: 0,
-			parent_id: '0'
+			channelPrivate: 0,
+			parentId: '0'
 		};
 
 		try {
 			const resp = await dispatch(createNewChannel(data)).unwrap();
+			if (resp?.channelId) {
+				setCreatedChannelId(resp.channelId as string);
+			}
 			toggleSuccess();
 		} catch (error: any) {
 			console.error('Failed to Add App:', error);
@@ -128,7 +129,18 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 	}, [applicationId, clanValue, categoryValue, labelValue, dispatch, appDetail]);
 
 	if (openSuccess) {
-		return <ModalSuccess name={appDetail?.appname || ''} clan={{ clanId: clanValue, clanName: '', isEmpty: false }} />;
+		const selectedClan = clans.find((clan) => clan.id === clanValue);
+		return (
+			<ModalSuccess
+				name={appDetail?.appname || ''}
+				clan={{
+					clanId: clanValue,
+					clanName: selectedClan?.clanName || '',
+					channelId: createdChannelId,
+					isEmpty: false
+				}}
+			/>
+		);
 	}
 
 	return (

@@ -17,7 +17,7 @@ interface ModalCallProps {
 }
 
 const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
-	const user = useAppSelector((state) => selectMemberDMByUserId(state, dataCall?.caller_id));
+	const user = useAppSelector((state) => selectMemberDMByUserId(state, dataCall?.callerId));
 	const isJoinedCall = useSelector(selectJoinedCall);
 	const isGroupCallActive = useSelector(selectIsGroupCallActive);
 
@@ -26,8 +26,8 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 	const groupCallSignaling = useGroupCallSignaling();
 
 	const callData = useMemo(() => {
-		return parseSignalingData(dataCall?.json_data as string);
-	}, [dataCall?.json_data]);
+		return parseSignalingData(dataCall?.jsonData as string);
+	}, [dataCall?.jsonData]);
 
 	const { groupName, memberCount, isVideoCall } = useMemo(
 		() => ({
@@ -46,38 +46,38 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 	}, [isGroupCallActive, isJoinedCall, groupCallState, groupCallAudio]);
 
 	const handleJoinCall = async () => {
-		if (dataCall?.channel_id && callData) {
+		if (dataCall?.channelId && callData) {
 			groupCallState.setIncomingCallData({
-				groupId: dataCall.channel_id,
+				groupId: dataCall.channelId,
 				groupName: callData.group_name || 'Group Call',
 				groupAvatar: callData.group_avatar,
-				meetingCode: callData.meeting_code,
-				clanId: callData.clan_id,
+				meetingCode: callData.meetingCode,
+				clanId: callData.clanId,
 				participants: callData.participants || [],
 				callerInfo: {
-					id: callData.caller_id,
+					id: callData.callerId,
 					name: callData.caller_name,
 					avatar: callData.caller_avatar
 				}
 			});
 
-			groupCallState.showPreCallInterface(dataCall.channel_id, callData.is_video);
+			groupCallState.showPreCallInterface(dataCall.channelId, callData.is_video);
 			groupCallState.autoJoinRoom(true, true);
 			groupCallState.hideIncomingGroupCall();
 		}
 	};
 
 	const handleCloseCall = async () => {
-		if (callData && dataCall?.caller_id) {
+		if (callData && dataCall?.callerId) {
 			const quitData = createQuitData({
 				isVideo: callData.is_video,
-				groupId: dataCall.channel_id || '',
+				groupId: dataCall.channelId || '',
 				callerId: userId,
-				callerName: user?.display_name || user?.username || '',
+				callerName: user?.displayName || user?.username || '',
 				action: 'decline'
 			}) as CallSignalingData;
 
-			groupCallSignaling.sendGroupCallQuit([dataCall.caller_id], quitData, dataCall.channel_id ?? '', userId ?? '');
+			groupCallSignaling.sendGroupCallQuit([dataCall.callerId], quitData, dataCall.channelId ?? '', userId ?? '');
 		}
 
 		groupCallState.hideIncomingGroupCall();
@@ -100,13 +100,13 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 						<AvatarImage
 							className="w-16 h-16 rounded-full border-2 border-green-500"
 							alt="caller avatar"
-							username={user?.display_name || user?.username}
-							srcImgProxy={createImgproxyUrl(user?.avatar_url ?? '', {
+							username={user?.displayName || user?.username}
+							srcImgProxy={createImgproxyUrl(user?.avatarUrl ?? '', {
 								width: 300,
 								height: 300,
 								resizeType: 'fit'
 							})}
-							src={user?.avatar_url}
+							src={user?.avatarUrl}
 						/>
 						<div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
 							{isVideoCall ? <Icons.IconMeetDM className="w-4 h-4" /> : <Icons.IconPhoneDM defaultSize="size-5" />}
@@ -115,7 +115,7 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 				</div>
 
 				<div className="text-center">
-					<p className="font-medium text-lg text-white">{user?.display_name || user?.username || 'Someone'} is inviting you to join</p>
+					<p className="font-medium text-lg text-white">{user?.displayName || user?.username || 'Someone'} is inviting you to join</p>
 					{memberCount > 1 && <p className="text-gray-400 mt-1">{memberCount} members in this group</p>}
 				</div>
 

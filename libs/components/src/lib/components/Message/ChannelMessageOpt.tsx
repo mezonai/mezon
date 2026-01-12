@@ -94,8 +94,8 @@ const ChannelMessageOpt = ({
 	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission, isAppChannel);
 	const optionMenu = useOptionMenuBuilder(handleContextMenu);
 	const giveACoffeeMenu = useGiveACoffeeMenuBuilder(message, isTopic);
-	const checkMessageOnTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.channel_id ?? ''));
-	const checkMessageHasTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.topic_id ?? ''));
+	const checkMessageOnTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.channelId ?? ''));
+	const checkMessageHasTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.topicId ?? ''));
 	const doNotAllowCreateTopic = (isTopic && checkMessageOnTopic) || (isTopic && checkMessageHasTopic) || !hasPermission || !canSendMessage;
 	const createTopicMenu = useTopicMenuBuilder(message, doNotAllowCreateTopic);
 	const items = useMenuBuilder([createTopicMenu, reactMenu, replyMenu, editMenu, threadMenu, giveACoffeeMenu, optionMenu]);
@@ -232,13 +232,13 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 	const { sendInviteMessage } = useSendInviteMessage();
 
 	const sendNotificationMessage = useCallback(
-		async (userId: string, username?: string, avatar?: string, display_names?: string) => {
-			const response = await createDirectMessageWithUser(userId, display_names, username, avatar);
-			if (response.channel_id) {
+		async (userId: string, username?: string, avatar?: string, displayNames?: string) => {
+			const response = await createDirectMessageWithUser(userId, displayNames, username, avatar);
+			if (response.channelId) {
 				const channelMode = ChannelStreamMode.STREAM_MODE_DM;
 				sendInviteMessage(
 					`${t('tokensSent')} ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | ${t('giveCoffeeAction')}`,
-					response.channel_id,
+					response.channelId,
 					channelMode,
 					TypeMessage.SendToken
 				);
@@ -253,31 +253,31 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 		try {
 			const checkSendCoffee = await dispatch(
 				giveCoffeeActions.updateGiveCoffee({
-					channel_id: message.channel_id,
-					clan_id: message.clan_id ?? '',
-					message_ref_id: message.id,
-					receiver_id: message.sender_id,
-					sender_id: userId
+					channelId: message.channelId,
+					clanId: message.clanId ?? '',
+					messageRefId: message.id,
+					receiverId: message.senderId,
+					senderId: userId
 				})
 			).unwrap();
 			if (checkSendCoffee === true) {
 				await reactionMessageDispatch({
-					id: EMOJI_GIVE_COFFEE.emoji_id,
+					id: EMOJI_GIVE_COFFEE.emojiId,
 					messageId: message.id ?? '',
-					emoji_id: EMOJI_GIVE_COFFEE.emoji_id,
+					emojiId: EMOJI_GIVE_COFFEE.emojiId,
 					emoji: EMOJI_GIVE_COFFEE.emoji,
 					count: 1,
-					message_sender_id: message?.sender_id ?? '',
+					messageSenderId: message?.senderId ?? '',
 					action_delete: false,
-					is_public: isPublicChannel(currentChannel),
-					clanId: message.clan_id ?? '',
-					channelId: isTopic ? currentChannel?.id || '' : (message?.channel_id ?? ''),
+					isPublic: isPublicChannel(currentChannel),
+					clanId: message.clanId ?? '',
+					channelId: isTopic ? currentChannel?.id || '' : (message?.channelId ?? ''),
 					isFocusTopicBox,
-					channelIdOnMessage: message?.channel_id
+					channelIdOnMessage: message?.channelId
 				});
 
 				await sendNotificationMessage(
-					message.sender_id || '',
+					message.senderId || '',
 					message.user?.username,
 					message.avatar,
 					message.user?.name || message.user?.username
@@ -290,9 +290,9 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 
 	return useMenuBuilderPlugin((builder) => {
 		builder.when(
-			userId !== message?.sender_id &&
-				message?.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID &&
-				message?.sender_id !== SYSTEM_SENDER_ID &&
+			userId !== message?.senderId &&
+				message?.senderId !== NX_CHAT_APP_ANNONYMOUS_USER_ID &&
+				message?.senderId !== SYSTEM_SENDER_ID &&
 				message.username !== SYSTEM_NAME,
 			(builder) => {
 				builder.addMenuItem(
@@ -317,20 +317,20 @@ function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) 
 	const handleItemClick = useCallback(() => {
 		dispatch(
 			referencesActions.setDataReferences({
-				channelId: message.topic_id && message.topic_id !== '0' ? message.topic_id : message.channel_id,
+				channelId: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 				dataReferences: {
 					message_ref_id: message.id,
 					ref_type: 0,
-					message_sender_id: message.sender_id,
+					message_sender_id: message.senderId,
 					content: JSON.stringify(message.content),
 					message_sender_username: message.username,
-					mesages_sender_avatar: message.clan_avatar ? message.clan_avatar : message.avatar,
-					message_sender_clan_nick: message.clan_nick,
-					message_sender_display_name: message.display_name,
+					message_sender_avatar: message.clanAvatar ? message.clanAvatar : message.avatar,
+					message_sender_clan_nick: message.clanNick,
+					message_sender_display_name: message.displayName,
 					has_attachment: (message.attachments && message.attachments?.length > 0) ?? false,
-					channel_id: message.topic_id && message.topic_id !== '0' ? message.topic_id : message.channel_id,
+					channel_id: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 					mode: message.mode ?? 0,
-					channel_label: message.channel_label
+					channel_label: message.channelLabel
 				}
 			})
 		);
@@ -339,7 +339,7 @@ function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) 
 	}, [dispatch, messageId]);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.when(userId !== message.sender_id && hasPermission, (builder) => {
+		builder.when(userId !== message.senderId && hasPermission, (builder) => {
 			builder.addMenuItem('reply', t('reply'), handleItemClick, <Icons.Reply />, null, false, false, 'rotate-180');
 		});
 	});
@@ -358,9 +358,9 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 		dispatch(referencesActions.setIdReferenceMessageEdit(messageId));
 		dispatch(
 			messagesActions.setChannelDraftMessage({
-				channelId: message.channel_id,
+				channelId: message.channelId,
 				channelDraftMessage: {
-					message_id: messageId,
+					messageId,
 					draftContent: message.content,
 					draftMention: message.mentions ?? [],
 					draftAttachment: message.attachments ?? [],
@@ -373,7 +373,7 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 
 	return useMenuBuilderPlugin((builder) => {
 		builder.when(
-			userId === message.sender_id &&
+			userId === message.senderId &&
 				!message?.content?.callLog?.callLogType &&
 				!(message.code === TypeMessage.SendToken) &&
 				!isForwardedMessage,
@@ -420,10 +420,10 @@ function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boole
 
 	const setIsShowCreateThread = useCallback(
 		(isShowCreateThread: boolean) => {
-			dispatch(threadsActions.setIsShowCreateThread({ channelId: message.channel_id as string, isShowCreateThread }));
+			dispatch(threadsActions.setIsShowCreateThread({ channelId: message.channelId as string, isShowCreateThread }));
 			dispatch(topicsActions.setIsShowCreateTopic(false));
 		},
-		[message.channel_id, dispatch]
+		[message.channelId, dispatch]
 	);
 
 	const setOpenThreadMessageState = useCallback(

@@ -36,14 +36,14 @@ const ChannelMessageReactionListener = React.memo(() => {
 				await reactionMessageDispatch({
 					id: data?.id ?? '',
 					messageId: data?.messageId ?? '',
-					emoji_id: data?.emojiId ?? '',
+					emojiId: data?.emojiId ?? '',
 					emoji: data?.emoji?.trim() ?? '',
 					count: data?.countToRemove ?? 0,
-					message_sender_id: data?.senderId ?? '',
-					action_delete: data?.actionDelete ?? false,
-					is_public: currentDirectId ? false : isPublicChannel(currentChannel),
-					clanId: currentDirectId ? '0' : currentChannel?.clan_id,
-					channelId: currentDirectId || currentChannel?.channel_id,
+					messageSenderId: data?.senderId ?? '',
+					actionDelete: data?.actionDelete ?? false,
+					isPublic: currentDirectId ? false : isPublicChannel(currentChannel),
+					clanId: currentDirectId ? '0' : currentChannel?.clanId,
+					channelId: currentDirectId || currentChannel?.channelId,
 					isFocusTopicBox: !!data?.topicId,
 					channelIdOnMessage: data?.channelId ?? ''
 				});
@@ -61,14 +61,14 @@ const ChannelMessageReactionListener = React.memo(() => {
 				await reactionMessageDispatch({
 					id: data?.id ?? '',
 					messageId: data?.messageId ?? '',
-					emoji_id: data?.emojiId ?? '',
+					emojiId: data?.emojiId ?? '',
 					emoji: data?.emoji?.trim() ?? '',
 					count: data?.countToRemove ?? 0,
-					message_sender_id: data?.senderId ?? '',
-					action_delete: data?.actionDelete ?? false,
-					is_public: currentDirectId ? false : isPublicChannel(currentChannel),
-					clanId: currentDirectId ? '0' : currentChannel?.clan_id,
-					channelId: currentDirectId || currentChannel?.channel_id,
+					messageSenderId: data?.senderId ?? '',
+					actionDelete: data?.actionDelete ?? false,
+					isPublic: currentDirectId ? false : isPublicChannel(currentChannel),
+					clanId: currentDirectId ? '0' : currentChannel?.clanId,
+					channelId: currentDirectId || currentChannel?.channelId,
 					isFocusTopicBox: !!data?.topicId,
 					channelIdOnMessage: data?.channelId ?? ''
 				});

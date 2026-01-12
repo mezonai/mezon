@@ -178,12 +178,12 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 
 			const response = await createDirectMessageWithUser(
 				user?.id,
-				user?.user?.display_name || user?.user?.username,
+				user?.user?.displayName || user?.user?.username,
 				user?.user?.username,
-				user?.user?.avatar_url
+				user?.user?.avatarUrl
 			);
-			if (response?.channel_id) {
-				const directDM = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+			if (response?.channelId) {
+				const directDM = toDmGroupPageFromMainApp(response.channelId, Number(response.type));
 				navigate(directDM);
 			}
 		},

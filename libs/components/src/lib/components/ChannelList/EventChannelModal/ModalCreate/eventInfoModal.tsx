@@ -222,7 +222,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						/>
 					</Suspense>
 				</div>
-				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.start_time')}>
+				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.startTime')}>
 					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
 						{t('fields.startTime.title')}
 						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
@@ -247,7 +247,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						/>
 					</Suspense>
 				</div>
-				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.end_time')}>
+				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.endTime')}>
 					<h3 className="uppercase text-[11px] font-semibold inline-flex gap-x-2">
 						{t('fields.endTime.title')}
 						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>

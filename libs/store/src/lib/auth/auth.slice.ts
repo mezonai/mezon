@@ -4,7 +4,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import { Session } from 'mezon-js';
-import type { ApiLinkAccountConfirmRequest } from 'mezon-js/dist/api.gen';
+import type { ApiLinkAccountConfirmRequest } from 'mezon-js/types';
 import { toast } from 'react-toastify';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
@@ -29,16 +29,16 @@ export interface AuthState {
 export interface ISession {
 	readonly created: boolean;
 	token: string;
-	readonly created_at: number;
+	readonly createdAt: number;
 	expires_at?: number;
 	refresh_expires_at?: number;
-	refresh_token: string;
+	refreshToken: string;
 	username?: string;
-	user_id?: string;
+	userId?: string;
 	vars?: object;
-	is_remember?: boolean;
-	api_url: string;
-	id_token?: string;
+	isRemember?: boolean;
+	apiUrl: string;
+	idToken?: string;
 }
 
 export const initialAuthState: AuthState = {
@@ -79,10 +79,10 @@ export type AuthenticatePhoneSMSOTPRequestPayload = {
 export const authenticateEmail = createAsyncThunk('auth/authenticateEmail', async ({ email, password }: AuthenticateEmailPayload, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	const session = await mezon?.authenticateEmail(email, password);
-	if (session && session?.id_token && session?.user_id) {
+	if (session && session?.idToken && session?.userId) {
 		const proofInput = {
-			userId: session?.user_id?.toString() || '',
-			jwt: session.id_token
+			userId: session?.userId?.toString() || '',
+			jwt: session.idToken
 		};
 
 		await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
@@ -100,10 +100,10 @@ export const authenticateMezon = createAsyncThunk('auth/authenticateMezon', asyn
 			console.error(data.message);
 		});
 	});
-	if (session && session.id_token && session.user_id) {
+	if (session && session.idToken && session.userId) {
 		const proofInput = {
-			userId: session.user_id,
-			jwt: session.id_token
+			userId: session.userId,
+			jwt: session.idToken
 		};
 
 		await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
@@ -123,23 +123,23 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 		return thunkAPI.rejectWithValue('Invalid refreshSession');
 	}
 
-	if (!sessionState.token || !sessionState.refresh_token) {
+	if (!sessionState.token || !sessionState.refreshToken) {
 		return thunkAPI.rejectWithValue('Invalid session tokens');
 	}
 
 	let session = new Session(
 		sessionState.token,
-		sessionState.refresh_token,
+		sessionState.refreshToken,
 		sessionState.created,
-		sessionState.api_url,
-		sessionState.id_token || '',
-		!!sessionState.is_remember
+		sessionState.apiUrl,
+		sessionState.idToken || '',
+		!!sessionState.isRemember
 	);
 
 	try {
 		session = (await mezon?.refreshSession({
 			...session,
-			is_remember: session.is_remember ?? false
+			isRemember: session.isRemember ?? false
 		})) as Session;
 	} catch (error: any) {
 		return thunkAPI.rejectWithValue(error);
@@ -163,7 +163,7 @@ export const checkSessionWithToken = createAsyncThunk('auth/checkSessionWithToke
 	try {
 		session = await mezon?.connectWithSession({
 			...mezon.sessionRef.current,
-			is_remember: mezon.sessionRef.current.is_remember ?? false
+			isRemember: mezon.sessionRef.current.isRemember ?? false
 		});
 	} catch (error: any) {
 		return thunkAPI.rejectWithValue('Redirect Login');
@@ -191,10 +191,10 @@ export const authenticateEmailOTPRequest = createAsyncThunk(
 export const confirmAuthenticateOTP = createAsyncThunk('auth/confirmAuthenticateOTP', async (data: ApiLinkAccountConfirmRequest, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	const session = await mezon?.confirmAuthenticateOTP(data);
-	if (session && session?.id_token && session?.user_id) {
+	if (session && session?.idToken && session?.userId) {
 		const proofInput = {
-			userId: session.user_id?.toString() || '',
-			jwt: session.id_token
+			userId: session.userId?.toString() || '',
+			jwt: session.idToken
 		};
 		await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
 	}
@@ -216,10 +216,10 @@ export const authenticatePhoneSMSOTPRequest = createAsyncThunk(
 	}
 );
 
-export const logOut = createAsyncThunk('auth/logOut', async ({ device_id, platform }: { device_id?: string; platform?: string }, thunkAPI) => {
+export const logOut = createAsyncThunk('auth/logOut', async ({ deviceId, platform }: { deviceId?: string; platform?: string }, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 	const sessionState = selectOthersSession(thunkAPI.getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
-	await mezon?.logOutMezon(device_id, platform, !sessionState);
+	await mezon?.logOutMezon(deviceId, platform, !sessionState);
 	thunkAPI.dispatch(authActions.setLogout());
 	thunkAPI.dispatch(walletActions.setLogout());
 	thunkAPI.dispatch(listChannelsByUserActions.removeAll());
@@ -248,12 +248,12 @@ export const checkLoginRequest = createAsyncThunk(
 	async ({ loginId, isRemember }: { loginId: string; isRemember: boolean }, thunkAPI) => {
 		const mezon = getMezonCtx(thunkAPI);
 
-		const session = await mezon?.checkLoginRequest({ login_id: loginId, is_remember: isRemember });
+		const session = await mezon?.checkLoginRequest({ loginId, isRemember });
 		if (session) {
-			if (session.id_token && session.user_id) {
+			if (session.idToken && session.userId) {
 				const proofInput = {
-					userId: session.user_id,
-					jwt: session.id_token
+					userId: session.userId,
+					jwt: session.idToken
 				};
 
 				await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
@@ -267,11 +267,11 @@ export const checkLoginRequest = createAsyncThunk(
 export const confirmLoginRequest = createAsyncThunk('auth/confirmLoginRequest', async ({ loginId }: { loginId: string }, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 
-	const session = await mezon?.confirmLoginRequest({ login_id: loginId });
-	if (session?.id_token && session?.user_id) {
+	const session = await mezon?.confirmLoginRequest({ loginId });
+	if (session?.idToken && session?.userId) {
 		const proofInput = {
-			userId: session.user_id,
-			jwt: session.id_token
+			userId: session.userId,
+			jwt: session.idToken
 		};
 
 		await thunkAPI.dispatch(walletActions.fetchZkProofs(proofInput));
@@ -327,24 +327,24 @@ export const authSlice = createSlice({
 		},
 
 		setSession(state, action) {
-			if (action.payload.user_id) {
+			if (action.payload.userId) {
 				if (!state.session) {
 					state.session = {
-						[action.payload.user_id]: action.payload
+						[action.payload.userId]: action.payload
 					};
 				} else {
-					state.session[action.payload.user_id] = action.payload;
+					state.session[action.payload.userId] = action.payload;
 				}
-				state.activeAccount = action.payload.user_id;
+				state.activeAccount = action.payload.userId;
 			}
 			state.isLogin = true;
 		},
 
 		updateSession(state, action: PayloadAction<ISession>) {
-			if (action?.payload?.user_id && state.session && state.session[action.payload.user_id]) {
-				const currentSession = state.session[action.payload.user_id];
+			if (action?.payload?.userId && state.session && state.session[action.payload.userId]) {
+				const currentSession = state.session[action.payload.userId];
 
-				state.session[action.payload.user_id] = {
+				state.session[action.payload.userId] = {
 					...currentSession,
 					...action.payload
 				};
@@ -393,15 +393,15 @@ export const authSlice = createSlice({
 			})
 			.addCase(authenticateApple.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
+				if (action.payload.userId) {
 					if (!state.session) {
 						state.session = {
-							[action.payload.user_id]: action.payload
+							[action.payload.userId]: action.payload
 						};
 					} else {
-						state.session[action.payload.user_id] = action.payload;
+						state.session[action.payload.userId] = action.payload;
 					}
-					state.activeAccount = action.payload.user_id;
+					state.activeAccount = action.payload.userId;
 				}
 
 				state.isLogin = true;
@@ -417,15 +417,15 @@ export const authSlice = createSlice({
 			})
 			.addCase(refreshSession.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
+				if (action.payload.userId) {
 					if (!state.session) {
 						state.session = {
-							[action.payload.user_id]: action.payload
+							[action.payload.userId]: action.payload
 						};
 					} else {
-						state.session[action.payload.user_id] = action.payload;
+						state.session[action.payload.userId] = action.payload;
 					}
-					state.activeAccount = `${action.payload.user_id}`;
+					state.activeAccount = `${action.payload.userId}`;
 				}
 				state.isLogin = true;
 			})
@@ -439,15 +439,15 @@ export const authSlice = createSlice({
 			})
 			.addCase(checkSessionWithToken.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
+				if (action.payload.userId) {
 					if (!state.session) {
 						state.session = {
-							[action.payload.user_id]: action.payload
+							[action.payload.userId]: action.payload
 						};
 					} else {
-						state.session[action.payload.user_id] = action.payload;
+						state.session[action.payload.userId] = action.payload;
 					}
-					state.activeAccount = `${action.payload.user_id}`;
+					state.activeAccount = `${action.payload.userId}`;
 				}
 				state.isLogin = true;
 			})
@@ -458,12 +458,12 @@ export const authSlice = createSlice({
 		builder
 			.addCase(checkLoginRequest.fulfilled, (state: AuthState, action) => {
 				if (action.payload !== null) {
-					if (state.session && action.payload.user_id) {
-						state.session[action.payload.user_id] = action.payload;
+					if (state.session && action.payload.userId) {
+						state.session[action.payload.userId] = action.payload;
 					}
-					if (!state.session && action.payload.user_id) {
+					if (!state.session && action.payload.userId) {
 						state.session = {
-							[action.payload.user_id]: action.payload
+							[action.payload.userId]: action.payload
 						};
 					}
 					state.isLogin = true;
@@ -490,15 +490,15 @@ export const authSlice = createSlice({
 			})
 			.addCase(authenticateMezon.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
+				if (action.payload.userId) {
 					if (!state.session) {
 						state.session = {
-							[action.payload.user_id]: action.payload
+							[action.payload.userId]: action.payload
 						};
 					} else {
-						state.session[action.payload.user_id] = action.payload;
+						state.session[action.payload.userId] = action.payload;
 					}
-					state.activeAccount = `${action.payload.user_id}`;
+					state.activeAccount = `${action.payload.userId}`;
 				}
 				state.isLogin = true;
 			})
@@ -513,15 +513,15 @@ export const authSlice = createSlice({
 			.addCase(authenticateEmail.fulfilled, (state: AuthState, action) => {
 				state.loadingStatusEmail = 'loaded';
 				state.isLogin = true;
-				if (action.payload.user_id) {
+				if (action.payload.userId) {
 					if (!state.session) {
 						state.session = {
-							[action.payload.user_id]: action.payload
+							[action.payload.userId]: action.payload
 						};
 					} else {
-						state.session[action.payload.user_id] = action.payload;
+						state.session[action.payload.userId] = action.payload;
 					}
-					state.activeAccount = `${action.payload.user_id}`;
+					state.activeAccount = `${action.payload.userId}`;
 				}
 			})
 			.addCase(authenticateEmail.rejected, (state: AuthState, action) => {
@@ -534,15 +534,15 @@ export const authSlice = createSlice({
 			})
 			.addCase(confirmAuthenticateOTP.fulfilled, (state: AuthState, action) => {
 				state.loadingStatus = 'loaded';
-				if (action.payload.user_id) {
+				if (action.payload.userId) {
 					if (!state.session) {
 						state.session = {
-							[action.payload.user_id]: action.payload
+							[action.payload.userId]: action.payload
 						};
 					} else {
-						state.session[action.payload.user_id] = action.payload;
+						state.session[action.payload.userId] = action.payload;
 					}
-					state.activeAccount = `${action.payload.user_id}`;
+					state.activeAccount = `${action.payload.userId}`;
 				}
 				state.isLogin = true;
 			})
@@ -589,8 +589,6 @@ export const authActions = {
 export const getAuthState = (rootState: { [AUTH_FEATURE_KEY]: AuthState }): AuthState => rootState[AUTH_FEATURE_KEY];
 
 export const selectAllAuth = createSelector(getAuthState, (state: AuthState) => state);
-
-export const selectAuthIsLoaded = createSelector(getAuthState, (state: AuthState) => state.loadingStatus === 'loaded');
 
 export const selectIsLogin = createSelector(getAuthState, (state: AuthState) => state.isLogin);
 

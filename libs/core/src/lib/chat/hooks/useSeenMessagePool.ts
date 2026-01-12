@@ -16,18 +16,18 @@ export function useSeenMessagePool() {
 	const isFocus = !isBackgroundModeActive();
 
 	const markAsReadSeen = useCallback(
-		(message: MessagesEntity, mode: number, badge_count: number) => {
+		(message: MessagesEntity, mode: number, badgeCount: number) => {
 			// if message is sending, do not mark as seen
 			if (message?.isSending) {
 				return;
 			}
 			dispatch(
 				messagesActions.updateLastSeenMessage({
-					clanId: message?.clan_id || '',
-					channelId: message?.channel_id,
+					clanId: message?.clanId || '',
+					channelId: message?.channelId,
 					messageId: message?.id,
 					mode,
-					badge_count
+					badgeCount
 				})
 			);
 			if (isFocus) {
@@ -35,7 +35,7 @@ export function useSeenMessagePool() {
 				if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) {
 					dispatch(
 						channelMetaActions.setChannelLastSeenTimestamp({
-							channelId: message?.channel_id,
+							channelId: message?.channelId,
 							timestamp: timestamp + TIME_OFFSET,
 							messageId: message?.id
 						})

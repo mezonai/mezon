@@ -10,7 +10,7 @@ import { Icons, Menu, Pagination } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
 import { formatDistance } from 'date-fns';
 import { ChannelType } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/types';
 import type { ReactElement } from 'react';
 import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -168,27 +168,27 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 	};
 
 	const isVoiceChannel = useMemo(() => {
-		return channelParent.channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
-	}, [channelParent.channel_type]);
+		return channelParent.channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
+	}, [channelParent.channelType]);
 
 	const isStreamChannel = useMemo(() => {
-		return channelParent.channel_type === ChannelType.CHANNEL_TYPE_STREAMING;
-	}, [channelParent.channel_type]);
+		return channelParent.channelType === ChannelType.CHANNEL_TYPE_STREAMING;
+	}, [channelParent.channelType]);
 
 	return (
-		<div className="flex flex-col border-b-[1px] border-b-theme-primary last:border-b-0">
+		<div className="flex flex-col border-b-theme-primary last:border-b-0 no-divider-last">
 			<div className="relative" onClick={handleFetchThreads}>
 				<ItemInfor
-					creatorId={channelParent.creator_id as string}
-					label={channelParent?.channel_label as string}
-					privateChannel={channelParent?.channel_private as number}
+					creatorId={channelParent.creatorId as string}
+					label={channelParent?.channelLabel as string}
+					privateChannel={channelParent?.channelPrivate as number}
 					isThread={false}
 					key={channelParent?.id}
-					userIds={channelParent?.user_ids || []}
+					userIds={channelParent?.userIds || []}
 					channelId={channelParent?.id as string}
 					isVoice={isVoiceChannel}
-					messageCount={channelParent?.message_count || 0}
-					lastMessage={channelParent?.last_sent_message}
+					messageCount={channelParent?.messageCount || 0}
+					lastMessage={channelParent?.lastSentMessage}
 					isStream={isStreamChannel}
 				/>
 				{!isVoiceChannel && !searchFilter && (
@@ -205,17 +205,17 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 					{threadsList?.length > 0 ? (
 						threadsList?.map((thread) => (
 							<ItemInfor
-								creatorId={thread?.creator_id as string}
-								label={thread?.channel_label as string}
-								privateChannel={thread?.channel_private as number}
-								isThread={thread?.channel_type === ChannelType.CHANNEL_TYPE_THREAD}
+								creatorId={thread?.creatorId as string}
+								label={thread?.channelLabel as string}
+								privateChannel={thread?.channelPrivate as number}
+								isThread={thread?.channelType === ChannelType.CHANNEL_TYPE_THREAD}
 								key={`${thread?.id}_thread`}
-								userIds={thread?.user_ids || []}
+								userIds={thread?.userIds || []}
 								channelId={thread?.id as string}
-								messageCount={thread?.message_count || 0}
-								lastMessage={thread.last_sent_message}
-								isVoice={thread?.channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
-								isStream={thread?.channel_type === ChannelType.CHANNEL_TYPE_STREAMING}
+								messageCount={thread?.messageCount || 0}
+								lastMessage={thread.lastSentMessage}
+								isVoice={thread?.channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
+								isStream={thread?.channelType === ChannelType.CHANNEL_TYPE_STREAMING}
 							/>
 						))
 					) : (
@@ -267,8 +267,8 @@ const ItemInfor = ({
 		notation: 'compact',
 		compactDisplay: 'short'
 	});
-	const date = lastMessage?.timestamp_seconds
-		? formatDistance((lastMessage?.timestamp_seconds as number) * 1000, new Date(), { addSuffix: true })
+	const date = lastMessage?.timestampSeconds
+		? formatDistance((lastMessage?.timestampSeconds as number) * 1000, new Date(), { addSuffix: true })
 		: null;
 
 	const handleShowAllMemberList = () => {
@@ -299,14 +299,14 @@ const ItemInfor = ({
 	}, [channelId]);
 
 	const imgCreator = useMemo(() => {
-		if (creatorChannel?.clan_avatar) {
-			return createImgproxyUrl(creatorChannel?.clan_avatar, { width: 32, height: 32, resizeType: 'fit' });
+		if (creatorChannel?.clanAvatar) {
+			return createImgproxyUrl(creatorChannel?.clanAvatar, { width: 32, height: 32, resizeType: 'fit' });
 		}
-		if (creatorChannel?.user?.avatar_url) {
-			return createImgproxyUrl(creatorChannel?.user?.avatar_url, { width: 32, height: 32, resizeType: 'fit' });
+		if (creatorChannel?.user?.avatarUrl) {
+			return createImgproxyUrl(creatorChannel?.user?.avatarUrl, { width: 32, height: 32, resizeType: 'fit' });
 		}
 		return 'assets/avatar-user.svg';
-	}, [creatorChannel?.clan_avatar, creatorChannel?.user?.avatar_url]);
+	}, [creatorChannel?.clanAvatar, creatorChannel?.user?.avatarUrl]);
 
 	return (
 		<div
@@ -314,7 +314,7 @@ const ItemInfor = ({
 			onContextMenu={handleCopyChannelId}
 		>
 			<div
-				className="cursor-pointer px-3 py-2 pr-12 flex gap-3 items-center w-full bg-item-hover"
+				className="cursor-pointer px-3 py-2 pr-12 flex gap-3 items-center w-full bg-item-hover "
 				data-e2e={generateE2eId('clan_page.channel_management.channel_item')}
 			>
 				<div className="h-6 w-6">
@@ -359,18 +359,18 @@ const ItemInfor = ({
 					{mumberformatter.format(Number(messageCount || 0))}
 				</div>
 				<div className={`flex-1 flex gap-1 items-center`}>
-					{lastMessage?.sender_id ? (
+					{lastMessage?.senderId ? (
 						<>
-							<AvatarUserShort id={lastMessage?.sender_id as string} />
+							<AvatarUserShort id={lastMessage?.senderId as string} />
 							<div>{date}</div>
 						</>
 					) : null}
 				</div>
 
 				<div className="overflow-hidden flex w-12 items-center justify-center">
-					{(creatorChannel?.clan_avatar || creatorChannel?.user?.avatar_url) && (
+					{(creatorChannel?.clanAvatar || creatorChannel?.user?.avatarUrl) && (
 						<img
-							title={creatorChannel?.clan_nick || creatorChannel?.user?.display_name || creatorChannel?.user?.username}
+							title={creatorChannel?.clanNick || creatorChannel?.user?.displayName || creatorChannel?.user?.username}
 							src={imgCreator}
 							className="w-8 h-8 object-cover rounded-full"
 							alt=""
@@ -384,7 +384,7 @@ const ItemInfor = ({
 export default ListChannelSetting;
 export const AvatarUserShort = ({ id, showName = false }: { id: string; showName?: boolean }) => {
 	const member = useAppSelector((state) => selectMemberClanByUserId(state, id));
-	const avatarUrl = getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url) || 'assets/avatar-user.svg';
+	const avatarUrl = getAvatarForPrioritize(member?.clanAvatar, member?.user?.avatarUrl) || 'assets/avatar-user.svg';
 
 	return (
 		<div className="flex items-center gap-3" data-e2e={generateE2eId('clan_page.channel_list.item.user_list_collapsed.item')}>
@@ -393,7 +393,7 @@ export const AvatarUserShort = ({ id, showName = false }: { id: string; showName
 				className="rounded-full h-6 aspect-square object-cover"
 				alt="User avatar"
 			/>
-			{showName ? <div className="">{member?.clan_nick || member?.user?.display_name || member?.user?.username}</div> : null}
+			{showName ? <div className="">{member?.clanNick || member?.user?.displayName || member?.user?.username}</div> : null}
 		</div>
 	);
 };

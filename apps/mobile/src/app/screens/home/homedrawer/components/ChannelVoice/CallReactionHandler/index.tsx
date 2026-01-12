@@ -292,18 +292,18 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 	// Optimized socket message handler
 	const handleVoiceReactionMessage = useCallback(
 		(message: VoiceReactionSend) => {
-			if (channelId !== message?.channel_id || displayedCountRef?.current >= 10) return;
+			if (channelId !== message?.channelId || displayedCountRef?.current >= 10) return;
 			try {
 				const emojis = message.emojis || [];
 				const emojiId = emojis[0];
-				const senderId = message.sender_id;
+				const senderId = message.senderId;
 
 				if (emojiId) {
 					if (emojiId?.startsWith('raising:')) {
 						const store = getStore();
 						const members = selectMemberClanByUserId(store.getState?.(), senderId);
-						const displayName = members?.clan_nick || members?.user?.display_name || members?.user?.username || '';
-						const avatarUrl = members?.clan_avatar || members?.user?.avatar_url || '';
+						const displayName = members?.clanNick || members?.user?.displayName || members?.user?.username || '';
+						const avatarUrl = members?.clanAvatar || members?.user?.avatarUrl || '';
 						createRaiseHandAnimation(displayName, avatarUrl);
 					} else if (emojiId.startsWith('sound:')) {
 						const soundId = emojiId.replace('sound:', '');
@@ -316,7 +316,7 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 					} else {
 						const store = getStore();
 						const members = selectMemberClanByUserId(store.getState?.(), senderId);
-						const displayName = members?.clan_nick || members?.user?.display_name || members?.user?.username || '';
+						const displayName = members?.clanNick || members?.user?.displayName || members?.user?.username || '';
 
 						createAndAnimateEmoji(emojiId, displayName);
 					}

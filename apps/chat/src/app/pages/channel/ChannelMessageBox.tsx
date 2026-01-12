@@ -18,7 +18,7 @@ import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload, ThreadValue } from '@mezon/utils';
 import { DONE_ONBOARDING_STATUS, blankReferenceObj } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import { memo, useCallback, useMemo, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
@@ -32,8 +32,8 @@ export type ChannelMessageBoxProps = {
 export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMessageBoxProps>) {
 	const currentMission = useSelector((state) => selectMissionDone(state, clanId as string));
 	const channelId = useMemo(() => {
-		return channel?.channel_id;
-	}, [channel?.channel_id]);
+		return channel?.channelId;
+	}, [channel?.channelId]);
 
 	const dispatch = useDispatch();
 	const appDispatch = useAppDispatch();
@@ -67,14 +67,14 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 		const store = (await getStoreAsync()).getState();
 		const processingClan = selectProcessingByClan(store, clanId as string);
 		if (
-			processingClan?.onboarding_step !== DONE_ONBOARDING_STATUS &&
+			processingClan?.onboardingStep !== DONE_ONBOARDING_STATUS &&
 			currentClanIsOnboarding &&
-			onboardingList?.mission?.[currentMission]?.channel_id === channel?.channel_id &&
-			onboardingList?.mission?.[currentMission]?.task_type === ETypeMission.SEND_MESSAGE
+			onboardingList?.mission?.[currentMission]?.channelId === channel?.channelId &&
+			onboardingList?.mission?.[currentMission]?.taskType === ETypeMission.SEND_MESSAGE
 		) {
-			dispatch(onboardingActions.doneMission({ clan_id: clanId as string }));
+			dispatch(onboardingActions.doneMission({ clanId: clanId as string }));
 			if (currentMission + 1 === onboardingList.mission.length) {
-				appDispatch(onboardingActions.doneOnboarding({ clan_id: clanId as string }));
+				appDispatch(onboardingActions.doneOnboarding({ clanId: clanId as string }));
 			}
 		}
 	};
@@ -100,7 +100,7 @@ export function ChannelMessageBox({ channel, clanId, mode }: Readonly<ChannelMes
 			{dataReferences.message_ref_id && <ReplyMessageBox channelId={channelId ?? ''} dataReferences={dataReferences} />}
 			<MessageBox
 				listMentions={UserMentionList({
-					channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? (channel.parent_id ?? '') : (channelId ?? ''),
+					channelID: mode === ChannelStreamMode.STREAM_MODE_THREAD ? (channel.parentId ?? '') : (channelId ?? ''),
 					channelMode: mode
 				})}
 				onSend={handleSend}

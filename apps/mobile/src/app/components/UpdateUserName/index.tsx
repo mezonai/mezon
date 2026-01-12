@@ -1,7 +1,7 @@
 import { useAccount } from '@mezon/core';
 import { size } from '@mezon/mobile-ui';
-import { accountActions, appActions, authActions } from '@mezon/store';
-import { getStoreAsync, selectCurrentLanguage, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import { accountActions, appActions } from '@mezon/store';
+import { getStore, selectCurrentLanguage, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Dimensions, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -11,6 +11,7 @@ import Toast from 'react-native-toast-message';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
+import { logoutGlobal } from '../../utils/helpers';
 import { ErrorInput } from '../ErrorInput';
 import { style } from './styles';
 
@@ -73,9 +74,8 @@ const UpdateUserName = () => {
 	};
 
 	const handleGoBack = async () => {
-		const store = await getStoreAsync();
-		store.dispatch(appActions.setIsShowWelcomeMobile(false));
-		await store.dispatch(authActions.logOut({ device_id: '', platform: Platform.OS }));
+		await logoutGlobal();
+		const store = getStore();
 		store.dispatch(appActions.setIsShowUpdateUsername(false));
 	};
 

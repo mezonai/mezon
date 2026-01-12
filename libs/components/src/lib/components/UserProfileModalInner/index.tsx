@@ -68,8 +68,8 @@ const UserProfileModalInner = ({
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const { setIsShowSettingFooterStatus, setIsShowSettingFooterInitTab, setIsUserProfile, setIsShowSettingProfileInitTab, setClanIdSettingProfile } =
 		useSettingFooter();
-	const displayAvatar = userById?.clan_avatar || userById?.user?.avatar_url;
-	const displayUsername = name || userById?.clan_nick || userById?.user?.display_name || userById?.user?.username;
+	const displayAvatar = userById?.clanAvatar || userById?.user?.avatarUrl;
+	const displayUsername = name || userById?.clanNick || userById?.user?.displayName || userById?.user?.username;
 	const userStatus = useMemberStatus(userId || '');
 	const currentClanId = useSelector(selectCurrentClanId);
 
@@ -84,15 +84,15 @@ const UserProfileModalInner = ({
 
 	useEffect(() => {
 		const getColor = async () => {
-			if (checkUrl(userById?.user?.avatar_url)) {
-				const url = userById?.user?.avatar_url;
+			if (checkUrl(userById?.user?.avatarUrl)) {
+				const url = userById?.user?.avatarUrl;
 				const colorImg = await getColorAverageFromURL(url || '');
 				if (colorImg) setColor(colorImg);
 			}
 		};
 
 		getColor();
-	}, [userById?.user?.avatar_url]);
+	}, [userById?.user?.avatarUrl]);
 
 	useOnClickOutside(userProfileRef, () => onClose?.());
 
@@ -159,9 +159,9 @@ const UserProfileModalInner = ({
 					<div className="flex absolute bottom-[-60px] w-full">
 						<AvatarProfile
 							avatar={avatar || displayAvatar}
-							username={displayUsername || notify?.content?.username}
+							username={displayUsername}
 							userToDisplay={userById}
-							customStatus={customStatus || (userStatus.user_status as string)}
+							customStatus={customStatus || (userStatus.userStatus as string)}
 							userID={userId}
 							statusOnline={userStatus?.status}
 							styleAvatar="w-[120px] h-[120px] rounded-full"
@@ -194,17 +194,23 @@ const UserProfileModalInner = ({
 					<div className="flex flex-col gap-3 h-full">
 						<div className="mt-4">
 							<h3 className="text-2xl font-semibold text-theme-primary">
-								{name || userById?.clan_nick || userById?.user?.display_name || userById?.user?.username || notify?.content?.username}
+								{name || userById?.clanNick || userById?.user?.displayName || userById?.user?.username}
 							</h3>
-							<p className="text-sm font-normal text-theme-primary">
-								{usernameAva || userById?.user?.username || notify?.content?.username}
-							</p>
+							<p className="text-sm font-normal text-theme-primary">{usernameAva || userById?.user?.username}</p>
 						</div>
 						<div className="flex-1 bg-theme-setting-primary rounded-lg shadow-shadowInbox">
 							<ProfileTabs activeTab={activeTab} onActiveTabChange={handleActiveTabChange} />
 							<div className="p-4 text-theme-primary	">
 								{activeTab === typeTab.ABOUT_ME && (
-									<AboutMe userId={userId} createTime={userById?.user?.create_time || user?.create_time_seconds} />
+									<AboutMe
+										userId={userId}
+										createTime={
+											userById?.user?.createTime ||
+											user?.createTimeSeconds ||
+											(userById?.user as any)?.createTimeSeconds ||
+											(user?.user as any)?.createTimeSeconds
+										}
+									/>
 								)}
 								{activeTab === typeTab.ACTIVITY && <Activity />}
 								{activeTab === typeTab.MUTUAL_FRIENDS && <MutualFriends />}

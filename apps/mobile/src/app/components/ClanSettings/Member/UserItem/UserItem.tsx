@@ -29,7 +29,7 @@ export const UserItem = memo<IUserItem>(({ userID, onMemberSelect }) => {
 		if (!rolesClan) return [];
 
 		return rolesClan.filter((role) => {
-			const roleUser = role?.role_user_list?.role_users;
+			const roleUser = role?.roleUserList?.roleUsers;
 			if (roleUser) {
 				return roleUser.some((roleUserItem) => roleUserItem?.id === userID);
 			}
@@ -38,12 +38,12 @@ export const UserItem = memo<IUserItem>(({ userID, onMemberSelect }) => {
 	}, [userID, rolesClan]);
 
 	const displayName = useMemo(() => {
-		return user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
-	}, [user?.clan_nick, user?.user?.display_name, user?.user?.username]);
+		return user?.clanNick || user?.user?.displayName || user?.user?.username || '';
+	}, [user?.clanNick, user?.user?.displayName, user?.user?.username]);
 
 	const avatarUrl = useMemo(() => {
-		return user?.clan_avatar || user?.user?.avatar_url || '';
-	}, [user?.clan_avatar, user?.user?.avatar_url]);
+		return user?.clanAvatar || user?.user?.avatarUrl || '';
+	}, [user?.clanAvatar, user?.user?.avatarUrl]);
 
 	const onPressMemberItem = useCallback(() => {
 		if (canEditRoles && onMemberSelect && user) {
@@ -71,7 +71,7 @@ export const UserItem = memo<IUserItem>(({ userID, onMemberSelect }) => {
 								{clanUserRole.map((role, index) => (
 									<View key={`role_${role?.id || index}_${role?.title || 'unknown'}`} style={styles.roleContainer}>
 										<View style={[styles.roleCircle, role?.color && { backgroundColor: role?.color }]}></View>
-										{role?.role_icon && <ImageNative url={role?.role_icon} style={styles.roleIcon} />}
+										{role?.roleIcon && <ImageNative url={role?.roleIcon} style={styles.roleIcon} />}
 										<Text style={styles.roleTitle}>{role?.title || ''}</Text>
 									</View>
 								))}

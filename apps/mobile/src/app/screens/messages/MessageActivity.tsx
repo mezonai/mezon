@@ -51,7 +51,7 @@ function MessageActivity() {
 	const activityMap = useMemo(() => {
 		if (!activities?.length) return new Map();
 
-		return new Map(activities.map((activity) => [activity.user_id, activity]));
+		return new Map(activities.map((activity) => [activity.userId, activity]));
 	}, [activities]);
 
 	const data = useMemo(() => {
@@ -64,16 +64,16 @@ function MessageActivity() {
 				.reduce((acc, user) => {
 					const info = activityMap.get(user.id);
 					if (info && user.id !== userId) {
-						const activityName = info?.activity_description
-							? `${info?.activity_name} - ${info.activity_description}`
-							: info?.activity_name;
+						const activityName = info?.activityDescription
+							? `${info?.activityName} - ${info.activityDescription}`
+							: info?.activityName;
 
 						acc.push({
 							activityName,
 							id: user?.id,
-							avatar: user?.avatar_url,
-							name: user?.display_name || user?.username,
-							display_name: user?.display_name,
+							avatar: user?.avatarUrl,
+							name: user?.displayName || user?.username,
+							displayName: user?.displayName,
 							username: user?.username
 						});
 					}
@@ -102,7 +102,7 @@ function MessageActivity() {
 		const directMessage = listDM
 			?.filter?.((dm) => dm.type === ChannelType.CHANNEL_TYPE_DM)
 			?.find?.((dm) => {
-				const userIds = dm?.user_ids;
+				const userIds = dm?.userIds;
 				if (!Array.isArray(userIds) || userIds.length !== 1) {
 					return false;
 				}
@@ -112,9 +112,9 @@ function MessageActivity() {
 			DeviceEventEmitter.emit('CHANGE_CHANNEL_DM_DETAIL', { dmId: directMessage?.id });
 			return;
 		}
-		const response = await createDirectMessageWithUser(item?.id, item?.display_name || item?.name, item?.username || item?.name, item?.avatar);
-		if (response?.channel_id) {
-			DeviceEventEmitter.emit('CHANGE_CHANNEL_DM_DETAIL', { dmId: response?.channel_id });
+		const response = await createDirectMessageWithUser(item?.id, item?.displayName || item?.name, item?.username || item?.name, item?.avatar);
+		if (response?.channelId) {
+			DeviceEventEmitter.emit('CHANGE_CHANNEL_DM_DETAIL', { dmId: response?.channelId });
 		}
 	};
 

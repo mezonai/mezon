@@ -29,16 +29,16 @@ const ReactionItem: React.FC<IReactionItem> = ({ emojiShortCode, emojiId, messag
 		await reactionMessageDispatch({
 			id: emojiId,
 			messageId,
-			emoji_id: emojiId,
+			emojiId: emojiId,
 			emoji: emojiShortCode,
 			count: 1,
-			message_sender_id: (message.sender_id || userProfile?.user?.id) ?? '',
+			messageSenderId: (message.senderId || userProfile?.user?.id) ?? '',
 			action_delete: false,
-			is_public: isPublicChannel({ parent_id: currentChannelParentId, channel_private: currentChannelPrivate }),
-			clanId: message?.clan_id ?? '',
-			channelId: isTopic ? currentChannelObjectId || '' : (message?.channel_id ?? ''),
+			isPublic: isPublicChannel({ parentId: currentChannelParentId, channelPrivate: currentChannelPrivate }),
+			clanId: message?.clanId ?? '',
+			channelId: isTopic ? currentChannelObjectId || '' : (message?.channelId ?? ''),
 			isFocusTopicBox: isTopic,
-			channelIdOnMessage: message?.channel_id
+			channelIdOnMessage: message?.channelId
 		});
 	}, [
 		reactionMessageDispatch,

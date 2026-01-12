@@ -2,6 +2,7 @@ import { ColorRoleProvider, useChatSending, useCurrentInbox, useDeleteMessage, u
 import {
 	selectAllAccount,
 	selectCurrentTopicId,
+	selectInitTopicMessageId,
 	selectMemberClanByUserId,
 	selectOpenEditMessageState,
 	topicsActions,
@@ -10,7 +11,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IMessageWithUser } from '@mezon/utils';
 import { TypeMessage, generateE2eId } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/types';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,10 +40,11 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 	const modalRef = useRef<HTMLDivElement>(null);
 	const isEditing = useSelector(selectOpenEditMessageState);
 	const currentTopicId = useSelector(selectCurrentTopicId);
+	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 	const [isInitialRender, setIsInitialRender] = useState(isEditing);
 	const hasAttachment = !!mess?.attachments?.length;
 	const { deleteSendMessage } = useDeleteMessage({
-		channelId: mess.channel_id,
+		channelId: mess.channelId,
 		mode,
 		hasAttachment,
 		isTopic
@@ -58,19 +60,23 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 	};
 
 	const handleDeleteMessage = useCallback(async () => {
-		if (!mess?.content?.tp) {
+		const isInitTopicMessage = mess.id === initTopicMessageId;
+
+		if (!mess?.content?.tp && !isInitTopicMessage) {
 			await deleteSendMessage(mess.id);
 			setIsLoading(false);
 			return;
 		}
 
-		if (mess.content.tp === currentTopicId) {
+		if (isInitTopicMessage || mess.content.tp === currentTopicId) {
 			await deleteSendMessage(mess.id);
 			setIsLoading(false);
 			dispatch(topicsActions.setCurrentTopicId(''));
 			dispatch(topicsActions.setIsShowCreateTopic(false));
+			dispatch(topicsActions.setOpenTopicMessageState(false));
+			dispatch(topicsActions.setInitTopicMessageId(''));
 		}
-	}, [mess, deleteSendMessage, currentTopicId, dispatch]);
+	}, [mess, deleteSendMessage, currentTopicId, initTopicMessageId, dispatch]);
 
 	const handleAction = useCallback(async () => {
 		if (isRemoveAttachmentNoContent) {

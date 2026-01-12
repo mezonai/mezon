@@ -116,12 +116,12 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 		const note = t('transferFunds');
 		dispatch(
 			giveCoffeeActions.setInfoSendToken({
-				sender_id: userProfile?.user?.id,
-				sender_name: userProfile?.user?.username,
-				receiver_id: user?.id,
+				senderId: userProfile?.user?.id,
+				senderName: userProfile?.user?.username,
+				receiverId: user?.id,
 				amount: 0,
 				note,
-				extra_attribute: transferDetail?.extra_attribute ?? '',
+				extraAttribute: transferDetail?.extraAttribute ?? '',
 				receiver_name: user ? (user.name ? user.name : user.user?.username) : ''
 			})
 		);

@@ -6,13 +6,13 @@ export const searchFieldName: Record<string, string> = {
 	has: 'has',
 	before: 'before',
 	after: 'after',
-	in: 'channel_id',
+	in: 'channelId',
 	pinned: '',
 	content: 'content',
 	'>': 'username',
 	'~': 'mention',
 	'&': 'has',
-	'#': 'channel_id'
+	'#': 'channelId'
 };
 
 export const getSearchOptions = (t: (key: string) => string, isClanMode = true) => {

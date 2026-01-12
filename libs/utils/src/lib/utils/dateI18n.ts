@@ -53,12 +53,12 @@ export const formatDateRange = (startDate: Date, endDate: Date, languageCode: st
 	}
 };
 
-export const convertTimeStringI18n = (dateString: string, t: (key: string) => string, languageCode = 'en') => {
-	if (!dateString) {
+export const convertTimeStringI18n = (dateString: number, t: (key: string) => string, languageCode = 'en') => {
+	if (!dateString || typeof dateString !== 'number') {
 		return '';
 	}
 
-	const codeTime = new Date(dateString);
+	const codeTime = new Date(dateString * 1000);
 	const today = startOfDay(new Date());
 	const yesterday = startOfDay(subDays(new Date(), 1));
 	const locale = getDateLocale(languageCode);
@@ -74,7 +74,10 @@ export const convertTimeStringI18n = (dateString: string, t: (key: string) => st
 	}
 };
 
-export const convertDateStringI18n = (dateString: string, t: (key: string) => string, languageCode = 'en', options?: { dateOnly?: boolean }) => {
+export const convertDateStringI18n = (dateString: number, t: (key: string) => string, languageCode = 'en', options?: { dateOnly?: boolean }) => {
+	if (!dateString || typeof dateString !== 'number') {
+		return '';
+	}
 	const codeTime = new Date(dateString);
 	const currentDate = new Date();
 	const locale = getDateLocale(languageCode);

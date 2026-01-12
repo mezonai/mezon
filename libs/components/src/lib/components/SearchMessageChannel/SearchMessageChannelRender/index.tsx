@@ -55,8 +55,8 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 		const allChannels = selectAllChannels(getStore().getState());
 		const map: Record<string, string> = {};
 		allChannels.forEach((channel) => {
-			if (channel.channel_id || channel.id) {
-				map[channel.channel_id || channel.id] = channel.channel_label || '';
+			if (channel.channelId || channel.id) {
+				map[channel.channelId || channel.id] = channel.channelLabel || '';
 			}
 		});
 		return map;
@@ -67,7 +67,7 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 	let currentChannelId: string | null | undefined = null;
 
 	searchMessages.forEach((message) => {
-		const msgChannelId = message.channel_id ?? '';
+		const msgChannelId = message.channelId ?? '';
 		if (msgChannelId !== currentChannelId) {
 			if (currentGroup.length > 0 && currentChannelId) {
 				groupedMessages.push({
@@ -139,7 +139,7 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 											<div key={groupIndex} className="flex flex-col gap-[8px]">
 												{group.messages.map((searchMessage) => (
 													<SearchedItem
-														key={searchMessage.message_id}
+														key={searchMessage.messageId}
 														searchChannel={searchChannel}
 														searchMessage={searchMessage}
 														user={currentClanUser}
@@ -186,9 +186,9 @@ const SearchedItem = ({ searchMessage, searchChannel, user }: ISearchedItemProps
 		if (!searchMessage) return;
 		dispatch(
 			messagesActions.jumpToMessage({
-				clanId: searchMessage?.clan_id || '',
-				messageId: searchMessage?.message_id || searchMessage.id,
-				channelId: searchMessage?.channel_id as string,
+				clanId: searchMessage?.clanId || '',
+				messageId: searchMessage?.messageId || searchMessage.id,
+				channelId: searchMessage?.channelId as string,
 				navigate
 			})
 		);

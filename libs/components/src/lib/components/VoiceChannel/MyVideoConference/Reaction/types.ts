@@ -1,7 +1,7 @@
 export interface ReactionChannelInfo {
-	channel_id: string;
-	clan_id: string;
-	channel_private: number;
+	channelId: string;
+	clanId: string;
+	channelPrivate: number;
 }
 
 export enum ReactionType {
@@ -13,7 +13,7 @@ export interface DisplayedEmoji {
 	id: string;
 	emoji: string;
 	emojiId: string;
-	creator_id?: string;
+	creatorId?: string;
 	timestamp: number;
 	displayName?: string;
 	position?: {
@@ -47,4 +47,5 @@ export interface ActiveSoundReaction {
 export interface ReactionCallHandlerProps {
 	onSoundReaction?: (participantId: string, soundId: string) => void;
 	onEndSound?: (userId: string) => void;
+	clearAllSound: () => void;
 }

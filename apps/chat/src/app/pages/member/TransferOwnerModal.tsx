@@ -34,20 +34,20 @@ const TransferOwnerModal = ({ onClose, member, onClick }: TransferOwnerProps) =>
 				<div className=" text-base ">
 					{t('description', {
 						clanName: currentClanName,
-						memberName: member?.clan_nick || member.user?.display_name || member?.user?.username
+						memberName: member?.clanNick || member.user?.displayName || member?.user?.username
 					})}
 				</div>
 				<div className="flex gap-3">
 					<div className="flex flex-col items-center justify-center gap-3 w-40 opacity-75">
 						<AvatarImage
-							username={dataInClan?.clan_nick || dataInClan.user?.display_name || dataInClan?.user?.username}
-							srcImgProxy={dataInClan?.clan_avatar || dataInClan?.user?.avatar_url}
-							src={dataInClan?.clan_avatar || dataInClan?.user?.avatar_url}
+							username={dataInClan?.clanNick || dataInClan.user?.displayName || dataInClan?.user?.username}
+							srcImgProxy={dataInClan?.clanAvatar || dataInClan?.user?.avatarUrl}
+							src={dataInClan?.clanAvatar || dataInClan?.user?.avatarUrl}
 							alt="Avatar"
 							className="w-20 h-20 rounded-full"
 						/>
 						<p className="text-lg font-semibold">
-							{dataInClan?.clan_nick || dataInClan.user?.display_name || dataInClan?.user?.username}
+							{dataInClan?.clanNick || dataInClan.user?.displayName || dataInClan?.user?.username}
 						</p>
 					</div>
 					<div className="font-extrabold text-white text-3xl mt-6">
@@ -55,13 +55,13 @@ const TransferOwnerModal = ({ onClose, member, onClick }: TransferOwnerProps) =>
 					</div>
 					<div className="flex flex-col items-center justify-center gap-3 w-40 relative">
 						<AvatarImage
-							username={member?.clan_nick || member.user?.display_name || member?.user?.username}
-							srcImgProxy={member?.clan_avatar || member?.user?.avatar_url}
-							src={member?.clan_avatar || member?.user?.avatar_url}
+							username={member?.clanNick || member.user?.displayName || member?.user?.username}
+							srcImgProxy={member?.clanAvatar || member?.user?.avatarUrl}
+							src={member?.clanAvatar || member?.user?.avatarUrl}
 							alt="Avatar"
 							className="w-20 h-20 rounded-full"
 						/>
-						<p className="text-lg font-semibold">{member?.clan_nick || member.user?.display_name || member?.user?.username}</p>
+						<p className="text-lg font-semibold">{member?.clanNick || member.user?.displayName || member?.user?.username}</p>
 						<Icons.OwnerIcon className="absolute -top-6 w-4 h-5" />
 					</div>
 				</div>
@@ -75,7 +75,7 @@ const TransferOwnerModal = ({ onClose, member, onClick }: TransferOwnerProps) =>
 						onChange={handleCheckInput}
 					/>
 					<label htmlFor="confirm-transfer" className="ml-2">
-						{t('confirmation', { memberName: member?.clan_nick || member.user?.display_name || member?.user?.username })}
+						{t('confirmation', { memberName: member?.clanNick || member.user?.displayName || member?.user?.username })}
 					</label>
 				</div>
 

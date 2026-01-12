@@ -11,8 +11,8 @@ const VoiceChannelAvatar = ({ userId }) => {
 
 	const member = useAppSelector((state) => selectMemberClanByUserId(state, userId));
 	const avatarUrl = useMemo(() => {
-		return member?.clan_avatar || member?.user?.avatar_url || '';
-	}, [member?.clan_avatar, member?.user?.avatar_url]);
+		return member?.clanAvatar || member?.user?.avatarUrl || '';
+	}, [member?.clanAvatar, member?.user?.avatarUrl]);
 
 	return (
 		<View style={styles.avatarCircle}>

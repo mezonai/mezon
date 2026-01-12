@@ -13,11 +13,11 @@ export const CategoryChannel = React.memo(() => {
 		try {
 			const settingOptions = [...channelCategorySettings];
 			settingOptions?.sort((a, b) => {
-				if (a.channel_category_label && b.channel_category_label) {
-					if (a.channel_category_label < b.channel_category_label) {
+				if (a.channelCategoryLabel && b.channelCategoryLabel) {
+					if (a.channelCategoryLabel < b.channelCategoryLabel) {
 						return -1;
 					}
-					if (a.channel_category_label > b.channel_category_label) {
+					if (a.channelCategoryLabel > b.channelCategoryLabel) {
 						return 1;
 					}
 				}
@@ -34,13 +34,13 @@ export const CategoryChannel = React.memo(() => {
 			{sortedChannelCategorySettings?.length > 0
 				? sortedChannelCategorySettings?.map((item) => (
 						<CategoryChannelItem
-							categoryLabel={item?.channel_category_label}
-							categorySubtext={item?.channel_category_title}
+							categoryLabel={item?.channelCategoryLabel}
+							categorySubtext={item?.channelCategoryTitle}
 							typePreviousIcon={
-								item?.channel_category_title === 'category' ? EOptionOverridesType.Category : ChannelType.CHANNEL_TYPE_CHANNEL
+								item?.channelCategoryTitle === 'category' ? EOptionOverridesType.Category : ChannelType.CHANNEL_TYPE_CHANNEL
 							}
 							expandable={true}
-							notificationStatus={item.notification_setting_type}
+							notificationStatus={item.notificationSettingType}
 							data={item}
 							key={item?.id}
 							categoryChannelId={item?.id}

@@ -33,7 +33,7 @@ import {
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import type { DragEvent } from 'react';
 import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,9 +76,9 @@ const TopicDiscussionBox = () => {
 		mode,
 		channelOrDirect: currentChannelId
 			? {
-					channel_id: currentChannelId,
-					clan_id: currentChannelClanId,
-					channel_private: currentChannelPrivate
+					channelId: currentChannelId,
+					clanId: currentChannelClanId,
+					channelPrivate: currentChannelPrivate
 				}
 			: undefined,
 		fromTopic: true
@@ -280,10 +280,10 @@ const TopicDiscussionBox = () => {
 			<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative ${isDesktop && 'pb-5'}`}>
 				{isBanned ? (
 					<BanCountDown
-						banTime={isBanned.ban_time ? isBanned.ban_time - Date.now() : Infinity}
+						banTime={isBanned.banTime ? isBanned.banTime - Date.now() : Infinity}
 						channelId={currentChannelId || ''}
 						clanId={currentClanId || ''}
-						userId={sessionUser?.user_id || ''}
+						userId={sessionUser?.userId || ''}
 					/>
 				) : (
 					<>
