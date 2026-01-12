@@ -123,17 +123,17 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 		return thunkAPI.rejectWithValue('Invalid refreshSession');
 	}
 
-	if (!sessionState.token || !sessionState.refreshToken) {
+	if (!sessionState.token || !(sessionState.refreshToken || (sessionState as any).refresh_token)) {
 		return thunkAPI.rejectWithValue('Invalid session tokens');
 	}
 
 	let session = new Session(
 		sessionState.token,
-		sessionState.refreshToken,
+		sessionState.refreshToken || (sessionState as any).refresh_token,
 		sessionState.created,
-		sessionState.apiUrl,
-		sessionState.idToken || '',
-		!!sessionState.isRemember
+		sessionState.apiUrl || (sessionState as any).api_url,
+		sessionState.idToken || (sessionState as any).id_token || '',
+		!!(sessionState.isRemember ?? (sessionState as any).is_remember)
 	);
 
 	try {
