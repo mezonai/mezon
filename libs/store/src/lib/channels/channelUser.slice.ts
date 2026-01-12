@@ -126,7 +126,7 @@ export const listChannelsByUserSlice = createSlice({
 		upsertMany: listChannelsByUserAdapter.upsertMany,
 		removeByClanId: (state, action: PayloadAction<{ clanId: string }>) => {
 			const channels = listChannelsByUserAdapter.getSelectors().selectAll(state);
-			const channelsToRemove = channels.filter((channel) => channel.clanId === action.payload.clanId).map((channel) => channel.id);
+			const channelsToRemove = channels.filter((channel) => channel.clan_id === action.payload.clanId).map((channel) => channel.id);
 			listChannelsByUserAdapter.removeMany(state, channelsToRemove);
 		},
 		updateLastSentTime: (state, action: PayloadAction<{ channelId: string }>) => {
@@ -135,7 +135,7 @@ export const listChannelsByUserSlice = createSlice({
 			listChannelsByUserAdapter.updateOne(state, {
 				id: payload.channelId,
 				changes: {
-					lastSentMessage: {
+					last_sent_message: {
 						timestampSeconds: timestamp
 					}
 				}
@@ -174,7 +174,7 @@ export const listChannelsByUserSlice = createSlice({
 				if (entity) {
 					const newCountMessUnread = isReset ? 0 : (entity.countMessUnread ?? 0) + count;
 					if (entity.countMessUnread !== newCountMessUnread || isReset) {
-						const lastSentMessage = state.entities[state.ids[state.ids.length - 1]]?.lastSentMessage;
+						const lastSentMessage = state.entities[state.ids[state.ids.length - 1]]?.last_sent_message;
 						listChannelsByUserAdapter.updateOne(state, {
 							id: channelId,
 							changes: {
@@ -197,7 +197,7 @@ export const listChannelsByUserSlice = createSlice({
 		},
 		markAsReadChannel: (state, action: PayloadAction<string[]>) => {
 			const updateList = action.payload.map((id) => {
-				const lastSentMessage = state.entities[id]?.lastSentMessage;
+				const lastSentMessage = state.entities[id]?.last_sent_message;
 				return {
 					id,
 					changes: {

@@ -10,15 +10,15 @@ import { listChannelRenderAction } from './listChannelRender.slice';
 export const switchPublicToPrivate = createAsyncThunk(
 	'channels/switchPublicToPrivate',
 	async ({ channel, userId }: { channel: ChannelUpdatedEvent; userId: string }, thunkAPI) => {
-		const clanId = channel.clanId;
+		const clanId = channel.clan_id;
 		const store = await getStoreAsync();
-		const roleInClan = selectRolesByClanId(store.getState(), channel.clanId);
-		const hasRoleAccessPrivate = (channel.roleIds || []).some((key) => key in roleInClan);
-		const memberAccessPrivate = (channel.userIds || []).some((userId) => userId === userId);
-		if (channel.creatorId === userId || hasRoleAccessPrivate || memberAccessPrivate) {
+		const roleInClan = selectRolesByClanId(store.getState(), channel.clan_id);
+		const hasRoleAccessPrivate = (channel.role_ids || []).some((key) => key in roleInClan);
+		const memberAccessPrivate = (channel.user_ids || []).some((userId) => userId === userId);
+		if (channel.creator_id === userId || hasRoleAccessPrivate || memberAccessPrivate) {
 			const userIdsToAdd = [
-				...(channel.creatorId ? [channel.creatorId] : []),
-				...(channel.roleIds || []).flatMap(
+				...(channel.creator_id ? [channel.creator_id] : []),
+				...(channel.role_ids || []).flatMap(
 					(roleId) => roleInClan[roleId]?.roleUserList?.roleUsers?.map((user) => user.id).filter((id): id is string => Boolean(id)) || []
 				)
 			];
@@ -26,7 +26,7 @@ export const switchPublicToPrivate = createAsyncThunk(
 			if (userIdsToAdd.length > 0) {
 				thunkAPI.dispatch(
 					channelMembersActions.addNewMember({
-						channelId: channel.channelId,
+						channelId: channel.channel_id,
 						userIds: [...new Set(userIdsToAdd)]
 					})
 				);
@@ -35,24 +35,24 @@ export const switchPublicToPrivate = createAsyncThunk(
 			thunkAPI.dispatch(
 				channelsActions.updateChannelPrivateState({
 					clanId,
-					channelId: channel.channelId,
-					channelPrivate: channel.channelPrivate
+					channelId: channel.channel_id,
+					channelPrivate: channel.channel_private
 				})
 			);
 			thunkAPI.dispatch(
 				listChannelRenderAction.updateChannelInListRender({
-					channelId: channel.channelId,
-					clanId: channel.clanId as string,
+					channelId: channel.channel_id,
+					clanId: channel.clan_id as string,
 					dataUpdate: { ...channel }
 				})
 			);
 			return false;
 		}
-		thunkAPI.dispatch(channelsActions.remove({ clanId, channelId: channel.channelId }));
+		thunkAPI.dispatch(channelsActions.remove({ clanId, channelId: channel.channel_id }));
 		thunkAPI.dispatch(
 			listChannelRenderAction.deleteChannelInListRender({
-				channelId: channel.channelId,
-				clanId: channel.clanId as string
+				channelId: channel.channel_id,
+				clanId: channel.clan_id as string
 			})
 		);
 		return true;
@@ -64,15 +64,15 @@ export const switchPrivateToPublic = createAsyncThunk(
 	async ({ channel }: { channel: ChannelUpdatedEvent }, thunkAPI) => {
 		thunkAPI.dispatch(
 			channelsActions.updateChannelPrivateState({
-				clanId: channel.clanId,
-				channelId: channel.channelId,
-				channelPrivate: channel.channelPrivate
+				clanId: channel.clan_id,
+				channelId: channel.channel_id,
+				channelPrivate: channel.channel_private
 			})
 		);
 		thunkAPI.dispatch(
 			listChannelRenderAction.updateChannelInListRender({
-				channelId: channel.channelId,
-				clanId: channel.clanId as string,
+				channelId: channel.channel_id,
+				clanId: channel.clan_id as string,
 				dataUpdate: { ...channel }
 			})
 		);
@@ -84,19 +84,19 @@ export const addChannelNotExist = createAsyncThunk(
 	async ({ channel }: { channel: ChannelUpdatedEvent }, thunkAPI) => {
 		thunkAPI.dispatch(
 			channelsActions.add({
-				clanId: channel.clanId as string,
+				clanId: channel.clan_id as string,
 				channel: {
 					...channel,
 					active: 1,
-					id: channel.channelId,
-					type: channel.channelType
+					id: channel.channel_id,
+					type: channel.channel_type
 				} as ChannelsEntity
 			})
 		);
 		thunkAPI.dispatch(
 			listChannelRenderAction.addChannelToListRender({
 				...channel,
-				type: channel.channelType,
+				type: channel.channel_type,
 				clanName: ''
 			})
 		);
@@ -104,7 +104,7 @@ export const addChannelNotExist = createAsyncThunk(
 );
 
 export const addThreadNotExist = createAsyncThunk('channels/switchPublicToPrivate', async ({ thread }: { thread: ChannelUpdatedEvent }, thunkAPI) => {
-	thunkAPI.dispatch(listChannelRenderAction.addThreadToListRender({ clanId: thread.clanId, channel: { ...thread, id: thread.channelId } }));
+	thunkAPI.dispatch(listChannelRenderAction.addThreadToListRender({ clanId: thread.clan_id, channel: { ...thread, id: thread.channel_id } }));
 });
 
 export const updateChannelActions = {

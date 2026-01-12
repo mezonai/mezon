@@ -724,7 +724,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 				currentChannelBadge
 			);
 
-			if (response?.channelId !== channelId) {
+			if (response?.channel_id !== channelId) {
 				return;
 			}
 			resetChannelBadgeCount(
@@ -1279,10 +1279,10 @@ export const sendTypingUser = createAsyncThunk(
 
 export const clickButtonMessage = createAsyncThunk(
 	'messages/clickButtonMessage',
-	async ({ messageId, channelId, buttonId, senderId, userId, extraData }: MessageButtonClicked, thunkAPI) => {
+	async ({ message_id, channel_id, button_id, sender_id, user_id, extra_data }: MessageButtonClicked, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		try {
-			mezon.socketRef.current?.handleMessageButtonClick(messageId, channelId, buttonId, senderId, userId, extraData);
+			mezon.socketRef.current?.handleMessageButtonClick(message_id, channel_id, button_id, sender_id, user_id, extra_data);
 		} catch (e) {
 			console.error(e);
 		}

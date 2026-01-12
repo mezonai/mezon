@@ -34,11 +34,11 @@ export function useChannelMembersActions() {
 			if (currentVoice?.clanId === clanId) {
 				await dispatch(
 					handleParticipantVoiceState({
-						clanId: clanId,
-						channelId: currentVoice.channelId,
-						displayName: userProfile?.user?.displayName ?? '',
+						clan_id: clanId,
+						channel_id: currentVoice.channelId,
+						display_name: userProfile?.user?.displayName ?? '',
 						state: ParticipantMeetState.LEAVE,
-						roomName: currentVoice.roomId || 'leave'
+						room_name: currentVoice.roomId || 'leave'
 					})
 				);
 			}

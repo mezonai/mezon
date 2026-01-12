@@ -284,7 +284,7 @@ export const voiceSlice = createSlice({
 		},
 		remove: (state, action: PayloadAction<VoiceLeavedEvent>) => {
 			const voice = action.payload;
-			const keyRemove = voice.voiceUserId + voice.voiceChannelId;
+			const keyRemove = voice.voice_user_id + voice.voice_channel_id;
 			const entities = voiceAdapter.getSelectors().selectEntities(state);
 			if (entities[keyRemove]) {
 				voiceAdapter.removeOne(state, keyRemove);
@@ -293,9 +293,9 @@ export const voiceSlice = createSlice({
 			}
 
 			const entitiesAfter = voiceAdapter.getSelectors().selectAll(state);
-			const userStillInVoice = entitiesAfter.some((entity) => entity.userId === voice.voiceUserId);
+			const userStillInVoice = entitiesAfter.some((entity) => entity.userId === voice.voice_user_id);
 			if (!userStillInVoice) {
-				delete state.listInVoiceStatus[voice.voiceUserId];
+				delete state.listInVoiceStatus[voice.voice_user_id];
 			}
 		},
 		removeFromClanInvoice: (state, action: PayloadAction<string>) => {

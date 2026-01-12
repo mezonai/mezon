@@ -301,7 +301,7 @@ export const updateDmGroup = createAsyncThunk(
 			if (response) {
 				thunkAPI.dispatch(
 					directActions.updateOne({
-						channelId: body.channelId,
+						channel_id: body.channelId,
 						...(typeof body.channelLabel !== 'undefined' ? { channelLabel: body.channelLabel } : {}),
 						...(typeof body.channelAvatar !== 'undefined' ? { channelAvatar: body.channelAvatar } : {})
 					})
@@ -453,11 +453,11 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		const label: string[] = [];
 
 		for (const user of users) {
-			userIds.push(user.userId);
+			userIds.push(user.user_id);
 			usernames.push(user.username);
 			avatars.push(user.avatar);
 			onlines.push(user.online);
-			label.push(user.displayName || user.username);
+			label.push(user.display_name || user.username);
 		}
 
 		const state = thunkAPI.getState() as RootState;
@@ -550,18 +550,18 @@ export const directSlice = createSlice({
 			directAdapter.setAll(state, entitiesWithPreservedBadges);
 		},
 		updateOne: (state, action: PayloadAction<Partial<ChannelUpdatedEvent & { currentUserId: string }>>) => {
-			if (!action.payload?.channelId) return;
-			const { channelId, creatorId: _creator_id, currentUserId: _currentUserId, ...changes } = action.payload;
+			if (!action.payload?.channel_id) return;
+			const { channel_id, creator_id: _creator_id, currentUserId: _currentUserId, ...changes } = action.payload;
 			directAdapter.updateOne(state, {
-				id: channelId,
+				id: channel_id,
 				changes
 			});
 		},
 		updateE2EE: (state, action: PayloadAction<Partial<ChannelUpdatedEvent & { currentUserId: string }>>) => {
-			if (!action.payload?.channelId) return;
-			const { creatorId, channelId, e2ee } = action.payload;
-			const notCurrentUser = action.payload?.currentUserId !== creatorId;
-			const existingDirect = state.entities[channelId];
+			if (!action.payload?.channel_id) return;
+			const { creator_id, channel_id, e2ee } = action.payload;
+			const notCurrentUser = action.payload?.currentUserId !== creator_id;
+			const existingDirect = state.entities[channel_id];
 			const showE2EEToast = existingDirect && existingDirect.e2ee !== e2ee && notCurrentUser;
 			if (showE2EEToast) {
 				// TODO: This toast needs i18n but it's in Redux slice, need to handle differently
@@ -570,7 +570,7 @@ export const directSlice = createSlice({
 				});
 			}
 			directAdapter.updateOne(state, {
-				id: channelId,
+				id: channel_id,
 				changes: {
 					e2ee
 				}
@@ -586,9 +586,9 @@ export const directSlice = createSlice({
 			});
 		},
 		changeE2EE: (state, action: PayloadAction<Partial<ChannelUpdatedEvent>>) => {
-			if (!action.payload?.channelId) return;
+			if (!action.payload?.channel_id) return;
 			directAdapter.updateOne(state, {
-				id: action.payload.channelId,
+				id: action.payload.channel_id,
 				changes: {
 					...action.payload
 				}

@@ -140,6 +140,8 @@ const MessageText = ({
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 }) => {
+	console.log('message: ', message);
+
 	let patchedContent = content;
 	if ((!content?.mk || content.mk.length === 0) && Array.isArray(content?.lk) && content.lk.length > 0) {
 		patchedContent = {
