@@ -58,7 +58,7 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 			</View>
 			{listEventToShow?.length > 0 ? (
 				listEventToShow?.map((event, index) => (
-					<EventItem event={event} start={event?.startTime} key={index.toString()} onPress={() => handlePress(event)} />
+					<EventItem event={event} start={event?.startTimeSeconds} key={index.toString()} onPress={() => handlePress(event)} />
 				))
 			) : (
 				<View style={styles.emptyView}>

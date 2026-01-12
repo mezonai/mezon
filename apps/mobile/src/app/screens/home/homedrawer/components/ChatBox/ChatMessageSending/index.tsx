@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useChannelMembers, useChatSending } from '@mezon/core';
 import type { IRoleMention } from '@mezon/mobile-components';
-import { ActionEmitEvent, ID_MENTION_HERE, STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
+import { ActionEmitEvent, ID_MENTION_HERE, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelsEntity } from '@mezon/store-mobile';
 import {
@@ -31,7 +31,13 @@ import type {
 	IMentionOnMessage,
 	IMessageSendPayload
 } from '@mezon/utils';
-import { THREAD_ARCHIVE_DURATION_SECONDS, ThreadStatus, checkIsThread, filterEmptyArrays, uniqueUsers } from '@mezon/utils';
+import {
+	checkIsThread,
+	filterEmptyArrays,
+	THREAD_ARCHIVE_DURATION_SECONDS,
+	ThreadStatus,
+	uniqueUsers
+} from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import type { MutableRefObject } from 'react';
@@ -297,19 +303,19 @@ export const ChatMessageSending = memo(
 			const reference = targetMessage
 				? ([
 						{
-							messageId: '',
-							messageRefId: targetMessage.id,
-							refType: 0,
-							messageSenderId: targetMessage?.senderId,
-							messageSenderUsername: targetMessage?.username,
-							mesagesSenderAvatar: targetMessage.clanAvatar ? targetMessage.clanAvatar : targetMessage.avatar,
-							messageSenderClanNick: targetMessage?.clanNick,
-							messageSenderDisplayName: targetMessage?.displayName,
+							message_id: '',
+							message_ref_id: targetMessage.id,
+							ref_type: 0,
+							message_sender_id: targetMessage?.senderId,
+							message_sender_username: targetMessage?.username,
+							message_sender_avatar: targetMessage.clanAvatar ? targetMessage.clanAvatar : targetMessage.avatar,
+							message_sender_clan_nick: targetMessage?.clanNick,
+							message_sender_display_name: targetMessage?.displayName,
 							content: JSON.stringify(targetMessage.content),
-							hasAttachment: Boolean(targetMessage?.attachments?.length),
-							channelId: targetMessage.channelId ?? '',
+							has_attachment: Boolean(targetMessage?.attachments?.length),
+							channel_id: targetMessage.channelId ?? '',
 							mode: targetMessage.mode ?? 0,
-							channelLabel: targetMessage.channelLabel
+							channel_label: targetMessage.channelLabel
 						}
 					] as Array<ApiMessageRef>)
 				: undefined;

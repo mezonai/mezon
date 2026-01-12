@@ -1,8 +1,7 @@
-import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { convertTimestampToTimeAgo } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectClanById, useAppSelector } from '@mezon/store-mobile';
-import { getNameForPrioritize } from '@mezon/utils';
+import type { IMentionOnMessage } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -61,7 +60,6 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 	const channelInfo = useAppSelector((state) => selectChannelById(state, notify?.content?.channelId || ''));
 	const data = parseObject(notify?.content);
 	const clan = useAppSelector(selectClanById(notify?.content?.clanId as string));
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(notify?.senderId);
 	const messageTimeDifference = convertTimestampToTimeAgo(data?.createTimeSeconds);
 	const subjectText = useMemo(() => {
 		return clan?.clanName && channelInfo?.channelLabel
@@ -69,10 +67,24 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 			: '';
 	}, [clan?.clanName, channelInfo?.channelLabel]);
 
-	const username = useMemo(() => {
-		return getNameForPrioritize(notify?.content?.clanNick, notify?.content?.displayName, notify?.content?.username);
+	const priorityName = useMemo(() => {
+		return notify?.content?.displayName || notify?.content?.username;
 	}, [notify]);
-
+	const priorityAvatar = useMemo(() => {
+		return notify?.content?.avatar;
+	}, [notify]);
+	const mentions = useMemo<IMentionOnMessage[]>(() => {
+		const message = notify?.content;
+		const mention = message.mentionIds?.map((item, index) => {
+			return {
+				e: message.positionE?.[index],
+				s: message.positionS?.[index],
+				roleId: message.isMentionRole?.[index] ? item : '',
+				userId: message.isMentionRole?.[index] ? '' : item
+			};
+		});
+		return mention || [];
+	}, [notify?.content]);
 	return (
 		<TouchableOpacity
 			onPress={() => {
@@ -85,18 +97,15 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 			<View style={styles.notifyContainer}>
 				<View style={styles.notifyHeader}>
 					<View style={styles.boxImage}>
-						<MezonAvatar
-							avatarUrl={priorityAvatar ? priorityAvatar : notify?.content?.avatar}
-							username={notify?.content?.username}
-						></MezonAvatar>
+						<MezonAvatar avatarUrl={priorityAvatar} username={priorityName}></MezonAvatar>
 					</View>
 					<View style={styles.notifyContent}>
 						<Text numberOfLines={2} style={styles.notifyHeaderTitle}>
-							<Text style={styles.username}>{username} </Text>
+							<Text style={styles.username}>{priorityName} </Text>
 							{subjectText}
 						</Text>
 						<View style={styles.contentMessage}>
-							<MessageNotification message={data} />
+							<MessageNotification message={data} mentions={mentions} />
 						</View>
 					</View>
 					<Text style={styles.notifyDuration}>{messageTimeDifference}</Text>

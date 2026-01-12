@@ -84,11 +84,11 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 	const allUserIdsInChannel = getMemberIds;
 	const handleJumpToPinMessage = useCallback(
 		(e) => {
-			if (message?.references && message?.references[0]?.messageRefId) {
+			if (message?.references && message?.references[0]?.message_ref_id) {
 				dispatch(
 					messagesActions.jumpToMessage({
 						clanId: message?.clanId || '',
-						messageId: message?.references[0]?.messageRefId,
+						messageId: message?.references[0]?.message_ref_id,
 						channelId: message?.channelId
 					})
 				);
