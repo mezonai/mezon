@@ -1,4 +1,4 @@
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, load, save, STORAGE_USERS_QUICK_REACTION } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity } from '@mezon/store-mobile';
 import {
@@ -15,7 +15,7 @@ import {
 import type { IChannel } from '@mezon/utils';
 import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { ChannelType } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, View } from 'react-native';
@@ -27,11 +27,12 @@ import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componen
 import MezonMenu from '../../componentUI/MezonMenu';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
+import { ContainerMessageActionModal } from '../../screens/home/homedrawer/components/MessageItemBS/ContainerMessageActionModal';
 import CustomGroupDm from './CustomGroupDm';
 import style from './MenuCustomDm.styles';
 
 const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChannel | DirectEntity; channelLabel: string }) => {
-	const { t } = useTranslation(['menuCustomDM', 'dmMessage']);
+	const { t } = useTranslation(['menuCustomDM', 'dmMessage', 'common']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
@@ -46,7 +47,68 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 		return userIds?.length === 1;
 	}, [allUserGroupDM?.userIds]);
 
+	const channelId = useMemo(() => {
+		return currentChannel?.channelId || currentChannel?.id || '';
+	}, [currentChannel?.channelId, currentChannel?.id]);
+
+	const handleEmojiSelected = useCallback(
+		(emojiId: string, shortname: string) => {
+			if (!currentUserId || !channelId) return;
+
+			try {
+				const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
+
+				if (!currentData[currentUserId]) {
+					currentData[currentUserId] = {};
+				}
+
+				currentData[currentUserId][channelId] = { emojiId, shortname };
+				save(STORAGE_USERS_QUICK_REACTION, currentData);
+
+				Toast.show({
+					type: 'success',
+					text1: t('common:quickReaction.toast.success')
+				});
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+			} catch (error) {
+				console.error('Error setting quick reaction:', error);
+				Toast.show({
+					type: 'error',
+					text1: t('common:quickReaction.toast.failed')
+				});
+			}
+		},
+		[channelId, currentUserId, t]
+	);
+
+	const handleOpenQuickReactionModal = useCallback(async () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		await sleep(500);
+		const data = {
+			snapPoints: ['90%'],
+			children: (
+				<ContainerMessageActionModal
+					message={undefined}
+					mode={
+						currentChannel?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP
+					}
+					isOnlyEmojiPicker
+					channelId={channelId}
+					onEmojiSelected={handleEmojiSelected}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	}, [channelId, currentChannel?.type, handleEmojiSelected]);
+
 	const menuSetting: IMezonMenuItemProps[] = [
+		{
+			title: t('common:quickReaction.title'),
+			expandable: false,
+			icon: <MezonIconCDN icon={IconCDN.reactionIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
+			textStyle: styles.label,
+			onPress: handleOpenQuickReactionModal
+		},
 		{
 			title: t('customiseGroup'),
 			expandable: false,
@@ -99,6 +161,13 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 	const closeDm: IMezonMenuSectionProps[] = [
 		{
 			items: [
+				{
+					title: t('common:quickReaction.title'),
+					expandable: false,
+					icon: <MezonIconCDN icon={IconCDN.reactionIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
+					textStyle: styles.label,
+					onPress: handleOpenQuickReactionModal
+				},
 				{
 					title: t('closeDM'),
 					expandable: false,

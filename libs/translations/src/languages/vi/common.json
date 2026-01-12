@@ -484,5 +484,12 @@
 	"download": "Tải xuống",
 	"jumpToMessage": "Đi đến tin nhắn",
 	"somethingWentWrong": "Đã xảy ra lỗi",
+	"quickReaction": {
+		"title": "Đặt cảm xúc nhanh",
+		"toast": {
+			"success": "Đặt cảm xúc nhanh thành công!",
+			"failed": "Đặt cảm xúc nhanh thất bại!"
+		}
+	},
 	"groupMembers": "{members} trên {total} thành viên"
 }
