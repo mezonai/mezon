@@ -10,6 +10,7 @@ import {
 	selectRawDataUserGroup,
 	useAppDispatch
 } from '@mezon/store-mobile';
+import { GROUP_CHAT_MAXIMUM_MEMBERS } from '@mezon/utils';
 import type { User } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import type { ApiCreateChannelDescRequest } from 'mezon-js/types';
@@ -201,6 +202,12 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 								{currentDirectMessage?.type === ChannelType.CHANNEL_TYPE_GROUP
 									? t('screen:headerTitle.addMembers')
 									: t('screen:headerTitle.newGroup')}
+							</Text>
+							<Text>
+								{t('groupMembers', {
+									members: selectedFriendDefault?.length + friendIdSelectedList?.length,
+									total: GROUP_CHAT_MAXIMUM_MEMBERS
+								})}
 							</Text>
 						</View>
 						<View style={styles.actions}>
