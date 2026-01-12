@@ -2,13 +2,13 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity, EventManagementEntity } from '@mezon/store-mobile';
 import {
-	appActions,
-	getStore,
-	selectAllChannelsByUser,
-	selectChannelById,
-	selectDirectsOpenlist,
-	useAppDispatch,
-	useAppSelector
+    appActions,
+    getStore,
+    selectAllChannelsByUser,
+    selectChannelById,
+    selectDirectsOpenlist,
+    useAppDispatch,
+    useAppSelector
 } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import type { ChannelThreads, IMessageSendPayload } from '@mezon/utils';
@@ -94,7 +94,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 
 	const shareLink = useMemo(() => {
 		if (!channelVoice?.channelId && !event?.meetRoom?.externalLink) return '';
-		return channelVoice.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
+		return channelVoice?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
 			? `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${channelVoice.clanId}/channels/${channelVoice.channelId}`
 			: `${process.env.NX_CHAT_APP_REDIRECT_URI}${event?.meetRoom?.externalLink}`;
 	}, [channelVoice, event?.meetRoom?.externalLink]);

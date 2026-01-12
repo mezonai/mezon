@@ -26,8 +26,8 @@ export default function setupAutoUpdates() {
 			return;
 		}
 		if (process.platform === 'darwin') {
-			//shell.openExternal('macappstore://itunes.apple.com/mezon.desktop');
-			//return;
+			shell.openExternal('macappstore://itunes.apple.com/app/mezon-desktop/id6756601798');
+			return;
 		}
 		new Notification({
 			icon: 'apps/desktop/src/assets/desktop-taskbar.ico',

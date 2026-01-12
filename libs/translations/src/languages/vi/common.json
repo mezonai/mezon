@@ -483,5 +483,6 @@
 	"share": "Chia sẻ",
 	"download": "Tải xuống",
 	"jumpToMessage": "Đi đến tin nhắn",
-	"somethingWentWrong": "Đã xảy ra lỗi"
+	"somethingWentWrong": "Đã xảy ra lỗi",
+	"groupMembers": "{members} trên {total} thành viên"
 }

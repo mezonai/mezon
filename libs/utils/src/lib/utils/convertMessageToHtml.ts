@@ -39,18 +39,18 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 
 		if (start !== undefined && end !== undefined) {
 			const mentionText = text.substring(start, end);
-			if (mention.userId) {
+			if (mention.user_id) {
 				allEntities.push({
 					start,
 					end,
-					html: `<a class="text-entity-link mention" data-entity-type="MessageEntityMentionName" data-user-id="${mention.userId}" contenteditable="false" dir="auto">${mentionText}</a>`,
+					html: `<a class="text-entity-link mention" data-entity-type="MessageEntityMentionName" data-user-id="${mention.user_id}" contenteditable="false" dir="auto">${mentionText}</a>`,
 					type: 'mention'
 				});
-			} else if (mention.roleId) {
+			} else if (mention.role_id) {
 				allEntities.push({
 					start,
 					end,
-					html: `<a class="text-entity-link mention" data-entity-type="MessageEntityMentionRole" data-user-id="${mention.roleId}" contenteditable="false" dir="auto">${mentionText}</a>`,
+					html: `<a class="text-entity-link mention" data-entity-type="MessageEntityMentionRole" data-user-id="${mention.role_id}" contenteditable="false" dir="auto">${mentionText}</a>`,
 					type: 'mention'
 				});
 			}

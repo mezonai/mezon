@@ -1,7 +1,7 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Fonts, size, useTheme } from '@mezon/mobile-ui';
+import type { ChannelsEntity } from '@mezon/store-mobile';
 import {
-	ChannelsEntity,
 	selectAllTextChannel,
 	selectChannelById,
 	selectCurrentClanId,
@@ -19,10 +19,12 @@ import { useSelector } from 'react-redux';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
-import MezonOption, { IMezonOptionData } from '../../../componentUI/MezonOption';
+import type { IMezonOptionData } from '../../../componentUI/MezonOption';
+import MezonOption from '../../../componentUI/MezonOption';
 import MezonSelect from '../../../componentUI/MezonSelect';
 import { IconCDN } from '../../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import BottomsheetSelectChannel from './BottomsheetSelectChannel';
 import { style } from './styles';
 
@@ -97,7 +99,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 						fontWeight: 'bold'
 					},
 					disabled: !!currentEvent,
-					icon: <MezonIconCDN icon={IconCDN.channelVoiceLock} color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} />
 				}
 			] satisfies IMezonOptionData,
 		[]
@@ -133,16 +135,18 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const isExistPrivateEvent = currentEvent?.isPrivate;
 
 	useEffect(() => {
-		if (currentEvent && currentEventChannel) {
+		if (currentEvent) {
 			if (isExistChannelVoice) {
 				setEventType(OptionEvent.OPTION_SPEAKER);
 				setChannelID(currentEvent.channelVoiceId);
+				if (currentEventChannel) {
+					setEventChannel(currentEventChannel);
+				}
 			} else if (isExistAddress) {
 				setEventType(OptionEvent.OPTION_LOCATION);
 			} else if (isExistPrivateEvent) {
 				setEventType(OptionEvent.PRIVATE_EVENT);
 			}
-			setEventChannel(currentEventChannel);
 		}
 	}, [currentEvent, currentEventChannel, isExistAddress, isExistChannelVoice, isExistPrivateEvent]);
 

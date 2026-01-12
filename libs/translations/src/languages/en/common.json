@@ -483,5 +483,6 @@
 	"share": "Share",
 	"download": "Download",
 	"jumpToMessage": "Jump to Message",
-	"somethingWentWrong": "Something went wrong"
+	"somethingWentWrong": "Something went wrong",
+	"groupMembers": "{members} of {total} members"
 }

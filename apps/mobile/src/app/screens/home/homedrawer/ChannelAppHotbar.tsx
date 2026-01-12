@@ -1,8 +1,9 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -18,9 +19,12 @@ const ChannelAppHotbar = ({ channelId, clanId }: channelAppHotBarProps) => {
 	const { t } = useTranslation(['common']);
 
 	const openChannelApp = useCallback(async () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+			isShow: false
+		});
 		navigation.navigate(APP_SCREEN.CHANNEL_APP, {
-			channelId: channelId,
-			clanId: clanId
+			channelId,
+			clanId
 		});
 	}, [channelId, clanId]);
 

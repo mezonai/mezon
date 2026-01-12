@@ -7,6 +7,17 @@ export const style = (colors: Attributes) =>
 			padding: Metrics.size.xl
 		},
 
+		emptyScreen: {
+			paddingVertical: size.s_40,
+			alignItems: 'center',
+			gap: size.s_8
+		},
+
+		emptyText: {
+			color: colors.textDisabled,
+			fontSize: size.s_16
+		},
+
 		item: {
 			flexDirection: 'row',
 			alignItems: 'center',

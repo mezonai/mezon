@@ -79,7 +79,7 @@ export const CustomStatusUser = ({ userStatus, handleCustomUserStatus, currentUs
 				{
 					title: t('userStatus.invisible'),
 					value: EUserStatus.INVISIBLE,
-					icon: <MezonIconCDN icon={IconCDN.offlineStatusIcon} color="#AEAEAE" height={size.s_12} width={size.s_20} />
+					icon: <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#AEAEAE" height={size.s_12} width={size.s_20} />
 				}
 			] as IMezonOptionData,
 		[t]

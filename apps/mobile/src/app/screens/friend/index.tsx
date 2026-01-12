@@ -1,13 +1,13 @@
 import { useDirect } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import type { FriendsEntity } from '@mezon/store-mobile';
+import type { ChannelsEntity, FriendsEntity } from '@mezon/store-mobile';
 import { DMCallActions, getStore, selectAllFriends, selectDirectsOpenlist, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import type { ApiUser } from 'mezon-js/types';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Pressable, Text, TextInput, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
@@ -69,17 +69,14 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				});
 
 			if (directMessage?.id) {
+				Keyboard.dismiss();
 				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
 				return;
 			}
-			const response = await createDirectMessageWithUser(
-				user?.user?.id,
-				user?.user?.displayName,
-				user?.user?.username,
-				user?.user?.avatarUrl
-			);
+			const response = await createDirectMessageWithUser(user?.user?.id, user?.user?.displayName, user?.user?.username, user?.user?.avatarUrl);
 			if (response?.channelId) {
 				await checkNotificationPermissionAndNavigate(() => {
+					Keyboard.dismiss();
 					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channelId });
 				});
 			}
@@ -111,12 +108,7 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data: dataModal });
 				return;
 			}
-			const response = await createDirectMessageWithUser(
-				user?.user?.id,
-				user?.user?.displayName,
-				user?.user?.username,
-				user?.user?.avatarUrl
-			);
+			const response = await createDirectMessageWithUser(user?.user?.id, user?.user?.displayName, user?.user?.username, user?.user?.avatarUrl);
 			if (response?.channelId) {
 				dispatch(DMCallActions.removeAll());
 				const params = {
@@ -202,7 +194,7 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				showAction={true}
 			/>
 
-			<UserInformationBottomSheet user={selectedUser} onClose={onClose} showAction={false} showRole={false} />
+			<UserInformationBottomSheet user={selectedUser} onClose={onClose} showAction={false} showRole={false} currentChannel={{ type: ChannelType.CHANNEL_TYPE_GROUP } as ChannelsEntity} />
 		</View>
 	);
 });

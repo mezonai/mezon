@@ -30,7 +30,9 @@
 	"detail": {
 		"eventInfo": "Event Info",
 		"interested": "Interested",
-		"personInterested": "{{count}} person is interested",
+		"personInterested": "{{count}} people are interested",
+		"onePersonInterested": "1 person is interested",
+		"noOneInterested": "No one's interested in this event yet.",
 		"createdBy": "Created by "
 	},
 	"share": {

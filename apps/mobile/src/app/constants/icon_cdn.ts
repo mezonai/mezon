@@ -195,5 +195,10 @@ export enum IconCDN {
 	advancedFunctionIcon = require('./iconPNG/advancedFunction.png'),
 	pollIcon = require('./iconPNG/poll.png'),
 	raiseHandIcon = require('./iconPNG/raiseHand.png'),
-	deviceDestopIcon = require('./iconPNG/deviceDesktop.png')
+	deviceDestopIcon = require('./iconPNG/deviceDesktop.png'),
+	sparkleIcon = require('./iconPNG/sparkle.png'),
+	gamingIcon = require('./iconPNG/gaming.png'),
+	studyIcon = require('./iconPNG/study.png'),
+	localCommunityIcon = require('./iconPNG/localCommunity.png'),
+	artistIcon = require('./iconPNG/artist.png')
 }

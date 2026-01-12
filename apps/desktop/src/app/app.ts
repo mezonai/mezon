@@ -424,8 +424,8 @@ export default class App {
 								return;
 							}
 							if (process.platform === 'darwin') {
-								//shell.openExternal('macappstore://itunes.apple.com/mezon.desktop');
-								//return;
+								shell.openExternal('macappstore://itunes.apple.com/app/mezon-desktop/id6756601798');
+								return;
 							}
 							autoUpdater.checkForUpdates().then((data) => {
 								if (!data?.updateInfo) return;
