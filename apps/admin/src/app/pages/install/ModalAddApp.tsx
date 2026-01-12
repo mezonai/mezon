@@ -39,7 +39,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 	const [categoryValue, setCategoryValue] = useState('');
 	const [categoryError, setCategoryError] = useState<string>();
 	const [createdChannelId, setCreatedChannelId] = useState<string>('');
-	const activeSince = appDetail?.create_time;
+	const activeSince = appDetail?.createTime;
 	const activeSincecv = activeSince ? new Date(activeSince).toLocaleDateString() : '';
 	useEffect(() => {
 		if (clanValue) {
@@ -115,8 +115,8 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 
 		try {
 			const resp = await dispatch(createNewChannel(data)).unwrap();
-			if (resp?.channel_id) {
-				setCreatedChannelId(resp.channel_id as string);
+			if (resp?.channelId) {
+				setCreatedChannelId(resp.channelId as string);
 			}
 			toggleSuccess();
 		} catch (error: any) {
@@ -135,7 +135,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 				name={appDetail?.appname || ''}
 				clan={{
 					clanId: clanValue,
-					clanName: selectedClan?.clan_name || '',
+					clanName: selectedClan?.clanName || '',
 					channelId: createdChannelId,
 					isEmpty: false
 				}}

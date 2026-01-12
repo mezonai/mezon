@@ -2,7 +2,7 @@ import { useChatSending } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectCurrentChannel, selectDmGroupCurrent } from '@mezon/store-mobile';
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
-import { MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME, createImgproxyUrl } from '@mezon/utils';
+import { createImgproxyUrl, MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { Text, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import ImageNative from '../ImageNative';
 import { style } from './styles';
+
 interface IWaveButtonProps {
 	message: IMessage;
 }
@@ -34,7 +35,7 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 	const displayName = useMemo(() => {
 		if (!isDM) return '';
 		return currentDmGroup?.channelLabel || currentDmGroup?.displayNames?.[0] || currentDmGroup?.usernames?.[0] || '';
-	}, [currentDmGroup?.channelLabel, currentDmGroup?.displayNames?.[0], currentDmGroup?.usernames?.[0], isDM]);
+	}, [currentDmGroup?.channelLabel, currentDmGroup?.displayNames, currentDmGroup?.usernames, isDM]);
 
 	const { sendMessage } = useChatSending({
 		mode,
@@ -56,19 +57,19 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 				? []
 				: [
 						{
-							messageId: '',
-							messageRefId: message?.id,
-							refType: 0,
-							messageSenderId: message?.senderId,
-							messageSenderUsername: WAVE_SENDER_NAME,
-							mesagesSenderAvatar: MEZON_AVATAR_URL,
-							messageSenderClanNick: WAVE_SENDER_NAME,
-							messageSenderDisplayName: WAVE_SENDER_NAME,
+							message_id: '',
+							message_ref_id: message?.id,
+							ref_type: 0,
+							message_sender_id: message?.senderId,
+							message_sender_username: WAVE_SENDER_NAME,
+							message_sender_avatar: MEZON_AVATAR_URL,
+							message_sender_clan_nick: WAVE_SENDER_NAME,
+							message_sender_display_name: WAVE_SENDER_NAME,
 							content: JSON.stringify(message?.content),
-							hasAttachment: false,
-							channelId: message?.channelId ?? '',
+							has_attachment: false,
+							channel_id: message?.channelId ?? '',
 							mode: message?.mode ?? 0,
-							channelLabel: message?.channelLabel
+							channel_label: message?.channelLabel
 						}
 					];
 			const attachments = [

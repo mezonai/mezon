@@ -191,7 +191,7 @@ const ModalUserProfile = ({
 		if (userID === message?.senderId) {
 			return message?.username;
 		}
-		return message?.references?.[0].messageSenderUsername;
+		return message?.references?.[0].message_sender_username;
 	}, [userById, userID, currentUserId?.username, userProfile?.user?.username, isFooterProfile, checkAnonymous, message]);
 
 	const handleOnKeyPress = useCallback(
@@ -208,7 +208,7 @@ const ModalUserProfile = ({
 					return;
 				}
 				sendMessage(
-					(isFooterProfile ? userId : userID === message?.senderId ? message?.senderId : message?.references?.[0].messageSenderId) || ''
+					(isFooterProfile ? userId : userID === message?.senderId ? message?.senderId : message?.references?.[0].message_sender_id) || ''
 				);
 				onLoading.current = true;
 			}
@@ -252,7 +252,7 @@ const ModalUserProfile = ({
 					<div>
 						<p
 							className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate"
-							data-e2e={generateE2eId('short_profile.displayName')}	
+							data-e2e={generateE2eId('short_profile.displayName')}
 						>
 							{isUserRemoved
 								? t('labels.unknownUser')

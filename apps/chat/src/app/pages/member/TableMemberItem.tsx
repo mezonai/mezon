@@ -100,7 +100,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 				isDM={false}
 				user={{
 					id: userId,
-					userId: userId,
+					userId,
 					user: {
 						id: userId,
 						username
@@ -122,11 +122,11 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 	const member: ChannelMembersEntity = useMemo(() => {
 		return {
 			id: userId,
-			userId: userId,
+			userId,
 			user: {
 				username,
 				id: userId,
-				displayName: displayName,
+				displayName,
 				avatarUrl: avatar
 			}
 		};
@@ -183,7 +183,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 
 	return (
 		<div
-			className="flex flex-row justify-between items-center h-[48px] border-b-[1px] bg-item-hover cursor-pointer  border-b-theme-primary last:border-b-0"
+			className="flex flex-row justify-between items-center h-[48px]  bg-item-hover cursor-pointer  border-b-theme-primary no-divider-last "
 			onContextMenu={handleContextMenu}
 			onClick={handleClickItem}
 			ref={itemRef}
@@ -216,7 +216,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 			</div>
 			<div className="flex-1 p-1 text-center">
 				<span className="text-xs  font-medium uppercase">
-					{clanJoinTime ? formatDistance(clanJoinTime as string, new Date(), { addSuffix: true }) : '-'}
+					{clanJoinTime && typeof clanJoinTime === 'string' ? formatDistance(clanJoinTime as string, new Date(), { addSuffix: true }) : '-'}
 				</span>
 			</div>
 			<div className="flex-1 p-1 text-center">

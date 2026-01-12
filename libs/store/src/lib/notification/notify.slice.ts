@@ -3,24 +3,24 @@ import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/ut
 import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { Notification } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/types';
+import type { ApiChannelMessageHeader } from 'mezon-js/types';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, getMezonCtx, timestampToString, withRetry } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import type { RootState } from '../store';
 
 export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIMIT_NOTIFICATION = 50;
 
-export const mapNotificationToEntity = (notifyRes: ApiNotification): INotification => {
+export const mapNotificationToEntity = (notifyRes: INotification): Notification => {
 	return {
 		...notifyRes,
 		id: notifyRes.id || '',
-		content: notifyRes.content,
-		createTime: timestampToString(notifyRes.createTime)
+		createTimeSeconds: notifyRes.createTimeSeconds
 	};
 };
 
@@ -124,9 +124,8 @@ export const fetchListNotification = createAsyncThunk(
 				};
 			}
 
-			const notifications = response.notifications.map((notify) => mapNotificationToEntity(notify as ApiNotification));
 			return {
-				data: notifications,
+				data: response.notifications as INotification[],
 				category,
 				fromCache
 			};
@@ -164,10 +163,10 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 			avatar: message.avatar || '',
 			clanId: message.clanId || '',
 			channelId: message.channelId,
-			attachments: JSON.stringify(message.attachments),
-			mentions: JSON.stringify(message.mentions),
-			reactions: JSON.stringify(message.reactions),
-			references: JSON.stringify(message.references)
+			attachments: new TextEncoder().encode(JSON.stringify([])),
+			mentions: new TextEncoder().encode(JSON.stringify([])),
+			reactions: new TextEncoder().encode(JSON.stringify([])),
+			references: new TextEncoder().encode(JSON.stringify([]))
 		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
@@ -202,6 +201,7 @@ export const notificationSlice = createSlice({
 	name: NOTIFICATION_FEATURE_KEY,
 	initialState: initialNotificationState,
 	reducers: {
+		removeAll: notificationAdapter.removeAll,
 		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
 			const { data, category } = action.payload;
 
@@ -300,9 +300,13 @@ export const notificationSlice = createSlice({
 							...message,
 							id: noti.id || '',
 							...noti,
-							createTime: new Date().toISOString(),
+							createTimeSeconds: new Date().getTime(),
 							content: safeJSONParse(noti.content || ''),
-							category: NotificationCategory.MESSAGES
+							category: NotificationCategory.MESSAGES,
+							channelType: 0,
+							avatarUrl: message?.avatar?.[0] || '',
+							clanId: message.clanId || '',
+							topicId: message.topicId || ''
 						};
 						state.notifications[NotificationCategory.MESSAGES].data = [
 							...state.notifications[NotificationCategory.MESSAGES].data,

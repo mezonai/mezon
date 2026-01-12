@@ -98,15 +98,15 @@ export const fetchChannelMembersCached = async (
 		{
 			api_name: 'ListChannelUsers',
 			list_channel_users_req: {
-				channelId,
+				channel_id: channelId,
 				limit: 2000,
-				clanId,
-				channelType,
+				clan_id: clanId,
+				channel_type: channelType,
 				state: 1
 			}
 		},
 		() => ensuredMezon.client.listChannelUsers(ensuredMezon.session, clanId, channelId, channelType, 1, 2000, ''),
-		'channel_user_list'
+		'channelUserList'
 	);
 
 	markApiFirstCalled(apiKey);

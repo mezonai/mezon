@@ -333,20 +333,23 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				>
 					{checkOptionVoice &&
 						!isPrivateEvent &&
-						(() => {
-							const linkProps = {
-								onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+						(isReviewEvent ? (
+							<span className="flex gap-x-2">
+								<Icons.Speaker />
+								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channelLabel}</p>
+							</span>
+						) : (
+							<a
+								onClick={(e) => {
 									handleStopPropagation(e);
 									redirectToVoice();
-								}
-							};
-							return (
-								<a {...linkProps} className="flex gap-x-2 cursor-pointer">
-									<Icons.Speaker />
-									<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channelLabel}</p>
-								</a>
-							);
-						})()}
+								}}
+								className="flex gap-x-2 cursor-pointer"
+							>
+								<Icons.Speaker />
+								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channelLabel}</p>
+							</a>
+						))}
 					{checkOptionLocation && (
 						<>
 							<Icons.Location />
@@ -362,12 +365,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					{isPrivateEvent && (
 						<div className="flex gap-x-2 items-center">
 							<Icons.Speaker />
-							{link ? (
+							{!isReviewEvent && link ? (
 								<a href={link} target="_blank" rel="noopener noreferrer" className="cursor-pointer whitespace-normal break-words">
 									{t('eventCreator:eventDetail.privateRoom')}
 								</a>
 							) : (
-								<span className="whitespace-normal break-words cursor-not-allowed">{t('eventCreator:eventDetail.privateRoom')}</span>
+								<span className="whitespace-normal break-words">{t('eventCreator:eventDetail.privateRoom')}</span>
 							)}
 						</div>
 					)}

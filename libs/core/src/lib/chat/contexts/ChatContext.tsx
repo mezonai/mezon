@@ -38,7 +38,6 @@ import {
 	listChannelsByUserActions,
 	listUsersByUserActions,
 	mapMessageChannelToEntityAction,
-	mapNotificationToEntity,
 	mapReactionToEntity,
 	messagesActions,
 	notificationActions,
@@ -528,7 +527,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 				if (message?.code === TypeMessage.ChatRemove) {
 					const replyData = selectDataReferences(store.getState(), message.channelId);
-					if (replyData && replyData.messageRefId === message.id) {
+					if (replyData && replyData.message_ref_id === message.id) {
 						dispatch(referencesActions.resetAfterReply(message.channelId));
 					}
 					if (message.messageId) {
@@ -649,7 +648,20 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				!isFocus
 			) {
 				dispatch(
-					notificationActions.add({ data: mapNotificationToEntity(notification), category: notification.category as NotificationCategory })
+					notificationActions.add({
+						data: {
+							...notification,
+							id: notification.id || '',
+							content: {},
+							clanId: notification.clanId || '',
+							channelId: notification.channelId || '',
+							channelType: notification.channelType || ChannelType.CHANNEL_TYPE_CHANNEL,
+							topicId: notification.topicId || '',
+							avatarUrl: notification.avatarUrl || '',
+							category: notification.category || 0
+						},
+						category: notification.category as NotificationCategory
+					})
 				);
 
 				if (notification.code === NotificationCode.USER_MENTIONED || notification.code === NotificationCode.USER_REPLIED) {
@@ -810,7 +822,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						if (user.channelType === ChannelType.CHANNEL_TYPE_THREAD) {
 							const parentChannelId = currentChannel?.parentId;
 							if (parentChannelId) {
-								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`);
+								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`, true);
 								return;
 							}
 						}
@@ -822,13 +834,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						const redirectChannelId = defaultChannelId || fallbackChannelId;
 
 						if (redirectChannelId) {
-							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
+							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`, true);
 						} else {
-							navigate(`/chat/clans/${clanId}/member-safety`);
+							navigate(`/chat/clans/${clanId}/member-safety`, true);
 						}
 					}
 					if (!isMobile && directId === user.channelId) {
-						navigate(`/chat/direct/friends`);
+						navigate(`/chat/direct/friends`, true);
 					}
 					dispatch(directSlice.actions.removeByDirectID(user.channelId));
 					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channelId, clanId: clanId as string }));
@@ -1384,16 +1396,16 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onmessagereaction = useCallback(
 		async (e: ApiMessageReaction) => {
-			if (e.senderId === userId) {
-				dispatch(emojiRecentActions.setLastEmojiRecent({ emojiRecentsId: e.emojiRecentId, emojiId: e.emojiId }));
-				dispatch(emojiRecentActions.addFirstEmojiRecent({ emojiRecentsId: e.emojiRecentId, emojiId: e.emojiId }));
+			if (e.sender_id === userId) {
+				dispatch(emojiRecentActions.setLastEmojiRecent({ emojiRecentsId: e.emoji_recent_id, emojiId: e.emoji_id }));
+				dispatch(emojiRecentActions.addFirstEmojiRecent({ emojiRecentsId: e.emoji_recent_id, emojiId: e.emoji_id }));
 			}
 			const reactionEntity = mapReactionToEntity(e);
 			const store = await getStoreAsync();
 			const isFocusTopicBox = selectClickedOnTopicStatus(store.getState());
 			const currenTopicId = selectCurrentTopicId(store.getState());
-			if (reactionEntity.topicId && reactionEntity.topicId !== '0' && isFocusTopicBox && currenTopicId) {
-				reactionEntity.channelId = reactionEntity.topicId ?? '';
+			if (reactionEntity.topic_id && reactionEntity.topic_id !== '0' && isFocusTopicBox && currenTopicId) {
+				reactionEntity.channel_id = reactionEntity.topic_id ?? '';
 			}
 
 			dispatch(messagesActions.updateMessageReactions(reactionEntity));

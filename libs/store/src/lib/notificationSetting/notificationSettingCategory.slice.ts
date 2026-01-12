@@ -67,11 +67,11 @@ export const fetchDefaultNotificationCategoryCached = async (
 		{
 			api_name: 'GetNotificationCategory',
 			notification_category: {
-				categoryId
+				category_id: categoryId
 			}
 		},
 		() => mezon.client.getNotificationCategory(mezon.session, categoryId),
-		'notificaion_user_channel'
+		'notificationUserChannel'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -113,10 +113,7 @@ export const getDefaultNotificationCategory = createAsyncThunk(
 				id: response.id,
 				notificationSettingType: response.notificationSettingType,
 				active: response.active,
-				timeMute:
-					response.timeMute && typeof response.timeMute === 'object' && 'seconds' in response.timeMute
-						? new Date((response.timeMute as any).seconds * 1000).toISOString()
-						: (response.timeMute as string | null | undefined)
+				timeMute: response.time ? new Date(response.time).toISOString() : ''
 			};
 
 			return { ...apiNotificationSetting, categoryId, clanId };
@@ -349,11 +346,11 @@ export const fetchChannelCategorySettingCached = async (getState: () => RootStat
 		{
 			api_name: 'GetChannelCategoryNotiSettingsList',
 			notification_clan: {
-				clanId
+				clan_id: clanId
 			}
 		},
 		() => mezon.client.getChannelCategoryNotiSettingsList(mezon.session, clanId),
-		'notification_list'
+		'notificationList'
 	);
 
 	markApiFirstCalled(apiKey);

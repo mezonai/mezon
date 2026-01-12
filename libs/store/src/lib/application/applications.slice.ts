@@ -260,7 +260,9 @@ export const editMezonOauthClient = createAsyncThunk(
 				tosUri: body.tosUri || '',
 				userinfoSignedResponseAlg: body.userinfoSignedResponseAlg || '',
 				registrationAccessToken: body.registrationAccessToken || '',
-				registrationClientUri: body.registrationClientUri || ''
+				registrationClientUri: body.registrationClientUri || '',
+				createdAtSeconds: body.createdAt ? new Date(body.createdAt).getTime() : 0,
+				updatedAtSeconds: body.updatedAt ? new Date(body.updatedAt).getTime() : 0
 			};
 			const response = await mezon.client.updateMezonOauthClient(mezon.session, bodyWithTypeName);
 			return response;
@@ -316,7 +318,7 @@ export const adminApplicationSlice = createSlice({
 		builder.addCase(getApplicationDetail.fulfilled, (state, action) => {
 			state.appDetail = {
 				...action.payload,
-				disableTime: timestampToString(action.payload.disableTime)
+				disableTime: timestampToString(action.payload.disableTimeSeconds)
 			} as ApiApp;
 		});
 		builder.addCase(editApplication.fulfilled, (state, action) => {
@@ -324,7 +326,7 @@ export const adminApplicationSlice = createSlice({
 				state.appDetail = {
 					...state.appDetail,
 					...action.payload,
-					disableTime: timestampToString((action.payload as any).disableTime)
+					disableTime: timestampToString((action.payload as any).disableTimeSeconds)
 				} as ApiApp;
 			}
 		});
@@ -333,8 +335,8 @@ export const adminApplicationSlice = createSlice({
 			if (!state.entities[clientId]) return;
 			state.entities[clientId].oAuthClient = {
 				...action.payload,
-				createdAt: timestampToString(action.payload.createdAt),
-				updatedAt: timestampToString(action.payload.updatedAt)
+				createdAt: timestampToString(action.payload.createdAtSeconds),
+				updatedAt: timestampToString(action.payload.updatedAtSeconds)
 			} as ApiMezonOauthClient;
 		});
 		builder.addCase(editMezonOauthClient.fulfilled, (state, action) => {
@@ -342,8 +344,8 @@ export const adminApplicationSlice = createSlice({
 			if (!state.entities[clientId]) return;
 			state.entities[clientId].oAuthClient = {
 				...action.payload,
-				createdAt: timestampToString(action.payload.createdAt),
-				updatedAt: timestampToString(action.payload.updatedAt)
+				createdAt: timestampToString(action.payload.createdAtSeconds),
+				updatedAt: timestampToString(action.payload.updatedAtSeconds)
 			} as ApiMezonOauthClient;
 		});
 	}

@@ -405,7 +405,7 @@ function ChannelMessages({
 	}, []);
 
 	useEffect(() => {
-		if (dataReferences?.messageRefId && getChatScrollBottomOffset() <= 100) {
+		if (dataReferences?.message_ref_id && getChatScrollBottomOffset() <= 100) {
 			scrollToLastMessage();
 		}
 	}, [dataReferences, lastMessage, scrollToLastMessage, getChatScrollBottomOffset]);
@@ -1001,8 +1001,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						(!isLoadingMoreBottomRef.current &&
 							((!isFirstJoinLoadRef.current && isAtBottom) || (userActiveScroll.current && isAtBottom))) ||
 						(user?.user?.id === lastMessage?.senderId &&
-							lastMessage?.createTime &&
-							new Date().getTime() - new Date(lastMessage.createTime).getTime() < 1000)
+							lastMessage?.createTimeSeconds &&
+							new Date().getTime() - lastMessage.createTimeSeconds < 1000)
 					) {
 						newScrollTop = scrollHeight;
 						shouldUpdateScrollPosition = !message?.isSending;
@@ -1133,11 +1133,10 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const { showMessageContextMenu, selectedMessageId } = useMessageContextMenu();
 
 		const renderedMessages = useMemo(() => {
-			// Use lastSeenAtBottomRef (saved when user was at bottom) or fallback to lastMessageUnreadId
 			const baseUnreadMessageId = lastSeenAtBottomRef.current || lastMessageUnreadId;
 			return messageIds.map((messageId, index) => {
 				const checkMessageTargetToMoved = msgIdJumpHightlight.current === messageId && messageId !== lastMessageId;
-				const messageReplyHighlight = (dataReferences?.messageRefId && dataReferences?.messageRefId === messageId) || false;
+				const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
 				const isSelected = selectedMessageId === messageId;
 				const isEditing = getIsEditing(messageId);
 				const previousMessageId = messageIds[index - 1];
@@ -1179,7 +1178,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			canSendMessage,
 			channelId,
 			channelLabel,
-			dataReferences?.messageRefId,
+			dataReferences?.message_ref_id,
 			entities,
 			idMessageNotified,
 			idMessageToJump?.id,
@@ -1260,7 +1259,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 				>
 					<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end">
 						{isTopic && firstMsgOfThisTopic && (
-							<div className={`fullBoxText relative group ${firstMsgOfThisTopic?.references?.[0]?.messageRefId ? 'pt-3' : ''}`}>
+							<div className={`fullBoxText relative group ${firstMsgOfThisTopic?.references?.[0]?.message_ref_id ? 'pt-3' : ''}`}>
 								<MessageWithUser
 									isTopic={isTopic}
 									allowDisplayShortProfile={true}

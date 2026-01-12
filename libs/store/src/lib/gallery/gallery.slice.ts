@@ -6,7 +6,7 @@ import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit'
 import type { AttachmentEntity } from '../attachment/attachments.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createCacheMetadata } from '../cache-metadata';
-import { ensureSession, getMezonCtx, timestampToString } from '../helpers';
+import { ensureSession, getMezonCtx } from '../helpers';
 
 export const GALLERY_FEATURE_KEY = 'gallery';
 
@@ -68,10 +68,7 @@ export const fetchGalleryAttachments = createAsyncThunk(
 			}
 
 			const attachments = response.attachments
-				.map((att) => ({
-					...att,
-					createTime: timestampToString(att.createTime)
-				}))
+
 				.filter((att) => {
 					if (mediaFilter === 'all') {
 						return att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
@@ -90,8 +87,8 @@ export const fetchGalleryAttachments = createAsyncThunk(
 					isVideo: attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX)
 				}))
 				.sort((a, b) => {
-					if (a.createTime && b.createTime) {
-						return Date.parse(b.createTime) - Date.parse(a.createTime);
+					if (a.createTimeSeconds && b.createTimeSeconds) {
+						return b.createTimeSeconds - a.createTimeSeconds;
 					}
 					return 0;
 				}) as AttachmentEntity[];

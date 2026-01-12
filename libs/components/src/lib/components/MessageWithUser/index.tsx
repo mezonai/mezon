@@ -16,8 +16,7 @@ import {
 	generateE2eId
 } from '@mezon/utils';
 import classNames from 'classnames';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
-import type { ApiMessageMention } from 'mezon-js/types';
+import { ChannelStreamMode } from 'mezon-js';
 import type { ReactNode } from 'react';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -97,7 +96,7 @@ function MessageWithUser({
 	const shortUserId = useRef('');
 	const isClickReply = useRef(false);
 	const checkAnonymous = message?.senderId === NX_CHAT_APP_ANNONYMOUS_USER_ID;
-	const checkAnonymousOnReplied = message?.references && message?.references[0]?.messageSenderId === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+	const checkAnonymousOnReplied = message?.references && message?.references[0]?.message_sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 	const showMessageHead = !(message?.references?.length === 0 && isCombine && !isShowFull);
 
 	const shouldShowForwardedText = useMemo(() => {
@@ -107,30 +106,26 @@ function MessageWithUser({
 
 		if (!previousMessage?.content?.fwd) return true;
 
-		const timeDiff = Date.parse(message.createTime) - Date.parse(previousMessage.createTime);
+		const timeDiff = (message.createTimeSeconds || 0) - (previousMessage.createTimeSeconds || 0);
 		const isDifferentSender = message.senderId !== previousMessage.senderId;
 		const isTimeGap = timeDiff > 600000;
 
 		return isDifferentSender || isTimeGap;
 	}, [message, previousMessage]);
 
-	const checkReplied = userId && message?.references && message?.references[0]?.messageSenderId === userId;
+	const checkReplied = userId && message?.references && message?.references[0]?.message_sender_id === userId;
 
 	const hasIncludeMention = (() => {
 		if (!userId) return false;
 		if (typeof message?.content?.t == 'string') {
-			if (message?.mentions?.some((mention) => mention?.userId === ID_MENTION_HERE)) return true;
+			if (Array.isArray(message?.mentions) && message?.mentions?.some((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
 		}
-		if (typeof message?.mentions === 'string') {
-			const parsedMentions = safeJSONParse(message?.mentions) as ApiMessageMention[] | undefined;
-			const userIdMention = userId;
-			const includesUser = parsedMentions?.some((mention) => mention?.userId === userIdMention);
-			const includesRole = parsedMentions?.some((item) => user?.roleId?.includes(item?.roleId as string));
-			return includesUser || includesRole;
+		if (!Array.isArray(message?.mentions)) {
+			return false;
 		}
 		const userIdMention = userId;
-		const includesUser = message?.mentions?.some((mention) => mention?.userId === userIdMention);
-		const includesRole = message?.mentions?.some((item) => user?.roleId?.includes(item?.roleId as string));
+		const includesUser = message?.mentions?.some((mention) => mention?.user_id === userIdMention);
+		const includesRole = message?.mentions?.some((item) => user?.roleId?.includes(item?.role_id as string));
 		return includesUser || includesRole;
 	})();
 
@@ -191,7 +186,7 @@ function MessageWithUser({
 					classBanner="rounded-tl-lg rounded-tr-lg h-[105px]"
 					message={message}
 					mode={mode}
-					avatar={isClickReply.current ? message?.references?.[0]?.mesagesSenderAvatar : message?.clanAvatar || message?.avatar}
+					avatar={isClickReply.current ? message?.references?.[0]?.message_sender_avatar : message?.clanAvatar || message?.avatar}
 					name={message?.clanNick || message?.displayName || message?.username}
 					isDM={isDM}
 					checkAnonymous={isAnonymousOnModal}
@@ -218,7 +213,7 @@ function MessageWithUser({
 							'mt-[10px]': !isCombine
 						},
 						{
-							'pt-3': !isCombine || (message.code !== TypeMessage.CreatePin && message.references?.[0]?.messageRefId)
+							'pt-3': !isCombine || (message.code !== TypeMessage.CreatePin && message.references?.[0]?.message_ref_id)
 						},
 						{
 							'bg-highlight-no-hover':
@@ -241,7 +236,7 @@ function MessageWithUser({
 							'max-w-[37rem] bg-tertiary border-theme-primary rounded-lg mx-2 my-1 p-3': message.content?.isCard
 						}
 					)}
-					createTime={message.createTime}
+					createTime={message.createTimeSeconds || 0}
 					showMessageHead={showMessageHead}
 				>
 					{shouldRenderMessageReply && (
@@ -253,7 +248,7 @@ function MessageWithUser({
 									? () => {}
 									: (e) => {
 											isClickReply.current = true;
-											handleOpenShortUser(e, message?.references?.[0]?.messageSenderId as string, checkAnonymousOnReplied);
+											handleOpenShortUser(e, message?.references?.[0]?.message_sender_id as string, checkAnonymousOnReplied);
 										}
 							}
 							isAnonymousReplied={checkAnonymousOnReplied}
@@ -401,7 +396,7 @@ function MessageWithUser({
 
 const MessageDateDivider = ({ message }: { message: MessagesEntity }) => {
 	const { t, i18n } = useTranslation('common');
-	const messageDate = !message.createTime ? '' : convertDateStringI18n(message.createTime as string, t, i18n.language);
+	const messageDate = !message.createTimeSeconds ? '' : convertDateStringI18n(message.createTimeSeconds, t, i18n.language);
 	return (
 		<div className="mt-5 mb-2  w-full h-px flex items-center justify-center border-b-theme-primary">
 			<span className="px-4 bg-item text-theme-primary text-xs font-semibold bg-theme-primary rounded-lg ">{messageDate}</span>
@@ -416,7 +411,7 @@ interface HoverStateWrapperProps {
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
 	messageId?: string;
 	className?: string;
-	createTime?: string;
+	createTime?: number;
 	showMessageHead?: boolean;
 	channelId: string;
 }

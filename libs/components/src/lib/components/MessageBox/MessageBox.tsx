@@ -42,7 +42,7 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 	const { removeAttachmentByIndex, checkAttachment, attachmentFilteredByChannelId } = useReference(props.currentChannelId);
 	const hasReplyMessage = useSelector((state) => {
 		const dataRefs = selectDataReferences(state, currentChannelId ?? '');
-		return !!dataRefs?.messageRefId;
+		return !!dataRefs?.message_ref_id;
 	});
 
 	const { setOverUploadingState } = useDragAndDrop();

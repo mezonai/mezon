@@ -43,6 +43,7 @@ import {
 	processFile
 } from '@mezon/utils';
 import isElectron from 'is-electron';
+import type { ApiCreateChannelDescRequest } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/types';
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
@@ -127,16 +128,13 @@ const ThreadBox = () => {
 				return;
 			}
 
-			const timestamp = Date.now() / 1000;
-			const body: Record<string, unknown> = {
+			const body: ApiCreateChannelDescRequest = {
 				clanId: currentClanId?.toString(),
 				channelLabel: value.nameValueThread,
 				channelPrivate: value.isPrivate,
 				parentId: idParent,
 				categoryId: currentChannelCategoryId,
-				type: ChannelType.CHANNEL_TYPE_THREAD,
-				lastSeenTimestamp: timestamp,
-				lastSentTimestamp: timestamp
+				type: ChannelType.CHANNEL_TYPE_THREAD
 			};
 
 			const thread = await dispatch(createNewChannel(body));

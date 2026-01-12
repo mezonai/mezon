@@ -1,65 +1,55 @@
-import { getShowName, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification } from '@mezon/core';
+import { getShowName, getTagById, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification } from '@mezon/core';
 import { selectChannelById, selectClanById, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
 import type { IMentionOnMessage, IMessageWithUser, INotification } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
 	NotificationCategory,
 	TOPBARS_MAX_WIDTH,
-	TypeMessage,
-	addMention,
 	convertTimeString,
 	createImgproxyUrl,
 	generateE2eId
 } from '@mezon/utils';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
+import type { NotificationFcmContent } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationJump } from '../../hooks/useNotificationJump';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import MessageAttachment from '../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../MessageWithUser/MessageLine';
-import MessageReply from '../MessageWithUser/MessageReply/MessageReply';
 import getPendingNames from '../MessageWithUser/usePendingNames';
 export type NotifyMentionProps = {
 	readonly notify: INotification;
 	onCloseTooltip?: () => void;
 };
 
-function convertContentToObject(notify: INotification) {
-	if (notify && notify.content && typeof notify.content === 'object') {
-		try {
-			const parsedContent = {
-				...notify.content,
-				content: notify.content.content ? safeJSONParse(notify.content.content) : null,
-				mentions: notify.content.mentions ? safeJSONParse(notify.content.mentions) : null,
-				reactions: notify.content.reactions ? safeJSONParse(notify.content.reactions) : null,
-				references: notify.content.references ? safeJSONParse(notify.content.references) : null,
-				attachments: notify.content.attachments ? safeJSONParse(notify.content.attachments) : null,
-				createTime: notify.createTime
-			};
-
-			return {
-				...notify,
-				content: parsedContent
-			};
-		} catch (error) {
-			return notify;
-		}
-	}
-	return notify;
-}
-
 function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	const { t } = useTranslation('channelTopbar');
-	const parseNotify = useMemo(() => convertContentToObject(notify), [notify]);
-	const messageId = parseNotify.content.messageId;
-	const channelId = parseNotify.content.channelId;
-	const clanId = parseNotify.content.clanId;
-	const mode = parseNotify?.content?.mode - 1;
+	const channelJump = getTagById(notify?.channelId);
+	const mode = useMemo<ChannelStreamMode>(() => {
+		if (!channelJump) {
+			return ChannelStreamMode.STREAM_MODE_CHANNEL;
+		}
 
-	const topicId = parseNotify?.content?.topicId;
+		switch (channelJump.type) {
+			case ChannelType.CHANNEL_TYPE_CHANNEL:
+				return ChannelStreamMode.STREAM_MODE_CHANNEL;
+			case ChannelType.CHANNEL_TYPE_THREAD:
+				return ChannelStreamMode.STREAM_MODE_THREAD;
+			case ChannelType.CHANNEL_TYPE_GROUP:
+				return ChannelStreamMode.STREAM_MODE_GROUP;
+			default:
+				return ChannelStreamMode.STREAM_MODE_DM;
+		}
+	}, [channelJump]);
+	const message = notify?.content;
+	const messageId = message?.messageId;
+	const channelId = notify?.channelId;
+	const clanId = message?.clanId;
 
-	const isTopic = Number(topicId) !== 0 || parseNotify?.content?.code === TypeMessage.Topic;
+	const topicId = notify?.topicId || '';
+
+	const isTopic = !!topicId;
 
 	const { handleClickJump } = useNotificationJump({
 		messageId,
@@ -82,22 +72,22 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	};
 
 	const allTabProps = {
-		message: parseNotify.content,
-		subject: parseNotify.subject,
-		category: parseNotify.category,
-		senderId: parseNotify.senderId
+		message,
+		subject: notify.subject,
+		category: notify.category,
+		senderId: notify?.content?.senderId
 	};
 
 	return (
 		<div className=" bg-transparent rounded-[8px] relative group">
 			<button
-				onClick={(event) => handleDeleteNotification(event, parseNotify.id, parseNotify.category as NotificationCategory)}
+				onClick={(event) => handleDeleteNotification(event, notify.id, notify.category as NotificationCategory)}
 				className="absolute top-1 right-1 flex items-center justify-center w-5 h-5 rounded-full bg-item-theme-hover text-theme-primary hover:text-red-500 text-sm font-bold shadow-md transition-all  hover:scale-110 active:scale-95"
 			>
 				✕
 			</button>
 
-			{parseNotify.category === NotificationCategory.MENTIONS && (
+			{notify.category === NotificationCategory.MENTIONS && (
 				<button
 					className="absolute py-1 px-2 bottom-[10px] z-50 right-3 text-[10px] rounded-lg border-theme-primary transition-all duration-300 group-hover:block hidden bg-item-theme"
 					onClick={handleClickJump}
@@ -105,7 +95,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 					{t('tooltips.jump')}
 				</button>
 			)}
-			{<AllTabContent {...allTabProps} />}
+			{message && <AllTabContent {...allTabProps} message={message} />}
 		</div>
 	);
 }
@@ -113,7 +103,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 export default AllNotificationItem;
 
 interface IMentionTabContent {
-	message: IMessageWithUser;
+	message: NotificationFcmContent;
 	subject?: string;
 	category?: number;
 	senderId?: string;
@@ -121,15 +111,10 @@ interface IMentionTabContent {
 
 function AllTabContent({ message, subject, category, senderId }: IMentionTabContent) {
 	const { t } = useTranslation('channelTopbar');
-	const contentUpdatedMention = addMention(message?.content, message?.mentions as IMentionOnMessage[]);
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.senderId);
+	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.senderId || '');
 
-	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channelId)) || {};
+	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channelId || '')) || {};
 	const parentChannel = useAppSelector((state) => selectChannelById(state, currentChannel.parentId || '')) || {};
-
-	const checkMessageHasReply = useMemo(() => {
-		return message.references && message.references?.length > 0;
-	}, [message.references]);
 
 	const clan = useAppSelector(selectClanById(message.clanId as string));
 	const user = useAppSelector((state) => selectMemberDMByUserId(state, senderId ?? ''));
@@ -141,16 +126,22 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 		const usernameLenght = username.length;
 		subjectText = subject?.slice(usernameLenght);
 	}
-	const isChannel = message.mode === ChannelStreamMode.STREAM_MODE_CHANNEL;
+	const isChannel = currentChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL;
+
+	const mentions = useMemo<IMentionOnMessage[]>(() => {
+		const mention = message.mentionIds?.map((item, index) => {
+			return {
+				e: message.positionE?.[index],
+				s: message.positionS?.[index],
+				roleId: message.isMentionRole?.[index] ? item : '',
+				userId: message.isMentionRole?.[index] ? '' : item
+			};
+		});
+		return mention || [];
+	}, [message.mentionIds]);
 
 	return (
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg overflow-hidden">
-			{checkMessageHasReply && (
-				<div className="max-w-full overflow-hidden">
-					<MessageReply message={message} />
-				</div>
-			)}
-
 			<div className="flex flex-row items-start p-1 w-full gap-4 rounded-lg ">
 				<AvatarImage
 					alt="user avatar"
@@ -173,19 +164,19 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 										<span className="uppercase truncate max-w-[120px] overflow-hidden whitespace-nowrap">{clan.clanName}</span>
 										<span>{'>'}</span>
 										<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap uppercase">
-											{isChannel ? message.categoryName : parentChannel.categoryName}
+											{isChannel ? currentChannel.categoryName : parentChannel.categoryName}
 										</span>
 									</div>
 
 									<div className="flex items-center gap-1 min-w-0 text-[13px]">
 										<span className="truncate max-w-[120px] overflow-hidden whitespace-nowrap">
-											{isChannel ? `#${message.channelLabel}` : `#${parentChannel.channelLabel}`}
+											{isChannel ? `#${currentChannel.channelLabel}` : `#${parentChannel.channelLabel}`}
 										</span>
 										{!isChannel && (
 											<>
 												<span>{'>'}</span>
 												<span className="truncate max-w-[130px] overflow-hidden whitespace-nowrap">
-													{`${message.channelLabel}`}
+													{`${currentChannel.channelLabel}`}
 												</span>
 											</>
 										)}
@@ -202,30 +193,29 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 					</div>
 					{category === NotificationCategory.MENTIONS || category === NotificationCategory.MESSAGES ? (
 						<div className="w-[85%] max-w-[85%]" data-e2e={generateE2eId('chat.channel_message.inbox.mentions')}>
-							<MessageHead message={message} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
+							<MessageHead message={message as IMessageWithUser} mode={ChannelStreamMode.STREAM_MODE_CHANNEL} />
 							<MessageLine
 								messageId={message.messageId}
 								isEditted={false}
-								content={contentUpdatedMention}
+								content={{
+									mentions: mentions || [],
+									t: message.content
+								}}
 								isTokenClickAble={false}
 								isJumMessageEnabled={false}
 							/>
-							{Array.isArray(message.attachments) && message.attachments.length > 0 && (
+							{message.attachmentLink && (
 								<div>
 									<div className="max-h-[150px] max-w-[150px] overflow-hidden rounded-lg">
 										<div>
 											<MessageAttachment
 												mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-												message={{ ...message, attachments: [message.attachments[0]] }}
+												message={{ ...(message as IMessageWithUser), attachments: [{ url: message.attachmentLink }] }}
 												defaultMaxWidth={TOPBARS_MAX_WIDTH}
 											/>
 										</div>
 									</div>
-									{message.attachments.length > 1 && (
-										<div className="text-xs text-zinc-400 mt-1 ml-1">
-											+{message.attachments.length - 1} {t(message.attachments.length - 1 === 1 ? 'moreFile' : 'moreFiles')}
-										</div>
-									)}
+									{message.hasMoreAttachment && <div className="text-xs text-zinc-400 mt-1 ml-1">{t('moreFiles')}</div>}
 								</div>
 							)}
 						</div>
@@ -235,7 +225,9 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 								<span className="font-bold">{user?.displayName || username}</span>
 								<span>{subjectText}</span>
 							</div>
-							<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.createTime as string)}</span>
+							{message?.createTimeSeconds && (
+								<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.createTimeSeconds)}</span>
+							)}
 						</div>
 					)}
 				</div>
@@ -252,7 +244,7 @@ type IMessageHeadProps = {
 
 // fix later
 const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
-	const messageTime = convertTimeString(message?.createTime as string);
+	const messageTime = message?.createTimeSeconds ? convertTimeString(message?.createTimeSeconds) : '';
 	const usernameSender = message?.username;
 	const clanNick = message?.clanNick;
 	const displayName = message?.displayName;

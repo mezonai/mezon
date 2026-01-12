@@ -57,7 +57,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 							userIds: [currentUser?.id || '', userId],
 							usernames: [currentUser?.username || '', username],
 							displayNames: [currentUser?.displayName || '', displayName],
-							avatars: [currentUser?.avatarUrl || avatar, ''],
+							avatars: [currentUser?.avatarUrl || '', avatar],
 							onlines: [true, false]
 						}
 					])

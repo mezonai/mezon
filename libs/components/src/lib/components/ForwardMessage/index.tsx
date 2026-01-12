@@ -203,8 +203,8 @@ const ForwardMessageModal = () => {
 		let index = startIndex + 1;
 		while (
 			index < allMessageIds.length &&
-			Date.parse(allMessagesEntities?.[allMessageIds[index]]?.createTime) -
-				Date.parse(allMessagesEntities?.[allMessageIds[index]]?.createTime) <
+			(allMessagesEntities?.[allMessageIds[index]]?.createTimeSeconds || 0) -
+				(allMessagesEntities?.[allMessageIds[index]]?.createTimeSeconds || 0) <
 				FOR_1_HOUR_SEC &&
 			allMessagesEntities?.[allMessageIds[index]]?.senderId === selectedMessage?.user?.id
 		) {
@@ -496,8 +496,8 @@ const ForwardMessageModal = () => {
 		let index = startIndex + 1;
 		while (
 			index < allMessageIds.length &&
-			Date.parse(allMessagesEntities?.[allMessageIds[index]]?.createTime) -
-				Date.parse(allMessagesEntities?.[allMessageIds[index]]?.createTime) <
+			(allMessagesEntities?.[allMessageIds[index]]?.createTimeSeconds || 0) -
+				(allMessagesEntities?.[allMessageIds[index]]?.createTimeSeconds || 0) <
 				FOR_1_HOUR_SEC &&
 			allMessagesEntities?.[allMessageIds[index]]?.senderId === selectedMessage?.user?.id
 		) {

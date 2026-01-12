@@ -293,6 +293,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		const session = await clientRef.current.checkLoginRequest(LoginRequest);
 		const config = extractAndSaveConfig(session, isFromMobile);
 		if (config) {
+			console.log(config, 'config checkLoginRequest');
 			clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 		}
 
@@ -327,6 +328,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 			const config = extractAndSaveConfig(session, isFromMobile);
 			if (config) {
+				console.log(config, 'config authenticateMezon');
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
 
@@ -354,6 +356,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 			const config = extractAndSaveConfig(session);
 			if (config) {
+				console.log(config, 'config authenticateEmail');
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
 
@@ -398,6 +401,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 			const config = extractAndSaveConfig(session);
 			if (config) {
+				console.log(config, 'config confirmAuthenticateOTP');
 				clientRef.current.setBasePath(config.host, config.port, config.useSSL);
 			}
 
@@ -448,6 +452,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				sessionRef.current = null;
 				if (clearSession) {
 					clearSessionFromStorage();
+					console.log('setBasePath logout');
 					clientRef.current.setBasePath(
 						process.env.NX_CHAT_APP_API_GW_HOST as string,
 						process.env.NX_CHAT_APP_API_GW_PORT as string,

@@ -1,4 +1,3 @@
-import type { Timestamp } from '@bufbuild/protobuf/wkt';
 import { captureSentryError } from '@mezon/logger';
 import type { IEventManagement, LoadingStatus } from '@mezon/utils';
 import { EEventAction, EEventStatus, ERepeatType } from '@mezon/utils';
@@ -16,7 +15,7 @@ import { selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
+import { convertGoogleTimestamp, ensureSession, fetchDataWithSocketFallback, getMezonCtx, timestampToString } from '../helpers';
 import type { RootState } from '../store';
 
 export const EVENT_MANAGEMENT_FEATURE_KEY = 'eventmanagement';
@@ -56,11 +55,11 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 		{
 			api_name: 'ListEvents',
 			list_event_req: {
-				clanId
+				clan_id: clanId
 			}
 		},
 		() => ensuredMezon.client.listEvents(ensuredMezon.session, clanId),
-		'event_list'
+		'eventList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -171,8 +170,8 @@ export const fetchCreateEventManagement = createAsyncThunk(
 				channelVoiceId: channelVoiceId || '',
 				address: address || '',
 				title: title || '',
-				startTime: startTime as unknown as Timestamp | undefined,
-				endTime: endTime as unknown as Timestamp | undefined,
+				startTimeSeconds: startTime ? Number(convertGoogleTimestamp(startTime).seconds) : 0,
+				endTimeSeconds: endTime ? Number(convertGoogleTimestamp(endTime).seconds) : 0,
 				description: description || '',
 				logo: logo || '',
 				channelId: channelId || '',
@@ -184,6 +183,7 @@ export const fetchCreateEventManagement = createAsyncThunk(
 				userId,
 				isPrivate
 			};
+
 			const response = await mezon.client.createEvent(mezon.session, body);
 
 			return response;
@@ -228,9 +228,9 @@ export const updateEventManagement = createAsyncThunk(
 				channelVoiceId: channelVoiceId || '',
 				eventId: eventId || '',
 				description: description || '',
-				endTime: endTime as unknown as Timestamp | undefined,
+				endTimeSeconds: endTime ? Number(convertGoogleTimestamp(endTime).seconds) : 0,
 				logo: logo || '',
-				startTime: startTime as unknown as Timestamp | undefined,
+				startTimeSeconds: startTime ? Number(convertGoogleTimestamp(startTime).seconds) : 0,
 				title: title || '',
 				channelId: channelId || '',
 				clanId: clanId || '',

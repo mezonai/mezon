@@ -1,8 +1,6 @@
 // eslint-disable-next-line @nx/enforce-module-boundaries
-import { ChannelsEntity } from '@mezon/store-mobile';
-import {
-	EBacktickType,
-	ETokenMessage,
+import type { ChannelsEntity } from '@mezon/store-mobile';
+import type {
 	IEmojiOnMessage,
 	IExtendedMessage,
 	IHashtagOnMessage,
@@ -12,7 +10,9 @@ import {
 	IMentionOnMessage,
 	IMessageWithUser
 } from '@mezon/utils';
-import { ChannelStreamMode, HashtagDm } from 'mezon-js';
+import { EBacktickType, ETokenMessage } from '@mezon/utils';
+import type { HashtagDm } from 'mezon-js';
+import { ChannelStreamMode } from 'mezon-js';
 
 export const convertMentionsToText = (text: string) => {
 	if (!text) {
@@ -31,21 +31,6 @@ export const convertMentionsToText = (text: string) => {
 			return match;
 		}
 	});
-};
-export const convertMentionsToData = (text: string) => {
-	const mentionPattern = /({@}|{#})\[([^\]]+)\]\((\d+)\)/g;
-	const result = [];
-	let match;
-	while ((match = mentionPattern.exec(text)) !== null) {
-		const prefix = match[1];
-		const mention = match[2];
-		const id = match[3];
-		result.push({
-			id: id,
-			display: `${prefix === '{@}' ? '@' : '#'}${mention}`
-		});
-	}
-	return result;
 };
 
 export const getChannelHashtag = (hashtagDmEntities: HashtagDm[], channelsEntities: ChannelsEntity[], mode: number, channelLabel: string) => {
@@ -73,7 +58,7 @@ type ElementToken =
 export const createFormattedString = (data: IExtendedMessage) => {
 	const { t = '' } = data;
 	const elements: ElementToken[] = (Object.keys(data) as (keyof IExtendedMessage)[])
-		.flatMap((key) => (Array.isArray(data[key]) ? data[key].map((item) => item && { ...item, kindOf: key }) : []))
+		.flatMap((key) => (Array.isArray(data[key]) ? data?.[key]?.map?.((item: any) => item && { ...item, kindOf: key }) : []))
 		.filter(Boolean) as ElementToken[];
 	elements?.sort((a, b) => (a.s ?? 0) - (b.s ?? 0));
 	let formatContentDraft = '';
@@ -88,8 +73,8 @@ export const createFormattedString = (data: IExtendedMessage) => {
 
 		switch (element.kindOf) {
 			case ETokenMessage.MENTIONS:
-				if (element.userId || element.roleId) {
-					const id = element.userId ?? element.roleId;
+				if (element.user_id || element.role_id) {
+					const id = element.user_id ?? element.role_id;
 					formatContentDraft += `{@}[${contentInElement.slice(1)}](${id})`;
 				}
 				break;
@@ -101,7 +86,11 @@ export const createFormattedString = (data: IExtendedMessage) => {
 				formatContentDraft += contentInElement;
 				break;
 			case ETokenMessage.MARKDOWNS:
-				if (element?.type === EBacktickType.LINKYOUTUBE || element?.type === EBacktickType.LINK || element?.type === EBacktickType.VOICE_LINK) {
+				if (
+					element?.type === EBacktickType.LINKYOUTUBE ||
+					element?.type === EBacktickType.LINK ||
+					element?.type === EBacktickType.VOICE_LINK
+				) {
 					formatContentDraft += contentInElement?.replace(/^```|```$/g, '');
 				} else if (element?.type === EBacktickType.PRE || element?.type === EBacktickType.TRIPLE) {
 					formatContentDraft += '```' + contentInElement?.replace(/^```|```$/g, '') + '```';

@@ -35,6 +35,7 @@ import {
 	selectDmChannelPrivateById,
 	selectDmCreatorIdById,
 	selectDmGroupCurrentId,
+	selectInitTopicMessageId,
 	selectMessageByMessageId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId,
@@ -176,6 +177,7 @@ function MessageContextMenu({
 		selectMessageEntitiesByChannelId(state, (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmChannelId) || '')
 	);
 	const allMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, (isClanView ? currentChannelId : currentDmId) as string));
+	const topicMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, currentTopicId || ''));
 	const dispatch = useAppDispatch();
 
 	const handleItemClick = useCallback(() => {
@@ -189,6 +191,7 @@ function MessageContextMenu({
 	const isOwnerGroupDM = useIsOwnerGroupDM();
 	const { reactionMessageDispatch } = useChatReaction();
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
+	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 
 	const isMyMessage = useMemo(() => {
 		return message?.senderId === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
@@ -315,12 +318,16 @@ function MessageContextMenu({
 		const isSameSenderWithNextMessage = currentMessage?.senderId === nextMessage?.senderId;
 		const isSameSenderWithPreviousMessage = currentMessage?.senderId === previousMessage?.senderId;
 
-		const isNextMessageWithinTimeLimit = nextMessage
-			? Date.parse(nextMessage?.createTime) - Date.parse(currentMessage?.createTime) < FORWARD_MESSAGE_TIME
-			: false;
-		const isPreviousMessageWithinTimeLimit = previousMessage
-			? Date.parse(currentMessage?.createTime) - Date.parse(previousMessage?.createTime) < FORWARD_MESSAGE_TIME
-			: false;
+		const isNextMessageWithinTimeLimit =
+			nextMessage?.createTimeSeconds &&
+			currentMessage?.createTimeSeconds &&
+			nextMessage?.createTimeSeconds - currentMessage?.createTimeSeconds < FORWARD_MESSAGE_TIME;
+
+		const isPreviousMessageWithinTimeLimit =
+			previousMessage.createTimeSeconds &&
+			currentMessage?.createTimeSeconds &&
+			currentMessage?.createTimeSeconds - previousMessage?.createTimeSeconds < FORWARD_MESSAGE_TIME;
+
 		return (isPreviousMessageWithinTimeLimit && isSameSenderWithPreviousMessage) || (isSameSenderWithNextMessage && isNextMessageWithinTimeLimit);
 	}, [allMessageIds, allMessagesEntities, messagePosition]);
 	const handleReplyMessage = useCallback(() => {
@@ -331,18 +338,18 @@ function MessageContextMenu({
 			referencesActions.setDataReferences({
 				channelId: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 				dataReferences: {
-					messageRefId: message.id,
-					refType: 0,
-					messageSenderId: message.senderId,
+					message_ref_id: message.id,
+					ref_type: 0,
+					message_sender_id: message.senderId,
 					content: JSON.stringify(message.content ?? '{}'),
-					messageSenderUsername: message.username,
-					mesagesSenderAvatar: message.clanAvatar ? message.clanAvatar : message.avatar,
-					messageSenderClanNick: message.clanNick,
-					messageSenderDisplayName: message.displayName,
-					hasAttachment: (message.attachments && message.attachments?.length > 0) ?? false,
-					channelId: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
+					message_sender_username: message.username,
+					message_sender_avatar: message.clanAvatar ? message.clanAvatar : message.avatar,
+					message_sender_clan_nick: message.clanNick,
+					message_sender_display_name: message.displayName,
+					has_attachment: (message.attachments && message.attachments?.length > 0) ?? false,
+					channel_id: message.topicId && message.topicId !== '0' ? message.topicId : message.channelId,
 					mode: message.mode ?? 0,
-					channelLabel: message.channelLabel
+					channel_label: message.channelLabel
 				}
 			})
 		);
@@ -572,6 +579,8 @@ function MessageContextMenu({
 
 	const enableDelMessageItem = useMemo(() => {
 		if (!checkPos || message?.content?.tp) return false;
+		if (messageId === initTopicMessageId) return false;
+		if (isTopic && topicMessageIds?.length > 0 && messageId === topicMessageIds[0]) return false;
 		if (isMyMessage) {
 			return true;
 		}
@@ -582,7 +591,19 @@ function MessageContextMenu({
 		if (activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL || activeMode === ChannelStreamMode.STREAM_MODE_THREAD) {
 			return canDeleteMessage;
 		}
-	}, [activeMode, type, canDeleteMessage, isMyMessage, checkPos, isOwnerGroupDM, message?.content?.tp]);
+	}, [
+		activeMode,
+		type,
+		canDeleteMessage,
+		isMyMessage,
+		checkPos,
+		isOwnerGroupDM,
+		message?.content?.tp,
+		messageId,
+		initTopicMessageId,
+		isTopic,
+		topicMessageIds
+	]);
 
 	const checkElementIsImage = elementTarget instanceof HTMLImageElement;
 	const checkElementIsLink = elementTarget instanceof HTMLAnchorElement;

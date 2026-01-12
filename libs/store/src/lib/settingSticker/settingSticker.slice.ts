@@ -87,7 +87,7 @@ export const fetchStickerByUserIdCached = async (getState: () => RootState, ensu
 			api_name: 'GetListStickersByUserId'
 		},
 		() => ensuredMezon.client.getListStickersByUserId(ensuredMezon.session),
-		'sticker_list'
+		'stickerList'
 	);
 
 	markApiFirstCalled(apiKey);

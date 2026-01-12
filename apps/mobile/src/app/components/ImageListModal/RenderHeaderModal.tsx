@@ -28,7 +28,7 @@ import { style } from './styles';
 
 interface IRenderFooterModalProps {
 	visible: boolean;
-	imageSelected?: AttachmentEntity & { channelId?: string; clanId?: string };
+	imageSelected?: AttachmentEntity & { channelId?: string; clanId?: string; createTimeSeconds?: number };
 	onImageSaved?: () => void;
 	onLoading?: (isLoading: boolean) => void;
 	onImageCopy?: (error?: string) => void;
@@ -223,7 +223,9 @@ export const RenderHeaderModal = memo(
 								{prioritySenderName}
 							</Text>
 							<Text style={styles.dateMessageBox}>
-								{imageSelected?.createTime ? convertTimeString(imageSelected.createTime, t) : ''}
+								{imageSelected?.createTime || imageSelected?.createTimeSeconds
+									? convertTimeString(imageSelected?.createTime ?? imageSelected.createTimeSeconds * 1000, t)
+									: ''}
 							</Text>
 						</View>
 					</View>

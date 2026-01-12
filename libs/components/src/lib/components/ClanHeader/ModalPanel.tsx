@@ -51,7 +51,7 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 			onClick={(e) => e.stopPropagation()}
 			className=" p-2 text-theme-primary rounded-lg w-[250px] shadow-shadowBorder absolute left-1/2 top-[58px] z-[9999] transform translate-x-[-50%] bg-theme-contexify"
 		>
-			<div className="flex flex-col pb-1 mb-1 border-b-[0.08px] border-b-theme-primary last:border-b-0 last:mb-0 last:pb-0">
+			<div className="flex flex-col pb-1 mb-1 border-b-theme-primary last:border-b-0 last:mb-0 last:pb-0 no-divider-last">
 				{canManageClan && (
 					<ItemModal
 						className="text-theme-primary-hover bg-item-theme-hover"
@@ -91,7 +91,9 @@ const ModalPanel: React.FC<ModalPanelProps> = ({
 					className="flex items-center w-full justify-between rounded-sm  text-theme-primary-hover bg-item-hover pr-2"
 					data-e2e={generateE2eId(`clan_page.header.modal_panel.item`)}
 				>
-					<li className="text-[14px] font-medium flex-1 py-[6px] px-[8px] text-left cursor-pointer list-none">{t('modalPanel.showEmptyCategories')}</li>
+					<li className="text-[14px] font-medium flex-1 py-[6px] px-[8px] text-left cursor-pointer list-none">
+						{t('modalPanel.showEmptyCategories')}
+					</li>
 					<input
 						className="peer relative h-3 w-6 cursor-pointer appearance-none rounded-lg
                             bg-slate-300 transition-colors after:absolute after:top-0 after:left-0 after:h-3 after:w-3 after:rounded-full

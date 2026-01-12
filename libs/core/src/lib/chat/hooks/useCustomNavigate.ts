@@ -5,8 +5,12 @@ export const useCustomNavigate = () => {
 	const { navigator } = useContext(UNSAFE_NavigationContext);
 
 	return useCallback(
-		(to: any) => {
-			navigator.push(to);
+		(to: any, replace?: boolean) => {
+			if (replace) {
+				navigator.replace(to);
+			} else {
+				navigator.push(to);
+			}
 		},
 		[navigator]
 	);

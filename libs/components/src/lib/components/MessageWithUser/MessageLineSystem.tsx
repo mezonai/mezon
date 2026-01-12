@@ -52,11 +52,11 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	const getIdMessageToJump = useCallback(
 		(e: React.MouseEvent<HTMLDivElement | HTMLSpanElement>) => {
 			e.stopPropagation();
-			if (message?.references && message?.references[0]?.messageRefId) {
+			if (message?.references && message?.references[0]?.message_ref_id) {
 				dispatch(
 					messagesActions.jumpToMessage({
 						clanId: message?.clanId || '',
-						messageId: message?.references[0]?.messageRefId,
+						messageId: message?.references[0]?.message_ref_id,
 						channelId: message?.channelId
 					})
 				);
@@ -184,9 +184,11 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 						<>{threadContent}</>
 					))}
 			</div>
-			<div className="ml-1 max-2xl:ml-0 pt-[5px]  max-2xl:pt-0 text-theme-primary text-[10px] cursor-default">
-				{convertTimeStringI18n(message?.createTime as string, translateCommon, i18n.language)}
-			</div>
+			{message?.createTimeSeconds && (
+				<div className="ml-1 max-2xl:ml-0 pt-[5px]  max-2xl:pt-0 text-theme-primary text-[10px] cursor-default">
+					{convertTimeStringI18n(message?.createTimeSeconds, translateCommon, i18n.language)}
+				</div>
+			)}
 		</div>
 	);
 };

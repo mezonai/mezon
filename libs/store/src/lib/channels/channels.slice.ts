@@ -205,12 +205,12 @@ export const fetchChannelsCached = async (
 			list_channel_req: {
 				limit,
 				state,
-				channelType,
-				clanId
+				channel_type: channelType,
+				clan_id: clanId
 			}
 		},
 		() => ensuredMezon.client.listChannelDescs(ensuredMezon.session, limit, state, '', clanId, channelType),
-		'channel_desc_list'
+		'channelDescList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -243,11 +243,11 @@ export const fetchListFavoriteChannelCached = async (getState: () => RootState, 
 		{
 			api_name: 'GetListFavoriteChannel',
 			favorite_channel_req: {
-				clanId
+				clan_id: clanId
 			}
 		},
 		() => ensuredMezon.client.getListFavoriteChannel(ensuredMezon.session, clanId),
-		'favorite_channel_list'
+		'favoriteChannelList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -279,11 +279,11 @@ export const fetchAppChannelCached = async (getState: () => RootState, ensuredMe
 		{
 			api_name: 'ListChannelApps',
 			list_apps_req: {
-				clanId
+				clan_id: clanId
 			}
 		},
 		() => ensuredMezon.client.listChannelApps(ensuredMezon.session, clanId),
-		'channel_apps_list'
+		'channelAppsList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -412,11 +412,16 @@ export const createNewChannel = createAsyncThunk('channels/createNewChannel', as
 			channelPrivate: body.channelPrivate ?? 0,
 			userIds: body.userIds || [],
 			appId: body.appId || '',
-			type: body.type
+			type: body.type || 0
 		};
 		const response = await mezon.client.createChannelDesc(mezon.session, bodyWithTypeName);
 		if (response) {
-			thunkAPI.dispatch(channelsActions.add({ channel: { id: response.channelId as string, ...response }, clanId: response.clanId as string }));
+			thunkAPI.dispatch(
+				channelsActions.add({
+					channel: { id: response.channelId as string, ...response, lastSeenMessage: {}, lastSentMessage: {} },
+					clanId: response.clanId as string
+				})
+			);
 
 			if (response.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && response.type !== ChannelType.CHANNEL_TYPE_STREAMING) {
 				const channelEntity = { id: response.channelId as string, ...response } as ChannelsEntity;

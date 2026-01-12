@@ -95,11 +95,11 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 		{
 			api_name: 'ListCategoryDescs',
 			list_category_req: {
-				clanId
+				clan_id: clanId
 			}
 		},
 		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
-		'category_list'
+		'categoryList'
 	);
 
 	markApiFirstCalled(apiKey);

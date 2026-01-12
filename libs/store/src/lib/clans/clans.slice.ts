@@ -107,7 +107,7 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 			const targetClan = state.clans.entities[clanId];
 			const hasUnreadCount = (targetClan?.badgeCount ?? 0) > 0;
 			if (hasUnreadCount && !noCache) {
-				thunkAPI.dispatch(fetchClans({ noCache: true }));
+				thunkAPI.dispatch(listClanBadgeCount({ clanId }));
 			}
 
 			batch(() => {
@@ -180,7 +180,7 @@ export const fetchClansCached = async (
 			}
 		},
 		() => ensuredMezon.client.listClanDescs(ensuredMezon.session, limit, state, cursor || ''),
-		'clan_desc_list'
+		'clanDescList'
 	);
 
 	markApiFirstCalled(apiKey);
@@ -433,7 +433,13 @@ export const updateUser = createAsyncThunk(
 				encryptPrivateKey:
 					encryptPrivateKey && encryptPrivateKey !== currentUser?.encryptPrivateKey
 						? encryptPrivateKey
-						: currentUser?.encryptPrivateKey || ''
+						: currentUser?.encryptPrivateKey || '',
+				dobSeconds:
+					dob && dob !== currentUser?.user?.dob
+						? new Date(dob).getTime()
+						: currentUser?.user?.dob
+							? new Date(currentUser?.user?.dob).getTime()
+							: 0
 			};
 			const response = await mezon.client.updateAccount(mezon.session, bodyWithTypeName);
 			if (!response) {
@@ -573,11 +579,11 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 						{
 							api_name: 'ListClanUnreadMsgIndicator',
 							list_unread_msg_indicator_req: {
-								clanId
+								clan_id: clanId
 							}
 						},
 						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),
-						'unread_msg_indicator'
+						'unreadMsgIndicator'
 					);
 
 					if (response && response.hasUnreadMessage !== undefined) {
@@ -600,6 +606,36 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 		}
 	}
 );
+
+export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('clans/listClanBadgeCount', async ({ clanId }, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		const response = await fetchDataWithSocketFallback(
+			mezon,
+			{
+				api_name: 'ListClanBadgeCount',
+				list_clan_badge_count_req: {
+					clan_id: clanId
+				}
+			},
+			() => (mezon.client as any).listClanBadgeCount?.(mezon.session, clanId),
+			'clanBadgeCount'
+		);
+
+		if (response && (response as any).badgeCount !== undefined) {
+			thunkAPI.dispatch(
+				clansActions.setClanBadgeCount({
+					clanId,
+					badgeCount: (response as any).badgeCount
+				})
+			);
+		}
+	} catch (error) {
+		captureSentryError(error, 'clans/listClanBadgeCount');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
 
 export const initialClansState: ClansState = clansAdapter.getInitialState({
 	loadingStatus: 'not loaded',
@@ -776,6 +812,18 @@ export const clansSlice = createSlice({
 		},
 		removeByClanID: (state, action: PayloadAction<string>) => {
 			clansAdapter.removeOne(state, action.payload);
+		},
+		setClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; badgeCount: number }>) => {
+			const { clanId, badgeCount } = action.payload;
+			const entity = state.entities[clanId];
+			if (entity) {
+				clansAdapter.updateOne(state, {
+					id: clanId,
+					changes: {
+						badgeCount: Math.max(0, badgeCount)
+					}
+				});
+			}
 		},
 		updateClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; count: number; isReset?: boolean }>) => {
 			const { clanId, count, isReset } = action.payload;
@@ -984,7 +1032,8 @@ export const clansActions = {
 	joinClan,
 	transferClan,
 	updateHasUnreadBasedOnChannels,
-	listClanUnreadMsgIndicator
+	listClanUnreadMsgIndicator,
+	listClanBadgeCount
 };
 
 /*

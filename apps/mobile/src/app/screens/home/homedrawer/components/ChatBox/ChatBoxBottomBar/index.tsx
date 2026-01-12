@@ -374,7 +374,7 @@ export const ChatBoxBottomBar = memo(
 				const words = convertedHashtag?.split?.(mentionRegexSplit);
 
 				const mentionList: Array<{ userId: string; s: number; e: number }> = [];
-				const hashtagList: Array<{ channelid: string; s: number; e: number }> = [];
+				const hashtagList: Array<{ channelid: string; s: number; e: number; parentId?: string; clanId?: string; channelLabel?: string }> = [];
 
 				let mentionBeforeCount = 0;
 				let mentionBeforeHashtagCount = 0;
@@ -408,7 +408,7 @@ export const ChatBoxBottomBar = memo(
 						const channelLabel = channelName?.slice?.(2, -1);
 						const channelInfo = getChannelHashtag(listChannelHashtagDm, listChannel, mode, channelLabel);
 						const isThreadPublish =
-							channelInfo?.type === ChannelType.CHANNEL_TYPE_THREAD && channelInfo?.channel_private !== ChannelStatusEnum.isPrivate;
+							channelInfo?.type === ChannelType.CHANNEL_TYPE_THREAD && channelInfo?.channelPrivate !== ChannelStatusEnum.isPrivate;
 						mentionBeforeHashtagCount++;
 
 						if (channelInfo) {
@@ -417,8 +417,8 @@ export const ChatBoxBottomBar = memo(
 
 							hashtagList?.push?.({
 								channelid: channelInfo?.channelId?.toString() ?? '',
-								parentId: channelInfo?.parent_id?.toString() ?? '',
-								clanId: channelInfo?.clan_id?.toString() ?? '',
+								parentId: channelInfo?.parentId?.toString() ?? '',
+								clanId: channelInfo?.clanId?.toString() ?? '',
 								channelLabel: isThreadPublish && channelLabel ? channelLabel : '',
 								s: startindex - (mentionBeforeCount * 2 + (mentionBeforeHashtagCount - 1) * 2),
 								e: startindex + channelName.length - (mentionBeforeHashtagCount * 2 + mentionBeforeCount * 2)
