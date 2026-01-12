@@ -200,16 +200,16 @@ const Notifications = ({ navigation, route }) => {
 					await Promise.all(promises);
 
 					if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM || notify?.content?.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
-						let directIdToJump = notify?.content?.channel_id;
+						let directIdToJump = notify?.content?.channelId;
 						if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM && (!directById || directById?.active === 0)) {
 							const response = await createDirectMessageWithUser(
-								notify?.content?.sender_id,
-								notify?.content?.display_name,
+								notify?.content?.senderId,
+								notify?.content?.displayName,
 								notify?.content?.username,
 								notify?.content?.avatar
 							);
-							if (response?.channel_id) {
-								directIdToJump = response?.channel_id;
+							if (response?.channelId) {
+								directIdToJump = response?.channelId;
 							}
 						}
 						if (isTabletLandscape) {

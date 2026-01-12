@@ -11,7 +11,7 @@ import {
 	setSelectedMessage,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { ETypeLinkMedia, ID_MENTION_HERE, TypeMessage, isValidEmojiData } from '@mezon/utils';
+import { ETypeLinkMedia, ID_MENTION_HERE, isValidEmojiData, TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/types';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -148,19 +148,19 @@ const MessageItem = React.memo(
 			const currentClanUser = selectMemberClanByUserId(store.getState(), userId as string);
 
 			if (typeof message?.content?.t === 'string') {
-				if (message?.mentions?.some((mention) => mention?.userId === ID_MENTION_HERE)) return true;
+				if (message?.mentions?.some((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
 			}
 
 			if (typeof message?.mentions === 'string') {
 				const parsedMentions = safeJSONParse(message?.mentions) as ApiMessageMention[] | undefined;
-				const includesUser = parsedMentions?.some((mention) => mention?.userId === userId);
-				const includesRole = parsedMentions?.some((item) => currentClanUser?.roleId?.includes(item?.roleId as string));
+				const includesUser = parsedMentions?.some((mention) => mention?.user_id === userId);
+				const includesRole = parsedMentions?.some((item) => currentClanUser?.roleId?.includes(item?.role_id as string));
 				return includesUser || includesRole;
 			}
 
-			const includesUser = message?.mentions?.some((mention) => mention?.userId === userId);
-			const includesRole = message?.mentions?.some((item) => currentClanUser?.roleId?.includes(item?.roleId as string));
-			const checkReplied = userId && message?.references && message?.references[0]?.messageSenderId === userId;
+			const includesUser = message?.mentions?.some((mention) => mention?.user_id === userId);
+			const includesRole = message?.mentions?.some((item) => currentClanUser?.roleId?.includes(item?.role_id as string));
+			const checkReplied = userId && message?.references && message?.references[0]?.message_sender_id === userId;
 
 			return includesUser || includesRole || checkReplied;
 		}, [userId, message?.content?.t, message?.mentions, message?.references]);

@@ -161,8 +161,8 @@ const processText = (rawInputString: string, emojiObjPicked: any) => {
 						const store = getStore();
 						const channel = selectChannelById(store.getState(), channelId as string) as ChannelsEntity;
 						isThreadPublish =
-							channel?.type === ChannelType.CHANNEL_TYPE_THREAD && channel?.channel_private !== ChannelStatusEnum.isPrivate;
-						channelName = channel?.channel_label || '';
+							channel?.type === ChannelType.CHANNEL_TYPE_THREAD && channel?.channelPrivate !== ChannelStatusEnum.isPrivate;
+						channelName = channel?.channelLabel || '';
 					}
 
 					links.push({

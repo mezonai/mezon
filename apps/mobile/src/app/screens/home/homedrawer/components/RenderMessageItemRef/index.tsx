@@ -2,7 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import type { MessagesEntity } from '@mezon/store-mobile';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Text, View } from 'react-native';
+import { type ImageStyle, Text, View } from 'react-native';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import { style } from '../../styles';
@@ -21,11 +21,11 @@ export const RenderMessageItemRef = ({ channelId, message, preventAction, isSear
 	const { t } = useTranslation('message');
 	const styles = style(themeValue);
 	const messageReferences = message?.references?.[0];
-	const isMessageReplyDeleted = message?.references?.length && !message.references?.[0]?.messageRefId;
+	const isMessageReplyDeleted = message?.references?.length && !message.references?.[0]?.message_ref_id;
 
 	return (
 		<>
-			{!!messageReferences && !!messageReferences?.messageRefId && !isSearchTab && (
+			{!!messageReferences && !!messageReferences?.message_ref_id && !isSearchTab && (
 				<MessageReferences
 					messageReferences={messageReferences}
 					preventAction={preventAction}
@@ -43,7 +43,7 @@ export const RenderMessageItemRef = ({ channelId, message, preventAction, isSear
 							width={size.s_34}
 							height={size.s_30}
 							color={themeValue.text}
-							customStyle={styles.deletedMessageReplyIcon}
+							customStyle={styles.deletedMessageReplyIcon as ImageStyle}
 						/>
 					</View>
 					<View style={styles.iconMessageDeleteReply}>

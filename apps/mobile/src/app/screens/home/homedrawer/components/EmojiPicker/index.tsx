@@ -118,19 +118,19 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 		if (messageActionNeedToResolve?.type === EMessageActionType.Reply) {
 			const targetMessage = messageActionNeedToResolve?.targetMessage;
 			messageRef = {
-				messageId: '',
-				messageRefId: targetMessage?.id,
-				refType: 0,
-				messageSenderId: targetMessage?.senderId,
-				messageSenderUsername: targetMessage?.username,
-				mesagesSenderAvatar: targetMessage?.clanAvatar ? targetMessage?.clanAvatar : targetMessage?.avatar,
-				messageSenderClanNick: targetMessage?.clanNick,
-				messageSenderDisplayName: targetMessage?.displayName,
+				message_id: '',
+				message_ref_id: targetMessage?.id,
+				ref_type: 0,
+				message_sender_id: targetMessage?.senderId,
+				message_sender_username: targetMessage?.username,
+				message_sender_avatar: targetMessage?.clanAvatar ? targetMessage?.clanAvatar : targetMessage?.avatar,
+				message_sender_clan_nick: targetMessage?.clanNick,
+				message_sender_display_name: targetMessage?.displayName,
 				content: JSON.stringify(targetMessage?.content),
-				hasAttachment: Boolean(targetMessage?.attachments?.length),
-				channelId: targetMessage?.channelId ?? '',
+				has_attachment: Boolean(targetMessage?.attachments?.length),
+				channel_id: targetMessage?.channelId ?? '',
 				mode: targetMessage?.mode ?? 0,
-				channelLabel: targetMessage?.channelLabel
+				channel_label: targetMessage?.channelLabel
 			};
 		} else {
 			messageRef = {};

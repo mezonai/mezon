@@ -201,6 +201,7 @@ export const notificationSlice = createSlice({
 	name: NOTIFICATION_FEATURE_KEY,
 	initialState: initialNotificationState,
 	reducers: {
+		removeAll: notificationAdapter.removeAll,
 		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
 			const { data, category } = action.payload;
 

@@ -105,14 +105,15 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 
 		viewInfo: {
 			flexDirection: 'row',
-			alignItems: 'center'
+			alignItems: 'center',
+			paddingRight: size.s_6
 		},
 
 		textName: {
 			fontSize: size.s_20,
 			fontWeight: 'bold',
 			color: colors.textStrong,
-			marginRight: 10
+			marginRight: size.s_6
 		},
 
 		buttonList: {
