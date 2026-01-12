@@ -216,7 +216,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onvoiceended = useCallback(
 		(voice: VoiceEndedEvent) => {
 			if (voice) {
-				dispatch(voiceActions.voiceEnded(voice?.voiceChannelId));
+				dispatch(voiceActions.voiceEnded(voice?.voice_channel_id));
 			}
 		},
 		[dispatch]
@@ -227,10 +227,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			if (voice) {
 				const store = getStore();
 				const state = store.getState();
-				const voiceChannel = selectChannelById(state, voice.voiceChannelId);
+				const voiceChannel = selectChannelById(state, voice.voice_channel_id);
 				const voiceOfMe = selectVoiceInfo(state);
 				const currentUserId = selectCurrentUserId(state);
-				const hasJoinSoundEffect = voiceOfMe?.channelId === voice.voiceChannelId || currentUserId === voice.userId;
+				const hasJoinSoundEffect = voiceOfMe?.channelId === voice.voice_channel_id || currentUserId === voice.user_id;
 
 				if (voiceChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && hasJoinSoundEffect) {
 					const joinSoundElement = document.createElement('audio');
@@ -259,7 +259,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				dispatch(
 					voiceActions.add({
-						...voice
+						clanId: voice.clan_id,
+						clanName: voice.clan_name,
+						id: voice.id,
+						lastScreenshot: voice.last_screenshot,
+						participant: voice.participant,
+						userId: voice.user_id,
+						voiceChannelId: voice.voice_channel_id,
+						voiceChannelLabel: voice.voice_channel_label
 					})
 				);
 			}
@@ -270,7 +277,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onvoiceleaved = useCallback(
 		(voice: VoiceLeavedEvent) => {
 			dispatch(voiceActions.remove(voice));
-			if (voice.voiceUserId === userId) {
+			if (voice.voice_user_id === userId) {
 				if (document.pictureInPictureElement) {
 					document.exitPictureInPicture();
 				}
@@ -284,16 +291,26 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const currentStreamInfo = selectCurrentStreamInfo(store.getState());
 		const streamChannelMember = selectStreamMembersByChannelId(store.getState(), currentStreamInfo?.streamId || '');
 
-		const existingMember = streamChannelMember?.find((member) => member?.userId === user?.userId);
+		const existingMember = streamChannelMember?.find((member) => member?.userId === user?.user_id);
 		if (existingMember) {
 			dispatch(usersStreamActions.remove(existingMember?.id));
 		}
-		dispatch(usersStreamActions.add(user));
+		dispatch(
+			usersStreamActions.add({
+				clanId: user.clan_id,
+				clanName: user.clan_name,
+				id: user.id,
+				participant: user.participant,
+				streamingChannelId: user.streaming_channel_id,
+				streamingChannelLabel: user.streaming_channel_label,
+				userId: user.user_id
+			})
+		);
 	}, []);
 
 	const onstreamingchannelleaved = useCallback(
 		(user: StreamingLeavedEvent) => {
-			dispatch(usersStreamActions.remove(user.streamingUserId));
+			dispatch(usersStreamActions.remove(user.streaming_user_id));
 		},
 		[dispatch]
 	);
@@ -573,19 +590,19 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					statusPresenceQueue.current.forEach((event) => {
 						event?.joins?.forEach((join) => {
-							userStatusMap.set(join.userId, {
+							userStatusMap.set(join.user_id, {
 								online: true,
-								isMobile: join.isMobile,
+								isMobile: join.is_mobile,
 								status: join.status,
-								userStatus: join.userStatus
+								userStatus: join.user_status
 							});
 						});
 						event?.leaves?.forEach((leave) => {
-							userStatusMap.set(leave.userId, {
+							userStatusMap.set(leave.user_id, {
 								online: false,
 								isMobile: false,
 								status: leave.status,
-								userStatus: leave.userStatus
+								userStatus: leave.user_status
 							});
 						});
 					});
@@ -617,12 +634,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			if (canvasEvent.status === EEventAction.CREATED) {
 				dispatch(
 					canvasAPIActions.upsertOne({
-						channelId: canvasEvent.channelId || '',
-						canvas: { ...canvasEvent, creatorId: canvasEvent.editorId }
+						channelId: canvasEvent.channel_id || '',
+						canvas: { ...canvasEvent, creatorId: canvasEvent.editor_id }
 					})
 				);
 			} else {
-				dispatch(canvasAPIActions.removeOneCanvas({ channelId: canvasEvent.channelId || '', canvasId: canvasEvent.id || '' }));
+				dispatch(canvasAPIActions.removeOneCanvas({ channelId: canvasEvent.channel_id || '', canvasId: canvasEvent.id || '' }));
 			}
 		},
 		[dispatch]
@@ -720,28 +737,28 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onpinmessage = useCallback((pin: LastPinMessageEvent) => {
-		if (!pin?.channelId) return;
+		if (!pin?.channel_id) return;
 
-		if (pin.clanId) {
-			dispatch(channelsActions.setShowPinBadgeOfChannel({ clanId: pin.clanId, channelId: pin.channelId, isShow: true }));
+		if (pin.clan_id) {
+			dispatch(channelsActions.setShowPinBadgeOfChannel({ clanId: pin.clan_id, channelId: pin.channel_id, isShow: true }));
 		} else {
-			dispatch(directActions.setShowPinBadgeOfDM({ dmId: pin?.channelId, isShow: true }));
+			dispatch(directActions.setShowPinBadgeOfDM({ dmId: pin?.channel_id, isShow: true }));
 		}
 
 		if (pin.operation === 1) {
 			dispatch(
 				pinMessageActions.addPinMessage({
-					channelId: pin.channelId,
+					channelId: pin.channel_id,
 					pinMessage: {
-						id: pin.messageId,
-						attachment: pin.messageAttachment,
-						avatar: pin.messageSenderAvatar,
-						channelId: pin.channelId,
-						content: pin.messageContent,
-						createTime: pin.messageCreatedTime,
-						messageId: pin.messageId,
-						username: pin.messageSenderUsername,
-						senderId: pin.messageSenderId
+						id: pin.message_id,
+						attachment: pin.message_attachment,
+						avatar: pin.message_sender_avatar,
+						channelId: pin.channel_id,
+						content: pin.message_content,
+						createTime: pin.message_created_time,
+						messageId: pin.message_id,
+						username: pin.message_sender_username,
+						senderId: pin.message_sender_id
 					}
 				})
 			);
@@ -749,11 +766,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	}, []);
 
 	const onUnpinMessageEvent = useCallback((unpin_message_event: UnpinMessageEvent) => {
-		if (!unpin_message_event?.channelId) return;
+		if (!unpin_message_event?.channel_id) return;
 		dispatch(
 			pinMessageActions.removePinMessage({
-				channelId: unpin_message_event.channelId,
-				pinId: unpin_message_event.messageId
+				channelId: unpin_message_event.channel_id,
+				pinId: unpin_message_event.message_id
 			})
 		);
 	}, []);
@@ -767,8 +784,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onlastseenupdated = useCallback(
 		async (lastSeenMess: LastSeenMessageEvent) => {
-			const { clanId, channelId, messageId } = lastSeenMess;
-			let badgeCount = lastSeenMess.badgeCount;
+			const { clan_id, channel_id, message_id } = lastSeenMess;
+			let badgeCount = lastSeenMess.badge_count;
 
 			const store = getStore();
 
@@ -780,18 +797,18 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				return;
 			}
 
-			if (clanId && clanId !== '0') {
-				const channel = selectChannelByIdAndClanId(state, clanId, channelId);
+			if (clan_id && clan_id !== '0') {
+				const channel = selectChannelByIdAndClanId(state, clan_id, channel_id);
 				badgeCount = channel?.countMessUnread || 0;
 			}
 
 			resetChannelBadgeCount(
 				dispatch,
 				{
-					clanId,
-					channelId,
+					clanId: clan_id,
+					channelId: channel_id,
 					badgeCount,
-					messageId
+					messageId: message_id
 				},
 				store
 			);
@@ -801,6 +818,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onuserchannelremoved = useCallback(
 		async (user: UserChannelRemovedEvent) => {
+			if (!user?.user_ids) return;
 			const store = await getStoreAsync();
 			const channelId = selectCurrentChannelId(store.getState() as unknown as RootState);
 			const directId = selectDmGroupCurrentId(store.getState());
@@ -808,18 +826,18 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const currentState = store.getState() as unknown as RootState;
 			const currentChannel = selectCurrentChannel(currentState);
 
-			for (let index = 0; index < user?.userIds.length; index++) {
-				const userID = user.userIds[index];
-				dispatch(clansActions.updateClanBadgeCount({ clanId: user?.clanId || '', count: -user.badgeCounts[index] }));
+			for (let index = 0; index < user?.user_ids.length; index++) {
+				const userID = user.user_ids[index];
+				dispatch(clansActions.updateClanBadgeCount({ clanId: user?.clan_id || '', count: -user.badge_counts[index] }));
 				if (userID === userId) {
-					if (isMobile && (channelId === user.channelId || directId === user.channelId)) {
+					if (isMobile && (channelId === user.channel_id || directId === user.channel_id)) {
 						MobileEventEmitter.emit('@ON_REMOVE_USER_CHANNEL', {
-							channelId: user.channelId,
-							channelType: user.channelType
+							channelId: user.channel_id,
+							channelType: user.channel_type
 						});
 					}
-					if (channelId === user.channelId && !isMobile) {
-						if (user.channelType === ChannelType.CHANNEL_TYPE_THREAD) {
+					if (channelId === user.channel_id && !isMobile) {
+						if (user.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 							const parentChannelId = currentChannel?.parentId;
 							if (parentChannelId) {
 								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`, true);
@@ -897,22 +915,23 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 	const onuserclanremoved = useCallback(
 		async (user: UserClanRemovedEvent) => {
-			if (!user?.userIds) return;
+			console.log('user: ', user);
+			if (!user?.user_ids) return;
 			const store = await getStoreAsync();
-			const channels = selectChannelsByClanId(store.getState() as unknown as RootState, user.clanId as string);
+			const channels = selectChannelsByClanId(store.getState() as unknown as RootState, user.clan_id as string);
 			const clanId = selectCurrentClanId(store.getState());
 			const currentVoice = selectVoiceInfo(store.getState());
 			const currentStream = selectCurrentStreamInfo(store.getState());
-			user?.userIds.forEach((id: string) => {
+			user?.user_ids.forEach((id: string) => {
 				dispatch(voiceActions.removeFromClanInvoice(id));
 				if (id === userId) {
 					dispatch(emojiSuggestionActions.invalidateCache());
 					dispatch(stickerSettingActions.invalidateCache());
 
-					if (clanId === user.clanId) {
+					if (clanId === user.clan_id) {
 						if (isMobile) {
 							const clanList = selectOrderedClans(store.getState());
-							const clanIdToJump = clanList?.filter((item) => item.clanId !== user.clanId)?.[0]?.clanId;
+							const clanIdToJump = clanList?.filter((item) => item.clanId !== user.clan_id)?.[0]?.clanId;
 							if (clanIdToJump) {
 								dispatch(clansActions.setCurrentClanId(clanIdToJump));
 								dispatch(clansActions.joinClan({ clanId: clanIdToJump }));
@@ -931,30 +950,30 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							navigate(`/chat/direct/friends`);
 						}
 					}
-					if (user.clanId === currentVoice?.clanId) {
+					if (user.clan_id === currentVoice?.clanId) {
 						dispatch(voiceActions.resetVoiceControl());
 						if (document.pictureInPictureElement) {
 							document.exitPictureInPicture();
 						}
 					}
-					if (user.clanId === currentStream?.clanId) {
+					if (user.clan_id === currentStream?.clanId) {
 						dispatch(videoStreamActions.stopStream());
 						dispatch(videoStreamActions.setIsJoin(false));
 					}
-					dispatch(clansSlice.actions.removeByClanID(user.clanId));
+					dispatch(clansSlice.actions.removeByClanID(user.clan_id));
 					dispatch(listChannelsByUserActions.remove(id));
-					dispatch(appActions.cleanHistoryClan(user.clanId));
-					dispatch(channelsActions.removeByClanId(user.clanId));
+					dispatch(appActions.cleanHistoryClan(user.clan_id));
+					dispatch(channelsActions.removeByClanId(user.clan_id));
 				}
 				dispatch(
 					channelMembersActions.removeUserByUserIdAndClan({
 						userId: id,
 						channelIds: channels.map((item) => item.id),
-						clanId: user.clanId
+						clanId: user.clan_id
 					})
 				);
-				dispatch(usersClanActions.remove({ userId: id, clanId: user.clanId }));
-				dispatch(rolesClanActions.updateRemoveUserRole({ userId: id, clanId: user.clanId }));
+				dispatch(usersClanActions.remove({ userId: id, clanId: user.clan_id }));
+				dispatch(rolesClanActions.updateRemoveUserRole({ userId: id, clanId: user.clan_id }));
 			});
 		},
 		[userId, isMobile]
@@ -1129,26 +1148,26 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const clanMemberStore = selectClanMemberByClanId(store.getState() as unknown as RootState, userJoinClan.clanId);
 
 		if (userJoinClan?.user && clanMemberStore) {
-			const accountCreateTime = new Date(userJoinClan?.user?.createTimeSecond * 1000).toISOString();
+			const accountCreateTime = new Date(userJoinClan?.user?.create_time_second * 1000).toISOString();
 			const joinTime = new Date().toISOString();
 			dispatch(
 				usersClanActions.add({
 					user: {
 						...userJoinClan,
-						id: userJoinClan.user.userId,
+						id: userJoinClan.user.user_id,
 						user: {
 							...userJoinClan.user,
 							avatarUrl: userJoinClan.user.avatar,
-							id: userJoinClan.user.userId,
+							id: userJoinClan.user.user_id,
 							//aboutMe: userJoinClan.user.aboutMe,
-							displayName: userJoinClan.user.displayName,
-							metadata: userJoinClan.user.customStatus,
+							displayName: userJoinClan.user.display_name,
+							metadata: userJoinClan.user.custom_status,
 							username: userJoinClan.user.username,
 							createTime: accountCreateTime,
 							joinTime
 						}
 					},
-					clanId: userJoinClan.clanId
+					clanId: userJoinClan.clan_id
 				} as any)
 			);
 		}
