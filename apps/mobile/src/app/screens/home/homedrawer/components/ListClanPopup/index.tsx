@@ -21,7 +21,7 @@ import { IconCDN } from '../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { ClanIcon } from '../ClanIcon';
-import CreateClanModal from '../CreateClanModal';
+import CreateClanTemplate from '../CreateClanTemplate';
 import JoinClanModal from '../JoinClanModal';
 import { style } from './styles';
 
@@ -131,7 +131,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 
 	const onCreateClanModal = useCallback(() => {
 		const data = {
-			children: <CreateClanModal />
+			children: <CreateClanTemplate />
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	}, []);
