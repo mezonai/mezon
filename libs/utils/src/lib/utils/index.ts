@@ -132,8 +132,8 @@ export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] 
 	const uniqueUserId1s = Array.from(
 		new Set(
 			mentions.reduce<string[]>((acc, mention) => {
-				if (mention.userId && mention.userId !== ID_MENTION_HERE) {
-					acc.push(mention.userId);
+				if (mention.user_id && mention.user_id !== ID_MENTION_HERE) {
+					acc.push(mention.user_id);
 				}
 				return acc;
 			}, [])
@@ -141,7 +141,7 @@ export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] 
 	);
 
 	const allRoleUsers = rolesClan.reduce<RoleUserListRoleUser[]>((acc, role) => {
-		const isMentionedRole = mentions.some((mention) => mention.roleId === role.id);
+		const isMentionedRole = mentions.some((mention) => mention.role_id === role.id);
 		if (isMentionedRole && role.roleUserList?.roleUsers) {
 			acc.push(...role.roleUserList.roleUsers);
 		}
@@ -554,10 +554,10 @@ export const createFormattedString = (data: IExtendedMessage): string => {
 		const contentInElement = t?.substring(startindex, endindex);
 		switch (element.kindOf) {
 			case ETokenMessage.MENTIONS: {
-				if (element.userId) {
-					result += `@[${contentInElement.slice(1)}](${element.userId})`;
-				} else if (element.roleId) {
-					result += `@[${contentInElement.slice(1)}](${element.roleId})`;
+				if (element.user_id) {
+					result += `@[${contentInElement.slice(1)}](${element.user_id})`;
+				} else if (element.role_id) {
+					result += `@[${contentInElement.slice(1)}](${element.role_id})`;
 				}
 				break;
 			}
@@ -1134,10 +1134,10 @@ export const getMarkupInsertIndex = (
 	let totalInsertedLength = 0;
 
 	mentionsBeforeInsert.forEach((mention) => {
-		const { userId, roleId } = mention;
+		const { user_id, role_id } = mention;
 
-		if (roleId) {
-			const role = clanRoles?.[roleId as string];
+		if (role_id) {
+			const role = clanRoles?.[role_id as string];
 			if (role) {
 				// Plain text: @name
 				// Mention markup format: @[name](id)
@@ -1147,12 +1147,12 @@ export const getMarkupInsertIndex = (
 			return;
 		}
 
-		const user = usersEntities?.[mention.userId as string];
+		const user = usersEntities?.[mention.user_id as string];
 		if (user) {
 			// Plain text: @name
 			// Mention markup format: @[name](id)
 			// => Adding 4 extra characters: `[`, `]`, `(`, `)`
-			totalInsertedLength += 4 + (userId?.length || 0);
+			totalInsertedLength += 4 + (user_id?.length || 0);
 		}
 	});
 

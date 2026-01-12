@@ -32,7 +32,7 @@ export type ApiMessageEntityMentionName = {
 	type: ApiMessageEntityTypes.MentionName;
 	offset: number;
 	length: number;
-	userId: string;
+	user_id: string;
 };
 
 export type ApiMessageEntityMentionTag = {
@@ -46,21 +46,21 @@ export type ApiMessageEntityMentionRole = {
 	type: ApiMessageEntityTypes.MentionRole;
 	offset: number;
 	length: number;
-	roleId: string;
+	role_id: string;
 };
 
 export type ApiMessageEntityBlockquote = {
 	type: ApiMessageEntityTypes.Blockquote;
 	offset: number;
 	length: number;
-	canCollapse?: boolean;
+	can_collapse?: boolean;
 };
 
 export type ApiMessageEntityCustomEmoji = {
 	type: ApiMessageEntityTypes.CustomEmoji;
 	offset: number;
 	length: number;
-	documentId: string;
+	document_id: string;
 };
 
 // Local entities
@@ -413,7 +413,7 @@ function getEntityDataFromNode(node: ChildNode, rawText: string, textIndex: numb
 				type,
 				offset,
 				length,
-				userId: (node as HTMLAnchorElement).dataset.userId!
+				user_id: (node as HTMLAnchorElement).dataset.userId!
 			}
 		};
 	}
@@ -424,7 +424,7 @@ function getEntityDataFromNode(node: ChildNode, rawText: string, textIndex: numb
 				type,
 				offset,
 				length,
-				roleId: (node as HTMLAnchorElement).dataset.userId!
+				role_id: (node as HTMLAnchorElement).dataset.userId!
 			}
 		};
 	}
@@ -460,7 +460,7 @@ function getEntityDataFromNode(node: ChildNode, rawText: string, textIndex: numb
 				type,
 				offset,
 				length,
-				documentId: (node as HTMLImageElement).dataset.documentId!
+				document_id: (node as HTMLImageElement).dataset.documentId!
 			}
 		};
 	}

@@ -310,15 +310,15 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				// add member to thread
 				if (props.membersOfChild && props.membersOfParent) {
 					mentionList.forEach((mention) => {
-						if (mention.userId) {
-							const existsInChild = props.membersOfChild?.some((member) => member.user?.id === mention.userId);
-							const existsInParent = props.membersOfParent?.some((member) => member.user?.id === mention.userId);
+						if (mention.user_id) {
+							const existsInChild = props.membersOfChild?.some((member) => member.user?.id === mention.user_id);
+							const existsInParent = props.membersOfParent?.some((member) => member.user?.id === mention.user_id);
 
-							if ((!existsInChild || props.isThreadbox) && existsInParent && mention?.userId) {
-								usersNotExistingInThreadSet.add(mention.userId);
+							if ((!existsInChild || props.isThreadbox) && existsInParent && mention?.user_id) {
+								usersNotExistingInThreadSet.add(mention.user_id);
 							}
-						} else if (mention?.roleId) {
-							const role = rolesClan?.find((r) => r.id === mention.roleId);
+						} else if (mention?.role_id) {
+							const role = rolesClan?.find((r) => r.id === mention.role_id);
 							if (role?.roleUserList?.roleUsers) {
 								role.roleUserList.roleUsers.forEach((roleUser: any) => {
 									if (roleUser?.id) {

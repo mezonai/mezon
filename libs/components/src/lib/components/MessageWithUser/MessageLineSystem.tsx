@@ -81,14 +81,14 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 				formattedContent.push(<PlainText isSearchMessage={isSearchMessage} key={`plain-${lastindex}`} text={t?.slice(lastindex, s) ?? ''} />);
 			}
 
-			if (element.kindOf === ETokenMessage.MENTIONS && element.userId) {
+			if (element.kindOf === ETokenMessage.MENTIONS && element.user_id) {
 				formattedContent.push(
 					<MentionUser
 						isTokenClickAble={isTokenClickAble}
 						isJumMessageEnabled={isJumMessageEnabled}
-						key={`mentionUser-${index}-${s}-${contentInElement}-${element.userId}-${element.roleId}`}
+						key={`mentionUser-${index}-${s}-${contentInElement}-${element.user_id}-${element.role_id}`}
 						tagUserName={contentInElement ?? ''}
-						tagUserId={element.userId}
+						tagUserId={element.user_id}
 						mode={mode}
 					/>
 				);

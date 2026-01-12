@@ -1,4 +1,4 @@
-import { IMessageSendPayload } from '.';
+import type { IMessageSendPayload } from '.';
 
 export interface IStartEndIndex {
 	s?: number | undefined;
@@ -17,8 +17,8 @@ export enum EBacktickType {
 }
 
 export interface IMention {
-	userId?: string | undefined;
-	roleId?: string | undefined;
+	user_id?: string | undefined;
+	role_id?: string | undefined;
 	username?: string | undefined;
 	display?: string;
 }
