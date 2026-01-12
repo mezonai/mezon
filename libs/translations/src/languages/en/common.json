@@ -482,5 +482,6 @@
 	"forward": "Forward",
 	"share": "Share",
 	"download": "Download",
-	"jumpToMessage": "Jump to Message"
+	"jumpToMessage": "Jump to Message",
+	"groupMembers": "{members} of {total} members"
 }
