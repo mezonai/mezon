@@ -51,6 +51,7 @@ export const style = (colors: Attributes) =>
 		},
 		titleMezonBtn: { fontSize: Fonts.size.h7, color: baseColor.white, fontWeight: '600' },
 		mezonBtn: { backgroundColor: baseColor.blurple },
+		buttonDisabled: { backgroundColor: baseColor.bgButtonSecondary },
 		label: {
 			color: colors.text,
 			fontSize: Fonts.size.h7,
