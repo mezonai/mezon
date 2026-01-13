@@ -7,7 +7,7 @@ import { ChannelType } from 'mezon-js';
 import type { ApiUser } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Pressable, Text, TextInput, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
@@ -69,6 +69,7 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				});
 
 			if (directMessage?.id) {
+				Keyboard.dismiss();
 				navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: directMessage?.id });
 				return;
 			}
@@ -80,6 +81,7 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 			);
 			if (response?.channel_id) {
 				await checkNotificationPermissionAndNavigate(() => {
+					Keyboard.dismiss();
 					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
 				});
 			}
@@ -202,7 +204,13 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				showAction={true}
 			/>
 
-			<UserInformationBottomSheet user={selectedUser} onClose={onClose} showAction={false} showRole={false} currentChannel={{ type: ChannelType.CHANNEL_TYPE_GROUP } as ChannelsEntity} />
+			<UserInformationBottomSheet
+				user={selectedUser}
+				onClose={onClose}
+				showAction={false}
+				showRole={false}
+				currentChannel={{ type: ChannelType.CHANNEL_TYPE_GROUP } as ChannelsEntity}
+			/>
 		</View>
 	);
 });

@@ -1,3 +1,4 @@
+import { useDirect } from '@mezon/core';
 import { ActionEmitEvent, getUpdateOrAddClanChannelCache, save, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
@@ -11,6 +12,7 @@ import {
 	notificationActions,
 	selectClanById,
 	selectCurrentClanId,
+	selectDirectById,
 	selectNotificationClan,
 	selectNotificationForYou,
 	selectNotificationMentions,
@@ -72,6 +74,7 @@ const Notifications = ({ navigation, route }) => {
 
 	const dispatch = useAppDispatch();
 	const isTabletLandscape = useTabletLandscape();
+	const { createDirectMessageWithUser } = useDirect();
 	const { t } = useTranslation(['notification']);
 
 	const [selectedTabs, setSelectedTabs] = useState<string>(initialTab || InboxType.MENTIONS);
@@ -143,7 +146,8 @@ const Notifications = ({ navigation, route }) => {
 				requestAnimationFrame(async () => {
 					const state = store.getState();
 					const clanById = selectClanById(notify?.content?.clan_id || '')(state);
-					if (!clanById) {
+					const directById = selectDirectById(state, notify?.content?.channel_id || '');
+					if (!clanById && !directById && notify?.content?.mode !== ChannelStreamMode.STREAM_MODE_DM) {
 						Toast.show({ type: 'error', text1: t('unknowClan') });
 						return resolve();
 					}
@@ -196,12 +200,24 @@ const Notifications = ({ navigation, route }) => {
 					await Promise.all(promises);
 
 					if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM || notify?.content?.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
+						let directIdToJump = notify?.content?.channel_id;
+						if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM && (!directById || directById?.active === 0)) {
+							const response = await createDirectMessageWithUser(
+								notify?.content?.sender_id,
+								notify?.content?.display_name,
+								notify?.content?.username,
+								notify?.content?.avatar
+							);
+							if (response?.channel_id) {
+								directIdToJump = response?.channel_id;
+							}
+						}
 						if (isTabletLandscape) {
-							await dispatch(directActions.setDmGroupCurrentId(notify?.content?.channel_id));
+							await dispatch(directActions.setDmGroupCurrentId(directIdToJump));
 							navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 						} else {
 							navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
-								directMessageId: notify?.content?.channel_id
+								directMessageId: directIdToJump
 							});
 						}
 					} else if (isTopic) {

@@ -74,6 +74,10 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 		}
 	}, [clanRole]);
 
+	const isNotChange = useMemo(() => {
+		return !isEditRoleMode && !selectedMemberIdList?.length;
+	}, [isEditRoleMode, selectedMemberIdList?.length]);
+
 	const onSelectMemberChange = (value: boolean, memberId: string) => {
 		const uniqueSelectedMembers = new Set(selectedMemberIdList);
 		if (value) {
@@ -216,8 +220,8 @@ export const SetupMembers = ({ navigation, route }: MenuClanScreenProps<SetupMem
 
 				{!isEditRoleMode ? (
 					<View style={styles.bottomButton}>
-						<TouchableOpacity onPress={() => updateMemberToRole()}>
-							<View style={styles.finishButton}>
+						<TouchableOpacity onPress={updateMemberToRole} disabled={isNotChange}>
+							<View style={[styles.finishButton, isNotChange && styles.buttonDisabled]}>
 								<Text style={styles.buttonFinishText}>{t('setupMember.finish')}</Text>
 							</View>
 						</TouchableOpacity>

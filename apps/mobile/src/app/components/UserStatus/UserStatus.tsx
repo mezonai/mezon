@@ -1,4 +1,4 @@
-import { IUserStatusProps } from '@mezon/mobile-components';
+import type { IUserStatusProps } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { EUserStatus } from '@mezon/utils';
 import React, { useMemo } from 'react';
@@ -19,7 +19,7 @@ export const UserStatus = React.memo(({ status, customStyles, iconSize = size.s_
 				return <MezonIconCDN icon={IconCDN.disturbStatusIcon} color="#F23F43" width={mobileIconSize} height={mobileIconSize} />;
 
 			case EUserStatus.INVISIBLE:
-				return <MezonIconCDN icon={IconCDN.offlineStatusIcon} color="#AEAEAE" width={iconSize} height={iconSize} />;
+				return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#AEAEAE" width={iconSize} height={iconSize} />;
 
 			default:
 				if (status?.isMobile) {

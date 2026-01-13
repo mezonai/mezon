@@ -66,7 +66,7 @@ export const MyVideoConference = memo(
 		url,
 		token
 	}: MyVideoConferenceProps) => {
-		const { activeSoundReactions, handleSoundReaction, removeActiveSoundParticipant } = useSoundReactions();
+		const { activeSoundReactions, handleSoundReaction, removeActiveSoundParticipant, clearAllSound } = useSoundReactions();
 		const lastAutoFocusedScreenShareTrack = useRef<TrackReferenceOrPlaceholder | null>(null);
 
 		const tracksFromHook = useTracks(
@@ -281,7 +281,7 @@ export const MyVideoConference = memo(
 			<div className="lk-video-conference flex-1">
 				<DeepFilterNetInitializer />
 				<VoiceTrackState />
-				<ReactionCallHandler onSoundReaction={handleSoundReaction} onEndSound={removeActiveSoundParticipant} />
+				<ReactionCallHandler onSoundReaction={handleSoundReaction} onEndSound={removeActiveSoundParticipant} clearAllSound={clearAllSound} />
 				<LayoutContextProvider value={layoutContext}>
 					<div className="lk-video-conference-inner relative bg-gray-100 dark:bg-black group">
 						{!focusTrack ? (

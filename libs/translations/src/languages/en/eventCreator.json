@@ -32,7 +32,7 @@
 			},
 			"somewhere": {
 				"title": "Somewhere else",
-				"description": "Text channel, external link, or in-person location."
+				"description": "Text channel, external link or in-person location."
 			},
 			"privateEvent": {
 				"title": "Create External Event",
@@ -78,7 +78,7 @@
 		},
 		"description": {
 			"title": "Description",
-			"description": "Tell people a little more about your event. Markdown, new lines, and links are supported."
+			"description": "Tell people a little more about your event."
 		},
 		"cover": "Cover Image"
 	},
