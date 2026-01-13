@@ -489,5 +489,6 @@
 			"success": "Đặt cảm xúc nhanh thành công!",
 			"failed": "Đặt cảm xúc nhanh thất bại!"
 		}
-	}
+	},
+	"somethingWentWrong": "Đã xảy ra lỗi"
 }
