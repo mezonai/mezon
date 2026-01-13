@@ -28,6 +28,7 @@ export * from './lib/clans/clanSettingChannel.slice';
 export * from './lib/clanWebhook/clanWebhook.slide';
 export * from './lib/compose/compose.slice';
 export * from './lib/comunity/comunity.slice';
+export * from './lib/devices/devices.slice';
 export * from './lib/direct/direct.slice';
 export * from './lib/direct/status.slice';
 export * from './lib/dmcall/audioCall.slice';
