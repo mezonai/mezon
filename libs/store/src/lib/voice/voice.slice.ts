@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import { generateBasePath } from '@mezon/transport';
-import type { IVoice, IvoiceInfo, LoadingStatus } from '@mezon/utils';
+import { INITIAL_NOISE_SUPPRESSION_PERCENTAGE, type IVoice, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelType, VoiceLeavedEvent } from 'mezon-js';
@@ -180,7 +180,7 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	showCamera: false,
 	showScreen: false,
 	noiseSuppressionEnabled: false,
-	noiseSuppressionLevel: 20,
+	noiseSuppressionLevel: INITIAL_NOISE_SUPPRESSION_PERCENTAGE,
 	statusCall: false,
 	voiceConnectionState: false,
 	fullScreen: false,
@@ -339,7 +339,7 @@ export const voiceSlice = createSlice({
 			state.showCamera = false;
 			state.showScreen = false;
 			state.noiseSuppressionEnabled = true;
-			state.noiseSuppressionLevel = 20;
+			state.noiseSuppressionLevel = INITIAL_NOISE_SUPPRESSION_PERCENTAGE;
 			state.voiceConnectionState = false;
 			state.voiceInfo = null;
 			state.fullScreen = false;
