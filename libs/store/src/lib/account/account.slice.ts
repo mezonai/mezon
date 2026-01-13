@@ -118,7 +118,7 @@ export const addPhoneNumber = createAsyncThunk(
 	async ({ data, isMobile = false }: { data: ApiLinkAccountMezon; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.linkMezon(mezon.session, data);
+			const response = await mezon.client.linkSMS(mezon.session, data);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'account/addPhoneNumber');
