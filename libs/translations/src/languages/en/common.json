@@ -483,5 +483,13 @@
 	"share": "Share",
 	"download": "Download",
 	"jumpToMessage": "Jump to Message",
-	"groupMembers": "{members} of {total} members"
+	"groupMembers": "{members} of {total} members",
+	"quickReaction": {
+		"title": "Set Quick Reaction",
+		"toast": {
+			"success": "Set quick reaction successfully!",
+			"failed": "Failed to set quick reaction!"
+		}
+	},
+	"somethingWentWrong": "Something went wrong"
 }

@@ -1,7 +1,7 @@
 import { useDirect } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import type { FriendsEntity } from '@mezon/store-mobile';
+import type { ChannelsEntity, FriendsEntity } from '@mezon/store-mobile';
 import { DMCallActions, getStore, selectAllFriends, selectDirectsOpenlist, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import type { ApiUser } from 'mezon-js/api.gen';
@@ -204,7 +204,7 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				showAction={true}
 			/>
 
-			<UserInformationBottomSheet user={selectedUser} onClose={onClose} showAction={false} showRole={false} />
+			<UserInformationBottomSheet user={selectedUser} onClose={onClose} showAction={false} showRole={false} currentChannel={{ type: ChannelType.CHANNEL_TYPE_GROUP } as ChannelsEntity} />
 		</View>
 	);
 });
