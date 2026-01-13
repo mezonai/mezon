@@ -1,4 +1,4 @@
-export const timeFomat = (start: string, locale?: string) => {
+export const timeFomat = (start: string | number, locale?: string) => {
 	const date = new Date(start);
 	const timezoneOffsetMinutes = -date.getTimezoneOffset();
 	date.setUTCMinutes(date.getUTCMinutes() + timezoneOffsetMinutes);
@@ -213,7 +213,7 @@ export const getTimeFomatDay = () => {
 	return `${hours}:${minutes}`;
 };
 
-export const formatTimeStringToHourFormat = (timeString: string) => {
+export const formatTimeStringToHourFormat = (timeString: string | number) => {
 	const date = new Date(timeString);
 	const timezoneOffsetMinutes = -date.getTimezoneOffset();
 	date.setUTCMinutes(date.getUTCMinutes() + timezoneOffsetMinutes);

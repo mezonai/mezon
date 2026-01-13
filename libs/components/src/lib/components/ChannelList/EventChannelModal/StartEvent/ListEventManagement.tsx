@@ -33,8 +33,8 @@ const ListEventManagement = (props: ListEventManagementProps) => {
 						address={event.address}
 						option={event.address ? OptionEvent.OPTION_LOCATION : OptionEvent.OPTION_SPEAKER}
 						logoRight={event.logo}
-						start={event.start_time || ''}
-						end={event.end_time || ''}
+						start={new Date(event.start_time_seconds || 0).toISOString() || ''}
+						end={new Date(event.end_time_seconds || 0).toISOString()}
 						event={event}
 						createTime={event.create_time}
 						openModelUpdate={openModelUpdate}

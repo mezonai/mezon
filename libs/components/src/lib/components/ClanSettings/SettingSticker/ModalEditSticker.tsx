@@ -129,10 +129,10 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 	const onSaveChange = async () => {
 		if (graphic && graphic.id && graphic.shortname !== editingGraphic.shortname) {
 			const updateData: MezonUpdateClanEmojiByIdBody = {
-				source: graphicSource,
-				category: graphic?.category,
-				shortname: isSticker ? editingGraphic.shortname : `:${editingGraphic.shortname}:`,
-				clan_id: currentClanId || ''
+				source: graphicSource || '0',
+				shortname: isSticker ? editingGraphic.shortname || '' : `:${editingGraphic.shortname}:`,
+				clan_id: currentClanId || '',
+				id: graphic.id
 			};
 
 			const requestData = {

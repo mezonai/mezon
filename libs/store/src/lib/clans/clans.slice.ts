@@ -396,7 +396,7 @@ export const updateUser = createAsyncThunk(
 			}
 
 			if (dob && dob !== currentUser?.user?.dob) {
-				body.dob = dob;
+				body.dob_seconds = new Date(dob).getTime();
 			}
 
 			if (logo !== currentUser?.logo) {

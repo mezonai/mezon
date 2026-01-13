@@ -185,7 +185,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 					))}
 			</div>
 			<div className="ml-1 max-2xl:ml-0 pt-[5px]  max-2xl:pt-0 text-theme-primary text-[10px] cursor-default">
-				{convertTimeStringI18n(message?.create_time as string, translateCommon, i18n.language)}
+				{convertTimeStringI18n(message?.create_time_seconds || 0, translateCommon, i18n.language)}
 			</div>
 		</div>
 	);

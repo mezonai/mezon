@@ -157,11 +157,7 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 			content: JSON.stringify(message.content),
 			avatar: message.avatar,
 			clan_id: message.clan_id,
-			channel_id: message.channel_id,
-			attachments: JSON.stringify(message.attachments),
-			mentions: JSON.stringify(message.mentions),
-			reactions: JSON.stringify(message.reactions),
-			references: JSON.stringify(message.references)
+			channel_id: message.channel_id
 		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
