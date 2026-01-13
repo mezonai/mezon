@@ -87,7 +87,7 @@ export const jumpToChannel = async (channelId: string, clanId: string) => {
 		// if (!channelsCache?.includes(channelId)) {
 		// 	save(STORAGE_CHANNEL_CURRENT_CACHE, [...channelsCache, channelId]);
 		// }
-		store.dispatch(channelsActions.joinChannel({ clanId: clanId ?? '', channelId: channelId, noFetchMembers: false, isClearMessage: true }));
+		store.dispatch(channelsActions.joinChannel({ clanId: clanId ?? '', channelId, noFetchMembers: false, isClearMessage: true }));
 	}
 };
 
@@ -113,9 +113,9 @@ export const changeClan = async (clanId: string) => {
 	await remove(STORAGE_CHANNEL_CURRENT_CACHE);
 	save(STORAGE_CLAN_ID, clanId);
 	const promises = [];
-	promises.push(store.dispatch(clansActions.joinClan({ clanId: clanId })));
-	promises.push(store.dispatch(clansActions.changeCurrentClan({ clanId: clanId })));
-	promises.push(store.dispatch(channelsActions.fetchChannels({ clanId: clanId, noCache: true })));
+	promises.push(store.dispatch(clansActions.joinClan({ clanId })));
+	promises.push(store.dispatch(clansActions.changeCurrentClan({ clanId })));
+	promises.push(store.dispatch(channelsActions.fetchChannels({ clanId, noCache: true })));
 	const results = await Promise.all(promises);
 	const channelResp = results.find((result) => result.type === 'channels/fetchChannels/fulfilled');
 	if (channelResp) {

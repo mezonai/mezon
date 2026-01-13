@@ -146,7 +146,7 @@ async function checkInternetConnectionCached(): Promise<boolean> {
 
 	sharedConnectionCheckPromise = (async () => {
 		try {
-			const response = await fetch('https://mezon.ai/assets/favicon.ico', {
+			const response = await fetch(`${window.origin}/assets/favicon.ico`, {
 				method: 'HEAD',
 				cache: 'no-cache',
 				signal: AbortSignal.timeout(5000)
