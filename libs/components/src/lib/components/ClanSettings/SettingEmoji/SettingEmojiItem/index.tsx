@@ -54,10 +54,10 @@ const SettingEmojiItem = ({ emoji, onUpdateEmoji: _onUpdateEmoji }: SettingEmoji
 		const cleanOriginalName = originalNameEmoji.replace(/\s/g, '');
 		if (cleanName !== emoji.shortname && cleanName !== '' && cleanName !== cleanOriginalName) {
 			const request: MezonUpdateClanEmojiByIdBody = {
-				source: emoji.src,
+				source: emoji.src || '',
 				shortname: `:${cleanName}:`,
-				category: emoji.category,
-				clan_id: clanId as string
+				clan_id: clanId as string,
+				id: emoji.id || ''
 			};
 			await dispatch(emojiSuggestionActions.updateEmojiSetting({ request, emojiId: emoji.id || '' }));
 			inputRef.current?.blur();

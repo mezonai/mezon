@@ -62,7 +62,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 			const resultAttach: ApiMessageAttachment & { create_time?: string } = {
 				...attachment,
 				sender_id: message.sender_id,
-				create_time: (attachment as any).create_time || message.create_time
+				create_time: (attachment as any).create_time_seconds || message.create_time_seconds
 			};
 			images.push(resultAttach);
 			return;
@@ -194,14 +194,14 @@ const ImageAlbum = memo(
 
 				const enhancedAttachmentData = {
 					...attachmentData,
-					create_time: attachmentData.create_time || message.create_time || new Date().toISOString()
+					create_time: attachmentData.create_time || new Date(message.create_time_seconds || 0).toISOString() || new Date().toISOString()
 				};
 
 				if (isElectron()) {
 					const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
 					const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
 
-					const messageTimestamp = message.create_time ? Math.floor(new Date(message.create_time).getTime() / 1000) : undefined;
+					const messageTimestamp = message.create_time_seconds ? message.create_time_seconds : undefined;
 					const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
 					const data = await dispatch(
 						attachmentActions.fetchChannelAttachments({
@@ -325,7 +325,7 @@ const ImageAlbum = memo(
 				if ((currentClanId && currentChannelId) || currentDmGroupId) {
 					const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
 					const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
-					const messageTimestamp = message.create_time ? Math.floor(new Date(message.create_time).getTime() / 1000) : undefined;
+					const messageTimestamp = message.create_time_seconds ? message.create_time_seconds : undefined;
 					const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
 					dispatch(
 						attachmentActions.fetchChannelAttachments({

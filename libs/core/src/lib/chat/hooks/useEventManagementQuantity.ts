@@ -24,16 +24,17 @@ export const useEventManagementQuantity = () => {
 	const numberEventManagement = eventsByUser.length;
 
 	const eventUpcoming = useMemo(
-		() => eventsByUser.filter((event) => {
-			if (!event.start_time) {
-				return false;
-			}
-			const startTime = new Date(event.start_time).getTime();
-			const currentTime = Date.now();
-			const timeDiff = startTime - currentTime;
-			const minutesLeft = Math.ceil(timeDiff / (1000 * 60));
-			return minutesLeft <= 10;
-		}),
+		() =>
+			eventsByUser.filter((event) => {
+				if (!event.start_time_seconds) {
+					return false;
+				}
+				const startTime = event.start_time_seconds;
+				const currentTime = Date.now();
+				const timeDiff = startTime - currentTime;
+				const minutesLeft = Math.ceil(timeDiff / (1000 * 60));
+				return minutesLeft <= 10;
+			}),
 		[eventsByUser]
 	);
 	const numberEventUpcoming = eventUpcoming.length;

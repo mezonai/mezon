@@ -1,4 +1,5 @@
-import { EventManagementEntity, selectChannelById, useAppSelector } from '@mezon/store';
+import type { EventManagementEntity } from '@mezon/store';
+import { selectChannelById, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EEventStatus, openVoiceChannel } from '@mezon/utils';
 import React from 'react';
@@ -33,7 +34,7 @@ const EventSchedule: React.FC<EventScheduleProps> = ({ event, className }) => {
 		<div
 			className={className}
 			onClick={handleOpenVoiceChannel}
-			title={`Event: ${event.title}\n${eventStatusNotice}\n${timeFomat(event.start_time ?? '')}`}
+			title={`Event: ${event.title}\n${eventStatusNotice}\n${timeFomat(event.start_time_seconds ?? 0)}`}
 		>
 			<Icons.IconEvents defaultSize={`w-4 h-4 ${cssEventStatus}`} />
 		</div>
