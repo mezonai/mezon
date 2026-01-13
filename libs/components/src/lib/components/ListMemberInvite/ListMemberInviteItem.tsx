@@ -26,7 +26,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 	const dispatch = useAppDispatch();
 	const directMessageWithUser = async (userId: string, username?: string, displayName?: string, avatar?: string) => {
 		const response = await createDirectMessageWithUser(userId, displayName, username, avatar);
-		if (response.channelId && url) {
+		if (response.channel_id && url) {
 			sendInviteMessage(url, response.channel_id, ChannelStreamMode.STREAM_MODE_DM);
 		}
 		return response;
@@ -57,7 +57,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 							user_ids: [currentUser?.id || '', userId],
 							usernames: [currentUser?.username || '', username],
 							display_names: [currentUser?.display_name || '', displayName],
-							avatars: [currentUser?.avatarUrl || avatar, ''],
+							avatars: [currentUser?.avatar_url || avatar, ''],
 							onlines: [true, false]
 						}
 					])
