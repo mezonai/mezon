@@ -1,10 +1,13 @@
 import { useClans } from '@mezon/core';
 import { ActionEmitEvent, save, setDefaultChannelLoader, STORAGE_CLAN_ID } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { channelsActions, checkDuplicateNameClan, clansActions, getStoreAsync } from '@mezon/store-mobile';
+import { categoriesActions, channelsActions, checkDuplicateNameClan, clansActions, createNewChannel, getStoreAsync } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import { MAX_FILE_SIZE_1MB } from '@mezon/utils';
-import { memo, useEffect, useState } from 'react';
+import { unwrapResult } from '@reduxjs/toolkit';
+import type { ChannelType } from 'mezon-js';
+import type { ApiCategoryDesc } from 'mezon-js/api.gen';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import RNFS from 'react-native-fs';
@@ -23,7 +26,30 @@ import useCheckClanLimit from '../../../../../hooks/useCheckClanLimit';
 import { validInput } from '../../../../../utils/validate';
 import { style } from './CreateClanModal.styles';
 
-const CreateClanModal = memo(() => {
+export type ChannelTemplate = {
+	name: string;
+	type: ChannelType.CHANNEL_TYPE_CHANNEL | ChannelType.CHANNEL_TYPE_MEZON_VOICE;
+	isPrivate?: boolean;
+};
+
+export type CategoryTemplate = {
+	name: string;
+	channels: ChannelTemplate[];
+};
+
+export type ClanTemplate = {
+	id: string;
+	name: string;
+	icon: React.JSX.Element;
+	categories: CategoryTemplate[];
+};
+
+export interface CreateClanModalProps {
+	template?: ClanTemplate | null;
+	onGoback(): void;
+}
+
+const CreateClanModal = memo(({ template, onGoback }: CreateClanModalProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [nameClan, setNameClan] = useState<string>('');
@@ -38,6 +64,38 @@ const CreateClanModal = memo(() => {
 	const onClose = () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	};
+
+	const createTemplateChannels = useCallback(async (clanId: string, template: ClanTemplate, defaultCategoryId: string) => {
+		const store = await getStoreAsync();
+		for (const category of template.categories) {
+			let newCategory: ApiCategoryDesc = { category_id: defaultCategoryId };
+			if (category?.name) {
+				const res = await store.dispatch(
+					categoriesActions.createNewCategory({
+						clan_id: clanId,
+						category_name: category.name
+					})
+				);
+				newCategory = unwrapResult(res);
+			}
+			if (!newCategory.category_id) continue;
+			for (const channel of category?.channels ?? []) {
+				const isPrivate = channel?.isPrivate ? 1 : 0;
+
+				await store.dispatch(
+					createNewChannel({
+						clan_id: clanId,
+						type: channel?.type,
+						channel_label: channel?.name,
+						channel_private: isPrivate,
+						category_id: newCategory?.category_id,
+						parent_id: '0'
+					})
+				);
+				await new Promise((resolve) => setTimeout(resolve, 400));
+			}
+		}
+	}, []);
 
 	const handleCreateClan = async () => {
 		const isClanLimit = checkClanLimit();
@@ -62,6 +120,16 @@ const CreateClanModal = memo(() => {
 					store.dispatch(clansActions.changeCurrentClan({ clanId: res?.clan_id }));
 					const respChannel = await store.dispatch(channelsActions.fetchChannels({ clanId: res?.clan_id }));
 					await setDefaultChannelLoader(respChannel.payload, res?.clan_id);
+
+					const channels = (respChannel?.payload as any)?.channels || [];
+					if (template) {
+						try {
+							await createTemplateChannels(res?.clan_id, template, channels[0]?.category_id);
+						} catch (error) {
+							console.error('Error creating template channels:', error);
+						}
+					}
+
 					onClose();
 				}
 			})
@@ -134,8 +202,8 @@ const CreateClanModal = memo(() => {
 			/>
 
 			<View style={styles.headerContainer}>
-				<TouchableOpacity style={styles.backButton} onPress={onClose} activeOpacity={0.7}>
-					<MezonIconCDN icon={IconCDN.closeIcon} color={themeValue.text} width={size.s_30} height={size.s_30} />
+				<TouchableOpacity style={styles.backButton} onPress={onGoback} activeOpacity={0.7}>
+					<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.text} width={size.s_24} height={size.s_24} />
 				</TouchableOpacity>
 				<Text style={[styles.title, { color: themeValue.text }]}>{t('title')}</Text>
 				<Text style={[styles.description, { color: themeValue.textDisabled }]}>{t('subTitle')}</Text>
