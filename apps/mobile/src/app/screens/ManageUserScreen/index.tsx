@@ -21,10 +21,12 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import KickUserClanModal from '../home/homedrawer/components/UserProfile/component/KickUserClanModal';
 import { ManageUser } from './ManageUser';
-import { EActionSettingUserProfile, IProfileSetting } from './types';
+import type { IProfileSetting } from './types';
+import { EActionSettingUserProfile } from './types';
 
 type ManageUserScreenProps = MenuClanScreenProps<typeof APP_SCREEN.MENU_CLAN.MANAGE_USER>;
 

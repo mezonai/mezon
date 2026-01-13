@@ -11,7 +11,8 @@ import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import MezonInput from '../../../componentUI/MezonInput';
 import MezonSelect from '../../../componentUI/MezonSelect';
 import { IconCDN } from '../../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
 
 const EVENT_MAX_LENGTH = 255;
@@ -143,11 +144,11 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 			startTime: combinedStartDateTime,
 			endTime: combinedEndDateTime,
 			frequency: eventFrequency,
-			eventChannelId: eventChannelId,
-			isPrivate: isPrivate,
+			eventChannelId,
+			isPrivate,
 			logo: eventLogo,
 			onGoBack,
-			currentEvent: currentEvent
+			currentEvent
 		});
 	}
 

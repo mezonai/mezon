@@ -1,4 +1,4 @@
-import { IUserStatusProps } from '@mezon/mobile-components';
+import type { IUserStatusProps } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { EUserStatus } from '@mezon/utils';
 import React, { useMemo } from 'react';
