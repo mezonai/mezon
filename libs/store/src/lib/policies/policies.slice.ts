@@ -70,7 +70,7 @@ const fetchPermissionsUserCached = async (
 		{
 			api_name: 'GetRoleOfUserInTheClan',
 			permission_user_req: {
-				clanId
+				clan_id: clanId
 			}
 		},
 		() => mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId),
