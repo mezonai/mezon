@@ -44,8 +44,8 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth
 	const styles = useMemo(() => style(themeValue, computedEntitySize), [themeValue, computedEntitySize]);
 
 	const computedChannelId = useMemo(() => {
-		return (mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel?.parentId : channelId) ?? '';
-	}, [channelId, currentChannel?.parentId, mode]);
+		return (mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel?.parent_id : channelId) ?? '';
+	}, [channelId, currentChannel?.parent_id, mode]);
 
 	useEffect(() => {
 		if (!currentUserId || !computedChannelId) return;

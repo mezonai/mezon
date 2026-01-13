@@ -87,8 +87,8 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 	const { sendSignalingToParticipants } = useSendSignaling();
 
 	const channelId = useMemo(() => {
-		return currentDmGroup?.channelId || currentDmGroup?.id || '';
-	}, [currentDmGroup?.channelId, currentDmGroup?.id]);
+		return currentDmGroup?.channel_id || currentDmGroup?.id || '';
+	}, [currentDmGroup?.channel_id, currentDmGroup?.id]);
 
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ mode, channelOrDirect: currentDmGroup });

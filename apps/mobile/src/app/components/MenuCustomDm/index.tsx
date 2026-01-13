@@ -48,8 +48,8 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 	}, [allUserGroupDM?.user_ids]);
 
 	const channelId = useMemo(() => {
-		return currentChannel?.channelId || currentChannel?.id || '';
-	}, [currentChannel?.channelId, currentChannel?.id]);
+		return currentChannel?.channel_id || currentChannel?.id || '';
+	}, [currentChannel?.channel_id, currentChannel?.id]);
 
 	const handleEmojiSelected = useCallback(
 		(emojiId: string, shortname: string) => {

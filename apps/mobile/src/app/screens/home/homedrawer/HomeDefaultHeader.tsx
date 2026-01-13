@@ -56,8 +56,8 @@ const HomeDefaultHeader = React.memo(
 		const { sendMessage } = useChatSending({ mode, channelOrDirect: currentChannel });
 
 		const channelId = useMemo(() => {
-			return currentChannel?.channelId || currentChannel?.id || '';
-		}, [currentChannel?.channelId, currentChannel?.id]);
+			return currentChannel?.channel_id || currentChannel?.id || '';
+		}, [currentChannel?.channel_id, currentChannel?.id]);
 
 		const headerOptions = useMemo(
 			() =>
@@ -83,11 +83,11 @@ const HomeDefaultHeader = React.memo(
 				].filter((item) => {
 					if (item.value === OptionChannelHeader.Buzz && isBanned) return false;
 					if (item.value === OptionChannelHeader.Anonymous && currentClanPreventAnonymous) return false;
-					if (item.value === OptionChannelHeader.QuickReaction && currentChannel?.parentId !== '0' && currentChannel?.parentId !== '')
+					if (item.value === OptionChannelHeader.QuickReaction && currentChannel?.parent_id !== '0' && currentChannel?.parent_id !== '')
 						return false;
 					return true;
 				}),
-			[anonymousMode, t, themeValue, isBanned, currentClanPreventAnonymous, currentChannel?.parentId]
+			[anonymousMode, t, themeValue, isBanned, currentClanPreventAnonymous, currentChannel?.parent_id]
 		);
 
 		const onPressOption = (option: IOption) => {
