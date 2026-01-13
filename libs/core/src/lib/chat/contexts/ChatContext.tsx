@@ -719,7 +719,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					channelId: pin.channel_id,
 					pinMessage: {
 						id: pin.message_id,
-						attachment: pin.message_attachment,
+						attachment: JSON.parse(pin.message_attachment),
 						avatar: pin.message_sender_avatar,
 						channel_id: pin.channel_id,
 						content: pin.message_content,

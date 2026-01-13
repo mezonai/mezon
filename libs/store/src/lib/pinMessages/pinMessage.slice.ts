@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IMessageWithUser, IPinMessage, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPinMessage, ApiPinMessageRequest } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiPinMessage, ApiPinMessageRequest } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -190,7 +190,7 @@ export type UpdatePinMessage = {
 	senderId: string;
 	senderUsername: string;
 	content: string;
-	attachment: string;
+	attachment: Array<ApiMessageAttachment>;
 	createdTime: string;
 };
 
@@ -215,7 +215,7 @@ export const joinPinMessage = createAsyncThunk(
 				senderId,
 				senderUsername,
 				content,
-				attachment,
+				JSON.stringify(attachment),
 				createdTime
 			);
 		} catch (error) {

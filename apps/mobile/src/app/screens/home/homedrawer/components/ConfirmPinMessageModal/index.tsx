@@ -1,8 +1,9 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor } from '@mezon/mobile-ui';
-import { AppDispatch, getActiveMode, getCurrentChannelAndDm, pinMessageActions, selectCurrentClanId, UpdatePinMessage } from '@mezon/store-mobile';
+import type { AppDispatch, UpdatePinMessage } from '@mezon/store-mobile';
+import { getActiveMode, getCurrentChannelAndDm, pinMessageActions, selectCurrentClanId } from '@mezon/store-mobile';
 import { isValidUrl } from '@mezon/transport';
-import { IMessageWithUser } from '@mezon/utils';
+import type { IMessageWithUser } from '@mezon/utils';
 import { useRoute } from '@react-navigation/native';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo } from 'react';
@@ -10,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Modal, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
-import { SeparatorWithLine } from '../../../../../components/Common';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { SeparatorWithLine } from '../../../../../components/Common';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { EMessageActionType } from '../../enums';
@@ -44,7 +45,7 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 					clan_id: message?.clan_id ?? '0',
 					channel_id: message?.channel_id,
 					message_id: message?.id,
-					message: message
+					message
 				})
 			);
 
