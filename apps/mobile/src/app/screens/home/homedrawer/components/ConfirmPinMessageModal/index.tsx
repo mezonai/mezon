@@ -5,7 +5,7 @@ import { getActiveMode, getCurrentChannelAndDm, pinMessageActions, selectCurrent
 import { isValidUrl } from '@mezon/transport';
 import type { IMessageWithUser } from '@mezon/utils';
 import { useRoute } from '@react-navigation/native';
-import { ChannelStreamMode } from 'mezon-js';
+import { ChannelStreamMode, decodeAttachments } from 'mezon-js';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Modal, Text, TouchableOpacity, View } from 'react-native';
@@ -50,7 +50,7 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 			);
 
 			const attachments = message.attachments?.filter((attach) => isValidUrl(attach.url || '')) || [];
-			const jsonAttachments = attachments.length > 0 ? JSON.stringify(attachments) : '';
+			const jsonAttachments = attachments.length > 0 ? decodeAttachments(attachments) : '';
 			const pinBody: UpdatePinMessage = {
 				clanId: isDMMode ? '' : (currentClanId ?? ''),
 				channelId: isDMMode ? currentDm?.id || '' : (currentChannel?.channel_id ?? ''),

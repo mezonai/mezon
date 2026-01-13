@@ -144,6 +144,7 @@ export const setChannelPinMessage = createAsyncThunk(
 				channel_id,
 				message_id
 			};
+
 			const response = await mezon.client.createPinMessage(mezon.session, body);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
