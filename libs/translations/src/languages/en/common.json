@@ -483,6 +483,7 @@
 	"share": "Share",
 	"download": "Download",
 	"jumpToMessage": "Jump to Message",
+	"groupMembers": "{members} of {total} members",
 	"quickReaction": {
 		"title": "Set Quick Reaction",
 		"toast": {

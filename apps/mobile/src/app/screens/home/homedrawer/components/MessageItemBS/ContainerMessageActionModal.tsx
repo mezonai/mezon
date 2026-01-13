@@ -3,8 +3,8 @@
 import { useChannelMembers, useChatSending, useDirect, usePermissionChecker, useSendInviteMessage } from '@mezon/core';
 import { ActionEmitEvent, STORAGE_MY_USER_ID, formatContentEditMessage, load } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import type { MessagesEntity } from '@mezon/store-mobile';
 import {
-	MessagesEntity,
 	appActions,
 	channelMetaActions,
 	clansActions,
@@ -689,8 +689,9 @@ export const ContainerMessageActionModal = React.memo(
 					ChannelType.CHANNEL_TYPE_STREAMING,
 					ChannelType.CHANNEL_TYPE_THREAD
 				].includes(currentChannel?.type);
-			const isTopicFirstMessage = message?.code === TypeMessage.Topic;
-			const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage) || isTopicFirstMessage;
+			const isTopicInitMessage = message?.code === TypeMessage.Topic;
+			const isFirstMessageInTopic = messagePosition === 0 && !!currentTopicId;
+			const isHideDeleteMessage = !((isAllowDelMessage && !isDM) || isMyMessage) || isTopicInitMessage || isFirstMessageInTopic;
 			const isHideTopicDiscussion =
 				(message?.topic_id && message?.topic_id !== '0') ||
 				message?.code === TypeMessage.Topic ||
@@ -735,7 +736,7 @@ export const ContainerMessageActionModal = React.memo(
 				isHideActionImage && EMessageActionType.CopyImage,
 				isHideActionImage && EMessageActionType.ShareImage,
 				isHideActionMedia && EMessageActionType.SaveMedia,
-				(isTopicFirstMessage || message?.content?.fwd || message?.code === TypeMessage.SendToken) && EMessageActionType.EditMessage
+				(isTopicInitMessage || message?.content?.fwd || message?.code === TypeMessage.SendToken) && EMessageActionType.EditMessage
 			];
 
 			let availableMessageActions: IMessageAction[] = [];

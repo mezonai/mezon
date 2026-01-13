@@ -94,7 +94,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 
 	const shareLink = useMemo(() => {
 		if (!channelVoice?.channel_id && !event?.meet_room?.external_link) return '';
-		return channelVoice.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
+		return channelVoice?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
 			? `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/${channelVoice.clan_id}/channels/${channelVoice.channel_id}`
 			: `${process.env.NX_CHAT_APP_REDIRECT_URI}${event?.meet_room?.external_link}`;
 	}, [channelVoice, event?.meet_room?.external_link]);

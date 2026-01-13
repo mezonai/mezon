@@ -483,6 +483,7 @@
 	"share": "Chia sẻ",
 	"download": "Tải xuống",
 	"jumpToMessage": "Đi đến tin nhắn",
+	"groupMembers": "{members} trên {total} thành viên",
 	"quickReaction": {
 		"title": "Đặt cảm xúc nhanh",
 		"toast": {

@@ -19,7 +19,7 @@ export const UserStatus = React.memo(({ status, customStyles, iconSize = size.s_
 				return <MezonIconCDN icon={IconCDN.disturbStatusIcon} color="#F23F43" width={mobileIconSize} height={mobileIconSize} />;
 
 			case EUserStatus.INVISIBLE:
-				return <MezonIconCDN icon={IconCDN.offlineStatusIcon} color="#AEAEAE" width={iconSize} height={iconSize} />;
+				return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#AEAEAE" width={iconSize} height={iconSize} />;
 
 			default:
 				if (status?.isMobile) {
