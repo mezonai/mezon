@@ -372,7 +372,7 @@ const MessageItem = React.memo(
 									onLongPress={handleLongPressMessage}
 									senderDisplayName={senderDisplayName}
 									isShow={!isCombine || !!message?.references?.length || showUserInformation}
-									createTime={message?.create_time_seconds}
+									createTime={message?.create_time_seconds || message?.create_time}
 									messageSenderId={message?.sender_id}
 									mode={mode}
 								/>
