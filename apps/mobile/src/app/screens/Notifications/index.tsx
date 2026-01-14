@@ -152,7 +152,7 @@ const Notifications = ({ navigation, route }) => {
 						return resolve();
 					}
 					const isTopic =
-						Number(notify?.content?.topic_id) !== 0 ||
+						(notify?.content?.topic_id && Number(notify?.content?.topic_id) !== 0) ||
 						notify?.content?.code === TypeMessage.Topic ||
 						notify?.message?.code === TypeMessage.Topic;
 
@@ -260,6 +260,7 @@ const Notifications = ({ navigation, route }) => {
 
 	const handleOnPressNotify = useCallback(
 		async (notify: INotification) => {
+			console.log("log => notify: ", notify);
 			if (!notify?.content?.channel_id) return;
 
 			const store = await getStoreAsync();
