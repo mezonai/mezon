@@ -57,18 +57,6 @@ export const timeFomat = (start: string | number, locale?: string) => {
 	}
 };
 
-export const handleTimeISO = (fullDateStr: Date, timeStr: string) => {
-	const date = new Date(fullDateStr);
-	const year = date.getFullYear();
-	const month = (date.getMonth() + 1).toString().padStart(2, '0');
-	const day = date.getDate().toString().padStart(2, '0');
-
-	const [hours, minutes] = timeStr.split(':').map(Number);
-	const isoDate = new Date(year, Number(month) - 1, Number(day), hours, minutes);
-
-	return isoDate.toISOString();
-};
-
 export function convertToLongUTCFormat(dateString: string): string {
 	const date = new Date(dateString);
 	if (isNaN(date.getTime())) {
@@ -188,22 +176,6 @@ export const compareTime = (start: string, end: string, equal?: boolean) => {
 	return false;
 };
 
-export const differenceTime = (end: string) => {
-	const start = handleTimeISO(new Date(), getTimeFomatDay());
-
-	const dateStart = new Date(start);
-	const dateEnd = new Date(end);
-
-	if (!isNaN(dateStart.getTime()) && !isNaN(dateEnd.getTime())) {
-		const differenceInMilliseconds = dateEnd.getTime() - dateStart.getTime();
-
-		const differenceInMinutes = Math.floor(differenceInMilliseconds / (1000 * 60));
-
-		return differenceInMinutes;
-	}
-	return -1;
-};
-
 export const getTimeFomatDay = () => {
 	const date = new Date();
 	const timezoneOffsetMinutes = -date.getTimezoneOffset();
@@ -215,12 +187,16 @@ export const getTimeFomatDay = () => {
 
 export const formatTimeStringToHourFormat = (timeString: string | number) => {
 	const date = new Date(timeString);
-	const timezoneOffsetMinutes = -date.getTimezoneOffset();
-	date.setUTCMinutes(date.getUTCMinutes() + timezoneOffsetMinutes);
-	const hours = date.getUTCHours().toString().padStart(2, '0');
-	const minutes = date.getUTCMinutes().toString().padStart(2, '0');
 
-	return `${hours}:${minutes}`;
+	const hours = date.getHours();
+	const minutes = date.getMinutes();
+
+	return hours * 60 * 60 * 1000 + minutes * 60 * 1000;
+};
+
+export const getTimeTodayMidNight = (time?: number) => {
+	if (time) return new Date(new Date(time).setHours(0, 0, 0, 0)).getTime();
+	return new Date(new Date().setHours(0, 0, 0, 0)).getTime();
 };
 
 export const formatToLocalDateString = (timeString: string | Date) => {

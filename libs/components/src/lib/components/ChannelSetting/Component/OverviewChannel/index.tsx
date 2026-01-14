@@ -1,3 +1,4 @@
+import { ModalSaveChanges } from '@mezon/components';
 import type { ChannelsEntity, IUpdateChannelRequest, IUpdateSystemMessage } from '@mezon/store';
 import {
 	channelsActions,
@@ -12,11 +13,10 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { Icons, Image, InputField, Menu as Dropdown, TextArea } from '@mezon/ui';
+import { Menu as Dropdown, Icons, Image, InputField, TextArea } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ValidateSpecialCharacters, ValidateURL, checkIsThread, generateE2eId } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { ModalSaveChanges } from '@mezon/components';
 import { ChannelType } from 'mezon-js';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -306,7 +306,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 		<div className="overflow-y-auto flex flex-col flex-1 shrink  w-1/2 pt-[94px] sbm:pb-7 text-theme-primary bg-theme-setting-primary sbm:pr-[10px] sbm:pl-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
 			<div className=" text-[15px]" data-e2e={generateE2eId(`clan_page.channel_list.settings.overview`)}>
 				<h3 className="mb-4 font-bold text-xl text-theme-primary-active">{t('overview.title')}</h3>
-				<p className="text-xs font-bold uppercase mb-2">{isThread ? t('fields.threadName.title') : t('fields.channelName.title')}</p>
+				<p className="text-xs font-bold mb-2">{isThread ? t('fields.threadName.title') : t('fields.channelName.title')}</p>
 				<InputField
 					type="text"
 					placeholder={channelLabel}
@@ -320,7 +320,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 				{channel.type === ChannelType.CHANNEL_TYPE_APP && (
 					<>
 						<hr className="border-t-theme-primary my-10" />
-						<p className="text-xs font-bold uppercase mb-2">{t('fields.appUrl.title')}</p>
+						<p className="text-xs font-bold mb-2">{t('fields.appUrl.title')}</p>
 						<InputField
 							disabled={true}
 							type="text"
@@ -334,9 +334,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 				)}
 
 				<hr className="border-t-theme-primary my-10" />
-				<p className="text-xs font-bold  uppercase mb-2">
-					{isThread ? t('fields.threadDescription.title') : t('fields.channelDescription.title')}
-				</p>
+				<p className="text-xs font-bold mb-2">{isThread ? t('fields.threadDescription.title') : t('fields.channelDescription.title')}</p>
 				<div className="relative">
 					<TextArea
 						placeholder={isThread ? t('fields.threadDescription.placeholder') : t('fields.channelDescription.placeholder')}

@@ -31,6 +31,8 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 			return ChannelStreamMode.STREAM_MODE_CHANNEL;
 		}
 
+		//11
+
 		switch (channelJump.type) {
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
 				return ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -43,9 +45,9 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		}
 	}, [channelJump]);
 	const message = notify?.content;
-	const messageId = message?.messageId;
+	const messageId = message?.message_id;
 	const channelId = notify?.channel_id;
-	const clanId = message?.clanId;
+	const clanId = message?.clan_id;
 
 	const topicId = notify?.topic_id || '';
 
@@ -75,7 +77,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		message,
 		subject: notify.subject,
 		category: notify.category,
-		senderId: notify?.content?.senderId
+		senderId: notify?.content?.sender_id
 	};
 
 	return (
@@ -203,9 +205,11 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 									content: message.content,
 									code: 0,
 									sender_id: message.sender_id,
+									display_name: message.display_name || message.username,
+									username: message.username,
 									user: {
 										id: message.sender_id,
-										name: message.username,
+										name: message.display_name || message.username,
 										username: message.username
 									}
 								}}
@@ -256,13 +260,13 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 							)}
 						</div>
 					) : (
-						<div className="flex flex-col gap-1">
+						<div className="flex flex-col gap-1 justify-center">
 							<div>
 								<span className="font-bold">{user?.display_name || username}</span>
 								<span>{subjectText}</span>
 							</div>
-							{message?.create_time_seconds && (
-								<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.create_time_seconds)}</span>
+							{!!message?.create_time_seconds && (
+								<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.create_time_seconds * 1000)}</span>
 							)}
 						</div>
 					)}
@@ -280,7 +284,7 @@ type IMessageHeadProps = {
 
 // fix later
 const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
-	const messageTime = message?.create_time_seconds ? convertTimeString(message?.create_time_seconds) : '';
+	const messageTime = message?.create_time_seconds ? convertTimeString(message?.create_time_seconds * 1000) : '';
 	const usernameSender = message?.username;
 	const clanNick = message?.clan_nick;
 	const displayName = message?.display_name;

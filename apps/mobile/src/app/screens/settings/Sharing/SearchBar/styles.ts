@@ -4,7 +4,6 @@ import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
-		// Search input container
 		searchInput: {
 			padding: size.s_16,
 			flexDirection: 'row',
@@ -12,7 +11,6 @@ export const style = (colors: Attributes) =>
 			gap: size.s_8
 		},
 
-		// Input wrapper for search
 		inputWrapper: {
 			flex: 1,
 			backgroundColor: colors.secondary,
@@ -22,7 +20,6 @@ export const style = (colors: Attributes) =>
 			borderRadius: size.s_24
 		},
 
-		// Input icons
 		iconLeftInput: {
 			marginRight: size.s_8,
 			width: size.s_18,
@@ -40,7 +37,6 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 
-		// Text inputs
 		textInput: {
 			flex: 1,
 			alignItems: 'center',
@@ -56,7 +52,6 @@ export const style = (colors: Attributes) =>
 			color: colors.white
 		},
 
-		// Filter button
 		filterButton: {
 			backgroundColor: colors.secondary,
 			paddingHorizontal: size.s_10,
@@ -67,20 +62,14 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center'
 		},
 
-		// Filter badge
 		filterBadge: {
 			marginRight: size.s_6,
 			backgroundColor: colors.borderDim,
-			borderRadius: size.s_8,
-			paddingHorizontal: size.s_8,
-			paddingVertical: size.s_2
-		},
-		filterBadgeText: {
-			fontSize: size.small,
-			color: colors.white
+			borderRadius: size.s_16,
+			paddingHorizontal: size.s_4,
+			paddingVertical: size.s_4
 		},
 
-		// Tooltip styles
 		tooltipContainer: {
 			backgroundColor: colors.primary,
 			borderRadius: size.s_10,
@@ -90,10 +79,15 @@ export const style = (colors: Attributes) =>
 			color: colors.white,
 			padding: size.s_10,
 			borderBottomWidth: 2,
+			borderBottomColor: colors.borderDim,
+			fontSize: size.s_14
+		},
+
+		tooltipUser: {
+			borderBottomWidth: 1,
 			borderBottomColor: colors.borderDim
 		},
 
-		// Filter options
 		filterOptionItem: {
 			backgroundColor: colors.primary,
 			flexDirection: 'row',
@@ -108,12 +102,6 @@ export const style = (colors: Attributes) =>
 			color: colors.white
 		},
 
-		groupAvatarWrapper: {
-			width: size.s_18,
-			height: size.s_18,
-			borderRadius: size.s_12,
-			overflow: 'hidden'
-		},
 		groupAvatarImage: {
 			width: '100%',
 			height: '100%'
@@ -121,11 +109,13 @@ export const style = (colors: Attributes) =>
 		avatarGroupImage: {
 			width: size.s_18,
 			height: size.s_18,
-			borderRadius: size.s_18
+			borderRadius: size.s_18,
+			overflow: 'hidden'
 		},
 		tooltipContent: {
 			minWidth: size.s_150,
 			padding: 0,
-			borderRadius: size.s_10
+			borderRadius: size.s_10,
+			backgroundColor: colors.primary
 		}
 	});

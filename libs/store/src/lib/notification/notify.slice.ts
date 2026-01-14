@@ -5,7 +5,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { Notification } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiMessageMention } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -298,21 +298,60 @@ export const notificationSlice = createSlice({
 			.addCase(
 				markMessageNotify.fulfilled,
 				(state: NotificationState, action: PayloadAction<{ noti: ApiChannelMessageHeader; message: MessagesEntity }>) => {
-					if (state.notifications[NotificationCategory.MESSAGES].data) {
+					if (state.notifications[NotificationCategory.MESSAGES].data && state.notifications[NotificationCategory.MESSAGES].data?.[0]?.id) {
 						const { noti, message } = action.payload;
+						const mention_ids: string[] = [];
+						const position_s: number[] = [];
+						const position_e: number[] = [];
+						const is_mention_role: boolean[] = [];
+						(message.mentions || []).map((item: ApiMessageMention) => {
+							if (item.user_id && item.s && item.e) {
+								mention_ids.push(item.user_id);
+								is_mention_role.push(false);
+								position_s.push(item.s);
+								position_e.push(item.e);
+							}
+							if (item.role_id && item.s && item.e) {
+								mention_ids.push(item.role_id);
+								is_mention_role.push(true);
+								position_s.push(item.s);
+								position_e.push(item.e);
+							}
+						});
 						const notiMark: INotification = {
 							...message,
 							id: noti.id || '',
 							...noti,
-							content: safeJSONParse(noti.content || ''),
+							content: {
+								title: '',
+								link: '',
+								content: message.content.t,
+								channel_id: message.channel_id,
+								sender_id: message.sender_id,
+								avatar: message.clan_avatar || message.avatar,
+								clan_id: message.clan_id,
+								attachment_link: message.attachments?.[0]?.url || '',
+								display_name: message.clan_nick || message.display_name || message.username,
+								create_time_seconds: message.create_time_seconds,
+								update_time_seconds: message.update_time_seconds,
+								username: message.username,
+								mention_ids,
+								position_s,
+								position_e,
+								attachment_type: '',
+								has_more_attachment: (message.attachments?.length || 0) > 2,
+								is_mention_role,
+								message_id: message.message_id
+							},
 							category: NotificationCategory.MESSAGES,
 							avatar_url: message?.avatar?.[0] || '',
 							clan_id: message.clan_id || '',
 							topic_id: message.topic_id || ''
 						};
+
 						state.notifications[NotificationCategory.MESSAGES].data = [
-							...state.notifications[NotificationCategory.MESSAGES].data,
-							notiMark
+							notiMark,
+							...state.notifications[NotificationCategory.MESSAGES].data
 						];
 					}
 				}

@@ -40,7 +40,7 @@ export type ItemEventManagementProps = {
 	address?: string;
 	logo?: string;
 	logoRight?: string;
-	start: string;
+	start?: string;
 	end?: string;
 	event?: EventManagementEntity;
 	createTime?: string;
@@ -224,6 +224,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		setIsInterested(!isInterested);
 	};
 
+	const displayLabel = useMemo(() => {
+		if (actualEventStatus.isUpcoming) return timeUntilEvent;
+		if (actualEventStatus.isOngoing) return t('countdown.joinNow');
+		return start || formatTimeI18n(new Date((event?.start_time_seconds || 0) * 1000).toISOString());
+	}, [actualEventStatus.isUpcoming, actualEventStatus.isOngoing, timeUntilEvent, start, event?.start_time_seconds, t]);
+
 	return (
 		<div className="rounded-lg overflow-hidden bg-theme-setting-nav border-theme-primary" ref={panelRef}>
 			{logo && <img src={logo} alt="logo" className="w-full max-h-[180px] object-cover" />}
@@ -232,11 +238,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					<div className="flex items-center gap-x-2 mb-4">
 						<Icons.IconEvents defaultSize={`font-semibold ${cssEventStatus}`} />
 						<p className={`font-semibold ${cssEventStatus}`} data-e2e={generateE2eId('clan_page.modal.create_event.review.start_time')}>
-							{actualEventStatus.isUpcoming
-								? timeUntilEvent || formatTimeI18n(new Date(event?.start_time_seconds || 0).toISOString() || start)
-								: actualEventStatus.isOngoing
-									? t('countdown.joinNow')
-									: formatTimeI18n(new Date(event?.start_time_seconds || 0).toISOString() || start)}
+							{displayLabel}
 						</p>
 						{isClanEvent && (
 							<p

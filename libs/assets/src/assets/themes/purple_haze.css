@@ -85,7 +85,7 @@
 
 	--border-color-primary: color-mix(
 		in oklab,
-		color-mix(in oklab, #0eb5bf 50%, #218be0 50%) 30%,
+		color-mix(in oklab, #8314a5 50%, #8a21e0 50%) 30%,
 		color-mix(in oklab, hsl(240 4% 40% / 0.3) 100%, hsl(50 100% 90% / 0.3) 50%) 100%
 	);
 	/* màu bên channel và user */

@@ -74,6 +74,27 @@ export const convertTimeStringI18n = (dateString: string | number, t: (key: stri
 	}
 };
 
+export const convertUnixSecondsToTimeString = (seconds: number, t: (key: string) => string, languageCode = 'en'): string => {
+	if (!seconds) {
+		return '';
+	}
+
+	const codeTime = new Date(seconds * 1000);
+	const today = startOfDay(new Date());
+	const yesterday = startOfDay(subDays(new Date(), 1));
+	const locale = getDateLocale(languageCode);
+
+	if (isSameDay(codeTime, today)) {
+		return format(codeTime, 'HH:mm', { locale });
+	} else if (isSameDay(codeTime, yesterday)) {
+		const formattedTime = format(codeTime, 'HH:mm', { locale });
+		return `${t('yesterdayAt')} ${formattedTime}`;
+	} else {
+		const formattedDate = format(codeTime, 'dd/MM/yyyy, HH:mm', { locale });
+		return formattedDate;
+	}
+};
+
 export const convertDateStringI18n = (
 	dateString: string | number,
 	t: (key: string) => string,

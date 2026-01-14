@@ -544,7 +544,7 @@ const SenderUser = () => {
 					{user?.clan_nick ?? user?.user?.display_name ?? user?.user?.username}
 				</div>
 				<div className="text-[12px] text-bgTextarea truncate max-sm:w-12">
-					{attachment?.create_time ? convertTimeString(attachment.create_time) : 'N/A'}
+					{attachment?.create_time ? convertTimeString(attachment.create_time || 0 * 1000) : 'N/A'}
 				</div>
 			</div>
 		</div>

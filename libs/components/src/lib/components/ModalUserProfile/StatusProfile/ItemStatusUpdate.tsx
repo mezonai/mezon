@@ -3,7 +3,7 @@ import { accountActions, useAppDispatch } from '@mezon/store';
 import { Menu } from '@mezon/ui';
 import { notificationService, useAppLayout } from '@mezon/utils';
 import type { ReactElement, ReactNode } from 'react';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ItemStatus from './ItemStatus';
 
@@ -24,9 +24,11 @@ const ItemStatusUpdate = ({ children, statusValue, dropdown, startIcon, onClick,
 	const dispatch = useAppDispatch();
 	const { isMobile } = useAppLayout();
 	const { userProfile } = useAuth();
+	const [visible, setVisible] = useState(false);
 	const updateUserStatus = useCallback(
 		(status: string, minutes: number, untilTurnOn: boolean) => {
 			modalRef.current = false;
+			setVisible(false);
 			onClick?.();
 			dispatch(
 				accountActions.updateAccountStatus({
@@ -41,7 +43,7 @@ const ItemStatusUpdate = ({ children, statusValue, dropdown, startIcon, onClick,
 				notificationService.setUserStatus(userProfile.user.id, status);
 			}
 		},
-		[dispatch, modalRef, onClick, userProfile?.user?.id]
+		[dispatch, modalRef, userProfile?.user?.id, onClick]
 	);
 
 	const menu = useMemo(() => {
@@ -74,12 +76,14 @@ const ItemStatusUpdate = ({ children, statusValue, dropdown, startIcon, onClick,
 			<div key="div5" className="w-full border-b-[1px] border-[#40444b] opacity-70 text-center my-2"></div>,
 			<ItemStatus key="forever" children={t('statusProfile.statusDuration.forever')} onClick={() => updateUserStatus(statusValue, 0, true)} />
 		];
-		return <>{itemMenu}</>;
+		return <div>{itemMenu}</div>;
 	}, [statusValue, updateUserStatus, t]);
 	return (
 		<Menu
 			menu={menu}
 			trigger="click"
+			visible={visible}
+			onVisibleChange={setVisible}
 			className=" bg-theme-contexify text-theme-primary border ml-2 py-[6px] px-[8px] w-[200px] max-md:!mx-auto border-theme-primary "
 			placement={isMobile ? 'bottom' : 'bottomRight'}
 			align={
