@@ -2,7 +2,6 @@ import { useLocalParticipant } from '@livekit/components-react';
 import { selectIsInCall, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { memo, useEffect, useRef } from 'react';
 
-
 export const VoiceTrackState = memo(() => {
 	const dispatch = useAppDispatch();
 	const { isMicrophoneEnabled, isCameraEnabled, localParticipant } = useLocalParticipant();
@@ -11,8 +10,6 @@ export const VoiceTrackState = memo(() => {
 
 	useEffect(() => {
 		if (isInCall) {
-			console.log(hasMutedRef.current, 'hasMutedRef.current');
-			
 			if (!hasMutedRef.current) {
 				if (isMicrophoneEnabled) {
 					localParticipant.setMicrophoneEnabled(false);
@@ -28,8 +25,6 @@ export const VoiceTrackState = memo(() => {
 			hasMutedRef.current = false;
 		}
 	}, [isInCall, isMicrophoneEnabled, isCameraEnabled, localParticipant, dispatch]);
-
-
 
 	return null;
 });

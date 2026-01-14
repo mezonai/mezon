@@ -1,5 +1,6 @@
-import { EventManagementEntity, eventManagementActions, useAppDispatch } from '@mezon/store';
-import { ERepeatType } from '@mezon/utils';
+import type { EventManagementEntity } from '@mezon/store';
+import { eventManagementActions, useAppDispatch } from '@mezon/store';
+import type { ERepeatType } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 
 export function useEventManagement() {
@@ -18,8 +19,8 @@ export function useEventManagement() {
 			channel_voice_id: string,
 			address: string,
 			title: string,
-			start_time: string,
-			end_time: string,
+			start_time_seconds: number,
+			end_time_seconds: number,
 			description: string,
 			logo: string,
 			channel_id: string,
@@ -32,8 +33,8 @@ export function useEventManagement() {
 					channel_voice_id,
 					address,
 					title,
-					start_time,
-					end_time,
+					start_time_seconds,
+					end_time_seconds,
 					description,
 					logo,
 					channel_id,

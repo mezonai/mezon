@@ -1,13 +1,15 @@
-import { useChannelMembersActions, usePermissionChecker } from '@mezon/core';
+import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { useAppSelector } from '@mezon/store';
 import {
+	clansActions,
 	selectAllAccount,
 	selectCurrentChannel,
 	selectCurrentClanCreatorId,
 	selectCurrentClanId,
-	selectMemberIdsByChannelId
+	selectMemberIdsByChannelId,
+	useAppDispatch
 } from '@mezon/store-mobile';
 import { EPermission } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
@@ -19,10 +21,12 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import KickUserClanModal from '../home/homedrawer/components/UserProfile/component/KickUserClanModal';
 import { ManageUser } from './ManageUser';
-import { EActionSettingUserProfile, IProfileSetting } from './types';
+import type { IProfileSetting } from './types';
+import { EActionSettingUserProfile } from './types';
 
 type ManageUserScreenProps = MenuClanScreenProps<typeof APP_SCREEN.MENU_CLAN.MANAGE_USER>;
 
@@ -32,7 +36,7 @@ const ManageUserScreen = ({ route }: ManageUserScreenProps) => {
 	const navigation = useNavigation();
 	const { t } = useTranslation('clanOverviewSetting');
 	const userProfile = useSelector(selectAllAccount);
-	const { removeMemberClan } = useChannelMembersActions();
+	const dispatch = useAppDispatch();
 	const currentClanCreatorId = useAppSelector(selectCurrentClanCreatorId);
 	const currentChannel = useSelector(selectCurrentChannel);
 	const currentChannelId = currentChannel?.channel_id;
@@ -106,7 +110,7 @@ const ManageUserScreen = ({ route }: ManageUserScreenProps) => {
 			try {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 				const userIds = [user.user?.id ?? ''];
-				const response = await removeMemberClan({ clanId: currentClanId as string, channelId: currentChannelId as string, userIds });
+				const response = await dispatch(clansActions.removeClanUsers({ clanId: currentClanId, userIds }));
 				if (response) {
 					Toast.show({
 						type: 'success',
@@ -129,7 +133,7 @@ const ManageUserScreen = ({ route }: ManageUserScreenProps) => {
 				});
 			}
 		}
-	}, [currentClanId, removeMemberClan, user, currentChannelId, t, navigation]);
+	}, [user, dispatch, currentClanId, navigation, t]);
 
 	const exitSetting = useCallback(() => {
 		navigation.goBack();

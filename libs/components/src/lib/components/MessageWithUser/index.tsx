@@ -107,7 +107,7 @@ function MessageWithUser({
 
 		if (!previousMessage?.content?.fwd) return true;
 
-		const timeDiff = Date.parse(message.create_time) - Date.parse(previousMessage.create_time);
+		const timeDiff = (message.create_time_seconds || 0) - (previousMessage.create_time_seconds || 0);
 		const isDifferentSender = message.sender_id !== previousMessage.sender_id;
 		const isTimeGap = timeDiff > 600000;
 
@@ -241,7 +241,7 @@ function MessageWithUser({
 							'max-w-[37rem] bg-tertiary border-theme-primary rounded-lg mx-2 my-1 p-3': message.content?.isCard
 						}
 					)}
-					create_time={message.create_time}
+					create_time={new Date(message.create_time_seconds || 0).toISOString()}
 					showMessageHead={showMessageHead}
 				>
 					{shouldRenderMessageReply && (
@@ -401,7 +401,7 @@ function MessageWithUser({
 
 const MessageDateDivider = ({ message }: { message: MessagesEntity }) => {
 	const { t, i18n } = useTranslation('common');
-	const messageDate = !message.create_time ? '' : convertDateStringI18n(message.create_time as string, t, i18n.language);
+	const messageDate = message.create_time_seconds ? convertDateStringI18n(message.create_time_seconds || 0, t, i18n.language) : '';
 	return (
 		<div className="mt-5 mb-2  w-full h-px flex items-center justify-center border-b-theme-primary">
 			<span className="px-4 bg-item text-theme-primary text-xs font-semibold bg-theme-primary rounded-lg ">{messageDate}</span>

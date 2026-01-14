@@ -11,7 +11,7 @@ import {
 	setSelectedMessage,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { ETypeLinkMedia, ID_MENTION_HERE, isValidEmojiData, TypeMessage } from '@mezon/utils';
+import { ETypeLinkMedia, ID_MENTION_HERE, TypeMessage, isValidEmojiData } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -518,6 +518,8 @@ const MessageItem = React.memo(
 				prevProps?.message?.content?.t +
 				prevProps?.message?.attachments?.length +
 				prevProps?.message?.references?.[0]?.content +
+				prevProps?.message?.isError +
+				prevProps?.message?.isErrorRetry +
 				prevProps?.preventAction ===
 			nextProps?.message?.id +
 				nextProps?.message?.update_time_seconds +
@@ -528,6 +530,8 @@ const MessageItem = React.memo(
 				nextProps?.message?.content?.t +
 				nextProps?.message?.attachments?.length +
 				nextProps?.message?.references?.[0]?.content +
+				nextProps?.message?.isError +
+				nextProps?.message?.isErrorRetry +
 				nextProps?.preventAction
 		);
 	}

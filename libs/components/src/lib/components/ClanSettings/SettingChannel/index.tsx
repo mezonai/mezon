@@ -176,7 +176,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 	}, [channelParent.channel_type]);
 
 	return (
-		<div className="flex flex-col border-b-[1px] border-b-theme-primary last:border-b-0">
+		<div className="flex flex-col border-b-theme-primary last:border-b-0 no-divider-last">
 			<div className="relative" onClick={handleFetchThreads}>
 				<ItemInfor
 					creatorId={channelParent.creator_id as string}

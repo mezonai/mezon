@@ -4,6 +4,7 @@ import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelMembersEntity } from '@mezon/store-mobile';
 import {
 	channelUsersActions,
+	clansActions,
 	selectAllAccount,
 	selectBanMemberCurrentClanById,
 	selectCurrentChannel,
@@ -215,7 +216,7 @@ const UserSettingProfile = ({ user, showActionOutside = true }: IUserSettingProf
 			try {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 				const userIds = [user.user?.id ?? ''];
-				const response = await removeMemberClan({ clanId: currentClanId as string, channelId: currentChannelId as string, userIds });
+				const response = await dispatch(clansActions.removeClanUsers({ clanId: currentClanId, userIds }));
 				if (response) {
 					Toast.show({
 						type: 'success',
@@ -238,7 +239,7 @@ const UserSettingProfile = ({ user, showActionOutside = true }: IUserSettingProf
 				});
 			}
 		}
-	}, [user, removeMemberClan, currentClanId, currentChannelId, t]);
+	}, [user, dispatch, currentClanId, t]);
 
 	const handleRemoveMemberFromThread = useCallback(
 		async (userId?: string) => {

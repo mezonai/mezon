@@ -23,7 +23,6 @@ import {
 import { Icons } from '@mezon/ui';
 import type { ChannelThreads, UsersClanEntity } from '@mezon/utils';
 import {
-	FOR_1_HOUR_SEC,
 	ModeResponsive,
 	TypeSearch,
 	addAttributesSearchList,
@@ -201,13 +200,7 @@ const ForwardMessageModal = () => {
 		combineMessages.push(selectedMessage);
 
 		let index = startIndex + 1;
-		while (
-			index < allMessageIds.length &&
-			Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) -
-				Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) <
-				FOR_1_HOUR_SEC &&
-			allMessagesEntities?.[allMessageIds[index]]?.sender_id === selectedMessage?.user?.id
-		) {
+		while (index < allMessageIds.length && allMessagesEntities?.[allMessageIds[index]]?.sender_id === selectedMessage?.user?.id) {
 			combineMessages.push(allMessagesEntities?.[allMessageIds[index]]);
 			index++;
 		}
@@ -494,13 +487,7 @@ const ForwardMessageModal = () => {
 		combineMessages.push(selectedMessage);
 
 		let index = startIndex + 1;
-		while (
-			index < allMessageIds.length &&
-			Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) -
-				Date.parse(allMessagesEntities?.[allMessageIds[index]]?.create_time) <
-				FOR_1_HOUR_SEC &&
-			allMessagesEntities?.[allMessageIds[index]]?.sender_id === selectedMessage?.user?.id
-		) {
+		while (index < allMessageIds.length && allMessagesEntities?.[allMessageIds[index]]?.sender_id === selectedMessage?.user?.id) {
 			combineMessages.push(allMessagesEntities?.[allMessageIds[index]]);
 			index++;
 		}

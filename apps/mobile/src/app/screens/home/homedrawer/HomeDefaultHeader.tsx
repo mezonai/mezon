@@ -1,6 +1,6 @@
 import { useChatSending } from '@mezon/core';
 import type { IOption } from '@mezon/mobile-components';
-import { ActionEmitEvent, ENotificationActive, ETypeSearch } from '@mezon/mobile-components';
+import { ActionEmitEvent, ENotificationActive, ETypeSearch, load, save, STORAGE_USERS_QUICK_REACTION } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import {
 	accountActions,
@@ -8,12 +8,13 @@ import {
 	selectChannelById,
 	selectCurrentChannel,
 	selectCurrentClanPreventAnonymous,
+	selectCurrentUserId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
 import { ChannelStatusEnum, TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -25,6 +26,7 @@ import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { ConfirmBuzzMessageModal } from './components/ConfirmBuzzMessage';
 import { OptionChannelHeader } from './components/HeaderOptions';
 import HeaderTooltip from './components/HeaderTooltip';
+import { ContainerMessageActionModal } from './components/MessageItemBS/ContainerMessageActionModal';
 import { style } from './styles';
 
 const HomeDefaultHeader = React.memo(
@@ -42,19 +44,30 @@ const HomeDefaultHeader = React.memo(
 		const isTabletLandscape = useTabletLandscape();
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const { t } = useTranslation('message');
+		const { t } = useTranslation(['message', 'common']);
 		const currentChannel = useSelector(selectCurrentChannel);
 		const parent = useAppSelector((state) => selectChannelById(state, currentChannel?.parent_id || ''));
 		const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id));
 		const currentClanPreventAnonymous = useAppSelector(selectCurrentClanPreventAnonymous);
+		const currentUserId = useAppSelector(selectCurrentUserId);
 		const dispatch = useAppDispatch();
 		const mode =
 			currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
 		const { sendMessage } = useChatSending({ mode, channelOrDirect: currentChannel });
 
+		const channelId = useMemo(() => {
+			return currentChannel?.channel_id || currentChannel?.id || '';
+		}, [currentChannel?.channel_id, currentChannel?.id]);
+
 		const headerOptions = useMemo(
 			() =>
 				[
+					{
+						title: 'quickReaction',
+						content: t('common:quickReaction.title'),
+						value: OptionChannelHeader.QuickReaction,
+						icon: <MezonIconCDN icon={IconCDN.reactionIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />
+					},
 					{
 						title: 'anonymous',
 						content: anonymousMode ? t('turnOffAnonymous') : t('turnOnAnonymous'),
@@ -70,9 +83,11 @@ const HomeDefaultHeader = React.memo(
 				].filter((item) => {
 					if (item.value === OptionChannelHeader.Buzz && isBanned) return false;
 					if (item.value === OptionChannelHeader.Anonymous && currentClanPreventAnonymous) return false;
+					if (item.value === OptionChannelHeader.QuickReaction && currentChannel?.parent_id !== '0' && currentChannel?.parent_id !== '')
+						return false;
 					return true;
 				}),
-			[anonymousMode, t, themeValue, isBanned, currentClanPreventAnonymous]
+			[anonymousMode, t, themeValue, isBanned, currentClanPreventAnonymous, currentChannel?.parent_id]
 		);
 
 		const onPressOption = (option: IOption) => {
@@ -80,6 +95,8 @@ const HomeDefaultHeader = React.memo(
 				handleToggleAnnonymous();
 			} else if (option?.value === OptionChannelHeader.Buzz) {
 				handleActionBuzzMessage();
+			} else {
+				handleOpenQuickReactionModal();
 			}
 		};
 
@@ -92,6 +109,43 @@ const HomeDefaultHeader = React.memo(
 
 		const handleBuzzMessage = (text: string) => {
 			sendMessage({ t: text || 'Buzz!!' }, [], [], [], undefined, undefined, undefined, TypeMessage.MessageBuzz);
+		};
+
+		const handleEmojiSelected = useCallback(
+			(emojiId: string, shortname: string) => {
+				if (!currentUserId || !channelId) return;
+
+				try {
+					const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
+
+					if (!currentData[currentUserId]) {
+						currentData[currentUserId] = {};
+					}
+
+					currentData[currentUserId][channelId] = { emojiId, shortname };
+					save(STORAGE_USERS_QUICK_REACTION, currentData);
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+				} catch (error) {
+					console.error('Error setting quick reaction:', error);
+				}
+			},
+			[currentUserId, channelId]
+		);
+
+		const handleOpenQuickReactionModal = async () => {
+			const data = {
+				snapPoints: ['90%'],
+				children: (
+					<ContainerMessageActionModal
+						message={undefined}
+						mode={mode}
+						isOnlyEmojiPicker
+						channelId={channelId}
+						onEmojiSelected={handleEmojiSelected}
+					/>
+				)
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 		};
 
 		const handleToggleAnnonymous = () => {

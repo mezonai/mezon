@@ -1,10 +1,13 @@
 import { captureSentryError } from '@mezon/logger';
 import { generateBasePath } from '@mezon/transport';
-import type { IVoice, IvoiceInfo, LoadingStatus } from '@mezon/utils';
+import { INITIAL_NOISE_SUPPRESSION_PERCENTAGE, type IVoice, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelType, VoiceLeavedEvent } from 'mezon-js';
 import type { ApiGenerateMeetTokenResponse, ApiVoiceChannelUser } from 'mezon-js/api.gen';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { MezonValueContext } from '../helpers';
 import { ensureClientAsync, ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 
@@ -47,6 +50,7 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 	openChatBox?: boolean;
 	externalGroup?: boolean;
 	listInVoiceStatus: Record<string, InVoiceInfor>;
+	cache?: CacheMetadata;
 	screenSource?: {
 		id: string;
 		audio: boolean;
@@ -62,6 +66,8 @@ export const voiceAdapter = createEntityAdapter({
 	selectId: (voice: VoiceEntity) => voice.id
 });
 
+const { selectAll: selectAllVoiceEntities } = voiceAdapter.getSelectors();
+
 const normalizeVoiceEntity = (voice: VoiceEntity): VoiceEntity => {
 	const normalizedId = voice.id && voice.id.length > 0 ? voice.id : `${voice.user_id || ''}${voice.voice_channel_id || ''}`;
 	return {
@@ -74,41 +80,93 @@ type fetchVoiceChannelMembersPayload = {
 	clanId: string;
 	channelId: string;
 	channelType: ChannelType;
+	noCache?: boolean;
+};
+
+export type FetchVoiceChannelMembersResponse = {
+	users: ApiVoiceChannelUser[];
+	clanId: string;
+	fromCache?: boolean;
 };
 
 export interface ApiGenerateMeetTokenResponseExtend extends ApiGenerateMeetTokenResponse {
 	guest_user_id?: string;
 	guest_access_token?: string;
 }
+
+const selectCachedVoiceMembers = createSelector([(state: RootState) => state[VOICE_FEATURE_KEY]], (voiceState) => {
+	return selectAllVoiceEntities(voiceState);
+});
+
+export const fetchVoiceChannelMembersCached = async (
+	getState: () => RootState,
+	ensuredMezon: MezonValueContext,
+	clanId: string,
+	channelId: string,
+	channelType: ChannelType,
+	noCache = false
+) => {
+	const state = getState();
+	const voiceState = state[VOICE_FEATURE_KEY];
+	const apiKey = createApiKey('fetchVoiceChannelMembers', clanId, 'voice_user_list');
+	const shouldForceCall = shouldForceApiCall(apiKey, voiceState?.cache, noCache);
+
+	if (!shouldForceCall) {
+		const voiceMembers = selectCachedVoiceMembers(state);
+		return {
+			voice_channel_users: voiceMembers,
+			fromCache: true
+		};
+	}
+
+	const response = await fetchDataWithSocketFallback(
+		ensuredMezon,
+		{
+			api_name: 'ListChannelVoiceUsers',
+			list_channel_users_req: {
+				limit: 100,
+				state: 1,
+				channel_type: channelType,
+				clan_id: clanId
+			}
+		},
+		() => ensuredMezon.client.listChannelVoiceUsers(ensuredMezon.session, clanId, channelId, channelType, 1, 100, ''),
+		'voice_user_list'
+	);
+
+	markApiFirstCalled(apiKey);
+
+	return {
+		...response,
+		fromCache: false
+	};
+};
+
 export const fetchVoiceChannelMembers = createAsyncThunk(
 	'voice/fetchVoiceChannelMembers',
-	async ({ clanId, channelId, channelType }: fetchVoiceChannelMembersPayload, thunkAPI) => {
+	async ({ clanId, channelId, channelType, noCache }: fetchVoiceChannelMembersPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
-			const response = await fetchDataWithSocketFallback(
+			const response = await fetchVoiceChannelMembersCached(
+				thunkAPI.getState as () => RootState,
 				mezon,
-				{
-					api_name: 'ListChannelVoiceUsers',
-					list_channel_users_req: {
-						limit: 100,
-						state: 1,
-						channel_type: channelType,
-						clan_id: clanId
-					}
-				},
-				() => mezon.client.listChannelVoiceUsers(mezon.session, clanId, channelId, channelType, 1, 100, ''),
-				'voice_user_list'
+				clanId,
+				channelId,
+				channelType,
+				noCache
 			);
 
 			if (!response.voice_channel_users) {
 				return { users: [] as ApiVoiceChannelUser[], clanId };
 			}
 
-			return {
+			const payload: FetchVoiceChannelMembersResponse = {
 				users: response.voice_channel_users,
-				clanId
+				clanId,
+				fromCache: response.fromCache
 			};
+
+			return payload;
 		} catch (error) {
 			captureSentryError(error, 'voice/fetchVoiceChannelMembers');
 			return thunkAPI.rejectWithValue(error);
@@ -180,7 +238,7 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	showCamera: false,
 	showScreen: false,
 	noiseSuppressionEnabled: false,
-	noiseSuppressionLevel: 20,
+	noiseSuppressionLevel: INITIAL_NOISE_SUPPRESSION_PERCENTAGE,
 	statusCall: false,
 	voiceConnectionState: false,
 	fullScreen: false,
@@ -339,7 +397,7 @@ export const voiceSlice = createSlice({
 			state.showCamera = false;
 			state.showScreen = false;
 			state.noiseSuppressionEnabled = true;
-			state.noiseSuppressionLevel = 20;
+			state.noiseSuppressionLevel = INITIAL_NOISE_SUPPRESSION_PERCENTAGE;
 			state.voiceConnectionState = false;
 			state.voiceInfo = null;
 			state.fullScreen = false;
@@ -389,33 +447,35 @@ export const voiceSlice = createSlice({
 			.addCase(fetchVoiceChannelMembers.pending, (state: VoiceState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(
-				fetchVoiceChannelMembers.fulfilled,
-				(state: VoiceState, action: PayloadAction<{ users: ApiVoiceChannelUser[]; clanId: string }>) => {
-					state.loadingStatus = 'loaded';
-					const { users, clanId } = action.payload;
-					state.listInVoiceStatus = {};
-					const members: VoiceEntity[] = users.map((channelRes) => {
-						if (channelRes.user_id && channelRes?.id) {
-							state.listInVoiceStatus[channelRes.user_id] = {
-								channelId: channelRes.channel_id || '',
-								clanId
-							};
-						}
-						return {
-							user_id: channelRes.user_id || '',
-							clan_id: clanId,
-							voice_channel_id: channelRes.channel_id || '',
-							clan_name: '',
-							participant: channelRes.participant || '',
-							voice_channel_label: '',
-							last_screenshot: '',
-							id: (channelRes.user_id || '') + (channelRes.channel_id || '')
+			.addCase(fetchVoiceChannelMembers.fulfilled, (state: VoiceState, action: PayloadAction<FetchVoiceChannelMembersResponse>) => {
+				const { users, clanId, fromCache } = action.payload;
+				state.loadingStatus = 'loaded';
+
+				if (fromCache) return;
+
+				state.listInVoiceStatus = {};
+				const members: VoiceEntity[] = users.map((channelRes) => {
+					if (channelRes.user_id && channelRes?.id) {
+						state.listInVoiceStatus[channelRes.user_id] = {
+							channelId: channelRes.channel_id || '',
+							clanId
 						};
-					});
-					voiceAdapter.setAll(state, members);
-				}
-			)
+					}
+					return {
+						user_id: channelRes.user_id || '',
+						clan_id: clanId,
+						voice_channel_id: channelRes.channel_id || '',
+						clan_name: '',
+						participant: channelRes.participant || '',
+						voice_channel_label: '',
+						last_screenshot: '',
+						id: (channelRes.user_id || '') + (channelRes.channel_id || '')
+					};
+				});
+				voiceAdapter.setAll(state, members);
+
+				state.cache = createCacheMetadata();
+			})
 			.addCase(fetchVoiceChannelMembers.rejected, (state: VoiceState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
@@ -481,11 +541,9 @@ export const voiceActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll } = voiceAdapter.getSelectors();
-
 export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): VoiceState => rootState[VOICE_FEATURE_KEY];
 
-export const selectAllVoice = createSelector(getVoiceState, selectAll);
+export const selectAllVoice = createSelector(getVoiceState, selectAllVoiceEntities);
 export const selectStatusInVoice = createSelector(
 	[getVoiceState, (state, userId: string) => userId],
 	(state, userId) => state.listInVoiceStatus[userId]

@@ -67,8 +67,9 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 		},
 		lastSeen: lastSeenId === (channelMess.id || channelMess.message_id),
 		create_time_seconds: createTimeSeconds,
-		create_time: channelMess.create_time || new Date(createTimeSeconds * 1000).toISOString(),
-		update_time: channelMess.update_time || (channelMess.update_time_seconds ? new Date(channelMess.update_time_seconds * 1000).toISOString() : undefined)
+		update_time_seconds:
+			channelMess.update_time_seconds ||
+			(channelMess.update_time_seconds ? new Date(channelMess.update_time_seconds * 1000).getTime() : undefined)
 	};
 };
 
@@ -250,7 +251,6 @@ export const fetchMessagesCached = async (
 			scope: 'channel-messages'
 		}
 	);
-
 
 	markApiFirstCalled(apiKey);
 
@@ -1471,7 +1471,8 @@ export const messagesSlice = createSlice({
 							attachments: action.payload.attachments,
 							hide_editted: action.payload.hide_editted,
 							update_time_seconds: updateTimeSeconds,
-							update_time: action.payload.update_time || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
+							update_time:
+								action.payload.update_time || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
 						}
 					});
 					const replyList = handleUpdateReplyMessage(channelEntity, action.payload.id);

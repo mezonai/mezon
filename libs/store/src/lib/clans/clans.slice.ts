@@ -107,9 +107,8 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 			const targetClan = state.clans.entities[clanId];
 			const hasUnreadCount = (targetClan?.badge_count ?? 0) > 0;
 			if (hasUnreadCount && !noCache) {
-				thunkAPI.dispatch(fetchClans({ noCache: true }));
+				thunkAPI.dispatch(listClanBadgeCount({ clanId }));
 			}
-
 			batch(() => {
 				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId as string));
 				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
@@ -146,6 +145,36 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 
 const selectCachedClans = createSelector([(state: RootState) => state[CLANS_FEATURE_KEY]], (clansState) => {
 	return clansAdapter.getSelectors().selectAll(clansState);
+});
+
+export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('clans/listClanBadgeCount', async ({ clanId }, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		const response = await fetchDataWithSocketFallback(
+			mezon,
+			{
+				api_name: 'ListClanBadgeCount',
+				list_clan_badge_count_req: {
+					clan_id: clanId
+				}
+			},
+			() => (mezon.client as any).listClanBadgeCount?.(mezon.session, clanId),
+			'clanBadgeCount'
+		);
+
+		if (response && (response as any).badge_count !== undefined) {
+			thunkAPI.dispatch(
+				clansActions.setClanBadgeCount({
+					clanId,
+					badgeCount: (response as any).badge_count
+				})
+			);
+		}
+	} catch (error) {
+		captureSentryError(error, 'clans/listClanBadgeCount');
+		return thunkAPI.rejectWithValue(error);
+	}
 });
 
 export const fetchClansCached = async (
@@ -396,7 +425,7 @@ export const updateUser = createAsyncThunk(
 			}
 
 			if (dob && dob !== currentUser?.user?.dob) {
-				body.dob = dob;
+				body.dob_seconds = new Date(dob).getTime();
 			}
 
 			if (logo !== currentUser?.logo) {
@@ -748,6 +777,18 @@ export const clansSlice = createSlice({
 		},
 		removeByClanID: (state, action: PayloadAction<string>) => {
 			clansAdapter.removeOne(state, action.payload);
+		},
+		setClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; badgeCount: number }>) => {
+			const { clanId, badgeCount } = action.payload;
+			const entity = state.entities[clanId];
+			if (entity) {
+				clansAdapter.updateOne(state, {
+					id: clanId,
+					changes: {
+						badge_count: Math.max(0, badgeCount)
+					}
+				});
+			}
 		},
 		updateClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; count: number; isReset?: boolean }>) => {
 			const { clanId, count, isReset } = action.payload;

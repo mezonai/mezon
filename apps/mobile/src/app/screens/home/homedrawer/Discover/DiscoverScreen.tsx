@@ -59,7 +59,6 @@ const DiscoverScreen = () => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { clans, loading, loadingMore, hasMore, loadMoreClans, refreshClans } = useDiscoverMobile();
-	const { t } = useTranslation('discover');
 
 	const renderItem = ({ item }: { item: ApiClanDiscover }) => <ClanDiscoverItem item={item} />;
 

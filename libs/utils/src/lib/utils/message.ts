@@ -1,5 +1,7 @@
-import { ChannelMessage, safeJSONParse } from 'mezon-js';
-import { EMessageCode, IMessageWithUser } from '../types';
+import type { ChannelMessage } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
+import type { IMessageWithUser } from '../types';
+import { EMessageCode } from '../types';
 
 interface MessagesEntity extends IMessageWithUser {
 	id: string; // Primary ID
@@ -13,7 +15,7 @@ interface MessagesEntity extends IMessageWithUser {
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
 const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): IMessageWithUser => {
-	const creationTime = new Date(channelMess.create_time || '');
+	const creationTime = new Date(channelMess.create_time_seconds || '');
 	const isAnonymous = channelMess?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 	return {
 		...channelMess,

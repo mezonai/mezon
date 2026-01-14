@@ -1,5 +1,5 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { IMessageWithUser } from '@mezon/utils';
+import type { IMentionOnMessage, IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -11,8 +11,9 @@ import { style } from './MessageNotification.styles';
 
 interface IMessageNotificationProps {
 	message: IMessageWithUser;
+	mentions: IMentionOnMessage[];
 }
-const MessageNotification = React.memo(({ message }: IMessageNotificationProps) => {
+const MessageNotification = React.memo(({ message, mentions }: IMessageNotificationProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation('message');
@@ -35,7 +36,7 @@ const MessageNotification = React.memo(({ message }: IMessageNotificationProps) 
 			<RenderTextMarkdownContent
 				content={{
 					...(typeof message.content === 'object' ? message.content : {}),
-					mentions: message?.mentions
+					mentions
 				}}
 				isEdited={isEdited}
 				isNumberOfLine

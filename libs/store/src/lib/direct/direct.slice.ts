@@ -378,11 +378,7 @@ const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 			id: message.id,
 			timestamp_seconds: message.create_time_seconds,
 			sender_id: message.sender_id,
-			content: JSON.stringify(message.content),
-			attachment: message?.attachments ? JSON.stringify(message?.attachments) : '[]',
-			reference: '[]',
-			mention: '[]',
-			reaction: '[]'
+			content: JSON.stringify(message.content)
 		},
 		last_seen_message: {
 			id: message.id,

@@ -17,13 +17,7 @@ import isEqual from 'lodash.isequal';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import {
-	convertToLongUTCFormat,
-	formatTimeStringToHourFormat,
-	formatToLocalDateString,
-	getCurrentTimeRounded,
-	handleTimeISO
-} from '../timeFomatEvent';
+import { formatTimeStringToHourFormat, getTimeTodayMidNight } from '../timeFomatEvent';
 import EventInfoModal from './eventInfoModal';
 import HeaderEventCreate from './headerEventCreate';
 import LocationModal from './locationModal';
@@ -65,10 +59,10 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const [contentSubmit, setContentSubmit] = useState<ContenSubmitEventProps>({
 		topic: currentEvent ? currentEvent.title || '' : '',
 		address: currentEvent ? currentEvent?.address || '' : '',
-		timeStart: currentEvent ? currentEvent.start_time || '00:00' : '00:00',
-		timeEnd: currentEvent ? currentEvent.end_time || '00:00' : '00:00',
-		selectedDateStart: currentEvent ? new Date(formatToLocalDateString(currentEvent.start_time || '')) : new Date(),
-		selectedDateEnd: currentEvent ? new Date(formatToLocalDateString(currentEvent.end_time || '')) : new Date(),
+		timeStart: currentEvent?.start_time_seconds ? formatTimeStringToHourFormat(currentEvent.start_time_seconds) : 0,
+		timeEnd: currentEvent?.end_time_seconds ? formatTimeStringToHourFormat(currentEvent?.end_time_seconds) : 0,
+		selectedDateStart: currentEvent?.start_time_seconds ? getTimeTodayMidNight(currentEvent.start_time_seconds) : getTimeTodayMidNight(),
+		selectedDateEnd: currentEvent?.end_time_seconds ? getTimeTodayMidNight(currentEvent?.end_time_seconds) : getTimeTodayMidNight(),
 		voiceChannel: currentEvent ? currentEvent?.channel_voice_id || '' : '',
 		logo: currentEvent ? currentEvent.logo || '' : '',
 		description: currentEvent ? currentEvent.description || '' : '',
@@ -149,16 +143,13 @@ const ModalCreate = (props: ModalCreateProps) => {
 		const address = choiceLocation ? contentSubmit.address : '';
 		const privateEvent = choicePrivateEvent ? contentSubmit.isPrivate : false;
 
-		const timeValueStart = handleTimeISO(contentSubmit.selectedDateStart, contentSubmit.timeStart);
-		const timeValueEnd = handleTimeISO(contentSubmit.selectedDateEnd, contentSubmit.timeEnd);
-
 		await createEventManagement(
 			currentClanId || '',
 			voice,
 			address as string,
 			contentSubmit.topic,
-			timeValueStart,
-			timeValueEnd,
+			contentSubmit.selectedDateStart + contentSubmit.timeStart,
+			contentSubmit.selectedDateEnd + contentSubmit.timeEnd,
 			contentSubmit.description,
 			contentSubmit.logo,
 			contentSubmit.textChannelId as string,
@@ -180,9 +171,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 			logo: currentEvent.logo ?? '',
 			description: currentEvent.description ?? '',
 			textChannelId: currentEvent.channel_id ?? '',
-			repeatType: currentEvent.repeat_type,
-			timeStart: formatToLocalDateString(currentEvent.start_time || ''),
-			timeEnd: formatToLocalDateString(currentEvent.end_time || '')
+			repeatType: currentEvent.repeat_type
 		};
 
 		const submittedContent = {
@@ -192,13 +181,11 @@ const ModalCreate = (props: ModalCreateProps) => {
 			logo: contentSubmit.logo,
 			description: contentSubmit.description,
 			textChannelId: contentSubmit.textChannelId,
-			repeatType: contentSubmit.repeatType,
-			timeStart: formatToLocalDateString(contentSubmit.selectedDateStart || ''),
-			timeEnd: formatToLocalDateString(contentSubmit.selectedDateEnd || '')
+			repeatType: contentSubmit.repeatType
 		};
 		const changeTime =
-			formatTimeStringToHourFormat(currentEvent.start_time || '') !== contentSubmit.timeStart ||
-			formatTimeStringToHourFormat(currentEvent.end_time || '') !== contentSubmit.timeEnd;
+			currentEvent.start_time_seconds !== contentSubmit.timeStart + contentSubmit.selectedDateStart ||
+			currentEvent?.end_time_seconds !== contentSubmit.timeEnd + contentSubmit.selectedDateEnd;
 		return !isEqual(submittedContent, formattedCurrentEvent) || changeTime;
 	}, [
 		currentEvent?.title,
@@ -208,8 +195,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 		currentEvent?.description,
 		currentEvent?.channel_id,
 		currentEvent?.repeat_type,
-		currentEvent?.start_time,
-		currentEvent?.end_time,
+		currentEvent?.start_time_seconds,
+		currentEvent?.end_time_seconds,
 
 		contentSubmit?.topic,
 		contentSubmit?.address,
@@ -227,10 +214,10 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const handleUpdate = useCallback(async () => {
 		try {
 			const address = choiceLocation ? contentSubmit.address : '';
-			const timeValueStart = handleTimeISO(contentSubmit.selectedDateStart, contentSubmit.timeStart);
-			const timeValueEnd = handleTimeISO(contentSubmit.selectedDateEnd, contentSubmit.timeEnd);
 			const voiceChannel = (eventChannel || eventId) && choiceSpeaker ? contentSubmit.voiceChannel : '';
 			const creatorId = currentEvent?.creator_id;
+			const timeStart = contentSubmit.selectedDateStart + contentSubmit.timeStart;
+			const timeEnd = contentSubmit.selectedDateEnd + contentSubmit.timeEnd;
 
 			const baseEventFields: Partial<Record<string, string | number | boolean>> = {
 				event_id: eventId,
@@ -244,8 +231,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 				channel_voice_id: contentSubmit.voiceChannel === currentEvent.channel_voice_id ? undefined : voiceChannel,
 				address: contentSubmit.address === currentEvent.address ? undefined : address,
 				title: contentSubmit.topic === currentEvent.title ? undefined : contentSubmit.topic,
-				start_time: timeValueStart === convertToLongUTCFormat(currentEvent.start_time as string) ? undefined : timeValueStart,
-				end_time: timeValueEnd === convertToLongUTCFormat(currentEvent.end_time as string) ? undefined : timeValueEnd,
+				start_time_seconds: timeStart === currentEvent?.start_time_seconds ? undefined : timeStart,
+				end_time_seconds: timeEnd === currentEvent?.end_time_seconds ? undefined : timeEnd,
 				repeat_type: contentSubmit.repeatType === currentEvent.repeat_type ? ERepeatType.DOES_NOT_REPEAT : contentSubmit.repeatType
 			};
 
@@ -309,16 +296,13 @@ const ModalCreate = (props: ModalCreateProps) => {
 		}
 	}, [choiceLocation, choiceSpeaker, contentSubmit.address, contentSubmit.voiceChannel, option]);
 
-	const defaultTimeStart = useMemo(() => getCurrentTimeRounded(), []);
-	const defaultTimeEnd = useMemo(() => getCurrentTimeRounded(true), []);
-
 	useEffect(() => {
 		if (eventId === '') {
-			setContentSubmit((prev) => ({ ...prev, timeStart: defaultTimeStart }));
-			setContentSubmit((prev) => ({ ...prev, timeEnd: defaultTimeEnd }));
+			setContentSubmit((prev) => ({ ...prev, timeStart: 0 }));
+			setContentSubmit((prev) => ({ ...prev, timeEnd: 0 }));
 		} else {
-			setContentSubmit((prev) => ({ ...prev, timeStart: formatTimeStringToHourFormat(currentEvent.start_time || '') }));
-			setContentSubmit((prev) => ({ ...prev, timeEnd: formatTimeStringToHourFormat(currentEvent.end_time || '') }));
+			setContentSubmit((prev) => ({ ...prev, timeStart: formatTimeStringToHourFormat(currentEvent.start_time_seconds || 0) }));
+			setContentSubmit((prev) => ({ ...prev, timeEnd: formatTimeStringToHourFormat(currentEvent?.end_time_seconds || 0) }));
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
@@ -353,8 +337,6 @@ const ModalCreate = (props: ModalCreateProps) => {
 					onClose={onClose}
 					contentSubmit={contentSubmit}
 					choiceLocation={choiceLocation}
-					timeStartDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.start_time || '') : defaultTimeStart}
-					timeEndDefault={currentEvent ? formatTimeStringToHourFormat(currentEvent.end_time || '') : defaultTimeEnd}
 					setContentSubmit={setContentSubmit}
 					setErrorTime={(status: boolean) => setErrorTime(status)}
 				/>
