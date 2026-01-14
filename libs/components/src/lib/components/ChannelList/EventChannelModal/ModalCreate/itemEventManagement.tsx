@@ -40,7 +40,7 @@ export type ItemEventManagementProps = {
 	address?: string;
 	logo?: string;
 	logoRight?: string;
-	start: string;
+	start?: string;
 	end?: string;
 	event?: EventManagementEntity;
 	createTime?: string;
@@ -101,11 +101,11 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const eventIsOngoing = event?.event_status === EEventStatus.ONGOING;
 
 	const actualEventStatus = useMemo(() => {
-		if (!event?.start_time) return { isUpcoming: eventIsUpcomming, isOngoing: eventIsOngoing };
+		if (!event?.start_time_seconds) return { isUpcoming: eventIsUpcomming, isOngoing: eventIsOngoing };
 
-		const startTime = new Date(event.start_time).getTime();
+		const startTime = event.start_time_seconds;
 		const currentTime = Date.now();
-		const endTime = event.end_time ? new Date(event.end_time).getTime() : startTime + 2 * 60 * 60 * 1000;
+		const endTime = event.end_time_seconds ? event.end_time_seconds : startTime + 2 * 60 * 60 * 1000;
 
 		const isActuallyUpcoming = currentTime < startTime;
 		const isActuallyOngoing = currentTime >= startTime && currentTime <= endTime;
@@ -114,7 +114,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 			isUpcoming: isActuallyUpcoming,
 			isOngoing: isActuallyOngoing
 		};
-	}, [event?.start_time, event?.end_time, eventIsUpcomming, eventIsOngoing]);
+	}, [event?.start_time_seconds, event?.end_time_seconds, eventIsUpcomming, eventIsOngoing]);
 
 	const externalLink = event?.meet_room?.external_link || getPrivateMeetingRoom?.external_link;
 	const hasLink = Boolean(externalLink);
@@ -161,9 +161,9 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const panelRef = useRef(null);
 	useOnClickOutside(panelRef, () => setOpenPanel(false));
 	const timeUntilEvent = useMemo(() => {
-		if (!event?.start_time || !actualEventStatus.isUpcoming) return null;
+		if (!event?.start_time_seconds || !actualEventStatus.isUpcoming) return null;
 
-		const startTime = new Date(event.start_time).getTime();
+		const startTime = event.start_time_seconds;
 		const currentTime = Date.now();
 		const timeDiff = startTime - currentTime;
 		const minutesLeft = Math.ceil(timeDiff / (1000 * 60));
@@ -172,7 +172,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		}
 
 		return null;
-	}, [event?.start_time, actualEventStatus.isUpcoming, t]);
+	}, [event?.start_time_seconds, actualEventStatus.isUpcoming, t]);
 
 	const cssEventStatus = useMemo(() => {
 		if (actualEventStatus.isOngoing) return 'text-green-500';
@@ -224,6 +224,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		setIsInterested(!isInterested);
 	};
 
+	const displayLabel = useMemo(() => {
+		if (actualEventStatus.isUpcoming) return timeUntilEvent;
+		if (actualEventStatus.isOngoing) return t('countdown.joinNow');
+		return start || formatTimeI18n(new Date((event?.start_time_seconds || 0) * 1000).toISOString());
+	}, [actualEventStatus.isUpcoming, actualEventStatus.isOngoing, timeUntilEvent, start, event?.start_time_seconds, t]);
+
 	return (
 		<div className="rounded-lg overflow-hidden bg-theme-setting-nav border-theme-primary" ref={panelRef}>
 			{logo && <img src={logo} alt="logo" className="w-full max-h-[180px] object-cover" />}
@@ -232,11 +238,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					<div className="flex items-center gap-x-2 mb-4">
 						<Icons.IconEvents defaultSize={`font-semibold ${cssEventStatus}`} />
 						<p className={`font-semibold ${cssEventStatus}`} data-e2e={generateE2eId('clan_page.modal.create_event.review.start_time')}>
-							{actualEventStatus.isUpcoming
-								? timeUntilEvent || formatTimeI18n(event?.start_time || start)
-								: actualEventStatus.isOngoing
-									? t('countdown.joinNow')
-									: formatTimeI18n(event?.start_time || start)}
+							{displayLabel}
 						</p>
 						{isClanEvent && (
 							<p

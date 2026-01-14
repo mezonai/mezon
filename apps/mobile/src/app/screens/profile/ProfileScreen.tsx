@@ -11,7 +11,7 @@ import {
 	useWallet,
 	walletActions
 } from '@mezon/store-mobile';
-import { createImgproxyUrl, CURRENCY, formatBalanceToString } from '@mezon/utils';
+import { CURRENCY, createImgproxyUrl, formatBalanceToString } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect } from '@react-navigation/native';
 import moment from 'moment';
@@ -260,7 +260,9 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				<View style={styles.contentContainer}>
 					<TouchableOpacity onPress={showUserStatusBottomSheet} style={styles.touchStatusMargin}>
 						<View style={styles.viewInfo}>
-							<Text style={styles.textName}>{displayName}</Text>
+							<Text style={styles.textName} numberOfLines={1}>
+								{displayName}
+							</Text>
 							<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 						</View>
 						<Text style={styles.text}>{userProfile?.user?.username || ''}</Text>

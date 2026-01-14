@@ -113,13 +113,13 @@ const ModalInvite = (props: ModalParam) => {
 						×
 					</Button>
 				</div>
-				<div className="flex flex-col w-full px-4 md:px-5 py-4">
+				<div className="flex flex-col w-full px-3 md:px-5 py-4 overflow-hidden">
 					<ListMemberInvite
 						isInviteExternalCalling={isInviteExternalCalling}
 						url={isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite}
 						channelID={channelID}
 					/>
-					<div className="relative">
+					<div className="relative w-full">
 						<p className="pt-4 pb-1 text-[12px] mb-12px cursor-default uppercase font-semibold text-theme-primary-active">
 							{t('modal.sendLinkText', { type: isInviteExternalCalling ? t('modal.privateRoom') : t('modal.clanInvite') })}
 							{!isInviteExternalCalling && (

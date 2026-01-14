@@ -55,6 +55,7 @@ const UserProfileModalInner = ({
 	const userProfileRef = useRef<HTMLDivElement | null>(null);
 	const modeResponsive = useAppSelector(selectModeResponsive);
 	const userById = useUserById(userId);
+
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, userById?.user?.id || userId || ''));
 	const checkAddFriend = useMemo(() => {
 		return infoFriend?.state;
@@ -204,7 +205,15 @@ const UserProfileModalInner = ({
 							<ProfileTabs activeTab={activeTab} onActiveTabChange={handleActiveTabChange} />
 							<div className="p-4 text-theme-primary	">
 								{activeTab === typeTab.ABOUT_ME && (
-									<AboutMe userId={userId} createTime={userById?.user?.create_time || user?.create_time_seconds} />
+									<AboutMe
+										userId={userId}
+										createTime={
+											(userById?.user as any)?.create_time ||
+											user?.create_time_seconds ||
+											(userById?.user as any)?.create_time_seconds ||
+											(user?.user as any)?.create_time_seconds
+										}
+									/>
 								)}
 								{activeTab === typeTab.ACTIVITY && <Activity />}
 								{activeTab === typeTab.MUTUAL_FRIENDS && <MutualFriends />}

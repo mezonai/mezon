@@ -32,6 +32,12 @@ export const style = (colors: Attributes) =>
 			fontSize: size.label,
 			fontWeight: '600'
 		},
+		screenSubTitle: {
+			color: colors.textDisabled,
+			paddingTop: size.s_4,
+			fontSize: size.small,
+			fontWeight: '600'
+		},
 		actions: {
 			flexDirection: 'row',
 			justifyContent: 'flex-end',

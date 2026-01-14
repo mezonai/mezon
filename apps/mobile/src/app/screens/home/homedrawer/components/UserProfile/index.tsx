@@ -3,9 +3,9 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelsEntity, RolesClanEntity, RootState } from '@mezon/store-mobile';
 import {
-	directActions,
 	DMCallActions,
 	EStateFriend,
+	directActions,
 	friendsActions,
 	getStore,
 	selectAllAccount,
@@ -596,7 +596,7 @@ const UserProfile = React.memo(
 
 					{isShowUserContent && (
 						<View style={styles.roleGroup}>
-							{!isDMGroup && (userById?.user?.create_time || user?.create_time || user?.user?.create_time) && (
+							{!!(userById?.user?.create_time || user?.create_time || user?.user?.create_time) && (
 								<View style={styles.memberSince}>
 									<Text style={styles.title}>{t('userInfoDM.mezonMemberSince')}</Text>
 									<Text style={styles.subUserName}>

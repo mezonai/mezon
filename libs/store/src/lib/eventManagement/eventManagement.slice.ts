@@ -146,8 +146,8 @@ export const fetchCreateEventManagement = createAsyncThunk(
 			channel_voice_id,
 			address,
 			title,
-			start_time,
-			end_time,
+			start_time_seconds,
+			end_time_seconds,
 			description,
 			logo,
 			channel_id,
@@ -163,8 +163,8 @@ export const fetchCreateEventManagement = createAsyncThunk(
 				channel_voice_id: channel_voice_id || '',
 				address: address || '',
 				title,
-				start_time,
-				end_time,
+				start_time_seconds: start_time_seconds ? start_time_seconds / 1000 : undefined,
+				end_time_seconds: end_time_seconds ? end_time_seconds / 1000 : undefined,
 				description: description || '',
 				logo: logo || '',
 				channel_id,
@@ -197,8 +197,8 @@ export const updateEventManagement = createAsyncThunk(
 			channel_voice_id,
 			address,
 			title,
-			start_time,
-			end_time,
+			start_time_seconds,
+			end_time_seconds,
 			description,
 			logo,
 			creator_id,
@@ -214,9 +214,9 @@ export const updateEventManagement = createAsyncThunk(
 				channel_voice_id,
 				event_id,
 				description,
-				end_time,
+				end_time_seconds: end_time_seconds ? end_time_seconds / 1000 : undefined,
 				logo,
-				start_time,
+				start_time_seconds: start_time_seconds ? start_time_seconds / 1000 : undefined,
 				title,
 				clan_id,
 				creator_id,
@@ -367,7 +367,7 @@ export const eventManagementSlice = createSlice({
 		},
 
 		updateNewStartTime: (state, action) => {
-			const { event_id, start_time } = action.payload;
+			const { event_id, start_time_seconds } = action.payload;
 			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
 			if (!existingEvent) {
 				return;
@@ -375,7 +375,7 @@ export const eventManagementSlice = createSlice({
 			eventManagementAdapter.updateOne(state.byClans[action.payload.clan_id].entities, {
 				id: event_id,
 				changes: {
-					start_time
+					start_time_seconds
 				}
 			});
 		},
@@ -518,15 +518,17 @@ export const selectEventsByChannelId = createSelector(
 		const filteredEntities = Object.values(entities).filter((entity: EventManagementEntity) => entity.channel_id === channelId);
 		const ongoingEvents = filteredEntities.filter((event) => event.event_status === EEventStatus.ONGOING);
 		if (ongoingEvents.length > 0) {
-			const oldestOngoingTime = Math.min(...ongoingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity)));
-			return ongoingEvents.filter((event) => new Date(event.start_time as string).getTime() === oldestOngoingTime);
+			const oldestOngoingTime = Math.min(
+				...ongoingEvents.map((event) => (event.start_time_seconds ? new Date(event.start_time_seconds).getTime() : Infinity))
+			);
+			return ongoingEvents.filter((event) => new Date(event.start_time_seconds || 0).getTime() === oldestOngoingTime);
 		}
 		const upcomingEvents = filteredEntities.filter((event) => event.event_status === EEventStatus.UPCOMING);
 		if (upcomingEvents.length > 0) {
 			const nearestUpcomingTime = Math.min(
-				...upcomingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity))
+				...upcomingEvents.map((event) => (event.start_time_seconds ? new Date(event.start_time_seconds).getTime() : Infinity))
 			);
-			return upcomingEvents.filter((event) => new Date(event.start_time as string).getTime() === nearestUpcomingTime);
+			return upcomingEvents.filter((event) => new Date(event.start_time_seconds || 0).getTime() === nearestUpcomingTime);
 		}
 
 		return [];

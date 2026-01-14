@@ -70,7 +70,8 @@ export default function TopicDiscussion() {
 				messagesActions.fetchMessages({
 					channelId: currentChannel?.channel_id || '',
 					clanId: currentClanId || '',
-					topicId: currentTopicId || ''
+					topicId: currentTopicId || '',
+					isClearMessage: true
 				})
 			);
 		};

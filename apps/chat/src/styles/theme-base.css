@@ -202,10 +202,13 @@ button.bg-button-add-friend {
 }
 
 .border-b-theme-primary {
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--border-color-primary);
-}
+	box-shadow: inset 0 -0.5px 0 var(--border-color-primary);
+  }
+  
+  .no-divider-last:last-child {
+	box-shadow: none;
+  }
+  
 
 .border-theme-primary {
 	border-width: 1px;

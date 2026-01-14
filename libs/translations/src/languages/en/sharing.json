@@ -4,6 +4,8 @@
 	"channels": "Channels",
 	"all": "All",
 	"selectChannelPlaceholder": "Select a channel or user...",
+	"selectChannel": "Select a channel",
+	"selectUser": "Select a user",
 	"share": "Share",
 	"suggestions": "Suggestions",
 	"addCommentPlaceholder": "Add a Comment (Optional)",

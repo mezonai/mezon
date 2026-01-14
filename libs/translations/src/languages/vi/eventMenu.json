@@ -31,6 +31,8 @@
         "eventInfo": "Thông tin sự kiện",
         "interested": "Quan tâm",
         "personInterested": "{{count}} người quan tâm",
+        "onePersonInterested": "1 người quan tâm",
+        "noOneInterested": "Không có ai quan tâm đến sự kiện.",
         "createdBy": "Được tạo bởi "
     },
     "share": {

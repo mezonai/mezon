@@ -68,5 +68,17 @@ export const style = (colors: Attributes) =>
 		cover: {
 			height: size.s_80,
 			width: '100%'
+		},
+		avatarContainer: {
+			width: size.s_18,
+			height: size.s_18,
+			borderRadius: size.s_18,
+			overflow: 'hidden'
+		},
+		badgeClanEvent: {
+			backgroundColor: baseColor.blurple
+		},
+		badgeChannelEvent: {
+			backgroundColor: baseColor.orange
 		}
 	});

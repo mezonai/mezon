@@ -1,7 +1,7 @@
 import { convertTimestampToTimeAgo } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectClanById, useAppSelector } from '@mezon/store-mobile';
-import React, { memo, useMemo } from 'react';
+import React, { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonClanAvatar from '../../../componentUI/MezonClanAvatar';
 import { parseObject } from '../NotificationMentionItem';
@@ -14,10 +14,7 @@ const NotificationWebhookClan = ({ notify, onLongPressNotify }: NotifyProps) => 
 	const clan = useAppSelector(selectClanById(notify?.content?.clan_id as string));
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const unixTimestamp = useMemo(() => {
-		return notify?.content?.create_time_seconds || Math.floor(new Date(notify?.create_time).getTime() / 1000);
-	}, [notify?.content?.create_time_seconds, notify?.create_time]);
-	const messageTimeDifference = convertTimestampToTimeAgo(unixTimestamp);
+	const messageTimeDifference = convertTimestampToTimeAgo(notify?.content?.create_time_seconds);
 	const data = parseObject(notify?.content);
 
 	return (

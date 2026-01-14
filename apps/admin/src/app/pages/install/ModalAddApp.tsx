@@ -21,9 +21,6 @@ import ModalSuccess from './components/ModalSuccess';
 import type { SelectFieldConfig } from './components/SelectField';
 import SelectField from './components/SelectField';
 import TextField from './components/TextField';
-enum RequestStatusSuccess {
-	Fulfill = 'fulfilled'
-}
 
 type ModalAddAppProps = {
 	applicationId: string;
@@ -40,6 +37,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 	const [labelValue, setLabelValue] = useState('');
 	const [clanError, setClanError] = useState<string>();
 	const [categoryValue, setCategoryValue] = useState('');
+	const [createdChannelId, setCreatedChannelId] = useState<string>('');
 	const [categoryError, setCategoryError] = useState<string>();
 	useEffect(() => {
 		if (clanValue) {
@@ -115,6 +113,9 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 
 		try {
 			const resp = await dispatch(createNewChannel(data)).unwrap();
+			if (resp?.channel_id) {
+				setCreatedChannelId(resp.channel_id as string);
+			}
 			toggleSuccess();
 		} catch (error: any) {
 			console.error('Failed to Add App:', error);
@@ -126,7 +127,18 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 	}, [applicationId, clanValue, categoryValue, labelValue, dispatch, appDetail]);
 
 	if (openSuccess) {
-		return <ModalSuccess name={appDetail?.appname || ''} clan={{ clanId: clanValue, clanName: '', isEmpty: false }} />;
+		const selectedClan = clans.find((clan) => clan.id === clanValue);
+		return (
+			<ModalSuccess
+				name={appDetail?.appname || ''}
+				clan={{
+					clanId: clanValue,
+					clanName: selectedClan?.clan_name || '',
+					channelId: createdChannelId,
+					isEmpty: false
+				}}
+			/>
+		);
 	}
 
 	return (

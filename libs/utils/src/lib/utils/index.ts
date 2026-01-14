@@ -83,7 +83,7 @@ export * from './transform';
 export * from './windowEnvironment';
 export * from './windowSize';
 
-export const convertTimeString = (dateString: string, t?: (key: string, options?: any) => string) => {
+export const convertTimeString = (dateString: string | number, t?: (key: string, options?: any) => string) => {
 	if (!dateString) {
 		return '';
 	}

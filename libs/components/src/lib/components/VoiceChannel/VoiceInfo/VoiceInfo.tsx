@@ -120,8 +120,13 @@ const VoiceInfo = React.memo(() => {
 			dispatch(voiceActions.setShowSelectScreenModal(true));
 			return;
 		}
-		dispatch(voiceActions.setShowScreen(!showScreen));
-	}, [showScreen]);
+		const btnControl = document.getElementById('btn-meet-screen');
+		if (btnControl) {
+			btnControl.click();
+		} else {
+			dispatch(voiceActions.setShowScreen(!showScreen));
+		}
+	}, [showScreen, dispatch]);
 
 	const handleToggleShareCamera = useCallback(() => {
 		const btnControl = document.getElementById('btn-meet-camera');
@@ -131,7 +136,7 @@ const VoiceInfo = React.memo(() => {
 		const enable = btnControl.dataset.lkEnabled?.toLowerCase() === 'true';
 		btnControl?.click();
 		dispatch(voiceActions.setShowCamera(!enable));
-	}, []);
+	}, [dispatch]);
 
 	const handleToggleOpenMicro = useCallback(() => {
 		const btnControl = document.getElementById('btn-meet-micro');
@@ -141,7 +146,7 @@ const VoiceInfo = React.memo(() => {
 		const enable = btnControl.dataset.lkEnabled?.toLowerCase() === 'true';
 		btnControl?.click();
 		dispatch(voiceActions.setShowMicrophone(!enable));
-	}, []);
+	}, [dispatch]);
 
 	const linkVoice = useMemo(() => {
 		if (currentVoiceInfo) {

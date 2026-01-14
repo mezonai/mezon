@@ -38,7 +38,6 @@ import {
 	listChannelsByUserActions,
 	listUsersByUserActions,
 	mapMessageChannelToEntityAction,
-	mapNotificationToEntity,
 	mapReactionToEntity,
 	messagesActions,
 	notificationActions,
@@ -649,7 +648,18 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				!isFocus
 			) {
 				dispatch(
-					notificationActions.add({ data: mapNotificationToEntity(notification), category: notification.category as NotificationCategory })
+					notificationActions.add({
+						data: {
+							...notification,
+							create_time: notification.create_time || new Date().toISOString(),
+							id: notification.id || '',
+							content: {
+								...notification.content,
+								content: safeJSONParse(notification.content?.content || '')?.t
+							}
+						},
+						category: notification.category as NotificationCategory
+					})
 				);
 
 				if (notification.code === NotificationCode.USER_MENTIONED || notification.code === NotificationCode.USER_REPLIED) {
@@ -722,7 +732,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					channelId: pin.channel_id,
 					pinMessage: {
 						id: pin.message_id,
-						attachment: pin.message_attachment,
+						attachment: JSON.parse(pin.message_attachment),
 						avatar: pin.message_sender_avatar,
 						channel_id: pin.channel_id,
 						content: pin.message_content,

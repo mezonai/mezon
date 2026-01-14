@@ -287,11 +287,6 @@ const TopicDiscussionBox = () => {
 					/>
 				) : (
 					<>
-						{dataReferences.message_ref_id && (
-							<div className="w-full ">
-								<ReplyMessageBox channelId={currentTopicId ?? ''} dataReferences={dataReferences} />
-							</div>
-						)}
 						{checkAttachment && (
 							<div
 								className={`${checkAttachment ? 'px-3  pb-1 pt-5  border-b-[1px] border-color-primary' : ''} bg-item-theme max-h-full`}
@@ -313,6 +308,7 @@ const TopicDiscussionBox = () => {
 							</div>
 						)}
 						<div className="mx-3 relative">
+							{dataReferences.message_ref_id && <ReplyMessageBox channelId={currentTopicId ?? ''} dataReferences={dataReferences} />}
 							<div
 								className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
 						bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || (dataReferences && dataReferences.message_ref_id) ? 'rounded-t-none' : 'rounded-t-lg'}

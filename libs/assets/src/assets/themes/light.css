@@ -34,8 +34,6 @@
 	--color-text-active-button: #4361ee;
 	--bg-button-add-friend: #4361ee;
 	--border-color-primary: #e0e0e0;
-	--bg-theme-direct-message: oklab(0.964355 0.000418752 -0.00125641);
-
 	--text-theme-message: oklab(0.322425 0.00154591 -0.010555);
 
 	--text-secondary: oklab(0.310123 0.00108959 -0.00894994);
@@ -62,7 +60,7 @@
 	--color-text-active-button: #4361ee;
 	--bg-button-add-friend: #4361ee;
 	--border-color-primary: #e0e0e0;
-	--bg-theme-direct-message: oklab(0.964355 0.000418752 -0.00125641);
+	--bg-theme-direct-message: oklab(93.488% 0.00113 -0.00396);
 
 	--bg-item-hover: rgba(67, 97, 238, 0.08);
 

@@ -24,8 +24,8 @@ const Integrations = ({ isClanSetting }: IIntegrationsProps) => {
 	const allClanWebhooks = useSelector(selectAllClanWebhooks);
 
 	return (
-		<div className="mt-[60px]">
-			<h2 className="text-xl font-semibold mb-5 flex text-theme-primary-active">
+		<div className=" text-[15px]">
+			<h2 className="text-xl font-bold mb-5 flex text-theme-primary-active">
 				<div
 					onClick={() => {
 						setIsOpenWebhooks(false);
