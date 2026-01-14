@@ -31,6 +31,8 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 			return ChannelStreamMode.STREAM_MODE_CHANNEL;
 		}
 
+		//11
+
 		switch (channelJump.type) {
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
 				return ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -264,7 +266,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 								<span>{subjectText}</span>
 							</div>
 							{!!message?.create_time_seconds && (
-								<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.create_time_seconds)}</span>
+								<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.create_time_seconds * 1000)}</span>
 							)}
 						</div>
 					)}
@@ -282,7 +284,7 @@ type IMessageHeadProps = {
 
 // fix later
 const MessageHead = ({ message, mode, onClick }: IMessageHeadProps) => {
-	const messageTime = message?.create_time_seconds ? convertTimeString(message?.create_time_seconds) : '';
+	const messageTime = message?.create_time_seconds ? convertTimeString(message?.create_time_seconds * 1000) : '';
 	const usernameSender = message?.username;
 	const clanNick = message?.clan_nick;
 	const displayName = message?.display_name;
