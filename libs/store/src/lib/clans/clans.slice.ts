@@ -698,9 +698,23 @@ export const clansSlice = createSlice({
 			if (group) {
 				group.clanIds = group.clanIds.filter((id) => id !== clanId);
 
-				if (group.clanIds.length === 0) {
+				if (group.clanIds.length === 1) {
+					const remainingClanId = group.clanIds[0];
 					clanGroupAdapter.removeOne(state.clanGroups, groupId);
-					state.clanGroupOrder = state.clanGroupOrder.filter((item) => !(item.type === 'group' && item.groupId === groupId));
+
+					const groupIndex = state.clanGroupOrder.findIndex((item) => item.type === 'group' && item.groupId === groupId);
+					if (groupIndex !== -1) {
+						state.clanGroupOrder[groupIndex] = {
+							type: 'clan',
+							id: remainingClanId,
+							clanId: remainingClanId
+						};
+						state.clanGroupOrder.splice(groupIndex + 1, 0, {
+							type: 'clan',
+							id: clanId,
+							clanId
+						});
+					}
 				} else {
 					const groupIndex = state.clanGroupOrder.findIndex((item) => item.type === 'group' && item.groupId === groupId);
 
