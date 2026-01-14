@@ -100,7 +100,6 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 	const { event, onClose, onCloseAll } = props;
 	const { t } = useTranslation('eventCreator');
 	const channelVoice = useAppSelector((state) => selectChannelById(state, event?.channel_voice_id ?? '')) || {};
-
 	const currentClanLogo = useSelector(selectCurrentClanLogo);
 	const currentClanName = useSelector(selectCurrentClanName);
 	const avatarClan = currentClanName?.charAt(0).toUpperCase();
@@ -186,11 +185,28 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 					}
 
 					if (isPrivateEvent) {
+						const externalLink = event?.meet_room?.external_link;
+						const openPrivateRoomInNewTab = () => {
+							if (externalLink) {
+								const fullLink = `${window.location.origin}${externalLink}`;
+								window.open(fullLink, '_blank', 'noopener,noreferrer');
+								onClose();
+								if (onCloseAll) {
+									onCloseAll();
+								}
+							}
+						};
 						return (
-							<>
-								<Icons.SpeakerLocked />
-								<p>{t('eventDetail.privateRoom')}</p>
-							</>
+							<a
+								onClick={(e) => {
+									handleStopPropagation(e);
+									openPrivateRoomInNewTab();
+								}}
+								className="flex gap-x-3 cursor-pointer items-center"
+							>
+								<Icons.Speaker />
+								<p className="hover:underline">{t('eventDetail.privateRoom')}</p>
+							</a>
 						);
 					}
 
@@ -203,7 +219,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				})()}
 			</div>
 			<div className="flex items-center gap-x-3">
-				<Icons.MemberList />
+				<Icons.MemberList defaultSize={'w-5 h-5'} />
 				<p>
 					{t(
 						(event?.user_ids?.filter((id) => id !== '0')?.length || 0) > 1
