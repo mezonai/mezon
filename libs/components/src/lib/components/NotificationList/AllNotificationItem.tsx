@@ -43,9 +43,9 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		}
 	}, [channelJump]);
 	const message = notify?.content;
-	const messageId = message?.messageId;
+	const messageId = message?.message_id;
 	const channelId = notify?.channel_id;
-	const clanId = message?.clanId;
+	const clanId = message?.clan_id;
 
 	const topicId = notify?.topic_id || '';
 
@@ -75,7 +75,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		message,
 		subject: notify.subject,
 		category: notify.category,
-		senderId: notify?.content?.senderId
+		senderId: notify?.content?.sender_id
 	};
 
 	return (
