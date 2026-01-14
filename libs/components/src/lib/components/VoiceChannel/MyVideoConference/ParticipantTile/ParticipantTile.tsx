@@ -27,6 +27,7 @@ import { ConnectionQuality, Track } from 'livekit-client';
 import { safeJSONParse } from 'mezon-js';
 import type { PropsWithChildren } from 'react';
 import React, { forwardRef, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 import type { ActiveSoundReaction } from '../Reaction/types';
 import { FocusToggle } from './FocusToggle';
@@ -86,6 +87,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	}: ParticipantTileProps,
 	ref
 ) {
+	const { t } = useTranslation('channelVoice');
 	const trackReference = useEnsureTrackRef(trackRef);
 
 	const isMicrophoneEnabled = (() => {
@@ -254,7 +256,9 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 											<span>
 												<ScreenShareIcon />
 											</span>
-											<span className="truncate whitespace-nowrap py-0.5">{voiceUsername}&apos;s screen</span>
+											<span className="truncate whitespace-nowrap py-0.5">
+												{t('usernameScreen', { username: voiceUsername })}
+											</span>
 										</div>
 									)}
 									<ConnectionQualityIndicator />

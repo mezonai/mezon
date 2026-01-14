@@ -28,6 +28,14 @@ export default function SetEmail({ submitButtonText, isLoading, onClose }: SetEm
 		},
 		[t]
 	);
+
+	const translateEmailError = useCallback(
+		(errorCode: string) => {
+			if (!errorCode) return '';
+			return t(`emailSetting.error.${errorCode}`);
+		},
+		[t]
+	);
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
@@ -41,15 +49,18 @@ export default function SetEmail({ submitButtonText, isLoading, onClose }: SetEm
 		dispatch(authActions.refreshStatus());
 	}, [dispatch]);
 
-	const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		setEmail(value);
+	const handleEmailChange = useCallback(
+		(e: React.ChangeEvent<HTMLInputElement>) => {
+			const value = e.target.value;
+			setEmail(value);
 
-		setErrors((prev) => ({
-			...prev,
-			email: validateEmail(value)
-		}));
-	}, []);
+			setErrors((prev) => ({
+				...prev,
+				email: translateEmailError(validateEmail(value))
+			}));
+		},
+		[translateEmailError]
+	);
 
 	const handlePasswordChange = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {

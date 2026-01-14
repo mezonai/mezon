@@ -83,6 +83,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const textChannel = useAppSelector((state) => selectChannelById(state, textChannelId ?? '')) || {};
 	const isThread = textChannel?.type === ChannelType.CHANNEL_TYPE_THREAD;
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
+	console.log('userCreate', userCreate);
+
 	const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);
 	const checkOptionVoice = useMemo(() => option === OptionEvent.OPTION_SPEAKER, [option]);
 	const checkOptionLocation = useMemo(() => option === OptionEvent.OPTION_LOCATION, [option]);
@@ -268,7 +270,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							placement="left"
 							overlay={
 								<p className="text-theme-primary-active w-[max-content]">
-									{t('eventCreator:eventDetail.createdBy', { username: userCreate?.user?.username })}
+									{t('eventCreator:eventDetail.createdBy', { username: userCreate?.clan_nick || userCreate?.user?.display_name })}
 								</p>
 							}
 						>
@@ -277,11 +279,11 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_detail_modal')}
 							>
 								<AvatarImage
-									alt={userCreate?.user?.username || ''}
-									username={userCreate?.user?.username}
+									alt={userCreate?.clan_nick || userCreate?.user?.display_name || ''}
+									username={userCreate?.clan_nick || userCreate?.user?.display_name}
 									className="min-w-6 min-h-6 max-w-6 max-h-6"
-									srcImgProxy={createImgproxyUrl(userCreate?.user?.avatar_url ?? '')}
-									src={userCreate?.user?.avatar_url}
+									srcImgProxy={createImgproxyUrl((userCreate?.clan_avatar || userCreate?.user?.avatar_url) ?? '')}
+									src={userCreate?.clan_avatar || userCreate?.user?.avatar_url}
 									classNameText="text-[9px] pt-[3px]"
 								/>
 								<div

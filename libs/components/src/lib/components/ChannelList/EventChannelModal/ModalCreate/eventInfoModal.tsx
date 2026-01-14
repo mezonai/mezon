@@ -27,6 +27,7 @@ export type EventInfoModalProps = {
 const EventInfoModal = (props: EventInfoModalProps) => {
 	const { contentSubmit, timeStartDefault, setErrorTime, setContentSubmit, choiceLocation, onClose } = props;
 	const { t } = useTranslation('eventCreator');
+	const { t: tCommon } = useTranslation('common');
 	const [countCharacterDescription, setCountCharacterDescription] = useState(255);
 	const [errorStart, setErrorStart] = useState(false);
 	const [errorEnd, setErrorEnd] = useState(false);
@@ -37,20 +38,26 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 	}, []);
 
 	const startDate = contentSubmit.selectedDateStart.getDate();
-	const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-	const startMonth = months[contentSubmit.selectedDateStart.getMonth()];
-	const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-	const startDayOfWeek = weekdays[contentSubmit.selectedDateStart.getDay()];
+	// Use translated month names
+	const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
+	const startMonthKey = monthKeys[contentSubmit.selectedDateStart.getMonth()];
+	const startMonth = tCommon(`timeFormat.months.${startMonthKey}`);
+
+	// Use translated weekday names
+	const weekdayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
+	const startDayOfWeekKey = weekdayKeys[contentSubmit.selectedDateStart.getDay()];
+	const startDayOfWeek = tCommon(`timeFormat.daysOfWeek.${startDayOfWeekKey}`);
 
 	const getWeekdayOccurrence = (date: Date): string => {
-		const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+		const ordinalKeys = ['first', 'second', 'third', 'fourth', 'fifth'] as const;
 		const dayOfMonth = date.getDate();
 		const dayOfWeek = date.getDay();
 		const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
 		const offset = (dayOfWeek - firstDayOfMonth + 7) % 7;
 		const occurrenceIndex = Math.floor((dayOfMonth - 1 - offset) / 7);
-		return ordinals[occurrenceIndex] || 'Unknown';
+		const ordinalKey = ordinalKeys[occurrenceIndex] || 'first';
+		return tCommon(`timeFormat.weekNames.${ordinalKey}`);
 	};
 
 	const weekdayOccurrence = getWeekdayOccurrence(contentSubmit.selectedDateStart);
@@ -71,12 +78,15 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 			{ value: ERepeatType.EVERY_OTHER_DAY, label: t('fields.eventFrequency.everyOther', { name: startDayOfWeek }) },
 			{
 				value: ERepeatType.MONTHLY,
-				label: t('fields.eventFrequency.monthlyOn', { name: `${weekdayOccurrence} ${startDayOfWeek}` })
+				label: t('fields.eventFrequency.monthlyOn', { name: `${startDayOfWeek} ${weekdayOccurrence}` })
 			},
-			{ value: ERepeatType.ANNUALLY, label: t('fields.eventFrequency.annuallyOn', { name: `${startDate} ${startMonth}` }) }
+			{ value: ERepeatType.ANNUALLY, label: t('fields.eventFrequency.annuallyOn', { name: `${startDate}/${startMonth}` }) }
 		];
 
-		if (startDayOfWeek !== 'Sunday' && startDayOfWeek !== 'Saturday') {
+		// Check using day index: 0 = Sunday, 6 = Saturday
+		const dayIndex = contentSubmit.selectedDateStart.getDay();
+		const isWeekend = dayIndex === 0 || dayIndex === 6;
+		if (!isWeekend) {
 			options.push({
 				value: ERepeatType.EVERY_WEEKDAY,
 				label: t('fields.eventFrequency.everyWeekday')
@@ -84,7 +94,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 		}
 
 		return options;
-	}, [startDate, startDayOfWeek, startMonth, weekdayOccurrence]);
+	}, [startDate, startDayOfWeek, startMonth, weekdayOccurrence, contentSubmit.selectedDateStart]);
 
 	useEffect(() => {
 		setSelectedFrequency(contentSubmit.repeatType ?? ERepeatType.DOES_NOT_REPEAT);

@@ -47,5 +47,6 @@
 		"inputDevice": "Microphone",
 		"outputDevice": "Audio",
 		"camera": "Camera"
-	}
+	},
+	"usernameScreen": "Màn hình của {{username}}"
 }

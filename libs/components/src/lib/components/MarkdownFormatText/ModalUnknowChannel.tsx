@@ -4,6 +4,7 @@ import type { RootState } from '@mezon/store';
 import { getStoreAsync, selectClanById, selectCurrentClanId, selectWelcomeChannelByClanId, toastActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
+import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
@@ -39,6 +40,7 @@ const getErrorConfig = (errMessage?: string) => {
 };
 
 function ModalUnknowChannel(props: ModalUnknowChannelProps) {
+	const { t } = useTranslation('common');
 	const dispatch = useDispatch();
 	const { onClose, isError = false, errMessage, idErr } = props;
 	const { toClanPage, navigate } = useAppNavigation();
@@ -105,20 +107,19 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 
 						{isError ? (
 							<div className="space-y-2">
-								<h3 className="text-xl font-semibold text-theme-primary-active">{errMessage || 'Oops! Something Went Wrong'}</h3>
+								<h3 className="text-xl font-semibold text-theme-primary-active">
+									{errMessage || t('modalUnknowChannel.defaultError')}
+								</h3>
 								<p className="text-theme-primary text-sm leading-relaxed">
 									{errorConfig.type === 'permission'
-										? "You don't have the necessary permissions to access this content. Please contact an administrator if you believe this is an error."
-										: "We encountered an issue while trying to access this content. Let's get you back on track."}
+										? t('modalUnknowChannel.permissionError')
+										: t('modalUnknowChannel.genericError')}
 								</p>
 							</div>
 						) : (
 							<div className="space-y-2">
-								<h3 className="text-xl font-semibold text-theme-primary-active">Access Denied</h3>
-								<p className="text-theme-primary text-sm leading-relaxed">
-									You don't have permission to access this channel or clan. Please check with the server administrator if you
-									believe this is an error.
-								</p>
+								<h3 className="text-xl font-semibold text-theme-primary-active">{t('modalUnknowChannel.accessDenied')}</h3>
+								<p className="text-theme-primary text-sm leading-relaxed">{t('modalUnknowChannel.accessDeniedDesc')}</p>
 							</div>
 						)}
 					</div>
@@ -132,14 +133,14 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 								className="flex-1 bg-[#5865f2] hover:bg-[#4752c4] text-white font-medium py-2.5 px-4 rounded transition-colors duration-200"
 								data-e2e={generateE2eId('clan_page.settings.modal.permission.confirm')}
 							>
-								Go to Welcome Channel
+								{t('modalUnknowChannel.goToWelcomeChannel')}
 							</button>
 							<button
 								onClick={onCloseAndReset}
 								className="px-4 py-2.5 text-theme-primary hover:underline rounded transition-colors duration-200"
 								data-e2e={generateE2eId('clan_page.settings.modal.permission.cancel')}
 							>
-								Cancel
+								{t('cancel')}
 							</button>
 						</>
 					) : (
@@ -147,7 +148,7 @@ function ModalUnknowChannel(props: ModalUnknowChannelProps) {
 							onClick={onCloseAndReset}
 							className="flex-1 bg-[#5865f2] hover:bg-[#4752c4] text-white font-medium py-2.5 px-4 rounded transition-colors duration-200"
 						>
-							Okay, Got It
+							{t('modalUnknowChannel.okayGotIt')}
 						</button>
 					)}
 				</div>

@@ -83,6 +83,7 @@
 		"userBlockedSuccess": "User blocked successfully",
 		"userBlockedFailed": "Failed to block user",
 		"canOnlyBlockFriends": "You can only block users who are your friends",
+		"userMessagesIgnored": "User messages ignored",
 		"reasons": {
 			"spam": "Spam",
 			"harassment": "Harassment or Bullying",
