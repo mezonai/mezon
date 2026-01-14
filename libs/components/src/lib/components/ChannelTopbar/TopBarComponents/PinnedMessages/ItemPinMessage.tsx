@@ -129,7 +129,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 									message={
 										{
 											...pinMessage,
-											attachments: enhancedAttachment
+											attachments: enhancedAttachment.attachments
 										} as unknown as IMessageWithUser
 									}
 									defaultMaxWidth={TOPBARS_MAX_WIDTH}

@@ -203,9 +203,11 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 									content: message.content,
 									code: 0,
 									sender_id: message.sender_id,
+									display_name: message.display_name || message.username,
+									username: message.username,
 									user: {
 										id: message.sender_id,
-										name: message.username,
+										name: message.display_name || message.username,
 										username: message.username
 									}
 								}}
@@ -256,12 +258,12 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 							)}
 						</div>
 					) : (
-						<div className="flex flex-col gap-1">
+						<div className="flex flex-col gap-1 justify-center">
 							<div>
 								<span className="font-bold">{user?.display_name || username}</span>
 								<span>{subjectText}</span>
 							</div>
-							{message?.create_time_seconds && (
+							{!!message?.create_time_seconds && (
 								<span className="text-zinc-400 text-[11px]">{convertTimeString(message?.create_time_seconds)}</span>
 							)}
 						</div>
