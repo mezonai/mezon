@@ -16,7 +16,7 @@ import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
-import type { ApiUserEventRequest } from 'mezon-js/api.gen';
+import { ApiUserEventRequest } from 'mezon-js/api.gen';
 import Tooltip from 'rc-tooltip';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -299,7 +299,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				<div className="flex justify-between gap-4 select-text">
 					<div className={`${isReviewEvent || !logoRight ? 'w-full' : 'w-3/5'} `}>
 						<p
-							className="hover:underline font-bold  text-base"
+							className="hover:underline font-bold text-base truncate"
 							data-e2e={generateE2eId('clan_page.modal.create_event.review.event_topic')}
 						>
 							{topic}

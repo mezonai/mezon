@@ -208,14 +208,17 @@ const LocationModal = (props: LocationModalProps) => {
 					value={options.find((option) => option.value === contentSubmit.voiceChannel)}
 					onChange={handleChangeVoice}
 					styles={customStyles}
-					placeholder={t('fields.channel.title')}
+					placeholder={t('fields.VoiceChannel.title')}
 					filterOption={memoizedFilterOption}
 					noOptionsMessage={() => t('invitation:noResults', 'No result')}
 				/>
 			)}
 			{choiceLocation && (
 				<div>
-					<h3 className="uppercase text-[11px] font-semibold  ">{t('fields.address.title')}</h3>
+					<h3 className="uppercase text-[11px] font-semibold">
+						{t('fields.address.title')}
+						<span className="text-red-500 ml-1">*</span>
+					</h3>
 					<input
 						type="text"
 						name="location"
