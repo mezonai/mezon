@@ -114,9 +114,17 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							/>
 						)}
 					</div>
-					{!!pinMessageAttachments?.length &&
+					{pinMessageAttachments?.length &&
 						(() => {
-							const attachment = decodeAttachments(pinMessageAttachments);
+							let attachment;
+							try {
+								attachment = decodeAttachments(pinMessageAttachments);
+							} catch (error) {
+								const parsed = safeJSONParse(pinMessageAttachments as unknown as string);
+
+								attachment = parsed?.attachments || parsed || {};
+							}
+
 							const enhancedAttachment = {
 								...attachment,
 								create_time: validCreateTime,
@@ -129,7 +137,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 									message={
 										{
 											...pinMessage,
-											attachments: enhancedAttachment.attachments
+											...enhancedAttachment
 										} as unknown as IMessageWithUser
 									}
 									defaultMaxWidth={TOPBARS_MAX_WIDTH}
