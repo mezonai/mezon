@@ -7,6 +7,7 @@ import {
 	selectNotificationMentions,
 	selectTheme,
 	selectTopicsSort,
+	topicsActions,
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
@@ -58,6 +59,9 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 
 	const handleChangeTab = (valueTab: string) => {
 		setCurrentTabNotify(valueTab);
+		if (valueTab === InboxType.TOPICS) {
+			dispatch(topicsActions.fetchTopics({ clanId: currentClanId as string }));
+		}
 	};
 
 	const allNotificationForYou = useSelector(selectNotificationForYou);
