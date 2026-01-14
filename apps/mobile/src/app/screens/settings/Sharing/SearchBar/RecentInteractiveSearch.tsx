@@ -3,13 +3,13 @@ import type { ClansEntity, DirectEntity } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import Images from '../../../../../assets/Images';
-import MezonAvatar from '../../../../componentUI/MezonAvatar';
+import MezonClanAvatar from '../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import ImageNative from '../../../../components/ImageNative';
 import { IconCDN } from '../../../../constants/icon_cdn';
@@ -21,41 +21,7 @@ export enum FilterType {
 	CHANNEL = 'channel'
 }
 
-interface FilterOptionsListProps {
-	onPressOption: (filter: FilterType) => void;
-	filterOptions: Array<{ type: FilterType; icon: IconCDN; label: string }>;
-	themeValue: any;
-	styles: any;
-}
-
-const FilterOptionsList = React.memo(({ onPressOption, filterOptions, themeValue, styles }: FilterOptionsListProps) => {
-	const { t } = useTranslation(['sharing']);
-
-	return (
-		<View style={styles.tooltipContainer}>
-			<Text style={styles.tooltipTitle}>{t('filterOptions')}</Text>
-			{filterOptions.map((opt) => (
-				<TouchableOpacity
-					key={opt.type}
-					style={[
-						styles.filterOptionItem,
-						opt.type === FilterType.USER && {
-							borderBottomWidth: 1,
-							borderBottomColor: themeValue.borderDim
-						}
-					]}
-					onPress={() => onPressOption(opt.type)}
-					activeOpacity={0.8}
-				>
-					<MezonIconCDN icon={opt.icon} width={size.s_16} height={size.s_16} color={themeValue.text} />
-					<Text style={[styles.filterOptionText]}>{opt.label}</Text>
-				</TouchableOpacity>
-			))}
-		</View>
-	);
-});
-
-interface IRecentInteractiveSearch {
+interface IRecentInteractiveSearchProps {
 	clans: Record<string, ClansEntity>;
 	topUserSuggestionUser?: DirectEntity;
 	listDMText: DirectEntity[];
@@ -63,10 +29,9 @@ interface IRecentInteractiveSearch {
 	onSearchResults: (results: DirectEntity[]) => void;
 	onChannelSelected: (channel: DirectEntity | undefined) => void;
 	selectedChannel?: DirectEntity;
-	placeholder?: string;
 }
 
-export const RecentInteractiveSearch = React.memo(
+export const RecentInteractiveSearch = memo(
 	({
 		clans,
 		topUserSuggestionUser,
@@ -74,12 +39,11 @@ export const RecentInteractiveSearch = React.memo(
 		listChannelsText,
 		onSearchResults,
 		onChannelSelected,
-		selectedChannel,
-		placeholder
-	}: IRecentInteractiveSearch) => {
+		selectedChannel
+	}: IRecentInteractiveSearchProps) => {
 		const { themeValue } = useTheme();
 		const { t } = useTranslation(['sharing']);
-		const styles = useMemo(() => style(themeValue), [themeValue]);
+		const styles = style(themeValue);
 		const [searchText, setSearchText] = useState<string>('');
 		const [currentFilter, setCurrentFilter] = useState<FilterType>(FilterType.ALL);
 		const [isVisibleToolTip, setIsVisibleToolTip] = useState<boolean>(false);
@@ -87,24 +51,23 @@ export const RecentInteractiveSearch = React.memo(
 
 		const filterOptions = useMemo(
 			() => [
-				{ type: FilterType.USER as const, icon: IconCDN.userIcon, label: t('users') },
-				{ type: FilterType.CHANNEL as const, icon: IconCDN.channelText, label: t('channels') }
+				{ type: FilterType.ALL, icon: IconCDN.communityIcon, label: t('all') },
+				{ type: FilterType.USER, icon: IconCDN.userIcon, label: t('users') },
+				{ type: FilterType.CHANNEL, icon: IconCDN.channelText, label: t('channels') }
 			],
 			[t]
 		);
 
-		const isGroupDMAvatar = useMemo(
+		const renderPlaceHolder = useMemo(() => {
+			if (currentFilter === FilterType.ALL) {
+				return t('selectChannelPlaceholder');
+			}
+			return currentFilter === FilterType.CHANNEL ? t('selectChannel') : t('selectUser');
+		}, [currentFilter, t]);
+
+		const groupHasCustomAvatar = useMemo(
 			() => selectedChannel?.channel_avatar && !selectedChannel?.channel_avatar?.includes('avatar-group.png'),
 			[selectedChannel?.channel_avatar]
-		);
-
-		const filterLabelMap: Record<FilterType, string> = useMemo(
-			() => ({
-				[FilterType.ALL]: t('all'),
-				[FilterType.USER]: t('users'),
-				[FilterType.CHANNEL]: t('channels')
-			}),
-			[t]
 		);
 
 		const generateChannelMatch = useCallback((searchText: string, dataSource: DirectEntity[]) => {
@@ -114,15 +77,11 @@ export const RecentInteractiveSearch = React.memo(
 			const matchChannels: DirectEntity[] = [];
 			const matchChannelIds = new Set<string>();
 
-			// Single pass to find matching channels and collect their IDs
 			for (const channel of dataSource) {
-				const channelLabel = channel?.channel_label?.toString()?.toLowerCase();
-				// Check if channel has user information for DM channels
+				const channelLabel = channel?.channel_label?.toLowerCase();
 				const hasUserMatch = channel?.usernames?.some?.((username: string) => username?.toLowerCase()?.includes(normalizedSearch));
 
-				const isMatch = channelLabel?.includes(normalizedSearch) || hasUserMatch;
-
-				if (isMatch) {
+				if (channelLabel?.includes(normalizedSearch) || hasUserMatch) {
 					matchChannels.push(channel);
 					if (channel?.channel_id) {
 						matchChannelIds.add(channel.channel_id);
@@ -130,9 +89,7 @@ export const RecentInteractiveSearch = React.memo(
 				}
 			}
 
-			// Find child channels in a single pass
 			const childChannels = dataSource.filter((item) => item?.parent_id && matchChannelIds.has(item.parent_id));
-
 			return [...matchChannels, ...childChannels];
 		}, []);
 
@@ -141,12 +98,14 @@ export const RecentInteractiveSearch = React.memo(
 				debounce((keyword: string, filter: FilterType) => {
 					let dataSource: DirectEntity[] = [];
 
-					if (filter === FilterType.ALL) {
-						dataSource = [...(topUserSuggestionUser ? [topUserSuggestionUser] : []), ...listDMText, ...listChannelsText];
-					} else if (filter === FilterType.USER) {
-						dataSource = [...(topUserSuggestionUser ? [topUserSuggestionUser] : []), ...listDMText];
-					} else if (filter === FilterType.CHANNEL) {
+					if (filter === FilterType.CHANNEL) {
 						dataSource = listChannelsText;
+					} else {
+						dataSource = [
+							...(topUserSuggestionUser ? [topUserSuggestionUser] : []),
+							...listDMText,
+							...(filter === FilterType.ALL ? listChannelsText : [])
+						];
 					}
 
 					const matchedChannels = generateChannelMatch(keyword, dataSource);
@@ -165,7 +124,6 @@ export const RecentInteractiveSearch = React.memo(
 
 		const handleKeyPress = useCallback(
 			(event: any) => {
-				// If input is empty and backspace is pressed, reset filter to ALL
 				if (event.nativeEvent.key === 'Backspace' && !searchText.trim() && currentFilter !== FilterType.ALL) {
 					setCurrentFilter(FilterType.ALL);
 					debouncedSearch('', FilterType.ALL);
@@ -181,177 +139,149 @@ export const RecentInteractiveSearch = React.memo(
 
 				let dataSource: DirectEntity[] = [];
 
-				if (filter === FilterType.ALL) {
-					dataSource = [...(topUserSuggestionUser ? [topUserSuggestionUser] : []), ...listDMText, ...listChannelsText];
-				} else if (filter === FilterType.USER) {
-					dataSource = [...(topUserSuggestionUser ? [topUserSuggestionUser] : []), ...listDMText];
-				} else if (filter === FilterType.CHANNEL) {
+				if (filter === FilterType.CHANNEL) {
 					dataSource = listChannelsText;
+				} else {
+					dataSource = [
+						...(topUserSuggestionUser ? [topUserSuggestionUser] : []),
+						...listDMText,
+						...(filter === FilterType.ALL ? listChannelsText : [])
+					];
 				}
 
-				if (searchText.trim()) {
-					debouncedSearch(searchText, filter);
-				} else {
-					onSearchResults(dataSource);
-				}
+				searchText.trim() ? debouncedSearch(searchText, filter) : onSearchResults(dataSource);
+				inputSearchRef?.current?.focus?.();
 			},
 			[debouncedSearch, listChannelsText, listDMText, onSearchResults, searchText, topUserSuggestionUser]
 		);
 
-		const handleClearSelection = useCallback(() => {
-			onChannelSelected(undefined);
-			setSearchText('');
-			inputSearchRef?.current?.focus?.();
-		}, [onChannelSelected]);
-
-		useEffect(() => {
-			onSearchResults([...((topUserSuggestionUser ? [topUserSuggestionUser] : []) as DirectEntity[]), ...listDMText, ...listChannelsText]);
-		}, []);
+		const handleClearSearch = useCallback(
+			(hasSelected: boolean) => {
+				if (hasSelected) {
+					onChannelSelected(undefined);
+				}
+				setSearchText('');
+				inputSearchRef?.current?.clear?.();
+				setCurrentFilter(currentFilter);
+				debouncedSearch('', currentFilter);
+			},
+			[currentFilter, debouncedSearch, onChannelSelected]
+		);
 
 		useEffect(() => {
 			return () => {
-				debouncedSearch.cancel();
+				debouncedSearch?.cancel();
 			};
 		}, [debouncedSearch]);
 
-		const renderInputContent = useMemo(() => {
-			return (
-				<View style={styles.searchInput}>
-					<View style={styles.inputWrapper}>
-						{selectedChannel ? (
-							<View style={styles.iconLeftInput}>
-								{selectedChannel?.type === ChannelType.CHANNEL_TYPE_GROUP ? (
-									isGroupDMAvatar ? (
-										<View style={styles.groupAvatarWrapper}>
-											<ImageNative
-												url={createImgproxyUrl(selectedChannel?.topic ?? '')}
-												style={styles.groupAvatarImage}
-												resizeMode={'cover'}
-											/>
-										</View>
-									) : (
-										<FastImage source={Images.AVATAR_GROUP} style={styles.avatarGroupImage} />
-									)
+		return (
+			<View style={styles.searchInput}>
+				<View style={styles.inputWrapper}>
+					{selectedChannel ? (
+						<View style={styles.iconLeftInput}>
+							{selectedChannel?.type === ChannelType.CHANNEL_TYPE_GROUP ? (
+								groupHasCustomAvatar ? (
+									<View style={styles.avatarGroupImage}>
+										<ImageNative
+											url={createImgproxyUrl(selectedChannel?.channel_avatar ?? '')}
+											style={styles.groupAvatarImage}
+											resizeMode={'cover'}
+										/>
+									</View>
 								) : (
-									<MezonAvatar
-										avatarUrl={selectedChannel?.avatars?.[0] || clans?.[selectedChannel?.clan_id]?.logo}
-										username={clans?.[selectedChannel?.clan_id]?.clan_name || selectedChannel?.channel_label}
-										width={size.s_18}
-										height={size.s_18}
+									<FastImage source={Images.AVATAR_GROUP} style={styles.avatarGroupImage} />
+								)
+							) : (
+								<View style={styles.avatarGroupImage}>
+									<MezonClanAvatar
+										image={selectedChannel?.avatars?.[0] || clans?.[selectedChannel?.clan_id]?.logo || ''}
+										alt={clans?.[selectedChannel?.clan_id]?.clan_name || selectedChannel?.channel_label || ''}
+										customFontSizeAvatarCharacter={size.h7}
 									/>
-								)}
-							</View>
-						) : (
-							<View style={styles.iconLeftInput}>
-								<MezonIconCDN icon={IconCDN.magnifyingIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
-							</View>
-						)}
+								</View>
+							)}
+						</View>
+					) : (
+						<View style={styles.iconLeftInput}>
+							<MezonIconCDN icon={IconCDN.magnifyingIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+						</View>
+					)}
 
-						{currentFilter !== FilterType.ALL && !selectedChannel && (
-							<View style={styles.filterBadge}>
-								<Text style={styles.filterBadgeText}>{filterLabelMap[currentFilter]}</Text>
-							</View>
-						)}
-
-						{selectedChannel ? (
-							<Text style={styles.textChannelSelected} numberOfLines={1}>
-								{selectedChannel?.channel_label}
-							</Text>
-						) : (
-							<TextInput
-								ref={inputSearchRef}
-								style={styles.textInput}
-								onChangeText={handleSearchTextChange}
-								onKeyPress={handleKeyPress}
-								placeholder={placeholder || t('selectChannelPlaceholder')}
-								placeholderTextColor={themeValue.textDisabled}
+					{!selectedChannel && currentFilter !== FilterType.ALL && (
+						<View style={styles.filterBadge}>
+							<MezonIconCDN
+								icon={currentFilter === FilterType.USER ? IconCDN.userIcon : IconCDN.channelText}
+								width={size.s_16}
+								height={size.s_16}
+								color={themeValue.textStrong}
 							/>
-						)}
+						</View>
+					)}
 
-						{selectedChannel ? (
-							<TouchableOpacity activeOpacity={0.8} onPress={handleClearSelection} style={styles.iconRightInput}>
-								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} color={themeValue.text} />
-							</TouchableOpacity>
-						) : (
-							!!searchText?.length && (
-								<TouchableOpacity
-									activeOpacity={0.8}
-									onPress={() => {
-										setSearchText('');
-										inputSearchRef?.current?.clear?.();
-										// Reset filter to ALL when clearing search text
-										if (currentFilter !== FilterType.ALL) {
-											setCurrentFilter(FilterType.ALL);
-											debouncedSearch('' as string, FilterType.ALL);
-										} else {
-											debouncedSearch('' as string, currentFilter);
-										}
-									}}
-									style={styles.iconRightInput}
-								>
-									<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} color={themeValue.text} />
-								</TouchableOpacity>
-							)
-						)}
-					</View>
+					{selectedChannel ? (
+						<Text style={styles.textChannelSelected} numberOfLines={1}>
+							{selectedChannel?.channel_label || ''}
+						</Text>
+					) : (
+						<TextInput
+							ref={inputSearchRef}
+							style={styles.textInput}
+							onChangeText={handleSearchTextChange}
+							onKeyPress={handleKeyPress}
+							placeholder={renderPlaceHolder}
+							placeholderTextColor={themeValue.textDisabled}
+						/>
+					)}
 
-					<Tooltip
-						isVisible={isVisibleToolTip}
-						closeOnBackgroundInteraction={true}
-						disableShadow={true}
-						closeOnContentInteraction={true}
-						content={
-							<FilterOptionsList
-								onPressOption={(filter) => {
-									handleFilterChange(filter);
-									if (inputSearchRef.current) {
-										inputSearchRef.current.focus();
-									}
-								}}
-								filterOptions={filterOptions}
-								themeValue={themeValue}
-								styles={styles}
-							/>
-						}
-						contentStyle={[styles.tooltipContent, { backgroundColor: themeValue.primary }]}
-						arrowSize={{ width: 0, height: 0 }}
-						placement="bottom"
-						onClose={() => setIsVisibleToolTip(false)}
-						showChildInTooltip={false}
-						topAdjustment={Platform.OS === 'android' ? -StatusBar.currentHeight : 0}
-					>
-						<TouchableOpacity
-							activeOpacity={0.7}
-							onPress={() => {
-								setIsVisibleToolTip(true);
-								if (inputSearchRef.current) {
-									inputSearchRef.current.focus();
-								}
-							}}
-							style={styles.filterButton}
-						>
-							<MezonIconCDN icon={IconCDN.filterHorizontalIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+					{(selectedChannel || !!searchText?.length) && (
+						<TouchableOpacity activeOpacity={0.8} onPress={() => handleClearSearch(!!selectedChannel)} style={styles.iconRightInput}>
+							<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_18} color={themeValue.text} />
 						</TouchableOpacity>
-					</Tooltip>
+					)}
 				</View>
-			);
-		}, [
-			selectedChannel,
-			searchText,
-			currentFilter,
-			isVisibleToolTip,
-			filterOptions,
-			handleFilterChange,
-			handleKeyPress,
-			t,
-			placeholder,
-			themeValue,
-			styles,
-			clans,
-			handleSearchTextChange,
-			handleClearSelection
-		]);
 
-		return <View>{renderInputContent}</View>;
+				<Tooltip
+					isVisible={isVisibleToolTip}
+					closeOnBackgroundInteraction
+					disableShadow
+					closeOnContentInteraction
+					content={
+						<View style={styles.tooltipContainer}>
+							<Text style={styles.tooltipTitle}>{t('filterOptions')}</Text>
+							{filterOptions.map((option, index) => (
+								<TouchableOpacity
+									key={option.type}
+									style={[styles.filterOptionItem, index !== filterOptions.length - 1 && styles.tooltipUser]}
+									onPress={() => handleFilterChange(option.type)}
+									activeOpacity={0.8}
+								>
+									<MezonIconCDN icon={option.icon} width={size.s_16} height={size.s_16} color={themeValue.text} />
+									<Text style={[styles.filterOptionText]}>{option.label}</Text>
+								</TouchableOpacity>
+							))}
+						</View>
+					}
+					contentStyle={[styles.tooltipContent, { backgroundColor: themeValue.primary }]}
+					arrowSize={{ width: 0, height: 0 }}
+					placement="bottom"
+					onClose={() => setIsVisibleToolTip(false)}
+					showChildInTooltip={false}
+					topAdjustment={Platform.OS === 'android' ? -StatusBar.currentHeight : 0}
+				>
+					<TouchableOpacity
+						activeOpacity={0.7}
+						onPress={() => {
+							setIsVisibleToolTip(true);
+							if (inputSearchRef.current) {
+								inputSearchRef.current.focus();
+							}
+						}}
+						style={styles.filterButton}
+					>
+						<MezonIconCDN icon={IconCDN.filterHorizontalIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+					</TouchableOpacity>
+				</Tooltip>
+			</View>
+		);
 	}
 );

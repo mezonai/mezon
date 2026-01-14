@@ -29,7 +29,7 @@
 		},
 		"channelPermission": {
 			"title": "",
-			"permission": "Channel Permission",
+			"permission": "Channel Permissions",
 			"description": "Change privacy settings and customize how members can interact with this channel."
 		},
 		"quickAction": {
