@@ -23,7 +23,7 @@ const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
 	const { t } = useTranslation(['notification', 'message']);
 	const styles = style(themeValue);
 	const navigation = useNavigation<any>();
-	const dataMessage = parseObject(notify?.message);
+	const dataMessage = parseObject(notify?.message || notify);
 	const messageTimeDifference = convertTimestampToTimeAgo(notify?.last_sent_message?.timestamp_seconds);
 	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, notify?.last_sent_message?.sender_id ?? ''));
 

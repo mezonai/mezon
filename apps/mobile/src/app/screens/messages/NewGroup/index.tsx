@@ -203,7 +203,7 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 									? t('screen:headerTitle.addMembers')
 									: t('screen:headerTitle.newGroup')}
 							</Text>
-							<Text>
+							<Text style={styles.screenSubTitle}>
 								{t('groupMembers', {
 									members: selectedFriendDefault?.length + friendIdSelectedList?.length,
 									total: GROUP_CHAT_MAXIMUM_MEMBERS

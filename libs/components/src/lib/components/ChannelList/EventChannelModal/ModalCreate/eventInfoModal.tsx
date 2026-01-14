@@ -4,11 +4,13 @@ import { handleUploadFile, useMezon } from '@mezon/transport';
 import { TextArea, TimePicker } from '@mezon/ui';
 import type { ContenSubmitEventProps } from '@mezon/utils';
 import { ERepeatType, MAX_FILE_SIZE_1MB, fileTypeImage, generateE2eId } from '@mezon/utils';
+import { format } from 'date-fns';
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ModalErrorTypeUpload, ModalOverData } from '../../../ModalValidateFile/ModalOverData';
 import { checkError } from '../eventHelper';
+import { getTimeTodayMidNight } from '../timeFomatEvent';
 
 const DatePickerWrapper = lazy(() => import('./DatePickerWrapper'));
 
@@ -17,15 +19,13 @@ const DatePickerPlaceholder = () => <div className="w-full h-[38px]  animate-pul
 export type EventInfoModalProps = {
 	contentSubmit: ContenSubmitEventProps;
 	choiceLocation: boolean;
-	timeStartDefault: string;
-	timeEndDefault: string;
 	setErrorTime: (status: boolean) => void;
 	setContentSubmit: React.Dispatch<React.SetStateAction<ContenSubmitEventProps>>;
 	onClose: () => void;
 };
 
 const EventInfoModal = (props: EventInfoModalProps) => {
-	const { contentSubmit, timeStartDefault, setErrorTime, setContentSubmit, choiceLocation, onClose } = props;
+	const { contentSubmit, setErrorTime, setContentSubmit, onClose } = props;
 	const { t } = useTranslation('eventCreator');
 	const { t: tCommon } = useTranslation('common');
 	const [countCharacterDescription, setCountCharacterDescription] = useState(255);
@@ -33,34 +33,14 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 	const [errorEnd, setErrorEnd] = useState(false);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-	useEffect(() => {
-		setCountCharacterDescription(255 - (contentSubmit.description?.length || 0));
-	}, []);
+	const date = new Date(contentSubmit.selectedDateStart);
 
-	const startDate = contentSubmit.selectedDateStart.getDate();
+	const dayOfMonth = date.getDate();
+	const month = format(date, 'MMM'); // Jan
+	const weekday = format(date, 'EEEE'); // Monday
 
-	// Use translated month names
-	const monthKeys = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const;
-	const startMonthKey = monthKeys[contentSubmit.selectedDateStart.getMonth()];
-	const startMonth = tCommon(`timeFormat.months.${startMonthKey}`);
-
-	// Use translated weekday names
-	const weekdayKeys = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as const;
-	const startDayOfWeekKey = weekdayKeys[contentSubmit.selectedDateStart.getDay()];
-	const startDayOfWeek = tCommon(`timeFormat.daysOfWeek.${startDayOfWeekKey}`);
-
-	const getWeekdayOccurrence = (date: Date): string => {
-		const ordinalKeys = ['first', 'second', 'third', 'fourth', 'fifth'] as const;
-		const dayOfMonth = date.getDate();
-		const dayOfWeek = date.getDay();
-		const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-		const offset = (dayOfWeek - firstDayOfMonth + 7) % 7;
-		const occurrenceIndex = Math.floor((dayOfMonth - 1 - offset) / 7);
-		const ordinalKey = ordinalKeys[occurrenceIndex] || 'first';
-		return tCommon(`timeFormat.weekNames.${ordinalKey}`);
-	};
-
-	const weekdayOccurrence = getWeekdayOccurrence(contentSubmit.selectedDateStart);
+	const ordinals = ['First', 'Second', 'Third', 'Fourth', 'Fifth'];
+	const weekdayOccurrence = ordinals[Math.floor((dayOfMonth - 1) / 7)] ?? 'Unknown';
 	const [selectedFrequency, setSelectedFrequency] = useState(ERepeatType.DOES_NOT_REPEAT);
 
 	useEffect(() => {
@@ -74,19 +54,16 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 	const frequencies = useMemo(() => {
 		const options = [
 			{ value: ERepeatType.DOES_NOT_REPEAT, label: t('fields.eventFrequency.noRepeat') },
-			{ value: ERepeatType.WEEKLY_ON_DAY, label: t('fields.eventFrequency.weeklyOn', { name: startDayOfWeek }) },
-			{ value: ERepeatType.EVERY_OTHER_DAY, label: t('fields.eventFrequency.everyOther', { name: startDayOfWeek }) },
+			{ value: ERepeatType.WEEKLY_ON_DAY, label: t('fields.eventFrequency.weeklyOn', { name: weekday }) },
+			{ value: ERepeatType.EVERY_OTHER_DAY, label: t('fields.eventFrequency.everyOther', { name: weekday }) },
 			{
 				value: ERepeatType.MONTHLY,
-				label: t('fields.eventFrequency.monthlyOn', { name: `${startDayOfWeek} ${weekdayOccurrence}` })
+				label: t('fields.eventFrequency.monthlyOn', { name: `${weekdayOccurrence} ${weekday}` })
 			},
-			{ value: ERepeatType.ANNUALLY, label: t('fields.eventFrequency.annuallyOn', { name: `${startDate}/${startMonth}` }) }
+			{ value: ERepeatType.ANNUALLY, label: t('fields.eventFrequency.annuallyOn', { name: `${dayOfMonth} ${month}` }) }
 		];
 
-		// Check using day index: 0 = Sunday, 6 = Saturday
-		const dayIndex = contentSubmit.selectedDateStart.getDay();
-		const isWeekend = dayIndex === 0 || dayIndex === 6;
-		if (!isWeekend) {
+		if (weekday !== 'Sunday' && weekday !== 'Saturday') {
 			options.push({
 				value: ERepeatType.EVERY_WEEKDAY,
 				label: t('fields.eventFrequency.everyWeekday')
@@ -94,35 +71,28 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 		}
 
 		return options;
-	}, [startDate, startDayOfWeek, startMonth, weekdayOccurrence, contentSubmit.selectedDateStart]);
+	}, [dayOfMonth, weekday, month, weekdayOccurrence]);
 
 	useEffect(() => {
 		setSelectedFrequency(contentSubmit.repeatType ?? ERepeatType.DOES_NOT_REPEAT);
 	}, []);
 	// this one to check error timeStart/timeEnd
 	useMemo(() => {
-		checkError(
-			contentSubmit.timeStart,
-			contentSubmit.timeEnd,
-			contentSubmit.selectedDateStart,
-			contentSubmit.selectedDateEnd,
-			setErrorStart,
-			setErrorEnd
-		);
+		checkError(contentSubmit.selectedDateStart, contentSubmit.selectedDateEnd, setErrorStart, setErrorEnd);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [contentSubmit.timeStart, contentSubmit.timeEnd, contentSubmit.selectedDateStart, contentSubmit.selectedDateEnd, contentSubmit.repeatType]);
+	}, [contentSubmit.selectedDateStart, contentSubmit.selectedDateEnd, contentSubmit.repeatType]);
 
 	const handleDateChangeStart = (date: Date) => {
-		setContentSubmit((prev) => ({ ...prev, selectedDateStart: date }));
+		setContentSubmit((prev) => ({ ...prev, selectedDateStart: getTimeTodayMidNight(date.getTime()) }));
 		// check dateEnd
 		// if endDate < startDate => set is startDate
-		if (date > contentSubmit.selectedDateEnd) {
+		if (date.getTime() > contentSubmit.selectedDateEnd) {
 			handleDateChangeEnd(date);
 		}
 	};
 
 	const handleDateChangeEnd = (date: Date) => {
-		setContentSubmit((prev) => ({ ...prev, selectedDateEnd: date }));
+		setContentSubmit((prev) => ({ ...prev, selectedDateEnd: getTimeTodayMidNight(date.getTime()) }));
 	};
 
 	const handleChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -144,7 +114,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 
 	const handleChangeTimeStart = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
-			const time = e.target.value;
+			const time = Number(e.target.value);
 			setContentSubmit((prev) => {
 				const updatedContent = { ...prev, timeStart: time };
 				return updatedContent;
@@ -155,7 +125,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 
 	const handleChangeTimeEnd = useCallback(
 		(e: React.ChangeEvent<HTMLInputElement>) => {
-			const time = e.target.value;
+			const time = Number(e.target.value);
 			setContentSubmit((prev) => {
 				const updatedContent = { ...prev, timeEnd: time };
 				return updatedContent;
@@ -225,7 +195,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						<DatePickerWrapper
 							className="bg-theme-input p-2 rounded outline-none w-full"
 							wrapperClassName="w-full"
-							selected={contentSubmit.selectedDateStart}
+							selected={new Date(contentSubmit.selectedDateStart)}
 							onChange={handleDateChangeStart}
 							dateFormat="dd/MM/yyyy"
 							minDate={new Date()}
@@ -237,7 +207,11 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						{t('fields.startTime.title')}
 						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
 					</h3>
-					<TimePicker value={contentSubmit.timeStart} name="timeStart" handleChangeTime={handleChangeTimeStart} />
+					<TimePicker
+						value={contentSubmit.selectedDateStart + contentSubmit.timeStart}
+						name="timeStart"
+						handleChangeTime={handleChangeTimeStart}
+					/>
 				</div>
 			</div>
 			<div className="mb-4 flex gap-x-4">
@@ -250,10 +224,10 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						<DatePickerWrapper
 							className="bg-theme-input p-2 rounded outline-none w-full"
 							wrapperClassName="w-full"
-							selected={contentSubmit.selectedDateEnd}
+							selected={new Date(contentSubmit.selectedDateEnd)}
 							onChange={handleDateChangeEnd}
 							dateFormat="dd/MM/yyyy"
-							minDate={contentSubmit.selectedDateStart}
+							minDate={new Date(contentSubmit.selectedDateStart)}
 						/>
 					</Suspense>
 				</div>
@@ -262,7 +236,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 						{t('fields.endTime.title')}
 						<p className="w-fit h-fit text-left text-xs font-medium leading-[150%] text-[#dc2626]">✱</p>
 					</h3>
-					<TimePicker value={contentSubmit.timeEnd} name="timeEnd" handleChangeTime={handleChangeTimeEnd} />
+					<TimePicker value={contentSubmit.selectedDateEnd + contentSubmit.timeEnd} name="timeEnd" handleChangeTime={handleChangeTimeEnd} />
 				</div>
 			</div>
 			<div className="mb-4">
