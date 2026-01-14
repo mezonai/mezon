@@ -4,7 +4,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelPresenceEvent, StatusPresenceEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ChannelUserListChannelUser } from 'mezon-js/dist/api.gen';
+import type { ChannelUserListChannelUser } from 'mezon-js/api.gen';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';

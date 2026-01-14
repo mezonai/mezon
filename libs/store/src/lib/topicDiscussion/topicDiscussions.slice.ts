@@ -3,8 +3,15 @@ import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezo
 import { getMobileUploadedAttachments, getWebUploadedAttachments } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelMessage, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic } from 'mezon-js/api.gen';
-import type { ApiChannelMessageHeader, ApiSdTopicRequest } from 'mezon-js/dist/api.gen';
+import type {
+	ApiChannelMessage,
+	ApiChannelMessageHeader,
+	ApiMessageAttachment,
+	ApiMessageMention,
+	ApiMessageRef,
+	ApiSdTopic,
+	ApiSdTopicRequest
+} from 'mezon-js/api.gen';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { selectMessageEntitiesByChannelId } from '../messages/messages.slice';

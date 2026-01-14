@@ -3,8 +3,13 @@ import type { IEventManagement, LoadingStatus } from '@mezon/utils';
 import { EEventAction, EEventStatus, ERepeatType } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiEventManagement, ApiGenerateMezonMeetResponse, ApiUserEventRequest } from 'mezon-js/api.gen';
-import type { ApiCreateEventRequest, MezonUpdateEventBody } from 'mezon-js/dist/api.gen';
+import type {
+	ApiCreateEventRequest,
+	ApiEventManagement,
+	ApiGenerateMezonMeetResponse,
+	ApiUserEventRequest,
+	MezonUpdateEventBody
+} from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';

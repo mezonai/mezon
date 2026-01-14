@@ -16,11 +16,11 @@ import {
 	useAppDispatch,
 	useWallet
 } from '@mezon/store-mobile';
-import { CURRENCY, formatBalanceToString, formatMoney, TypeMessage } from '@mezon/utils';
+import { CURRENCY, TypeMessage, formatBalanceToString, formatMoney } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import debounce from 'lodash.debounce';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiTokenSentEvent } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Modal, Platform, Pressable, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';

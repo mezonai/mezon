@@ -171,16 +171,19 @@ import type {
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
-import type { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction, ApiNotification } from 'mezon-js/api.gen';
 import type {
 	ApiChannelMessageHeader,
 	ApiClanEmoji,
+	ApiCreateEventRequest,
+	ApiGiveCoffeeEvent,
+	ApiMessageReaction,
+	ApiNotification,
 	ApiNotificationUserChannel,
 	ApiPermissionUpdate,
 	ApiTokenSentEvent,
 	ApiUpdateCategoryDescRequest,
 	ApiWebhook
-} from 'mezon-js/dist/api.gen';
+} from 'mezon-js/api.gen';
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';

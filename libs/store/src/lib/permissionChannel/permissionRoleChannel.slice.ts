@@ -1,8 +1,7 @@
 import type { IPermissionRoleChannel, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPermissionRoleChannel, ApiPermissionUpdate } from 'mezon-js/api.gen';
-import type { ApiPermissionRoleChannelListEventResponse } from 'mezon-js/dist/api.gen';
+import type { ApiPermissionRoleChannel, ApiPermissionRoleChannelListEventResponse, ApiPermissionUpdate } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';

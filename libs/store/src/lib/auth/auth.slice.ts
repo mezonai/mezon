@@ -4,7 +4,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import { Session } from 'mezon-js';
-import type { ApiLinkAccountConfirmRequest } from 'mezon-js/dist/api.gen';
+import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api.gen';
 import { toast } from 'react-toastify';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
