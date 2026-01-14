@@ -59,19 +59,19 @@ const SuggestItem = memo(
 							<FastImage
 								style={styles.roleImage}
 								source={{
-									uri: createImgproxyUrl(avatarUrl ?? '', { width: 100, height: 100, resizeType: 'fit' })
+									uri: createImgproxyUrl(avatarUrl || '', { width: 100, height: 100, resizeType: 'fit' })
 								}}
 							/>
 						) : (
 							<MezonIconCDN
 								icon={IconCDN.shieldUserIcon}
-								color={color ?? themeValue.textRoleLink}
+								color={color || themeValue.textRoleLink}
 								width={size.s_20}
 								height={size.s_20}
 							/>
 						)}
 
-						<Text style={[styles.roleText, { color: color ?? themeValue.textRoleLink }]}>{`${name}`}</Text>
+						<Text style={[styles.roleText, { color: color || themeValue.textRoleLink }]}>{`${name}`}</Text>
 					</View>
 				)}
 				{name?.startsWith('here') && <Text style={[styles.roleText, styles.textHere]}>{`@${name}`}</Text>}

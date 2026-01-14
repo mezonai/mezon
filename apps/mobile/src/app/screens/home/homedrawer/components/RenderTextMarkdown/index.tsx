@@ -7,10 +7,8 @@ import {
 	getStore,
 	selectAllChannelMembers,
 	selectAllUserClans,
-	selectChannelById,
 	selectChannelByIdAndClanId,
-	selectClanById,
-	selectCurrentClanId
+	selectClanById
 } from '@mezon/store-mobile';
 import type { IExtendedMessage } from '@mezon/utils';
 import { EBacktickType, ETokenMessage, getSrcEmoji, isYouTubeLink } from '@mezon/utils';
@@ -23,9 +21,9 @@ import Feather from 'react-native-vector-icons/Feather';
 import CustomIcon from '../../../../../../../src/assets/CustomIcon';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import LinkOptionModal from '../LinkOptions/LinkOptionModal';
-import { ChannelHashtag } from '../MarkdownFormatText/ChannelHashtag';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
+import { HashtagChannel } from './components/HashtagChannel';
 import RenderYoutubeVideo from './components/RenderYoutubeVideo';
 import { styles as componentStyles, getMessageReplyMaxHeight } from './index.styles';
 
@@ -471,45 +469,16 @@ export const RenderTextMarkdownContent = ({
 
 			case ETokenMessage.HASHTAGS: {
 				if (!isHiddenHashtag) {
-					const channelFound = selectChannelById(store.getState() as any, element?.channelid);
-					const mention = ChannelHashtag({
-						channelHashtagId: element?.channelid,
-						channelEntity: channelFound
-					});
-
-					const { text, link } = parseMarkdownLink(mention);
-
-					const urlFormat = link.replace(/##voice|#thread|#stream|#app|#%22|%22|"|#/g, '');
-					const dataChannel = urlFormat.split('***');
-					const payloadChannel = {
-						type: Number(dataChannel?.[0] || 1),
-						id: dataChannel?.[1],
-						channel_id: dataChannel?.[1],
-						clan_id: dataChannel?.[2],
-						status: Number(dataChannel?.[3] || 1),
-						meeting_code: dataChannel?.[4] || '',
-						category_id: dataChannel?.[5],
-						channel_label: text || ''
-					};
-
 					textParts.push(
-						<Text
+						<HashtagChannel
 							key={`hashtag-${index}`}
-							style={[
-								themeValue && payloadChannel?.channel_id === 'undefined'
-									? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).privateChannel
-									: themeValue && !!payloadChannel?.channel_id
-										? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).hashtag
-										: {}
-							]}
-							onPress={() => {
-								if (!payloadChannel?.channel_id) return;
-								DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, payloadChannel);
-							}}
-						>
-							{renderChannelIcon(payloadChannel?.type, payloadChannel?.channel_id, themeValue)}
-							{payloadChannel?.channel_id === 'undefined' ? 'private-channel' : text}
-						</Text>
+							element={element}
+							index={index}
+							themeValue={themeValue}
+							isUnReadChannel={isUnReadChannel}
+							isLastMessage={isLastMessage}
+							isBuzzMessage={isBuzzMessage}
+						/>
 					);
 				} else {
 					textParts.push(<Text key={`hashtag-${index}`}>{contentInElement}</Text>);
@@ -610,47 +579,21 @@ export const RenderTextMarkdownContent = ({
 							const channelIdOnLink = pathSegments?.[pathSegments?.indexOf('channels') + 1];
 
 							const channelFound = selectChannelByIdAndClanId(store.getState() as any, clanId, channelIdOnLink);
-							const currentClanId = selectCurrentClanId(store.getState() as any);
 
-							if (channelIdOnLink && (channelFound?.id || currentClanId === clanId)) {
-								const mention = ChannelHashtag({
-									channelHashtagId: channelIdOnLink,
-									channelEntity: channelFound
-								});
-
-								const { text, link } = parseMarkdownLink(mention);
-
-								const urlFormat = link.replace(/##voice|#thread|#stream|#app|#%22|%22|"|#/g, '');
-								const dataChannel = urlFormat.split('***');
-								const payloadChannel = {
-									type: Number(dataChannel?.[0] || 1),
-									id: dataChannel?.[1],
-									channel_id: dataChannel?.[1],
-									clan_id: dataChannel?.[2],
-									status: Number(dataChannel?.[3] || 1),
-									meeting_code: dataChannel?.[4] || '',
-									category_id: dataChannel?.[5],
-									channel_label: text || ''
-								};
-
+							if ((channelIdOnLink && channelFound?.id) || (element?.channelid && element?.channelLabel)) {
 								textParts.push(
-									<Text
+									<HashtagChannel
 										key={`hashtag-${index}`}
-										style={[
-											themeValue && payloadChannel?.channel_id === 'undefined'
-												? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).privateChannel
-												: themeValue && !!payloadChannel?.channel_id
-													? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage).hashtag
-													: {}
-										]}
-										onPress={() => {
-											if (!payloadChannel?.channel_id) return;
-											DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_MENTION_MESSAGE_ITEM, payloadChannel);
-										}}
-									>
-										{renderChannelIcon(payloadChannel?.type, payloadChannel?.channel_id, themeValue)}
-										{payloadChannel?.channel_id === 'undefined' ? 'private-channel' : text}
-									</Text>
+										element={element}
+										index={index}
+										themeValue={themeValue}
+										isUnReadChannel={isUnReadChannel}
+										isLastMessage={isLastMessage}
+										isBuzzMessage={isBuzzMessage}
+										channelIdOverride={channelIdOnLink}
+										clanIdOverride={element?.clanId || clanId}
+										channelEntityOverride={channelFound}
+									/>
 								);
 								break;
 							} else {

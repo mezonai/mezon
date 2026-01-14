@@ -10,8 +10,7 @@ import { style } from './NotificationIndividualItem.styles';
 const NotificationIndividualItem = ({ notify, onLongPressNotify }: NotifyProps) => {
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, notify?.sender_id ?? ''));
 	const username = notify?.content?.username || user?.user?.username;
-	const unixTimestamp = Math.floor(new Date(notify?.create_time).getTime() / 1000);
-	const messageTimeDifference = convertTimestampToTimeAgo(unixTimestamp);
+	const messageTimeDifference = convertTimestampToTimeAgo(notify?.content?.create_time_seconds);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	let notice = notify?.subject;
