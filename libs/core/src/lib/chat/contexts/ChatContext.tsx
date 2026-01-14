@@ -649,7 +649,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						data: {
 							...notification,
 							create_time: notification.create_time || new Date().toISOString(),
-							id: notification.id || ''
+							id: notification.id || '',
+							content: safeJSONParse(notification.content?.content || '')?.t
 						},
 						category: notification.category as NotificationCategory
 					})
