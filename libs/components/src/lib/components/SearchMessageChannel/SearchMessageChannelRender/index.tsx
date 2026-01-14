@@ -13,8 +13,7 @@ import {
 } from '@mezon/store';
 import { Pagination } from '@mezon/ui';
 import type { IMessageWithUser, UsersClanEntity } from '@mezon/utils';
-import { SIZE_PAGE_SEARCH, convertSearchMessage } from '@mezon/utils';
-import type { ChannelMessage } from 'mezon-js';
+import { SIZE_PAGE_SEARCH } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -180,7 +179,9 @@ const SearchedItem = ({ searchMessage, searchChannel, user }: ISearchedItemProps
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
 
-	const convertedMessage = convertSearchMessage(searchMessage as ChannelMessage);
+	const convertedMessage = {
+		...searchMessage
+	} as unknown as IMessageWithUser;
 
 	const handleClickJump = () => {
 		if (!searchMessage) return;
