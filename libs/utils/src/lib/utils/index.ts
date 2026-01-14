@@ -14,8 +14,7 @@ import {
 import isElectron from 'is-electron';
 import type { Client, Session } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser } from 'mezon-js/api.gen';
-import type { RoleUserListRoleUser } from 'mezon-js/dist/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser, RoleUserListRoleUser } from 'mezon-js/api.gen';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { electronBridge } from '../bridge';

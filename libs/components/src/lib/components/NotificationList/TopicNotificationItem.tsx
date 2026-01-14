@@ -19,7 +19,7 @@ import {
 import type { IMessageWithUser } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiSdTopic } from 'mezon-js/dist/api.gen';
+import type { ApiChannelMessageHeader, ApiSdTopic } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
