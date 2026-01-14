@@ -114,7 +114,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							/>
 						)}
 					</div>
-					{pinMessageAttachments?.length &&
+					{!!pinMessageAttachments?.length &&
 						(() => {
 							const attachment = decodeAttachments(pinMessageAttachments);
 							const enhancedAttachment = {
