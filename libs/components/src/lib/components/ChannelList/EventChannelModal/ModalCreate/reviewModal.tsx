@@ -1,9 +1,8 @@
 import { useEscapeKeyClose } from '@mezon/core';
-import { EventManagementEntity } from '@mezon/store';
-import { ContenSubmitEventProps } from '@mezon/utils';
+import type { EventManagementEntity } from '@mezon/store';
+import type { ContenSubmitEventProps } from '@mezon/utils';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { handleTimeISO } from '../timeFomatEvent';
 import ItemEventManagement from './itemEventManagement';
 
 export type ReviewModalProps = {
@@ -16,7 +15,18 @@ export type ReviewModalProps = {
 const ReviewModal = (props: ReviewModalProps) => {
 	const { option, contentSubmit, onClose, event } = props;
 	const { t } = useTranslation('eventCreator');
-	const time = useMemo(() => handleTimeISO(contentSubmit.selectedDateStart, contentSubmit.timeStart), []);
+	const time = useMemo(() => {
+		const startLabel = new Intl.DateTimeFormat('en', {
+			weekday: 'short',
+			month: 'short',
+			day: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit',
+			hour12: false
+		}).format(new Date(contentSubmit.selectedDateStart + contentSubmit.timeStart));
+
+		return startLabel;
+	}, []);
 	const modalRef = useRef<HTMLDivElement>(null);
 
 	useEscapeKeyClose(modalRef, onClose);

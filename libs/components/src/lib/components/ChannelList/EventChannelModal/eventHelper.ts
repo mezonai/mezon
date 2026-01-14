@@ -1,18 +1,9 @@
-import { format, isSameDay } from 'date-fns';
-import { compareTime } from './timeFomatEvent';
+import { isSameDay } from 'date-fns';
 
-export const checkError = (
-	timeStart: string,
-	timeEnd: string,
-	startDate: Date,
-	endDate: Date,
-	setErrorStart: (value: boolean) => void,
-	setErrorEnd: (value: boolean) => void
-) => {
-	const currentDate = new Date();
-	const currentTime = format(currentDate, 'HH:mm');
-	const compareCurrentAndStart = compareTime(currentTime, timeStart);
-	const compareStartAndEnd = compareTime(timeStart, timeEnd);
+export const checkError = (startDate: number, endDate: number, setErrorStart: (value: boolean) => void, setErrorEnd: (value: boolean) => void) => {
+	const currentDate = Date.now();
+	const compareCurrentAndStart = currentDate < startDate;
+	const compareStartAndEnd = startDate < endDate;
 	const isStartDateSameCurrentDate = isSameDay(currentDate, startDate);
 	const isStartDateSameEndDate = isSameDay(startDate, endDate);
 

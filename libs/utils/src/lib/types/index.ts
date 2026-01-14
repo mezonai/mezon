@@ -845,10 +845,10 @@ export enum MentionTypeEnum {
 
 export type ContenSubmitEventProps = {
 	topic: string;
-	timeStart: string;
-	timeEnd: string;
-	selectedDateStart: Date;
-	selectedDateEnd: Date;
+	timeStart: number;
+	timeEnd: number;
+	selectedDateStart: number;
+	selectedDateEnd: number;
 	voiceChannel: string;
 	logo: string;
 	description: string;
