@@ -94,7 +94,7 @@
 		"editEvent": "Chỉnh sửa sự kiện",
 		"cancelEvent": "Hủy sự kiện",
 		"copyEventLink": "Sao chép liên kết sự kiện",
-		"uploadImage": "Tải ảnh lên",
+		"uploadImage": "Tải ảnh bìa lên",
 		"neverMind": "Bỏ qua",
 		"cancelEventQuestion": "Hủy sự kiện?",
 		"confirmCancelEvent": "Bạn có chắc chắn muốn hủy sự kiện này không?",
@@ -118,6 +118,7 @@
 		"eventInfo": "Thông tin sự kiện",
 		"interested": "{{count}} Quan tâm",
 		"personInterested": "{{count}} người quan tâm",
+		"personInteresteds": "{{count}} người quan tâm",
 		"createdBy": "Được tạo bởi {{username}}",
 		"inviteFriends": "Mời bạn bè tham gia sự kiện?",
 		"shareLink": "Chia sẻ liên kết này với người khác để cấp quyền truy cập vào máy chủ này",
@@ -133,11 +134,18 @@
 		"privateEvent": "Sự kiện bên ngoài",
 		"privateRoom": "Phòng họp bên ngoài",
 		"newEvent": "Mới",
-		"share": "Chia sẻ"
+		"share": "Chia sẻ",
+		"noOneInterested": "Chưa có ai quan tâm đến sự kiện này."
 	},
 	"errorMessages": {
 		"startTimeFuture": "Thời gian bắt đầu phải ở tương lai.",
 		"endTimeAfterStart": "Thời gian kết thúc phải lớn hơn thời gian bắt đầu."
 	},
-	"selectUser": "Chọn kênh hoặc chủ đề để tạo sự kiện"
+	"selectUser": "Chọn kênh hoặc chủ đề để tạo sự kiện",
+	"emptyState": {
+		"title": "Không có sự kiện nào sắp tới.",
+		"description1": "Lên lịch sự kiện cho bất kỳ hoạt động nào trong",
+		"clan": "clan",
+		"description2": "Hãy mời các thành viên khác đóng góp ý tưởng cho các sự kiện sắp tới."
+	}
 }

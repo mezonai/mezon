@@ -53,12 +53,10 @@ const DeleteCategoryModal: React.FC<DeleteCategoryModalProps> = ({ category, clo
 	return (
 		<ModalConfirm
 			handleCancel={closeDeleteModal}
-			modalName={category.category_name || ''}
 			handleConfirm={confirmDeleteCategory}
-			title="delete"
+			title={t('modalConfirm.deleteCategoryTitle', { name: category.category_name || '' })}
 			buttonName={t('deleteCategory')}
 			message={t('cannotBeUndone')}
-			customModalName={t('category')}
 		/>
 	);
 };

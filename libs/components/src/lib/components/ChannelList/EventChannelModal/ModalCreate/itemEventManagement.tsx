@@ -16,7 +16,7 @@ import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
-import type { ApiUserEventRequest } from 'mezon-js/api.gen';
+import { ApiUserEventRequest } from 'mezon-js/api.gen';
 import Tooltip from 'rc-tooltip';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -83,6 +83,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const textChannel = useAppSelector((state) => selectChannelById(state, textChannelId ?? '')) || {};
 	const isThread = textChannel?.type === ChannelType.CHANNEL_TYPE_THREAD;
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
+	console.log('userCreate', userCreate);
+
 	const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);
 	const checkOptionVoice = useMemo(() => option === OptionEvent.OPTION_SPEAKER, [option]);
 	const checkOptionLocation = useMemo(() => option === OptionEvent.OPTION_LOCATION, [option]);
@@ -270,7 +272,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							placement="left"
 							overlay={
 								<p className="text-theme-primary-active w-[max-content]">
-									{t('eventCreator:eventDetail.createdBy', { username: userCreate?.user?.username })}
+									{t('eventCreator:eventDetail.createdBy', { username: userCreate?.clan_nick || userCreate?.user?.display_name })}
 								</p>
 							}
 						>
@@ -279,18 +281,20 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_detail_modal')}
 							>
 								<AvatarImage
-									alt={userCreate?.user?.username || ''}
-									username={userCreate?.user?.username}
+									alt={userCreate?.clan_nick || userCreate?.user?.display_name || ''}
+									username={userCreate?.clan_nick || userCreate?.user?.display_name}
 									className="min-w-6 min-h-6 max-w-6 max-h-6"
-									srcImgProxy={createImgproxyUrl(userCreate?.user?.avatar_url ?? '')}
-									src={userCreate?.user?.avatar_url}
+									srcImgProxy={createImgproxyUrl((userCreate?.clan_avatar || userCreate?.user?.avatar_url) ?? '')}
+									src={userCreate?.clan_avatar || userCreate?.user?.avatar_url}
 									classNameText="text-[9px] pt-[3px]"
 								/>
 								<div
 									className="flex items-center gap-x-1 w-full justify-end px-2 py-1 rounded-full bg-theme-primary text-theme-primary-active"
-									title={t('eventCreator:eventDetail.personInterested', { count: event?.user_ids?.length })}
+									title={t('eventCreator:eventDetail.personInterested', {
+										count: (event?.user_ids?.filter((id) => id !== '0')?.length || '') as any
+									})}
 								>
-									<span className="text-md">{event?.user_ids?.length}</span>
+									<span className="text-md">{event?.user_ids?.filter((id) => id !== '0')?.length || '0'}</span>
 									<Icons.MemberList defaultSize="h-4 w-4" />
 								</div>
 							</div>
@@ -301,7 +305,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				<div className="flex justify-between gap-4 select-text">
 					<div className={`${isReviewEvent || !logoRight ? 'w-full' : 'w-3/5'} `}>
 						<p
-							className="hover:underline font-bold  text-base"
+							className="hover:underline font-bold text-base truncate"
 							data-e2e={generateE2eId('clan_page.modal.create_event.review.event_topic')}
 						>
 							{topic}
@@ -335,20 +339,23 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				>
 					{checkOptionVoice &&
 						!isPrivateEvent &&
-						(() => {
-							const linkProps = {
-								onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+						(isReviewEvent ? (
+							<span className="flex gap-x-2">
+								<Icons.Speaker />
+								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
+							</span>
+						) : (
+							<a
+								onClick={(e) => {
 									handleStopPropagation(e);
 									redirectToVoice();
-								}
-							};
-							return (
-								<a {...linkProps} className="flex gap-x-2 cursor-pointer">
-									<Icons.Speaker />
-									<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
-								</a>
-							);
-						})()}
+								}}
+								className="flex gap-x-2 cursor-pointer"
+							>
+								<Icons.Speaker />
+								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
+							</a>
+						))}
 					{checkOptionLocation && (
 						<>
 							<Icons.Location />
@@ -364,12 +371,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					{isPrivateEvent && (
 						<div className="flex gap-x-2 items-center">
 							<Icons.Speaker />
-							{link ? (
+							{!isReviewEvent && link ? (
 								<a href={link} target="_blank" rel="noopener noreferrer" className="cursor-pointer whitespace-normal break-words">
 									{t('eventCreator:eventDetail.privateRoom')}
 								</a>
 							) : (
-								<span className="whitespace-normal break-words cursor-not-allowed">{t('eventCreator:eventDetail.privateRoom')}</span>
+								<span className="whitespace-normal break-words">{t('eventCreator:eventDetail.privateRoom')}</span>
 							)}
 						</div>
 					)}

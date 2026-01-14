@@ -16,8 +16,8 @@
 	"doNotHaveBlockedUser": "Không có người dùng nào bị chặn",
 	"setPassword": "Đặt mật khẩu",
 	"changePassword": "Đổi mật khẩu",
-	"setEmail": "Set Email",
-	"changeEmail": "Change Email",
+	"setEmail": "Đặt Email",
+	"changeEmail": "Đổi Email",
 	"setPhoneNumber": "Đặt số điện thoại",
 	"disableAccountAlert": {
 		"title": "Vô hiệu hoá tài khoản",
@@ -123,6 +123,11 @@
 		"fillOTP": "Nhập mã OTP",
 		"send": "Gửi OTP",
 		"resendOtp": "Gửi lại mã OTP!",
+		"error": {
+			"notEqual": "Mật khẩu xác nhận không khớp",
+			"required": "Email là bắt buộc",
+			"invalid": "Vui lòng nhập địa chỉ email hợp lệ"
+		},
 		"updateEmail": {
 			"newEmail": "Email mới",
 			"nextButton": "Tiếp theo",

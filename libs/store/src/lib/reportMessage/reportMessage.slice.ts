@@ -2,6 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import { t } from 'i18next';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { toastActions } from '../toasts/toasts.slice';
 
@@ -34,7 +35,7 @@ export const reportMessageAbuse = createAsyncThunk('reportMessage/reportMessageA
 
 		thunkAPI.dispatch(
 			toastActions.addToast({
-				message: 'Message reported successfully',
+				message: t('common:reportMessage.success'),
 				type: 'success'
 			})
 		);
@@ -42,7 +43,7 @@ export const reportMessageAbuse = createAsyncThunk('reportMessage/reportMessageA
 		return response;
 	} catch (error: unknown) {
 		captureSentryError(error, 'reportMessage/reportMessageAbuse');
-		const errorMessage = error instanceof Error ? error.message : 'Failed to report message';
+		const errorMessage = error instanceof Error ? error.message : t('common:reportMessage.failed');
 		thunkAPI.dispatch(
 			toastActions.addToast({
 				message: errorMessage,
@@ -87,7 +88,7 @@ export const reportMessageSlice = createSlice({
 			})
 			.addCase(reportMessageAbuse.rejected, (state, action) => {
 				state.loadingStatus = 'error';
-				state.error = action.error.message || 'Failed to report message';
+				state.error = action.error.message || t('common:reportMessage.failed');
 			});
 	}
 });

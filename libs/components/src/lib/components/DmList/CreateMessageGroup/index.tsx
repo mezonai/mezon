@@ -43,6 +43,11 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 		currentDM?.type === ChannelType.CHANNEL_TYPE_GROUP || currentDM?.type === ChannelType.CHANNEL_TYPE_DM
 	);
 
+	const allAddableFriends = filteredFriends(
+		'',
+		currentDM?.type === ChannelType.CHANNEL_TYPE_GROUP || currentDM?.type === ChannelType.CHANNEL_TYPE_DM
+	);
+
 	const handleSelectFriends = (idFriend: string) => {
 		setSelectedFriends((prevSelectedFriends) => {
 			if (prevSelectedFriends.includes(idFriend)) {
@@ -235,15 +240,19 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 		if (currentDM?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			if (numberMemberInDmGroup == null) return 0;
 			return numberMemberInDmGroup < GROUP_CHAT_MAXIMUM_MEMBERS
-				? GROUP_CHAT_MAXIMUM_MEMBERS - numberMemberInDmGroup > (listFriends?.length ?? 0)
-					? (listFriends?.length ?? 0)
+				? GROUP_CHAT_MAXIMUM_MEMBERS - numberMemberInDmGroup > (allAddableFriends?.length ?? 0)
+					? (allAddableFriends?.length ?? 0)
 					: GROUP_CHAT_MAXIMUM_MEMBERS - numberMemberInDmGroup
 				: 0;
 		} else {
 			const maxCanSelect = GROUP_CHAT_MAXIMUM_MEMBERS - 1;
-			return friends.length > maxCanSelect ? maxCanSelect : friends.length;
+			return allAddableFriends.length > maxCanSelect ? maxCanSelect : allAddableFriends.length;
 		}
-	}, [friends, currentDM?.type, listFriends?.length, numberMemberInDmGroup]);
+	}, [allAddableFriends?.length, currentDM?.type, numberMemberInDmGroup]);
+
+	const remainingCanAdd = useMemo(() => {
+		return Math.max(0, numberCanAdd - selectedFriends.length);
+	}, [numberCanAdd, selectedFriends.length]);
 
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, onClose);
@@ -262,7 +271,7 @@ const CreateMessageGroup = ({ onClose, classNames, currentDM, rootRef }: CreateM
 			<div className="cursor-default text-start">
 				<div className="p-4">
 					<h3 className="text-lg md:text-xl text-theme-primary-active">{t('createMessageGroup.selectFriends')}</h3>
-					<p className="text-sm md:text-base pt-1">{t('createMessageGroup.canAddMoreFriends', { count: numberCanAdd })}</p>
+					<p className="text-sm md:text-base pt-1">{t('createMessageGroup.canAddMoreFriends', { count: remainingCanAdd })}</p>
 					<InputField
 						type="text"
 						placeholder={t('createMessageGroup.searchPlaceholder')}
