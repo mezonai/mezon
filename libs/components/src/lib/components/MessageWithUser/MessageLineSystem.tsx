@@ -1,6 +1,6 @@
 import { channelsActions, messagesActions, pinMessageActions, threadsActions, useAppDispatch } from '@mezon/store';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
-import { ETokenMessage, TypeMessage, convertTimeStringI18n, generateE2eId, parseThreadInfo } from '@mezon/utils';
+import { ETokenMessage, TypeMessage, convertUnixSecondsToTimeString, generateE2eId, parseThreadInfo } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -185,7 +185,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 					))}
 			</div>
 			<div className="ml-1 max-2xl:ml-0 pt-[5px]  max-2xl:pt-0 text-theme-primary text-[10px] cursor-default">
-				{convertTimeStringI18n(message?.create_time_seconds || 0, translateCommon, i18n.language)}
+				{convertUnixSecondsToTimeString(message?.create_time_seconds || 0, translateCommon, i18n.language)}
 			</div>
 		</div>
 	);
