@@ -75,16 +75,18 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 	useEffect(() => {
 		setSelectedFrequency(contentSubmit.repeatType ?? ERepeatType.DOES_NOT_REPEAT);
 	}, []);
-	// this one to check error timeStart/timeEnd
+
 	useMemo(() => {
-		checkError(contentSubmit.selectedDateStart, contentSubmit.selectedDateEnd, setErrorStart, setErrorEnd);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [contentSubmit.selectedDateStart, contentSubmit.selectedDateEnd, contentSubmit.repeatType]);
+		checkError(
+			contentSubmit.selectedDateStart + contentSubmit.timeStart,
+			contentSubmit.selectedDateEnd + contentSubmit.timeEnd,
+			setErrorStart,
+			setErrorEnd
+		);
+	}, [contentSubmit.timeEnd, contentSubmit.timeStart, contentSubmit.selectedDateStart, contentSubmit.selectedDateEnd, contentSubmit.repeatType]);
 
 	const handleDateChangeStart = (date: Date) => {
 		setContentSubmit((prev) => ({ ...prev, selectedDateStart: getTimeTodayMidNight(date.getTime()) }));
-		// check dateEnd
-		// if endDate < startDate => set is startDate
 		if (date.getTime() > contentSubmit.selectedDateEnd) {
 			handleDateChangeEnd(date);
 		}
@@ -112,8 +114,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 	);
 
 	const handleChangeTimeStart = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			const time = Number(e.target.value);
+		(time: number) => {
 			setContentSubmit((prev) => {
 				const updatedContent = { ...prev, timeStart: time };
 				return updatedContent;
@@ -123,8 +124,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 	);
 
 	const handleChangeTimeEnd = useCallback(
-		(e: React.ChangeEvent<HTMLInputElement>) => {
-			const time = Number(e.target.value);
+		(time: number) => {
 			setContentSubmit((prev) => {
 				const updatedContent = { ...prev, timeEnd: time };
 				return updatedContent;
