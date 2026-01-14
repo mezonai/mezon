@@ -649,7 +649,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						data: {
 							...notification,
 							create_time: notification.create_time || new Date().toISOString(),
-							id: notification.id || ''
+							id: notification.id || '',
+							content: safeJSONParse(notification.content?.content || '')?.t
 						},
 						category: notification.category as NotificationCategory
 					})
@@ -725,7 +726,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					channelId: pin.channel_id,
 					pinMessage: {
 						id: pin.message_id,
-						attachment: pin.message_attachment,
+						attachment: JSON.parse(pin.message_attachment),
 						avatar: pin.message_sender_avatar,
 						channel_id: pin.channel_id,
 						content: pin.message_content,

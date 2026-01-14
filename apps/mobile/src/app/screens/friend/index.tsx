@@ -204,7 +204,13 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 				showAction={true}
 			/>
 
-			<UserInformationBottomSheet user={selectedUser} onClose={onClose} showAction={false} showRole={false} currentChannel={{ type: ChannelType.CHANNEL_TYPE_GROUP } as ChannelsEntity} />
+			<UserInformationBottomSheet
+				user={selectedUser}
+				onClose={onClose}
+				showAction={false}
+				showRole={false}
+				currentChannel={{ type: ChannelType.CHANNEL_TYPE_GROUP } as ChannelsEntity}
+			/>
 		</View>
 	);
 });

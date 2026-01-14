@@ -30,6 +30,7 @@ export interface PoliciesState extends EntityState<PermissionUserEntity, string>
 	error?: string | null;
 	PermissionsUserId?: string | null;
 	cache?: CacheMetadata;
+	permissionUserCache?: CacheMetadata;
 	maxPermissionUser: number;
 }
 
@@ -39,26 +40,59 @@ type fetchPermissionsUserPayload = {
 	clanId: string;
 };
 
-export const fetchPermissionsUser = createAsyncThunk<any, fetchPermissionsUserPayload, ThunkConfigWithError>(
+type FetchPermissionsUserResult = {
+	clanId: string;
+	maxPermissionUser: number;
+	fromCache?: boolean;
+	time?: number;
+};
+
+const fetchPermissionsUserCached = async (
+	getState: () => RootState,
+	mezon: MezonValueContext,
+	clanId: string,
+	noCache = false
+): Promise<FetchPermissionsUserResult> => {
+	const policiesState = (getState() as RootState)[POLICIES_FEATURE_KEY];
+	const apiKey = createApiKey('fetchPermissionsUser', clanId, mezon.session.username || '');
+	const shouldForceCall = shouldForceApiCall(apiKey, policiesState.permissionUserCache, noCache || policiesState.PermissionsUserId !== clanId);
+	if (!shouldForceCall && policiesState.PermissionsUserId === clanId) {
+		return {
+			clanId,
+			maxPermissionUser: policiesState.maxPermissionUser || 0,
+			fromCache: true,
+			time: policiesState.permissionUserCache?.lastFetched || Date.now()
+		};
+	}
+
+	const response = await fetchDataWithSocketFallback(
+		mezon,
+		{
+			api_name: 'GetRoleOfUserInTheClan',
+			permission_user_req: {
+				clan_id: clanId
+			}
+		},
+		() => mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId),
+		'role_list'
+	);
+
+	markApiFirstCalled(apiKey);
+
+	return {
+		clanId,
+		maxPermissionUser: response?.max_level_permission || 0,
+		fromCache: false,
+		time: Date.now()
+	};
+};
+
+export const fetchPermissionsUser = createAsyncThunk<FetchPermissionsUserResult, fetchPermissionsUserPayload, ThunkConfigWithError>(
 	'policies/fetchPermissionsUser',
 	async ({ clanId }: fetchPermissionsUserPayload, thunkAPI) => {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await fetchDataWithSocketFallback(
-			mezon,
-			{
-				api_name: 'GetRoleOfUserInTheClan',
-				permission_user_req: {
-					clan_id: clanId
-				}
-			},
-			() => mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId),
-			'role_list'
-		);
-
-		if (!response.roles) {
-			return [];
-		}
-		return response.max_level_permission || 0;
+		const response = await fetchPermissionsUserCached(thunkAPI.getState as () => RootState, mezon, clanId);
+		return response;
 	}
 );
 
@@ -125,6 +159,7 @@ export const fetchPermission = createAsyncThunk('policies/fetchPermission', asyn
 export const initialPoliciesState: PoliciesState = policiesAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	maxPermissionUser: 0,
+	permissionUserCache: undefined,
 	error: null
 });
 
@@ -168,8 +203,15 @@ export const policiesSlice = createSlice({
 			.addCase(fetchPermissionsUser.pending, (state: PoliciesState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchPermissionsUser.fulfilled, (state: PoliciesState, action: PayloadAction<number>) => {
-				state.maxPermissionUser = action.payload;
+			.addCase(fetchPermissionsUser.fulfilled, (state: PoliciesState, action: PayloadAction<FetchPermissionsUserResult>) => {
+				const { maxPermissionUser, fromCache, clanId } = action.payload;
+				state.PermissionsUserId = clanId;
+				state.maxPermissionUser = maxPermissionUser;
+
+				if (!fromCache) {
+					state.permissionUserCache = createCacheMetadata(LIST_PERMISSION_CACHED_TIME);
+				}
+
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchPermissionsUser.rejected, (state: PoliciesState, action) => {

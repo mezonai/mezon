@@ -11,7 +11,7 @@ import {
 } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
 import { TOPBARS_MAX_WIDTH, convertTimeString, generateE2eId } from '@mezon/utils';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
+import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +45,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(pinMessage.sender_id || '');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
-	const pinMessageAttachments = safeJSONParse(pinMessage?.attachment || '[]');
+	const pinMessageAttachments = pinMessage?.attachment;
 	const handleJumpMess = () => {
 		if (pinMessage.message_id && pinMessage.channel_id) {
 			dispatch(
@@ -114,22 +114,23 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							/>
 						)}
 					</div>
-					{!!pinMessageAttachments.length &&
+					{pinMessageAttachments?.length &&
 						(() => {
-							const enhancedAttachments = pinMessageAttachments.map((att: ApiMessageAttachment) => ({
-								...att,
+							const attachment = decodeAttachments(pinMessageAttachments);
+							const enhancedAttachment = {
+								...attachment,
 								create_time: validCreateTime,
 								sender_id: pinMessage.sender_id,
 								message_id: pinMessage.message_id
-							}));
+							};
 							return (
 								<MessageAttachment
 									mode={mode as ChannelStreamMode}
 									message={
 										{
 											...pinMessage,
-											attachments: enhancedAttachments
-										} as IMessageWithUser
+											attachments: enhancedAttachment.attachments
+										} as unknown as IMessageWithUser
 									}
 									defaultMaxWidth={TOPBARS_MAX_WIDTH}
 								/>

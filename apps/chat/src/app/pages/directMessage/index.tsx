@@ -25,7 +25,7 @@ const Direct = () => {
 				className={`flex-col flex w-[272px]  bg-theme-direct-message  relative min-w-widthMenuMobile ${isWindowsDesktop || isLinuxDesktop ? 'max-h-heightTitleBar h-heightTitleBar' : ''} sbm:min-w-[272px] ${closeMenu ? (statusMenu ? 'flex' : 'max-sm:hidden') : ''}`}
 			>
 				<DirectMessageContextMenuProvider contextMenuId="dm-list-context">
-					<div className="contain-content border-left-theme-primary ">
+					<div className="contain-content ">
 						<ClanHeader type={'direct'} />
 						<DirectMessageList />
 					</div>
