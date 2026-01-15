@@ -1056,7 +1056,6 @@ export const selectCurrentClanBadgeCount = createSelector(selectCurrentClan, (cl
 export const selectCurrentClanIsCommunity = createSelector(selectCurrentClan, (clan) => clan?.is_community);
 export const selectCurrentClanPreventAnonymous = createSelector(selectCurrentClan, (clan) => clan?.prevent_anonymous ?? false);
 
-export const selectDefaultClanId = createSelector(selectAllClans, (clans) => (clans.length > 0 ? clans[0].id : null));
 export const selectOrderedClans = createSelector([selectAllClans, (state: RootState) => state.clans.clansOrder], (clans, order) => {
 	if (!order || order.length === 0) return clans;
 
@@ -1068,12 +1067,6 @@ export const selectOrderedClans = createSelector([selectAllClans, (state: RootSt
 
 	return [...orderedClans, ...remainingClans];
 });
-
-export const selectShowNumEvent = (clanId: string) =>
-	createSelector(getClansState, (state) => {
-		const clan = state.clanMetadata.entities[clanId];
-		return clan?.showNumEvent || false;
-	});
 
 export const selectBadgeCountAllClan = createSelector(selectAllClans, (clan) => {
 	return clan.reduce((total, count) => total + (count.badge_count ?? 0), 0);
@@ -1093,10 +1086,6 @@ export const selectWelcomeChannelByClanId = createSelector([getClansState, (stat
 });
 
 export const selectClanGroups = createSelector(getClansState, (state) => clanGroupAdapter.getSelectors().selectAll(state.clanGroups));
-
-export const selectClanGroupEntities = createSelector(getClansState, (state) => clanGroupAdapter.getSelectors().selectEntities(state.clanGroups));
-
-export const selectClanGroupById = (groupId: string) => createSelector(selectClanGroupEntities, (entities) => entities[groupId]);
 
 export const selectClanGroupOrder = createSelector(getClansState, (state) => state?.clanGroupOrder || []);
 

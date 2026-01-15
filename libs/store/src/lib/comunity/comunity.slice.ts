@@ -320,10 +320,6 @@ export const comunityActions = {
 	updateCommunityDescription,
 	updateCommunityShortUrl
 };
-export const selectComunityDescription = createSelector(
-	[(state: RootState, clanId: string) => selectComunityState(state).byClanId?.[clanId]?.description],
-	(description) => description ?? ''
-);
 
 export const selectComunityState = (state: RootState) => state[COMUNITY_FEATURE_KEY] as ComunityState;
 

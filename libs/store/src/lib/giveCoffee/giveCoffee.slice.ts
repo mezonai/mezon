@@ -237,15 +237,3 @@ export const selectShowModalSendToken = createSelector(getCoffeeState, (state) =
 export const selectInfoSendToken = createSelector(getCoffeeState, (state) => state.infoSendToken);
 
 export const selectSendTokenEvent = createSelector(getCoffeeState, (state) => state.sendTokenEvent);
-
-export const selectUpdateToken = (userId: string) =>
-	createSelector(getCoffeeState, (state) => {
-		const tokenUpdate = state?.tokenUpdate || {};
-		const tokenValue = tokenUpdate[userId];
-		return typeof tokenValue === 'number' && !isNaN(tokenValue) ? tokenValue : 0;
-	});
-export const selectTokenSocket = (userId: string) =>
-	createSelector(getCoffeeState, (state) => {
-		const tokenSocket = state?.tokenSocket || {};
-		return tokenSocket[userId];
-	});

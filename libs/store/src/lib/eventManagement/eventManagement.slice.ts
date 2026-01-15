@@ -492,8 +492,6 @@ export const selectEventsByClanId = createSelector(
 	(events, clanId) => selectAll(events.byClans[clanId]?.entities ?? eventManagementAdapter.getInitialState())
 );
 
-export const selectNumberEvent = createSelector(selectEventsByClanId, (events) => events?.length);
-
 export const selectChooseEvent = createSelector(getEventManagementState, (state) => state.chooseEvent);
 
 export const selectShowModelEvent = createSelector(getEventManagementState, (state) => state.showModalEvent);

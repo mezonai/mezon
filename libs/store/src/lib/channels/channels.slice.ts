@@ -31,7 +31,6 @@ import { selectClansEntities } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import { messagesActions, processQueuedLastSeenMessages } from '../messages/messages.slice';
-import { selectEntiteschannelCategorySetting } from '../notificationSetting/notificationSettingCategory.slice';
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
 import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice';
 import { reactionActions } from '../reactionMessage/reactionMessage.slice';
@@ -41,7 +40,7 @@ import { selectListThreadId, threadsActions } from '../threads/threads.slice';
 import type { LIST_CHANNELS_USER_FEATURE_KEY, ListChannelsByUserState } from './channelUser.slice';
 import { listChannelsByUserActions, selectAllChannelsByUser, selectEntitiesChannelsByUser } from './channelUser.slice';
 import type { ChannelMetaEntity } from './channelmeta.slice';
-import { channelMetaActions, enableMute, selectChannelMetaById } from './channelmeta.slice';
+import { channelMetaActions, selectChannelMetaById } from './channelmeta.slice';
 import { listChannelRenderAction, selectListChannelRenderByClanId } from './listChannelRender.slice';
 
 const LIST_CHANNEL_CACHED_TIME = 1000 * 60 * 5;
@@ -1736,11 +1735,6 @@ export const selectCurrentChannelId = createSelector(
 	(state, clanId) => state.byClans[clanId]?.currentChannelId
 );
 
-export const selectSelectedChannelId = createSelector(
-	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => state.byClans[clanId]?.selectedChannelId
-);
-
 export const selectModeResponsive = createSelector(
 	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
 	(state, clanId) => state.byClans[clanId]?.modeResponsive
@@ -1817,11 +1811,6 @@ export const selectDefaultChannelIdByClanId = createSelector(
 	}
 );
 
-export const selectAllIdChannelSelected = createSelector(
-	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => state.byClans[clanId]?.idChannelSelected ?? {}
-);
-
 export const selectAllChannelsFavorite = createSelector(
 	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
 	(state, clanId) => state.byClans[clanId]?.favoriteChannels ?? []
@@ -1835,11 +1824,6 @@ export const selectPreviousChannels = createSelector(
 export const selectAppChannelById = createSelector(
 	[getChannelsState, (state: RootState) => state.clans.currentClanId as string, (_: RootState, channelId: string) => channelId],
 	(state, clanId, channelId) => state.byClans[clanId]?.appChannelsList[channelId]
-);
-
-export const selectFetchChannelStatus = createSelector(
-	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => state.byClans[clanId]?.fetchChannelSuccess ?? false
 );
 
 export const selectIsShowPinBadgeByChannelId = (channelId: string) =>
@@ -1910,16 +1894,6 @@ export const selectCurrentCategory = createSelector(
 	(state, clanId) => state.byClans[clanId]?.currentCategory
 );
 
-export const selectAppChannelsListShowOnPopUp = createSelector(
-	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => Object.values(state.byClans[clanId]?.appChannelsListShowOnPopUp || [])
-);
-
-export const selectCheckAppFocused = createSelector(
-	[getChannelsState, (state: RootState) => state.clans.currentClanId as string, (_: RootState, channelId: string) => channelId],
-	(state, clanId, channelId) => Boolean(state.byClans[clanId]?.appFocused?.[channelId])
-);
-
 export const selectAppChannelsKeysShowOnPopUp = createSelector(
 	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
 	(state, clanId) => {
@@ -1943,14 +1917,6 @@ export const selectAppChannelsList = createSelector([getChannelsState, (state: R
 	Object.values(state.byClans[clanId]?.appChannelsList || {})
 );
 
-export const selectAppFocusedChannel = createSelector(
-	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => {
-		const focusedApps = Object.values(state.byClans[clanId]?.appFocused || {});
-		return focusedApps.length > 0 ? focusedApps[0] : null;
-	}
-);
-
 export const selectScrollPositionByChannelId = createSelector(
 	[getChannelsState, (state, channelId) => channelId],
 	(state, channelId) => state.scrollPosition?.[channelId] ?? null
@@ -1960,8 +1926,3 @@ export const selectShowScrollDownButton = createSelector(
 	[getChannelsState, (state, channelId) => channelId],
 	(state, channelId) => state.showScrollDownButton?.[channelId] ?? false
 );
-
-export const selectAllAppChannelsListShowOnPopUp = createSelector(getChannelsState, (state) => {
-	const data = Object.values(state.byClans).flatMap((clan) => clan.appChannelsListShowOnPopUp);
-	return data?.length ? data : null;
-});

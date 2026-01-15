@@ -880,7 +880,7 @@ const getStatusUnread = (lastSeenStamp: number, lastSentStamp: number) => {
 	return true;
 };
 
-const { selectAll, selectEntities, selectIds } = directAdapter.getSelectors();
+const { selectAll, selectEntities } = directAdapter.getSelectors();
 
 export const getDirectState = (rootState: { [DIRECT_FEATURE_KEY]: DirectState }): DirectState => rootState[DIRECT_FEATURE_KEY];
 export const selectDirectMessageEntities = createSelector(getDirectState, selectEntities);
@@ -1082,5 +1082,3 @@ export const selectLastSeenMessageIdDM = createSelector([selectDirectMessageEnti
 	const dm = entities?.[channelId];
 	return dm?.last_seen_message?.id;
 });
-
-export const selectEntitiesDirectMeta = selectDirectMessageEntities;
