@@ -46,7 +46,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	}, [channelJump]);
 	const message = notify?.content;
 	const messageId = message?.message_id;
-	const channelId = notify?.channel_id;
+	const channelId = message?.channel_id;
 	const clanId = message?.clan_id;
 
 	const topicId = notify?.topic_id || '';
