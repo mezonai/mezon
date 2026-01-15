@@ -27,25 +27,25 @@ const CustomizePage = () => {
 			id: 0,
 			title: 'Custom Themes',
 			description: 'Choose from light, dark, or create your own custom theme to match your personal style.',
-			image: '/assets/custome.webp'
+			image: '/custome.webp'
 		},
 		{
 			id: 1,
 			title: 'Server Branding',
 			description: 'Add your logo, banner, and custom colors to your server to reflect your brand identity.',
-			image: '/assets/custome.webp'
+			image: '/custome.webp'
 		},
 		{
 			id: 2,
 			title: 'Custom Emojis',
 			description: 'Upload and use your own custom emojis and stickers to express yourself in unique ways.',
-			image: '/assets/custome.webp'
+			image: '/custome.webp'
 		},
 		{
 			id: 3,
 			title: 'Layout Customization',
 			description: 'Rearrange and customize the layout of your workspace to fit your workflow and preferences perfectly.',
-			image: '/assets/custome.webp'
+			image: '/custome.webp'
 		}
 	];
 
@@ -86,7 +86,7 @@ const CustomizePage = () => {
 						</div>
 
 						<div className="flex justify-center lg:justify-end">
-							<img src="/assets/custome.webp" alt="Customize" className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl" />
+							<img src="/custome.webp" alt="Customize" className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl" />
 						</div>
 					</div>
 				</div>

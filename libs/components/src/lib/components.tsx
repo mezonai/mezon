@@ -143,3 +143,4 @@ export { default as InternetStatusPopover } from './components/InternetStatusPop
 export { default as ModalLayout } from './components/Modal';
 export { default as ModalEditGroup } from './components/ModalEditGroup';
 export { default as SidebarHistory } from './components/ModalListClans/SidebarHistory';
+export { OtpConfirm } from './components/OtpConfirm/index';

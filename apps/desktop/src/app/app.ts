@@ -5,6 +5,7 @@ import { autoUpdater } from 'electron-updater';
 import activeWindows from 'mezon-active-windows';
 import { join } from 'path';
 import ua from 'universal-analytics';
+import { format } from 'url';
 import tray from '../Tray';
 import { EActivityCoding, EActivityGaming, EActivityMusic } from './activities';
 import setupAutoUpdates from './autoUpdates';
@@ -20,6 +21,7 @@ const ACTIVITY_MUSIC = Object.values(EActivityMusic);
 const ACTIVITY_GAMING = Object.values(EActivityGaming);
 
 const _IMAGE_WINDOW_KEY = 'IMAGE_WINDOW_KEY';
+const STORE_ID = 'MEZON.Mezon_vdgv9gtrfadw6!MEZON.Mezon';
 
 const isMac = process.platform === 'darwin';
 
@@ -40,7 +42,7 @@ export default class App {
 	static BrowserWindow: typeof Electron.BrowserWindow;
 	static imageViewerWindow: Electron.BrowserWindow | null = null;
 	static channelAppWindow: Electron.BrowserWindow | null = null;
-	static attachmentData: any;
+	static attachmentData: unknown;
 	static imageScriptWindowLoaded = false;
 
 	private static updateCheckInterval: NodeJS.Timeout | null = null;
@@ -78,7 +80,8 @@ export default class App {
 	private static onReady() {
 		if (rendererAppName) {
 			App.application.setLoginItemSettings({
-				openAtLogin: false
+				openAtLogin: true,
+				path: process.execPath
 			});
 			App.initMainWindow();
 			App.loadMainWindow();
@@ -94,7 +97,7 @@ export default class App {
 		}
 
 		if (process.platform === 'win32') {
-			app.setAppUserModelId('app.mezon.ai');
+			app.setAppUserModelId(STORE_ID);
 		}
 
 		autoUpdater.checkForUpdates();
@@ -126,11 +129,14 @@ export default class App {
 		const width = Math.min(1280, workAreaSize.width || 1280);
 		const height = Math.min(720, workAreaSize.height || 720);
 
+		const loginSettings = App.application.getLoginItemSettings();
+		const showOnStartup = !loginSettings.wasOpenedAtLogin;
+
 		// Create the browser window.
 		App.mainWindow = new BrowserWindow({
 			width,
 			height,
-			show: false,
+			show: showOnStartup,
 			frame: false,
 			titleBarOverlay: false,
 			titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
@@ -140,6 +146,7 @@ export default class App {
 				nodeIntegration: false,
 				contextIsolation: true,
 				backgroundThrottling: false,
+				webSecurity: false, // Disable CORS check
 				preload: join(__dirname, 'main.preload.js')
 			},
 			icon: join(__dirname, 'assets', 'desktop-taskbar.ico')
@@ -299,7 +306,15 @@ export default class App {
 			const fullUrl = this.generateFullUrl(baseUrl, params);
 			App.mainWindow.loadURL(fullUrl);
 		} else {
-			App.mainWindow.loadURL('https://mezon.ai/');
+			const baseUrl = join(__dirname, '..', rendererAppName, 'index.html');
+			App.mainWindow.loadURL(
+				format({
+					pathname: baseUrl,
+					protocol: 'file:',
+					slashes: true,
+					query: params
+				})
+			);
 		}
 	}
 
@@ -333,9 +348,11 @@ export default class App {
 
 		App.mainWindow.setAlwaysOnTop(true);
 		App.mainWindow.focus();
-		setImmediate(() => {
-			App.mainWindow.setAlwaysOnTop(false);
-		});
+		setTimeout(() => {
+			if (App.isWindowValid(App.mainWindow)) {
+				App.mainWindow.setAlwaysOnTop(false);
+			}
+		}, 300);
 	}
 
 	public static setActivityTrackingEnabled(enabled: boolean) {

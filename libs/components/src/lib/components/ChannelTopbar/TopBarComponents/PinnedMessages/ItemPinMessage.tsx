@@ -113,10 +113,9 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							/>
 						)}
 					</div>
-					{pinMessageAttachments &&
+					{!!pinMessageAttachments?.length &&
 						(() => {
 							let attachmentsList: ApiMessageAttachment[] = [];
-							
 							if (Array.isArray(pinMessageAttachments)) {
 								attachmentsList = pinMessageAttachments.filter((att) => att && Object.keys(att).length > 0);
 							} else {

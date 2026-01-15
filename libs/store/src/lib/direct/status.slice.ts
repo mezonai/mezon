@@ -85,11 +85,9 @@ export const statusActions = {
 /*
  * Export selectors to query state. For use with the `useSelector` hook.
  */
-const { selectAll, selectEntities, selectById } = statusAdapter.getSelectors();
+const { selectEntities, selectById } = statusAdapter.getSelectors();
 
 export const getstatusState = (rootState: { [USER_STATUS_FEATURE_KEY]: UserStatusState }): UserStatusState => rootState[USER_STATUS_FEATURE_KEY];
-
-export const selectAllstatus = createSelector(getstatusState, selectAll);
 
 export const selectStatusEntities = createSelector(getstatusState, selectEntities);
 

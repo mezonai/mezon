@@ -1,8 +1,9 @@
-import { IDMCall, IMessageSendPayload, IOtherCall, LoadingStatus } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { WebrtcSignalingFwd } from 'mezon-js';
+import type { IDMCall, IMessageSendPayload, IOtherCall, LoadingStatus } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { WebrtcSignalingFwd } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { RootState } from '../store';
 
 export const DMCALL_FEATURE_KEY = 'dmcall';
 
@@ -169,11 +170,9 @@ export const DMCallActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities } = DMCallAdapter.getSelectors();
+const { selectEntities } = DMCallAdapter.getSelectors();
 
 export const getDMCallState = (rootState: { [DMCALL_FEATURE_KEY]: DMCallState }): DMCallState => rootState[DMCALL_FEATURE_KEY];
-
-export const selectAllDMCallVoice = createSelector(getDMCallState, selectAll);
 
 export const selectDMVoiceEntities = createSelector(getDMCallState, selectEntities);
 
@@ -189,11 +188,7 @@ export const selectSignalingDataByUserId = createSelector([selectDMVoiceEntities
 
 export const selectIsMuteMicrophone = createSelector(getDMCallState, (state: DMCallState) => state.isMuteMicrophone);
 
-export const selectIsShowShareScreen = createSelector(getDMCallState, (state: DMCallState) => state.isShowShareScreen);
-
 export const selectIsShowMeetDM = createSelector(getDMCallState, (state: DMCallState) => state.isShowMeetDM);
-
-export const selectLocalStream = createSelector(getDMCallState, (state: DMCallState) => state.localStream);
 
 export const selectIsInCall = createSelector(getDMCallState, (state) => state.isInCall);
 

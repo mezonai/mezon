@@ -217,13 +217,11 @@ export const acitvitiesActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectById, selectEntities } = activityAdapter.getSelectors();
+const { selectAll, selectById } = activityAdapter.getSelectors();
 
 export const getActivityState = (rootState: { [ACTIVITIES_API_FEATURE_KEY]: ActivityState }): ActivityState => rootState[ACTIVITIES_API_FEATURE_KEY];
 
 export const selectAllActivities = createSelector(getActivityState, selectAll);
-
-export const selectActivitiesEntities = createSelector(getActivityState, selectEntities);
 
 export const selectIsActivityTrackingEnabled = createSelector(getActivityState, (state) => state.isActivityTrackingEnabled);
 

@@ -170,15 +170,15 @@ export const userClanProfileActions = {
 	updateUserClanProfile
 };
 
-const { selectAll } = userClanProfileAdapter.getSelectors();
+const { selectEntities } = userClanProfileAdapter.getSelectors();
 
 export const getUserClanProfileState = (rootState: { [USER_CLAN_PROFILE_FEATURE_KEY]: UserClanProfileState }): UserClanProfileState =>
 	rootState[USER_CLAN_PROFILE_FEATURE_KEY];
 
-export const selectAllUserClanProfile = createSelector(getUserClanProfileState, selectAll);
+export const selectAllUserClanProfile = createSelector(getUserClanProfileState, selectEntities);
 
 export const selectUserClanProfileByClanID = (clanId: string, userId: string) =>
-	createSelector(selectAllUserClanProfile, (profiles) => profiles.find((pr) => pr.clan_id === clanId && pr.user_id === userId));
+	createSelector(selectAllUserClanProfile, (profiles) => profiles[`${clanId}${userId}`]);
 
 export const selectShowModalFooterProfile = createSelector(getUserClanProfileState, (state) => state.showModalFooterProfile);
 

@@ -42,8 +42,21 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 
 	const handleBirthdayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const dateValue = event.target.value;
+
+		if (!dateValue) {
+			setDob('');
+			return;
+		}
+
 		const [year, month, day] = dateValue.split('-');
-		const formattedDate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), 0, 0, 0));
+		const yearNum = Number(year);
+		const currentYear = new Date().getFullYear();
+
+		if (year.length !== 4 || isNaN(yearNum) || yearNum > currentYear) {
+			return;
+		}
+
+		const formattedDate = new Date(Date.UTC(yearNum, Number(month) - 1, Number(day), 0, 0, 0));
 		const isoFormattedDate = formattedDate.toISOString();
 		setDob(isoFormattedDate);
 	};
@@ -52,7 +65,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 		return (
 			<ModalLayout onClose={handleCloseModal}>
 				<div className="bg-theme-setting-primary  pt-4 rounded flex flex-col items-center text-theme-primary w-[550px]">
-					<img src={'assets/images/cake.png'} alt="warning" width={200} height={200} />
+					<img src={'/assets/images/cake.png'} alt="warning" width={200} height={200} />
 					<div className="text-center ml-6 mr-6">
 						<h2 className="text-2xl font-bold text-center mb-4 text-theme-primary-active">{t('confirmBirthdayTitle')}</h2>
 						<p>{t('confirmBirthdayMessage')}</p>
@@ -60,6 +73,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 					<input
 						type="date"
 						id="birthday"
+						max={new Date().toISOString().split('T')[0]}
 						onChange={handleBirthdayChange}
 						className="mb-4 px-4 py-2 mt-5 border-2 border-color-theme text-theme-message rounded-lg bg-input-secondary w-9/10"
 					/>
@@ -89,7 +103,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 		<div>
 			<div className="w-full h-full max-w-[100%] flex justify-center items-center text-theme-primary ">
 				<div className="flex flex-col items-center">
-					<img src={'assets/images/warning.svg'} alt="warning" width={200} height={200} />
+					<img src={'/assets/images/warning.svg'} alt="warning" width={200} height={200} />
 
 					<div className="text-center mt-4">
 						<h1 className="text-3xl font-bold mb-2 text-theme-primary-active ">{t('title')}</h1>

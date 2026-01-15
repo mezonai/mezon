@@ -42,7 +42,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 			const displayName = usersInviteExternal?.clan_nick || dmGroup?.channel_label || '';
 			const avatar =
 				usersInviteExternal?.clan_avatar || dmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP
-					? dmGroup?.topic || 'assets/images/avatar-group.png'
+					? dmGroup?.topic || '/assets/images/avatar-group.png'
 					: dmGroup?.avatars?.at(0) || '';
 
 			const response = await directMessageWithUser(userId, username, displayName, avatar);
@@ -90,7 +90,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 			isInviteSent={isInviteSent}
 			onHandle={() =>
 				handleButtonClick(
-					usersInviteExternal?.type === ChannelType.CHANNEL_TYPE_GROUP ? usersInviteExternal?.id : undefined,
+					usersInviteExternal?.dmId,
 					usersInviteExternal?.type,
 					usersInviteExternal?.type === ChannelType.CHANNEL_TYPE_GROUP ? undefined : usersInviteExternal?.id
 				)
@@ -100,7 +100,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 		<ItemInviteDM
 			channelID={dmGroup.channel_id}
 			type={Number(dmGroup.type)}
-			avatar={dmGroup.type === ChannelType.CHANNEL_TYPE_GROUP ? dmGroup.topic || 'assets/images/avatar-group.png' : dmGroup.avatars?.at(0)}
+			avatar={dmGroup.type === ChannelType.CHANNEL_TYPE_GROUP ? dmGroup.topic || '/assets/images/avatar-group.png' : dmGroup.avatars?.at(0)}
 			label={dmGroup.channel_label}
 			isInviteSent={isInviteSent}
 			onHandle={() => handleButtonClick(dmGroup.channel_id || '', dmGroup.type || 0, dmGroup.user_ids?.at(0))}

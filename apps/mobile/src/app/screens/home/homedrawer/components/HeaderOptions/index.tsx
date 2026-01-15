@@ -5,6 +5,7 @@ import { style } from './styles';
 
 export const OptionChannelHeader = {
 	QuickReaction: 'QuickReaction',
+	RemoveQuickReaction: 'RemoveQuickReaction',
 	Anonymous: 'Anonymous',
 	Buzz: 'Buzz'
 };

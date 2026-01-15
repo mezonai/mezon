@@ -134,7 +134,7 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 
 	return (
 		<div className=" overflow-hidden ">
-			<div className="text-xl font-semibold mb-5 sbm:mt-[60px] mt-[10px] text-theme-primary-active">
+			<div className="text-xl font-semibold mb-5 text-theme-primary-active">
 				<h2 className="text-xl text-theme-primary-active font-semibold flex">
 					<div>{t('title')}</div>
 				</h2>

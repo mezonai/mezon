@@ -8,4 +8,4 @@ export * from './DmCall';
 export * from './EmojiPicker/EmojiRolePanel';
 export * from './GroupCall';
 export * from './PDFViewer';
-
+export * from './OtpConfirm';

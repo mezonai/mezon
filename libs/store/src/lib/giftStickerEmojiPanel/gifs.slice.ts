@@ -1,6 +1,7 @@
 import { captureSentryError } from '@mezon/logger';
-import { IGif, IGifCategory } from '@mezon/utils';
-import { EntityState, PayloadAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { IGif, IGifCategory } from '@mezon/utils';
+import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 export const GIFS_FEATURE_KEY = 'gifs';
 
@@ -47,7 +48,7 @@ const limit = 30;
 
 export const fetchGifCategories = createAsyncThunk<GifCategoriesResponse>('gifs/fetchStatus', async (_, thunkAPI) => {
 	const baseUrl = process.env.NX_CHAT_APP_API_TENOR_URL_CATEGORIES ?? '';
-	const categoriesUrl = baseUrl + apiKey + '&client_key=' + clientKey + '&limit=' + limit;
+	const categoriesUrl = `${baseUrl + apiKey}&client_key=${clientKey}&limit=${limit}`;
 
 	try {
 		const response = await fetch(`${categoriesUrl}`);
@@ -64,7 +65,7 @@ export const fetchGifCategories = createAsyncThunk<GifCategoriesResponse>('gifs/
 
 export const fetchGifsDataSearch = createAsyncThunk<any, string>('gifs/fetchDataSearch', async (valueSearch, thunkAPI) => {
 	const baseUrl = process.env.NX_CHAT_APP_API_TENOR_URL_SEARCH ?? '';
-	const searchUrl = baseUrl + valueSearch + '&key=' + apiKey + '&client_key=' + clientKey + '&limit=' + limit;
+	const searchUrl = `${baseUrl + valueSearch}&key=${apiKey}&client_key=${clientKey}&limit=${limit}`;
 
 	try {
 		const response = await fetch(`${searchUrl}`);
@@ -82,7 +83,7 @@ export const fetchGifsDataSearch = createAsyncThunk<any, string>('gifs/fetchData
 
 export const fetchGifCategoryFeatured = createAsyncThunk<GifEntity[]>('gifs/fetchDataTrending', async (_, thunkAPI) => {
 	const baseUrl = process.env.NX_CHAT_APP_API_TENOR_URL_FEATURED ?? '';
-	const featuredUrl = baseUrl + apiKey + '&client_key=' + clientKey + '&limit=' + limit;
+	const featuredUrl = `${baseUrl + apiKey}&client_key=${clientKey}&limit=${limit}`;
 
 	try {
 		const response = await fetch(`${featuredUrl}`);
@@ -163,13 +164,11 @@ export const gifsActions = {
 	fetchGifCategoryFeatured
 };
 
-const { selectAll, selectEntities } = gifsAdapter.getSelectors();
+const { selectAll } = gifsAdapter.getSelectors();
 
 export const getGifsState = (rootState: { [GIFS_FEATURE_KEY]: GifsState }): GifsState => rootState[GIFS_FEATURE_KEY];
 
 export const selectAllgifCategory = createSelector(getGifsState, selectAll);
-
-export const selectGifsEntities = createSelector(getGifsState, selectEntities);
 
 export const selectGifsDataSearch = createSelector(getGifsState, (state: GifsState) => state.dataGifsSearch);
 

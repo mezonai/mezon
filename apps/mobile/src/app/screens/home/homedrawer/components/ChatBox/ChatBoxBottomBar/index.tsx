@@ -368,7 +368,7 @@ export const ChatBoxBottomBar = memo(
 				const words = convertedHashtag?.split?.(mentionRegexSplit);
 
 				const mentionList: Array<{ user_id: string; s: number; e: number }> = [];
-				const hashtagList: Array<{ channelid: string; s: number; e: number; parentId?: string; clanId?: string; channelLabel?: string }> = [];
+				const hashtagList: Array<{ channelId: string; s: number; e: number; parentId?: string; clanId?: string; channelLabel?: string }> = [];
 
 				let mentionBeforeCount = 0;
 				let mentionBeforeHashtagCount = 0;
@@ -410,7 +410,7 @@ export const ChatBoxBottomBar = memo(
 							indexOfLastHashtag = startindex + 1;
 
 							hashtagList?.push?.({
-								channelid: channelInfo?.channel_id?.toString() ?? '',
+								channelId: channelInfo?.channel_id?.toString() ?? '',
 								parentId: channelInfo?.parent_id?.toString() ?? '',
 								clanId: channelInfo?.clan_id?.toString() ?? '',
 								channelLabel: isThreadPublish && channelLabel ? channelLabel : '',

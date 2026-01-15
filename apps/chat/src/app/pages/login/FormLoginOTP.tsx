@@ -1,8 +1,7 @@
+import { OtpConfirm } from '@mezon/components';
 import { authActions, useAppDispatch } from '@mezon/store';
-import { validateEmail } from '@mezon/utils';
-
 import { ButtonLoading, FormError, Icons, Input } from '@mezon/ui';
-import { OtpConfirm } from 'libs/components/src/lib/components/SettingAccount/SettingPhone';
+import { validateEmail } from '@mezon/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 

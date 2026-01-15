@@ -1960,13 +1960,6 @@ export function orderMessageByIDAscending(a: MessagesEntity, b: MessagesEntity) 
 
 export const selectOpenOptionMessageState = createSelector(getMessagesState, (state: MessagesState) => state.openOptionMessageState);
 
-export const selectMessagesEntityById = createSelector(
-	[getMessagesState, getChannelIdAsSecondParam, (_, channelId) => channelId],
-	(messagesState, channelId) => {
-		return messagesState.channelMessages[channelId]?.entities;
-	}
-);
-
 export const selectUnreadMessageEntries = createSelector(getMessagesState, (state) => state.unreadMessagesEntries);
 
 export const selectUnreadMessageIdByChannelId = createSelector(
@@ -2020,8 +2013,6 @@ export const selectHasMoreBottomByChannelId = createSelector([getMessagesState, 
 	return !isLastMessageInChannel;
 });
 
-export const selectIsFocused = createSelector(getMessagesState, (state) => state.isFocused);
-
 // V2
 
 const emptyObject = {};
@@ -2031,11 +2022,6 @@ export const createCachedSelector = createSelectorCreator({
 	memoize: weakMapMemoize,
 	argsMemoize: weakMapMemoize
 });
-
-export const selectFirstLoadedMessageIdByChannelId = (channelId: string) =>
-	createSelector(getMessagesState, (state) => {
-		return state.channelMessages[channelId]?.ids[0];
-	});
 
 export const selectLastLoadedMessageIdByChannelId = (channelId: string) =>
 	createSelector(getMessagesState, (state) => {
@@ -2133,20 +2119,11 @@ export const selectLastMessageIdByChannelId = createSelector(selectMessageIdsByC
 
 export const selectMessageIsLoading = createSelector(getMessagesState, (state) => state.loadingStatus === 'loading');
 
-export const selectIsViewingOlderMessagesByChannelId = createSelector([getMessagesState, getChannelIdAsSecondParam], (state, channelId) => {
-	return (state.isViewingOlderMessagesByChannelId[channelId] && state.channelMessages[channelId]?.ids.length) || false;
-});
-
 export const selectIsMessageIdExist = createSelector(
 	[getMessagesState, getChannelIdAsSecondParam, (_, __, messageId) => messageId],
 	(state, channelId, messageId) => {
 		return Boolean(state.channelMessages[channelId]?.entities[messageId]);
 	}
-);
-
-export const selectIsJumpingToPresent = createSelector(
-	[getMessagesState, getChannelIdAsSecondParam],
-	(state, channelId) => state.isJumpingToPresent[channelId]
 );
 
 export const selectIdMessageToJump = createSelector(getMessagesState, (state: MessagesState) => state.idMessageToJump);
