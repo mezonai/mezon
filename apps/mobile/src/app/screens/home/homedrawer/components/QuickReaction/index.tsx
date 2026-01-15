@@ -94,7 +94,7 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth
 
 	useEffect(() => {
 		if (!hasCustomPosition) {
-			translateX.value = withSpring(initialBounds.DEFAULT_X);
+			translateX.value = initialBounds.DEFAULT_X;
 			translateY.value = withSpring(initialBounds.DEFAULT_Y);
 		}
 	}, [hasCustomPosition, initialBounds.DEFAULT_Y, initialBounds.DEFAULT_X]);
