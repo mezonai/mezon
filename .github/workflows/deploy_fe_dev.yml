@@ -10,11 +10,11 @@ jobs:
     name: Build Mezon FE
     environment: dev
     env:
-      NODE_ENV: 'development'
+      NODE_ENV: 'production'
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
