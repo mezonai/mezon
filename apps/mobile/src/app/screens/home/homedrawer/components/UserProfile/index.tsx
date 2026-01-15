@@ -214,10 +214,9 @@ const UserProfile = React.memo(
 		}, [userById?.role_id, rolesClan]);
 
 		const isCheckOwner = useMemo(() => {
-			const userId = userById?.user?.id;
 			const id = userProfile?.user?.id;
-			return userId === id;
-		}, [userById, userProfile]);
+			return userId === id || user?.id === id;
+		}, [user?.id, userId, userProfile?.user?.id]);
 
 		const directMessageWithUser = useCallback(
 			async (userId: string) => {
