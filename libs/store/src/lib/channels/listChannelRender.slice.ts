@@ -604,6 +604,13 @@ export const listChannelRenderSlice = createSlice({
 					}
 				}
 			});
+		},
+
+		removeListChannelRenderByClanId: (state, action: PayloadAction<{ clanId: string }>) => {
+			const { clanId } = action.payload;
+			if (!!clanId) {
+				delete state.listChannelRender[clanId];
+			}
 		}
 	}
 });
