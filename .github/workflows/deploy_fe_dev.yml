@@ -43,7 +43,7 @@ jobs:
           yarn config set nodedir ~/.cache/node-gyp/20.18.1/
           echo "Node directory: ${nv:1}"
           source ~/.bashrc
-          yarn --frozen-lockfile
+          yarn
 
       - name: Build
         run: |
