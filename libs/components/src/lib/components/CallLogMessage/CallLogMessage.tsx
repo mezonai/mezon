@@ -1,20 +1,24 @@
 import { useChatSending } from '@mezon/core';
 import {
 	audioCallActions,
+	EStateFriend,
 	selectAllAccount,
 	selectAudioBusyTone,
 	selectAudioDialTone,
 	selectAudioRingTone,
 	selectDmGroupCurrent,
+	selectFriendById,
 	selectIsInCall,
 	selectSession,
 	toastActions,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { CallLog, IMessageCallLog, IMessageSendPayload, IMessageTypeCallLog } from '@mezon/utils';
+import type { IMessageCallLog, IMessageSendPayload } from '@mezon/utils';
+import { CallLog, IMessageTypeCallLog } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -84,16 +88,17 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
 	const sessionUser = useSelector(selectSession);
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
-	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode: mode });
+	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode });
 	const isInCall = useSelector(selectIsInCall);
 	const isPlayDialTone = useSelector(selectAudioDialTone);
 	const isPlayRingTone = useSelector(selectAudioRingTone);
 	const isPlayBusyTone = useSelector(selectAudioBusyTone);
 	const userProfile = useSelector(selectAllAccount);
+	const isBlocked = useAppSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''))?.state === EStateFriend.BLOCK;
 	const isMe = useMemo(() => userProfile?.user?.id === senderId, [userProfile?.user?.id, senderId]);
 	const key = `${callLog.callLogType}_${isMe ? 'SENDER' : 'RECEIVER'}`;
 
-	const shouldShowCallBack = callLog.showCallBack !== false;
+	const shouldShowCallBack = callLog.showCallBack !== false && !isBlocked;
 
 	const { icon, text, colorClass, bgClass } = iconMap[key] || {
 		icon: <Icons.OutGoingCall defaultSize="w-6 h-6" />,
