@@ -1,14 +1,4 @@
 {
-	"title": {
-		"part1": "Nền Tảng",
-		"live": "Kết Nối",
-		"work": "Làm Việc",
-		"and": "Và",
-		"playPlatform": "Giải Trí",
-		"theBest": "Sự Thay Thế Tuyệt Vời Cho",
-		"discord": "Discord",
-		"alternative": ""
-	},
 	"description": {
 		"part1": "Là nơi tuyệt vời để chơi game, trò chuyện cùng bạn bè hoặc xây dựng một cộng đồng toàn cầu.",
 		"part2": "Tùy chỉnh không gian riêng của bạn để",
@@ -84,9 +74,9 @@
 				"live": "Kết Nối",
 				"work": "Làm Việc",
 				"play": "Giải Trí ",
-				"platform": "Của Bạn.",
-				"theBest": "Sự Thay Thế Tuyệt Vời Cho",
-				"discordAlternative": "Discord"
+				"platform": "Số 1",
+				"theBest": "cho",
+				"yourCommunity": "Cộng Đồng"
 			},
 			"description": "là nơi tuyệt vời để chơi game, trò chuyện cùng bạn bè hoặc xây dựng một cộng đồng toàn cầu. Tùy chỉnh không gian riêng của bạn để",
 			"talk": "Trò Chuyện",
