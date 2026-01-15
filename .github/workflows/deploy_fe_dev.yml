@@ -35,8 +35,6 @@ jobs:
       - name: Reset Nx cache
         run: |
           echo "Resetting Nx cache"
-          yarn nx reset
-
       - name: Build
         run: |
           echo "Build"
