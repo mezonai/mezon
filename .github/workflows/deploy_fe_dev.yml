@@ -38,6 +38,8 @@ jobs:
           yarn nx reset
 
       - name: Build
+        env:
+          NODE_ENV: 'production'
         run: |
           echo "Build"
           echo NX_CHAT_APP_API_GW_HOST="${{ secrets.NX_CHAT_APP_API_GW_HOST_DEV }}" >> apps/chat/.env
