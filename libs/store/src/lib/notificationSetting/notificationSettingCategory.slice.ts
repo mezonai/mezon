@@ -599,18 +599,11 @@ export const selectDefaultNotificationCategory = createSelector(
 	(state, clanId, categoryId) => state.byClans[clanId]?.categoriesSettings[categoryId]
 );
 
-const { selectAll, selectEntities } = channelCategorySettingAdapter.getSelectors();
+const { selectAll } = channelCategorySettingAdapter.getSelectors();
 
 export const getchannelCategorySettingListState = (rootState: {
 	['notichannelcategorysetting']: ChannelCategorySettingState;
 }): ChannelCategorySettingState => rootState['notichannelcategorysetting'];
-
-export const selectEntiteschannelCategorySetting = createSelector(
-	[getchannelCategorySettingListState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => {
-		return selectEntities(state.byClans[clanId]?.list);
-	}
-);
 
 export const selectAllchannelCategorySetting = createSelector(
 	[getchannelCategorySettingListState, (state: RootState) => state.clans.currentClanId as string],

@@ -550,15 +550,11 @@ export const threadsActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities } = threadsAdapter.getSelectors();
+const { selectAll } = threadsAdapter.getSelectors();
 
 export const getThreadsState = (rootState: { [THREADS_FEATURE_KEY]: ThreadsState }): ThreadsState => rootState[THREADS_FEATURE_KEY];
 
 export const selectAllThreads = createSelector(getThreadsState, selectAll);
-
-export const selectThreadsEntities = createSelector(getThreadsState, selectEntities);
-
-export const selectThreadById = createSelector([selectThreadsEntities, (state, threadId: string) => threadId], (state, threadId) => state[threadId]);
 
 export const selectIsPrivate = createSelector(getThreadsState, (state) => state.isPrivate);
 
@@ -571,8 +567,6 @@ export const selectListThreadId = createSelector(getThreadsState, (state) => sta
 export const selectValueThread = createSelector(getThreadsState, (state) => state.valueThread);
 
 export const selectOpenThreadMessageState = createSelector(getThreadsState, (state: ThreadsState) => state.openThreadMessageState);
-
-export const selectCurrentThread = createSelector(getThreadsState, (state: ThreadsState) => state.currentThread);
 
 export const selectNameValueThread = (channelId: string) =>
 	createSelector(getThreadsState, (state) => {
@@ -609,5 +603,3 @@ export const selectThreadsByParentChannelId = createSelector(
 		return selectAll(channelState);
 	}
 );
-
-export const selectShouldTriggerSendFromThreadName = createSelector(getThreadsState, (state) => state.shouldTriggerSendFromThreadName);

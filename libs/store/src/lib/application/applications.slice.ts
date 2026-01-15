@@ -269,6 +269,5 @@ export const selectApplicationById = createSelector(
 
 export const selectAppsFetchingLoading = createSelector(getApplicationState, (state) => state.loadingStatus);
 
-export const selectAppById = (appId: string) => createSelector(selectAllApps, (allApp) => allApp.apps?.find((app) => app.id === appId) || null);
 export const adminApplicationReducer = adminApplicationSlice.reducer;
 export const { setCurrentAppId, setIsElectronUpdateAvailable, setIsElectronDownloading } = adminApplicationSlice.actions;

@@ -1,12 +1,14 @@
 import { captureSentryError } from '@mezon/logger';
 import i18n from '@mezon/translations';
-import { LoadingStatus } from '@mezon/utils';
+import type { LoadingStatus } from '@mezon/utils';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiClanWebhook, ApiGenerateClanWebhookRequest, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiClanWebhook, ApiGenerateClanWebhookRequest, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api.gen';
 import { toast } from 'react-toastify';
-import { CacheMetadata, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 
 export const INTEGRATION_CLAN_WEBHOOK = 'integrationClanWebhook';
 
@@ -171,11 +173,6 @@ export const integrationClanWebhookSlice = createSlice({
 export const getClanWebHookState = (rootState: { [INTEGRATION_CLAN_WEBHOOK]: IClanWebHookState }): IClanWebHookState =>
 	rootState[INTEGRATION_CLAN_WEBHOOK];
 export const selectAllClanWebhooks = createSelector(getClanWebHookState, (state) => state?.clanWebhookList || []);
-
-export const selectClanWebhooksByClanId = createSelector(
-	[getClanWebHookState, (state: RootState, clanId: string) => clanId],
-	(state, clanId) => state?.byClan[clanId]?.webhooks || []
-);
 
 export const selectClanWebhooksById = createSelector(
 	[getClanWebHookState, (state: RootState, webhookId: string) => webhookId],
