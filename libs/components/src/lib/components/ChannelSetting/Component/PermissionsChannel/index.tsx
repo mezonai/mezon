@@ -103,7 +103,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 
 	return (
 		<>
-			<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] sbm:pb-7 sbm:px-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar relative">
+			<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 lg:pt-[94px] sbm:pb-7 px-[10px] sbm:px-[40px] overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar relative">
 				<div className="dark:text-white text-[15px] text-black">
 					<HeaderModal name={categoryName} />
 					<div className="rounded-md overflow-hidden mt-4">

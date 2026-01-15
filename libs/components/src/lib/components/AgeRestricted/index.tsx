@@ -42,8 +42,21 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 
 	const handleBirthdayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const dateValue = event.target.value;
+
+		if (!dateValue) {
+			setDob('');
+			return;
+		}
+
 		const [year, month, day] = dateValue.split('-');
-		const formattedDate = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day), 0, 0, 0));
+		const yearNum = Number(year);
+		const currentYear = new Date().getFullYear();
+
+		if (year.length !== 4 || isNaN(yearNum) || yearNum > currentYear) {
+			return;
+		}
+
+		const formattedDate = new Date(Date.UTC(yearNum, Number(month) - 1, Number(day), 0, 0, 0));
 		const isoFormattedDate = formattedDate.toISOString();
 		setDob(isoFormattedDate);
 	};
@@ -60,6 +73,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 					<input
 						type="date"
 						id="birthday"
+						max={new Date().toISOString().split('T')[0]}
 						onChange={handleBirthdayChange}
 						className="mb-4 px-4 py-2 mt-5 border-2 border-color-theme text-theme-message rounded-lg bg-input-secondary w-9/10"
 					/>

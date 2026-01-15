@@ -1,12 +1,4 @@
 {
-	"title": {
-		"part1": "The",
-		"live": "Live",
-		"work": "Work",
-		"and": "And",
-		"playPlatform": "Play Platform",
-		"alternative": "Alternative"
-	},
 	"description": {
 		"part1": "Is great for playing games and chilling with friends, or even building a worldwide community.",
 		"part2": "Customize your own space to",
@@ -82,7 +74,9 @@
 				"live": "Live",
 				"work": "Work",
 				"play": "Play",
-				"platform": "Platform. The Best For Your Community"
+				"platform": "Platform.",
+				"theBest": "The Best",
+				"yourCommunity": "For Your Community"
 			},
 			"description": "is great for playing games and chilling with friends, or even building a worldwide community. Customize your own space to",
 			"talk": "Talk",

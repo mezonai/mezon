@@ -1133,7 +1133,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const { showMessageContextMenu, selectedMessageId } = useMessageContextMenu();
 
 		const renderedMessages = useMemo(() => {
-			// Use lastSeenAtBottomRef (saved when user was at bottom) or fallback to lastMessageUnreadId
 			const baseUnreadMessageId = lastSeenAtBottomRef.current || lastMessageUnreadId;
 			return messageIds.map((messageId, index) => {
 				const checkMessageTargetToMoved = msgIdJumpHightlight.current === messageId && messageId !== lastMessageId;

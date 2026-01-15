@@ -47,5 +47,6 @@
 		"inputDevice": "Input device",
 		"outputDevice": "Output device",
 		"camera": "Camera"
-	}
+	},
+	"usernameScreen": "{{username}}'s screen"
 }

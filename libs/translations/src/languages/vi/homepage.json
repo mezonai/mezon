@@ -1,12 +1,4 @@
 {
-	"title": {
-		"part1": "Nền Tảng",
-		"live": "Kết Nối",
-		"work": "Làm Việc",
-		"and": "Và",
-		"playPlatform": "Giải Trí",
-		"alternative": ""
-	},
 	"description": {
 		"part1": "Là nơi tuyệt vời để chơi game, trò chuyện cùng bạn bè hoặc xây dựng một cộng đồng toàn cầu.",
 		"part2": "Tùy chỉnh không gian riêng của bạn để",
@@ -82,7 +74,9 @@
 				"live": "Kết Nối",
 				"work": "Làm Việc",
 				"play": "Giải Trí ",
-				"platform": "Số 1 Cho Cộng Đồng"
+				"platform": "Số 1",
+				"theBest": "Cho",
+				"yourCommunity": "Cộng Đồng"
 			},
 			"description": "là nơi tuyệt vời để chơi game, trò chuyện cùng bạn bè hoặc xây dựng một cộng đồng toàn cầu. Tùy chỉnh không gian riêng của bạn để",
 			"talk": "Trò Chuyện",

@@ -133,8 +133,8 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 	}, []);
 
 	return (
-		<div className="mt-[48px] overflow-hidden ">
-			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+		<div className=" overflow-hidden ">
+			<div className="text-xl font-semibold mb-5 text-theme-primary-active">
 				<h2 className="text-xl text-theme-primary-active font-semibold flex">
 					<div>{t('title')}</div>
 				</h2>

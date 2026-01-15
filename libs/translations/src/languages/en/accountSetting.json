@@ -126,6 +126,11 @@
 		"fillOTP": "Fill OTP",
 		"send": "Send OTP",
 		"resendOtp": "Resend OTP",
+		"error": {
+			"notEqual": "Confirmation password doesn't match",
+			"required": "Email is required",
+			"invalid": "Please enter a valid email address"
+		},
 		"updateEmail": {
 			"newEmail": "New Email",
 			"nextButton": "Next",

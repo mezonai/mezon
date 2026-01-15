@@ -213,15 +213,8 @@ export const MessageLine = ({
 	const lkm = Array.isArray(lk) ? lk.map((item) => ({ ...item, kindOf: ETokenMessage.LINKS })) : [];
 	const lkym = Array.isArray(lky) ? lky.map((item) => ({ ...item, kindOf: ETokenMessage.LINKYOUTUBE })) : [];
 	const vkm = Array.isArray(vk) ? vk.map((item) => ({ ...item, kindOf: ETokenMessage.VOICE_LINKS })) : [];
-	const elements: ElementToken[] = [
-		...(mentions || []).map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })),
-		...hgm,
-		...ejm,
-		...mkm,
-		...lkm,
-		...lkym,
-		...vkm
-	]
+	const mtm = Array.isArray(mentions) ? mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) : [];
+	const elements: ElementToken[] = [...mtm, ...hgm, ...ejm, ...mkm, ...lkm, ...lkym, ...vkm]
 		.sort((a, b) => (a.s ?? 0) - (b.s ?? 0))
 		.filter((element, index, sortedArray) => {
 			if (index === 0) return true;

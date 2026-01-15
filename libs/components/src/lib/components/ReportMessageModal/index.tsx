@@ -72,9 +72,9 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 	}, [selectedReason, customReason, mess?.id, dispatch]);
 
 	const handleIgnoreUser = useCallback(() => {
-		toast.success('User messages ignored');
+		toast.success(t('reportMessageModal.userMessagesIgnored'));
 		closeModal();
-	}, [closeModal]);
+	}, [closeModal, t]);
 
 	const handleBlockUser = useCallback(async () => {
 		if (!mess?.sender_id || !mess?.username) return;

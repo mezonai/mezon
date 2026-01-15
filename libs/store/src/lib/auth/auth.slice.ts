@@ -590,8 +590,6 @@ export const getAuthState = (rootState: { [AUTH_FEATURE_KEY]: AuthState }): Auth
 
 export const selectAllAuth = createSelector(getAuthState, (state: AuthState) => state);
 
-export const selectAuthIsLoaded = createSelector(getAuthState, (state: AuthState) => state.loadingStatus === 'loaded');
-
 export const selectIsLogin = createSelector(getAuthState, (state: AuthState) => state.isLogin);
 
 export const selectSession = createSelector(getAuthState, (state: AuthState) => {

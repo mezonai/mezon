@@ -645,10 +645,6 @@ export const selectAllThreadUnreadBehind = createSelector(
 	}
 );
 
-export const selectListOrderChannel = createSelector(getListChannelRenderState, (state) => {
-	return state.listOrderChannelByCate;
-});
-
 function prioritizeChannel(channels: IChannel[]): IChannel[] {
 	return channels.sort((a, b) => {
 		const aParentId = a.parent_id ?? '';

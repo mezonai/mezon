@@ -169,7 +169,7 @@ const DmItemProfile = ({
 						{name}
 					</span>
 					<p className="opacity-60 text-theme-primary text-xs text-start">
-						{number} {t('members')}
+						{number} {number === 1 ? t('member') : t('members')}
 					</p>
 				</div>
 			) : (

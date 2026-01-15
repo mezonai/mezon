@@ -27,7 +27,8 @@ export type EventInfoModalProps = {
 const EventInfoModal = (props: EventInfoModalProps) => {
 	const { contentSubmit, setErrorTime, setContentSubmit, onClose } = props;
 	const { t } = useTranslation('eventCreator');
-	const [countCharacterDescription, setCountCharacterDescription] = useState(1000);
+	const { t: tCommon } = useTranslation('common');
+	const [countCharacterDescription, setCountCharacterDescription] = useState(255);
 	const [errorStart, setErrorStart] = useState(false);
 	const [errorEnd, setErrorEnd] = useState(false);
 	const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -98,7 +99,7 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 
 	const handleChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 		setContentSubmit((prev) => ({ ...prev, description: e.target.value }));
-		setCountCharacterDescription(1000 - e.target.value.length);
+		setCountCharacterDescription(255 - e.target.value.length);
 	};
 
 	const handleFrequencyChange = useCallback(
@@ -263,12 +264,12 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 				<div className="relative" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.description')}>
 					<TextArea
 						placeholder={t('fields.description.description')}
-						className="resize-none h-auto min-h-[87px] w-full bg-theme-input overflow-y-hidden outline-none py-2 pl-3 pr-5"
+						className="resize-none h-auto min-h-[87px] max-h-[150px] thread-scroll w-full bg-theme-input overflow-y-auto outline-none py-2 pl-3 pr-5"
 						value={contentSubmit.description}
 						onChange={handleChangeTextArea}
 						rows={1}
 						refTextArea={textAreaRef}
-						maxLength={1000}
+						maxLength={255}
 					></TextArea>
 					<p className="absolute bottom-2 right-2 ">{countCharacterDescription}</p>
 				</div>

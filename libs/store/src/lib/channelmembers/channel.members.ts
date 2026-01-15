@@ -9,7 +9,6 @@ import { accountActions, selectAllAccount } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { USERS_CLANS_FEATURE_KEY, selectAllUserClans, selectEntitesUserClans, usersClanActions } from '../clanMembers/clan.members';
-import { selectClanView } from '../clans/clans.slice';
 import type { DirectEntity } from '../direct/direct.slice';
 import { selectDirectMessageEntities } from '../direct/direct.slice';
 import type { MezonValueContext } from '../helpers';
@@ -607,7 +606,6 @@ export const getChannelMembersState = (rootState: { [CHANNEL_MEMBERS_FEATURE_KEY
 	return rootState[CHANNEL_MEMBERS_FEATURE_KEY];
 };
 
-export const selectMemberStatus = createSelector(getChannelMembersState, (state) => state.onlineStatusUser);
 export const selectMemberCustomStatus = createSelector(getChannelMembersState, (state) => state.customStatusUser);
 export const selectMemberCustomStatusById = createSelector(
 	[selectMemberCustomStatus, (_: RootState, userId: string) => userId],
@@ -654,30 +652,6 @@ export const selectMemberGroupByUserId = createSelector(
 		if (index === -1) return undefined;
 
 		return users[index] as ChannelMembersEntity;
-	}
-);
-
-export const selectMemberStatusById = createSelector(
-	[
-		selectEntitesUserClans,
-		selectDirectMessageEntities,
-		selectClanView,
-		(state, userId: string) => {
-			return `${userId},${state?.direct.currentDirectMessageId}`;
-		}
-	],
-	(usersClanEntities, directs, isClanView, payload) => {
-		const [userId, currentDirectMessageId] = payload.split(',');
-		const userClan = usersClanEntities[userId];
-		const userGroup = directs?.[currentDirectMessageId];
-		if (userClan && isClanView) {
-			return { status: userClan.user?.online, isMobile: userClan.user?.is_mobile };
-		}
-		const index = userGroup?.user_ids?.findIndex((item) => item === userId) ?? -1;
-		if (index === -1) {
-			return { status: false, isMobile: false };
-		}
-		return { status: userGroup?.onlines?.[index] || false, isMobile: false };
 	}
 );
 
