@@ -124,8 +124,6 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 									attachment = decodeAttachments(pinMessageAttachments);
 								} catch (error) {
 									const parsed = safeJSONParse(pinMessageAttachments.toString());
-
-									//TODO: In case of invalid attachment data like { t: "string" }
 									if (parsed?.t) {
 										attachment = [];
 									} else {
