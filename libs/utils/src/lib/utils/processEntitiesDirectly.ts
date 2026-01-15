@@ -1,4 +1,5 @@
-import { EBacktickType, IEmojiOnMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
+import type { IEmojiOnMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
+import { EBacktickType } from '../types';
 
 export const processEntitiesDirectly = (entities: any[], content: string, rolesClan: any[]) => {
 	const mentions: IMentionOnMessage[] = [];
@@ -29,7 +30,7 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 
 			case 'MessageEntityMentionRole':
 				mentions.push({
-					role_id: role_id,
+					role_id,
 					s,
 					e,
 					display
@@ -41,7 +42,7 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 					hashtags.push({
 						s,
 						e,
-						channelid: id
+						channelId: id
 					});
 				}
 				break;

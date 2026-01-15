@@ -1,10 +1,12 @@
 import {
+	getStore,
 	messagesActions,
 	selectAllAccount,
 	selectAnonymousMode,
 	selectCurrentTopicId,
 	selectInitTopicMessageId,
 	selectMemberClanByUserId,
+	selectSearchChannelById,
 	selectTopicAnonymousMode,
 	topicsActions,
 	useAppDispatch,
@@ -78,6 +80,43 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			code?: number,
 			ephemeralReceiverId?: string
 		) => {
+			const moreContent = content;
+
+			if (content.t && moreContent?.mk && moreContent?.mk?.length > 0) {
+				const store = getStore();
+				moreContent.mk = moreContent.mk.map((item) => {
+					const path = content.t?.slice(item.s, item.e);
+					if (!path) return item;
+					const channelId = isValidChatChannel(path);
+					if (!channelId) return item;
+					const channel = selectSearchChannelById(store.getState(), channelId);
+					if (!channel?.parent_id || channel?.parent_id === '0' || channel?.channel_private) return item;
+					return {
+						...item,
+						...(channel?.clan_id && { clanId: channel.clan_id }),
+						...(channel?.channel_label && { channelLabel: channel.channel_label }),
+						...(channel?.channel_id && { channelId: channel.channel_id }),
+						...(channel?.parent_id && channel.parent_id !== '0' && { parentId: channel.parent_id })
+					};
+				});
+			}
+
+			if (content.t && moreContent?.hg && moreContent?.hg?.length > 0) {
+				const store = getStore();
+				moreContent.hg = moreContent.hg.map((item) => {
+					if (!item.channelId) return item;
+					const channel = selectSearchChannelById(store.getState(), item.channelId);
+					if (!channel?.parent_id || channel?.parent_id === '0' || channel?.channel_private) return item;
+					return {
+						...item,
+						...(channel?.clan_id && { clanId: channel.clan_id }),
+						...(channel?.channel_label && { channelLabel: channel.channel_label }),
+						...(channel?.channel_id && { channelId: channel.channel_id }),
+						...(channel?.parent_id && channel.parent_id !== '0' && { parentId: channel.parent_id })
+					};
+				});
+			}
+
 			if (ephemeralReceiverId) {
 				await dispatch(
 					messagesActions.sendEphemeralMessage({
@@ -245,4 +284,29 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 		}),
 		[sendMessage, sendMessageTyping, editSendMessage]
 	);
+}
+
+function isValidChatChannel(link: string) {
+	const pattern = 'chat/clans/';
+	const patternPos = link.indexOf(pattern);
+	if (patternPos === -1) return false;
+
+	const clanStart = patternPos + pattern.length;
+
+	if (link.length < clanStart + 19 + 10 + 19) return false;
+
+	const clanId = link.substring(clanStart, clanStart + 19);
+	if (isNaN(Number(clanId))) return false;
+
+	const channelsKeyword = '/channels/';
+	const channelsStart = clanStart + 19;
+	for (let k = 0; k < channelsKeyword.length; k++) {
+		if (link[channelsStart + k] !== channelsKeyword[k]) return false;
+	}
+
+	const channelIdStart = channelsStart + channelsKeyword.length;
+	const channelId = link.substring(channelIdStart, channelIdStart + 19);
+	if (isNaN(Number(channelId))) return false;
+
+	return channelId;
 }

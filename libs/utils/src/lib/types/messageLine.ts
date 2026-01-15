@@ -1,4 +1,4 @@
-import { IMessageSendPayload } from '.';
+import type { IMessageSendPayload } from '.';
 
 export interface IStartEndIndex {
 	s?: number | undefined;
@@ -24,13 +24,17 @@ export interface IMention {
 }
 
 export interface IHashtag {
-	channelid: string | undefined;
+	channelId: string | undefined;
 }
 export interface IEmoji {
 	emojiid: string | undefined;
 }
 
 export interface IMarkdown {
+	channelId?: string;
+	channelIabel?: string;
+	clanId?: string;
+	parentId?: string;
 	type?: EBacktickType;
 }
 export interface IMarkdown {
