@@ -114,7 +114,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							/>
 						)}
 					</div>
-					{pinMessageAttachments?.length &&
+					{!!pinMessageAttachments?.length &&
 						(() => {
 							let attachment;
 							try {
