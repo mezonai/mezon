@@ -1,5 +1,5 @@
-import { Icons } from '@mezon/ui';
 import React from 'react';
+import { Icons } from '../Icons';
 
 type PaginationProps = {
 	totalPages: number;

@@ -22,6 +22,7 @@ import {
 	topicsActions,
 	useAppDispatch
 } from '@mezon/store';
+
 import { Icons } from '@mezon/ui';
 import { DONE_ONBOARDING_STATUS, EPermission, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';

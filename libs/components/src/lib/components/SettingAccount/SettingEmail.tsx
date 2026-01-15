@@ -6,7 +6,7 @@ import { validateEmail, validatePassword } from '@mezon/utils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { OtpConfirm } from './SettingPhone';
+import { OtpConfirm } from '../OtpConfirm';
 
 interface SetEmailProps {
 	submitButtonText?: string;

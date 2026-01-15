@@ -355,7 +355,7 @@ const ForwardMessageModal = () => {
 					return {
 						id: itemGr?.channel_id ?? '',
 						name: itemGr?.channel_label ?? '',
-						avatarUser: itemGr?.channel_avatar || 'assets/images/avatar-group.png',
+						avatarUser: itemGr?.channel_avatar || '/assets/images/avatar-group.png',
 						idDM: itemGr?.id ?? '',
 						typeChat: ChannelType.CHANNEL_TYPE_GROUP,
 						displayName: itemGr.channel_label,

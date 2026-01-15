@@ -408,9 +408,9 @@ const BottomBlock = ({
 	const { t } = useTranslation('channelSetting');
 	const logoImgSrc = useMemo(() => {
 		if (appearanceTheme === 'light') {
-			return 'assets/images/channel_setting_logo_light.svg';
+			return '/assets/images/channel_setting_logo_light.svg';
 		}
-		return 'assets/images/channel_setting_logo_dark.svg';
+		return '/assets/images/channel_setting_logo_dark.svg';
 	}, [appearanceTheme]);
 
 	const menu = useMemo(() => {

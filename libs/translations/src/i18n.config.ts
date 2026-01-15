@@ -1,19 +1,9 @@
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-http-backend';
+import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next';
-import * as languages from './languages';
 
-const ns = Object.keys(Object.values(languages)[0]);
-export const defaultNS = ns[0];
-
-const resources = Object.entries(languages).reduce(
-	(acc, [key, value]) => ({
-		...acc,
-		[key]: value
-	}),
-	{}
-);
+export const defaultNS = 'common';
 
 const timezoneDetector = {
 	name: 'timezone',
@@ -48,21 +38,22 @@ const timezoneDetector = {
 const languageDetector = new LanguageDetector();
 languageDetector.addDetector(timezoneDetector);
 
-i18n.use(Backend)
+i18n.use(
+	resourcesToBackend((language: string, namespace: string, callback: (err: Error | null, resources?: any) => void) => {
+		import(`./languages/${language}/index.ts`)
+			.then((module) => {
+				const resources = module.default;
+				callback(null, resources[namespace]);
+			})
+			.catch((error) => {
+				callback(error);
+			});
+	})
+)
 	.use(languageDetector)
 	.use(initReactI18next)
 	.init({
-		ns,
 		defaultNS,
-		resources: {
-			...Object.entries(resources).reduce(
-				(acc, [key, value]) => ({
-					...acc,
-					[key]: value
-				}),
-				{}
-			)
-		},
 		fallbackLng: 'en',
 		supportedLngs: ['en', 'vi'],
 		detection: {
@@ -70,11 +61,15 @@ i18n.use(Backend)
 			lookupLocalStorage: 'i18nextLng',
 			caches: ['localStorage']
 		},
+		load: 'currentOnly',
 		debug: false,
 		interpolation: {
 			escapeValue: false
 		},
-		compatibilityJSON: 'v3'
+		compatibilityJSON: 'v3',
+		react: {
+			useSuspense: true
+		}
 	});
 
 export default i18n;

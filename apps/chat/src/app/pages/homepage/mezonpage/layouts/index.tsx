@@ -12,7 +12,7 @@ const Layout = memo((props: LayoutProps) => {
 	const { t } = useTranslation('homepage');
 	return (
 		<div>
-			<section id="overview" className="flex flex-col items-center relative bg-[url('/assets/pattern.png')]">
+			<section id="overview" className="flex flex-col items-center relative bg-[url('/pattern.png')]">
 				<div className="max-lg:hidden absolute top-0 left-0 translate-y-1/2 w-[400px] h-[400px] bg-[#8D72C5] rounded-full filter blur-[130px] mix-blend-color-dodge will-change-transform"></div>
 				<div className="max-lg:hidden absolute right-0 translate-y-1/2 w-[400px] h-[400px] bg-[#8D72C5] rounded-full filter blur-[130px] mix-blend-color-dodge will-change-transform"></div>
 				<div

@@ -27,25 +27,25 @@ const AIGenerationPage = () => {
 			id: 0,
 			title: 'Smart Responses',
 			description: 'Get AI-powered suggestions and quick replies for faster communication and better conversations.',
-			image: '/assets/ai-gent.webp'
+			image: '/ai-gent.webp'
 		},
 		{
 			id: 1,
 			title: 'Content Generation',
 			description: 'Generate text, images, and creative content with AI assistance to bring your ideas to life.',
-			image: '/assets/ai-gent.webp'
+			image: '/ai-gent.webp'
 		},
 		{
 			id: 2,
 			title: 'Automation',
 			description: 'Automate repetitive tasks and streamline your workflow with AI-powered automation tools.',
-			image: '/assets/ai-gent.webp'
+			image: '/ai-gent.webp'
 		},
 		{
 			id: 3,
 			title: 'Intelligent Summarization',
 			description: 'Automatically summarize long conversations and threads so you can quickly catch up on what matters.',
-			image: '/assets/ai-gent.webp'
+			image: '/ai-gent.webp'
 		}
 	];
 
@@ -85,9 +85,9 @@ const AIGenerationPage = () => {
 						</div>
 
 						<div className="flex justify-center lg:justify-end">
-							<img
-								src="/assets/ai-gent.webp"
-								alt="AI Generation"
+						<img
+							src="/ai-gent.webp"
+							alt="AI Generation"
 								className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl"
 							/>
 						</div>

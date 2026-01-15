@@ -27,25 +27,25 @@ const OrganizePage = () => {
 			id: 0,
 			title: 'Channel Categories',
 			description: 'Group related channels together for better organization and clarity in your workspace.',
-			image: '/assets/organize.webp'
+			image: '/organize.webp'
 		},
 		{
 			id: 1,
 			title: 'Roles & Permissions',
 			description: 'Control who can access what with customizable roles and granular permissions.',
-			image: '/assets/organize.webp'
+			image: '/organize.webp'
 		},
 		{
 			id: 2,
 			title: 'Thread Management',
 			description: 'Keep conversations organized with threads for focused discussions on specific topics.',
-			image: '/assets/organize.webp'
+			image: '/organize.webp'
 		},
 		{
 			id: 3,
 			title: 'Custom Channel Ordering',
 			description: 'Drag and drop channels to organize them exactly how you want. Prioritize what matters most to your team.',
-			image: '/assets/organize.webp'
+			image: '/organize.webp'
 		}
 	];
 
@@ -85,7 +85,7 @@ const OrganizePage = () => {
 						</div>
 
 						<div className="flex justify-center lg:justify-end">
-							<img src="/assets/organize.webp" alt="Organize" className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl" />
+							<img src="/organize.webp" alt="Organize" className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl" />
 						</div>
 					</div>
 				</div>

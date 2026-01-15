@@ -1,117 +1,70 @@
 {
-  "name": "chat",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/chat/src",
-  "projectType": "application",
-  "tags": [],
-  "targets": {
-    "build": {
-      "executor": "@nx/webpack:webpack",
-      "outputs": [
-        "{options.outputPath}"
-      ],
-      "defaultConfiguration": "production",
-      "options": {
-        "compiler": "babel",
-        "outputPath": "dist/apps/chat",
-        "index": "apps/chat/src/index.html",
-        "baseHref": "/",
-        "main": "apps/chat/src/main.tsx",
-        "tsConfig": "apps/chat/tsconfig.app.json",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "apps/chat/src/assets/",
-            "output": "./assets/"
-          },
-          {
-            "glob": "**/*",
-            "input": "libs/assets/src/assets/",
-            "output": "./assets/"
-          },
-          {
-            "glob": "apps/chat/src/assets/favicon.ico",
-            "input": "./",
-            "output": "./"
-          }
-        ],
-        "styles": [
-          "apps/chat/src/styles.scss"
-        ],
-        "scripts": [],
-        "webpackConfig": "apps/chat/webpack.config.js",
-        "postcssConfig": "apps/chat/postcss.config.js"
-      },
-      "configurations": {
-        "development": {
-          "extractLicenses": false,
-          "optimization": false,
-          "sourceMap": true,
-          "vendorChunk": true
-        },
-        "production": {
-          "fileReplacements": [
-            {
-              "replace": "apps/chat/src/environments/environment.ts",
-              "with": "apps/chat/src/environments/environment.prod.ts"
-            }
-          ],
-          "optimization": true,
-          "outputHashing": "all",
-          "sourceMap": false,
-          "namedChunks": false,
-          "extractLicenses": true,
-          "vendorChunk": false
-        },
-        "production-fresh": {
-          "fileReplacements": [
-            {
-              "replace": "apps/chat/src/environments/environment.ts",
-              "with": "apps/chat/src/environments/environment.prod.ts"
-            }
-          ],
-          "optimization": true,
-          "outputHashing": "all",
-          "sourceMap": false,
-          "namedChunks": false,
-          "extractLicenses": true,
-          "vendorChunk": false,
-          "skipNxCache": true
-        }
-      }
-    },
-    "serve": {
-      "executor": "@nx/webpack:dev-server",
-      "defaultConfiguration": "development",
-      "options": {
-        "buildTarget": "chat:build",
-        "hmr": true,
-        "proxyConfig": "apps/chat/proxy.conf.json"
-      },
-      "configurations": {
-        "development": {
-          "buildTarget": "chat:build:development"
-        },
-        "production": {
-          "buildTarget": "chat:build:production",
-          "hmr": false
-        }
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": [
-        "{options.outputFile}"
-      ]
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
-      "options": {
-        "jestConfig": "apps/chat/jest.config.ts"
-      }
-    }
-  }
+	"name": "chat",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/chat/src",
+	"projectType": "application",
+	"tags": [],
+	"targets": {
+		"build": {
+			"executor": "@nx/vite:build",
+			"outputs": ["{options.outputPath}"],
+			"defaultConfiguration": "production",
+			"options": {
+				"outputPath": "dist/apps/chat",
+				"configFile": "apps/chat/vite.config.ts"
+			},
+			"configurations": {
+				"development": {
+					"mode": "development"
+				},
+				"production": {
+					"mode": "production",
+					"fileReplacements": [
+						{
+							"replace": "apps/chat/src/environments/environment.ts",
+							"with": "apps/chat/src/environments/environment.prod.ts"
+						}
+					]
+				},
+				"production-fresh": {
+					"mode": "production",
+					"fileReplacements": [
+						{
+							"replace": "apps/chat/src/environments/environment.ts",
+							"with": "apps/chat/src/environments/environment.prod.ts"
+						}
+					],
+					"skipNxCache": true
+				}
+			}
+		},
+		"serve": {
+			"executor": "@nx/vite:dev-server",
+			"defaultConfiguration": "development",
+			"options": {
+				"buildTarget": "chat:build",
+				"hmr": true
+			},
+			"configurations": {
+				"development": {
+					"buildTarget": "chat:build:development"
+				},
+				"production": {
+					"buildTarget": "chat:build:production",
+					"hmr": false
+				}
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint",
+			"outputs": ["{options.outputFile}"]
+		},
+		"test": {
+			"executor": "@nx/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"options": {
+				"jestConfig": "apps/chat/jest.config.ts"
+			}
+		}
+	}
 }
