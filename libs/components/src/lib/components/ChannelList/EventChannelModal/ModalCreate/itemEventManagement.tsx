@@ -76,15 +76,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const { t, i18n } = useTranslation(['eventMenu', 'eventCreator']);
 	const dispatch = useAppDispatch();
 
-	// Create i18n-aware time formatter
 	const formatTimeI18n = useMemo(() => createI18nTimeFormatter(i18n.language), [i18n.language]);
 	const channelFirst = useSelector(selectChannelFirst);
 	const channelVoice = useAppSelector((state) => selectChannelById(state, voiceChannel ?? '')) || {};
 	const textChannel = useAppSelector((state) => selectChannelById(state, textChannelId ?? '')) || {};
 	const isThread = textChannel?.type === ChannelType.CHANNEL_TYPE_THREAD;
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
-	console.log('userCreate', userCreate);
-
 	const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);
 	const checkOptionVoice = useMemo(() => option === OptionEvent.OPTION_SPEAKER, [option]);
 	const checkOptionLocation = useMemo(() => option === OptionEvent.OPTION_LOCATION, [option]);
