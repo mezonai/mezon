@@ -25,7 +25,7 @@ const Integrations = ({ isClanSetting }: IIntegrationsProps) => {
 
 	return (
 		<div className="">
-			<h2 className="text-xl font-bold mb-5 text-theme-primary-active">
+			<h2 className="text-xl font-bold mb-5 text-theme-primary-active sbm:mt-[60px] mt-[10px]">
 				<div
 					onClick={() => {
 						setIsOpenWebhooks(false);

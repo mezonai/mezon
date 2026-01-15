@@ -191,9 +191,11 @@ const ClanSetting = (props: ModalSettingProps) => {
 					<div className="flex-3 bg-theme-setting-primary text-theme-primary overflow-y-auto hide-scrollbar">
 						<div className="flex flex-row flex-1 justify-start h-full">
 							<div className="w-full max-w-[740px] pl-4 pr-4 sbm:pl-10 sbm:pr-7">
-								<div className="relative max-h-full sbm:min-h-heightRolesEdit min-h-heightRolesEditMobile text-theme-primary pt-[70px]">
+								<div className="relative max-h-full sbm:min-h-heightRolesEdit min-h-heightRolesEditMobile text-theme-primary pt-[70px] sbm:pt-0">
 									{!(currentSetting?.id === ItemSetting.INTEGRATIONS || currentSetting?.id === ItemSetting.AUDIT_LOG) ? (
-										<h2 className="text-xl font-semibold mb-5 text-theme-primary-active">{currentSetting?.name}</h2>
+										<h2 className="text-xl font-semibold mb-5 sbm:mt-[60px] mt-[10px] text-theme-primary-active">
+											{currentSetting?.name}
+										</h2>
 									) : (
 										''
 									)}
