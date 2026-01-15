@@ -580,7 +580,7 @@ export const RenderTextMarkdownContent = ({
 
 							const channelFound = selectChannelByIdAndClanId(store.getState() as any, clanId, channelIdOnLink);
 
-							if ((channelIdOnLink && channelFound?.id) || (element?.channelid && element?.channelLabel)) {
+							if ((channelIdOnLink && channelFound?.id) || (element?.channelId && element?.channelLabel)) {
 								textParts.push(
 									<HashtagChannel
 										key={`hashtag-${index}`}

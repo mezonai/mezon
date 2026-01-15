@@ -126,9 +126,8 @@ export const ContainerMessageActionModal = React.memo(
 				const currentClanId = selectCurrentClanId(store.getState());
 				const mentions = message?.mentions || [];
 				const references = message?.references || [];
-				const mentionsString = JSON.stringify(mentions);
-				const referencesString = JSON.stringify(references);
-
+				const mentionsBytes = mentions.length > 0 ? new Uint8Array(1) : new Uint8Array();
+				const referencesBytes = references.length > 0 ? new Uint8Array(1) : new Uint8Array();
 				dispatch(
 					messagesActions.remove({
 						channelId: currentDmId ? currentDmId : currentTopicId || currentChannelId,
@@ -143,8 +142,8 @@ export const ContainerMessageActionModal = React.memo(
 					messageId,
 					!!message?.attachments,
 					currentTopicId,
-					mentionsString,
-					referencesString
+					mentionsBytes as any,
+					referencesBytes as any
 				);
 			},
 			[currentChannel, currentChannelId, currentDmId, currentTopicId, dispatch, message, mode, socketRef, store]

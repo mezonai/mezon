@@ -1,10 +1,11 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import type { ChannelsEntity } from '@mezon/store-mobile';
 import {
+	ChannelsEntity,
 	attachmentActions,
 	getStoreAsync,
 	referencesActions,
+	selectAttachmentByChannelId,
 	selectChannelById,
 	selectCurrentDM,
 	selectIsSendHDImageMobile,
@@ -14,6 +15,7 @@ import { checkIsThread, getMaxFileSize, isFileSizeExceeded, isImageFile } from '
 import Geolocation from '@react-native-community/geolocation';
 import type { DocumentPickerResponse } from '@react-native-documents/picker';
 import { errorCodes, pick, types } from '@react-native-documents/picker';
+import { Snowflake } from '@theinternetfolks/snowflake';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +29,7 @@ import type { IFile } from '../../../../../componentUI/MezonImagePicker';
 import ShareLocationConfirmModal from '../../../../../components/ShareLocationConfirmModal';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import type { EMessageActionType } from '../../enums';
+import { GALLERY_MAX_SELECTION } from './Gallery';
 import { style } from './styles';
 
 type FileWithDimensions = DocumentPickerResponse & {
@@ -46,6 +49,7 @@ const HeaderAttachmentPicker = ({ currentChannelId, onCancel, messageAction }: H
 	const { t } = useTranslation(['message', 'sharing', 'common']);
 	const dispatch = useDispatch();
 	const isSendHDImageMobile = useAppSelector(selectIsSendHDImageMobile);
+	const attachmentFilteredByChannelId = useAppSelector((state) => selectAttachmentByChannelId(state, currentChannelId ?? ''));
 
 	const getImageDimension = useCallback((imageUri: string): Promise<{ width: number; height: number }> => {
 		return new Promise((resolve) => {
@@ -63,6 +67,8 @@ const HeaderAttachmentPicker = ({ currentChannelId, onCancel, messageAction }: H
 
 	const onPickFiles = async () => {
 		try {
+			const { files = [] } = attachmentFilteredByChannelId || {};
+			if (files?.length >= GALLERY_MAX_SELECTION) return;
 			const res = await pick({
 				type: [types.allFiles]
 			});
@@ -92,7 +98,7 @@ const HeaderAttachmentPicker = ({ currentChannelId, onCancel, messageAction }: H
 					channelId: currentChannelId,
 					files: [
 						{
-							filename: file?.name || file?.uri,
+							filename: file?.name || Snowflake.generate() + (file?.type || ''),
 							url: file?.uri || (file as any)?.fileCopyUri,
 							filetype: file?.type,
 							size: file.size as number,

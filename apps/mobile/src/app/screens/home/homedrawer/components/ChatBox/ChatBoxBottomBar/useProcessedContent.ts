@@ -168,7 +168,7 @@ const processText = (rawInputString: string, emojiObjPicked: any) => {
 					}
 
 					links.push({
-						channelid: channelId ? channelId : '',
+						channelId: channelId ? channelId : '',
 						clanId: clanId ? clanId : '',
 						channelLabel: isThreadPublish && channelName ? channelName : '',
 						type: isYouTube ? EBacktickType.LINKYOUTUBE : EBacktickType.LINK,

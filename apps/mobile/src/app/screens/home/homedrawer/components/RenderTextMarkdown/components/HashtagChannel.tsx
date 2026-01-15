@@ -69,7 +69,7 @@ const HashtagChannelComponent = ({
 }: HashtagChannelProps) => {
 	const dispatch = useAppDispatch();
 
-	const targetChannelId = useMemo(() => channelIdOverride ?? element?.channelid, [channelIdOverride, element?.channelid]);
+	const targetChannelId = useMemo(() => channelIdOverride ?? element?.channelId, [channelIdOverride, element?.channelId]);
 
 	const channelFoundFromStore = useSelector((state: any) => (!channelEntityOverride ? selectChannelById(state, targetChannelId) : null));
 
@@ -110,10 +110,10 @@ const HashtagChannelComponent = ({
 		let clanId = '';
 		if (clanIdOverride) {
 			clanId = clanIdOverride;
-		} else if (dataChannel?.[2] && dataChannel?.[2] !== 'undefined') {
+		} else if (dataChannel?.[2] && dataChannel?.[2]?.toString() !== 'undefined') {
 			clanId = dataChannel?.[2];
 		} else if (element?.clanId) {
-			channelId = element?.clanId;
+			clanId = element?.clanId;
 		}
 
 		const payload = {
