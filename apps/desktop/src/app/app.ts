@@ -79,7 +79,8 @@ export default class App {
 	private static onReady() {
 		if (rendererAppName) {
 			App.application.setLoginItemSettings({
-				openAtLogin: false
+				openAtLogin: true,
+				path: process.execPath
 			});
 			App.initMainWindow();
 			App.loadMainWindow();
@@ -127,11 +128,14 @@ export default class App {
 		const width = Math.min(1280, workAreaSize.width || 1280);
 		const height = Math.min(720, workAreaSize.height || 720);
 
+		const loginSettings = App.application.getLoginItemSettings();
+		const showOnStartup = !loginSettings.wasOpenedAtLogin;
+
 		// Create the browser window.
 		App.mainWindow = new BrowserWindow({
 			width,
 			height,
-			show: false,
+			show: showOnStartup,
 			frame: false,
 			titleBarOverlay: false,
 			titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
