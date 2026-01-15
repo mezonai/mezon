@@ -90,7 +90,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 			isInviteSent={isInviteSent}
 			onHandle={() =>
 				handleButtonClick(
-					usersInviteExternal?.type === ChannelType.CHANNEL_TYPE_GROUP ? usersInviteExternal?.id : undefined,
+					usersInviteExternal?.dmId,
 					usersInviteExternal?.type,
 					usersInviteExternal?.type === ChannelType.CHANNEL_TYPE_GROUP ? undefined : usersInviteExternal?.id
 				)
