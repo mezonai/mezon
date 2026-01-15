@@ -82,6 +82,7 @@
 		"userBlockedSuccess": "Đã chặn người dùng thành công",
 		"userBlockedFailed": "Không thể chặn người dùng",
 		"canOnlyBlockFriends": "Bạn chỉ có thể chặn người dùng là bạn bè",
+		"userMessagesIgnored": "Đã bỏ qua tin nhắn của người dùng",
 		"reasons": {
 			"spam": "Spam",
 			"harassment": "Quấy rối hoặc Bắt nạt",

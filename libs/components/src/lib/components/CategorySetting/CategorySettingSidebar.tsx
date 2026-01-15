@@ -27,6 +27,7 @@ const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({
 	displayCategoryName
 }) => {
 	const { t } = useTranslation('clan');
+	const { t: tCommon } = useTranslation('common');
 	const [showModal, setShowModal] = useState(false);
 	const { handleDeleteCategory } = useCategory();
 	const handleClickButtonSidebar = (setting: ItemObjProps) => {
@@ -82,12 +83,10 @@ const CategorySettingSidebar: React.FC<ICategorySettingSidebarProps> = ({
 				{showModal && (
 					<ModalConfirm
 						handleCancel={() => setShowModal(false)}
-						modalName={category?.category_name || ''}
 						handleConfirm={confirmDeleteCategory}
-						title={t('categoryOverview.deleteCategoryTitle')}
+						title={tCommon('modalConfirm.deleteCategoryTitle', { name: category?.category_name || '' })}
 						buttonName={t('categoryOverview.deleteCategoryButton')}
 						message={t('categoryOverview.cannotBeUndone')}
-						customModalName={t('categoryOverview.categoryLabel')}
 					/>
 				)}
 			</div>

@@ -1,7 +1,7 @@
 import type { AuthenticateEmailPayload } from '@mezon/store';
 import { accountActions, authActions, selectAllAccount, useAppDispatch } from '@mezon/store';
 import type { Session } from 'mezon-js';
-import type { ApiLinkAccountConfirmRequest, ApiLoginIDResponse } from 'mezon-js/dist/api.gen';
+import type { ApiLinkAccountConfirmRequest, ApiLoginIDResponse } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
