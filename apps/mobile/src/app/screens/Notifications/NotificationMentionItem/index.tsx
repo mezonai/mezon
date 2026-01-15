@@ -66,8 +66,8 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 	const subjectText = useMemo(() => {
 		return clan?.clan_name && channelInfo?.channel_label
 			? `${clan?.clan_name ? `(${clan.clan_name})` : ''} - ${channelInfo?.channel_label || ''}`
-			: '';
-	}, [clan?.clan_name, channelInfo?.channel_label]);
+			: notify?.content?.display_name;
+	}, [clan?.clan_name, channelInfo?.channel_label, notify?.content?.display_name]);
 
 	const priorityName = useMemo(() => {
 		return notify?.content?.displayName || notify?.content?.username;

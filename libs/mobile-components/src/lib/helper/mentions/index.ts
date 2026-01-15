@@ -79,7 +79,7 @@ export const createFormattedString = (data: IExtendedMessage) => {
 				}
 				break;
 			case ETokenMessage.HASHTAGS:
-				formatContentDraft += `{#}[${contentInElement.slice(1)}](${element.channelid})`;
+				formatContentDraft += `{#}[${contentInElement.slice(1)}](${element.channelId})`;
 				break;
 			case ETokenMessage.EMOJIS:
 				emojiPicked?.push({ ...element, shortName: contentInElement });

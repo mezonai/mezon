@@ -178,6 +178,7 @@ export function getDayWeekName(date: Date, lang: 'vi' | 'en') {
 }
 
 export function convertTimestampToTimeAgo(timestampSeconds: number, t?: (key: string, options?: any) => string) {
+	if (!timestampSeconds) return '';
 	const now = Math.floor(Date.now() / 1000);
 	const diff = now - timestampSeconds;
 

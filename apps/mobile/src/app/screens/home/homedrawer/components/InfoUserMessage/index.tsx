@@ -1,5 +1,5 @@
 import { useColorsRoleById, useTheme } from '@mezon/mobile-ui';
-import { convertTimeString, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR } from '@mezon/utils';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,7 +45,13 @@ export const InfoUserMessage = ({ createTime, isShow, onPress, onLongPress, send
 					{senderDisplayName}
 				</Text>
 				{!!imageRoleUrl && <ImageNative url={imageRoleUrl} style={styles.roleIcon} resizeMode={'contain'} />}
-				<Text style={styles.dateMessageBox}>{createTime ? convertTimeString(new Date(createTime * 1000).toISOString(), t) : ''}</Text>
+				<Text style={styles.dateMessageBox}>
+					{typeof createTime === 'number'
+						? convertTimeString(new Date(createTime * 1000).toISOString(), t)
+						: createTime
+							? convertTimeString(createTime)
+							: ''}
+				</Text>
 			</TouchableOpacity>
 		);
 	}
