@@ -820,7 +820,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						if (user.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 							const parentChannelId = currentChannel?.parent_id;
 							if (parentChannelId) {
-								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`);
+								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`, true);
 								return;
 							}
 						}
@@ -832,13 +832,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						const redirectChannelId = defaultChannelId || fallbackChannelId;
 
 						if (redirectChannelId) {
-							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
+							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`, true);
 						} else {
-							navigate(`/chat/clans/${clanId}/member-safety`);
+							navigate(`/chat/clans/${clanId}/member-safety`, true);
 						}
 					}
 					if (!isMobile && directId === user.channel_id) {
-						navigate(`/chat/direct/friends`);
+						navigate(`/chat/direct/friends`, true);
 					}
 					dispatch(directSlice.actions.removeByDirectID(user.channel_id));
 					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: clanId as string }));
