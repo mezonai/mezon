@@ -371,6 +371,7 @@
 		"content": "Your session has expired. Please log in again to continue."
 	},
 	"call": {
+		"title": "Call",
 		"connecting": "Connecting...",
 		"ringing": "Ringing..."
 	},
@@ -487,9 +488,12 @@
 	"groupMembers": "{{members}} of {{total}} members",
 	"quickReaction": {
 		"title": "Set Quick Reaction",
+		"removeTitle": "Remove Quick Reaction",
 		"toast": {
 			"success": "Set quick reaction successfully!",
-			"failed": "Failed to set quick reaction!"
+			"failed": "Failed to set quick reaction!",
+			"removeSuccess": "Remove quick reaction successfully!",
+			"removeFailed": "Failed to remove quick reaction!"
 		}
 	},
 	"somethingWentWrong": "Something went wrong",
@@ -505,5 +509,8 @@
 	"reportMessage": {
 		"success": "Message reported successfully",
 		"failed": "Failed to report message"
-	}
+	},
+	"shareContact": "Share Contact",
+	"shareContactTitle": "Share Contact",
+	"sendMessage": "Message"
 }

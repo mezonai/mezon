@@ -21,7 +21,7 @@ import {
 import { IMessageTypeCallLog, TypeMessage, WEBRTC_SIGNALING_TYPES, createImgproxyUrl } from '@mezon/utils';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BackHandler, DeviceEventEmitter, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -81,21 +81,33 @@ export const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, directMessageId, isBlocked }) => {
 	const { t } = useTranslation('common');
 	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
+	const currentUserId = useSelector(selectCurrentUserId);
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
 	const dispatch = useAppDispatch();
 	const { sendSignalingToParticipants } = useSendSignaling();
+	const [hasQuickReaction, setHasQuickReaction] = useState<boolean>(false);
 
 	const channelId = useMemo(() => {
 		return currentDmGroup?.channel_id || currentDmGroup?.id || '';
 	}, [currentDmGroup?.channel_id, currentDmGroup?.id]);
+
+	useFocusEffect(
+		useCallback(() => {
+			if (!currentUserId || !channelId) {
+				setHasQuickReaction(false);
+				return;
+			}
+			const data = load(STORAGE_USERS_QUICK_REACTION) || {};
+			setHasQuickReaction(!!data?.[currentUserId]?.[channelId]);
+		}, [currentUserId, channelId])
+	);
 
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ mode, channelOrDirect: currentDmGroup });
 	const isTypeDMGroup = useMemo(() => {
 		return Number(currentDmGroup?.type) === ChannelType.CHANNEL_TYPE_GROUP;
 	}, [currentDmGroup?.type]);
-	const currentUserId = useSelector(selectCurrentUserId);
 
 	const isChatWithMyself = useMemo(() => {
 		if (Number(currentDmGroup?.type) !== ChannelType.CHANNEL_TYPE_DM) return false;
@@ -219,20 +231,50 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data: dataModal });
 	};
 
-	const headerOptions: IOption[] = [
-		{
-			title: 'quickReaction',
-			content: t('quickReaction.title'),
-			value: OptionChannelHeader.QuickReaction,
-			icon: <MezonIconCDN icon={IconCDN.reactionIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />
-		},
-		{
-			title: 'buzz',
-			content: 'Buzz',
-			value: OptionChannelHeader.Buzz,
-			icon: <MezonIconCDN icon={IconCDN.buzz} color={themeValue.text} height={size.s_18} width={size.s_18} />
+	const handleRemoveQuickReaction = useCallback(() => {
+		if (!currentUserId || !channelId) return;
+
+		try {
+			const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
+
+			if (currentData?.[currentUserId]?.[channelId]) {
+				delete currentData[currentUserId][channelId];
+				save(STORAGE_USERS_QUICK_REACTION, currentData);
+				setHasQuickReaction(false);
+			}
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		} catch (error) {
+			console.error('Error removing quick reaction:', error);
 		}
-	];
+	}, [channelId, currentUserId, t]);
+
+	const headerOptions = useMemo(
+		() =>
+			[
+				{
+					title: 'quickReaction',
+					content: t('quickReaction.title'),
+					value: OptionChannelHeader.QuickReaction,
+					icon: <MezonIconCDN icon={IconCDN.reactionIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />
+				},
+				{
+					title: 'removeQuickReaction',
+					content: t('quickReaction.removeTitle'),
+					value: OptionChannelHeader.RemoveQuickReaction,
+					icon: <MezonIconCDN icon={IconCDN.circleXIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />
+				},
+				{
+					title: 'buzz',
+					content: 'Buzz',
+					value: OptionChannelHeader.Buzz,
+					icon: <MezonIconCDN icon={IconCDN.buzz} color={themeValue.text} height={size.s_18} width={size.s_18} />
+				}
+			].filter((item) => {
+				if (item.value === OptionChannelHeader.RemoveQuickReaction && !hasQuickReaction) return false;
+				return true;
+			}),
+		[t, themeValue, hasQuickReaction]
+	);
 
 	const handleEmojiSelected = useCallback(
 		(emojiId: string, shortname: string) => {
@@ -247,6 +289,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 
 				currentData[currentUserId][channelId] = { emojiId, shortname };
 				save(STORAGE_USERS_QUICK_REACTION, currentData);
+				setHasQuickReaction(true);
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			} catch (error) {
 				console.error('Error setting quick reaction:', error);
@@ -274,6 +317,8 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 	const onPressOption = (option: IOption) => {
 		if (option?.value === OptionChannelHeader.Buzz) {
 			handleActionBuzzMessage();
+		} else if (option?.value === OptionChannelHeader.RemoveQuickReaction) {
+			handleRemoveQuickReaction();
 		} else {
 			handleOpenQuickReactionModal();
 		}
