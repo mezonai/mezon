@@ -20,13 +20,17 @@ jobs:
         with:
           node-version: '24.5.0'
 
+      - name: Install Nx global
+        run: |
+          echo "Installing Nx"
+          npm install -g nx@21.1.2
+          nx --version
+
       - name: Clean cache
         run: |
           echo "Cleaning caches"
-          rm -rf node_modules
           rm -rf .nx
           rm -rf node_modules/.vite
-          yarn cache clean
           echo "Cache cleaned"
 
       - name: Install dependencies
@@ -39,17 +43,13 @@ jobs:
           yarn config set nodedir ~/.cache/node-gyp/20.18.1/
           echo "Node directory: ${nv:1}"
           source ~/.bashrc
-          yarn
-          echo "check nx installation"
-          ls -la node_modules/.bin/nx || echo "nx binary not found"
-          ./node_modules/.bin/nx --version || echo "nx not executable"
+          yarn --frozen-lockfile
 
       - name: Build
         run: |
           echo "Build"
           echo NX_CHAT_APP_API_GW_HOST="${{ secrets.NX_CHAT_APP_API_GW_HOST_DEV }}" >> apps/chat/.env
           echo NX_CHAT_APP_API_GW_PORT="${{ secrets.NX_CHAT_APP_API_GW_PORT_DEV }}" >> apps/chat/.env
-          export PATH="$PWD/node_modules/.bin:$PATH"
           GENERATE_SOURCEMAP=false nx build chat --prod --baseHref=/
 
   deploy:
