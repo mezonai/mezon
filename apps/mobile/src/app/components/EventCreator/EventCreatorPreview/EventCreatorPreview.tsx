@@ -60,7 +60,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 			await dispatch(
 				eventManagementActions.updateEventManagement({
 					event_id: currentEvent?.id,
-					start_time_seconds: timeValueEnd,
+					start_time_seconds: timeValueStart,
 					end_time_seconds: timeValueEnd,
 					channel_voice_id: channelId,
 					address: location,
