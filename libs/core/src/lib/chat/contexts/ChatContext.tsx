@@ -234,7 +234,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				if (voiceChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && hasJoinSoundEffect) {
 					const joinSoundElement = document.createElement('audio');
-					joinSoundElement.src = 'assets/audio/joincallsound.mp3';
+					joinSoundElement.src = '/assets/audio/joincallsound.mp3';
 					joinSoundElement.preload = 'auto';
 					joinSoundElement.style.display = 'none';
 
@@ -310,7 +310,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const handleBuzz = useCallback((channelId: string, senderId: string, isReset: boolean, mode: ChannelStreamMode | undefined) => {
-		const audio = new Audio('assets/audio/buzz.mp3');
+		const audio = new Audio('/assets/audio/buzz.mp3');
 
 		const cleanup = () => {
 			audio.removeEventListener('ended', cleanup);
@@ -702,7 +702,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			if (isLinuxDesktop) {
 				const notiSoundElement = document.createElement('audio');
-				notiSoundElement.src = 'assets/audio/noti-linux.mp3';
+				notiSoundElement.src = '/assets/audio/noti-linux.mp3';
 				notiSoundElement.preload = 'auto';
 				notiSoundElement.style.display = 'none';
 				document.body.appendChild(notiSoundElement);
@@ -1356,7 +1356,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 			if (isReceiverGiveCoffee) {
 				const joinSoundElement = document.createElement('audio');
-				joinSoundElement.src = 'assets/audio/bankSound.mp3';
+				joinSoundElement.src = '/assets/audio/bankSound.mp3';
 				joinSoundElement.preload = 'auto';
 				joinSoundElement.style.display = 'none';
 				document.body.appendChild(joinSoundElement);

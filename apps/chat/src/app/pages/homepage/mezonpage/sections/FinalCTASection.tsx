@@ -38,11 +38,11 @@ export const FinalCTASection = () => {
 					ref={imageRef}
 					className={`flex-shrink-0 transition-all duration-700 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}
 				>
-					<img
-						src="/assets/message.webp"
-						alt="AI Generation"
-						className="w-auto h-auto max-w-[55vw] max-lg:max-w-full object-contain drop-shadow-2xl rounded-2xl"
-					/>
+				<img
+					src="/message.webp"
+					alt="AI Generation"
+					className="w-auto h-auto max-w-[55vw] max-lg:max-w-full object-contain drop-shadow-2xl rounded-2xl"
+				/>
 				</div>
 
 				<div

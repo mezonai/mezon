@@ -21,10 +21,10 @@ export const AUDIO_TONES = {
 } as const;
 
 export const AUDIO_FILES = {
-	[AudioToneType.DIAL]: 'assets/audio/dialtone.mp3',
-	[AudioToneType.RING]: 'assets/audio/ringing.mp3',
-	[AudioToneType.END]: 'assets/audio/endcall.mp3',
-	[AudioToneType.BUSY]: 'assets/audio/busytone.mp3'
+	[AudioToneType.DIAL]: '/assets/audio/dialtone.mp3',
+	[AudioToneType.RING]: '/assets/audio/ringing.mp3',
+	[AudioToneType.END]: '/assets/audio/endcall.mp3',
+	[AudioToneType.BUSY]: '/assets/audio/busytone.mp3'
 } as const;
 
 export const CALL_CONFIG = {

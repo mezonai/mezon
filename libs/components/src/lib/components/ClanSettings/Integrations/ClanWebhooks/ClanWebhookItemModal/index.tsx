@@ -36,7 +36,10 @@ const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
 				<div className="flex w-full justify-between items-center text-theme-primary-active">
 					<div className="">
 						<div data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_title')}>{webhookItem.webhook_name}</div>
-						<div className="flex gap-1 items-center"  data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_description')}>
+						<div
+							className="flex gap-1 items-center"
+							data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_description')}
+						>
 							<Icons.ClockIcon className="text-theme-primary" />
 							<div className="text-theme-primary text-[13px]">
 								{t('webhooksItem.createdBy', {

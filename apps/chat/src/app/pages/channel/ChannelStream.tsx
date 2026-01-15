@@ -120,7 +120,7 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 			<div className="custom-video-container w-full h-full relative">
 				{!isRemoteVideoStream && (
 					<img
-						src={currentChannel?.channel_avatar || 'assets/images/flahstream.png'}
+						src={currentChannel?.channel_avatar || '/assets/images/flahstream.png'}
 						alt={t('streamThumbnail')}
 						className="w-full h-full object-cover"
 					/>

@@ -107,6 +107,8 @@
 				"outputPath": "dist/apps/desktop",
 				"main": "apps/desktop/src/main.ts",
 				"tsConfig": "apps/desktop/tsconfig.app.json",
+				"typeCheck": false,
+				"webpackConfig": "apps/desktop/webpack.config.js",
 				"assets": [
 					{
 						"glob": "**/*",

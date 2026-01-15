@@ -49,7 +49,7 @@ export const mapDmGroupToEntity = (channelRes: ApiChannelDescription, existingEn
 	if (existingEntity?.channel_avatar && !mapped.channel_avatar) {
 		mapped.channel_avatar = existingEntity.channel_avatar;
 	} else if (!mapped.channel_avatar) {
-		mapped.channel_avatar = 'assets/images/avatar-group.png';
+		mapped.channel_avatar = '/assets/images/avatar-group.png';
 	}
 
 	return mapped;
@@ -95,7 +95,7 @@ export const createNewDirectMessage = createAsyncThunk(
 						channel_label:
 							response.channel_label ||
 							(Array.isArray(display_names) ? display_names.join(',') : Array.isArray(username) ? username.join(',') : ''),
-						channel_avatar: response.channel_avatar || 'assets/images/avatar-group.png',
+						channel_avatar: response.channel_avatar || '/assets/images/avatar-group.png',
 						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
 						user_ids: body.user_ids,
 						active: 1,
@@ -445,7 +445,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			user_ids: userIds,
 			usernames,
 			display_names: label,
-			channel_avatar: channel_desc.channel_avatar || 'assets/images/avatar-group.png',
+			channel_avatar: channel_desc.channel_avatar || '/assets/images/avatar-group.png',
 			avatars,
 			onlines,
 			active: 1,

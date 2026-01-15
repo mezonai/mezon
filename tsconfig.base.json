@@ -33,6 +33,7 @@
 			"@mezon/translations": ["libs/translations/src/i18n.config.ts"],
 			"@mezon/transport": ["libs/transport/src/index.ts"],
 			"@mezon/ui": ["libs/ui/src/index.ts"],
+			"@mezon/ui/lib/*": ["libs/ui/src/lib/*"],
 			"@mezon/utils": ["libs/utils/src/index.ts"],
 			"@mezon/chat-scroll": ["libs/chat-scroll/src/index.ts"],
 			"@mezon/package-js": ["package.json"],

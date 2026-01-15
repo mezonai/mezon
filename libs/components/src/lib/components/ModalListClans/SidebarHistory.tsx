@@ -170,7 +170,7 @@ const ItemHistory = ({
 			return (
 				<img
 					className="w-6 aspect-square rounded-md"
-					src={avatar ? createImgproxyUrl(avatar, { width: 24, height: 24, resizeType: 'fit' }) : 'assets/images/mezon-logo-black.svg'}
+					src={avatar ? createImgproxyUrl(avatar, { width: 24, height: 24, resizeType: 'fit' }) : '/assets/images/mezon-logo-black.svg'}
 				/>
 			);
 		}

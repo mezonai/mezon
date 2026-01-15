@@ -1,25 +1,23 @@
 {
-  "presets": [
-    [
-      "@nx/react/babel",
-      {
-        "runtime": "automatic"
-      }
-    ]
-  ],
-  "plugins": [],
-  "env": {
-    "production": {
-      "plugins": [
-        [
-          "react-remove-properties",
-          {
-            "properties": [
-              "data-e2e"
-            ]
-          }
-        ]
-      ]
-    }
-  }
+	"presets": [
+		[
+			"@nx/react/babel",
+			{
+				"runtime": "automatic"
+			}
+		]
+	],
+	"plugins": [],
+	"env": {
+		"production": {
+			"plugins": [
+				[
+					"react-remove-properties",
+					{
+						"properties": ["data-e2e"]
+					}
+				]
+			]
+		}
+	}
 }

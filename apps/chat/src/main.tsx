@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom/client';
 import { ThemeManager } from '@mezon/themes';
 import App from './app/app';
 
-// import './styles.scss';
+import './styles.scss';
 
 import './instrument/instrument';
 

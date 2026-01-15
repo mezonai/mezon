@@ -84,7 +84,7 @@ const handleLogoutWithRedirect = (dispatch: AppDispatch, initialPath: string): I
 
 async function checkInternetConnection() {
 	try {
-		const response = await fetch(`${window.origin}/assets/favicon.ico`, {
+		const response = await fetch(`${window.origin}/favicon.ico`, {
 			method: 'HEAD',
 			cache: 'no-cache'
 		});

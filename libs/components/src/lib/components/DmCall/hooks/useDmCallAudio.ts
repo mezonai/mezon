@@ -18,10 +18,10 @@ export interface DmCallAudioHookReturn {
 }
 
 const AUDIO_FILES = {
-	dial: 'assets/audio/dialtone.mp3',
-	ring: 'assets/audio/ringing.mp3',
-	end: 'assets/audio/endcall.mp3',
-	busy: 'assets/audio/busytone.mp3'
+	dial: '/assets/audio/dialtone.mp3',
+	ring: '/assets/audio/ringing.mp3',
+	end: '/assets/audio/endcall.mp3',
+	busy: '/assets/audio/busytone.mp3'
 };
 
 export const useDmCallAudio = (): DmCallAudioHookReturn => {

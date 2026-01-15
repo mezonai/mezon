@@ -80,7 +80,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 				<div className="flex items-center justify-between md:px-[32px] max-md:px-[16px] max-md:py-[14px] h-[80px] max-md:h-[72px]">
 					<div className="flex items-center gap-[40px]">
 						<Link to={'/'} className="flex items-center gap-[4.92px] min-w-[120px]">
-							<Image src={`assets/logo.png`} width={120} height={35} className="object-cover" />
+							<Image src={`/assets/logo.png`} width={120} height={35} className="object-cover" />
 						</Link>
 						<div className="hidden lg:flex items-center gap-3 lg:max-xl:gap-[0.05rem]">
 							<NavLink href="#home" section="home" label={t('header.home')} />
