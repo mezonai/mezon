@@ -20,6 +20,7 @@ const ACTIVITY_MUSIC = Object.values(EActivityMusic);
 const ACTIVITY_GAMING = Object.values(EActivityGaming);
 
 const _IMAGE_WINDOW_KEY = 'IMAGE_WINDOW_KEY';
+const STORE_ID = 'MEZON.Mezon_vdgv9gtrfadw6!MEZON.Mezon';
 
 const isMac = process.platform === 'darwin';
 
@@ -94,7 +95,7 @@ export default class App {
 		}
 
 		if (process.platform === 'win32') {
-			app.setAppUserModelId('app.mezon.ai');
+			app.setAppUserModelId(STORE_ID);
 		}
 
 		autoUpdater.checkForUpdates();
