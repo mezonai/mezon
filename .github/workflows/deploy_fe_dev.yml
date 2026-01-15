@@ -20,14 +20,6 @@ jobs:
         with:
           node-version: '24.5.0'
 
-      - name: Install Nx global
-        run: |
-          echo "Installing Nx"
-          npm install -g nx@21.1.2
-          export PATH="$(npm config get prefix)/bin:$PATH"
-          nx --version
-          echo "PATH=$PATH" >> $GITHUB_ENV
-
       - name: Clean cache
         run: |
           echo "Cleaning caches"
@@ -52,7 +44,7 @@ jobs:
           echo "Build"
           echo NX_CHAT_APP_API_GW_HOST="${{ secrets.NX_CHAT_APP_API_GW_HOST_DEV }}" >> apps/chat/.env
           echo NX_CHAT_APP_API_GW_PORT="${{ secrets.NX_CHAT_APP_API_GW_PORT_DEV }}" >> apps/chat/.env
-          nx build chat --prod --baseHref=/
+          ./node_modules/.bin/nx build chat --prod --baseHref=/
 
   deploy:
     runs-on: mezone-fe-dev
