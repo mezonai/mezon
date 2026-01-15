@@ -655,30 +655,6 @@ export const selectMemberGroupByUserId = createSelector(
 	}
 );
 
-export const selectMemberStatusById = createSelector(
-	[
-		selectEntitesUserClans,
-		selectDirectMessageEntities,
-		selectClanView,
-		(state, userId: string) => {
-			return `${userId},${state?.direct.currentDirectMessageId}`;
-		}
-	],
-	(usersClanEntities, directs, isClanView, payload) => {
-		const [userId, currentDirectMessageId] = payload.split(',');
-		const userClan = usersClanEntities[userId];
-		const userGroup = directs?.[currentDirectMessageId];
-		if (userClan && isClanView) {
-			return { status: userClan.user?.online, isMobile: userClan.user?.is_mobile };
-		}
-		const index = userGroup?.user_ids?.findIndex((item) => item === userId) ?? -1;
-		if (index === -1) {
-			return { status: false, isMobile: false };
-		}
-		return { status: userGroup?.onlines?.[index] || false, isMobile: false };
-	}
-);
-
 export const selectAllChannelMembers = createSelector(
 	[
 		selectMemberIdsByChannelId,

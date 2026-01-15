@@ -1774,10 +1774,6 @@ export const selectCurrentChannelCountMessUnread = createSelector(selectCurrentC
 export const selectCurrentChannelAgeRestricted = createSelector(selectCurrentChannel, (channel) => channel?.age_restricted);
 export const selectCurrentChannelCreatorId = createSelector(selectCurrentChannel, (channel) => channel?.creator_id);
 
-export const selectSelectedChannel = createSelector(selectChannelsEntities, selectSelectedChannelId, (clansEntities, clanId) =>
-	clanId ? clansEntities[clanId] : null
-);
-
 export const selectClanId = () => createSelector(selectCurrentChannel, (channel) => channel?.clan_id);
 
 export const selectCurrentVoiceChannel = createSelector(selectChannelsEntities, selectCurrentVoiceChannelId, (clansEntities, clanId) =>
@@ -1831,21 +1827,6 @@ export const selectIsShowPinBadgeByChannelId = (channelId: string) =>
 		[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
 		(state, clanId) => state.byClans[clanId]?.entities.entities[channelId]?.showPinBadge
 	);
-
-export const selectAnyUnreadChannels = createSelector(
-	[getChannelsState, selectEntiteschannelCategorySetting, (state: RootState) => state.clans.currentClanId as string],
-	(state, settings, clanId) => {
-		const entities = state.byClans[clanId]?.entities;
-		if (!entities) return false;
-
-		for (const id of entities.ids) {
-			const channel = entities.entities[id];
-			if (settings?.[channel?.id]?.action === enableMute) continue;
-			if (channel?.count_mess_unread) return true;
-		}
-		return false;
-	}
-);
 
 export const selectThreadCurrentChannel = createSelector(
 	[selectChannelsEntities, selectCurrentChannelId, selectListThreadId],
