@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => {
 		root: path.join(appRoot, 'src'),
 		publicDir: mode === 'production' ? false : path.join(appRoot, 'src/assets'),
 		cacheDir: path.join(workspaceRoot, 'node_modules/.vite/apps/chat'),
-		base: './',
+		base: mode === 'production' ? '/' : './',
 
 		server: {
 			port: 4200,
@@ -36,6 +36,8 @@ export default defineConfig(({ mode }) => {
 
 		plugins: [
 			react({
+				jsxRuntime: 'automatic',
+				jsxImportSource: 'react',
 				babel: {
 					plugins: [
 						['@babel/plugin-proposal-decorators', { legacy: true }],

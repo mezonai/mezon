@@ -14,7 +14,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -38,6 +38,8 @@ jobs:
           yarn nx reset
 
       - name: Build
+        env:
+          NODE_ENV: 'production'
         run: |
           echo "Build"
           echo NX_CHAT_APP_API_GW_HOST="${{ secrets.NX_CHAT_APP_API_GW_HOST_DEV }}" >> apps/chat/.env
