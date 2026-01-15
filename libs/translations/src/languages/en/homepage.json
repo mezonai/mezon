@@ -5,8 +5,6 @@
 		"work": "Work",
 		"and": "And",
 		"playPlatform": "Play Platform",
-		"theBest": "The Best",
-		"discord": "Discord",
 		"alternative": "Alternative"
 	},
 	"description": {
@@ -84,9 +82,7 @@
 				"live": "Live",
 				"work": "Work",
 				"play": "Play",
-				"platform": "Platform.",
-				"theBest": "The Best",
-				"discordAlternative": "Discord Alternative"
+				"platform": "Platform. The Best For Your Community"
 			},
 			"description": "is great for playing games and chilling with friends, or even building a worldwide community. Customize your own space to",
 			"talk": "Talk",
