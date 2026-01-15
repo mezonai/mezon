@@ -14,6 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.5.0'  
+
       - name: Install package
         run: |
           echo "yarn"

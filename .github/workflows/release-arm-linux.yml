@@ -19,7 +19,7 @@ jobs:
           export nv=$(node -v)
           echo "Node version: $nv"
           echo "Installing dependencies"
-          yarn config set nodedir ~/.cache/node-gyp/"${nv:1}"
+          yarn config set nodedir ~/.cache/node-gyp/20.18.1/
           echo "Node directory: ${nv:1}"
           yarn
 
