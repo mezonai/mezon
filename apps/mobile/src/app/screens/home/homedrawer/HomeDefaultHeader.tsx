@@ -14,7 +14,7 @@ import {
 } from '@mezon/store-mobile';
 import { ChannelStatusEnum, TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
@@ -54,10 +54,37 @@ const HomeDefaultHeader = React.memo(
 		const mode =
 			currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
 		const { sendMessage } = useChatSending({ mode, channelOrDirect: currentChannel });
+		const [hasQuickReaction, setHasQuickReaction] = useState<boolean>(false);
 
 		const channelId = useMemo(() => {
 			return currentChannel?.channel_id || currentChannel?.id || '';
 		}, [currentChannel?.channel_id, currentChannel?.id]);
+
+		useEffect(() => {
+			if (!currentUserId || !channelId) {
+				setHasQuickReaction(false);
+				return;
+			}
+			const data = load(STORAGE_USERS_QUICK_REACTION) || {};
+			setHasQuickReaction(!!data?.[currentUserId]?.[channelId]);
+		}, [currentUserId, channelId]);
+
+		const handleRemoveQuickReaction = useCallback(() => {
+			if (!currentUserId || !channelId) return;
+
+			try {
+				const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
+
+				if (currentData?.[currentUserId]?.[channelId]) {
+					delete currentData[currentUserId][channelId];
+					save(STORAGE_USERS_QUICK_REACTION, currentData);
+					setHasQuickReaction(false);
+				}
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+			} catch (error) {
+				console.error('Error removing quick reaction:', error);
+			}
+		}, [channelId, currentUserId, t]);
 
 		const headerOptions = useMemo(
 			() =>
@@ -67,6 +94,12 @@ const HomeDefaultHeader = React.memo(
 						content: t('common:quickReaction.title'),
 						value: OptionChannelHeader.QuickReaction,
 						icon: <MezonIconCDN icon={IconCDN.reactionIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />
+					},
+					{
+						title: 'removeQuickReaction',
+						content: t('common:quickReaction.removeTitle'),
+						value: OptionChannelHeader.RemoveQuickReaction,
+						icon: <MezonIconCDN icon={IconCDN.circleXIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />
 					},
 					{
 						title: 'anonymous',
@@ -85,14 +118,21 @@ const HomeDefaultHeader = React.memo(
 					if (item.value === OptionChannelHeader.Anonymous && currentClanPreventAnonymous) return false;
 					if (item.value === OptionChannelHeader.QuickReaction && currentChannel?.parent_id !== '0' && currentChannel?.parent_id !== '')
 						return false;
+					if (
+						item.value === OptionChannelHeader.RemoveQuickReaction &&
+						((currentChannel?.parent_id !== '0' && currentChannel?.parent_id !== '') || !hasQuickReaction)
+					)
+						return false;
 					return true;
 				}),
-			[anonymousMode, t, themeValue, isBanned, currentClanPreventAnonymous, currentChannel?.parent_id]
+			[anonymousMode, t, themeValue, isBanned, currentClanPreventAnonymous, currentChannel?.parent_id, hasQuickReaction]
 		);
 
 		const onPressOption = (option: IOption) => {
 			if (option?.value === OptionChannelHeader.Anonymous) {
 				handleToggleAnnonymous();
+			} else if (option?.value === OptionChannelHeader.RemoveQuickReaction) {
+				handleRemoveQuickReaction();
 			} else if (option?.value === OptionChannelHeader.Buzz) {
 				handleActionBuzzMessage();
 			} else {
@@ -124,6 +164,7 @@ const HomeDefaultHeader = React.memo(
 
 					currentData[currentUserId][channelId] = { emojiId, shortname };
 					save(STORAGE_USERS_QUICK_REACTION, currentData);
+					setHasQuickReaction(true);
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 				} catch (error) {
 					console.error('Error setting quick reaction:', error);

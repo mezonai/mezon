@@ -101,6 +101,38 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}, [channelId, currentChannel?.type, handleEmojiSelected]);
 
+	const hasQuickReaction = useMemo(() => {
+		if (!currentUserId || !channelId) return false;
+
+		const data = load(STORAGE_USERS_QUICK_REACTION) || {};
+		return !!data?.[currentUserId]?.[channelId];
+	}, [currentUserId, channelId]);
+
+	const handleRemoveQuickReaction = useCallback(() => {
+		if (!currentUserId || !channelId) return;
+
+		try {
+			const currentData = load(STORAGE_USERS_QUICK_REACTION) || {};
+
+			if (currentData?.[currentUserId]?.[channelId]) {
+				delete currentData[currentUserId][channelId];
+				save(STORAGE_USERS_QUICK_REACTION, currentData);
+
+				Toast.show({
+					type: 'success',
+					text1: t('common:quickReaction.toast.removeSuccess')
+				});
+			}
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		} catch (error) {
+			console.error('Error removing quick reaction:', error);
+			Toast.show({
+				type: 'error',
+				text1: t('common:quickReaction.toast.removeFailed')
+			});
+		}
+	}, [channelId, currentUserId, t]);
+
 	const menuSetting: IMezonMenuItemProps[] = [
 		{
 			title: t('common:quickReaction.title'),
@@ -108,6 +140,14 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 			icon: <MezonIconCDN icon={IconCDN.reactionIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
 			textStyle: styles.label,
 			onPress: handleOpenQuickReactionModal
+		},
+		{
+			title: t('common:quickReaction.removeTitle'),
+			expandable: false,
+			icon: <MezonIconCDN icon={IconCDN.circleXIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
+			textStyle: styles.label,
+			onPress: handleRemoveQuickReaction,
+			isShow: hasQuickReaction
 		},
 		{
 			title: t('customiseGroup'),
@@ -167,6 +207,14 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 					icon: <MezonIconCDN icon={IconCDN.reactionIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
 					textStyle: styles.label,
 					onPress: handleOpenQuickReactionModal
+				},
+				{
+					title: t('common:quickReaction.removeTitle'),
+					expandable: false,
+					icon: <MezonIconCDN icon={IconCDN.circleXIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
+					textStyle: styles.label,
+					onPress: handleRemoveQuickReaction,
+					isShow: hasQuickReaction
 				},
 				{
 					title: t('closeDM'),

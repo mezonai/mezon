@@ -371,6 +371,7 @@
 		"content": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại để tiếp tục."
 	},
 	"call": {
+		"title": "Gọi điện",
 		"connecting": "Đang kết nối...",
 		"ringing": "Đang đổ chuông..."
 	},
@@ -487,9 +488,12 @@
 	"groupMembers": "{{members}} trên {{total}} thành viên",
 	"quickReaction": {
 		"title": "Đặt cảm xúc nhanh",
+		"removeTitle": "Xóa cảm xúc nhanh",
 		"toast": {
 			"success": "Đặt cảm xúc nhanh thành công!",
-			"failed": "Đặt cảm xúc nhanh thất bại!"
+			"failed": "Đặt cảm xúc nhanh thất bại!",
+			"removeSuccess": "Xóa cảm xúc nhanh thành công!",
+			"removeFailed": "Xóa cảm xúc nhanh thất bại!"
 		}
 	},
 	"somethingWentWrong": "Đã xảy ra lỗi",
@@ -505,5 +509,8 @@
 	"reportMessage": {
 		"success": "Báo cáo tin nhắn thành công",
 		"failed": "Báo cáo tin nhắn thất bại"
-	}
+	},
+	"shareContact": "Danh thiếp",
+	"shareContactTitle": "Chia sẻ danh thiếp",
+	"sendMessage": "Nhắn tin"
 }
