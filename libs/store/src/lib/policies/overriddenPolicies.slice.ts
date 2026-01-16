@@ -59,7 +59,7 @@ const overriddenPoliciesSlice = createSlice({
 				(acc, perm) => {
 					if (perm.slug) {
 						acc[perm.slug] = {
-							id: perm.id,
+							id: BigInt(perm.id),
 							slug: perm.slug,
 							active: perm.active
 						};
@@ -136,10 +136,10 @@ export const fetchMaxChannelPermissionCached = async (
 			api_name: 'ListUserPermissionInChannel',
 			user_permission_req: {
 				channel_id: channelId,
-				clan_id: clanId
+				clan_id: BigInt(clanId)
 			}
 		},
-		() => mezon.client.listUserPermissionInChannel(mezon.session, clanId, channelId),
+		() => mezon.client.listUserPermissionInChannel(mezon.session, BigInt(clanId), BigInt(channelId)),
 		'user_permission_list'
 	);
 
