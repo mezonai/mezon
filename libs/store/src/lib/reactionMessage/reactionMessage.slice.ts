@@ -9,34 +9,21 @@ import { toastActions } from '../toasts';
 
 export const REACTION_FEATURE_KEY = 'reaction';
 
-export const mapReactionToEntity = (reaction: UpdateReactionMessageArgs) => {
+export const mapReactionToEntity = (reaction: ApiMessageReaction): ReactionEntity => {
 	return {
-		...reaction
+		...reaction,
+		id: reaction.id !== undefined ? String(reaction.id) : '',
+		message_id: reaction.message_id !== undefined ? String(reaction.message_id) : '',
+		channel_id: reaction.channel_id !== undefined ? String(reaction.channel_id) : undefined,
+		sender_id: reaction.sender_id !== undefined ? String(reaction.sender_id) : undefined
 	} as ReactionEntity;
 };
 
-export interface ReactionEntity extends IReaction {
+export interface ReactionEntity extends Omit<IReaction, 'id' | 'channel_id' | 'sender_id'> {
 	id: string;
-}
-
-export type UpdateReactionMessageArgs = {
-	id?: string;
 	channel_id?: string;
-	message_id?: string;
-	emoji_id: string;
-	emoji: string;
-	count?: number;
 	sender_id?: string;
-	action?: boolean;
-};
-
-export type UpdateBulkMessageReactionsArgs = {
-	messages: {
-		id: string;
-		reactions?: ApiMessageReaction[] | undefined;
-		channel_id?: string;
-	}[];
-};
+}
 
 export interface ReactionState extends EntityState<ReactionEntity, string> {
 	loadingStatus: 'not loaded' | 'loading' | 'loaded' | 'error';
@@ -165,19 +152,19 @@ export const writeMessageReaction = createAsyncThunk(
 					async () => {
 						return await createTimeoutPromise(
 							socket.writeMessageReaction(
-								id,
-								clanId,
-								channelId,
+								BigInt(id),
+								BigInt(clanId),
+								BigInt(channelId),
 								mode,
 								isPublic,
-								messageId,
-								emoji_id,
+								BigInt(messageId),
+								BigInt(emoji_id),
 								emoji,
 								count,
-								messageSenderId,
+								BigInt(messageSenderId),
 								actionDelete,
-								topic_id,
-								emoji_recent_id,
+								BigInt(topic_id || ''),
+								BigInt(emoji_recent_id || ''),
 								sender_name
 							),
 							2000,

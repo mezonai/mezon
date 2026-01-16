@@ -24,7 +24,7 @@ export const embedSlice = createSlice({
 	initialState: initialEmbedState,
 	reducers: {
 		addEmbedValue: (state, action: PayloadAction<{ message_id: string; data: FormDataEmbed; multiple?: boolean; onlyChooseOne?: boolean }>) => {
-			const { message_id, data, multiple, onlyChooseOne } = action.payload;
+			const { message_id, data, multiple } = action.payload;
 			if (multiple) {
 				if (!state.formDataEmbed[message_id]) {
 					state.formDataEmbed[message_id] = {

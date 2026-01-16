@@ -13,22 +13,28 @@ import type { RootState } from '../store';
 
 export const ONBOARDING_FEATURE_KEY = 'ONBOARDING_FEATURE_KEY';
 
-export interface OnboardingClanEntity extends ApiOnboardingSteps {
-	id: string; // Primary ID
+export interface OnboardingItemEntity extends Omit<ApiOnboardingItem, 'id' | 'clan_id'> {
+	id: string;
+	clan_id?: string;
 }
 
 export type OnboardingClanType = {
-	greeting?: ApiOnboardingItem;
-	rule: ApiOnboardingItem[];
-	question: ApiOnboardingItem[];
-	mission: ApiOnboardingItem[];
+	greeting?: OnboardingItemEntity;
+	rule: OnboardingItemEntity[];
+	question: OnboardingItemEntity[];
+	mission: OnboardingItemEntity[];
 };
 
 export interface RuleType extends ApiOnboardingContent {
 	file?: File;
 }
 
-export interface OnboardingState extends EntityState<ApiOnboardingSteps, string> {
+export interface OnboardingStepsEntity extends Omit<ApiOnboardingSteps, 'id' | 'clan_id'> {
+	id: string;
+	clan_id?: string;
+}
+
+export interface OnboardingState extends EntityState<OnboardingStepsEntity, string> {
 	onboardingPreviewMode: {
 		open: boolean;
 		clanId: string | null;
@@ -54,15 +60,31 @@ export interface OnboardingState extends EntityState<ApiOnboardingSteps, string>
 	onboardingCache: Record<
 		string,
 		{
-			onboarding?: ApiOnboardingItem[];
+			onboarding?: OnboardingItemEntity[];
 			cache?: CacheMetadata;
 		}
 	>;
 	onboardingStepCache?: CacheMetadata;
 }
 
-export const onboardingUserAdapter = createEntityAdapter({
-	selectId: (a: ApiOnboardingSteps) => a.clan_id || ''
+export const mapOnboardingItemToEntity = (item: ApiOnboardingItem): OnboardingItemEntity => {
+	return {
+		...item,
+		id: item.id !== undefined ? String(item.id) : '',
+		clan_id: item.clan_id !== undefined ? String(item.clan_id) : undefined
+	};
+};
+
+export const mapOnboardingStepsToEntity = (steps: ApiOnboardingSteps): OnboardingStepsEntity => {
+	return {
+		...steps,
+		id: steps.id !== undefined ? String(steps.id) : '',
+		clan_id: steps.clan_id !== undefined ? String(steps.clan_id) : undefined
+	};
+};
+
+export const onboardingUserAdapter = createEntityAdapter<OnboardingStepsEntity, string>({
+	selectId: (a: OnboardingStepsEntity) => a.clan_id || ''
 });
 
 const getInitialOnboardingState = () => ({
@@ -85,7 +107,7 @@ export const fetchOnboardingCached = async (getState: () => RootState, mezon: Me
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.listOnboarding(mezon.session, clan_id, undefined, 100), {
+	const response = await withRetry(() => mezon.client.listOnboarding(mezon.session, BigInt(clan_id), undefined, 100), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'list-clan-onboarding'
@@ -132,7 +154,7 @@ export const createOnboardingTask = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.createOnboarding(mezon.session, {
-				clan_id,
+				clan_id: BigInt(clan_id),
 				contents: [...content]
 			});
 			if (!response || !response?.list_onboarding) {
@@ -151,8 +173,8 @@ export const editOnboarding = createAsyncThunk(
 	async ({ content, idOnboarding, clan_id }: { content: ApiOnboardingContent; idOnboarding: string; clan_id: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateOnboarding(mezon.session, idOnboarding, {
-				clan_id,
+			const response = await mezon.client.updateOnboarding(mezon.session, BigInt(idOnboarding), {
+				clan_id: BigInt(clan_id),
 				...content
 			});
 			if (!response) {
@@ -172,7 +194,7 @@ export const removeOnboardingTask = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.deleteOnboarding(mezon.session, idTask, clan_id);
+			const response = await mezon.client.deleteOnboarding(mezon.session, BigInt(idTask), BigInt(clan_id));
 			if (!response) {
 				return {
 					clan_id: null,
@@ -199,7 +221,7 @@ export const enableOnboarding = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			const response = await mezon.client.updateClanDesc(mezon.session, BigInt(clan_id), {
 				is_onboarding: onboarding,
 				banner
 			});
@@ -237,7 +259,7 @@ export const fetchOnboardingStepCached = async (getState: () => RootState, mezon
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.listOnboardingStep(mezon.session, clan_id), {
+	const response = await withRetry(() => mezon.client.listOnboardingStep(mezon.session, clan_id ? BigInt(clan_id) : undefined), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'clan-onboarding-steps'
@@ -281,7 +303,9 @@ export const doneOnboarding = createAsyncThunk('onboarding/doneOnboarding', asyn
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.updateOnboardingStepByClanId(mezon.session, clan_id, { onboarding_step: DONE_ONBOARDING_STATUS });
+		const response = await mezon.client.updateOnboardingStepByClanId(mezon.session, BigInt(clan_id), {
+			onboarding_step: DONE_ONBOARDING_STATUS
+		});
 		if (!response) {
 			return false;
 		}
@@ -442,7 +466,7 @@ export const onboardingSlice = createSlice({
 
 			state.answerByClanId[clanId] = existingAnswers;
 		},
-		resetOnboarding: (state, action) => {
+		resetOnboarding: (state) => {
 			state.formOnboarding = {
 				greeting: null,
 				rules: [],
@@ -463,19 +487,21 @@ export const onboardingSlice = createSlice({
 						question: [],
 						rule: []
 					};
-					response.map((onboardingItem) => {
+					const apiItems = response as ApiOnboardingItem[];
+					apiItems.forEach((onboardingItem) => {
+						const entity = mapOnboardingItemToEntity(onboardingItem);
 						switch (onboardingItem.guide_type) {
 							case EGuideType.GREETING:
-								onboardingClan.greeting = onboardingItem;
+								onboardingClan.greeting = entity;
 								break;
 							case EGuideType.RULE:
-								onboardingClan.rule.push(onboardingItem);
+								onboardingClan.rule.push(entity);
 								break;
 							case EGuideType.QUESTION:
-								onboardingClan.question.push(onboardingItem);
+								onboardingClan.question.push(entity);
 								break;
 							case EGuideType.TASK:
-								onboardingClan.mission.push(onboardingItem);
+								onboardingClan.mission.push(entity);
 								break;
 							default:
 								break;
@@ -489,7 +515,7 @@ export const onboardingSlice = createSlice({
 						state.onboardingCache[clan_id] = getInitialOnboardingState();
 					}
 
-					state.onboardingCache[clan_id].onboarding = response;
+					state.onboardingCache[clan_id].onboarding = apiItems.map(mapOnboardingItemToEntity);
 					state.onboardingCache[clan_id].cache = {
 						lastFetched: Date.now(),
 						expiresAt: Date.now() + 1000 * 60 * 60,
@@ -515,25 +541,20 @@ export const onboardingSlice = createSlice({
 						question: state.listOnboarding[clan_id].question,
 						rule: state.listOnboarding[clan_id].rule
 					};
-					content.map((onboardingItem) => {
+					content.forEach((onboardingItem) => {
+						const entity = mapOnboardingItemToEntity(onboardingItem);
 						switch (onboardingItem.guide_type) {
 							case EGuideType.GREETING:
-								onboardingClan.greeting = onboardingItem;
+								onboardingClan.greeting = entity;
 								break;
 							case EGuideType.RULE:
-								onboardingClan.rule.push({
-									...onboardingItem
-								});
+								onboardingClan.rule.push(entity);
 								break;
 							case EGuideType.QUESTION:
-								onboardingClan.question.push({
-									...onboardingItem
-								});
+								onboardingClan.question.push(entity);
 								break;
 							case EGuideType.TASK:
-								onboardingClan.mission.push({
-									...onboardingItem
-								});
+								onboardingClan.mission.push(entity);
 								break;
 							default:
 								break;
@@ -550,17 +571,17 @@ export const onboardingSlice = createSlice({
 							break;
 						case EGuideType.RULE:
 							state.listOnboarding[action.payload.clan_id].rule = state.listOnboarding[action.payload.clan_id].rule.filter(
-								(task) => task.id !== action.payload.idTask
+								(task) => task.id !== String(action.payload.idTask)
 							);
 							break;
 						case EGuideType.QUESTION:
 							state.listOnboarding[action.payload.clan_id].question = state.listOnboarding[action.payload.clan_id].question.filter(
-								(task) => task.id !== action.payload.idTask
+								(task) => task.id !== String(action.payload.idTask)
 							);
 							break;
 						case EGuideType.TASK:
 							state.listOnboarding[action.payload.clan_id].mission = state.listOnboarding[action.payload.clan_id].mission.filter(
-								(task) => task.id !== action.payload.idTask
+								(task) => task.id !== String(action.payload.idTask)
 							);
 							break;
 						default:
@@ -570,7 +591,8 @@ export const onboardingSlice = createSlice({
 			})
 			.addCase(fetchProcessingOnboarding.fulfilled, (state, action) => {
 				if (action.payload && !action.payload.fromCache) {
-					onboardingUserAdapter.setMany(state, action.payload.steps);
+					const stepsEntities = (action.payload.steps as ApiOnboardingSteps[]).map(mapOnboardingStepsToEntity);
+					onboardingUserAdapter.setMany(state, stepsEntities);
 					state.onboardingStepCache = {
 						lastFetched: Date.now(),
 						expiresAt: Date.now() + 1000 * 60 * 60,
@@ -587,7 +609,7 @@ export const onboardingSlice = createSlice({
 					switch (content.guide_type) {
 						case EGuideType.RULE:
 							state.listOnboarding[action.payload.clan_id].rule = state.listOnboarding[action.payload.clan_id].rule.map((rule) => {
-								if (rule.id === idOnboarding) {
+								if (rule.id === String(idOnboarding)) {
 									return {
 										...rule,
 										...content
@@ -599,7 +621,7 @@ export const onboardingSlice = createSlice({
 						case EGuideType.TASK:
 							state.listOnboarding[action.payload.clan_id].mission = state.listOnboarding[action.payload.clan_id].mission.map(
 								(task) => {
-									if (task.id === idOnboarding) {
+									if (task.id === String(idOnboarding)) {
 										return {
 											...task,
 											...content

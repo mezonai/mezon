@@ -11,7 +11,7 @@ type generateMeetTokenPayload = {
 
 const generateMeetTokenCached = async (mezon: MezonValueContext, channelId: string, roomName: string) => {
 	const body = {
-		channel_id: channelId,
+		channel_id: BigInt(channelId),
 		room_name: roomName
 	};
 	return await mezon.client.generateMeetToken(mezon.session, body);

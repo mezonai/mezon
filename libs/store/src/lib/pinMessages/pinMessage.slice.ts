@@ -14,8 +14,11 @@ export const PIN_MESSAGE_FEATURE_KEY = 'pinmessages';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface PinMessageEntity extends IPinMessage {
-	id: string; // Primary ID
+export interface PinMessageEntity extends Omit<IPinMessage, 'id' | 'message_id' | 'channel_id' | 'clan_id'> {
+	id: string;
+	message_id?: string;
+	channel_id?: string;
+	clan_id?: string;
 }
 
 export interface PinMessageState extends EntityState<PinMessageEntity, string> {
@@ -66,7 +69,7 @@ export const fetchChannelPinMessagesCached = async (
 		};
 	}
 
-	const response = await mezon.client.pinMessagesList(mezon.session, '', channelId, clanId);
+	const response = await mezon.client.pinMessagesList(mezon.session, BigInt(''), BigInt(channelId), BigInt(clanId));
 
 	markApiFirstCalled(apiKey);
 
@@ -77,8 +80,15 @@ export const fetchChannelPinMessagesCached = async (
 	};
 };
 
-export const mapChannelPinMessagesToEntity = (pinMessageRes: ApiPinMessage) => {
-	return { ...pinMessageRes, id: pinMessageRes.id || '' };
+export const mapChannelPinMessagesToEntity = (pinMessageRes: ApiPinMessage): PinMessageEntity => {
+	const pinMessageWithClanId = pinMessageRes as ApiPinMessage & { clan_id?: bigint };
+	return {
+		...pinMessageRes,
+		id: pinMessageRes.id !== undefined ? String(pinMessageRes.id) : '',
+		message_id: pinMessageRes.message_id !== undefined ? String(pinMessageRes.message_id) : undefined,
+		channel_id: pinMessageRes.channel_id !== undefined ? String(pinMessageRes.channel_id) : undefined,
+		clan_id: pinMessageWithClanId.clan_id !== undefined ? String(pinMessageWithClanId.clan_id) : undefined
+	};
 };
 
 export const fetchChannelPinMessages = createAsyncThunk(
@@ -113,7 +123,7 @@ export const fetchChannelPinMessages = createAsyncThunk(
 				};
 			}
 
-			const pinMessages = response.pin_messages_list.map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes));
+			const pinMessages = (response.pin_messages_list as ApiPinMessage[]).map((pinMessageRes) => mapChannelPinMessagesToEntity(pinMessageRes));
 			return {
 				channelId,
 				pinMessages,
@@ -136,13 +146,13 @@ type SetChannelPinMessagesPayload = {
 
 export const setChannelPinMessage = createAsyncThunk(
 	'pinmessage/setChannelPinMessage',
-	async ({ clan_id, channel_id, message_id, message }: SetChannelPinMessagesPayload, thunkAPI) => {
+	async ({ clan_id, channel_id, message_id }: SetChannelPinMessagesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body: ApiPinMessageRequest = {
-				clan_id,
-				channel_id,
-				message_id
+				clan_id: BigInt(clan_id),
+				channel_id: BigInt(channel_id),
+				message_id: BigInt(message_id)
 			};
 
 			const response = await mezon.client.createPinMessage(mezon.session, body);
@@ -163,7 +173,13 @@ export const deleteChannelPinMessage = createAsyncThunk(
 	async ({ channel_id, message_id, pin_id, clan_id }: SetChannelPinMessagesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deletePinMessage(mezon.session, pin_id, message_id, channel_id, clan_id);
+			const response = await mezon.client.deletePinMessage(
+				mezon.session,
+				pin_id ? BigInt(pin_id) : undefined,
+				BigInt(message_id),
+				BigInt(channel_id),
+				BigInt(clan_id)
+			);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -205,15 +221,15 @@ export const joinPinMessage = createAsyncThunk(
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const now = Math.floor(Date.now() / 1000);
 			await mezon.socketRef.current?.writeLastPinMessage(
-				clanId,
-				channelId,
+				BigInt(clanId),
+				BigInt(channelId),
 				mode,
 				isPublic,
-				messageId,
+				BigInt(messageId),
 				now,
 				1,
 				avatar,
-				senderId,
+				BigInt(senderId),
 				senderUsername,
 				content,
 				JSON.stringify(attachment),
@@ -234,7 +250,7 @@ export const initialPinMessageState: PinMessageState = pinMessageAdapter.getInit
 	isPinModalVisible: false
 });
 
-export const pinMessageSlice = createSlice({
+const pinMessageSlice = createSlice({
 	name: PIN_MESSAGE_FEATURE_KEY,
 	initialState: initialPinMessageState,
 	reducers: {
@@ -264,7 +280,7 @@ export const pinMessageSlice = createSlice({
 				return;
 			}
 
-			const pinList = state.byChannels[channelId].pinMessages?.filter((pin) => pin.message_id !== pinId);
+			const pinList = state.byChannels[channelId].pinMessages?.filter((pin) => String(pin.message_id) !== pinId);
 			state.byChannels[channelId].pinMessages = pinList;
 			state.byChannels[channelId].cache = createCacheMetadata(CHANNEL_PIN_MESSAGES_CACHED_TIME);
 		},
@@ -273,7 +289,7 @@ export const pinMessageSlice = createSlice({
 			const channel = state.byChannels[channelId];
 			if (!channel?.pinMessages) return;
 
-			const idx = channel.pinMessages.findIndex((p) => p.message_id === pinId);
+			const idx = channel.pinMessages.findIndex((p) => String(p.message_id) === pinId);
 			if (idx === -1) return;
 
 			const updated: PinMessageEntity = {

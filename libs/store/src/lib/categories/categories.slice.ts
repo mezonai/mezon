@@ -98,7 +98,7 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
+		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, BigInt(clanId)),
 		'category_list'
 	);
 

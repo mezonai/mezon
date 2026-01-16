@@ -15,14 +15,18 @@ export const POLICIES_FEATURE_KEY = 'policies';
  * Update these interfaces according to your requirements.
  */
 
-export interface PermissionUserEntity extends IPermissionUser {
+export interface PermissionUserEntity extends Omit<IPermissionUser, 'id'> {
 	id: string; // Primary ID
 	max_level_permission?: number;
 }
 
-export const mapPermissionUserToEntity = (userPermissions: ApiPermission) => {
-	const id = (userPermissions as unknown as any).id;
-	return { ...userPermissions, id };
+export const mapPermissionUserToEntity = (userPermissions: ApiPermission): PermissionUserEntity => {
+	const id = userPermissions.id;
+	return {
+		...userPermissions,
+		id: id !== undefined ? String(id) : '',
+		max_level_permission: undefined
+	} as PermissionUserEntity;
 };
 
 export interface PoliciesState extends EntityState<PermissionUserEntity, string> {
@@ -70,10 +74,10 @@ const fetchPermissionsUserCached = async (
 		{
 			api_name: 'GetRoleOfUserInTheClan',
 			permission_user_req: {
-				clan_id: clanId
+				clan_id: BigInt(clanId)
 			}
 		},
-		() => mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId),
+		() => mezon.client.GetRoleOfUserInTheClan(mezon.session, BigInt(clanId)),
 		'role_list'
 	);
 
@@ -98,7 +102,17 @@ export const fetchPermissionsUser = createAsyncThunk<FetchPermissionsUserResult,
 
 const LIST_PERMISSION_CACHED_TIME = 1000 * 60 * 60;
 
-export const fetchPermissionCached = async (getState: () => RootState, mezon: MezonValueContext, noCache = false) => {
+type FetchPermissionCachedResult = {
+	permissions: ApiPermission[] | PermissionUserEntity[];
+	fromCache: boolean;
+	time: number;
+};
+
+export const fetchPermissionCached = async (
+	getState: () => RootState,
+	mezon: MezonValueContext,
+	noCache = false
+): Promise<FetchPermissionCachedResult> => {
 	const currentState = getState();
 	const policiesData = currentState[POLICIES_FEATURE_KEY];
 	const apiKey = createApiKey('fetchPermission', mezon.session.username || '');
@@ -113,7 +127,7 @@ export const fetchPermissionCached = async (getState: () => RootState, mezon: Me
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
+	const response = await fetchDataWithSocketFallback<{ permissions?: ApiPermission[] }>(
 		mezon,
 		{
 			api_name: 'GetListPermission'
@@ -125,7 +139,7 @@ export const fetchPermissionCached = async (getState: () => RootState, mezon: Me
 	markApiFirstCalled(apiKey);
 
 	return {
-		...response,
+		permissions: response?.permissions || [],
 		fromCache: false,
 		time: Date.now()
 	};
@@ -135,8 +149,14 @@ type fetchPermissionPayload = {
 	noCache?: boolean;
 };
 
-export const fetchPermission = createAsyncThunk('policies/fetchPermission', async ({ noCache }: fetchPermissionPayload = {}, thunkAPI) => {
-	try {
+type FetchPermissionResult = {
+	fromCache: boolean;
+	permissions: PermissionUserEntity[];
+};
+
+export const fetchPermission = createAsyncThunk<FetchPermissionResult, fetchPermissionPayload, ThunkConfigWithError>(
+	'policies/fetchPermission',
+	async ({ noCache }: fetchPermissionPayload = {}, thunkAPI) => {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchPermissionCached(thunkAPI.getState as () => RootState, mezon, Boolean(noCache));
 
@@ -147,14 +167,16 @@ export const fetchPermission = createAsyncThunk('policies/fetchPermission', asyn
 			};
 		}
 
+		const permissions = response.fromCache
+			? (response.permissions as PermissionUserEntity[])
+			: (response.permissions as ApiPermission[]).map(mapPermissionUserToEntity);
+
 		return {
 			fromCache: response.fromCache,
-			permissions: response.permissions?.map(mapPermissionUserToEntity) || []
+			permissions
 		};
-	} catch (error) {
-		return thunkAPI.rejectWithValue(error);
 	}
-});
+);
 
 export const initialPoliciesState: PoliciesState = policiesAdapter.getInitialState({
 	loadingStatus: 'not loaded',
@@ -221,18 +243,15 @@ export const policiesSlice = createSlice({
 			.addCase(fetchPermission.pending, (state: PoliciesState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(
-				fetchPermission.fulfilled,
-				(state: PoliciesState, action: PayloadAction<{ fromCache?: boolean; permissions: IPermissionUser[] }>) => {
-					const { fromCache, permissions } = action.payload;
-					if (!fromCache) {
-						policiesAdapter.setAll(state, permissions);
-						state.cache = createCacheMetadata(LIST_PERMISSION_CACHED_TIME);
-					}
-
-					state.loadingStatus = 'loaded';
+			.addCase(fetchPermission.fulfilled, (state: PoliciesState, action: PayloadAction<FetchPermissionResult>) => {
+				const { fromCache, permissions } = action.payload;
+				if (!fromCache) {
+					policiesAdapter.setAll(state, permissions);
+					state.cache = createCacheMetadata(LIST_PERMISSION_CACHED_TIME);
 				}
-			)
+
+				state.loadingStatus = 'loaded';
+			})
 			.addCase(fetchPermission.rejected, (state: PoliciesState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;

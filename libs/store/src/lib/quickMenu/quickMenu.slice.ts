@@ -10,8 +10,25 @@ import type { RootState } from '../store';
 
 export const QUICK_MENU_FEATURE_KEY = 'quickMenu';
 
+export interface QuickMenuAccessEntity extends Omit<ApiQuickMenuAccess, 'id' | 'bot_id' | 'channel_id' | 'clan_id'> {
+	id: string;
+	bot_id: string;
+	channel_id: string;
+	clan_id: string;
+}
+
+export const mapQuickMenuAccessToEntity = (item: ApiQuickMenuAccess): QuickMenuAccessEntity => {
+	return {
+		...item,
+		id: item.id !== undefined ? String(item.id) : '',
+		bot_id: item.bot_id !== undefined ? String(item.bot_id) : '',
+		channel_id: item.channel_id !== undefined ? String(item.channel_id) : '',
+		clan_id: item.clan_id !== undefined ? String(item.clan_id) : ''
+	};
+};
+
 export interface QuickMenuState {
-	byChannels: Record<string, Record<number, ApiQuickMenuAccess[]>>;
+	byChannels: Record<string, Record<number, QuickMenuAccessEntity[]>>;
 	timestamps: Record<string, Record<number, number>>;
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -70,8 +87,8 @@ export const writeQuickMenuEvent = createAsyncThunk(
 
 			await socket.writeQuickMenuEvent(
 				menuName,
-				clanId,
-				channelId,
+				BigInt(clanId),
+				BigInt(channelId),
 				mode,
 				isPublic,
 				content,
@@ -82,7 +99,7 @@ export const writeQuickMenuEvent = createAsyncThunk(
 				mentionEveryone || false,
 				avatar,
 				code || 0,
-				topicId
+				BigInt(topicId || 0)
 			);
 
 			return {
@@ -109,18 +126,19 @@ export const addQuickMenuAccess = createAsyncThunk(
 	async (body: ApiQuickMenuAccessRequest & { channelId: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const data = {
-				id: Snowflake.generate(),
-				bot_id: '0',
-				channel_id: body.channelId,
-				clan_id: body.clanId,
+			const requestData: ApiQuickMenuAccessRequest = {
+				id: BigInt(Snowflake.generate()),
+				bot_id: BigInt(0),
+				channel_id: BigInt(body.channelId),
+				clan_id: BigInt(body.clanId),
 				menu_name: body.menu_name,
 				action_msg: body.action_msg || '',
 				menu_type: body.menu_type || QUICK_MENU_TYPE.FLASH_MESSAGE
 			};
-			const response = await mezon.client.addQuickMenuAccess(mezon.session, data);
+			const response = await mezon.client.addQuickMenuAccess(mezon.session, requestData);
 			if (response) {
-				return { data, channelId: body.channelId };
+				const entityData = mapQuickMenuAccessToEntity(response);
+				return { data: entityData, channelId: body.channelId };
 			}
 			return { data: null, channelId: body.channelId };
 		} catch (error) {
@@ -135,18 +153,19 @@ export const updateQuickMenuAccess = createAsyncThunk(
 	async (body: ApiQuickMenuAccessRequest & { channelId: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const data = {
+			const requestData: ApiQuickMenuAccessRequest = {
 				id: body.id,
-				bot_id: '0',
-				channel_id: body.channelId,
-				clan_id: body.clanId,
+				bot_id: BigInt(0),
+				channel_id: BigInt(body.channelId),
+				clan_id: BigInt(body.clanId),
 				menu_name: body.menu_name,
 				action_msg: body.action_msg || '',
 				menu_type: body.menu_type || QUICK_MENU_TYPE.FLASH_MESSAGE
 			};
-			const response = await mezon.client.updateQuickMenuAccess(mezon.session, data);
+			const response = await mezon.client.updateQuickMenuAccess(mezon.session, requestData);
 			if (response) {
-				return { data, channelId: body.channelId };
+				const entityData = mapQuickMenuAccessToEntity(response);
+				return { data: entityData, channelId: body.channelId };
 			}
 			return { data: null, channelId: body.channelId };
 		} catch (error) {
@@ -161,7 +180,7 @@ export const deleteQuickMenuAccess = createAsyncThunk(
 	async ({ id, channelId, clanId }: { id: string; channelId: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.deleteQuickMenuAccess(mezon.session, id, clanId);
+			await mezon.client.deleteQuickMenuAccess(mezon.session, BigInt(id), BigInt(clanId));
 			return { id, channelId };
 		} catch (error) {
 			captureSentryError(error, 'quickMenu/deleteQuickMenuAccess');
@@ -187,13 +206,14 @@ export const listQuickMenuAccess = createAsyncThunk(
 			}
 
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await withRetry(() => mezon.client.listQuickMenuAccess(mezon.session, '0', channelId, menuType), {
+			const response = await withRetry(() => mezon.client.listQuickMenuAccess(mezon.session, BigInt(0), BigInt(channelId), menuType), {
 				maxRetries: 3,
 				initialDelay: 1000,
 				scope: 'channel-quick-menu'
 			});
 
-			return { channelId, menuType, quickMenuItems: response.list_menus || [], fromCache: false };
+			const quickMenuItems = (response.list_menus || []).map(mapQuickMenuAccessToEntity);
+			return { channelId, menuType, quickMenuItems, fromCache: false };
 		} catch (error) {
 			captureSentryError(error, 'quickMenu/listQuickMenuAccess');
 			return thunkAPI.rejectWithValue(error);
