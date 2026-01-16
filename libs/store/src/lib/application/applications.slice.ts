@@ -11,16 +11,26 @@ import type { RootState } from '../store';
 
 export const ADMIN_APPLICATIONS = 'adminApplication';
 
-export interface IApplicationEntity extends ApiApp {
+export interface IApplication extends Omit<ApiApp, 'id'> {
 	id: string;
+}
+
+export interface IApplicationEntity extends IApplication {
 	oAuthClient: ApiMezonOauthClient;
 }
+
+export const mapApiAppToEntity = (app: ApiApp): IApplication => {
+	return {
+		...app,
+		id: app.id ? String(app.id) : ''
+	};
+};
 
 export interface IApplicationState extends EntityState<IApplicationEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	appsData: ApiAppList;
-	appDetail: ApiApp;
+	appDetail: IApplication;
 	currentAppId?: string;
 	isElectronDownLoading: boolean;
 	isElectronUpdateAvailable: boolean;
@@ -103,7 +113,7 @@ export const fetchApplications = createAsyncThunk('adminApplication/fetchApplica
 export const getApplicationDetail = createAsyncThunk('adminApplication/getApplicationDetail', async ({ appId }: { appId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await withRetry(() => mezon.client.getApp(mezon.session, appId), {
+		const response = await withRetry(() => mezon.client.getApp(mezon.session, BigInt(appId)), {
 			maxRetries: 3,
 			initialDelay: 1000,
 			scope: 'app-detail'
@@ -135,7 +145,7 @@ export const createApplication = createAsyncThunk('adminApplication/createApplic
 export const addBotChat = createAsyncThunk('adminApplication/addBotChat', async (data: { appId: string; clanId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		await mezon.client.addAppToClan(mezon.session, data.appId, data.clanId);
+		await mezon.client.addAppToClan(mezon.session, BigInt(data.appId), BigInt(data.clanId));
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/addBotChat');
 		return thunkAPI.rejectWithValue(error);
@@ -147,7 +157,7 @@ export const editApplication = createAsyncThunk(
 	async (data: { request: MezonUpdateAppBody; appId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateApp(mezon.session, data.appId, data.request);
+			const response = await mezon.client.updateApp(mezon.session, BigInt(data.appId), data.request);
 			if (response) {
 				return response;
 			}
@@ -161,7 +171,7 @@ export const editApplication = createAsyncThunk(
 export const deleteApplication = createAsyncThunk('adminApplication/deleteApplication', async ({ appId }: { appId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.deleteApp(mezon.session, appId);
+		const response = await mezon.client.deleteApp(mezon.session, BigInt(appId));
 		return response;
 	} catch (error) {
 		captureSentryError(error, 'adminApplication/deleteApplication');
@@ -227,20 +237,27 @@ export const adminApplicationSlice = createSlice({
 			if (!fromCache) {
 				state.appsData = appsData;
 				state.cache = createCacheMetadata();
-				applicationAdapter.setAll(state, (appsData.apps as IApplicationEntity[]) || []);
+				const mappedApps = (appsData.apps?.map(mapApiAppToEntity) as IApplicationEntity[]) || [];
+				applicationAdapter.setAll(state, mappedApps);
 			}
 		});
 		builder.addCase(fetchApplications.rejected, (state) => {
 			state.loadingStatus = 'not loaded';
 		});
 		builder.addCase(getApplicationDetail.fulfilled, (state, action) => {
-			state.appDetail = action.payload;
+			const payload = action.payload;
+			if (payload) {
+				state.appDetail = mapApiAppToEntity(payload);
+			}
 		});
 		builder.addCase(editApplication.fulfilled, (state, action) => {
-			state.appDetail = {
-				...state.appDetail,
-				...action.payload
-			};
+			const payload = action.payload;
+			if (payload) {
+				state.appDetail = {
+					...state.appDetail,
+					...mapApiAppToEntity(payload)
+				};
+			}
 		});
 		builder.addCase(fetchMezonOauthClient.fulfilled, (state, action: PayloadAction<ApiMezonOauthClient>) => {
 			const clientId = action.payload.client_id ?? '';

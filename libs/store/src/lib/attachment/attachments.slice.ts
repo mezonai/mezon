@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import type { IAttachmentEntity, IChannelAttachment, LoadingStatus } from '@mezon/utils';
+import type { IAttachmentEntity, LoadingStatus } from '@mezon/utils';
 import { EMimeTypes, ETypeLinkMedia } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -15,7 +15,7 @@ export const ATTACHMENT_FEATURE_KEY = 'attachments';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface AttachmentEntity extends IChannelAttachment {
+export interface AttachmentEntity extends Omit<ApiChannelAttachment, 'id'> {
 	id: string; // Primary ID
 }
 
@@ -114,7 +114,16 @@ export const fetchChannelAttachmentsCached = async (
 		}
 	}
 
-	const response = await mezon.client.listChannelAttachments(mezon.session, clanId, channelId, fileType, state, limit, before, after);
+	const response = await mezon.client.listChannelAttachments(
+		mezon.session,
+		BigInt(clanId),
+		BigInt(channelId),
+		fileType,
+		state,
+		limit,
+		before,
+		after
+	);
 
 	const apiKey = createApiKey('fetchChannelAttachments', clanId, channelId, fileType, limit || '', before || '', after || '');
 	markApiFirstCalled(apiKey);
@@ -126,10 +135,10 @@ export const fetchChannelAttachmentsCached = async (
 	};
 };
 
-export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachment, channelId?: string, clanId?: string) => {
+export const mapChannelAttachmentsToEntity = (attachmentRes: AttachmentEntity | ApiChannelAttachment, channelId?: string, clanId?: string) => {
 	const isVideo =
 		attachmentRes?.filetype?.startsWith('video') || attachmentRes?.filetype?.includes('mp4') || attachmentRes?.filetype?.includes('mov');
-	const uniqueId = `${attachmentRes.message_id}_${attachmentRes.url}`;
+	const uniqueId = `${String(attachmentRes.message_id)}_${attachmentRes.url}`;
 	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: uniqueId, channelId, clanId, isVideo };
 	return attachmentEntity;
 };
@@ -248,7 +257,7 @@ export const attachmentSlice = createSlice({
 			const { messageId, channelId } = action.payload;
 			if (state.listAttachmentsByChannel[channelId]) {
 				state.listAttachmentsByChannel[channelId].attachments = state.listAttachmentsByChannel[channelId].attachments.filter(
-					(attachment) => attachment.message_id !== messageId
+					(attachment) => String(attachment.message_id) !== messageId
 				);
 
 				if (state?.listAttachmentsByChannel[channelId].attachments.length === 0) {
