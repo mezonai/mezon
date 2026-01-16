@@ -213,7 +213,7 @@ export const selectAllEmojiRecent = createSelector([selectAllEmojiSuggestion, ge
 			if (!emoji || !recentEmoji) return null;
 
 			return {
-				id: emoji.id ?? '',
+				id: emoji?.id ? BigInt(emoji.id) : undefined,
 				shortname: emoji.shortname ?? '',
 				src: emoji.src ?? '',
 				category: RECENT_EMOJI_CATEGORY,

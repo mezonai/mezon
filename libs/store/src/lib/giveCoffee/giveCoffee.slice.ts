@@ -51,17 +51,17 @@ export const updateGiveCoffee = createAsyncThunk(
 				const response = await thunkAPI
 					.dispatch(
 						walletActions.sendTransaction({
-							sender: sender_id,
-							recipient: receiver_id,
+							sender: sender_id?.toString(),
+							recipient: receiver_id?.toString(),
 							amount: AMOUNT_TOKEN.TEN_THOUSAND_TOKENS,
 							textData: 'givecoffee',
 							extraInfo: {
 								type: ETransferType.GiveCoffee,
-								ChannelId: channel_id || '',
-								ClanId: clan_id || '',
-								MessageRefId: message_ref_id || '',
-								UserReceiverId: receiver_id || '',
-								UserSenderId: sender_id || '',
+								ChannelId: channel_id?.toString() || '',
+								ClanId: clan_id?.toString() || '',
+								MessageRefId: message_ref_id?.toString() || '',
+								UserReceiverId: receiver_id?.toString() || '',
+								UserSenderId: sender_id?.toString() || '',
 								UserSenderUsername: mezon.session.username || ''
 							}
 						})
@@ -107,14 +107,14 @@ export const sendToken = createAsyncThunk(
 			const response = await thunkAPI
 				.dispatch(
 					walletActions.sendTransaction({
-						sender: tokenEvent.sender_id,
-						recipient: tokenEvent.receiver_id,
+						sender: tokenEvent.sender_id?.toString(),
+						recipient: tokenEvent.receiver_id?.toString(),
 						amount: tokenEvent.amount,
 						textData: tokenEvent.note,
 						extraInfo: {
 							type: ETransferType.TransferToken,
-							UserReceiverId: tokenEvent.receiver_id || '',
-							UserSenderId: tokenEvent.sender_id || '',
+							UserReceiverId: tokenEvent.receiver_id?.toString() || '',
+							UserSenderId: tokenEvent.sender_id?.toString() || '',
 							UserSenderUsername: mezon.session.username || '',
 							ExtraAttribute: tokenEvent?.extra_attribute || ''
 						},
@@ -162,23 +162,23 @@ export const giveCoffeeSlice = createSlice({
 			const { tokenEvent } = action.payload;
 			const userId = tokenEvent.sender_id;
 			if (!userId) return;
-			state.tokenUpdate[userId] = state.tokenUpdate[userId] ?? 0;
-			state.tokenSocket[userId] = tokenEvent ?? {};
+			state.tokenUpdate[userId?.toString()] = state.tokenUpdate[userId?.toString()] ?? 0;
+			state.tokenSocket[userId?.toString()] = tokenEvent ?? {};
 
 			if (userId === tokenEvent.sender_id) {
-				state.tokenUpdate[userId] -= tokenEvent.amount || 0;
+				state.tokenUpdate[userId?.toString()] -= tokenEvent.amount || 0;
 			}
 		},
 		handleSocketToken: (state, action: PayloadAction<{ currentUserId: string; tokenEvent: ApiTokenSentEvent }>) => {
 			const { currentUserId, tokenEvent } = action.payload;
 			if (!currentUserId) return;
-			if (currentUserId !== tokenEvent.receiver_id) return;
+			if (currentUserId !== tokenEvent.receiver_id?.toString()) return;
 
 			state.tokenUpdate[currentUserId] = state.tokenUpdate[currentUserId] ?? 0;
-			state.tokenSocket[currentUserId] = tokenEvent ?? {};
+			state.tokenSocket[currentUserId?.toString()] = tokenEvent ?? {};
 
-			if (currentUserId === tokenEvent.receiver_id) {
-				state.tokenUpdate[currentUserId] += tokenEvent.amount || 0;
+			if (currentUserId === tokenEvent.receiver_id?.toString()) {
+				state.tokenUpdate[currentUserId?.toString()] += tokenEvent.amount || 0;
 			}
 		},
 		setPendingGiveCoffee: (state, action: PayloadAction<boolean>) => {

@@ -18,7 +18,7 @@ import type { RootState } from '../store';
 
 export const EVENT_MANAGEMENT_FEATURE_KEY = 'eventmanagement';
 
-export interface EventManagementEntity extends IEventManagement {
+export interface EventManagementEntity extends Omit<IEventManagement, 'id'> {
 	id: string;
 }
 
@@ -53,10 +53,10 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 		{
 			api_name: 'ListEvents',
 			list_event_req: {
-				clan_id: clanId
+				clan_id: BigInt(clanId)
 			}
 		},
-		() => ensuredMezon.client.listEvents(ensuredMezon.session, clanId),
+		() => ensuredMezon.client.listEvents(ensuredMezon.session, BigInt(clanId)),
 		'event_list'
 	);
 
@@ -72,9 +72,9 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?: string) => {
 	return {
 		...eventRes,
-		id: eventRes.id || '',
-		channel_id: eventRes.channel_id === '0' || eventRes.channel_id === '' ? '' : eventRes.channel_id,
-		channel_voice_id: eventRes.channel_voice_id === '0' || eventRes.channel_voice_id === '' ? '' : eventRes.channel_voice_id
+		id: eventRes.id ? eventRes.id.toString() : '',
+		channel_id: eventRes.channel_id?.toString() === '0' || eventRes.channel_id?.toString() === '' ? BigInt('') : eventRes.channel_id,
+		channel_voice_id: eventRes.channel_voice_id?.toString() === '0' || eventRes.channel_voice_id?.toString() === '' ? BigInt('') : eventRes.channel_voice_id
 	};
 };
 
@@ -101,7 +101,7 @@ export const fetchEventManagement = createAsyncThunk(
 					fromCache: true
 				};
 			}
-			const events = response.events.map((eventRes) => mapEventManagementToEntity(eventRes, clanId));
+			const events = response.events.map((eventRes) => mapEventManagementToEntity(eventRes as ApiEventManagement, clanId));
 			return { events, clanId, fromCache: response?.fromCache };
 		} catch (error) {
 			captureSentryError(error, 'eventManagement/fetchEventManagement');
@@ -160,7 +160,7 @@ export const fetchCreateEventManagement = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
 				clan_id,
-				channel_voice_id: channel_voice_id || '',
+				channel_voice_id,
 				address: address || '',
 				title,
 				start_time_seconds: start_time_seconds ? start_time_seconds / 1000 : undefined,
@@ -225,7 +225,7 @@ export const updateEventManagement = createAsyncThunk(
 				repeat_type
 			};
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateEvent(mezon.session, event_id ?? '', body);
+			const response = await mezon.client.updateEvent(mezon.session, BigInt(event_id ?? ''), body);
 		} catch (error) {
 			captureSentryError(error, 'updateEventManagement/updateEventManagement');
 			return thunkAPI.rejectWithValue(error);
@@ -238,7 +238,7 @@ export const fetchDeleteEventManagement = createAsyncThunk(
 	async (body: fetchDeleteEventManagementPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteEvent(mezon.session, body.eventID, body.clanId, body.creatorId, body.eventLabel);
+			const response = await mezon.client.deleteEvent(mezon.session, BigInt(body.eventID), BigInt(body.clanId), BigInt(body.creatorId), body.eventLabel);
 		} catch (error) {
 			captureSentryError(error, 'deleteEventManagement/fetchDeleteEventManagement');
 			return thunkAPI.rejectWithValue(error);
@@ -461,9 +461,9 @@ export const eventManagementSlice = createSlice({
 					if (!state.privateMeetingRooms) {
 						state.privateMeetingRooms = [];
 					}
-					const hasEvents = state.privateMeetingRooms.some((record) => record[event.id as string]);
+					const hasEvents = state.privateMeetingRooms.some((record) => record[event.id?.toString() as string]);
 					if (!hasEvents) {
-						state.privateMeetingRooms.push({ [event?.id as string]: event?.meet_room });
+						state.privateMeetingRooms.push({ [event?.id?.toString() as string]: event?.meet_room });
 					}
 				}
 			})
@@ -506,14 +506,14 @@ export const selectEventLoading = createSelector(getEventManagementState, (state
 
 export const selectNumberEventPrivate = createSelector(
 	selectEventsByClanId,
-	(events) => events.filter((event) => event.channel_id && event.channel_id !== '0' && event.channel_id !== '').length
+	(events) => events.filter((event) => event.channel_id && event.channel_id?.toString() !== '0' && event.channel_id?.toString() !== '').length
 );
 
 // check
 export const selectEventsByChannelId = createSelector(
 	[selectEventsByClanId, (state: RootState, clanId: string, channelId: string) => channelId],
 	(entities, channelId) => {
-		const filteredEntities = Object.values(entities).filter((entity: EventManagementEntity) => entity.channel_id === channelId);
+		const filteredEntities = Object.values(entities).filter((entity: EventManagementEntity) => entity.channel_id?.toString() === channelId);
 		const ongoingEvents = filteredEntities.filter((event) => event.event_status === EEventStatus.ONGOING);
 		if (ongoingEvents.length > 0) {
 			const oldestOngoingTime = Math.min(
