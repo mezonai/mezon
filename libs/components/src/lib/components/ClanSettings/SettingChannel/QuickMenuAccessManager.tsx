@@ -233,7 +233,7 @@ const QuickMenuAccessManager: React.FC<QuickMenuAccessManagerProps> = ({ channel
 		<div className="quick-menu-access-manager">
 			<div className="flex items-center justify-between mb-6">
 				<div>
-					<h3 className="text-xl font-bold text-theme-primary-active mb-1">{t('quickAction.title')}</h3>
+					<h3 className="text-xl font-semibold text-theme-primary-active mb-1">{t('quickAction.title')}</h3>
 					<p className="text-sm text-theme-primary">{t('quickAction.description')}</p>
 				</div>
 				<button

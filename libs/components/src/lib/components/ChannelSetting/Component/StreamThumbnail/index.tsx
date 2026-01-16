@@ -180,7 +180,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 
 	return (
 		<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 lg:pt-[94px] sbm:pb-7 pr-[10px] sbm:pr-[10px] pl-[10px] sbm:pl-[40px] overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
-			<h2 className="font-bold text-xl text-theme-primary-active">{t('title')}</h2>
+			<h2 className="font-semibold text-xl text-theme-primary-active">{t('title')}</h2>
 			<div className="w-full mx-auto px-6 py-12">
 				<div className="max-w-[650px]">
 					<div className="lg:col-span-2 space-y-6">
