@@ -58,7 +58,7 @@ export const fetchClanWebhooksCached = async (getState: () => RootState, mezon: 
 		};
 	}
 
-	const response = await mezon.client.listClanWebhook(mezon.session, clanId);
+	const response = await mezon.client.listClanWebhook(mezon.session, BigInt(clanId));
 
 	markApiFirstCalled(apiKey);
 
@@ -109,7 +109,10 @@ export const deleteClanWebhookById = createAsyncThunk(
 	async (data: { webhook: ApiClanWebhook; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteClanWebhookById(mezon.session, data.webhook.id as string, data.clanId);
+			if (!data.webhook.id || !data.clanId) {
+				return thunkAPI.rejectWithValue('Webhook ID is required');
+			}
+			const response = await mezon.client.deleteClanWebhookById(mezon.session, data.webhook.id, BigInt(data.clanId));
 			if (response) {
 				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookDeletedSuccess', { webhookName: data.webhook.webhook_name }));
 				thunkAPI.dispatch(fetchClanWebhooks({ clanId: data.clanId, noCache: true }));
@@ -128,7 +131,7 @@ export const updateClanWebhookById = createAsyncThunk(
 	async (data: { request: MezonUpdateClanWebhookByIdBody; webhookId: string | undefined; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateClanWebhookById(mezon.session, data.webhookId as string, data.request);
+			const response = await mezon.client.updateClanWebhookById(mezon.session, BigInt(data.webhookId as string), data.request);
 			if (response) {
 				thunkAPI.dispatch(fetchClanWebhooks({ clanId: data.clanId, noCache: true }));
 			}
@@ -176,7 +179,7 @@ export const selectAllClanWebhooks = createSelector(getClanWebHookState, (state)
 
 export const selectClanWebhooksById = createSelector(
 	[getClanWebHookState, (state: RootState, webhookId: string) => webhookId],
-	(state, webhookId) => state?.clanWebhookList?.find((webhook) => webhook.id === webhookId) || null
+	(state, webhookId) => state?.clanWebhookList?.find((webhook) => webhook.id?.toString() === webhookId) || null
 );
 
 export const integrationClanWebhookReducer = integrationClanWebhookSlice.reducer;

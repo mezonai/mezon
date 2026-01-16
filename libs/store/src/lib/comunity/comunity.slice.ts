@@ -30,7 +30,7 @@ export const getCommunityInfo = createAsyncThunk('comunity/getCommunityInfo', as
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.listClanDescs(mezon.session);
-		const clan = response.clandesc?.find((c) => c.clan_id === clan_id);
+		const clan = response.clandesc?.find((c) => String(c.clan_id) === clan_id);
 		if (!clan) {
 			return thunkAPI.rejectWithValue('Clan not found');
 		}
@@ -63,7 +63,7 @@ export const updateCommunity = createAsyncThunk(
 	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			await mezon.client.updateClanDesc(mezon.session, BigInt(clan_id), {
 				is_community: enabled,
 				community_banner: bannerUrl,
 				about,
@@ -83,7 +83,7 @@ export const updateCommunityStatus = createAsyncThunk(
 	async ({ clan_id, enabled }: { clan_id: string; enabled: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			await mezon.client.updateClanDesc(mezon.session, BigInt(clan_id), {
 				is_community: enabled
 			});
 			return { clan_id, enabled };
@@ -99,7 +99,7 @@ export const updateCommunityBanner = createAsyncThunk(
 	async ({ clan_id, bannerUrl }: { clan_id: string; bannerUrl: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			await mezon.client.updateClanDesc(mezon.session, BigInt(clan_id), {
 				community_banner: bannerUrl
 			});
 			return { clan_id, bannerUrl };
@@ -115,7 +115,7 @@ export const updateCommunityAbout = createAsyncThunk(
 	async ({ clan_id, about }: { clan_id: string; about: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			await mezon.client.updateClanDesc(mezon.session, BigInt(clan_id), {
 				about
 			});
 			return { clan_id, about };
@@ -131,7 +131,7 @@ export const updateCommunityDescription = createAsyncThunk(
 	async ({ clan_id, description }: { clan_id: string; description: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			await mezon.client.updateClanDesc(mezon.session, BigInt(clan_id), {
 				description
 			});
 			return { clan_id, description };
@@ -147,7 +147,7 @@ export const updateCommunityShortUrl = createAsyncThunk(
 	async ({ clan_id, short_url }: { clan_id: string; short_url: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.updateClanDesc(mezon.session, clan_id, {
+			await mezon.client.updateClanDesc(mezon.session, BigInt(clan_id), {
 				short_url,
 				is_community: true
 			});

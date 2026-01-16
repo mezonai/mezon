@@ -37,7 +37,10 @@ export const fetchListLoggedDevices = createAsyncThunk('devices/fetchListLoggedD
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.listLogedDevice(mezon.session);
-		return (response?.devices || []) as IDevice[];
+		return ((response?.devices || []) as unknown as IDevice[]).map((device) => ({
+			...device,
+			device_id: String(device.device_id)
+		}));
 	} catch (error: unknown) {
 		const errorMessage = error instanceof Error ? error.message : 'Failed to fetch devices';
 		return thunkAPI.rejectWithValue(errorMessage);

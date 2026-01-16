@@ -23,7 +23,7 @@ export interface SettingClanChannelState extends EntityState<ApiChannelSettingIt
 }
 
 export const channelSettingAdapter = createEntityAdapter({
-	selectId: (channel: ApiChannelSettingItem) => channel.id || ''
+	selectId: (channel: ApiChannelSettingItem) => String(channel.id) || ''
 });
 const cleanUndefinedFields = (item: ApiChannelSettingItem): ApiChannelSettingItem => {
 	return Object.fromEntries(Object.entries(item).filter(([_, value]) => value !== undefined)) as ApiChannelSettingItem;
@@ -73,8 +73,8 @@ export const fetchChannelSettingInClanCached = async (
 
 	const response = await mezon.client.getChannelSettingInClan(
 		mezon.session,
-		clanId,
-		parentId, // parent_id
+		BigInt(clanId),
+		BigInt(parentId), // parent_id
 		undefined, // category_id
 		undefined, // private_channel
 		undefined, // active

@@ -36,7 +36,7 @@ type fetchUserClanProfilePayload = {
 
 export const fetchUserClanProfile = createAsyncThunk('userclanProfile/userClanProfile', async ({ clanId }: fetchUserClanProfilePayload, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
-	const response = await withRetry(() => mezon.client.getUserProfileOnClan(mezon.session, clanId), {
+	const response = await withRetry(() => mezon.client.getUserProfileOnClan(mezon.session, BigInt(clanId)), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'user-clan-profile'
@@ -53,7 +53,12 @@ export const checkDuplicateClanNickName = createAsyncThunk(
 	async ({ clanNickName, clanId }: { clanNickName: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clanNickName, clanId, TypeCheck.TYPENICKNAME, clanId);
+			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(
+				clanNickName,
+				BigInt(clanId),
+				TypeCheck.TYPENICKNAME,
+				BigInt(clanId)
+			);
 
 			if (isDuplicateName?.type === TypeCheck.TYPENICKNAME) {
 				return isDuplicateName.exist;
@@ -83,7 +88,7 @@ export const updateUserClanProfile = createAsyncThunk(
 			const currentUserClanProfile = state.userClanProfile.entities[`${clanId}${currentUser?.user?.id}`];
 			const mezon = ensureClient(getMezonCtx(thunkAPI));
 			const body: Partial<ApiUpdateClanProfileRequest> = {
-				clan_id: clanId,
+				clan_id: BigInt(clanId),
 				nick_name: username,
 				avatar: avatarUrl
 			};
@@ -92,7 +97,7 @@ export const updateUserClanProfile = createAsyncThunk(
 				(username && username !== currentUserClanProfile?.nick_name) ||
 				(avatarUrl && avatarUrl !== '' && avatarUrl !== currentUserClanProfile?.avatar)
 			) {
-				const response = await mezon.client.updateUserProfileByClan(mezon.session, clanId, body as ApiUpdateClanProfileRequest);
+				const response = await mezon.client.updateUserProfileByClan(mezon.session, BigInt(clanId), body as ApiUpdateClanProfileRequest);
 				if (!response) {
 					return thunkAPI.rejectWithValue([]);
 				}
@@ -108,7 +113,7 @@ export const updateUserClanProfile = createAsyncThunk(
 				);
 
 				if (avatarUrl && currentUser?.user?.id) {
-					setUserClanAvatarOverride(currentUser.user.id, clanId, avatarUrl);
+					setUserClanAvatarOverride(String(currentUser.user.id), clanId, avatarUrl);
 					thunkAPI.dispatch(accountActions.incrementAvatarVersion());
 				}
 
