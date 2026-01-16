@@ -82,9 +82,10 @@ export type IPermissionUser = ApiPermission & {
 	id: string;
 };
 
-export type IUsersClan = ClanUserListClanUser & {
+export type IUsersClan = Omit<ClanUserListClanUser, 'user'> & {
 	prioritizeName?: string;
 	id: string;
+	user: Omit<ApiUser, 'id'> & { id: string };
 };
 
 export type IRolesClan = ApiRole & {
