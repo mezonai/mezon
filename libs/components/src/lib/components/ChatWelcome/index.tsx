@@ -256,7 +256,7 @@ const WelComeDm = (props: WelComeDmProps) => {
 					{t('welcome.editGroup')}
 				</button>
 			)}
-			{!isDmGroup && <StatusFriend username={username} checkAddFriend={checkAddFriend} userID={userID[0]} t={t} />}
+			{!isDmGroup && (username || userID[0]) && <StatusFriend username={username} checkAddFriend={checkAddFriend} userID={userID[0]} t={t} />}
 			{!isDmGroup && <WaveButtonDM username={username} />}
 		</>
 	);
