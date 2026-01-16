@@ -23,6 +23,7 @@ import {
 	selectCurrentChannelId,
 	selectCurrentDM,
 	selectDirectById,
+	selectDirectLoadingStatus,
 	selectDmGroupCurrent,
 	selectDmGroupCurrentId,
 	selectFriendById,
@@ -151,6 +152,7 @@ const DirectMessage = () => {
 	const { userId } = useAuth();
 	const directMessage = useAppSelector((state) => selectDirectById(state, directId));
 	const hasKeyE2ee = useSelector(selectHasKeyE2ee);
+	const loadingStatus = useSelector(selectDirectLoadingStatus);
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -223,15 +225,9 @@ const DirectMessage = () => {
 		}
 	}, [directMessage, dispatch, hasKeyE2ee]);
 
-	useEffect(() => {
-		if (!currentDirect && currentDirectId) {
-			dispatch(
-				directActions.fetchDirectDetail({
-					directId: currentDirectId
-				})
-			);
-		}
-	}, []);
+	if (loadingStatus === 'loading' || loadingStatus === 'not loaded') {
+		return null;
+	}
 
 	return (
 		<>
