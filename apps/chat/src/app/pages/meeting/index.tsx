@@ -1,4 +1,5 @@
 import { LiveKitRoom } from '@livekit/components-react';
+import '@livekit/components-styles';
 import { JoinForm, MyVideoConference, VideoPreview } from '@mezon/components';
 import {
 	authActions,

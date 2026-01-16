@@ -23,8 +23,8 @@ export const TOPIC_DISCUSSIONS_FEATURE_KEY = 'topicdiscussions';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface TopicDiscussionsEntity extends ApiSdTopic {
-	id: string; // Primary ID
+export interface TopicDiscussionsEntity extends Omit<ApiSdTopic, 'id'> {
+	id: string;
 }
 
 export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntity, string> {
@@ -50,14 +50,14 @@ export interface FetchTopicDiscussionsArgs {
 }
 
 const fetchTopicsCached = async (mezon: MezonValueContext, clanId: string) => {
-	const response = await mezon.client.listSdTopic(mezon.session, clanId, 50);
+	const response = await mezon.client.listSdTopic(mezon.session, BigInt(clanId), 50);
 	return { ...response, time: Date.now() };
 };
 
-const mapToTopicEntity = (topics: ApiSdTopic[]) => {
+const mapToTopicEntity = (topics: ApiSdTopic[]): TopicDiscussionsEntity[] => {
 	return topics.map((topic) => ({
 		...topic,
-		id: topic.id || ''
+		id: String(topic.id || '')
 	}));
 };
 
@@ -66,7 +66,7 @@ export const getFirstMessageOfTopic = createAsyncThunk(
 	async ({ topicId, isMobile = false }: { topicId: string; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.getTopicDetail(mezon.session, topicId);
+			const response = await mezon.client.getTopicDetail(mezon.session, BigInt(topicId));
 			return { data: response, isMobile };
 		} catch (error) {
 			captureSentryError(error, 'topics/getFirstMessageOfTopic');
@@ -180,8 +180,8 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 	}
 
 	await socket.writeChatMessage(
-		clanId as string,
-		channelId as string,
+		BigInt(clanId),
+		BigInt(channelId),
 		mode,
 		isPublic,
 		content,
@@ -192,7 +192,7 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		false,
 		'',
 		0,
-		topicId
+		BigInt(topicId || '0')
 	);
 });
 
@@ -275,16 +275,16 @@ export const topicsSlice = createSlice({
 			})
 			.addCase(createTopic.fulfilled, (state: TopicDiscussionsState, action) => {
 				const newTopic = action.payload as ApiSdTopic;
-				const clanId = newTopic.clan_id;
+				const clanId = String(newTopic.clan_id);
 
-				if (clanId && newTopic.id) {
+				if (newTopic.clan_id && newTopic.id) {
 					if (!state.clanTopics[clanId]) {
 						state.clanTopics[clanId] = topicsAdapter.getInitialState();
 					}
 
 					const topicEntity: TopicDiscussionsEntity = {
 						...newTopic,
-						id: newTopic.id
+						id: String(newTopic.id)
 					};
 
 					topicsAdapter.addOne(state.clanTopics[clanId], topicEntity);
@@ -293,7 +293,7 @@ export const topicsSlice = createSlice({
 			.addCase(getFirstMessageOfTopic.fulfilled, (state: TopicDiscussionsState, action) => {
 				const { data, isMobile } = action.payload;
 				const { message, message_id } = data || {};
-				state.initTopicMessageId = message_id || '';
+				state.initTopicMessageId = String(message_id || '');
 				if (message && isMobile) {
 					state.firstMessageTopic = message;
 				}

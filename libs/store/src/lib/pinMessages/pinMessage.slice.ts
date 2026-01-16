@@ -14,11 +14,8 @@ export const PIN_MESSAGE_FEATURE_KEY = 'pinmessages';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface PinMessageEntity extends Omit<IPinMessage, 'id' | 'message_id' | 'channel_id' | 'clan_id'> {
+export interface PinMessageEntity extends Omit<IPinMessage, 'id'> {
 	id: string;
-	message_id?: string;
-	channel_id?: string;
-	clan_id?: string;
 }
 
 export interface PinMessageState extends EntityState<PinMessageEntity, string> {
@@ -81,14 +78,7 @@ export const fetchChannelPinMessagesCached = async (
 };
 
 export const mapChannelPinMessagesToEntity = (pinMessageRes: ApiPinMessage): PinMessageEntity => {
-	const pinMessageWithClanId = pinMessageRes as ApiPinMessage & { clan_id?: bigint };
-	return {
-		...pinMessageRes,
-		id: pinMessageRes.id !== undefined ? String(pinMessageRes.id) : '',
-		message_id: pinMessageRes.message_id !== undefined ? String(pinMessageRes.message_id) : undefined,
-		channel_id: pinMessageRes.channel_id !== undefined ? String(pinMessageRes.channel_id) : undefined,
-		clan_id: pinMessageWithClanId.clan_id !== undefined ? String(pinMessageWithClanId.clan_id) : undefined
-	};
+	return { ...pinMessageRes, id: String(pinMessageRes.id || '') };
 };
 
 export const fetchChannelPinMessages = createAsyncThunk(

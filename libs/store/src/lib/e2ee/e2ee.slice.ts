@@ -101,7 +101,7 @@ export const e2eeSlice = createSlice({
 				action.payload.pub_keys?.map((pk: GetPubKeysResponseUserPubKey) => {
 					if (pk.PK) {
 						pubKeys.push({
-							id: pk.user_id || '',
+							id: String(pk.user_id) || '',
 							PK: pk.PK
 						});
 					}
@@ -116,7 +116,7 @@ export const e2eeSlice = createSlice({
 });
 
 export const fetchPubkeys = async (mezon: MezonValueContext, userIds: string[]) => {
-	const response = await mezon.client.getPubKeys(mezon.session, userIds);
+	const response = await mezon.client.getPubKeys(mezon.session, userIds.map(BigInt));
 	return { ...response, time: Date.now() };
 };
 

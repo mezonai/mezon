@@ -37,7 +37,7 @@ export interface ClansEntity extends IClan {
 }
 
 export const mapClanToEntity = (clanRes: ApiClanDesc) => {
-	return { ...clanRes, id: clanRes.clan_id || '' };
+	return { ...clanRes, id: String(clanRes.clan_id) || '' };
 };
 
 interface ClanMeta {
@@ -156,10 +156,10 @@ export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('cl
 			{
 				api_name: 'ListClanBadgeCount',
 				list_clan_badge_count_req: {
-					clan_id: clanId
+					clan_id: BigInt(clanId)
 				}
 			},
-			() => (mezon.client as any).listClanBadgeCount?.(mezon.session, clanId),
+			() => (mezon.client as any).listClanBadgeCount?.(mezon.session, BigInt(clanId)),
 			'clanBadgeCount'
 		);
 
@@ -238,7 +238,7 @@ export const fetchClans = createAsyncThunk(
 				return { clans: [], fromCache: response.fromCache };
 			}
 			const clans = response.clandesc.map(mapClanToEntity);
-			const meta = clans.map((clan: ClansEntity) => extractClanMeta(clan));
+			const meta = clans.map((clan) => extractClanMeta(clan as ClansEntity));
 			thunkAPI.dispatch(clansActions.updateBulkClanMetadata(meta));
 
 			const state = thunkAPI.getState() as RootState;
@@ -252,13 +252,13 @@ export const fetchClans = createAsyncThunk(
 					const now = Date.now();
 					if (now - lastUnreadIndicatorCall > UNREAD_DEBOUNCE_MS) {
 						lastUnreadIndicatorCall = now;
-						const clanIds = clans.filter((clan) => clan?.id).map((clan) => clan.id);
+						const clanIds = clans.filter((clan) => clan?.id).map((clan) => String(clan.id));
 						queueMicrotask(() => {
 							thunkAPI.dispatch(listClanUnreadMsgIndicator({ clanIds }));
 						});
 					}
 				} else {
-					const clanIds = clans.filter((clan) => clan?.id).map((clan) => clan.id);
+					const clanIds = clans.filter((clan) => clan?.id).map((clan) => String(clan.id));
 					thunkAPI.dispatch(listClanUnreadMsgIndicator({ clanIds }));
 				}
 			}
@@ -286,7 +286,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 		const body = {
 			banner: '',
 			clan_name,
-			creator_id: '',
+			creator_id: BigInt(''),
 			logo: logo ?? ''
 		};
 		const response = await mezon.client.createClanDesc(mezon.session, body);
@@ -303,7 +303,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 export const checkDuplicateNameClan = createAsyncThunk('clans/duplicateNameClan', async (clan_name: string, thunkAPI) => {
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clan_name, '', TypeCheck.TYPECLAN, '0');
+		const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clan_name, BigInt(''), TypeCheck.TYPECLAN, BigInt('0'));
 
 		if (isDuplicateName?.type === TypeCheck.TYPECLAN) {
 			return isDuplicateName.exist;
@@ -318,7 +318,7 @@ export const checkDuplicateNameClan = createAsyncThunk('clans/duplicateNameClan'
 export const deleteClan = createAsyncThunk('clans/deleteClans', async (body: ChangeCurrentClanArgs, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.deleteClanDesc(mezon.session, body.clanId);
+		const response = await mezon.client.deleteClanDesc(mezon.session, BigInt(body.clanId));
 		if (response) {
 			thunkAPI.dispatch(emojiSuggestionSlice.actions.invalidateCache());
 			thunkAPI.dispatch(settingClanStickerSlice.actions.invalidateCache());
@@ -336,8 +336,8 @@ export const transferClan = createAsyncThunk('clans/transferClan', async (body: 
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.transferOwnership(mezon.session, {
-			clan_id: body.clanId,
-			new_owner_id: body.new_clan_owner
+			clan_id: BigInt(body.clanId),
+			new_owner_id: BigInt(body.new_clan_owner)
 		});
 		if (response) {
 			return {
@@ -360,7 +360,7 @@ type removeClanUsersPayload = {
 export const removeClanUsers = createAsyncThunk('clans/removeClanUsers', async ({ clanId, userIds }: removeClanUsersPayload, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.removeClanUsers(mezon.session, clanId, userIds);
+		const response = await mezon.client.removeClanUsers(mezon.session, BigInt(clanId), userIds.map(BigInt));
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
 		}
@@ -378,7 +378,7 @@ export const updateClan = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.updateClanDesc(mezon.session, clan_id, request);
+			const response = await mezon.client.updateClanDesc(mezon.session, BigInt(clan_id), request);
 
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
@@ -463,7 +463,7 @@ export const updateUser = createAsyncThunk(
 				);
 
 				if (avatar_url && currentUser?.user?.id && avatar_url !== currentUser?.user?.avatar_url) {
-					setUserAvatarOverride(currentUser.user.id, avatar_url);
+					setUserAvatarOverride(String(currentUser?.user?.id), avatar_url);
 					thunkAPI.dispatch(accountActions.incrementAvatarVersion());
 				}
 
@@ -516,7 +516,7 @@ interface JoinClanPayload {
 export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan', async ({ clanId }, thunkAPI) => {
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		await mezon.socketRef.current?.joinClanChat(clanId);
+		await mezon.socketRef.current?.joinClanChat(BigInt(clanId));
 	} catch (error) {
 		captureSentryError(error, 'clans/joinClan');
 		return thunkAPI.rejectWithValue(error);
@@ -574,10 +574,10 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 						{
 							api_name: 'ListClanUnreadMsgIndicator',
 							list_unread_msg_indicator_req: {
-								clan_id: clanId
+								clan_id: BigInt(clanId)
 							}
 						},
-						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),
+						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, BigInt(clanId)),
 						'unread_msg_indicator'
 					);
 
@@ -639,8 +639,8 @@ export const clansSlice = createSlice({
 		},
 		updateClanOwner: (state, action: PayloadAction<{ clanId: string; newOwnerId: string }>) => {
 			clansAdapter.updateOne(state, {
-				id: action.payload.clanId,
-				changes: { creator_id: action.payload.newOwnerId }
+				id: String(action.payload.clanId),
+				changes: { creator_id: BigInt(action.payload.newOwnerId) }
 			});
 		},
 
@@ -879,16 +879,20 @@ export const clansSlice = createSlice({
 		update: (state, action: PayloadAction<{ dataUpdate: ClanUpdatedEvent }>) => {
 			const { dataUpdate } = action.payload;
 
-			const currentClanData = clansAdapter.getSelectors().selectById(state, dataUpdate.clan_id);
+			const currentClanData = clansAdapter.getSelectors().selectById(state, String(dataUpdate.clan_id));
 			clansAdapter.updateOne(state, {
-				id: dataUpdate.clan_id as string,
+				id: String(dataUpdate.clan_id),
 				changes: {
-					clan_id: dataUpdate.clan_id,
+					clan_id: BigInt(dataUpdate.clan_id),
 					clan_name: dataUpdate.clan_name,
 					logo: dataUpdate.logo,
 					banner: dataUpdate.banner,
 					is_onboarding: dataUpdate.is_onboarding,
-					welcome_channel_id: dataUpdate.welcome_channel_id !== '-1' ? dataUpdate.welcome_channel_id : currentClanData.welcome_channel_id,
+					welcome_channel_id: BigInt(
+						String(dataUpdate.welcome_channel_id) !== '-1'
+							? String(dataUpdate.welcome_channel_id)
+							: String(currentClanData?.welcome_channel_id ?? '-1')
+					),
 					prevent_anonymous: dataUpdate?.prevent_anonymous ?? currentClanData.prevent_anonymous
 				}
 			});
@@ -952,7 +956,7 @@ export const clansSlice = createSlice({
 			const { clanId, new_clan_owner } = action.payload;
 			clansAdapter.updateOne(state, {
 				id: clanId,
-				changes: { creator_id: new_clan_owner }
+				changes: { creator_id: BigInt(new_clan_owner) }
 			});
 		});
 		builder.addCase(updateHasUnreadBasedOnChannels.fulfilled, (state: ClansState, action) => {

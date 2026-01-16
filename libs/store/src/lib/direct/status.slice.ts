@@ -17,7 +17,7 @@ const statusAdapter = createEntityAdapter({
 });
 
 export function convertStatusClan(user: UsersClanEntity, state: RootState): IUserProfileActivity {
-	const isMe = state?.account?.userProfile?.user?.id === user?.user?.id;
+	const isMe = String(state?.account?.userProfile?.user?.id) === user?.user?.id;
 	const isUserInvisible = user?.user?.user_status === EUserStatus.INVISIBLE;
 	return {
 		id: user.id,
@@ -33,7 +33,7 @@ export function convertStatusGroup(users: ApiAllUsersAddChannelResponse): IUserP
 	users.user_ids?.map((id, index) => {
 		if (id) {
 			listGroup.push({
-				id,
+				id: String(id),
 				avatar_url: users.avatars?.[index] || '',
 				display_name: users.display_names?.[index] || '',
 				online: users.onlines?.[index],
@@ -60,7 +60,7 @@ export const statusSlice = createSlice({
 			const user = action.payload;
 
 			statusAdapter.updateOne(state, {
-				id: user.user_id,
+				id: String(user.user_id),
 				changes: {
 					status: user.custom_status
 				}

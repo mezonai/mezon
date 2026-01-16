@@ -19,7 +19,7 @@ export function useWallet(): {
 	const isWalletAvailable = useSelector(selectIsWalletAvailable);
 
 	const enableWallet = useCallback(async () => {
-		const userId = userProfile?.user?.id || '';
+		const userId = userProfile?.user?.id ? String(userProfile.user.id) : '';
 		if (sessionRef.current?.id_token && userId) {
 			const proofInput = {
 				userId,
@@ -28,7 +28,7 @@ export function useWallet(): {
 
 			await dispatch(walletActions.fetchZkProofs(proofInput));
 		}
-	}, [userProfile, sessionRef]);
+	}, [userProfile, sessionRef, dispatch]);
 
 	const disableWallet = useCallback(async () => {
 		await dispatch(walletActions.resetState());
