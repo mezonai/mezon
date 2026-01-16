@@ -48,10 +48,10 @@ const selectCachedStreamMembers = createSelector([(state: RootState) => state[US
 	const entities = selectAllUsersStreamEntities(streamState);
 	return entities.map(
 		(entity): ApiStreamingChannelUser => ({
-			user_id: entity.user_id,
-			channel_id: entity.streaming_channel_id,
+			user_id: BigInt(entity.user_id || '0'),
+			channel_id: BigInt(entity.streaming_channel_id || '0'),
 			participant: entity.participant,
-			id: entity.id
+			id: BigInt(entity.id || '0')
 		})
 	);
 });
@@ -85,10 +85,10 @@ export const fetchStreamChannelMembersCached = async (
 				limit: 100,
 				state: 1,
 				channel_type: channelType,
-				clan_id: clanId
+				clan_id: BigInt(clanId)
 			}
 		},
-		() => ensuredMezon.client.listStreamingChannelUsers(ensuredMezon.session, clanId, channelId, channelType, 1, 100, ''),
+		() => ensuredMezon.client.listStreamingChannelUsers(ensuredMezon.session, BigInt(clanId), BigInt(channelId), channelType, 1, 100, ''),
 		'voice_user_list'
 	);
 
@@ -120,13 +120,13 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 
 			const members = response.streaming_channel_users.map((channelRes) => {
 				return {
-					user_id: channelRes.user_id || '',
+					user_id: String(channelRes.user_id || ''),
 					clan_id: clanId,
-					streaming_channel_id: channelRes.channel_id || '',
+					streaming_channel_id: String(channelRes.channel_id || ''),
 					clan_name: '',
 					participant: channelRes.participant || '',
 					streaming_channel_label: '',
-					id: channelRes.id || ''
+					id: String(channelRes.id || '')
 				};
 			});
 
@@ -185,8 +185,8 @@ export const usersStreamSlice = createSlice({
 				if (fromCache) return;
 
 				state.streamChannelMember = streams.map((stream) => ({
-					id: stream.id || '',
-					user_id: stream.user_id,
+					id: String(stream.id || ''),
+					user_id: String(stream.user_id || ''),
 					participant: stream.participant
 				}));
 				state.cache = createCacheMetadata();

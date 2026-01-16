@@ -17,8 +17,13 @@ export const THREADS_FEATURE_KEY = 'threads';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface ThreadsEntity extends IThread {
-	id: string; // Primary ID
+export interface ThreadsEntity extends Omit<IThread, 'id' | 'clan_id' | 'channel_id' | 'category_id' | 'parent_id' | 'creator_id'> {
+	id: string;
+	clan_id?: string;
+	channel_id?: string;
+	category_id?: string;
+	parent_id?: string;
+	creator_id?: string;
 }
 
 export interface ThreadsState extends EntityState<ThreadsEntity, string> {
@@ -101,11 +106,14 @@ export const fetchThreadsCached = async (
 			time: channelData.cache?.lastFetched || Date.now()
 		};
 	}
-	const response = await withRetry(() => mezon.client.listThreadDescs(mezon.session, channelId, LIMIT, 0, clanId, threadId, page), {
-		maxRetries: 3,
-		initialDelay: 1000,
-		scope: 'channel-threads'
-	});
+	const response = await withRetry(
+		() => mezon.client.listThreadDescs(mezon.session, BigInt(channelId), LIMIT, 0, BigInt(clanId), threadId ? BigInt(threadId) : undefined, page),
+		{
+			maxRetries: 3,
+			initialDelay: 1000,
+			scope: 'channel-threads'
+		}
+	);
 	markApiFirstCalled(apiKey);
 
 	return {
@@ -132,10 +140,15 @@ const updateCacheOnThreadCreation = createAsyncThunk(
 	}
 );
 
-const mapToThreadEntity = (threads: ApiChannelDescription[]) => {
+const mapToThreadEntity = (threads: ApiChannelDescription[]): ThreadsEntity[] => {
 	return threads.map((thread) => ({
 		...thread,
-		id: thread.channel_id as string
+		id: String(thread.channel_id || ''),
+		clan_id: thread.clan_id ? String(thread.clan_id) : undefined,
+		channel_id: thread.channel_id ? String(thread.channel_id) : undefined,
+		category_id: thread.category_id ? String(thread.category_id) : undefined,
+		parent_id: thread.parent_id ? String(thread.parent_id) : undefined,
+		creator_id: thread.creator_id ? String(thread.creator_id) : undefined
 	}));
 };
 
@@ -178,8 +191,8 @@ export const searchedThreads = createAsyncThunk('threads/searchThreads', async (
 		const clanId = state?.clans?.currentClanId;
 		const currentChannel = selectCurrentChannel(state);
 		const channelSearch = currentChannel ? getParentChannelIdIfHas(currentChannel) : channelId;
-		if (clanId && clanId !== '0' && channelId) {
-			const response = await mezon.client.searchThread(mezon.session, clanId, channelSearch, label?.trim());
+		if (clanId && clanId !== '0' && channelId && channelSearch) {
+			const response = await mezon.client.searchThread(mezon.session, BigInt(clanId), BigInt(channelSearch), label?.trim());
 			if (!response.channeldesc) {
 				return [];
 			}
@@ -252,7 +265,12 @@ export const checkDuplicateThread = createAsyncThunk(
 	async ({ thread_name, channel_id, clan_id }: { thread_name: string; channel_id: string; clan_id: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(thread_name, channel_id, TypeCheck.TYPETHREAD, clan_id);
+			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(
+				thread_name,
+				BigInt(channel_id || '0'),
+				TypeCheck.TYPETHREAD,
+				BigInt(clan_id || '0')
+			);
 			if (isDuplicateName?.type === TypeCheck.TYPETHREAD) {
 				return isDuplicateName.exist;
 			}
@@ -268,7 +286,7 @@ export const leaveThread = createAsyncThunk(
 	async ({ clanId, channelId, threadId, isPrivate }: { clanId: string; channelId: string; threadId: string; isPrivate: number }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.leaveThread(mezon.session, clanId, threadId);
+			const response = await mezon.client.leaveThread(mezon.session, BigInt(clanId), BigInt(threadId));
 			if (response) {
 				thunkAPI.dispatch(channelsActions.removeByChannelID({ channelId: threadId, clanId }));
 				if (isPrivate) {
@@ -290,7 +308,7 @@ export const writeActiveArchivedThread = createAsyncThunk(
 	async ({ clanId, channelId }: { clanId: string; channelId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			await mezon.socketRef.current?.writeActiveArchivedThread(clanId, channelId);
+			await mezon.socketRef.current?.writeActiveArchivedThread(BigInt(clanId), BigInt(channelId || '0'));
 			thunkAPI.dispatch(threadsActions.updateActiveCodeThread({ channelId, activeCode: ThreadStatus.joined }));
 			return { channelId, activeCode: ThreadStatus.joined };
 		} catch (error) {

@@ -11,7 +11,7 @@ import type { RootState } from '../store';
 
 export const SYSTEM_MESSAGE_FEATURE_KEY = 'systemMessages';
 
-export interface SystemMessageEntity extends IPSystemMessage {
+export interface SystemMessageEntity extends Omit<IPSystemMessage, 'id'> {
 	id: string;
 }
 
@@ -58,7 +58,7 @@ export const fetchSystemMessageByClanCached = async (getState: () => RootState, 
 		};
 	}
 
-	const response = await mezon.client.getSystemMessageByClanId(mezon.session, clanId);
+	const response = await mezon.client.getSystemMessageByClanId(mezon.session, BigInt(clanId));
 
 	markApiFirstCalled(apiKey);
 
@@ -111,7 +111,7 @@ export const updateSystemMessage = createAsyncThunk(
 	async ({ clanId, newMessage, cachedMessage }: IUpdateSystemMessage, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response: ApiSystemMessage = await mezon.client.updateSystemMessage(mezon.session, clanId, newMessage);
+			const response: ApiSystemMessage = await mezon.client.updateSystemMessage(mezon.session, BigInt(clanId), newMessage);
 			if (response) {
 				// Force refresh cache after update
 				thunkAPI.dispatch(fetchSystemMessageByClanId({ clanId, noCache: true }));
@@ -127,8 +127,9 @@ export const updateSystemMessage = createAsyncThunk(
 
 export const deleteSystemMessage = createAsyncThunk('systemMessages/deleteSystemMessage', async (clanId: string, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
-	await mezon.client.deleteSystemMessage(mezon.session, clanId);
+	await mezon.client.deleteSystemMessage(mezon.session, BigInt(clanId));
 	thunkAPI.dispatch(fetchSystemMessages());
+	return clanId;
 });
 
 export const systemMessageSlice = createSlice({
@@ -151,8 +152,14 @@ export const systemMessageSlice = createSlice({
 			.addCase(fetchSystemMessages.pending, (state: SystemMessageState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchSystemMessages.fulfilled, (state: SystemMessageState, action: PayloadAction<any>) => {
-				systemMessageAdapter.setAll(state, action.payload);
+			.addCase(fetchSystemMessages.fulfilled, (state: SystemMessageState, action: PayloadAction<ApiSystemMessage[] | undefined>) => {
+				if (action.payload) {
+					const entities: SystemMessageEntity[] = action.payload.map((msg) => ({
+						...msg,
+						id: String(msg.id || '')
+					}));
+					systemMessageAdapter.setAll(state, entities);
+				}
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(fetchSystemMessages.rejected, (state: SystemMessageState, action) => {
@@ -173,7 +180,7 @@ export const systemMessageSlice = createSlice({
 
 					if (!fromCache) {
 						if (systemMessageData.id) {
-							systemMessageAdapter.upsertOne(state, { ...systemMessageData, id: systemMessageData.id });
+							systemMessageAdapter.upsertOne(state, { ...systemMessageData, id: String(systemMessageData.id) });
 						}
 						state.byClans[clanId].systemMessage = systemMessageData;
 						state.byClans[clanId].cache = createCacheMetadata(FOR_15_MINUTES_SEC);
@@ -186,20 +193,32 @@ export const systemMessageSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message ?? null;
 			})
-			.addCase(createSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<any>) => {
+			.addCase(createSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<ApiSystemMessage>) => {
 				const payload = action.payload;
 				if (payload?.id) {
-					systemMessageAdapter.addOne(state, payload);
+					const entity: SystemMessageEntity = {
+						...payload,
+						id: String(payload.id)
+					};
+					systemMessageAdapter.addOne(state, entity);
 				}
 			})
-			.addCase(updateSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<any>) => {
+			.addCase(updateSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<ApiSystemMessage>) => {
 				const payload = action.payload;
 				if (payload?.id) {
-					systemMessageAdapter.upsertOne(state, payload);
+					const entity: SystemMessageEntity = {
+						...payload,
+						id: String(payload.id)
+					};
+					systemMessageAdapter.upsertOne(state, entity);
 				}
 			})
-			.addCase(deleteSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<any>) => {
-				systemMessageAdapter.removeOne(state, action.payload);
+			.addCase(deleteSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<string>) => {
+				const clanId = action.payload;
+				if (state.byClans[clanId]?.systemMessage?.id) {
+					systemMessageAdapter.removeOne(state, String(state.byClans[clanId].systemMessage.id));
+					delete state.byClans[clanId];
+				}
 			});
 	}
 });

@@ -1,5 +1,6 @@
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Toast, ToastPayload } from './types';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { Toast, ToastPayload } from './types';
 
 export const TOASTS_FEATURE_KEY = 'toasts';
 
