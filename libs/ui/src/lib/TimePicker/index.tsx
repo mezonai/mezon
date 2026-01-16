@@ -15,8 +15,8 @@ function TimePicker(props: TimePickerProps) {
 
 		const date = new Date(value);
 
-		const hour = date.getHours(); // local hour
-		const minute = date.getMinutes(); // local minute
+		const hour = date.getHours();
+		const minute = date.getMinutes();
 
 		return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 	}, [value]);
