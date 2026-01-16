@@ -121,7 +121,7 @@ export type IUsersRole = RoleUserListRoleUser & {
 };
 
 export type ICategoryChannel = ICategory & {
-	channels: string[] | IChannel[];
+	channels: bigint[] | IChannel[];
 	isFavor?: boolean;
 };
 
@@ -640,10 +640,6 @@ export type IChannelUser = ChannelDescription & {
 	last_seen_message?: any;
 };
 
-export type IUsers = ApiUser & {
-	id: string;
-};
-
 export type IPermissionRoleChannel = ApiPermissionRoleChannel & {
 	id: string;
 };
@@ -808,20 +804,20 @@ export type UpdateClan = {
 };
 
 export type RemoveClanUsers = {
-	clanId: string;
-	channelId: string;
-	userIds: string[];
+	clanId: bigint;
+	channelId: bigint;
+	userIds: bigint[];
 };
 
 export type RemoveChannelUsers = {
-	channelId: string;
-	userIds: string[];
+	channelId: bigint;
+	userIds: bigint[];
 };
 
 export type BanClanUsers = {
-	clanId: string;
-	channelId: string;
-	userIds: string[];
+	clanId: bigint;
+	channelId: bigint;
+	userIds: bigint[];
 };
 
 export enum Tabs_Option {
@@ -926,7 +922,7 @@ export enum ModeResponsive {
 }
 
 export type ApiChannelMessageHeaderWithChannel = ApiChannelMessageHeader & {
-	channel_id: string;
+	channel_id: bigint;
 };
 
 export enum ThemeApp {
