@@ -21,7 +21,12 @@ export interface ActivitiesEntity extends IActivity {
 }
 
 export const mapActivityEntity = (activitiesRes: ApiUserActivity) => {
-	return { ...activitiesRes, id: activitiesRes.user_id || '' };
+	return {
+		...activitiesRes,
+		id: String(activitiesRes.user_id),
+		user_id: activitiesRes.user_id ? String(activitiesRes.user_id) : undefined,
+		application_id: activitiesRes.application_id ? String(activitiesRes.application_id) : undefined
+	};
 };
 
 export interface ActivityState extends EntityState<ActivitiesEntity, string> {

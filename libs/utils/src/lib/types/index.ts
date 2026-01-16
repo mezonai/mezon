@@ -63,7 +63,7 @@ export type IClan = ApiClanDesc & {
 	id: string;
 };
 
-export type IChannelAttachment = ApiChannelAttachment & {
+export type IChannelAttachment = Omit<ApiChannelAttachment, 'id'> & {
 	id: string;
 };
 
@@ -1474,7 +1474,7 @@ export enum CallLog {
 	TIME_DEFAULT = '0 mins 0 secs'
 }
 
-export interface IAttachmentEntity extends ApiChannelAttachment {
+export interface IAttachmentEntity extends Omit<ApiChannelAttachment, 'id'> {
 	id: string;
 	channelId?: string;
 	clanId?: string;
