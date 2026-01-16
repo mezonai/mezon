@@ -51,14 +51,6 @@ function processImageFile<T>(file: File): Promise<T> {
 					height: img.height
 				} as T;
 
-				if (shouldShrinkPreview) {
-					try {
-						const hash = await encodeImageToBlurhash(file);
-						(metadata as any).thumbnail = hash;
-					} catch (error) {
-						console.error('Error generating blurhash:', error);
-					}
-				}
 				resolve(metadata);
 				URL.revokeObjectURL(img.src);
 			};
@@ -227,73 +219,3 @@ export const handleProcessTextAndLinks = ({
 			console.error('Cannot get images from link:', error);
 		});
 };
-
-async function encodeImageToBlurhash(file: File, maxSize = 32): Promise<string> {
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader();
-		reader.onload = async (event) => {
-			try {
-				const img = new Image();
-				img.onload = async () => {
-					try {
-						const canvas = document.createElement('canvas');
-						const ctx = canvas.getContext('2d');
-						if (!ctx) {
-							console.error('cannot init canvas');
-							return;
-						}
-						const scale = maxSize / Math.max(img.width, img.height);
-						const width = Math.round(img.width * scale);
-						const height = Math.round(img.height * scale);
-
-						canvas.width = width;
-						canvas.height = height;
-						ctx.drawImage(img, 0, 0, width, height);
-						const imageData = ctx.getImageData(0, 0, width, height);
-
-						if (typeof (window as any).blurhash === 'undefined') {
-							const script = document.createElement('script');
-							script.src = `${window.location.origin}/assets/js/blurhash.js`;
-							script.onload = () => {
-								(window as any).blurhash = module.exports;
-								try {
-									const hash = (window as any).blurhash.encode(imageData.data, width, height, 4, 3);
-									resolve(hash);
-								} catch (encodingError) {
-									reject(encodingError);
-								}
-							};
-							script.onerror = (err) => {
-								reject(new Error('Failed to load blurhash.js'));
-							};
-							document.head.appendChild(script);
-						} else {
-							const hash = (window as any).blurhash.encode(imageData.data, width, height, 4, 3);
-							resolve(hash);
-						}
-					} catch (error) {
-						reject(error);
-					}
-				};
-
-				img.onerror = () => {
-					reject(new Error('Failed to load image'));
-				};
-
-				if (event.target?.result) {
-					img.src = event.target.result as string;
-				} else {
-					reject(new Error('Failed to read file'));
-				}
-			} catch (error) {
-				reject(error);
-			}
-		};
-
-		reader.onerror = () => {
-			reject(new Error('Failed to read file'));
-		};
-
-		reader.readAsDataURL(file);
-	});
-}
