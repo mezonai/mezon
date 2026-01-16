@@ -1,11 +1,10 @@
 import { captureSentryError } from '@mezon/logger';
-import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/utils';
+import type { INotification, LoadingStatus } from '@mezon/utils';
 import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { Notification } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiMessageMention } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiMessageMention, ApiNotification } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -16,14 +15,6 @@ import type { RootState } from '../store';
 export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIMIT_NOTIFICATION = 50;
 
-export const mapNotificationToEntity = (notifyRes: INotification): Notification => {
-	return {
-		...notifyRes,
-		id: notifyRes.id || '',
-		create_time: notifyRes.create_time
-	};
-};
-
 export interface FetchNotificationArgs {
 	clanId: string;
 	category: NotificationCategory;
@@ -31,7 +22,14 @@ export interface FetchNotificationArgs {
 	noCache?: boolean;
 }
 
-export interface NotificationState extends EntityState<NotificationEntity, string> {
+export interface NotificationEntityForRedux extends Omit<INotification, 'id' | 'clan_id' | 'topic_id' | 'channel_id'> {
+	id: string;
+	clan_id?: string;
+	topic_id?: string;
+	channel_id?: string;
+}
+
+export interface NotificationState extends EntityState<NotificationEntityForRedux, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	messageNotifiedId: string;
@@ -39,20 +37,23 @@ export interface NotificationState extends EntityState<NotificationEntity, strin
 	notifications: Record<
 		NotificationCategory,
 		{
-			data: NotificationEntity[];
+			data: NotificationEntityForRedux[];
 			lastId: string;
 			cache?: CacheMetadata;
 		}
 	>;
 }
 
-export type LastSeenTimeStampChannelArgs = {
-	channelId: string;
-	lastSeenTimeStamp: number;
-	clanId: string;
+export const mapNotificationToEntity = (notification: INotification | ApiNotification): NotificationEntityForRedux => {
+	return {
+		...notification,
+		id: notification.id !== undefined ? String(notification.id) : '',
+		clan_id: notification.clan_id !== undefined ? String(notification.clan_id) : undefined,
+		topic_id: notification.topic_id !== undefined ? String(notification.topic_id) : undefined
+	} as NotificationEntityForRedux;
 };
 
-export const notificationAdapter = createEntityAdapter<NotificationEntity>();
+export const notificationAdapter = createEntityAdapter<NotificationEntityForRedux>();
 
 export const fetchListNotificationCached = async (
 	getState: () => RootState,
@@ -78,9 +79,9 @@ export const fetchListNotificationCached = async (
 		() =>
 			ensuredMezon.client.listNotifications(
 				ensuredMezon.session,
-				clanId,
+				BigInt(clanId),
 				LIMIT_NOTIFICATION,
-				notificationId || '',
+				notificationId ? BigInt(notificationId) : BigInt(0),
 				category,
 				Direction_Mode.BEFORE_TIMESTAMP
 			),
@@ -141,7 +142,11 @@ export const deleteNotify = createAsyncThunk(
 	async ({ ids, category }: { ids: string[]; category: NotificationCategory }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteNotifications(mezon.session, ids, category);
+			const response = await mezon.client.deleteNotifications(
+				mezon.session,
+				ids.map((id) => BigInt(id)),
+				category
+			);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -157,11 +162,11 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.createMessage2Inbox(mezon.session, {
-			message_id: message.id,
+			message_id: BigInt(message.id),
 			content: JSON.stringify(message.content),
 			avatar: message.avatar || '',
-			clan_id: message.clan_id || '',
-			channel_id: message.channel_id
+			clan_id: BigInt(message.clan_id || ''),
+			channel_id: BigInt(message.channel_id)
 		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
@@ -192,12 +197,12 @@ export const initialNotificationState: NotificationState = notificationAdapter.g
 	}
 });
 
-export const notificationSlice = createSlice({
+const notificationSlice = createSlice({
 	name: NOTIFICATION_FEATURE_KEY,
 	initialState: initialNotificationState,
 	reducers: {
 		removeAll: notificationAdapter.removeAll,
-		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
+		add(state, action: PayloadAction<{ data: NotificationEntityForRedux; category: NotificationCategory }>) {
 			const { data, category } = action.payload;
 
 			if (state.notifications[category]?.data?.length) {
@@ -250,16 +255,20 @@ export const notificationSlice = createSlice({
 				fetchListNotification.fulfilled,
 				(state: NotificationState, action: PayloadAction<{ data: INotification[]; category: NotificationCategory; fromCache?: boolean }>) => {
 					if (action.payload && Array.isArray(action.payload.data) && action.payload.data.length > 0) {
-						notificationAdapter.setMany(state, action.payload.data);
+						const entities = action.payload.data.map(mapNotificationToEntity);
+						notificationAdapter.setMany(state, entities);
 
 						const { data, category, fromCache } = action.payload;
 						const dataParse = data.map((item) => {
+							const entity = mapNotificationToEntity(item);
 							return {
-								...item,
+								...entity,
 								content: {
-									...item.content,
+									...entity.content,
 									content:
-										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content
+										typeof entity.content?.content === 'string'
+											? safeJSONParse(entity.content?.content)?.t
+											: entity.content?.content
 								}
 							};
 						});
@@ -276,7 +285,7 @@ export const notificationSlice = createSlice({
 						state.loadingStatus = 'loaded';
 
 						if (data.length >= LIMIT_NOTIFICATION) {
-							state.notifications[category].lastId = data[data.length - 1].id;
+							state.notifications[category].lastId = String(data[data.length - 1].id || '');
 						}
 					} else {
 						state.loadingStatus = 'not loaded';
@@ -292,7 +301,7 @@ export const notificationSlice = createSlice({
 				const { ids, category } = action.payload;
 
 				if (state.notifications[category]) {
-					state.notifications[category].data = state.notifications[category].data.filter((item) => !ids.includes(item.id));
+					state.notifications[category].data = state.notifications[category].data.filter((item) => !ids.includes(String(item.id)));
 				}
 			})
 			.addCase(
@@ -304,32 +313,33 @@ export const notificationSlice = createSlice({
 						const position_s: number[] = [];
 						const position_e: number[] = [];
 						const is_mention_role: boolean[] = [];
-						(message.mentions || []).map((item: ApiMessageMention) => {
+						(message.mentions || []).forEach((item: ApiMessageMention) => {
 							if (item.user_id && item.s && item.e) {
-								mention_ids.push(item.user_id);
+								mention_ids.push(String(item.user_id));
 								is_mention_role.push(false);
 								position_s.push(item.s);
 								position_e.push(item.e);
 							}
 							if (item.role_id && item.s && item.e) {
-								mention_ids.push(item.role_id);
+								mention_ids.push(String(item.role_id));
 								is_mention_role.push(true);
 								position_s.push(item.s);
 								position_e.push(item.e);
 							}
 						});
-						const notiMark: INotification = {
+						const notiId = noti.id !== undefined ? String(noti.id) : '';
+						const notiMark: NotificationEntityForRedux = {
 							...message,
-							id: noti.id || '',
-							...noti,
+							id: notiId,
+							...(noti as Omit<ApiChannelMessageHeader, 'id'>),
 							content: {
 								title: '',
 								link: '',
 								content: message.content.t,
-								channel_id: message.channel_id,
-								sender_id: message.sender_id,
+								channel_id: message.channel_id ? String(message.channel_id) : undefined,
+								sender_id: message.sender_id ? String(message.sender_id) : undefined,
 								avatar: message.clan_avatar || message.avatar,
-								clan_id: message.clan_id,
+								clan_id: message.clan_id ? String(message.clan_id) : undefined,
 								attachment_link: message.attachments?.[0]?.url || '',
 								display_name: message.clan_nick || message.display_name || message.username,
 								create_time_seconds: message.create_time_seconds,
@@ -341,12 +351,12 @@ export const notificationSlice = createSlice({
 								attachment_type: '',
 								has_more_attachment: (message.attachments?.length || 0) > 2,
 								is_mention_role,
-								message_id: message.message_id
+								message_id: message.message_id ? String(message.message_id) : undefined
 							},
 							category: NotificationCategory.MESSAGES,
 							avatar_url: message?.avatar?.[0] || '',
-							clan_id: message.clan_id || '',
-							topic_id: message.topic_id || ''
+							clan_id: message.clan_id ? String(message.clan_id) : undefined,
+							topic_id: message.topic_id ? String(message.topic_id) : undefined
 						};
 
 						state.notifications[NotificationCategory.MESSAGES].data = [

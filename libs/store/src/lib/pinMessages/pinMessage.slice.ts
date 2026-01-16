@@ -211,15 +211,15 @@ export const joinPinMessage = createAsyncThunk(
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const now = Math.floor(Date.now() / 1000);
 			await mezon.socketRef.current?.writeLastPinMessage(
-				clanId,
-				channelId,
+				BigInt(clanId),
+				BigInt(channelId),
 				mode,
 				isPublic,
-				messageId,
+				BigInt(messageId),
 				now,
 				1,
 				avatar,
-				senderId,
+				BigInt(senderId),
 				senderUsername,
 				content,
 				JSON.stringify(attachment),
@@ -240,7 +240,7 @@ export const initialPinMessageState: PinMessageState = pinMessageAdapter.getInit
 	isPinModalVisible: false
 });
 
-export const pinMessageSlice = createSlice({
+const pinMessageSlice = createSlice({
 	name: PIN_MESSAGE_FEATURE_KEY,
 	initialState: initialPinMessageState,
 	reducers: {

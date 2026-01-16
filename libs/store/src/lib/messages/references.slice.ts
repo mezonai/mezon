@@ -9,7 +9,7 @@ export const REFERENCES_FEATURE_KEY = 'references';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface ReferencesEntity extends IMessage {
+export interface ReferencesEntity extends Omit<IMessage, 'id'> {
 	id: string;
 }
 
@@ -57,10 +57,6 @@ export const referencesSlice = createSlice({
 		add: referencesAdapter.addOne,
 		remove: referencesAdapter.removeOne,
 
-		setMessageMentionId(state, action) {
-			state.idMessageMention = action.payload;
-		},
-
 		setDataReferences(state, action: PayloadAction<{ channelId: string; dataReferences: ApiMessageRef }>) {
 			if (action.payload !== null) {
 				const { channelId, dataReferences } = action.payload;
@@ -68,13 +64,6 @@ export const referencesSlice = createSlice({
 					delete state.dataReferences[channelId];
 				}
 				state.dataReferences[channelId] = dataReferences;
-			}
-		},
-
-		clearDataReferences(state, action: PayloadAction<string>) {
-			const channelId = action.payload;
-			if (channelId && state.dataReferences[channelId]) {
-				delete state.dataReferences[channelId];
 			}
 		},
 

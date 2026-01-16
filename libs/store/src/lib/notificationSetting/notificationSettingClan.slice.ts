@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import type { IDefaultNotification, IDefaultNotificationClan, LoadingStatus } from '@mezon/utils';
+import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiNotificationSetting } from 'mezon-js/api.gen';
@@ -13,11 +13,15 @@ export const DEFAULT_NOTIFICATION_CLAN_FEATURE_KEY = 'defaultnotificationclan';
 
 const DEFAULT_NOTIFICATION_CLAN_CACHE_TIME = 1000 * 60 * 60;
 
+export interface NotificationClanEntity extends Omit<ApiNotificationSetting, 'id'> {
+	id: string;
+}
+
 export interface DefaultNotificationClanState {
 	byClans: Record<
 		string,
 		{
-			defaultNotificationClan?: IDefaultNotificationClan | null;
+			defaultNotificationClan?: NotificationClanEntity | null;
 			cache?: CacheMetadata;
 		}
 	>;
@@ -59,10 +63,10 @@ export const fetchDefaultNotificationClanCached = async (getState: () => RootSta
 		{
 			api_name: 'GetNotificationClancase',
 			notification_clan: {
-				clan_id: clanId
+				clan_id: BigInt(clanId)
 			}
 		},
-		() => mezon.client.getNotificationClan(mezon.session, clanId),
+		() => mezon.client.getNotificationClan(mezon.session, BigInt(clanId)),
 		'notification_setting'
 	);
 
@@ -90,16 +94,18 @@ export const getDefaultNotificationClan = createAsyncThunk(
 			if (response.fromCache) {
 				return {
 					fromCache: true,
-					clanId
-				};
+					clanId,
+					id: response.id !== undefined ? String(response.id) : '',
+					notification_setting_type: response.notification_setting_type
+				} as NotificationClanEntity & { clanId: string; fromCache: boolean };
 			}
 
-			const clanNotificationConfig: ApiNotificationSetting = {
-				id: response.id,
+			const clanNotificationConfig: NotificationClanEntity = {
+				id: response.id !== undefined ? String(response.id) : '',
 				notification_setting_type: response.notification_setting_type
 			};
 
-			return { ...clanNotificationConfig, clanId };
+			return { ...clanNotificationConfig, clanId, fromCache: false };
 		} catch (error) {
 			captureSentryError(error, 'defaultnotificationclan/getDefaultNotificationClan');
 			return thunkAPI.rejectWithValue(error);
@@ -118,7 +124,7 @@ export const setDefaultNotificationClan = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				clan_id,
+				clan_id: BigInt(clan_id || ''),
 				notification_type
 			};
 			const response = await mezon.client.setNotificationClan(mezon.session, body);
@@ -152,7 +158,7 @@ export const defaultNotificationClanSlice = createSlice({
 			})
 			.addCase(
 				getDefaultNotificationClan.fulfilled,
-				(state: DefaultNotificationClanState, action: PayloadAction<ApiNotificationSetting & { clanId: string; fromCache?: boolean }>) => {
+				(state: DefaultNotificationClanState, action: PayloadAction<NotificationClanEntity & { clanId: string; fromCache?: boolean }>) => {
 					const { clanId, fromCache, ...notificationData } = action.payload;
 
 					if (!state.byClans[clanId]) {
@@ -177,22 +183,19 @@ export const defaultNotificationClanSlice = createSlice({
 				}
 				const { clan_id, notification_type } = action.payload;
 				if (!clan_id) return;
-				if (!state.byClans[clan_id]) {
-					state.byClans[clan_id] = getInitialClanState();
+				if (!state.byClans[String(clan_id)]) {
+					state.byClans[String(clan_id)] = getInitialClanState();
 				}
-				if (state.byClans[clan_id].defaultNotificationClan) {
-					state.byClans[clan_id].defaultNotificationClan = {
-						...state.byClans[clan_id].defaultNotificationClan,
+				if (state.byClans[String(clan_id)].defaultNotificationClan) {
+					state.byClans[String(clan_id)].defaultNotificationClan = {
+						...state.byClans[String(clan_id)].defaultNotificationClan,
+						id: state.byClans[String(clan_id)].defaultNotificationClan?.id || '',
 						notification_setting_type: notification_type
 					};
 				}
 			});
 	}
 });
-
-export interface DefaultNotificationListEntity extends IDefaultNotification {
-	id: string; // Primary ID
-}
 
 export const defaultNotificationClanReducer = defaultNotificationClanSlice.reducer;
 

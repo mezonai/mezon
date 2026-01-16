@@ -22,13 +22,21 @@ const ROLES_CLAN_CACHE_TIME = 1000 * 60 * 60;
  * Update these interfaces according to your requirements.
  */
 
-export interface RolesClanEntity extends IRolesClan {
+export interface RolesClanEntity extends Omit<IRolesClan, 'id' | 'clan_id' | 'creator_id' | 'channel_ids'> {
 	id: string; // Primary ID
+	clan_id?: string;
+	creator_id?: string;
+	channel_ids?: string[];
 }
 
-export const mapRolesClanToEntity = (RolesClanRes: ApiRole) => {
-	const id = (RolesClanRes as unknown as any).id;
-	return { ...RolesClanRes, id };
+export const mapRolesClanToEntity = (RolesClanRes: ApiRole): RolesClanEntity => {
+	return {
+		...RolesClanRes,
+		id: RolesClanRes.id !== undefined ? String(RolesClanRes.id) : '',
+		clan_id: RolesClanRes.clan_id !== undefined ? String(RolesClanRes.clan_id) : undefined,
+		creator_id: RolesClanRes.creator_id !== undefined ? String(RolesClanRes.creator_id) : undefined,
+		channel_ids: RolesClanRes.channel_ids?.map((id) => String(id))
+	} as RolesClanEntity;
 };
 
 export interface RolesClanState extends EntityState<RolesClanEntity, string> {
@@ -64,12 +72,10 @@ type GetRolePayload = {
 };
 
 type FetchRoleClanPayload = {
-	roles: IRolesClan[];
+	roles: RolesClanEntity[];
 	clanId: string;
 	fromCache?: boolean;
 };
-
-const { selectEntities } = RolesClanAdapter.getSelectors();
 
 const selectCachedRolesClanByClan = createSelector(
 	[(state: RootState) => state[ROLES_CLAN_FEATURE_KEY].byClans, (state: RootState, clanId: string) => clanId],
@@ -103,10 +109,10 @@ export const fetchRolesClanCached = async (getState: () => RootState, ensuredMez
 			role_list_event_req: {
 				limit: 500,
 				state: 1,
-				clan_id: clanId
+				clan_id: BigInt(clanId)
 			}
 		},
-		() => ensuredMezon.client.listRoles(ensuredMezon.session, clanId, 500, 1, ''),
+		() => ensuredMezon.client.listRoles(ensuredMezon.session, BigInt(clanId), 500, 1, ''),
 		'role_event_list'
 	)) as ApiRoleListEventResponse;
 
@@ -134,7 +140,7 @@ export const fetchRolesClan = createAsyncThunk(
 			if (repace) {
 				thunkAPI.dispatch(rolesClanActions.removeRoleByChannel({ channelId: channelId ?? '', clanId: clanId || '' }));
 			}
-			const roles: IRolesClan[] = response?.roles.roles
+			const roles: RolesClanEntity[] = response?.roles.roles
 				.filter((role) => role?.active)
 				.map((role, index) => ({ ...role, originalIndex: index }))
 				.sort((role_1, role_2) => {
@@ -151,7 +157,7 @@ export const fetchRolesClan = createAsyncThunk(
 					// If only one role has 'order_role', prioritize it
 					return role_1.order_role !== undefined ? -1 : 1;
 				})
-				.map(mapRolesClanToEntity);
+				.map((role) => mapRolesClanToEntity(role as ApiRole));
 
 			const payload: FetchRoleClanPayload = {
 				roles,
@@ -178,7 +184,7 @@ type FetchMembersRolePayload = {
 export const fetchMembersRole = createAsyncThunk('MembersRole/fetchMembersRole', async ({ roleId, clanId }: FetchMembersRolePayload, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await withRetry(() => mezon.client.listRoleUsers(mezon.session, roleId, 100, ''), {
+		const response = await withRetry(() => mezon.client.listRoleUsers(mezon.session, BigInt(roleId), 100, ''), {
 			maxRetries: 3,
 			initialDelay: 1000,
 			scope: 'clan-role-users'
@@ -203,7 +209,7 @@ export const fetchDeleteRole = createAsyncThunk(
 	async ({ roleId, clanId }: FetchMembersRolePayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteRole(mezon.session, roleId, clanId);
+			const response = await mezon.client.deleteRole(mezon.session, BigInt(roleId), BigInt(clanId));
 			thunkAPI.dispatch(rolesClanActions.remove({ roleId, clanId }));
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
@@ -231,15 +237,15 @@ export const fetchCreateRole = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				active_permission_ids: activePermissionIds || [],
-				add_user_ids: addUserIds || [],
+				active_permission_ids: (activePermissionIds || []).map((id) => BigInt(id)),
+				add_user_ids: (addUserIds || []).map((id) => BigInt(id)),
 				allow_mention: 0,
-				clan_id: clanId,
+				clan_id: BigInt(clanId),
 				color: color ?? '',
 				description: '',
 				display_online: 0,
 				title: title ?? '',
-				max_permission_id: maxPermissionId
+				max_permission_id: BigInt(maxPermissionId)
 			};
 			const response = await mezon.client.createRole(mezon.session, body);
 			if (!response) {
@@ -286,21 +292,21 @@ export const updateRole = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body: ApiUpdateRoleRequest = {
-				role_id: roleId,
+				role_id: BigInt(roleId),
 				title: title ?? '',
 				color: color ?? '',
 				role_icon: roleIcon,
 				description: '',
 				display_online: 0,
 				allow_mention: 0,
-				add_user_ids: addUserIds || [],
-				active_permission_ids: activePermissionIds || [],
-				remove_user_ids: removeUserIds || [],
-				remove_permission_ids: removePermissionIds || [],
-				clan_id: clanId,
-				max_permission_id: maxPermissionId
+				add_user_ids: (addUserIds || []).map((id) => BigInt(id)),
+				active_permission_ids: (activePermissionIds || []).map((id) => BigInt(id)),
+				remove_user_ids: (removeUserIds || []).map((id) => BigInt(id)),
+				remove_permission_ids: (removePermissionIds || []).map((id) => BigInt(id)),
+				clan_id: BigInt(clanId),
+				max_permission_id: BigInt(maxPermissionId)
 			};
-			const response = await mezon.client.updateRole(mezon.session, roleId, body);
+			const response = await mezon.client.updateRole(mezon.session, BigInt(roleId), body);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -343,7 +349,10 @@ export const updatePermissionUserByRoleId = createAsyncThunk(
 			const roles = state.rolesclan.entities;
 			const role = roles[roleId];
 			if (role?.role_user_list?.role_users) {
-				const userExists = role.role_user_list.role_users.some((user) => user.id === userId);
+				const userExists = role.role_user_list.role_users.some((user) => {
+					const userIdStr = user.id !== undefined ? String(user.id) : '';
+					return userIdStr === userId;
+				});
 				return userExists;
 			}
 			return false;
@@ -381,6 +390,7 @@ export const RolesClanSlice = createSlice({
 		},
 		update: (state, action: PayloadAction<{ role: ApiRole; clanId: string }>) => {
 			const { role, clanId } = action.payload;
+			const roleId = role.id !== undefined ? String(role.id) : '';
 			const changes: Partial<{
 				title: string;
 				color: string;
@@ -396,15 +406,15 @@ export const RolesClanSlice = createSlice({
 				changes.role_user_list = role.role_user_list;
 			}
 
-			if (state.byClans[clanId]?.roles[role.id || '']) {
-				state.byClans[clanId].roles[role.id || ''] = {
-					...state.byClans[clanId].roles[role.id || ''],
+			if (state.byClans[clanId]?.roles[roleId]) {
+				state.byClans[clanId].roles[roleId] = {
+					...state.byClans[clanId].roles[roleId],
 					...changes
 				};
 			}
 
 			RolesClanAdapter.updateOne(state, {
-				id: role.id || '',
+				id: roleId,
 				changes
 			});
 		},
@@ -436,7 +446,10 @@ export const RolesClanSlice = createSlice({
 
 			Object.values(clanData.roles).forEach((role) => {
 				if (role && role.role_user_list?.role_users) {
-					const updatedRoleUsers = role.role_user_list.role_users.filter((user) => user.id !== userId);
+					const updatedRoleUsers = role.role_user_list.role_users.filter((user) => {
+						const userIdStr = user.id !== undefined ? String(user.id) : '';
+						return userIdStr !== userId;
+					});
 					if (updatedRoleUsers.length !== role.role_user_list.role_users.length) {
 						clanData.roles[role.id] = {
 							...role,
@@ -715,7 +728,8 @@ export const selectAllRolesClan = createSelector([getRolesClanState, (state: Roo
 
 export const selectRolesByChannelId = (channelId?: string | null) =>
 	createSelector(selectAllRolesClan, (roles) => {
-		return roles.filter((role) => role?.channel_ids?.includes(channelId!));
+		if (!channelId) return [];
+		return roles.filter((role) => role?.channel_ids?.includes(channelId));
 	});
 
 export const selectCurrentRoleId = createSelector(getRolesClanState, (state) => state.currentRoleId);
@@ -755,26 +769,41 @@ const handleMapUpdateRole = (
 		allow_mention
 	} = body;
 
-	const removePermissionSet = new Set(remove_permission_ids);
-	// const activePermissionSet = new Set(active_permission_ids);
+	const removePermissionSet = new Set(remove_permission_ids.map((id) => String(id)));
 
 	const permissionUpdate = (role.permission_list?.permissions || [])
-		.filter((p) => (p.id ? !removePermissionSet.has(p.id) : false))
-		.concat(active_permission_ids.map((id) => permissions[id]).filter((p): p is PermissionUserEntity => !!p && !removePermissionSet.has(p.id)));
+		.filter((p) => {
+			const pIdStr = p.id !== undefined ? String(p.id) : '';
+			return pIdStr ? !removePermissionSet.has(pIdStr) : false;
+		})
+		.map((p) => {
+			// Convert ApiPermission to PermissionUserEntity format
+			return {
+				...p,
+				id: p.id !== undefined ? String(p.id) : ''
+			} as PermissionUserEntity;
+		})
+		.concat(
+			active_permission_ids.map((id) => permissions[String(id)]).filter((p): p is PermissionUserEntity => !!p && !removePermissionSet.has(p.id))
+		);
 
-	const removeUserSet = new Set(remove_user_ids);
+	const removeUserSet = new Set(remove_user_ids.map((id) => String(id)));
 	const existingUsers = role.role_user_list?.role_users || [];
 
-	const userUpdate = existingUsers.filter((u) => (u.id ? !removeUserSet.has(u.id) : false));
-	const existingUserIdSet = new Set(userUpdate.map((u) => u.id).filter((id): id is string => Boolean(id)));
+	const userUpdate = existingUsers.filter((u) => {
+		const uIdStr = u.id !== undefined ? String(u.id) : '';
+		return uIdStr ? !removeUserSet.has(uIdStr) : false;
+	});
+	const existingUserIdSet = new Set(userUpdate.map((u) => (u.id !== undefined ? String(u.id) : '')).filter((id): id is string => Boolean(id)));
 	for (const id of add_user_ids) {
-		if (removeUserSet.has(id)) continue;
-		if (existingUserIdSet.has(id)) continue;
-		const u = users[id];
+		const idStr = String(id);
+		if (removeUserSet.has(idStr)) continue;
+		if (existingUserIdSet.has(idStr)) continue;
+		const u = users[idStr];
 		if (!u) continue;
 
 		userUpdate.push({
-			id: u.id,
+			id: BigInt(u.id),
 			avatar_url: u.clan_avatar || u.user?.avatar_url,
 			display_name: u.prioritizeName,
 			username: u.user?.username,
@@ -782,7 +811,7 @@ const handleMapUpdateRole = (
 			location: u.user?.location,
 			online: u.user?.online
 		});
-		existingUserIdSet.add(id);
+		existingUserIdSet.add(idStr);
 	}
 
 	return {
@@ -793,7 +822,7 @@ const handleMapUpdateRole = (
 		description: description ?? role.description,
 		display_online: display_online ?? role.display_online,
 		allow_mention: allow_mention ?? role.allow_mention,
-		permission_list: { permissions: permissionUpdate },
+		permission_list: { permissions: permissionUpdate as any },
 		role_user_list: { role_users: userUpdate }
 	};
 };

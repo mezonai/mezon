@@ -1,5 +1,6 @@
-import { LoadingStatus } from '@mezon/utils';
-import { PayloadAction, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { LoadingStatus } from '@mezon/utils';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice } from '@reduxjs/toolkit';
 
 export const EMBED_MESSAGE = 'EMBED_MESSAGE';
 
@@ -24,7 +25,7 @@ export const embedSlice = createSlice({
 	initialState: initialEmbedState,
 	reducers: {
 		addEmbedValue: (state, action: PayloadAction<{ message_id: string; data: FormDataEmbed; multiple?: boolean; onlyChooseOne?: boolean }>) => {
-			const { message_id, data, multiple, onlyChooseOne } = action.payload;
+			const { message_id, data, multiple } = action.payload;
 			if (multiple) {
 				if (!state.formDataEmbed[message_id]) {
 					state.formDataEmbed[message_id] = {

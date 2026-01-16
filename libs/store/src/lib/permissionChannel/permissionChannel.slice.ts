@@ -12,10 +12,10 @@ type addChannelUsersPayload = {
 };
 export const addChannelUsers = createAsyncThunk(
 	'channelUsers/addChannelUsers',
-	async ({ channelId, channelType, userIds, clanId }: addChannelUsersPayload, thunkAPI) => {
+	async ({ channelId, channelType, userIds }: addChannelUsersPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.addChannelUsers(mezon.session, channelId, userIds);
+			const response = await mezon.client.addChannelUsers(mezon.session, BigInt(channelId), userIds.map(BigInt));
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -48,8 +48,8 @@ export const removeChannelUsers = createAsyncThunk(
 	async ({ channelId, userId }: removeChannelUsersPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const userIds = [userId];
-			const response = await mezon.client.removeChannelUsers(mezon.session, channelId, userIds);
+			const userIds = [BigInt(userId)];
+			const response = await mezon.client.removeChannelUsers(mezon.session, BigInt(channelId), userIds);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -72,7 +72,10 @@ export const addChannelRoles = createAsyncThunk(
 	async ({ channelId, roleIds, clanId }: addChannelRolesPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.addRolesChannelDesc(mezon.session, { channel_id: channelId, role_ids: roleIds });
+			const response = await mezon.client.addRolesChannelDesc(mezon.session, {
+				channel_id: BigInt(channelId),
+				role_ids: roleIds.map(BigInt)
+			});
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -102,7 +105,11 @@ export const removeChannelRole = createAsyncThunk(
 	async ({ channelId, clanId, roleId }: removeChannelRolePayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteRoleChannelDesc(mezon.session, { clan_id: clanId, channel_id: channelId, role_id: roleId });
+			const response = await mezon.client.deleteRoleChannelDesc(mezon.session, {
+				clan_id: BigInt(clanId),
+				channel_id: BigInt(channelId),
+				role_id: BigInt(roleId)
+			});
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}

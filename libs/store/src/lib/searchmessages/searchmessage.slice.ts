@@ -60,7 +60,7 @@ export const mapSearchMessageToEntity = (searchMessage: ApiSearchMessageDocument
 	return {
 		...searchMessage,
 		avatar: searchMessage.avatar_url,
-		id: searchMessage.message_id || Snowflake.generate(),
+		id: String(searchMessage.message_id || Snowflake.generate()),
 		content: searchMessage.content ? (safeJSONParse(searchMessage.content) as Record<string, unknown>) : null,
 		mentions: decodedMentions,
 		attachments: decodedAttachments || (Array.isArray(searchMessage.attachments) ? searchMessage.attachments : undefined),

@@ -31,7 +31,7 @@ export const reportMessageAbuse = createAsyncThunk('reportMessage/reportMessageA
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.reportMessageAbuse(mezon.session, payload.messageId, payload.abuseType);
+		const response = await mezon.client.reportMessageAbuse(mezon.session, BigInt(payload.messageId), payload.abuseType);
 
 		thunkAPI.dispatch(
 			toastActions.addToast({
