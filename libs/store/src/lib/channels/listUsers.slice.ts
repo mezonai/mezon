@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import type { IUsers, LoadingStatus } from '@mezon/utils';
+import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiUser } from 'mezon-js/api.gen';
@@ -14,12 +14,12 @@ export const LIST_USERS_BY_USER_FEATURE_KEY = 'listusersbyuserid';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface UsersEntity extends IUsers {
-	id: string; // Primary ID
+export interface UsersEntity extends ApiUser {
+	id_key: string; // Primary ID
 }
 
 export const mapUsersToEntity = (userRes: ApiUser) => {
-	return { ...userRes, id: userRes.id || '' };
+	return { ...userRes, id_key: String(userRes.id) };
 };
 
 export interface ListUsersState extends EntityState<UsersEntity, string> {
@@ -28,7 +28,9 @@ export interface ListUsersState extends EntityState<UsersEntity, string> {
 	cache?: CacheMetadata;
 }
 
-export const listUsersAdapter = createEntityAdapter<UsersEntity>();
+export const listUsersAdapter = createEntityAdapter({
+	selectId: (item: UsersEntity) => item.id_key
+});
 
 export interface ListUsersRootState {
 	[LIST_USERS_BY_USER_FEATURE_KEY]: ListUsersState;

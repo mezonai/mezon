@@ -135,7 +135,7 @@ export const fetchMaxChannelPermissionCached = async (
 		{
 			api_name: 'ListUserPermissionInChannel',
 			user_permission_req: {
-				channel_id: channelId,
+				channel_id: BigInt(channelId),
 				clan_id: BigInt(clanId)
 			}
 		},
