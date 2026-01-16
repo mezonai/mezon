@@ -79,7 +79,7 @@ function extractClanMeta(clan: ClansEntity): ClanMeta {
 export interface ClansState extends EntityState<ClansEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	currentClanId?: string | null;
+	currentClanId?: bigint | null;
 	clanMetadata: EntityState<ClanMeta, string>;
 	clanUnreadStates: EntityState<ClanUnreadState, string>; // Normalized unread state
 	invitePeople: boolean;
@@ -110,7 +110,7 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 				thunkAPI.dispatch(listClanBadgeCount({ clanId }));
 			}
 			batch(() => {
-				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId as string));
+				thunkAPI.dispatch(clansActions.setCurrentClanId(BigInt(clanId)));
 				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
 				thunkAPI.dispatch(channelsActions.fetchChannels({ clanId }));
 
@@ -631,7 +631,7 @@ export const clansSlice = createSlice({
 		add: clansAdapter.addOne,
 		remove: clansAdapter.removeOne,
 		removeAll: clansAdapter.removeAll,
-		setCurrentClanId: (state, action: PayloadAction<string>) => {
+		setCurrentClanId: (state, action: PayloadAction<bigint>) => {
 			state.currentClanId = action.payload;
 		},
 		updateClansOrder: (state, action: PayloadAction<string[]>) => {
@@ -1040,14 +1040,14 @@ export const selectClanNumber = createSelector(getClansState, (state) => state?.
 export const selectCurrentClanId = createSelector(getClansState, (state) => state.currentClanId);
 export const selectClansLoadingStatus = createSelector(getClansState, (state) => state.loadingStatus);
 
-export const selectClanView = createSelector(selectCurrentClanId, (currentClanId) => !!(currentClanId && currentClanId !== '0'));
+export const selectClanView = createSelector(selectCurrentClanId, (currentClanId) => !!currentClanId);
 
 export const selectClansEntities = createSelector(getClansState, selectEntities);
 
 export const selectClanById = (id: string) => createSelector(selectClansEntities, (clansEntities) => clansEntities[id]);
 
 export const selectCurrentClan = createSelector(selectClansEntities, selectCurrentClanId, (clansEntities, clanId) =>
-	clanId ? clansEntities[clanId] : null
+	clanId ? clansEntities[String(clanId)] : null
 );
 
 export const selectCurrentClanBanner = createSelector(selectCurrentClan, (clan) => clan?.banner);

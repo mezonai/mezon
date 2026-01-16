@@ -379,13 +379,13 @@ export const UsersClanSlice = createSlice({
 		},
 		addBannedUser: (
 			state,
-			action: PayloadAction<{ clanId: string; channelId: string; userIds: string[]; banner_id?: string; ban_time?: number }>
+			action: PayloadAction<{ clanId: string; channelId: string; userIds: bigint[]; banner_id?: string; ban_time?: number }>
 		) => {
 			const { clanId, channelId, userIds, banner_id, ban_time } = action.payload;
 			const banList: Update<UsersClanEntity, string>[] = userIds.map((id) => {
-				const oldBanList = state.byClans?.[clanId]?.entities?.entities[id].ban_list || {};
+				const oldBanList = state.byClans?.[clanId]?.entities?.entities[String(id)].ban_list || {};
 				return {
-					id,
+					id: String(id),
 					changes: {
 						ban_list: {
 							...oldBanList,
@@ -401,14 +401,14 @@ export const UsersClanSlice = createSlice({
 				UsersClanAdapter.updateMany(state.byClans[clanId]?.entities, banList);
 			}
 		},
-		removeBannedUser: (state, action: PayloadAction<{ clanId: string; channelId: string; userIds: string[] }>) => {
+		removeBannedUser: (state, action: PayloadAction<{ clanId: string; channelId: string; userIds: bigint[] }>) => {
 			const { clanId, channelId, userIds } = action.payload;
 			const banList: Update<UsersClanEntity, string>[] = userIds.map((id) => {
-				const oldBanList = state.byClans?.[clanId]?.entities?.entities[id].ban_list || {};
+				const oldBanList = state.byClans?.[clanId]?.entities?.entities[String(id)].ban_list || {};
 				const newBanList = { ...oldBanList };
 				delete newBanList[channelId];
 				return {
-					id,
+					id: String(id),
 					changes: {
 						ban_list: newBanList
 					}
@@ -538,13 +538,13 @@ export const getUsersClanState = (rootState: { [USERS_CLANS_FEATURE_KEY]: UsersC
 
 export const selectClanMemberByClanId = createSelector([getUsersClanState, (_, clanId: string) => clanId], (state, clanId) => state.byClans[clanId]);
 
-export const selectAllUserClans = createSelector([getUsersClanState, (state: RootState) => state.clans.currentClanId as string], (state, clanId) => {
+export const selectAllUserClans = createSelector([getUsersClanState, (state: RootState) => String(state.clans.currentClanId)], (state, clanId) => {
 	const clanState = state.byClans[clanId]?.entities;
 	return clanState ? selectAll(clanState) : [];
 });
 
 export const selectEntitesUserClans = createSelector(
-	[getUsersClanState, (state: RootState) => state.clans.currentClanId as string],
+	[getUsersClanState, (state: RootState) => String(state.clans.currentClanId)],
 	(state, clanId) => {
 		const clanState = state.byClans[clanId]?.entities;
 		return clanState ? selectEntities(clanState) : {};
@@ -561,7 +561,7 @@ export const selectMembersByUserIds = createSelector([selectEntitesUserClans, (_
 );
 
 export const selectMembersClanCount = createSelector(
-	[getUsersClanState, (state: RootState) => state.clans.currentClanId as string],
+	[getUsersClanState, (state: RootState) => String(state.clans.currentClanId)],
 	(state, clanId) => {
 		return state.byClans[clanId]?.entities.ids.length || 0;
 	}
@@ -644,7 +644,7 @@ export const selectClanMemberWithStatusIds = createSelector(
 export const selectBanMemberCurrentClanById = createSelector(
 	[
 		getUsersClanState,
-		(state: RootState) => state.clans.currentClanId as string,
+		(state: RootState) => String(state.clans.currentClanId),
 		(_: RootState, channelId: string) => channelId,
 		(_: RootState, __: string, userId: string) => userId
 	],
@@ -659,7 +659,7 @@ export const selectBanMeInChannel = createSelector(
 	[
 		getUsersClanState,
 		selectCurrentUserId,
-		(state: RootState) => state.clans.currentClanId as string,
+		(state: RootState) => String(state.clans.currentClanId),
 		(_: RootState, channelId?: string | null) => channelId
 	],
 	(state, userId, clanId, channelId) => {
@@ -671,7 +671,7 @@ export const selectBanMeInChannel = createSelector(
 );
 
 export const selectBanMemberByChannelId = createSelector(
-	[getUsersClanState, (state: RootState) => state.clans.currentClanId as string, (_: RootState, channelId: string) => channelId],
+	[getUsersClanState, (state: RootState) => String(state.clans.currentClanId), (_: RootState, channelId: string) => channelId],
 	(state, clanId, channelId) => {
 		const clanState = state.byClans?.[clanId]?.entities;
 		if (!clanState) return [];
