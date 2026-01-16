@@ -37,8 +37,8 @@ export const createLinkInviteUser = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				channel_id,
-				clan_id,
+				channel_id: channel_id ? BigInt(channel_id) : undefined,
+				clan_id: clan_id ? BigInt(clan_id) : undefined,
 				expiry_time
 			};
 			const response = await mezon.client.createLinkInviteUser(mezon.session, body);
@@ -60,7 +60,7 @@ type InviteUser = {
 export const inviteUser = createAsyncThunk('invite/inviteUser', async ({ inviteId }: InviteUser, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.inviteUser(mezon.session, inviteId);
+		const response = await mezon.client.inviteUser(mezon.session, BigInt(inviteId));
 		if (!response?.clan_id) {
 			captureSentryError('Can not join clan', 'invite/inviteUser');
 			return thunkAPI.rejectWithValue('Can not join clan');
@@ -81,7 +81,7 @@ export const getLinkInvite = createAsyncThunk('invite/getLinkInvite', async ({ i
 			ssl: process.env.NX_CHAT_APP_API_SECURE === 'true'
 		};
 		const mezon = createClient(gw_login);
-		const response = await mezon.getLinkInvite(inviteId);
+		const response = await mezon.getLinkInvite(BigInt(inviteId));
 
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
@@ -98,7 +98,7 @@ export const checkMutableRelationship = createAsyncThunk('invite/getMutableRelat
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.isFollower(mezon.session, {
-			follow_id: userId
+			follow_id: BigInt(userId)
 		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
@@ -130,7 +130,7 @@ export const inviteSlice = createSlice({
 		},
 		removeByClanId: (state, action: PayloadAction<string>) => {
 			for (const id of state.ids) {
-				if (state.entities[id]?.clan_id === action.payload) {
+				if (state.entities[id]?.clan_id?.toString() === action.payload) {
 					inviteAdapter.removeOne(state, id);
 				}
 			}

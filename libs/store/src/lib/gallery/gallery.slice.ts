@@ -61,7 +61,7 @@ export const fetchGalleryAttachments = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-			const response = await mezon.client.listChannelAttachments(mezon.session, clanId, channelId, fileType, undefined, limit, before, after);
+			const response = await mezon.client.listChannelAttachments(mezon.session, BigInt(clanId), BigInt(channelId), fileType, undefined, limit, before, after);
 
 			if (!response.attachments) {
 				return { attachments: [], channelId, direction };
