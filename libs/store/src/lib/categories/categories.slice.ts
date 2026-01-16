@@ -98,7 +98,7 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
+		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, BigInt(clanId)),
 		'category_list'
 	);
 
@@ -148,7 +148,7 @@ export const createNewCategory = createAsyncThunk('categories/createCategories',
 
 export const checkDuplicateCategoryInClan = createAsyncThunk(
 	'categories/checkDuplicateCategoryInClan',
-	async ({ categoryName, clanId }: { categoryName: string; clanId: string }, thunkAPI) => {
+	async ({ categoryName, clanId }: { categoryName: string; clanId: bigint }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(categoryName, clanId, TypeCheck.TYPECATEGORY, clanId);
@@ -166,15 +166,15 @@ export const checkDuplicateCategoryInClan = createAsyncThunk(
 
 export const deleteCategory = createAsyncThunk(
 	'categories/deleteCategory',
-	async ({ clanId, categoryId, categoryLabel }: { clanId: string; categoryId: string; categoryLabel: string }, thunkAPI) => {
+	async ({ clanId, categoryId, categoryLabel }: { clanId: string; categoryId: bigint; categoryLabel: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.deleteCategoryDesc(mezon.session, categoryId, clanId, categoryLabel);
+			await mezon.client.deleteCategoryDesc(mezon.session, categoryId, BigInt(clanId), categoryLabel);
 			// Clear API call tracker to force fresh data on next fetch
 			const apiKey = createApiKey('fetchCategories', clanId);
 			clearApiCallTracker(apiKey);
-			thunkAPI.dispatch(categoriesActions.deleteOne({ clanId, categoryId }));
-			thunkAPI.dispatch(channelsActions.removeByCategory({ clanId, categoryId }));
+			thunkAPI.dispatch(categoriesActions.deleteOne({ clanId, categoryId: String(categoryId) }));
+			thunkAPI.dispatch(channelsActions.removeByCategory({ clanId, categoryId: String(categoryId) }));
 		} catch (error) {
 			captureSentryError(error, 'categories/deleteCategory');
 			return thunkAPI.rejectWithValue(error);
@@ -194,10 +194,10 @@ export const updateCategoriesOrder = createAsyncThunk(
 			});
 
 			const state = thunkAPI.getState() as RootState;
-			const currentCategories = selectCachedCategoriesByClan(state, clan_id as string);
+			const currentCategories = selectCachedCategoriesByClan(state, String(clan_id));
 
 			const updatedCategories = currentCategories.map((cat) => {
-				const updatedOrder = categories.find((c) => c.category_id === cat.id);
+				const updatedOrder = categories.find((c) => c.category_id === BigInt(cat.id));
 				return {
 					...cat,
 					order: updatedOrder?.order
@@ -208,7 +208,7 @@ export const updateCategoriesOrder = createAsyncThunk(
 
 			thunkAPI.dispatch(
 				categoriesActions.setAll({
-					clanId: clan_id,
+					clanId: String(clan_id),
 					categories: sortedCategories
 				})
 			);
@@ -222,13 +222,13 @@ export const updateCategoriesOrder = createAsyncThunk(
 export const updateCategory = createAsyncThunk('categories/updateCategory', async ({ clanId, request }: updatCategoryPayload, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const _response = await mezon.client.updateCategory(mezon.session, clanId, request);
+		const _response = await mezon.client.updateCategory(mezon.session, BigInt(clanId), request);
 
 		if (request.category_id && _response) {
 			const updatedCategory: CategoriesEntity = {
-				id: request.category_id,
+				id: String(request.category_id),
 				category_name: request.category_name || '',
-				clan_id: clanId
+				clan_id: BigInt(clanId)
 			};
 
 			thunkAPI.dispatch(
@@ -456,34 +456,31 @@ export const categoriesActions = {
 export const getCategoriesState = (rootState: { [CATEGORIES_FEATURE_KEY]: CategoriesState }): CategoriesState => rootState[CATEGORIES_FEATURE_KEY];
 
 export const selectCategoryIdSortChannel = createSelector(
-	[getCategoriesState, (state: RootState) => state.clans.currentClanId as string],
+	[getCategoriesState, (state: RootState) => String(state.clans.currentClanId)],
 	(state, clanId) => {
 		return state.byClans[clanId]?.sortChannelByCategoryId;
 	}
 );
 
 export const selectIsShowEmptyCategory = createSelector(
-	[getCategoriesState, (state: RootState) => state.clans.currentClanId as string],
+	[getCategoriesState, (state: RootState) => String(state.clans.currentClanId)],
 	(state, clanId) => state.byClans[clanId]?.showEmptyCategory ?? false
 );
 
 export const selectCategoryById = createSelector(
-	[getCategoriesState, (state: RootState) => state.clans.currentClanId as string, (_, id: string) => id],
+	[getCategoriesState, (state: RootState) => String(state.clans.currentClanId), (_, id: string) => id],
 	(state, clanId, id) => state.byClans[clanId]?.entities.entities[id]
 );
 
 export const selectCtrlKFocusChannel = createSelector(getCategoriesState, (state) => state.ctrlKFocusChannel);
 
 export const selectCategoryExpandStateByCategoryId = createSelector(
-	[getCategoriesState, (state: RootState) => state.clans.currentClanId as string, (_, categoryId: string) => categoryId],
+	[getCategoriesState, (state: RootState) => String(state.clans.currentClanId), (_, categoryId: string) => categoryId],
 	(state, clanId, categoryId) => state.byClans[clanId]?.categoryExpandState[categoryId] ?? true
 );
 
 export const selectAllCategories = createSelector(
-	[
-		(state: RootState, id?: null | string) => id || (state.clans.currentClanId as string),
-		(state: RootState) => state[CATEGORIES_FEATURE_KEY].byClans
-	],
+	[(state: RootState, id?: null | string) => id || String(state.clans.currentClanId), (state: RootState) => state[CATEGORIES_FEATURE_KEY].byClans],
 	(clanId, byClans) => {
 		const clanState = byClans[clanId]?.entities;
 		return clanState ? selectAllCategoriesEntities(clanState) : [];
