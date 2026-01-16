@@ -11,25 +11,9 @@ let instances:
 	  }[]
 	| undefined;
 
-let cachedBlurhashPath: string | null = null;
-
-function getBlurhashPath() {
-	if (cachedBlurhashPath) {
-		return cachedBlurhashPath;
-	}
-
-	cachedBlurhashPath = `https://mezon.ai/assets/js/blurhash.js`;
-
-	return cachedBlurhashPath;
-}
 
 function createWorkerCode() {
-	const blurhashPath = getBlurhashPath();
 	return `
-  var module = { exports: {} };
-  importScripts('${blurhashPath}');
-  self.blurhash = module.exports;
-
   // Define utility functions
   const callbackState = new Map();
   const pendingPayloads = [];
@@ -77,21 +61,15 @@ function createWorkerCode() {
   // API implementation
    async function blurThumb(canvas, thumbData) {
       const { width, height } = canvas;
-  const ctx = canvas.getContext('2d');
-
-  const pixels = self.blurhash.decode(
-    thumbData,
-    width,
-    height
-  );
-
-  const blurredImageData = new ImageData(
-    new Uint8ClampedArray(pixels),
-    width,
-    height
-  );
-
-  ctx.putImageData(blurredImageData, 0, 0);
+      const ctx = canvas.getContext('2d');
+      const imageData = ctx.createImageData(width, height);
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        imageData.data[i] = 200;
+        imageData.data[i + 1] = 200;
+        imageData.data[i + 2] = 200;
+        imageData.data[i + 3] = 255;
+      }
+      ctx.putImageData(imageData, 0, 0);
   }
 
   async function getAppendixColorFromImage(blobUrl, isOwn) {
