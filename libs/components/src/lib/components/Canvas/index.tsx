@@ -118,10 +118,10 @@ const Canvas = () => {
 		async (isCreate: number) => {
 			if (currentChannelId && currentClanId) {
 				const body = {
-					channel_id: currentChannelId,
-					clan_id: currentClanId?.toString(),
+					channel_id: BigInt(currentChannelId),
+					clan_id: BigInt(currentClanId),
 					content,
-					...(idCanvas && { id: idCanvas }),
+					...(idCanvas && { id: BigInt(idCanvas) }),
 					...(canvasById?.is_default && { is_default: true }),
 					title,
 					status: isCreate

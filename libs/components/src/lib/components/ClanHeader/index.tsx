@@ -86,7 +86,7 @@ function ClanHeader({ name, type }: ClanHeaderProps) {
 
 	const handleCreateCate = async (nameCate: string) => {
 		const body: ApiCreateCategoryDescRequest = {
-			clan_id: currentClanId?.toString(),
+			clan_id: BigInt(currentClanId || 0),
 			category_name: nameCate
 		};
 		await dispatch(categoriesActions.createNewCategory(body));

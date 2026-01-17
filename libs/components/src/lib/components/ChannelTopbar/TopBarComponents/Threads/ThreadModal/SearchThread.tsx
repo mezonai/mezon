@@ -27,7 +27,7 @@ const SearchThread = ({ channelId }: SearchThreadProps) => {
 	const handleChange = useCallback(
 		(event: React.ChangeEvent<HTMLInputElement>) => {
 			const value = event.target.value;
-			dispatch(threadsActions.setThreadInputSearch({ channelId: channelId, value }));
+			dispatch(threadsActions.setThreadInputSearch({ channelId, value }));
 			handleTypingDebounced(value);
 		},
 		[dispatch, channelId, handleTypingDebounced]

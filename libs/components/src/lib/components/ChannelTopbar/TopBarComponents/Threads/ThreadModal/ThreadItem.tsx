@@ -11,7 +11,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ChannelMembersEntity, IChannelMember } from '@mezon/utils';
+import type { ChannelMembersEntity, IUsersClan } from '@mezon/utils';
 import { convertTimeMessage, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { MutableRefObject } from 'react';
 import { useMemo } from 'react';
@@ -41,9 +41,9 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 		selectMessageEntityById(state, thread.channel_id as string, messageId || thread?.last_sent_message?.id)
 	);
 	const user = useAppSelector((state) =>
-		selectMemberClanByUserId(state, (message?.user?.id || thread?.last_sent_message?.sender_id || thread?.creator_id) as string)
-	) as IChannelMember;
-	const { avatarImg, username } = useMessageSender(user);
+		selectMemberClanByUserId(state, message?.user?.id || String(thread?.last_sent_message?.sender_id) || String(thread?.creator_id))
+	) as IUsersClan;
+	const { avatarImg, username } = useMessageSender({ ...user, id: user.user.id, user: { ...user.user, id: BigInt(user.id) } });
 
 	const getRandomElements = (array: ChannelMembersEntity[], count: number) => {
 		const result: ChannelMembersEntity[] = [];

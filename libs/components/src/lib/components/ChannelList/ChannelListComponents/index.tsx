@@ -281,12 +281,12 @@ const ChannelAppList = memo(() => {
 		if (appChannel.app_id && appChannel.app_url && appChannel.channel_id) {
 			const hashData = await dispatch(
 				channelAppActions.generateAppUserHash({
-					appId: appChannel.app_id
+					appId: String(appChannel.app_id)
 				})
 			).unwrap();
 			if (hashData.web_app_data) {
 				const store = getStore();
-				const channel = selectChannelById(store.getState(), appChannel.channel_id);
+				const channel = selectChannelById(store.getState(), String(appChannel.channel_id));
 				const encodedHash = encodeURIComponent(hashData.web_app_data);
 				const urlWithHash = `${appChannel.app_url}?data=${encodedHash}`;
 				if (isElectron()) {

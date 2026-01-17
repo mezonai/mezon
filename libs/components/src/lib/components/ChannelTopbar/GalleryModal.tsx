@@ -607,7 +607,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			dispatch(
 				attachmentActions.setCurrentAttachment({
 					...enhancedAttachmentData,
-					id: enhancedAttachmentData.message_id as string,
+					id: String(enhancedAttachmentData.message_id),
 					uploader: enhancedAttachmentData.uploader,
 					create_time: enhancedAttachmentData.create_time
 				})
@@ -1055,7 +1055,7 @@ const GalleryContent = ({
 									return (
 										<ImageWithLoading
 											key={cacheKey}
-											cacheKey={cacheKey}
+											cacheKey={String(cacheKey)}
 											src={
 												isVideo
 													? attachment.url || ''

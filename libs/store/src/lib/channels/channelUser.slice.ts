@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IChannelUser, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ChannelDescription } from 'mezon-js';
+import type { ApiChannelDescription } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -21,8 +21,15 @@ export interface ChannelUsersEntity extends IChannelUser {
 	id: string; // Primary ID
 }
 
-export const mapChannelsByUserToEntity = (channelRes: ChannelDescription) => {
-	return { ...channelRes, id: String(channelRes.channel_id) || '', status: channelRes.meeting_code ? 1 : 0 };
+export const mapChannelsByUserToEntity = (channelRes: ChannelUsersEntity | ApiChannelDescription): ChannelUsersEntity & { status: number } => {
+	return {
+		...channelRes,
+		id: String(channelRes.channel_id) || '',
+		status: channelRes.meeting_code ? 1 : 0,
+		clan_id: String(channelRes.clan_id),
+		channel_id: String(channelRes.channel_id),
+		parent_id: String(channelRes.parent_id)
+	};
 };
 
 export interface ListChannelsByUserState extends EntityState<ChannelUsersEntity, string> {
@@ -126,7 +133,7 @@ export const listChannelsByUserSlice = createSlice({
 		upsertMany: listChannelsByUserAdapter.upsertMany,
 		removeByClanId: (state, action: PayloadAction<{ clanId: string }>) => {
 			const channels = listChannelsByUserAdapter.getSelectors().selectAll(state);
-			const channelsToRemove = channels.filter((channel) => channel.clan_id === BigInt(action.payload.clanId)).map((channel) => channel.id);
+			const channelsToRemove = channels.filter((channel) => channel.clan_id === action.payload.clanId).map((channel) => channel.id);
 			listChannelsByUserAdapter.removeMany(state, channelsToRemove);
 		},
 		updateLastSentTime: (state, action: PayloadAction<{ channelId: string }>) => {
