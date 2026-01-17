@@ -110,7 +110,7 @@ export const userChannelsSlice = createSlice({
 		remove: UserChannelAdapter.removeOne,
 		update: UserChannelAdapter.updateOne,
 		removeMany: UserChannelAdapter.removeMany,
-		addUserChannel: (state, action: PayloadAction<{ channelId: string; userAdds: Array<bigint> }>) => {
+		addUserChannel: (state, action: PayloadAction<{ channelId: string; userAdds: Array<string> }>) => {
 			const { channelId, userAdds } = action.payload;
 
 			if (userAdds.length <= 0) return;
@@ -118,7 +118,7 @@ export const userChannelsSlice = createSlice({
 			const existingChannel = state.entities[channelId];
 
 			if (existingChannel) {
-				const updatedUserIds = Array.from(new Set([...(existingChannel?.user_ids || []), ...userAdds]));
+				const updatedUserIds = Array.from(new Set([...(existingChannel?.user_ids || []), ...userAdds.map((id) => BigInt(id))]));
 
 				UserChannelAdapter.updateOne(state, {
 					id: channelId,
@@ -129,11 +129,11 @@ export const userChannelsSlice = createSlice({
 			} else {
 				UserChannelAdapter.addOne(state, {
 					id: channelId,
-					user_ids: userAdds
+					user_ids: userAdds.map((id) => BigInt(id))
 				});
 			}
 		},
-		removeUserChannel: (state, action: PayloadAction<{ channelId: string; userRemoves: Array<bigint> }>) => {
+		removeUserChannel: (state, action: PayloadAction<{ channelId: string; userRemoves: Array<string> }>) => {
 			const { channelId, userRemoves } = action.payload;
 
 			if (userRemoves.length <= 0) return;
@@ -146,7 +146,8 @@ export const userChannelsSlice = createSlice({
 				const onlines = existingChannel.onlines;
 				const avatars = existingChannel.avatars;
 				userRemoves.forEach((user) => {
-					const indexRemove = user_ids?.indexOf(user);
+					const userBigInt = BigInt(user);
+					const indexRemove = user_ids?.indexOf(userBigInt);
 					if (indexRemove !== -1 && indexRemove !== undefined) {
 						user_ids?.splice(indexRemove, 1);
 						display_names?.splice(indexRemove, 1);

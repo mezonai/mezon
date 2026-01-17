@@ -148,10 +148,15 @@ export const createNewCategory = createAsyncThunk('categories/createCategories',
 
 export const checkDuplicateCategoryInClan = createAsyncThunk(
 	'categories/checkDuplicateCategoryInClan',
-	async ({ categoryName, clanId }: { categoryName: string; clanId: bigint }, thunkAPI) => {
+	async ({ categoryName, clanId }: { categoryName: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(categoryName, clanId, TypeCheck.TYPECATEGORY, clanId);
+			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(
+				categoryName,
+				BigInt(clanId),
+				TypeCheck.TYPECATEGORY,
+				BigInt(clanId)
+			);
 
 			if (isDuplicateName?.type === TypeCheck.TYPECATEGORY) {
 				return isDuplicateName.exist;
@@ -166,10 +171,10 @@ export const checkDuplicateCategoryInClan = createAsyncThunk(
 
 export const deleteCategory = createAsyncThunk(
 	'categories/deleteCategory',
-	async ({ clanId, categoryId, categoryLabel }: { clanId: string; categoryId: bigint; categoryLabel: string }, thunkAPI) => {
+	async ({ clanId, categoryId, categoryLabel }: { clanId: string; categoryId: string; categoryLabel: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.deleteCategoryDesc(mezon.session, categoryId, BigInt(clanId), categoryLabel);
+			await mezon.client.deleteCategoryDesc(mezon.session, BigInt(categoryId), BigInt(clanId), categoryLabel);
 			// Clear API call tracker to force fresh data on next fetch
 			const apiKey = createApiKey('fetchCategories', clanId);
 			clearApiCallTracker(apiKey);
