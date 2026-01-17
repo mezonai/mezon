@@ -66,7 +66,7 @@ const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, 
 	let currentChannelId: string | null | undefined = null;
 
 	searchMessages.forEach((message) => {
-		const msgChannelId = message.channel_id ?? '';
+		const msgChannelId = message.channel_id !== undefined ? String(message.channel_id) : '';
 		if (msgChannelId !== currentChannelId) {
 			if (currentGroup.length > 0 && currentChannelId) {
 				groupedMessages.push({
@@ -180,16 +180,18 @@ const SearchedItem = ({ searchMessage, searchChannel, user }: ISearchedItemProps
 	const navigate = useNavigate();
 
 	const convertedMessage = {
-		...searchMessage
+		...searchMessage,
+		channel_id: searchMessage.channel_id !== undefined ? String(searchMessage.channel_id) : '',
+		sender_id: searchMessage.sender_id !== undefined ? String(searchMessage.sender_id) : ''
 	} as unknown as IMessageWithUser;
 
 	const handleClickJump = () => {
 		if (!searchMessage) return;
 		dispatch(
 			messagesActions.jumpToMessage({
-				clanId: searchMessage?.clan_id || '',
-				messageId: searchMessage?.message_id || searchMessage.id,
-				channelId: searchMessage?.channel_id as string,
+				clanId: searchMessage?.clan_id !== undefined ? String(searchMessage.clan_id) : '',
+				messageId: searchMessage?.message_id !== undefined ? String(searchMessage.message_id) : searchMessage.id,
+				channelId: searchMessage?.channel_id !== undefined ? String(searchMessage.channel_id) : '',
 				navigate
 			})
 		);
@@ -205,7 +207,13 @@ const SearchedItem = ({ searchMessage, searchChannel, user }: ISearchedItemProps
 			</button>
 			<MessageWithUser
 				allowDisplayShortProfile={false}
-				message={convertedMessage as IMessageWithUser}
+				message={
+					{
+						...convertedMessage,
+						channel_id: String(convertedMessage.channel_id || ''),
+						sender_id: String(convertedMessage.sender_id || '')
+					} as any
+				}
 				mode={
 					searchChannel?.type === ChannelType.CHANNEL_TYPE_THREAD
 						? ChannelStreamMode.STREAM_MODE_THREAD

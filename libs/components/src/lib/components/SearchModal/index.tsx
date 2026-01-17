@@ -61,11 +61,16 @@ function SearchModal({ onClose }: SearchModalProps) {
 			dmGroupChatList.map((itemDM: DirectEntity) => {
 				if (itemDM.active === 1) {
 					listDmSearchMap.push({
-						id: itemDM.channel_id,
+						id: String(itemDM.channel_id || ''),
 						name: itemDM?.usernames?.toString() ?? '',
 						displayName: itemDM.channel_label,
 						avatarUser: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? (itemDM?.avatars?.[0] ?? '') : itemDM?.channel_avatar,
-						idDM: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? itemDM?.user_ids?.[0] : itemDM.channel_id,
+						idDM:
+							itemDM.type === ChannelType.CHANNEL_TYPE_DM
+								? itemDM?.user_ids?.[0]
+									? String(itemDM.user_ids[0])
+									: ''
+								: String(itemDM.channel_id || ''),
 						lastSentTimeStamp: itemDM.last_sent_message?.timestamp_seconds,
 						typeChat: TypeSearch.Dm_Type,
 						type: itemDM.type,
@@ -74,7 +79,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 					});
 				}
 				if (itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
-					checkListDM.current?.add(itemDM?.user_ids?.[0]);
+					checkListDM.current?.add(String(itemDM.user_ids[0]));
 				}
 			});
 		}
@@ -84,18 +89,18 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const listChannelSearch = useMemo(() => {
 		const list = listChannels.map((item) => {
 			return {
-				id: item?.channel_id ?? '',
+				id: item?.channel_id !== undefined ? String(item.channel_id) : '',
 				name: item?.channel_label ?? '',
 				subText: item?.clan_name ?? '',
 				icon: '#',
-				clanId: item?.clan_id ?? '',
-				channelId: item?.channel_id ?? '',
+				clanId: item?.clan_id !== undefined ? String(item.clan_id) : '',
+				channelId: item?.channel_id !== undefined ? String(item.channel_id) : '',
 				lastSentTimeStamp: Number(item?.last_sent_message?.timestamp_seconds || 0),
 				typeChat: TypeSearch.Channel_Type,
 				prioritizeName: item?.channel_label ?? '',
 				channel_private: item.channel_private,
 				type: item.type,
-				parent_id: item.parent_id,
+				parent_id: item.parent_id !== undefined ? String(item.parent_id) : undefined,
 				meeting_code: item.meeting_code,
 				count_messsage_unread: item?.count_mess_unread,
 				lastSeenTimeStamp: Number(item?.last_seen_message?.timestamp_seconds || 0)
@@ -109,15 +114,16 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 		for (const userId in allUsesInAllClansEntities) {
 			const user = allUsesInAllClansEntities[userId];
-			if (!checkListDM.current?.has(user?.id)) {
+			const userIdString = user?.id !== undefined ? String(user.id) : '';
+			if (!checkListDM.current?.has(userIdString)) {
 				list.push({
-					id: user?.id ?? '',
-					prioritizeName: allClanUsersEntities[user?.id]?.clan_nick ?? user?.display_name ?? '',
+					id: userIdString,
+					prioritizeName: allClanUsersEntities[userIdString]?.clan_nick ?? user?.display_name ?? '',
 					name: user?.username ?? '',
 					avatarUser: user?.avatar_url ?? '',
 					displayName: user?.display_name ?? '',
 					lastSentTimeStamp: '0',
-					idDM: user?.id,
+					idDM: userIdString,
 					typeChat: TypeSearch.Dm_Type,
 					type: ChannelType.CHANNEL_TYPE_DM,
 					searchName: (user.list_nick_names || []).join('.')
@@ -231,7 +237,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 			} else {
 				const response = await createDirectMessageWithUser(user.idDM || '', user.displayName || user.name, user.name, user.avatarUser);
 				if (response.channel_id) {
-					const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+					const directChat = toDmGroupPageFromMainApp(String(response.channel_id), Number(response.type));
 					navigate(directChat);
 				}
 			}
