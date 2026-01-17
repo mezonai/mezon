@@ -26,7 +26,7 @@ export const initialListChannelRenderState: ChannelListRenderState = {
 
 export const updateClanBadgeRender = createAsyncThunk(
 	'listRender/updateClanBadge',
-	async ({ channelId, clanId }: { channelId: bigint; clanId: string }, thunkAPI) => {
+	async ({ channelId, clanId }: { channelId: string; clanId: string }, thunkAPI) => {
 		try {
 			const state = thunkAPI.getState() as RootState;
 			const listChannelRender = state.CHANNEL_LIST_RENDER.listChannelRender[clanId];

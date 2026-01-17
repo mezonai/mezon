@@ -15,13 +15,14 @@ import type {
 	ApiSortParam
 } from 'mezon-js/api.gen';
 import { ensureSession, getMezonCtx } from '../helpers';
+import type { MessageMentionEntity } from '../messages/messages.slice';
 export const SEARCH_MESSAGES_FEATURE_KEY = 'searchMessages';
 
 export interface ISearchMessage extends Omit<ApiSearchMessageDocument, 'mentions' | 'attachments' | 'references' | 'reactions' | 'content'> {
 	id: string;
 	content?: Record<string, unknown> | null;
 	avatar?: string;
-	mentions?: ApiMessageMention[];
+	mentions?: MessageMentionEntity[];
 	attachments?: ApiMessageAttachment[];
 	references?: ApiMessageRef[];
 	reactions?: ApiMessageReaction[];
@@ -57,12 +58,22 @@ export const mapSearchMessageToEntity = (searchMessage: ApiSearchMessageDocument
 	const decodedRefs = decodeOrParseField<ApiMessageRef>(searchMessage.references, decodeRefs, 'refs');
 	const decodedReactions = decodeOrParseField<ApiMessageReaction>(searchMessage.reactions, decodeReactions, 'reactions');
 
+	const mentions = decodedMentions?.map(
+		(mention): MessageMentionEntity => ({
+			...mention,
+			id: mention.id?.toString() || '',
+			user_id: mention.user_id?.toString(),
+			role_id: mention.role_id?.toString(),
+			channel_id: mention.channel_id?.toString()
+		})
+	);
+
 	return {
 		...searchMessage,
 		avatar: searchMessage.avatar_url,
 		id: String(searchMessage.message_id || Snowflake.generate()),
 		content: searchMessage.content ? (safeJSONParse(searchMessage.content) as Record<string, unknown>) : null,
-		mentions: decodedMentions,
+		mentions,
 		attachments: decodedAttachments || (Array.isArray(searchMessage.attachments) ? searchMessage.attachments : undefined),
 		references: decodedRefs,
 		reactions: decodedReactions

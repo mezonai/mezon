@@ -1,8 +1,6 @@
 import type { IChannel } from '@mezon/utils';
 import { ID_MENTION_HERE, TIME_OFFSET, TypeMessage, debounce } from '@mezon/utils';
-import type { ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageMention } from 'mezon-js/api.gen';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
@@ -10,6 +8,7 @@ import { listChannelRenderAction } from '../channels/listChannelRender.slice';
 import { selectMemberClanByUserId } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
 import { directMetaActions } from '../direct/direct.slice';
+import type { MessageMentionEntity, MessagesEntity } from '../messages/messages.slice';
 import { selectLatestMessageId } from '../messages/messages.slice';
 import type { AppDispatch, RootState, Store } from '../store';
 
@@ -151,35 +150,34 @@ export const resetChannelBadgeCount = (dispatch: AppDispatch, params: ResetBadge
 };
 
 export interface DecreaseChannelBadgeParams {
-	message: ChannelMessage;
+	message: MessagesEntity;
 	userId: string;
 	store: Store;
 }
 
-const isMessageMentionOrReply = (msg: ChannelMessage, currentUserId: string, store: Store): boolean => {
+const isMessageMentionOrReply = (msg: MessagesEntity, currentUserId: string, store: Store): boolean => {
 	const state = store?.getState?.();
 	const currentClanUser = state ? selectMemberClanByUserId(state, currentUserId) : undefined;
 
 	const hasMention = (() => {
 		if (!currentUserId) return false;
 
-		// Normalize mentions to an array
-		let mentions: ApiMessageMention[] | undefined;
+		let mentions: MessageMentionEntity[] | undefined = msg?.mentions;
+
 		if (Array.isArray(msg?.mentions)) {
-			mentions = msg.mentions as unknown as ApiMessageMention[];
+			mentions = msg.mentions;
 		} else if (typeof msg?.mentions === 'string') {
-			mentions = safeJSONParse(msg.mentions) as ApiMessageMention[] | undefined;
+			mentions = safeJSONParse(msg.mentions);
 		}
 
-		// Special @here mention
-		const includesHere = mentions?.some((m) => m?.user_id === ID_MENTION_HERE) ?? false;
+		const includesHere = mentions?.some((m) => m?.user_id === String(ID_MENTION_HERE)) ?? false;
 		const includesUser = mentions?.some((mention) => mention?.user_id === currentUserId) ?? false;
-		const includesRole = mentions?.some((item) => (currentClanUser?.role_id as string | undefined)?.includes(item?.role_id as string)) ?? false;
+		const includesRole = mentions?.some((item) => (currentClanUser?.role_id as string | undefined)?.includes(item?.role_id || '')) ?? false;
 
 		return includesHere || includesUser || includesRole;
 	})();
 
-	const isReply = msg.references?.some((ref) => ref.message_sender_id === currentUserId) ?? false;
+	const isReply = msg.references?.some((ref) => ref.message_sender_id && String(ref.message_sender_id) === currentUserId) ?? false;
 
 	return hasMention || isReply;
 };

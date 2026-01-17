@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
-import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
+import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ApiAuditLog, MezonapiListAuditLog } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
@@ -12,14 +12,18 @@ import type { RootState } from '../store';
 export const AUDIT_LOG_FEATURE_KEY = 'auditlog';
 const FETCH_AUDIT_LOG_CACHED_TIME = 1000 * 60 * 60;
 
-export interface AuditLogEntity extends ApiAuditLog {
+export interface AuditLogEntity extends Omit<ApiAuditLog, 'id' | 'channel_id' | 'clan_id' | 'entity_id' | 'user_id'> {
 	id: string;
+	channel_id?: string;
+	clan_id?: string;
+	entity_id?: string;
+	user_id?: string;
 }
 
-export interface IAuditLogState extends EntityState<ApiAuditLog, string> {
+export interface IAuditLogState extends EntityState<AuditLogEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	auditLogData: MezonapiListAuditLog;
+	auditLogData: Omit<MezonapiListAuditLog, 'logs'> & { logs?: AuditLogEntity[] };
 	cache?: CacheMetadata;
 }
 
@@ -31,9 +35,9 @@ type getAuditLogListPayload = {
 	noCache?: boolean;
 };
 
-export const auditLogAdapter = createEntityAdapter({
-	selectId: (auditLog: ApiAuditLog) => auditLog.id || '',
-	sortComparer: (a: ApiAuditLog, b: ApiAuditLog) => {
+export const auditLogAdapter = createEntityAdapter<AuditLogEntity, string>({
+	selectId: (auditLog: AuditLogEntity) => auditLog.id,
+	sortComparer: (a: AuditLogEntity, b: AuditLogEntity) => {
 		if (a.time_log && b.time_log) {
 			return Date.parse(b.time_log) - Date.parse(a.time_log);
 		}
@@ -64,7 +68,7 @@ export const fetchAuditLogCached = async (
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.listAuditLog(mezon.session, actionLog, userId, clanId, date_log), {
+	const response = await withRetry(() => mezon.client.listAuditLog(mezon.session, actionLog, BigInt(userId), BigInt(clanId), date_log), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'audit-log'
@@ -132,14 +136,30 @@ export const auditLogSlice = createSlice({
 			.addCase(auditLogList.pending, (state: IAuditLogState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(auditLogList.fulfilled, (state: IAuditLogState, action: PayloadAction<MezonapiListAuditLog & { fromCache?: boolean }>) => {
-				const { fromCache, ...auditLogData } = action.payload;
-
-				if (!fromCache) {
-					state.auditLogData = auditLogData;
-					state.cache = createCacheMetadata(FETCH_AUDIT_LOG_CACHED_TIME);
+			.addCase(auditLogList.fulfilled, (state: IAuditLogState, action) => {
+				if (action.payload.fromCache) {
+					state.loadingStatus = 'loaded';
+					return;
 				}
 
+				const auditLogData = action.payload as MezonapiListAuditLog;
+
+				const mappedLogs = auditLogData.logs?.map(
+					(log): AuditLogEntity => ({
+						...log,
+						id: log.id?.toString() || '',
+						channel_id: log.channel_id?.toString(),
+						clan_id: log.clan_id?.toString(),
+						entity_id: log.entity_id?.toString(),
+						user_id: log.user_id?.toString()
+					})
+				);
+
+				state.auditLogData = {
+					...auditLogData,
+					logs: mappedLogs
+				};
+				state.cache = createCacheMetadata(FETCH_AUDIT_LOG_CACHED_TIME);
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(auditLogList.rejected, (state: IAuditLogState, action) => {

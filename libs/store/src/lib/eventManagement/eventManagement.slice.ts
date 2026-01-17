@@ -74,7 +74,8 @@ export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?
 		...eventRes,
 		id: eventRes.id ? eventRes.id.toString() : '',
 		channel_id: eventRes.channel_id?.toString() === '0' || eventRes.channel_id?.toString() === '' ? BigInt('') : eventRes.channel_id,
-		channel_voice_id: eventRes.channel_voice_id?.toString() === '0' || eventRes.channel_voice_id?.toString() === '' ? BigInt('') : eventRes.channel_voice_id
+		channel_voice_id:
+			eventRes.channel_voice_id?.toString() === '0' || eventRes.channel_voice_id?.toString() === '' ? BigInt('') : eventRes.channel_voice_id
 	};
 };
 
@@ -238,7 +239,13 @@ export const fetchDeleteEventManagement = createAsyncThunk(
 	async (body: fetchDeleteEventManagementPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteEvent(mezon.session, BigInt(body.eventID), BigInt(body.clanId), BigInt(body.creatorId), body.eventLabel);
+			const response = await mezon.client.deleteEvent(
+				mezon.session,
+				BigInt(body.eventID),
+				BigInt(body.clanId),
+				BigInt(body.creatorId),
+				body.eventLabel
+			);
 		} catch (error) {
 			captureSentryError(error, 'deleteEventManagement/fetchDeleteEventManagement');
 			return thunkAPI.rejectWithValue(error);

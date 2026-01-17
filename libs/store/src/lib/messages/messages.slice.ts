@@ -53,6 +53,16 @@ export const MESSAGES_FEATURE_KEY = 'messages';
 export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenId?: string): MessagesEntity => {
 	const isAnonymous = String(channelMess?.sender_id || '') === NX_CHAT_APP_ANNONYMOUS_USER_ID;
 	const createTimeSeconds = channelMess.create_time_seconds || Date.now() / 1000;
+	const mentions = channelMess.mentions?.map(
+		(mention): MessageMentionEntity => ({
+			...mention,
+			id: mention.id?.toString() || '',
+			user_id: mention.user_id?.toString(),
+			role_id: mention.role_id?.toString(),
+			channel_id: mention.channel_id?.toString()
+		})
+	);
+
 	return {
 		...channelMess,
 		isFirst: channelMess.code === EMessageCode.FIRST_MESSAGE,
@@ -73,11 +83,19 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 		update_time_seconds:
 			channelMess.update_time_seconds ||
 			(channelMess.update_time_seconds ? new Date(channelMess.update_time_seconds * 1000).getTime() : undefined),
-		code: channelMess.code || 0
+		code: channelMess.code || 0,
+		mentions
 	};
 };
 
-export interface MessagesEntity extends Omit<IMessageWithUser, 'id' | 'channel_id' | 'sender_id' | 'clan_id'> {
+export interface MessageMentionEntity extends Omit<ApiMessageMention, 'id' | 'user_id' | 'role_id' | 'channel_id'> {
+	id: string;
+	user_id?: string;
+	role_id?: string;
+	channel_id?: string;
+}
+
+export interface MessagesEntity extends Omit<IMessageWithUser, 'id' | 'channel_id' | 'sender_id' | 'clan_id' | 'mentions'> {
 	id: string;
 	channel_id: string;
 	sender_id?: string;
@@ -87,6 +105,7 @@ export interface MessagesEntity extends Omit<IMessageWithUser, 'id' | 'channel_i
 	hide_editted?: boolean;
 	code: number;
 	originalSendPayload?: Partial<SendMessagePayload>;
+	mentions?: MessageMentionEntity[];
 }
 
 export type LastMessageEntity = Omit<ApiChannelMessageHeaderWithChannel, 'id' | 'sender_id'> & {
@@ -1435,7 +1454,7 @@ export const messagesSlice = createSlice({
 					...action.payload,
 					id: BigInt(action.payload.id),
 					message_id: BigInt(action.payload.message_id),
-					channel_id: BigInt(action.payload.channel_id),
+					channel_id: action.payload.channel_id ? BigInt(action.payload.channel_id) : BigInt(0),
 					sender_id: action.payload.sender_id ? BigInt(action.payload.sender_id) : undefined
 				};
 				message.reactions.push(reactionToAdd as any);

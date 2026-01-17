@@ -379,7 +379,7 @@ export const UsersClanSlice = createSlice({
 		},
 		addBannedUser: (
 			state,
-			action: PayloadAction<{ clanId: string; channelId: string; userIds: bigint[]; banner_id?: string; ban_time?: number }>
+			action: PayloadAction<{ clanId: string; channelId: string; userIds: string[]; banner_id?: string; ban_time?: number }>
 		) => {
 			const { clanId, channelId, userIds, banner_id, ban_time } = action.payload;
 			const banList: Update<UsersClanEntity, string>[] = userIds.map((id) => {
@@ -401,7 +401,7 @@ export const UsersClanSlice = createSlice({
 				UsersClanAdapter.updateMany(state.byClans[clanId]?.entities, banList);
 			}
 		},
-		removeBannedUser: (state, action: PayloadAction<{ clanId: string; channelId: string; userIds: bigint[] }>) => {
+		removeBannedUser: (state, action: PayloadAction<{ clanId: string; channelId: string; userIds: string[] }>) => {
 			const { clanId, channelId, userIds } = action.payload;
 			const banList: Update<UsersClanEntity, string>[] = userIds.map((id) => {
 				const oldBanList = state.byClans?.[clanId]?.entities?.entities[String(id)].ban_list || {};
