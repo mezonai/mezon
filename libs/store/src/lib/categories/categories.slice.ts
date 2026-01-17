@@ -95,10 +95,10 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 		{
 			api_name: 'ListCategoryDescs',
 			list_category_req: {
-				clan_id: BigInt(clanId)
+				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
+		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, BigInt(clanId)),
 		'category_list'
 	);
 
@@ -169,7 +169,7 @@ export const deleteCategory = createAsyncThunk(
 	async ({ clanId, categoryId, categoryLabel }: { clanId: string; categoryId: string; categoryLabel: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.deleteCategoryDesc(mezon.session, categoryId, clanId, categoryLabel);
+			await mezon.client.deleteCategoryDesc(mezon.session, categoryId, BigInt(clanId), categoryLabel);
 			// Clear API call tracker to force fresh data on next fetch
 			const apiKey = createApiKey('fetchCategories', clanId);
 			clearApiCallTracker(apiKey);
@@ -197,7 +197,7 @@ export const updateCategoriesOrder = createAsyncThunk(
 			const currentCategories = selectCachedCategoriesByClan(state, String(clan_id));
 
 			const updatedCategories = currentCategories.map((cat) => {
-				const updatedOrder = categories.find((c) => String(c.category_id) === cat.id);
+				const updatedOrder = categories.find((c) => c.category_id === BigInt(cat.id));
 				return {
 					...cat,
 					order: updatedOrder?.order
@@ -220,15 +220,15 @@ export const updateCategoriesOrder = createAsyncThunk(
 );
 
 export const updateCategory = createAsyncThunk('categories/updateCategory', async ({ clanId, request }: updatCategoryPayload, thunkAPI) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const _response = await mezon.client.updateCategory(mezon.session, clanId, request);
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const _response = await mezon.client.updateCategory(mezon.session, BigInt(clanId), request);
 
 		if (request.category_id && _response) {
 			const updatedCategory: CategoriesEntity = {
 				id: String(request.category_id),
 				category_name: request.category_name || '',
-				clan_id: clanId
+				clan_id: BigInt(clanId)
 			};
 
 			thunkAPI.dispatch(
