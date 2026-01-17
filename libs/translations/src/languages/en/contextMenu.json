@@ -41,7 +41,8 @@
 		"banChat": "Ban",
 		"unBanChat": "Unban",
 		"kick": "Kick",
-		"removeFromThread": "Remove {{username}} from thread"
+		"removeFromThread": "Remove {{username}} from thread",
+		"shareContact": "Share this contact"
 	},
 	"removeLogo": "Remove Logo",
 	"processing": "Processing...",

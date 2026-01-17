@@ -78,6 +78,7 @@ import screenStack from './screenStack.json';
 import search from './search.json';
 import searchMessageChannel from './searchMessageChannel.json';
 import setting from './setting.json';
+import shareContact from './shareContact.json';
 import sharing from './sharing.json';
 import streamThumbnail from './streamThumbnail.json';
 import streamingRoom from './streamingRoom.json';
@@ -176,5 +177,6 @@ export default {
 	discover,
 	mezondong,
 	textchannel,
-	clandetail
+	clandetail,
+	shareContact
 };

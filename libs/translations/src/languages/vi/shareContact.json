@@ -1,0 +1,17 @@
+{
+	"modal": {
+		"title": "Chia sẻ liên hệ",
+		"searchPlaceholder": "Tìm bạn bè...",
+		"noResults": "Không tìm thấy",
+		"noFriends": "Không có bạn bè",
+		"contactPreview": "Liên hệ sẽ chia sẻ",
+		"cancel": "Hủy",
+		"share": "Chia sẻ",
+		"sharing": "Đang gửi..."
+	},
+	"card": {
+		"message": "Nhắn tin"
+	},
+	"contactSharedSuccess": "Chia sẻ thành công",
+	"contactSharedError": "Không thể chia sẻ"
+}

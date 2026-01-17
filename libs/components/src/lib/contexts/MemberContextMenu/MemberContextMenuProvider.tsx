@@ -29,6 +29,7 @@ import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalRemoveMemberClan from '../../components/MemberProfile/ModalRemoveMemberClan';
 import ItemPanel from '../../components/PanelChannel/ItemPanel';
+import ShareContactModal from '../../components/ShareContact';
 import { MemberMenuItem } from './MemberMenuItem';
 import type { MemberContextMenuContextType, MemberContextMenuHandlers, MemberContextMenuProps } from './types';
 import { MEMBER_CONTEXT_MENU_ID } from './types';
@@ -112,6 +113,22 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 		[hideProfileItemModal, hideUserProfileModal, setCurrentUser, showRemoveMemberModal]
 	);
 
+	const [showShareContactModal, hideShareContactModal] = useModal(() => {
+		if (!currentUser) return null;
+
+		return <ShareContactModal contactUser={currentUser} onClose={hideShareContactModal} />;
+	}, [currentUser]);
+
+	const openShareContactModal = useCallback(
+		(user?: ChannelMembersEntity) => {
+			if (user) {
+				setCurrentUser(user);
+			}
+			showShareContactModal();
+		},
+		[setCurrentUser, showShareContactModal]
+	);
+
 	const [currentHandlers, setCurrentHandlers] = useState<MemberContextMenuHandlers | null>(null);
 
 	const { show } = useContextMenu({
@@ -163,6 +180,8 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 				return shouldShowAddFriend;
 			case 'removeFriend':
 				return shouldShowRemoveFriend;
+			case 'shareContact':
+				return !isSelf && !!currentUser?.user?.id;
 			case 'markAsRead':
 				return !!currentUser;
 			case 'banChat':
@@ -318,6 +337,11 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 						handleBanChatUser(user.user.id, banTime);
 					}
 				}
+			},
+			handleShareContact: () => {
+				if (user) {
+					openShareContactModal(user);
+				}
 			}
 		};
 	};
@@ -412,6 +436,13 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 								label={t('member.removeFriend')}
 								onClick={currentHandlers.handleRemoveFriend}
 								isWarning={true}
+								setWarningStatus={setWarningStatus}
+							/>
+						)}
+						{shouldShow('shareContact') && (
+							<MemberMenuItem
+								label={t('member.shareContact')}
+								onClick={currentHandlers.handleShareContact}
 								setWarningStatus={setWarningStatus}
 							/>
 						)}

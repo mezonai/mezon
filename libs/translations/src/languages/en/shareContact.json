@@ -1,0 +1,17 @@
+{
+	"modal": {
+		"title": "Share Contact",
+		"searchPlaceholder": "Search friends...",
+		"noResults": "No friends found",
+		"noFriends": "No friends available",
+		"contactPreview": "Contact to share",
+		"cancel": "Cancel",
+		"share": "Share",
+		"sharing": "Sharing..."
+	},
+	"card": {
+		"message": "Message"
+	},
+	"contactSharedSuccess": "Contact shared successfully",
+	"contactSharedError": "Failed to share contact"
+}
