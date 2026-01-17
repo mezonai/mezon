@@ -18,8 +18,14 @@ import type { RootState } from '../store';
 
 export const EVENT_MANAGEMENT_FEATURE_KEY = 'eventmanagement';
 
-export interface EventManagementEntity extends Omit<IEventManagement, 'id'> {
+export interface EventManagementEntity
+	extends Omit<IEventManagement, 'id' | 'channel_voice_id' | 'clan_id' | 'creator_id' | 'user_ids' | 'channel_id'> {
 	id: string;
+	channel_voice_id?: string;
+	clan_id?: string;
+	creator_id?: string;
+	user_ids?: Array<string>;
+	channel_id?: string;
 }
 
 export const eventManagementAdapter = createEntityAdapter<EventManagementEntity>();
@@ -73,9 +79,12 @@ export const mapEventManagementToEntity = (eventRes: ApiEventManagement, clanId?
 	return {
 		...eventRes,
 		id: eventRes.id ? eventRes.id.toString() : '',
-		channel_id: eventRes.channel_id?.toString() === '0' || eventRes.channel_id?.toString() === '' ? BigInt('') : eventRes.channel_id,
+		channel_id: eventRes.channel_id?.toString() === '0' || eventRes.channel_id?.toString() === '' ? '' : String(eventRes.channel_id),
 		channel_voice_id:
-			eventRes.channel_voice_id?.toString() === '0' || eventRes.channel_voice_id?.toString() === '' ? BigInt('') : eventRes.channel_voice_id
+			eventRes.channel_voice_id?.toString() === '0' || eventRes.channel_voice_id?.toString() === '' ? '' : String(eventRes.channel_voice_id),
+		clan_id: String(eventRes.clan_id || ''),
+		creator_id: String(eventRes.creator_id || ''),
+		user_ids: eventRes.user_ids?.map((id) => String(id))
 	};
 };
 

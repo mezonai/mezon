@@ -50,7 +50,7 @@ const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 				<ModalDeletePinMess
 					pinMessage={unpinMess?.pinMessage as PinMessageEntity}
 					contentString={unpinMess?.contentString}
-					handlePinMessage={() => handleUnPinMessage(unpinMess?.pinMessage.message_id || '')}
+					handlePinMessage={() => handleUnPinMessage(String(unpinMess?.pinMessage.message_id || ''))}
 					closeModal={closeDeletePinMessage}
 					attachments={unpinMess?.attachments as ApiMessageAttachment[]}
 					modalref={modalDeleteRef}

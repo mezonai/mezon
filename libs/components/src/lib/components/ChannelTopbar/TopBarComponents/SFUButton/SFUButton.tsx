@@ -40,7 +40,7 @@ export const SFUBtn: React.FC<ISFUBtnProps> = ({ isLightMode }) => {
 						<Icons.JoinedSFU className="size-4 dark:hover:text-white hover:text-black text-theme-primary" />
 					</div>
 				) : (
-						<Icons.NotJoinedSFU className="size-6 dark:hover:text-white hover:text-black text-theme-primary" />
+					<Icons.NotJoinedSFU className="size-6 dark:hover:text-white hover:text-black text-theme-primary" />
 				)}
 			</button>
 		</div>

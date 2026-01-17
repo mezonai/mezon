@@ -68,9 +68,9 @@ const OverviewSetting: React.FC<IOverViewSettingProps> = ({ category, onClose, o
 	const handleSave = () => {
 		setCategoryNameInit(categoryName);
 		const request: ApiUpdateCategoryDescRequest = {
-			category_id: category?.category_id || '',
+			category_id: BigInt(category?.category_id || ''),
 			category_name: categoryName,
-			ClanId: currentClanId ?? ''
+			Clanid: BigInt(currentClanId ?? '')
 		};
 		dispatch(
 			categoriesActions.updateCategory({

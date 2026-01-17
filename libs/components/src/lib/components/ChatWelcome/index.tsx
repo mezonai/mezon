@@ -282,7 +282,7 @@ const StatusFriend = memo((props: StatusFriendProps) => {
 		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userID && infoFriend?.user?.id === userProfile?.user?.id;
 	}, [userProfile?.user?.id, infoFriend, userID]);
 	const didIBlockUser = useMemo(() => {
-		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userProfile?.user?.id && infoFriend?.user?.id === userID;
+		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userProfile?.user?.id && String(infoFriend?.user?.id) === userID;
 	}, [userProfile?.user?.id, infoFriend, userID]);
 	const { acceptFriend, deleteFriend, addFriend, blockFriend, unBlockFriend } = useFriends();
 

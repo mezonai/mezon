@@ -144,12 +144,12 @@ const MainPermissionManage: React.FC<MainPermissionManageProps> = ({
 	const handleSave = async (id: string, permissionsArray: ApiPermissionUpdate[], type: number) => {
 		setPermissions({});
 		const intersection = listPermission.filter((x) => {
-			return !permissionsArray.some((y) => x.id === y.permission_id);
+			return !permissionsArray.some((y) => BigInt(x.id) === y.permission_id);
 		});
 		intersection.forEach((p) => {
 			const matchingRoleChannel = listPermissionRoleChannel?.permission_role_channel?.find((roleChannel) => roleChannel.permission_id === p.id);
 			permissionsArray.push({
-				permission_id: p.id,
+				permission_id: BigInt(p.id),
 				slug: p.slug,
 				type: matchingRoleChannel ? (matchingRoleChannel.active ? TypeChoose.Tick : TypeChoose.Remove) : TypeChoose.Or
 			});
@@ -188,7 +188,7 @@ const MainPermissionManage: React.FC<MainPermissionManageProps> = ({
 		const permissionsArray: ApiPermissionUpdate[] = [];
 		for (const permission_id in permissions) {
 			permissionsArray.push({
-				permission_id,
+				permission_id: BigInt(permission_id),
 				type: permissions[permission_id],
 				slug: listPermission.filter((p) => p.id === permission_id).at(0)?.slug
 			});

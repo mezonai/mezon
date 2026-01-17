@@ -390,15 +390,15 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 
 			let orderCounter = 1;
 			const categoriesOrderChanges: ApiCategoryOrderUpdate[] = reordered
-				.filter((category: ICategoryChannel) => category.id !== FAVORITE_CATEGORY_ID && category.category_id !== 'favorCate')
+				.filter((category: ICategoryChannel) => category.id !== FAVORITE_CATEGORY_ID && category.category_id !== FAVORITE_CATEGORY_ID)
 				.map((category: ICategoryChannel) => ({
-					category_id: category.category_id as string,
+					category_id: BigInt(category.category_id || ''),
 					order: orderCounter++
 				}));
 
 			dispatch(
 				categoriesActions.updateCategoriesOrder({
-					clan_id: currentClanId as string,
+					clan_id: BigInt(currentClanId || 0),
 					categories: categoriesOrderChanges
 				})
 			);

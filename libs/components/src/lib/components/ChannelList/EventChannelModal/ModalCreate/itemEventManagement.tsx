@@ -16,7 +16,7 @@ import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
-import { ApiUserEventRequest } from 'mezon-js/api.gen';
+import type { ApiUserEventRequest } from 'mezon-js/api.gen';
 import Tooltip from 'rc-tooltip';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -83,7 +83,6 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const textChannel = useAppSelector((state) => selectChannelById(state, textChannelId ?? '')) || {};
 	const isThread = textChannel?.type === ChannelType.CHANNEL_TYPE_THREAD;
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
-	console.log('userCreate', userCreate);
 
 	const [isClanOwner] = usePermissionChecker([EPermission.clanOwner]);
 	const checkOptionVoice = useMemo(() => option === OptionEvent.OPTION_SPEAKER, [option]);
@@ -213,8 +212,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		if (!event?.id) return;
 
 		const request: ApiUserEventRequest = {
-			clan_id: event.clan_id,
-			event_id: event.id
+			clan_id: BigInt(event.clan_id || 0),
+			event_id: BigInt(event.id)
 		};
 
 		if (isInterested) {

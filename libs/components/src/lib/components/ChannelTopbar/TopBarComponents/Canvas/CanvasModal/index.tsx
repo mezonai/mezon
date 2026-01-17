@@ -92,7 +92,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 					</div>
 					<SearchCanvas setKeywordSearch={setKeywordSearch} />
 					<div className="flex flex-row items-center gap-4">
-						<button 
+						<button
 							onClick={handleCreateCanvas}
 							className="px-3 h-6 rounded-lg btn-primary btn-primary-hover text-sm"
 							data-e2e={generateE2eId('chat.channel_message.header.button.canvas.modal.canvas_management.button.create_canvas')}
