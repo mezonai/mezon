@@ -54,7 +54,7 @@ export const fetchUserChannelsCached = async (
 		{
 			api_name: 'ListChannelUsersUC',
 			list_channel_users_uc_req: {
-				channel_id: BigInt(channelId),
+				channel_id: channelId,
 				limit
 			}
 		},
