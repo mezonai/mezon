@@ -20,7 +20,7 @@ export function ReplyMessageBox({ channelId, dataReferences, className }: Messag
 		dataReferences.message_sender_clan_nick ?? '',
 		dataReferences.message_sender_display_name ?? '',
 		dataReferences.message_sender_username ?? '',
-		dataReferences.message_sender_id ?? ''
+		dataReferences.message_sender_id !== undefined ? String(dataReferences.message_sender_id) : ''
 	);
 
 	const handleRemoveReply = () => {

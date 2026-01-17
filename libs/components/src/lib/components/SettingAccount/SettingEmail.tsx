@@ -89,13 +89,16 @@ export default function SetEmail({ submitButtonText, isLoading, onClose }: SetEm
 		[password, t]
 	);
 
-	const handleSendOtp = useCallback(async (otp: string) => {
-		if (reqId) {
-			await dispatch(authActions.confirmAuthenticateOTP({ otp_code: otp, req_id: reqId })).unwrap();
-			return;
-		}
-		onClose?.();
-	}, []);
+	const handleSendOtp = useCallback(
+		async (otp: string) => {
+			if (reqId) {
+				await dispatch(authActions.confirmAuthenticateOTP({ otp_code: otp, req_id: BigInt(reqId) })).unwrap();
+				return;
+			}
+			onClose?.();
+		},
+		[reqId, dispatch, onClose]
+	);
 
 	const handleSubmit = useCallback(async () => {
 		if (errors.email || (count !== null && count > 0)) {
@@ -112,7 +115,7 @@ export default function SetEmail({ submitButtonText, isLoading, onClose }: SetEm
 				})
 			).unwrap();
 			if (response && response?.req_id) {
-				setReqId(response.req_id);
+				setReqId(String(response.req_id));
 				setCount(60);
 			} else {
 				toast.error('');
