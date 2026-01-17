@@ -12,14 +12,20 @@ import type { RootState } from '../store';
 
 export const INTEGRATION_CLAN_WEBHOOK = 'integrationClanWebhook';
 
+export interface IClanWebHook extends Omit<ApiClanWebhook, 'clan_id' | 'creator_id' | 'id'> {
+	clan_id?: string;
+	creator_id?: string;
+	id?: string;
+}
+
 export interface IClanWebHookState {
 	loadingStatus: LoadingStatus;
 	errors?: string | null;
-	clanWebhookList?: Array<ApiClanWebhook>;
+	clanWebhookList?: Array<IClanWebHook>;
 	byClan: Record<
 		string,
 		{
-			webhooks?: Array<ApiClanWebhook>;
+			webhooks?: Array<IClanWebHook>;
 			cache?: CacheMetadata;
 		}
 	>;
@@ -59,11 +65,20 @@ export const fetchClanWebhooksCached = async (getState: () => RootState, mezon: 
 	}
 
 	const response = await mezon.client.listClanWebhook(mezon.session, BigInt(clanId));
+	const list_clan_webhooks = response.list_clan_webhooks?.map((item) => {
+		return {
+			...item,
+			creator_id: String(item.creator_id),
+			clan_id: String(item.clan_id),
+			id: String(item.id)
+		};
+	});
 
 	markApiFirstCalled(apiKey);
 
 	return {
 		...response,
+		list_clan_webhooks,
 		fromCache: false,
 		time: Date.now()
 	};
@@ -106,21 +121,16 @@ export const generateClanWebhook = createAsyncThunk(
 
 export const deleteClanWebhookById = createAsyncThunk(
 	'integration/deleteClanWebhook',
-	async (data: { webhook: ApiClanWebhook; clanId: string }, thunkAPI) => {
+	async (data: { webhook: IClanWebHook; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			if (!data.webhook.id || !data.clanId) {
 				return thunkAPI.rejectWithValue('Webhook ID is required');
 			}
-			const response = await mezon.client.deleteClanWebhookById(mezon.session, data.webhook.id, BigInt(data.clanId));
-			if (response) {
-				toast.success(i18n.t('clanIntegrationsSetting:toast.webhookDeletedSuccess', { webhookName: data.webhook.webhook_name }));
-				thunkAPI.dispatch(fetchClanWebhooks({ clanId: data.clanId, noCache: true }));
-				return data.webhook;
-			}
-			thunkAPI.rejectWithValue({});
+			const response = await mezon.client.deleteClanWebhookById(mezon.session, BigInt(data.webhook.id), BigInt(data.clanId));
+			return response;
 		} catch (error) {
-			captureSentryError(error, 'integration/deleteClanWebhook');
+			captureSentryError(error, 'integration/updateClanWebhook');
 			return thunkAPI.rejectWithValue(error);
 		}
 	}

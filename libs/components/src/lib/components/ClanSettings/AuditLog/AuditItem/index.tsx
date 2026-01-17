@@ -1,3 +1,4 @@
+import type { AuditLogEntity } from '@mezon/store';
 import {
 	auditLogList,
 	selectActionAuditLog,
@@ -11,7 +12,6 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { convertTimeString, createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
-import type { ApiAuditLog } from 'mezon-js/api.gen';
 import type { Dispatch, SetStateAction } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -66,7 +66,7 @@ const MainAuditLog = ({ pageSize, setPageSize, currentPage, setCurrentPage, sele
 export default MainAuditLog;
 
 type AuditLogItemProps = {
-	logItem: ApiAuditLog;
+	logItem: AuditLogEntity;
 };
 
 const AuditLogItem = ({ logItem }: AuditLogItemProps) => {

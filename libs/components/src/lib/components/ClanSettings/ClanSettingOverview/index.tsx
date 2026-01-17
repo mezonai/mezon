@@ -1,7 +1,9 @@
 import { useClans } from '@mezon/core';
+import type { SystemMessageEntity } from '@mezon/store';
 import { createSystemMessage, fetchSystemMessageByClanId, selectCurrentClan, updateSystemMessage, useAppDispatch } from '@mezon/store';
+import type { ISystemMessageRequest } from '@mezon/utils';
 import { unwrapResult } from '@reduxjs/toolkit';
-import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
+import type { ApiSystemMessageRequest, MezonUpdateClanDescBody, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -17,14 +19,14 @@ const ClanSettingOverview = () => {
 	const [clanRequest, setClanRequest] = useState<MezonUpdateClanDescBody>({
 		banner: currentClan?.banner ?? '',
 		clan_name: currentClan?.clan_name ?? '',
-		creator_id: currentClan?.creator_id ?? '',
+		creator_id: BigInt(currentClan?.creator_id ?? ''),
 		logo: currentClan?.logo ?? '',
-		welcome_channel_id: currentClan?.welcome_channel_id ?? '',
+		welcome_channel_id: BigInt(currentClan?.welcome_channel_id ?? ''),
 		prevent_anonymous: !!currentClan?.prevent_anonymous
 	});
 	const { t } = useTranslation('clanSettings');
-	const [systemMessage, setSystemMessage] = useState<ApiSystemMessage | null>(null);
-	const [updateSystemMessageRequest, setUpdateSystemMessageRequest] = useState<ApiSystemMessageRequest | null>(null);
+	const [systemMessage, setSystemMessage] = useState<SystemMessageEntity | null>(null);
+	const [updateSystemMessageRequest, setUpdateSystemMessageRequest] = useState<ISystemMessageRequest | null>(null);
 	const [resetTrigger, setResetTrigger] = useState<boolean>(false);
 
 	const dispatch = useAppDispatch();
@@ -105,12 +107,12 @@ const ClanSettingOverview = () => {
 
 	const updateSystemMessages = async () => {
 		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClan?.clan_id && updateSystemMessageRequest) {
-			const cachedMessageUpdate: ApiSystemMessage = {
+			const cachedMessageUpdate: ISystemMessageRequest = {
 				boost_message:
 					updateSystemMessageRequest?.boost_message === systemMessage?.boost_message ? '' : updateSystemMessageRequest?.boost_message,
 				channel_id: updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '' : updateSystemMessageRequest?.channel_id,
 				clan_id: systemMessage?.clan_id,
-				id: systemMessage?.id,
+				id: systemMessage?.id ? systemMessage?.id : undefined,
 				hide_audit_log:
 					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? '' : updateSystemMessageRequest?.hide_audit_log,
 				setup_tips: updateSystemMessageRequest?.setup_tips === systemMessage?.setup_tips ? '' : updateSystemMessageRequest?.setup_tips,
@@ -121,7 +123,12 @@ const ClanSettingOverview = () => {
 			};
 			const request = {
 				clanId: currentClan.clan_id,
-				newMessage: cachedMessageUpdate,
+				newMessage: {
+					...cachedMessageUpdate,
+					id: systemMessage?.id ? BigInt(systemMessage?.id) : undefined,
+					channel_id: cachedMessageUpdate.channel_id ? BigInt(cachedMessageUpdate.channel_id) : undefined,
+					clan_id: cachedMessageUpdate.clan_id ? BigInt(cachedMessageUpdate.clan_id) : undefined
+				} as MezonUpdateSystemMessageBody,
 				cachedMessage: updateSystemMessageRequest
 			};
 			await dispatch(updateSystemMessage(request));
@@ -143,10 +150,10 @@ const ClanSettingOverview = () => {
 		setClanRequest({
 			banner: currentClan?.banner ?? '',
 			clan_name: currentClan?.clan_name ?? '',
-			creator_id: currentClan?.creator_id ?? '',
+			creator_id: BigInt(currentClan?.creator_id ?? 0),
 			logo: currentClan?.logo ?? '',
 			is_onboarding: currentClan?.is_onboarding,
-			welcome_channel_id: currentClan?.welcome_channel_id ?? '',
+			welcome_channel_id: BigInt(currentClan?.welcome_channel_id ?? 0),
 			prevent_anonymous: !!currentClan?.prevent_anonymous
 		});
 		setUpdateSystemMessageRequest(systemMessage);

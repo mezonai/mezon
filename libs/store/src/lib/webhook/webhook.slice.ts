@@ -10,12 +10,19 @@ import { ensureSession, getMezonCtx } from '../helpers';
 
 export const INTEGRATION_WEBHOOK = 'integrationWebhook';
 
+export interface IWebhook extends Omit<ApiWebhook, 'id' | 'channel_id' | 'creator_id' | 'clan_id'> {
+	channel_id?: string;
+	creator_id?: string;
+	id?: string;
+	clan_id?: string;
+}
+
 export interface IWebHookState {
 	loadingStatus: LoadingStatus;
 	errors?: string | null;
 	webhookList: Record<
 		string,
-		EntityState<ApiWebhook, string> & {
+		EntityState<IWebhook, string> & {
 			id: string;
 		}
 	>;
@@ -28,7 +35,7 @@ export interface IFetchWebhooksByChannelIdArg {
 }
 
 export const webhookAdapter = createEntityAdapter({
-	selectId: (webhook: ApiWebhook) => String(webhook.id || '')
+	selectId: (webhook: IWebhook) => String(webhook.id || '')
 });
 
 export const initialWebhookState: IWebHookState = webhookAdapter.getInitialState({
@@ -84,7 +91,7 @@ export const generateWebhook = createAsyncThunk(
 
 export const deleteWebhookById = createAsyncThunk(
 	'integration/deleteWebhook',
-	async (data: { webhook: ApiWebhook; clanId: string; channelId: string; isClanSetting?: boolean }, thunkAPI) => {
+	async (data: { webhook: IWebhook; clanId: string; channelId: string; isClanSetting?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
@@ -94,7 +101,7 @@ export const deleteWebhookById = createAsyncThunk(
 			if (!data.webhook.id) {
 				return thunkAPI.rejectWithValue({ error: 'Webhook ID is required' });
 			}
-			const response = await mezon.client.deleteWebhookById(mezon.session, data.webhook.id, body);
+			const response = await mezon.client.deleteWebhookById(mezon.session, BigInt(data.webhook.id), body);
 
 			if (!response) {
 				return thunkAPI.rejectWithValue({});
@@ -140,10 +147,19 @@ export const integrationWebhookSlice = createSlice({
 			const clanIdStr = String(clan_id);
 			if (!state.webhookList[clanIdStr]) {
 				state.webhookList[clanIdStr] = webhookAdapter.getInitialState({
-					id: clanIdStr
+					id: clanIdStr,
+					channel_id: String(webhook.channel_id),
+					clan_id: String(webhook.clan_id),
+					creator_id: String(webhook.creator_id)
 				});
 			}
-			state.webhookList[clanIdStr] = webhookAdapter.upsertOne(state.webhookList[clanIdStr], webhook);
+			state.webhookList[clanIdStr] = webhookAdapter.upsertOne(state.webhookList[clanIdStr], {
+				...webhook,
+				channel_id: String(webhook.channel_id),
+				clan_id: String(webhook.clan_id),
+				creator_id: String(webhook.creator_id),
+				id: String(webhook.id)
+			});
 		},
 		removeOneWebhook: (state, action: PayloadAction<{ clanId: string; webhookId: string }>) => {
 			const { clanId, webhookId } = action.payload;
@@ -168,7 +184,16 @@ export const integrationWebhookSlice = createSlice({
 						});
 					}
 
-					const updatedChannelWebhook = webhookAdapter.setAll(state.webhookList[clanId], webhooks);
+					const updatedChannelWebhook = webhookAdapter.setAll(
+						state.webhookList[clanId],
+						webhooks.map((webhook) => ({
+							...webhook,
+							channel_id: String(webhook.channel_id),
+							clan_id: String(webhook.clan_id),
+							creator_id: String(webhook.creator_id),
+							id: String(webhook.id)
+						}))
+					);
 					state.webhookList[clanId] = updatedChannelWebhook;
 				}
 			})
@@ -199,6 +224,6 @@ export const selectWebhooksByChannelId = createSelector(
 		if (channelId === '0') {
 			return selectAll(state.webhookList[clanId]);
 		}
-		return selectAll(state.webhookList?.[clanId] || []).filter((entity) => entity.channel_id === BigInt(channelId));
+		return selectAll(state.webhookList?.[clanId] || []).filter((entity) => entity.channel_id === channelId);
 	}
 );

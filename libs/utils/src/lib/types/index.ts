@@ -27,6 +27,7 @@ import type {
 	ApiRole,
 	ApiSearchMessageDocument,
 	ApiSystemMessage,
+	ApiSystemMessageRequest,
 	ApiUser,
 	ClanUserListClanUser,
 	RoleUserListRoleUser
@@ -1618,4 +1619,10 @@ export interface ApiChannelAppResponseExtend extends ApiChannelAppResponse {
 export enum EDragBorderPosition {
 	TOP = 'top',
 	BOTTOM = 'bottom'
+}
+
+export interface ISystemMessageRequest extends Omit<ApiSystemMessageRequest, 'channel_id' | 'clan_id' | 'id'> {
+	channel_id?: string;
+	clan_id?: string;
+	id?: string;
 }

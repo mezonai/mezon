@@ -1,4 +1,4 @@
-import type { ChannelsEntity } from '@mezon/store';
+import type { ChannelsEntity, IWebhook } from '@mezon/store';
 import {
 	selectAllChannels,
 	selectChannelById,
@@ -14,7 +14,7 @@ import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons, Menu } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ChannelIsNotThread, MAX_FILE_SIZE_8MB, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
-import type { ApiMessageAttachment, ApiWebhook, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
 import type { ChangeEvent, ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ import ModalSaveChanges from '../../../ClanSettingOverview/ModalSaveChanges';
 import DeleteWebhookPopup from './DeleteWebhookPopup';
 
 interface IWebhookItemModalProps {
-	webhookItem: ApiWebhook;
+	webhookItem: IWebhook;
 	currentChannel?: IChannel;
 	isClanSetting?: boolean;
 }
@@ -67,7 +67,7 @@ const WebhookItemModal = ({ webhookItem, currentChannel, isClanSetting }: IWebho
 };
 
 interface IExpendedWebhookModal {
-	webhookItem: ApiWebhook;
+	webhookItem: IWebhook;
 	currentChannel?: IChannel;
 	isClanSetting?: boolean;
 }
@@ -167,10 +167,10 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 	const handleEditWebhook = async () => {
 		const request: MezonUpdateWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
-			channel_id_update: dataForUpdate.channelIdForUpdate,
+			channel_id_update: BigInt(dataForUpdate.channelIdForUpdate || 0),
 			webhook_name: dataForUpdate.webhookNameInput,
-			channel_id: currentChannel?.channel_id,
-			clan_id: clanId
+			channel_id: BigInt(currentChannel?.channel_id || 0),
+			clan_id: BigInt(clanId)
 		};
 		await dispatch(
 			updateWebhookBySpecificId({
@@ -304,7 +304,7 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 };
 
 interface IWebhookItemChannelDropdown {
-	webhookItem: ApiWebhook;
+	webhookItem: IWebhook;
 	dataForUpdate: IDataForUpdate;
 	setDataForUpdate: (dataForUpdate: IDataForUpdate) => void;
 	hasChange: boolean;

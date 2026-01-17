@@ -1,14 +1,15 @@
+import type { IWebhook } from '@mezon/store';
 import { generateWebhook, selectCurrentClanId, useAppDispatch } from '@mezon/store';
 import { Image } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiWebhook, ApiWebhookCreateRequest } from 'mezon-js/api.gen';
+import type { ApiWebhookCreateRequest } from 'mezon-js/api.gen';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import WebhookItemModal from './WebhookItemModal';
 
 interface IWebhooksProps {
-	allWebhooks?: ApiWebhook[] | undefined;
+	allWebhooks?: IWebhook[] | undefined;
 	currentChannel?: IChannel;
 	isClanSetting?: boolean;
 }
@@ -35,10 +36,10 @@ const Webhooks = ({ allWebhooks, currentChannel, isClanSetting }: IWebhooksProps
 	const clanId = useSelector(selectCurrentClanId) as string;
 	const handleAddWebhook = () => {
 		const newWebhookReq: ApiWebhookCreateRequest = {
-			channel_id: currentChannel?.channel_id as string,
+			channel_id: BigInt(currentChannel?.channel_id || 0),
 			webhook_name: getRandomWebhookName(),
 			avatar: getRandomAvatar(),
-			clan_id: clanId
+			clan_id: BigInt(clanId)
 		};
 		dispatch(generateWebhook({ request: newWebhookReq, channelId: currentChannel?.channel_id as string, clanId, isClanSetting }));
 	};

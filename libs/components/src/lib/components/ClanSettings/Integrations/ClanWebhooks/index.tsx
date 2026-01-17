@@ -1,13 +1,14 @@
+import type { IClanWebHook } from '@mezon/store';
 import { generateClanWebhook, selectCurrentClanId, useAppDispatch } from '@mezon/store';
 import { Image } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiClanWebhook, ApiGenerateClanWebhookRequest } from 'mezon-js/api.gen';
+import type { ApiGenerateClanWebhookRequest } from 'mezon-js/api.gen';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import ClanWebhookItemModal from './ClanWebhookItemModal';
 
 interface IClanWebhooksProps {
-	allClanWebhooks?: ApiClanWebhook[] | undefined;
+	allClanWebhooks?: IClanWebHook[] | undefined;
 }
 
 const ClanWebhooks = ({ allClanWebhooks }: IClanWebhooksProps) => {
@@ -34,7 +35,7 @@ const ClanWebhooks = ({ allClanWebhooks }: IClanWebhooksProps) => {
 		const newWebhookReq: ApiGenerateClanWebhookRequest = {
 			webhook_name: getRandomWebhookName(),
 			avatar: getRandomAvatar(),
-			clan_id: clanId
+			clan_id: BigInt(clanId)
 		};
 		dispatch(generateClanWebhook({ request: newWebhookReq, clanId }));
 	};
