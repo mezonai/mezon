@@ -301,7 +301,7 @@ const ControlBar = ({
 						>
 							<button
 								onClick={toggleNoiseSuppression}
-								className={`w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center border-none dark	border-none transition-colors ${
+								className={`w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center dark	border-none transition-colors ${
 									isShowMember ? 'bg-zinc-500 dark:bg-zinc-900' : 'bg-zinc-700'
 								} 'hover:bg-green-600 dark:hover:bg-green-700`}
 							>

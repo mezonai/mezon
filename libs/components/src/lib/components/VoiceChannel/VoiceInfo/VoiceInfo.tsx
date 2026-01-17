@@ -55,8 +55,8 @@ const VoiceInfo = React.memo(() => {
 	const participantMeetState = async (state: ParticipantMeetState, clanId: string, channelId: string, roomId: string): Promise<void> => {
 		await dispatch(
 			handleParticipantVoiceState({
-				clan_id: clanId,
-				channel_id: channelId,
+				clan_id: BigInt(clanId),
+				channel_id: BigInt(channelId),
 				display_name: userProfile?.user?.display_name ?? '',
 				state,
 				room_name: state === ParticipantMeetState.LEAVE ? 'leave' : roomId || ''

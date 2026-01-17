@@ -10,7 +10,7 @@ export type UserListVoiceChannelProps = {
 };
 
 function UserListVoiceChannel({ channelID, channelType, memberList, isPttList }: UserListVoiceChannelProps) {
-	return memberList?.map((item: IChannelMember, index: number) => {
+	return memberList?.map((item: IChannelMember) => {
 		return (
 			<div key={item.id} className={isPttList ? 'w-full' : 'mt-[1px]'}>
 				<UserListItem isPttList={isPttList} user={item} channelID={channelID} />

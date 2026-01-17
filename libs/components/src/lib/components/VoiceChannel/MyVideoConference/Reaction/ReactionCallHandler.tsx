@@ -91,11 +91,11 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 		const audioMap = audioRefs.current;
 
 		currentSocket.onvoicereactionmessage = (message: VoiceReactionSend) => {
-			if (channelId === message.channel_id) {
+			if (channelId === String(message.channel_id)) {
 				try {
 					const emojis = message.emojis || [];
 					const firstEmojiId = emojis[0];
-					const senderId = message.sender_id;
+					const senderId = String(message.sender_id);
 
 					if (firstEmojiId) {
 						if (firstEmojiId.startsWith('sound:')) {
