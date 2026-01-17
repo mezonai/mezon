@@ -17,7 +17,7 @@ function Login() {
 	const isLogin = useSelector(selectIsLogin);
 	const { redirectTo } = useLoaderData() as ILoginLoaderData;
 	const { qRCode, checkLoginRequest } = useAuth();
-	const [loginId, setLoginId] = useState<string | null>(null);
+	const [loginId, setLoginId] = useState<bigint | null>(null);
 	const [createSecond, setCreateSecond] = useState<number | null>(null);
 	const [hidden, setHidden] = useState<boolean>(false);
 	const [isRemember, setIsRemember] = useState<boolean>(false);
@@ -40,7 +40,7 @@ function Login() {
 			if (!qRInfo || !qRInfo.login_id) {
 				setHidden(true);
 			} else {
-				await setLoginId(qRInfo?.login_id as string);
+				await setLoginId(qRInfo?.login_id);
 				await setCreateSecond(Number(qRInfo?.create_time_second));
 			}
 		};
@@ -82,7 +82,7 @@ function Login() {
 		if (!qRInfo || !qRInfo.login_id) {
 			setHidden(true);
 		} else {
-			await setLoginId(qRInfo?.login_id as string);
+			await setLoginId(qRInfo?.login_id);
 			await setCreateSecond(Number(qRInfo?.create_time_second));
 			setHidden(false);
 		}
@@ -122,7 +122,7 @@ function Login() {
 				</div>
 
 				<div className="bg-white p-4 rounded-lg shadow-md flex flex-col items-center w-56 h-80">
-					<QRSection loginId={loginId || ''} isExpired={hidden} reloadQR={reloadQR} />;
+					<QRSection loginId={String(loginId)} isExpired={hidden} reloadQR={reloadQR} />;
 					<p className="text-sm text-gray-500">{t('login.qr.signIn')}</p>
 					<p className="text-xs text-gray-400">{t('login.qr.useMobile')}</p>
 				</div>

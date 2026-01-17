@@ -53,10 +53,10 @@ export function useAuth() {
 	}, [dispatch]);
 
 	const checkLoginRequest = useCallback(
-		async (loginId: string, isRemember: boolean) => {
+		async (loginId: bigint, isRemember: boolean) => {
 			const action = await dispatch(
 				authActions.checkLoginRequest({
-					loginId: loginId || '',
+					loginId,
 					isRemember
 				})
 			);
@@ -67,8 +67,8 @@ export function useAuth() {
 	);
 
 	const confirmLoginRequest = useCallback(
-		async (loginId: string) => {
-			const action = await dispatch(authActions.confirmLoginRequest({ loginId: loginId || '' }));
+		async (loginId: bigint) => {
+			const action = await dispatch(authActions.confirmLoginRequest({ loginId }));
 			const session = action.payload as Session;
 			return session;
 		},

@@ -245,7 +245,7 @@ export const createQRLogin = createAsyncThunk('auth/getQRCode', async (_, thunkA
 
 export const checkLoginRequest = createAsyncThunk(
 	'auth/checkLoginRequest',
-	async ({ loginId, isRemember }: { loginId: string; isRemember: boolean }, thunkAPI) => {
+	async ({ loginId, isRemember }: { loginId: bigint; isRemember: boolean }, thunkAPI) => {
 		const mezon = getMezonCtx(thunkAPI);
 
 		const session = await mezon?.checkLoginRequest({ login_id: loginId, is_remember: isRemember });
@@ -264,7 +264,7 @@ export const checkLoginRequest = createAsyncThunk(
 	}
 );
 
-export const confirmLoginRequest = createAsyncThunk('auth/confirmLoginRequest', async ({ loginId }: { loginId: string }, thunkAPI) => {
+export const confirmLoginRequest = createAsyncThunk('auth/confirmLoginRequest', async ({ loginId }: { loginId: bigint }, thunkAPI) => {
 	const mezon = getMezonCtx(thunkAPI);
 
 	const session = await mezon?.confirmLoginRequest({ login_id: loginId });

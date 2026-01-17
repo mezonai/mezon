@@ -82,7 +82,7 @@ export const QRScanner = () => {
 		try {
 			if (valueCode) {
 				store.dispatch(appActions.setLoadingMainMobile(true));
-				const res = await confirmLoginRequest(valueCode);
+				const res = await confirmLoginRequest(BigInt(valueCode));
 				store.dispatch(appActions.setLoadingMainMobile(false));
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-expect-error

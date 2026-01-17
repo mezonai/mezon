@@ -23,18 +23,3 @@ export const getUserClanAvatarOverride = (userId: string, clanId: string): strin
 	const key = `${userId}_${clanId}`;
 	return avatarOverrideStore.clanAvatars.get(key);
 };
-
-export const getAvatarOverrideVersion = (): number => {
-	return avatarOverrideStore.version;
-};
-
-export const clearUserAvatarOverride = (userId: string) => {
-	avatarOverrideStore.userAvatars.delete(userId);
-	avatarOverrideStore.version++;
-};
-
-export const clearUserClanAvatarOverride = (userId: string, clanId: string) => {
-	const key = `${userId}_${clanId}`;
-	avatarOverrideStore.clanAvatars.delete(key);
-	avatarOverrideStore.version++;
-};

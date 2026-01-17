@@ -13,10 +13,10 @@ export const AUDIT_LOG_FEATURE_KEY = 'auditlog';
 const FETCH_AUDIT_LOG_CACHED_TIME = 1000 * 60 * 60;
 
 export interface AuditLogEntity extends ApiAuditLog {
-	id: string;
+	key: string;
 }
 
-export interface IAuditLogState extends EntityState<ApiAuditLog, string> {
+export interface IAuditLogState extends EntityState<AuditLogEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	auditLogData: MezonapiListAuditLog;
@@ -32,7 +32,7 @@ type getAuditLogListPayload = {
 };
 
 export const auditLogAdapter = createEntityAdapter({
-	selectId: (auditLog: ApiAuditLog) => auditLog.id || '',
+	selectId: (auditLog: AuditLogEntity) => auditLog.key || '',
 	sortComparer: (a: ApiAuditLog, b: ApiAuditLog) => {
 		if (a.time_log && b.time_log) {
 			return Date.parse(b.time_log) - Date.parse(a.time_log);
@@ -64,7 +64,7 @@ export const fetchAuditLogCached = async (
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.listAuditLog(mezon.session, actionLog, userId, clanId, date_log), {
+	const response = await withRetry(() => mezon.client.listAuditLog(mezon.session, actionLog, BigInt(userId), BigInt(clanId), date_log), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'audit-log'
