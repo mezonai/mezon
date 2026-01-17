@@ -77,7 +77,12 @@ export type IInvite = ApiInviteUserRes & {
 export type IClanProfile = ApiClanProfile & {
 	id: string;
 };
-export type ICategory = ApiCategoryDesc & {
+export type ICategory = Omit<ApiCategoryDesc, 'category_id' | 'clan_id' | 'creator_id'> & {
+	category_id?: string;
+
+	clan_id?: string;
+
+	creator_id?: string;
 	id: string;
 };
 
@@ -124,7 +129,7 @@ export type IUsersRole = RoleUserListRoleUser & {
 };
 
 export type ICategoryChannel = ICategory & {
-	channels: bigint[] | IChannel[];
+	channels: string[] | IChannel[];
 	isFavor?: boolean;
 };
 
