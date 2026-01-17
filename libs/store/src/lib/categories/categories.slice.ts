@@ -95,7 +95,7 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 		{
 			api_name: 'ListCategoryDescs',
 			list_category_req: {
-				clan_id: clanId
+				clan_id: BigInt(clanId)
 			}
 		},
 		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
@@ -220,9 +220,9 @@ export const updateCategoriesOrder = createAsyncThunk(
 );
 
 export const updateCategory = createAsyncThunk('categories/updateCategory', async ({ clanId, request }: updatCategoryPayload, thunkAPI) => {
-	try {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const _response = await mezon.client.updateCategory(mezon.session, clanId, request);
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const _response = await mezon.client.updateCategory(mezon.session, clanId, request);
 
 		if (request.category_id && _response) {
 			const updatedCategory: CategoriesEntity = {

@@ -99,9 +99,9 @@ export const fetchChannelMembersCached = async (
 		{
 			api_name: 'ListChannelUsers',
 			list_channel_users_req: {
-				channel_id: channelId,
+				channel_id: BigInt(channelId),
 				limit: 2000,
-				clan_id: clanId,
+				clan_id: BigInt(clanId),
 				channel_type: channelType,
 				state: 1
 			}
