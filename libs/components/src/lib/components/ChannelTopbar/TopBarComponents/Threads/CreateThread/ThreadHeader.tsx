@@ -2,7 +2,7 @@ import { useMessageValue } from '@mezon/core';
 import { selectComposeInputByChannelId, selectCurrentChannelId, threadsActions, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import { ApiChannelDescription } from 'mezon-js/api.gen';
+import type { ApiChannelDescription } from 'mezon-js/api.gen';
 import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -66,7 +66,11 @@ const ThreadHeader = ({ threadCurrentChannel }: ThreadHeaderProps) => {
 					{threadCurrentChannel ? threadCurrentChannel.channel_label : t('createThread.newThread')}
 				</span>
 			</div>
-			<button onClick={handleCloseModal} className="relative right-0 text-theme-primary-hover" data-e2e={generateE2eId('discussion.header.button.close')}>
+			<button
+				onClick={handleCloseModal}
+				className="relative right-0 text-theme-primary-hover"
+				data-e2e={generateE2eId('discussion.header.button.close')}
+			>
 				<Icons.Close />
 			</button>
 		</div>

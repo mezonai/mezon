@@ -42,7 +42,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 
 	const validCreateTime = getValidCreateTime();
 	const messageTime = convertTimeString(validCreateTime);
-	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(pinMessage.sender_id || '');
+	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(String(pinMessage.sender_id || ''));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const pinMessageAttachments = pinMessage?.attachment;
@@ -51,8 +51,8 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 			dispatch(
 				messagesActions.jumpToMessage({
 					clanId: currentClanId || '0',
-					messageId: pinMessage.message_id,
-					channelId: pinMessage.channel_id
+					messageId: String(pinMessage.message_id),
+					channelId: String(pinMessage.channel_id)
 				})
 			);
 		}

@@ -62,11 +62,11 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 		const updatedUserIds = userProfile?.user?.id ? [...selectedUserIds, userProfile?.user.id] : selectedUserIds;
 		await dispatch(
 			channelsActions.updateChannelPrivate({
-				clan_id: clanId,
-				channel_id: channel.id,
+				clan_id: BigInt(clanId || 0),
+				channel_id: BigInt(channel.id),
 				channel_private: channel.channel_private || 0,
-				user_ids: updatedUserIds,
-				role_ids: selectedRoleIds
+				user_ids: updatedUserIds.map((id) => BigInt(id)),
+				role_ids: selectedRoleIds.map((id) => BigInt(id))
 			})
 		);
 	}, [valueToggle, selectedUserIds, selectedRoleIds, userProfile, channel]);

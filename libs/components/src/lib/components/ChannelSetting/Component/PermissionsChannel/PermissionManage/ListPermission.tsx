@@ -63,7 +63,7 @@ const ListPermission = forwardRef<ListPermissionHandle, ItemListPermissionProps>
 			<div className="space-y-2">
 				{listPermission.map((item, index) => {
 					const matchingRoleChannel = listPermissionRoleChannel?.permission_role_channel?.find(
-						(roleChannel) => roleChannel.permission_id === item.id
+						(roleChannel) => String(roleChannel.permission_id) === item.id
 					);
 
 					return (

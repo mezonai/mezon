@@ -8,17 +8,15 @@ import {
 	getStore,
 	notificationSettingActions,
 	onboardingActions,
-	selectAppChannelById,
 	selectBuzzStateByChannelId,
 	selectCurrentMission,
 	selectEventsByChannelId,
-	selectToCheckAppIsOpening,
 	threadsActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { ApiChannelAppResponseExtend, ChannelThreads, IChannel } from '@mezon/utils';
+import type { ChannelThreads, IChannel } from '@mezon/utils';
 import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { DragEvent } from 'react';
@@ -142,7 +140,6 @@ const ChannelLinkComponent = ({
 		}
 		const store = getStore();
 		const isChannelApp = channel.type === ChannelType.CHANNEL_TYPE_APP;
-		const appIsOpening = selectToCheckAppIsOpening(store.getState(), channel.channel_id as string);
 		if (channel.category_id === FAVORITE_CATEGORY_ID) {
 			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
 		}
@@ -158,12 +155,8 @@ const ChannelLinkComponent = ({
 			);
 		}
 		dispatch(appActions.setIsShowCanvas(false));
-		if (currentMission && currentMission.channel_id === channel.id && currentMission.task_type === ETypeMission.VISIT) {
+		if (currentMission && String(currentMission.channel_id) === channel.id && currentMission.task_type === ETypeMission.VISIT) {
 			dispatch(onboardingActions.doneMission({ clan_id: clanId as string }));
-		}
-		if (isChannelApp && appIsOpening) {
-			const appChannel = selectAppChannelById(store.getState(), channel.channel_id as string);
-			dispatch(channelsActions.setAppChannelFocus({ app: appChannel as ApiChannelAppResponseExtend }));
 		}
 	};
 

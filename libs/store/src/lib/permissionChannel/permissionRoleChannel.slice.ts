@@ -17,20 +17,34 @@ export interface PermissionRoleChannelsEntity extends IPermissionRoleChannel {
 	id: string; // Primary ID
 }
 
+export interface IPermissionRoleChannelListEventResponse
+	extends Omit<ApiPermissionRoleChannelListEventResponse, 'channel_id' | 'role_id' | 'user_id' | 'permission_role_channel'> {
+	channel_id?: string;
+
+	permission_role_channel?: Array<
+		Omit<ApiPermissionRoleChannel, 'permission_id'> & {
+			permission_id?: string;
+		}
+	>;
+
+	role_id?: string;
+	user_id?: string;
+}
+
 export interface PermissionRoleChannelState {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	cacheByChannels: Record<
 		string,
 		{
-			permissionRoleChannel: EntityState<ApiPermissionRoleChannelListEventResponse, string>;
+			permissionRoleChannel: EntityState<IPermissionRoleChannelListEventResponse, string>;
 			cache?: CacheMetadata;
 		}
 	>;
 }
 
-export const permissionRoleChannelAdapter = createEntityAdapter<ApiPermissionRoleChannelListEventResponse, string>({
-	selectId: (permission: ApiPermissionRoleChannelListEventResponse) => {
+export const permissionRoleChannelAdapter = createEntityAdapter<IPermissionRoleChannelListEventResponse, string>({
+	selectId: (permission: IPermissionRoleChannelListEventResponse) => {
 		const userId = permission.user_id !== undefined ? String(permission.user_id) : '';
 		const roleId = permission.role_id !== undefined ? String(permission.role_id) : '';
 		return userId || roleId || '';
@@ -182,7 +196,12 @@ export const permissionRoleChannelSlice = createSlice({
 					permissionRoleChannelAdapter.updateOne(channelPermission, {
 						id: roleId,
 						changes: {
-							permission_role_channel: permissionRole
+							permission_role_channel: permissionRole?.map((permission) => {
+								return {
+									...permission,
+									permission_id: String(permission.permission_id)
+								};
+							})
 						}
 					});
 				}
@@ -207,22 +226,28 @@ export const permissionRoleChannelSlice = createSlice({
 					}
 
 					if (!fromCache) {
-						const entity: ApiPermissionRoleChannelListEventResponse = {
+						const entity: IPermissionRoleChannelListEventResponse = {
 							...action.payload,
 							channel_id:
-								typeof action.payload.channel_id === 'bigint' ? action.payload.channel_id : BigInt(action.payload.channel_id || '0'),
+								typeof action.payload.channel_id === 'bigint' ? String(action.payload.channel_id) : action.payload.channel_id || '0',
 							user_id:
 								action.payload.user_id !== undefined
 									? typeof action.payload.user_id === 'bigint'
-										? action.payload.user_id
-										: BigInt(action.payload.user_id)
+										? String(action.payload.user_id)
+										: String(action.payload.user_id)
 									: undefined,
 							role_id:
 								action.payload.role_id !== undefined
 									? typeof action.payload.role_id === 'bigint'
-										? action.payload.role_id
-										: BigInt(action.payload.role_id)
-									: undefined
+										? String(action.payload.role_id)
+										: String(action.payload.role_id)
+									: undefined,
+							permission_role_channel: action.payload.permission_role_channel?.map((permission) => {
+								return {
+									...permission,
+									permission_id: String(permission.permission_id)
+								};
+							})
 						};
 						state.cacheByChannels[channelIdStr].permissionRoleChannel = permissionRoleChannelAdapter.addOne(
 							state.cacheByChannels[channelIdStr].permissionRoleChannel,
@@ -244,17 +269,17 @@ export const permissionRoleChannelSlice = createSlice({
 				}
 				const { userId, roleId, permission, channelId } = action.payload;
 
-				const listUpdate: ApiPermissionRoleChannel[] = permission
+				const listUpdate = permission
 					.filter((item) => item.type)
 					.map((role) => ({
 						active: role.type === 1 ? true : false,
-						permission_id: role.permission_id
+						permission_id: String(role.permission_id)
 					}));
 				if (state.cacheByChannels[channelId]?.permissionRoleChannel) {
-					const entity: ApiPermissionRoleChannelListEventResponse = {
-						role_id: BigInt(roleId),
-						user_id: BigInt(userId),
-						channel_id: BigInt(channelId),
+					const entity: IPermissionRoleChannelListEventResponse = {
+						role_id: roleId,
+						user_id: userId,
+						channel_id: channelId,
 						permission_role_channel: listUpdate
 					};
 					permissionRoleChannelAdapter.upsertOne(state.cacheByChannels[channelId]?.permissionRoleChannel, entity);
