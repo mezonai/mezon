@@ -9,7 +9,7 @@ export function useMyRole() {
 	const RolesClan = useSelector(selectAllRolesClan);
 
 	const userRolesClan = useMemo(() => {
-		return userById?.role_id ? RolesClan.filter((role) => userById?.role_id?.includes(role.id)) : [];
+		return userById?.role_id ? RolesClan.filter((role) => userById?.role_id?.includes(BigInt(role.id))) : [];
 	}, [userById?.role_id, RolesClan]);
 
 	const maxPermissionId = useMemo(() => {

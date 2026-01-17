@@ -45,18 +45,18 @@ export function useDMInvite(channelID?: string) {
 
 		Object.values(friendList).forEach((friend) => {
 			const hasBlockedUser = friend?.state === EStateFriend.BLOCK && (friend?.source_id === userId || friend.user?.id === userId);
-			if (hasBlockedUser || listId.has(friend.user?.id || '')) {
+			if (hasBlockedUser || listId.has(String(friend.user?.id || ''))) {
 				return;
 			}
 			filteredListUserClan.push({
-				id: friend.user?.id || '',
-				user_ids: [friend.user?.id || ''],
+				id: String(friend.user?.id || ''),
+				user_ids: [String(friend.user?.id || '')],
 				usernames: [friend.user?.username || ''],
 				channel_label: friend.user?.display_name || friend.user?.username || '',
 				avatars: [friend.user?.avatar_url || ''],
 				type: ChannelType.CHANNEL_TYPE_DM
 			});
-			listId.add(friend.user?.id || '');
+			listId.add(String(friend.user?.id || ''));
 		});
 		return filteredListUserClan;
 	}, [channelID, dmGroupChatList, usersClan, isChannelPrivate, friendList]);

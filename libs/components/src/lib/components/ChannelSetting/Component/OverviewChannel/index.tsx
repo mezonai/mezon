@@ -191,7 +191,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			const request: IUpdateSystemMessage = {
 				clanId: currentChannel.clan_id as string,
 				newMessage: {
-					channel_id: currentChannel.channel_id,
+					channel_id: BigInt(currentChannel.channel_id || 0),
 					boost_message: currentSystemMessage.boost_message,
 					setup_tips: currentSystemMessage.setup_tips,
 					welcome_random: currentSystemMessage.welcome_random,

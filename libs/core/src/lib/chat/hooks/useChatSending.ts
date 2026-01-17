@@ -19,7 +19,23 @@ import { useSelector } from 'react-redux';
 
 export type UseChatSendingOptions = {
 	mode: number;
-	channelOrDirect: ApiChannelDescription | undefined;
+	channelOrDirect:
+		| (Omit<ApiChannelDescription, 'category_id' | 'channel_id' | 'clan_id' | 'creator_id' | 'parent_id' | 'app_id' | 'role_ids' | 'user_ids'> & {
+				category_id?: string;
+				channel_id?: string;
+				clan_id?: string;
+				creator_id?: string;
+				parent_id?: string;
+				app_id?: string;
+				role_ids?: string[];
+				user_ids?: string[];
+				unread?: boolean;
+				threadIds?: string[];
+				description?: string;
+				isRoleUser?: boolean;
+				isFavor?: boolean;
+		  })
+		| undefined;
 	fromTopic?: boolean;
 };
 
@@ -57,9 +73,9 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 
 	const createTopic = useCallback(async () => {
 		const body: ApiSdTopicRequest = {
-			clan_id: getClanId as string,
-			channel_id: channelIdOrDirectId as string,
-			message_id: initTopicMessageId as string
+			clan_id: BigInt(getClanId || 0),
+			channel_id: BigInt(channelIdOrDirectId || 0),
+			message_id: BigInt(initTopicMessageId || 0)
 		};
 
 		const topic = (await dispatch(topicsActions.createTopic(body))).payload as ApiSdTopic;
@@ -119,10 +135,10 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 							mentionEveryone,
 							mentions,
 							references,
-							topicId: topic?.id as string
+							topicId: String(topic?.id)
 						})
 					);
-					return dispatch(topicsActions.setCurrentTopicId(topic?.id as string));
+					return dispatch(topicsActions.setCurrentTopicId(String(topic?.id)));
 				}
 
 				dispatch(

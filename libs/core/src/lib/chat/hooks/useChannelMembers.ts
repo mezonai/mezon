@@ -46,7 +46,7 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 						lastSentTimestamp: timestamp,
 						clanId: currentChannel?.clan_id ?? '',
 						isMute: false,
-						senderId: currentChannel?.last_sent_message?.sender_id || ''
+						senderId: String(currentChannel?.last_sent_message?.sender_id || '')
 					}
 				])
 			);

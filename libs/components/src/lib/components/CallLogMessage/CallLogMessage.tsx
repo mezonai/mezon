@@ -12,9 +12,10 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { CallLog, IMessageCallLog, IMessageSendPayload, IMessageTypeCallLog } from '@mezon/utils';
+import type { IMessageCallLog, IMessageSendPayload } from '@mezon/utils';
+import { CallLog, IMessageTypeCallLog } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -84,7 +85,7 @@ export default function CallLogMessage({ userId, username, messageId, channelId,
 	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
 	const sessionUser = useSelector(selectSession);
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
-	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode: mode });
+	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode });
 	const isInCall = useSelector(selectIsInCall);
 	const isPlayDialTone = useSelector(selectAudioDialTone);
 	const isPlayRingTone = useSelector(selectAudioRingTone);

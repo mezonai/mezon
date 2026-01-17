@@ -86,6 +86,13 @@ export type ICategory = Omit<ApiCategoryDesc, 'category_id' | 'clan_id' | 'creat
 	id: string;
 };
 
+export interface RolesClanEntity extends Omit<IRolesClan, 'id' | 'clan_id' | 'creator_id' | 'channel_ids'> {
+	id: string; // Primary ID
+	clan_id?: string;
+	creator_id?: string;
+	channel_ids?: string[];
+}
+
 export type IPermissionUser = ApiPermission & {
 	id: string;
 };
@@ -658,11 +665,14 @@ export type IEmojiRecent = {
 	update_time?: string;
 };
 
-export type IChannelUser = ChannelDescription & {
+export type IChannelUser = Omit<ChannelDescription, 'channel_id' | 'clan_id' | 'parent_id'> & {
 	id: string;
 	active?: number;
 	count_mess_unread?: number;
 	last_seen_message?: any;
+	clan_id?: string;
+	channel_id?: string;
+	parent_id?: string;
 };
 
 export type IPermissionRoleChannel = ApiPermissionRoleChannel & {
@@ -829,20 +839,20 @@ export type UpdateClan = {
 };
 
 export type RemoveClanUsers = {
-	clanId: bigint;
-	channelId: bigint;
-	userIds: bigint[];
+	clanId: string;
+	channelId: string;
+	userIds: string[];
 };
 
 export type RemoveChannelUsers = {
-	channelId: bigint;
-	userIds: bigint[];
+	channelId: string;
+	userIds: string[];
 };
 
 export type BanClanUsers = {
-	clanId: bigint;
-	channelId: bigint;
-	userIds: bigint[];
+	clanId: string;
+	channelId: string;
+	userIds: string[];
 };
 
 export enum Tabs_Option {
