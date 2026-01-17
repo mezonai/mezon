@@ -10,10 +10,10 @@ export interface ChannelMetaEntity {
 	id: string; // Primary ID
 	lastSeenTimestamp: number;
 	lastSentTimestamp: number;
-	clanId: bigint;
+	clanId: string;
 	isMute: boolean;
-	senderId: bigint;
-	lastSeenMessageId?: bigint;
+	senderId: string;
+	lastSeenMessageId?: string;
 }
 
 export interface ChannelMetaState extends EntityState<ChannelMetaEntity, string> {
@@ -34,7 +34,7 @@ export const channelMetaSlice = createSlice({
 	initialState: initialChannelMetaState,
 	reducers: {
 		add: channelMetaAdapter.addOne,
-		setChannelLastSentTimestamp: (state, action: PayloadAction<{ channelId: string; timestamp: number; senderId: bigint }>) => {
+		setChannelLastSentTimestamp: (state, action: PayloadAction<{ channelId: string; timestamp: number; senderId: string }>) => {
 			const channel = state?.entities[action.payload.channelId];
 			if (channel) {
 				channel.lastSentTimestamp = Math.floor(action.payload.timestamp);
@@ -42,7 +42,7 @@ export const channelMetaSlice = createSlice({
 				channel.senderId = action.payload.senderId;
 			}
 		},
-		setChannelLastSeenTimestamp: (state, action: PayloadAction<{ channelId: string; timestamp: number; messageId?: bigint }>) => {
+		setChannelLastSeenTimestamp: (state, action: PayloadAction<{ channelId: string; timestamp: number; messageId?: string }>) => {
 			const { channelId, timestamp, messageId } = action.payload;
 			const channel = state?.entities[channelId];
 			if (channel) {
@@ -55,7 +55,7 @@ export const channelMetaSlice = createSlice({
 				});
 			}
 		},
-		setChannelsLastSeenTimestamp: (state, action: PayloadAction<Array<{ channelId: bigint; messageId?: bigint }>>) => {
+		setChannelsLastSeenTimestamp: (state, action: PayloadAction<Array<{ channelId: string; messageId?: string }>>) => {
 			const timestamp = Date.now() / 1000;
 			const updates = action.payload.map(({ channelId, messageId }) => ({
 				id: String(channelId),

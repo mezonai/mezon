@@ -8,11 +8,11 @@ import { toast } from 'react-toastify';
 import { authActions } from '../auth/auth.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { clearApiCallTracker, createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
-// import { selectCurrentClanId } from '../clans/clans.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { RootState } from '../store';
 import { walletActions } from '../wallet/wallet.slice';
+
 export const ACCOUNT_FEATURE_KEY = 'account';
 export interface IAccount {
 	email: string;
@@ -86,11 +86,24 @@ export const getUserProfile = createAsyncThunk<IUserAccount & { fromCache?: bool
 			} as IUserAccount & { fromCache: boolean };
 		}
 
-		const { fromCache, time, ...profileData } = response;
-		if (response?.user?.id) {
-			thunkAPI.dispatch(walletActions.fetchWalletDetail({ userId: String(response?.user?.id) }));
+		const { user, ...profileData } = response;
+
+		const convertedUser = user
+			? {
+					...user,
+					id: String(user.id)
+				}
+			: undefined;
+
+		if (user?.id) {
+			thunkAPI.dispatch(walletActions.fetchWalletDetail({ userId: String(user.id) }));
 		}
-		return { ...profileData, fromCache: false };
+
+		return {
+			...profileData,
+			user: convertedUser,
+			fromCache: false
+		};
 	}
 );
 
@@ -282,10 +295,18 @@ export const accountSlice = createSlice({
 			}
 		},
 		setUpdateAccount(state, action: PayloadAction<IUserAccount>) {
+			const updatedUser = action.payload.user
+				? {
+						...state.userProfile?.user,
+						...action.payload.user,
+						id: action.payload.user.id
+					}
+				: state.userProfile?.user;
+
 			state.userProfile = {
 				...state.userProfile,
 				...action.payload,
-				user: { ...state.userProfile?.user, ...action.payload.user },
+				user: updatedUser,
 				encrypt_private_key: action.payload.encrypt_private_key
 			};
 		},

@@ -59,8 +59,11 @@ export * from './thumbnailPos';
 
 export type LoadingStatus = 'not loaded' | 'loading' | 'loaded' | 'error';
 
-export type IClan = ApiClanDesc & {
+export type IClan = Omit<ApiClanDesc, 'clan_id' | 'creator_id' | 'welcome_channel_id'> & {
 	id: string;
+	clan_id?: string;
+	creator_id?: string;
+	welcome_channel_id?: string;
 };
 
 export type IChannelAttachment = Omit<ApiChannelAttachment, 'id'> & {
@@ -137,8 +140,19 @@ export type ChannelThreads = IChannel & {
 	threads?: IChannel[];
 };
 
-export type IChannel = ApiChannelDescription & {
+export type IChannel = Omit<
+	ApiChannelDescription,
+	'category_id' | 'channel_id' | 'clan_id' | 'creator_id' | 'parent_id' | 'app_id' | 'role_ids' | 'user_ids'
+> & {
 	id: string;
+	category_id?: string;
+	channel_id?: string;
+	clan_id?: string;
+	creator_id?: string;
+	parent_id?: string;
+	app_id?: string;
+	role_ids?: string[];
+	user_ids?: string[];
 	unread?: boolean;
 	threadIds?: string[];
 	description?: string;
@@ -521,7 +535,11 @@ export interface ThreadProps {
 	name: string;
 }
 
-export type IUserAccount = ApiAccount;
+export type IUserAccount = Omit<ApiAccount, 'user'> & {
+	user?: Omit<NonNullable<ApiAccount['user']>, 'id'> & {
+		id: string;
+	};
+};
 
 export type IPermission = ApiPermission;
 
@@ -922,7 +940,7 @@ export enum ModeResponsive {
 }
 
 export type ApiChannelMessageHeaderWithChannel = ApiChannelMessageHeader & {
-	channel_id: bigint;
+	channel_id: string;
 };
 
 export enum ThemeApp {
