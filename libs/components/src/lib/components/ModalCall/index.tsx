@@ -21,7 +21,7 @@ type ICallerInfo = {
 };
 
 const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallProps) => {
-	const user = useUserByUserId(dataCall?.caller_id);
+	const user = useUserByUserId(dataCall?.caller_id ? String(dataCall.caller_id) : '');
 	const [callerInfo, setCallerInfo] = useState<ICallerInfo>({ name: '', avatar: '' });
 	const mezon = useMezon();
 	const dispatch = useAppDispatch();

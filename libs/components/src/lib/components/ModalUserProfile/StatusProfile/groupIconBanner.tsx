@@ -25,7 +25,7 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 	const { addFriend, acceptFriend, deleteFriend } = useFriends();
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const dispatch = useAppDispatch();
-	const isMe = user?.user?.id === currentUserId;
+	const isMe = String(user?.user?.id || '') === currentUserId;
 	const { userProfile } = useAuth();
 
 	const handleDefault = (event: any) => {
@@ -84,10 +84,10 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 				handleDefault(e);
 				if (user) {
 					if (index === 0) {
-						acceptFriend(user.user?.username || '', user.user?.id || '');
+						acceptFriend(user.user?.username || '', String(user.user?.id || ''));
 						break;
 					}
-					deleteFriend(user.user?.username || '', user.user?.id || '');
+					deleteFriend(user.user?.username || '', String(user.user?.id || ''));
 				}
 				break;
 			default: {
@@ -95,7 +95,7 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 				if (user) {
 					if (user.user?.id) {
 						addFriend({
-							ids: [user.user.id]
+							ids: [String(user.user.id)]
 						});
 					} else {
 						addFriend({
@@ -116,9 +116,9 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 		const note = t('transferFunds');
 		dispatch(
 			giveCoffeeActions.setInfoSendToken({
-				sender_id: userProfile?.user?.id,
+				sender_id: userProfile?.user?.id ? String(userProfile.user.id) : undefined,
 				sender_name: userProfile?.user?.username,
-				receiver_id: user?.id,
+				receiver_id: user?.id ? String(user.id) : undefined,
 				amount: 0,
 				note,
 				extra_attribute: transferDetail?.extra_attribute ?? '',
