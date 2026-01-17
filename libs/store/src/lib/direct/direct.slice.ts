@@ -45,7 +45,17 @@ export interface DirectRootState {
 export const directAdapter = createEntityAdapter<DirectEntity>();
 
 export const mapDmGroupToEntity = (channelRes: ApiChannelDescription, existingEntity?: DirectEntity) => {
-	const mapped = { ...channelRes, id: String(channelRes.channel_id) || '' };
+	const mapped = {
+		...channelRes,
+		id: String(channelRes.channel_id) || '',
+		category_id: String(channelRes.category_id),
+		channel_id: String(channelRes.channel_id),
+		clan_id: String(channelRes.clan_id),
+		creator_id: String(channelRes.creator_id),
+		parent_id: String(channelRes.parent_id),
+		app_id: String(channelRes.app_id),
+		user_ids: channelRes.user_ids?.map((id) => String(id))
+	};
 	if (existingEntity?.channel_avatar && !mapped.channel_avatar) {
 		mapped.channel_avatar = existingEntity.channel_avatar;
 	} else if (!mapped.channel_avatar) {
@@ -97,7 +107,13 @@ export const createNewDirectMessage = createAsyncThunk(
 							(Array.isArray(display_names) ? display_names.join(',') : Array.isArray(username) ? username.join(',') : ''),
 						channel_avatar: response.channel_avatar || '/assets/images/avatar-group.png',
 						avatars: Array.isArray(avatar) ? avatar : avatar ? [avatar] : [],
-						user_ids: body.user_ids,
+						user_ids: body.user_ids?.map((id) => String(id)),
+						category_id: String(response.category_id),
+						channel_id: String(response.channel_id),
+						clan_id: String(response.clan_id),
+						parent_id: String(response.parent_id),
+						creator_id: String(response.creator_id),
+						app_id: String(response.app_id),
 						active: 1,
 						last_sent_message: {
 							timestamp_seconds: Date.now()
@@ -218,12 +234,12 @@ export const fetchDirectMessage = createAsyncThunk(
 				if (channel.type === ChannelType.CHANNEL_TYPE_DM) {
 					listDM.push({
 						id: String(channel.channel_id) || '',
-						channel_id: channel.channel_id || BigInt('0'),
+						channel_id: String(channel.channel_id) || '0',
 						avatars: [userProfile?.avatar_url || '', channel.avatars?.[0] || ''],
 						display_names: [userProfile?.display_name || '', channel.display_names?.[0] || ''],
 						usernames: [userProfile?.username || '', channel.usernames?.[0] || ''],
 						onlines: [true, !!channel?.onlines?.[0]],
-						user_ids: [userProfile?.id || BigInt('0'), channel.user_ids?.[0] || BigInt('0')]
+						user_ids: [String(userProfile?.id) || '0', String(channel.user_ids?.[0]) || '0']
 					});
 				}
 			});
@@ -363,17 +379,17 @@ export const joinDirectMessage = createAsyncThunk<void, JoinDirectMessagePayload
 const mapMessageToConversation = (message: ChannelMessage): DirectEntity => {
 	return {
 		id: String(message.channel_id),
-		clan_id: BigInt('0'),
-		parent_id: BigInt('0'),
-		channel_id: message.channel_id,
-		category_id: BigInt('0'),
+		clan_id: '0',
+		parent_id: '0',
+		channel_id: String(message.channel_id),
+		category_id: '0',
 		type: message?.mode === ChannelStreamMode.STREAM_MODE_GROUP ? ChannelType.CHANNEL_TYPE_GROUP : ChannelType.CHANNEL_TYPE_DM,
-		creator_id: message.sender_id,
+		creator_id: String(message.sender_id),
 		channel_label: message.display_name || message.username,
 		channel_private: 1,
 		channel_avatar: message.avatar,
 		avatars: [message.avatar as string],
-		user_ids: [message.sender_id],
+		user_ids: [String(message.sender_id)],
 		last_sent_message: {
 			id: message.id,
 			timestamp_seconds: message.create_time_seconds,
@@ -422,14 +438,14 @@ interface AddGroupUserWSPayload {
 export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (payload: AddGroupUserWSPayload, thunkAPI) => {
 	try {
 		const { channel_desc, users } = payload;
-		const userIds: bigint[] = [];
+		const userIds: string[] = [];
 		const usernames: string[] = [];
 		const avatars: string[] = [];
 		const onlines: boolean[] = [];
 		const label: string[] = [];
 
 		for (const user of users) {
-			userIds.push(BigInt(user.user_id));
+			userIds.push(String(user.user_id));
 			usernames.push(user.username);
 			avatars.push(user.avatar);
 			onlines.push(user.online);
@@ -451,7 +467,13 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			active: 1,
 			channel_label: channel_desc?.channel_label || existingEntity?.channel_label || label.toString(),
 			topic: channel_desc.topic || existingEntity?.topic,
-			member_count: channel_desc.member_count
+			member_count: channel_desc.member_count,
+			category_id: '0',
+			channel_id: channel_desc.category_id ? String(channel_desc.category_id) : undefined,
+			clan_id: channel_desc.clan_id ? String(channel_desc.clan_id) : undefined,
+			parent_id: channel_desc.parent_id ? String(channel_desc.parent_id) : undefined,
+			creator_id: channel_desc.creator_id ? String(channel_desc.creator_id) : undefined,
+			app_id: channel_desc.app_id ? String(channel_desc.app_id) : undefined
 		};
 		thunkAPI.dispatch(
 			userChannelsActions.update({
@@ -463,7 +485,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 					onlines,
 					usernames,
 					user_ids: userIds,
-					channel_id: channel_desc.channel_id
+					channel_id: String(channel_desc.channel_id)
 				}
 			})
 		);
@@ -527,10 +549,28 @@ export const directSlice = createSlice({
 		},
 		updateOne: (state, action: PayloadAction<Partial<ChannelUpdatedEvent & { currentUserId: string }>>) => {
 			if (!action.payload?.channel_id) return;
-			const { channel_id, creator_id: _creator_id, currentUserId: _currentUserId, ...changes } = action.payload;
+			const { channel_id, creator_id, user_ids, category_id, role_ids, currentUserId, parent_id, clan_id, app_id, ...changes } = action.payload;
 			directAdapter.updateOne(state, {
 				id: String(channel_id),
-				changes
+				changes: {
+					...changes,
+					...(creator_id !== undefined && { creator_id: String(creator_id) }),
+					...(app_id !== undefined && { app_id: String(app_id) }),
+					...(channel_id !== undefined && { channel_id: String(channel_id) }),
+					...(clan_id !== undefined && { clan_id: String(clan_id) }),
+					...(parent_id !== undefined && { parent_id: String(parent_id) }),
+					...(category_id !== undefined && {
+						category_id: String(category_id)
+					}),
+					...(role_ids !== undefined &&
+						role_ids.length !== 0 && {
+							role_ids: role_ids?.map((id) => String(id))
+						}),
+					...(user_ids !== undefined &&
+						user_ids.length !== 0 && {
+							user_ids: user_ids?.map((id) => String(id))
+						})
+				}
 			});
 		},
 		updateE2EE: (state, action: PayloadAction<Partial<ChannelUpdatedEvent & { currentUserId: string }>>) => {
@@ -559,13 +599,6 @@ export const directSlice = createSlice({
 				changes: {
 					member_count: (currentDirect?.member_count || 0) > 0 ? (currentDirect?.member_count || 1) - 1 : 0
 				}
-			});
-		},
-		changeE2EE: (state, action: PayloadAction<Partial<ChannelUpdatedEvent>>) => {
-			if (!action.payload?.channel_id) return;
-			directAdapter.updateOne(state, {
-				id: String(action.payload.channel_id),
-				changes: action.payload
 			});
 		},
 		setDmGroupCurrentId: (state, action: PayloadAction<string>) => {
@@ -603,7 +636,7 @@ export const directSlice = createSlice({
 					const item = entities?.[ids[index]];
 					if (!item) continue;
 
-					const userIndex = item.user_ids?.indexOf(BigInt(userId));
+					const userIndex = item.user_ids?.indexOf(userId);
 					if (userIndex === -1 || userIndex === undefined) continue;
 
 					const currentStatusOnlines = item.onlines || [];
@@ -645,12 +678,12 @@ export const directSlice = createSlice({
 			state,
 			action: PayloadAction<{ dmId: string; user_id: string; avatar: string; display_name: string; about_me?: string }>
 		) => {
-			const { dmId, user_id, avatar, display_name, about_me } = action.payload;
+			const { dmId, user_id, avatar, display_name } = action.payload;
 			const dmGroup = state.entities?.[dmId];
 
 			if (!dmGroup || !user_id) return;
 
-			const index = (dmGroup.user_ids ??= []).indexOf(BigInt(user_id));
+			const index = (dmGroup.user_ids ??= []).indexOf(user_id);
 			if (index === -1) return;
 
 			if (avatar && dmGroup.channel_avatar) dmGroup.channel_avatar = avatar;
@@ -1011,7 +1044,7 @@ export const selectDirectById = createSelector([selectDirectMessageEntities, (st
 export const selectAllUserDM = createSelector(selectAllDirectMessages, (directMessages) => {
 	return directMessages.reduce<IUserProfileActivity[]>((acc, dm) => {
 		if (dm?.active === 1) {
-			dm?.user_ids?.forEach((userId: bigint, index: number) => {
+			dm?.user_ids?.forEach((userId: string, index: number) => {
 				if (!acc.some((existingUser) => existingUser.id === String(userId))) {
 					const user = {
 						avatar_url: dm?.avatars ? dm?.avatars[index] : '',

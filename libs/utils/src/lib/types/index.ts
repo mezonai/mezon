@@ -169,8 +169,10 @@ export type INotificationUserChannel = ApiNotificationUserChannel & {
 	id: string;
 };
 
-export type IUserChannel = ApiAllUsersAddChannelResponse & {
+export type IUserChannel = Omit<ApiAllUsersAddChannelResponse, 'channel_id' | 'user_ids'> & {
 	id: string;
+	channel_id?: string;
+	user_ids?: Array<string>;
 };
 
 export type IPinMessage = ApiPinMessage & {
