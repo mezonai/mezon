@@ -90,14 +90,19 @@ export type IPermissionUser = ApiPermission & {
 	id: string;
 };
 
-export type IUsersClan = Omit<ClanUserListClanUser, 'user'> & {
+export type IUsersClan = Omit<ClanUserListClanUser, 'role_id' | 'clan_id' | 'user'> & {
+	role_id?: string[];
+	clan_id?: string;
 	prioritizeName?: string;
 	id: string;
-	user: Omit<ApiUser, 'id'> & { id: string };
+	user?: Omit<ApiUser, 'id'> & { id?: string };
 };
 
-export type IRolesClan = ApiRole & {
+export type IRolesClan = Omit<ApiRole, 'id' | 'clan_id' | 'creator_id' | 'channel_ids'> & {
 	id: string;
+	clan_id?: string;
+	creator_id?: string;
+	channel_ids?: string[];
 };
 
 export type INotificationSetting = ApiNotificationUserChannel;
@@ -183,12 +188,17 @@ export type IPSystemMessage = ApiSystemMessage & {
 	id: string;
 };
 
-export type IChannelMember = ClanUserListClanUser & {
+export type IChannelMember = Omit<ClanUserListClanUser, 'role_id' | 'clan_id' | 'user'> & {
+	role_id?: string[];
+	clan_id?: string;
 	id: string;
 	channelId?: string;
 	userChannelId?: string;
 	user_id?: string; // use on VoiceChannelList
 	participant?: string; // use on VoiceChannelList
+	user?: Omit<ApiUser, 'id'> & {
+		id?: string;
+	};
 };
 
 export type IThread = {
