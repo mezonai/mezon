@@ -1,13 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import type {
-	ApiChannelAppResponseExtend,
-	ApiChannelMessageHeaderWithChannel,
-	BuzzArgs,
-	ChannelThreads,
-	ICategory,
-	IChannel,
-	LoadingStatus
-} from '@mezon/utils';
+import type { ApiChannelAppResponseExtend, BuzzArgs, ChannelThreads, ICategory, IChannel, LoadingStatus } from '@mezon/utils';
 import { ModeResponsive, TypeCheck, checkIsThread, mapChannelToAppEntity } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -36,6 +28,7 @@ import { overriddenPoliciesActions } from '../policies/overriddenPolicies.slice'
 import { reactionActions } from '../reactionMessage/reactionMessage.slice';
 import { rolesClanActions } from '../roleclan/roleclan.slice';
 import type { RootState } from '../store';
+import type { ThreadsEntity } from '../threads/threads.slice';
 import { selectListThreadId, threadsActions } from '../threads/threads.slice';
 import type { ChannelUsersEntity, LIST_CHANNELS_USER_FEATURE_KEY, ListChannelsByUserState } from './channelUser.slice';
 import { listChannelsByUserActions, selectAllChannelsByUser, selectEntitiesChannelsByUser } from './channelUser.slice';
@@ -196,7 +189,7 @@ export const fetchChannelsCached = async (
 	if (!shouldForceCall && clanData?.entities?.ids?.length > 0) {
 		const channels = selectCachedChannelsByClan(currentState, clanId);
 		return {
-			channeldesc: channels,
+			channeldesc: channels as ApiChannelDescription[],
 			fromCache: true,
 			time: clanData.channelsCache?.lastFetched || Date.now()
 		};
@@ -522,7 +515,6 @@ export const updateChannel = createAsyncThunk('channels/updateChannel', async (b
 			...body,
 			channel_id: BigInt(body.channel_id),
 			category_id: body.category_id ? BigInt(body.category_id) : undefined,
-			parent_id: body.parent_id ? BigInt(body.parent_id) : undefined,
 			app_id: BigInt(body.app_id)
 		});
 		if (response) {
@@ -753,6 +745,19 @@ type fetchAppChannelsArgs = {
 	clanId: string;
 	noCache: boolean;
 };
+function toApiChannelDescription(channel: ThreadsEntity): ApiChannelDescription {
+	return {
+		...channel,
+		active: 1,
+		category_id: channel.category_id ? BigInt(channel.category_id) : undefined,
+		channel_id: BigInt(channel.channel_id || 0),
+		clan_id: BigInt(channel.clan_id || 0),
+		create_time_seconds: Number(channel.create_time_seconds),
+		creator_id: BigInt(channel.creator_id || 0),
+		parent_id: BigInt(channel.parent_id || 0),
+		update_time_seconds: Number(channel.update_time_seconds)
+	};
+}
 
 export const fetchChannels = createAsyncThunk(
 	'channels/fetchChannels',
@@ -785,12 +790,14 @@ export const fetchChannels = createAsyncThunk(
 					const lastChannelMessages =
 						response.channeldesc?.map((channel) => ({
 							...channel.last_sent_message,
-							channel_id: channel.channel_id
+							channel_id: String(channel.channel_id),
+							id: String(channel.channel_id),
+							sender_id: String(channel.last_sent_message?.sender_id)
 						})) ?? [];
 
 					const lastChannelMessagesTruthy = lastChannelMessages.filter((message) => message);
 
-					thunkAPI.dispatch(messagesActions.setManyLastMessages(lastChannelMessagesTruthy as ApiChannelMessageHeaderWithChannel[]));
+					thunkAPI.dispatch(messagesActions.setManyLastMessages(lastChannelMessagesTruthy));
 				}
 
 				const state = thunkAPI.getState() as RootState;
@@ -809,7 +816,10 @@ export const fetchChannels = createAsyncThunk(
 							)
 							.unwrap();
 						if (data?.threads?.length > 0) {
-							response.channeldesc.push({ ...data.threads[0], active: 1 } as ChannelsEntity);
+							response.channeldesc.push({
+								...toApiChannelDescription(data.threads[0]),
+								active: 1
+							});
 						}
 					}
 				} catch (error) {
@@ -1184,7 +1194,14 @@ export const channelsSlice = createSlice({
 					id: String(payload.channel_id),
 					changes: {
 						...payload,
-						user_ids: payload.user_ids?.map((id) => String(id))
+						user_ids: payload.user_ids?.map((id) => String(id)),
+						category_id: String(payload.category_id),
+						channel_id: String(payload.channel_id),
+						clan_id: String(payload.clan_id),
+						creator_id: String(payload.creator_id),
+						parent_id: String(payload.parent_id),
+						app_id: String(payload.app_id),
+						role_ids: payload.role_ids?.map((id) => String(id))
 					}
 				});
 			}
