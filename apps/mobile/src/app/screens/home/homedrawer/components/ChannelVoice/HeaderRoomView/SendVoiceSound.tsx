@@ -21,7 +21,7 @@ const SendVoiceSound = memo(({ channelId }: SendVoiceSoundProps) => {
 		async (soundId: string) => {
 			try {
 				if (!socketRef.current || !channelId) return;
-				await socketRef.current.writeVoiceReaction([`sound:${soundId}`], channelId);
+				await socketRef.current.writeVoiceReaction([`sound:${soundId}`], BigInt(channelId));
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			} catch (error) {
 				console.error('Error sending sound effect:', error);

@@ -62,7 +62,7 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 			type: channel?.type,
 			avatar: '#',
 			name: channel?.channel_label,
-			clanId: channel?.clan_id,
+			clanId: String(channel?.clan_id),
 			clanName: channel?.clan_name
 		};
 	};
@@ -143,8 +143,8 @@ export const ShareEventModal = memo(({ event, onConfirm }: IShareEventModalProps
 				} else if (type === ChannelType.CHANNEL_TYPE_GROUP) {
 					mode = ChannelStreamMode.STREAM_MODE_GROUP;
 				}
-				await socket.joinChat(clanId, channelId, type, true);
-				await socket.writeChatMessage(clanId, channelId, mode, true, content);
+				await socket.joinChat(BigInt(clanId), BigInt(channelId), type, true);
+				await socket.writeChatMessage(BigInt(clanId), BigInt(channelId), mode, true, content);
 			}
 		} catch (err) {
 			console.error(err);

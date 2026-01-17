@@ -183,8 +183,8 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			);
 
 			await mezon.socketRef.current.writeChatMessage(
-				'0',
-				channelSelected?.id || '',
+				BigInt(0),
+				BigInt(channelSelected?.id || 0),
 				channelSelected?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP,
 				false,
 				{
@@ -242,8 +242,8 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 		);
 
 		await mezon.socketRef.current.writeChatMessage(
-			channelSelected?.clan_id,
-			channelSelected?.channel_id,
+			BigInt(channelSelected?.clan_id),
+			BigInt(channelSelected?.channel_id),
 			checkIsThread(channelSelected) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL,
 			isPublic,
 			{

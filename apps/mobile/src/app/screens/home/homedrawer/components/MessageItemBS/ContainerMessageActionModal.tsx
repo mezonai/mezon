@@ -95,7 +95,7 @@ export const ContainerMessageActionModal = React.memo(
 		const currentChannel = useSelector(selectCurrentChannel);
 		const currentDmGroup = useSelector(selectDmGroupCurrent(currentDmId ?? ''));
 		const currentTopicId = useSelector(selectCurrentTopicId);
-		const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id));
+		const anonymousMode = useSelector((state) => selectAnonymousMode(state, String(currentChannel?.clan_id)));
 		const navigation = useNavigation<any>();
 		const { createDirectMessageWithUser } = useDirect();
 		const { sendInviteMessage } = useSendInviteMessage();
@@ -105,7 +105,7 @@ export const ContainerMessageActionModal = React.memo(
 			message?.code === TypeMessage.CreateThread ||
 			message?.code === TypeMessage.CreatePin ||
 			message?.code === TypeMessage.AuditLog;
-		const isAnonymous = message?.sender_id === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID;
+		const isAnonymous = String(message?.sender_id) === process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID;
 
 		const onClose = useCallback(() => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
@@ -135,13 +135,13 @@ export const ContainerMessageActionModal = React.memo(
 					})
 				);
 				await socket.removeChatMessage(
-					currentDmId ? '0' : currentClanId || '',
-					currentDmId ? currentDmId : currentChannelId,
+					BigInt(currentDmId ? '0' : currentClanId || ''),
+					BigInt(currentDmId ? currentDmId : currentChannelId),
 					mode,
 					isPublic,
-					messageId,
+					BigInt(messageId),
 					!!message?.attachments,
-					currentTopicId,
+					BigInt(currentTopicId),
 					mentionsBytes as any,
 					referencesBytes as any
 				);
@@ -217,11 +217,11 @@ export const ContainerMessageActionModal = React.memo(
 				if (userId !== message.sender_id) {
 					const currentClanId = selectCurrentClanId(store.getState());
 					const coffeeEvent = {
-						channel_id: message.channel_id,
-						clan_id: message.clan_id,
-						message_ref_id: message.id,
-						receiver_id: message.sender_id,
-						sender_id: userId
+						channel_id: BigInt(message.channel_id),
+						clan_id: BigInt(message.clan_id),
+						message_ref_id: BigInt(message.id),
+						receiver_id: BigInt(message.sender_id),
+						sender_id: BigInt(userId)
 					};
 					const res = await dispatch(giveCoffeeActions.updateGiveCoffee(coffeeEvent));
 					if (res?.meta?.requestStatus === 'rejected' || !res || !res?.payload) {
@@ -233,7 +233,7 @@ export const ContainerMessageActionModal = React.memo(
 					}
 					handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message.id, EMOJI_GIVE_COFFEE.emoji_id, EMOJI_GIVE_COFFEE.emoji);
 					const response = await createDirectMessageWithUser(
-						message?.sender_id,
+						String(message?.sender_id),
 						message?.user?.name,
 						message?.user?.username,
 						message?.avatar
@@ -241,7 +241,7 @@ export const ContainerMessageActionModal = React.memo(
 					if (response?.channel_id) {
 						sendInviteMessage(
 							`${t('tokensSent', { ns: 'token' })} ${formatMoney(TOKEN_TO_AMOUNT.ONE_THOUNSAND * 10)}₫ | ${t('giveCoffeeAction', { ns: 'token' })}`,
-							response?.channel_id,
+							String(response?.channel_id),
 							ChannelStreamMode.STREAM_MODE_DM,
 							TypeMessage.SendToken
 						);
@@ -437,7 +437,7 @@ export const ContainerMessageActionModal = React.memo(
 			try {
 				await dispatch(
 					messagesActions.updateLastSeenMessage({
-						clanId: message?.clan_id || '',
+						clanId: String(message?.clan_id || ''),
 						channelId: message?.channel_id || '',
 						messageId: message?.id || '',
 						mode: message?.mode || 0,
@@ -445,7 +445,7 @@ export const ContainerMessageActionModal = React.memo(
 						message_time: 1
 					})
 				);
-				if (message?.clan_id === '0') {
+				if (String(message?.clan_id) === '0') {
 					dispatch(directMetaActions.setDirectLastSeenTimestamp(payloadSetLastSeenTimestamp));
 				} else {
 					dispatch(channelMetaActions.setChannelLastSeenTimestamp(payloadSetLastSeenTimestamp));
@@ -894,7 +894,7 @@ export const ContainerMessageActionModal = React.memo(
 
 				if (!message && isOnlyEmojiPicker) {
 					if (!socketRef.current || !channelId) return;
-					await socketRef.current.writeVoiceReaction([emoji_id], channelId);
+					await socketRef.current.writeVoiceReaction([emoji_id], BigInt(channelId));
 					return;
 				}
 				await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emoji_id, emoij);

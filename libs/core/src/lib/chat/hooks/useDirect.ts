@@ -14,8 +14,8 @@ export function useDirect({ autoFetch = false }: UseDirectParams = { autoFetch: 
 			const bodyCreateDm: ApiCreateChannelDescRequest = {
 				type: ChannelType.CHANNEL_TYPE_DM,
 				channel_private: 1,
-				user_ids: [userId],
-				clan_id: '0'
+				user_ids: [BigInt(userId)],
+				clan_id: BigInt(0)
 			};
 			const response = await dispatch(directActions.createNewDirectMessage({ body: bodyCreateDm, username, avatar, display_names }));
 			const resPayload = response.payload as ApiCreateChannelDescRequest;

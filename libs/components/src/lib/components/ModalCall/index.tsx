@@ -57,7 +57,13 @@ const ModalCall = ({ dataCall, userId, triggerCall, clearCallState }: ModalCallP
 	};
 
 	const handleCloseCall = async () => {
-		await mezon.socketRef.current?.forwardWebrtcSignaling(dataCall?.caller_id, 4, '', dataCall.channel_id ?? '', userId ?? '');
+		await mezon.socketRef.current?.forwardWebrtcSignaling(
+			BigInt(dataCall?.caller_id),
+			4,
+			'',
+			BigInt(dataCall.channel_id ?? 0),
+			BigInt(userId ?? 0)
+		);
 
 		if (clearCallState) {
 			clearCallState();

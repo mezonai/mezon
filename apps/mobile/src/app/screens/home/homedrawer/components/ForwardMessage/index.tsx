@@ -220,8 +220,8 @@ const ForwardMessageScreen = ({ route }) => {
 			if (!personalRawMessages?.trim()) return;
 
 			await mezon.socketRef.current.writeChatMessage(
-				clanId,
-				channelIdOrDirectId,
+				BigInt(clanId),
+				BigInt(channelIdOrDirectId),
 				mode,
 				isPublic,
 				{ t: personalRawMessages },

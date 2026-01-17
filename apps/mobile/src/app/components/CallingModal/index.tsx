@@ -183,10 +183,10 @@ const CallingModal = () => {
 		Vibration.cancel();
 		const latestSignalingEntry = signalingData?.[signalingData?.length - 1];
 		await mezon.socketRef.current?.forwardWebrtcSignaling(
-			latestSignalingEntry?.callerId,
+			BigInt(latestSignalingEntry?.callerId),
 			WebrtcSignalingType.WEBRTC_SDP_QUIT,
 			'{}',
-			latestSignalingEntry?.signalingData?.channel_id,
+			BigInt(latestSignalingEntry?.signalingData?.channel_id),
 			userId
 		);
 	};

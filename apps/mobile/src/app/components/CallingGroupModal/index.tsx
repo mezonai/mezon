@@ -53,7 +53,7 @@ export const useSendSignaling = () => {
 			participants.forEach((userId) => {
 				if (userId !== currentUserId) {
 					try {
-						socket.forwardWebrtcSignaling(userId, signalType, JSON.stringify(data), channelId, currentUserId);
+						socket.forwardWebrtcSignaling(BigInt(userId), signalType, JSON.stringify(data), BigInt(channelId), BigInt(currentUserId));
 						if (
 							signalType === WEBRTC_SIGNALING_TYPES.GROUP_CALL_OFFER ||
 							signalType === WEBRTC_SIGNALING_TYPES.GROUP_CALL_QUIT ||
@@ -92,7 +92,7 @@ export const useSendSignaling = () => {
 
 			if (isCancel) {
 				const bodyFCMMobile = { offer: 'CANCEL_CALL' };
-				socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+				socket.makeCallPush(BigInt(receiverId), JSON.stringify(bodyFCMMobile), data.group_id, BigInt(currentUserId));
 				return;
 			}
 
@@ -114,7 +114,7 @@ export const useSendSignaling = () => {
 				channelId: data.group_id
 			};
 
-			socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+			socket.makeCallPush(BigInt(receiverId), JSON.stringify(bodyFCMMobile), data.group_id, BigInt(currentUserId));
 		},
 		[mezon]
 	);

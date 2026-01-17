@@ -31,11 +31,11 @@ const ButtonRaiseHand = ({ channelId }: { channelId: string }) => {
 
 		try {
 			if (!socketRef.current) return;
-			await socketRef.current.writeVoiceReaction([`raising:${'channelId'}`], channelId);
+			await socketRef.current.writeVoiceReaction([`raising:${'channelId'}`], BigInt(channelId));
 		} catch (error) {
 			console.error('Error sending raise hand:', error);
 		}
-	}, [channelId, socketRef]);
+	}, [channelId, isCooldown, socketRef]);
 
 	return (
 		<TouchableOpacity style={[styles.menuIcon]} onPress={handleRaiseHand} disabled={isCooldown}>

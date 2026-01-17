@@ -39,14 +39,14 @@ export function useSendForwardMessage() {
 					...(message.content as IMessageSendPayload),
 					fwd: true
 				};
-				await socket.joinChat(clanid, channel_id, type, isPublic);
+				await socket.joinChat(BigInt(clanid), BigInt(channel_id), type, isPublic);
 				await socket.writeChatMessage(
-					clanid,
-					channel_id,
+					BigInt(clanid),
+					BigInt(channel_id),
 					mode,
 					isPublic,
 					validatedContent,
-					message.channel_id === channel_id ? message.mentions : [],
+					String(message.channel_id) === channel_id ? message.mentions : [],
 					message.attachments
 				);
 
@@ -60,7 +60,7 @@ export function useSendForwardMessage() {
 					const additionalContent: IMessageSendPayload = {
 						t: trimmedMessage
 					};
-					await socket.writeChatMessage(clanid, channel_id, mode, isPublic, additionalContent, [], []);
+					await socket.writeChatMessage(BigInt(clanid), BigInt(channel_id), mode, isPublic, additionalContent, [], []);
 				}
 
 				dispatch(

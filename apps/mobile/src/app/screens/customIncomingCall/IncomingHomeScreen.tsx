@@ -219,11 +219,11 @@ const IncomingHomeScreen = memo(() => {
 		}
 
 		await socketRef.current?.forwardWebrtcSignaling(
-			latestSignalingEntry?.callerId,
+			BigInt(latestSignalingEntry?.callerId),
 			WebrtcSignalingType.WEBRTC_SDP_QUIT,
 			'{}',
-			latestSignalingEntry?.signalingData?.channel_id,
-			userId
+			BigInt(latestSignalingEntry?.signalingData?.channel_id),
+			BigInt(userId)
 		);
 		dispatch(DMCallActions.removeAll());
 		onKillApp();

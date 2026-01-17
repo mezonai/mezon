@@ -220,16 +220,16 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			};
 
 			await socket.updateChatMessage(
-				getClanId || '',
-				channelIdOrDirectId ?? '',
+				BigInt(getClanId ?? 0),
+				BigInt(channelIdOrDirectId ?? 0),
 				mode,
 				isPublic,
-				messageId,
+				BigInt(messageId),
 				trimContent,
 				mentions,
 				attachments,
 				hide_editted,
-				topic_id,
+				BigInt(topic_id || 0),
 				!!isTopic,
 				oldMentions
 			);
