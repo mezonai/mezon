@@ -1,3 +1,4 @@
+import type { IClanWebHook } from '@mezon/store';
 import {
 	selectCurrentClanId,
 	selectMemberClanByUserId,
@@ -9,7 +10,7 @@ import {
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { MAX_FILE_SIZE_8MB, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
-import type { ApiClanWebhook, ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api.gen';
 import type { ChangeEvent } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,7 +22,7 @@ import ModalSaveChanges from '../../../ClanSettingOverview/ModalSaveChanges';
 import DeleteClanWebhookPopup from './DeleteWebhookPopup';
 
 interface IClanWebhookItemModalProps {
-	webhookItem: ApiClanWebhook;
+	webhookItem: IClanWebHook;
 }
 
 const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
@@ -64,7 +65,7 @@ const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
 };
 
 interface IExpendedClanWebhookModal {
-	webhookItem: ApiClanWebhook;
+	webhookItem: IClanWebHook;
 }
 
 interface IDataForUpdate {
@@ -157,7 +158,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		const request: MezonUpdateClanWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
 			webhook_name: dataForUpdate.webhookNameInput,
-			clan_id: clanId
+			clan_id: BigInt(clanId)
 		};
 		await dispatch(
 			updateClanWebhookById({
@@ -173,7 +174,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		const request: MezonUpdateClanWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
 			webhook_name: dataForUpdate.webhookNameInput,
-			clan_id: clanId,
+			clan_id: BigInt(clanId),
 			reset_token: true
 		};
 

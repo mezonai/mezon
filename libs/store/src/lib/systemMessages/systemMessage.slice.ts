@@ -1,8 +1,9 @@
 import { captureSentryError } from '@mezon/logger';
+import type { ISystemMessageRequest } from '@mezon/utils';
 import { FOR_15_MINUTES_SEC, type IPSystemMessage, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiSystemMessage, ApiSystemMessageRequest, ApiSystemMessagesList, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
+import type { ApiSystemMessage, ApiSystemMessagesList, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -11,8 +12,10 @@ import type { RootState } from '../store';
 
 export const SYSTEM_MESSAGE_FEATURE_KEY = 'systemMessages';
 
-export interface SystemMessageEntity extends Omit<IPSystemMessage, 'id'> {
-	id: string;
+export interface SystemMessageEntity extends Omit<IPSystemMessage, 'id' | 'channel_id' | 'clan_id'> {
+	id?: string;
+	channel_id?: string;
+	clan_id?: string;
 }
 
 export interface SystemMessageState extends EntityState<SystemMessageEntity, string> {
@@ -22,7 +25,7 @@ export interface SystemMessageState extends EntityState<SystemMessageEntity, str
 	byClans: Record<
 		string,
 		{
-			systemMessage: ApiSystemMessage;
+			systemMessage: SystemMessageEntity;
 			cache?: CacheMetadata;
 		}
 	>;
@@ -63,7 +66,12 @@ export const fetchSystemMessageByClanCached = async (getState: () => RootState, 
 	markApiFirstCalled(apiKey);
 
 	return {
-		...response,
+		...({
+			...response,
+			channel_id: String(response.channel_id),
+			clan_id: String(response.clan_id),
+			id: String(response.id)
+		} as SystemMessageEntity),
 		fromCache: false,
 		time: Date.now()
 	};
@@ -95,16 +103,20 @@ export const fetchSystemMessageByClanId = createAsyncThunk(
 	}
 );
 
-export const createSystemMessage = createAsyncThunk('systemMessages/createSystemMessage', async (newMessage: ApiSystemMessageRequest, thunkAPI) => {
+export const createSystemMessage = createAsyncThunk('systemMessages/createSystemMessage', async (newMessage: ISystemMessageRequest, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
-	const response: ApiSystemMessage = await mezon.client.createSystemMessage(mezon.session, newMessage);
+	const response: ApiSystemMessage = await mezon.client.createSystemMessage(mezon.session, {
+		...newMessage,
+		channel_id: newMessage.channel_id ? BigInt(newMessage.channel_id) : undefined,
+		clan_id: newMessage.clan_id ? BigInt(newMessage.clan_id) : undefined
+	});
 	return response;
 });
 
 export interface IUpdateSystemMessage {
 	clanId: string;
 	newMessage: MezonUpdateSystemMessageBody;
-	cachedMessage?: ApiSystemMessage;
+	cachedMessage?: SystemMessageEntity;
 }
 export const updateSystemMessage = createAsyncThunk(
 	'systemMessages/updateSystemMessage',
@@ -115,9 +127,17 @@ export const updateSystemMessage = createAsyncThunk(
 			if (response) {
 				// Force refresh cache after update
 				thunkAPI.dispatch(fetchSystemMessageByClanId({ clanId, noCache: true }));
-				return cachedMessage || response;
+				return (
+					cachedMessage ||
+					({
+						...response,
+						channel_id: String(response.channel_id),
+						clan_id: String(response.clan_id),
+						id: String(response.id)
+					} as SystemMessageEntity)
+				);
 			}
-			return response;
+			return null;
 		} catch (error) {
 			captureSentryError(error, 'systemMessages/updateSystemMessage');
 			return thunkAPI.rejectWithValue(error);
@@ -156,7 +176,9 @@ export const systemMessageSlice = createSlice({
 				if (action.payload) {
 					const entities: SystemMessageEntity[] = action.payload.map((msg) => ({
 						...msg,
-						id: String(msg.id || '')
+						id: String(msg.id || ''),
+						channel_id: String(msg.channel_id),
+						clan_id: String(msg.clan_id)
 					}));
 					systemMessageAdapter.setAll(state, entities);
 				}
@@ -171,7 +193,7 @@ export const systemMessageSlice = createSlice({
 			})
 			.addCase(
 				fetchSystemMessageByClanId.fulfilled,
-				(state: SystemMessageState, action: PayloadAction<ApiSystemMessage & { clanId: string; fromCache?: boolean }>) => {
+				(state: SystemMessageState, action: PayloadAction<SystemMessageEntity & { clanId: string; fromCache?: boolean }>) => {
 					const { clanId, fromCache, ...systemMessageData } = action.payload;
 
 					if (!state.byClans[clanId]) {
@@ -182,7 +204,7 @@ export const systemMessageSlice = createSlice({
 						if (systemMessageData.id) {
 							systemMessageAdapter.upsertOne(state, { ...systemMessageData, id: String(systemMessageData.id) });
 						}
-						state.byClans[clanId].systemMessage = systemMessageData;
+						state.byClans[clanId].systemMessage = { ...systemMessageData, id: String(systemMessageData.id) };
 						state.byClans[clanId].cache = createCacheMetadata(FOR_15_MINUTES_SEC);
 					}
 
@@ -198,17 +220,21 @@ export const systemMessageSlice = createSlice({
 				if (payload?.id) {
 					const entity: SystemMessageEntity = {
 						...payload,
-						id: String(payload.id)
+						id: String(payload.id),
+						channel_id: String(payload.channel_id),
+						clan_id: String(payload.clan_id)
 					};
 					systemMessageAdapter.addOne(state, entity);
 				}
 			})
-			.addCase(updateSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<ApiSystemMessage>) => {
+			.addCase(updateSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<SystemMessageEntity | null>) => {
 				const payload = action.payload;
 				if (payload?.id) {
 					const entity: SystemMessageEntity = {
 						...payload,
-						id: String(payload.id)
+						id: String(payload.id),
+						channel_id: String(payload.channel_id),
+						clan_id: String(payload.clan_id)
 					};
 					systemMessageAdapter.upsertOne(state, entity);
 				}

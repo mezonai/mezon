@@ -1,12 +1,12 @@
 import { usePermissionChecker } from '@mezon/core';
+import type { IClanWebHook } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EPermission, generateE2eId } from '@mezon/utils';
-import type { ApiClanWebhook } from 'mezon-js/api.gen';
 import { useTranslation } from 'react-i18next';
 
 interface IClanIntegrationProps {
 	setIsOpenClanWebhooks(): void;
-	allClanWebhooks?: ApiClanWebhook[] | undefined;
+	allClanWebhooks?: IClanWebHook[] | undefined;
 }
 
 const MainClanIntegrations = ({ setIsOpenClanWebhooks, allClanWebhooks }: IClanIntegrationProps) => {

@@ -1,11 +1,11 @@
+import type { IClanWebHook } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiWebhook } from 'mezon-js/api.gen';
 import { useTranslation } from 'react-i18next';
 
 interface IIntegrationProps {
 	setIsOpenWebhooks(): void;
-	allWebhooks?: ApiWebhook[] | undefined;
+	allWebhooks?: IClanWebHook[] | undefined;
 }
 
 const MainIntegrations = ({ setIsOpenWebhooks, allWebhooks }: IIntegrationProps) => {

@@ -1,20 +1,20 @@
 import { useEscapeKeyClose } from '@mezon/core';
+import type { IClanWebHook } from '@mezon/store';
 import { deleteClanWebhookById, hasGrandchildModal, selectCurrentClanId, settingClanStickerActions, useAppDispatch } from '@mezon/store';
-import type { ApiClanWebhook, ApiWebhook } from 'mezon-js/api.gen';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
 interface IDeleteClanWebhookPopupProps {
 	closeShowPopup: () => void;
-	webhookItem: ApiWebhook;
+	webhookItem: IClanWebHook;
 }
 
 const DeleteClanWebhookPopup = ({ webhookItem, closeShowPopup }: IDeleteClanWebhookPopupProps) => {
 	const { t } = useTranslation('clanIntegrationsSetting');
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
-	const handleDeleteClanWebhook = (webhook: ApiClanWebhook) => {
+	const handleDeleteClanWebhook = (webhook: IClanWebHook) => {
 		dispatch(
 			deleteClanWebhookById({
 				webhook,

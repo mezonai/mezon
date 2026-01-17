@@ -62,7 +62,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		}
 		onClose();
 	};
-	const message = useAppSelector((state) => selectMessageByMessageId(state, pinMessage?.channel_id, pinMessage?.message_id as string));
+	const message = useAppSelector((state) => selectMessageByMessageId(state, pinMessage?.channel_id, String(pinMessage?.message_id)));
 	const messageContentObject = useMemo(() => {
 		try {
 			return safeJSONParse(pinMessage.content || '{}') || {};

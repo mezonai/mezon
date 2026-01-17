@@ -2,8 +2,8 @@ import { usePermissionChecker } from '@mezon/core';
 import { selectCurrentChannelId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EOverriddenPermission, EPermission } from '@mezon/utils';
-import { useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 
 type EmptyCanvasProps = {
 	onClick: () => void;

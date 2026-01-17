@@ -12,7 +12,6 @@ import {
 import type { IMessageSendPayload } from '@mezon/utils';
 import { STICKER_WAVE } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription } from 'mezon-js/api.gen';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -55,7 +54,7 @@ const WaveButtonDM = ({ username }: IWaveButtonDMProps) => {
 
 	const { sendMessage } = useChatSending({
 		mode,
-		channelOrDirect: currentDm as ApiChannelDescription
+		channelOrDirect: currentDm
 	});
 
 	const urlIcon = useMemo(() => {
