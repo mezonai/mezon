@@ -36,8 +36,14 @@ export interface ClansEntity extends IClan {
 	id: string; // Primary ID
 }
 
-export const mapClanToEntity = (clanRes: ApiClanDesc) => {
-	return { ...clanRes, id: String(clanRes.clan_id) || '' };
+export const mapClanToEntity = (clanRes: ApiClanDesc): ClansEntity => {
+	return {
+		...clanRes,
+		id: String(clanRes.clan_id) || '',
+		clan_id: clanRes.clan_id ? String(clanRes.clan_id) : undefined,
+		creator_id: clanRes.creator_id ? String(clanRes.creator_id) : undefined,
+		welcome_channel_id: clanRes.welcome_channel_id ? String(clanRes.welcome_channel_id) : undefined
+	};
 };
 
 interface ClanMeta {
@@ -79,7 +85,7 @@ function extractClanMeta(clan: ClansEntity): ClanMeta {
 export interface ClansState extends EntityState<ClansEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	currentClanId?: bigint | null;
+	currentClanId?: string | null;
 	clanMetadata: EntityState<ClanMeta, string>;
 	clanUnreadStates: EntityState<ClanUnreadState, string>; // Normalized unread state
 	invitePeople: boolean;
@@ -110,7 +116,7 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 				thunkAPI.dispatch(listClanBadgeCount({ clanId }));
 			}
 			batch(() => {
-				thunkAPI.dispatch(clansActions.setCurrentClanId(BigInt(clanId)));
+				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId));
 				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
 				thunkAPI.dispatch(channelsActions.fetchChannels({ clanId }));
 
@@ -237,7 +243,7 @@ export const fetchClans = createAsyncThunk(
 			if (!response.clandesc) {
 				return { clans: [], fromCache: response.fromCache };
 			}
-			const clans = response.clandesc.map(mapClanToEntity);
+			const clans: ClansEntity[] = (response.clandesc as ApiClanDesc[]).map(mapClanToEntity);
 			const meta = clans.map((clan) => extractClanMeta(clan as ClansEntity));
 			thunkAPI.dispatch(clansActions.updateBulkClanMetadata(meta));
 
@@ -286,7 +292,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 		const body = {
 			banner: '',
 			clan_name,
-			creator_id: BigInt(''),
+			creator_id: BigInt('0'),
 			logo: logo ?? ''
 		};
 		const response = await mezon.client.createClanDesc(mezon.session, body);
@@ -451,6 +457,7 @@ export const updateUser = createAsyncThunk(
 						logo,
 						encrypt_private_key,
 						user: {
+							id: currentUser?.user?.id || '',
 							avatar_url: avatar_url || '',
 							display_name: display_name || '',
 							lang_tag: 'en',
@@ -631,7 +638,7 @@ export const clansSlice = createSlice({
 		add: clansAdapter.addOne,
 		remove: clansAdapter.removeOne,
 		removeAll: clansAdapter.removeAll,
-		setCurrentClanId: (state, action: PayloadAction<bigint>) => {
+		setCurrentClanId: (state, action: PayloadAction<string>) => {
 			state.currentClanId = action.payload;
 		},
 		updateClansOrder: (state, action: PayloadAction<string[]>) => {
@@ -640,7 +647,7 @@ export const clansSlice = createSlice({
 		updateClanOwner: (state, action: PayloadAction<{ clanId: string; newOwnerId: string }>) => {
 			clansAdapter.updateOne(state, {
 				id: String(action.payload.clanId),
-				changes: { creator_id: BigInt(action.payload.newOwnerId) }
+				changes: { creator_id: action.payload.newOwnerId }
 			});
 		},
 
@@ -883,16 +890,15 @@ export const clansSlice = createSlice({
 			clansAdapter.updateOne(state, {
 				id: String(dataUpdate.clan_id),
 				changes: {
-					clan_id: BigInt(dataUpdate.clan_id),
+					clan_id: String(dataUpdate.clan_id),
 					clan_name: dataUpdate.clan_name,
 					logo: dataUpdate.logo,
 					banner: dataUpdate.banner,
 					is_onboarding: dataUpdate.is_onboarding,
-					welcome_channel_id: BigInt(
+					welcome_channel_id:
 						String(dataUpdate.welcome_channel_id) !== '-1'
 							? String(dataUpdate.welcome_channel_id)
-							: String(currentClanData?.welcome_channel_id ?? '-1')
-					),
+							: String(currentClanData?.welcome_channel_id ?? '-1'),
 					prevent_anonymous: dataUpdate?.prevent_anonymous ?? currentClanData.prevent_anonymous
 				}
 			});
@@ -956,7 +962,7 @@ export const clansSlice = createSlice({
 			const { clanId, new_clan_owner } = action.payload;
 			clansAdapter.updateOne(state, {
 				id: clanId,
-				changes: { creator_id: BigInt(new_clan_owner) }
+				changes: { creator_id: new_clan_owner }
 			});
 		});
 		builder.addCase(updateHasUnreadBasedOnChannels.fulfilled, (state: ClansState, action) => {
