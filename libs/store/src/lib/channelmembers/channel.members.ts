@@ -200,7 +200,7 @@ export const fetchChannelMembersPresence = createAsyncThunk(
 				const existingMember = state[CHANNEL_MEMBERS_FEATURE_KEY].memberChannels[channelId]?.ids?.findIndex((item) => item === userId);
 				if (!existingMember) {
 					thunkAPI.dispatch(
-						channelMembersActions.addNewMember({ channel_id: String(channelPresence.channel_id), user_ids: [BigInt(userId)] })
+						channelMembersActions.addNewMember({ channel_id: String(channelPresence.channel_id), user_ids: [String(userId)] })
 					);
 					thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: true, isMobile }));
 				}
@@ -274,7 +274,7 @@ export const updateCustomStatus = createAsyncThunk(
 				const timeDifference = endOfDay.getTime() - now.getTime();
 				minutes = Math.floor(timeDifference / (1000 * 60));
 			}
-			const response = await mezon.socketRef.current?.writeCustomStatus(clanId, customStatus, minutes, noClear);
+			const response = await mezon.socketRef.current?.writeCustomStatus(BigInt(clanId), customStatus, minutes, noClear);
 
 			const state = thunkAPI.getState() as RootState;
 			const userId = state.account?.userProfile?.user?.id;
@@ -305,7 +305,7 @@ export const banUserChannel = createAsyncThunk(
 	async ({ clanId, channelId, userIds, banTime }: BanClanUsers & { banTime?: number }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.banClanUsers(mezon.session, clanId, channelId, userIds, banTime);
+			const response = await mezon.client.banClanUsers(mezon.session, BigInt(clanId), BigInt(channelId), userIds, banTime);
 			if (!response) {
 				return;
 			}
@@ -325,7 +325,7 @@ export const unbanUserChannel = createAsyncThunk(
 	async ({ clanId, channelId, userIds }: BanClanUsers, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.unbanClanUsers(mezon.session, clanId, channelId, userIds);
+			const response = await mezon.client.unbanClanUsers(mezon.session, BigInt(clanId), BigInt(channelId), userIds);
 			if (!response) {
 				return;
 			}
@@ -386,7 +386,9 @@ export const checkBanInChannel = createAsyncThunk(
 				return;
 			}
 			if (response.isBan) {
-				thunkAPI.dispatch(usersClanActions.addBannedUser({ clanId, channelId, userIds: [userId], banner_id: '', ban_time: response.time }));
+				thunkAPI.dispatch(
+					usersClanActions.addBannedUser({ clanId, channelId, userIds: [BigInt(userId)], banner_id: '', ban_time: response.time })
+				);
 			}
 			return true;
 		} catch (error) {
