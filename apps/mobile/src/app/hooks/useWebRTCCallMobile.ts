@@ -1,20 +1,8 @@
-import {
-	mediaDevices,
-	MediaStream,
-	RTCIceCandidate,
-	RTCPeerConnection,
-	RTCSessionDescription
-} from '@livekit/react-native-webrtc';
+import { mediaDevices, MediaStream, RTCIceCandidate, RTCPeerConnection, RTCSessionDescription } from '@livekit/react-native-webrtc';
 import { useChatSending } from '@mezon/core';
 import { ActionEmitEvent, sessionConstraints } from '@mezon/mobile-components';
 import type { RootState } from '@mezon/store-mobile';
-import {
-	audioCallActions,
-	DMCallActions,
-	selectAllAccount,
-	selectDmGroupCurrent,
-	useAppDispatch
-} from '@mezon/store-mobile';
+import { audioCallActions, DMCallActions, selectAllAccount, selectDmGroupCurrent, useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { IMessageTypeCallLog, sleep } from '@mezon/utils';
@@ -144,11 +132,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	useEffect(() => {
 		if (isConnected && !hasSyncRemoteMediaRef?.current) {
 			mezon.socketRef.current?.forwardWebrtcSignaling(
-				dmUserId,
+				BigInt(dmUserId),
 				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
 				`{"cameraEnabled": ${localMediaControl.camera}, "micEnabled": ${localMediaControl.mic}}`,
-				channelId,
-				userId
+				BigInt(channelId),
+				BigInt(userId)
 			);
 			hasSyncRemoteMediaRef.current = true;
 		}
@@ -219,7 +207,13 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 			if (pc.iceConnectionState === 'connected') {
 				timeStartConnected.current = new Date();
 				endCallTimeout?.current && clearTimeout(endCallTimeout.current);
-				mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_INIT, '', channelId, userId);
+				mezon.socketRef.current?.forwardWebrtcSignaling(
+					BigInt(dmUserId),
+					WebrtcSignalingType.WEBRTC_SDP_INIT,
+					'',
+					BigInt(channelId),
+					BigInt(userId)
+				);
 				setIsConnected(true);
 				stopDialTone();
 				cancelCallFCMMobile();
@@ -307,7 +301,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 
 	const cancelCallFCMMobile = async (receiverId: string = dmUserId) => {
 		const bodyFCMMobile = { offer: 'CANCEL_CALL' };
-		await mezon.socketRef.current?.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), channelId, userId);
+		await mezon.socketRef.current?.makeCallPush(BigInt(receiverId), JSON.stringify(bodyFCMMobile), BigInt(channelId), BigInt(userId));
 	};
 
 	const startCall = async (isVideoCall: boolean, isAnswer = false) => {
@@ -355,14 +349,14 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 					callerId: userId,
 					channelId
 				};
-				await mezon.socketRef.current?.makeCallPush(dmUserId, JSON.stringify(bodyFCMMobile), channelId, userId);
+				await mezon.socketRef.current?.makeCallPush(BigInt(dmUserId), JSON.stringify(bodyFCMMobile), BigInt(channelId), BigInt(userId));
 
 				await mezon.socketRef.current?.forwardWebrtcSignaling(
-					dmUserId,
+					BigInt(dmUserId),
 					WebrtcSignalingType.WEBRTC_SDP_OFFER,
 					compressedOffer,
-					channelId,
-					userId
+					BigInt(channelId),
+					BigInt(userId)
 				);
 				setCallState({
 					localStream: stream,
@@ -375,11 +369,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				peerConnection.current = pc;
 				if (isVideoCall && constraints?.video) {
 					await mezon.socketRef.current?.forwardWebrtcSignaling(
-						dmUserId,
+						BigInt(dmUserId),
 						WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
 						`{"cameraEnabled": ${true}}`,
-						channelId,
-						userId
+						BigInt(channelId),
+						BigInt(userId)
 					);
 					await toggleSpeaker();
 				}
@@ -410,11 +404,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		}
 		if (localMediaControl.camera || isVideoCall) {
 			await mezon.socketRef.current?.forwardWebrtcSignaling(
-				dmUserId,
+				BigInt(dmUserId),
 				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
 				`{"cameraEnabled": true}`,
-				channelId,
-				userId
+				BigInt(channelId),
+				BigInt(userId)
 			);
 			setLocalMediaControl((prev) => ({
 				...prev,
@@ -426,7 +420,13 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		await pc.setLocalDescription(answer);
 		const compressedAnswer = await compress(JSON.stringify(answer));
 		await sleep(500); // Wait for the stream to be ready
-		await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_ANSWER, compressedAnswer, channelId, userId);
+		await mezon.socketRef.current?.forwardWebrtcSignaling(
+			BigInt(dmUserId),
+			WebrtcSignalingType.WEBRTC_SDP_ANSWER,
+			compressedAnswer,
+			BigInt(channelId),
+			BigInt(userId)
+		);
 
 		if (!peerConnection?.current) {
 			peerConnection.current = pc;
@@ -439,11 +439,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		if (pendingCandidatesRef?.current?.length > 0) {
 			for (const candidateItem of pendingCandidatesRef.current) {
 				await mezon.socketRef.current?.forwardWebrtcSignaling(
-					dmUserId,
+					BigInt(dmUserId),
 					WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
 					JSON.stringify(candidateItem),
-					channelId,
-					userId
+					BigInt(channelId),
+					BigInt(userId)
 				);
 			}
 			pendingCandidatesRef.current = [];
@@ -460,11 +460,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				if (pendingCandidatesRef?.current?.length && peerConnection?.current?.remoteDescription?.type === 'offer') {
 					for (const candidateItem of pendingCandidatesRef.current) {
 						await mezon.socketRef.current?.forwardWebrtcSignaling(
-							dmUserId,
+							BigInt(dmUserId),
 							WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
 							JSON.stringify(candidateItem),
-							channelId,
-							userId
+							BigInt(channelId),
+							BigInt(userId)
 						);
 					}
 					pendingCandidatesRef.current = [];
@@ -525,7 +525,13 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 			dispatch(DMCallActions.removeAll());
 			dispatch(DMCallActions.setIsInCall(false));
 			if (!isCallerEndCall) {
-				await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_QUIT, '', channelId, userId);
+				await mezon.socketRef.current?.forwardWebrtcSignaling(
+					BigInt(dmUserId),
+					WebrtcSignalingType.WEBRTC_SDP_QUIT,
+					'',
+					BigInt(channelId),
+					BigInt(userId)
+				);
 			}
 			if (timeStartConnected?.current && isMyCaller.current) {
 				let timeCall = '';
@@ -592,11 +598,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				track.enabled = !track.enabled;
 			});
 			await mezon.socketRef.current?.forwardWebrtcSignaling(
-				dmUserId,
+				BigInt(dmUserId),
 				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
 				`{"micEnabled": ${!localMediaControl.mic}}`,
-				channelId,
-				userId
+				BigInt(channelId),
+				BigInt(userId)
 			);
 			setLocalMediaControl((prev) => ({
 				...prev,
@@ -643,22 +649,22 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				});
 			}
 			await mezon.socketRef.current?.forwardWebrtcSignaling(
-				dmUserId,
+				BigInt(dmUserId),
 				WebrtcSignalingType.WEBRTC_SDP_STATUS_REMOTE_MEDIA,
 				`{"cameraEnabled": ${!localMediaControl.camera}}`,
-				channelId,
-				userId
+				BigInt(channelId),
+				BigInt(userId)
 			);
 			if (peerConnection?.current && !isCameraOn) {
 				const offer = await peerConnection.current.createOffer(sessionConstraints);
 				await peerConnection.current.setLocalDescription(offer);
 				const compressedOffer = await compress(JSON.stringify(offer));
 				await mezon.socketRef.current?.forwardWebrtcSignaling(
-					dmUserId,
+					BigInt(dmUserId),
 					WebrtcSignalingType.WEBRTC_SDP_OFFER,
 					compressedOffer,
-					channelId,
-					userId
+					BigInt(channelId),
+					BigInt(userId)
 				);
 			}
 			setLocalMediaControl((prev) => ({

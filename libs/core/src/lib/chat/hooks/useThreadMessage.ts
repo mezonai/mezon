@@ -81,8 +81,8 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 			}
 
 			await socket.writeChatMessage(
-				currentClanId,
-				thread.channel_id as string,
+				BigInt(currentClanId),
+				BigInt(thread?.channel_id ?? 0),
 				ChannelStreamMode.STREAM_MODE_THREAD,
 				thread.channel_private === 0,
 				content,
@@ -138,11 +138,11 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				throw new Error('Client is not initialized');
 			}
 			await socket.updateChatMessage(
-				currentClanId,
-				channelId,
+				BigInt(currentClanId),
+				BigInt(channelId),
 				ChannelStreamMode.STREAM_MODE_THREAD,
 				thread ? !thread.channel_private : false,
-				messageId,
+				BigInt(messageId),
 				editMessage
 			);
 		},

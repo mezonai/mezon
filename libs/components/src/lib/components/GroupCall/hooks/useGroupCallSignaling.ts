@@ -30,7 +30,7 @@ export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
 							return;
 						}
 
-						socket.forwardWebrtcSignaling(userId, signalType, JSON.stringify(data), channelId, currentUserId);
+						socket.forwardWebrtcSignaling(BigInt(userId), signalType, JSON.stringify(data), BigInt(channelId), BigInt(currentUserId));
 						if (
 							signalType === WEBRTC_SIGNALING_TYPES.GROUP_CALL_OFFER ||
 							signalType === WEBRTC_SIGNALING_TYPES.GROUP_CALL_QUIT ||
@@ -111,7 +111,7 @@ export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
 
 			if (isCancel) {
 				const bodyFCMMobile = { offer: 'CANCEL_CALL' };
-				socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+				socket.makeCallPush(BigInt(receiverId), JSON.stringify(bodyFCMMobile), BigInt(data.group_id), BigInt(currentUserId));
 				return;
 			}
 
@@ -133,7 +133,7 @@ export const useGroupCallSignaling = (): GroupCallSignalingHookReturn => {
 				channelId: data.group_id
 			};
 
-			socket.makeCallPush(receiverId, JSON.stringify(bodyFCMMobile), data.group_id, currentUserId);
+			socket.makeCallPush(BigInt(receiverId), JSON.stringify(bodyFCMMobile), BigInt(data.group_id), BigInt(currentUserId));
 		},
 		[mezon]
 	);

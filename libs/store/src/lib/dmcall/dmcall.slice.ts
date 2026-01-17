@@ -1,7 +1,6 @@
 import type { IDMCall, IMessageSendPayload, IOtherCall, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { WebrtcSignalingFwd } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 
@@ -10,14 +9,42 @@ export const DMCALL_FEATURE_KEY = 'dmcall';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface DMCallEntity extends IDMCall {
+export interface DMCallEntity extends Omit<IDMCall, 'signalingData'> {
 	id: string; // Primary ID
+	signalingData: {
+		receiver_id: string;
+		data_type: number;
+		json_data: string;
+		channel_id: string;
+		caller_id: string;
+	};
 }
+
+export const mapDMCallToEntity = (dmCall: IDMCall, id?: string | bigint): DMCallEntity => {
+	const entityId = id !== undefined ? String(id) : dmCall.callerId || dmCall.calleeId || '';
+	return {
+		...dmCall,
+		id: entityId,
+		signalingData: {
+			receiver_id: dmCall.signalingData?.receiver_id !== undefined ? String(dmCall.signalingData.receiver_id) : '',
+			data_type: dmCall.signalingData?.data_type || 0,
+			json_data: dmCall.signalingData?.json_data || '',
+			channel_id: dmCall.signalingData?.channel_id !== undefined ? String(dmCall.signalingData.channel_id) : '',
+			caller_id: dmCall.signalingData?.caller_id !== undefined ? String(dmCall.signalingData.caller_id) : ''
+		}
+	};
+};
 
 export interface DMCallState extends EntityState<DMCallEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
-	signalingData: WebrtcSignalingFwd;
+	signalingData: {
+		receiver_id: string;
+		data_type: number;
+		json_data: string;
+		channel_id: string;
+		caller_id: string;
+	};
 	listOfCalls: Record<string, string[]>;
 	isMuteMicrophone: boolean;
 	isShowShareScreen: boolean;
@@ -39,7 +66,7 @@ export const updateCallLog = createAsyncThunk(
 			const state = thunkAPI.getState() as RootState;
 			const messageId = selectCallMessageId(state);
 			if (messageId) {
-				mezon.socketRef.current?.updateChatMessage('0', channelId ?? '', 4, false, messageId, content, [], [], true);
+				mezon.socketRef.current?.updateChatMessage(BigInt('0'), BigInt(channelId ?? ''), 4, false, BigInt(messageId), content, [], [], true);
 			}
 		} catch (error) {
 			return thunkAPI.rejectWithValue(error);
@@ -68,7 +95,7 @@ export const initialDMCallState: DMCallState = DMCallAdapter.getInitialState({
 	isForceQuitCallNative: false
 });
 
-export const DMCallSlice = createSlice({
+const DMCallSlice = createSlice({
 	name: DMCALL_FEATURE_KEY,
 	initialState: initialDMCallState,
 	reducers: {
@@ -88,7 +115,7 @@ export const DMCallSlice = createSlice({
 				state.otherCall = {
 					caller_id: action.payload.signalingData.caller_id,
 					channel_id: action.payload.signalingData.channel_id
-				};
+				} as IOtherCall;
 			}
 		},
 

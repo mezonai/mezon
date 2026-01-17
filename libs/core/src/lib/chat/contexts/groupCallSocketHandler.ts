@@ -71,7 +71,7 @@ export const handleGroupCallSocketEvent = async (
 						reason: 'busy'
 					}),
 					event.channel_id,
-					userId || ''
+					BigInt(userId || 0)
 				);
 			} catch (error) {
 				console.error('Failed to send busy signal:', error);
@@ -114,7 +114,7 @@ export const handleGroupCallSocketEvent = async (
 							10, // GROUP_CALL_ANSWER
 							JSON.stringify(answerData),
 							event.channel_id,
-							userId || ''
+							BigInt(userId || 0)
 						);
 					}
 
