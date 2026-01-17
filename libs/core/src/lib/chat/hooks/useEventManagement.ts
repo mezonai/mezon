@@ -29,15 +29,15 @@ export function useEventManagement() {
 		) => {
 			await dispatch(
 				eventManagementActions.fetchCreateEventManagement({
-					clan_id,
-					channel_voice_id,
+					clan_id: BigInt(clan_id),
+					channel_voice_id: BigInt(channel_voice_id),
 					address,
 					title,
 					start_time_seconds,
 					end_time_seconds,
 					description,
 					logo,
-					channel_id,
+					channel_id: BigInt(channel_id),
 					repeat_type,
 					is_private
 				})

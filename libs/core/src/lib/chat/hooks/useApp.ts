@@ -68,4 +68,3 @@ export function useApp() {
 		[isShowMemberList, setIsShowMemberList, setAppearanceTheme, systemIsDark]
 	);
 }
-

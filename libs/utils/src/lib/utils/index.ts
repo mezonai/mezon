@@ -44,6 +44,7 @@ import type {
 	MentionDataProps,
 	MentionItem,
 	NotificationEntity,
+	RolesClanEntity,
 	SearchItemProps,
 	SenderInfoOptionals,
 	UsersClanEntity
@@ -135,7 +136,7 @@ export const checkSameDay = (startTimeString: string, endTimeString: string) => 
 	return sameDay;
 };
 
-export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] | null, rolesClan: IRolesClan[], refereceSenderId: string[]) => {
+export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] | null, rolesClan: RolesClanEntity[], refereceSenderId: string[]) => {
 	const uniqueUserId1s = Array.from(
 		new Set(
 			mentions.reduce<string[]>((acc, mention) => {
@@ -159,7 +160,7 @@ export const uniqueUsers = (mentions: IMentionOnMessage[], memUserIds: string[] 
 		new Set(
 			allRoleUsers.reduce<string[]>((acc, roleUser) => {
 				if (roleUser?.id) {
-					acc.push(roleUser.id);
+					acc.push(String(roleUser.id));
 				}
 				return acc;
 			}, [])
@@ -430,26 +431,8 @@ export const resizeFileImage = (file: File, maxWidth: number, maxHeight: number,
 
 export function findClanAvatarByUserId(userId: string, data: ClanUserListClanUser[]) {
 	for (const item of data) {
-		if (item?.user?.id === userId) {
+		if (String(item?.user?.id) === userId) {
 			return item.clan_avatar;
-		}
-	}
-	return '';
-}
-
-export function findClanNickByUserId(userId: string, data: ClanUserListClanUser[]) {
-	for (const item of data) {
-		if (item?.user?.id === userId) {
-			return item.clan_nick;
-		}
-	}
-	return '';
-}
-
-export function findDisplayNameByUserId(userId: string, data: ClanUserListClanUser[]) {
-	for (const item of data) {
-		if (item?.user?.id === userId) {
-			return item.user.display_name;
 		}
 	}
 	return '';
@@ -806,17 +789,17 @@ export async function getMobileUploadedAttachments(payload: {
 }
 
 export const blankReferenceObj: ApiMessageRef = {
-	message_id: '',
-	message_ref_id: '',
+	message_id: BigInt(''),
+	message_ref_id: BigInt(''),
 	ref_type: 0,
-	message_sender_id: '',
+	message_sender_id: BigInt(''),
 	message_sender_username: '',
 	mesages_sender_avatar: '',
 	message_sender_clan_nick: '',
 	message_sender_display_name: '',
 	content: '',
 	has_attachment: false,
-	channel_id: '',
+	channel_id: BigInt(''),
 	mode: 0,
 	channel_label: ''
 };
@@ -1077,7 +1060,7 @@ export const transformTextWithMentions = (
 		const end = (e as number) + offsetAdjustment;
 
 		if (role_id) {
-			const role = clanRoles?.[role_id as string];
+			const role = clanRoles?.[String(role_id)];
 			if (role) {
 				const roleName = role.title || '';
 				const replacement = `@[${roleName}](${role_id})`;
@@ -1086,7 +1069,7 @@ export const transformTextWithMentions = (
 			}
 		}
 
-		const user = usersEntities?.[user_id as string];
+		const user = usersEntities?.[String(user_id)];
 		if (user) {
 			const name = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
 			const replacement = `@[${name}](${user_id})`;
@@ -1112,7 +1095,7 @@ export const generateMentionItems = (
 ): MentionItem[] => {
 	return mentions
 		.map((mention) => {
-			const user = usersEntities?.[mention.user_id as string];
+			const user = usersEntities?.[String(mention.user_id)];
 			if (user) {
 				const name = user.clan_nick || user.user?.display_name || user.user?.username || '';
 				const mentionText = `@[${name}](${mention.user_id})`;
@@ -1149,7 +1132,7 @@ export const getMarkupInsertIndex = (
 				// Plain text: @name
 				// Mention markup format: @[name](id)
 				// => Adding 4 extra characters: `[`, `]`, `(`, `)`
-				totalInsertedLength += 4 + (role?.id?.length || 0);
+				totalInsertedLength += 4 + (String(role?.id)?.length || 0);
 			}
 			return;
 		}

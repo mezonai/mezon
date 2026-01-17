@@ -91,7 +91,20 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				references
 			);
 
-			const userIds = uniqueUsers(mentions as ApiMessageMention[], mapToMemberIds, rolesClan, []);
+			const userIds = uniqueUsers(
+				(mentions || []).map((item) => ({
+					...item,
+					message_id: String(item.message_id),
+					channel_id: String(item.channel_id),
+					role_id: String(item.role_id),
+					sender_id: String(item.sender_id),
+					user_id: String(item.user_id)
+				})),
+				mapToMemberIds,
+				rolesClan,
+				[]
+			);
+
 			if (userIds.length) {
 				addMemberToThread(thread as ChannelsEntity, userIds as string[]);
 			}

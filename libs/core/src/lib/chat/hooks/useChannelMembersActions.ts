@@ -34,8 +34,8 @@ export function useChannelMembersActions() {
 			if (currentVoice?.clanId === clanId) {
 				await dispatch(
 					handleParticipantVoiceState({
-						clan_id: clanId,
-						channel_id: currentVoice.channelId,
+						clan_id: BigInt(clanId),
+						channel_id: BigInt(currentVoice.channelId),
 						display_name: userProfile?.user?.display_name ?? '',
 						state: ParticipantMeetState.LEAVE,
 						room_name: currentVoice.roomId || 'leave'

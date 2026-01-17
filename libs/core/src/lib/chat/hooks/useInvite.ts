@@ -1,5 +1,5 @@
 import { inviteActions, useAppDispatch } from '@mezon/store';
-import { ApiInviteUserRes, ApiLinkInviteUser } from 'mezon-js/api.gen';
+import type { ApiInviteUserRes, ApiLinkInviteUser } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 
 export function useInvite() {
@@ -9,9 +9,9 @@ export function useInvite() {
 		async (clan_id: string, channel_id: string, expiry_time: number) => {
 			const action = await dispatch(
 				inviteActions.createLinkInviteUser({
-					clan_id: clan_id,
-					channel_id: channel_id,
-					expiry_time: expiry_time
+					clan_id,
+					channel_id,
+					expiry_time
 				})
 			);
 			const payload = action.payload as ApiLinkInviteUser;

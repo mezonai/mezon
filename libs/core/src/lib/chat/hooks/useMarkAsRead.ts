@@ -36,9 +36,9 @@ export function useMarkAsRead() {
 	const handleMarkAsReadDM = useCallback(
 		async (channelId: string) => {
 			const body: ApiMarkAsReadRequest = {
-				clan_id: '',
-				category_id: '',
-				channel_id: channelId
+				clan_id: undefined,
+				category_id: undefined,
+				channel_id: BigInt(channelId)
 			};
 
 			try {
@@ -54,9 +54,9 @@ export function useMarkAsRead() {
 	const handleMarkAsReadChannel = useCallback(
 		async (channel: ChannelsEntity) => {
 			const body: ApiMarkAsReadRequest = {
-				clan_id: channel.clan_id,
-				category_id: channel.category_id,
-				channel_id: channel.channel_id
+				clan_id: BigInt(channel.clan_id || 0),
+				category_id: BigInt(channel.category_id || 0),
+				channel_id: BigInt(channel.channel_id || 0)
 			};
 
 			setStatusMarkAsReadChannel('pending');
@@ -135,8 +135,8 @@ export function useMarkAsRead() {
 	const handleMarkAsReadCategory = useCallback(
 		async (category: ICategoryChannel) => {
 			const body: ApiMarkAsReadRequest = {
-				clan_id: category.clan_id,
-				category_id: category.category_id
+				clan_id: BigInt(category.clan_id || 0),
+				category_id: BigInt(category.category_id || 0)
 			};
 
 			const store = getStore();
@@ -193,7 +193,7 @@ export function useMarkAsRead() {
 	const handleMarkAsReadClan = useCallback(
 		async (clanId: string) => {
 			const body: ApiMarkAsReadRequest = {
-				clan_id: clanId ?? ''
+				clan_id: BigInt(clanId ?? '')
 			};
 			setStatusMarkAsReadClan('pending');
 			try {

@@ -10,7 +10,7 @@ export function useActivities() {
 				activity_description: info?.windowTitle,
 				activity_name: info?.appName,
 				activity_type: info?.typeActivity,
-				application_id: '0',
+				application_id: BigInt(0),
 				start_time: info?.startTime,
 				status: 1
 			};

@@ -3,7 +3,6 @@ import type { IEmojiRecent } from '@mezon/utils';
 import { RECENT_EMOJI_CATEGORY } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiClanEmoji } from 'mezon-js/api.gen';
 import type { AddTxResponse } from 'mmn-client-js';
 import { ETransferType } from 'mmn-client-js';
 import type { CacheMetadata } from '../cache-metadata';
@@ -213,14 +212,14 @@ export const selectAllEmojiRecent = createSelector([selectAllEmojiSuggestion, ge
 			if (!emoji || !recentEmoji) return null;
 
 			return {
-				id: emoji?.id ? BigInt(emoji.id) : undefined,
+				id: emoji?.id ? emoji.id : undefined,
 				shortname: emoji.shortname ?? '',
 				src: emoji.src ?? '',
 				category: RECENT_EMOJI_CATEGORY,
 				emoji_recents_id: recentEmoji?.emoji_recents_id ?? ''
-			} as ApiClanEmoji;
+			};
 		})
-		.filter((emoji): emoji is ApiClanEmoji => emoji !== null);
+		.filter((emoji) => emoji !== null);
 
 	return emojiRecents;
 });
