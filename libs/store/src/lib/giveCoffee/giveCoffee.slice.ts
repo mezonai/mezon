@@ -19,7 +19,9 @@ export interface GiveCoffeeEntity {
 	id: string; // Primary ID
 }
 
-export interface ISendTokenDetailType extends ApiTokenSentEvent {
+export interface ISendTokenDetailType extends Omit<ApiTokenSentEvent, 'sender_id' | 'receiver_id'> {
+	sender_id?: string;
+	receiver_id?: string;
 	receiver_name?: string;
 }
 export interface GiveCoffeeState extends EntityState<GiveCoffeeEntity, string> {

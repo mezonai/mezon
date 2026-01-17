@@ -15,8 +15,9 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import type { IUserAccount } from '@mezon/utils';
 import { MessageCrypt } from '@mezon/utils';
-import type { ApiAccount, ApiPubKey } from 'mezon-js/api.gen';
+import type { ApiPubKey } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -165,7 +166,7 @@ export const ModalConfirmPin = ({
 	onBack,
 	pin,
 	userProfile
-}: ModalProps & { pin: string[]; userProfile: ApiAccount | null | undefined }) => {
+}: ModalProps & { pin: string[]; userProfile: IUserAccount | null | undefined }) => {
 	const [otp, setOtp] = useState<string[]>(Array(6).fill(''));
 	const [activeIndex, setActiveIndex] = useState(0);
 	const [errorMessage, setErrorMessage] = useState<string>('');
@@ -259,7 +260,7 @@ export const ModalConfirmPin = ({
 		const pinCode = pin.join('');
 		try {
 			if (userProfile?.encrypt_private_key) {
-				await MessageCrypt.decryptPrivateKeyWithPIN(userProfile?.encrypt_private_key, otpCode, userProfile?.user?.id as string);
+				await MessageCrypt.decryptPrivateKeyWithPIN(userProfile?.encrypt_private_key, otpCode, String(userProfile?.user?.id));
 				onClose(true);
 				clearApiCallTracker();
 				dispatch(e2eeActions.setHasKey(true));
@@ -271,7 +272,7 @@ export const ModalConfirmPin = ({
 				}
 			} else {
 				if (otpCode === pinCode) {
-					const encryptWithPIN = await MessageCrypt.encryptPrivateKeyWithPIN(userProfile?.user?.id as string, otpCode);
+					const encryptWithPIN = await MessageCrypt.encryptPrivateKeyWithPIN(String(userProfile?.user?.id), otpCode);
 					dispatch(
 						clansActions.updateUser({
 							avatar_url: userProfile?.user?.avatar_url as string,

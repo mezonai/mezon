@@ -243,8 +243,14 @@ export type IMessageMeta = {
 	contextMenu: IMessageContextMenu;
 };
 
-export type IMessage = ChannelMessage & {
+export type IMessage = Omit<ChannelMessage, 'id' | 'channel_id' | 'clan_id' | 'sender_id' | 'message_id' | 'topic_id' | 'mentions'> & {
 	id: string;
+	channel_id: string;
+	clan_id?: string;
+	sender_id: string;
+	message_id?: string;
+	topic_id?: string;
+	mentions?: IMessageMention[];
 	content: IMessageSendPayload;
 	date?: string;
 	creationTime?: Date;
@@ -257,6 +263,13 @@ export type IMessage = ChannelMessage & {
 	isFirst?: boolean;
 	isErrorRetry?: boolean;
 	code?: number;
+};
+
+export type IMessageMention = Omit<ApiMessageMention, 'id' | 'user_id' | 'role_id' | 'channel_id'> & {
+	id: string;
+	user_id?: string;
+	role_id?: string;
+	channel_id?: string;
 };
 
 export type SearchMessage = ApiSearchMessageDocument & {
@@ -966,8 +979,12 @@ export enum ThemeApp {
 	System = 'system'
 }
 
-export interface INotification extends ApiNotification {
+export interface INotification extends Omit<ApiNotification, 'id' | 'channel_id' | 'clan_id' | 'sender_id' | 'topic_id'> {
 	id: string;
+	channel_id?: string;
+	clan_id?: string;
+	sender_id?: string;
+	topic_id?: string;
 	content?: any;
 }
 export interface NotificationEntity extends INotification {

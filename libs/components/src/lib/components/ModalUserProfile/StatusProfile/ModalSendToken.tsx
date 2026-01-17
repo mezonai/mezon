@@ -121,7 +121,7 @@ const ModalSendToken = ({
 		const userMap: Map<string, User> = new Map();
 
 		usersClan.forEach((itemUserClan) => {
-			const userId = itemUserClan?.id ?? '';
+			const userId = itemUserClan?.id ? String(itemUserClan.id) : '';
 			if (userId && !userMap.has(userId)) {
 				userMap.set(userId, {
 					id: userId,
@@ -134,7 +134,7 @@ const ModalSendToken = ({
 		});
 
 		directMessages.forEach((itemDM: FriendsEntity) => {
-			const userId = itemDM?.user?.id ?? '';
+			const userId = itemDM?.user?.id ? String(itemDM.user.id) : '';
 			if (userId && !userMap.has(userId)) {
 				userMap.set(userId, {
 					id: userId,

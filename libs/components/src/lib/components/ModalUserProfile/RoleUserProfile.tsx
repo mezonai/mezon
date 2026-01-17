@@ -64,8 +64,8 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 
 		const updatedRoleUsers =
 			action === 'add'
-				? [...(role.role_user_list?.role_users || []), { id: userById.user.id }]
-				: role.role_user_list?.role_users?.filter((user) => user.id !== userById?.user?.id) || [];
+				? [...(role.role_user_list?.role_users || []), { id: String(userById.user.id) }]
+				: role.role_user_list?.role_users?.filter((user) => String(user.id) !== String(userById?.user?.id)) || [];
 
 		dispatch(
 			rolesClanActions.update({
@@ -84,13 +84,13 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 	const addRole = async (roleId: string) => {
 		setIsVisible(false);
 		const activeRole = RolesClan.find((role) => role.id === roleId);
-		const userIDArray = userById?.user?.id?.split(',');
+		const userIDArray = userById?.user?.id ? String(userById.user.id).split(',') : [];
 
-		await updateRole(currentClanId || '', roleId, activeRole?.title ?? '', activeRole?.color ?? '', userIDArray || [], [], [], []);
+		await updateRole(currentClanId || '', roleId, activeRole?.title ?? '', activeRole?.color ?? '', userIDArray, [], [], []);
 		await dispatch(
 			usersClanActions.addRoleIdUser({
 				id: roleId,
-				userId: userById?.user?.id as string,
+				userId: userById?.user?.id ? String(userById.user.id) : '',
 				clanId: currentClanId as string
 			})
 		);
@@ -100,13 +100,13 @@ const RoleUserProfile = ({ userID }: RoleUserProfileProps) => {
 
 	const deleteRole = async (roleId: string) => {
 		const activeRole = RolesClan.find((role) => role.id === roleId);
-		const userIDArray = userById?.user?.id?.split(',');
-		await updateRole(currentClanId || '', roleId, activeRole?.title ?? '', activeRole?.color ?? '', [], [], userIDArray || [], []);
+		const userIDArray = userById?.user?.id ? String(userById.user.id).split(',') : [];
+		await updateRole(currentClanId || '', roleId, activeRole?.title ?? '', activeRole?.color ?? '', [], [], userIDArray, []);
 		await dispatch(
 			usersClanActions.removeRoleIdUser({
 				clanId: currentClanId as string,
 				id: roleId,
-				userId: userById?.user?.id as string
+				userId: userById?.user?.id ? String(userById.user.id) : ''
 			})
 		);
 

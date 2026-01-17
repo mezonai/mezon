@@ -1,5 +1,5 @@
 import { useFriends } from '@mezon/core';
-import { ChannelMembersEntity } from '@mezon/utils';
+import type { ChannelMembersEntity } from '@mezon/utils';
 
 type PendingFriendProps = {
 	user: ChannelMembersEntity | null;
@@ -20,7 +20,7 @@ const PendingFriend = (props: PendingFriendProps) => {
 					onClick={(e) => {
 						handleDefault(e);
 						if (user) {
-							acceptFriend(user.user?.username || '', user.user?.id || '');
+							acceptFriend(user.user?.username || '', String(user.user?.id || ''));
 						}
 					}}
 				>
@@ -31,7 +31,7 @@ const PendingFriend = (props: PendingFriendProps) => {
 					onClick={(e) => {
 						handleDefault(e);
 						if (user) {
-							deleteFriend(user.user?.username || '', user.user?.id || '');
+							deleteFriend(user.user?.username || '', String(user.user?.id || ''));
 						}
 					}}
 				>

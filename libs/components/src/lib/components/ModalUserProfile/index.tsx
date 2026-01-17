@@ -126,9 +126,9 @@ const ModalUserProfile = ({
 		const response = await createDirectMessageWithUser(userId, display_name, username, avatar);
 		if (response.channel_id) {
 			const channelMode = ChannelStreamMode.STREAM_MODE_DM;
-			sendInviteMessage(content, response.channel_id, channelMode);
+			sendInviteMessage(content, String(response.channel_id), channelMode);
 			setContent('');
-			const directChat = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+			const directChat = toDmGroupPageFromMainApp(String(response.channel_id), Number(response.type));
 			navigate(directChat);
 		}
 		onLoading.current = false;
@@ -154,7 +154,7 @@ const ModalUserProfile = ({
 
 		getColor();
 	}, [userProfile?.user?.avatar_url, isFooterProfile, userID, message?.avatar, userById?.user?.avatar_url]);
-	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, userById?.user?.id || ''));
+	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, String(userById?.user?.id || '')));
 	const checkAddFriend = useMemo(() => {
 		return infoFriend?.state;
 	}, [infoFriend]);
@@ -199,7 +199,7 @@ const ModalUserProfile = ({
 			if (e.key === 'Enter' && content && onLoading.current === false) {
 				if (userById) {
 					sendMessage(
-						isFooterProfile ? userId || userById?.user?.id || '' : userById?.user?.id || '',
+						isFooterProfile ? String(userId || userById?.user?.id || '') : String(userById?.user?.id || ''),
 						userById?.user?.display_name || userById?.user?.username,
 						userById?.user?.username,
 						userById.user?.avatar_url
@@ -208,7 +208,13 @@ const ModalUserProfile = ({
 					return;
 				}
 				sendMessage(
-					(isFooterProfile ? userId : userID === message?.sender_id ? message?.sender_id : message?.references?.[0].message_sender_id) || ''
+					String(
+						(isFooterProfile
+							? userId
+							: userID === message?.sender_id
+								? message?.sender_id
+								: message?.references?.[0].message_sender_id) || ''
+					)
 				);
 				onLoading.current = true;
 			}
@@ -252,7 +258,7 @@ const ModalUserProfile = ({
 					<div>
 						<p
 							className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate"
-							data-e2e={generateE2eId('short_profile.display_name')}	
+							data-e2e={generateE2eId('short_profile.display_name')}
 						>
 							{isUserRemoved
 								? t('labels.unknownUser')
