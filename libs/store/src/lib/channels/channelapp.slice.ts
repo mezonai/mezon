@@ -7,12 +7,12 @@ import type { JoinChannelAppData } from 'mezon-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 
 type CreateChannelAppMeetPayload = {
-	channelId: bigint;
+	channelId: string;
 	roomName: string;
 };
 
 type GenerateAppUserHashPayload = {
-	appId: bigint;
+	appId: string;
 };
 
 export const CHANNEL_APP = 'channelApp';
@@ -73,7 +73,7 @@ export const createChannelAppMeet = createAsyncThunk(
 );
 
 export const generateAppUserHash = createAsyncThunk(`${CHANNEL_APP}/generateAppUserHash`, async ({ appId }: GenerateAppUserHashPayload, thunkAPI) => {
-	if (appId === BigInt(0)) return thunkAPI.rejectWithValue('Invalid input');
+	if (appId === String(0)) return thunkAPI.rejectWithValue('Invalid input');
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.generateHashChannelApps(mezon.session, appId);

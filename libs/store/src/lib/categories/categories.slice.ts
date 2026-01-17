@@ -98,7 +98,7 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, BigInt(clanId)),
+		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
 		'category_list'
 	);
 
@@ -148,7 +148,7 @@ export const createNewCategory = createAsyncThunk('categories/createCategories',
 
 export const checkDuplicateCategoryInClan = createAsyncThunk(
 	'categories/checkDuplicateCategoryInClan',
-	async ({ categoryName, clanId }: { categoryName: string; clanId: bigint }, thunkAPI) => {
+	async ({ categoryName, clanId }: { categoryName: string; clanId: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(categoryName, clanId, TypeCheck.TYPECATEGORY, clanId);
@@ -166,10 +166,10 @@ export const checkDuplicateCategoryInClan = createAsyncThunk(
 
 export const deleteCategory = createAsyncThunk(
 	'categories/deleteCategory',
-	async ({ clanId, categoryId, categoryLabel }: { clanId: string; categoryId: bigint; categoryLabel: string }, thunkAPI) => {
+	async ({ clanId, categoryId, categoryLabel }: { clanId: string; categoryId: string; categoryLabel: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			await mezon.client.deleteCategoryDesc(mezon.session, categoryId, BigInt(clanId), categoryLabel);
+			await mezon.client.deleteCategoryDesc(mezon.session, categoryId, clanId, categoryLabel);
 			// Clear API call tracker to force fresh data on next fetch
 			const apiKey = createApiKey('fetchCategories', clanId);
 			clearApiCallTracker(apiKey);
@@ -197,7 +197,7 @@ export const updateCategoriesOrder = createAsyncThunk(
 			const currentCategories = selectCachedCategoriesByClan(state, String(clan_id));
 
 			const updatedCategories = currentCategories.map((cat) => {
-				const updatedOrder = categories.find((c) => c.category_id === BigInt(cat.id));
+				const updatedOrder = categories.find((c) => String(c.category_id) === cat.id);
 				return {
 					...cat,
 					order: updatedOrder?.order
@@ -222,13 +222,13 @@ export const updateCategoriesOrder = createAsyncThunk(
 export const updateCategory = createAsyncThunk('categories/updateCategory', async ({ clanId, request }: updatCategoryPayload, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const _response = await mezon.client.updateCategory(mezon.session, BigInt(clanId), request);
+		const _response = await mezon.client.updateCategory(mezon.session, clanId, request);
 
 		if (request.category_id && _response) {
 			const updatedCategory: CategoriesEntity = {
 				id: String(request.category_id),
 				category_name: request.category_name || '',
-				clan_id: BigInt(clanId)
+				clan_id: clanId
 			};
 
 			thunkAPI.dispatch(

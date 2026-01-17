@@ -58,7 +58,7 @@ export const fetchUserChannelsCached = async (
 				limit
 			}
 		},
-		() => ensuredMezon.client.listChannelUsersUC(ensuredMezon.session, BigInt(channelId), limit),
+		() => ensuredMezon.client.listChannelUsersUC(ensuredMezon.session, channelId, limit),
 		'channel_users_uc_list'
 	);
 
@@ -110,7 +110,7 @@ export const userChannelsSlice = createSlice({
 		remove: UserChannelAdapter.removeOne,
 		update: UserChannelAdapter.updateOne,
 		removeMany: UserChannelAdapter.removeMany,
-		addUserChannel: (state, action: PayloadAction<{ channelId: string; userAdds: Array<bigint> }>) => {
+		addUserChannel: (state, action: PayloadAction<{ channelId: string; userAdds: Array<string> }>) => {
 			const { channelId, userAdds } = action.payload;
 
 			if (userAdds.length <= 0) return;
@@ -133,7 +133,7 @@ export const userChannelsSlice = createSlice({
 				});
 			}
 		},
-		removeUserChannel: (state, action: PayloadAction<{ channelId: string; userRemoves: Array<bigint> }>) => {
+		removeUserChannel: (state, action: PayloadAction<{ channelId: string; userRemoves: Array<string> }>) => {
 			const { channelId, userRemoves } = action.payload;
 
 			if (userRemoves.length <= 0) return;

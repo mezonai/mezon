@@ -88,7 +88,7 @@ export const fetchChannelMembersCached = async (
 	if (!shouldForceCall) {
 		const cachedChannelData = channelMembersState.memberChannels[channelId];
 		return {
-			channel_users: cachedChannelData.ids?.map((item) => ({ user_id: BigInt(item), id: BigInt(item) })) || [],
+			channel_users: cachedChannelData.ids?.map((item) => ({ user_id: item, id: item })) || [],
 			time: Date.now(),
 			fromCache: true
 		};
@@ -99,14 +99,14 @@ export const fetchChannelMembersCached = async (
 		{
 			api_name: 'ListChannelUsers',
 			list_channel_users_req: {
-				channel_id: BigInt(channelId),
+				channel_id: channelId,
 				limit: 2000,
-				clan_id: BigInt(clanId),
+				clan_id: clanId,
 				channel_type: channelType,
 				state: 1
 			}
 		},
-		() => ensuredMezon.client.listChannelUsers(ensuredMezon.session, BigInt(clanId), BigInt(channelId), channelType, 1, 2000, ''),
+		() => ensuredMezon.client.listChannelUsers(ensuredMezon.session, clanId, channelId, channelType, 1, 2000, ''),
 		'channel_user_list'
 	);
 
@@ -199,9 +199,7 @@ export const fetchChannelMembersPresence = createAsyncThunk(
 				const state = thunkAPI.getState() as ChannelMemberRootState;
 				const existingMember = state[CHANNEL_MEMBERS_FEATURE_KEY].memberChannels[channelId]?.ids?.findIndex((item) => item === userId);
 				if (!existingMember) {
-					thunkAPI.dispatch(
-						channelMembersActions.addNewMember({ channel_id: String(channelPresence.channel_id), user_ids: [BigInt(userId)] })
-					);
+					thunkAPI.dispatch(channelMembersActions.addNewMember({ channel_id: String(channelPresence.channel_id), user_ids: [userId] }));
 					thunkAPI.dispatch(channelMembersActions.setStatusUser({ userId, online: true, isMobile }));
 				}
 			}
@@ -234,7 +232,7 @@ export const removeMemberChannel = createAsyncThunk(
 	async ({ channelId, userIds, kickMember = true }: RemoveChannelUsers & { kickMember?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.removeChannelUsers(mezon.session, BigInt(channelId), userIds);
+			const response = await mezon.client.removeChannelUsers(mezon.session, String(channelId), userIds.map(String));
 			if (!response) {
 				return;
 			}
@@ -256,7 +254,7 @@ export const removeMemberChannel = createAsyncThunk(
 );
 
 type UpdateCustomStatus = {
-	clanId: bigint;
+	clanId: string;
 	customStatus: string;
 	minutes: number;
 	noClear: boolean;
@@ -305,7 +303,7 @@ export const banUserChannel = createAsyncThunk(
 	async ({ clanId, channelId, userIds, banTime }: BanClanUsers & { banTime?: number }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.banClanUsers(mezon.session, clanId, channelId, userIds, banTime);
+			const response = await mezon.client.banClanUsers(mezon.session, String(clanId), String(channelId), userIds.map(String), banTime);
 			if (!response) {
 				return;
 			}
@@ -325,7 +323,7 @@ export const unbanUserChannel = createAsyncThunk(
 	async ({ clanId, channelId, userIds }: BanClanUsers, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.unbanClanUsers(mezon.session, clanId, channelId, userIds);
+			const response = await mezon.client.unbanClanUsers(mezon.session, String(clanId), String(channelId), userIds.map(String));
 			if (!response) {
 				return;
 			}
@@ -361,7 +359,7 @@ export const checkBanInChannelCached = async (
 		};
 	}
 
-	const response = await ensuredMezon.client.isBanned(ensuredMezon.session, BigInt(channelId));
+	const response = await ensuredMezon.client.isBanned(ensuredMezon.session, channelId);
 
 	markApiFirstCalled(apiKey);
 
@@ -381,12 +379,15 @@ export const checkBanInChannel = createAsyncThunk(
 			if (!userId) {
 				return;
 			}
-			const response = await checkBanInChannelCached(thunkAPI.getState as () => RootState, mezon, clanId, channelId, String(userId), false);
+			const userIdString = String(userId);
+			const response = await checkBanInChannelCached(thunkAPI.getState as () => RootState, mezon, clanId, channelId, userIdString, false);
 			if (!response) {
 				return;
 			}
 			if (response.isBan) {
-				thunkAPI.dispatch(usersClanActions.addBannedUser({ clanId, channelId, userIds: [userId], banner_id: '', ban_time: response.time }));
+				thunkAPI.dispatch(
+					usersClanActions.addBannedUser({ clanId, channelId, userIds: [BigInt(userIdString)], banner_id: '', ban_time: response.time })
+				);
 			}
 			return true;
 		} catch (error) {
@@ -475,7 +476,7 @@ export const channelMembers = createSlice({
 			};
 			state.bannedUserIds[channelId] = memberBanneds;
 		},
-		addNewMember: (state, action: PayloadAction<{ channel_id: string; user_ids: bigint[]; addedByUserId?: bigint }>) => {
+		addNewMember: (state, action: PayloadAction<{ channel_id: string; user_ids: string[]; addedByUserId?: string }>) => {
 			const payload = action.payload;
 			const userIds = payload.user_ids;
 			const channelId = payload.channel_id;
@@ -489,19 +490,19 @@ export const channelMembers = createSlice({
 				};
 			}
 			userIds.forEach((userId) => {
-				if (!state.memberChannels[channelId]?.ids.includes(String(userId)) && String(userId) !== process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
-					state.memberChannels[channelId].ids.push(String(userId));
+				if (!state.memberChannels[channelId]?.ids.includes(userId) && userId !== process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID) {
+					state.memberChannels[channelId].ids.push(userId);
 					if (addedByUserId && state?.memberChannels?.[channelId]?.memberAddedByUserId) {
 						if (!state?.memberChannels[channelId]?.memberAddedByUserId) {
 							state.memberChannels[channelId].memberAddedByUserId = {};
 						}
-						const isExist = state.memberChannels[channelId].memberAddedByUserId?.[String(userId)];
+						const isExist = state.memberChannels[channelId].memberAddedByUserId?.[userId];
 						if (!isExist && state.memberChannels[channelId].memberAddedByUserId) {
 							state.memberChannels[channelId].memberAddedByUserId = {
 								...state.memberChannels[channelId].memberAddedByUserId,
-								[String(userId)]: {
-									id: String(userId),
-									addedBy: String(addedByUserId)
+								[userId]: {
+									id: userId,
+									addedBy: addedByUserId
 								}
 							};
 						}
@@ -707,7 +708,7 @@ export const selectAllChannelMembers = createSelector(
 					id: usersClanEntities[id].id,
 					user: {
 						...usersClanEntities[id].user,
-						id: BigInt(usersClanEntities[id].id)
+						id: usersClanEntities[id].id
 					}
 				});
 			}
