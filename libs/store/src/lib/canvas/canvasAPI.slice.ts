@@ -106,11 +106,14 @@ const fetchCanvasListCached = async (
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.getChannelCanvasList(mezon.session, channel_id, clan_id, limit || LIMIT, page), {
-		maxRetries: 3,
-		initialDelay: 1000,
-		scope: 'channel-canvas-list'
-	});
+	const response = await withRetry(
+		() => mezon.client.getChannelCanvasList(mezon.session, BigInt(channel_id), BigInt(clan_id), limit || LIMIT, page),
+		{
+			maxRetries: 3,
+			initialDelay: 1000,
+			scope: 'channel-canvas-list'
+		}
+	);
 
 	markApiFirstCalled(apiKey);
 
@@ -139,7 +142,7 @@ const fetchCanvasDetailCached = async (
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.getChannelCanvasDetail(mezon.session, id, clan_id, channel_id), {
+	const response = await withRetry(() => mezon.client.getChannelCanvasDetail(mezon.session, BigInt(id), BigInt(clan_id), BigInt(channel_id)), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'channel-canvas-detail'
@@ -175,9 +178,9 @@ export const createEditCanvas = createAsyncThunk('canvas/editChannelCanvases', a
 			if (body.id) {
 				thunkAPI.dispatch(
 					canvasAPIActions.updateCanvas({
-						channelId: body.channel_id,
+						channelId: String(body.channel_id),
 						dataUpdate: {
-							id: result.id,
+							id: String(result.id),
 							title: body.title as string,
 							content: body.content as string
 						}
@@ -186,7 +189,7 @@ export const createEditCanvas = createAsyncThunk('canvas/editChannelCanvases', a
 			} else {
 				thunkAPI.dispatch(
 					canvasAPIActions.upsertOne({
-						channel_id: body.channel_id,
+						channel_id: String(body.channel_id),
 						canvas: result
 					})
 				);
@@ -236,7 +239,7 @@ export const deleteCanvas = createAsyncThunk('canvas/deleteCanvas', async ({ id,
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
-		const response = await mezon.client.deleteChannelCanvas(mezon.session, id, clan_id, channel_id);
+		const response = await mezon.client.deleteChannelCanvas(mezon.session, BigInt(id), BigInt(clan_id), BigInt(channel_id));
 
 		if (channel_id && id) {
 			thunkAPI.dispatch(
