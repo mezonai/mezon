@@ -4,12 +4,12 @@ import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiMessageMention, ApiNotification } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
-import type { MessagesEntity } from '../messages/messages.slice';
+import type { MessageMentionEntity, MessagesEntity } from '../messages/messages.slice';
 import type { RootState } from '../store';
 
 export const NOTIFICATION_FEATURE_KEY = 'notification';
@@ -22,11 +22,12 @@ export interface FetchNotificationArgs {
 	noCache?: boolean;
 }
 
-export interface NotificationEntityForRedux extends Omit<INotification, 'id' | 'clan_id' | 'topic_id' | 'channel_id'> {
+export interface NotificationEntityForRedux extends Omit<INotification, 'id' | 'clan_id' | 'topic_id' | 'channel_id' | 'sender_id'> {
 	id: string;
 	clan_id?: string;
 	topic_id?: string;
 	channel_id?: string;
+	sender_id?: string;
 }
 
 export interface NotificationState extends EntityState<NotificationEntityForRedux, string> {
@@ -313,15 +314,15 @@ const notificationSlice = createSlice({
 						const position_s: number[] = [];
 						const position_e: number[] = [];
 						const is_mention_role: boolean[] = [];
-						(message.mentions || []).forEach((item: ApiMessageMention) => {
+						(message.mentions || []).forEach((item: MessageMentionEntity) => {
 							if (item.user_id && item.s && item.e) {
-								mention_ids.push(String(item.user_id));
+								mention_ids.push(item.user_id);
 								is_mention_role.push(false);
 								position_s.push(item.s);
 								position_e.push(item.e);
 							}
 							if (item.role_id && item.s && item.e) {
-								mention_ids.push(String(item.role_id));
+								mention_ids.push(item.role_id);
 								is_mention_role.push(true);
 								position_s.push(item.s);
 								position_e.push(item.e);
@@ -329,9 +330,10 @@ const notificationSlice = createSlice({
 						});
 						const notiId = noti.id !== undefined ? String(noti.id) : '';
 						const notiMark: NotificationEntityForRedux = {
-							...message,
+							...(message as Omit<MessagesEntity, 'sender_id' | 'channel_id' | 'clan_id' | 'topic_id' | 'message_id'>),
 							id: notiId,
-							...(noti as Omit<ApiChannelMessageHeader, 'id'>),
+							...(noti as Omit<ApiChannelMessageHeader, 'id' | 'sender_id'>),
+							sender_id: noti.sender_id !== undefined ? String(noti.sender_id) : undefined,
 							content: {
 								title: '',
 								link: '',
