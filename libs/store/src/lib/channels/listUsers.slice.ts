@@ -14,12 +14,13 @@ export const LIST_USERS_BY_USER_FEATURE_KEY = 'listusersbyuserid';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface UsersEntity extends ApiUser {
-	id_key: string; // Primary ID
+export interface UsersEntity extends Omit<ApiUser, 'id'> {
+	id: string;
 }
 
-export const mapUsersToEntity = (userRes: ApiUser) => {
-	return { ...userRes, id_key: String(userRes.id) };
+export const mapUsersToEntity = (userRes: ApiUser): UsersEntity => {
+	const { id, ...rest } = userRes;
+	return { ...rest, id: String(id || '') };
 };
 
 export interface ListUsersState extends EntityState<UsersEntity, string> {
@@ -29,7 +30,7 @@ export interface ListUsersState extends EntityState<UsersEntity, string> {
 }
 
 export const listUsersAdapter = createEntityAdapter({
-	selectId: (item: UsersEntity) => item.id_key
+	selectId: (item: UsersEntity) => item.id
 });
 
 export interface ListUsersRootState {
@@ -85,7 +86,7 @@ export const fetchListUsersByUser = createAsyncThunk(
 				return { users: [], fromCache: response.fromCache };
 			}
 
-			const users = response?.users.map(mapUsersToEntity);
+			const users = (response.users as ApiUser[]).map(mapUsersToEntity);
 			return { users, fromCache: response.fromCache };
 		} catch (error) {
 			captureSentryError(error, 'usersByUser/fetchListUsersByUser');

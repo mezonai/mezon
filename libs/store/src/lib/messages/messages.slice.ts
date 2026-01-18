@@ -63,11 +63,22 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 		})
 	);
 
+	const references = channelMess.references?.map(
+		(ref): MessageRefEntity => ({
+			...ref,
+			message_id: ref.message_id?.toString(),
+			message_ref_id: ref.message_ref_id?.toString(),
+			message_sender_id: ref.message_sender_id?.toString()
+		})
+	);
+
 	return {
 		...channelMess,
 		isFirst: channelMess.code === EMessageCode.FIRST_MESSAGE,
 		creationTime: new Date(createTimeSeconds * 1000),
 		id: String(channelMess.id || channelMess.message_id || ''),
+		message_id: String(channelMess.message_id || ''),
+		topic_id: String(channelMess.topic_id || ''),
 		channel_id: String(channelMess.channel_id || ''),
 		sender_id: String(channelMess.sender_id || ''),
 		clan_id: channelMess.clan_id ? String(channelMess.clan_id) : undefined,
@@ -84,7 +95,8 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 			channelMess.update_time_seconds ||
 			(channelMess.update_time_seconds ? new Date(channelMess.update_time_seconds * 1000).getTime() : undefined),
 		code: channelMess.code || 0,
-		mentions
+		mentions,
+		references
 	};
 };
 
@@ -95,7 +107,13 @@ export interface MessageMentionEntity extends Omit<ApiMessageMention, 'id' | 'us
 	channel_id?: string;
 }
 
-export interface MessagesEntity extends Omit<IMessageWithUser, 'id' | 'channel_id' | 'sender_id' | 'clan_id' | 'mentions'> {
+export interface MessageRefEntity extends Omit<ApiMessageRef, 'message_id' | 'message_ref_id' | 'message_sender_id'> {
+	message_id?: string;
+	message_ref_id?: string;
+	message_sender_id?: string;
+}
+
+export interface MessagesEntity extends Omit<IMessageWithUser, 'id' | 'channel_id' | 'sender_id' | 'clan_id' | 'mentions' | 'references'> {
 	id: string;
 	channel_id: string;
 	sender_id?: string;
@@ -106,6 +124,7 @@ export interface MessagesEntity extends Omit<IMessageWithUser, 'id' | 'channel_i
 	code: number;
 	originalSendPayload?: Partial<SendMessagePayload>;
 	mentions?: MessageMentionEntity[];
+	references?: MessageRefEntity[];
 }
 
 export type LastMessageEntity = Omit<ApiChannelMessageHeaderWithChannel, 'id' | 'sender_id'> & {
@@ -491,18 +510,27 @@ export const fetchMessages = createAsyncThunk(
 				};
 			}
 
-			if (clanId === '0' || !clanId) {
-				const userId = currentUser?.user?.id ? String(currentUser.user.id) : '';
-				const messagesToDecrypt = messages.map((m) => ({
-					...m,
-					id: BigInt(m.id),
-					channel_id: BigInt(m.channel_id),
-					sender_id: m.sender_id ? BigInt(m.sender_id) : undefined,
-					clan_id: m.clan_id ? BigInt(m.clan_id) : undefined
-				})) as unknown as IMessageWithUser[];
-				const decryptedContent = await MessageCrypt.decryptMessages(messagesToDecrypt, userId);
-				messages = decryptedContent.map((item) => mapMessageChannelToEntity(item as ChannelMessage));
-			}
+			// if (clanId === '0' || !clanId) {
+			// const userId = currentUser?.user?.id ? String(currentUser.user.id) : '';
+			// const messagesToDecrypt = messages.map((m) => ({
+			// 	...m,
+			// 	id: BigInt(m.id),
+			// 	channel_id: BigInt(m.channel_id),
+			// 	sender_id: m.sender_id ? BigInt(m.sender_id) : undefined,
+			// 	clan_id: m.clan_id ? BigInt(m.clan_id) : undefined
+			// })) as unknown as IMessageWithUser[];
+			// const decryptedContent = await MessageCrypt.decryptMessages(messagesToDecrypt, userId);
+			// messages = decryptedContent.map((item) => {
+			// 	const channelMsg = {
+			// 		...item,
+			// 		id: BigInt(item.id),
+			// 		channel_id: BigInt(item.channel_id),
+			// 		sender_id: item.sender_id ? BigInt(item.sender_id) : BigInt(0),
+			// 		clan_id: item.clan_id ? BigInt(item.clan_id) : undefined
+			// 	} as ChannelMessage;
+			// 	return mapMessageChannelToEntity(channelMsg);
+			// });
+			// }
 
 			if (!state.messages.channelMessages?.[channelId]?.cache && response.last_seen_message?.id) {
 				thunkAPI.dispatch(
@@ -1361,10 +1389,16 @@ export const sendTypingUser = createAsyncThunk(
 
 export const clickButtonMessage = createAsyncThunk(
 	'messages/clickButtonMessage',
-	async ({ message_id, channel_id, button_id, sender_id, user_id, extra_data }: MessageButtonClicked, thunkAPI) => {
+	async ({ message_id, channel_id, button_id, sender_id, user_id, extra_data }: Omit<MessageButtonClicked, 'message_id' | 'channel_id' | 'button_id' | 'sender_id' | 'user_id'> & {
+		message_id: string;
+		channel_id: string;
+		button_id: string;
+		sender_id: string;
+		user_id: string;
+	}, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		try {
-			mezon.socketRef.current?.handleMessageButtonClick(message_id, channel_id, button_id, sender_id, user_id, extra_data);
+			mezon.socketRef.current?.handleMessageButtonClick(BigInt(message_id), BigInt(channel_id), BigInt(button_id), BigInt(sender_id), BigInt(user_id), extra_data);
 		} catch (e) {
 			console.error(e);
 		}
@@ -2322,14 +2356,22 @@ const updateReferenceMessage = ({ state, channelId, listMessageIds }: { state: M
 	if (index === -1) return;
 
 	const listReferencesUpdate: Update<MessagesEntity, string>[] = listMessageIds.map((id) => {
+		const existingRef = channelEntity.entities[id].references?.[0];
 		return {
 			id,
 			changes: {
 				references: [
 					{
-						...(channelEntity.entities[id].references?.[0] as ApiMessageRef),
 						content: '{"t":"Original message was deleted"}',
-						message_ref_id: undefined
+						message_ref_id: undefined,
+						message_id: existingRef?.message_id,
+						ref_type: existingRef?.ref_type,
+						message_sender_id: existingRef?.message_sender_id,
+						message_sender_username: existingRef?.message_sender_username,
+						mesages_sender_avatar: existingRef?.mesages_sender_avatar,
+						message_sender_clan_nick: existingRef?.message_sender_clan_nick,
+						message_sender_display_name: existingRef?.message_sender_display_name,
+						has_attachment: existingRef?.has_attachment || false
 					}
 				]
 			}

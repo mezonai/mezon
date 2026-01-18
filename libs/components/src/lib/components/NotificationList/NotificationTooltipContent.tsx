@@ -13,7 +13,6 @@ import {
 import { Icons } from '@mezon/ui';
 import type { INotification } from '@mezon/utils';
 import { NotificationCategory, generateE2eId, sortNotificationsByDate } from '@mezon/utils';
-import type { ApiSdTopic } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -220,7 +219,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				{currentTabNotify === InboxType.TOPICS && (
 					<div>
 						{getAllTopic.length > 0 ? (
-							getAllTopic.map((topic: ApiSdTopic, index: number) => (
+							getAllTopic.map((topic, index: number) => (
 								<TopicNotification topic={topic} key={`topic-${topic?.id}-${index}`} onCloseTooltip={onCloseTooltip} />
 							))
 						) : (

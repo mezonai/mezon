@@ -1,13 +1,13 @@
 import { inviteActions } from '@mezon/store';
-import { ShouldRevalidateFunction } from 'react-router-dom';
-import { CustomLoaderFunction } from './appLoader';
+import type { ShouldRevalidateFunction } from 'react-router-dom';
+import type { CustomLoaderFunction } from './appLoader';
 
 export const inviteLoader: CustomLoaderFunction = async ({ params, dispatch }) => {
 	const { inviteId } = params;
 	if (!inviteId) {
 		throw new Error('inviteId ID null');
 	}
-	dispatch(inviteActions.getLinkInvite({ inviteId: inviteId }));
+	dispatch(inviteActions.getLinkInvite({ inviteId }));
 	// Handle auto open deeplink when load on mobile
 	if (inviteId) {
 		try {

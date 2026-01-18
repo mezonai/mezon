@@ -17,13 +17,21 @@ export const CATEGORIES_FEATURE_KEY = 'categories';
  * Update these interfaces according to your requirements.
  */
 
-export interface CategoriesEntity extends ICategory {
+export interface CategoriesEntity extends Omit<ICategory, 'category_id' | 'clan_id' | 'creator_id'> {
 	id: string; // Primary ID
+	category_id?: string;
+	clan_id?: string;
+	creator_id?: string;
 }
 
-export const mapCategoryToEntity = (categoriesRes: ApiCategoryDesc) => {
-	const id = (categoriesRes as unknown as any).category_id;
-	return { ...categoriesRes, id };
+export const mapCategoryToEntity = (categoriesRes: ApiCategoryDesc): CategoriesEntity => {
+	return {
+		...categoriesRes,
+		id: categoriesRes.category_id ? String(categoriesRes.category_id) : '',
+		category_id: categoriesRes.category_id ? String(categoriesRes.category_id) : undefined,
+		clan_id: categoriesRes.clan_id ? String(categoriesRes.clan_id) : undefined,
+		creator_id: categoriesRes.creator_id ? String(categoriesRes.creator_id) : undefined
+	};
 };
 
 export interface CategoriesState {
@@ -120,7 +128,9 @@ export const fetchCategories = createAsyncThunk('categories/fetchCategories', as
 		}
 
 		const payload: FetchCategoriesPayload = {
-			categories: response.categorydesc.map(mapCategoryToEntity),
+			categories: response.fromCache
+				? (response.categorydesc as CategoriesEntity[])
+				: (response.categorydesc as ApiCategoryDesc[]).map(mapCategoryToEntity),
 			clanId,
 			fromCache: response.fromCache
 		};
@@ -233,7 +243,7 @@ export const updateCategory = createAsyncThunk('categories/updateCategory', asyn
 			const updatedCategory: CategoriesEntity = {
 				id: String(request.category_id),
 				category_name: request.category_name || '',
-				clan_id: BigInt(clanId)
+				clan_id: clanId
 			};
 
 			thunkAPI.dispatch(

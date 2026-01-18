@@ -85,11 +85,7 @@ const AIGenerationPage = () => {
 						</div>
 
 						<div className="flex justify-center lg:justify-end">
-						<img
-							src="/ai-gent.webp"
-							alt="AI Generation"
-								className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl"
-							/>
+							<img src="/ai-gent.webp" alt="AI Generation" className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl" />
 						</div>
 					</div>
 				</div>

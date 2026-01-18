@@ -1,5 +1,7 @@
-import { AppDispatch, RootState, audioCallActions, groupCallActions, selectIsGroupCallActive, selectIsInCall, selectVoiceInfo } from '@mezon/store';
-import { Socket, WebrtcSignalingFwd, safeJSONParse } from 'mezon-js';
+import type { AppDispatch, RootState } from '@mezon/store';
+import { audioCallActions, groupCallActions, selectIsGroupCallActive, selectIsInCall, selectVoiceInfo } from '@mezon/store';
+import type { Socket, WebrtcSignalingFwd } from 'mezon-js';
+import { safeJSONParse } from 'mezon-js';
 
 export interface GroupCallSocketHandlerOptions {
 	dispatch: AppDispatch;
@@ -90,7 +92,8 @@ export const handleGroupCallSocketEvent = async (
 				const callData = parseCallData(event?.json_data as string, 'GROUP_CALL_OFFER');
 				const isVideoCall = callData?.is_video === true;
 
-				const isInSameGroup = currentVoiceInfo?.channelId === event.channel_id && currentVoiceInfo?.clanId === '0' && isGroupCallActive;
+				const isInSameGroup =
+					currentVoiceInfo?.channelId === String(event.channel_id) && currentVoiceInfo?.clanId === '0' && isGroupCallActive;
 
 				if (isInSameGroup) {
 					dispatch(audioCallActions.setIsRingTone(false));
@@ -130,7 +133,7 @@ export const handleGroupCallSocketEvent = async (
 
 					dispatch(
 						groupCallActions.showIncomingGroupCall({
-							groupId: event.channel_id,
+							groupId: String(event.channel_id),
 							callData: {
 								...event,
 								groupName: callData?.group_name || callData?.channel_label || 'Group Call',

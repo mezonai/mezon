@@ -27,7 +27,8 @@ export const ColorRoleProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 			role?.role_user_list?.role_users?.forEach((user) => {
 				if (!user?.id) return;
 
-				const currentRole = map.get(user.id);
+				const userId = String(user.id);
+				const currentRole = map.get(userId);
 				const newRole = {
 					roleId: role.id,
 					color: role.color || DEFAULT_ROLE_COLOR,
@@ -36,12 +37,12 @@ export const ColorRoleProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 				};
 
 				if (!currentRole) {
-					map.set(user.id, newRole);
+					map.set(userId, newRole);
 					return;
 				}
 
 				if (!currentRole.icon && newRole.icon) {
-					map.set(user.id, { ...currentRole, icon: newRole.icon });
+					map.set(userId, { ...currentRole, icon: newRole.icon });
 					return;
 				}
 			});

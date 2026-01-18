@@ -1,7 +1,7 @@
 import { toastActions } from '@mezon/store';
 import { handleUploadFile } from '@mezon/transport';
+import type { IUserAccount } from '@mezon/utils';
 import { MAX_FILE_SIZE_1MB } from '@mezon/utils';
-import type { ApiAccount } from 'mezon-js/api.gen';
 import { toast } from 'react-toastify';
 
 export const processImage = async (
@@ -10,7 +10,7 @@ export const processImage = async (
 	clientRef: React.MutableRefObject<any>,
 	sessionRef: React.MutableRefObject<any>,
 	clanId: string,
-	userProfile: ApiAccount | null | undefined,
+	userProfile: IUserAccount | null | undefined,
 	setUrlImage: React.Dispatch<React.SetStateAction<string>>,
 	setImageObject: React.Dispatch<React.SetStateAction<null>>,
 	setImageCropped: React.Dispatch<React.SetStateAction<null>>,

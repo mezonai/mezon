@@ -1,4 +1,4 @@
-import { CustomLoaderFunction } from './appLoader';
+import type { CustomLoaderFunction } from './appLoader';
 
 export interface ILoginLoaderData {
 	initialPath: string;

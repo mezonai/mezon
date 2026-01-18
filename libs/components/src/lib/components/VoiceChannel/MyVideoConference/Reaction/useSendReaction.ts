@@ -22,7 +22,7 @@ export const useSendReaction = () => {
 	const sendEmojiReaction = useCallback(
 		(emoji: string, emojiId: string) => {
 			if (!socketRef.current || !channelId || !canSend()) return;
-			socketRef.current.writeVoiceReaction([emojiId], channelId);
+			socketRef.current.writeVoiceReaction([emojiId], BigInt(channelId));
 		},
 		[socketRef, channelId, canSend]
 	);
@@ -30,7 +30,7 @@ export const useSendReaction = () => {
 	const sendSoundReaction = useCallback(
 		(soundId: string) => {
 			if (!socketRef.current || !channelId || !canSend()) return;
-			socketRef.current.writeVoiceReaction([`sound:${soundId}`], channelId);
+			socketRef.current.writeVoiceReaction([`sound:${soundId}`], BigInt(channelId));
 		},
 		[socketRef, channelId, canSend]
 	);
@@ -38,7 +38,7 @@ export const useSendReaction = () => {
 	const sendRaisingHand = useCallback(
 		(userId: string, hand: boolean) => {
 			if (!socketRef.current || !channelId || !canSend()) return;
-			socketRef.current.writeVoiceReaction([hand ? `raising-up:${userId}` : `raising-down:${userId}`], channelId);
+			socketRef.current.writeVoiceReaction([hand ? `raising-up:${userId}` : `raising-down:${userId}`], BigInt(channelId));
 		},
 		[socketRef, channelId, canSend]
 	);

@@ -71,12 +71,20 @@ export type IChannelAttachment = Omit<ApiChannelAttachment, 'id'> & {
 	id: string;
 };
 
+export type IChannelMessageHeader = Omit<ApiChannelMessageHeader, 'id' | 'sender_id' | 'repliers'> & {
+	id?: string;
+	sender_id?: string;
+	repliers?: string[];
+};
+
 export type IInvite = ApiInviteUserRes & {
 	id: string;
 };
 
-export type IClanProfile = ApiClanProfile & {
+export type IClanProfile = Omit<ApiClanProfile, 'clan_id' | 'user_id'> & {
 	id: string;
+	clan_id?: string;
+	user_id?: string;
 };
 export type ICategory = Omit<ApiCategoryDesc, 'category_id' | 'clan_id' | 'creator_id'> & {
 	category_id?: string;
@@ -254,14 +262,15 @@ export type IMessageMeta = {
 	contextMenu: IMessageContextMenu;
 };
 
-export type IMessage = Omit<ChannelMessage, 'id' | 'channel_id' | 'clan_id' | 'sender_id' | 'message_id' | 'topic_id' | 'mentions'> & {
+export type IMessage = Omit<ChannelMessage, 'id' | 'channel_id' | 'clan_id' | 'sender_id' | 'message_id' | 'topic_id' | 'mentions' | 'references'> & {
 	id: string;
 	channel_id: string;
 	clan_id?: string;
-	sender_id: string;
+	sender_id?: string;
 	message_id?: string;
 	topic_id?: string;
 	mentions?: IMessageMention[];
+	references?: IMessageRef[];
 	content: IMessageSendPayload;
 	date?: string;
 	creationTime?: Date;
@@ -281,6 +290,12 @@ export type IMessageMention = Omit<ApiMessageMention, 'id' | 'user_id' | 'role_i
 	user_id?: string;
 	role_id?: string;
 	channel_id?: string;
+};
+
+export type IMessageRef = Omit<ApiMessageRef, 'message_id' | 'message_ref_id' | 'message_sender_id'> & {
+	message_id?: string;
+	message_ref_id?: string;
+	message_sender_id?: string;
 };
 
 export type SearchMessage = ApiSearchMessageDocument & {

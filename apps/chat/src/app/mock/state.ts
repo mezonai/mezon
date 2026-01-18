@@ -1,4 +1,4 @@
-import { PreloadedRootState } from '@mezon/store';
+import type { PreloadedRootState } from '@mezon/store';
 
 const preloadedState = {
 	app: {

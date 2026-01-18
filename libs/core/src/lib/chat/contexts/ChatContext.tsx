@@ -97,7 +97,7 @@ import {
 	webhookActions
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
-import type { IMessageSendPayload, IUserProfileActivity, NotificationCategory } from '@mezon/utils';
+import type { IChannelMessageHeader, IMessageSendPayload, IUserProfileActivity, NotificationCategory } from '@mezon/utils';
 import {
 	ADD_ROLE_CHANNEL_STATUS,
 	AMOUNT_TOKEN,
@@ -171,7 +171,6 @@ import type {
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import type {
-	ApiChannelMessageHeader,
 	ApiClanEmoji,
 	ApiCreateEventRequest,
 	ApiGiveCoffeeEvent,
@@ -390,9 +389,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 
 			if (msg.topicId && msg.topicId !== '0') {
-				const lastMsg: ApiChannelMessageHeader = {
+				const lastMsg: IChannelMessageHeader = {
 					content: message.content,
-					sender_id: message.sender_id,
+					sender_id: message.sender_id.toString(),
 					timestamp_seconds: message.create_time_seconds
 				};
 				dispatch(
@@ -482,7 +481,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				if (mess.mode === ChannelStreamMode.STREAM_MODE_DM || mess.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
 					const isContentMutation = message.code === TypeMessage.ChatUpdate || message.code === TypeMessage.ChatRemove;
-					if (!isContentMutation) {
+					if (!isContentMutation && mess.sender_id) {
 						await dispatch(directActions.addDirectByMessageWS(mess)).unwrap();
 					}
 
@@ -1089,7 +1088,16 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						app_id: channelData.appId
 					};
 					dispatch(channelsActions.add({ clanId: channelData.clanId, channel: { ...channel, active: 1 } }));
-					dispatch(listChannelsByUserActions.add({ ...channel_desc, id: channelData.channelId }));
+					const { clan_id, channel_id, parent_id, ...channelDescRest } = channel_desc;
+					dispatch(
+						listChannelsByUserActions.add({
+							...channelDescRest,
+							id: channelData.channelId,
+							clan_id: channelData.clanId,
+							channel_id: channelData.channelId,
+							parent_id: channelData.parentId
+						})
+					);
 
 					dispatch(
 						channelSettingActions.addChannelFromSocket({
@@ -1639,7 +1647,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				category_name: category?.category_name || ''
 			};
 			dispatch(channelsActions.createChannelSocket(channelWithCategoryName));
-			dispatch(listChannelsByUserActions.addOneChannel({ id: channel.channelId, type: channelCreated.channel_type, ...channelCreated }));
+			const { clan_id, channel_id, parent_id, category_id, creator_id, app_id, ...channelCreatedRest } = channelCreated;
+			dispatch(
+				listChannelsByUserActions.addOneChannel({
+					...channelCreatedRest,
+					id: channel.channelId,
+					type: channelCreated.channel_type,
+					clan_id: channel.clanId,
+					channel_id: channel.channelId,
+					parent_id: channel.parentId
+				})
+			);
 			dispatch(listChannelRenderAction.addChannelToListRender({ type: channelCreated.channel_type, ...channelCreated }));
 
 			const now = Math.floor(Date.now() / 1000);
@@ -1673,11 +1691,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		} else if (channel.creatorId === userId) {
 			dispatch(listChannelRenderAction.addChannelToListRender({ type: channelCreated.channel_type, ...channelCreated }));
 			if (channelCreated.channel_type !== ChannelType.CHANNEL_TYPE_DM && channelCreated.channel_type !== ChannelType.CHANNEL_TYPE_GROUP) {
+				const { clan_id, channel_id, parent_id, category_id, creator_id, app_id, ...channelCreatedRest } = channelCreated;
 				dispatch(
 					listChannelsByUserActions.addOneChannel({
+						...channelCreatedRest,
 						id: channel.channelId,
 						type: channelCreated.channel_type,
-						...channelCreated
+						clan_id: channel.clanId,
+						channel_id: channel.channelId,
+						parent_id: channel.parentId
 					})
 				);
 			}
@@ -2187,11 +2209,23 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						}
 					})
 				);
+				const {
+					clan_id: _clan_id2,
+					channel_id: _channel_id2,
+					parent_id: _parent_id2,
+					category_id: _category_id2,
+					creator_id: _creator_id2,
+					app_id: _app_id2,
+					...channelUpdatedRest2
+				} = channelUpdated;
 				dispatch(
 					listChannelsByUserActions.upsertOne({
-						...channelUpdated,
+						...channelUpdatedRest2,
 						id: channel.channelId,
-						type: channelUpdated.channel_type
+						type: channelUpdated.channel_type,
+						clan_id: channel.clanId,
+						channel_id: channel.channelId,
+						parent_id: channel.parentId
 					})
 				);
 
@@ -2208,7 +2242,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 			} else {
 				dispatch(channelsActions.updateChannelSocket(channelUpdated));
-				dispatch(listChannelsByUserActions.upsertOne({ id: channel.channelId, ...channelUpdated }));
+				const { clan_id, channel_id, parent_id, category_id, creator_id, app_id, ...rest } = channelUpdated;
+				dispatch(
+					listChannelsByUserActions.upsertOne({
+						...rest,
+						id: channel.channelId,
+						type: channelUpdated.channel_type,
+						clan_id: channel.clanId,
+						channel_id: channel.channelId,
+						parent_id: channel.parentId
+					})
+				);
 			}
 			if (channelUpdated.app_id) {
 				dispatch(
@@ -2243,7 +2287,17 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						}
 					})
 				);
-				dispatch(listChannelsByUserActions.upsertOne({ id: channel.channelId, ...channelUpdated }));
+				const { clan_id, channel_id, parent_id, category_id, creator_id, app_id, ...rest } = channelUpdated;
+				dispatch(
+					listChannelsByUserActions.upsertOne({
+						...rest,
+						id: channel.channelId,
+						type: channelUpdated.channel_type,
+						clan_id: channel.clanId,
+						channel_id: channel.channelId,
+						parent_id: channel.parentId
+					})
+				);
 			}
 			if (channelUpdated.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 				const cleanDataThread: Record<string, string | number | boolean | string[]> = {};
@@ -2750,6 +2804,15 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			clanId: sdTopicEvent.clan_id?.toString() || ''
 		};
 
+		const convertedLastSentMessage: IChannelMessageHeader | undefined = sdTopicEvent.last_sent_message
+			? {
+					...sdTopicEvent.last_sent_message,
+					id: sdTopicEvent.last_sent_message.id ? String(sdTopicEvent.last_sent_message.id) : undefined,
+					sender_id: sdTopicEvent.last_sent_message.sender_id ? String(sdTopicEvent.last_sent_message.sender_id) : undefined,
+					repliers: sdTopicEvent.last_sent_message.repliers?.map((r: bigint) => String(r))
+				}
+			: undefined;
+
 		dispatch(
 			messagesActions.updateToBeTopicMessage({
 				channelId: topic.channelId,
@@ -2763,10 +2826,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				clanId: topic.clanId,
 				topic: {
 					id: topic.topicId,
-					clan_id: sdTopicEvent.clan_id,
-					channel_id: sdTopicEvent.channel_id,
-					message_id: sdTopicEvent.message_id,
-					last_sent_message: sdTopicEvent.last_sent_message,
+					clan_id: topic.clanId,
+					channel_id: topic.channelId,
+					message_id: topic.messageId,
+					last_sent_message: convertedLastSentMessage,
 					message: sdTopicEvent.message
 				}
 			})

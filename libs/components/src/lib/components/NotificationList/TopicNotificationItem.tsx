@@ -1,5 +1,5 @@
 import { useAuth, useGetPriorityNameFromUserClan } from '@mezon/core';
-import type { MessagesEntity } from '@mezon/store';
+import type { MessagesEntity, TopicDiscussionsEntity } from '@mezon/store';
 import {
 	appActions,
 	getStore,
@@ -16,17 +16,17 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { IMessageWithUser } from '@mezon/utils';
+import type { IChannelMessageHeader, IMessageWithUser } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import type { ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiSdTopic } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 export type TopicProps = {
-	readonly topic: ApiSdTopic;
+	readonly topic: TopicDiscussionsEntity;
 	onCloseTooltip?: () => void;
 };
 
@@ -43,7 +43,7 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 	const userIds = topic.last_sent_message?.repliers;
 	const usernames = useMemo(() => {
 		return memberClan
-			.filter((profile) => (userIds || []).includes(profile?.user?.id || '') && profile?.user?.id !== userId)
+			.filter((profile) => (userIds || []).includes(String(profile?.user?.id)) && String(profile?.user?.id) !== String(userId))
 			.map((profile) => profile?.user?.username);
 	}, [memberClan, userIds, userId]);
 	useEffect(() => {
@@ -137,11 +137,11 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 export default TopicNotificationItem;
 
 interface ITopicTabContent {
-	messageReplied?: ApiChannelMessageHeader;
+	messageReplied?: ChannelMessage;
 	subject?: string;
 	senderId?: string;
-	lastMessageTopic?: ApiChannelMessageHeader;
-	topic?: ApiSdTopic;
+	lastMessageTopic?: IChannelMessageHeader;
+	topic?: TopicDiscussionsEntity;
 }
 
 function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITopicTabContent) {
@@ -156,8 +156,8 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 		setSubjectTopic(lastMessageTopic?.sender_id ?? '');
 	}, [lastMessageTopic]);
 
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(senderId || '');
-	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, lastMessageTopic?.sender_id ?? ''));
+	const { priorityAvatar } = useGetPriorityNameFromUserClan(String(senderId));
+	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, String(lastMessageTopic?.sender_id)));
 
 	return (
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg">

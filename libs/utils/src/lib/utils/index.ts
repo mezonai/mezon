@@ -37,6 +37,7 @@ import type {
 	ILinkVoiceRoomOnMessage,
 	IMarkdownOnMessage,
 	IMentionOnMessage,
+	IMessageMention,
 	IMessageSendPayload,
 	IMessageWithUser,
 	IPermissonMedia,
@@ -1048,7 +1049,7 @@ export const parsePastedMentionData = (data: string): { message: IMessageWithUse
 
 export const transformTextWithMentions = (
 	text: string,
-	mentions: ApiMessageMention[],
+	mentions: IMessageMention[],
 	usersEntities: Record<string, ChannelMembersEntity> | Record<string, UsersClanEntity>,
 	clanRoles: Record<string, IRolesClan>
 ): string => {

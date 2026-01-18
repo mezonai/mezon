@@ -1,8 +1,8 @@
-import type { ApiSdTopic } from 'mezon-js/api.gen';
+import type { TopicDiscussionsEntity } from '@mezon/store';
 import TopicNotificationItem from './TopicNotificationItem';
 
 type TopicNotificationProps = {
-	topic?: ApiSdTopic;
+	topic?: TopicDiscussionsEntity;
 	onCloseTooltip?: () => void;
 };
 

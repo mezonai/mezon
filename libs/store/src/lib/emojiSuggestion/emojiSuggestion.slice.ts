@@ -137,10 +137,10 @@ export const updateEmojiSetting = createAsyncThunk('settingClanEmoji/updateEmoji
 
 export const deleteEmojiSetting = createAsyncThunk(
 	'settingClanEmoji/deleteEmoji',
-	async (data: { emoji: ClanEmoji; clan_id: string; label: string }, thunkAPI) => {
+	async (data: { emoji: Omit<ClanEmoji, 'id'> & { id: string }; clan_id: string; label: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const res = await mezon.client.deleteByIdClanEmoji(mezon.session, BigInt(data.emoji.id || ''), BigInt(data.clan_id), data.label);
+			const res = await mezon.client.deleteByIdClanEmoji(mezon.session, BigInt(data.emoji.id), BigInt(data.clan_id), data.label);
 			if (res) {
 				return data.emoji;
 			}
