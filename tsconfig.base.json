@@ -2,7 +2,7 @@
 	"compileOnSave": false,
 	"compilerOptions": {
 		"resolveJsonModule": true,
-    	"esModuleInterop": true,
+		"esModuleInterop": true,
 		"rootDir": ".",
 		"sourceMap": true,
 		"declaration": false,
@@ -10,7 +10,7 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"importHelpers": true,
-		"target": "es2015",
+		"target": "es2020",
 		"module": "esnext",
 		"allowJs": true,
 		"checkJs": false,
