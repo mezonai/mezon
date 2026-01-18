@@ -29,10 +29,9 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 	const dispatch = useAppDispatch();
 	const userId = useSelector(selectAllAccount)?.user?.id;
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, userId as string));
-	const friendStatus = useAppSelector((state) => selectFriendStatus(mess?.sender_id || '')(state));
+	const friendStatus = useAppSelector((state) => selectFriendStatus(mess?.sender_id !== undefined ? String(mess.sender_id) : '')(state));
 	const modalRef = useRef<HTMLDivElement>(null);
 	const { blockFriend } = useFriends();
-
 	const reportedUserName = mess?.clan_nick || mess?.display_name || mess?.username;
 
 	const reportReasons = [
@@ -84,7 +83,7 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 		}
 
 		try {
-			await blockFriend(mess.username, mess.sender_id);
+			await blockFriend(mess.username, String(mess.sender_id));
 			toast.success(t('reportMessageModal.userBlockedSuccess'));
 			closeModal();
 		} catch (error) {
@@ -177,7 +176,13 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 							<MessageWithUser
 								isSearchMessage={true}
 								allowDisplayShortProfile={false}
-								message={mess}
+								message={
+									{
+										...mess,
+										channel_id: String(mess.channel_id || ''),
+										sender_id: String(mess.sender_id || '')
+									} as any
+								}
 								mode={mode}
 								isMention={true}
 								isShowFull={true}
