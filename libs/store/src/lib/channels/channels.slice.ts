@@ -1832,7 +1832,7 @@ export const selectAppChannelsKeysShowOnPopUp = createSelector(
 		if (!Array.isArray(appChannelsList) || appChannelsList.length === 0) {
 			return [];
 		}
-		return appChannelsList.map((app) => app.channel_id);
+		return appChannelsList.map((app) => String(app.channel_id));
 	}
 );
 
