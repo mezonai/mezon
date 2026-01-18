@@ -1,4 +1,5 @@
-import { ChatProps, ReceivedChatMessage, useChat } from '@livekit/components-react';
+import type { ChatProps, ReceivedChatMessage } from '@livekit/components-react';
+import { useChat } from '@livekit/components-react';
 import { selectOpenExternalChatBox } from '@mezon/store';
 import { safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';

@@ -15,9 +15,15 @@ export interface UserClanProfileEntity extends IClanProfile {
 	id: string; // Primary ID
 }
 
-export const mapUserClanProfileToEntity = (userClanProfileRes: ApiClanProfile) => {
-	const id = `${userClanProfileRes.clan_id}${userClanProfileRes.user_id}`;
-	return { ...userClanProfileRes, id };
+export const mapUserClanProfileToEntity = (userClanProfileRes: ApiClanProfile): UserClanProfileEntity => {
+	const { clan_id, user_id, ...rest } = userClanProfileRes;
+	const id = `${clan_id}${user_id}`;
+	return {
+		...rest,
+		id,
+		clan_id: clan_id ? String(clan_id) : undefined,
+		user_id: user_id ? String(user_id) : undefined
+	};
 };
 
 export interface UserClanProfileState extends EntityState<UserClanProfileEntity, string> {

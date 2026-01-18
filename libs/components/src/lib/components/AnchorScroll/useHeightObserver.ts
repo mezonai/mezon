@@ -51,9 +51,9 @@ export const useHeightObserverRef = () => {
 		const listeners = new Map<ListenerName, ListenerCallBack>();
 		const observer = createHeightObserver(listeners);
 		ref.current = {
-			observer: observer,
-			listeners: listeners,
-			setListener: function (listenerName: ListenerName, listener: ListenerCallBack) {
+			observer,
+			listeners,
+			setListener(listenerName: ListenerName, listener: ListenerCallBack) {
 				ref.current?.listeners.set(listenerName, listener);
 			}
 		};

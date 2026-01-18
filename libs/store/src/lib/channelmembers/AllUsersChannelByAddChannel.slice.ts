@@ -118,7 +118,7 @@ export const userChannelsSlice = createSlice({
 			const existingChannel = state.entities[channelId];
 
 			if (existingChannel) {
-				const updatedUserIds = Array.from(new Set([...(existingChannel?.user_ids || []), ...userAdds.map((id) => BigInt(id))]));
+				const updatedUserIds = Array.from(new Set([...(existingChannel?.user_ids || []), ...userAdds.map((id) => id)]));
 
 				UserChannelAdapter.updateOne(state, {
 					id: channelId,
@@ -129,7 +129,7 @@ export const userChannelsSlice = createSlice({
 			} else {
 				UserChannelAdapter.addOne(state, {
 					id: channelId,
-					user_ids: userAdds.map((id) => BigInt(id))
+					user_ids: userAdds.map((id) => id)
 				});
 			}
 		},
@@ -145,9 +145,8 @@ export const userChannelsSlice = createSlice({
 				const usernames = existingChannel.usernames;
 				const onlines = existingChannel.onlines;
 				const avatars = existingChannel.avatars;
-				userRemoves.forEach((user) => {
-					const userBigInt = BigInt(user);
-					const indexRemove = user_ids?.indexOf(userBigInt);
+				userRemoves.forEach((id) => {
+					const indexRemove = user_ids?.indexOf(id);
 					if (indexRemove !== -1 && indexRemove !== undefined) {
 						user_ids?.splice(indexRemove, 1);
 						display_names?.splice(indexRemove, 1);
@@ -172,27 +171,25 @@ export const userChannelsSlice = createSlice({
 	},
 	extraReducers(builder) {
 		builder
-			.addCase(
-				fetchUserChannels.fulfilled,
-				(
-					state: UsersByAddChannelState,
-					action: PayloadAction<{ channelId: string; user_ids: ApiAllUsersAddChannelResponse; fromCache?: boolean }>
-				) => {
-					const { channelId, user_ids, fromCache } = action.payload;
-					state.loadingStatus = 'loaded';
+			.addCase(fetchUserChannels.fulfilled, (state: UsersByAddChannelState, action) => {
+				const { channelId, user_ids, fromCache } = action.payload;
+				state.loadingStatus = 'loaded';
 
-					if (!fromCache && user_ids) {
-						const userIdsEntity = {
-							id: channelId,
-							...user_ids
-						};
-						UserChannelAdapter.upsertOne(state, userIdsEntity);
-						state.cacheByChannels[channelId] = createCacheMetadata();
-					} else if (!user_ids) {
-						state.error = 'No data received';
-					}
+				if (!fromCache && user_ids) {
+					const channelIdValue = user_ids.channel_id;
+					const userIdsValue = user_ids.user_ids;
+					const userIdsEntity: IUserChannel = {
+						id: channelId,
+						...user_ids,
+						channel_id: channelIdValue ? (typeof channelIdValue === 'bigint' ? String(channelIdValue) : channelIdValue) : undefined,
+						user_ids: userIdsValue?.map((id) => (typeof id === 'bigint' ? String(id) : id))
+					};
+					UserChannelAdapter.upsertOne(state, userIdsEntity);
+					state.cacheByChannels[channelId] = createCacheMetadata();
+				} else if (!user_ids) {
+					state.error = 'No data received';
 				}
-			)
+			})
 			.addCase(fetchUserChannels.pending, (state: UsersByAddChannelState) => {
 				state.loadingStatus = 'loading';
 			})

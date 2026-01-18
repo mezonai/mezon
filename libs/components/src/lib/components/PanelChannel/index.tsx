@@ -161,7 +161,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 	}, [favoriteChannel, channel.id]);
 
 	const maskFavoriteChannel = () => {
-		dispatch(channelsActions.addFavoriteChannel({ channel_id: channel.id, clan_id: currentClanId as string }));
+		dispatch(channelsActions.addFavoriteChannel({ channel_id: BigInt(channel.id), clan_id: BigInt(currentClanId as string) }));
 		dispatch(listChannelRenderAction.handleMarkFavor({ channelId: channel.id, clanId: currentClanId as string, mark: true }));
 		setIsShowPanelChannel(false);
 	};

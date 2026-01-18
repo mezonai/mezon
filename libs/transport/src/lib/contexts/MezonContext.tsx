@@ -562,7 +562,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 						}
 
 						await socket.connect(newSession || sessionRef.current, true, isFromMobile ? '1' : '0');
-						await socket.joinClanChat(clanId);
+						await socket.joinClanChat(BigInt(clanId));
 
 						return socket;
 					} catch (error) {

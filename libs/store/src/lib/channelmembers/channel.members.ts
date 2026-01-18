@@ -234,7 +234,7 @@ export const removeMemberChannel = createAsyncThunk(
 	async ({ channelId, userIds, kickMember = true }: RemoveChannelUsers & { kickMember?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.removeChannelUsers(mezon.session, BigInt(channelId), userIds);
+			const response = await mezon.client.removeChannelUsers(mezon.session, BigInt(channelId), userIds.map(BigInt));
 			if (!response) {
 				return;
 			}
@@ -305,7 +305,7 @@ export const banUserChannel = createAsyncThunk(
 	async ({ clanId, channelId, userIds, banTime }: BanClanUsers & { banTime?: number }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.banClanUsers(mezon.session, BigInt(clanId), BigInt(channelId), userIds, banTime);
+			const response = await mezon.client.banClanUsers(mezon.session, BigInt(clanId), BigInt(channelId), userIds.map(BigInt), banTime);
 			if (!response) {
 				return;
 			}
@@ -325,7 +325,7 @@ export const unbanUserChannel = createAsyncThunk(
 	async ({ clanId, channelId, userIds }: BanClanUsers, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.unbanClanUsers(mezon.session, BigInt(clanId), BigInt(channelId), userIds);
+			const response = await mezon.client.unbanClanUsers(mezon.session, BigInt(clanId), BigInt(channelId), userIds.map(BigInt));
 			if (!response) {
 				return;
 			}
@@ -387,7 +387,7 @@ export const checkBanInChannel = createAsyncThunk(
 			}
 			if (response.isBan) {
 				thunkAPI.dispatch(
-					usersClanActions.addBannedUser({ clanId, channelId, userIds: [BigInt(userId)], banner_id: '', ban_time: response.time })
+					usersClanActions.addBannedUser({ clanId, channelId, userIds: [String(userId)], banner_id: '', ban_time: response.time })
 				);
 			}
 			return true;
@@ -709,7 +709,7 @@ export const selectAllChannelMembers = createSelector(
 					id: usersClanEntities[id].id,
 					user: {
 						...usersClanEntities[id].user,
-						id: BigInt(usersClanEntities[id].id)
+						id: String(usersClanEntities[id].id)
 					}
 				});
 			}

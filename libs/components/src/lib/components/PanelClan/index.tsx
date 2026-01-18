@@ -16,9 +16,8 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import { Menu } from '@mezon/ui';
-import type { IClan } from '@mezon/utils';
+import type { IClan, IUserAccount } from '@mezon/utils';
 import { EUserSettings } from '@mezon/utils';
-import type { ApiAccount } from 'mezon-js/api.gen';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +35,7 @@ interface IPanelClanProps {
 	clan?: IClan;
 	onDeleteCategory?: () => void;
 	setShowClanListMenuContext?: () => void;
-	userProfile?: ApiAccount;
+	userProfile?: IUserAccount;
 }
 
 const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMenuContext, userProfile }) => {

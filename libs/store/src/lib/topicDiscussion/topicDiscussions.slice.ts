@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
+import type { IChannelMessageHeader, IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
 import { getMobileUploadedAttachments, getWebUploadedAttachments } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -23,8 +23,14 @@ export const TOPIC_DISCUSSIONS_FEATURE_KEY = 'topicdiscussions';
 /*
  * Update these interfaces according to your requirements.
  */
-export interface TopicDiscussionsEntity extends Omit<ApiSdTopic, 'id'> {
+export interface TopicDiscussionsEntity
+	extends Omit<ApiSdTopic, 'id' | 'channel_id' | 'clan_id' | 'creator_id' | 'message_id' | 'last_sent_message'> {
 	id: string;
+	channel_id?: string;
+	clan_id?: string;
+	creator_id?: string;
+	message_id?: string;
+	last_sent_message?: IChannelMessageHeader;
 }
 
 export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntity, string> {
@@ -54,11 +60,30 @@ const fetchTopicsCached = async (mezon: MezonValueContext, clanId: string) => {
 	return { ...response, time: Date.now() };
 };
 
+const convertMessageHeader = (header?: ApiChannelMessageHeader): IChannelMessageHeader | undefined => {
+	if (!header) return undefined;
+	const { id, sender_id, repliers, ...rest } = header;
+	return {
+		...rest,
+		id: id ? String(id) : undefined,
+		sender_id: sender_id ? String(sender_id) : undefined,
+		repliers: repliers?.map((r: bigint) => String(r))
+	};
+};
+
 const mapToTopicEntity = (topics: ApiSdTopic[]): TopicDiscussionsEntity[] => {
-	return topics.map((topic) => ({
-		...topic,
-		id: String(topic.id || '')
-	}));
+	return topics.map((topic) => {
+		const { id, channel_id, clan_id, creator_id, message_id, last_sent_message, ...rest } = topic;
+		return {
+			...rest,
+			id: String(id || ''),
+			channel_id: channel_id ? String(channel_id) : undefined,
+			clan_id: clan_id ? String(clan_id) : undefined,
+			creator_id: creator_id ? String(creator_id) : undefined,
+			message_id: message_id ? String(message_id) : undefined,
+			last_sent_message: convertMessageHeader(last_sent_message)
+		};
+	});
 };
 
 export const getFirstMessageOfTopic = createAsyncThunk(
@@ -223,11 +248,11 @@ export const topicsSlice = createSlice({
 			const { channelId, topicId } = action.payload;
 			state.channelTopics[channelId] = topicId;
 		},
-		setTopicLastSent: (state, action: PayloadAction<{ clanId: string; topicId: string; lastSentMess: ApiChannelMessageHeader }>) => {
+		setTopicLastSent: (state, action: PayloadAction<{ clanId: string; topicId: string; lastSentMess: IChannelMessageHeader }>) => {
 			const topic = state.clanTopics[action.payload.clanId]?.entities?.[action.payload.topicId];
 			if (topic) {
 				if (!topic.last_sent_message) {
-					topic.last_sent_message = {} as ApiChannelMessageHeader;
+					topic.last_sent_message = {} as IChannelMessageHeader;
 				}
 
 				const { content, sender_id, timestamp_seconds } = action.payload.lastSentMess;
@@ -282,9 +307,15 @@ export const topicsSlice = createSlice({
 						state.clanTopics[clanId] = topicsAdapter.getInitialState();
 					}
 
+					const { id, channel_id, clan_id, creator_id, message_id, last_sent_message, ...rest } = newTopic;
 					const topicEntity: TopicDiscussionsEntity = {
-						...newTopic,
-						id: String(newTopic.id)
+						...rest,
+						id: String(id),
+						channel_id: channel_id ? String(channel_id) : undefined,
+						clan_id: clan_id ? String(clan_id) : undefined,
+						creator_id: creator_id ? String(creator_id) : undefined,
+						message_id: message_id ? String(message_id) : undefined,
+						last_sent_message: convertMessageHeader(last_sent_message)
 					};
 
 					topicsAdapter.addOne(state.clanTopics[clanId], topicEntity);

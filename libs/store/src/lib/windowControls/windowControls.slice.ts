@@ -1,5 +1,6 @@
 import { GET_WINDOW_STATE, MAC_WINDOWS_ACTION, WINDOW_STATE_CHANGED } from '@mezon/utils';
-import { PayloadAction, createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import isElectron from 'is-electron';
 
 export const WINDOW_CONTROLS_FEATURE_KEY = 'windowControls';

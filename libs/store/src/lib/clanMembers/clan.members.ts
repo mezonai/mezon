@@ -17,11 +17,14 @@ export const USERS_CLANS_FEATURE_KEY = 'usersClan';
  * Update these interfaces according to your requirements.
  */
 
-export const mapUsersClanToEntity = (UsersClanRes: ClanUserListClanUser) => {
-	const id = (UsersClanRes as unknown as any)?.user.id;
+export const mapUsersClanToEntity = (UsersClanRes: ClanUserListClanUser): UsersClanEntity => {
+	const id = UsersClanRes?.user?.id;
+	const { clan_id, role_id, ...rest } = UsersClanRes;
 	return {
-		...UsersClanRes,
+		...rest,
 		id: String(id),
+		clan_id: String(clan_id),
+		role_id: role_id?.map((roleId) => String(roleId)),
 		user: {
 			...UsersClanRes.user,
 			id: String(UsersClanRes.user?.id)
@@ -238,8 +241,8 @@ export const UsersClanSlice = createSlice({
 					id: userId,
 					changes: {
 						role_id: state.byClans[clanId].entities.entities[userId]?.role_id
-							? [...new Set([...(state.byClans[clanId].entities.entities[userId].role_id || []), BigInt(roleId)])]
-							: [BigInt(roleId)]
+							? [...new Set([...(state.byClans[clanId].entities.entities[userId].role_id || []), roleId])]
+							: [roleId]
 					}
 				}));
 				UsersClanAdapter.updateMany(state.byClans[clanId].entities, entityUpdates);
@@ -287,7 +290,7 @@ export const UsersClanSlice = createSlice({
 				const existingMember = state.byClans[clanId].entities.entities[userId];
 				if (existingMember) {
 					const roleIds = existingMember.role_id || [];
-					const updatedRoleIds = [...roleIds, BigInt(id)];
+					const updatedRoleIds = [...roleIds, id];
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {
 						id: userId,
 						changes: { role_id: updatedRoleIds }
@@ -358,16 +361,18 @@ export const UsersClanSlice = createSlice({
 						}
 					};
 
-					if (avatar !== undefined) {
-						updates.user!.avatar_url = avatar;
-					}
+					if (updates.user) {
+						if (avatar !== undefined) {
+							updates.user.avatar_url = avatar;
+						}
 
-					if (display_name !== undefined) {
-						updates.user!.display_name = display_name;
-					}
+						if (display_name !== undefined) {
+							updates.user.display_name = display_name;
+						}
 
-					if (about_me !== undefined) {
-						updates.user!.about_me = about_me;
+						if (about_me !== undefined) {
+							updates.user.about_me = about_me;
+						}
 					}
 
 					UsersClanAdapter.updateOne(state.byClans[clanId].entities, {

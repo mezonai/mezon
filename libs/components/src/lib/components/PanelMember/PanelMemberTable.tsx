@@ -1,11 +1,11 @@
 import { useAppNavigation, useAuth, useDirect, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import { selectCurrentClanCreatorId } from '@mezon/store';
-import { ChannelMembersEntity } from '@mezon/utils';
+import type { ChannelMembersEntity } from '@mezon/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { Coords } from '../ChannelLink';
+import type { Coords } from '../ChannelLink';
 import GroupPanelMember from './GroupPanelMember';
 import ItemPanelMember from './ItemPanelMember';
 
@@ -55,7 +55,7 @@ const PanelMemberTable = ({ coords, member, onClose, onOpenProfile, kichMember, 
 			member?.user?.avatar_url
 		);
 		if (response?.channel_id) {
-			const directDM = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+			const directDM = toDmGroupPageFromMainApp(String(response.channel_id), Number(response.type));
 			navigate(directDM);
 		}
 	};

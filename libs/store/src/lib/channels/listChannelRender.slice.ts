@@ -117,11 +117,11 @@ export const listChannelRenderSlice = createSlice({
 			state.listChannelRender[clanId] = [favorCate, ...listFavorChannel, ...listChannelRender];
 		},
 
-		addChannelToListRender: (state, action: PayloadAction<ApiChannelDescription>) => {
+		addChannelToListRender: (state, action: PayloadAction<ApiChannelDescription & { id?: string }>) => {
 			if (!action.payload.channel_id) return;
 			const channelData: IChannel = {
 				...(action.payload as IChannel),
-				id: String(action.payload.channel_id)
+				id: action.payload.id || String(action.payload.channel_id)
 			};
 			const clanId = String(channelData.clan_id);
 
@@ -303,10 +303,16 @@ export const listChannelRenderSlice = createSlice({
 				);
 			}
 		},
-		updateCategory: (state, action: PayloadAction<{ clanId: string; cate: ApiUpdateCategoryDescRequest }>) => {
+		updateCategory: (
+			state,
+			action: PayloadAction<{
+				clanId: string;
+				cate: Omit<ApiUpdateCategoryDescRequest, 'category_id' | 'Clanid'> & { category_id: string; clan_id: string; creator_id: string };
+			}>
+		) => {
 			const { clanId, cate } = action.payload;
 			if (state.listChannelRender[clanId]) {
-				const indexUpdate = state.listChannelRender[clanId].findIndex((channel) => channel.id === String(cate.category_id));
+				const indexUpdate = state.listChannelRender[clanId].findIndex((channel) => channel.id === cate.category_id);
 				state.listChannelRender[clanId][indexUpdate] = {
 					...state.listChannelRender[clanId][indexUpdate],
 					category_name: cate.category_name

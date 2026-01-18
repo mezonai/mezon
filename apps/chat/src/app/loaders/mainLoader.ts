@@ -1,5 +1,5 @@
 import { appActions, clansActions, gifsActions } from '@mezon/store';
-import { CustomLoaderFunction } from './appLoader';
+import type { CustomLoaderFunction } from './appLoader';
 import { waitForSocketConnection } from './socketUtils';
 
 export const mainLoader: CustomLoaderFunction = async ({ dispatch }) => {

@@ -183,7 +183,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 				user?.user?.avatar_url
 			);
 			if (response?.channel_id) {
-				const directDM = toDmGroupPageFromMainApp(response.channel_id, Number(response.type));
+				const directDM = toDmGroupPageFromMainApp(String(response.channel_id), Number(response.type));
 				navigate(directDM);
 			}
 		},

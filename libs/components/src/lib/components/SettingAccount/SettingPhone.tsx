@@ -89,7 +89,7 @@ const SettingPhone = ({ title, description, isLoading, onClose }: SetPhoneProps)
 				accountActions.verifyPhone({
 					data: {
 						otp_code: otp.join(''),
-						req_id: validateOTP
+						req_id: BigInt(validateOTP || '0')
 					}
 				})
 			).unwrap();
@@ -122,7 +122,7 @@ const SettingPhone = ({ title, description, isLoading, onClose }: SetPhoneProps)
 				setErrors({});
 				setCount(60);
 				setOpenConfirm(true);
-				setValidateOTP(response.req_id);
+				setValidateOTP(String(response.req_id));
 			}
 			return;
 		}
