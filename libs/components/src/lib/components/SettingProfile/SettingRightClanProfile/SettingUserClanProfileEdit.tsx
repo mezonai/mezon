@@ -86,7 +86,7 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 			clientRef,
 			sessionRef,
 			clanId,
-			userProfile,
+			userProfile as any,
 			setUrlImage as any,
 			setImageObject as any,
 			setImageCropped as any,
@@ -188,7 +188,8 @@ const SettingUserClanProfileEdit: React.FC<SettingUserClanProfileEditProps> = ({
 	};
 	const handleUpdateUser = async () => {
 		if (!checkValidate) {
-			await updateUserClanProfile(userClansProfile?.clan_id ?? '', displayName.trim() || userProfile?.user?.display_name || '', urlImage || '');
+			const clanIdString = userClansProfile?.clan_id !== undefined ? String(userClansProfile.clan_id) : clanId;
+			await updateUserClanProfile(clanIdString, displayName.trim() || userProfile?.user?.display_name || '', urlImage || '');
 		}
 		setFlagOption(false);
 	};

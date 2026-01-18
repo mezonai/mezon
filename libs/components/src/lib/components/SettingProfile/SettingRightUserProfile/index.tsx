@@ -118,7 +118,7 @@ const SettingRightUser = ({
 			clientRef,
 			sessionRef,
 			currentClanId || '0',
-			userProfile,
+			userProfile as any,
 			setUrlImage as any,
 			setImageObject as any,
 			setImageCropped as any,
@@ -241,7 +241,7 @@ const SettingRightUser = ({
 	});
 
 	const [openRightClickModal, closeRightClickModal] = useModal(() => {
-		return <PanelClan coords={coords} setShowClanListMenuContext={closeRightClickModal} userProfile={userProfile || undefined} />;
+		return <PanelClan coords={coords} setShowClanListMenuContext={closeRightClickModal} userProfile={(userProfile || undefined) as any} />;
 	}, [coords]);
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		const mouseX = event.clientX;

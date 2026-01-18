@@ -1821,3 +1821,22 @@ export const selectShowScrollDownButton = createSelector(
 	[getChannelsState, (state, channelId) => channelId],
 	(state, channelId) => state.showScrollDownButton?.[channelId] ?? false
 );
+
+export const selectAppChannelsKeysShowOnPopUp = createSelector(
+	[getChannelsState, (state: RootState) => state.clans.currentClanId as string],
+	(state, clanId) => {
+		if (!state.byClans[clanId]) {
+			return [];
+		}
+		const appChannelsList = state.byClans[clanId].appChannelsListShowOnPopUp;
+		if (!Array.isArray(appChannelsList) || appChannelsList.length === 0) {
+			return [];
+		}
+		return appChannelsList.map((app) => app.channel_id);
+	}
+);
+
+export const selectToCheckAppIsOpening = createSelector(
+	[selectAppChannelsKeysShowOnPopUp, (state: RootState, channelId: string) => channelId],
+	(keys, channelId) => keys.includes(channelId)
+);
