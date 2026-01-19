@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import 'react-datepicker/dist/react-datepicker.min.css';
 
 type DatePickerWrapperProps = {
 	selected: Date;
@@ -25,7 +26,6 @@ const DatePickerWrapper = (props: DatePickerWrapperProps) => {
 		const loadDatePicker = async () => {
 			try {
 				const datepickerModule = await import('react-datepicker');
-				require('react-datepicker/dist/react-datepicker.css');
 				setDatePickerComponent(() => datepickerModule.default);
 				setIsLoading(false);
 			} catch (error) {
@@ -35,7 +35,6 @@ const DatePickerWrapper = (props: DatePickerWrapperProps) => {
 
 		loadDatePicker();
 	}, []);
-
 	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			const target = event.target as Node;

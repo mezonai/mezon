@@ -1082,3 +1082,5 @@ export const selectLastSeenMessageIdDM = createSelector([selectDirectMessageEnti
 	const dm = entities?.[channelId];
 	return dm?.last_seen_message?.id;
 });
+
+export const selectDirectLoadingStatus = createSelector(getDirectState, (state) => state.loadingStatus);

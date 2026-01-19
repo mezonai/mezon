@@ -5,7 +5,6 @@ import { autoUpdater } from 'electron-updater';
 import activeWindows from 'mezon-active-windows';
 import { join } from 'path';
 import ua from 'universal-analytics';
-import { format } from 'url';
 import tray from '../Tray';
 import { EActivityCoding, EActivityGaming, EActivityMusic } from './activities';
 import setupAutoUpdates from './autoUpdates';
@@ -42,7 +41,7 @@ export default class App {
 	static BrowserWindow: typeof Electron.BrowserWindow;
 	static imageViewerWindow: Electron.BrowserWindow | null = null;
 	static channelAppWindow: Electron.BrowserWindow | null = null;
-	static attachmentData: unknown;
+	static attachmentData: any;
 	static imageScriptWindowLoaded = false;
 
 	private static updateCheckInterval: NodeJS.Timeout | null = null;
@@ -146,7 +145,6 @@ export default class App {
 				nodeIntegration: false,
 				contextIsolation: true,
 				backgroundThrottling: false,
-				webSecurity: false, // Disable CORS check
 				preload: join(__dirname, 'main.preload.js')
 			},
 			icon: join(__dirname, 'assets', 'desktop-taskbar.ico')
@@ -306,15 +304,7 @@ export default class App {
 			const fullUrl = this.generateFullUrl(baseUrl, params);
 			App.mainWindow.loadURL(fullUrl);
 		} else {
-			const baseUrl = join(__dirname, '..', rendererAppName, 'index.html');
-			App.mainWindow.loadURL(
-				format({
-					pathname: baseUrl,
-					protocol: 'file:',
-					slashes: true,
-					query: params
-				})
-			);
+			App.mainWindow.loadURL('https://mezon.ai/');
 		}
 	}
 
@@ -348,11 +338,9 @@ export default class App {
 
 		App.mainWindow.setAlwaysOnTop(true);
 		App.mainWindow.focus();
-		setTimeout(() => {
-			if (App.isWindowValid(App.mainWindow)) {
-				App.mainWindow.setAlwaysOnTop(false);
-			}
-		}, 300);
+		setImmediate(() => {
+			App.mainWindow.setAlwaysOnTop(false);
+		});
 	}
 
 	public static setActivityTrackingEnabled(enabled: boolean) {

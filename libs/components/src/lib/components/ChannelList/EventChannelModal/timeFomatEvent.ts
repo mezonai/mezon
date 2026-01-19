@@ -186,7 +186,7 @@ export const getTimeFomatDay = () => {
 };
 
 export const formatTimeStringToHourFormat = (timeString: string | number) => {
-	const date = new Date(timeString);
+	const date = new Date(Number(timeString) * 1000);
 
 	const hours = date.getHours();
 	const minutes = date.getMinutes();

@@ -39,15 +39,10 @@ const languageDetector = new LanguageDetector();
 languageDetector.addDetector(timezoneDetector);
 
 i18n.use(
-	resourcesToBackend((language: string, namespace: string, callback: (err: Error | null, resources?: any) => void) => {
-		import(`./languages/${language}/index.ts`)
-			.then((module) => {
-				const resources = module.default;
-				callback(null, resources[namespace]);
-			})
-			.catch((error) => {
-				callback(error);
-			});
+	resourcesToBackend((language: string, namespace: string) => {
+		return import(`./languages/${language}/index.ts`).then((module) => {
+			return module.default[namespace];
+		});
 	})
 )
 	.use(languageDetector)
@@ -68,8 +63,9 @@ i18n.use(
 		},
 		compatibilityJSON: 'v3',
 		react: {
-			useSuspense: true
-		}
+			useSuspense: false
+		},
+		partialBundledLanguages: true
 	});
 
 export default i18n;
