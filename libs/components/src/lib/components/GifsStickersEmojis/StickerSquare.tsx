@@ -11,7 +11,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { FOR_SALE_CATE, ITEM_TYPE, PREDEFINED_EMOJI_CATEGORIES, SubPanelName, blankReferenceObj } from '@mezon/utils';
+import { FOR_SALE_CATE, ITEM_TYPE, PREDEFINED_EMOJI_CATEGORIES, SubPanelName, blankReferenceObj, createImgproxyUrl } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -209,7 +209,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 								<>
 									{avt.url !== '' ? (
 										<img
-											src={avt.url}
+											src={createImgproxyUrl(avt.url || '')}
 											alt={`avt ${avt.id}`}
 											className={`w-7 h-7 object-cover aspect-square cursor-pointer  bg-item-hover ${avt.type === selectedType ? 'bg-item-theme' : ''} hover:rounded-full justify-center items-center border-theme-primary rounded-full aspect-square`}
 											role="button"
@@ -273,7 +273,7 @@ const CategorizedStickers: React.FC<ICategorizedStickerProps> = ({ stickerList, 
 					<Icons.MarketIcons className="w-4 h4" />
 				) : logo !== '' ? (
 					<img
-						src={logo}
+						src={createImgproxyUrl(logo || '')}
 						alt={categoryName || 'category'}
 						className="w-4 !h-4 flex items-center justify-center rounded-full object-cover"
 					/>
@@ -316,7 +316,9 @@ const StickerPanel: React.FC<IStickerPanelProps> = ({ stickerList, onClickSticke
 									onMouseEnter={() => setPlaceHolderInput(sticker.shortname || '')}
 								>
 									<img
-										src={sticker.url ? sticker.url : `${process.env.NX_BASE_IMG_URL}/stickers/${sticker.id}.webp`}
+										src={createImgproxyUrl(
+											sticker.url ? sticker.url : `${process.env.NX_BASE_IMG_URL}/stickers/${sticker.id}.webp`
+										)}
 										alt="sticker"
 										className={`w-full h-full aspect-square object-contain  hover:bg-bgLightModeButton ${sticker.id === '0' ? 'blur-sm' : ''}`}
 										onClick={() => {
