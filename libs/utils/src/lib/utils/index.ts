@@ -269,7 +269,9 @@ export const convertMarkdown = (markdown: string, type: EBacktickType): string =
 };
 
 export const getSrcEmoji = (id: string) => {
-	return `${process.env.NX_BASE_IMG_URL}/emojis/${id}.webp`;
+	if (!id) return '';
+	const baseUrl = `${process.env.NX_BASE_IMG_URL}/emojis/${id}.webp`;
+	return createImgproxyUrl(baseUrl, { width: 100, height: 100, resizeType: 'fit' });
 };
 
 export const getSrcSound = (id: string) => {
@@ -569,7 +571,7 @@ export const createFormattedString = (data: IExtendedMessage): string => {
 				break;
 			}
 			case ETokenMessage.HASHTAGS:
-				result += `#[${contentInElement.slice(1)}](${element.channelid})`;
+				result += `#[${contentInElement.slice(1)}](${element.channelId})`;
 				break;
 			case ETokenMessage.EMOJIS:
 				result += `::[${contentInElement}](${element.emojiid})`;

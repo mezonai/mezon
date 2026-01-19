@@ -140,6 +140,31 @@ export const getCurrentTimeRounded = (addMinute?: boolean) => {
 	return `${hour}:00`;
 };
 
+export const getNearestFutureWholeHourTimestamp = (from: number = Date.now()) => {
+	const d = new Date(from);
+	const hasFractionalHour = d.getMinutes() !== 0 || d.getSeconds() !== 0 || d.getMilliseconds() !== 0;
+	if (hasFractionalHour) {
+		d.setHours(d.getHours() + 1);
+	}
+	d.setMinutes(0, 0, 0);
+	return d.getTime();
+};
+
+export const getDefaultCreateEventTimes = (from: number = Date.now()) => {
+	const startTs = getNearestFutureWholeHourTimestamp(from);
+	const endTs = startTs + 60 * 60 * 1000;
+
+	const startDateMidnight = getTimeTodayMidNight(startTs);
+	const endDateMidnight = getTimeTodayMidNight(endTs);
+
+	return {
+		selectedDateStart: startDateMidnight,
+		timeStart: startTs - startDateMidnight,
+		selectedDateEnd: endDateMidnight,
+		timeEnd: endTs - endDateMidnight
+	};
+};
+
 export const compareDate = (start: Date | string, end: Date | string) => {
 	const startDay = new Date(start);
 	const endDay = new Date(end);

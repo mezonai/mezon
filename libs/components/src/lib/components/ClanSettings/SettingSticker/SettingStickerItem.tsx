@@ -1,7 +1,7 @@
 import { usePermissionChecker } from '@mezon/core';
 import { deleteSticker, selectCurrentClanId, selectCurrentUserId, selectMemberClanByUserId, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EPermission } from '@mezon/utils';
+import { EPermission, createImgproxyUrl } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -40,7 +40,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 			<div className="aspect-square h-[72px]  flex justify-center">
 				<img
 					className={' w-auto h-full object-cover select-none'}
-					src={`${!sticker.source ? `${process.env.NX_BASE_IMG_URL}/stickers/${sticker.id}.webp` : sticker.source}`}
+					src={createImgproxyUrl(!sticker.source ? `${process.env.NX_BASE_IMG_URL}/stickers/${sticker.id}.webp` : sticker.source || '')}
 					alt=""
 				/>
 			</div>
@@ -53,7 +53,7 @@ const SettingStickerItem = ({ sticker, updateSticker }: SettingEmojiListProps) =
 
 			<div className="flex items-end justify-center gap-1">
 				{avatarUrl ? (
-					<img className="w-4 h-4 rounded-full select-none object-cover" src={avatarUrl} alt="" />
+					<img className="w-4 h-4 rounded-full select-none object-cover" src={createImgproxyUrl(avatarUrl)} alt="" />
 				) : (
 					<div className="size-4 bg-bgAvatarDark rounded-full flex justify-center items-center text-bgAvatarLight text-[12px]">
 						{avatarLetter}

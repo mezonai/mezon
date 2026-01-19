@@ -62,9 +62,9 @@ function extractChannelMeta(channel: ChannelsEntity): ChannelMetaEntity {
 		id: channel.id,
 		lastSeenTimestamp: Number(channel.last_seen_message?.timestamp_seconds) ?? 0,
 		lastSentTimestamp: Number(channel.last_sent_message?.timestamp_seconds),
-		clanId: channel.clan_id ?? '',
+		clanId: channel.clan_id ?? '0',
 		isMute: channel.is_mute ?? false,
-		senderId: channel.last_sent_message?.sender_id ?? '',
+		senderId: channel.last_sent_message?.sender_id ?? '0',
 		lastSeenMessageId: channel.last_seen_message?.id
 	};
 }
@@ -72,7 +72,7 @@ function extractChannelMeta(channel: ChannelsEntity): ChannelMetaEntity {
 export const mapChannelToEntity = (channelRes: ApiChannelDescription) => {
 	return {
 		...channelRes,
-		id: channelRes.channel_id || '',
+		id: channelRes.channel_id || '0',
 		status: channelRes.meeting_code ? 1 : 0,
 		count_mess_unread: channelRes.count_mess_unread ? channelRes.count_mess_unread : 0
 	};
@@ -117,7 +117,7 @@ const getInitialClanState = () => {
 		entities: channelsAdapter.getInitialState(),
 		currentChannelId: null,
 		selectedChannelId: null,
-		currentVoiceChannelId: '',
+		currentVoiceChannelId: '0',
 		idChannelSelected: {},
 		modeResponsive: ModeResponsive.MODE_DM,
 		previousChannels: [],
@@ -206,10 +206,10 @@ export const fetchChannelsCached = async (
 				limit,
 				state,
 				channel_type: channelType,
-				clan_id: clanId
+				clan_id: clanId || '0'
 			}
 		},
-		() => ensuredMezon.client.listChannelDescs(ensuredMezon.session, limit, state, '', clanId, channelType),
+		() => ensuredMezon.client.listChannelDescs(ensuredMezon.session, limit, state, '0', clanId, channelType),
 		'channel_desc_list'
 	);
 
@@ -325,7 +325,7 @@ export const joinChannel = createAsyncThunk(
 			thunkAPI.dispatch(channelsActions.setIdChannelSelected({ clanId, channelId }));
 			thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId }));
 			thunkAPI.dispatch(notificationSettingActions.getNotificationSetting({ channelId }));
-			thunkAPI.dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId: clanId ?? '', channelId }));
+			thunkAPI.dispatch(overriddenPoliciesActions.fetchMaxChannelPermission({ clanId: clanId ?? '0', channelId }));
 
 			let state = thunkAPI.getState() as RootState;
 
@@ -360,7 +360,7 @@ export const joinChannel = createAsyncThunk(
 					thunkAPI.dispatch(
 						channelMembersActions.fetchChannelMembers({
 							clanId,
-							channelId: channel.parent_id || '',
+							channelId: channel.parent_id || '0',
 							channelType: ChannelType.CHANNEL_TYPE_CHANNEL
 						})
 					);
@@ -383,8 +383,8 @@ export const joinChannel = createAsyncThunk(
 			if (channel) {
 				thunkAPI.dispatch(
 					channelsActions.joinChat({
-						clanId: channel.clan_id ?? '',
-						channelId: channel.channel_id ?? '',
+						clanId: channel.clan_id ?? '0',
+						channelId: channel.channel_id ?? '0',
 						channelType: channel.type ?? 0,
 						isPublic
 					})
@@ -921,12 +921,12 @@ export const bulkDeleteChannelSocket = createAsyncThunk(
 			const channelIds = channels.map((channel) => channel.id);
 			const channelDeleteEvents = channels.map((channel) => ({
 				channel_id: channel.id,
-				clan_id: channel.clan_id || '',
+				clan_id: channel.clan_id || '0',
 				deletor: 'user',
 				channel_type: channel.type || 0,
-				channel_label: channel.channel_label || '',
-				category_id: channel.category_id || '',
-				parent_id: channel.parent_id || ''
+				channel_label: channel.channel_label || '0',
+				category_id: channel.category_id || '0',
+				parent_id: channel.parent_id || '0'
 			}));
 			thunkAPI.dispatch(channelsActions.bulkDeleteChannels({ clanId, channelIds }));
 			thunkAPI.dispatch(listChannelsByUserActions.bulkRemove(channelIds));
@@ -1443,14 +1443,6 @@ export const channelsSlice = createSlice({
 			}
 
 			state.byClans[clanId].appChannelsListShowOnPopUp = [];
-		},
-		clearAllAppChannelsListShowOnPopUp: (state) => {
-			Object.keys(state.byClans).forEach((clanId) => {
-				if (state.byClans[clanId]) {
-					state.byClans[clanId].appChannelsListShowOnPopUp = [];
-					state.byClans[clanId].appFocused = {};
-				}
-			});
 		},
 		setShowPinBadgeOfChannel: (state, action: PayloadAction<{ clanId: string; channelId: string; isShow: boolean }>) => {
 			const { clanId, channelId, isShow } = action.payload;

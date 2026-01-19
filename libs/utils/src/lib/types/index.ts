@@ -65,6 +65,7 @@ export type IClan = ApiClanDesc & {
 
 export type IChannelAttachment = ApiChannelAttachment & {
 	id: string;
+	create_time?: string;
 };
 
 export type IInvite = ApiInviteUserRes & {
@@ -1479,6 +1480,7 @@ export interface IAttachmentEntity extends ApiChannelAttachment {
 	channelId?: string;
 	clanId?: string;
 	isVideo?: boolean;
+	create_time?: string;
 }
 
 export interface IAttachmentEntityWithUploader extends IAttachmentEntity {

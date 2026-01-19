@@ -577,18 +577,18 @@ function MessageContextMenu({
 
 	const enableDelMessageItem = useMemo(() => {
 		if (!checkPos || message?.content?.tp) return false;
-		if (messageId === initTopicMessageId) return false;
-		if (isTopic && topicMessageIds?.length > 0 && messageId === topicMessageIds[0]) return false;
-		if (isMyMessage) {
-			return true;
-		}
-		// DM Group
-		if (Number(type) === ChannelType.CHANNEL_TYPE_GROUP) {
-			return isOwnerGroupDM;
-		}
-		if (activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL || activeMode === ChannelStreamMode.STREAM_MODE_THREAD) {
-			return canDeleteMessage;
-		}
+
+		const isFirstTopicMessage = isTopic && topicMessageIds?.length > 0 && messageId === topicMessageIds[0];
+		const isInitTopicMessage = !isTopic && messageId === initTopicMessageId;
+		if (isFirstTopicMessage || isInitTopicMessage) return false;
+
+		if (isMyMessage) return true;
+
+		if (Number(type) === ChannelType.CHANNEL_TYPE_GROUP) return isOwnerGroupDM;
+
+		const isChannelOrThreadOrTopic =
+			isTopic || activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL || activeMode === ChannelStreamMode.STREAM_MODE_THREAD;
+		return isChannelOrThreadOrTopic ? canDeleteMessage : false;
 	}, [
 		activeMode,
 		type,

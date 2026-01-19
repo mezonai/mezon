@@ -153,7 +153,9 @@ const AppInitializer = () => {
 				}
 
 				const timestamp =
-					direction === 'before' ? currentAttachments?.[currentAttachments.length - 1]?.create_time : currentAttachments?.[0]?.create_time;
+					direction === 'before'
+						? currentAttachments?.[currentAttachments.length - 1]?.create_time_seconds
+						: currentAttachments?.[0]?.create_time_seconds;
 				const timestampNumber = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
 
 				const clanId = currentClanId === '0' ? '0' : currentClanId;

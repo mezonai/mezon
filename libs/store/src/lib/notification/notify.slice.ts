@@ -80,7 +80,7 @@ export const fetchListNotificationCached = async (
 				ensuredMezon.session,
 				clanId,
 				LIMIT_NOTIFICATION,
-				notificationId || '',
+				notificationId || '0',
 				category,
 				Direction_Mode.BEFORE_TIMESTAMP
 			),
@@ -108,7 +108,7 @@ export const fetchListNotification = createAsyncThunk(
 			const response = await fetchListNotificationCached(
 				thunkAPI.getState as () => RootState,
 				mezon,
-				clanId,
+				clanId || '0',
 				category,
 				notificationId as string,
 				noCache

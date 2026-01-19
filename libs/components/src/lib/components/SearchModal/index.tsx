@@ -82,24 +82,27 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return addPropsIntoSearchList;
 	}, [accountId, dmGroupChatList, allUsesInAllClansEntities]);
 	const listChannelSearch = useMemo(() => {
-		const list = listChannels.map((item) => {
-			return {
-				id: item?.channel_id ?? '',
-				name: item?.channel_label ?? '',
-				subText: item?.clan_name ?? '',
-				icon: '#',
-				clanId: item?.clan_id ?? '',
-				channelId: item?.channel_id ?? '',
-				lastSentTimeStamp: Number(item?.last_sent_message?.timestamp_seconds || 0),
-				typeChat: TypeSearch.Channel_Type,
-				prioritizeName: item?.channel_label ?? '',
-				channel_private: item.channel_private,
-				type: item.type,
-				parent_id: item.parent_id,
-				meeting_code: item.meeting_code,
-				count_messsage_unread: item?.count_mess_unread,
-				lastSeenTimeStamp: Number(item?.last_seen_message?.timestamp_seconds || 0)
-			};
+		const list: SearchItemProps[] = [];
+		listChannels.map((item) => {
+			if (item) {
+				list.push({
+					id: item?.channel_id ?? '',
+					name: item?.channel_label ?? '',
+					subText: item?.clan_name ?? '',
+					icon: '#',
+					clanId: item?.clan_id ?? '',
+					channelId: item?.channel_id ?? '',
+					lastSentTimeStamp: Number(item?.last_sent_message?.timestamp_seconds || 0),
+					typeChat: TypeSearch.Channel_Type,
+					prioritizeName: item?.channel_label ?? '',
+					channel_private: item?.channel_private,
+					type: item?.type,
+					parent_id: item?.parent_id,
+					meeting_code: item?.meeting_code,
+					count_messsage_unread: item?.count_mess_unread,
+					lastSeenTimeStamp: Number(item?.last_seen_message?.timestamp_seconds || 0)
+				});
+			}
 		});
 		return list;
 	}, [listChannels]);

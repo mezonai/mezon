@@ -1,3 +1,16 @@
 {
-  "emptyDescription": "Chúng tôi đã tìm kiếm rất xa. Thật không may, không có kết quả được tìm thấy"
+	"emptyDescription": "Chúng tôi đã tìm kiếm rất xa. Thật không may, không có kết quả được tìm thấy",
+	"video": {
+		"error": {
+			"title": "Video không khả dụng",
+			"cannotPlay": "Không thể phát video",
+			"loadingAborted": "Đã hủy tải video",
+			"networkError": "Lỗi mạng khi tải video",
+			"codecNotSupported": "Codec video không được hỗ trợ trên nền tảng này",
+			"codecNotSupportedElectron": "Codec video không được hỗ trợ trên nền tảng này. Hãy thử tải video về để phát bằng trình phát hệ thống.",
+			"formatNotSupported": "Định dạng video không được hỗ trợ",
+			"downloadButton": "Tải video xuống",
+			"browserNotSupported": "Trình duyệt của bạn không hỗ trợ thẻ video."
+		}
+	}
 }

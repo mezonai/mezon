@@ -92,7 +92,9 @@ const MessageModalImage = () => {
 				const state = getStore()?.getState();
 				const currentAttachments = selectAllListAttachmentByChannel(state, channelId);
 				const timestamp =
-					direction === 'before' ? currentAttachments?.[currentAttachments.length - 1]?.create_time : currentAttachments?.[0]?.create_time;
+					direction === 'before'
+						? currentAttachments?.[currentAttachments.length - 1]?.create_time_seconds
+						: currentAttachments?.[0]?.create_time_seconds;
 				const timestampNumber = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
 
 				const clanId = currentClanId === '0' ? '0' : currentClanId;
@@ -544,7 +546,7 @@ const SenderUser = () => {
 					{user?.clan_nick ?? user?.user?.display_name ?? user?.user?.username}
 				</div>
 				<div className="text-[12px] text-bgTextarea truncate max-sm:w-12">
-					{attachment?.create_time ? convertTimeString(Number(attachment.create_time) * 1000) : 'N/A'}
+					{attachment?.create_time_seconds ? convertTimeString(Number(attachment.create_time_seconds) * 1000) : 'N/A'}
 				</div>
 			</div>
 		</div>
