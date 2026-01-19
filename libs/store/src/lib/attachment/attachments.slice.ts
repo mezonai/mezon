@@ -130,7 +130,8 @@ export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachmen
 	const isVideo =
 		attachmentRes?.filetype?.startsWith('video') || attachmentRes?.filetype?.includes('mp4') || attachmentRes?.filetype?.includes('mov');
 	const uniqueId = `${attachmentRes.message_id}_${attachmentRes.url}`;
-	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: uniqueId, channelId, clanId, isVideo };
+	const create_time = attachmentRes.create_time_seconds ? new Date(Number(attachmentRes.create_time_seconds) * 1000).toISOString() : undefined;
+	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: uniqueId, channelId, clanId, isVideo, create_time };
 	return attachmentEntity;
 };
 
