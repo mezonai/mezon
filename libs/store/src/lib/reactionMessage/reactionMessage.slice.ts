@@ -245,7 +245,10 @@ export const reactionSlice = createSlice({
 });
 function saveRecentEmoji(emojiLastest: EmojiStorage) {
 	const storedEmojis = localStorage.getItem('recentEmojis');
-	const emojisRecentParse = storedEmojis ? safeJSONParse(storedEmojis) : [];
+	let emojisRecentParse = storedEmojis ? safeJSONParse(storedEmojis) : [];
+	if (!Array.isArray(emojisRecentParse)) {
+		emojisRecentParse = [];
+	}
 
 	if (emojisRecentParse.length > 0) {
 		const lastEmoji = emojisRecentParse[emojisRecentParse.length - 1];
@@ -253,9 +256,9 @@ function saveRecentEmoji(emojiLastest: EmojiStorage) {
 			return;
 		}
 	}
-	const duplicateIndex = Array.isArray(emojisRecentParse)
-		? emojisRecentParse.findIndex((item: EmojiStorage) => item.emoji === emojiLastest.emoji && item.senderId === emojiLastest.senderId)
-		: -1;
+	const duplicateIndex = emojisRecentParse.findIndex(
+		(item: EmojiStorage) => item.emoji === emojiLastest.emoji && item.senderId === emojiLastest.senderId
+	);
 
 	if (emojiLastest.action === true) {
 		if (duplicateIndex !== -1) {
