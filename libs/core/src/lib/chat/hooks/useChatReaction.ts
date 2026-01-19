@@ -146,7 +146,7 @@ export function useChatReaction({ isMobile = false, isClanViewMobile = undefined
 				actionDelete: action_delete,
 				isPublic: payload.is_public,
 				userId: userId as string,
-				topic_id: isFocusTopicBox ? channelIdOnMessage : '',
+				topic_id: isFocusTopicBox ? channelIdOnMessage : '0',
 				emoji_recent_id,
 				sender_name: userName
 			};
