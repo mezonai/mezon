@@ -93,7 +93,7 @@ const ServerSettingRoleManagement = (props: EditNewRole) => {
 	return flagOption ? (
 		<>
 			<div
-				className="absolute top-0 left-0 w-full h-full pl-2 flex flex-row flex-1 shrink bg-theme-setting-primary overflow-hidden sbm:pt-[-60px] pt-[10px]"
+				className="absolute top-0 left-0 w-full h-full pl-2 flex flex-row flex-1 shrink bg-theme-setting-primary overflow-hidden sbm:pt-[-60px] pt-[10px] max-sm:mt-10 max-sm:pt-10"
 				data-e2e={generateE2eId('clan_page.settings.role.container')}
 			>
 				<SettingListRole handleClose={props.handleClose} RolesClan={rolesClan} handleUpdateUser={() => handleUpdateUser(true)} />

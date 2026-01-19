@@ -213,7 +213,7 @@ const HeaderModal = memo((props: HeaderModalProps) => {
 	const { t } = useTranslation('channelSetting');
 	return (
 		<>
-			<h3 className="mb-4 font-bold text-xl text-theme-primary-active ">{t('channelPermission.header.title')}</h3>
+			<h3 className="mb-4 font-semibold text-xl text-theme-primary-active ">{t('channelPermission.header.title')}</h3>
 			<p className="mb-3 text-theme-primary">{t('channelPermission.header.description')}</p>
 			<div className="flex mt-4 p-4">
 				<Icons.SyncIcon defaultFill="#F0B033" defaultSize="mr-2" />
