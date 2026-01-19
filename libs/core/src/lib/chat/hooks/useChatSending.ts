@@ -231,7 +231,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				hide_editted,
 				topic_id,
 				!!isTopic,
-				oldMentions
+				new TextEncoder().encode(oldMentions)
 			);
 		},
 		[sessionRef, clientRef, socketRef, channelOrDirect, getClanId, channelIdOrDirectId, mode, isPublic]
