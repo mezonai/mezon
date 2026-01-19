@@ -17,7 +17,7 @@ import isEqual from 'lodash.isequal';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { formatTimeStringToHourFormat, getTimeTodayMidNight } from '../timeFomatEvent';
+import { formatTimeStringToHourFormat, getDefaultCreateEventTimes, getTimeTodayMidNight } from '../timeFomatEvent';
 import EventInfoModal from './eventInfoModal';
 import HeaderEventCreate from './headerEventCreate';
 import LocationModal from './locationModal';
@@ -56,13 +56,21 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const createStatus = useSelector(selectCreatingLoaded);
 	const dispatch = useAppDispatch();
 
+	const defaultCreateEventTimes = useMemo(() => getDefaultCreateEventTimes(), []);
+
 	const [contentSubmit, setContentSubmit] = useState<ContenSubmitEventProps>({
 		topic: currentEvent ? currentEvent.title || '' : '',
 		address: currentEvent ? currentEvent?.address || '' : '',
-		timeStart: currentEvent?.start_time_seconds ? formatTimeStringToHourFormat(currentEvent.start_time_seconds * 1000) : 0,
-		timeEnd: currentEvent?.end_time_seconds ? formatTimeStringToHourFormat(currentEvent?.end_time_seconds * 1000) : 0,
-		selectedDateStart: currentEvent?.start_time_seconds ? getTimeTodayMidNight(currentEvent.start_time_seconds * 1000) : getTimeTodayMidNight(),
-		selectedDateEnd: currentEvent?.end_time_seconds ? getTimeTodayMidNight(currentEvent?.end_time_seconds * 1000) : getTimeTodayMidNight(),
+		timeStart: currentEvent?.start_time_seconds
+			? formatTimeStringToHourFormat(currentEvent.start_time_seconds)
+			: defaultCreateEventTimes.timeStart,
+		timeEnd: currentEvent?.end_time_seconds ? formatTimeStringToHourFormat(currentEvent?.end_time_seconds) : defaultCreateEventTimes.timeEnd,
+		selectedDateStart: currentEvent?.start_time_seconds
+			? getTimeTodayMidNight(currentEvent.start_time_seconds)
+			: defaultCreateEventTimes.selectedDateStart,
+		selectedDateEnd: currentEvent?.end_time_seconds
+			? getTimeTodayMidNight(currentEvent?.end_time_seconds)
+			: defaultCreateEventTimes.selectedDateEnd,
 		voiceChannel: currentEvent ? currentEvent?.channel_voice_id || '' : '',
 		logo: currentEvent ? currentEvent.logo || '' : '',
 		description: currentEvent ? currentEvent.description || '' : '',
@@ -157,9 +165,10 @@ const ModalCreate = (props: ModalCreateProps) => {
 			privateEvent as boolean
 		);
 
-		hanldeCloseModal();
+		onClose();
+		clearEventId();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [choiceSpeaker, contentSubmit, choiceLocation, currentClanId, createEventManagement]);
+	}, [choiceSpeaker, contentSubmit, choiceLocation, currentClanId, createEventManagement, onClose, clearEventId]);
 
 	const isEventChanged = useMemo(() => {
 		if (!currentEvent || !contentSubmit) return false;
@@ -264,12 +273,13 @@ const ModalCreate = (props: ModalCreateProps) => {
 
 			if (isEventChanged) {
 				await dispatch(eventManagementActions.updateEventManagement(finalFieldsToSubmit));
-				hanldeCloseModal();
+				onClose();
+				clearEventId();
 			}
 		} catch (error) {
 			console.error('Error in handleUpdate:', error);
 		}
-	}, [choiceLocation, contentSubmit, currentEvent, eventChannel, eventId, choiceSpeaker, currentClanId, dispatch]);
+	}, [choiceLocation, contentSubmit, currentEvent, eventChannel, eventId, choiceSpeaker, currentClanId, dispatch, onClose, clearEventId]);
 
 	const hanldeCloseModal = () => {
 		onClose();
@@ -298,8 +308,14 @@ const ModalCreate = (props: ModalCreateProps) => {
 
 	useEffect(() => {
 		if (eventId === '') {
-			setContentSubmit((prev) => ({ ...prev, timeStart: 0 }));
-			setContentSubmit((prev) => ({ ...prev, timeEnd: 0 }));
+			const defaults = getDefaultCreateEventTimes();
+			setContentSubmit((prev) => ({
+				...prev,
+				selectedDateStart: defaults.selectedDateStart,
+				selectedDateEnd: defaults.selectedDateEnd,
+				timeStart: defaults.timeStart,
+				timeEnd: defaults.timeEnd
+			}));
 		} else {
 			setContentSubmit((prev) => ({ ...prev, timeStart: formatTimeStringToHourFormat(currentEvent.start_time_seconds || 0) }));
 			setContentSubmit((prev) => ({ ...prev, timeEnd: formatTimeStringToHourFormat(currentEvent?.end_time_seconds || 0) }));
