@@ -1,3 +1,16 @@
 {
-  "emptyDescription": "We searched far and wide. Unfortunately, no results were found"
+	"emptyDescription": "We searched far and wide. Unfortunately, no results were found",
+	"video": {
+		"error": {
+			"title": "Video unavailable",
+			"cannotPlay": "Video cannot be played",
+			"loadingAborted": "Video loading aborted",
+			"networkError": "Network error while loading video",
+			"codecNotSupported": "Video codec not supported on this platform",
+			"codecNotSupportedElectron": "Video codec not supported on this platform. Try downloading the video to play it with your system player.",
+			"formatNotSupported": "Video format not supported",
+			"downloadButton": "Download video",
+			"browserNotSupported": "Your browser does not support the video tag."
+		}
+	}
 }

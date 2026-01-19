@@ -76,6 +76,7 @@ import {
 	selectLastSentMessageStateByChannelId,
 	selectLatestMessageId,
 	selectLoadingStatus,
+	selectMessageEntityById,
 	selectOrderedClans,
 	selectStreamMembersByChannelId,
 	selectUserCallId,
@@ -727,6 +728,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 
 		if (pin.operation === 1) {
+			const store = getStore();
+			const state = store.getState() as RootState;
+			const messageFromStore = selectMessageEntityById(state, pin.channel_id, pin.message_id);
+			const createTimeSeconds = messageFromStore?.create_time_seconds;
+
 			dispatch(
 				pinMessageActions.addPinMessage({
 					channelId: pin.channel_id,
@@ -736,7 +742,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						avatar: pin.message_sender_avatar,
 						channel_id: pin.channel_id,
 						content: pin.message_content,
-						create_time: pin.message_created_time,
+						create_time: createTimeSeconds ? new Date(createTimeSeconds * 1000).toISOString() : pin.message_created_time,
+						create_time_seconds: createTimeSeconds,
 						message_id: pin.message_id,
 						username: pin.message_sender_username,
 						sender_id: pin.message_sender_id

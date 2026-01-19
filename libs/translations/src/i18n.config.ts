@@ -1,7 +1,8 @@
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import resourcesToBackend from 'i18next-resources-to-backend';
 import { initReactI18next } from 'react-i18next';
+import enTranslations from './languages/en/index';
+import viTranslations from './languages/vi/index';
 
 export const defaultNS = 'common';
 
@@ -38,19 +39,16 @@ const timezoneDetector = {
 const languageDetector = new LanguageDetector();
 languageDetector.addDetector(timezoneDetector);
 
-i18n.use(
-	resourcesToBackend((language: string, namespace: string) => {
-		return import(`./languages/${language}/index.ts`).then((module) => {
-			return module.default[namespace];
-		});
-	})
-)
-	.use(languageDetector)
+i18n.use(languageDetector)
 	.use(initReactI18next)
 	.init({
 		defaultNS,
 		fallbackLng: 'en',
 		supportedLngs: ['en', 'vi'],
+		resources: {
+			en: enTranslations,
+			vi: viTranslations
+		},
 		detection: {
 			order: ['timezone', 'localStorage', 'navigator', 'htmlTag'],
 			lookupLocalStorage: 'i18nextLng',
@@ -64,8 +62,7 @@ i18n.use(
 		compatibilityJSON: 'v3',
 		react: {
 			useSuspense: false
-		},
-		partialBundledLanguages: true
+		}
 	});
 
 export default i18n;
