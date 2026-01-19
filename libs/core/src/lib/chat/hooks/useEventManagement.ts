@@ -27,7 +27,7 @@ export function useEventManagement() {
 			repeat_type: ERepeatType,
 			is_private: boolean
 		) => {
-			await dispatch(
+			const action = await dispatch(
 				eventManagementActions.fetchCreateEventManagement({
 					clan_id,
 					channel_voice_id,
@@ -42,6 +42,7 @@ export function useEventManagement() {
 					is_private
 				})
 			);
+			return (action as any)?.payload;
 		},
 		[dispatch]
 	);
