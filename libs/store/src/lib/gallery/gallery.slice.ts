@@ -83,7 +83,10 @@ export const fetchGalleryAttachments = createAsyncThunk(
 					id: attachmentRes.id || '',
 					channelId,
 					clanId,
-					isVideo: attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX)
+					isVideo: attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX),
+					create_time: attachmentRes.create_time_seconds
+						? new Date(Number(attachmentRes.create_time_seconds) * 1000).toISOString()
+						: undefined
 				}))
 				.sort((a, b) => {
 					if (a.create_time_seconds && b.create_time_seconds) {
