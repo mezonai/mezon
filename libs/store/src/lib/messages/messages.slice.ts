@@ -1358,7 +1358,7 @@ export const messagesSlice = createSlice({
 			if (!message.reactions) {
 				message.reactions = [];
 			}
-			const existingReactionIndex = message.reactions.findIndex((r) => r.emoji_id === emoji_id && r.sender_id === sender_id);
+			const existingReactionIndex = message.reactions?.findIndex((r) => r.emoji_id === emoji_id && r.sender_id === sender_id);
 			if (existingReactionIndex !== -1) {
 				!remove ? message.reactions[existingReactionIndex].count++ : (message.reactions[existingReactionIndex].count = 0);
 			} else {
