@@ -1444,14 +1444,6 @@ export const channelsSlice = createSlice({
 
 			state.byClans[clanId].appChannelsListShowOnPopUp = [];
 		},
-		clearAllAppChannelsListShowOnPopUp: (state) => {
-			Object.keys(state.byClans).forEach((clanId) => {
-				if (state.byClans[clanId]) {
-					state.byClans[clanId].appChannelsListShowOnPopUp = [];
-					state.byClans[clanId].appFocused = {};
-				}
-			});
-		},
 		setShowPinBadgeOfChannel: (state, action: PayloadAction<{ clanId: string; channelId: string; isShow: boolean }>) => {
 			const { clanId, channelId, isShow } = action.payload;
 			if (!state.byClans[clanId]) {
