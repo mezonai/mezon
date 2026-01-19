@@ -4,6 +4,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { categoriesActions, channelsActions, checkDuplicateNameClan, clansActions, createNewChannel, getStoreAsync } from '@mezon/store-mobile';
 import { handleUploadFileMobile, useMezon } from '@mezon/transport';
 import { MAX_FILE_SIZE_1MB } from '@mezon/utils';
+import { useNavigation } from '@react-navigation/native';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { ChannelType } from 'mezon-js';
 import type { ApiCategoryDesc } from 'mezon-js/api.gen';
@@ -23,6 +24,7 @@ import type { IFile } from '../../../../../componentUI/MezonImagePicker';
 import MezonInput from '../../../../../componentUI/MezonInput';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import useCheckClanLimit from '../../../../../hooks/useCheckClanLimit';
+import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { validInput } from '../../../../../utils/validate';
 import { style } from './CreateClanModal.styles';
 
@@ -47,9 +49,10 @@ export type ClanTemplate = {
 export interface CreateClanModalProps {
 	template?: ClanTemplate | null;
 	onGoback(): void;
+	isProfileSetting?: boolean;
 }
 
-const CreateClanModal = memo(({ template, onGoback }: CreateClanModalProps) => {
+const CreateClanModal = memo(({ template, onGoback, isProfileSetting = false }: CreateClanModalProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [nameClan, setNameClan] = useState<string>('');
@@ -60,10 +63,14 @@ const CreateClanModal = memo(({ template, onGoback }: CreateClanModalProps) => {
 	const { sessionRef, clientRef } = useMezon();
 	const { createClans } = useClans();
 	const { checkClanLimit } = useCheckClanLimit();
+	const navigation = useNavigation<any>();
 
-	const onClose = () => {
+	const onClose = useCallback(() => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-	};
+		if (isProfileSetting) {
+			navigation.navigate(APP_SCREEN.HOME);
+		}
+	}, [isProfileSetting, navigation]);
 
 	const createTemplateChannels = useCallback(async (clanId: string, template: ClanTemplate, defaultCategoryId: string) => {
 		const store = await getStoreAsync();
