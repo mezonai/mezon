@@ -6,7 +6,6 @@ import type { ChannelsEntity } from '@mezon/store-mobile';
 import {
 	appActions,
 	checkDuplicateNameClan,
-	createSystemMessage,
 	defaultNotificationActions,
 	fetchSystemMessageByClanId,
 	getStoreAsync,
@@ -185,11 +184,6 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 				cachedMessage: updateSystemMessageRequest
 			};
 			const response = await dispatch(updateSystemMessage(request));
-			if (response?.meta?.requestStatus === 'rejected') {
-				throw new Error(response?.meta?.requestStatus);
-			}
-		} else if (updateSystemMessageRequest) {
-			const response = await dispatch(createSystemMessage(updateSystemMessageRequest));
 			if (response?.meta?.requestStatus === 'rejected') {
 				throw new Error(response?.meta?.requestStatus);
 			}

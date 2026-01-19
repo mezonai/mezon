@@ -10,7 +10,7 @@ import {
 	generateE2eId
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { DirectFcmProto } from 'mezon-js/dist/api/api';
+import type { ApiDirectFcmProto } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationJump } from '../../hooks/useNotificationJump';
@@ -105,7 +105,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 export default AllNotificationItem;
 
 interface IMentionTabContent {
-	message: DirectFcmProto;
+	message: ApiDirectFcmProto;
 	subject?: string;
 	category?: number;
 	senderId?: string;

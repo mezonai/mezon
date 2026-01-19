@@ -1,5 +1,5 @@
 import { useClans } from '@mezon/core';
-import { createSystemMessage, fetchSystemMessageByClanId, selectCurrentClan, updateSystemMessage, useAppDispatch } from '@mezon/store';
+import { fetchSystemMessageByClanId, selectCurrentClan, updateSystemMessage, useAppDispatch } from '@mezon/store';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -128,7 +128,6 @@ const ClanSettingOverview = () => {
 			setSystemMessage(updateSystemMessageRequest);
 			setUpdateSystemMessageRequest(updateSystemMessageRequest);
 		} else if (updateSystemMessageRequest) {
-			await dispatch(createSystemMessage(updateSystemMessageRequest));
 			setSystemMessage(updateSystemMessageRequest);
 			setUpdateSystemMessageRequest(updateSystemMessageRequest);
 		}

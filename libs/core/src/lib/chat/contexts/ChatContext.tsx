@@ -1616,7 +1616,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const request: ApiUpdateCategoryDescRequest = {
 				category_id: categoryEvent.id || '',
 				category_name: categoryEvent.category_name,
-				ClanId: categoryEvent.clan_id
+				clan_id: categoryEvent.clan_id
 			};
 			dispatch(
 				categoriesActions.updateOne({
@@ -2964,4 +2964,3 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider, MobileEventEmitter };
-

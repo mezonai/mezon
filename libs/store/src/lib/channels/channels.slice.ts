@@ -810,7 +810,7 @@ export const fetchChannels = createAsyncThunk(
 				thunkAPI.dispatch(
 					listChannelRenderAction.mapListChannelRender({
 						clanId,
-						listChannelFavor: favorChannels.payload.channel_ids || [],
+						listChannelFavor: (favorChannels.payload as any)?.channel_ids || [],
 						listCategory: (listCategory.payload as FetchCategoriesPayload)?.categories || [],
 						listChannel: channels,
 						isMobile
@@ -1605,8 +1605,8 @@ export const channelsSlice = createSlice({
 			})
 			.addCase(
 				fetchListFavoriteChannel.fulfilled,
-				(state, action: PayloadAction<{ channel_ids: string[]; clanId: string; fromCache?: boolean }>) => {
-					if (!action?.payload || action.payload?.fromCache) return;
+				(state, action: PayloadAction<{ channel_ids?: string[]; clanId?: string; fromCache?: boolean }>) => {
+					if (!action?.payload || action.payload?.fromCache || !action.payload.clanId || !action.payload.channel_ids) return;
 					const { clanId } = action.payload;
 					if (!state.byClans[clanId]) {
 						state.byClans[clanId] = getInitialClanState();
