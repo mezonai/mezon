@@ -8,7 +8,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { clamp, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { clamp, runOnJS, useAnimatedStyle, useSharedValue, withSequence, withSpring } from 'react-native-reanimated';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
@@ -156,11 +156,8 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth
 		() =>
 			Gesture.Tap()
 				.maxDuration(200)
-				.onStart(() => {
-					scale.value = withSpring(0.9);
-				})
 				.onEnd(() => {
-					scale.value = withSpring(1);
+					scale.value = withSequence(withSpring(1.5), withSpring(1));
 					runOnJS(handleSend)();
 				}),
 		[handleSend]

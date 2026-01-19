@@ -120,7 +120,7 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 			if (mentions?.[0]) {
 				const mentionText = t?.substring(mentions[0]?.s ?? 0, mentions[0]?.e ?? 0);
 				formattedContent.push(
-					<Text style={styles.textMention} onPress={() => onMention(`@${mentions[0]?.username || ''}`)}>
+					<Text key="line-system" style={styles.textMention} onPress={() => onMention(`@${mentions[0]?.username || ''}`)}>
 						{mentionText}
 					</Text>
 				);

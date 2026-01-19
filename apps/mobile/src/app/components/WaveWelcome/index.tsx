@@ -56,17 +56,17 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 				? []
 				: [
 						{
-							message_id: '',
-							message_ref_id: message?.id,
+							message_id: '0',
+							message_ref_id: message?.id || '0',
 							ref_type: 0,
-							message_sender_id: message?.sender_id,
+							message_sender_id: message?.sender_id || '0',
 							message_sender_username: WAVE_SENDER_NAME,
 							mesages_sender_avatar: MEZON_AVATAR_URL,
 							message_sender_clan_nick: WAVE_SENDER_NAME,
 							message_sender_display_name: WAVE_SENDER_NAME,
 							content: JSON.stringify(message?.content),
 							has_attachment: false,
-							channel_id: message?.channel_id ?? '',
+							channel_id: message?.channel_id ?? '0',
 							mode: message?.mode ?? 0,
 							channel_label: message?.channel_label
 						}
