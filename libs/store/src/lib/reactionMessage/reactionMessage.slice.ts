@@ -253,9 +253,9 @@ function saveRecentEmoji(emojiLastest: EmojiStorage) {
 			return;
 		}
 	}
-	const duplicateIndex = emojisRecentParse.findIndex(
-		(item: EmojiStorage) => item.emoji === emojiLastest.emoji && item.senderId === emojiLastest.senderId
-	);
+	const duplicateIndex = Array.isArray(emojisRecentParse)
+		? emojisRecentParse.findIndex((item: EmojiStorage) => item.emoji === emojiLastest.emoji && item.senderId === emojiLastest.senderId)
+		: -1;
 
 	if (emojiLastest.action === true) {
 		if (duplicateIndex !== -1) {
