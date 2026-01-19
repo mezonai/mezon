@@ -55,11 +55,11 @@ export default defineConfig(({ mode }) => {
 			viteStaticCopy({
 				targets: [
 					{
-						src: path.join(workspaceRoot, 'libs/assets/src/assets/*'),
+						src: path.join(workspaceRoot, 'libs/assets/src/assets/*').replace(/\\/g, '/'),
 						dest: 'assets'
 					},
 					{
-						src: path.join(appRoot, 'src/assets/*'),
+						src: path.join(appRoot, 'src/assets/*').replace(/\\/g, '/'),
 						dest: 'assets'
 					}
 				],
