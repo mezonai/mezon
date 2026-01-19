@@ -167,7 +167,7 @@ const ImageAlbum = memo(
 		defaultMaxWidth,
 		isMobile
 	}: {
-		images: (ApiMessageAttachment & { create_time?: string })[];
+		images: ApiMessageAttachment[];
 		message: IMessageWithUser;
 		mode?: ChannelStreamMode;
 		onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
@@ -194,7 +194,9 @@ const ImageAlbum = memo(
 
 				const enhancedAttachmentData = {
 					...attachmentData,
-					create_time: attachmentData.create_time || new Date(message.create_time_seconds || 0).toISOString() || new Date().toISOString()
+					create_time_seconds: attachmentData?.create_time_seconds
+						? attachmentData?.create_time_seconds || message.create_time_seconds
+						: Date.now() / 1000
 				};
 
 				if (isElectron()) {
