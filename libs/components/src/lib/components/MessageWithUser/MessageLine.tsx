@@ -257,7 +257,7 @@ export const MessageLine = ({
 					/>
 				);
 			} else if (
-				(element.kindOf === ETokenMessage.MENTIONS && element.user_id) ||
+				(element.kindOf === ETokenMessage.MENTIONS && element.user_id && element.user_id !== '0') ||
 				(element.kindOf === ETokenMessage.MENTIONS && element.username)
 			) {
 				formattedContent.push(
