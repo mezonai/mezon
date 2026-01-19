@@ -61,11 +61,11 @@ export const convertMessageToHtml = (message: IExtendedMessage): string => {
 		if (hashtag.s !== undefined && hashtag.e !== undefined) {
 			const hashtagText = text.substring(hashtag.s, hashtag.e);
 
-			if (hashtag.channelid) {
+			if (hashtag.channelId) {
 				allEntities.push({
 					start: hashtag.s,
 					end: hashtag.e,
-					html: `<a class="text-entity-link hashtag" data-entity-type="MessageEntityHashtag" data-id="${hashtag.channelid}" contenteditable="false" dir="auto">${hashtagText}</a>`,
+					html: `<a class="text-entity-link hashtag" data-entity-type="MessageEntityHashtag" data-id="${hashtag.channelId}" contenteditable="false" dir="auto">${hashtagText}</a>`,
 					type: 'hashtag'
 				});
 			}

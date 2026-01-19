@@ -569,7 +569,7 @@ export const createFormattedString = (data: IExtendedMessage): string => {
 				break;
 			}
 			case ETokenMessage.HASHTAGS:
-				result += `#[${contentInElement.slice(1)}](${element.channelid})`;
+				result += `#[${contentInElement.slice(1)}](${element.channelId})`;
 				break;
 			case ETokenMessage.EMOJIS:
 				result += `::[${contentInElement}](${element.emojiid})`;

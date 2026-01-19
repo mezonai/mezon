@@ -1,5 +1,5 @@
 import { getTagById, useAppNavigation } from '@mezon/core';
-import { categoriesActions, selectClanView, selectCurrentChannelType, useAppDispatch } from '@mezon/store';
+import { categoriesActions, selectClanView, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback } from 'react';
@@ -10,22 +10,42 @@ type ChannelHashtagProps = {
 	channelHastagId: string;
 	isJumMessageEnabled: boolean;
 	isTokenClickAble: boolean;
+	channelLabel?: string;
+	clanId?: string;
+	parentId?: string;
+	channelId?: string;
 };
 
-const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble }: ChannelHashtagProps) => {
+const ChannelHashtag = ({
+	channelHastagId,
+	isJumMessageEnabled,
+	isTokenClickAble,
+	parentId,
+	channelLabel,
+	channelId,
+	clanId
+}: ChannelHashtagProps) => {
 	const dispatch = useAppDispatch();
 	const isClanView = useSelector(selectClanView);
 	const { toChannelPage, navigate } = useAppNavigation();
-	const currentChannelType = useSelector(selectCurrentChannelType);
 
 	const channel = getTagById(channelHastagId);
+	const parentChannel = getTagById(parentId);
 
 	const handleClick = useCallback(() => {
-		if (!channel) return;
+		if (!channel && !parentId) return;
 
-		const channelUrl = toChannelPage(channel?.id, channel?.clan_id ?? '');
-		dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
-		navigate(channelUrl);
+		if (channel) {
+			const channelUrl = toChannelPage(channel?.id, channel?.clan_id ?? '');
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
+			navigate(channelUrl);
+			return;
+		}
+		if (channelId && clanId && parentId) {
+			const channelUrl = toChannelPage(channelId, clanId);
+			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channelId, parentId }));
+			navigate(channelUrl);
+		}
 	}, [channel, dispatch, navigate, toChannelPage]);
 
 	const tokenClickAble = () => {
@@ -38,44 +58,41 @@ const ChannelHashtag = ({ channelHastagId, isJumMessageEnabled, isTokenClickAble
 		return <ModalUnknowChannel onClose={closeUnknown} />;
 	}, []);
 
-	const isTextChannel = currentChannelType === ChannelType.CHANNEL_TYPE_CHANNEL;
-	const isStreamingChannel = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
-	const isThreadChannel = currentChannelType === ChannelType.CHANNEL_TYPE_THREAD;
-	const isAppChannel = currentChannelType === ChannelType.CHANNEL_TYPE_APP;
-	const isVoiceChannel = currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
+	const isTextChannel = channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL;
+	const isStreamingChannel = channel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
+	const isThreadChannel = channel?.type === ChannelType.CHANNEL_TYPE_THREAD || (parentId && parentChannel);
+	const isAppChannel = channel?.type === ChannelType.CHANNEL_TYPE_APP;
+	const isVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 
 	const existHashtagAndChannelView = channelHastagId && !isClanView;
-	const isValidChannel =
-		(isTextChannel || isStreamingChannel || isThreadChannel || isVoiceChannel || existHashtagAndChannelView || isAppChannel) && channel;
+	const isValidChannel = isTextChannel || isStreamingChannel || isThreadChannel || isVoiceChannel || existHashtagAndChannelView || isAppChannel;
 
-	return channel ? (
-		isValidChannel ? (
-			<div
-				onClick={tokenClickAble}
-				className={`no-underline font-medium rounded-sm  inline whitespace-nowrap cursor-pointer bg-mention color-mention${!isJumMessageEnabled ? ' hover-mention ' : `hover:none cursor-text`} `}
-			>
-				{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE ? (
-					<Icons.Speaker defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
-				) : channel.type === ChannelType.CHANNEL_TYPE_STREAMING ? (
-					<Icons.Stream defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
-				) : channel.type === ChannelType.CHANNEL_TYPE_APP ? (
-					<Icons.AppChannelIcon className={`inline mt-[-0.2rem] w-4 h-4`} />
-				) : channel.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
-					!channel.channel_private || channel.channel_private === 0 ? (
-						<Icons.Hashtag defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
-					) : (
-						<Icons.HashtagLocked defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
-					)
-				) : channel.type === ChannelType.CHANNEL_TYPE_THREAD ? (
-					!channel.channel_private || channel.channel_private === 0 ? (
-						<Icons.ThreadIcon defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
-					) : (
-						<Icons.ThreadIconLocker className={`inline-block -mt-[0.2rem] w-4 h-4 `} />
-					)
-				) : null}
-				{channel.channel_label}
-			</div>
-		) : null
+	return isValidChannel ? (
+		<div
+			onClick={tokenClickAble}
+			className={`no-underline font-medium rounded-sm  inline whitespace-nowrap cursor-pointer bg-mention color-mention${!isJumMessageEnabled ? ' hover-mention ' : `hover:none cursor-text`} `}
+		>
+			{isVoiceChannel ? (
+				<Icons.Speaker defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
+			) : isStreamingChannel ? (
+				<Icons.Stream defaultSize={`inline mt-[-0.2rem] w-4 h-4`} defaultFill="#3297FF" />
+			) : isAppChannel ? (
+				<Icons.AppChannelIcon className={`inline mt-[-0.2rem] w-4 h-4`} />
+			) : isTextChannel ? (
+				!channel.channel_private || channel.channel_private === 0 ? (
+					<Icons.Hashtag defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
+				) : (
+					<Icons.HashtagLocked defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
+				)
+			) : isThreadChannel ? (
+				(channel && (!channel.channel_private || channel.channel_private === 0)) || parentId ? (
+					<Icons.ThreadIcon defaultSize={`inline-block -mt-[0.2rem] w-4 h-4`} />
+				) : (
+					<Icons.ThreadIconLocker className={`inline-block -mt-[0.2rem] w-4 h-4 `} />
+				)
+			) : null}
+			{channel ? channel.channel_label : channelLabel || null}
+		</div>
 	) : (
 		<PrivateChannel onClick={openUnknown} />
 	);
