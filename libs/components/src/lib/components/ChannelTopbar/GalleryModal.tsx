@@ -476,7 +476,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 			if (!attachmentData) return;
 			const enhancedAttachmentData = {
 				...attachmentData,
-				create_time_seconds: attachmentData.create_time_seconds || Date.now
+				create_time_seconds: attachmentData.create_time_seconds || Date.now() / 1000
 			};
 
 			const isVideo =
