@@ -154,9 +154,9 @@ const ListAttachment = (props: ListAttachmentProps) => {
 					const attachment = reversedAttachments[virtualItem.index];
 					const originalIndex = attachments.length - 1 - virtualItem.index;
 
-					const currentDate = new Date(attachment.create_time || '').toLocaleDateString();
+					const currentDate = new Date(attachment.create_time_seconds || '').toLocaleDateString();
 					const nextAttachment = reversedAttachments[virtualItem.index + 1];
-					const nextDate = nextAttachment ? new Date(nextAttachment.create_time || '').toLocaleDateString() : '';
+					const nextDate = nextAttachment ? new Date(nextAttachment.create_time_seconds || '').toLocaleDateString() : '';
 					const showDate = nextDate !== currentDate;
 
 					return (
