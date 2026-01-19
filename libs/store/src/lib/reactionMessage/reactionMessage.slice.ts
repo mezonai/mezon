@@ -166,7 +166,7 @@ export const writeMessageReaction = createAsyncThunk(
 						return await createTimeoutPromise(
 							socket.writeMessageReaction(
 								id,
-								clanId,
+								clanId || '0',
 								channelId,
 								mode,
 								isPublic,
