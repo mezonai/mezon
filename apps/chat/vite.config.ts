@@ -84,6 +84,7 @@ export default defineConfig(({ mode }) => {
 		],
 
 		define: {
+			global: 'globalThis',
 			'process.env.NODE_ENV': JSON.stringify(mode),
 			'process.env.APP_VERSION': JSON.stringify(APP_VERSION),
 			...Object.keys(env).reduce(
