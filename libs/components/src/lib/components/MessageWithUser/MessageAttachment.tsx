@@ -232,8 +232,8 @@ const ImageAlbum = memo(
 								attachmentRes?.filetype?.includes(EMimeTypes.mov)
 						}))
 						.sort((a, b) => {
-							if (a.create_time && b.create_time) {
-								return Date.parse(b.create_time) - Date.parse(a.create_time);
+							if (a.create_time_seconds && b.create_time_seconds) {
+								return b.create_time_seconds - a.create_time_seconds;
 							}
 							return 0;
 						});
@@ -315,7 +315,7 @@ const ImageAlbum = memo(
 						...enhancedAttachmentData,
 						id: generateAttachmentId(attachmentData, message.id),
 						uploader: enhancedAttachmentData.sender_id || message.sender_id,
-						create_time: enhancedAttachmentData.create_time
+						create_time_seconds: enhancedAttachmentData.create_time_seconds
 					})
 				);
 

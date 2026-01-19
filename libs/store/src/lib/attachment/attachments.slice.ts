@@ -46,8 +46,8 @@ export interface AttachmentState extends EntityState<AttachmentEntity, string> {
 export const attachmentAdapter = createEntityAdapter({
 	selectId: (attachment: AttachmentEntity) => attachment.url as string,
 	sortComparer: (a: AttachmentEntity, b: AttachmentEntity) => {
-		if (a.create_time && b.create_time) {
-			return Date.parse(b.create_time) - Date.parse(a.create_time);
+		if (a.create_time_seconds && b.create_time_seconds) {
+			return b.create_time_seconds - a.create_time_seconds;
 		}
 		return 0;
 	}
@@ -90,15 +90,15 @@ export const fetchChannelAttachmentsCached = async (
 		if (before !== undefined) {
 			const beforeTime = before * 1000;
 			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time) return false;
-				const attTime = new Date(att.create_time).getTime();
+				if (!att.create_time_seconds) return false;
+				const attTime = att.create_time_seconds;
 				return attTime < beforeTime;
 			});
 		} else if (after !== undefined) {
 			const afterTime = after * 1000;
 			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time) return false;
-				const attTime = new Date(att.create_time).getTime();
+				if (!att.create_time_seconds) return false;
+				const attTime = att.create_time_seconds;
 				return attTime > afterTime;
 			});
 		} else {
