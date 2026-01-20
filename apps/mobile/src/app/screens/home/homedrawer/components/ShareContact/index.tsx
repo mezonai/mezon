@@ -157,35 +157,37 @@ const ShareContactScreen = () => {
 				<View style={styles.contentWrapper}>
 					{loadingStatus === 'loading' ? (
 						<View style={styles.loadingView}>
-						<LoadingModal isVisible={true} isTransparent />
-					</View>
-					) : filteredUsers.length > 0 && loadingStatus === 'loaded' ? (
-						<FlatList
-							data={filteredUsers}
-							keyExtractor={(user, index) => `${user?.user?.id || user?.id}_${index}_user`}
-							ItemSeparatorComponent={SeparatorWithLine}
-							renderItem={({ item }: { item: FriendsEntity }) => renderMemberItem({ item })}
-							keyboardShouldPersistTaps={'handled'}
-							onEndReachedThreshold={0.1}
-							initialNumToRender={5}
-							maxToRenderPerBatch={5}
-							windowSize={15}
-							updateCellsBatchingPeriod={10}
-							decelerationRate={'fast'}
-							disableVirtualization
-							removeClippedSubviews
-							getItemLayout={(_, index) => ({
-								length: size.s_60,
-								offset: size.s_60 * index,
-								index
-							})}
-						/>
-					) : (
-						<View style={styles.emptyContainer}>
-							<Image source={Images.EMPTY_FRIEND} style={styles.emptyImage} />
-							<Text style={styles.emptyText}>{t('noContactsFound')}</Text>
+							<LoadingModal isVisible={true} isTransparent />
 						</View>
-					)}
+					) : loadingStatus === 'loaded' ? (
+						filteredUsers.length > 0 ? (
+							<FlatList
+								data={filteredUsers}
+								keyExtractor={(user, index) => `${user?.user?.id || user?.id}_${index}_user`}
+								ItemSeparatorComponent={SeparatorWithLine}
+								renderItem={({ item }: { item: FriendsEntity }) => renderMemberItem({ item })}
+								keyboardShouldPersistTaps={'handled'}
+								onEndReachedThreshold={0.1}
+								initialNumToRender={5}
+								maxToRenderPerBatch={5}
+								windowSize={15}
+								updateCellsBatchingPeriod={10}
+								decelerationRate={'fast'}
+								disableVirtualization
+								removeClippedSubviews
+								getItemLayout={(_, index) => ({
+									length: size.s_60,
+									offset: size.s_60 * index,
+									index
+								})}
+							/>
+						) : (
+							<View style={styles.emptyContainer}>
+								<Image source={Images.EMPTY_FRIEND} style={styles.emptyImage} />
+								<Text style={styles.emptyText}>{t('noContactsFound')}</Text>
+							</View>
+						)
+					) : null}
 				</View>
 			</View>
 		</View>
