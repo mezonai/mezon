@@ -204,8 +204,9 @@ export const joinPinMessage = createAsyncThunk(
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const now = Math.floor(Date.now() / 1000);
+
 			await mezon.socketRef.current?.writeLastPinMessage(
-				clanId,
+				clanId || '0',
 				channelId,
 				mode,
 				isPublic,

@@ -64,7 +64,7 @@ export const fetchAuditLogCached = async (
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.listAuditLog(mezon.session, actionLog, userId, clanId, date_log), {
+	const response = await withRetry(() => mezon.client.listAuditLog(mezon.session, actionLog, userId || undefined, clanId, date_log), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'audit-log'

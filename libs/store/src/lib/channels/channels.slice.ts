@@ -860,8 +860,8 @@ export const markAsReadProcessing = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.markAsRead(mezon.session, {
-				clan_id,
-				category_id,
+				clan_id: clan_id || undefined,
+				category_id: category_id || undefined,
 				channel_id
 			});
 			if (!response) {
