@@ -6,6 +6,8 @@ import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from '../styles';
 
+export const RAISE_HAND_COOLDOWN_MS = 10000;
+
 const ButtonRaiseHand = ({ channelId }: { channelId: string }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -22,23 +24,34 @@ const ButtonRaiseHand = ({ channelId }: { channelId: string }) => {
 		};
 	}, []);
 
-	const handleRaiseHand = useCallback(async () => {
-		if (isCooldown) return;
-		setIsCooldown(true);
+	const startAutoLowerTimer = () => {
+		if (timerRef.current) clearTimeout(timerRef.current);
+
 		timerRef.current = setTimeout(() => {
 			setIsCooldown(false);
-		}, 5000);
+			timerRef.current = null;
+		}, RAISE_HAND_COOLDOWN_MS);
+	};
+
+	const handleRaiseHand = useCallback(async () => {
+		if (!socketRef.current) return;
 
 		try {
-			if (!socketRef.current) return;
-			await socketRef.current.writeVoiceReaction([`raising:${'channelId'}`], channelId);
+			if (isCooldown) {
+				await socketRef.current.writeVoiceReaction([`raising-down:${channelId}`], channelId);
+				setIsCooldown(false);
+			} else {
+				await socketRef.current.writeVoiceReaction([`raising-up:${channelId}`], channelId);
+				setIsCooldown(true);
+				startAutoLowerTimer();
+			}
 		} catch (error) {
 			console.error('Error sending raise hand:', error);
 		}
-	}, [channelId, socketRef]);
+	}, [socketRef, isCooldown, channelId]);
 
 	return (
-		<TouchableOpacity style={[styles.menuIcon]} onPress={handleRaiseHand} disabled={isCooldown}>
+		<TouchableOpacity style={[styles.menuIcon]} onPress={handleRaiseHand}>
 			<MezonIconCDN
 				icon={IconCDN.raiseHandIcon}
 				color={isCooldown ? baseColor.goldenrodYellow : themeValue.textStrong}

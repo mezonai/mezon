@@ -25,12 +25,10 @@ export const RaisingHandControls = memo(() => {
 			timeCount.current++;
 		}
 
-		if (hand) {
-			timeoutRef.current = window.setTimeout(() => {
-				setHand(false);
-				timeoutRef.current = null;
-			}, 10000);
-		}
+		timeoutRef.current = window.setTimeout(() => {
+			setHand(false);
+			timeoutRef.current = null;
+		}, 10000);
 
 		if (timeCount.current === 10) {
 			if (resetCountTimeoutRef.current) clearTimeout(resetCountTimeoutRef.current);

@@ -160,8 +160,8 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 
 	const avatarToRender = resolvedAvatar ? (
 		<AvatarImage
-			alt={usernameString || ''}
-			username={usernameString || ''}
+			alt={voiceUsername || ''}
+			username={voiceUsername || ''}
 			className="w-20 h-20"
 			srcImgProxy={createImgproxyUrl(resolvedAvatar, {
 				width: 320,
@@ -172,11 +172,11 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		/>
 	) : (
 		isAvatarResolved &&
-		usernameString && (
+		voiceUsername && (
 			<div
 				className={`size-10 text-theme-primary bg-theme-primary text-[16px] w-20 h-20 !text-4xl font-semibold flex items-center justify-center rounded-xl`}
 			>
-				{usernameString?.charAt(0)?.toUpperCase()}
+				{voiceUsername?.charAt(0)?.toUpperCase()}
 			</div>
 		)
 	);
