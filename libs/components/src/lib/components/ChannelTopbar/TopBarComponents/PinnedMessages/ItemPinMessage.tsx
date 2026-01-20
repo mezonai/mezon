@@ -10,10 +10,10 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
-import { convertTimeString, generateE2eId } from '@mezon/utils';
+import { convertTimeString, Direction_Mode, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import type { UnpinMessageObject } from '.';
@@ -42,18 +42,36 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 
 	const validCreateTime = getValidCreateTime();
 	const messageTime = convertTimeString(validCreateTime);
-	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(pinMessage.sender_id || '');
+	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(String(pinMessage.sender_id || ''));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
-	const message = useAppSelector((state) => selectMessageByMessageId(state, pinMessage?.channel_id, pinMessage?.message_id as string));
+	const message = useAppSelector((state) =>
+		selectMessageByMessageId(state, String(pinMessage?.channel_id || ''), String(pinMessage?.message_id || ''))
+	);
+	useEffect(() => {
+		if (!pinMessage?.message_id || !pinMessage?.channel_id) return;
+		if (message) return;
+
+		dispatch(
+			messagesActions.fetchMessages({
+				clanId: currentClanId || '0',
+				channelId: String(pinMessage.channel_id || ''),
+				messageId: String(pinMessage.message_id || ''),
+				direction: Direction_Mode.AROUND_TIMESTAMP,
+				noCache: true,
+				viewingOlder: true
+			})
+		);
+	}, [dispatch, currentClanId, pinMessage?.channel_id, pinMessage?.message_id, message]);
+
 	const pinMessageAttachments = message?.attachments || pinMessage?.attachment;
 	const handleJumpMess = () => {
 		if (pinMessage.message_id && pinMessage.channel_id) {
 			dispatch(
 				messagesActions.jumpToMessage({
 					clanId: currentClanId || '0',
-					messageId: pinMessage.message_id,
-					channelId: pinMessage.channel_id
+					messageId: String(pinMessage.message_id),
+					channelId: String(pinMessage.channel_id)
 				})
 			);
 		}
@@ -155,8 +173,8 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 														...message,
 														attachments: attachmentsToRender,
 														create_time: validCreateTime,
-														sender_id: pinMessage.sender_id,
-														message_id: pinMessage.message_id
+														sender_id: String(pinMessage.sender_id || ''),
+														message_id: String(pinMessage.message_id || '')
 													} as unknown as IMessageWithUser
 												}
 												defaultMaxWidth={50}
