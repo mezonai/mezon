@@ -1,12 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
 import type {
-    ApiChannelAppResponseExtend,
-    ApiChannelMessageHeaderWithChannel,
-    BuzzArgs,
-    ChannelThreads,
-    ICategory,
-    IChannel,
-    LoadingStatus
+	ApiChannelAppResponseExtend,
+	ApiChannelMessageHeaderWithChannel,
+	BuzzArgs,
+	ChannelThreads,
+	ICategory,
+	IChannel,
+	LoadingStatus
 } from '@mezon/utils';
 import { ModeResponsive, TypeCheck, checkIsThread, mapChannelToAppEntity } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
@@ -15,12 +15,12 @@ import isEqual from 'lodash.isequal';
 import type { ChannelCreatedEvent, ChannelDeletedEvent, ChannelUpdatedEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import type {
-    ApiAddFavoriteChannelRequest,
-    ApiChangeChannelPrivateRequest,
-    ApiChannelAppResponse,
-    ApiChannelDescription,
-    ApiCreateChannelDescRequest,
-    ApiMarkAsReadRequest
+	ApiAddFavoriteChannelRequest,
+	ApiChangeChannelPrivateRequest,
+	ApiChannelAppResponse,
+	ApiChannelDescription,
+	ApiCreateChannelDescRequest,
+	ApiMarkAsReadRequest
 } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -860,8 +860,8 @@ export const markAsReadProcessing = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.markAsRead(mezon.session, {
-				clan_id,
-				category_id,
+				clan_id: clan_id || undefined,
+				category_id: category_id || undefined,
 				channel_id
 			});
 			if (!response) {
