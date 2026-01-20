@@ -1062,26 +1062,24 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				);
 			}
 
-			const state = getStore();
-			const existingEntity = selectDmGroupById(state, channel_desc.channel_id || '');
-
-			if (
-				channel_desc.type === ChannelType.CHANNEL_TYPE_GROUP ||
-				(channel_desc.type === ChannelType.CHANNEL_TYPE_DM && existingEntity && existingEntity.id)
-			) {
-				dispatch(
-					directActions.addGroupUserWS({
-						channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
-						users
-					})
-				);
-				dispatch(
-					channelMembersActions.addNewMember({
-						channel_id: channel_desc.channel_id as string,
-						user_ids: userIds,
-						addedByUserId: caller?.user_id
-					})
-				);
+			if (channel_desc.type === ChannelType.CHANNEL_TYPE_GROUP || channel_desc.type === ChannelType.CHANNEL_TYPE_DM) {
+				const state = getStore();
+				const existingEntity = selectDmGroupById(state, channel_desc.channel_id || '');
+				if (existingEntity && existingEntity.id) {
+					dispatch(
+						directActions.addGroupUserWS({
+							channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
+							users
+						})
+					);
+					dispatch(
+						channelMembersActions.addNewMember({
+							channel_id: channel_desc.channel_id as string,
+							user_ids: userIds,
+							addedByUserId: caller?.user_id
+						})
+					);
+				}
 			}
 
 			if (currentClanId === clan_id) {
