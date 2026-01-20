@@ -87,14 +87,14 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 	}, [contentSubmit.timeEnd, contentSubmit.timeStart, contentSubmit.selectedDateStart, contentSubmit.selectedDateEnd, contentSubmit.repeatType]);
 
 	const handleDateChangeStart = (date: Date) => {
-		setContentSubmit((prev) => ({ ...prev, selectedDateStart: getTimeTodayMidNight(date.getTime()) }));
+		setContentSubmit((prev) => ({ ...prev, selectedDateStart: getTimeTodayMidNight(date ? date.getTime() : undefined) }));
 		if (date.getTime() > contentSubmit.selectedDateEnd) {
 			handleDateChangeEnd(date);
 		}
 	};
 
 	const handleDateChangeEnd = (date: Date) => {
-		setContentSubmit((prev) => ({ ...prev, selectedDateEnd: getTimeTodayMidNight(date.getTime()) }));
+		setContentSubmit((prev) => ({ ...prev, selectedDateEnd: getTimeTodayMidNight(date ? date.getTime() : undefined) }));
 	};
 
 	const handleChangeTextArea = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
