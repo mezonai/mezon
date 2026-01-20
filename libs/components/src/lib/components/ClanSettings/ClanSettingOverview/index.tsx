@@ -112,7 +112,7 @@ const ClanSettingOverview = () => {
 				clan_id: systemMessage?.clan_id,
 				id: systemMessage?.id,
 				hide_audit_log:
-					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? '' : updateSystemMessageRequest?.hide_audit_log,
+					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? false : updateSystemMessageRequest?.hide_audit_log,
 				setup_tips: updateSystemMessageRequest?.setup_tips === systemMessage?.setup_tips ? '' : updateSystemMessageRequest?.setup_tips,
 				welcome_random:
 					updateSystemMessageRequest?.welcome_random === systemMessage?.welcome_random ? '' : updateSystemMessageRequest?.welcome_random,
