@@ -48,5 +48,10 @@ export const style = (colors: Attributes) =>
 			color: colors.text,
 			fontSize: size.s_16,
 			textAlign: 'center'
+		},
+		loadingView: {
+			flex: 1,
+			justifyContent: 'center',
+			alignItems: 'center'
 		}
 	});

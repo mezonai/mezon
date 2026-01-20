@@ -228,8 +228,8 @@ const MessageItem = React.memo(
 		const isSendTokenLog = useMemo(() => message?.code === TypeMessage.SendToken, [message?.code]);
 
 		const contactData = useMemo((): IContactData | null => {
+			if (message?.code !== TypeMessage.ShareContact) return null
 			const embed = message?.content?.embed?.[0];
-			if (embed?.fields?.[0]?.value !== 'share_contact') return null
 
 			return {
 				user_id: embed?.fields?.[1]?.value || '',
@@ -237,7 +237,7 @@ const MessageItem = React.memo(
 				display_name: embed?.fields?.[3]?.value || '',
 				avatar: embed?.fields?.[4]?.value || ''
 			};
-		}, [message?.content?.embed?.[0]]);
+		}, [message?.content?.embed?.[0], message?.code]);
 
 		const onLongPressImage = useCallback(
 			(image?: ApiMessageAttachment) => {

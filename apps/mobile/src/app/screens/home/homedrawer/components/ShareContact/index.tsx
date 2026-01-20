@@ -19,7 +19,8 @@ import UserInfoSearch from '../../../../../components/ThreadDetail/SearchMessage
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { style } from './styles';
 import { ApiChannelDescription } from 'mezon-js/api.gen';
-import { FriendsEntity } from '@mezon/store-mobile';
+import { FriendsEntity, selectLoadingStatusFriend } from '@mezon/store-mobile';
+import LoadingModal from '../../../../../components/LoadingModal/LoadingModal';
 
 const ShareContactScreen = () => {
 	const navigation = useNavigation();
@@ -33,12 +34,13 @@ const ShareContactScreen = () => {
 	const currentDM = useSelector(selectCurrentDM);
 	const isCreateTopic = useSelector(selectIsShowCreateTopic);
 	const currentTopicId = useSelector(selectCurrentTopicId);
+	const loadingStatus = useSelector(selectLoadingStatusFriend);
 	const channelOrDirect = useMemo(() => {
 		return (currentDM || currentChannel) as ApiChannelDescription | undefined;
 	}, [currentDM, currentChannel]);
 
 	const friendList = useMemo(() => {
-		return allFriends?.length > 0 && allFriends.filter((friend) => friend?.state === EStateFriend.FRIEND) 
+		return allFriends?.length > 0 && allFriends.filter((friend) => friend?.state === EStateFriend.FRIEND)
 	}, [allFriends]);
 
 	const mode = useMemo(() => {
@@ -106,7 +108,7 @@ const ShareContactScreen = () => {
 				});
 				onClose();
 			} catch (error) {
-				Toast.show({ 
+				Toast.show({
 					type: 'error',
 					text1: t('common:somethingWentWrong')
 				});
@@ -153,7 +155,11 @@ const ShareContactScreen = () => {
 				/>
 
 				<View style={styles.contentWrapper}>
-					{filteredUsers.length > 0 ? (
+					{loadingStatus === 'loading' ? (
+						<View style={styles.loadingView}>
+						<LoadingModal isVisible={true} isTransparent />
+					</View>
+					) : filteredUsers.length > 0 && loadingStatus === 'loaded' ? (
 						<FlatList
 							data={filteredUsers}
 							keyExtractor={(user, index) => `${user?.user?.id || user?.id}_${index}_user`}

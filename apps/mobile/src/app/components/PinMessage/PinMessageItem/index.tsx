@@ -114,7 +114,7 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 						senderId={message?.sender_id}
 					/>
 				)}
-				 {contactData && (
+				 {!!contactData && (
                         <ContactMessageCard
                             key={`pin_message_contact_${pinMessageItem?.message_id}`}
                             data={contactData}
