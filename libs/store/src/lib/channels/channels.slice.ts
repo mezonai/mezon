@@ -1,12 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
 import type {
-	ApiChannelAppResponseExtend,
-	ApiChannelMessageHeaderWithChannel,
-	BuzzArgs,
-	ChannelThreads,
-	ICategory,
-	IChannel,
-	LoadingStatus
+    ApiChannelAppResponseExtend,
+    ApiChannelMessageHeaderWithChannel,
+    BuzzArgs,
+    ChannelThreads,
+    ICategory,
+    IChannel,
+    LoadingStatus
 } from '@mezon/utils';
 import { ModeResponsive, TypeCheck, checkIsThread, mapChannelToAppEntity } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
@@ -15,12 +15,12 @@ import isEqual from 'lodash.isequal';
 import type { ChannelCreatedEvent, ChannelDeletedEvent, ChannelUpdatedEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import type {
-	ApiAddFavoriteChannelRequest,
-	ApiChangeChannelPrivateRequest,
-	ApiChannelAppResponse,
-	ApiChannelDescription,
-	ApiCreateChannelDescRequest,
-	ApiMarkAsReadRequest
+    ApiAddFavoriteChannelRequest,
+    ApiChangeChannelPrivateRequest,
+    ApiChannelAppResponse,
+    ApiChannelDescription,
+    ApiCreateChannelDescRequest,
+    ApiMarkAsReadRequest
 } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -209,7 +209,7 @@ export const fetchChannelsCached = async (
 				clan_id: clanId || '0'
 			}
 		},
-		() => ensuredMezon.client.listChannelDescs(ensuredMezon.session, limit, state, '0', clanId, channelType),
+		(session) => ensuredMezon.client.listChannelDescs(session, limit, state, '0', clanId, channelType),
 		'channel_desc_list'
 	);
 
@@ -246,7 +246,7 @@ export const fetchListFavoriteChannelCached = async (getState: () => RootState, 
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.getListFavoriteChannel(ensuredMezon.session, clanId),
+		(session) => ensuredMezon.client.getListFavoriteChannel(session, clanId),
 		'favorite_channel_list'
 	);
 
@@ -282,7 +282,7 @@ export const fetchAppChannelCached = async (getState: () => RootState, ensuredMe
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listChannelApps(ensuredMezon.session, clanId),
+		(session) => ensuredMezon.client.listChannelApps(session, clanId),
 		'channel_apps_list'
 	);
 

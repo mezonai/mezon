@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
 import type { AttachmentEntity } from '@mezon/store';
+import { formatDateI18n } from '@mezon/utils';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useVirtualizer } from '../../virtual-core/useVirtualizer';
 import ItemAttachment from './itemAttachment';
@@ -150,14 +151,14 @@ const ListAttachment = (props: ListAttachmentProps) => {
 					</div>
 				)}
 
-				{virtualItems.map((virtualItem) => {
-					const attachment = reversedAttachments[virtualItem.index];
-					const originalIndex = attachments.length - 1 - virtualItem.index;
+			{virtualItems.map((virtualItem) => {
+				const attachment = reversedAttachments[virtualItem.index];
+				const originalIndex = attachments.length - 1 - virtualItem.index;
 
-					const currentDate = new Date(attachment.create_time_seconds || '').toLocaleDateString();
-					const nextAttachment = reversedAttachments[virtualItem.index + 1];
-					const nextDate = nextAttachment ? new Date(nextAttachment.create_time_seconds || '').toLocaleDateString() : '';
-					const showDate = nextDate !== currentDate;
+				const currentDate = formatDateI18n(new Date(attachment.create_time || ''), 'en', 'dd/MM/yyyy');
+				const nextAttachment = reversedAttachments[virtualItem.index + 1];
+				const nextDate = nextAttachment ? formatDateI18n(new Date(nextAttachment.create_time || ''), 'en', 'dd/MM/yyyy') : '';
+				const showDate = nextDate !== currentDate;
 
 					return (
 						<div

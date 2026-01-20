@@ -70,7 +70,7 @@ export const fetchNotificationSettingCached = async (getState: () => RootState, 
 				channel_id: channelId
 			}
 		},
-		() => mezon.client.getNotificationChannel(mezon.session, channelId),
+		(session) => mezon.client.getNotificationChannel(session, channelId),
 		'notificaion_user_channel'
 	);
 
