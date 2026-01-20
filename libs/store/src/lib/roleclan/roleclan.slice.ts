@@ -181,7 +181,8 @@ export const fetchMembersRole = createAsyncThunk('MembersRole/fetchMembersRole',
 		const response = await withRetry(() => mezon.client.listRoleUsers(mezon.session, roleId, 100, ''), {
 			maxRetries: 3,
 			initialDelay: 1000,
-			scope: 'clan-role-users'
+			scope: 'clan-role-users',
+			mezon
 		});
 		if (!response.role_users) {
 			return thunkAPI.rejectWithValue([]);

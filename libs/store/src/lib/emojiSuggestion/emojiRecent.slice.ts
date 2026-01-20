@@ -56,7 +56,8 @@ export const fetchEmojiRecentCached = async (getState: () => RootState, ensuredM
 	const response = await withRetry(() => ensuredMezon.client.emojiRecentList(ensuredMezon.session), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'emoji-recent'
+		scope: 'emoji-recent',
+		mezon: ensuredMezon
 	});
 
 	markApiFirstCalled(apiKey);
