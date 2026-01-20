@@ -5,7 +5,7 @@ import { rolesClanActions, selectUserMaxPermissionLevel, useAppDispatch } from '
 import { EPermission } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, FlatList, Keyboard, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { DeviceEventEmitter, FlatList, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../../componentUI/MezonConfirm';
@@ -161,91 +161,87 @@ export const RoleDetail = ({ navigation, route }: MenuClanScreenProps<RoleDetail
 	}, [t, isCanEditRole, isEveryoneRole]);
 
 	return (
-		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-			<View style={styles.containerWrapper}>
-				<StatusBarHeight />
-				<View style={styles.container}>
-					<View style={styles.header}>
-						<TouchableOpacity style={styles.saveButton} onPress={handleBack}>
-							<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.white} height={size.s_22} width={size.s_22} />
-						</TouchableOpacity>
-						<View style={styles.center}>
-							<Text style={styles.headerTitle} numberOfLines={1}>
-								{clanRole?.title}
-							</Text>
-							<Text style={styles.headerText}>{t('roleDetail.role')}</Text>
-						</View>
-						{!isNotChange && (
-							<TouchableOpacity onPress={async () => handleSave()}>
-								<View style={styles.saveButton}>
-									<Text style={styles.saveText}>{t('roleDetail.save')}</Text>
-								</View>
-							</TouchableOpacity>
-						)}
+		<View style={styles.containerWrapper}>
+			<StatusBarHeight />
+			<View style={styles.container}>
+				<View style={styles.header}>
+					<TouchableOpacity style={styles.saveButton} onPress={handleBack}>
+						<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} color={themeValue.white} height={size.s_22} width={size.s_22} />
+					</TouchableOpacity>
+					<View style={styles.center}>
+						<Text style={styles.headerTitle} numberOfLines={1}>
+							{clanRole?.title}
+						</Text>
+						<Text style={styles.headerText}>{t('roleDetail.role')}</Text>
 					</View>
-					<View style={styles.nameInput}>
-						<MezonInput
-							value={currentRoleName}
-							onTextChange={setCurrentRoleName}
-							placeHolder={t('roleDetail.roleName')}
-							label={t('roleDetail.roleName')}
-							disabled={!isCanEditRole || isEveryoneRole}
-							maxCharacter={MAX_ROLE_NAME}
+					{!isNotChange && (
+						<TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+							<Text style={styles.saveText}>{t('roleDetail.save')}</Text>
+						</TouchableOpacity>
+					)}
+				</View>
+				<View style={styles.nameInput}>
+					<MezonInput
+						value={currentRoleName}
+						onTextChange={setCurrentRoleName}
+						placeHolder={t('roleDetail.roleName')}
+						label={t('roleDetail.roleName')}
+						disabled={!isCanEditRole || isEveryoneRole}
+						maxCharacter={MAX_ROLE_NAME}
+					/>
+				</View>
+
+				<View style={styles.wrapper}>
+					<RoleCoLourComponent roleId={roleId} disable={!isCanEditRole} />
+					<RoleImagePicker roleId={roleId} disable={!isCanEditRole} />
+					<View style={styles.actionList}>
+						<FlatList
+							data={actionList}
+							scrollEnabled
+							showsVerticalScrollIndicator={false}
+							keyExtractor={(item) => item.id.toString()}
+							ItemSeparatorComponent={SeparatorWithLine}
+							initialNumToRender={1}
+							maxToRenderPerBatch={1}
+							windowSize={2}
+							renderItem={({ item }) => {
+								return (
+									<TouchableOpacity onPress={() => handleAction(item.type)} disabled={!item?.isView}>
+										<View style={styles.actionItem}>
+											<View style={styles.actionTitleHeader}>
+												<Text style={styles.actionItemText}>{item.actionTitle}</Text>
+												{!item?.isView && (
+													<MezonIconCDN
+														icon={IconCDN.lockIcon}
+														color={themeValue.textDisabled}
+														height={size.s_16}
+														width={size.s_16}
+													/>
+												)}
+											</View>
+											<View>
+												{item?.isView && <MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />}
+											</View>
+										</View>
+									</TouchableOpacity>
+								);
+							}}
 						/>
 					</View>
 
-					<View style={styles.wrapper}>
-						<RoleCoLourComponent roleId={roleId} disable={!isCanEditRole} />
-						<RoleImagePicker roleId={roleId} disable={!isCanEditRole} />
-						<View style={styles.actionList}>
-							<FlatList
-								data={actionList}
-								scrollEnabled
-								showsVerticalScrollIndicator={false}
-								keyExtractor={(item) => item.id.toString()}
-								ItemSeparatorComponent={SeparatorWithLine}
-								initialNumToRender={1}
-								maxToRenderPerBatch={1}
-								windowSize={2}
-								renderItem={({ item }) => {
-									return (
-										<TouchableOpacity onPress={() => handleAction(item.type)} disabled={!item?.isView}>
-											<View style={styles.actionItem}>
-												<View style={styles.actionTitleHeader}>
-													<Text style={styles.actionItemText}>{item.actionTitle}</Text>
-													{!item?.isView && (
-														<MezonIconCDN
-															icon={IconCDN.lockIcon}
-															color={themeValue.textDisabled}
-															height={size.s_16}
-															width={size.s_16}
-														/>
-													)}
-												</View>
-												<View>
-													{item?.isView && <MezonIconCDN icon={IconCDN.chevronSmallRightIcon} color={themeValue.text} />}
-												</View>
-											</View>
-										</TouchableOpacity>
-									);
-								}}
-							/>
-						</View>
-
-						{isCanEditRole && !isEveryoneRole && (
-							<View style={styles.deleteViewMargin}>
-								<TouchableOpacity onPress={() => deleteRole()}>
-									<View style={styles.deleteButton}>
-										<View style={styles.flex}>
-											<Text style={styles.deleteText}>{t('roleDetail.deleteRole')}</Text>
-										</View>
+					{isCanEditRole && !isEveryoneRole && (
+						<View style={styles.deleteViewMargin}>
+							<TouchableOpacity onPress={() => deleteRole()}>
+								<View style={styles.deleteButton}>
+									<View style={styles.flex}>
+										<Text style={styles.deleteText}>{t('roleDetail.deleteRole')}</Text>
 									</View>
-								</TouchableOpacity>
-							</View>
-						)}
-					</View>
+								</View>
+							</TouchableOpacity>
+						</View>
+					)}
 				</View>
 			</View>
-		</TouchableWithoutFeedback>
+		</View>
 	);
 };

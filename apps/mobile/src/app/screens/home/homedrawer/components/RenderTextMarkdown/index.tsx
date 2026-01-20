@@ -437,8 +437,8 @@ export const RenderTextMarkdownContent = ({
 				const usersInChannel = selectAllChannelMembers(store.getState() as RootState, currentChannelId as string);
 				const mention = MentionUser({
 					tagName: contentInElement,
-					roleId: element?.role_id || '',
-					tagUserId: element?.user_id,
+					roleId: !!element?.role_id && element?.role_id !== '0' ? element?.role_id : '',
+					tagUserId: !!element?.user_id && element?.user_id !== '0' ? element?.user_id : '',
 					mode,
 					usersClan,
 					usersInChannel
@@ -580,7 +580,7 @@ export const RenderTextMarkdownContent = ({
 
 							const channelFound = selectChannelByIdAndClanId(store.getState() as any, clanId, channelIdOnLink);
 
-							if ((channelIdOnLink && channelFound?.id) || (element?.channelId && element?.channelLabel)) {
+							if ((channelIdOnLink && channelFound?.id) || ((element?.channelId || element?.channelid) && element?.channelLabel)) {
 								textParts.push(
 									<HashtagChannel
 										key={`hashtag-${index}`}
