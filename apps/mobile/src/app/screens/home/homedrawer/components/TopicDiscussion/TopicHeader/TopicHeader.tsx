@@ -14,13 +14,14 @@ import { EmbedMessage } from '../../EmbedMessage';
 import { MessageAttachment } from '../../MessageAttachment';
 import { RenderTextMarkdownContent } from '../../RenderTextMarkdown';
 import { style } from './styles';
+import { ContactMessageCard, IContactData } from '../../ContactMessageCard';
 
-type TopicHeaderProps = {
+type ITopicHeaderProps = {
 	currentChannelId: string;
 	handleBack: () => void;
 };
 
-const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) => {
+const TopicHeader = memo(({ currentChannelId, handleBack }: ITopicHeaderProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['message', 'common']);
@@ -47,6 +48,23 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) =>
 			DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR
 		);
 	}, [themeValue.text, userRolesClan.highestPermissionRoleColor]);
+
+	const embed = useMemo(() => {
+		return typeof firstMessage?.content?.embed === 'string'
+		? safeJSONParse(firstMessage?.content || '{}')?.embed?.[0]
+		: firstMessage?.content?.embed?.[0]
+	}, [firstMessage?.content?.embed?.[0]]);
+
+	const contactData = useMemo((): IContactData | null => {
+		if (embed?.fields?.[0]?.value !== 'share_contact') return null
+
+		return {
+			user_id: embed?.fields?.[1]?.value || '',
+			username: embed?.fields?.[2]?.value || '',
+			display_name: embed?.fields?.[3]?.value || '',
+			avatar: embed?.fields?.[4]?.value || ''
+		};
+	}, [embed]);
 
 	return (
 		<View style={styles.container}>
@@ -109,18 +127,20 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) =>
 							senderId={firstMessage?.sender_id}
 						/>
 					)}
-					{!!firstMessage?.content?.embed?.[0] && (
-						<EmbedMessage
-							message_id={firstMessage?.id || ''}
-							channel_id={firstMessage?.channel_id || ''}
-							embed={
-								typeof firstMessage?.content?.embed === 'string'
-									? safeJSONParse(firstMessage?.content || '{}')?.embed?.[0]
-									: firstMessage?.content?.embed?.[0]
-							}
-							key={`message_embed_${firstMessage?.channel_id}_${firstMessage?.id}`}
-						/>
-					)}
+					{!!embed &&
+						(contactData ? (
+							<ContactMessageCard
+								key={`message_contact_${firstMessage?.channel_id}_${firstMessage?.id}`}
+								data={contactData}
+							/>
+						) : (
+							<EmbedMessage
+								message_id={firstMessage?.id || ''}
+								channel_id={firstMessage?.channel_id || ''}
+								embed={embed}
+								key={`message_embed_${firstMessage?.channel_id}_${firstMessage?.id}`}
+							/>
+						))}
 				</ScrollView>
 			)}
 		</View>

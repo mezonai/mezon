@@ -77,6 +77,8 @@
 	"messageDeleteReply": "Tin nhắn gốc đã bị xóa",
 	"forwardMessagesSuccessfully": "Chuyển tiếp tin nhắn thành công!",
 	"forwardTo": "Chuyển tiếp đến",
+	"contactSharedSuccessfully": "Chia sẻ danh thiếp thành công!",
+	"noContactsFound": "Không tìm thấy liên hệ",
 	"search": "Tìm kiếm",
 	"reportMessage": {
 		"reportSummary": "Tóm tắt báo cáo",
@@ -209,7 +211,8 @@
 		"sticker": "Nhãn dán",
 		"gif": "GIF",
 		"link": "Liên kết",
-		"attachment": "Tệp đính kèm"
+		"attachment": "Tệp đính kèm",
+		"contact": "Danh thiếp"
 	},
 	"bannedChannel": "Bạn đã bị cấm trong kênh {{channelName}}.",
 	"addAMessage": "Thêm một tin nhắn (Không bắt buộc)",

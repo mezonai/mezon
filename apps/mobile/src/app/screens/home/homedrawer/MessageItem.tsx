@@ -25,6 +25,7 @@ import RenderMessageBlock from './RenderMessageBlock';
 import WelcomeMessage from './WelcomeMessage';
 import { AvatarMessage } from './components/AvatarMessage';
 import ButtonGotoTopic from './components/ButtonGotoTopic/ButtonGotoTopic';
+import { ContactMessageCard, type IContactData } from './components/ContactMessageCard';
 import { EmbedComponentsPanel } from './components/EmbedComponents';
 import { EmbedMessage } from './components/EmbedMessage';
 import { InfoUserMessage } from './components/InfoUserMessage';
@@ -226,6 +227,18 @@ const MessageItem = React.memo(
 
 		const isSendTokenLog = useMemo(() => message?.code === TypeMessage.SendToken, [message?.code]);
 
+		const contactData = useMemo((): IContactData | null => {
+			const embed = message?.content?.embed?.[0];
+			if (embed?.fields?.[0]?.value !== 'share_contact') return null
+
+			return {
+				user_id: embed?.fields?.[1]?.value || '',
+				username: embed?.fields?.[2]?.value || '',
+				display_name: embed?.fields?.[3]?.value || '',
+				avatar: embed?.fields?.[4]?.value || ''
+			};
+		}, [message?.content?.embed?.[0]]);
+
 		const onLongPressImage = useCallback(
 			(image?: ApiMessageAttachment) => {
 				if (preventAction) return;
@@ -425,14 +438,23 @@ const MessageItem = React.memo(
 											/>
 										) : null}
 										{!!message?.content?.embed?.length &&
-											message?.content?.embed?.map((embed, index) => (
-												<EmbedMessage
-													message_id={message?.id}
-													channel_id={message?.channel_id}
-													embed={embed}
-													key={`message_embed_${message?.id}_${index}`}
+											(contactData ? (
+												<ContactMessageCard
+													key={`message_contact_${message?.id}`}
+													data={contactData}
 													onLongPress={handleLongPressMessage}
+													showUserProfileGroup={mode === ChannelStreamMode.STREAM_MODE_GROUP}
 												/>
+											) : (
+												message?.content?.embed?.map((embed, index) => (
+													<EmbedMessage
+														message_id={message?.id}
+														channel_id={message?.channel_id}
+														embed={embed}
+														key={`message_embed_${message?.id}_${index}`}
+														onLongPress={handleLongPressMessage}
+													/>
+												))
 											))}
 										{!!message?.content?.components?.length &&
 											message?.content.components?.map((component, index) => (
