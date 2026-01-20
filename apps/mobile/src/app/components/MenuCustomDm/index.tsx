@@ -7,7 +7,7 @@ import {
 	fetchDirectMessage,
 	removeMemberChannel,
 	selectCurrentUserId,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectRawDataUserGroup,
 	useAppDispatch,
 	useAppSelector
@@ -38,7 +38,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 	const dispatch = useAppDispatch();
 	const navigation = useNavigation<any>();
 	const currentUserId = useAppSelector(selectCurrentUserId);
-	const currentDMGroup = useAppSelector(selectDmGroupCurrent(currentChannel?.id));
+	const currentDMGroup = useAppSelector((state) => selectDmGroupById(state, currentChannel?.id));
 	const currentAvatar = currentDMGroup?.channel_avatar;
 	const allUserGroupDM = useSelector((state) => selectRawDataUserGroup(state, currentChannel?.id || ''));
 

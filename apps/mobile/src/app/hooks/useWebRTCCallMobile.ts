@@ -1,20 +1,8 @@
-import {
-	mediaDevices,
-	MediaStream,
-	RTCIceCandidate,
-	RTCPeerConnection,
-	RTCSessionDescription
-} from '@livekit/react-native-webrtc';
+import { mediaDevices, MediaStream, RTCIceCandidate, RTCPeerConnection, RTCSessionDescription } from '@livekit/react-native-webrtc';
 import { useChatSending } from '@mezon/core';
 import { ActionEmitEvent, sessionConstraints } from '@mezon/mobile-components';
 import type { RootState } from '@mezon/store-mobile';
-import {
-	audioCallActions,
-	DMCallActions,
-	selectAllAccount,
-	selectDmGroupCurrent,
-	useAppDispatch
-} from '@mezon/store-mobile';
+import { audioCallActions, DMCallActions, selectAllAccount, useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { IMessageTypeCallLog, sleep } from '@mezon/utils';
@@ -82,7 +70,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	const [isConnected, setIsConnected] = useState<boolean | null>(null);
 	const [offerCache, setOfferCache] = useState(null);
 	const pendingCandidatesRef = useRef<(RTCIceCandidate | null)[]>([]);
-	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
+	const currentDmGroup = useSelector(selectDmGroupById(channelId));
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode });
 	const userProfile = useSelector(selectAllAccount);
