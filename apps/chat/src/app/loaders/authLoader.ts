@@ -6,6 +6,7 @@ import {
 	directActions,
 	emojiRecentActions,
 	emojiSuggestionActions,
+	fcmActions,
 	friendsActions,
 	getStore,
 	listChannelsByUserActions,
@@ -17,6 +18,7 @@ import {
 	walletActions
 } from '@mezon/store';
 import type { IWithError } from '@mezon/utils';
+import { notificationService } from '@mezon/utils';
 import type { CustomLoaderFunction } from './appLoader';
 import { waitForSocketConnection } from './socketUtils';
 
@@ -42,6 +44,18 @@ function getRedirectTo(initialPath?: string): string {
 
 let connectionCheckPromise: Promise<void> | null = null;
 let isCheckingConnection = false;
+
+const connectNotification = async (dispatch: AppDispatch) => {
+	try {
+		const response = await dispatch(fcmActions.connectNotificationService());
+		if (response.payload && typeof response.payload === 'object' && 'token' in response.payload) {
+			const { token, userId } = response.payload as { token: string; userId: string };
+			notificationService.connect(token, userId);
+		}
+	} catch (error) {
+		console.error('Failed to connect notification service:', error);
+	}
+};
 
 const waitForInternetConnection = async (delayMs: number): Promise<void> => {
 	const hasConnection = await checkInternetConnection();
@@ -184,6 +198,8 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(directActions.fetchDirectMessage({}));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
+
+	connectNotification(dispatch);
 	// check network not connect
 	if (!navigator.onLine) {
 		const splashScreen = document.getElementById('splash-screen');

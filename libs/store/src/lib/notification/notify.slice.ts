@@ -87,7 +87,8 @@ export const fetchListNotificationCached = async (
 		{
 			maxRetries: 3,
 			initialDelay: 1000,
-			scope: 'notifications'
+			scope: 'notifications',
+			mezon: ensuredMezon
 		}
 	);
 

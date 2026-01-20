@@ -248,7 +248,8 @@ export const fetchMessagesCached = async (
 		{
 			maxRetries: 5,
 			initialDelay: 1000,
-			scope: 'channel-messages'
+			scope: 'channel-messages',
+			mezon: ensuredMezon
 		}
 	);
 
