@@ -3,15 +3,15 @@ import { Text, TouchableOpacity, View } from 'react-native';
 
 import { useFriends } from '@mezon/core';
 import { size, useTheme } from '@mezon/mobile-ui';
+import type { MessagesEntity } from '@mezon/store-mobile';
 import {
 	EStateFriend,
 	friendsActions,
 	getStore,
 	getStoreAsync,
-	MessagesEntity,
 	selectAllAccount,
 	selectChannelById,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectFriendById,
 	selectMemberClanByUserId,
 	selectMessagesByChannel,
@@ -37,7 +37,7 @@ interface IWelcomeMessageProps {
 
 const useCurrentChannel = (channelId: string) => {
 	const channel = useAppSelector((state) => selectChannelById(state, channelId));
-	const dmGroup = useAppSelector(selectDmGroupCurrent(channelId));
+	const dmGroup = useAppSelector((state) => selectDmGroupById(state, channelId));
 	return dmGroup || channel;
 };
 

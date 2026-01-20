@@ -3,7 +3,6 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	accountActions,
-	type ChannelsEntity,
 	getStoreAsync,
 	referencesActions,
 	selectAnonymousMode,
@@ -13,13 +12,14 @@ import {
 	selectCurrentClanPreventAnonymous,
 	selectCurrentDM,
 	selectCurrentTopicId,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	useAppDispatch,
-	useAppSelector
+	useAppSelector,
+	type ChannelsEntity
 } from '@mezon/store-mobile';
-import { checkIsThread, getMaxFileSize, isFileSizeExceeded, isImageFile, TypeMessage } from '@mezon/utils';
+import { TypeMessage, checkIsThread, getMaxFileSize, isFileSizeExceeded, isImageFile } from '@mezon/utils';
 import Geolocation from '@react-native-community/geolocation';
-import { type DocumentPickerResponse, errorCodes, pick, types } from '@react-native-documents/picker';
+import { errorCodes, pick, types, type DocumentPickerResponse } from '@react-native-documents/picker';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -90,7 +90,7 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 	const currentChannel = useSelector(selectCurrentChannel);
 	const clanId = useAppSelector(selectCurrentClanId);
 	const currentTopicId = useAppSelector(selectCurrentTopicId);
-	const currentDmGroup = useAppSelector(selectDmGroupCurrent(directMessageId));
+	const currentDmGroup = useAppSelector((state) => selectDmGroupById(state, directMessageId));
 	const anonymousMode = useAppSelector((state) => selectAnonymousMode(state, clanId));
 	const currentClanPreventAnonymous = useAppSelector(selectCurrentClanPreventAnonymous);
 

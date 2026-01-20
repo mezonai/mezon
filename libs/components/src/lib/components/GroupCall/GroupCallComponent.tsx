@@ -6,7 +6,7 @@ import {
 	DMCallActions,
 	appActions,
 	generateMeetToken,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectGroupCallJoined,
 	selectIsShowChatVoice,
 	selectIsShowSettingFooter,
@@ -44,7 +44,7 @@ const GroupCallComponent = memo(
 		const { userProfile } = useAuth();
 		const containerRef = useRef<HTMLDivElement | null>(null);
 
-		const currentDmGroup = useSelector(selectDmGroupCurrent(directId ?? ''));
+		const currentDmGroup = useSelector((state) => selectDmGroupById(state, directId ?? ''));
 
 		const groupCall = useGroupCall({ currentGroup: currentDmGroup });
 

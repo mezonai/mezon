@@ -9,7 +9,7 @@ import {
 	selectCurrentChannel,
 	selectCurrentClanPreventAnonymous,
 	selectCurrentTopicId,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectIsShowCreateTopic,
 	useAppDispatch
 } from '@mezon/store-mobile';
@@ -67,7 +67,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const currentChannel = useSelector(selectCurrentChannel);
-	const currentDirectMessage = useSelector(selectDmGroupCurrent(directMessageId)); //Note: prioritize DM first
+	const currentDirectMessage = useSelector((state) => selectDmGroupById(state, directMessageId)); //Note: prioritize DM first
 	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id));
 	const currentClanPreventAnonymous = useSelector(selectCurrentClanPreventAnonymous);
 	const [mode, setMode] = useState<ExpressionType>('emoji');

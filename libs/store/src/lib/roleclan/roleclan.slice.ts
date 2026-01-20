@@ -240,8 +240,9 @@ export const fetchCreateRole = createAsyncThunk(
 				description: '',
 				display_online: 0,
 				title: title ?? '',
-				max_permission_id: maxPermissionId
+				max_permission_id: maxPermissionId || '0'
 			};
+
 			const response = await mezon.client.createRole(mezon.session, body);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
@@ -299,8 +300,9 @@ export const updateRole = createAsyncThunk(
 				remove_user_ids: removeUserIds || [],
 				remove_permission_ids: removePermissionIds || [],
 				clan_id: clanId,
-				max_permission_id: maxPermissionId
+				max_permission_id: maxPermissionId || '0'
 			};
+
 			const response = await mezon.client.updateRole(mezon.session, roleId, body);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
