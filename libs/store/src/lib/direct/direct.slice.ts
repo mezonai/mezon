@@ -61,8 +61,7 @@ export const fetchDirectDetail = createAsyncThunk('direct/fetchDirectDetail', as
 		const response = await withRetry(() => mezon.client.listChannelDetail(mezon.session, directId), {
 			maxRetries: 3,
 			initialDelay: 1000,
-			scope: 'dm-detail',
-			mezon
+			scope: 'dm-detail'
 		});
 
 		return mapDmGroupToEntity(response);

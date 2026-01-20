@@ -109,8 +109,7 @@ const fetchCanvasListCached = async (
 	const response = await withRetry(() => mezon.client.getChannelCanvasList(mezon.session, channel_id, clan_id, limit || LIMIT, page), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'channel-canvas-list',
-		mezon
+		scope: 'channel-canvas-list'
 	});
 
 	markApiFirstCalled(apiKey);
@@ -143,8 +142,7 @@ const fetchCanvasDetailCached = async (
 	const response = await withRetry(() => mezon.client.getChannelCanvasDetail(mezon.session, id, clan_id, channel_id), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'channel-canvas-detail',
-		mezon
+		scope: 'channel-canvas-detail'
 	});
 
 	markApiFirstCalled(apiKey);

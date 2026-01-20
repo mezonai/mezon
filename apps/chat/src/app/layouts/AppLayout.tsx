@@ -1,6 +1,6 @@
 import { ToastController } from '@mezon/components';
 import { useCustomNavigate, useMezonNavigateEvent } from '@mezon/core';
-import { selectAllAccount, selectIsLogin } from '@mezon/store';
+import { fcmActions, selectAllAccount, selectAllSession, selectIsLogin, useAppDispatch } from '@mezon/store';
 import { Icons, MezonUiProvider } from '@mezon/ui';
 import {
 	CLOSE_APP,
@@ -15,10 +15,10 @@ import {
 	notificationService
 } from '@mezon/utils';
 import isElectron from 'is-electron';
-import React, { useEffect } from 'react';
+import { Session } from 'mezon-js';
+import React, { useCallback, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Outlet, useLoaderData, useLocation } from 'react-router-dom';
-import { useNotificationDisconnect } from '../hooks/useNotificationManagement';
 import type { IAppLoaderData } from '../loaders/appLoader';
 import { MacOSWindowControls } from './MacWindowsControl';
 
@@ -86,7 +86,9 @@ const TitleBar: React.FC<TitleBarProps> = ({ eventName }) => {
 };
 
 const AppLayout = () => {
-	const isLogin = useSelector(selectIsLogin) ?? false;
+	const dispatch = useAppDispatch();
+	const isLogin = useSelector(selectIsLogin);
+	const sessions = useSelector(selectAllSession);
 	const account = useSelector(selectAllAccount);
 	const currentUserId = account?.user?.id;
 	const userStatus = account?.user?.status;
@@ -100,7 +102,47 @@ const AppLayout = () => {
 		}
 	}, [currentUserId, userStatus]);
 
-	useNotificationDisconnect(isLogin);
+	const handleConnectNoti = useCallback(async () => {
+		if (sessions) {
+			const tasks = Object.keys(sessions).map((key) => async () => {
+				const sessionData = sessions[key];
+
+				const session = new Session(
+					sessionData.token,
+					sessionData.refresh_token,
+					sessionData.created,
+					sessionData.api_url,
+					sessionData.id_token || '',
+					!!sessionData.is_remember
+				);
+				const response = await dispatch(
+					fcmActions.registFcmDeviceToken({
+						session: session as Session,
+						tokenId: `${sessionData.user_id}`,
+						deviceId: sessionData.username as string,
+						platform: 'desktop'
+					})
+				);
+				const token = (response?.payload as { token: string })?.token;
+
+				notificationService.connect(token, sessionData.user_id as string);
+			});
+
+			await Promise.all(tasks.map((fn) => fn()));
+		}
+	}, [sessions, dispatch]);
+
+	useEffect(() => {
+		if (!isLogin) {
+			notificationService.isActive && notificationService.disconnectAll();
+			return;
+		}
+		const timerId = setTimeout(() => {
+			handleConnectNoti();
+		}, 3000);
+
+		return () => clearTimeout(timerId);
+	}, [isLogin, sessions, handleConnectNoti]);
 
 	useMezonNavigateEvent();
 

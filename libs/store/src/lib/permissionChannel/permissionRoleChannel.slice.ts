@@ -70,8 +70,7 @@ export const fetchPermissionRoleChannelCached = async (
 	const response = await withRetry(() => ensuredMezon.client.getPermissionByRoleIdChannelId(ensuredMezon.session, roleId, channelId, userId), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'channel-permissions',
-		mezon: ensuredMezon
+		scope: 'channel-permissions'
 	});
 
 	markApiFirstCalled(apiKey);
