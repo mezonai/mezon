@@ -6,7 +6,7 @@ import {
 	selectAudioBusyTone,
 	selectAudioDialTone,
 	selectAudioRingTone,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectFriendById,
 	selectIsInCall,
 	selectSession,
@@ -85,7 +85,7 @@ const iconMap: { [key: string]: { icon: JSX.Element; text: string; colorClass: s
 
 export default function CallLogMessage({ userId, username, messageId, channelId, senderId, callLog, contentMsg }: CallLogMessageProps) {
 	const dispatch = useAppDispatch();
-	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, channelId ?? ''));
 	const sessionUser = useSelector(selectSession);
 	const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 	const { sendMessage } = useChatSending({ channelOrDirect: currentDmGroup, mode });

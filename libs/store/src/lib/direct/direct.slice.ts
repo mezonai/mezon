@@ -437,7 +437,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		}
 
 		const state = thunkAPI.getState() as RootState;
-		const existingEntity = selectAllDirectMessages(state).find((entity) => entity.id === channel_desc.channel_id);
+		const existingEntity = selectDmGroupById(state, channel_desc.channel_id || '');
 
 		const directEntity: DirectEntity = {
 			...channel_desc,
@@ -943,7 +943,10 @@ export const selectUserIdCurrentDm = createSelector(selectAllDirectMessages, sel
 
 export const selectIsLoadDMData = createSelector(getDirectState, (state) => state.loadingStatus !== 'not loaded');
 
-export const selectDmGroupCurrent = (dmId: string) => createSelector(selectDirectMessageEntities, (channelEntities) => channelEntities[dmId]);
+export const selectDmGroupById = createSelector(
+	[selectDirectMessageEntities, (state, dmId: string) => dmId],
+	(channelEntities, dmId) => channelEntities[dmId]
+);
 
 // Fine-grained selectors for DM/group properties
 export const selectDmTypeById = createSelector(

@@ -1,5 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { EStateFriend, selectDmGroupCurrent, selectFriendById } from '@mezon/store-mobile';
+import { EStateFriend, selectDmGroupById, selectFriendById } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
@@ -12,7 +12,7 @@ import { style } from './styles';
 export const DirectMessageDetailTablet = ({ directMessageId }: { directMessageId?: string }) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, directMessageId ?? ''));
 	const infoFriend = useSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''));
 
 	const isBlocked = useMemo(() => {
