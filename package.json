@@ -45,7 +45,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@floating-ui/react": "^0.27.16",
     "@hookform/resolvers": "^3.3.4",
-    "@livekit/components-react": "^2.9.17",
+    "@livekit/components-react": "^2.9.19",
     "@livekit/components-styles": "^1.2.0",
     "@livekit/track-processors": "^0.4.0",
     "@loadable/component": "^5.16.3",
