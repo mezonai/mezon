@@ -228,9 +228,9 @@ const MessageItem = React.memo(
 		const isSendTokenLog = useMemo(() => message?.code === TypeMessage.SendToken, [message?.code]);
 
 		const contactData = useMemo((): IContactData | null => {
-			if (message?.code !== TypeMessage.ShareContact) return null
 			const embed = message?.content?.embed?.[0];
-
+			if (message?.code !== TypeMessage.ShareContact && embed?.fields?.[0]?.value !== 'share_contact') return null
+			
 			return {
 				user_id: embed?.fields?.[1]?.value || '',
 				username: embed?.fields?.[2]?.value || '',
