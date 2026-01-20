@@ -58,7 +58,7 @@ export const fetchUserChannelsCached = async (
 				limit
 			}
 		},
-		() => ensuredMezon.client.listChannelUsersUC(ensuredMezon.session, channelId, limit),
+		(session) => ensuredMezon.client.listChannelUsersUC(session, channelId, limit),
 		'channel_users_uc_list'
 	);
 

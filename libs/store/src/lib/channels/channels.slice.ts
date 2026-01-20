@@ -209,7 +209,7 @@ export const fetchChannelsCached = async (
 				clan_id: clanId || '0'
 			}
 		},
-		() => ensuredMezon.client.listChannelDescs(ensuredMezon.session, limit, state, '0', clanId, channelType),
+		(session) => ensuredMezon.client.listChannelDescs(session, limit, state, '0', clanId, channelType),
 		'channel_desc_list'
 	);
 
@@ -246,7 +246,7 @@ export const fetchListFavoriteChannelCached = async (getState: () => RootState, 
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.getListFavoriteChannel(ensuredMezon.session, clanId),
+		(session) => ensuredMezon.client.getListFavoriteChannel(session, clanId),
 		'favorite_channel_list'
 	);
 
@@ -282,7 +282,7 @@ export const fetchAppChannelCached = async (getState: () => RootState, ensuredMe
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listChannelApps(ensuredMezon.session, clanId),
+		(session) => ensuredMezon.client.listChannelApps(session, clanId),
 		'channel_apps_list'
 	);
 

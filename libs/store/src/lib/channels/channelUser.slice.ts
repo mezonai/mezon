@@ -62,10 +62,11 @@ export const fetchListChannelsByUserCached = async (getState: () => RootState, e
 		};
 	}
 
-	const response = await withRetry(() => ensuredMezon.client.listChannelByUserId(ensuredMezon.session), {
+	const response = await withRetry((session) => ensuredMezon.client.listChannelByUserId(session), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'user-channels'
+		scope: 'user-channels',
+		mezon: ensuredMezon
 	});
 
 	markApiFirstCalled(apiKey);

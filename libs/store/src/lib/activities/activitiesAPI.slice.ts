@@ -70,7 +70,7 @@ export const fetchActivitiesCached = async (getState: () => any, mezon: MezonVal
 		{
 			api_name: 'ListActivity'
 		},
-		() => mezon.client.listActivity(mezon.session),
+		(session) => mezon.client.listActivity(session),
 		'user_activity_list'
 	);
 

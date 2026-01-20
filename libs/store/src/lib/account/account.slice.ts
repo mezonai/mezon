@@ -53,10 +53,11 @@ export const fetchUserProfileCached = async (getState: () => RootState, mezon: M
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.getAccount(mezon.session), {
+	const response = await withRetry((session) => mezon.client.getAccount(session), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'account'
+		scope: 'account',
+		mezon
 	});
 
 	markApiFirstCalled(apiKey);
