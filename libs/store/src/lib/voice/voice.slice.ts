@@ -130,7 +130,7 @@ export const fetchVoiceChannelMembersCached = async (
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listChannelVoiceUsers(ensuredMezon.session, clanId, channelId, channelType, 1, 100, ''),
+		() => ensuredMezon.client.listChannelVoiceUsers(ensuredMezon.session, clanId || '0', channelId || '0', channelType, 1, 100, ''),
 		'voice_user_list'
 	);
 

@@ -159,15 +159,15 @@ export const fetchCreateEventManagement = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				clan_id,
-				channel_voice_id: channel_voice_id || '',
+				clan_id: clan_id || '0',
+				channel_voice_id: channel_voice_id || '0',
 				address: address || '',
 				title,
 				start_time_seconds: start_time_seconds ? start_time_seconds / 1000 : undefined,
 				end_time_seconds: end_time_seconds ? end_time_seconds / 1000 : undefined,
 				description: description || '',
 				logo: logo || '',
-				channel_id,
+				channel_id: channel_id || '0',
 				repeat_type: repeat_type || ERepeatType.DOES_NOT_REPEAT,
 				is_private
 			};

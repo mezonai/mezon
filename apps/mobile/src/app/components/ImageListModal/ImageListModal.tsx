@@ -6,7 +6,7 @@ import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Dimensions, Text, useWindowDimensions, View } from 'react-native';
+import { DeviceEventEmitter, Dimensions, Text, View, useWindowDimensions } from 'react-native';
 import type { GalleryRef, RenderItemInfo } from 'react-native-awesome-gallery';
 import GalleryAwesome from 'react-native-awesome-gallery';
 import Toast from 'react-native-toast-message';
