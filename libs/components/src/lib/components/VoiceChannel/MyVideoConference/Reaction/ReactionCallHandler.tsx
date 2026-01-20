@@ -225,7 +225,9 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 									{item.avatar ? (
 										<img src={item.avatar} className="w-8 h-8 rounded-full" />
 									) : (
-										<div className="w-10 h-10 rounded-full">{item.name.charAt(0)}</div>
+										<div className="w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs font-semibold">
+											{item.name.charAt(0).toUpperCase()}
+										</div>
 									)}
 									<div className="text-sm text-black flex-1 truncate font-semibold">{item.name}</div>
 									<svg xmlns="http://www.w3.org/2000/svg" viewBox="-5.0 -10.0 110.0 135.0" className="h-8" fill="#efbc39">
