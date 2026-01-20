@@ -18,6 +18,7 @@ export type MezonValueContext = MezonContextValue & {
 	zkClient: ZkClient | null;
 	mmnClient: MmnClient | null;
 	indexerClient: IndexerClient | null;
+	getLatestSession: () => Session | null;
 };
 
 export async function ensureSession(mezon: MezonContextValue): Promise<MezonValueContext> {
@@ -65,7 +66,8 @@ export function ensureClient(mezon: MezonContextValue): MezonValueContext {
 		session: mezon.sessionRef.current,
 		zkClient: mezon.zkRef.current,
 		mmnClient: mezon.mmnRef?.current || null,
-		indexerClient: mezon.indexerRef?.current || null
+		indexerClient: mezon.indexerRef?.current || null,
+		getLatestSession: () => mezon.sessionRef.current
 	} as MezonValueContext;
 }
 
@@ -104,6 +106,7 @@ export interface RetryConfig {
 	onRetry?: (error: RetryableError, attemptNumber: number, nextDelay: number) => void;
 	signal?: AbortSignal;
 	scope?: string;
+	mezon?: MezonValueContext;
 }
 
 let sharedConnectionCheckPromise: Promise<boolean> | null = null;
@@ -166,7 +169,7 @@ async function checkInternetConnectionCached(): Promise<boolean> {
 	return sharedConnectionCheckPromise;
 }
 
-type RequiredRetryConfig = Required<Omit<RetryConfig, 'signal' | 'scope'>>;
+type RequiredRetryConfig = Required<Omit<RetryConfig, 'signal' | 'scope' | 'mezon'>>;
 
 const DEFAULT_RETRY_CONFIG: RequiredRetryConfig = {
 	maxRetries: 3,
@@ -209,7 +212,7 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
 	]);
 }
 
-export async function withRetry<T>(fn: () => Promise<T>, config: RetryConfig = {}): Promise<T> {
+export async function withRetry<T>(fn: (() => Promise<T>) | ((session: Session) => Promise<T>), config: RetryConfig = {}): Promise<T> {
 	const mergedConfig: RequiredRetryConfig = { ...DEFAULT_RETRY_CONFIG, ...config };
 	let lastError: RetryableError | undefined;
 
@@ -220,6 +223,17 @@ export async function withRetry<T>(fn: () => Promise<T>, config: RetryConfig = {
 		throw new Error('Request cancelled');
 	}
 
+	const executeCall = (): Promise<T> => {
+		if (config.mezon) {
+			const latestSession = config.mezon.getLatestSession();
+			if (!latestSession) {
+				throw new Error('No session available');
+			}
+			return (fn as (session: Session) => Promise<T>)(latestSession);
+		}
+		return (fn as () => Promise<T>)();
+	};
+
 	try {
 		for (let attempt = 0; attempt <= mergedConfig.maxRetries; attempt++) {
 			if (signal?.aborted) {
@@ -227,7 +241,7 @@ export async function withRetry<T>(fn: () => Promise<T>, config: RetryConfig = {
 			}
 
 			try {
-				const result = await withTimeout(fn(), mergedConfig.timeout);
+				const result = await withTimeout(executeCall(), mergedConfig.timeout);
 
 				if (config.scope && scopeController) {
 					activeScopeControllers.delete(config.scope);
