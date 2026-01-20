@@ -969,7 +969,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			}
 
 			const combinedContent = currentValue + contentToCheck;
-			const combinedContentSize = (contentToCheck?.length && JSON.stringify(combinedContent)?.length) || 0;
+			const combinedContentSize = contentToCheck?.length && JSON.stringify(combinedContent)?.length || 0;
 
 			if (handleConvertToFile && combinedContentSize > MIN_THRESHOLD_CHARS) {
 				event.preventDefault();
