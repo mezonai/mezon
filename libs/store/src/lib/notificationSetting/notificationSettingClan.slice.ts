@@ -62,7 +62,7 @@ export const fetchDefaultNotificationClanCached = async (getState: () => RootSta
 				clan_id: clanId
 			}
 		},
-		() => mezon.client.getNotificationClan(mezon.session, clanId),
+		(session) => mezon.client.getNotificationClan(session, clanId),
 		'notification_setting'
 	);
 

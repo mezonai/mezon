@@ -27,12 +27,15 @@ export const registFcmDeviceToken = createAsyncThunk(
 	async ({ session, tokenId, deviceId, platform, voipToken }: FcmDeviceTokenPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await withRetry(() => mezon.client.registFCMDeviceToken(session, tokenId, deviceId, platform || '', voipToken || ''), {
-				maxRetries: 3,
-				initialDelay: 1000,
-				scope: 'regist-fcm',
-				mezon
-			});
+			const response = await withRetry(
+				(latestSession) => mezon.client.registFCMDeviceToken(latestSession, tokenId, deviceId, platform || '', voipToken || ''),
+				{
+					maxRetries: 3,
+					initialDelay: 1000,
+					scope: 'regist-fcm',
+					mezon
+				}
+			);
 			if (!response) {
 				return thunkAPI.rejectWithValue(null);
 			}

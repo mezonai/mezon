@@ -101,7 +101,7 @@ export const fetchThreadsCached = async (
 			time: channelData.cache?.lastFetched || Date.now()
 		};
 	}
-	const response = await withRetry(() => mezon.client.listThreadDescs(mezon.session, channelId, LIMIT, 0, clanId, threadId, page), {
+	const response = await withRetry((session) => mezon.client.listThreadDescs(session, channelId, LIMIT, 0, clanId, threadId, page), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'channel-threads',

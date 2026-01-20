@@ -521,8 +521,8 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 							attachmentRes?.filetype?.includes(EMimeTypes.mov)
 					}))
 					.sort((a, b) => {
-						if (a.create_time && b.create_time) {
-							return Date.parse(b.create_time) - Date.parse(a.create_time);
+						if (a.create_time_seconds && b.create_time_seconds) {
+							return b.create_time_seconds - a.create_time_seconds;
 						}
 						return 0;
 					});

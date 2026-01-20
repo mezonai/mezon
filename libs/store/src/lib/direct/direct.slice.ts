@@ -58,7 +58,7 @@ export const mapDmGroupToEntity = (channelRes: ApiChannelDescription, existingEn
 export const fetchDirectDetail = createAsyncThunk('direct/fetchDirectDetail', async ({ directId }: { directId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await withRetry(() => mezon.client.listChannelDetail(mezon.session, directId), {
+		const response = await withRetry((session) => mezon.client.listChannelDetail(session, directId), {
 			maxRetries: 3,
 			initialDelay: 1000,
 			scope: 'dm-detail',

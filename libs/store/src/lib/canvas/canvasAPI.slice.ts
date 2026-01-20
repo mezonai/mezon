@@ -106,7 +106,7 @@ const fetchCanvasListCached = async (
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.getChannelCanvasList(mezon.session, channel_id, clan_id, limit || LIMIT, page), {
+	const response = await withRetry((session) => mezon.client.getChannelCanvasList(session, channel_id, clan_id, limit || LIMIT, page), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'channel-canvas-list',
@@ -140,7 +140,7 @@ const fetchCanvasDetailCached = async (
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.getChannelCanvasDetail(mezon.session, id, clan_id, channel_id), {
+	const response = await withRetry((session) => mezon.client.getChannelCanvasDetail(session, id, clan_id, channel_id), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'channel-canvas-detail',

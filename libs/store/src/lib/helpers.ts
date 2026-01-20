@@ -315,7 +315,7 @@ export interface SocketDataRequest {
 export async function fetchDataWithSocketFallback<T>(
 	mezon: MezonValueContext,
 	socketRequest: SocketDataRequest,
-	restApiFallback: () => Promise<T>,
+	restApiFallback: (session: Session) => Promise<T>,
 	responseKey?: string,
 	retryConfig?: RetryConfig
 ): Promise<T> {
@@ -357,7 +357,7 @@ export async function fetchDataWithSocketFallback<T>(
 	}
 
 	if (!response) {
-		response = await withRetry(restApiFallback, { ...retryConfig, scope: socketRequest.api_name });
+		response = await withRetry(restApiFallback, { ...retryConfig, scope: socketRequest.api_name, mezon });
 	}
 	return response;
 }

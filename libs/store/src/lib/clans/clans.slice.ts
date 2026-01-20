@@ -159,7 +159,7 @@ export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('cl
 					clan_id: clanId
 				}
 			},
-			() => (mezon.client as any).listClanBadgeCount?.(mezon.session, clanId),
+			(session) => (mezon.client as any).listClanBadgeCount?.(session, clanId),
 			'clanBadgeCount'
 		);
 
@@ -208,7 +208,7 @@ export const fetchClansCached = async (
 				state: 1
 			}
 		},
-		() => ensuredMezon.client.listClanDescs(ensuredMezon.session, limit, state, cursor || ''),
+		(session) => ensuredMezon.client.listClanDescs(session, limit, state, cursor || ''),
 		'clan_desc_list'
 	);
 
@@ -577,7 +577,7 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 								clan_id: clanId
 							}
 						},
-						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),
+						(session) => mezon.client.listClanUnreadMsgIndicator?.(session, clanId),
 						'unread_msg_indicator'
 					);
 

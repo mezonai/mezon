@@ -53,7 +53,7 @@ export const fetchEmojiRecentCached = async (getState: () => RootState, ensuredM
 			fromCache: true
 		};
 	}
-	const response = await withRetry(() => ensuredMezon.client.emojiRecentList(ensuredMezon.session), {
+	const response = await withRetry((session) => ensuredMezon.client.emojiRecentList(session), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'emoji-recent',

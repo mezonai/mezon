@@ -73,7 +73,7 @@ const fetchPermissionsUserCached = async (
 				clan_id: clanId
 			}
 		},
-		() => mezon.client.GetRoleOfUserInTheClan(mezon.session, clanId),
+		(session) => mezon.client.GetRoleOfUserInTheClan(session, clanId),
 		'role_list'
 	);
 
@@ -118,7 +118,7 @@ export const fetchPermissionCached = async (getState: () => RootState, mezon: Me
 		{
 			api_name: 'GetListPermission'
 		},
-		() => mezon.client.getListPermission(mezon.session),
+		(session) => mezon.client.getListPermission(session),
 		'permission_list'
 	);
 

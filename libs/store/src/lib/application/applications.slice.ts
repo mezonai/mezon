@@ -74,7 +74,7 @@ export const fetchApplicationsCached = async (getState: () => RootState, mezon: 
 		};
 	}
 
-	const response = await withRetry(() => mezon.client.listApps(mezon.session), {
+	const response = await withRetry((session) => mezon.client.listApps(session), {
 		maxRetries: 3,
 		initialDelay: 1000,
 		scope: 'apps-list',
@@ -104,7 +104,7 @@ export const fetchApplications = createAsyncThunk('adminApplication/fetchApplica
 export const getApplicationDetail = createAsyncThunk('adminApplication/getApplicationDetail', async ({ appId }: { appId: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await withRetry(() => mezon.client.getApp(mezon.session, appId), {
+		const response = await withRetry((session) => mezon.client.getApp(session, appId), {
 			maxRetries: 3,
 			initialDelay: 1000,
 			scope: 'app-detail',
@@ -176,7 +176,7 @@ export const fetchMezonOauthClient = createAsyncThunk(
 	async ({ appId, appName }: { appId: string; appName?: string }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await withRetry(() => mezon.client.getMezonOauthClient(mezon.session, appId, appName), {
+			const response = await withRetry((session) => mezon.client.getMezonOauthClient(session, appId, appName), {
 				maxRetries: 3,
 				initialDelay: 1000,
 				scope: '0auth-client',
