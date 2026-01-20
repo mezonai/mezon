@@ -38,7 +38,6 @@ import {
 	listChannelsByUserActions,
 	listUsersByUserActions,
 	mapMessageChannelToEntityAction,
-	mapNotificationToEntity,
 	mapReactionToEntity,
 	messagesActions,
 	notificationActions,
@@ -349,7 +348,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onchannelmessage = useCallback(
 		async (message: ChannelMessage) => {
-			console.log('message: ', message);
 			const store = getStore();
 			const isMobile = false;
 			const currentDirectId = selectDmGroupCurrentId(store.getState());
@@ -648,7 +646,10 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				!isFocus
 			) {
 				dispatch(
-					notificationActions.add({ data: mapNotificationToEntity(notification), category: notification.category as NotificationCategory })
+					notificationActions.add({
+						data: { ...notification, id: notification?.id || '' },
+						category: notification.category as NotificationCategory
+					})
 				);
 
 				if (notification.code === NotificationCode.USER_MENTIONED || notification.code === NotificationCode.USER_REPLIED) {
@@ -721,7 +722,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					channelId: pin.channel_id,
 					pinMessage: {
 						id: pin.message_id,
-						attachment: pin.message_attachment,
+						attachment: new TextEncoder().encode(pin.message_attachment),
 						avatar: pin.message_sender_avatar,
 						channel_id: pin.channel_id,
 						content: pin.message_content,
@@ -1610,7 +1611,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const request: ApiUpdateCategoryDescRequest = {
 				category_id: categoryEvent.id || '',
 				category_name: categoryEvent.category_name,
-				ClanId: categoryEvent.clan_id
+				clan_id: categoryEvent.clan_id
 			};
 			dispatch(
 				categoriesActions.updateOne({
