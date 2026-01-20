@@ -58,7 +58,7 @@ const ChannelVoiceInner = () => {
 	const containerRef = useRef<HTMLDivElement | null>(null);
 	const { userProfile } = useAuth();
 
-	const room = useMemo(() => new Room(), []);
+	const room = useMemo(() => new Room({ dynacast: true, adaptiveStream: true }), []);
 
 	const connectOptions = useMemo(
 		(): RoomConnectOptions => ({
