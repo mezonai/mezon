@@ -362,7 +362,7 @@ const WebhookItemChannelDropdown = ({
 		<Menu
 			trigger="click"
 			menu={menu}
-			className={`bg-option-theme-important  border-none ml-[3px] py-[6px] px-[8px] max-h-[200px] overflow-y-scroll w-[200px] thread-scroll z-20`}
+			className={`bg-option-theme-important  border-none ml-[3px] py-[6px] px-[8px] max-h-[200px] overflow-y-scroll w-[200px] thread-scroll`}
 		>
 			<div className="w-full h-[50px] rounded-md bg-theme-setting-primary flex flex-row px-3 justify-between items-center">
 				<p className="truncate max-w-[90%]">{dropdownValue}</p>

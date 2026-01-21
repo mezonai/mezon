@@ -96,7 +96,7 @@
     "react-pdf": "^9.2.1",
     "react-qr-code": "^2.0.15",
     "react-redux": "9.1.0",
-    "react-router-dom": "^7.6.1",
+    "react-router-dom": "^7.12.0",
     "react-select": "^5.8.0",
     "react-simple-code-editor": "^0.14.1",
     "react-syntax-highlighter": "^15.5.0",
@@ -184,7 +184,7 @@
     "jest-environment-node": "^29.4.1",
     "jest-react-native": "18.0.0",
     "lint-staged": "^15.2.9",
-    "node-polyfill-webpack-plugin": "^3.0.0",
+    "node-polyfill-webpack-plugin": "^4.1.0",
     "npm": "^10.5.0",
     "nx": "^21.1.2",
     "postcss": "8.4.33",
@@ -219,7 +219,10 @@
     "undici": "^6.21.2",
     "koa": "^2.16.1",
     "esbuild": "^0.25.0",
-    "brace-expansion": "^2.0.2"
+    "brace-expansion": "^2.0.2",
+    "tar": "^7.5.6",
+    "qs": "^6.14.1",
+    "glob": "^10.5.0"
   },
   "optionalDependencies": {
     "@nx/nx-darwin-arm64": "18.2.2",
