@@ -1063,7 +1063,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 
 			if (channel_desc.type === ChannelType.CHANNEL_TYPE_GROUP || channel_desc.type === ChannelType.CHANNEL_TYPE_DM) {
-				const state = getStore();
+				const state = getStore().getState();
 				const existingEntity = selectDmGroupById(state, channel_desc.channel_id || '0');
 				if (existingEntity && existingEntity.id) {
 					dispatch(

@@ -104,7 +104,7 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 	const currentClanName = useSelector(selectCurrentClanName);
 	const avatarClan = currentClanName?.charAt(0).toUpperCase();
 	const userCreate = useAppSelector((state) => selectMemberClanByUserId(state, event?.creator_id || ''));
-	const time = useMemo(() => timeFomat(event?.start_time_seconds || 0), [event?.start_time_seconds]);
+	const time = useMemo(() => timeFomat((event?.start_time_seconds || 0) * 1000), [event?.start_time_seconds]);
 
 	const { toChannelPage, navigate } = useAppNavigation();
 
