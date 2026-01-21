@@ -78,7 +78,7 @@
     "mezon-active-windows": "0.1.38",
     "mezon-js": "2.14.48",
     "mezon-js-protobuf": "1.8.91",
-    "mmn-client-js": "1.0.14",
+    "mmn-client-js": "1.0.16",
     "nx-electron": "^20.0.2",
     "quill": "^2.0.3",
     "rc-dropdown": "^4.2.1",
