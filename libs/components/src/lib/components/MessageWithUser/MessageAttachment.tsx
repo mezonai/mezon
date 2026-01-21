@@ -62,7 +62,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 			const resultAttach: ApiMessageAttachment & { create_time?: string } = {
 				...attachment,
 				sender_id: message.sender_id,
-				create_time: (attachment as any).create_time_seconds || message.create_time_seconds
+				create_time: (attachment.create_time_seconds ?? 0) * 1000 || (((message.create_time_seconds ?? 0) * 1000) as any)
 			};
 			images.push(resultAttach);
 			return;
@@ -90,7 +90,11 @@ const Attachments: React.FC<{
 }> = memo(
 	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }) => {
 		const classified = useMemo(() => classifyAttachments(attachments, message), [attachments, message]);
+
+		console.log(classified, 'classified');
+
 		const { videos, images, documents, audio } = classified;
+
 		const { isMobile } = useAppLayout();
 		return (
 			<>
@@ -190,7 +194,10 @@ const ImageAlbum = memo(
 				const attachmentData = attachmentId
 					? images.find((item) => generateAttachmentId(item, message.id) === attachmentId)
 					: images.find((item) => item.url === url);
+
 				if (!attachmentData) return;
+
+				console.log(attachmentData, 'attachmentData');
 
 				const enhancedAttachmentData = {
 					...attachmentData,
