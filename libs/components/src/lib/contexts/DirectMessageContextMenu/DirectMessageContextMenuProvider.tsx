@@ -66,8 +66,8 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const { openProfileItem } = useModals({
 		currentUser
 	});
-	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentUser?.channel_id || '')(state));
-	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentUser?.channel_id || '')(state));
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentUser?.channel_id || '0')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentUser?.channel_id || '0')(state));
 
 	const editGroupModal = useEditGroupModal({
 		channelId: currentUser?.channelId || currentUser?.channel_id,

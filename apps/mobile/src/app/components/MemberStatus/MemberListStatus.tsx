@@ -127,7 +127,7 @@ export const MemberListStatus = memo(({ currentChannel, currentUserId }: IMember
 	const navigateToNewGroupScreen = () => {
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 			screen: APP_SCREEN.MESSAGES.NEW_GROUP,
-			params: { directMessageId: currentChannel?.id || currentChannel?.channel_id || '', fromUser: true }
+			params: { directMessageId: currentChannel?.id || currentChannel?.channel_id || '0', fromUser: true }
 		});
 	};
 

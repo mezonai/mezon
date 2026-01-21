@@ -512,5 +512,6 @@
 	},
 	"shareContact": "Danh thiếp",
 	"shareContactTitle": "Chia sẻ danh thiếp",
-	"sendMessage": "Nhắn tin"
+	"sendMessage": "Nhắn tin",
+	"noPermissionToCallBlocked": "Bạn không thể thực hiện hành động này."
 }

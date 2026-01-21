@@ -49,7 +49,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	const channelId = message?.channel_id;
 	const clanId = message?.clan_id;
 
-	const topicId = notify?.topic_id || '';
+	const topicId = notify?.topic_id || '0';
 
 	const isTopic = !!topicId;
 
@@ -115,7 +115,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 	const { t } = useTranslation('channelTopbar');
 	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.sender_id || '');
 
-	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channel_id || '')) || {};
+	const currentChannel = useAppSelector((state) => selectChannelById(state, message.channel_id || '0')) || {};
 	const parentChannel = useAppSelector((state) => selectChannelById(state, currentChannel.parent_id || '')) || {};
 
 	const clan = useAppSelector(selectClanById(message.clan_id as string));

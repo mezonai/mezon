@@ -73,7 +73,7 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 
 			dispatch(
 				messagesActions.jumpToMessage({
-					clanId: topic.clan_id || '',
+					clanId: topic.clan_id || '0',
 					messageId: topic.message_id,
 					channelId: topic.channel_id,
 					navigate

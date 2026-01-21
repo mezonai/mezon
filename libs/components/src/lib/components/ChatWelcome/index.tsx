@@ -48,8 +48,8 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const currentChannelLabel = useSelector(selectCurrentChannelLabel);
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
-	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(directChannel?.channel_id || '')(state));
-	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(directChannel?.channel_id || '')(state));
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(directChannel?.channel_id || '0')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(directChannel?.channel_id || '0')(state));
 	const editGroupModal = useEditGroupModal({
 		channelId: directChannel?.channel_id,
 		currentGroupName: name || directChannel?.channel_label || 'Group',

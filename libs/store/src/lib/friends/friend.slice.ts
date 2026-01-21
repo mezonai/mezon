@@ -383,3 +383,4 @@ export const selectBlockedUsersForMessage = createSelector([selectAllFriends], (
 );
 export const selectFriendById = createSelector([getFriendsState, (state, userId: string) => userId], (state, userId) => selectById(state, userId));
 export const selectCurrentTabStatus = createSelector(getFriendsState, (state) => state.currentTabStatus);
+export const selectLoadingStatusFriend = createSelector(getFriendsState, (state) => state.loadingStatus);

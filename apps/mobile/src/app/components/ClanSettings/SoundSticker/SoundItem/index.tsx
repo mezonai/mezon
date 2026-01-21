@@ -58,7 +58,7 @@ const SoundItemComponent = forwardRef(({ item, onSwipeOpen, isPlaying = false, o
 			await dispatch(
 				soundEffectActions.deleteSound({
 					soundId: item?.id || '',
-					clan_id: item?.clan_id || '',
+					clan_id: item?.clan_id || '0',
 					soundLabel: item?.shortname || ''
 				})
 			);

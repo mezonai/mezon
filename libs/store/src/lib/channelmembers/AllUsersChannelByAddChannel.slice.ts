@@ -20,7 +20,7 @@ export interface UsersByAddChannelState extends EntityState<IUserChannel, string
 }
 
 export const UserChannelAdapter = createEntityAdapter({
-	selectId: (userChannel: IUserChannel) => userChannel.channel_id || ''
+	selectId: (userChannel: IUserChannel) => userChannel.channel_id || '0'
 });
 
 export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapter.getInitialState({

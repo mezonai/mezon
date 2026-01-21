@@ -26,7 +26,7 @@ export const RoleItem = memo(
 
 		const deleteRole = async () => {
 			const body = {
-				channelId: channel?.channel_id || '',
+				channelId: channel?.channel_id || '0',
 				clanId: currentClanId || '',
 				roleId: role?.id || '',
 				channelType: channel?.type

@@ -115,7 +115,7 @@ export const ProfileDetail = memo(() => {
 		if (response?.channel_id) {
 			await checkNotificationPermissionAndNavigate(() => {
 				if (isTabletLandscape) {
-					dispatch(directActions.setDmGroupCurrentId(response?.channel_id || ''));
+					dispatch(directActions.setDmGroupCurrentId(response?.channel_id || '0'));
 					navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 				} else {
 					navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });

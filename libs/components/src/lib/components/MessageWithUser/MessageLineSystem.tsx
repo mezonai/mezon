@@ -55,7 +55,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 			if (message?.references && message?.references[0]?.message_ref_id) {
 				dispatch(
 					messagesActions.jumpToMessage({
-						clanId: message?.clan_id || '',
+						clanId: message?.clan_id || '0',
 						messageId: message?.references[0]?.message_ref_id,
 						channelId: message?.channel_id
 					})
@@ -125,7 +125,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	};
 
 	const handleShowPinMessage = async () => {
-		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channel_id, clanId: message.clan_id || '' }));
+		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channel_id, clanId: message.clan_id || '0' }));
 		dispatch(pinMessageActions.togglePinModal());
 	};
 
