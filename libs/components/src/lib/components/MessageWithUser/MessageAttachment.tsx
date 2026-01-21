@@ -91,8 +91,6 @@ const Attachments: React.FC<{
 	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }) => {
 		const classified = useMemo(() => classifyAttachments(attachments, message), [attachments, message]);
 
-		console.log(classified, 'classified');
-
 		const { videos, images, documents, audio } = classified;
 
 		const { isMobile } = useAppLayout();
