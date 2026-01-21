@@ -10,10 +10,10 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
-import { convertTimeString, Direction_Mode, generateE2eId } from '@mezon/utils';
+import { convertTimeString, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import type { UnpinMessageObject } from '.';
@@ -48,22 +48,6 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const message = useAppSelector((state) =>
 		selectMessageByMessageId(state, String(pinMessage?.channel_id || ''), String(pinMessage?.message_id || ''))
 	);
-	useEffect(() => {
-		if (!pinMessage?.message_id || !pinMessage?.channel_id) return;
-		if (message) return;
-
-		dispatch(
-			messagesActions.fetchMessages({
-				clanId: currentClanId || '0',
-				channelId: String(pinMessage.channel_id || ''),
-				messageId: String(pinMessage.message_id || ''),
-				direction: Direction_Mode.AROUND_TIMESTAMP,
-				noCache: true,
-				viewingOlder: true
-			})
-		);
-	}, [dispatch, currentClanId, pinMessage?.channel_id, pinMessage?.message_id, message]);
-
 	const pinMessageAttachments = message?.attachments || pinMessage?.attachment;
 	const handleJumpMess = () => {
 		if (pinMessage.message_id && pinMessage.channel_id) {
