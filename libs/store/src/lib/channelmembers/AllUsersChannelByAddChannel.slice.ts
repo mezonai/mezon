@@ -20,7 +20,7 @@ export interface UsersByAddChannelState extends EntityState<IUserChannel, string
 }
 
 export const UserChannelAdapter = createEntityAdapter({
-	selectId: (userChannel: IUserChannel) => userChannel.channel_id || ''
+	selectId: (userChannel: IUserChannel) => userChannel.channel_id || '0'
 });
 
 export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapter.getInitialState({
@@ -58,7 +58,7 @@ export const fetchUserChannelsCached = async (
 				limit
 			}
 		},
-		() => ensuredMezon.client.listChannelUsersUC(ensuredMezon.session, channelId, limit),
+		(session) => ensuredMezon.client.listChannelUsersUC(session, channelId, limit),
 		'channel_users_uc_list'
 	);
 

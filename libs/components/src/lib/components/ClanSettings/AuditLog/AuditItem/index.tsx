@@ -74,7 +74,7 @@ const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
 	const userAuditLogItem = useAppSelector((state) => selectMemberClanByUserId(state, logItem?.user_id ?? ''));
 	const username = userAuditLogItem?.user?.username;
 	const avatar = getAvatarForPrioritize(userAuditLogItem?.clan_avatar, userAuditLogItem?.user?.avatar_url);
-	const channel = useAppSelector((state) => selectChannelById(state, logItem?.channel_id || ''));
+	const channel = useAppSelector((state) => selectChannelById(state, logItem?.channel_id || '0'));
 
 	return (
 		<div className=" p-[10px] flex gap-3 items-center border  rounded-md  mb-4 text-theme-primary border-theme-primary bg-item-theme ">

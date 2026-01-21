@@ -22,8 +22,8 @@ export default function InviteAcceptModal({ inviteId, onClose, showModal }: Invi
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const clanId = selectInvite?.clan_id || '';
-	const channelId = selectInvite?.channel_id || '';
+	const clanId = selectInvite?.clan_id || '0';
+	const channelId = selectInvite?.channel_id || '0';
 
 	const userJoined = selectInvite?.user_joined;
 

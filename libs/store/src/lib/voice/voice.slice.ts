@@ -130,7 +130,7 @@ export const fetchVoiceChannelMembersCached = async (
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listChannelVoiceUsers(ensuredMezon.session, clanId || '0', channelId || '0', channelType, 1, 100, ''),
+		(session) => ensuredMezon.client.listChannelVoiceUsers(session, clanId || '0', channelId || '0', channelType, 1, 100, ''),
 		'voice_user_list'
 	);
 
@@ -457,19 +457,19 @@ export const voiceSlice = createSlice({
 				const members: VoiceEntity[] = users.map((channelRes) => {
 					if (channelRes.user_id && channelRes?.id) {
 						state.listInVoiceStatus[channelRes.user_id] = {
-							channelId: channelRes.channel_id || '',
+							channelId: channelRes.channel_id || '0',
 							clanId
 						};
 					}
 					return {
 						user_id: channelRes.user_id || '',
 						clan_id: clanId,
-						voice_channel_id: channelRes.channel_id || '',
+						voice_channel_id: channelRes.channel_id || '0',
 						clan_name: '',
 						participant: channelRes.participant || '',
 						voice_channel_label: '',
 						last_screenshot: '',
-						id: (channelRes.user_id || '') + (channelRes.channel_id || '')
+						id: (channelRes.user_id || '') + (channelRes.channel_id || '0')
 					};
 				});
 				voiceAdapter.setAll(state, members);

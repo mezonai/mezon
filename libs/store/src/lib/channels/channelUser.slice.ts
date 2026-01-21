@@ -22,7 +22,7 @@ export interface ChannelUsersEntity extends IChannelUser {
 }
 
 export const mapChannelsByUserToEntity = (channelRes: ChannelDescription) => {
-	return { ...channelRes, id: channelRes.channel_id || '', status: channelRes.meeting_code ? 1 : 0 };
+	return { ...channelRes, id: channelRes.channel_id || '0', status: channelRes.meeting_code ? 1 : 0 };
 };
 
 export interface ListChannelsByUserState extends EntityState<ChannelUsersEntity, string> {
@@ -62,10 +62,11 @@ export const fetchListChannelsByUserCached = async (getState: () => RootState, e
 		};
 	}
 
-	const response = await withRetry(() => ensuredMezon.client.listChannelByUserId(ensuredMezon.session), {
+	const response = await withRetry((session) => ensuredMezon.client.listChannelByUserId(session), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'user-channels'
+		scope: 'user-channels',
+		mezon: ensuredMezon
 	});
 
 	markApiFirstCalled(apiKey);

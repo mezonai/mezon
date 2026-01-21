@@ -57,7 +57,7 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 		...channelMess,
 		isFirst: channelMess.code === EMessageCode.FIRST_MESSAGE,
 		creationTime: new Date(createTimeSeconds * 1000),
-		id: channelMess.id || channelMess.message_id || '',
+		id: channelMess.id || channelMess.message_id || '0',
 		date: new Date().toLocaleString(),
 		isAnonymous,
 		user: {
@@ -244,11 +244,12 @@ export const fetchMessagesCached = async (
 	// );
 
 	const response = await withRetry(
-		() => ensuredMezon.client.listChannelMessages(ensuredMezon.session, clanId, channelId, messageId, direction, LIMIT_MESSAGE, topicId),
+		(session) => ensuredMezon.client.listChannelMessages(session, clanId, channelId, messageId, direction, LIMIT_MESSAGE, topicId),
 		{
 			maxRetries: 5,
 			initialDelay: 1000,
-			scope: 'channel-messages'
+			scope: 'channel-messages',
+			mezon: ensuredMezon
 		}
 	);
 
@@ -1400,6 +1401,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.AuditLog:
 				case TypeMessage.SendToken:
 				case TypeMessage.Ephemeral:
+				case TypeMessage.ShareContact:
 				case TypeMessage.Chat: {
 					if (topic_id !== '0' && topic_id) {
 						handleAddOneMessage({

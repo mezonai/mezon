@@ -24,7 +24,7 @@ export default function SearchMessageDm({ navigation, route }: any) {
 	const [filtersSearch, setFiltersSearch] = useState<SearchFilter[]>();
 	const { currentChannel } = route?.params || {};
 	const dispatch = useAppDispatch();
-	const valueInputSearch = useAppSelector((state) => selectValueInputSearchMessage(state, currentChannel?.channel_id || ''));
+	const valueInputSearch = useAppSelector((state) => selectValueInputSearchMessage(state, currentChannel?.channel_id || '0'));
 	const keywordSearch = useRef<string>(valueInputSearch || '');
 	const [optionFilter, setOptionFilter] = useState<IOption>(null);
 	const [userMention, setUserMention] = useState<IUerMention>(null);
@@ -33,8 +33,8 @@ export default function SearchMessageDm({ navigation, route }: any) {
 		async (searchText: string) => {
 			try {
 				const filter = [
-					{ field_name: 'channel_id', field_value: currentChannel?.channel_id || '' },
-					{ field_name: 'clan_id', field_value: currentChannel?.clan_id || '' }
+					{ field_name: 'channel_id', field_value: currentChannel?.channel_id || '0' },
+					{ field_name: 'clan_id', field_value: currentChannel?.clan_id || '0' }
 				];
 
 				if (searchText?.trim()) {
@@ -54,7 +54,7 @@ export default function SearchMessageDm({ navigation, route }: any) {
 					size: SIZE_PAGE_SEARCH
 				};
 				await dispatch(searchMessagesActions.fetchListSearchMessage(payload));
-				dispatch(searchMessagesActions.setCurrentPage({ channelId: currentChannel?.channel_id || '', page: 1 }));
+				dispatch(searchMessagesActions.setCurrentPage({ channelId: currentChannel?.channel_id || '0', page: 1 }));
 			} catch (error) {
 				console.error('Fetch list search message error', error);
 			}
@@ -79,7 +79,7 @@ export default function SearchMessageDm({ navigation, route }: any) {
 
 	const handleSetValueInputSearch = useCallback(
 		(value: string) => {
-			dispatch(searchMessagesActions.setValueInputSearch({ channelId: currentChannel?.channel_id || '', value }));
+			dispatch(searchMessagesActions.setValueInputSearch({ channelId: currentChannel?.channel_id || '0', value }));
 			setActiveTab(null);
 		},
 		[dispatch, currentChannel?.channel_id]

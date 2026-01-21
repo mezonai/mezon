@@ -56,7 +56,7 @@ const SystemMessagesManagement = ({
 		}
 		switch (type) {
 			case ETypeUpdateSystemMessage.HIDE_AUDIT_LOG:
-				setUpdateSystemMessageRequest({ ...updateSystem, hide_audit_log: checked ? '0' : '1' });
+				setUpdateSystemMessageRequest({ ...updateSystem, hide_audit_log: checked ? false : true });
 				break;
 			case ETypeUpdateSystemMessage.SETUP_TIPS:
 				setUpdateSystemMessageRequest({ ...updateSystem, setup_tips: checked ? '1' : '0' });
@@ -143,7 +143,7 @@ const SystemMessagesManagement = ({
 			/>
 			<ToggleItem
 				label={t('systemMessages.auditLog')}
-				value={updateSystem?.hide_audit_log !== '1'}
+				value={updateSystem?.hide_audit_log !== true}
 				handleToggle={(e) => handleToggleSetting(e, ETypeUpdateSystemMessage.HIDE_AUDIT_LOG)}
 			/>
 		</div>

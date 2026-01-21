@@ -1,4 +1,4 @@
-import { audioCallActions, selectDmGroupCurrent, selectIsVideoGroupCall, useAppDispatch } from '@mezon/store';
+import { audioCallActions, selectDmGroupById, selectIsVideoGroupCall, useAppDispatch } from '@mezon/store';
 import { ChannelType } from 'mezon-js';
 import { memo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -13,7 +13,7 @@ type PreCallInterfaceProps = {
 };
 
 const PreCallInterface = memo(({ onJoinCall, onCancel, loading, directId }: PreCallInterfaceProps) => {
-	const currentDmGroup = useSelector(selectDmGroupCurrent(directId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, directId ?? ''));
 	const dispatch = useAppDispatch();
 	const isDmGroup = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP;
 	const isDm = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM;

@@ -38,7 +38,7 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 
 		const baseData = {
 			is_video: false,
-			group_id: currentDmGroup?.channel_id || '',
+			group_id: currentDmGroup?.channel_id || '0',
 			caller_id: userProfile?.user?.id,
 			caller_name: userProfile?.user?.display_name || userProfile?.user?.username || '',
 			timestamp: Date.now()
@@ -72,7 +72,7 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 				currentDmGroup?.user_ids || [],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_QUIT,
 				baseData as CallSignalingData,
-				currentDmGroup?.channel_id || '',
+				currentDmGroup?.channel_id || '0',
 				userProfile?.user?.id || ''
 			);
 			// if (isFromNativeCall) {
@@ -87,7 +87,7 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 				currentDmGroup?.user_ids || [],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_CANCEL,
 				cancelAction as CallSignalingData,
-				currentDmGroup?.channel_id || '',
+				currentDmGroup?.channel_id || '0',
 				userProfile?.user?.id || ''
 			);
 			groupCallActions.hidePreCallInterface();

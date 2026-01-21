@@ -13,7 +13,7 @@ import {
 	selectAllRolesClan,
 	selectAttachmentByChannelId,
 	selectChannelById,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectIsShowCreateTopic,
 	selectMemberClanByUserId,
 	selectMemberIdsByChannelId,
@@ -104,7 +104,7 @@ export const ChatMessageSending = memo(
 		const store = getStore();
 		const attachmentFilteredByChannelId = useAppSelector((state) => selectAttachmentByChannelId(state, currentTopicId || channelId));
 		const currentChannel = useAppSelector((state) => selectChannelById(state, channelId || ''));
-		const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
+		const currentDmGroup = useSelector((state) => selectDmGroupById(state, channelId));
 		const { addMemberToThread, joinningToThread } = useChannelMembers({
 			channelId,
 			mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0
@@ -277,7 +277,7 @@ export const ChatMessageSending = memo(
 				const payloadEphemeral = {
 					receiverId: ephemeralTargetUserId,
 					channelId: currentTopicId || channelId,
-					clanId: currentChannel?.clan_id || '',
+					clanId: currentChannel?.clan_id || '0',
 					mode,
 					isPublic,
 					content: payloadSendMessage,

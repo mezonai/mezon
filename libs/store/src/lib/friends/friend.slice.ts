@@ -106,7 +106,7 @@ export const fetchListFriendsCached = async (
 			api_name: 'ListFriends',
 			list_friend_req: {}
 		},
-		() => ensuredMezon.client.listFriends(ensuredMezon.session),
+		(session) => ensuredMezon.client.listFriends(session),
 		'friend_list'
 	);
 
@@ -383,3 +383,4 @@ export const selectBlockedUsersForMessage = createSelector([selectAllFriends], (
 );
 export const selectFriendById = createSelector([getFriendsState, (state, userId: string) => userId], (state, userId) => selectById(state, userId));
 export const selectCurrentTabStatus = createSelector(getFriendsState, (state) => state.currentTabStatus);
+export const selectLoadingStatusFriend = createSelector(getFriendsState, (state) => state.loadingStatus);

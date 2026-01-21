@@ -1,7 +1,7 @@
 import { useChatSending } from '@mezon/core';
 import { AppStorage, load, STORAGE_USERS_QUICK_REACTION } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectChannelById, selectCurrentUserId, selectDmGroupCurrent, useAppSelector } from '@mezon/store-mobile';
+import { selectChannelById, selectCurrentUserId, selectDmGroupById, useAppSelector } from '@mezon/store-mobile';
 import { getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
@@ -30,7 +30,7 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth
 	const isTabletLandscape = useTabletLandscape();
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
-	const currentDmGroup = useAppSelector(selectDmGroupCurrent(channelId));
+	const currentDmGroup = useAppSelector((state) => selectDmGroupById(state, channelId));
 	const [quickReactionEmoji, setQuickReactionEmoji] = useState<QuickReactionEmoji | null>(null);
 	const [hasCustomPosition, setHasCustomPosition] = useState<boolean>(false);
 

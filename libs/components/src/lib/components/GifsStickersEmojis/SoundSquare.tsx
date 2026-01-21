@@ -78,7 +78,7 @@ function SoundSquare({ mode, onClose, isTopic = false, onSoundSelect }: ChannelM
 		return allSoundsInStore.map((sound) => ({
 			clan_name: sound.clan_name || 'MY SOUNDS',
 			logo: sound.logo || '',
-			clan_id: sound.clan_id || '',
+			clan_id: sound.clan_id || '0',
 			id: sound.id || '',
 			filename: sound.shortname || 'sound.mp3',
 			size: 100000,

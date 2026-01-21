@@ -1,7 +1,7 @@
 import { useAppNavigation, useAuth } from '@mezon/core';
 import {
 	handleParticipantVoiceState,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectIsGroupCallActive,
 	selectNoiseSuppressionEnabled,
 	selectNoiseSuppressionLevel,
@@ -33,7 +33,7 @@ const VoiceInfo = React.memo(() => {
 	const currentVoiceInfo = useSelector(selectVoiceInfo);
 	const isGroupCallActive = useSelector(selectIsGroupCallActive);
 
-	const currentDmGroup = useSelector(selectDmGroupCurrent(currentVoiceInfo?.channelId || ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, currentVoiceInfo?.channelId || ''));
 
 	const groupCallState = useGroupCallState();
 	const groupCallSignaling = useGroupCallSignaling();

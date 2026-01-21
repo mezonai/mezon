@@ -39,7 +39,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const textChannels = useSelector(selectAllTextChannel);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentEvent = useAppSelector((state) => selectEventById(state, currentClanId ?? '', eventId ?? ''));
-	const currentEventChannel = useSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '' : ''));
+	const currentEventChannel = useSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '0' : ''));
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
@@ -176,7 +176,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 			type: eventType,
 			channelId: eventType === OptionEvent.OPTION_SPEAKER ? channelID : '',
 			location: eventType === OptionEvent.OPTION_LOCATION ? location : '',
-			eventChannelId: eventChannel?.channel_id || '',
+			eventChannelId: eventChannel?.channel_id || '0',
 			isPrivate: eventType === OptionEvent.PRIVATE_EVENT,
 			onGoBack,
 			currentEvent: currentEvent || null

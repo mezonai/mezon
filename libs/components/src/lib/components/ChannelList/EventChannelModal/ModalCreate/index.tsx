@@ -37,7 +37,7 @@ enum EventTabIndex {
 }
 
 const ModalCreate = (props: ModalCreateProps) => {
-	const { onClose, onCloseEventModal, eventId, clearEventId } = props;
+	const { onClose, eventId, clearEventId } = props;
 	const { t } = useTranslation('eventCreator');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const voicesChannel = useSelector(selectVoiceChannelAll);
@@ -51,12 +51,13 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const isClanEvent = currentEvent?.channel_id === undefined;
 	const isChannelEvent = Boolean(currentEvent?.channel_id && currentEvent?.channel_id !== '0');
 	const isPrivateEvent = currentEvent?.is_private;
-	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '' : '')) || {};
+	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '0' : '')) || {};
 
 	const createStatus = useSelector(selectCreatingLoaded);
 	const dispatch = useAppDispatch();
 
 	const defaultCreateEventTimes = useMemo(() => getDefaultCreateEventTimes(), []);
+	const toMsFromSeconds = useCallback((seconds?: number) => (typeof seconds === 'number' ? seconds * 1000 : undefined), []);
 
 	const [contentSubmit, setContentSubmit] = useState<ContenSubmitEventProps>({
 		topic: currentEvent ? currentEvent.title || '' : '',
@@ -66,15 +67,15 @@ const ModalCreate = (props: ModalCreateProps) => {
 			: defaultCreateEventTimes.timeStart,
 		timeEnd: currentEvent?.end_time_seconds ? formatTimeStringToHourFormat(currentEvent?.end_time_seconds) : defaultCreateEventTimes.timeEnd,
 		selectedDateStart: currentEvent?.start_time_seconds
-			? getTimeTodayMidNight(currentEvent.start_time_seconds)
+			? getTimeTodayMidNight(toMsFromSeconds(currentEvent.start_time_seconds))
 			: defaultCreateEventTimes.selectedDateStart,
 		selectedDateEnd: currentEvent?.end_time_seconds
-			? getTimeTodayMidNight(currentEvent?.end_time_seconds)
+			? getTimeTodayMidNight(toMsFromSeconds(currentEvent?.end_time_seconds))
 			: defaultCreateEventTimes.selectedDateEnd,
 		voiceChannel: currentEvent ? currentEvent?.channel_voice_id || '' : '',
 		logo: currentEvent ? currentEvent.logo || '' : '',
 		description: currentEvent ? currentEvent.description || '' : '',
-		textChannelId: currentEvent ? currentEvent.channel_id || '' : '',
+		textChannelId: currentEvent ? currentEvent.channel_id || '0' : '',
 		repeatType: currentEvent ? currentEvent.repeat_type || ERepeatType.DOES_NOT_REPEAT : ERepeatType.DOES_NOT_REPEAT,
 		isPrivate: Boolean(currentEvent?.is_private)
 	});
@@ -192,9 +193,11 @@ const ModalCreate = (props: ModalCreateProps) => {
 			textChannelId: contentSubmit.textChannelId,
 			repeatType: contentSubmit.repeatType
 		};
-		const changeTime =
-			currentEvent.start_time_seconds !== contentSubmit.timeStart + contentSubmit.selectedDateStart ||
-			currentEvent?.end_time_seconds !== contentSubmit.timeEnd + contentSubmit.selectedDateEnd;
+		const currentStartMs = toMsFromSeconds(currentEvent.start_time_seconds) ?? 0;
+		const currentEndMs = toMsFromSeconds(currentEvent.end_time_seconds) ?? 0;
+		const submittedStartMs = contentSubmit.timeStart + contentSubmit.selectedDateStart;
+		const submittedEndMs = contentSubmit.timeEnd + contentSubmit.selectedDateEnd;
+		const changeTime = currentStartMs !== submittedStartMs || currentEndMs !== submittedEndMs;
 		return !isEqual(submittedContent, formattedCurrentEvent) || changeTime;
 	}, [
 		currentEvent?.title,
@@ -217,7 +220,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 		contentSubmit?.selectedDateStart,
 		contentSubmit?.selectedDateEnd,
 		contentSubmit?.timeStart,
-		contentSubmit?.timeEnd
+		contentSubmit?.timeEnd,
+		toMsFromSeconds
 	]);
 
 	const handleUpdate = useCallback(async () => {
@@ -227,6 +231,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 			const creatorId = currentEvent?.creator_id;
 			const timeStart = contentSubmit.selectedDateStart + contentSubmit.timeStart;
 			const timeEnd = contentSubmit.selectedDateEnd + contentSubmit.timeEnd;
+			const currentStartMs = toMsFromSeconds(currentEvent?.start_time_seconds) ?? 0;
+			const currentEndMs = toMsFromSeconds(currentEvent?.end_time_seconds) ?? 0;
 
 			const baseEventFields: Partial<Record<string, string | number | boolean>> = {
 				event_id: eventId,
@@ -240,8 +246,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 				channel_voice_id: contentSubmit.voiceChannel === currentEvent.channel_voice_id ? undefined : voiceChannel,
 				address: contentSubmit.address === currentEvent.address ? undefined : address,
 				title: contentSubmit.topic === currentEvent.title ? undefined : contentSubmit.topic,
-				start_time_seconds: timeStart === currentEvent?.start_time_seconds ? undefined : timeStart,
-				end_time_seconds: timeEnd === currentEvent?.end_time_seconds ? undefined : timeEnd,
+				start_time_seconds: timeStart === currentStartMs ? undefined : timeStart,
+				end_time_seconds: timeEnd === currentEndMs ? undefined : timeEnd,
 				repeat_type: contentSubmit.repeatType === currentEvent.repeat_type ? ERepeatType.DOES_NOT_REPEAT : contentSubmit.repeatType
 			};
 
@@ -279,12 +285,19 @@ const ModalCreate = (props: ModalCreateProps) => {
 		} catch (error) {
 			console.error('Error in handleUpdate:', error);
 		}
-	}, [choiceLocation, contentSubmit, currentEvent, eventChannel, eventId, choiceSpeaker, currentClanId, dispatch, onClose, clearEventId]);
-
-	const hanldeCloseModal = () => {
-		onClose();
-		onCloseEventModal();
-	};
+	}, [
+		choiceLocation,
+		contentSubmit,
+		currentEvent,
+		eventChannel,
+		eventId,
+		choiceSpeaker,
+		currentClanId,
+		dispatch,
+		onClose,
+		clearEventId,
+		toMsFromSeconds
+	]);
 
 	useEffect(() => {
 		if (currentModal >= 1) {

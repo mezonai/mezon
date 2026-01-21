@@ -40,10 +40,10 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 				const currentChannelId = selectCurrentChannelId(store.getState());
 				dispatch(
 					messagesActions.jumpToMessage({
-						clanId: message?.clan_id || '',
+						clanId: message?.clan_id || '0',
 						messageId: messageIdRef,
-						channelId: currentChannelId || message?.channel_id || '',
-						topicId: isTopic ? message?.channel_id || '' : undefined
+						channelId: currentChannelId || message?.channel_id || '0',
+						topicId: isTopic ? message?.channel_id || '0' : undefined
 					})
 				);
 			}
@@ -83,11 +83,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 	const avatarProps = getAvatarProps();
 
 	return (
-		<div
-			className="overflow-hidden max-w-[97%] h-[24px]"
-			ref={markUpOnReplyParent}
-			data-e2e={generateE2eId('replied_message.item')}
-		>
+		<div className="overflow-hidden max-w-[97%] h-[24px]" ref={markUpOnReplyParent} data-e2e={generateE2eId('replied_message.item')}>
 			{message.references?.[0].message_ref_id ? (
 				<div className="rounded flex flex-row gap-1 items-center justify-start w-fit text-[14px] ml-9 mb-[-5px] replyMessage">
 					<Icons.ReplyCorner />

@@ -6,7 +6,7 @@ import {
 	selectAudioBusyTone,
 	selectAudioDialTone,
 	selectCloseMenu,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectIsInCall,
 	selectIsMuteMicrophone,
 	selectIsShowMeetDM,
@@ -40,7 +40,7 @@ type DmCallingProps = {
 // DmCalling check later
 const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: boolean) => void }, DmCallingProps>(({ dmGroupId, directId }, ref) => {
 	const dispatch = useAppDispatch();
-	const currentDmGroup = useSelector(selectDmGroupCurrent(dmGroupId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, dmGroupId ?? ''));
 	const { setStatusMenu } = useMenu();
 	const userProfile = useSelector(selectAllAccount);
 	const userId = useMemo(() => userProfile?.user?.id, [userProfile]);

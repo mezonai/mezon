@@ -103,7 +103,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 		setIsUserProfile(false);
 		setIsShowSettingFooterInitTab(EUserSettings.PROFILES);
 		setIsShowSettingProfileInitTab(EActiveType.CLAN_SETTING);
-		setClanIdSettingProfile(clan?.clan_id || '');
+		setClanIdSettingProfile(clan?.clan_id || '0');
 		setIsShowSettingFooterStatus(true);
 		if (setShowClanListMenuContext) {
 			setShowClanListMenuContext();

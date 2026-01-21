@@ -75,9 +75,9 @@ export const fetchListNotificationCached = async (
 	}
 
 	const response = await withRetry(
-		() =>
+		(session) =>
 			ensuredMezon.client.listNotifications(
-				ensuredMezon.session,
+				session,
 				clanId,
 				LIMIT_NOTIFICATION,
 				notificationId || '0',
@@ -87,7 +87,8 @@ export const fetchListNotificationCached = async (
 		{
 			maxRetries: 3,
 			initialDelay: 1000,
-			scope: 'notifications'
+			scope: 'notifications',
+			mezon: ensuredMezon
 		}
 	);
 
@@ -160,7 +161,7 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 			message_id: message.id,
 			content: JSON.stringify(message.content),
 			avatar: message.avatar || '',
-			clan_id: message.clan_id || '',
+			clan_id: message.clan_id || '0',
 			channel_id: message.channel_id
 		});
 		if (!response) {
@@ -345,8 +346,8 @@ export const notificationSlice = createSlice({
 							},
 							category: NotificationCategory.MESSAGES,
 							avatar_url: message?.avatar?.[0] || '',
-							clan_id: message.clan_id || '',
-							topic_id: message.topic_id || ''
+							clan_id: message.clan_id || '0',
+							topic_id: message.topic_id || '0'
 						};
 
 						state.notifications[NotificationCategory.MESSAGES].data = [

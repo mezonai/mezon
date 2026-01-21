@@ -338,7 +338,7 @@ const ListOptionRole = ({
 
 	const handleAddRoleMemberList = async (role: RolesClanEntity) => {
 		if (userRolesClan.usersRole[role.id]) {
-			await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [], [], [userId], [], role.role_icon || '');
+			await updateRole(role.clan_id || '0', role.id, role.title || '', role.color || '', [], [], [userId], [], role.role_icon || '');
 
 			await dispatch(
 				usersClanActions.removeRoleIdUser({
@@ -352,7 +352,7 @@ const ListOptionRole = ({
 			return;
 		}
 
-		await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [userId], [], [], [], role.role_icon || '');
+		await updateRole(role.clan_id || '0', role.id, role.title || '', role.color || '', [userId], [], [], [], role.role_icon || '');
 
 		await dispatch(
 			usersClanActions.addRoleIdUser({

@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { DMCallActions, EStateFriend, selectCurrentUserId, selectDmGroupCurrent, selectFriendById, useAppDispatch } from '@mezon/store-mobile';
+import { DMCallActions, EStateFriend, selectCurrentUserId, selectDmGroupById, selectFriendById, useAppDispatch } from '@mezon/store-mobile';
 import type { IMessageCallLog } from '@mezon/utils';
 import { IMessageTypeCallLog } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
@@ -28,7 +28,7 @@ export const MessageCallLog = memo(({ contentMsg, senderId, channelId, callLog, 
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
 	const currentUserId = useSelector(selectCurrentUserId);
-	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, channelId ?? ''));
 	const infoFriend = useSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''));
 
 	const isMe = useMemo(() => currentUserId === senderId, [currentUserId, senderId]);

@@ -21,7 +21,7 @@ export const AuditLogItem = memo(({ data }: AuditLogItemProps) => {
 	const styles = style(themeValue);
 	const userMention = useAppSelector((state) => selectMemberClanByUserId(state, data?.entity_id ?? ''));
 	const usernameMention = userMention?.user?.username;
-	const channel = useAppSelector((state) => selectChannelById(state, data?.channel_id || ''));
+	const channel = useAppSelector((state) => selectChannelById(state, data?.channel_id || '0'));
 	const { t } = useTranslation('auditLog');
 	const isAddAction =
 		data?.action_log === ActionLog.ADD_MEMBER_CHANNEL_ACTION_AUDIT || data?.action_log === ActionLog.ADD_ROLE_CHANNEL_ACTION_AUDIT;

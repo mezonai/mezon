@@ -11,7 +11,7 @@ import {
 	messagesActions,
 	selectAllAccount,
 	selectCurrentUserId,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectLastMessageByChannelId,
 	selectLastSentMessageStateByChannelId,
 	selectRawDataUserGroup,
@@ -49,7 +49,7 @@ interface HeaderProps {
 export const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 	const dispatch = useAppDispatch();
 	const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
-	const currentDmGroup = useSelector(selectDmGroupCurrent(channelId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, channelId ?? ''));
 	const lastMessageState = useSelector((state) => selectLastSentMessageStateByChannelId(state, channelId as string));
 
 	const { markAsReadSeen } = useSeenMessagePool();
@@ -80,7 +80,7 @@ export const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 
 const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, directMessageId, isBlocked }) => {
 	const { t } = useTranslation('common');
-	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, directMessageId ?? ''));
 	const currentUserId = useSelector(selectCurrentUserId);
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
@@ -159,7 +159,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 			const state = store.getState();
 			const rawDataUserGroup = selectRawDataUserGroup(state, currentDmGroup.channel_id);
 			const data = {
-				channelId: currentDmGroup.channel_id || '',
+				channelId: currentDmGroup.channel_id || '0',
 				roomName: currentDmGroup?.meeting_code,
 				clanId: '',
 				isGroupCall: true,
@@ -191,7 +191,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				rawDataUserGroup?.user_ids || [],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_OFFER,
 				callOfferAction as CallSignalingData,
-				currentDmGroup?.channel_id || '',
+				currentDmGroup?.channel_id || '0',
 				userProfile?.user?.id || ''
 			);
 			dispatch(

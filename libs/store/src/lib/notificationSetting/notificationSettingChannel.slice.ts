@@ -26,7 +26,7 @@ export interface NotificationSettingState extends EntityState<INotificationUserC
 }
 
 const NotificationSettingsAdapter = createEntityAdapter({
-	selectId: (notifi: INotificationUserChannel) => notifi.channel_id || ''
+	selectId: (notifi: INotificationUserChannel) => notifi.channel_id || '0'
 });
 
 const getInitialChannelState = () => ({
@@ -70,7 +70,7 @@ export const fetchNotificationSettingCached = async (getState: () => RootState, 
 				channel_id: channelId
 			}
 		},
-		() => mezon.client.getNotificationChannel(mezon.session, channelId),
+		(session) => mezon.client.getNotificationChannel(session, channelId),
 		'notificaion_user_channel'
 	);
 
@@ -205,7 +205,7 @@ export const deleteNotiChannelSetting = createAsyncThunk(
 	async ({ channel_id, clan_id: _clan_id, is_current_channel: _is_current_channel = true }: DeleteNotiChannelSettingPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.deleteNotificationChannel(mezon.session, channel_id || '');
+			const response = await mezon.client.deleteNotificationChannel(mezon.session, channel_id || '0');
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -233,7 +233,7 @@ export const notificationSettingSlice = createSlice({
 				});
 			}
 			const notificationEntity = {
-				id: action.payload.channel_id || '',
+				id: action.payload.channel_id || '0',
 				...action.payload
 			};
 			NotificationSettingsAdapter.upsertOne(state, notificationEntity);

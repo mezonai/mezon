@@ -71,7 +71,13 @@ export const MessagePreviewLastest = React.memo(
 			const isLinkMessage = contentTextObj?.isLinkMessage;
 			const text = contentTextObj?.text;
 			if (embed) {
-				return `${embed?.title || embed?.description || ''}`;
+				if (embed?.title || embed?.description) {
+					return `${embed?.title || embed?.description}`;
+				} else if (embed?.fields?.[0]?.value === 'share_contact') {
+					return `[${t('attachments.contact')}]`;
+				} else {
+					return ``;
+				}
 			}
 			const isGoogleMapsLink = validLinkGoogleMapRegex.test(text);
 			if (isGoogleMapsLink) {

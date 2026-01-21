@@ -20,7 +20,7 @@ export const ChatBoxListenerComponent = memo(({ mode }: IChatMessageLeftAreaProp
 			? currentDirectId
 			: mode === ChannelStreamMode.STREAM_MODE_THREAD && currentChannel?.parent_id
 				? currentChannel?.parent_id
-				: currentChannel?.channel_id || '',
+				: currentChannel?.channel_id || '0',
 		channelMode: mode
 	});
 	const previousListMentions = useRef(null);

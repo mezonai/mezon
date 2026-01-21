@@ -23,7 +23,7 @@ export function useSeenMessagePool() {
 			}
 			dispatch(
 				messagesActions.updateLastSeenMessage({
-					clanId: message?.clan_id || '',
+					clanId: message?.clan_id || '0',
 					channelId: message?.channel_id,
 					messageId: message?.id,
 					mode,

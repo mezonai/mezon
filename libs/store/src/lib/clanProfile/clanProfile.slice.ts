@@ -36,10 +36,11 @@ type fetchUserClanProfilePayload = {
 
 export const fetchUserClanProfile = createAsyncThunk('userclanProfile/userClanProfile', async ({ clanId }: fetchUserClanProfilePayload, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
-	const response = await withRetry(() => mezon.client.getUserProfileOnClan(mezon.session, clanId), {
+	const response = await withRetry((session) => mezon.client.getUserProfileOnClan(session, clanId), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'user-clan-profile'
+		scope: 'user-clan-profile',
+		mezon
 	});
 	if (!response) {
 		return thunkAPI.rejectWithValue([]);

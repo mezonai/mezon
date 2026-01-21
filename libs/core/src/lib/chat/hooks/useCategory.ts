@@ -90,7 +90,7 @@ export function useCategory() {
 				})
 			);
 
-			dispatch(channelCategorySettingActions.invalidateCache({ clanId: category.clan_id || '', cache: null }));
+			dispatch(channelCategorySettingActions.invalidateCache({ clanId: category.clan_id || '0', cache: null }));
 			navigateAfterDeleteCategory(category.id);
 		},
 		[currentChannelId, currentClanId, navigate, toChannelPage, dispatch, navigateAfterDeleteCategory]

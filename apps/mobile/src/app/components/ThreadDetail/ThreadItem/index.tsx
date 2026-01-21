@@ -83,7 +83,7 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 		requestAnimationFrame(async () => {
 			store.dispatch(channelsActions.upsertOne({ clanId: thread?.clan_id ?? '', channel: thread as ChannelsEntity }));
 			await store.dispatch(
-				channelsActions.joinChannel({ clanId: thread?.clan_id ?? '', channelId: thread?.channel_id || '', noFetchMembers: false })
+				channelsActions.joinChannel({ clanId: thread?.clan_id ?? '', channelId: thread?.channel_id || '0', noFetchMembers: false })
 			);
 		});
 		const dataSave = getUpdateOrAddClanChannelCache(thread?.clan_id, thread?.channel_id);

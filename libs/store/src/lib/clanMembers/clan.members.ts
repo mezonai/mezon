@@ -70,7 +70,7 @@ export const fetchUsersClanCached = async (getState: () => RootState, ensuredMez
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listClanUsers(ensuredMezon.session, clanId),
+		(session) => ensuredMezon.client.listClanUsers(session, clanId),
 		'clan_user_list'
 	);
 

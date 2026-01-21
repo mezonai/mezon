@@ -65,7 +65,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 					);
 					dispatch(
 						videoStreamActions.startStream({
-							clanId: channel?.clan_id || '',
+							clanId: channel?.clan_id || '0',
 							clanName: '',
 							streamId: channelId,
 							streamName: channel?.channel_label || '',

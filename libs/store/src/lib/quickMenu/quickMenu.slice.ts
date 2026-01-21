@@ -187,10 +187,11 @@ export const listQuickMenuAccess = createAsyncThunk(
 			}
 
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await withRetry(() => mezon.client.listQuickMenuAccess(mezon.session, '0', channelId, menuType), {
+			const response = await withRetry((session) => mezon.client.listQuickMenuAccess(session, '0', channelId, menuType), {
 				maxRetries: 3,
 				initialDelay: 1000,
-				scope: 'channel-quick-menu'
+				scope: 'channel-quick-menu',
+				mezon
 			});
 
 			return { channelId, menuType, quickMenuItems: response.list_menus || [], fromCache: false };

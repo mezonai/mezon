@@ -8,7 +8,7 @@ import {
 	messagesActions,
 	selectDirectById,
 	selectDirectMesIdE2ee,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectHasKeyE2ee,
 	selectPubkey,
 	useAppDispatch,
@@ -173,7 +173,7 @@ export const ModalConfirmPin = ({
 	const dispatch = useAppDispatch();
 	const currentDmId = useSelector(selectDirectMesIdE2ee);
 	const directMessageValue = useAppSelector((state) => selectDirectById(state, currentDmId));
-	const currentDmGroup = useSelector(selectDmGroupCurrent(directMessageValue?.id ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, directMessageValue?.id ?? ''));
 	const pubkey = useSelector(selectPubkey);
 
 	useEffect(() => {
