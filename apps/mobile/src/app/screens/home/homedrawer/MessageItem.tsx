@@ -433,7 +433,7 @@ const MessageItem = React.memo(
 													actionRow={component}
 													messageId={message?.id}
 													senderId={message?.sender_id}
-													channelId={message?.channel_id || ''}
+													channelId={message?.channel_id || '0'}
 												/>
 											))}
 									</View>

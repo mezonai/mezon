@@ -64,7 +64,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		dispatch(fetchSystemMessageByClanId({ clanId: channel?.clan_id }));
 	}, [channel?.channel_id, channel?.clan_id, dispatch]);
 
-	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.channel_id || ''));
+	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.channel_id || '0'));
 
 	const currentUserId = useSelector(selectCurrentUserId);
 
@@ -149,7 +149,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 	const handleUnmuteChannel = async () => {
 		try {
 			const body = {
-				channel_id: channel?.channel_id || '',
+				channel_id: channel?.channel_id || '0',
 				clan_id: currentClanId || '',
 				active: EMuteState.UN_MUTE,
 				mute_time: 0
@@ -361,7 +361,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				Toast.show({ type: 'error', text1: t('modalConfirm.channel.systemChannel') });
 			} else {
 				const response = await dispatch(
-					channelsActions.deleteChannel({ channelId: channel?.channel_id || '', clanId: channel?.clan_id || '' })
+					channelsActions.deleteChannel({ channelId: channel?.channel_id || '0', clanId: channel?.clan_id || '0' })
 				);
 				if (response?.meta?.requestStatus === 'rejected') {
 					Toast.show({ type: 'error', text1: response?.error?.message });

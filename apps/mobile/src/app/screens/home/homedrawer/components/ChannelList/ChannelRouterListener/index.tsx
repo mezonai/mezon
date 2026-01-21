@@ -48,8 +48,8 @@ const ChannelRouterListener = () => {
 			} else {
 				navigation.navigate(APP_SCREEN.HOME_DEFAULT);
 			}
-			const channelId = channel?.channel_id || '';
-			const clanId = channel?.clan_id || '';
+			const channelId = channel?.channel_id || '0';
+			const clanId = channel?.clan_id || '0';
 			const store = await getStoreAsync();
 			store.dispatch(topicsActions.setCurrentTopicId(''));
 			store.dispatch(directActions.setDmGroupCurrentId(''));

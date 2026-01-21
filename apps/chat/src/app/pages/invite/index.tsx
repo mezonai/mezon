@@ -19,10 +19,10 @@ export default function InvitePage() {
 	const [error, setError] = useState<string | null>(null);
 
 	const clanId = useMemo(() => {
-		return selectInvite?.clan_id || '';
+		return selectInvite?.clan_id || '0';
 	}, [selectInvite]);
 	const channeId = useMemo(() => {
-		return selectInvite?.channel_id || '';
+		return selectInvite?.channel_id || '0';
 	}, [selectInvite]);
 	const userJoined = useMemo(() => {
 		return selectInvite?.user_joined;

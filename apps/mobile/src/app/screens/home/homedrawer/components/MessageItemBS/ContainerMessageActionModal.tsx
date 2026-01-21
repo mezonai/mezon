@@ -430,15 +430,15 @@ export const ContainerMessageActionModal = React.memo(
 
 		const handleMarkUnread = async () => {
 			const payloadSetLastSeenTimestamp = {
-				channelId: message?.channel_id || '',
+				channelId: message?.channel_id || '0',
 				timestamp: 1,
 				messageId: message?.id
 			};
 			try {
 				await dispatch(
 					messagesActions.updateLastSeenMessage({
-						clanId: message?.clan_id || '',
-						channelId: message?.channel_id || '',
+						clanId: message?.clan_id || '0',
+						channelId: message?.channel_id || '0',
 						messageId: message?.id || '',
 						mode: message?.mode || 0,
 						badge_count: 0,

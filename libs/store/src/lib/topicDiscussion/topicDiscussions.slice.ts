@@ -293,7 +293,7 @@ export const topicsSlice = createSlice({
 			.addCase(getFirstMessageOfTopic.fulfilled, (state: TopicDiscussionsState, action) => {
 				const { data, isMobile } = action.payload;
 				const { message, message_id } = data || {};
-				state.initTopicMessageId = message_id || '';
+				state.initTopicMessageId = message_id || '0';
 				if (message && isMobile) {
 					state.firstMessageTopic = message;
 				}

@@ -42,7 +42,7 @@ export default function CreateThreadModal({ navigation, route }: MenuThreadScree
 	const [isNextDisabled, setIsNextDisabled] = useState<boolean>(false);
 	const [isPaginationVisible, setIsPaginationVisible] = useState<boolean>(false);
 	const targetChannelId = useMemo(() => {
-		return channelThreads?.channel_id || currentChannel?.channel_id || '';
+		return channelThreads?.channel_id || currentChannel?.channel_id || '0';
 	}, [channelThreads?.channel_id, currentChannel?.channel_id]);
 	const threadFetched = useSelector((state) => selectThreadsByParentChannelId(state, targetChannelId));
 	const threadsSearched = useSelector((state) => selectSearchedThreadResult(state, targetChannelId));

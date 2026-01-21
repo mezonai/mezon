@@ -58,7 +58,7 @@ export function parseObject(obj: any) {
 const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify }: NotifyProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const channelInfo = useAppSelector((state) => selectChannelById(state, notify?.content?.channel_id || ''));
+	const channelInfo = useAppSelector((state) => selectChannelById(state, notify?.content?.channel_id || '0'));
 	const data = parseObject(notify?.content);
 	const clan = useAppSelector(selectClanById(notify?.content?.clan_id as string));
 	const { priorityAvatar } = useGetPriorityNameFromUserClan(notify?.sender_id);

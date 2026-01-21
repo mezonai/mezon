@@ -40,7 +40,7 @@ export function CategorySetting({ navigation, route }: MenuClanScreenProps<Scree
 		};
 		dispatch(
 			categoriesActions.updateCategory({
-				clanId: category?.clan_id || '',
+				clanId: category?.clan_id || '0',
 				request
 			})
 		);

@@ -1,7 +1,7 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { selectFirstMessageEntityTopic, selectFirstMessageOfCurrentTopic, useAppSelector } from '@mezon/store-mobile';
-import { convertTimeString, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR } from '@mezon/utils';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -103,8 +103,8 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) =>
 									? safeJSONParse(firstMessage?.attachments || '[]')
 									: firstMessage?.attachments || []
 							}
-							clanId={firstMessage?.clan_id || ''}
-							channelId={firstMessage?.channel_id || ''}
+							clanId={firstMessage?.clan_id || '0'}
+							channelId={firstMessage?.channel_id || '0'}
 							messageCreatTime={firstMessage?.create_time_seconds}
 							senderId={firstMessage?.sender_id}
 						/>
@@ -112,7 +112,7 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: TopicHeaderProps) =>
 					{!!firstMessage?.content?.embed?.[0] && (
 						<EmbedMessage
 							message_id={firstMessage?.id || ''}
-							channel_id={firstMessage?.channel_id || ''}
+							channel_id={firstMessage?.channel_id || '0'}
 							embed={
 								typeof firstMessage?.content?.embed === 'string'
 									? safeJSONParse(firstMessage?.content || '{}')?.embed?.[0]

@@ -15,7 +15,7 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 	const { channel } = props;
 	const { t } = useTranslation('channelSetting');
 	const listCategory = useSelector(selectAllCategories);
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || ''));
+	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || '0'));
 	const categoryName = useMemo(() => {
 		if (realTimeChannel?.category_name) {
 			return realTimeChannel.category_name;

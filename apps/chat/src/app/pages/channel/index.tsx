@@ -110,7 +110,7 @@ function useChannelSeen(channelId: string) {
 				const channelWithActive = { ...currentChannel, active: 1 };
 				dispatch(
 					channelsActions.upsertOne({
-						clanId: currentChannel?.clan_id || '',
+						clanId: currentChannel?.clan_id || '0',
 						channel: channelWithActive as ChannelsEntity
 					})
 				);

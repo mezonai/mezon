@@ -162,10 +162,10 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 		if (resPayload.channel_id) {
 			await checkNotificationPermissionAndNavigate(() => {
 				if (isTabletLandscape) {
-					dispatch(directActions.setDmGroupCurrentId(resPayload?.channel_id || ''));
+					dispatch(directActions.setDmGroupCurrentId(resPayload?.channel_id || '0'));
 					navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 				} else {
-					directMessageIdRef.current = resPayload?.channel_id || '';
+					directMessageIdRef.current = resPayload?.channel_id || '0';
 					if (fromUser) {
 						navigation.popToTop();
 						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {

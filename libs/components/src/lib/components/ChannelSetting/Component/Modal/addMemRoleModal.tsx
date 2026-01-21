@@ -64,7 +64,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	);
 
 	const usersClan = useSelector(selectAllUserClans);
-	const userChannelIds = useSelector((state) => selectUserChannelIds(state, channel.channel_id || ''));
+	const userChannelIds = useSelector((state) => selectUserChannelIds(state, channel.channel_id || '0'));
 	const listUserInvite = useMemo(() => {
 		if (channel.channel_private !== 1) {
 			return usersClan.filter((user) => user.id !== userProfile?.user?.id && !selectedUserIds.includes(user.id));
