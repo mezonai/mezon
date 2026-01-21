@@ -1,6 +1,6 @@
 import type BottomSheet from '@gorhom/bottom-sheet';
 import { useThreadMessage, useThreads } from '@mezon/core';
-import { ActionEmitEvent, getUpdateOrAddClanChannelCache, save, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE, getUpdateOrAddClanChannelCache, save } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import type { RootState } from '@mezon/store-mobile';
 import {
@@ -162,6 +162,9 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 							);
 							dispatch(appActions.setLoadingMainMobile(false));
 							await checkNotificationPermissionMiddleware({ showBottomSheet: true });
+							DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+								isShow: false
+							});
 						}
 					} catch (error) {
 						dispatch(appActions.setLoadingMainMobile(false));
