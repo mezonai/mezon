@@ -10,11 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
-<<<<<<< HEAD
-import { Direction_Mode, convertTimeString, generateE2eId } from '@mezon/utils';
-=======
 import { convertTimeString, generateE2eId } from '@mezon/utils';
->>>>>>> eee19a95d8faaec2614d23b49f7235b945e23721
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';

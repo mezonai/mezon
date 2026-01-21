@@ -69,7 +69,7 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				}
 
 				await socket.removeChatMessage(
-					payload.clan_id,
+					payload.clan_id || '0',
 					channelId,
 					mode,
 					payload.is_public,
