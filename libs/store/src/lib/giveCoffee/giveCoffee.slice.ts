@@ -57,8 +57,8 @@ export const updateGiveCoffee = createAsyncThunk(
 							textData: 'givecoffee',
 							extraInfo: {
 								type: ETransferType.GiveCoffee,
-								ChannelId: channel_id || '',
-								ClanId: clan_id || '',
+								ChannelId: channel_id || '0',
+								ClanId: clan_id || '0',
 								MessageRefId: message_ref_id || '',
 								UserReceiverId: receiver_id || '',
 								UserSenderId: sender_id || '',

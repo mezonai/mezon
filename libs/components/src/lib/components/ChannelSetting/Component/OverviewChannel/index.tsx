@@ -210,7 +210,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 
 		const updateChannel = {
 			clan_id: currentChannel.clan_id,
-			channel_id: currentChannel.channel_id || '',
+			channel_id: currentChannel.channel_id || '0',
 			channel_label: channelLabel,
 			category_id: currentChannel.category_id,
 			app_url: updatedAppUrl,

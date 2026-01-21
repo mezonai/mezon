@@ -82,7 +82,7 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 			case EMessageActionType.UnPinMessage:
 				dispatch(
 					pinMessageActions.deleteChannelPinMessage({
-						channel_id: params?.['directMessageId'] ? params?.['directMessageId'] : message?.channel_id || '',
+						channel_id: params?.['directMessageId'] ? params?.['directMessageId'] : message?.channel_id || '0',
 						message_id: message.id,
 						clan_id: message?.clan_id
 					})

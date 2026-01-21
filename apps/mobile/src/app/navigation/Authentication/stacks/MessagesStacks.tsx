@@ -14,7 +14,7 @@ import { APP_SCREEN } from '../../ScreenTypes';
 const Stack = createStackNavigator();
 
 // eslint-disable-next-line no-empty-pattern
-export const MessagesStacks = ({ }: any) => {
+export const MessagesStacks = ({}: any) => {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation('screen');
 	return (
@@ -92,14 +92,18 @@ export const MessagesStacks = ({ }: any) => {
 				}}
 			/>
 			<Stack.Screen name={APP_SCREEN.MESSAGES.FORWARD_MESSAGE} component={ForwardMessageScreen} options={{ headerShown: false }} />
-			<Stack.Screen name={APP_SCREEN.MESSAGES.SHARE_CONTACT} component={ShareContactScreen} options={{
-				title: t('headerTitle.shareContact'),
-				headerStyle: {
-					backgroundColor: themeValue.primary
-				},
-				headerShown: false,
-				headerShadowVisible: false
-			}} />
+			<Stack.Screen
+				name={APP_SCREEN.MESSAGES.SHARE_CONTACT}
+				component={ShareContactScreen}
+				options={{
+					title: t('headerTitle.shareContact'),
+					headerStyle: {
+						backgroundColor: themeValue.primary
+					},
+					headerShown: false,
+					headerShadowVisible: false
+				}}
+			/>
 		</Stack.Navigator>
 	);
 };

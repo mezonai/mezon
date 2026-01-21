@@ -1,7 +1,7 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { selectFirstMessageEntityTopic, selectFirstMessageOfCurrentTopic, useAppSelector } from '@mezon/store-mobile';
-import { convertTimeString, DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR } from '@mezon/utils';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,11 +10,12 @@ import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import ImageNative from '../../../../../../components/ImageNative';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
+import type { IContactData } from '../../ContactMessageCard';
+import { ContactMessageCard } from '../../ContactMessageCard';
 import { EmbedMessage } from '../../EmbedMessage';
 import { MessageAttachment } from '../../MessageAttachment';
 import { RenderTextMarkdownContent } from '../../RenderTextMarkdown';
 import { style } from './styles';
-import { ContactMessageCard, IContactData } from '../../ContactMessageCard';
 
 type ITopicHeaderProps = {
 	currentChannelId: string;
@@ -51,12 +52,12 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: ITopicHeaderProps) =
 
 	const embed = useMemo(() => {
 		return typeof firstMessage?.content?.embed === 'string'
-		? safeJSONParse(firstMessage?.content || '{}')?.embed?.[0]
-		: firstMessage?.content?.embed?.[0]
+			? safeJSONParse(firstMessage?.content || '{}')?.embed?.[0]
+			: firstMessage?.content?.embed?.[0];
 	}, [firstMessage?.content?.embed?.[0]]);
 
 	const contactData = useMemo((): IContactData | null => {
-		if (embed?.fields?.[0]?.value !== 'share_contact') return null
+		if (embed?.fields?.[0]?.value !== 'share_contact') return null;
 
 		return {
 			user_id: embed?.fields?.[1]?.value || '',
@@ -121,22 +122,19 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: ITopicHeaderProps) =
 									? safeJSONParse(firstMessage?.attachments || '[]')
 									: firstMessage?.attachments || []
 							}
-							clanId={firstMessage?.clan_id || ''}
-							channelId={firstMessage?.channel_id || ''}
+							clanId={firstMessage?.clan_id || '0'}
+							channelId={firstMessage?.channel_id || '0'}
 							messageCreatTime={firstMessage?.create_time_seconds}
 							senderId={firstMessage?.sender_id}
 						/>
 					)}
 					{!!embed &&
 						(contactData ? (
-							<ContactMessageCard
-								key={`message_contact_${firstMessage?.channel_id}_${firstMessage?.id}`}
-								data={contactData}
-							/>
+							<ContactMessageCard key={`message_contact_${firstMessage?.channel_id}_${firstMessage?.id}`} data={contactData} />
 						) : (
 							<EmbedMessage
 								message_id={firstMessage?.id || ''}
-								channel_id={firstMessage?.channel_id || ''}
+								channel_id={firstMessage?.channel_id || '0'}
 								embed={embed}
 								key={`message_embed_${firstMessage?.channel_id}_${firstMessage?.id}`}
 							/>

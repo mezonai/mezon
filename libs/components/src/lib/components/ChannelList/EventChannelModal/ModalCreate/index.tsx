@@ -51,7 +51,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 	const isClanEvent = currentEvent?.channel_id === undefined;
 	const isChannelEvent = Boolean(currentEvent?.channel_id && currentEvent?.channel_id !== '0');
 	const isPrivateEvent = currentEvent?.is_private;
-	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '' : '')) || {};
+	const eventChannel = useAppSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '0' : '')) || {};
 
 	const createStatus = useSelector(selectCreatingLoaded);
 	const dispatch = useAppDispatch();
@@ -74,7 +74,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 		voiceChannel: currentEvent ? currentEvent?.channel_voice_id || '' : '',
 		logo: currentEvent ? currentEvent.logo || '' : '',
 		description: currentEvent ? currentEvent.description || '' : '',
-		textChannelId: currentEvent ? currentEvent.channel_id || '' : '',
+		textChannelId: currentEvent ? currentEvent.channel_id || '0' : '',
 		repeatType: currentEvent ? currentEvent.repeat_type || ERepeatType.DOES_NOT_REPEAT : ERepeatType.DOES_NOT_REPEAT,
 		isPrivate: Boolean(currentEvent?.is_private)
 	});

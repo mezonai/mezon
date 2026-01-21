@@ -215,7 +215,7 @@ const GroupCallComponent = memo(
 
 				const quitData = createQuitData({
 					isVideo: showCamera,
-					groupId: currentDmGroup?.channel_id || '',
+					groupId: currentDmGroup?.channel_id || '0',
 					callerId: userProfile?.user?.id || '',
 					callerName: userProfile?.user?.display_name || userProfile?.user?.username || '',
 					action: 'leave'
@@ -271,7 +271,7 @@ const GroupCallComponent = memo(
 
 			const cancelData = createCancelData({
 				isVideo: groupCall.state.isVideoCall,
-				groupId: currentDmGroup?.channel_id || '',
+				groupId: currentDmGroup?.channel_id || '0',
 				callerId: userProfile?.user?.id || '',
 				callerName: userProfile?.user?.display_name || userProfile?.user?.username || '',
 				reason: 'cancelled'

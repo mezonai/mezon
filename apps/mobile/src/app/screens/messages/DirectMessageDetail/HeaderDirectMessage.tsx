@@ -159,7 +159,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 			const state = store.getState();
 			const rawDataUserGroup = selectRawDataUserGroup(state, currentDmGroup.channel_id);
 			const data = {
-				channelId: currentDmGroup.channel_id || '',
+				channelId: currentDmGroup.channel_id || '0',
 				roomName: currentDmGroup?.meeting_code,
 				clanId: '',
 				isGroupCall: true,
@@ -191,7 +191,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 				rawDataUserGroup?.user_ids || [],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_OFFER,
 				callOfferAction as CallSignalingData,
-				currentDmGroup?.channel_id || '',
+				currentDmGroup?.channel_id || '0',
 				userProfile?.user?.id || ''
 			);
 			dispatch(

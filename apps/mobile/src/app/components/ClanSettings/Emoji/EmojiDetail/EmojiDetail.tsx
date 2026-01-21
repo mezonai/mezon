@@ -60,7 +60,7 @@ export const EmojiDetail = forwardRef(({ item, onSwipeOpen }: ServerDetailProps,
 			source: item?.src || '',
 			shortname: `:${emojiName}:`,
 			category: item?.category || '',
-			clan_id: item?.clan_id || ''
+			clan_id: item?.clan_id || '0'
 		};
 		await dispatch(emojiSuggestionActions.updateEmojiSetting({ request, emojiId: item?.id || '' }));
 	};

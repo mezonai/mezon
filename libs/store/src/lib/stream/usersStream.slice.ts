@@ -122,7 +122,7 @@ export const fetchStreamChannelMembers = createAsyncThunk(
 				return {
 					user_id: channelRes.user_id || '',
 					clan_id: clanId,
-					streaming_channel_id: channelRes.channel_id || '',
+					streaming_channel_id: channelRes.channel_id || '0',
 					clan_name: '',
 					participant: channelRes.participant || '',
 					streaming_channel_label: '',

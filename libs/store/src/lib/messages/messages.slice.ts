@@ -57,7 +57,7 @@ export const mapMessageChannelToEntity = (channelMess: ChannelMessage, lastSeenI
 		...channelMess,
 		isFirst: channelMess.code === EMessageCode.FIRST_MESSAGE,
 		creationTime: new Date(createTimeSeconds * 1000),
-		id: channelMess.id || channelMess.message_id || '',
+		id: channelMess.id || channelMess.message_id || '0',
 		date: new Date().toLocaleString(),
 		isAnonymous,
 		user: {

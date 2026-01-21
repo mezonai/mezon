@@ -1,10 +1,8 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
-import { ChannelsEntity, directActions, DMCallActions, EStateFriend, selectDirectsOpenlist, selectFriendStatus, useAppDispatch } from '@mezon/store-mobile';
+import type { ChannelsEntity } from '@mezon/store-mobile';
+import { directActions, DMCallActions, EStateFriend, selectDirectsOpenlist, selectFriendStatus, useAppDispatch } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
-import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
-import { checkNotificationPermissionAndNavigate } from '../../../../../utils/notificationPermissionHelper';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,9 +10,12 @@ import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
+import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
+import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
+import { checkNotificationPermissionAndNavigate } from '../../../../../utils/notificationPermissionHelper';
 import { DirectMessageCallMain } from '../../../../messages/DirectMessageCall';
 import UserProfile from '../UserProfile';
 import { style } from './styles';
@@ -117,7 +118,7 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 		} else {
 			Toast.show({
 				type: 'error',
-				text2: t('friends:toast.somethingWentWrong'),
+				text2: t('friends:toast.somethingWentWrong')
 			});
 		}
 	}, [data?.user_id, dispatch, isTabletLandscape, listDM, navigation, t, createDirectMessage]);
@@ -133,7 +134,7 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 		if (friendStatus === EStateFriend.BLOCK) {
 			Toast.show({
 				type: 'error',
-				text1: t('noPermissionToCallBlocked'),
+				text1: t('noPermissionToCallBlocked')
 			});
 			return;
 		}
@@ -150,7 +151,7 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 		if (directMessageId) {
 			const params: ICallPayload = {
 				...payload,
-				directMessageId: directMessageId
+				directMessageId
 			};
 			navigateToCallModal(params);
 			return;
@@ -170,7 +171,7 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 	const handleLongPress = useCallback(() => {
 		onLongPress && onLongPress();
 	}, [onLongPress]);
-	
+
 	return (
 		<TouchableOpacity activeOpacity={0.8} onPress={handleOpenProfile} onLongPress={handleLongPress}>
 			<View style={styles.container}>

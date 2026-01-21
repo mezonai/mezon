@@ -1,10 +1,20 @@
 import { useChatSending } from '@mezon/core';
 import type { IUserMention } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { EStateFriend, selectAllFriends, selectCurrentChannel, selectCurrentDM, selectCurrentTopicId, selectIsShowCreateTopic } from '@mezon/store-mobile';
+import type { FriendsEntity } from '@mezon/store-mobile';
+import {
+	EStateFriend,
+	selectAllFriends,
+	selectCurrentChannel,
+	selectCurrentDM,
+	selectCurrentTopicId,
+	selectIsShowCreateTopic,
+	selectLoadingStatusFriend
+} from '@mezon/store-mobile';
 import { TypeMessage } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import type { ApiChannelDescription } from 'mezon-js/api.gen';
 import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
@@ -14,13 +24,11 @@ import Images from '../../../../../../assets/Images';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../../../components/Common/Common';
+import LoadingModal from '../../../../../components/LoadingModal/LoadingModal';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import UserInfoSearch from '../../../../../components/ThreadDetail/SearchMessageChannel/SearchOptionPage/UserInfoSearch';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { style } from './styles';
-import { ApiChannelDescription } from 'mezon-js/api.gen';
-import { FriendsEntity, selectLoadingStatusFriend } from '@mezon/store-mobile';
-import LoadingModal from '../../../../../components/LoadingModal/LoadingModal';
 
 const ShareContactScreen = () => {
 	const navigation = useNavigation();
@@ -40,7 +48,7 @@ const ShareContactScreen = () => {
 	}, [currentDM, currentChannel]);
 
 	const friendList = useMemo(() => {
-		return allFriends?.length > 0 && allFriends.filter((friend) => friend?.state === EStateFriend.FRIEND)
+		return allFriends?.length > 0 && allFriends.filter((friend) => friend?.state === EStateFriend.FRIEND);
 	}, [allFriends]);
 
 	const mode = useMemo(() => {
@@ -62,11 +70,7 @@ const ShareContactScreen = () => {
 		const query = searchText.trim().toLowerCase();
 		if (!query) return friendList || [];
 
-		return (
-			friendList?.filter(
-				({ user }) => [user?.display_name, user?.username].some(name => name?.toLowerCase()?.includes(query))
-			) || []
-		);
+		return friendList?.filter(({ user }) => [user?.display_name, user?.username].some((name) => name?.toLowerCase()?.includes(query))) || [];
 	}, [searchText, friendList]);
 
 	const onClose = useCallback(() => navigation.goBack(), [navigation]);

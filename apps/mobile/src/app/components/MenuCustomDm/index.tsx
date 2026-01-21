@@ -237,7 +237,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 
 			const resultLeaveOrDeleteGroup = lastOne
 				? await dispatch(deleteChannel({ clanId: '0', channelId: currentChannel?.channel_id ?? '', isDmGroup: true }))
-				: await dispatch(removeMemberChannel({ channelId: currentChannel?.channel_id || '', userIds: [currentUserId], kickMember: false }));
+				: await dispatch(removeMemberChannel({ channelId: currentChannel?.channel_id || '0', userIds: [currentUserId], kickMember: false }));
 
 			if (resultLeaveOrDeleteGroup?.meta?.requestStatus === 'rejected') {
 				throw new Error(resultLeaveOrDeleteGroup?.meta?.requestStatus);

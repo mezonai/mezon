@@ -221,8 +221,8 @@ const MessageItem = React.memo(
 
 		const contactData = useMemo((): IContactData | null => {
 			const embed = message?.content?.embed?.[0];
-			if (message?.code !== TypeMessage.ShareContact && embed?.fields?.[0]?.value !== 'share_contact') return null
-			
+			if (message?.code !== TypeMessage.ShareContact && embed?.fields?.[0]?.value !== 'share_contact') return null;
+
 			return {
 				user_id: embed?.fields?.[1]?.value || '',
 				username: embed?.fields?.[2]?.value || '',
@@ -455,7 +455,7 @@ const MessageItem = React.memo(
 													actionRow={component}
 													messageId={message?.id}
 													senderId={message?.sender_id}
-													channelId={message?.channel_id || ''}
+													channelId={message?.channel_id || '0'}
 												/>
 											))}
 									</View>

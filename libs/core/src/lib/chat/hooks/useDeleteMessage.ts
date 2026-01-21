@@ -55,7 +55,7 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				if (isTopic) {
 					await socket.removeChatMessage(
 						payload.clan_id,
-						channel?.channel_id || '',
+						channel?.channel_id || '0',
 						mode,
 						payload.is_public,
 						messageId,

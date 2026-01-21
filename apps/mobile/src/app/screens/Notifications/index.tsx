@@ -145,8 +145,8 @@ const Notifications = ({ navigation, route }) => {
 			return new Promise<void>((resolve) => {
 				requestAnimationFrame(async () => {
 					const state = store.getState();
-					const clanById = selectClanById(notify?.content?.clan_id || '')(state);
-					const directById = selectDirectById(state, notify?.content?.channel_id || '');
+					const clanById = selectClanById(notify?.content?.clan_id || '0')(state);
+					const directById = selectDirectById(state, notify?.content?.channel_id || '0');
 					if (!clanById && !directById && notify?.content?.mode !== ChannelStreamMode.STREAM_MODE_DM) {
 						Toast.show({ type: 'error', text1: t('unknowClan') });
 						return resolve();
@@ -167,7 +167,7 @@ const Notifications = ({ navigation, route }) => {
 								store.dispatch(
 									channelsActions.addThreadToChannels({
 										clanId: notify?.content?.clan_id ?? '',
-										channelId: notify?.content?.channel_id || ''
+										channelId: notify?.content?.channel_id || '0'
 									})
 								),
 								store.dispatch(topicsActions.setCurrentTopicId(notify?.content?.topic_id || notify?.id || '')),

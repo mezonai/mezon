@@ -10,10 +10,11 @@ import MezonClanAvatar from '../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
+import type { IContactData } from '../../../screens/home/homedrawer/components/ContactMessageCard';
+import { ContactMessageCard } from '../../../screens/home/homedrawer/components/ContactMessageCard';
 import { MessageAttachment } from '../../../screens/home/homedrawer/components/MessageAttachment';
 import { RenderTextMarkdownContent } from '../../../screens/home/homedrawer/components/RenderTextMarkdown';
 import { style } from './PinMessageItem.styles';
-import { ContactMessageCard, IContactData } from '../../../screens/home/homedrawer/components/ContactMessageCard';
 
 interface IPinMessageItemProps {
 	pinMessageItem: PinMessageEntity;
@@ -85,16 +86,16 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 	}, [pinMessageItem?.attachment]);
 
 	const contactData = useMemo((): IContactData | null => {
-        const embed = contentMessage?.embed?.[0];
-        if (embed?.fields?.[0]?.value !== 'share_contact') return null;
+		const embed = contentMessage?.embed?.[0];
+		if (embed?.fields?.[0]?.value !== 'share_contact') return null;
 
-        return {
-            user_id: embed?.fields?.[1]?.value || '',
-            username: embed?.fields?.[2]?.value || '',
-            display_name: embed?.fields?.[3]?.value || '',
-            avatar: embed?.fields?.[4]?.value || ''
-        };
-    }, [contentMessage?.embed?.[0]]);
+		return {
+			user_id: embed?.fields?.[1]?.value || '',
+			username: embed?.fields?.[2]?.value || '',
+			display_name: embed?.fields?.[3]?.value || '',
+			avatar: embed?.fields?.[4]?.value || ''
+		};
+	}, [contentMessage?.embed?.[0]]);
 
 	return (
 		<TouchableOpacity onPress={handleJumpMess} style={styles.pinMessageItemWrapper}>
@@ -114,12 +115,7 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 						senderId={message?.sender_id}
 					/>
 				)}
-				 {!!contactData && (
-                        <ContactMessageCard
-                            key={`pin_message_contact_${pinMessageItem?.message_id}`}
-                            data={contactData}
-                        />
-                    )}
+				{!!contactData && <ContactMessageCard key={`pin_message_contact_${pinMessageItem?.message_id}`} data={contactData} />}
 			</View>
 			<View>
 				<TouchableOpacity

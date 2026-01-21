@@ -173,7 +173,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 									{currentSetting === EChannelSettingTab.STREAM_THUMBNAIL && <StreamThumbnailChannel channel={channel} />}
 									{currentSetting === EChannelSettingTab.QUICK_MENU && (
 										<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-full lg:pt-[94px] sbm:pb-7 pr-[10px] sbm:pr-[10px] pl-[10px] sbm:pl-[40px] overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
-											<QuickMenuAccessManager channelId={channel.channel_id || ''} clanId={channel.clan_id || ''} />
+											<QuickMenuAccessManager channelId={channel.channel_id || '0'} clanId={channel.clan_id || '0'} />
 										</div>
 									)}
 								</div>

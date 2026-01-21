@@ -46,7 +46,7 @@ const WaveButtonDM = ({ username }: IWaveButtonDMProps) => {
 	const messageIdsLength = useMemo(() => {
 		const store = getStore();
 		const appState = store.getState() as RootState;
-		return selectMessageIdsByChannelId(appState, currentDm?.channel_id || '').length;
+		return selectMessageIdsByChannelId(appState, currentDm?.channel_id || '0').length;
 	}, [currentDm?.channel_id]);
 
 	const mode = useMemo(() => {

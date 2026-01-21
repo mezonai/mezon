@@ -22,7 +22,7 @@ export interface ChannelUsersEntity extends IChannelUser {
 }
 
 export const mapChannelsByUserToEntity = (channelRes: ChannelDescription) => {
-	return { ...channelRes, id: channelRes.channel_id || '', status: channelRes.meeting_code ? 1 : 0 };
+	return { ...channelRes, id: channelRes.channel_id || '0', status: channelRes.meeting_code ? 1 : 0 };
 };
 
 export interface ListChannelsByUserState extends EntityState<ChannelUsersEntity, string> {

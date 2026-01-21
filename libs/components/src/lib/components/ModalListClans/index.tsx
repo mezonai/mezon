@@ -70,7 +70,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 		setCoords({ mouseX, mouseY, distanceToBottom });
 		await dispatch(
 			defaultNotificationActions.getDefaultNotificationClan({
-				clanId: option.id || option.clan_id || ''
+				clanId: option.id || option.clan_id || '0'
 			})
 		);
 		openRightClickModal();

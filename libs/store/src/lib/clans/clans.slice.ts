@@ -37,7 +37,7 @@ export interface ClansEntity extends IClan {
 }
 
 export const mapClanToEntity = (clanRes: ApiClanDesc) => {
-	return { ...clanRes, id: clanRes.clan_id || '' };
+	return { ...clanRes, id: clanRes.clan_id || '0' };
 };
 
 interface ClanMeta {

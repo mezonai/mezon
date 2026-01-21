@@ -62,7 +62,7 @@ export interface OnboardingState extends EntityState<ApiOnboardingSteps, string>
 }
 
 export const onboardingUserAdapter = createEntityAdapter({
-	selectId: (a: ApiOnboardingSteps) => a.clan_id || ''
+	selectId: (a: ApiOnboardingSteps) => a.clan_id || '0'
 });
 
 const getInitialOnboardingState = () => ({
@@ -226,7 +226,7 @@ export const fetchOnboardingStepCached = async (getState: () => RootState, mezon
 	const currentState = getState();
 	const onboardingState = currentState[ONBOARDING_FEATURE_KEY];
 
-	const apiKey = createApiKey('fetchOnboardingStep', mezon.session.username || '', clan_id || '');
+	const apiKey = createApiKey('fetchOnboardingStep', mezon.session.username || '', clan_id || '0');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, onboardingState.onboardingStepCache, noCache);
 
