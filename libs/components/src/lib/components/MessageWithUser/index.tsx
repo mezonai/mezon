@@ -236,7 +236,7 @@ function MessageWithUser({
 							'max-w-[37rem] bg-tertiary border-theme-primary rounded-lg mx-2 my-1 p-3': message.content?.isCard
 						}
 					)}
-					create_time={new Date(message.create_time_seconds || 0).toISOString()}
+					create_time={new Date((message.create_time_seconds || 0) * 1000).toISOString()}
 					showMessageHead={showMessageHead}
 				>
 					{shouldRenderMessageReply && (
