@@ -1190,7 +1190,8 @@ export enum TypeMessage {
 	Ephemeral = 12,
 	UpcomingEvent = 13,
 	UpdateEphemeralMsg = 14,
-	DeleteEphemeralMsg = 15
+	DeleteEphemeralMsg = 15,
+	ShareContact = 16
 }
 
 export enum ServerSettingsMenuValue {

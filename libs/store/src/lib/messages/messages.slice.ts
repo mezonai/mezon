@@ -1401,6 +1401,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.AuditLog:
 				case TypeMessage.SendToken:
 				case TypeMessage.Ephemeral:
+				case TypeMessage.ShareContact:
 				case TypeMessage.Chat: {
 					if (topic_id !== '0' && topic_id) {
 						handleAddOneMessage({
