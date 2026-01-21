@@ -216,5 +216,7 @@
 	},
 	"bannedChannel": "Bạn đã bị cấm trong kênh {{channelName}}.",
 	"addAMessage": "Thêm một tin nhắn (Không bắt buộc)",
-	"slideToCancel": "Vuốt để hủy"
+	"slideToCancel": "Vuốt để hủy",
+	"noAccess": "Không có quyền",
+	"unknown": "Không xác định"
 }
