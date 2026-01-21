@@ -273,7 +273,7 @@ export const updateDmGroup = createAsyncThunk(
 			}
 			if (typeof body.channel_avatar !== 'undefined') {
 				updatePayload.channel_avatar = body.channel_avatar;
-			} else if (typeof current?.channel_avatar !== 'undefined') {
+			} else if (typeof current?.channel_avatar !== 'undefined' && current?.channel_avatar !== '/assets/images/avatar-group.png') {
 				updatePayload.channel_avatar = current.channel_avatar;
 			}
 
