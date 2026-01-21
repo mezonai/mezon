@@ -109,6 +109,7 @@ export const userChannelsSlice = createSlice({
 		upsertMany: UserChannelAdapter.upsertMany,
 		remove: UserChannelAdapter.removeOne,
 		update: UserChannelAdapter.updateOne,
+		upsert: UserChannelAdapter.upsertOne,
 		removeMany: UserChannelAdapter.removeMany,
 		addUserChannel: (state, action: PayloadAction<{ channelId: string; userAdds: Array<string> }>) => {
 			const { channelId, userAdds } = action.payload;
