@@ -39,9 +39,10 @@ export function useSendForwardMessage() {
 					...(message.content as IMessageSendPayload),
 					fwd: true
 				};
-				await socket.joinChat(clanid, channel_id, type, isPublic);
+				await socket.joinChat(clanid || '0', channel_id, type, isPublic);
+
 				await socket.writeChatMessage(
-					clanid,
+					clanid || '0',
 					channel_id,
 					mode,
 					isPublic,
