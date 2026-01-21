@@ -18,6 +18,10 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 
+interface IApiAuditLog extends ApiAuditLog {
+	time_log_seconds?: number;
+}
+
 interface MainAuditLogProps {
 	pageSize: number;
 	setPageSize: Dispatch<SetStateAction<number>>;
@@ -50,7 +54,7 @@ const MainAuditLog = ({ pageSize, setPageSize, currentPage, setCurrentPage, sele
 	return (
 		<div className="flex flex-col">
 			{auditLogData && auditLogData.length > 0 ? (
-				auditLogData.map((log) => <AuditLogItem key={log.id} logItem={log} />)
+				auditLogData.map((log) => <AuditLogItem key={log.id} logItem={log as IApiAuditLog} />)
 			) : (
 				<div className="flex flex-col items-center justify-center text-center py-10 max-w-[440px] mx-auto">
 					<div className="flex flex-col items-center justify-center text-center max-w-[300px]">
@@ -66,11 +70,11 @@ const MainAuditLog = ({ pageSize, setPageSize, currentPage, setCurrentPage, sele
 export default MainAuditLog;
 
 type AuditLogItemProps = {
-	logItem: ApiAuditLog;
+	logItem: IApiAuditLog;
 };
 
 const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
-	const auditLogTime = convertTimeString(logItem?.time_log as string);
+	const auditLogTime = logItem?.time_log_seconds ? convertTimeString(logItem.time_log_seconds * 1000) : '';
 	const userAuditLogItem = useAppSelector((state) => selectMemberClanByUserId(state, logItem?.user_id ?? ''));
 	const username = userAuditLogItem?.user?.username;
 	const avatar = getAvatarForPrioritize(userAuditLogItem?.clan_avatar, userAuditLogItem?.user?.avatar_url);
