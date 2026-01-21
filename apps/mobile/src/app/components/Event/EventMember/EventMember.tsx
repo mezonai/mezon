@@ -46,7 +46,11 @@ export function EventMember({ event }: IEventMemberProps) {
 	const currentEvent = useAppSelector((state) => selectEventById(state, event?.clan_id ?? '', event?.id ?? ''));
 	const { t } = useTranslation('eventMenu');
 
-	if (!currentEvent?.user_ids?.length)
+	const eventMemberIds = useMemo(() => {
+		return currentEvent?.user_ids?.filter((id) => !!id && id !== '0') || [];
+	}, [currentEvent?.user_ids]);
+
+	if (!eventMemberIds?.length)
 		return (
 			<View style={styles.emptyScreen}>
 				<MezonIconCDN icon={IconCDN.peopleIcon} height={size.s_24} width={size.s_24} color={themeValue.textDisabled} />
@@ -54,5 +58,5 @@ export function EventMember({ event }: IEventMemberProps) {
 			</View>
 		);
 
-	return <View style={styles.container}>{currentEvent?.user_ids?.map((uid, index) => <Avatar key={uid} id={uid} index={index} />)}</View>;
+	return <View style={styles.container}>{eventMemberIds?.map((uid, index) => <Avatar key={uid} id={uid} index={index} />)}</View>;
 }

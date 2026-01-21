@@ -34,6 +34,7 @@ interface IMezonInputProps {
 	autoFocus?: boolean;
 	keyboardType?: KeyboardType;
 	includeEmoji?: boolean;
+	required?: boolean;
 }
 
 export default function MezonInput({
@@ -59,7 +60,8 @@ export default function MezonInput({
 	forcusInput = false,
 	autoFocus = false,
 	keyboardType = 'default',
-	includeEmoji = false
+	includeEmoji = false,
+	required = false
 }: IMezonInputProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -111,7 +113,12 @@ export default function MezonInput({
 
 	return (
 		<View style={styles.container}>
-			{label && <Text style={[styles.label, titleUppercase ? styles.titleUppercase : {}, titleStyle]}>{label}</Text>}
+			{label && (
+				<Text style={[styles.label, titleUppercase ? styles.titleUppercase : {}, titleStyle]}>
+					{label}
+					{required && <Text style={styles.required}> *</Text>}
+				</Text>
+			)}
 			<View style={[styles.fakeInput, textarea && { paddingTop: 10 }, renderBorder(), inputWrapperStyle]}>
 				<View style={styles.inputBox}>
 					{prefixIcon}
