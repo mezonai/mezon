@@ -248,7 +248,7 @@ export const removeBackticks = (text: string) => {
 export const logoutGlobal = async () => {
 	const store = getStore();
 	const userProfile = selectAllAccount(store.getState());
-	store.dispatch(authActions.logOut({ device_id: userProfile.user.username, platform: Platform.OS }));
+	store.dispatch(authActions.logOut({ device_id: userProfile?.user?.username, platform: Platform.OS }));
 	store.dispatch(directActions.removeAll());
 	store.dispatch(notificationActions.removeAll());
 	store.dispatch(channelsActions.removeAll());
