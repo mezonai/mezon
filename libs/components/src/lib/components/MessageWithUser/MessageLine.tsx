@@ -364,6 +364,7 @@ export const MessageLine = ({
 									clanId={element.clanId}
 									parentId={element.parentId}
 									channelId={element.channelId}
+									isLink={true}
 								/>
 							);
 						}
