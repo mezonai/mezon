@@ -512,5 +512,6 @@
 	},
 	"shareContact": "Share Contact",
 	"shareContactTitle": "Share Contact",
-	"sendMessage": "Message"
+	"sendMessage": "Message",
+	"noPermissionToCallBlocked": "You cannot perform this action."
 }

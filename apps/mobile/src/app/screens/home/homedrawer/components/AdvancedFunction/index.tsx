@@ -52,7 +52,8 @@ type FunctionActionId =
 	| 'ephemeral'
 	| 'transfer_funds'
 	| 'poll'
-	| 'quick_messages';
+	| 'quick_messages'
+	| 'share_contact';
 
 type AdvancedFunctionItem = {
 	id: FunctionActionId;
@@ -75,7 +76,8 @@ const FUNCTION_COLORS = {
 	BUZZ: '#D4667A',
 	EPHEMERAL: '#d1b332',
 	TRANSFER: '#5BBB8D',
-	POLL: '#1c932b'
+	POLL: '#1c932b',
+	SHARE_CONTACT: '#6BB6FF'
 } as const;
 
 const SHOULD_FOCUS_AFTER_ACTION: FunctionActionId[] = ['quick_messages', 'ephemeral', 'anonymous'];
@@ -165,6 +167,12 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 				label: t('common:poll'),
 				icon: IconCDN.pollIcon,
 				backgroundColor: FUNCTION_COLORS.POLL
+			},
+			{
+				id: 'share_contact',
+				label: t('common:shareContact'),
+				icon: IconCDN.businessIcon,
+				backgroundColor: FUNCTION_COLORS.SHARE_CONTACT
 			}
 		];
 
@@ -321,6 +329,12 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 		});
 	}, [navigation]);
 
+	const handleOpenShareContact = useCallback(() => {
+		navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
+			screen: APP_SCREEN.MESSAGES.SHARE_CONTACT
+		});
+	}, [navigation]);
+
 	const handlePoll = useCallback(() => {
 		sendMessage({ t: '*poll' }, [], [], [], undefined, undefined, undefined);
 	}, [sendMessage]);
@@ -397,9 +411,19 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 			quick_messages: () => DeviceEventEmitter.emit(ActionEmitEvent.ON_SEND_ACTION_FROM_ADVANCED_MENU, 'quickMessage'),
 			ephemeral: () => DeviceEventEmitter.emit(ActionEmitEvent.ON_SEND_ACTION_FROM_ADVANCED_MENU, 'ephemeral'),
 			poll: handlePoll,
-			pickFiles: onPickFiles
+			pickFiles: onPickFiles,
+			share_contact: handleOpenShareContact
 		}),
-		[handleLinkGoogleMap, handleCreateThread, handleActionBuzzMessage, handleToggleAnonymous, handleTransferFunds, handlePoll, onPickFiles]
+		[
+			handleLinkGoogleMap,
+			handleCreateThread,
+			handleActionBuzzMessage,
+			handleToggleAnonymous,
+			handleTransferFunds,
+			handlePoll,
+			onPickFiles,
+			handleOpenShareContact
+		]
 	);
 
 	const handleFunctionPress = useCallback(

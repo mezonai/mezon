@@ -5,6 +5,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import ForwardMessageScreen from '../../../screens/home/homedrawer/components/ForwardMessage';
+import ShareContactScreen from '../../../screens/home/homedrawer/components/ShareContact';
 import { ChatBoxStreamComponent } from '../../../screens/home/homedrawer/components/StreamingRoom/ChatBoxStream';
 import TopicDiscussion from '../../../screens/home/homedrawer/components/TopicDiscussion/TopicDiscussion';
 import { NewGroupScreen } from '../../../screens/messages/NewGroup';
@@ -13,7 +14,7 @@ import { APP_SCREEN } from '../../ScreenTypes';
 const Stack = createStackNavigator();
 
 // eslint-disable-next-line no-empty-pattern
-export const MessagesStacks = ({}: any) => {
+export const MessagesStacks = ({ }: any) => {
 	const { themeValue } = useTheme();
 	const { t } = useTranslation('screen');
 	return (
@@ -91,6 +92,14 @@ export const MessagesStacks = ({}: any) => {
 				}}
 			/>
 			<Stack.Screen name={APP_SCREEN.MESSAGES.FORWARD_MESSAGE} component={ForwardMessageScreen} options={{ headerShown: false }} />
+			<Stack.Screen name={APP_SCREEN.MESSAGES.SHARE_CONTACT} component={ShareContactScreen} options={{
+				title: t('headerTitle.shareContact'),
+				headerStyle: {
+					backgroundColor: themeValue.primary
+				},
+				headerShown: false,
+				headerShadowVisible: false
+			}} />
 		</Stack.Navigator>
 	);
 };
