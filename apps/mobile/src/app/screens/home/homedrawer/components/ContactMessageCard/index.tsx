@@ -166,7 +166,7 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 			};
 			navigateToCallModal(params);
 		}
-	}, [data?.user_id, data?.avatar, data?.display_name, dispatch, listDM, navigateToCallModal, createDirectMessage, friendStatus]);
+	}, [friendStatus, data?.user_id, data?.avatar, data?.display_name, listDM, createDirectMessage, t, navigateToCallModal, dispatch]);
 
 	const handleLongPress = useCallback(() => {
 		onLongPress && onLongPress();

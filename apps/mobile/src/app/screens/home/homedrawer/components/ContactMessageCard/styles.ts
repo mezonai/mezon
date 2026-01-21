@@ -13,16 +13,13 @@ export const style = (colors: Attributes) =>
 		},
 		cardGradient: {
 			paddingHorizontal: size.s_14,
-			paddingVertical: size.s_50,
-			position: 'relative'
+			paddingTop: size.s_14,
+			paddingBottom: size.s_50
 		},
 		avatarWrapper: {
 			flexDirection: 'row',
-			alignItems: 'center',
-			gap: size.s_12,
-			position: 'absolute',
-			top: size.s_12,
-			left: size.s_12
+			alignItems: 'flex-start',
+			gap: size.s_12
 		},
 		avatarContainer: {
 			width: size.s_40,
