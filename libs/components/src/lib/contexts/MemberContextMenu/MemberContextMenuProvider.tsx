@@ -12,6 +12,7 @@ import {
 	selectCurrentChannelType,
 	selectCurrentClanCreatorId,
 	selectCurrentClanId,
+	selectFriendById,
 	selectFriendStatus,
 	toastActions,
 	useAppDispatch,
@@ -156,8 +157,10 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 		!isSelf && isThread && (isCreator || hasClanOwnerPermission || (hasAdminPermission && !memberIsClanOwner));
 
 	const friendStatus = useAppSelector(selectFriendStatus(currentUser?.user?.id || ''));
+	const friendInfo = useAppSelector((state) => selectFriendById(state, currentUser?.user?.id || ''));
 
 	const isFriend = friendStatus === EStateFriend.FRIEND;
+	const isBlocked = friendInfo?.state === EStateFriend.BLOCK;
 
 	const shouldShowAddFriend = !isSelf && !isFriend && !!currentUser?.user?.id;
 	const shouldShowRemoveFriend = !isSelf && isFriend && !!currentUser?.user?.id;
@@ -181,7 +184,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 			case 'removeFriend':
 				return shouldShowRemoveFriend;
 			case 'shareContact':
-				return !isSelf && !!currentUser?.user?.id;
+				return !isSelf && !isBlocked && isFriend && !!currentUser?.user?.id;
 			case 'markAsRead':
 				return !!currentUser;
 			case 'banChat':

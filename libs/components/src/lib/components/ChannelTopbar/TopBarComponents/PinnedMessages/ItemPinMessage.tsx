@@ -9,12 +9,8 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { IMessageWithUser } from '@mezon/utils';
-<<<<<<< HEAD
-import { Direction_Mode, convertTimeString, generateE2eId } from '@mezon/utils';
-=======
-import { convertTimeString, generateE2eId } from '@mezon/utils';
->>>>>>> eee19a95d8faaec2614d23b49f7235b945e23721
+import type { IEmbedProps, IMessageWithUser } from '@mezon/utils';
+import { TypeMessage, convertTimeString, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -24,6 +20,7 @@ import type { UnpinMessageObject } from '.';
 import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
+import ShareContactCard from '../../../ShareContact/ShareContactCard';
 
 type ItemPinMessageProps = {
 	pinMessage: PinMessageEntity;
@@ -78,6 +75,25 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		return {};
 	}, [pinMessage.content]);
 
+	const isShareContact = useMemo(() => {
+		const code = message?.code || messageContentObject?.code || messageContentObject?.embed?.code;
+		const embeds = messageContentObject?.embed || message?.content?.embed || [];
+
+		if (code === TypeMessage.ShareContact) return true;
+		if (embeds.length > 0) {
+			const firstEmbed = embeds[0];
+			const fields = firstEmbed?.fields || [];
+			if (fields.some((f: { name?: string; value?: string }) => f.value === 'share_contact')) return true;
+		}
+		return false;
+	}, [message, messageContentObject]);
+
+	const shareContactEmbed = useMemo((): IEmbedProps | null => {
+		if (!isShareContact) return null;
+		const embeds = messageContentObject?.embed || message?.content?.embed || [];
+		return embeds[0] || null;
+	}, [isShareContact, messageContentObject, message]);
+
 	const handleUnpinConfirm = () => {
 		handleUnPinMessage({
 			pinMessage,
@@ -107,16 +123,20 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 						<div className=" text-[10px]">{messageTime}</div>
 					</div>
 					<div className="leading-6">
-						{contentString && (
-							<MessageLine
-								isInPinMsg={true}
-								isEditted={false}
-								content={messageContentObject}
-								isJumMessageEnabled={false}
-								isTokenClickAble={false}
-								messageId={message?.id}
-								isSearchMessage={true} // to correct size youtube emmbed
-							/>
+						{isShareContact && shareContactEmbed ? (
+							<ShareContactCard embed={shareContactEmbed} />
+						) : (
+							contentString && (
+								<MessageLine
+									isInPinMsg={true}
+									isEditted={false}
+									content={messageContentObject}
+									isJumMessageEnabled={false}
+									isTokenClickAble={false}
+									messageId={message?.id}
+									isSearchMessage={true}
+								/>
+							)
 						)}
 					</div>
 					{!!pinMessageAttachments?.length &&

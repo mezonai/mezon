@@ -1,16 +1,21 @@
 {
 	"modal": {
 		"title": "Share Contact",
-		"searchPlaceholder": "Search friends...",
-		"noResults": "No friends found",
-		"noFriends": "No friends available",
+		"searchPlaceholder": "Search...",
+		"noResults": "No results found",
+		"noFriends": "No friends or channels available",
 		"contactPreview": "Contact to share",
 		"cancel": "Cancel",
 		"share": "Share",
-		"sharing": "Sharing..."
+		"sharing": "Sharing...",
+		"group": "Group",
+		"channel": "Channel",
+		"thread": "Thread"
 	},
 	"card": {
-		"message": "Message"
+		"call": "Call",
+		"message": "Message",
+		"blockedAction": "You cannot perform this action."
 	},
 	"contactSharedSuccess": "Contact shared successfully",
 	"contactSharedError": "Failed to share contact"
