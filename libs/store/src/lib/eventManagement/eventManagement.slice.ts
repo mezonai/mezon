@@ -56,7 +56,7 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listEvents(ensuredMezon.session, clanId),
+		(session) => ensuredMezon.client.listEvents(session, clanId),
 		'event_list'
 	);
 
@@ -220,12 +220,13 @@ export const updateEventManagement = createAsyncThunk(
 				title,
 				clan_id,
 				creator_id,
-				channel_id,
+				channel_id: channel_id || undefined,
 				channel_id_old,
 				repeat_type
 			};
+
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateEvent(mezon.session, event_id ?? '', body);
+			await mezon.client.updateEvent(mezon.session, event_id ?? '', body);
 		} catch (error) {
 			captureSentryError(error, 'updateEventManagement/updateEventManagement');
 			return thunkAPI.rejectWithValue(error);

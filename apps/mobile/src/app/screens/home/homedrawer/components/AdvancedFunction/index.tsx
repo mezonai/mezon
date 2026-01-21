@@ -12,7 +12,7 @@ import {
 	selectCurrentClanPreventAnonymous,
 	selectCurrentDM,
 	selectCurrentTopicId,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	useAppDispatch,
 	useAppSelector,
 	type ChannelsEntity
@@ -92,7 +92,7 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 	const currentChannel = useSelector(selectCurrentChannel);
 	const clanId = useAppSelector(selectCurrentClanId);
 	const currentTopicId = useAppSelector(selectCurrentTopicId);
-	const currentDmGroup = useAppSelector(selectDmGroupCurrent(directMessageId));
+	const currentDmGroup = useAppSelector((state) => selectDmGroupById(state, directMessageId));
 	const anonymousMode = useAppSelector((state) => selectAnonymousMode(state, clanId));
 	const currentClanPreventAnonymous = useAppSelector(selectCurrentClanPreventAnonymous);
 

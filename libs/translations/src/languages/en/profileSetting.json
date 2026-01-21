@@ -66,5 +66,11 @@
 		"removeTitle": "Remove Direct Message Icon",
 		"removeDescription": "Are you sure you want to remove the direct message icon?"
 	},
-	"displayName": "DISPLAY NAME"
+	"displayName": "DISPLAY NAME",
+	"emptyClanProfile": {
+		"title": "You don't have any clan",
+		"description": "Create or join a clan to get started!",
+		"createClan": "Create a clan",
+		"joinClan": "Join a clan"
+	}
 }

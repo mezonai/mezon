@@ -19,7 +19,7 @@ import {
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectCurrentTopicId,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectDmGroupCurrentId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId,
@@ -93,7 +93,7 @@ export const ContainerMessageActionModal = React.memo(
 		const currentChannelId = useSelector(selectCurrentChannelId);
 		const currentDmId = useSelector(selectDmGroupCurrentId);
 		const currentChannel = useSelector(selectCurrentChannel);
-		const currentDmGroup = useSelector(selectDmGroupCurrent(currentDmId ?? ''));
+		const currentDmGroup = useSelector((state) => selectDmGroupById(state, currentDmId ?? ''));
 		const currentTopicId = useSelector(selectCurrentTopicId);
 		const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id));
 		const navigation = useNavigation<any>();

@@ -101,6 +101,7 @@ export const fetchListSearchMessage = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.searchMessage(mezon.session, { filters, from, size, sorts });
+
 			const channelId = filters?.find((filter) => filter.field_name === 'channel_id')?.field_value || '';
 
 			if (!response.messages) {

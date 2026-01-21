@@ -9,6 +9,7 @@ import {
 } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { clansActions, emojiSuggestionActions, getStoreAsync, inviteActions, settingClanStickerActions } from '@mezon/store-mobile';
+import { useNavigation } from '@react-navigation/native';
 import type { ApiInviteUserRes } from 'mezon-js/api.gen';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,13 +21,19 @@ import MezonInput from '../../../../../componentUI/MezonInput';
 import { ErrorInput } from '../../../../../components/ErrorInput';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../../../constants/icon_cdn';
+import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { styles } from './JoinClanModal.styles';
 
-const JoinClanModal = () => {
+type JoinClanModalProps = {
+	isProfileSetting?: boolean;
+};
+
+const JoinClanModal = ({ isProfileSetting = false }: JoinClanModalProps) => {
 	const [inviteLink, setInviteLink] = useState<string>('');
 	const [isValidInvite, setIsValidInvite] = useState<boolean>(true);
 	const { t } = useTranslation(['userEmptyClan', 'common']);
 	const { themeValue } = useTheme();
+	const navigation = useNavigation<any>();
 
 	const joinClan = async () => {
 		const inviteId = extractIdFromUrl(inviteLink.trim());
@@ -48,6 +55,9 @@ const JoinClanModal = () => {
 				store.dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: payload?.clan_id }));
 				await store.dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+				if (isProfileSetting) {
+					navigation.navigate(APP_SCREEN.HOME);
+				}
 			} else {
 				Toast.show({
 					type: 'error',

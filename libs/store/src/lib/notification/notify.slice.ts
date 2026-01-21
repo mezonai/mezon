@@ -75,9 +75,9 @@ export const fetchListNotificationCached = async (
 	}
 
 	const response = await withRetry(
-		() =>
+		(session) =>
 			ensuredMezon.client.listNotifications(
-				ensuredMezon.session,
+				session,
 				clanId,
 				LIMIT_NOTIFICATION,
 				notificationId || '0',
@@ -87,7 +87,8 @@ export const fetchListNotificationCached = async (
 		{
 			maxRetries: 3,
 			initialDelay: 1000,
-			scope: 'notifications'
+			scope: 'notifications',
+			mezon: ensuredMezon
 		}
 	);
 

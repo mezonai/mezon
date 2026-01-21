@@ -105,7 +105,7 @@ export const fetchChannelMembersCached = async (
 				state: 1
 			}
 		},
-		() => ensuredMezon.client.listChannelUsers(ensuredMezon.session, clanId, channelId, channelType, 1, 2000, ''),
+		(session) => ensuredMezon.client.listChannelUsers(session, clanId, channelId, channelType, 1, 2000, ''),
 		'channel_user_list'
 	);
 

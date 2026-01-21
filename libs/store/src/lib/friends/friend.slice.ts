@@ -106,7 +106,7 @@ export const fetchListFriendsCached = async (
 			api_name: 'ListFriends',
 			list_friend_req: {}
 		},
-		() => ensuredMezon.client.listFriends(ensuredMezon.session),
+		(session) => ensuredMezon.client.listFriends(session),
 		'friend_list'
 	);
 

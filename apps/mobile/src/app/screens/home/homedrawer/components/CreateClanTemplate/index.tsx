@@ -171,7 +171,11 @@ const CLAN_TEMPLATES: ClanTemplate[] = [
 	}
 ];
 
-const CreateClanTemplate = () => {
+type CreateClanTemplateProps = {
+	isProfileSetting?: boolean;
+};
+
+const CreateClanTemplate = ({ isProfileSetting = false }: CreateClanTemplateProps) => {
 	const { t } = useTranslation('clan');
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
@@ -240,7 +244,7 @@ const CreateClanTemplate = () => {
 					</View>
 				</View>
 			)}
-			{isVisible && <CreateClanModal template={selectedTemplate} onGoback={handleGoback} />}
+			{isVisible && <CreateClanModal template={selectedTemplate} onGoback={handleGoback} isProfileSetting={isProfileSetting} />}
 		</>
 	);
 };
