@@ -282,7 +282,15 @@ function ChannelVoice({
 					colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
 					style={[StyleSheet.absoluteFillObject]}
 				/>
-				<LiveKitRoom serverUrl={serverUrl} token={token} connect={true}>
+				<LiveKitRoom
+					serverUrl={serverUrl}
+					token={token}
+					connect={true}
+					options={{
+						dynacast: true,
+						adaptiveStream: true
+					}}
+				>
 					<HeaderRoomView
 						channelId={channelId}
 						onPressMinimizeRoom={onPressMinimizeRoom}

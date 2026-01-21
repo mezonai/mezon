@@ -139,7 +139,7 @@ export const fetchMaxChannelPermissionCached = async (
 				clan_id: clanId
 			}
 		},
-		() => mezon.client.listUserPermissionInChannel(mezon.session, clanId, channelId),
+		() => mezon.client.listUserPermissionInChannel(mezon.session, clanId || '0', channelId || '0'),
 		'user_permission_list'
 	);
 
