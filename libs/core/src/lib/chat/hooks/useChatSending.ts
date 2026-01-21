@@ -259,8 +259,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			};
 
 			await socket.updateChatMessage(
-				getClanId || '',
-				channelIdOrDirectId ?? '',
+				getClanId || '0',
+				channelIdOrDirectId ?? '0',
 				mode,
 				isPublic,
 				messageId,
@@ -268,9 +268,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				mentions,
 				attachments,
 				hide_editted,
-				topic_id,
-				!!isTopic,
-				new TextEncoder().encode(oldMentions)
+				topic_id || '0',
+				!!isTopic
 			);
 		},
 		[sessionRef, clientRef, socketRef, channelOrDirect, getClanId, channelIdOrDirectId, mode, isPublic]
