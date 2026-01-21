@@ -260,7 +260,6 @@ const Notifications = ({ navigation, route }) => {
 
 	const handleOnPressNotify = useCallback(
 		async (notify: INotification) => {
-			console.log("log => notify: ", notify);
 			if (!notify?.content?.channel_id) return;
 
 			const store = await getStoreAsync();

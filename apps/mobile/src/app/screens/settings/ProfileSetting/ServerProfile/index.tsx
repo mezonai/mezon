@@ -23,6 +23,7 @@ import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../componentUI/MezonInput';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import BannerAvatar from '../UserProfile/components/Banner';
+import EmptyClanProfile from './EmptyClanProfile';
 import { style } from './styles';
 
 interface IServerProfile {
@@ -162,6 +163,10 @@ const ServerProfile = forwardRef(function ServerProfile({ navigation }: IServerP
 			updateClanProfile();
 		}
 	}));
+
+	if (!clans?.length) {
+		return <EmptyClanProfile />;
+	}
 
 	return (
 		<KeyboardAvoidingView behavior={'position'} style={[styles.keyboardAvoidingView, { width: Dimensions.get('screen').width }]}>

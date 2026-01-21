@@ -52,11 +52,39 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 		const yearNum = Number(year);
 		const currentYear = new Date().getFullYear();
 
-		if (year.length !== 4 || isNaN(yearNum) || yearNum > currentYear) {
+		const isCompleteDate = year && month && day && year.length === 4 && month.length === 2 && day.length === 2;
+
+		if (!isCompleteDate) {
+			return;
+		}
+
+		const isYearStartingWithZero = year.startsWith('0') && yearNum < 1000;
+
+		if (year.length !== 4 || isNaN(yearNum) || !Number.isInteger(yearNum) || isYearStartingWithZero || yearNum > currentYear) {
+			return;
+		}
+
+		const monthNum = Number(month);
+		const dayNum = Number(day);
+
+		if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) {
+			return;
+		}
+
+		if (isNaN(dayNum) || dayNum < 1 || dayNum > 31) {
 			return;
 		}
 
 		const formattedDate = new Date(Date.UTC(yearNum, Number(month) - 1, Number(day), 0, 0, 0));
+
+		if (
+			formattedDate.getUTCFullYear() !== yearNum ||
+			formattedDate.getUTCMonth() !== Number(month) - 1 ||
+			formattedDate.getUTCDate() !== Number(day)
+		) {
+			return;
+		}
+
 		const isoFormattedDate = formattedDate.toISOString();
 		setDob(isoFormattedDate);
 	};
@@ -75,13 +103,24 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 						id="birthday"
 						max={new Date().toISOString().split('T')[0]}
 						onChange={handleBirthdayChange}
+						onKeyDown={(e) => {
+							if (e.key !== 'Tab' && e.key !== 'Escape' && e.key !== 'Enter' && !e.key.startsWith('Arrow')) {
+								e.preventDefault();
+							}
+						}}
+						onPaste={(e) => e.preventDefault()}
 						className="mb-4 px-4 py-2 mt-5 border-2 border-color-theme text-theme-message rounded-lg bg-input-secondary w-9/10"
 					/>
 					<div className="flex space-x-4 mb-4 w-9/10">
 						<button
 							type="button"
 							onClick={handleSubmit}
-							className="border-2 border-blue-600 rounded-lg px-6 py-2 bg-blue-600 text-white w-full"
+							disabled={!dob || dob === ''}
+							className={`border-2 rounded-lg px-6 py-2 w-full ${
+								!dob || dob === ''
+									? 'border-gray-400 bg-gray-400 text-gray-600 cursor-not-allowed'
+									: 'border-blue-600 bg-blue-600 text-white'
+							}`}
 						>
 							{t('submit')}
 						</button>

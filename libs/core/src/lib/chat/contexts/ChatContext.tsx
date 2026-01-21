@@ -70,6 +70,7 @@ import {
 	selectDataReferences,
 	selectDefaultChannelIdByClanId,
 	selectDirectById,
+	selectDmGroupById,
 	selectDmGroupCurrentId,
 	selectIsInCall,
 	selectLastMessageByChannelId,
@@ -170,19 +171,16 @@ import type {
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
+import type { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction, ApiNotification } from 'mezon-js/api.gen';
 import type {
 	ApiChannelMessageHeader,
 	ApiClanEmoji,
-	ApiCreateEventRequest,
-	ApiGiveCoffeeEvent,
-	ApiMessageReaction,
-	ApiNotification,
 	ApiNotificationUserChannel,
 	ApiPermissionUpdate,
 	ApiTokenSentEvent,
 	ApiUpdateCategoryDescRequest,
 	ApiWebhook
-} from 'mezon-js/api.gen';
+} from 'mezon-js/dist/api.gen';
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -234,7 +232,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				if (voiceChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && hasJoinSoundEffect) {
 					const joinSoundElement = document.createElement('audio');
-					joinSoundElement.src = '/assets/audio/joincallsound.mp3';
+					joinSoundElement.src = 'assets/audio/joincallsound.mp3';
 					joinSoundElement.preload = 'auto';
 					joinSoundElement.style.display = 'none';
 
@@ -310,7 +308,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const handleBuzz = useCallback((channelId: string, senderId: string, isReset: boolean, mode: ChannelStreamMode | undefined) => {
-		const audio = new Audio('/assets/audio/buzz.mp3');
+		const audio = new Audio('assets/audio/buzz.mp3');
 
 		const cleanup = () => {
 			audio.removeEventListener('ended', cleanup);
@@ -649,15 +647,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			) {
 				dispatch(
 					notificationActions.add({
-						data: {
-							...notification,
-							create_time: notification.create_time || new Date().toISOString(),
-							id: notification.id || '',
-							content: {
-								...notification.content,
-								content: safeJSONParse(notification.content?.content || '')?.t
-							}
-						},
+						data: { ...notification, id: notification?.id || '' },
 						category: notification.category as NotificationCategory
 					})
 				);
@@ -702,7 +692,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			if (isLinuxDesktop) {
 				const notiSoundElement = document.createElement('audio');
-				notiSoundElement.src = '/assets/audio/noti-linux.mp3';
+				notiSoundElement.src = 'assets/audio/noti-linux.mp3';
 				notiSoundElement.preload = 'auto';
 				notiSoundElement.style.display = 'none';
 				document.body.appendChild(notiSoundElement);
@@ -732,7 +722,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					channelId: pin.channel_id,
 					pinMessage: {
 						id: pin.message_id,
-						attachment: JSON.parse(pin.message_attachment),
+						attachment: new TextEncoder().encode(pin.message_attachment),
 						avatar: pin.message_sender_avatar,
 						channel_id: pin.channel_id,
 						content: pin.message_content,
@@ -820,7 +810,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						if (user.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 							const parentChannelId = currentChannel?.parent_id;
 							if (parentChannelId) {
-								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`, true);
+								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`);
 								return;
 							}
 						}
@@ -832,13 +822,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						const redirectChannelId = defaultChannelId || fallbackChannelId;
 
 						if (redirectChannelId) {
-							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`, true);
+							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
 						} else {
-							navigate(`/chat/clans/${clanId}/member-safety`, true);
+							navigate(`/chat/clans/${clanId}/member-safety`);
 						}
 					}
 					if (!isMobile && directId === user.channel_id) {
-						navigate(`/chat/direct/friends`, true);
+						navigate(`/chat/direct/friends`);
 					}
 					dispatch(directSlice.actions.removeByDirectID(user.channel_id));
 					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: clanId as string }));
@@ -941,7 +931,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					}
 					dispatch(clansSlice.actions.removeByClanID(user.clan_id));
 					dispatch(listChannelsByUserActions.remove(id));
-					dispatch(listChannelRenderAction.removeListChannelRenderByClanId({ clanId: user?.clan_id }));
 					dispatch(appActions.cleanHistoryClan(user.clan_id));
 					dispatch(channelsActions.removeByClanId(user.clan_id));
 				}
@@ -1073,20 +1062,24 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				);
 			}
 
-			if (channel_desc.type === ChannelType.CHANNEL_TYPE_GROUP) {
-				dispatch(
-					directActions.addGroupUserWS({
-						channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
-						users
-					})
-				);
-				dispatch(
-					channelMembersActions.addNewMember({
-						channel_id: channel_desc.channel_id as string,
-						user_ids: userIds,
-						addedByUserId: caller?.user_id
-					})
-				);
+			if (channel_desc.type === ChannelType.CHANNEL_TYPE_GROUP || channel_desc.type === ChannelType.CHANNEL_TYPE_DM) {
+				const state = getStore();
+				const existingEntity = selectDmGroupById(state, channel_desc.channel_id || '');
+				if (existingEntity && existingEntity.id) {
+					dispatch(
+						directActions.addGroupUserWS({
+							channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
+							users
+						})
+					);
+					dispatch(
+						channelMembersActions.addNewMember({
+							channel_id: channel_desc.channel_id as string,
+							user_ids: userIds,
+							addedByUserId: caller?.user_id
+						})
+					);
+				}
 			}
 
 			if (currentClanId === clan_id) {
@@ -1356,7 +1349,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 			if (isReceiverGiveCoffee) {
 				const joinSoundElement = document.createElement('audio');
-				joinSoundElement.src = '/assets/audio/bankSound.mp3';
+				joinSoundElement.src = 'assets/audio/bankSound.mp3';
 				joinSoundElement.preload = 'auto';
 				joinSoundElement.style.display = 'none';
 				document.body.appendChild(joinSoundElement);
@@ -1616,7 +1609,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const request: ApiUpdateCategoryDescRequest = {
 				category_id: categoryEvent.id || '',
 				category_name: categoryEvent.category_name,
-				ClanId: categoryEvent.clan_id
+				clan_id: categoryEvent.clan_id
 			};
 			dispatch(
 				categoriesActions.updateOne({
@@ -2964,4 +2957,3 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider, MobileEventEmitter };
-

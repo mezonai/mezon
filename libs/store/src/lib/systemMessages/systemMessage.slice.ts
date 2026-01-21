@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { FOR_15_MINUTES_SEC, type IPSystemMessage, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiSystemMessage, ApiSystemMessageRequest, ApiSystemMessagesList, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
+import type { ApiSystemMessage, ApiSystemMessagesList, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -95,12 +95,6 @@ export const fetchSystemMessageByClanId = createAsyncThunk(
 	}
 );
 
-export const createSystemMessage = createAsyncThunk('systemMessages/createSystemMessage', async (newMessage: ApiSystemMessageRequest, thunkAPI) => {
-	const mezon = await ensureSession(getMezonCtx(thunkAPI));
-	const response: ApiSystemMessage = await mezon.client.createSystemMessage(mezon.session, newMessage);
-	return response;
-});
-
 export interface IUpdateSystemMessage {
 	clanId: string;
 	newMessage: MezonUpdateSystemMessageBody;
@@ -186,12 +180,6 @@ export const systemMessageSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message ?? null;
 			})
-			.addCase(createSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<any>) => {
-				const payload = action.payload;
-				if (payload?.id) {
-					systemMessageAdapter.addOne(state, payload);
-				}
-			})
 			.addCase(updateSystemMessage.fulfilled, (state: SystemMessageState, action: PayloadAction<any>) => {
 				const payload = action.payload;
 				if (payload?.id) {
@@ -217,7 +205,6 @@ export const systemMessageActions = {
 	...systemMessageSlice.actions,
 	fetchSystemMessageByClanId,
 	fetchSystemMessages,
-	createSystemMessage,
 	updateSystemMessage,
 	deleteSystemMessage
 };

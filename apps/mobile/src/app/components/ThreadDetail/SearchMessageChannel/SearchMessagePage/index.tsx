@@ -6,18 +6,22 @@ import {
 	listChannelsByUserActions,
 	selectAllChannelMembers,
 	selectAllChannelsByUser,
+	selectAllDirectMessages,
 	selectAllUsersByUser,
+	selectAllUsesInAllClansEntities,
 	selectDirectsOpenlist,
+	selectEntitesUserClans,
 	selectTotalResultSearchMessage,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
 import type { IChannel, SearchItemProps } from '@mezon/utils';
-import { compareObjects, normalizeString } from '@mezon/utils';
+import { addAttributesSearchList, compareObjects, normalizeString } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { removeDiacritics } from '../../../../utils/helpers';
 import { ChannelsSearchTab } from '../../../ChannelsSearchTab';
 import { EmptySearchPage } from '../../../EmptySearchPage';
@@ -49,6 +53,56 @@ const SearchMessagePage = ({
 	const { t } = useTranslation(['searchMessageChannel']);
 	const [activeTab, setActiveTab] = useState<number>(ACTIVE_TAB.MEMBER);
 	const [isContentReady, setIsContentReady] = useState(false);
+	const allClanUsersEntitiesRef = useRef(useSelector(selectEntitesUserClans));
+	const dmGroupChatListRef = useRef(useAppSelector(selectAllDirectMessages));
+	const allUsesInAllClansEntitiesRef = useRef(useSelector(selectAllUsesInAllClansEntities));
+	const allClanUsersEntities = allClanUsersEntitiesRef.current;
+	const dmGroupChatList = dmGroupChatListRef.current;
+	const allUsesInAllClansEntities = allUsesInAllClansEntitiesRef.current;
+	const checkListDM = useRef(new Set<string>());
+	const listDirectSearch = useMemo(() => {
+		const listDmSearchMap = [];
+		if (dmGroupChatList.length) {
+			dmGroupChatList.map((itemDM: DirectEntity) => {
+				if (itemDM.active === 1) {
+					listDmSearchMap.push({
+						id: itemDM.channel_id,
+						username: itemDM?.usernames?.toString() ?? '',
+						display_name: itemDM.channel_label,
+						channel_label: itemDM.channel_label,
+						avatar_url: itemDM.type === ChannelType.CHANNEL_TYPE_DM ? (itemDM?.avatars?.[0] ?? '') : itemDM?.channel_avatar,
+						type: itemDM.type === ChannelType.CHANNEL_TYPE_GROUP ? itemDM.type : ''
+					});
+				}
+				if (itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
+					checkListDM.current?.add(itemDM?.user_ids?.[0]);
+				}
+			});
+		}
+		return addAttributesSearchList(listDmSearchMap, Object.values(allUsesInAllClansEntities) as any);
+	}, [dmGroupChatList, allUsesInAllClansEntities]);
+	const listMemberSearch = useMemo(() => {
+		const list = [];
+
+		for (const userId in allUsesInAllClansEntities) {
+			const user = allUsesInAllClansEntities[userId];
+			if (!checkListDM.current?.has(user?.id)) {
+				list.push({
+					id: user?.id ?? '',
+					display_name: allClanUsersEntities[user?.id]?.clan_nick ?? user?.display_name ?? '',
+					username: user?.username ?? '',
+					avatar_url: user?.avatar_url ?? ''
+				});
+			}
+		}
+		return list as SearchItemProps[];
+	}, [allClanUsersEntities, allUsesInAllClansEntities]);
+
+	const totalLists = useMemo(() => {
+		if (nameChannel) return [];
+
+		return (listMemberSearch || []).concat(listDirectSearch || []);
+	}, [nameChannel, listMemberSearch, listDirectSearch]);
 
 	const channelId = useMemo(() => {
 		if (!currentChannel) {
@@ -177,9 +231,9 @@ const SearchMessagePage = ({
 	}, []);
 
 	const membersSearch = useMemo(() => {
-		const allMembers = nameChannel ? channelMembers : allUsers;
+		const allMembers = nameChannel ? channelMembers : totalLists;
 		return filterAndSortMembers(allMembers, searchText);
-	}, [nameChannel, channelMembers, allUsers, searchText, filterAndSortMembers]);
+	}, [nameChannel, channelMembers, totalLists, filterAndSortMembers, searchText]);
 
 	const dmGroupsSearch = useMemo(() => {
 		if (nameChannel) return [];

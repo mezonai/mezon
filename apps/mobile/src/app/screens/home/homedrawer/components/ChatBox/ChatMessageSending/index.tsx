@@ -13,7 +13,7 @@ import {
 	selectAllRolesClan,
 	selectAttachmentByChannelId,
 	selectChannelById,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectIsShowCreateTopic,
 	selectMemberClanByUserId,
 	selectMemberIdsByChannelId,
@@ -104,7 +104,7 @@ export const ChatMessageSending = memo(
 		const store = getStore();
 		const attachmentFilteredByChannelId = useAppSelector((state) => selectAttachmentByChannelId(state, currentTopicId || channelId));
 		const currentChannel = useAppSelector((state) => selectChannelById(state, channelId || ''));
-		const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
+		const currentDmGroup = useSelector((state) => selectDmGroupById(state, channelId));
 		const { addMemberToThread, joinningToThread } = useChannelMembers({
 			channelId,
 			mode: ChannelStreamMode.STREAM_MODE_CHANNEL ?? 0
@@ -130,10 +130,10 @@ export const ChatMessageSending = memo(
 		const roleList = useMemo(() => {
 			const rolesInClan = selectAllRolesClan(store.getState() as any);
 			return rolesInClan?.map((item) => ({
-				roleId: item.id ?? '',
+				roleId: item.id || '0',
 				roleName: item?.title ?? ''
 			}));
-		}, []);
+		}, [store]);
 
 		const removeTags = (text: string) => {
 			if (!text) return '';
@@ -297,17 +297,17 @@ export const ChatMessageSending = memo(
 			const reference = targetMessage
 				? ([
 						{
-							message_id: '',
-							message_ref_id: targetMessage.id,
+							message_id: '0',
+							message_ref_id: targetMessage?.id || '0',
 							ref_type: 0,
-							message_sender_id: targetMessage?.sender_id,
+							message_sender_id: targetMessage?.sender_id || '0',
 							message_sender_username: targetMessage?.username,
 							mesages_sender_avatar: targetMessage.clan_avatar ? targetMessage.clan_avatar : targetMessage.avatar,
 							message_sender_clan_nick: targetMessage?.clan_nick,
 							message_sender_display_name: targetMessage?.display_name,
 							content: JSON.stringify(targetMessage.content),
 							has_attachment: Boolean(targetMessage?.attachments?.length),
-							channel_id: targetMessage.channel_id ?? '',
+							channel_id: targetMessage.channel_id || '0',
 							mode: targetMessage.mode ?? 0,
 							channel_label: targetMessage.channel_label
 						}

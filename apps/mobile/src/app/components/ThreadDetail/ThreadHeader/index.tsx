@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { selectDmGroupCurrent } from '@mezon/store-mobile';
+import { selectDmGroupById } from '@mezon/store';
 import { ChannelStatusEnum, createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
@@ -22,7 +22,7 @@ export const ThreadHeader = memo(() => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const currentChannel = useContext(threadDetailContext);
-	const currentDmGroup = useSelector(selectDmGroupCurrent(currentChannel?.id ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, currentChannel?.id ?? ''));
 	const isTabletLandscape = useTabletLandscape();
 	const isDMThread = useMemo(() => {
 		return [ChannelType.CHANNEL_TYPE_DM, ChannelType.CHANNEL_TYPE_GROUP].includes(currentChannel?.type);

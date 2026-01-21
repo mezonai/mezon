@@ -55,11 +55,11 @@ export default defineConfig(({ mode }) => {
 			viteStaticCopy({
 				targets: [
 					{
-						src: path.join(workspaceRoot, 'libs/assets/src/assets/*'),
+						src: path.join(workspaceRoot, 'libs/assets/src/assets/*').replace(/\\/g, '/'),
 						dest: 'assets'
 					},
 					{
-						src: path.join(appRoot, 'src/assets/*'),
+						src: path.join(appRoot, 'src/assets/*').replace(/\\/g, '/'),
 						dest: 'assets'
 					}
 				],
@@ -84,6 +84,7 @@ export default defineConfig(({ mode }) => {
 		],
 
 		define: {
+			global: 'globalThis',
 			'process.env.NODE_ENV': JSON.stringify(mode),
 			'process.env.APP_VERSION': JSON.stringify(APP_VERSION),
 			...Object.keys(env).reduce(

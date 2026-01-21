@@ -1,7 +1,7 @@
 import { useChatSending } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { selectChannelById, selectDmGroupCurrent } from '@mezon/store';
+import { selectChannelById, selectDmGroupById } from '@mezon/store';
 import { useAppSelector } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -12,7 +12,7 @@ import AudioRecorderPlayer from 'react-native-audio-recorder-player';
 import { Audio } from 'react-native-compressor';
 import RNFS from 'react-native-fs';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import { check, PERMISSIONS } from 'react-native-permissions';
+import { PERMISSIONS, check } from 'react-native-permissions';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -56,7 +56,7 @@ export const RecordMessageSending = memo(
 		}, []);
 
 		const currentChannel = useAppSelector((state) => selectChannelById(state, channelId || ''));
-		const currentDmGroup = useSelector(selectDmGroupCurrent(channelId));
+		const currentDmGroup = useSelector((state) => selectDmGroupById(state, channelId));
 
 		const channelOrDirect =
 			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel : currentDmGroup;

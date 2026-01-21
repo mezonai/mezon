@@ -10,6 +10,7 @@ import Sound from 'react-native-sound';
 import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
+import { RAISE_HAND_COOLDOWN_MS } from '../ControlBottomBar/ButtonRaiseHand';
 import { style } from '../styles';
 
 const { width, height } = Dimensions.get('window');
@@ -48,6 +49,7 @@ interface EmojiItem {
 
 interface RaiseHandItem {
 	id: string;
+	senderId: string;
 	displayName: string;
 	avatarUrl: string;
 	opacity: Animated.Value;
@@ -90,14 +92,17 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [displayedEmojis, setDisplayedEmojis] = useState<EmojiItem[]>([]);
-	const [raiseHandAnimation, setRaiseHandAnimation] = useState<RaiseHandItem>(null);
+	const [raiseHandList, setRaiseHandList] = useState<RaiseHandItem[]>([]);
 	const { socketRef } = useMezon();
 	const animationTimeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
+	const raiseHandTimeoutsRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
 	const soundRefs = useRef<Map<string, Sound>>(new Map());
 	// Cleanup function for timeouts
 	const cleanupTimeouts = useCallback(() => {
 		animationTimeoutsRef.current.forEach(clearTimeout);
 		animationTimeoutsRef.current.clear();
+		raiseHandTimeoutsRef.current.forEach(clearTimeout);
+		raiseHandTimeoutsRef.current.clear();
 	}, []);
 	const displayedCountRef = useRef<number>(0);
 
@@ -179,39 +184,66 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 			])
 		]);
 	}, []);
+
+	const removeRaiseHand = useCallback((senderId: string) => {
+		const timeoutId = raiseHandTimeoutsRef.current.get(senderId);
+		if (timeoutId) {
+			clearTimeout(timeoutId);
+			raiseHandTimeoutsRef.current.delete(senderId);
+		}
+		displayedCountRef.current = Math.max(0, displayedCountRef.current - 1);
+		setRaiseHandList((prev: RaiseHandItem[]) => prev.filter((item) => item.senderId !== senderId));
+	}, []);
+
 	const createRaiseHandAnimation = useCallback(
-		(displayName: string, avatarUrl: string) => {
-			const item: RaiseHandItem = {
-				id: `${displayName}-${Date.now()}`,
-				displayName,
-				opacity: new Animated.Value(0),
-				translateY: new Animated.Value(50),
-				avatarUrl
-			};
-			cleanupTimeouts();
-			setRaiseHandAnimation(item);
+		(displayName: string, avatarUrl: string, senderId: string) => {
+			setRaiseHandList((prev: RaiseHandItem[]) => {
+				const exists = prev.find((item) => item.senderId === senderId);
+				if (exists) {
+					const oldTimeout = raiseHandTimeoutsRef.current.get(senderId);
+					if (oldTimeout) clearTimeout(oldTimeout);
 
-			Animated.parallel([
-				Animated.timing(item.opacity, {
-					toValue: 1,
-					duration: 300,
-					useNativeDriver: true
-				}),
-				Animated.timing(item.translateY, {
-					toValue: 0,
-					duration: 300,
-					useNativeDriver: true
-				})
-			]).start();
+					const timeoutId = setTimeout(() => {
+						removeRaiseHand(senderId);
+					}, 10000);
+					raiseHandTimeoutsRef.current.set(senderId, timeoutId);
+					return prev;
+				}
 
-			const timeoutId = setTimeout(() => {
-				setRaiseHandAnimation(null);
-				animationTimeoutsRef.current.delete(timeoutId);
-			}, 5000);
+				const item: RaiseHandItem = {
+					id: `${senderId}-${Date.now()}`,
+					displayName,
+					avatarUrl,
+					senderId,
+					opacity: new Animated.Value(0),
+					translateY: new Animated.Value(50)
+				};
 
-			animationTimeoutsRef.current.add(timeoutId);
+				
+
+				Animated.parallel([
+					Animated.timing(item.opacity, {
+						toValue: 1,
+						duration: 300,
+						useNativeDriver: true
+					}),
+					Animated.timing(item.translateY, {
+						toValue: 0,
+						duration: 300,
+						useNativeDriver: true
+					})
+				]).start();
+
+				const timeoutId = setTimeout(() => {
+					removeRaiseHand(senderId);
+				}, RAISE_HAND_COOLDOWN_MS);
+
+				raiseHandTimeoutsRef.current.set(senderId, timeoutId);
+
+				return [...(prev || []), item];
+			});
 		},
-		[cleanupTimeouts]
+		[removeRaiseHand]
 	);
 
 	// Optimized emoji creation and animation trigger
@@ -299,12 +331,14 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 				const senderId = message.sender_id;
 
 				if (emojiId) {
-					if (emojiId?.startsWith('raising:')) {
+					if (emojiId?.startsWith('raising-up:')) {
 						const store = getStore();
 						const members = selectMemberClanByUserId(store.getState?.(), senderId);
 						const displayName = members?.clan_nick || members?.user?.display_name || members?.user?.username || '';
 						const avatarUrl = members?.clan_avatar || members?.user?.avatar_url || '';
-						createRaiseHandAnimation(displayName, avatarUrl);
+						createRaiseHandAnimation(displayName, avatarUrl, senderId);
+					} else if (emojiId?.startsWith('raising-down:')) {
+						removeRaiseHand(senderId);
 					} else if (emojiId.startsWith('sound:')) {
 						const soundId = emojiId.replace('sound:', '');
 						const soundUrl = getSrcSound(soundId);
@@ -321,13 +355,15 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 						createAndAnimateEmoji(emojiId, displayName);
 					}
 				}
-				displayedCountRef.current = displayedCountRef.current + 1;
+				if (!emojiId?.startsWith('raising-down:')){
+					displayedCountRef.current = displayedCountRef.current + 1;
+				}
 			} catch (error) {
 				console.error('Error handling voice reaction:', error);
 				displayedCountRef.current = Math.max(0, displayedCountRef.current - 1);
 			}
 		},
-		[channelId, createAndAnimateEmoji, createRaiseHandAnimation, onSoundReaction, playSound]
+		[channelId, createAndAnimateEmoji, createRaiseHandAnimation, onSoundReaction, playSound, removeRaiseHand]
 	);
 
 	// Effect for socket handling with proper cleanup
@@ -358,7 +394,7 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 		};
 	}, [cleanupTimeouts]);
 
-	if ((displayedEmojis?.length === 0 && !raiseHandAnimation) || !isAnimatedCompleted) {
+	if ((displayedEmojis?.length === 0 && raiseHandList?.length === 0) || !isAnimatedCompleted) {
 		return null;
 	}
 
@@ -367,33 +403,30 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 			{displayedEmojis.map((item) => (
 				<AnimatedEmoji key={item.id} item={item} styles={styles} />
 			))}
-			{raiseHandAnimation && (
+			{raiseHandList?.map((item, index) => (
 				<Animated.View
+					key={`raisehand-${item?.id}`}
 					style={[
 						styles.raiseHandIcon,
 						{
-							opacity: raiseHandAnimation.opacity,
-							transform: [{ translateY: raiseHandAnimation.translateY }]
+							opacity: item?.opacity,
+							transform: [{ translateY: item?.translateY }],
+							bottom: (Platform.OS === 'ios' ? -size.s_50 : -size.s_100) + index * 50
 						},
 						styles.raiseHandWrapper
 					]}
 				>
-					{raiseHandAnimation?.displayName && (
+					{item?.displayName && (
 						<View style={styles.reactionRaiseHandContainer}>
-							<MezonClanAvatar
-								image={raiseHandAnimation.avatarUrl}
-								alt={raiseHandAnimation.displayName}
-								imageHeight={100}
-								imageWidth={100}
-							/>
+							<MezonClanAvatar image={item?.avatarUrl} alt={item?.displayName} imageHeight={100} imageWidth={100} />
 						</View>
 					)}
 					<Text numberOfLines={1} style={styles.senderNameRaiseHand}>
-						{raiseHandAnimation.displayName}
+						{item?.displayName}
 					</Text>
 					<MezonIconCDN icon={IconCDN.raiseHandIcon} height={size.s_32} width={size.s_32} color={baseColor.goldenrodYellow} />
 				</Animated.View>
-			)}
+			))}
 		</View>
 	);
 });

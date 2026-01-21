@@ -244,11 +244,12 @@ export const fetchMessagesCached = async (
 	// );
 
 	const response = await withRetry(
-		() => ensuredMezon.client.listChannelMessages(ensuredMezon.session, clanId, channelId, messageId, direction, LIMIT_MESSAGE, topicId),
+		(session) => ensuredMezon.client.listChannelMessages(session, clanId, channelId, messageId, direction, LIMIT_MESSAGE, topicId),
 		{
 			maxRetries: 5,
 			initialDelay: 1000,
-			scope: 'channel-messages'
+			scope: 'channel-messages',
+			mezon: ensuredMezon
 		}
 	);
 
@@ -1268,7 +1269,7 @@ export const sendTypingUser = createAsyncThunk(
 	'messages/sendTypingUser',
 	async ({ clanId, channelId, mode, isPublic, username, topicId = '' }: SendMessageArgs, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const ack = mezon.socketRef.current?.writeMessageTyping(clanId, channelId, mode, isPublic, username, topicId);
+		const ack = mezon.socketRef.current?.writeMessageTyping(clanId, channelId, mode, isPublic, username, topicId || '0');
 		return ack;
 	}
 );
@@ -1358,7 +1359,9 @@ export const messagesSlice = createSlice({
 			if (!message.reactions) {
 				message.reactions = [];
 			}
-			const existingReactionIndex = message.reactions.findIndex((r) => r.emoji_id === emoji_id && r.sender_id === sender_id);
+			const existingReactionIndex = Array.isArray(message.reactions)
+				? message.reactions.findIndex((r) => r.emoji_id === emoji_id && r.sender_id === sender_id)
+				: -1;
 			if (existingReactionIndex !== -1) {
 				!remove ? message.reactions[existingReactionIndex].count++ : (message.reactions[existingReactionIndex].count = 0);
 			} else {

@@ -7,7 +7,7 @@ import {
 	selectCloseMenu,
 	selectCurrentStreamInfo,
 	selectDirectById,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectGroupCallId,
 	selectJoinedCall,
 	selectStreamMembersByChannelId,
@@ -37,7 +37,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 	const closeMenu = useSelector(selectCloseMenu);
 	const streamChannelMember = useAppSelector((state) => selectStreamMembersByChannelId(state, currentStreamInfo?.streamId || ''));
 	const groupCallId = useSelector(selectGroupCallId);
-	const currentDmGroup = useSelector(selectDmGroupCurrent(groupCallId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, groupCallId ?? ''));
 	const dmUserId = currentDmGroup?.user_ids?.[0] || '';
 	const direct = useAppSelector((state) => selectDirectById(state, groupCallId)) || {};
 	const isJoinedCall = useSelector(selectJoinedCall);

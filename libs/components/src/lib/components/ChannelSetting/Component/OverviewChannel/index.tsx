@@ -305,7 +305,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 	return (
 		<div className="overflow-y-auto flex flex-col flex-1 shrink  w-1/2 lg:pt-[94px] sbm:pb-7 text-theme-primary bg-theme-setting-primary pr-[10px] sbm:pr-[10px] pl-[10px] sbm:pl-[40px] overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
 			<div className=" text-[15px]" data-e2e={generateE2eId(`clan_page.channel_list.settings.overview`)}>
-				<h3 className="mb-4 font-bold text-xl text-theme-primary-active">{t('overview.title')}</h3>
+				<h3 className="mb-4 font-semibold text-xl text-theme-primary-active">{t('overview.title')}</h3>
 				<p className="text-xs font-bold mb-2">{isThread ? t('fields.threadName.title') : t('fields.channelName.title')}</p>
 				<InputField
 					type="text"

@@ -70,7 +70,7 @@ export const fetchDefaultNotificationCategoryCached = async (
 				category_id: categoryId
 			}
 		},
-		() => mezon.client.getNotificationCategory(mezon.session, categoryId),
+		(session) => mezon.client.getNotificationCategory(session, categoryId),
 		'notificaion_user_channel'
 	);
 
@@ -342,7 +342,7 @@ export const fetchChannelCategorySettingCached = async (getState: () => RootStat
 				clan_id: clanId
 			}
 		},
-		() => mezon.client.getChannelCategoryNotiSettingsList(mezon.session, clanId),
+		(session) => mezon.client.getChannelCategoryNotiSettingsList(session, clanId),
 		'notification_list'
 	);
 

@@ -15,22 +15,26 @@ export const RaisingHandControls = memo(() => {
 		if (!userId) return;
 		if (timeCount.current >= 10) return;
 
-		setHand(!hand);
-		sendRaisingHand(userId, !hand);
+		const nextHand = !hand;
 
-		if (timeoutRef.current && hand) {
-			clearTimeout(timeoutRef.current);
+		setHand(nextHand);
+		sendRaisingHand(userId, nextHand);
+
+		if (!nextHand) {
+			if (timeoutRef.current) {
+				clearTimeout(timeoutRef.current);
+				timeoutRef.current = null;
+			}
+			return;
 		}
 		if (!hand) {
 			timeCount.current++;
 		}
 
-		if (hand) {
-			timeoutRef.current = window.setTimeout(() => {
-				setHand(false);
-				timeoutRef.current = null;
-			}, 10000);
-		}
+		timeoutRef.current = window.setTimeout(() => {
+			setHand(false);
+			timeoutRef.current = null;
+		}, 10000);
 
 		if (timeCount.current === 10) {
 			if (resetCountTimeoutRef.current) clearTimeout(resetCountTimeoutRef.current);

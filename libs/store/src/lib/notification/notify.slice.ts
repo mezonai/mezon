@@ -75,19 +75,20 @@ export const fetchListNotificationCached = async (
 	}
 
 	const response = await withRetry(
-		() =>
+		(session) =>
 			ensuredMezon.client.listNotifications(
-				ensuredMezon.session,
+				session,
 				clanId,
 				LIMIT_NOTIFICATION,
-				notificationId || '',
+				notificationId || '0',
 				category,
 				Direction_Mode.BEFORE_TIMESTAMP
 			),
 		{
 			maxRetries: 3,
 			initialDelay: 1000,
-			scope: 'notifications'
+			scope: 'notifications',
+			mezon: ensuredMezon
 		}
 	);
 
@@ -108,7 +109,7 @@ export const fetchListNotification = createAsyncThunk(
 			const response = await fetchListNotificationCached(
 				thunkAPI.getState as () => RootState,
 				mezon,
-				clanId,
+				clanId || '0',
 				category,
 				notificationId as string,
 				noCache

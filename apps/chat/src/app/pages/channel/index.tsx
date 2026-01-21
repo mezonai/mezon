@@ -356,7 +356,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	}, [appChannel]);
 
 	useEffect(() => {
-		const savedChannelIds = safeJSONParse(localStorage.getItem('agerestrictedchannelIds') || '[]');
+		const savedChannelIds = safeJSONParse(localStorage.getItem('agerestrictedchannelIds') || '[]')?.t;
 		if (!savedChannelIds.includes(currentChannel.channel_id) && currentChannel.age_restricted === 1) {
 			setIsShowAgeRestricted(true);
 		} else {

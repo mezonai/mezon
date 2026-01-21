@@ -123,15 +123,15 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 				thunkAPI.dispatch(channelsActions.setStatusChannelFetch(clanId));
 				thunkAPI.dispatch(
 					voiceActions.fetchVoiceChannelMembers({
-						clanId: clanId ?? '',
-						channelId: '',
+						clanId: clanId ?? '0',
+						channelId: '0',
 						channelType: ChannelType.CHANNEL_TYPE_MEZON_VOICE
 					})
 				);
 				thunkAPI.dispatch(
 					usersStreamActions.fetchStreamChannelMembers({
-						clanId: clanId ?? '',
-						channelId: '',
+						clanId: clanId ?? '0',
+						channelId: '0',
 						channelType: ChannelType.CHANNEL_TYPE_STREAMING
 					})
 				);
@@ -159,7 +159,7 @@ export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('cl
 					clan_id: clanId
 				}
 			},
-			() => (mezon.client as any).listClanBadgeCount?.(mezon.session, clanId),
+			(session) => (mezon.client as any).listClanBadgeCount?.(session, clanId),
 			'clanBadgeCount'
 		);
 
@@ -187,7 +187,7 @@ export const fetchClansCached = async (
 ) => {
 	const rootState = getState();
 	const clansState = rootState[CLANS_FEATURE_KEY];
-	const apiKey = createApiKey('fetchClans', limit?.toString() || '', state?.toString() || '', cursor || '');
+	const apiKey = createApiKey('fetchClans', limit?.toString() || '0', state?.toString() || '0', cursor || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, clansState.cache, noCache);
 
@@ -208,7 +208,7 @@ export const fetchClansCached = async (
 				state: 1
 			}
 		},
-		() => ensuredMezon.client.listClanDescs(ensuredMezon.session, limit, state, cursor || ''),
+		(session) => ensuredMezon.client.listClanDescs(session, limit, state, cursor || ''),
 		'clan_desc_list'
 	);
 
@@ -233,7 +233,7 @@ export const fetchClans = createAsyncThunk(
 	async ({ noCache = false, isMobile = false }: { noCache?: boolean; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await fetchClansCached(thunkAPI.getState as () => RootState, mezon, LIMIT_CLAN_ITEM, 1, '', noCache);
+			const response = await fetchClansCached(thunkAPI.getState as () => RootState, mezon, LIMIT_CLAN_ITEM, 1, '0', noCache);
 			if (!response.clandesc) {
 				return { clans: [], fromCache: response.fromCache };
 			}
@@ -286,7 +286,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 		const body = {
 			banner: '',
 			clan_name,
-			creator_id: '',
+			creator_id: '0',
 			logo: logo ?? ''
 		};
 		const response = await mezon.client.createClanDesc(mezon.session, body);
@@ -303,7 +303,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 export const checkDuplicateNameClan = createAsyncThunk('clans/duplicateNameClan', async (clan_name: string, thunkAPI) => {
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clan_name, '', TypeCheck.TYPECLAN, '0');
+		const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clan_name, '0', TypeCheck.TYPECLAN, '0');
 
 		if (isDuplicateName?.type === TypeCheck.TYPECLAN) {
 			return isDuplicateName.exist;
@@ -577,7 +577,7 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 								clan_id: clanId
 							}
 						},
-						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),
+						(session) => mezon.client.listClanUnreadMsgIndicator?.(session, clanId),
 						'unread_msg_indicator'
 					);
 

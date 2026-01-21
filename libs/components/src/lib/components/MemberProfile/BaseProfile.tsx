@@ -8,6 +8,7 @@ const BaseProfile = ({
 	avatar,
 	name,
 	hideIcon = false,
+	hideName = false,
 	status,
 	displayName,
 	userStatus
@@ -17,6 +18,7 @@ const BaseProfile = ({
 	displayName?: ReactNode;
 	status?: EUserStatus;
 	hideIcon?: boolean;
+	hideName?: boolean;
 	userStatus?: string;
 }) => {
 	return (
@@ -35,21 +37,23 @@ const BaseProfile = ({
 				</div>
 			)}
 
-			<div className="flex flex-col justify-center min-w-0 flex-1">
-				{(displayName || name) && (
-					<span className="one-line text-start truncate" data-e2e={generateE2eId('base_profile.display_name')}>
-						{displayName || name}
-					</span>
-				)}
-				{userStatus && (
-					<span
-						className="text-[11px] text-left text-theme-primary opacity-60 line-clamp-1 truncate"
-						data-e2e={generateE2eId('base_profile.user_status')}
-					>
-						{userStatus}
-					</span>
-				)}
-			</div>
+			{!hideName && (
+				<div className="flex flex-col justify-center min-w-0 flex-1">
+					{(displayName || name) && (
+						<span className="one-line text-start truncate" data-e2e={generateE2eId('base_profile.display_name')}>
+							{displayName || name}
+						</span>
+					)}
+					{userStatus && (
+						<span
+							className="text-[11px] text-left text-theme-primary opacity-60 line-clamp-1 truncate"
+							data-e2e={generateE2eId('base_profile.user_status')}
+						>
+							{userStatus}
+						</span>
+					)}
+				</div>
+			)}
 		</div>
 	);
 };

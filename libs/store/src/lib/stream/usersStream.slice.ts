@@ -88,7 +88,7 @@ export const fetchStreamChannelMembersCached = async (
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listStreamingChannelUsers(ensuredMezon.session, clanId, channelId, channelType, 1, 100, ''),
+		(session) => ensuredMezon.client.listStreamingChannelUsers(session, clanId, channelId, channelType, 1, 100, ''),
 		'voice_user_list'
 	);
 

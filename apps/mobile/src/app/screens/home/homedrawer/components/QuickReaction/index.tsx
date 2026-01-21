@@ -1,14 +1,14 @@
 import { useChatSending } from '@mezon/core';
 import { AppStorage, load, STORAGE_USERS_QUICK_REACTION } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectChannelById, selectCurrentUserId, selectDmGroupCurrent, useAppSelector } from '@mezon/store-mobile';
+import { selectChannelById, selectCurrentUserId, selectDmGroupById, useAppSelector } from '@mezon/store-mobile';
 import { getSrcEmoji } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, { clamp, runOnJS, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { clamp, runOnJS, useAnimatedStyle, useSharedValue, withSequence, withSpring } from 'react-native-reanimated';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
@@ -30,7 +30,7 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth
 	const isTabletLandscape = useTabletLandscape();
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
-	const currentDmGroup = useAppSelector(selectDmGroupCurrent(channelId));
+	const currentDmGroup = useAppSelector((state) => selectDmGroupById(state, channelId));
 	const [quickReactionEmoji, setQuickReactionEmoji] = useState<QuickReactionEmoji | null>(null);
 	const [hasCustomPosition, setHasCustomPosition] = useState<boolean>(false);
 
@@ -156,11 +156,8 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth
 		() =>
 			Gesture.Tap()
 				.maxDuration(200)
-				.onStart(() => {
-					scale.value = withSpring(0.9);
-				})
 				.onEnd(() => {
-					scale.value = withSpring(1);
+					scale.value = withSequence(withSpring(1.5), withSpring(1));
 					runOnJS(handleSend)();
 				}),
 		[handleSend]

@@ -83,11 +83,14 @@ export const fetchGalleryAttachments = createAsyncThunk(
 					id: attachmentRes.id || '',
 					channelId,
 					clanId,
-					isVideo: attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX)
+					isVideo: attachmentRes?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX),
+					create_time: attachmentRes.create_time_seconds
+						? new Date(Number(attachmentRes.create_time_seconds) * 1000).toISOString()
+						: undefined
 				}))
 				.sort((a, b) => {
-					if (a.create_time && b.create_time) {
-						return Date.parse(b.create_time) - Date.parse(a.create_time);
+					if (a.create_time_seconds && b.create_time_seconds) {
+						return b.create_time_seconds - a.create_time_seconds;
 					}
 					return 0;
 				}) as AttachmentEntity[];
@@ -181,8 +184,8 @@ export const gallerySlice = createSlice({
 
 			state.galleryByChannel[channelId].attachments.push(...newAttachments);
 			state.galleryByChannel[channelId].attachments.sort((a, b) => {
-				if (a.create_time && b.create_time) {
-					return Date.parse(b.create_time) - Date.parse(a.create_time);
+				if (a.create_time_seconds && b.create_time_seconds) {
+					return b.create_time_seconds - a.create_time_seconds;
 				}
 				return 0;
 			});
