@@ -176,7 +176,7 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 			updateWebhookBySpecificId({
 				request,
 				webhookId: webhookItem.id,
-				channelId: currentChannel?.channel_id || '',
+				channelId: currentChannel?.channel_id || '0',
 				clanId,
 				isClanSetting
 			})

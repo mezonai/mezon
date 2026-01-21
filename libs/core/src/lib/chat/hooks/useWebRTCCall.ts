@@ -424,14 +424,14 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	// Handle incoming signaling messages
 	const handleSignalingMessage = async (signalingData: any) => {
 		const dataType = signalingData.data_type;
-		channelIdRef.current = signalingData?.channel_id || '';
+		channelIdRef.current = signalingData?.channel_id || '0';
 		if ([WebrtcSignalingType.WEBRTC_SDP_QUIT, WebrtcSignalingType.WEBRTC_SDP_TIMEOUT].includes(dataType)) {
 			if (!timeStartConnected?.current && isMyCaller?.current) {
 				const callLogType =
 					dataType === WebrtcSignalingType.WEBRTC_SDP_TIMEOUT ? IMessageTypeCallLog.TIMEOUTCALL : IMessageTypeCallLog.REJECTCALL;
 				dispatch(
 					DMCallActions.updateCallLog({
-						channelId: channelId || signalingData?.channel_id || '',
+						channelId: channelId || signalingData?.channel_id || '0',
 						content: {
 							t:
 								callLogType === IMessageTypeCallLog.TIMEOUTCALL

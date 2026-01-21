@@ -46,7 +46,7 @@ export function processUserData(membersClan: UsersClanEntity[], dmGroupChatList:
 
 		if (chat.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			acc.push({
-				id: chat.channel_id || '',
+				id: chat.channel_id || '0',
 				username: `${chat.usernames?.join(',') || ''}${chat.creator_name ? `, ${chat.creator_name}` : ''}`,
 				display_name: chat.channel_label || '',
 				avatar_url: 'assets/images/avatar-group.png',

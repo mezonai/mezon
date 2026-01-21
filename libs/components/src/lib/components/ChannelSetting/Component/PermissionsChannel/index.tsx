@@ -21,7 +21,7 @@ export type PermissionsChannelProps = {
 
 const PermissionsChannel = (props: PermissionsChannelProps) => {
 	const { channel, openModalAdd, parentRef, clanId } = props;
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || ''));
+	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || '0'));
 	const listCategory = useSelector(selectAllCategories);
 	const categoryName = useMemo(() => {
 		if (realTimeChannel?.category_name) {

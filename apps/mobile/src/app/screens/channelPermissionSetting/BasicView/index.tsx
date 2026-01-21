@@ -102,7 +102,7 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 				const currentChannelPrivate = isPublic ? 1 : 0;
 				const updateUpdateChannelRequest: ApiChangeChannelPrivateRequest = {
 					clan_id: channel?.clan_id,
-					channel_id: channel?.channel_id || '',
+					channel_id: channel?.channel_id || '0',
 					channel_private: currentChannelPrivate,
 					user_ids: [userId],
 					role_ids: []
@@ -112,15 +112,15 @@ export const BasicView = memo(({ channel }: IBasicViewProps) => {
 
 				dispatch(
 					channelsActions.updateChannelPrivateState({
-						clanId: channel?.clan_id || '',
-						channelId: channel?.channel_id || '',
+						clanId: channel?.clan_id || '0',
+						channelId: channel?.channel_id || '0',
 						channelPrivate: Number(!isPublic)
 					})
 				);
 				dispatch(
 					listChannelRenderAction.updateChannelInListRender({
-						channelId: channel?.channel_id || '',
-						clanId: channel?.clan_id || '',
+						channelId: channel?.channel_id || '0',
+						clanId: channel?.clan_id || '0',
 						dataUpdate: {
 							...updateUpdateChannelRequest,
 							channel_private: Number(!isPublic)

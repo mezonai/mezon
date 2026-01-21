@@ -41,7 +41,7 @@ const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
 		(category: ICategoryChannel) => {
 			dispatch(
 				categoriesActions.setCategoryExpandState({
-					clanId: category.clan_id || '',
+					clanId: category.clan_id || '0',
 					categoryId: category.id,
 					expandState: !categoryExpandState
 				})

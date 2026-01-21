@@ -281,7 +281,7 @@ export default function ChannelStream({
 	isStream
 }: ChannelStreamProps) {
 	const { t } = useTranslation('channelStream');
-	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || ''));
+	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || '0'));
 	const streamPlay = useSelector(selectStatusStream);
 	const isJoin = useSelector(selectIsJoin);
 	const { userProfile } = useAuth();

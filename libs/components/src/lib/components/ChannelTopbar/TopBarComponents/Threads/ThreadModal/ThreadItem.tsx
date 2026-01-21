@@ -34,7 +34,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 	const navigate = useNavigate();
 	const { toChannelPage } = useAppNavigation();
 	const dispatch = useAppDispatch();
-	const threadMembers = useSelector((state) => selectAllChannelMembers(state, thread?.channel_id || ''));
+	const threadMembers = useSelector((state) => selectAllChannelMembers(state, thread?.channel_id || '0'));
 
 	const messageId = useAppSelector((state) => selectLastMessageIdByChannelId(state, thread.channel_id as string));
 	const message = useAppSelector((state) =>
@@ -89,7 +89,7 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 
 	return (
 		<div
-			onClick={() => handleLinkThread(thread.channel_id as string, thread.clan_id || '')}
+			onClick={() => handleLinkThread(thread.channel_id as string, thread.clan_id || '0')}
 			className="relative overflow-y-hidden p-4 mb-2 cursor-pointer rounded-lg h-[72px] bg-item-theme"
 			role="button"
 			data-e2e={generateE2eId('chat.channel_message.header.button.thread.item')}

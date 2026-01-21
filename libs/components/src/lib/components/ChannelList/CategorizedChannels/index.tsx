@@ -152,7 +152,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 
 	const handleToggleCategory = () => {
 		const payload = {
-			clanId: category.clan_id || '',
+			clanId: category.clan_id || '0',
 			categoryId: category.id,
 			expandState: !categoryExpandState
 		};
@@ -175,7 +175,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 
 	const handleOpenCreateChannelModal = (category: ICategoryChannel) => {
 		const payload = {
-			clanId: category.clan_id || '',
+			clanId: category.clan_id || '0',
 			categoryId: category.id,
 			expandState: true
 		};

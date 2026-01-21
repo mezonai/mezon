@@ -212,7 +212,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 			dispatch(groupCallActions.hideIncomingGroupCall());
 			if (!callData.meeting_code) return;
 			const data = {
-				channelId: dataCall.channel_id || '',
+				channelId: dataCall.channel_id || '0',
 				roomName: callData?.meeting_code,
 				clanId: '',
 				isGroupCall: true
@@ -228,7 +228,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 				[dataCall?.caller_id],
 				WEBRTC_SIGNALING_TYPES.GROUP_CALL_PARTICIPANT_JOINED,
 				joinAction,
-				dataCall?.channel_id || '',
+				dataCall?.channel_id || '0',
 				userId || ''
 			);
 		}
@@ -240,7 +240,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 		setIsVisible(false);
 		const quitAction = {
 			is_video: callData?.is_video || false,
-			group_id: dataCall?.channel_id || '',
+			group_id: dataCall?.channel_id || '0',
 			caller_id: userId,
 			caller_name: callData?.caller_name || '',
 			timestamp: Date.now(),
@@ -250,7 +250,7 @@ const CallingGroupModal = ({ dataCall }: ICallingGroupProps) => {
 			[dataCall?.caller_id],
 			WEBRTC_SIGNALING_TYPES.GROUP_CALL_QUIT,
 			quitAction,
-			dataCall?.channel_id || '',
+			dataCall?.channel_id || '0',
 			userId || ''
 		);
 		dispatch(groupCallActions.hideIncomingGroupCall());

@@ -140,7 +140,7 @@ export const MessageReactionContent = memo((props: IMessageReactionContentProps)
 					removeEmoji={removeEmoji}
 					channelId={channelId || ''}
 					currentEmojiSelected={currentEmojiSelected}
-					currentClanId={messageReactions?.clan_id || ''}
+					currentClanId={messageReactions?.clan_id || '0'}
 				/>
 			);
 		},

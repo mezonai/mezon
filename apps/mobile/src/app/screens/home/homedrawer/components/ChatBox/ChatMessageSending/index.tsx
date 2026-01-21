@@ -277,7 +277,7 @@ export const ChatMessageSending = memo(
 				const payloadEphemeral = {
 					receiverId: ephemeralTargetUserId,
 					channelId: currentTopicId || channelId,
-					clanId: currentChannel?.clan_id || '',
+					clanId: currentChannel?.clan_id || '0',
 					mode,
 					isPublic,
 					content: payloadSendMessage,

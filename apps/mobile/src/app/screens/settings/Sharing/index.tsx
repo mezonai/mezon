@@ -176,7 +176,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			await store.dispatch(
 				channelsActions.joinChat({
 					clanId: '0',
-					channelId: channelSelected?.channel_id || '',
+					channelId: channelSelected?.channel_id || '0',
 					channelType: channelSelected?.type,
 					isPublic: false
 				})

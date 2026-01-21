@@ -71,7 +71,7 @@ const GroupPopupNotiCall = ({ dataCall, userId }: ModalCallProps) => {
 		if (callData && dataCall?.caller_id) {
 			const quitData = createQuitData({
 				isVideo: callData.is_video,
-				groupId: dataCall.channel_id || '',
+				groupId: dataCall.channel_id || '0',
 				callerId: userId,
 				callerName: user?.display_name || user?.username || '',
 				action: 'decline'

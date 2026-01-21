@@ -13,7 +13,7 @@ export const EventChannelDetail = memo(({ event }: IEventLocation) => {
 	const { t } = useTranslation(['eventCreator', 'common']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const eventChannel = useAppSelector((state) => selectChannelById(state, event?.channel_id || ''));
+	const eventChannel = useAppSelector((state) => selectChannelById(state, event?.channel_id || '0'));
 	const channelType = useMemo(() => {
 		return eventChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ? t('common:channelLabel') : t('common:threadLabel');
 	}, [eventChannel?.type, t]);
