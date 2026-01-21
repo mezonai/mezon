@@ -19,6 +19,7 @@ import Flows from '../pages/flows';
 import Flow from '../pages/flows/Flow';
 import InitialRoutes from './InititalRoutes';
 
+const DashboardPage = loadable(() => import('../pages/dashboard'));
 const ApplicationsPage = loadable(() => import('../pages/applications'));
 const TeamsPage = loadable(() => import('../pages/teams'));
 const DocsPage = loadable(() => import('../pages/docs'));
@@ -68,7 +69,7 @@ export const Routes = () => {
 							children: [
 								{
 									path: '*',
-									element: <Navigate to="/developers/applications" />
+									element: <Navigate to="/developers/dashboard" />
 								},
 								{
 									path: '',
@@ -77,6 +78,10 @@ export const Routes = () => {
 								{
 									path: 'applications',
 									element: <ApplicationsPage />
+								},
+								{
+									path: 'dashboard',
+									element: <DashboardPage />
 								},
 								{
 									path: 'applications/:applicationId',

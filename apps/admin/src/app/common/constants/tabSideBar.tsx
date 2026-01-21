@@ -8,6 +8,7 @@ export interface ITabs {
 }
 
 export const getSidebarTabs = (t: (key: string) => string): ITabs[] => [
+	{ name: t('sidebarTabs.dashboard'), routerLink: 'dashboard' },
 	{ name: t('sidebarTabs.applications'), routerLink: 'applications' },
 	// { name: t('sidebarTabs.teams'), routerLink: 'teams' },
 	// { name: t('sidebarTabs.embedDebugger'), routerLink: 'embeds' },
