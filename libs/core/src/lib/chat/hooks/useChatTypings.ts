@@ -22,7 +22,7 @@ export function useChatTypings({ channelId, mode, isPublic, isDM }: UseChatTypin
 				clanId: currentClanId || '',
 				channelId,
 				mode,
-				isPublic: isPublic,
+				isPublic,
 				username: userProfile?.user?.display_name || userProfile?.user?.username || ''
 			})
 		);

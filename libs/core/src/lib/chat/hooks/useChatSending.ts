@@ -224,12 +224,12 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 		if (!anonymousMode) {
 			dispatch(
 				messagesActions.sendTypingUser({
-					clanId: getClanId || '',
-					channelId: channelIdOrDirectId ?? '',
+					clanId: getClanId || '0',
+					channelId: channelIdOrDirectId ?? '0',
 					mode,
 					isPublic,
 					username: priorityNameToShow || '',
-					topicId: fromTopic ? currentTopicId || '' : ''
+					topicId: fromTopic ? currentTopicId || undefined : undefined
 				})
 			);
 		}
