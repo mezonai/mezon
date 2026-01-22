@@ -30,7 +30,7 @@ const ListMemberInvite = (props: ModalParam) => {
 			return;
 		}
 
-		const listSearch = listDMInvite?.filter((dmGroup) => {
+		const listSearch = listDMInvite?.filter((dmGroup: any) => {
 			if (dmGroup.usernames?.toString()?.toLowerCase().includes(searchTerm.toLowerCase())) {
 				return dmGroup.usernames?.toString()?.toLowerCase().includes(searchTerm.toLowerCase());
 			}

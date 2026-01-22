@@ -14,7 +14,7 @@ interface EmbedMessageWrapProps {
 	code?: number;
 }
 
-const isShareContactEmbed = (embed: IEmbedProps, code): boolean => {
+const isShareContactEmbed = (embed: IEmbedProps, code: any): boolean => {
 	const fields = embed.fields || [];
 	return (fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY) || code === TypeMessage.ShareContact;
 };
