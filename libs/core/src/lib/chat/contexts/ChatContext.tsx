@@ -70,7 +70,6 @@ import {
 	selectDataReferences,
 	selectDefaultChannelIdByClanId,
 	selectDirectById,
-	selectDmGroupById,
 	selectDmGroupCurrentId,
 	selectIsInCall,
 	selectLastMessageByChannelId,
@@ -1063,23 +1062,19 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 
 			if (channel_desc.type === ChannelType.CHANNEL_TYPE_GROUP || channel_desc.type === ChannelType.CHANNEL_TYPE_DM) {
-				const state = getStore().getState();
-				const existingEntity = selectDmGroupById(state, channel_desc.channel_id || '0');
-				if (existingEntity && existingEntity.id) {
-					dispatch(
-						directActions.addGroupUserWS({
-							channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
-							users
-						})
-					);
-					dispatch(
-						channelMembersActions.addNewMember({
-							channel_id: channel_desc.channel_id as string,
-							user_ids: userIds,
-							addedByUserId: caller?.user_id
-						})
-					);
-				}
+				dispatch(
+					directActions.addGroupUserWS({
+						channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
+						users
+					})
+				);
+				dispatch(
+					channelMembersActions.addNewMember({
+						channel_id: channel_desc.channel_id as string,
+						user_ids: userIds,
+						addedByUserId: caller?.user_id
+					})
+				);
 			}
 
 			if (currentClanId === clan_id) {
