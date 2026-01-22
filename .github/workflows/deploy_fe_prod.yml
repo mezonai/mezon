@@ -17,7 +17,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24.5.0'  
+          node-version: '24.5.0'
 
       - name: Install dependencies
         run: |
@@ -126,7 +126,7 @@ jobs:
       - name: Clear www folder
         run: |
           echo "Clearing /var/www/mezon-fe/"
-          rm -rf /var/www/mezon-fe/*
+          mv /var/www/mezon-fe /var/www/mezon-bk
 
       - name: Download Artifact
         uses: actions/download-artifact@v4
