@@ -77,7 +77,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		message,
 		subject: notify.subject,
 		category: notify.category,
-		senderId: notify?.content?.sender_id
+		senderId: notify?.content?.sender_id || notify.sender_id
 	};
 
 	return (

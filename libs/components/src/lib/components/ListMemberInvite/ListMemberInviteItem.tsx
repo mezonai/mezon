@@ -37,7 +37,7 @@ const ListMemberInviteItem = (props: ItemPorp) => {
 		const getDirect = selectDirectById(store.getState(), directParamId);
 		setIsInviteSent(true);
 
-		if (userId && !directParamId) {
+		if (userId && directParamId === '0') {
 			const username = usersInviteExternal?.username || dmGroup?.usernames?.toString() || '';
 			const displayName = usersInviteExternal?.clan_nick || dmGroup?.channel_label || '';
 			const avatar =
