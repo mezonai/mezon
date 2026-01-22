@@ -47,7 +47,10 @@ export const fetchClansList = createAsyncThunk(
 				const text = await res.text().catch(() => '');
 				return thunkAPI.rejectWithValue(text || res.statusText);
 			}
-			const json = await res.json();
+			// convert clanId from int64 to string
+			const text = await res.text();
+			const fixed = text.replace(/("clanId"\s*:\s*)(\d+)/g, '$1"$2"');
+			const json = JSON.parse(fixed);
 			return json;
 		} catch (err) {
 			return thunkAPI.rejectWithValue(err);
