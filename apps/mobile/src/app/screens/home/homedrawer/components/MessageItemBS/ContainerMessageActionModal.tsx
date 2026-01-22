@@ -917,6 +917,7 @@ export const ContainerMessageActionModal = React.memo(
 						onClose={onCloseModalConfirm}
 						message={message}
 						type={currentMessageActionType}
+						mode={mode}
 					/>
 				)}
 

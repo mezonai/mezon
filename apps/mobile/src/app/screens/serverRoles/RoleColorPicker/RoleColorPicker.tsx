@@ -1,12 +1,18 @@
 import { useBottomSheetModal } from '@gorhom/bottom-sheet';
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { style } from './styles';
 
-export const RoleColorPicker = function RoleColorPicker({ onPickColor }: { onPickColor: (color: string) => void }) {
-	const [colorSelected, setColorSelected] = useState<string>('');
+export const RoleColorPicker = function RoleColorPicker({
+	onPickColor,
+	currentColor
+}: {
+	onPickColor: (color: string) => void;
+	currentColor?: string;
+}) {
+	const [colorSelected, setColorSelected] = useState<string>(currentColor);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { dismiss } = useBottomSheetModal();
@@ -51,7 +57,11 @@ export const RoleColorPicker = function RoleColorPicker({ onPickColor }: { onPic
 			<View style={styles.header}>
 				<View style={styles.headerSpacer} />
 				<Text style={styles.title}>{t('roleColorPicker.titleBS')}</Text>
-				<TouchableOpacity onPress={handleSaveColor} style={styles.headerRightBtn}>
+				<TouchableOpacity
+					onPress={handleSaveColor}
+					style={[styles.headerRightBtn, colorSelected !== currentColor && styles.activeSaveButton]}
+					disabled={colorSelected === currentColor}
+				>
 					<Text style={styles.textBtn}>{t('roleColorPicker.save')}</Text>
 				</TouchableOpacity>
 			</View>
