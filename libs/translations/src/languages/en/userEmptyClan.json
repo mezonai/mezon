@@ -14,7 +14,7 @@
     "createClan":"Create Your Clan",
     "joinClan":"Join a Clan",
     "joinChannel":"Join a Channel",
-    "findChannel":"You find yourself in a strange place. You don't have assess to any text channels"
+    "findChannel":"You find yourself in a strange place. You don't have access to any text channels"
   },
   "emptyMessage": {
     "dMsWith":"DMs with superpowers",

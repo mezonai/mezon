@@ -1,7 +1,7 @@
 {
 	"muteClan": "Muting a clan prevents unread indicators and notifications from appearing unless you are mentioned",
 	"notifySettingOption": {
-		"title": "Clan Notifications Setting",
+		"title": "Clan Notifications Settings",
 		"allMessage": "All messages",
 		"onlyMentions": "Only @mention",
 		"nothing": "Nothing"
