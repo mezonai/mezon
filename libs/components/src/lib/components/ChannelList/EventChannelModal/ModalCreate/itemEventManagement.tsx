@@ -102,9 +102,9 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const actualEventStatus = useMemo(() => {
 		if (!event?.start_time_seconds) return { isUpcoming: eventIsUpcomming, isOngoing: eventIsOngoing };
 
-		const startTime = event.start_time_seconds;
+		const startTime = event.start_time_seconds * 1000; 
 		const currentTime = Date.now();
-		const endTime = event.end_time_seconds ? event.end_time_seconds : startTime + 2 * 60 * 60 * 1000;
+		const endTime = event.end_time_seconds ? event.end_time_seconds * 1000 : startTime + 2 * 60 * 60 * 1000;
 
 		const isActuallyUpcoming = currentTime < startTime;
 		const isActuallyOngoing = currentTime >= startTime && currentTime <= endTime;
@@ -162,7 +162,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const timeUntilEvent = useMemo(() => {
 		if (!event?.start_time_seconds || !actualEventStatus.isUpcoming) return null;
 
-		const startTime = event.start_time_seconds;
+		const startTime = event.start_time_seconds * 1000; 
 		const currentTime = Date.now();
 		const timeDiff = startTime - currentTime;
 		const minutesLeft = Math.ceil(timeDiff / (1000 * 60));

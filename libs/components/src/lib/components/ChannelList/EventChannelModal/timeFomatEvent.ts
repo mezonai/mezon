@@ -220,7 +220,8 @@ export const formatTimeStringToHourFormat = (timeString: string | number) => {
 };
 
 export const getTimeTodayMidNight = (time?: number) => {
-	if (time) return new Date(new Date(time).setHours(0, 0, 0, 0)).getTime();
+	const timeInMs = time && time < 10000000000 ? time * 1000 : time;
+	if (timeInMs) return new Date(new Date(timeInMs).setHours(0, 0, 0, 0)).getTime();
 	return new Date(new Date().setHours(0, 0, 0, 0)).getTime();
 };
 

@@ -192,9 +192,10 @@ const ModalCreate = (props: ModalCreateProps) => {
 			textChannelId: contentSubmit.textChannelId,
 			repeatType: contentSubmit.repeatType
 		};
+		if (!currentEvent.start_time_seconds || !currentEvent.end_time_seconds) return null;
 		const changeTime =
-			currentEvent.start_time_seconds !== contentSubmit.timeStart + contentSubmit.selectedDateStart ||
-			currentEvent?.end_time_seconds !== contentSubmit.timeEnd + contentSubmit.selectedDateEnd;
+			currentEvent.start_time_seconds * 1000 !== contentSubmit.timeStart + contentSubmit.selectedDateStart ||
+			currentEvent.end_time_seconds * 1000 !== contentSubmit.timeEnd + contentSubmit.selectedDateEnd;
 		return !isEqual(submittedContent, formattedCurrentEvent) || changeTime;
 	}, [
 		currentEvent?.title,
@@ -225,8 +226,9 @@ const ModalCreate = (props: ModalCreateProps) => {
 			const address = choiceLocation ? contentSubmit.address : '';
 			const voiceChannel = (eventChannel || eventId) && choiceSpeaker ? contentSubmit.voiceChannel : '';
 			const creatorId = currentEvent?.creator_id;
-			const timeStart = contentSubmit.selectedDateStart + contentSubmit.timeStart;
-			const timeEnd = contentSubmit.selectedDateEnd + contentSubmit.timeEnd;
+
+			const timeStart = Math.floor((contentSubmit.selectedDateStart + contentSubmit.timeStart) / 1000);
+			const timeEnd = Math.floor((contentSubmit.selectedDateEnd + contentSubmit.timeEnd) / 1000);
 
 			const baseEventFields: Partial<Record<string, string | number | boolean>> = {
 				event_id: eventId,
@@ -270,7 +272,6 @@ const ModalCreate = (props: ModalCreateProps) => {
 				...validatedFieldsToUpdate,
 				...additionalFields
 			};
-
 			if (isEventChanged) {
 				await dispatch(eventManagementActions.updateEventManagement(finalFieldsToSubmit));
 				onClose();
