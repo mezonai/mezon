@@ -20,7 +20,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ETypeLinkMedia, ModeResponsive, SHOW_POSITION, convertTimeString, createImgproxyUrl, handleSaveImage } from '@mezon/utils';
+import { ETypeLinkMedia, ModeResponsive, SHOW_POSITION, createImgproxyUrl, formatDateI18n, handleSaveImage } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { MessageContextMenuProps } from '../../ContextMenu';
 import { useMessageContextMenu } from '../../ContextMenu';
@@ -546,7 +546,7 @@ const SenderUser = () => {
 					{user?.clan_nick ?? user?.user?.display_name ?? user?.user?.username}
 				</div>
 				<div className="text-[12px] text-bgTextarea truncate max-sm:w-12">
-					{attachment?.create_time_seconds ? convertTimeString(Number(attachment.create_time_seconds) * 1000) : 'N/A'}
+					{attachment?.create_time ? formatDateI18n(new Date(attachment.create_time || ''), 'en', 'dd/MM/yyyy') : 'N/A'}
 				</div>
 			</div>
 		</div>

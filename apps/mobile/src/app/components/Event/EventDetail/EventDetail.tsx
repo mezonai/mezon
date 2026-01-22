@@ -42,7 +42,8 @@ export function EventDetail({ event }: IEventDetailProps) {
 	const clans = useSelector(selectClanById(event?.clan_id || '0'));
 	const userProfile = useSelector(selectAllAccount);
 	const [isInterested, setIsInterested] = useState<boolean>(false);
-	const [eventInterested, setEventInterested] = useState<number>(event?.user_ids?.length || 0);
+	const interestedCount = event?.user_ids?.filter((id) => !!id && id !== '0')?.length || 0;
+	const [eventInterested, setEventInterested] = useState<number>(interestedCount);
 	const [isClanOwner, hasClanPermission, hasAdminPermission] = usePermissionChecker([
 		EPermission.clanOwner,
 		EPermission.manageClan,

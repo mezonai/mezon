@@ -41,6 +41,7 @@ import type {
 import {
 	CHANNEL_INPUT_ID,
 	CREATING_TOPIC,
+	GENERAL_INPUT_ID,
 	ID_MENTION_HERE,
 	IS_SAFARI,
 	MIN_THRESHOLD_CHARS,
@@ -135,6 +136,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		draftRequest,
 		updateDraft
 	} = props;
+
+	const inputId = props.isTopic ? GENERAL_INPUT_ID : CHANNEL_INPUT_ID;
 
 	const dispatch = useAppDispatch();
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
@@ -1006,7 +1009,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					{ephemeralTargetUserId ? t('ephemeralMessage', { username: ephemeralTargetUserDisplay }) : t('placeholder')}
 				</span>
 				<MentionsInput
-					id={CHANNEL_INPUT_ID}
+					id={inputId}
 					ref={editorRef}
 					value={draftRequest?.valueTextInput ?? ''}
 					onChange={onChangeMentionInput}

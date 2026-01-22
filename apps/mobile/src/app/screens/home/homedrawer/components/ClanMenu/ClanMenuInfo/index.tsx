@@ -10,7 +10,7 @@ import MezonBadge from '../../../../../../componentUI/MezonBadge';
 import { style } from './styles';
 
 export default function ClanMenuInfo() {
-	const { t } = useTranslation(['clanMenu']);
+	const { t } = useTranslation(['clanMenu', 'common']);
 	const styles = style(useTheme().themeValue);
 	const onlineMembers = useSelector(selectClanMemberWithStatusIds)?.online?.length || 0;
 	const members = useSelector(selectMembersClanCount);
@@ -26,7 +26,7 @@ export default function ClanMenuInfo() {
 
 			<View style={styles.inlineInfo}>
 				<MezonIconCDN icon={IconCDN.circleIcon} height={10} width={10} color="gray" />
-				<Text style={styles.inlineText}>{`${members} ${t('info.members')}`}</Text>
+				<Text style={styles.inlineText}>{`${members} ${members > 1 ? t('common:members') : t('common:member')}`}</Text>
 			</View>
 		</View>
 	);

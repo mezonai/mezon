@@ -1,5 +1,5 @@
 import { Client } from 'mezon-js';
-import { IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
+import { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 
 export type CreateMezonClientOptions = {
 	ssl: boolean;
@@ -9,6 +9,12 @@ export type CreateMezonClientOptions = {
 };
 
 export type CreateZkClientOptions = {
+	endpoint: string;
+	timeout?: number;
+	headers?: Record<string, string>;
+};
+
+export type CreateDongClientOptions = {
 	endpoint: string;
 	timeout?: number;
 	headers?: Record<string, string>;
@@ -36,6 +42,7 @@ export type VoiceConnectionCBFunction = () => void;
 
 let clientInstance: Client;
 let zkClientInstance: ZkClient;
+let dongClientInstance: DongClient;
 let mmnClientInstance: MmnClient;
 let indexerClientInstance: IndexerClient;
 
@@ -45,6 +52,10 @@ export function getClient() {
 
 export function getZkClient() {
 	return zkClientInstance;
+}
+
+export function getDongClient() {
+	return dongClientInstance;
 }
 
 export function getMmnClient() {
@@ -73,6 +84,19 @@ export function createZkClient(options: CreateZkClientOptions) {
 	zkClientInstance = zkClient;
 
 	return zkClient;
+}
+
+export function createDongClient(options: CreateDongClientOptions) {
+	const { endpoint, timeout = 30000, headers = { 'Content-Type': 'application/json' } } = options;
+	const dongClient = new DongClient({
+		endpoint,
+		timeout,
+		headers
+	});
+
+	dongClientInstance = dongClient;
+
+	return dongClient;
 }
 
 export function createMmnClient(options: CreateMmnClientOptions) {

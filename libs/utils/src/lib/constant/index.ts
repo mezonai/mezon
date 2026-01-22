@@ -150,7 +150,7 @@ export const MAX_FILE_SIZE_8MB = MAX_FILE_SIZE_1MB * 8; // 8MB
 export const MAX_FILE_SIZE_10MB = 10 * MAX_FILE_SIZE_1MB; // 10MB
 export const MAX_FILE_SIZE_256KB = MAX_FILE_SIZE_1MB / 4; // 256KB
 export const MAX_FILE_SIZE_512KB = MAX_FILE_SIZE_1MB / 2; // 512KB
-export const MAX_FILE_SIZE = 100 * MAX_FILE_SIZE_1MB; // 100MB
+export const MAX_FILE_SIZE = 1024 * MAX_FILE_SIZE_1MB; // 1024MB
 export const IMAGE_MAX_FILE_SIZE = 50 * MAX_FILE_SIZE_1MB; // 50MB
 
 export enum MiniAppEventType {

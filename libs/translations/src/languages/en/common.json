@@ -3,7 +3,7 @@
 	"savedSuccessfully": "Saved Successfully",
 	"saveFailed": "Failed to save",
 	"yes": "Yes",
-	"settings": "Setting",
+	"settings": "Settings",
 	"search": "Search",
 	"errorBoundary": {
 		"title": "Well, this is awkward",
@@ -513,5 +513,6 @@
 	"shareContact": "Share Contact",
 	"shareContactTitle": "Share Contact",
 	"sendMessage": "Message",
-	"noPermissionToCallBlocked": "You cannot perform this action."
+	"noPermissionToCallBlocked": "You cannot perform this action.",
+	"detail": "Detail"
 }

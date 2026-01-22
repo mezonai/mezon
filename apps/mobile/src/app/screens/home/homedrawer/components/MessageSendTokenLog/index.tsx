@@ -1,6 +1,7 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
@@ -14,6 +15,7 @@ type MessageSendTokenLogProps = {
 const MessageSendTokenLog = memo(({ messageContent = ' | ' }: MessageSendTokenLogProps) => {
 	const { themeValue } = useTheme();
 	const navigation = useNavigation<any>();
+	const { t } = useTranslation(['common']);
 	const styles = style(themeValue);
 
 	const [title, ...descriptionData] = messageContent.split(' | ');
@@ -35,7 +37,7 @@ const MessageSendTokenLog = memo(({ messageContent = ' | ' }: MessageSendTokenLo
 					<View style={styles.contentContainer}>
 						<Text style={styles.title}>{title}</Text>
 						<Text style={styles.transactionTitle}>
-							{'Detail: '}
+							{`${t('detail')}: `}
 							<Text style={styles.lightTitle}>{description}</Text>
 						</Text>
 					</View>

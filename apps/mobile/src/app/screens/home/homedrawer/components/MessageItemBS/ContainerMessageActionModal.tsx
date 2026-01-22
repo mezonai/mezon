@@ -135,13 +135,13 @@ export const ContainerMessageActionModal = React.memo(
 					})
 				);
 				await socket.removeChatMessage(
-					currentDmId ? '0' : currentClanId || '',
+					currentDmId ? '0' : currentClanId || '0',
 					currentDmId ? currentDmId : currentChannelId,
 					mode,
 					isPublic,
 					messageId,
 					!!message?.attachments,
-					currentTopicId,
+					currentTopicId || '0',
 					mentionsBytes as any,
 					referencesBytes as any
 				);
@@ -917,6 +917,7 @@ export const ContainerMessageActionModal = React.memo(
 						onClose={onCloseModalConfirm}
 						message={message}
 						type={currentMessageActionType}
+						mode={mode}
 					/>
 				)}
 

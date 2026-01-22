@@ -234,10 +234,9 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 							label={t('fields.address.title')}
 							titleUppercase
 							placeHolder={t('fields.address.placeholder')}
+							required
 						/>
 					)}
-
-					<Text style={styles.bottomDescription}>{t('screens.eventType.description')}</Text>
 
 					{eventType !== OptionEvent.PRIVATE_EVENT && (
 						<View style={styles.headerSection}>

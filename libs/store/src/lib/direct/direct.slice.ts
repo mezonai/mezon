@@ -273,7 +273,7 @@ export const updateDmGroup = createAsyncThunk(
 			}
 			if (typeof body.channel_avatar !== 'undefined') {
 				updatePayload.channel_avatar = body.channel_avatar;
-			} else if (typeof current?.channel_avatar !== 'undefined') {
+			} else if (typeof current?.channel_avatar !== 'undefined' && current?.channel_avatar !== '/assets/images/avatar-group.png') {
 				updatePayload.channel_avatar = current.channel_avatar;
 			}
 
@@ -455,17 +455,14 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			member_count: channel_desc.member_count
 		};
 		thunkAPI.dispatch(
-			userChannelsActions.update({
-				id: channel_desc.channel_id || '0',
-				changes: {
-					avatars,
-					display_names: label,
-					id: channel_desc.channel_id,
-					onlines,
-					usernames,
-					user_ids: userIds,
-					channel_id: channel_desc.channel_id
-				}
+			userChannelsActions.upsert({
+				avatars,
+				display_names: label,
+				id: channel_desc.channel_id || '',
+				onlines,
+				usernames,
+				user_ids: userIds,
+				channel_id: channel_desc.channel_id
 			})
 		);
 		thunkAPI.dispatch(directActions.upsertOne(directEntity));

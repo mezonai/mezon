@@ -69,7 +69,10 @@ const HashtagChannelComponent = ({
 }: HashtagChannelProps) => {
 	const dispatch = useAppDispatch();
 
-	const targetChannelId = useMemo(() => channelIdOverride ?? element?.channelId, [channelIdOverride, element?.channelId]);
+	const targetChannelId = useMemo(
+		() => channelIdOverride || element?.channelId || element?.channelid,
+		[channelIdOverride, element?.channelId, element?.channelid]
+	);
 
 	const channelFoundFromStore = useSelector((state: any) => (!channelEntityOverride ? selectChannelById(state, targetChannelId) : null));
 

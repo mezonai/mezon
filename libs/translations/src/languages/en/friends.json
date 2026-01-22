@@ -18,7 +18,7 @@
 		"addByUserName": "Add by Username",
 		"addByUsername": "Add By {{username}}",
 		"searchUsernamePlaceholder": "Enter a username",
-		"whoYouWantToAddFriend": "Who would you like to add as a friend",
+		"whoYouWantToAddFriend": "Who would you like to add as a friend?",
 		"byTheWay": "By the way, your username is",
 		"sendRequestButton": "Send Friend Request",
 		"addFriendToast": "Sent a friend request"

@@ -15,8 +15,9 @@
     },
     "dashboard": {
         "title": "Sự kiện",
+        "event_one": "Sự kiện",
         "noEvent": "Không có sự kiện nào",
-        "noEventDescription": "Lên lịch sự kiện cho các hoạt động đã định trong clan của bạn. Bạn có thể cấp quyền cho người khác tạo sự kiện tại Cài đặt Clan > Vai trò.",
+        "noEventDescription": "Hãy thoải mái mời các thành viên khác tham gia đóng góp ý tưởng cho các sự kiện sắp tới.",
         "createButton": "Tạo",
         "noti": "Sự kiện này mở cho tất cả mọi người trong clan.",
         "endEvent": "Kết thúc sự kiện",

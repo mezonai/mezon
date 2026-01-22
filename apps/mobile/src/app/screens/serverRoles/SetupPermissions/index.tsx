@@ -65,12 +65,12 @@ export const SetupPermissions = ({ navigation, route }: MenuClanScreenProps<Setu
 				case EPermission.manageClan:
 					return (!isClanOwner && !hasAdminPermission) || !isCanEditRole;
 				case EOverriddenPermission.sendMessage:
-					return clanRole?.slug === `everyone-${clanRole?.clanId}`;
+					return clanRole?.slug === `everyone-${clanRole?.clan_id}`;
 				default:
 					return !isCanEditRole;
 			}
 		},
-		[isClanOwner, isCanEditRole, hasAdminPermission, clanRole?.slug, clanRole?.clanId]
+		[isClanOwner, isCanEditRole, hasAdminPermission, clanRole?.slug, clanRole?.clan_id]
 	);
 
 	const permissionList = useMemo(() => {

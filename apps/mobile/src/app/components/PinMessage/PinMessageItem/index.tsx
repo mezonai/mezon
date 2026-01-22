@@ -3,7 +3,8 @@ import type { PinMessageEntity } from '@mezon/store-mobile';
 import { messagesActions, selectMemberClanByUserId, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { safeJSONParse } from 'mezon-js';
+import { decodeAttachments, safeJSONParse } from 'mezon-js';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonClanAvatar from '../../../componentUI/MezonClanAvatar';
@@ -78,11 +79,19 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 	};
 
 	const pinMessageAttachments = useMemo(() => {
+		let attachment: ApiMessageAttachment[] = [];
 		try {
-			return safeJSONParse(pinMessageItem?.attachment || '[]') || [];
-		} catch (e) {
-			console.error({ e });
+			const decodedAttachments = decodeAttachments(pinMessageItem?.attachment);
+			attachment = decodedAttachments?.attachments || decodedAttachments || [];
+		} catch (error) {
+			const parsed = safeJSONParse(pinMessageItem?.attachment?.toString());
+			if (parsed?.t) {
+				attachment = [];
+			} else {
+				attachment = parsed?.attachments || parsed || [];
+			}
 		}
+		return attachment;
 	}, [pinMessageItem?.attachment]);
 
 	const contactData = useMemo((): IContactData | null => {

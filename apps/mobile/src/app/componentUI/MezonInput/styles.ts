@@ -1,4 +1,4 @@
-import { Attributes, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -72,5 +72,9 @@ export const style = (colors: Attributes) =>
 		titleUppercase: {
 			fontSize: Fonts.size.h7,
 			textTransform: 'uppercase'
+		},
+
+		required: {
+			color: baseColor.redStrong
 		}
 	});

@@ -108,7 +108,8 @@ const ClanSettingOverview = () => {
 			const cachedMessageUpdate: ApiSystemMessage = {
 				boost_message:
 					updateSystemMessageRequest?.boost_message === systemMessage?.boost_message ? '' : updateSystemMessageRequest?.boost_message,
-				channel_id: updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '' : updateSystemMessageRequest?.channel_id,
+				channel_id:
+					updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '0' : updateSystemMessageRequest?.channel_id || '0',
 				clan_id: systemMessage?.clan_id,
 				id: systemMessage?.id,
 				hide_audit_log:

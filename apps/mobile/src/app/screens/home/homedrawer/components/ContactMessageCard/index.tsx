@@ -166,7 +166,7 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 			};
 			navigateToCallModal(params);
 		}
-	}, [data?.user_id, data?.avatar, data?.display_name, dispatch, listDM, navigateToCallModal, createDirectMessage, friendStatus]);
+	}, [friendStatus, data?.user_id, data?.avatar, data?.display_name, listDM, createDirectMessage, t, navigateToCallModal, dispatch]);
 
 	const handleLongPress = useCallback(() => {
 		onLongPress && onLongPress();
@@ -182,7 +182,6 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 					]}
 					start={{ x: 0, y: 0 }}
 					end={{ x: 1, y: 1 }}
-					style={styles.cardGradient}
 				>
 					<View style={styles.avatarWrapper}>
 						<View style={styles.avatarContainer}>
@@ -197,21 +196,21 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 							</Text>
 						</View>
 					</View>
+
+					<View style={styles.actionContainer}>
+						<TouchableOpacity style={styles.actionButton} onPress={handleCallUser} activeOpacity={0.8}>
+							<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.textStrong} />
+							<Text style={styles.actionText}>{t('call.title')}</Text>
+						</TouchableOpacity>
+
+						<View style={styles.divider} />
+
+						<TouchableOpacity style={styles.actionButton} onPress={handleSendMessage} activeOpacity={0.8}>
+							<MezonIconCDN icon={IconCDN.chatIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
+							<Text style={[styles.actionText, styles.messageButtonText]}>{t('sendMessage')}</Text>
+						</TouchableOpacity>
+					</View>
 				</LinearGradient>
-
-				<View style={styles.actionContainer}>
-					<TouchableOpacity style={styles.actionButton} onPress={handleCallUser} activeOpacity={0.8}>
-						<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.textStrong} />
-						<Text style={styles.actionText}>{t('call.title')}</Text>
-					</TouchableOpacity>
-
-					<View style={styles.divider} />
-
-					<TouchableOpacity style={styles.actionButton} onPress={handleSendMessage} activeOpacity={0.8}>
-						<MezonIconCDN icon={IconCDN.chatIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
-						<Text style={[styles.actionText, styles.messageButtonText]}>{t('sendMessage')}</Text>
-					</TouchableOpacity>
-				</View>
 			</View>
 		</TouchableOpacity>
 	);

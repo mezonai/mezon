@@ -3,7 +3,7 @@ import { compareBigInt, type LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import type { ExtraInfo, IEphemeralKeyPair, IZkProof } from 'mmn-client-js';
+import type { ClaimRedEnvelopeQRResponse, ExtraInfo, IEphemeralKeyPair, IZkProof } from 'mmn-client-js';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { EErrorType, toastActions } from '../toasts';
 
@@ -194,6 +194,70 @@ const sendTransaction = createAsyncThunk(
 	}
 );
 
+const claimAmountRedEnvelopeQR = createAsyncThunk(
+	'wallet/claimAmountRedEnvelopeQR',
+	async (
+		{
+			id,
+			userId
+		}: {
+			id: string;
+			userId: string;
+		},
+		thunkAPI
+	) => {
+		const zkProofs = selectZkProofs(thunkAPI.getState() as any);
+		const ephemeralKeyPair = selectEphemeralKeyPair(thunkAPI.getState() as any);
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		if (!mezon.dongClient) {
+			return thunkAPI.rejectWithValue('DongClient not initialized');
+		}
+
+		const response = await mezon.dongClient.claimAmountRedEnvelopeQR({
+			id,
+			user_id: userId,
+			proof_b64: zkProofs?.proof || '',
+			public_b64: zkProofs?.public_input || '',
+			publickey: ephemeralKeyPair?.publicKey || ''
+		});
+
+		return response as ClaimRedEnvelopeQRResponse;
+	}
+);
+
+const claimRedEnvelopeQR = createAsyncThunk(
+	'wallet/claimAmountRedEnvelopeQR',
+	async (
+		{
+			id,
+			splitMoneyId,
+			userId
+		}: {
+			id: string;
+			splitMoneyId: number;
+			userId: string;
+		},
+		thunkAPI
+	) => {
+		const zkProofs = selectZkProofs(thunkAPI.getState() as any);
+		const ephemeralKeyPair = selectEphemeralKeyPair(thunkAPI.getState() as any);
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		if (!mezon.dongClient) {
+			return thunkAPI.rejectWithValue('DongClient not initialized');
+		}
+
+		const response = await mezon.dongClient.claimRedEnvelopeQR(id, {
+			split_money_id: splitMoneyId,
+			user_id: userId,
+			proof_b64: zkProofs?.proof || '',
+			public_b64: zkProofs?.public_input || '',
+			publickey: ephemeralKeyPair?.publicKey || ''
+		});
+
+		return response;
+	}
+);
+
 export const initialWalletState: WalletState = {
 	loadingStatus: 'not loaded',
 	error: null,
@@ -289,7 +353,9 @@ export const walletActions = {
 	fetchWalletDetail,
 	fetchEphemeralKeyPair,
 	fetchZkProofs,
-	sendTransaction
+	sendTransaction,
+	claimAmountRedEnvelopeQR,
+	claimRedEnvelopeQR
 };
 
 export const selectWalletDetail = createSelector(getWalletState, (state) => state?.wallet);

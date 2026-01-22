@@ -186,7 +186,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			})
 		);
 		const attachments = message.attachments?.filter((attach) => isValidUrl(attach.url || '')) || [];
-		const createTime = new Date(message.create_time_seconds || 0).toISOString();
+		const createTime = message.create_time_seconds ? new Date(message.create_time_seconds * 1000).toISOString() : new Date().toISOString();
 		const pinBody: UpdatePinMessage = {
 			clanId: mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD ? '' : (currentClanId ?? ''),
 			channelId:
