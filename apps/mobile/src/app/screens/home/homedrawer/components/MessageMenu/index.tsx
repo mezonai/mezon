@@ -140,7 +140,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 
 	const handleAddFriend = () => {
 		const body = messageInfo?.user_ids?.[0] ? { ids: [messageInfo?.user_ids?.[0]] } : { usernames: [messageInfo?.usernames?.[0]] };
-		addFriend(body);
+		addFriend({ ...body, isMobile: true });
 		dismiss();
 	};
 

@@ -1,14 +1,15 @@
 import { useFriends } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import type { RootState, requestAddFriendParam } from '@mezon/store-mobile';
-import { EStateFriend, friendsActions, getStore, selectCurrentUsername, selectStatusSentMobile } from '@mezon/store-mobile';
+import { size, useTheme } from '@mezon/mobile-ui';
+import type { requestAddFriendParam } from '@mezon/store-mobile';
+import { EStateFriend, selectCurrentUsername } from '@mezon/store-mobile';
+import type { ApiAddFriendsResponse } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Pressable, StatusBar, Text, TextInput, View } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import Toast from 'react-native-toast-message';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import MezonButton from '../../../../../componentUI/MezonButton';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
@@ -20,7 +21,6 @@ export const AddFriendModal = React.memo(() => {
 	const styles = style(themeValue);
 	const currentUsername = useSelector(selectCurrentUsername);
 	const { addFriend, friends } = useFriends();
-	const dispatch = useDispatch();
 	const [requestAddFriend, setRequestAddFriend] = useState<requestAddFriendParam>({
 		usernames: [],
 		ids: []
@@ -67,7 +67,7 @@ export const AddFriendModal = React.memo(() => {
 		});
 	};
 
-	const sentFriendRequest = async () => {
+	const sentFriendRequest = useCallback(async () => {
 		const firstUsername = Array.isArray(requestAddFriend.usernames) && requestAddFriend.usernames.length > 0 ? requestAddFriend.usernames[0] : '';
 		if (!(firstUsername || '')?.trim()?.length) return null;
 		if (inputRef?.current) {
@@ -98,33 +98,21 @@ export const AddFriendModal = React.memo(() => {
 			return;
 		}
 
-		await addFriend(requestAddFriend);
-		showAddFriendToast();
-	};
-
-	const showAddFriendToast = useCallback(() => {
-		const store = getStore();
-		const statusSentMobile = selectStatusSentMobile(store.getState() as RootState);
-		if (statusSentMobile?.isSuccess) {
+		const response = await addFriend({ ...requestAddFriend, isMobile: true });
+		const payload = response?.payload as ApiAddFriendsResponse;
+		if (payload?.ids?.[0] && payload.ids[0] !== '0') {
+			resetField();
 			Toast.show({
 				type: 'success',
-				props: {
-					text2: t('toast.sendAddFriendSuccess'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
-				}
+				text1: t('toast.sendAddFriendSuccess')
 			});
-			resetField();
 		} else {
 			Toast.show({
 				type: 'error',
-				props: {
-					text2: t('toast.sendAddFriendFail'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
-				}
+				text1: t('toast.sendAddFriendFail')
 			});
 		}
-		dispatch(friendsActions.setSentStatusMobile(null));
-	}, [dispatch, t]);
+	}, [addFriend, currentUsername, friends, requestAddFriend, t]);
 
 	return (
 		<KeyboardAvoidingView

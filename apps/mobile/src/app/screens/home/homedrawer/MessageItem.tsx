@@ -2,7 +2,15 @@
 import { ActionEmitEvent, validLinkGoogleMapRegex, validLinkInviteRegex } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import type { MessagesEntity } from '@mezon/store-mobile';
-import { getStore, getStoreAsync, selectCurrentChannel, selectMemberClanByUserId, setSelectedMessage, useAppDispatch } from '@mezon/store-mobile';
+import {
+	getStore,
+	getStoreAsync,
+	selectCurrentChannel,
+	selectDmGroupById,
+	selectMemberClanByUserId,
+	setSelectedMessage,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { ETypeLinkMedia, ID_MENTION_HERE, TypeMessage, isValidEmojiData } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
@@ -257,7 +265,7 @@ const MessageItem = React.memo(
 				const store = await getStoreAsync();
 				let currentChannel;
 				if (isDM) {
-					currentChannel = selectDmGroupById(channelId ?? '')?.(store.getState());
+					currentChannel = selectDmGroupById(store.getState(), channelId ?? '');
 				} else {
 					currentChannel = selectCurrentChannel(store.getState() as any);
 				}
