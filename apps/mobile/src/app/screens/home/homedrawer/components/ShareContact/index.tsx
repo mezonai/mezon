@@ -1,5 +1,5 @@
 import { useChatSending } from '@mezon/core';
-import type { IUserMention } from '@mezon/mobile-components';
+import { debounce, type IUserMention } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import type { FriendsEntity } from '@mezon/store-mobile';
 import {
@@ -30,12 +30,15 @@ import UserInfoSearch from '../../../../../components/ThreadDetail/SearchMessage
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { style } from './styles';
 
+const DEBOUNCE_SEARCH_MS = 300;
+
 const ShareContactScreen = () => {
 	const navigation = useNavigation();
 	const { t } = useTranslation(['message', 'common']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [searchText, setSearchText] = useState<string>('');
+	const [debouncedSearchText, setDebouncedSearchText] = useState<string>('');
 
 	const allFriends = useSelector(selectAllFriends);
 	const currentChannel = useSelector(selectCurrentChannel);
@@ -66,12 +69,28 @@ const ShareContactScreen = () => {
 
 	const { sendMessage } = useChatSending({ mode, channelOrDirect, fromTopic: isCreateTopic || !!currentTopicId });
 
+	const debouncedSetSearchText = useMemo(
+		() =>
+			debounce((value: string) => {
+				setDebouncedSearchText(value);
+			}, DEBOUNCE_SEARCH_MS),
+		[]
+	);
+
+	const handleSearchTextChange = useCallback(
+		(value: string) => {
+			setSearchText(value);
+			debouncedSetSearchText(value);
+		},
+		[debouncedSetSearchText]
+	);
+
 	const filteredUsers = useMemo(() => {
-		const query = searchText.trim().toLowerCase();
+		const query = debouncedSearchText.trim().toLowerCase();
 		if (!query) return friendList || [];
 
 		return friendList?.filter(({ user }) => [user?.display_name, user?.username].some((name) => name?.toLowerCase()?.includes(query))) || [];
-	}, [searchText, friendList]);
+	}, [debouncedSearchText, friendList]);
 
 	const onClose = useCallback(() => navigation.goBack(), [navigation]);
 
@@ -134,10 +153,6 @@ const ShareContactScreen = () => {
 		[handleSelectMember]
 	);
 
-	const handleTextChange = useCallback((text: string) => {
-		setSearchText(text);
-	}, []);
-
 	return (
 		<View style={styles.container}>
 			<StatusBarHeight />
@@ -152,7 +167,7 @@ const ShareContactScreen = () => {
 
 				<MezonInput
 					placeHolder={t('common:search')}
-					onTextChange={handleTextChange}
+					onTextChange={handleSearchTextChange}
 					value={searchText}
 					prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />}
 					inputWrapperStyle={styles.inputWrapper}

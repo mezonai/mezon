@@ -108,11 +108,11 @@ async function checkInternetConnection() {
 	}
 }
 
-const isServerError500 = (errorPayload: any): boolean => {
-	if (errorPayload && typeof errorPayload === 'object' && 'status' in errorPayload && errorPayload.status === 500) {
+const isUnauthorizedError = (errorPayload: any): boolean => {
+	if (errorPayload && typeof errorPayload === 'object' && 'status' in errorPayload && errorPayload.status === 401) {
 		return true;
 	}
-	if (errorPayload instanceof Response && errorPayload.status === 500) {
+	if (errorPayload instanceof Response && errorPayload.status === 401) {
 		return true;
 	}
 	return false;
@@ -139,8 +139,8 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 
 			if ((response as unknown as IWithError).error) {
 				const errorPayload = response.payload;
-				if (isServerError500(errorPayload)) {
-					console.error('Server error (500), logging out immediately');
+				if (isUnauthorizedError(errorPayload)) {
+					console.error('Unauthorized (401), logging out immediately');
 					return handleLogoutWithRedirect(dispatch, initialPath);
 				}
 

@@ -3,6 +3,7 @@ import { categoriesActions, selectClanView, useAppDispatch } from '@mezon/store'
 import { Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalUnknowChannel from './ModalUnknowChannel';
@@ -14,6 +15,7 @@ type ChannelHashtagProps = {
 	clanId?: string;
 	parentId?: string;
 	channelId?: string;
+	isLink?: boolean;
 };
 
 const ChannelHashtag = ({
@@ -23,7 +25,8 @@ const ChannelHashtag = ({
 	parentId,
 	channelLabel,
 	channelId,
-	clanId
+	clanId,
+	isLink
 }: ChannelHashtagProps) => {
 	const dispatch = useAppDispatch();
 	const isClanView = useSelector(selectClanView);
@@ -64,7 +67,7 @@ const ChannelHashtag = ({
 	const isAppChannel = channel?.type === ChannelType.CHANNEL_TYPE_APP;
 	const isVoiceChannel = channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 
-	const existHashtagAndChannelView = channelHastagId && !isClanView;
+	const existHashtagAndChannelView = channelHastagId && !isClanView && channel?.id;
 	const isValidChannel = isTextChannel || isStreamingChannel || isThreadChannel || isVoiceChannel || existHashtagAndChannelView || isAppChannel;
 
 	return isValidChannel ? (
@@ -94,19 +97,20 @@ const ChannelHashtag = ({
 			{channel ? channel.channel_label : channelLabel || null}
 		</div>
 	) : (
-		<PrivateChannel onClick={openUnknown} />
+		<PrivateChannel onClick={openUnknown} isLink={isLink} />
 	);
 };
 
 export default memo(ChannelHashtag);
-function PrivateChannel({ onClick }: { onClick: () => void }) {
+function PrivateChannel({ onClick, isLink }: { onClick: () => void; isLink?: boolean }) {
+	const { t } = useTranslation('message');
 	return (
 		<span
 			onClick={onClick}
-			className={`px-0.1 rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
+			className={`px-0.1 items-center rounded-sm inline-flex w-fit whitespace-nowrap color-mention bg-mention relative top-[3px] cursor-pointer`}
 		>
-			<Icons.LockedPrivate className={`mt-1 w-4 h-4`} />
-			<span>private-channel</span>
+			{isLink ? <Icons.Hashtag defaultSize={`w-4 h-4`} /> : <Icons.LockedPrivate className={`w-4 h-4`} />}
+			<span className={`${isLink ? 'italic' : ''}`}>{isLink ? t('unknown') : t('noAccess')}</span>
 		</span>
 	);
 }

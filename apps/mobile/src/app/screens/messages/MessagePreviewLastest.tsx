@@ -1,7 +1,6 @@
 import { isEmpty, load, STORAGE_MY_USER_ID, validLinkGoogleMapRegex } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { isContainsUrl } from '@mezon/transport';
-import { EMimeTypes } from '@mezon/utils';
 import { ChannelType, safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,12 +21,6 @@ export const MessagePreviewLastest = React.memo(
 		const content = useMemo(() => {
 			return typeof lastSentMessage?.content === 'object' ? lastSentMessage?.content : safeJSONParse(lastSentMessage?.content || '{}');
 		}, [lastSentMessage?.content]);
-
-		const attachment = useMemo(() => {
-			const messageAttachments =
-				typeof lastSentMessage?.attachment === 'object' ? lastSentMessage?.attachment : safeJSONParse(lastSentMessage?.attachment || '{}');
-			return Array.isArray(messageAttachments) ? messageAttachments?.[0] : messageAttachments;
-		}, [lastSentMessage?.attachment]);
 
 		const contentTextObj = useMemo(() => {
 			const isLinkMessage = isContainsUrl(content?.t || '');
@@ -51,7 +44,7 @@ export const MessagePreviewLastest = React.memo(
 			return userId?.toString() === senderId?.toString();
 		}, [senderId]);
 
-		const renderLastMessageContent = useMemo(() => {
+		const renderLastMessageAuthor = useMemo(() => {
 			if (!senderId) {
 				return '';
 			}
@@ -67,9 +60,7 @@ export const MessagePreviewLastest = React.memo(
 			return '';
 		}, [senderId, isYourAccount, senderName, t]);
 
-		const lastMessageAttachmentContent = useMemo(() => {
-			const isLinkMessage = contentTextObj?.isLinkMessage;
-			const text = contentTextObj?.text;
+		const renderLastMessageContent = useMemo(() => {
 			if (embed) {
 				if (embed?.title || embed?.description) {
 					return `${embed?.title || embed?.description}`;
@@ -79,43 +70,16 @@ export const MessagePreviewLastest = React.memo(
 					return ``;
 				}
 			}
-			const isGoogleMapsLink = validLinkGoogleMapRegex.test(text);
+			const isGoogleMapsLink = validLinkGoogleMapRegex.test(contentTextObj?.text);
 			if (isGoogleMapsLink) {
 				return `[${t('attachments.location')}]`;
 			}
-			if (isLinkMessage) {
-				return `[${t('attachments.link')}] ${text}`;
+			if (contentTextObj?.isLinkMessage) {
+				return `[${t('attachments.link')}] ${contentTextObj?.text}`;
 			}
 
-			const fileName = attachment?.filename;
-			const fileType = attachment?.filetype;
-			const url = attachment?.url;
-
-			const type = fileType?.split('/')?.[0];
-
-			switch (type) {
-				case 'image': {
-					if (url?.includes(EMimeTypes.tenor)) {
-						return `[${t('attachments.gif')}]`;
-					}
-					if (url?.includes(EMimeTypes.cdnmezon) || url?.includes(EMimeTypes.cdnmezon2) || url?.includes(EMimeTypes.cdnmezon3)) {
-						return `[${t('attachments.sticker')}]`;
-					}
-					return `[${t('attachments.image')}]`;
-				}
-				case 'video': {
-					return `[${t('attachments.video')}]`;
-				}
-				case 'audio': {
-					return `[${t('attachments.audio')}]`;
-				}
-				case 'application':
-				case 'text':
-					return `[${t('attachments.file')}] ${fileName || ''}`;
-				default:
-					return `[${t('attachments.file')}]`;
-			}
-		}, [attachment, contentTextObj, embed, t]);
+			return `[${t('attachments.file')}]`;
+		}, [contentTextObj, embed, t]);
 
 		if (isEmpty(content)) {
 			if (isTypeDMGroup) {
@@ -148,8 +112,8 @@ export const MessagePreviewLastest = React.memo(
 						]}
 						numberOfLines={1}
 					>
+						{renderLastMessageAuthor}
 						{renderLastMessageContent}
-						{lastMessageAttachmentContent}
 					</Text>
 				</View>
 			);
@@ -157,11 +121,11 @@ export const MessagePreviewLastest = React.memo(
 
 		return (
 			<View style={styles.contentMessage}>
-				{renderLastMessageContent && (
+				{renderLastMessageAuthor && (
 					<Text
 						style={[styles.defaultText, styles.lastMessage, { color: isUnReadChannel ? themeValue.textStrong : themeValue.textDisabled }]}
 					>
-						{renderLastMessageContent}
+						{renderLastMessageAuthor}
 					</Text>
 				)}
 				{!!content && (

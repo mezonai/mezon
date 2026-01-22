@@ -95,22 +95,6 @@ function MessageVideo({ attachmentData, isMobile = false, isPreview = false }: M
 		console.error('Video playback error:', error?.code, error?.message, attachmentData.url);
 	};
 
-	const getVideoType = (url: string, filetype?: string): string => {
-		if (filetype) {
-			return filetype;
-		}
-		if (url.includes('.mp4') || url.endsWith('.mp4')) {
-			return 'video/mp4';
-		}
-		if (url.includes('.mov') || url.endsWith('.mov')) {
-			return 'video/quicktime';
-		}
-		if (url.includes('.webm') || url.endsWith('.webm')) {
-			return 'video/webm';
-		}
-		return 'video/mp4';
-	};
-
 	const handleDownloadVideo = async () => {
 		if (attachmentData.url) {
 			try {
@@ -166,7 +150,7 @@ function MessageVideo({ attachmentData, isMobile = false, isPreview = false }: M
 						className="object-contain"
 						preload="metadata"
 					>
-						<source src={attachmentData.url} type={getVideoType(attachmentData.url || '', attachmentData.filetype)} />
+						<source src={attachmentData.url} />
 						{t('video.error.browserNotSupported')}
 					</video>
 

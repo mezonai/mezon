@@ -5,24 +5,19 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
-			width: size.s_200 + size.s_40,
+			width: '100%',
+			maxWidth: size.s_220,
 			borderRadius: size.s_12,
 			backgroundColor: colors.secondary,
-			marginVertical: size.s_4,
+			marginTop: size.s_4,
 			overflow: 'hidden'
-		},
-		cardGradient: {
-			paddingHorizontal: size.s_14,
-			paddingVertical: size.s_50,
-			position: 'relative'
 		},
 		avatarWrapper: {
 			flexDirection: 'row',
-			alignItems: 'center',
 			gap: size.s_12,
-			position: 'absolute',
-			top: size.s_12,
-			left: size.s_12
+			paddingTop: size.s_12,
+			paddingBottom: size.s_50,
+			paddingLeft: size.s_12
 		},
 		avatarContainer: {
 			width: size.s_40,
@@ -40,13 +35,11 @@ export const style = (colors: Attributes) =>
 		displayName: {
 			fontSize: size.s_14,
 			color: colors.white,
-			fontWeight: '600',
-			width: '90%'
+			fontWeight: '600'
 		},
 		username: {
 			fontSize: size.s_12,
-			color: colors.text,
-			width: '90%'
+			color: colors.text
 		},
 		actionContainer: {
 			flexDirection: 'row',
