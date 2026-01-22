@@ -93,8 +93,8 @@ android {
         applicationId "com.mezon.mobile"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 810
-        versionName "1.1.135"
+        versionCode 863
+        versionName "1.1.142"
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }

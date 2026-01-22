@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		headerActionTitle: {
+			fontSize: size.s_16,
 			color: baseColor.blurple,
 			fontWeight: 'bold',
 			paddingHorizontal: 20

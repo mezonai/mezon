@@ -124,11 +124,6 @@ const ShareContactScreen = () => {
 					undefined,
 					TypeMessage.ShareContact
 				);
-
-				Toast.show({
-					type: 'success',
-					text1: t('contactSharedSuccessfully')
-				});
 				onClose();
 			} catch (error) {
 				Toast.show({

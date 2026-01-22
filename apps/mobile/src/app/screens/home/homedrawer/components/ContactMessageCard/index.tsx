@@ -4,9 +4,9 @@ import type { ChannelsEntity } from '@mezon/store-mobile';
 import { directActions, DMCallActions, EStateFriend, selectDirectsOpenlist, selectFriendStatus, useAppDispatch } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import { memo, useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -42,8 +42,8 @@ interface IContactMessageCardProps {
 
 export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGroup = false }: IContactMessageCardProps) => {
 	const { themeValue, themeBasic } = useTheme();
-	const styles = style(themeValue);
 	const isTabletLandscape = useTabletLandscape();
+	const styles = style(themeValue, isTabletLandscape);
 	const { t } = useTranslation(['common', 'friends']);
 	const navigation = useNavigation<any>();
 	const dispatch = useAppDispatch();
@@ -173,44 +173,43 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 	}, [onLongPress]);
 
 	return (
-		<TouchableOpacity activeOpacity={0.8} onPress={handleOpenProfile} onLongPress={handleLongPress}>
-			<View style={styles.container}>
-				<LinearGradient
-					colors={[
-						themeValue.primary,
-						(themeValue?.primaryGradiant ?? themeBasic === ThemeModeBase.LIGHT) ? themeValue.tertiary : themeValue.secondaryLight
-					]}
-					start={{ x: 0, y: 0 }}
-					end={{ x: 1, y: 1 }}
-				>
-					<View style={styles.avatarWrapper}>
-						<View style={styles.avatarContainer}>
-							<MezonClanAvatar image={data?.avatar} alt={data?.username} />
-						</View>
-						<View style={styles.displayNameWrapper}>
-							<Text style={styles.displayName} numberOfLines={1}>
-								{data?.display_name}
-							</Text>
-							<Text style={styles.username} numberOfLines={1}>
-								{`@${data?.username}`}
-							</Text>
-						</View>
-					</View>
+		<TouchableOpacity activeOpacity={0.8} onPress={handleOpenProfile} onLongPress={handleLongPress} style={styles.container}>
+			<LinearGradient
+				start={{ x: 1, y: 0 }}
+				end={{ x: 0, y: 0 }}
+				colors={[
+					themeValue.primary,
+					(themeValue?.primaryGradiant ?? themeBasic === ThemeModeBase.LIGHT) ? themeValue.tertiary : themeValue.secondaryLight
+				]}
+				style={[StyleSheet.absoluteFillObject]}
+			/>
 
-					<View style={styles.actionContainer}>
-						<TouchableOpacity style={styles.actionButton} onPress={handleCallUser} activeOpacity={0.8}>
-							<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.textStrong} />
-							<Text style={styles.actionText}>{t('call.title')}</Text>
-						</TouchableOpacity>
+			<View style={styles.avatarWrapper}>
+				<View style={styles.avatarContainer}>
+					<MezonClanAvatar image={data?.avatar} alt={data?.username} />
+				</View>
+				<View style={styles.displayNameWrapper}>
+					<Text style={styles.displayName} numberOfLines={2}>
+						{data?.display_name}
+					</Text>
+					<Text style={styles.username} numberOfLines={1}>
+						{`@${data?.username}`}
+					</Text>
+				</View>
+			</View>
 
-						<View style={styles.divider} />
+			<View style={styles.actionContainer}>
+				<TouchableOpacity style={styles.actionButton} onPress={handleCallUser} activeOpacity={0.8}>
+					<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.textStrong} />
+					<Text style={styles.actionText}>{t('call.title')}</Text>
+				</TouchableOpacity>
 
-						<TouchableOpacity style={styles.actionButton} onPress={handleSendMessage} activeOpacity={0.8}>
-							<MezonIconCDN icon={IconCDN.chatIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
-							<Text style={[styles.actionText, styles.messageButtonText]}>{t('sendMessage')}</Text>
-						</TouchableOpacity>
-					</View>
-				</LinearGradient>
+				<View style={styles.divider} />
+
+				<TouchableOpacity style={styles.actionButton} onPress={handleSendMessage} activeOpacity={0.8}>
+					<MezonIconCDN icon={IconCDN.chatIcon} width={size.s_18} height={size.s_18} color={baseColor.blurple} />
+					<Text style={[styles.actionText, styles.messageButtonText]}>{t('sendMessage')}</Text>
+				</TouchableOpacity>
 			</View>
 		</TouchableOpacity>
 	);

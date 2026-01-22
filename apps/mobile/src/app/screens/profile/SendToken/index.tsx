@@ -90,7 +90,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 		return friends?.filter((user) => user.state === 0) || [];
 	}, [store]);
 	const canEdit = jsonObject?.canEdit;
-	const { walletDetail, enableWallet } = useWallet();
+	const { walletDetail } = useWallet();
 
 	const tokenInWallet = useMemo(() => {
 		return walletDetail?.balance || 0;

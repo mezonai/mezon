@@ -1,7 +1,7 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { IMAGE_MAX_FILE_SIZE, MAX_FILE_SIZE, fileTypeImage } from '@mezon/utils';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_SIZE, MAX_FILE_SIZE_1G, fileTypeImage } from '@mezon/utils';
 import type { PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
 import {
 	CameraRoll,
@@ -298,7 +298,8 @@ const Gallery = ({ currentChannelId }: IProps) => {
 
 				// Determine if this is an image file based on type
 				const isImage = type && fileTypeImage.includes(type);
-				const maxAllowedSize = isImage ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE;
+				const isVideo = type && type?.includes(type);
+				const maxAllowedSize = isImage ? IMAGE_MAX_FILE_SIZE : isVideo ? MAX_FILE_SIZE_1G : MAX_FILE_SIZE;
 
 				if (size && size >= maxAllowedSize) {
 					const fileTypeText = isImage ? t('common:image') : t('common:files');
@@ -441,7 +442,7 @@ const Gallery = ({ currentChannelId }: IProps) => {
 				onPickGallery(fileFormat);
 			}
 		});
-	}, [hasPermission, onPickGallery]);
+	}, [attachmentFilteredByChannelId, hasPermission, onPickGallery]);
 
 	const handleLoadMore = async () => {
 		if (pageInfo?.has_next_page && pageInfo?.end_cursor) {

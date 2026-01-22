@@ -7,7 +7,6 @@ import {
 	selectAllChannelMembers,
 	selectAllChannelsByUser,
 	selectAllDirectMessages,
-	selectAllUsersByUser,
 	selectAllUsesInAllClansEntities,
 	selectDirectsOpenlist,
 	selectEntitesUserClans,
@@ -66,7 +65,7 @@ const SearchMessagePage = ({
 			dmGroupChatList.map((itemDM: DirectEntity) => {
 				if (itemDM.active === 1) {
 					listDmSearchMap.push({
-						id: itemDM.channel_id,
+						id: itemDM.type === ChannelType.CHANNEL_TYPE_GROUP ? itemDM.channel_id : itemDM?.user_ids?.[0],
 						username: itemDM?.usernames?.toString() ?? '',
 						display_name: itemDM.channel_label,
 						channel_label: itemDM.channel_label,
@@ -165,12 +164,6 @@ const SearchMessagePage = ({
 			return [];
 		}
 	}, [nameChannel, currentChannel, store, channelId, formatMemberData]);
-
-	const allUsers = useMemo(() => {
-		if (nameChannel) return [];
-
-		return selectAllUsersByUser(store.getState()) || [];
-	}, [nameChannel, store]);
 
 	const allDirectMessages = useMemo(() => {
 		if (nameChannel) return [];

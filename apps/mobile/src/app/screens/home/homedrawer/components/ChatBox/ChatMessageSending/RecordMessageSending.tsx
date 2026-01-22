@@ -1,8 +1,7 @@
 import { useChatSending } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { selectChannelById, selectDmGroupById } from '@mezon/store';
-import { useAppSelector } from '@mezon/store-mobile';
+import { selectChannelById, selectDmGroupById, useAppSelector } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
