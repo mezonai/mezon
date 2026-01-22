@@ -5728,7 +5728,7 @@ export function MacOSMaximizeIcon({ isMaximized = false, ...props }: React.HTMLA
 
 export function FileAndFolder(props: React.HTMLAttributes<SVGElement>) {
 	return (
-		<svg width="250" height="225" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180" className="absolute left-[22%] -top-36">
+		<svg width="250" height="225" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 180" className="absolute left-1/2 -translate-x-1/2 -top-36">
 			<g className="layer">
 				<g className="layer" id="svg_1" transform="translate(103.002 50.5774) matrix(0.939693 0.34202 -0.34202 0.939693 18.588 -9.41797)">
 					<path
