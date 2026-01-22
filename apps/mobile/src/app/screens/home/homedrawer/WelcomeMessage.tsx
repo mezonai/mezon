@@ -123,7 +123,8 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 			store.dispatch(
 				friendsActions.sendRequestAddFriend({
 					usernames: [],
-					ids: [targetUserId]
+					ids: [targetUserId],
+					isMobile: true
 				})
 			);
 		}
@@ -134,7 +135,8 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 		const body = {
 			usernames: [],
 			ids: [targetUserId],
-			isAcceptingRequest: true
+			isAcceptingRequest: true,
+			isMobile: true
 		};
 		store.dispatch(friendsActions.sendRequestAddFriend(body));
 	};

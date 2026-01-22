@@ -31,7 +31,7 @@ export const AddFriendScreen = () => {
 					deleteFriend(friend?.user?.username, friend?.user?.id);
 					break;
 				case EFriendItemAction.Approve:
-					acceptFriend(friend?.user?.username, friend?.user?.id);
+					acceptFriend(friend?.user?.username, friend?.user?.id, true);
 					break;
 				case EFriendItemAction.ShowInformation:
 					setSelectedUser(friend?.user);

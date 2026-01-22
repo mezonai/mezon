@@ -1,7 +1,7 @@
 import { useFriends } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
-import { FriendsEntity } from '@mezon/store-mobile';
-import { User } from 'mezon-js';
+import type { FriendsEntity } from '@mezon/store-mobile';
+import type { ApiUser } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
@@ -20,7 +20,7 @@ export const RequestFriendScreen = () => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [selectedTab, setSelectedTab] = useState(EFriendRequest.Received);
-	const [selectedUser, setSelectedUser] = useState<User | null>(null);
+	const [selectedUser, setSelectedUser] = useState<ApiUser | null>(null);
 	const { friends, acceptFriend, deleteFriend } = useFriends();
 	const { t } = useTranslation('friends');
 	const friendRequestTabs = [
@@ -41,7 +41,7 @@ export const RequestFriendScreen = () => {
 					deleteFriend(friend?.user?.username, friend?.user?.id);
 					break;
 				case EFriendItemAction.Approve:
-					acceptFriend(friend?.user?.username, friend?.user?.id);
+					acceptFriend(friend?.user?.username, friend?.user?.id, true);
 					break;
 				case EFriendItemAction.ShowInformation:
 					setSelectedUser(friend?.user);

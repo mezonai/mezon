@@ -192,19 +192,18 @@ export const ProfileDetail = memo(() => {
 	]);
 
 	const handleAddFriend = useCallback(() => {
-		const userIdToAddFriend = profileData?.user_id;
-		if (userIdToAddFriend) {
+		if (profileData?.user_id) {
 			addFriend({
 				usernames: [],
-				ids: [userIdToAddFriend]
+				ids: [profileData.user_id],
+				isMobile: true
 			});
 		}
 	}, [profileData?.user_id, addFriend]);
 
 	const handleAcceptRequest = useCallback(() => {
-		const userIdToAcceptRequest = profileData?.user_id;
-		if (userIdToAcceptRequest) {
-			acceptFriend(profileData?.username, userIdToAcceptRequest);
+		if (profileData?.user_id) {
+			acceptFriend(profileData?.username, profileData.user_id, true);
 		}
 	}, [profileData?.user_id, profileData?.username, acceptFriend]);
 
