@@ -425,7 +425,10 @@ export const updateUser = createAsyncThunk(
 			}
 
 			if (dob && dob !== currentUser?.user?.dob) {
-				body.dob_seconds = new Date(dob).getTime();
+				const dobMs = new Date(dob).getTime();
+				if (!Number.isNaN(dobMs)) {
+					body.dob_seconds = Math.floor(dobMs / 1000);
+				}
 			}
 
 			if (logo !== currentUser?.logo) {
