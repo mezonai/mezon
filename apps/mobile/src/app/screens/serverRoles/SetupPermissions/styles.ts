@@ -30,7 +30,7 @@ export const style = (colors: Attributes) =>
 			position: 'absolute',
 			alignSelf: 'center',
 			width: '100%',
-			zIndex: -1
+			zIndex: 1
 		},
 		name: {
 			textAlign: 'center',
@@ -41,7 +41,8 @@ export const style = (colors: Attributes) =>
 			alignSelf: 'center'
 		},
 		backButton: {
-			padding: size.s_16
+			padding: size.s_16,
+			zIndex: 2
 		},
 		emptyText: {
 			color: colors.text,

@@ -13,14 +13,18 @@ interface IEventTabProps {
 }
 
 export const EventTab = memo(({ event, t, isBottomSheet = false }: IEventTabProps) => {
-	const currentEvent = useAppSelector((state) => selectEventById(state, event?.clan_id ?? '', event?.id ?? ''));
+	const currentEvent = useAppSelector((state) => selectEventById(state, event?.clan_id ?? '0', event?.id ?? '0'));
+
+	const interestedMembersCount = useMemo(() => {
+		return currentEvent?.user_ids?.filter((id) => !!id && id !== '0')?.length;
+	}, [currentEvent?.user_ids]);
 
 	const titleEvent = useMemo(() => {
-		if (currentEvent?.user_ids?.length > 0) {
-			return [t('detail.eventInfo'), `${currentEvent.user_ids.length.toString()} ${t('item.interested')}`];
+		if (interestedMembersCount > 0) {
+			return [t('detail.eventInfo'), `${interestedMembersCount} ${t('item.interested')}`];
 		}
 		return [t('detail.eventInfo'), t('item.interested')];
-	}, [currentEvent?.user_ids?.length, t]);
+	}, [interestedMembersCount, t]);
 
 	return <MezonTab views={[<EventDetail event={event} />, <EventMember event={event} />]} titles={titleEvent} isBottomSheet={isBottomSheet} />;
 });

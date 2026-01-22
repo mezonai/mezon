@@ -38,7 +38,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 		if (!start) return 0;
 		const currentTime = Date.now();
 		const startTimeLocal = new Date(start).getTime();
-		return Math.ceil((startTimeLocal - currentTime) / 1000);
+		return Math.ceil(startTimeLocal - currentTime / 1000);
 	}, [start]);
 
 	const calculateMinutesRemaining = useMemo(() => {
@@ -48,6 +48,10 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 		}
 		return 0;
 	}, [leftTimeSeconds, start]);
+
+	const interestedCount = useMemo(() => {
+		return event?.user_ids?.filter((id) => !!id && id !== '0')?.length;
+	}, [event?.user_ids]);
 
 	const eventStatus = useMemo(() => {
 		if (event?.event_status) return event.event_status;
@@ -102,7 +106,11 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 						<View style={styles.avatar}>
 							<FastImage
 								source={{
-									uri: createImgproxyUrl(userCreate?.user?.avatar_url ?? '', { width: 100, height: 100, resizeType: 'fit' })
+									uri: createImgproxyUrl(userCreate?.clan_avatar || userCreate?.user?.avatar_url || '', {
+										width: 100,
+										height: 100,
+										resizeType: 'fit'
+									})
 								}}
 								style={{ width: '100%', height: '100%' }}
 								resizeMode="cover"
@@ -110,7 +118,7 @@ export function EventItem({ event, onPress, showActions = true, start }: IEventI
 						</View>
 						<View style={styles.inline}>
 							<MezonIconCDN icon={IconCDN.groupIcon} height={size.s_12} width={size.s_12} color={themeValue.text} />
-							<Text style={styles.tinyText}>{event?.user_ids?.length}</Text>
+							<Text style={styles.tinyText}>{interestedCount}</Text>
 						</View>
 					</View>
 				</View>
