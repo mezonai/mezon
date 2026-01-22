@@ -98,19 +98,23 @@ export const AddFriendModal = React.memo(() => {
 			return;
 		}
 
-		const response = await addFriend({ ...requestAddFriend, isMobile: true });
-		const payload = response?.payload as ApiAddFriendsResponse;
-		if (payload?.ids?.[0] && payload.ids[0] !== '0') {
-			resetField();
-			Toast.show({
-				type: 'success',
-				text1: t('toast.sendAddFriendSuccess')
-			});
-		} else {
-			Toast.show({
-				type: 'error',
-				text1: t('toast.sendAddFriendFail')
-			});
+		try {
+			const response = await addFriend({ ...requestAddFriend, isMobile: true });
+			const payload = response?.payload as ApiAddFriendsResponse;
+			if (payload?.ids?.[0] && payload.ids[0] !== '0') {
+				resetField();
+				Toast.show({
+					type: 'success',
+					text1: t('toast.sendAddFriendSuccess')
+				});
+			} else {
+				Toast.show({
+					type: 'error',
+					text1: t('toast.sendAddFriendFail')
+				});
+			}
+		} catch (error) {
+			console.error('Error send friend request: ', error);
 		}
 	}, [addFriend, currentUsername, friends, requestAddFriend, t]);
 
