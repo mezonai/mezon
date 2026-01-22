@@ -1,5 +1,7 @@
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import type { CacheMetadata } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { RootState } from '../store';
 
 const API_BASE = process.env.NX_ADMIN_API_URL || 'http://localhost:8080/api';
@@ -16,6 +18,15 @@ export const fetchAllClansMetrics = createAsyncThunk(
 	'dashboard/fetchAllClansMetrics',
 	async ({ start, end, rangeType }: { start: string; end: string; rangeType?: string }, thunkAPI) => {
 		try {
+			const getState = thunkAPI.getState as () => RootState;
+			const apiKey = createApiKey('fetchAllClansMetrics', start, end, rangeType || '');
+			const cached = getState().dashboard.allClansRawPayload;
+			const cacheMeta = getState().dashboard.allClansCache;
+			const shouldForce = shouldForceApiCall(apiKey, cacheMeta, false);
+			if (!shouldForce && cached) {
+				return { ...(cached as any), fromCache: true };
+			}
+
 			const base = API_BASE || '';
 			const res = await fetch(`${base}/dashboard/all-clans/metrics?start=${start}&end=${end}${rangeType ? `&rangeType=${rangeType}` : ''}`);
 			if (!res.ok) {
@@ -28,6 +39,7 @@ export const fetchAllClansMetrics = createAsyncThunk(
 				activeChannels: number[];
 				totalMessages: number[];
 			}>;
+			markApiFirstCalled(apiKey);
 			return json;
 		} catch (err) {
 			return thunkAPI.rejectWithValue(err);
@@ -62,6 +74,14 @@ export const fetchClanMetrics = createAsyncThunk(
 	'dashboard/fetchClanMetrics',
 	async ({ clanId, start, end, rangeType }: { clanId: string; start: string; end: string; rangeType?: string }, thunkAPI) => {
 		try {
+			const getState = thunkAPI.getState as () => RootState;
+			const apiKey = createApiKey('fetchClanMetrics', clanId, start, end, rangeType || '');
+			const clanCacheEntry = getState().dashboard.chartCacheByClan?.[clanId];
+			const shouldForce = shouldForceApiCall(apiKey, clanCacheEntry?.cache, false);
+			if (!shouldForce && clanCacheEntry?.rawPayload) {
+				return { ...(clanCacheEntry.rawPayload as any), fromCache: true, clanId };
+			}
+
 			const base = API_BASE || '';
 			const res = await fetch(`${base}/dashboard/${clanId}/metrics?start=${start}&end=${end}${rangeType ? `&rangeType=${rangeType}` : ''}`);
 			if (!res.ok) {
@@ -69,7 +89,8 @@ export const fetchClanMetrics = createAsyncThunk(
 				return thunkAPI.rejectWithValue(text || res.statusText);
 			}
 			const json = await res.json();
-			return json;
+			markApiFirstCalled(apiKey);
+			return { ...(json as any), clanId };
 		} catch (err) {
 			return thunkAPI.rejectWithValue(err);
 		}
@@ -104,6 +125,9 @@ export interface DashboardState {
 	loading: boolean;
 	stats: Record<string, number>;
 	chartData: ChartPoint[];
+	allClansCache?: CacheMetadata;
+	allClansRawPayload?: any;
+	chartCacheByClan: Record<string, { cache?: CacheMetadata; rawPayload?: any }>;
 	tableData: ClanRow[];
 	usageTotals?: { totalActiveUsers: number; totalActiveChannels: number; totalMessages: number } | null;
 	chartLoading: boolean;
@@ -117,6 +141,9 @@ export const initialDashboardState: DashboardState = {
 	loading: false,
 	stats: {},
 	chartData: [],
+	allClansCache: undefined,
+	allClansRawPayload: undefined,
+	chartCacheByClan: {},
 	tableData: [],
 	usageTotals: null,
 	chartLoading: false,
@@ -158,6 +185,10 @@ export const dashboardSlice = createSlice({
 			.addCase(fetchAllClansMetrics.fulfilled, (state, action) => {
 				state.chartLoading = false;
 				const payload = action.payload as any;
+				// store raw payload and cache metadata
+				state.allClansRawPayload = payload;
+				state.allClansCache = createCacheMetadata();
+				if (payload?.fromCache) return;
 				if (payload?.success && payload.data) {
 					const labels: string[] = payload.data.labels || [];
 					state.chartData = labels.map((label: string, idx: number) => ({
@@ -203,6 +234,13 @@ export const dashboardSlice = createSlice({
 			.addCase(fetchClanMetrics.fulfilled, (state, action) => {
 				state.chartLoading = false;
 				const payload = action.payload as any;
+				const clanId = payload?.clanId as string | undefined;
+				if (clanId) {
+					if (!state.chartCacheByClan[clanId]) state.chartCacheByClan[clanId] = {};
+					state.chartCacheByClan[clanId].rawPayload = payload;
+					state.chartCacheByClan[clanId].cache = createCacheMetadata();
+				}
+				if (payload?.fromCache) return;
 				if (payload?.success && payload.data) {
 					const labels: string[] = payload.data.labels || [];
 					state.chartData = labels.map((label: string, idx: number) => ({
