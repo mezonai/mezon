@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { selectDmGroupById } from '@mezon/store';
+import { selectDmGroupById } from '@mezon/store-mobile';
 import { ChannelStatusEnum, createImgproxyUrl } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';

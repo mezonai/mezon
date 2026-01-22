@@ -1,6 +1,5 @@
-import { getStore } from '@mezon/store';
 import type { ChannelsEntity } from '@mezon/store-mobile';
-import { selectChannelById, selectEmojiObjSuggestion } from '@mezon/store-mobile';
+import { getStore, selectChannelById, selectEmojiObjSuggestion } from '@mezon/store-mobile';
 import type { IEmojiOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage } from '@mezon/utils';
 import { ChannelStatusEnum, EBacktickType, isYouTubeLink } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';

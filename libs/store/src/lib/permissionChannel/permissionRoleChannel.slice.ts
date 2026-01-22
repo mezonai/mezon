@@ -121,7 +121,7 @@ export const setPermissionRoleChannel = createAsyncThunk(
 				channel_id: channelId,
 				role_id: roleId,
 				permission_update: permission,
-				max_permission_id: maxPermissionId,
+				max_permission_id: maxPermissionId || '0',
 				user_id: userId
 			};
 			const response = await mezon.client.setRoleChannelPermission(mezon.session, body);
