@@ -307,10 +307,14 @@ export const AuthenticationLoader = () => {
 					});
 				}
 				//Payload from FCM need messageType and sound
-				if (remoteMessage?.data?.sound === INotificationSound.BUZZ || remoteMessage?.data?.sound === INotificationSound.BANK) {
+				if (
+					typeof remoteMessage?.data?.sound === 'string' &&
+					(remoteMessage?.data?.sound?.toLowerCase() === INotificationSound.BUZZ ||
+						remoteMessage?.data?.sound?.toLowerCase() === INotificationSound.BANK)
+				) {
 					const isAppActive = appStateRef.current === 'active';
 					if (isAppActive) {
-						playCustomSoundNotify(remoteMessage?.data?.sound);
+						playCustomSoundNotify(remoteMessage?.data?.sound?.toLowerCase());
 					}
 
 					if (messageCode === TypeMessage.MessageBuzz) handleBuzz(remoteMessage);
