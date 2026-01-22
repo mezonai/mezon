@@ -103,6 +103,11 @@ interface ActiveMentionContext {
 const prepareForRegExp = (html: string): string => {
 	const tempDiv = document.createElement('div');
 	tempDiv.innerHTML = html;
+
+	const entityElements = tempDiv.querySelectorAll('[data-entity-type]');
+	entityElements.forEach((el) => {
+		el.textContent = '\u200B';
+	});
 	let textContent = tempDiv.textContent || tempDiv.innerText || '';
 	textContent = textContent.replace(/(&nbsp;|\u00A0)/g, ' ');
 	textContent = textContent.replace(/\n/g, ' ');
