@@ -2,7 +2,8 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"outDir": "../../dist/out-tsc",
-		"types": ["node"]
+		"types": ["node"],
+		"skipLibCheck": true
 	},
 	"exclude": ["**/*.spec.ts", "**/*.test.ts"],
 	"include": ["**/*.ts"]

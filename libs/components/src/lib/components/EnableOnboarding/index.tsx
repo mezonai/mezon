@@ -12,7 +12,7 @@ const EnableOnboarding = ({ onEnable }: { onEnable: () => void }) => {
 
 			<div className="relative z-10 flex flex-col items-center">
 				<div className="mb-8 p-4 bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg">
-					<img src={'assets/images/onboarding.png'} alt="Mezon Onboarding" className="max-w-[350px] w-full h-auto rounded-lg shadow-md" />
+					<img src={'/assets/images/onboarding.png'} alt="Mezon Onboarding" className="max-w-[350px] w-full h-auto rounded-lg shadow-md" />
 				</div>
 
 				<h2 className="text-4xl font-bold text-white mb-2 text-center leading-tight">{t('enableOnboarding.title')}</h2>

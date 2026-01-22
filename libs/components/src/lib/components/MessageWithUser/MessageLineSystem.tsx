@@ -1,6 +1,6 @@
 import { channelsActions, messagesActions, pinMessageActions, threadsActions, useAppDispatch } from '@mezon/store';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
-import { ETokenMessage, TypeMessage, convertTimeStringI18n, generateE2eId, parseThreadInfo } from '@mezon/utils';
+import { ETokenMessage, TypeMessage, convertUnixSecondsToTimeString, generateE2eId, parseThreadInfo } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 			if (message?.references && message?.references[0]?.message_ref_id) {
 				dispatch(
 					messagesActions.jumpToMessage({
-						clanId: message?.clan_id || '',
+						clanId: message?.clan_id || '0',
 						messageId: message?.references[0]?.message_ref_id,
 						channelId: message?.channel_id
 					})
@@ -125,7 +125,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 	};
 
 	const handleShowPinMessage = async () => {
-		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channel_id, clanId: message.clan_id || '' }));
+		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channel_id, clanId: message.clan_id || '0' }));
 		dispatch(pinMessageActions.togglePinModal());
 	};
 
@@ -185,7 +185,7 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 					))}
 			</div>
 			<div className="ml-1 max-2xl:ml-0 pt-[5px]  max-2xl:pt-0 text-theme-primary text-[10px] cursor-default">
-				{convertTimeStringI18n(message?.create_time as string, translateCommon, i18n.language)}
+				{convertUnixSecondsToTimeString(message?.create_time_seconds || 0, translateCommon, i18n.language)}
 			</div>
 		</div>
 	);

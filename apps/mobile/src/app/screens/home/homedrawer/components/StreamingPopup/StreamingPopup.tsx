@@ -129,7 +129,7 @@ const StreamingPopup = () => {
 				videoStreamActions.startStream({
 					clanId: currentClanId || '',
 					clanName: currentClanName || '',
-					streamId: currentChannel.channel_id || '',
+					streamId: currentChannel.channel_id || '0',
 					streamName: currentChannel.channel_label || '',
 					parentId: currentChannel.parent_id || ''
 				})

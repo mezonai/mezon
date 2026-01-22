@@ -3,8 +3,9 @@ import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/ut
 import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { Notification } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiNotification } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiMessageMention } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -15,8 +16,12 @@ import type { RootState } from '../store';
 export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIMIT_NOTIFICATION = 50;
 
-export const mapNotificationToEntity = (notifyRes: ApiNotification): INotification => {
-	return { ...notifyRes, id: notifyRes.id || '', content: notifyRes.content };
+export const mapNotificationToEntity = (notifyRes: INotification): Notification => {
+	return {
+		...notifyRes,
+		id: notifyRes.id || '',
+		create_time: notifyRes.create_time
+	};
 };
 
 export interface FetchNotificationArgs {
@@ -70,19 +75,20 @@ export const fetchListNotificationCached = async (
 	}
 
 	const response = await withRetry(
-		() =>
+		(session) =>
 			ensuredMezon.client.listNotifications(
-				ensuredMezon.session,
+				session,
 				clanId,
 				LIMIT_NOTIFICATION,
-				notificationId || '',
+				notificationId || '0',
 				category,
 				Direction_Mode.BEFORE_TIMESTAMP
 			),
 		{
 			maxRetries: 3,
 			initialDelay: 1000,
-			scope: 'notifications'
+			scope: 'notifications',
+			mezon: ensuredMezon
 		}
 	);
 
@@ -103,7 +109,7 @@ export const fetchListNotification = createAsyncThunk(
 			const response = await fetchListNotificationCached(
 				thunkAPI.getState as () => RootState,
 				mezon,
-				clanId,
+				clanId || '0',
 				category,
 				notificationId as string,
 				noCache
@@ -119,9 +125,8 @@ export const fetchListNotification = createAsyncThunk(
 				};
 			}
 
-			const notifications = response.notifications.map(mapNotificationToEntity);
 			return {
-				data: notifications,
+				data: response.notifications as INotification[],
 				category,
 				fromCache
 			};
@@ -155,13 +160,9 @@ export const markMessageNotify = createAsyncThunk('notification/markMessageNotif
 		const response = await mezon.client.createMessage2Inbox(mezon.session, {
 			message_id: message.id,
 			content: JSON.stringify(message.content),
-			avatar: message.avatar,
-			clan_id: message.clan_id,
-			channel_id: message.channel_id,
-			attachments: JSON.stringify(message.attachments),
-			mentions: JSON.stringify(message.mentions),
-			reactions: JSON.stringify(message.reactions),
-			references: JSON.stringify(message.references)
+			avatar: message.avatar || '',
+			clan_id: message.clan_id || '0',
+			channel_id: message.channel_id
 		});
 		if (!response) {
 			return thunkAPI.rejectWithValue([]);
@@ -196,6 +197,7 @@ export const notificationSlice = createSlice({
 	name: NOTIFICATION_FEATURE_KEY,
 	initialState: initialNotificationState,
 	reducers: {
+		removeAll: notificationAdapter.removeAll,
 		add(state, action: PayloadAction<{ data: INotification; category: NotificationCategory }>) {
 			const { data, category } = action.payload;
 
@@ -252,11 +254,20 @@ export const notificationSlice = createSlice({
 						notificationAdapter.setMany(state, action.payload.data);
 
 						const { data, category, fromCache } = action.payload;
-
+						const dataParse = data.map((item) => {
+							return {
+								...item,
+								content: {
+									...item.content,
+									content:
+										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content
+								}
+							};
+						});
 						if (state.notifications[category]) {
-							state.notifications[category].data = [...state.notifications[category].data, ...data];
+							state.notifications[category].data = [...state.notifications[category].data, ...dataParse];
 						} else {
-							state.notifications[category] = { data: [...data], lastId: '', cache: undefined };
+							state.notifications[category] = { data: [...dataParse], lastId: '', cache: undefined };
 						}
 
 						if (!fromCache) {
@@ -288,19 +299,60 @@ export const notificationSlice = createSlice({
 			.addCase(
 				markMessageNotify.fulfilled,
 				(state: NotificationState, action: PayloadAction<{ noti: ApiChannelMessageHeader; message: MessagesEntity }>) => {
-					if (state.notifications[NotificationCategory.MESSAGES].data) {
+					if (state.notifications[NotificationCategory.MESSAGES].data && state.notifications[NotificationCategory.MESSAGES].data?.[0]?.id) {
 						const { noti, message } = action.payload;
+						const mention_ids: string[] = [];
+						const position_s: number[] = [];
+						const position_e: number[] = [];
+						const is_mention_role: boolean[] = [];
+						(message.mentions || []).map((item: ApiMessageMention) => {
+							if (item.user_id && item.s && item.e) {
+								mention_ids.push(item.user_id);
+								is_mention_role.push(false);
+								position_s.push(item.s);
+								position_e.push(item.e);
+							}
+							if (item.role_id && item.s && item.e) {
+								mention_ids.push(item.role_id);
+								is_mention_role.push(true);
+								position_s.push(item.s);
+								position_e.push(item.e);
+							}
+						});
 						const notiMark: INotification = {
 							...message,
 							id: noti.id || '',
 							...noti,
-							create_time: new Date().toISOString(),
-							content: safeJSONParse(noti.content || ''),
-							category: NotificationCategory.MESSAGES
+							content: {
+								title: '',
+								link: '',
+								content: message.content.t,
+								channel_id: message.channel_id,
+								sender_id: message.sender_id,
+								avatar: message.clan_avatar || message.avatar,
+								clan_id: message.clan_id,
+								attachment_link: message.attachments?.[0]?.url || '',
+								display_name: message.clan_nick || message.display_name || message.username,
+								create_time_seconds: message.create_time_seconds,
+								update_time_seconds: message.update_time_seconds,
+								username: message.username,
+								mention_ids,
+								position_s,
+								position_e,
+								attachment_type: '',
+								has_more_attachment: (message.attachments?.length || 0) > 2,
+								is_mention_role,
+								message_id: message.message_id
+							},
+							category: NotificationCategory.MESSAGES,
+							avatar_url: message?.avatar?.[0] || '',
+							clan_id: message.clan_id || '0',
+							topic_id: message.topic_id || '0'
 						};
+
 						state.notifications[NotificationCategory.MESSAGES].data = [
-							...state.notifications[NotificationCategory.MESSAGES].data,
-							notiMark
+							notiMark,
+							...state.notifications[NotificationCategory.MESSAGES].data
 						];
 					}
 				}

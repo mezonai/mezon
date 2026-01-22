@@ -3,13 +3,16 @@ import type { PinMessageEntity } from '@mezon/store-mobile';
 import { messagesActions, selectMemberClanByUserId, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
-import { safeJSONParse } from 'mezon-js';
+import { decodeAttachments, safeJSONParse } from 'mezon-js';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonClanAvatar from '../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
+import type { IContactData } from '../../../screens/home/homedrawer/components/ContactMessageCard';
+import { ContactMessageCard } from '../../../screens/home/homedrawer/components/ContactMessageCard';
 import { MessageAttachment } from '../../../screens/home/homedrawer/components/MessageAttachment';
 import { RenderTextMarkdownContent } from '../../../screens/home/homedrawer/components/RenderTextMarkdown';
 import { style } from './PinMessageItem.styles';
@@ -76,12 +79,32 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 	};
 
 	const pinMessageAttachments = useMemo(() => {
+		let attachment: ApiMessageAttachment[] = [];
 		try {
-			return safeJSONParse(pinMessageItem?.attachment || '[]') || [];
-		} catch (e) {
-			console.error({ e });
+			const decodedAttachments = decodeAttachments(pinMessageItem?.attachment);
+			attachment = decodedAttachments?.attachments || decodedAttachments || [];
+		} catch (error) {
+			const parsed = safeJSONParse(pinMessageItem?.attachment?.toString());
+			if (parsed?.t) {
+				attachment = [];
+			} else {
+				attachment = parsed?.attachments || parsed || [];
+			}
 		}
+		return attachment;
 	}, [pinMessageItem?.attachment]);
+
+	const contactData = useMemo((): IContactData | null => {
+		const embed = contentMessage?.embed?.[0];
+		if (embed?.fields?.[0]?.value !== 'share_contact') return null;
+
+		return {
+			user_id: embed?.fields?.[1]?.value || '',
+			username: embed?.fields?.[2]?.value || '',
+			display_name: embed?.fields?.[3]?.value || '',
+			avatar: embed?.fields?.[4]?.value || ''
+		};
+	}, [contentMessage?.embed?.[0]]);
 
 	return (
 		<TouchableOpacity onPress={handleJumpMess} style={styles.pinMessageItemWrapper}>
@@ -101,6 +124,7 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 						senderId={message?.sender_id}
 					/>
 				)}
+				{!!contactData && <ContactMessageCard key={`pin_message_contact_${pinMessageItem?.message_id}`} data={contactData} />}
 			</View>
 			<View>
 				<TouchableOpacity

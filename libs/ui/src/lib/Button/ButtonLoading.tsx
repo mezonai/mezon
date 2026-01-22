@@ -1,5 +1,6 @@
-import { Button, Icons } from '@mezon/ui';
 import { useState } from 'react';
+import Button from '../Button';
+import { Icons } from '../Icons';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void;

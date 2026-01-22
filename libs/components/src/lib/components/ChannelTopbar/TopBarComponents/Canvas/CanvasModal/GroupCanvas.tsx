@@ -1,7 +1,7 @@
+import { ButtonCopy } from '@mezon/components';
 import { useAuth } from '@mezon/core';
 import { appActions, canvasActions, canvasAPIActions, selectIdCanvas, useAppDispatch } from '@mezon/store';
 import { generateE2eId, ICanvas } from '@mezon/utils';
-import { ButtonCopy } from 'libs/components/src/lib/components';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 type GroupCanvasProps = {
@@ -73,7 +73,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 				to={link}
 				onClick={handleOpenCanvas}
 			>
-				<div 
+				<div
 					className="h-6 text-xs one-line font-semibold leading-6 "
 					data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item.title')}
 				>

@@ -8,6 +8,7 @@ import CallingModalGroupWrapper from '../../components/CallingModalGroupWrapper'
 import CallingModalWrapper from '../../components/CallingModalWrapper';
 import ModalRootListener from '../../components/ModalRootListener';
 import AppBrowser from '../../screens/auth/AppBrowser';
+import { ClaimMoneyScreen } from '../../screens/claimMoney';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
 import ChannelAppScreen from '../../screens/home/homedrawer/ChannelApp';
 import HomeDefaultWrapper from '../../screens/home/homedrawer/HomeDefaultWrapper';
@@ -164,6 +165,7 @@ export const RootAuthStack = memo(
 					<RootStack.Screen name={APP_SCREEN.CHANNEL_APP_SHOW_ALL} component={ChannelAppShowAll} />
 					<RootStack.Screen name={APP_SCREEN.APP_BROWSER} component={AppBrowser} />
 					<RootStack.Screen name={APP_SCREEN.WALLET} component={WalletScreen} />
+					<RootStack.Screen name={APP_SCREEN.CLAIM_MONEY} component={ClaimMoneyScreen} />
 					<RootStack.Screen
 						name={APP_SCREEN.PROFILE_DETAIL}
 						component={ProfileDetail}

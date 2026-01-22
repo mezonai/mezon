@@ -40,7 +40,14 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 	};
 	return (
 		<label className="pl-3 flex items-center h-11" data-e2e={generateE2eId('mention.selected_file')}>
-			<input id="preview_img" type="file" onChange={handleChange} className="w-full hidden" multiple  data-e2e={generateE2eId('user_setting.profile.user_profile.upload.avatar_input')} />
+			<input
+				id="preview_img"
+				type="file"
+				onChange={handleChange}
+				className="w-full hidden"
+				multiple
+				data-e2e={generateE2eId('user_setting.profile.user_profile.upload.avatar_input')}
+			/>
 			<div className="flex flex-row h-6 w-6 items-center justify-center cursor-pointer text-theme-primary text-theme-primary-hover">
 				<Icons.AddCircle className="" />
 			</div>

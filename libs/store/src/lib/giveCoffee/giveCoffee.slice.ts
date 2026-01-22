@@ -4,8 +4,7 @@ import type { LoadingStatus } from '@mezon/utils';
 import { AMOUNT_TOKEN } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiGiveCoffeeEvent } from 'mezon-js/api.gen';
-import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiGiveCoffeeEvent, ApiTokenSentEvent } from 'mezon-js/api.gen';
 import type { AddTxResponse } from 'mmn-client-js';
 import { ETransferType } from 'mmn-client-js';
 import { ensureSession, getMezonCtx } from '../helpers';
@@ -58,8 +57,8 @@ export const updateGiveCoffee = createAsyncThunk(
 							textData: 'givecoffee',
 							extraInfo: {
 								type: ETransferType.GiveCoffee,
-								ChannelId: channel_id || '',
-								ClanId: clan_id || '',
+								ChannelId: channel_id || '0',
+								ClanId: clan_id || '0',
 								MessageRefId: message_ref_id || '',
 								UserReceiverId: receiver_id || '',
 								UserSenderId: sender_id || '',
@@ -238,15 +237,3 @@ export const selectShowModalSendToken = createSelector(getCoffeeState, (state) =
 export const selectInfoSendToken = createSelector(getCoffeeState, (state) => state.infoSendToken);
 
 export const selectSendTokenEvent = createSelector(getCoffeeState, (state) => state.sendTokenEvent);
-
-export const selectUpdateToken = (userId: string) =>
-	createSelector(getCoffeeState, (state) => {
-		const tokenUpdate = state?.tokenUpdate || {};
-		const tokenValue = tokenUpdate[userId];
-		return typeof tokenValue === 'number' && !isNaN(tokenValue) ? tokenValue : 0;
-	});
-export const selectTokenSocket = (userId: string) =>
-	createSelector(getCoffeeState, (state) => {
-		const tokenSocket = state?.tokenSocket || {};
-		return tokenSocket[userId];
-	});

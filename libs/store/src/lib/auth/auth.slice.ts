@@ -4,7 +4,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import { Session } from 'mezon-js';
-import type { ApiLinkAccountConfirmRequest } from 'mezon-js/dist/api.gen';
+import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api.gen';
 import { toast } from 'react-toastify';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
@@ -589,8 +589,6 @@ export const authActions = {
 export const getAuthState = (rootState: { [AUTH_FEATURE_KEY]: AuthState }): AuthState => rootState[AUTH_FEATURE_KEY];
 
 export const selectAllAuth = createSelector(getAuthState, (state: AuthState) => state);
-
-export const selectAuthIsLoaded = createSelector(getAuthState, (state: AuthState) => state.loadingStatus === 'loaded');
 
 export const selectIsLogin = createSelector(getAuthState, (state: AuthState) => state.isLogin);
 

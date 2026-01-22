@@ -68,6 +68,7 @@ export const style = (colors: Attributes, colorUsername?: string) =>
 		},
 		usernameText: {
 			opacity: 0.8,
+			fontSize: size.s_12,
 			color: colors.textDisabled
 		},
 		displayNameText: {

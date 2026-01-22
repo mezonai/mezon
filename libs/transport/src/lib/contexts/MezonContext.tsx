@@ -2,12 +2,13 @@ import EventEmitter from 'events';
 import type { Client, Socket } from 'mezon-js';
 import { Session } from 'mezon-js';
 import { WebSocketAdapterPb } from 'mezon-js-protobuf';
-import type { ApiConfirmLoginRequest, ApiLinkAccountConfirmRequest, ApiLoginIDResponse, ApiSession } from 'mezon-js/dist/api.gen';
-import type { IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
+import type { ApiConfirmLoginRequest, ApiLinkAccountConfirmRequest, ApiLoginIDResponse, ApiSession } from 'mezon-js/api.gen';
+import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import React, { useCallback } from 'react';
 import type { CreateMezonClientOptions } from '../mezon';
 import {
 	createClient as createMezonClient,
+	createDongClient as createMezonDongClient,
 	createIndexerClient as createMezonIndexerClient,
 	createMmnClient as createMezonMmnClient,
 	createZkClient as createMezonZkClient
@@ -140,10 +141,12 @@ export type MezonContextValue = {
 	socketRef: React.MutableRefObject<Socket | null>;
 	zkRef: React.MutableRefObject<ZkClient | null>;
 	mmnRef: React.MutableRefObject<MmnClient | null>;
+	dongRef: React.MutableRefObject<DongClient | null>;
 	indexerRef: React.MutableRefObject<IndexerClient | null>;
 	createClient: () => Promise<Client>;
 	createZkClient: () => ZkClient;
 	createMmnClient: () => MmnClient;
+	createDongClient: () => DongClient;
 	createIndexerClient: () => IndexerClient;
 	authenticateMezon: (token: string, isRemember?: boolean) => Promise<Session>;
 	createQRLogin: () => Promise<ApiLoginIDResponse>;
@@ -168,6 +171,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 	const sessionRef = React.useRef<Session | null>(null);
 	const socketRef = React.useRef<Socket | null>(null);
 	const zkRef = React.useRef<ZkClient | null>(null);
+	const dongRef = React.useRef<DongClient | null>(null);
 	const mmnRef = React.useRef<MmnClient | null>(null);
 	const indexerRef = React.useRef<IndexerClient | null>(null);
 
@@ -204,6 +208,18 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		});
 		zkRef.current = zkClient;
 		return zkClient;
+	}, []);
+
+	const createDongClient = useCallback(() => {
+		const dongClient = createMezonDongClient({
+			endpoint: process.env.NX_CHAT_APP_DONG_SERVICE_API_URL || '',
+			timeout: 30000,
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
+		dongRef.current = dongClient;
+		return dongClient;
 	}, []);
 
 	const createMmnClient = useCallback(() => {
@@ -273,10 +289,11 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		// Initialize additional clients
 		createZkClient();
 		createMmnClient();
+		createDongClient();
 		createIndexerClient();
 
 		return client;
-	}, [mezon, createZkClient, createMmnClient, createIndexerClient, isFromMobile]);
+	}, [mezon, createZkClient, createMmnClient, createDongClient, createIndexerClient, isFromMobile]);
 
 	const createQRLogin = useCallback(async () => {
 		if (!clientRef.current) {
@@ -601,10 +618,12 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			sessionRef,
 			socketRef,
 			zkRef,
+			dongRef,
 			mmnRef,
 			indexerRef,
 			createClient,
 			createZkClient,
+			createDongClient,
 			createMmnClient,
 			createIndexerClient,
 			createQRLogin,
@@ -630,6 +649,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			indexerRef,
 			createClient,
 			createZkClient,
+			createDongClient,
 			createMmnClient,
 			createIndexerClient,
 			createQRLogin,

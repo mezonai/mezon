@@ -10,6 +10,7 @@ import {
 	selectRawDataUserGroup,
 	useAppDispatch
 } from '@mezon/store-mobile';
+import { GROUP_CHAT_MAXIMUM_MEMBERS } from '@mezon/utils';
 import type { User } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
 import type { ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
@@ -161,10 +162,10 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 		if (resPayload.channel_id) {
 			await checkNotificationPermissionAndNavigate(() => {
 				if (isTabletLandscape) {
-					dispatch(directActions.setDmGroupCurrentId(resPayload?.channel_id || ''));
+					dispatch(directActions.setDmGroupCurrentId(resPayload?.channel_id || '0'));
 					navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 				} else {
-					directMessageIdRef.current = resPayload?.channel_id || '';
+					directMessageIdRef.current = resPayload?.channel_id || '0';
 					if (fromUser) {
 						navigation.popToTop();
 						navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, {
@@ -201,6 +202,12 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 								{currentDirectMessage?.type === ChannelType.CHANNEL_TYPE_GROUP
 									? t('screen:headerTitle.addMembers')
 									: t('screen:headerTitle.newGroup')}
+							</Text>
+							<Text style={styles.screenSubTitle}>
+								{t('groupMembers', {
+									members: selectedFriendDefault?.length + friendIdSelectedList?.length,
+									total: GROUP_CHAT_MAXIMUM_MEMBERS
+								})}
 							</Text>
 						</View>
 						<View style={styles.actions}>

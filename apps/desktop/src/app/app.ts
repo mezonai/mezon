@@ -20,6 +20,7 @@ const ACTIVITY_MUSIC = Object.values(EActivityMusic);
 const ACTIVITY_GAMING = Object.values(EActivityGaming);
 
 const _IMAGE_WINDOW_KEY = 'IMAGE_WINDOW_KEY';
+const STORE_ID = 'MEZON.Mezon_vdgv9gtrfadw6!MEZON.Mezon';
 
 const isMac = process.platform === 'darwin';
 
@@ -78,7 +79,8 @@ export default class App {
 	private static onReady() {
 		if (rendererAppName) {
 			App.application.setLoginItemSettings({
-				openAtLogin: false
+				openAtLogin: true,
+				path: process.execPath
 			});
 			App.initMainWindow();
 			App.loadMainWindow();
@@ -94,7 +96,7 @@ export default class App {
 		}
 
 		if (process.platform === 'win32') {
-			app.setAppUserModelId('app.mezon.ai');
+			app.setAppUserModelId(STORE_ID);
 		}
 
 		autoUpdater.checkForUpdates();
@@ -126,11 +128,14 @@ export default class App {
 		const width = Math.min(1280, workAreaSize.width || 1280);
 		const height = Math.min(720, workAreaSize.height || 720);
 
+		const loginSettings = App.application.getLoginItemSettings();
+		const showOnStartup = !loginSettings.wasOpenedAtLogin;
+
 		// Create the browser window.
 		App.mainWindow = new BrowserWindow({
 			width,
 			height,
-			show: false,
+			show: showOnStartup,
 			frame: false,
 			titleBarOverlay: false,
 			titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
@@ -424,8 +429,8 @@ export default class App {
 								return;
 							}
 							if (process.platform === 'darwin') {
-								//shell.openExternal('macappstore://itunes.apple.com/mezon.desktop');
-								//return;
+								shell.openExternal('macappstore://itunes.apple.com/app/mezon-desktop/id6756601798');
+								return;
 							}
 							autoUpdater.checkForUpdates().then((data) => {
 								if (!data?.updateInfo) return;

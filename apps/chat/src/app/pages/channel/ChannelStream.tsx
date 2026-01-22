@@ -120,7 +120,7 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 			<div className="custom-video-container w-full h-full relative">
 				{!isRemoteVideoStream && (
 					<img
-						src={currentChannel?.channel_avatar || 'assets/images/flahstream.png'}
+						src={currentChannel?.channel_avatar || '/assets/images/flahstream.png'}
 						alt={t('streamThumbnail')}
 						className="w-full h-full object-cover"
 					/>
@@ -281,7 +281,7 @@ export default function ChannelStream({
 	isStream
 }: ChannelStreamProps) {
 	const { t } = useTranslation('channelStream');
-	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || ''));
+	const memberJoin = useAppSelector((state) => selectStreamMembersByChannelId(state, currentChannel?.channel_id || '0'));
 	const streamPlay = useSelector(selectStatusStream);
 	const isJoin = useSelector(selectIsJoin);
 	const { userProfile } = useAuth();

@@ -41,7 +41,7 @@ const ChannelIndex = lazy(() => import(/* webpackChunkName: "channel-index" */ '
 const DirectMessageIndex = lazy(() => import(/* webpackChunkName: "dm-index" */ '../pages/directMessage/DirectMessageIndex'));
 const ChannelAppLayoutMobile = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/ChannelAppLayoutMobile'));
 const PreJoinCalling = lazy(() => import(/* webpackChunkName: "ui-components" */ '../pages/meeting'));
-
+const MeetPage = lazy(() => import(/* webpackChunkName: "meet-page" */ '../pages/meet'));
 const AppDirectory = lazy(() => import(/* webpackChunkName: "app-pages" */ '../pages/AppDirectory'));
 const ChannelMain = lazy(() => import(/* webpackChunkName: "channel-pages" */ '../pages/channel'));
 const Direct = lazy(() => import(/* webpackChunkName: "dm-pages" */ '../pages/directMessage'));
@@ -169,6 +169,15 @@ export const Routes = memo(() => {
 						element: (
 							<Suspense fallback={<SuspenseFallback />}>
 								<PreJoinCalling />
+							</Suspense>
+						),
+						loader: loaderWithStore(authLoader)
+					},
+					{
+						path: 'meet',
+						element: (
+							<Suspense fallback={<SuspenseFallback />}>
+								<MeetPage />
 							</Suspense>
 						),
 						loader: loaderWithStore(authLoader)

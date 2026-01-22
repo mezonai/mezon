@@ -151,7 +151,7 @@ const TopBarChannelText = memo(() => {
 	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames]);
 	const dmUserAvatar = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
-			return currentDmGroup?.channel_avatar || 'assets/images/avatar-group.png';
+			return currentDmGroup?.channel_avatar || '/assets/images/avatar-group.png';
 		}
 
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup?.user_ids) {
@@ -159,8 +159,8 @@ const TopBarChannelText = memo(() => {
 		}
 	}, [currentDmGroup]);
 
-	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentDmGroup?.channel_id || '')(state));
-	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentDmGroup?.channel_id || '')(state));
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentDmGroup?.channel_id || '0')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentDmGroup?.channel_id || '0')(state));
 
 	const editGroupModal = useEditGroupModal({
 		channelId: currentDmGroup?.channel_id,
@@ -613,7 +613,7 @@ const DmTopbarTools = memo(() => {
 
 					dispatch(
 						groupCallActions.showPreCallInterface({
-							groupId: currentDmGroup.channel_id || '',
+							groupId: currentDmGroup.channel_id || '0',
 							isVideo: isVideoCall
 						})
 					);

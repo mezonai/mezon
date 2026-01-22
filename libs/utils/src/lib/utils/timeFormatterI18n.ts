@@ -10,7 +10,7 @@ export const timeFormatI18n = (start: string, t: (key: string, options?: any) =>
 		t('timeFormat.daysOfWeek.fri'),
 		t('timeFormat.daysOfWeek.sat')
 	];
-	const dayName = daysOfWeek[date.getUTCDay()];
+	const dayName = daysOfWeek[date.getDay()];
 
 	const months = [
 		t('timeFormat.months.jan'),
@@ -26,11 +26,11 @@ export const timeFormatI18n = (start: string, t: (key: string, options?: any) =>
 		t('timeFormat.months.nov'),
 		t('timeFormat.months.dec')
 	];
-	const monthName = months[date.getUTCMonth()];
+	const monthName = months[date.getMonth()];
 
-	const day = date.getUTCDate();
-	const hours = date.getUTCHours().toString().padStart(2, '0');
-	const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+	const day = date.getDate();
+	const hours = date.getHours().toString().padStart(2, '0');
+	const minutes = date.getMinutes().toString().padStart(2, '0');
 
 	return t('timeFormat.fullDate', {
 		dayName,

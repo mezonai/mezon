@@ -62,7 +62,7 @@ const AboutMezon = () => {
 	const mobileDropdownRef = useRef<HTMLDivElement>(null);
 	const downloadUrl: string = useMemo(() => {
 		if (platform === Platform.MACOS) {
-			return `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-arm64.dmg`;
+			return 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 		} else if (platform === Platform.LINUX) {
 			return `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`;
 		}
@@ -77,7 +77,7 @@ const AboutMezon = () => {
 			});
 		}
 	};
-	const universalUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-x64.dmg`;
+	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
 
 	const handleDownloadDesktop = () => {
@@ -169,7 +169,7 @@ const AboutMezon = () => {
 										<span className="text-gray-700 font-svnAvo">Windows</span>
 									</a>
 									<a
-										href={`${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-arm64.dmg`}
+										href={'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 text-purple-600 hover:text-pink-600"
@@ -179,7 +179,7 @@ const AboutMezon = () => {
 										<span className="text-gray-700 font-svnAvo">macOS (Apple)</span>
 									</a>
 									<a
-										href={`${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-x64.dmg`}
+										href={'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'}
 										target="_blank"
 										rel="noopener noreferrer"
 										className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 text-purple-600 hover:text-pink-600"

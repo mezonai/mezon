@@ -24,7 +24,7 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 			<>
 				<KeyPressListener currentChannel={currentChannel} mode={mode} />
 				<ChannelMessages
-					clanId={currentChannel?.clan_id || ''}
+					clanId={currentChannel?.clan_id || '0'}
 					channelId={currentChannel?.id}
 					channelLabel={currentChannel.channel_label}
 					isPrivate={currentChannel.channel_private}

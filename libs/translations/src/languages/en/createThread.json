@@ -2,7 +2,7 @@
 	"threads": "Threads",
 	"emptyThread": {
 		"textNoThread": "There are no threads",
-		"textNotify": "Stay focus on conversation with a threads - a temporary text channel.",
+		"textNotify": "Stay focus on conversation with a thread - a temporary text channel.",
 		"createThreads": "Create Thread"
 	},
 	"otherThreads": "OLDER THREADS",

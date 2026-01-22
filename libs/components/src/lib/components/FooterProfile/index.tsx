@@ -37,7 +37,7 @@ import {
 	generateE2eId
 } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiTokenSentEvent } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -313,7 +313,7 @@ function FooterProfile({ name, status, avatar, userId, isDM }: FooterProfileProp
 
 	return (
 		<div
-			className={`fixed md:bottom-3 bottom-3 md:left-[12px] left-2 right-2 border border-theme-primary rounded-xl shadow-lg bg-theme-surface min-h-14 w-auto md:w-widthProfile z-10 overflow-hidden  ${
+			className={`fixed md:bottom-3 bottom-3 md:left-[12px] left-2 right-2 border border-theme-primary rounded-xl shadow-lg bg-theme-surface min-h-14 w-auto sbm:w-widthProfile z-10 overflow-hidden  ${
 				statusMenu ? 'sbm:!w-widthProfile' : 'hidden'
 			} sbm:block `}
 			id="clan-footer"

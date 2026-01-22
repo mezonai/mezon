@@ -44,6 +44,12 @@ const HeaderUserEmptyClan = () => {
 		navigation.navigate(APP_SCREEN.FRIENDS.STACK, { screen: APP_SCREEN.FRIENDS.ADD_FRIEND });
 	};
 
+	const navigateToScanQRScreen = () => {
+		navigation.navigate(APP_SCREEN.SETTINGS.STACK, {
+			screen: APP_SCREEN.SETTINGS.QR_SCANNER
+		});
+	};
+
 	return (
 		<View style={styles.containerHeader}>
 			<Text style={[styles.headerTextEmpty]}>{t('communityOnMezon')}</Text>
@@ -58,6 +64,9 @@ const HeaderUserEmptyClan = () => {
 						placeholderTextColor={themeValue.textDisabled}
 					/>
 				</View>
+				<TouchableOpacity onPressIn={navigateToScanQRScreen} style={styles.iconWrapper}>
+					<MezonIconCDN icon={IconCDN.myQRcodeIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+				</TouchableOpacity>
 				<TouchableOpacity onPressIn={navigateToAddFriendScreen} style={styles.iconWrapper}>
 					<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 					{quantityPendingRequest > 0 && (

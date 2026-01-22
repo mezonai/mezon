@@ -51,6 +51,7 @@ export const ScreenShareControl = memo(
 		if (isDesktop) {
 			return (
 				<ScreenShareToggleButton
+					id="btn-meet-screen"
 					onClick={onDesktopScreenShare}
 					className={`w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center ${!isShowMember && 'text-white'}`}
 				/>
@@ -59,6 +60,7 @@ export const ScreenShareControl = memo(
 
 		return (
 			<TrackToggle
+				id="btn-meet-screen"
 				key={+showScreen}
 				initialState={showScreen}
 				className={`w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center border-none dark:border-none ${isShowMember ? 'bg-zinc-500 dark:bg-zinc-900' : 'bg-zinc-700'}`}

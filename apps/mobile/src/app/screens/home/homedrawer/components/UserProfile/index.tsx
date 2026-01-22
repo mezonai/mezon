@@ -1,25 +1,24 @@
 import { useDirect, useMemberStatus } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import type { ChannelsEntity, RolesClanEntity, RootState } from '@mezon/store-mobile';
+import type { ChannelsEntity, RolesClanEntity } from '@mezon/store-mobile';
 import {
-	directActions,
 	DMCallActions,
 	EStateFriend,
+	directActions,
 	friendsActions,
-	getStore,
 	selectAllAccount,
 	selectAllRolesClan,
 	selectDirectsOpenlist,
 	selectFriendById,
 	selectMemberClanByUserId,
-	selectStatusSentMobile,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
 import { DEFAULT_ROLE_COLOR, EUserStatus } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
+import type { ApiAddFriendsResponse } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -148,39 +147,27 @@ const UserProfile = React.memo(
 		const handleAddFriend = async () => {
 			const userIdToAddFriend = userId || user?.id;
 			if (userIdToAddFriend) {
-				await dispatch(
+				const response = await dispatch(
 					friendsActions.sendRequestAddFriend({
 						usernames: [],
-						ids: [userIdToAddFriend]
+						ids: [userIdToAddFriend],
+						isMobile: true
 					})
 				);
-
-				showAddFriendToast();
+				const payload = response?.payload as ApiAddFriendsResponse;
+				if (payload?.ids?.[0] && payload.ids[0] !== '0') {
+					Toast.show({
+						type: 'success',
+						text1: t('friends:toast.sendAddFriendSuccess')
+					});
+				} else {
+					Toast.show({
+						type: 'error',
+						text1: t('friends:toast.sendAddFriendFail')
+					});
+				}
 			}
 		};
-
-		const showAddFriendToast = useCallback(() => {
-			const store = getStore();
-			const statusSentMobile = selectStatusSentMobile(store.getState() as RootState);
-			if (statusSentMobile?.isSuccess) {
-				Toast.show({
-					type: 'success',
-					props: {
-						text2: t('friends:toast.sendAddFriendSuccess'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
-					}
-				});
-			} else {
-				Toast.show({
-					type: 'error',
-					props: {
-						text2: t('friends:toast.sendAddFriendFail'),
-						leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
-					}
-				});
-			}
-			dispatch(friendsActions.setSentStatusMobile(null));
-		}, []);
 
 		const iconFriend = useMemo(() => {
 			switch (infoFriend?.state) {
@@ -214,10 +201,9 @@ const UserProfile = React.memo(
 		}, [userById?.role_id, rolesClan]);
 
 		const isCheckOwner = useMemo(() => {
-			const userId = userById?.user?.id;
 			const id = userProfile?.user?.id;
-			return userId === id;
-		}, [userById, userProfile]);
+			return userId === id || user?.id === id;
+		}, [user?.id, userId, userProfile?.user?.id]);
 
 		const directMessageWithUser = useCallback(
 			async (userId: string) => {
@@ -250,7 +236,7 @@ const UserProfile = React.memo(
 				if (response?.channel_id) {
 					await checkNotificationPermissionAndNavigate(() => {
 						if (isTabletLandscape) {
-							dispatch(directActions.setDmGroupCurrentId(response?.channel_id || ''));
+							dispatch(directActions.setDmGroupCurrentId(response?.channel_id || '0'));
 							navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 						} else {
 							navigation.navigate(APP_SCREEN.MESSAGES.MESSAGE_DETAIL, { directMessageId: response?.channel_id });
@@ -596,7 +582,7 @@ const UserProfile = React.memo(
 
 					{isShowUserContent && (
 						<View style={styles.roleGroup}>
-							{!isDMGroup && (userById?.user?.create_time || user?.create_time || user?.user?.create_time) && (
+							{!!(userById?.user?.create_time || user?.create_time || user?.user?.create_time) && (
 								<View style={styles.memberSince}>
 									<Text style={styles.title}>{t('userInfoDM.mezonMemberSince')}</Text>
 									<Text style={styles.subUserName}>

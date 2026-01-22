@@ -4,7 +4,7 @@ import { accountActions, giveCoffeeActions, useAppDispatch, useWallet, userClanP
 import { Icons, Menu } from '@mezon/ui';
 import { CURRENCY, EUserStatus, formatBalanceToString, useAppLayout } from '@mezon/utils';
 import type { ReactElement, ReactNode } from 'react';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ButtonCopy } from '../../../components';
 import TransactionHistory from '../../TransactionHistory';
@@ -17,10 +17,11 @@ type StatusProfileProps = {
 	modalRef: React.MutableRefObject<boolean>;
 	onClose: () => void;
 };
-const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps) => {
+const StatusProfile = ({ userById, isDM: _isDM, modalRef, onClose }: StatusProfileProps) => {
 	const { t } = useTranslation(['userProfile', 'message']);
 	const dispatch = useAppDispatch();
 	const { isMobile } = useAppLayout();
+	const [statusMenuVisible, setStatusMenuVisible] = useState(false);
 	const handleCustomStatus = () => {
 		dispatch(userClanProfileActions.setShowModalCustomStatus(true));
 	};
@@ -36,7 +37,7 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 			status: userProfile?.user?.status || EUserStatus.ONLINE,
 			user_status: userProfile?.user?.user_status
 		};
-	}, [getStatus, userProfile?.user?.status, userProfile?.user?.user_status]);
+	}, [getStatus, userById?.id, userProfile?.user?.id, userProfile?.user?.status, userProfile?.user?.user_status]);
 	const [isShowModalHistory, setIsShowModalHistory] = useState<boolean>(false);
 
 	const { walletDetail } = useWallet();
@@ -81,18 +82,18 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 				return t('statusProfile.statusOptions.online');
 		}
 	};
-	const updateUserStatus = (status: string, minutes: number, untilTurnOn: boolean) => {
-		dispatch(
-			accountActions.updateAccountStatus({
-				status,
-				minutes,
-				until_turn_on: untilTurnOn
-			})
-		);
-		dispatch(accountActions.updateUserStatus(status));
-	};
-
 	const menuStatus = useMemo(() => {
+		const updateUserStatus = (status: string, minutes: number, untilTurnOn: boolean) => {
+			dispatch(
+				accountActions.updateAccountStatus({
+					status,
+					minutes,
+					until_turn_on: untilTurnOn
+				})
+			);
+			dispatch(accountActions.updateUserStatus(status));
+		};
+
 		const menuItems: ReactElement[] = [
 			<ItemStatus
 				children={t('statusProfile.statusOptions.online')}
@@ -109,32 +110,35 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 				statusValue={EUserStatus.IDLE}
 				startIcon={<Icons.DarkModeIcon className="text-[#F0B232] -rotate-90" />}
 				dropdown
-				onClick={onClose}
+				onClick={() => setStatusMenuVisible(false)}
 			/>,
 			<ItemStatusUpdate
-				onClick={onClose}
 				modalRef={modalRef}
 				children={t('statusProfile.statusOptions.doNotDisturb')}
 				description={t('statusProfile.statusOptionsDescriptions.doNotDisturb')}
 				statusValue={EUserStatus.DO_NOT_DISTURB}
 				startIcon={<Icons.MinusCircleIcon />}
 				dropdown
+				onClick={() => setStatusMenuVisible(false)}
 			/>,
 			<ItemStatusUpdate
-				onClick={onClose}
 				modalRef={modalRef}
 				children={t('statusProfile.statusOptions.invisible')}
 				description={t('statusProfile.statusOptionsDescriptions.invisible')}
 				statusValue={EUserStatus.INVISIBLE}
 				startIcon={<Icons.OfflineStatus />}
 				dropdown
+				onClick={() => setStatusMenuVisible(false)}
 			/>
 		];
-		return <>{menuItems}</>;
-	}, [modalRef, onClose, updateUserStatus, t]);
-	const handleChangeVisible = (visible: boolean) => {
-		modalRef.current = visible;
-	};
+		return <div>{menuItems}</div>;
+	}, [dispatch, modalRef, onClose, t]);
+	const handleChangeVisible = useCallback(
+		(visible: boolean) => {
+			modalRef.current = visible;
+		},
+		[modalRef]
+	);
 
 	return (
 		<>
@@ -163,7 +167,11 @@ const StatusProfile = ({ userById, isDM, modalRef, onClose }: StatusProfileProps
 				<Menu
 					trigger="click"
 					menu={menuStatus}
-					onVisibleChange={handleChangeVisible}
+					visible={statusMenuVisible}
+					onVisibleChange={(v) => {
+						setStatusMenuVisible(v);
+						handleChangeVisible(v);
+					}}
 					placement={isMobile ? 'bottom' : undefined}
 					align={
 						isMobile

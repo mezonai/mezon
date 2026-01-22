@@ -878,6 +878,15 @@ export const DATA_E2E_IDENTIFIER = {
 		},
 		search: {
 			input: ''
+		},
+		share_contact: {
+			input: {
+				search: ''
+			},
+			button: {
+				cancel: '',
+				share: ''
+			}
 		}
 	},
 	icon: {

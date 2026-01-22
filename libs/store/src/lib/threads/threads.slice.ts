@@ -101,10 +101,11 @@ export const fetchThreadsCached = async (
 			time: channelData.cache?.lastFetched || Date.now()
 		};
 	}
-	const response = await withRetry(() => mezon.client.listThreadDescs(mezon.session, channelId, LIMIT, 0, clanId, threadId, page), {
+	const response = await withRetry((session) => mezon.client.listThreadDescs(session, channelId, LIMIT, 0, clanId, threadId, page), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'channel-threads'
+		scope: 'channel-threads',
+		mezon
 	});
 	markApiFirstCalled(apiKey);
 
@@ -550,15 +551,11 @@ export const threadsActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectAll, selectEntities } = threadsAdapter.getSelectors();
+const { selectAll } = threadsAdapter.getSelectors();
 
 export const getThreadsState = (rootState: { [THREADS_FEATURE_KEY]: ThreadsState }): ThreadsState => rootState[THREADS_FEATURE_KEY];
 
 export const selectAllThreads = createSelector(getThreadsState, selectAll);
-
-export const selectThreadsEntities = createSelector(getThreadsState, selectEntities);
-
-export const selectThreadById = createSelector([selectThreadsEntities, (state, threadId: string) => threadId], (state, threadId) => state[threadId]);
 
 export const selectIsPrivate = createSelector(getThreadsState, (state) => state.isPrivate);
 
@@ -571,8 +568,6 @@ export const selectListThreadId = createSelector(getThreadsState, (state) => sta
 export const selectValueThread = createSelector(getThreadsState, (state) => state.valueThread);
 
 export const selectOpenThreadMessageState = createSelector(getThreadsState, (state: ThreadsState) => state.openThreadMessageState);
-
-export const selectCurrentThread = createSelector(getThreadsState, (state: ThreadsState) => state.currentThread);
 
 export const selectNameValueThread = (channelId: string) =>
 	createSelector(getThreadsState, (state) => {
@@ -609,5 +604,3 @@ export const selectThreadsByParentChannelId = createSelector(
 		return selectAll(channelState);
 	}
 );
-
-export const selectShouldTriggerSendFromThreadName = createSelector(getThreadsState, (state) => state.shouldTriggerSendFromThreadName);

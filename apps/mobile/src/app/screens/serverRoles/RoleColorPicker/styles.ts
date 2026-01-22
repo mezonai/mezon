@@ -9,6 +9,7 @@ export const style = (colors: Attributes) =>
 		header: {
 			width: '100%',
 			flexDirection: 'row',
+			alignItems: 'center',
 			marginBottom: size.s_20
 		},
 		headerSpacer: {
@@ -59,12 +60,16 @@ export const style = (colors: Attributes) =>
 			width: size.s_60
 		},
 		footerBtn: {
-			backgroundColor: baseColor.blurple,
+			backgroundColor: colors.charcoal,
 			paddingHorizontal: size.s_10,
 			paddingVertical: size.s_6,
 			borderRadius: size.s_20,
 			width: size.s_80,
 			alignItems: 'center',
 			justifyContent: 'center'
+		},
+
+		activeSaveButton: {
+			backgroundColor: baseColor.blurple
 		}
 	});

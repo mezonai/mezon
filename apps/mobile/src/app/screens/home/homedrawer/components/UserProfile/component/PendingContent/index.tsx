@@ -37,7 +37,8 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 		const body = {
 			usernames: [],
 			ids: [targetUser?.user?.id],
-			isAcceptingRequest: true
+			isAcceptingRequest: true,
+			isMobile: true
 		};
 		dispatch(friendsActions.sendRequestAddFriend(body));
 		onClose();

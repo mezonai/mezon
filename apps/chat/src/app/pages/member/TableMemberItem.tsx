@@ -183,7 +183,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 
 	return (
 		<div
-			className="flex flex-row justify-between items-center h-[48px] border-b-[1px] bg-item-hover cursor-pointer  border-b-theme-primary last:border-b-0"
+			className="flex flex-row justify-between items-center h-[48px]  bg-item-hover cursor-pointer  border-b-theme-primary no-divider-last "
 			onContextMenu={handleContextMenu}
 			onClick={handleClickItem}
 			ref={itemRef}
@@ -338,7 +338,7 @@ const ListOptionRole = ({
 
 	const handleAddRoleMemberList = async (role: RolesClanEntity) => {
 		if (userRolesClan.usersRole[role.id]) {
-			await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [], [], [userId], [], role.role_icon || '');
+			await updateRole(role.clan_id || '0', role.id, role.title || '', role.color || '', [], [], [userId], [], role.role_icon || '');
 
 			await dispatch(
 				usersClanActions.removeRoleIdUser({
@@ -352,7 +352,7 @@ const ListOptionRole = ({
 			return;
 		}
 
-		await updateRole(role.clan_id || '', role.id, role.title || '', role.color || '', [userId], [], [], [], role.role_icon || '');
+		await updateRole(role.clan_id || '0', role.id, role.title || '', role.color || '', [userId], [], [], [], role.role_icon || '');
 
 		await dispatch(
 			usersClanActions.addRoleIdUser({

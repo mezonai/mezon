@@ -14,8 +14,7 @@ import {
 import isElectron from 'is-electron';
 import type { Client, Session } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser } from 'mezon-js/api.gen';
-import type { RoleUserListRoleUser } from 'mezon-js/dist/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser, RoleUserListRoleUser } from 'mezon-js/api.gen';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { electronBridge } from '../bridge';
@@ -84,7 +83,7 @@ export * from './transform';
 export * from './windowEnvironment';
 export * from './windowSize';
 
-export const convertTimeString = (dateString: string, t?: (key: string, options?: any) => string) => {
+export const convertTimeString = (dateString: string | number, t?: (key: string, options?: any) => string) => {
 	if (!dateString) {
 		return '';
 	}
@@ -270,7 +269,9 @@ export const convertMarkdown = (markdown: string, type: EBacktickType): string =
 };
 
 export const getSrcEmoji = (id: string) => {
-	return `${process.env.NX_BASE_IMG_URL}/emojis/${id}.webp`;
+	if (!id) return '';
+	const baseUrl = `${process.env.NX_BASE_IMG_URL}/emojis/${id}.webp`;
+	return createImgproxyUrl(baseUrl, { width: 100, height: 100, resizeType: 'fit' });
 };
 
 export const getSrcSound = (id: string) => {
@@ -570,7 +571,7 @@ export const createFormattedString = (data: IExtendedMessage): string => {
 				break;
 			}
 			case ETokenMessage.HASHTAGS:
-				result += `#[${contentInElement.slice(1)}](${element.channelid})`;
+				result += `#[${contentInElement.slice(1)}](${element.channelId})`;
 				break;
 			case ETokenMessage.EMOJIS:
 				result += `::[${contentInElement}](${element.emojiid})`;
@@ -1216,7 +1217,7 @@ export const getAttachmentDataForWindow = (
 			uploaderData: {
 				avatar: (uploader?.clan_avatar ||
 					uploader?.user?.avatar_url ||
-					`${window.location.origin}/assets/images/anonymous-avatar.png`) as string,
+					`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string,
 				name: uploader?.clan_nick || uploader?.user?.display_name || uploader?.user?.username || 'Anonymous'
 			},
 			url: image.url,

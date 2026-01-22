@@ -84,7 +84,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 		setIsCheckDuplicateNameChannel(isCheckNameChannelValue);
 		const updateChannel = {
 			clan_id: channel?.clan_id,
-			channel_id: channel?.channel_id || '',
+			channel_id: channel?.channel_id || '0',
 			channel_label: currentSettingValue?.channelName,
 			category_id: channel?.category_id,
 			app_url: channel?.app_url || '',
@@ -354,7 +354,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 			} else {
 				const response = await dispatch(
 					threadsActions.leaveThread({
-						clanId: channel?.clan_id || '',
+						clanId: channel?.clan_id || '0',
 						channelId: channel?.parent_id || '',
 						threadId: channel?.id || '',
 						isPrivate: channel?.channel_private || 0

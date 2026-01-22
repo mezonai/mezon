@@ -23,7 +23,8 @@ import {
 	selectCurrentChannelId,
 	selectCurrentDM,
 	selectDirectById,
-	selectDmGroupCurrent,
+	selectDirectLoadingStatus,
+	selectDmGroupById,
 	selectDmGroupCurrentId,
 	selectFriendById,
 	selectHasKeyE2ee,
@@ -66,7 +67,7 @@ const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 		if (!lastMessageViewport || !lastMessageChannel || lastMessageViewport?.isSending) return;
 		const store = getStore();
 		const state = store.getState();
-		const currentDmGroup = selectDmGroupCurrent(channelId ?? '')(state);
+		const currentDmGroup = selectDmGroupById(state, channelId ?? '');
 		const mode = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP;
 		if (lastSeenMessageId && lastMessageViewport?.id) {
 			try {
@@ -151,11 +152,12 @@ const DirectMessage = () => {
 	const { userId } = useAuth();
 	const directMessage = useAppSelector((state) => selectDirectById(state, directId));
 	const hasKeyE2ee = useSelector(selectHasKeyE2ee);
+	const loadingStatus = useSelector(selectDirectLoadingStatus);
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 
 	// check
-	const currentDmGroup = useSelector(selectDmGroupCurrent(directId ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, directId ?? ''));
 	const reactionTopState = useSelector(selectReactionTopState);
 	const { subPanelActive } = useGifsStickersEmoji();
 	const closeMenu = useSelector(selectCloseMenu);
@@ -223,15 +225,9 @@ const DirectMessage = () => {
 		}
 	}, [directMessage, dispatch, hasKeyE2ee]);
 
-	useEffect(() => {
-		if (!currentDirect && currentDirectId) {
-			dispatch(
-				directActions.fetchDirectDetail({
-					directId: currentDirectId
-				})
-			);
-		}
-	}, []);
+	if (loadingStatus === 'loading' || loadingStatus === 'not loaded') {
+		return null;
+	}
 
 	return (
 		<>
@@ -260,7 +256,7 @@ const DirectMessage = () => {
 									username={isDmChannel ? currentDmGroup?.usernames?.at(-1) : undefined}
 									type={isDmChannel ? ChannelType.CHANNEL_TYPE_DM : ChannelType.CHANNEL_TYPE_GROUP}
 									mode={isDmChannel ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP}
-									avatarDM={isDmChannel ? currentDmGroup?.avatars?.at(-1) : 'assets/images/avatar-group.png'}
+									avatarDM={isDmChannel ? currentDmGroup?.avatars?.at(-1) : '/assets/images/avatar-group.png'}
 								/>
 							}
 						</div>

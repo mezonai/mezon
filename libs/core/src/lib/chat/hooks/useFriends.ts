@@ -12,7 +12,6 @@ import {
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
-// check later
 export function useFriends() {
 	const friends = useSelector(selectAllFriends);
 	const currentDM = useSelector(selectDmGroupCurrentId);
@@ -26,20 +25,30 @@ export function useFriends() {
 	}, [friends]);
 
 	const addFriend = useCallback(
-		async (requestAddFriend: requestAddFriendParam) => {
-			await dispatch(friendsActions.sendRequestAddFriend(requestAddFriend));
+		async ({ ids, usernames, isAcceptingRequest, isMobile = false }: requestAddFriendParam) => {
+			const response = await dispatch(
+				friendsActions.sendRequestAddFriend({
+					ids,
+					usernames,
+					isAcceptingRequest,
+					isMobile
+				})
+			);
+			if (isMobile) return response;
 		},
 		[dispatch]
 	);
 
 	const acceptFriend = useCallback(
-		(username: string, id: string) => {
+		async (username: string, id: string, isMobile = false) => {
 			const body = {
 				usernames: [username],
 				ids: [id],
-				isAcceptingRequest: true
+				isAcceptingRequest: true,
+				isMobile
 			};
-			dispatch(friendsActions.sendRequestAddFriend(body));
+			const response = await dispatch(friendsActions.sendRequestAddFriend(body));
+			if (isMobile) return response;
 		},
 		[dispatch]
 	);

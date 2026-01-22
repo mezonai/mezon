@@ -2,9 +2,26 @@ import { LIMIT_CLAN_ITEM, trackError } from '@mezon/utils';
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/browser';
 import { authActions } from '../auth/auth.slice';
-import type { Toast, ToastPayload } from '../toasts';
+import type { EErrorType, Toast, ToastPayload } from '../toasts';
 import { toastActions } from '../toasts';
+import { walletActions } from '../wallet/wallet.slice';
 import { triggerClanLimitModal } from './errors.slice';
+
+interface ErrorAction {
+	type: string;
+	payload?: {
+		status?: number;
+		error?: { status?: number };
+		errType?: EErrorType;
+		json?: () => Promise<{ message: string }>;
+		[key: string]: unknown;
+	};
+	error?: { message?: string };
+	meta?: { error?: { toast?: boolean | string | object } };
+	message?: string;
+	config?: { toast?: boolean | string | object };
+	action?: ErrorAction;
+}
 
 export const errorListenerMiddleware = createListenerMiddleware({
 	onError: (error, _listenerApi) => {
@@ -15,26 +32,36 @@ export const errorListenerMiddleware = createListenerMiddleware({
 let hasDispatchedRefreshOnce = false;
 let isRefreshing = false;
 
-function isErrorPredicate(action: any) {
+function isUnauthorizedError(payload: unknown): boolean {
+	if (payload && typeof payload === 'object' && 'status' in payload && (payload as { status: number }).status === 401) {
+		return true;
+	}
+	if (payload instanceof Response && payload.status === 401) {
+		return true;
+	}
+	return false;
+}
+
+function isErrorPredicate(action: ErrorAction) {
 	return !!action.error;
 }
 
-function isRejectedWithValue(action: any) {
+function isRejectedWithValue(action: ErrorAction) {
 	return action.type.endsWith('rejected') && action.payload !== undefined && action.error && action.error.message === 'Rejected';
 }
 
-function getErrorFromRejectedWithValue(action: any) {
-	let message = action.error.message;
+function getErrorFromRejectedWithValue(action: ErrorAction): ErrorAction {
+	let message = action.error?.message;
 
 	if (typeof action.payload === 'string') {
 		message = action.payload;
-	} else if (typeof action.payload === 'object' && action.payload != null && action.payload.message) {
-		message = action.payload.message;
+	} else if (typeof action.payload === 'object' && action.payload != null && 'message' in action.payload) {
+		message = action.payload.message as string;
 	} else if (typeof action.payload === 'object' && action.payload != null && action.payload.error) {
 		if (typeof action.payload.error === 'string') {
 			message = action.payload.error;
-		} else if (typeof action.payload.error === 'object' && action.payload.error.message) {
-			message = action.payload.error.message;
+		} else if (typeof action.payload.error === 'object' && 'message' in action.payload.error) {
+			message = (action.payload.error as { message?: string }).message;
 		}
 	}
 
@@ -42,13 +69,14 @@ function getErrorFromRejectedWithValue(action: any) {
 		message,
 		error: action.error,
 		action,
-		config: action.meta.error || {
+		config: action.meta?.error || {
 			toast: true
-		}
+		},
+		type: action.type
 	};
 }
 
-function normalizeError(error: any) {
+function normalizeError(error: ErrorAction) {
 	if (isRejectedWithValue(error)) {
 		return getErrorFromRejectedWithValue(error);
 	}
@@ -56,7 +84,7 @@ function normalizeError(error: any) {
 	return error;
 }
 
-function createErrorToast(error: any): ToastPayload {
+function createErrorToast(error: ErrorAction): ToastPayload {
 	let toast: Toast = {
 		message: error.message,
 		type: 'error',
@@ -82,7 +110,7 @@ function createErrorToast(error: any): ToastPayload {
 
 errorListenerMiddleware.startListening({
 	predicate: isErrorPredicate,
-	effect: async (action: any, listenerApi) => {
+	effect: async (action: ErrorAction, listenerApi) => {
 		try {
 			const isRefreshAction = typeof action.type === 'string' && action.type.startsWith('auth/refreshSession');
 
@@ -96,8 +124,15 @@ errorListenerMiddleware.startListening({
 					isRefreshing = true;
 					hasDispatchedRefreshOnce = true;
 					try {
-						await listenerApi.dispatch(authActions.refreshSession());
-						hasDispatchedRefreshOnce = false;
+						const result = await listenerApi.dispatch(authActions.refreshSession());
+						const isRejected = result.meta?.requestStatus === 'rejected';
+						if (isRejected || isUnauthorizedError(result.payload)) {
+							console.error('Refresh session failed with 401, logging out');
+							listenerApi.dispatch(authActions.setLogout());
+							listenerApi.dispatch(walletActions.setLogout());
+						} else {
+							hasDispatchedRefreshOnce = false;
+						}
 					} finally {
 						isRefreshing = false;
 					}
@@ -125,15 +160,16 @@ errorListenerMiddleware.startListening({
 		if (action.payload) {
 			const key = Object.keys(action.payload);
 
-			const getMessageFromPayload = async (payload: any) => {
+			const getMessageFromPayload = async (payload: ErrorAction['payload']) => {
 				if (key.length === 0) {
-					if (typeof payload.json === 'function') {
+					if (payload && typeof payload.json === 'function') {
 						const data = await payload.json();
 						return data.message;
 					}
 				} else {
-					if (typeof payload[key[0]].json === 'function') {
-						const data = await payload[key[0]].json();
+					const payloadItem = payload?.[key[0]];
+					if (payloadItem && typeof payloadItem === 'object' && 'json' in payloadItem && typeof payloadItem.json === 'function') {
+						const data = await (payloadItem as { json: () => Promise<{ message: string }> }).json();
 						return data.message;
 					}
 				}

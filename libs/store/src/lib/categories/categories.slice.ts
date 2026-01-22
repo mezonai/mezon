@@ -98,7 +98,7 @@ export const fetchCategoriesCached = async (getState: () => RootState, ensuredMe
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listCategoryDescs(ensuredMezon.session, clanId),
+		(session) => ensuredMezon.client.listCategoryDescs(session, clanId),
 		'category_list'
 	);
 
@@ -471,8 +471,6 @@ export const selectCategoryById = createSelector(
 	[getCategoriesState, (state: RootState) => state.clans.currentClanId as string, (_, id: string) => id],
 	(state, clanId, id) => state.byClans[clanId]?.entities.entities[id]
 );
-
-export const selectCtrlKSelectedChannelId = createSelector(getCategoriesState, (state) => state.ctrlKSelectedChannelId);
 
 export const selectCtrlKFocusChannel = createSelector(getCategoriesState, (state) => state.ctrlKFocusChannel);
 

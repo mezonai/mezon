@@ -1,7 +1,8 @@
 import { useCustomNavigate } from '@mezon/core';
 import { channelsActions, getStore, selectAppChannelById } from '@mezon/store';
-import type { IEmbedProps, ObserveFn } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, TypeMessage, type IEmbedProps, type ObserveFn } from '@mezon/utils';
 import { useDispatch } from 'react-redux';
+import ShareContactCard from '../ShareContact/ShareContactCard';
 import { EmbedMessage } from './EmbedMessage';
 
 interface EmbedMessageWrapProps {
@@ -10,9 +11,15 @@ interface EmbedMessageWrapProps {
 	messageId?: string;
 	channelId: string;
 	observeIntersectionForLoading?: ObserveFn;
+	code?: number;
 }
 
-export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, observeIntersectionForLoading }: EmbedMessageWrapProps) {
+const isShareContactEmbed = (embed: IEmbedProps, code): boolean => {
+	const fields = embed.fields || [];
+	return (fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY) || code === TypeMessage.ShareContact;
+};
+
+export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, observeIntersectionForLoading, code }: EmbedMessageWrapProps) {
 	const navigate = useCustomNavigate();
 	const dispatch = useDispatch();
 
@@ -58,17 +65,21 @@ export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, obser
 
 	return (
 		<div className="w-full">
-			{embeds.map((embed, index) => (
-				<EmbedMessage
-					key={index}
-					embed={embed}
-					senderId={senderId}
-					message_id={messageId}
-					onClick={() => onEmbedClick(embed)}
-					channelId={channelId}
-					observeIntersectionForLoading={observeIntersectionForLoading}
-				/>
-			))}
+			{embeds.map((embed, index) =>
+				isShareContactEmbed(embed, code) ? (
+					<ShareContactCard key={index} embed={embed} />
+				) : (
+					<EmbedMessage
+						key={index}
+						embed={embed}
+						senderId={senderId}
+						message_id={messageId}
+						onClick={() => onEmbedClick(embed)}
+						channelId={channelId}
+						observeIntersectionForLoading={observeIntersectionForLoading}
+					/>
+				)
+			)}
 		</div>
 	);
 }

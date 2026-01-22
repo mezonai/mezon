@@ -15,8 +15,9 @@
 	},
 	"dashboard": {
 		"title": "Events",
+		"event_one": "Event",
 		"noEvent": "There are no upcoming events.",
-		"noEventDescription": "Schedule an event for any planned activity in your clan. You can give other people permission to create event in Clan Settings > Roles.",
+		"noEventDescription": "Feel free to invite other members to contribute their ideas for upcoming events.",
 		"createButton": "Create",
 		"noti": "This event is open to everyone in the clan.",
 		"endEvent": "End Event",
@@ -30,7 +31,9 @@
 	"detail": {
 		"eventInfo": "Event Info",
 		"interested": "Interested",
-		"personInterested": "{{count}} person is interested",
+		"personInterested": "{{count}} people are interested",
+		"onePersonInterested": "1 person is interested",
+		"noOneInterested": "No one's interested in this event yet.",
 		"createdBy": "Created by "
 	},
 	"share": {

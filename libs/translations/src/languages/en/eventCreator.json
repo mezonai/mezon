@@ -14,7 +14,7 @@
 		"eventPreview": {
 			"headerTitle": "Step 3 of 3",
 			"title": "Here's a preview of your event",
-			"subtitle": "This event will auto start when it's time",
+			"subtitle": "This event will auto-start when it's time",
 			"subtitleVoice": "When it's time, visit the voice channel to start the event!"
 		},
 		"channelSelection": {
@@ -28,11 +28,11 @@
 		"channelType": {
 			"voiceChannel": {
 				"title": "Voice Channel",
-				"description": "Hang out with voice, video, screenshare, and Go Live."
+				"description": "Hang out with voice, video, screenshare and Go Live."
 			},
 			"somewhere": {
-				"title": "Somewhere else",
-				"description": "Text channel, external link, or in-person location."
+				"title": "Somewhere Else",
+				"description": "Text channel, external link or in-person location."
 			},
 			"privateEvent": {
 				"title": "Create External Event",
@@ -40,7 +40,10 @@
 			}
 		},
 		"channel": {
-			"title": "Select channel"
+			"title": "Select Channel"
+		},
+		"VoiceChannel": {
+			"title": "Select Voice Channel"
 		},
 		"address": {
 			"title": "Locations",
@@ -78,7 +81,7 @@
 		},
 		"description": {
 			"title": "Description",
-			"description": "Tell people a little more about your event. Markdown, new lines, and links are supported."
+			"description": "Tell people a little more about your event."
 		},
 		"cover": "Cover Image"
 	},
@@ -94,7 +97,7 @@
 		"editEvent": "Edit Event",
 		"cancelEvent": "Cancel Event",
 		"copyEventLink": "Copy Event Link",
-		"uploadImage": "Upload Image",
+		"uploadImage": "Upload Cover Image",
 		"neverMind": "Never Mind",
 		"cancelEventQuestion": "Cancel Event?",
 		"confirmCancelEvent": "Please confirm if you would like to cancel this event?",
@@ -118,6 +121,7 @@
 		"eventInfo": "Event Info",
 		"interested": "{{count}} Interested",
 		"personInterested": "{{count}} person is interested",
+		"personInteresteds": "{{count}} people are interested",
 		"createdBy": "Created by {{username}}",
 		"inviteFriends": "Invite friends to event?",
 		"shareLink": "Share this link with others to grant access to this clan",
@@ -133,11 +137,18 @@
 		"privateEvent": "External Event",
 		"privateRoom": "External Meeting Room",
 		"newEvent": "New",
-		"share": "Share"
+		"share": "Share",
+		"noOneInterested": "No one's interested in this event yet."
 	},
 	"errorMessages": {
 		"startTimeFuture": "The start time must be in the future.",
 		"endTimeAfterStart": "The end time must be bigger than start time."
 	},
-	"selectUser": "Select channel or thread to create event"
+	"selectUser": "Select channel or thread to create event",
+	"emptyState": {
+		"title": "There are no upcoming events.",
+		"description1": "Schedule an event for any planned activity in your",
+		"clan": "clan",
+		"description2": "Feel free to invite other members to contribute their ideas for upcoming events."
+	}
 }

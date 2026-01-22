@@ -21,7 +21,7 @@ export type PermissionsChannelProps = {
 
 const PermissionsChannel = (props: PermissionsChannelProps) => {
 	const { channel, openModalAdd, parentRef, clanId } = props;
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || ''));
+	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || '0'));
 	const listCategory = useSelector(selectAllCategories);
 	const categoryName = useMemo(() => {
 		if (realTimeChannel?.category_name) {
@@ -103,7 +103,7 @@ const PermissionsChannel = (props: PermissionsChannelProps) => {
 
 	return (
 		<>
-			<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] sbm:pb-7 sbm:px-[40px] p-4 overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar relative">
+			<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 lg:pt-[94px] sbm:pb-7 px-[10px] sbm:px-[40px] overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar relative">
 				<div className="dark:text-white text-[15px] text-black">
 					<HeaderModal name={categoryName} />
 					<div className="rounded-md overflow-hidden mt-4">
@@ -213,7 +213,7 @@ const HeaderModal = memo((props: HeaderModalProps) => {
 	const { t } = useTranslation('channelSetting');
 	return (
 		<>
-			<h3 className="mb-4 font-bold text-xl text-theme-primary-active ">{t('channelPermission.header.title')}</h3>
+			<h3 className="mb-4 font-semibold text-xl text-theme-primary-active ">{t('channelPermission.header.title')}</h3>
 			<p className="mb-3 text-theme-primary">{t('channelPermission.header.description')}</p>
 			<div className="flex mt-4 p-4">
 				<Icons.SyncIcon defaultFill="#F0B033" defaultSize="mr-2" />

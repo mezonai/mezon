@@ -1,397 +1,358 @@
 {
-  "name": "desktop",
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/desktop/src",
-  "projectType": "application",
-  "targets": {
-    "build": {
-      "executor": "nx-electron:build",
-      "outputs": [
-        "{options.outputPath}"
-      ],
-      "appId": "app.mezon.ai",
-      "productName": "mezon",
-      "publish": [
-        {
-          "provider": "generic",
-          "url": "https://cdn.mezon.ai/release/"
-        }
-      ],
-      "asarUnpack": [
-        "./node_modules/macos-notification-state/build/Release//*.node",
-        "./node_modules/windows-focus-assist/build/Release//*.node"
-      ],
-      "mac": {
-        "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-        "icon": "apps/desktop/src/assets/mac-icon.png",
-        "appId": "E9Y2J54ZH3.app.mezon.ai",
-        "category": "public.app-category.productivity",
-        "target": {
-          "arch": [
-            "x64",
-            "arm64"
-          ],
-          "target": "default"
-        },
-        "publish": [
-          {
-            "provider": "generic",
-            "url": "https://cdn.mezon.ai/release/"
-          }
-        ],
-        "identity": "Tien Pham (E9Y2J54ZH3)",
-        "hardenedRuntime": true,
-        "entitlements": "./apps/desktop/src/assets/entitlements.mac.plist",
-        "entitlementsInherit": "./apps/desktop/src/assets/entitlements.mac.inherit.plist",
-        "gatekeeperAssess": true,
-        "notarize": {
-          "teamId": "E9Y2J54ZH3"
-        },
-        "provisioningProfile": "./apps/desktop/src/assets/mezonai.provisionprofile",
-        "extendInfo": {
-          "NSMicrophoneUsageDescription": "Mezon requires microphone access to enable audio call",
-          "NSCameraUsageDescription": "Mezon needs camera access to enable video call"
-        }
-      },
-      "win": {
-        "icon": "apps/desktop/src/assets/desktop-taskbar.ico",
-        "target": [
-          "nsis",
-          "portable",
-          "appx"
-        ],
-        "appId": "app.mezon.ai",
-        "publish": [
-          {
-            "provider": "generic",
-            "url": "https://cdn.mezon.ai/release/"
-          }
-        ]
-      },
-      "nsis": {
-        "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-        "uninstallDisplayName": "${productName}",
-        "include": "scripts/installer.nsh",
-        "packElevateHelper": false,
-        "runAfterFinish": true,
-        "createDesktopShortcut": "always",
-        "createStartMenuShortcut": true,
-        "deleteAppDataOnUninstall": false
-      },
-      "portable": {
-        "artifactName": "${name}-${version}-${os}-${arch}-portable.${ext}"
-      },
-      "msi": {
-        "additionalWixArgs": [
-          "-ext",
-          "WixUtilExtension"
-        ],
-        "artifactName": "${name}-${version}-${os}-${arch}.${ext}"
-      },
-      "appx": {
-        "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-        "publisher": "CN=877DCBF5-53BD-4E9B-82DE-DA6D88F92FF3",
-        "publisherDisplayName": "NCCPLUS",
-        "identityName": "MEZON.Mezon",
-        "displayName": "MEZON"
-      },
-      "linux": {
-        "icon": "apps/desktop/src/assets/linux-icon.icns",
-        "category": "Utility",
-        "target": "deb",
-        "mimeTypes": [
-          "x-scheme-handler/mezonapp"
-        ],
-        "desktop": {
-          "exec": "mezonapp %U"
-        },
-        "appId": "app.mezon.ai",
-        "publish": [
-          {
-            "provider": "generic",
-            "url": "https://cdn.mezon.ai/release/"
-          }
-        ]
-      },
-      "deb": {
-        "afterInstall": "scripts/installer.sh"
-      },
-      "options": {
-        "outputPath": "dist/apps/desktop",
-        "main": "apps/desktop/src/main.ts",
-        "tsConfig": "apps/desktop/tsconfig.app.json",
-        "assets": [
-          {
-            "glob": "**/*",
-            "input": "apps/desktop/src/assets/",
-            "output": "./assets/"
-          },
-          {
-            "glob": "apps/chat/src/assets/js",
-            "input": "./",
-            "output": "./"
-          },
-          {
-            "glob": "apps/chat/src/assets/favicon.ico",
-            "input": "./",
-            "output": "./"
-          },
-          {
-            "glob": "apps/desktop/index.html",
-            "input": "./",
-            "output": "./"
-          },
-          {
-            "glob": "apps/desktop/package.json",
-            "input": "./",
-            "output": "./"
-          }
-        ]
-      },
-      "configurations": {
-        "production": {
-          "optimization": true,
-          "extractLicenses": true,
-          "inspect": false,
-          "fileReplacements": [
-            {
-              "replace": "apps/desktop/src/environments/environment.ts",
-              "with": "apps/desktop/src/environments/environment.prod.ts"
-            }
-          ]
-        }
-      }
-    },
-    "serve": {
-      "executor": "nx-electron:execute",
-      "options": {
-        "buildTarget": "desktop:build"
-      }
-    },
-    "package": {
-      "executor": "nx-electron:package",
-      "options": {
-        "name": "desktop",
-        "frontendProject": "chat",
-        "sourcePath": "dist/apps",
-        "outputPath": "dist/packages",
-        "prepackageOnly": true,
-        "mac": {
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "icon": "apps/desktop/src/assets/mac-icon.png",
-          "appId": "E9Y2J54ZH3.app.mezon.ai",
-          "category": "public.app-category.productivity",
-          "target": {
-            "arch": [
-              "x64",
-              "arm64"
-            ],
-            "target": "default"
-          },
-          "publish": [
-            {
-              "provider": "generic",
-              "url": "https://cdn.mezon.ai/release/"
-            }
-          ],
-          "identity": "Tien Pham (E9Y2J54ZH3)",
-          "hardenedRuntime": true,
-          "entitlements": "./apps/desktop/src/assets/entitlements.mac.plist",
-          "entitlementsInherit": "./apps/desktop/src/assets/entitlements.mac.inherit.plist",
-          "gatekeeperAssess": true,
-          "notarize": {
-            "teamId": "E9Y2J54ZH3"
-          },
-          "provisioningProfile": "./apps/desktop/src/assets/mezonai.provisionprofile",
-          "extendInfo": {
-            "NSMicrophoneUsageDescription": "Mezon requires microphone access to enable audio call",
-            "NSCameraUsageDescription": "Mezon needs camera access to enable video call"
-          }
-        },
-        "win": {
-          "icon": "apps/desktop/src/assets/desktop-taskbar.ico",
-          "target": [
-            "nsis",
-            "portable",
-            "appx"
-          ],
-          "appId": "app.mezon.ai",
-          "publish": [
-            {
-              "provider": "generic",
-              "url": "https://cdn.mezon.ai/release/"
-            }
-          ]
-        },
-        "nsis": {
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "uninstallDisplayName": "${productName}",
-          "include": "scripts/installer.nsh",
-          "packElevateHelper": false,
-          "runAfterFinish": true,
-          "createDesktopShortcut": "always",
-          "createStartMenuShortcut": true,
-          "deleteAppDataOnUninstall": false
-        },
-        "portable": {
-          "artifactName": "${name}-${version}-${os}-${arch}-portable.${ext}"
-        },
-        "msi": {
-          "additionalWixArgs": [
-            "-ext",
-            "WixUtilExtension"
-          ],
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}"
-        },
-        "appx": {
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "publisher": "CN=877DCBF5-53BD-4E9B-82DE-DA6D88F92FF3",
-          "publisherDisplayName": "NCCPLUS",
-          "identityName": "MEZON.Mezon",
-          "displayName": "MEZON"
-        },
-        "linux": {
-          "icon": "apps/desktop/src/assets/linux-icon.icns",
-          "category": "Utility",
-          "target": "deb",
-          "mimeTypes": [
-            "x-scheme-handler/mezonapp"
-          ],
-          "desktop": {
-            "exec": "mezonapp %U"
-          },
-          "appId": "app.mezon.ai",
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "publish": [
-            {
-              "provider": "generic",
-              "url": "https://cdn.mezon.ai/release/"
-            }
-          ]
-        },
-        "deb": {
-          "afterInstall": "scripts/installer.sh"
-        }
-      }
-    },
-    "make": {
-      "executor": "nx-electron:make",
-      "options": {
-        "name": "desktop",
-        "frontendProject": "chat",
-        "sourcePath": "dist/apps",
-        "outputPath": "dist/executables",
-        "mac": {
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "icon": "apps/desktop/src/assets/mac-icon.png",
-          "appId": "E9Y2J54ZH3.app.mezon.ai",
-          "category": "public.app-category.productivity",
-          "target": {
-            "arch": [
-              "x64",
-              "arm64"
-            ],
-            "target": "default"
-          },
-          "publish": [
-            {
-              "provider": "generic",
-              "url": "https://cdn.mezon.ai/release/"
-            }
-          ],
-          "identity": "Tien Pham (E9Y2J54ZH3)",
-          "hardenedRuntime": true,
-          "entitlements": "./apps/desktop/src/assets/entitlements.mac.plist",
-          "entitlementsInherit": "./apps/desktop/src/assets/entitlements.mac.inherit.plist",
-          "gatekeeperAssess": true,
-          "notarize": {
-            "teamId": "E9Y2J54ZH3"
-          },
-          "provisioningProfile": "./apps/desktop/src/assets/mezonai.provisionprofile",
-          "extendInfo": {
-            "NSMicrophoneUsageDescription": "Mezon requires microphone access to enable audio call",
-            "NSCameraUsageDescription": "Mezon needs camera access to enable video call"
-          }
-        },
-        "win": {
-          "icon": "apps/desktop/src/assets/desktop-taskbar.ico",
-          "target": [
-            "nsis",
-            "portable",
-            "appx"
-          ],
-          "appId": "app.mezon.ai",
-          "publish": [
-            {
-              "provider": "generic",
-              "url": "https://cdn.mezon.ai/release/"
-            }
-          ]
-        },
-        "nsis": {
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "uninstallDisplayName": "${productName}",
-          "include": "scripts/installer.nsh",
-          "runAfterFinish": true,
-          "createDesktopShortcut": "always",
-          "createStartMenuShortcut": true,
-          "deleteAppDataOnUninstall": false
-        },
-        "portable": {
-          "artifactName": "${name}-${version}-${os}-${arch}-portable.${ext}"
-        },
-        "msi": {
-          "additionalWixArgs": [
-            "-ext",
-            "WixUtilExtension"
-          ],
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}"
-        },
-        "appx": {
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "publisher": "CN=877DCBF5-53BD-4E9B-82DE-DA6D88F92FF3",
-          "publisherDisplayName": "NCCPLUS",
-          "identityName": "MEZON.Mezon",
-          "displayName": "MEZON"
-        },
-        "linux": {
-          "icon": "apps/desktop/src/assets/linux-icon.icns",
-          "category": "Utility",
-          "target": "deb",
-          "mimeTypes": [
-            "x-scheme-handler/mezonapp"
-          ],
-          "desktop": {
-            "exec": "mezonapp %U"
-          },
-          "appId": "app.mezon.ai",
-          "artifactName": "${name}-${version}-${os}-${arch}.${ext}",
-          "publish": [
-            {
-              "provider": "generic",
-              "url": "https://cdn.mezon.ai/release/"
-            }
-          ]
-        },
-        "deb": {
-          "afterInstall": "scripts/installer.sh"
-        }
-      }
-    },
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": [
-        "{options.outputFile}"
-      ]
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
-      "options": {
-        "jestConfig": "apps/desktop/jest.config.ts"
-      }
-    }
-  }
+	"name": "desktop",
+	"$schema": "../../node_modules/nx/schemas/project-schema.json",
+	"sourceRoot": "apps/desktop/src",
+	"projectType": "application",
+	"targets": {
+		"build": {
+			"executor": "nx-electron:build",
+			"outputs": ["{options.outputPath}"],
+			"appId": "app.mezon.ai",
+			"productName": "mezon",
+			"publish": [
+				{
+					"provider": "generic",
+					"url": "https://cdn.mezon.ai/release/"
+				}
+			],
+			"asarUnpack": [
+				"./node_modules/macos-notification-state/build/Release//*.node",
+				"./node_modules/windows-focus-assist/build/Release//*.node"
+			],
+			"mac": {
+				"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+				"icon": "apps/desktop/src/assets/mac-icon.png",
+				"appId": "E9Y2J54ZH3.app.mezon.ai",
+				"category": "public.app-category.productivity",
+				"target": {
+					"arch": ["x64", "arm64"],
+					"target": "default"
+				},
+				"publish": [
+					{
+						"provider": "generic",
+						"url": "https://cdn.mezon.ai/release/"
+					}
+				],
+				"identity": "Tien Pham (E9Y2J54ZH3)",
+				"hardenedRuntime": true,
+				"entitlements": "./apps/desktop/src/assets/entitlements.mac.plist",
+				"entitlementsInherit": "./apps/desktop/src/assets/entitlements.mac.inherit.plist",
+				"gatekeeperAssess": true,
+				"notarize": {
+					"teamId": "E9Y2J54ZH3"
+				},
+				"provisioningProfile": "./apps/desktop/src/assets/mezonai.provisionprofile",
+				"extendInfo": {
+					"NSMicrophoneUsageDescription": "Mezon requires microphone access to enable audio call",
+					"NSCameraUsageDescription": "Mezon needs camera access to enable video call"
+				}
+			},
+			"win": {
+				"icon": "apps/desktop/src/assets/desktop-taskbar.ico",
+				"target": ["nsis", "portable", "appx"],
+				"appId": "app.mezon.ai",
+				"publish": [
+					{
+						"provider": "generic",
+						"url": "https://cdn.mezon.ai/release/"
+					}
+				]
+			},
+			"nsis": {
+				"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+				"uninstallDisplayName": "${productName}",
+				"include": "scripts/installer.nsh",
+				"packElevateHelper": false,
+				"runAfterFinish": true,
+				"createDesktopShortcut": "always",
+				"createStartMenuShortcut": true,
+				"deleteAppDataOnUninstall": false
+			},
+			"portable": {
+				"artifactName": "${name}-${version}-${os}-${arch}-portable.${ext}"
+			},
+			"msi": {
+				"additionalWixArgs": ["-ext", "WixUtilExtension"],
+				"artifactName": "${name}-${version}-${os}-${arch}.${ext}"
+			},
+			"appx": {
+				"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+				"publisher": "CN=877DCBF5-53BD-4E9B-82DE-DA6D88F92FF3",
+				"publisherDisplayName": "NCCPLUS",
+				"identityName": "MEZON.Mezon",
+				"displayName": "MEZON",
+				"addAutoLaunchExtension": true
+			},
+			"linux": {
+				"icon": "apps/desktop/src/assets/linux-icon.icns",
+				"category": "Utility",
+				"target": "deb",
+				"mimeTypes": ["x-scheme-handler/mezonapp"],
+				"desktop": {
+					"exec": "mezonapp %U"
+				},
+				"appId": "app.mezon.ai",
+				"publish": [
+					{
+						"provider": "generic",
+						"url": "https://cdn.mezon.ai/release/"
+					}
+				]
+			},
+			"deb": {
+				"afterInstall": "scripts/installer.sh"
+			},
+			"options": {
+				"outputPath": "dist/apps/desktop",
+				"main": "apps/desktop/src/main.ts",
+				"tsConfig": "apps/desktop/tsconfig.app.json",
+				"typeCheck": false,
+				"webpackConfig": "apps/desktop/webpack.config.js",
+				"assets": [
+					{
+						"glob": "**/*",
+						"input": "apps/desktop/src/assets/",
+						"output": "./assets/"
+					},
+					{
+						"glob": "apps/chat/src/assets/js",
+						"input": "./",
+						"output": "./"
+					},
+					{
+						"glob": "apps/chat/src/assets/favicon.ico",
+						"input": "./",
+						"output": "./"
+					},
+					{
+						"glob": "apps/desktop/index.html",
+						"input": "./",
+						"output": "./"
+					},
+					{
+						"glob": "apps/desktop/package.json",
+						"input": "./",
+						"output": "./"
+					}
+				]
+			},
+			"configurations": {
+				"production": {
+					"optimization": true,
+					"extractLicenses": true,
+					"inspect": false,
+					"fileReplacements": [
+						{
+							"replace": "apps/desktop/src/environments/environment.ts",
+							"with": "apps/desktop/src/environments/environment.prod.ts"
+						}
+					]
+				}
+			}
+		},
+		"serve": {
+			"executor": "nx-electron:execute",
+			"options": {
+				"buildTarget": "desktop:build"
+			}
+		},
+		"package": {
+			"executor": "nx-electron:package",
+			"options": {
+				"name": "desktop",
+				"frontendProject": "chat",
+				"sourcePath": "dist/apps",
+				"outputPath": "dist/packages",
+				"prepackageOnly": true,
+				"mac": {
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+					"icon": "apps/desktop/src/assets/mac-icon.png",
+					"appId": "E9Y2J54ZH3.app.mezon.ai",
+					"category": "public.app-category.productivity",
+					"target": {
+						"arch": ["x64", "arm64"],
+						"target": "default"
+					},
+					"publish": [
+						{
+							"provider": "generic",
+							"url": "https://cdn.mezon.ai/release/"
+						}
+					],
+					"identity": "Tien Pham (E9Y2J54ZH3)",
+					"hardenedRuntime": true,
+					"entitlements": "./apps/desktop/src/assets/entitlements.mac.plist",
+					"entitlementsInherit": "./apps/desktop/src/assets/entitlements.mac.inherit.plist",
+					"gatekeeperAssess": true,
+					"notarize": {
+						"teamId": "E9Y2J54ZH3"
+					},
+					"provisioningProfile": "./apps/desktop/src/assets/mezonai.provisionprofile",
+					"extendInfo": {
+						"NSMicrophoneUsageDescription": "Mezon requires microphone access to enable audio call",
+						"NSCameraUsageDescription": "Mezon needs camera access to enable video call"
+					}
+				},
+				"win": {
+					"icon": "apps/desktop/src/assets/desktop-taskbar.ico",
+					"target": ["nsis", "portable", "appx"],
+					"appId": "app.mezon.ai",
+					"publish": [
+						{
+							"provider": "generic",
+							"url": "https://cdn.mezon.ai/release/"
+						}
+					]
+				},
+				"nsis": {
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+					"uninstallDisplayName": "${productName}",
+					"include": "scripts/installer.nsh",
+					"packElevateHelper": false,
+					"runAfterFinish": true,
+					"createDesktopShortcut": "always",
+					"createStartMenuShortcut": true,
+					"deleteAppDataOnUninstall": false
+				},
+				"portable": {
+					"artifactName": "${name}-${version}-${os}-${arch}-portable.${ext}"
+				},
+				"msi": {
+					"additionalWixArgs": ["-ext", "WixUtilExtension"],
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}"
+				},
+				"appx": {
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+					"publisher": "CN=877DCBF5-53BD-4E9B-82DE-DA6D88F92FF3",
+					"publisherDisplayName": "NCCPLUS",
+					"identityName": "MEZON.Mezon",
+					"displayName": "MEZON"
+				},
+				"linux": {
+					"icon": "apps/desktop/src/assets/linux-icon.icns",
+					"category": "Utility",
+					"target": "deb",
+					"mimeTypes": ["x-scheme-handler/mezonapp"],
+					"desktop": {
+						"exec": "mezonapp %U"
+					},
+					"appId": "app.mezon.ai",
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+					"publish": [
+						{
+							"provider": "generic",
+							"url": "https://cdn.mezon.ai/release/"
+						}
+					]
+				},
+				"deb": {
+					"afterInstall": "scripts/installer.sh"
+				}
+			}
+		},
+		"make": {
+			"executor": "nx-electron:make",
+			"options": {
+				"name": "desktop",
+				"frontendProject": "chat",
+				"sourcePath": "dist/apps",
+				"outputPath": "dist/executables",
+				"mac": {
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+					"icon": "apps/desktop/src/assets/mac-icon.png",
+					"appId": "E9Y2J54ZH3.app.mezon.ai",
+					"category": "public.app-category.productivity",
+					"target": {
+						"arch": ["x64", "arm64"],
+						"target": "default"
+					},
+					"publish": [
+						{
+							"provider": "generic",
+							"url": "https://cdn.mezon.ai/release/"
+						}
+					],
+					"identity": "Tien Pham (E9Y2J54ZH3)",
+					"hardenedRuntime": true,
+					"entitlements": "./apps/desktop/src/assets/entitlements.mac.plist",
+					"entitlementsInherit": "./apps/desktop/src/assets/entitlements.mac.inherit.plist",
+					"gatekeeperAssess": true,
+					"notarize": {
+						"teamId": "E9Y2J54ZH3"
+					},
+					"provisioningProfile": "./apps/desktop/src/assets/mezonai.provisionprofile",
+					"extendInfo": {
+						"NSMicrophoneUsageDescription": "Mezon requires microphone access to enable audio call",
+						"NSCameraUsageDescription": "Mezon needs camera access to enable video call"
+					}
+				},
+				"win": {
+					"icon": "apps/desktop/src/assets/desktop-taskbar.ico",
+					"target": ["nsis", "portable", "appx"],
+					"appId": "app.mezon.ai",
+					"publish": [
+						{
+							"provider": "generic",
+							"url": "https://cdn.mezon.ai/release/"
+						}
+					]
+				},
+				"nsis": {
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+					"uninstallDisplayName": "${productName}",
+					"include": "scripts/installer.nsh",
+					"runAfterFinish": true,
+					"createDesktopShortcut": "always",
+					"createStartMenuShortcut": true,
+					"deleteAppDataOnUninstall": false
+				},
+				"portable": {
+					"artifactName": "${name}-${version}-${os}-${arch}-portable.${ext}"
+				},
+				"msi": {
+					"additionalWixArgs": ["-ext", "WixUtilExtension"],
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}"
+				},
+				"appx": {
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+					"publisher": "CN=877DCBF5-53BD-4E9B-82DE-DA6D88F92FF3",
+					"publisherDisplayName": "NCCPLUS",
+					"identityName": "MEZON.Mezon",
+					"displayName": "MEZON"
+				},
+				"linux": {
+					"icon": "apps/desktop/src/assets/linux-icon.icns",
+					"category": "Utility",
+					"target": "deb",
+					"mimeTypes": ["x-scheme-handler/mezonapp"],
+					"desktop": {
+						"exec": "mezonapp %U"
+					},
+					"appId": "app.mezon.ai",
+					"artifactName": "${name}-${version}-${os}-${arch}.${ext}",
+					"publish": [
+						{
+							"provider": "generic",
+							"url": "https://cdn.mezon.ai/release/"
+						}
+					]
+				},
+				"deb": {
+					"afterInstall": "scripts/installer.sh"
+				}
+			}
+		},
+		"lint": {
+			"executor": "@nx/eslint:lint",
+			"outputs": ["{options.outputFile}"]
+		},
+		"test": {
+			"executor": "@nx/jest:jest",
+			"outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+			"options": {
+				"jestConfig": "apps/desktop/jest.config.ts"
+			}
+		}
+	}
 }

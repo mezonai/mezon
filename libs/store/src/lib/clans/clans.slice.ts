@@ -37,7 +37,7 @@ export interface ClansEntity extends IClan {
 }
 
 export const mapClanToEntity = (clanRes: ApiClanDesc) => {
-	return { ...clanRes, id: clanRes.clan_id || '' };
+	return { ...clanRes, id: clanRes.clan_id || '0' };
 };
 
 interface ClanMeta {
@@ -107,9 +107,8 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 			const targetClan = state.clans.entities[clanId];
 			const hasUnreadCount = (targetClan?.badge_count ?? 0) > 0;
 			if (hasUnreadCount && !noCache) {
-				thunkAPI.dispatch(fetchClans({ noCache: true }));
+				thunkAPI.dispatch(listClanBadgeCount({ clanId }));
 			}
-
 			batch(() => {
 				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId as string));
 				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
@@ -124,15 +123,15 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 				thunkAPI.dispatch(channelsActions.setStatusChannelFetch(clanId));
 				thunkAPI.dispatch(
 					voiceActions.fetchVoiceChannelMembers({
-						clanId: clanId ?? '',
-						channelId: '',
+						clanId: clanId ?? '0',
+						channelId: '0',
 						channelType: ChannelType.CHANNEL_TYPE_MEZON_VOICE
 					})
 				);
 				thunkAPI.dispatch(
 					usersStreamActions.fetchStreamChannelMembers({
-						clanId: clanId ?? '',
-						channelId: '',
+						clanId: clanId ?? '0',
+						channelId: '0',
 						channelType: ChannelType.CHANNEL_TYPE_STREAMING
 					})
 				);
@@ -148,6 +147,36 @@ const selectCachedClans = createSelector([(state: RootState) => state[CLANS_FEAT
 	return clansAdapter.getSelectors().selectAll(clansState);
 });
 
+export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('clans/listClanBadgeCount', async ({ clanId }, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		const response = await fetchDataWithSocketFallback(
+			mezon,
+			{
+				api_name: 'ListClanBadgeCount',
+				list_clan_badge_count_req: {
+					clan_id: clanId
+				}
+			},
+			(session) => (mezon.client as any).listClanBadgeCount?.(session, clanId),
+			'clanBadgeCount'
+		);
+
+		if (response && (response as any).badge_count !== undefined) {
+			thunkAPI.dispatch(
+				clansActions.setClanBadgeCount({
+					clanId,
+					badgeCount: (response as any).badge_count
+				})
+			);
+		}
+	} catch (error) {
+		captureSentryError(error, 'clans/listClanBadgeCount');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const fetchClansCached = async (
 	getState: () => RootState,
 	ensuredMezon: MezonValueContext,
@@ -158,7 +187,7 @@ export const fetchClansCached = async (
 ) => {
 	const rootState = getState();
 	const clansState = rootState[CLANS_FEATURE_KEY];
-	const apiKey = createApiKey('fetchClans', limit?.toString() || '', state?.toString() || '', cursor || '');
+	const apiKey = createApiKey('fetchClans', limit?.toString() || '0', state?.toString() || '0', cursor || '');
 
 	const shouldForceCall = shouldForceApiCall(apiKey, clansState.cache, noCache);
 
@@ -179,7 +208,7 @@ export const fetchClansCached = async (
 				state: 1
 			}
 		},
-		() => ensuredMezon.client.listClanDescs(ensuredMezon.session, limit, state, cursor || ''),
+		(session) => ensuredMezon.client.listClanDescs(session, limit, state, cursor || ''),
 		'clan_desc_list'
 	);
 
@@ -204,7 +233,7 @@ export const fetchClans = createAsyncThunk(
 	async ({ noCache = false, isMobile = false }: { noCache?: boolean; isMobile?: boolean }, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await fetchClansCached(thunkAPI.getState as () => RootState, mezon, LIMIT_CLAN_ITEM, 1, '', noCache);
+			const response = await fetchClansCached(thunkAPI.getState as () => RootState, mezon, LIMIT_CLAN_ITEM, 1, '0', noCache);
 			if (!response.clandesc) {
 				return { clans: [], fromCache: response.fromCache };
 			}
@@ -257,7 +286,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 		const body = {
 			banner: '',
 			clan_name,
-			creator_id: '',
+			creator_id: '0',
 			logo: logo ?? ''
 		};
 		const response = await mezon.client.createClanDesc(mezon.session, body);
@@ -274,7 +303,7 @@ export const createClan = createAsyncThunk('clans/createClans', async ({ clan_na
 export const checkDuplicateNameClan = createAsyncThunk('clans/duplicateNameClan', async (clan_name: string, thunkAPI) => {
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clan_name, '', TypeCheck.TYPECLAN, '0');
+		const isDuplicateName = await mezon.socketRef.current?.checkDuplicateName(clan_name, '0', TypeCheck.TYPECLAN, '0');
 
 		if (isDuplicateName?.type === TypeCheck.TYPECLAN) {
 			return isDuplicateName.exist;
@@ -396,7 +425,10 @@ export const updateUser = createAsyncThunk(
 			}
 
 			if (dob && dob !== currentUser?.user?.dob) {
-				body.dob = dob;
+				const dobMs = new Date(dob).getTime();
+				if (!Number.isNaN(dobMs)) {
+					body.dob_seconds = Math.floor(dobMs / 1000);
+				}
 			}
 
 			if (logo !== currentUser?.logo) {
@@ -548,7 +580,7 @@ export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: stri
 								clan_id: clanId
 							}
 						},
-						() => mezon.client.listClanUnreadMsgIndicator?.(mezon.session, clanId),
+						(session) => mezon.client.listClanUnreadMsgIndicator?.(session, clanId),
 						'unread_msg_indicator'
 					);
 
@@ -669,9 +701,23 @@ export const clansSlice = createSlice({
 			if (group) {
 				group.clanIds = group.clanIds.filter((id) => id !== clanId);
 
-				if (group.clanIds.length === 0) {
+				if (group.clanIds.length === 1) {
+					const remainingClanId = group.clanIds[0];
 					clanGroupAdapter.removeOne(state.clanGroups, groupId);
-					state.clanGroupOrder = state.clanGroupOrder.filter((item) => !(item.type === 'group' && item.groupId === groupId));
+
+					const groupIndex = state.clanGroupOrder.findIndex((item) => item.type === 'group' && item.groupId === groupId);
+					if (groupIndex !== -1) {
+						state.clanGroupOrder[groupIndex] = {
+							type: 'clan',
+							id: remainingClanId,
+							clanId: remainingClanId
+						};
+						state.clanGroupOrder.splice(groupIndex + 1, 0, {
+							type: 'clan',
+							id: clanId,
+							clanId
+						});
+					}
 				} else {
 					const groupIndex = state.clanGroupOrder.findIndex((item) => item.type === 'group' && item.groupId === groupId);
 
@@ -748,6 +794,18 @@ export const clansSlice = createSlice({
 		},
 		removeByClanID: (state, action: PayloadAction<string>) => {
 			clansAdapter.removeOne(state, action.payload);
+		},
+		setClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; badgeCount: number }>) => {
+			const { clanId, badgeCount } = action.payload;
+			const entity = state.entities[clanId];
+			if (entity) {
+				clansAdapter.updateOne(state, {
+					id: clanId,
+					changes: {
+						badge_count: Math.max(0, badgeCount)
+					}
+				});
+			}
 		},
 		updateClanBadgeCount: (state: ClansState, action: PayloadAction<{ clanId: string; count: number; isReset?: boolean }>) => {
 			const { clanId, count, isReset } = action.payload;
@@ -1001,7 +1059,6 @@ export const selectCurrentClanBadgeCount = createSelector(selectCurrentClan, (cl
 export const selectCurrentClanIsCommunity = createSelector(selectCurrentClan, (clan) => clan?.is_community);
 export const selectCurrentClanPreventAnonymous = createSelector(selectCurrentClan, (clan) => clan?.prevent_anonymous ?? false);
 
-export const selectDefaultClanId = createSelector(selectAllClans, (clans) => (clans.length > 0 ? clans[0].id : null));
 export const selectOrderedClans = createSelector([selectAllClans, (state: RootState) => state.clans.clansOrder], (clans, order) => {
 	if (!order || order.length === 0) return clans;
 
@@ -1013,12 +1070,6 @@ export const selectOrderedClans = createSelector([selectAllClans, (state: RootSt
 
 	return [...orderedClans, ...remainingClans];
 });
-
-export const selectShowNumEvent = (clanId: string) =>
-	createSelector(getClansState, (state) => {
-		const clan = state.clanMetadata.entities[clanId];
-		return clan?.showNumEvent || false;
-	});
 
 export const selectBadgeCountAllClan = createSelector(selectAllClans, (clan) => {
 	return clan.reduce((total, count) => total + (count.badge_count ?? 0), 0);
@@ -1038,10 +1089,6 @@ export const selectWelcomeChannelByClanId = createSelector([getClansState, (stat
 });
 
 export const selectClanGroups = createSelector(getClansState, (state) => clanGroupAdapter.getSelectors().selectAll(state.clanGroups));
-
-export const selectClanGroupEntities = createSelector(getClansState, (state) => clanGroupAdapter.getSelectors().selectEntities(state.clanGroups));
-
-export const selectClanGroupById = (groupId: string) => createSelector(selectClanGroupEntities, (entities) => entities[groupId]);
 
 export const selectClanGroupOrder = createSelector(getClansState, (state) => state?.clanGroupOrder || []);
 

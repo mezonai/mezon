@@ -1,4 +1,4 @@
-export const timeFomat = (start: string, locale?: string) => {
+export const timeFomat = (start: string | number, locale?: string) => {
 	const date = new Date(start);
 	const timezoneOffsetMinutes = -date.getTimezoneOffset();
 	date.setUTCMinutes(date.getUTCMinutes() + timezoneOffsetMinutes);
@@ -55,18 +55,6 @@ export const timeFomat = (start: string, locale?: string) => {
 		const minutes = date.getUTCMinutes().toString().padStart(2, '0');
 		return `${dayName} ${monthName} ${dayWithSuffix} - ${hours}:${minutes}`;
 	}
-};
-
-export const handleTimeISO = (fullDateStr: Date, timeStr: string) => {
-	const date = new Date(fullDateStr);
-	const year = date.getFullYear();
-	const month = (date.getMonth() + 1).toString().padStart(2, '0');
-	const day = date.getDate().toString().padStart(2, '0');
-
-	const [hours, minutes] = timeStr.split(':').map(Number);
-	const isoDate = new Date(year, Number(month) - 1, Number(day), hours, minutes);
-
-	return isoDate.toISOString();
 };
 
 export function convertToLongUTCFormat(dateString: string): string {
@@ -152,6 +140,31 @@ export const getCurrentTimeRounded = (addMinute?: boolean) => {
 	return `${hour}:00`;
 };
 
+export const getNearestFutureWholeHourTimestamp = (from: number = Date.now()) => {
+	const d = new Date(from);
+	const hasFractionalHour = d.getMinutes() !== 0 || d.getSeconds() !== 0 || d.getMilliseconds() !== 0;
+	if (hasFractionalHour) {
+		d.setHours(d.getHours() + 1);
+	}
+	d.setMinutes(0, 0, 0);
+	return d.getTime();
+};
+
+export const getDefaultCreateEventTimes = (from: number = Date.now()) => {
+	const startTs = getNearestFutureWholeHourTimestamp(from);
+	const endTs = startTs + 60 * 60 * 1000;
+
+	const startDateMidnight = getTimeTodayMidNight(startTs);
+	const endDateMidnight = getTimeTodayMidNight(endTs);
+
+	return {
+		selectedDateStart: startDateMidnight,
+		timeStart: startTs - startDateMidnight,
+		selectedDateEnd: endDateMidnight,
+		timeEnd: endTs - endDateMidnight
+	};
+};
+
 export const compareDate = (start: Date | string, end: Date | string) => {
 	const startDay = new Date(start);
 	const endDay = new Date(end);
@@ -188,22 +201,6 @@ export const compareTime = (start: string, end: string, equal?: boolean) => {
 	return false;
 };
 
-export const differenceTime = (end: string) => {
-	const start = handleTimeISO(new Date(), getTimeFomatDay());
-
-	const dateStart = new Date(start);
-	const dateEnd = new Date(end);
-
-	if (!isNaN(dateStart.getTime()) && !isNaN(dateEnd.getTime())) {
-		const differenceInMilliseconds = dateEnd.getTime() - dateStart.getTime();
-
-		const differenceInMinutes = Math.floor(differenceInMilliseconds / (1000 * 60));
-
-		return differenceInMinutes;
-	}
-	return -1;
-};
-
 export const getTimeFomatDay = () => {
 	const date = new Date();
 	const timezoneOffsetMinutes = -date.getTimezoneOffset();
@@ -213,14 +210,18 @@ export const getTimeFomatDay = () => {
 	return `${hours}:${minutes}`;
 };
 
-export const formatTimeStringToHourFormat = (timeString: string) => {
-	const date = new Date(timeString);
-	const timezoneOffsetMinutes = -date.getTimezoneOffset();
-	date.setUTCMinutes(date.getUTCMinutes() + timezoneOffsetMinutes);
-	const hours = date.getUTCHours().toString().padStart(2, '0');
-	const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+export const formatTimeStringToHourFormat = (timeString: string | number) => {
+	const date = new Date(Number(timeString) * 1000);
 
-	return `${hours}:${minutes}`;
+	const hours = date.getHours();
+	const minutes = date.getMinutes();
+
+	return hours * 60 * 60 * 1000 + minutes * 60 * 1000;
+};
+
+export const getTimeTodayMidNight = (time?: number) => {
+	if (time) return new Date(new Date(time).setHours(0, 0, 0, 0)).getTime();
+	return new Date(new Date().setHours(0, 0, 0, 0)).getTime();
 };
 
 export const formatToLocalDateString = (timeString: string | Date) => {

@@ -66,5 +66,11 @@
 		"removeTitle": "Xóa biểu tượng tin nhắn riêng",
 		"removeDescription": "Bạn có chắc muốn xóa biểu tượng tin nhắn riêng?"
 	},
-	"displayName": "TÊN HIỂN THỊ"
+	"displayName": "TÊN HIỂN THỊ",
+	"emptyClanProfile": {
+		"title": "Bạn chưa tham gia clan nào",
+		"description": "Tạo hoăc tham gia một clan để thiết lập hồ sơ clan của bạn.",
+		"createClan": "Tạo clan",
+		"joinClan": "Tham gia clan"
+	}
 }

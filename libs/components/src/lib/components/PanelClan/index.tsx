@@ -18,7 +18,7 @@ import {
 import { Menu } from '@mezon/ui';
 import type { IClan } from '@mezon/utils';
 import { EUserSettings } from '@mezon/utils';
-import type { ApiAccount } from 'mezon-js/dist/api.gen';
+import type { ApiAccount } from 'mezon-js/api.gen';
 import type { ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -103,7 +103,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 		setIsUserProfile(false);
 		setIsShowSettingFooterInitTab(EUserSettings.PROFILES);
 		setIsShowSettingProfileInitTab(EActiveType.CLAN_SETTING);
-		setClanIdSettingProfile(clan?.clan_id || '');
+		setClanIdSettingProfile(clan?.clan_id || '0');
 		setIsShowSettingFooterStatus(true);
 		if (setShowClanListMenuContext) {
 			setShowClanListMenuContext();

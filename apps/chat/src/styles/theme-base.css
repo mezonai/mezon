@@ -67,6 +67,10 @@ button.bg-button-add-friend {
 	border-color: var(--border-primary);
 }
 
+.divide-color-primary > :not([hidden]) ~ :not([hidden]) {
+	border-color: var(--border-primary);
+}
+
 .border-base-text-primary {
 	border-color: var(--text-theme-primary);
 }
@@ -202,9 +206,11 @@ button.bg-button-add-friend {
 }
 
 .border-b-theme-primary {
-	border-bottom-width: 1px;
-	border-bottom-style: solid;
-	border-bottom-color: var(--border-color-primary);
+	box-shadow: inset 0 -0.5px 0 var(--border-color-primary);
+}
+
+.no-divider-last:last-child {
+	box-shadow: none;
 }
 
 .border-theme-primary {
@@ -399,5 +405,5 @@ input.bg-theme-input-primary::placeholder {
 	border-color: var(--border-color-avatar);
 }
 .bg-tooltip-channelapp {
-	background: var(--bg-tooltip-app) ;
+	background: var(--bg-tooltip-app);
 }

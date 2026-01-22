@@ -1,28 +1,71 @@
 import { captureSentryError } from '@mezon/logger';
-import type { LoadingStatus, SearchFilter } from '@mezon/utils';
+import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import { safeJSONParse } from 'mezon-js';
-import type { ApiSearchMessageDocument, ApiSearchMessageRequest } from 'mezon-js/api.gen';
+import { decodeAttachments, decodeMentions, decodeReactions, decodeRefs, safeJSONParse } from 'mezon-js';
+import type {
+	ApiFilterParam,
+	ApiMessageAttachment,
+	ApiMessageMention,
+	ApiMessageReaction,
+	ApiMessageRef,
+	ApiSearchMessageDocument,
+	ApiSearchMessageRequest,
+	ApiSortParam
+} from 'mezon-js/api.gen';
 import { ensureSession, getMezonCtx } from '../helpers';
 export const SEARCH_MESSAGES_FEATURE_KEY = 'searchMessages';
 
-export interface ISearchMessage extends ApiSearchMessageDocument {
+export interface ISearchMessage extends Omit<ApiSearchMessageDocument, 'mentions' | 'attachments' | 'references' | 'reactions' | 'content'> {
 	id: string;
-	content?: any;
+	content?: Record<string, unknown> | null;
 	avatar?: string;
+	mentions?: ApiMessageMention[];
+	attachments?: ApiMessageAttachment[];
+	references?: ApiMessageRef[];
+	reactions?: ApiMessageReaction[];
 }
 export interface SearchMessageEntity extends ISearchMessage {
 	id: string;
 }
 
+const decodeOrParseField = <T>(field: string | undefined, decodeFunc: (data: unknown) => unknown, propertyName: string): T[] | undefined => {
+	if (!field) return undefined;
+
+	try {
+		if (field.startsWith('[') || field.startsWith('{')) {
+			return safeJSONParse(field) as T[];
+		}
+
+		const decoded = decodeFunc(Buffer.from(field, 'base64')) as Record<string, T[] | undefined>;
+		return decoded?.[propertyName];
+	} catch (error) {
+		console.warn(`Failed to decode ${propertyName}:`, error);
+		const parsed = safeJSONParse(field);
+		return Array.isArray(parsed) ? (parsed as T[]) : undefined;
+	}
+};
+
 export const mapSearchMessageToEntity = (searchMessage: ApiSearchMessageDocument): ISearchMessage => {
+	const decodedMentions = decodeOrParseField<ApiMessageMention>(searchMessage.mentions, decodeMentions, 'mentions');
+	const decodedAttachments = decodeOrParseField<ApiMessageAttachment>(
+		typeof searchMessage.attachments === 'string' ? searchMessage.attachments : undefined,
+		decodeAttachments,
+		'attachments'
+	);
+	const decodedRefs = decodeOrParseField<ApiMessageRef>(searchMessage.references, decodeRefs, 'refs');
+	const decodedReactions = decodeOrParseField<ApiMessageReaction>(searchMessage.reactions, decodeReactions, 'reactions');
+
 	return {
 		...searchMessage,
 		avatar: searchMessage.avatar_url,
 		id: searchMessage.message_id || Snowflake.generate(),
-		content: searchMessage.content ? safeJSONParse(searchMessage.content) : null
+		content: searchMessage.content ? (safeJSONParse(searchMessage.content) as Record<string, unknown>) : null,
+		mentions: decodedMentions,
+		attachments: decodedAttachments || (Array.isArray(searchMessage.attachments) ? searchMessage.attachments : undefined),
+		references: decodedRefs,
+		reactions: decodedReactions
 	};
 };
 
@@ -44,13 +87,22 @@ export interface SearchMessageState {
 
 export const SearchMessageAdapter = createEntityAdapter<SearchMessageEntity>();
 
+interface FetchListSearchMessageParams {
+	filters?: ApiFilterParam[];
+	from?: number;
+	size?: number;
+	sorts?: ApiSortParam[];
+	isMobile?: boolean;
+}
+
 export const fetchListSearchMessage = createAsyncThunk(
 	'searchMessage/fetchListSearchMessage',
-	async ({ filters, from, size, sorts, isMobile = false }: any, thunkAPI) => {
+	async ({ filters, from, size, sorts, isMobile = false }: FetchListSearchMessageParams, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.searchMessage(mezon.session, { filters, from, size, sorts });
-			const channelId = filters.find((filter: { field_name: string }) => filter.field_name === 'channel_id')?.field_value;
+
+			const channelId = filters?.find((filter) => filter.field_name === 'channel_id')?.field_value || '';
 
 			if (!response.messages) {
 				thunkAPI.dispatch(searchMessagesActions.setTotalResults({ channelId, total: isMobile ? response.total || 0 : 0 }));
@@ -151,30 +203,20 @@ export const searchMessageSlice = createSlice({
 			.addCase(fetchListSearchMessage.pending, (state: SearchMessageState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(
-				fetchListSearchMessage.fulfilled,
-				(
-					state: SearchMessageState,
-					action: PayloadAction<
-						{ searchMessage: ISearchMessage[]; isMobile?: boolean; channelId: string },
-						string,
-						{ arg: { filters: SearchFilter[] } }
-					>
-				) => {
-					const { channelId, searchMessage, isMobile } = action.payload;
+			.addCase(fetchListSearchMessage.fulfilled, (state: SearchMessageState, action) => {
+				const { channelId, searchMessage, isMobile } = action.payload;
 
-					if (!state.byChannels[channelId]) {
-						state.byChannels[channelId] = getInitialChannelState();
-					}
-
-					if (isMobile) {
-						SearchMessageAdapter.addMany(state.byChannels[channelId].entities, searchMessage);
-					} else {
-						SearchMessageAdapter.setAll(state.byChannels[channelId].entities, searchMessage);
-					}
-					state.loadingStatus = 'loaded';
+				if (!state.byChannels[channelId]) {
+					state.byChannels[channelId] = getInitialChannelState();
 				}
-			)
+
+				if (isMobile) {
+					SearchMessageAdapter.addMany(state.byChannels[channelId].entities, searchMessage);
+				} else {
+					SearchMessageAdapter.setAll(state.byChannels[channelId].entities, searchMessage);
+				}
+				state.loadingStatus = 'loaded';
+			})
 			.addCase(fetchListSearchMessage.rejected, (state: SearchMessageState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;

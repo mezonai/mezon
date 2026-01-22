@@ -13,11 +13,11 @@ const OrganizePage = () => {
 	const version = mezonPackage.version;
 	const downloadUrl: string =
 		platform === Platform.MACOS
-			? `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-arm64.dmg`
+			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
 				? `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
 				: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
-	const universalUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-x64.dmg`;
+	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
 
 	const [activeFeature, setActiveFeature] = useState(0);
@@ -27,25 +27,25 @@ const OrganizePage = () => {
 			id: 0,
 			title: 'Channel Categories',
 			description: 'Group related channels together for better organization and clarity in your workspace.',
-			image: '/assets/organize.webp'
+			image: '/organize.webp'
 		},
 		{
 			id: 1,
 			title: 'Roles & Permissions',
 			description: 'Control who can access what with customizable roles and granular permissions.',
-			image: '/assets/organize.webp'
+			image: '/organize.webp'
 		},
 		{
 			id: 2,
 			title: 'Thread Management',
 			description: 'Keep conversations organized with threads for focused discussions on specific topics.',
-			image: '/assets/organize.webp'
+			image: '/organize.webp'
 		},
 		{
 			id: 3,
 			title: 'Custom Channel Ordering',
 			description: 'Drag and drop channels to organize them exactly how you want. Prioritize what matters most to your team.',
-			image: '/assets/organize.webp'
+			image: '/organize.webp'
 		}
 	];
 
@@ -85,7 +85,7 @@ const OrganizePage = () => {
 						</div>
 
 						<div className="flex justify-center lg:justify-end">
-							<img src="/assets/organize.webp" alt="Organize" className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl" />
+							<img src="/organize.webp" alt="Organize" className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl" />
 						</div>
 					</div>
 				</div>

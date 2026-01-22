@@ -1,19 +1,36 @@
 {
-    "name": "Mezon's World",
-    "short_name": "Mezon",
-    "icons": [
-        {
-            "src": "/assets/images/mezon-logo.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/assets/images/mezon-logo.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "display": "standalone"
+	"id": "/",
+	"name": "Mezon's World",
+	"short_name": "Mezon",
+	"description": "Join Mezon to play games, chill with friends, and build your community.",
+	"start_url": "/",
+	"scope": "/",
+	"display": "standalone",
+	"orientation": "any",
+	"theme_color": "#155EEF",
+	"background_color": "#000000",
+	"icons": [
+		{
+			"src": "/assets/favicon-16x16.png",
+			"sizes": "16x16",
+			"type": "image/png"
+		},
+		{
+			"src": "/assets/favicon-32x32.png",
+			"sizes": "32x32",
+			"type": "image/png"
+		},
+		{
+			"src": "/assets/apple-touch-icon.png",
+			"sizes": "180x180",
+			"type": "image/png"
+		},
+		{
+			"src": "/assets/logo.png",
+			"sizes": "512x512",
+			"type": "image/png",
+			"purpose": "any maskable"
+		}
+	],
+	"categories": ["social", "communication", "entertainment"]
 }

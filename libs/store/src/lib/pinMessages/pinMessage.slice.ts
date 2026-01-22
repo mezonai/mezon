@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IMessageWithUser, IPinMessage, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPinMessage, ApiPinMessageRequest } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiPinMessage, ApiPinMessageRequest } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -66,7 +66,7 @@ export const fetchChannelPinMessagesCached = async (
 		};
 	}
 
-	const response = await mezon.client.pinMessagesList(mezon.session, '', channelId, clanId);
+	const response = await mezon.client.pinMessagesList(mezon.session, '0', channelId || '0', clanId || '0');
 
 	markApiFirstCalled(apiKey);
 
@@ -144,6 +144,7 @@ export const setChannelPinMessage = createAsyncThunk(
 				channel_id,
 				message_id
 			};
+
 			const response = await mezon.client.createPinMessage(mezon.session, body);
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
@@ -190,7 +191,7 @@ export type UpdatePinMessage = {
 	senderId: string;
 	senderUsername: string;
 	content: string;
-	attachment: string;
+	attachment: Array<ApiMessageAttachment>;
 	createdTime: string;
 };
 
@@ -203,8 +204,9 @@ export const joinPinMessage = createAsyncThunk(
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const now = Math.floor(Date.now() / 1000);
+
 			await mezon.socketRef.current?.writeLastPinMessage(
-				clanId,
+				clanId || '0',
 				channelId,
 				mode,
 				isPublic,
@@ -215,7 +217,7 @@ export const joinPinMessage = createAsyncThunk(
 				senderId,
 				senderUsername,
 				content,
-				attachment,
+				JSON.stringify(attachment),
 				createdTime
 			);
 		} catch (error) {
@@ -362,24 +364,13 @@ export const pinMessageActions = {
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectEntities } = pinMessageAdapter.getSelectors();
-
 export const getPinMessageState = (rootState: { [PIN_MESSAGE_FEATURE_KEY]: PinMessageState }): PinMessageState => rootState[PIN_MESSAGE_FEATURE_KEY];
-export const selectPinMessageEntities = createSelector(getPinMessageState, selectEntities);
 
 export const selectPinMessageByChannelId = createSelector(
 	[getPinMessageState, (state: RootState, channelId: string) => channelId],
 	(state, channelId) => {
 		if (!channelId) return [];
 		return state.byChannels[channelId]?.pinMessages || [];
-	}
-);
-
-export const selectLastPinMessageByChannelId = createSelector(
-	[getPinMessageState, (state: RootState, channelId: string) => channelId],
-	(state, channelId) => {
-		const pinMessages = state.byChannels[channelId]?.pinMessages || [];
-		return pinMessages[pinMessages.length - 1]?.id || null;
 	}
 );
 

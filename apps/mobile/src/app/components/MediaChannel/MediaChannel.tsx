@@ -71,20 +71,17 @@ const MediaChannel = memo(({ channelId, isDM }: IMediaChannelProps) => {
 		const groups = new Map<string, AttachmentEntity[]>();
 
 		for (const attachment of attachments) {
-			if (!attachment.create_time) continue;
-
-			const date = new Date(attachment.create_time);
+			const date = attachment?.create_time_seconds ? new Date(attachment.create_time_seconds * 1000) : new Date();
 			const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 			if (!groups.has(dateKey)) {
 				groups.set(dateKey, []);
 			}
-			groups.get(dateKey)!.push(attachment);
+			groups.get(dateKey)?.push(attachment);
 		}
 
 		return groups;
 	}, [attachments]);
-
 	const flatData: FlatDataItem[] = useMemo(() => {
 		if (dateGroups.size === 0) {
 			return [];
@@ -131,9 +128,8 @@ const MediaChannel = memo(({ channelId, isDM }: IMediaChannelProps) => {
 		if (!paginationState?.hasMoreBefore) return;
 
 		const lastAttachment = attachments[attachments.length - 1];
-		const timestamp = lastAttachment?.create_time;
-		const beforeTs = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
-		if (!beforeTs) return;
+		const timestamp = lastAttachment?.create_time_seconds;
+		if (!timestamp) return;
 
 		dispatch(galleryActions.setGalleryLoading({ channelId: currentChannelId, isLoading: true }));
 		dispatch(
@@ -141,7 +137,7 @@ const MediaChannel = memo(({ channelId, isDM }: IMediaChannelProps) => {
 				clanId: currentClanId,
 				channelId: currentChannelId,
 				limit: paginationState?.limit ?? 50,
-				before: beforeTs,
+				before: timestamp,
 				direction: 'before'
 			})
 		);

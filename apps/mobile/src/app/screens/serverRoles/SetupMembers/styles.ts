@@ -10,6 +10,7 @@ export const style = (colors: Attributes) =>
 			paddingHorizontal: size.s_14
 		},
 		header: {
+			backgroundColor: colors.primary,
 			flexDirection: 'row',
 			justifyContent: 'space-between',
 			width: '100%'
@@ -19,7 +20,7 @@ export const style = (colors: Attributes) =>
 			alignSelf: 'center',
 			width: '100%',
 			textAlign: 'center',
-			zIndex: -1,
+			zIndex: 1,
 			color: colors.textStrong,
 			fontSize: size.s_16,
 			fontWeight: 'bold'
@@ -28,7 +29,7 @@ export const style = (colors: Attributes) =>
 			position: 'absolute',
 			alignSelf: 'center',
 			width: '100%',
-			zIndex: -1
+			zIndex: 1
 		},
 		name: {
 			textAlign: 'center',
@@ -39,7 +40,8 @@ export const style = (colors: Attributes) =>
 			alignSelf: 'center'
 		},
 		backButton: {
-			padding: size.s_16
+			padding: size.s_16,
+			zIndex: 2
 		},
 		addMember: {
 			flex: 1,
@@ -96,6 +98,9 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.bgViolet,
 			paddingVertical: size.s_14,
 			borderRadius: size.s_8
+		},
+		buttonDisabled: {
+			backgroundColor: colors.textDisabled
 		},
 		buttonText: {
 			color: colors.text,

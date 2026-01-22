@@ -1,15 +1,15 @@
 import type { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useChatSending } from '@mezon/core';
-import { debounce, isEmpty } from '@mezon/mobile-components';
+import { ActionEmitEvent, debounce, isEmpty } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
-	gifsStickerEmojiActions,
 	MediaType,
+	gifsStickerEmojiActions,
 	selectAnonymousMode,
 	selectCurrentChannel,
 	selectCurrentClanPreventAnonymous,
 	selectCurrentTopicId,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectIsShowCreateTopic,
 	useAppDispatch
 } from '@mezon/store-mobile';
@@ -20,7 +20,7 @@ import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mez
 import type { MutableRefObject } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Platform, Text, TextInput, View } from 'react-native';
+import { DeviceEventEmitter, Platform, Text, TextInput, View } from 'react-native';
 import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
@@ -67,7 +67,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const currentChannel = useSelector(selectCurrentChannel);
-	const currentDirectMessage = useSelector(selectDmGroupCurrent(directMessageId)); //Note: prioritize DM first
+	const currentDirectMessage = useSelector((state) => selectDmGroupById(state, directMessageId)); //Note: prioritize DM first
 	const anonymousMode = useSelector((state) => selectAnonymousMode(state, currentChannel?.clan_id));
 	const currentClanPreventAnonymous = useSelector(selectCurrentClanPreventAnonymous);
 	const [mode, setMode] = useState<ExpressionType>('emoji');
@@ -109,6 +109,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 			references?: Array<ApiMessageRef>
 		) => {
 			sendMessage(content, mentions, attachments, references, dmMode ? false : anonymousMode && !currentClanPreventAnonymous, false, true);
+			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);
 		},
 		[anonymousMode, currentClanPreventAnonymous, dmMode, sendMessage]
 	);

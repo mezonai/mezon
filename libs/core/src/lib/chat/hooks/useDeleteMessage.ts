@@ -37,8 +37,8 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				const message = channelMessages?.entities?.[messageId];
 				const mentions = message?.mentions || [];
 				const references = message?.references || [];
-				const mentionsString = JSON.stringify(mentions);
-				const referencesString = JSON.stringify(references);
+				const mentionsBytes = mentions.length > 0 ? new Uint8Array(1) : new Uint8Array();
+				const referencesBytes = references.length > 0 ? new Uint8Array(1) : new Uint8Array();
 				dispatch(
 					messagesActions.remove({
 						channelId,
@@ -55,29 +55,29 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				if (isTopic) {
 					await socket.removeChatMessage(
 						payload.clan_id,
-						channel?.channel_id || '',
+						channel?.channel_id || '0',
 						mode,
 						payload.is_public,
 						messageId,
 						hasAttachment,
 						channelId,
-						mentionsString,
-						referencesString
+						mentionsBytes as any,
+						referencesBytes as any
 					);
 
 					return;
 				}
 
 				await socket.removeChatMessage(
-					payload.clan_id,
+					payload.clan_id || '0',
 					channelId,
 					mode,
 					payload.is_public,
 					messageId,
 					hasAttachment,
 					undefined,
-					mentionsString,
-					referencesString
+					mentionsBytes as any,
+					referencesBytes as any
 				);
 			} catch (e) {
 				console.error(e);

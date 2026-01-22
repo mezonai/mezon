@@ -42,7 +42,8 @@ import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMPOSE_FEATURE_KEY, composeReducer } from './compose/compose.slice';
 import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
-import { statusReducer, USER_STATUS_FEATURE_KEY } from './direct/status.slice';
+import { DEVICES_FEATURE_KEY, devicesReducer } from './devices/devices.slice';
+import { USER_STATUS_FEATURE_KEY, statusReducer } from './direct/status.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
 import { DMCallReducer } from './dmcall/dmcall.slice';
 import { dragAndDropReducer } from './dragAndDrop/dragAndDrop.slice';
@@ -64,7 +65,7 @@ import { permissionRoleChannelReducer } from './permissionChannel/permissionRole
 import { pinMessageReducer } from './pinMessages/pinMessage.slice';
 import { OVERRIDDEN_POLICIES_FEATURE_KEY, overriddenPoliciesReducer } from './policies/overriddenPolicies.slice';
 import { QUICK_MENU_FEATURE_KEY, quickMenuReducer } from './quickMenu/quickMenu.slice';
-import { IsShowReducer, roleIdReducer, RolesClanReducer } from './roleclan/roleclan.slice';
+import { IsShowReducer, RolesClanReducer, roleIdReducer } from './roleclan/roleclan.slice';
 import { SEARCH_MESSAGES_FEATURE_KEY, searchMessageReducer } from './searchmessages/searchmessage.slice';
 import { settingStickerReducer } from './settingSticker/settingSticker.slice';
 import { groupCallReducer } from './slices/groupCall.slice';
@@ -502,7 +503,8 @@ const reducer = {
 	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
 	[WALLET_FEATURE_KEY]: persistedWalletStore,
 	[USER_STATUS_FEATURE_KEY]: statusReducer,
-	[COMUNITY_FEATURE_KEY]: persistedComunityReducer
+	[COMUNITY_FEATURE_KEY]: persistedComunityReducer,
+	[DEVICES_FEATURE_KEY]: devicesReducer
 };
 
 let storeInstance = configureStore({

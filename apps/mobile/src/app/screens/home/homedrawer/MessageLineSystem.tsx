@@ -2,7 +2,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { MessagesEntity } from '@mezon/store-mobile';
 import { channelsActions, messagesActions, selectAllChannelMemberIds, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { convertTimeString, ETokenMessage, parseThreadInfo, TypeMessage } from '@mezon/utils';
+import { ETokenMessage, TypeMessage, convertTimeString, parseThreadInfo } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -87,7 +87,7 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 			if (message?.references && message?.references[0]?.message_ref_id) {
 				dispatch(
 					messagesActions.jumpToMessage({
-						clanId: message?.clan_id || '',
+						clanId: message?.clan_id || '0',
 						messageId: message?.references[0]?.message_ref_id,
 						channelId: message?.channel_id
 					})
@@ -120,7 +120,7 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 			if (mentions?.[0]) {
 				const mentionText = t?.substring(mentions[0]?.s ?? 0, mentions[0]?.e ?? 0);
 				formattedContent.push(
-					<Text style={styles.textMention} onPress={() => onMention(`@${mentions[0]?.username || ''}`)}>
+					<Text key="line-system" style={styles.textMention} onPress={() => onMention(`@${mentions[0]?.username || ''}`)}>
 						{mentionText}
 					</Text>
 				);

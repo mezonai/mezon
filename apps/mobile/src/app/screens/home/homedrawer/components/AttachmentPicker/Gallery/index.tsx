@@ -1,7 +1,7 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { appActions, referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import { fileTypeImage, IMAGE_MAX_FILE_SIZE, MAX_FILE_SIZE } from '@mezon/utils';
+import { IMAGE_MAX_FILE_SIZE, MAX_FILE_SIZE, MAX_FILE_SIZE_1G, fileTypeImage } from '@mezon/utils';
 import type { PhotoIdentifier } from '@react-native-camera-roll/camera-roll';
 import {
 	CameraRoll,
@@ -30,7 +30,7 @@ interface IProps {
 	currentChannelId: string;
 }
 
-const GALLERY_MAX_SELECTION = 20;
+export const GALLERY_MAX_SELECTION = 20;
 const Gallery = ({ currentChannelId }: IProps) => {
 	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
@@ -62,7 +62,7 @@ const Gallery = ({ currentChannelId }: IProps) => {
 
 	const isDisableSelectAttachment = useMemo(() => {
 		if (!attachmentFilteredByChannelId) return false;
-		const { files } = attachmentFilteredByChannelId;
+		const { files = [] } = attachmentFilteredByChannelId || {};
 		return files?.length >= GALLERY_MAX_SELECTION;
 	}, [attachmentFilteredByChannelId]);
 
@@ -298,7 +298,8 @@ const Gallery = ({ currentChannelId }: IProps) => {
 
 				// Determine if this is an image file based on type
 				const isImage = type && fileTypeImage.includes(type);
-				const maxAllowedSize = isImage ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE;
+				const isVideo = type && type?.includes(type);
+				const maxAllowedSize = isImage ? IMAGE_MAX_FILE_SIZE : isVideo ? MAX_FILE_SIZE_1G : MAX_FILE_SIZE;
 
 				if (size && size >= maxAllowedSize) {
 					const fileTypeText = isImage ? t('common:image') : t('common:files');
@@ -412,6 +413,8 @@ const Gallery = ({ currentChannelId }: IProps) => {
 			const granted = await requestCameraPermission();
 			if (!granted) return;
 		}
+		const { files = [] } = attachmentFilteredByChannelId || {};
+		if (files?.length >= GALLERY_MAX_SELECTION) return;
 
 		const options = {
 			durationLimit: 10000,
@@ -439,7 +442,7 @@ const Gallery = ({ currentChannelId }: IProps) => {
 				onPickGallery(fileFormat);
 			}
 		});
-	}, [hasPermission, onPickGallery]);
+	}, [attachmentFilteredByChannelId, hasPermission, onPickGallery]);
 
 	const handleLoadMore = async () => {
 		if (pageInfo?.has_next_page && pageInfo?.end_cursor) {

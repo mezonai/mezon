@@ -1,5 +1,6 @@
 import { getShowName, useColorsRoleById } from '@mezon/core';
-import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, IMessageWithUser, convertTimeStringI18n, generateE2eId } from '@mezon/utils';
+import type { IMessageWithUser } from '@mezon/utils';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeStringI18n, convertUnixSecondsToTimeString, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useTranslation } from 'react-i18next';
 import getPendingNames from './usePendingNames';
@@ -19,7 +20,9 @@ const BaseMessageHead = ({
 	userRolesClan
 }: IMessageHeadProps & { userRolesClan?: ReturnType<typeof useColorsRoleById> }) => {
 	const { t, i18n } = useTranslation('common');
-	const messageTime = convertTimeStringI18n(message?.create_time as string, t, i18n.language);
+	const messageTime = message?.create_time_seconds
+		? convertUnixSecondsToTimeString(message.create_time_seconds, t, i18n.language)
+		: convertTimeStringI18n((message as any)?.create_time || '', t, i18n.language);
 	const usernameSender = message?.username;
 	const clanNick = message?.clan_nick;
 	const displayName = message?.display_name;

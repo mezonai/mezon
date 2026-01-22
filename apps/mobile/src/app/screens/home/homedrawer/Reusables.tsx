@@ -45,7 +45,7 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 				<TouchableOpacity
 					disabled={isSent}
 					onPress={() => {
-						onPress(dmGroup.channel_id || '', dmGroup?.type || 0, dmGroup);
+						onPress(dmGroup.channel_id || '0', dmGroup?.type || 0, dmGroup);
 					}}
 					style={[styles.friendItemWrapper, isSent && styles.friendItemWrapperInvited]}
 				>
@@ -74,7 +74,7 @@ export const FriendListItem = memo((props: IFriendListItemProps) => {
 						containerStyle={[styles.inviteButton]}
 						disabled={isSent}
 						onPress={() => {
-							onPress(dmGroup.channel_id || '', dmGroup?.type || 0, dmGroup);
+							onPress(dmGroup.channel_id || '0', dmGroup?.type || 0, dmGroup);
 						}}
 					/>
 				</TouchableOpacity>

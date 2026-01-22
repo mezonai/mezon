@@ -15,7 +15,7 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 	const { channel } = props;
 	const { t } = useTranslation('channelSetting');
 	const listCategory = useSelector(selectAllCategories);
-	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || ''));
+	const realTimeChannel = useAppSelector((state) => selectChannelById(state, channel.channel_id || '0'));
 	const categoryName = useMemo(() => {
 		if (realTimeChannel?.category_name) {
 			return realTimeChannel.category_name;
@@ -70,9 +70,9 @@ const SettingCategoryChannel = (props: CategoryChannelProps) => {
 	}, [listCateUpdate, handleMoveChannelToNewCategory]);
 
 	return (
-		<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 pt-[94px] pb-7 pr-[10px] pl-[40px] overflow-x-hidden min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
+		<div className="overflow-y-auto flex flex-col flex-1 shrink bg-theme-setting-primary w-1/2 lg:pt-[94px] sbm:pb-7 pr-[10px] sbm:pr-[10px] pl-[10px] sbm:pl-[40px] overflow-x-hidden min-w-full sbm:min-w-[700px] 2xl:min-w-[900px] max-w-[740px] hide-scrollbar">
 			<div className="text-theme-primary text-[15px] flex flex-col gap-4">
-				<h3 className="font-bold text-xl text-theme-primary-active">{t('categoryManagement.title')}</h3>
+				<h3 className="font-semibold text-xl text-theme-primary-active">{t('categoryManagement.title')}</h3>
 
 				<p className="text-xs font-bold text-theme-primary">{t('categoryManagement.channelName')}</p>
 				<div className="bg-input-secondary border-theme-primary rounded-lg pl-3 py-2 w-full  outline-none text-theme-message">

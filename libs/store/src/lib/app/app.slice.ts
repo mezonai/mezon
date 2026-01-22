@@ -17,6 +17,44 @@ import { voiceActions } from '../voice/voice.slice';
 export const APP_FEATURE_KEY = 'app';
 const NUMBER_HISTORY = 10;
 
+const REFRESH_APP_CONFIG = {
+	maxAttempts: 5,
+	windowMs: 60000,
+	cooldownMs: 30000
+};
+
+let refreshAttempts: number[] = [];
+let cooldownUntil: number | null = null;
+
+const canRefreshApp = (): { allowed: boolean; reason?: string } => {
+	const now = Date.now();
+
+	if (cooldownUntil && now < cooldownUntil) {
+		return { allowed: false, reason: `Cooldown active. Wait ${Math.ceil((cooldownUntil - now) / 1000)}s` };
+	}
+
+	if (cooldownUntil && now >= cooldownUntil) {
+		cooldownUntil = null;
+		refreshAttempts = [];
+	}
+
+	refreshAttempts = refreshAttempts.filter((time) => now - time < REFRESH_APP_CONFIG.windowMs);
+
+	if (refreshAttempts.length >= REFRESH_APP_CONFIG.maxAttempts) {
+		cooldownUntil = now + REFRESH_APP_CONFIG.cooldownMs;
+		return {
+			allowed: false,
+			reason: `Max ${REFRESH_APP_CONFIG.maxAttempts} attempts reached. Cooldown ${REFRESH_APP_CONFIG.cooldownMs / 1000}s`
+		};
+	}
+
+	return { allowed: true };
+};
+
+const trackRefreshAttempt = () => {
+	refreshAttempts.push(Date.now());
+};
+
 export interface showSettingFooterProps {
 	status: boolean;
 	initTab: string;
@@ -107,6 +145,15 @@ export const initialAppState: AppState = {
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
+	const { allowed, reason } = canRefreshApp();
+
+	if (!allowed) {
+		console.warn('[refreshApp] Rate limited:', reason);
+		return thunkAPI.rejectWithValue({ rateLimited: true, reason });
+	}
+
+	trackRefreshAttempt();
+
 	try {
 		const state = thunkAPI.getState() as RootState;
 
@@ -379,8 +426,6 @@ export const selectTheme = createSelector(getAppState, (state: AppState) => stat
 
 export const selectCurrentLanguage = createSelector(getAppState, (state: AppState) => state.currentLanguage || 'en');
 
-export const selectError = createSelector(getAppState, (state: AppState) => state.error);
-
 export const selectIsShowMemberList = createSelector(getAppState, (state: AppState) => state.isShowMemberList);
 
 export const selectIsShowChatStream = createSelector(getAppState, (state: AppState) => state.isShowChatStream);
@@ -391,8 +436,6 @@ export const selectChatStreamWidth = createSelector(getAppState, (state: AppStat
 export const selectIsShowCanvas = createSelector(getAppState, (state: AppState) => state.isShowCanvas);
 
 export const selectInitialPath = createCachedSelector(getAppState, (state: AppState) => state.initialPath);
-
-export const selectInitialParams = createCachedSelector(getAppState, (state: AppState) => state.initialParams);
 
 export const selectCloseMenu = createSelector(getAppState, (state: AppState) => state.closeMenu);
 

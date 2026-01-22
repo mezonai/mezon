@@ -1,8 +1,8 @@
 'use client';
 
-import { Icons } from '@mezon/ui';
 import React, { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Icons } from '../Icons';
 import FormError from './FormError';
 
 interface PasswordInputProps {

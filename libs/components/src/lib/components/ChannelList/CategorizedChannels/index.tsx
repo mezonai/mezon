@@ -53,12 +53,10 @@ const DeleteCategoryModal: React.FC<DeleteCategoryModalProps> = ({ category, clo
 	return (
 		<ModalConfirm
 			handleCancel={closeDeleteModal}
-			modalName={category.category_name || ''}
 			handleConfirm={confirmDeleteCategory}
-			title="delete"
+			title={t('modalConfirm.deleteCategoryTitle', { name: category.category_name || '' })}
 			buttonName={t('deleteCategory')}
 			message={t('cannotBeUndone')}
-			customModalName={t('category')}
 		/>
 	);
 };
@@ -154,7 +152,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 
 	const handleToggleCategory = () => {
 		const payload = {
-			clanId: category.clan_id || '',
+			clanId: category.clan_id || '0',
 			categoryId: category.id,
 			expandState: !categoryExpandState
 		};
@@ -177,7 +175,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 
 	const handleOpenCreateChannelModal = (category: ICategoryChannel) => {
 		const payload = {
-			clanId: category.clan_id || '',
+			clanId: category.clan_id || '0',
 			categoryId: category.id,
 			expandState: true
 		};

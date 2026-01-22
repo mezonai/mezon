@@ -129,7 +129,7 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 								onClick={handleImageClick}
 							>
 								<img
-									src={imagePreview || 'assets/images/avatar-group.png'}
+									src={imagePreview || '/assets/images/avatar-group.png'}
 									alt="Group"
 									className="w-full h-full rounded-full object-cover border-4 border-[#404249] group-hover:border-[#5865f2] transition-colors duration-200"
 								/>
@@ -155,7 +155,7 @@ const ModalEditGroup: React.FC<ModalEditGroupProps> = ({
 								data-e2e={generateE2eId('chat.direct_message.edit_group.upload.avatar_group_input')}
 							/>
 							<p className="text-xs text-theme-primary font-medium">{t('editGroup.uploadImageText')}</p>
-							{imagePreview && !imagePreview.includes('assets/images/avatar-group.png') && (
+							{imagePreview && !imagePreview.includes('/assets/images/avatar-group.png') && (
 								<button
 									type="button"
 									onClick={() => onImageUpload?.(null)}

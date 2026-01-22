@@ -20,7 +20,7 @@ export interface UsersByAddChannelState extends EntityState<IUserChannel, string
 }
 
 export const UserChannelAdapter = createEntityAdapter({
-	selectId: (userChannel: IUserChannel) => userChannel.channel_id || ''
+	selectId: (userChannel: IUserChannel) => userChannel.channel_id || '0'
 });
 
 export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapter.getInitialState({
@@ -58,7 +58,7 @@ export const fetchUserChannelsCached = async (
 				limit
 			}
 		},
-		() => ensuredMezon.client.listChannelUsersUC(ensuredMezon.session, channelId, limit),
+		(session) => ensuredMezon.client.listChannelUsersUC(session, channelId, limit),
 		'channel_users_uc_list'
 	);
 
@@ -109,6 +109,7 @@ export const userChannelsSlice = createSlice({
 		upsertMany: UserChannelAdapter.upsertMany,
 		remove: UserChannelAdapter.removeOne,
 		update: UserChannelAdapter.updateOne,
+		upsert: UserChannelAdapter.upsertOne,
 		removeMany: UserChannelAdapter.removeMany,
 		addUserChannel: (state, action: PayloadAction<{ channelId: string; userAdds: Array<string> }>) => {
 			const { channelId, userAdds } = action.payload;
@@ -211,9 +212,8 @@ export const userChannelsReducer = userChannelsSlice.reducer;
 
 export const getUserChannelsState = (rootState: { [ALL_USERS_BY_ADD_CHANNEL]: UsersByAddChannelState }): UsersByAddChannelState =>
 	rootState[ALL_USERS_BY_ADD_CHANNEL];
-const { selectEntities, selectById } = UserChannelAdapter.getSelectors();
+const { selectById } = UserChannelAdapter.getSelectors();
 
-export const selectUserChannelUCEntities = createSelector(getUserChannelsState, selectEntities);
 export const selectUserChannelIds = createSelector(
 	[getUserChannelsState, (state, channelId: string) => channelId],
 	(state, channelId) => selectById(state, channelId)?.user_ids || []

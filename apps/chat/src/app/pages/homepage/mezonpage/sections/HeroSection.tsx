@@ -21,8 +21,8 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 	const downloadLinks = {
 		windows: 'https://apps.microsoft.com/detail/9pf25lf1fj17',
 		windowsPortable: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`,
-		macos: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-arm64.dmg`,
-		macosIntel: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-x64.dmg`,
+		macos: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
+		macosIntel: 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12',
 		linux: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
 	};
 
@@ -59,7 +59,7 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 						{t('sections.hero.title.your')} <span className="text-purple-600">{t('sections.hero.title.live')}</span>,{' '}
 						<span className="text-purple-600">{t('sections.hero.title.work')}</span>,{' '}
 						<span className="text-purple-600">{t('sections.hero.title.play')}</span> {t('sections.hero.title.platform')}{' '}
-						{t('sections.hero.title.theBest')} {t('sections.hero.title.discordAlternative')}
+						{t('sections.hero.title.theBest')} {t('sections.hero.title.yourCommunity')}
 					</h1>
 
 					<p className="font-svnAvo text-xl max-md:text-lg text-gray-600 max-w-3xl">

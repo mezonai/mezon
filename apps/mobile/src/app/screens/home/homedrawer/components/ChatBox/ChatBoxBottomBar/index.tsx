@@ -27,15 +27,16 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import type { IHashtagOnMessage, IMentionOnMessage, MentionDataProps } from '@mezon/utils';
-import { MIN_THRESHOLD_CHARS } from '@mezon/utils';
+import { ChannelStatusEnum, MIN_THRESHOLD_CHARS } from '@mezon/utils';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 // eslint-disable-next-line
 import { useMezon } from '@mezon/transport';
 import Clipboard from '@react-native-clipboard/clipboard';
-import { ChannelStreamMode } from 'mezon-js';
+import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, EmitterSubscription, Platform, StyleSheet, TextInput, View } from 'react-native';
+import type { EmitterSubscription } from 'react-native';
+import { DeviceEventEmitter, Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { TriggersConfig } from 'react-native-controlled-mentions';
 import { useMentions } from 'react-native-controlled-mentions';
 import RNFS from 'react-native-fs';
@@ -367,7 +368,7 @@ export const ChatBoxBottomBar = memo(
 				const words = convertedHashtag?.split?.(mentionRegexSplit);
 
 				const mentionList: Array<{ user_id: string; s: number; e: number }> = [];
-				const hashtagList: Array<{ channelid: string; s: number; e: number }> = [];
+				const hashtagList: Array<{ channelId: string; s: number; e: number; parentId?: string; clanId?: string; channelLabel?: string }> = [];
 
 				let mentionBeforeCount = 0;
 				let mentionBeforeHashtagCount = 0;
@@ -400,7 +401,8 @@ export const ChatBoxBottomBar = memo(
 						const listChannelHashtagDm = selectAllChannelsByUser(store.getState() as RootState);
 						const channelLabel = channelName?.slice?.(2, -1);
 						const channelInfo = getChannelHashtag(listChannelHashtagDm, listChannel, mode, channelLabel);
-
+						const isThreadPublish =
+							channelInfo?.type === ChannelType.CHANNEL_TYPE_THREAD && channelInfo?.channel_private !== ChannelStatusEnum.isPrivate;
 						mentionBeforeHashtagCount++;
 
 						if (channelInfo) {
@@ -408,7 +410,10 @@ export const ChatBoxBottomBar = memo(
 							indexOfLastHashtag = startindex + 1;
 
 							hashtagList?.push?.({
-								channelid: channelInfo?.channel_id?.toString() ?? '',
+								channelId: channelInfo?.channel_id?.toString() ?? '',
+								parentId: channelInfo?.parent_id?.toString() ?? '',
+								clanId: channelInfo?.clan_id?.toString() ?? '',
+								channelLabel: isThreadPublish && channelLabel ? channelLabel : '',
 								s: startindex - (mentionBeforeCount * 2 + (mentionBeforeHashtagCount - 1) * 2),
 								e: startindex + channelName.length - (mentionBeforeHashtagCount * 2 + mentionBeforeCount * 2)
 							});

@@ -35,14 +35,17 @@ export interface ElementToken {
 	kindOf: ETokenMessage;
 	user_id?: string;
 	role_id?: string;
-	channelid?: string;
+	channelId?: string;
 	emojiid?: string;
 	type?: EBacktickType;
 	username?: string;
+	clanId?: string;
+	parentId?: string;
+	channelLabel?: string;
 }
 
 export function extractIdsFromUrl(url: string) {
-	const regex = /\/chat\/clans\/([^/]+)\/channels\/([^/]+)(?:\/canvas\/([^/]+))?/;
+	const regex = /\/chat\/clans\/(\d{19})\/channels\/(\d{19})(?:\/canvas\/([^/]+))?/;
 	const match = url?.match(regex);
 	if (!match) return null;
 
@@ -213,15 +216,8 @@ export const MessageLine = ({
 	const lkm = Array.isArray(lk) ? lk.map((item) => ({ ...item, kindOf: ETokenMessage.LINKS })) : [];
 	const lkym = Array.isArray(lky) ? lky.map((item) => ({ ...item, kindOf: ETokenMessage.LINKYOUTUBE })) : [];
 	const vkm = Array.isArray(vk) ? vk.map((item) => ({ ...item, kindOf: ETokenMessage.VOICE_LINKS })) : [];
-	const elements: ElementToken[] = [
-		...(mentions || []).map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })),
-		...hgm,
-		...ejm,
-		...mkm,
-		...lkm,
-		...lkym,
-		...vkm
-	]
+	const mtm = Array.isArray(mentions) ? mentions.map((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) : [];
+	const elements: ElementToken[] = [...mtm, ...hgm, ...ejm, ...mkm, ...lkm, ...lkym, ...vkm]
 		.sort((a, b) => (a.s ?? 0) - (b.s ?? 0))
 		.filter((element, index, sortedArray) => {
 			if (index === 0) return true;
@@ -260,11 +256,15 @@ export const MessageLine = ({
 						key={`hashtag-${s}-${messageId}`}
 						isTokenClickAble={isTokenClickAble}
 						isJumMessageEnabled={isJumMessageEnabled}
-						channelHastagId={element.channelid || ''}
+						channelHastagId={element.channelId || ''}
+						channelLabel={element.channelLabel}
+						clanId={element.clanId}
+						parentId={element.parentId}
+						channelId={element.channelId}
 					/>
 				);
 			} else if (
-				(element.kindOf === ETokenMessage.MENTIONS && element.user_id) ||
+				(element.kindOf === ETokenMessage.MENTIONS && element.user_id && element.user_id !== '0') ||
 				(element.kindOf === ETokenMessage.MENTIONS && element.username)
 			) {
 				formattedContent.push(
@@ -360,6 +360,11 @@ export const MessageLine = ({
 									isTokenClickAble={isTokenClickAble}
 									isJumMessageEnabled={isJumMessageEnabled}
 									channelHastagId={channelId}
+									channelLabel={element.channelLabel}
+									clanId={element.clanId}
+									parentId={element.parentId}
+									channelId={element.channelId}
+									isLink={true}
 								/>
 							);
 						}

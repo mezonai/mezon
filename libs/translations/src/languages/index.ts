@@ -1,2 +1,4 @@
-export { default as en } from './en';
-export { default as vi } from './vi';
+export const loadLanguage = async (lang: 'en' | 'vi') => {
+	const module = await import(`./${lang}/index`);
+	return module.default;
+};

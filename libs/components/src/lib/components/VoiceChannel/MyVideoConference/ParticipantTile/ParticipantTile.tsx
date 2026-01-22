@@ -27,6 +27,7 @@ import { ConnectionQuality, Track } from 'livekit-client';
 import { safeJSONParse } from 'mezon-js';
 import type { PropsWithChildren } from 'react';
 import React, { forwardRef, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 import type { ActiveSoundReaction } from '../Reaction/types';
 import { FocusToggle } from './FocusToggle';
@@ -86,6 +87,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	}: ParticipantTileProps,
 	ref
 ) {
+	const { t } = useTranslation('channelVoice');
 	const trackReference = useEnsureTrackRef(trackRef);
 
 	const isMicrophoneEnabled = (() => {
@@ -158,8 +160,8 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 
 	const avatarToRender = resolvedAvatar ? (
 		<AvatarImage
-			alt={usernameString || ''}
-			username={usernameString || ''}
+			alt={voiceUsername || ''}
+			username={voiceUsername || ''}
 			className="w-20 h-20"
 			srcImgProxy={createImgproxyUrl(resolvedAvatar, {
 				width: 320,
@@ -170,11 +172,11 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		/>
 	) : (
 		isAvatarResolved &&
-		usernameString && (
+		voiceUsername && (
 			<div
 				className={`size-10 text-theme-primary bg-theme-primary text-[16px] w-20 h-20 !text-4xl font-semibold flex items-center justify-center rounded-xl`}
 			>
-				{usernameString?.charAt(0)?.toUpperCase()}
+				{voiceUsername?.charAt(0)?.toUpperCase()}
 			</div>
 		)
 	);
@@ -254,7 +256,9 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 											<span>
 												<ScreenShareIcon />
 											</span>
-											<span className="truncate whitespace-nowrap py-0.5">{voiceUsername}&apos;s screen</span>
+											<span className="truncate whitespace-nowrap py-0.5">
+												{t('usernameScreen', { username: voiceUsername })}
+											</span>
 										</div>
 									)}
 									<ConnectionQualityIndicator />

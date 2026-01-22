@@ -54,37 +54,37 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 	}, [navigation, onGoBack, t, themeValue.textDisabled, themeValue.textStrong]);
 
 	async function handleCreate() {
-		const timeValueStart = startTime.toISOString();
-		const timeValueEnd = endTime.toISOString();
+		const timeValueStart = Math.floor(startTime.getTime());
+		const timeValueEnd = Math.floor(endTime.getTime());
 		if (currentEvent) {
 			await dispatch(
 				eventManagementActions.updateEventManagement({
 					event_id: currentEvent?.id,
-					start_time: timeValueStart,
-					end_time: timeValueEnd,
-					channel_voice_id: channelId,
+					start_time_seconds: timeValueStart,
+					end_time_seconds: timeValueEnd,
+					channel_voice_id: channelId || '0',
 					address: location,
 					creator_id: myUser.userId,
 					title,
 					description,
 					channel_id: eventChannelId,
 					logo,
-					channel_id_old: currentEvent?.channel_id,
+					channel_id_old: currentEvent?.channel_id || '0',
 					repeat_type: frequency,
-					clan_id: currentEvent?.clan_id
+					clan_id: currentEvent?.clan_id || '0'
 				})
 			);
 		} else {
 			await createEventManagement(
-				currentClanId || '',
-				channelId,
+				currentClanId || '0',
+				channelId || '0',
 				location,
 				title,
 				timeValueStart,
 				timeValueEnd,
 				description,
 				logo,
-				eventChannelId,
+				eventChannelId || '0',
 				frequency,
 				isPrivate
 			);
@@ -99,7 +99,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 				<EventItem
 					event={{
 						id: '',
-						start_time: startTime.toISOString(),
+						start_time_seconds: Math.floor(startTime.getTime() / 1000),
 						channel_voice_id: channelId,
 						address: location,
 						user_ids: [],

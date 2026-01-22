@@ -10,6 +10,7 @@ export const style = (colors: Attributes) =>
 			paddingHorizontal: size.s_14
 		},
 		header: {
+			backgroundColor: colors.primary,
 			flexDirection: 'row',
 			justifyContent: 'space-between',
 			alignItems: 'center',
@@ -20,7 +21,7 @@ export const style = (colors: Attributes) =>
 			alignSelf: 'center',
 			width: '100%',
 			textAlign: 'center',
-			zIndex: -1,
+			zIndex: 1,
 			color: colors.textStrong,
 			fontSize: size.s_16,
 			fontWeight: 'bold'
@@ -29,7 +30,7 @@ export const style = (colors: Attributes) =>
 			position: 'absolute',
 			alignSelf: 'center',
 			width: '100%',
-			zIndex: -1
+			zIndex: 1
 		},
 		name: {
 			textAlign: 'center',
@@ -40,14 +41,16 @@ export const style = (colors: Attributes) =>
 			alignSelf: 'center'
 		},
 		backButton: {
-			padding: size.s_16
+			padding: size.s_16,
+			zIndex: 2
 		},
 		emptyText: {
 			color: colors.text,
 			textAlign: 'center'
 		},
 		saveButton: {
-			marginRight: size.s_14
+			marginRight: size.s_14,
+			zIndex: 2
 		},
 		saveText: {
 			color: colors.bgViolet,
@@ -109,6 +112,11 @@ export const style = (colors: Attributes) =>
 		},
 		finishButton: {
 			backgroundColor: colors.bgViolet,
+			paddingVertical: size.s_14,
+			borderRadius: size.s_8
+		},
+		buttonDisabled: {
+			backgroundColor: colors.textDisabled,
 			paddingVertical: size.s_14,
 			borderRadius: size.s_8
 		},

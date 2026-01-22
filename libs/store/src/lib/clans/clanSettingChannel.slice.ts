@@ -3,7 +3,7 @@ import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { captureSentryError } from '@mezon/logger';
-import type { ApiChannelSettingItem } from 'mezon-js/dist/api.gen';
+import type { ApiChannelSettingItem } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -268,13 +268,11 @@ export const channelSettingActions = {
 
 export const getChannelSettingState = (rootState: { [SETTING_CLAN_CHANNEL]: SettingClanChannelState }): SettingClanChannelState =>
 	rootState[SETTING_CLAN_CHANNEL];
-const { selectAll, selectEntities, selectById } = channelSettingAdapter.getSelectors();
+const { selectAll, selectById } = channelSettingAdapter.getSelectors();
 export const selectAllChannelSuggestion = createSelector(getChannelSettingState, selectAll);
-export const selectChannelSuggestionEntities = createSelector(getChannelSettingState, selectEntities);
 export const selectOneChannelInfor = (channelId: string) => createSelector(getChannelSettingState, (state) => selectById(state, channelId));
 export const selectThreadsListByParentId = (parentId: string) => createSelector(getChannelSettingState, (state) => state.threadsByChannel[parentId]);
 export const settingChannelReducer = settingClanChannelSlice.reducer;
 export const selectNumberChannelCount = createSelector(getChannelSettingState, (state) => state.channelCount);
-export const selectNumberThreadCount = createSelector(getChannelSettingState, (state) => state.threadCount);
 
 export const selectListChannelBySearch = createSelector(getChannelSettingState, (state) => state.listSearchChannel);

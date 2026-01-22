@@ -2,8 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { EMuteState, type IChannelCategorySetting, type IDefaultNotificationCategory, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiSetNotificationRequest } from 'mezon-js/api.gen';
-import type { ApiNotificationChannelCategorySetting } from 'mezon-js/dist/api.gen';
+import type { ApiNotificationChannelCategorySetting, ApiSetNotificationRequest } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -71,7 +70,7 @@ export const fetchDefaultNotificationCategoryCached = async (
 				category_id: categoryId
 			}
 		},
-		() => mezon.client.getNotificationCategory(mezon.session, categoryId),
+		(session) => mezon.client.getNotificationCategory(session, categoryId),
 		'notificaion_user_channel'
 	);
 
@@ -343,7 +342,7 @@ export const fetchChannelCategorySettingCached = async (getState: () => RootStat
 				clan_id: clanId
 			}
 		},
-		() => mezon.client.getChannelCategoryNotiSettingsList(mezon.session, clanId),
+		(session) => mezon.client.getChannelCategoryNotiSettingsList(session, clanId),
 		'notification_list'
 	);
 
@@ -600,18 +599,11 @@ export const selectDefaultNotificationCategory = createSelector(
 	(state, clanId, categoryId) => state.byClans[clanId]?.categoriesSettings[categoryId]
 );
 
-const { selectAll, selectEntities } = channelCategorySettingAdapter.getSelectors();
+const { selectAll } = channelCategorySettingAdapter.getSelectors();
 
 export const getchannelCategorySettingListState = (rootState: {
 	['notichannelcategorysetting']: ChannelCategorySettingState;
 }): ChannelCategorySettingState => rootState['notichannelcategorysetting'];
-
-export const selectEntiteschannelCategorySetting = createSelector(
-	[getchannelCategorySettingListState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => {
-		return selectEntities(state.byClans[clanId]?.list);
-	}
-);
 
 export const selectAllchannelCategorySetting = createSelector(
 	[getchannelCategorySettingListState, (state: RootState) => state.clans.currentClanId as string],

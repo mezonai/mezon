@@ -36,10 +36,11 @@ type fetchUserClanProfilePayload = {
 
 export const fetchUserClanProfile = createAsyncThunk('userclanProfile/userClanProfile', async ({ clanId }: fetchUserClanProfilePayload, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
-	const response = await withRetry(() => mezon.client.getUserProfileOnClan(mezon.session, clanId), {
+	const response = await withRetry((session) => mezon.client.getUserProfileOnClan(session, clanId), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'user-clan-profile'
+		scope: 'user-clan-profile',
+		mezon
 	});
 	if (!response) {
 		return thunkAPI.rejectWithValue([]);
@@ -170,15 +171,15 @@ export const userClanProfileActions = {
 	updateUserClanProfile
 };
 
-const { selectAll } = userClanProfileAdapter.getSelectors();
+const { selectEntities } = userClanProfileAdapter.getSelectors();
 
 export const getUserClanProfileState = (rootState: { [USER_CLAN_PROFILE_FEATURE_KEY]: UserClanProfileState }): UserClanProfileState =>
 	rootState[USER_CLAN_PROFILE_FEATURE_KEY];
 
-export const selectAllUserClanProfile = createSelector(getUserClanProfileState, selectAll);
+export const selectAllUserClanProfile = createSelector(getUserClanProfileState, selectEntities);
 
 export const selectUserClanProfileByClanID = (clanId: string, userId: string) =>
-	createSelector(selectAllUserClanProfile, (profiles) => profiles.find((pr) => pr.clan_id === clanId && pr.user_id === userId));
+	createSelector(selectAllUserClanProfile, (profiles) => profiles[`${clanId}${userId}`]);
 
 export const selectShowModalFooterProfile = createSelector(getUserClanProfileState, (state) => state.showModalFooterProfile);
 

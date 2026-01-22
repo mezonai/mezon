@@ -133,12 +133,12 @@ const AuditLog = ({ currentClanId }: AuditLogProps) => {
 	}, []);
 
 	return (
-		<div className="mt-[48px] overflow-hidden ">
-			<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-				<h2 className="text-xl text-theme-primary-active font-semibold flex">
+		<div className=" overflow-hidden ">
+			<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center sm:justify-between sbm:mt-[60px] mt-[10px] max-sm:gap-2">
+				<h2 className="text-xl max-sm:text-lg text-theme-primary-active font-semibold flex">
 					<div>{t('title')}</div>
 				</h2>
-				<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center">
+				<div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-center max-sm:gap-2 max-sm:w-full">
 					<div className="relative">
 						<div onClick={handleSearchMemberClick} className="flex items-center gap-3 w-full text-[13px] line-clamp-1 break-all">
 							<div className="max-sm:hidden">{t('filterByUser')}</div>

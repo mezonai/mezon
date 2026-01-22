@@ -36,7 +36,7 @@ import {
 	UPDATE_ERROR
 } from '@mezon/utils';
 import isElectron from 'is-electron';
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, Suspense, useContext, useEffect, useMemo, useState } from 'react';
 import 'react-contexify/ReactContexify.css';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -153,7 +153,9 @@ const AppInitializer = () => {
 				}
 
 				const timestamp =
-					direction === 'before' ? currentAttachments?.[currentAttachments.length - 1]?.create_time : currentAttachments?.[0]?.create_time;
+					direction === 'before'
+						? currentAttachments?.[currentAttachments.length - 1]?.create_time_seconds
+						: currentAttachments?.[0]?.create_time_seconds;
 				const timestampNumber = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
 
 				const clanId = currentClanId === '0' ? '0' : currentClanId;
@@ -361,9 +363,11 @@ function AppWrapper() {
 
 	return (
 		<I18nextProvider i18n={i18n}>
-			<MezonContextProvider mezon={mezon} connect={true}>
-				<App />
-			</MezonContextProvider>
+			<Suspense fallback={<LoadingFallbackWrapper />}>
+				<MezonContextProvider mezon={mezon} connect={true}>
+					<App />
+				</MezonContextProvider>
+			</Suspense>
 		</I18nextProvider>
 	);
 }

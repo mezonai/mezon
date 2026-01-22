@@ -48,7 +48,6 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 			<div
 				className="px-[16px] py-[16px] flex flex-col gap-[16px] overflow-y-auto"
 				style={{
-					backgroundImage: 'url(../../../assets/header-bg-mobile.png)',
 					backgroundRepeat: 'no-repeat',
 					backgroundSize: 'cover',
 					backgroundPosition: 'center',

@@ -139,7 +139,7 @@ export const fetchMaxChannelPermissionCached = async (
 				clan_id: clanId
 			}
 		},
-		() => mezon.client.listUserPermissionInChannel(mezon.session, clanId, channelId),
+		(session) => mezon.client.listUserPermissionInChannel(session, clanId || '0', channelId || '0'),
 		'user_permission_list'
 	);
 
@@ -152,50 +152,75 @@ export const fetchMaxChannelPermissionCached = async (
 	};
 };
 
+const pendingPermissionRequests = new Map<string, Promise<any>>();
+
 export const fetchMaxChannelPermission = createAsyncThunk(
 	`${OVERRIDDEN_POLICIES_FEATURE_KEY}/fetchMaxPermissionRoleChannel`,
 	async ({ clanId, channelId, noCache }: FetchMaxPermissionChannelsArgs, thunkAPI) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await fetchMaxChannelPermissionCached(thunkAPI.getState as () => RootState, mezon, clanId, channelId, Boolean(noCache));
-
-			if (!response) {
-				return thunkAPI.rejectWithValue('Invalid fetchMaxChannelPermission');
+		const requestKey = `${clanId}:${channelId}`;
+		const pendingRequest = pendingPermissionRequests.get(requestKey);
+		if (pendingRequest) {
+			try {
+				return await pendingRequest;
+			} catch (error) {
+				//
 			}
-
-			if (response.fromCache) {
-				return {
-					channelId,
-					channelPermission: response as ChannelPermission,
-					fromCache: true
-				};
-			}
-
-			if (response && 'permissions' in response && response.permissions?.permissions) {
-				const channelPermission: ChannelPermission = {
-					channelId,
-					maxPermissions: response.permissions.permissions.reduce<Record<EOverriddenPermission, ApiPermission>>(
-						(acc: Record<EOverriddenPermission, ApiPermission>, perm: ApiPermission) => {
-							if (perm.slug) {
-								acc[perm.slug as EOverriddenPermission] = perm;
-							}
-							return acc;
-						},
-						{} as Record<EOverriddenPermission, ApiPermission>
-					)
-				};
-
-				return {
-					channelId,
-					channelPermission,
-					fromCache: false
-				};
-			}
-			return thunkAPI.rejectWithValue(null);
-		} catch (error) {
-			captureSentryError(error, 'overriddenPolicies/fetchMaxChannelPermission');
-			return thunkAPI.rejectWithValue(error);
 		}
+		const requestPromise = (async () => {
+			try {
+				const mezon = await ensureSession(getMezonCtx(thunkAPI));
+				const response = await fetchMaxChannelPermissionCached(
+					thunkAPI.getState as () => RootState,
+					mezon,
+					clanId,
+					channelId,
+					Boolean(noCache)
+				);
+
+				if (!response) {
+					return thunkAPI.rejectWithValue('Invalid fetchMaxChannelPermission');
+				}
+
+				if (response.fromCache) {
+					return {
+						channelId,
+						channelPermission: response as ChannelPermission,
+						fromCache: true
+					};
+				}
+
+				if (response && 'permissions' in response && response.permissions?.permissions) {
+					const channelPermission: ChannelPermission = {
+						channelId,
+						maxPermissions: (response.permissions.permissions as ApiPermission[]).reduce(
+							(acc: Record<EOverriddenPermission, ApiPermission>, perm: ApiPermission) => {
+								if (perm.slug) {
+									acc[perm.slug as EOverriddenPermission] = perm;
+								}
+								return acc;
+							},
+							{} as Record<EOverriddenPermission, ApiPermission>
+						)
+					};
+
+					return {
+						channelId,
+						channelPermission,
+						fromCache: false
+					};
+				}
+				return thunkAPI.rejectWithValue(null);
+			} catch (error) {
+				captureSentryError(error, 'overriddenPolicies/fetchMaxChannelPermission');
+				return thunkAPI.rejectWithValue(error);
+			} finally {
+				pendingPermissionRequests.delete(requestKey);
+			}
+		})();
+
+		pendingPermissionRequests.set(requestKey, requestPromise);
+
+		return requestPromise;
 	}
 );
 

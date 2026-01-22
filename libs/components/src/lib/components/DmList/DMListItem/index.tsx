@@ -100,7 +100,7 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			data-e2e={generateE2eId(`chat.direct_message.chat_list`)}
 		>
 			<DmItemProfile
-				avatar={isTypeDMGroup ? directMessage?.channel_avatar || 'assets/images/avatar-group.png' : (directMessage?.avatars?.at(-1) ?? '')}
+				avatar={isTypeDMGroup ? directMessage?.channel_avatar || '/assets/images/avatar-group.png' : (directMessage?.avatars?.at(-1) ?? '')}
 				name={directMessage?.channel_label || ''}
 				number={directMessage?.member_count || 0}
 				isTypeDMGroup={isTypeDMGroup}
@@ -169,7 +169,7 @@ const DmItemProfile = ({
 						{name}
 					</span>
 					<p className="opacity-60 text-theme-primary text-xs text-start">
-						{number} {t('members')}
+						{number} {number === 1 ? t('member') : t('members')}
 					</p>
 				</div>
 			) : (

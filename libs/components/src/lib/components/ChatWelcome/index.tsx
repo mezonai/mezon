@@ -48,8 +48,8 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 	const currentChannelType = useSelector(selectCurrentChannelType);
 	const currentChannelLabel = useSelector(selectCurrentChannelLabel);
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
-	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(directChannel?.channel_id || '')(state));
-	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(directChannel?.channel_id || '')(state));
+	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(directChannel?.channel_id || '0')(state));
+	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(directChannel?.channel_id || '0')(state));
 	const editGroupModal = useEditGroupModal({
 		channelId: directChannel?.channel_id,
 		currentGroupName: name || directChannel?.channel_label || 'Group',
@@ -105,7 +105,7 @@ function ChatWelCome({ name, username, avatarDM, mode, isPrivate }: ChatWelComeP
 							<WelComeDm
 								name={isDmGroup ? name || `${selectedChannel?.creator_name}'s Groups` : name || username}
 								username={username || name}
-								avatar={isDmGroup ? directChannel?.channel_avatar || 'assets/images/avatar-group.png' : avatarDM}
+								avatar={isDmGroup ? directChannel?.channel_avatar || '/assets/images/avatar-group.png' : avatarDM}
 								classNameSubtext={classNameSubtext}
 								isDmGroup={isDmGroup}
 								onEditGroup={isDmGroup ? handleOpenEditModal : undefined}
@@ -256,7 +256,7 @@ const WelComeDm = (props: WelComeDmProps) => {
 					{t('welcome.editGroup')}
 				</button>
 			)}
-			{!isDmGroup && <StatusFriend username={username} checkAddFriend={checkAddFriend} userID={userID[0]} t={t} />}
+			{!isDmGroup && (username || userID?.[0]) && <StatusFriend username={username} checkAddFriend={checkAddFriend} userID={userID[0]} t={t} />}
 			{!isDmGroup && <WaveButtonDM username={username} />}
 		</>
 	);

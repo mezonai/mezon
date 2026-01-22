@@ -62,7 +62,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 			const resultAttach: ApiMessageAttachment & { create_time?: string } = {
 				...attachment,
 				sender_id: message.sender_id,
-				create_time: (attachment as any).create_time || message.create_time
+				create_time: (attachment.create_time_seconds ?? 0) * 1000 || (((message.create_time_seconds ?? 0) * 1000) as any)
 			};
 			images.push(resultAttach);
 			return;
@@ -90,7 +90,9 @@ const Attachments: React.FC<{
 }> = memo(
 	({ attachments, message, onContextMenu, mode, observeIntersectionForLoading, isInSearchMessage, defaultMaxWidth }) => {
 		const classified = useMemo(() => classifyAttachments(attachments, message), [attachments, message]);
+
 		const { videos, images, documents, audio } = classified;
+
 		const { isMobile } = useAppLayout();
 		return (
 			<>
@@ -167,7 +169,7 @@ const ImageAlbum = memo(
 		defaultMaxWidth,
 		isMobile
 	}: {
-		images: (ApiMessageAttachment & { create_time?: string })[];
+		images: ApiMessageAttachment[];
 		message: IMessageWithUser;
 		mode?: ChannelStreamMode;
 		onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
@@ -190,18 +192,23 @@ const ImageAlbum = memo(
 				const attachmentData = attachmentId
 					? images.find((item) => generateAttachmentId(item, message.id) === attachmentId)
 					: images.find((item) => item.url === url);
+
 				if (!attachmentData) return;
+
+				console.log(attachmentData, 'attachmentData');
 
 				const enhancedAttachmentData = {
 					...attachmentData,
-					create_time: attachmentData.create_time || message.create_time || new Date().toISOString()
+					create_time_seconds: attachmentData?.create_time_seconds
+						? attachmentData?.create_time_seconds || message.create_time_seconds
+						: Date.now() / 1000
 				};
 
 				if (isElectron()) {
 					const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
 					const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
 
-					const messageTimestamp = message.create_time ? Math.floor(new Date(message.create_time).getTime() / 1000) : undefined;
+					const messageTimestamp = message.create_time_seconds ? message.create_time_seconds : undefined;
 					const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
 					const data = await dispatch(
 						attachmentActions.fetchChannelAttachments({
@@ -232,8 +239,8 @@ const ImageAlbum = memo(
 								attachmentRes?.filetype?.includes(EMimeTypes.mov)
 						}))
 						.sort((a, b) => {
-							if (a.create_time && b.create_time) {
-								return Date.parse(b.create_time) - Date.parse(a.create_time);
+							if (a.create_time_seconds && b.create_time_seconds) {
+								return b.create_time_seconds - a.create_time_seconds;
 							}
 							return 0;
 						});
@@ -255,7 +262,7 @@ const ImageAlbum = memo(
 								'Anonymous',
 							avatar: (currentImageUploader?.clan_avatar ||
 								currentImageUploader?.user?.avatar_url ||
-								`${window.location.origin}/assets/images/anonymous-avatar.png`) as string
+								`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
 						},
 						realUrl: enhancedAttachmentData.url || '',
 						channelImagesData: {
@@ -297,7 +304,7 @@ const ImageAlbum = memo(
 										'Anonymous',
 									avatar: (currentImageUploader?.clan_avatar ||
 										currentImageUploader?.user?.avatar_url ||
-										`${window.location.origin}/assets/images/anonymous-avatar.png`) as string
+										`${window.location.origin}/assets/images/anonymous-avatar.jpg`) as string
 								},
 								realUrl: enhancedAttachmentData.url || '',
 								channelImagesData
@@ -315,7 +322,7 @@ const ImageAlbum = memo(
 						...enhancedAttachmentData,
 						id: generateAttachmentId(attachmentData, message.id),
 						uploader: enhancedAttachmentData.sender_id || message.sender_id,
-						create_time: enhancedAttachmentData.create_time
+						create_time_seconds: enhancedAttachmentData.create_time_seconds
 					})
 				);
 
@@ -325,7 +332,7 @@ const ImageAlbum = memo(
 				if ((currentClanId && currentChannelId) || currentDmGroupId) {
 					const clanId = currentClanId === '0' ? '0' : (currentClanId as string);
 					const channelId = currentClanId !== '0' ? (currentChannelId as string) : (currentDmGroupId as string);
-					const messageTimestamp = message.create_time ? Math.floor(new Date(message.create_time).getTime() / 1000) : undefined;
+					const messageTimestamp = message.create_time_seconds ? message.create_time_seconds : undefined;
 					const beforeTimestamp = messageTimestamp ? messageTimestamp + 86400 : undefined;
 					dispatch(
 						attachmentActions.fetchChannelAttachments({

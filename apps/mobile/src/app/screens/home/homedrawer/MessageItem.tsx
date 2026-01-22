@@ -6,12 +6,12 @@ import {
 	getStore,
 	getStoreAsync,
 	selectCurrentChannel,
-	selectDmGroupCurrent,
+	selectDmGroupById,
 	selectMemberClanByUserId,
 	setSelectedMessage,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { ETypeLinkMedia, ID_MENTION_HERE, isValidEmojiData, TypeMessage } from '@mezon/utils';
+import { ETypeLinkMedia, ID_MENTION_HERE, TypeMessage, isValidEmojiData } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -25,6 +25,7 @@ import RenderMessageBlock from './RenderMessageBlock';
 import WelcomeMessage from './WelcomeMessage';
 import { AvatarMessage } from './components/AvatarMessage';
 import ButtonGotoTopic from './components/ButtonGotoTopic/ButtonGotoTopic';
+import { ContactMessageCard, type IContactData } from './components/ContactMessageCard';
 import { EmbedComponentsPanel } from './components/EmbedComponents';
 import { EmbedMessage } from './components/EmbedMessage';
 import { InfoUserMessage } from './components/InfoUserMessage';
@@ -226,6 +227,18 @@ const MessageItem = React.memo(
 
 		const isSendTokenLog = useMemo(() => message?.code === TypeMessage.SendToken, [message?.code]);
 
+		const contactData = useMemo((): IContactData | null => {
+			const embed = message?.content?.embed?.[0];
+			if (message?.code !== TypeMessage.ShareContact && embed?.fields?.[0]?.value !== 'share_contact') return null;
+
+			return {
+				user_id: embed?.fields?.[1]?.value || '',
+				username: embed?.fields?.[2]?.value || '',
+				display_name: embed?.fields?.[3]?.value || '',
+				avatar: embed?.fields?.[4]?.value || ''
+			};
+		}, [message?.content?.embed?.[0], message?.code]);
+
 		const onLongPressImage = useCallback(
 			(image?: ApiMessageAttachment) => {
 				if (preventAction) return;
@@ -252,7 +265,7 @@ const MessageItem = React.memo(
 				const store = await getStoreAsync();
 				let currentChannel;
 				if (isDM) {
-					currentChannel = selectDmGroupCurrent(channelId ?? '')?.(store.getState());
+					currentChannel = selectDmGroupById(store.getState(), channelId ?? '');
 				} else {
 					currentChannel = selectCurrentChannel(store.getState() as any);
 				}
@@ -372,7 +385,7 @@ const MessageItem = React.memo(
 									onLongPress={handleLongPressMessage}
 									senderDisplayName={senderDisplayName}
 									isShow={!isCombine || !!message?.references?.length || showUserInformation}
-									createTime={message?.create_time_seconds}
+									createTime={message?.create_time_seconds || message?.create_time}
 									messageSenderId={message?.sender_id}
 									mode={mode}
 								/>
@@ -425,14 +438,23 @@ const MessageItem = React.memo(
 											/>
 										) : null}
 										{!!message?.content?.embed?.length &&
-											message?.content?.embed?.map((embed, index) => (
-												<EmbedMessage
-													message_id={message?.id}
-													channel_id={message?.channel_id}
-													embed={embed}
-													key={`message_embed_${message?.id}_${index}`}
+											(contactData ? (
+												<ContactMessageCard
+													key={`message_contact_${message?.id}`}
+													data={contactData}
 													onLongPress={handleLongPressMessage}
+													showUserProfileGroup={mode === ChannelStreamMode.STREAM_MODE_GROUP}
 												/>
+											) : (
+												message?.content?.embed?.map((embed, index) => (
+													<EmbedMessage
+														message_id={message?.id}
+														channel_id={message?.channel_id}
+														embed={embed}
+														key={`message_embed_${message?.id}_${index}`}
+														onLongPress={handleLongPressMessage}
+													/>
+												))
 											))}
 										{!!message?.content?.components?.length &&
 											message?.content.components?.map((component, index) => (
@@ -441,7 +463,7 @@ const MessageItem = React.memo(
 													actionRow={component}
 													messageId={message?.id}
 													senderId={message?.sender_id}
-													channelId={message?.channel_id || ''}
+													channelId={message?.channel_id || '0'}
 												/>
 											))}
 									</View>
@@ -518,6 +540,8 @@ const MessageItem = React.memo(
 				prevProps?.message?.content?.t +
 				prevProps?.message?.attachments?.length +
 				prevProps?.message?.references?.[0]?.content +
+				prevProps?.message?.isError +
+				prevProps?.message?.isErrorRetry +
 				prevProps?.preventAction ===
 			nextProps?.message?.id +
 				nextProps?.message?.update_time_seconds +
@@ -528,6 +552,8 @@ const MessageItem = React.memo(
 				nextProps?.message?.content?.t +
 				nextProps?.message?.attachments?.length +
 				nextProps?.message?.references?.[0]?.content +
+				nextProps?.message?.isError +
+				nextProps?.message?.isErrorRetry +
 				nextProps?.preventAction
 		);
 	}

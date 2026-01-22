@@ -24,10 +24,6 @@ export interface FriendsEntity extends ApiFriend {
 	id: string;
 }
 
-interface IStatusSentMobile {
-	isSuccess: boolean;
-}
-
 export enum EStateFriend {
 	FRIEND = 0,
 	OTHER_PENDING = 1,
@@ -63,7 +59,6 @@ export interface FriendsState extends EntityState<FriendsEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	currentTabStatus: string;
-	statusSentMobile: IStatusSentMobile | null;
 	cache?: CacheMetadata;
 }
 
@@ -106,7 +101,7 @@ export const fetchListFriendsCached = async (
 			api_name: 'ListFriends',
 			list_friend_req: {}
 		},
-		() => ensuredMezon.client.listFriends(ensuredMezon.session),
+		(session) => ensuredMezon.client.listFriends(session),
 		'friend_list'
 	);
 
@@ -140,48 +135,52 @@ export type requestAddFriendParam = {
 	ids?: string[];
 	usernames?: string[];
 	isAcceptingRequest?: boolean;
+	isMobile?: boolean;
 };
 
 export const sendRequestAddFriend = createAsyncThunk(
 	'friends/requestFriends',
-	async ({ ids, usernames, isAcceptingRequest }: requestAddFriendParam, thunkAPI) => {
-		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const state = thunkAPI.getState() as RootState;
-		const currentUserId = state.account?.userProfile?.user?.id;
-		await mezon.client
-			.addFriends(mezon.session, ids, usernames)
+	async ({ ids, usernames, isAcceptingRequest, isMobile = false }: requestAddFriendParam, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const state = thunkAPI.getState() as RootState;
+			const currentUserId = state.account?.userProfile?.user?.id;
+			const response = await mezon.client.addFriends(mezon.session, ids, usernames);
 
-			.catch(function (err) {
-				err.json().then((data: any) => {
-					thunkAPI.dispatch(
-						friendsActions.setSentStatusMobile({
-							isSuccess: false
-						})
-					);
-					toast.error(i18n.t('friends:toast.sendAddFriendFail'));
-				});
-			})
-			.then((data) => {
-				if (data) {
-					if (!isAcceptingRequest && data?.ids) {
+			if (response) {
+				if (response?.ids?.[0] && response.ids[0] !== '0') {
+					if (!isAcceptingRequest) {
 						thunkAPI.dispatch(
 							friendsActions.upsertFriend({
-								id: data?.ids?.[0] || '',
+								id: response?.ids?.[0] || '',
 								source_id: currentUserId,
 								state: EStateFriend.OTHER_PENDING,
 								user: {
 									username: usernames?.[0],
-									id: data?.ids?.[0]
+									id: response?.ids?.[0]
 								}
 							})
 						);
-						toast.success(i18n.t('friends:toast.sendAddFriendSuccess'));
+						if (!isMobile) {
+							toast.success(i18n.t('friends:toast.sendAddFriendSuccess'));
+						}
 					} else {
 						thunkAPI.dispatch(friendsActions.acceptFriend(`${ids?.[0]}`));
-						toast.success(i18n.t('friends:toast.acceptAddFriendSuccess'));
+						if (!isMobile) {
+							toast.success(i18n.t('friends:toast.acceptAddFriendSuccess'));
+						}
 					}
+				} else if (response?.ids?.[0] === '0' && !isAcceptingRequest && !isMobile) {
+					toast.error(i18n.t('friends:toast.sendAddFriendFail'));
 				}
-			});
+
+				if (isMobile) return response;
+			}
+		} catch (err: any) {
+			if (!isMobile) {
+				toast.error(i18n.t('friends:toast.sendAddFriendFail'));
+			}
+		}
 	}
 );
 
@@ -243,7 +242,6 @@ export const initialFriendsState: FriendsState = friendsAdapter.getInitialState(
 	friends: [],
 	error: null,
 	currentTabStatus: 'all',
-	statusSentMobile: null,
 	cache: undefined
 });
 
@@ -271,9 +269,6 @@ export const friendsSlice = createSlice({
 		},
 		changeCurrentStatusTab: (state, action: PayloadAction<string>) => {
 			state.currentTabStatus = action.payload;
-		},
-		setSentStatusMobile: (state, action: PayloadAction<IStatusSentMobile | null>) => {
-			state.statusSentMobile = action.payload;
 		},
 		setManyStatusUser: (state, action: PayloadAction<StatusUserArgs[]>) => {
 			action.payload.forEach((statusUser) => {
@@ -368,7 +363,6 @@ const { selectAll, selectById, selectEntities } = friendsAdapter.getSelectors();
 export const getFriendsState = (FriendState: { [FRIEND_FEATURE_KEY]: FriendsState }): FriendsState => FriendState[FRIEND_FEATURE_KEY];
 export const selectAllFriends = createSelector(getFriendsState, selectAll);
 export const selectFriendsEntities = createSelector(getFriendsState, selectEntities);
-export const selectStatusSentMobile = createSelector(getFriendsState, (state) => state.statusSentMobile);
 export const selectFriendStatus = (userId: string) =>
 	createSelector(getFriendsState, (state) => {
 		const friends = selectAll(state);
@@ -383,3 +377,4 @@ export const selectBlockedUsersForMessage = createSelector([selectAllFriends], (
 );
 export const selectFriendById = createSelector([getFriendsState, (state, userId: string) => userId], (state, userId) => selectById(state, userId));
 export const selectCurrentTabStatus = createSelector(getFriendsState, (state) => state.currentTabStatus);
+export const selectLoadingStatusFriend = createSelector(getFriendsState, (state) => state.loadingStatus);

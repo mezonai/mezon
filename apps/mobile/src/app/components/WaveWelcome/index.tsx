@@ -1,6 +1,6 @@
 import { useChatSending } from '@mezon/core';
 import { useTheme } from '@mezon/mobile-ui';
-import { selectCurrentChannel, selectDmGroupCurrent } from '@mezon/store-mobile';
+import { selectCurrentChannel, selectDmGroupById } from '@mezon/store-mobile';
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
 import { MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME, createImgproxyUrl } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -19,7 +19,7 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 	const styles = style(themeValue);
 	const { t } = useTranslation('dmMessage');
 	const currenChannel = useSelector(selectCurrentChannel);
-	const currentDmGroup = useSelector(selectDmGroupCurrent(message?.channel_id ?? ''));
+	const currentDmGroup = useSelector((state) => selectDmGroupById(state, message?.channel_id ?? ''));
 
 	const isDM = useMemo(() => {
 		return currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM;
@@ -56,17 +56,17 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 				? []
 				: [
 						{
-							message_id: '',
-							message_ref_id: message?.id,
+							message_id: '0',
+							message_ref_id: message?.id || '0',
 							ref_type: 0,
-							message_sender_id: message?.sender_id,
+							message_sender_id: message?.sender_id || '0',
 							message_sender_username: WAVE_SENDER_NAME,
 							mesages_sender_avatar: MEZON_AVATAR_URL,
 							message_sender_clan_nick: WAVE_SENDER_NAME,
 							message_sender_display_name: WAVE_SENDER_NAME,
 							content: JSON.stringify(message?.content),
 							has_attachment: false,
-							channel_id: message?.channel_id ?? '',
+							channel_id: message?.channel_id ?? '0',
 							mode: message?.mode ?? 0,
 							channel_label: message?.channel_label
 						}

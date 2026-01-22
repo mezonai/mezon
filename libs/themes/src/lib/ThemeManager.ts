@@ -10,55 +10,55 @@ export const AVAILABLE_THEMES: ThemeConfig[] = [
 		name: 'dark',
 		displayName: 'Dark Theme',
 		color: '#26272B',
-		cssFile: 'assets/themes/dark.css'
+		cssFile: '/assets/themes/dark.css'
 	},
 	{
 		name: 'light',
 		displayName: 'Light Theme',
 		color: '#FFFFFF',
-		cssFile: 'assets/themes/light.css'
+		cssFile: '/assets/themes/light.css'
 	},
 	{
 		name: 'sunrise',
 		displayName: 'Sunrise Theme',
 		color: 'linear-gradient(135deg, #e0c3fc, #fbc2eb, #fcd5ce, #fff1eb)',
-		cssFile: 'assets/themes/sunrise.css'
+		cssFile: '/assets/themes/sunrise.css'
 	},
 	{
 		name: 'purple_haze',
 		displayName: 'Purple Haze',
 		color: 'linear-gradient(135deg, #a78bfa, #f472b6, #60a5fa)',
-		cssFile: 'assets/themes/purple_haze.css'
+		cssFile: '/assets/themes/purple_haze.css'
 	},
 	{
 		name: 'redDark',
 		displayName: 'Red Dark',
 		color: 'linear-gradient(135deg, #3b0a0a, #7f1d1d, #e11d48)',
-		cssFile: 'assets/themes/redDark.css'
+		cssFile: '/assets/themes/redDark.css'
 	},
 	{
 		name: 'abyss_dark',
 		displayName: 'Abyss Dark',
 		color: 'linear-gradient(135deg, #0f172a, #1e3a8a, #6d28d9)',
-		cssFile: 'assets/themes/abyss_dark_.css'
+		cssFile: '/assets/themes/abyss_dark_.css'
 	},
 	{
 		name: 'berrynade',
 		displayName: 'Berry nade',
 		color: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), linear-gradient(161.03deg, rgb(175, 26, 108) 18.79%, rgb(194, 107, 32) 49.76%, rgb(231, 165, 37) 80.72%)',
-		cssFile: 'assets/themes/berrynade.css'
+		cssFile: '/assets/themes/berrynade.css'
 	},
 	{
 		name: 'cisher',
 		displayName: 'Cisher',
 		color: 'linear-gradient(rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.65)), linear-gradient(rgb(243, 179, 54) 31.1%, rgb(238, 133, 88) 67.09%)',
-		cssFile: 'assets/themes/cisher.css'
+		cssFile: '/assets/themes/cisher.css'
 	},
 	{
 		name: 'sunset',
 		displayName: 'Sunset',
 		color: 'linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), linear-gradient(141.68deg, rgb(72, 40, 140) 27.57%, rgb(219, 127, 75) 71.25%)',
-		cssFile: 'assets/themes/sunset.css'
+		cssFile: '/assets/themes/sunset.css'
 	}
 ];
 

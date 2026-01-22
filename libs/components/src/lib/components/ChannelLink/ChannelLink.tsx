@@ -110,7 +110,7 @@ const ChannelLinkComponent = ({
 
 		await dispatch(
 			notificationSettingActions.getNotificationSetting({
-				channelId: channel.channel_id || '',
+				channelId: channel.channel_id || '0',
 				isCurrentChannel: isActive
 			})
 		);

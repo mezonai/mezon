@@ -1,10 +1,13 @@
 import { useMemberStatus } from '@mezon/core';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import type { EventManagementEntity } from '@mezon/store-mobile';
 import { selectEventById, selectMemberClanByUserId, useAppSelector } from '@mezon/store-mobile';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../constants/icon_cdn';
 import { style } from './styles';
 
 interface IEventMemberProps {
@@ -41,6 +44,19 @@ export function EventMember({ event }: IEventMemberProps) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const currentEvent = useAppSelector((state) => selectEventById(state, event?.clan_id ?? '', event?.id ?? ''));
+	const { t } = useTranslation('eventMenu');
 
-	return <View style={styles.container}>{currentEvent?.user_ids?.map((uid, index) => <Avatar key={uid} id={uid} index={index} />)}</View>;
+	const eventMemberIds = useMemo(() => {
+		return currentEvent?.user_ids?.filter((id) => !!id && id !== '0') || [];
+	}, [currentEvent?.user_ids]);
+
+	if (!eventMemberIds?.length)
+		return (
+			<View style={styles.emptyScreen}>
+				<MezonIconCDN icon={IconCDN.peopleIcon} height={size.s_24} width={size.s_24} color={themeValue.textDisabled} />
+				<Text style={styles.emptyText}>{t('detail.noOneInterested')}</Text>
+			</View>
+		);
+
+	return <View style={styles.container}>{eventMemberIds?.map((uid, index) => <Avatar key={uid} id={uid} index={index} />)}</View>;
 }

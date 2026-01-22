@@ -104,21 +104,20 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 			<div className="mx-2 flex justify-center h-[400px] overflow-y-scroll hide-scrollbar flex-wrap">
 				<div className="grid grid-cols-3  gap-1">
 					{dataToRenderGifs &&
-						dataToRenderGifs.map((gif: any, index: number) => (
-							<div
-								key={gif.id}
-								className={`order-${index} overflow-hidden cursor-pointer flex items-center justify-center bg-bgIconLight rounded-lg`}
-								onClick={() => handleClickGif(gif.media_formats.gif.url)}
-								role="button"
-								data-e2e={generateE2eId('mention.popover.gifs.item')}
-							>
-								<img
-									src={gif.media_formats.gif.url}
-									alt={gif.media_formats.gif.url}
-									className="w-full h-auto object-contain max-h-full"
-								/>
-							</div>
-						))}
+						dataToRenderGifs.map((gif: any, index: number) => {
+							const gifUrl = gif.media_formats?.gif?.url || '';
+							return (
+								<div
+									key={gif.id}
+									className={`order-${index} overflow-hidden cursor-pointer flex items-center justify-center bg-bgIconLight rounded-lg`}
+									onClick={() => handleClickGif(gifUrl)}
+									role="button"
+									data-e2e={generateE2eId('mention.popover.gifs.item')}
+								>
+									<img src={gifUrl} alt={gifUrl} className="w-full h-auto object-contain max-h-full" />
+								</div>
+							);
+						})}
 				</div>
 			</div>
 		);

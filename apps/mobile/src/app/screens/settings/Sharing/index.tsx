@@ -82,6 +82,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	const listDM = useSelector(selectDirectsOpenlist);
 	const topUserSuggestion = useRef(useSelector((state: any) => selectDirectById(state, topUserSuggestionId)));
 	const listChannels = useRef(useSelector(selectAllChannelsByUser));
+	const listSuggestionRef = useRef<FlatList<any> | null>(null);
 	const clans = useRef(useSelector(selectClansEntities));
 	const listBlockUsers = useSelector(selectBlockedUsersForMessage);
 	const { handleReconnect } = useContext(ChatContext);
@@ -143,6 +144,11 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 
 	const handleSearchResults = useCallback((results: any[]) => {
 		setDataShareTo(results);
+		requestAnimationFrame(() => {
+			if (listSuggestionRef?.current) {
+				listSuggestionRef.current.scrollToOffset({ offset: 0, animated: false });
+			}
+		});
 	}, []);
 
 	const handleChannelSelection = useCallback((channel: any) => {
@@ -170,7 +176,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 			await store.dispatch(
 				channelsActions.joinChat({
 					clanId: '0',
-					channelId: channelSelected?.channel_id || '',
+					channelId: channelSelected?.channel_id || '0',
 					channelType: channelSelected?.type,
 					isPublic: false
 				})
@@ -519,13 +525,13 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 					onSearchResults={handleSearchResults}
 					onChannelSelected={handleChannelSelection}
 					selectedChannel={channelSelected}
-					placeholder={t('selectChannelPlaceholder')}
 				/>
 
 				<View style={styles.container}>
 					<View>
 						<Text style={styles.title}>{t('suggestions')}</Text>
 						<FlatList
+							ref={listSuggestionRef}
 							data={dataShareTo?.length ? dataShareTo : []}
 							keyExtractor={(item, index) => `${item?.id}_${index}_suggestion`}
 							renderItem={renderItemSuggest}

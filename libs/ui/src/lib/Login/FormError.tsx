@@ -1,5 +1,5 @@
-import { Icons } from '@mezon/ui';
 import { memo } from 'react';
+import { Icons } from '../Icons';
 
 interface FormErrorProps {
 	message: string;

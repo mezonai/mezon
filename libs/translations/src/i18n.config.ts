@@ -1,19 +1,10 @@
 import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import Backend from 'i18next-http-backend';
 import { initReactI18next } from 'react-i18next';
-import * as languages from './languages';
+import enTranslations from './languages/en/index';
+import viTranslations from './languages/vi/index';
 
-const ns = Object.keys(Object.values(languages)[0]);
-export const defaultNS = ns[0];
-
-const resources = Object.entries(languages).reduce(
-	(acc, [key, value]) => ({
-		...acc,
-		[key]: value
-	}),
-	{}
-);
+export const defaultNS = 'common';
 
 const timezoneDetector = {
 	name: 'timezone',
@@ -48,33 +39,30 @@ const timezoneDetector = {
 const languageDetector = new LanguageDetector();
 languageDetector.addDetector(timezoneDetector);
 
-i18n.use(Backend)
-	.use(languageDetector)
+i18n.use(languageDetector)
 	.use(initReactI18next)
 	.init({
-		ns,
 		defaultNS,
-		resources: {
-			...Object.entries(resources).reduce(
-				(acc, [key, value]) => ({
-					...acc,
-					[key]: value
-				}),
-				{}
-			)
-		},
 		fallbackLng: 'en',
 		supportedLngs: ['en', 'vi'],
+		resources: {
+			en: enTranslations,
+			vi: viTranslations
+		},
 		detection: {
 			order: ['timezone', 'localStorage', 'navigator', 'htmlTag'],
 			lookupLocalStorage: 'i18nextLng',
 			caches: ['localStorage']
 		},
+		load: 'currentOnly',
 		debug: false,
 		interpolation: {
 			escapeValue: false
 		},
-		compatibilityJSON: 'v3'
+		compatibilityJSON: 'v3',
+		react: {
+			useSuspense: false
+		}
 	});
 
 export default i18n;

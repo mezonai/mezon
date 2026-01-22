@@ -2,6 +2,7 @@ import type { ChannelDescription, ChannelMessage, ChannelStreamMode, ChannelType
 import { NotificationType } from 'mezon-js';
 import type {
 	ApiAccount,
+	ApiAllUsersAddChannelResponse,
 	ApiCategoryDesc,
 	ApiChannelAppResponse,
 	ApiChannelAttachment,
@@ -15,10 +16,13 @@ import type {
 	ApiMessageMention,
 	ApiMessageReaction,
 	ApiMessageRef,
+	ApiNotifiReactMessage,
 	ApiNotification,
+	ApiNotificationChannelCategorySetting,
 	ApiNotificationSetting,
 	ApiNotificationUserChannel,
 	ApiPermission,
+	ApiPermissionRoleChannel,
 	ApiPinMessage,
 	ApiRole,
 	ApiSearchMessageDocument,
@@ -27,12 +31,6 @@ import type {
 	ClanUserListClanUser,
 	RoleUserListRoleUser
 } from 'mezon-js/api.gen';
-import type {
-	ApiAllUsersAddChannelResponse,
-	ApiNotifiReactMessage,
-	ApiNotificationChannelCategorySetting,
-	ApiPermissionRoleChannel
-} from 'mezon-js/dist/api.gen';
 import type { HTMLInputTypeAttribute } from 'react';
 import type { ILongPressType } from '../hooks';
 import type { CanvasDataResponse } from './htmlCanvas';
@@ -67,6 +65,7 @@ export type IClan = ApiClanDesc & {
 
 export type IChannelAttachment = ApiChannelAttachment & {
 	id: string;
+	create_time?: string;
 };
 
 export type IInvite = ApiInviteUserRes & {
@@ -845,10 +844,10 @@ export enum MentionTypeEnum {
 
 export type ContenSubmitEventProps = {
 	topic: string;
-	timeStart: string;
-	timeEnd: string;
-	selectedDateStart: Date;
-	selectedDateEnd: Date;
+	timeStart: number;
+	timeEnd: number;
+	selectedDateStart: number;
+	selectedDateEnd: number;
 	voiceChannel: string;
 	logo: string;
 	description: string;
@@ -1191,7 +1190,9 @@ export enum TypeMessage {
 	Ephemeral = 12,
 	UpcomingEvent = 13,
 	UpdateEphemeralMsg = 14,
-	DeleteEphemeralMsg = 15
+	DeleteEphemeralMsg = 15,
+	ShareContact = 16,
+	Location = 17
 }
 
 export enum ServerSettingsMenuValue {
@@ -1481,6 +1482,7 @@ export interface IAttachmentEntity extends ApiChannelAttachment {
 	channelId?: string;
 	clanId?: string;
 	isVideo?: boolean;
+	create_time?: string;
 }
 
 export interface IAttachmentEntityWithUploader extends IAttachmentEntity {

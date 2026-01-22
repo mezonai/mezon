@@ -3,8 +3,15 @@ import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezo
 import { getMobileUploadedAttachments, getWebUploadedAttachments } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelMessage, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic } from 'mezon-js/api.gen';
-import type { ApiChannelMessageHeader, ApiSdTopicRequest } from 'mezon-js/dist/api.gen';
+import type { ChannelMessage } from 'mezon-js';
+import type {
+	ApiChannelMessageHeader,
+	ApiMessageAttachment,
+	ApiMessageMention,
+	ApiMessageRef,
+	ApiSdTopic,
+	ApiSdTopicRequest
+} from 'mezon-js/api.gen';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { selectMessageEntitiesByChannelId } from '../messages/messages.slice';
@@ -29,7 +36,7 @@ export interface TopicDiscussionsState extends EntityState<TopicDiscussionsEntit
 	openTopicMessageState: boolean;
 	currentTopicId?: string;
 	initTopicMessageId?: string;
-	firstMessageTopic?: ApiChannelMessage;
+	firstMessageTopic?: ChannelMessage;
 	isFocusTopicBox: boolean;
 	channelTopics: Record<string, string>;
 	clanTopics: Record<string, EntityState<TopicDiscussionsEntity, string>>;
@@ -286,7 +293,7 @@ export const topicsSlice = createSlice({
 			.addCase(getFirstMessageOfTopic.fulfilled, (state: TopicDiscussionsState, action) => {
 				const { data, isMobile } = action.payload;
 				const { message, message_id } = data || {};
-				state.initTopicMessageId = message_id || '';
+				state.initTopicMessageId = message_id || '0';
 				if (message && isMobile) {
 					state.firstMessageTopic = message;
 				}
@@ -344,8 +351,6 @@ export const selectAllTopics = createSelector([getTopicsState, (state: RootState
 export const selectMessageTopicError = createSelector(getTopicsState, (state) => state.messageTopicError);
 
 export const selectCurrentTopicInitMessage = createSelector(getTopicsState, (state) => state.currentTopicInitMessage);
-
-export const selectOpenTopicMessageState = createSelector(getTopicsState, (state: TopicDiscussionsState) => state.openTopicMessageState);
 
 export const selectCurrentTopicId = createSelector(getTopicsState, (state: TopicDiscussionsState) => state.currentTopicId);
 

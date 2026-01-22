@@ -6,6 +6,7 @@ import {
 	directActions,
 	emojiRecentActions,
 	emojiSuggestionActions,
+	fcmActions,
 	friendsActions,
 	getStore,
 	listChannelsByUserActions,
@@ -17,6 +18,7 @@ import {
 	walletActions
 } from '@mezon/store';
 import type { IWithError } from '@mezon/utils';
+import { notificationService } from '@mezon/utils';
 import type { CustomLoaderFunction } from './appLoader';
 import { waitForSocketConnection } from './socketUtils';
 
@@ -42,6 +44,18 @@ function getRedirectTo(initialPath?: string): string {
 
 let connectionCheckPromise: Promise<void> | null = null;
 let isCheckingConnection = false;
+
+const connectNotification = async (dispatch: AppDispatch) => {
+	try {
+		const response = await dispatch(fcmActions.connectNotificationService());
+		if (response.payload && typeof response.payload === 'object' && 'token' in response.payload) {
+			const { token, userId } = response.payload as { token: string; userId: string };
+			notificationService.connect(token, userId);
+		}
+	} catch (error) {
+		console.error('Failed to connect notification service:', error);
+	}
+};
 
 const waitForInternetConnection = async (delayMs: number): Promise<void> => {
 	const hasConnection = await checkInternetConnection();
@@ -84,7 +98,7 @@ const handleLogoutWithRedirect = (dispatch: AppDispatch, initialPath: string): I
 
 async function checkInternetConnection() {
 	try {
-		const response = await fetch('https://mezon.ai/assets/favicon.ico', {
+		const response = await fetch(`${window.origin}/favicon.ico`, {
 			method: 'HEAD',
 			cache: 'no-cache'
 		});
@@ -94,11 +108,11 @@ async function checkInternetConnection() {
 	}
 }
 
-const isServerError500 = (errorPayload: any): boolean => {
-	if (errorPayload && typeof errorPayload === 'object' && 'status' in errorPayload && errorPayload.status === 500) {
+const isUnauthorizedError = (errorPayload: any): boolean => {
+	if (errorPayload && typeof errorPayload === 'object' && 'status' in errorPayload && errorPayload.status === 401) {
 		return true;
 	}
-	if (errorPayload instanceof Response && errorPayload.status === 500) {
+	if (errorPayload instanceof Response && errorPayload.status === 401) {
 		return true;
 	}
 	return false;
@@ -125,8 +139,8 @@ const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch
 
 			if ((response as unknown as IWithError).error) {
 				const errorPayload = response.payload;
-				if (isServerError500(errorPayload)) {
-					console.error('Server error (500), logging out immediately');
+				if (isUnauthorizedError(errorPayload)) {
+					console.error('Unauthorized (401), logging out immediately');
 					return handleLogoutWithRedirect(dispatch, initialPath);
 				}
 
@@ -184,6 +198,8 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(directActions.fetchDirectMessage({}));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
+
+	connectNotification(dispatch);
 	// check network not connect
 	if (!navigator.onLine) {
 		const splashScreen = document.getElementById('splash-screen');

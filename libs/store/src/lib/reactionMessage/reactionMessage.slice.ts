@@ -165,19 +165,19 @@ export const writeMessageReaction = createAsyncThunk(
 					async () => {
 						return await createTimeoutPromise(
 							socket.writeMessageReaction(
-								id,
-								clanId,
+								id || '0',
+								clanId || '0',
 								channelId,
 								mode,
 								isPublic,
 								messageId,
-								emoji_id,
+								emoji_id || '0',
 								emoji,
 								count,
 								messageSenderId,
 								actionDelete,
-								topic_id,
-								emoji_recent_id,
+								topic_id || '0',
+								emoji_recent_id || '0',
 								sender_name
 							),
 							2000,
@@ -245,7 +245,10 @@ export const reactionSlice = createSlice({
 });
 function saveRecentEmoji(emojiLastest: EmojiStorage) {
 	const storedEmojis = localStorage.getItem('recentEmojis');
-	const emojisRecentParse = storedEmojis ? safeJSONParse(storedEmojis) : [];
+	let emojisRecentParse = storedEmojis ? safeJSONParse(storedEmojis) : [];
+	if (!Array.isArray(emojisRecentParse)) {
+		emojisRecentParse = [];
+	}
 
 	if (emojisRecentParse.length > 0) {
 		const lastEmoji = emojisRecentParse[emojisRecentParse.length - 1];

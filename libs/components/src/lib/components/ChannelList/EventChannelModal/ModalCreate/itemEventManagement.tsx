@@ -13,7 +13,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EEventStatus, EPermission, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { EEventStatus, EPermission, ONE_MINUTE_MS, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
 import type { ApiUserEventRequest } from 'mezon-js/api.gen';
@@ -40,7 +40,7 @@ export type ItemEventManagementProps = {
 	address?: string;
 	logo?: string;
 	logoRight?: string;
-	start: string;
+	start?: string;
 	end?: string;
 	event?: EventManagementEntity;
 	createTime?: string;
@@ -76,7 +76,6 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const { t, i18n } = useTranslation(['eventMenu', 'eventCreator']);
 	const dispatch = useAppDispatch();
 
-	// Create i18n-aware time formatter
 	const formatTimeI18n = useMemo(() => createI18nTimeFormatter(i18n.language), [i18n.language]);
 	const channelFirst = useSelector(selectChannelFirst);
 	const channelVoice = useAppSelector((state) => selectChannelById(state, voiceChannel ?? '')) || {};
@@ -101,20 +100,20 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const eventIsOngoing = event?.event_status === EEventStatus.ONGOING;
 
 	const actualEventStatus = useMemo(() => {
-		if (!event?.start_time) return { isUpcoming: eventIsUpcomming, isOngoing: eventIsOngoing };
+		if (!event?.start_time_seconds) return { isUpcoming: eventIsUpcomming, isOngoing: eventIsOngoing };
 
-		const startTime = new Date(event.start_time).getTime();
+		const startTime = event.start_time_seconds * 1000;
 		const currentTime = Date.now();
-		const endTime = event.end_time ? new Date(event.end_time).getTime() : startTime + 2 * 60 * 60 * 1000;
+		const endTime = event.end_time_seconds ? event.end_time_seconds * 1000 : startTime + 2 * 60 * 60 * 1000;
 
-		const isActuallyUpcoming = currentTime < startTime;
+		const isActuallyUpcoming = (startTime - currentTime) / ONE_MINUTE_MS <= 10;
 		const isActuallyOngoing = currentTime >= startTime && currentTime <= endTime;
 
 		return {
 			isUpcoming: isActuallyUpcoming,
 			isOngoing: isActuallyOngoing
 		};
-	}, [event?.start_time, event?.end_time, eventIsUpcomming, eventIsOngoing]);
+	}, [event?.start_time_seconds, event?.end_time_seconds, eventIsUpcomming, eventIsOngoing]);
 
 	const externalLink = event?.meet_room?.external_link || getPrivateMeetingRoom?.external_link;
 	const hasLink = Boolean(externalLink);
@@ -161,18 +160,18 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	const panelRef = useRef(null);
 	useOnClickOutside(panelRef, () => setOpenPanel(false));
 	const timeUntilEvent = useMemo(() => {
-		if (!event?.start_time || !actualEventStatus.isUpcoming) return null;
+		if (!event?.start_time_seconds || !actualEventStatus.isUpcoming) return null;
 
-		const startTime = new Date(event.start_time).getTime();
+		const startTime = event.start_time_seconds * 1000;
 		const currentTime = Date.now();
 		const timeDiff = startTime - currentTime;
-		const minutesLeft = Math.ceil(timeDiff / (1000 * 60));
+		const minutesLeft = Math.ceil(timeDiff / ONE_MINUTE_MS);
 		if (minutesLeft <= 10 && minutesLeft > 0) {
 			return minutesLeft === 1 ? t('countdown.joinIn_one') : t('countdown.joinIn_other', { count: minutesLeft });
 		}
 
 		return null;
-	}, [event?.start_time, actualEventStatus.isUpcoming, t]);
+	}, [event?.start_time_seconds, actualEventStatus.isUpcoming, t]);
 
 	const cssEventStatus = useMemo(() => {
 		if (actualEventStatus.isOngoing) return 'text-green-500';
@@ -224,6 +223,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		setIsInterested(!isInterested);
 	};
 
+	const displayLabel = useMemo(() => {
+		if (actualEventStatus.isOngoing) return t('countdown.joinNow');
+		if (actualEventStatus.isUpcoming) return timeUntilEvent;
+		return start || formatTimeI18n(new Date((event?.start_time_seconds || 0) * 1000).toISOString());
+	}, [actualEventStatus.isUpcoming, actualEventStatus.isOngoing, timeUntilEvent, start, event?.start_time_seconds, t]);
+
 	return (
 		<div className="rounded-lg overflow-hidden bg-theme-setting-nav border-theme-primary" ref={panelRef}>
 			{logo && <img src={logo} alt="logo" className="w-full max-h-[180px] object-cover" />}
@@ -232,11 +237,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					<div className="flex items-center gap-x-2 mb-4">
 						<Icons.IconEvents defaultSize={`font-semibold ${cssEventStatus}`} />
 						<p className={`font-semibold ${cssEventStatus}`} data-e2e={generateE2eId('clan_page.modal.create_event.review.start_time')}>
-							{actualEventStatus.isUpcoming
-								? timeUntilEvent || formatTimeI18n(event?.start_time || start)
-								: actualEventStatus.isOngoing
-									? t('countdown.joinNow')
-									: formatTimeI18n(event?.start_time || start)}
+							{displayLabel}
 						</p>
 						{isClanEvent && (
 							<p
@@ -268,7 +269,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							placement="left"
 							overlay={
 								<p className="text-theme-primary-active w-[max-content]">
-									{t('eventCreator:eventDetail.createdBy', { username: userCreate?.user?.username })}
+									{t('eventCreator:eventDetail.createdBy', { username: userCreate?.clan_nick || userCreate?.user?.display_name })}
 								</p>
 							}
 						>
@@ -277,18 +278,20 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_detail_modal')}
 							>
 								<AvatarImage
-									alt={userCreate?.user?.username || ''}
-									username={userCreate?.user?.username}
+									alt={userCreate?.clan_nick || userCreate?.user?.display_name || ''}
+									username={userCreate?.clan_nick || userCreate?.user?.display_name}
 									className="min-w-6 min-h-6 max-w-6 max-h-6"
-									srcImgProxy={createImgproxyUrl(userCreate?.user?.avatar_url ?? '')}
-									src={userCreate?.user?.avatar_url}
+									srcImgProxy={createImgproxyUrl((userCreate?.clan_avatar || userCreate?.user?.avatar_url) ?? '')}
+									src={userCreate?.clan_avatar || userCreate?.user?.avatar_url}
 									classNameText="text-[9px] pt-[3px]"
 								/>
 								<div
 									className="flex items-center gap-x-1 w-full justify-end px-2 py-1 rounded-full bg-theme-primary text-theme-primary-active"
-									title={t('eventCreator:eventDetail.personInterested', { count: event?.user_ids?.length })}
+									title={t('eventCreator:eventDetail.personInterested', {
+										count: (event?.user_ids?.filter((id) => id !== '0')?.length || '') as any
+									})}
 								>
-									<span className="text-md">{event?.user_ids?.length}</span>
+									<span className="text-md">{event?.user_ids?.filter((id) => id !== '0')?.length || '0'}</span>
 									<Icons.MemberList defaultSize="h-4 w-4" />
 								</div>
 							</div>
@@ -299,7 +302,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				<div className="flex justify-between gap-4 select-text">
 					<div className={`${isReviewEvent || !logoRight ? 'w-full' : 'w-3/5'} `}>
 						<p
-							className="hover:underline font-bold  text-base"
+							className="hover:underline font-bold text-base truncate"
 							data-e2e={generateE2eId('clan_page.modal.create_event.review.event_topic')}
 						>
 							{topic}
@@ -333,20 +336,23 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				>
 					{checkOptionVoice &&
 						!isPrivateEvent &&
-						(() => {
-							const linkProps = {
-								onClick: (e: React.MouseEvent<HTMLAnchorElement>) => {
+						(isReviewEvent ? (
+							<span className="flex gap-x-2">
+								<Icons.Speaker />
+								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
+							</span>
+						) : (
+							<a
+								onClick={(e) => {
 									handleStopPropagation(e);
 									redirectToVoice();
-								}
-							};
-							return (
-								<a {...linkProps} className="flex gap-x-2 cursor-pointer">
-									<Icons.Speaker />
-									<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
-								</a>
-							);
-						})()}
+								}}
+								className="flex gap-x-2 cursor-pointer"
+							>
+								<Icons.Speaker />
+								<p data-e2e={generateE2eId('clan_page.modal.create_event.review.voice_channel')}>{channelVoice?.channel_label}</p>
+							</a>
+						))}
 					{checkOptionLocation && (
 						<>
 							<Icons.Location />
@@ -362,12 +368,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					{isPrivateEvent && (
 						<div className="flex gap-x-2 items-center">
 							<Icons.Speaker />
-							{link ? (
+							{!isReviewEvent && link ? (
 								<a href={link} target="_blank" rel="noopener noreferrer" className="cursor-pointer whitespace-normal break-words">
 									{t('eventCreator:eventDetail.privateRoom')}
 								</a>
 							) : (
-								<span className="whitespace-normal break-words cursor-not-allowed">{t('eventCreator:eventDetail.privateRoom')}</span>
+								<span className="whitespace-normal break-words">{t('eventCreator:eventDetail.privateRoom')}</span>
 							)}
 						</div>
 					)}

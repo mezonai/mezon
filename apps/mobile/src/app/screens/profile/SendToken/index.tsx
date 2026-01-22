@@ -1,6 +1,5 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useDirect, useSendInviteMessage } from '@mezon/core';
-import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity, FriendsEntity } from '@mezon/store-mobile';
 import {
@@ -16,14 +15,14 @@ import {
 	useAppDispatch,
 	useWallet
 } from '@mezon/store-mobile';
-import { CURRENCY, formatBalanceToString, formatMoney, TypeMessage } from '@mezon/utils';
+import { CURRENCY, TypeMessage, formatBalanceToString, formatMoney } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import debounce from 'lodash.debounce';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiTokenSentEvent } from 'mezon-js/dist/api.gen';
+import type { ApiTokenSentEvent } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Keyboard, Modal, Platform, Pressable, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, Modal, Platform, Pressable, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
@@ -46,7 +45,7 @@ type Receiver = {
 	username?: Array<string>;
 	avatar_url?: string;
 };
-const formatTokenAmount = (amount: any) => {
+export const formatTokenAmount = (amount: any) => {
 	let sanitizedText = String(amount).replace(/[^0-9]/g, '');
 	if (sanitizedText === '') return '0';
 	sanitizedText = sanitizedText.replace(/^0+/, '');
@@ -58,7 +57,6 @@ const ITEM_HEIGHT = size.s_60;
 const MAX_NOTE_LENGTH = 512;
 export const SendTokenScreen = ({ navigation, route }: any) => {
 	const { t } = useTranslation(['token', 'common']);
-	const { t: tMsg } = useTranslation(['message']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const store = getStore();
@@ -92,7 +90,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 		return friends?.filter((user) => user.state === 0) || [];
 	}, [store]);
 	const canEdit = jsonObject?.canEdit;
-	const { walletDetail, enableWallet } = useWallet();
+	const { walletDetail } = useWallet();
 
 	const tokenInWallet = useMemo(() => {
 		return walletDetail?.balance || 0;
@@ -145,14 +143,6 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 		return arrUser;
 	}, [friendList, listDM, store, userProfile?.user?.id]);
 
-	const handleEnableWallet = async () => {
-		await enableWallet();
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-	};
-
-	const onCancelEnableWallet = () => {
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-	};
 	const directMessageId = useMemo(() => {
 		const directMessage = listDM?.find?.((dm) => {
 			const userIds = dm?.user_ids;

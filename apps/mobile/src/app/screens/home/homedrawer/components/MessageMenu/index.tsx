@@ -65,7 +65,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		);
 	}, [infoFriend?.source_id, infoFriend?.state, infoFriend?.user?.id, messageInfo?.user_ids, userProfile?.user?.id]);
 	const { blockFriend, unBlockFriend, deleteFriend, addFriend } = useFriends();
-	const allUserGroupDM = useSelector((state) => selectRawDataUserGroup(state, messageInfo?.channel_id || ''));
+	const allUserGroupDM = useSelector((state) => selectRawDataUserGroup(state, messageInfo?.channel_id || '0'));
 
 	useEffect(() => {
 		if (messageInfo?.channel_id) {
@@ -87,7 +87,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		);
 	}, [messageInfo?.channel_label, messageInfo?.usernames]);
 
-	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, messageInfo?.channel_id || ''));
+	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, messageInfo?.channel_id || '0'));
 
 	const isDmUnmute = useMemo(() => {
 		return (
@@ -140,7 +140,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 
 	const handleAddFriend = () => {
 		const body = messageInfo?.user_ids?.[0] ? { ids: [messageInfo?.user_ids?.[0]] } : { usernames: [messageInfo?.usernames?.[0]] };
-		addFriend(body);
+		addFriend({ ...body, isMobile: true });
 		dismiss();
 	};
 
@@ -273,7 +273,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const handleUnmuteConversation = async () => {
 		try {
 			const body = {
-				channel_id: messageInfo?.channel_id || '',
+				channel_id: messageInfo?.channel_id || '0',
 				clan_id: currentClanId || '',
 				active: EMuteState.UN_MUTE,
 				mute_time: 0
@@ -332,7 +332,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 	const handleLeaveGroupConfirm = useCallback(async () => {
 		const isLeaveOrDeleteGroup = lastOne
 			? await dispatch(deleteChannel({ clanId: '0', channelId: messageInfo?.channel_id ?? '', isDmGroup: true }))
-			: await dispatch(removeMemberChannel({ channelId: messageInfo?.channel_id || '', userIds: [currentUserId], kickMember: false }));
+			: await dispatch(removeMemberChannel({ channelId: messageInfo?.channel_id || '0', userIds: [currentUserId], kickMember: false }));
 		if (!isLeaveOrDeleteGroup) {
 			return;
 		}

@@ -1,10 +1,12 @@
 import { captureSentryError } from '@mezon/logger';
-import { LoadingStatus } from '@mezon/utils';
-import { EntityState, GetThunkAPI, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ApiPubKey } from 'mezon-js/api.gen';
+import type { LoadingStatus } from '@mezon/utils';
+import type { EntityState, GetThunkAPI } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiPubKey, GetPubKeysResponseUserPubKey } from 'mezon-js/api.gen';
 import { selectDirectById } from '../direct/direct.slice';
-import { MezonValueContext, ensureSession, getMezonCtx } from '../helpers';
-import { RootState } from '../store';
+import type { MezonValueContext } from '../helpers';
+import { ensureSession, getMezonCtx } from '../helpers';
+import type { RootState } from '../store';
 
 export const E2EE_FEATURE_KEY = 'e2ee';
 
@@ -19,7 +21,7 @@ export interface E2eeState extends EntityState<PubKeyEntity, string> {
 	openModalE2ee: boolean;
 	hasKeyE2ee: boolean;
 	directMesIdE2ee: string;
-	pubkey: ApiPubKey;
+	pubkey: ApiPubKey | null;
 }
 
 export interface E2eeRootState {
@@ -68,7 +70,7 @@ export const initialE2eeState: E2eeState = e2eeAdapter.getInitialState({
 	openModalE2ee: false,
 	hasKeyE2ee: false,
 	directMesIdE2ee: '',
-	pubkey: {}
+	pubkey: null
 });
 
 export const e2eeSlice = createSlice({
@@ -95,11 +97,15 @@ export const e2eeSlice = createSlice({
 			})
 			.addCase(getPubKeys.fulfilled, (state: E2eeState, action) => {
 				state.loadingStatus = 'loaded';
-				const pubKeys =
-					action.payload.pub_keys?.map((pk: { PK?: ApiPubKey; user_id?: string }) => ({
-						id: pk.user_id || '',
-						PK: pk.PK || {}
-					})) || [];
+				const pubKeys: PubKeyEntity[] = [];
+				action.payload.pub_keys?.map((pk: GetPubKeysResponseUserPubKey) => {
+					if (pk.PK) {
+						pubKeys.push({
+							id: pk.user_id || '',
+							PK: pk.PK
+						});
+					}
+				});
 				e2eeAdapter.upsertMany(state, pubKeys);
 			})
 			.addCase(getPubKeys.rejected, (state: E2eeState, action) => {

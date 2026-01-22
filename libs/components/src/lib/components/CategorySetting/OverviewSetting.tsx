@@ -70,7 +70,7 @@ const OverviewSetting: React.FC<IOverViewSettingProps> = ({ category, onClose, o
 		const request: ApiUpdateCategoryDescRequest = {
 			category_id: category?.category_id || '',
 			category_name: categoryName,
-			ClanId: currentClanId ?? ''
+			clan_id: currentClanId ?? ''
 		};
 		dispatch(
 			categoriesActions.updateCategory({

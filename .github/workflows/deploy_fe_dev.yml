@@ -15,6 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.5.0'
+
       - name: Install dependencies
         run: |
           echo "Environments"
@@ -22,7 +27,7 @@ jobs:
           export nv=$(node -v)
           echo "Node version: $nv"
           echo "Installing dependencies"
-          yarn config set nodedir ~/.cache/node-gyp/"${nv:1}"
+          yarn config set nodedir ~/.cache/node-gyp/20.18.1/
           echo "Node directory: ${nv:1}"
           source ~/.bashrc
           yarn
@@ -33,6 +38,8 @@ jobs:
           yarn nx reset
 
       - name: Build
+        env:
+          NODE_ENV: 'production'
         run: |
           echo "Build"
           echo NX_CHAT_APP_API_GW_HOST="${{ secrets.NX_CHAT_APP_API_GW_HOST_DEV }}" >> apps/chat/.env

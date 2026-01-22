@@ -9,9 +9,9 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { IMessageWithUser } from '@mezon/utils';
-import { TOPBARS_MAX_WIDTH, convertTimeString, generateE2eId } from '@mezon/utils';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
+import type { IEmbedProps, IMessageWithUser } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, convertTimeString, generateE2eId } from '@mezon/utils';
+import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +20,7 @@ import type { UnpinMessageObject } from '.';
 import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
+import ShareContactCard from '../../../ShareContact/ShareContactCard';
 
 type ItemPinMessageProps = {
 	pinMessage: PinMessageEntity;
@@ -42,17 +43,20 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 
 	const validCreateTime = getValidCreateTime();
 	const messageTime = convertTimeString(validCreateTime);
-	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(pinMessage.sender_id || '');
+	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(String(pinMessage.sender_id || ''));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
-	const pinMessageAttachments = safeJSONParse(pinMessage?.attachment || '[]');
+	const message = useAppSelector((state) =>
+		selectMessageByMessageId(state, String(pinMessage?.channel_id || '0'), String(pinMessage?.message_id || '0'))
+	);
+	const pinMessageAttachments = message?.attachments || pinMessage?.attachment;
 	const handleJumpMess = () => {
 		if (pinMessage.message_id && pinMessage.channel_id) {
 			dispatch(
 				messagesActions.jumpToMessage({
 					clanId: currentClanId || '0',
-					messageId: pinMessage.message_id,
-					channelId: pinMessage.channel_id
+					messageId: String(pinMessage.message_id),
+					channelId: String(pinMessage.channel_id)
 				})
 			);
 		}
@@ -62,7 +66,6 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		}
 		onClose();
 	};
-	const message = useAppSelector((state) => selectMessageByMessageId(state, pinMessage?.channel_id, pinMessage?.message_id as string));
 	const messageContentObject = useMemo(() => {
 		try {
 			return safeJSONParse(pinMessage.content || '{}') || {};
@@ -71,6 +74,19 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		}
 		return {};
 	}, [pinMessage.content]);
+
+	const isShareContact = useMemo(() => {
+		const embeds = messageContentObject?.embed || message?.content?.embed || [];
+		const firstEmbed = embeds[0];
+		const fields = firstEmbed?.fields || [];
+		return fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY;
+	}, [message, messageContentObject]);
+
+	const shareContactEmbed = useMemo((): IEmbedProps | null => {
+		if (!isShareContact) return null;
+		const embeds = messageContentObject?.embed || message?.content?.embed || [];
+		return embeds[0] || null;
+	}, [isShareContact, messageContentObject, message]);
 
 	const handleUnpinConfirm = () => {
 		handleUnPinMessage({
@@ -82,7 +98,6 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 
 	const avatarToShow =
 		(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? priorityAvatar : pinMessage.avatar) || '';
-
 	const nameToShow =
 		(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? namePriority : pinMessage.username) || '';
 	return (
@@ -93,46 +108,88 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		>
 			<div className="flex items-start gap-2 w-full ">
 				<div className="pointer-events-none">
-					<BaseProfile avatar={avatarToShow || ''} hideIcon={true} />
+					<BaseProfile avatar={avatarToShow || ''} name={nameToShow} hideIcon={true} hideName={true} />
 				</div>
 
-				<div className="flex flex-col gap-1 text-left w-[85%] enableSelectText cursor-text">
+				<div className="relative flex flex-col gap-1 text-left w-[85%] enableSelectText cursor-text">
 					<div className="flex items-center gap-4">
 						<div className="font-medium ">{nameToShow}</div>
 						<div className=" text-[10px]">{messageTime}</div>
 					</div>
 					<div className="leading-6">
-						{contentString && (
-							<MessageLine
-								isInPinMsg={true}
-								isEditted={false}
-								content={messageContentObject}
-								isJumMessageEnabled={false}
-								isTokenClickAble={false}
-								messageId={message?.id}
-								isSearchMessage={true} // to correct size youtube emmbed
-							/>
+						{isShareContact && shareContactEmbed ? (
+							<ShareContactCard embed={shareContactEmbed} />
+						) : (
+							contentString && (
+								<MessageLine
+									isInPinMsg={true}
+									isEditted={false}
+									content={messageContentObject}
+									isJumMessageEnabled={false}
+									isTokenClickAble={false}
+									messageId={message?.id}
+									isSearchMessage={true}
+								/>
+							)
 						)}
 					</div>
-					{!!pinMessageAttachments.length &&
+					{!!pinMessageAttachments?.length &&
 						(() => {
-							const enhancedAttachments = pinMessageAttachments.map((att: ApiMessageAttachment) => ({
-								...att,
-								create_time: validCreateTime,
-								sender_id: pinMessage.sender_id,
-								message_id: pinMessage.message_id
-							}));
-							return (
-								<MessageAttachment
-									mode={mode as ChannelStreamMode}
-									message={
-										{
-											...pinMessage,
-											attachments: enhancedAttachments
-										} as IMessageWithUser
+							let attachmentsList: ApiMessageAttachment[] = [];
+							if (Array.isArray(pinMessageAttachments)) {
+								attachmentsList = pinMessageAttachments.filter((att) => att && Object.keys(att).length > 0);
+							} else {
+								let attachment: unknown;
+								try {
+									attachment = decodeAttachments(pinMessageAttachments);
+								} catch (error) {
+									const parsed = safeJSONParse(pinMessageAttachments.toString());
+									if (parsed?.t) {
+										attachment = [];
+									} else {
+										attachment = parsed?.attachments || parsed || [];
 									}
-									defaultMaxWidth={TOPBARS_MAX_WIDTH}
-								/>
+								}
+
+								attachmentsList = Array.isArray(attachment)
+									? (attachment as ApiMessageAttachment[]).filter((att) => att && Object.keys(att).length > 0)
+									: ((attachment as any)?.attachments as ApiMessageAttachment[])?.filter(
+											(att) => att && Object.keys(att).length > 0
+										) || [];
+							}
+
+							if (attachmentsList.length === 0) return null;
+
+							const attachmentsToRender = [attachmentsList[0]];
+							const remainingCount = Math.max(0, attachmentsList.length - 1);
+
+							return (
+								<div className="flex items-end gap-1">
+									<div className="relative w-[120px] h-[120px] overflow-hidden rounded cursor-default [&_*]:cursor-default [&_*]:hover:!scale-100 [&_*]:hover:!bg-transparent [&_*]:hover:!opacity-100">
+										<div className="w-full h-full [&_video]:w-full [&_video]:h-full [&_video]:object-cover [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_div]:w-full [&_div]:h-full">
+											<MessageAttachment
+												mode={mode as ChannelStreamMode}
+												message={
+													{
+														...pinMessage,
+														...message,
+														attachments: attachmentsToRender,
+														create_time: validCreateTime,
+														sender_id: String(pinMessage.sender_id || ''),
+														message_id: String(pinMessage.message_id || '0')
+													} as unknown as IMessageWithUser
+												}
+												defaultMaxWidth={50}
+											/>
+										</div>
+									</div>
+
+									{remainingCount > 0 && (
+										<div className="bg-theme-setting-primary text-theme-primary text-md px-1.5 py-0.5 rounded-full flex items-center justify-center min-h-[35px] min-w-[35px]">
+											+{remainingCount}
+										</div>
+									)}
+								</div>
 							);
 						})()}
 				</div>

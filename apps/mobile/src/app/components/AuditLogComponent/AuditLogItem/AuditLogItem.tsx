@@ -8,12 +8,15 @@ import { Text, View } from 'react-native';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import { style } from './styles';
 
+interface IApiAuditLog extends ApiAuditLog {
+	time_log_seconds?: number;
+}
 type AuditLogItemProps = {
-	data: ApiAuditLog;
+	data: IApiAuditLog;
 };
-//
+
 export const AuditLogItem = memo(({ data }: AuditLogItemProps) => {
-	const auditLogTime = convertTimeString(data?.time_log as string);
+	const auditLogTime = data?.time_log_seconds ? convertTimeString(data.time_log_seconds * 1000) : '';
 	const userAuditLogItem = useAppSelector((state) => selectMemberClanByUserId(state, data?.user_id ?? ''));
 	const username = userAuditLogItem?.user?.username;
 	const avatar = getAvatarForPrioritize(userAuditLogItem?.clan_avatar, userAuditLogItem?.user?.avatar_url);
@@ -21,7 +24,7 @@ export const AuditLogItem = memo(({ data }: AuditLogItemProps) => {
 	const styles = style(themeValue);
 	const userMention = useAppSelector((state) => selectMemberClanByUserId(state, data?.entity_id ?? ''));
 	const usernameMention = userMention?.user?.username;
-	const channel = useAppSelector((state) => selectChannelById(state, data?.channel_id || ''));
+	const channel = useAppSelector((state) => selectChannelById(state, data?.channel_id || '0'));
 	const { t } = useTranslation('auditLog');
 	const isAddAction =
 		data?.action_log === ActionLog.ADD_MEMBER_CHANNEL_ACTION_AUDIT || data?.action_log === ActionLog.ADD_ROLE_CHANNEL_ACTION_AUDIT;

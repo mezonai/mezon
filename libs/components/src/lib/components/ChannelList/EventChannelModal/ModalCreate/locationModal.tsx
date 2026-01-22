@@ -51,6 +51,7 @@ const LocationModal = (props: LocationModalProps) => {
 		isChannelEvent = false,
 		isPrivateEvent = false
 	} = props;
+
 	const { t } = useTranslation('eventCreator');
 	const [errorVoice, setErrorVoice] = useState(false);
 
@@ -171,7 +172,8 @@ const LocationModal = (props: LocationModalProps) => {
 						desc={t('fields.channelType.voiceChannel.description')}
 						choose={choiceSpeaker}
 						id="Speaker"
-						onChange={voicesChannel.length > 0 ? () => handleOption(OptionEvent.OPTION_SPEAKER) : () => {}}
+						onChange={() => handleOption(OptionEvent.OPTION_SPEAKER)}
+						disabled={voicesChannel.length === 0}
 					/>
 				)}
 
@@ -206,14 +208,17 @@ const LocationModal = (props: LocationModalProps) => {
 					value={options.find((option) => option.value === contentSubmit.voiceChannel)}
 					onChange={handleChangeVoice}
 					styles={customStyles}
-					placeholder={t('fields.channel.title')}
+					placeholder={t('fields.VoiceChannel.title')}
 					filterOption={memoizedFilterOption}
 					noOptionsMessage={() => t('invitation:noResults', 'No result')}
 				/>
 			)}
 			{choiceLocation && (
 				<div>
-					<h3 className="uppercase text-[11px] font-semibold  ">{t('fields.address.title')}</h3>
+					<h3 className="uppercase text-[11px] font-semibold">
+						{t('fields.address.title')}
+						<span className="text-red-500 ml-1">*</span>
+					</h3>
 					<input
 						type="text"
 						name="location"
@@ -265,7 +270,8 @@ const TitleOptionEvent = ({
 	choose,
 	icon,
 	onChange,
-	id
+	id,
+	disabled = false
 }: {
 	title: string;
 	desc: string;
@@ -273,9 +279,13 @@ const TitleOptionEvent = ({
 	icon: JSX.Element;
 	onChange?: () => void;
 	id: string;
+	disabled?: boolean;
 }) => {
 	return (
-		<label className="w-full bg-item-theme rounded flex justify-between items-center p-2 cursor-pointer" htmlFor={id}>
+		<label
+			className={`w-full bg-item-theme rounded flex justify-between items-center p-2 ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+			htmlFor={disabled ? undefined : id}
+		>
 			<div className={`flex items-center gap-x-2 ${choose ? 'text-theme-primary-active' : ''} `}>
 				{icon}
 				<div>
@@ -285,7 +295,15 @@ const TitleOptionEvent = ({
 					<p>{desc}</p>
 				</div>
 			</div>
-			<input type="radio" checked={choose} id={id} value={id} className="focus:outline-none focus:ring-0" onChange={onChange} />
+			<input
+				type="radio"
+				checked={choose}
+				id={id}
+				value={id}
+				className="focus:outline-none focus:ring-0"
+				onChange={onChange}
+				disabled={disabled}
+			/>
 		</label>
 	);
 };

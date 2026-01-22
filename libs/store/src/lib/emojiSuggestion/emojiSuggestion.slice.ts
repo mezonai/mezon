@@ -46,7 +46,7 @@ type EmojiObjPickedArgs = {
 	fromTopic?: boolean;
 };
 
-const { selectAll, selectEntities } = emojiSuggestionAdapter.getSelectors();
+const { selectAll } = emojiSuggestionAdapter.getSelectors();
 
 const selectCachedEmoji = createSelector([(state: RootState) => state[EMOJI_SUGGESTION_FEATURE_KEY]], (entitiesState) => {
 	return entitiesState ? selectAll(entitiesState) : [];
@@ -72,7 +72,7 @@ export const fetchEmojiCached = async (getState: () => RootState, ensuredMezon: 
 		{
 			api_name: 'GetListEmojisByUserId'
 		},
-		() => ensuredMezon.client.getListEmojisByUserId(ensuredMezon.session),
+		(session) => ensuredMezon.client.getListEmojisByUserId(session),
 		'emoji_list'
 	);
 
@@ -256,8 +256,6 @@ export const selectAllEmojiSuggestion = createSelector(getEmojiSuggestionState, 
 
 export const selectEmojiSuggestion = createSelector(getEmojiSuggestionState, (emojisState) => emojisState.emojiPicked);
 
-export const selectEmojiSuggestionEntities = createSelector(getEmojiSuggestionState, selectEntities);
-
 export const selectEmojiListStatus = createSelector(getEmojiSuggestionState, (emojisState) => emojisState.emojiSuggestionListStatus);
 
 export const selectTextToSearchEmojiSuggestion = createSelector(getEmojiSuggestionState, (emojisState) => emojisState.textToSearchEmojiSuggestion);
@@ -267,8 +265,6 @@ export const selectAddEmojiState = createSelector(getEmojiSuggestionState, (emoj
 export const selectShiftPressedStatus = createSelector(getEmojiSuggestionState, (emojisState) => emojisState.shiftPressed);
 
 export const selectEmojiObjSuggestion = createSelector(getEmojiSuggestionState, (emojisState) => emojisState.emojiObjPicked);
-
-export const selectEmojiFromTopic = createSelector(getEmojiSuggestionState, (emojisState) => emojisState.fromTopic);
 
 export const selectEmojiByClanId = createSelector(
 	[(state: RootState) => state[EMOJI_SUGGESTION_FEATURE_KEY], (state: RootState, clanId: string) => clanId],

@@ -1001,8 +1001,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						(!isLoadingMoreBottomRef.current &&
 							((!isFirstJoinLoadRef.current && isAtBottom) || (userActiveScroll.current && isAtBottom))) ||
 						(user?.user?.id === lastMessage?.sender_id &&
-							lastMessage?.create_time &&
-							new Date().getTime() - new Date(lastMessage.create_time).getTime() < 1000)
+							lastMessage?.create_time_seconds &&
+							new Date().getTime() - lastMessage.create_time_seconds * 1000 < 1000)
 					) {
 						newScrollTop = scrollHeight;
 						shouldUpdateScrollPosition = !message?.isSending;
@@ -1133,7 +1133,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const { showMessageContextMenu, selectedMessageId } = useMessageContextMenu();
 
 		const renderedMessages = useMemo(() => {
-			// Use lastSeenAtBottomRef (saved when user was at bottom) or fallback to lastMessageUnreadId
 			const baseUnreadMessageId = lastSeenAtBottomRef.current || lastMessageUnreadId;
 			return messageIds.map((messageId, index) => {
 				const checkMessageTargetToMoved = msgIdJumpHightlight.current === messageId && messageId !== lastMessageId;

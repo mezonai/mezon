@@ -4,6 +4,8 @@
 	"channels": "Kênh",
 	"all": "Tất cả",
 	"selectChannelPlaceholder": "Chọn một kênh hoặc người dùng...",
+	"selectChannel": "Chọn một kênh",
+	"selectUser": "Chọn một người dùng",
 	"share": "Chia sẻ",
 	"suggestions": "Gợi ý",
 	"addCommentPlaceholder": "Thêm bình luận (Tùy chọn)",

@@ -41,7 +41,8 @@
 		"banChat": "Ban",
 		"unBanChat": "Unban",
 		"kick": "Kick",
-		"removeFromThread": "Remove {{username}} from thread"
+		"removeFromThread": "Remove {{username}} from thread",
+		"shareContact": "Share this contact"
 	},
 	"removeLogo": "Remove Logo",
 	"processing": "Processing...",
@@ -83,6 +84,7 @@
 		"userBlockedSuccess": "User blocked successfully",
 		"userBlockedFailed": "Failed to block user",
 		"canOnlyBlockFriends": "You can only block users who are your friends",
+		"userMessagesIgnored": "User messages ignored",
 		"reasons": {
 			"spam": "Spam",
 			"harassment": "Harassment or Bullying",

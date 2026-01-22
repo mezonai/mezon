@@ -48,7 +48,6 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 		try {
 			const content: IMessageSendPayload = { t: '' };
 			const ref = {
-				message_id: '',
 				message_ref_id: message.id,
 				ref_type: 0,
 				message_sender_id: message?.sender_id,
@@ -58,7 +57,7 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 				message_sender_display_name: WAVE_SENDER_NAME,
 				content: JSON.stringify(message.content),
 				has_attachment: false,
-				channel_id: message.channel_id ?? '',
+				channel_id: message.channel_id ?? '0',
 				mode: message.mode ?? 0,
 				channel_label: message.channel_label
 			};

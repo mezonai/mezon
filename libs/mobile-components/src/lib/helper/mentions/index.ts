@@ -32,21 +32,6 @@ export const convertMentionsToText = (text: string) => {
 		}
 	});
 };
-export const convertMentionsToData = (text: string) => {
-	const mentionPattern = /({@}|{#})\[([^\]]+)\]\((\d+)\)/g;
-	const result = [];
-	let match;
-	while ((match = mentionPattern.exec(text)) !== null) {
-		const prefix = match[1];
-		const mention = match[2];
-		const id = match[3];
-		result.push({
-			id: id,
-			display: `${prefix === '{@}' ? '@' : '#'}${mention}`
-		});
-	}
-	return result;
-};
 
 export const getChannelHashtag = (hashtagDmEntities: HashtagDm[], channelsEntities: ChannelsEntity[], mode: number, channelLabel: string) => {
 	if ([ChannelStreamMode.STREAM_MODE_DM].includes(mode)) {
@@ -94,7 +79,7 @@ export const createFormattedString = (data: IExtendedMessage) => {
 				}
 				break;
 			case ETokenMessage.HASHTAGS:
-				formatContentDraft += `{#}[${contentInElement.slice(1)}](${element.channelid})`;
+				formatContentDraft += `{#}[${contentInElement.slice(1)}](${element.channelId})`;
 				break;
 			case ETokenMessage.EMOJIS:
 				emojiPicked?.push({ ...element, shortName: contentInElement });

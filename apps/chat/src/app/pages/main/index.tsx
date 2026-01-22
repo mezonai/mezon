@@ -445,7 +445,7 @@ const ClansList = memo(() => {
 	};
 
 	return (
-		<div className="flex flex-col gap-1 relative">
+		<div className="flex flex-col pb-3 gap-1 relative">
 			{orderedClansWithGroups
 				.filter((item): item is NonNullable<typeof item> => item != null)
 				.map((item, index) => {
@@ -520,7 +520,7 @@ const ClansList = memo(() => {
 								{item.type === 'clan' && item.clan ? (
 									<SidebarClanItem
 										option={item.clan}
-										active={isActive(item.clan.clan_id || '')}
+										active={isActive(item.clan.clan_id || '0')}
 										className={`transition-all duration-200 ${draggingThis ? 'opacity-30' : ''} ${
 											isGroupIntentTarget && dropZone === 'center' ? 'animate-pulse' : ''
 										}`}

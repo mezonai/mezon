@@ -132,8 +132,8 @@ The application will be available at http://localhost:4200/
 | Platform    | Download Link                                                                 | Status    |
 | ----------- | ----------------------------------------------------------------------------- | --------- |
 | **Windows** | [Download](https://apps.microsoft.com/detail/9pf25lf1fj17)                    | ✅ Stable |
-| **macOS**   | [Download](https://cdn.mezon.ai/release/mezon-1.4.60-mac-arm64.dmg)           | ✅ Stable |
-| **Linux**   | [Download](https://cdn.mezon.ai/release/mezon-1.4.60-linux-amd64.deb)         | ✅ Stable |
+| **macOS**   | [Download](https://apps.apple.com/vn/app/mezon-desktop/id6756601798)          | ✅ Stable |
+| **Linux**   | [Download](https://cdn.mezon.ai/release/mezon-1.4.61-linux-amd64.deb)         | ✅ Stable |
 | **iOS**     | [App Store](https://apps.apple.com/vn/app/mezon/id6502750046)                 | ✅ Stable |
 | **Android** | [Google Play](https://play.google.com/store/apps/details?id=com.mezon.mobile) | ✅ Stable |
 | **Web**     | [mezon.ai](https://mezon.ai)                                                  | ✅ Stable |
@@ -167,6 +167,49 @@ yarn build:mobile      # Build mobile apps
 yarn lint              # Run linting
 yarn format           # Format code
 ```
+
+### Local Development Setup Guide
+
+#### 1. Install Dependencies
+
+Open your terminal in the project's root directory and run the following command to install the necessary packages:
+
+```bash
+yarn install
+```
+
+#### 2. Retrieve Authentication Data from Dev
+
+To access protected data and features on your local machine, you need to copy your session tokens from the Development environment:
+
+1. Navigate to: [https://dev-mezon.nccsoft.vn](https://dev-mezon.nccsoft.vn)
+2. **Log in** with your credentials.
+3. Open **Developer Tools** (Press `F12` or `Right-click > Inspect`).
+4. Go to the **Application** tab.
+5. In the left sidebar, expand **Local Storage** and select `https://dev-mezon.nccsoft.vn`.
+6. Locate and **copy** the values for the following keys:
+
+-   `persist:auth`
+-   `mezon_session`
+
+#### 3. Configure Localhost Storage
+
+Once your local server is running (typically at `http://localhost:4200`):
+
+1. Open your **Localhost** URL in the browser.
+2. Open **Developer Tools** (`F12`) > **Application** tab > **Local Storage**.
+3. Manually add or edit the keys `persist:auth` and `mezon_session`.
+4. **Paste** the corresponding values you copied from the Dev site into the **Value** column.
+
+#### 4. Finalize
+
+Refresh your local browser tab to apply the authentication state:
+
+-   Press **F5** or **Cmd/Ctrl + R**.
+
+You should now be logged into the local environment with your Dev session active.
+
+---
 
 ### 📁 Project Structure
 

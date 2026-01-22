@@ -4,7 +4,7 @@ import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useRef } from 'react';
 import Button from '../Button';
-import { Hashtag, HashtagLocked } from '../Icons';
+import { Icons } from '../Icons';
 
 export type ModalProps = {
 	children: React.ReactNode;
@@ -64,9 +64,11 @@ const Modal = (props: ModalProps) => {
 									{hasChannel && (
 										<div className="inline-flex gap-x-2">
 											{hasChannel.channel_private === ChannelStatusEnum.isPrivate &&
-												hasChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL && <HashtagLocked defaultSize="w-5 h-5 " />}
+												hasChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
+													<Icons.HashtagLocked defaultSize="w-5 h-5 " />
+												)}
 											{hasChannel.channel_private === undefined && hasChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL && (
-												<Hashtag defaultSize="w-5 h-5" />
+												<Icons.Hashtag defaultSize="w-5 h-5" />
 											)}
 											<p>{hasChannel.channel_label}</p>
 										</div>

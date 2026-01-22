@@ -187,10 +187,11 @@ export const listQuickMenuAccess = createAsyncThunk(
 			}
 
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await withRetry(() => mezon.client.listQuickMenuAccess(mezon.session, '0', channelId, menuType), {
+			const response = await withRetry((session) => mezon.client.listQuickMenuAccess(session, '0', channelId, menuType), {
 				maxRetries: 3,
 				initialDelay: 1000,
-				scope: 'channel-quick-menu'
+				scope: 'channel-quick-menu',
+				mezon
 			});
 
 			return { channelId, menuType, quickMenuItems: response.list_menus || [], fromCache: false };
@@ -323,11 +324,6 @@ export const selectQuickMenuByChannelId = createSelector(
 	}
 );
 
-export const selectQuickMenuByChannelIdAndType = createSelector(
-	[getQuickMenuState, (_state: RootState, channelId: string) => channelId, (_state: RootState, _channelId: string, menuType: number) => menuType],
-	(quickMenuState, channelId, menuType) => quickMenuState?.byChannels?.[channelId]?.[menuType] || []
-);
-
 export const selectFlashMessagesByChannelId = createSelector(
 	[getQuickMenuState, (_state: RootState, channelId: string) => channelId],
 	(quickMenuState, channelId) => quickMenuState?.byChannels?.[channelId]?.[QUICK_MENU_TYPE.FLASH_MESSAGE] || []
@@ -339,5 +335,3 @@ export const selectQuickMenusByChannelId = createSelector(
 );
 
 export const selectQuickMenuLoadingStatus = createSelector(getQuickMenuState, (state) => state?.loadingStatus || 'not loaded');
-
-export const selectQuickMenuError = createSelector(getQuickMenuState, (state) => state?.error || null);

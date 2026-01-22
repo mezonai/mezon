@@ -41,7 +41,8 @@
 	"modalConfirm": {
 		"defaultTitle": "Tiêu đề Modal",
 		"defaultButtonName": "OK",
-		"defaultMessage": "Bạn sẽ không thể tham gia lại Clan này trừ khi được mời lại."
+		"defaultMessage": "Bạn sẽ không thể tham gia lại Clan này trừ khi được mời lại.",
+		"deleteCategoryTitle": "Xóa {{name}}"
 	},
 	"firstJoinPopup": {
 		"ifYouHaveInvitation": "Nếu bạn có liên kết mời,",
@@ -370,6 +371,7 @@
 		"content": "Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại để tiếp tục."
 	},
 	"call": {
+		"title": "Gọi điện",
 		"connecting": "Đang kết nối...",
 		"ringing": "Đang đổ chuông..."
 	},
@@ -482,5 +484,35 @@
 	"forward": "Chuyển tiếp",
 	"share": "Chia sẻ",
 	"download": "Tải xuống",
-	"jumpToMessage": "Đi đến tin nhắn"
+	"jumpToMessage": "Đi đến tin nhắn",
+	"groupMembers": "{{members}} trên {{total}} thành viên",
+	"quickReaction": {
+		"title": "Đặt cảm xúc nhanh",
+		"removeTitle": "Xóa cảm xúc nhanh",
+		"toast": {
+			"success": "Đặt cảm xúc nhanh thành công!",
+			"failed": "Đặt cảm xúc nhanh thất bại!",
+			"removeSuccess": "Xóa cảm xúc nhanh thành công!",
+			"removeFailed": "Xóa cảm xúc nhanh thất bại!"
+		}
+	},
+	"somethingWentWrong": "Đã xảy ra lỗi",
+	"modalUnknowChannel": {
+		"defaultError": "Ôi! Đã xảy ra lỗi",
+		"permissionError": "Bạn không có quyền cần thiết để truy cập nội dung này. Vui lòng liên hệ quản trị viên nếu bạn cho rằng đây là lỗi.",
+		"genericError": "Chúng tôi gặp sự cố khi cố gắng truy cập nội dung này. Hãy để chúng tôi đưa bạn trở lại đúng hướng.",
+		"accessDenied": "Từ chối truy cập",
+		"accessDeniedDesc": "Bạn không có quyền truy cập kênh hoặc clan này. Vui lòng liên hệ quản trị viên nếu bạn cho rằng đây là lỗi.",
+		"goToWelcomeChannel": "Đi đến kênh chào mừng",
+		"okayGotIt": "Đã hiểu"
+	},
+	"reportMessage": {
+		"success": "Báo cáo tin nhắn thành công",
+		"failed": "Báo cáo tin nhắn thất bại"
+	},
+	"shareContact": "Danh thiếp",
+	"shareContactTitle": "Chia sẻ danh thiếp",
+	"sendMessage": "Nhắn tin",
+	"noPermissionToCallBlocked": "Bạn không thể thực hiện hành động này.",
+	"detail": "Chi tiết"
 }

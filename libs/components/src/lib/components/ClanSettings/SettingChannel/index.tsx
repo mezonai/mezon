@@ -176,7 +176,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 	}, [channelParent.channel_type]);
 
 	return (
-		<div className="flex flex-col border-b-[1px] border-b-theme-primary last:border-b-0">
+		<div className="flex flex-col border-b-theme-primary last:border-b-0 no-divider-last">
 			<div className="relative" onClick={handleFetchThreads}>
 				<ItemInfor
 					creatorId={channelParent.creator_id as string}
@@ -305,7 +305,7 @@ const ItemInfor = ({
 		if (creatorChannel?.user?.avatar_url) {
 			return createImgproxyUrl(creatorChannel?.user?.avatar_url, { width: 32, height: 32, resizeType: 'fit' });
 		}
-		return 'assets/avatar-user.svg';
+		return '/assets/avatar-user.svg';
 	}, [creatorChannel?.clan_avatar, creatorChannel?.user?.avatar_url]);
 
 	return (
@@ -384,7 +384,7 @@ const ItemInfor = ({
 export default ListChannelSetting;
 export const AvatarUserShort = ({ id, showName = false }: { id: string; showName?: boolean }) => {
 	const member = useAppSelector((state) => selectMemberClanByUserId(state, id));
-	const avatarUrl = getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url) || 'assets/avatar-user.svg';
+	const avatarUrl = getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url) || '/assets/avatar-user.svg';
 
 	return (
 		<div className="flex items-center gap-3" data-e2e={generateE2eId('clan_page.channel_list.item.user_list_collapsed.item')}>

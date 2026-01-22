@@ -4,7 +4,7 @@ import { EMimeTypes, ETypeLinkMedia } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelAttachment } from 'mezon-js/dist/api.gen';
+import type { ApiChannelAttachment } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -46,8 +46,8 @@ export interface AttachmentState extends EntityState<AttachmentEntity, string> {
 export const attachmentAdapter = createEntityAdapter({
 	selectId: (attachment: AttachmentEntity) => attachment.url as string,
 	sortComparer: (a: AttachmentEntity, b: AttachmentEntity) => {
-		if (a.create_time && b.create_time) {
-			return Date.parse(b.create_time) - Date.parse(a.create_time);
+		if (a.create_time_seconds && b.create_time_seconds) {
+			return b.create_time_seconds - a.create_time_seconds;
 		}
 		return 0;
 	}
@@ -90,15 +90,15 @@ export const fetchChannelAttachmentsCached = async (
 		if (before !== undefined) {
 			const beforeTime = before * 1000;
 			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time) return false;
-				const attTime = new Date(att.create_time).getTime();
+				if (!att.create_time_seconds) return false;
+				const attTime = att.create_time_seconds;
 				return attTime < beforeTime;
 			});
 		} else if (after !== undefined) {
 			const afterTime = after * 1000;
 			hasDataForRange = existingAttachments.some((att) => {
-				if (!att.create_time) return false;
-				const attTime = new Date(att.create_time).getTime();
+				if (!att.create_time_seconds) return false;
+				const attTime = att.create_time_seconds;
 				return attTime > afterTime;
 			});
 		} else {
@@ -130,7 +130,8 @@ export const mapChannelAttachmentsToEntity = (attachmentRes: ApiChannelAttachmen
 	const isVideo =
 		attachmentRes?.filetype?.startsWith('video') || attachmentRes?.filetype?.includes('mp4') || attachmentRes?.filetype?.includes('mov');
 	const uniqueId = `${attachmentRes.message_id}_${attachmentRes.url}`;
-	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: uniqueId, channelId, clanId, isVideo };
+	const create_time = attachmentRes.create_time_seconds ? new Date(Number(attachmentRes.create_time_seconds) * 1000).toISOString() : undefined;
+	const attachmentEntity: IAttachmentEntity = { ...attachmentRes, id: uniqueId, channelId, clanId, isVideo, create_time };
 	return attachmentEntity;
 };
 

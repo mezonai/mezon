@@ -3,7 +3,7 @@ import type { IEmojiRecent } from '@mezon/utils';
 import { RECENT_EMOJI_CATEGORY } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiClanEmoji } from 'mezon-js/dist/api.gen';
+import type { ApiClanEmoji } from 'mezon-js/api.gen';
 import type { AddTxResponse } from 'mmn-client-js';
 import { ETransferType } from 'mmn-client-js';
 import type { CacheMetadata } from '../cache-metadata';
@@ -53,10 +53,11 @@ export const fetchEmojiRecentCached = async (getState: () => RootState, ensuredM
 			fromCache: true
 		};
 	}
-	const response = await withRetry(() => ensuredMezon.client.emojiRecentList(ensuredMezon.session), {
+	const response = await withRetry((session) => ensuredMezon.client.emojiRecentList(session), {
 		maxRetries: 3,
 		initialDelay: 1000,
-		scope: 'emoji-recent'
+		scope: 'emoji-recent',
+		mezon: ensuredMezon
 	});
 
 	markApiFirstCalled(apiKey);

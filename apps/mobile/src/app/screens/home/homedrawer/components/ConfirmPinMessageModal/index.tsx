@@ -1,8 +1,9 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor } from '@mezon/mobile-ui';
-import { AppDispatch, getActiveMode, getCurrentChannelAndDm, pinMessageActions, selectCurrentClanId, UpdatePinMessage } from '@mezon/store-mobile';
+import type { AppDispatch, UpdatePinMessage } from '@mezon/store-mobile';
+import { getCurrentChannelAndDm, pinMessageActions, selectCurrentClanId } from '@mezon/store-mobile';
 import { isValidUrl } from '@mezon/transport';
-import { IMessageWithUser } from '@mezon/utils';
+import type { IMessageWithUser } from '@mezon/utils';
 import { useRoute } from '@react-navigation/native';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo } from 'react';
@@ -10,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Modal, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
-import { SeparatorWithLine } from '../../../../../components/Common';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { SeparatorWithLine } from '../../../../../components/Common';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { EMessageActionType } from '../../enums';
@@ -22,10 +23,11 @@ interface IConfirmPinMessageModalProps {
 	onClose: () => void;
 	message: IMessageWithUser;
 	type?: EMessageActionType;
+	mode?: ChannelStreamMode;
 }
 
 export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps) => {
-	const { isVisible, message, onClose, type } = props;
+	const { isVisible, message, onClose, type, mode } = props;
 	const isTabletLandscape = useTabletLandscape();
 	const route = useRoute();
 	const { params } = route;
@@ -36,7 +38,6 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 
 	const handleConfirmPinMessage = async () => {
 		try {
-			const mode = getActiveMode();
 			const isDMMode = mode !== ChannelStreamMode.STREAM_MODE_CHANNEL && mode !== ChannelStreamMode.STREAM_MODE_THREAD;
 
 			await dispatch(
@@ -44,21 +45,20 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 					clan_id: message?.clan_id ?? '0',
 					channel_id: message?.channel_id,
 					message_id: message?.id,
-					message: message
+					message
 				})
 			);
 
 			const attachments = message.attachments?.filter((attach) => isValidUrl(attach.url || '')) || [];
-			const jsonAttachments = attachments.length > 0 ? JSON.stringify(attachments) : '';
 			const pinBody: UpdatePinMessage = {
-				clanId: isDMMode ? '' : (currentClanId ?? ''),
-				channelId: isDMMode ? currentDm?.id || '' : (currentChannel?.channel_id ?? ''),
+				clanId: isDMMode ? '0' : (currentClanId ?? '0'),
+				channelId: isDMMode ? currentDm?.id || '0' : (currentChannel?.channel_id ?? '0'),
 				messageId: message?.id,
 				isPublic: isDMMode ? false : currentChannel ? !currentChannel.channel_private : false,
 				mode: mode as number,
 				senderId: message.sender_id,
 				senderUsername: message.display_name || message.username || message.user?.name || '',
-				attachment: jsonAttachments,
+				attachment: attachments,
 				avatar: message.avatar || message.clan_avatar || '',
 				content: JSON.stringify(message.content),
 				createdTime: message.create_time_seconds ? new Date(message.create_time_seconds * 1000).toISOString() : ''
@@ -81,7 +81,7 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 			case EMessageActionType.UnPinMessage:
 				dispatch(
 					pinMessageActions.deleteChannelPinMessage({
-						channel_id: params?.['directMessageId'] ? params?.['directMessageId'] : message?.channel_id || '',
+						channel_id: params?.['directMessageId'] ? params?.['directMessageId'] : message?.channel_id || '0',
 						message_id: message.id,
 						clan_id: message?.clan_id
 					})

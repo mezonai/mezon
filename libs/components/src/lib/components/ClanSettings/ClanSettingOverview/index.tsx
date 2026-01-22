@@ -1,5 +1,5 @@
 import { useClans } from '@mezon/core';
-import { createSystemMessage, fetchSystemMessageByClanId, selectCurrentClan, updateSystemMessage, useAppDispatch } from '@mezon/store';
+import { fetchSystemMessageByClanId, selectCurrentClan, updateSystemMessage, useAppDispatch } from '@mezon/store';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -108,11 +108,12 @@ const ClanSettingOverview = () => {
 			const cachedMessageUpdate: ApiSystemMessage = {
 				boost_message:
 					updateSystemMessageRequest?.boost_message === systemMessage?.boost_message ? '' : updateSystemMessageRequest?.boost_message,
-				channel_id: updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '' : updateSystemMessageRequest?.channel_id,
+				channel_id:
+					updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '0' : updateSystemMessageRequest?.channel_id || '0',
 				clan_id: systemMessage?.clan_id,
 				id: systemMessage?.id,
 				hide_audit_log:
-					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? '' : updateSystemMessageRequest?.hide_audit_log,
+					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? false : updateSystemMessageRequest?.hide_audit_log,
 				setup_tips: updateSystemMessageRequest?.setup_tips === systemMessage?.setup_tips ? '' : updateSystemMessageRequest?.setup_tips,
 				welcome_random:
 					updateSystemMessageRequest?.welcome_random === systemMessage?.welcome_random ? '' : updateSystemMessageRequest?.welcome_random,
@@ -128,7 +129,6 @@ const ClanSettingOverview = () => {
 			setSystemMessage(updateSystemMessageRequest);
 			setUpdateSystemMessageRequest(updateSystemMessageRequest);
 		} else if (updateSystemMessageRequest) {
-			await dispatch(createSystemMessage(updateSystemMessageRequest));
 			setSystemMessage(updateSystemMessageRequest);
 			setUpdateSystemMessageRequest(updateSystemMessageRequest);
 		}

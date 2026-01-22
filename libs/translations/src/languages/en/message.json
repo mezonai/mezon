@@ -77,6 +77,8 @@
 	"messageDeleteReply": "Original message was deleted",
 	"forwardMessagesSuccessfully": "Forward messages successfully!",
 	"forwardTo": "Forward to",
+	"contactSharedSuccessfully": "Contact shared successfully!",
+	"noContactsFound": "No contacts found",
 	"search": "Search",
 	"reportMessage": {
 		"reportSummary": "Report summary",
@@ -211,9 +213,12 @@
 		"sticker": "Sticker",
 		"gif": "GIF",
 		"link": "Link",
-		"attachment": "Attachment"
+		"attachment": "Attachment",
+		"contact": "Contact"
 	},
 	"bannedChannel": "You are banned from channel {{channelName}}.",
 	"addAMessage": "Add a message (Optional)",
-	"slideToCancel": "Slide to cancel"
+	"slideToCancel": "Slide to cancel",
+	"noAccess": "noAccess",
+	"unknown": "unknown"
 }

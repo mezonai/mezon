@@ -13,11 +13,11 @@ const CustomizePage = () => {
 	const version = mezonPackage.version;
 	const downloadUrl: string =
 		platform === Platform.MACOS
-			? `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-arm64.dmg`
+			? 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12'
 			: platform === Platform.LINUX
 				? `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-linux-amd64.deb`
 				: `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64.exe`;
-	const universalUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-mac-x64.dmg`;
+	const universalUrl = 'https://apps.apple.com/vn/app/mezon-desktop/id6756601798?mt=12';
 	const portableUrl = `${process.env.NX_BASE_IMG_URL}/release/mezon-${version}-win-x64-portable.exe`;
 
 	const [activeFeature, setActiveFeature] = useState(0);
@@ -27,25 +27,25 @@ const CustomizePage = () => {
 			id: 0,
 			title: 'Custom Themes',
 			description: 'Choose from light, dark, or create your own custom theme to match your personal style.',
-			image: '/assets/custome.webp'
+			image: '/custome.webp'
 		},
 		{
 			id: 1,
 			title: 'Server Branding',
 			description: 'Add your logo, banner, and custom colors to your server to reflect your brand identity.',
-			image: '/assets/custome.webp'
+			image: '/custome.webp'
 		},
 		{
 			id: 2,
 			title: 'Custom Emojis',
 			description: 'Upload and use your own custom emojis and stickers to express yourself in unique ways.',
-			image: '/assets/custome.webp'
+			image: '/custome.webp'
 		},
 		{
 			id: 3,
 			title: 'Layout Customization',
 			description: 'Rearrange and customize the layout of your workspace to fit your workflow and preferences perfectly.',
-			image: '/assets/custome.webp'
+			image: '/custome.webp'
 		}
 	];
 
@@ -86,7 +86,7 @@ const CustomizePage = () => {
 						</div>
 
 						<div className="flex justify-center lg:justify-end">
-							<img src="/assets/custome.webp" alt="Customize" className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl" />
+							<img src="/custome.webp" alt="Customize" className="w-full max-w-[500px] h-auto object-contain drop-shadow-2xl" />
 						</div>
 					</div>
 				</div>

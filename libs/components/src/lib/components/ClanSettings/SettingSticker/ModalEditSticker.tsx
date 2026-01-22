@@ -3,7 +3,15 @@ import { createSticker, emojiSuggestionActions, selectCurrentClanId, updateStick
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 
 import { Button, ButtonLoading, Checkbox, Icons, InputField } from '@mezon/ui';
-import { LIMIT_SIZE_UPLOAD_IMG, fileTypeImage, generateE2eId, getIdSaleItemFromSource, resizeFileImage, sanitizeUrlSecure } from '@mezon/utils';
+import {
+	LIMIT_SIZE_UPLOAD_IMG,
+	createImgproxyUrl,
+	fileTypeImage,
+	generateE2eId,
+	getIdSaleItemFromSource,
+	resizeFileImage,
+	sanitizeUrlSecure
+} from '@mezon/utils';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ClanEmoji, ClanSticker } from 'mezon-js';
 import type { ApiClanStickerAddRequest, MezonUpdateClanEmojiByIdBody } from 'mezon-js/api.gen';
@@ -129,10 +137,10 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 	const onSaveChange = async () => {
 		if (graphic && graphic.id && graphic.shortname !== editingGraphic.shortname) {
 			const updateData: MezonUpdateClanEmojiByIdBody = {
-				source: graphicSource,
-				category: graphic?.category,
-				shortname: isSticker ? editingGraphic.shortname : `:${editingGraphic.shortname}:`,
-				clan_id: currentClanId || ''
+				source: graphicSource || '0',
+				shortname: isSticker ? editingGraphic.shortname || '' : `:${editingGraphic.shortname}:`,
+				clan_id: currentClanId || '',
+				id: graphic.id
 			};
 
 			const requestData = {
@@ -412,7 +420,7 @@ const PreviewStickerBox = ({ preview }: { preview: string }) => {
 
 	return (
 		<div className={'m-auto absolute w-40 aspect-square overflow-hidden flex items-center justify-center'}>
-			<img className="h-full w-auto object-cover" alt="sticker" src={sanitizedPreview} />
+			<img className="h-full w-auto object-cover" alt="sticker" src={createImgproxyUrl(sanitizedPreview)} />
 		</div>
 	);
 };

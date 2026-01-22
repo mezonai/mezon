@@ -3,8 +3,13 @@ import type { IEventManagement, LoadingStatus } from '@mezon/utils';
 import { EEventAction, EEventStatus, ERepeatType } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiEventManagement, ApiGenerateMezonMeetResponse, ApiUserEventRequest } from 'mezon-js/api.gen';
-import type { ApiCreateEventRequest, MezonUpdateEventBody } from 'mezon-js/dist/api.gen';
+import type {
+	ApiCreateEventRequest,
+	ApiEventManagement,
+	ApiGenerateMezonMeetResponse,
+	ApiUserEventRequest,
+	MezonUpdateEventBody
+} from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -51,7 +56,7 @@ export const fetchEventManagementCached = async (getState: () => RootState, ensu
 				clan_id: clanId
 			}
 		},
-		() => ensuredMezon.client.listEvents(ensuredMezon.session, clanId),
+		(session) => ensuredMezon.client.listEvents(session, clanId),
 		'event_list'
 	);
 
@@ -141,8 +146,8 @@ export const fetchCreateEventManagement = createAsyncThunk(
 			channel_voice_id,
 			address,
 			title,
-			start_time,
-			end_time,
+			start_time_seconds,
+			end_time_seconds,
 			description,
 			logo,
 			channel_id,
@@ -154,15 +159,15 @@ export const fetchCreateEventManagement = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
-				clan_id,
-				channel_voice_id: channel_voice_id || '',
+				clan_id: clan_id || '0',
+				channel_voice_id: channel_voice_id || '0',
 				address: address || '',
 				title,
-				start_time,
-				end_time,
+				start_time_seconds: start_time_seconds ? start_time_seconds / 1000 : undefined,
+				end_time_seconds: end_time_seconds ? end_time_seconds / 1000 : undefined,
 				description: description || '',
 				logo: logo || '',
-				channel_id,
+				channel_id: channel_id || '0',
 				repeat_type: repeat_type || ERepeatType.DOES_NOT_REPEAT,
 				is_private
 			};
@@ -192,8 +197,8 @@ export const updateEventManagement = createAsyncThunk(
 			channel_voice_id,
 			address,
 			title,
-			start_time,
-			end_time,
+			start_time_seconds,
+			end_time_seconds,
 			description,
 			logo,
 			creator_id,
@@ -209,18 +214,19 @@ export const updateEventManagement = createAsyncThunk(
 				channel_voice_id,
 				event_id,
 				description,
-				end_time,
+				end_time_seconds: end_time_seconds ? end_time_seconds / 1000 : undefined,
 				logo,
-				start_time,
+				start_time_seconds: start_time_seconds ? start_time_seconds / 1000 : undefined,
 				title,
 				clan_id,
 				creator_id,
-				channel_id,
+				channel_id: channel_id || undefined,
 				channel_id_old,
 				repeat_type
 			};
+
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateEvent(mezon.session, event_id ?? '', body);
+			await mezon.client.updateEvent(mezon.session, event_id ?? '', body);
 		} catch (error) {
 			captureSentryError(error, 'updateEventManagement/updateEventManagement');
 			return thunkAPI.rejectWithValue(error);
@@ -362,7 +368,7 @@ export const eventManagementSlice = createSlice({
 		},
 
 		updateNewStartTime: (state, action) => {
-			const { event_id, start_time } = action.payload;
+			const { event_id, start_time_seconds } = action.payload;
 			const existingEvent = eventManagementAdapter.getSelectors().selectById(state.byClans[action.payload.clan_id].entities, event_id);
 			if (!existingEvent) {
 				return;
@@ -370,7 +376,7 @@ export const eventManagementSlice = createSlice({
 			eventManagementAdapter.updateOne(state.byClans[action.payload.clan_id].entities, {
 				id: event_id,
 				changes: {
-					start_time
+					start_time_seconds
 				}
 			});
 		},
@@ -487,8 +493,6 @@ export const selectEventsByClanId = createSelector(
 	(events, clanId) => selectAll(events.byClans[clanId]?.entities ?? eventManagementAdapter.getInitialState())
 );
 
-export const selectNumberEvent = createSelector(selectEventsByClanId, (events) => events?.length);
-
 export const selectChooseEvent = createSelector(getEventManagementState, (state) => state.chooseEvent);
 
 export const selectShowModelEvent = createSelector(getEventManagementState, (state) => state.showModalEvent);
@@ -513,15 +517,17 @@ export const selectEventsByChannelId = createSelector(
 		const filteredEntities = Object.values(entities).filter((entity: EventManagementEntity) => entity.channel_id === channelId);
 		const ongoingEvents = filteredEntities.filter((event) => event.event_status === EEventStatus.ONGOING);
 		if (ongoingEvents.length > 0) {
-			const oldestOngoingTime = Math.min(...ongoingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity)));
-			return ongoingEvents.filter((event) => new Date(event.start_time as string).getTime() === oldestOngoingTime);
+			const oldestOngoingTime = Math.min(
+				...ongoingEvents.map((event) => (event.start_time_seconds ? new Date(event.start_time_seconds).getTime() : Infinity))
+			);
+			return ongoingEvents.filter((event) => new Date(event.start_time_seconds || 0).getTime() === oldestOngoingTime);
 		}
 		const upcomingEvents = filteredEntities.filter((event) => event.event_status === EEventStatus.UPCOMING);
 		if (upcomingEvents.length > 0) {
 			const nearestUpcomingTime = Math.min(
-				...upcomingEvents.map((event) => (event.start_time ? new Date(event.start_time).getTime() : Infinity))
+				...upcomingEvents.map((event) => (event.start_time_seconds ? new Date(event.start_time_seconds).getTime() : Infinity))
 			);
-			return upcomingEvents.filter((event) => new Date(event.start_time as string).getTime() === nearestUpcomingTime);
+			return upcomingEvents.filter((event) => new Date(event.start_time_seconds || 0).getTime() === nearestUpcomingTime);
 		}
 
 		return [];

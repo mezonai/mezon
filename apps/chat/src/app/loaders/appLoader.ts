@@ -1,5 +1,5 @@
 import type { AppDispatch } from '@mezon/store';
-import { appActions, authActions, channelsActions } from '@mezon/store';
+import { appActions, authActions } from '@mezon/store';
 import { safeJSONParse } from 'mezon-js';
 import type { LoaderFunctionArgs } from 'react-router-dom';
 
@@ -45,7 +45,6 @@ export const appLoader: CustomLoaderFunction = async ({ dispatch }) => {
 	if (notificationPath) {
 		redirectTo = notificationPath;
 	}
-	dispatch(channelsActions.clearAllAppChannelsListShowOnPopUp());
 	dispatch(appActions.setInitialParams(params));
 	return {
 		pathname,

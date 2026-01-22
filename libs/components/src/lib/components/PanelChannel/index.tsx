@@ -223,7 +223,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		menuOpenMute.current = false;
 
 		const body: MuteChannelPayload = {
-			channel_id: channel.channel_id || '',
+			channel_id: channel.channel_id || '0',
 			mute_time: duration !== Infinity ? duration : 0,
 			active: EMuteState.MUTED,
 			clan_id: currentClanId || ''
@@ -233,7 +233,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 
 	const muteOrUnMuteChannel = (active: number) => {
 		const body: MuteChannelPayload = {
-			channel_id: channel.channel_id || '',
+			channel_id: channel.channel_id || '0',
 			clan_id: currentClanId || '',
 			active,
 			mute_time: 0
@@ -245,7 +245,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		menuOpenNoti.current = false;
 		if (notificationType) {
 			const body = {
-				channel_id: channel.channel_id || '',
+				channel_id: channel.channel_id || '0',
 				notification_type: notificationType || 0,
 				clan_id: currentClanId || '',
 				is_current_channel: channel.channel_id === currentChannelId
@@ -254,7 +254,7 @@ const PanelChannel = ({ coords, channel, openSetting, setIsShowPanelChannel, onD
 		} else {
 			dispatch(
 				notificationSettingActions.deleteNotiChannelSetting({
-					channel_id: channel.channel_id || '',
+					channel_id: channel.channel_id || '0',
 					clan_id: currentClanId || '',
 					is_current_channel: channel.channel_id === currentChannelId
 				})

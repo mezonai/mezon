@@ -1,7 +1,7 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { Fonts, size, useTheme } from '@mezon/mobile-ui';
+import type { ChannelsEntity } from '@mezon/store-mobile';
 import {
-	ChannelsEntity,
 	selectAllTextChannel,
 	selectChannelById,
 	selectCurrentClanId,
@@ -19,10 +19,12 @@ import { useSelector } from 'react-redux';
 import MezonButton, { EMezonButtonTheme } from '../../../componentUI/MezonButton';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
-import MezonOption, { IMezonOptionData } from '../../../componentUI/MezonOption';
+import type { IMezonOptionData } from '../../../componentUI/MezonOption';
+import MezonOption from '../../../componentUI/MezonOption';
 import MezonSelect from '../../../componentUI/MezonSelect';
 import { IconCDN } from '../../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import BottomsheetSelectChannel from './BottomsheetSelectChannel';
 import { style } from './styles';
 
@@ -37,7 +39,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const textChannels = useSelector(selectAllTextChannel);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentEvent = useAppSelector((state) => selectEventById(state, currentClanId ?? '', eventId ?? ''));
-	const currentEventChannel = useSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '' : ''));
+	const currentEventChannel = useSelector((state) => selectChannelById(state, currentEvent ? currentEvent.channel_id || '0' : ''));
 
 	useLayoutEffect(() => {
 		navigation.setOptions({
@@ -97,7 +99,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 						fontWeight: 'bold'
 					},
 					disabled: !!currentEvent,
-					icon: <MezonIconCDN icon={IconCDN.channelVoiceLock} color={themeValue.text} />
+					icon: <MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} />
 				}
 			] satisfies IMezonOptionData,
 		[]
@@ -133,16 +135,18 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const isExistPrivateEvent = currentEvent?.is_private;
 
 	useEffect(() => {
-		if (currentEvent && currentEventChannel) {
+		if (currentEvent) {
 			if (isExistChannelVoice) {
 				setEventType(OptionEvent.OPTION_SPEAKER);
 				setChannelID(currentEvent.channel_voice_id);
+				if (currentEventChannel) {
+					setEventChannel(currentEventChannel);
+				}
 			} else if (isExistAddress) {
 				setEventType(OptionEvent.OPTION_LOCATION);
 			} else if (isExistPrivateEvent) {
 				setEventType(OptionEvent.PRIVATE_EVENT);
 			}
-			setEventChannel(currentEventChannel);
 		}
 	}, [currentEvent, currentEventChannel, isExistAddress, isExistChannelVoice, isExistPrivateEvent]);
 
@@ -172,7 +176,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 			type: eventType,
 			channelId: eventType === OptionEvent.OPTION_SPEAKER ? channelID : '',
 			location: eventType === OptionEvent.OPTION_LOCATION ? location : '',
-			eventChannelId: eventChannel?.channel_id || '',
+			eventChannelId: eventChannel?.channel_id || '0',
 			isPrivate: eventType === OptionEvent.PRIVATE_EVENT,
 			onGoBack,
 			currentEvent: currentEvent || null
@@ -230,10 +234,9 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 							label={t('fields.address.title')}
 							titleUppercase
 							placeHolder={t('fields.address.placeholder')}
+							required
 						/>
 					)}
-
-					<Text style={styles.bottomDescription}>{t('screens.eventType.description')}</Text>
 
 					{eventType !== OptionEvent.PRIVATE_EVENT && (
 						<View style={styles.headerSection}>

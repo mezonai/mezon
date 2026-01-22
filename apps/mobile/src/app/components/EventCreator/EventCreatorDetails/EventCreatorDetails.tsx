@@ -1,6 +1,7 @@
 import { ActionEmitEvent, getDayName, getDayWeekName, getDayYearName, getNearTime } from '@mezon/mobile-components';
 import { Fonts, size, useTheme } from '@mezon/mobile-ui';
 import { ERepeatType, MAX_FILE_SIZE_1MB, OptionEvent } from '@mezon/utils';
+import moment from 'moment';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -11,8 +12,11 @@ import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import MezonInput from '../../../componentUI/MezonInput';
 import MezonSelect from '../../../componentUI/MezonSelect';
 import { IconCDN } from '../../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './styles';
+
+const EVENT_MAX_LENGTH = 255;
 
 type CreateEventScreenDetails = typeof APP_SCREEN.MENU_CLAN.CREATE_EVENT_DETAILS;
 export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<CreateEventScreenDetails>) {
@@ -51,8 +55,8 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 		});
 	}, [navigation, onGoBack, t, themeValue.textDisabled, themeValue.textStrong]);
 
-	const currentStartDate = currentEvent?.start_time ? new Date(currentEvent?.start_time) : undefined;
-	const currentEndDate = currentEvent?.end_time ? new Date(currentEvent?.end_time) : undefined;
+	const currentStartDate = currentEvent?.start_time_seconds ? new Date(currentEvent?.start_time_seconds * 1000) : undefined;
+	const currentEndDate = currentEvent?.end_time_seconds ? new Date(currentEvent?.end_time_seconds * 1000) : undefined;
 
 	const [eventTitle, setEventTitle] = useState<string>(currentEvent?.title || '');
 	const [eventDescription, setEventDescription] = useState<string>(currentEvent?.description || '');
@@ -101,21 +105,29 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	}
 
-	const isErrorStartDate = useMemo(() => {
-		return startDate.getTime() <= today.getTime();
-	}, [startDate, today]);
+	const isErrorStartDate = useMemo(() => moment(combinedStartDateTime).isBefore(moment(), 'day'), [combinedStartDateTime]);
 
 	const isErrorStartTime = useMemo(() => {
-		return startTime.getTime() <= today.getTime();
-	}, [startTime, today]);
+		if (!moment(startDate).isSame(moment(), 'day')) return false;
+
+		return moment(startTime).isSameOrBefore(moment(), 'minute');
+	}, [startDate, startTime]);
 
 	const isErrorEndDate = useMemo(() => {
-		return startDate.getTime() >= endDate.getTime();
+		return moment(endDate).isBefore(moment(startDate), 'day');
 	}, [endDate, startDate]);
 
 	const isErrorEndTime = useMemo(() => {
-		return startDate.getDate() >= endDate.getDate() && startTime.getTime() >= endTime.getTime();
-	}, [endDate, endTime, startDate, startTime]);
+		if (!moment(endDate).isSame(moment(startDate), 'day')) return false;
+
+		return moment(endTime).isSameOrBefore(moment(startTime), 'minute');
+	}, [startDate, startTime, endDate, endTime]);
+
+	const isDisableNextButton = useMemo(() => {
+		return (
+			isErrorStartDate || isErrorStartTime || (type !== OptionEvent.OPTION_LOCATION && (isErrorEndDate || isErrorEndTime)) || !isValidEventTitle
+		);
+	}, [isErrorEndDate, isErrorEndTime, isErrorStartDate, isErrorStartTime, isValidEventTitle, type]);
 
 	function handlePressNext() {
 		setIsValidEventTitle(!!eventTitle?.trim()?.length);
@@ -135,11 +147,11 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 			startTime: combinedStartDateTime,
 			endTime: combinedEndDateTime,
 			frequency: eventFrequency,
-			eventChannelId: eventChannelId,
-			isPrivate: isPrivate,
+			eventChannelId,
+			isPrivate,
 			logo: eventLogo,
 			onGoBack,
-			currentEvent: currentEvent
+			currentEvent
 		});
 	}
 
@@ -241,6 +253,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 							onTextChange={setEventDescription}
 							textarea
 							placeHolder={t('fields.description.description')}
+							maxCharacter={EVENT_MAX_LENGTH}
 						/>
 						<MezonSelect
 							title={t('fields.eventFrequency.title')}
@@ -272,8 +285,9 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 					title={t('actions.next')}
 					titleStyle={styles.titleMezonBtn}
 					type={EMezonButtonTheme.SUCCESS}
-					containerStyle={styles.mezonBtn}
+					containerStyle={isDisableNextButton ? styles.buttonDisabled : styles.mezonBtn}
 					onPress={handlePressNext}
+					disabled={isDisableNextButton}
 				/>
 			</View>
 		</View>

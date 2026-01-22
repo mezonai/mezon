@@ -68,9 +68,10 @@ export default function TopicDiscussion() {
 		const fetchMsgResult = async () => {
 			await dispatch(
 				messagesActions.fetchMessages({
-					channelId: currentChannel?.channel_id || '',
+					channelId: currentChannel?.channel_id || '0',
 					clanId: currentClanId || '',
-					topicId: currentTopicId || ''
+					topicId: currentTopicId || '',
+					isClearMessage: true
 				})
 			);
 		};

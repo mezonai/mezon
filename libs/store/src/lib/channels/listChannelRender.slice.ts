@@ -119,7 +119,7 @@ export const listChannelRenderSlice = createSlice({
 		addChannelToListRender: (state, action: PayloadAction<ApiChannelDescription>) => {
 			const channelData: IChannel = {
 				...(action.payload as IChannel),
-				id: action.payload.channel_id || ''
+				id: action.payload.channel_id || '0'
 			};
 			const clanId = channelData.clan_id;
 
@@ -604,6 +604,13 @@ export const listChannelRenderSlice = createSlice({
 					}
 				}
 			});
+		},
+
+		removeListChannelRenderByClanId: (state, action: PayloadAction<{ clanId: string }>) => {
+			const { clanId } = action.payload;
+			if (clanId) {
+				delete state.listChannelRender[clanId];
+			}
 		}
 	}
 });
@@ -644,10 +651,6 @@ export const selectAllThreadUnreadBehind = createSelector(
 		return result;
 	}
 );
-
-export const selectListOrderChannel = createSelector(getListChannelRenderState, (state) => {
-	return state.listOrderChannelByCate;
-});
 
 function prioritizeChannel(channels: IChannel[]): IChannel[] {
 	return channels.sort((a, b) => {

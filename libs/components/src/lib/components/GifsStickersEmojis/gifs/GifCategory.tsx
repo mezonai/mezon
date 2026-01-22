@@ -1,6 +1,6 @@
 import { useGifs, useGifsStickersEmoji } from '@mezon/core';
 import type { IGifCategory } from '@mezon/utils';
-import { generateE2eId } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 
 type GifCategoryProps = {
 	gifCategory: IGifCategory;
@@ -28,7 +28,11 @@ function GifCategory({ gifCategory }: GifCategoryProps) {
 			<div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
 				<span className="text-white text-lg font-manrope">{gifCategory.searchterm}</span>
 			</div>
-			<img className="w-full h-full object-cover brightness-100 rounded-sm" src={gifCategory.image} alt={gifCategory.image} />
+			<img
+				className="w-full h-full object-cover brightness-100 rounded-sm"
+				src={createImgproxyUrl(gifCategory.image || '')}
+				alt={gifCategory.image}
+			/>
 			<div className="absolute inset-0 border-2 border-blue-500 opacity-0 group-hover:opacity-100 transition-opacity rounded-md z-30"></div>
 		</div>
 	);

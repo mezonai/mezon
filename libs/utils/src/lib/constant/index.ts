@@ -30,7 +30,18 @@ export const ONE_MINUTE_MS = 60000;
 export const GUEST_NAME = 'guest';
 export const FOR_SALE_CATE = 'forsale';
 
-export const PREDEFINED_EMOJI_CATEGORIES = ['Recent', 'Frequently', 'People', 'Nature', 'Food', 'Activities', 'Travel', 'Objects', 'Symbols', 'Flags'];
+export const PREDEFINED_EMOJI_CATEGORIES = [
+	'Recent',
+	'Frequently',
+	'People',
+	'Nature',
+	'Food',
+	'Activities',
+	'Travel',
+	'Objects',
+	'Symbols',
+	'Flags'
+];
 
 export const DEFAULT_ID = '0';
 export const LIMIT = 50;
@@ -44,6 +55,8 @@ export const titleMission = ['Send a message in', 'Visit a channel', 'Do anythin
 
 export const MIN_THRESHOLD_CHARS = 8000;
 export const MAX_FORWARD_ADDITIONAL_MESSAGE_LENGTH = 2000;
+
+export const SHARE_CONTACT_KEY = 'share_contact';
 
 export type ITypeConvert = {
 	type: string;
@@ -137,7 +150,7 @@ export const MAX_FILE_SIZE_8MB = MAX_FILE_SIZE_1MB * 8; // 8MB
 export const MAX_FILE_SIZE_10MB = 10 * MAX_FILE_SIZE_1MB; // 10MB
 export const MAX_FILE_SIZE_256KB = MAX_FILE_SIZE_1MB / 4; // 256KB
 export const MAX_FILE_SIZE_512KB = MAX_FILE_SIZE_1MB / 2; // 512KB
-export const MAX_FILE_SIZE = 100 * MAX_FILE_SIZE_1MB; // 100MB
+export const MAX_FILE_SIZE = 1024 * MAX_FILE_SIZE_1MB; // 1024MB
 export const IMAGE_MAX_FILE_SIZE = 50 * MAX_FILE_SIZE_1MB; // 50MB
 
 export enum MiniAppEventType {
@@ -221,3 +234,6 @@ export const ITEM_TYPE = {
 };
 
 export const MAX_CLAN_ITEM_SLOTS = 250;
+
+export const NOISE_SUPPRESSION_NORMALIZATION_FACTOR = 0.6;
+export const INITIAL_NOISE_SUPPRESSION_PERCENTAGE = 20;

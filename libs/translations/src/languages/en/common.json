@@ -3,7 +3,7 @@
 	"savedSuccessfully": "Saved Successfully",
 	"saveFailed": "Failed to save",
 	"yes": "Yes",
-	"settings": "Setting",
+	"settings": "Settings",
 	"search": "Search",
 	"errorBoundary": {
 		"title": "Well, this is awkward",
@@ -41,7 +41,8 @@
 	"modalConfirm": {
 		"defaultTitle": "Title Modal",
 		"defaultButtonName": "OK",
-		"defaultMessage": "You won't be able to re-join this Clan unless you are re-invited."
+		"defaultMessage": "You won't be able to re-join this Clan unless you are re-invited.",
+		"deleteCategoryTitle": "Delete {{name}}"
 	},
 	"firstJoinPopup": {
 		"ifYouHaveInvitation": "If you have invitation link,",
@@ -370,6 +371,7 @@
 		"content": "Your session has expired. Please log in again to continue."
 	},
 	"call": {
+		"title": "Call",
 		"connecting": "Connecting...",
 		"ringing": "Ringing..."
 	},
@@ -482,5 +484,35 @@
 	"forward": "Forward",
 	"share": "Share",
 	"download": "Download",
-	"jumpToMessage": "Jump to Message"
+	"jumpToMessage": "Jump to Message",
+	"groupMembers": "{{members}} of {{total}} members",
+	"quickReaction": {
+		"title": "Set Quick Reaction",
+		"removeTitle": "Remove Quick Reaction",
+		"toast": {
+			"success": "Set quick reaction successfully!",
+			"failed": "Failed to set quick reaction!",
+			"removeSuccess": "Remove quick reaction successfully!",
+			"removeFailed": "Failed to remove quick reaction!"
+		}
+	},
+	"somethingWentWrong": "Something went wrong",
+	"modalUnknowChannel": {
+		"defaultError": "Oops! Something Went Wrong",
+		"permissionError": "You don't have the necessary permissions to access this content. Please contact an administrator if you believe this is an error.",
+		"genericError": "We encountered an issue while trying to access this content. Let's get you back on track.",
+		"accessDenied": "Access Denied",
+		"accessDeniedDesc": "You don't have permission to access this channel or clan. Please check with the server administrator if you believe this is an error.",
+		"goToWelcomeChannel": "Go to Welcome Channel",
+		"okayGotIt": "Okay, Got It"
+	},
+	"reportMessage": {
+		"success": "Message reported successfully",
+		"failed": "Failed to report message"
+	},
+	"shareContact": "Share Contact",
+	"shareContactTitle": "Share Contact",
+	"sendMessage": "Message",
+	"noPermissionToCallBlocked": "You cannot perform this action.",
+	"detail": "Detail"
 }

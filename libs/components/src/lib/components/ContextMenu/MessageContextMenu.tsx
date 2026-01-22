@@ -35,6 +35,7 @@ import {
 	selectDmChannelPrivateById,
 	selectDmCreatorIdById,
 	selectDmGroupCurrentId,
+	selectInitTopicMessageId,
 	selectMessageByMessageId,
 	selectMessageEntitiesByChannelId,
 	selectMessageIdsByChannelId,
@@ -176,6 +177,7 @@ function MessageContextMenu({
 		selectMessageEntitiesByChannelId(state, (modeResponsive === ModeResponsive.MODE_CLAN ? currentChannelId : currentDmChannelId) || '')
 	);
 	const allMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, (isClanView ? currentChannelId : currentDmId) as string));
+	const topicMessageIds = useAppSelector((state) => selectMessageIdsByChannelId(state, currentTopicId || ''));
 	const dispatch = useAppDispatch();
 
 	const handleItemClick = useCallback(() => {
@@ -189,6 +191,7 @@ function MessageContextMenu({
 	const isOwnerGroupDM = useIsOwnerGroupDM();
 	const { reactionMessageDispatch } = useChatReaction();
 	const isFocusTopicBox = useSelector(selectClickedOnTopicStatus);
+	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 
 	const isMyMessage = useMemo(() => {
 		return message?.sender_id === userId && !message?.content?.callLog?.callLogType && !(message?.code === TypeMessage.SendToken);
@@ -315,12 +318,14 @@ function MessageContextMenu({
 		const isSameSenderWithNextMessage = currentMessage?.sender_id === nextMessage?.sender_id;
 		const isSameSenderWithPreviousMessage = currentMessage?.sender_id === previousMessage?.sender_id;
 
-		const isNextMessageWithinTimeLimit = nextMessage
-			? Date.parse(nextMessage?.create_time) - Date.parse(currentMessage?.create_time) < FORWARD_MESSAGE_TIME
-			: false;
-		const isPreviousMessageWithinTimeLimit = previousMessage
-			? Date.parse(currentMessage?.create_time) - Date.parse(previousMessage?.create_time) < FORWARD_MESSAGE_TIME
-			: false;
+		const isNextMessageWithinTimeLimit =
+			nextMessage?.create_time_seconds && currentMessage?.create_time_seconds
+				? nextMessage?.create_time_seconds - currentMessage?.create_time_seconds < FORWARD_MESSAGE_TIME
+				: false;
+		const isPreviousMessageWithinTimeLimit =
+			currentMessage?.create_time_seconds && previousMessage?.create_time_seconds
+				? currentMessage?.create_time_seconds - previousMessage?.create_time_seconds < FORWARD_MESSAGE_TIME
+				: false;
 		return (isPreviousMessageWithinTimeLimit && isSameSenderWithPreviousMessage) || (isSameSenderWithNextMessage && isNextMessageWithinTimeLimit);
 	}, [allMessageIds, allMessagesEntities, messagePosition]);
 	const handleReplyMessage = useCallback(() => {
@@ -456,7 +461,7 @@ function MessageContextMenu({
 		try {
 			dispatch(
 				messagesActions.updateLastSeenMessage({
-					clanId: message?.clan_id || '',
+					clanId: message?.clan_id || '0',
 					channelId: message?.channel_id,
 					messageId: message?.id,
 					mode: message?.mode || 0,
@@ -572,17 +577,31 @@ function MessageContextMenu({
 
 	const enableDelMessageItem = useMemo(() => {
 		if (!checkPos || message?.content?.tp) return false;
-		if (isMyMessage) {
-			return true;
-		}
-		// DM Group
-		if (Number(type) === ChannelType.CHANNEL_TYPE_GROUP) {
-			return isOwnerGroupDM;
-		}
-		if (activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL || activeMode === ChannelStreamMode.STREAM_MODE_THREAD) {
-			return canDeleteMessage;
-		}
-	}, [activeMode, type, canDeleteMessage, isMyMessage, checkPos, isOwnerGroupDM, message?.content?.tp]);
+
+		const isFirstTopicMessage = isTopic && topicMessageIds?.length > 0 && messageId === topicMessageIds[0];
+		const isInitTopicMessage = !isTopic && messageId === initTopicMessageId;
+		if (isFirstTopicMessage || isInitTopicMessage) return false;
+
+		if (isMyMessage) return true;
+
+		if (Number(type) === ChannelType.CHANNEL_TYPE_GROUP) return isOwnerGroupDM;
+
+		const isChannelOrThreadOrTopic =
+			isTopic || activeMode === ChannelStreamMode.STREAM_MODE_CHANNEL || activeMode === ChannelStreamMode.STREAM_MODE_THREAD;
+		return isChannelOrThreadOrTopic ? canDeleteMessage : false;
+	}, [
+		activeMode,
+		type,
+		canDeleteMessage,
+		isMyMessage,
+		checkPos,
+		isOwnerGroupDM,
+		message?.content?.tp,
+		messageId,
+		initTopicMessageId,
+		isTopic,
+		topicMessageIds
+	]);
 
 	const checkElementIsImage = elementTarget instanceof HTMLImageElement;
 	const checkElementIsLink = elementTarget instanceof HTMLAnchorElement;

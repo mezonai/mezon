@@ -176,6 +176,13 @@ export const QRScanner = () => {
 			}
 			try {
 				const valueObj = safeJSONParse(value || '{}');
+				// case Lucky money
+				if (valueObj?.lucky_money_id) {
+					navigation.push(APP_SCREEN.CLAIM_MONEY, {
+						luckyMoneyId: valueObj?.lucky_money_id
+					});
+					return;
+				}
 				// case Transfer funds
 				if (valueObj?.receiver_id || valueObj?.wallet_address) {
 					navigation.push(APP_SCREEN.WALLET, {

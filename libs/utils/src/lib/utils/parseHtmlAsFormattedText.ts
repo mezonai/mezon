@@ -406,13 +406,8 @@ export const processMarkdownEntities = (text: string | undefined, entities: ApiM
 	return filteredEntities
 		.map((entity) => {
 			if (entity.type === ApiMessageEntityTypes.Url || entity.type === ApiMessageEntityTypes.TextUrl) {
-				const link = text?.substring(entity.offset, entity.offset + entity.length);
 				return {
-					type: link?.startsWith('https://meet.google.com/')
-						? EBacktickType.VOICE_LINK
-						: isYouTubeLink(text as string)
-							? EBacktickType.LINKYOUTUBE
-							: EBacktickType.LINK,
+					type: isYouTubeLink(text as string) ? EBacktickType.LINKYOUTUBE : EBacktickType.LINK,
 					e: entity.offset + entity.length,
 					s: entity.offset
 				};

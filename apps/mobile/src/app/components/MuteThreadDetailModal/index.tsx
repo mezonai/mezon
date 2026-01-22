@@ -132,7 +132,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 		});
 	}, [currentChannel?.channel_label, isChannel, isDMThread, navigation, styles.headerLeftBtn, t, themeValue.text, themeValue.textStrong]);
 
-	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannel?.channel_id || ''));
+	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannel?.channel_id || '0'));
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 
@@ -168,7 +168,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	const handleUnmuteChannel = async () => {
 		try {
 			const body = {
-				channel_id: currentChannel?.channel_id || '',
+				channel_id: currentChannel?.channel_id || '0',
 				clan_id: currentClanId || '',
 				active: EMuteState.UN_MUTE,
 				mute_time: 0
@@ -195,7 +195,7 @@ const MuteThreadDetailModal = ({ route }: MuteThreadDetailModalProps) => {
 	const handleScheduleMute = async (duration: number) => {
 		try {
 			const body = {
-				channel_id: currentChannel?.channel_id || '',
+				channel_id: currentChannel?.channel_id || '0',
 				clan_id: isDMThread ? '' : currentClanId || '',
 				mute_time: duration !== Infinity ? duration : 0,
 				active: EMuteState.MUTED
