@@ -170,6 +170,8 @@ export const sendRequestAddFriend = createAsyncThunk(
 							toast.success(i18n.t('friends:toast.acceptAddFriendSuccess'));
 						}
 					}
+				} else if (response?.ids?.[0] === '0' && !isAcceptingRequest) {
+					toast.error(i18n.t('friends:toast.sendAddFriendFail'));
 				}
 
 				if (isMobile) return response;
