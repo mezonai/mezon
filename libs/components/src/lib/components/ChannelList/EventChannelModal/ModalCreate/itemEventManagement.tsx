@@ -13,7 +13,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { EEventStatus, EPermission, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
+import { EEventStatus, EPermission, ONE_MINUTE_MS, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
 import type { ApiUserEventRequest } from 'mezon-js/api.gen';
@@ -106,7 +106,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		const currentTime = Date.now();
 		const endTime = event.end_time_seconds ? event.end_time_seconds * 1000 : startTime + 2 * 60 * 60 * 1000;
 
-		const isActuallyUpcoming = currentTime < startTime;
+		const isActuallyUpcoming = (startTime - currentTime) / ONE_MINUTE_MS <= 10;
 		const isActuallyOngoing = currentTime >= startTime && currentTime <= endTime;
 
 		return {
@@ -165,7 +165,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 		const startTime = event.start_time_seconds * 1000;
 		const currentTime = Date.now();
 		const timeDiff = startTime - currentTime;
-		const minutesLeft = Math.ceil(timeDiff / (1000 * 60));
+		const minutesLeft = Math.ceil(timeDiff / ONE_MINUTE_MS);
 		if (minutesLeft <= 10 && minutesLeft > 0) {
 			return minutesLeft === 1 ? t('countdown.joinIn_one') : t('countdown.joinIn_other', { count: minutesLeft });
 		}
@@ -224,8 +224,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 	};
 
 	const displayLabel = useMemo(() => {
-		if (actualEventStatus.isUpcoming) return timeUntilEvent;
 		if (actualEventStatus.isOngoing) return t('countdown.joinNow');
+		if (actualEventStatus.isUpcoming) return timeUntilEvent;
 		return start || formatTimeI18n(new Date((event?.start_time_seconds || 0) * 1000).toISOString());
 	}, [actualEventStatus.isUpcoming, actualEventStatus.isOngoing, timeUntilEvent, start, event?.start_time_seconds, t]);
 
