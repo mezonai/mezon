@@ -17,7 +17,7 @@ const FileItem = ({ attachmentData, mode }: FileItemProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const userSendAttachment = useAppSelector((state) => selectMemberClanByUserId(state, attachmentData?.uploader ?? ''));
 	const username = userSendAttachment?.user?.username;
-	const attachmentSendTime = attachmentData?.create_time_seconds ? convertTimeString(attachmentData?.create_time_seconds) : '';
+	const attachmentSendTime = attachmentData?.create_time_seconds ? convertTimeString(attachmentData?.create_time_seconds * 1000) : '';
 	const fileType = getFileExtension(attachmentData?.filetype ?? '');
 
 	function getFileExtension(filetype: string) {
