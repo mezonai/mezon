@@ -195,8 +195,6 @@ const ImageAlbum = memo(
 
 				if (!attachmentData) return;
 
-				console.log(attachmentData, 'attachmentData');
-
 				const enhancedAttachmentData = {
 					...attachmentData,
 					create_time_seconds: attachmentData?.create_time_seconds
