@@ -1,11 +1,10 @@
-import { useAuth, useGetPriorityNameFromUserClan } from '@mezon/core';
+import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import type { MessagesEntity } from '@mezon/store';
 import {
 	appActions,
 	getStore,
 	messagesActions,
 	notificationActions,
-	selectAllUserClans,
 	selectCurrentChannelId,
 	selectIsShowCanvas,
 	selectIsShowInbox,
@@ -36,27 +35,11 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 	const isShowInbox = useSelector(selectIsShowInbox);
 	const [subjectTopic, setSubjectTopic] = useState('');
 	const dispatch = useAppDispatch();
-	const memberClan = useSelector(selectAllUserClans);
 	const isShowCanvas = useSelector(selectIsShowCanvas);
 
-	const { userId } = useAuth();
-	const userIds = topic.last_sent_message?.repliers;
-	const usernames = useMemo(() => {
-		return memberClan
-			.filter((profile) => (userIds || []).includes(profile?.user?.id || '') && profile?.user?.id !== userId)
-			.map((profile) => profile?.user?.username);
-	}, [memberClan, userIds, userId]);
 	useEffect(() => {
-		if (usernames.length === 0) {
-			setSubjectTopic('Topic and you');
-		}
-		if (usernames.length === 1) {
-			setSubjectTopic(`${usernames[0]} and you`);
-		}
-		if (usernames.length > 1) {
-			setSubjectTopic(`${usernames[usernames.length - 1]} and ${usernames.length - 1} others`);
-		}
-	}, [usernames, userIds]);
+		setSubjectTopic('Topic and you');
+	}, []);
 
 	const handleOpenTopic = async () => {
 		if (isShowCanvas) {
