@@ -445,7 +445,7 @@ const ClansList = memo(() => {
 	};
 
 	return (
-		<div className="flex flex-col gap-1 relative">
+		<div className="flex flex-col pb-3 gap-1 relative">
 			{orderedClansWithGroups
 				.filter((item): item is NonNullable<typeof item> => item != null)
 				.map((item, index) => {

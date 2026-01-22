@@ -114,6 +114,7 @@ export const updateWebhookBySpecificId = createAsyncThunk(
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.updateWebhookById(mezon.session, data.webhookId as string, data.request);
+			thunkAPI.dispatch(fetchWebhooks({ channelId: data?.isClanSetting ? '0' : data?.channelId, clanId: data.clanId, noCache: true }));
 		} catch (error) {
 			captureSentryError(error, 'integration/editWebhook');
 			return thunkAPI.rejectWithValue(error);
