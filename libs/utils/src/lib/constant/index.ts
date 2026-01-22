@@ -56,6 +56,8 @@ export const titleMission = ['Send a message in', 'Visit a channel', 'Do anythin
 export const MIN_THRESHOLD_CHARS = 8000;
 export const MAX_FORWARD_ADDITIONAL_MESSAGE_LENGTH = 2000;
 
+export const SHARE_CONTACT_KEY = 'share_contact';
+
 export type ITypeConvert = {
 	type: string;
 	typeConvert: string;

@@ -1,0 +1,22 @@
+{
+	"modal": {
+		"title": "Chia sẻ liên hệ",
+		"searchPlaceholder": "Tìm kiếm...",
+		"noResults": "Không tìm thấy kết quả",
+		"noFriends": "Không có bạn bè hoặc kênh nào",
+		"contactPreview": "Liên hệ sẽ chia sẻ",
+		"cancel": "Hủy",
+		"share": "Chia sẻ",
+		"sharing": "Đang gửi...",
+		"group": "Nhóm",
+		"channel": "Kênh",
+		"thread": "Chủ đề"
+	},
+	"card": {
+		"call": "Gọi",
+		"message": "Nhắn tin",
+		"blockedAction": "Bạn không thể thực hiện hành động này."
+	},
+	"contactSharedSuccess": "Chia sẻ thành công",
+	"contactSharedError": "Không thể chia sẻ"
+}

@@ -39,7 +39,6 @@ const ListPinMessage = ({
 			) : (
 				<div className="flex flex-col items-center justify-center space-y-2 py-2">
 					{listPinMessages?.map((pinMessage) => {
-						// Parse content if it's a JSON string
 						let contentString = pinMessage.content;
 						if (typeof contentString === 'string') {
 							try {

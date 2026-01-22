@@ -9,8 +9,8 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { IMessageWithUser } from '@mezon/utils';
-import { convertTimeString, generateE2eId } from '@mezon/utils';
+import type { IEmbedProps, IMessageWithUser } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, convertTimeString, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -20,6 +20,7 @@ import type { UnpinMessageObject } from '.';
 import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
+import ShareContactCard from '../../../ShareContact/ShareContactCard';
 
 type ItemPinMessageProps = {
 	pinMessage: PinMessageEntity;
@@ -74,6 +75,19 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		return {};
 	}, [pinMessage.content]);
 
+	const isShareContact = useMemo(() => {
+		const embeds = messageContentObject?.embed || message?.content?.embed || [];
+		const firstEmbed = embeds[0];
+		const fields = firstEmbed?.fields || [];
+		return fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY;
+	}, [message, messageContentObject]);
+
+	const shareContactEmbed = useMemo((): IEmbedProps | null => {
+		if (!isShareContact) return null;
+		const embeds = messageContentObject?.embed || message?.content?.embed || [];
+		return embeds[0] || null;
+	}, [isShareContact, messageContentObject, message]);
+
 	const handleUnpinConfirm = () => {
 		handleUnPinMessage({
 			pinMessage,
@@ -103,16 +117,20 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 						<div className=" text-[10px]">{messageTime}</div>
 					</div>
 					<div className="leading-6">
-						{contentString && (
-							<MessageLine
-								isInPinMsg={true}
-								isEditted={false}
-								content={messageContentObject}
-								isJumMessageEnabled={false}
-								isTokenClickAble={false}
-								messageId={message?.id}
-								isSearchMessage={true} // to correct size youtube emmbed
-							/>
+						{isShareContact && shareContactEmbed ? (
+							<ShareContactCard embed={shareContactEmbed} />
+						) : (
+							contentString && (
+								<MessageLine
+									isInPinMsg={true}
+									isEditted={false}
+									content={messageContentObject}
+									isJumMessageEnabled={false}
+									isTokenClickAble={false}
+									messageId={message?.id}
+									isSearchMessage={true}
+								/>
+							)
 						)}
 					</div>
 					{!!pinMessageAttachments?.length &&

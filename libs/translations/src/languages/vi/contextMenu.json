@@ -41,7 +41,8 @@
 		"banChat": "Chặn",
 		"unBanChat": "Bỏ chặn",
 		"kick": "Đuổi",
-		"removeFromThread": "Xóa {{username}} khỏi chủ đề"
+		"removeFromThread": "Xóa {{username}} khỏi chủ đề",
+		"shareContact": "Chia sẻ liên hệ này"
 	},
 	"removeLogo": "Xóa logo",
 	"processing": "Đang xử lý...",

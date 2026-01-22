@@ -4337,7 +4337,7 @@ export function Chat({ defaultFill, defaultSize = 'w-5 h-5' }: IconProps) {
 			height="24"
 			fill="currentColor"
 			viewBox="0 0 24 24"
-			className={` ${defaultSize} ${defaultFill ? defaultFill : 'dark:hover:text-white hover:text-black dark:text-channelTextLabel text-colorTextLightMode'}`}
+			className={` ${defaultSize}`}
 		>
 			<path fill="currentColor" d="M12 22a10 10 0 1 0-8.45-4.64c.13.19.11.44-.04.61l-2.06 2.37A1 1 0 0 0 2.2 22H12Z"></path>
 		</svg>

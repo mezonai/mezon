@@ -347,6 +347,7 @@ function MessageWithUser({
 								senderId={message?.sender_id}
 								messageId={message?.id}
 								channelId={message.channel_id}
+								code={message?.code}
 							/>
 						)}
 						{!isTopic && message?.code === TypeMessage.Topic && <TopicViewButton message={message} />}
