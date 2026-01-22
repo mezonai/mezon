@@ -51,7 +51,7 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 
 	const topicId = notify?.topic_id || '0';
 
-	const isTopic = !!topicId;
+	const isTopic = !!topicId && topicId !== '0';
 
 	const { handleClickJump } = useNotificationJump({
 		messageId,
