@@ -30,7 +30,18 @@ export const ONE_MINUTE_MS = 60000;
 export const GUEST_NAME = 'guest';
 export const FOR_SALE_CATE = 'forsale';
 
-export const PREDEFINED_EMOJI_CATEGORIES = ['Recent', 'Frequently', 'People', 'Nature', 'Food', 'Activities', 'Travel', 'Objects', 'Symbols', 'Flags'];
+export const PREDEFINED_EMOJI_CATEGORIES = [
+	'Recent',
+	'Frequently',
+	'People',
+	'Nature',
+	'Food',
+	'Activities',
+	'Travel',
+	'Objects',
+	'Symbols',
+	'Flags'
+];
 
 export const DEFAULT_ID = '0';
 export const LIMIT = 50;
@@ -44,6 +55,8 @@ export const titleMission = ['Send a message in', 'Visit a channel', 'Do anythin
 
 export const MIN_THRESHOLD_CHARS = 8000;
 export const MAX_FORWARD_ADDITIONAL_MESSAGE_LENGTH = 2000;
+
+export const SHARE_CONTACT_KEY = 'share_contact';
 
 export type ITypeConvert = {
 	type: string;

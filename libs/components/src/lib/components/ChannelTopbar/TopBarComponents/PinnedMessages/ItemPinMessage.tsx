@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { IEmbedProps, IMessageWithUser } from '@mezon/utils';
-import { TypeMessage, convertTimeString, generateE2eId } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, convertTimeString, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -76,16 +76,10 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	}, [pinMessage.content]);
 
 	const isShareContact = useMemo(() => {
-		const code = message?.code || messageContentObject?.code || messageContentObject?.embed?.code;
 		const embeds = messageContentObject?.embed || message?.content?.embed || [];
-
-		if (code === TypeMessage.ShareContact) return true;
-		if (embeds.length > 0) {
-			const firstEmbed = embeds[0];
-			const fields = firstEmbed?.fields || [];
-			if (fields.some((f: { name?: string; value?: string }) => f.value === 'share_contact')) return true;
-		}
-		return false;
+		const firstEmbed = embeds[0];
+		const fields = firstEmbed?.fields || [];
+		return fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY;
 	}, [message, messageContentObject]);
 
 	const shareContactEmbed = useMemo((): IEmbedProps | null => {

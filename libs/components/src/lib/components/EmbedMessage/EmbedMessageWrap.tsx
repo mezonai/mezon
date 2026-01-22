@@ -1,6 +1,6 @@
 import { useCustomNavigate } from '@mezon/core';
 import { channelsActions, getStore, selectAppChannelById } from '@mezon/store';
-import { TypeMessage, type IEmbedProps, type ObserveFn } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, TypeMessage, type IEmbedProps, type ObserveFn } from '@mezon/utils';
 import { useDispatch } from 'react-redux';
 import ShareContactCard from '../ShareContact/ShareContactCard';
 import { EmbedMessage } from './EmbedMessage';
@@ -16,7 +16,7 @@ interface EmbedMessageWrapProps {
 
 const isShareContactEmbed = (embed: IEmbedProps, code): boolean => {
 	const fields = embed.fields || [];
-	return (fields.length > 0 && fields[0]?.value === 'share_contact') || code === TypeMessage.ShareContact;
+	return (fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY) || code === TypeMessage.ShareContact;
 };
 
 export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, observeIntersectionForLoading, code }: EmbedMessageWrapProps) {
