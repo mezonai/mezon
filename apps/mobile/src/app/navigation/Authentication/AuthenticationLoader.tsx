@@ -35,6 +35,11 @@ import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex, getQueryParam } 
 import { isShowNotification, navigateToNotification } from '../../utils/pushNotificationHelpers';
 import { APP_SCREEN } from '../ScreenTypes';
 
+export const INotificationSound = {
+	BUZZ: 'buzz',
+	BANK: 'bank'
+};
+
 const messaging = getMessaging(getApp());
 export const AuthenticationLoader = () => {
 	const navigation = useNavigation<any>();
@@ -302,10 +307,10 @@ export const AuthenticationLoader = () => {
 					});
 				}
 				//Payload from FCM need messageType and sound
-				if (messageCode === TypeMessage.MessageBuzz || messageCode === TypeMessage.SendToken) {
+				if (remoteMessage?.data?.sound === INotificationSound.BUZZ || remoteMessage?.data?.sound === INotificationSound.BANK) {
 					const isAppActive = appStateRef.current === 'active';
 					if (isAppActive) {
-						playCustomSoundNotify(messageCode === TypeMessage.MessageBuzz ? 'buzz' : 'bank');
+						playCustomSoundNotify(remoteMessage?.data?.sound);
 					}
 
 					if (messageCode === TypeMessage.MessageBuzz) handleBuzz(remoteMessage);
