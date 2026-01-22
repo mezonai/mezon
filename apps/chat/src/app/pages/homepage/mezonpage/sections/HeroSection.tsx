@@ -132,7 +132,7 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 						<img
 							src="https://cdn.mezon.ai/landing-page-mezon/herosectionmezon.webp"
 							alt="Mezon Platform Preview"
-							className="w-full h-auto relative z-10"
+							className="w-full h-auto relative"
 							onLoad={() => setIsImageLoaded(true)}
 						/>
 
