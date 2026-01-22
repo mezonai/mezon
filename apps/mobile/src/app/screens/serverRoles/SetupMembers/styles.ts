@@ -20,7 +20,7 @@ export const style = (colors: Attributes) =>
 			alignSelf: 'center',
 			width: '100%',
 			textAlign: 'center',
-			zIndex: -1,
+			zIndex: 1,
 			color: colors.textStrong,
 			fontSize: size.s_16,
 			fontWeight: 'bold'

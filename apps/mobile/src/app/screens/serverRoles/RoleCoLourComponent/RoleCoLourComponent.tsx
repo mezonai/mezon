@@ -23,7 +23,7 @@ function RoleCoLourComponent({ roleId, disable = false }: { roleId: string; disa
 	const { t } = useTranslation('clanRoles');
 
 	const handleSaveRoleColor = useCallback(async (colorSelected: string) => {
-		if (colorSelected && activeRole) {
+		if (activeRole) {
 			const response = await updateRole(
 				activeRole?.clan_id || '0',
 				activeRole?.id,
@@ -35,7 +35,7 @@ function RoleCoLourComponent({ roleId, disable = false }: { roleId: string; disa
 				[]
 			);
 			if (response) {
-				setRoleColorSelected(colorSelected);
+				setRoleColorSelected(colorSelected || DEFAULT_ROLE_COLOR);
 			} else {
 				Toast.show({
 					type: 'error',
@@ -51,7 +51,7 @@ function RoleCoLourComponent({ roleId, disable = false }: { roleId: string; disa
 	const onPresentBS = () => {
 		const data = {
 			snapPoints: ['50%'],
-			children: <RoleColorPicker onPickColor={handleSaveRoleColor} />
+			children: <RoleColorPicker currentColor={roleColorSelected} onPickColor={handleSaveRoleColor} />
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
