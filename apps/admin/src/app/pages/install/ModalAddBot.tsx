@@ -47,7 +47,7 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 	const defaultChannelId = useMemo(() => {
 		if (!clanValue || channels.length === 0) return null;
 		const defaultChannel = channels.find(
-			(channel: ChannelsEntity) => channel.parentId === '0' && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL
+			(channel: ChannelsEntity) => channel.parent_id === '0' && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL
 		);
 		return defaultChannel ? defaultChannel.id : null;
 	}, [clanValue, channels]);
@@ -115,7 +115,7 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 				name={appDetail?.appname || ''}
 				clan={{
 					clanId: clanValue,
-					clanName: selectedClan?.clanName || '',
+					clanName: selectedClan?.clan_name || '',
 					channelId: defaultChannelId || undefined,
 					isEmpty: false
 				}}
