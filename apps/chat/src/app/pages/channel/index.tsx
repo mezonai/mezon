@@ -356,6 +356,10 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	}, [appChannel]);
 
 	useEffect(() => {
+		const validDate = userProfile?.user?.dob_seconds && new Date().getFullYear() - new Date(userProfile?.user?.dob_seconds).getFullYear() >= 18;
+		if (validDate) {
+			return;
+		}
 		const savedChannelIds = safeJSONParse(localStorage.getItem('agerestrictedchannelIds') || '{"t":[]}')?.t;
 		if (Array.isArray(savedChannelIds) && !savedChannelIds.includes(currentChannel.channel_id) && currentChannel.age_restricted === 1) {
 			setIsShowAgeRestricted(true);

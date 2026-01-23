@@ -277,7 +277,7 @@ export const ModalConfirmPin = ({
 							avatar_url: userProfile?.user?.avatar_url as string,
 							display_name: userProfile?.user?.display_name as string,
 							about_me: userProfile?.user?.about_me as string,
-							dob: userProfile?.user?.dob as string,
+							dob: userProfile?.user?.dob_seconds || 0,
 							encrypt_private_key: encryptWithPIN,
 							logo: userProfile?.logo || ''
 						})

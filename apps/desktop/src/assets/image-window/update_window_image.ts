@@ -17,8 +17,8 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 		name: escapeHtml(image.uploaderData.name),
 		fileName: escapeHtml(image.filename),
 		realUrl: sanitizeUrl(image.realUrl || ''),
-		create_time: image.create_time,
-		time: escapeHtml(formatDateTime(image.create_time)),
+		create_time: escapeHtml(formatDateTime(image.create_time_seconds || 0)),
+		time: escapeHtml(formatDateTime(image.create_time_seconds || 0)),
 		isVideo: image.isVideo,
 		filetype: image.filetype,
 		width: image.width || 600,
@@ -127,7 +127,7 @@ function updateImagePopup(imageData: ImageData, imageWindow: BrowserWindow) {
 	imageWindow.focus();
 }
 
-function formatDateTime(dateString: string) {
+function formatDateTime(dateString: string | number) {
 	return new Date(dateString).toLocaleString('vi-VN');
 }
 export default updateImagePopup;

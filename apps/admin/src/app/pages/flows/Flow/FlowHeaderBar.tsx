@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import { FlowContext } from '../../../context/FlowContext';
 import flowService from '../../../services/flowService';
 import { changeLoading, setEdgesContext, setNodesContext } from '../../../stores/flow/flow.action';
-import ExampleFlow from '../../flowExamples/ExampleFlows';
 import ConfirmDeleteFlowPopup from './ConfirmDeleteFlowPopup';
 
 interface IFlowHeaderBarProps {
@@ -24,12 +23,7 @@ const FlowHeaderBar = ({ isExampleFlow, onSaveFlow, flowData, changeOpenModalSav
 	const handleClickBackButton = () => {
 		flowDispatch(setNodesContext([]));
 		flowDispatch(setEdgesContext([]));
-		const checkIsExampleFlow = ExampleFlow.find((item) => item.id === flowId);
-		if (checkIsExampleFlow) {
-			navigate(`/developers/applications/${applicationId}/flow-examples`);
-		} else {
-			navigate(`/developers/applications/${applicationId}/flow`);
-		}
+		navigate(`/developers/applications/${applicationId}/flow`);
 	};
 
 	const handleClickDeleteButton = React.useCallback(async () => {

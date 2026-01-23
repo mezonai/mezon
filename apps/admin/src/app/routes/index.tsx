@@ -14,7 +14,6 @@ import { appLoader, shouldRevalidateApp } from '../loader/appLoader';
 import { authLoader, shouldRevalidateAuth } from '../loader/authLoader';
 // Pages
 import { applicationLoader, shouldRevalidateApplication } from '../loader/applicationLoader';
-import FlowExamples from '../pages/flowExamples';
 import Flows from '../pages/flows';
 import Flow from '../pages/flows/Flow';
 import InitialRoutes from './InititalRoutes';
@@ -127,10 +126,6 @@ export const Routes = () => {
 													<Flow />
 												</ReactFlowProvider>
 											)
-										},
-										{
-											path: 'flow-examples',
-											element: <FlowExamples />
 										},
 										{
 											path: 'use-flow-example/:exampleFlowId',

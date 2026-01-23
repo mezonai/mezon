@@ -6,7 +6,6 @@ import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import flowService from '../../../services/flowService';
-import ExampleFlow from '../../flowExamples/ExampleFlows';
 
 interface IMessage {
 	message: {
@@ -34,21 +33,6 @@ const FlowChatPopup = () => {
 		setMessages([...messages, { message: { message: input, urlImage: undefined }, type: 'input' }]);
 		setInput('');
 		try {
-			// check if message is into an example flow, return output message of that flow.
-			const checkMessageIsIntoExampleFlow = ExampleFlow.find((flow) => flow.message.input === input?.trim());
-			if (checkMessageIsIntoExampleFlow) {
-				setMessages((prev) => [
-					...prev,
-					{
-						message: {
-							message: checkMessageIsIntoExampleFlow.message.output.message,
-							urlImage: checkMessageIsIntoExampleFlow.message.output.image
-						},
-						type: 'output'
-					}
-				]);
-				return;
-			}
 			const response: { message: string; urlImage: string } = await flowService.executionFlow(
 				applicationId ?? '',
 				appDetail.token ?? '',
@@ -64,7 +48,7 @@ const FlowChatPopup = () => {
 			if (!response.message && !urlImage) {
 				response.message = 'Sorry, I dont know';
 			}
-			setMessages((prev) => [...prev, { message: { message: response.message, urlImage: urlImage }, type: 'output' }]);
+			setMessages((prev) => [...prev, { message: { message: response.message, urlImage }, type: 'output' }]);
 		} catch (error) {
 			setMessages((prev) => [...prev, { message: { message: "Sory, I dont't know", urlImage: undefined }, type: 'output' }]);
 		}

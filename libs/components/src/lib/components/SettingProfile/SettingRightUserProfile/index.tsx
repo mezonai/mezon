@@ -47,7 +47,7 @@ const SettingRightUser = ({
 	currentDisplayName: string;
 	aboutMe: string;
 	isDM: boolean;
-	dob: string;
+	dob: number;
 	logo: string;
 }) => {
 	const { t } = useTranslation('profileSetting');
