@@ -124,5 +124,14 @@ export const style = (colors: Attributes) =>
 		},
 		controlContainerTertiary: {
 			backgroundColor: colors.tertiary
+		},
+		chatButtonContainer: {
+			position: 'relative'
+		},
+		chatBadgeWrapper: {
+			position: 'absolute',
+			top: -size.s_4,
+			right: -size.s_4,
+			zIndex: 1
 		}
 	});
