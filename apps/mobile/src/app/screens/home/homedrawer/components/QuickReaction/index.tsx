@@ -9,6 +9,7 @@ import { Dimensions } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { clamp, runOnJS, useAnimatedStyle, useSharedValue, withSequence, withSpring } from 'react-native-reanimated';
+import { useThrottledCallback } from 'use-debounce';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
@@ -24,6 +25,8 @@ interface QuickReactionEmoji {
 	emojiId: string;
 	shortname: string;
 }
+
+const SEND_THROTTLE_MS = 300;
 
 const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth, windowHeight }: QuickReactionButtonProps) => {
 	const { themeValue } = useTheme();
@@ -115,7 +118,7 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth
 		fromTopic: false
 	});
 
-	const handleSend = useCallback(() => {
+	const sendQuickReaction = useCallback(() => {
 		if (!quickReactionEmoji?.emojiId || !quickReactionEmoji?.shortname) return;
 		sendMessage(
 			{
@@ -127,6 +130,8 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth
 			[]
 		);
 	}, [quickReactionEmoji, sendMessage]);
+
+	const handleSendThrottled = useThrottledCallback(sendQuickReaction, SEND_THROTTLE_MS, { leading: true, trailing: false });
 
 	const panGesture = useMemo(
 		() =>
@@ -158,9 +163,9 @@ const QuickReactionButton = ({ channelId, mode, isShowJumpToPresent, windowWidth
 				.maxDuration(200)
 				.onEnd(() => {
 					scale.value = withSequence(withSpring(1.5), withSpring(1));
-					runOnJS(handleSend)();
+					runOnJS(handleSendThrottled)();
 				}),
-		[handleSend]
+		[handleSendThrottled]
 	);
 
 	const gesture = useMemo(() => Gesture.Exclusive(panGesture, tapGesture), [panGesture, tapGesture]);

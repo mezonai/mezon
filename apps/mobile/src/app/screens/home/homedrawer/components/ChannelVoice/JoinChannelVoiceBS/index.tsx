@@ -19,6 +19,7 @@ import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
+import { ChannelBadgeUnread } from '../../ChannelList/ChannelBadgeUnread';
 import InviteToChannel from '../../InviteToChannel';
 import { style } from './JoinChannelVoiceBS.styles';
 import VoiceChannelAvatar from './VoiceChannelAvatar';
@@ -32,6 +33,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 	const channelId = useMemo(() => {
 		return channel?.channel_id || channel?.id || '';
 	}, [channel?.channel_id, channel?.id]);
+	const countMessUnread = channel?.count_mess_unread || 0;
 
 	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channelId));
 	const badge = useMemo(() => (voiceChannelMembers?.length > 3 ? voiceChannelMembers.length - 3 : 0), [voiceChannelMembers]);
@@ -40,7 +42,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 		if (!channel?.meeting_code) return;
 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, {
-			channelId: channelId,
+			channelId,
 			roomName: channel.meeting_code,
 			clanId: currentClanId
 		});
@@ -134,6 +136,11 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 						<View style={[styles.controlContainer, styles.controlContainerTertiary]}>
 							<MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.textStrong} />
 						</View>
+						{countMessUnread > 0 && (
+							<View style={styles.chatBadgeWrapper}>
+								<ChannelBadgeUnread countMessageUnread={countMessUnread} customDimension={size.s_20} />
+							</View>
+						)}
 					</TouchableOpacity>
 				</View>
 			</View>
