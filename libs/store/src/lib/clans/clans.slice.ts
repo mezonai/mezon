@@ -424,7 +424,7 @@ export const updateUser = createAsyncThunk(
 				body.about_me = about_me || '';
 			}
 
-			if (dob && dob !== currentUser?.user?.dob) {
+			if (dob && dob !== new Date(currentUser?.user?.dob_seconds || 0).toISOString()) {
 				const dobMs = new Date(dob).getTime();
 				if (!Number.isNaN(dobMs)) {
 					body.dob_seconds = Math.floor(dobMs / 1000);
@@ -460,7 +460,7 @@ export const updateUser = createAsyncThunk(
 							location: '',
 							timezone: '',
 							about_me,
-							dob
+							dob_seconds: body.dob_seconds
 						}
 					})
 				);
