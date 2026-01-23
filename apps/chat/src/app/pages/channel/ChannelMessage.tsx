@@ -74,11 +74,11 @@ export const ChannelMessage: ChannelMessageComponent = ({
 }: Readonly<MessageProps>) => {
 	const isSameUser = message?.user?.id === previousMessage?.user?.id;
 	const isTimeGreaterThan60Minutes =
-		!!message?.create_time_seconds && message.create_time_seconds - (previousMessage?.create_time_seconds || 0) < TIME_COMBINE_MS;
+		!!message?.create_time_seconds && message.create_time_seconds - (previousMessage?.create_time_seconds || 0) < TIME_COMBINE_MS / 1000;
 	const isDifferentDay =
 		!!message?.create_time_seconds &&
 		!!previousMessage?.create_time_seconds &&
-		!isSameDay(new Date(message.create_time_seconds), new Date(previousMessage?.create_time_seconds));
+		!isSameDay(new Date(message.create_time_seconds * 1000), new Date(previousMessage?.create_time_seconds * 1000));
 
 	const isCombine = isSameUser && isTimeGreaterThan60Minutes;
 
