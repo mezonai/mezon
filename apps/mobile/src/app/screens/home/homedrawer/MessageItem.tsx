@@ -149,18 +149,18 @@ const MessageItem = React.memo(
 			const currentClanUser = selectMemberClanByUserId(store.getState(), userId as string);
 
 			if (typeof message?.content?.t === 'string') {
-				if (message?.mentions?.some((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
+				if (message?.mentions?.some?.((mention) => mention?.user_id === ID_MENTION_HERE)) return true;
 			}
 
 			if (typeof message?.mentions === 'string') {
 				const parsedMentions = safeJSONParse(message?.mentions) as ApiMessageMention[] | undefined;
-				const includesUser = parsedMentions?.some((mention) => mention?.user_id === userId);
-				const includesRole = parsedMentions?.some((item) => currentClanUser?.role_id?.includes(item?.role_id as string));
+				const includesUser = parsedMentions?.some?.((mention) => mention?.user_id === userId);
+				const includesRole = parsedMentions?.some?.((item) => currentClanUser?.role_id?.includes(item?.role_id as string));
 				return includesUser || includesRole;
 			}
 
-			const includesUser = message?.mentions?.some((mention) => mention?.user_id === userId);
-			const includesRole = message?.mentions?.some((item) => currentClanUser?.role_id?.includes(item?.role_id as string));
+			const includesUser = message?.mentions?.some?.((mention) => mention?.user_id === userId);
+			const includesRole = message?.mentions?.some?.((item) => currentClanUser?.role_id?.includes(item?.role_id as string));
 			const checkReplied = userId && message?.references && message?.references[0]?.message_sender_id === userId;
 
 			return includesUser || includesRole || checkReplied;
@@ -237,7 +237,7 @@ const MessageItem = React.memo(
 				display_name: embed?.fields?.[3]?.value || '',
 				avatar: embed?.fields?.[4]?.value || ''
 			};
-		}, [message?.content?.embed?.[0], message?.code]);
+		}, [message?.code, message?.content?.embed]);
 
 		const onLongPressImage = useCallback(
 			(image?: ApiMessageAttachment) => {

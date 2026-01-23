@@ -30,7 +30,6 @@ export const style = (colors: Attributes) =>
 		},
 		contentWrapper: {
 			marginVertical: size.s_12,
-			marginHorizontal: size.s_6,
 			flex: 1
 		},
 		emptyContainer: {

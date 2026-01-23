@@ -72,13 +72,14 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center'
 		},
 		wrapperTabType: {
-			marginBottom: size.s_4,
+			marginBottom: size.s_4
+		},
+		wrapperTabTypeContent: {
+			minWidth: '100%',
 			gap: size.s_6,
-			padding: Metrics.size.m,
-			overflow: 'visible',
-			flexDirection: 'row',
-			alignItems: 'center',
-			justifyContent: 'space-between'
+			justifyContent: 'space-between',
+			flexGrow: 1,
+			padding: Metrics.size.m
 		},
 		textTabType: {
 			color: colors.text,

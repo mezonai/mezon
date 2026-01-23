@@ -178,13 +178,20 @@ const ShareContactScreen = () => {
 							<FlatList
 								data={filteredUsers}
 								keyExtractor={(user, index) => `${user?.user?.id || user?.id}_${index}_user`}
-								ItemSeparatorComponent={SeparatorWithLine}
+								ItemSeparatorComponent={() => (
+									<SeparatorWithLine
+										style={{
+											backgroundColor: themeValue.borderDim
+										}}
+									/>
+								)}
 								renderItem={({ item }: { item: FriendsEntity }) => renderMemberItem({ item })}
 								keyboardShouldPersistTaps={'handled'}
 								onEndReachedThreshold={0.1}
 								initialNumToRender={5}
 								maxToRenderPerBatch={5}
 								windowSize={15}
+								showsVerticalScrollIndicator={false}
 								updateCellsBatchingPeriod={10}
 								decelerationRate={'fast'}
 								disableVirtualization
