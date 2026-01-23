@@ -96,7 +96,7 @@ function TopicNotificationItem({ topic, onCloseTooltip }: TopicProps) {
 		}
 	};
 	const allTabProps = {
-		messageReplied: topic?.message,
+		messageReplied: topic,
 		subject: subjectTopic,
 		senderId: topic?.last_sent_message?.sender_id,
 		lastMessageTopic: topic?.last_sent_message,
@@ -131,6 +131,7 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 	const messageRl = useMemo(() => {
 		return messageReplied?.content ? safeJSONParse(messageReplied?.content) : null;
 	}, [messageReplied]);
+
 	const lastMsgTopic = useMemo(() => {
 		return lastMessageTopic?.content ? safeJSONParse(lastMessageTopic?.content) : null;
 	}, [lastMessageTopic]);
@@ -167,7 +168,8 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 							className="text-[12px] w-fit max-w-full break-words whitespace-normal"
 							data-e2e={generateE2eId('chat.channel_message.inbox.topics.init_message')}
 						>
-							<b className="font-semibold">Replied to</b>: {messageRl ? messageRl?.t : 'Unreachable message'}
+							<b className="font-semibold">Replied to</b>:{' '}
+							{messageRl?.t ? messageRl?.t : messageRl?.embed ? 'Attachment message' : 'Unreachable message'}
 						</div>
 					</div>
 					<div>
