@@ -21,18 +21,9 @@ function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartDat
 					onTabChange={onTabChange}
 					totals={metrics}
 					dateRangeText={dateRangeText}
-					iconUsers={<Icons.MemberList defaultSize="w-5 h-5" className="text-white" />}
-					iconChannels={<Icons.ThreadIcon defaultSize="w-5 h-5" className="text-white" />}
-					iconMessages={
-						<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-							/>
-						</svg>
-					}
+					iconUsers={<Icons.MemberList defaultSize="w-5 h-5" className="text-black dark:text-white" />}
+					iconChannels={<Icons.Hashtag defaultSize="w-5 h-5" className="text-black dark:text-white" />}
+					iconMessages={<Icons.MessageIcon defaultSize="w-5 h-5" className="text-black dark:text-white" />}
 				/>
 			</div>
 

@@ -1,4 +1,3 @@
-import { Icons } from '@mezon/ui';
 import { formatDateI18n } from '@mezon/utils';
 import 'rc-tooltip/assets/bootstrap.css';
 import React from 'react';
@@ -44,7 +43,7 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 				<MetricTab
 					active={activeTab === 'activeUsers'}
 					onClick={() => onTabChange('activeUsers')}
-					icon={iconUsers ?? <Icons.MemberList defaultSize="w-5 h-5" className="text-white" />}
+					icon={iconUsers}
 					iconWrapperClass="p-2 rounded-full bg-blue-900"
 					label="Total Active Users"
 					tooltip="Unique users who were active at least once"
@@ -59,7 +58,7 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 				<MetricTab
 					active={activeTab === 'activeChannels'}
 					onClick={() => onTabChange('activeChannels')}
-					icon={iconChannels ?? <Icons.Hashtag defaultSize="w-5 h-5" className="text-white" />}
+					icon={iconChannels}
 					iconWrapperClass="p-2 rounded-full bg-purple-800"
 					label="Total Active Channels"
 					tooltip="Unique channels that were active at least once"
@@ -74,18 +73,7 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 				<MetricTab
 					active={activeTab === 'messages'}
 					onClick={() => onTabChange('messages')}
-					icon={
-						iconMessages ?? (
-							<svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-								/>
-							</svg>
-						)
-					}
+					icon={iconMessages}
 					iconWrapperClass="p-2 rounded-full bg-red-800"
 					label="Total Messages"
 					tooltip="Total messages sent during the selected period"
