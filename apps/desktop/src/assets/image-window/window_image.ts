@@ -500,7 +500,7 @@ document.addEventListener('keydown', (e) => {
 	return popupWindow;
 }
 
-function formatDateTime(dateString) {
+function formatDateTime(dateString: number | string) {
 	const options: Intl.DateTimeFormatOptions = {
 		year: 'numeric',
 		month: '2-digit',
@@ -1180,8 +1180,8 @@ export const scriptThumnails = (reversedImages: IAttachmentEntityWithUploader[],
 		name: escapeHtml(image.uploaderData.name),
 		fileName: escapeHtml(image.filename),
 		realUrl: sanitizeUrl(image.realUrl || ''),
-		create_time: image.create_time,
-		time: escapeHtml(formatDateTime(image.create_time)),
+		create_time: escapeHtml(formatDateTime(image.create_time_seconds | 0)),
+		time: escapeHtml(formatDateTime(image.create_time_seconds | 0)),
 		isVideo: image.isVideo,
 		filetype: image.filetype,
 		width: image.width || 600,
