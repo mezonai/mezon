@@ -11,6 +11,7 @@ type ShareItem = {
 	type: ShareItemType;
 	channelId?: string;
 	clanId?: string;
+	clanName?: string;
 	isPublic?: boolean;
 };
 
@@ -40,7 +41,8 @@ export const ShareItemRow = ({ item, isSelected, onToggle, searchText, t }: Shar
 					) : (
 						<Icons.ThreadIconLocker className="w-5 h-5 text-theme-secondary" />
 					)}
-					<span className="text-theme-primary text-sm">{item.displayName}</span>
+					<span className="text-theme-primary text-sm flex-1">{item.displayName}</span>
+					{item.clanName && <span className="text-theme-primary text-xs uppercase ml-2">{item.clanName}</span>}
 				</div>
 			) : (
 				<div className="flex-1 mr-1">
@@ -56,12 +58,20 @@ export const ShareItemRow = ({ item, isSelected, onToggle, searchText, t }: Shar
 					/>
 				</div>
 			)}
-			<Checkbox
-				className="w-4 h-4 focus:ring-transparent"
-				id={`checkbox-item-${item.id}`}
-				checked={isSelected}
-				onChange={() => onToggle(item.id)}
-			/>
+			<div
+				className="flex items-center"
+				onClick={(e) => {
+					e.stopPropagation();
+					onToggle(item.id);
+				}}
+			>
+				<Checkbox
+					className="w-4 h-4 focus:ring-transparent pointer-events-none cursor-pointer"
+					id={`checkbox-item-${item.id}`}
+					checked={isSelected}
+					readOnly
+				/>
+			</div>
 		</div>
 	);
 };

@@ -3,6 +3,7 @@ import {
 	EStateFriend,
 	audioCallActions,
 	messagesActions,
+	selectAllAccount,
 	selectCurrentChannelId,
 	selectFriendById,
 	selectIsInCall,
@@ -44,6 +45,13 @@ const ShareContactCard = ({ embed }: ShareContactCardProps) => {
 	const { toDmGroupPageFromMainApp, navigate } = useAppNavigation();
 
 	const friendStatus = useAppSelector((state) => selectFriendById(state, userId));
+	const currentUser = useAppSelector(selectAllAccount);
+	const currentUserId = currentUser?.user?.id;
+
+	const isSelf = useMemo(() => {
+		return userId === currentUserId;
+	}, [userId, currentUserId]);
+
 	const isBlocked = useMemo(() => {
 		return friendStatus?.state === EStateFriend.BLOCK;
 	}, [friendStatus]);
@@ -83,6 +91,16 @@ const ShareContactCard = ({ embed }: ShareContactCardProps) => {
 
 	const handleCall = useCallback(async () => {
 		if (!userId || isInCall || abortControllerRef.current?.signal.aborted) return;
+
+		if (isSelf) {
+			dispatch(
+				toastActions.addToast({
+					message: t('card.cannotCallSelf'),
+					type: 'error'
+				})
+			);
+			return;
+		}
 
 		if (isBlocked) {
 			dispatch(
@@ -152,6 +170,7 @@ const ShareContactCard = ({ embed }: ShareContactCardProps) => {
 		dispatch,
 		isInCall,
 		isBlocked,
+		isSelf,
 		toDmGroupPageFromMainApp,
 		navigate,
 		t,
@@ -175,7 +194,7 @@ const ShareContactCard = ({ embed }: ShareContactCardProps) => {
 							src={avatar}
 						/>
 						<div className="rounded-full right-[-4px] absolute bottom-0 inline-flex items-center justify-center gap-1 p-[3px] text-sm ">
-							<UserStatusIconClan channelId={currentChannelId || ''} userId={userId || ''} status={userMeta?.status} />
+							<UserStatusIconClan channelId={currentChannelId || ''} userId={userId || ''} status={userMeta?.status} isShareContact />
 						</div>
 					</div>
 					<div className="flex-1 min-w-0">
