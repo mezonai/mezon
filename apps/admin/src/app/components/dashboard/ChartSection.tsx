@@ -27,7 +27,7 @@ function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartDat
 				/>
 			</div>
 
-			<div className="border dark:border-[#4d4f52] rounded-lg p-4">
+			<div className="border dark:border-[#4d4f52] rounded-lg p-4 mt-4">
 				{isLoading ? (
 					<div className="text-center py-12">
 						<div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-[#5865F2] border-r-transparent"></div>

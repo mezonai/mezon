@@ -139,7 +139,7 @@ function ClansTable({
 							// Data loading
 							<tr>
 								<td colSpan={4} className="px-4 py-8 text-center text-sm dark:text-textSecondary">
-									No data available for the selected period.
+									You don't own any clan to generate analytics.
 								</td>
 							</tr>
 						) : (

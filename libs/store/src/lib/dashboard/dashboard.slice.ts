@@ -20,15 +20,16 @@ export const fetchAllClansMetrics = createAsyncThunk(
 		try {
 			const getState = thunkAPI.getState as () => RootState;
 			const apiKey = createApiKey('fetchAllClansMetrics', start, end, rangeType || '');
-			const cached = getState().dashboard.allClansRawPayload;
-			const cacheMeta = getState().dashboard.allClansCache;
-			const shouldForce = shouldForceApiCall(apiKey, cacheMeta, false);
-			if (!shouldForce && cached) {
-				return { ...(cached as any), fromCache: true };
+			const cacheEntry = getState().dashboard.allClansCacheByKey?.[apiKey];
+			const shouldForce = shouldForceApiCall(apiKey, cacheEntry?.cache, false);
+
+			if (!shouldForce && cacheEntry?.rawPayload) {
+				return { ...(cacheEntry.rawPayload as any), fromCache: true };
 			}
 
 			const base = API_BASE || '';
-			const res = await fetch(`${base}/dashboard/all-clans/metrics?start=${start}&end=${end}${rangeType ? `&rangeType=${rangeType}` : ''}`);
+			const url = `${base}/dashboard/all-clans/metrics?start=${start}&end=${end}${rangeType ? `&rangeType=${rangeType}` : ''}`;
+			const res = await fetch(url);
 			if (!res.ok) {
 				const text = await res.text().catch(() => '');
 				return thunkAPI.rejectWithValue(text || res.statusText);
@@ -127,6 +128,7 @@ export interface DashboardState {
 	chartData: ChartPoint[];
 	allClansCache?: CacheMetadata;
 	allClansRawPayload?: any;
+	allClansCacheByKey: Record<string, { cache?: CacheMetadata; rawPayload?: any }>;
 	chartCacheByClan: Record<string, { cache?: CacheMetadata; rawPayload?: any }>;
 	tableData: ClanRow[];
 	usageTotals?: { totalActiveUsers: number; totalActiveChannels: number; totalMessages: number } | null;
@@ -143,6 +145,7 @@ export const initialDashboardState: DashboardState = {
 	chartData: [],
 	allClansCache: undefined,
 	allClansRawPayload: undefined,
+	allClansCacheByKey: {},
 	chartCacheByClan: {},
 	tableData: [],
 	usageTotals: null,
@@ -185,10 +188,19 @@ export const dashboardSlice = createSlice({
 			.addCase(fetchAllClansMetrics.fulfilled, (state, action) => {
 				state.chartLoading = false;
 				const payload = action.payload as any;
-				// store raw payload and cache metadata
+				const { start, end, rangeType } = (action.meta.arg as any) || {};
+				const apiKey = `fetchAllClansMetrics_${start}_${end}_${rangeType || ''}`;
+
+				// store raw payload and cache metadata by key
+				if (!state.allClansCacheByKey[apiKey]) state.allClansCacheByKey[apiKey] = {};
+				state.allClansCacheByKey[apiKey].rawPayload = payload;
+				state.allClansCacheByKey[apiKey].cache = createCacheMetadata();
+
+				// Also keep backward compatibility
 				state.allClansRawPayload = payload;
 				state.allClansCache = createCacheMetadata();
-				if (payload?.fromCache) return;
+
+				// Always update chartData even if from cache
 				if (payload?.success && payload.data) {
 					const labels: string[] = payload.data.labels || [];
 					state.chartData = labels.map((label: string, idx: number) => ({
