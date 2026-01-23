@@ -168,7 +168,7 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 				icon: IconCDN.pollIcon,
 				backgroundColor: FUNCTION_COLORS.POLL
 			},
-			{
+			!anonymousMode && {
 				id: 'share_contact',
 				label: t('common:shareContact'),
 				icon: IconCDN.businessIcon,
