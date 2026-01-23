@@ -1,7 +1,15 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import type { ChannelsEntity } from '@mezon/store-mobile';
-import { directActions, DMCallActions, EStateFriend, selectDirectsOpenlist, selectFriendStatus, useAppDispatch } from '@mezon/store-mobile';
+import {
+	directActions,
+	DMCallActions,
+	EStateFriend,
+	selectCurrentUserId,
+	selectDirectsOpenlist,
+	selectFriendStatus,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback } from 'react';
@@ -49,6 +57,7 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 	const dispatch = useAppDispatch();
 	const listDM = useSelector(selectDirectsOpenlist);
 	const friendStatus = useSelector(selectFriendStatus(data?.user_id));
+	const currentUserId = useSelector(selectCurrentUserId);
 
 	const handleOpenProfile = useCallback(() => {
 		const dataEmitter = {
@@ -131,6 +140,14 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 	}, []);
 
 	const handleCallUser = useCallback(async () => {
+		if (data?.user_id === currentUserId) {
+			Toast.show({
+				type: 'error',
+				text1: t('cannotCallYourself')
+			});
+			return;
+		}
+
 		if (friendStatus === EStateFriend.BLOCK) {
 			Toast.show({
 				type: 'error',

@@ -15,7 +15,8 @@
 	"card": {
 		"call": "Gọi",
 		"message": "Nhắn tin",
-		"blockedAction": "Bạn không thể thực hiện hành động này."
+		"blockedAction": "Bạn không thể thực hiện hành động này.",
+		"cannotCallSelf": "Bạn không thể gọi chính mình."
 	},
 	"contactSharedSuccess": "Chia sẻ thành công",
 	"contactSharedError": "Không thể chia sẻ"

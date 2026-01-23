@@ -514,5 +514,6 @@
 	"shareContactTitle": "Share Contact",
 	"sendMessage": "Message",
 	"noPermissionToCallBlocked": "You cannot perform this action.",
-	"detail": "Detail"
+	"detail": "Detail",
+	"cannotCallYourself": "You cannot call yourself."
 }

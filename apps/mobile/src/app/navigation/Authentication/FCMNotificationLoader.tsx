@@ -1,16 +1,12 @@
-import { ChatContext } from '@mezon/core';
 import { ActionEmitEvent, save, STORAGE_IS_DISABLE_LOAD_BACKGROUND } from '@mezon/mobile-components';
 import { appActions, getStore, getStoreAsync, selectCurrentChannelId, selectDmGroupCurrentId } from '@mezon/store-mobile';
 import notifee, { EventType } from '@notifee/react-native';
 import { getApp } from '@react-native-firebase/app';
 import { getMessaging, onNotificationOpenedApp } from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
-import type { ChannelMessage } from 'mezon-js';
-import { safeJSONParse } from 'mezon-js';
-import { useCallback, useContext, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { AppState, DeviceEventEmitter, Platform } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
-import NotificationPreferences from '../../utils/NotificationPreferences';
 import { checkNotificationPermission, processNotification } from '../../utils/pushNotificationHelpers';
 
 const messaging = getMessaging(getApp());
@@ -18,69 +14,15 @@ const messaging = getMessaging(getApp());
 export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 	const navigation = useNavigation<any>();
 	const isTabletLandscape = useTabletLandscape();
-	const { onchannelmessage } = useContext(ChatContext);
 	const appStateRef = useRef(AppState.currentState);
 
 	const checkPermission = async () => {
 		await checkNotificationPermission();
 	};
 
-	const mapMessageNotificationToSlice = (notificationDataPushedParse: any) => {
-		try {
-			if (notificationDataPushedParse?.length > 0) {
-				for (const data of notificationDataPushedParse) {
-					const extraMessage = data?.message;
-					if (extraMessage) {
-						const message = safeJSONParse(extraMessage);
-						if (message && typeof message === 'object' && message?.channel_id) {
-							const createTimeSeconds = message?.createTimeSeconds || Math.floor(Date.now() / 1000);
-							const updateTimeSeconds = message?.update_time_seconds;
-
-							let codeValue = 0;
-							if (message?.code) {
-								if (typeof message.code === 'number') {
-									codeValue = message.code;
-								} else if (typeof message.code === 'object' && message.code?.value !== undefined) {
-									codeValue = message.code.value;
-								}
-							}
-
-							const messageId = message?.message_id || message?.id;
-							if (!messageId) {
-								console.warn('onNotificationOpenedApp: Message missing id');
-								continue;
-							}
-
-							const messageData = {
-								...message,
-								code: codeValue,
-								id: messageId,
-								content: safeJSONParse(message?.content || '{}'),
-								attachments: safeJSONParse(message?.attachments || '[]'),
-								mentions: safeJSONParse(message?.mentions || '[]'),
-								references: safeJSONParse(message?.references || '[]'),
-								reactions: safeJSONParse(message?.reactions || '[]'),
-								create_time_seconds: createTimeSeconds,
-								update_time_seconds: updateTimeSeconds
-							};
-							onchannelmessage(messageData as ChannelMessage);
-						} else {
-							console.warn('onNotificationOpenedApp: Invalid message structure or missing channel_id');
-						}
-					}
-				}
-			}
-		} catch (e) {
-			console.error('log  => error mapMessageNotificationToSlice', e);
-		}
-	};
-
 	const setupNotificationListeners = async (navigation, isTabletLandscape = false) => {
 		try {
 			if (notifyInit) {
-				if (notifyInit?.data && Platform.OS === 'ios') {
-					mapMessageNotificationToSlice([notifyInit?.data]);
-				}
 				const store = await getStoreAsync();
 				save(STORAGE_IS_DISABLE_LOAD_BACKGROUND, true);
 				store.dispatch(appActions.setIsFromFCMMobile(true));
@@ -93,9 +35,6 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 			}
 
 			onNotificationOpenedApp(messaging, async (remoteMessage) => {
-				if (remoteMessage?.data && Platform.OS === 'ios') {
-					mapMessageNotificationToSlice([remoteMessage?.data]);
-				}
 				await processNotification({
 					notification: { ...remoteMessage?.notification, data: remoteMessage?.data },
 					navigation,
@@ -167,20 +106,6 @@ export const FCMNotificationLoader = ({ notifyInit }: { notifyInit: any }) => {
 			const channelIdJoined = channelId || currentDirectId || currentChannelId;
 
 			if (!channelIdJoined) return;
-			if (Platform.OS === 'android') {
-				const notificationDataPushed = await NotificationPreferences.getValue('notificationDataPushed');
-				const notificationDataPushedParse = safeJSONParse(notificationDataPushed || '[]');
-				const notificationDataMain = notificationDataPushedParse?.filter((item) => item?.channel === channelIdJoined);
-				mapMessageNotificationToSlice(notificationDataMain?.length ? notificationDataMain.slice(0, 10) : []);
-				await NotificationPreferences.clearValue('notificationDataPushed');
-			} else {
-				const notificationsDisplay = await notifee.getDisplayedNotifications();
-				const notificationDataPushedParse = notificationsDisplay?.map?.((item) => {
-					return item?.notification?.data;
-				});
-				const notificationDataMain = notificationDataPushedParse?.filter((item) => item?.channel === channelIdJoined);
-				mapMessageNotificationToSlice(notificationDataMain?.length ? notificationDataMain.slice(0, 10) : []);
-			}
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_REMOVE_NOTIFY_BY_CHANNEL_ID, { channelId: channelIdJoined });
 		} catch (error) {
 			console.error('Error processing notifications:', error);

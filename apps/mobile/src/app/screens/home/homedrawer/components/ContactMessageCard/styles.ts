@@ -18,8 +18,7 @@ export const style = (colors: Attributes, isTablet: boolean) =>
 		avatarWrapper: {
 			flexDirection: 'row',
 			gap: size.s_12,
-			paddingTop: size.s_12,
-			paddingBottom: size.s_50,
+			paddingVertical: size.s_16,
 			paddingLeft: size.s_12
 		},
 		avatarContainer: {

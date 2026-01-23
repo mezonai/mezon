@@ -18,10 +18,12 @@ import type { FC } from 'react';
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Menu, Submenu, useContextMenu } from 'react-contexify';
 import { useTranslation } from 'react-i18next';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import LeaveGroupModal from '../../components/LeaveGroupModal';
 import ModalEditGroup from '../../components/ModalEditGroup';
 import ItemPanelMember from '../../components/PanelMember/ItemPanelMember';
+import ShareContactModal from '../../components/ShareContact';
 import { useEditGroupModal } from '../../hooks/useEditGroupModal';
 import { MemberMenuItem } from '../MemberContextMenu';
 import { useModals } from '../MemberContextMenu/useModals';
@@ -83,6 +85,22 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		setIsLeaveGroupModalOpen(false);
 	}, []);
 
+	const [showShareContactModal, hideShareContactModal] = useModal(() => {
+		if (!currentUser) return null;
+
+		return <ShareContactModal contactUser={currentUser} onClose={hideShareContactModal} />;
+	}, [currentUser]);
+
+	const openShareContactModal = useCallback(
+		(user?: ChannelMembersEntity) => {
+			if (user) {
+				setCurrentUser(user);
+			}
+			showShareContactModal();
+		},
+		[setCurrentUser, showShareContactModal]
+	);
+
 	useEffect(() => {
 		if (currentUser?.channel_id) {
 			dispatch(directActions.fetchDirectMessage({ noCache: true }));
@@ -137,7 +155,8 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		blockFriend,
 		unBlockFriend,
 		openEditGroupModal: editGroupModal.openEditModal,
-		openLeaveGroupModal
+		openLeaveGroupModal,
+		openShareContactModal
 	});
 
 	const { showContextMenu } = useContextMenuHandlers({
@@ -173,6 +192,9 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const didIBlockUser = useMemo(() => {
 		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userProfile?.user?.id;
 	}, [currentUser?.user_ids, infoFriend, userProfile?.user?.id]);
+
+	const isFriend = infoFriend?.state === EStateFriend.FRIEND;
+	const shouldShowShareContact = contextMenuId === DMCT_GROUP_CHAT_ID && !isSelf && isFriend && !didIBlockUser;
 
 	const contextValue: DirectMessageContextMenuContextType = {
 		setCurrentHandlers,
@@ -309,6 +331,14 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 						)}
 						{contextMenuId === DMCT_GROUP_CHAT_ID && isOwnerClanOrGroup && (
 							<ItemPanelMember children={t('contextMenu.removeFromGroup')} onClick={currentHandlers.handleRemoveFromGroup} danger />
+						)}
+
+						{shouldShowShareContact && (
+							<MemberMenuItem
+								label={t('contextMenu.shareContact')}
+								onClick={currentHandlers.handleShareContact}
+								setWarningStatus={setWarningStatus}
+							/>
 						)}
 
 						{contextMenuId !== DMCT_GROUP_CHAT_ID && isDmGroup && (

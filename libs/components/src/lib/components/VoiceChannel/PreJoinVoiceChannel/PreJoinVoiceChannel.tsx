@@ -6,6 +6,7 @@ import { VoiceChannelUsers } from './VoiceChannelUsers/VoiceChannelUsers';
 interface PreJoinVoiceChannelProps {
 	channel_label?: string;
 	channel_id?: string;
+	clan_id?: string;
 	roomName?: string;
 	loading: boolean;
 	handleJoinRoom: () => void;
@@ -18,10 +19,11 @@ export const PreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 	roomName,
 	loading,
 	handleJoinRoom,
-	isCurrentChannel
+	isCurrentChannel,
+	clan_id
 }) => {
 	const { t } = useTranslation('common');
-	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel_id as string));
+	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel_id as string, clan_id as string));
 	const statusMenu = useAppSelector(selectStatusMenu);
 
 	return (

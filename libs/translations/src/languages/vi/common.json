@@ -514,5 +514,6 @@
 	"shareContactTitle": "Chia sẻ danh thiếp",
 	"sendMessage": "Nhắn tin",
 	"noPermissionToCallBlocked": "Bạn không thể thực hiện hành động này.",
-	"detail": "Chi tiết"
+	"detail": "Chi tiết",
+	"cannotCallYourself": "Bạn không thể gọi chính mình"
 }
