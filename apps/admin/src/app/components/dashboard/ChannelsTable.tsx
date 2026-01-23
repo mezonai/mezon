@@ -33,6 +33,7 @@ function ChannelsTable({ data }: ChannelsTableProps) {
 										aria-label="Select Channel name column"
 										type="checkbox"
 										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										defaultChecked
 									/>
 								</div>
 							</th>
@@ -43,6 +44,7 @@ function ChannelsTable({ data }: ChannelsTableProps) {
 										aria-label="Select Active users column"
 										type="checkbox"
 										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										defaultChecked
 									/>
 								</div>
 							</th>
@@ -53,6 +55,7 @@ function ChannelsTable({ data }: ChannelsTableProps) {
 										aria-label="Select Messages column"
 										type="checkbox"
 										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										defaultChecked
 									/>
 								</div>
 							</th>
