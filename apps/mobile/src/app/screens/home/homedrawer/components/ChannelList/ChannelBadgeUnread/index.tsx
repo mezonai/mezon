@@ -4,7 +4,7 @@ import { style } from './styles';
 
 interface IChannelBadgeUnreadProps {
 	countMessageUnread: number;
-	customDimension: number | undefined;
+	customDimension?: number | undefined;
 }
 
 export const ChannelBadgeUnread = memo(({ countMessageUnread, customDimension = undefined }: IChannelBadgeUnreadProps) => {
