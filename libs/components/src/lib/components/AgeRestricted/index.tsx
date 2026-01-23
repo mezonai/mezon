@@ -124,7 +124,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 		return (
 			<ModalLayout onClose={handleCloseModal}>
 				<div className="bg-theme-setting-primary  pt-4 rounded flex flex-col items-center text-theme-primary w-[550px]">
-					<img src={'/assets/images/cake.png'} alt="warning" width={200} height={200} />
+					<img src={'/assets/images/warning.svg'} alt="warning" width={200} height={200} />
 					<div className="text-center ml-6 mr-6">
 						<h2 className="text-2xl font-bold text-center mb-4 text-theme-primary-active">{t('confirmBirthdayTitle')}</h2>
 						<p>{t('confirmBirthdayMessage')}</p>
