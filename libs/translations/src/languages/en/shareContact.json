@@ -15,7 +15,8 @@
 	"card": {
 		"call": "Call",
 		"message": "Message",
-		"blockedAction": "You cannot perform this action."
+		"blockedAction": "You cannot perform this action.",
+		"cannotCallSelf": "You cannot call yourself."
 	},
 	"contactSharedSuccess": "Contact shared successfully",
 	"contactSharedError": "Failed to share contact"

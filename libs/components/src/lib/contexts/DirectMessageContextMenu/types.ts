@@ -23,6 +23,7 @@ export interface DirectMessageContextMenuHandlers {
 	handleEditGroup: () => void;
 	handleBlockFriend: () => Promise<void>;
 	handleUnblockFriend: () => Promise<void>;
+	handleShareContact: () => void;
 }
 
 export interface DirectMessageContextMenuContextType {

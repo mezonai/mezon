@@ -14,7 +14,7 @@ interface EmbedMessageWrapProps {
 	code?: number;
 }
 
-const isShareContactEmbed = (embed: IEmbedProps, code: any): boolean => {
+const isShareContactEmbed = (embed: IEmbedProps, code: number): boolean => {
 	const fields = embed.fields || [];
 	return (fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY) || code === TypeMessage.ShareContact;
 };
@@ -66,7 +66,7 @@ export function EmbedMessageWrap({ embeds, senderId, messageId, channelId, obser
 	return (
 		<div className="w-full">
 			{embeds.map((embed, index) =>
-				isShareContactEmbed(embed, code) ? (
+				isShareContactEmbed(embed, code ?? 0) ? (
 					<ShareContactCard key={index} embed={embed} />
 				) : (
 					<EmbedMessage
