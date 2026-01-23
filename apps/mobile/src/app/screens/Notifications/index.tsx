@@ -24,7 +24,7 @@ import { NotificationCategory, sleep, sortNotificationsByDate, TypeMessage } fro
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, DeviceEventEmitter, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, DeviceEventEmitter, FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
@@ -443,7 +443,12 @@ const Notifications = ({ navigation, route }) => {
 					<Text style={styles.notificationHeaderTitle}>{t('headerTitle')}</Text>
 					<BadgeFriendRequestNoti />
 				</View>
-				<View style={styles.wrapperTabType}>
+				<ScrollView
+					horizontal
+					showsHorizontalScrollIndicator={false}
+					style={styles.wrapperTabType}
+					contentContainerStyle={styles.wrapperTabTypeContent}
+				>
 					{notificationMenu.map((item, index) => (
 						<Pressable
 							key={index}
@@ -476,7 +481,7 @@ const Notifications = ({ navigation, route }) => {
 							</View>
 						</Pressable>
 					))}
-				</View>
+				</ScrollView>
 			</View>
 
 			{firstLoading ? (

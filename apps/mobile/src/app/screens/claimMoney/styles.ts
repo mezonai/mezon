@@ -20,8 +20,7 @@ export const style = (colors: Attributes) =>
 			zIndex: 999
 		},
 		fullscreenModal: {
-			width: '100%',
-			height: '100%',
+			flex: 1,
 			backgroundColor: colors.primary,
 			justifyContent: 'space-between',
 			paddingHorizontal: size.s_30,
@@ -74,11 +73,16 @@ export const style = (colors: Attributes) =>
 			fontWeight: '500'
 		},
 		confirmButton: {
+			marginHorizontal: size.s_30,
 			backgroundColor: colors.white,
 			justifyContent: 'center',
 			alignItems: 'center',
 			height: size.s_50,
+			marginBottom: size.s_30,
 			borderRadius: size.s_50
+		},
+		confirmButtonDisabled: {
+			opacity: 0.7
 		},
 		confirmText: {
 			fontSize: 18,
