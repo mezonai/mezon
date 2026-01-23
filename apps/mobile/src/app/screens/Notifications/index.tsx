@@ -146,7 +146,7 @@ const Notifications = ({ navigation, route }) => {
 					const state = store.getState();
 					const clanById = selectClanById(notify?.content?.clan_id || '0')(state);
 					const directById = selectDirectById(state, notify?.content?.channel_id || '0');
-					if (!clanById && !directById && notify?.content?.mode !== ChannelStreamMode.STREAM_MODE_DM) {
+					if (!clanById && !directById) {
 						Toast.show({ type: 'error', text1: t('unknowClan') });
 						return resolve();
 					}
@@ -157,7 +157,11 @@ const Notifications = ({ navigation, route }) => {
 
 					const promises = [];
 
-					if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM || notify?.content?.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
+					if (
+						directById ||
+						notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM ||
+						notify?.content?.mode === ChannelStreamMode.STREAM_MODE_GROUP
+					) {
 						promises.push(store.dispatch(directActions.fetchDirectMessage({})));
 						promises.push(store.dispatch(directActions.setDmGroupCurrentId(notify?.content?.channel_id)));
 					} else {
@@ -198,7 +202,11 @@ const Notifications = ({ navigation, route }) => {
 					}
 					await Promise.all(promises);
 
-					if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM || notify?.content?.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
+					if (
+						directById ||
+						notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM ||
+						notify?.content?.mode === ChannelStreamMode.STREAM_MODE_GROUP
+					) {
 						let directIdToJump = notify?.content?.channel_id;
 						if (notify?.content?.mode === ChannelStreamMode.STREAM_MODE_DM && (!directById || directById?.active === 0)) {
 							const response = await createDirectMessageWithUser(
