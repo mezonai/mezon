@@ -6,7 +6,6 @@ import {
 	clansActions,
 	directActions,
 	fetchListNotification,
-	getFirstMessageOfTopic,
 	getStoreAsync,
 	messagesActions,
 	notificationActions,
@@ -171,7 +170,7 @@ const Notifications = ({ navigation, route }) => {
 									})
 								),
 								store.dispatch(topicsActions.setCurrentTopicId(notify?.content?.topic_id || notify?.id || '')),
-								store.dispatch(getFirstMessageOfTopic({ topicId: notify?.content?.topic_id || notify?.id || '', isMobile: true })),
+								store.dispatch(topicsActions.setInitTopicMessageId(notify?.content?.message_id || '')),
 								store.dispatch(topicsActions.setIsShowCreateTopic(true))
 							);
 						}
@@ -476,6 +475,7 @@ const Notifications = ({ navigation, route }) => {
 				<SkeletonNotification numberSkeleton={8} />
 			) : notificationsFilter?.length ? (
 				<FlatList
+					key={`notification_${selectedTabs}`}
 					showsVerticalScrollIndicator={false}
 					data={notificationsFilter}
 					renderItem={renderItem}
