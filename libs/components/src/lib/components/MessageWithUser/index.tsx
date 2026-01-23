@@ -9,8 +9,7 @@ import {
 	ID_MENTION_HERE,
 	TOPIC_MAX_WIDTH,
 	TypeMessage,
-	WIDTH_CHANNEL_LIST_BOX,
-	WIDTH_CLAN_SIDE_BAR,
+	WIDTH_PANEL_PROFILE,
 	convertDateStringI18n,
 	convertTimeHour,
 	generateE2eId
@@ -142,20 +141,51 @@ function MessageWithUser({
 				mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
 					? HEIGHT_PANEL_PROFILE
 					: HEIGHT_PANEL_PROFILE_DM;
-			if (window.innerHeight - e.clientY > heightPanel) {
-				positionShortUser.current = {
-					top: e.clientY,
-					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
-				};
+
+			const popupWidth = WIDTH_PANEL_PROFILE;
+			const padding = 50;
+			const windowWidth = window.innerWidth;
+			const windowHeight = window.innerHeight;
+
+			const elementRect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+			const referenceX = elementRect.left;
+			const referenceY = elementRect.top + elementRect.height / 2;
+
+			let left: number;
+			let top: number;
+
+			if (isSearchMessage) {
+				const searchPadding = padding + 50;
+				left = referenceX - popupWidth - searchPadding;
+
+				if (left < padding) {
+					left = padding;
+				}
 			} else {
-				positionShortUser.current = {
-					top: window.innerHeight - heightPanel,
-					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
-				};
+				left = referenceX + padding;
+				if (left + popupWidth > windowWidth - padding) {
+					left = referenceX - popupWidth - padding;
+				}
+				if (left < padding) {
+					left = Math.max(padding, (windowWidth - popupWidth) / 2);
+				}
 			}
+
+			top = referenceY;
+			if (top + heightPanel + padding > windowHeight) {
+				top = windowHeight - heightPanel - padding;
+			}
+			if (top < padding) {
+				top = padding;
+			}
+
+			positionShortUser.current = {
+				top,
+				left
+			};
 			openProfileItem();
 		},
-		[mode]
+		[mode, isSearchMessage]
 	);
 
 	const handleLeaveComment = useCallback(() => {
