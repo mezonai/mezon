@@ -1,6 +1,6 @@
 import type { ThreadError } from '../types';
 
-export const TIME_COMBINE_MS = 10 * 60 * 1000; // 10 minutes in milliseconds
+export const TIME_COMBINE_SECOND = 10 * 60; // 10 minutes in milliseconds
 export const TIME_OFFSET = 3;
 export const LIMIT_MESSAGE = 50;
 export const LIMIT_CLAN_ITEM = 50;
@@ -19,7 +19,7 @@ export const RECENT_EMOJI_CATEGORY = 'Recent';
 export const DONE_ONBOARDING_STATUS = 3;
 export const FOR_15_MINUTES_SEC = 15 * 60;
 export const FOR_10_MINUTES_SEC = 10 * 60;
-export const FORWARD_MESSAGE_TIME = 10 * 60 * 1000;
+export const FORWARD_MESSAGE_TIME = 10 * 60;
 export const FOR_1_HOUR_SEC = 60 * 60;
 export const FOR_3_HOURS_SEC = 3 * 60 * 60;
 export const FOR_8_HOURS_SEC = 8 * 60 * 60;
