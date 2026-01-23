@@ -26,7 +26,7 @@ const AgeRestricted = ({ closeAgeRestricted }: { closeAgeRestricted: () => void 
 			userProfile?.user?.avatar_url || '',
 			userProfile?.user?.display_name || '',
 			userProfile?.user?.about_me || '',
-			dob,
+			new Date(dob).getTime() / 1000,
 			userProfile?.logo || ''
 		);
 	};

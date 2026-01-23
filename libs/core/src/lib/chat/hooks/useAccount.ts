@@ -5,7 +5,7 @@ export function useAccount() {
 	const dispatch = useAppDispatch();
 
 	const updateUser = React.useCallback(
-		async (name: string, logoUrl: string, displayName: string, aboutMe: string, dob: string, logo: string, noCache?: boolean) => {
+		async (name: string, logoUrl: string, displayName: string, aboutMe: string, dob: number, logo: string, noCache?: boolean) => {
 			const action = await dispatch(
 				clansActions.updateUser({
 					avatar_url: logoUrl,

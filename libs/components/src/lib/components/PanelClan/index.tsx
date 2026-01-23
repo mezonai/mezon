@@ -116,7 +116,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 				avatar_url: userProfile?.user?.avatar_url || '',
 				display_name: userProfile?.user?.display_name || '',
 				about_me: userProfile?.user?.about_me || '',
-				dob: userProfile?.user?.dob || '',
+				dob: userProfile?.user?.dob_seconds || 0,
 				logo: ''
 			})
 		);
