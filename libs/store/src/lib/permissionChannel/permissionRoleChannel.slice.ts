@@ -87,8 +87,14 @@ export const fetchPermissionRoleChannel = createAsyncThunk(
 	'permissionrolechannel/fetchPermissionRoleChannel',
 	async ({ roleId, channelId, userId, noCache }: fetchChannelsArgs, thunkAPI) => {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
-		const response = await fetchPermissionRoleChannelCached(thunkAPI.getState as () => RootState, mezon, roleId, channelId, userId, noCache);
+		const response = await fetchPermissionRoleChannelCached(
+			thunkAPI.getState as () => RootState,
+			mezon,
+			roleId || '0',
+			channelId || '0',
+			userId || '0',
+			noCache
+		);
 		if (!response || !response?.permission_role_channel) {
 			return [];
 		}

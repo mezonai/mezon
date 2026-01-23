@@ -152,7 +152,7 @@ const ForwardMessageModal = () => {
 			selectedObjectIdSend.clanId || '',
 			selectedObjectIdSend.id,
 			ChannelStreamMode.STREAM_MODE_CHANNEL,
-			currentChannel ? !currentChannel.channel_private : false
+			selectedObjectIdSend ? selectedObjectIdSend.isPublic : false
 		);
 	};
 
@@ -162,7 +162,7 @@ const ForwardMessageModal = () => {
 			selectedObjectIdSend.clanId || '',
 			selectedObjectIdSend.id,
 			ChannelStreamMode.STREAM_MODE_THREAD,
-			currentChannel ? !currentChannel.channel_private : false
+			selectedObjectIdSend ? selectedObjectIdSend.isPublic : false
 		);
 	};
 
