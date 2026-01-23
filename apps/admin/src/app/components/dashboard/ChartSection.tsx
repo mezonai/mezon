@@ -33,6 +33,10 @@ function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartDat
 						<div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-[#5865F2] border-r-transparent"></div>
 						<div className="mt-2 text-sm dark:text-textSecondary">Loading chart data...</div>
 					</div>
+				) : chartData.length === 0 ? (
+					<div className="text-center py-12">
+						<div className="text-lg font-medium dark:text-textSecondary">Metrics are available for clan owners only.</div>
+					</div>
 				) : (
 					<>
 						{activeTab === 'activeUsers' && (

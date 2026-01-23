@@ -138,8 +138,12 @@ function ClansTable({
 						) : (data?.length || 0) === 0 ? (
 							// Data loading
 							<tr>
-								<td colSpan={4} className="px-4 py-8 text-center text-sm dark:text-textSecondary">
-									You don't own any clan to generate analytics.
+								<td colSpan={4}>
+									<div className="text-center py-12">
+										<div className="text-lg font-medium dark:text-textSecondary">
+											You don't own any clan to generate analytics.
+										</div>
+									</div>
 								</td>
 							</tr>
 						) : (
