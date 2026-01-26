@@ -181,7 +181,7 @@ const ChannelVoiceInner = () => {
 
 			dispatch(voiceActions.resetVoiceControl());
 			if (userProfile?.user?.id) {
-				dispatch(voiceActions.removeFromClanInvoice(userProfile.user.id));
+				dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: voiceInfo.clanId }));
 			}
 			await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId, self);
 		},

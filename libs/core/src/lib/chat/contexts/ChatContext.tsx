@@ -213,7 +213,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onvoiceended = useCallback(
 		(voice: VoiceEndedEvent) => {
 			if (voice) {
-				dispatch(voiceActions.voiceEnded(voice?.voice_channel_id));
+				dispatch(voiceActions.voiceEnded({ channelId: voice?.voice_channel_id, clanId: voice?.clan_id }));
 			}
 		},
 		[dispatch]
@@ -891,7 +891,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const currentVoice = selectVoiceInfo(store.getState());
 			const currentStream = selectCurrentStreamInfo(store.getState());
 			user?.user_ids.forEach((id: string) => {
-				dispatch(voiceActions.removeFromClanInvoice(id));
+				dispatch(voiceActions.removeFromClanInvoice({ id, clanId: user.clan_id }));
 				if (id === userId) {
 					dispatch(emojiSuggestionActions.invalidateCache());
 					dispatch(stickerSettingActions.invalidateCache());
