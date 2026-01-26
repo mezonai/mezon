@@ -52,6 +52,7 @@ type Sessionlike = {
 	created: boolean;
 	is_remember: boolean;
 	api_url: string;
+	ws_url?: string;
 	expires_at?: number;
 	refresh_expires_at?: number;
 	created_at?: number;
@@ -256,6 +257,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					session.refresh_token || '',
 					session.created || false,
 					session.api_url || '',
+					session.ws_url || '',
 					session.id_token || '',
 					sessionData.is_remember || false
 				);
@@ -481,6 +483,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				session?.refresh_token,
 				session.created,
 				session.api_url,
+				session.ws_url || '',
 				session.id_token || '',
 				session.is_remember
 			);
@@ -503,7 +506,15 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			}
 
 			const newSession = await clientRef.current.sessionRefresh(
-				new Session(session?.token, session?.refresh_token, session.created, session.api_url, session.id_token || '', session.is_remember)
+				new Session(
+					session?.token,
+					session?.refresh_token,
+					session.created,
+					session.api_url,
+					session.ws_url || '',
+					session.id_token || '',
+					session.is_remember
+				)
 			);
 
 			sessionRef.current = newSession;
@@ -572,6 +583,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 									sessionRef.current.refresh_token,
 									sessionRef.current.created,
 									sessionRef.current.api_url,
+									sessionRef.current.ws_url || '',
 									sessionRef.current.id_token,
 									sessionRef.current.is_remember ?? false
 								)
@@ -689,6 +701,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					sessionData.refresh_token,
 					sessionData.created || false,
 					sessionData.api_url,
+					sessionData.ws_url || '',
 					sessionData.id_token || '',
 					sessionData.is_remember || false
 				);
