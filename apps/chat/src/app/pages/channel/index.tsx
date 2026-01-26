@@ -4,6 +4,7 @@ import { useAppNavigation, useAuth, useDragAndDrop, usePermissionChecker, useSea
 import type { ChannelsEntity } from '@mezon/store';
 import {
 	ETypeMission,
+	appActions,
 	channelAppActions,
 	channelsActions,
 	getStore,
@@ -34,6 +35,7 @@ import {
 	selectSearchMessagesLoadingStatus,
 	selectStatusMenu,
 	selectToCheckAppIsOpening,
+	selectVoiceInfo,
 	useAppDispatch,
 	useAppSelector,
 	usersClanActions
@@ -121,6 +123,10 @@ function useChannelSeen(channelId: string) {
 
 	useEffect(() => {
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
+		const voiceInfo = selectVoiceInfo(getStore().getState());
+		if (voiceInfo?.channelId && channelId !== voiceInfo.channelId) {
+			dispatch(appActions.setIsShowChatVoice(false));
+		}
 	}, [dispatch, channelId]);
 
 	useEffect(() => {
