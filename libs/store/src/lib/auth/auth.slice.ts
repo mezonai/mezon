@@ -38,6 +38,7 @@ export interface ISession {
 	vars?: object;
 	is_remember?: boolean;
 	api_url: string;
+	ws_url: string;
 	id_token?: string;
 }
 
@@ -132,6 +133,7 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 		sessionState.refresh_token,
 		sessionState.created,
 		sessionState.api_url,
+		sessionState.ws_url,
 		sessionState.id_token || '',
 		!!sessionState.is_remember
 	);

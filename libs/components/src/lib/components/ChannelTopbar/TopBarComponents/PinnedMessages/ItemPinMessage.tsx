@@ -10,7 +10,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { IEmbedProps, IMessageWithUser } from '@mezon/utils';
-import { SHARE_CONTACT_KEY, convertTimeString, generateE2eId } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, convertTimeString, generateE2eId, isImageFileType, isVideoFileType } from '@mezon/utils';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -163,10 +163,25 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 							const attachmentsToRender = [attachmentsList[0]];
 							const remainingCount = Math.max(0, attachmentsList.length - 1);
 
+							const firstAttachment = attachmentsList[0];
+							const isImageOrVideo = isImageFileType(firstAttachment?.filetype) || isVideoFileType(firstAttachment?.filetype);
+
 							return (
 								<div className="flex items-end gap-1">
-									<div className="relative w-[120px] h-[120px] overflow-hidden rounded cursor-default [&_*]:cursor-default [&_*]:hover:!scale-100 [&_*]:hover:!bg-transparent [&_*]:hover:!opacity-100">
-										<div className="w-full h-full [&_video]:w-full [&_video]:h-full [&_video]:object-cover [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_div]:w-full [&_div]:h-full">
+									<div
+										className={
+											isImageOrVideo
+												? 'relative w-[120px] h-[120px] overflow-hidden rounded cursor-default [&_*]:cursor-default [&_*]:hover:!scale-100 [&_*]:hover:!bg-transparent [&_*]:hover:!opacity-100'
+												: 'relative cursor-default'
+										}
+									>
+										<div
+											className={
+												isImageOrVideo
+													? 'w-full h-full [&_video]:w-full [&_video]:h-full [&_video]:object-cover [&_img]:w-full [&_img]:h-full [&_img]:object-cover [&_div]:w-full [&_div]:h-full'
+													: ''
+											}
+										>
 											<MessageAttachment
 												mode={mode as ChannelStreamMode}
 												message={

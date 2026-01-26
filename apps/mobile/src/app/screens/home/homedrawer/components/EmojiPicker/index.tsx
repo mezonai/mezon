@@ -119,7 +119,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 		if (messageActionNeedToResolve?.type === EMessageActionType.Reply) {
 			const targetMessage = messageActionNeedToResolve?.targetMessage;
 			messageRef = {
-				message_id: '',
+				message_id: '0',
 				message_ref_id: targetMessage?.id,
 				ref_type: 0,
 				message_sender_id: targetMessage?.sender_id,

@@ -51,7 +51,7 @@ const SuggestItem = ({
 	});
 
 	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | HashtagDm | null>(null);
-	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string));
+	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string, getChannel?.clan_id as string));
 	const checkVoiceStatus = useMemo(() => {
 		if (channelId !== undefined && numberMembersVoice && specificChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			return numberMembersVoice >= 2;

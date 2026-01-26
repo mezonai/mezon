@@ -30,7 +30,7 @@
     "install:desktop": "cd apps/desktop && yarn",
     "build:desktop:app": "nx run desktop:build",
     "build:desktop:renderer": "cross-env BUILD_TARGET='electron' nx build chat --prod --baseHref=./",
-    "build:desktop": "yarn install:desktop && yarn build:desktop:app && yarn build:desktop:renderer",
+    "build:desktop": "yarn install:desktop && yarn build:desktop:app",
     "package:desktop": "nx run desktop:package",
     "make:desktop": "nx run desktop:make",
     "release:desktop": "yarn build:desktop && yarn package:desktop && yarn make:desktop",
@@ -207,7 +207,6 @@
     "webpack-merge": "^5.10.0"
   },
   "resolutions": {
-    "@electron/notarize": "2.3.2",
     "cross-spawn": "^7.0.3",
     "axios": "^1.8.2",
     "image-size": "^1.2.1",
@@ -222,7 +221,9 @@
     "brace-expansion": "^2.0.2",
     "tar": "^7.5.6",
     "qs": "^6.14.1",
-    "glob": "^10.5.0"
+    "glob": "^10.5.0",
+    "@electron/rebuild": "^3.7.0",
+    "cacache": "^18.0.0"
   },
   "optionalDependencies": {
     "@nx/nx-darwin-arm64": "18.2.2",
