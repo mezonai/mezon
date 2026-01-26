@@ -214,6 +214,9 @@ export const referencesSlice = createSlice({
 			state.idMessageRefEdit = '';
 			state.idMessageRefReaction = '';
 			state.idMessageMention = '';
+		},
+		clearAttachmentDraft(state, action: PayloadAction<string>) {
+			delete state.attachmentAfterUpload[action.payload];
 		}
 	},
 	extraReducers: (builder) => {

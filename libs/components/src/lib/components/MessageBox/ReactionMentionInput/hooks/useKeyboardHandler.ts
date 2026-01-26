@@ -1,5 +1,7 @@
-import { RequestInput } from '@mezon/utils';
-import { KeyboardEvent, RefObject, useCallback } from 'react';
+import { getStore, referencesActions, selectAttachmentByChannelId, useAppDispatch } from '@mezon/store';
+import type { RequestInput } from '@mezon/utils';
+import type { KeyboardEvent, RefObject } from 'react';
+import { useCallback } from 'react';
 
 interface UseKeyboardHandlerProps {
 	editorRef: RefObject<HTMLDivElement | null>;
@@ -10,6 +12,7 @@ interface UseKeyboardHandlerProps {
 	setEphemeralTargetUserId?: (userId: string | null) => void;
 	setEphemeralTargetUserDisplay?: (display: string | null) => void;
 	ephemeralTargetUserId?: string | null;
+	channelId?: string;
 }
 
 export const useKeyboardHandler = ({
@@ -20,13 +23,22 @@ export const useKeyboardHandler = ({
 	setIsEphemeralMode,
 	setEphemeralTargetUserId,
 	setEphemeralTargetUserDisplay,
-	ephemeralTargetUserId
+	ephemeralTargetUserId,
+	channelId
 }: UseKeyboardHandlerProps) => {
+	const dispatch = useAppDispatch();
 	const onKeyDown = useCallback(
 		(event: KeyboardEvent<HTMLDivElement | HTMLTextAreaElement | HTMLInputElement>): void => {
 			const { key, ctrlKey, shiftKey, metaKey } = event;
 			switch (key) {
 				case 'Escape': {
+					const store = getStore();
+					const hasAttachment = selectAttachmentByChannelId(store.getState(), channelId ?? '');
+					if (hasAttachment) {
+						dispatch(referencesActions.clearAttachmentDraft(channelId as string));
+						return;
+					}
+
 					if (
 						(isEphemeralMode || ephemeralTargetUserId) &&
 						setIsEphemeralMode &&
@@ -59,7 +71,8 @@ export const useKeyboardHandler = ({
 			setIsEphemeralMode,
 			setEphemeralTargetUserId,
 			setEphemeralTargetUserDisplay,
-			ephemeralTargetUserId
+			ephemeralTargetUserId,
+			channelId
 		]
 	);
 

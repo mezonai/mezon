@@ -11,7 +11,6 @@ import {
 	selectCurrentChannelPrivate,
 	selectCurrentChannelType,
 	selectCurrentClanId,
-	selectCurrentTopicId,
 	selectDataReferences,
 	selectInitTopicMessageId,
 	selectSession,
@@ -43,7 +42,7 @@ import { BanCountDown } from '../channel';
 import MemoizedChannelMessages from '../channel/ChannelMessages';
 import { ChannelTyping } from '../channel/ChannelTyping';
 
-const TopicDiscussionBox = () => {
+const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 	const { t } = useTranslation('common');
 	const dispatch = useAppDispatch();
 	const currentChannelId = useSelector(selectCurrentChannelId);
@@ -53,7 +52,6 @@ const TopicDiscussionBox = () => {
 	const currentClanId = useSelector(selectCurrentClanId);
 	const allUserIdsInChannel = useAppSelector((state) => selectAllChannelMemberIds(state, currentChannelId as string, false));
 	const sessionUser = useSelector(selectSession);
-	const currentTopicId = useSelector(selectCurrentTopicId);
 	const [isFetchMessageDone, setIsFetchMessageDone] = useState(false);
 	const dataReferences = useAppSelector((state) => selectDataReferences(state, currentTopicId ?? ''));
 	const currentInputChannelId = currentTopicId || CREATING_TOPIC;
