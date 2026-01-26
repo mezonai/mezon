@@ -14,13 +14,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.18.1'
+      - name: Setup Node.js with nvm
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm use 20.18.1
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
 
       - name: Install package
         run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm use 20.18.1
           export nv=$(node -v)
           echo "Node version: $nv"
           echo "Installing dependencies"
@@ -30,6 +36,9 @@ jobs:
 
       - name: Reset Nx cache
         run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm use 20.18.1
           echo "Resetting Nx cache"
           yarn nx reset
 
@@ -100,6 +109,9 @@ jobs:
 
       - name: Release Desktop
         run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm use 20.18.1
           yarn release:desktop
         env:
           USE_HARD_LINKS: false
