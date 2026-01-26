@@ -1,8 +1,7 @@
 import type { DragEvent } from 'react';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import type { UsersStreamEntity, VoiceEntity } from '@mezon/store';
 import {
 	clansActions,
 	selectCategoryExpandStateByCategoryId,
@@ -14,14 +13,13 @@ import {
 	selectVoiceChannelMembersByChannelId,
 	useAppSelector
 } from '@mezon/store';
-import { Icons } from '@mezon/ui';
-import type { ChannelThreads } from '@mezon/utils';
+import type { ChannelThreads, IChannelMember } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import AvatarGroup, { AvatarCount } from '../../Avatar/AvatarGroup';
 import type { ChannelLinkRef } from '../../ChannelLink';
 import { ChannelLink } from '../../ChannelLink';
 import { AvatarUserShort } from '../../ClanSettings/SettingChannel';
-import UserListVoiceChannel from '../../UserListVoiceChannel';
+import UserListItem from '../../UserListVoiceChannel/UserListItemVoiceChannel';
 import type { IChannelLinkPermission } from '../CategorizedChannels';
 
 export type ChannelListItemRef = {
@@ -76,12 +74,6 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 		);
 	};
 
-	const [isExpandedPttMems, setIsExpendedPttMems] = useState(true);
-
-	const togglePttMembers = () => {
-		setIsExpendedPttMems(!isExpandedPttMems);
-	};
-
 	const hasUnread = useAppSelector((state) => selectIsUnreadThreadInChannel(state, channel.threadIds || []));
 	const renderChannelContent = useMemo(() => {
 		if (
@@ -95,64 +87,44 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 				currentChannelParentId === channel.id ||
 				channel?.count_mess_unread)
 		) {
-			return (
-				<>
-					{renderChannelLink()}
-					{channelMemberList?.length > 0 && (
-						<div className="flex gap-1 px-4">
-							<div className="flex gap-1 h-fit">
-								<Icons.InPttCall className="w-5 dark:text-channelTextLabel text-colorTextLightMode" />
-								<Icons.RightFilledTriangle
-									onClick={togglePttMembers}
-									className={`w-3 dark:text-channelTextLabel dark:hover:text-white text-colorTextLightMode hover:text-black duration-200 ${isExpandedPttMems ? 'rotate-90' : ''}`}
-								/>
-							</div>
-							<div className="flex-1">
-								{isExpandedPttMems ? (
-									<UserListVoiceChannel
-										isPttList
-										channelID={channel.channel_id ?? ''}
-										channelType={channel?.type}
-										memberList={channelMemberList}
-									/>
-								) : (
-									<CollapsedMemberList isPttList channelMemberList={channelMemberList} />
-								)}
-							</div>
-						</div>
-					)}
-				</>
-			);
+			return <>{renderChannelLink()}</>;
 		}
 
-		if (isCategoryExpanded) {
-			return (
-				<>
-					{renderChannelLink()}
-					<UserListVoiceChannel channelID={channel.channel_id ?? ''} channelType={channel?.type} memberList={channelMemberList} />
-				</>
-			);
-		}
-
-		return channelMemberList.length > 0 ? (
+		return (
 			<>
 				{renderChannelLink()}
-				<CollapsedMemberList channelMemberList={channelMemberList} />
+				{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
+					<>
+						{isCategoryExpanded ? (
+							<UserListVoiceChannel channelId={channel.channel_id ?? ''} channelType={channel?.type} clanId={channel.clan_id || ''} />
+						) : (
+							<CollapsedMemberList channelId={channel.channel_id ?? ''} channelType={channel?.type} clanId={channel.clan_id || ''} />
+						)}
+					</>
+				)}
 			</>
-		) : null;
+		);
 	}, [channel.type, channel.threads, channel.channel_id, isCategoryExpanded, channelMemberList, renderChannelLink]);
 
 	return <>{renderChannelContent} </>;
 };
 
 interface ICollapsedMemberListProps {
-	channelMemberList: VoiceEntity[] | UsersStreamEntity[];
-	isPttList?: boolean;
+	channelId: string;
+	clanId: string;
+	channelType?: number;
 }
 
-const CollapsedMemberList = ({ channelMemberList, isPttList }: ICollapsedMemberListProps) => {
+const CollapsedMemberList = ({ channelId, clanId, channelType }: ICollapsedMemberListProps) => {
+	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channelId, clanId));
+	const streamChannelMembers = useAppSelector((state) => selectStreamMembersByChannelId(state, clanId));
+	const channelMemberList = useMemo(() => {
+		if (channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE || channelType === ChannelType.CHANNEL_TYPE_APP) return voiceChannelMembers;
+		if (channelType === ChannelType.CHANNEL_TYPE_STREAMING) return streamChannelMembers;
+		return [];
+	}, [channelType, voiceChannelMembers, streamChannelMembers]);
 	return (
-		<AvatarGroup className={`${isPttList ? 'pr-6' : 'px-6'}`}>
+		<AvatarGroup className={'px-6'}>
 			{[...channelMemberList].slice(0, 5).map((member, index) => (
 				<AvatarUserShort id={member.user_id || ''} key={(member.user_id || '') + index} />
 			))}
@@ -162,5 +134,33 @@ const CollapsedMemberList = ({ channelMemberList, isPttList }: ICollapsedMemberL
 		</AvatarGroup>
 	);
 };
+
+type UserListVoiceChannelProps = {
+	readonly channelId: string;
+	readonly clanId: string;
+	channelType?: number;
+};
+
+function UserListVoiceChannel({ channelId, channelType, clanId }: UserListVoiceChannelProps) {
+	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channelId, clanId));
+	const streamChannelMembers = useAppSelector((state) => selectStreamMembersByChannelId(state, channelId));
+	const channelMemberList = useMemo(() => {
+		if (channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE || channelType === ChannelType.CHANNEL_TYPE_APP) return voiceChannelMembers;
+		if (channelType === ChannelType.CHANNEL_TYPE_STREAMING) return streamChannelMembers;
+		return [];
+	}, [channelType, voiceChannelMembers, streamChannelMembers]);
+
+	if (channelMemberList.length === 0) {
+		return null;
+	}
+
+	return channelMemberList?.map((item: IChannelMember) => {
+		return (
+			<div key={item.id} className={'mt-[1px]'}>
+				<UserListItem user={item} />
+			</div>
+		);
+	});
+}
 
 export default memo(ChannelLinkContent);
