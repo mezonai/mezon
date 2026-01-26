@@ -99,6 +99,8 @@ jobs:
           envkey_NX_CHAT_APP_ZK_API_URL: https://dong.mezon.ai/zk-api
 
       - name: Build
+        env:
+          BABEL_ENV: 'remove-e2e'
         run: |
           echo "Build"
           yarn build:chat
