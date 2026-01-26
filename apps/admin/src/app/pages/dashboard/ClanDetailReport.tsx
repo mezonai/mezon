@@ -1,6 +1,12 @@
 import {
+	fetchChannelUsers,
+	fetchClanChannels,
 	fetchClanMetrics,
+	selectChannelUsers,
+	selectChannelUsersLoading,
 	selectClanById,
+	selectClanChannels,
+	selectClanChannelsLoading,
 	selectDashboardChartData,
 	selectDashboardChartLoading,
 	useAppDispatch,
@@ -13,22 +19,9 @@ import ChannelsTable from '../../components/dashboard/ChannelsTable';
 import ChartSection from '../../components/dashboard/ChartSection';
 import { LoadingState, NoDataState } from '../../components/dashboard/StateComponents';
 import UsersTable from '../../components/dashboard/UsersTable';
+import { handleChannelCSVExport, handleUserCSVExport } from '../../utils/dashboard/csvExport';
 import { calculateAllowedGranularities, calculateMetrics, formatDateRangeText, getDateRangeFromPreset } from '../../utils/dashboard/reportUtils';
 import type { ChannelsData, ClanDetailReportProps, UserData } from './types';
-
-// Sample data for channels
-const sampleChannelData: ChannelsData[] = [
-	{ channelName: 'general', activeUsers: 5, messages: 23 },
-	{ channelName: 'announcements', activeUsers: 3, messages: 8 },
-	{ channelName: 'random', activeUsers: 4, messages: 15 }
-];
-
-// Sample data for users
-const sampleUserData: UserData[] = [
-	{ userName: 'User A', messages: 45 },
-	{ userName: 'User B', messages: 32 },
-	{ userName: 'User C', messages: 28 }
-];
 
 function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const [dateRange, setDateRange] = useState('7');
@@ -36,6 +29,10 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const [activeTab, setActiveTab] = useState<'activeUsers' | 'activeChannels' | 'messages'>('activeUsers');
 	const [customStartDate, setCustomStartDate] = useState('');
 	const [customEndDate, setCustomEndDate] = useState('');
+	const [selectedChannelColumns, setSelectedChannelColumns] = useState<string[]>(['channel_name', 'active_users', 'messages']);
+	const [isExportingChannelCSV, setIsExportingChannelCSV] = useState(false);
+	const [selectedUserColumns, setSelectedUserColumns] = useState<string[]>(['user_name', 'messages']);
+	const [isExportingUserCSV, setIsExportingUserCSV] = useState(false);
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -45,7 +42,14 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const chartData = useAppSelector(selectDashboardChartData);
 	const chartLoadingStore = useAppSelector(selectDashboardChartLoading);
 
-	const isLoadingDerived = chartLoadingStore;
+	const channelsLoadingStore = useAppSelector((s) => selectClanChannelsLoading(s));
+	const channelsFromStore = useAppSelector((s) => (clanId ? selectClanChannels(s, clanId) : []));
+	const channelUsersLoadingStore = useAppSelector((s) => selectChannelUsersLoading(s));
+
+	const firstChannelId = (channelsFromStore as any)?.[0]?.channelId || '';
+	const usersFromStore = useAppSelector((s) => (clanId && firstChannelId ? selectChannelUsers(s, clanId, firstChannelId) : []));
+
+	const isLoadingDerived = chartLoadingStore || channelsLoadingStore || channelUsersLoadingStore;
 	const hasNoDataDerived = !chartLoadingStore && (chartData?.length || 0) === 0;
 
 	// Fetch data from API
@@ -54,8 +58,24 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 
 		if (clanId) {
 			dispatch(fetchClanMetrics({ clanId, start: startStr, end: endStr, rangeType: periodFilter }));
+			dispatch(fetchClanChannels({ clanId, start: startStr, end: endStr, page: 1, limit: 10 }));
 		}
 	}, [clanId, refreshTrigger, dateRange, customStartDate, customEndDate, periodFilter, dispatch]);
+
+	// When channels load, fetch users for the first channel by default
+	useEffect(() => {
+		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
+		if (clanId && firstChannelId) {
+			dispatch(fetchChannelUsers({ clanId, channelId: firstChannelId, start: startStr, end: endStr }));
+		} else if (clanId && channelsFromStore && channelsFromStore.length > 0) {
+			// Fallback: try to extract channelId from raw payload
+			const stateAny: any = (dispatch as any).getState?.() || {};
+			const raw = stateAny?.dashboard?.channelsCacheByClan?.[clanId]?.rawPayload?.data?.channels || [];
+			const rawFirst = raw[0];
+			const cid = rawFirst?.channelId || rawFirst?.id || '';
+			if (cid) dispatch(fetchChannelUsers({ clanId, channelId: cid, start: startStr, end: endStr }));
+		}
+	}, [firstChannelId, clanId, dateRange, customStartDate, customEndDate, dispatch]);
 
 	const allowedGranularities = useMemo(
 		() => calculateAllowedGranularities(dateRange, customStartDate, customEndDate),
@@ -82,6 +102,26 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		setCustomStartDate('');
 		setCustomEndDate('');
 		setRefreshTrigger((prev) => prev + 1);
+	};
+
+	const toggleChannelColumn = (col: string) => {
+		setSelectedChannelColumns((prev) => (prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]));
+	};
+
+	const handleExportChannelCSV = async () => {
+		if (!clanId) return;
+		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
+		await handleChannelCSVExport(dispatch, clanId, startStr, endStr, periodFilter, selectedChannelColumns, setIsExportingChannelCSV);
+	};
+
+	const toggleUserColumn = (col: string) => {
+		setSelectedUserColumns((prev) => (prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]));
+	};
+
+	const handleExportUserCSV = async () => {
+		if (!clanId || !firstChannelId) return;
+		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
+		await handleUserCSVExport(dispatch, clanId, firstChannelId, startStr, endStr, periodFilter, selectedUserColumns, setIsExportingUserCSV);
 	};
 
 	return (
@@ -122,10 +162,26 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 			)}
 
 			{/* Channels Table Section */}
-			{!isLoadingDerived && !hasNoDataDerived && <ChannelsTable data={sampleChannelData} />}
+			{!isLoadingDerived && !hasNoDataDerived && (
+				<ChannelsTable
+					data={channelsFromStore as ChannelsData[]}
+					selectedColumns={selectedChannelColumns}
+					isExportingCSV={isExportingChannelCSV}
+					onExportCSV={handleExportChannelCSV}
+					onToggleColumn={toggleChannelColumn}
+				/>
+			)}
 
 			{/* User Table Section */}
-			{!isLoadingDerived && !hasNoDataDerived && <UsersTable data={sampleUserData} />}
+			{!isLoadingDerived && !hasNoDataDerived && (
+				<UsersTable
+					data={(usersFromStore as UserData[]) || []}
+					selectedColumns={selectedUserColumns}
+					isExportingCSV={isExportingUserCSV}
+					onExportCSV={handleExportUserCSV}
+					onToggleColumn={toggleUserColumn}
+				/>
+			)}
 		</div>
 	);
 }
