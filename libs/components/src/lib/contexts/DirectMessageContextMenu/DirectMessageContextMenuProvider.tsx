@@ -15,7 +15,7 @@ import {
 import { EMuteState, FOR_15_MINUTES_SEC, FOR_1_HOUR_SEC, FOR_24_HOURS_SEC, FOR_3_HOURS_SEC, FOR_8_HOURS_SEC } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { FC } from 'react';
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { Menu, Submenu, useContextMenu } from 'react-contexify';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -100,12 +100,6 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		},
 		[setCurrentUser, showShareContactModal]
 	);
-
-	useEffect(() => {
-		if (currentUser?.channel_id) {
-			dispatch(directActions.fetchDirectMessage({ noCache: true }));
-		}
-	}, [currentUser?.channel_id, dispatch]);
 	const showMenu = useCallback(
 		(event: React.MouseEvent) => {
 			show({ event });
