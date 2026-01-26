@@ -14,19 +14,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Node.js with nvm
-        run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          nvm use 24.5.0
-          echo "Node version: $(node -v)"
-          echo "npm version: $(npm -v)"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.5.0'
 
       - name: Install dependencies
         run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          nvm use 24.5.0
           echo "Environments"
           echo "NODE_ENV: ${{ env.NODE_ENV }}"
           export nv=$(node -v)
@@ -39,9 +33,6 @@ jobs:
 
       - name: Reset Nx cache
         run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          nvm use 24.5.0
           echo "Resetting Nx cache"
           yarn nx reset
 
@@ -111,9 +102,6 @@ jobs:
         env:
           BABEL_ENV: 'remove-e2e'
         run: |
-          export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-          nvm use 24.5.0
           echo "Build"
           yarn build:chat
 
