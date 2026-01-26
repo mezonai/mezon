@@ -19,6 +19,7 @@ interface UseDefaultHandlersParams {
 	unBlockFriend: (username: string, userId: string) => Promise<boolean>;
 	openEditGroupModal?: () => void;
 	openLeaveGroupModal?: () => void;
+	openShareContactModal?: (user?: any) => void;
 }
 
 export function useDefaultHandlers({
@@ -35,7 +36,8 @@ export function useDefaultHandlers({
 	blockFriend,
 	unBlockFriend,
 	openEditGroupModal,
-	openLeaveGroupModal
+	openLeaveGroupModal,
+	openShareContactModal
 }: UseDefaultHandlersParams) {
 	const { t } = useTranslation('friendsPage');
 	const createDefaultHandlers = useCallback(
@@ -127,6 +129,11 @@ export function useDefaultHandlers({
 					if (openEditGroupModal) {
 						openEditGroupModal();
 					}
+				},
+				handleShareContact: () => {
+					if (user && openShareContactModal) {
+						openShareContactModal(user);
+					}
 				}
 			};
 		},
@@ -144,7 +151,8 @@ export function useDefaultHandlers({
 			blockFriend,
 			t,
 			unBlockFriend,
-			openEditGroupModal
+			openEditGroupModal,
+			openShareContactModal
 		]
 	);
 

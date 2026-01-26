@@ -10,7 +10,7 @@ import {
 	STORAGE_MY_USER_ID,
 	STORAGE_OFFER_HAVE_CALL_CACHE
 } from '@mezon/mobile-components';
-import { appActions, channelsActions, clansActions, directActions, getFirstMessageOfTopic, getStoreAsync, topicsActions } from '@mezon/store-mobile';
+import { appActions, channelsActions, clansActions, directActions, getStoreAsync, topicsActions } from '@mezon/store-mobile';
 import i18n from '@mezon/translations';
 import { sleep } from '@mezon/utils';
 import notifee, { AndroidLaunchActivityFlag, AuthorizationStatus as NotifeeAuthorizationStatus } from '@notifee/react-native';
@@ -592,7 +592,6 @@ const handleOpenTopicDiscustion = async (store: any, topicId: string, channelId:
 	const promises = [];
 	promises.push(store.dispatch(topicsActions.setCurrentTopicId(topicId || '')));
 	promises.push(store.dispatch(topicsActions.setIsShowCreateTopic(true)));
-	promises.push(store.dispatch(getFirstMessageOfTopic({ topicId: topicId || '', isMobile: true })));
 
 	await Promise.all(promises);
 	if (navigation) {

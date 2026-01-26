@@ -17,11 +17,17 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24.5.0'  
+          node-version: '20.19.0'
 
       - name: Install package
         run: |
-          echo "yarn"
+          echo "Environments"
+          echo "NODE_ENV: ${{ env.NODE_ENV }}"
+          $nv = node -v
+          echo "Node version: $nv"
+          echo "Installing dependencies"
+          yarn config set nodedir $env:LOCALAPPDATA\node-gyp\Cache\20.19.0\
+          echo "Node directory configured"
           yarn
 
       - name: Reset Nx cache

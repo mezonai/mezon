@@ -1,6 +1,6 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
-import { selectFirstMessageEntityTopic, selectFirstMessageOfCurrentTopic, useAppSelector } from '@mezon/store-mobile';
+import { selectFirstMessageOfCurrentTopic, useAppSelector } from '@mezon/store-mobile';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
@@ -26,22 +26,10 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: ITopicHeaderProps) =
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['message', 'common']);
-	const firstMessageEntity = useAppSelector((state) => selectFirstMessageEntityTopic(state));
-	const firstMessageByChannel = useAppSelector((state) => selectFirstMessageOfCurrentTopic(state, currentChannelId || ''));
-
-	const firstMessage = useMemo(() => {
-		if (firstMessageByChannel) {
-			return firstMessageByChannel;
-		}
-		return firstMessageEntity;
-	}, [firstMessageByChannel, firstMessageEntity]);
+	const firstMessage = useAppSelector((state) => selectFirstMessageOfCurrentTopic(state, currentChannelId || ''));
 
 	const { priorityAvatar, namePriority } = useGetPriorityNameFromUserClan(firstMessage?.sender_id || '');
 	const userRolesClan = useColorsRoleById(firstMessage?.sender_id || '');
-
-	const senderUsername = useMemo(() => {
-		return firstMessage?.user?.username || firstMessage?.username || '';
-	}, [firstMessage?.user?.username, firstMessage?.username]);
 
 	const colorSenderName = useMemo(() => {
 		return (
@@ -84,7 +72,7 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: ITopicHeaderProps) =
 			{firstMessage && (
 				<View style={styles.userInfo}>
 					<View style={styles.avatarWrapper}>
-						<MezonClanAvatar alt={senderUsername} image={priorityAvatar} />
+						<MezonClanAvatar alt={namePriority} image={priorityAvatar} />
 					</View>
 
 					<View>

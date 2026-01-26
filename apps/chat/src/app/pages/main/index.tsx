@@ -27,7 +27,6 @@ import {
 	accountActions,
 	clansActions,
 	e2eeActions,
-	fetchDirectMessage,
 	getIsShowPopupForward,
 	getStore,
 	onboardingActions,
@@ -92,7 +91,6 @@ function MyApp() {
 			const prefixKey = PLATFORM_ENV === Platform.MACOS ? 'metaKey' : 'ctrlKey';
 			if (event[prefixKey] && (event.key === 'k' || event.key === 'K')) {
 				event.preventDefault();
-				dispatch(fetchDirectMessage({}));
 				openSearchModal();
 			}
 			if (event[prefixKey] && event.shiftKey && event.key === 'Enter' && !directId) {

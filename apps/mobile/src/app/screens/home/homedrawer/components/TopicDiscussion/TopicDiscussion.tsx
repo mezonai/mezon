@@ -89,7 +89,6 @@ export default function TopicDiscussion() {
 		return () => {
 			dispatch(topicsActions.setCurrentTopicId(''));
 			dispatch(topicsActions.setIsShowCreateTopic(false));
-			dispatch(topicsActions.setFirstMessageTopic(null));
 			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
 				isShow: false,

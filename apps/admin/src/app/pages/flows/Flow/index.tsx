@@ -11,7 +11,6 @@ import { FlowContext } from '../../../context/FlowContext';
 import flowService from '../../../services/flowService';
 import { addEdge, addNode, changeLoading, deleteNode, setEdgesContext, setNodesContext } from '../../../stores/flow/flow.action';
 import type { IEdge, IFlowDataRequest, IFlowDetail, INode, INodeType, IParameter } from '../../../stores/flow/flow.interface';
-import ExampleFlow from '../../flowExamples/ExampleFlows';
 import AddNodeMenuPopup from '../AddNodeMenuPopup';
 import FlowChatPopup from '../FlowChat';
 import CustomNode from '../nodes/CustomNode';
@@ -292,27 +291,11 @@ const Flow = () => {
 			});
 			flowDispatch(setEdgesContext(listEdge));
 		};
-
-		const checkIsExampleFlow = ExampleFlow.find((item) => item.id === flowId || item.id === exampleFlowId);
-		// set flow data from example flow => use example flow template to create new flow
-		if (exampleFlowId && checkIsExampleFlow) {
-			setFlowDetail(checkIsExampleFlow.flowDetail);
-			setIsExampleFlow(false);
-			return;
-		}
-
 		// set flow data is empty when flowId is empty => create new flow
 		if (!flowId) {
 			flowDispatch(setNodesContext([]));
 			flowDispatch(setEdgesContext([]));
 			setIsExampleFlow(false);
-			return;
-		}
-
-		// get flow detail from example flow to display in flow editor
-		if (checkIsExampleFlow) {
-			setFlowDetail(checkIsExampleFlow.flowDetail);
-			setIsExampleFlow(true);
 			return;
 		}
 

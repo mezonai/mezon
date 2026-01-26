@@ -30,7 +30,7 @@
     "install:desktop": "cd apps/desktop && yarn",
     "build:desktop:app": "nx run desktop:build",
     "build:desktop:renderer": "cross-env BUILD_TARGET='electron' nx build chat --prod --baseHref=./",
-    "build:desktop": "yarn install:desktop && yarn build:desktop:app && yarn build:desktop:renderer",
+    "build:desktop": "yarn install:desktop && yarn build:desktop:app",
     "package:desktop": "nx run desktop:package",
     "make:desktop": "nx run desktop:make",
     "release:desktop": "yarn build:desktop && yarn package:desktop && yarn make:desktop",
@@ -76,8 +76,8 @@
     "lodash.isequal": "^4.5.0",
     "lowlight": "^3.3.0",
     "mezon-active-windows": "0.1.38",
-    "mezon-js": "2.14.54",
-    "mezon-js-protobuf": "1.8.94",
+    "mezon-js": "2.14.57",
+    "mezon-js-protobuf": "1.8.95",
     "mmn-client-js": "1.0.16",
     "nx-electron": "^20.0.2",
     "quill": "^2.0.3",
@@ -207,7 +207,6 @@
     "webpack-merge": "^5.10.0"
   },
   "resolutions": {
-    "@electron/notarize": "2.3.2",
     "cross-spawn": "^7.0.3",
     "axios": "^1.8.2",
     "image-size": "^1.2.1",

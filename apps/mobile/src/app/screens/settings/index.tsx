@@ -107,7 +107,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.devices'),
-					icon: <MezonIconCDN icon={IconCDN.mobileDeviceIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <MezonIconCDN icon={IconCDN.devicesIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[navigation, t, themeValue.textStrong]

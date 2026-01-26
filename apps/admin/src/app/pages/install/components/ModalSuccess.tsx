@@ -1,5 +1,5 @@
 import { useAppNavigation } from '@mezon/core';
-import { Check } from 'libs/ui/src/lib/Icons';
+import { Check } from '@mezon/ui/lib/Icons/icons';
 import { useNavigate } from 'react-router-dom';
 import type { TypeSelectClan } from './types';
 

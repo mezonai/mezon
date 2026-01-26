@@ -1,15 +1,15 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
-export const style = (colors: Attributes) =>
+export const style = (customDimension?: number | undefined) =>
 	StyleSheet.create({
 		channelDotWrapper: {
 			backgroundColor: baseColor.redStrong,
-			height: size.s_18,
-			width: size.s_18,
+			height: customDimension ?? size.s_18,
+			width: customDimension ?? size.s_18,
 			justifyContent: 'center',
 			alignItems: 'center',
-			borderRadius: size.s_18
+			borderRadius: customDimension ?? size.s_18
 		},
 
 		channelDot: {

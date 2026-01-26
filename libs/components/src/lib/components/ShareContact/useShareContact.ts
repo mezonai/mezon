@@ -4,7 +4,7 @@ import {
 	EStateFriend,
 	messagesActions,
 	selectAllAccount,
-	selectAllChannels,
+	selectAllChannelsByUser,
 	selectAllDirectMessages,
 	selectAllFriends,
 	selectBlockedUsers,
@@ -26,6 +26,7 @@ export type ShareItem = {
 	type: ShareItemType;
 	channelId?: string;
 	clanId?: string;
+	clanName?: string;
 	isPublic?: boolean;
 };
 
@@ -71,7 +72,7 @@ export const useShareContact = ({ contactUser, t }: UseShareContactProps) => {
 	const allFriends = useSelector(selectAllFriends);
 	const blockedUsers = useSelector(selectBlockedUsers);
 	const allDirectMessages = useSelector(selectAllDirectMessages);
-	const allChannels = useSelector(selectAllChannels);
+	const allChannels = useSelector(selectAllChannelsByUser);
 
 	const blockedUserIds = useMemo(() => new Set(blockedUsers.map((b) => b?.user?.id)), [blockedUsers]);
 
@@ -116,6 +117,7 @@ export const useShareContact = ({ contactUser, t }: UseShareContactProps) => {
 				type: (ch.type === ChannelType.CHANNEL_TYPE_THREAD ? 'thread' : 'channel') as ShareItemType,
 				channelId: ch.channel_id || ch.id,
 				clanId: ch.clan_id || '',
+				clanName: ch.clan_name || '',
 				isPublic: !ch.channel_private
 			}));
 

@@ -41,11 +41,21 @@ export const UserStatusIcon = ({ status }: { status?: EUserStatus }) => {
 	}
 };
 
-export const UserStatusIconClan = ({ status, channelId, userId }: { status?: EUserStatus; channelId?: string; userId?: string }) => {
+export const UserStatusIconClan = ({
+	status,
+	channelId,
+	userId,
+	isShareContact = false
+}: {
+	status?: EUserStatus;
+	channelId?: string;
+	userId?: string;
+	isShareContact?: boolean;
+}) => {
 	const normalizedStatus = status?.toUpperCase();
 	const isTyping = useAppSelector((state) => selectIsUserTypingInChannel(state, channelId || '', userId || ''));
 
-	if (isTyping) {
+	if (isTyping && !isShareContact) {
 		return RenderTypingIndicator();
 	}
 

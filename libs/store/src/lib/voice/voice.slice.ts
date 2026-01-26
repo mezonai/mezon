@@ -60,6 +60,7 @@ export interface VoiceState extends EntityState<VoiceEntity, string> {
 		openedParticipantId: string | null;
 		position: { x: number; y: number };
 	} | null;
+	listVoiceMemberByClan: Record<string, EntityState<VoiceEntity, string>>;
 }
 
 export const voiceAdapter = createEntityAdapter({
@@ -94,9 +95,12 @@ export interface ApiGenerateMeetTokenResponseExtend extends ApiGenerateMeetToken
 	guest_access_token?: string;
 }
 
-const selectCachedVoiceMembers = createSelector([(state: RootState) => state[VOICE_FEATURE_KEY]], (voiceState) => {
-	return selectAllVoiceEntities(voiceState);
-});
+const selectCachedVoiceMembers = createSelector(
+	[(state: RootState) => state[VOICE_FEATURE_KEY], (_, clan_id: string) => clan_id],
+	(voiceState, clan_id) => {
+		return selectAllVoiceEntities(voiceState.listVoiceMemberByClan[clan_id]);
+	}
+);
 
 export const fetchVoiceChannelMembersCached = async (
 	getState: () => RootState,
@@ -112,7 +116,7 @@ export const fetchVoiceChannelMembersCached = async (
 	const shouldForceCall = shouldForceApiCall(apiKey, voiceState?.cache, noCache);
 
 	if (!shouldForceCall) {
-		const voiceMembers = selectCachedVoiceMembers(state);
+		const voiceMembers = selectCachedVoiceMembers(state, clanId);
 		return {
 			voice_channel_users: voiceMembers,
 			fromCache: true
@@ -256,7 +260,8 @@ export const initialVoiceState: VoiceState = voiceAdapter.getInitialState({
 	openChatBox: false,
 	externalGroup: false,
 	listInVoiceStatus: {},
-	contextMenu: null
+	contextMenu: null,
+	listVoiceMemberByClan: {}
 });
 
 export const voiceSlice = createSlice({
@@ -472,7 +477,7 @@ export const voiceSlice = createSlice({
 						id: (channelRes.user_id || '') + (channelRes.channel_id || '0')
 					};
 				});
-				voiceAdapter.setAll(state, members);
+				state.listVoiceMemberByClan[clanId] = voiceAdapter.setAll(state, members);
 
 				state.cache = createCacheMetadata();
 			})
@@ -575,9 +580,18 @@ export const selectVoiceFullScreen = createSelector(getVoiceState, (state) => st
 
 const selectChannelId = (_: RootState, channelId: string) => channelId;
 
-export const selectVoiceChannelMembersByChannelId = createSelector([selectAllVoice, selectChannelId], (members, channelId) => {
-	return members.filter((member) => member && member.voice_channel_id === channelId);
-});
+export const selectVoiceChannelMembersByChannelId = createSelector(
+	[getVoiceState, selectChannelId, (_, __, clanId: string) => clanId],
+	(state, channelId, clanId) => {
+		if (!clanId || clanId === '0') return [];
+		const listByClan = state.listVoiceMemberByClan[clanId];
+
+		if (listByClan) {
+			return selectAllVoiceEntities(listByClan).filter((member) => member && member.voice_channel_id === channelId);
+		}
+		return [];
+	}
+);
 
 export const selectScreenSource = createSelector(getVoiceState, (state) => state.screenSource);
 

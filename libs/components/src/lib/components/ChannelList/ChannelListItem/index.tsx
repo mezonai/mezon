@@ -41,7 +41,7 @@ type ChannelLinkContentProps = {
 const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActive, permissions, dragStart, dragEnter }) => {
 	const dispatch = useDispatch();
 	const isUnreadChannel = useSelector((state) => selectIsUnreadChannelById(state, channel.id));
-	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel.id));
+	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channel.id, channel.clan_id as string));
 	const streamChannelMembers = useAppSelector((state) => selectStreamMembersByChannelId(state, channel.id));
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentChannelParentId = useSelector(selectCurrentChannelParentId);

@@ -176,7 +176,11 @@ const ClanSettingOverview = () => {
 				<SystemMessagesManagement
 					updateSystem={updateSystemMessageRequest}
 					setUpdateSystemMessageRequest={setUpdateSystemMessageRequest}
-					channelSelectedId={updateSystemMessageRequest?.channel_id as string}
+					channelSelectedId={
+						updateSystemMessageRequest?.channel_id && updateSystemMessageRequest?.channel_id !== '0'
+							? updateSystemMessageRequest?.channel_id
+							: currentClan?.welcome_channel_id || ''
+					}
 					setClanRequest={setClanRequest}
 				/>
 			)}

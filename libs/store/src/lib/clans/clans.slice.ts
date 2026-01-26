@@ -395,7 +395,7 @@ type UpdateLinkUser = {
 	avatar_url: string;
 	display_name: string;
 	about_me: string;
-	dob: string;
+	dob: number;
 	noCache?: boolean;
 	logo?: string;
 	encrypt_private_key?: string;
@@ -424,10 +424,9 @@ export const updateUser = createAsyncThunk(
 				body.about_me = about_me || '';
 			}
 
-			if (dob && dob !== currentUser?.user?.dob) {
-				const dobMs = new Date(dob).getTime();
-				if (!Number.isNaN(dobMs)) {
-					body.dob_seconds = Math.floor(dobMs / 1000);
+			if (dob && dob !== currentUser?.user?.dob_seconds) {
+				if (!Number.isNaN(dob)) {
+					body.dob_seconds = dob;
 				}
 			}
 
@@ -460,7 +459,7 @@ export const updateUser = createAsyncThunk(
 							location: '',
 							timezone: '',
 							about_me,
-							dob
+							dob_seconds: body.dob_seconds
 						}
 					})
 				);

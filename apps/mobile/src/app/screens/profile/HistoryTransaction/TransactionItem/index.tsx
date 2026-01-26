@@ -1,7 +1,7 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectAllUsersByUser } from '@mezon/store-mobile';
-import { formatBalanceToString } from '@mezon/utils';
+import { CURRENCY, formatBalanceToString } from '@mezon/utils';
 import type { Transaction } from 'mmn-client-js';
 import moment from 'moment';
 import React, { useCallback } from 'react';
@@ -58,7 +58,7 @@ export const TransactionItem = ({ item, walletAddress }: { item: Transaction; wa
 								}
 							]}
 						>
-							{formatBalanceToString((item.value || 0)?.toString())}
+							{formatBalanceToString((item.value || 0)?.toString())} {CURRENCY.SYMBOL}
 						</Text>
 						<Text style={styles.code}>
 							{walletAddress !== item?.from_address ? t('historyTransaction.detail.received') : t('historyTransaction.detail.sent')}
