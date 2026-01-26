@@ -48,20 +48,14 @@ const FormLoginEmail = () => {
 		const value = e.target.value;
 		setEmail(value);
 
-		setErrors((prev) => ({
-			...prev,
-			email: validateEmail(value)
-		}));
+		setErrors((prev) => ({ ...prev, email: undefined }));
 	}, []);
 
 	const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		const value = e.target.value;
 		setPassword(value);
 
-		setErrors((prev) => ({
-			...prev,
-			password: validatePassword(value)
-		}));
+		setErrors((prev) => ({ ...prev, password: undefined }));
 	}, []);
 
 	const showErrLoginFail = isLoadingLoginEmail === 'error';
