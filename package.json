@@ -30,7 +30,7 @@
     "install:desktop": "cd apps/desktop && yarn",
     "build:desktop:app": "nx run desktop:build",
     "build:desktop:renderer": "cross-env BUILD_TARGET='electron' nx build chat --prod --baseHref=./",
-    "build:desktop": "yarn install:desktop && yarn build:desktop:app && yarn build:desktop:renderer",
+    "build:desktop": "yarn install:desktop && yarn build:desktop:app",
     "package:desktop": "nx run desktop:package",
     "make:desktop": "nx run desktop:make",
     "release:desktop": "yarn build:desktop && yarn package:desktop && yarn make:desktop",
