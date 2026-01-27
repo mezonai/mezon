@@ -11,7 +11,6 @@ import {
 	voiceActions
 } from '@mezon/store-mobile';
 import type { ICategoryChannel } from '@mezon/utils';
-import { useFocusEffect } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Platform, RefreshControl, View } from 'react-native';
@@ -26,6 +25,7 @@ import ChannelListScroll from '../components/ChannelList/ChannelListScroll';
 import ChannelListSection from '../components/ChannelList/ChannelListSection';
 import { ChannelOnboarding } from '../components/ChannelList/ChannelOnboarding';
 import ButtonNewUnread from './ButtonNewUnread';
+import { ChannelListRenderListener } from './ChannelListRenderListener';
 import { style } from './styles';
 
 const ChannelList = () => {
@@ -48,14 +48,6 @@ const ChannelList = () => {
 			triggerScrollFlatList();
 		}
 	}, [currentClanId, triggerScrollFlatList]);
-
-	useFocusEffect(() => {
-		// Re-try call fetch channels when focus and list is empty
-		if (currentClanId && (listChannelRender?.length === 1 || !listChannelRender?.length)) {
-			dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true, isMobile: true }));
-			triggerScrollFlatList();
-		}
-	});
 
 	const handleRefresh = useCallback(async () => {
 		setRefreshing(true);
@@ -185,6 +177,7 @@ const ChannelList = () => {
 			/>
 			{!isTabletLandscape && <View style={styles.bottomSpacer} />}
 			<ButtonNewUnread />
+			<ChannelListRenderListener onTriggerScrollFlatList={triggerScrollFlatList} />
 		</View>
 	);
 };
