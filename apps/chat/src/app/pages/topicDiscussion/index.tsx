@@ -25,7 +25,7 @@ const TopicDiscussionMain = () => {
 		<div className="flex flex-col h-full">
 			<TopicHeader />
 			<div className="flex flex-col h-full border-l dark:border-borderDivider border-bgLightTertiary">
-				<TopicDiscussionBox />
+				<TopicDiscussionBox currentTopicId={currentChannelId || ''} />
 			</div>
 		</div>
 	);

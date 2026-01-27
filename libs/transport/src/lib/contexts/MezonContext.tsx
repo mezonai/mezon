@@ -185,7 +185,13 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			await socketRef.current.disconnect(false);
 		}
 
-		const socket = clientRef.current.createSocket(clientRef.current.useSSL, false, new WebSocketAdapterPb());
+		const socket = clientRef.current.createSocket(
+			clientRef.current.useSSL,
+			clientRef.current.host,
+			clientRef.current.port,
+			false,
+			new WebSocketAdapterPb()
+		);
 		socketRef.current = socket;
 		socket.onreconnect = (evt) => {
 			if (typeof window === 'undefined') return;
