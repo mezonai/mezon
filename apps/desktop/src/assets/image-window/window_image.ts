@@ -1,10 +1,21 @@
 import { BrowserWindow, ipcMain, screen } from 'electron';
-import type { ApiChannelAttachment } from 'mezon-js/api.gen';
 import { join } from 'path';
 import App from '../../app/app';
 import { escapeHtml, sanitizeUrl } from '../../app/utils';
 import menu from '../menu-context';
 import new_window_css from '../window/new-window-css';
+
+interface ApiChannelAttachment {
+	message_id?: string;
+	url?: string;
+	filetype?: string;
+	create_time_seconds?: number;
+	filename?: string;
+	size?: number;
+	width?: number;
+	height?: number;
+	sender_id?: string;
+}
 
 function createImgProxyUrl(sourceImageUrl: string, width = 0, height = 0, resizeType = 'force'): string {
 	if (!sourceImageUrl) return '';
