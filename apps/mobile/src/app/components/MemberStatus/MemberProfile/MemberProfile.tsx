@@ -6,7 +6,6 @@ import type { ChannelMembersEntity, IChannel } from '@mezon/utils';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, EUserStatus } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { memo, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
@@ -26,7 +25,6 @@ interface IMemberProfileProps {
 
 export const MemberProfile = memo(({ user, creatorClanId, isDM, currentChannel, isShowUsername = false }: IMemberProfileProps) => {
 	const { themeValue } = useTheme();
-	const { t } = useTranslation(['userProfile']);
 	const userId = user?.id || user?.user?.id || '';
 	const { highestPermissionRoleColor } = useColorsRoleById(userId);
 	const getStatus = useMemberStatus(userId);

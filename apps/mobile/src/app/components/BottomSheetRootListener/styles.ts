@@ -49,7 +49,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			justifyContent: 'flex-start'
 		},
 		handleIndicator: {
-			backgroundColor: 'rgba(255, 255, 255, 0.8)',
+			backgroundColor: colors.white,
 			height: size.s_6,
 			top: -size.s_6,
 			marginTop: size.s_16,

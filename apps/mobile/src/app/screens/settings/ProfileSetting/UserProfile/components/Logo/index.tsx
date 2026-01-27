@@ -76,6 +76,7 @@ export const DirectMessageLogo = memo(() => {
 				onLoad={handleOnLoad}
 				autoUpload
 				imageSizeLimit={MAX_FILE_SIZE_1MB}
+				rounded
 			/>
 			{!!logoCustom && (
 				<TouchableOpacity style={styles.removeButton} onPress={handleShowConfirmModal}>
