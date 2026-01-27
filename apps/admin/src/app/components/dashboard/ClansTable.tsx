@@ -82,8 +82,8 @@ function ClansTable({
 										aria-label="Select Clan Name column"
 										type="checkbox"
 										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
-										checked={selectedColumns.includes('clan_id')}
-										onChange={() => onToggleColumn('clan_id')}
+										checked={selectedColumns.includes('clan_name')}
+										onChange={() => onToggleColumn('clan_name')}
 									/>
 								</div>
 							</th>

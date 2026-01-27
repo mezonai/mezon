@@ -20,7 +20,7 @@ import ChartSection from '../../components/dashboard/ChartSection';
 import { LoadingState, NoDataState } from '../../components/dashboard/StateComponents';
 import UsersTable from '../../components/dashboard/UsersTable';
 import { handleChannelCSVExport, handleUserCSVExport } from '../../utils/dashboard/csvExport';
-import { calculateAllowedGranularities, calculateMetrics, formatDateRangeText, getDateRangeFromPreset } from '../../utils/dashboard/reportUtils';
+import { calculateAllowedGranularities, formatDateRangeText, getDateRangeFromPreset } from '../../utils/dashboard/reportUtils';
 import type { ChannelsData, ClanDetailReportProps, UserData } from './types';
 
 function ClanDetailReport({ clanId }: ClanDetailReportProps) {
@@ -44,6 +44,11 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 
 	const channelsLoadingStore = useAppSelector((s) => selectClanChannelsLoading(s));
 	const channelsFromStore = useAppSelector((s) => (clanId ? selectClanChannels(s, clanId) : []));
+	const metrics = useAppSelector((s) => (clanId ? s.dashboard?.channelsCacheByClan?.[clanId]?.rawPayload?.data?.total : null)) ?? {
+		totalActiveUsers: 0,
+		totalActiveChannels: 0,
+		totalMessages: 0
+	};
 	const channelUsersLoadingStore = useAppSelector((s) => selectChannelUsersLoading(s));
 
 	const firstChannelId = (channelsFromStore as any)?.[0]?.channelId || '';
@@ -89,7 +94,6 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		}
 	}, [allowedGranularities, periodFilter]);
 
-	const metrics = useMemo(() => calculateMetrics(chartData), [chartData]);
 	const dateRangeText = formatDateRangeText(dateRange, customStartDate, customEndDate);
 	const displayedData = useMemo(() => chartData || [], [chartData]);
 

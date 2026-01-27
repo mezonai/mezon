@@ -24,7 +24,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const [activeTab, setActiveTab] = useState<'activeUsers' | 'activeChannels' | 'messages'>('activeUsers');
 	const [customStartDate, setCustomStartDate] = useState('');
 	const [customEndDate, setCustomEndDate] = useState('');
-	const [selectedColumns, setSelectedColumns] = useState<string[]>(['clan_id', 'active_users', 'active_channels', 'messages']);
+	const [selectedColumns, setSelectedColumns] = useState<string[]>(['clan_name', 'active_users', 'active_channels', 'messages']);
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
 	const [hasNoData, setHasNoData] = useState(false);
 	const [showFullPageLoading, setShowFullPageLoading] = useState(false);

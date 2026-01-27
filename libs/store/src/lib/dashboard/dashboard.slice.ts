@@ -202,8 +202,8 @@ export const exportClansCsv = createAsyncThunk(
 				const text = await res.text().catch(() => '');
 				return thunkAPI.rejectWithValue(text || res.statusText);
 			}
-			const blob = await res.blob();
-			return { blob, headers: Array.from(res.headers.entries()) };
+			const json = await res.json();
+			return json;
 		} catch (err) {
 			return thunkAPI.rejectWithValue(err);
 		}
