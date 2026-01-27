@@ -250,7 +250,8 @@ export const ChatMessageSending = memo(
 					...(filteredBolds || [])
 				],
 				cid: messageActionNeedToResolve?.targetMessage?.content?.cid,
-				tp: messageActionNeedToResolve?.targetMessage?.content?.tp
+				tp: messageActionNeedToResolve?.targetMessage?.content?.tp,
+				...(messageActionNeedToResolve?.targetMessage?.content?.embed && { embed: messageActionNeedToResolve.targetMessage.content.embed })
 			};
 			const isEmpty = isPayloadEmpty(payloadSendMessage);
 			if (isEmpty && !attachmentDataRef?.length) {

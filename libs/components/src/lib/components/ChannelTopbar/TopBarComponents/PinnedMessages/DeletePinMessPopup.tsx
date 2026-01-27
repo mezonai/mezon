@@ -1,13 +1,15 @@
 import type { PinMessageEntity } from '@mezon/store';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
-import type { IMessageWithUser } from '@mezon/utils';
-import { TOPBARS_MAX_WIDTH } from '@mezon/utils';
+import type { IEmbedProps, IMessageWithUser } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, TOPBARS_MAX_WIDTH } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
+import ShareContactCard from '../../../ShareContact/ShareContactCard';
 
 type ModalDeletePinMessProps = {
 	pinMessage: PinMessageEntity;
@@ -21,6 +23,28 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 	const { pinMessage, contentString, closeModal, handlePinMessage, attachments, modalref } = props;
 	const { t } = useTranslation('channelTopbar');
 	const userSender = useAppSelector((state) => selectMemberClanByUserId(state, pinMessage.sender_id as string));
+
+	const messageContentObject = useMemo(() => {
+		try {
+			return safeJSONParse(pinMessage.content || '{}') || {};
+		} catch (e) {
+			return {};
+		}
+	}, [pinMessage.content]);
+
+	const isShareContact = useMemo(() => {
+		const embeds = messageContentObject?.embed || [];
+		const firstEmbed = embeds[0];
+		const fields = firstEmbed?.fields || [];
+		return fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY;
+	}, [messageContentObject]);
+
+	const shareContactEmbed = useMemo((): IEmbedProps | null => {
+		if (!isShareContact) return null;
+		const embeds = messageContentObject?.embed || [];
+		return embeds[0] || null;
+	}, [isShareContact, messageContentObject]);
+
 	return (
 		<div
 			ref={modalref}
@@ -36,28 +60,34 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 						<div className="flex-shrink-0">
 							<BaseProfile avatar={pinMessage.avatar || ''} hideIcon={true} />
 						</div>
-						<div className="flex text-sm flex-col gap-1 text-left flex-1 min-w-0 pointer-events-none [&_.attachment-actions]:!hidden [&_button]:!hidden">
+						<div className="flex text-sm flex-col gap-1 text-left flex-1 min-w-0">
 							<div className="font-medium">
 								{userSender?.clan_nick || userSender?.user?.display_name || userSender?.user?.username || pinMessage.username}
 							</div>
-							{contentString && (
-								<MessageLine
-									isEditted={false}
-									isJumMessageEnabled={false}
-									isTokenClickAble={false}
-									content={safeJSONParse(pinMessage.content || '{}')}
-									isInPinMsg={true}
-									messageId={pinMessage.message_id}
-									isSearchMessage={true}
-								/>
-							)}
+							{isShareContact && shareContactEmbed ? (
+								<ShareContactCard embed={shareContactEmbed} />
+							) : (
+								<div className="pointer-events-none [&_.attachment-actions]:!hidden [&_button]:!hidden">
+									{contentString && (
+										<MessageLine
+											isEditted={false}
+											isJumMessageEnabled={false}
+											isTokenClickAble={false}
+											content={messageContentObject}
+											isInPinMsg={true}
+											messageId={pinMessage.message_id}
+											isSearchMessage={true}
+										/>
+									)}
 
-							{attachments && (
-								<MessageAttachment
-									mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-									message={{ ...pinMessage, attachments } as IMessageWithUser}
-									defaultMaxWidth={TOPBARS_MAX_WIDTH}
-								/>
+									{attachments && (
+										<MessageAttachment
+											mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
+											message={{ ...pinMessage, attachments } as IMessageWithUser}
+											defaultMaxWidth={TOPBARS_MAX_WIDTH}
+										/>
+									)}
+								</div>
 							)}
 						</div>
 					</div>
