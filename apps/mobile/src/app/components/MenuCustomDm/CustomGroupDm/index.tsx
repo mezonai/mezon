@@ -7,7 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import MezonImagePicker, { IMezonImagePickerHandler } from '../../../componentUI/MezonImagePicker';
+import type { IMezonImagePickerHandler } from '../../../componentUI/MezonImagePicker';
+import MezonImagePicker from '../../../componentUI/MezonImagePicker';
 import MezonInput from '../../../componentUI/MezonInput';
 import { IconCDN } from '../../../constants/icon_cdn';
 import style from '../MenuCustomDm.styles';
@@ -39,11 +40,8 @@ const CustomGroupDm = ({ dmGroupId, channelLabel, currentAvatar }: { dmGroupId: 
 		const regex = ValidateSpecialCharacters();
 		if (!regex.test(trimmedName)) {
 			Toast.show({
-				type: 'success',
-				props: {
-					text2: t('invalidGroupName'),
-					leadingIcon: <MezonIconCDN icon={IconCDN.circleXIcon} color={baseColor.red} />
-				}
+				type: 'error',
+				text1: t('invalidGroupName')
 			});
 			return;
 		}

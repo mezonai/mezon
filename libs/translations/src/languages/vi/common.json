@@ -515,5 +515,6 @@
 	"sendMessage": "Nhắn tin",
 	"noPermissionToCallBlocked": "Bạn không thể thực hiện hành động này.",
 	"detail": "Chi tiết",
-	"cannotCallYourself": "Bạn không thể gọi chính mình"
+	"cannotCallYourself": "Bạn không thể gọi chính mình",
+	"errorMaxLength": "Độ dài phải nằm trong khoảng {{min}} đến {{max}} ký tự."
 }
