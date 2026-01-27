@@ -69,6 +69,10 @@ import { MainContent } from './MainContent';
 import PopupQuickMess from './PopupQuickMess';
 import DirectUnread from './directUnreads';
 
+type UserWithCreateTime = {
+	create_time_seconds?: number;
+};
+
 function MyApp() {
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -77,11 +81,18 @@ function MyApp() {
 	const openModalAttachment = useSelector(selectOpenModalAttachment);
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
-	const { userProfile } = useAuth();
-	const calculateJoinedTime = new Date().getTime() - new Date(userProfile?.user?.create_time ?? '').getTime();
+	const { userProfile, fetchUserProfile } = useAuth();
+	const userCreateTimeSeconds = (userProfile?.user as UserWithCreateTime)?.create_time_seconds;
+	const calculateJoinedTime = userCreateTimeSeconds ? new Date().getTime() - userCreateTimeSeconds * 1000 : Infinity;
 	const isNewGuy = calculateJoinedTime <= TIME_OF_SHOWING_FIRST_POPUP;
 	const numberOfClanJoined = useSelector(selectClanNumber);
 	const isShowFirstJoinPopup = isNewGuy && numberOfClanJoined === 0;
+
+	useEffect(() => {
+		if (userProfile?.user?.id && !(userProfile.user as UserWithCreateTime).create_time_seconds) {
+			fetchUserProfile();
+		}
+	}, [userProfile?.user?.id, (userProfile?.user as UserWithCreateTime)?.create_time_seconds, fetchUserProfile]);
 
 	const { currentURL, directId } = useAppParams();
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
