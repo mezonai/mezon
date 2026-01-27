@@ -23,6 +23,7 @@ import {
 	selectAllAccount
 } from '@mezon/store-mobile';
 import type { EmojiDataOptionals } from '@mezon/utils';
+import { resetFetchStrategy } from 'mezon-js';
 import { Platform } from 'react-native';
 import { deflate, inflate } from 'react-native-gzip';
 
@@ -246,6 +247,7 @@ export const removeBackticks = (text: string) => {
 };
 
 export const logoutGlobal = async () => {
+	resetFetchStrategy();
 	const store = getStore();
 	const userProfile = selectAllAccount(store.getState());
 	store.dispatch(authActions.logOut({ device_id: userProfile?.user?.username, platform: Platform.OS }));

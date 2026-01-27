@@ -30,7 +30,7 @@
 		"@testing-library/jest-native": "*",
 		"@testing-library/react-native": "*",
 		"buffer": "^6.0.3",
-		"livekit-client": "2.16.0",
+		"livekit-client": "2.16.1",
 		"lottie-react-native": "7.2.2",
 		"metro-config": "0.80.9",
 		"moment": "2.30.1",

@@ -10,7 +10,6 @@ import { ChatContextProvider, EmojiSuggestionProvider, PermissionProvider } from
 import { ActionEmitEvent, save, STORAGE_SESSION_KEY } from '@mezon/mobile-components';
 import { ThemeModeBase, ThemeProvider, useTheme } from '@mezon/mobile-ui';
 import type { Session } from 'mezon-js';
-import { setFetchStrategy } from 'mezon-js';
 import { DeviceEventEmitter, NativeModules, Platform, StatusBar, View } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -20,7 +19,6 @@ import NetInfoComp from '../components/NetworkInfo';
 import { WebRTCStreamProvider } from '../components/StreamContext/StreamContext';
 import { toastConfig } from '../configs/toastConfig';
 import { DeviceProvider } from '../contexts/device';
-import { createNativeFetch } from '../utils/NativeHttpClient';
 import RefreshSessionWrapper, { useSessionReady } from './RefreshSessionWrapper';
 import RootListener from './RootListener';
 import RootStack from './RootStack';
@@ -65,7 +63,6 @@ const NavigationMain = memo(
 		const isHiddenTab = useAppSelector(selectHiddenBottomTabMobile);
 
 		useEffect(() => {
-			setFetchStrategy(createNativeFetch());
 			const getNavigationInfo = async () => {
 				if (Platform.OS === 'android') {
 					try {
