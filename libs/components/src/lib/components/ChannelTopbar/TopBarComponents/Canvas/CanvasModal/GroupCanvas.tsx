@@ -1,9 +1,8 @@
 import { ButtonCopy } from '@mezon/components';
 import { useAuth } from '@mezon/core';
-import { appActions, canvasActions, canvasAPIActions, selectIdCanvas, useAppDispatch } from '@mezon/store';
+import { appActions, canvasAPIActions, useAppDispatch } from '@mezon/store';
 import { generateE2eId, ICanvas } from '@mezon/utils';
-import { useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 type GroupCanvasProps = {
 	canvas: ICanvas;
 	channelId?: string;
@@ -16,7 +15,7 @@ type GroupCanvasProps = {
 
 const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, selectedCanvasId, onSelectCanvas }: GroupCanvasProps) => {
 	const canvasId = canvas.id;
-	const currentIdCanvas = useSelector(selectIdCanvas);
+	const { canvasId: currentCanvasId } = useParams<{ canvasId: string }>();
 	const { userProfile } = useAuth();
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
@@ -26,7 +25,6 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 
 	const handleOpenCanvas = async () => {
 		dispatch(appActions.setIsShowCanvas(true));
-		dispatch(canvasActions.setIdCanvas(canvasId || ''));
 		onClose();
 	};
 
@@ -46,7 +44,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 			};
 			await dispatch(canvasAPIActions.deleteCanvas(body));
 			dispatch(canvasAPIActions.removeOneCanvas({ channelId, canvasId }));
-			if (currentIdCanvas === canvasId) {
+			if (currentCanvasId === canvasId) {
 				dispatch(appActions.setIsShowCanvas(false));
 				const redirectPath =
 					canvas.parent_id && canvas.parent_id !== '0'
@@ -67,7 +65,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 		<div className="w-full flex gap-2 relative" data-e2e={generateE2eId('chat.channel_message.header.button.canvas.item')}>
 			<Link
 				className={`w-full py-2 pl-4 pr-4 cursor-pointer rounded-lg border-theme-primary ${
-					currentIdCanvas === canvasId ? 'bg-item-theme text-theme-primary-active ' : 'bg-item-hover'
+					currentCanvasId === canvasId ? 'bg-item-theme text-theme-primary-active ' : 'bg-item-hover'
 				}`}
 				role="button"
 				to={link}

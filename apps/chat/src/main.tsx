@@ -5,7 +5,9 @@ import App from './app/app';
 
 import './styles.scss';
 
-import './instrument/instrument';
+if (process.env.NX_ENABLE_SENTRY === 'true') {
+	// import('./instrument/instrument');
+}
 
 ThemeManager.initializeTheme();
 

@@ -2,6 +2,7 @@ import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
 import * as fs from 'fs';
 import * as path from 'path';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { defineConfig, loadEnv } from 'vite';
 import { nodePolyfills } from 'vite-plugin-node-polyfills';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
@@ -80,7 +81,18 @@ export default defineConfig(({ mode }) => {
 						await fs.remove(path.join(workspaceRoot, 'apps/dist'));
 					}
 				}
-			}
+			},
+			...(process.env.ANALYZE === 'true'
+				? [
+						visualizer({
+							open: true,
+							filename: path.join(workspaceRoot, 'dist/stats.html'),
+							gzipSize: true,
+							brotliSize: true,
+							template: 'treemap'
+						})
+					]
+				: [])
 		],
 
 		define: {
@@ -96,6 +108,23 @@ export default defineConfig(({ mode }) => {
 			)
 		},
 
+		optimizeDeps: {
+			include: [
+				'protobufjs/minimal',
+				'long',
+				'mezon-js-protobuf',
+				'react',
+				'react-dom',
+				'react-router-dom',
+				'@reduxjs/toolkit',
+				'react-redux',
+				'mezon-js'
+			],
+			esbuildOptions: {
+				target: 'esnext'
+			}
+		},
+
 		resolve: {
 			alias: {
 				'@mezon/store': path.resolve(__dirname, '../../libs/store/src/index.ts'),
@@ -106,9 +135,11 @@ export default defineConfig(({ mode }) => {
 				'@mezon/ui': path.resolve(__dirname, '../../libs/ui/src/index.ts'),
 				'@mezon/themes': path.resolve(__dirname, '../../libs/themes/src/index.ts'),
 				'@mezon/translations': path.resolve(__dirname, '../../libs/translations/src/index.ts'),
-				'@mezon/logger': path.resolve(__dirname, '../../libs/logger/src/index.ts')
+				'@mezon/logger': path.resolve(__dirname, '../../libs/logger/src/index.ts'),
+				'mezon-js-protobuf': path.resolve(__dirname, '../../node_modules/mezon-js-protobuf/dist/mezon-js-protobuf.esm.mjs')
 			},
-			extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json']
+			extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
+			conditions: ['import', 'module', 'browser', 'default']
 		},
 
 		css: {
@@ -138,6 +169,15 @@ export default defineConfig(({ mode }) => {
 					},
 					manualChunks: (id) => {
 						if (id.includes('node_modules')) {
+							if (id.includes('@tiptap')) {
+								return 'vendor-tiptap';
+							}
+							if (id.includes('react-datepicker')) {
+								return 'vendor-datepicker';
+							}
+							if (id.includes('react-pdf') || id.includes('pdfjs-dist')) {
+								return 'vendor-pdf';
+							}
 							if (id.includes('react') || id.includes('react-dom') || id.includes('scheduler')) {
 								return 'vendor-react';
 							}
@@ -168,10 +208,6 @@ export default defineConfig(({ mode }) => {
 			minify: mode === 'production' ? 'esbuild' : false,
 			target: 'esnext',
 			chunkSizeWarningLimit: 1000
-		},
-
-		optimizeDeps: {
-			include: ['react', 'react-dom', 'react-router-dom', '@reduxjs/toolkit', 'react-redux', 'mezon-js']
 		}
 	};
 });

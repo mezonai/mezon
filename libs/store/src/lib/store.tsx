@@ -31,7 +31,6 @@ import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';
 import { auditLogReducer } from './auditLog/auditLog.slice';
 import { auditLogFilterReducer } from './auditLog/auditLogFilter.slice';
-import { canvasReducer } from './canvas/canvas.slice';
 import { canvasAPIReducer } from './canvas/canvasAPI.slice';
 import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChannel.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
@@ -330,7 +329,6 @@ const reducer = {
 	usersstream: usersStreamReducer,
 	videostream: videoStreamReducer,
 	channelApp: persistedChannelAppReducer,
-	canvas: canvasReducer,
 	canvasapi: canvasAPIReducer,
 	activitiesapi: persistedActivitiesReducer,
 	auditlog: auditLogReducer,

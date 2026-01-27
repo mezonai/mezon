@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Tiêu đề canvas của bạn"
+	},
+	"editor": {
+		"placeholder": "Bắt đầu nhập...",
+		"uploadingImage": "Đang tải ảnh..."
+	},
+	"actions": {
+		"save": "Lưu",
+		"saving": "Đang lưu...",
+		"discardChanges": "Hủy thay đổi"
+	},
+	"error": {
+		"title": "Lỗi"
+	},
+	"toolbar": {
+		"blockFormat": "Định dạng khối",
+		"addLink": "Thêm liên kết",
+		"removeLink": "Xóa liên kết",
+		"codeBlock": "Khối mã",
+		"cancel": "Hủy",
+		"apply": "Áp dụng"
+	},
+	"blocks": {
+		"paragraph": "Đoạn văn",
+		"h1": "H1 Tiêu đề lớn",
+		"h2": "H2 Tiêu đề vừa",
+		"h3": "H3 Tiêu đề nhỏ",
+		"checkedList": "Danh sách có đánh dấu",
+		"orderedList": "Danh sách có số thứ tự",
+		"bulletedList": "Danh sách có dấu đầu dòng",
+		"blockquote": "Trích dẫn"
+	}
+}
