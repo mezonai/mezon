@@ -262,7 +262,7 @@ const ChannelVoiceInner = () => {
 									<EmojiSuggestionProvider>
 										{isShowChatVoice && (
 											<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
-												<ChatStream />
+												<ChatStream topicChannelId={voiceInfo?.channelId} />
 											</div>
 										)}
 									</EmojiSuggestionProvider>

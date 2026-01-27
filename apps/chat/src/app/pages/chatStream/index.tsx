@@ -40,7 +40,7 @@ const ChatStream = ({ topicChannelId }: ChatStreamProps) => {
 	return (
 		<div className="flex flex-col h-full">
 			<ChatHeader />
-			<ChannelMain />
+			<ChannelMain topicChannelId={topicChannelId} />
 		</div>
 	);
 };
