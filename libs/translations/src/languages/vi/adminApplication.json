@@ -144,6 +144,7 @@
 		"title": "Ví dụ về Luồng"
 	},
 	"sidebarTabs": {
+		"dashboard": "Bảng điều khiển",
 		"applications": "Ứng dụng",
 		"teams": "Nhóm",
 		"embedDebugger": "Trình gỡ lỗi Embed",

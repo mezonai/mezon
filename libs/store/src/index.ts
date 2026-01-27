@@ -29,6 +29,7 @@ export * from './lib/clans/clanSettingChannel.slice';
 export * from './lib/clans/clans.slice';
 export * from './lib/compose/compose.slice';
 export * from './lib/comunity/comunity.slice';
+export * from './lib/dashboard/dashboard.slice';
 export * from './lib/devices/devices.slice';
 export * from './lib/direct/direct.slice';
 export * from './lib/direct/status.slice';
