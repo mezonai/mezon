@@ -1,222 +1,111 @@
-import { useAuth } from '@mezon/core';
-import {
-	appActions,
-	canvasActions,
-	canvasAPIActions,
-	createEditCanvas,
-	selectCanvasEntityById,
-	selectContent,
-	selectCurrentChannelId,
-	selectCurrentChannelParentId,
-	selectCurrentClanId,
-	selectIdCanvas,
-	selectTheme,
-	selectTitle
-} from '@mezon/store';
-import { EEventAction, generateE2eId } from '@mezon/utils';
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { generateE2eId } from '@mezon/utils';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import { useDebouncedCallback } from 'use-debounce';
+import { useCanvas } from './useCanvas';
 
-const CanvasContent = lazy(() => import('./CanvasContent'));
+const CanvasEditor = lazy(() => import('./CanvasEditor').then((m) => ({ default: m.CanvasEditor })));
 
-const CanvasContentPlaceholder = () => <div className="w-full h-[calc(100vh-120px)] animate-pulse bg-gray-200 dark:bg-gray-700 rounded"></div>;
+const TitleSkeleton = () => (
+	<div className="w-full px-4 py-2 mt-[25px]">
+		<div className="h-[34px] dark:bg-skeleton-dark bg-skeleton-white rounded w-3/4 animate-pulse" />
+	</div>
+);
 
-const Canvas = () => {
-	const { t } = useTranslation('common');
-	const dispatch = useDispatch();
-	const { clanId, channelId, canvasId } = useParams<{
-		clanId: string;
-		channelId: string;
-		canvasId: string;
-	}>();
+const EditorSkeleton = () => (
+	<div className="w-full px-4 pt-4">
+		<div className="space-y-3">
+			<div className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded w-full animate-pulse" />
+			<div className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded w-full animate-pulse" />
+			<div className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded w-5/6 animate-pulse" />
+			<div className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded w-full animate-pulse" />
+			<div className="h-4 dark:bg-skeleton-dark bg-skeleton-white rounded w-4/5 animate-pulse" />
+		</div>
+	</div>
+);
 
-	const title = useSelector(selectTitle);
-	const content = useSelector(selectContent);
-	const idCanvas = useSelector(selectIdCanvas);
-	const currentChannelId = useSelector(selectCurrentChannelId);
-	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
-	const currentClanId = useSelector(selectCurrentClanId);
-	const canvasById = useSelector((state) => selectCanvasEntityById(state, currentChannelId, currentChannelParentId, idCanvas));
+function Canvas() {
+	const { t } = useTranslation('canvas');
+	const { title, content, canvasId, isLoading, isSaving, error, canEdit, hasChanges, updateTitle, updateContent, saveCanvas, discardChanges } =
+		useCanvas();
 
-	const [showLoading, setShowLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
-	const appearanceTheme = useSelector(selectTheme);
-	const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
-	const { userProfile } = useAuth();
-	const isEditAndDelCanvas = Boolean(canvasById?.creator_id === userProfile?.user?.id || !canvasById?.creator_id);
-
-	const refreshCanvasData = useCallback(
-		async (forceRefresh = false) => {
-			if (!canvasId || !channelId || !clanId) return;
-
-			try {
-				setShowLoading(false);
-				setError(null);
-				const loadingTimeout = setTimeout(() => {
-					setShowLoading(true);
-				}, 1000);
-
-				const listBody = {
-					channel_id: channelId,
-					clan_id: clanId,
-					noCache: forceRefresh
-				};
-				await dispatch(canvasAPIActions.getChannelCanvasList(listBody) as any);
-
-				dispatch(canvasActions.setIdCanvas(canvasId));
-
-				const detailBody = {
-					id: canvasId,
-					channel_id: channelId,
-					clan_id: clanId,
-					noCache: forceRefresh
-				};
-				const results = await dispatch(canvasAPIActions.getChannelCanvasDetail(detailBody) as any);
-				const dataUpdate = results?.payload;
-
-				if (dataUpdate) {
-					const { content: canvasContent } = dataUpdate;
-					dispatch(canvasActions.setContent(canvasContent));
-					dispatch(canvasAPIActions.updateCanvas({ channelId, dataUpdate }));
-				}
-
-				clearTimeout(loadingTimeout);
-			} catch (err) {
-				setError(t('canvas.failedToRefresh') || 'Failed to refresh canvas data');
-			} finally {
-				setShowLoading(false);
-			}
-		},
-		[canvasId, channelId, clanId, dispatch]
-	);
+	const textAreaRef = useRef<HTMLTextAreaElement>(null);
+	const [editorKey, setEditorKey] = useState(0);
 
 	useEffect(() => {
-		dispatch(appActions.setIsShowCanvas(true));
-		refreshCanvasData(false);
-	}, [canvasId, channelId, clanId, dispatch, refreshCanvasData]);
-
-	useEffect(() => {
-		return () => {
-			dispatch(canvasActions.setTitle(''));
-			dispatch(canvasActions.setContent(''));
-			dispatch(canvasActions.setIdCanvas(''));
-			dispatch(appActions.setIsShowCanvas(false));
-		};
-	}, []);
-
-	useEffect(() => {
-		if (textAreaRef.current) {
+		if (textAreaRef.current && !isLoading) {
 			textAreaRef.current.style.height = 'auto';
 			textAreaRef.current.style.height = `${textAreaRef.current.scrollHeight}px`;
 		}
-	}, [title]);
-
-	const callCreateEditCanvas = useCallback(
-		async (isCreate: number) => {
-			if (currentChannelId && currentClanId) {
-				const body = {
-					channel_id: currentChannelId,
-					clan_id: currentClanId?.toString(),
-					content,
-					...(idCanvas && { id: idCanvas }),
-					...(canvasById?.is_default && { is_default: true }),
-					title,
-					status: isCreate
-				};
-				const response = await dispatch(createEditCanvas(body) as any);
-				if (response) {
-					dispatch(canvasActions.setIdCanvas(response?.payload?.id));
-				}
-			}
-		},
-		[currentChannelId, currentClanId, content, idCanvas, canvasById?.is_default, title, dispatch]
-	);
-
-	const debouncedSave = useDebouncedCallback(() => {
-		let isCreate: number = EEventAction.UPDATE;
-		if (!idCanvas || (title && title !== canvasById?.title) || (content && content !== canvasById?.content)) {
-			isCreate = EEventAction.CREATED;
-		}
-
-		callCreateEditCanvas(isCreate);
-	}, 1000);
-
-	const handleCanvasChange = useCallback(() => {
-		if (!isEditAndDelCanvas) return;
-		debouncedSave();
-	}, [isEditAndDelCanvas, debouncedSave]);
-
-	useEffect(() => {
-		if (canvasById) {
-			dispatch(canvasActions.setTitle(canvasById?.title || ''));
-			dispatch(canvasActions.setContent(canvasById?.content || ''));
-			dispatch(canvasActions.setIdCanvas(canvasById?.id || ''));
-		}
-	}, [canvasById]);
-
-	const handleInputChange = (e: { target: { value: any } }) => {
-		if (!isEditAndDelCanvas) return;
-		const newTitle = e.target.value;
-		dispatch(canvasActions.setTitle(newTitle));
-		handleCanvasChange();
-	};
-
-	if (showLoading) {
-		return (
-			<div className="w-full h-[calc(100vh-50px)] max-w-[80%] flex items-center justify-center text-theme-message">
-				<div className="flex flex-col items-center gap-4">
-					<div className="w-8 h-8 border-2 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-					<span className="">{t('canvas.loadingCanvas') || 'Loading canvas...'}</span>
-				</div>
-			</div>
-		);
-	}
+	}, [title, isLoading]);
 
 	if (error) {
 		return (
 			<div className="w-full h-[calc(100vh-50px)] max-w-[80%] flex items-center justify-center text-theme-message">
 				<div className="flex flex-col items-center gap-4">
-					<div className="text-red-500 text-lg">
-						<span role="img" aria-label="warning">
-							⚠️
-						</span>
-						{t('canvas.error') || 'Error'}
-					</div>
-					<span className="">{error}</span>
+					<div className="text-red-500 text-lg">{t('error.title')}</div>
+					<span>{error}</span>
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="w-full h-[calc(100vh-50px)] max-w-[80%]">
-			<textarea
-				ref={textAreaRef}
-				placeholder={t('canvas.titlePlaceholder') || 'Your canvas title'}
-				value={title || ''}
-				onChange={handleInputChange}
-				rows={1}
-				disabled={!isEditAndDelCanvas}
-				className="w-full px-4 py-2 mt-[25px] text-theme-message bg-inherit focus:outline-none text-[28px] resize-none leading-[34px] font-bold "
-				data-e2e={generateE2eId('clan_page.screen.canvas_editor.input.title')}
-			/>
-			<div className="w-full" data-e2e={generateE2eId('clan_page.screen.canvas_editor.input.content')}>
-				<Suspense fallback={<CanvasContentPlaceholder />}>
-					<CanvasContent
-						key={idCanvas}
-						idCanvas={idCanvas || ''}
-						isLightMode={appearanceTheme === 'light'}
-						content={content || ''}
-						isEditAndDelCanvas={isEditAndDelCanvas}
-						onCanvasChange={handleCanvasChange}
+		<div className="w-full h-[calc(100vh-50px)] max-w-[80%] relative">
+			{isLoading ? (
+				<>
+					<TitleSkeleton />
+					<EditorSkeleton />
+				</>
+			) : (
+				<>
+					<textarea
+						ref={textAreaRef}
+						placeholder={t('title.placeholder')}
+						value={title}
+						onChange={(e) => updateTitle(e.target.value)}
+						rows={1}
+						disabled={!canEdit}
+						className="w-full px-4 py-2 mt-[25px] text-theme-message bg-inherit focus:outline-none text-[28px] resize-none leading-[34px] font-bold"
+						data-e2e={generateE2eId('clan_page.screen.canvas_editor.input.title')}
 					/>
-				</Suspense>
-			</div>
+
+					<div className="w-full" data-e2e={generateE2eId('clan_page.screen.canvas_editor.input.content')}>
+						<Suspense fallback={<EditorSkeleton />}>
+							<CanvasEditor key={`${canvasId}-${editorKey}`} content={content} editable={canEdit} onChange={updateContent} />
+						</Suspense>
+					</div>
+				</>
+			)}
+
+			{hasChanges && canEdit && (
+				<div
+					className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2.5 px-3 py-2 rounded-[10px] bg-theme-contexify shadow-[0_4px_20px_rgba(0,0,0,0.35)] border border-white/[0.08] z-50"
+					role="toolbar"
+					aria-label="Canvas unsaved changes"
+				>
+					<button
+						type="button"
+						onClick={() => {
+							discardChanges();
+							setEditorKey((prev) => prev + 1);
+						}}
+						disabled={isSaving}
+						className="inline-flex items-center gap-2 border-none px-[18px] py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-150 bg-button-hover text-theme-primary disabled:cursor-not-allowed disabled:opacity-70"
+					>
+						{t('actions.discardChanges')}
+					</button>
+					<button
+						type="button"
+						onClick={saveCanvas}
+						disabled={isSaving}
+						className="inline-flex items-center gap-2 border-none px-[18px] py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-150 btn-primary disabled:cursor-not-allowed disabled:opacity-70"
+					>
+						{isSaving ? t('actions.saving') : t('actions.save')}
+					</button>
+				</div>
+			)}
 		</div>
 	);
-};
+}
 
 export default Canvas;

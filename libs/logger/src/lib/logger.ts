@@ -1,4 +1,4 @@
-import * as Sentry from '@sentry/react';
+// import * as Sentry from '@sentry/react';
 
 const SKIP_LOG = 'skip_log';
 
@@ -22,53 +22,53 @@ export async function captureSentryError(error: unknown, actionName: string, con
 	const timestamp = new Date().toISOString();
 	const errorLabel = `${actionName} - ${timestamp}`;
 
-	Sentry.addBreadcrumb({
-		message: `Error in ${actionName}`,
-		level: 'error',
-		data: {
-			action: actionName,
-			context: context || {},
-			timestamp
-		}
-	});
+	// Sentry.addBreadcrumb({
+	// 	message: `Error in ${actionName}`,
+	// 	level: 'error',
+	// 	data: {
+	// 		action: actionName,
+	// 		context: context || {},
+	// 		timestamp
+	// 	}
+	// });
 
-	Sentry.setTags({
-		action: actionName,
-		errorType: error instanceof Error ? error.constructor.name : typeof error,
-		component: context?.component || 'unknown'
-	});
+	// Sentry.setTags({
+	// 	action: actionName,
+	// 	errorType: error instanceof Error ? error.constructor.name : typeof error,
+	// 	component: context?.component || 'unknown'
+	// });
 
-	if (context) {
-		Sentry.setContext('error_context', {
-			...context,
-			timestamp,
-			action: actionName
-		});
-	}
+	// if (context) {
+	// 	Sentry.setContext('error_context', {
+	// 		...context,
+	// 		timestamp,
+	// 		action: actionName
+	// 	});
+	// }
 
-	if (context?.userId) {
-		Sentry.setUser({
-			id: context.userId
-		});
-	}
+	// if (context?.userId) {
+	// 	Sentry.setUser({
+	// 		id: context.userId
+	// 	});
+	// }
 
-	const logTitle = new Error(errorLabel);
-	logTitle.name = errorLabel;
+	// const logTitle = new Error(errorLabel);
+	// logTitle.name = errorLabel;
 
-	Sentry.captureException(logTitle, {
-		level: 'error',
-		extra: {
-			errorDetail,
-			originalError: error,
-			context: context || {}
-		},
-		tags: {
-			action: actionName,
-			errorType: error instanceof Error ? error.constructor.name : typeof error,
-			component: context?.component || 'unknown'
-		},
-		fingerprint: [actionName, error instanceof Error ? error.constructor.name : 'unknown']
-	});
+	// Sentry.captureException(logTitle, {
+	// 	level: 'error',
+	// 	extra: {
+	// 		errorDetail,
+	// 		originalError: error,
+	// 		context: context || {}
+	// 	},
+	// 	tags: {
+	// 		action: actionName,
+	// 		errorType: error instanceof Error ? error.constructor.name : typeof error,
+	// 		component: context?.component || 'unknown'
+	// 	},
+	// 	fingerprint: [actionName, error instanceof Error ? error.constructor.name : 'unknown']
+	// });
 }
 
 async function getErrorMessage(error: unknown): Promise<string> {
