@@ -418,18 +418,25 @@ export const addDirectByMessageWS = createAsyncThunk('direct/addDirectByMessageW
 interface AddGroupUserWSPayload {
 	channel_desc: ApiChannelDescription;
 	users: UserProfileRedis[];
+	myId: string;
 }
 
 export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (payload: AddGroupUserWSPayload, thunkAPI) => {
 	try {
-		const { channel_desc, users } = payload;
+		const { channel_desc, users, myId } = payload;
 		const userIds: string[] = [];
 		const usernames: string[] = [];
 		const avatars: string[] = [];
 		const onlines: boolean[] = [];
 		const label: string[] = [];
 
+		const isDM = channel_desc.type === ChannelType.CHANNEL_TYPE_DM;
 		for (const user of users) {
+			const isMe = user.user_id === myId;
+			if (isDM && isMe) {
+				continue;
+			}
+
 			userIds.push(user.user_id);
 			usernames.push(user.username);
 			avatars.push(user.avatar);
@@ -450,9 +457,12 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			avatars,
 			onlines,
 			active: 1,
-			channel_label: channel_desc?.channel_label || existingEntity?.channel_label || label.toString(),
+			channel_label: isDM ? label.toString() : channel_desc?.channel_label || existingEntity?.channel_label || label.toString(),
 			topic: channel_desc.topic || existingEntity?.topic,
-			member_count: channel_desc.member_count
+			member_count: channel_desc.member_count,
+			last_sent_message: {
+				timestamp_seconds: channel_desc.type === ChannelType.CHANNEL_TYPE_DM ? Date.now() : channel_desc.last_sent_message?.timestamp_seconds
+			}
 		};
 		thunkAPI.dispatch(
 			userChannelsActions.upsert({
