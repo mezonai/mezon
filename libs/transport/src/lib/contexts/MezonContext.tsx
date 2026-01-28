@@ -61,14 +61,15 @@ type Sessionlike = {
 	id_token?: string;
 };
 
-const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean) => {
+const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean, wsUrl?: string) => {
 	try {
 		localStorage.setItem(
 			SESSION_STORAGE_KEY,
 			JSON.stringify({
 				host,
 				port,
-				ssl: useSSL
+				ssl: useSSL,
+				...(wsUrl && { ws_url: wsUrl })
 			})
 		);
 	} catch (error) {
@@ -123,13 +124,14 @@ export const extractAndSaveConfig = (session: Session | null, isFromMobile?: boo
 		const host = url.hostname;
 		const port = url.port;
 		const useSSL = url.protocol === 'https:';
+		const wsUrl = session.ws_url;
 
 		// mobile will use AsyncStorage to save in source mobile app
 		if (!isFromMobile) {
-			saveMezonConfigToStorage(host, port, useSSL);
+			saveMezonConfigToStorage(host, port, useSSL, wsUrl);
 		}
 
-		return { host, port, useSSL };
+		return { host, port, useSSL, wsUrl };
 	} catch (error) {
 		console.error('Failed to extract config from session:', error);
 		return null;

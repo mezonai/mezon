@@ -1,7 +1,7 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { size, useColorsRoleById, useTheme } from '@mezon/mobile-ui';
 import { selectFirstMessageOfCurrentTopic, useAppSelector } from '@mezon/store-mobile';
-import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeString } from '@mezon/utils';
+import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, SHARE_CONTACT_KEY, convertTimeString } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,14 +45,15 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: ITopicHeaderProps) =
 	}, [firstMessage?.content?.embed?.[0]]);
 
 	const contactData = useMemo((): IContactData | null => {
-		if (embed?.fields?.[0]?.value !== 'share_contact') return null;
-
-		return {
-			user_id: embed?.fields?.[1]?.value || '',
-			username: embed?.fields?.[2]?.value || '',
-			display_name: embed?.fields?.[3]?.value || '',
-			avatar: embed?.fields?.[4]?.value || ''
-		};
+		if (embed?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+			return {
+				user_id: embed?.fields?.[1]?.value || '',
+				username: embed?.fields?.[2]?.value || '',
+				display_name: embed?.fields?.[3]?.value || '',
+				avatar: embed?.fields?.[4]?.value || ''
+			};
+		}
+		return null;
 	}, [embed]);
 
 	return (

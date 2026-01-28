@@ -1,17 +1,18 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import type { ChannelsEntity } from '@mezon/store-mobile';
 import {
-	ChannelsEntity,
 	attachmentActions,
 	getStoreAsync,
 	referencesActions,
+	selectAnonymousMode,
 	selectAttachmentByChannelId,
 	selectChannelById,
 	selectCurrentDM,
 	selectIsSendHDImageMobile,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { checkIsThread, getMaxFileSize, isFileSizeExceeded, isImageFile } from '@mezon/utils';
+import { getMaxFileSize, isFileSizeExceeded, isImageFile } from '@mezon/utils';
 import Geolocation from '@react-native-community/geolocation';
 import type { DocumentPickerResponse } from '@react-native-documents/picker';
 import { errorCodes, pick, types } from '@react-native-documents/picker';
@@ -37,19 +38,21 @@ type FileWithDimensions = DocumentPickerResponse & {
 	height?: number;
 };
 
-export type HeaderAttachmentPickerProps = {
-	currentChannelId?: string;
-	onCancel?: (isForcesKeyboard?: boolean) => void;
-	messageAction?: EMessageActionType;
-};
+interface IHeaderAttachmentPickerProps {
+	currentChannelId: string;
+	currentClanId: string;
+	onCancel: (isForcesKeyboard?: boolean) => void;
+	messageAction: EMessageActionType;
+}
 
-const HeaderAttachmentPicker = ({ currentChannelId, onCancel, messageAction }: HeaderAttachmentPickerProps) => {
+const HeaderAttachmentPicker = ({ currentChannelId, currentClanId, onCancel, messageAction }: IHeaderAttachmentPickerProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['message', 'sharing', 'common']);
 	const dispatch = useDispatch();
 	const isSendHDImageMobile = useAppSelector(selectIsSendHDImageMobile);
 	const attachmentFilteredByChannelId = useAppSelector((state) => selectAttachmentByChannelId(state, currentChannelId ?? ''));
+	const anonymousMode = useAppSelector((state) => selectAnonymousMode(state, currentClanId));
 
 	const getImageDimension = useCallback((imageUri: string): Promise<{ width: number; height: number }> => {
 		return new Promise((resolve) => {
@@ -111,8 +114,7 @@ const HeaderAttachmentPicker = ({ currentChannelId, onCancel, messageAction }: H
 			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, {});
 		} catch (err) {
 			if (err?.code === errorCodes.OPERATION_CANCELED) {
-				onCancel?.();
-				// User cancelled the picker
+				onCancel();
 			} else {
 				throw err;
 			}
@@ -220,27 +222,32 @@ const HeaderAttachmentPicker = ({ currentChannelId, onCancel, messageAction }: H
 		if (permissionGranted) {
 			try {
 				Keyboard.dismiss();
-				const { latitude, longitude } = await getCurrentPosition();
 				const store = await getStoreAsync();
 				let mode = ChannelStreamMode.STREAM_MODE_CHANNEL;
 				const currentDirect = selectCurrentDM(store.getState());
+
+				if (!currentDirect && anonymousMode) {
+					Toast.show({
+						type: 'error',
+						text1: t('common:cannotSendLocationWithAnonymous')
+					});
+					return;
+				}
+
 				if (currentDirect) {
 					mode =
 						currentDirect?.type === ChannelType.CHANNEL_TYPE_GROUP
 							? ChannelStreamMode.STREAM_MODE_GROUP
 							: ChannelStreamMode.STREAM_MODE_DM;
 				} else {
-					const channel = selectChannelById(store.getState(), currentChannelId as string) as ChannelsEntity;
-					const isThread = checkIsThread(channel);
+					const channel = selectChannelById(store.getState(), currentChannelId) as ChannelsEntity;
+					const isThread = channel?.parent_id !== '0' && channel?.parent_id !== '';
 					if (isThread) {
 						mode = ChannelStreamMode.STREAM_MODE_THREAD;
 					}
 				}
 
-				const geoLocation = {
-					latitude,
-					longitude
-				};
+				const geoLocation = await getCurrentPosition();
 				const data = {
 					children: (
 						<ShareLocationConfirmModal

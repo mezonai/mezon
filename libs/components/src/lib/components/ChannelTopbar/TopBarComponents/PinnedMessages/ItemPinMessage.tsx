@@ -35,7 +35,6 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const { pinMessage, contentString, handleUnPinMessage, onClose, mode } = props;
 
 	const getValidCreateTime = () => {
-		if (pinMessage?.create_time) return pinMessage.create_time;
 		if (pinMessage?.create_time_seconds) return new Date(pinMessage.create_time_seconds * 1000).toISOString();
 		return new Date().toISOString();
 	};

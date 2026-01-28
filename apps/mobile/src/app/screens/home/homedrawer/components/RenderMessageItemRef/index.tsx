@@ -22,37 +22,39 @@ export const RenderMessageItemRef = ({ channelId, message, preventAction, isSear
 	const styles = style(themeValue);
 	const messageReferences = message?.references?.[0];
 
+	if (isSearchTab) {
+		return null;
+	}
+
 	return (
-		!isSearchTab && (
-			<>
-				{!!messageReferences && messageReferences?.message_ref_id && messageReferences.message_ref_id !== '0' && (
-					<MessageReferences
-						messageReferences={messageReferences}
-						preventAction={preventAction}
-						isMessageReply
-						channelId={channelId ?? message?.channel_id}
-						clanId={message?.clan_id}
-						onLongPress={onLongPress}
-					/>
-				)}
-				{!!message?.references?.length && message.references?.[0]?.message_ref_id === '0' && (
-					<View style={styles.aboveMessageDeleteReply}>
-						<View style={styles.iconReply}>
-							<MezonIconCDN
-								icon={IconCDN.reply}
-								width={size.s_34}
-								height={size.s_30}
-								color={themeValue.text}
-								customStyle={styles.deletedMessageReplyIcon}
-							/>
-						</View>
-						<View style={styles.iconMessageDeleteReply}>
-							<MezonIconCDN icon={IconCDN.replyDelete} width={size.s_12} height={size.s_12} />
-						</View>
-						<Text style={styles.messageDeleteReplyText}>{t('messageDeleteReply')}</Text>
+		<>
+			{!!messageReferences && messageReferences?.message_ref_id && messageReferences.message_ref_id !== '0' && (
+				<MessageReferences
+					messageReferences={messageReferences}
+					preventAction={preventAction}
+					isMessageReply
+					channelId={channelId ?? message?.channel_id}
+					clanId={message?.clan_id}
+					onLongPress={onLongPress}
+				/>
+			)}
+			{!!message?.references?.length && message.references?.[0]?.message_ref_id === '0' && (
+				<View style={styles.aboveMessageDeleteReply}>
+					<View style={styles.iconReply}>
+						<MezonIconCDN
+							icon={IconCDN.reply}
+							width={size.s_34}
+							height={size.s_30}
+							color={themeValue.text}
+							customStyle={styles.deletedMessageReplyIcon}
+						/>
 					</View>
-				)}
-			</>
-		)
+					<View style={styles.iconMessageDeleteReply}>
+						<MezonIconCDN icon={IconCDN.replyDelete} width={size.s_12} height={size.s_12} />
+					</View>
+					<Text style={styles.messageDeleteReplyText}>{t('messageDeleteReply')}</Text>
+				</View>
+			)}
+		</>
 	);
 };
