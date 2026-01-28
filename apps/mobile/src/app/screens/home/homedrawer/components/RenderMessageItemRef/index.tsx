@@ -35,7 +35,7 @@ export const RenderMessageItemRef = ({ channelId, message, preventAction, isSear
 						onLongPress={onLongPress}
 					/>
 				)}
-				{message?.references?.length && message.references?.[0]?.message_ref_id === '0' && (
+				{!!message?.references?.length && message.references?.[0]?.message_ref_id === '0' && (
 					<View style={styles.aboveMessageDeleteReply}>
 						<View style={styles.iconReply}>
 							<MezonIconCDN
