@@ -11,10 +11,9 @@ import {
 	useWallet,
 	walletActions
 } from '@mezon/store-mobile';
-import { CURRENCY, createImgproxyUrl, formatBalanceToString } from '@mezon/utils';
+import { CURRENCY, createImgproxyUrl, formatBalanceToString, formatDateI18n } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useFocusEffect } from '@react-navigation/native';
-import moment from 'moment';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
@@ -41,7 +40,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	const styles = style(themeValue, isTabletLandscape);
 	const allUser = useSelector(selectAllFriends);
 	const { color } = useMixImageColor(userProfile?.user?.avatar_url);
-	const { t } = useTranslation(['profile', 'customUserStatus', 'screenStack']);
+	const { t, i18n } = useTranslation(['profile', 'customUserStatus', 'screenStack', 'common']);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
 	const { walletDetail } = useWallet();
@@ -96,8 +95,11 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	}, [friendList]);
 
 	const memberSince = useMemo(() => {
-		return moment(userProfile?.user?.create_time).format('MMM DD, YYYY');
-	}, [userProfile?.user?.create_time]);
+		const createTime = userProfile?.user?.create_time_seconds;
+		if (!createTime) return '';
+		const timestamp = typeof createTime === 'number' ? (createTime.toString().length <= 10 ? createTime * 1000 : createTime) : createTime;
+		return formatDateI18n(new Date(timestamp), i18n.language, t('common:formatDate'));
+	}, [userProfile?.user?.create_time_seconds, i18n.language]);
 
 	const handleCustomUserStatus = useCallback(
 		(customStatus = '', duration?: number, noClearStatus?: boolean) => {
