@@ -43,7 +43,6 @@ export type ItemEventManagementProps = {
 	start?: string;
 	end?: string;
 	event?: EventManagementEntity;
-	createTime?: string;
 	isReviewEvent?: boolean;
 	openModelUpdate?: () => void;
 	onEventUpdateId?: (id: string) => void;

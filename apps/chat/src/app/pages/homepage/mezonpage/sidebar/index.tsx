@@ -1,4 +1,4 @@
-import { selectIsLogin } from '@mezon/store';
+import { authActions, selectIsLogin, useAppDispatch } from '@mezon/store';
 import debounce from 'lodash.debounce';
 import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ interface SideBarProps {
 export const SideBarMezon = memo((props: SideBarProps) => {
 	const { t } = useTranslation('homepage');
 	const isLogin = useSelector(selectIsLogin);
+	const dispatch = useAppDispatch();
 	const { sideBarIsOpen, scrollToSection } = props;
 
 	const [bodySideBarRef, setBodySideBarRef] = useState(0);
@@ -102,6 +103,17 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 					{t('header.blogs')}
 				</a>
 
+				<Link
+					className="text-center px-[16px] py-[10px] rounded-[8px] bg-white text-[#6E4A9E] font-bold text-[16px] leading-[24px] hover:opacity-90 transition-opacity whitespace-nowrap"
+					to={isLogin ? '/meet' : '/mezon'}
+					onClick={() => {
+						if (!isLogin) {
+							dispatch(authActions.setRedirectUrl('/meet'));
+						}
+					}}
+				>
+					Quick Meeting
+				</Link>
 				<Link
 					className="text-center px-[16px] py-[10px] rounded-[8px] bg-[#1024D4] text-[#F4F7F9] font-semibold text-[16px] leading-[24px] hover:bg-[#0C1AB2] focus:bg-[#281FB5] whitespace-nowrap"
 					to={'/mezon'}

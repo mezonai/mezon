@@ -1,14 +1,14 @@
 import { TopicHeader } from '@mezon/components';
 import { useEscapeKey } from '@mezon/core';
-import { selectCurrentChannelId, topicsActions, useAppDispatch } from '@mezon/store';
+import { selectCurrentChannelId, selectCurrentTopicId, topicsActions, useAppDispatch } from '@mezon/store';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import TopicDiscussionBox from './TopicDiscussionBox';
 
 const TopicDiscussionMain = () => {
 	const dispatch = useAppDispatch();
+	const currentTopicId = useSelector(selectCurrentTopicId);
 	const currentChannelId = useSelector(selectCurrentChannelId);
-
 	const setIsShowCreateTopic = useCallback(
 		(isShowCreateTopic: boolean) => {
 			dispatch(topicsActions.setIsShowCreateTopic(isShowCreateTopic));
@@ -25,7 +25,7 @@ const TopicDiscussionMain = () => {
 		<div className="flex flex-col h-full">
 			<TopicHeader />
 			<div className="flex flex-col h-full border-l dark:border-borderDivider border-bgLightTertiary">
-				<TopicDiscussionBox currentTopicId={currentChannelId || ''} />
+				<TopicDiscussionBox currentTopicId={currentTopicId || ''} />
 			</div>
 		</div>
 	);

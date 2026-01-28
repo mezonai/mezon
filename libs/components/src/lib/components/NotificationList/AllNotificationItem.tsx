@@ -74,7 +74,6 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	};
 
 	const allTabProps = {
-		message,
 		subject: notify.subject,
 		category: notify.category,
 		senderId: notify?.content?.sender_id || notify.sender_id
@@ -97,7 +96,16 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 					{t('tooltips.jump')}
 				</button>
 			)}
-			{message && <AllTabContent {...allTabProps} message={message} />}
+			{message && (
+				<AllTabContent
+					{...allTabProps}
+					message={{
+						...message,
+						create_time_seconds:
+							notify?.category === NotificationCategory.FOR_YOU ? notify.create_time_seconds : message?.create_time_seconds
+					}}
+				/>
+			)}
 		</div>
 	);
 }
@@ -211,7 +219,8 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 										id: message.sender_id,
 										name: message.display_name || message.username,
 										username: message.username
-									}
+									},
+									create_time_seconds: message.create_time_seconds
 								}}
 								mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
 							/>
