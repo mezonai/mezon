@@ -95,7 +95,8 @@ const sendTransaction = createAsyncThunk(
 			amount,
 			textData,
 			extraInfo,
-			isSendByAddress
+			isSendByAddress,
+			isMobile = false
 		}: {
 			sender?: string;
 			recipient?: string;
@@ -103,36 +104,36 @@ const sendTransaction = createAsyncThunk(
 			textData?: string;
 			extraInfo?: ExtraInfo;
 			isSendByAddress?: boolean;
+			isMobile?: boolean;
 		},
 		thunkAPI
 	) => {
+		const notifyError = (message: string) => {
+			if (!isMobile) {
+				thunkAPI.dispatch(toastActions.addToast({ message, type: 'error' }));
+			}
+		};
+
 		const zkProofs = selectZkProofs(thunkAPI.getState() as any);
 		const ephemeralKeyPair = selectEphemeralKeyPair(thunkAPI.getState() as any);
 		const walletDetail = selectWalletDetail(thunkAPI.getState() as any);
 
 		if (!sender || !zkProofs || !ephemeralKeyPair) {
-			thunkAPI.dispatch(
-				toastActions.addToast({
-					message: i18n.t('message:wallet.notAvailable'),
-					type: 'error'
-				})
-			);
+			const errMsg = i18n.t('message:wallet.notAvailable');
+			notifyError(errMsg);
 			return thunkAPI.rejectWithValue({ message: i18n.t('message:wallet.notAvailable'), errType: EErrorType.WALLET });
 		}
 
 		if (!recipient) {
-			thunkAPI.dispatch(toastActions.addToast({ message: i18n.t('token:toast.error.mustSelectUser'), type: 'error' }));
-			return thunkAPI.rejectWithValue(i18n.t('token:toast.error.mustSelectUser'));
+			const errMsg = i18n.t('token:toast.error.mustSelectUser');
+			notifyError(errMsg);
+			return thunkAPI.rejectWithValue(errMsg);
 		}
 
 		if (!amount || amount <= 0) {
-			thunkAPI.dispatch(
-				toastActions.addToast({
-					message: i18n.t('token:toast.error.amountMustThanZero'),
-					type: 'error'
-				})
-			);
-			return thunkAPI.rejectWithValue(i18n.t('token:toast.error.amountMustThanZero'));
+			const errMsg = i18n.t('token:toast.error.amountMustThanZero');
+			notifyError(errMsg);
+			return thunkAPI.rejectWithValue(errMsg);
 		}
 
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
@@ -141,56 +142,58 @@ const sendTransaction = createAsyncThunk(
 		}
 
 		if (compareBigInt(walletDetail?.balance || '', mezon.mmnClient.scaleAmountToDecimals(amount)) < 0) {
-			thunkAPI.dispatch(
-				toastActions.addToast({
-					message: i18n.t('token:toast.error.exceedWallet'),
-					type: 'error'
-				})
-			);
-			return thunkAPI.rejectWithValue(i18n.t('token:toast.error.exceedWallet'));
+			const errMsg = i18n.t('token:toast.error.exceedWallet');
+			notifyError(errMsg);
+			return thunkAPI.rejectWithValue(errMsg);
 		}
 
 		const currentNonce = await mezon.mmnClient.getCurrentNonce(sender, 'pending');
 
 		if (currentNonce?.error) {
 			const errMsg = safeJSONParse(currentNonce.error)?.message || currentNonce.error;
-			thunkAPI.dispatch(toastActions.addToast({ message: errMsg || i18n.t('token:toast.error.anErrorOccurred'), type: 'error' }));
-			return thunkAPI.rejectWithValue(errMsg);
+			notifyError(errMsg || i18n.t('token:toast.error.anErrorOccurred'));
+			return thunkAPI.rejectWithValue(errMsg || i18n.t('token:toast.error.anErrorOccurred'));
 		}
 
-		const response = isSendByAddress
-			? await mezon.mmnClient.sendTransactionByAddress({
-					sender,
-					recipient,
-					amount: mezon.mmnClient.scaleAmountToDecimals(amount),
-					nonce: currentNonce.nonce + 1,
-					textData,
-					extraInfo,
-					publicKey: ephemeralKeyPair.publicKey,
-					privateKey: ephemeralKeyPair.privateKey,
-					zkProof: zkProofs.proof,
-					zkPub: zkProofs.public_input
-				})
-			: await mezon.mmnClient.sendTransaction({
-					sender,
-					recipient,
-					amount: mezon.mmnClient.scaleAmountToDecimals(amount),
-					nonce: currentNonce.nonce + 1,
-					textData,
-					extraInfo,
-					publicKey: ephemeralKeyPair.publicKey,
-					privateKey: ephemeralKeyPair.privateKey,
-					zkProof: zkProofs.proof,
-					zkPub: zkProofs.public_input
-				});
+		try {
+			const response = isSendByAddress
+				? await mezon.mmnClient.sendTransactionByAddress({
+						sender,
+						recipient,
+						amount: mezon.mmnClient.scaleAmountToDecimals(amount),
+						nonce: currentNonce.nonce + 1,
+						textData,
+						extraInfo,
+						publicKey: ephemeralKeyPair.publicKey,
+						privateKey: ephemeralKeyPair.privateKey,
+						zkProof: zkProofs.proof,
+						zkPub: zkProofs.public_input
+					})
+				: await mezon.mmnClient.sendTransaction({
+						sender,
+						recipient,
+						amount: mezon.mmnClient.scaleAmountToDecimals(amount),
+						nonce: currentNonce.nonce + 1,
+						textData,
+						extraInfo,
+						publicKey: ephemeralKeyPair.publicKey,
+						privateKey: ephemeralKeyPair.privateKey,
+						zkProof: zkProofs.proof,
+						zkPub: zkProofs.public_input
+					});
 
-		if (!response?.ok) {
-			const errMsg = safeJSONParse(response.error)?.message || response.error;
-			thunkAPI.dispatch(toastActions.addToast({ message: errMsg || i18n.t('token:toast.error.anErrorOccurred'), type: 'error' }));
+			if (!response?.ok) {
+				const errMsg = safeJSONParse(response.error)?.message || response.error;
+				notifyError(errMsg || i18n.t('token:toast.error.anErrorOccurred'));
+				return thunkAPI.rejectWithValue(errMsg || i18n.t('token:toast.error.anErrorOccurred'));
+			}
+
+			return response;
+		} catch (error) {
+			const errMsg = error instanceof Error ? error.message : i18n.t('token:toast.error.anErrorOccurred');
+			notifyError(errMsg);
 			return thunkAPI.rejectWithValue(errMsg);
 		}
-
-		return response;
 	}
 );
 
