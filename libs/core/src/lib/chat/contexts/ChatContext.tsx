@@ -170,16 +170,19 @@ import type {
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
-import type { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction, ApiNotification } from 'mezon-js/api.gen';
 import type {
 	ApiChannelMessageHeader,
 	ApiClanEmoji,
+	ApiCreateEventRequest,
+	ApiGiveCoffeeEvent,
+	ApiMessageReaction,
+	ApiNotification,
 	ApiNotificationUserChannel,
 	ApiPermissionUpdate,
 	ApiTokenSentEvent,
 	ApiUpdateCategoryDescRequest,
 	ApiWebhook
-} from 'mezon-js/dist/api.gen';
+} from 'mezon-js/api.gen';
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -231,7 +234,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				if (voiceChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && hasJoinSoundEffect) {
 					const joinSoundElement = document.createElement('audio');
-					joinSoundElement.src = 'assets/audio/joincallsound.mp3';
+					joinSoundElement.src = '/assets/audio/joincallsound.mp3';
 					joinSoundElement.preload = 'auto';
 					joinSoundElement.style.display = 'none';
 
@@ -307,7 +310,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const handleBuzz = useCallback((channelId: string, senderId: string, isReset: boolean, mode: ChannelStreamMode | undefined) => {
-		const audio = new Audio('assets/audio/buzz.mp3');
+		const audio = new Audio('/assets/audio/buzz.mp3');
 
 		const cleanup = () => {
 			audio.removeEventListener('ended', cleanup);
@@ -646,7 +649,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			) {
 				dispatch(
 					notificationActions.add({
-						data: { ...notification, id: notification?.id || '' },
+						data: {
+							...notification,
+							id: notification?.id || '',
+							content: { ...notification.content, content: safeJSONParse(notification.content?.content).t }
+						},
 						category: notification.category as NotificationCategory
 					})
 				);
@@ -691,7 +698,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			if (isLinuxDesktop) {
 				const notiSoundElement = document.createElement('audio');
-				notiSoundElement.src = 'assets/audio/noti-linux.mp3';
+				notiSoundElement.src = '/assets/audio/noti-linux.mp3';
 				notiSoundElement.preload = 'auto';
 				notiSoundElement.style.display = 'none';
 				document.body.appendChild(notiSoundElement);
@@ -809,7 +816,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						if (user.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 							const parentChannelId = currentChannel?.parent_id;
 							if (parentChannelId) {
-								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`);
+								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`, true);
 								return;
 							}
 						}
@@ -821,13 +828,13 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						const redirectChannelId = defaultChannelId || fallbackChannelId;
 
 						if (redirectChannelId) {
-							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
+							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`, true);
 						} else {
-							navigate(`/chat/clans/${clanId}/member-safety`);
+							navigate(`/chat/clans/${clanId}/member-safety`, true);
 						}
 					}
 					if (!isMobile && directId === user.channel_id) {
-						navigate(`/chat/direct/friends`);
+						navigate(`/chat/direct/friends`, true);
 					}
 					dispatch(directSlice.actions.removeByDirectID(user.channel_id));
 					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: clanId as string }));
@@ -1344,7 +1351,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 			if (isReceiverGiveCoffee) {
 				const joinSoundElement = document.createElement('audio');
-				joinSoundElement.src = 'assets/audio/bankSound.mp3';
+				joinSoundElement.src = '/assets/audio/bankSound.mp3';
 				joinSoundElement.preload = 'auto';
 				joinSoundElement.style.display = 'none';
 				document.body.appendChild(joinSoundElement);

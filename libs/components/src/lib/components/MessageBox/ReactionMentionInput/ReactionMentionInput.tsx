@@ -693,6 +693,13 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			handleThreadActivation
 		]
 	);
+	const attachmentData = useMemo(() => {
+		if (!attachmentFiltered) {
+			return [];
+		} else {
+			return attachmentFiltered.files;
+		}
+	}, [attachmentFiltered?.files]);
 
 	const { onKeyDown } = useKeyboardHandler({
 		editorRef: editorElementRef as RefObject<HTMLDivElement>,
@@ -706,16 +713,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		setIsEphemeralMode,
 		setEphemeralTargetUserId,
 		setEphemeralTargetUserDisplay,
-		ephemeralTargetUserId
+		ephemeralTargetUserId,
+		channelId: props.isTopic ? scopeId : currentChannel?.id || props.currentDmGroupId
 	});
-
-	const attachmentData = useMemo(() => {
-		if (!attachmentFiltered) {
-			return [];
-		} else {
-			return attachmentFiltered.files;
-		}
-	}, [attachmentFiltered?.files]);
 
 	const hashtagData = useMemo(() => {
 		return allChannels.reduce<Array<{ id: string; display: string; subText: string }>>((acc, item) => {

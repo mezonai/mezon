@@ -132,6 +132,10 @@ const MessageItem = React.memo(
 			[isDM, message?.display_name, message?.username, message?.clan_nick, message?.user?.username, checkAnonymous]
 		);
 
+		const senderUsername = useMemo(() => {
+			return message?.username || message?.user?.username || '';
+		}, [message?.username, message?.user?.username]);
+
 		const onReplyMessage = useCallback(() => {
 			const payload: IMessageActionNeedToResolve = {
 				type: EMessageActionType.Reply,
@@ -475,6 +479,7 @@ const MessageItem = React.memo(
 											avatarUrl={messageAvatar}
 											isSelf={message?.user?.id === userId}
 											senderName={senderDisplayName}
+											senderUsername={senderUsername}
 										/>
 									)}
 									{/* check  */}

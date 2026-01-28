@@ -402,8 +402,27 @@ const UserProfile = React.memo(
 		}, [currentChannel?.creator_id, dmChannel?.creator_id, userProfile?.user?.id]);
 
 		const isShowUserContent = useMemo(() => {
-			return !!userById?.user?.about_me || (showRole && userRolesClan?.length) || showAction || (isDMGroup && isChannelOwner && !isCheckOwner);
-		}, [userById?.user?.about_me, showAction, showRole, userRolesClan, isDMGroup, isCheckOwner, isChannelOwner]);
+			return (
+				!!(userById?.user?.create_time || user?.create_time || user?.user?.create_time) ||
+				!!userById?.user?.about_me ||
+				(userRolesClan?.length && showRole && !isDM) ||
+				(isDMGroup && !isCheckOwner && isChannelOwner) ||
+				(showAction && !isKicked)
+			);
+		}, [
+			isChannelOwner,
+			isCheckOwner,
+			isDM,
+			isDMGroup,
+			isKicked,
+			showAction,
+			showRole,
+			user?.create_time,
+			user?.user?.create_time,
+			userById?.user?.about_me,
+			userById?.user?.create_time,
+			userRolesClan
+		]);
 
 		const handleTransferFunds = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {

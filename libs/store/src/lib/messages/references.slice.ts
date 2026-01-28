@@ -248,6 +248,9 @@ export const referencesSlice = createSlice({
 			} | null>
 		) {
 			state.ogpData = action.payload;
+		},
+		clearAttachmentDraft(state, action: PayloadAction<string>) {
+			delete state.attachmentAfterUpload[action.payload];
 		}
 	},
 	extraReducers: (builder) => {

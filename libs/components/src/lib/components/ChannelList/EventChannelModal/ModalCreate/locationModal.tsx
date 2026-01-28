@@ -8,8 +8,8 @@ import { ChannelType } from 'mezon-js';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import type { FilterOptionOption } from 'react-select';
 import Select from 'react-select';
-import type { FilterOptionOption } from 'react-select/dist/declarations/src/filters';
 import { customStyles } from '../../../NotificationSetting';
 
 export type LocationModalProps = {

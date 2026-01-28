@@ -49,7 +49,7 @@ const SuggestItem = memo(
 			};
 		}, [channel]);
 
-		const isVoiceActive = useCheckVoiceStatus(channelId, channel.clan_id);
+		const isVoiceActive = useCheckVoiceStatus(channelId, channel?.clan_id);
 
 		const renderRoleUser = () => (
 			<View>

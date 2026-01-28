@@ -447,7 +447,11 @@ const ChannelTopbarTools = memo(
 						</div>
 					</div>
 				) : (
-					<>{isShowChatStream && <ChatButton closeMenuOnMobile={closeMenuOnMobile} />}</>
+					<div className="items-center gap-2 flex">
+						<div className="relative items-center gap-4 hidden sbm:flex sbm:flex-row-reverse">
+							<ChatButton closeMenuOnMobile={closeMenuOnMobile} />
+						</div>
+					</div>
 				)}
 			</div>
 		);
@@ -1025,13 +1029,20 @@ function ChannelListButton() {
 function ChatButton({ closeMenuOnMobile }: { closeMenuOnMobile?: () => void }) {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useDispatch();
+	const isShowChatStream = useSelector(selectIsShowChatStream);
+
 	const handleClick = () => {
-		dispatch(appActions.setIsShowChatStream(true));
+		dispatch(appActions.setIsShowChatStream(!isShowChatStream));
 		closeMenuOnMobile?.();
 	};
+
 	return (
 		<div className="relative leading-5 h-5" data-e2e={generateE2eId('chat.channel_message.header.button.chat')}>
-			<button title={t('tooltips.showChat')} onClick={handleClick} className="text-theme-primary text-theme-primary-hover">
+			<button
+				title={isShowChatStream ? t('tooltips.hideChat') : t('tooltips.showChat')}
+				onClick={handleClick}
+				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowChatStream ? 'text-theme-primary-active' : ''}`}
+			>
 				<Icons.Chat defaultSize="size-5" />
 			</button>
 		</div>

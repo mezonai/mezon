@@ -160,6 +160,8 @@
 	"maxFileSize": "Max file size is {{sizeLimit}}, please!",
 	"onlyImageFiles": "Only image files are allowed",
 	"uploadImageTypes": "Just upload type file (JPEG, PNG), please!",
+	"onlyAudioFiles": "Only audio files are allowed",
+	"uploadAudioTypes": "Just upload type file audio, please!",
 	"confirmLogOut": "Please confirm if you would like to log out?",
 	"confirmDeleteAccount": "Are you sure that you want to delete your account? This will immediately log you out of your account and you will not be able to log in again.",
 	"enterPassword": "Enter your password",
@@ -515,5 +517,6 @@
 	"sendMessage": "Message",
 	"noPermissionToCallBlocked": "You cannot perform this action.",
 	"detail": "Detail",
-	"cannotCallYourself": "You cannot call yourself."
+	"cannotCallYourself": "You cannot call yourself.",
+	"errorMaxLength": "Must be between {{min}} and {{max}} in length."
 }
