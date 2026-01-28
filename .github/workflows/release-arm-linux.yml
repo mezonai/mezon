@@ -14,13 +14,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.5.0'
+
       - name: Install package
         run: |
-          export nv=$(node -v)
-          echo "Node version: $nv"
-          echo "Installing dependencies"
-          yarn config set nodedir ~/.cache/node-gyp/20.18.1/
-          echo "Node directory: ${nv:1}"
+          node -v
           yarn
 
       - name: Reset Nx cache
