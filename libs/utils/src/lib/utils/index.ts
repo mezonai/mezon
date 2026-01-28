@@ -230,7 +230,7 @@ export const removeDuplicatesById = (array: any) => {
 		return acc;
 	}, []);
 };
-export const getTimeDifferenceDate = (dateString: string) => {
+export const getTimeDifferenceDate = (dateString: string | number) => {
 	if (!dateString) return '-';
 	const codeTime = new Date(dateString);
 	if (isNaN(codeTime.getTime())) return '-';
@@ -878,8 +878,8 @@ export const handleShowShortProfile = (
 
 export const sortNotificationsByDate = (notifications: NotificationEntity[]) => {
 	return notifications.sort((a, b) => {
-		const dateA = a.create_time ? new Date(a.create_time).getTime() : 0;
-		const dateB = b.create_time ? new Date(b.create_time).getTime() : 0;
+		const dateA = a.create_time_seconds ? a.create_time_seconds : 0;
+		const dateB = b.create_time_seconds ? b.create_time_seconds : 0;
 		return dateB - dateA;
 	});
 };

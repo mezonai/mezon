@@ -65,11 +65,12 @@ type MemberClanProps = {
 	id: string;
 	isOwner?: boolean;
 	temp: boolean;
+	clanId: string;
 };
 
 const MemoizedMemberItem = memo((props: MemberClanProps) => {
 	const { t } = useTranslation('memberPage');
-	const { id, isOwner, temp } = props;
+	const { id, isOwner, temp, clanId } = props;
 	const user = useAppSelector((state) => selectMemberClanByUserId(state, id));
 	const userMeta = useMemberStatus(id);
 	const userCustomStatus = useAppSelector((state) => selectMemberCustomStatusByUserId(state, user?.user?.id || ''));
@@ -78,7 +79,10 @@ const MemoizedMemberItem = memo((props: MemberClanProps) => {
 	const username = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
 	const { showContextMenu, openProfileItem, setCurrentUser } = useMemberContextMenu();
 	const handleClick = (event: React.MouseEvent) => {
-		setCurrentUser(user);
+		setCurrentUser({
+			...user,
+			clan_id: clanId
+		});
 		openProfileItem(event, user);
 	};
 	return temp ? (
@@ -251,7 +255,12 @@ const ListMember = () => {
 										{t('offlineCount', { count: lisMembers.offlineCount })}
 									</p>
 								) : (
-									<MemoizedMemberItem id={user} temp={!showFullList} isOwner={currentClanCreatorId === user} />
+									<MemoizedMemberItem
+										id={user}
+										temp={!showFullList}
+										isOwner={currentClanCreatorId === user}
+										clanId={currentClanId || ''}
+									/>
 								)}
 							</div>
 						</div>

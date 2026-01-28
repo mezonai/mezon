@@ -72,7 +72,7 @@ export const updateGiveCoffee = createAsyncThunk(
 					thunkAPI.dispatch(toastActions.addToast({ message: 'Coffee sent', type: 'success' }));
 					return response.ok;
 				} else {
-					return thunkAPI.rejectWithValue('');
+					return thunkAPI.rejectWithValue(response);
 				}
 			} catch (error) {
 				captureSentryError(error, 'giveCoffee/updateGiveCoffee');
@@ -100,7 +100,10 @@ export const initialGiveCoffeeState: GiveCoffeeState = giveCoffeeAdapter.getInit
 
 export const sendToken = createAsyncThunk(
 	'token/sendToken',
-	async ({ tokenEvent, isSendByAddress }: { tokenEvent: ApiTokenSentEvent; isSendByAddress?: boolean }, thunkAPI) => {
+	async (
+		{ tokenEvent, isSendByAddress, isMobile = false }: { tokenEvent: ApiTokenSentEvent; isSendByAddress?: boolean; isMobile?: boolean },
+		thunkAPI
+	) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
@@ -118,7 +121,8 @@ export const sendToken = createAsyncThunk(
 							UserSenderUsername: mezon.session.username || '',
 							ExtraAttribute: tokenEvent?.extra_attribute || ''
 						},
-						isSendByAddress
+						isSendByAddress,
+						isMobile
 					})
 				)
 				.then((action) => action?.payload as AddTxResponse);
@@ -128,7 +132,7 @@ export const sendToken = createAsyncThunk(
 				thunkAPI.dispatch(giveCoffeeActions.updateTokenUser({ tokenEvent }));
 				return { ...response, tx_hash: response.tx_hash };
 			} else {
-				return thunkAPI.rejectWithValue('');
+				return thunkAPI.rejectWithValue(response);
 			}
 		} catch (error) {
 			captureSentryError(error, 'token/sendToken');
