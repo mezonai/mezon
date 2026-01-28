@@ -646,7 +646,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			) {
 				dispatch(
 					notificationActions.add({
-						data: { ...notification, id: notification?.id || '' },
+						data: {
+							...notification,
+							id: notification?.id || '',
+							content: { ...notification.content, content: safeJSONParse(notification.content?.content).t }
+						},
 						category: notification.category as NotificationCategory
 					})
 				);
