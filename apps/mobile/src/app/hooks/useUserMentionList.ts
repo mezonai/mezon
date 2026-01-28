@@ -1,17 +1,10 @@
 /* eslint-disable @nx/enforce-module-boundaries */
-import {
-	channelMembersActions,
-	ChannelMembersEntity,
-	ChannelsEntity,
-	getStore,
-	selectAllChannelMembers,
-	selectAllRolesClan,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store-mobile';
-import { getNameForPrioritize, ID_MENTION_HERE, MentionDataProps } from '@mezon/utils';
+import type { ChannelMembersEntity, ChannelsEntity } from '@mezon/store-mobile';
+import { channelMembersActions, getStore, selectAllChannelMembers, selectAllRolesClan, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import type { MentionDataProps } from '@mezon/utils';
+import { ID_MENTION_HERE, getNameForPrioritize } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiRole } from 'mezon-js/api.gen';
+import type { ApiRole } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
