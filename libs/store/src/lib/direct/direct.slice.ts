@@ -447,14 +447,6 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		const state = thunkAPI.getState() as RootState;
 		const existingEntity = selectDmGroupById(state, channel_desc.channel_id || '0');
 
-		if (existingEntity && existingEntity.type === ChannelType.CHANNEL_TYPE_GROUP) {
-			userIds.push(...(existingEntity.user_ids || []));
-			usernames.push(...(existingEntity.usernames || []));
-			avatars.push(...(existingEntity.avatars || []));
-			onlines.push(...(existingEntity.onlines || []));
-			label.push(...(existingEntity.display_names || existingEntity.usernames || []));
-		}
-
 		const directEntity: DirectEntity = {
 			...channel_desc,
 			id: channel_desc.channel_id || '0',
