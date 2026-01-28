@@ -301,7 +301,10 @@ export const voiceSlice = createSlice({
 		remove: (state, action: PayloadAction<VoiceLeavedEvent>) => {
 			const voice = action.payload;
 			const keyRemove = voice.voice_user_id + voice.voice_channel_id;
-			const entities = voiceAdapter.getSelectors().selectEntities(state.listVoiceMemberByClan[voice.clan_id]);
+			const clanState = state.listVoiceMemberByClan[voice.clan_id];
+			if (!clanState) return;
+
+			const entities = voiceAdapter.getSelectors().selectEntities(clanState);
 			if (entities[keyRemove]) {
 				state.listVoiceMemberByClan[voice.clan_id] = voiceAdapter.removeOne(state.listVoiceMemberByClan[voice.clan_id], keyRemove);
 			} else {
@@ -488,10 +491,7 @@ export const voiceSlice = createSlice({
 				});
 				if (!state.listVoiceMemberByClan[clanId]) {
 					state.listVoiceMemberByClan[clanId] = voiceAdapter.getInitialState({});
-					state.listVoiceMemberByClan[clanId] = state.listVoiceMemberByClan[clanId] = voiceAdapter.setAll(
-						state.listVoiceMemberByClan[clanId],
-						members
-					);
+					state.listVoiceMemberByClan[clanId] = voiceAdapter.setAll(state.listVoiceMemberByClan[clanId], members);
 				}
 
 				state.cache = createCacheMetadata();
