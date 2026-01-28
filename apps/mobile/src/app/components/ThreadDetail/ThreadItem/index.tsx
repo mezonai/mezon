@@ -104,9 +104,11 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 			(typeof thread?.last_sent_message?.content === 'string'
 				? safeJSONParse(thread?.last_sent_message?.content || '{}')
 				: thread?.last_sent_message?.content);
+		const isShareContact = content?.embed?.[0]?.fields?.[0]?.value === SHARE_CONTACT_KEY;
+
 		if (content?.t) {
 			return content.t;
-		} else if (content?.embed?.[0]?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+		} else if (isShareContact) {
 			return `[${t('attachments.contact')}]`;
 		} else {
 			return `[${t('attachments.file')}]`;

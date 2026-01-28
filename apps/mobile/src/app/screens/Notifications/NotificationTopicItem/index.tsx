@@ -32,10 +32,11 @@ const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
 			typeof notify?.last_sent_message?.content === 'string'
 				? safeJSONParse(notify.last_sent_message.content || '{}')
 				: notify?.last_sent_message?.content;
+		const isShareContact = content?.embed?.[0]?.fields?.[0]?.value === SHARE_CONTACT_KEY;
 
 		if (content?.t) {
 			return content.t;
-		} else if (content?.embed?.[0]?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+		} else if (isShareContact) {
 			return `[${t('message:attachments.contact')}]`;
 		} else {
 			return `[${t('message:attachments.file')}]`;
@@ -44,9 +45,11 @@ const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
 
 	const replyContent = useMemo(() => {
 		const content = dataMessage?.content;
+		const isShareContact = content?.embed?.[0]?.fields?.[0]?.value === SHARE_CONTACT_KEY;
+
 		if (content?.t) {
 			return content.t;
-		} else if (content?.embed?.[0]?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+		} else if (isShareContact) {
 			return `[${t('message:attachments.contact')}]`;
 		} else {
 			return `[${t('message:attachments.file')}]`;

@@ -45,7 +45,7 @@ const MessageWebhookClan = memo(({ message }: IMessageNotificationProps) => {
 					senderId={message?.sender_id}
 				/>
 			) : null}
-			{contactData ? <ContactMessageCard data={contactData} /> : null}
+			{!!contactData && <ContactMessageCard data={contactData} />}
 
 			<View>
 				<RenderTextMarkdownContent
