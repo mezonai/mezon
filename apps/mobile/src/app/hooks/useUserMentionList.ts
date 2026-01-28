@@ -116,17 +116,10 @@ function UseMentionList({ channelDetail, channelID, channelMode }: UserMentionLi
 	const processedMentionData = useMemo(() => {
 		const userMentionRaw = getMembersChannel();
 
-		const seen = new Set<string>();
-		const uniqueMembers: ChannelMembersEntity[] = [];
-		for (const member of userMentionRaw) {
-			if (member?.id && !seen.has(member.id)) {
-				seen.add(member.id);
-				uniqueMembers.push(member);
-			}
-		}
+		const mentionList = userMentionRaw.map(transformMemberToMention).filter((item): item is MentionDataProps => item !== null);
 
-		const mentionList = uniqueMembers.map(transformMemberToMention).filter((item): item is MentionDataProps => item !== null);
 		const roleMentions = filteredRoles.map(transformRoleToMention).filter((item): item is MentionDataProps => item !== null);
+
 		const sortedMentionList = sortMentionList(mentionList);
 
 		return {
