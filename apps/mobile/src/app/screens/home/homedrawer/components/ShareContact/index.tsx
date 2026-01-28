@@ -11,7 +11,7 @@ import {
 	selectIsShowCreateTopic,
 	selectLoadingStatusFriend
 } from '@mezon/store-mobile';
-import { TypeMessage } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, TypeMessage } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiChannelDescription } from 'mezon-js/api.gen';
@@ -103,7 +103,7 @@ const ShareContactScreen = () => {
 						embed: [
 							{
 								fields: [
-									{ name: 'key', value: 'share_contact', inline: true },
+									{ name: 'key', value: SHARE_CONTACT_KEY, inline: true },
 									{ name: 'user_id', value: user?.user?.id || user?.id || '', inline: true },
 									{ name: 'username', value: user?.user?.username || '', inline: true },
 									{
