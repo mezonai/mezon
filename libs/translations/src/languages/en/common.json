@@ -518,5 +518,6 @@
 	"noPermissionToCallBlocked": "You cannot perform this action.",
 	"detail": "Detail",
 	"cannotCallYourself": "You cannot call yourself.",
-	"errorMaxLength": "Must be between {{min}} and {{max}} in length."
+	"errorMaxLength": "Must be between {{min}} and {{max}} in length.",
+	"cannotSendLocationWithAnonymous": "Cannot send location using Anonymous."
 }
