@@ -1,7 +1,8 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { selectCurrentChannel, selectCurrentUserId, selectDmGroupCurrentId } from '@mezon/store-mobile';
+import type { MentionDataProps } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import { memo, useEffect, useMemo, useRef } from 'react';
+import { memo, useEffect, useRef } from 'react';
 import { DeviceEventEmitter } from 'react-native';
 import { useSelector } from 'react-redux';
 import UseMentionList from '../../../../../../hooks/useUserMentionList';
@@ -25,18 +26,16 @@ export const ChatBoxListenerComponent = memo(({ mode }: IChatMessageLeftAreaProp
 		channelMode: mode
 	});
 
-	const filterListMentions = useMemo(() => {
-		const isSelfDM = listMentions?.length === 2 && listMentions[0]?.id === currentUserId && listMentions[1]?.id === currentUserId;
-		if (isSelfDM) {
-			return [listMentions[0]];
-		}
-		return listMentions;
-	}, [listMentions, currentUserId]);
-
 	const previousListMentions = useRef(null);
 
 	useEffect(() => {
 		const timeoout = setTimeout(() => {
+			let filterListMentions: MentionDataProps[] = listMentions;
+			const isSelfDM = listMentions?.length === 2 && listMentions[0]?.id === currentUserId && listMentions[1]?.id === currentUserId;
+			if (isSelfDM) {
+				filterListMentions = [listMentions[0]];
+			}
+
 			if (previousListMentions?.current !== filterListMentions && !!filterListMentions) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_SET_LIST_MENTION_DATA, { data: filterListMentions });
 				previousListMentions.current = filterListMentions;
@@ -46,7 +45,7 @@ export const ChatBoxListenerComponent = memo(({ mode }: IChatMessageLeftAreaProp
 		return () => {
 			if (timeoout) clearTimeout(timeoout);
 		};
-	}, [filterListMentions, currentChannel?.channel_id]);
+	}, [listMentions, currentChannel?.channel_id, currentUserId]);
 
 	return null;
 });
