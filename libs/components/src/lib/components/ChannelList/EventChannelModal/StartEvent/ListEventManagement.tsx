@@ -34,7 +34,6 @@ const ListEventManagement = (props: ListEventManagementProps) => {
 						option={event.address ? OptionEvent.OPTION_LOCATION : OptionEvent.OPTION_SPEAKER}
 						logoRight={event.logo}
 						event={event}
-						createTime={event.create_time}
 						openModelUpdate={openModelUpdate}
 						onEventUpdateId={onUpdateEventId}
 						textChannelId={event.channel_id}
