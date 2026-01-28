@@ -1,17 +1,10 @@
 /* eslint-disable @nx/enforce-module-boundaries */
-import {
-	channelMembersActions,
-	ChannelMembersEntity,
-	ChannelsEntity,
-	getStore,
-	selectAllChannelMembers,
-	selectAllRolesClan,
-	useAppDispatch,
-	useAppSelector
-} from '@mezon/store-mobile';
-import { getNameForPrioritize, ID_MENTION_HERE, MentionDataProps } from '@mezon/utils';
+import type { ChannelMembersEntity, ChannelsEntity } from '@mezon/store-mobile';
+import { channelMembersActions, getStore, selectAllChannelMembers, selectAllRolesClan, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import type { MentionDataProps } from '@mezon/utils';
+import { ID_MENTION_HERE, getNameForPrioritize } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import { ApiRole } from 'mezon-js/api.gen';
+import type { ApiRole } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -123,10 +116,17 @@ function UseMentionList({ channelDetail, channelID, channelMode }: UserMentionLi
 	const processedMentionData = useMemo(() => {
 		const userMentionRaw = getMembersChannel();
 
+		const seen = new Set<string>();
+		const uniqueMembers: ChannelMembersEntity[] = [];
+		for (const member of userMentionRaw) {
+			if (member?.id && !seen.has(member.id)) {
+				seen.add(member.id);
+				uniqueMembers.push(member);
+			}
+		}
+
 		const mentionList = userMentionRaw.map(transformMemberToMention).filter((item): item is MentionDataProps => item !== null);
-
 		const roleMentions = filteredRoles.map(transformRoleToMention).filter((item): item is MentionDataProps => item !== null);
-
 		const sortedMentionList = sortMentionList(mentionList);
 
 		return {
