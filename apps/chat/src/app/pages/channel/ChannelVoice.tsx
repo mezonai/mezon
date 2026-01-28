@@ -228,6 +228,7 @@ const ChannelVoiceInner = () => {
 						roomName={currentChannelMeetingCode}
 						loading={loading}
 						handleJoinRoom={handleJoinRoom}
+						clan_id={currentChannelClanId}
 					/>
 				) : (
 					<>
@@ -238,6 +239,7 @@ const ChannelVoiceInner = () => {
 							handleJoinRoom={handleJoinRoom}
 							channel_label={currentChannelLabel}
 							isCurrentChannel={isShow}
+							clan_id={currentChannelClanId}
 						/>
 
 						<div
