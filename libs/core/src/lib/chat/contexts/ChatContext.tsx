@@ -1073,7 +1073,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				dispatch(
 					directActions.addGroupUserWS({
 						channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
-						users
+						users,
+						myId: userId || ''
 					})
 				);
 				dispatch(
