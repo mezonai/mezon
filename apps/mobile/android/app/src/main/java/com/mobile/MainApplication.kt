@@ -27,6 +27,7 @@ import com.mezon.mobile.AudioSessionPackage;
 import com.mezon.mobile.ImageClipboardPackage;
 import com.mezon.mobile.BadgePackage;
 import com.mezon.mobile.SmsUserConsentPackage;
+import com.mezon.mobile.CronetPackage;
 import io.invertase.firebase.analytics.ReactNativeFirebaseAnalyticsPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
@@ -55,6 +56,7 @@ class MainApplication : Application(), ReactApplication {
               add(ImageClipboardPackage())
               add(BadgePackage())
               add(SmsUserConsentPackage())
+              add(CronetPackage())
             }
 
         override fun getJSMainModuleName(): String = "src/main"
