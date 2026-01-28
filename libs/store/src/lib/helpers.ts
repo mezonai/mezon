@@ -1,7 +1,6 @@
 import type { MezonContextValue } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { Client, Session } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api.gen';
 import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import type { GetThunkAPIWithMezon } from './typings';
 
@@ -314,6 +313,8 @@ export interface SocketDataRequest {
 	[key: string]: unknown;
 }
 
+const SOCKET_ONLY_APIS = ['ListClanBadgeCount', 'ListClanUnreadMsgIndicator'];
+
 export async function fetchDataWithSocketFallback<T>(
 	mezon: MezonValueContext,
 	socketRequest: SocketDataRequest,
@@ -324,37 +325,15 @@ export async function fetchDataWithSocketFallback<T>(
 	const socket = mezon.socketRef?.current;
 	let response: T | undefined;
 
-	if (socket?.isOpen()) {
+	const shouldUseSocket = SOCKET_ONLY_APIS.includes(socketRequest.api_name);
+
+	if (shouldUseSocket && socket?.isOpen()) {
 		try {
 			const data = await socket.listDataSocket(socketRequest);
 
-			if (socketRequest.api_name === 'ListFriends') {
-				if (responseKey && data?.[responseKey]?.friends) {
-					data[responseKey].friends = data[responseKey]?.friends?.map((item: ApiFriend) => ({
-						...item
-					}));
-				}
-
-				// refactor later
-			}
-
-			if (socketRequest.api_name === 'ListClanUsers') {
-				if (responseKey && data?.[responseKey]?.clan_users) {
-					data[responseKey].clan_users = data[responseKey]?.clan_users?.map((item: ApiFriend) => ({
-						...item
-					}));
-				}
-
-				// refactor later
-			}
-
 			response = responseKey ? data?.[responseKey] : data;
-
-			// if (socketRequest.api_name === 'ListClanDescs') {
-			// }
 		} catch (err) {
 			console.error(err, socketRequest);
-			// ignore socket errors and fallback to REST API
 		}
 	}
 
