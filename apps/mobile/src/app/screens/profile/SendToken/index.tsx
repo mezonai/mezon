@@ -218,7 +218,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				amount: Number(plainTokenCount || 1),
 				note: note?.replace?.(/\s+/g, ' ')?.trim() || ''
 			};
-			const res: any = await store.dispatch(giveCoffeeActions.sendToken({ tokenEvent, isSendByAddress: !!walletAddress }));
+			const res: any = await store.dispatch(giveCoffeeActions.sendToken({ tokenEvent, isSendByAddress: !!walletAddress, isMobile: true }));
 			store.dispatch(appActions.setLoadingMainMobile(false));
 			setDisableButton(false);
 			if (res?.meta?.requestStatus === 'rejected' || !res) {
