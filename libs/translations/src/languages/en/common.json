@@ -519,5 +519,6 @@
 	"detail": "Detail",
 	"cannotCallYourself": "You cannot call yourself.",
 	"errorMaxLength": "Must be between {{min}} and {{max}} in length.",
+	"formatDate": "MMMM d, yyyy",
 	"cannotSendLocationWithAnonymous": "Cannot send location using Anonymous."
 }
