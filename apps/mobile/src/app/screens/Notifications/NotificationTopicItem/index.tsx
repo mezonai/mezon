@@ -2,7 +2,7 @@ import { convertTimestampToTimeAgo } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import type { TopicDiscussionsEntity } from '@mezon/store-mobile';
 import { getStoreAsync, selectMemberClanByUserId, topicsActions, useAppSelector } from '@mezon/store-mobile';
-import type { INotification } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, type INotification } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
@@ -28,24 +28,30 @@ const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
 	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, notify?.last_sent_message?.sender_id ?? ''));
 
 	const lastSentMessage = useMemo(() => {
-		const content = (
+		const content =
 			typeof notify?.last_sent_message?.content === 'string'
 				? safeJSONParse(notify.last_sent_message.content || '{}')
-				: notify?.last_sent_message?.content
-		)?.t;
-		const attachments =
-			(typeof notify?.last_sent_message?.attachment === 'string'
-				? safeJSONParse(notify.last_sent_message.attachment || '[]')
-				: notify?.last_sent_message?.attachment) || [];
+				: notify?.last_sent_message?.content;
 
-		if (content) {
-			return content;
-		} else if (attachments?.length > 0) {
-			return `[${t('message:attachments.attachment')}]`;
+		if (content?.t) {
+			return content.t;
+		} else if (content?.embed?.[0]?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+			return `[${t('message:attachments.contact')}]`;
 		} else {
-			return '';
+			return `[${t('message:attachments.file')}]`;
 		}
-	}, [notify?.last_sent_message?.attachment, notify?.last_sent_message?.content, t]);
+	}, [notify?.last_sent_message?.content, t]);
+
+	const replyContent = useMemo(() => {
+		const content = dataMessage?.content;
+		if (content?.t) {
+			return content.t;
+		} else if (content?.embed?.[0]?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+			return `[${t('message:attachments.contact')}]`;
+		} else {
+			return `[${t('message:attachments.file')}]`;
+		}
+	}, [dataMessage?.content, t]);
 
 	const priorityAvatar = useMemo(() => {
 		return lastSentUser?.clan_avatar || lastSentUser?.user?.avatar_url || '';
@@ -108,7 +114,7 @@ const NotificationTopicItem = memo(({ notify, onPressNotify }: NotifyProps) => {
 						</Text>
 						<Text numberOfLines={2} style={styles.notifyHeaderTitle}>
 							<Text style={styles.username}>{t('repliedTo')}</Text>
-							{dataMessage?.content?.t || ''}
+							{replyContent}
 						</Text>
 						{priorityDisplayName && (
 							<Text numberOfLines={2} style={styles.notifyHeaderTitle}>

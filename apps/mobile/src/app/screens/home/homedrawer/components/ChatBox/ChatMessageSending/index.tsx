@@ -31,7 +31,7 @@ import type {
 	IMentionOnMessage,
 	IMessageSendPayload
 } from '@mezon/utils';
-import { THREAD_ARCHIVE_DURATION_SECONDS, ThreadStatus, checkIsThread, filterEmptyArrays, uniqueUsers } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, THREAD_ARCHIVE_DURATION_SECONDS, ThreadStatus, checkIsThread, filterEmptyArrays, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import type { MutableRefObject } from 'react';
@@ -250,7 +250,11 @@ export const ChatMessageSending = memo(
 					...(filteredBolds || [])
 				],
 				cid: messageActionNeedToResolve?.targetMessage?.content?.cid,
-				tp: messageActionNeedToResolve?.targetMessage?.content?.tp
+				tp: messageActionNeedToResolve?.targetMessage?.content?.tp,
+				...(messageActionNeedToResolve?.type === EMessageActionType.EditMessage &&
+					messageActionNeedToResolve?.targetMessage?.content?.embed?.[0].fields?.[0]?.value === SHARE_CONTACT_KEY && {
+						embed: messageActionNeedToResolve?.targetMessage?.content?.embed
+					})
 			};
 			const isEmpty = isPayloadEmpty(payloadSendMessage);
 			if (isEmpty && !attachmentDataRef?.length) {

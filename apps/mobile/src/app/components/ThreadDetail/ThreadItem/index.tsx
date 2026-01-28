@@ -12,7 +12,7 @@ import {
 } from '@mezon/store-mobile';
 import i18n from '@mezon/translations';
 import type { IChannelMember } from '@mezon/utils';
-import { convertTimeMessage } from '@mezon/utils';
+import { convertTimeMessage, SHARE_CONTACT_KEY } from '@mezon/utils';
 import type { NavigationProp } from '@react-navigation/native';
 import { useNavigation } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
@@ -99,13 +99,19 @@ const ThreadItem = ({ thread }: IThreadItemProps) => {
 	}, [message?.create_time_seconds, thread?.last_sent_message?.timestamp_seconds]);
 
 	const lastSentMessage = useMemo(() => {
-		const textMsg =
-			(message?.content?.t as string) ??
+		const content =
+			message?.content ??
 			(typeof thread?.last_sent_message?.content === 'string'
-				? safeJSONParse(thread.last_sent_message.content || '{}')?.t
-				: (thread?.last_sent_message?.content as any)?.t || '');
-		return textMsg ? textMsg : `[${t('attachments.attachment')}]`;
-	}, [message?.content?.t, t, thread?.last_sent_message?.content]);
+				? safeJSONParse(thread?.last_sent_message?.content || '{}')
+				: thread?.last_sent_message?.content);
+		if (content?.t) {
+			return content.t;
+		} else if (content?.embed?.[0]?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+			return `[${t('attachments.contact')}]`;
+		} else {
+			return `[${t('attachments.file')}]`;
+		}
+	}, [message?.content, t, thread?.last_sent_message?.content]);
 
 	return (
 		<Pressable

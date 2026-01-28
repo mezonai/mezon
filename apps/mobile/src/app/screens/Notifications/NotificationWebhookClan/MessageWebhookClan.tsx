@@ -1,16 +1,18 @@
-import { IMessageWithUser } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, type IEmbedProps, type IMessageWithUser } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import { useMessageParser } from '../../../hooks/useMessageParser';
+import { ContactMessageCard, type IContactData } from '../../home/homedrawer/components/ContactMessageCard';
 import { MessageAttachment } from '../../home/homedrawer/components/MessageAttachment';
 import { RenderTextMarkdownContent } from '../../home/homedrawer/components/RenderTextMarkdown';
 
 interface IMessageNotificationProps {
-	message: IMessageWithUser;
+	message: IMessageWithUser & { embed: IEmbedProps };
 }
-const MessageWebhookClan = React.memo(({ message }: IMessageNotificationProps) => {
+
+const MessageWebhookClan = memo(({ message }: IMessageNotificationProps) => {
 	const { t } = useTranslation('message');
 	const { attachments } = useMessageParser(message);
 	const isEdited = useMemo(() => {
@@ -19,6 +21,18 @@ const MessageWebhookClan = React.memo(({ message }: IMessageNotificationProps) =
 		}
 		return false;
 	}, [message?.update_time_seconds, message?.create_time_seconds]);
+
+	const contactData = useMemo((): IContactData | null => {
+		const embed = message?.embed?.[0];
+		if (embed?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+			return {
+				user_id: embed?.fields?.[1]?.value || '',
+				username: embed?.fields?.[2]?.value || '',
+				display_name: embed?.fields?.[3]?.value || '',
+				avatar: embed?.fields?.[4]?.value || ''
+			};
+		}
+	}, [message?.embed?.[0]]);
 
 	return (
 		<View>
@@ -31,6 +45,8 @@ const MessageWebhookClan = React.memo(({ message }: IMessageNotificationProps) =
 					senderId={message?.sender_id}
 				/>
 			) : null}
+			{contactData ? <ContactMessageCard data={contactData} /> : null}
+
 			<View>
 				<RenderTextMarkdownContent
 					content={{
