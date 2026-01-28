@@ -5,7 +5,8 @@ import LottieView from 'lottie-react-native';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Animated, Easing, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Animated, Easing, Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
@@ -27,6 +28,7 @@ export const ClaimMoneyScreen = React.memo(({ navigation, route }: any) => {
 	const dispatch = useAppDispatch();
 	const styles = style(themeValue);
 	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [isClaimingToWallet, setIsClaimingToWallet] = useState<boolean>(false);
 	const [errorClaim, setErrorClaim] = useState<boolean>(false);
 	const [dataClaimSuccess, setDataClaimSuccess] = useState<IClaimData | null>(null);
 
@@ -90,15 +92,39 @@ export const ClaimMoneyScreen = React.memo(({ navigation, route }: any) => {
 	}, [handleFetchClaim, luckyMoneyId]);
 
 	const handleClaimToWallet = async () => {
-		if (!dataClaimSuccess) return;
-		await dispatch(
-			walletActions.claimRedEnvelopeQR({
-				id: luckyMoneyId,
-				splitMoneyId: dataClaimSuccess.split_money_id,
-				userId: userProfile?.user?.id
-			})
-		);
-		navigation.goBack();
+		if (!dataClaimSuccess || isClaimingToWallet) return;
+		setIsClaimingToWallet(true);
+		try {
+			const resp = await dispatch(
+				walletActions.claimRedEnvelopeQR({
+					id: luckyMoneyId,
+					splitMoneyId: dataClaimSuccess.split_money_id,
+					userId: userProfile?.user?.id
+				})
+			);
+			if (resp) {
+				Toast.show({
+					type: 'success',
+					text1: t('claimSuccess'),
+					text2: t('claimSuccessDesc')
+				});
+				navigation.goBack();
+			} else {
+				Toast.show({
+					type: 'error',
+					text1: t('claimFailed'),
+					text2: t('claimFailedDesc')
+				});
+			}
+		} catch (error) {
+			Toast.show({
+				type: 'error',
+				text1: t('claimFailed'),
+				text2: t('claimFailedDesc')
+			});
+		} finally {
+			setIsClaimingToWallet(false);
+		}
 	};
 
 	const spin = spinValue.interpolate({
@@ -128,7 +154,7 @@ export const ClaimMoneyScreen = React.memo(({ navigation, route }: any) => {
 					<Text style={styles.errorSubText}>{t('claimFailedDesc')}</Text>
 				</View>
 
-				<TouchableOpacity style={styles.confirmButton} onPress={() => navigation.goBack()}>
+				<TouchableOpacity style={[styles.confirmButton, { marginHorizontal: 0 }]} onPress={() => navigation.goBack()}>
 					<Text style={styles.confirmText}>{t('common:close')}</Text>
 				</TouchableOpacity>
 			</View>
@@ -163,11 +189,10 @@ export const ClaimMoneyScreen = React.memo(({ navigation, route }: any) => {
 						</View>
 					</View>
 				</View>
-
-				<TouchableOpacity style={styles.confirmButton} onPress={handleClaimToWallet}>
-					<Text style={styles.confirmText}>{t('claimToWallet')}</Text>
-				</TouchableOpacity>
 			</View>
+			<TouchableOpacity style={[styles.confirmButton]} onPress={handleClaimToWallet} disabled={isClaimingToWallet}>
+				{isClaimingToWallet ? <ActivityIndicator size="small" color="white" /> : <Text style={styles.confirmText}>{t('claimToWallet')}</Text>}
+			</TouchableOpacity>
 		</View>
 	);
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useChannelMembers, useChatSending } from '@mezon/core';
+import { useChannelMembers } from '@mezon/core';
 import type { IRoleMention } from '@mezon/mobile-components';
 import { ActionEmitEvent, ID_MENTION_HERE, STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
@@ -47,6 +47,7 @@ import type { IMessageActionNeedToResolve, IPayloadThreadSendMessage } from '../
 import { style } from '../ChatBoxBottomBar/style';
 import { RecordMessageSending } from './RecordMessageSending';
 import { styles as localStyles } from './styles';
+import { useNativeHttpSending } from './useNativeHttpSending';
 
 interface IChatMessageSendingProps {
 	isAvailableSending: boolean;
@@ -117,7 +118,7 @@ export const ChatMessageSending = memo(
 		const channelOrDirect =
 			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel : currentDmGroup;
 		const isPublic = !channelOrDirect?.channel_private;
-		const { editSendMessage, sendMessage } = useChatSending({
+		const { editSendMessage, sendMessage } = useNativeHttpSending({
 			mode,
 			channelOrDirect,
 			fromTopic: isCreateTopic || !!currentTopicId
