@@ -1,4 +1,4 @@
-import DatePickerWrapper from '../../../../../../libs/components/src/lib/components/ChannelList/EventChannelModal/ModalCreate/DatePickerWrapper';
+import { DatePickerWrapper } from '@mezon/components';
 import Button from '../controls/Button';
 import SelectControl from '../controls/SelectControl';
 

@@ -1,6 +1,29 @@
 import type { AppDispatch } from '@mezon/store';
 import { exportChannelsCsv, exportClansCsv, exportUsersCsv } from '@mezon/store';
 
+// Decode base64 CSV and download blobs
+const downloadBlob = (blob: Blob, filename: string) => {
+	const link = document.createElement('a');
+	const blobUrl = URL.createObjectURL(blob);
+	link.href = blobUrl;
+	link.download = filename;
+	document.body.appendChild(link);
+	link.click();
+	link.remove();
+	URL.revokeObjectURL(blobUrl);
+};
+
+const decodeBase64AndDownload = (base64: string, filename: string) => {
+	const byteCharacters = atob(base64);
+	const byteNumbers = new Array(byteCharacters.length);
+	for (let i = 0; i < byteCharacters.length; i++) {
+		byteNumbers[i] = byteCharacters.charCodeAt(i);
+	}
+	const byteArray = new Uint8Array(byteNumbers);
+	const csvBlob = new Blob([byteArray], { type: 'text/csv;charset=utf-8;' });
+	downloadBlob(csvBlob, filename);
+};
+
 export const handleCSVExport = async (
 	dispatch: AppDispatch,
 	startStr: string,
@@ -13,30 +36,7 @@ export const handleCSVExport = async (
 		setIsExporting(true);
 		const action = await dispatch(exportClansCsv({ start: startStr, end: endStr, rangeType: periodFilter, columns: selectedColumns }));
 		if (exportClansCsv.fulfilled.match(action)) {
-			const payload = action.payload as any;
-
-			// Helpers to avoid duplicated code
-			const downloadBlob = (blob: Blob, filename: string) => {
-				const link = document.createElement('a');
-				const blobUrl = URL.createObjectURL(blob);
-				link.href = blobUrl;
-				link.download = filename;
-				document.body.appendChild(link);
-				link.click();
-				link.remove();
-				URL.revokeObjectURL(blobUrl);
-			};
-
-			const decodeBase64AndDownload = (base64: string, filename: string) => {
-				const byteCharacters = atob(base64);
-				const byteNumbers = new Array(byteCharacters.length);
-				for (let i = 0; i < byteCharacters.length; i++) {
-					byteNumbers[i] = byteCharacters.charCodeAt(i);
-				}
-				const byteArray = new Uint8Array(byteNumbers);
-				const csvBlob = new Blob([byteArray], { type: 'text/csv;charset=utf-8;' });
-				downloadBlob(csvBlob, filename);
-			};
+			const payload = action.payload;
 
 			// If payload directly contains base64 CSV + filename
 			if (payload?.csvData && payload?.filename) {
@@ -98,25 +98,7 @@ export const handleChannelCSVExport = async (
 		setIsExporting(true);
 		const action = await dispatch(exportChannelsCsv({ clanId, start: startStr, end: endStr, rangeType: periodFilter, columns: selectedColumns }));
 		if (exportChannelsCsv.fulfilled.match(action)) {
-			const payload = action.payload as any;
-
-			const decodeBase64AndDownload = (base64: string, filename: string) => {
-				const byteCharacters = atob(base64);
-				const byteNumbers = new Array(byteCharacters.length);
-				for (let i = 0; i < byteCharacters.length; i++) {
-					byteNumbers[i] = byteCharacters.charCodeAt(i);
-				}
-				const byteArray = new Uint8Array(byteNumbers);
-				const csvBlob = new Blob([byteArray], { type: 'text/csv;charset=utf-8;' });
-				const link = document.createElement('a');
-				const blobUrl = URL.createObjectURL(csvBlob);
-				link.href = blobUrl;
-				link.download = filename;
-				document.body.appendChild(link);
-				link.click();
-				link.remove();
-				URL.revokeObjectURL(blobUrl);
-			};
+			const payload = action.payload;
 
 			// Response contains base64 CSV + filename
 			if (payload?.csvData && payload?.filename) {
@@ -151,25 +133,7 @@ export const handleUserCSVExport = async (
 			exportUsersCsv({ clanId, channelId, start: startStr, end: endStr, rangeType: periodFilter, columns: selectedColumns })
 		);
 		if (exportUsersCsv.fulfilled.match(action)) {
-			const payload = action.payload as any;
-
-			const decodeBase64AndDownload = (base64: string, filename: string) => {
-				const byteCharacters = atob(base64);
-				const byteNumbers = new Array(byteCharacters.length);
-				for (let i = 0; i < byteCharacters.length; i++) {
-					byteNumbers[i] = byteCharacters.charCodeAt(i);
-				}
-				const byteArray = new Uint8Array(byteNumbers);
-				const csvBlob = new Blob([byteArray], { type: 'text/csv;charset=utf-8;' });
-				const link = document.createElement('a');
-				const blobUrl = URL.createObjectURL(csvBlob);
-				link.href = blobUrl;
-				link.download = filename;
-				document.body.appendChild(link);
-				link.click();
-				link.remove();
-				URL.revokeObjectURL(blobUrl);
-			};
+			const payload = action.payload;
 
 			// Response contains base64 CSV + filename
 			if (payload?.csvData && payload?.filename) {

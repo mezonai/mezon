@@ -1,8 +1,14 @@
 import React from 'react';
 
+type TooltipPayloadItem = {
+	name?: string;
+	value?: string | number | null;
+	[key: string]: unknown;
+};
+
 type Props = {
 	active?: boolean;
-	payload?: any[];
+	payload?: TooltipPayloadItem[];
 	label?: React.ReactNode;
 };
 
