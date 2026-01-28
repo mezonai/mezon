@@ -252,7 +252,7 @@ const ModalUserProfile = ({
 					<div>
 						<p
 							className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate"
-							data-e2e={generateE2eId('short_profile.display_name')}	
+							data-e2e={generateE2eId('short_profile.display_name')}
 						>
 							{isUserRemoved
 								? t('labels.unknownUser')
