@@ -129,6 +129,16 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				>
 					{t('setting:language.title')}
 				</button>
+				<br />
+				<button
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === 'Voice' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					onClick={() => {
+						handleButtonClick('Voice');
+						onItemClick && onItemClick('Voice');
+					}}
+				>
+					{t('setting:appSettings.voice')}
+				</button>
 				<div className="hidden">
 					<br />
 					<button className="p-2 text-[16px] font-medium w-[170px] rounded-[5px] text-left mt-1 ml-[-8px] ">Accessibility</button>

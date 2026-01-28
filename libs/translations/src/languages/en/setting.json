@@ -71,6 +71,10 @@
 		"english": "English",
 		"vietnamese": "Tiếng Việt"
 	},
+	"voice": {
+		"title": "Voice",
+		"description": "Configure your voice settings."
+	},
 	"logOut": "Logout",
 	"logOutPopup": {
 		"description": "Please confirm if you would like to log out?",

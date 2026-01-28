@@ -78,6 +78,7 @@ export { SettingLanguage } from './components/SettingLanguage';
 export { default as SettingNotifications } from './components/SettingNotifications';
 export * from './components/SettingProfile';
 export { getColorAverageFromURL } from './components/SettingProfile/AverageColor';
+export { SettingVoice } from './components/SettingVoice';
 export { default as MzToast } from './components/ToastController/MzToast';
 export { default as ToastController } from './components/ToastController/ToastController';
 export { default as UserListVoiceChannel } from './components/UserListVoiceChannel';

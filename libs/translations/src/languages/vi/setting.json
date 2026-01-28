@@ -71,6 +71,10 @@
 		"english": "English",
 		"vietnamese": "Tiếng Việt"
 	},
+	"voice": {
+		"title": "Giọng nói",
+		"description": "Cấu hình cài đặt giọng nói của bạn."
+	},
 	"logOut": "Đăng xuất",
 	"logOutPopup": {
 		"description": "Bạn có chắc chắn muốn đăng xuất không?",
