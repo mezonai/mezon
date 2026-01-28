@@ -10,6 +10,7 @@ import type {
 } from '@mezon/utils';
 import {
 	Direction_Mode,
+	EBacktickType,
 	EMessageCode,
 	LIMIT_MESSAGE,
 	MessageCrypt,
@@ -39,6 +40,7 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
+import { selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
 const sendTimeoutMap = new Map<string, ReturnType<typeof setTimeout>>();
@@ -866,8 +868,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 		}
 
+		const state = thunkAPI.getState() as RootState;
 		if (checkEnableE2EE) {
-			const state = thunkAPI.getState() as RootState;
 			const currentDM = selectCurrentDM(state);
 			const keys = selectE2eeByUserIds(state, currentDM.user_ids as string[]);
 
@@ -886,6 +888,19 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 		}
 
+		const ogpData = selectOgpData(state);
+		if (true && content?.mk && content?.mk?.length > 0) {
+			content.mk.push({
+				description:
+					ogpData?.description ||
+					'Join Mezon to play games, chill with friends, and build your community. Create your own customized space to chat, play, and hang out with people from around the world.',
+				image: ogpData?.image || 'https://static.cdninstagram.com/rsrc.php/v4/yR/r/hexDR1NOpRC.png',
+				title: ogpData?.title || 'Mezon – The Live, Work, and Play Platform.',
+				s: content.t?.length,
+				e: (content.t?.length || 0) + 1,
+				type: EBacktickType.OGP_PREVIEW
+			});
+		}
 		const res = await socket.writeChatMessage(
 			clanId,
 			channelId,

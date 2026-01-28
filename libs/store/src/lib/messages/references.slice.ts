@@ -30,6 +30,17 @@ export interface ReferencesState extends EntityState<ReferencesEntity, string> {
 	idMessageMention: string;
 	attachmentAfterUpload: Record<string, PreSendAttachment>;
 	geoLocation?: { latitude: number; longitude: number };
+	ogpPreview: {
+		url: string;
+		index: number;
+	} | null;
+	ogpData: {
+		url: string;
+		image: string;
+		index: number;
+		title?: string;
+		description?: string;
+	} | null;
 }
 
 export const referencesAdapter = createEntityAdapter<ReferencesEntity>();
@@ -47,7 +58,9 @@ export const initialReferencesState: ReferencesState = referencesAdapter.getInit
 	idMessageRefEdit: '',
 	idMessageMention: '',
 	attachmentAfterUpload: {},
-	geoLocation: undefined
+	geoLocation: undefined,
+	ogpPreview: null,
+	ogpData: null
 });
 
 export const referencesSlice = createSlice({
@@ -214,6 +227,27 @@ export const referencesSlice = createSlice({
 			state.idMessageRefEdit = '';
 			state.idMessageRefReaction = '';
 			state.idMessageMention = '';
+		},
+		setOgpPreview(
+			state,
+			action: PayloadAction<{
+				url: string;
+				index: number;
+			} | null>
+		) {
+			state.ogpPreview = action.payload;
+		},
+		setOgpData(
+			state,
+			action: PayloadAction<{
+				url: string;
+				image: string;
+				index: number;
+				title?: string;
+				description?: string;
+			} | null>
+		) {
+			state.ogpData = action.payload;
 		}
 	},
 	extraReducers: (builder) => {
@@ -256,3 +290,6 @@ export const selectAttachmentByChannelId = createSelector(
 	[selectAttachmentAfterUpload, (_, channelId: string) => channelId],
 	(attachmentAfterUpload, channelId) => attachmentAfterUpload[channelId] || null
 );
+
+export const selectOgpPreview = createSelector(getReferencesState, (state: ReferencesState) => state.ogpPreview);
+export const selectOgpData = createSelector(getReferencesState, (state: ReferencesState) => state.ogpData);

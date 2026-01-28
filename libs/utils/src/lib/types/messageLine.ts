@@ -13,7 +13,8 @@ export enum EBacktickType {
 	BOLD = 'b',
 	LINK = 'lk',
 	VOICE_LINK = 'vk',
-	LINKYOUTUBE = 'lk_yt'
+	LINKYOUTUBE = 'lk_yt',
+	OGP_PREVIEW = 'lk_ogp'
 }
 
 export interface IMention {
@@ -62,7 +63,11 @@ export interface IExtendedMessage extends IMessageSendPayload {
 export interface IHashtagOnMessage extends IHashtag, IStartEndIndex {}
 export interface IEmojiOnMessage extends IEmoji, IStartEndIndex {}
 export type ILinkOnMessage = IStartEndIndex;
-export interface IMarkdownOnMessage extends IMarkdown, IStartEndIndex {}
+export interface IMarkdownOnMessage extends IMarkdown, IStartEndIndex {
+	image?: string;
+	title?: string;
+	description?: string;
+}
 export type ILinkVoiceRoomOnMessage = IStartEndIndex;
 export type ILinkYoutubeOnMessage = IStartEndIndex;
 
