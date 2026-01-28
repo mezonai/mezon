@@ -70,7 +70,6 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 			isMobile?: boolean,
 			code?: number
 		) => {
-			// Handle topic messages
 			if (fromTopic) {
 				if (!currentTopicId) {
 					const topic = (await createTopic()) as ApiSdTopic;
@@ -145,9 +144,6 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 					})
 				).unwrap();
 			} catch (error) {
-				// eslint-disable-next-line no-console
-				console.log('sendMessageViaApi failed after retries, using socket fallback:', error);
-				// Fake message already removed by sendMessageViaApi, now fallback to socket
 				await originalHook.sendMessage(content, mentions, attachments, references, anonymous, mentionEveryone, isMobile, code);
 			}
 		},
@@ -178,11 +174,27 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 			topicId?: string,
 			isTopic?: boolean
 		) => {
-			// TODO: Implement editSendMessage via API when available
-			// For now, use the original socket-based implementation
-			await originalHook.editSendMessage(content, messageId, mentions, attachments, hideEditted, topicId, isTopic);
+			try {
+				await dispatch(
+					messagesActions.editMessageViaApi({
+						channelId: channelIdOrDirectId ?? '',
+						clanId: getClanId || '',
+						mode,
+						isPublic,
+						messageId,
+						content,
+						mentions,
+						attachments,
+						hideEditted,
+						topicId,
+						isTopic
+					})
+				).unwrap();
+			} catch (error) {
+				await originalHook.editSendMessage(content, messageId, mentions, attachments, hideEditted, topicId, isTopic);
+			}
 		},
-		[originalHook]
+		[dispatch, channelIdOrDirectId, getClanId, mode, isPublic, originalHook]
 	);
 
 	return useMemo(
