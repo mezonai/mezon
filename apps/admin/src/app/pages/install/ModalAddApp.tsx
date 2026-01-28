@@ -39,6 +39,8 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 	const [categoryValue, setCategoryValue] = useState('');
 	const [createdChannelId, setCreatedChannelId] = useState<string>('');
 	const [categoryError, setCategoryError] = useState<string>();
+	const activeSince = appDetail?.create_time;
+	const activeSincecv = activeSince ? new Date(activeSince).toLocaleDateString() : '';
 	useEffect(() => {
 		if (clanValue) {
 			dispatch(categoriesActions.fetchCategories({ clanId: clanValue }));
@@ -148,18 +150,18 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 					{appDetail.applogo ? (
 						<img src={appDetail.applogo} alt={appDetail.appname} className="w-16 h-16 rounded-full object-cover mb-2" />
 					) : (
-						<span className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold mb-2">
+						<span className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold mb-2 truncate overflow-hidden max-w-[300px]">
 							{appDetail.appname?.[0]}
 						</span>
 					)}
-					<p className="text-xl font-semibold">{appDetail.appname}</p>
+					<p className="text-xl font-semibold truncate overflow-hidden max-w-[300px]">{appDetail.appname}</p>
 				</div>
 			)}
 			<HeaderModal name={appDetail?.appname || ''} username={account?.user?.username} />
 			<SelectField uppercase={true} {...clanConfig} />
 			{clanValue && <SelectField {...categoryConfig} />}
 			<TextField label="Channel Name" value={labelValue} onChange={(v) => setLabelValue(v)} placeholder={appDetail?.appname || ''} />
-			<FooterModal name={appDetail?.appname || ''} />
+			<FooterModal activeSince={activeSincecv} name={appDetail?.appname || ''} />
 			<ModalAsk handelBack={handleOpenModal} handleAddBotOrApp={handleAdd} />
 		</div>
 	);
