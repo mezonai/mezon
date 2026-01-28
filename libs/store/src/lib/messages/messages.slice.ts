@@ -809,6 +809,173 @@ type SendMessagePayload = {
 	tempId?: string;
 };
 
+export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', async (payload: SendMessagePayload, thunkAPI) => {
+	const {
+		mentions,
+		attachments,
+		references,
+		anonymous,
+		mentionEveryone,
+		channelId,
+		mode,
+		isPublic,
+		clanId,
+		senderId,
+		avatar,
+		isMobile = false,
+		username,
+		code
+	} = payload;
+
+	const content = payload.content;
+	const clientSendTime = Date.now();
+	const tempId = `${payload.channelId}-${clientSendTime}`;
+
+	const id = Snowflake.generate();
+	const MAX_RETRIES = 3;
+	const RETRY_DELAY_MS = 500;
+
+	async function doSend(uploadedFiles: ApiMessageAttachment[], retryCount = 0): Promise<{ channel_id?: string }> {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const session = mezon.sessionRef.current;
+			const client = mezon.clientRef.current;
+
+			if (!client || !session || !channelId) {
+				throw new Error('Client is not initialized');
+			}
+
+			return await client.sendChannelMessage(
+				session,
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				typeof content === 'object' ? JSON.stringify(content) : content,
+				mentions,
+				uploadedFiles,
+				references,
+				anonymous,
+				mentionEveryone,
+				avatar,
+				code
+			);
+		} catch (error) {
+			if (retryCount < MAX_RETRIES - 1) {
+				thunkAPI.dispatch(messagesActions.markAsError({ messageId: id, channelId }));
+				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+				return doSend(uploadedFiles, retryCount + 1);
+			}
+
+			thunkAPI.dispatch(messagesActions.remove({ channelId, messageId: id }));
+			throw error;
+		}
+	}
+
+	async function fakeItUntilYouMakeIt() {
+		const rootState = thunkAPI.getState() as RootState;
+		const currentUser = selectAllAccount(rootState);
+
+		const overrideAvatar = getUserAvatarOverride(senderId);
+		const overrideClanAvatar = clanId && clanId !== '0' ? getUserClanAvatarOverride(senderId, clanId) : undefined;
+
+		let clanAvatar = avatar;
+		if (clanId && clanId !== '0' && currentUser?.user?.id) {
+			const userClanProfile = selectUserClanProfileByClanID(clanId, currentUser.user.id)(rootState);
+			clanAvatar = overrideClanAvatar || userClanProfile?.avatar || avatar;
+		}
+
+		const finalAvatar = overrideAvatar || avatar;
+
+		const fakeMessage: ChannelMessageWithClientMeta = {
+			id,
+			code: code || 0,
+			channel_id: channelId,
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			content,
+			attachments,
+			create_time_seconds: clientSendTime / 1000,
+			create_time: new Date(clientSendTime).toISOString(),
+			client_send_time: clientSendTime,
+			temp_id: tempId,
+			sender_id: anonymous ? NX_CHAT_APP_ANNONYMOUS_USER_ID : senderId,
+			username: anonymous ? 'Anonymous' : username || '',
+			avatar: anonymous ? '' : finalAvatar,
+			clan_avatar: clanId && clanId !== '0' ? clanAvatar : undefined,
+			clan_id: clanId !== '0' ? clanId : undefined,
+			isSending: true,
+			references: references?.filter((item) => item) || [],
+			isMe: true,
+			hide_editted: true,
+			isAnonymous: anonymous,
+			isError: false,
+			isErrorRetry: false
+		};
+
+		const fakeMess = await thunkAPI
+			.dispatch(
+				messagesActions.mapMessageChannelToEntityAction({
+					message: fakeMessage
+				})
+			)
+			.unwrap();
+
+		const state = getMessagesState(getMessagesRootState(thunkAPI));
+		const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId];
+
+		if (!isViewingOlderMessages) {
+			thunkAPI.dispatch(messagesActions.addNewMessage(fakeMess));
+		}
+
+		try {
+			thunkAPI.dispatch(messagesActions.setIdMessageToJump(null));
+			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
+
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const session = mezon.sessionRef.current;
+			const client = mezon.clientRef.current;
+
+			if (!client || !session || !channelId) {
+				throw new Error('Client is not initialized');
+			}
+
+			let uploadedFiles: ApiMessageAttachment[] = [];
+			if (attachments && attachments.length > 0) {
+				if (isMobile) {
+					uploadedFiles = await getMobileUploadedAttachments({ attachments, client, session });
+				} else {
+					uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
+				}
+			}
+
+			const messageResult = await doSend(uploadedFiles);
+
+			if (!isViewingOlderMessages && messageResult?.channel_id) {
+				const timestamp = Date.now() / 1000;
+				thunkAPI.dispatch(
+					channelMetaActions.setChannelLastSeenTimestamp({
+						channelId,
+						timestamp,
+						messageId: messageResult.channel_id
+					})
+				);
+			}
+
+			return messageResult;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	try {
+		return await fakeItUntilYouMakeIt();
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+});
+
 export const sendMessage = createAsyncThunk('messages/sendMessage', async (payload: SendMessagePayload, thunkAPI) => {
 	const {
 		mentions,
@@ -1910,6 +2077,7 @@ export const messagesActions = {
 	...messagesSlice.actions,
 	addNewMessage,
 	sendMessage,
+	sendMessageViaApi,
 	resendMessage,
 	sendEphemeralMessage,
 	fetchMessages,
