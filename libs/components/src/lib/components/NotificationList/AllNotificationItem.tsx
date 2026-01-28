@@ -211,7 +211,8 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 										id: message.sender_id,
 										name: message.display_name || message.username,
 										username: message.username
-									}
+									},
+									create_time_seconds: message.create_time_seconds
 								}}
 								mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
 							/>
