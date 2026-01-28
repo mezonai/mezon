@@ -160,6 +160,8 @@
 	"maxFileSize": "Kích thước tệp tối đa là {{sizeLimit}}, vui lòng!",
 	"onlyImageFiles": "Chỉ cho phép tệp hình ảnh",
 	"uploadImageTypes": "Chỉ tải lên tệp loại (JPEG, PNG), vui lòng!",
+	"onlyAudioFiles": "Chỉ cho phép tệp audio",
+	"uploadAudioTypes": "Chỉ tải lên tệp loại audio, vui lòng!",
 	"confirmLogOut": "Bạn có chắc chắn muốn đăng xuất?",
 	"confirmDeleteAccount": "Bạn có chắc chắn muốn xóa tài khoản của mình? Điều này sẽ đăng xuất bạn ngay lập tức và bạn sẽ không thể đăng nhập lại.",
 	"enterPassword": "Nhập mật khẩu của bạn",

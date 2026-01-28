@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { ELimitSize } from '../../ModalValidateFile';
-import { ModalErrorTypeUpload, ModalOverData } from '../../ModalValidateFile/ModalOverData';
+import { ModalErrorTypeUploadVoice, ModalOverData } from '../../ModalValidateFile/ModalOverData';
 import type { SoundType } from './index';
 
 interface ModalUploadSoundProps {
@@ -361,7 +361,7 @@ const ModalUploadSound = ({ sound, onSuccess, onClose }: ModalUploadSoundProps) 
 				</div>
 			</Modal>
 
-			<ModalErrorTypeUpload open={openModalType} onClose={() => setOpenModalType(false)} />
+			<ModalErrorTypeUploadVoice open={openModalType} onClose={() => setOpenModalType(false)} />
 			<ModalOverData open={openModalSize} onClose={() => setOpenModalSize(false)} size={ELimitSize.MB} />
 		</>
 	);
