@@ -518,5 +518,6 @@
 	"noPermissionToCallBlocked": "Bạn không thể thực hiện hành động này.",
 	"detail": "Chi tiết",
 	"cannotCallYourself": "Bạn không thể gọi chính mình",
-	"errorMaxLength": "Độ dài phải nằm trong khoảng {{min}} đến {{max}} ký tự."
+	"errorMaxLength": "Độ dài phải nằm trong khoảng {{min}} đến {{max}} ký tự.",
+	"cannotSendLocationWithAnonymous": "Không thể gửi vị trí khi đang ẩn danh."
 }
