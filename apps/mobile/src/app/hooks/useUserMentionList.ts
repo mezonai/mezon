@@ -125,7 +125,7 @@ function UseMentionList({ channelDetail, channelID, channelMode }: UserMentionLi
 			}
 		}
 
-		const mentionList = userMentionRaw.map(transformMemberToMention).filter((item): item is MentionDataProps => item !== null);
+		const mentionList = uniqueMembers.map(transformMemberToMention).filter((item): item is MentionDataProps => item !== null);
 		const roleMentions = filteredRoles.map(transformRoleToMention).filter((item): item is MentionDataProps => item !== null);
 		const sortedMentionList = sortMentionList(mentionList);
 
