@@ -976,6 +976,58 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 	}
 });
 
+export type EditMessageViaApiPayload = {
+	channelId: string;
+	clanId: string;
+	mode: number;
+	isPublic: boolean;
+	messageId: string;
+	content: IMessageSendPayload;
+	mentions?: ApiMessageMention[];
+	attachments?: ApiMessageAttachment[];
+	hideEditted?: boolean;
+	topicId?: string;
+	isTopic?: boolean;
+};
+
+export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', async (payload: EditMessageViaApiPayload, thunkAPI) => {
+	const { channelId, clanId, mode, isPublic, messageId, content, mentions, attachments, hideEditted, topicId, isTopic } = payload;
+
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const session = mezon.sessionRef.current;
+		const client = mezon.clientRef.current;
+
+		if (!client || !session || !channelId) {
+			throw new Error('Client is not initialized');
+		}
+
+		const trimContent: IMessageSendPayload = {
+			...content,
+			t: content.t?.trim()
+		};
+
+		const res = await client.updateChannelMessage(
+			session,
+			clanId || '0',
+			channelId || '0',
+			mode,
+			isPublic,
+			messageId || '0',
+			trimContent,
+			mentions,
+			attachments,
+			hideEditted,
+			topicId || '0',
+			!!isTopic
+		);
+
+		return res;
+	} catch (error) {
+		throw error;
+	}
+});
+
 export const sendMessage = createAsyncThunk('messages/sendMessage', async (payload: SendMessagePayload, thunkAPI) => {
 	const {
 		mentions,
@@ -2078,6 +2130,7 @@ export const messagesActions = {
 	addNewMessage,
 	sendMessage,
 	sendMessageViaApi,
+	editMessageViaApi,
 	resendMessage,
 	sendEphemeralMessage,
 	fetchMessages,
