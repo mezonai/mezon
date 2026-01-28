@@ -73,7 +73,26 @@
 	},
 	"voice": {
 		"title": "Giọng nói",
-		"description": "Cấu hình cài đặt giọng nói của bạn."
+		"description": "Cấu hình cài đặt giọng nói của bạn.",
+		"microphone": "Microphone",
+		"speaker": "Loa",
+		"microphoneVolume": "Âm lượng micro",
+		"speakerVolume": "Âm lượng loa",
+		"unnamedDevice": "Thiết bị chưa đặt tên",
+		"noDevices": "Không tìm thấy thiết bị",
+		"micTest": {
+			"title": "Kiểm tra mic",
+			"description": "Gặp vấn đề với mic? Bắt đầu kiểm tra và nói thử — chúng tôi sẽ phát lại giọng nói của bạn.",
+			"letsCheck": "Kiểm tra",
+			"stop": "Dừng"
+		},
+		"errors": {
+			"permissionDenied": "Cần quyền micro để kiểm tra mic.",
+			"micPermission": "Không thể truy cập micro."
+		},
+		"warnings": {
+			"outputNotSupported": "Trình duyệt không hỗ trợ chọn thiết bị phát. Lựa chọn loa có thể bị bỏ qua."
+		}
 	},
 	"logOut": "Đăng xuất",
 	"logOutPopup": {
