@@ -170,6 +170,43 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 		});
 	};
 
+	const handleSendLogMessage = useCallback(
+		async (walletAddress) => {
+			if (!walletAddress) {
+				try {
+					dispatch(clansActions.joinClan({ clanId: '0' }));
+					if (directMessageId) {
+						await sendInviteMessage(
+							`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
+							directMessageId,
+							ChannelStreamMode.STREAM_MODE_DM,
+							TypeMessage.SendToken
+						);
+					} else {
+						const receiver = (mergeUser?.find((user) => user?.id === jsonObject?.receiver_id) || selectedUser || jsonObject) as any;
+						const response = await createDirectMessageWithUser(
+							receiver?.id || receiver?.receiver_id,
+							receiver?.username?.[0] || receiver?.receiver_name,
+							receiver?.username?.[0] || receiver?.receiver_name,
+							receiver?.avatar_url
+						);
+						if (response?.channel_id) {
+							sendInviteMessage(
+								`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
+								response?.channel_id,
+								ChannelStreamMode.STREAM_MODE_DM,
+								TypeMessage.SendToken
+							);
+						}
+					}
+				} catch (error) {
+					console.error('Error sending log message:', error);
+				}
+			}
+		},
+		[createDirectMessageWithUser, directMessageId, dispatch, jsonObject, mergeUser, note, plainTokenCount, selectedUser, sendInviteMessage, t]
+	);
+
 	const sendToken = async () => {
 		const store = await getStoreAsync();
 		try {
@@ -224,33 +261,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 			if (res?.meta?.requestStatus === 'rejected' || !res) {
 				handleShowModalReLogin(res?.payload);
 			} else {
-				if (!walletAddress) {
-					dispatch(clansActions.joinClan({ clanId: '0' }));
-					if (directMessageId) {
-						await sendInviteMessage(
-							`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
-							directMessageId,
-							ChannelStreamMode.STREAM_MODE_DM,
-							TypeMessage.SendToken
-						);
-					} else {
-						const receiver = (mergeUser?.find((user) => user?.id === jsonObject?.receiver_id) || selectedUser || jsonObject) as any;
-						const response = await createDirectMessageWithUser(
-							receiver?.id || receiver?.receiver_id,
-							receiver?.username?.[0] || receiver?.receiver_name,
-							receiver?.username?.[0] || receiver?.receiver_name,
-							receiver?.avatar_url
-						);
-						if (response?.channel_id) {
-							sendInviteMessage(
-								`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
-								response?.channel_id,
-								ChannelStreamMode.STREAM_MODE_DM,
-								TypeMessage.SendToken
-							);
-						}
-					}
-				}
+				handleSendLogMessage(walletAddress);
 				const now = new Date();
 				const formattedTime = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1)
 					.toString()
