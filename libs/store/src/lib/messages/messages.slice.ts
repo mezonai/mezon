@@ -40,7 +40,7 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
-import { selectOgpData } from './references.slice';
+import { referencesActions, selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
 const sendTimeoutMap = new Map<string, ReturnType<typeof setTimeout>>();
@@ -889,7 +889,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		}
 
 		const ogpData = selectOgpData(state);
-		if (true && content?.mk && content?.mk?.length > 0) {
+		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0) {
 			content.mk.push({
 				description:
 					ogpData?.description ||
@@ -915,6 +915,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			'',
 			code
 		);
+		if (res) {
+			thunkAPI.dispatch(referencesActions.clearOgpData());
+		}
 
 		return res;
 	}

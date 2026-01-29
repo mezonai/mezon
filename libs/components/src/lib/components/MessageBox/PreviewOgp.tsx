@@ -1,4 +1,4 @@
-import { referencesActions, selectOgpPreview } from '@mezon/store';
+import { referencesActions, selectCurrentChannelId, selectOgpPreview } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { memo, useEffect, useState } from 'react';
@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 function PreviewOgp() {
 	const ogpLink = useSelector(selectOgpPreview);
+	const currentChannelId = useSelector(selectCurrentChannelId);
 	const dispatch = useDispatch();
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState<{
@@ -15,14 +16,17 @@ function PreviewOgp() {
 	} | null>(null);
 
 	useEffect(() => {
-		if (!ogpLink || ogpLink.url) return;
+		if (!ogpLink || !ogpLink.url) {
+			dispatch(referencesActions.clearOgpData());
+			return;
+		}
 
 		const controller = new AbortController();
 		const { signal } = controller;
 
 		const timeoutId = setTimeout(async () => {
 			try {
-				// setLoading(true);
+				setLoading(true);
 				const res = await fetch('https://ogp.mezon.ai/ogp', {
 					method: 'POST',
 					headers: {
@@ -64,7 +68,7 @@ function PreviewOgp() {
 		};
 	}, [ogpLink?.url]);
 
-	if (!ogpLink || !data) return null;
+	if (!ogpLink || !data || currentChannelId !== ogpLink.channel_id) return null;
 	return (
 		<div
 			className="px-3 pb-2 pt-2 flex bg-theme-input text-theme-primary h-20 items-center gap-2"

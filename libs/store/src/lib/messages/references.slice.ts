@@ -33,6 +33,7 @@ export interface ReferencesState extends EntityState<ReferencesEntity, string> {
 	ogpPreview: {
 		url: string;
 		index: number;
+		channel_id: string;
 	} | null;
 	ogpData: {
 		url: string;
@@ -40,6 +41,7 @@ export interface ReferencesState extends EntityState<ReferencesEntity, string> {
 		index: number;
 		title?: string;
 		description?: string;
+		channel_id: string;
 	} | null;
 }
 
@@ -233,6 +235,7 @@ export const referencesSlice = createSlice({
 			action: PayloadAction<{
 				url: string;
 				index: number;
+				channel_id: string;
 			} | null>
 		) {
 			state.ogpPreview = action.payload;
@@ -245,12 +248,16 @@ export const referencesSlice = createSlice({
 				index: number;
 				title?: string;
 				description?: string;
+				channel_id: string;
 			} | null>
 		) {
 			state.ogpData = action.payload;
 		},
 		clearAttachmentDraft(state, action: PayloadAction<string>) {
 			delete state.attachmentAfterUpload[action.payload];
+		},
+		clearOgpData(state) {
+			state.ogpData = null;
 		}
 	},
 	extraReducers: (builder) => {

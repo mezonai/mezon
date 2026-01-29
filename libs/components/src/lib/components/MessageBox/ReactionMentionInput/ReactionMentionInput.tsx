@@ -757,7 +757,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		const { text: newPlainTextValue, entities, linkPreview } = parseHtmlAsFormattedText(html);
 
 		if (cachedLinkOgp.current !== linkPreview.url) {
-			dispatch(referencesActions.setOgpPreview(linkPreview ? linkPreview : null));
+			dispatch(referencesActions.setOgpPreview(linkPreview.url ? { ...linkPreview, channel_id: props.currentChannelId || '' } : null));
 			cachedLinkOgp.current = linkPreview.url;
 		}
 
