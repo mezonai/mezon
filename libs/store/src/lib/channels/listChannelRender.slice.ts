@@ -229,17 +229,17 @@ export const listChannelRenderSlice = createSlice({
 				return;
 			}
 
-			const newChannelWithThreads = state.listChannelRender[clanId].filter((item) => {
-				if (
-					((item as IChannel).id === channelId || (item as IChannel).parent_id === channelId) &&
-					(item as IChannel)?.category_id !== FAVORITE_CATEGORY_ID
-				) {
-					return {
-						...item,
-						category_id: categoryId
-					};
-				}
-			});
+			const newChannelWithThreads = state.listChannelRender[clanId]
+				.filter((item) => {
+					return (
+						((item as IChannel).id === channelId || (item as IChannel).parent_id === channelId) &&
+						(item as IChannel)?.category_id !== FAVORITE_CATEGORY_ID
+					);
+				})
+				.map((item) => ({
+					...item,
+					category_id: categoryId
+				}));
 
 			state.listChannelRender[clanId].splice(oldIndexOfChannel, newChannelWithThreads.length);
 

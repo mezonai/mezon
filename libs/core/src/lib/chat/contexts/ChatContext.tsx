@@ -836,14 +836,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					if (!isMobile && directId === user.channel_id) {
 						navigate(`/chat/direct/friends`, true);
 					}
+					const threadToRemove =
+						user.channel_type === ChannelType.CHANNEL_TYPE_THREAD ? selectChannelById(currentState, user.channel_id) : null;
+
 					dispatch(directSlice.actions.removeByDirectID(user.channel_id));
 					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: clanId as string }));
 
 					if (user.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
-						const currentState = store.getState() as unknown as RootState;
-						const thread = selectChannelById(currentState, user.channel_id);
-
-						if (thread && thread.channel_private === ChannelStatusEnum.isPrivate) {
+						if (threadToRemove && threadToRemove.channel_private === ChannelStatusEnum.isPrivate) {
 							dispatch(threadsActions.remove(user.channel_id));
 							const allChannels = selectAllChannels(currentState);
 							const parentChannels = allChannels.filter((ch) => !checkIsThread(ch));
