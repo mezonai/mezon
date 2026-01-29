@@ -24,7 +24,7 @@ export interface InVoiceInfor {
 	clanId: string;
 	channelId: string;
 }
-export interface VoiceState extends EntityState<VoiceEntity, string> {
+export interface VoiceState {
 	voiceInfo: IvoiceInfo | null;
 	loadingStatus: LoadingStatus;
 	error?: string | null;
@@ -268,20 +268,29 @@ export const voiceSlice = createSlice({
 	name: VOICE_FEATURE_KEY,
 	initialState: initialVoiceState,
 	reducers: {
-		setAll: voiceAdapter.setAll,
 		add: (state, action: PayloadAction<VoiceEntity>) => {
 			const normalizedVoice = normalizeVoiceEntity(action.payload);
-			const duplicateEntry = Object.values(state.entities).find(
+			if (!state.listVoiceMemberByClan[normalizedVoice.clan_id]) {
+				state.listVoiceMemberByClan[normalizedVoice.clan_id] = voiceAdapter.getInitialState({});
+			}
+
+			const duplicateEntry = Object.values(state.listVoiceMemberByClan[normalizedVoice.clan_id]?.entities).find(
 				(member) =>
 					member?.user_id === normalizedVoice.user_id &&
 					member?.voice_channel_id === normalizedVoice.voice_channel_id &&
 					member?.id !== normalizedVoice.id
 			);
 			if (duplicateEntry?.id) {
-				voiceAdapter.removeOne(state, duplicateEntry.id);
+				state.listVoiceMemberByClan[normalizedVoice.clan_id] = voiceAdapter.removeOne(
+					state.listVoiceMemberByClan[normalizedVoice.clan_id],
+					duplicateEntry.id
+				);
 			}
 
-			voiceAdapter.upsertOne(state, normalizedVoice);
+			state.listVoiceMemberByClan[normalizedVoice.clan_id] = voiceAdapter.upsertOne(
+				state.listVoiceMemberByClan[normalizedVoice.clan_id],
+				normalizedVoice
+			);
 			if (normalizedVoice.user_id) {
 				state.listInVoiceStatus[normalizedVoice.user_id] = {
 					clanId: normalizedVoice.clan_id,
@@ -292,35 +301,40 @@ export const voiceSlice = createSlice({
 		remove: (state, action: PayloadAction<VoiceLeavedEvent>) => {
 			const voice = action.payload;
 			const keyRemove = voice.voice_user_id + voice.voice_channel_id;
-			const entities = voiceAdapter.getSelectors().selectEntities(state);
+			const clanState = state.listVoiceMemberByClan[voice.clan_id];
+			if (!clanState) return;
+
+			const entities = voiceAdapter.getSelectors().selectEntities(clanState);
 			if (entities[keyRemove]) {
-				voiceAdapter.removeOne(state, keyRemove);
+				state.listVoiceMemberByClan[voice.clan_id] = voiceAdapter.removeOne(state.listVoiceMemberByClan[voice.clan_id], keyRemove);
 			} else {
-				voiceAdapter.removeOne(state, voice.id);
+				state.listVoiceMemberByClan[voice.clan_id] = voiceAdapter.removeOne(state.listVoiceMemberByClan[voice.clan_id], voice.id);
 			}
 
-			const entitiesAfter = voiceAdapter.getSelectors().selectAll(state);
+			const entitiesAfter = voiceAdapter.getSelectors().selectAll(state.listVoiceMemberByClan[voice.clan_id]);
 			const userStillInVoice = entitiesAfter.some((entity) => entity.user_id === voice.voice_user_id);
 			if (!userStillInVoice) {
 				delete state.listInVoiceStatus[voice.voice_user_id];
 			}
 		},
-		removeFromClanInvoice: (state, action: PayloadAction<string>) => {
-			const userId = action.payload;
+		removeFromClanInvoice: (state, action: PayloadAction<{ id: string; clanId: string }>) => {
+			const userId = action.payload.id;
 			const entitiesOfUser = voiceAdapter
 				.getSelectors()
-				.selectAll(state)
+				.selectAll(state.listVoiceMemberByClan[action.payload.clanId])
 				.filter((entity) => entity.user_id === userId);
 			if (entitiesOfUser.length === 0) {
 				delete state.listInVoiceStatus[userId];
 			}
 		},
-		voiceEnded: (state, action: PayloadAction<string>) => {
-			const channelId = action.payload;
-			const idsToRemove = Object.values(state.entities)
+		voiceEnded: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
+			const { channelId, clanId } = action.payload;
+			const clanState = state.listVoiceMemberByClan[clanId];
+			if (!clanState) return;
+			const idsToRemove = Object.values(state.listVoiceMemberByClan[clanId].entities)
 				.filter((member) => member?.voice_channel_id === channelId)
 				.map((member) => member?.id + member?.voice_channel_id);
-			voiceAdapter.removeMany(state, idsToRemove);
+			state.listVoiceMemberByClan[clanId] = voiceAdapter.removeMany(state.listVoiceMemberByClan[clanId], idsToRemove);
 		},
 		setJoined: (state, action) => {
 			state.isJoined = action.payload;
@@ -477,7 +491,10 @@ export const voiceSlice = createSlice({
 						id: (channelRes.user_id || '') + (channelRes.channel_id || '0')
 					};
 				});
-				state.listVoiceMemberByClan[clanId] = voiceAdapter.setAll(state, members);
+				if (!state.listVoiceMemberByClan[clanId]) {
+					state.listVoiceMemberByClan[clanId] = voiceAdapter.getInitialState({});
+				}
+				state.listVoiceMemberByClan[clanId] = voiceAdapter.setAll(state.listVoiceMemberByClan[clanId], members);
 
 				state.cache = createCacheMetadata();
 			})
@@ -548,7 +565,6 @@ export const voiceActions = {
  */
 export const getVoiceState = (rootState: { [VOICE_FEATURE_KEY]: VoiceState }): VoiceState => rootState[VOICE_FEATURE_KEY];
 
-export const selectAllVoice = createSelector(getVoiceState, selectAllVoiceEntities);
 export const selectStatusInVoice = createSelector(
 	[getVoiceState, (state, userId: string) => userId],
 	(state, userId) => state.listInVoiceStatus[userId]
