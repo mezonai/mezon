@@ -1015,7 +1015,8 @@ export enum ETokenMessage {
 	MARKDOWNS = 'mk',
 	PRE = 'pre',
 	BOLD = 'bm',
-	LINKYOUTUBE = 'lk_yt'
+	LINKYOUTUBE = 'lk_yt',
+	OGP_PREVIEW = 'lk_ogp'
 }
 export type SearchFilter = {
 	field_name: string;

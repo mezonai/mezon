@@ -752,8 +752,16 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		}
 	}, [draftRequest?.content]);
 
+	const cachedLinkOgp = useRef<string>('');
+
 	const onChangeMentionInput = (html: string) => {
-		const { text: newPlainTextValue, entities } = parseHtmlAsFormattedText(html);
+		const { text: newPlainTextValue, entities, linkPreview } = parseHtmlAsFormattedText(html);
+
+		if (cachedLinkOgp.current !== linkPreview.url) {
+			dispatch(referencesActions.setOgpPreview(linkPreview.url ? { ...linkPreview, channel_id: props.currentChannelId || '' } : null));
+			cachedLinkOgp.current = linkPreview.url;
+		}
+
 		const newValue = html;
 		const previousValue = prevValueRef.current;
 		const previousPlainText = prevPlainTextRef.current;
