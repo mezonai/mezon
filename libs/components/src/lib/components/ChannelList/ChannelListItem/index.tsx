@@ -117,7 +117,7 @@ interface ICollapsedMemberListProps {
 
 const CollapsedMemberList = ({ channelId, clanId, channelType }: ICollapsedMemberListProps) => {
 	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channelId, clanId));
-	const streamChannelMembers = useAppSelector((state) => selectStreamMembersByChannelId(state, clanId));
+	const streamChannelMembers = useAppSelector((state) => selectStreamMembersByChannelId(state, channelId));
 	const channelMemberList = useMemo(() => {
 		if (channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE || channelType === ChannelType.CHANNEL_TYPE_APP) return voiceChannelMembers;
 		if (channelType === ChannelType.CHANNEL_TYPE_STREAMING) return streamChannelMembers;

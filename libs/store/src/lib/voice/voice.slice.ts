@@ -329,6 +329,8 @@ export const voiceSlice = createSlice({
 		},
 		voiceEnded: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
 			const { channelId, clanId } = action.payload;
+			const clanState = state.listVoiceMemberByClan[clanId];
+			if (!clanState) return;
 			const idsToRemove = Object.values(state.listVoiceMemberByClan[clanId].entities)
 				.filter((member) => member?.voice_channel_id === channelId)
 				.map((member) => member?.id + member?.voice_channel_id);
@@ -491,8 +493,8 @@ export const voiceSlice = createSlice({
 				});
 				if (!state.listVoiceMemberByClan[clanId]) {
 					state.listVoiceMemberByClan[clanId] = voiceAdapter.getInitialState({});
-					state.listVoiceMemberByClan[clanId] = voiceAdapter.setAll(state.listVoiceMemberByClan[clanId], members);
 				}
+				state.listVoiceMemberByClan[clanId] = voiceAdapter.setAll(state.listVoiceMemberByClan[clanId], members);
 
 				state.cache = createCacheMetadata();
 			})
