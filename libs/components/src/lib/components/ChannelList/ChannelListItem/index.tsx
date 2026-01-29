@@ -30,8 +30,8 @@ export type ChannelListItemRef = {
 
 type ChannelLinkContentProps = {
 	channel: ChannelThreads;
-	dragStart: (e: DragEvent<HTMLDivElement>) => void;
-	dragEnter: (e: DragEvent<HTMLDivElement>) => void;
+	dragStart?: (e: DragEvent<HTMLDivElement>) => void;
+	dragEnter?: (e: DragEvent<HTMLDivElement>) => void;
 	isActive: boolean;
 	permissions: IChannelLinkPermission;
 };

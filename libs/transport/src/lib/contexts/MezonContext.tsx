@@ -19,6 +19,7 @@ const MIN_WEBSOCKET_RETRY_TIME = 1000;
 const MAX_WEBSOCKET_RETRY_TIME = 30000;
 const JITTER_RANGE = 1000;
 const FAST_RETRY_ATTEMPTS = 5;
+const DEFAULT_WS_URL = 'sock.mezon.ai';
 export const SESSION_STORAGE_KEY = 'mezon_session';
 export const MobileEventSessionEmitter = new EventEmitter();
 
@@ -265,7 +266,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					session.refresh_token || '',
 					session.created || false,
 					session.api_url || '',
-					session.ws_url || '',
+					session.ws_url || DEFAULT_WS_URL,
 					session.id_token || '',
 					sessionData.is_remember || false
 				);
@@ -491,7 +492,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				session?.refresh_token,
 				session.created,
 				session.api_url,
-				session.ws_url || '',
+				session.ws_url || DEFAULT_WS_URL,
 				session.id_token || '',
 				session.is_remember
 			);
@@ -519,7 +520,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					session?.refresh_token,
 					session.created,
 					session.api_url,
-					session.ws_url || '',
+					session.ws_url || DEFAULT_WS_URL,
 					session.id_token || '',
 					session.is_remember
 				)
@@ -591,7 +592,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 									sessionRef.current.refresh_token,
 									sessionRef.current.created,
 									sessionRef.current.api_url,
-									sessionRef.current.ws_url || '',
+									sessionRef.current.ws_url || DEFAULT_WS_URL,
 									sessionRef.current.id_token,
 									sessionRef.current.is_remember ?? false
 								)
@@ -709,7 +710,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					sessionData.refresh_token,
 					sessionData.created || false,
 					sessionData.api_url,
-					sessionData.ws_url || '',
+					sessionData.ws_url || DEFAULT_WS_URL,
 					sessionData.id_token || '',
 					sessionData.is_remember || false
 				);

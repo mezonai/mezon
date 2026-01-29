@@ -44,8 +44,8 @@ export type ChannelLinkProps = {
 	channelType?: number;
 	permissions: IChannelLinkPermission;
 	isActive: boolean;
-	dragStart: (e: DragEvent<HTMLDivElement>) => void;
-	dragEnter: (e: DragEvent<HTMLDivElement>) => void;
+	dragStart?: (e: DragEvent<HTMLDivElement>) => void;
+	dragEnter?: (e: DragEvent<HTMLDivElement>) => void;
 };
 
 export interface Coords {
