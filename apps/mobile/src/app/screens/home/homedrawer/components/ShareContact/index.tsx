@@ -86,6 +86,8 @@ const ShareContactScreen = () => {
 	);
 
 	const filteredUsers = useMemo(() => {
+		if (!friendList) return [];
+
 		const query = debouncedSearchText.trim().toLowerCase();
 		if (!query) return friendList || [];
 

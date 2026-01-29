@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Text, View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
-import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import DeviceItem from './DeviceItem';
 import { style } from './styles';
 
@@ -25,7 +24,6 @@ const DeviceManage = () => {
 
 	return (
 		<View style={styles.container}>
-			<StatusBarHeight />
 			<View style={styles.padding}>
 				<Text style={styles.description}>{t('deviceSettings.description1')}</Text>
 				<Text style={styles.description}>{t('deviceSettings.description2')}</Text>
