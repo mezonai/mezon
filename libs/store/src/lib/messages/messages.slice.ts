@@ -889,17 +889,22 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		}
 
 		const ogpData = selectOgpData(state);
+
 		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0) {
-			content.mk.push({
-				description:
-					ogpData?.description ||
-					'Join Mezon to play games, chill with friends, and build your community. Create your own customized space to chat, play, and hang out with people from around the world.',
-				image: ogpData?.image || 'https://static.cdninstagram.com/rsrc.php/v4/yR/r/hexDR1NOpRC.png',
-				title: ogpData?.title || 'Mezon – The Live, Work, and Play Platform.',
-				s: content.t?.length,
+			const mk = [...(content.mk ?? [])];
+
+			mk.push({
+				description: ogpData?.description || '',
+				image: ogpData?.image || '',
+				title: ogpData?.title || '',
 				e: (content.t?.length || 0) + 1,
-				type: EBacktickType.OGP_PREVIEW
+				type: EBacktickType.OGP_PREVIEW,
+				index: ogpData.index
 			});
+			content = {
+				...content,
+				mk
+			};
 		}
 		const res = await socket.writeChatMessage(
 			clanId,

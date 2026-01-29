@@ -49,7 +49,8 @@ function PreviewOgp() {
 						...ogpLink,
 						image: data?.image || '',
 						title: data?.title || '',
-						description: data?.description || ''
+						description: data?.description || '',
+						type: data?.type || ''
 					})
 				);
 				setLoading(false);

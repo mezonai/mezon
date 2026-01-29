@@ -35,14 +35,17 @@ export interface ReferencesState extends EntityState<ReferencesEntity, string> {
 		index: number;
 		channel_id: string;
 	} | null;
-	ogpData: {
-		url: string;
-		image: string;
-		index: number;
-		title?: string;
-		description?: string;
-		channel_id: string;
-	} | null;
+	ogpData: OgpEntity | null;
+}
+
+export interface OgpEntity {
+	url: string;
+	image: string;
+	index: number;
+	title?: string;
+	description?: string;
+	channel_id: string;
+	type?: string;
 }
 
 export const referencesAdapter = createEntityAdapter<ReferencesEntity>();
@@ -249,6 +252,7 @@ export const referencesSlice = createSlice({
 				title?: string;
 				description?: string;
 				channel_id: string;
+				type?: string;
 			} | null>
 		) {
 			state.ogpData = action.payload;
