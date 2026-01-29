@@ -84,7 +84,7 @@
 			"title": "Mic Test",
 			"description": "Having mic issues? Start a test and say something fun — we'll play your voice back to you.",
 			"letsCheck": "Let's Check",
-			"stop": "Stop"
+			"stop": "Stop Testing"
 		},
 		"errors": {
 			"permissionDenied": "Microphone permission is required to run mic test.",

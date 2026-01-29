@@ -74,7 +74,7 @@
 	"voice": {
 		"title": "Giọng nói",
 		"description": "Cấu hình cài đặt giọng nói của bạn.",
-		"microphone": "Microphone",
+		"microphone": "Micro",
 		"speaker": "Loa",
 		"microphoneVolume": "Âm lượng micro",
 		"speakerVolume": "Âm lượng loa",

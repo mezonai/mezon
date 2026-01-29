@@ -1,6 +1,9 @@
 import { requestMediaPermission } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DeviceSelector } from './DeviceSelector';
+import { MicTest } from './MicTest';
+import { VolumeSlider } from './VolumeSlider';
 
 const LS_KEYS = {
 	inputDeviceId: 'mezon.voice.inputDeviceId',
@@ -37,13 +40,30 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 	const [isTesting, setIsTesting] = useState<boolean>(false);
 	const [testError, setTestError] = useState<string>('');
 
+	const inputDeviceIdRef = useRef<string>(inputDeviceId);
+	const outputDeviceIdRef = useRef<string>(outputDeviceId);
+	const micVolumeRef = useRef<number>(micVolume);
+	const speakerVolumeRef = useRef<number>(speakerVolume);
+
+	useEffect(() => {
+		inputDeviceIdRef.current = inputDeviceId;
+	}, [inputDeviceId]);
+	useEffect(() => {
+		outputDeviceIdRef.current = outputDeviceId;
+	}, [outputDeviceId]);
+	useEffect(() => {
+		micVolumeRef.current = micVolume;
+	}, [micVolume]);
+	useEffect(() => {
+		speakerVolumeRef.current = speakerVolume;
+	}, [speakerVolume]);
+
 	const streamRef = useRef<MediaStream | null>(null);
 	const audioContextRef = useRef<AudioContext | null>(null);
 	const analyserRef = useRef<AnalyserNode | null>(null);
 	const rafRef = useRef<number | null>(null);
-	const recorderRef = useRef<MediaRecorder | null>(null);
-	const chunksRef = useRef<BlobPart[]>([]);
 	const playbackAudioRef = useRef<HTMLAudioElement | null>(null);
+	const playbackStreamRef = useRef<MediaStream | null>(null);
 
 	const hasSetSinkId = useMemo(() => {
 		try {
@@ -95,7 +115,6 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 		setInputDevices(nextInputs);
 		setOutputDevices(nextOutputs);
 
-		// Remove "System Default" option: normalize selection to a real device if possible
 		setInputDeviceId((prev) => {
 			if (nextInputs.length === 0) return '';
 			const first = nextInputs[0];
@@ -109,7 +128,6 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 	}, []);
 
 	useEffect(() => {
-		// request mic permission so that device labels are available
 		(async () => {
 			const status = await requestMediaPermission('audio');
 			setPermissionState(status === 'granted' ? 'granted' : 'denied');
@@ -138,20 +156,6 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 		localStorage.setItem(LS_KEYS.speakerVolume, String(speakerVolume));
 	}, [speakerVolume]);
 
-	const inputOptions = useMemo(() => {
-		return inputDevices.map((d) => ({
-			id: d.deviceId,
-			label: d.label || t('setting:voice.unnamedDevice')
-		}));
-	}, [inputDevices, t]);
-
-	const outputOptions = useMemo(() => {
-		return outputDevices.map((d) => ({
-			id: d.deviceId,
-			label: d.label || t('setting:voice.unnamedDevice')
-		}));
-	}, [outputDevices, t]);
-
 	const startLevelMeter = useCallback(() => {
 		const analyser = analyserRef.current;
 		if (!analyser) return;
@@ -166,7 +170,7 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 				sum += v * v;
 			}
 			const rms = Math.sqrt(sum / data.length);
-			setMicLevel(clamp01(rms * 2.2)); // amplify visually
+			setMicLevel(clamp01(rms * 2.2));
 			rafRef.current = requestAnimationFrame(tick);
 		};
 		rafRef.current = requestAnimationFrame(tick);
@@ -176,13 +180,18 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 		setIsTesting(false);
 		setTestError('');
 
-		try {
-			recorderRef.current?.stop();
-		} catch {
-			// ignore
+		const audio = playbackAudioRef.current;
+		if (audio) {
+			try {
+				audio.pause();
+			} catch {
+				// ignore
+			}
+			audio.srcObject = null;
+			audio.removeAttribute('src');
+			audio.load();
 		}
-		recorderRef.current = null;
-		chunksRef.current = [];
+		playbackStreamRef.current = null;
 
 		cleanupAudioGraph();
 		stopStream();
@@ -193,12 +202,14 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 		setIsTesting(true);
 
 		try {
-			// Ensure old test is stopped
 			stopTest();
 			setIsTesting(true);
 
+			const currentInputDeviceId = inputDeviceIdRef.current;
+			const currentMicVolume = micVolumeRef.current;
+
 			const constraints: MediaStreamConstraints = {
-				audio: inputDeviceId ? { deviceId: { exact: inputDeviceId } } : true,
+				audio: currentInputDeviceId ? { deviceId: { exact: currentInputDeviceId } } : true,
 				video: false
 			};
 			const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -209,7 +220,7 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 
 			const source = audioContext.createMediaStreamSource(stream);
 			const gain = audioContext.createGain();
-			gain.gain.value = micVolume;
+			gain.gain.value = currentMicVolume;
 
 			const analyser = audioContext.createAnalyser();
 			analyser.fftSize = 2048;
@@ -223,28 +234,16 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 
 			startLevelMeter();
 
-			const recorder = new MediaRecorder(dest.stream);
-			recorderRef.current = recorder;
-			chunksRef.current = [];
+			// Live monitor: play mic audio immediately instead of waiting until stop.
+			const audio = playbackAudioRef.current;
+			if (audio) {
+				playbackStreamRef.current = dest.stream;
+				audio.srcObject = dest.stream;
+				audio.volume = speakerVolumeRef.current;
 
-			recorder.ondataavailable = (e) => {
-				if (e.data && e.data.size > 0) chunksRef.current.push(e.data);
-			};
-
-			recorder.onstop = async () => {
-				const blob = new Blob(chunksRef.current, { type: recorder.mimeType || 'audio/webm' });
-				chunksRef.current = [];
-
-				const url = URL.createObjectURL(blob);
-				const audio = playbackAudioRef.current;
-				if (!audio) return;
-				audio.src = url;
-				audio.volume = speakerVolume;
-
-				// best-effort output device routing
-				if (hasSetSinkId && outputDeviceId) {
+				if (hasSetSinkId && outputDeviceIdRef.current) {
 					try {
-						await (audio as HTMLMediaElement & { setSinkId: (deviceId: string) => Promise<void> }).setSinkId(outputDeviceId);
+						await (audio as HTMLMediaElement & { setSinkId: (deviceId: string) => Promise<void> }).setSinkId(outputDeviceIdRef.current);
 					} catch {
 						// ignore and fallback to default output
 					}
@@ -255,23 +254,7 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 				} catch {
 					// ignore autoplay issues
 				}
-			};
-
-			recorder.start();
-
-			// Auto stop after 4s to mimic quick mic test
-			window.setTimeout(() => {
-				if (recorderRef.current && recorderRef.current.state === 'recording') {
-					try {
-						recorderRef.current.stop();
-					} catch {
-						// ignore
-					}
-				}
-				setIsTesting(false);
-				cleanupAudioGraph();
-				stopStream();
-			}, 4000);
+			}
 		} catch (e) {
 			console.error(e);
 			setIsTesting(false);
@@ -279,7 +262,13 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 			cleanupAudioGraph();
 			stopStream();
 		}
-	}, [cleanupAudioGraph, hasSetSinkId, inputDeviceId, micVolume, outputDeviceId, speakerVolume, startLevelMeter, stopStream, stopTest, t]);
+	}, [cleanupAudioGraph, hasSetSinkId, startLevelMeter, stopStream, stopTest, t]);
+
+	useEffect(() => {
+		return () => {
+			stopTest();
+		};
+	}, [stopTest]);
 
 	return (
 		<div
@@ -290,109 +279,41 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 			<div className="rounded-lg bg-theme-setting-nav p-6">
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
 					<div className="space-y-4">
-						<div className="text-xs font-semibold uppercase text-theme-primary-active tracking-wide">{t('setting:voice.microphone')}</div>
-						<select
-							className="w-full rounded-md bg-theme-setting-primary border border-theme-primary px-3 py-2 text-sm"
+						<DeviceSelector
+							devices={inputDevices}
 							value={inputDeviceId}
-							onChange={(e) => setInputDeviceId(e.target.value)}
-							disabled={inputOptions.length === 0}
-						>
-							{inputOptions.length === 0 ? <option value="">{t('setting:voice.noDevices')}</option> : null}
-							{inputOptions.map((o) => (
-								<option key={o.id} value={o.id}>
-									{o.label}
-								</option>
-							))}
-						</select>
-
-						<div className="text-xs font-semibold uppercase text-theme-primary-active tracking-wide">
-							{t('setting:voice.microphoneVolume')}
-						</div>
-						<div className="flex items-center gap-3">
-							<input
-								type="range"
-								min={0}
-								max={100}
-								value={Math.round(micVolume * 100)}
-								onChange={(e) => setMicVolume(clamp01(Number(e.target.value) / 100))}
-								className="w-full"
-							/>
-							<div className="w-10 text-right text-xs text-theme-primary-hover">{Math.round(micVolume * 100)}%</div>
-						</div>
+							onChange={setInputDeviceId}
+							label={t('setting:voice.microphone')}
+							disabled={inputDevices.length === 0}
+							t={t}
+						/>
+						<VolumeSlider value={micVolume} onChange={setMicVolume} label={t('setting:voice.microphoneVolume')} />
 					</div>
 
 					<div className="space-y-4">
-						<div className="text-xs font-semibold uppercase text-theme-primary-active tracking-wide">{t('setting:voice.speaker')}</div>
-						<select
-							className="w-full rounded-md bg-theme-setting-primary border border-theme-primary px-3 py-2 text-sm"
+						<DeviceSelector
+							devices={outputDevices}
 							value={outputDeviceId}
-							onChange={(e) => setOutputDeviceId(e.target.value)}
-							disabled={outputOptions.length === 0}
-						>
-							{outputOptions.length === 0 ? <option value="">{t('setting:voice.noDevices')}</option> : null}
-							{outputOptions.map((o) => (
-								<option key={o.id} value={o.id}>
-									{o.label}
-								</option>
-							))}
-						</select>
-
-						<div className="text-xs font-semibold uppercase text-theme-primary-active tracking-wide">
-							{t('setting:voice.speakerVolume')}
-						</div>
-						<div className="flex items-center gap-3">
-							<input
-								type="range"
-								min={0}
-								max={100}
-								value={Math.round(speakerVolume * 100)}
-								onChange={(e) => setSpeakerVolume(clamp01(Number(e.target.value) / 100))}
-								className="w-full"
-							/>
-							<div className="w-10 text-right text-xs text-theme-primary-hover">{Math.round(speakerVolume * 100)}%</div>
-						</div>
+							onChange={setOutputDeviceId}
+							label={t('setting:voice.speaker')}
+							disabled={outputDevices.length === 0}
+							t={t}
+						/>
+						<VolumeSlider value={speakerVolume} onChange={setSpeakerVolume} label={t('setting:voice.speakerVolume')} />
 					</div>
 				</div>
 
-				<div className="mt-6 border-t border-theme-primary ">
-					<div className="p-2">
-						<div className="text-xs font-semibold uppercase text-theme-primary-active tracking-wide mb-2">
-							{t('setting:voice.micTest.title')}
-						</div>
-						<p className="text-xs text-theme-primary-hover mb-3">{t('setting:voice.micTest.description')}</p>
-
-						{permissionState === 'denied' && (
-							<div className="text-xs text-red-500 mb-3">{t('setting:voice.errors.permissionDenied')}</div>
-						)}
-						{testError && <div className="text-xs text-red-500 mb-3">{testError}</div>}
-
-						<div className="flex items-center gap-3">
-							<button
-								className="btn-primary btn-primary-hover h-fit px-4 py-2 rounded-lg cursor-pointer w-fit text-center disabled:opacity-50"
-								onClick={() => (isTesting ? stopTest() : void startTest())}
-								disabled={permissionState === 'denied'}
-							>
-								{isTesting ? t('setting:voice.micTest.stop') : t('setting:voice.micTest.letsCheck')}
-							</button>
-
-							<div className="flex-1">
-								<div className="h-2 rounded bg-theme-setting-primary overflow-hidden border border-theme-primary">
-									<div
-										className="h-full bg-blue-500 transition-[width] duration-75"
-										style={{ width: `${Math.round(micLevel * 100)}%` }}
-									/>
-								</div>
-							</div>
-						</div>
-
-						{/* hidden audio element for playback routing */}
-						<audio ref={playbackAudioRef} className="hidden" />
-
-						{!hasSetSinkId && (
-							<div className="mt-2 text-[11px] text-theme-primary-hover">{t('setting:voice.warnings.outputNotSupported')}</div>
-						)}
-					</div>
-				</div>
+				<MicTest
+					permissionState={permissionState}
+					isTesting={isTesting}
+					micLevel={micLevel}
+					testError={testError}
+					hasSetSinkId={hasSetSinkId}
+					playbackAudioRef={playbackAudioRef}
+					onStartTest={startTest}
+					onStopTest={stopTest}
+					t={t}
+				/>
 			</div>
 		</div>
 	);
