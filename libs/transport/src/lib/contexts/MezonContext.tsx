@@ -212,13 +212,23 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			await socketRef.current.disconnect(false);
 		}
 
-		const socket = clientRef.current.createSocket(
-			clientRef.current.useSSL,
-			clientRef.current.host,
-			clientRef.current.port,
-			false,
-			new WebSocketAdapterPb()
-		);
+		const config = getMezonConfig();
+		let useSSL = clientRef.current.useSSL;
+		let host = clientRef.current.host;
+		let port = clientRef.current.port;
+
+		if (config.ws_url) {
+			try {
+				const wsUrl = new URL(config.ws_url.startsWith('ws') ? config.ws_url : `wss://${config.ws_url}`);
+				useSSL = wsUrl.protocol === 'wss:';
+				host = wsUrl.hostname;
+				port = wsUrl.port;
+			} catch {
+				console.warn('Failed to parse ws_url, using default client config');
+			}
+		}
+
+		const socket = clientRef.current.createSocket(useSSL, host, port, false, new WebSocketAdapterPb());
 		socketRef.current = socket;
 		socket.onreconnect = (evt) => {
 			if (typeof window === 'undefined') return;
