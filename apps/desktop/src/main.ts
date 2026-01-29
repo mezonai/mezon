@@ -1,8 +1,6 @@
 import { BrowserWindow, app, clipboard, desktopCapturer, dialog, ipcMain, nativeImage, screen, shell } from 'electron';
 import log from 'electron-log/main';
 import fs from 'fs';
-import type { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import App from './app/app';
 import {
 	ACTION_SHOW_IMAGE,
@@ -34,6 +32,20 @@ import updateImagePopup from './assets/image-window/update_window_image';
 import openImagePopup, { type ImageData } from './assets/image-window/window_image';
 import openNewWindow from './assets/window/new-window';
 import { environment } from './environments/environment';
+interface ChannelStreamMode {
+	mode: 'channel' | 'dm';
+}
+
+interface ApiMessageAttachment {
+	filetype?: string;
+	url?: string;
+	create_time_seconds?: number;
+	sender_id?: string;
+	filename?: string;
+	size?: number;
+	width?: number;
+	height?: number;
+}
 
 export type ImageWindowProps = {
 	attachmentData: ApiMessageAttachment & { create_time?: string };

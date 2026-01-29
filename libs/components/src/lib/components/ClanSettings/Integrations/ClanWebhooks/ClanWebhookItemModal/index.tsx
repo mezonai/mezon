@@ -43,7 +43,7 @@ const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
 							<Icons.ClockIcon className="text-theme-primary" />
 							<div className="text-theme-primary text-[13px]">
 								{t('webhooksItem.createdBy', {
-									webhookCreateTime: timeFormatI18n(webhookItem.create_time || '', tCommon),
+									webhookCreateTime: timeFormatI18n(webhookItem.create_time_seconds || '', tCommon),
 									webhookUserOwnerName: webhookOwner?.user?.username
 								})}
 							</div>

@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes, isTabletLandscape: boolean) =>
@@ -16,13 +17,10 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		avatarWrapper: {
 			borderWidth: 2,
 			borderColor: colors.white,
-			borderRadius: size.s_20,
-			overflow: 'hidden'
-		},
-		avatar: {
+			borderRadius: size.s_30,
 			width: size.s_30,
 			height: size.s_30,
-			borderRadius: size.s_15
+			overflow: 'hidden'
 		},
 		info: {
 			padding: size.s_10,

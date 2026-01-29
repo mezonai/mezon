@@ -97,7 +97,7 @@ const VoiceInfo = React.memo(() => {
 				dispatch(voiceActions.resetVoiceControl());
 			}
 			if (userProfile?.user?.id) {
-				dispatch(voiceActions.removeFromClanInvoice(userProfile.user.id));
+				dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: currentVoiceInfo.clanId }));
 			}
 			await participantMeetState(
 				ParticipantMeetState.LEAVE,

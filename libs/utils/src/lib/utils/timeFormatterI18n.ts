@@ -1,4 +1,4 @@
-export const timeFormatI18n = (start: string, t: (key: string, options?: any) => string) => {
+export const timeFormatI18n = (start: string | number, t: (key: string, options?: any) => string) => {
 	const date = new Date(start);
 
 	const daysOfWeek = [

@@ -254,13 +254,14 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 
 			const currentTime = Math.floor(Date.now() / 1000);
 			const lastMessageTimestamp = channel.last_sent_message?.timestamp_seconds;
+
 			const isArchived = lastMessageTimestamp && currentTime - Number(lastMessageTimestamp) > THREAD_ARCHIVE_DURATION_SECONDS;
 
 			const store = getStore();
 			const userIds = selectMemberIdsByChannelId(store.getState(), channel.id as string);
 			const needsJoin = !userProfile?.user?.id ? false : !userIds?.includes(userProfile?.user?.id);
 
-			if (isArchived) {
+			if (isArchived || channel.active === 0) {
 				await dispatch(
 					threadsActions.writeActiveArchivedThread({
 						clanId: channel.clan_id ?? '',
@@ -291,9 +292,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				return;
 			}
 
-			if (props.isThread && !threadCurrentChannel) {
+			if (props.isThread && !threadCurrentChannel && !isSendMessageOnThreadBox) {
 				const hasContent = checkedRequest.content?.trim() || checkedRequest.valueTextInput?.trim();
-				if (!hasContent && !checkAttachment) {
+				const hasValueThreadMedia = (valueThread?.attachments?.length ?? 0) > 0 || (valueThread?.content?.t ?? '').trim().length > 0;
+				if (!hasContent && !checkAttachment && !hasValueThreadMedia) {
 					dispatch(threadsActions.setMessageThreadError(t('channelTopbar:createThread.validation.starterMessageRequired')));
 					return;
 				}
@@ -404,11 +406,11 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					dispatch(referencesActions.resetAfterReply(props.currentChannelId ?? ''));
 				} else if (isSendMessageOnThreadBox) {
 					props.onSend(
-						{ t: valueThread?.content.t || '' },
-						valueThread?.mentions,
-						valueThread?.attachments,
+						filterEmptyArrays(payload),
+						mentionList,
+						attachmentData,
 						valueThread?.references,
-						{ nameValueThread: nameValueThread ?? valueThread?.content.t, isPrivate },
+						{ nameValueThread, isPrivate },
 						anonymousMessage,
 						mentionEveryone,
 						undefined,
@@ -528,13 +530,17 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				return;
 			}
 
-			if ((!text && !checkAttachment) || ((draftRequest?.valueTextInput || '').trim() === '' && !checkAttachment)) {
+			if (
+				!isSendMessageOnThreadBox &&
+				((!text && !checkAttachment) || ((draftRequest?.valueTextInput || '').trim() === '' && !checkAttachment))
+			) {
 				return;
 			}
 			if (props.isTopic && !text && checkAttachment) {
 				payload.t = '';
 			}
 			if (
+				!isSendMessageOnThreadBox &&
 				draftRequest?.valueTextInput &&
 				typeof draftRequest?.valueTextInput === 'string' &&
 				!(draftRequest?.valueTextInput || '').trim() &&
@@ -579,17 +585,18 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				dispatch(threadsActions.setIsPrivate(0));
 			} else if (isSendMessageOnThreadBox) {
 				props.onSend(
-					{ t: valueThread?.content.t || '' },
-					valueThread?.mentions,
-					valueThread?.attachments,
+					filterEmptyArrays(payload),
+					isPasteMulti ? mentionUpdated : [],
+					attachmentData,
 					valueThread?.references,
-					{ nameValueThread: nameValueThread ?? valueThread?.content.t, isPrivate },
+					{ nameValueThread, isPrivate },
 					anonymousMessage,
 					mentionEveryone,
 					undefined,
 					undefined,
 					ephemeralTargetUserId || undefined
 				);
+				setMentionEveryone(false);
 				dispatch(
 					referencesActions.setAtachmentAfterUpload({
 						channelId: props.currentChannelId ?? '',
@@ -603,6 +610,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					entities: []
 				});
 				setOpenThreadMessageState(false);
+				setMentionData([]);
+				dispatch(threadsActions.setIsPrivate(0));
 			} else if (isReplyOnTopic) {
 				props.onSend(
 					filterEmptyArrays(payload),
@@ -690,9 +699,18 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			setOpenThreadMessageState,
 			updateDraft,
 			setSubPanelActive,
-			handleThreadActivation
+			handleThreadActivation,
+			checkAttachment,
+			valueThread
 		]
 	);
+	const attachmentData = useMemo(() => {
+		if (!attachmentFiltered) {
+			return [];
+		} else {
+			return attachmentFiltered.files;
+		}
+	}, [attachmentFiltered?.files]);
 
 	const { onKeyDown } = useKeyboardHandler({
 		editorRef: editorElementRef as RefObject<HTMLDivElement>,
@@ -706,16 +724,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		setIsEphemeralMode,
 		setEphemeralTargetUserId,
 		setEphemeralTargetUserDisplay,
-		ephemeralTargetUserId
+		ephemeralTargetUserId,
+		channelId: props.isTopic ? scopeId : currentChannel?.id || props.currentDmGroupId
 	});
-
-	const attachmentData = useMemo(() => {
-		if (!attachmentFiltered) {
-			return [];
-		} else {
-			return attachmentFiltered.files;
-		}
-	}, [attachmentFiltered?.files]);
 
 	const hashtagData = useMemo(() => {
 		return allChannels.reduce<Array<{ id: string; display: string; subText: string }>>((acc, item) => {
@@ -751,8 +762,16 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 		}
 	}, [draftRequest?.content]);
 
+	const cachedLinkOgp = useRef<string>('');
+
 	const onChangeMentionInput = (html: string) => {
-		const { text: newPlainTextValue, entities } = parseHtmlAsFormattedText(html);
+		const { text: newPlainTextValue, entities, linkPreview } = parseHtmlAsFormattedText(html);
+
+		if (cachedLinkOgp.current !== linkPreview.url) {
+			dispatch(referencesActions.setOgpPreview(linkPreview.url ? { ...linkPreview, channel_id: props.currentChannelId || '' } : null));
+			cachedLinkOgp.current = linkPreview.url;
+		}
+
 		const newValue = html;
 		const previousValue = prevValueRef.current;
 		const previousPlainText = prevPlainTextRef.current;
@@ -943,18 +962,19 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			const htmlContent = event.clipboardData.getData('text/html');
 
 			const items = event.clipboardData.items;
-			let hasImageFiles = false;
+			let hasMediaFiles = false;
 
 			if (items) {
 				for (let i = 0; i < items.length; i++) {
-					if (items[i].type.indexOf('image') !== -1) {
-						hasImageFiles = true;
+					const type = items[i].type;
+					if (type.indexOf('image') !== -1 || type.indexOf('video') !== -1) {
+						hasMediaFiles = true;
 						break;
 					}
 				}
 			}
 
-			if (hasImageFiles) {
+			if (hasMediaFiles) {
 				if (originalHandlePaste) {
 					originalHandlePaste(event);
 				}

@@ -18,7 +18,7 @@ import { TypeMessage } from '@mezon/utils';
 import { getApp } from '@react-native-firebase/app';
 import { getMessaging, onMessage } from '@react-native-firebase/messaging';
 import { useNavigation } from '@react-navigation/native';
-import { safeJSONParse } from 'mezon-js';
+import { safeJSONParse, setFetchStrategy } from 'mezon-js';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AppState, AppStateStatus, DeviceEventEmitter, Keyboard, Linking, Platform, StatusBar } from 'react-native';
@@ -32,6 +32,7 @@ import { useCheckUpdatedVersion } from '../../hooks/useCheckUpdatedVersion';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { Sharing } from '../../screens/settings/Sharing';
 import { clanAndChannelIdLinkRegex, clanDirectMessageLinkRegex, getQueryParam } from '../../utils/helpers';
+import { createNativeFetch } from '../../utils/NativeHttpClient';
 import { isShowNotification, navigateToNotification } from '../../utils/pushNotificationHelpers';
 import { APP_SCREEN } from '../ScreenTypes';
 
@@ -58,6 +59,7 @@ export const AuthenticationLoader = () => {
 	const voiceFullScreenRef = useRef(isFullVoiceScreen);
 
 	useEffect(() => {
+		setFetchStrategy(createNativeFetch());
 		const subscription = AppState.addEventListener('change', (nextAppState) => {
 			appStateRef.current = nextAppState;
 		});

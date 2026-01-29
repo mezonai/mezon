@@ -4,6 +4,7 @@ import { useAppNavigation, useAuth, useDragAndDrop, usePermissionChecker, useSea
 import type { ChannelsEntity } from '@mezon/store';
 import {
 	ETypeMission,
+	appActions,
 	channelAppActions,
 	channelsActions,
 	getStore,
@@ -34,6 +35,7 @@ import {
 	selectSearchMessagesLoadingStatus,
 	selectStatusMenu,
 	selectToCheckAppIsOpening,
+	selectVoiceInfo,
 	useAppDispatch,
 	useAppSelector,
 	usersClanActions
@@ -121,6 +123,10 @@ function useChannelSeen(channelId: string) {
 
 	useEffect(() => {
 		dispatch(gifsStickerEmojiActions.setSubPanelActive(SubPanelName.NONE));
+		const voiceInfo = selectVoiceInfo(getStore().getState());
+		if (voiceInfo?.channelId && channelId !== voiceInfo.channelId) {
+			dispatch(appActions.setIsShowChatVoice(false));
+		}
 	}, [dispatch, channelId]);
 
 	useEffect(() => {
@@ -373,9 +379,9 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const isChannelStream = currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
 
 	return (
-		<div className={`w-full `}>
+		<div className={`w-full h-full max-h-full overflow-hidden ${isChannelStream && (isWindowsDesktop || isLinuxDesktop) ? 'pb-5' : ''}`}>
 			<div
-				className="flex flex-col flex-1 shrink min-w-0 bg-transparent h-[100%] z-10"
+				className="flex flex-col flex-1 shrink min-w-0 bg-transparent h-full max-h-full overflow-hidden z-10"
 				id="mainChat"
 				// eslint-disable-next-line @typescript-eslint/no-empty-function
 				onDragEnter={canSendMessage ? handleDragEnter : () => {}}
@@ -385,14 +391,14 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 				>
 					{!isShowCanvas && !isShowAgeRestricted && (
 						<div
-							className={`flex flex-col flex-1 min-w-60 ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+							className={`flex flex-col flex-1 min-w-60 ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isShowMemberList ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
 						>
-							<div
-								className={`relative overflow-y-auto  ${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarMessageViewChatDM' : 'h-heightMessageViewChatDM'} flex-shrink`}
-							>
+							<div className={`relative overflow-y-auto flex-1 min-h-0`}>
 								<ChannelMedia currentChannel={currentChannel} />
 							</div>
-							<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
+							<div className="flex-shrink-0">
+								<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
+							</div>
 						</div>
 					)}
 					{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (

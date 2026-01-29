@@ -181,7 +181,7 @@ const ChannelVoiceInner = () => {
 
 			dispatch(voiceActions.resetVoiceControl());
 			if (userProfile?.user?.id) {
-				dispatch(voiceActions.removeFromClanInvoice(userProfile.user.id));
+				dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: voiceInfo.clanId }));
 			}
 			await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId, self);
 		},
@@ -228,6 +228,7 @@ const ChannelVoiceInner = () => {
 						roomName={currentChannelMeetingCode}
 						loading={loading}
 						handleJoinRoom={handleJoinRoom}
+						clan_id={currentChannelClanId}
 					/>
 				) : (
 					<>
@@ -238,6 +239,7 @@ const ChannelVoiceInner = () => {
 							handleJoinRoom={handleJoinRoom}
 							channel_label={currentChannelLabel}
 							isCurrentChannel={isShow}
+							clan_id={currentChannelClanId}
 						/>
 
 						<div
@@ -262,7 +264,7 @@ const ChannelVoiceInner = () => {
 									<EmojiSuggestionProvider>
 										{isShowChatVoice && (
 											<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
-												<ChatStream />
+												<ChatStream topicChannelId={voiceInfo?.channelId} />
 											</div>
 										)}
 									</EmojiSuggestionProvider>

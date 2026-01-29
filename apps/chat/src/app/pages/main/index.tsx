@@ -81,9 +81,8 @@ function MyApp() {
 	const openModalAttachment = useSelector(selectOpenModalAttachment);
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
-	const { userProfile, fetchUserProfile } = useAuth();
-	const userCreateTimeSeconds = (userProfile?.user as UserWithCreateTime)?.create_time_seconds;
-	const calculateJoinedTime = userCreateTimeSeconds ? new Date().getTime() - userCreateTimeSeconds * 1000 : Infinity;
+	const { userProfile } = useAuth();
+	const calculateJoinedTime = new Date().getTime() - new Date(userProfile?.user?.create_time_seconds ?? '').getTime();
 	const isNewGuy = calculateJoinedTime <= TIME_OF_SHOWING_FIRST_POPUP;
 	const numberOfClanJoined = useSelector(selectClanNumber);
 	const isShowFirstJoinPopup = isNewGuy && numberOfClanJoined === 0;

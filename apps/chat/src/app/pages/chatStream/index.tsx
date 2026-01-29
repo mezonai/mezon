@@ -19,15 +19,15 @@ const ChatHeader = () => {
 	};
 
 	return (
-		<div className="flex flex-row items-center justify-between px-4 h-[58px] min-h-[50px]  bg-theme-primary">
-			<div className="flex flex-row items-center gap-2 pointer-events-none">
-				<Icons.Chat defaultSize="w-6 h-6 text-theme-primary" />
+		<div className="flex flex-row items-center justify-between px-4 h-[58px] min-h-[50px] bg-theme-primary">
+			<div className="flex flex-row items-center gap-2">
+				<Icons.Chat defaultSize="w-5 h-5 text-theme-primary" />
 				<span className="text-base font-semibold text-theme-primary">
-					{currentChannelLabel && currentChannelLabel.length > 50 ? `${currentChannelLabel.substring(0, 50)}...` : currentChannelLabel}
+					{currentChannelLabel && currentChannelLabel.length > 30 ? `${currentChannelLabel.substring(0, 30)}...` : currentChannelLabel}
 				</span>
 			</div>
-			<button onClick={handleCloseModal} className="relative right-0 text-theme-primary text-theme-primary-hover ">
-				<Icons.Close />
+			<button onClick={handleCloseModal} className="text-theme-primary text-theme-primary-hover transition-colors">
+				<Icons.Close defaultSize="w-5 h-5" />
 			</button>
 		</div>
 	);
@@ -38,9 +38,11 @@ const ChatStream = ({ topicChannelId }: ChatStreamProps) => {
 	useEscapeKey(() => dispatch(appActions.setIsShowChatStream(false)));
 
 	return (
-		<div className="flex flex-col h-full">
+		<div className="flex flex-col h-full max-h-full overflow-hidden">
 			<ChatHeader />
-			<ChannelMain />
+			<div className="flex-1 overflow-hidden min-h-0">
+				<ChannelMain topicChannelId={topicChannelId} />
+			</div>
 		</div>
 	);
 };

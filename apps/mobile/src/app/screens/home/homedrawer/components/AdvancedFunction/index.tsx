@@ -117,7 +117,7 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 
 	const advancedFunctions: AdvancedFunctionItem[] = useMemo(() => {
 		const allFunctions: (AdvancedFunctionItem | false)[] = [
-			{
+			(directMessageId || !anonymousMode) && {
 				id: 'location',
 				label: t('message:actions:location'),
 				icon: IconCDN.locationIcon,
@@ -168,7 +168,7 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 				icon: IconCDN.pollIcon,
 				backgroundColor: FUNCTION_COLORS.POLL
 			},
-			!anonymousMode && {
+			(directMessageId || !anonymousMode) && {
 				id: 'share_contact',
 				label: t('common:shareContact'),
 				icon: IconCDN.businessIcon,
@@ -177,7 +177,7 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 		];
 
 		return allFunctions.filter((item): item is AdvancedFunctionItem => Boolean(item));
-	}, [t, directMessageId, currentChannel?.type, currentTopicId, currentClanPreventAnonymous, anonymousMode]);
+	}, [anonymousMode, t, directMessageId, currentChannel?.type, currentTopicId, currentClanPreventAnonymous]);
 
 	const handleCreateThread = useCallback(() => {
 		navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, {

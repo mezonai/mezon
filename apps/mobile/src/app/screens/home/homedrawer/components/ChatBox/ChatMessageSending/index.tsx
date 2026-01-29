@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useChannelMembers, useChatSending } from '@mezon/core';
+import { useChannelMembers } from '@mezon/core';
 import type { IRoleMention } from '@mezon/mobile-components';
 import { ActionEmitEvent, ID_MENTION_HERE, STORAGE_MY_USER_ID, load } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
@@ -31,7 +31,7 @@ import type {
 	IMentionOnMessage,
 	IMessageSendPayload
 } from '@mezon/utils';
-import { THREAD_ARCHIVE_DURATION_SECONDS, ThreadStatus, checkIsThread, filterEmptyArrays, uniqueUsers } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, THREAD_ARCHIVE_DURATION_SECONDS, ThreadStatus, checkIsThread, filterEmptyArrays, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import type { MutableRefObject } from 'react';
@@ -47,6 +47,7 @@ import type { IMessageActionNeedToResolve, IPayloadThreadSendMessage } from '../
 import { style } from '../ChatBoxBottomBar/style';
 import { RecordMessageSending } from './RecordMessageSending';
 import { styles as localStyles } from './styles';
+import { useNativeHttpSending } from './useNativeHttpSending';
 
 interface IChatMessageSendingProps {
 	isAvailableSending: boolean;
@@ -117,7 +118,7 @@ export const ChatMessageSending = memo(
 		const channelOrDirect =
 			mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD ? currentChannel : currentDmGroup;
 		const isPublic = !channelOrDirect?.channel_private;
-		const { editSendMessage, sendMessage } = useChatSending({
+		const { editSendMessage, sendMessage } = useNativeHttpSending({
 			mode,
 			channelOrDirect,
 			fromTopic: isCreateTopic || !!currentTopicId
@@ -175,7 +176,7 @@ export const ChatMessageSending = memo(
 				const userIds = selectMemberIdsByChannelId(store.getState(), channel?.id as string);
 				const needsJoin = !userId ? false : !userIds.includes(userId);
 
-				if (isArchived || (needsJoin && joinningToThread)) {
+				if (isArchived || channel.active === 0) {
 					await dispatch(
 						threadsActions.writeActiveArchivedThread({
 							clanId: channel.clan_id ?? '',
@@ -239,6 +240,8 @@ export const ChatMessageSending = memo(
 				await handleThreadActivation(currentChannel);
 			}
 
+			const isShareContact = messageActionNeedToResolve?.targetMessage?.content?.embed?.[0].fields?.[0]?.value === SHARE_CONTACT_KEY;
+
 			const payloadSendMessage: IMessageSendPayload = {
 				t: removeTags(valueInputRef?.current),
 				hg: filteredHashtags,
@@ -250,7 +253,11 @@ export const ChatMessageSending = memo(
 					...(filteredBolds || [])
 				],
 				cid: messageActionNeedToResolve?.targetMessage?.content?.cid,
-				tp: messageActionNeedToResolve?.targetMessage?.content?.tp
+				tp: messageActionNeedToResolve?.targetMessage?.content?.tp,
+				...(messageActionNeedToResolve?.type === EMessageActionType.EditMessage &&
+					isShareContact && {
+						embed: messageActionNeedToResolve?.targetMessage?.content?.embed
+					})
 			};
 			const isEmpty = isPayloadEmpty(payloadSendMessage);
 			if (isEmpty && !attachmentDataRef?.length) {

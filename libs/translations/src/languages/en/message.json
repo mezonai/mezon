@@ -219,6 +219,6 @@
 	"bannedChannel": "You are banned from channel {{channelName}}.",
 	"addAMessage": "Add a message (Optional)",
 	"slideToCancel": "Slide to cancel",
-	"noAccess": "noAccess",
+	"noAccess": "No Access",
 	"unknown": "unknown"
 }

@@ -107,7 +107,7 @@ const ModalUserProfile = ({
 	const modalRef = useRef<boolean>(false);
 	const onLoading = useRef<boolean>(false);
 
-	const date = new Date(userById?.user?.create_time as string | Date);
+	const date = new Date(userById?.user?.create_time_seconds || 0);
 	const { timeFormatted } = useFormatDate({ date });
 
 	const avatarByUserId = isDM ? userById?.user?.avatar_url : userById?.clan_avatar || userById?.user?.avatar_url;
@@ -252,7 +252,7 @@ const ModalUserProfile = ({
 					<div>
 						<p
 							className="font-semibold tracking-wider text-lg one-line text-theme-primary-active my-0 truncate"
-							data-e2e={generateE2eId('short_profile.display_name')}	
+							data-e2e={generateE2eId('short_profile.display_name')}
 						>
 							{isUserRemoved
 								? t('labels.unknownUser')

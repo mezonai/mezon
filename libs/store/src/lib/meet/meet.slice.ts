@@ -52,7 +52,7 @@ export const handleParticipantVoiceState = createAsyncThunk(
 	async ({ clan_id, channel_id, display_name, state, room_name }: HandleParticipantMeetStateEvent, thunkAPI) => {
 		try {
 			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const response = await mezon.socketRef.current?.handleParticipantMeetState(clan_id, channel_id, display_name, state, room_name);
+			const response = await mezon.client.updateMezonVoiceState(mezon.session, clan_id, channel_id, display_name, room_name, state);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'meet/handleParticipantMeetState');

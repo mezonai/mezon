@@ -160,7 +160,7 @@ export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('cl
 				}
 			},
 			(session) => (mezon.client as any).listClanBadgeCount?.(session, clanId),
-			'clanBadgeCount'
+			'clan_badge_count'
 		);
 
 		if (response && (response as any).badge_count !== undefined) {

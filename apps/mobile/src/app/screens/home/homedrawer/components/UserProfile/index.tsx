@@ -15,7 +15,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { DEFAULT_ROLE_COLOR, EUserStatus } from '@mezon/utils';
+import { DEFAULT_ROLE_COLOR, EUserStatus, formatDateI18n } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import type { ApiAddFriendsResponse } from 'mezon-js/api.gen';
@@ -94,7 +94,7 @@ const UserProfile = React.memo(
 		const { themeValue } = useTheme();
 		const styles = style(themeValue, isTabletLandscape);
 		const userProfile = useSelector(selectAllAccount);
-		const { t } = useTranslation(['userProfile', 'friends']);
+		const { t, i18n } = useTranslation(['userProfile', 'friends', 'common']);
 		const userById = useAppSelector((state) => selectMemberClanByUserId(state, userId || user?.id));
 		const rolesClan: RolesClanEntity[] = useSelector(selectAllRolesClan);
 		const { color } = useMixImageColor(
@@ -114,6 +114,16 @@ const UserProfile = React.memo(
 			const channelType = dmChannel?.type || currentChannel?.type;
 			return channelType === ChannelType.CHANNEL_TYPE_GROUP;
 		}, [currentChannel?.type, dmChannel?.type]);
+
+		const createTime = useMemo(() => {
+			return userById?.user?.create_time_seconds || user?.create_time_seconds || user?.user?.create_time_seconds;
+		}, [user?.create_time_seconds, user?.user?.create_time_seconds, userById?.user?.create_time_seconds]);
+
+		const memberSince = useMemo(() => {
+			if (!createTime) return '';
+			const timestamp = typeof createTime === 'number' ? (createTime.toString().length <= 10 ? createTime * 1000 : createTime) : createTime;
+			return formatDateI18n(new Date(timestamp), i18n.language, t('common:formatDate'));
+		}, [createTime, i18n.language]);
 
 		const status = useMemo(() => {
 			const userIdInfo = userId || user?.id;
@@ -402,8 +412,14 @@ const UserProfile = React.memo(
 		}, [currentChannel?.creator_id, dmChannel?.creator_id, userProfile?.user?.id]);
 
 		const isShowUserContent = useMemo(() => {
-			return !!userById?.user?.about_me || (showRole && userRolesClan?.length) || showAction || (isDMGroup && isChannelOwner && !isCheckOwner);
-		}, [userById?.user?.about_me, showAction, showRole, userRolesClan, isDMGroup, isCheckOwner, isChannelOwner]);
+			return (
+				!!createTime ||
+				!!userById?.user?.about_me ||
+				(userRolesClan?.length && showRole && !isDM) ||
+				(isDMGroup && !isCheckOwner && isChannelOwner) ||
+				(showAction && !isKicked)
+			);
+		}, [createTime, isChannelOwner, isCheckOwner, isDM, isDMGroup, isKicked, showAction, showRole, userById?.user?.about_me, userRolesClan]);
 
 		const handleTransferFunds = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
@@ -582,12 +598,10 @@ const UserProfile = React.memo(
 
 					{isShowUserContent && (
 						<View style={styles.roleGroup}>
-							{!!(userById?.user?.create_time || user?.create_time || user?.user?.create_time) && (
+							{!!createTime && (
 								<View style={styles.memberSince}>
 									<Text style={styles.title}>{t('userInfoDM.mezonMemberSince')}</Text>
-									<Text style={styles.subUserName}>
-										{formatDate(userById?.user?.create_time || user?.create_time || user?.user?.create_time)}
-									</Text>
+									<Text style={styles.subUserName}>{memberSince}</Text>
 								</View>
 							)}
 							{!!userById?.user?.about_me && (

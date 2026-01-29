@@ -1,5 +1,6 @@
 import { BottomSheetFlatList, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useDirect, useSendInviteMessage } from '@mezon/core';
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity, FriendsEntity } from '@mezon/store-mobile';
 import {
@@ -12,6 +13,8 @@ import {
 	selectAllFriends,
 	selectAllUserClans,
 	selectDirectsOpenlist,
+	selectEphemeralKeyPair,
+	selectZkProofs,
 	useAppDispatch,
 	useWallet
 } from '@mezon/store-mobile';
@@ -22,7 +25,7 @@ import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type { ApiTokenSentEvent } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Keyboard, Modal, Platform, Pressable, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Modal, Platform, Pressable, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAvoidingView, KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
@@ -38,6 +41,7 @@ import { useImage } from '../../../hooks/useImage';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { removeDiacritics } from '../../../utils/helpers';
 import { Sharing } from '../../settings/Sharing';
+import { ConfirmReLoginModal } from './ConfirmReLoginModal';
 import { style } from './styles';
 
 type Receiver = {
@@ -156,6 +160,53 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 		return directMessage?.id;
 	}, [jsonObject?.receiver_id, listDM, selectedUser?.id]);
 
+	const handleShowModalReLogin = (content?: string) => {
+		const data = {
+			children: <ConfirmReLoginModal content={content} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, {
+			isShow: true,
+			data
+		});
+	};
+
+	const handleSendLogMessage = useCallback(
+		async (walletAddress) => {
+			if (!walletAddress) {
+				try {
+					dispatch(clansActions.joinClan({ clanId: '0' }));
+					if (directMessageId) {
+						await sendInviteMessage(
+							`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
+							directMessageId,
+							ChannelStreamMode.STREAM_MODE_DM,
+							TypeMessage.SendToken
+						);
+					} else {
+						const receiver = (mergeUser?.find((user) => user?.id === jsonObject?.receiver_id) || selectedUser || jsonObject) as any;
+						const response = await createDirectMessageWithUser(
+							receiver?.id || receiver?.receiver_id,
+							receiver?.username?.[0] || receiver?.receiver_name,
+							receiver?.username?.[0] || receiver?.receiver_name,
+							receiver?.avatar_url
+						);
+						if (response?.channel_id) {
+							sendInviteMessage(
+								`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
+								response?.channel_id,
+								ChannelStreamMode.STREAM_MODE_DM,
+								TypeMessage.SendToken
+							);
+						}
+					}
+				} catch (error) {
+					console.error('Error sending log message:', error);
+				}
+			}
+		},
+		[createDirectMessageWithUser, directMessageId, dispatch, jsonObject, mergeUser, note, plainTokenCount, selectedUser, sendInviteMessage, t]
+	);
+
 	const sendToken = async () => {
 		const store = await getStoreAsync();
 		try {
@@ -186,6 +237,16 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 			store.dispatch(appActions.setLoadingMainMobile(true));
 			setDisableButton(true);
 
+			const zkProofs = selectZkProofs(store.getState() as any);
+			const ephemeralKeyPair = selectEphemeralKeyPair(store.getState() as any);
+
+			if (!zkProofs || !ephemeralKeyPair) {
+				store.dispatch(appActions.setLoadingMainMobile(false));
+				setDisableButton(false);
+				handleShowModalReLogin();
+				return;
+			}
+
 			const tokenEvent: ApiTokenSentEvent = {
 				sender_id: walletAddress ? walletDetail?.address : userProfile?.user?.id || '',
 				sender_name: walletAddress ? walletDetail?.address : userProfile?.user?.username?.[0] || userProfile?.user?.username || '',
@@ -194,42 +255,13 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 				amount: Number(plainTokenCount || 1),
 				note: note?.replace?.(/\s+/g, ' ')?.trim() || ''
 			};
-			const res: any = await store.dispatch(giveCoffeeActions.sendToken({ tokenEvent, isSendByAddress: !!walletAddress }));
+			const res: any = await store.dispatch(giveCoffeeActions.sendToken({ tokenEvent, isSendByAddress: !!walletAddress, isMobile: true }));
 			store.dispatch(appActions.setLoadingMainMobile(false));
 			setDisableButton(false);
 			if (res?.meta?.requestStatus === 'rejected' || !res) {
-				Toast.show({
-					type: 'error',
-					text1: res?.payload || t('toast.error.anErrorOccurred')
-				});
+				handleShowModalReLogin(res?.payload);
 			} else {
-				if (!walletAddress) {
-					dispatch(clansActions.joinClan({ clanId: '0' }));
-					if (directMessageId) {
-						await sendInviteMessage(
-							`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
-							directMessageId,
-							ChannelStreamMode.STREAM_MODE_DM,
-							TypeMessage.SendToken
-						);
-					} else {
-						const receiver = (mergeUser?.find((user) => user?.id === jsonObject?.receiver_id) || selectedUser || jsonObject) as any;
-						const response = await createDirectMessageWithUser(
-							receiver?.id || receiver?.receiver_id,
-							receiver?.username?.[0] || receiver?.receiver_name,
-							receiver?.username?.[0] || receiver?.receiver_name,
-							receiver?.avatar_url
-						);
-						if (response?.channel_id) {
-							sendInviteMessage(
-								`${t('tokensSent')} ${formatMoney(Number(plainTokenCount || 1))}₫ | ${note?.replace?.(/\s+/g, ' ')?.trim() || ''}`,
-								response?.channel_id,
-								ChannelStreamMode.STREAM_MODE_DM,
-								TypeMessage.SendToken
-							);
-						}
-					}
-				}
+				handleSendLogMessage(walletAddress);
 				const now = new Date();
 				const formattedTime = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1)
 					.toString()

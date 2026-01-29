@@ -29,6 +29,7 @@
 		E9443C752DDF8CCB002A97D3 /* VoIPManager.m in Sources */ = {isa = PBXBuildFile; fileRef = E9443C742DDF8CCB002A97D3 /* VoIPManager.m */; };
 		E9489BCF2E94C306003ADFEE /* bank.wav in Resources */ = {isa = PBXBuildFile; fileRef = E9489BCE2E94C306003ADFEE /* bank.wav */; };
 		E94D0A432DA66F2700D84EF2 /* ReplayKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E94CBA5D2DA65548005C0A98 /* ReplayKit.framework */; };
+		E94DDC352F271E2700C5784A /* URLSessionClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = E94DDC342F271E2700C5784A /* URLSessionClient.swift */; };
 		E964CE922E94BB64008824E9 /* buzz.wav in Resources */ = {isa = PBXBuildFile; fileRef = E964CE912E94BB64008824E9 /* buzz.wav */; };
 		E967E05F2C6B20060050124F /* MezonSharing in Resources */ = {isa = PBXBuildFile; fileRef = E967E05E2C6B20060050124F /* MezonSharing */; };
 		E967E0672C6B20290050124F /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E967E0662C6B20290050124F /* ShareViewController.swift */; };
@@ -44,20 +45,13 @@
 		E9ABAB1D2CF42CE3003537E1 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E9ABAB1C2CF42CE3003537E1 /* Intents.framework */; };
 		E9ADF8312E83C96600AE80C6 /* NotificationService.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E9ADF82A2E83C96500AE80C6 /* NotificationService.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E9BFF0C32C37AC0F003C310E /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E9BFF0C22C37AC0F003C310E /* SplashScreen.storyboard */; };
+		E9C5FAA72F271E8700E75D7E /* URLSessionClient.m in Sources */ = {isa = PBXBuildFile; fileRef = E9C5FAA62F271E8700E75D7E /* URLSessionClient.m */; };
 		E9DCD8C52CF5738500193E85 /* endcall.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = E9DCD8C42CF5738500193E85 /* endcall.mp3 */; };
 		E9EE2EC52ED044870018084F /* ImageClipboardModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EE2EC42ED044870018084F /* ImageClipboardModule.swift */; };
 		E9FF89922ED04590000A26B3 /* ImageClipboardModule.m in Sources */ = {isa = PBXBuildFile; fileRef = E9FF89912ED04590000A26B3 /* ImageClipboardModule.m */; };
-		EB8EF22644D89E2389CBE23D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F430D579619E0B5CFD2D20E7 /* ExpoModulesProvider.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		00E356F41AD99517003FC87E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
-			remoteInfo = Mobile;
-		};
 		E94D0A482DA66F2700D84EF2 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
@@ -97,7 +91,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		00E356EE1AD99517003FC87E /* MobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* Mobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Mobile/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Mobile/Info.plist; sourceTree = "<group>"; };
@@ -127,6 +120,7 @@
 		E9489BCE2E94C306003ADFEE /* bank.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = bank.wav; sourceTree = "<group>"; };
 		E94CBA5D2DA65548005C0A98 /* ReplayKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ReplayKit.framework; path = System/Library/Frameworks/ReplayKit.framework; sourceTree = SDKROOT; };
 		E94D0A422DA66F2700D84EF2 /* ScreenBroadcast.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ScreenBroadcast.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		E94DDC342F271E2700C5784A /* URLSessionClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionClient.swift; sourceTree = "<group>"; };
 		E964CE912E94BB64008824E9 /* buzz.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = buzz.wav; sourceTree = "<group>"; };
 		E967E05E2C6B20060050124F /* MezonSharing */ = {isa = PBXFileReference; lastKnownFileType = folder; path = MezonSharing; sourceTree = "<group>"; };
 		E967E0642C6B20290050124F /* MezonSharing.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MezonSharing.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,6 +139,7 @@
 		E9ADF82A2E83C96500AE80C6 /* NotificationService.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = NotificationService.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9BFF0C22C37AC0F003C310E /* SplashScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = SplashScreen.storyboard; sourceTree = "<group>"; };
 		E9C22F3A2BF59D4200BCBA90 /* MobileRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = MobileRelease.entitlements; path = Mobile/MobileRelease.entitlements; sourceTree = "<group>"; };
+		E9C5FAA62F271E8700E75D7E /* URLSessionClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = URLSessionClient.m; sourceTree = "<group>"; };
 		E9DCD8C42CF5738500193E85 /* endcall.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = endcall.mp3; sourceTree = "<group>"; };
 		E9EE2EC42ED044870018084F /* ImageClipboardModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageClipboardModule.swift; sourceTree = "<group>"; };
 		E9FF89912ED04590000A26B3 /* ImageClipboardModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageClipboardModule.m; sourceTree = "<group>"; };
@@ -175,13 +170,6 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		00E356EB1AD99517003FC87E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F8C1A680F5B00A75B9A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -220,6 +208,7 @@
 		13B07FAE1A68108700A75B9A /* Mobile */ = {
 			isa = PBXGroup;
 			children = (
+				E9C5FAA62F271E8700E75D7E /* URLSessionClient.m */,
 				E9489BCE2E94C306003ADFEE /* bank.wav */,
 				E943F9EC2DB9D70000B81261 /* DeviceUtilsIOS.swift */,
 				E925D79E2DB8D69E00C10D69 /* AppDelegate.swift */,
@@ -254,6 +243,7 @@
 				E964CE912E94BB64008824E9 /* buzz.wav */,
 				E9EE2EC42ED044870018084F /* ImageClipboardModule.swift */,
 				E9FF89912ED04590000A26B3 /* ImageClipboardModule.m */,
+				E94DDC342F271E2700C5784A /* URLSessionClient.swift */,
 			);
 			name = Mobile;
 			sourceTree = "<group>";
@@ -317,7 +307,6 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* Mobile.app */,
-				00E356EE1AD99517003FC87E /* MobileTests.xctest */,
 				E967E0642C6B20290050124F /* MezonSharing.appex */,
 				E94D0A422DA66F2700D84EF2 /* ScreenBroadcast.appex */,
 				E9ADF82A2E83C96500AE80C6 /* NotificationService.appex */,
@@ -372,24 +361,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* MobileTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "MobileTests" */;
-			buildPhases = (
-				00E356EA1AD99517003FC87E /* Sources */,
-				00E356EB1AD99517003FC87E /* Frameworks */,
-				00E356EC1AD99517003FC87E /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				00E356F51AD99517003FC87E /* PBXTargetDependency */,
-			);
-			name = MobileTests;
-			productName = MobileTests;
-			productReference = 00E356EE1AD99517003FC87E /* MobileTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		13B07F861A680F5B00A75B9A /* Mobile */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Mobile" */;
@@ -480,10 +451,6 @@
 				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1210;
 				TargetAttributes = {
-					00E356ED1AD99517003FC87E = {
-						CreatedOnToolsVersion = 6.2;
-						TestTargetID = 13B07F861A680F5B00A75B9A;
-					};
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1540;
 					};
@@ -512,7 +479,6 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* Mobile */,
-				00E356ED1AD99517003FC87E /* MobileTests */,
 				E967E0632C6B20290050124F /* MezonSharing */,
 				E94D0A412DA66F2700D84EF2 /* ScreenBroadcast */,
 				E9ADF8292E83C96500AE80C6 /* NotificationService */,
@@ -521,13 +487,6 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		00E356EC1AD99517003FC87E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F8E1A680F5B00A75B9A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -675,14 +634,6 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		00E356EA1AD99517003FC87E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				EB8EF22644D89E2389CBE23D /* ExpoModulesProvider.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		13B07F871A680F5B00A75B9A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -699,6 +650,7 @@
 				E9443C752DDF8CCB002A97D3 /* VoIPManager.m in Sources */,
 				E9409A412E290BFE007867D1 /* AudioSessionModule.swift in Sources */,
 				E9A25DD72DBA41D00056281D /* KeepAwakeIOS.m in Sources */,
+				E9C5FAA72F271E8700E75D7E /* URLSessionClient.m in Sources */,
 				E943F9ED2DB9D70200B81261 /* DeviceUtilsIOS.swift in Sources */,
 				E9A25DD52DBA416B0056281D /* KeepAwakeIOS.swift in Sources */,
 				E99410712E8423ED00ED3CDA /* BadgeModule.m in Sources */,
@@ -706,6 +658,7 @@
 				E905645D2E828EC9006C8567 /* VideoPlayerManager.m in Sources */,
 				E9EE2EC52ED044870018084F /* ImageClipboardModule.swift in Sources */,
 				E9945B352E83F5D900F66F29 /* BadgeModule.swift in Sources */,
+				E94DDC352F271E2700C5784A /* URLSessionClient.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -734,11 +687,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* Mobile */;
-			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
-		};
 		E94D0A492DA66F2700D84EF2 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E94D0A412DA66F2700D84EF2 /* ScreenBroadcast */;
@@ -768,59 +716,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		00E356F61AD99517003FC87E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = MobileTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lc++",
-					"$(inherited)",
-				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mobile.app/Mobile";
-			};
-			name = Debug;
-		};
-		00E356F71AD99517003FC87E /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				COPY_PHASE_STRIP = NO;
-				INFOPLIST_FILE = MobileTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-lc++",
-					"$(inherited)",
-				);
-				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Mobile.app/Mobile";
-			};
-			name = Release;
-		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9B4B5CB69275D16B46133D8E /* Pods-Mobile.debug.xcconfig */;
@@ -979,7 +874,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.71;
+				MARKETING_VERSION = 1.2.81;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1159,7 +1054,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.71;
+				MARKETING_VERSION = 1.2.81;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1645,15 +1540,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "MobileTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				00E356F61AD99517003FC87E /* Debug */,
-				00E356F71AD99517003FC87E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Mobile" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -102,6 +102,7 @@ export const listUsersByUserSlice = createSlice({
 	name: LIST_USERS_BY_USER_FEATURE_KEY,
 	initialState: initialListUsersByUserState,
 	reducers: {
+		removeAll: listUsersAdapter.removeAll,
 		updateUserInList: (state, action: PayloadAction<UsersEntity>) => {
 			listUsersAdapter.upsertOne(state, action.payload);
 		}
