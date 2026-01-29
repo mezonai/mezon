@@ -107,8 +107,8 @@ jobs:
 
       - name: Push to MinIO
         run: |
-          mc cp dist/executables/latest-mac.yml mezon-app/mezon/release/latest-mac.yml
-          mc cp dist/executables/mezon-*-mac-arm64.dmg mezon-app/mezon/release/
-          mc cp dist/executables/mezon-*-mac-arm64.zip mezon-app/mezon/release/
+          #mc cp dist/executables/latest-mac.yml mezon-app/mezon/release/latest-mac.yml
+          #mc cp dist/executables/mezon-*-mac-arm64.dmg mezon-app/mezon/release/
+          #mc cp dist/executables/mezon-*-mac-arm64.zip mezon-app/mezon/release/
           mc cp dist/executables/mezon-*-mac-x64.dmg mezon-app/mezon/release/
           mc cp dist/executables/mezon-*-mac-x64.zip mezon-app/mezon/release/
