@@ -93,7 +93,7 @@
 		"back": "BACK",
 		"display": "Display",
 		"permissions": "Permissions",
-		"manageMembers": "Manager Members",
+		"manageMembers": "Manage Members",
 		"searchPermissions": "Search Permissions",
 		"failedToUpdateRoleOrder": "Failed to update role order.",
 		"newRoleDefault": "New Role",

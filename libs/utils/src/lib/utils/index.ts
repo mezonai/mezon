@@ -230,7 +230,7 @@ export const removeDuplicatesById = (array: any) => {
 		return acc;
 	}, []);
 };
-export const getTimeDifferenceDate = (dateString: string) => {
+export const getTimeDifferenceDate = (dateString: string | number) => {
 	if (!dateString) return '-';
 	const codeTime = new Date(dateString);
 	if (isNaN(codeTime.getTime())) return '-';

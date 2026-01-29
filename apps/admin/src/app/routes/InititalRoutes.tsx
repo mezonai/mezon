@@ -8,7 +8,7 @@ const InitialRoutes = () => {
 	if (!isLogin) {
 		return <Navigate to="" replace />;
 	}
-	return <Navigate to="/developers/applications" replace />;
+	return <Navigate to="/developers/dashboard" replace />;
 };
 
 export default InitialRoutes;

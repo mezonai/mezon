@@ -144,6 +144,7 @@
 		"title": "Flow Examples"
 	},
 	"sidebarTabs": {
+		"dashboard": "Dashboard",
 		"applications": "Applications",
 		"teams": "Teams",
 		"embedDebugger": "Embed Debugger",

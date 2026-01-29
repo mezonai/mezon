@@ -732,7 +732,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						avatar: pin.message_sender_avatar,
 						channel_id: pin.channel_id,
 						content: pin.message_content,
-						create_time: pin.message_created_time,
+						create_time_seconds: pin.message_created_time ? new Date(pin.message_created_time).getTime() / 1000 : Date.now(),
 						message_id: pin.message_id,
 						username: pin.message_sender_username,
 						sender_id: pin.message_sender_id
@@ -937,6 +937,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					}
 					dispatch(clansSlice.actions.removeByClanID(user.clan_id));
 					dispatch(listChannelsByUserActions.remove(id));
+					dispatch(listChannelRenderAction.removeListChannelRenderByClanId({ clanId: user?.clan_id }));
 					dispatch(appActions.cleanHistoryClan(user.clan_id));
 					dispatch(channelsActions.removeByClanId(user.clan_id));
 				}
@@ -1072,7 +1073,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				dispatch(
 					directActions.addGroupUserWS({
 						channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
-						users
+						users,
+						myId: userId || ''
 					})
 				);
 				dispatch(

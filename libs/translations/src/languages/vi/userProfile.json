@@ -48,7 +48,7 @@
 			"removeSuccess": "Đã xóa thành viên khỏi nhóm",
 			"removeFailed": "Xóa thành viên khỏi nhóm không thành công"
 		},
-		"mezonMemberSince": "THÀNH VIÊN MEZON TỪ"
+		"mezonMemberSince": "Thành viên Mezon từ"
 	},
 	"notification": {
 		"blockUser": {

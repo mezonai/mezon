@@ -252,6 +252,7 @@ const PanelKeyboard = React.memo((props: IProps) => {
 								onCancel={onClose}
 								messageAction={props?.messageAction}
 								currentChannelId={props?.currentChannelId}
+								currentClanId={props?.currentClanId}
 							/>
 							<Gallery currentChannelId={props?.currentChannelId} />
 						</View>

@@ -257,9 +257,15 @@ export const notificationSlice = createSlice({
 							return {
 								...item,
 								content: {
-									...item.content,
+									...item?.content,
 									content:
-										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content
+										typeof item?.content?.content === 'string'
+											? safeJSONParse(item?.content?.content)?.t
+											: item?.content?.content,
+									embed:
+										typeof item?.content?.content === 'string'
+											? safeJSONParse(item?.content?.content)?.embed
+											: item?.content?.content
 								}
 							};
 						});
@@ -326,6 +332,7 @@ export const notificationSlice = createSlice({
 								title: '',
 								link: '',
 								content: message.content.t,
+								embed: message?.content?.embed,
 								channel_id: message.channel_id,
 								sender_id: message.sender_id,
 								avatar: message.clan_avatar || message.avatar,
