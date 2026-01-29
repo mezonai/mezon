@@ -292,9 +292,10 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				return;
 			}
 
-			if (props.isThread && !threadCurrentChannel) {
+			if (props.isThread && !threadCurrentChannel && !isSendMessageOnThreadBox) {
 				const hasContent = checkedRequest.content?.trim() || checkedRequest.valueTextInput?.trim();
-				if (!hasContent && !checkAttachment) {
+				const hasValueThreadMedia = (valueThread?.attachments?.length ?? 0) > 0 || (valueThread?.content?.t ?? '').trim().length > 0;
+				if (!hasContent && !checkAttachment && !hasValueThreadMedia) {
 					dispatch(threadsActions.setMessageThreadError(t('channelTopbar:createThread.validation.starterMessageRequired')));
 					return;
 				}
@@ -405,11 +406,11 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					dispatch(referencesActions.resetAfterReply(props.currentChannelId ?? ''));
 				} else if (isSendMessageOnThreadBox) {
 					props.onSend(
-						{ t: valueThread?.content.t || '' },
-						valueThread?.mentions,
-						valueThread?.attachments,
+						filterEmptyArrays(payload),
+						mentionList,
+						attachmentData,
 						valueThread?.references,
-						{ nameValueThread: nameValueThread ?? valueThread?.content.t, isPrivate },
+						{ nameValueThread, isPrivate },
 						anonymousMessage,
 						mentionEveryone,
 						undefined,
@@ -529,13 +530,17 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				return;
 			}
 
-			if ((!text && !checkAttachment) || ((draftRequest?.valueTextInput || '').trim() === '' && !checkAttachment)) {
+			if (
+				!isSendMessageOnThreadBox &&
+				((!text && !checkAttachment) || ((draftRequest?.valueTextInput || '').trim() === '' && !checkAttachment))
+			) {
 				return;
 			}
 			if (props.isTopic && !text && checkAttachment) {
 				payload.t = '';
 			}
 			if (
+				!isSendMessageOnThreadBox &&
 				draftRequest?.valueTextInput &&
 				typeof draftRequest?.valueTextInput === 'string' &&
 				!(draftRequest?.valueTextInput || '').trim() &&
@@ -580,17 +585,18 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 				dispatch(threadsActions.setIsPrivate(0));
 			} else if (isSendMessageOnThreadBox) {
 				props.onSend(
-					{ t: valueThread?.content.t || '' },
-					valueThread?.mentions,
-					valueThread?.attachments,
+					filterEmptyArrays(payload),
+					isPasteMulti ? mentionUpdated : [],
+					attachmentData,
 					valueThread?.references,
-					{ nameValueThread: nameValueThread ?? valueThread?.content.t, isPrivate },
+					{ nameValueThread, isPrivate },
 					anonymousMessage,
 					mentionEveryone,
 					undefined,
 					undefined,
 					ephemeralTargetUserId || undefined
 				);
+				setMentionEveryone(false);
 				dispatch(
 					referencesActions.setAtachmentAfterUpload({
 						channelId: props.currentChannelId ?? '',
@@ -604,6 +610,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					entities: []
 				});
 				setOpenThreadMessageState(false);
+				setMentionData([]);
+				dispatch(threadsActions.setIsPrivate(0));
 			} else if (isReplyOnTopic) {
 				props.onSend(
 					filterEmptyArrays(payload),
@@ -691,7 +699,9 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			setOpenThreadMessageState,
 			updateDraft,
 			setSubPanelActive,
-			handleThreadActivation
+			handleThreadActivation,
+			checkAttachment,
+			valueThread
 		]
 	);
 	const attachmentData = useMemo(() => {
@@ -952,18 +962,19 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			const htmlContent = event.clipboardData.getData('text/html');
 
 			const items = event.clipboardData.items;
-			let hasImageFiles = false;
+			let hasMediaFiles = false;
 
 			if (items) {
 				for (let i = 0; i < items.length; i++) {
-					if (items[i].type.indexOf('image') !== -1) {
-						hasImageFiles = true;
+					const type = items[i].type;
+					if (type.indexOf('image') !== -1 || type.indexOf('video') !== -1) {
+						hasMediaFiles = true;
 						break;
 					}
 				}
 			}
 
-			if (hasImageFiles) {
+			if (hasMediaFiles) {
 				if (originalHandlePaste) {
 					originalHandlePaste(event);
 				}
