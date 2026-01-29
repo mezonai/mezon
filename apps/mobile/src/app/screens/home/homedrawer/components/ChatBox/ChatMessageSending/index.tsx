@@ -175,7 +175,7 @@ export const ChatMessageSending = memo(
 				const userIds = selectMemberIdsByChannelId(store.getState(), channel?.id as string);
 				const needsJoin = !userId ? false : !userIds.includes(userId);
 
-				if (isArchived || (needsJoin && joinningToThread)) {
+				if (isArchived || channel.active === 0) {
 					await dispatch(
 						threadsActions.writeActiveArchivedThread({
 							clanId: channel.clan_id ?? '',
