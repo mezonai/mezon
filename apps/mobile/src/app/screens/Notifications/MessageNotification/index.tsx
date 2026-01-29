@@ -35,7 +35,7 @@ const MessageNotification = React.memo(({ message, mentions }: IMessageNotificat
 			) : null}
 			<RenderTextMarkdownContent
 				content={{
-					...(typeof message.content === 'object' ? message.content : {}),
+					...(typeof message.content === 'object' ? message.content : { t: message?.content?.toString() || '' }),
 					mentions
 				}}
 				isEdited={isEdited}
