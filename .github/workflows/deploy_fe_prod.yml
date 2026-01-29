@@ -128,7 +128,7 @@ jobs:
       - name: Clear www folder
         run: |
           echo "Clearing /var/www/mezon-fe/"
-          mv /var/www/mezon-fe /var/www/mezon-bk
+          rm -rf /var/www/mezon-fe/*
 
       - name: Download Artifact
         uses: actions/download-artifact@v4
