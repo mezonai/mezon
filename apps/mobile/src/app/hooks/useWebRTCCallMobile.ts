@@ -61,7 +61,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	const mezon = useMezon();
 	const dispatch = useAppDispatch();
 	const endCallTimeout = useRef<NodeJS.Timeout | null>(null);
-	const timeStartConnected = useRef<any>(null);
+	const timeStartConnected = useRef<Date | null>(null);
 	const [localMediaControl, setLocalMediaControl] = useState<MediaControl>({
 		mic: false,
 		camera: false,
@@ -98,31 +98,22 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	};
 
 	const stopAllTracks = useCallback(() => {
-		if (callState.localStream) {
-			callState.localStream?.getVideoTracks().forEach((track) => {
-				track.enabled = false;
-			});
-			callState.localStream?.getAudioTracks().forEach((track) => {
-				track.enabled = false;
-			});
-			callState.localStream.getTracks().forEach((track) => track.stop());
-		}
-		if (callState.remoteStream) {
-			callState.remoteStream?.getVideoTracks().forEach((track) => {
-				track.enabled = false;
-			});
-			callState.remoteStream?.getAudioTracks().forEach((track) => {
-				track.enabled = false;
-			});
-			callState.remoteStream.getTracks().forEach((track) => track.stop());
-		}
+		callState.localStream?.getTracks().forEach((track) => track.stop());
+		callState.remoteStream?.getTracks().forEach((track) => track.stop());
 	}, [callState.localStream, callState.remoteStream]);
 
 	useEffect(() => {
 		clearUpStorageCalling();
 		return () => {
-			endCallTimeout.current && clearTimeout(endCallTimeout.current);
-			endCallTimeout.current = null;
+			if (endCallTimeout.current) {
+				clearTimeout(endCallTimeout.current);
+				endCallTimeout.current = null;
+			}
+			if (trackEventTimeoutRef.current) {
+				clearTimeout(trackEventTimeoutRef.current);
+				trackEventTimeoutRef.current = null;
+			}
+			pendingCandidatesRef.current = [];
 			timeStartConnected.current = null;
 			dispatch(DMCallActions.removeAll());
 			stopDialTone();
@@ -224,7 +215,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		});
 
 		return pc;
-	}, [callState, mezon.socketRef, dmUserId, channelId, userId]);
+	}, [mezon.socketRef, dmUserId, channelId, userId]);
 
 	const alertPermission = (type: string) => {
 		Alert.alert(`${type} is not available`, `Allow Mezon access to your ${type}`, [
@@ -326,7 +317,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				endCallTimeout.current = setTimeout(() => {
 					dispatch(
 						DMCallActions.updateCallLog({
-							channelId,
+							channelId: channelId || '0',
 							content: { t: '', callLog: { isVideo: isVideoCall, callLogType: IMessageTypeCallLog.TIMEOUTCALL } }
 						})
 					);
@@ -382,9 +373,14 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	};
 
 	const handleOffer = async (offer: any) => {
+		const signalingData = offer || offerCache;
+		if (!signalingData) {
+			console.warn('handleOffer called with no offer data');
+			return;
+		}
+
 		const pc = peerConnection?.current || initializePeerConnection();
 
-		const signalingData = offer || offerCache;
 		if (!callState?.localStream) {
 			const constraints = await getConstraintsLocal(localMediaControl.camera);
 			const stream = await mediaDevices.getUserMedia(constraints);
@@ -501,6 +497,18 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 		}
 	};
 
+	const handleNativeAppExit = useCallback(() => {
+		if (!isFromNative) return;
+		try {
+			InCallManager.stop();
+			NativeModules?.DeviceUtils?.killApp();
+			BackHandler.exitApp();
+		} catch (e) {
+			console.error('log  => onKillApp', e);
+			BackHandler.exitApp();
+		}
+	}, [isFromNative]);
+
 	const handleEndCall = async ({ isCallerEndCall = false }: { isCallerEndCall?: boolean }) => {
 		try {
 			stopDialTone();
@@ -525,7 +533,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				timeCall = `${diffMins} mins ${diffSecs} secs`;
 				await dispatch(
 					DMCallActions.updateCallLog({
-						channelId,
+						channelId: channelId || '0',
 						content: {
 							t: timeCall,
 							callLog: {
@@ -543,31 +551,11 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 				remoteStream: null
 			});
 			peerConnection.current = null;
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-			if (isFromNative) {
-				try {
-					InCallManager.stop();
-					NativeModules?.DeviceUtils?.killApp();
-					BackHandler.exitApp();
-				} catch (e) {
-					console.error('log  => onKillApp', e);
-					BackHandler.exitApp();
-				}
-				return;
-			}
 		} catch (error) {
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
-			if (isFromNative) {
-				try {
-					InCallManager.stop();
-					NativeModules?.DeviceUtils?.killApp();
-					BackHandler.exitApp();
-				} catch (e) {
-					console.error('log  => onKillApp', e);
-					BackHandler.exitApp();
-				}
-			}
 			console.error('Error ending call:', error);
+		} finally {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+			handleNativeAppExit();
 		}
 	};
 
