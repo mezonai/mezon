@@ -19,7 +19,7 @@ const MIN_WEBSOCKET_RETRY_TIME = 1000;
 const MAX_WEBSOCKET_RETRY_TIME = 30000;
 const JITTER_RANGE = 1000;
 const FAST_RETRY_ATTEMPTS = 5;
-const DEFAULT_WS_URL = 'sock.mezon.ai';
+export const DEFAULT_WS_URL = 'sock.mezon.ai';
 export const SESSION_STORAGE_KEY = 'mezon_session';
 export const MobileEventSessionEmitter = new EventEmitter();
 
@@ -53,7 +53,6 @@ type Sessionlike = {
 	created: boolean;
 	is_remember: boolean;
 	api_url: string;
-	ws_url?: string;
 	expires_at?: number;
 	refresh_expires_at?: number;
 	created_at?: number;
@@ -62,15 +61,30 @@ type Sessionlike = {
 	id_token?: string;
 };
 
-const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean, wsUrl?: string) => {
+const saveMezonConfigToStorage = (host: string, port: string, useSSL: boolean, apiUrl: string, wsUrl?: string) => {
 	try {
+		const existingConfig = localStorage.getItem(SESSION_STORAGE_KEY);
+		let existingWsUrl: string | undefined;
+
+		if (existingConfig) {
+			try {
+				const parsed = JSON.parse(existingConfig);
+				existingWsUrl = parsed.ws_url;
+			} catch {
+				existingWsUrl = '';
+			}
+		}
+
+		const finalWsUrl = wsUrl || existingWsUrl;
+
 		localStorage.setItem(
 			SESSION_STORAGE_KEY,
 			JSON.stringify({
 				host,
 				port,
 				ssl: useSSL,
-				...(wsUrl && { ws_url: wsUrl })
+				api_url: apiUrl,
+				...(finalWsUrl && { ws_url: finalWsUrl })
 			})
 		);
 	} catch (error) {
@@ -94,16 +108,26 @@ export const clearSessionRefreshFromStorage = () => {
 	}
 };
 
-export const getMezonConfig = (): CreateMezonClientOptions => {
+export type MezonConfigResult = CreateMezonClientOptions & {
+	api_url?: string;
+	ws_url?: string;
+};
+
+export const getMezonConfig = (): MezonConfigResult => {
 	try {
 		const storedConfig = localStorage.getItem('mezon_session');
 
 		if (storedConfig) {
 			const parsedConfig = JSON.parse(storedConfig);
 			if (parsedConfig.host) {
-				parsedConfig.port = parsedConfig.port || (process.env.NX_CHAT_APP_API_PORT as string);
-				parsedConfig.key = process.env.NX_CHAT_APP_API_KEY as string;
-				return parsedConfig;
+				return {
+					host: parsedConfig.host,
+					port: parsedConfig.port || (process.env.NX_CHAT_APP_API_PORT as string),
+					key: process.env.NX_CHAT_APP_API_KEY as string,
+					ssl: parsedConfig.ssl,
+					api_url: parsedConfig.api_url,
+					ws_url: parsedConfig.ws_url
+				};
 			}
 		}
 	} catch (error) {
@@ -126,13 +150,13 @@ export const extractAndSaveConfig = (session: Session | null, isFromMobile?: boo
 		const port = url.port;
 		const useSSL = url.protocol === 'https:';
 		const wsUrl = session.ws_url;
+		const apiUrl = session.api_url;
 
-		// mobile will use AsyncStorage to save in source mobile app
 		if (!isFromMobile) {
-			saveMezonConfigToStorage(host, port, useSSL, wsUrl);
+			saveMezonConfigToStorage(host, port, useSSL, apiUrl, wsUrl);
 		}
 
-		return { host, port, useSSL, wsUrl };
+		return { host, port, useSSL, wsUrl, apiUrl };
 	} catch (error) {
 		console.error('Failed to extract config from session:', error);
 		return null;
@@ -261,12 +285,14 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 		client.onRefreshSession = (session: ApiSession) => {
 			if (session) {
 				const sessionData = session;
+				const config = getMezonConfig();
+				const wsUrl = config.ws_url || DEFAULT_WS_URL;
 				const newSession = new Session(
 					session.token || '',
 					session.refresh_token || '',
 					session.created || false,
 					session.api_url || '',
-					session.ws_url || DEFAULT_WS_URL,
+					wsUrl,
 					session.id_token || '',
 					sessionData.is_remember || false
 				);
@@ -487,12 +513,15 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 				throw new Error('Mezon client not initialized');
 			}
 
+			const config = getMezonConfig();
+			const wsUrl = config.ws_url || DEFAULT_WS_URL;
+
 			const sessionObj = new Session(
 				session?.token,
 				session?.refresh_token,
 				session.created,
 				session.api_url,
-				session.ws_url || DEFAULT_WS_URL,
+				wsUrl,
 				session.id_token || '',
 				session.is_remember
 			);
@@ -500,11 +529,6 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (session.expires_at) {
 				sessionObj.expires_at = session.expires_at;
 			}
-
-			// if (sessionObj.isexpired(Date.now() / 1000)) {
-			// 	await logOutMezon();
-			// 	return;
-			// }
 
 			if (
 				!clientRef.current.host ||
@@ -520,7 +544,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 					session?.refresh_token,
 					session.created,
 					session.api_url,
-					session.ws_url || DEFAULT_WS_URL,
+					wsUrl,
 					session.id_token || '',
 					session.is_remember
 				)
@@ -583,6 +607,8 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 						}
 
 						const socket = await createSocket();
+						const config = getMezonConfig();
+						const wsUrl = config.ws_url || DEFAULT_WS_URL;
 
 						let newSession = null;
 						if (sessionRef.current.refresh_token && sessionRef.current.isexpired(Date.now() / 1000)) {
@@ -592,7 +618,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 									sessionRef.current.refresh_token,
 									sessionRef.current.created,
 									sessionRef.current.api_url,
-									sessionRef.current.ws_url || DEFAULT_WS_URL,
+									wsUrl,
 									sessionRef.current.id_token,
 									sessionRef.current.is_remember ?? false
 								)
@@ -705,12 +731,14 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			const sessionData = customEvent.detail?.session;
 
 			if (sessionData && sessionRef.current?.token !== sessionData.token) {
+				const config = getMezonConfig();
+				const wsUrl = config.ws_url || DEFAULT_WS_URL;
 				const newSession = new Session(
 					sessionData.token,
 					sessionData.refresh_token,
 					sessionData.created || false,
 					sessionData.api_url,
-					sessionData.ws_url || DEFAULT_WS_URL,
+					wsUrl,
 					sessionData.id_token || '',
 					sessionData.is_remember || false
 				);
