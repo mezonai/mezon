@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { ChannelsData } from '../../pages/dashboard/types';
 
 interface ChannelsTableProps {
@@ -9,10 +10,12 @@ interface ChannelsTableProps {
 }
 
 function ChannelsTable({ data, selectedColumns, isExportingCSV, onExportCSV, onToggleColumn }: ChannelsTableProps) {
+	const { t } = useTranslation('dashboard');
+
 	return (
 		<div className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
 			<div className="flex justify-between items-center mb-4">
-				<h3 className="text-xl font-semibold">Channels Activity Data</h3>
+				<h3 className="text-xl font-semibold">{t('table.channelsActivityData')}</h3>
 				<button
 					onClick={onExportCSV}
 					disabled={isExportingCSV}
@@ -21,7 +24,7 @@ function ChannelsTable({ data, selectedColumns, isExportingCSV, onExportCSV, onT
 					{isExportingCSV ? (
 						<>
 							<div className="inline-block h-3 w-3 animate-spin rounded-full border border-solid border-current border-r-transparent"></div>
-							Exporting...
+							{t('table.exporting')}
 						</>
 					) : (
 						<>
@@ -34,7 +37,7 @@ function ChannelsTable({ data, selectedColumns, isExportingCSV, onExportCSV, onT
 									strokeLinejoin="round"
 								/>
 							</svg>
-							Export CSV
+							{t('table.exportCSV')}
 						</>
 					)}
 				</button>
@@ -45,7 +48,7 @@ function ChannelsTable({ data, selectedColumns, isExportingCSV, onExportCSV, onT
 						<tr>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center">
-									<span>Channel name</span>
+									<span>{t('table.channelName')}</span>
 									<input
 										aria-label="Select Channel name column"
 										type="checkbox"
@@ -57,7 +60,7 @@ function ChannelsTable({ data, selectedColumns, isExportingCSV, onExportCSV, onT
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center">
-									<span>Active users</span>
+									<span>{t('table.activeUsers')}</span>
 									<input
 										aria-label="Select Active users column"
 										type="checkbox"
@@ -69,7 +72,7 @@ function ChannelsTable({ data, selectedColumns, isExportingCSV, onExportCSV, onT
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center">
-									<span>Messages</span>
+									<span>{t('table.messages')}</span>
 									<input
 										aria-label="Select Messages column"
 										type="checkbox"
@@ -85,7 +88,7 @@ function ChannelsTable({ data, selectedColumns, isExportingCSV, onExportCSV, onT
 						{data.length === 0 ? (
 							<tr>
 								<td colSpan={3} className="px-4 py-6 text-sm text-center border-b dark:border-[#4d4f52] text-gray-500">
-									There are currently no active channels in this clan.
+									{t('table.noActiveChannels')}
 								</td>
 							</tr>
 						) : (

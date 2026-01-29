@@ -13,6 +13,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import ReportControls from '../../components/ReportControls/ReportControls';
 import ChannelsTable from '../../components/dashboard/ChannelsTable';
@@ -24,6 +25,7 @@ import { calculateAllowedGranularities, formatDateRangeText, getDateRangeFromPre
 import type { ChannelsData, ClanDetailReportProps, UserData } from './types';
 
 function ClanDetailReport({ clanId }: ClanDetailReportProps) {
+	const { t } = useTranslation('dashboard');
 	const [dateRange, setDateRange] = useState('7');
 	const [periodFilter, setPeriodFilter] = useState<'daily' | 'weekly' | 'monthly'>('daily');
 	const [activeTab, setActiveTab] = useState<'activeUsers' | 'activeChannels' | 'messages'>('activeUsers');
@@ -131,7 +133,9 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	return (
 		<div className="flex flex-col gap-5">
 			<div className="flex justify-between items-center w-full">
-				<h1 className="text-2xl font-medium">Dashboard {clan?.clan_name || clanId} Report</h1>
+				<h1 className="text-2xl font-medium">
+					{t('page.dashboardReport')} {clan?.clan_name || clanId} {t('page.report').toLowerCase()}
+				</h1>
 			</div>
 
 			<ReportControls

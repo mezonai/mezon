@@ -1,6 +1,7 @@
 import { formatDateI18n } from '@mezon/utils';
 import 'rc-tooltip/assets/bootstrap.css';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { UsageMetrics } from '../pages/dashboard/types';
 import MetricTab from './controls/MetricTab';
 
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export default function ActivityOverview({ activeTab, onTabChange, totals, dateRangeText, iconUsers, iconChannels, iconMessages }: Props) {
+	const { t } = useTranslation('dashboard');
 	const now = formatDateI18n(new Date(), 'en', 'dd/MM/yyyy, HH:mm:ss');
 
 	return (
@@ -24,10 +26,14 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 			<div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
 				<div className="flex flex-col md:flex-row items-start justify-between w-full">
 					<div className="flex flex-col">
-						<h2 className="text-xl font-semibold">Activity Overview</h2>
+						<h2 className="text-xl font-semibold">{t('activityOverview.title')}</h2>
 						<div className="mt-1 text-sm dark:text-textSecondary">
-							<div>{now} UTC</div>
-							<div>Time Period: {dateRangeText}</div>
+							<div>
+								{now} {t('activityOverview.utc')}
+							</div>
+							<div>
+								{t('activityOverview.timePeriod')}: {dateRangeText}
+							</div>
 						</div>
 					</div>
 					<div className="flex space-x-4"></div>
@@ -40,8 +46,8 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 					onClick={() => onTabChange('activeUsers')}
 					icon={iconUsers}
 					iconWrapperClass="p-2 rounded-full bg-blue-900"
-					label="Total Active Users"
-					tooltip="Unique users who were active at least once"
+					label={t('activityOverview.totalActiveUsers')}
+					tooltip={t('activityOverview.totalActiveUsersTooltip')}
 					value={totals.totalActiveUsers ?? 0}
 					activeClassName="border-2 border-[#93c5fd] dark:border-white bg-[#eef2ff] text-[#1b1833] dark:bg-[#1b1833] dark:text-white"
 					labelClassActive="text-sm font-medium text-[#1b1833] dark:text-white"
@@ -55,8 +61,8 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 					onClick={() => onTabChange('activeChannels')}
 					icon={iconChannels}
 					iconWrapperClass="p-2 rounded-full bg-purple-800"
-					label="Total Active Channels"
-					tooltip="Unique channels that were active at least once"
+					label={t('activityOverview.totalActiveChannels')}
+					tooltip={t('activityOverview.totalActiveChannelsTooltip')}
 					value={totals.totalActiveChannels ?? 0}
 					activeClassName="border-2 border-[#93c5fd] dark:border-white bg-[#fff5f7] text-[#5b2a2a] dark:bg-[#2a1f17] dark:text-white"
 					labelClassActive="text-sm font-medium text-[#5b2a2a] dark:text-white"
@@ -70,8 +76,8 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 					onClick={() => onTabChange('messages')}
 					icon={iconMessages}
 					iconWrapperClass="p-2 rounded-full bg-red-800"
-					label="Total Messages"
-					tooltip="Total messages sent during the selected period"
+					label={t('activityOverview.totalMessages')}
+					tooltip={t('activityOverview.totalMessagesTooltip')}
 					value={totals.totalMessages ?? 0}
 					activeClassName="border-2 border-[#93c5fd] dark:border-white bg-[#f0fff4] text-[#0f5132] dark:bg-[#0f2a1b] dark:text-white"
 					labelClassActive="text-sm font-medium text-[#0f5132] dark:text-white"

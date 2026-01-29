@@ -1,4 +1,5 @@
 import { DatePickerWrapper } from '@mezon/components';
+import { useTranslation } from 'react-i18next';
 import Button from '../controls/Button';
 import SelectControl from '../controls/SelectControl';
 
@@ -33,6 +34,7 @@ export default function ReportControls({
 	onReset,
 	onDateRangeChange
 }: Props) {
+	const { t } = useTranslation('dashboard');
 	const formatDate = (d: Date) => d.toISOString().split('T')[0];
 
 	const handleStartDateChange = (date: Date) => {
@@ -51,7 +53,7 @@ export default function ReportControls({
 		<div className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
 			<div className="flex flex-wrap gap-4 items-end">
 				<div>
-					<h2 className="text-xl font-semibold mb-1">Time Period</h2>
+					<h2 className="text-xl font-semibold mb-1">{t('reportControls.timePeriod')}</h2>
 					<SelectControl
 						value={dateRange}
 						onChange={(val) => {
@@ -64,10 +66,10 @@ export default function ReportControls({
 							}
 						}}
 						options={[
-							{ value: '7', label: 'Last 7 days' },
-							{ value: '30', label: 'Last 30 days' },
-							{ value: '90', label: 'Last 90 days' },
-							{ value: 'custom', label: 'Custom date range' }
+							{ value: '7', label: t('reportControls.last7Days') },
+							{ value: '30', label: t('reportControls.last30Days') },
+							{ value: '90', label: t('reportControls.last90Days') },
+							{ value: 'custom', label: t('reportControls.customDateRange') }
 						]}
 						className="w-full sm:w-[200px] px-3 py-2 border dark:border-[#4d4f52] bg-white dark:bg-[#1e1f22] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 					/>
@@ -76,7 +78,7 @@ export default function ReportControls({
 				{dateRange === 'custom' && (
 					<>
 						<div>
-							<label className="block text-sm font-medium dark:text-textSecondary mb-2">Start Date</label>
+							<label className="block text-sm font-medium dark:text-textSecondary mb-2">{t('reportControls.startDate')}</label>
 							<DatePickerWrapper
 								selected={customStartDate ? new Date(customStartDate) : new Date()}
 								onChange={handleStartDateChange}
@@ -86,7 +88,7 @@ export default function ReportControls({
 							/>
 						</div>
 						<div>
-							<label className="block text-sm font-medium dark:text-textSecondary mb-2">End Date</label>
+							<label className="block text-sm font-medium dark:text-textSecondary mb-2">{t('reportControls.endDate')}</label>
 							<DatePickerWrapper
 								selected={customEndDate ? new Date(customEndDate) : new Date()}
 								onChange={handleEndDateChange}
@@ -102,19 +104,19 @@ export default function ReportControls({
 				<div>
 					{allowedGranularities.length > 0 && (
 						<div>
-							<h2 className="text-xl font-semibold mb-1">Range Type</h2>
+							<h2 className="text-xl font-semibold mb-1">{t('reportControls.rangeType')}</h2>
 							<SelectControl
 								value={periodFilter}
 								onChange={(val) => setPeriodFilter(val as Granularity)}
-								options={allowedGranularities.map((g) => ({ value: g, label: g.charAt(0).toUpperCase() + g.slice(1) }))}
+								options={allowedGranularities.map((g) => ({ value: g, label: t(`reportControls.${g}`) }))}
 								className="w-full sm:w-[200px] px-3 py-2 border dark:border-[#4d4f52] bg-white dark:bg-[#1e1f22] rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
 							/>
 						</div>
 					)}
 				</div>
 
-				<Button onClick={onRun}>Run report</Button>
-				<Button onClick={onReset}>Reset</Button>
+				<Button onClick={onRun}>{t('reportControls.runReport')}</Button>
+				<Button onClick={onReset}>{t('reportControls.reset')}</Button>
 			</div>
 		</div>
 	);

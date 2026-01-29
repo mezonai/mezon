@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PaginationProps {
 	page: number;
@@ -10,6 +11,8 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({ page, totalPages, total, pageSize, onPageChange, className = '' }) => {
+	const { t } = useTranslation('dashboard');
+
 	const pageItems = React.useMemo(() => {
 		const pages = totalPages || 1;
 		const maxButtons = 7;
@@ -34,7 +37,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, total, pageSi
 	return (
 		<div className={`mt-4 pt-4 border-t dark:border-[#4d4f52] flex items-center justify-between ${className}`}>
 			<div className="text-sm dark:text-textSecondary">
-				{`Showing ${Math.min((page - 1) * pageSize + 1, total)}–${Math.min(page * pageSize, total)} of ${total} clans`}
+				{`${t('pagination.showing')} ${Math.min((page - 1) * pageSize + 1, total)}–${Math.min(page * pageSize, total)} ${t('pagination.of')} ${total} ${t('pagination.clans')}`}
 			</div>
 
 			<div className="flex items-center space-x-3">
@@ -43,7 +46,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, total, pageSi
 					disabled={page === 1}
 					className="px-3 py-1 border dark:border-[#3d3f43] rounded disabled:opacity-60 bg-[#f6f7ff] dark:bg-[#2b273f] text-[#5865F2] hover:bg-[#e7e1ff] dark:hover:bg-[#3e3a66] text-sm"
 				>
-					Previous
+					{t('pagination.previous')}
 				</button>
 
 				<div className="flex items-center space-x-1">
@@ -74,7 +77,7 @@ const Pagination: React.FC<PaginationProps> = ({ page, totalPages, total, pageSi
 					disabled={page === totalPages || totalPages === 0}
 					className="px-3 py-1 border dark:border-[#3d3f43] rounded disabled:opacity-50 bg-white dark:bg-[#2b2d31] hover:bg-gray-50 dark:hover:bg-[#35373c] text-sm"
 				>
-					Next
+					{t('pagination.next')}
 				</button>
 			</div>
 		</div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ClanDetailReport from './ClanDetailReport';
 import ClanUsageReport from './ClanUsageReport';
 
@@ -8,6 +9,7 @@ import ClanUsageReport from './ClanUsageReport';
  * 2. ClanDetailReport - Detailed clan report when a clan is selected
  */
 function DashboardPage() {
+	const { t } = useTranslation('dashboard');
 	const [currentView, setCurrentView] = useState<'overview' | 'detail'>('overview');
 	const [selectedClan, setSelectedClan] = useState<string | null>(null);
 
@@ -36,7 +38,7 @@ function DashboardPage() {
 							<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 								<path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
 							</svg>
-							Back to Clan Usage Overview
+							{t('page.backToOverview')}
 						</button>
 					</div>
 					{selectedClan && <ClanDetailReport clanId={selectedClan} />}

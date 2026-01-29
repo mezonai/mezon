@@ -1,0 +1,66 @@
+{
+	"activityOverview": {
+		"title": "Tổng quan hoạt động",
+		"utc": "UTC",
+		"timePeriod": "Khoảng thời gian",
+		"totalActiveUsers": "Tổng số người dùng hoạt động",
+		"totalActiveUsersTooltip": "Số người dùng duy nhất hoạt động ít nhất một lần",
+		"totalActiveChannels": "Tổng số kênh hoạt động",
+		"totalActiveChannelsTooltip": "Số kênh duy nhất hoạt động ít nhất một lần",
+		"totalMessages": "Tổng số tin nhắn",
+		"totalMessagesTooltip": "Tổng số tin nhắn được gửi trong khoảng thời gian đã chọn"
+	},
+	"pagination": {
+		"showing": "Hiển thị",
+		"of": "trong tổng số",
+		"clans": "clan",
+		"previous": "Trước",
+		"next": "Tiếp"
+	},
+	"chart": {
+		"loadingChartData": "Đang tải dữ liệu biểu đồ...",
+		"metricsAvailableForOwnersOnly": "Số liệu chỉ dành cho chủ sở hữu clan."
+	},
+	"table": {
+		"detailedActivityData": "Dữ liệu hoạt động chi tiết",
+		"channelsActivityData": "Dữ liệu hoạt động kênh",
+		"userActivityData": "Dữ liệu hoạt động người dùng",
+		"exportCSV": "Xuất CSV",
+		"exporting": "Đang xuất...",
+		"clanName": "Tên Clan",
+		"channelName": "Tên kênh",
+		"userName": "Tên người dùng",
+		"activeUsers": "Người dùng hoạt động",
+		"activeChannels": "Kênh hoạt động",
+		"messages": "Tin nhắn",
+		"noOwnedClans": "Bạn không sở hữu clan nào để tạo phân tích.",
+		"noActiveChannels": "Hiện không có kênh hoạt động nào trong clan này.",
+		"noActiveUsers": "Hiện không có người dùng hoạt động nào trong kênh này."
+	},
+	"page": {
+		"backToOverview": "Quay lại tổng quan sử dụng Clan",
+		"clanUsageStatisticsReport": "Báo Cáo Thống Kê Sử Dụng Clan",
+		"dashboardReport": "Bảng điều khiển",
+		"report": "Báo cáo"
+	},
+	"state": {
+		"loadingData": "Đang tải dữ liệu...",
+		"noDataFound": "Không tìm thấy dữ liệu",
+		"noDataDescription": "Không có dữ liệu sử dụng cho khoảng thời gian đã chọn."
+	},
+	"reportControls": {
+		"timePeriod": "Khoảng thời gian",
+		"rangeType": "Loại khoảng",
+		"startDate": "Ngày bắt đầu",
+		"endDate": "Ngày kết thúc",
+		"last7Days": "7 ngày qua",
+		"last30Days": "30 ngày qua",
+		"last90Days": "90 ngày qua",
+		"customDateRange": "Tùy chỉnh khoảng ngày",
+		"daily": "Theo ngày",
+		"weekly": "Theo tuần",
+		"monthly": "Theo tháng",
+		"runReport": "Chạy báo cáo",
+		"reset": "Đặt lại"
+	}
+}

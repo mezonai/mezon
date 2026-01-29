@@ -36,6 +36,7 @@ import contextMenu from './contextMenu.json';
 import createChannel from './createChannel.json';
 import createThread from './createThread.json';
 import customUserStatus from './customUserStatus.json';
+import dashboard from './dashboard.json';
 import deleteClan from './deleteClan.json';
 import directMessage from './directMessage.json';
 import discover from './discover.json';
@@ -181,5 +182,6 @@ export default {
 	textchannel,
 	clandetail,
 	shareContact,
-	canvas
+	canvas,
+	dashboard
 };
