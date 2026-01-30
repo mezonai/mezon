@@ -2462,7 +2462,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const store = getStore();
 
 		const channels = selectChannelThreads(store.getState() as RootState);
-		if (!markAsReadEvent.category_id) {
+		if (markAsReadEvent.category_id === '0') {
 			const channelIds = channels.map((item) => item.id);
 			const channelUpdates = channelIds.map((channelId) => {
 				let messageId = selectLatestMessageId(store.getState(), channelId);
@@ -2489,7 +2489,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
 			return;
 		}
-		if (!markAsReadEvent.channel_id) {
+		if (markAsReadEvent.channel_id === '0') {
 			const channelsInCategory = channels.filter((channel) => channel.category_id === markAsReadEvent.category_id);
 
 			const allChannelsAndThreads = channelsInCategory.flatMap((channel) => [channel, ...(channel.threads || [])]);
@@ -2516,9 +2516,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			);
 			dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
 		} else {
-			const relatedChannels = channels.filter(
-				(channel) => channel.id === markAsReadEvent.channel_id || channel.parent_id === markAsReadEvent.channel_id
-			);
+			const relatedChannels = channels.filter((channel) => channel.clan_id === markAsReadEvent.clan_id);
 
 			const channelIds = relatedChannels.map((channel) => channel.id);
 
@@ -2559,7 +2557,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
 			}
 
-			dispatch(listChannelsByUserActions.markAsReadChannel([markAsReadEvent.channel_id, ...threadIds]));
+			dispatch(listChannelsByUserActions.markAsReadChannel([markAsReadEvent.channel_id, ...channelIds]));
 		}
 	}, []);
 

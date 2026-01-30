@@ -71,6 +71,29 @@
 		"english": "English",
 		"vietnamese": "Tiếng Việt"
 	},
+	"voice": {
+		"title": "Voice",
+		"description": "Configure your voice settings.",
+		"microphone": "Microphone",
+		"speaker": "Speaker",
+		"microphoneVolume": "Microphone Volume",
+		"speakerVolume": "Speaker Volume",
+		"unnamedDevice": "Unnamed device",
+		"noDevices": "No devices found",
+		"micTest": {
+			"title": "Mic Test",
+			"description": "Having mic issues? Start a test and say something fun — we'll play your voice back to you.",
+			"letsCheck": "Let's Check",
+			"stop": "Stop Testing"
+		},
+		"errors": {
+			"permissionDenied": "Microphone permission is required to run mic test.",
+			"micPermission": "Unable to access microphone."
+		},
+		"warnings": {
+			"outputNotSupported": "Your browser does not support selecting output device. Speaker selection may be ignored."
+		}
+	},
 	"logOut": "Logout",
 	"logOutPopup": {
 		"description": "Please confirm if you would like to log out?",
