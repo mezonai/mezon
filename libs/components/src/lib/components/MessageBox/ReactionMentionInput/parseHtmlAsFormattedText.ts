@@ -246,7 +246,7 @@ export default function parseHtmlAsFormattedText(html: string, withMarkdownLinks
 	function addEntity(node: ChildNode) {
 		if (node.nodeType === Node.COMMENT_NODE) return;
 		const { index, entity } = getEntityDataFromNode(node, text, textIndex);
-		if (!linkPreview.url && entity?.type === ApiMessageEntityTypes.Url) {
+		if (!linkPreview.url && (entity?.type === ApiMessageEntityTypes.Url || entity?.type === ApiMessageEntityTypes.TextUrl)) {
 			linkPreview.url = (entity as unknown as ApiMessageEntityTextUrl).url;
 			linkPreview.index = index;
 		}
