@@ -10,6 +10,7 @@ export interface IMessageExtras {
 	link: string; // link for navigating
 	e2eemess: string;
 	topicId: string;
+	messageId?: string;
 }
 
 export interface NotificationData {
@@ -321,9 +322,16 @@ export class MezonNotificationService {
 					existingWindow.focus();
 					const notificationUrl = new URL(link);
 					const path = notificationUrl.pathname;
-					const fromTopic = msg?.extras?.topicId && msg?.extras?.topicId !== '0';
 
-					// Switch to the user who received the notification if needed
+					const extras = msg?.extras as unknown as Record<string, string | undefined>;
+					let topicId: string | undefined | null = extras?.topicId ?? extras?.topic_id ?? extras?.topic;
+
+					if (!topicId && msg?.extras?.link) {
+						const linkUrl = new URL(msg.extras.link);
+						topicId = linkUrl.searchParams.get('topicId') ?? linkUrl.searchParams.get('topic_id');
+					}
+					const fromTopic = Boolean(topicId && topicId !== '0');
+					const enrichedMsg = fromTopic && topicId ? { ...msg, extras: { ...msg?.extras, topicId } } : msg;
 					if (connection?.userId && this.currentActiveUserId !== connection.userId) {
 						this.setCurrentActiveUserId(connection.userId);
 					}
@@ -331,7 +339,7 @@ export class MezonNotificationService {
 					setTimeout(() => {
 						window.dispatchEvent(
 							new CustomEvent('mezon:navigate', {
-								detail: { url: path, msg: fromTopic ? msg : null, userId: connection?.userId }
+								detail: { url: path, msg: fromTopic ? enrichedMsg : null, userId: connection?.userId }
 							})
 						);
 					}, 100);

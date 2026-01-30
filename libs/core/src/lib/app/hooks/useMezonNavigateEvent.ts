@@ -2,12 +2,27 @@ import { getStore, handleTopicNotification, selectDirectMessageEntities, useAppD
 import { useCallback, useEffect } from 'react';
 import { useCustomNavigate } from '../../chat/hooks/useCustomNavigate';
 
+const DM_LOAD_TIMEOUT_MS = 2500;
+
+const TOPIC_OPEN_DELAY_MS = 500;
+
+interface TopicNotificationMessage {
+	channel_id?: string;
+	extras?: {
+		topicId?: string;
+		messageId?: string;
+		message_id?: string;
+		link?: string;
+		[key: string]: string | undefined;
+	};
+}
+
 export const useMezonNavigateEvent = () => {
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 
 	const handleNavigation = useCallback(
-		async (url: string, msg?: unknown) => {
+		async (url: string, msg?: TopicNotificationMessage) => {
 			const dmUrlPattern = /^\/chat\/direct\/message\/([^/]+)\/(\d+)$/;
 			const dmMatch = url.match(dmUrlPattern);
 
@@ -23,16 +38,20 @@ export const useMezonNavigateEvent = () => {
 				let dmExists = checkDMExists();
 
 				if (!dmExists) {
-					await new Promise((resolve) => setTimeout(resolve, 2500));
+					await new Promise((resolve) => setTimeout(resolve, DM_LOAD_TIMEOUT_MS));
 					dmExists = checkDMExists();
 					if (!dmExists) {
 						return false;
 					}
 				}
 			}
+
 			navigate(url);
+
 			if (msg) {
-				dispatch(handleTopicNotification({ msg }));
+				setTimeout(() => {
+					dispatch(handleTopicNotification({ msg }));
+				}, TOPIC_OPEN_DELAY_MS);
 			}
 
 			return true;
