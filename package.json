@@ -1,6 +1,6 @@
 {
   "name": "mezon",
-  "version": "1.4.62",
+  "version": "1.4.63",
   "license": "MIT",
   "description": "Mezon application",
   "productName": "mezon",
@@ -86,8 +86,8 @@
     "lodash.isequal": "^4.5.0",
     "lowlight": "^3.3.0",
     "mezon-active-windows": "0.1.38",
-    "mezon-js": "2.14.65",
-    "mezon-js-protobuf": "1.8.97",
+    "mezon-js": "2.14.70",
+    "mezon-js-protobuf": "1.8.99",
     "mmn-client-js": "1.0.16",
     "nx-electron": "^20.0.2",
     "rc-dropdown": "^4.2.1",
@@ -256,6 +256,9 @@
     "node": ">=18.x",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
+  },
+  "build": {
+    "npmRebuild": false
   },
   "author": "Mezon App <hello@mezon.vn>"
 }
