@@ -4,7 +4,7 @@ import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiMessageMention, ApiNotification } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiMessageMention } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -14,14 +14,6 @@ import type { RootState } from '../store';
 
 export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIMIT_NOTIFICATION = 50;
-
-export const mapNotificationToEntity = (notifyRes: INotification): ApiNotification => {
-	return {
-		...notifyRes,
-		id: notifyRes.id || '',
-		create_time: notifyRes.create_time
-	};
-};
 
 export interface FetchNotificationArgs {
 	clanId: string;
