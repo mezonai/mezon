@@ -107,6 +107,7 @@ export const IconMeetDM = createLazyIconWithFallback(() => import('./icons'), 'I
 export const IconAddFriendDM = createLazyIconWithFallback(() => import('./icons'), 'IconAddFriendDM');
 export const IconUserProfileDM = createLazyIconWithFallback(() => import('./icons'), 'IconUserProfileDM');
 export const IconReplyMessDeleted = createLazyIconWithFallback(() => import('./icons'), 'IconReplyMessDeleted');
+export const IconReplyMessDeletedWeb = createLazyIconWithFallback(() => import('./icons'), 'IconReplyMessDeletedWeb');
 export const IConShareEventLocation = createLazyIconWithFallback(() => import('./icons'), 'IConShareEventLocation');
 export const IconShareEventVoice = createLazyIconWithFallback(() => import('./icons'), 'IconShareEventVoice');
 export const WebhooksIcon = createLazyIconWithFallback(() => import('./icons'), 'WebhooksIcon');

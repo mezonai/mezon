@@ -174,6 +174,7 @@ export const MemorizedChannelMessage = memo(ChannelMessage, (prev, curr) => {
 		prev.previousMessage?.id === curr.previousMessage?.id &&
 		prev.message?.code === curr.message?.code &&
 		prev.message?.references?.[0]?.content === curr.message?.references?.[0]?.content &&
+		prev.message?.references?.[0]?.message_ref_id === curr.message?.references?.[0]?.message_ref_id &&
 		prev.avatarDM === curr.avatarDM &&
 		prev.channelLabel === curr.channelLabel &&
 		prev.isHighlight === curr.isHighlight &&
