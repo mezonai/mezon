@@ -17,6 +17,7 @@ function PreviewOgp() {
 
 	useEffect(() => {
 		if (!ogpLink || !ogpLink.url) {
+			setData(null);
 			dispatch(referencesActions.clearOgpData());
 			return;
 		}
