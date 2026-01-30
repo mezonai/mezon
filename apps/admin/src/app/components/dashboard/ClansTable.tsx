@@ -1,4 +1,5 @@
 import { selectClanById, useAppSelector } from '@mezon/store';
+import { useTranslation } from 'react-i18next';
 import type { ClanData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
 
@@ -33,6 +34,8 @@ function ClansTable({
 	onPageChange,
 	tableRef
 }: ClansTableProps) {
+	const { t } = useTranslation('dashboard');
+
 	const clansById = useAppSelector((s) => {
 		const map: Record<string, unknown> = {};
 		for (const r of data || []) {
@@ -44,7 +47,7 @@ function ClansTable({
 	return (
 		<div ref={tableRef} className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
 			<div className="flex justify-between items-center mb-4">
-				<h3 className="text-xl font-semibold">Detailed Activity Data</h3>
+				<h3 className="text-xl font-semibold">{t('table.detailedActivityData')}</h3>
 				<button
 					onClick={onExportCSV}
 					disabled={isExportingCSV}
@@ -53,7 +56,7 @@ function ClansTable({
 					{isExportingCSV ? (
 						<>
 							<div className="inline-block h-3 w-3 animate-spin rounded-full border border-solid border-current border-r-transparent"></div>
-							Exporting...
+							{t('table.exporting')}
 						</>
 					) : (
 						<>
@@ -66,7 +69,7 @@ function ClansTable({
 									strokeLinejoin="round"
 								/>
 							</svg>
-							Export CSV
+							{t('table.exportCSV')}
 						</>
 					)}
 				</button>
@@ -77,7 +80,7 @@ function ClansTable({
 						<tr>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center">
-									<span>Clan Name</span>
+									<span>{t('table.clanName')}</span>
 									<input
 										aria-label="Select Clan Name column"
 										type="checkbox"
@@ -89,7 +92,7 @@ function ClansTable({
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center">
-									<span>Active users</span>
+									<span>{t('table.activeUsers')}</span>
 									<input
 										aria-label="Select Active users column"
 										type="checkbox"
@@ -101,7 +104,7 @@ function ClansTable({
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center">
-									<span>Active channels</span>
+									<span>{t('table.activeChannels')}</span>
 									<input
 										aria-label="Select Active channels column"
 										type="checkbox"
@@ -113,7 +116,7 @@ function ClansTable({
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center">
-									<span>Messages</span>
+									<span>{t('table.messages')}</span>
 									<input
 										aria-label="Select Messages column"
 										type="checkbox"
@@ -149,9 +152,7 @@ function ClansTable({
 							<tr>
 								<td colSpan={4}>
 									<div className="text-center py-12">
-										<div className="text-lg font-medium dark:text-textSecondary">
-											You don't own any clan to generate analytics.
-										</div>
+										<div className="text-lg font-medium dark:text-textSecondary">{t('table.noOwnedClans')}</div>
 									</div>
 								</td>
 							</tr>

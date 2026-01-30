@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { UserData } from '../../pages/dashboard/types';
 
 interface UsersTableProps {
@@ -9,10 +10,12 @@ interface UsersTableProps {
 }
 
 function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onToggleColumn }: UsersTableProps) {
+	const { t } = useTranslation('dashboard');
+
 	return (
 		<div className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
 			<div className="flex justify-between items-center mb-4">
-				<h3 className="text-xl font-semibold">User Activity Data</h3>
+				<h3 className="text-xl font-semibold">{t('table.userActivityData')}</h3>
 				<button
 					onClick={onExportCSV}
 					disabled={isExportingCSV}
@@ -21,7 +24,7 @@ function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onTogg
 					{isExportingCSV ? (
 						<>
 							<div className="inline-block h-3 w-3 animate-spin rounded-full border border-solid border-current border-r-transparent"></div>
-							Exporting...
+							{t('table.exporting')}
 						</>
 					) : (
 						<>
@@ -34,7 +37,7 @@ function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onTogg
 									strokeLinejoin="round"
 								/>
 							</svg>
-							Export CSV
+							{t('table.exportCSV')}
 						</>
 					)}
 				</button>
@@ -45,7 +48,7 @@ function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onTogg
 						<tr>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center">
-									<span>User name</span>
+									<span>{t('table.userName')}</span>
 									<input
 										aria-label="Select User name column"
 										type="checkbox"
@@ -57,7 +60,7 @@ function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onTogg
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center">
-									<span>Messages</span>
+									<span>{t('table.messages')}</span>
 									<input
 										aria-label="Select Messages column"
 										type="checkbox"
@@ -73,7 +76,7 @@ function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onTogg
 						{data.length === 0 ? (
 							<tr>
 								<td colSpan={2} className="px-4 py-6 text-sm text-center border-b dark:border-[#4d4f52] text-gray-500">
-									There are currently no active users in this channel.
+									{t('table.noActiveUsers')}
 								</td>
 							</tr>
 						) : (

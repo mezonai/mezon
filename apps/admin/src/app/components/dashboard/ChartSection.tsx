@@ -1,4 +1,5 @@
 import { Icons } from '@mezon/ui';
+import { useTranslation } from 'react-i18next';
 import type { ChartDataPoint, UsageMetrics } from '../../pages/dashboard/types';
 import ActivityOverview from '../ActivityOverview';
 import MemoizedSingleLineChart from '../SingleLineChart';
@@ -13,6 +14,8 @@ interface ChartSectionProps {
 }
 
 function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartData, isLoading }: ChartSectionProps) {
+	const { t } = useTranslation('dashboard');
+
 	return (
 		<div className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
 			<div>
@@ -31,11 +34,11 @@ function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartDat
 				{isLoading ? (
 					<div className="text-center py-12">
 						<div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-[#5865F2] border-r-transparent"></div>
-						<div className="mt-2 text-sm dark:text-textSecondary">Loading chart data...</div>
+						<div className="mt-2 text-sm dark:text-textSecondary">{t('chart.loadingChartData')}</div>
 					</div>
 				) : chartData.length === 0 ? (
 					<div className="text-center py-12">
-						<div className="text-lg font-medium dark:text-textSecondary">Metrics are available for clan owners only.</div>
+						<div className="text-lg font-medium dark:text-textSecondary">{t('chart.metricsAvailableForOwnersOnly')}</div>
 					</div>
 				) : (
 					<>

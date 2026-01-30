@@ -9,6 +9,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ReportControls from '../../components/ReportControls/ReportControls';
 import ChartSection from '../../components/dashboard/ChartSection';
 import ClansTable from '../../components/dashboard/ClansTable';
@@ -19,6 +20,7 @@ import { calculateAllowedGranularities, calculateMetrics, formatDateRangeText, g
 import type { ClanUsageReportProps } from './types';
 
 function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
+	const { t } = useTranslation('dashboard');
 	const [dateRange, setDateRange] = useState('7');
 	const [periodFilter, setPeriodFilter] = useState<'daily' | 'weekly' | 'monthly'>('daily');
 	const [activeTab, setActiveTab] = useState<'activeUsers' | 'activeChannels' | 'messages'>('activeUsers');
@@ -132,7 +134,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 		<div className="space-y-6">
 			{/* Header */}
 			<div className="mb-[40px]">
-				<h1 className="text-2xl font-medium">Clan Usage Statistics Report</h1>
+				<h1 className="text-2xl font-medium">{t('page.clanUsageStatisticsReport')}</h1>
 			</div>
 
 			<ReportControls

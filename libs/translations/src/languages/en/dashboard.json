@@ -1,0 +1,66 @@
+{
+	"activityOverview": {
+		"title": "Activity Overview",
+		"utc": "UTC",
+		"timePeriod": "Time Period",
+		"totalActiveUsers": "Total Active Users",
+		"totalActiveUsersTooltip": "Unique users who were active at least once",
+		"totalActiveChannels": "Total Active Channels",
+		"totalActiveChannelsTooltip": "Unique channels that were active at least once",
+		"totalMessages": "Total Messages",
+		"totalMessagesTooltip": "Total messages sent during the selected period"
+	},
+	"pagination": {
+		"showing": "Showing",
+		"of": "of",
+		"clans": "clans",
+		"previous": "Previous",
+		"next": "Next"
+	},
+	"chart": {
+		"loadingChartData": "Loading chart data...",
+		"metricsAvailableForOwnersOnly": "Metrics are available for clan owners only."
+	},
+	"table": {
+		"detailedActivityData": "Detailed Activity Data",
+		"channelsActivityData": "Channels Activity Data",
+		"userActivityData": "User Activity Data",
+		"exportCSV": "Export CSV",
+		"exporting": "Exporting...",
+		"clanName": "Clan Name",
+		"channelName": "Channel name",
+		"userName": "User name",
+		"activeUsers": "Active users",
+		"activeChannels": "Active channels",
+		"messages": "Messages",
+		"noOwnedClans": "You don't own any clan to generate analytics.",
+		"noActiveChannels": "There are currently no active channels in this clan.",
+		"noActiveUsers": "There are currently no active users in this channel."
+	},
+	"page": {
+		"backToOverview": "Back to Clan Usage Overview",
+		"clanUsageStatisticsReport": "Clan Usage Statistics Report",
+		"dashboardReport": "Dashboard",
+		"report": "Report"
+	},
+	"state": {
+		"loadingData": "Loading data...",
+		"noDataFound": "No data found",
+		"noDataDescription": "No usage data available for the selected period."
+	},
+	"reportControls": {
+		"timePeriod": "Time Period",
+		"rangeType": "Range Type",
+		"startDate": "Start Date",
+		"endDate": "End Date",
+		"last7Days": "Last 7 days",
+		"last30Days": "Last 30 days",
+		"last90Days": "Last 90 days",
+		"customDateRange": "Custom date range",
+		"daily": "Daily",
+		"weekly": "Weekly",
+		"monthly": "Monthly",
+		"runReport": "Run report",
+		"reset": "Reset"
+	}
+}
