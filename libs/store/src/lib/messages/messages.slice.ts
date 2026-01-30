@@ -1141,10 +1141,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			'',
 			code
 		);
-		console.log('res: ', res);
-		if (res) {
-			thunkAPI.dispatch(referencesActions.clearOgpData());
-		}
+		thunkAPI.dispatch(referencesActions.clearOgpData());
 
 		return res;
 	}
