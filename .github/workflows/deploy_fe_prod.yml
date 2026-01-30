@@ -97,6 +97,7 @@ jobs:
           envkey_NX_CHAT_APP_MMN_API_URL: https://dong.mezon.ai/mmn-api
           envkey_NX_CHAT_APP_INDEXER_API_URL: https://dong.mezon.ai/indexer-api
           envkey_NX_CHAT_APP_ZK_API_URL: https://dong.mezon.ai/zk-api
+          envkey_NX_OGP_URL: https://ogp.mezon.ai/ogp
 
       - name: Build
         env:

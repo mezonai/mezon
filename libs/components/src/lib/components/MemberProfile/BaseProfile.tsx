@@ -11,7 +11,8 @@ const BaseProfile = ({
 	hideName = false,
 	status,
 	displayName,
-	userStatus
+	userStatus,
+	isAnonymous
 }: {
 	avatar: string;
 	name?: string;
@@ -20,6 +21,7 @@ const BaseProfile = ({
 	hideIcon?: boolean;
 	hideName?: boolean;
 	userStatus?: string;
+	isAnonymous?: boolean;
 }) => {
 	return (
 		<div className={`relative h-10 flex gap-3 items-center text-theme-primary`}>
@@ -30,6 +32,7 @@ const BaseProfile = ({
 				classNameText="font-semibold"
 				srcImgProxy={createImgproxyUrl(avatar ?? '')}
 				src={avatar}
+				isAnonymous={isAnonymous}
 			/>
 			{!hideIcon && (
 				<div className="rounded-full left-5 absolute bottom-0 inline-flex items-center justify-center gap-1 p-[3px] text-sm text-theme-primary">

@@ -2,7 +2,8 @@ import { ColorRoleProvider, useEscapeKeyClose } from '@mezon/core';
 import { selectAllAccount, selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
 import { KEY_KEYBOARD, generateE2eId } from '@mezon/utils';
-import { useCallback, useEffect, useRef } from 'react';
+import { ChannelStreamMode } from 'mezon-js';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import MessageWithUser from '../MessageWithUser';
@@ -19,6 +20,15 @@ export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 	const { t } = useTranslation('pinMessage');
 	const userId = useSelector(selectAllAccount)?.user?.id;
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, userId as string));
+
+	const isDM = mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP;
+
+	const descriptionText = useMemo(() => {
+		if (isDM) {
+			return t('modal.descriptionDM');
+		}
+		return t('modal.description', { channelLabel });
+	}, [isDM, channelLabel, t]);
 
 	const handlePinMessageAndCloseModal = useCallback(() => {
 		handlePinMessage();
@@ -52,12 +62,12 @@ export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 				<div className=" max-w-full">
 					<div className="p-4 pb-0">
 						<h3 className="font-semibold pb-4 text-xl text-theme-primary-active">{t('modal.title')}</h3>
-						<p>{t('modal.description', { channelLabel })}</p>
+						<p>{descriptionText}</p>
 					</div>
 					<div className="p-4 max-h-[60vh] overflow-y-auto hide-scrollbar">
 						<ColorRoleProvider>
 							<MessageWithUser
-								isSearchMessage={true} // to correct size youtube emmbed
+								isSearchMessage={true}
 								allowDisplayShortProfile={false}
 								message={mess}
 								mode={mode}

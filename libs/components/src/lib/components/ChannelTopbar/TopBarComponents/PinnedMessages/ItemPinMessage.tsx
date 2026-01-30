@@ -22,6 +22,8 @@ import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
 import ShareContactCard from '../../../ShareContact/ShareContactCard';
 
+const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
+
 type ItemPinMessageProps = {
 	pinMessage: PinMessageEntity;
 	contentString: string | undefined;
@@ -87,10 +89,14 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		});
 	};
 
+	const checkAnonymous = pinMessage?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+
 	const avatarToShow =
 		(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? priorityAvatar : pinMessage.avatar) || '';
-	const nameToShow =
-		(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? namePriority : pinMessage.username) || '';
+	const nameToShow = checkAnonymous
+		? 'Anonymous'
+		: (mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? namePriority : pinMessage.username) ||
+			'';
 	return (
 		<div
 			key={pinMessage.id}
@@ -99,7 +105,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		>
 			<div className="flex items-start gap-2 w-full ">
 				<div className="pointer-events-none">
-					<BaseProfile avatar={avatarToShow || ''} name={nameToShow} hideIcon={true} hideName={true} />
+					<BaseProfile avatar={avatarToShow || ''} name={nameToShow} hideIcon={true} hideName={true} isAnonymous={checkAnonymous} />
 				</div>
 
 				<div className="relative flex flex-col gap-1 text-left w-[85%] enableSelectText cursor-text">

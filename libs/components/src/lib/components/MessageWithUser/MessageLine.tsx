@@ -231,6 +231,7 @@ export const MessageLine = ({
 			return currentStart >= prevEnd;
 		});
 
+	const isDeletedMessage = code === TypeMessage.ChatRemove || t === 'Original message was deleted';
 	let lastindex = 0;
 	const content2 = (() => {
 		const formattedContent: React.ReactNode[] = [];
@@ -535,8 +536,7 @@ export const MessageLine = ({
 							minHeight: 30
 						}
 			}
-			className={`w-full ${isJumMessageEnabled ? 'whitespace-pre-line gap-1 text-theme-message text-theme-message-hover cursor-pointer' : 'text-theme-message'} ${isEphemeral ? 'opacity-80 italic text-[#5865F2] ' : ''} ${isSending ? 'opacity-50' : ''}
-
+			className={`w-full ${isDeletedMessage ? 'text-theme-primary italic' : isJumMessageEnabled ? 'whitespace-pre-line gap-1 text-theme-message text-theme-message-hover cursor-pointer' : 'text-theme-message'} ${isEphemeral ? 'opacity-80 italic text-[#5865F2] ' : ''} ${isSending ? 'opacity-50' : ''}
       `}
 		>
 			{code === TypeMessage.MessageBuzz ? <span className="text-red-500">{content2}</span> : content2}

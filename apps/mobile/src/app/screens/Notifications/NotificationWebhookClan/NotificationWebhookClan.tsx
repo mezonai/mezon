@@ -17,6 +17,10 @@ const NotificationWebhookClan = ({ notify, onLongPressNotify }: NotifyProps) => 
 	const messageTimeDifference = convertTimestampToTimeAgo(notify?.content?.create_time_seconds);
 	const data = parseObject(notify?.content);
 
+	if (!data?.content && !data?.attachments) {
+		return null;
+	}
+
 	return (
 		<TouchableOpacity onLongPress={() => onLongPressNotify(ENotifyBsToShow.removeNotification, notify)}>
 			<View style={styles.notifyContainer}>
