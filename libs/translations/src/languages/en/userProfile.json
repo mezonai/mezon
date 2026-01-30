@@ -198,7 +198,7 @@
 	"muteVoice": "Mute",
 	"kickVoice": "Kick",
 	"voiceInfo": {
-		"inVoice": "In Voice",
+		"inVoice": "In voice",
 		"joinVoice": "Join Voice"
 	},
 	"ban": {

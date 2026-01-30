@@ -33,8 +33,6 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 			return ChannelStreamMode.STREAM_MODE_CHANNEL;
 		}
 
-		//11
-
 		switch (channelJump.type) {
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
 				return ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -76,7 +74,6 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	};
 
 	const allTabProps = {
-		message,
 		subject: notify.subject,
 		category: notify.category,
 		senderId: notify?.content?.sender_id || notify.sender_id,
@@ -100,7 +97,16 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 					{t('tooltips.jump')}
 				</button>
 			)}
-			{message && <AllTabContent {...allTabProps} message={message} />}
+			{message && (
+				<AllTabContent
+					{...allTabProps}
+					message={{
+						...message,
+						create_time_seconds:
+							notify?.category === NotificationCategory.FOR_YOU ? notify.create_time_seconds : message?.create_time_seconds
+					}}
+				/>
+			)}
 		</div>
 	);
 }
@@ -125,7 +131,7 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 	const clan = useAppSelector(selectClanById(message.clan_id as string));
 	const user = useAppSelector((state) => selectMemberDMByUserId(state, senderId ?? ''));
 
-	const username = message.username;
+	const username = message.username || user?.username || '';
 	let subjectText = subject;
 
 	if (username) {
@@ -156,7 +162,7 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 				<AvatarImage
 					alt="user avatar"
 					className="w-10 h-10 min-w-10 flex-shrink-0"
-					username={message?.username}
+					username={username}
 					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url) ?? '', {
 						width: 300,
 						height: 300,
@@ -219,7 +225,8 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 										id: message.sender_id,
 										name: message.display_name || message.username,
 										username: message.username
-									}
+									},
+									create_time_seconds: message.create_time_seconds
 								}}
 								mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
 							/>

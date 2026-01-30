@@ -56,7 +56,7 @@ const ClanEffects: React.FC<{
 		return () => {
 			window.removeEventListener('resize', updateChatStreamWidth);
 		};
-	}, [isShowChatStream]);
+	}, [isShowChatStream, chatStreamRef, dispatch]);
 
 	useEffect(() => {
 		if (isShowCreateThread || isShowCreateTopic) {
@@ -124,7 +124,10 @@ const ClanLayout = () => {
 				</div>
 
 				{isShowChatStream && currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING && memberPath !== currentURL && (
-					<div ref={chatStreamRef} className="flex flex-col flex-1 max-w-[480px] min-w-60 rounded-l-lg">
+					<div
+						ref={chatStreamRef}
+						className="flex flex-col w-[420px] min-w-[360px] max-w-[420px] h-full max-h-full overflow-hidden flex-shrink-0"
+					>
 						<ChatStream />
 					</div>
 				)}

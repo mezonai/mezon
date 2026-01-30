@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelsEntity } from '@mezon/store-mobile';
 import {
 	deleteClanWebhookById,
@@ -34,7 +34,7 @@ import { style } from './styles';
 
 export function WebhooksEdit({ route, navigation }: { route: any; navigation: any }) {
 	const { themeValue } = useTheme();
-	const styles = useMemo(() => style(themeValue), [themeValue]);
+	const styles = style(themeValue);
 	const { webhook, isClanIntegration, isClanSetting } = route.params || {};
 	const [urlImageWebhook, setUrlImageWebhook] = useState<string>(webhook?.avatar || '');
 	const [webhookName, setWebhookName] = useState<string>(webhook?.webhook_name || '');
@@ -51,7 +51,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	const clanId = useSelector(selectCurrentClanId) as string;
 	const currentWebhook = useSelector((state: any) => selectClanWebhooksById(state, webhook?.id));
 	const [isCopied, setIsCopied] = useState(false);
-	const { t } = useTranslation(['screenStack', 'clanIntegrationsSetting']);
+	const { t } = useTranslation(['screenStack', 'clanIntegrationsSetting', 'common']);
 	const dispatch = useAppDispatch();
 
 	const channel = useMemo(() => {
@@ -94,11 +94,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 				} else {
 					Toast.show({
 						type: 'success',
-						props: {
-							text2: t(resetToken ? 'toast.resetTokenSuccess' : 'toast.saveSuccess', { ns: 'clanIntegrationsSetting' }),
-							leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkLargeIcon} color={baseColor.green} />
-						},
-						text2Style: { fontSize: size.small }
+						text1: t(resetToken ? 'toast.resetTokenSuccess' : 'toast.saveSuccess', { ns: 'clanIntegrationsSetting' })
 					});
 				}
 			} catch (error) {
@@ -135,7 +131,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 	);
 
 	const handleEditWebhook = useCallback(async () => {
-		if (!hasChange) return;
+		if (!hasChange || !webhookName?.trim()) return;
 
 		if (isClanIntegration) {
 			await updateClanWebhookProcess(webhook?.id, false);
@@ -153,14 +149,15 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		});
 	}, [
 		hasChange,
+		webhookName,
 		isClanIntegration,
-		updateClanWebhookProcess,
-		updateWebhookProcess,
-		webhook?.id,
-		webhook?.channel_id,
 		navigation,
+		webhook?.channel_id,
+		webhook?.id,
+		isClanSetting,
 		clanId,
-		isClanSetting
+		updateClanWebhookProcess,
+		updateWebhookProcess
 	]);
 
 	useLayoutEffect(() => {
@@ -168,7 +165,11 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 			headerStatusBarHeight: Platform.OS === 'android' ? 0 : undefined,
 			headerRight: () =>
 				hasChange ? (
-					<Pressable onPress={handleEditWebhook} style={styles.headerButton}>
+					<Pressable
+						disabled={!webhookName?.trim()}
+						onPress={handleEditWebhook}
+						style={[styles.headerButton, !webhookName?.trim() && styles.headerButtonDisabled]}
+					>
 						<Text style={styles.textHeader}>{t('webhooksEdit.save', { ns: 'clanIntegrationsSetting' })}</Text>
 					</Pressable>
 				) : null,
@@ -188,7 +189,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 
 			headerTitle: t('menuClanStack.webhooksEdit')
 		});
-	}, [hasChange, handleEditWebhook, styles.textHeader, t, handleResetChange, navigation, themeValue.text]);
+	}, [hasChange, handleEditWebhook, t, handleResetChange, navigation, webhookName]);
 
 	const channelMenu: IMezonMenuItemProps[] = useMemo(() => {
 		return [
@@ -268,11 +269,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 				});
 				Toast.show({
 					type: 'success',
-					props: {
-						text2: t('toast.deleteSuccess', { ns: 'clanIntegrationsSetting' }),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
-					},
-					text2Style: { fontSize: size.small }
+					text1: t('toast.deleteSuccess', { ns: 'clanIntegrationsSetting' })
 				});
 			} catch (error) {
 				console.error('Error deleting webhook:', error);
@@ -304,7 +301,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 			)
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
-	}, [t, themeValue.white, webhook?.webhook_name, handleDeleteWebhook, webhook]);
+	}, [t, webhook?.webhook_name, handleDeleteWebhook, webhook]);
 
 	return (
 		<View style={styles.wrapper}>
@@ -335,6 +332,9 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 				label={t('webhooksEdit.name', { ns: 'clanIntegrationsSetting' })}
 				value={webhookName}
 				onTextChange={handleChangeText}
+				maxCharacter={64}
+				isValid={!!webhookName?.trim()}
+				errorMessage={t('common:errorMaxLength', { ns: 'common', min: 1, max: 64 })}
 			/>
 
 			{!isClanIntegration && <MezonMenu menu={menu} />}

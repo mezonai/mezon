@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Your canvas title"
+	},
+	"editor": {
+		"placeholder": "Start typing...",
+		"uploadingImage": "Uploading image..."
+	},
+	"actions": {
+		"save": "Save",
+		"saving": "Saving...",
+		"discardChanges": "Discard changes"
+	},
+	"error": {
+		"title": "Error"
+	},
+	"toolbar": {
+		"blockFormat": "Block format",
+		"addLink": "Add link",
+		"removeLink": "Remove link",
+		"codeBlock": "Code Block",
+		"cancel": "Cancel",
+		"apply": "Apply"
+	},
+	"blocks": {
+		"paragraph": "Paragraph",
+		"h1": "H1 Big Heading",
+		"h2": "H2 Medium Heading",
+		"h3": "H3 Small Heading",
+		"checkedList": "Checked list",
+		"orderedList": "Ordered list",
+		"bulletedList": "Bulleted list",
+		"blockquote": "Blockquote"
+	}
+}

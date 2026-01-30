@@ -92,6 +92,10 @@ export type ApiMessageEntity =
 export interface ApiFormattedText {
 	text: string;
 	entities?: ApiMessageEntity[];
+	linkPreview: {
+		url: string;
+		index: number;
+	};
 }
 
 export enum ApiMessageEntityTypes {
@@ -233,11 +237,19 @@ export default function parseHtmlAsFormattedText(html: string, withMarkdownLinks
 	const trimShift = fragment.innerText.indexOf(text[0]);
 	let textIndex = -trimShift;
 	let recursionDeepness = 0;
+	const linkPreview = {
+		url: '',
+		index: -1
+	};
 	const entities: ApiMessageEntity[] = [];
 
 	function addEntity(node: ChildNode) {
 		if (node.nodeType === Node.COMMENT_NODE) return;
 		const { index, entity } = getEntityDataFromNode(node, text, textIndex);
+		if (!linkPreview.url && entity?.type === ApiMessageEntityTypes.Url) {
+			linkPreview.url = (entity as unknown as ApiMessageEntityTextUrl).url;
+			linkPreview.index = index;
+		}
 
 		if (entity) {
 			textIndex = index;
@@ -263,7 +275,8 @@ export default function parseHtmlAsFormattedText(html: string, withMarkdownLinks
 
 	return {
 		text,
-		entities: entities.length ? entities : undefined
+		entities: entities.length ? entities : undefined,
+		linkPreview
 	};
 }
 
@@ -395,7 +408,7 @@ function getEntityDataFromNode(node: ChildNode, rawText: string, textIndex: numb
 	const offset = rawText.substring(0, index).length;
 	const { length } = rawText.substring(index, index + node.textContent.length);
 
-	if (type === ApiMessageEntityTypes.TextUrl) {
+	if (type === ApiMessageEntityTypes.TextUrl || type === ApiMessageEntityTypes.Url) {
 		return {
 			index,
 			entity: {

@@ -42,6 +42,10 @@ export interface ElementToken {
 	clanId?: string;
 	parentId?: string;
 	channelLabel?: string;
+	title?: string;
+	image?: string;
+	description?: string;
+	index?: number;
 }
 
 export function extractIdsFromUrl(url: string) {
@@ -416,6 +420,24 @@ export const MessageLine = ({
 							messageId={messageId}
 							onContextMenu={onContextMenu}
 						/>
+					);
+				} else if (element.type === EBacktickType.OGP_PREVIEW) {
+					const url = element.index !== undefined ? t?.substring(mk[0]?.s ?? 0, mk[0]?.e) : '';
+					formattedContent.push(
+						<div className="h-28 w-72 rounded-md p-2 flex items-center gap-3 border border-theme-primary shadow-lg bg-theme-surface">
+							<img
+								className="h-16 aspect-square"
+								src={element.image}
+								onError={(e) => {
+									e.currentTarget.src = '/assets/images/warning.svg';
+								}}
+							/>
+							<div className="h-full flex-col flex justify-center w-[200px]">
+								<h5 className="text-sm font-semibold line-clamp-2">{element.title}</h5>
+								{!!element.description && <p className="text-xs line-clamp-2">{element.description}</p>}
+								{!!url && <p className="text-xs line-clamp-2 italic">{url}</p>}
+							</div>
+						</div>
 					);
 				} else {
 					let content = contentInElement ?? '';

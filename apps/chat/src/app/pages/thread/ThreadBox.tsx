@@ -36,7 +36,9 @@ import type { IMessageSendPayload, ThreadValue } from '@mezon/utils';
 import {
 	CHANNEL_INPUT_ID,
 	CREATING_THREAD,
+	IMAGE_MAX_FILE_SIZE,
 	MAX_FILE_ATTACHMENTS,
+	MAX_FILE_SIZE,
 	UploadLimitReason,
 	ValidateSpecialCharacters,
 	generateE2eId,
@@ -98,7 +100,7 @@ const ThreadBox = () => {
 	}, [membersOfParent]);
 
 	const createThread = useCallback(
-		async (value: ThreadValue, messageContent?: IMessageSendPayload) => {
+		async (value: ThreadValue, messageContent?: IMessageSendPayload, attachments?: Array<ApiMessageAttachment>) => {
 			const idParent = currentChannelParentId !== '0' ? currentChannelParentId : (currentChannelId as string);
 
 			if (!value.nameValueThread || !value.nameValueThread.trim()) {
@@ -122,7 +124,8 @@ const ThreadBox = () => {
 				return;
 			}
 
-			if (!messageContent?.t && !checkAttachment) {
+			const hasAttachments = (attachments?.length ?? 0) > 0;
+			if (!messageContent?.t && !hasAttachments) {
 				toast.warning(t('createThread.toast.initialMessageRequired'));
 				return;
 			}
@@ -142,7 +145,7 @@ const ThreadBox = () => {
 			const thread = await dispatch(createNewChannel(body));
 			return thread.payload;
 		},
-		[checkAttachment, currentChannelCategoryId, currentChannelParentId, currentChannelId, currentClanId, dispatch, t]
+		[currentChannelCategoryId, currentChannelParentId, currentChannelId, currentClanId, dispatch, t]
 	);
 
 	const handleSend = useCallback(
@@ -161,7 +164,13 @@ const ThreadBox = () => {
 		) => {
 			if (sessionUser) {
 				if (value?.nameValueThread && !threadCurrentChannel) {
-					const thread = (await createThread(value, content)) as ApiChannelDescription;
+					const shouldSeedStarterFromValueThread = Boolean(valueThread && openThreadMessageState);
+					const hasUserMessage = Boolean(content?.t && content.t.trim().length > 0) || (attachments?.length ?? 0) > 0;
+
+					const createThreadMessageContent = hasUserMessage ? content : valueThread?.content;
+					const createThreadAttachments = hasUserMessage ? attachments : valueThread?.attachments;
+
+					const thread = (await createThread(value, createThreadMessageContent, createThreadAttachments)) as ApiChannelDescription;
 					if (thread) {
 						await dispatch(
 							channelsActions.joinChat({
@@ -176,7 +185,19 @@ const ThreadBox = () => {
 							await addMemberToThread(thread as ChannelsEntity, usersNotExistingInThread);
 						}
 
-						await sendMessageThread(content, mentions, attachments, references, thread);
+						if (shouldSeedStarterFromValueThread && valueThread) {
+							await sendMessageThread(
+								valueThread.content,
+								valueThread.mentions,
+								valueThread.attachments,
+								valueThread.references,
+								thread
+							);
+						}
+
+						if (hasUserMessage) {
+							await sendMessageThread(content, mentions, attachments, references, thread);
+						}
 						await dispatch(
 							messagesActions.fetchMessages({
 								clanId: currentClanId || '',
@@ -214,7 +235,9 @@ const ThreadBox = () => {
 			currentInputChannelId,
 			request,
 			setNameValueThread,
-			addMemberToThread
+			addMemberToThread,
+			valueThread,
+			openThreadMessageState
 		]
 	);
 	const handleSendWithLimitCheck = useCallback(
@@ -231,18 +254,39 @@ const ThreadBox = () => {
 			ephemeralReceiverId?: string,
 			usersNotExistingInThread?: string[]
 		): Promise<boolean> => {
-			if (!threadCurrentChannel && valueThread) {
+			if (!threadCurrentChannel && valueThread && openThreadMessageState) {
 				if (valueThread.content?.t && valueThread.content.t.length > CONSTANT.LIMIT_CHARACTER_REACTION_INPUT_LENGTH) {
 					toast.error(t('createThread.toast.messageTooLong'));
 					return false;
 				}
+				if (content?.t && content.t.length > CONSTANT.LIMIT_CHARACTER_REACTION_INPUT_LENGTH) {
+					toast.error(t('createThread.toast.messageTooLong'));
+					return false;
+				}
+
+				const combinedAttachments = [...(attachments || []), ...attachmentData];
+				if (combinedAttachments.length > MAX_FILE_ATTACHMENTS) {
+					setOverUploadingState(true, UploadLimitReason.COUNT);
+					return false;
+				}
+
+				const getLimit = (attachment: ApiMessageAttachment) =>
+					attachment?.filetype?.startsWith('image/') ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE;
+				const oversizedAttachment = combinedAttachments.find((attachment) => (attachment?.size ?? 0) > getLimit(attachment));
+				if (oversizedAttachment) {
+					setOverUploadingState(true, UploadLimitReason.SIZE, getLimit(oversizedAttachment));
+					return false;
+				}
+
+				const hasUserText = Boolean(content?.t && content.t.trim().length > 0);
+				const userMentions = hasUserText ? (mentions ?? []) : [];
 				await handleSend(
-					valueThread.content,
-					valueThread.mentions || [],
-					attachmentData,
+					content,
+					userMentions,
+					combinedAttachments,
 					valueThread?.references,
 					{
-						nameValueThread: nameValueThread ?? valueThread?.content.t,
+						nameValueThread: nameValueThread ?? (hasUserText ? content.t : valueThread?.content.t),
 						isPrivate
 					},
 					anonymousMessage,
@@ -259,6 +303,20 @@ const ThreadBox = () => {
 				toast.error(t('createThread.toast.messageTooLong'));
 				return false;
 			}
+
+			if ((attachments?.length ?? 0) > MAX_FILE_ATTACHMENTS) {
+				setOverUploadingState(true, UploadLimitReason.COUNT);
+				return false;
+			}
+
+			const getAttachmentLimit = (attachment: ApiMessageAttachment) =>
+				attachment?.filetype?.startsWith('image/') ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE;
+			const oversizedAttachment = (attachments ?? []).find((attachment) => (attachment?.size ?? 0) > getAttachmentLimit(attachment));
+			if (oversizedAttachment) {
+				setOverUploadingState(true, UploadLimitReason.SIZE, getAttachmentLimit(oversizedAttachment));
+				return false;
+			}
+
 			await handleSend(
 				content,
 				mentions,
@@ -274,7 +332,7 @@ const ThreadBox = () => {
 			);
 			return true;
 		},
-		[handleSend, t, threadCurrentChannel, valueThread, attachmentData, nameValueThread, isPrivate]
+		[handleSend, t, threadCurrentChannel, valueThread, attachmentData, nameValueThread, isPrivate, openThreadMessageState, setOverUploadingState]
 	);
 
 	const handleTyping = useCallback(() => {
@@ -300,11 +358,13 @@ const ThreadBox = () => {
 		async (event: React.ClipboardEvent<HTMLDivElement>) => {
 			const items = Array.from(event.clipboardData?.items || []);
 			const files = items
-				.filter((item) => item.type.startsWith('image'))
+				.filter((item) => item.type.startsWith('image') || item.type.startsWith('video'))
 				.map((item) => item.getAsFile())
 				.filter((file): file is File => Boolean(file));
 
-			if (!files.length) return;
+			if (!files.length) {
+				return;
+			}
 
 			const totalFiles = files.length + (attachmentFilteredByChannelId?.files?.length || 0);
 			if (totalFiles > MAX_FILE_ATTACHMENTS) {
@@ -312,8 +372,14 @@ const ThreadBox = () => {
 				return;
 			}
 
-			const updatedFiles = await Promise.all(files.map(processFile<ApiMessageAttachment>));
+			const getLimit = (file: File) => (file.type?.startsWith('image/') ? IMAGE_MAX_FILE_SIZE : MAX_FILE_SIZE);
+			const oversizedFile = files.find((file) => file.size > getLimit(file));
+			if (oversizedFile) {
+				setOverUploadingState(true, UploadLimitReason.SIZE, getLimit(oversizedFile));
+				return;
+			}
 
+			const updatedFiles = await Promise.all(files.map(processFile<ApiMessageAttachment>));
 			dispatch(
 				referencesActions.setAtachmentAfterUpload({
 					channelId: currentInputChannelId,
@@ -462,20 +528,26 @@ const ThreadBox = () => {
 					className={`h-fit w-full bg-transparent shadow-md rounded-lg min-h-[45px] ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'} ${messageThreadError && !threadCurrentChannel ? 'border-[#B91C1C]' : ''}`}
 				>
 					{!threadCurrentChannel ? (
-						<div className={`w-full border-none rounded-r-lg gap-3 relative whitespace-pre-wrap`} onContextMenu={handleChildContextMenu}>
-							<MentionReactInput
-								currentChannelId={currentInputChannelId}
-								handlePaste={onPastedFiles}
-								onSend={handleSendWithLimitCheck}
-								onTyping={handleTypingDebounced}
-								listMentions={UserMentionList({
-									channelID: currentChannelId as string,
-									channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
-								})}
-								isThread={true}
-								isThreadbox={true}
-								allowEmptySend={true}
-							/>
+						<div
+							className={`flex flex-inline items-start gap-2 box-content w-full bg-theme-surface rounded-lg relative border-theme-primary ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}
+							onContextMenu={handleChildContextMenu}
+						>
+							<FileSelectionButton currentChannelId={currentInputChannelId} />
+							<div className="flex-1 min-w-0">
+								<MentionReactInput
+									currentChannelId={currentInputChannelId}
+									handlePaste={onPastedFiles}
+									onSend={handleSendWithLimitCheck}
+									onTyping={handleTypingDebounced}
+									listMentions={UserMentionList({
+										channelID: currentChannelId as string,
+										channelMode: ChannelStreamMode.STREAM_MODE_CHANNEL
+									})}
+									isThread={true}
+									isThreadbox={true}
+									allowEmptySend={true}
+								/>
+							</div>
 						</div>
 					) : (
 						<div
@@ -491,7 +563,7 @@ const ThreadBox = () => {
 									<MentionReactInput
 										currentChannelId={currentInputChannelId}
 										handlePaste={onPastedFiles}
-										onSend={handleSend}
+										onSend={handleSendWithLimitCheck}
 										onTyping={handleTypingDebounced}
 										listMentions={UserMentionList({
 											channelID: currentChannelId as string,

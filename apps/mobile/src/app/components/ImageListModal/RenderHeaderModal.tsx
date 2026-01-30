@@ -10,7 +10,7 @@ import {
 	selectMemberGroupByUserId,
 	selectMessageByMessageId
 } from '@mezon/store-mobile';
-import { convertTimeString, sleep } from '@mezon/utils';
+import { convertTimeString, sleep, UsersClanEntity } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -52,9 +52,28 @@ export const RenderHeaderModal = memo(
 			if (imageSelected?.clanId === '0' || !!currentDirectId || !imageSelected?.clanId) {
 				return selectMemberGroupByUserId(store.getState(), imageSelected?.channelId as string, imageSelected?.uploader as string);
 			} else {
-				return selectMemberClanByUserId(store.getState(), imageSelected?.uploader as string);
+				const memberClan = selectMemberClanByUserId(store.getState(), imageSelected?.uploader as string);
+				if (memberClan) {
+					return memberClan;
+				}
+	
+				if (imageSelected?.message_id && imageSelected?.channelId) {
+					const message = selectMessageByMessageId(store.getState(), imageSelected.channelId, imageSelected.message_id);
+					const data = {
+						clan_avatar: message?.clan_avatar,
+						clan_nick: message?.clan_nick,
+						user: {
+							avatar_url: message?.avatar,
+							username: message?.username,
+							display_name: message?.display_name,
+						}
+					} as UsersClanEntity
+					return data
+				}
+				return null;
 			}
 		}, [imageSelected]);
+		
 		const onClose = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		};

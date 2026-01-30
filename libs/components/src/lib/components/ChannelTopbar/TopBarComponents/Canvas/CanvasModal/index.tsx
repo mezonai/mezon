@@ -1,13 +1,11 @@
 import { useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import {
 	appActions,
-	canvasActions,
 	selectCanvasIdsByChannelId,
 	selectCurrentChannelChannelId,
 	selectCurrentChannelCreatorId,
 	selectCurrentChannelParentId,
 	selectCurrentClanId,
-	selectIdCanvas,
 	selectTheme,
 	useAppDispatch,
 	useAppSelector
@@ -15,13 +13,13 @@ import {
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import type { RefObject } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import EmptyCanvas from './EmptyCanvas';
 import GroupCanvas from './GroupCanvas';
 import SearchCanvas from './SearchCanvas';
-import { CANVAS_TYPES } from './constants';
 
 type CanvasProps = {
 	onClose: () => void;
@@ -31,14 +29,15 @@ type CanvasProps = {
 const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+	const { canvasId: currentCanvasId } = useParams<{ canvasId: string }>();
 	const channelId = useAppSelector(selectCurrentChannelChannelId);
 	const parentId = useAppSelector(selectCurrentChannelParentId);
 	const creatorChannelId = useAppSelector(selectCurrentChannelCreatorId);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const appearanceTheme = useSelector(selectTheme);
 	const [keywordSearch, setKeywordSearch] = useState('');
-	const currentIdCanvas = useSelector(selectIdCanvas);
-	const [selectedCanvasId, setSelectedCanvasId] = useState<string | null>(currentIdCanvas);
+	const [selectedCanvasId, setSelectedCanvasId] = useState<string | null>(currentCanvasId || null);
 	const canvases = useAppSelector((state) => selectCanvasIdsByChannelId(state, channelId ?? '', parentId));
 	const filteredCanvases = useMemo(() => {
 		if (!keywordSearch) return canvases;
@@ -46,27 +45,20 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 		return canvases.filter((entity) => entity.title.toLowerCase().includes(lowerCaseQuery));
 	}, [canvases, keywordSearch]);
 
-	useEffect(() => {
-		if (currentIdCanvas && !selectedCanvasId) {
-			setSelectedCanvasId(currentIdCanvas);
-		}
-	}, [currentIdCanvas, selectedCanvasId]);
-
-	const handleCreateCanvas = () => {
+	const handleCreateCanvas = async () => {
 		const isThread = Boolean(parentId && parentId !== '0');
 		const id = channelId;
 
-		if (!id) {
+		if (!id || !currentClanId) {
 			console.error('Error: ID is undefined. Check channel data');
 			return;
 		}
-		const type = isThread ? CANVAS_TYPES.THREAD : CANVAS_TYPES.CHANNEL;
-		dispatch(canvasActions.setParentId(isThread ? parentId || null : id));
-		dispatch(canvasActions.setType(type));
+
 		dispatch(appActions.setIsShowCanvas(true));
-		dispatch(canvasActions.setTitle(''));
-		dispatch(canvasActions.setContent(''));
-		dispatch(canvasActions.setIdCanvas(null));
+		const newCanvasPath = isThread
+			? `/chat/clans/${currentClanId}/threads/${id}/canvas/new`
+			: `/chat/clans/${currentClanId}/channels/${id}/canvas/new`;
+		navigate(newCanvasPath);
 		onClose();
 	};
 
@@ -92,7 +84,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 					</div>
 					<SearchCanvas setKeywordSearch={setKeywordSearch} />
 					<div className="flex flex-row items-center gap-4">
-						<button 
+						<button
 							onClick={handleCreateCanvas}
 							className="px-3 h-6 rounded-lg btn-primary btn-primary-hover text-sm"
 							data-e2e={generateE2eId('chat.channel_message.header.button.canvas.modal.canvas_management.button.create_canvas')}

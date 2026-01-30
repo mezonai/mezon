@@ -1,5 +1,6 @@
 import { useGetPriorityNameFromUserClan } from '@mezon/core';
-import { IMentionOnMessage, IMessageWithUser, INotification, TOPBARS_MAX_WIDTH, TypeMessage, addMention, createImgproxyUrl } from '@mezon/utils';
+import type { IMentionOnMessage, IMessageWithUser, INotification } from '@mezon/utils';
+import { TOPBARS_MAX_WIDTH, TypeMessage, addMention, createImgproxyUrl } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';

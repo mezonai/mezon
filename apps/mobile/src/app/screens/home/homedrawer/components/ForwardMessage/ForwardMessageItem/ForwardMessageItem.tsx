@@ -52,7 +52,7 @@ function ForwardMessageItem({
 					</View>
 				) : (
 					<View style={styles.groupAvatarDefaultContainer}>
-						<MezonIconCDN icon={IconCDN.userGroupIcon} width={size.s_16} height={size.s_16} color={themeValue.white} />
+						<MezonIconCDN icon={IconCDN.userGroupIcon} width={size.s_16} height={size.s_16} color={baseColor.white} />
 					</View>
 				);
 			case ChannelType.CHANNEL_TYPE_CHANNEL:

@@ -38,7 +38,7 @@ export const style = (colors: Attributes, colorUsername?: string) =>
 			paddingVertical: size.s_8
 		},
 		nameItem: {
-			gap: size.s_4,
+			gap: size.s_2,
 			justifyContent: 'center',
 			width: '100%'
 		},

@@ -5,7 +5,6 @@ import {
 	selectNotificationClan,
 	selectNotificationForYou,
 	selectNotificationMentions,
-	selectTheme,
 	selectTopicsSort,
 	topicsActions,
 	useAppDispatch
@@ -44,7 +43,6 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	const { t } = useTranslation('notifications');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const dispatch = useAppDispatch();
-	const appearanceTheme = useSelector(selectTheme);
 	const [currentTabNotify, setCurrentTabNotify] = useState(InboxType.MENTIONS);
 
 	const tabDataNotify = useMemo(
@@ -162,13 +160,11 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				</div>
 			</div>
 
-			<div
-				className={` flex flex-col max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
-			>
+			<div className={` flex flex-col max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden app-scroll`}>
 				{currentTabNotify === InboxType.INDIVIDUAL && (
 					<div
 						ref={listRefForYou}
-						className={`max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+						className={`max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden app-scroll`}
 						onScroll={handleScroll(NotificationCategory.FOR_YOU, allNotificationForYou?.lastId)}
 					>
 						{getAllNotificationForYou.length > 0 ? (
@@ -184,7 +180,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				{currentTabNotify === InboxType.MENTIONS && (
 					<div
 						ref={listRefMentions}
-						className={`max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+						className={`max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden app-scroll`}
 						onScroll={handleScroll(NotificationCategory.MENTIONS, allNotificationMentions?.lastId)}
 					>
 						{getAllNotificationMentions.length > 0 ? (
@@ -204,7 +200,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 				{currentTabNotify === InboxType.MESSAGES && (
 					<div
 						ref={listRefMessages}
-						className={`max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+						className={`max-w-[600px] max-h-heightInBox overflow-y-auto overflow-x-hidden app-scroll`}
 						onScroll={handleScroll(NotificationCategory.MESSAGES, allNotificationClan?.lastId)}
 					>
 						{getAllNotificationClan.length > 0 ? (

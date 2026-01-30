@@ -11,7 +11,7 @@ import {
 	setSelectedMessage,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { ETypeLinkMedia, ID_MENTION_HERE, TypeMessage, isValidEmojiData } from '@mezon/utils';
+import { ETypeLinkMedia, ID_MENTION_HERE, SHARE_CONTACT_KEY, TypeMessage, isValidEmojiData } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment, ApiMessageMention } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo, useRef } from 'react';
@@ -132,6 +132,10 @@ const MessageItem = React.memo(
 			[isDM, message?.display_name, message?.username, message?.clan_nick, message?.user?.username, checkAnonymous]
 		);
 
+		const senderUsername = useMemo(() => {
+			return message?.username || message?.user?.username || '';
+		}, [message?.username, message?.user?.username]);
+
 		const onReplyMessage = useCallback(() => {
 			const payload: IMessageActionNeedToResolve = {
 				type: EMessageActionType.Reply,
@@ -229,14 +233,15 @@ const MessageItem = React.memo(
 
 		const contactData = useMemo((): IContactData | null => {
 			const embed = message?.content?.embed?.[0];
-			if (message?.code !== TypeMessage.ShareContact && embed?.fields?.[0]?.value !== 'share_contact') return null;
-
-			return {
-				user_id: embed?.fields?.[1]?.value || '',
-				username: embed?.fields?.[2]?.value || '',
-				display_name: embed?.fields?.[3]?.value || '',
-				avatar: embed?.fields?.[4]?.value || ''
-			};
+			if (message?.code === TypeMessage.ShareContact || embed?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+				return {
+					user_id: embed?.fields?.[1]?.value || '',
+					username: embed?.fields?.[2]?.value || '',
+					display_name: embed?.fields?.[3]?.value || '',
+					avatar: embed?.fields?.[4]?.value || ''
+				};
+			}
+			return null;
 		}, [message?.code, message?.content?.embed]);
 
 		const onLongPressImage = useCallback(
@@ -475,6 +480,7 @@ const MessageItem = React.memo(
 											avatarUrl={messageAvatar}
 											isSelf={message?.user?.id === userId}
 											senderName={senderDisplayName}
+											senderUsername={senderUsername}
 										/>
 									)}
 									{/* check  */}

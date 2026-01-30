@@ -1,6 +1,7 @@
 import { isEmpty, load, STORAGE_MY_USER_ID, validLinkGoogleMapRegex } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { isContainsUrl } from '@mezon/transport';
+import { SHARE_CONTACT_KEY } from '@mezon/utils';
 import { ChannelType, safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -64,7 +65,7 @@ export const MessagePreviewLastest = React.memo(
 			if (embed) {
 				if (embed?.title || embed?.description) {
 					return `${embed?.title || embed?.description}`;
-				} else if (embed?.fields?.[0]?.value === 'share_contact') {
+				} else if (embed?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
 					return `[${t('attachments.contact')}]`;
 				} else {
 					return ``;

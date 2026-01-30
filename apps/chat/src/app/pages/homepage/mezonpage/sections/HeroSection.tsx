@@ -135,22 +135,6 @@ export const HeroSection = ({ homeRef, isVisible }: HeroSectionProps) => {
 							className="w-full h-auto relative"
 							onLoad={() => setIsImageLoaded(true)}
 						/>
-
-						<div className="absolute top-10 left-10 max-md:left-2 max-md:top-5 bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg z-20">
-							#wol
-						</div>
-						<div className="absolute top-1/4 right-10 max-md:right-2 bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
-							#synda
-						</div>
-						<div className="absolute bottom-20 left-20 max-md:left-5 max-md:bottom-10 bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
-							#daily
-						</div>
-						<div className="absolute bottom-32 right-16 max-md:right-5 max-md:bottom-16 bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
-							#help
-						</div>
-						<div className="absolute top-1/2 right-8 max-md:right-2 bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold shadow-lg">
-							#order
-						</div>
 					</div>
 				</div>
 			</div>

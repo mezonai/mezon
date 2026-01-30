@@ -1,4 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
+import { DEFAULT_WS_URL, getMezonConfig } from '@mezon/transport';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
@@ -127,11 +128,15 @@ export const refreshSession = createAsyncThunk('auth/refreshSession', async (_, 
 		return thunkAPI.rejectWithValue('Invalid session tokens');
 	}
 
+	const config = getMezonConfig();
+	const wsUrl = config.ws_url || DEFAULT_WS_URL;
+
 	let session = new Session(
 		sessionState.token,
 		sessionState.refresh_token,
 		sessionState.created,
 		sessionState.api_url,
+		wsUrl,
 		sessionState.id_token || '',
 		!!sessionState.is_remember
 	);

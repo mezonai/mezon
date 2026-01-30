@@ -302,7 +302,7 @@ export default function ChannelStream({
 		if (currentStreamInfo.streamId !== currentChannel.id || (!streamPlay && currentStreamInfo?.streamId === currentChannel.id)) {
 			dispatch(appActions.setIsShowChatStream(false));
 		}
-	}, [currentChannel, currentStreamInfo, currentClanId]);
+	}, [currentChannel, currentStreamInfo, currentClanId, dispatch, streamPlay]);
 
 	const handleLeaveChannel = async () => {
 		if (currentStreamInfo) {
@@ -403,7 +403,7 @@ export default function ChannelStream({
 				onMouseMove={handleMouseMoveOrClick}
 				onClick={handleMouseMoveOrClick}
 			>
-				<div className="flex flex-col justify-center gap-2 w-full bg-black">
+				<div className="flex flex-col justify-center gap-2 w-full bg-theme-setting-primary border-theme-primary">
 					<div className={`relative min-h-40 h-fit items-center flex justify-center ${memberJoin.length > 0 && showMembers ? 'mt-6' : ''}`}>
 						{isStream ? (
 							<div
@@ -412,7 +412,7 @@ export default function ChannelStream({
 								<HLSPlayer videoRef={streamVideoRef} currentChannel={currentChannel} />
 							</div>
 						) : (
-							<div className="sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] dark:text-[#AEAEAE] text-colorTextLightMode dark:bg-bgSecondary600 bg-channelTextareaLight text-5xl flex justify-center items-center text-center">
+							<div className="sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] text-theme-primary bg-theme-setting-nav text-5xl flex justify-center items-center text-center border-theme-primary">
 								<span>{t('noStreamToday')}</span>
 							</div>
 						)}

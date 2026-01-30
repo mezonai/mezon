@@ -1,7 +1,7 @@
 import { useTheme } from '@mezon/mobile-ui';
 import type { PinMessageEntity } from '@mezon/store-mobile';
 import { messagesActions, selectMemberClanByUserId, selectMessageByMessageId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
-import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
+import { SHARE_CONTACT_KEY, type IExtendedMessage, type IMessageWithUser } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
@@ -96,14 +96,15 @@ const PinMessageItem = memo(({ pinMessageItem, handleUnpinMessage, contentMessag
 
 	const contactData = useMemo((): IContactData | null => {
 		const embed = contentMessage?.embed?.[0];
-		if (embed?.fields?.[0]?.value !== 'share_contact') return null;
-
-		return {
-			user_id: embed?.fields?.[1]?.value || '',
-			username: embed?.fields?.[2]?.value || '',
-			display_name: embed?.fields?.[3]?.value || '',
-			avatar: embed?.fields?.[4]?.value || ''
-		};
+		if (embed?.fields?.[0]?.value === SHARE_CONTACT_KEY) {
+			return {
+				user_id: embed?.fields?.[1]?.value || '',
+				username: embed?.fields?.[2]?.value || '',
+				display_name: embed?.fields?.[3]?.value || '',
+				avatar: embed?.fields?.[4]?.value || ''
+			};
+		}
+		return null;
 	}, [contentMessage?.embed?.[0]]);
 
 	return (

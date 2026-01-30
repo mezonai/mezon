@@ -12,14 +12,17 @@ import {
 	isTikTokLink,
 	isYouTubeLink
 } from '@mezon/utils';
+import type { Element, Root } from 'hast';
+import { common, createLowlight } from 'lowlight';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useMessageContextMenu } from '../ContextMenu';
 import InviteAcceptModal from '../InviteAcceptModal';
+import './highlight-github-dark.scss';
 
 type MarkdownContentOpt = {
 	content?: string;
@@ -60,44 +63,80 @@ const isGoogleMapsLink = (url?: string) => {
 	);
 };
 
-export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
-	content,
-	isJumMessageEnabled,
-	isTokenClickAble,
-	isInPinMsg,
-	isLink,
-	isBacktick,
-	typeOfBacktick,
-	isReply,
-	isSearchMessage,
-	messageId,
-	onContextMenu
-}) => {
+const extractLanguageFromCodeBlock = (content: string): { language: string | null; code: string } => {
+	if (!content) return { language: null, code: content };
+
+	const lines = content.split('\n');
+	const firstLine = lines[0]?.trim();
+	const languagePattern = /^[a-zA-Z][a-zA-Z0-9_-]*$/;
+
+	if (firstLine && languagePattern.test(firstLine) && lines.length > 1) {
+		return {
+			language: firstLine.toLowerCase(),
+			code: lines.slice(1).join('\n')
+		};
+	}
+
+	return { language: null, code: content };
+};
+
+const lowlight = createLowlight(common);
+
+function isLanguageRegistered(language: string): boolean {
+	const lowLang = language.toLowerCase();
+	return lowlight.registered(lowLang);
+}
+
+function highlightCode(text: string, language: string | null): Root | null {
+	if (!text) {
+		return null;
+	}
+
+	if (!language) {
+		try {
+			return lowlight.highlightAuto(text);
+		} catch {
+			return null;
+		}
+	}
+
+	const lowLang = language.toLowerCase();
+
+	if (isLanguageRegistered(lowLang)) {
+		try {
+			return lowlight.highlight(lowLang, text);
+		} catch (error) {
+			try {
+				return lowlight.highlightAuto(text);
+			} catch {
+				return null;
+			}
+		}
+	}
+
+	try {
+		return lowlight.highlightAuto(text);
+	} catch {
+		return null;
+	}
+}
+
+type LinkContentProps = {
+	content: string;
+	messageId?: string;
+	isJumMessageEnabled: boolean;
+	isTokenClickAble: boolean;
+	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
+};
+
+const LinkContent = memo<LinkContentProps>(({ content, messageId, isJumMessageEnabled, isTokenClickAble, onContextMenu }) => {
 	const { t } = useTranslation('common');
-	const appearanceTheme = useSelector(selectTheme);
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const { showMessageContextMenu } = useMessageContextMenu();
 	const origin = `${process.env.NX_CHAT_APP_REDIRECT_URI}/invite/`;
 	const originClan = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/clans/`;
 	const originDirect = `${process.env.NX_CHAT_APP_REDIRECT_URI}/chat/direct/message/`;
-
-	const handleContextMenu = useCallback(
-		(event: React.MouseEvent<HTMLElement>) => {
-			event.preventDefault();
-			event.stopPropagation();
-
-			if (isLink && content && messageId) {
-				showMessageContextMenu(event, messageId, ChannelStreamMode.STREAM_MODE_CHANNEL, false, {
-					linkContent: content,
-					isLinkContent: true
-				});
-			} else if (onContextMenu) {
-				onContextMenu(event);
-			}
-		},
-		[isLink, content, messageId, showMessageContextMenu, onContextMenu]
-	);
 
 	const [isLoadingInvite, setIsLoadingInvite] = useState(false);
 	const [inviteError, setInviteError] = useState<string | null>(null);
@@ -113,7 +152,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	);
 
 	const [openInviteModal, closeInviteModal] = useModal(() => {
-		const inviteId = extractInviteId(content || '');
+		const inviteId = extractInviteId(content);
 		if (!inviteId) return null;
 
 		return (
@@ -127,7 +166,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				showModal={true}
 			/>
 		);
-	}, [content]);
+	}, [content, extractInviteId]);
 
 	const [openLoadingModal, closeLoadingModal] = useModal(() => {
 		if (!isLoadingInvite && !inviteError) return null;
@@ -161,13 +200,14 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				</div>
 			</div>
 		);
-	}, [isLoadingInvite, inviteError]);
+	}, [isLoadingInvite, inviteError, t]);
 
-	const onClickLink = useCallback(
-		async (url: string) => {
+	const handleClickLink = useCallback(
+		async (e: React.MouseEvent) => {
+			e.preventDefault();
 			if (!isJumMessageEnabled || isTokenClickAble) {
-				if (url.startsWith(origin)) {
-					const inviteId = url.replace(origin, '');
+				if (content.startsWith(origin)) {
+					const inviteId = content.replace(origin, '');
 					if (inviteId) {
 						try {
 							setIsLoadingInvite(true);
@@ -184,7 +224,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 								setIsLoadingInvite(false);
 								setInviteError(t('inviteLoadFailed'));
 							}
-						} catch (error) {
+						} catch {
 							setIsLoadingInvite(false);
 							setInviteError(t('inviteLoadFailed'));
 						}
@@ -192,13 +232,13 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 					return;
 				}
 
-				if (url.startsWith(originClan) || url.startsWith(originDirect)) {
-					const urlInvite = new URL(url);
+				if (content.startsWith(originClan) || content.startsWith(originDirect)) {
+					const urlInvite = new URL(content);
 					dispatch(inviteActions.setIsClickInvite(true));
 
 					navigate(urlInvite.pathname);
 
-					const params = extractChannelParams(url);
+					const params = extractChannelParams(content);
 
 					if (!params?.channelId || !params?.clanId || !params?.code) return;
 
@@ -219,13 +259,14 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 						);
 					}
 				} else {
-					window.open(url, '_blank');
+					window.open(content, '_blank');
 				}
 			}
 		},
 		[
 			isJumMessageEnabled,
 			isTokenClickAble,
+			content,
 			origin,
 			originClan,
 			originDirect,
@@ -233,47 +274,75 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 			navigate,
 			openInviteModal,
 			openLoadingModal,
-			closeLoadingModal
+			closeLoadingModal,
+			t
 		]
 	);
+
+	const handleContextMenu = useCallback(
+		(event: React.MouseEvent<HTMLElement>) => {
+			event.preventDefault();
+			event.stopPropagation();
+
+			if (messageId) {
+				showMessageContextMenu(event, messageId, ChannelStreamMode.STREAM_MODE_CHANNEL, false, {
+					linkContent: content,
+					isLinkContent: true
+				});
+			} else if (onContextMenu) {
+				onContextMenu(event);
+			}
+		},
+		[content, messageId, showMessageContextMenu, onContextMenu]
+	);
+
+	const isGoogleMaps = isGoogleMapsLink(content);
+
+	return (
+		<a
+			href={content}
+			onClick={handleClickLink}
+			onContextMenu={handleContextMenu}
+			rel="noopener noreferrer"
+			className="text-blue-500 cursor-pointer break-words underline tagLink"
+			target="_blank"
+		>
+			{isGoogleMaps ? <span>{t('locationSharedMessage')}</span> : content}
+		</a>
+	);
+});
+
+LinkContent.displayName = 'LinkContent';
+
+export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
+	content,
+	isJumMessageEnabled,
+	isTokenClickAble,
+	isInPinMsg,
+	isLink,
+	isBacktick,
+	typeOfBacktick,
+	isReply,
+	isSearchMessage,
+	messageId,
+	onContextMenu
+}) => {
+	const appearanceTheme = useSelector(selectTheme);
 
 	const isLightMode = appearanceTheme === 'light';
 	const posInNotification = !isJumMessageEnabled && !isTokenClickAble;
 	const posInReply = isJumMessageEnabled && !isTokenClickAble;
 
 	return (
-		<div
-			onContextMenu={handleContextMenu}
-			className={` inline${!isLink ? ' bg-item-theme rounded-lg' : ''} ${isJumMessageEnabled ? 'whitespace-nowrap' : ''}`}
-		>
-			{isLink && content && isGoogleMapsLink(content) ? (
-				<a
-					href={content}
-					onClick={(e) => {
-						e.preventDefault();
-						onClickLink(content);
-					}}
-					rel="noopener noreferrer"
-					className="text-blue-500 cursor-pointer break-words underline tagLink"
-					target="_blank"
-				>
-					<span>{t('locationSharedMessage')}</span>
-				</a>
-			) : (
-				isLink && (
-					<a
-						href={content ?? '#'}
-						onClick={(e) => {
-							e.preventDefault();
-							onClickLink(content ?? '');
-						}}
-						rel="noopener noreferrer"
-						className="text-blue-500 cursor-pointer break-words underline tagLink"
-						target="_blank"
-					>
-						{content}
-					</a>
-				)
+		<div className={` inline${!isLink ? ' bg-item-theme rounded-lg' : ''} ${isJumMessageEnabled ? 'whitespace-nowrap' : ''}`}>
+			{isLink && content && (
+				<LinkContent
+					content={content}
+					messageId={messageId}
+					isJumMessageEnabled={isJumMessageEnabled}
+					isTokenClickAble={isTokenClickAble}
+					onContextMenu={onContextMenu}
+				/>
 			)}
 
 			{!isReply && isLink && content && isYouTubeLink(content) && (
@@ -329,6 +398,70 @@ const SingleBacktick: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: _
 	);
 };
 
+const treeToElements = (tree: Element | Root): React.ReactNode => {
+	const children = tree.children
+		.map((child) => {
+			if (child.type === 'text') {
+				return child.value;
+			}
+			if (child.type === 'element') {
+				return treeToElements(child);
+			}
+			return null;
+		})
+		.filter((child) => child !== null);
+
+	if (tree.type === 'root') {
+		return children;
+	}
+
+	const name = tree.tagName;
+	const classNameArray = tree.properties?.className as string[] | undefined;
+	const className = classNameArray?.join(' ');
+
+	return React.createElement(name, { className }, ...children);
+};
+
+const CodeHighlighter: React.FC<{ code: string; language: string | null; isInPinMsg?: boolean }> = ({ code, language, isInPinMsg }) => {
+	const [highlightedElements, setHighlightedElements] = useState<React.ReactNode | null>(null);
+
+	useEffect(() => {
+		if (!code || !language) {
+			setHighlightedElements(null);
+			return;
+		}
+
+		try {
+			const result = highlightCode(code, language);
+			if (result) {
+				const elements = treeToElements(result);
+				setHighlightedElements(elements);
+			} else {
+				setHighlightedElements(null);
+			}
+		} catch (error) {
+			console.warn('Failed to highlight code:', error);
+			setHighlightedElements(null);
+		}
+	}, [code, language]);
+
+	const codeClassName = `text-sm w-full whitespace-pre-wrap break-words break-all text-theme-message ${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`;
+
+	if (highlightedElements && Array.isArray(highlightedElements) && highlightedElements.length > 0) {
+		return (
+			<code style={{ fontFamily: 'sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word' }} className={codeClassName}>
+				{highlightedElements}
+			</code>
+		);
+	}
+
+	return (
+		<code style={{ fontFamily: 'sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word' }} className={codeClassName}>
+			{code}
+		</code>
+	);
+};
+
 const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: _isLightMode, isInPinMsg }) => {
 	const [copied, setCopied] = useState(false);
 
@@ -347,6 +480,8 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: 
 			.catch((err) => console.error('Failed to copy text: ', err));
 	};
 
+	const { language, code } = useMemo(() => extractLanguageFromCodeBlock(contentBacktick || ''), [contentBacktick]);
+
 	return (
 		<div className="py-1 relative">
 			<pre
@@ -356,12 +491,7 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: 
 				<button className="absolute right-2 top-3" onClick={handleCopyClick}>
 					{copied ? <Icons.PasteIcon /> : <Icons.CopyIcon />}
 				</button>
-				<code
-					style={{ fontFamily: 'sans-serif', wordBreak: 'break-word', overflowWrap: 'break-word' }}
-					className={`text-sm w-full whitespace-pre-wrap break-words break-all text-theme-message ${isInPinMsg ? 'whitespace-pre-wrap block break-words w-full' : ''}`}
-				>
-					{contentBacktick}
-				</code>
+				<CodeHighlighter code={code} language={language} isInPinMsg={isInPinMsg} />
 			</pre>
 		</div>
 	);

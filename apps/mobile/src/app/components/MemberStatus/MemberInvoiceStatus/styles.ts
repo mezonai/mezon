@@ -12,7 +12,6 @@ export const style = (colors: Attributes) =>
 		},
 		voiceText: {
 			color: colors.textDisabled,
-			fontSize: size.s_12,
-			fontWeight: '500'
+			fontSize: size.s_10
 		}
 	});
