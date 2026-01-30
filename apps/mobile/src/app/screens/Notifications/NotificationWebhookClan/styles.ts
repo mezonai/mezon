@@ -5,7 +5,9 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		notifyContainer: {
 			paddingHorizontal: size.s_10,
-			marginBottom: size.s_10
+			borderBottomWidth: size.s_2,
+			borderBottomColor: colors.secondaryLight,
+			paddingVertical: size.s_6
 		},
 
 		notifyHeader: {
