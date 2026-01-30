@@ -1,11 +1,10 @@
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import { Icons, NameComponent } from '@mezon/ui';
-import type { IChannelMember } from '@mezon/utils';
 import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize, getNameForPrioritize } from '@mezon/utils';
 import { AvatarImage } from '../../components';
 
-function UserListItem({ user }: { user: IChannelMember }) {
-	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user.user_id ?? ''));
+function UserListItem({ id }: { id: string }) {
+	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, id ?? ''));
 	const name = getNameForPrioritize(userStream?.clan_nick, userStream?.user?.display_name, userStream?.user?.username);
 	const avatar = getAvatarForPrioritize(userStream?.clan_avatar, userStream?.user?.avatar_url);
 
@@ -29,13 +28,7 @@ function UserListItem({ user }: { user: IChannelMember }) {
 					)}
 				</div>
 			</div>
-			<div>
-				{userStream ? (
-					<NameComponent id={user.user_id || ''} name={name || ''} />
-				) : (
-					<p className="text-sm font-medium ">{user.participant}</p>
-				)}
-			</div>
+			<div>{userStream ? <NameComponent id={userStream.id || ''} name={name || ''} /> : null}</div>
 		</div>
 	);
 }
