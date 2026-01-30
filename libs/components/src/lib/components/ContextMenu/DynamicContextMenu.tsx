@@ -29,7 +29,7 @@ import ReactionItem from './ReactionItem';
 import ReactionPart from './ReactionPart';
 import { SearchableCommandList } from './SearchableCommandList';
 
-interface SlashCommand {
+interface QuickMenu {
 	id: string;
 	display: string;
 	action_msg?: string;
@@ -43,7 +43,7 @@ interface SlashCommand {
 interface CommandOption {
 	value: string;
 	label: string;
-	command: SlashCommand;
+	command: QuickMenu;
 }
 
 type Props = {
@@ -52,11 +52,11 @@ type Props = {
 	messageId: string;
 	message: IMessageWithUser;
 	isTopic?: boolean;
-	onSlashCommandExecute?: (command: SlashCommand) => void;
+	onQuickMenuExecute?: (command: QuickMenu) => void;
 	currentChannelId?: string;
 };
 
-export default function DynamicContextMenu({ menuId, items, messageId, message, isTopic, onSlashCommandExecute, currentChannelId }: Props) {
+export default function DynamicContextMenu({ menuId, items, messageId, message, isTopic, onQuickMenuExecute, currentChannelId }: Props) {
 	const emojiConverted = useEmojiConverted();
 	const { t } = useTranslation('contextMenu');
 
@@ -100,7 +100,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 	}, [emojiConverted]) as IEmoji[];
 
 	const [warningStatus, setWarningStatus] = useState<string>('var(--bg-item-hover)');
-	const [isLoadingCommands, setIsLoadingCommands] = useState(false);
+	const [isQuickMenu, setIsLoadingCommands] = useState(false);
 	const dispatch = useAppDispatch();
 
 	const className = useMemo(
@@ -129,13 +129,13 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		return false;
 	}, [posShowMenu]);
 
-	const handleSlashCommandClick = useCallback(
-		async (command: SlashCommand) => {
+	const handleQuickMenuClick = useCallback(
+		async (quickMenu: QuickMenu) => {
 			const store = getStore();
 			const userProfile = selectAllAccount(store.getState());
 			const profileInClan = selectMemberClanByUserId(store.getState(), userProfile?.user?.id ?? '');
 
-			if (command.menu_type === QUICK_MENU_TYPE.QUICK_MENU) {
+			if (quickMenu.menu_type === QUICK_MENU_TYPE.QUICK_MENU) {
 				try {
 					const channelId = currentChannelId || currentChannelId || '';
 					const clanId = currentChannelClanId || '';
@@ -146,7 +146,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 						quickMenuActions.writeQuickMenuEvent({
 							channelId,
 							clanId,
-							menuName: command.display || command.menu_name || '',
+							menuName: quickMenu.display || quickMenu.menu_name || '',
 							mode,
 							isPublic,
 							content: message.content,
@@ -163,17 +163,17 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 				} catch (error) {
 					console.error('Error sending quick menu event:', error);
 				}
-			} else if (command.action_msg && onSlashCommandExecute) {
-				onSlashCommandExecute(command);
+			} else if (quickMenu.action_msg && onQuickMenuExecute) {
+				onQuickMenuExecute(quickMenu);
 			}
 		},
-		[onSlashCommandExecute, dispatch, currentChannelId, messageId, message, isFocusTopicBox, currenTopicId]
+		[onQuickMenuExecute, dispatch, currentChannelId, messageId, message, isFocusTopicBox, currenTopicId]
 	);
 
 	const quickMenuItems = useAppSelector((state) => selectQuickMenusByChannelId(state, currentChannelId || ''));
 
-	const slashCommandOptions = useMemo(() => {
-		if (isLoadingCommands) {
+	const quickMenuOptions = useMemo(() => {
+		if (isQuickMenu) {
 			return [];
 		}
 
@@ -189,20 +189,20 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 				isBuiltIn: false
 			}
 		}));
-	}, [quickMenuItems, isLoadingCommands]);
+	}, [quickMenuItems, isQuickMenu]);
 
-	const handleCommandSelect = useCallback(
+	const handleQuickMenuSelect = useCallback(
 		(selectedOption: CommandOption | null) => {
 			if (selectedOption && selectedOption.command) {
-				handleSlashCommandClick(selectedOption.command);
+				handleQuickMenuClick(selectedOption.command);
 			}
 		},
-		[handleSlashCommandClick]
+		[handleQuickMenuClick]
 	);
 
 	const shouldShowQuickMenu = useMemo(() => {
-		return quickMenuItems.length > 0 || isLoadingCommands;
-	}, [quickMenuItems, isLoadingCommands]);
+		return quickMenuItems.length > 0 || isQuickMenu;
+	}, [quickMenuItems, isQuickMenu]);
 
 	const dropdownReact = useMemo(() => {
 		const reactItems: ReactElement[] = [];
@@ -254,24 +254,24 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		return <>{reactItems}</>;
 	}, [firstFourElements, handleClickEmoji, isTopic, items, message, messageId, t]);
 
-	const dropdownSlashCommands = useMemo(() => {
-		if (isLoadingCommands) {
+	const dropdownQuickMenus = useMemo(() => {
+		if (isQuickMenu) {
 			return (
 				<div className="w-[320px] p-4 text-center text-gray-500">
 					<div className="flex items-center justify-center gap-2 mb-2">
 						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="animate-spin">
 							<circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" strokeDasharray="30" strokeDashoffset="30" />
 						</svg>
-						<span>{t('loadingCommands')}</span>
+						<span>{t('loadingQuickMenus')}</span>
 					</div>
 				</div>
 			);
 		}
 
-		if (slashCommandOptions.length === 0) {
+		if (quickMenuOptions.length === 0) {
 			return (
 				<div className="w-[320px] p-4 text-center text-gray-500">
-					<span>{t('noCommandsAvailable')}</span>
+					<span>{t('noQuickMenusAvailable')}</span>
 				</div>
 			);
 		}
@@ -279,16 +279,16 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		return (
 			<Item onKeyDown={(e) => e.stopPropagation()} onKeyUp={(e) => e.stopPropagation()} onKeyPress={(e) => e.stopPropagation()}>
 				<SearchableCommandList
-					options={slashCommandOptions}
-					onChange={handleCommandSelect}
-					placeholder={t('typeToSearchSlashCommands')}
-					isLoading={isLoadingCommands}
+					options={quickMenuOptions}
+					onChange={handleQuickMenuSelect}
+					placeholder={t('typeToSearchQuickMenus')}
+					isLoading={isQuickMenu}
 					className="w-[320px]"
 					autoFocus={true}
 				/>
 			</Item>
 		);
-	}, [isLoadingCommands, slashCommandOptions, handleCommandSelect, t]);
+	}, [isQuickMenu, quickMenuOptions, handleQuickMenuSelect, t]);
 
 	const children = useMemo(() => {
 		const elements: React.ReactNode[] = [];
@@ -310,15 +310,15 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 			if (item.label === t('copyText') && checkPos) elements.push(<Separator key={`separator-${index}`} />);
 			if (item.label === t('copyLink') && checkPos) elements.push(<Separator key={`separator-${index}`} />);
 			if (item.label === t('copyImage')) elements.push(<Separator key={`separator-${index}`} />);
-			const lableAddReaction = item.label === t('addReaction');
-			const lableSlashCommands = item.label === t('slashCommands');
-			if (lableSlashCommands && shouldShowQuickMenu) {
+			const labelAddReaction = item.label === t('addReaction');
+			const labelQuickMenus = item.label === t('quickMenus');
+			if (labelQuickMenus && shouldShowQuickMenu) {
 				elements.push(
 					<Dropdown
 						align={{
 							points: ['tl', 'br']
 						}}
-						menu={dropdownSlashCommands}
+						menu={dropdownQuickMenus}
 						key={item.label}
 						trigger="hover"
 						className="border-none bg-theme-contexify"
@@ -329,7 +329,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 									data-e2e={generateE2eId('chat.message_action_modal.button.base')}
 									className={`flex justify-between items-center w-full font-['gg_sans','Noto_Sans',sans-serif] text-sm font-medium p-1 text-theme-primary text-theme-primary-hover`}
 								>
-									<span>{t('slashCommands')}</span>
+									<span>{t('quickMenus')}</span>
 									<span>
 										<Icons.RightArrowRightClick defaultSize="w-4 h-4" />
 									</span>
@@ -338,7 +338,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 						</div>
 					</Dropdown>
 				);
-			} else if (lableAddReaction) {
+			} else if (labelAddReaction) {
 				elements.push(
 					<Dropdown
 						align={{
@@ -364,7 +364,7 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 						</div>
 					</Dropdown>
 				);
-			} else if (!lableSlashCommands) {
+			} else if (!labelQuickMenus) {
 				elements.push(
 					<Item
 						key={item.label}
@@ -410,14 +410,14 @@ export default function DynamicContextMenu({ menuId, items, messageId, message, 
 		firstFourElements,
 		messageId,
 		handleClickEmoji,
-		slashCommandOptions,
-		isLoadingCommands,
-		handleCommandSelect,
+		quickMenuOptions,
+		isQuickMenu,
+		handleQuickMenuSelect,
 		isTopic,
 		message,
 		shouldShowQuickMenu,
 		dropdownReact,
-		dropdownSlashCommands,
+		dropdownQuickMenus,
 		t
 	]);
 
