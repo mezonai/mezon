@@ -11,6 +11,7 @@ import { useSelector } from 'react-redux';
 import AttachmentPreviewThumbnail from './AttachmentPreviewThumbnail';
 import AudioRecorderControl from './AudioRecorder/AudioRecorderControl';
 import FileSelectionButton from './FileSelectionButton';
+import PreviewOgp from './PreviewOgp';
 import { MentionReactInput } from './ReactionMentionInput';
 
 export type MessageBoxProps = {
@@ -146,6 +147,7 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 				</div>
 			)}
 
+			<PreviewOgp />
 			<AudioRecorderControl outerRecording={isRecording} onSendRecord={handleEndRecording} />
 			<div
 				className={`flex flex-inline items-start gap-2 box-content max-sm:mb-0
@@ -153,7 +155,6 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 			${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
 			>
 				<FileSelectionButton currentChannelId={currentChannelId || ''} />
-
 				<div className={`w-[calc(100%_-_50px)] bg-theme-surface gap-3 flex items-center rounded-e-md`}>
 					<div className={`w-full rounded-r-lg  gap-3 relative whitespace-pre-wrap`} onContextMenu={handleChildContextMenu}>
 						<MentionReactInput

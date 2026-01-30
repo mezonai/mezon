@@ -714,7 +714,7 @@ export const ContainerMessageActionModal = React.memo(
 			const isHideActionImage = !(message?.attachments?.length === 1 && message?.attachments?.[0]?.filetype?.includes('image'));
 			const isHideActionMedia =
 				message?.attachments?.length === 0 ||
-				!message?.attachments?.every((a) => a?.filetype?.startsWith('image') || a?.filetype?.startsWith('video'));
+				!message?.attachments?.every?.((a) => a?.filetype?.startsWith?.('image') || a?.filetype?.startsWith?.('video'));
 
 			const isShowForwardAll = () => {
 				if ((messagePosition === -1 || messagePosition === 0) && !currentTopicId) return false;

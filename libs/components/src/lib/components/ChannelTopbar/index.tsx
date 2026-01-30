@@ -194,6 +194,14 @@ const TopBarChannelText = memo(() => {
 	const userStatus = useMemberStatus(currentDmGroup?.user_ids?.[0] || '');
 	const checkInvoice = useSelector((state) => selectStatusInVoice(state, currentDmGroup?.user_ids?.[0] || ''));
 
+	const handleJoinVoice = () => {
+		if (!checkInvoice || currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
+			return;
+		}
+		const link = toChannelPage(checkInvoice.channelId, checkInvoice.clanId);
+		navigate(link);
+	};
+
 	return (
 		<>
 			<div className="flex relative flex-1 min-w-0 items-center gap-2  text-theme-primary mr-5">
@@ -257,7 +265,10 @@ const TopBarChannelText = memo(() => {
 							<div className="flex flex-col justify-center">
 								<span className="truncate min-w-0 h-4 leading-4">{channelDmGroupLabel}</span>
 								{!!checkInvoice && currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_GROUP && (
-									<span className="truncate min-w-0 h-4 text-xs flex gap-1 items-center">
+									<span
+										className="truncate min-w-0 h-4 text-xs flex gap-1 items-center cursor-pointer pointer-events-auto"
+										onClick={handleJoinVoice}
+									>
 										<Icons.Speaker className="text-green-500 !w-3 !h-3" /> {t('invoice')}
 									</span>
 								)}

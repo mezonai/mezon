@@ -10,6 +10,7 @@ import type {
 } from '@mezon/utils';
 import {
 	Direction_Mode,
+	EBacktickType,
 	EMessageCode,
 	LIMIT_MESSAGE,
 	MessageCrypt,
@@ -39,6 +40,7 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
+import { referencesActions, selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
 const sendTimeoutMap = new Map<string, ReturnType<typeof setTimeout>>();
@@ -1085,8 +1087,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 		}
 
+		const state = thunkAPI.getState() as RootState;
 		if (checkEnableE2EE) {
-			const state = thunkAPI.getState() as RootState;
 			const currentDM = selectCurrentDM(state);
 			const keys = selectE2eeByUserIds(state, currentDM.user_ids as string[]);
 
@@ -1105,6 +1107,24 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 		}
 
+		const ogpData = selectOgpData(state);
+
+		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0) {
+			const mk = [...(content.mk ?? [])];
+
+			mk.push({
+				description: ogpData?.description || '',
+				image: ogpData?.image || '',
+				title: ogpData?.title || '',
+				e: (content.t?.length || 0) + 1,
+				type: EBacktickType.OGP_PREVIEW,
+				index: ogpData.index
+			});
+			content = {
+				...content,
+				mk
+			};
+		}
 		const res = await socket.writeChatMessage(
 			clanId,
 			channelId,
@@ -1119,6 +1139,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			'',
 			code
 		);
+		if (res) {
+			thunkAPI.dispatch(referencesActions.clearOgpData());
+		}
 
 		return res;
 	}
