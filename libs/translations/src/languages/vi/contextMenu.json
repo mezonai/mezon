@@ -10,7 +10,7 @@
 	"reply": "Trả lời",
 	"createThread": "Tạo chủ đề",
 	"copyText": "Sao chép văn bản",
-	"slashCommands": "Lệnh gạch chéo",
+	"quickMenus": "Tuỳ chọn nhanh",
 	"addToInbox": "Thêm vào hộp thư",
 	"markUnread": "Đánh dấu chưa đọc",
 	"topicDiscussion": "Thảo luận chủ đề",
@@ -29,9 +29,10 @@
 	"removeReactions": "Xóa biểu cảm",
 	"removeAllReactions": "Xóa tất cả biểu cảm",
 	"loadingCommands": "Đang tải lệnh...",
+	"loadingQuickMenus": "Đang tải tuỳ chọn nhanh...",
 	"noCommandsFound": "Không tìm thấy lệnh nào",
-	"noCommandsAvailable": "Không có lệnh nào",
-	"typeToSearchSlashCommands": "Nhập để tìm kiếm lệnh gạch chéo...",
+	"noQuickMenusAvailable": "Không có tuỳ chọn nhanh nào khả dụng",
+	"typeToSearchQuickMenus": "Nhập để tìm kiếm tuỳ chọn nhanh...",
 	"viewMore": "Xem thêm",
 	"member": {
 		"profile": "Hồ sơ",
@@ -111,7 +112,7 @@
 		"failedToCopyImage": "Không thể sao chép hình ảnh:",
 		"failedToSaveImage": "Không thể lưu hình ảnh:",
 		"failedToGiveCoffee": "Không thể tặng coffee tin nhắn",
-		"errorSendingSlashCommand": "Lỗi gửi lệnh gạch chéo:",
+		"errorSendingQuickMenu": "Lỗi gửi tuỳ chọn nhanh",
 		"failedToResendMessage": "Không thể gửi lại tin nhắn"
 	}
 }
