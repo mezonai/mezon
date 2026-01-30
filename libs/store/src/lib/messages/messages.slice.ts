@@ -1116,6 +1116,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				description: ogpData?.description || '',
 				image: ogpData?.image || '',
 				title: ogpData?.title || '',
+				s: content.t?.length || 0,
 				e: (content.t?.length || 0) + 1,
 				type: EBacktickType.OGP_PREVIEW,
 				index: ogpData.index
@@ -1125,6 +1126,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				mk
 			};
 		}
+
 		const res = await socket.writeChatMessage(
 			clanId,
 			channelId,
@@ -1139,9 +1141,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			'',
 			code
 		);
-		if (res) {
-			thunkAPI.dispatch(referencesActions.clearOgpData());
-		}
+		thunkAPI.dispatch(referencesActions.clearOgpData());
 
 		return res;
 	}
