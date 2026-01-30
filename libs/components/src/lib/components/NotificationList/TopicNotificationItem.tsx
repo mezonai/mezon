@@ -149,7 +149,7 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 				<div className="relative w-12 h-12">
 					<AvatarImage
 						alt="user avatar"
-						className="w-12 h-12 rounded-full border-2 border-color-theme z-10"
+						className="!w-12 !h-12 rounded-full border-2 border-color-theme z-10"
 						username={isAnonymous ? '' : lastSentUser?.user?.username}
 						isAnonymous={isAnonymous}
 						srcImgProxy={
