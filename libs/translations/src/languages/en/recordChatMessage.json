@@ -1,7 +1,8 @@
 {
-  "uploading": "Uploading...",
-  "handsFreeMode": "hands-free mode",
-  "deleteRecording": "Delete recording",
-  "goBack": "Go back",
-  "confirmDeleteRecording": "Delete recording?"
+	"uploading": "Uploading...",
+	"handsFreeMode": "hands-free mode",
+	"deleteRecording": "Delete recording",
+	"goBack": "Go back",
+	"confirmDeleteRecording": "Delete recording?",
+	"hintRecording": "Press & hold to record."
 }

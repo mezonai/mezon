@@ -87,6 +87,18 @@ export const style = (colors: Attributes) =>
 		toastInfoBackground: {
 			backgroundColor: '#b6e1c6'
 		},
+		toastTooltipBackground: {
+			backgroundColor: colors.secondaryLight,
+			alignItems: 'center',
+			width: 'auto'
+		},
+		toastTooltipText: {
+			fontSize: size.medium,
+			color: colors.textStrong,
+			fontWeight: '500',
+			paddingVertical: size.s_12,
+			paddingHorizontal: size.s_20
+		},
 		contentContainerStyle: {
 			paddingLeft: size.s_20,
 			paddingRight: size.s_30

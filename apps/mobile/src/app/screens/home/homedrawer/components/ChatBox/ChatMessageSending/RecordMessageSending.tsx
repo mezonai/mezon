@@ -47,6 +47,15 @@ export const RecordMessageSending = memo(
 		const recordingStartTimeRef = useRef<number>(0);
 		const recordingDurationRef = useRef<number>(0);
 
+		const showHoldToRecordHint = useCallback(() => {
+			Toast.show({
+				type: 'tooltip',
+				text1: t('recordChatMessage:hintRecording'),
+				position: 'bottom',
+				bottomOffset: size.s_80
+			});
+		}, [t]);
+
 		const getAudioRecorderPlayer = useCallback(() => {
 			if (!audioRecorderPlayerRef.current) {
 				audioRecorderPlayerRef.current = new AudioRecorderPlayer();
@@ -258,7 +267,11 @@ export const RecordMessageSending = memo(
 				}
 			});
 
-		const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture);
+		const tapGesture = Gesture.Tap().onEnd(() => {
+			runOnJS(showHoldToRecordHint)();
+		});
+
+		const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture, tapGesture);
 
 		return (
 			<GestureDetector gesture={composedGesture}>

@@ -1,7 +1,8 @@
 {
-  "uploading": "Đang tải lên...",
-  "handsFreeMode": "chế độ rảnh tay",
-  "deleteRecording": "Xóa ghi âm",
-  "goBack": "Quay lại",
-  "confirmDeleteRecording": "Xóa ghi âm?"
+	"uploading": "Đang tải lên...",
+	"handsFreeMode": "chế độ rảnh tay",
+	"deleteRecording": "Xóa ghi âm",
+	"goBack": "Quay lại",
+	"confirmDeleteRecording": "Xóa ghi âm?",
+	"hintRecording": "Ấn giữ để ghi âm."
 }
