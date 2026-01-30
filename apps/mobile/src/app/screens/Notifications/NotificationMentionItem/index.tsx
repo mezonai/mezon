@@ -124,7 +124,7 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 							{subjectText}
 						</Text>
 						<View style={styles.contentMessage}>
-							<MessageNotification message={data} mentions={mentions} attacmentItem={attachmentItem} />
+							<MessageNotification message={data} mentions={mentions} attachmentItem={attachmentItem} />
 						</View>
 					</View>
 					<Text style={styles.notifyDuration}>{messageTimeDifference}</Text>
