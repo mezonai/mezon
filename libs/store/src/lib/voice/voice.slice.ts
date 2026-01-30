@@ -284,9 +284,10 @@ export const voiceSlice = createSlice({
 			const clanState = state.listVoiceMemberByClan[voice.clan_id];
 			if (!clanState) return;
 
-			const entities = clanState[voice.voice_channel_id];
-			if (entities.includes(voice.voice_user_id)) {
-				state.listVoiceMemberByClan[voice.clan_id][voice.voice_channel_id] = entities.filter((id) => id !== voice.voice_user_id);
+			const channalState = clanState[voice.voice_channel_id];
+			if (!channalState) return;
+			if (channalState.includes(voice.voice_user_id)) {
+				state.listVoiceMemberByClan[voice.clan_id][voice.voice_channel_id] = channalState.filter((id) => id !== voice.voice_user_id);
 			}
 
 			const entitiesAfter = state.listVoiceMemberByClan[voice.clan_id][voice.voice_channel_id];
