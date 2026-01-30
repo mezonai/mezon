@@ -184,15 +184,16 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 export type UserListStreamChannelProps = {
 	readonly memberJoin: string[];
 	readonly isShowChat?: boolean;
+	readonly maxMember?: number;
 };
 
-export function UserListStreamChannel({ memberJoin = [], isShowChat }: UserListStreamChannelProps) {
+export function UserListStreamChannel({ memberJoin = [], isShowChat, maxMember }: UserListStreamChannelProps) {
 	const [displayedMembers, setDisplayedMembers] = useState<string[]>(memberJoin);
 	const [remainingCount, setRemainingCount] = useState(0);
 
 	const handleSizeWidth = useCallback(() => {
 		const membersToShow = [...memberJoin];
-		let maxMembers = 3;
+		let maxMembers = maxMember ?? 7;
 
 		if (window.innerWidth < 1000) {
 			maxMembers = isShowChat ? 1 : 2;
@@ -210,7 +211,7 @@ export function UserListStreamChannel({ memberJoin = [], isShowChat }: UserListS
 
 		setDisplayedMembers(membersToShow.slice(0, maxMembers));
 		setRemainingCount(extraMembers > 99 ? 99 : extraMembers > 0 ? extraMembers : 0);
-	}, [memberJoin, isShowChat]);
+	}, [memberJoin, isShowChat, maxMember]);
 
 	useEffect(() => {
 		handleSizeWidth();
@@ -375,7 +376,7 @@ export default function ChannelStream({
 				<div className="w-full h-full bg-gray-300 dark:bg-black flex justify-center items-center">
 					<div className="flex flex-col justify-center items-center gap-4 w-full">
 						<div className="w-full flex gap-2 justify-center p-2">
-							{memberJoin.length > 0 && <UserListStreamChannel memberJoin={memberJoin}></UserListStreamChannel>}
+							{memberJoin.length > 0 && <UserListStreamChannel memberJoin={memberJoin} maxMember={3}></UserListStreamChannel>}
 						</div>
 						<div className="max-w-[350px] text-center text-3xl font-bold text-gray-800 dark:text-white">
 							{currentChannel?.channel_label && currentChannel.channel_label.length > 20
