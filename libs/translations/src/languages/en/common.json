@@ -512,8 +512,8 @@
 		"success": "Message reported successfully",
 		"failed": "Failed to report message"
 	},
-	"shareContact": "Share Contact",
-	"shareContactTitle": "Share Contact",
+	"shareContact": "Share This Contact",
+	"shareContactTitle": "Share This Contact",
 	"sendMessage": "Message",
 	"noPermissionToCallBlocked": "You cannot perform this action.",
 	"detail": "Detail",

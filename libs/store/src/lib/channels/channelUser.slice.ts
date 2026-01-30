@@ -132,7 +132,7 @@ export const listChannelsByUserSlice = createSlice({
 		},
 		updateLastSentTime: (state, action: PayloadAction<{ channelId: string }>) => {
 			const payload = action.payload;
-			const timestamp = Date.now() / 1000;
+			const timestamp = Math.floor(Date.now() / 1000);
 			listChannelsByUserAdapter.updateOne(state, {
 				id: payload.channelId,
 				changes: {
@@ -144,7 +144,7 @@ export const listChannelsByUserSlice = createSlice({
 		},
 		updateLastSeenTime: (state, action: PayloadAction<{ channelId: string }>) => {
 			const payload = action.payload;
-			const timestamp = Date.now() / 1000;
+			const timestamp = Math.floor(Date.now() / 1000);
 			listChannelsByUserAdapter.updateOne(state, {
 				id: payload.channelId,
 				changes: {
@@ -184,7 +184,7 @@ export const listChannelsByUserSlice = createSlice({
 									newCountMessUnread === 0
 										? {
 												id: last_sent_message?.id,
-												timestamp_seconds: Date.now()
+												timestamp_seconds: Math.floor(Date.now() / 1000)
 											}
 										: entity.last_seen_message
 							}
@@ -205,7 +205,7 @@ export const listChannelsByUserSlice = createSlice({
 						count_mess_unread: 0,
 						last_seen_message: {
 							id: last_sent_message?.id,
-							timestamp_seconds: Date.now()
+							timestamp_seconds: Math.floor(Date.now() / 1000)
 						}
 					}
 				};

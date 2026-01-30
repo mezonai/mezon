@@ -132,7 +132,7 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 	};
 
 	return (
-		<div className="flex flex-col gap-2 bg-theme-setting-primary text-[14px] text-theme-primary rounded-lg w-[480px] max-w-[600px] max-h-[80vh] z-50 overflow-hidden">
+		<div className="flex flex-col bg-theme-setting-primary text-[14px] text-theme-primary rounded-lg w-[480px] max-w-[600px] max-h-[80vh] z-50 overflow-hidden">
 			<div className="py-2 px-3 ">
 				<div className="flex flex-row items-center justify-between gap-2 font-bold text-[16px]">
 					<div className="flex flex-row items-center gap-4 justify-start">

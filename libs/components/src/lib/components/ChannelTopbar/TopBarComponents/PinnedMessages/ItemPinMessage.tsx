@@ -9,8 +9,8 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { IEmbedProps, IMessageWithUser } from '@mezon/utils';
-import { SHARE_CONTACT_KEY, convertTimeString, generateE2eId, isImageFileType, isVideoFileType } from '@mezon/utils';
+import type { IMessageWithUser } from '@mezon/utils';
+import { convertTimeString, generateE2eId, getShareContactInfo, isImageFileType, isVideoFileType } from '@mezon/utils';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -74,18 +74,10 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		return {};
 	}, [pinMessage.content]);
 
-	const isShareContact = useMemo(() => {
+	const { isShareContact, shareContactEmbed } = useMemo(() => {
 		const embeds = messageContentObject?.embed || message?.content?.embed || [];
-		const firstEmbed = embeds[0];
-		const fields = firstEmbed?.fields || [];
-		return fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY;
+		return getShareContactInfo(embeds);
 	}, [message, messageContentObject]);
-
-	const shareContactEmbed = useMemo((): IEmbedProps | null => {
-		if (!isShareContact) return null;
-		const embeds = messageContentObject?.embed || message?.content?.embed || [];
-		return embeds[0] || null;
-	}, [isShareContact, messageContentObject, message]);
 
 	const handleUnpinConfirm = () => {
 		handleUnPinMessage({

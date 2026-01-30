@@ -101,7 +101,7 @@ export const createNewDirectMessage = createAsyncThunk(
 						user_ids: body.user_ids,
 						active: 1,
 						last_sent_message: {
-							timestamp_seconds: Date.now()
+							timestamp_seconds: Math.floor(Date.now() / 1000)
 						}
 					})
 				);

@@ -239,6 +239,14 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 							/>
 						)}
 
+						{shouldShowShareContact && (
+							<MemberMenuItem
+								label={t('contextMenu.shareContact')}
+								onClick={currentHandlers.handleShareContact}
+								setWarningStatus={setWarningStatus}
+							/>
+						)}
+
 						{!isDmGroup && infoFriend?.state !== EStateFriend.BLOCK && (
 							<>
 								{infoFriend?.state !== EStateFriend.FRIEND &&
@@ -325,14 +333,6 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 						)}
 						{contextMenuId === DMCT_GROUP_CHAT_ID && isOwnerClanOrGroup && (
 							<ItemPanelMember children={t('contextMenu.removeFromGroup')} onClick={currentHandlers.handleRemoveFromGroup} danger />
-						)}
-
-						{shouldShowShareContact && (
-							<MemberMenuItem
-								label={t('contextMenu.shareContact')}
-								onClick={currentHandlers.handleShareContact}
-								setWarningStatus={setWarningStatus}
-							/>
 						)}
 
 						{contextMenuId !== DMCT_GROUP_CHAT_ID && isDmGroup && (

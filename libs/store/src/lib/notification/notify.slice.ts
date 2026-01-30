@@ -19,7 +19,7 @@ export const mapNotificationToEntity = (notifyRes: INotification): ApiNotificati
 	return {
 		...notifyRes,
 		id: notifyRes.id || '',
-		create_time_seconds: notifyRes.create_time_seconds
+		create_time: notifyRes.create_time
 	};
 };
 
@@ -259,13 +259,9 @@ export const notificationSlice = createSlice({
 								content: {
 									...item?.content,
 									content:
-										typeof item?.content?.content === 'string'
-											? safeJSONParse(item?.content?.content)?.t
-											: item?.content?.content,
+										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content,
 									embed:
-										typeof item?.content?.content === 'string'
-											? safeJSONParse(item?.content?.content)?.embed
-											: item?.content?.content
+										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.embed : item.content?.embed
 								}
 							};
 						});
