@@ -1,6 +1,6 @@
 import { appActions, authActions, selectAllAccount, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
-import { generateE2eId } from '@mezon/utils';
+import { EUserSettings, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,10 +41,10 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 			<div className="w-170px ">
 				<p className="font-bold text-sm tracking-wider text-theme-primary-active">{t('setting:accountSettings.title')}</p>
 				<button
-					className={` w-[170px] text-[16px] text-theme-primary-hover bg-item-hover font-medium rounded-[5px] text-left ml-[-8px] p-2 mt-4  ${selectedButton === 'Account' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'}`}
+					className={` w-[170px] text-[16px] text-theme-primary-hover bg-item-hover font-medium rounded-[5px] text-left ml-[-8px] p-2 mt-4  ${selectedButton === EUserSettings.ACCOUNT ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'}`}
 					onClick={() => {
-						handleButtonClick('Account');
-						onItemClick && onItemClick('Account');
+						handleButtonClick(EUserSettings.ACCOUNT);
+						onItemClick && onItemClick(EUserSettings.ACCOUNT);
 					}}
 					data-e2e={generateE2eId(`user_setting.account.tab_account`)}
 				>
@@ -53,10 +53,10 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 
 				<br />
 				<button
-					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === 'Devices' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.DEVICES ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
 					onClick={() => {
-						handleButtonClick('Devices');
-						onItemClick && onItemClick('Devices');
+						handleButtonClick(EUserSettings.DEVICES);
+						onItemClick && onItemClick(EUserSettings.DEVICES);
 					}}
 					data-e2e={generateE2eId(`user_setting.devices.tab_devices`)}
 				>
@@ -64,10 +64,10 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				</button>
 				<br />
 				<button
-					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === 'Profiles' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.PROFILES ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
 					onClick={() => {
-						handleButtonClick('Profiles');
-						onItemClick && onItemClick('Profiles');
+						handleButtonClick(EUserSettings.PROFILES);
+						onItemClick && onItemClick(EUserSettings.PROFILES);
 					}}
 					data-e2e={generateE2eId(`user_setting.profile.tab_profile`)}
 				>
@@ -91,50 +91,50 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				<button className="pt-2  mt-4 font-bold text-sm tracking-wider text-theme-primary-active">{t('setting:appSettings.title')}</button>
 				<br />
 				<button
-					className={`p-2  pl-2 ml-[-8px] font-medium ${selectedButton === 'Appearance' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					className={`p-2  pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.APPEARANCE ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
 					onClick={() => {
-						handleButtonClick('Appearance');
-						onItemClick && onItemClick('Appearance');
+						handleButtonClick(EUserSettings.APPEARANCE);
+						onItemClick && onItemClick(EUserSettings.APPEARANCE);
 					}}
 				>
 					{t('setting:appSettings.appearance')}
 				</button>
 				<br />
 				<button
-					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === 'Activity' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.ACTIVITY ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
 					onClick={() => {
-						handleButtonClick('Activity');
-						onItemClick && onItemClick('Activity');
+						handleButtonClick(EUserSettings.ACTIVITY);
+						onItemClick && onItemClick(EUserSettings.ACTIVITY);
 					}}
 				>
 					{t('setting:appSettings.activity')}
 				</button>
 				<br />
 				<button
-					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === 'Notifications' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.NOTIFICATIONS ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
 					onClick={() => {
-						handleButtonClick('Notifications');
-						onItemClick && onItemClick('Notifications');
+						handleButtonClick(EUserSettings.NOTIFICATIONS);
+						onItemClick && onItemClick(EUserSettings.NOTIFICATIONS);
 					}}
 				>
 					{t('setting:appSettings.notifications')}
 				</button>
 				<br />
 				<button
-					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === 'Language' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.LANGUAGE ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
 					onClick={() => {
-						handleButtonClick('Language');
-						onItemClick && onItemClick('Language');
+						handleButtonClick(EUserSettings.LANGUAGE);
+						onItemClick && onItemClick(EUserSettings.LANGUAGE);
 					}}
 				>
 					{t('setting:language.title')}
 				</button>
 				<br />
 				<button
-					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === 'Voice' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.VOICE ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
 					onClick={() => {
-						handleButtonClick('Voice');
-						onItemClick && onItemClick('Voice');
+						handleButtonClick(EUserSettings.VOICE);
+						onItemClick && onItemClick(EUserSettings.VOICE);
 					}}
 				>
 					{t('setting:appSettings.voice')}
@@ -160,9 +160,9 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				<hr className="border-t-theme-primary mt-4" />
 				<br />
 				<button
-					className={`p-2 text-[16px] font-medium ${selectedButton === 'Log Out' ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px] ml-[-8px] `}
+					className={`p-2 text-[16px] font-medium ${selectedButton === EUserSettings.LOG_OUT ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px] ml-[-8px] `}
 					onClick={() => {
-						handleButtonClick('Log Out');
+						handleButtonClick(EUserSettings.LOG_OUT);
 						handleOpenModal();
 					}}
 					data-e2e={generateE2eId(`user_setting.logout`)}

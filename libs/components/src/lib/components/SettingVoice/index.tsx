@@ -134,26 +134,22 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 		})().catch(() => {
 			setPermissionState('denied');
 		});
+	}, []);
 
+	useEffect(() => {
 		const handler = () => refreshDevices().catch(() => undefined);
 		navigator.mediaDevices?.addEventListener?.('devicechange', handler);
 		return () => {
 			navigator.mediaDevices?.removeEventListener?.('devicechange', handler);
 		};
-	}, [refreshDevices]);
+	}, []);
 
 	useEffect(() => {
 		localStorage.setItem(LS_KEYS.inputDeviceId, inputDeviceId);
-	}, [inputDeviceId]);
-	useEffect(() => {
 		localStorage.setItem(LS_KEYS.outputDeviceId, outputDeviceId);
-	}, [outputDeviceId]);
-	useEffect(() => {
 		localStorage.setItem(LS_KEYS.micVolume, String(micVolume));
-	}, [micVolume]);
-	useEffect(() => {
 		localStorage.setItem(LS_KEYS.speakerVolume, String(speakerVolume));
-	}, [speakerVolume]);
+	}, [inputDeviceId, outputDeviceId, micVolume, speakerVolume]);
 
 	const startLevelMeter = useCallback(() => {
 		const analyser = analyserRef.current;
@@ -198,7 +194,6 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 
 	const startTest = useCallback(async () => {
 		setTestError('');
-		setIsTesting(true);
 
 		try {
 			stopTest();
