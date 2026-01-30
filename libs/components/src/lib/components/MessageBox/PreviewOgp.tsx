@@ -33,7 +33,7 @@ function PreviewOgp() {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						url: ogpLink
+						url: ogpLink.url
 					}),
 					signal
 				});
