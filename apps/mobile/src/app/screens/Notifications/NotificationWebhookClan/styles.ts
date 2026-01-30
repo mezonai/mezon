@@ -1,10 +1,13 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		notifyContainer: {
 			paddingHorizontal: size.s_10,
-			marginBottom: size.s_10
+			borderBottomWidth: size.s_2,
+			borderBottomColor: colors.secondaryLight,
+			paddingVertical: size.s_6
 		},
 
 		notifyHeader: {
@@ -15,7 +18,8 @@ export const style = (colors: Attributes) =>
 
 		notifyContent: {
 			flex: 1,
-			marginLeft: size.s_6
+			marginLeft: size.s_6,
+			overflow: 'hidden'
 		},
 
 		notifyHeaderTitle: {

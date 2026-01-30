@@ -1,13 +1,14 @@
 import { getShowName, getTagById, useColorsRoleById, useGetPriorityNameFromUserClan, useNotification } from '@mezon/core';
 import { selectChannelById, selectClanById, selectMemberDMByUserId, useAppSelector } from '@mezon/store';
-import type { IMentionOnMessage, IMessageWithUser, INotification } from '@mezon/utils';
+import type { IEmbedProps, IMentionOnMessage, IMessageWithUser, INotification } from '@mezon/utils';
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
 	NotificationCategory,
 	TOPBARS_MAX_WIDTH,
 	convertTimeString,
 	createImgproxyUrl,
-	generateE2eId
+	generateE2eId,
+	getShareContactInfo
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiDirectFcmProto } from 'mezon-js/api.gen';
@@ -18,6 +19,7 @@ import { AvatarImage } from '../AvatarImage/AvatarImage';
 import MessageAttachment from '../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../MessageWithUser/MessageLine';
 import getPendingNames from '../MessageWithUser/usePendingNames';
+import ShareContactCard from '../ShareContact/ShareContactCard';
 export type NotifyMentionProps = {
 	readonly notify: INotification;
 	onCloseTooltip?: () => void;
@@ -30,8 +32,6 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		if (!channelJump) {
 			return ChannelStreamMode.STREAM_MODE_CHANNEL;
 		}
-
-		//11
 
 		switch (channelJump.type) {
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
@@ -74,10 +74,10 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 	};
 
 	const allTabProps = {
-		message,
 		subject: notify.subject,
 		category: notify.category,
-		senderId: notify?.content?.sender_id || notify.sender_id
+		senderId: notify?.content?.sender_id || notify.sender_id,
+		embed: notify?.content?.embed as IEmbedProps[] | undefined
 	};
 
 	return (
@@ -97,7 +97,16 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 					{t('tooltips.jump')}
 				</button>
 			)}
-			{message && <AllTabContent {...allTabProps} message={message} />}
+			{message && (
+				<AllTabContent
+					{...allTabProps}
+					message={{
+						...message,
+						create_time_seconds:
+							notify?.category === NotificationCategory.FOR_YOU ? notify.create_time_seconds : message?.create_time_seconds
+					}}
+				/>
+			)}
 		</div>
 	);
 }
@@ -109,9 +118,10 @@ interface IMentionTabContent {
 	subject?: string;
 	category?: number;
 	senderId?: string;
+	embed?: IEmbedProps[];
 }
 
-function AllTabContent({ message, subject, category, senderId }: IMentionTabContent) {
+function AllTabContent({ message, subject, category, senderId, embed }: IMentionTabContent) {
 	const { t } = useTranslation('channelTopbar');
 	const { priorityAvatar } = useGetPriorityNameFromUserClan(message.sender_id || '');
 
@@ -121,7 +131,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 	const clan = useAppSelector(selectClanById(message.clan_id as string));
 	const user = useAppSelector((state) => selectMemberDMByUserId(state, senderId ?? ''));
 
-	const username = message.username;
+	const username = message.username || user?.username || '';
 	let subjectText = subject;
 
 	if (username) {
@@ -129,6 +139,10 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 		subjectText = subject?.slice(usernameLenght);
 	}
 	const isChannel = currentChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL;
+
+	const { isShareContact, shareContactEmbed } = useMemo(() => {
+		return getShareContactInfo(embed);
+	}, [embed]);
 
 	const mentions = useMemo<IMentionOnMessage[]>(() => {
 		const mention = message.mention_ids?.map((item, index) => {
@@ -148,7 +162,7 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 				<AvatarImage
 					alt="user avatar"
 					className="w-10 h-10 min-w-10 flex-shrink-0"
-					username={message?.username}
+					username={username}
 					srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : message.avatar || user?.avatar_url) ?? '', {
 						width: 300,
 						height: 300,
@@ -211,20 +225,25 @@ function AllTabContent({ message, subject, category, senderId }: IMentionTabCont
 										id: message.sender_id,
 										name: message.display_name || message.username,
 										username: message.username
-									}
+									},
+									create_time_seconds: message.create_time_seconds
 								}}
 								mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
 							/>
-							<MessageLine
-								messageId={message.message_id}
-								isEditted={false}
-								content={{
-									mentions: mentions || [],
-									t: message.content
-								}}
-								isTokenClickAble={false}
-								isJumMessageEnabled={false}
-							/>
+							{isShareContact && shareContactEmbed ? (
+								<ShareContactCard embed={shareContactEmbed} />
+							) : (
+								<MessageLine
+									messageId={message.message_id}
+									isEditted={false}
+									content={{
+										mentions: mentions || [],
+										t: message.content
+									}}
+									isTokenClickAble={false}
+									isJumMessageEnabled={false}
+								/>
+							)}
 							{message.attachment_link && (
 								<div>
 									<div className="max-h-[150px] max-w-[150px] overflow-hidden rounded-lg">

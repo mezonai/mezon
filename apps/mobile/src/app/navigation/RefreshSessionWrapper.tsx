@@ -110,6 +110,7 @@ const RefreshSessionWrapper = ({ children }) => {
 					session.refresh_token,
 					session.created || false,
 					session.api_url,
+					session.ws_url,
 					session?.id_token || '',
 					session?.is_remember || false
 				);

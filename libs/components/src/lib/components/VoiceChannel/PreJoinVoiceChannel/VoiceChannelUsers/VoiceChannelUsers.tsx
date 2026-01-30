@@ -1,45 +1,42 @@
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { IChannelMember } from '@mezon/utils';
 import { createImgproxyUrl, getAvatarForPrioritize, useSyncEffect, useWindowSize } from '@mezon/utils';
 import { useCallback, useState } from 'react';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 
 export type VoiceChannelUsersProps = {
-	readonly memberJoin: IChannelMember[];
-	readonly memberMax?: number;
-	readonly isShowChat?: boolean;
+	voiceChannelMembers: string[];
 };
 
-export function VoiceChannelUsers({ memberJoin = [], memberMax, isShowChat }: VoiceChannelUsersProps) {
-	const [displayedMembers, setDisplayedMembers] = useState<IChannelMember[]>([]);
+export function VoiceChannelUsers({ voiceChannelMembers }: VoiceChannelUsersProps) {
+	const [displayedMembers, setDisplayedMembers] = useState<string[]>([]);
 	const [remainingCount, setRemainingCount] = useState(0);
 
 	const handleSizeWidth = useCallback(() => {
-		const membersToShow = [...memberJoin];
-		let maxMembers = memberMax ?? 7;
+		const membersToShow = [...voiceChannelMembers];
+		let maxMembers = 3;
 
 		if (window.innerWidth < 1000) {
-			maxMembers = isShowChat ? 1 : 2;
+			maxMembers = 2;
 		} else if (window.innerWidth < 1200) {
-			maxMembers = isShowChat ? 2 : 3;
+			maxMembers = 3;
 		} else if (window.innerWidth < 1300) {
-			maxMembers = isShowChat ? 3 : 4;
+			maxMembers = 4;
 		} else if (window.innerWidth < 1400) {
-			maxMembers = isShowChat ? 4 : 5;
+			maxMembers = 5;
 		} else if (window.innerWidth < 1700) {
-			maxMembers = isShowChat ? 5 : 6;
+			maxMembers = 6;
 		}
 
 		const extraMembers = membersToShow.length - maxMembers;
 
 		setDisplayedMembers(membersToShow.slice(0, maxMembers));
 		setRemainingCount(extraMembers > 0 ? extraMembers : 0);
-	}, [memberJoin, memberMax, isShowChat]);
+	}, [voiceChannelMembers]);
 
 	useSyncEffect(() => {
 		handleSizeWidth();
-	}, [memberJoin]);
+	}, [voiceChannelMembers]);
 
 	useWindowSize(() => {
 		handleSizeWidth();
@@ -47,9 +44,9 @@ export function VoiceChannelUsers({ memberJoin = [], memberMax, isShowChat }: Vo
 
 	return (
 		<div className="flex items-center gap-2">
-			{displayedMembers.map((item: IChannelMember) => (
-				<div key={item.id} className="flex items-center">
-					<VoiceUserItem userId={item.user_id || ''} />
+			{displayedMembers.map((id) => (
+				<div key={id} className="flex items-center">
+					<VoiceUserItem userId={id || ''} />
 				</div>
 			))}
 			{remainingCount > 0 && (

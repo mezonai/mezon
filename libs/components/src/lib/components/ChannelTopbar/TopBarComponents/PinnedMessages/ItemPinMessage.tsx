@@ -9,8 +9,8 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { IEmbedProps, IMessageWithUser } from '@mezon/utils';
-import { SHARE_CONTACT_KEY, convertTimeString, generateE2eId, isImageFileType, isVideoFileType } from '@mezon/utils';
+import type { IMessageWithUser } from '@mezon/utils';
+import { convertTimeString, generateE2eId, getShareContactInfo, isImageFileType, isVideoFileType } from '@mezon/utils';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -21,6 +21,8 @@ import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
 import ShareContactCard from '../../../ShareContact/ShareContactCard';
+
+const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
 type ItemPinMessageProps = {
 	pinMessage: PinMessageEntity;
@@ -35,7 +37,6 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const { pinMessage, contentString, handleUnPinMessage, onClose, mode } = props;
 
 	const getValidCreateTime = () => {
-		if (pinMessage?.create_time) return pinMessage.create_time;
 		if (pinMessage?.create_time_seconds) return new Date(pinMessage.create_time_seconds * 1000).toISOString();
 		return new Date().toISOString();
 	};
@@ -75,18 +76,10 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		return {};
 	}, [pinMessage.content]);
 
-	const isShareContact = useMemo(() => {
+	const { isShareContact, shareContactEmbed } = useMemo(() => {
 		const embeds = messageContentObject?.embed || message?.content?.embed || [];
-		const firstEmbed = embeds[0];
-		const fields = firstEmbed?.fields || [];
-		return fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY;
+		return getShareContactInfo(embeds);
 	}, [message, messageContentObject]);
-
-	const shareContactEmbed = useMemo((): IEmbedProps | null => {
-		if (!isShareContact) return null;
-		const embeds = messageContentObject?.embed || message?.content?.embed || [];
-		return embeds[0] || null;
-	}, [isShareContact, messageContentObject, message]);
 
 	const handleUnpinConfirm = () => {
 		handleUnPinMessage({
@@ -96,10 +89,14 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		});
 	};
 
+	const checkAnonymous = pinMessage?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
+
 	const avatarToShow =
 		(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? priorityAvatar : pinMessage.avatar) || '';
-	const nameToShow =
-		(mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? namePriority : pinMessage.username) || '';
+	const nameToShow = checkAnonymous
+		? 'Anonymous'
+		: (mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? namePriority : pinMessage.username) ||
+			'';
 	return (
 		<div
 			key={pinMessage.id}
@@ -108,7 +105,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		>
 			<div className="flex items-start gap-2 w-full ">
 				<div className="pointer-events-none">
-					<BaseProfile avatar={avatarToShow || ''} name={nameToShow} hideIcon={true} hideName={true} />
+					<BaseProfile avatar={avatarToShow || ''} name={nameToShow} hideIcon={true} hideName={true} isAnonymous={checkAnonymous} />
 				</div>
 
 				<div className="relative flex flex-col gap-1 text-left w-[85%] enableSelectText cursor-text">

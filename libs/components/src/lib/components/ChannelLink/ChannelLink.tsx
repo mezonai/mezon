@@ -44,8 +44,8 @@ export type ChannelLinkProps = {
 	channelType?: number;
 	permissions: IChannelLinkPermission;
 	isActive: boolean;
-	dragStart: (e: DragEvent<HTMLDivElement>) => void;
-	dragEnter: (e: DragEvent<HTMLDivElement>) => void;
+	dragStart?: (e: DragEvent<HTMLDivElement>) => void;
+	dragEnter?: (e: DragEvent<HTMLDivElement>) => void;
 };
 
 export interface Coords {
@@ -221,7 +221,7 @@ const ChannelLinkComponent = ({
 					to={channelPath}
 					id={`${channel.category_id}-${channel.id}`}
 					onClick={handleClick}
-					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'}`}
+					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${numberNotification ? 'text-theme-primary-active' : ''}`}
 					draggable="false"
 				>
 					<span

@@ -170,16 +170,19 @@ import type {
 	WebrtcSignalingFwd
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
-import type { ApiCreateEventRequest, ApiGiveCoffeeEvent, ApiMessageReaction, ApiNotification } from 'mezon-js/api.gen';
 import type {
 	ApiChannelMessageHeader,
 	ApiClanEmoji,
+	ApiCreateEventRequest,
+	ApiGiveCoffeeEvent,
+	ApiMessageReaction,
+	ApiNotification,
 	ApiNotificationUserChannel,
 	ApiPermissionUpdate,
 	ApiTokenSentEvent,
 	ApiUpdateCategoryDescRequest,
 	ApiWebhook
-} from 'mezon-js/dist/api.gen';
+} from 'mezon-js/api.gen';
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -213,7 +216,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const onvoiceended = useCallback(
 		(voice: VoiceEndedEvent) => {
 			if (voice) {
-				dispatch(voiceActions.voiceEnded(voice?.voice_channel_id));
+				dispatch(voiceActions.voiceEnded({ channelId: voice?.voice_channel_id, clanId: voice?.clan_id }));
 			}
 		},
 		[dispatch]
@@ -231,7 +234,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				if (voiceChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && hasJoinSoundEffect) {
 					const joinSoundElement = document.createElement('audio');
-					joinSoundElement.src = 'assets/audio/joincallsound.mp3';
+					joinSoundElement.src = '/assets/audio/joincallsound.mp3';
 					joinSoundElement.preload = 'auto';
 					joinSoundElement.style.display = 'none';
 
@@ -256,7 +259,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				dispatch(
 					voiceActions.add({
-						...voice
+						channel_id: voice.voice_channel_id,
+						clan_id: voice.clan_id,
+						user_id: voice.user_id
 					})
 				);
 			}
@@ -281,9 +286,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const currentStreamInfo = selectCurrentStreamInfo(store.getState());
 		const streamChannelMember = selectStreamMembersByChannelId(store.getState(), currentStreamInfo?.streamId || '');
 
-		const existingMember = streamChannelMember?.find((member) => member?.user_id === user?.user_id);
+		const existingMember = streamChannelMember?.find((id) => id === user?.user_id);
 		if (existingMember) {
-			dispatch(usersStreamActions.remove(existingMember?.id));
+			dispatch(usersStreamActions.remove(existingMember));
 		}
 		dispatch(usersStreamActions.add(user));
 	}, []);
@@ -307,7 +312,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const handleBuzz = useCallback((channelId: string, senderId: string, isReset: boolean, mode: ChannelStreamMode | undefined) => {
-		const audio = new Audio('assets/audio/buzz.mp3');
+		const audio = new Audio('/assets/audio/buzz.mp3');
 
 		const cleanup = () => {
 			audio.removeEventListener('ended', cleanup);
@@ -646,7 +651,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			) {
 				dispatch(
 					notificationActions.add({
-						data: { ...notification, id: notification?.id || '' },
+						data: {
+							...notification,
+							id: notification?.id || '',
+							content: { ...notification.content, content: safeJSONParse(notification.content?.content).t }
+						},
 						category: notification.category as NotificationCategory
 					})
 				);
@@ -691,7 +700,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			if (isLinuxDesktop) {
 				const notiSoundElement = document.createElement('audio');
-				notiSoundElement.src = 'assets/audio/noti-linux.mp3';
+				notiSoundElement.src = '/assets/audio/noti-linux.mp3';
 				notiSoundElement.preload = 'auto';
 				notiSoundElement.style.display = 'none';
 				document.body.appendChild(notiSoundElement);
@@ -725,7 +734,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						avatar: pin.message_sender_avatar,
 						channel_id: pin.channel_id,
 						content: pin.message_content,
-						create_time: pin.message_created_time,
+						create_time_seconds: pin.message_created_time ? new Date(pin.message_created_time).getTime() / 1000 : Date.now(),
 						message_id: pin.message_id,
 						username: pin.message_sender_username,
 						sender_id: pin.message_sender_id
@@ -809,7 +818,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						if (user.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 							const parentChannelId = currentChannel?.parent_id;
 							if (parentChannelId) {
-								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`);
+								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`, true);
 								return;
 							}
 						}
@@ -821,22 +830,22 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						const redirectChannelId = defaultChannelId || fallbackChannelId;
 
 						if (redirectChannelId) {
-							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
+							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`, true);
 						} else {
-							navigate(`/chat/clans/${clanId}/member-safety`);
+							navigate(`/chat/clans/${clanId}/member-safety`, true);
 						}
 					}
 					if (!isMobile && directId === user.channel_id) {
-						navigate(`/chat/direct/friends`);
+						navigate(`/chat/direct/friends`, true);
 					}
+					const threadToRemove =
+						user.channel_type === ChannelType.CHANNEL_TYPE_THREAD ? selectChannelById(currentState, user.channel_id) : null;
+
 					dispatch(directSlice.actions.removeByDirectID(user.channel_id));
 					dispatch(channelsSlice.actions.removeByChannelID({ channelId: user.channel_id, clanId: clanId as string }));
 
 					if (user.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
-						const currentState = store.getState() as unknown as RootState;
-						const thread = selectChannelById(currentState, user.channel_id);
-
-						if (thread && thread.channel_private === ChannelStatusEnum.isPrivate) {
+						if (threadToRemove && threadToRemove.channel_private === ChannelStatusEnum.isPrivate) {
 							dispatch(threadsActions.remove(user.channel_id));
 							const allChannels = selectAllChannels(currentState);
 							const parentChannels = allChannels.filter((ch) => !checkIsThread(ch));
@@ -891,7 +900,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const currentVoice = selectVoiceInfo(store.getState());
 			const currentStream = selectCurrentStreamInfo(store.getState());
 			user?.user_ids.forEach((id: string) => {
-				dispatch(voiceActions.removeFromClanInvoice(id));
+				dispatch(voiceActions.removeFromClanInvoice({ id, clanId: user.clan_id }));
 				if (id === userId) {
 					dispatch(emojiSuggestionActions.invalidateCache());
 					dispatch(stickerSettingActions.invalidateCache());
@@ -930,6 +939,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					}
 					dispatch(clansSlice.actions.removeByClanID(user.clan_id));
 					dispatch(listChannelsByUserActions.remove(id));
+					dispatch(listChannelRenderAction.removeListChannelRenderByClanId({ clanId: user?.clan_id }));
 					dispatch(appActions.cleanHistoryClan(user.clan_id));
 					dispatch(channelsActions.removeByClanId(user.clan_id));
 				}
@@ -1065,7 +1075,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				dispatch(
 					directActions.addGroupUserWS({
 						channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
-						users
+						users,
+						myId: userId || ''
 					})
 				);
 				dispatch(
@@ -1344,7 +1355,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			}
 			if (isReceiverGiveCoffee) {
 				const joinSoundElement = document.createElement('audio');
-				joinSoundElement.src = 'assets/audio/bankSound.mp3';
+				joinSoundElement.src = '/assets/audio/bankSound.mp3';
 				joinSoundElement.preload = 'auto';
 				joinSoundElement.style.display = 'none';
 				document.body.appendChild(joinSoundElement);
@@ -2451,7 +2462,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const store = getStore();
 
 		const channels = selectChannelThreads(store.getState() as RootState);
-		if (!markAsReadEvent.category_id) {
+		if (markAsReadEvent.category_id === '0') {
 			const channelIds = channels.map((item) => item.id);
 			const channelUpdates = channelIds.map((channelId) => {
 				let messageId = selectLatestMessageId(store.getState(), channelId);
@@ -2478,7 +2489,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
 			return;
 		}
-		if (!markAsReadEvent.channel_id) {
+		if (markAsReadEvent.channel_id === '0') {
 			const channelsInCategory = channels.filter((channel) => channel.category_id === markAsReadEvent.category_id);
 
 			const allChannelsAndThreads = channelsInCategory.flatMap((channel) => [channel, ...(channel.threads || [])]);
@@ -2505,9 +2516,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			);
 			dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
 		} else {
-			const relatedChannels = channels.filter(
-				(channel) => channel.id === markAsReadEvent.channel_id || channel.parent_id === markAsReadEvent.channel_id
-			);
+			const relatedChannels = channels.filter((channel) => channel.clan_id === markAsReadEvent.clan_id);
 
 			const channelIds = relatedChannels.map((channel) => channel.id);
 
@@ -2548,7 +2557,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
 			}
 
-			dispatch(listChannelsByUserActions.markAsReadChannel([markAsReadEvent.channel_id, ...threadIds]));
+			dispatch(listChannelsByUserActions.markAsReadChannel([markAsReadEvent.channel_id, ...channelIds]));
 		}
 	}, []);
 

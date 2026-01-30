@@ -77,9 +77,17 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			if (callState.localStream) {
 				callState.localStream.getTracks().forEach((track) => track.stop());
 			}
+			if (callState.localScreenStream) {
+				callState.localScreenStream.getTracks().forEach((track) => track.stop());
+			}
 			timeStartConnected.current = null;
+			pendingCandidatesRef.current = [];
+			if (callTimeout.current) {
+				clearTimeout(callTimeout.current);
+				callTimeout.current = null;
+			}
 		};
-	}, [callState.localStream]);
+	}, [callState.localStream, callState.localScreenStream]);
 
 	useEffect(() => {
 		if (isConnected && !hasSyncRemoteMediaRef?.current) {
@@ -93,6 +101,13 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			hasSyncRemoteMediaRef.current = true;
 		}
 	}, [channelId, dmUserId, isConnected, controlState?.cameraEnabled, controlState?.micEnabled, mezon?.socketRef, userId]);
+
+	const clearCallTimeout = () => {
+		if (callTimeout.current) {
+			clearTimeout(callTimeout.current);
+			callTimeout.current = null;
+		}
+	};
 
 	// Initialize peer connection with proper configuration
 	const initializePeerConnection = () => {
@@ -139,10 +154,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					await cancelCallFCMMobile('', true);
 				}
 				setIsConnected(true);
-				if (callTimeout.current) {
-					clearTimeout(callTimeout.current);
-					callTimeout.current = null;
-				}
+				clearCallTimeout();
 			}
 
 			if (pc.iceConnectionState === 'disconnected') {
@@ -150,10 +162,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				dispatch(toastActions.addToast({ message: 'Connection disconnected', type: 'warning', autoClose: 3000 }));
 				dispatch(audioCallActions.setIsJoinedCall(false));
 				handleEndCall();
-				if (callTimeout.current) {
-					clearTimeout(callTimeout.current);
-					callTimeout.current = null;
-				}
+				clearCallTimeout();
 			}
 		};
 
@@ -265,7 +274,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					);
 					dispatch(
 						DMCallActions.updateCallLog({
-							channelId,
+							channelId: channelId || '0',
 							content: {
 								t: `${isVideoCall ? 'Video' : 'Voice'} call timed out`,
 								callLog: {
@@ -391,9 +400,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					userId
 				);
 			}
+			pendingCandidatesRef.current = [];
 		}
-
-		pendingCandidatesRef.current = [];
 	};
 
 	const handleICECandidate = async (data: any) => {
@@ -412,8 +420,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 							userId
 						);
 					}
+					pendingCandidatesRef.current = [];
 				}
-				pendingCandidatesRef.current = [];
 			} else {
 				console.error('Invalid ICE candidate data:', data);
 			}
@@ -463,11 +471,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 						const decompressedData = await decompress(signalingData.json_data);
 						const answer = safeJSONParse(decompressedData || '{}');
 						await handleAnswer(answer);
-						if (callTimeout.current) {
-							clearTimeout(callTimeout.current);
-							callTimeout.current = null;
-						}
-
+						clearCallTimeout();
 						break;
 					}
 
@@ -476,13 +480,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 						await handleICECandidate(candidate);
 						break;
 					}
-					/// case other call
-					// 	WebrtcSignalingType.WEBRTC_SDP_TIMEOUT
-					case 5: {
-						if (callTimeout.current) {
-							clearTimeout(callTimeout.current);
-							callTimeout.current = null;
-						}
+					case WebrtcSignalingType.WEBRTC_SDP_TIMEOUT: {
+						clearCallTimeout();
 						break;
 					}
 				}
@@ -508,15 +507,12 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	};
 
 	// End call and cleanup
-	const handleEndCall = async (callerEndCall = false) => {
+	const handleEndCall = async (isCallerEndCall = false) => {
 		try {
-			if (!callerEndCall) {
+			if (!isCallerEndCall) {
 				await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_QUIT, '', channelId, userId);
 			}
-			if (callTimeout.current) {
-				clearTimeout(callTimeout.current);
-				callTimeout.current = null;
-			}
+			clearCallTimeout();
 
 			if (callState.localStream) {
 				callState.localStream.getTracks().forEach((track) => track.stop());
@@ -571,7 +567,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 				dispatch(
 					DMCallActions.updateCallLog({
-						channelId: channelId || channelIdRef?.current || '',
+						channelId: channelId || channelIdRef?.current || '0',
 						content: {
 							t: `Call duration: ${timeCall}`,
 							callLog: {

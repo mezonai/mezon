@@ -73,10 +73,15 @@ export const GifStickerEmojiPopup = ({
 
 	const handleTabClick = useCallback(
 		(tab: SubPanelName) => {
-			setValueInputSearch('');
+			const isStickerOrEmoji = tab === SubPanelName.STICKERS || tab === SubPanelName.EMOJI;
+			const isCurrentStickerOrEmoji = subPanelActive === SubPanelName.STICKERS || subPanelActive === SubPanelName.EMOJI;
+
+			if (!isStickerOrEmoji || !isCurrentStickerOrEmoji) {
+				setValueInputSearch('');
+			}
 			setSubPanelActive(tab);
 		},
-		[setValueInputSearch, setSubPanelActive]
+		[setSubPanelActive, setValueInputSearch, subPanelActive]
 	);
 
 	const closePannel = useCallback(() => {
@@ -96,7 +101,7 @@ export const GifStickerEmojiPopup = ({
 			(subPanelActive === SubPanelName.EMOJI_REACTION_RIGHT && isStreaming) ||
 			(subPanelActive === SubPanelName.EMOJI_REACTION_BOTTOM && isStreaming)
 		);
-	}, [subPanelActive, emojiAction]);
+	}, [subPanelActive, emojiAction, currentChannelType]);
 
 	const containerClassName = useMemo(() => {
 		const isStreaming = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
@@ -110,12 +115,12 @@ export const GifStickerEmojiPopup = ({
 					: 'min-h-[500px]';
 
 		return `${baseClasses} ${widthClasses} max-sbm:w-[calc(100dvw_-_24px)] max-sbm:rounded-lg h-fit rounded-lg text-theme-primary bg-theme-setting-primary shadow shadow-neutral-900 z-20 ${heightClasses}`;
-	}, [emojiAction, isShowEmojiPicker]);
+	}, [emojiAction, isShowEmojiPicker, currentChannelType]);
 
 	const contentWidthClass = useMemo(() => {
 		const isStreaming = currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING;
 		return isStreaming ? 'md:w-[430px]' : 'md:w-[500px]';
-	}, []);
+	}, [currentChannelType]);
 
 	return (
 		<div onClick={(e) => e.stopPropagation()} className={containerClassName}>

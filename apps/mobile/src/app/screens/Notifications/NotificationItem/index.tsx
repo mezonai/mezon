@@ -1,4 +1,4 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import { NotificationCategory } from '@mezon/utils';
 import { memo } from 'react';
 import { View } from 'react-native';
@@ -12,7 +12,7 @@ const NotificationItem = memo(({ notify, onLongPressNotify, onPressNotify }: Not
 	const { themeValue } = useTheme();
 
 	return (
-		<View style={{ borderBottomWidth: size.s_2, borderBottomColor: themeValue.secondaryLight, paddingTop: size.s_6 }}>
+		<View>
 			{notify?.category === NotificationCategory.FOR_YOU && (
 				<NotificationIndividualItem notify={notify} onLongPressNotify={onLongPressNotify} />
 			)}

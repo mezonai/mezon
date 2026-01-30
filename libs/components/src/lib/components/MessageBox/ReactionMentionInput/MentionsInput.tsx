@@ -959,17 +959,7 @@ const MentionsInputComponent = forwardRef<MentionsInputHandle, MentionsInputProp
 					const cleanedHtml = preparePastedHtml(htmlContent);
 					contentToInsert = cleanedHtml;
 				} else if (htmlContent) {
-					const pastedFormattedText = parseHtmlAsFormattedText(preparePastedHtml(htmlContent), false, true);
-
-					if (pastedFormattedText?.entities?.length) {
-						contentToInsert = (renderText(pastedFormattedText.text, ['escape_html', 'br_html']) as string[])
-							.join('')
-							.replace(/\u200b+/g, '\u200b');
-					} else {
-						contentToInsert = (renderText(plainText || '', ['escape_html', 'br_html']) as string[])
-							.join('')
-							.replace(/\u200b+/g, '\u200b');
-					}
+					contentToInsert = (renderText(plainText || '', ['escape_html', 'br_html']) as string[]).join('').replace(/\u200b+/g, '\u200b');
 				} else {
 					if (!plainText) {
 						return;

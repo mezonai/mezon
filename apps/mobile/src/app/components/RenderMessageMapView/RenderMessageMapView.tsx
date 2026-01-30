@@ -1,19 +1,21 @@
-import { useTheme } from '@mezon/mobile-ui';
-import React, { useMemo } from 'react';
+import { size, useTheme } from '@mezon/mobile-ui';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Image, Linking, Pressable, Text, View } from 'react-native';
+import { Linking, Pressable, Text, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import MezonClanAvatar from '../../componentUI/MezonClanAvatar';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { style } from './styles';
 
-type RenderMessageMapViewProps = {
+interface IRenderMessageMapViewProps {
 	content: string;
 	avatarUrl?: string;
 	isSelf?: boolean;
 	senderName?: string;
-};
+	senderUsername?: string;
+}
 
-function RenderMessageMapView({ content, avatarUrl, isSelf, senderName }: RenderMessageMapViewProps) {
+function RenderMessageMapView({ content, avatarUrl, isSelf, senderName, senderUsername }: IRenderMessageMapViewProps) {
 	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
 	const styles = style(themeValue, isTabletLandscape);
@@ -26,18 +28,16 @@ function RenderMessageMapView({ content, avatarUrl, isSelf, senderName }: Render
 		}
 	};
 
-	const extractCoordinates = (url: string) => {
+	const coordinate = useMemo(() => {
 		const regex = /q=(-?\d+\.\d+),(-?\d+\.\d+)/;
-		const matches = url?.match(regex);
+		const matches = content?.match(regex);
 		if (matches) {
 			const latitude = parseFloat(matches[1]);
 			const longitude = parseFloat(matches[2]);
 			return { latitude, longitude } as const;
 		}
 		return null;
-	};
-
-	const coordinate = useMemo(() => extractCoordinates(content), [content]);
+	}, [content]);
 
 	if (!coordinate) return null;
 
@@ -58,7 +58,9 @@ function RenderMessageMapView({ content, avatarUrl, isSelf, senderName }: Render
 				zoomTapEnabled={false}
 			>
 				<Marker coordinate={{ latitude: coordinate.latitude, longitude: coordinate.longitude }}>
-					<View style={styles.avatarWrapper}>{!!avatarUrl && <Image source={{ uri: avatarUrl }} style={styles.avatar} />}</View>
+					<View style={styles.avatarWrapper}>
+						<MezonClanAvatar image={avatarUrl} alt={senderUsername} customFontSizeAvatarCharacter={size.h5} />
+					</View>
 				</Marker>
 			</MapView>
 
@@ -71,4 +73,4 @@ function RenderMessageMapView({ content, avatarUrl, isSelf, senderName }: Render
 	);
 }
 
-export default React.memo(RenderMessageMapView);
+export default memo(RenderMessageMapView);

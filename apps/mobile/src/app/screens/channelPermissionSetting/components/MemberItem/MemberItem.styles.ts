@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = (colors: Attributes) =>
@@ -31,5 +32,11 @@ export const styles = (colors: Attributes) =>
 			marginLeft: 0,
 			marginRight: 0,
 			color: colors.textDisabled
+		},
+		avatarWrapper: {
+			width: size.s_36,
+			height: size.s_36,
+			borderRadius: size.s_36,
+			overflow: 'hidden'
 		}
 	});

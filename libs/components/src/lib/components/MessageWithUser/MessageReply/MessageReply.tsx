@@ -19,7 +19,6 @@ type MessageReplyProps = {
 	isTopic?: boolean;
 };
 
-// TODO: refactor component for message lines
 const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, isAnonymousReplied }) => {
 	const { t } = useTranslation('message');
 	const senderIdMessageRef = message?.references?.[0]?.message_sender_id as string;
@@ -84,7 +83,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 
 	return (
 		<div className="overflow-hidden max-w-[97%] h-[24px]" ref={markUpOnReplyParent} data-e2e={generateE2eId('replied_message.item')}>
-			{message.references?.[0].message_ref_id ? (
+			{message.references?.[0].message_ref_id && message.references?.[0].message_ref_id !== '0' ? (
 				<div className="rounded flex flex-row gap-1 items-center justify-start w-fit text-[14px] ml-9 mb-[-5px] replyMessage">
 					<Icons.ReplyCorner />
 					<div className="flex flex-row gap-1 pr-12 items-center w-full h-[33px] pb-[4px]">
@@ -137,8 +136,8 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 				<div className="rounded flex flex-row gap-1 items-center justify-start w-fit text-[14px] ml-9 mb-[-5px] mt-1 replyMessage h-[24px]">
 					<Icons.ReplyCorner />
 					<div className="flex flex-row gap-1 mb-2 pr-12 items-center">
-						<div className="rounded-full text-theme-primary-active size-4 bg-item-theme">
-							<Icons.IconReplyMessDeleted />
+						<div className="rounded-full flex items-center justify-center text-theme-primary-active size-6 bg-item-theme">
+							<Icons.IconReplyMessDeletedWeb defaultSize="w-4 h-4 text-theme-primary-active" />
 						</div>
 						<i className="text-theme-primary text-[13px]">{t('messageDeleteReply')}</i>
 					</div>

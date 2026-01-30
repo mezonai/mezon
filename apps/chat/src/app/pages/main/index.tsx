@@ -78,7 +78,8 @@ function MyApp() {
 	const closeMenu = useSelector(selectCloseMenu);
 	const statusMenu = useSelector(selectStatusMenu);
 	const { userProfile } = useAuth();
-	const calculateJoinedTime = new Date().getTime() - new Date(userProfile?.user?.create_time ?? '').getTime();
+	const createTimeMs = userProfile?.user?.create_time_seconds ? Number(userProfile.user.create_time_seconds) * 1000 : 0;
+	const calculateJoinedTime = createTimeMs > 0 ? new Date().getTime() - createTimeMs : Infinity;
 	const isNewGuy = calculateJoinedTime <= TIME_OF_SHOWING_FIRST_POPUP;
 	const numberOfClanJoined = useSelector(selectClanNumber);
 	const isShowFirstJoinPopup = isNewGuy && numberOfClanJoined === 0;

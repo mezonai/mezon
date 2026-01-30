@@ -36,7 +36,7 @@ export const MemberInvoiceStatus = ({ userId }: MemberInvoiceStatusProps) => {
 
 	return (
 		<View style={styles.voiceContainer}>
-			<MezonIconCDN icon={IconCDN.channelVoice} color={baseColor.green} width={size.s_12} height={size.s_12} />
+			<MezonIconCDN icon={IconCDN.channelVoice} color={baseColor.green} width={size.s_10} height={size.s_10} />
 			<Text style={styles.voiceText}>{t('voiceInfo.inVoice')}</Text>
 		</View>
 	);

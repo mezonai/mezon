@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -9,21 +10,6 @@ export const style = (colors: Attributes) =>
 			paddingBottom: size.s_20
 		},
 
-		bottomSheetBarWrapper: {
-			height: 20,
-			width: '100%',
-			alignItems: 'center',
-			justifyContent: 'center',
-			backgroundColor: 'transparent'
-		},
-
-		bottomSheetBar: {
-			width: size.s_30,
-			height: size.s_4,
-			borderRadius: 20,
-			backgroundColor: colors.textStrong
-		},
-
 		headerWrapper: {
 			paddingHorizontal: 20,
 			paddingBottom: 10
@@ -32,13 +18,13 @@ export const style = (colors: Attributes) =>
 		headerTitle: {
 			color: colors.text,
 			fontWeight: 'bold',
-			fontSize: size.h4,
+			fontSize: size.h5,
 			textAlign: 'center'
 		},
 
 		headerLink: {
 			color: colors.text,
-			fontSize: size.h9,
+			fontSize: size.h8,
 			marginBottom: size.s_10,
 			textAlign: 'center'
 		},

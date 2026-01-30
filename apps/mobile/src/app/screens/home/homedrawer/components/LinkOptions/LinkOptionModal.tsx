@@ -50,9 +50,6 @@ const LinkOptionModal: React.FC<LinkOptionModalProps> = ({ visible, link }) => {
 
 	return (
 		<BottomSheetView style={styles.bottomSheetWrapper}>
-			<View style={styles.bottomSheetBarWrapper}>
-				<View style={styles.bottomSheetBar} />
-			</View>
 			<View style={styles.headerWrapper}>
 				<Text numberOfLines={2} style={styles.headerTitle}>
 					{t('actions.linkOptions', 'Link Options')}

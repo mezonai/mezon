@@ -97,6 +97,7 @@
 		"private": "Exposing private identifying information"
 	},
 	"tapToSeeAttachment": "Tap to see attachment",
+	"moreFiles": "More files",
 	"clickToSeeAttachment": "Click to see attachment",
 	"findThePerfectReaction": "Find the perfect reaction",
 	"findThePerfectGif": "Find the perfect GIF",
@@ -219,6 +220,6 @@
 	"bannedChannel": "You are banned from channel {{channelName}}.",
 	"addAMessage": "Add a message (Optional)",
 	"slideToCancel": "Slide to cancel",
-	"noAccess": "noAccess",
+	"noAccess": "No Access",
 	"unknown": "unknown"
 }

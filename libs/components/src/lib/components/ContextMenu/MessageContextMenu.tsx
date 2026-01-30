@@ -481,11 +481,7 @@ function MessageContextMenu({
 		}
 	}, [dispatch, message, t]);
 
-	const handleSlashCommands = useCallback(async () => {
-		// ignore
-	}, []);
-
-	const handleSlashCommandSelect = useCallback(
+	const handleQuickMenuSelect = useCallback(
 		(command: ApiQuickMenuAccessRequest) => {
 			if (command.action_msg) {
 				const payload = {
@@ -498,7 +494,7 @@ function MessageContextMenu({
 				try {
 					sendChatMessage(payload, [], [], undefined, false, false);
 				} catch (error) {
-					console.error(t('errors.errorSendingSlashCommand'), error);
+					console.error(t('errors.errorSendingQuickMenu'), error);
 					toast.error(`Failed to execute command "${command.menu_name}"`);
 				}
 			}
@@ -851,9 +847,9 @@ function MessageContextMenu({
 		});
 		builder.when(checkPos && quickMenuItems?.length > 0, (builder) => {
 			builder.addMenuItem(
-				'slashCommands',
-				t('slashCommands'),
-				handleSlashCommands,
+				'quickMenus',
+				t('quickMenus'),
+				() => {}, // Ignored because handled by onQuickMenuExecute
 				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path
 						d="M7 12l3-3 3 3m0 6l3-3 3 3M7 6l3-3 3 3"
@@ -955,7 +951,6 @@ function MessageContextMenu({
 		urlImage,
 		handleItemClick,
 		handleCreateTopic,
-		handleSlashCommands,
 		handleAddToNote,
 		isTopic,
 		isErrorMessage,
@@ -972,7 +967,7 @@ function MessageContextMenu({
 			messageId={messageId}
 			message={message}
 			isTopic={isTopic}
-			onSlashCommandExecute={handleSlashCommandSelect}
+			onQuickMenuExecute={handleQuickMenuSelect}
 			currentChannelId={currentChannelId as string}
 		/>
 	);

@@ -1015,7 +1015,8 @@ export enum ETokenMessage {
 	MARKDOWNS = 'mk',
 	PRE = 'pre',
 	BOLD = 'bm',
-	LINKYOUTUBE = 'lk_yt'
+	LINKYOUTUBE = 'lk_yt',
+	OGP_PREVIEW = 'lk_ogp'
 }
 export type SearchFilter = {
 	field_name: string;
@@ -1064,6 +1065,7 @@ export enum EUserSettings {
 	NOTIFICATIONS = 'Notifications',
 	KEYBINDS = 'Keybinds',
 	LANGUAGE = 'Language',
+	VOICE = 'Voice',
 	STREAMER_MODE = 'Streamer Mode',
 	ADVANCED = 'Advanced',
 	LOG_OUT = 'Log Out'

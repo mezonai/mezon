@@ -2,7 +2,7 @@ import { useClanOwner } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
 import { getSelectedRoleId, toggleIsShowFalse } from '@mezon/store';
 import { generateE2eId } from '@mezon/utils';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { useCheckHasAdministrator } from '../../SettingMainRoles/listActiveRole';
@@ -19,7 +19,7 @@ enum RoleTabs {
 
 const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }) => {
 	const { t } = useTranslation('clanRoles');
-	const [selectedButton, setSelectedButton] = useState<string | null>(RoleTabs.Permission_Tab);
+	const [selectedButton, setSelectedButton] = useState<string | null>(RoleTabs.Display_Tab);
 
 	const clickRole = useSelector(getSelectedRoleId);
 	const activeRole = useMemo(() => RolesClan.find((role) => role.id === clickRole), [RolesClan, clickRole]);
@@ -31,6 +31,13 @@ const SettingValueDisplayRole = ({ RolesClan }: { RolesClan: RolesClanEntity[] }
 	const handleButtonClick = (buttonName: string) => {
 		setSelectedButton(buttonName);
 	};
+
+	useEffect(() => {
+		const isEveryoneRole = activeRole?.slug === `everyone-${activeRole?.clan_id}`;
+		if (isEveryoneRole && selectedButton === RoleTabs.Manage_Tab) {
+			setSelectedButton(RoleTabs.Display_Tab);
+		}
+	}, [clickRole, activeRole?.slug, activeRole?.clan_id, selectedButton]);
 
 	const renderContent = useCallback(() => {
 		switch (selectedButton) {

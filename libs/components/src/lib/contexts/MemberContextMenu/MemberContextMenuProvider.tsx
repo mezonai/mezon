@@ -427,6 +427,13 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 						{shouldShow('message') && (
 							<MemberMenuItem label={t('member.message')} onClick={currentHandlers.handleMessage} setWarningStatus={setWarningStatus} />
 						)}
+						{shouldShow('shareContact') && (
+							<MemberMenuItem
+								label={t('member.shareContact')}
+								onClick={currentHandlers.handleShareContact}
+								setWarningStatus={setWarningStatus}
+							/>
+						)}
 						{shouldShow('addFriend') && (
 							<MemberMenuItem
 								label={t('member.addFriend')}
@@ -439,13 +446,6 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 								label={t('member.removeFriend')}
 								onClick={currentHandlers.handleRemoveFriend}
 								isWarning={true}
-								setWarningStatus={setWarningStatus}
-							/>
-						)}
-						{shouldShow('shareContact') && (
-							<MemberMenuItem
-								label={t('member.shareContact')}
-								onClick={currentHandlers.handleShareContact}
 								setWarningStatus={setWarningStatus}
 							/>
 						)}

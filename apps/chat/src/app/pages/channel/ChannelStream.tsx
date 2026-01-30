@@ -18,7 +18,7 @@ import {
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import type { IChannelMember, IStreamInfo } from '@mezon/utils';
+import type { IStreamInfo } from '@mezon/utils';
 import { createImgproxyUrl, getAvatarForPrioritize } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { RefObject } from 'react';
@@ -182,18 +182,18 @@ function HLSPlayer({ videoRef, currentChannel }: MediaPlayerProps) {
 }
 
 export type UserListStreamChannelProps = {
-	readonly memberJoin: IChannelMember[];
-	readonly memberMax?: number;
+	readonly memberJoin: string[];
 	readonly isShowChat?: boolean;
+	readonly maxMember?: number;
 };
 
-export function UserListStreamChannel({ memberJoin = [], memberMax, isShowChat }: UserListStreamChannelProps) {
-	const [displayedMembers, setDisplayedMembers] = useState<IChannelMember[]>(memberJoin);
+export function UserListStreamChannel({ memberJoin = [], isShowChat, maxMember }: UserListStreamChannelProps) {
+	const [displayedMembers, setDisplayedMembers] = useState<string[]>(memberJoin);
 	const [remainingCount, setRemainingCount] = useState(0);
 
 	const handleSizeWidth = useCallback(() => {
 		const membersToShow = [...memberJoin];
-		let maxMembers = memberMax ?? 7;
+		let maxMembers = maxMember ?? 7;
 
 		if (window.innerWidth < 1000) {
 			maxMembers = isShowChat ? 1 : 2;
@@ -211,7 +211,7 @@ export function UserListStreamChannel({ memberJoin = [], memberMax, isShowChat }
 
 		setDisplayedMembers(membersToShow.slice(0, maxMembers));
 		setRemainingCount(extraMembers > 99 ? 99 : extraMembers > 0 ? extraMembers : 0);
-	}, [memberJoin, memberMax, isShowChat]);
+	}, [memberJoin, isShowChat, maxMember]);
 
 	useEffect(() => {
 		handleSizeWidth();
@@ -224,9 +224,9 @@ export function UserListStreamChannel({ memberJoin = [], memberMax, isShowChat }
 
 	return (
 		<div className="flex items-center gap-2">
-			{displayedMembers.map((item: IChannelMember) => (
-				<div key={item.id} className="flex items-center">
-					<UserItem user={item} />
+			{displayedMembers.map((id: string) => (
+				<div key={id} className="flex items-center">
+					<UserItem id={id} />
 				</div>
 			))}
 			{remainingCount > 0 && (
@@ -238,8 +238,8 @@ export function UserListStreamChannel({ memberJoin = [], memberMax, isShowChat }
 	);
 }
 
-function UserItem({ user }: { user: IChannelMember }) {
-	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user.user_id ?? ''));
+function UserItem({ id }: { id: string }) {
+	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, id ?? ''));
 	const avatar = getAvatarForPrioritize(userStream?.clan_avatar, userStream?.user?.avatar_url);
 
 	return (
@@ -302,7 +302,7 @@ export default function ChannelStream({
 		if (currentStreamInfo.streamId !== currentChannel.id || (!streamPlay && currentStreamInfo?.streamId === currentChannel.id)) {
 			dispatch(appActions.setIsShowChatStream(false));
 		}
-	}, [currentChannel, currentStreamInfo, currentClanId]);
+	}, [currentChannel, currentStreamInfo, currentClanId, dispatch, streamPlay]);
 
 	const handleLeaveChannel = async () => {
 		if (currentStreamInfo) {
@@ -310,7 +310,7 @@ export default function ChannelStream({
 		}
 		dispatch(videoStreamActions.setIsJoin(false));
 		disconnect();
-		const idStreamByMe = memberJoin?.find((member) => member?.user_id === userProfile?.user?.id)?.id;
+		const idStreamByMe = memberJoin?.find((id) => id === userProfile?.user?.id);
 		dispatch(usersStreamActions.remove(idStreamByMe || ''));
 		dispatch(appActions.setIsShowChatStream(false));
 		setShowMembers(true);
@@ -376,7 +376,7 @@ export default function ChannelStream({
 				<div className="w-full h-full bg-gray-300 dark:bg-black flex justify-center items-center">
 					<div className="flex flex-col justify-center items-center gap-4 w-full">
 						<div className="w-full flex gap-2 justify-center p-2">
-							{memberJoin.length > 0 && <UserListStreamChannel memberJoin={memberJoin} memberMax={3}></UserListStreamChannel>}
+							{memberJoin.length > 0 && <UserListStreamChannel memberJoin={memberJoin} maxMember={3}></UserListStreamChannel>}
 						</div>
 						<div className="max-w-[350px] text-center text-3xl font-bold text-gray-800 dark:text-white">
 							{currentChannel?.channel_label && currentChannel.channel_label.length > 20
@@ -403,7 +403,7 @@ export default function ChannelStream({
 				onMouseMove={handleMouseMoveOrClick}
 				onClick={handleMouseMoveOrClick}
 			>
-				<div className="flex flex-col justify-center gap-2 w-full bg-black">
+				<div className="flex flex-col justify-center gap-2 w-full bg-theme-setting-primary border-theme-primary">
 					<div className={`relative min-h-40 h-fit items-center flex justify-center ${memberJoin.length > 0 && showMembers ? 'mt-6' : ''}`}>
 						{isStream ? (
 							<div
@@ -412,7 +412,7 @@ export default function ChannelStream({
 								<HLSPlayer videoRef={streamVideoRef} currentChannel={currentChannel} />
 							</div>
 						) : (
-							<div className="sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] dark:text-[#AEAEAE] text-colorTextLightMode dark:bg-bgSecondary600 bg-channelTextareaLight text-5xl flex justify-center items-center text-center">
+							<div className="sm:h-[250px] md:h-[350px] lg:h-[450px] xl:h-[550px] w-[70%] text-theme-primary bg-theme-setting-nav text-5xl flex justify-center items-center text-center border-theme-primary">
 								<span>{t('noStreamToday')}</span>
 							</div>
 						)}

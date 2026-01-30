@@ -31,7 +31,6 @@ import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';
 import { auditLogReducer } from './auditLog/auditLog.slice';
 import { auditLogFilterReducer } from './auditLog/auditLogFilter.slice';
-import { canvasReducer } from './canvas/canvas.slice';
 import { canvasAPIReducer } from './canvas/canvasAPI.slice';
 import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChannel.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
@@ -42,6 +41,7 @@ import { listUsersByUserReducer } from './channels/listUsers.slice';
 import { integrationClanWebhookReducer } from './clanWebhook/clanWebhook.slide';
 import { settingChannelReducer } from './clans/clanSettingChannel.slice';
 import { COMUNITY_FEATURE_KEY, comunityReducer } from './comunity/comunity.slice';
+import { dashboardReducer } from './dashboard/dashboard.slice';
 import { DEVICES_FEATURE_KEY, devicesReducer } from './devices/devices.slice';
 import { USER_STATUS_FEATURE_KEY, statusReducer } from './direct/status.slice';
 import { audioCallReducer } from './dmcall/audioCall.slice';
@@ -290,6 +290,7 @@ const persistedActivitiesReducer = persistReducer(
 
 const reducer = {
 	app: persistedAppReducer,
+	dashboard: dashboardReducer,
 	account: accountReducer,
 	auth: persistedReducer,
 	attachments: attachmentReducer,
@@ -330,7 +331,6 @@ const reducer = {
 	usersstream: usersStreamReducer,
 	videostream: videoStreamReducer,
 	channelApp: persistedChannelAppReducer,
-	canvas: canvasReducer,
 	canvasapi: canvasAPIReducer,
 	activitiesapi: persistedActivitiesReducer,
 	auditlog: auditLogReducer,

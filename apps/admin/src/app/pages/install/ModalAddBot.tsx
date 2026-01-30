@@ -35,7 +35,8 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 	const dispatch = useAppDispatch();
 	const account = useSelector(selectAllAccount);
 	const appDetail = useSelector(selectAppDetail);
-
+	const activeSince = appDetail?.create_time;
+	const activeSincecv = activeSince ? new Date(activeSince).toLocaleDateString() : '';
 	const [openSuccess, setOpenSuccess] = useState(false);
 	const toggleSuccess = () => setOpenSuccess((s) => !s);
 
@@ -130,16 +131,16 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 					{appDetail.applogo ? (
 						<img src={appDetail.applogo} alt={appDetail.appname} className="w-16 h-16 rounded-full object-cover mb-2" />
 					) : (
-						<span className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold mb-2">
+						<span className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold mb-2 ">
 							{appDetail.appname?.[0]}
 						</span>
 					)}
-					<p className="text-xl font-semibold">{appDetail.appname}</p>
+					<p className="text-xl font-semibold truncate overflow-hidden max-w-[300px]">{appDetail.appname}</p>
 				</div>
 			)}
 			<HeaderModal name={appDetail?.appname || ''} username={account?.user?.username} />
 			<SelectField uppercase={true} {...clanConfig} />
-			<FooterModal name={appDetail?.appname || ''} />
+			<FooterModal activeSince={activeSincecv} name={appDetail?.appname || ''} />
 			<ModalAsk handelBack={handleOpenModal} handleAddBotOrApp={handleAdd} />
 		</div>
 	);

@@ -140,23 +140,28 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 		setSubjectTopic(lastMessageTopic?.sender_id ?? '');
 	}, [lastMessageTopic]);
 
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(senderId || '');
+	const { priorityAvatar, isAnonymous } = useGetPriorityNameFromUserClan(senderId || '');
 	const lastSentUser = useAppSelector((state) => selectMemberClanByUserId(state, lastMessageTopic?.sender_id ?? ''));
 
 	return (
 		<div className="flex flex-col p-2 bg-item-theme rounded-lg">
 			<div className="flex flex-row items-start p-1 w-full gap-4 rounded-lg relative">
-				<div className="relative w-11 h-10">
+				<div className="relative w-12 h-12">
 					<AvatarImage
 						alt="user avatar"
-						className="w-11 h-10 rounded-full border-2 border-color-theme z-10"
-						username={lastSentUser?.user?.username}
-						srcImgProxy={createImgproxyUrl((priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatar_url) ?? '', {
-							width: 300,
-							height: 300,
-							resizeType: 'fit'
-						})}
-						src={priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatar_url}
+						className="w-12 h-12 rounded-full border-2 border-color-theme z-10"
+						username={isAnonymous ? '' : lastSentUser?.user?.username}
+						isAnonymous={isAnonymous}
+						srcImgProxy={
+							isAnonymous
+								? ''
+								: createImgproxyUrl((priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatar_url) ?? '', {
+										width: 300,
+										height: 300,
+										resizeType: 'fit'
+									})
+						}
+						src={isAnonymous ? '' : priorityAvatar ? priorityAvatar : lastSentUser?.user?.avatar_url}
 					/>
 				</div>
 				<div className="h-full flex-1 max-w-full min-w-0">
@@ -177,7 +182,7 @@ function AllTabContent({ messageReplied, subject, lastMessageTopic, topic }: ITo
 							className="text-[13px] w-fit max-w-full break-words whitespace-normal"
 							data-e2e={generateE2eId('chat.channel_message.inbox.topics.last_reply_message')}
 						>
-							<b className="font-semibold">{lastSentUser ? lastSentUser?.user?.username : 'Sender'}</b>:{' '}
+							<b className="font-semibold">{isAnonymous ? 'Anonymous' : lastSentUser ? lastSentUser?.user?.username : 'Sender'}</b>:{' '}
 							{lastMsgTopic ? lastMsgTopic?.t : 'Unreachable message'}
 						</div>
 					</div>

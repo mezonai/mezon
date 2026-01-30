@@ -10,7 +10,6 @@ export * from './lib/auth/auth.slice';
 export * from './lib/avatarOverride/avatarOverride';
 export * from './lib/badge/badgeHelpers';
 export * from './lib/cache-metadata';
-export * from './lib/canvas/canvas.slice';
 export * from './lib/canvas/canvasAPI.slice';
 export * from './lib/categories/categories.slice';
 export * from './lib/channelmembers/AllUsersChannelByAddChannel.slice';

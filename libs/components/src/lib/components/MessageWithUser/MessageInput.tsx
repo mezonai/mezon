@@ -136,7 +136,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 				hg: hashtagList,
 				ej: emojiList,
 				mk: markdownList,
-				cid: message?.content?.cid
+				cid: message?.content?.cid,
+				...(message?.content?.embed && { embed: message.content.embed })
 			};
 
 			const addMentionToPayload = addMention(payload, mentionList);
@@ -161,7 +162,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ channelId, mode, channelLab
 		} else {
 			const payload = {
 				t: newPlainTextValue,
-				cid: message?.content?.cid
+				cid: message?.content?.cid,
+				...(message?.content?.embed && { embed: message.content.embed })
 			};
 
 			try {

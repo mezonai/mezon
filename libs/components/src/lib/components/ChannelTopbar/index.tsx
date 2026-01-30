@@ -194,6 +194,14 @@ const TopBarChannelText = memo(() => {
 	const userStatus = useMemberStatus(currentDmGroup?.user_ids?.[0] || '');
 	const checkInvoice = useSelector((state) => selectStatusInVoice(state, currentDmGroup?.user_ids?.[0] || ''));
 
+	const handleJoinVoice = () => {
+		if (!checkInvoice || currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
+			return;
+		}
+		const link = toChannelPage(checkInvoice.channelId, checkInvoice.clanId);
+		navigate(link);
+	};
+
 	return (
 		<>
 			<div className="flex relative flex-1 min-w-0 items-center gap-2  text-theme-primary mr-5">
@@ -257,7 +265,10 @@ const TopBarChannelText = memo(() => {
 							<div className="flex flex-col justify-center">
 								<span className="truncate min-w-0 h-4 leading-4">{channelDmGroupLabel}</span>
 								{!!checkInvoice && currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_GROUP && (
-									<span className="truncate min-w-0 h-4 text-xs flex gap-1 items-center">
+									<span
+										className="truncate min-w-0 h-4 text-xs flex gap-1 items-center cursor-pointer pointer-events-auto"
+										onClick={handleJoinVoice}
+									>
 										<Icons.Speaker className="text-green-500 !w-3 !h-3" /> {t('invoice')}
 									</span>
 								)}
@@ -447,7 +458,11 @@ const ChannelTopbarTools = memo(
 						</div>
 					</div>
 				) : (
-					<>{isShowChatStream && <ChatButton closeMenuOnMobile={closeMenuOnMobile} />}</>
+					<div className="items-center gap-2 flex">
+						<div className="relative items-center gap-4 hidden sbm:flex sbm:flex-row-reverse">
+							<ChatButton closeMenuOnMobile={closeMenuOnMobile} />
+						</div>
+					</div>
 				)}
 			</div>
 		);
@@ -1025,13 +1040,20 @@ function ChannelListButton() {
 function ChatButton({ closeMenuOnMobile }: { closeMenuOnMobile?: () => void }) {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useDispatch();
+	const isShowChatStream = useSelector(selectIsShowChatStream);
+
 	const handleClick = () => {
-		dispatch(appActions.setIsShowChatStream(true));
+		dispatch(appActions.setIsShowChatStream(!isShowChatStream));
 		closeMenuOnMobile?.();
 	};
+
 	return (
 		<div className="relative leading-5 h-5" data-e2e={generateE2eId('chat.channel_message.header.button.chat')}>
-			<button title={t('tooltips.showChat')} onClick={handleClick} className="text-theme-primary text-theme-primary-hover">
+			<button
+				title={isShowChatStream ? t('tooltips.hideChat') : t('tooltips.showChat')}
+				onClick={handleClick}
+				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowChatStream ? 'text-theme-primary-active' : ''}`}
+			>
 				<Icons.Chat defaultSize="size-5" />
 			</button>
 		</div>

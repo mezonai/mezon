@@ -10,6 +10,7 @@ import type {
 } from '@mezon/utils';
 import {
 	Direction_Mode,
+	EBacktickType,
 	EMessageCode,
 	LIMIT_MESSAGE,
 	MessageCrypt,
@@ -39,6 +40,7 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
+import { referencesActions, selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
 const sendTimeoutMap = new Map<string, ReturnType<typeof setTimeout>>();
@@ -809,6 +811,225 @@ type SendMessagePayload = {
 	tempId?: string;
 };
 
+export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', async (payload: SendMessagePayload, thunkAPI) => {
+	const {
+		mentions,
+		attachments,
+		references,
+		anonymous,
+		mentionEveryone,
+		channelId,
+		mode,
+		isPublic,
+		clanId,
+		senderId,
+		avatar,
+		isMobile = false,
+		username,
+		code
+	} = payload;
+
+	const content = payload.content;
+	const clientSendTime = Date.now();
+	const tempId = `${payload.channelId}-${clientSendTime}`;
+
+	const id = Snowflake.generate();
+	const MAX_RETRIES = 3;
+	const RETRY_DELAY_MS = 500;
+
+	async function doSend(uploadedFiles: ApiMessageAttachment[], retryCount = 0): Promise<{ channel_id?: string }> {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const session = mezon.sessionRef.current;
+			const client = mezon.clientRef.current;
+
+			if (!client || !session || !channelId) {
+				throw new Error('Client is not initialized');
+			}
+
+			return await client.sendChannelMessage(
+				session,
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				typeof content === 'object' ? JSON.stringify(content) : content,
+				mentions,
+				uploadedFiles,
+				references,
+				anonymous,
+				mentionEveryone,
+				avatar,
+				code
+			);
+		} catch (error) {
+			if (retryCount < MAX_RETRIES - 1) {
+				thunkAPI.dispatch(messagesActions.markAsError({ messageId: id, channelId }));
+				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+				return doSend(uploadedFiles, retryCount + 1);
+			}
+
+			thunkAPI.dispatch(messagesActions.remove({ channelId, messageId: id }));
+			throw error;
+		}
+	}
+
+	async function fakeItUntilYouMakeIt() {
+		const rootState = thunkAPI.getState() as RootState;
+		const currentUser = selectAllAccount(rootState);
+
+		const overrideAvatar = getUserAvatarOverride(senderId);
+		const overrideClanAvatar = clanId && clanId !== '0' ? getUserClanAvatarOverride(senderId, clanId) : undefined;
+
+		let clanAvatar = avatar;
+		if (clanId && clanId !== '0' && currentUser?.user?.id) {
+			const userClanProfile = selectUserClanProfileByClanID(clanId, currentUser.user.id)(rootState);
+			clanAvatar = overrideClanAvatar || userClanProfile?.avatar || avatar;
+		}
+
+		const finalAvatar = overrideAvatar || avatar;
+
+		const fakeMessage: ChannelMessageWithClientMeta = {
+			id,
+			code: code || 0,
+			channel_id: channelId,
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-expect-error
+			content,
+			attachments,
+			create_time_seconds: clientSendTime / 1000,
+			create_time: new Date(clientSendTime).toISOString(),
+			client_send_time: clientSendTime,
+			temp_id: tempId,
+			sender_id: anonymous ? NX_CHAT_APP_ANNONYMOUS_USER_ID : senderId,
+			username: anonymous ? 'Anonymous' : username || '',
+			avatar: anonymous ? '' : finalAvatar,
+			clan_avatar: clanId && clanId !== '0' ? clanAvatar : undefined,
+			clan_id: clanId !== '0' ? clanId : undefined,
+			isSending: true,
+			references: references?.filter((item) => item) || [],
+			isMe: true,
+			hide_editted: true,
+			isAnonymous: anonymous,
+			isError: false,
+			isErrorRetry: false
+		};
+
+		const fakeMess = await thunkAPI
+			.dispatch(
+				messagesActions.mapMessageChannelToEntityAction({
+					message: fakeMessage
+				})
+			)
+			.unwrap();
+
+		const state = getMessagesState(getMessagesRootState(thunkAPI));
+		const isViewingOlderMessages = state.isViewingOlderMessagesByChannelId[channelId];
+
+		if (!isViewingOlderMessages) {
+			thunkAPI.dispatch(messagesActions.addNewMessage(fakeMess));
+		}
+
+		try {
+			thunkAPI.dispatch(messagesActions.setIdMessageToJump(null));
+			thunkAPI.dispatch(messagesActions.markAsSent({ id, mess: fakeMess }));
+
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const session = mezon.sessionRef.current;
+			const client = mezon.clientRef.current;
+
+			if (!client || !session || !channelId) {
+				throw new Error('Client is not initialized');
+			}
+
+			let uploadedFiles: ApiMessageAttachment[] = [];
+			if (attachments && attachments.length > 0) {
+				if (isMobile) {
+					uploadedFiles = await getMobileUploadedAttachments({ attachments, client, session });
+				} else {
+					uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
+				}
+			}
+
+			const messageResult = await doSend(uploadedFiles);
+
+			if (!isViewingOlderMessages && messageResult?.channel_id) {
+				const timestamp = Date.now() / 1000;
+				thunkAPI.dispatch(
+					channelMetaActions.setChannelLastSeenTimestamp({
+						channelId,
+						timestamp,
+						messageId: messageResult.channel_id
+					})
+				);
+			}
+
+			return messageResult;
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	try {
+		return await fakeItUntilYouMakeIt();
+	} catch (error) {
+		console.error(error);
+		throw error;
+	}
+});
+
+export type EditMessageViaApiPayload = {
+	channelId: string;
+	clanId: string;
+	mode: number;
+	isPublic: boolean;
+	messageId: string;
+	content: IMessageSendPayload;
+	mentions?: ApiMessageMention[];
+	attachments?: ApiMessageAttachment[];
+	hideEditted?: boolean;
+	topicId?: string;
+	isTopic?: boolean;
+};
+
+export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', async (payload: EditMessageViaApiPayload, thunkAPI) => {
+	const { channelId, clanId, mode, isPublic, messageId, content, mentions, attachments, hideEditted, topicId, isTopic } = payload;
+
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const session = mezon.sessionRef.current;
+		const client = mezon.clientRef.current;
+
+		if (!client || !session || !channelId) {
+			throw new Error('Client is not initialized');
+		}
+
+		const trimContent: IMessageSendPayload = {
+			...content,
+			t: content.t?.trim()
+		};
+
+		const res = await client.updateChannelMessage(
+			session,
+			clanId || '0',
+			channelId || '0',
+			mode,
+			isPublic,
+			messageId || '0',
+			trimContent,
+			mentions,
+			attachments,
+			hideEditted,
+			topicId || '0',
+			!!isTopic
+		);
+
+		return res;
+	} catch (error) {
+		throw error;
+	}
+});
+
 export const sendMessage = createAsyncThunk('messages/sendMessage', async (payload: SendMessagePayload, thunkAPI) => {
 	const {
 		mentions,
@@ -866,8 +1087,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 		}
 
+		const state = thunkAPI.getState() as RootState;
 		if (checkEnableE2EE) {
-			const state = thunkAPI.getState() as RootState;
 			const currentDM = selectCurrentDM(state);
 			const keys = selectE2eeByUserIds(state, currentDM.user_ids as string[]);
 
@@ -886,6 +1107,24 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			}
 		}
 
+		const ogpData = selectOgpData(state);
+
+		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0) {
+			const mk = [...(content.mk ?? [])];
+
+			mk.push({
+				description: ogpData?.description || '',
+				image: ogpData?.image || '',
+				title: ogpData?.title || '',
+				e: (content.t?.length || 0) + 1,
+				type: EBacktickType.OGP_PREVIEW,
+				index: ogpData.index
+			});
+			content = {
+				...content,
+				mk
+			};
+		}
 		const res = await socket.writeChatMessage(
 			clanId,
 			channelId,
@@ -900,6 +1139,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			'',
 			code
 		);
+		if (res) {
+			thunkAPI.dispatch(referencesActions.clearOgpData());
+		}
 
 		return res;
 	}
@@ -1279,7 +1521,7 @@ export const clickButtonMessage = createAsyncThunk(
 	async ({ message_id, channel_id, button_id, sender_id, user_id, extra_data }: MessageButtonClicked, thunkAPI) => {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		try {
-			mezon.socketRef.current?.handleMessageButtonClick(message_id, channel_id, button_id, sender_id, user_id, extra_data);
+			mezon.client.messageButtonClick(mezon.session, message_id, channel_id, button_id, sender_id, user_id, extra_data);
 		} catch (e) {
 			console.error(e);
 		}
@@ -1402,6 +1644,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.SendToken:
 				case TypeMessage.Ephemeral:
 				case TypeMessage.ShareContact:
+				case TypeMessage.Location:
 				case TypeMessage.Chat: {
 					if (topic_id !== '0' && topic_id) {
 						handleAddOneMessage({
@@ -1507,7 +1750,7 @@ export const messagesSlice = createSlice({
 					updateReferenceMessage({
 						state,
 						channelId,
-						listMessageIds: referenced_message as string[]
+						deletedMessageId: messageId
 					});
 					handleRemoveOneMessage({ state, channelId, messageId });
 					break;
@@ -1910,6 +2153,8 @@ export const messagesActions = {
 	...messagesSlice.actions,
 	addNewMessage,
 	sendMessage,
+	sendMessageViaApi,
+	editMessageViaApi,
 	resendMessage,
 	sendEphemeralMessage,
 	fetchMessages,
@@ -2206,29 +2451,38 @@ const handleRemoveOneMessage = ({ state, channelId, messageId }: { state: Messag
 	return channelMessagesAdapter.removeOne(channelEntity, messageId);
 };
 
-const updateReferenceMessage = ({ state, channelId, listMessageIds }: { state: MessagesState; channelId: string; listMessageIds: string[] }) => {
-	if (!listMessageIds || listMessageIds.length === 0) {
-		return;
-	}
-	const channelEntity = state.channelMessages[channelId];
-	const index = channelEntity.ids.indexOf(listMessageIds[0]);
-	if (index === -1) return;
+const updateReferenceMessage = ({ state, channelId, deletedMessageId }: { state: MessagesState; channelId: string; deletedMessageId: string }) => {
+	if (!deletedMessageId) return;
 
-	const listReferencesUpdate: Update<MessagesEntity, string>[] = listMessageIds.map((id) => {
-		return {
-			id,
-			changes: {
-				references: [
-					{
-						...(channelEntity.entities[id].references?.[0] as ApiMessageRef),
-						content: '{"t":"Original message was deleted"}',
-						message_ref_id: undefined
-					}
-				]
-			}
-		};
-	});
-	channelMessagesAdapter.updateMany(channelEntity, listReferencesUpdate);
+	const channelEntity = state.channelMessages[channelId];
+	if (!channelEntity?.entities) return;
+
+	const { entities, ids } = channelEntity;
+	const listReferencesUpdate: Update<MessagesEntity, string>[] = [];
+
+	for (const id of ids) {
+		const message = entities[id];
+		if (!message?.references?.[0]?.message_ref_id) continue;
+
+		if (message.references[0].message_ref_id === deletedMessageId) {
+			listReferencesUpdate.push({
+				id: id as string,
+				changes: {
+					references: [
+						{
+							...(message.references[0] as ApiMessageRef),
+							content: '{"t":"Original message was deleted"}',
+							message_ref_id: undefined
+						}
+					]
+				}
+			});
+		}
+	}
+
+	if (listReferencesUpdate.length) {
+		channelMessagesAdapter.updateMany(channelEntity, listReferencesUpdate);
+	}
 };
 
 const handleAddOneMessage = ({ state, channelId, adapterPayload }: { state: MessagesState; channelId: string; adapterPayload: MessagesEntity }) => {

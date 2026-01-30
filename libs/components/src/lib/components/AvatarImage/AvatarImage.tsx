@@ -43,7 +43,7 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 		);
 
 	if (!src && !username) {
-		return <Icons.AvatarUser className="w-5 h-5 mr-2" />;
+		return <Icons.AvatarUser className={`w-5 h-5 ${className}`} />;
 	}
 
 	if (srcImgProxy && src && isError) {

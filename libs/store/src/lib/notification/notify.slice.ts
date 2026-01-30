@@ -3,7 +3,6 @@ import type { INotification, LoadingStatus, NotificationEntity } from '@mezon/ut
 import { Direction_Mode, NotificationCategory } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { Notification } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
 import type { ApiChannelMessageHeader, ApiMessageMention } from 'mezon-js/api.gen';
 import type { CacheMetadata } from '../cache-metadata';
@@ -15,14 +14,6 @@ import type { RootState } from '../store';
 
 export const NOTIFICATION_FEATURE_KEY = 'notification';
 const LIMIT_NOTIFICATION = 50;
-
-export const mapNotificationToEntity = (notifyRes: INotification): Notification => {
-	return {
-		...notifyRes,
-		id: notifyRes.id || '',
-		create_time: notifyRes.create_time
-	};
-};
 
 export interface FetchNotificationArgs {
 	clanId: string;
@@ -258,9 +249,11 @@ export const notificationSlice = createSlice({
 							return {
 								...item,
 								content: {
-									...item.content,
+									...item?.content,
 									content:
-										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content
+										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.t : item.content?.content,
+									embed:
+										typeof item.content?.content === 'string' ? safeJSONParse(item.content?.content)?.embed : item.content?.embed
 								}
 							};
 						});
@@ -327,6 +320,7 @@ export const notificationSlice = createSlice({
 								title: '',
 								link: '',
 								content: message.content.t,
+								embed: message?.content?.embed,
 								channel_id: message.channel_id,
 								sender_id: message.sender_id,
 								avatar: message.clan_avatar || message.avatar,
