@@ -27,7 +27,7 @@ function PreviewOgp() {
 		const timeoutId = setTimeout(async () => {
 			try {
 				setLoading(true);
-				const res = await fetch('https://ogp.mezon.ai/ogp', {
+				const res = await fetch(`${process.env.NX_OGP_URL}`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
