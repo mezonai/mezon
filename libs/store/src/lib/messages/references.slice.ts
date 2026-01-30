@@ -262,6 +262,7 @@ export const referencesSlice = createSlice({
 		},
 		clearOgpData(state) {
 			state.ogpData = null;
+			state.ogpPreview = null;
 		}
 	},
 	extraReducers: (builder) => {

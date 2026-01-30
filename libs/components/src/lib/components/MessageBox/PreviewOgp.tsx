@@ -17,6 +17,7 @@ function PreviewOgp() {
 
 	useEffect(() => {
 		if (!ogpLink || !ogpLink.url) {
+			setData(null);
 			dispatch(referencesActions.clearOgpData());
 			return;
 		}
@@ -33,7 +34,7 @@ function PreviewOgp() {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						url: ogpLink
+						url: ogpLink.url
 					}),
 					signal
 				});
