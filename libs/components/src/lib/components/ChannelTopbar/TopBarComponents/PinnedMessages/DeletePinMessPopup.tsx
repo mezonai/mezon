@@ -1,7 +1,7 @@
 import type { PinMessageEntity } from '@mezon/store';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
-import type { IEmbedProps, IMessageWithUser } from '@mezon/utils';
-import { SHARE_CONTACT_KEY, TOPBARS_MAX_WIDTH } from '@mezon/utils';
+import type { IMessageWithUser } from '@mezon/utils';
+import { TOPBARS_MAX_WIDTH, getShareContactInfo } from '@mezon/utils';
 import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -25,25 +25,12 @@ export const ModalDeletePinMess = (props: ModalDeletePinMessProps) => {
 	const userSender = useAppSelector((state) => selectMemberClanByUserId(state, pinMessage.sender_id as string));
 
 	const messageContentObject = useMemo(() => {
-		try {
-			return safeJSONParse(pinMessage.content || '{}') || {};
-		} catch (e) {
-			return {};
-		}
+		return safeJSONParse(pinMessage.content || '{}') || {};
 	}, [pinMessage.content]);
 
-	const isShareContact = useMemo(() => {
-		const embeds = messageContentObject?.embed || [];
-		const firstEmbed = embeds[0];
-		const fields = firstEmbed?.fields || [];
-		return fields.length > 0 && fields[0]?.value === SHARE_CONTACT_KEY;
+	const { isShareContact, shareContactEmbed } = useMemo(() => {
+		return getShareContactInfo(messageContentObject?.embed);
 	}, [messageContentObject]);
-
-	const shareContactEmbed = useMemo((): IEmbedProps | null => {
-		if (!isShareContact) return null;
-		const embeds = messageContentObject?.embed || [];
-		return embeds[0] || null;
-	}, [isShareContact, messageContentObject]);
 
 	return (
 		<div

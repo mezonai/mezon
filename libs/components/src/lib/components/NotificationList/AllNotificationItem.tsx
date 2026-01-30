@@ -4,11 +4,11 @@ import type { IEmbedProps, IMentionOnMessage, IMessageWithUser, INotification } 
 import {
 	DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR,
 	NotificationCategory,
-	SHARE_CONTACT_KEY,
 	TOPBARS_MAX_WIDTH,
 	convertTimeString,
 	createImgproxyUrl,
-	generateE2eId
+	generateE2eId,
+	getShareContactInfo
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiDirectFcmProto } from 'mezon-js/api.gen';
@@ -135,13 +135,7 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 	const isChannel = currentChannel.type === ChannelType.CHANNEL_TYPE_CHANNEL;
 
 	const { isShareContact, shareContactEmbed } = useMemo(() => {
-		if (!embed || !Array.isArray(embed) || embed.length === 0) {
-			return { isShareContact: false, shareContactEmbed: null };
-		}
-		const firstEmbed = embed[0];
-		const fields = firstEmbed?.fields || [];
-		const isShare = fields.length > 0 && fields.some((f) => f.name === 'key' && f.value === SHARE_CONTACT_KEY);
-		return { isShareContact: isShare, shareContactEmbed: isShare ? firstEmbed : null };
+		return getShareContactInfo(embed);
 	}, [embed]);
 
 	const mentions = useMemo<IMentionOnMessage[]>(() => {
