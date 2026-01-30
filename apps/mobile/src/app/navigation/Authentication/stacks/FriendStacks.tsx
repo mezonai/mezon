@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, Text } from 'react-native';
+import { FriendsHeaderTitle } from '../../../components/FriendHeaderTitle';
 import { FriendScreen } from '../../../screens/friend';
 import { AddFriendScreen } from '../../../screens/friend/AddFriend';
 import { RequestFriendScreen } from '../../../screens/friend/RequestFriend';
@@ -56,7 +57,7 @@ export const FriendStacks = ({ navigation }: { navigation: any }) => {
 				name={APP_SCREEN.FRIENDS.HOME}
 				component={FriendScreen}
 				options={{
-					headerTitle: t('headerTitle.Friends'),
+					headerTitle: () => <FriendsHeaderTitle />,
 					headerStyle: {
 						backgroundColor: themeValue.primary
 					},

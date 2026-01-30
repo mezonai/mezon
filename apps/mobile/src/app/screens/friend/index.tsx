@@ -5,7 +5,7 @@ import type { ChannelsEntity, FriendsEntity } from '@mezon/store-mobile';
 import { DMCallActions, getStore, selectAllFriends, selectDirectsOpenlist, useAppDispatch } from '@mezon/store-mobile';
 import { ChannelType } from 'mezon-js';
 import type { ApiUser } from 'mezon-js/api.gen';
-import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Pressable, Text, TextInput, View } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
@@ -31,25 +31,10 @@ export const FriendScreen = React.memo(({ navigation }: { navigation: any }) => 
 	const { createDirectMessageWithUser } = useDirect();
 	const store = getStore();
 	const friendList: FriendsEntity[] = useMemo(() => {
-		return allUser?.filter((user) => user?.state === 0) || [];
+		return allUser.filter((user) => user.state === 0);
 	}, [allUser]);
 	const [selectedUser, setSelectedUser] = useState<ApiUser | null>(null);
 	const dispatch = useAppDispatch();
-
-	useLayoutEffect(() => {
-		navigation.setOptions({
-			headerTitle: () => (
-				<View style={styles.headerTitleWrapper}>
-					<Text style={styles.headerTitle}>
-						{t('screen:headerTitle.Friends')}
-					</Text>
-					{friendList?.length > 0 && <Text style={styles.headerCount}>
-						{friendList?.length} {friendList?.length === 1 ? t('common:friend') : t('friends:friends')}
-					</Text>}
-				</View>
-			)
-		});
-	}, [navigation, friendList, themeValue, t]);
 
 	const navigateToRequestFriendScreen = () => {
 		navigation.navigate(APP_SCREEN.FRIENDS.STACK, { screen: APP_SCREEN.FRIENDS.REQUEST_FRIEND });

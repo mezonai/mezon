@@ -43,17 +43,5 @@ export const style = (colors: Attributes) =>
 		},
 		defaultText: {
 			color: colors.text
-		},
-		headerTitle: {
-			color: colors.textStrong,
-			fontSize: size.s_15,
-			fontWeight: '600'
-		},
-        headerCount: {
-            color: colors.textDisabled,
-            fontSize: size.s_10,
-        },
-		headerTitleWrapper: {
-			alignItems: 'center'
 		}
 	});
