@@ -461,7 +461,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			topic: channel_desc.topic || existingEntity?.topic,
 			member_count: channel_desc.member_count,
 			last_sent_message: {
-				timestamp_seconds: channel_desc.type === ChannelType.CHANNEL_TYPE_DM ? Date.now() : channel_desc.last_sent_message?.timestamp_seconds
+				timestamp_seconds: Date.now() / 1000
 			}
 		};
 		thunkAPI.dispatch(

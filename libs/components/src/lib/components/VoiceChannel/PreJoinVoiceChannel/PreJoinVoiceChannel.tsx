@@ -34,7 +34,7 @@ export const PreJoinVoiceChannel: React.FC<PreJoinVoiceChannelProps> = ({
 		>
 			<div className="flex flex-col justify-center items-center gap-4 w-full text-white">
 				<div className="w-full flex gap-2 justify-center p-2">
-					{voiceChannelMembers.length > 0 && <VoiceChannelUsers memberJoin={voiceChannelMembers} memberMax={3}></VoiceChannelUsers>}
+					{voiceChannelMembers.length > 0 && <VoiceChannelUsers voiceChannelMembers={voiceChannelMembers}></VoiceChannelUsers>}
 				</div>
 				<div className="max-w-[350px] text-center text-3xl font-bold text-gray-800 dark:text-white">
 					{channel_label && channel_label.length > 20 ? `${channel_label.substring(0, 20)}...` : channel_label}

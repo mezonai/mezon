@@ -13,7 +13,7 @@ import {
 	selectVoiceChannelMembersByChannelId,
 	useAppSelector
 } from '@mezon/store';
-import type { ChannelThreads, IChannelMember } from '@mezon/utils';
+import type { ChannelThreads } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import AvatarGroup, { AvatarCount } from '../../Avatar/AvatarGroup';
 import type { ChannelLinkRef } from '../../ChannelLink';
@@ -125,8 +125,8 @@ const CollapsedMemberList = ({ channelId, clanId, channelType }: ICollapsedMembe
 	}, [channelType, voiceChannelMembers, streamChannelMembers]);
 	return (
 		<AvatarGroup className={'px-6'}>
-			{[...channelMemberList].slice(0, 5).map((member, index) => (
-				<AvatarUserShort id={member.user_id || ''} key={(member.user_id || '') + index} />
+			{[...channelMemberList].slice(0, 5).map((id, index) => (
+				<AvatarUserShort id={id || ''} key={(id || '') + index} />
 			))}
 			{channelMemberList && channelMemberList.length > 5 && (
 				<AvatarCount number={channelMemberList?.length - 5 > 99 ? 99 : channelMemberList?.length - 5} />
@@ -154,10 +154,10 @@ function UserListVoiceChannel({ channelId, channelType, clanId }: UserListVoiceC
 		return null;
 	}
 
-	return channelMemberList?.map((item: IChannelMember) => {
+	return channelMemberList?.map((id) => {
 		return (
-			<div key={item.id} className={'mt-[1px]'}>
-				<UserListItem user={item} />
+			<div key={id} className={'mt-[1px]'}>
+				<UserListItem id={id} />
 			</div>
 		);
 	});

@@ -259,7 +259,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				dispatch(
 					voiceActions.add({
-						...voice
+						channel_id: voice.voice_channel_id,
+						clan_id: voice.clan_id,
+						user_id: voice.user_id
 					})
 				);
 			}
@@ -284,9 +286,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const currentStreamInfo = selectCurrentStreamInfo(store.getState());
 		const streamChannelMember = selectStreamMembersByChannelId(store.getState(), currentStreamInfo?.streamId || '');
 
-		const existingMember = streamChannelMember?.find((member) => member?.user_id === user?.user_id);
+		const existingMember = streamChannelMember?.find((id) => id === user?.user_id);
 		if (existingMember) {
-			dispatch(usersStreamActions.remove(existingMember?.id));
+			dispatch(usersStreamActions.remove(existingMember));
 		}
 		dispatch(usersStreamActions.add(user));
 	}, []);
