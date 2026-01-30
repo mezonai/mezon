@@ -4,6 +4,7 @@
 	"modal": {
 		"title": "Ghim đi. Ghim luôn cho chắc.",
 		"description": "Này, mình chỉ muốn xác nhận lại một lần nữa là bạn có muốn ghim tin nhắn này vào #{{channelLabel}} để lưu giữ vĩnh viễn không?",
+		"descriptionDM": "Này, mình chỉ muốn xác nhận lại một lần nữa là bạn có muốn ghim tin nhắn này vào cuộc trò chuyện hiện tại để lưu giữ vĩnh viễn không?",
 		"cancel": "Hủy",
 		"confirm": "Ghim luôn"
 	}
