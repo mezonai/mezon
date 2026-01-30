@@ -23,25 +23,32 @@ export const ToastTooltip = memo((props: ToastConfigParams<any>) => {
 
 		opacity.setValue(0);
 
-		Animated.timing(opacity, {
+		const fadeIn = Animated.timing(opacity, {
 			toValue: 1,
 			duration: FADE_IN_MS,
 			useNativeDriver: true
-		}).start();
+		});
+		const fadeOut = Animated.timing(opacity, {
+			toValue: 0,
+			duration: FADE_OUT_MS,
+			useNativeDriver: true
+		});
+
+		fadeIn?.start();
 
 		const timeoutId = setTimeout(() => {
-			Animated.timing(opacity, {
-				toValue: 0,
-				duration: FADE_OUT_MS,
-				useNativeDriver: true
-			}).start(({ finished }) => {
+			fadeOut?.start(({ finished }) => {
 				if (finished) {
 					Toast.hide();
 				}
 			});
 		}, durationMs);
 
-		return () => clearTimeout(timeoutId);
+		return () => {
+			clearTimeout(timeoutId);
+			fadeIn?.stop();
+			fadeOut?.stop();
+		};
 	}, [isVisible, durationMs, opacity]);
 
 	const textContent = text1 || data?.text1 || text2 || data?.text2 || '';
