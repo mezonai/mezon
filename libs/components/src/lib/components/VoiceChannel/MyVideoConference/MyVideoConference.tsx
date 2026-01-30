@@ -158,14 +158,13 @@ export const MyVideoConference = memo(
 
 		useEffect(() => {
 			const handleDisconnected = async (reason?: DisconnectReason) => {
-				if (reason === DisconnectReason.CLIENT_INITIATED) return;
-
 				if (
 					reason === DisconnectReason.SERVER_SHUTDOWN ||
 					reason === DisconnectReason.PARTICIPANT_REMOVED ||
 					reason === DisconnectReason.SIGNAL_CLOSE ||
 					reason === DisconnectReason.JOIN_FAILURE ||
-					reason === DisconnectReason.DUPLICATE_IDENTITY
+					reason === DisconnectReason.DUPLICATE_IDENTITY ||
+					reason === DisconnectReason.CLIENT_INITIATED
 				) {
 					await onLeaveRoom();
 					room?.disconnect();
