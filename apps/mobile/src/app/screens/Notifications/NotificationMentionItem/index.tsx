@@ -7,6 +7,7 @@ import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
+import type { attacmentNotifyItem } from '../MessageNotification';
 import MessageNotification from '../MessageNotification';
 import type { NotifyProps } from '../types';
 import { ENotifyBsToShow } from '../types';
@@ -77,6 +78,15 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 		return priorityAvatar || notify?.content?.avatar;
 	}, [notify?.content?.avatar, priorityAvatar]);
 
+	const attachmentItem: attacmentNotifyItem = useMemo(() => {
+		return notify?.content?.attachment_link
+			? {
+					url: notify?.content?.attachment_link,
+					hasMore: notify?.content?.has_more_attachment
+				}
+			: null;
+	}, [notify?.content?.attachment_link, notify?.content?.has_more_attachment]);
+
 	const mentions = useMemo<IMentionOnMessage[]>(() => {
 		const message = notify?.content;
 		const mention = message.mention_ids?.map((item, index) => {
@@ -89,6 +99,10 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 		});
 		return mention || [];
 	}, [notify?.content]);
+
+	if (!data?.content && !subjectText && !data?.attachments?.length && !attachmentItem) {
+		return null;
+	}
 
 	return (
 		<TouchableOpacity
@@ -110,7 +124,7 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 							{subjectText}
 						</Text>
 						<View style={styles.contentMessage}>
-							<MessageNotification message={data} mentions={mentions} />
+							<MessageNotification message={data} mentions={mentions} attacmentItem={attachmentItem} />
 						</View>
 					</View>
 					<Text style={styles.notifyDuration}>{messageTimeDifference}</Text>

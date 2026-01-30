@@ -12,8 +12,15 @@ import { style } from './MessageNotification.styles';
 interface IMessageNotificationProps {
 	message: IMessageWithUser;
 	mentions: IMentionOnMessage[];
+	attacmentItem: attacmentNotifyItem;
 }
-const MessageNotification = React.memo(({ message, mentions }: IMessageNotificationProps) => {
+
+export type attacmentNotifyItem = {
+	url: string;
+	hasMore: boolean;
+};
+
+const MessageNotification = React.memo(({ message, mentions, attacmentItem }: IMessageNotificationProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation('message');
@@ -27,10 +34,13 @@ const MessageNotification = React.memo(({ message, mentions }: IMessageNotificat
 
 	return (
 		<View>
-			{message?.attachments?.length ? (
-				<View style={styles.attachmentBox}>
-					<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')}</Text>
-					<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_13} height={size.s_13} color={themeValue.textDisabled} />
+			{message?.attachments?.length || attacmentItem ? (
+				<View>
+					<View style={styles.attachmentBox}>
+						<Text style={styles.tapToSeeAttachmentText}>{t('tapToSeeAttachment')}</Text>
+						<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_13} height={size.s_13} color={themeValue.textDisabled} />
+					</View>
+					{message?.attachments?.length > 1 || (attacmentItem?.hasMore && <Text style={styles.tapToSeeAttachmentText}>More files</Text>)}
 				</View>
 			) : null}
 			<RenderTextMarkdownContent

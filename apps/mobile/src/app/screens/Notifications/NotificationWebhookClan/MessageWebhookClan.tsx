@@ -50,7 +50,7 @@ const MessageWebhookClan = memo(({ message }: IMessageNotificationProps) => {
 			<View>
 				<RenderTextMarkdownContent
 					content={{
-						...(typeof message.content === 'object' ? message.content : {}),
+						...(typeof message.content === 'object' ? message.content : { t: message?.content?.toString() || '' }),
 						mentions: message?.mentions
 					}}
 					isEdited={isEdited}
