@@ -1065,6 +1065,7 @@ export enum EUserSettings {
 	NOTIFICATIONS = 'Notifications',
 	KEYBINDS = 'Keybinds',
 	LANGUAGE = 'Language',
+	VOICE = 'Voice',
 	STREAMER_MODE = 'Streamer Mode',
 	ADVANCED = 'Advanced',
 	LOG_OUT = 'Log Out'
