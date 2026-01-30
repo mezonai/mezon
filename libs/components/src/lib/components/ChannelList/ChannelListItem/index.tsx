@@ -75,36 +75,53 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 	};
 
 	const hasUnread = useAppSelector((state) => selectIsUnreadThreadInChannel(state, channel.threadIds || []));
+	const isVoiceOrStreamingChannel =
+		channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE ||
+		channel.type === ChannelType.CHANNEL_TYPE_STREAMING ||
+		channel.type === ChannelType.CHANNEL_TYPE_APP;
+
+	const hasMembersInVoice = isVoiceOrStreamingChannel && channelMemberList.length > 0;
+
+	const shouldShowChannel =
+		isCategoryExpanded ||
+		isUnreadChannel ||
+		hasUnread ||
+		currentChannelId === channel.id ||
+		currentChannelParentId === channel.id ||
+		channel?.count_mess_unread ||
+		hasMembersInVoice;
+
 	const renderChannelContent = useMemo(() => {
-		if (
-			channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE &&
-			channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
-			channel.type !== ChannelType.CHANNEL_TYPE_APP &&
-			(isCategoryExpanded ||
-				isUnreadChannel ||
-				hasUnread ||
-				currentChannelId === channel.id ||
-				currentChannelParentId === channel.id ||
-				channel?.count_mess_unread)
-		) {
+		if (!shouldShowChannel) {
+			return null;
+		}
+
+		if (!isVoiceOrStreamingChannel) {
 			return <>{renderChannelLink()}</>;
 		}
 
 		return (
 			<>
 				{renderChannelLink()}
-				{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
-					<>
-						{isCategoryExpanded ? (
-							<UserListVoiceChannel channelId={channel.channel_id ?? ''} channelType={channel?.type} clanId={channel.clan_id || ''} />
-						) : (
-							<CollapsedMemberList channelId={channel.channel_id ?? ''} channelType={channel?.type} clanId={channel.clan_id || ''} />
-						)}
-					</>
+				{isCategoryExpanded ? (
+					<UserListVoiceChannel channelId={channel.channel_id ?? ''} channelType={channel?.type} clanId={channel.clan_id || ''} />
+				) : (
+					channelMemberList.length > 0 && (
+						<CollapsedMemberList channelId={channel.channel_id ?? ''} channelType={channel?.type} clanId={channel.clan_id || ''} />
+					)
 				)}
 			</>
 		);
-	}, [channel.type, channel.threads, channel.channel_id, isCategoryExpanded, channelMemberList, renderChannelLink]);
+	}, [
+		shouldShowChannel,
+		isVoiceOrStreamingChannel,
+		isCategoryExpanded,
+		channel.channel_id,
+		channel.type,
+		channel.clan_id,
+		channelMemberList.length,
+		renderChannelLink
+	]);
 
 	return <>{renderChannelContent} </>;
 };
