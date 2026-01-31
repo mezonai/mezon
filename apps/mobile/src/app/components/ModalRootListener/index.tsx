@@ -1,13 +1,13 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, BackHandler, DeviceEventEmitter, Keyboard, StyleSheet, View } from 'react-native';
+import { Animated, BackHandler, DeviceEventEmitter, InteractionManager, Keyboard, StyleSheet, View } from 'react-native';
 
 const useModalState = () => {
 	const [children, setChildren] = useState<any>(null);
 
-	const clearDataModal = () => {
+	const clearDataModal = useCallback(() => {
 		setChildren(null);
-	};
+	}, []);
 
 	return {
 		children,
@@ -62,8 +62,10 @@ const ModalRootListener = () => {
 				useNativeDriver: true
 			})
 		]).start(() => {
-			setVisible(false);
-			clearDataModal();
+			InteractionManager.runAfterInteractions(() => {
+				setVisible(false);
+				clearDataModal();
+			});
 		});
 	}, [fadeAnim, scaleAnim, clearDataModal]);
 

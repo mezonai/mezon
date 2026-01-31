@@ -155,7 +155,7 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 						channelPrivate: 1
 					})
 				);
-				await participantMeetState(ParticipantMeetState.JOIN, clanId as string, channelId as string);
+				await participantMeetState(ParticipantMeetState.JOIN, clanId as string, channelId as string, roomName);
 				setToken(result);
 				dispatch(voiceActions.setJoined(true));
 				dispatch(appActions.setLoadingMainMobile(false));

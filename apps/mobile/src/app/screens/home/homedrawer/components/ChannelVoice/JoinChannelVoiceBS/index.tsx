@@ -35,7 +35,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 	}, [channel?.channel_id, channel?.id]);
 	const countMessUnread = channel?.count_mess_unread || 0;
 
-	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channelId));
+	const voiceChannelMembers = useAppSelector((state) => selectVoiceChannelMembersByChannelId(state, channelId, channel?.clan_id));
 	const badge = useMemo(() => (voiceChannelMembers?.length > 3 ? voiceChannelMembers.length - 3 : 0), [voiceChannelMembers]);
 
 	const handleJoinVoice = async () => {
@@ -109,7 +109,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 					) : (
 						<View style={styles.avatarRow}>
 							{voiceChannelMembers?.slice?.(0, 3)?.map((m) => {
-								return <VoiceChannelAvatar key={`${m?.user_id}_user_join_voice`} userId={m?.user_id} />;
+								return <VoiceChannelAvatar key={`${m?.user_id || m}_user_join_voice`} userId={m?.user_id || m} />;
 							})}
 							{badge > 0 && (
 								<View style={styles.badgeContainer}>
