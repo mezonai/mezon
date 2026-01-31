@@ -6,7 +6,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { RootState } from '../store';
 
-const API_BASE = process.env.NX_ADMIN_API_URL || 'http://localhost:8080/api';
+const API_BASE = process.env.NX_ADMIN_API_URL || 'http://localhost:8081';
 
 type ChartPoint = { date: string; isoDate?: string; activeUsers: number; activeChannels: number; messages: number };
 type ClanRow = { clanId: string; totalActiveUsers: number; totalActiveChannels: number; totalMessages: number };
