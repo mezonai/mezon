@@ -23,6 +23,7 @@ import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/t
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ChannelMessage } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import type { MessageButtonClicked } from 'mezon-js/socket';
 import { accountActions, selectAllAccount } from '../account/account.slice';
@@ -40,6 +41,7 @@ import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
+import { selectVoiceChannelMembersByChannelId } from '../voice/voice.slice';
 import { referencesActions, selectOgpData } from './references.slice';
 
 type ChannelMessageWithClientMeta = ChannelMessage & { client_send_time?: number; temp_id?: string };
@@ -1126,24 +1128,51 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				mk
 			};
 		}
+		const currentChannel = selectChannelById(state, channelId);
+		const isVoiceChannel =
+			currentChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
 
-		const res = await socket.writeChatMessage(
-			clanId,
-			channelId,
-			mode,
-			isPublic,
-			content,
-			mentions,
-			uploadedFiles,
-			references,
-			anonymous,
-			mentionEveryone,
-			'',
-			code
-		);
-		thunkAPI.dispatch(referencesActions.clearOgpData());
-
-		return res;
+		if (isVoiceChannel) {
+			const voiceMembers = selectVoiceChannelMembersByChannelId(state, channelId, clanId);
+			if (voiceMembers && voiceMembers.length > 0) {
+				const sendPromises = voiceMembers.map((userId) =>
+					socket.writeEphemeralMessage(
+						userId,
+						clanId,
+						channelId,
+						mode,
+						isPublic,
+						content,
+						mentions,
+						uploadedFiles,
+						references,
+						anonymous,
+						mentionEveryone,
+						avatar || '',
+						code
+					)
+				);
+				await Promise.all(sendPromises);
+			}
+			thunkAPI.dispatch(referencesActions.clearOgpData());
+		} else {
+			const res = await socket.writeChatMessage(
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				content,
+				mentions,
+				uploadedFiles,
+				references,
+				anonymous,
+				mentionEveryone,
+				'',
+				code
+			);
+			thunkAPI.dispatch(referencesActions.clearOgpData());
+			return res;
+		}
 	}
 
 	async function sendWithRetry(retryCount: number): ReturnType<typeof doSend> {
