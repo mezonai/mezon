@@ -1134,8 +1134,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		if (isVoiceChannel) {
 			const voiceMembers = selectVoiceChannelMembersByChannelId(state, channelId, clanId);
-			if (voiceMembers && voiceMembers.length > 0) {
-				const sendPromises = voiceMembers.map((userId) =>
+			const otherMembers = voiceMembers?.filter((userId) => userId !== senderId) || [];
+			if (otherMembers.length > 0) {
+				const sendPromises = otherMembers.map((userId) =>
 					socket.writeEphemeralMessage(
 						userId,
 						clanId,
