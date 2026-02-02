@@ -10,7 +10,7 @@ import {
 	STORAGE_MY_USER_ID,
 	STORAGE_OFFER_HAVE_CALL_CACHE
 } from '@mezon/mobile-components';
-import { appActions, channelsActions, clansActions, directActions, getStoreAsync, topicsActions } from '@mezon/store-mobile';
+import { appActions, channelsActions, clansActions, directActions, getStoreAsync, messagesActions, topicsActions } from '@mezon/store-mobile';
 import i18n from '@mezon/translations';
 import { sleep } from '@mezon/utils';
 import notifee, { AndroidLaunchActivityFlag, AuthorizationStatus as NotifeeAuthorizationStatus } from '@notifee/react-native';
@@ -29,7 +29,7 @@ import { AuthorizationStatus, getMessaging, getToken, hasPermission, requestPerm
 import { CommonActions } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
 import React from 'react';
-import { DeviceEventEmitter, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import MezonConfirm from '../componentUI/MezonConfirm';
 import { APP_SCREEN } from '../navigation/ScreenTypes';
 import { InboxType } from '../screens/Notifications';
@@ -465,6 +465,15 @@ export const navigateToNotification = async (store: any, notification: any, navi
 			const clanId = linkMatch?.[1];
 			const channelId = linkMatch?.[2];
 			if (channelId !== '0' && !!channelId) {
+				store.dispatch(
+					messagesActions.fetchMessages({
+						channelId,
+						noCache: true,
+						isFetchingLatestMessages: true,
+						isClearMessage: true,
+						clanId
+					})
+				);
 				store.dispatch(directActions.setDmGroupCurrentId(''));
 				store.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId }));
 				store.dispatch(
@@ -479,6 +488,7 @@ export const navigateToNotification = async (store: any, notification: any, navi
 				);
 			}
 			if (navigation) {
+				Keyboard.dismiss();
 				if (isTabletLandscape) {
 					navigation.navigate(APP_SCREEN.HOME as never);
 				} else {
