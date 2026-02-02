@@ -107,7 +107,14 @@ const ModalUserProfile = ({
 	const modalRef = useRef<boolean>(false);
 	const onLoading = useRef<boolean>(false);
 
-	const date = new Date(userById?.user?.create_time_seconds || 0);
+	const createTimeSeconds = userById?.user?.create_time_seconds;
+	const createTimeMs =
+		typeof createTimeSeconds === 'number'
+			? createTimeSeconds.toString().length <= 10
+				? createTimeSeconds * 1000
+				: createTimeSeconds
+			: Number(createTimeSeconds || 0) * 1000;
+	const date = new Date(createTimeMs || 0);
 	const { timeFormatted } = useFormatDate({ date });
 
 	const avatarByUserId = isDM ? userById?.user?.avatar_url : userById?.clan_avatar || userById?.user?.avatar_url;
