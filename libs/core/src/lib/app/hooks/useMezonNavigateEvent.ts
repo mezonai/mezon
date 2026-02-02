@@ -1,10 +1,9 @@
-import { getStore, handleTopicNotification, selectDirectMessageEntities, useAppDispatch } from '@mezon/store';
+import { getStore, handleTopicNotification, selectDirectMessageEntities, selectMessageIsLoading, useAppDispatch } from '@mezon/store';
 import { useCallback, useEffect } from 'react';
 import { useCustomNavigate } from '../../chat/hooks/useCustomNavigate';
 
 const DM_LOAD_TIMEOUT_MS = 2500;
-
-const TOPIC_OPEN_DELAY_MS = 500;
+const MESSAGES_LOAD_TIMEOUT_MS = 5000;
 
 interface TopicNotificationMessage {
 	channel_id?: string;
@@ -16,6 +15,44 @@ interface TopicNotificationMessage {
 		[key: string]: string | undefined;
 	};
 }
+
+const waitForMessagesLoaded = (): Promise<void> => {
+	const store = getStore();
+
+	if (!selectMessageIsLoading(store.getState())) {
+		return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+	}
+
+	return new Promise((resolve) => {
+		let unsubscribe: (() => void) | null = null;
+		let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+		const cleanup = () => {
+			if (unsubscribe) {
+				unsubscribe();
+				unsubscribe = null;
+			}
+			if (timeoutId) {
+				clearTimeout(timeoutId);
+				timeoutId = null;
+			}
+		};
+
+		const handleResolve = () => {
+			cleanup();
+			requestAnimationFrame(() => resolve());
+		};
+
+		unsubscribe = store.subscribe(() => {
+			const isLoading = selectMessageIsLoading(store.getState());
+			if (!isLoading) {
+				handleResolve();
+			}
+		});
+
+		timeoutId = setTimeout(handleResolve, MESSAGES_LOAD_TIMEOUT_MS);
+	});
+};
 
 export const useMezonNavigateEvent = () => {
 	const navigate = useCustomNavigate();
@@ -49,9 +86,8 @@ export const useMezonNavigateEvent = () => {
 			navigate(url);
 
 			if (msg) {
-				setTimeout(() => {
-					dispatch(handleTopicNotification({ msg }));
-				}, TOPIC_OPEN_DELAY_MS);
+				await waitForMessagesLoaded();
+				dispatch(handleTopicNotification({ msg }));
 			}
 
 			return true;

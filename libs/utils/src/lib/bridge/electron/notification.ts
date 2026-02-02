@@ -318,34 +318,44 @@ export class MezonNotificationService {
 			const existingWindow = window.open('', '_self');
 
 			if (existingWindow) {
+				existingWindow.focus();
+
+				let notificationUrl: URL | null = null;
 				try {
-					existingWindow.focus();
-					const notificationUrl = new URL(link);
-					const path = notificationUrl.pathname;
+					notificationUrl = new URL(link);
+				} catch (urlError) {
+					console.error('Invalid notification URL:', link, urlError);
+					window.location.href = link;
+					return;
+				}
 
-					const extras = msg?.extras as unknown as Record<string, string | undefined>;
-					let topicId: string | undefined | null = extras?.topicId ?? extras?.topic_id ?? extras?.topic;
+				const path = notificationUrl.pathname;
+				const extras = msg?.extras as unknown as Record<string, string | undefined>;
+				let topicId: string | undefined | null = extras?.topicId ?? extras?.topic_id ?? extras?.topic;
 
-					if (!topicId && msg?.extras?.link) {
+				if (!topicId && msg?.extras?.link) {
+					try {
 						const linkUrl = new URL(msg.extras.link);
 						topicId = linkUrl.searchParams.get('topicId') ?? linkUrl.searchParams.get('topic_id');
+					} catch (linkUrlError) {
+						console.error('Invalid extras link URL:', msg.extras.link, linkUrlError);
 					}
-					const fromTopic = Boolean(topicId && topicId !== '0');
-					const enrichedMsg = fromTopic && topicId ? { ...msg, extras: { ...msg?.extras, topicId } } : msg;
-					if (connection?.userId && this.currentActiveUserId !== connection.userId) {
-						this.setCurrentActiveUserId(connection.userId);
-					}
-
-					setTimeout(() => {
-						window.dispatchEvent(
-							new CustomEvent('mezon:navigate', {
-								detail: { url: path, msg: fromTopic ? enrichedMsg : null, userId: connection?.userId }
-							})
-						);
-					}, 100);
-				} catch (error) {
-					console.error('Error navigating to link:', error);
 				}
+
+				const fromTopic = Boolean(topicId && topicId !== '0');
+				const enrichedMsg = fromTopic && topicId ? { ...msg, extras: { ...msg?.extras, topicId } } : msg;
+
+				if (connection?.userId && this.currentActiveUserId !== connection.userId) {
+					this.setCurrentActiveUserId(connection.userId);
+				}
+
+				setTimeout(() => {
+					window.dispatchEvent(
+						new CustomEvent('mezon:navigate', {
+							detail: { url: path, msg: fromTopic ? enrichedMsg : null, userId: connection?.userId }
+						})
+					);
+				}, 100);
 			} else {
 				window.location.href = link;
 			}
