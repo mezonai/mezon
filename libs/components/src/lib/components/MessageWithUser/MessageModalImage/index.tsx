@@ -58,7 +58,11 @@ const MessageModalImage = () => {
 
 		if (urlImg) {
 			const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv', '.m4v'];
+			const imgExtensionSpecial = '.avif';
 			const lowerUrl = urlImg.toLowerCase();
+			if (lowerUrl.includes(imgExtensionSpecial)) {
+				return false;
+			}
 			return videoExtensions.some((ext) => lowerUrl.includes(ext));
 		}
 
