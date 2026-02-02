@@ -536,8 +536,8 @@ export const selectClanChannels = (state: RootState, clanId: string) => {
 	return raw.map((c: any) => ({
 		channelId: c.channelId || c.id || '',
 		channelName: c.channelName || c.name || '',
-		activeUsers: Number(c.totalUsers ?? c.total_users ?? 0) || 0,
-		messages: Number(c.totalMessages ?? c.total_messages ?? 0) || 0
+		totalUsers: String(c.totalUsers ?? '0'),
+		totalMessages: String(c.totalMessages ?? '0')
 	}));
 };
 
