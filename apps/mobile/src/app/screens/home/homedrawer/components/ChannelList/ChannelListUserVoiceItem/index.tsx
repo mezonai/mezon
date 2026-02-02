@@ -1,21 +1,20 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectMemberClanByUserId, useAppSelector } from '@mezon/store-mobile';
-import type { IChannelMember } from '@mezon/utils';
 import { memo, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import { style } from './styles';
 
 interface IUserVoiceItemProps {
-	userVoice: IChannelMember;
+	userId: string;
 	isCategoryExpanded: boolean;
 	index: number;
 	totalMembers: number;
 }
-const UserVoiceItem = memo(({ userVoice, isCategoryExpanded, index, totalMembers }: IUserVoiceItemProps) => {
+const UserVoiceItem = memo(({ userId, isCategoryExpanded, index, totalMembers }: IUserVoiceItemProps) => {
 	const { themeValue } = useTheme();
 	const styles = useMemo(() => style(themeValue, index), [themeValue, index]);
-	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, userVoice?.user_id ?? ''));
+	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, userId ?? ''));
 	const priorityName = useMemo(() => {
 		return userStream?.clan_nick || userStream?.user?.display_name || userStream?.user?.username || '';
 	}, [userStream?.clan_nick, userStream?.user?.display_name, userStream?.user?.username]);
@@ -45,9 +44,9 @@ const UserVoiceItem = memo(({ userVoice, isCategoryExpanded, index, totalMembers
 	return (
 		<View style={styles.userVoiceWrapper}>
 			<View style={styles.collapsedAvatarImage}>
-				<MezonClanAvatar image={priorityAvatar} alt={userStream?.user?.username || ''} customFontSizeAvatarCharacter={size.h8} />
+				<MezonClanAvatar image={priorityAvatar} alt={priorityName} customFontSizeAvatarCharacter={size.h8} />
 			</View>
-			<Text style={styles.userVoiceName}>{userStream ? priorityName : `${userVoice?.participant} (guest)`}</Text>
+			<Text style={styles.userVoiceName}>{priorityName}</Text>
 		</View>
 	);
 });
