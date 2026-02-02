@@ -194,16 +194,17 @@ export const QRScanner = () => {
 				// 	case login
 				if (value) {
 					const decode = Snowflake.parse(value);
-					if (decode?.timestamp && Number.isInteger(Number(value))) {
+					if (!!decode?.timestamp && decode?.timestamp !== 0 && Number.isInteger(Number(value))) {
 						setValueCode(value);
+						return;
 					}
-					return;
 				}
 			} catch (e) {
 				setDoScanBarcode(true);
 				setIsNavigating(false);
 			}
-
+			setDoScanBarcode(true);
+			setIsNavigating(false);
 			Toast.show({
 				type: 'error',
 				text1: t('qrCodeNotValid')
