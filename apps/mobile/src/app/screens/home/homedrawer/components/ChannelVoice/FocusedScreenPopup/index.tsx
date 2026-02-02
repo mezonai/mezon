@@ -116,7 +116,9 @@ const FocusedScreenPopup = () => {
 					) : (
 						<MezonIconCDN icon={IconCDN.microphoneSlashIcon} height={size.s_14} color={themeValue.text} />
 					)}
-					<Text style={styles.subTitle}>{voiceUsername || 'Unknown'}</Text>
+					<Text style={styles.subTitle} numberOfLines={1}>
+						{voiceUsername || 'Unknown'}
+					</Text>
 				</View>
 			</View>
 		);
