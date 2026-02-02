@@ -113,7 +113,7 @@ function Login() {
 								<label htmlFor="keepSignedIn">{t('login.keepSignedIn')}</label>
 							</div>
 							{!loginMethod && (
-								<div className="text-sm text-blue-500 hover:underline" onClick={handleSwitchMethod}>
+								<div className="text-sm text-blue-500 hover:underline cursor-pointer" onClick={handleSwitchMethod}>
 									{t('login.loginByOTP')}
 								</div>
 							)}
