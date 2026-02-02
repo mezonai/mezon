@@ -42,6 +42,7 @@ const RenderYoutubeVideo = ({ videoKey, videoId, contentInElement, onPress, onLo
 						javaScriptEnabled: true,
 						domStorageEnabled: true,
 						allowsInlineMediaPlayback: true,
+						nestedScrollEnabled: true,
 						onStartShouldSetResponder: () => true,
 						onTouchStart: () => {
 							Keyboard.dismiss();

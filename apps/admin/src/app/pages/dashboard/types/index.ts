@@ -25,6 +25,7 @@ export interface UserData {
 
 export interface ClanData {
 	clanId: string;
+	clanName: string;
 	totalActiveUsers: number;
 	totalActiveChannels: number;
 	totalMessages: number;

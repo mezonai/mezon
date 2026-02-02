@@ -1,4 +1,3 @@
-import { selectClanById, useAppSelector } from '@mezon/store';
 import { useTranslation } from 'react-i18next';
 import type { ClanData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
@@ -35,14 +34,6 @@ function ClansTable({
 	tableRef
 }: ClansTableProps) {
 	const { t } = useTranslation('dashboard');
-
-	const clansById = useAppSelector((s) => {
-		const map: Record<string, unknown> = {};
-		for (const r of data || []) {
-			map[r.clanId] = selectClanById(r.clanId)(s);
-		}
-		return map;
-	});
 
 	return (
 		<div ref={tableRef} className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
@@ -161,7 +152,7 @@ function ClansTable({
 								<tr key={row.clanId} className="hover:bg-gray-50 dark:hover:bg-[#1e1f22]">
 									<td className="px-4 py-3 text-sm border-b dark:border-[#4d4f52]">
 										<button onClick={() => onClanClick(row.clanId)} className="text-blue-600 dark:text-blue-400 hover:underline">
-											{(clansById[row.clanId] as any)?.clan_name || ''}
+											{row?.clanName || ''}
 										</button>
 									</td>
 									<td className="px-4 py-3 text-sm border-b dark:border-[#4d4f52]">{row.totalActiveUsers}</td>
