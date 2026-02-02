@@ -153,6 +153,7 @@ const ControlBottomBar = ({
 
 	const handleShowChat = () => {
 		if (!isTabletLandscape) {
+			navigation.navigate(APP_SCREEN.HOME);
 			navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
 				screen: APP_SCREEN.MESSAGES.CHAT_STREAMING
 			});
