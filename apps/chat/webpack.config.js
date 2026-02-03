@@ -60,7 +60,11 @@ module.exports = composePlugins(
 		// Add DefinePlugin to inject environment variables
 		config.plugins.push(new webpack.DefinePlugin(envVars));
 
-		config.plugins.push(new NodePolyfillPlugin());
+		config.plugins.push(
+			new NodePolyfillPlugin({
+				excludeAliases: ['crypto', 'crypto-browserify']
+			})
+		);
 
 		config.resolve = config.resolve || {};
 		config.resolve.fallback = { fs: false };
