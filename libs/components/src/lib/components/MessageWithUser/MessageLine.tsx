@@ -423,21 +423,34 @@ export const MessageLine = ({
 						/>
 					);
 				} else if (element.type === EBacktickType.OGP_PREVIEW) {
-					const url = element.index !== undefined ? t?.substring(mk[0]?.s ?? 0, mk[0]?.e) : '';
+					const url = element.index !== undefined && t ? t?.substring(71, t?.indexOf(' ', 71) === -1 ? t.length : t.indexOf(' ', 71)) : '';
 					formattedContent.push(
-						<div className="h-28 w-72 rounded-md p-2 flex items-center gap-3 border border-theme-primary shadow-lg bg-theme-surface">
-							<img
-								className="h-16 aspect-square object-cover"
-								src={element.image}
-								onError={(e) => {
-									e.currentTarget.src = '/assets/images/warning.svg';
-								}}
-							/>
-							<div className="h-full flex-col flex justify-center w-[200px]">
-								<h5 className="text-sm font-semibold line-clamp-2">{element.title}</h5>
-								{!!element.description && <p className="text-xs line-clamp-2">{element.description}</p>}
-								{!!url && <p className="text-xs line-clamp-2 italic">{url}</p>}
+						<div
+							className="w-80 cursor-pointer rounded-md p-4 flex flex-col items-center gap-3 border border-theme-primary shadow-lg bg-theme-surface"
+							onClick={() => {
+								if (url) {
+									window.open(url);
+								}
+							}}
+						>
+							<div className="flex h-14 w-full items-center gap-2 rounded-md">
+								<img
+									className="h-14 aspect-square object-cover"
+									src={element.image}
+									onError={(e) => {
+										e.currentTarget.src = '/assets/images/warning.svg';
+									}}
+								/>
+								<div className="flex flex-col gap-2 w-[224px]">
+									<h5 className="text-sm font-semibold line-clamp-1 w-full leading-[14px] truncate">{element.title}</h5>
+									{!!url && <p className="text-xs line-clamp-2 italic text-blue-500 cursor-pointer break-words underline">{url}</p>}
+								</div>
 							</div>
+							{!!element.description && (
+								<div className="h-full flex-col flex justify-center">
+									<p className="text-xs line-clamp-2">{element.description}</p>
+								</div>
+							)}
 						</div>
 					);
 				} else {
