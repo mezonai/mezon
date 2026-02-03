@@ -46,7 +46,10 @@ const WebhookItemModal = ({ webhookItem, currentChannel, isClanSetting }: IWebho
 							<Icons.ClockIcon className="text-theme-primary" />
 							<div className="text-theme-primary text-[13px]">
 								{t('webhooksItem.createdBy', {
-									webhookCreateTime: timeFormatI18n(webhookItem.create_time_seconds || 0, tCommon),
+									webhookCreateTime: timeFormatI18n(
+										webhookItem.create_time_seconds ?? Math.floor(new Date(webhookItem.update_time || '').getTime() / 1000),
+										tCommon
+									),
 									webhookUserOwnerName: webhookOwner?.user?.username
 								})}
 							</div>

@@ -1,5 +1,10 @@
-export const timeFormatI18n = (start: string | number, t: (key: string, options?: any) => string) => {
-	const date = new Date(start);
+export const timeFormatI18n = (start: string | number | null | undefined, t: (key: string, options?: any) => string) => {
+	const timestamp = Number(start);
+	if (!timestamp || Number.isNaN(timestamp)) return '';
+
+	const date = new Date(timestamp * 1000);
+
+	if (Number.isNaN(date.getTime())) return '';
 
 	const daysOfWeek = [
 		t('timeFormat.daysOfWeek.sun'),
