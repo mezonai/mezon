@@ -55,6 +55,7 @@ const ForwardMessageScreen = ({ route }) => {
 	const [searchText, setSearchText] = useState('');
 	const [personalRawMessages, setPersonalRawMessages] = useState<string>('');
 	const [isReadyToSend, setIsReadyToSend] = useState(false);
+	const [isForwarding, setIsForwarding] = useState(false);
 	const selectedMessage = route?.params?.message;
 
 	const navigation = useNavigation();
@@ -279,8 +280,9 @@ const ForwardMessageScreen = ({ route }) => {
 	);
 
 	const handleForward = useCallback(async () => {
-		if (!selectedForwardObjectsRef.current?.length) return;
+		if (!selectedForwardObjectsRef.current?.length || isForwarding) return;
 
+		setIsForwarding(true);
 		try {
 			await sendMessagesToTargets(selectedForwardObjectsRef.current, messagesToForward);
 
@@ -295,8 +297,10 @@ const ForwardMessageScreen = ({ route }) => {
 			onClose();
 		} catch (error) {
 			console.error('Forward error:', error);
+		} finally {
+			setIsForwarding(false);
 		}
-	}, [messagesToForward, sendMessagesToTargets, onClose, t]);
+	}, [messagesToForward, sendMessagesToTargets, onClose, t, isForwarding]);
 
 	const isOnlyContainEmoji = useMemo(() => isValidEmojiData(selectedMessage?.content), [selectedMessage?.content]);
 
@@ -427,7 +431,10 @@ const ForwardMessageScreen = ({ route }) => {
 							</TouchableOpacity>
 						)}
 					</View>
-					<TouchableOpacity style={[styles.btn, !isReadyToSend && { backgroundColor: themeValue.textDisabled }]} onPress={handleForward}>
+					<TouchableOpacity
+						style={[styles.btn, (!isReadyToSend || isForwarding) && { backgroundColor: themeValue.textDisabled }]}
+						onPress={handleForward}
+					>
 						<MezonIconCDN icon={IconCDN.sendMessageIcon} color={baseColor.white} height={size.s_18} width={size.s_18} />
 					</TouchableOpacity>
 				</View>
