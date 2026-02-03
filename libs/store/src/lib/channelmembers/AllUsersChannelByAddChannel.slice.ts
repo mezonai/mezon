@@ -111,6 +111,37 @@ export const userChannelsSlice = createSlice({
 		update: UserChannelAdapter.updateOne,
 		upsert: UserChannelAdapter.upsertOne,
 		removeMany: UserChannelAdapter.removeMany,
+		updateUserInfo: (state, action: PayloadAction<{ userId: string; displayName?: string; avatarUrl?: string }>) => {
+			const { userId, displayName, avatarUrl } = action.payload;
+
+			state.ids.forEach((channelId) => {
+				const channel = state.entities[channelId];
+				if (!channel?.user_ids) return;
+
+				const userIndex = channel.user_ids.indexOf(userId);
+				if (userIndex !== -1) {
+					const changes: Partial<IUserChannel> = {};
+
+					if (displayName !== undefined && channel.display_names) {
+						const newDisplayNames = [...channel.display_names];
+						newDisplayNames[userIndex] = displayName;
+						changes.display_names = newDisplayNames;
+					}
+					if (avatarUrl !== undefined && channel.avatars) {
+						const newAvatars = [...channel.avatars];
+						newAvatars[userIndex] = avatarUrl;
+						changes.avatars = newAvatars;
+					}
+
+					if (Object.keys(changes).length > 0) {
+						UserChannelAdapter.updateOne(state, {
+							id: channelId as string,
+							changes
+						});
+					}
+				}
+			});
+		},
 		addUserChannel: (state, action: PayloadAction<{ channelId: string; userAdds: Array<string> }>) => {
 			const { channelId, userAdds } = action.payload;
 
@@ -228,7 +259,7 @@ export const selectMemberByGroupId = createSelector([getUserChannelsState, (stat
 		return undefined;
 	}
 	const listMember: ChannelMembersEntity[] = [];
-	entities?.user_ids?.map((id, index) => {
+	entities?.user_ids?.forEach((id, index) => {
 		listMember.push({
 			id,
 			user: {
