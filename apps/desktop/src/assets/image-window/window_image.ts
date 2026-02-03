@@ -1250,14 +1250,15 @@ export const scriptThumnails = (reversedImages: IAttachmentEntityWithUploader[],
 						handleMediaLoading(true);
 					}
 
-					if (isNewVideo !== wasVideo) {
-						const wrapper = document.getElementById('selected-image-wrapper');
-						if (wrapper) {
-							const media = document.getElementById('selectedMedia');
-							const errorDiv = wrapper.querySelector('.image-error');
-							if (skeleton) skeleton.remove();
-							if (media) media.remove();
-							if (errorDiv) errorDiv.remove();
+				if (isNewVideo !== wasVideo) {
+					const wrapper = document.getElementById('selected-image-wrapper');
+					if (wrapper) {
+						const media = document.getElementById('selectedMedia');
+						const errorDiv = wrapper.querySelector('.image-error');
+						const skeleton = wrapper.querySelector('.skeleton');
+						if (skeleton) skeleton.remove();
+						if (media) media.remove();
+						if (errorDiv) errorDiv.remove();
 
 							if (!isNewVideo) {
 
