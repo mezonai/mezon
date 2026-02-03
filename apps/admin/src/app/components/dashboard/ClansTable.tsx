@@ -75,7 +75,7 @@ function ClansTable({
 									<input
 										aria-label="Select Clan Name column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('clan_name')}
 										onChange={() => onToggleColumn('clan_name')}
 									/>
@@ -87,7 +87,7 @@ function ClansTable({
 									<input
 										aria-label="Select Active users column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('active_users')}
 										onChange={() => onToggleColumn('active_users')}
 									/>
@@ -99,7 +99,7 @@ function ClansTable({
 									<input
 										aria-label="Select Active channels column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('active_channels')}
 										onChange={() => onToggleColumn('active_channels')}
 									/>
@@ -111,7 +111,7 @@ function ClansTable({
 									<input
 										aria-label="Select Messages column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>

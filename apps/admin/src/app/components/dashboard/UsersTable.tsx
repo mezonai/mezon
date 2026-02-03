@@ -1,15 +1,32 @@
 import { useTranslation } from 'react-i18next';
 import type { UserData } from '../../pages/dashboard/types';
+import Pagination from '../Pagination';
 
 interface UsersTableProps {
 	data: UserData[];
 	selectedColumns: string[];
 	isExportingCSV: boolean;
+	page: number;
+	limit: number;
+	total: number;
+	totalPages: number;
 	onExportCSV: () => void;
 	onToggleColumn: (col: string) => void;
+	onPageChange: (page: number) => void;
 }
 
-function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onToggleColumn }: UsersTableProps) {
+function UsersTable({
+	data,
+	selectedColumns,
+	isExportingCSV,
+	page,
+	limit,
+	total,
+	totalPages,
+	onExportCSV,
+	onToggleColumn,
+	onPageChange
+}: UsersTableProps) {
 	const { t } = useTranslation('dashboard');
 
 	return (
@@ -52,7 +69,7 @@ function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onTogg
 									<input
 										aria-label="Select User name column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('user_name')}
 										onChange={() => onToggleColumn('user_name')}
 									/>
@@ -64,7 +81,7 @@ function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onTogg
 									<input
 										aria-label="Select Messages column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>
@@ -89,6 +106,15 @@ function UsersTable({ data, selectedColumns, isExportingCSV, onExportCSV, onTogg
 						)}
 					</tbody>
 				</table>
+
+				{/* Pagination controls */}
+				{total > limit && (
+					<>
+						{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+						{/* @ts-ignore */}
+						<Pagination page={page} totalPages={totalPages} total={total} pageSize={limit} onPageChange={onPageChange} />
+					</>
+				)}
 			</div>
 		</div>
 	);

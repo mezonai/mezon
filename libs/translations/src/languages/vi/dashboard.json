@@ -1,7 +1,6 @@
 {
 	"activityOverview": {
 		"title": "Tổng quan hoạt động",
-		"utc": "UTC",
 		"timePeriod": "Khoảng thời gian",
 		"totalActiveUsers": "Tổng số người dùng hoạt động",
 		"totalActiveUsersTooltip": "Số người dùng duy nhất hoạt động ít nhất một lần",

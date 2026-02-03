@@ -24,9 +24,9 @@ function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartDat
 					onTabChange={onTabChange}
 					totals={metrics}
 					dateRangeText={dateRangeText}
-					iconUsers={<Icons.MemberList defaultSize="w-5 h-5" className="text-black dark:text-white" />}
-					iconChannels={<Icons.Hashtag defaultSize="w-5 h-5" className="text-black dark:text-white" />}
-					iconMessages={<Icons.MessageIcon defaultSize="w-5 h-5" className="text-black dark:text-white" />}
+					iconUsers={<Icons.MemberList defaultSize="w-5 h-5" />}
+					iconChannels={<Icons.Hashtag defaultSize="w-5 h-5" />}
+					iconMessages={<Icons.MessageIcon defaultSize="w-5 h-5" />}
 				/>
 			</div>
 
@@ -42,15 +42,11 @@ function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartDat
 					</div>
 				) : (
 					<>
-						{activeTab === 'activeUsers' && (
-							<MemoizedSingleLineChart data={chartData} dataKey="activeUsers" stroke="#5b5fc7" name="Total Active Users" />
-						)}
+						{activeTab === 'activeUsers' && <MemoizedSingleLineChart data={chartData} dataKey="activeUsers" name="Total Active Users" />}
 						{activeTab === 'activeChannels' && (
-							<MemoizedSingleLineChart data={chartData} dataKey="activeChannels" stroke="#ff7a59" name="Total Active Channels" />
+							<MemoizedSingleLineChart data={chartData} dataKey="activeChannels" name="Total Active Channels" />
 						)}
-						{activeTab === 'messages' && (
-							<MemoizedSingleLineChart data={chartData} dataKey="messages" stroke="#3ac47d" name="Total Messages" />
-						)}
+						{activeTab === 'messages' && <MemoizedSingleLineChart data={chartData} dataKey="messages" name="Total Messages" />}
 					</>
 				)}
 			</div>
