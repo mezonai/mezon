@@ -57,11 +57,11 @@ export function useDefaultHandlers({
 				handleAddFriend: () => {
 					if (!user) return;
 
-					const usernames = user?.usernames ? user?.usernames[0] : user?.user ? user?.user?.username : user?.usernames[0];
-					const ids = user?.user_ids ? user?.user_ids[0] : user?.user ? user?.user?.id : user?.user_ids[0];
+					const usernames = user?.usernames?.[0] ?? user?.user?.username ?? '';
+					const ids = user?.user_ids?.[0] ?? user?.user?.id ?? '';
 					if (!usernames && !ids) return;
 
-					addFriend({ ids, usernames, displayName: user.display_names[0], avatar: user.avatars[0] });
+					addFriend({ ids, usernames, displayName: user?.display_names?.[0] || '', avatar: user?.avatars?.[0] || '' });
 				},
 				handleRemoveFriend: () => {
 					if (!user) return;
