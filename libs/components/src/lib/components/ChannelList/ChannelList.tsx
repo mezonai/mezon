@@ -26,6 +26,7 @@ import type { ChannelThreads, ICategoryChannel, IChannel } from '@mezon/utils';
 import { EPermission, createImgproxyUrl, generateE2eId, isLinuxDesktop, isWindowsDesktop, toggleDisableHover } from '@mezon/utils';
 import type { ApiCategoryOrderUpdate } from 'mezon-js/api.gen';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { CreateNewChannelModal } from '../CreateChannelModal';
@@ -114,6 +115,7 @@ const ChannelBannerAndEvents = memo(({ banner }: { banner?: string }) => {
 });
 
 const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLinkPermission }) => {
+	const { t } = useTranslation('channelList');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanBanner = useSelector(selectCurrentClanBanner);
 	const [showFullList, setShowFullList] = useState(false);
@@ -150,6 +152,7 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 				? listChannelRender
 				: listChannelRender.filter(
 						(item) =>
+							(item as ICategoryChannel).category_id === FAVORITE_CATEGORY_ID ||
 							((item as ICategoryChannel).channels && (item as ICategoryChannel).channels.length > 0) ||
 							(item as ICategoryChannel).channels === undefined
 					)
@@ -465,29 +468,36 @@ const RowVirtualizerDynamic = memo(({ permissions }: { permissions: IChannelLink
 									})}
 								>
 									{isFirstCategory && (
-										<div className="absolute left-2 top-1 -translate-y-1/2 z-10 opacity-0 group-hover/category:opacity-100 transition-opacity">
+										<div
+											className={`absolute right-1 bottom-[-1px] -translate-y-1/2 z-10 transition-opacity ${
+												isDragModeEnabled ? 'opacity-100' : 'opacity-0 group-hover/category:opacity-100'
+											}`}
+										>
 											<button
 												onClick={() => setIsDragModeEnabled(!isDragModeEnabled)}
 												className={`flex items-center justify-center w-5 h-5 rounded-md transition-all ${
 													isDragModeEnabled
 														? 'text-green-500 bg-green-500/10 hover:bg-green-500/20'
-														: 'text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5'
+														: 'text-[var(--text-theme-primary)] hover:bg-black/5 dark:hover:bg-white/5'
 												}`}
-												title={isDragModeEnabled ? 'Click to disable drag mode' : 'Click to enable drag mode'}
+												title={isDragModeEnabled ? t('dragMode.disable') : t('dragMode.enable')}
 											>
 												<svg
-													width="12"
-													height="12"
-													viewBox="0 0 12 12"
-													fill="currentColor"
 													xmlns="http://www.w3.org/2000/svg"
+													className="w-4 h-4"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													strokeWidth="2"
+													strokeLinecap="round"
+													strokeLinejoin="round"
 												>
-													<circle cx="3" cy="2" r="1" />
-													<circle cx="3" cy="6" r="1" />
-													<circle cx="3" cy="10" r="1" />
-													<circle cx="9" cy="2" r="1" />
-													<circle cx="9" cy="6" r="1" />
-													<circle cx="9" cy="10" r="1" />
+													<path d="M12 2v20" />
+													<path d="m15 19-3 3-3-3" />
+													<path d="m19 9 3 3-3 3" />
+													<path d="M2 12h20" />
+													<path d="m5 9-3 3 3 3" />
+													<path d="m9 5 3-3 3 3" />
 												</svg>
 											</button>
 										</div>

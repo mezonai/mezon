@@ -16,5 +16,9 @@
 		"of": "of"
 	},
 	"favoriteChannel": "Favorite Channel",
-	"publicChannels": "Public Channels"
+	"publicChannels": "Public Channels",
+	"dragMode": {
+		"enable": "Click to enable drag mode category",
+		"disable": "Click to disable drag mode category"
+	}
 }
