@@ -11,16 +11,17 @@ import { ClanIcon } from '../../screens/home/homedrawer/components/ClanIcon';
 import ImageNative from '../ImageNative';
 import { style } from './styles';
 
-interface ClanGroupProps {
+interface IClanGroupProps {
 	group: ClanGroupType;
 	onClanPress: (clanId: string) => void;
 	clans: any[];
 	drag: () => void;
 	isActive?: boolean;
 	isActiveCurrentClan?: boolean;
+	isGroupingTarget?: boolean;
 }
 
-export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: ClanGroupProps) => {
+export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive, isGroupingTarget }: IClanGroupProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
@@ -96,6 +97,7 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 		<ScaleDecorator activeScale={1.1}>
 			<TouchableOpacity style={styles.collapsedGroup} onPress={handleToggleGroup} onLongPress={drag} disabled={isActive}>
 				<View style={styles.groupIcon}>
+					{isGroupingTarget && <View style={styles.groupIconGrouping} />}
 					<View style={[styles.multipleClansView, groupClan.length === 1 && styles.singleClanView]}>
 						{groupClan?.slice(0, 4)?.map((clan) => (
 							<View key={`${clan?.clan_id}-collapsed`} style={styles.quarterClan}>

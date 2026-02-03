@@ -1,5 +1,6 @@
 /* eslint-disable prettier/prettier */
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (themeValue: Attributes) =>
@@ -40,7 +41,8 @@ export const style = (themeValue: Attributes) =>
 			width: size.s_42,
 			height: size.s_42,
 			borderRadius: size.s_8,
-			backgroundColor: themeValue.midnightBlue
+			backgroundColor: themeValue.midnightBlue,
+			position: 'relative'
 		},
 
 		clanIcon: {
@@ -106,5 +108,16 @@ export const style = (themeValue: Attributes) =>
 			color: baseColor.white,
 			fontWeight: 'bold',
 			fontSize: size.s_10
-		}
+		},
+
+		groupIconGrouping: {
+			position: 'absolute',
+			left: -size.s_2,
+			top: -size.s_2,
+			right: -size.s_2,
+			bottom: -size.s_2,
+			borderWidth: size.s_2,
+			borderColor: baseColor.green,
+			borderRadius: size.s_8,
+		  },
 	});

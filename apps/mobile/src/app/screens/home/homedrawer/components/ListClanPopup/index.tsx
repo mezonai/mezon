@@ -11,7 +11,7 @@ import {
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, InteractionManager, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, InteractionManager, TouchableOpacity, Vibration, View } from 'react-native';
 import { NestableDraggableFlatList } from 'react-native-draggable-flatlist';
 import { useSelector } from 'react-redux';
 import { ClanGroup } from '../../../../../components/ClanGroup';
@@ -27,7 +27,7 @@ import { style } from './styles';
 
 const GROUP = 'group';
 const CLAN = 'clan';
-const CHECK_INTERVAL_MS = 100;
+const CHECK_INTERVAL_MS = 300;
 const GROUPING_THRESHOLD_MIN = 0.2;
 const GROUPING_THRESHOLD_MAX = 0.8;
 const MARGIN_ICON = size.s_10;
@@ -44,6 +44,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 	const currentClanId = useSelector(selectCurrentClanId);
 	const [isDragging, setIsDragging] = useState(false);
 	const [targetPreview, setTargetPreview] = useState<{ [key: string]: number | null }>({});
+	const [groupingTargetIndex, setGroupingTargetIndex] = useState<number | null>(null);
 	const dragIndexRef = useRef<number | null>(null);
 	const lastTargetCanGroupIndexRef = useRef<number | null>(null);
 	const animationValuesRef = useRef<any>(null);
@@ -105,6 +106,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 	const clearGroupingState = useCallback(() => {
 		lastTargetCanGroupIndexRef.current = null;
 		setTargetPreview({});
+		setGroupingTargetIndex(null);
 	}, []);
 
 	const checkCanGroupRealTime = useCallback(() => {
@@ -139,13 +141,18 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 			if (targetIndex !== dragIndexRef.current) {
 				const targetItem = groupClans[targetIndex];
 				if (targetItem) {
+					if (lastTargetCanGroupIndexRef.current !== targetIndex) {
+						Vibration.vibrate(30);
+					}
 					lastTargetCanGroupIndexRef.current = targetIndex;
 					if (targetItem?.type === CLAN) {
 						setTargetPreview({
 							[targetItem?.clan?.clan_id]: targetIndex
 						});
+						setGroupingTargetIndex(null);
 					} else {
 						setTargetPreview({});
+						setGroupingTargetIndex(targetIndex);
 					}
 					return;
 				}
@@ -277,11 +284,12 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 	}, [targetPreview, groupClans]);
 
 	const renderItem = useCallback(
-		({ item, drag, isActive }) => {
+		({ item, drag, isActive, getIndex }) => {
 			if (isActive && item?.type === CLAN && groupPreview) {
 				return <ClanGroupPreview targetItem={groupPreview} dragItem={item} clans={clans} />;
 			}
 
+			const index = getIndex();
 			if (item?.type === GROUP) {
 				return (
 					<ClanGroup
@@ -291,6 +299,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 						clans={clans}
 						drag={handleDrag(drag)}
 						isActive={isActive}
+						isGroupingTarget={groupingTargetIndex === index}
 					/>
 				);
 			} else {
@@ -308,7 +317,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 				);
 			}
 		},
-		[groupPreview, clans, handleChangeClan, handleDrag, currentClanId, getIconLayout, hideActive]
+		[groupPreview, clans, groupingTargetIndex, handleChangeClan, handleDrag, currentClanId, getIconLayout, hideActive]
 	);
 
 	const ListFooter = useMemo(

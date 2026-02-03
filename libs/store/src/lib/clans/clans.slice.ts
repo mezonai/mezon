@@ -55,7 +55,7 @@ export interface ClanGroup {
 	name?: string;
 	clanIds: string[];
 	isExpanded: boolean;
-	createdAt: number;
+	createdAt?: number;
 }
 
 export interface ClanGroupItem {
