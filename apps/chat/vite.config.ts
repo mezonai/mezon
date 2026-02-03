@@ -47,6 +47,7 @@ export default defineConfig(({ mode }) => {
 			nxViteTsPaths(),
 			nodePolyfills({
 				include: ['buffer', 'process', 'stream', 'util'],
+				exclude: ['crypto'],
 				globals: {
 					Buffer: true,
 					global: true,
