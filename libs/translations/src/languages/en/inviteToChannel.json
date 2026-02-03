@@ -38,5 +38,9 @@
 		"message": "Join Mezon with me: ",
 		"error": "Error sharing invite link",
 		"errorCreateLink": "Error creating invite link"
-	}
+	},
+	"noFriendsToInvite": "No friends available to invite",
+	"addFriendsToInvite": "Add friends to your friend list to invite them to this clan.",
+	"addSomeFriends": "Add Some Friends",
+	"loadingInviteLink": "Loading invite link..."
 }

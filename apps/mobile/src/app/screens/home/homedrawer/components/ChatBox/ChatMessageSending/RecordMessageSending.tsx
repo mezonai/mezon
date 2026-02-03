@@ -3,6 +3,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { selectChannelById, selectDmGroupById, useAppSelector } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
+import { useIsFocused } from '@react-navigation/native';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,6 +23,8 @@ import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { usePermission } from '../../../../../../hooks/useRequestPermission';
 import { style } from '../ChatBoxBottomBar/style';
 
+const RECORD_CANCEL_SWIPE_X = 100;
+
 interface IRecordMessageSendingProps {
 	mode: ChannelStreamMode;
 	channelId: string;
@@ -33,6 +36,7 @@ interface IRecordMessageSendingProps {
 export const RecordMessageSending = memo(
 	({ channelId, mode, currentTopicId = '', isCreateTopic = false, anonymousMode }: IRecordMessageSendingProps) => {
 		const { themeValue } = useTheme();
+		const isFocused = useIsFocused();
 		const styles = style(themeValue);
 
 		const [isRecording, setIsRecording] = useState(false);
@@ -240,13 +244,37 @@ export const RecordMessageSending = memo(
 		}));
 
 		const longPressGesture = Gesture.LongPress()
+			.enabled(isFocused)
 			.minDuration(400)
+			.maxDistance(RECORD_CANCEL_SWIPE_X)
 			.onStart(() => {
 				startTime.value = Date.now();
 				runOnJS(startRecording)();
 			})
 			.onEnd(() => {
 				if (isLongPressed.value && !hasTriggeredCancel.value) {
+					runOnJS(stopRecording)();
+					translateX.value = withSpring(0);
+					scale.value = withSpring(1);
+					isLongPressed.value = false;
+					runOnJS(setIsRecording)(false);
+				}
+			});
+
+		const panGesture = Gesture.Pan()
+			.enabled(isFocused)
+			.minDistance(0)
+			.onUpdate((event) => {
+				if (isLongPressed.value) {
+					translateX.value = event.translationX;
+					if (event.translationX < -RECORD_CANCEL_SWIPE_X && !hasTriggeredCancel.value) {
+						hasTriggeredCancel.value = true;
+						runOnJS(cancelRecording)();
+					}
+				}
+			})
+			.onEnd((event) => {
+				if (event.translationX > -RECORD_CANCEL_SWIPE_X) {
 					runOnJS(stopRecording)();
 				}
 				translateX.value = withSpring(0);
@@ -255,21 +283,11 @@ export const RecordMessageSending = memo(
 				runOnJS(setIsRecording)(false);
 			});
 
-		const panGesture = Gesture.Pan()
-			.minDistance(0)
-			.onUpdate((event) => {
-				if (isLongPressed.value) {
-					translateX.value = event.translationX;
-					if (event.translationX < -5 && !hasTriggeredCancel.value) {
-						hasTriggeredCancel.value = true;
-						runOnJS(cancelRecording)();
-					}
-				}
+		const tapGesture = Gesture.Tap()
+			.enabled(isFocused)
+			.onEnd(() => {
+				runOnJS(showHoldToRecordHint)();
 			});
-
-		const tapGesture = Gesture.Tap().onEnd(() => {
-			runOnJS(showHoldToRecordHint)();
-		});
 
 		const composedGesture = Gesture.Simultaneous(longPressGesture, panGesture, tapGesture);
 

@@ -9,7 +9,7 @@ import type { RootState } from '../store';
 const API_BASE = process.env.NX_ADMIN_API_URL || 'http://localhost:8081';
 
 type ChartPoint = { date: string; isoDate?: string; activeUsers: number; activeChannels: number; messages: number };
-type ClanRow = { clanId: string; totalActiveUsers: number; totalActiveChannels: number; totalMessages: number };
+type ClanRow = { clanId: string; clanName: string; totalActiveUsers: number; totalActiveChannels: number; totalMessages: number };
 
 interface ListResponse<T> {
 	success: boolean;
@@ -536,8 +536,8 @@ export const selectClanChannels = (state: RootState, clanId: string) => {
 	return raw.map((c: any) => ({
 		channelId: c.channelId || c.id || '',
 		channelName: c.channelName || c.name || '',
-		activeUsers: Number(c.totalUsers ?? c.total_users ?? 0) || 0,
-		messages: Number(c.totalMessages ?? c.total_messages ?? 0) || 0
+		totalUsers: String(c.totalUsers ?? '0'),
+		totalMessages: String(c.totalMessages ?? '0')
 	}));
 };
 

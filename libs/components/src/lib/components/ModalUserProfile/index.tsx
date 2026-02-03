@@ -1,4 +1,5 @@
 import {
+	getTagById,
 	useAppNavigation,
 	useAuth,
 	useDirect,
@@ -12,7 +13,7 @@ import {
 	useUserByUserId
 } from '@mezon/core';
 import type { RootState } from '@mezon/store';
-import { EStateFriend, selectAllAccount, selectChannelByChannelId, selectFriendById, selectStatusInVoice, useAppSelector } from '@mezon/store';
+import { EStateFriend, selectAllAccount, selectFriendById, selectStatusInVoice, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { ChannelMembersEntity, IMessageWithUser } from '@mezon/utils';
 import { EUserStatus, generateE2eId } from '@mezon/utils';
@@ -107,7 +108,8 @@ const ModalUserProfile = ({
 	const modalRef = useRef<boolean>(false);
 	const onLoading = useRef<boolean>(false);
 
-	const date = new Date(userById?.user?.create_time_seconds || 0);
+	const createTimeMs = Number(userById?.user?.create_time_seconds ?? 0) * 1000;
+	const date = new Date(createTimeMs || 0);
 	const { timeFormatted } = useFormatDate({ date });
 
 	const avatarByUserId = isDM ? userById?.user?.avatar_url : userById?.clan_avatar || userById?.user?.avatar_url;
@@ -335,7 +337,7 @@ const ModalUserProfile = ({
 };
 
 const MemberInVoiceButton = ({ channelId }: { channelId: string }) => {
-	const channelData = useSelector((state) => selectChannelByChannelId(state, channelId));
+	const channelData = getTagById(channelId);
 	const navigate = useNavigate();
 
 	const handleNavigateRoom = useCallback(() => {
@@ -344,6 +346,7 @@ const MemberInVoiceButton = ({ channelId }: { channelId: string }) => {
 		}
 	}, [channelId]);
 
+	if (!channelData) return null;
 	return (
 		<div
 			className="group flex min-w-8 w-fit h-8 items-center text-sm justify-end bg bg-buttonMore hover:bg-buttonMoreHover cursor-pointer py-1 px-2 text-white rounded-full"

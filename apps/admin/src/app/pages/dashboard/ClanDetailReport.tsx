@@ -35,6 +35,8 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const [isExportingChannelCSV, setIsExportingChannelCSV] = useState(false);
 	const [selectedUserColumns, setSelectedUserColumns] = useState<string[]>(['user_name', 'messages']);
 	const [isExportingUserCSV, setIsExportingUserCSV] = useState(false);
+	const [channelPage, setChannelPage] = useState(1);
+	const [channelLimit] = useState(10);
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -46,6 +48,15 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 
 	const channelsLoadingStore = useAppSelector((s) => selectClanChannelsLoading(s));
 	const channelsFromStore = useAppSelector((s) => (clanId ? selectClanChannels(s, clanId) : []));
+
+	const channelsData = channelsFromStore;
+
+	const channelsPagination = useAppSelector((s) => (clanId ? s.dashboard?.channelsCacheByClan?.[clanId]?.rawPayload?.data?.pagination : null)) ?? {
+		page: 1,
+		limit: 10,
+		total: 0,
+		totalPages: 1
+	};
 	const metrics = useAppSelector((s) => (clanId ? s.dashboard?.channelsCacheByClan?.[clanId]?.rawPayload?.data?.total : null)) ?? {
 		totalActiveUsers: 0,
 		totalActiveChannels: 0,
@@ -67,7 +78,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 			dispatch(fetchClanMetrics({ clanId, start: startStr, end: endStr, rangeType: periodFilter }));
 			dispatch(fetchClanChannels({ clanId, start: startStr, end: endStr, page: 1, limit: 10 }));
 		}
-	}, [clanId, refreshTrigger, dateRange, customStartDate, customEndDate, periodFilter, dispatch]);
+	}, [clanId, refreshTrigger, dateRange, customStartDate, customEndDate, periodFilter, channelPage, channelLimit, dispatch]);
 
 	// When channels load, fetch users for the first channel by default
 	useEffect(() => {
@@ -107,7 +118,12 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		setDateRange('7');
 		setCustomStartDate('');
 		setCustomEndDate('');
+		setChannelPage(1);
 		setRefreshTrigger((prev) => prev + 1);
+	};
+
+	const handleChannelPageChange = (newPage: number) => {
+		setChannelPage(newPage);
 	};
 
 	const toggleChannelColumn = (col: string) => {
@@ -172,11 +188,16 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 			{/* Channels Table Section */}
 			{!isLoadingDerived && !hasNoDataDerived && (
 				<ChannelsTable
-					data={channelsFromStore as ChannelsData[]}
+					data={channelsData as ChannelsData[]}
 					selectedColumns={selectedChannelColumns}
 					isExportingCSV={isExportingChannelCSV}
+					page={channelPage}
+					limit={channelLimit}
+					total={Number(channelsPagination.total) || 0}
+					totalPages={channelsPagination.totalPages || 1}
 					onExportCSV={handleExportChannelCSV}
 					onToggleColumn={toggleChannelColumn}
+					onPageChange={handleChannelPageChange}
 				/>
 			)}
 

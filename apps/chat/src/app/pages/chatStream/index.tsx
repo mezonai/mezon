@@ -1,9 +1,10 @@
 import { useEscapeKey } from '@mezon/core';
-import { appActions, selectCurrentChannelLabel, useAppDispatch } from '@mezon/store';
+import { appActions, selectCurrentChannelLabel, selectIsShowCreateTopic, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { memo } from 'react';
 import { useSelector } from 'react-redux';
 import ChannelMain from '../channel';
+import TopicDiscussionMain from '../topicDiscussion';
 
 type ChatStreamProps = {
 	topicChannelId?: string;
@@ -35,14 +36,21 @@ const ChatHeader = () => {
 
 const ChatStream = ({ topicChannelId }: ChatStreamProps) => {
 	const dispatch = useAppDispatch();
+	const isShowCreateTopic = useSelector(selectIsShowCreateTopic);
 	useEscapeKey(() => dispatch(appActions.setIsShowChatStream(false)));
 
 	return (
 		<div className="flex flex-col h-full max-h-full overflow-hidden">
-			<ChatHeader />
-			<div className="flex-1 overflow-hidden min-h-0">
-				<ChannelMain topicChannelId={topicChannelId} />
-			</div>
+			{isShowCreateTopic ? (
+				<TopicDiscussionMain />
+			) : (
+				<>
+					<ChatHeader />
+					<div className="flex-1 overflow-hidden min-h-0">
+						<ChannelMain topicChannelId={topicChannelId} />
+					</div>
+				</>
+			)}
 		</div>
 	);
 };

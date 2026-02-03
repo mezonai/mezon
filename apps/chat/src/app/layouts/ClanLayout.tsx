@@ -138,11 +138,14 @@ const ClanLayout = () => {
 				</div>
 			)}
 
-			{isShowCreateTopic && !isShowCreateThread && (
-				<div onMouseDown={onMouseDownTopicBox} className="w-[510px] rounded-l-lg">
-					<TopicDiscussionMain />
-				</div>
-			)}
+			{isShowCreateTopic &&
+				!isShowCreateThread &&
+				currentChannelType !== ChannelType.CHANNEL_TYPE_STREAMING &&
+				currentChannelType !== ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
+					<div onMouseDown={onMouseDownTopicBox} className="w-[510px] rounded-l-lg">
+						<TopicDiscussionMain />
+					</div>
+				)}
 
 			{/* update later */}
 			<Setting isDM={false} />

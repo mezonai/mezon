@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { Dimensions, StyleSheet } from 'react-native';
 
 const marginWidth = Dimensions.get('screen').width * 0.3;
@@ -190,5 +191,40 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 			color: colors.white,
 			fontSize: size.s_16,
 			fontWeight: '600'
+		},
+
+		emptyFriendList: {
+			flex: 1,
+			alignItems: 'center',
+			justifyContent: 'center',
+			color: colors.text,
+			paddingHorizontal: size.s_16,
+			paddingVertical: size.s_40
+		},
+
+		emptyFriendListText: {
+			color: colors.textStrong,
+			fontSize: size.s_14,
+			fontWeight: '600',
+			marginTop: size.s_8,
+			textAlign: 'center'
+		},
+
+		emptyFriendListDescription: {
+			color: colors.textDisabled,
+			fontSize: size.s_12,
+			fontWeight: '400',
+			marginTop: size.s_8,
+			textAlign: 'center'
+		},
+
+		addFriendButton: {
+			marginTop: size.s_16,
+			padding: size.s_4
+		},
+
+		addFriendButtonText: {
+			color: baseColor.link,
+			fontSize: size.small
 		}
 	});
