@@ -28,6 +28,7 @@ import {
 	selectCurrentChannelId,
 	selectCurrentChannelParentId,
 	selectCurrentChannelPrivate,
+	selectCurrentChannelType,
 	selectCurrentClanId,
 	selectCurrentTopicId,
 	selectDefaultCanvasByChannelId,
@@ -134,6 +135,7 @@ function MessageContextMenu({
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentChannelPrivate = useSelector(selectCurrentChannelPrivate);
 	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
+	const currentChannelType = useSelector(selectCurrentChannelType);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const listPinMessages = useAppSelector((state) => selectPinMessageByChannelId(state, currentChannelId as string));
 	const currentDmId = useSelector(selectDmGroupCurrentId);
@@ -566,10 +568,12 @@ function MessageContextMenu({
 		if (!checkPos) return false;
 		if (activeMode === ChannelStreamMode.STREAM_MODE_DM || activeMode === ChannelStreamMode.STREAM_MODE_GROUP) {
 			return false;
-		} else {
-			return canManageThread;
 		}
-	}, [checkPos, activeMode, canManageThread]);
+		if (currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING || currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
+			return false;
+		}
+		return canManageThread;
+	}, [checkPos, activeMode, canManageThread, currentChannelType]);
 
 	const enableDelMessageItem = useMemo(() => {
 		if (!checkPos || message?.content?.tp) return false;

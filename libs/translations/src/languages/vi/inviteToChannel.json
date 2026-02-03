@@ -38,5 +38,9 @@
 		"message": "Tham gia Mezon với tôi:",
 		"error": "Lỗi khi chia sẻ liên kết mời",
 		"errorCreateLink": "Lỗi khi tạo liên kết mời"
-	}
+	},
+	"noFriendsToInvite": "Không có bạn bè nào để mời",
+	"addFriendsToInvite": "Thêm bạn bè vào danh sách bạn bè của bạn để mời họ vào clan này.",
+	"addSomeFriends": "Thêm vài người bạn",
+	"loadingInviteLink": "Đang tạo liên kết mời..."
 }

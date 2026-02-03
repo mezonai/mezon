@@ -1,5 +1,5 @@
 import { authActions, selectLoadingEmail, useAppDispatch } from '@mezon/store';
-import { validateEmail, validatePassword } from '@mezon/utils';
+import { validateEmail } from '@mezon/utils';
 
 import { ButtonLoading, FormError, Input, PasswordInput } from '@mezon/ui';
 import { useCallback, useEffect, useState } from 'react';
@@ -19,6 +19,28 @@ const FormLoginEmail = () => {
 
 	const isLoadingLoginEmail = useSelector(selectLoadingEmail);
 
+	const getEmailErrorMessage = useCallback(
+		(value: string) => {
+			const errorCode = validateEmail(value);
+			if (!errorCode) return '';
+			if (errorCode === 'required') {
+				return t('login.enterEmailToLogin');
+			}
+			return t('login.invalidCredentials');
+		},
+		[t]
+	);
+
+	const getPasswordErrorMessage = useCallback(
+		(value: string) => {
+			if (!value) {
+				return t('enterPassword');
+			}
+			return '';
+		},
+		[t]
+	);
+
 	const handleLogin = async ({ email, password }: { email: string; password: string }) => {
 		if (!email || !password) {
 			console.error('Email and password are required');
@@ -29,8 +51,8 @@ const FormLoginEmail = () => {
 	};
 
 	const handleSubmit = useCallback(async () => {
-		const emailError = validateEmail(email);
-		const passwordError = validatePassword(password);
+		const emailError = getEmailErrorMessage(email);
+		const passwordError = getPasswordErrorMessage(password);
 
 		if (emailError || passwordError) {
 			setErrors({ email: emailError, password: passwordError });
@@ -38,7 +60,7 @@ const FormLoginEmail = () => {
 		}
 
 		await handleLogin({ email, password });
-	}, [email, password]);
+	}, [email, password, getEmailErrorMessage, getPasswordErrorMessage]);
 
 	const handleFocus = () => {
 		setErrors({});
@@ -66,7 +88,7 @@ const FormLoginEmail = () => {
 				password: t('login.invalidCredentials')
 			});
 		}
-	}, [showErrLoginFail]);
+	}, [showErrLoginFail, t]);
 
 	const disabled = !!errors.email || !!errors.password || !email || !password || isLoadingLoginEmail !== 'not loaded';
 

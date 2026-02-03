@@ -9,7 +9,7 @@ type EmptyNotification = {
 
 const EmptyNotification = ({ isEmptyForYou, isEmptyMessages, isEmptyMentions }: EmptyNotification) => {
 	const { t } = useTranslation('notifications');
-	
+
 	return (
 		<div className="m-4 flex flex-col justify-center h-[400px] py-[80px] select-none">
 			{isEmptyForYou && <EmptyForYou t={t} />}
@@ -24,7 +24,7 @@ export default EmptyNotification;
 const EmptyForYou = ({ t }: { t: any }) => {
 	return (
 		<>
-			<img className="mx-auto mb-4" src="assets/images/empty-for-you.svg" alt="empty-for-you" />
+			<img className="mx-auto mb-4" src="/assets/images/empty-for-you.svg" alt="empty-for-you" />
 			<h1 className="text-center  text-lg font-bold mb-2">{t('empty.forYou.title')}</h1>
 			<div className="text-center text-base font-medium ">{t('empty.forYou.description')}</div>
 		</>

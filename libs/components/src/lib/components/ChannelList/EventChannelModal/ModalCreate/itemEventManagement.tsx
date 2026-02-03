@@ -198,6 +198,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 
 	const { userId } = useAuth();
 	const [isInterested, setIsInterested] = useState(false);
+	const creatorDisplayName = userCreate?.clan_nick || userCreate?.user?.display_name || userCreate?.user?.username || '';
 
 	useEffect(() => {
 		if (userId && event?.user_ids) {
@@ -268,7 +269,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							placement="left"
 							overlay={
 								<p className="text-theme-primary-active w-[max-content]">
-									{t('eventCreator:eventDetail.createdBy', { username: userCreate?.clan_nick || userCreate?.user?.display_name })}
+									{t('eventCreator:eventDetail.createdBy', { username: creatorDisplayName })}
 								</p>
 							}
 						>
@@ -277,8 +278,8 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.button.open_detail_modal')}
 							>
 								<AvatarImage
-									alt={userCreate?.clan_nick || userCreate?.user?.display_name || ''}
-									username={userCreate?.clan_nick || userCreate?.user?.display_name}
+									alt={creatorDisplayName}
+									username={creatorDisplayName}
 									className="min-w-6 min-h-6 max-w-6 max-h-6"
 									srcImgProxy={createImgproxyUrl((userCreate?.clan_avatar || userCreate?.user?.avatar_url) ?? '')}
 									src={userCreate?.clan_avatar || userCreate?.user?.avatar_url}

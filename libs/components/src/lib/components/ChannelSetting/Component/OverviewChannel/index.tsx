@@ -214,7 +214,7 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			channel_label: channelLabel,
 			category_id: currentChannel.category_id,
 			app_url: updatedAppUrl,
-			app_id: currentChannel.app_id || '',
+			app_id: currentChannel.app_id || '0',
 			topic,
 			age_restricted: isAgeRestricted,
 			e2ee: isE2ee,

@@ -16,11 +16,12 @@ import {
 	useAppDispatch
 } from '@mezon/store-mobile';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiSystemMessage } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Pressable, Text, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { Chase } from 'react-native-animated-spinkit';
 import Share from 'react-native-share';
 import Toast from 'react-native-toast-message';
@@ -29,6 +30,7 @@ import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../../../componentUI/MezonInput';
 import { SeparatorWithLine } from '../../../../../components/Common';
 import { IconCDN } from '../../../../../constants/icon_cdn';
+import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { normalizeString } from '../../../../../utils/helpers';
 import type { Receiver } from '../../Reusables';
 import { FriendListItem } from '../../Reusables';
@@ -60,6 +62,7 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 	const dispatch = useAppDispatch();
 	const currentInviteLinkRef = useRef('');
 	const [currentInviteLink, setCurrentInviteLink] = useState<string>('');
+	const navigation = useNavigation<any>();
 	const store = getStore();
 
 	const friendList: FriendsEntity[] = useMemo(() => {
@@ -269,6 +272,11 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 		);
 	};
 
+	const navigateToAddFriendScreen = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+		navigation.navigate(APP_SCREEN.FRIENDS.STACK, { screen: APP_SCREEN.FRIENDS.ADD_FRIEND });
+	};
+
 	return (
 		<View style={styles.bottomSheetWrapper}>
 			{!isKeyboardVisible && (
@@ -296,6 +304,35 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 							prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
 						/>
 					</View>
+
+					{!currentInviteLink && userInviteList?.length === 0 && (
+						<View style={styles.emptyFriendList}>
+							<Chase color={themeValue.text} size={size.s_32} />
+							<Text style={styles.emptyFriendListText}>{t('loadingInviteLink')}</Text>
+						</View>
+					)}
+
+					{!!currentInviteLink && userInviteList?.length === 0 && (
+						<View style={styles.emptyFriendList}>
+							<MezonIconCDN icon={IconCDN.searchFriendIcon} useOriginalColor height={size.s_80} width={size.s_80} />
+							<Text style={styles.emptyFriendListText}>{t('noFriendsToInvite')}</Text>
+							<Text style={styles.emptyFriendListDescription}>{t('addFriendsToInvite')}</Text>
+							<TouchableOpacity style={styles.addFriendButton} onPress={navigateToAddFriendScreen}>
+								<Text style={styles.addFriendButtonText}>{t('addSomeFriends')}</Text>
+							</TouchableOpacity>
+						</View>
+					)}
+
+					{!!currentInviteLink && userInviteList?.length > 0 && (
+						<View style={styles.searchInviteFriendWrapper}>
+							<MezonInput
+								placeHolder={channelId ? t('inviteFriendToChannel') : t('inviteFriendToClan')}
+								onTextChange={setSearchUserText}
+								value={searchUserText}
+								prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
+							/>
+						</View>
+					)}
 
 					{!!currentInviteLink && (
 						<BottomSheetFlatList

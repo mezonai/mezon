@@ -2,27 +2,74 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { useAppSelector } from '@mezon/store';
 import { channelAppActions, selectAppChannelById, useAppDispatch } from '@mezon/store-mobile';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Modal, Platform, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Dimensions, Modal, Platform, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
+import Animated, { clamp, runOnJS, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import StatusBarHeight from '../../../../components/StatusBarHeight/StatusBarHeight';
 import WebviewBase from '../../../../components/WebviewBase';
 import { IconCDN } from '../../../../constants/icon_cdn';
+import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
+const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
+
+const SPRING_CONFIG = {
+	damping: 15,
+	stiffness: 150,
+	mass: 1,
+	overshootClamping: false
+};
+
+const BUBBLE_SPRING_CONFIG = {
+	damping: 20,
+	stiffness: 180,
+	mass: 1
+};
+
+const TIMING_CONFIG = {
+	duration: 300
+};
+
 const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }) => {
+	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const dispatch = useAppDispatch();
 	const paramsRoute = route?.params;
 	const styles = style(themeValue);
 	const [uri, setUri] = useState<string>('');
 	const [orientation, setOrientation] = useState<'Portrait' | 'Landscape'>('Portrait');
-	const [showCloseButton, setShowCloseButton] = useState<boolean>(true);
-	const animatedHeight = useRef(new Animated.Value(1)).current;
-	const animatedRotation = useRef(new Animated.Value(0)).current;
+	const scale = useSharedValue(1);
+	const hasMoved = useSharedValue(false);
+	const headerHeight = useSharedValue(50);
+	const headerOpacity = useSharedValue(1);
+	const bubbleOpacity = useSharedValue(0);
+	const translateX = useSharedValue(0);
+	const translateY = useSharedValue(0);
+	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	const appChannel = useAppSelector((state) => selectAppChannelById(state, paramsRoute?.channelId || ''));
+
+	const insets = useSafeAreaInsets();
+
+	const computedEntitySize = useMemo(() => {
+		return {
+			button: isTabletLandscape ? size.s_40 : size.s_32,
+			marginLeft: isTabletLandscape ? size.s_8 : size.s_6
+		};
+	}, [isTabletLandscape]);
+
+	const initialBounds = useMemo(() => {
+		const startY = Platform.OS === 'android' ? size.s_10 : size.s_100 + size.s_10;
+		return {
+			MIN_X: -windowWidth + size.s_50,
+			MAX_X: size.s_10,
+			MIN_Y: -startY + size.s_4 + (Platform.OS === 'android' ? 0 : insets.top),
+			MAX_Y: windowHeight - startY - computedEntitySize.button - size.s_10 - (Platform.OS === 'android' ? 0 : insets.bottom)
+		};
+	}, [computedEntitySize?.button, insets?.bottom, insets?.top, windowHeight, windowWidth]);
 
 	const getUrlChannelApp = useCallback(async () => {
 		if (appChannel.app_id && appChannel.app_url) {
@@ -65,78 +112,148 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 		navigation.goBack();
 	};
 
-	const toggleCloseButton = () => {
-		const toValue = showCloseButton ? 0 : 1;
-		const rotationValue = showCloseButton ? 1 : 0;
+	const hideHeader = useCallback(() => {
+		headerHeight.value = withTiming(0, TIMING_CONFIG);
+		headerOpacity.value = withTiming(0, TIMING_CONFIG);
+		bubbleOpacity.value = withTiming(1, TIMING_CONFIG);
+	}, []);
 
-		Animated.parallel([
-			Animated.timing(animatedHeight, {
-				toValue,
-				duration: 300,
-				useNativeDriver: false
-			}),
-			Animated.timing(animatedRotation, {
-				toValue: rotationValue,
-				duration: 300,
-				useNativeDriver: true
-			})
-		]).start();
+	const resetTimer = useCallback(() => {
+		if (timerRef.current) clearTimeout(timerRef.current);
+		timerRef.current = setTimeout(() => {
+			runOnJS(hideHeader)();
+		}, 5000);
+	}, [hideHeader]);
 
-		setShowCloseButton((prev) => !prev);
-	};
+	const showHeader = useCallback(() => {
+		headerHeight.value = withTiming(50, TIMING_CONFIG);
+		headerOpacity.value = withTiming(1, TIMING_CONFIG);
+		bubbleOpacity.value = withTiming(0, TIMING_CONFIG);
+		runOnJS(resetTimer)();
+	}, [resetTimer]);
 
-	const heightInterpolate = animatedHeight.interpolate({
-		inputRange: [0, 1],
-		outputRange: [0, 50]
-	});
+	useEffect(() => {
+		showHeader();
+		return () => {
+			if (timerRef.current) clearTimeout(timerRef.current);
+		};
+	}, []);
 
-	const rotateInterpolate = animatedRotation.interpolate({
-		inputRange: [0, 1],
-		outputRange: ['180deg', '0deg']
-	});
+	const animatedStyle = useAnimatedStyle(() => ({
+		height: headerHeight.value,
+		opacity: headerOpacity.value,
+		zIndex: 1
+	}));
 
-	const insets = useSafeAreaInsets();
+	const bubbleAnimatedStyle = useAnimatedStyle(() => ({
+		opacity: 0.5,
+		transform: [{ scale: bubbleOpacity.value }, { translateX: translateX.value }, { translateY: translateY.value }] as any,
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 4
+		},
+		shadowOpacity: 0.45,
+		shadowRadius: 3.84,
+		zIndex: 10001
+	}));
+
+	const tapGesture = useMemo(
+		() =>
+			Gesture.Tap()
+				.maxDuration(200)
+				.onEnd(() => {
+					scale.value = withSequence(withSpring(1.5, BUBBLE_SPRING_CONFIG), withSpring(1, BUBBLE_SPRING_CONFIG));
+					runOnJS(showHeader)();
+				}),
+		[showHeader]
+	);
+
+	const panGesture = useMemo(
+		() =>
+			Gesture.Pan()
+				.minDistance(5)
+				.onBegin(() => {
+					hasMoved.value = false;
+					scale.value = withSpring(1.1, SPRING_CONFIG);
+				})
+				.onChange(({ changeX, changeY }) => {
+					if (Math.abs(changeX) > 0 || Math.abs(changeY) > 0) {
+						hasMoved.value = true;
+					}
+					translateX.value = clamp(translateX.value + changeX, initialBounds.MIN_X, initialBounds.MAX_X);
+					translateY.value = clamp(translateY.value + changeY, initialBounds.MIN_Y, initialBounds.MAX_Y);
+				})
+				.onFinalize(() => {
+					scale.value = withSpring(1, SPRING_CONFIG);
+				}),
+		[hasMoved, initialBounds?.MAX_X, initialBounds?.MAX_Y, initialBounds?.MIN_X, initialBounds?.MIN_Y, scale, translateX, translateY]
+	);
+
+	const gesture = useMemo(() => Gesture.Exclusive(panGesture, tapGesture), [panGesture, tapGesture]);
+
 	return (
 		<Modal style={styles.container} visible={true} transparent={true} supportedOrientations={['portrait', 'landscape']}>
-			{orientation === 'Portrait' && Platform.OS === 'ios' && <StatusBarHeight />}
-			<Animated.View
-				style={[
-					styles.backButton,
-					{
-						height: heightInterpolate,
-						opacity: animatedHeight
-					},
-					orientation === 'Landscape' && styles.backButtonLandscape,
-					Platform.OS === 'ios' && { backgroundColor: themeValue.primary }
-				]}
-			>
-				{Platform.OS === 'ios' && (
-					<LinearGradient
-						start={{ x: 1, y: 0 }}
-						end={{ x: 0, y: 0 }}
-						colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-						style={[StyleSheet.absoluteFillObject]}
-					/>
-				)}
+			<GestureHandlerRootView style={{ height: windowHeight, width: windowWidth }}>
+				{orientation === 'Portrait' && Platform.OS === 'ios' && <StatusBarHeight />}
+				<Animated.View
+					style={[
+						styles.backButton,
+						animatedStyle,
+						orientation === 'Landscape' && styles.backButtonLandscape,
+						Platform.OS === 'ios' && { backgroundColor: themeValue.primary }
+					]}
+				>
+					{Platform.OS === 'ios' && (
+						<LinearGradient
+							start={{ x: 1, y: 0 }}
+							end={{ x: 0, y: 0 }}
+							colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+							style={[StyleSheet.absoluteFillObject]}
+						/>
+					)}
 
-				<TouchableOpacity onPress={onClose} style={{ padding: size.s_8, paddingRight: size.s_2 }}>
-					<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_24} width={size.s_24} color={themeValue.text} />
-				</TouchableOpacity>
-				<Text style={styles.title}>{appChannel?.app_name}</Text>
-			</Animated.View>
-			<TouchableOpacity
-				onPress={toggleCloseButton}
-				style={[
-					styles.toggleButton,
-					{ top: Platform.OS === 'ios' ? (orientation === 'Landscape' ? size.s_6 : insets.top + size.s_2) : size.s_2 },
-					orientation === 'Landscape' && { right: size.s_30 }
-				]}
-			>
-				<Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
-					<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_16} width={size.s_16} color={themeValue.text} />
+					<TouchableOpacity onPress={onClose} style={{ padding: size.s_8, paddingRight: size.s_2 }}>
+						<MezonIconCDN icon={IconCDN.closeIcon} height={size.s_24} width={size.s_24} color={themeValue.text} />
+					</TouchableOpacity>
+					<Text style={styles.title}>{appChannel?.app_name}</Text>
 				</Animated.View>
-			</TouchableOpacity>
-			<WebviewBase url={uri} incognito={true} style={styles.container} javaScriptEnabled={true} nestedScrollEnabled={true} onGoBack={onClose} />
+				<GestureDetector gesture={gesture}>
+					<Animated.View
+						style={[
+							{
+								position: 'absolute',
+								top: Platform.OS === 'android' ? size.s_10 : size.s_60,
+								right: size.s_10,
+								alignSelf: 'center',
+								backgroundColor: themeValue.primary,
+								borderRadius: size.s_20,
+								padding: size.s_8,
+								shadowColor: '#000',
+								shadowOffset: {
+									width: 0,
+									height: 2
+								},
+								shadowOpacity: 0.25,
+								shadowRadius: 3.84,
+								elevation: 5,
+								zIndex: 10000
+							},
+							bubbleAnimatedStyle
+						]}
+					>
+						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_24} width={size.s_24} color={themeValue.text} />
+					</Animated.View>
+				</GestureDetector>
+				<WebviewBase
+					url={uri}
+					incognito={true}
+					style={styles.container}
+					javaScriptEnabled={true}
+					nestedScrollEnabled={true}
+					onGoBack={onClose}
+				/>
+			</GestureHandlerRootView>
 		</Modal>
 	);
 };
