@@ -298,8 +298,6 @@ export function createNativeFetch(): typeof fetch {
 					}
 				}
 
-				console.log('lgo => NativeFetch', method, url, body, headers);
-
 				const response = await NativeHttpClient.request(method, url, body || undefined, headers);
 				return new NativeResponse(response.body, response.statusCode, url, headers, false);
 			}
