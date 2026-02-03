@@ -25,6 +25,7 @@ export const ClanIcon = memo(
 		const styles = style(themeValue);
 		const badgeCountClan = useSelector(selectBadgeCountByClanId(props?.data?.clan_id ?? '')) || 0;
 		const isHaveUnreadMessage = useSelector(selectClanHasUnreadMessage(props?.data?.clan_id ?? '')) || false;
+
 		const onIconLayout = useCallback(
 			(event: any) => {
 				const { width, height } = event.nativeEvent.layout;
@@ -32,8 +33,9 @@ export const ClanIcon = memo(
 			},
 			[props.onLayout]
 		);
+
 		return (
-			<ScaleDecorator activeScale={1.5}>
+			<ScaleDecorator activeScale={1.1}>
 				<TouchableOpacity
 					style={[styles.wrapperClanIcon]}
 					onPress={() => {
