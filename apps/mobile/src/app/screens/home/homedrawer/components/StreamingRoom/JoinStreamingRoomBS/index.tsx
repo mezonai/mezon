@@ -138,7 +138,7 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 					) : (
 						<View style={styles.avatarRow}>
 							{memberJoin?.slice?.(0, 3)?.map((m) => {
-								return <VoiceChannelAvatar key={`${m?.user_id}_user_join_streaming`} userId={m?.user_id} />;
+								return <VoiceChannelAvatar key={`${m?.user_id || m}_user_join_streaming`} userId={m?.user_id || m} />;
 							})}
 							{badge > 0 && (
 								<View style={styles.badgeContainer}>

@@ -39,7 +39,7 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 	const [categoryValue, setCategoryValue] = useState('');
 	const [createdChannelId, setCreatedChannelId] = useState<string>('');
 	const [categoryError, setCategoryError] = useState<string>();
-	const activeSince = appDetail?.create_time;
+	const activeSince = new Date(appDetail?.create_time_seconds || 0 * 1000);
 	const activeSincecv = activeSince ? new Date(activeSince).toLocaleDateString() : '';
 	useEffect(() => {
 		if (clanValue) {
