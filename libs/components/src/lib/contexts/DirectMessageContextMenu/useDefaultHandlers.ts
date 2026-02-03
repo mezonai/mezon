@@ -1,3 +1,4 @@
+import type { requestAddFriendParam } from '@mezon/store';
 import { EMuteState } from '@mezon/utils';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +8,7 @@ import type { DirectMessageContextMenuHandlers } from './types';
 interface UseDefaultHandlersParams {
 	openUserProfile: () => void;
 	handleDirectMessageWithUser: (user?: any) => Promise<void>;
-	addFriend: (params: { usernames?: string[]; ids?: string[] }) => void;
+	addFriend: (params: requestAddFriendParam) => void;
 	deleteFriend: (username: string, userId: string) => void;
 	handleMarkAsRead: (channelId: string) => void;
 	handleScheduleMute: (channelId: string, duration: number) => void;
@@ -56,11 +57,11 @@ export function useDefaultHandlers({
 				handleAddFriend: () => {
 					if (!user) return;
 
-					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
-					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
-					if (usernames.length === 0 || ids.length === 0) return;
+					const usernames = user?.usernames ? user?.usernames[0] : user?.user ? user?.user?.username : user?.usernames[0];
+					const ids = user?.user_ids ? user?.user_ids[0] : user?.user ? user?.user?.id : user?.user_ids[0];
+					if (!usernames && !ids) return;
 
-					addFriend(ids.length > 0 ? { ids } : { usernames });
+					addFriend({ ids, usernames, displayName: user.display_names[0], avatar: user.avatars[0] });
 				},
 				handleRemoveFriend: () => {
 					if (!user) return;
