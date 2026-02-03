@@ -423,7 +423,10 @@ export const MessageLine = ({
 						/>
 					);
 				} else if (element.type === EBacktickType.OGP_PREVIEW) {
-					const url = element.index !== undefined && t ? t?.substring(71, t?.indexOf(' ', 71) === -1 ? t.length : t.indexOf(' ', 71)) : '';
+					const url =
+						element.index !== undefined && t
+							? t?.substring(element.index, t?.indexOf(' ', element.index) === -1 ? t.length : t.indexOf(' ', element.index))
+							: '';
 					formattedContent.push(
 						<div
 							className="w-80 cursor-pointer rounded-md p-4 flex flex-col items-center gap-3 border border-theme-primary shadow-lg bg-theme-surface"
