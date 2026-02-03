@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import './CanvasEditor.scss';
 import { EditorBubbleMenu } from './components';
 import type { CanvasEditorProps } from './types';
+import { convertQuillDeltaToTiptap, isQuillDeltaFormat } from './utils/quillConverter';
 
 export function CanvasEditor({ content, editable, onChange }: CanvasEditorProps) {
 	const { t } = useTranslation('canvas');
@@ -59,7 +60,12 @@ export function CanvasEditor({ content, editable, onChange }: CanvasEditorProps)
 
 		try {
 			const parsed = JSON.parse(content);
-			editor.commands.setContent(parsed);
+			if (isQuillDeltaFormat(parsed)) {
+				const tiptapContent = convertQuillDeltaToTiptap(parsed);
+				editor.commands.setContent(tiptapContent);
+			} else {
+				editor.commands.setContent(parsed);
+			}
 		} catch {
 			if (content) {
 				editor.commands.setContent(content);
