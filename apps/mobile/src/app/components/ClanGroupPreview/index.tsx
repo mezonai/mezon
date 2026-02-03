@@ -49,23 +49,14 @@ export const ClanGroupPreview = memo(({ targetItem, dragItem, clans }: GroupPrev
 	});
 
 	const previewGroupData = useMemo(() => {
-		if (dragItem?.type === CLAN) {
-			if (targetItem?.type === GROUP) {
-				const existingClanIds = targetItem?.group?.clanIds || [];
-
-				return {
-					...targetItem.group,
-					clanIds: [...existingClanIds, dragItem?.clan?.clan_id]
-				};
-			} else if (targetItem?.type === CLAN) {
-				const dragClanId = dragItem?.clan?.clan_id;
-				const targetClanId = targetItem?.clan?.clan_id;
-				return {
-					id: `preview-group-${targetClanId}-${dragClanId}`,
-					clanIds: [targetClanId, dragClanId],
-					isExpanded: false
-				};
-			}
+		if (dragItem?.type === CLAN && targetItem?.type === CLAN) {
+			const dragClanId = dragItem?.clan?.clan_id;
+			const targetClanId = targetItem?.clan?.clan_id;
+			return {
+				id: `preview-group-${targetClanId}-${dragClanId}`,
+				clanIds: [targetClanId, dragClanId],
+				isExpanded: false
+			};
 		}
 
 		return null;
