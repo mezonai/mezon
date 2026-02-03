@@ -256,7 +256,9 @@ const WelComeDm = (props: WelComeDmProps) => {
 					{t('welcome.editGroup')}
 				</button>
 			)}
-			{!isDmGroup && (username || userID?.[0]) && <StatusFriend username={username} checkAddFriend={checkAddFriend} userID={userID[0]} t={t} />}
+			{!isDmGroup && (username || userID?.[0]) && (
+				<StatusFriend username={username} avatar={avatar} displayName={name} checkAddFriend={checkAddFriend} userID={userID[0]} t={t} />
+			)}
 			{!isDmGroup && <WaveButtonDM username={username} />}
 		</>
 	);
@@ -266,12 +268,14 @@ type StatusFriendProps = {
 	username?: string;
 
 	checkAddFriend?: number;
+	avatar?: string;
 	userID: string;
+	displayName?: string;
 	t: (key: string, options?: any) => string;
 };
 
 const StatusFriend = memo((props: StatusFriendProps) => {
-	const { username = '', checkAddFriend, userID, t } = props;
+	const { username = '', checkAddFriend, userID, avatar, displayName, t } = props;
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, userID));
 	const userProfile = useSelector(selectAllAccount);
 
@@ -317,15 +321,12 @@ const StatusFriend = memo((props: StatusFriendProps) => {
 				deleteFriend(username, userID);
 				break;
 			default:
-				addFriend(
-					userID
-						? {
-								ids: [userID]
-							}
-						: {
-								usernames: [username]
-							}
-				);
+				addFriend({
+					ids: userID,
+					usernames: username,
+					avatar,
+					displayName
+				});
 		}
 	};
 

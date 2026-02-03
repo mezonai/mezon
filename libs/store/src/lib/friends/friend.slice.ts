@@ -132,20 +132,22 @@ export const fetchListFriends = createAsyncThunk('friends/fetchListFriends', asy
 });
 
 export type requestAddFriendParam = {
-	ids?: string[];
-	usernames?: string[];
+	ids?: string;
+	usernames?: string;
 	isAcceptingRequest?: boolean;
 	isMobile?: boolean;
+	displayName?: string;
+	avatar?: string;
 };
 
 export const sendRequestAddFriend = createAsyncThunk(
 	'friends/requestFriends',
-	async ({ ids, usernames, isAcceptingRequest, isMobile = false }: requestAddFriendParam, thunkAPI) => {
+	async ({ ids, usernames, isAcceptingRequest, isMobile = false, avatar, displayName }: requestAddFriendParam, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const state = thunkAPI.getState() as RootState;
 			const currentUserId = state.account?.userProfile?.user?.id;
-			const response = await mezon.client.addFriends(mezon.session, ids, usernames);
+			const response = await mezon.client.addFriends(mezon.session, ids ? [ids] : [], usernames ? [usernames] : []);
 
 			if (response) {
 				if (response?.ids?.[0] && response.ids[0] !== '0') {
@@ -156,8 +158,10 @@ export const sendRequestAddFriend = createAsyncThunk(
 								source_id: currentUserId,
 								state: EStateFriend.OTHER_PENDING,
 								user: {
-									username: usernames?.[0],
-									id: response?.ids?.[0]
+									username: usernames,
+									id: response?.ids?.[0],
+									avatar_url: avatar,
+									display_name: displayName
 								}
 							})
 						);
@@ -174,8 +178,9 @@ export const sendRequestAddFriend = createAsyncThunk(
 					toast.error(i18n.t('friends:toast.sendAddFriendFail'));
 				}
 
-				if (isMobile) return response;
+				return response;
 			}
+			return;
 		} catch (err: any) {
 			if (!isMobile) {
 				toast.error(i18n.t('friends:toast.sendAddFriendFail'));
@@ -186,7 +191,7 @@ export const sendRequestAddFriend = createAsyncThunk(
 
 export const sendRequestDeleteFriend = createAsyncThunk(
 	'friends/requestDeleteFriends',
-	async ({ ids, usernames }: requestAddFriendParam, thunkAPI) => {
+	async ({ ids, usernames }: { ids: string[]; usernames: string[] }, thunkAPI) => {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.deleteFriends(mezon.session, ids, usernames);
 		if (!response) {
@@ -197,7 +202,7 @@ export const sendRequestDeleteFriend = createAsyncThunk(
 	}
 );
 
-export const sendRequestBlockFriend = createAsyncThunk('friends/requestBlockFriends', async ({ ids }: requestAddFriendParam, thunkAPI) => {
+export const sendRequestBlockFriend = createAsyncThunk('friends/requestBlockFriends', async ({ ids }: { ids: string[] }, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
 
 	const response = await mezon.client.blockFriends(mezon.session, ids);
@@ -207,7 +212,7 @@ export const sendRequestBlockFriend = createAsyncThunk('friends/requestBlockFrie
 	return response;
 });
 
-export const sendRequestUnblockFriend = createAsyncThunk('friends/requestUnblockFriends', async ({ ids }: requestAddFriendParam, thunkAPI) => {
+export const sendRequestUnblockFriend = createAsyncThunk('friends/requestUnblockFriends', async ({ ids }: { ids: string[] }, thunkAPI) => {
 	const mezon = await ensureSession(getMezonCtx(thunkAPI));
 	const response = await mezon.client.unblockFriends(mezon.session, ids);
 	if (!response) {

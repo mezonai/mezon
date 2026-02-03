@@ -103,7 +103,7 @@ export default function AddFriendPage() {
 
 		dispatch(
 			sendRequestAddFriend({
-				usernames: [username]
+				usernames: username
 			})
 		);
 		navigate('/chat/direct/friends');
