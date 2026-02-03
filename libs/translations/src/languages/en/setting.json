@@ -78,6 +78,14 @@
 		"speaker": "Speaker",
 		"microphoneVolume": "Microphone Volume",
 		"speakerVolume": "Speaker Volume",
+		"noiseSuppressionModel": "Noise Suppression Model",
+		"noiseSuppressionEnabled": "Enable Noise Suppression",
+		"noiseSuppressionStrength": "Noise Suppression Strength",
+		"noiseSuppressionModels": {
+			"off": "Off",
+			"browser": "Browser Default",
+			"ai": "AI Optimized"
+		},
 		"unnamedDevice": "Unnamed device",
 		"noDevices": "No devices found",
 		"micTest": {

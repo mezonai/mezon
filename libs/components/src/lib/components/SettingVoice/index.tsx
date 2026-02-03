@@ -1,15 +1,26 @@
+import { selectNoiseSuppressionEnabled, selectNoiseSuppressionLevel, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { requestMediaPermission } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceSelector } from './DeviceSelector';
 import { MicTest } from './MicTest';
 import { VolumeSlider } from './VolumeSlider';
+import {
+	NoiseSuppressionControl,
+	applyNoiseSuppressionModel,
+	getNoiseSuppressionMediaConstraints,
+	isValidNoiseSuppressionModel,
+	type NoiseSuppressionModel
+} from './noiseSuppression';
 
 const LS_KEYS = {
 	inputDeviceId: 'mezon.voice.inputDeviceId',
 	outputDeviceId: 'mezon.voice.outputDeviceId',
 	micVolume: 'mezon.voice.micVolume',
-	speakerVolume: 'mezon.voice.speakerVolume'
+	speakerVolume: 'mezon.voice.speakerVolume',
+	noiseSuppressionModel: 'mezon.voice.noiseSuppressionModel',
+	noiseSuppressionLevel: 'mezon.voice.noiseSuppressionLevel',
+	noiseSuppressionEnabled: 'mezon.voice.noiseSuppressionEnabled'
 } as const;
 
 const clamp01 = (n: number) => Math.max(0, Math.min(1, n));
@@ -18,6 +29,10 @@ const safeParseNumber = (value: string | null, fallback: number) => {
 	const n = Number(value);
 	return Number.isFinite(n) ? n : fallback;
 };
+const safeParseBoolean = (value: string | null, fallback: boolean) => {
+	if (value == null) return fallback;
+	return value === 'true';
+};
 
 interface ISettingVoiceProps {
 	menuIsOpen: boolean;
@@ -25,6 +40,9 @@ interface ISettingVoiceProps {
 
 export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 	const { t } = useTranslation(['setting']);
+	const dispatch = useAppDispatch();
+	const noiseSuppressionEnabledFromStore = useAppSelector(selectNoiseSuppressionEnabled);
+	const noiseSuppressionLevelFromStore = useAppSelector(selectNoiseSuppressionLevel);
 	const [permissionState, setPermissionState] = useState<'unknown' | 'granted' | 'denied'>('unknown');
 
 	const [inputDevices, setInputDevices] = useState<MediaDeviceInfo[]>([]);
@@ -34,6 +52,19 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 	const [outputDeviceId, setOutputDeviceId] = useState<string>(() => localStorage.getItem(LS_KEYS.outputDeviceId) || '');
 	const [micVolume, setMicVolume] = useState<number>(() => clamp01(safeParseNumber(localStorage.getItem(LS_KEYS.micVolume), 0.8)));
 	const [speakerVolume, setSpeakerVolume] = useState<number>(() => clamp01(safeParseNumber(localStorage.getItem(LS_KEYS.speakerVolume), 0.6)));
+	const [noiseSuppressionModel, setNoiseSuppressionModel] = useState<NoiseSuppressionModel>(() => {
+		const saved = localStorage.getItem(LS_KEYS.noiseSuppressionModel);
+		if (isValidNoiseSuppressionModel(saved)) {
+			return saved;
+		}
+		return 'ai';
+	});
+	const [noiseSuppressionLevel, setNoiseSuppressionLevel] = useState<number>(() =>
+		Math.round(Math.max(0, Math.min(100, safeParseNumber(localStorage.getItem(LS_KEYS.noiseSuppressionLevel), noiseSuppressionLevelFromStore))))
+	);
+	const [noiseSuppressionEnabled, setNoiseSuppressionEnabled] = useState<boolean>(() =>
+		safeParseBoolean(localStorage.getItem(LS_KEYS.noiseSuppressionEnabled), noiseSuppressionEnabledFromStore)
+	);
 
 	const [micLevel, setMicLevel] = useState<number>(0);
 	const [isTesting, setIsTesting] = useState<boolean>(false);
@@ -43,6 +74,10 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 	const outputDeviceIdRef = useRef<string>(outputDeviceId);
 	const micVolumeRef = useRef<number>(micVolume);
 	const speakerVolumeRef = useRef<number>(speakerVolume);
+	const noiseSuppressionModelRef = useRef<NoiseSuppressionModel>(noiseSuppressionModel);
+	const noiseSuppressionLevelRef = useRef<number>(noiseSuppressionLevel);
+	const noiseSuppressionEnabledRef = useRef<boolean>(noiseSuppressionEnabled);
+	const inputGainRef = useRef<GainNode | null>(null);
 
 	useEffect(() => {
 		inputDeviceIdRef.current = inputDeviceId;
@@ -56,6 +91,15 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 	useEffect(() => {
 		speakerVolumeRef.current = speakerVolume;
 	}, [speakerVolume]);
+	useEffect(() => {
+		noiseSuppressionModelRef.current = noiseSuppressionModel;
+	}, [noiseSuppressionModel]);
+	useEffect(() => {
+		noiseSuppressionLevelRef.current = noiseSuppressionLevel;
+	}, [noiseSuppressionLevel]);
+	useEffect(() => {
+		noiseSuppressionEnabledRef.current = noiseSuppressionEnabled;
+	}, [noiseSuppressionEnabled]);
 
 	const streamRef = useRef<MediaStream | null>(null);
 	const audioContextRef = useRef<AudioContext | null>(null);
@@ -96,6 +140,7 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 
 		const ctx = audioContextRef.current;
 		audioContextRef.current = null;
+		inputGainRef.current = null;
 		if (ctx) {
 			try {
 				void ctx.close();
@@ -149,7 +194,37 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 		localStorage.setItem(LS_KEYS.outputDeviceId, outputDeviceId);
 		localStorage.setItem(LS_KEYS.micVolume, String(micVolume));
 		localStorage.setItem(LS_KEYS.speakerVolume, String(speakerVolume));
-	}, [inputDeviceId, outputDeviceId, micVolume, speakerVolume]);
+		localStorage.setItem(LS_KEYS.noiseSuppressionModel, noiseSuppressionModel);
+		localStorage.setItem(LS_KEYS.noiseSuppressionLevel, String(noiseSuppressionLevel));
+		localStorage.setItem(LS_KEYS.noiseSuppressionEnabled, String(noiseSuppressionEnabled));
+	}, [inputDeviceId, outputDeviceId, micVolume, speakerVolume, noiseSuppressionEnabled, noiseSuppressionLevel, noiseSuppressionModel]);
+
+	useEffect(() => {
+		dispatch(voiceActions.setNoiseSuppressionEnabled(noiseSuppressionEnabled));
+		dispatch(voiceActions.setNoiseSuppressionLevel(noiseSuppressionLevel));
+	}, [dispatch, noiseSuppressionEnabled, noiseSuppressionLevel]);
+
+	useEffect(() => {
+		if (!isTesting) return;
+		if (inputGainRef.current) {
+			inputGainRef.current.gain.value = micVolume;
+		}
+	}, [isTesting, micVolume]);
+
+	useEffect(() => {
+		if (!isTesting) return;
+		const audio = playbackAudioRef.current;
+		if (audio) {
+			audio.volume = speakerVolume;
+		}
+	}, [isTesting, speakerVolume]);
+
+	useEffect(() => {
+		if (!isTesting || !hasSetSinkId || !outputDeviceId) return;
+		const audio = playbackAudioRef.current;
+		if (!audio) return;
+		void (audio as HTMLMediaElement & { setSinkId: (deviceId: string) => Promise<void> }).setSinkId(outputDeviceId).catch(() => undefined);
+	}, [hasSetSinkId, isTesting, outputDeviceId]);
 
 	const startLevelMeter = useCallback(() => {
 		const analyser = analyserRef.current;
@@ -201,9 +276,15 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 
 			const currentInputDeviceId = inputDeviceIdRef.current;
 			const currentMicVolume = micVolumeRef.current;
+			const currentNoiseSuppressionEnabled = noiseSuppressionEnabledRef.current;
+			const currentNoiseSuppressionModel = noiseSuppressionModelRef.current;
+			const currentNoiseSuppressionLevel = noiseSuppressionLevelRef.current;
 
 			const constraints: MediaStreamConstraints = {
-				audio: currentInputDeviceId ? { deviceId: { exact: currentInputDeviceId } } : true,
+				audio: getNoiseSuppressionMediaConstraints(currentInputDeviceId, {
+					enabled: currentNoiseSuppressionEnabled,
+					model: currentNoiseSuppressionModel
+				}),
 				video: false
 			};
 			const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -215,16 +296,22 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 			const source = audioContext.createMediaStreamSource(stream);
 			const gain = audioContext.createGain();
 			gain.gain.value = currentMicVolume;
+			inputGainRef.current = gain;
 
 			const analyser = audioContext.createAnalyser();
 			analyser.fftSize = 2048;
 			analyserRef.current = analyser;
 
 			const dest = audioContext.createMediaStreamDestination();
+			const processingNode = applyNoiseSuppressionModel(audioContext, gain, {
+				enabled: currentNoiseSuppressionEnabled,
+				model: currentNoiseSuppressionModel,
+				level: currentNoiseSuppressionLevel
+			});
 
 			source.connect(gain);
-			gain.connect(analyser);
-			gain.connect(dest);
+			processingNode.connect(analyser);
+			processingNode.connect(dest);
 
 			startLevelMeter();
 
@@ -296,6 +383,16 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 						<VolumeSlider value={speakerVolume} onChange={setSpeakerVolume} label={t('setting:voice.speakerVolume')} />
 					</div>
 				</div>
+
+				<NoiseSuppressionControl
+					model={noiseSuppressionModel}
+					enabled={noiseSuppressionEnabled}
+					level={noiseSuppressionLevel}
+					onEnabledChange={setNoiseSuppressionEnabled}
+					onModelChange={setNoiseSuppressionModel}
+					onLevelChange={setNoiseSuppressionLevel}
+					t={t}
+				/>
 
 				<MicTest
 					permissionState={permissionState}

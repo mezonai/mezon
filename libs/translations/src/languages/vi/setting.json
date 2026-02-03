@@ -78,6 +78,14 @@
 		"speaker": "Loa",
 		"microphoneVolume": "Âm lượng micro",
 		"speakerVolume": "Âm lượng loa",
+		"noiseSuppressionModel": "Mô hình lọc tạp âm",
+		"noiseSuppressionEnabled": "Bật lọc tạp âm",
+		"noiseSuppressionStrength": "Mức lọc tạp âm",
+		"noiseSuppressionModels": {
+			"off": "Tắt",
+			"browser": "Trình duyệt mặc định",
+			"ai": "AI tối ưu"
+		},
 		"unnamedDevice": "Thiết bị chưa đặt tên",
 		"noDevices": "Không tìm thấy thiết bị",
 		"micTest": {
