@@ -1,15 +1,32 @@
 import { useTranslation } from 'react-i18next';
 import type { ChannelsData } from '../../pages/dashboard/types';
+import Pagination from '../Pagination';
 
 interface ChannelsTableProps {
 	data: ChannelsData[];
 	selectedColumns: string[];
 	isExportingCSV: boolean;
+	page: number;
+	limit: number;
+	total: number;
+	totalPages: number;
 	onExportCSV: () => void;
 	onToggleColumn: (col: string) => void;
+	onPageChange: (page: number) => void;
 }
 
-function ChannelsTable({ data, selectedColumns, isExportingCSV, onExportCSV, onToggleColumn }: ChannelsTableProps) {
+function ChannelsTable({
+	data,
+	selectedColumns,
+	isExportingCSV,
+	page,
+	limit,
+	total,
+	totalPages,
+	onExportCSV,
+	onToggleColumn,
+	onPageChange
+}: ChannelsTableProps) {
 	const { t } = useTranslation('dashboard');
 
 	return (
@@ -92,16 +109,25 @@ function ChannelsTable({ data, selectedColumns, isExportingCSV, onExportCSV, onT
 								</td>
 							</tr>
 						) : (
-							data.map((row, index) => (
-								<tr key={index} className="hover:bg-gray-50 dark:hover:bg-[#1e1f22]">
+							data.map((row) => (
+								<tr key={row.channelId} className="hover:bg-gray-50 dark:hover:bg-[#1e1f22]">
 									<td className="px-4 py-3 text-sm border-b dark:border-[#4d4f52]">{row.channelName}</td>
-									<td className="px-4 py-3 text-sm border-b dark:border-[#4d4f52]">{row.activeUsers}</td>
-									<td className="px-4 py-3 text-sm border-b dark:border-[#4d4f52]">{row.messages}</td>
+									<td className="px-4 py-3 text-sm border-b dark:border-[#4d4f52]">{row.totalUsers}</td>
+									<td className="px-4 py-3 text-sm border-b dark:border-[#4d4f52]">{row.totalMessages}</td>
 								</tr>
 							))
 						)}
 					</tbody>
 				</table>
+
+				{/* Pagination controls */}
+				{total > limit && (
+					<>
+						{/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+						{/* @ts-ignore */}
+						<Pagination page={page} totalPages={totalPages} total={total} pageSize={limit} onPageChange={onPageChange} />
+					</>
+				)}
 			</div>
 		</div>
 	);

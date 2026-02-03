@@ -13,7 +13,7 @@ import type {
 } from 'mezon-js/api.gen';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
-import { selectMessageEntitiesByChannelId } from '../messages/messages.slice';
+import { messagesActions, selectMessageEntitiesByChannelId } from '../messages/messages.slice';
 import type { RootState } from '../store';
 import { threadsActions } from '../threads/threads.slice';
 
@@ -117,22 +117,54 @@ export const createTopic = createAsyncThunk('topics/createTopic', async (body: A
 	}
 });
 
-export const handleTopicNotification = createAsyncThunk('topics/handleTopicNotification', async ({ msg }: any, thunkAPI) => {
+interface TopicNotificationMessage {
+	channel_id?: string;
+	extras?: {
+		topicId?: string;
+		messageId?: string;
+		message_id?: string;
+		link?: string;
+		[key: string]: string | undefined;
+	};
+}
+
+interface TopicNotificationPayload {
+	msg: TopicNotificationMessage;
+}
+
+export const handleTopicNotification = createAsyncThunk('topics/handleTopicNotification', async ({ msg }: TopicNotificationPayload, thunkAPI) => {
 	const state = thunkAPI.getState() as RootState;
 	const currentTopicId = state.topicdiscussions.currentTopicId;
 	const currentChannelId = state.channels?.byClans[state.clans?.currentClanId as string]?.currentChannelId;
 	const isShowCreateTopic = !!currentChannelId;
 
-	if (msg?.extras?.topicId && msg?.extras?.topicId !== '0' && (currentTopicId !== msg?.extras?.topicId || !isShowCreateTopic)) {
-		thunkAPI.dispatch(topicsActions.setIsShowCreateTopic(true));
+	const topicIdFromMsg = msg?.extras?.topicId;
+	const shouldOpenTopic = topicIdFromMsg && topicIdFromMsg !== '0' && (currentTopicId !== topicIdFromMsg || !isShowCreateTopic);
+
+	if (!shouldOpenTopic) {
+		return;
+	}
+
+	thunkAPI.dispatch(topicsActions.setIsShowCreateTopic(true));
+	thunkAPI.dispatch(
+		threadsActions.setIsShowCreateThread({
+			channelId: msg.channel_id ?? '',
+			isShowCreateThread: false
+		})
+	);
+	thunkAPI.dispatch(topicsActions.setCurrentTopicId(topicIdFromMsg));
+	thunkAPI.dispatch(getFirstMessageOfTopic({ topicId: topicIdFromMsg }));
+
+	const messageId = msg?.extras?.messageId ?? msg?.extras?.message_id;
+
+	if (messageId) {
+		thunkAPI.dispatch(topicsActions.setInitTopicMessageId(messageId));
 		thunkAPI.dispatch(
-			threadsActions.setIsShowCreateThread({
-				channelId: msg.channel_id as string,
-				isShowCreateThread: false
+			messagesActions.setIdMessageToJump({
+				id: messageId,
+				navigate: false
 			})
 		);
-		thunkAPI.dispatch(topicsActions.setCurrentTopicId(msg?.extras?.topicId || ''));
-		thunkAPI.dispatch(getFirstMessageOfTopic(msg?.extras?.topicId || ''));
 	}
 });
 

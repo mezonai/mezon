@@ -13,9 +13,10 @@ export interface UsageMetrics {
 }
 
 export interface ChannelsData {
+	channelId: string;
 	channelName: string;
-	activeUsers: number;
-	messages: number;
+	totalUsers: string;
+	totalMessages: string;
 }
 
 export interface UserData {

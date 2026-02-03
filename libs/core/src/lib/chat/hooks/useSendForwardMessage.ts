@@ -61,7 +61,7 @@ export function useSendForwardMessage() {
 					const additionalContent: IMessageSendPayload = {
 						t: trimmedMessage
 					};
-					await socket.writeChatMessage(clanid, channel_id, mode, isPublic, additionalContent, [], []);
+					await socket.writeChatMessage(clanid || '0', channel_id, mode, isPublic, additionalContent, [], []);
 				}
 
 				dispatch(

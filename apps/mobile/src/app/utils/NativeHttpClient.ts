@@ -270,6 +270,10 @@ export function createNativeFetch(): typeof fetch {
 			init?.body instanceof ArrayBuffer;
 
 		try {
+			if (url?.includes(`https://${process.env.NX_CHAT_APP_API_GW_HOST}:${process.env.NX_CHAT_APP_API_GW_PORT}`)) {
+				return fetch(input, init);
+			}
+
 			if (isBinaryRequest) {
 				// Handle binary (protobuf) request
 				let bodyBytes: Uint8Array | undefined;

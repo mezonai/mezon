@@ -2,6 +2,7 @@ import { useAuth, useEscapeKeyClose } from '@mezon/core';
 import type { RolesClanEntity } from '@mezon/store';
 import {
 	channelUsersActions,
+	getStore,
 	selectAllRolesClan,
 	selectAllUserClans,
 	selectCurrentClanId,
@@ -30,6 +31,11 @@ interface AddMemRoleProps {
 type filterItemProps = {
 	listRolesNotAddChannel: RolesClanEntity[];
 	listMembersNotInChannel: UsersClanEntity[];
+};
+
+const getUserChannelIdsFromStore = (channelId?: string) => {
+	const selectorKey = channelId || '0';
+	return selectUserChannelIds(getStore().getState(), selectorKey);
 };
 
 export const AddMemRole: React.FC<AddMemRoleProps> = ({
@@ -64,7 +70,8 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 	);
 
 	const usersClan = useSelector(selectAllUserClans);
-	const userChannelIds = useSelector((state) => selectUserChannelIds(state, channel.channel_id || '0'));
+	const userChannelIds = getUserChannelIdsFromStore(channel.channel_id);
+
 	const listUserInvite = useMemo(() => {
 		if (channel.channel_private !== 1) {
 			return usersClan.filter((user) => user.id !== userProfile?.user?.id && !selectedUserIds.includes(user.id));
@@ -237,7 +244,7 @@ export const AddMemRole: React.FC<AddMemRoleProps> = ({
 							</div>
 						</div>
 					)}
-					{userChannelIds.length !== 0 && (
+					{filterItem.listMembersNotInChannel.length > 0 && (
 						<div className="mt-2">
 							<p className="uppercase font-bold text-xs pb-4">{t('addMembersRoles.members')}</p>
 							<div data-e2e={generateE2eId('channel_setting_page.permissions.section.member_role_management.modal.member_list')}>
