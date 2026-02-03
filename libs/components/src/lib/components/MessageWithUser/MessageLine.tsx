@@ -432,7 +432,9 @@ export const MessageLine = ({
 							className="w-80 cursor-pointer rounded-md p-4 flex flex-col items-center gap-3 border border-theme-primary shadow-lg bg-theme-surface"
 							onClick={() => {
 								if (url) {
-									window.open(url);
+									if (url) {
+										window.open(url, '_blank', 'noopener,noreferrer');
+									}
 								}
 							}}
 						>

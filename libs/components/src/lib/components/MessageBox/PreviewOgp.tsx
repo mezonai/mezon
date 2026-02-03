@@ -25,6 +25,7 @@ function PreviewOgp() {
 
 		const controller = new AbortController();
 		const { signal } = controller;
+		let hideLoadingTimeout: NodeJS.Timeout | null = null;
 
 		const timeoutId = setTimeout(async () => {
 			try {
@@ -47,7 +48,7 @@ function PreviewOgp() {
 				const data = await res.json();
 				setData(data);
 
-				setTimeout(() => {
+				hideLoadingTimeout = setTimeout(() => {
 					setLoading(false);
 					dispatch(
 						referencesActions.setOgpData({
@@ -72,6 +73,9 @@ function PreviewOgp() {
 		return () => {
 			clearTimeout(timeoutId);
 			controller.abort();
+			if (hideLoadingTimeout) {
+				clearTimeout(hideLoadingTimeout);
+			}
 		};
 	}, [ogpLink?.url]);
 	const clearOgpData = () => {
