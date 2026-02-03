@@ -274,17 +274,13 @@ const LoginScreen = ({ navigation }) => {
 				if (!resp) {
 					Toast.show({
 						type: 'error',
-						props: {
-							text2: t('login.loginFailed')
-						}
+						text1: t('login.loginFailed')
 					});
 				}
 			} catch (e) {
 				Toast.show({
 					type: 'error',
-					props: {
-						text2: e?.message || t('login.loginFailed')
-					}
+					text1: e?.message || t('login.loginFailed')
 				});
 			}
 		}

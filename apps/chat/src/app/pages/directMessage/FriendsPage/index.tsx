@@ -49,8 +49,8 @@ const FriendsPage = () => {
 	};
 
 	const [requestAddFriend, setRequestAddFriend] = useState<requestAddFriendParam>({
-		usernames: [],
-		ids: []
+		usernames: '',
+		ids: ''
 	});
 
 	useEffect(() => {
@@ -65,13 +65,13 @@ const FriendsPage = () => {
 		switch (key) {
 			case 'username':
 				if ((value || '').trim()) {
-					setRequestAddFriend({ ...requestAddFriend, usernames: [value] });
+					setRequestAddFriend({ ...requestAddFriend, usernames: value });
 				} else {
-					setRequestAddFriend({ ...requestAddFriend, usernames: [] });
+					setRequestAddFriend({ ...requestAddFriend, usernames: '' });
 				}
 				break;
 			case 'id':
-				setRequestAddFriend({ ...requestAddFriend, ids: [value] });
+				setRequestAddFriend({ ...requestAddFriend, ids: value });
 				break;
 			default:
 				return;
@@ -81,8 +81,8 @@ const FriendsPage = () => {
 
 	const resetField = () => {
 		setRequestAddFriend({
-			usernames: [],
-			ids: []
+			usernames: '',
+			ids: ''
 		});
 		setIsInvalidInput(false);
 		setIsAlreadyFriend(null);

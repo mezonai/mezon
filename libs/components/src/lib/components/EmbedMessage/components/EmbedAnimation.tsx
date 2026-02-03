@@ -61,8 +61,8 @@ export const EmbedAnimation = ({
             animation: animation_embed_${index}_${messageId} ${duration}s steps(1) forwards;
             animation-iteration-count: ${repeat ? repeat : 'infinite'};
             background-repeat : no-repeat;
-            width : ${DEFAULT_HEIGH * ratioWidthBig}px !important;
-            height : ${DEFAULT_WIDTH * ratioWidthBig}px !important;
+            width : ${heightItem * ratioWidthBig}px !important;
+            height : ${widthItem * ratioWidthBig}px !important;
             background-size: ${jsonPosition.meta.size.w * ratioWidthBig}px ${jsonPosition.meta.size.h * ratioWidthBig}px;
             }
 
@@ -95,8 +95,8 @@ export const EmbedAnimation = ({
             background-repeat : no-repeat;
             background-position: -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.x * ratioWidthBig}px -${jsonPosition.frames[poolItem[poolItem.length - 1]].frame.y * ratioWidthBig}px;
             background-size: ${jsonPosition.meta.size.w * ratioWidthBig}px ${jsonPosition.meta.size.h * ratioWidthBig}px;
-            width : ${DEFAULT_HEIGH * ratioWidthBig}px !important;
-            height : ${DEFAULT_WIDTH * ratioWidthBig}px !important;
+            width : ${heightItem * ratioWidthBig}px !important;
+            height : ${widthItem * ratioWidthBig}px !important;
             }
               @media (max-width: ${BREAK_POINT_RESPONSIVE}px) {
               .box_resize_${index}_${messageId}{

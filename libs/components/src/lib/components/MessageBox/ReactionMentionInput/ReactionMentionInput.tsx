@@ -1040,6 +1040,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 					}${props.isThread && !threadCurrentChannel ? 'p-2.5' : 'py-[9px] pr-[120px] pl-[9px]'}`}
 					onSend={(formattedText: FormattedText) => {
 						handleSendWithFormattedText(formattedText, anonymousMode);
+						cachedLinkOgp.current = '';
 					}}
 					onHandlePaste={handlePasteWithCharacterLimit}
 					enableUndoRedo={true}

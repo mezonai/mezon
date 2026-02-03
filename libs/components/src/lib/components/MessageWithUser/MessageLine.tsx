@@ -423,20 +423,48 @@ export const MessageLine = ({
 						/>
 					);
 				} else if (element.type === EBacktickType.OGP_PREVIEW) {
-					const url = element.index !== undefined ? t?.substring(mk[0]?.s ?? 0, mk[0]?.e) : '';
+					const url =
+						element.index !== undefined && t
+							? t?.substring(element.index, t?.indexOf(' ', element.index) === -1 ? t.length : t.indexOf(' ', element.index))
+							: '';
 					formattedContent.push(
-						<div className="h-28 w-72 rounded-md p-2 flex items-center gap-3 border border-theme-primary shadow-lg bg-theme-surface">
-							<img
-								className="h-16 aspect-square object-cover"
-								src={element.image}
-								onError={(e) => {
-									e.currentTarget.src = '/assets/images/warning.svg';
+						<div className="flex flex-col gap-0.5 max-w-[350px]">
+							<div
+								className="group relative flex flex-col gap-1.5 rounded-lg p-2.5 shadow-lg transition-all bg-highlight-no-hover-left-meta bg-theme-setting-nav cursor-pointer"
+								onClick={() => {
+									if (url) {
+										if (url) {
+											window.open(url, '_blank', 'noopener,noreferrer');
+										}
+									}
 								}}
-							/>
-							<div className="h-full flex-col flex justify-center w-[200px]">
-								<h5 className="text-sm font-semibold line-clamp-2">{element.title}</h5>
-								{!!element.description && <p className="text-xs line-clamp-2">{element.description}</p>}
-								{!!url && <p className="text-xs line-clamp-2 italic">{url}</p>}
+							>
+								<div className="flex flex-col gap-0.5">
+									<a
+										href={url || '#'}
+										onClick={(e) => e.preventDefault()}
+										className="text-[14px] font-bold text-blue-500 hover:text-blue-400 hover:underline transition-colors line-clamp-2 leading-snug"
+									>
+										{element.title}
+									</a>
+									{!!element.description && (
+										<p className="text-[12px] leading-normal text-theme-primary line-clamp-2 opacity-90">{element.description}</p>
+									)}
+								</div>
+
+								<div className="relative mt-1 overflow-hidden rounded border border-white/5 bg-theme-setting-primary">
+									<img
+										className={`w-full h-auto object-cover max-h-[200px] transition-transform duration-500 group-hover:scale-[1.02] ${
+											!element.image ? 'opacity-30' : ''
+										}`}
+										src={element.image || '/assets/images/warning.svg'}
+										alt={element.title}
+										onError={(e) => {
+											e.currentTarget.src = '/assets/images/warning.svg';
+											e.currentTarget.classList.add('opacity-30');
+										}}
+									/>
+								</div>
 							</div>
 						</div>
 					);

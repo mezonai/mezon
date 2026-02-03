@@ -185,7 +185,7 @@ export const MessageSelect: React.FC<MessageSelectProps> = ({ select, messageId,
 	}, []);
 
 	return (
-		<Menu menu={menu} className="h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode dark:bg-bgTertiary px-2 z-20">
+		<Menu menu={menu} className="h-fit max-h-[200px] text-xs overflow-y-scroll customSmallScrollLightMode dark:bg-bgTertiary px-2 z-30">
 			<div className="w-full max-w-[400px] h-auto rounded-md flex p-3 justify-between items-center text-sm border-theme-primary ">
 				<div>
 					{selectedOptions?.length > 0 && (

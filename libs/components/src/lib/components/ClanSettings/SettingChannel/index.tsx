@@ -7,7 +7,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons, Menu, Pagination } from '@mezon/ui';
-import { createImgproxyUrl, generateE2eId, getAvatarForPrioritize } from '@mezon/utils';
+import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { formatDistance } from 'date-fns';
 import { ChannelType } from 'mezon-js';
 import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/api.gen';
@@ -18,6 +18,7 @@ import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { AnchorScroll } from '../../AnchorScroll/AnchorScroll';
 import AvatarGroup, { AvatarCount } from '../../Avatar/AvatarGroup';
+import { AvatarImage } from '../../AvatarImage/AvatarImage';
 
 type ListChannelSettingProp = {
 	listChannel: ApiChannelSettingItem[];
@@ -298,15 +299,8 @@ const ItemInfor = ({
 		);
 	}, [channelId]);
 
-	const imgCreator = useMemo(() => {
-		if (creatorChannel?.clan_avatar) {
-			return createImgproxyUrl(creatorChannel?.clan_avatar, { width: 32, height: 32, resizeType: 'fit' });
-		}
-		if (creatorChannel?.user?.avatar_url) {
-			return createImgproxyUrl(creatorChannel?.user?.avatar_url, { width: 32, height: 32, resizeType: 'fit' });
-		}
-		return '/assets/avatar-user.svg';
-	}, [creatorChannel?.clan_avatar, creatorChannel?.user?.avatar_url]);
+	const creatorDisplayName = creatorChannel?.clan_nick || creatorChannel?.user?.display_name || creatorChannel?.user?.username || '';
+	const creatorAvatar = creatorChannel?.clan_avatar || creatorChannel?.user?.avatar_url || '';
 
 	return (
 		<div
@@ -368,14 +362,14 @@ const ItemInfor = ({
 				</div>
 
 				<div className="overflow-hidden flex w-12 items-center justify-center">
-					{(creatorChannel?.clan_avatar || creatorChannel?.user?.avatar_url) && (
-						<img
-							title={creatorChannel?.clan_nick || creatorChannel?.user?.display_name || creatorChannel?.user?.username}
-							src={imgCreator}
-							className="w-8 h-8 object-cover rounded-full"
-							alt=""
-						/>
-					)}
+					<AvatarImage
+						title={creatorDisplayName}
+						alt={creatorDisplayName}
+						username={creatorDisplayName}
+						src={creatorAvatar}
+						srcImgProxy={createImgproxyUrl(creatorAvatar, { width: 32, height: 32, resizeType: 'fit' })}
+						className="w-8 h-8 min-w-8 min-h-8 max-w-8 max-h-8"
+					/>
 				</div>
 			</div>
 		</div>
@@ -384,16 +378,19 @@ const ItemInfor = ({
 export default ListChannelSetting;
 export const AvatarUserShort = ({ id, showName = false }: { id: string; showName?: boolean }) => {
 	const member = useAppSelector((state) => selectMemberClanByUserId(state, id));
-	const avatarUrl = getAvatarForPrioritize(member?.clan_avatar, member?.user?.avatar_url) || '/assets/avatar-user.svg';
+	const displayName = member?.clan_nick || member?.user?.display_name || member?.user?.username || '';
+	const avatarUrl = member?.clan_avatar || member?.user?.avatar_url || '';
 
 	return (
 		<div className="flex items-center gap-3" data-e2e={generateE2eId('clan_page.channel_list.item.user_list_collapsed.item')}>
-			<img
-				src={createImgproxyUrl(avatarUrl, { width: 24, height: 24, resizeType: 'fit' })}
-				className="rounded-full h-6 aspect-square object-cover"
-				alt="User avatar"
+			<AvatarImage
+				alt={displayName || 'User avatar'}
+				username={displayName}
+				src={avatarUrl}
+				srcImgProxy={createImgproxyUrl(avatarUrl, { width: 24, height: 24, resizeType: 'fit' })}
+				className="rounded-full h-6 w-6 min-w-6 min-h-6 max-w-6 max-h-6"
 			/>
-			{showName ? <div className="">{member?.clan_nick || member?.user?.display_name || member?.user?.username}</div> : null}
+			{showName ? <div className="">{displayName}</div> : null}
 		</div>
 	);
 };

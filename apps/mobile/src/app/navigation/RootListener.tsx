@@ -140,21 +140,26 @@ const RootListener = () => {
 
 	const handleAppStateChange = useCallback(
 		async (state: string) => {
+			if (state !== 'active') return;
+
 			const store = getStore();
 			const isFromFCM = await load(STORAGE_IS_DISABLE_LOAD_BACKGROUND);
-			// Note: if is DM
 			const currentDirectId = selectDmGroupCurrentId(store.getState());
 			const isFromFcmMobile = selectIsFromFCMMobile(store.getState());
-			if (state === 'active') {
-				await activeAgainLoaderBackground();
+			const shouldSkipMessageLoad = isFromFCM?.toString() === 'true' || isFromFcmMobile;
+			if (!currentDirectId && !shouldSkipMessageLoad) {
+				messageLoaderBackground().finally(() => {
+					requestIdleCallback(() => {
+						activeAgainLoaderBackground();
+					});
+				});
+			} else {
+				requestIdleCallback(() => {
+					activeAgainLoaderBackground();
+				});
 			}
-			if (state === 'active' && !currentDirectId) {
+			if (!currentDirectId) {
 				handleReconnect('Initial reconnect attempt timeout');
-				if (isFromFCM?.toString() === 'true' || isFromFcmMobile) {
-					/* empty */
-				} else {
-					await messageLoaderBackground();
-				}
 			}
 		},
 		[activeAgainLoaderBackground, handleReconnect, messageLoaderBackground]

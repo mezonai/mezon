@@ -11,7 +11,7 @@ const API_BASE = process.env.NX_ADMIN_API_URL || 'http://localhost:8081';
 type ChartPoint = { date: string; isoDate?: string; activeUsers: number; activeChannels: number; messages: number };
 type ClanRow = { clanId: string; clanName: string; totalActiveUsers: number; totalActiveChannels: number; totalMessages: number };
 
-interface ListResponse<T> {
+export interface ListResponse<T> {
 	success: boolean;
 	data: T;
 }
@@ -41,9 +41,9 @@ export const fetchAllClansMetrics = createAsyncThunk(
 			}
 			const json = (await res.json()) as ListResponse<{
 				labels: string[];
-				activeUsers: number[];
-				activeChannels: number[];
-				totalMessages: number[];
+				active_users: string[];
+				active_channels: string[];
+				total_messages: string[];
 			}>;
 			markApiFirstCalled(apiKey);
 			return json;
@@ -68,9 +68,9 @@ export const fetchClansList = createAsyncThunk(
 				const text = await res.text().catch(() => '');
 				return thunkAPI.rejectWithValue(text || res.statusText);
 			}
-			// convert clanId from int64 to string
+			// convert clan_id from int64 to string
 			const text = await res.text();
-			const fixed = text.replace(/("clanId"\s*:\s*)(\d+)/g, '$1"$2"');
+			const fixed = text.replace(/("clan_id"\s*:\s*)(\d+)/g, '$1"$2"');
 			const json = JSON.parse(fixed);
 			return json;
 		} catch (err) {
@@ -149,7 +149,17 @@ export const fetchClanChannels = createAsyncThunk(
 
 export const fetchChannelUsers = createAsyncThunk(
 	'dashboard/fetchChannelUsers',
-	async ({ clanId, channelId, start, end }: { clanId: string; channelId: string; start: string; end: string }, thunkAPI) => {
+	async (
+		{
+			clanId,
+			channelId,
+			start,
+			end,
+			page = 1,
+			limit = 10
+		}: { clanId: string; channelId: string; start: string; end: string; page?: number; limit?: number },
+		thunkAPI
+	) => {
 		try {
 			const getState = thunkAPI.getState as () => RootState;
 			const key = `${clanId}_${channelId}`;
@@ -166,7 +176,7 @@ export const fetchChannelUsers = createAsyncThunk(
 			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
 			const token = session?.token;
 			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-			const url = `${base}/dashboard/${clanId}/users/${channelId}/metrics?start_date=${start}&end_date=${end}`;
+			const url = `${base}/dashboard/${clanId}/channels/${channelId}/users?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}`;
 			const res = await fetch(url, { headers });
 			if (!res.ok) {
 				const text = await res.text().catch(() => '');
@@ -375,9 +385,9 @@ export const dashboardSlice = createSlice({
 					state.chartData = labels.map((label: string, idx: number) => ({
 						date: new Date(label).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }),
 						isoDate: label,
-						activeUsers: payload.data.activeUsers?.[idx] || 0,
-						activeChannels: payload.data.activeChannels?.[idx] || 0,
-						messages: payload.data.totalMessages?.[idx] || 0
+						activeUsers: Number(payload.data.active_users?.[idx] || 0),
+						activeChannels: Number(payload.data.active_channels?.[idx] || 0),
+						messages: Number(payload.data.total_messages?.[idx] || 0)
 					}));
 				} else {
 					state.chartData = [];
@@ -396,8 +406,22 @@ export const dashboardSlice = createSlice({
 				state.tableLoading = false;
 				const payload = action.payload as any;
 				if (payload?.success && payload.data) {
-					state.tableData = payload.data.clans || [];
-					state.usageTotals = payload.data.total || null;
+					const clans = payload.data.clans || [];
+					state.tableData = clans.map((clan: any) => ({
+						clanId: clan.clan_id,
+						clanName: clan.clan_name,
+						totalActiveUsers: Number(clan.total_active_users),
+						totalActiveChannels: Number(clan.total_active_channels),
+						totalMessages: Number(clan.total_messages)
+					}));
+					const total = payload.data.total;
+					state.usageTotals = total
+						? {
+								totalActiveUsers: Number(total.total_active_users),
+								totalActiveChannels: Number(total.total_active_channels),
+								totalMessages: Number(total.total_messages)
+							}
+						: null;
 				} else {
 					state.tableData = [];
 					state.usageTotals = null;
@@ -427,9 +451,9 @@ export const dashboardSlice = createSlice({
 					state.chartData = labels.map((label: string, idx: number) => ({
 						date: new Date(label).toLocaleDateString('en-US', { month: 'short', day: '2-digit' }),
 						isoDate: label,
-						activeUsers: payload.data.activeUsers?.[idx] || 0,
-						activeChannels: payload.data.activeChannels?.[idx] || 0,
-						messages: payload.data.totalMessages?.[idx] || 0
+						activeUsers: Number(payload.data.active_users?.[idx] || 0),
+						activeChannels: Number(payload.data.active_channels?.[idx] || 0),
+						messages: Number(payload.data.total_messages?.[idx] || 0)
 					}));
 				} else {
 					state.chartData = [];
@@ -534,25 +558,58 @@ export const selectClanChannels = (state: RootState, clanId: string) => {
 	const raw = selectDashboard(state).channelsCacheByClan?.[clanId]?.rawPayload?.data?.channels;
 	if (!Array.isArray(raw)) return [];
 	return raw.map((c: any) => ({
-		channelId: c.channelId || c.id || '',
-		channelName: c.channelName || c.name || '',
-		activeUsers: Number(c.totalUsers ?? c.total_users ?? 0) || 0,
-		messages: Number(c.totalMessages ?? c.total_messages ?? 0) || 0
+		channelId: c.channel_id || c.channelId || c.id || '',
+		channelName: c.channel_name || c.channelName || c.name || '',
+		totalUsers: String(c.total_users ?? c.totalUsers ?? '0'),
+		totalMessages: String(c.total_messages ?? c.totalMessages ?? '0')
 	}));
 };
 
 export const selectClanChannelsLoading = (state: RootState) => selectDashboard(state).channelsLoading;
+
+export const selectClanChannelsPagination = (state: RootState, clanId: string) => {
+	const raw = selectDashboard(state).channelsCacheByClan?.[clanId]?.rawPayload?.data?.pagination;
+	if (!raw) return { page: 1, limit: 10, total: 0, totalPages: 1 };
+	return {
+		page: raw.page ?? 1,
+		limit: raw.limit ?? 10,
+		total: Number(raw.total ?? 0),
+		totalPages: raw.total_pages ?? raw.totalPages ?? 1
+	};
+};
+
+export const selectClanChannelsMetrics = (state: RootState, clanId: string) => {
+	const raw = selectDashboard(state).channelsCacheByClan?.[clanId]?.rawPayload?.data?.total;
+	if (!raw) return { totalActiveUsers: 0, totalActiveChannels: 0, totalMessages: 0 };
+	return {
+		totalActiveUsers: Number(raw.total_active_users ?? raw.totalActiveUsers ?? 0),
+		totalActiveChannels: Number(raw.total_active_channels ?? raw.totalActiveChannels ?? 0),
+		totalMessages: Number(raw.total_messages ?? raw.totalMessages ?? 0)
+	};
+};
 
 export const selectChannelUsers = (state: RootState, clanId: string, channelId: string) => {
 	const key = `${clanId}_${channelId}`;
 	const raw = selectDashboard(state).usersCacheByChannel?.[key]?.rawPayload?.data?.users;
 	if (!Array.isArray(raw)) return [];
 	return raw.map((u: any) => ({
-		userName: u.userName || u.name || u.username || '',
-		messages: Number(u.totalMessages ?? u.total_messages ?? u.messages ?? 0) || 0
+		userName: u.user_name || u.userName || u.name || u.username || '',
+		messages: Number(u.total_messages ?? u.totalMessages ?? u.messages ?? 0) || 0
 	}));
 };
 
 export const selectChannelUsersLoading = (state: RootState) => selectDashboard(state).usersLoading;
+
+export const selectChannelUsersPagination = (state: RootState, clanId: string, channelId: string) => {
+	const key = `${clanId}_${channelId}`;
+	const raw = selectDashboard(state).usersCacheByChannel?.[key]?.rawPayload?.data?.pagination;
+	if (!raw) return { page: 1, limit: 10, total: 0, totalPages: 1 };
+	return {
+		page: raw.page ?? 1,
+		limit: raw.limit ?? 10,
+		total: Number(raw.total ?? 0),
+		totalPages: raw.total_pages ?? raw.totalPages ?? 1
+	};
+};
 
 export default dashboardReducer;

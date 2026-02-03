@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default function Button({ onClick, children, className = '', type = 'button' }: Props) {
-	const base = 'w-full sm:w-36 px-6 py-2 bg-[#5865F2] text-white rounded-md hover:bg-[#4752c4] focus:outline-none focus:ring-2 focus:ring-blue-500';
+	const base = 'text-[15px] py-[10px] px-[16px] text-white bg-[#5865F2] hover:bg-[#4752c4] cursor-pointer rounded-md text-nowrap';
 	return (
 		<button type={type} onClick={onClick} className={`${base} ${className}`.trim()}>
 			{children}

@@ -248,7 +248,7 @@ export const ModalConfirmPin = ({
 			channel_id: directId,
 			channel_label: '',
 			category_id: currentDmGroup.category_id,
-			app_id: currentDmGroup.app_id || '',
+			app_id: currentDmGroup.app_id || '0',
 			e2ee: !currentDmGroup.e2ee ? 1 : 0
 		};
 		await dispatch(channelsActions.updateChannel(updateChannel));

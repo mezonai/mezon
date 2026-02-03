@@ -95,18 +95,18 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 				if (user) {
 					if (user.user?.id) {
 						addFriend({
-							ids: [user.user.id]
+							ids: user.user.id,
+							usernames: user.user.username,
+							displayName: user.user.display_name,
+							avatar: user.user.avatar_url
 						});
 					} else {
-						addFriend({
-							usernames: [user.user?.username || '']
-						});
-					}
-				} else {
-					if (kichUser) {
-						addFriend({
-							usernames: [kichUser.username]
-						});
+						if (kichUser) {
+							addFriend({
+								ids: kichUser.id,
+								usernames: kichUser.username
+							});
+						}
 					}
 				}
 			}

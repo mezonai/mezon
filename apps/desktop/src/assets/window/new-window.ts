@@ -16,7 +16,6 @@ function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow
 		x,
 		y,
 		frame: false,
-		transparent: true,
 		autoHideMenuBar: true,
 		show: false,
 		backgroundColor: '#00000000',

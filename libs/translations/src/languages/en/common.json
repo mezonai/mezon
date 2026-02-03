@@ -303,7 +303,7 @@
 		"getStarted": "Get Started",
 		"invalidPhoneNumber": "Invalid phone number",
 		"loginTooFast": "Login too fast. Please wait {{seconds}} seconds before trying again.",
-		"loginFailed": "Login Failed! An error occurred during login",
+		"loginFailed": "Invalid email or password. Please try again.",
 		"otpSentMessage": "Please check your email address at {{email}} for the OTP",
 		"backToEmailInput": "Change email?",
 		"invalidTimeOtp": "Invalid time OTP"

@@ -63,6 +63,7 @@ const HomeDefault = React.memo(
 		}, []);
 
 		useEffect(() => {
+			Keyboard.dismiss();
 			save(STORAGE_IS_LAST_ACTIVE_TAB_DM, 'false');
 			return () => {
 				timeoutRef?.current && clearTimeout(timeoutRef.current);

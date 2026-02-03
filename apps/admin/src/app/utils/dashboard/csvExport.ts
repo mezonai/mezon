@@ -39,6 +39,11 @@ export const handleCSVExport = async (
 			const payload = action.payload;
 
 			// If payload directly contains base64 CSV + filename
+			if (payload?.csv_data && payload?.filename) {
+				decodeBase64AndDownload(payload.csv_data as string, payload.filename as string);
+				return;
+			}
+
 			if (payload?.csvData && payload?.filename) {
 				decodeBase64AndDownload(payload.csvData as string, payload.filename as string);
 				return;
@@ -63,6 +68,11 @@ export const handleCSVExport = async (
 					parsed = JSON.parse(text);
 				} catch (e) {
 					parsed = null;
+				}
+
+				if (parsed?.csv_data && parsed?.filename) {
+					decodeBase64AndDownload(parsed.csv_data as string, parsed.filename as string);
+					return;
 				}
 
 				if (parsed?.csvData && parsed?.filename) {
@@ -101,6 +111,11 @@ export const handleChannelCSVExport = async (
 			const payload = action.payload;
 
 			// Response contains base64 CSV + filename
+			if (payload?.csv_data && payload?.filename) {
+				decodeBase64AndDownload(payload.csv_data as string, payload.filename as string);
+				return;
+			}
+
 			if (payload?.csvData && payload?.filename) {
 				decodeBase64AndDownload(payload.csvData as string, payload.filename as string);
 			} else {
@@ -136,6 +151,11 @@ export const handleUserCSVExport = async (
 			const payload = action.payload;
 
 			// Response contains base64 CSV + filename
+			if (payload?.csv_data && payload?.filename) {
+				decodeBase64AndDownload(payload.csv_data as string, payload.filename as string);
+				return;
+			}
+
 			if (payload?.csvData && payload?.filename) {
 				decodeBase64AndDownload(payload.csvData as string, payload.filename as string);
 			} else {

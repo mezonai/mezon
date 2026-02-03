@@ -59,14 +59,38 @@ function MessageVideo({ attachmentData, isMobile = false, isPreview = false }: M
 
 	useEffect(() => {
 		const video = videoRef.current;
-		return () => {
-			if (video) {
-				video.pause();
-				video.removeAttribute('src');
-				video.load();
+		if (!video) return;
+
+		let checkTimeout: NodeJS.Timeout | null = null;
+
+		const checkVideoPlayable = () => {
+			if (video.videoWidth === 0 || video.videoHeight === 0) {
+				setHasError(true);
+				setErrorMessage(isElectron() ? t('video.error.codecNotSupportedElectron') : t('video.error.cannotPlay'));
 			}
 		};
-	}, []);
+
+		const handleLoadedMetadata = () => {
+			checkTimeout = setTimeout(checkVideoPlayable, 500);
+		};
+
+		const handleCanPlay = () => {
+			if (checkTimeout) clearTimeout(checkTimeout);
+			checkTimeout = setTimeout(checkVideoPlayable, 300);
+		};
+
+		video.addEventListener('loadedmetadata', handleLoadedMetadata);
+		video.addEventListener('canplay', handleCanPlay);
+
+		return () => {
+			if (checkTimeout) clearTimeout(checkTimeout);
+			video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+			video.removeEventListener('canplay', handleCanPlay);
+			video.pause();
+			video.removeAttribute('src');
+			video.load();
+		};
+	}, [attachmentData.url, t]);
 
 	const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
 		const video = e.currentTarget;

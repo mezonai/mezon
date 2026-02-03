@@ -1,7 +1,6 @@
 {
 	"activityOverview": {
 		"title": "Activity Overview",
-		"utc": "UTC",
 		"timePeriod": "Time Period",
 		"totalActiveUsers": "Total Active Users",
 		"totalActiveUsersTooltip": "Unique users who were active at least once",
