@@ -1,5 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ClanGroup as ClanGroupType, clansActions, useAppDispatch } from '@mezon/store-mobile';
+import type { ClanGroup as ClanGroupType } from '@mezon/store-mobile';
+import { clansActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -23,27 +24,17 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
+
 	const groupClan = useMemo(() => {
 		if (!group?.clanIds?.length || !clans?.length) return [];
-		try {
-			return clans.filter((clan) => group.clanIds.includes(clan?.clan_id));
-		} catch (error) {
-			console.error('Error in groupClan: ', error);
-			return [];
-		}
+		return clans.filter((clan) => group.clanIds.includes(clan?.clan_id));
 	}, [clans, group?.clanIds]);
 
 	const totalBadgeCount = useMemo(() => {
 		if (!groupClan?.length) return 0;
-
-		try {
-			return groupClan.reduce((total, clan) => {
-				return total + (clan?.badge_count || 0);
-			}, 0);
-		} catch (error) {
-			console.error('Error in totalBadgeCount: ', error);
-			return 0;
-		}
+		return groupClan.reduce((total, clan) => {
+			return total + (clan?.badge_count || 0);
+		}, 0);
 	}, [groupClan]);
 
 	const handleRemoveClanFromGroup = (clanId: string) => {
@@ -102,7 +93,7 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 	}
 
 	return (
-		<ScaleDecorator activeScale={1.5}>
+		<ScaleDecorator activeScale={1.1}>
 			<TouchableOpacity style={styles.collapsedGroup} onPress={handleToggleGroup} onLongPress={drag} disabled={isActive}>
 				<View style={styles.groupIcon}>
 					<View style={[styles.multipleClansView, groupClan.length === 1 && styles.singleClanView]}>

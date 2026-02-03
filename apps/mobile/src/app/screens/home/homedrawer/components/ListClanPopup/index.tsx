@@ -11,7 +11,7 @@ import {
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, InteractionManager, TouchableOpacity, View } from 'react-native';
 import { NestableDraggableFlatList } from 'react-native-draggable-flatlist';
 import { useSelector } from 'react-redux';
 import { ClanGroup } from '../../../../../components/ClanGroup';
@@ -27,8 +27,11 @@ import { style } from './styles';
 
 const GROUP = 'group';
 const CLAN = 'clan';
-const DISTANCE_OFFSET = 10;
-const PREVIEW_DEBOUNCE_MS = 750;
+const CHECK_INTERVAL_MS = 100;
+const GROUPING_THRESHOLD_MIN = 0.2;
+const GROUPING_THRESHOLD_MAX = 0.8;
+const MARGIN_ICON = size.s_10;
+const DEFAULT_CLAN_ICON_HEIGHT = size.s_42;
 
 export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: boolean }) => {
 	const { themeValue } = useTheme();
@@ -39,32 +42,17 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 	const orderedClansWithGroups = useSelector(selectOrderedClansWithGroups);
 	const clans = useSelector(selectOrderedClans);
 	const currentClanId = useSelector(selectCurrentClanId);
-	const iconDimensionsRef = useRef<{ width: number; height: number } | null>(null);
-	const animationValuesRef = useRef<any>(null);
-	const dragIndexRef = useRef<number | null>(null);
-	const placeholderIndexRef = useRef<number | null>(null);
-	const groupPreviewIntervalRef = useRef<NodeJS.Timeout | null>(null);
 	const [isDragging, setIsDragging] = useState(false);
-	const [groupPreviewMap, setGroupPreviewMap] = useState<{ [key: string]: number | null }>({});
+	const [targetPreview, setTargetPreview] = useState<{ [key: string]: number | null }>({});
+	const dragIndexRef = useRef<number | null>(null);
+	const lastTargetCanGroupIndexRef = useRef<number | null>(null);
+	const animationValuesRef = useRef<any>(null);
+	const iconDimensionsRef = useRef<{ width: number; height: number } | null>(null);
+	const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
 	useEffect(() => {
 		dispatch(clansActions.initializeClanGroupOrder());
 	}, [dispatch]);
-
-	useEffect(() => {
-		if (isDragging && animationValuesRef.current?.isDraggingCell?.value) {
-			groupPreviewIntervalRef.current = setInterval(() => {
-				checkCanGroupRealTime();
-			}, PREVIEW_DEBOUNCE_MS);
-		}
-
-		return () => {
-			if (groupPreviewIntervalRef.current) {
-				clearInterval(groupPreviewIntervalRef.current);
-				groupPreviewIntervalRef.current = null;
-			}
-		};
-	}, [isDragging]);
 
 	const groupClans = useMemo(() => {
 		if (!orderedClansWithGroups?.length) return [];
@@ -97,37 +85,90 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 		}
 	}, [orderedClansWithGroups, clans]);
 
-	const checkCanGroupRealTime = () => {
-		if (
-			!isDragging ||
-			!animationValuesRef.current?.isDraggingCell?.value ||
-			dragIndexRef.current === null ||
-			placeholderIndexRef.current === null
-		) {
+	const clanIconSpacing = useMemo(() => {
+		const height = iconDimensionsRef.current?.height || DEFAULT_CLAN_ICON_HEIGHT;
+		return height + MARGIN_ICON;
+	}, []);
+
+	const handleDrag = useCallback(
+		(drag: () => void) => () => {
+			dispatch(clansActions.collapseAllGroups());
+			InteractionManager.runAfterInteractions(() => {
+				requestAnimationFrame(() => {
+					drag();
+				});
+			});
+		},
+		[dispatch]
+	);
+
+	const clearGroupingState = useCallback(() => {
+		lastTargetCanGroupIndexRef.current = null;
+		setTargetPreview({});
+	}, []);
+
+	const checkCanGroupRealTime = useCallback(() => {
+		if (dragIndexRef.current === null || !animationValuesRef.current?.isDraggingCell?.value || !animationValuesRef.current?.hoverAnim?.value) {
 			return;
 		}
 
 		const fromItem = groupClans[dragIndexRef.current];
-		const toItem = groupClans[placeholderIndexRef.current];
-
-		if (!fromItem || !toItem) return;
-
-		let currentDragDistance = 0;
-		if (animationValuesRef.current?.hoverAnim?.value) {
-			const indexDiff = Math.abs(placeholderIndexRef.current - dragIndexRef.current);
-			const multiIndexDistanceOffset = DISTANCE_OFFSET * indexDiff;
-			currentDragDistance = Math.abs(animationValuesRef.current.hoverAnim.value) + DISTANCE_OFFSET + multiIndexDistanceOffset;
+		if (!fromItem || fromItem?.type !== CLAN) {
+			clearGroupingState();
+			return;
 		}
 
-		const currentThreshold = calculateDynamicThreshold(dragIndexRef.current, placeholderIndexRef.current);
-		const canGroup =
-			currentThreshold !== null && currentDragDistance !== null && fromItem?.type === CLAN && currentDragDistance < currentThreshold;
-		canGroup
-			? setGroupPreviewMap({
-					[toItem?.clan?.clan_id ?? toItem?.group?.id]: placeholderIndexRef.current
-				})
-			: setGroupPreviewMap({});
-	};
+		const hoverDistance = animationValuesRef.current.hoverAnim.value;
+		const indexOffset = Math.abs(hoverDistance) / clanIconSpacing;
+		const fractionalPart = indexOffset % 1;
+		const isGrouping = fractionalPart >= GROUPING_THRESHOLD_MIN && fractionalPart <= GROUPING_THRESHOLD_MAX;
+
+		if (isGrouping) {
+			let targetIndex: number;
+			if (hoverDistance > 0) {
+				targetIndex = dragIndexRef.current + Math.ceil(indexOffset);
+			} else {
+				targetIndex = dragIndexRef.current - Math.ceil(indexOffset);
+			}
+
+			if (targetIndex === groupClans.length) {
+				clearGroupingState();
+				return;
+			}
+
+			if (targetIndex !== dragIndexRef.current) {
+				const targetItem = groupClans[targetIndex];
+				if (targetItem) {
+					lastTargetCanGroupIndexRef.current = targetIndex;
+					if (targetItem?.type === CLAN) {
+						setTargetPreview({
+							[targetItem?.clan?.clan_id]: targetIndex
+						});
+					} else {
+						setTargetPreview({});
+					}
+					return;
+				}
+			}
+		}
+
+		clearGroupingState();
+	}, [clanIconSpacing, clearGroupingState, groupClans]);
+
+	useEffect(() => {
+		if (isDragging) {
+			checkIntervalRef.current = setInterval(() => {
+				checkCanGroupRealTime();
+			}, CHECK_INTERVAL_MS);
+		}
+
+		return () => {
+			if (checkIntervalRef.current) {
+				clearInterval(checkIntervalRef.current);
+				checkIntervalRef.current = null;
+			}
+		};
+	}, [isDragging, checkCanGroupRealTime]);
 
 	const onCreateClanModal = useCallback(() => {
 		const data = {
@@ -140,7 +181,6 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 		const data = {
 			children: <JoinClanModal />
 		};
-
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 	}, []);
 
@@ -152,85 +192,27 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 		iconDimensionsRef.current = dimensions;
 	}, []);
 
-	const calculateDynamicThreshold = (from: number, to: number) => {
-		const minDistance = iconDimensionsRef.current?.height;
-		const maxDistance = minDistance * 2;
-		const fromIndex = Math.min(from, to);
-		const toIndex = Math.max(from, to);
-		const indexDiff = Math.abs(to - from);
-		const baseThreshold = (minDistance + maxDistance) / 2;
-
-		try {
-			let expandedGroupsCount = 0;
-			let expandedGroupsItemCount = 0;
-
-			groupClans.slice(fromIndex, toIndex + 1).forEach((item) => {
-				if (item?.type === GROUP && item?.group?.clanIds?.length > 0 && item?.group?.isExpanded) {
-					expandedGroupsCount++;
-					expandedGroupsItemCount += 1 + item.group.clanIds.length;
-				}
-			});
-
-			if (expandedGroupsItemCount > 0) {
-				const adjustedIndexDiff = indexDiff - expandedGroupsCount;
-				const thresholdMultiplier = expandedGroupsItemCount + adjustedIndexDiff;
-				return baseThreshold * thresholdMultiplier - thresholdMultiplier;
-			}
-
-			return baseThreshold * indexDiff - indexDiff;
-		} catch (error) {
-			console.error('Error in calculateDynamicThreshold: ', error);
-			return 0;
-		}
-	};
-
-	const handlePlaceholderIndexChange = useCallback(
-		(placeholderIndex: number) => {
-			if (!isDragging) return;
-			placeholderIndexRef.current = placeholderIndex;
+	const handleDragBegin = useCallback(
+		(index: number) => {
+			dragIndexRef.current = index;
+			clearGroupingState();
+			setIsDragging(true);
 		},
-		[isDragging]
+		[clearGroupingState]
 	);
 
-	const handleDragBegin = useCallback((index: number) => {
-		setIsDragging(true);
-		dragIndexRef.current = index;
-		placeholderIndexRef.current = index;
-	}, []);
-
 	const handleDragEnd = useCallback(
-		({ data, from, to }) => {
-			setIsDragging(false);
-			dragIndexRef.current = null;
-			placeholderIndexRef.current = null;
-
-			if (from === to) {
-				return;
+		({ data, from }) => {
+			if (checkIntervalRef.current) {
+				clearInterval(checkIntervalRef.current);
+				checkIntervalRef.current = null;
 			}
 
 			try {
 				const fromItem = groupClans[from];
-				const toItem = groupClans[to];
+				const toItem = groupClans[lastTargetCanGroupIndexRef.current];
 
-				if (fromItem?.type === GROUP || groupPreviewMap?.[toItem?.clan?.clan_id ?? toItem?.group?.id] === undefined) {
-					const newClanGroupOrder = data?.map((item) => {
-						if (item?.type === GROUP) {
-							return {
-								type: GROUP,
-								id: item?.id,
-								groupId: item?.group?.id
-							};
-						} else if (item?.type === CLAN) {
-							return {
-								type: CLAN,
-								id: item?.id,
-								clanId: item?.clan?.clan_id
-							};
-						}
-					});
-
-					dispatch(clansActions.updateClanGroupOrder(newClanGroupOrder));
-				} else if (groupPreviewMap?.[toItem?.clan?.clan_id ?? toItem?.group?.id] !== undefined) {
+				if (lastTargetCanGroupIndexRef.current !== null && fromItem?.type === CLAN && !!toItem) {
 					requestAnimationFrame(() => {
 						if (toItem?.type === GROUP) {
 							dispatch(
@@ -239,7 +221,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 									clanId: fromItem?.clan?.clan_id
 								})
 							);
-						} else if (toItem?.type === CLAN) {
+						} else {
 							dispatch(
 								clansActions.createClanGroup({
 									clanIds: [fromItem?.clan?.clan_id, toItem?.clan?.clan_id]
@@ -247,14 +229,23 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 							);
 						}
 					});
+				} else {
+					const newClanGroupOrder = data?.map((item) => ({
+						type: item?.type,
+						id: item?.id,
+						...(item?.type === GROUP ? { groupId: item?.group?.id } : { clanId: item?.clan?.clan_id })
+					}));
+					dispatch(clansActions.updateClanGroupOrder(newClanGroupOrder));
 				}
 			} catch (error) {
 				console.error('Error in handleDragEnd', error);
 			} finally {
-				setGroupPreviewMap({});
+				dragIndexRef.current = null;
+				clearGroupingState();
+				setIsDragging(false);
 			}
 		},
-		[groupClans, groupPreviewMap]
+		[groupClans, dispatch, clearGroupingState]
 	);
 
 	const handleChangeClan = useCallback(
@@ -279,44 +270,66 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 		[isTabletLandscape, navigation]
 	);
 
-	const renderItem = ({ item, drag, isActive }) => {
-		const isActiveCurrentClan = currentClanId === item?.clan?.clan_id;
-		if (item?.type === GROUP) {
-			return (
-				<>
+	const groupPreview = useMemo(() => {
+		const targetIndex = Object.values(targetPreview)[0];
+		if (targetIndex == null) return null;
+		return groupClans[targetIndex];
+	}, [targetPreview, groupClans]);
+
+	const renderItem = useCallback(
+		({ item, drag, isActive }) => {
+			if (isActive && item?.type === CLAN && groupPreview) {
+				return <ClanGroupPreview targetItem={groupPreview} dragItem={item} clans={clans} />;
+			}
+
+			if (item?.type === GROUP) {
+				return (
 					<ClanGroup
 						key={`group-${item?.group?.id}`}
 						group={item?.group}
 						onClanPress={handleChangeClan}
 						clans={clans}
-						drag={drag}
+						drag={handleDrag(drag)}
 						isActive={isActive}
 					/>
-					{groupPreviewMap?.[item?.group?.id] !== undefined && (
-						<ClanGroupPreview targetItem={item} dragItem={groupClans[dragIndexRef.current]} clans={clans} />
-					)}
-				</>
-			);
-		} else if (item?.type === CLAN) {
-			return (
-				<>
+				);
+			} else {
+				return (
 					<ClanIcon
 						key={`clan-${item?.clan?.clan_id}`}
 						data={item?.clan}
 						onPress={handleChangeClan}
-						drag={drag}
+						drag={handleDrag(drag)}
 						isActive={isActive}
-						isActiveCurrentClan={isActiveCurrentClan}
+						isActiveCurrentClan={currentClanId === item?.clan?.clan_id}
 						onLayout={getIconLayout}
 						hideActive={hideActive}
 					/>
-					{groupPreviewMap?.[item?.clan?.clan_id] !== undefined && (
-						<ClanGroupPreview targetItem={item} dragItem={groupClans[dragIndexRef.current]} clans={clans} />
-					)}
-				</>
-			);
-		}
-	};
+				);
+			}
+		},
+		[groupPreview, clans, handleChangeClan, handleDrag, currentClanId, getIconLayout, hideActive]
+	);
+
+	const ListFooter = useMemo(
+		() => (
+			<View>
+				{clans?.length === 0 && (
+					<TouchableOpacity style={styles.createClan} onPress={onJoinNewClanModal}>
+						<View style={styles.wrapperPlusClan}>
+							<MezonIconCDN icon={IconCDN.joinClanIcon} useOriginalColor={true} width={size.s_30} height={size.s_30} />
+						</View>
+					</TouchableOpacity>
+				)}
+				<TouchableOpacity style={styles.createClan} onPress={onCreateClanModal}>
+					<View style={styles.wrapperPlusClan}>
+						<MezonIconCDN icon={IconCDN.plusLargeIcon} color={baseColor.blurple} width={size.s_18} height={size.s_18} />
+					</View>
+				</TouchableOpacity>
+			</View>
+		),
+		[clans, onCreateClanModal, onJoinNewClanModal]
+	);
 
 	return (
 		<View style={styles.clansBox}>
@@ -331,27 +344,9 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 				onDragBegin={handleDragBegin}
 				onDragEnd={handleDragEnd}
 				onAnimValInit={handleAnimValInit}
-				onPlaceholderIndexChange={handlePlaceholderIndexChange}
 				renderItem={renderItem}
 				ListEmptyComponent={<View />}
-				ListFooterComponent={() => {
-					return (
-						<View>
-							{clans?.length === 0 && (
-								<TouchableOpacity style={styles.createClan} onPress={onJoinNewClanModal}>
-									<View style={styles.wrapperPlusClan}>
-										<MezonIconCDN icon={IconCDN.joinClanIcon} useOriginalColor={true} width={size.s_30} height={size.s_30} />
-									</View>
-								</TouchableOpacity>
-							)}
-							<TouchableOpacity style={styles.createClan} onPress={onCreateClanModal}>
-								<View style={styles.wrapperPlusClan}>
-									<MezonIconCDN icon={IconCDN.plusLargeIcon} color={baseColor.blurple} width={size.s_18} height={size.s_18} />
-								</View>
-							</TouchableOpacity>
-						</View>
-					);
-				}}
+				ListFooterComponent={ListFooter}
 				activationDistance={40}
 			/>
 		</View>
