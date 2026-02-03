@@ -247,7 +247,7 @@ export default function parseHtmlAsFormattedText(html: string, withMarkdownLinks
 		if (node.nodeType === Node.COMMENT_NODE) return;
 		const { index, entity } = getEntityDataFromNode(node, text, textIndex);
 		if (!linkPreview.url && (entity?.type === ApiMessageEntityTypes.Url || entity?.type === ApiMessageEntityTypes.TextUrl)) {
-			if (process.env.NX_CHAT_APP_API_HOST && !(entity as unknown as ApiMessageEntityTextUrl).url.includes(process.env.NX_CHAT_APP_API_HOST)) {
+			if (process.env.NX_DOMAIN_URL && !(entity as unknown as ApiMessageEntityTextUrl).url.includes(process.env.NX_DOMAIN_URL)) {
 				linkPreview.url = (entity as unknown as ApiMessageEntityTextUrl).url;
 				linkPreview.index = index;
 			}
