@@ -53,7 +53,8 @@ type FunctionActionId =
 	| 'transfer_funds'
 	| 'poll'
 	| 'quick_messages'
-	| 'share_contact';
+	| 'share_contact'
+	| 'lucky_money';
 
 type AdvancedFunctionItem = {
 	id: FunctionActionId;
@@ -77,7 +78,8 @@ const FUNCTION_COLORS = {
 	EPHEMERAL: '#d1b332',
 	TRANSFER: '#5BBB8D',
 	POLL: '#1c932b',
-	SHARE_CONTACT: '#6BB6FF'
+	SHARE_CONTACT: '#6BB6FF',
+	LUCKY_MONEY: '#D84315'
 } as const;
 
 const SHOULD_FOCUS_AFTER_ACTION: FunctionActionId[] = ['quick_messages', 'ephemeral', 'anonymous'];
@@ -173,6 +175,12 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 				label: t('common:shareContact'),
 				icon: IconCDN.businessIcon,
 				backgroundColor: FUNCTION_COLORS.SHARE_CONTACT
+			},
+			{
+				id: 'lucky_money',
+				label: 'Lucky Money',
+				icon: IconCDN.giftIcon,
+				backgroundColor: FUNCTION_COLORS.LUCKY_MONEY
 			}
 		];
 
@@ -338,6 +346,10 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 	const handlePoll = useCallback(() => {
 		sendMessage({ t: '*poll' }, [], [], [], undefined, undefined, undefined);
 	}, [sendMessage]);
+
+	const handleLuckyMoney = useCallback(() => {
+		navigation.navigate(APP_SCREEN.LUCKY_MONEY);
+	}, [navigation]);
 	const getImageDimension = useCallback((imageUri: string): Promise<{ width: number; height: number }> => {
 		return new Promise((resolve) => {
 			Image.getSize(
@@ -412,7 +424,8 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 			ephemeral: () => DeviceEventEmitter.emit(ActionEmitEvent.ON_SEND_ACTION_FROM_ADVANCED_MENU, 'ephemeral'),
 			poll: handlePoll,
 			pickFiles: onPickFiles,
-			share_contact: handleOpenShareContact
+			share_contact: handleOpenShareContact,
+			lucky_money: handleLuckyMoney
 		}),
 		[
 			handleLinkGoogleMap,
@@ -422,7 +435,8 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 			handleTransferFunds,
 			handlePoll,
 			onPickFiles,
-			handleOpenShareContact
+			handleOpenShareContact,
+			handleLuckyMoney
 		]
 	);
 

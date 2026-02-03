@@ -34,6 +34,13 @@ export const APP_SCREEN = {
 	PROFILE_DETAIL: 'PROFILE_DETAIL',
 	INSTALL_CLAN: 'INSTALL_CLAN',
 	CLAIM_MONEY: 'CLAIM_MONEY',
+	MEDIA_HIGHLIGHTS_TIMELINE: 'MEDIA_HIGHLIGHTS_TIMELINE',
+	EVENT_DETAIL: 'EVENT_DETAIL',
+	EVENT_DETAIL_SCREEN: 'EVENT_DETAIL_SCREEN',
+	CREATE_MILESTONE: 'CREATE_MILESTONE',
+	FAMILY_EVENTS: 'FAMILY_EVENTS',
+	LUCKY_MONEY: 'LUCKY_MONEY',
+	LUCKY_MONEY_HISTORY: 'LUCKY_MONEY_HISTORY',
 
 	SERVERS: {
 		STACK: 'ROUTES.SERVERS.STACK',
@@ -372,6 +379,23 @@ export type AppStackParamList = {
 	[APP_SCREEN.HOME]: undefined;
 	[APP_SCREEN.HOME_DEFAULT]: undefined;
 	[APP_SCREEN.PROFILE_DETAIL]: { username?: string; data?: string };
+	[APP_SCREEN.MEDIA_HIGHLIGHTS_TIMELINE]: { channelId?: string; clanId?: string };
+	[APP_SCREEN.EVENT_DETAIL]: { eventId: string; title: string; date: string; images?: any[] };
+	[APP_SCREEN.EVENT_DETAIL_SCREEN]: {
+		eventId: string;
+		title: string;
+		description: string;
+		date: Date;
+		time?: string;
+		isAllDay?: boolean;
+		image?: string;
+		category: string;
+		location?: string;
+	};
+	[APP_SCREEN.CREATE_MILESTONE]: undefined;
+	[APP_SCREEN.FAMILY_EVENTS]: undefined;
+	[APP_SCREEN.LUCKY_MONEY]: undefined;
+	[APP_SCREEN.LUCKY_MONEY_HISTORY]: { envelopeId?: string; totalAmount?: string; senderName?: string; message?: string };
 	[APP_SCREEN.SERVERS.STACK]: NavigatorScreenParams<ServerStackParamList>;
 	[APP_SCREEN.NOTIFICATION.STACK]: NavigatorScreenParams<NotificationStackParamList>;
 	[APP_SCREEN.MESSAGES.STACK]: NavigatorScreenParams<MessagesStackParamList>;

@@ -7,6 +7,13 @@ import { Dimensions, Platform, View } from 'react-native';
 import CallingModalGroupWrapper from '../../components/CallingModalGroupWrapper';
 import CallingModalWrapper from '../../components/CallingModalWrapper';
 import ModalRootListener from '../../components/ModalRootListener';
+import CreateMilestone from '../../screens/CreateMilestone';
+import EventDetail from '../../screens/EventDetail';
+import EventDetailScreen from '../../screens/EventDetailScreen';
+import FamilyEvents from '../../screens/FamilyEvents';
+import LuckyMoney from '../../screens/LuckyMoney';
+import LuckyMoneyHistory from '../../screens/LuckyMoneyHistory';
+import MediaHighlightsTimeline from '../../screens/MediaHighlightsTimeline';
 import AppBrowser from '../../screens/auth/AppBrowser';
 import { ClaimMoneyScreen } from '../../screens/claimMoney';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
@@ -173,6 +180,79 @@ export const RootAuthStack = memo(
 							headerShown: false,
 							gestureEnabled: true,
 							gestureDirection: 'horizontal'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.MEDIA_HIGHLIGHTS_TIMELINE}
+						component={MediaHighlightsTimeline}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							animationEnabled: Platform.OS === 'ios'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.EVENT_DETAIL}
+						component={EventDetail}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							animationEnabled: Platform.OS === 'ios'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.EVENT_DETAIL_SCREEN}
+						component={EventDetailScreen}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							animationEnabled: Platform.OS === 'ios'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.CREATE_MILESTONE}
+						component={CreateMilestone}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'vertical',
+							animationEnabled: Platform.OS === 'ios',
+							presentation: 'modal'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.FAMILY_EVENTS}
+						component={FamilyEvents}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							animationEnabled: Platform.OS === 'ios'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.LUCKY_MONEY}
+						component={LuckyMoney}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'vertical',
+							animationEnabled: Platform.OS === 'ios',
+							presentation: 'modal'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.LUCKY_MONEY_HISTORY}
+						component={LuckyMoneyHistory}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'vertical',
+							animationEnabled: Platform.OS === 'ios',
+							presentation: 'modal'
 						}}
 					/>
 					<RootStack.Screen name={APP_SCREEN.SHOP.STACK} children={(props) => <ShopStack {...props} />} />
