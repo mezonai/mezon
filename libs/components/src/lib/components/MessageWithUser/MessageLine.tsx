@@ -427,7 +427,7 @@ export const MessageLine = ({
 					formattedContent.push(
 						<div className="h-28 w-72 rounded-md p-2 flex items-center gap-3 border border-theme-primary shadow-lg bg-theme-surface">
 							<img
-								className="h-16 aspect-square"
+								className="h-16 aspect-square object-cover"
 								src={element.image}
 								onError={(e) => {
 									e.currentTarget.src = '/assets/images/warning.svg';
