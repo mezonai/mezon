@@ -44,6 +44,8 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 		selectMemberClanByUserId(state, (message?.user?.id || thread?.last_sent_message?.sender_id || thread?.creator_id) as string)
 	) as IChannelMember;
 	const { avatarImg, username } = useMessageSender(user);
+	const senderDisplayName = user?.clan_nick || user?.user?.display_name || username || user?.user?.username || '';
+	const senderAvatarUrl = user?.clan_avatar || user?.user?.avatar_url || avatarImg || '';
 
 	const getRandomElements = (array: ChannelMembersEntity[], count: number) => {
 		const result: ChannelMembersEntity[] = [];
@@ -99,18 +101,18 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 					<p className="text-base font-semibold leading-5 one-line">{thread?.channel_label}</p>
 					<div className="flex flex-row items-center h-6">
 						<AvatarImage
-							alt={`${user?.user?.username}'s avatar`}
-							username={user?.user?.username}
+							alt={`${senderDisplayName}'s avatar`}
+							username={senderDisplayName}
 							className="size-4 rounded-md object-cover mr-2"
-							srcImgProxy={createImgproxyUrl(user?.clan_avatar || user?.user?.avatar_url || '', {
+							srcImgProxy={createImgproxyUrl(senderAvatarUrl, {
 								width: 300,
 								height: 300,
 								resizeType: 'fit'
 							})}
-							src={user?.clan_avatar || avatarImg}
+							src={senderAvatarUrl}
 						/>
 						<span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-[#17AC86] text-sm font-semibold leading-4">
-							{user?.clan_nick || user?.user?.display_name || username}:&nbsp;
+							{senderDisplayName}:&nbsp;
 						</span>
 						<div className="overflow-hidden max-w-[140px]">
 							<ThreadModalContent message={message} thread={thread as ChannelsEntity} />
@@ -126,11 +128,17 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 					{threadMembers && (
 						<AvatarGroup className="flex justify-end items-center">
 							{previewAvatarList?.map((avatar, index) => (
-								<img
+								<AvatarImage
 									key={(avatar.clan_avatar || avatar.user?.avatar_url || avatar.id) + index}
-									src={avatar.clan_avatar || avatar.user?.avatar_url}
-									className="object-cover h-6 aspect-square rounded-full"
-									alt=""
+									alt={avatar?.clan_nick || avatar?.user?.display_name || avatar?.user?.username || 'avatar'}
+									username={avatar?.clan_nick || avatar?.user?.display_name || avatar?.user?.username || ''}
+									src={avatar.clan_avatar || avatar.user?.avatar_url || ''}
+									srcImgProxy={createImgproxyUrl(avatar.clan_avatar || avatar.user?.avatar_url || '', {
+										width: 24,
+										height: 24,
+										resizeType: 'fit'
+									})}
+									className="object-cover h-6 w-6 min-w-6 min-h-6 max-w-6 max-h-6 rounded-full"
 								/>
 							))}
 							{threadMembers && threadMembers.length > 5 && (

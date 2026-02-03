@@ -22,6 +22,7 @@ import {
 import { Icons } from '@mezon/ui';
 import { ETypeLinkMedia, ModeResponsive, SHOW_POSITION, createImgproxyUrl, formatDateI18n, handleSaveImage } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AvatarImage } from '../../AvatarImage/AvatarImage';
 import type { MessageContextMenuProps } from '../../ContextMenu';
 import { useMessageContextMenu } from '../../ContextMenu';
 import ListAttachment from './listAttachment';
@@ -535,20 +536,22 @@ const SenderUser = () => {
 	const dmUser = useAppSelector((state) => selectMemberGroupByUserId(state, directId as string, attachment?.uploader as string));
 	const modeResponsive = useAppSelector(selectModeResponsive);
 	const user = modeResponsive === ModeResponsive.MODE_CLAN ? clanUser : dmUser;
+	const displayName = user?.clan_nick || user?.user?.display_name || user?.user?.username || '';
+	const avatarUrl = user?.clan_avatar || user?.user?.avatar_url || '';
 
 	return (
 		<div className="flex gap-2 overflow-hidden ">
 			<div className="w-10 aspect-square object-cover overflow-hidden">
-				<img
-					src={createImgproxyUrl(user?.clan_avatar ?? user?.user?.avatar_url ?? '', { width: 300, height: 300, resizeType: 'fit' })}
-					alt="user-avatar"
-					className="w-10 rounded-full aspect-square object-cover"
+				<AvatarImage
+					alt={displayName || 'user-avatar'}
+					username={displayName}
+					src={avatarUrl}
+					srcImgProxy={createImgproxyUrl(avatarUrl, { width: 300, height: 300, resizeType: 'fit' })}
+					className="w-10 h-10 min-w-10 min-h-10 max-w-10 max-h-10"
 				/>
 			</div>
 			<div className="flex flex-col justify-between ">
-				<div className="text-[14px] font-semibold text-textDarkTheme truncate max-sm:w-12">
-					{user?.clan_nick ?? user?.user?.display_name ?? user?.user?.username}
-				</div>
+				<div className="text-[14px] font-semibold text-textDarkTheme truncate max-sm:w-12">{displayName}</div>
 				<div className="text-[12px] text-bgTextarea truncate max-sm:w-12">
 					{attachment?.create_time ? formatDateI18n(new Date(attachment.create_time || ''), 'en', 'dd/MM/yyyy') : 'N/A'}
 				</div>
