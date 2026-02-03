@@ -17,6 +17,7 @@ export interface UsersByAddChannelState extends EntityState<IUserChannel, string
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	cacheByChannels: Record<string, CacheMetadata>;
+	userIdToChannelIds: Record<string, string[]>;
 }
 
 export const UserChannelAdapter = createEntityAdapter({
@@ -26,7 +27,8 @@ export const UserChannelAdapter = createEntityAdapter({
 export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
-	cacheByChannels: {}
+	cacheByChannels: {},
+	userIdToChannelIds: {}
 });
 
 export const fetchUserChannelsCached = async (
@@ -114,7 +116,9 @@ export const userChannelsSlice = createSlice({
 		updateUserInfo: (state, action: PayloadAction<{ userId: string; displayName?: string; avatarUrl?: string }>) => {
 			const { userId, displayName, avatarUrl } = action.payload;
 
-			state.ids.forEach((channelId) => {
+			const channelIds = state.userIdToChannelIds[userId] || [];
+
+			channelIds.forEach((channelId) => {
 				const channel = state.entities[channelId];
 				if (!channel?.user_ids) return;
 
@@ -135,7 +139,7 @@ export const userChannelsSlice = createSlice({
 
 					if (Object.keys(changes).length > 0) {
 						UserChannelAdapter.updateOne(state, {
-							id: channelId as string,
+							id: channelId,
 							changes
 						});
 					}
@@ -164,6 +168,15 @@ export const userChannelsSlice = createSlice({
 					user_ids: userAdds
 				});
 			}
+
+			userAdds.forEach((userId) => {
+				if (!state.userIdToChannelIds[userId]) {
+					state.userIdToChannelIds[userId] = [];
+				}
+				if (!state.userIdToChannelIds[userId].includes(channelId)) {
+					state.userIdToChannelIds[userId].push(channelId);
+				}
+			});
 		},
 		removeUserChannel: (state, action: PayloadAction<{ channelId: string; userRemoves: Array<string> }>) => {
 			const { channelId, userRemoves } = action.payload;
@@ -199,6 +212,15 @@ export const userChannelsSlice = createSlice({
 					}
 				});
 			}
+
+			userRemoves.forEach((userId) => {
+				if (state.userIdToChannelIds[userId]) {
+					state.userIdToChannelIds[userId] = state.userIdToChannelIds[userId].filter((id) => id !== channelId);
+					if (state.userIdToChannelIds[userId].length === 0) {
+						delete state.userIdToChannelIds[userId];
+					}
+				}
+			});
 		}
 	},
 	extraReducers(builder) {
@@ -219,6 +241,16 @@ export const userChannelsSlice = createSlice({
 						};
 						UserChannelAdapter.upsertOne(state, userIdsEntity);
 						state.cacheByChannels[channelId] = createCacheMetadata();
+
+						// Update reverse lookup map
+						user_ids.user_ids?.forEach((userId) => {
+							if (!state.userIdToChannelIds[userId]) {
+								state.userIdToChannelIds[userId] = [];
+							}
+							if (!state.userIdToChannelIds[userId].includes(channelId)) {
+								state.userIdToChannelIds[userId].push(channelId);
+							}
+						});
 					} else if (!user_ids) {
 						state.error = 'No data received';
 					}
