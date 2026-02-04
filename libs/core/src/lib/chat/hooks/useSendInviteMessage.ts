@@ -42,7 +42,7 @@ export function useSendInviteMessage() {
 				await sleep(100);
 			}
 
-			await socket.writeChatMessage('0', channel_id, channelMode, false, content, [], [], [], undefined, undefined, undefined, code);
+			await client.sendChannelMessage(session, '0', channel_id, channelMode, false, content, [], [], [], undefined, undefined, undefined, code);
 		},
 		[sessionRef, clientRef, socketRef]
 	);
