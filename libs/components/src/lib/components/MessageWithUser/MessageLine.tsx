@@ -425,7 +425,13 @@ export const MessageLine = ({
 				} else if (element.type === EBacktickType.OGP_PREVIEW) {
 					const url =
 						element.index !== undefined && t
-							? t?.substring(element.index, t?.indexOf(' ', element.index) === -1 ? t.length : t.indexOf(' ', element.index))
+							? t.substring(
+									element.index,
+									Math.min(
+										t.indexOf(' ', element.index) === -1 ? t.length : t.indexOf(' ', element.index),
+										t.indexOf('\n', element.index) === -1 ? t.length : t.indexOf('\n', element.index)
+									)
+								)
 							: '';
 					formattedContent.push(
 						<div className="flex flex-col gap-0.5 max-w-[350px]">

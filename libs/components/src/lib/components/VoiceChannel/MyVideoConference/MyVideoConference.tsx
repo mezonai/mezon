@@ -241,7 +241,7 @@ export const MyVideoConference = memo(
 			const handleTrackMuted = async (publication: TrackPublication, participant: Participant) => {
 				const store = getStore();
 				const userId = selectCurrentUserId(store.getState());
-				if (participant.identity === userId) {
+				if (participant.identity === userId && publication.kind === Track.Kind.Audio) {
 					dispatch(voiceActions.setShowMicrophone(false));
 				}
 			};
