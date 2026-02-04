@@ -77,11 +77,12 @@ const ShareLocationConfirmModal = ({
 		} else {
 			await sendMessage(filterEmptyArrays(payloadSendMessage), [], [], [], false, false, true, TypeMessage.Location);
 		}
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+		handleCancelModal()
 	};
 
-	const handelCancelModal = () => {
+	const handleCancelModal = () => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, { isShow: false, mode: 'force' });
 	};
 
 	return (
@@ -104,7 +105,7 @@ const ShareLocationConfirmModal = ({
 					>{`${t('shareLocationModal.coordinate')} (${geoLocation?.latitude}, ${geoLocation?.longitude})`}</Text>
 				</View>
 				<View style={styles.modalFooter}>
-					<TouchableOpacity style={styles.button} onPress={handelCancelModal}>
+					<TouchableOpacity style={styles.button} onPress={handleCancelModal}>
 						<Text style={[styles.textButton, { color: themeValue.text }]}>{t('shareLocationModal.cancel')}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity style={styles.button} onPress={handleSendMessage}>
@@ -112,7 +113,7 @@ const ShareLocationConfirmModal = ({
 					</TouchableOpacity>
 				</View>
 			</View>
-			<TouchableOpacity style={styles.backdrop} onPress={handelCancelModal} />
+			<TouchableOpacity style={styles.backdrop} onPress={handleCancelModal} />
 		</View>
 	);
 };
