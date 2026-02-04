@@ -9,6 +9,7 @@ import {
 	selectOrderedClansWithGroups,
 	useAppDispatch
 } from '@mezon/store-mobile';
+import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DeviceEventEmitter, InteractionManager, Platform, TouchableOpacity, Vibration, View } from 'react-native';
@@ -109,7 +110,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 		setGroupingTargetIndex(null);
 	}, []);
 
-	const checkCanGroupRealTime = useCallback(() => {
+	const checkCanGroupRealTime = useCallback(async () => {
 		if (dragIndexRef.current === null || !animationValuesRef.current?.isDraggingCell?.value || !animationValuesRef.current?.hoverAnim?.value) {
 			return;
 		}
@@ -141,8 +142,14 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 			if (targetIndex !== dragIndexRef.current) {
 				const targetItem = groupClans[targetIndex];
 				if (targetItem) {
-					if (Platform.OS === 'android' && lastTargetCanGroupIndexRef.current !== targetIndex) {
-						Vibration.vibrate(30);
+					if (lastTargetCanGroupIndexRef.current !== targetIndex) {
+						if (Platform.OS === 'android') {
+							Vibration.vibrate(30);
+						} else {
+							Vibration.vibrate();
+							await sleep(30);
+							Vibration.cancel();
+						}
 					}
 					lastTargetCanGroupIndexRef.current = targetIndex;
 					if (targetItem?.type === CLAN) {
