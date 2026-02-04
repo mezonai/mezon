@@ -296,15 +296,6 @@ export const FriendList = React.memo(({ isUnknownChannel, isKeyboardVisible, cha
 						</View>
 					)}
 
-					<View style={styles.searchInviteFriendWrapper}>
-						<MezonInput
-							placeHolder={channelId ? t('inviteFriendToChannel') : t('inviteFriendToClan')}
-							onTextChange={setSearchUserText}
-							value={searchUserText}
-							prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={20} width={20} />}
-						/>
-					</View>
-
 					{!currentInviteLink && userInviteList?.length === 0 && (
 						<View style={styles.emptyFriendList}>
 							<Chase color={themeValue.text} size={size.s_32} />

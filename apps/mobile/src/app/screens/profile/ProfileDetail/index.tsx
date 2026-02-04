@@ -194,8 +194,8 @@ export const ProfileDetail = memo(() => {
 	const handleAddFriend = useCallback(() => {
 		if (profileData?.user_id) {
 			addFriend({
-				usernames: [],
-				ids: [profileData.user_id],
+				usernames: '',
+				ids: profileData.user_id,
 				isMobile: true
 			});
 		}
