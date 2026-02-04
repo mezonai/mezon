@@ -22,7 +22,8 @@ export const DmCallManager = memo(({ userId, directId }: DmCallManagerProps) => 
 					<ModalCall dataCall={dataCall} userId={userId} triggerCall={triggerCall} clearCallState={clearCallState} />
 				)}
 
-			<DmCalling ref={dmCallingRef} dmGroupId={groupCallId} directId={directId || ''} />
+			{/* check length make sure groupCallId valid */}
+			<DmCalling ref={dmCallingRef} dmGroupId={!!groupCallId && groupCallId?.length > 1 ? groupCallId : directId} directId={directId || ''} />
 		</>
 	);
 });

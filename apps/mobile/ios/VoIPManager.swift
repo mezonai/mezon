@@ -11,6 +11,8 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate, CXProviderDelegate {
     private var hasListeners = false
     private let notificationDataKey = "notificationDataCalling"
     private let activeCallUUIDKey = "activeCallUUID"
+    private let notificationTimestampKey = "notificationTimestamp"
+    private let callExpirationSeconds: TimeInterval = 60
 
     private var callKitProvider: CXProvider?
     private var callKitCallController: CXCallController?
@@ -79,6 +81,17 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate, CXProviderDelegate {
 
     @objc
     func getStoredNotificationData(_ resolve: @escaping RCTPromiseResolveBlock, rejecter reject: @escaping RCTPromiseRejectBlock) {
+        if let timestamp = UserDefaults.standard.object(forKey: notificationTimestampKey) as? Double {
+            let storedDate = Date(timeIntervalSince1970: timestamp)
+            let elapsedTime = Date().timeIntervalSince(storedDate)
+
+            if elapsedTime > callExpirationSeconds {
+                clearStoredNotificationDataInternal()
+                resolve(NSNull())
+                return
+            }
+        }
+
         if let data = UserDefaults.standard.object(forKey: notificationDataKey) as? [String: Any] {
             resolve(data)
         } else {
@@ -104,12 +117,14 @@ class VoIPManager: RCTEventEmitter, PKPushRegistryDelegate, CXProviderDelegate {
 
     private func storeNotificationData(_ data: [String: Any]) {
         UserDefaults.standard.set(data, forKey: notificationDataKey)
+        UserDefaults.standard.set(Date().timeIntervalSince1970, forKey: notificationTimestampKey)
         UserDefaults.standard.synchronize()
     }
 
     private func clearStoredNotificationDataInternal() {
          UserDefaults.standard.removeObject(forKey: notificationDataKey)
          UserDefaults.standard.removeObject(forKey: activeCallUUIDKey)
+         UserDefaults.standard.removeObject(forKey: notificationTimestampKey)
          UserDefaults.standard.synchronize()
     }
 
