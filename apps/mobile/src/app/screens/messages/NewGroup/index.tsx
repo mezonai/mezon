@@ -188,6 +188,11 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 	}, []);
 
 	const typingSearchDebounce = useThrottledCallback((text) => setSearchText(text), 500);
+
+	const groupMembersCount = useMemo(() => {
+		return new Set([...(friendIdSelectedList || []), ...(selectedFriendDefault || [])])?.size;
+	}, [selectedFriendDefault, friendIdSelectedList]);
+
 	return (
 		<View style={styles.newGroupContainer}>
 			<StatusBarHeight />
@@ -205,7 +210,7 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 							</Text>
 							<Text style={styles.screenSubTitle}>
 								{t('groupMembers', {
-									members: selectedFriendDefault?.length + friendIdSelectedList?.length,
+									members: groupMembersCount,
 									total: GROUP_CHAT_MAXIMUM_MEMBERS
 								})}
 							</Text>

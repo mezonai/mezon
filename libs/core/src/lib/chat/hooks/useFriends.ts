@@ -25,13 +25,15 @@ export function useFriends() {
 	}, [friends]);
 
 	const addFriend = useCallback(
-		async ({ ids, usernames, isAcceptingRequest, isMobile = false }: requestAddFriendParam) => {
+		async ({ ids, usernames, isAcceptingRequest, isMobile = false, displayName, avatar }: requestAddFriendParam) => {
 			const response = await dispatch(
 				friendsActions.sendRequestAddFriend({
 					ids,
 					usernames,
 					isAcceptingRequest,
-					isMobile
+					isMobile,
+					displayName,
+					avatar
 				})
 			);
 			if (isMobile) return response;
@@ -42,8 +44,8 @@ export function useFriends() {
 	const acceptFriend = useCallback(
 		async (username: string, id: string, isMobile = false) => {
 			const body = {
-				usernames: [username],
-				ids: [id],
+				usernames: username,
+				ids: id,
 				isAcceptingRequest: true,
 				isMobile
 			};

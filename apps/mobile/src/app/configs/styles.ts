@@ -104,7 +104,7 @@ export const style = (colors: Attributes) =>
 			paddingRight: size.s_30
 		},
 		trailingIconContainer: {
-			marginRight: -size.s_40
+			marginRight: -size.s_30
 		},
 		notificationTextContainer: {
 			flexDirection: 'column',

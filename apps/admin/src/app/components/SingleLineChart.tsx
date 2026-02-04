@@ -5,13 +5,13 @@ import ChartTooltip from './controls/ChartTooltip';
 function SingleLineChart({
 	data,
 	dataKey,
-	stroke,
+	stroke = '#5865F2',
 	name,
 	height = 350
 }: {
 	data: any[];
 	dataKey: string;
-	stroke: string;
+	stroke?: string;
 	name: string;
 	height?: number;
 }) {

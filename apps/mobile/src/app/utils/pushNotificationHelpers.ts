@@ -10,7 +10,7 @@ import {
 	STORAGE_MY_USER_ID,
 	STORAGE_OFFER_HAVE_CALL_CACHE
 } from '@mezon/mobile-components';
-import { appActions, channelsActions, clansActions, directActions, getStoreAsync, topicsActions } from '@mezon/store-mobile';
+import { appActions, channelsActions, clansActions, directActions, getStoreAsync, messagesActions, topicsActions } from '@mezon/store-mobile';
 import i18n from '@mezon/translations';
 import { sleep } from '@mezon/utils';
 import notifee, { AndroidLaunchActivityFlag, AuthorizationStatus as NotifeeAuthorizationStatus } from '@notifee/react-native';
@@ -29,7 +29,7 @@ import { AuthorizationStatus, getMessaging, getToken, hasPermission, requestPerm
 import { CommonActions } from '@react-navigation/native';
 import { safeJSONParse } from 'mezon-js';
 import React from 'react';
-import { DeviceEventEmitter, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
+import { DeviceEventEmitter, Keyboard, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import MezonConfirm from '../componentUI/MezonConfirm';
 import { APP_SCREEN } from '../navigation/ScreenTypes';
 import { InboxType } from '../screens/Notifications';
@@ -465,6 +465,28 @@ export const navigateToNotification = async (store: any, notification: any, navi
 			const clanId = linkMatch?.[1];
 			const channelId = linkMatch?.[2];
 			if (channelId !== '0' && !!channelId) {
+				store.dispatch(
+					messagesActions.fetchMessages({
+						channelId,
+						noCache: true,
+						isFetchingLatestMessages: true,
+						isClearMessage: true,
+						clanId
+					})
+				);
+			}
+			if (navigation) {
+				Keyboard.dismiss();
+				if (isTabletLandscape) {
+					navigation.navigate(APP_SCREEN.HOME as never);
+				} else {
+					navigation.navigate(APP_SCREEN.BOTTOM_BAR as never);
+					if (channelId !== '0' && !!channelId) {
+						navigation.navigate(APP_SCREEN.HOME_DEFAULT as never);
+					}
+				}
+			}
+			if (channelId !== '0' && !!channelId) {
 				store.dispatch(directActions.setDmGroupCurrentId(''));
 				store.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId }));
 				store.dispatch(
@@ -478,16 +500,7 @@ export const navigateToNotification = async (store: any, notification: any, navi
 					})
 				);
 			}
-			if (navigation) {
-				if (isTabletLandscape) {
-					navigation.navigate(APP_SCREEN.HOME as never);
-				} else {
-					navigation.navigate(APP_SCREEN.BOTTOM_BAR as never);
-					if (channelId !== '0' && !!channelId) {
-						navigation.navigate(APP_SCREEN.HOME_DEFAULT as never);
-					}
-				}
-			}
+
 			if (clanId) {
 				store.dispatch(clansActions.joinClan({ clanId }));
 				store.dispatch(clansActions.setCurrentClanId(clanId as string));
@@ -684,13 +697,24 @@ export const displayNativeCalling = async (data: any, appInBackground = false) =
 		}
 
 		const cancelCallsCacheStr = load(STORAGE_OFFER_HAVE_CALL_CACHE) || '[]';
-		const cancelCallsCache = safeJSONParse(cancelCallsCacheStr) || [];
-		const notificationDataCalling = await NotificationPreferences.getValue('notificationDataCalling');
+		const cancelCallsCache = safeJSONParse(cancelCallsCacheStr)?.length ? safeJSONParse(cancelCallsCacheStr) : [];
+		let notificationDataCalling = null;
+		const maxRetries = 3;
+		const retryDelay = 500;
+		for (let attempt = 0; attempt < maxRetries; attempt++) {
+			notificationDataCalling = await NotificationPreferences.getValue('notificationDataCalling');
+			if (notificationDataCalling) {
+				break;
+			}
+			if (attempt < maxRetries - 1) {
+				await sleep(retryDelay);
+			}
+		}
 
 		if (!dataObj?.callerName || cancelCallsCache?.includes?.(JSON.stringify(dataObj?.offer)) || !notificationDataCalling) {
 			return;
 		}
-		cancelCallsCache.push(JSON.stringify(dataObj?.offer));
+		cancelCallsCache?.push?.(JSON.stringify(dataObj?.offer));
 		if (cancelCallsCache.length > 20) {
 			cancelCallsCache.splice(0, 10);
 		}

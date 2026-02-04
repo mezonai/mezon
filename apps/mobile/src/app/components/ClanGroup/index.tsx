@@ -1,5 +1,6 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ClanGroup as ClanGroupType, clansActions, useAppDispatch } from '@mezon/store-mobile';
+import type { ClanGroup as ClanGroupType } from '@mezon/store-mobile';
+import { clansActions, useAppDispatch } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -10,40 +11,31 @@ import { ClanIcon } from '../../screens/home/homedrawer/components/ClanIcon';
 import ImageNative from '../ImageNative';
 import { style } from './styles';
 
-interface ClanGroupProps {
+interface IClanGroupProps {
 	group: ClanGroupType;
 	onClanPress: (clanId: string) => void;
 	clans: any[];
 	drag: () => void;
 	isActive?: boolean;
 	isActiveCurrentClan?: boolean;
+	isGroupingTarget?: boolean;
 }
 
-export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: ClanGroupProps) => {
+export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive, isGroupingTarget }: IClanGroupProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const dispatch = useAppDispatch();
+
 	const groupClan = useMemo(() => {
 		if (!group?.clanIds?.length || !clans?.length) return [];
-		try {
-			return clans.filter((clan) => group.clanIds.includes(clan?.clan_id));
-		} catch (error) {
-			console.error('Error in groupClan: ', error);
-			return [];
-		}
+		return clans.filter((clan) => group.clanIds.includes(clan?.clan_id));
 	}, [clans, group?.clanIds]);
 
 	const totalBadgeCount = useMemo(() => {
 		if (!groupClan?.length) return 0;
-
-		try {
-			return groupClan.reduce((total, clan) => {
-				return total + (clan?.badge_count || 0);
-			}, 0);
-		} catch (error) {
-			console.error('Error in totalBadgeCount: ', error);
-			return 0;
-		}
+		return groupClan.reduce((total, clan) => {
+			return total + (clan?.badge_count || 0);
+		}, 0);
 	}, [groupClan]);
 
 	const handleRemoveClanFromGroup = (clanId: string) => {
@@ -102,9 +94,10 @@ export const ClanGroup = memo(({ group, onClanPress, clans, drag, isActive }: Cl
 	}
 
 	return (
-		<ScaleDecorator activeScale={1.5}>
+		<ScaleDecorator activeScale={1.1}>
 			<TouchableOpacity style={styles.collapsedGroup} onPress={handleToggleGroup} onLongPress={drag} disabled={isActive}>
 				<View style={styles.groupIcon}>
+					{isGroupingTarget && <View style={styles.groupIconGrouping} />}
 					<View style={[styles.multipleClansView, groupClan.length === 1 && styles.singleClanView]}>
 						{groupClan?.slice(0, 4)?.map((clan) => (
 							<View key={`${clan?.clan_id}-collapsed`} style={styles.quarterClan}>

@@ -69,7 +69,7 @@ function ChannelsTable({
 									<input
 										aria-label="Select Channel name column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('channel_name')}
 										onChange={() => onToggleColumn('channel_name')}
 									/>
@@ -81,7 +81,7 @@ function ChannelsTable({
 									<input
 										aria-label="Select Active users column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('active_users')}
 										onChange={() => onToggleColumn('active_users')}
 									/>
@@ -93,7 +93,7 @@ function ChannelsTable({
 									<input
 										aria-label="Select Messages column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52]"
+										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>

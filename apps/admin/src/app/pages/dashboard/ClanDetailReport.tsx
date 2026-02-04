@@ -4,9 +4,12 @@ import {
 	fetchClanMetrics,
 	selectChannelUsers,
 	selectChannelUsersLoading,
+	selectChannelUsersPagination,
 	selectClanById,
 	selectClanChannels,
 	selectClanChannelsLoading,
+	selectClanChannelsMetrics,
+	selectClanChannelsPagination,
 	selectDashboardChartData,
 	selectDashboardChartLoading,
 	useAppDispatch,
@@ -37,6 +40,8 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const [isExportingUserCSV, setIsExportingUserCSV] = useState(false);
 	const [channelPage, setChannelPage] = useState(1);
 	const [channelLimit] = useState(10);
+	const [userPage, setUserPage] = useState(1);
+	const [userLimit] = useState(10);
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -51,21 +56,19 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 
 	const channelsData = channelsFromStore;
 
-	const channelsPagination = useAppSelector((s) => (clanId ? s.dashboard?.channelsCacheByClan?.[clanId]?.rawPayload?.data?.pagination : null)) ?? {
-		page: 1,
-		limit: 10,
-		total: 0,
-		totalPages: 1
-	};
-	const metrics = useAppSelector((s) => (clanId ? s.dashboard?.channelsCacheByClan?.[clanId]?.rawPayload?.data?.total : null)) ?? {
-		totalActiveUsers: 0,
-		totalActiveChannels: 0,
-		totalMessages: 0
-	};
+	const channelsPagination = useAppSelector((s) =>
+		clanId ? selectClanChannelsPagination(s, clanId) : { page: 1, limit: 10, total: 0, totalPages: 1 }
+	);
+	const metrics = useAppSelector((s) =>
+		clanId ? selectClanChannelsMetrics(s, clanId) : { totalActiveUsers: 0, totalActiveChannels: 0, totalMessages: 0 }
+	);
 	const channelUsersLoadingStore = useAppSelector((s) => selectChannelUsersLoading(s));
 
 	const firstChannelId = (channelsFromStore as any)?.[0]?.channelId || '';
 	const usersFromStore = useAppSelector((s) => (clanId && firstChannelId ? selectChannelUsers(s, clanId, firstChannelId) : []));
+	const usersPagination = useAppSelector((s) =>
+		clanId && firstChannelId ? selectChannelUsersPagination(s, clanId, firstChannelId) : { page: 1, limit: 10, total: 0, totalPages: 1 }
+	);
 
 	const isLoadingDerived = chartLoadingStore || channelsLoadingStore || channelUsersLoadingStore;
 	const hasNoDataDerived = !chartLoadingStore && (chartData?.length || 0) === 0;
@@ -84,16 +87,16 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	useEffect(() => {
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
 		if (clanId && firstChannelId) {
-			dispatch(fetchChannelUsers({ clanId, channelId: firstChannelId, start: startStr, end: endStr }));
+			dispatch(fetchChannelUsers({ clanId, channelId: firstChannelId, start: startStr, end: endStr, page: userPage, limit: userLimit }));
 		} else if (clanId && channelsFromStore && channelsFromStore.length > 0) {
 			// Fallback: try to extract channelId from raw payload
 			const stateAny: any = (dispatch as any).getState?.() || {};
 			const raw = stateAny?.dashboard?.channelsCacheByClan?.[clanId]?.rawPayload?.data?.channels || [];
 			const rawFirst = raw[0];
-			const cid = rawFirst?.channelId || rawFirst?.id || '';
-			if (cid) dispatch(fetchChannelUsers({ clanId, channelId: cid, start: startStr, end: endStr }));
+			const cid = rawFirst?.channel_id || rawFirst?.channelId || rawFirst?.id || '';
+			if (cid) dispatch(fetchChannelUsers({ clanId, channelId: cid, start: startStr, end: endStr, page: userPage, limit: userLimit }));
 		}
-	}, [firstChannelId, clanId, dateRange, customStartDate, customEndDate, dispatch]);
+	}, [firstChannelId, clanId, dateRange, customStartDate, customEndDate, userPage, userLimit, dispatch]);
 
 	const allowedGranularities = useMemo(
 		() => calculateAllowedGranularities(dateRange, customStartDate, customEndDate),
@@ -119,11 +122,16 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		setCustomStartDate('');
 		setCustomEndDate('');
 		setChannelPage(1);
+		setUserPage(1);
 		setRefreshTrigger((prev) => prev + 1);
 	};
 
 	const handleChannelPageChange = (newPage: number) => {
 		setChannelPage(newPage);
+	};
+
+	const handleUserPageChange = (newPage: number) => {
+		setUserPage(newPage);
 	};
 
 	const toggleChannelColumn = (col: string) => {
@@ -207,8 +215,13 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 					data={(usersFromStore as UserData[]) || []}
 					selectedColumns={selectedUserColumns}
 					isExportingCSV={isExportingUserCSV}
+					page={userPage}
+					limit={userLimit}
+					total={Number(usersPagination.total) || 0}
+					totalPages={usersPagination.totalPages || 1}
 					onExportCSV={handleExportUserCSV}
 					onToggleColumn={toggleUserColumn}
+					onPageChange={handleUserPageChange}
 				/>
 			)}
 		</div>

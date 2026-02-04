@@ -314,7 +314,12 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 			},
 			handleAddFriend: () => {
 				if (user?.user?.username && user?.user?.id) {
-					addFriend({ ids: [user.user.id] });
+					addFriend({
+						ids: user.user.id,
+						usernames: user.user.username,
+						avatar: user.user.avatar_url,
+						displayName: user.user.display_name
+					});
 				}
 			},
 			handleRemoveFriend: () => {
