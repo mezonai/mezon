@@ -77,7 +77,7 @@ const ShareLocationConfirmModal = ({
 		} else {
 			await sendMessage(filterEmptyArrays(payloadSendMessage), [], [], [], false, false, true, TypeMessage.Location);
 		}
-		handleCancelModal()
+		handleCancelModal();
 	};
 
 	const handleCancelModal = () => {
