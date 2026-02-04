@@ -60,7 +60,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		clanId ? selectClanChannelsPagination(s, clanId) : { page: 1, limit: 10, total: 0, totalPages: 1 }
 	);
 	const metrics = useAppSelector((s) =>
-		clanId ? selectClanChannelsMetrics(s, clanId) : { totalActiveUsers: 0, totalActiveChannels: 0, totalMessages: 0 }
+		clanId ? selectClanChannelsMetrics(s, clanId) : { totalActiveUsers: '0', totalActiveChannels: '0', totalMessages: '0' }
 	);
 	const channelUsersLoadingStore = useAppSelector((s) => selectChannelUsersLoading(s));
 

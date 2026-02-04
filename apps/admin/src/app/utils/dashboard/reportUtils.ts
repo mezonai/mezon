@@ -3,9 +3,9 @@ import type { ChartDataPoint, UsageMetrics } from '../../pages/dashboard/types';
 export const calculateMetrics = (chartData: ChartDataPoint[]): UsageMetrics => {
 	if (chartData.length === 0) {
 		return {
-			totalActiveUsers: 0,
-			totalActiveChannels: 0,
-			totalMessages: 0
+			totalActiveUsers: '0',
+			totalActiveChannels: '0',
+			totalMessages: '0'
 		};
 	}
 
@@ -14,9 +14,9 @@ export const calculateMetrics = (chartData: ChartDataPoint[]): UsageMetrics => {
 	const totalMessages = chartData.reduce((sum, day) => sum + day.messages, 0);
 
 	return {
-		totalActiveUsers: Math.floor(totalActiveUsers),
-		totalActiveChannels: Math.floor(totalActiveChannels),
-		totalMessages: Math.floor(totalMessages)
+		totalActiveUsers: Math.floor(totalActiveUsers).toString(),
+		totalActiveChannels: Math.floor(totalActiveChannels).toString(),
+		totalMessages: Math.floor(totalMessages).toString()
 	};
 };
 
