@@ -410,3 +410,6 @@ input.bg-theme-input-primary::placeholder {
 .bg-tooltip-channelapp {
 	background: var(--bg-tooltip-app);
 }
+.text-tooltip-app {
+	color: var(--text-tooltip-app);
+}

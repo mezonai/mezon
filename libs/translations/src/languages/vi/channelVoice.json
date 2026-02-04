@@ -48,5 +48,12 @@
 		"outputDevice": "Audio",
 		"camera": "Camera"
 	},
+	"toast": {
+		"connectionConnected": "Kết nối thành công",
+		"connectionDisconnected": "Kết nối bị gián đoạn",
+		"microphonePermissionRequired": "Cần quyền microphone",
+		"cameraPermissionRequired": "Cần quyền camera",
+		"recipientDidNotAnswer": "Người nhận không trả lời cuộc gọi."
+	},
 	"usernameScreen": "Màn hình của {{username}}"
 }

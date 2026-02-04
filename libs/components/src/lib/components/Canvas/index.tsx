@@ -95,7 +95,7 @@ function Canvas() {
 								setEditorKey((prev) => prev + 1);
 							}}
 							disabled={isSaving}
-							className="inline-flex items-center gap-2 border-none px-[18px] py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-150 bg-button-hover text-theme-primary disabled:cursor-not-allowed disabled:opacity-70"
+							className="inline-flex items-center gap-2 border-none px-[18px] py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-150 bg-transparent bg-secondary-button-hover text-theme-primary disabled:cursor-not-allowed disabled:opacity-70"
 						>
 							{t('actions.discardChanges')}
 						</button>
@@ -103,7 +103,7 @@ function Canvas() {
 							type="button"
 							onClick={saveCanvas}
 							disabled={isSaving}
-							className="inline-flex items-center gap-2 border-none px-[18px] py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-150 btn-primary disabled:cursor-not-allowed disabled:opacity-70"
+							className="inline-flex items-center gap-2 border-none px-[18px] py-2.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-150 bg-transparent text-theme-primary hover:text-white btn-primary-hover disabled:cursor-not-allowed disabled:opacity-70"
 						>
 							{isSaving ? t('actions.saving') : t('actions.save')}
 						</button>

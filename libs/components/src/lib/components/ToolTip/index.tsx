@@ -52,7 +52,7 @@ export const CustomTooltip = ({ children, text, offsetX = 12 }: CustomTooltipPro
 					>
 						<div className="relative">
 							<div className="bg-tooltip-channelapp rounded-lg px-3 py-2 shadow-lg">
-								<span className="text-theme-primary text-sm font-medium block truncate max-w-[100px]">{text}</span>
+								<span className="text-tooltip-app text-sm font-medium block truncate max-w-[100px]">{text}</span>
 							</div>
 							<div className="absolute top-full left-1/2 -translate-x-1/2">
 								<div

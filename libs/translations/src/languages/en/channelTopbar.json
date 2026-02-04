@@ -61,7 +61,7 @@
 	},
 	"files": {
 		"emptyTitle": "There are no files.",
-		"emptyDescription": "Stay focused on a conversation with a file - a temporary text channel.",
+		"emptyDescription": "No files is shared in the current channel.",
 		"searchPlaceholder": "Search for File Name"
 	},
 	"fileItem": {

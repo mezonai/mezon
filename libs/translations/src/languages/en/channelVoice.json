@@ -48,5 +48,12 @@
 		"outputDevice": "Output device",
 		"camera": "Camera"
 	},
+	"toast": {
+		"connectionConnected": "Connection connected",
+		"connectionDisconnected": "Connection disconnected",
+		"microphonePermissionRequired": "Microphone permission is required",
+		"cameraPermissionRequired": "Camera permission is required",
+		"recipientDidNotAnswer": "The recipient did not answer the call."
+	},
 	"usernameScreen": "{{username}}'s screen"
 }
