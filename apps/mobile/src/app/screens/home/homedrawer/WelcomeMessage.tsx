@@ -126,7 +126,7 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 			const store = await getStoreAsync();
 			store.dispatch(
 				friendsActions.sendRequestAddFriend({
-					usernames: userName,
+					usernames: '',
 					ids: targetUserId,
 					avatar,
 					displayName,

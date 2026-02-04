@@ -195,11 +195,13 @@ export const ProfileDetail = memo(() => {
 		if (profileData?.user_id) {
 			addFriend({
 				usernames: '',
-				ids: profileData.user_id,
+				ids: profileData?.user_id,
+				avatar: profileData?.avatar_url,
+				displayName: profileData?.display_name,
 				isMobile: true
 			});
 		}
-	}, [profileData?.user_id, addFriend]);
+	}, [profileData?.user_id, profileData?.avatar_url, profileData?.display_name, addFriend]);
 
 	const handleAcceptRequest = useCallback(() => {
 		if (profileData?.user_id) {
