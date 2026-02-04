@@ -11,7 +11,7 @@ import {
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, InteractionManager, TouchableOpacity, Vibration, View } from 'react-native';
+import { DeviceEventEmitter, InteractionManager, Platform, TouchableOpacity, Vibration, View } from 'react-native';
 import { NestableDraggableFlatList } from 'react-native-draggable-flatlist';
 import { useSelector } from 'react-redux';
 import { ClanGroup } from '../../../../../components/ClanGroup';
@@ -141,7 +141,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 			if (targetIndex !== dragIndexRef.current) {
 				const targetItem = groupClans[targetIndex];
 				if (targetItem) {
-					if (lastTargetCanGroupIndexRef.current !== targetIndex) {
+					if (Platform.OS === 'android' && lastTargetCanGroupIndexRef.current !== targetIndex) {
 						Vibration.vibrate(30);
 					}
 					lastTargetCanGroupIndexRef.current = targetIndex;
