@@ -26,6 +26,7 @@ import { ScreenShareControl } from './ScreenShareControl';
 import { Icons } from '@mezon/ui';
 import { requestMediaPermission, useMediaPermissions } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
+import { AgentControl } from './AgentControl';
 import { RaisingHandControls } from './RaisingHandControl';
 import { useControlBarPermissions } from './hooks/useControlBarPermissions';
 import { useViewControls } from './hooks/useViewControls';
@@ -341,6 +342,7 @@ const ControlBar = ({
 					/>
 				)}
 
+				<AgentControl />
 				<RaisingHandControls />
 				{visibleControls.leave && <LeaveButton onLeaveRoom={handleLeaveRoom} />}
 			</div>
