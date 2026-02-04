@@ -54,7 +54,7 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 					}
 					label={t('activityOverview.totalActiveUsers')}
 					tooltip={t('activityOverview.totalActiveUsersTooltip')}
-					value={totals.totalActiveUsers ?? 0}
+					value={totals.totalActiveUsers ?? '0'}
 					labelClassActive="text-sm font-medium text-white"
 					valueClassActive="text-xl font-bold text-white"
 				/>
@@ -70,7 +70,7 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 					}
 					label={t('activityOverview.totalActiveChannels')}
 					tooltip={t('activityOverview.totalActiveChannelsTooltip')}
-					value={totals.totalActiveChannels ?? 0}
+					value={totals.totalActiveChannels ?? '0'}
 					labelClassActive="text-sm font-medium text-white"
 					valueClassActive="text-xl font-bold text-white"
 				/>
@@ -86,7 +86,7 @@ export default function ActivityOverview({ activeTab, onTabChange, totals, dateR
 					}
 					label={t('activityOverview.totalMessages')}
 					tooltip={t('activityOverview.totalMessagesTooltip')}
-					value={totals.totalMessages ?? 0}
+					value={totals.totalMessages ?? '0'}
 					labelClassActive="text-sm font-medium text-white"
 					valueClassActive="text-xl font-bold text-white"
 				/>
