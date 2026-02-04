@@ -26,10 +26,11 @@ export const MessagePreviewLastest = memo(
 	({ type, senderId, senderName, userId, lastSentMessageStr, isUnReadChannel, callerUsername }: IMessagePreviewLastestProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
+		const { t } = useTranslation(['message', 'common']);
+		const userProfile = useSelector(selectAllAccount)
 		const lastSentMessage = useMemo(() => {
 			return safeJSONParse(lastSentMessageStr || '{}');
 		}, [lastSentMessageStr]);
-		const userProfile = useSelector(selectAllAccount)
 
 		const content = useMemo(() => {
 			return typeof lastSentMessage?.content === 'object' ? lastSentMessage?.content : safeJSONParse(lastSentMessage?.content || '{}');
@@ -58,7 +59,6 @@ export const MessagePreviewLastest = memo(
 		const isTypeDMGroup = useMemo(() => {
 			return type === ChannelType.CHANNEL_TYPE_GROUP;
 		}, [type]);
-		const { t } = useTranslation(['message', 'common']);
 
 		const isYourAccount = useMemo(() => {
 			const userId = load(STORAGE_MY_USER_ID);
