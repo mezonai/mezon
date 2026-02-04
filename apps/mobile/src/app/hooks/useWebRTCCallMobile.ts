@@ -79,6 +79,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	const trackEventTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const hasSyncRemoteMediaRef = useRef<boolean>(false);
 	const isMyCaller = useRef<boolean>(false);
+	const isCallCanceledRef = useRef<boolean>(false);
 
 	const playDialToneIOS = () => {
 		Sound.setCategory('Playback');
@@ -291,6 +292,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 
 	const startCall = async (isVideoCall: boolean, isAnswer = false) => {
 		try {
+			isCallCanceledRef.current = false;
 			await setIsSpeaker({ isSpeaker: false });
 			if (!isAnswer) {
 				isMyCaller.current = true;
@@ -334,7 +336,19 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 					callerId: userId,
 					channelId
 				};
+				if (isCallCanceledRef.current) {
+					stream.getTracks().forEach((track) => track.stop());
+					pc.close();
+					return;
+				}
+
 				await mezon.socketRef.current?.makeCallPush(dmUserId, JSON.stringify(bodyFCMMobile), channelId, userId);
+
+				if (isCallCanceledRef.current) {
+					stream.getTracks().forEach((track) => track.stop());
+					pc.close();
+					return;
+				}
 
 				await mezon.socketRef.current?.forwardWebrtcSignaling(
 					dmUserId,
@@ -510,6 +524,7 @@ export function useWebRTCCallMobile({ dmUserId, channelId, userId, isVideoCall, 
 	}, [isFromNative]);
 
 	const handleEndCall = async ({ isCallerEndCall = false }: { isCallerEndCall?: boolean }) => {
+		isCallCanceledRef.current = true;
 		try {
 			stopDialTone();
 			playEndCall();

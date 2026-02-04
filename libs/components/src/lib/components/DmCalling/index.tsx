@@ -16,7 +16,6 @@ import {
 	selectRemoteVideo,
 	selectSignalingDataByUserId,
 	selectStatusMenu,
-	selectVoiceJoined,
 	toastActions,
 	useAppDispatch,
 	useAppSelector
@@ -60,7 +59,6 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	const [activeVideo, setActiveVideo] = useState<'local' | 'remote' | null>(null);
 	const isJoinedCall = useSelector(selectJoinedCall);
 	const otherCall = useSelector(selectOtherCall);
-	const isVoiceJoined = useSelector(selectVoiceJoined);
 	const isInChannelCalled = useMemo(() => {
 		const isSignalDataOffer = signalingData?.[0]?.signalingData?.data_type === WebrtcSignalingType.WEBRTC_SDP_OFFER;
 		if (!isSignalDataOffer && !isInCall) {
