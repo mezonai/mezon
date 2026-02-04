@@ -1,27 +1,47 @@
 import { isEmpty, load, STORAGE_MY_USER_ID, validLinkGoogleMapRegex } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
+import { selectAllAccount } from '@mezon/store-mobile';
 import { isContainsUrl } from '@mezon/transport';
 import { SHARE_CONTACT_KEY } from '@mezon/utils';
 import { ChannelType, safeJSONParse } from 'mezon-js';
-import React, { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import { MemberInvoiceStatus } from '../../components/MemberStatus/MemberInvoiceStatus';
 import { DmListItemLastMessage } from './DMListItemLastMessage';
 import { style } from './styles';
 
-export const MessagePreviewLastest = React.memo(
-	(props: { type: ChannelType; senderId: string; senderName: string; userId: string; lastSentMessageStr: string; isUnReadChannel: boolean }) => {
+interface IMessagePreviewLastestProps {
+	type: ChannelType;
+	senderId: string;
+	senderName: string;
+	userId: string;
+	lastSentMessageStr: string;
+	isUnReadChannel: boolean;
+	callerUsername: string
+}
+
+export const MessagePreviewLastest = memo(
+	({ type, senderId, senderName, userId, lastSentMessageStr, isUnReadChannel, callerUsername }: IMessagePreviewLastestProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const { lastSentMessageStr, type, senderId, senderName, userId, isUnReadChannel } = props || {};
 		const lastSentMessage = useMemo(() => {
 			return safeJSONParse(lastSentMessageStr || '{}');
 		}, [lastSentMessageStr]);
+		const userProfile = useSelector(selectAllAccount)
 
 		const content = useMemo(() => {
 			return typeof lastSentMessage?.content === 'object' ? lastSentMessage?.content : safeJSONParse(lastSentMessage?.content || '{}');
 		}, [lastSentMessage?.content]);
+
+		const groupMsgPreview = useMemo(() => {
+			if (callerUsername) {
+				const myPriorityName = userProfile?.user?.display_name || userProfile?.user?.username
+				return `${callerUsername} added ${myPriorityName} to the conversation.`;
+			}
+			return t('directMessage.groupCreated')
+		}, [callerUsername, userProfile?.user?.display_name, userProfile?.user?.username, t]);
 
 		const contentTextObj = useMemo(() => {
 			const isLinkMessage = isContainsUrl(content?.t || '');
@@ -93,7 +113,7 @@ export const MessagePreviewLastest = React.memo(
 								{ color: isUnReadChannel ? themeValue.textStrong : themeValue.textDisabled }
 							]}
 						>
-							{t('directMessage.groupCreated')}
+							{groupMsgPreview}
 						</Text>
 					</View>
 				);
