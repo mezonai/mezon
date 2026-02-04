@@ -71,6 +71,10 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 		return typeof currenChannel?.display_names === 'string' ? currenChannel?.display_names : currenChannel?.display_names?.[0] || '';
 	}, [currenChannel?.display_names]);
 
+	const avatar: string = useMemo(() => {
+		return typeof currenChannel?.avatars === 'string' ? currenChannel?.avatars : currenChannel?.avatars?.[0] || '';
+	}, [currenChannel?.avatars]);
+
 	const isChannel = useMemo(() => {
 		return currenChannel?.parent_id === '0';
 	}, [currenChannel?.parent_id]);
@@ -122,8 +126,10 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 			const store = await getStoreAsync();
 			store.dispatch(
 				friendsActions.sendRequestAddFriend({
-					usernames: [],
-					ids: [targetUserId],
+					usernames: '',
+					ids: targetUserId,
+					avatar,
+					displayName,
 					isMobile: true
 				})
 			);
@@ -133,8 +139,8 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 	const handleAcceptFriend = async () => {
 		const store = await getStoreAsync();
 		const body = {
-			usernames: [],
-			ids: [targetUserId],
+			usernames: '',
+			ids: targetUserId,
 			isAcceptingRequest: true,
 			isMobile: true
 		};

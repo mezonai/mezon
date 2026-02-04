@@ -60,3 +60,31 @@ export const handleParticipantVoiceState = createAsyncThunk(
 		}
 	}
 );
+
+export const handleAddAgentToVoice = createAsyncThunk(
+	'meet/handleAddAgentToVoice',
+	async ({ channel_id, room_name }: { channel_id: string; room_name: string }, thunkAPI) => {
+		try {
+			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+			const response = await mezon.client.addAgentToChannel(mezon.session, room_name, channel_id);
+			return response;
+		} catch (error) {
+			captureSentryError(error, 'meet/handleAddAgentToVoice');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const handleKichAgentFromVoice = createAsyncThunk(
+	'meet/handleKichAgentFromVoice',
+	async ({ channel_id, room_name }: { channel_id: string; room_name: string }, thunkAPI) => {
+		try {
+			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+			const response = await mezon.client.disconnectAgent(mezon.session, room_name, channel_id);
+			return response;
+		} catch (error) {
+			captureSentryError(error, 'meet/handleKichAgentFromVoice');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);

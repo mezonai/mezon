@@ -304,7 +304,7 @@ export interface DashboardState {
 	channelsCacheByClan: Record<string, { cache?: CacheMetadata; rawPayload?: any }>;
 	tableData: ClanRow[];
 	usersCacheByChannel: Record<string, { cache?: CacheMetadata; rawPayload?: any }>;
-	usageTotals?: { totalActiveUsers: number; totalActiveChannels: number; totalMessages: number } | null;
+	usageTotals?: { totalActiveUsers: string; totalActiveChannels: string; totalMessages: string } | null;
 	chartLoading: boolean;
 	channelsLoading: boolean;
 	usersLoading: boolean;
@@ -410,16 +410,16 @@ export const dashboardSlice = createSlice({
 					state.tableData = clans.map((clan: any) => ({
 						clanId: clan.clan_id,
 						clanName: clan.clan_name,
-						totalActiveUsers: Number(clan.total_active_users),
-						totalActiveChannels: Number(clan.total_active_channels),
-						totalMessages: Number(clan.total_messages)
+						totalActiveUsers: clan.total_active_users,
+						totalActiveChannels: clan.total_active_channels,
+						totalMessages: clan.total_messages
 					}));
 					const total = payload.data.total;
 					state.usageTotals = total
 						? {
-								totalActiveUsers: Number(total.total_active_users),
-								totalActiveChannels: Number(total.total_active_channels),
-								totalMessages: Number(total.total_messages)
+								totalActiveUsers: total.total_active_users,
+								totalActiveChannels: total.total_active_channels,
+								totalMessages: total.total_messages
 							}
 						: null;
 				} else {
@@ -580,11 +580,11 @@ export const selectClanChannelsPagination = (state: RootState, clanId: string) =
 
 export const selectClanChannelsMetrics = (state: RootState, clanId: string) => {
 	const raw = selectDashboard(state).channelsCacheByClan?.[clanId]?.rawPayload?.data?.total;
-	if (!raw) return { totalActiveUsers: 0, totalActiveChannels: 0, totalMessages: 0 };
+	if (!raw) return { totalActiveUsers: '0', totalActiveChannels: '0', totalMessages: '0' };
 	return {
-		totalActiveUsers: Number(raw.total_active_users ?? raw.totalActiveUsers ?? 0),
-		totalActiveChannels: Number(raw.total_active_channels ?? raw.totalActiveChannels ?? 0),
-		totalMessages: Number(raw.total_messages ?? raw.totalMessages ?? 0)
+		totalActiveUsers: raw.total_active_users ?? raw.totalActiveUsers ?? '0',
+		totalActiveChannels: raw.total_active_channels ?? raw.totalActiveChannels ?? '0',
+		totalMessages: raw.total_messages ?? raw.totalMessages ?? '0'
 	};
 };
 
@@ -593,8 +593,8 @@ export const selectChannelUsers = (state: RootState, clanId: string, channelId: 
 	const raw = selectDashboard(state).usersCacheByChannel?.[key]?.rawPayload?.data?.users;
 	if (!Array.isArray(raw)) return [];
 	return raw.map((u: any) => ({
-		userName: u.user_name || u.userName || u.name || u.username || '',
-		messages: Number(u.total_messages ?? u.totalMessages ?? u.messages ?? 0) || 0
+		userName: u.user_name ?? '0',
+		messages: u.total_messages ?? '0'
 	}));
 };
 

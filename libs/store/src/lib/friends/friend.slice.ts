@@ -169,7 +169,7 @@ export const sendRequestAddFriend = createAsyncThunk(
 							toast.success(i18n.t('friends:toast.sendAddFriendSuccess'));
 						}
 					} else {
-						thunkAPI.dispatch(friendsActions.acceptFriend(`${ids?.[0]}`));
+						thunkAPI.dispatch(friendsActions.acceptFriend(`${ids}`));
 						if (!isMobile) {
 							toast.success(i18n.t('friends:toast.acceptAddFriendSuccess'));
 						}
