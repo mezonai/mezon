@@ -1,7 +1,7 @@
 import { convertTimestampToTimeAgo } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectClanById, useAppSelector } from '@mezon/store-mobile';
-import React, { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonClanAvatar from '../../../componentUI/MezonClanAvatar';
 import { parseObject } from '../NotificationMentionItem';
@@ -21,17 +21,21 @@ const NotificationWebhookClan = ({ notify, onLongPressNotify }: NotifyProps) => 
 		return null;
 	}
 
+	const priorityName = useMemo(() => {
+		return notify?.content?.displayName || notify?.content?.username || '';
+	}, [notify?.content?.displayName, notify?.content?.username]);
+
 	return (
 		<TouchableOpacity onLongPress={() => onLongPressNotify(ENotifyBsToShow.removeNotification, notify)}>
 			<View style={styles.notifyContainer}>
 				<View style={styles.notifyHeader}>
 					<View style={styles.boxImage}>
-						<MezonClanAvatar alt={notify?.content?.display_name} image={notify?.content?.avatar} />
+						<MezonClanAvatar alt={notify?.content?.username || ''} image={notify?.content?.avatar} />
 					</View>
 					<View style={styles.notifyContent}>
 						{clan?.clan_name && (
 							<Text numberOfLines={2} style={styles.notifyHeaderTitle}>
-								<Text style={styles.username}>{notify?.content?.display_name} </Text>
+								<Text style={styles.username}>{priorityName} </Text>
 								{clan?.clan_name}
 							</Text>
 						)}

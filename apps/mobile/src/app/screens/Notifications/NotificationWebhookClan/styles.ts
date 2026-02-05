@@ -36,7 +36,7 @@ export const style = (colors: Attributes) =>
 		boxImage: {
 			width: size.s_40,
 			height: size.s_40,
-			borderRadius: size.s_50,
+			borderRadius: size.s_40,
 			marginBottom: size.s_8,
 			fontSize: size.medium,
 			alignItems: 'center',

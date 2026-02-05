@@ -1,14 +1,13 @@
 import { useFriends } from '@mezon/core';
-import { baseColor, useTheme } from '@mezon/mobile-ui';
+import { useTheme } from '@mezon/mobile-ui';
 import type { FriendsEntity } from '@mezon/store-mobile';
 import { selectBlockedUsers } from '@mezon/store-mobile';
-import { createImgproxyUrl } from '@mezon/utils';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Image, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../constants/icon_cdn';
+import MezonClanAvatar from '../../../../componentUI/MezonClanAvatar';
 import type { APP_SCREEN, SettingScreenProps } from '../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -20,39 +19,34 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 	const blockedUsers = useSelector(selectBlockedUsers);
 	const { unBlockFriend } = useFriends();
 
-	const handleUnblockFriend = async (user: FriendsEntity) => {
+	const handleUnblockFriend = useCallback(async (user: FriendsEntity) => {
 		try {
 			const isUnblocked = await unBlockFriend(user?.user?.username, user?.user?.id);
 			if (isUnblocked) {
 				Toast.show({
 					type: 'success',
-					props: {
-						text2: t('notification.unblockUser.success', { ns: 'userProfile' }),
-						leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} width={20} height={20} />
-					}
+					text1: t('notification.unblockUser.success', { ns: 'userProfile' }),
 				});
 			}
 		} catch (error) {
+			console.error('Error unblocking friend:', error);
 			Toast.show({
 				type: 'error',
-				props: {
-					text2: t('notification.unblockUser.error', { ns: 'userProfile' }),
-					leadingIcon: <MezonIconCDN icon={IconCDN.closeIcon} color={baseColor.redStrong} width={20} height={20} />
-				}
+				text1: t('notification.unblockUser.error', { ns: 'userProfile' }),
+
 			});
 		}
-	};
+	}, [t, unBlockFriend]);
 
-	const renderBlockedUser = ({ item }: { item: FriendsEntity }) => (
+	const renderBlockedUser = useCallback(({ item }: { item: FriendsEntity }) => (
 		<View style={styles.userItem}>
 			<View style={styles.userInfo}>
-				{item?.user?.avatar_url ? (
-					<Image source={{ uri: createImgproxyUrl(item?.user?.avatar_url) }} style={styles.avatar} />
-				) : (
-					<View style={styles.avatarPlaceholder}>
-						<Text style={styles.avatarText}>{(item?.user?.username?.[0] || '').toUpperCase()}</Text>
-					</View>
-				)}
+				<View style={styles.avatar}>
+					<MezonClanAvatar
+						image={item?.user?.avatar_url || ''}
+						alt={item?.user?.username || ''}
+					/>
+				</View>
 				<Text style={styles.username}>{item?.user?.display_name || item?.user?.username}</Text>
 			</View>
 
@@ -60,7 +54,7 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 				<Text style={styles.unblockText}>{t('pendingContent.unblock', { ns: 'userProfile' })}</Text>
 			</TouchableOpacity>
 		</View>
-	);
+	), [t, handleUnblockFriend]);
 
 	return (
 		<View style={styles.container}>

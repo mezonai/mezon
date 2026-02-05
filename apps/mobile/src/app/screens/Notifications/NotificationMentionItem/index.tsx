@@ -1,12 +1,11 @@
-import { useGetPriorityNameFromUserClan } from '@mezon/core';
 import { convertTimestampToTimeAgo } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { selectChannelById, selectClanById, useAppSelector } from '@mezon/store-mobile';
+import { selectChannelById, selectClanById, selectMemberClanByUserId, useAppSelector } from '@mezon/store-mobile';
 import type { IMentionOnMessage } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import MezonAvatar from '../../../componentUI/MezonAvatar';
+import MezonClanAvatar from '../../../componentUI/MezonClanAvatar';
 import type { attacmentNotifyItem } from '../MessageNotification';
 import MessageNotification from '../MessageNotification';
 import type { NotifyProps } from '../types';
@@ -62,7 +61,7 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 	const channelInfo = useAppSelector((state) => selectChannelById(state, notify?.content?.channel_id || '0'));
 	const data = parseObject(notify?.content);
 	const clan = useAppSelector(selectClanById(notify?.content?.clan_id as string));
-	const { priorityAvatar } = useGetPriorityNameFromUserClan(notify?.sender_id);
+	const clanProfile = useAppSelector((state) => selectMemberClanByUserId(state, notify?.sender_id ?? ''));
 	const messageTimeDifference = convertTimestampToTimeAgo(data?.create_time_seconds);
 	const subjectText = useMemo(() => {
 		return clan?.clan_name && channelInfo?.channel_label
@@ -71,19 +70,19 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 	}, [clan?.clan_name, channelInfo?.channel_label, notify?.content?.display_name]);
 
 	const priorityName = useMemo(() => {
-		return notify?.content?.displayName || notify?.content?.username;
-	}, [notify]);
+		return clanProfile?.clan_nick || notify?.content?.displayName || clanProfile?.user?.display_name || notify?.content?.username || clanProfile?.user?.username || '';
+	}, [clanProfile?.clan_nick, notify?.content?.displayName, clanProfile?.user?.display_name, notify?.content?.username, clanProfile?.user?.username]);
 
-	const avatar = useMemo(() => {
-		return priorityAvatar || notify?.content?.avatar;
-	}, [notify?.content?.avatar, priorityAvatar]);
+	const priorityAvatar = useMemo(() => {
+		return clanProfile?.clan_avatar || notify?.content?.avatar || clanProfile?.user?.avatar_url;
+	}, [notify?.content?.avatar, clanProfile?.clan_avatar, clanProfile?.user?.avatar_url]);
 
 	const attachmentItem: attacmentNotifyItem = useMemo(() => {
 		return notify?.content?.attachment_link
 			? {
-					url: notify?.content?.attachment_link,
-					hasMore: notify?.content?.has_more_attachment
-				}
+				url: notify?.content?.attachment_link,
+				hasMore: notify?.content?.has_more_attachment
+			}
 			: null;
 	}, [notify?.content?.attachment_link, notify?.content?.has_more_attachment]);
 
@@ -116,7 +115,7 @@ const NotificationMentionItem = memo(({ notify, onLongPressNotify, onPressNotify
 			<View style={styles.notifyContainer}>
 				<View style={styles.notifyHeader}>
 					<View style={styles.boxImage}>
-						<MezonAvatar avatarUrl={avatar} username={priorityName}></MezonAvatar>
+						<MezonClanAvatar image={priorityAvatar} alt={notify?.content?.username || clanProfile?.user?.username || ''} />
 					</View>
 					<View style={styles.notifyContent}>
 						<Text numberOfLines={2} style={styles.notifyHeaderTitle}>

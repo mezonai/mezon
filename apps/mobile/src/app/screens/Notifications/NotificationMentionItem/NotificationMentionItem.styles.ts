@@ -37,9 +37,8 @@ export const style = (colors: Attributes) =>
 		boxImage: {
 			width: size.s_40,
 			height: size.s_40,
-			borderRadius: 50,
-			marginBottom: 10,
-			fontSize: size.medium
+			borderRadius: size.s_40,
+			overflow: 'hidden',
 		},
 
 		image: {
