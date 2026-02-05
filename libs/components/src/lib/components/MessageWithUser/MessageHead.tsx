@@ -1,4 +1,5 @@
 import { getShowName, useColorsRoleById } from '@mezon/core';
+import { selectMemberClanByUserId, useAppSelector } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
 import { DEFAULT_MESSAGE_CREATOR_NAME_DISPLAY_COLOR, convertTimeStringI18n, convertUnixSecondsToTimeString, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
@@ -10,6 +11,7 @@ type IMessageHeadProps = {
 	mode?: number;
 	onClick?: (e: React.MouseEvent<HTMLImageElement, MouseEvent>) => void;
 	isDM?: boolean;
+	isSearchMessage?: boolean;
 };
 
 const BaseMessageHead = ({
@@ -17,14 +19,15 @@ const BaseMessageHead = ({
 	mode,
 	onClick,
 	isDM,
-	userRolesClan
-}: IMessageHeadProps & { userRolesClan?: ReturnType<typeof useColorsRoleById> }) => {
+	userRolesClan,
+	clanNickFromStore
+}: IMessageHeadProps & { userRolesClan?: ReturnType<typeof useColorsRoleById>; clanNickFromStore?: string }) => {
 	const { t, i18n } = useTranslation('common');
 	const messageTime = message?.create_time_seconds
 		? convertUnixSecondsToTimeString(message.create_time_seconds, t, i18n.language)
 		: convertTimeStringI18n((message as any)?.create_time || '', t, i18n.language);
 	const usernameSender = message?.username;
-	const clanNick = message?.clan_nick;
+	const clanNick = message?.clan_nick || clanNickFromStore || '';
 	const displayName = message?.display_name;
 
 	const { pendingClannick, pendingDisplayName, pendingUserName } = getPendingNames(
@@ -32,7 +35,7 @@ const BaseMessageHead = ({
 		clanNick ?? '',
 		displayName ?? '',
 		usernameSender ?? '',
-		message.clan_nick ?? '',
+		clanNick ?? '',
 		message?.display_name ?? '',
 		message?.username ?? ''
 	);
@@ -49,9 +52,9 @@ const BaseMessageHead = ({
 	return (
 		<>
 			<div
-				className="text-base font-medium tracking-normal cursor-pointer break-all username text-theme-primary-active hover:underline flex items-center"
+				className={`text-base font-medium tracking-normal break-all username text-theme-primary-active flex items-center ${onClick ? 'cursor-pointer hover:underline' : ''}`}
 				onClick={onClick}
-				role="button"
+				role={onClick ? 'button' : undefined}
 				style={{
 					letterSpacing: '-0.01rem',
 					color:
@@ -73,20 +76,34 @@ const BaseMessageHead = ({
 	);
 };
 
-export const DMMessageHead = (props: Omit<IMessageHeadProps, 'isDM'>) => {
+export const DMMessageHead = (props: Omit<IMessageHeadProps, 'isDM' | 'isSearchMessage'>) => {
 	return <BaseMessageHead {...props} isDM={true} />;
 };
 
-export const ClanMessageHead = (props: Omit<IMessageHeadProps, 'isDM'>) => {
+export const ClanMessageHead = (props: Omit<IMessageHeadProps, 'isDM' | 'isSearchMessage'>) => {
 	const userRolesClan = useColorsRoleById(props.message?.sender_id);
 	return <BaseMessageHead {...props} isDM={false} userRolesClan={userRolesClan} />;
 };
 
+export const SearchClanMessageHead = (props: Omit<IMessageHeadProps, 'isDM' | 'isSearchMessage'>) => {
+	const userRolesClan = useColorsRoleById(props.message?.sender_id);
+	const userClan = useAppSelector((state) => selectMemberClanByUserId(state, props.message?.sender_id || ''));
+	const clanNickFromStore = userClan?.clan_nick;
+	return <BaseMessageHead {...props} isDM={false} userRolesClan={userRolesClan} clanNickFromStore={clanNickFromStore} />;
+};
+
 const MessageHead = (props: IMessageHeadProps) => {
-	if (props.isDM || props.mode === ChannelStreamMode.STREAM_MODE_DM || props.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
-		return <DMMessageHead {...props} />;
+	const { isSearchMessage, ...headProps } = props;
+
+	if (headProps.isDM || headProps.mode === ChannelStreamMode.STREAM_MODE_DM || headProps.mode === ChannelStreamMode.STREAM_MODE_GROUP) {
+		return <DMMessageHead {...headProps} />;
 	}
-	return <ClanMessageHead {...props} />;
+
+	if (isSearchMessage) {
+		return <SearchClanMessageHead {...headProps} />;
+	}
+
+	return <ClanMessageHead {...headProps} />;
 };
 
 export default MessageHead;

@@ -9,7 +9,8 @@ import {
 	ID_MENTION_HERE,
 	TOPIC_MAX_WIDTH,
 	TypeMessage,
-	WIDTH_PANEL_PROFILE,
+	WIDTH_CHANNEL_LIST_BOX,
+	WIDTH_CLAN_SIDE_BAR,
 	convertDateStringI18n,
 	convertTimeHour,
 	generateE2eId
@@ -76,6 +77,7 @@ function MessageWithUser({
 	popup,
 	isShowFull,
 	isSearchMessage,
+	allowDisplayShortProfile = true,
 	isCombine,
 	showDivider,
 	channelLabel,
@@ -135,57 +137,27 @@ function MessageWithUser({
 
 	const handleOpenShortUser = useCallback(
 		(e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string, isClickOnReply = false) => {
+			if (!allowDisplayShortProfile) return;
 			setIsAnonymousOnModal(isClickOnReply);
 			shortUserId.current = userId;
 			const heightPanel =
 				mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
 					? HEIGHT_PANEL_PROFILE
 					: HEIGHT_PANEL_PROFILE_DM;
-
-			const popupWidth = WIDTH_PANEL_PROFILE;
-			const padding = 50;
-			const windowWidth = window.innerWidth;
-			const windowHeight = window.innerHeight;
-
-			const elementRect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-			const referenceX = elementRect.left;
-			const referenceY = elementRect.top + elementRect.height / 2;
-
-			let left: number;
-			let top: number;
-
-			if (isSearchMessage) {
-				const searchPadding = padding + 50;
-				left = referenceX - popupWidth - searchPadding;
-
-				if (left < padding) {
-					left = padding;
-				}
+			if (window.innerHeight - e.clientY > heightPanel) {
+				positionShortUser.current = {
+					top: e.clientY,
+					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
+				};
 			} else {
-				left = referenceX + padding;
-				if (left + popupWidth > windowWidth - padding) {
-					left = referenceX - popupWidth - padding;
-				}
-				if (left < padding) {
-					left = Math.max(padding, (windowWidth - popupWidth) / 2);
-				}
+				positionShortUser.current = {
+					top: window.innerHeight - heightPanel,
+					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
+				};
 			}
-
-			top = referenceY;
-			if (top + heightPanel + padding > windowHeight) {
-				top = windowHeight - heightPanel - padding;
-			}
-			if (top < padding) {
-				top = padding;
-			}
-
-			positionShortUser.current = {
-				top,
-				left
-			};
 			openProfileItem();
 		},
-		[mode, isSearchMessage]
+		[mode, allowDisplayShortProfile]
 	);
 
 	const handleLeaveComment = useCallback(() => {
@@ -274,8 +246,8 @@ function MessageWithUser({
 							message={message}
 							mode={mode}
 							onClick={
-								checkAnonymousOnReplied
-									? () => {}
+								!allowDisplayShortProfile || checkAnonymousOnReplied
+									? undefined
 									: (e) => {
 											isClickReply.current = true;
 											handleOpenShortUser(e, message?.references?.[0]?.message_sender_id as string, checkAnonymousOnReplied);
@@ -295,8 +267,8 @@ function MessageWithUser({
 									isEditing={isEditing}
 									mode={mode}
 									onClick={
-										checkAnonymous
-											? () => {}
+										!allowDisplayShortProfile || checkAnonymous
+											? undefined
 											: (e) => {
 													isClickReply.current = false;
 													handleOpenShortUser(e, message?.sender_id);
@@ -306,9 +278,10 @@ function MessageWithUser({
 								<MessageHead
 									message={message}
 									mode={mode}
+									isSearchMessage={isSearchMessage}
 									onClick={
-										checkAnonymous
-											? () => {}
+										!allowDisplayShortProfile || checkAnonymous
+											? undefined
 											: (e) => {
 													isClickReply.current = false;
 													handleOpenShortUser(e, message?.sender_id);
