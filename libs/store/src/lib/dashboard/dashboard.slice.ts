@@ -55,14 +55,31 @@ export const fetchAllClansMetrics = createAsyncThunk(
 
 export const fetchClansList = createAsyncThunk(
 	'dashboard/fetchClansList',
-	async ({ start, end, page, limit, rangeType }: { start: string; end: string; page: number; limit: number; rangeType?: string }, thunkAPI) => {
+	async (
+		{
+			start,
+			end,
+			page,
+			limit,
+			rangeType,
+			sortBy,
+			sort
+		}: { start: string; end: string; page: number; limit: number; rangeType?: string; sortBy?: string; sort?: 'asc' | 'desc' },
+		thunkAPI
+	) => {
 		try {
 			const base = API_BASE || '';
 			const state = thunkAPI.getState() as RootState;
 			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
 			const token = session?.token;
 			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-			const url = `${base}/dashboard/list-all-clans/metrics?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}${rangeType ? `&rangeType=${rangeType}` : ''}`;
+			let url = `${base}/dashboard/list-all-clans/metrics?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}${rangeType ? `&rangeType=${rangeType}` : ''}`;
+			if (sortBy) {
+				url += `&sort_by=${sortBy}`;
+			}
+			if (sort) {
+				url += `&sort=${sort}`;
+			}
 			const res = await fetch(url, { headers });
 			if (!res.ok) {
 				const text = await res.text().catch(() => '');
@@ -116,7 +133,18 @@ export const fetchClanMetrics = createAsyncThunk(
 
 export const fetchClanChannels = createAsyncThunk(
 	'dashboard/fetchClanChannels',
-	async ({ clanId, start, end, page, limit }: { clanId: string; start: string; end: string; page?: number; limit?: number }, thunkAPI) => {
+	async (
+		{
+			clanId,
+			start,
+			end,
+			page,
+			limit,
+			sortBy,
+			sort
+		}: { clanId: string; start: string; end: string; page?: number; limit?: number; sortBy?: string; sort?: 'asc' | 'desc' },
+		thunkAPI
+	) => {
 		try {
 			const getState = thunkAPI.getState as () => RootState;
 			const apiKey = createApiKey('fetchClanChannels', clanId, start, end, String(page || ''), String(limit || ''));
@@ -132,7 +160,13 @@ export const fetchClanChannels = createAsyncThunk(
 			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
 			const token = session?.token;
 			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-			const url = `${base}/dashboard/${clanId}/channels?start_date=${start}&end_date=${end}${page ? `&page=${page}` : ''}${limit ? `&limit=${limit}` : ''}`;
+			let url = `${base}/dashboard/${clanId}/channels?start_date=${start}&end_date=${end}${page ? `&page=${page}` : ''}${limit ? `&limit=${limit}` : ''}`;
+			if (sortBy) {
+				url += `&sort_by=${sortBy}`;
+			}
+			if (sort) {
+				url += `&sort=${sort}`;
+			}
 			const res = await fetch(url, { headers });
 			if (!res.ok) {
 				const text = await res.text().catch(() => '');
@@ -156,8 +190,10 @@ export const fetchChannelUsers = createAsyncThunk(
 			start,
 			end,
 			page = 1,
-			limit = 10
-		}: { clanId: string; channelId: string; start: string; end: string; page?: number; limit?: number },
+			limit = 10,
+			sortBy,
+			sort
+		}: { clanId: string; channelId: string; start: string; end: string; page?: number; limit?: number; sortBy?: string; sort?: 'asc' | 'desc' },
 		thunkAPI
 	) => {
 		try {
@@ -176,7 +212,13 @@ export const fetchChannelUsers = createAsyncThunk(
 			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
 			const token = session?.token;
 			const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
-			const url = `${base}/dashboard/${clanId}/channels/${channelId}/users?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}`;
+			let url = `${base}/dashboard/${clanId}/users?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}`;
+			if (sortBy) {
+				url += `&sort_by=${sortBy}`;
+			}
+			if (sort) {
+				url += `&sort=${sort}`;
+			}
 			const res = await fetch(url, { headers });
 			if (!res.ok) {
 				const text = await res.text().catch(() => '');
@@ -193,7 +235,17 @@ export const fetchChannelUsers = createAsyncThunk(
 
 export const exportClansCsv = createAsyncThunk(
 	'dashboard/exportClansCsv',
-	async ({ start, end, rangeType, columns }: { start: string; end: string; rangeType: string; columns: string[] }, thunkAPI) => {
+	async (
+		{
+			start,
+			end,
+			rangeType,
+			columns,
+			sortBy,
+			sort
+		}: { start: string; end: string; rangeType: string; columns: string[]; sortBy?: string; sort?: 'asc' | 'desc' },
+		thunkAPI
+	) => {
 		try {
 			const base = API_BASE || '';
 			const state = thunkAPI.getState() as RootState;
@@ -203,10 +255,13 @@ export const exportClansCsv = createAsyncThunk(
 				'Content-Type': 'application/json',
 				...(token ? { Authorization: `Bearer ${token}` } : {})
 			};
+			const body: any = { start_date: start, end_date: end, range_type: rangeType, columns };
+			if (sortBy) body.sort_by = sortBy;
+			if (sort) body.sort = sort;
 			const res = await fetch(`${base}/dashboard/list-all-clans/export-csv`, {
 				method: 'POST',
 				headers,
-				body: JSON.stringify({ start_date: start, end_date: end, range_type: rangeType, columns })
+				body: JSON.stringify(body)
 			});
 			if (!res.ok) {
 				const text = await res.text().catch(() => '');
@@ -223,7 +278,15 @@ export const exportClansCsv = createAsyncThunk(
 export const exportChannelsCsv = createAsyncThunk(
 	'dashboard/exportChannelsCsv',
 	async (
-		{ clanId, start, end, rangeType, columns }: { clanId: string; start: string; end: string; rangeType: string; columns: string[] },
+		{
+			clanId,
+			start,
+			end,
+			rangeType,
+			columns,
+			sortBy,
+			sort
+		}: { clanId: string; start: string; end: string; rangeType: string; columns: string[]; sortBy?: string; sort?: 'asc' | 'desc' },
 		thunkAPI
 	) => {
 		try {
@@ -235,10 +298,13 @@ export const exportChannelsCsv = createAsyncThunk(
 				'Content-Type': 'application/json',
 				...(token ? { Authorization: `Bearer ${token}` } : {})
 			};
+			const body: any = { start_date: start, end_date: end, range_type: rangeType, columns };
+			if (sortBy) body.sort_by = sortBy;
+			if (sort) body.sort = sort;
 			const res = await fetch(`${base}/dashboard/${clanId}/channels/export-csv`, {
 				method: 'POST',
 				headers,
-				body: JSON.stringify({ start_date: start, end_date: end, range_type: rangeType, columns })
+				body: JSON.stringify(body)
 			});
 			if (!res.ok) {
 				const text = await res.text().catch(() => '');
@@ -257,12 +323,13 @@ export const exportUsersCsv = createAsyncThunk(
 	async (
 		{
 			clanId,
-			channelId,
 			start,
 			end,
 			rangeType,
-			columns
-		}: { clanId: string; channelId: string; start: string; end: string; rangeType: string; columns: string[] },
+			columns,
+			sortBy,
+			sort
+		}: { clanId: string; start: string; end: string; rangeType: string; columns: string[]; sortBy?: string; sort?: 'asc' | 'desc' },
 		thunkAPI
 	) => {
 		try {
@@ -274,10 +341,13 @@ export const exportUsersCsv = createAsyncThunk(
 				'Content-Type': 'application/json',
 				...(token ? { Authorization: `Bearer ${token}` } : {})
 			};
-			const res = await fetch(`${base}/dashboard/${clanId}/channels/${channelId}/users/export-csv`, {
+			const body: any = { clan_id: clanId, start_date: start, end_date: end, range_type: rangeType, columns };
+			if (sortBy) body.sort_by = sortBy;
+			if (sort) body.sort = sort;
+			const res = await fetch(`${base}/dashboard/${clanId}/users/export-csv`, {
 				method: 'POST',
 				headers,
-				body: JSON.stringify({ start_date: start, end_date: end, range_type: rangeType, columns })
+				body: JSON.stringify(body)
 			});
 			if (!res.ok) {
 				const text = await res.text().catch(() => '');

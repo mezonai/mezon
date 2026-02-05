@@ -10,9 +10,12 @@ interface UsersTableProps {
 	limit: number;
 	total: number;
 	totalPages: number;
+	sortBy?: string;
+	sort?: 'asc' | 'desc';
 	onExportCSV: () => void;
 	onToggleColumn: (col: string) => void;
 	onPageChange: (page: number) => void;
+	onSort?: (column: string) => void;
 }
 
 function UsersTable({
@@ -23,11 +26,39 @@ function UsersTable({
 	limit,
 	total,
 	totalPages,
+	sortBy,
+	sort,
 	onExportCSV,
 	onToggleColumn,
-	onPageChange
+	onPageChange,
+	onSort
 }: UsersTableProps) {
 	const { t } = useTranslation('dashboard');
+
+	const getSortIcon = (column: string) => {
+		if (sortBy !== column) {
+			return (
+				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
+					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
+				</svg>
+			);
+		}
+		if (sort === 'asc') {
+			return (
+				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
+					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
+				</svg>
+			);
+		}
+		return (
+			<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+				<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" opacity="0.3" />
+				<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
+			</svg>
+		);
+	};
 
 	return (
 		<div className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
@@ -64,24 +95,36 @@ function UsersTable({
 					<thead className="bg-gray-50 dark:bg-[#1e1f22]">
 						<tr>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.userName')}</span>
+									<button
+										onClick={() => onSort?.('user_name')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										{getSortIcon('user_name')}
+									</button>
 									<input
 										aria-label="Select User name column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('user_name')}
 										onChange={() => onToggleColumn('user_name')}
 									/>
 								</div>
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.messages')}</span>
+									<button
+										onClick={() => onSort?.('messages')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										{getSortIcon('messages')}
+									</button>
 									<input
 										aria-label="Select Messages column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>

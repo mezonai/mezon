@@ -11,10 +11,13 @@ interface ClansTableProps {
 	limit: number;
 	total: number;
 	totalPages: number;
+	sortBy?: string;
+	sort?: 'asc' | 'desc';
 	onClanClick: (clanId: string) => void;
 	onExportCSV: () => void;
 	onToggleColumn: (col: string) => void;
 	onPageChange: (page: number) => void;
+	onSort?: (column: string) => void;
 	tableRef: React.RefObject<HTMLDivElement>;
 }
 
@@ -27,13 +30,44 @@ function ClansTable({
 	limit,
 	total,
 	totalPages,
+	sortBy,
+	sort,
 	onClanClick,
 	onExportCSV,
 	onToggleColumn,
 	onPageChange,
+	onSort,
 	tableRef
 }: ClansTableProps) {
 	const { t } = useTranslation('dashboard');
+
+	const getSortIcon = (column: string) => {
+		if (sortBy !== column) {
+			// Not sorted - both arrows enabled
+			return (
+				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
+					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
+				</svg>
+			);
+		}
+		if (sort === 'asc') {
+			// Ascending - only top arrow enabled
+			return (
+				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
+					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
+				</svg>
+			);
+		}
+		// Descending - only bottom arrow enabled
+		return (
+			<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+				<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" opacity="0.3" />
+				<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
+			</svg>
+		);
+	};
 
 	return (
 		<div ref={tableRef} className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
@@ -72,11 +106,11 @@ function ClansTable({
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center gap-2">
 									<span>{t('table.clanName')}</span>
-									<button className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4">
-										<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-											<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-											<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
-										</svg>
+									<button
+										onClick={() => onSort?.('clan_name')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										{getSortIcon('clan_name')}
 									</button>
 									<input
 										aria-label="Select Clan Name column"
@@ -90,11 +124,11 @@ function ClansTable({
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center gap-2">
 									<span>{t('table.activeUsers')}</span>
-									<button className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4">
-										<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-											<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-											<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
-										</svg>
+									<button
+										onClick={() => onSort?.('active_users')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										{getSortIcon('active_users')}
 									</button>
 									<input
 										aria-label="Select Active users column"
@@ -108,11 +142,11 @@ function ClansTable({
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center gap-2">
 									<span>{t('table.activeChannels')}</span>
-									<button className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4">
-										<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-											<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-											<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
-										</svg>
+									<button
+										onClick={() => onSort?.('active_channels')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										{getSortIcon('active_channels')}
 									</button>
 									<input
 										aria-label="Select Active channels column"
@@ -126,11 +160,11 @@ function ClansTable({
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
 								<div className="flex items-center gap-2">
 									<span>{t('table.messages')}</span>
-									<button className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4">
-										<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-											<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-											<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
-										</svg>
+									<button
+										onClick={() => onSort?.('messages')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										{getSortIcon('messages')}
 									</button>
 									<input
 										aria-label="Select Messages column"

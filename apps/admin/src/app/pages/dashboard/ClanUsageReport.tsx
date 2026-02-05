@@ -31,11 +31,21 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const [hasNoData, setHasNoData] = useState(false);
 	const [showFullPageLoading, setShowFullPageLoading] = useState(false);
 	const [isExportingCSV, setIsExportingCSV] = useState(false);
+	const [sortBy, setSortBy] = useState<string>('clan_name');
+	const [sort, setSort] = useState<'asc' | 'desc'>('asc');
 
 	const tableRef = useRef<HTMLDivElement>(null);
 	const shouldScrollToTable = useRef(false);
 
-	const { page, setPage, limit, total, totalPages } = usePagination(dateRange, customStartDate, customEndDate, periodFilter, refreshTrigger);
+	const { page, setPage, limit, total, totalPages } = usePagination(
+		dateRange,
+		customStartDate,
+		customEndDate,
+		periodFilter,
+		refreshTrigger,
+		sortBy,
+		sort
+	);
 
 	const dispatch = useAppDispatch();
 	const chartData = useAppSelector(selectDashboardChartData);
@@ -116,7 +126,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const handleExportCSV = async () => {
 		shouldScrollToTable.current = true;
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
-		await handleCSVExport(dispatch, startStr, endStr, periodFilter, selectedColumns, setIsExportingCSV);
+		await handleCSVExport(dispatch, startStr, endStr, periodFilter, selectedColumns, setIsExportingCSV, sortBy, sort);
 	};
 
 	const handleClanClick = (clanId: string) => {
@@ -128,6 +138,18 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const handlePageChange = (p: number) => {
 		if (p !== page) shouldScrollToTable.current = true;
 		setPage(p);
+	};
+
+	const handleSort = (column: string) => {
+		if (sortBy === column) {
+			// Toggle sort direction
+			setSort((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+		} else {
+			// New column, default to ascending
+			setSortBy(column);
+			setSort('asc');
+		}
+		setPage(1);
 	};
 
 	return (
@@ -182,10 +204,13 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 						limit={limit}
 						total={total}
 						totalPages={totalPages}
+						sortBy={sortBy}
+						sort={sort}
 						onClanClick={handleClanClick}
 						onExportCSV={handleExportCSV}
 						onToggleColumn={toggleColumn}
 						onPageChange={handlePageChange}
+						onSort={handleSort}
 						tableRef={tableRef}
 					/>
 				</>

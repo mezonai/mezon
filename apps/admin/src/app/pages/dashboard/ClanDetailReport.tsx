@@ -42,6 +42,10 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const [channelLimit] = useState(10);
 	const [userPage, setUserPage] = useState(1);
 	const [userLimit] = useState(10);
+	const [channelSortBy, setChannelSortBy] = useState<string>('channel_name');
+	const [channelSort, setChannelSort] = useState<'asc' | 'desc'>('asc');
+	const [userSortBy, setUserSortBy] = useState<string>('user_name');
+	const [userSort, setUserSort] = useState<'asc' | 'desc'>('asc');
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -79,24 +83,69 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 
 		if (clanId) {
 			dispatch(fetchClanMetrics({ clanId, start: startStr, end: endStr, rangeType: periodFilter }));
-			dispatch(fetchClanChannels({ clanId, start: startStr, end: endStr, page: 1, limit: 10 }));
+			dispatch(
+				fetchClanChannels({
+					clanId,
+					start: startStr,
+					end: endStr,
+					page: channelPage,
+					limit: channelLimit,
+					sortBy: channelSortBy,
+					sort: channelSort
+				})
+			);
 		}
-	}, [clanId, refreshTrigger, dateRange, customStartDate, customEndDate, periodFilter, channelPage, channelLimit, dispatch]);
+	}, [
+		clanId,
+		refreshTrigger,
+		dateRange,
+		customStartDate,
+		customEndDate,
+		periodFilter,
+		channelPage,
+		channelLimit,
+		channelSortBy,
+		channelSort,
+		dispatch
+	]);
 
 	// When channels load, fetch users for the first channel by default
 	useEffect(() => {
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
 		if (clanId && firstChannelId) {
-			dispatch(fetchChannelUsers({ clanId, channelId: firstChannelId, start: startStr, end: endStr, page: userPage, limit: userLimit }));
+			dispatch(
+				fetchChannelUsers({
+					clanId,
+					channelId: firstChannelId,
+					start: startStr,
+					end: endStr,
+					page: userPage,
+					limit: userLimit,
+					sortBy: userSortBy,
+					sort: userSort
+				})
+			);
 		} else if (clanId && channelsFromStore && channelsFromStore.length > 0) {
 			// Fallback: try to extract channelId from raw payload
 			const stateAny: any = (dispatch as any).getState?.() || {};
 			const raw = stateAny?.dashboard?.channelsCacheByClan?.[clanId]?.rawPayload?.data?.channels || [];
 			const rawFirst = raw[0];
 			const cid = rawFirst?.channel_id || rawFirst?.channelId || rawFirst?.id || '';
-			if (cid) dispatch(fetchChannelUsers({ clanId, channelId: cid, start: startStr, end: endStr, page: userPage, limit: userLimit }));
+			if (cid)
+				dispatch(
+					fetchChannelUsers({
+						clanId,
+						channelId: cid,
+						start: startStr,
+						end: endStr,
+						page: userPage,
+						limit: userLimit,
+						sortBy: userSortBy,
+						sort: userSort
+					})
+				);
 		}
-	}, [firstChannelId, clanId, dateRange, customStartDate, customEndDate, userPage, userLimit, dispatch]);
+	}, [firstChannelId, clanId, dateRange, customStartDate, customEndDate, userPage, userLimit, userSortBy, userSort, dispatch]);
 
 	const allowedGranularities = useMemo(
 		() => calculateAllowedGranularities(dateRange, customStartDate, customEndDate),
@@ -134,6 +183,26 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		setUserPage(newPage);
 	};
 
+	const handleChannelSort = (column: string) => {
+		if (channelSortBy === column) {
+			setChannelSort((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+		} else {
+			setChannelSortBy(column);
+			setChannelSort('asc');
+		}
+		setChannelPage(1);
+	};
+
+	const handleUserSort = (column: string) => {
+		if (userSortBy === column) {
+			setUserSort((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+		} else {
+			setUserSortBy(column);
+			setUserSort('asc');
+		}
+		setUserPage(1);
+	};
+
 	const toggleChannelColumn = (col: string) => {
 		setSelectedChannelColumns((prev) => (prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]));
 	};
@@ -141,7 +210,17 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const handleExportChannelCSV = async () => {
 		if (!clanId) return;
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
-		await handleChannelCSVExport(dispatch, clanId, startStr, endStr, periodFilter, selectedChannelColumns, setIsExportingChannelCSV);
+		await handleChannelCSVExport(
+			dispatch,
+			clanId,
+			startStr,
+			endStr,
+			periodFilter,
+			selectedChannelColumns,
+			setIsExportingChannelCSV,
+			channelSortBy,
+			channelSort
+		);
 	};
 
 	const toggleUserColumn = (col: string) => {
@@ -149,9 +228,9 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	};
 
 	const handleExportUserCSV = async () => {
-		if (!clanId || !firstChannelId) return;
+		if (!clanId) return;
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
-		await handleUserCSVExport(dispatch, clanId, firstChannelId, startStr, endStr, periodFilter, selectedUserColumns, setIsExportingUserCSV);
+		await handleUserCSVExport(dispatch, clanId, startStr, endStr, periodFilter, selectedUserColumns, setIsExportingUserCSV, userSortBy, userSort);
 	};
 
 	return (
@@ -203,9 +282,12 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 					limit={channelLimit}
 					total={Number(channelsPagination.total) || 0}
 					totalPages={channelsPagination.totalPages || 1}
+					sortBy={channelSortBy}
+					sort={channelSort}
 					onExportCSV={handleExportChannelCSV}
 					onToggleColumn={toggleChannelColumn}
 					onPageChange={handleChannelPageChange}
+					onSort={handleChannelSort}
 				/>
 			)}
 
@@ -219,9 +301,12 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 					limit={userLimit}
 					total={Number(usersPagination.total) || 0}
 					totalPages={usersPagination.totalPages || 1}
+					sortBy={userSortBy}
+					sort={userSort}
 					onExportCSV={handleExportUserCSV}
 					onToggleColumn={toggleUserColumn}
 					onPageChange={handleUserPageChange}
+					onSort={handleUserSort}
 				/>
 			)}
 		</div>
