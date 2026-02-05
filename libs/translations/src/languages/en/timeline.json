@@ -1,0 +1,9 @@
+{
+	"newPost": "Create New Post",
+	"titlePlaceholder": "Enter title...",
+	"descriptionPlaceholder": "Enter description (optional)...",
+	"addMedia": "Add media",
+	"post": "Post",
+	"noMessagesYet": "No messages yet",
+	"beTheFirst": "Be the first to send a message in this channel"
+}

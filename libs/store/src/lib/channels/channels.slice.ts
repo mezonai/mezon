@@ -1458,21 +1458,23 @@ export const channelsSlice = createSlice({
 			if (!state.byClans[clanId]) return;
 			channelsAdapter.setAll(state.byClans[clanId]?.entities, channels);
 		},
-		setScrollPosition: (state, action: PayloadAction<{ channelId: string; messageId?: string; offset?: number }>) => {
-			const { channelId, messageId, offset } = action.payload;
+		setScrollPosition: (
+			state,
+			action: PayloadAction<{ channelId: string; messageId?: string; offset?: number; viewMode?: 'default' | 'timeline' }>
+		) => {
+			const { channelId, messageId, offset, viewMode = 'default' } = action.payload;
+			const key = viewMode === 'timeline' ? `${channelId}_timeline` : channelId;
 
 			if (!state.scrollPosition) {
 				state.scrollPosition = {};
 			}
 
-			const currentPosition = state.scrollPosition[channelId];
+			const currentPosition = state.scrollPosition[key];
 			if (currentPosition?.messageId === messageId && currentPosition?.offset === offset) {
 				return;
 			}
 
-			// removed noisy console log
-
-			state.scrollPosition[channelId] = { messageId, offset };
+			state.scrollPosition[key] = { messageId, offset };
 		},
 
 		clearScrollPosition: (state, action: PayloadAction<{ clanId: string; channelId: string }>) => {
@@ -1482,14 +1484,15 @@ export const channelsSlice = createSlice({
 			}
 		},
 
-		setScrollDownVisibility: (state, action: PayloadAction<{ channelId: string; isVisible: boolean }>) => {
-			const { channelId, isVisible } = action.payload;
+		setScrollDownVisibility: (state, action: PayloadAction<{ channelId: string; isVisible: boolean; viewMode?: 'default' | 'timeline' }>) => {
+			const { channelId, isVisible, viewMode = 'default' } = action.payload;
+			const key = viewMode === 'timeline' ? `${channelId}_timeline` : channelId;
 
 			if (!state.showScrollDownButton) {
 				state.showScrollDownButton = {};
 			}
-			if (state.showScrollDownButton[channelId] === isVisible) return;
-			state.showScrollDownButton[channelId] = isVisible;
+			if (state.showScrollDownButton[key] === isVisible) return;
+			state.showScrollDownButton[key] = isVisible;
 		},
 		invalidateCache: (state, action: PayloadAction<{ clanId: string; channelsCache?: CacheMetadata }>) => {
 			const { clanId, channelsCache } = action.payload;
@@ -1891,11 +1894,17 @@ export const selectAppChannelsList = createSelector([getChannelsState, (state: R
 );
 
 export const selectScrollPositionByChannelId = createSelector(
-	[getChannelsState, (state, channelId) => channelId],
-	(state, channelId) => state.scrollPosition?.[channelId] ?? null
+	[getChannelsState, (state, channelId: string, viewMode?: 'default' | 'timeline') => ({ channelId, viewMode })],
+	(state, { channelId, viewMode = 'default' }) => {
+		const key = viewMode === 'timeline' ? `${channelId}_timeline` : channelId;
+		return state.scrollPosition?.[key] ?? null;
+	}
 );
 
 export const selectShowScrollDownButton = createSelector(
-	[getChannelsState, (state, channelId) => channelId],
-	(state, channelId) => state.showScrollDownButton?.[channelId] ?? false
+	[getChannelsState, (state, channelId: string, viewMode?: 'default' | 'timeline') => ({ channelId, viewMode })],
+	(state, { channelId, viewMode = 'default' }) => {
+		const key = viewMode === 'timeline' ? `${channelId}_timeline` : channelId;
+		return state.showScrollDownButton?.[key] ?? false;
+	}
 );

@@ -170,6 +170,13 @@ export type IChannelMember = ClanUserListClanUser & {
 	participant?: string; // use on VoiceChannelList
 };
 
+export interface ITimelineContent {
+	title: string;
+	description?: string;
+}
+
+export type MessageViewMode = 'default' | 'timeline';
+
 export type IThread = {
 	id?: string | undefined;
 	/// new update

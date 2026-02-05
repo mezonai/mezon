@@ -55,11 +55,14 @@ export { MentionReactInput } from './components/MessageBox/ReactionMentionInput'
 export { default as CustomModalMentions } from './components/MessageBox/ReactionMentionInput/CustomModalMentions';
 export { default as SuggestItem } from './components/MessageBox/ReactionMentionInput/SuggestItem';
 export { default as MessageWithUser } from './components/MessageWithUser';
+export { default as MessageContent, TopicViewButton } from './components/MessageWithUser/MessageContent';
 export { default as MessageModalImage } from './components/MessageWithUser/MessageModalImage';
 export { default as MessageReaction } from './components/MessageWithUser/MessageReaction/MessageReaction';
 export { default as ReactionBottom } from './components/MessageWithUser/MessageReaction/ReactionBottom';
 export { default as UserReactionPanel } from './components/MessageWithUser/MessageReaction/UserReactionPanel';
 export { default as MessageVideo } from './components/MessageWithUser/MessageVideo';
+export { default as TimelineAttachment } from './components/MessageWithUser/TimelineAttachment';
+export { default as TimelineDateBadge } from './components/MessageWithUser/TimelineDateBadge';
 export { default as SidebarLogoItem } from './components/ModalListClans/SidebarLogoItem';
 export { default as SidebarTooltip } from './components/ModalListClans/SidebarTooltip';
 export { default as SidebarClanItem } from './components/ModalListClans/index';

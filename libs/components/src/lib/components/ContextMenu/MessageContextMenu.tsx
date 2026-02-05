@@ -95,6 +95,7 @@ type MessageContextMenuProps = {
 	openReportMessageModal: () => void;
 	linkContent?: string;
 	isLinkContent?: boolean;
+	viewMode?: 'default' | 'timeline';
 };
 
 type JsonObject = {
@@ -126,7 +127,8 @@ function MessageContextMenu({
 	openDeleteMessageModal,
 	openReportMessageModal,
 	linkContent,
-	isLinkContent
+	isLinkContent,
+	viewMode = 'default'
 }: MessageContextMenuProps) {
 	const { t } = useTranslation('contextMenu');
 	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
@@ -771,7 +773,8 @@ function MessageContextMenu({
 		});
 		builder.when(
 			checkPos &&
-				(canSendMessage || activeMode === ChannelStreamMode.STREAM_MODE_DM || activeMode === ChannelStreamMode.STREAM_MODE_GROUP || isTopic),
+				(canSendMessage || activeMode === ChannelStreamMode.STREAM_MODE_DM || activeMode === ChannelStreamMode.STREAM_MODE_GROUP || isTopic) &&
+				viewMode !== 'timeline',
 			(builder) => {
 				builder.addMenuItem(
 					'reply',

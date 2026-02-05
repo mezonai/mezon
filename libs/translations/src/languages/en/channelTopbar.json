@@ -21,7 +21,9 @@
 		"showChat": "Show Chat",
 		"addFriendsToDM": "Add friends to DM",
 		"jump": "Jump",
-		"gallery": "Gallery"
+		"gallery": "Gallery",
+		"timelineView": "Switch to Timeline View",
+		"defaultView": "Switch to Default View"
 	},
 	"directMessage": "Direct message",
 	"activeThreads": "Active Threads",
