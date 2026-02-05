@@ -53,6 +53,7 @@ type ChannelMessageOptProps = {
 	hasPermission: boolean;
 	isTopic: boolean;
 	canSendMessage: boolean;
+	viewMode?: 'default' | 'timeline';
 };
 
 type JsonObject = {
@@ -79,7 +80,8 @@ const ChannelMessageOpt = ({
 	isDifferentDay,
 	hasPermission = true,
 	isTopic,
-	canSendMessage
+	canSendMessage,
+	viewMode = 'default'
 }: ChannelMessageOptProps) => {
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
@@ -88,7 +90,7 @@ const ChannelMessageOpt = ({
 	const refOpt = useRef<HTMLDivElement>(null);
 	const [canManageThread] = usePermissionChecker([EOverriddenPermission.manageThread], currentChannelId ?? '');
 	const isShowIconThread = !!(currentChannelId && !Snowflake.isValid(currentChannelParentId ?? '') && canManageThread);
-	const replyMenu = useReplyMenuBuilder(message, hasPermission);
+	const replyMenu = useReplyMenuBuilder(message, hasPermission, viewMode);
 	const editMenu = useEditMenuBuilder(message);
 	const reactMenu = useReactMenuBuilder(message);
 	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission, isAppChannel);
@@ -206,7 +208,6 @@ interface RecentEmojiProps {
 
 const RecentEmoji: React.FC<RecentEmojiProps> = ({ message, isTopic }) => {
 	const emojiConverted = useEmojiConverted();
-
 	const firstThreeElements = useMemo(() => {
 		return emojiConverted.slice(0, 3);
 	}, [emojiConverted]);
@@ -308,7 +309,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 
 // Menu items plugins
 // maybe should be moved to separate files
-function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) {
+function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean, viewMode?: 'default' | 'timeline') {
 	const { t } = useTranslation('contextMenu');
 	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
@@ -339,7 +340,7 @@ function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) 
 	}, [dispatch, messageId]);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.when(userId !== message.sender_id && hasPermission, (builder) => {
+		builder.when(userId !== message.sender_id && hasPermission && viewMode !== 'timeline', (builder) => {
 			builder.addMenuItem('reply', t('reply'), handleItemClick, <Icons.Reply />, null, false, false, 'rotate-180');
 		});
 	});

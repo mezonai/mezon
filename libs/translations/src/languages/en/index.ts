@@ -85,6 +85,7 @@ import sharing from './sharing.json';
 import streamThumbnail from './streamThumbnail.json';
 import streamingRoom from './streamingRoom.json';
 import textchannel from './textchannel.json';
+import timeline from './timeline.json';
 import token from './token.json';
 import transactionHistory from './transactionHistory.json';
 import transferOwner from './transferOwner.json';
@@ -93,6 +94,7 @@ import userProfile from './userProfile.json';
 
 export default {
 	invitation,
+	timeline,
 	inviteToChannel,
 	notification,
 	message,

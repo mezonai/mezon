@@ -562,12 +562,14 @@ export const MessageLine = ({
 							whiteSpace: 'nowrap',
 							overflow: 'hidden',
 							textOverflow: 'ellipsis',
-							minHeight: 30
+							minHeight: 30,
+							textAlign: 'left'
 						}
 					: {
 							whiteSpace: 'break-spaces',
 							overflowWrap: 'break-word',
-							minHeight: 30
+							minHeight: 30,
+							textAlign: 'left'
 						}
 			}
 			className={`w-full ${isDeletedMessage ? 'text-theme-primary italic' : isJumMessageEnabled ? 'whitespace-pre-line gap-1 text-theme-message text-theme-message-hover cursor-pointer' : 'text-theme-message'} ${isEphemeral ? 'opacity-80 italic text-[#5865F2] ' : ''} ${isSending ? 'opacity-50' : ''}

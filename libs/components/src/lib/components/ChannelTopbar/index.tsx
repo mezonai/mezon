@@ -48,6 +48,7 @@ import {
 	selectSession,
 	selectStatusInVoice,
 	selectStatusMenu,
+	selectTimelineViewMode,
 	selectUpdateDmGroupError,
 	selectUpdateDmGroupLoading,
 	threadsActions,
@@ -397,6 +398,8 @@ const ChannelTopbarTools = memo(
 	}) => {
 		const dispatch = useAppDispatch();
 		const isShowChatStream = useSelector(selectIsShowChatStream);
+		const isTimelineView = useAppSelector(selectTimelineViewMode);
+		const isShowMemberList = useSelector(selectIsShowMemberList);
 		const { setStatusMenu } = useMenu();
 
 		if (isPagePath) {
@@ -435,6 +438,7 @@ const ChannelTopbarTools = memo(
 			dispatch(canvasAPIActions.getChannelCanvasList({ channel_id: channelId || '', clan_id: clanId || '' }));
 			closeMenuOnMobile();
 		};
+
 		return (
 			<div className={`items-center h-full flex`}>
 				{!isStream ? (
@@ -447,15 +451,20 @@ const ChannelTopbarTools = memo(
 							<GalleryButton />
 							<MuteButton />
 							<PinButton mode={ChannelStreamMode.STREAM_MODE_CHANNEL} styleCss={'text-theme-primary text-theme-primary-hover'} />
-							<div onClick={setTurnOffThreadMessage}>
-								<ChannelListButton />
-							</div>
+							{!isTimelineView && (
+								<div onClick={setTurnOffThreadMessage}>
+									<ChannelListButton />
+								</div>
+							)}
 							{!isApp && <ThreadButton />}
+							<TimelineViewToggleButton />
 							<CanvasButton onClick={fetchCanvasChannel} />
 						</div>
-						<div className="sbm:hidden mr-5" onClick={closeMenuOnMobile}>
-							<ChannelListButton />
-						</div>
+						{!isTimelineView && (
+							<div className="sbm:hidden mr-5" onClick={closeMenuOnMobile}>
+								<ChannelListButton />
+							</div>
+						)}
 					</div>
 				) : (
 					<div className="items-center gap-2 flex">
@@ -836,6 +845,29 @@ function CanvasButton({ onClick }: { onClick?: () => void }) {
 				<Icons.CanvasIcon defaultSize="size-5" />
 			</button>
 			{isShowCanvas && <CanvasModal onClose={handleClose} rootRef={canvasRef} />}
+		</div>
+	);
+}
+
+function TimelineViewToggleButton() {
+	const { t } = useTranslation('channelTopbar');
+	const dispatch = useAppDispatch();
+	const isTimelineView = useAppSelector(selectTimelineViewMode);
+
+	const handleToggle = useCallback(() => {
+		dispatch(appActions.setTimelineViewMode(!isTimelineView));
+	}, [dispatch, isTimelineView]);
+
+	return (
+		<div className="relative leading-5 h-5">
+			<button
+				title={isTimelineView ? t('tooltips.defaultView') : t('tooltips.timelineView')}
+				onClick={handleToggle}
+				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isTimelineView ? 'text-theme-primary-active' : ''}`}
+				onContextMenu={(e) => e.preventDefault()}
+			>
+				<Icons.History className="w-5 h-5" />
+			</button>
 		</div>
 	);
 }

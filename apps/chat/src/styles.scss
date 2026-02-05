@@ -1646,3 +1646,146 @@ input {
 	color: var(--mention-color);
 	background-color: var(--mention-primary);
 }
+
+/* Timeline View Styles */
+.timeline-view {
+	position: relative;
+}
+
+.timeline-view::before {
+	content: '';
+	position: absolute;
+	left: 50%;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: #e5e7eb;
+	transform: translateX(-50%);
+}
+
+.timeline-view.timeline-empty::before {
+	display: none;
+}
+
+.dark .timeline-view::before {
+	background: #4b5563;
+}
+
+.timeline-messages-wrap {
+	padding-top: 2rem;
+	padding-bottom: 2rem;
+}
+
+.timeline-item {
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	margin-bottom: 2rem;
+	width: 100%;
+}
+
+.timeline-item--left {
+	flex-direction: row-reverse;
+	padding-right: calc(50% + 1.5rem);
+	text-align: right;
+}
+
+.timeline-item--left .timeline-card {
+	margin-left: auto;
+}
+
+.timeline-item--left .timeline-date {
+	text-align: left;
+}
+
+.timeline-item--right {
+	padding-left: calc(50% + 1.5rem);
+}
+
+.timeline-item--right .timeline-card {
+	margin-right: auto;
+}
+
+.timeline-dot {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-3px);
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: #3b82f6;
+	z-index: 10;
+	top: 1rem;
+}
+
+.timeline-card {
+	background: white;
+	border-radius: 8px;
+	padding: 1rem;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+	max-width: 400px;
+	transition: box-shadow 0.2s ease;
+}
+
+.timeline-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dark .timeline-card {
+	background: var(--bg-secondary);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark .timeline-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.timeline-date {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	min-width: 60px;
+	text-align: center;
+}
+
+.timeline-content h3 {
+	margin: 0 0 0.25rem 0;
+	font-size: 1.125rem;
+	font-weight: 600;
+}
+
+.timeline-content p {
+	margin: 0;
+	font-size: 0.875rem;
+	opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+	.timeline-view::before {
+		left: 1.5rem;
+	}
+
+	.timeline-item--left,
+	.timeline-item--right {
+		flex-direction: row;
+		padding-left: 3rem;
+		padding-right: 1rem;
+		text-align: left;
+	}
+
+	.timeline-item--left .timeline-card,
+	.timeline-item--right .timeline-card {
+		margin-left: 0;
+		margin-right: 0;
+	}
+
+	.timeline-item--left .timeline-date,
+	.timeline-item--right .timeline-date {
+		display: none;
+	}
+
+	.timeline-dot {
+		left: 1.5rem;
+	}
+}
