@@ -20,6 +20,7 @@ import {
 	selectCurrentChannelCategoryId,
 	selectCurrentChannelChannelId,
 	selectCurrentChannelClanId,
+	selectCurrentChannelCountMessUnread,
 	selectCurrentChannelId,
 	selectCurrentChannelLabel,
 	selectCurrentChannelParentId,
@@ -1073,6 +1074,7 @@ function ChatButton({ closeMenuOnMobile }: { closeMenuOnMobile?: () => void }) {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useDispatch();
 	const isShowChatStream = useSelector(selectIsShowChatStream);
+	const unreadCount = useSelector(selectCurrentChannelCountMessUnread) || 0;
 
 	const handleClick = () => {
 		dispatch(appActions.setIsShowChatStream(!isShowChatStream));
@@ -1087,6 +1089,11 @@ function ChatButton({ closeMenuOnMobile }: { closeMenuOnMobile?: () => void }) {
 				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowChatStream ? 'text-theme-primary-active' : ''}`}
 			>
 				<Icons.Chat defaultSize="size-5" />
+				{!isShowChatStream && unreadCount > 0 && (
+					<span className="absolute -top-1 -right-2 min-w-[14px] h-[14px] px-1 rounded-full bg-red-600 text-white text-[10px] leading-[14px] text-center">
+						{unreadCount > 9 ? '9+' : unreadCount}
+					</span>
+				)}
 			</button>
 		</div>
 	);

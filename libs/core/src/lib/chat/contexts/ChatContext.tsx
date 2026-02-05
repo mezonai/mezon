@@ -642,13 +642,21 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const store = await getStoreAsync();
 			const currentChannel = selectCurrentChannel(store.getState() as unknown as RootState);
 			const isFocus = !isBackgroundModeActive();
-
-			if (
+			const isMentionNotification =
+				notification.code === NotificationCode.USER_MENTIONED || notification.code === NotificationCode.USER_REPLIED;
+			const isVoiceOrStreamingChannel =
+				notification?.channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE ||
+				notification?.channel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
+			const shouldHandleCurrentVoiceOrStreamMention =
+				isMentionNotification && isVoiceOrStreamingChannel && currentChannel?.channel_id === notification?.channel_id;
+			const shouldHandleNotification =
 				(currentChannel?.channel_id !== notification?.channel_id && notification?.clan_id !== '0') ||
 				isDirectViewPage ||
 				isFriendPageView ||
-				!isFocus
-			) {
+				!isFocus ||
+				shouldHandleCurrentVoiceOrStreamMention;
+
+			if (shouldHandleNotification) {
 				dispatch(
 					notificationActions.add({
 						data: {
@@ -660,7 +668,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					})
 				);
 
-				if (notification.code === NotificationCode.USER_MENTIONED || notification.code === NotificationCode.USER_REPLIED) {
+				if (isMentionNotification) {
 					dispatch(clansActions.updateClanBadgeCount({ clanId: notification?.clan_id || '0', count: 1 }));
 
 					if (notification?.channel?.type === ChannelType.CHANNEL_TYPE_THREAD) {

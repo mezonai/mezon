@@ -169,12 +169,9 @@ const ChannelLinkComponent = ({
 
 	const isShowSettingChannel = isClanOwner || hasAdminPermission || hasClanPermission || hasChannelManagePermission;
 
-	const notVoiceOrAppOrStreamChannel =
-		channel.type !== ChannelType.CHANNEL_TYPE_APP &&
-		channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
-		channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE;
-	const showWhiteDot = isUnReadChannel && !isActive && notVoiceOrAppOrStreamChannel;
-	const hightLightTextChannel = (isActive || isUnReadChannel) && notVoiceOrAppOrStreamChannel;
+	const isNotAppChannel = channel.type !== ChannelType.CHANNEL_TYPE_APP;
+	const showWhiteDot = isUnReadChannel && !isActive && isNotAppChannel;
+	const hightLightTextChannel = (isActive || isUnReadChannel) && isNotAppChannel;
 
 	const [openProfileItem, closeProfileItem] = useModal(() => {
 		return (

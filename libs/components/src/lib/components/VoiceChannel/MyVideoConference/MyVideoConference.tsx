@@ -10,7 +10,7 @@ import {
 	useRoomContext,
 	useTracks
 } from '@livekit/components-react';
-import { getStore, selectCurrentUserId, useAppDispatch, voiceActions } from '@mezon/store';
+import { getStore, selectCurrentChannelCountMessUnread, selectCurrentUserId, useAppDispatch, useAppSelector, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type {
 	LocalParticipant,
@@ -79,6 +79,7 @@ export const MyVideoConference = memo(
 
 		const tracks = propTracks || tracksFromHook;
 		const dispatch = useAppDispatch();
+		const unreadCount = useAppSelector(selectCurrentChannelCountMessUnread) || 0;
 		const room = useRoomContext();
 
 		useScreenSharePublisher(room);
@@ -376,6 +377,11 @@ export const MyVideoConference = memo(
 											}
 											className={isShowChatVoice ? 'text-white' : 'text-white hover:text-gray-200'}
 										/>
+										{!isShowChatVoice && unreadCount > 0 && (
+											<span className="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-1 rounded-full bg-red-600 text-white text-[10px] leading-[14px] text-center">
+												{unreadCount > 9 ? '9+' : unreadCount}
+											</span>
+										)}
 									</button>
 								</div>
 							</div>
