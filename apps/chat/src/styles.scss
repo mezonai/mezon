@@ -333,17 +333,6 @@ input:-webkit-autofill:active {
 	max-width: 100%;
 	word-break: break-all;
 }
-
-// css inBox dropdrow nocation
-#inBox [data-testid='flowbite-dropdown'] {
-	min-width: 480px !important;
-	left: -30px !important;
-
-	ul {
-		padding-bottom: 0;
-	}
-}
-
 // css hover svg change color
 .iconHover {
 	svg:hover {
