@@ -70,48 +70,72 @@ function ClansTable({
 					<thead className="bg-gray-50 dark:bg-[#1e1f22]">
 						<tr>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.clanName')}</span>
+									<button className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4">
+										<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+											<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
+											<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
+										</svg>
+									</button>
 									<input
 										aria-label="Select Clan Name column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('clan_name')}
 										onChange={() => onToggleColumn('clan_name')}
 									/>
 								</div>
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.activeUsers')}</span>
+									<button className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4">
+										<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+											<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
+											<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
+										</svg>
+									</button>
 									<input
 										aria-label="Select Active users column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('active_users')}
 										onChange={() => onToggleColumn('active_users')}
 									/>
 								</div>
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.activeChannels')}</span>
+									<button className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4">
+										<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+											<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
+											<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
+										</svg>
+									</button>
 									<input
 										aria-label="Select Active channels column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('active_channels')}
 										onChange={() => onToggleColumn('active_channels')}
 									/>
 								</div>
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.messages')}</span>
+									<button className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4">
+										<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
+											<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
+											<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
+										</svg>
+									</button>
 									<input
 										aria-label="Select Messages column"
 										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>
