@@ -1,8 +1,13 @@
 import { captureSentryError } from '@mezon/logger';
 import { createAsyncThunk } from '@reduxjs/toolkit';
+import { ChannelType } from 'mezon-js';
+import { selectCurrentUserId } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
+import { selectChannelByChannelId } from '../channels/channels.slice';
+import { listChannelRenderAction } from '../channels/listChannelRender.slice';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { rolesClanActions } from '../roleclan/roleclan.slice';
+import type { RootState } from '../store';
 
 type addChannelUsersPayload = {
 	channelId: string;
@@ -21,6 +26,21 @@ export const addChannelUsers = createAsyncThunk(
 			}
 			if (channelId && channelType) {
 				thunkAPI.dispatch(userChannelsActions.addUserChannel({ channelId, userAdds: userIds }));
+			}
+			if (channelType === ChannelType.CHANNEL_TYPE_THREAD) {
+				const userId = selectCurrentUserId(thunkAPI.getState() as RootState);
+				if (userId === userIds[0]) {
+					const thread = selectChannelByChannelId(thunkAPI.getState(), channelId);
+					thunkAPI.dispatch(
+						listChannelRenderAction.addThreadToListRender({
+							clanId: thread.clan_id || '',
+							channel: {
+								...thread,
+								active: 1
+							}
+						})
+					);
+				}
 			}
 			return response;
 		} catch (error) {
@@ -53,6 +73,7 @@ export const removeChannelUsers = createAsyncThunk(
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
+
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'channelUsers/removeChannelUsers');
