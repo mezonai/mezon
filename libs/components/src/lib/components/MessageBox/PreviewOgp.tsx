@@ -1,5 +1,6 @@
 import { referencesActions, selectCurrentChannelId, selectCurrentDmId, selectOgpPreview } from '@mezon/store';
 import { Icons } from '@mezon/ui';
+import { isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import { memo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -17,6 +18,14 @@ function PreviewOgp() {
 
 	useEffect(() => {
 		if (!ogpLink || !ogpLink.url) {
+			setData(null);
+			dispatch(referencesActions.clearOgpData());
+			setLoading(false);
+			return;
+		}
+
+		const isSocialMediaLink = isYouTubeLink(ogpLink.url) || isFacebookLink(ogpLink.url) || isTikTokLink(ogpLink.url);
+		if (isSocialMediaLink) {
 			setData(null);
 			dispatch(referencesActions.clearOgpData());
 			setLoading(false);

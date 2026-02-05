@@ -5,11 +5,9 @@ import type {
 	ILinkVoiceRoomOnMessage,
 	IMarkdownOnMessage,
 	IMentionOnMessage,
-	IMessageSendPayload,
 	INewPosMarkdown
 } from '../types';
 import { EBacktickType } from '../types';
-import { parseHtmlAsFormattedText, processMarkdownEntities } from './parseHtmlAsFormattedText';
 export const processSingleBacktick = (inputString: string, excludeRange: { start: number; end: number }) => {
 	const result: IMarkdownOnMessage[] = [];
 	let i = 0;
@@ -128,29 +126,6 @@ export const processText = (inputString: string) => {
 	const { links, voiceRooms } = processLinks(inputString, markdowns);
 
 	return { links, voiceRooms, markdowns };
-};
-///////////////////////////////
-export const prepareProcessedContent = (processedContentDraft: IMessageSendPayload, mentions: IMentionOnMessage[]) => {
-	const { text, entities } = parseHtmlAsFormattedText(processedContentDraft.t ?? '');
-	const mk: IMarkdownOnMessage[] = processMarkdownEntities(text, entities);
-
-	const { adjustedMentionsPos, adjustedHashtagPos, adjustedEmojiPos } = adjustPos(
-		mk,
-		mentions,
-		processedContentDraft.hg ?? [],
-		processedContentDraft.ej ?? [],
-		text
-	);
-
-	const updatedProcessedContent = {
-		...processedContentDraft,
-		t: text,
-		hg: adjustedHashtagPos,
-		ej: adjustedEmojiPos,
-		mk
-	};
-
-	return { updatedProcessedContent, adjustedMentionsPos };
 };
 
 // to get markdown will be add prefix include: code/pre/boldtext
