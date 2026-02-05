@@ -54,9 +54,7 @@
 	"tabs": {
 		"generalInformation": "Thông tin chung",
 		"installation": "Cài đặt",
-		"oauth2": "OAuth2",
-		"flow": "Luồng",
-		"flowExamples": "Ví dụ luồng"
+		"oauth2": "OAuth2"
 	},
 	"generalInformation": {
 		"title": "Thông tin chung",
@@ -139,9 +137,6 @@
 		"toasts": {
 			"addRedirectUri": "Vui lòng thêm ít nhất một redirect URI trước khi đặt lại secret key!"
 		}
-	},
-	"flowExamples": {
-		"title": "Ví dụ về Luồng"
 	},
 	"sidebarTabs": {
 		"dashboard": "Bảng điều khiển",
