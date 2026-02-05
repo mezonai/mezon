@@ -9,6 +9,7 @@ import {
 	selectTheme,
 	toastActions,
 	useAppDispatch,
+	userChannelsActions,
 	usersClanActions
 } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
@@ -78,6 +79,15 @@ const SettingRightUser = ({
 				await dispatch(
 					usersClanActions.updateUserDisplayName({
 						clanId: currentClanId,
+						userId: userProfile.user.id,
+						displayName: valueDisplayName.trim(),
+						avatarUrl: urlImage
+					})
+				);
+			}
+			if (userProfile?.user?.id) {
+				dispatch(
+					userChannelsActions.updateUserInfo({
 						userId: userProfile.user.id,
 						displayName: valueDisplayName.trim(),
 						avatarUrl: urlImage

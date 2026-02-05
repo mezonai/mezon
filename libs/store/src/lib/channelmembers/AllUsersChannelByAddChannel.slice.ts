@@ -17,6 +17,7 @@ export interface UsersByAddChannelState extends EntityState<IUserChannel, string
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	cacheByChannels: Record<string, CacheMetadata>;
+	userIdToChannelIds: Record<string, string[]>;
 }
 
 export const UserChannelAdapter = createEntityAdapter({
@@ -26,7 +27,8 @@ export const UserChannelAdapter = createEntityAdapter({
 export const initialUserChannelState: UsersByAddChannelState = UserChannelAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null,
-	cacheByChannels: {}
+	cacheByChannels: {},
+	userIdToChannelIds: {}
 });
 
 export const fetchUserChannelsCached = async (
@@ -111,6 +113,39 @@ export const userChannelsSlice = createSlice({
 		update: UserChannelAdapter.updateOne,
 		upsert: UserChannelAdapter.upsertOne,
 		removeMany: UserChannelAdapter.removeMany,
+		updateUserInfo: (state, action: PayloadAction<{ userId: string; displayName?: string; avatarUrl?: string }>) => {
+			const { userId, displayName, avatarUrl } = action.payload;
+
+			const channelIds = state.userIdToChannelIds[userId] || [];
+
+			channelIds.forEach((channelId) => {
+				const channel = state.entities[channelId];
+				if (!channel?.user_ids) return;
+
+				const userIndex = channel.user_ids.indexOf(userId);
+				if (userIndex !== -1) {
+					const changes: Partial<IUserChannel> = {};
+
+					if (displayName !== undefined && channel.display_names) {
+						const newDisplayNames = [...channel.display_names];
+						newDisplayNames[userIndex] = displayName;
+						changes.display_names = newDisplayNames;
+					}
+					if (avatarUrl !== undefined && channel.avatars) {
+						const newAvatars = [...channel.avatars];
+						newAvatars[userIndex] = avatarUrl;
+						changes.avatars = newAvatars;
+					}
+
+					if (Object.keys(changes).length > 0) {
+						UserChannelAdapter.updateOne(state, {
+							id: channelId,
+							changes
+						});
+					}
+				}
+			});
+		},
 		addUserChannel: (state, action: PayloadAction<{ channelId: string; userAdds: Array<string> }>) => {
 			const { channelId, userAdds } = action.payload;
 
@@ -133,6 +168,15 @@ export const userChannelsSlice = createSlice({
 					user_ids: userAdds
 				});
 			}
+
+			userAdds.forEach((userId) => {
+				if (!state.userIdToChannelIds[userId]) {
+					state.userIdToChannelIds[userId] = [];
+				}
+				if (!state.userIdToChannelIds[userId].includes(channelId)) {
+					state.userIdToChannelIds[userId].push(channelId);
+				}
+			});
 		},
 		removeUserChannel: (state, action: PayloadAction<{ channelId: string; userRemoves: Array<string> }>) => {
 			const { channelId, userRemoves } = action.payload;
@@ -168,6 +212,15 @@ export const userChannelsSlice = createSlice({
 					}
 				});
 			}
+
+			userRemoves.forEach((userId) => {
+				if (state.userIdToChannelIds[userId]) {
+					state.userIdToChannelIds[userId] = state.userIdToChannelIds[userId].filter((id) => id !== channelId);
+					if (state.userIdToChannelIds[userId].length === 0) {
+						delete state.userIdToChannelIds[userId];
+					}
+				}
+			});
 		}
 	},
 	extraReducers(builder) {
@@ -188,6 +241,16 @@ export const userChannelsSlice = createSlice({
 						};
 						UserChannelAdapter.upsertOne(state, userIdsEntity);
 						state.cacheByChannels[channelId] = createCacheMetadata();
+
+						// Update reverse lookup map
+						user_ids.user_ids?.forEach((userId) => {
+							if (!state.userIdToChannelIds[userId]) {
+								state.userIdToChannelIds[userId] = [];
+							}
+							if (!state.userIdToChannelIds[userId].includes(channelId)) {
+								state.userIdToChannelIds[userId].push(channelId);
+							}
+						});
 					} else if (!user_ids) {
 						state.error = 'No data received';
 					}
@@ -228,7 +291,7 @@ export const selectMemberByGroupId = createSelector([getUserChannelsState, (stat
 		return undefined;
 	}
 	const listMember: ChannelMembersEntity[] = [];
-	entities?.user_ids?.map((id, index) => {
+	entities?.user_ids?.forEach((id, index) => {
 		listMember.push({
 			id,
 			user: {
