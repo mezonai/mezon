@@ -65,7 +65,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	useEffect(() => {
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
 		dispatch(fetchAllClansMetrics({ start: startStr, end: endStr, rangeType: periodFilter }));
-	}, [refreshTrigger, dateRange, customStartDate, customEndDate, periodFilter, dispatch]);
+	}, [refreshTrigger, dispatch]);
 
 	// Check for no data state
 	useEffect(() => {
@@ -118,6 +118,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 		setDateRange('7');
 		setCustomStartDate('');
 		setCustomEndDate('');
+		setPeriodFilter('daily');
 		setShowFullPageLoading(true);
 		setPage(1);
 		setRefreshTrigger((prev) => prev + 1);
