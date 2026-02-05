@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
-import { SHOW_POSITION, fileTypeImage, fileTypeVideo } from '@mezon/utils';
-import { ApiMessageAttachment } from 'mezon-js/api.gen';
+import { EMimeTypes, SHOW_POSITION, fileTypeImage, fileTypeVideo } from '@mezon/utils';
+import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
 import { MessageAudioControl } from '../MessageWithUser/MessageAudio/MessageAudioControl';
@@ -28,7 +28,7 @@ export const RenderAttachmentThumbnail = ({ attachment, size, pos, isFileList }:
 	const { setPositionShow } = useMessageContextMenu();
 
 	const handleContextMenu = useCallback(() => {
-		if (attachment.filetype === 'image/gif') {
+		if (attachment.filetype === EMimeTypes.sticker) {
 			setPositionShow(SHOW_POSITION.IN_STICKER);
 		}
 	}, [attachment.filetype]);

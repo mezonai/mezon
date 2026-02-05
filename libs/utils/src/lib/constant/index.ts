@@ -72,11 +72,11 @@ export const typeConverts: ITypeConvert[] = [
 
 export const fileTypeVideo = ['video/mp4', 'video/webm', 'video/mpeg', 'video/x-msvideo'];
 
-export const fileTypeImage = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
+export const fileTypeImage = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg', 'sticker'];
 
 export const isImageFileType = (filetype?: string): boolean => {
 	if (!filetype) return false;
-	return fileTypeImage.includes(filetype) || filetype.startsWith('image/');
+	return fileTypeImage.includes(filetype) || filetype.startsWith('image/') || filetype === 'sticker';
 };
 
 export const isVideoFileType = (filetype?: string): boolean => {

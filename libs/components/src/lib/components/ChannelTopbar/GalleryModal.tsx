@@ -100,7 +100,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 		if (mediaFilter === 'all') {
 			return attachments;
 		} else if (mediaFilter === 'image') {
-			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX));
+			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att.filetype === EMimeTypes.sticker);
 		} else if (mediaFilter === 'video') {
 			return attachments.filter((att) => att.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX));
 		}
@@ -506,6 +506,7 @@ export function GalleryModal({ onClose, rootRef }: GalleryModalProps) {
 					?.filter(
 						(att) =>
 							att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) ||
+							att?.filetype === EMimeTypes.sticker ||
 							att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
 							att?.filetype?.includes(EMimeTypes.mp4) ||
 							att?.filetype?.includes(EMimeTypes.mov)

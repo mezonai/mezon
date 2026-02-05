@@ -69,12 +69,14 @@ export const fetchGalleryAttachments = createAsyncThunk(
 
 			const attachments = response.attachments
 				.filter((att) => {
+					const isImage = att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX);
+					const isVideo = att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
 					if (mediaFilter === 'all') {
-						return att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
+						return isImage || isVideo;
 					} else if (mediaFilter === 'image') {
-						return att?.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX);
+						return isImage;
 					} else if (mediaFilter === 'video') {
-						return att?.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX);
+						return isVideo;
 					}
 					return false;
 				})
