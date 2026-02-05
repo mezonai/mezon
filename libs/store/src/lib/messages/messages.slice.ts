@@ -17,7 +17,10 @@ import {
 	TypeMessage,
 	getMobileUploadedAttachments,
 	getPublicKeys,
-	getWebUploadedAttachments
+	getWebUploadedAttachments,
+	isFacebookLink,
+	isTikTokLink,
+	isYouTubeLink
 } from '@mezon/utils';
 import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
@@ -1109,7 +1112,9 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 
 		const ogpData = selectOgpData(state);
 
-		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0) {
+		const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isFacebookLink(ogpData.url) || isTikTokLink(ogpData.url));
+
+		if (ogpData && ogpData?.channel_id === channelId && content?.mk && content?.mk?.length > 0 && !isSocialMediaLink) {
 			const mk = [...(content.mk ?? [])];
 
 			mk.push({
