@@ -25,7 +25,6 @@ function PreviewOgp() {
 
 		const controller = new AbortController();
 		const { signal } = controller;
-		let hideLoadingTimeout: NodeJS.Timeout | null = null;
 
 		const timeoutId = setTimeout(async () => {
 			try {
@@ -48,18 +47,16 @@ function PreviewOgp() {
 				const data = await res.json();
 				setData(data);
 
-				hideLoadingTimeout = setTimeout(() => {
-					setLoading(false);
-					dispatch(
-						referencesActions.setOgpData({
-							...ogpLink,
-							image: data?.image || '',
-							title: data?.title || '',
-							description: data?.description || '',
-							type: data?.type || ''
-						})
-					);
-				}, 250);
+				setLoading(false);
+				dispatch(
+					referencesActions.setOgpData({
+						...ogpLink,
+						image: data?.image || '',
+						title: data?.title || '',
+						description: data?.description || '',
+						type: data?.type || ''
+					})
+				);
 			} catch (error: any) {
 				if (error.name === 'AbortError') {
 					console.warn('Fetch OGP aborted');
@@ -73,9 +70,6 @@ function PreviewOgp() {
 		return () => {
 			clearTimeout(timeoutId);
 			controller.abort();
-			if (hideLoadingTimeout) {
-				clearTimeout(hideLoadingTimeout);
-			}
 		};
 	}, [ogpLink?.url]);
 	const clearOgpData = () => {
@@ -84,8 +78,16 @@ function PreviewOgp() {
 
 	if (loading) {
 		return (
-			<div className="px-3 pb-2 pt-2 flex bg-theme-input text-theme-primary h-20 items-center gap-2">
-				<Icons.LoadingSpinner className={`!w-10 !h-10`} />
+			<div className="space-y-4 animate-pulse pb-2 pt-2 flex bg-theme-input text-theme-primary h-20 items-center gap-2">
+				<div className="bg-item-theme rounded-lg border-theme-primary p-4 h-[84px] w-full">
+					<div className="flex items-center gap-4 h-full">
+						<div className="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700"></div>
+						<div className="flex-1 space-y-2">
+							<div className="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4"></div>
+							<div className="h-3 bg-gray-300 dark:bg-gray-700 rounded w-1/2"></div>
+						</div>
+					</div>
+				</div>
 			</div>
 		);
 	}
