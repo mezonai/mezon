@@ -40,6 +40,7 @@ import {
 	Direction_Mode,
 	EOverriddenPermission,
 	LoadMoreDirection,
+	SYSTEM_SENDER_ID,
 	TIME_COMBINE_1_HOUR,
 	animateScroll,
 	buildClassName,
@@ -737,7 +738,6 @@ const TimelineMessageList: React.FC<TimelineMessageListProps> = memo(
 	}) => {
 		const effectiveChannelId = topicId || channelId;
 
-		const { t } = useTranslation('timeline');
 		const dispatch = useAppDispatch();
 		const { setSafeTimeout, clearSafeTimeout } = useSafeTimeout();
 		const removeForceScrollTimeoutRef = useRef<number | null>(null);
@@ -746,12 +746,20 @@ const TimelineMessageList: React.FC<TimelineMessageListProps> = memo(
 		const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, effectiveChannelId));
 		const idMessageToJump = useSelector(selectIdMessageToJump);
 		const entities = useAppSelector((state) => selectMessageEntitiesByChannelId(state, effectiveChannelId));
+
 		const firstMsgOfThisTopic = useAppSelector((state) => selectFirstMessageOfCurrentTopic(state, channelId));
 		const lastMessageUnreadId = useAppSelector((state) => selectUnreadMessageIdByChannelId(state, effectiveChannelId));
 
 		const openEditMessageState = useSelector(selectOpenEditMessageState);
 		const idMessageRefEdit = useSelector(selectIdMessageRefEdit);
 		const channelDraftMessage = useAppSelector((state) => selectChannelDraftMessage(state, effectiveChannelId));
+
+		const filteredMessageIds = useMemo(() => {
+			return messageIds.filter((messageId) => {
+				const message = entities[messageId];
+				return message?.sender_id !== SYSTEM_SENDER_ID;
+			});
+		}, [messageIds, entities]);
 
 		const getIsEditing = useCallback(
 			(messageId: string) => {
@@ -1141,9 +1149,9 @@ const TimelineMessageList: React.FC<TimelineMessageListProps> = memo(
 			const groups = new Map<string, (typeof entities)[string][]>();
 			let currentGroupId: string | null = null;
 
-			messageIds.forEach((messageId, index) => {
+			filteredMessageIds.forEach((messageId, index) => {
 				const message = entities[messageId];
-				const prevMessage = entities[messageIds[index - 1]];
+				const prevMessage = entities[filteredMessageIds[index - 1]];
 
 				const isSameUser = message?.user?.id === prevMessage?.user?.id;
 				const timeDiff = (message?.create_time_seconds || 0) - (prevMessage?.create_time_seconds || 0);
@@ -1158,32 +1166,42 @@ const TimelineMessageList: React.FC<TimelineMessageListProps> = memo(
 			});
 
 			return groups;
-		}, [messageIds, entities]);
+		}, [filteredMessageIds, entities]);
 
-		const isOnlySystemMessage = messageIds?.length <= 1;
+		const hasNoUserMessages = filteredMessageIds?.length < 1;
 
 		const renderedMessages = useMemo(() => {
 			const baseUnreadMessageId = lastSeenAtBottomRef.current || lastMessageUnreadId;
-			return messageIds.map((messageId, index) => {
+			let groupIndex = 0;
+
+			return filteredMessageIds.map((messageId, index) => {
 				const checkMessageTargetToMoved = msgIdJumpHightlight.current === messageId && messageId !== lastMessageId;
 				const messageReplyHighlight = (dataReferences?.message_ref_id && dataReferences?.message_ref_id === messageId) || false;
 				const isSelected = selectedMessageId === messageId;
 				const isEditing = getIsEditing(messageId);
-				const previousMessageId = messageIds[index - 1];
+				const previousMessageId = filteredMessageIds[index - 1];
 				const isPreviousMessageLastSeen =
 					baseUnreadMessageId && Boolean(previousMessageId === baseUnreadMessageId && previousMessageId !== lastMessageId);
 				const shouldShowUnreadBreak = isPreviousMessageLastSeen && entities[messageId]?.sender_id !== user?.user?.id;
+
+				const groupedMessages = groupedMessagesMap.get(messageId) || [];
+				const isGroupHead = groupedMessages.length > 0;
+
+				const currentGroupIndex = groupIndex;
+				if (isGroupHead) {
+					groupIndex++;
+				}
 
 				return (
 					<MemorizedChannelMessage
 						key={messageId}
 						index={index}
 						message={entities[messageId]}
-						previousMessage={entities[messageIds[index - 1]]}
+						previousMessage={entities[filteredMessageIds[index - 1]]}
 						avatarDM={avatarDM}
 						username={username}
 						messageId={messageId}
-						nextMessageId={messageIds[index + 1]}
+						nextMessageId={filteredMessageIds[index + 1]}
 						channelId={channelId}
 						isHighlight={messageId === idMessageNotified}
 						mode={mode}
@@ -1200,13 +1218,13 @@ const TimelineMessageList: React.FC<TimelineMessageListProps> = memo(
 						isEditing={isEditing}
 						shouldShowUnreadBreak={!!shouldShowUnreadBreak}
 						viewMode="timeline"
-						timelinePosition={index % 2 === 0 ? 'left' : 'right'}
-						groupedMessages={groupedMessagesMap.get(messageId) || []}
+						timelinePosition={currentGroupIndex % 2 === 0 ? 'left' : 'right'}
+						groupedMessages={groupedMessages}
 					/>
 				);
 			});
 		}, [
-			messageIds,
+			filteredMessageIds,
 			avatarDM,
 			canSendMessage,
 			channelId,
@@ -1277,7 +1295,7 @@ const TimelineMessageList: React.FC<TimelineMessageListProps> = memo(
 
 		return (
 			<div
-				className={`w-full h-full relative messages-container select-text bg-theme-chat timeline-view ${isOnlySystemMessage ? 'timeline-empty' : ''}`}
+				className={`w-full h-full relative messages-container select-text bg-theme-chat timeline-view ${hasNoUserMessages ? 'timeline-empty' : ''}`}
 			>
 				<StickyLoadingIndicator messageCount={messageIds?.length} />
 				<div
@@ -1293,27 +1311,13 @@ const TimelineMessageList: React.FC<TimelineMessageListProps> = memo(
 					ref={chatRef}
 					className={'messages-scroll outline-none w-full scroll-big'}
 				>
-					{isOnlySystemMessage ? (
-						<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end timeline-messages-wrap">
-							{withHistoryTriggers && <div ref={backwardsTriggerRef} key="backwards-trigger" className="backwards-trigger" />}
-							<div className="flex items-center justify-center flex-1">
-								<div className="text-center text-gray-400">
-									<svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path
-											strokeLinecap="round"
-											strokeLinejoin="round"
-											strokeWidth={1.5}
-											d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-										/>
-									</svg>
-									<p className="text-lg font-medium">{t('noMessagesYet')}</p>
-									<p className="text-sm mt-2">{t('beTheFirst')}</p>
-								</div>
-							</div>
-							{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
-							<div ref={fabTriggerRef} key="fab-trigger" className="fab-trigger"></div>
-							<div className="h-[20px] w-[1px] pointer-events-none"></div>
-						</div>
+					{hasNoUserMessages ? (
+						<TimelineEmptyState
+							withHistoryTriggers={withHistoryTriggers}
+							backwardsTriggerRef={backwardsTriggerRef}
+							forwardsTriggerRef={forwardsTriggerRef}
+							fabTriggerRef={fabTriggerRef}
+						/>
 					) : (
 						<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end timeline-messages-wrap">
 							{isTopic && firstMsgOfThisTopic && (
@@ -1363,6 +1367,71 @@ const MemoizedTimelineMessages = memo(
 export default MemoizedTimelineMessages;
 
 (MemoizedTimelineMessages as any).displayName = 'MemoizedTimelineMessages';
+
+const TimelineEmptyState = memo(
+	({
+		withHistoryTriggers,
+		backwardsTriggerRef,
+		forwardsTriggerRef,
+		fabTriggerRef
+	}: {
+		withHistoryTriggers: boolean;
+		backwardsTriggerRef: React.RefObject<HTMLDivElement>;
+		forwardsTriggerRef: React.RefObject<HTMLDivElement>;
+		fabTriggerRef: React.RefObject<HTMLDivElement>;
+	}) => {
+		const { t } = useTranslation('timeline');
+		const isLoading = useAppSelector(selectMessageIsLoading);
+		const [showEmptyAfterDelay, setShowEmptyAfterDelay] = useState(false);
+
+		useEffect(() => {
+			const timer = setTimeout(() => {
+				setShowEmptyAfterDelay(true);
+			}, 1000);
+
+			return () => {
+				clearTimeout(timer);
+				setShowEmptyAfterDelay(false);
+			};
+		}, []);
+
+		if (isLoading || !showEmptyAfterDelay) {
+			return (
+				<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end timeline-messages-wrap">
+					{withHistoryTriggers && <div ref={backwardsTriggerRef} key="backwards-trigger" className="backwards-trigger" />}
+					{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
+					<div ref={fabTriggerRef} key="fab-trigger" className="fab-trigger"></div>
+					<div className="h-[20px] w-[1px] pointer-events-none"></div>
+				</div>
+			);
+		}
+
+		return (
+			<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end timeline-messages-wrap">
+				{withHistoryTriggers && <div ref={backwardsTriggerRef} key="backwards-trigger" className="backwards-trigger" />}
+				<div className="flex items-center justify-center flex-1">
+					<div className="text-center text-gray-400">
+						<svg className="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={1.5}
+								d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+							/>
+						</svg>
+						<p className="text-lg font-medium">{t('noMessagesYet')}</p>
+						<p className="text-sm mt-2">{t('beTheFirst')}</p>
+					</div>
+				</div>
+				{withHistoryTriggers && <div ref={forwardsTriggerRef} key="forwards-trigger" className="forwards-trigger" />}
+				<div ref={fabTriggerRef} key="fab-trigger" className="fab-trigger"></div>
+				<div className="h-[20px] w-[1px] pointer-events-none"></div>
+			</div>
+		);
+	}
+);
+
+TimelineEmptyState.displayName = 'TimelineEmptyState';
 
 const StickyLoadingIndicator = memo(({ messageCount }: { messageCount: number }) => {
 	const isLoading = useAppSelector(selectMessageIsLoading);

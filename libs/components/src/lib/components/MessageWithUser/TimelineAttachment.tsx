@@ -13,6 +13,7 @@ import isElectron from 'is-electron';
 import type { ChannelStreamMode } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { memo, useCallback, useMemo } from 'react';
+import { MessageAudio } from './MessageAudio/MessageAudio';
 
 type TimelineAttachmentProps = {
 	message: IMessageWithUser;
@@ -23,6 +24,7 @@ type TimelineAttachmentProps = {
 const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 	const images: ApiMessageAttachment[] = [];
 	const videos: ApiMessageAttachment[] = [];
+	const audio: ApiMessageAttachment[] = [];
 	const others: ApiMessageAttachment[] = [];
 
 	attachments.forEach((attachment) => {
@@ -45,10 +47,15 @@ const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 			return;
 		}
 
+		if (attachment.filetype?.includes(EMimeTypes.audio)) {
+			audio.push(attachment);
+			return;
+		}
+
 		others.push(attachment);
 	});
 
-	return { images, videos, others };
+	return { images, videos, audio, others };
 };
 
 const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineAttachmentProps) => {
@@ -58,7 +65,7 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 		[message.attachments]
 	);
 
-	const { images, videos } = useMemo(() => classifyAttachments(validateAttachment), [validateAttachment]);
+	const { images, videos, audio } = useMemo(() => classifyAttachments(validateAttachment), [validateAttachment]);
 
 	const mediaItems = useMemo(() => [...images, ...videos], [images, videos]);
 
@@ -223,55 +230,60 @@ const TimelineAttachment = memo(({ message, maxThumbnails = 3, mode }: TimelineA
 		[message, mode, dispatch]
 	);
 
-	if (mediaItems.length === 0) return null;
+	if (mediaItems.length === 0 && audio.length === 0) return null;
 
 	return (
-		<div className="flex gap-2 mt-3">
-			{visibleItems.map((item, index) => {
-				const isVideo =
-					item.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
-					item.filetype?.includes(EMimeTypes.mp4) ||
-					item.filetype?.includes(EMimeTypes.mov);
+		<div className="flex flex-col gap-2 mt-3">
+			{mediaItems.length > 0 && (
+				<div className="flex gap-2">
+					{visibleItems.map((item, index) => {
+						const isVideo =
+							item.filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) ||
+							item.filetype?.includes(EMimeTypes.mp4) ||
+							item.filetype?.includes(EMimeTypes.mov);
 
-				const thumbnailUrl =
-					isVideo && item.thumbnail
-						? createImgproxyUrl(item.thumbnail, {
-								width: 120,
-								height: 120,
-								resizeType: 'fill'
-							})
-						: createImgproxyUrl(item.url || '', {
-								width: 120,
-								height: 120,
-								resizeType: 'fill'
-							});
+						const thumbnailUrl =
+							isVideo && item.thumbnail
+								? createImgproxyUrl(item.thumbnail, {
+										width: 120,
+										height: 120,
+										resizeType: 'fill'
+									})
+								: createImgproxyUrl(item.url || '', {
+										width: 120,
+										height: 120,
+										resizeType: 'fill'
+									});
 
-				return (
-					<div
-						key={`${item.url}-${index}`}
-						className="relative w-[50px] h-[50px] rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
-						onClick={() => handleClick(item)}
-					>
-						{isVideo ? (
-							<video src={item.url} className="w-full h-full object-cover" muted playsInline />
-						) : (
-							<img src={thumbnailUrl} alt="" className="w-full h-full object-cover" />
-						)}
-						{isVideo && (
-							<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
-								<svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-									<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-								</svg>
+						return (
+							<div
+								key={`${item.url}-${index}`}
+								className="relative w-[50px] h-[50px] rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+								onClick={() => handleClick(item)}
+							>
+								{isVideo ? (
+									<video src={item.url} className="w-full h-full object-cover" muted playsInline />
+								) : (
+									<img src={thumbnailUrl} alt="" className="w-full h-full object-cover" />
+								)}
+								{isVideo && (
+									<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-30">
+										<svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+											<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
+										</svg>
+									</div>
+								)}
+								{index === maxThumbnails - 1 && remainingCount > 0 && (
+									<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60">
+										<span className="text-white text-2xl font-bold">+{remainingCount}</span>
+									</div>
+								)}
 							</div>
-						)}
-						{index === maxThumbnails - 1 && remainingCount > 0 && (
-							<div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60">
-								<span className="text-white text-2xl font-bold">+{remainingCount}</span>
-							</div>
-						)}
-					</div>
-				);
-			})}
+						);
+					})}
+				</div>
+			)}
+			{audio.length > 0 && audio.map((audioItem, index) => <MessageAudio key={`${index}_${audioItem.url}`} audioUrl={audioItem.url || ''} />)}
 		</div>
 	);
 });
