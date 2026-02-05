@@ -66,7 +66,7 @@ export type MessageRef = {
 type TimelineMessageGroupProps = {
 	messages: MessagesEntity[];
 	timelinePosition: 'left' | 'right';
-	onContextMenu: (event: React.MouseEvent<HTMLElement>, props?: Partial<MessageContextMenuProps>) => void;
+	onContextMenu: (event: React.MouseEvent<HTMLElement>, messageId: string, props?: Partial<MessageContextMenuProps>) => void;
 	popup: () => ReactNode;
 	mode: number;
 };
@@ -139,7 +139,7 @@ const TimelineMessageGroup = ({ messages, timelinePosition, onContextMenu, popup
 							key={msg.id}
 							id={index > 0 ? `msg-${msg.id}` : undefined}
 							className={index > 0 ? 'mt-3 pt-3 border-t border-gray-200 dark:border-gray-700' : ''}
-							onContextMenu={(e) => onContextMenu(e)}
+							onContextMenu={(e) => onContextMenu(e, msg.id)}
 						>
 							<div className="flex items-center gap-2 mb-1">
 								<span className="text-xs text-theme-primary-hover text-theme-primary">{msgTime}</span>
@@ -207,7 +207,14 @@ export const ChannelMessage: ChannelMessageComponent = ({
 		(event: React.MouseEvent<HTMLElement>, props?: Partial<MessageContextMenuProps>) => {
 			showMessageContextMenu(event, messageId, mode, isTopic as boolean, { ...props, viewMode });
 		},
-		[showMessageContextMenu, messageId, mode, viewMode]
+		[showMessageContextMenu, messageId, mode, viewMode, isTopic]
+	);
+
+	const handleContextMenuWithMessageId = useCallback(
+		(event: React.MouseEvent<HTMLElement>, targetMessageId: string, props?: Partial<MessageContextMenuProps>) => {
+			showMessageContextMenu(event, targetMessageId, mode, isTopic as boolean, { ...props, viewMode });
+		},
+		[showMessageContextMenu, mode, viewMode, isTopic]
 	);
 
 	const mess = (() => {
@@ -260,7 +267,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 					<TimelineMessageGroup
 						messages={groupedMessages}
 						timelinePosition={timelinePosition}
-						onContextMenu={handleContextMenu}
+						onContextMenu={handleContextMenuWithMessageId}
 						popup={popup}
 						mode={mode}
 					/>

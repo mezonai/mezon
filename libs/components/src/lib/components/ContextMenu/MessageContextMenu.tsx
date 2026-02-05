@@ -550,11 +550,11 @@ function MessageContextMenu({
 
 	const [enableEditMessageItem, enableReportMessageItem] = useMemo(() => {
 		if (!checkPos) return [false, false];
-		const enableEdit = isMyMessage && !message?.content?.tp;
+		const enableEdit = isMyMessage && !message?.content?.tp && viewMode !== 'timeline';
 		const enableReport = !isMyMessage;
 
 		return [enableEdit, enableReport];
-	}, [isMyMessage, checkPos, message?.content?.tp]);
+	}, [isMyMessage, checkPos, message?.content?.tp, viewMode]);
 
 	const pinMessageStatus = useMemo(() => {
 		if (!checkPos) return undefined;
@@ -568,6 +568,7 @@ function MessageContextMenu({
 
 	const enableCreateThreadItem = useMemo(() => {
 		if (!checkPos) return false;
+		if (viewMode === 'timeline') return false;
 		if (activeMode === ChannelStreamMode.STREAM_MODE_DM || activeMode === ChannelStreamMode.STREAM_MODE_GROUP) {
 			return false;
 		}
@@ -575,7 +576,7 @@ function MessageContextMenu({
 			return false;
 		}
 		return canManageThread;
-	}, [checkPos, activeMode, canManageThread, currentChannelType]);
+	}, [checkPos, activeMode, canManageThread, currentChannelType, viewMode]);
 
 	const enableDelMessageItem = useMemo(() => {
 		if (!checkPos || message?.content?.tp) return false;
@@ -773,7 +774,10 @@ function MessageContextMenu({
 		});
 		builder.when(
 			checkPos &&
-				(canSendMessage || activeMode === ChannelStreamMode.STREAM_MODE_DM || activeMode === ChannelStreamMode.STREAM_MODE_GROUP || isTopic) &&
+				(canSendMessage ||
+					activeMode === ChannelStreamMode.STREAM_MODE_DM ||
+					activeMode === ChannelStreamMode.STREAM_MODE_GROUP ||
+					isTopic) &&
 				viewMode !== 'timeline',
 			(builder) => {
 				builder.addMenuItem(
@@ -826,7 +830,7 @@ function MessageContextMenu({
 			notAllowedType &&
 			!isTopic &&
 			canSendMessage &&
-			builder.when(checkPos && hasPermissionCreateTopic, (builder) => {
+			builder.when(checkPos && hasPermissionCreateTopic && viewMode !== 'timeline', (builder) => {
 				builder.addMenuItem('topicDiscussion', t('topicDiscussion'), handleCreateTopic, <Icons.TopicIcon defaultSize="w-4 h-4" />);
 			});
 		builder.when(checkPos, (builder) => {
@@ -852,7 +856,7 @@ function MessageContextMenu({
 				</svg>
 			);
 		});
-		builder.when(checkPos && quickMenuItems?.length > 0, (builder) => {
+		builder.when(checkPos && quickMenuItems?.length > 0 && viewMode !== 'timeline', (builder) => {
 			builder.addMenuItem(
 				'quickMenus',
 				t('quickMenus'),
