@@ -40,7 +40,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[]) => {
 			return;
 		}
 
-		if (attachment.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX)) {
+		if (attachment.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || attachment.filetype === EMimeTypes.sticker) {
 			images.push(attachment);
 			return;
 		}

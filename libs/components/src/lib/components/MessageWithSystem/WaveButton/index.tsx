@@ -2,7 +2,7 @@ import { useChatSending } from '@mezon/core';
 import type { RootState } from '@mezon/store';
 import { getStore, selectBanMeInChannel, selectCurrentChannel, selectCurrentDM } from '@mezon/store';
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
-import { MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME } from '@mezon/utils';
+import { EMimeTypes, MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ApiChannelDescription } from 'mezon-js/api.gen';
 import { memo, useMemo } from 'react';
@@ -64,7 +64,7 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 			const attachments = [
 				{
 					url: urlIcon,
-					filetype: 'image/gif',
+					filetype: EMimeTypes.sticker,
 					filename: STICKER_WAVE.NAME,
 					size: 374892,
 					width: 150,

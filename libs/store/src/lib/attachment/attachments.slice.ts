@@ -447,7 +447,11 @@ export const selectAllListDocumentByChannel = createSelector([getAttachmentState
 	return (
 		state?.listAttachmentsByChannel[channelId]?.attachments?.reduce<AttachmentEntity[]>((result, att) => {
 			const { filetype, filename } = att || {};
-			if (!filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) && !filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX)) {
+			if (
+				!filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
+				!filetype?.startsWith(ETypeLinkMedia.VIDEO_PREFIX) &&
+				filetype !== EMimeTypes.sticker
+			) {
 				result.push({
 					...att,
 					filename: filename ?? 'File',
