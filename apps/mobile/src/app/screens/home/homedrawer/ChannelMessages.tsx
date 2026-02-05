@@ -89,6 +89,12 @@ const ChannelMessages = React.memo(
 		const [haveScrollToBottom, setHaveScrollToBottom] = useState<boolean>(false);
 		const [listMessageLayout, setListMessageLayout] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
+		const initialScrollIndex = useMemo(() => {
+			if (!lastSeenMessageId || !messages?.length) return undefined;
+			const index = messages.findIndex((message: { id: string }) => message.id === lastSeenMessageId);
+			return index >= 5 ? index : undefined;
+		}, [lastSeenMessageId, messages]);
+
 		useEffect(() => {
 			const event = DeviceEventEmitter.addListener(ActionEmitEvent.SCROLL_TO_BOTTOM_CHAT, () => {
 				setIsShowJumpToPresent(false);
@@ -135,14 +141,12 @@ const ChannelMessages = React.memo(
 				if (isMessageExist) {
 					const indexToJump = messages?.findIndex?.((message: { id: string }) => message.id === idMessageToJump?.id);
 					if (indexToJump !== -1 && flatListRef.current && indexToJump > 0 && messages?.length - 1 >= indexToJump) {
-						setTimeout(() => {
-							flatListRef?.current?.scrollToIndex?.({
-								animated: true,
-								index: indexToJump,
-								viewPosition: 0.5,
-								viewOffset: 20
-							});
-						}, 100);
+						flatListRef?.current?.scrollToIndex?.({
+							animated: false,
+							index: indexToJump,
+							viewPosition: 0.5,
+							viewOffset: 20
+						});
 					}
 				}
 				timeout = setTimeout(() => {
@@ -350,6 +354,7 @@ const ChannelMessages = React.memo(
 						lastSeenMessageId={lastSeenMessageId}
 						onLoadMore={onLoadMore}
 						isLoadMoreBottom={isLoadMore?.current?.[ELoadMoreDirection.bottom]}
+						initialScrollIndex={initialScrollIndex}
 					/>
 				) : (
 					<View />
