@@ -271,3 +271,55 @@ export const logoutGlobal = async () => {
 	store.dispatch(appActions.setIsShowWelcomeMobile(false));
 	store.dispatch(appActions.setLoadingMainMobile(false));
 };
+
+export const isValidOgpUrl = (url: string): boolean => {
+	if (!url || typeof url !== 'string') {
+		return false;
+	}
+
+	try {
+		const normalizedUrl = url.toLowerCase().trim();
+
+		const blockedPatterns = [
+			/(?:https?:\/\/)?(?:www\.)?youtube\.com/i,
+			/(?:https?:\/\/)?(?:www\.)?youtu\.be/i,
+			/(?:https?:\/\/)?(?:m\.)?youtube\.com/i,
+			/(?:https?:\/\/)?(?:music\.)?youtube\.com/i,
+			/(?:https?:\/\/)?(?:gaming\.)?youtube\.com/i,
+			/(?:https?:\/\/)?(?:studio\.)?youtube\.com/i,
+			/(?:https?:\/\/)?(?:[a-z]{2}\.)?youtube\.com/i,
+
+			/(?:https?:\/\/)?(?:www\.)?facebook\.com/i,
+			/(?:https?:\/\/)?(?:m\.)?facebook\.com/i,
+			/(?:https?:\/\/)?(?:web\.)?facebook\.com/i,
+			/(?:https?:\/\/)?(?:business\.)?facebook\.com/i,
+			/(?:https?:\/\/)?(?:developers\.)?facebook\.com/i,
+			/(?:https?:\/\/)?(?:www\.)?fb\.com/i,
+			/(?:https?:\/\/)?(?:www\.)?fb\.me/i,
+			/(?:https?:\/\/)?(?:www\.)?messenger\.com/i,
+			/(?:https?:\/\/)?(?:www\.)?fbcdn\.net/i,
+			/(?:https?:\/\/)?(?:[a-z-]+\.)?facebook\.com/i,
+
+			/(?:https?:\/\/)?(?:www\.)?tiktok\.com/i,
+			/(?:https?:\/\/)?(?:m\.)?tiktok\.com/i,
+			/(?:https?:\/\/)?(?:vm\.)?tiktok\.com/i,
+			/(?:https?:\/\/)?(?:vt\.)?tiktok\.com/i,
+			/(?:https?:\/\/)?(?:www\.)?tiktokv\.com/i,
+			/(?:https?:\/\/)?(?:www\.)?tiktokcdn\.com/i,
+			/(?:https?:\/\/)?(?:[a-z]{2}\.)?tiktok\.com/i,
+
+			/(?:https?:\/\/)?(?:www\.)?mezon\.ai/i
+		];
+
+		for (const pattern of blockedPatterns) {
+			if (pattern.test(normalizedUrl)) {
+				return false;
+			}
+		}
+
+		return true;
+	} catch (error) {
+		console.error('Error validating OGP URL:', error);
+		return false;
+	}
+};
