@@ -42,9 +42,9 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const [channelLimit] = useState(10);
 	const [userPage, setUserPage] = useState(1);
 	const [userLimit] = useState(10);
-	const [channelSortBy, setChannelSortBy] = useState<string>('channel_name');
+	const [channelSortBy, setChannelSortBy] = useState<string | undefined>(undefined);
 	const [channelSort, setChannelSort] = useState<'asc' | 'desc'>('asc');
-	const [userSortBy, setUserSortBy] = useState<string>('user_name');
+	const [userSortBy, setUserSortBy] = useState<string | undefined>(undefined);
 	const [userSort, setUserSort] = useState<'asc' | 'desc'>('asc');
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -219,7 +219,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 			selectedChannelColumns,
 			setIsExportingChannelCSV,
 			channelSortBy,
-			channelSort
+			channelSortBy ? channelSort : undefined
 		);
 	};
 
@@ -230,7 +230,17 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const handleExportUserCSV = async () => {
 		if (!clanId) return;
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
-		await handleUserCSVExport(dispatch, clanId, startStr, endStr, periodFilter, selectedUserColumns, setIsExportingUserCSV, userSortBy, userSort);
+		await handleUserCSVExport(
+			dispatch,
+			clanId,
+			startStr,
+			endStr,
+			periodFilter,
+			selectedUserColumns,
+			setIsExportingUserCSV,
+			userSortBy,
+			userSortBy ? userSort : undefined
+		);
 	};
 
 	return (

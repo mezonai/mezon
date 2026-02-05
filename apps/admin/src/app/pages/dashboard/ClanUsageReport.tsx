@@ -31,7 +31,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const [hasNoData, setHasNoData] = useState(false);
 	const [showFullPageLoading, setShowFullPageLoading] = useState(false);
 	const [isExportingCSV, setIsExportingCSV] = useState(false);
-	const [sortBy, setSortBy] = useState<string>('clan_name');
+	const [sortBy, setSortBy] = useState<string | undefined>(undefined);
 	const [sort, setSort] = useState<'asc' | 'desc'>('asc');
 
 	const tableRef = useRef<HTMLDivElement>(null);
@@ -126,7 +126,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const handleExportCSV = async () => {
 		shouldScrollToTable.current = true;
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
-		await handleCSVExport(dispatch, startStr, endStr, periodFilter, selectedColumns, setIsExportingCSV, sortBy, sort);
+		await handleCSVExport(dispatch, startStr, endStr, periodFilter, selectedColumns, setIsExportingCSV, sortBy, sortBy ? sort : undefined);
 	};
 
 	const handleClanClick = (clanId: string) => {

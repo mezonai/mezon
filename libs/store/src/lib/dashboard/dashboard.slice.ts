@@ -76,9 +76,9 @@ export const fetchClansList = createAsyncThunk(
 			let url = `${base}/dashboard/list-all-clans/metrics?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}${rangeType ? `&rangeType=${rangeType}` : ''}`;
 			if (sortBy) {
 				url += `&sort_by=${sortBy}`;
-			}
-			if (sort) {
-				url += `&sort=${sort}`;
+				if (sort) {
+					url += `&sort=${sort}`;
+				}
 			}
 			const res = await fetch(url, { headers });
 			if (!res.ok) {
@@ -163,9 +163,9 @@ export const fetchClanChannels = createAsyncThunk(
 			let url = `${base}/dashboard/${clanId}/channels?start_date=${start}&end_date=${end}${page ? `&page=${page}` : ''}${limit ? `&limit=${limit}` : ''}`;
 			if (sortBy) {
 				url += `&sort_by=${sortBy}`;
-			}
-			if (sort) {
-				url += `&sort=${sort}`;
+				if (sort) {
+					url += `&sort=${sort}`;
+				}
 			}
 			const res = await fetch(url, { headers });
 			if (!res.ok) {
@@ -215,9 +215,9 @@ export const fetchChannelUsers = createAsyncThunk(
 			let url = `${base}/dashboard/${clanId}/users?start_date=${start}&end_date=${end}&page=${page}&limit=${limit}`;
 			if (sortBy) {
 				url += `&sort_by=${sortBy}`;
-			}
-			if (sort) {
-				url += `&sort=${sort}`;
+				if (sort) {
+					url += `&sort=${sort}`;
+				}
 			}
 			const res = await fetch(url, { headers });
 			if (!res.ok) {
