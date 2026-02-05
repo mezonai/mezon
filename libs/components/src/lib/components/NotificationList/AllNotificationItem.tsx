@@ -268,7 +268,7 @@ function AllTabContent({ message, subject, category, senderId, embed }: IMention
 															username: message.username
 														}
 													},
-													attachments: [{ url: message.attachment_link }]
+													attachments: [{ url: message.attachment_link, filetype: message.attachment_type }]
 												}}
 												defaultMaxWidth={TOPBARS_MAX_WIDTH}
 											/>
