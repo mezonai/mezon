@@ -20,7 +20,7 @@ const RenderOgpPreview = ({ ogpItem, url }: RenderOgpPreviewProps) => {
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue, isTabletLandscape);
-	const { resolution } = useImageResolution({ uri: ogpItem.image });
+	const { resolution } = useImageResolution({ uri: ogpItem?.image || '' });
 	const { width } = useWindowDimensions();
 	const ogpViewWidth = isTabletLandscape ? width * 0.4 : width * 0.8;
 

@@ -17,7 +17,8 @@ import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { NativeHttpClient } from '../../../../../..//utils/NativeHttpClient';
-import { isValidOgpUrl } from '../../../../../../utils/helpers';
+
+const MEZONAI_PATTERN = /^https:\/\/mezon\.ai\/chat/i;
 
 export function useNativeHttpSending(options: UseChatSendingOptions) {
 	const { mode, channelOrDirect, fromTopic = false } = options;
@@ -56,7 +57,7 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 			for (const markdown of markdowns) {
 				if (markdown.type === EBacktickType.LINK) {
 					const link = contentText?.slice(markdown.s, markdown.e);
-					if (isValidOgpUrl(link)) {
+					if (!MEZONAI_PATTERN.test(link)) {
 						const datafetch = await NativeHttpClient.post(
 							`${process.env.NX_OGP_URL}`,
 							JSON.stringify({
@@ -103,7 +104,7 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 		) => {
 			const contentMessage = content;
 			if (content?.mk?.some((item) => item.type === EBacktickType.LINK)) {
-				const ogpData = await getOGPFromLinks(content?.mk, content?.t);
+				const ogpData = await getOGPFromLinks(content?.mk, content?.t ?? '');
 				if (ogpData) {
 					const messageMarkdown = content?.mk;
 
@@ -111,8 +112,8 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 						title: ogpData?.data?.title,
 						description: ogpData?.data?.description,
 						image: ogpData?.data?.image,
-						s: content?.t?.length,
-						e: content?.t?.length + 1,
+						s: content?.t?.length ?? 0,
+						e: (content?.t?.length ?? 0) + 1,
 						type: EBacktickType.OGP_PREVIEW,
 						index: ogpData?.index || 0,
 						url: ogpData?.data?.url

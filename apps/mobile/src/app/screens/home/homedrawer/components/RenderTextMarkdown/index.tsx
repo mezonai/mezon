@@ -570,6 +570,8 @@ export const RenderTextMarkdownContent = ({
 							</Text>
 						);
 						break;
+					case EBacktickType.LINKFACEBOOK:
+					case EBacktickType.LINKTIKTOK:
 					case EBacktickType.VOICE_LINK:
 					case EBacktickType.LINK: {
 						if (isYouTubeLink(contentInElement || '')) {
