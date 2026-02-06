@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { ClanData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
+import SortIcon from './SortIcon';
 
 interface ClansTableProps {
 	data: ClanData[];
@@ -40,34 +41,6 @@ function ClansTable({
 	tableRef
 }: ClansTableProps) {
 	const { t } = useTranslation('dashboard');
-
-	const getSortIcon = (column: string) => {
-		if (sortBy !== column) {
-			// Not sorted - both arrows enabled
-			return (
-				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
-				</svg>
-			);
-		}
-		if (sort === 'asc') {
-			// Ascending - only top arrow enabled
-			return (
-				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
-				</svg>
-			);
-		}
-		// Descending - only bottom arrow enabled
-		return (
-			<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-				<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" opacity="0.3" />
-				<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
-			</svg>
-		);
-	};
 
 	return (
 		<div ref={tableRef} className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
@@ -110,7 +83,7 @@ function ClansTable({
 										onClick={() => onSort?.('clan_name')}
 										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
 									>
-										{getSortIcon('clan_name')}
+										<SortIcon column="clan_name" sortBy={sortBy} sort={sort} />
 									</button>
 									<input
 										aria-label="Select Clan Name column"
@@ -128,7 +101,7 @@ function ClansTable({
 										onClick={() => onSort?.('active_users')}
 										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
 									>
-										{getSortIcon('active_users')}
+										<SortIcon column="active_users" sortBy={sortBy} sort={sort} />
 									</button>
 									<input
 										aria-label="Select Active users column"
@@ -146,7 +119,7 @@ function ClansTable({
 										onClick={() => onSort?.('active_channels')}
 										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
 									>
-										{getSortIcon('active_channels')}
+										<SortIcon column="active_channels" sortBy={sortBy} sort={sort} />
 									</button>
 									<input
 										aria-label="Select Active channels column"
@@ -164,7 +137,7 @@ function ClansTable({
 										onClick={() => onSort?.('messages')}
 										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
 									>
-										{getSortIcon('messages')}
+										<SortIcon column="messages" sortBy={sortBy} sort={sort} />
 									</button>
 									<input
 										aria-label="Select Messages column"

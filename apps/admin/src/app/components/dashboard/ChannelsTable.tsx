@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { ChannelsData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
+import SortIcon from './SortIcon';
 
 interface ChannelsTableProps {
 	data: ChannelsData[];
@@ -34,31 +35,6 @@ function ChannelsTable({
 	onSort
 }: ChannelsTableProps) {
 	const { t } = useTranslation('dashboard');
-
-	const getSortIcon = (column: string) => {
-		if (sortBy !== column) {
-			return (
-				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
-				</svg>
-			);
-		}
-		if (sort === 'asc') {
-			return (
-				<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-					<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" />
-					<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" opacity="0.3" />
-				</svg>
-			);
-		}
-		return (
-			<svg width="10" height="16" viewBox="0 0 10 16" fill="none" className="-my-1">
-				<path d="M5 2L8 6H2L5 2Z" fill="#5865F2" opacity="0.3" />
-				<path d="M5 14L2 10H8L5 14Z" fill="#5865F2" />
-			</svg>
-		);
-	};
 
 	return (
 		<div className="bg-white dark:bg-[#2b2d31] p-6 rounded-lg border dark:border-[#4d4f52]">
@@ -101,7 +77,7 @@ function ChannelsTable({
 										onClick={() => onSort?.('channel_name')}
 										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
 									>
-										{getSortIcon('channel_name')}
+										<SortIcon column="channel_name" sortBy={sortBy} sort={sort} />
 									</button>
 									<input
 										aria-label="Select Channel name column"
@@ -119,7 +95,7 @@ function ChannelsTable({
 										onClick={() => onSort?.('active_users')}
 										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
 									>
-										{getSortIcon('active_users')}
+										<SortIcon column="active_users" sortBy={sortBy} sort={sort} />
 									</button>
 									<input
 										aria-label="Select Active users column"
@@ -137,7 +113,7 @@ function ChannelsTable({
 										onClick={() => onSort?.('messages')}
 										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
 									>
-										{getSortIcon('messages')}
+										<SortIcon column="messages" sortBy={sortBy} sort={sort} />
 									</button>
 									<input
 										aria-label="Select Messages column"
