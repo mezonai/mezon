@@ -34,9 +34,15 @@ const RenderOgpPreview = ({ ogpItem, url }: RenderOgpPreviewProps) => {
 		<View style={[styles.wrapper, { width: ogpViewWidth }]}>
 			<View style={styles.container}>
 				<TouchableOpacity onPress={openLink}>
-					<Text style={styles.title}>{ogpItem?.title || url}</Text>
+					<Text numberOfLines={2} style={styles.title}>
+						{ogpItem?.title || url}
+					</Text>
 				</TouchableOpacity>
-				{ogpItem?.description && <Text style={styles?.description}>{ogpItem.description}</Text>}
+				{ogpItem?.description && (
+					<Text numberOfLines={3} style={styles?.description}>
+						{ogpItem.description}
+					</Text>
+				)}
 				{ogpItem?.image && <ImageNative url={ogpItem.image} style={[styles.image, { aspectRatio }]} resizeMode="cover" />}
 			</View>
 		</View>
