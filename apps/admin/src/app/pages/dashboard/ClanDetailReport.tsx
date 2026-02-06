@@ -48,6 +48,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const [userSort, setUserSort] = useState<'asc' | 'desc'>('asc');
 
 	const [refreshTrigger, setRefreshTrigger] = useState(0);
+	const [showFullPageLoading, setShowFullPageLoading] = useState(true);
 
 	const clan = useSelector(selectClanById(clanId ?? ''));
 
@@ -74,8 +75,14 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		clanId && firstChannelId ? selectChannelUsersPagination(s, clanId, firstChannelId) : { page: 1, limit: 10, total: 0, totalPages: 1 }
 	);
 
-	const isLoadingDerived = chartLoadingStore || channelsLoadingStore || channelUsersLoadingStore;
+	const isLoading = showFullPageLoading && (chartLoadingStore || channelsLoadingStore || channelUsersLoadingStore);
 	const hasNoDataDerived = !chartLoadingStore && (chartData?.length || 0) === 0;
+
+	useEffect(() => {
+		if (showFullPageLoading && !chartLoadingStore && !channelsLoadingStore && !channelUsersLoadingStore) {
+			setShowFullPageLoading(false);
+		}
+	}, [showFullPageLoading, chartLoadingStore, channelsLoadingStore, channelUsersLoadingStore]);
 
 	// Fetch data from API
 	useEffect(() => {
@@ -95,7 +102,19 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 				})
 			);
 		}
-	}, [clanId, refreshTrigger, channelPage, channelLimit, channelSortBy, channelSort, dispatch]);
+	}, [
+		clanId,
+		refreshTrigger,
+		channelPage,
+		channelLimit,
+		channelSortBy,
+		channelSort,
+		dateRange,
+		customStartDate,
+		customEndDate,
+		periodFilter,
+		dispatch
+	]);
 
 	// When channels load, fetch users for the first channel by default
 	useEffect(() => {
@@ -133,7 +152,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 					})
 				);
 		}
-	}, [firstChannelId, clanId, refreshTrigger, userPage, userLimit, userSortBy, userSort, dispatch]);
+	}, [firstChannelId, clanId, refreshTrigger, userPage, userLimit, userSortBy, userSort, dateRange, customStartDate, customEndDate, dispatch]);
 
 	const allowedGranularities = useMemo(
 		() => calculateAllowedGranularities(dateRange, customStartDate, customEndDate),
@@ -151,6 +170,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	const displayedData = useMemo(() => chartData || [], [chartData]);
 
 	const handleRunReport = () => {
+		setShowFullPageLoading(true);
 		setRefreshTrigger((prev) => prev + 1);
 	};
 
@@ -161,6 +181,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		setPeriodFilter('daily');
 		setChannelPage(1);
 		setUserPage(1);
+		setShowFullPageLoading(true);
 		setRefreshTrigger((prev) => prev + 1);
 	};
 
@@ -255,13 +276,13 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 			/>
 
 			{/* Loading State */}
-			{isLoadingDerived && <LoadingState />}
+			{isLoading && <LoadingState />}
 
 			{/* No Data State */}
-			{!isLoadingDerived && hasNoDataDerived && <NoDataState />}
+			{!isLoading && hasNoDataDerived && <NoDataState />}
 
 			{/* Activity Chart (tabs + reusable SingleLineChart) */}
-			{!isLoadingDerived && !hasNoDataDerived && (
+			{!showFullPageLoading && !hasNoDataDerived && (
 				<ChartSection
 					activeTab={activeTab}
 					onTabChange={setActiveTab}
@@ -272,7 +293,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 			)}
 
 			{/* Channels Table Section */}
-			{!isLoadingDerived && !hasNoDataDerived && (
+			{!showFullPageLoading && !hasNoDataDerived && (
 				<ChannelsTable
 					data={channelsData as ChannelsData[]}
 					selectedColumns={selectedChannelColumns}
@@ -291,7 +312,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 			)}
 
 			{/* User Table Section */}
-			{!isLoadingDerived && !hasNoDataDerived && (
+			{!showFullPageLoading && !hasNoDataDerived && (
 				<UsersTable
 					data={(usersFromStore as UserData[]) || []}
 					selectedColumns={selectedUserColumns}

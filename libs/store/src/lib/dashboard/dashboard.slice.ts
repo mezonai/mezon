@@ -147,9 +147,9 @@ export const fetchClanChannels = createAsyncThunk(
 	) => {
 		try {
 			const getState = thunkAPI.getState as () => RootState;
-			const apiKey = createApiKey('fetchClanChannels', clanId, start, end, String(page || ''), String(limit || ''));
+			const apiKey = createApiKey('fetchClanChannels', clanId, start, end, String(page || ''), String(limit || ''), sortBy || '', sort || '');
 			const cacheEntry = getState().dashboard.channelsCacheByClan?.[clanId];
-			const shouldForce = shouldForceApiCall(apiKey, cacheEntry?.cache, false);
+			const shouldForce = shouldForceApiCall(apiKey, cacheEntry?.cache, true);
 
 			if (!shouldForce && cacheEntry?.rawPayload) {
 				return { ...(cacheEntry.rawPayload as any), fromCache: true, clanId };
@@ -199,9 +199,9 @@ export const fetchChannelUsers = createAsyncThunk(
 		try {
 			const getState = thunkAPI.getState as () => RootState;
 			const key = `${clanId}_${channelId}`;
-			const apiKey = createApiKey('fetchChannelUsers', clanId, channelId, start, end);
+			const apiKey = createApiKey('fetchChannelUsers', clanId, channelId, start, end, String(page), String(limit), sortBy || '', sort || '');
 			const cacheEntry = getState().dashboard.usersCacheByChannel?.[key];
-			const shouldForce = shouldForceApiCall(apiKey, cacheEntry?.cache, false);
+			const shouldForce = shouldForceApiCall(apiKey, cacheEntry?.cache, true);
 
 			if (!shouldForce && cacheEntry?.rawPayload) {
 				return { ...(cacheEntry.rawPayload as any), fromCache: true, clanId, channelId };
