@@ -12,7 +12,7 @@ const fs = require('fs');
 
 const envFile = process.env.ENV_FILE || '.env';
 const envPath = path.resolve(__dirname, envFile);
-let envVars = {};
+const envVars = {};
 
 if (fs.existsSync(envPath)) {
 	const envConfig = dotenv.config({ path: envPath });
@@ -65,7 +65,9 @@ module.exports = composePlugins(
 		config.resolve.fallback = { fs: false };
 
 		config.devServer = config.devServer || {};
-
+		config.devServer.historyApiFallback = true;
+		config.devServer.port = 4200;
+		config.devServer.host = '127.0.0.1';
 		config.devServer.static = {
 			directory: path.join(__dirname, 'src/assets'),
 			publicPath: '/'
