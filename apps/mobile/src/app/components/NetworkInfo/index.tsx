@@ -7,24 +7,22 @@ import { AppState, Platform, StyleSheet, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
+import { NativeHttpClient } from '../../utils/NativeHttpClient';
 
-export const fetchWithTimeout = async (url, timeout = 8000) => {
-	const controller = new AbortController();
-	const timeoutId = setTimeout(() => controller.abort(), timeout);
+export const fetchWithTimeout = async (url: string, timeout = 8000) => {
+	const timeoutPromise = new Promise<never>((_, reject) => {
+		setTimeout(() => reject(new Error('Request timed out')), timeout);
+	});
 
 	try {
-		const response = await fetch(url, {
-			cache: 'no-cache',
-			signal: controller.signal
-		});
-		clearTimeout(timeoutId);
-		return response;
+		const response = await Promise.race([NativeHttpClient.get(url), timeoutPromise]);
+		return {
+			ok: response.statusCode >= 200 && response.statusCode < 300,
+			status: response.statusCode,
+			body: response.body
+		};
 	} catch (error) {
 		console.error('log  => error', error);
-		clearTimeout(timeoutId);
-		if (error.name === 'AbortError') {
-			throw new Error('Request timed out');
-		}
 		throw error;
 	}
 };

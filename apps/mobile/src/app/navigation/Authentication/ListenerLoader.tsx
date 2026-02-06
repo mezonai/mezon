@@ -1,5 +1,4 @@
 import React, { memo } from 'react';
-import BottomSheetRootListener from '../../components/BottomSheetRootListener';
 import ChannelMessageListener from '../../screens/home/homedrawer/ChannelMessageListener';
 import ChannelMessageReactionListener from '../../screens/home/homedrawer/ChannelMessageReactionListener';
 import ChannelVoicePopup from '../../screens/home/homedrawer/components/ChannelVoicePopup';
@@ -20,7 +19,6 @@ export const ListenerLoader = memo(() => {
 		<>
 			<StreamingWrapper />
 			<ChannelVoicePopup />
-			<BottomSheetRootListener />
 			<ChannelMessageListener />
 			<ChannelMessageReactionListener />
 		</>

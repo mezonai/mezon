@@ -5,9 +5,10 @@ import { TouchableWithoutFeedback } from 'react-native';
 import { Extrapolation, interpolate, useAnimatedStyle } from 'react-native-reanimated';
 interface CustomBackdropProps extends BottomSheetBackdropProps {
 	onBackdropPress?: () => void;
+	blockDismiss?: boolean;
 }
 
-const Backdrop = ({ onBackdropPress, ...props }: CustomBackdropProps) => {
+const Backdrop = ({ onBackdropPress, blockDismiss, ...props }: CustomBackdropProps) => {
 	const containerAnimatedStyle = useAnimatedStyle(() => ({
 		opacity: interpolate(props.animatedIndex.value, [-1, 0], [0, 0.9], Extrapolation.CLAMP)
 	}));
@@ -29,7 +30,7 @@ const Backdrop = ({ onBackdropPress, ...props }: CustomBackdropProps) => {
 				style={containerStyle}
 				disappearsOnIndex={-1}
 				appearsOnIndex={0}
-				pressBehavior={onBackdropPress ? 'none' : 'close'}
+				pressBehavior={onBackdropPress || blockDismiss ? 'none' : 'close'}
 			/>
 		</TouchableWithoutFeedback>
 	);

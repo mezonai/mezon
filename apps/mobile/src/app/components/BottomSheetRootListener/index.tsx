@@ -12,14 +12,16 @@ import { style } from './styles';
 
 export const DEFAULT_MAX_HEIGHT_PERCENT = 0.8;
 
-const useBottomSheetBackHandler = (bottomSheetRef: React.RefObject<OriginalBottomSheet | null>) => {
+const useBottomSheetBackHandler = (bottomSheetRef: React.RefObject<OriginalBottomSheet | null>, blockDismiss: boolean) => {
 	const backHandlerSubscriptionRef = useRef<NativeEventSubscription | null>(null);
 	const handleSheetPositionChange = useCallback<NonNullable<BottomSheetModalProps['onChange']>>(
 		(index) => {
 			const isBottomSheetVisible = index >= 0;
 			if (isBottomSheetVisible && !backHandlerSubscriptionRef.current) {
 				backHandlerSubscriptionRef.current = BackHandler.addEventListener('hardwareBackPress', () => {
-					bottomSheetRef.current?.dismiss();
+					if (!blockDismiss) {
+						bottomSheetRef.current?.dismiss();
+					}
 					return true;
 				});
 			} else if (!isBottomSheetVisible) {
@@ -27,7 +29,7 @@ const useBottomSheetBackHandler = (bottomSheetRef: React.RefObject<OriginalBotto
 				backHandlerSubscriptionRef.current = null;
 			}
 		},
-		[bottomSheetRef, backHandlerSubscriptionRef]
+		[bottomSheetRef, backHandlerSubscriptionRef, blockDismiss]
 	);
 	return { handleSheetPositionChange };
 };
@@ -44,6 +46,7 @@ type BottomSheetState = {
 	maxHeightPercent: string;
 	containerStyle: StyleProp<ViewStyle>;
 	backdropStyle: StyleProp<ViewStyle>;
+	blockDismiss: boolean;
 };
 
 const initialBottomSheetState: BottomSheetState = {
@@ -57,19 +60,24 @@ const initialBottomSheetState: BottomSheetState = {
 	hiddenHeaderIndicator: false,
 	maxHeightPercent: null,
 	containerStyle: null,
-	backdropStyle: null
+	backdropStyle: null,
+	blockDismiss: false
 };
 
 const useBottomSheetState = () => {
 	const [state, setState] = useState<BottomSheetState>(initialBottomSheetState);
 
-	const clearDataBottomSheet = () => {
+	const clearDataBottomSheet = useCallback(() => {
 		setState(initialBottomSheetState);
-	};
+	}, []);
+
+	const setAll = useCallback((updates: Partial<BottomSheetState>) => {
+		setState((prev) => ({ ...prev, ...updates }));
+	}, []);
 
 	return {
 		...state,
-		setAll: (updates: Partial<BottomSheetState>) => setState((prev) => ({ ...prev, ...updates })),
+		setAll,
 		clearDataBottomSheet
 	};
 };
@@ -87,51 +95,69 @@ const BottomSheetRootListener = () => {
 		containerStyle,
 		backdropStyle,
 		maxHeightPercent,
+		blockDismiss,
 		setAll,
 		clearDataBottomSheet
 	} = useBottomSheetState();
 
 	const ref = useRef<OriginalBottomSheet>(null);
-	const { handleSheetPositionChange } = useBottomSheetBackHandler(ref);
+	const { handleSheetPositionChange } = useBottomSheetBackHandler(ref, blockDismiss);
 	const { height: screenHeight } = useWindowDimensions();
 
-	const onCloseBottomSheet = async () => {
+	const onCloseBottomSheet = useCallback(async () => {
 		ref?.current?.close();
 		await sleep(500);
 		ref?.current?.forceClose();
-	};
+	}, []);
 
-	const onTriggerBottomSheet = (data) => {
-		const updates: Partial<BottomSheetState> = {};
-		if (data?.snapPoints) updates.snapPoints = data.snapPoints;
-		if (data?.heightFitContent !== undefined) updates.heightFitContent = data.heightFitContent;
-		if (data?.children) updates.children = data.children;
-		if (data?.title) updates.title = data.title;
-		if (data?.headerLeft) updates.headerLeft = data.headerLeft;
-		if (data?.headerRight) updates.headerRight = data.headerRight;
-		if (data?.setTitleSize) updates.titleSize = data.setTitleSize;
-		if (data?.hiddenHeaderIndicator !== undefined) updates.hiddenHeaderIndicator = data.hiddenHeaderIndicator;
-		if (data?.containerStyle) updates.containerStyle = data.containerStyle;
-		if (data?.backdropStyle) updates.backdropStyle = data.backdropStyle;
-		if (data?.maxHeightPercent) updates.maxHeightPercent = data.maxHeightPercent;
-		setAll(updates);
-		ref?.current?.present();
-	};
+	const [shouldPresent, setShouldPresent] = useState(false);
+
+	const onTriggerBottomSheet = useCallback(
+		(data) => {
+			const updates: Partial<BottomSheetState> = {};
+			if (data?.snapPoints) updates.snapPoints = data.snapPoints;
+			if (data?.heightFitContent !== undefined) updates.heightFitContent = data.heightFitContent;
+			if (data?.children) updates.children = data.children;
+			if (data?.title) updates.title = data.title;
+			if (data?.headerLeft) updates.headerLeft = data.headerLeft;
+			if (data?.headerRight) updates.headerRight = data.headerRight;
+			if (data?.setTitleSize) updates.titleSize = data.setTitleSize;
+			if (data?.hiddenHeaderIndicator !== undefined) updates.hiddenHeaderIndicator = data.hiddenHeaderIndicator;
+			if (data?.containerStyle) updates.containerStyle = data.containerStyle;
+			if (data?.backdropStyle) updates.backdropStyle = data.backdropStyle;
+			if (data?.maxHeightPercent) updates.maxHeightPercent = data.maxHeightPercent;
+			if (data?.blockDismiss !== undefined) updates.blockDismiss = data.blockDismiss;
+			setAll(updates);
+			setShouldPresent(true);
+		},
+		[setAll]
+	);
+
+	useEffect(() => {
+		if (shouldPresent) {
+			const timer = setTimeout(() => {
+				ref?.current?.present();
+				setShouldPresent(false);
+			}, 50);
+			return () => clearTimeout(timer);
+		}
+	}, [shouldPresent]);
 
 	useEffect(() => {
 		const bottomSheetListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, ({ isDismiss, data }) => {
-			clearDataBottomSheet();
 			if (isDismiss || !data) {
+				clearDataBottomSheet();
 				onCloseBottomSheet();
 			} else {
 				Keyboard.dismiss();
+				clearDataBottomSheet();
 				onTriggerBottomSheet(data);
 			}
 		});
 		return () => {
 			bottomSheetListener.remove();
 		};
-	}, []);
+	}, [onTriggerBottomSheet, onCloseBottomSheet, clearDataBottomSheet]);
 
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
@@ -170,12 +196,13 @@ const BottomSheetRootListener = () => {
 			index={0}
 			animateOnMount
 			backgroundStyle={styles.backgroundStyle}
-			backdropComponent={(prop) => <Backdrop {...prop} style={backdropStyle} />}
+			backdropComponent={(prop) => <Backdrop {...prop} style={backdropStyle} blockDismiss={blockDismiss} />}
+			enablePanDownToClose={!blockDismiss}
 			enableDynamicSizing={heightFitContent}
 			style={styles.container}
 			maxDynamicContentSize={maxHeightSize}
 			handleComponent={
-				hiddenHeaderIndicator
+				hiddenHeaderIndicator || blockDismiss
 					? null
 					: () => {
 							return <View style={styles.handleIndicator} />;
