@@ -1,7 +1,7 @@
 import { selectStreamMembersByChannelId, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store-mobile';
 import type { IChannel } from '@mezon/utils';
-import React, { memo, useMemo } from 'react';
-import { View } from 'react-native';
+import React, { memo, useCallback, useMemo } from 'react';
+import { FlatList, View } from 'react-native';
 import ChannelItem from '../ChannelItem';
 import UserVoiceItem from '../ChannelListUserVoiceItem';
 import { style } from './styles';
@@ -23,6 +23,27 @@ export default memo(function ChannelListUserVoice({ channelId, isCategoryExpande
 		return [...(voiceChannelMember || []), ...(streamChannelMembers || [])];
 	}, [voiceChannelMember, streamChannelMembers]);
 
+	const MAX_COLLAPSED_ITEMS = 6;
+
+	const visibleMembers = useMemo(() => {
+		if (isCategoryExpanded) return combinedMembers;
+		return combinedMembers.slice(0, MAX_COLLAPSED_ITEMS);
+	}, [combinedMembers, isCategoryExpanded]);
+
+	const keyExtractor = useCallback((item: any, index: number) => (item?.user_id || item) + index, []);
+
+	const renderItem = useCallback(
+		({ item, index }: { item: any; index: number }) => (
+			<UserVoiceItem
+				userId={item?.user_id || item}
+				index={index}
+				isCategoryExpanded={isCategoryExpanded}
+				totalMembers={combinedMembers.length}
+			/>
+		),
+		[isCategoryExpanded, combinedMembers.length]
+	);
+
 	if (!isCategoryExpanded && !combinedMembers.length) return <View />;
 
 	return (
@@ -30,15 +51,17 @@ export default memo(function ChannelListUserVoice({ channelId, isCategoryExpande
 			<ChannelItem data={data} isUnRead={isUnRead} isActive={isActive} />
 			{combinedMembers?.length > 0 && (
 				<View style={[!isCategoryExpanded && styles.channelListUserVoiceWrapper]}>
-					{combinedMembers.map((member: any, index) => (
-						<UserVoiceItem
-							key={`${index}_${member}`}
-							userId={member?.user_id || member}
-							index={index}
-							isCategoryExpanded={isCategoryExpanded}
-							totalMembers={combinedMembers.length}
-						/>
-					))}
+					<FlatList
+						data={visibleMembers}
+						keyExtractor={keyExtractor}
+						renderItem={renderItem}
+						horizontal={!isCategoryExpanded}
+						scrollEnabled={false}
+						initialNumToRender={10}
+						windowSize={3}
+						maxToRenderPerBatch={10}
+						removeClippedSubviews
+					/>
 				</View>
 			)}
 		</>
