@@ -152,6 +152,7 @@ export type INotificationUserChannel = ApiNotificationUserChannel & {
 
 export type IUserChannel = ApiAllUsersAddChannelResponse & {
 	id: string;
+	create_time_seconds?: number;
 };
 
 export type IPinMessage = ApiPinMessage & {
