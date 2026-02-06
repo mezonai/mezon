@@ -102,10 +102,10 @@ export const fetchClanMetrics = createAsyncThunk(
 		try {
 			const getState = thunkAPI.getState as () => RootState;
 			const apiKey = createApiKey('fetchClanMetrics', clanId, start, end, rangeType || '');
-			const clanCacheEntry = getState().dashboard.chartCacheByClan?.[clanId];
+			const clanCacheEntry = getState().dashboard.chartCacheByClan?.[apiKey];
 			const shouldForce = shouldForceApiCall(apiKey, clanCacheEntry?.cache, false);
 			if (!shouldForce && clanCacheEntry?.rawPayload) {
-				return { ...(clanCacheEntry.rawPayload as any), fromCache: true, clanId };
+				return { ...clanCacheEntry.rawPayload, fromCache: true, clanId, _cacheKey: apiKey };
 			}
 
 			const base = API_BASE || '';
@@ -124,7 +124,7 @@ export const fetchClanMetrics = createAsyncThunk(
 			}
 			const json = await res.json();
 			markApiFirstCalled(apiKey);
-			return { ...(json as any), clanId };
+			return { ...json, clanId, _cacheKey: apiKey };
 		} catch (err) {
 			return thunkAPI.rejectWithValue(err);
 		}
@@ -509,13 +509,12 @@ export const dashboardSlice = createSlice({
 			.addCase(fetchClanMetrics.fulfilled, (state, action) => {
 				state.chartLoading = false;
 				const payload = action.payload as any;
-				const clanId = payload?.clanId as string | undefined;
-				if (clanId) {
-					if (!state.chartCacheByClan[clanId]) state.chartCacheByClan[clanId] = {};
-					state.chartCacheByClan[clanId].rawPayload = payload;
-					state.chartCacheByClan[clanId].cache = createCacheMetadata();
+				const cacheKey = payload?._cacheKey as string | undefined;
+				if (cacheKey) {
+					if (!state.chartCacheByClan[cacheKey]) state.chartCacheByClan[cacheKey] = {};
+					state.chartCacheByClan[cacheKey].rawPayload = payload;
+					state.chartCacheByClan[cacheKey].cache = createCacheMetadata();
 				}
-				if (payload?.fromCache) return;
 				if (payload?.success && payload.data) {
 					const labels: string[] = payload.data.labels || [];
 					state.chartData = labels.map((label: string, idx: number) => ({
