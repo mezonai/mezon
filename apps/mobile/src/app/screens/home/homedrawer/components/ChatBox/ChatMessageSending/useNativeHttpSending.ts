@@ -7,18 +7,16 @@ import {
 	selectCurrentTopicId,
 	selectInitTopicMessageId,
 	selectMemberClanByUserId,
+	selectOgpData,
 	topicsActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { EBacktickType, type IMarkdownOnMessage, type IMessageSendPayload } from '@mezon/utils';
-import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
+import { EBacktickType, type IMessageSendPayload } from '@mezon/utils';
+import { ChannelStreamMode } from 'mezon-js';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { NativeHttpClient } from '../../../../../..//utils/NativeHttpClient';
-
-const MEZONAI_PATTERN = /^https:\/\/mezon\.ai\/chat/i;
 
 export function useNativeHttpSending(options: UseChatSendingOptions) {
 	const { mode, channelOrDirect, fromTopic = false } = options;
@@ -32,6 +30,7 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 
 	const userProfile = useSelector(selectAllAccount);
 	const profileInTheClan = useAppSelector((state) => selectMemberClanByUserId(state, userProfile?.user?.id ?? ''));
+	const ogpData = useAppSelector(selectOgpData);
 
 	const priorityAvatar =
 		mode === ChannelStreamMode.STREAM_MODE_THREAD || mode === ChannelStreamMode.STREAM_MODE_CHANNEL
@@ -51,35 +50,6 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 	const currentUserId = userProfile?.user?.id || '';
 	const anonymousMode = useSelector((state) => selectAnonymousMode(state, getClanId as string));
 	const initTopicMessageId = useSelector(selectInitTopicMessageId);
-
-	const getOGPFromLinks = async (markdowns: IMarkdownOnMessage[], contentText: string) => {
-		try {
-			for (const markdown of markdowns) {
-				if (markdown.type === EBacktickType.LINK) {
-					const link = contentText?.slice(markdown.s, markdown.e);
-					if (!MEZONAI_PATTERN.test(link)) {
-						const datafetch = await NativeHttpClient.post(
-							`${process.env.NX_OGP_URL}`,
-							JSON.stringify({
-								url: link
-							}),
-							{ 'Content-Type': 'application/json' }
-						);
-
-						const jsonData = safeJSONParse(datafetch?.body);
-						if (jsonData?.title && jsonData?.image) {
-							const data = { data: safeJSONParse(datafetch?.body), index: markdown.s };
-							return data;
-						}
-					}
-				}
-			}
-		} catch (e) {
-			console.error('log  => getOGPFromLinks error', e);
-		}
-
-		return null;
-	};
 
 	const createTopic = useCallback(async () => {
 		const body: ApiSdTopicRequest = {
@@ -104,19 +74,18 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 		) => {
 			const contentMessage = content;
 			if (content?.mk?.some((item) => item.type === EBacktickType.LINK)) {
-				const ogpData = await getOGPFromLinks(content?.mk, content?.t ?? '');
 				if (ogpData) {
 					const messageMarkdown = content?.mk;
+					const indexOgp = content?.t?.indexOf(ogpData?.url);
 
 					const ogp = {
-						title: ogpData?.data?.title,
-						description: ogpData?.data?.description,
-						image: ogpData?.data?.image,
+						title: ogpData?.title,
+						description: ogpData?.description,
+						image: ogpData?.image,
 						s: content?.t?.length ?? 0,
 						e: (content?.t?.length ?? 0) + 1,
 						type: EBacktickType.OGP_PREVIEW,
-						index: ogpData?.index || 0,
-						url: ogpData?.data?.url
+						index: indexOgp || 0
 					};
 
 					messageMarkdown.push(ogp);
@@ -214,6 +183,7 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 			originalHook,
 			fromTopic,
 			currentTopicId,
+			ogpData,
 			createTopic
 		]
 	);
