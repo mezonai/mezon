@@ -27,21 +27,25 @@ export const addChannelUsers = createAsyncThunk(
 			if (channelId && channelType) {
 				thunkAPI.dispatch(userChannelsActions.addUserChannel({ channelId, userAdds: userIds }));
 			}
-			if (channelType === ChannelType.CHANNEL_TYPE_THREAD) {
-				const userId = selectCurrentUserId(thunkAPI.getState() as RootState);
-				if (userId === userIds[0]) {
-					const thread = selectChannelByChannelId(thunkAPI.getState(), channelId);
-					thunkAPI.dispatch(
-						listChannelRenderAction.addThreadToListRender({
-							clanId: thread.clan_id || '',
-							channel: {
-								...thread,
-								active: 1
-							}
-						})
-					);
-				}
-			}
+			if (channelType !== ChannelType.CHANNEL_TYPE_THREAD) return response;
+
+			const state = thunkAPI.getState() as RootState;
+			const userId = selectCurrentUserId(state);
+
+			if (userId !== userIds[0]) return response;
+
+			const thread = selectChannelByChannelId(state, channelId);
+			if (!thread) return response;
+
+			thunkAPI.dispatch(
+				listChannelRenderAction.addThreadToListRender({
+					clanId: thread.clan_id ?? '',
+					channel: {
+						...thread,
+						active: 1
+					}
+				})
+			);
 			return response;
 		} catch (error) {
 			captureSentryError(error, 'channelUsers/addChannelUsers');
