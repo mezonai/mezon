@@ -124,7 +124,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 		} else if (clanId && channelsFromStore && channelsFromStore.length > 0) {
 			// Fallback: try to extract channelId from raw payload
 			const stateAny: any = (dispatch as any).getState?.() || {};
-			const raw = stateAny?.dashboard?.channelsCacheByClan?.[clanId]?.rawPayload?.data?.channels || [];
+			const raw = stateAny?.dashboard?.channelsDataByClan?.[clanId]?.data?.channels || [];
 			const rawFirst = raw[0];
 			const cid = rawFirst?.channel_id || rawFirst?.channelId || rawFirst?.id || '';
 			if (cid)

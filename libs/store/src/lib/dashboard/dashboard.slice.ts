@@ -2,8 +2,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import type { AUTH_FEATURE_KEY, AuthState } from '../auth/auth.slice';
 import { selectSession } from '../auth/auth.slice';
-import type { CacheMetadata } from '../cache-metadata';
-import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+
 import type { RootState } from '../store';
 
 const API_BASE = process.env.NX_ADMIN_API_URL || 'http://localhost:8081';
@@ -21,14 +20,6 @@ export const fetchAllClansMetrics = createAsyncThunk(
 	async ({ start, end, rangeType }: { start: string; end: string; rangeType?: string }, thunkAPI) => {
 		try {
 			const getState = thunkAPI.getState as () => RootState;
-			const apiKey = createApiKey('fetchAllClansMetrics', start, end, rangeType || '');
-			const cacheEntry = getState().dashboard.allClansCacheByKey?.[apiKey];
-			const shouldForce = shouldForceApiCall(apiKey, cacheEntry?.cache, false);
-
-			if (!shouldForce && cacheEntry?.rawPayload) {
-				return { ...(cacheEntry.rawPayload as any), fromCache: true };
-			}
-
 			const base = API_BASE || '';
 			const url = `${base}/dashboard/all-clans/metrics?start_date=${start}&end_date=${end}${rangeType ? `&rangeType=${rangeType}` : ''}`;
 			const session = selectSession(getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
@@ -45,7 +36,6 @@ export const fetchAllClansMetrics = createAsyncThunk(
 				active_channels: string[];
 				total_messages: string[];
 			}>;
-			markApiFirstCalled(apiKey);
 			return json;
 		} catch (err) {
 			return thunkAPI.rejectWithValue(err);
@@ -101,13 +91,6 @@ export const fetchClanMetrics = createAsyncThunk(
 	async ({ clanId, start, end, rangeType }: { clanId: string; start: string; end: string; rangeType?: string }, thunkAPI) => {
 		try {
 			const getState = thunkAPI.getState as () => RootState;
-			const apiKey = createApiKey('fetchClanMetrics', clanId, start, end, rangeType || '');
-			const clanCacheEntry = getState().dashboard.chartCacheByClan?.[apiKey];
-			const shouldForce = shouldForceApiCall(apiKey, clanCacheEntry?.cache, false);
-			if (!shouldForce && clanCacheEntry?.rawPayload) {
-				return { ...clanCacheEntry.rawPayload, fromCache: true, clanId, _cacheKey: apiKey };
-			}
-
 			const base = API_BASE || '';
 			const session = selectSession(getState() as unknown as { [AUTH_FEATURE_KEY]: AuthState });
 			const token = session?.token;
@@ -123,8 +106,7 @@ export const fetchClanMetrics = createAsyncThunk(
 				return thunkAPI.rejectWithValue(text || res.statusText);
 			}
 			const json = await res.json();
-			markApiFirstCalled(apiKey);
-			return { ...json, clanId, _cacheKey: apiKey };
+			return { ...json, clanId };
 		} catch (err) {
 			return thunkAPI.rejectWithValue(err);
 		}
@@ -147,14 +129,6 @@ export const fetchClanChannels = createAsyncThunk(
 	) => {
 		try {
 			const getState = thunkAPI.getState as () => RootState;
-			const apiKey = createApiKey('fetchClanChannels', clanId, start, end, String(page || ''), String(limit || ''), sortBy || '', sort || '');
-			const cacheEntry = getState().dashboard.channelsCacheByClan?.[clanId];
-			const shouldForce = shouldForceApiCall(apiKey, cacheEntry?.cache, true);
-
-			if (!shouldForce && cacheEntry?.rawPayload) {
-				return { ...(cacheEntry.rawPayload as any), fromCache: true, clanId };
-			}
-
 			const base = API_BASE || '';
 			const state = getState() as RootState;
 			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
@@ -173,8 +147,7 @@ export const fetchClanChannels = createAsyncThunk(
 				return thunkAPI.rejectWithValue(text || res.statusText);
 			}
 			const json = await res.json();
-			markApiFirstCalled(apiKey);
-			return { ...(json as any), clanId };
+			return { ...json, clanId };
 		} catch (err) {
 			return thunkAPI.rejectWithValue(err);
 		}
@@ -198,15 +171,6 @@ export const fetchChannelUsers = createAsyncThunk(
 	) => {
 		try {
 			const getState = thunkAPI.getState as () => RootState;
-			const key = `${clanId}_${channelId}`;
-			const apiKey = createApiKey('fetchChannelUsers', clanId, channelId, start, end, String(page), String(limit), sortBy || '', sort || '');
-			const cacheEntry = getState().dashboard.usersCacheByChannel?.[key];
-			const shouldForce = shouldForceApiCall(apiKey, cacheEntry?.cache, true);
-
-			if (!shouldForce && cacheEntry?.rawPayload) {
-				return { ...(cacheEntry.rawPayload as any), fromCache: true, clanId, channelId };
-			}
-
 			const base = API_BASE || '';
 			const state = getState() as RootState;
 			const session = selectSession(state as unknown as { [AUTH_FEATURE_KEY]: AuthState });
@@ -225,8 +189,7 @@ export const fetchChannelUsers = createAsyncThunk(
 				return thunkAPI.rejectWithValue(text || res.statusText);
 			}
 			const json = await res.json();
-			markApiFirstCalled(apiKey);
-			return { ...(json as any), clanId, channelId };
+			return { ...json, clanId, channelId };
 		} catch (err) {
 			return thunkAPI.rejectWithValue(err);
 		}
@@ -367,13 +330,10 @@ export interface DashboardState {
 	loading: boolean;
 	stats: Record<string, number>;
 	chartData: ChartPoint[];
-	allClansCache?: CacheMetadata;
 	allClansRawPayload?: any;
-	allClansCacheByKey: Record<string, { cache?: CacheMetadata; rawPayload?: any }>;
-	chartCacheByClan: Record<string, { cache?: CacheMetadata; rawPayload?: any }>;
-	channelsCacheByClan: Record<string, { cache?: CacheMetadata; rawPayload?: any }>;
+	channelsDataByClan: Record<string, any>;
 	tableData: ClanRow[];
-	usersCacheByChannel: Record<string, { cache?: CacheMetadata; rawPayload?: any }>;
+	usersDataByChannel: Record<string, any>;
 	usageTotals?: { totalActiveUsers: string; totalActiveChannels: string; totalMessages: string } | null;
 	chartLoading: boolean;
 	channelsLoading: boolean;
@@ -388,12 +348,9 @@ export const initialDashboardState: DashboardState = {
 	loading: false,
 	stats: {},
 	chartData: [],
-	allClansCache: undefined,
 	allClansRawPayload: undefined,
-	allClansCacheByKey: {},
-	chartCacheByClan: {},
-	channelsCacheByClan: {},
-	usersCacheByChannel: {},
+	channelsDataByClan: {},
+	usersDataByChannel: {},
 	tableData: [],
 	usageTotals: null,
 	chartLoading: false,
@@ -437,19 +394,7 @@ export const dashboardSlice = createSlice({
 			.addCase(fetchAllClansMetrics.fulfilled, (state, action) => {
 				state.chartLoading = false;
 				const payload = action.payload as any;
-				const { start, end, rangeType } = (action.meta.arg as any) || {};
-				const apiKey = `fetchAllClansMetrics_${start}_${end}_${rangeType || ''}`;
-
-				// store raw payload and cache metadata by key
-				if (!state.allClansCacheByKey[apiKey]) state.allClansCacheByKey[apiKey] = {};
-				state.allClansCacheByKey[apiKey].rawPayload = payload;
-				state.allClansCacheByKey[apiKey].cache = createCacheMetadata();
-
-				// Also keep backward compatibility
 				state.allClansRawPayload = payload;
-				state.allClansCache = createCacheMetadata();
-
-				// Always update chartData even if from cache
 				if (payload?.success && payload.data) {
 					const labels: string[] = payload.data.labels || [];
 					state.chartData = labels.map((label: string, idx: number) => ({
@@ -509,12 +454,6 @@ export const dashboardSlice = createSlice({
 			.addCase(fetchClanMetrics.fulfilled, (state, action) => {
 				state.chartLoading = false;
 				const payload = action.payload as any;
-				const cacheKey = payload?._cacheKey as string | undefined;
-				if (cacheKey) {
-					if (!state.chartCacheByClan[cacheKey]) state.chartCacheByClan[cacheKey] = {};
-					state.chartCacheByClan[cacheKey].rawPayload = payload;
-					state.chartCacheByClan[cacheKey].cache = createCacheMetadata();
-				}
 				if (payload?.success && payload.data) {
 					const labels: string[] = payload.data.labels || [];
 					state.chartData = labels.map((label: string, idx: number) => ({
@@ -542,9 +481,7 @@ export const dashboardSlice = createSlice({
 				const payload = action.payload as any;
 				const clanId = payload?.clanId as string | undefined;
 				if (clanId) {
-					if (!state.channelsCacheByClan[clanId]) state.channelsCacheByClan[clanId] = {};
-					state.channelsCacheByClan[clanId].rawPayload = payload;
-					state.channelsCacheByClan[clanId].cache = createCacheMetadata();
+					state.channelsDataByClan[clanId] = payload;
 				}
 			})
 			.addCase(fetchClanChannels.rejected, (state, action) => {
@@ -563,9 +500,7 @@ export const dashboardSlice = createSlice({
 				const channelId = payload?.channelId as string | undefined;
 				if (clanId && channelId) {
 					const key = `${clanId}_${channelId}`;
-					if (!state.usersCacheByChannel[key]) state.usersCacheByChannel[key] = {};
-					state.usersCacheByChannel[key].rawPayload = payload;
-					state.usersCacheByChannel[key].cache = createCacheMetadata();
+					state.usersDataByChannel[key] = payload;
 				}
 			})
 			.addCase(fetchChannelUsers.rejected, (state, action) => {
@@ -624,7 +559,7 @@ export const selectDashboardTableLoading = (state: RootState) => selectDashboard
 export const selectDashboardExportLoading = (state: RootState) => selectDashboard(state).exportLoading;
 
 export const selectClanChannels = (state: RootState, clanId: string) => {
-	const raw = selectDashboard(state).channelsCacheByClan?.[clanId]?.rawPayload?.data?.channels;
+	const raw = selectDashboard(state).channelsDataByClan?.[clanId]?.data?.channels;
 	if (!Array.isArray(raw)) return [];
 	return raw.map((c: any) => ({
 		channelId: c.channel_id || c.channelId || c.id || '',
@@ -637,7 +572,7 @@ export const selectClanChannels = (state: RootState, clanId: string) => {
 export const selectClanChannelsLoading = (state: RootState) => selectDashboard(state).channelsLoading;
 
 export const selectClanChannelsPagination = (state: RootState, clanId: string) => {
-	const raw = selectDashboard(state).channelsCacheByClan?.[clanId]?.rawPayload?.data?.pagination;
+	const raw = selectDashboard(state).channelsDataByClan?.[clanId]?.data?.pagination;
 	if (!raw) return { page: 1, limit: 10, total: 0, totalPages: 1 };
 	return {
 		page: raw.page ?? 1,
@@ -648,7 +583,7 @@ export const selectClanChannelsPagination = (state: RootState, clanId: string) =
 };
 
 export const selectClanChannelsMetrics = (state: RootState, clanId: string) => {
-	const raw = selectDashboard(state).channelsCacheByClan?.[clanId]?.rawPayload?.data?.total;
+	const raw = selectDashboard(state).channelsDataByClan?.[clanId]?.data?.total;
 	if (!raw) return { totalActiveUsers: '0', totalActiveChannels: '0', totalMessages: '0' };
 	return {
 		totalActiveUsers: raw.total_active_users ?? raw.totalActiveUsers ?? '0',
@@ -659,7 +594,7 @@ export const selectClanChannelsMetrics = (state: RootState, clanId: string) => {
 
 export const selectChannelUsers = (state: RootState, clanId: string, channelId: string) => {
 	const key = `${clanId}_${channelId}`;
-	const raw = selectDashboard(state).usersCacheByChannel?.[key]?.rawPayload?.data?.users;
+	const raw = selectDashboard(state).usersDataByChannel?.[key]?.data?.users;
 	if (!Array.isArray(raw)) return [];
 	return raw.map((u: any) => ({
 		userName: u.user_name ?? '0',
@@ -671,7 +606,7 @@ export const selectChannelUsersLoading = (state: RootState) => selectDashboard(s
 
 export const selectChannelUsersPagination = (state: RootState, clanId: string, channelId: string) => {
 	const key = `${clanId}_${channelId}`;
-	const raw = selectDashboard(state).usersCacheByChannel?.[key]?.rawPayload?.data?.pagination;
+	const raw = selectDashboard(state).usersDataByChannel?.[key]?.data?.pagination;
 	if (!raw) return { page: 1, limit: 10, total: 0, totalPages: 1 };
 	return {
 		page: raw.page ?? 1,
