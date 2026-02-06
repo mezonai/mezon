@@ -11,11 +11,14 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import type { IMessageSendPayload } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
+import { EBacktickType, type IMarkdownOnMessage, type IMessageSendPayload } from '@mezon/utils';
+import { ChannelStreamMode, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api.gen';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { NativeHttpClient } from '../../../../../..//utils/NativeHttpClient';
+
+const MEZONAI_PATTERN = /^https:\/\/mezon\.ai\/chat/i;
 
 export function useNativeHttpSending(options: UseChatSendingOptions) {
 	const { mode, channelOrDirect, fromTopic = false } = options;
@@ -49,6 +52,35 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 	const anonymousMode = useSelector((state) => selectAnonymousMode(state, getClanId as string));
 	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 
+	const getOGPFromLinks = async (markdowns: IMarkdownOnMessage[], contentText: string) => {
+		try {
+			for (const markdown of markdowns) {
+				if (markdown.type === EBacktickType.LINK) {
+					const link = contentText?.slice(markdown.s, markdown.e);
+					if (!MEZONAI_PATTERN.test(link)) {
+						const datafetch = await NativeHttpClient.post(
+							`${process.env.NX_OGP_URL}`,
+							JSON.stringify({
+								url: link
+							}),
+							{ 'Content-Type': 'application/json' }
+						);
+
+						const jsonData = safeJSONParse(datafetch?.body);
+						if (jsonData?.title && jsonData?.image) {
+							const data = { data: safeJSONParse(datafetch?.body), index: markdown.s };
+							return data;
+						}
+					}
+				}
+			}
+		} catch (e) {
+			console.error('log  => getOGPFromLinks error', e);
+		}
+
+		return null;
+	};
+
 	const createTopic = useCallback(async () => {
 		const body: ApiSdTopicRequest = {
 			clan_id: getClanId || '0',
@@ -70,6 +102,28 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 			isMobile?: boolean,
 			code?: number
 		) => {
+			const contentMessage = content;
+			if (content?.mk?.some((item) => item.type === EBacktickType.LINK)) {
+				const ogpData = await getOGPFromLinks(content?.mk, content?.t ?? '');
+				if (ogpData) {
+					const messageMarkdown = content?.mk;
+
+					const ogp = {
+						title: ogpData?.data?.title,
+						description: ogpData?.data?.description,
+						image: ogpData?.data?.image,
+						s: content?.t?.length ?? 0,
+						e: (content?.t?.length ?? 0) + 1,
+						type: EBacktickType.OGP_PREVIEW,
+						index: ogpData?.index || 0,
+						url: ogpData?.data?.url
+					};
+
+					messageMarkdown.push(ogp);
+					contentMessage.mk = messageMarkdown;
+				}
+			}
+
 			if (fromTopic) {
 				if (!currentTopicId) {
 					const topic = (await createTopic()) as ApiSdTopic;
@@ -85,7 +139,7 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 							anonymous: false,
 							attachments,
 							code: 0,
-							content,
+							content: contentMessage,
 							isMobile: true,
 							isPublic,
 							mentionEveryone,
@@ -108,7 +162,7 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 						anonymous,
 						attachments,
 						code: 0,
-						content,
+						content: contentMessage,
 						isMobile: true,
 						isPublic,
 						mentionEveryone,
@@ -130,7 +184,7 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 						clanId: getClanId || '',
 						mode,
 						isPublic,
-						content,
+						content: contentMessage,
 						mentions,
 						attachments,
 						references,
@@ -144,7 +198,7 @@ export function useNativeHttpSending(options: UseChatSendingOptions) {
 					})
 				).unwrap();
 			} catch (error) {
-				await originalHook.sendMessage(content, mentions, attachments, references, anonymous, mentionEveryone, isMobile, code);
+				await originalHook.sendMessage(contentMessage, mentions, attachments, references, anonymous, mentionEveryone, isMobile, code);
 			}
 		},
 		[
