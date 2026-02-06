@@ -8,6 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { showSimpleToast } from '@mezon/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReportControls from '../../components/ReportControls/ReportControls';
@@ -58,7 +59,16 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const showTableSkeleton = useTableSkeleton(tableLoadingStore);
 
 	const toggleColumn = (col: string) => {
-		setSelectedColumns((prev) => (prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]));
+		setSelectedColumns((prev) => {
+			if (prev.includes(col)) {
+				if (prev.length === 1) {
+					showSimpleToast(t('table.selectAtLeastOneColumn'));
+					return prev;
+				}
+				return prev.filter((c) => c !== col);
+			}
+			return [...prev, col];
+		});
 	};
 
 	// Fetch chart data when dependencies change

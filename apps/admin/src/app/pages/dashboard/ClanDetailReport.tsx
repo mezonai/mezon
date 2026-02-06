@@ -15,6 +15,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { showSimpleToast } from '@mezon/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -214,7 +215,16 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	};
 
 	const toggleChannelColumn = (col: string) => {
-		setSelectedChannelColumns((prev) => (prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]));
+		setSelectedChannelColumns((prev) => {
+			if (prev.includes(col)) {
+				if (prev.length === 1) {
+					showSimpleToast(t('table.selectAtLeastOneColumn'));
+					return prev;
+				}
+				return prev.filter((c) => c !== col);
+			}
+			return [...prev, col];
+		});
 	};
 
 	const handleExportChannelCSV = async () => {
@@ -234,7 +244,16 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 	};
 
 	const toggleUserColumn = (col: string) => {
-		setSelectedUserColumns((prev) => (prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]));
+		setSelectedUserColumns((prev) => {
+			if (prev.includes(col)) {
+				if (prev.length === 1) {
+					showSimpleToast(t('table.selectAtLeastOneColumn'));
+					return prev;
+				}
+				return prev.filter((c) => c !== col);
+			}
+			return [...prev, col];
+		});
 	};
 
 	const handleExportUserCSV = async () => {

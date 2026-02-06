@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { UserData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
+import ColumnToggle from './ColumnToggle';
 import SortIcon from './SortIcon';
 
 interface UsersTableProps {
@@ -79,10 +80,8 @@ function UsersTable({
 									>
 										<SortIcon column="user_name" sortBy={sortBy} sort={sort} />
 									</button>
-									<input
-										aria-label="Select User name column"
-										type="checkbox"
-										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<ColumnToggle
+										ariaLabel="Select User name column"
 										checked={selectedColumns.includes('user_name')}
 										onChange={() => onToggleColumn('user_name')}
 									/>
@@ -97,10 +96,8 @@ function UsersTable({
 									>
 										<SortIcon column="messages" sortBy={sortBy} sort={sort} />
 									</button>
-									<input
-										aria-label="Select Messages column"
-										type="checkbox"
-										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<ColumnToggle
+										ariaLabel="Select Messages column"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>

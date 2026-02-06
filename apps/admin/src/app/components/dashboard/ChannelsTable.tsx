@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { ChannelsData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
+import ColumnToggle from './ColumnToggle';
 import SortIcon from './SortIcon';
 
 interface ChannelsTableProps {
@@ -79,10 +80,8 @@ function ChannelsTable({
 									>
 										<SortIcon column="channel_name" sortBy={sortBy} sort={sort} />
 									</button>
-									<input
-										aria-label="Select Channel name column"
-										type="checkbox"
-										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<ColumnToggle
+										ariaLabel="Select Channel name column"
 										checked={selectedColumns.includes('channel_name')}
 										onChange={() => onToggleColumn('channel_name')}
 									/>
@@ -97,10 +96,8 @@ function ChannelsTable({
 									>
 										<SortIcon column="active_users" sortBy={sortBy} sort={sort} />
 									</button>
-									<input
-										aria-label="Select Active users column"
-										type="checkbox"
-										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<ColumnToggle
+										ariaLabel="Select Active users column"
 										checked={selectedColumns.includes('active_users')}
 										onChange={() => onToggleColumn('active_users')}
 									/>
@@ -115,10 +112,8 @@ function ChannelsTable({
 									>
 										<SortIcon column="messages" sortBy={sortBy} sort={sort} />
 									</button>
-									<input
-										aria-label="Select Messages column"
-										type="checkbox"
-										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<ColumnToggle
+										ariaLabel="Select Messages column"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>

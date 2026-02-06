@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { ClanData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
+import ColumnToggle from './ColumnToggle';
 import SortIcon from './SortIcon';
 
 interface ClansTableProps {
@@ -85,10 +86,8 @@ function ClansTable({
 									>
 										<SortIcon column="clan_name" sortBy={sortBy} sort={sort} />
 									</button>
-									<input
-										aria-label="Select Clan Name column"
-										type="checkbox"
-										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<ColumnToggle
+										ariaLabel="Select Clan Name column"
 										checked={selectedColumns.includes('clan_name')}
 										onChange={() => onToggleColumn('clan_name')}
 									/>
@@ -103,10 +102,8 @@ function ClansTable({
 									>
 										<SortIcon column="active_users" sortBy={sortBy} sort={sort} />
 									</button>
-									<input
-										aria-label="Select Active users column"
-										type="checkbox"
-										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<ColumnToggle
+										ariaLabel="Select Active users column"
 										checked={selectedColumns.includes('active_users')}
 										onChange={() => onToggleColumn('active_users')}
 									/>
@@ -121,10 +118,8 @@ function ClansTable({
 									>
 										<SortIcon column="active_channels" sortBy={sortBy} sort={sort} />
 									</button>
-									<input
-										aria-label="Select Active channels column"
-										type="checkbox"
-										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<ColumnToggle
+										ariaLabel="Select Active channels column"
 										checked={selectedColumns.includes('active_channels')}
 										onChange={() => onToggleColumn('active_channels')}
 									/>
@@ -139,10 +134,8 @@ function ClansTable({
 									>
 										<SortIcon column="messages" sortBy={sortBy} sort={sort} />
 									</button>
-									<input
-										aria-label="Select Messages column"
-										type="checkbox"
-										className="h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<ColumnToggle
+										ariaLabel="Select Messages column"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>
