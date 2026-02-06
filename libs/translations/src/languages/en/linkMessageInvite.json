@@ -3,6 +3,12 @@
 	"offline": "offline",
 	"online": "online",
 	"join": "Join",
+	"joining": "Joining...",
+	"goToClan": "Go to Clan",
+	"unknownClan": "Unknown Clan",
+	"memberCount": "{{count}} Member",
+	"memberCount_plural": "{{count}} Members",
+	"failedToJoin": "Failed to join this clan.",
 	"inviteTo": "INVITE TO {{clanName}}",
 	"noThanks": "No, Thanks",
 	"invalidInvite": {
