@@ -92,6 +92,7 @@ export interface AppState {
 		current: number | null;
 	};
 	isShowUpdateUsername: boolean;
+	isTimelineViewMode: boolean;
 }
 
 const getInitialLanguage = (): 'en' | 'vi' => {
@@ -141,7 +142,8 @@ export const initialAppState: AppState = {
 		url: [],
 		current: null
 	},
-	isShowUpdateUsername: false
+	isShowUpdateUsername: false,
+	isTimelineViewMode: false
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
@@ -407,6 +409,9 @@ export const appSlice = createSlice({
 		},
 		setIsShowUpdateUsername: (state, action) => {
 			state.isShowUpdateUsername = action.payload;
+		},
+		setTimelineViewMode: (state, action: PayloadAction<boolean>) => {
+			state.isTimelineViewMode = action.payload;
 		}
 	}
 });
@@ -462,3 +467,5 @@ export const selectIsShowWelcomeMobile = createSelector(getAppState, (state: App
 export const selectHistory = createSelector(getAppState, (state: AppState) => state.history);
 
 export const selectIsShowUpdateUsername = createSelector(getAppState, (state: AppState) => state.isShowUpdateUsername);
+
+export const selectTimelineViewMode = createSelector(getAppState, (state: AppState) => state.isTimelineViewMode);

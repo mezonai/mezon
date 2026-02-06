@@ -10,7 +10,7 @@ import {
 	selectUserIdCurrentDm
 } from '@mezon/store';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { STICKER_WAVE } from '@mezon/utils';
+import { EMimeTypes, STICKER_WAVE } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiChannelDescription } from 'mezon-js/api.gen';
 import { memo, useMemo, useState } from 'react';
@@ -83,7 +83,7 @@ const WaveButtonDM = ({ username }: IWaveButtonDMProps) => {
 			const attachments = [
 				{
 					url: urlIcon,
-					filetype: 'image/gif',
+					filetype: EMimeTypes.sticker,
 					filename: STICKER_WAVE.NAME,
 					size: 374892,
 					width: 150,

@@ -12,8 +12,7 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.primary,
 			position: 'absolute',
 			top: 0,
-			left: 0,
-			zIndex: 100000000
+			left: 0
 		},
 		containerWebview: {
 			width: '100%',
@@ -90,5 +89,12 @@ export const style = (colors: Attributes) =>
 			position: 'absolute',
 			right: size.s_10,
 			zIndex: 1000
+		},
+		closeButton: {
+			padding: size.s_8,
+			paddingRight: size.s_2
+		},
+		bubbleButton: {
+			transform: [{ rotate: '180deg' }]
 		}
 	});

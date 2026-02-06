@@ -14,6 +14,8 @@ export enum EBacktickType {
 	LINK = 'lk',
 	VOICE_LINK = 'vk',
 	LINKYOUTUBE = 'lk_yt',
+	LINKFACEBOOK = 'lk_fb',
+	LINKTIKTOK = 'lk_tt',
 	OGP_PREVIEW = 'lk_ogp'
 }
 

@@ -156,11 +156,15 @@ const UserProfile = React.memo(
 
 		const handleAddFriend = async () => {
 			const userIdToAddFriend = userId || user?.id;
+			const userAvatar = userById?.user?.avatar_url || userProfile?.user?.avatar_url;
+			const userDisplayName = userById?.user?.display_name || userProfile?.user?.display_name;
 			if (userIdToAddFriend) {
 				const response = await dispatch(
 					friendsActions.sendRequestAddFriend({
-						usernames: [],
-						ids: [userIdToAddFriend],
+						usernames: '',
+						ids: userIdToAddFriend,
+						avatar: userAvatar,
+						displayName: userDisplayName,
 						isMobile: true
 					})
 				);
@@ -390,10 +394,11 @@ const UserProfile = React.memo(
 		const handleAcceptFriend = () => {
 			const body = infoFriend?.user?.id
 				? {
-						ids: [infoFriend?.user?.id || ''],
+						ids: infoFriend?.user?.id || '',
+						usernames: infoFriend?.user?.username || '',
 						isAcceptingRequest: true
 					}
-				: { usernames: [infoFriend?.user?.username || ''], isAcceptingRequest: true };
+				: { usernames: infoFriend?.user?.username || '', isAcceptingRequest: true };
 			dispatch(friendsActions.sendRequestAddFriend(body));
 		};
 

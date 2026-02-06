@@ -9,9 +9,10 @@ import {
 	selectOrderedClansWithGroups,
 	useAppDispatch
 } from '@mezon/store-mobile';
+import { sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, InteractionManager, TouchableOpacity, Vibration, View } from 'react-native';
+import { DeviceEventEmitter, InteractionManager, Platform, TouchableOpacity, Vibration, View } from 'react-native';
 import { NestableDraggableFlatList } from 'react-native-draggable-flatlist';
 import { useSelector } from 'react-redux';
 import { ClanGroup } from '../../../../../components/ClanGroup';
@@ -109,7 +110,7 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 		setGroupingTargetIndex(null);
 	}, []);
 
-	const checkCanGroupRealTime = useCallback(() => {
+	const checkCanGroupRealTime = useCallback(async () => {
 		if (dragIndexRef.current === null || !animationValuesRef.current?.isDraggingCell?.value || !animationValuesRef.current?.hoverAnim?.value) {
 			return;
 		}
@@ -142,7 +143,13 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 				const targetItem = groupClans[targetIndex];
 				if (targetItem) {
 					if (lastTargetCanGroupIndexRef.current !== targetIndex) {
-						Vibration.vibrate(30);
+						if (Platform.OS === 'android') {
+							Vibration.vibrate(30);
+						} else {
+							Vibration.vibrate();
+							await sleep(30);
+							Vibration.cancel();
+						}
 					}
 					lastTargetCanGroupIndexRef.current = targetIndex;
 					if (targetItem?.type === CLAN) {

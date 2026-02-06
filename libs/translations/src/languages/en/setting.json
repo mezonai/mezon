@@ -44,7 +44,8 @@
 		"chat": "Chat",
 		"webBrowser": "Web Browser",
 		"appIcon": "App Icon",
-		"advanced": "Advanced"
+		"advanced": "Advanced",
+		"appVersion": "App Version"
 	},
 	"activity": {
 		"title": "Show My Activity",

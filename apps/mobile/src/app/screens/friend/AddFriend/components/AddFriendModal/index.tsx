@@ -22,8 +22,10 @@ export const AddFriendModal = React.memo(() => {
 	const currentUsername = useSelector(selectCurrentUsername);
 	const { addFriend, friends } = useFriends();
 	const [requestAddFriend, setRequestAddFriend] = useState<requestAddFriendParam>({
-		usernames: [],
-		ids: []
+		usernames: '',
+		ids: '',
+		avatar: '',
+		displayName: ''
 	});
 	const { t } = useTranslation(['friends', 'friendsPage']);
 	const inputRef = useRef<TextInput>(null);
@@ -49,26 +51,25 @@ export const AddFriendModal = React.memo(() => {
 
 	const handleTextChange = (text: string) => {
 		if ((text || '')?.trim()?.length) {
-			setRequestAddFriend({ ...requestAddFriend, usernames: [text] });
+			setRequestAddFriend({ ...requestAddFriend, usernames: text });
 		} else {
-			setRequestAddFriend({ ...requestAddFriend, usernames: [] });
+			setRequestAddFriend({ ...requestAddFriend, usernames: '' });
 		}
 	};
 
-	const firstUsername = useMemo(
-		() => (Array.isArray(requestAddFriend.usernames) && requestAddFriend.usernames.length > 0 ? requestAddFriend.usernames[0] : ''),
-		[requestAddFriend.usernames]
-	);
+	const firstUsername = useMemo(() => requestAddFriend?.usernames, [requestAddFriend?.usernames]);
 
 	const resetField = () => {
 		setRequestAddFriend({
-			usernames: [],
-			ids: []
+			usernames: '',
+			ids: '',
+			avatar: '',
+			displayName: ''
 		});
 	};
 
 	const sentFriendRequest = useCallback(async () => {
-		const firstUsername = Array.isArray(requestAddFriend.usernames) && requestAddFriend.usernames.length > 0 ? requestAddFriend.usernames[0] : '';
+		const firstUsername = requestAddFriend?.usernames || '';
 		if (!(firstUsername || '')?.trim()?.length) return null;
 		if (inputRef?.current) {
 			inputRef.current.blur();
@@ -148,9 +149,9 @@ export const AddFriendModal = React.memo(() => {
 					</View>
 				</View>
 				<MezonButton
-					disabled={!firstUsername?.length}
+					disabled={!firstUsername}
 					onPress={() => sentFriendRequest()}
-					containerStyle={[styles.sendButton, !firstUsername?.length && { backgroundColor: themeValue.textDisabled }]}
+					containerStyle={[styles.sendButton, !firstUsername && { backgroundColor: themeValue.textDisabled }]}
 					title={t('addFriend.sendRequestButton')}
 					titleStyle={styles.buttonTitleStyle}
 				/>

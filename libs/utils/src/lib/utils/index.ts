@@ -48,7 +48,7 @@ import type {
 	SenderInfoOptionals,
 	UsersClanEntity
 } from '../types';
-import { EBacktickType, ETokenMessage, EUserStatus } from '../types';
+import { EBacktickType, EMimeTypes, ETokenMessage, EUserStatus } from '../types';
 import { getDateLocale } from './dateI18n';
 import { Foreman } from './foreman';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
@@ -201,7 +201,7 @@ export const calculateTotalCount = (senders: SenderInfoOptionals[]) => {
 };
 
 export const notImplementForGifOrStickerSendFromPanel = (data: ApiMessageAttachment) => {
-	if (isTenorUrl(data.url) || data.filetype === 'image/gif') {
+	if (isTenorUrl(data.url) || data.filetype === 'image/gif' || data.filetype === EMimeTypes.sticker) {
 		return true;
 	} else {
 		return false;

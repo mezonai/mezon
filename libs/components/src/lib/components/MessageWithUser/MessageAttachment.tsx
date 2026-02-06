@@ -55,7 +55,8 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 		if (
 			((attachment.filetype?.includes(EMimeTypes.png) ||
 				attachment.filetype?.includes(EMimeTypes.jpeg) ||
-				attachment.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX)) &&
+				attachment.filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) ||
+				attachment.filetype === EMimeTypes.sticker) &&
 				!attachment.filetype?.includes('svg+xml')) ||
 			attachment.url?.endsWith('.gif')
 		) {
@@ -363,8 +364,9 @@ const ImageAlbum = memo(
 					id: message.id,
 					url: firstImage?.url,
 					width: firstImage?.width || 0,
-					height: firstImage?.height || 150
-				} as ApiPhoto;
+					height: firstImage?.height || 150,
+					filetype: firstImage?.filetype
+				} as ApiPhoto & { filetype?: string };
 
 				if (firstImage?.thumbnail) {
 					props.thumbnail = {

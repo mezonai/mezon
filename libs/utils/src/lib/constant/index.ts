@@ -1,6 +1,7 @@
 import type { ThreadError } from '../types';
 
-export const TIME_COMBINE_SECOND = 10 * 60; // 10 minutes in milliseconds
+export const TIME_COMBINE_SECOND = 10 * 60; // 10 minutes in seconds
+export const TIME_COMBINE_1_HOUR = 60 * 60;
 export const TIME_OFFSET = 3;
 export const LIMIT_MESSAGE = 50;
 export const LIMIT_CLAN_ITEM = 50;
@@ -71,11 +72,11 @@ export const typeConverts: ITypeConvert[] = [
 
 export const fileTypeVideo = ['video/mp4', 'video/webm', 'video/mpeg', 'video/x-msvideo'];
 
-export const fileTypeImage = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
+export const fileTypeImage = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg', 'sticker'];
 
 export const isImageFileType = (filetype?: string): boolean => {
 	if (!filetype) return false;
-	return fileTypeImage.includes(filetype) || filetype.startsWith('image/');
+	return fileTypeImage.includes(filetype) || filetype.startsWith('image/') || filetype === 'sticker';
 };
 
 export const isVideoFileType = (filetype?: string): boolean => {

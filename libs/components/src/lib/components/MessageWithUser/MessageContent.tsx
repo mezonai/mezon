@@ -10,7 +10,16 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
-import { EBacktickType, ETypeLinkMedia, addMention, convertTimeMessage, createImgproxyUrl, generateE2eId, isValidEmojiData } from '@mezon/utils';
+import {
+	EBacktickType,
+	EMimeTypes,
+	ETypeLinkMedia,
+	addMention,
+	convertTimeMessage,
+	createImgproxyUrl,
+	generateE2eId,
+	isValidEmojiData
+} from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import React, { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -152,7 +161,7 @@ const MessageText = ({
 	const contentToMessage = message.content?.t;
 	const checkOneLinkImage =
 		attachmentOnMessage?.length === 1 &&
-		attachmentOnMessage[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) &&
+		(attachmentOnMessage[0].filetype?.startsWith(ETypeLinkMedia.IMAGE_PREFIX) || attachmentOnMessage[0].filetype === EMimeTypes.sticker) &&
 		attachmentOnMessage[0].url === contentToMessage?.trim();
 	const showEditted = !message.hide_editted && !isSearchMessage;
 

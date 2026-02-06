@@ -214,6 +214,7 @@ export const MessageLine = ({
 	const { t: translate } = useTranslation('common');
 	mode = mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL;
 	const { t, mentions = [], hg = [], ej = [], mk = [], lk = [], vk = [], lky = [] } = content || {};
+
 	const hgm = Array.isArray(hg) ? hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })) : [];
 	const ejm = Array.isArray(ej) ? ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })) : [];
 	const mkm = Array.isArray(mk) ? mk.map((item) => ({ ...item, kindOf: ETokenMessage.MARKDOWNS })) : [];
@@ -324,7 +325,12 @@ export const MessageLine = ({
 					/>
 				);
 			} else if (element.kindOf === ETokenMessage.MARKDOWNS) {
-				if (element.type === EBacktickType.LINK || element.type === EBacktickType.LINKYOUTUBE) {
+				if (
+					element.type === EBacktickType.LINK ||
+					element.type === EBacktickType.LINKYOUTUBE ||
+					element.type === EBacktickType.LINKFACEBOOK ||
+					element.type === EBacktickType.LINKTIKTOK
+				) {
 					const basePath = '/chat/clans/';
 					const contentHasChannelLink = contentInElement?.includes(basePath) && contentInElement?.includes('/channels/');
 					let componentToRender: React.ReactNode = null;
@@ -383,6 +389,8 @@ export const MessageLine = ({
 									content={contentInElement}
 									isReply={isReply}
 									isSearchMessage={isSearchMessage}
+									isInPinMsg={isInPinMsg}
+									typeOfBacktick={element.type}
 									messageId={messageId}
 									onContextMenu={onContextMenu}
 								/>
@@ -399,6 +407,8 @@ export const MessageLine = ({
 									content={contentInElement}
 									isReply={isReply}
 									isSearchMessage={isSearchMessage}
+									isInPinMsg={isInPinMsg}
+									typeOfBacktick={element.type}
 									messageId={messageId}
 									onContextMenu={onContextMenu}
 								/>
@@ -425,7 +435,13 @@ export const MessageLine = ({
 				} else if (element.type === EBacktickType.OGP_PREVIEW) {
 					const url =
 						element.index !== undefined && t
-							? t?.substring(element.index, t?.indexOf(' ', element.index) === -1 ? t.length : t.indexOf(' ', element.index))
+							? t.substring(
+									element.index,
+									Math.min(
+										t.indexOf(' ', element.index) === -1 ? t.length : t.indexOf(' ', element.index),
+										t.indexOf('\n', element.index) === -1 ? t.length : t.indexOf('\n', element.index)
+									)
+								)
 							: '';
 					formattedContent.push(
 						<div className="flex flex-col gap-0.5 max-w-[350px]">
@@ -556,12 +572,14 @@ export const MessageLine = ({
 							whiteSpace: 'nowrap',
 							overflow: 'hidden',
 							textOverflow: 'ellipsis',
-							minHeight: 30
+							minHeight: 30,
+							textAlign: 'left'
 						}
 					: {
 							whiteSpace: 'break-spaces',
 							overflowWrap: 'break-word',
-							minHeight: 30
+							minHeight: 30,
+							textAlign: 'left'
 						}
 			}
 			className={`w-full ${isDeletedMessage ? 'text-theme-primary italic' : isJumMessageEnabled ? 'whitespace-pre-line gap-1 text-theme-message text-theme-message-hover cursor-pointer' : 'text-theme-message'} ${isEphemeral ? 'opacity-80 italic text-[#5865F2] ' : ''} ${isSending ? 'opacity-50' : ''}

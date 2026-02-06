@@ -21,7 +21,9 @@
 		"showChat": "Hiển thị cuộc trò chuyện",
 		"addFriendsToDM": "Thêm bạn bè vào DM",
 		"jump": "Nhảy đến",
-		"gallery": "Thư viện"
+		"gallery": "Thư viện",
+		"timelineView": "Chuyển sang Chế độ Dòng thời gian",
+		"defaultView": "Chuyển sang Chế độ Mặc định"
 	},
 	"directMessage": "Tin nhắn trực tiếp",
 	"activeThreads": "Chủ đề đang hoạt động",
