@@ -44,7 +44,8 @@
 		"chat": "Trò chuyện",
 		"webBrowser": "Trình duyệt web",
 		"appIcon": "Biểu tượng",
-		"advanced": "Nâng cao"
+		"advanced": "Nâng cao",
+		"appVersion": "Phiên bản ứng dụng"
 	},
 	"activity": {
 		"title": "Hiển thị hoạt động của tôi",

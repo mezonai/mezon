@@ -239,7 +239,8 @@
 					"publisher": "CN=877DCBF5-53BD-4E9B-82DE-DA6D88F92FF3",
 					"publisherDisplayName": "NCCPLUS",
 					"identityName": "MEZON.Mezon",
-					"displayName": "MEZON"
+					"displayName": "MEZON",
+					"addAutoLaunchExtension": true
 				},
 				"linux": {
 					"icon": "apps/desktop/src/assets/linux-icon.icns",
@@ -337,7 +338,8 @@
 					"publisher": "CN=877DCBF5-53BD-4E9B-82DE-DA6D88F92FF3",
 					"publisherDisplayName": "NCCPLUS",
 					"identityName": "MEZON.Mezon",
-					"displayName": "MEZON"
+					"displayName": "MEZON",
+					"addAutoLaunchExtension": true
 				},
 				"linux": {
 					"icon": "apps/desktop/src/assets/linux-icon.icns",

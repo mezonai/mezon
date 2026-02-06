@@ -1,5 +1,13 @@
 import type { IEmojiOnMessage, IHashtagOnMessage, IMarkdownOnMessage, IMentionOnMessage } from '../types';
 import { EBacktickType } from '../types';
+import { isFacebookLink, isTikTokLink, isYouTubeLink } from './embed-social';
+
+const getLinkType = (url: string): EBacktickType => {
+	if (isYouTubeLink(url)) return EBacktickType.LINKYOUTUBE;
+	if (isFacebookLink(url)) return EBacktickType.LINKFACEBOOK;
+	if (isTikTokLink(url)) return EBacktickType.LINKTIKTOK;
+	return EBacktickType.LINK;
+};
 
 export const processEntitiesDirectly = (entities: any[], content: string, rolesClan: any[]) => {
 	const mentions: IMentionOnMessage[] = [];
@@ -8,7 +16,7 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 	const markdown: IMarkdownOnMessage[] = [];
 
 	entities.forEach((entity: any) => {
-		const { type, offset, length, userId, id, documentId, role_id } = entity;
+		const { type, offset, length, userId, id, documentId, role_id, url } = entity;
 
 		const s = offset;
 		const e = offset + length;
@@ -74,11 +82,11 @@ export const processEntitiesDirectly = (entities: any[], content: string, rolesC
 				break;
 
 			case 'MessageEntityTextUrl':
-				markdown.push({ s, e, type: EBacktickType.LINK });
+				markdown.push({ s, e, type: getLinkType(url || display) });
 				break;
 
 			case 'MessageEntityUrl':
-				markdown.push({ s, e, type: EBacktickType.LINK });
+				markdown.push({ s, e, type: getLinkType(display) });
 				break;
 
 			default:

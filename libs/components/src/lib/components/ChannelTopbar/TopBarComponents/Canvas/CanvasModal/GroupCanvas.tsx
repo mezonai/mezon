@@ -1,7 +1,7 @@
 import { ButtonCopy } from '@mezon/components';
 import { useAuth } from '@mezon/core';
 import { appActions, canvasAPIActions, useAppDispatch } from '@mezon/store';
-import { generateE2eId, ICanvas } from '@mezon/utils';
+import { ICanvas, generateE2eId } from '@mezon/utils';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 type GroupCanvasProps = {
 	canvas: ICanvas;
@@ -48,7 +48,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 				dispatch(appActions.setIsShowCanvas(false));
 				const redirectPath =
 					canvas.parent_id && canvas.parent_id !== '0'
-						? `/chat/clans/${clanId}/threads/${channelId}`
+						? `/chat/clans/${clanId}/channels/${channelId}`
 						: `/chat/clans/${clanId}/channels/${channelId}`;
 				navigate(redirectPath);
 			}
@@ -58,7 +58,7 @@ const GroupCanvas = ({ canvas, channelId, clanId, onClose, creatorIdChannel, sel
 	const isSelected = selectedCanvasId === canvasId && canvasId;
 	const link =
 		canvas.parent_id && canvas.parent_id !== '0'
-			? `/chat/clans/${clanId}/threads/${channelId}/canvas/${canvasId}`
+			? `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`
 			: `/chat/clans/${clanId}/channels/${channelId}/canvas/${canvasId}`;
 
 	return (

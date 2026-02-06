@@ -7,9 +7,9 @@ export interface ChartDataPoint {
 }
 
 export interface UsageMetrics {
-	totalActiveUsers: number;
-	totalActiveChannels: number;
-	totalMessages: number;
+	totalActiveUsers: string;
+	totalActiveChannels: string;
+	totalMessages: string;
 }
 
 export interface ChannelsData {
@@ -21,7 +21,7 @@ export interface ChannelsData {
 
 export interface UserData {
 	userName: string;
-	messages: number;
+	messages: string;
 }
 
 export interface ClanData {

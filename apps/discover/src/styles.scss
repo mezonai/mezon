@@ -34,16 +34,15 @@
 	font-display: swap;
 }
 
-
 :root {
 	--white-500: #ffffff;
 	--divider-color: #ff0000;
 	--status-danger: #ff0000;
 	--background-modifier-accent: #ff0000;
 	--bg-overlay-chat: #141415;
-	--background-primary: #F6F6F6;
-	--brand-color: #5865F2;
-	--brand-color-hover: #4752C4;
+	--background-primary: #f6f6f6;
+	--brand-color: #5865f2;
+	--brand-color-hover: #4752c4;
 	--text-normal: #2e3338;
 	--text-muted: #747f8d;
 }
@@ -232,15 +231,6 @@ input:-webkit-autofill:active {
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 	max-width: 100%;
-}
-
-#inBox [data-testid='flowbite-dropdown'] {
-	min-width: 480px !important;
-	left: -30px !important;
-
-	ul {
-		padding-bottom: 0;
-	}
 }
 
 .iconHover {
@@ -448,7 +438,6 @@ input:-webkit-autofill:active {
 			}
 		}
 	}
-
 }
 
 #meet {
@@ -599,7 +588,6 @@ input:-webkit-autofill:active {
 .bg-opacity-30 {
 	--tw-bg-opacity: 0.3;
 }
-
 
 .lightModeScrollBarMention {
 	::-webkit-scrollbar-track {

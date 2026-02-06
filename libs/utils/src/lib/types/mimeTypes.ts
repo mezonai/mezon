@@ -12,5 +12,6 @@ export enum EMimeTypes {
 	tenor = 'tenor.com',
 	cdnmezon = 'cdn.mezon.ai/stickers',
 	audio = 'audio',
-	heic = 'image/heic' // NOT SUPPORT BROWSER
+	heic = 'image/heic',
+	sticker = 'sticker'
 }

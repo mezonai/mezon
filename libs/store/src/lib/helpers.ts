@@ -313,7 +313,7 @@ export interface SocketDataRequest {
 	[key: string]: unknown;
 }
 
-const SOCKET_ONLY_APIS = ['ListClanBadgeCount', 'ListClanUnreadMsgIndicator'];
+const SOCKET_ONLY_APIS = ['ListClanBadgeCount', 'ListClanUnreadMsgIndicator', 'ListLogedDevice'];
 
 export async function fetchDataWithSocketFallback<T>(
 	mezon: MezonValueContext,

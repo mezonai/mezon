@@ -163,7 +163,7 @@ export function useCanvas(): UseCanvasReturn {
 				const newCanvasId = result.payload.id;
 				const isThread = Boolean(currentChannelParentId && currentChannelParentId !== '0');
 				const redirectPath = isThread
-					? `/chat/clans/${currentClanId}/threads/${currentChannelId}/canvas/${newCanvasId}`
+					? `/chat/clans/${currentClanId}/channels/${currentChannelId}/canvas/${newCanvasId}`
 					: `/chat/clans/${currentClanId}/channels/${currentChannelId}/canvas/${newCanvasId}`;
 				navigate(redirectPath, { replace: true });
 			}

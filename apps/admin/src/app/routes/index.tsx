@@ -1,6 +1,5 @@
 import loadable from '@loadable/component';
 import { selectInitialPath, useAppDispatch } from '@mezon/store';
-import { ReactFlowProvider } from '@xyflow/react';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { LoaderFunctionArgs } from 'react-router-dom';
@@ -14,8 +13,6 @@ import { appLoader, shouldRevalidateApp } from '../loader/appLoader';
 import { authLoader, shouldRevalidateAuth } from '../loader/authLoader';
 // Pages
 import { applicationLoader, shouldRevalidateApplication } from '../loader/applicationLoader';
-import Flows from '../pages/flows';
-import Flow from '../pages/flows/Flow';
 import InitialRoutes from './InititalRoutes';
 
 const DashboardPage = loadable(() => import('../pages/dashboard'));
@@ -111,34 +108,6 @@ export const Routes = () => {
 										{
 											path: 'oauth2',
 											element: <OAuth2 />
-										},
-										{
-											path: 'flow',
-											element: <Flows />
-										},
-										{
-											path: 'add-flow',
-											element: (
-												<ReactFlowProvider>
-													<Flow />
-												</ReactFlowProvider>
-											)
-										},
-										{
-											path: 'flow/:flowId',
-											element: (
-												<ReactFlowProvider>
-													<Flow />
-												</ReactFlowProvider>
-											)
-										},
-										{
-											path: 'use-flow-example/:exampleFlowId',
-											element: (
-												<ReactFlowProvider>
-													<Flow />
-												</ReactFlowProvider>
-											)
 										}
 									]
 								},

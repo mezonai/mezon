@@ -136,7 +136,8 @@ const SuggestionsPanel = memo(
 		isEphemeralMode,
 		channelId,
 		mode,
-		onSelectCommand
+		onSelectCommand,
+		modeKeyBoardBottomSheet
 	}: {
 		triggers: any;
 		listMentions: MentionDataProps[];
@@ -144,7 +145,19 @@ const SuggestionsPanel = memo(
 		channelId: string;
 		mode: ChannelStreamMode;
 		onSelectCommand: (command: any) => void;
+		modeKeyBoardBottomSheet: string;
 	}) => {
+		const shouldCloseSuggestions = useMemo(() => {
+			const isPanelOpen = modeKeyBoardBottomSheet === 'emoji' ||
+				modeKeyBoardBottomSheet === 'attachment' ||
+				modeKeyBoardBottomSheet === 'advanced'
+			return triggers?.emoji?.keyword !== undefined && isPanelOpen
+		}, [modeKeyBoardBottomSheet, triggers?.emoji?.keyword]);
+
+		if (shouldCloseSuggestions) {
+			return null;
+		}
+
 		return (
 			<>
 				{triggers?.mention?.keyword !== undefined && (
@@ -789,6 +802,7 @@ export const ChatBoxBottomBar = memo(
 						channelId={channelId}
 						mode={mode}
 						onSelectCommand={handleSlashCommandSelect}
+						modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}
 					/>
 				</View>
 				<AttachmentPreview channelId={currentChannelKey} />

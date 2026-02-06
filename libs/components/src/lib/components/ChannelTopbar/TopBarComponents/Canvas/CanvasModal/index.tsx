@@ -38,7 +38,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 	const appearanceTheme = useSelector(selectTheme);
 	const [keywordSearch, setKeywordSearch] = useState('');
 	const [selectedCanvasId, setSelectedCanvasId] = useState<string | null>(currentCanvasId || null);
-	const canvases = useAppSelector((state) => selectCanvasIdsByChannelId(state, channelId ?? '', parentId));
+	const canvases = useAppSelector((state) => selectCanvasIdsByChannelId(state, channelId || ''));
 	const filteredCanvases = useMemo(() => {
 		if (!keywordSearch) return canvases;
 		const lowerCaseQuery = keywordSearch.toLowerCase().trim();
@@ -56,7 +56,7 @@ const CanvasModal = ({ onClose, rootRef }: CanvasProps) => {
 
 		dispatch(appActions.setIsShowCanvas(true));
 		const newCanvasPath = isThread
-			? `/chat/clans/${currentClanId}/threads/${id}/canvas/new`
+			? `/chat/clans/${currentClanId}/channels/${id}/canvas/new`
 			: `/chat/clans/${currentClanId}/channels/${id}/canvas/new`;
 		navigate(newCanvasPath);
 		onClose();

@@ -1,7 +1,7 @@
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import { ensureSession, getMezonCtx } from '../helpers';
+import { ensureSession, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 
 export const DEVICES_FEATURE_KEY = 'devices';
 
@@ -36,7 +36,23 @@ export const initialDevicesState: DevicesState = devicesAdapter.getInitialState(
 export const fetchListLoggedDevices = createAsyncThunk('devices/fetchListLoggedDevices', async (_, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
-		const response = await mezon.client.listLogedDevice(mezon.session);
+		const response = await fetchDataWithSocketFallback(
+			mezon,
+			{
+				api_name: 'ListLogedDevice'
+			},
+			(
+				session
+			): Promise<{
+				devices: Array<IDevice>;
+			}> => {
+				return Promise.resolve({
+					devices: []
+				});
+			},
+			'list_loged_device'
+		);
+
 		return (response?.devices || []) as IDevice[];
 	} catch (error: unknown) {
 		const errorMessage = error instanceof Error ? error.message : 'Failed to fetch devices';

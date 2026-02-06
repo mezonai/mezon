@@ -11,7 +11,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { FOR_SALE_CATE, ITEM_TYPE, PREDEFINED_EMOJI_CATEGORIES, SubPanelName, blankReferenceObj, createImgproxyUrl } from '@mezon/utils';
+import { EMimeTypes, FOR_SALE_CATE, ITEM_TYPE, PREDEFINED_EMOJI_CATEGORIES, SubPanelName, blankReferenceObj, createImgproxyUrl } from '@mezon/utils';
 import type { ClanSticker } from 'mezon-js';
 import type { ApiChannelDescription, ApiMessageRef } from 'mezon-js/api.gen';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -129,7 +129,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 	const handleClickImage = (image: StickerPanel) => {
 		const imageUrl = image.url ? image.url : `${process.env.NX_BASE_IMG_URL}/stickers/${image.id}.webp`;
 		if (isReplyAction) {
-			sendMessage({ t: '' }, [], [{ url: imageUrl, filetype: 'image/gif', filename: image.id }], [dataReferences], undefined);
+			sendMessage({ t: '' }, [], [{ url: imageUrl, filetype: EMimeTypes.sticker, filename: image.id }], [dataReferences], undefined);
 
 			dispatch(
 				referencesActions.setDataReferences({
@@ -138,7 +138,7 @@ function StickerSquare({ channel, mode, onClose, isTopic = false }: ChannelMessa
 				})
 			);
 		} else {
-			sendMessage({ t: '' }, [], [{ url: imageUrl, filetype: 'image/gif', filename: image.id }], [], undefined);
+			sendMessage({ t: '' }, [], [{ url: imageUrl, filetype: EMimeTypes.sticker, filename: image.id }], [], undefined);
 		}
 		setSubPanelActive(SubPanelName.NONE);
 	};

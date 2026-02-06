@@ -1,5 +1,13 @@
 import type { ApiMediaExtendedPreview, ApiPhoto, IMediaDimensions, ObserveFn } from '@mezon/utils';
-import { MIN_MEDIA_HEIGHT, SHOW_POSITION, buildClassName, calculateMediaDimensions, createImgproxyUrl, useIsIntersecting } from '@mezon/utils';
+import {
+	EMimeTypes,
+	MIN_MEDIA_HEIGHT,
+	SHOW_POSITION,
+	buildClassName,
+	calculateMediaDimensions,
+	createImgproxyUrl,
+	useIsIntersecting
+} from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
 
@@ -206,6 +214,7 @@ const Photo = <T,>({
 			className={`relative max-w-full ${componentClassName}`}
 			style={style}
 			onClick={() => {
+				if ((photo as ApiPhoto & { filetype?: string })?.filetype === EMimeTypes.sticker) return;
 				onClick?.(photo?.url, id);
 			}}
 		>

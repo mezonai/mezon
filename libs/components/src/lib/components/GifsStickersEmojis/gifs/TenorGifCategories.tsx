@@ -64,7 +64,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 
 	const handleClickGif = (giftUrl: string) => {
 		if (isReplyAction) {
-			sendMessage({ t: '' }, [], [{ url: giftUrl }], [dataReferences], undefined);
+			sendMessage({ t: '' }, [], [{ url: giftUrl, filetype: EMimeTypes.sticker }], [dataReferences], undefined);
 			dispatch(
 				referencesActions.setDataReferences({
 					channelId: currentId as string,
@@ -72,7 +72,7 @@ function TenorGifCategories({ channelOrDirect, mode, onClose, isTopic = false }:
 				})
 			);
 		} else {
-			sendMessage({ t: '' }, [], [{ url: giftUrl, filetype: EMimeTypes.gif }], [], undefined);
+			sendMessage({ t: '' }, [], [{ url: giftUrl, filetype: EMimeTypes.sticker }], [], undefined);
 		}
 		setSubPanelActive(SubPanelName.NONE);
 	};

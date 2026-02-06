@@ -35,8 +35,10 @@ export const PendingContent = memo((props: IPendingContentProps) => {
 
 	const handleAcceptFriend = () => {
 		const body = {
-			usernames: [],
-			ids: [targetUser?.user?.id],
+			usernames: targetUser?.user?.username,
+			ids: targetUser?.user?.id,
+			avatar: targetUser?.user?.avatar_url,
+			displayName: targetUser?.user?.display_name,
 			isAcceptingRequest: true,
 			isMobile: true
 		};

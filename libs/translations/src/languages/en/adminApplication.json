@@ -54,9 +54,7 @@
 	"tabs": {
 		"generalInformation": "General Information",
 		"installation": "Installation",
-		"oauth2": "OAuth2",
-		"flow": "Flow",
-		"flowExamples": "Flow Examples"
+		"oauth2": "OAuth2"
 	},
 	"generalInformation": {
 		"title": "General Information",
@@ -139,9 +137,6 @@
 		"toasts": {
 			"addRedirectUri": "Please add at least one redirect URI before resetting the secret key!"
 		}
-	},
-	"flowExamples": {
-		"title": "Flow Examples"
 	},
 	"sidebarTabs": {
 		"dashboard": "Dashboard",

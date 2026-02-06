@@ -5,6 +5,7 @@ import { sleep } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, ScrollView, View } from 'react-native';
+import VersionInfo from 'react-native-version-info';
 import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../componentUI/MezonConfirm';
@@ -116,6 +117,11 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 	const AppMenu = useMemo(
 		() =>
 			[
+				{
+					title: t('appSettings.appVersion'),
+					previewValue: `${VersionInfo.appVersion}`,
+					icon: <MezonIconCDN icon={IconCDN.logoMezon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+				},
 				{
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.SETTINGS.STACK, {

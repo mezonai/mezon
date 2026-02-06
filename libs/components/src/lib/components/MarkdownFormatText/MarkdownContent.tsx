@@ -7,10 +7,7 @@ import {
 	getTikTokEmbedSize,
 	getTikTokEmbedUrl,
 	getYouTubeEmbedSize,
-	getYouTubeEmbedUrl,
-	isFacebookLink,
-	isTikTokLink,
-	isYouTubeLink
+	getYouTubeEmbedUrl
 } from '@mezon/utils';
 import type { Element, Root } from 'hast';
 import { common, createLowlight } from 'lowlight';
@@ -345,13 +342,15 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				/>
 			)}
 
-			{!isReply && isLink && content && isYouTubeLink(content) && (
+			{!isReply && isLink && content && typeOfBacktick === EBacktickType.LINKYOUTUBE && (
 				<SocialEmbed url={content} platform="youtube" isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />
 			)}
-			{!isReply && isLink && content && isFacebookLink(content) && (
+			{!isReply && isLink && content && typeOfBacktick === EBacktickType.LINKFACEBOOK && (
 				<SocialEmbed url={content} platform="facebook" isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />
 			)}
-			{!isReply && isLink && content && isTikTokLink(content) && <SocialEmbed url={content} platform="tiktok" isInPinMsg={isInPinMsg} />}
+			{!isReply && isLink && content && typeOfBacktick === EBacktickType.LINKTIKTOK && (
+				<SocialEmbed url={content} platform="tiktok" isInPinMsg={isInPinMsg} />
+			)}
 			{!isLink && isBacktick && (typeOfBacktick === EBacktickType.SINGLE || typeOfBacktick === EBacktickType.CODE) ? (
 				<SingleBacktick contentBacktick={content} isInPinMsg={isInPinMsg} isLightMode={isLightMode} posInNotification={posInNotification} />
 			) : isBacktick && (typeOfBacktick === EBacktickType.TRIPLE || typeOfBacktick === EBacktickType.PRE) && !isLink ? (

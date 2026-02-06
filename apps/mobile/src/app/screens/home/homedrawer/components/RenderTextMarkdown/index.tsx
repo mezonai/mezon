@@ -11,14 +11,11 @@ import {
 	selectClanById
 } from '@mezon/store-mobile';
 import type { IExtendedMessage } from '@mezon/utils';
-import { EBacktickType, ETokenMessage, getSrcEmoji, isYouTubeLink } from '@mezon/utils';
+import { EBacktickType, ETokenMessage, getSrcEmoji } from '@mezon/utils';
 import type { TFunction } from 'i18next';
-import { ChannelType } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, Linking, StyleSheet, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import Feather from 'react-native-vector-icons/Feather';
-import CustomIcon from '../../../../../../../src/assets/CustomIcon';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import LinkOptionModal from '../LinkOptions/LinkOptionModal';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
@@ -271,26 +268,6 @@ export function extractIds(url: string): { clanId: string | null; channelId: str
 		canvasId: canvasIdMatch ? canvasIdMatch[1] : null
 	};
 }
-
-const renderChannelIcon = (channelType: number, channelId: string, themeValue: Attributes) => {
-	const iconStyle = componentStyles().channelIcon;
-	if (channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
-		return <CustomIcon name="voice" size={size.s_14} color={baseColor.link} style={iconStyle} />;
-	}
-	if (channelType === ChannelType.CHANNEL_TYPE_THREAD) {
-		return <CustomIcon name="thread" size={size.s_14} color={baseColor.link} style={iconStyle} />;
-	}
-	if (channelType === ChannelType.CHANNEL_TYPE_STREAMING) {
-		return <CustomIcon name="stream" size={size.s_14} color={baseColor.link} style={iconStyle} />;
-	}
-	if (channelType === ChannelType.CHANNEL_TYPE_APP) {
-		return <CustomIcon name="app" size={size.s_14} color={baseColor.link} style={iconStyle} />;
-	}
-	if (channelId === 'undefined') {
-		return <Feather name="lock" size={size.s_14} color={themeValue.text} style={iconStyle} />;
-	}
-	return null;
-};
 
 const renderTextPalainContain = (
 	themeValue: Attributes,
@@ -551,20 +528,6 @@ export const RenderTextMarkdownContent = ({
 						break;
 					case EBacktickType.VOICE_LINK:
 					case EBacktickType.LINK: {
-						if (isYouTubeLink(contentInElement || '')) {
-							const videoId = extractYoutubeVideoId(contentInElement);
-							markdownBlackParts.push(
-								<RenderYoutubeVideo
-									videoKey={`youtube-link-${videoId}-${index}`}
-									videoId={videoId}
-									contentInElement={contentInElement}
-									onPress={() => openUrl(contentInElement, null)}
-									onLongPress={() => handleLongPressLink?.(contentInElement)}
-									linkStyle={themeValue ? markdownStyles(themeValue).link : {}}
-								/>
-							);
-							break;
-						}
 						const { clanId, channelId, canvasId } = extractIds(contentInElement);
 
 						const basePath = '/chat/clans/';
@@ -633,10 +596,9 @@ export const RenderTextMarkdownContent = ({
 						break;
 					}
 
-					case EBacktickType.LINKYOUTUBE:
-						if (isYouTubeLink(contentInElement)) {
-							const videoId = extractYoutubeVideoId(contentInElement);
-
+					case EBacktickType.LINKYOUTUBE: {
+						const videoId = extractYoutubeVideoId(contentInElement);
+						if (videoId) {
 							markdownBlackParts.push(
 								<RenderYoutubeVideo
 									videoKey={`youtube-linkyoutube-${videoId}-${index}`}
@@ -660,6 +622,7 @@ export const RenderTextMarkdownContent = ({
 							);
 						}
 						break;
+					}
 
 					default:
 						textParts.push(<Text key={`text-${index}`}>{contentInElement}</Text>);
