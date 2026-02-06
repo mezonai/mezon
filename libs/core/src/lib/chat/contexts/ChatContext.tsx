@@ -2516,7 +2516,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			);
 			dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
 		} else {
-			const relatedChannels = channels.filter((channel) => channel.clan_id === markAsReadEvent.clan_id);
+			const relatedChannels = channels.filter((channel) => channel.parent_id === markAsReadEvent.channel_id);
 
 			const channelIds = relatedChannels.map((channel) => channel.id);
 
