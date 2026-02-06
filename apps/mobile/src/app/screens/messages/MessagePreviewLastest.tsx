@@ -19,15 +19,15 @@ interface IMessagePreviewLastestProps {
 	userId: string;
 	lastSentMessageStr: string;
 	isUnReadChannel: boolean;
-	callerUsername: string
+	inviterUsername: string;
 }
 
 export const MessagePreviewLastest = memo(
-	({ type, senderId, senderName, userId, lastSentMessageStr, isUnReadChannel, callerUsername }: IMessagePreviewLastestProps) => {
+	({ type, senderId, senderName, userId, lastSentMessageStr, isUnReadChannel, inviterUsername }: IMessagePreviewLastestProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
 		const { t } = useTranslation(['message', 'common']);
-		const userProfile = useSelector(selectAllAccount)
+		const userProfile = useSelector(selectAllAccount);
 		const lastSentMessage = useMemo(() => {
 			return safeJSONParse(lastSentMessageStr || '{}');
 		}, [lastSentMessageStr]);
@@ -37,12 +37,12 @@ export const MessagePreviewLastest = memo(
 		}, [lastSentMessage?.content]);
 
 		const groupMsgPreview = useMemo(() => {
-			if (callerUsername) {
-				const myPriorityName = userProfile?.user?.display_name || userProfile?.user?.username
-				return `${callerUsername} added ${myPriorityName} to the conversation.`;
+			if (inviterUsername) {
+				const myPriorityName = userProfile?.user?.display_name || userProfile?.user?.username;
+				return `${inviterUsername} added ${myPriorityName} to the conversation.`;
 			}
-			return t('directMessage.groupCreated')
-		}, [callerUsername, userProfile?.user?.display_name, userProfile?.user?.username, t]);
+			return t('directMessage.groupCreated');
+		}, [inviterUsername, userProfile?.user?.display_name, userProfile?.user?.username, t]);
 
 		const contentTextObj = useMemo(() => {
 			const isLinkMessage = isContainsUrl(content?.t || '');
