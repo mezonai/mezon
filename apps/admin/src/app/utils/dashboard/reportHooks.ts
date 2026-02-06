@@ -7,7 +7,9 @@ export const usePagination = (
 	customStartDate: string,
 	customEndDate: string,
 	periodFilter: 'daily' | 'weekly' | 'monthly',
-	refreshTrigger: number
+	refreshTrigger: number,
+	sortBy?: string,
+	sort?: 'asc' | 'desc'
 ) => {
 	const [page, setPage] = useState(1);
 	const [limit, setLimit] = useState(10);
@@ -18,7 +20,7 @@ export const usePagination = (
 	useEffect(() => {
 		const fetchTable = async () => {
 			const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
-			const action = await dispatch(fetchClansList({ start: startStr, end: endStr, page, limit, rangeType: periodFilter }));
+			const action = await dispatch(fetchClansList({ start: startStr, end: endStr, page, limit, rangeType: periodFilter, sortBy, sort }));
 			if (fetchClansList.fulfilled.match(action)) {
 				const payload = action.payload as {
 					success?: boolean;
@@ -35,7 +37,7 @@ export const usePagination = (
 			}
 		};
 		fetchTable();
-	}, [refreshTrigger, page, limit, dateRange, customStartDate, customEndDate, periodFilter, dispatch]);
+	}, [refreshTrigger, page, limit, sortBy, sort, dispatch]);
 
 	return { page, setPage, limit, setLimit, total, totalPages };
 };

@@ -23,6 +23,26 @@ export const formatDateI18n = (date: Date, languageCode: string, formatString = 
 	return format(date, formatString, { locale });
 };
 
+export const formatChartDate = (date: Date, languageCode: string, options?: { withYear?: boolean; fullMonth?: boolean }) => {
+	const lang = String(languageCode || 'en');
+	const isVi = lang.toLowerCase().startsWith('vi');
+	const withYear = options?.withYear || false;
+	const fullMonth = options?.fullMonth || false;
+
+	let fmt = '';
+	if (fullMonth) {
+		fmt = isVi ? 'dd MMMM' : 'MMMM dd';
+	} else {
+		fmt = isVi ? 'dd MMM' : 'MMM dd';
+	}
+
+	if (withYear) {
+		fmt = isVi ? `${fmt}, yyyy` : `${fmt}, yyyy`;
+	}
+
+	return formatDateI18n(date, languageCode, fmt);
+};
+
 export const formatRelativeTime = (date: Date, languageCode: string): string => {
 	const locale = getDateLocale(languageCode);
 

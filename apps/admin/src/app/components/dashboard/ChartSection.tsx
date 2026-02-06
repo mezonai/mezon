@@ -42,11 +42,15 @@ function ChartSection({ activeTab, onTabChange, metrics, dateRangeText, chartDat
 					</div>
 				) : (
 					<>
-						{activeTab === 'activeUsers' && <MemoizedSingleLineChart data={chartData} dataKey="activeUsers" name="Total Active Users" />}
-						{activeTab === 'activeChannels' && (
-							<MemoizedSingleLineChart data={chartData} dataKey="activeChannels" name="Total Active Channels" />
+						{activeTab === 'activeUsers' && (
+							<MemoizedSingleLineChart data={chartData} dataKey="activeUsers" name={t('activityOverview.totalActiveUsers')} />
 						)}
-						{activeTab === 'messages' && <MemoizedSingleLineChart data={chartData} dataKey="messages" name="Total Messages" />}
+						{activeTab === 'activeChannels' && (
+							<MemoizedSingleLineChart data={chartData} dataKey="activeChannels" name={t('activityOverview.totalActiveChannels')} />
+						)}
+						{activeTab === 'messages' && (
+							<MemoizedSingleLineChart data={chartData} dataKey="messages" name={t('activityOverview.totalMessages')} />
+						)}
 					</>
 				)}
 			</div>

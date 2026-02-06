@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import type { UserData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
+import ColumnToggle from './ColumnToggle';
+import SortIcon from './SortIcon';
 
 interface UsersTableProps {
 	data: UserData[];
@@ -10,9 +12,12 @@ interface UsersTableProps {
 	limit: number;
 	total: number;
 	totalPages: number;
+	sortBy?: string;
+	sort?: 'asc' | 'desc';
 	onExportCSV: () => void;
 	onToggleColumn: (col: string) => void;
 	onPageChange: (page: number) => void;
+	onSort?: (column: string) => void;
 }
 
 function UsersTable({
@@ -23,9 +28,12 @@ function UsersTable({
 	limit,
 	total,
 	totalPages,
+	sortBy,
+	sort,
 	onExportCSV,
 	onToggleColumn,
-	onPageChange
+	onPageChange,
+	onSort
 }: UsersTableProps) {
 	const { t } = useTranslation('dashboard');
 
@@ -64,24 +72,32 @@ function UsersTable({
 					<thead className="bg-gray-50 dark:bg-[#1e1f22]">
 						<tr>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.userName')}</span>
-									<input
-										aria-label="Select User name column"
-										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<button
+										onClick={() => onSort?.('user_name')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										<SortIcon column="user_name" sortBy={sortBy} sort={sort} />
+									</button>
+									<ColumnToggle
+										ariaLabel="Select User name column"
 										checked={selectedColumns.includes('user_name')}
 										onChange={() => onToggleColumn('user_name')}
 									/>
 								</div>
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.messages')}</span>
-									<input
-										aria-label="Select Messages column"
-										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<button
+										onClick={() => onSort?.('messages')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										<SortIcon column="messages" sortBy={sortBy} sort={sort} />
+									</button>
+									<ColumnToggle
+										ariaLabel="Select Messages column"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>
