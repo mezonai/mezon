@@ -37,7 +37,7 @@ export const usePagination = (
 			}
 		};
 		fetchTable();
-	}, [refreshTrigger, page, limit, dateRange, customStartDate, customEndDate, periodFilter, sortBy, sort, dispatch]);
+	}, [refreshTrigger, page, limit, sortBy, sort, dispatch]);
 
 	return { page, setPage, limit, setLimit, total, totalPages };
 };

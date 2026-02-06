@@ -103,19 +103,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 				})
 			);
 		}
-	}, [
-		clanId,
-		refreshTrigger,
-		channelPage,
-		channelLimit,
-		channelSortBy,
-		channelSort,
-		dateRange,
-		customStartDate,
-		customEndDate,
-		periodFilter,
-		dispatch
-	]);
+	}, [clanId, refreshTrigger, channelPage, channelLimit, channelSortBy, channelSort, dispatch]);
 
 	// When channels load, fetch users for the first channel by default
 	useEffect(() => {
@@ -153,7 +141,7 @@ function ClanDetailReport({ clanId }: ClanDetailReportProps) {
 					})
 				);
 		}
-	}, [firstChannelId, clanId, refreshTrigger, userPage, userLimit, userSortBy, userSort, dateRange, customStartDate, customEndDate, dispatch]);
+	}, [firstChannelId, clanId, refreshTrigger, userPage, userLimit, userSortBy, userSort, dispatch]);
 
 	const allowedGranularities = useMemo(
 		() => calculateAllowedGranularities(dateRange, customStartDate, customEndDate),
