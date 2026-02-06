@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 	StyleSheet.create({
 		wrapper: {
-			marginTop: size.s_2
+			marginTop: size.s_4
 		},
 		container: {
 			backgroundColor: colors.secondaryLight,
