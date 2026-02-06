@@ -62,9 +62,10 @@
 		"whatsNew": "What's new"
 	},
 	"updateGate": {
-		"outOfDateVersion": "Out of Date Version",
-		"updateExperience": "Let's update to have the best experience!",
-		"updateNow": "Update Now"
+		"outOfDateVersion": "New Version Ready",
+		"updateExperience": "A quick update is needed to continue using our latest family features.",
+		"updateNow": "Update now",
+		"versionInfo": "VERSION"
 	},
 	"language": {
 		"title": "Language",

@@ -62,9 +62,10 @@
 		"whatsNew": "Có gì mới"
 	},
 	"updateGate": {
-		"outOfDateVersion": "Phiên bản đã lỗi thời",
-		"updateExperience": "Hãy cập nhật để có trải nghiệm tốt nhất!",
-		"updateNow": "Cập nhật ngay"
+		"outOfDateVersion": "Phiên Bản Mới Đã Sẵn Sàng",
+		"updateExperience": "Cần cập nhật nhanh để tiếp tục sử dụng các tính năng gia đình mới nhất của chúng tôi.",
+		"updateNow": "Cập nhật ngay",
+		"versionInfo": "PHIÊN BẢN"
 	},
 	"language": {
 		"title": "Ngôn ngữ",
