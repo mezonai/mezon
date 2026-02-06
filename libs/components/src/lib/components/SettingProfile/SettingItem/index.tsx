@@ -160,7 +160,9 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				<hr className="border-t-theme-primary mt-4" />
 				<br />
 				<button
-					className={`p-2 text-[16px] font-medium ${selectedButton === EUserSettings.LOG_OUT ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px] ml-[-8px] `}
+					className={`p-2 text-[16px] font-medium text-red-500 ${
+						selectedButton === EUserSettings.LOG_OUT ? 'bg-button-secondary bg-item-theme' : ''
+					} mt-1 w-[170px] text-left rounded-[5px] ml-[-8px] `}
 					onClick={() => {
 						handleButtonClick(EUserSettings.LOG_OUT);
 						handleOpenModal();
