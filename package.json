@@ -85,7 +85,7 @@
     "lodash.isequal": "^4.5.0",
     "lowlight": "^3.3.0",
     "mezon-active-windows": "0.1.38",
-    "mezon-js": "2.14.78",
+    "mezon-js": "2.14.80",
     "mezon-js-protobuf": "1.10.9",
     "mmn-client-js": "1.0.16",
     "nx-electron": "^20.0.2",

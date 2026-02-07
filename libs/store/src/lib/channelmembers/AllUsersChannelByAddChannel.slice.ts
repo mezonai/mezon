@@ -299,7 +299,8 @@ export const selectMemberByGroupId = createSelector([getUserChannelsState, (stat
 				username: entities.usernames?.[index] || '',
 				display_name: entities.display_names?.[index] || '',
 				avatar_url: entities.avatars?.[index] || '',
-				online: entities.onlines?.[index]
+				online: entities.onlines?.[index],
+				create_time_seconds: entities?.create_time_seconds
 			}
 		});
 	});
