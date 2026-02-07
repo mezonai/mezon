@@ -8,6 +8,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { showSimpleToast } from '@mezon/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReportControls from '../../components/ReportControls/ReportControls';
@@ -31,11 +32,21 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const [hasNoData, setHasNoData] = useState(false);
 	const [showFullPageLoading, setShowFullPageLoading] = useState(false);
 	const [isExportingCSV, setIsExportingCSV] = useState(false);
+	const [sortBy, setSortBy] = useState<string | undefined>(undefined);
+	const [sort, setSort] = useState<'asc' | 'desc'>('asc');
 
 	const tableRef = useRef<HTMLDivElement>(null);
 	const shouldScrollToTable = useRef(false);
 
-	const { page, setPage, limit, total, totalPages } = usePagination(dateRange, customStartDate, customEndDate, periodFilter, refreshTrigger);
+	const { page, setPage, limit, total, totalPages } = usePagination(
+		dateRange,
+		customStartDate,
+		customEndDate,
+		periodFilter,
+		refreshTrigger,
+		sortBy,
+		sort
+	);
 
 	const dispatch = useAppDispatch();
 	const chartData = useAppSelector(selectDashboardChartData);
@@ -48,14 +59,23 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const showTableSkeleton = useTableSkeleton(tableLoadingStore);
 
 	const toggleColumn = (col: string) => {
-		setSelectedColumns((prev) => (prev.includes(col) ? prev.filter((c) => c !== col) : [...prev, col]));
+		setSelectedColumns((prev) => {
+			if (prev.includes(col)) {
+				if (prev.length === 1) {
+					showSimpleToast(t('table.selectAtLeastOneColumn'));
+					return prev;
+				}
+				return prev.filter((c) => c !== col);
+			}
+			return [...prev, col];
+		});
 	};
 
 	// Fetch chart data when dependencies change
 	useEffect(() => {
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
 		dispatch(fetchAllClansMetrics({ start: startStr, end: endStr, rangeType: periodFilter }));
-	}, [refreshTrigger, dateRange, customStartDate, customEndDate, periodFilter, dispatch]);
+	}, [refreshTrigger, dispatch]);
 
 	// Check for no data state
 	useEffect(() => {
@@ -108,6 +128,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 		setDateRange('7');
 		setCustomStartDate('');
 		setCustomEndDate('');
+		setPeriodFilter('daily');
 		setShowFullPageLoading(true);
 		setPage(1);
 		setRefreshTrigger((prev) => prev + 1);
@@ -116,7 +137,7 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const handleExportCSV = async () => {
 		shouldScrollToTable.current = true;
 		const { startStr, endStr } = getDateRangeFromPreset(dateRange, customStartDate, customEndDate);
-		await handleCSVExport(dispatch, startStr, endStr, periodFilter, selectedColumns, setIsExportingCSV);
+		await handleCSVExport(dispatch, startStr, endStr, periodFilter, selectedColumns, setIsExportingCSV, sortBy, sortBy ? sort : undefined);
 	};
 
 	const handleClanClick = (clanId: string) => {
@@ -128,6 +149,18 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 	const handlePageChange = (p: number) => {
 		if (p !== page) shouldScrollToTable.current = true;
 		setPage(p);
+	};
+
+	const handleSort = (column: string) => {
+		if (sortBy === column) {
+			// Toggle sort direction
+			setSort((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+		} else {
+			// New column, default to ascending
+			setSortBy(column);
+			setSort('asc');
+		}
+		setPage(1);
 	};
 
 	return (
@@ -182,10 +215,13 @@ function ClanUsageReport({ onClanClick }: ClanUsageReportProps) {
 						limit={limit}
 						total={total}
 						totalPages={totalPages}
+						sortBy={sortBy}
+						sort={sort}
 						onClanClick={handleClanClick}
 						onExportCSV={handleExportCSV}
 						onToggleColumn={toggleColumn}
 						onPageChange={handlePageChange}
+						onSort={handleSort}
 						tableRef={tableRef}
 					/>
 				</>

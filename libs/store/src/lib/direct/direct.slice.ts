@@ -430,9 +430,22 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		const avatars: string[] = [];
 		const onlines: boolean[] = [];
 		const label: string[] = [];
+		const listMember: { user_ids: string[]; avatars: string[]; onlines: boolean[]; usernames: string[]; display_names: string[] } = {
+			user_ids: [],
+			avatars: [],
+			onlines: [],
+			usernames: [],
+			display_names: []
+		};
 
 		const isDM = channel_desc.type === ChannelType.CHANNEL_TYPE_DM;
 		for (const user of users) {
+			listMember.avatars.push(user.avatar);
+			listMember.user_ids.push(user.user_id);
+			listMember.usernames.push(user.username);
+			listMember.onlines.push(user.online);
+			listMember.display_names.push(user.display_name || user.username);
+
 			const isMe = user.user_id === myId;
 			if ((isDM && isMe) || !user.user_id) {
 				continue;
@@ -467,8 +480,7 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 		};
 		thunkAPI.dispatch(
 			userChannelsActions.upsert({
-				avatars,
-				display_names: label,
+				...listMember,
 				id: channel_desc.channel_id || '',
 				onlines,
 				usernames,

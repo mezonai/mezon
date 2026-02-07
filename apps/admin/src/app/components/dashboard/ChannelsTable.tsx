@@ -1,6 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import type { ChannelsData } from '../../pages/dashboard/types';
 import Pagination from '../Pagination';
+import ColumnToggle from './ColumnToggle';
+import SortIcon from './SortIcon';
 
 interface ChannelsTableProps {
 	data: ChannelsData[];
@@ -10,9 +12,12 @@ interface ChannelsTableProps {
 	limit: number;
 	total: number;
 	totalPages: number;
+	sortBy?: string;
+	sort?: 'asc' | 'desc';
 	onExportCSV: () => void;
 	onToggleColumn: (col: string) => void;
 	onPageChange: (page: number) => void;
+	onSort?: (column: string) => void;
 }
 
 function ChannelsTable({
@@ -23,9 +28,12 @@ function ChannelsTable({
 	limit,
 	total,
 	totalPages,
+	sortBy,
+	sort,
 	onExportCSV,
 	onToggleColumn,
-	onPageChange
+	onPageChange,
+	onSort
 }: ChannelsTableProps) {
 	const { t } = useTranslation('dashboard');
 
@@ -64,36 +72,48 @@ function ChannelsTable({
 					<thead className="bg-gray-50 dark:bg-[#1e1f22]">
 						<tr>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.channelName')}</span>
-									<input
-										aria-label="Select Channel name column"
-										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<button
+										onClick={() => onSort?.('channel_name')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										<SortIcon column="channel_name" sortBy={sortBy} sort={sort} />
+									</button>
+									<ColumnToggle
+										ariaLabel="Select Channel name column"
 										checked={selectedColumns.includes('channel_name')}
 										onChange={() => onToggleColumn('channel_name')}
 									/>
 								</div>
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.activeUsers')}</span>
-									<input
-										aria-label="Select Active users column"
-										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<button
+										onClick={() => onSort?.('active_users')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										<SortIcon column="active_users" sortBy={sortBy} sort={sort} />
+									</button>
+									<ColumnToggle
+										ariaLabel="Select Active users column"
 										checked={selectedColumns.includes('active_users')}
 										onChange={() => onToggleColumn('active_users')}
 									/>
 								</div>
 							</th>
 							<th className="px-4 py-3 text-left text-sm font-semibold border-b dark:border-[#4d4f52]">
-								<div className="flex items-center">
+								<div className="flex items-center gap-2">
 									<span>{t('table.messages')}</span>
-									<input
-										aria-label="Select Messages column"
-										type="checkbox"
-										className="ml-2 h-4 w-4 rounded border dark:border-[#4d4f52] accent-[#5865F2] cursor-pointer"
+									<button
+										onClick={() => onSort?.('messages')}
+										className="inline-flex flex-col items-center justify-center cursor-pointer h-4 w-4"
+									>
+										<SortIcon column="messages" sortBy={sortBy} sort={sort} />
+									</button>
+									<ColumnToggle
+										ariaLabel="Select Messages column"
 										checked={selectedColumns.includes('messages')}
 										onChange={() => onToggleColumn('messages')}
 									/>

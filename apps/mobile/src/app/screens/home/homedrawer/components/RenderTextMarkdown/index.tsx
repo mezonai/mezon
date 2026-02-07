@@ -21,6 +21,8 @@ import LinkOptionModal from '../LinkOptions/LinkOptionModal';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
 import { HashtagChannel } from './components/HashtagChannel';
+import type { OgpElemnent } from './components/RenderOGPItem';
+import RenderOgpPreview from './components/RenderOGPItem';
 import RenderYoutubeVideo from './components/RenderYoutubeVideo';
 import { styles as componentStyles, getMessageReplyMaxHeight } from './index.styles';
 
@@ -241,6 +243,25 @@ export type IMarkdownProps = {
 	isBuzzMessage?: boolean;
 };
 
+export interface ElementToken {
+	s?: number;
+	e?: number;
+	kindOf: ETokenMessage;
+	user_id?: string;
+	role_id?: string;
+	channelId?: string;
+	emojiid?: string;
+	type?: EBacktickType;
+	username?: string;
+	clanId?: string;
+	parentId?: string;
+	channelLabel?: string;
+	title?: string;
+	image?: string;
+	description?: string;
+	index?: number;
+}
+
 function parseMarkdownLink(text: string) {
 	const bracketMatch = text.match(/\[(.*?)\]/);
 	const parenthesesMatch = text.match(/\((.*?)\)/);
@@ -366,7 +387,7 @@ export const RenderTextMarkdownContent = ({
 	const textTripleParts: React.ReactNode[] = [];
 	const markdownBlackParts: React.ReactNode[] = [];
 
-	const elements = [
+	const elements: ElementToken[] = [
 		...hg.map((item) => ({ ...item, kindOf: ETokenMessage.HASHTAGS })),
 		...(mentions?.map?.((item) => ({ ...item, kindOf: ETokenMessage.MENTIONS })) || []),
 		...ej.map((item) => ({ ...item, kindOf: ETokenMessage.EMOJIS })),
@@ -526,6 +547,8 @@ export const RenderTextMarkdownContent = ({
 							</Text>
 						);
 						break;
+					case EBacktickType.LINKFACEBOOK:
+					case EBacktickType.LINKTIKTOK:
 					case EBacktickType.VOICE_LINK:
 					case EBacktickType.LINK: {
 						const { clanId, channelId, canvasId } = extractIds(contentInElement);
@@ -624,6 +647,17 @@ export const RenderTextMarkdownContent = ({
 						break;
 					}
 
+					case EBacktickType.OGP_PREVIEW: {
+						const url =
+							element.index !== undefined && t
+								? t?.substring(element.index, t?.indexOf(' ', element.index) === -1 ? t.length : t.indexOf(' ', element.index))
+								: '';
+
+						if (url) {
+							markdownBlackParts.push(<RenderOgpPreview ogpItem={element as OgpElemnent} url={url} />);
+						}
+						break;
+					}
 					default:
 						textParts.push(<Text key={`text-${index}`}>{contentInElement}</Text>);
 				}

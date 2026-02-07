@@ -53,7 +53,7 @@ export const splitBlockCodeRegex =
 export const urlRegex = /(https?:\/\/[^\s]+)/g;
 export const validLinkGoogleMapRegex = /^https:\/\/(www\.)?google\.com\/maps\?q=(-?\d+(\.\d+)?),(-?\d+(\.\d+)?)(&.*)?$/;
 export const validLinkInviteRegex = /https:\/\/mezon\.ai\/invite\/[0-9]+/;
-export const inviteLinkRegex = /https:\/\/mezon\.ai\/invite\/([0-9]+)/;
+export const inviteLinkRegex = /https:\/\/mezon\.ai\/invite\/([0-9]{19})(?=\s|$)/;
 export const pushAttachmentToCache = (attachment: any, channelId: string | number) => {
 	const allCachedAttachment = load(STORAGE_KEY_TEMPORARY_ATTACHMENT) || {};
 

@@ -34,7 +34,9 @@
 		"messages": "Tin nhắn",
 		"noOwnedClans": "Bạn không sở hữu clan nào để tạo phân tích.",
 		"noActiveChannels": "Hiện không có kênh hoạt động nào trong clan này.",
-		"noActiveUsers": "Hiện không có người dùng hoạt động nào trong kênh này."
+		"noActiveUsers": "Hiện không có người dùng hoạt động nào trong kênh này.",
+		"selectColumnTooltip": "Chọn/bỏ chọn để xuất CSV theo cột này",
+		"selectAtLeastOneColumn": "Phải chọn ít nhất 1 cột để export csv"
 	},
 	"page": {
 		"backToOverview": "Quay lại tổng quan sử dụng Clan",
@@ -61,5 +63,8 @@
 		"monthly": "Theo tháng",
 		"runReport": "Chạy báo cáo",
 		"reset": "Đặt lại"
+	},
+	"sortIcon": {
+		"tooltip": "Sắp xếp tăng/giảm theo cột này"
 	}
 }
