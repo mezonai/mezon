@@ -1,11 +1,11 @@
-import { selectCurrentChannelId } from '@mezon/store';
+import { selectVoiceInfo } from '@mezon/store';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useSendReaction } from '../../MyVideoConference/Reaction/useSendReaction';
 
 export function useReactionControls() {
 	const { sendEmojiReaction, sendSoundReaction, sendRaisingHand } = useSendReaction();
-	const currentChannelId = useSelector(selectCurrentChannelId);
+	const voiceInfo = useSelector(selectVoiceInfo);
 
 	const [showEmojiPanel, setShowEmojiPanel] = useState(false);
 	const [showSoundPanel, setShowSoundPanel] = useState(false);
@@ -13,7 +13,7 @@ export function useReactionControls() {
 	useEffect(() => {
 		setShowEmojiPanel(false);
 		setShowSoundPanel(false);
-	}, [currentChannelId]);
+	}, [voiceInfo?.channelId]);
 
 	useEffect(() => {
 		if (!showEmojiPanel) return;

@@ -29,7 +29,7 @@ import type { PropsWithChildren } from 'react';
 import React, { forwardRef, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
-import type { ActiveSoundReaction } from '../Reaction/types';
+import { useActiveSoundReaction } from '../Reaction/useActiveSoundReaction';
 import { FocusToggle } from './FocusToggle';
 
 export function ParticipantContextIfNeeded(
@@ -64,7 +64,6 @@ export interface ParticipantTileProps extends React.HTMLAttributes<HTMLDivElemen
 	onParticipantClick?: (event: ParticipantClickEvent) => void;
 	isExtCalling?: boolean;
 	isConnectingScreen?: boolean;
-	activeSoundReactions?: Map<string, ActiveSoundReaction>;
 	roomName?: string;
 	room?: Room;
 	groupMembers?: UsersClanEntity[];
@@ -80,7 +79,6 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 		onParticipantClick,
 		disableSpeakingIndicator,
 		isExtCalling,
-		activeSoundReactions,
 		room: _room,
 		groupMembers,
 		...htmlProps
@@ -158,7 +156,8 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	const resolvedAvatar = extAvatar ?? avatar;
 	const isAvatarResolved = parsedUsername !== undefined || member !== undefined;
 
-	const activeSoundReaction = activeSoundReactions?.get(usernameString);
+	const activeSoundReaction = useActiveSoundReaction(usernameString);
+
 	const hasActiveSoundReaction = Boolean(activeSoundReaction);
 
 	const avatarToRender = resolvedAvatar ? (
