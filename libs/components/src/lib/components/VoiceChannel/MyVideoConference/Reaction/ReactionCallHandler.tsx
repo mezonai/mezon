@@ -2,15 +2,15 @@ import { getStore, getStoreAsync, selectMemberClanByUserId, selectVoiceInfo } fr
 import { useMezon } from '@mezon/transport';
 import { getSrcEmoji } from '@mezon/utils';
 import type { VoiceReactionSend } from 'mezon-js';
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { soundReactionsService } from './soundReactionsService';
-import type { DisplayedEmoji, DisplayedHand, ReactionCallHandlerProps } from './types';
+import type { DisplayedEmoji, DisplayedHand } from './types';
 
 const MAX_EMOJIS_DISPLAYED = 20;
 const EMOJI_RATE_LIMIT_MS = 150;
 
-export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(() => {
+export const ReactionCallHandler = memo(() => {
 	const [displayedEmojis, setDisplayedEmojis] = useState<DisplayedEmoji[]>([]);
 	const [raisingList, setRaisingList] = useState<DisplayedHand[]>([]);
 	const timeoutsRef = useRef<Map<string, number>>(new Map());
