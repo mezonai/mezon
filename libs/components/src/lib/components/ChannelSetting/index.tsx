@@ -111,7 +111,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 		<div
 			ref={modalRef}
 			tabIndex={-1}
-			className="flex fixed inset-0  w-screen z-30 cursor-default"
+			className="flex fixed inset-0  w-screen z-[70] cursor-default"
 			onMouseDown={(event) => event.stopPropagation()}
 			role="button"
 		>

@@ -3,9 +3,9 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import HeaderMezon from './components/HeaderMezon';
 import { DiscoverProvider } from './context/DiscoverContext';
 import { useMezonDiscover } from './hooks/useMezonDiscover';
+import ClanDetailPage from './pages/ClanDetailPage';
 
 const DiscoverPage = lazy(() => import('./pages/DiscoverPage'));
-const ClanDetailPage = lazy(() => import('./pages/ClanDetailPage'));
 
 const LoadingSpinner = () => (
 	<div className="flex items-center justify-center min-h-screen">

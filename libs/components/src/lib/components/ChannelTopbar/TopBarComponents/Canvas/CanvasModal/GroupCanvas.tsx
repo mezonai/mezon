@@ -1,7 +1,8 @@
 import { ButtonCopy } from '@mezon/components';
 import { useAuth } from '@mezon/core';
 import { appActions, canvasAPIActions, useAppDispatch } from '@mezon/store';
-import { ICanvas, generateE2eId } from '@mezon/utils';
+import type { ICanvas } from '@mezon/utils';
+import { generateE2eId } from '@mezon/utils';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 type GroupCanvasProps = {
 	canvas: ICanvas;

@@ -1,15 +1,16 @@
-import { getStore, getStoreAsync, selectCurrentChannelId, selectMemberClanByUserId } from '@mezon/store';
+import { getStore, getStoreAsync, selectMemberClanByUserId, selectVoiceInfo } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { getSrcEmoji } from '@mezon/utils';
 import type { VoiceReactionSend } from 'mezon-js';
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import type { DisplayedEmoji, DisplayedHand, ReactionCallHandlerProps } from './types';
+import { soundReactionsService } from './soundReactionsService';
+import type { DisplayedEmoji, DisplayedHand } from './types';
 
 const MAX_EMOJIS_DISPLAYED = 20;
 const EMOJI_RATE_LIMIT_MS = 150;
 
-export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ onSoundReaction, onEndSound, clearAllSound }) => {
+export const ReactionCallHandler = memo(() => {
 	const [displayedEmojis, setDisplayedEmojis] = useState<DisplayedEmoji[]>([]);
 	const [raisingList, setRaisingList] = useState<DisplayedHand[]>([]);
 	const timeoutsRef = useRef<Map<string, number>>(new Map());
@@ -18,7 +19,8 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 	const audioRefs = useRef<Map<string, HTMLAudioElement>>(new Map());
 	const emojiQueueRef = useRef<DisplayedEmoji[]>([]);
 	const lastEmojiTimestampRef = useRef<number>(0);
-	const channelId = useSelector(selectCurrentChannelId);
+	const voiceInfo = useSelector(selectVoiceInfo);
+	const channelId = voiceInfo?.channelId;
 	const rafRef = useRef<number>();
 	const audioRef = useRef<HTMLAudioElement>(null);
 	const generatePosition = useCallback(() => {
@@ -49,9 +51,7 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 				audio.volume = 0.3;
 				audioRefs.current.set(soundId, audio);
 				audio.onended = () => {
-					if (onEndSound) {
-						onEndSound(senderId);
-					}
+					soundReactionsService.removeActiveSoundParticipant(senderId);
 				};
 			}
 
@@ -102,8 +102,8 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 							const soundUrl = firstEmojiId.replace('sound:', '');
 
 							playSound(soundUrl, soundUrl, senderId);
-							if (onSoundReaction && senderId) {
-								onSoundReaction(senderId, soundUrl);
+							if (senderId) {
+								soundReactionsService.handleSoundReaction(senderId, soundUrl);
 							}
 							return;
 						}
@@ -183,10 +183,10 @@ export const ReactionCallHandler: React.FC<ReactionCallHandlerProps> = memo(({ o
 			audioMap.forEach((audio) => {
 				audio.pause();
 			});
-			clearAllSound();
+			soundReactionsService.clearAllSound();
 			audioMap.clear();
 		};
-	}, [socketRef, channelId, generatePosition, playSound, onSoundReaction]);
+	}, [socketRef, channelId, generatePosition, playSound]);
 
 	const shouldRender = displayedEmojis.length !== 0 || raisingList.length !== 0;
 	return (

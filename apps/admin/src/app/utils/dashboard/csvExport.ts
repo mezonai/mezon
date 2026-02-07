@@ -30,11 +30,15 @@ export const handleCSVExport = async (
 	endStr: string,
 	periodFilter: 'daily' | 'weekly' | 'monthly',
 	selectedColumns: string[],
-	setIsExporting: (value: boolean) => void
+	setIsExporting: (value: boolean) => void,
+	sortBy?: string,
+	sort?: 'asc' | 'desc'
 ) => {
 	try {
 		setIsExporting(true);
-		const action = await dispatch(exportClansCsv({ start: startStr, end: endStr, rangeType: periodFilter, columns: selectedColumns }));
+		const action = await dispatch(
+			exportClansCsv({ start: startStr, end: endStr, rangeType: periodFilter, columns: selectedColumns, sortBy, sort })
+		);
 		if (exportClansCsv.fulfilled.match(action)) {
 			const payload = action.payload;
 
@@ -102,11 +106,15 @@ export const handleChannelCSVExport = async (
 	endStr: string,
 	periodFilter: 'daily' | 'weekly' | 'monthly',
 	selectedColumns: string[],
-	setIsExporting: (value: boolean) => void
+	setIsExporting: (value: boolean) => void,
+	sortBy?: string,
+	sort?: 'asc' | 'desc'
 ) => {
 	try {
 		setIsExporting(true);
-		const action = await dispatch(exportChannelsCsv({ clanId, start: startStr, end: endStr, rangeType: periodFilter, columns: selectedColumns }));
+		const action = await dispatch(
+			exportChannelsCsv({ clanId, start: startStr, end: endStr, rangeType: periodFilter, columns: selectedColumns, sortBy, sort })
+		);
 		if (exportChannelsCsv.fulfilled.match(action)) {
 			const payload = action.payload;
 
@@ -135,17 +143,18 @@ export const handleChannelCSVExport = async (
 export const handleUserCSVExport = async (
 	dispatch: AppDispatch,
 	clanId: string,
-	channelId: string,
 	startStr: string,
 	endStr: string,
 	periodFilter: 'daily' | 'weekly' | 'monthly',
 	selectedColumns: string[],
-	setIsExporting: (value: boolean) => void
+	setIsExporting: (value: boolean) => void,
+	sortBy?: string,
+	sort?: 'asc' | 'desc'
 ) => {
 	try {
 		setIsExporting(true);
 		const action = await dispatch(
-			exportUsersCsv({ clanId, channelId, start: startStr, end: endStr, rangeType: periodFilter, columns: selectedColumns })
+			exportUsersCsv({ clanId, start: startStr, end: endStr, rangeType: periodFilter, columns: selectedColumns, sortBy, sort })
 		);
 		if (exportUsersCsv.fulfilled.match(action)) {
 			const payload = action.payload;

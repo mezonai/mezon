@@ -20,6 +20,7 @@ import {
 } from '@mezon/store-mobile';
 import { CURRENCY, TypeMessage, formatBalanceToString, formatMoney } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
+import { useNavigation } from '@react-navigation/native';
 import debounce from 'lodash.debounce';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
 import type { ApiTokenSentEvent } from 'mezon-js/api.gen';
@@ -38,7 +39,6 @@ import Backdrop from '../../../components/BottomSheetRootListener/backdrop';
 import { toastConfig } from '../../../configs/toastConfig';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { useImage } from '../../../hooks/useImage';
-import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { removeDiacritics } from '../../../utils/helpers';
 import { Sharing } from '../../settings/Sharing';
 import { ConfirmReLoginModal } from './ConfirmReLoginModal';
@@ -59,8 +59,9 @@ export const formatTokenAmount = (amount: any) => {
 
 const ITEM_HEIGHT = size.s_60;
 const MAX_NOTE_LENGTH = 512;
-export const SendTokenScreen = ({ navigation, route }: any) => {
+export const SendTokenScreen = ({ route }: any) => {
 	const { t } = useTranslation(['token', 'common']);
+	const navigation = useNavigation<any>();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const store = getStore();
@@ -286,10 +287,7 @@ export const SendTokenScreen = ({ navigation, route }: any) => {
 
 	const handleConfirmSuccessful = () => {
 		setShowConfirmModal(false);
-		navigation.reset({
-			index: 0,
-			routes: [{ name: APP_SCREEN.BOTTOM_BAR }]
-		});
+		navigation.goBack();
 	};
 
 	const handleOpenBottomSheet = () => {

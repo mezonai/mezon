@@ -108,7 +108,7 @@ const ModalUserProfile = ({
 	const modalRef = useRef<boolean>(false);
 	const onLoading = useRef<boolean>(false);
 
-	const createTimeMs = Number(userById?.user?.create_time_seconds ?? 0) * 1000;
+	const createTimeMs = Number((userById?.user?.join_time_seconds || userById?.user?.create_time_seconds) ?? 0) * 1000;
 	const date = new Date(createTimeMs || 0);
 	const { timeFormatted } = useFormatDate({ date });
 
