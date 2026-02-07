@@ -8,7 +8,6 @@ import ImageWithSkeleton from '../components/common/ImageWithSkeleton';
 import { FacebookIcon, LightBulbIcon, RedditIcon, TwitterIcon, UserGroupIcon } from '../components/icons';
 import { DEFAULT_IMAGES } from '../constants/constants';
 import { useDiscover } from '../context/DiscoverContext';
-import { useNavigation } from '../hooks/useNavigation';
 
 export default function ClanDetailPage() {
 	const { id } = useParams();
@@ -18,7 +17,6 @@ export default function ClanDetailPage() {
 	const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 	const [isCopied, setIsCopied] = useState(false);
 	const [isJoinOptionsOpen, setIsJoinOptionsOpen] = useState(false);
-	const { toClanPage } = useNavigation();
 
 	useEffect(() => {
 		const loadClan = async () => {
@@ -46,7 +44,17 @@ export default function ClanDetailPage() {
 	}
 
 	const chatty = (clan as any).chatty || 'Like a busy coffee shop';
-	const createdAt = format((clan as any).create_time, 'MMMM do, yyyy') || '';
+
+	let createdAt = '';
+	try {
+		if ((clan as any).create_time) {
+			createdAt = format(new Date((clan as any).create_time * 1000), 'MMMM do, yyyy');
+		}
+	} catch (err) {
+		console.error('Error formatting date:', err);
+		createdAt = 'Unknown';
+	}
+
 	const features = [
 		(clan as any).feature1 || 'Try out the official features of this clan!',
 		(clan as any).feature2 || 'Weekly events and updates.',
