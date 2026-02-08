@@ -148,10 +148,9 @@ const SuggestionsPanel = memo(
 		modeKeyBoardBottomSheet: string;
 	}) => {
 		const shouldCloseSuggestions = useMemo(() => {
-			const isPanelOpen = modeKeyBoardBottomSheet === 'emoji' ||
-				modeKeyBoardBottomSheet === 'attachment' ||
-				modeKeyBoardBottomSheet === 'advanced'
-			return triggers?.emoji?.keyword !== undefined && isPanelOpen
+			const isPanelOpen =
+				modeKeyBoardBottomSheet === 'emoji' || modeKeyBoardBottomSheet === 'attachment' || modeKeyBoardBottomSheet === 'advanced';
+			return triggers?.emoji?.keyword !== undefined && isPanelOpen;
 		}, [modeKeyBoardBottomSheet, triggers?.emoji?.keyword]);
 
 		if (shouldCloseSuggestions) {
@@ -327,7 +326,6 @@ export const ChatBoxBottomBar = memo(
 					isReset: true
 				})
 			);
-			DeviceEventEmitter.emit(ActionEmitEvent.SHOW_KEYBOARD, null);
 		}, [onDeleteMessageActionNeedToResolve, topicChannelId, channelId, dispatch]);
 
 		const handleKeyboardBottomSheetMode = useCallback((mode: string) => {

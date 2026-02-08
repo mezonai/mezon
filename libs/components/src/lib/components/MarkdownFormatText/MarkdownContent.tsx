@@ -329,6 +329,13 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 	const isLightMode = appearanceTheme === 'light';
 	const posInNotification = !isJumMessageEnabled && !isTokenClickAble;
 	const posInReply = isJumMessageEnabled && !isTokenClickAble;
+	const isSocialLink =
+		!isReply &&
+		isLink &&
+		content &&
+		(typeOfBacktick === EBacktickType.LINKTIKTOK ||
+			typeOfBacktick === EBacktickType.LINKYOUTUBE ||
+			typeOfBacktick === EBacktickType.LINKFACEBOOK);
 
 	return (
 		<div className={` inline${!isLink ? ' bg-item-theme rounded-lg' : ''} ${isJumMessageEnabled ? 'whitespace-nowrap' : ''}`}>
@@ -342,15 +349,7 @@ export const MarkdownContent: React.FC<MarkdownContentOpt> = ({
 				/>
 			)}
 
-			{!isReply && isLink && content && typeOfBacktick === EBacktickType.LINKYOUTUBE && (
-				<SocialEmbed url={content} platform="youtube" isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />
-			)}
-			{!isReply && isLink && content && typeOfBacktick === EBacktickType.LINKFACEBOOK && (
-				<SocialEmbed url={content} platform="facebook" isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />
-			)}
-			{!isReply && isLink && content && typeOfBacktick === EBacktickType.LINKTIKTOK && (
-				<SocialEmbed url={content} platform="tiktok" isInPinMsg={isInPinMsg} />
-			)}
+			{isSocialLink && <SocialEmbed url={content} platform={typeOfBacktick} isSearchMessage={isSearchMessage} isInPinMsg={isInPinMsg} />}
 			{!isLink && isBacktick && (typeOfBacktick === EBacktickType.SINGLE || typeOfBacktick === EBacktickType.CODE) ? (
 				<SingleBacktick contentBacktick={content} isInPinMsg={isInPinMsg} isLightMode={isLightMode} posInNotification={posInNotification} />
 			) : isBacktick && (typeOfBacktick === EBacktickType.TRIPLE || typeOfBacktick === EBacktickType.PRE) && !isLink ? (
@@ -496,7 +495,7 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: 
 	);
 };
 
-type SocialPlatform = 'youtube' | 'tiktok' | 'facebook';
+type SocialPlatform = EBacktickType.LINKYOUTUBE | EBacktickType.LINKTIKTOK | EBacktickType.LINKFACEBOOK;
 
 const SocialEmbed: React.FC<{ url: string; platform: SocialPlatform; isSearchMessage?: boolean; isInPinMsg?: boolean }> = ({
 	url,
@@ -506,21 +505,21 @@ const SocialEmbed: React.FC<{ url: string; platform: SocialPlatform; isSearchMes
 }) => {
 	const getEmbedData = () => {
 		switch (platform) {
-			case 'youtube':
+			case EBacktickType.LINKYOUTUBE:
 				return {
 					embedUrl: getYouTubeEmbedUrl(url),
 					size: getYouTubeEmbedSize(url, isSearchMessage),
 					borderColor: '#ff001f',
 					allowAttributes: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
 				};
-			case 'tiktok':
+			case EBacktickType.LINKTIKTOK:
 				return {
 					embedUrl: getTikTokEmbedUrl(url),
 					size: getTikTokEmbedSize(),
 					borderColor: '#ff0050',
 					allowAttributes: 'fullscreen; autoplay; clipboard-write; encrypted-media; picture-in-picture'
 				};
-			case 'facebook':
+			case EBacktickType.LINKFACEBOOK:
 				return {
 					embedUrl: getFacebookEmbedUrl(url),
 					size: getFacebookEmbedSize(),

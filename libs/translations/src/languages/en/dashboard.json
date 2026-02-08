@@ -34,7 +34,9 @@
 		"messages": "Messages",
 		"noOwnedClans": "You don't own any clan to generate analytics.",
 		"noActiveChannels": "There are currently no active channels in this clan.",
-		"noActiveUsers": "There are currently no active users in this channel."
+		"noActiveUsers": "There are currently no active users in this channel.",
+		"selectColumnTooltip": "Select/deselect to include this column in CSV export",
+		"selectAtLeastOneColumn": "You must select at least one column to export CSV"
 	},
 	"page": {
 		"backToOverview": "Back to Clan Usage Overview",
@@ -61,5 +63,8 @@
 		"monthly": "Monthly",
 		"runReport": "Run report",
 		"reset": "Reset"
+	},
+	"sortIcon": {
+		"tooltip": "Sort ascending/descending by this column"
 	}
 }

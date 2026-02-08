@@ -70,7 +70,7 @@ const ChannelMessages = React.memo(
 	}: ChannelMessagesProps) => {
 		const dispatch = useAppDispatch();
 		const { themeValue } = useTheme();
-		const styles = style(themeValue);
+		const styles = useMemo(() => style(themeValue), [themeValue]);
 		const selectMessagesByChannelMemoized = useAppSelector((state) => selectMessagesByChannel(state, channelId));
 		const messages = useMemo(() => getEntitiesArray(selectMessagesByChannelMemoized), [selectMessagesByChannelMemoized]);
 		const isLoadMore = useRef({});
@@ -89,6 +89,12 @@ const ChannelMessages = React.memo(
 		const [haveScrollToBottom, setHaveScrollToBottom] = useState<boolean>(false);
 		const [listMessageLayout, setListMessageLayout] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 
+		const messagesRef = useRef(messages);
+		messagesRef.current = messages;
+		const haveScrollToBottomRef = useRef(haveScrollToBottom);
+		haveScrollToBottomRef.current = haveScrollToBottom;
+		const isShowJumpToPresentRef = useRef(isShowJumpToPresent);
+		isShowJumpToPresentRef.current = isShowJumpToPresent;
 		const initialScrollIndex = useMemo(() => {
 			if (!lastSeenMessageId || !messages?.length) return undefined;
 			const index = messages.findIndex((message: { id: string }) => message.id === lastSeenMessageId);
@@ -142,7 +148,7 @@ const ChannelMessages = React.memo(
 					const indexToJump = messages?.findIndex?.((message: { id: string }) => message.id === idMessageToJump?.id);
 					if (indexToJump !== -1 && flatListRef.current && indexToJump > 0 && messages?.length - 1 >= indexToJump) {
 						flatListRef?.current?.scrollToIndex?.({
-							animated: false,
+							animated: true,
 							index: indexToJump,
 							viewPosition: 0.5,
 							viewOffset: 20
@@ -206,7 +212,8 @@ const ChannelMessages = React.memo(
 
 		const onLoadMore = useCallback(
 			async (direction: ELoadMoreDirection) => {
-				if (messages?.length < 10) return;
+				if (!readyToLoadMore.current) return;
+				if (messagesRef.current?.length < 10) return;
 				try {
 					if (direction === ELoadMoreDirection.top) {
 						const canLoadMore = await isCanLoadMore(ELoadMoreDirection.top);
@@ -249,19 +256,20 @@ const ChannelMessages = React.memo(
 					console.error('Error in onLoadMore:', error);
 				}
 			},
-			[messages?.length, dispatch, clanId, topicChannelId, channelId, topicId, isCanLoadMore]
+			[dispatch, clanId, topicChannelId, channelId, topicId, isCanLoadMore]
 		);
 
 		const renderItem = useCallback(
 			({ item, index }) => {
-				const previousMessage = messages?.[index + 1];
+				const currentMessages = messagesRef.current;
+				const previousMessage = currentMessages?.[index + 1];
 				const previousMessageId = previousMessage?.id;
 				const isPreviousMessageLastSeen =
 					Boolean(previousMessageId === lastSeenMessageId && previousMessageId !== lastMessageId) &&
-					messages.length > 2 &&
+					currentMessages.length > 2 &&
 					lastSeenMessageId &&
 					previousMessage;
-				const shouldShowUnreadBreak = isPreviousMessageLastSeen && item?.sender_id !== userId && !haveScrollToBottom;
+				const shouldShowUnreadBreak = isPreviousMessageLastSeen && item?.sender_id !== userId && !haveScrollToBottomRef.current;
 				return (
 					<>
 						<MessageItem
@@ -279,7 +287,7 @@ const ChannelMessages = React.memo(
 					</>
 				);
 			},
-			[channelId, haveScrollToBottom, idMessageToJump?.id, isBanned, lastMessageId, lastSeenMessageId, messages, mode, topicChannelId, userId]
+			[channelId, idMessageToJump?.id, isBanned, lastMessageId, lastSeenMessageId, mode, topicChannelId, userId]
 		);
 
 		const handleJumpToPresent = useCallback(async () => {
@@ -302,16 +310,13 @@ const ChannelMessages = React.memo(
 			}, 300);
 		}, [clanId, channelId, dispatch, topicChannelId]);
 
-		const handleSetShowJumpLast = useCallback(
-			(nativeEvent) => {
-				const { contentOffset } = nativeEvent;
-				const isLastMessageVisible = contentOffset.y >= 100;
-				if (isLastMessageVisible !== isShowJumpToPresent) {
-					setIsShowJumpToPresent(isLastMessageVisible);
-				}
-			},
-			[isShowJumpToPresent]
-		);
+		const handleSetShowJumpLast = useCallback((nativeEvent) => {
+			const { contentOffset } = nativeEvent;
+			const isLastMessageVisible = contentOffset.y >= 100;
+			if (isLastMessageVisible !== isShowJumpToPresentRef.current) {
+				setIsShowJumpToPresent(isLastMessageVisible);
+			}
+		}, []);
 
 		const handleScroll = useCallback(
 			async ({ nativeEvent }) => {

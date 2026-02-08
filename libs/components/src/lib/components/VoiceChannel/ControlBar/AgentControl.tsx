@@ -1,10 +1,13 @@
+import { usePermissionChecker } from '@mezon/core';
 import { handleAddAgentToVoice, handleKichAgentFromVoice, selectVoiceInfo, useAppDispatch } from '@mezon/store';
+import { EPermission } from '@mezon/utils';
 import { memo, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export const AgentControl = memo(() => {
 	const [onAgent, setOnAgent] = useState(false);
 	const currentVoice = useSelector(selectVoiceInfo);
+	const [hasChannelPermission] = usePermissionChecker([EPermission.manageChannel]);
 	const dispatch = useAppDispatch();
 	const handleAddAgent = () => {
 		if (!currentVoice) {
@@ -18,10 +21,14 @@ export const AgentControl = memo(() => {
 			dispatch(handleKichAgentFromVoice({ channel_id: currentVoice.channelId, room_name: currentVoice.roomId || '' }));
 		}
 	};
+
+	if (!hasChannelPermission) {
+		return null;
+	}
 	return (
 		<div className="relative rounded-full bg-gray-300 dark:bg-black" onClick={handleAddAgent}>
 			<div
-				className={`w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center border-none bg-zinc-500 lk-button ${onAgent ? '!bg-blue-500 hover:!bg-blue-600' : ''}`}
+				className={`w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center border-none dark:border-none bg-zinc-500 dark:bg-zinc-900 lk-button${onAgent ? '!bg-blue-500 hover:!bg-blue-600' : ''}`}
 			>
 				<svg
 					width="28px"

@@ -1,7 +1,7 @@
 import type { ChannelsEntity } from '@mezon/store-mobile';
 import { getStore, selectChannelById, selectEmojiObjSuggestion } from '@mezon/store-mobile';
 import type { IEmojiOnMessage, ILinkOnMessage, ILinkVoiceRoomOnMessage, IMarkdownOnMessage } from '@mezon/utils';
-import { ChannelStatusEnum, EBacktickType, isYouTubeLink } from '@mezon/utils';
+import { ChannelStatusEnum, EBacktickType, isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
@@ -153,6 +153,8 @@ const processText = (rawInputString: string, emojiObjPicked: any) => {
 					} as ILinkVoiceRoomOnMessage);
 				} else {
 					const isYouTube = isYouTubeLink(link);
+					const isFacebook = isFacebookLink(link);
+					const isTiktok = isTikTokLink(link);
 					const channelMessageMatch = link.match(clanAndChannelIdLinkRegex);
 					const clanId = channelMessageMatch?.[1] || '';
 					const channelId = channelMessageMatch?.[2] || '';
@@ -170,7 +172,13 @@ const processText = (rawInputString: string, emojiObjPicked: any) => {
 						channelId: channelId ? channelId : '',
 						clanId: clanId ? clanId : '',
 						channelLabel: isThreadPublish && channelName ? channelName : '',
-						type: isYouTube ? EBacktickType.LINKYOUTUBE : EBacktickType.LINK,
+						type: isYouTube
+							? EBacktickType.LINKYOUTUBE
+							: isFacebook
+								? EBacktickType.LINKFACEBOOK
+								: isTiktok
+									? EBacktickType.LINKTIKTOK
+									: EBacktickType.LINK,
 						s: startindex - shift,
 						e: endindex - shift
 					} as ILinkOnMessage);

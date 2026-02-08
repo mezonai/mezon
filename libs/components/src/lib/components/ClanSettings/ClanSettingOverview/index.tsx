@@ -1,7 +1,7 @@
 import { useClans } from '@mezon/core';
 import { fetchSystemMessageByClanId, selectCurrentClan, updateSystemMessage, useAppDispatch } from '@mezon/store';
 import { unwrapResult } from '@reduxjs/toolkit';
-import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
+import type { ApiSystemMessage, ApiSystemMessageRequest, MezonUpdateClanDescBody, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -105,21 +105,15 @@ const ClanSettingOverview = () => {
 
 	const updateSystemMessages = async () => {
 		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClan?.clan_id && updateSystemMessageRequest) {
-			const cachedMessageUpdate: ApiSystemMessage = {
-				boost_message:
-					updateSystemMessageRequest?.boost_message === systemMessage?.boost_message ? '' : updateSystemMessageRequest?.boost_message,
-				channel_id:
-					updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '0' : updateSystemMessageRequest?.channel_id || '0',
-				clan_id: systemMessage?.clan_id,
-				id: systemMessage?.id,
-				hide_audit_log:
-					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? false : updateSystemMessageRequest?.hide_audit_log,
-				setup_tips: updateSystemMessageRequest?.setup_tips === systemMessage?.setup_tips ? '' : updateSystemMessageRequest?.setup_tips,
-				welcome_random:
-					updateSystemMessageRequest?.welcome_random === systemMessage?.welcome_random ? '' : updateSystemMessageRequest?.welcome_random,
-				welcome_sticker:
-					updateSystemMessageRequest?.welcome_sticker === systemMessage?.welcome_sticker ? '' : updateSystemMessageRequest?.welcome_sticker
+			const cachedMessageUpdate: MezonUpdateSystemMessageBody = {
+				boost_message: updateSystemMessageRequest?.boost_message ?? systemMessage?.boost_message,
+				channel_id: updateSystemMessageRequest?.channel_id ?? systemMessage?.channel_id,
+				hide_audit_log: updateSystemMessageRequest?.hide_audit_log ?? systemMessage?.hide_audit_log,
+				setup_tips: updateSystemMessageRequest?.setup_tips ?? systemMessage?.setup_tips,
+				welcome_random: updateSystemMessageRequest?.welcome_random ?? systemMessage?.welcome_random,
+				welcome_sticker: updateSystemMessageRequest?.welcome_sticker ?? systemMessage?.welcome_sticker
 			};
+
 			const request = {
 				clanId: currentClan.clan_id,
 				newMessage: cachedMessageUpdate,

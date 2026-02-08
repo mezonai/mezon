@@ -1129,7 +1129,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 		if (userJoinClan?.user && clanMemberStore) {
 			const accountCreateTime = new Date(userJoinClan?.user?.create_time_second * 1000).toISOString();
-			const joinTime = new Date().toISOString();
+			const joinTime = Date.now() / 1000;
 			dispatch(
 				usersClanActions.add({
 					user: {
@@ -1139,12 +1139,12 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							...userJoinClan.user,
 							avatar_url: userJoinClan.user.avatar,
 							id: userJoinClan.user.user_id,
-							//about_me: userJoinClan.user.about_me,
 							display_name: userJoinClan.user.display_name,
 							metadata: userJoinClan.user.custom_status,
 							username: userJoinClan.user.username,
 							create_time: accountCreateTime,
-							join_time: joinTime
+							create_time_seconds: userJoinClan?.user?.create_time_second,
+							join_time_seconds: joinTime
 						}
 					},
 					clanId: userJoinClan.clan_id
@@ -2516,7 +2516,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			);
 			dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
 		} else {
-			const relatedChannels = channels.filter((channel) => channel.clan_id === markAsReadEvent.clan_id);
+			const relatedChannels = channels.filter((channel) => channel.parent_id === markAsReadEvent.channel_id);
 
 			const channelIds = relatedChannels.map((channel) => channel.id);
 

@@ -5,7 +5,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useTranslation } from 'react-i18next';
 import { Platform } from 'react-native';
 import { useSelector } from 'react-redux';
-import { useCheckUpdatedVersion } from '../../hooks/useCheckUpdatedVersion';
 import AppBrowser from '../../screens/auth/AppBrowser';
 import LoginScreen from '../../screens/auth/Login';
 import WelcomeScreen from '../../screens/auth/Login/WelcomeScreen';
@@ -15,7 +14,6 @@ import { APP_SCREEN } from '../ScreenTypes';
 const Stack = createNativeStackNavigator();
 
 export const UnAuthentication = () => {
-	useCheckUpdatedVersion();
 	const isShowWelcome = useSelector(selectIsShowWelcomeMobile);
 	const currentLanguage = useAppSelector(selectCurrentLanguage);
 	const { i18n } = useTranslation();

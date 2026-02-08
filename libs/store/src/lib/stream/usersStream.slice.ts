@@ -246,6 +246,6 @@ export const getUsersStreamState = (rootState: { [USERS_STREAM_FEATURE_KEY]: Use
 export const selectAllUsersStream = createSelector(getUsersStreamState, selectAllUsersStreamEntities);
 
 export const selectStreamMembersByChannelId = createSelector([selectAllUsersStream, (_, channelId: string) => channelId], (entities, channelId) => {
-	const listStreamChannelUser = entities.filter((member) => member && member.streaming_channel_id === channelId).map((user) => user.id);
+	const listStreamChannelUser = entities.filter((member) => member && member.streaming_channel_id === channelId).map((user) => user.user_id);
 	return listStreamChannelUser;
 });
