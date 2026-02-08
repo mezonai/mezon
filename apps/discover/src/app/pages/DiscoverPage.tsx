@@ -7,8 +7,19 @@ import { useDiscover } from '../context/DiscoverContext';
 import { usePagination } from '../hooks/usePagination';
 
 export default function DiscoverPage() {
-	const { clans, categories, loading, error, currentPage, totalPages, searchTerm, selectedCategory, handleSearch, handleCategorySelect, handlePageChange } =
-		useDiscover();
+	const {
+		clans,
+		categories,
+		loading,
+		error,
+		currentPage,
+		totalPages,
+		searchTerm,
+		selectedCategory,
+		handleSearch,
+		handleCategorySelect,
+		handlePageChange
+	} = useDiscover();
 
 	const { pageNumbers, isFirstPage, isLastPage } = usePagination({
 		currentPage,

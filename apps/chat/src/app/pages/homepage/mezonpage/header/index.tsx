@@ -86,7 +86,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 							<NavLink href="#home" section="home" label={t('header.home')} />
 
 							<a
-								href={'developers/applications'}
+								href={'developers/'}
 								target="_blank"
 								rel="noopener noreferrer"
 								className="text-[16px] leading-[24px] text-white font-semibold flex flex-row items-center px-2 py-1 rounded-lg hover:bg-[#de82e6]"
