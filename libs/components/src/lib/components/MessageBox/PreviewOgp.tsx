@@ -108,7 +108,14 @@ function PreviewOgp() {
 				<Icons.Close defaultSize="w-3 h-3 text-theme-primary" />
 			</div>
 			<div className="aspect-square rounded-md h-full flex items-center">
-				<img src={data.image} className="h-full aspect-square object-cover rounded-md" />
+				<img
+					src={data.image}
+					className="h-full aspect-square object-cover rounded-md"
+					onError={(e) => {
+						e.currentTarget.src = '/assets/images/warning.svg';
+						e.currentTarget.classList.add('opacity-30');
+					}}
+				/>
 			</div>
 			<div className="flex flex-col justify-center gap-2 flex-1 overflow-hidden">
 				<h5 className="text-sm truncate font-semibold">{data.title}</h5>
