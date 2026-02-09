@@ -14,7 +14,7 @@ export default function ColumnToggle({ ariaLabel, checked, onChange, className }
 	const { t } = useTranslation('dashboard');
 
 	return (
-		<Tooltip overlay={t('table.selectColumnTooltip')} placement="top">
+		<Tooltip overlay={checked ? t('table.includedInExport') : t('table.notIncludedInExport')} placement="top">
 			<input
 				aria-label={ariaLabel}
 				type="checkbox"
