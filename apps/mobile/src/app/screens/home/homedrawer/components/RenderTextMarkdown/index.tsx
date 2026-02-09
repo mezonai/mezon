@@ -653,7 +653,7 @@ export const RenderTextMarkdownContent = ({
 								? t?.substring(element.index, t?.indexOf(' ', element.index) === -1 ? t.length : t.indexOf(' ', element.index))
 								: '';
 
-						if (url) {
+						if (url && element?.title && (element?.description || element?.image)) {
 							markdownBlackParts.push(<RenderOgpPreview ogpItem={element as OgpElemnent} url={url} />);
 						}
 						break;

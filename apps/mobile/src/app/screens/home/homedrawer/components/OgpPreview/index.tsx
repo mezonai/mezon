@@ -74,7 +74,7 @@ const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 		if (links?.length) {
 			const dataOgp = await getOGPFromLinks(links, text || '');
 			setOgpItem(dataOgp?.data);
-			if (dataOgp) {
+			if (dataOgp?.data?.title && (dataOgp?.data?.image || dataOgp?.data?.description)) {
 				dispatch(
 					referencesActions.setOgpData({
 						url: dataOgp?.data?.key,
