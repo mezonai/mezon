@@ -19,7 +19,6 @@ export * from './lib/chat/hooks/useChannels';
 export * from './lib/chat/hooks/useChatParams';
 export * from './lib/chat/hooks/useChatReaction';
 export * from './lib/chat/hooks/useChatSending';
-export * from './lib/chat/hooks/useChatTypings';
 export * from './lib/chat/hooks/useCheckOwnerForUser';
 export * from './lib/chat/hooks/useCheckVoiceStatus';
 export * from './lib/chat/hooks/useClanOwner';
