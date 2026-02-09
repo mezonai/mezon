@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceSelector } from './DeviceSelector';
 import { MicTest } from './MicTest';
+import { NoiseSuppressionControl } from './NoiseSuppressionControl';
 import { VolumeSlider } from './VolumeSlider';
 
 const LS_KEYS = {
@@ -296,6 +297,7 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 						<VolumeSlider value={speakerVolume} onChange={setSpeakerVolume} label={t('setting:voice.speakerVolume')} />
 					</div>
 				</div>
+				<NoiseSuppressionControl className="mt-4" />
 
 				<MicTest
 					permissionState={permissionState}
