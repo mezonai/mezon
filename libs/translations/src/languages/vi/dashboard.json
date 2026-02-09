@@ -26,6 +26,8 @@
 		"userActivityData": "Dữ liệu hoạt động người dùng",
 		"exportCSV": "Xuất CSV",
 		"exporting": "Đang xuất...",
+		"includedInExport": "Cột này sẽ được xuất ra file CSV",
+		"notIncludedInExport": "Cột này sẽ không được xuất ra file CSV",
 		"clanName": "Tên Clan",
 		"channelName": "Tên kênh",
 		"userName": "Tên người dùng",
@@ -65,6 +67,8 @@
 		"reset": "Đặt lại"
 	},
 	"sortIcon": {
-		"tooltip": "Sắp xếp tăng/giảm theo cột này"
+		"tooltip": "Sắp xếp tăng/giảm theo cột này",
+		"sortedAsc": "Đã sắp xếp tăng dần",
+		"sortedDesc": "Đã sắp xếp giảm dần"
 	}
 }
