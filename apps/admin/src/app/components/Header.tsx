@@ -50,7 +50,7 @@ const Header = ({ toggleSideBar, isShowSideBar }: IHeaderProps) => {
 				{isShowSideBar ? <Icons.MenuClose className="w-6 h-6 mt-1 ml-1" /> : <Icons.MenuBarIcon className="w-8 h-8" />}
 			</div>
 			<div className="flex items-center gap-3">
-				<Link to="/developers/applications" className="flex flex-row items-center justify-center gap-[4px]">
+				<Link to="/developers" className="flex flex-row items-center justify-center gap-[4px]">
 					<Image
 						src={`${isDarkMode ? 'assets/images/mezon-logo-black.svg' : 'assets/images/mezon-logo-white.svg'}`}
 						width={28}

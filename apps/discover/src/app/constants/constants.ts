@@ -8,7 +8,7 @@ export const NAVIGATION_LINKS = {
 		label: 'Home'
 	},
 	DEVELOPERS: {
-		url: 'https://mezon.ai/developers/applications',
+		url: 'https://mezon.ai/developers',
 		label: 'Developers'
 	},
 	BOTS_APPS: {
@@ -16,7 +16,7 @@ export const NAVIGATION_LINKS = {
 		label: 'Bots/Apps'
 	},
 	DOCUMENTS: {
-		url: 'docs/',
+		url: 'https://mezon.ai/docs',
 		label: 'Documents'
 	},
 	DISCOVER: {

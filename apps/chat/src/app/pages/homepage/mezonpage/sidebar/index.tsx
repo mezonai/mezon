@@ -63,7 +63,7 @@ export const SideBarMezon = memo((props: SideBarProps) => {
 					{t('header.home')}
 				</a>
 				<a
-					href={'developers/applications'}
+					href={'developers/'}
 					target="_blank"
 					rel="noopener noreferrer"
 					className="text-center px-[16px] py-[10px] text-[#F4F7F9] font-semibold text-[16px] leading-[24px] hover:bg-[#0C1AB2] hover:rounded-[8px] focus:rounded-[8px] focus:bg-[#281FB5]"
