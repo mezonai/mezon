@@ -5,11 +5,13 @@ import { getStore, selectChannelById } from '@mezon/store-mobile';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { DeviceEventEmitter, NativeModules, Platform, Text, TouchableOpacity, View } from 'react-native';
+import Tooltip from 'react-native-walkthrough-tooltip';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import AudioOutputTooltip from '../../AudioOutputTooltip';
 import { ContainerMessageActionModal } from '../../MessageItemBS/ContainerMessageActionModal';
 import { style } from '../styles';
+import AgentControl from './AgentControl';
 import SendVoiceSound from './SendVoiceSound';
 import SwitchCamera from './SwitchCamera';
 const { AudioSessionModule } = NativeModules;
@@ -32,6 +34,7 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 	const styles = style(themeValue);
 	const [currentAudioOutput, setCurrentAudioOutput] = useState<string>('earpiece');
 	const [availableAudioOutputs, setAvailableAudioOutputs] = useState<AudioOutput[]>([]);
+	const [tooltipVisible, setTooltipVisible] = useState(false);
 
 	// Get available audio outputs
 	const getAvailableAudioOutputs = useCallback(async (isHaveBluetooth?: boolean): Promise<AudioOutput[]> => {
@@ -129,6 +132,7 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 	}, [channelId]);
 
 	const handleOpenEmojiPicker = () => {
+		hideTooltip();
 		const data = {
 			snapPoints: ['75%'],
 			children: (
@@ -146,6 +150,14 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};
 
+	const hideTooltip = () => {
+		setTooltipVisible(false);
+	};
+
+	const showTooltip = () => {
+		setTooltipVisible(true);
+	};
+
 	return (
 		<View style={[styles.menuHeader, !isShow && { display: 'none' }]}>
 			<View style={styles.headerRowLeft}>
@@ -160,12 +172,7 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 			</View>
 
 			<View style={styles.headerRowRight}>
-				{!isGroupCall && (
-					<TouchableOpacity onPress={handleOpenEmojiPicker} style={[styles.buttonCircle]}>
-						<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_20} width={size.s_20} color={themeValue.white} />
-					</TouchableOpacity>
-				)}
-				{!isGroupCall && <SendVoiceSound channelId={channelId} />}
+				{!isGroupCall && <AgentControl />}
 				<SwitchCamera />
 				<AudioOutputTooltip
 					onSelectOutput={switchAudioOutput}
@@ -174,6 +181,40 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 					currentAudioOutput={currentAudioOutput}
 					onOpenTooltip={onOpenTooltip}
 				/>
+				{!isGroupCall && (
+					<Tooltip
+						isVisible={tooltipVisible}
+						content={
+							<View style={{ gap: 8 }}>
+								<TouchableOpacity onPress={handleOpenEmojiPicker} style={[styles.buttonCircle]}>
+									<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_20} width={size.s_20} color={themeValue.white} />
+								</TouchableOpacity>
+								<SendVoiceSound channelId={channelId} onPress={hideTooltip} />
+							</View>
+						}
+						contentStyle={{
+							zIndex: 100,
+							backgroundColor: 'transparent',
+							borderRadius: size.s_10,
+							paddingVertical: size.s_10,
+							top: Platform.OS === 'android' ? -size.s_50 : 0,
+							left: Platform.OS === 'android' ? size.s_18 : size.s_20
+						}}
+						arrowSize={{ width: 0, height: 0 }}
+						placement="bottom"
+						onClose={hideTooltip}
+						closeOnBackgroundInteraction={true}
+						disableShadow={true}
+						closeOnContentInteraction={false}
+					>
+						<TouchableOpacity
+							onPress={showTooltip}
+							style={[styles.buttonCircle, Platform.OS === 'android' && tooltipVisible && { opacity: 0 }]}
+						>
+							<MezonIconCDN icon={IconCDN.moreVerticalIcon} height={size.s_20} width={size.s_20} color={themeValue.white} />
+						</TouchableOpacity>
+					</Tooltip>
+				)}
 			</View>
 		</View>
 	);
