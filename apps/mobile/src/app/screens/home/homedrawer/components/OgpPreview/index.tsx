@@ -125,7 +125,7 @@ const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 				colors={[themeValue.secondary, themeValue.secondaryLight]}
 				style={[StyleSheet.absoluteFillObject]}
 			/>
-			{ogpItem?.image && <ImageNative url={ogpItem.image} style={styles.image} resizeMode="cover" />}
+			{!!ogpItem?.image && <ImageNative url={ogpItem.image} style={styles.image} resizeMode="cover" />}
 			<View style={{ flexShrink: 1 }}>
 				<TouchableOpacity>
 					<Text style={styles.title} numberOfLines={1}>
