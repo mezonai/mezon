@@ -6,7 +6,7 @@ import { style } from './styles';
 
 const UserItem = (user) => {
 	const styles = style();
-	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user?.user?.user_id || ''));
+	const userStream = useAppSelector((state) => selectMemberClanByUserId(state, user?.user || ''));
 
 	const avatarUrl = useMemo(() => {
 		return userStream?.clan_avatar || userStream?.user?.avatar_url || '';
