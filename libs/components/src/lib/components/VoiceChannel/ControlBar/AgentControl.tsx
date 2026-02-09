@@ -28,7 +28,7 @@ export const AgentControl = memo(() => {
 	return (
 		<div className="relative rounded-full bg-gray-300 dark:bg-black" onClick={handleAddAgent}>
 			<div
-				className={`w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center border-none dark:border-none bg-zinc-500 dark:bg-zinc-900 lk-button${onAgent ? '!bg-blue-500 hover:!bg-blue-600' : ''}`}
+				className={`w-14 aspect-square max-md:w-10 max-md:p-2 !rounded-full flex justify-center items-center border-none dark:border-none bg-zinc-500 dark:bg-zinc-900 lk-button ${onAgent ? '!bg-blue-500 hover:!bg-blue-600' : ''}`}
 			>
 				<svg
 					width="28px"
