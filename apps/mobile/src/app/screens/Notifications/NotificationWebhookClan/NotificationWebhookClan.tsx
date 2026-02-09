@@ -1,7 +1,7 @@
 import { convertTimestampToTimeAgo } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { selectClanById, useAppSelector } from '@mezon/store-mobile';
-import React, { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonClanAvatar from '../../../componentUI/MezonClanAvatar';
 import { parseObject } from '../NotificationMentionItem';
@@ -17,6 +17,10 @@ const NotificationWebhookClan = ({ notify, onLongPressNotify }: NotifyProps) => 
 	const messageTimeDifference = convertTimestampToTimeAgo(notify?.content?.create_time_seconds);
 	const data = parseObject(notify?.content);
 
+	const priorityName = useMemo(() => {
+		return notify?.content?.display_name || notify?.content?.username || '';
+	}, [notify?.content?.display_name, notify?.content?.username]);
+
 	if (!data?.content && !data?.attachments) {
 		return null;
 	}
@@ -26,13 +30,13 @@ const NotificationWebhookClan = ({ notify, onLongPressNotify }: NotifyProps) => 
 			<View style={styles.notifyContainer}>
 				<View style={styles.notifyHeader}>
 					<View style={styles.boxImage}>
-						<MezonClanAvatar alt={notify?.content?.display_name} image={notify?.content?.avatar} />
+						<MezonClanAvatar alt={priorityName} image={notify?.content?.avatar} />
 					</View>
 					<View style={styles.notifyContent}>
 						{clan?.clan_name && (
 							<Text numberOfLines={2} style={styles.notifyHeaderTitle}>
-								<Text style={styles.username}>{notify?.content?.display_name} </Text>
-								{clan?.clan_name}
+								<Text style={styles.username}>{priorityName} </Text>
+								{clan.clan_name}
 							</Text>
 						)}
 						<View style={styles.contentMessage}>{<MessageWebhookClan message={data} />}</View>

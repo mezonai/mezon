@@ -31,20 +31,8 @@ export const style = (colors: Attributes) =>
 		avatar: {
 			width: size.s_40,
 			height: size.s_40,
-			borderRadius: size.s_20
-		},
-		avatarPlaceholder: {
-			width: size.s_40,
-			height: size.s_40,
-			borderRadius: size.s_20,
-			backgroundColor: colors.primary,
-			justifyContent: 'center',
-			alignItems: 'center'
-		},
-		avatarText: {
-			color: colors.text,
-			fontSize: size.s_16,
-			fontWeight: 'bold'
+			borderRadius: size.s_40,
+			overflow: 'hidden'
 		},
 		username: {
 			fontSize: size.s_16,

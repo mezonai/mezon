@@ -5,10 +5,9 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		notifyContainer: {
 			paddingHorizontal: size.s_10,
-			marginBottom: size.s_10,
 			borderBottomWidth: size.s_2,
 			borderBottomColor: colors.secondaryLight,
-			paddingVertical: size.s_6
+			paddingVertical: size.s_12
 		},
 
 		notifyHeader: {
@@ -20,32 +19,27 @@ export const style = (colors: Attributes) =>
 
 		notifyContent: {
 			flex: 1,
-			marginLeft: size.s_6
+			marginLeft: size.s_6,
+			gap: size.s_4
 		},
 
 		notifyHeaderTitle: {
 			color: colors.text,
 			fontSize: size.medium,
-			fontWeight: '400',
-			marginBottom: size.s_4
+			fontWeight: '400'
 		},
 
 		notifyDuration: {
-			color: colors.textStrong
+			color: colors.textStrong,
+			alignSelf: 'center'
 		},
 
 		boxImage: {
-			marginTop: size.s_4,
 			width: size.s_40,
 			height: size.s_40,
 			borderRadius: size.s_40,
-			overflow: 'hidden'
-		},
-
-		image: {
-			width: '90%',
-			height: '90%',
-			borderRadius: size.s_50
+			overflow: 'hidden',
+			alignSelf: 'center'
 		},
 
 		username: {

@@ -2,7 +2,7 @@ import { loadUserChoices, saveUserChoices } from '@livekit/components-core';
 import { RoomContext } from '@livekit/components-react';
 import '@livekit/components-styles';
 
-import { EmojiSuggestionProvider, useAppParams, useAuth } from '@mezon/core';
+import { EmojiSuggestionProvider, useAuth } from '@mezon/core';
 import {
 	appActions,
 	generateMeetToken,
@@ -18,7 +18,6 @@ import {
 	selectCurrentClanName,
 	selectIsShowChatVoice,
 	selectIsShowSettingFooter,
-	selectShowModelEvent,
 	selectStatusMenu,
 	selectTokenJoinVoice,
 	selectVoiceFullScreen,
@@ -34,13 +33,119 @@ import { ParticipantMeetState, isLinuxDesktop, isWindowsDesktop } from '@mezon/u
 import type { RoomConnectOptions } from 'livekit-client';
 import { Room } from 'livekit-client';
 import { ChannelType } from 'mezon-js';
+import type { ReactNode, RefObject } from 'react';
 import { Suspense, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import ChatStream from '../chatStream';
 import { useLowCPUOptimizer } from './hooks/useLowCPUOptimizer';
 
-const ChannelVoiceInner = () => {
+interface VoicePreJoinWrapperProps {
+	loading: boolean;
+	handleJoinRoom: () => void;
+}
+
+const VoicePreJoinWrapper = memo(({ loading, handleJoinRoom }: VoicePreJoinWrapperProps) => {
+	const channelLabel = useSelector(selectCurrentChannelLabel);
+	const channelId = useSelector(selectCurrentChannelId);
+	const channelMeetingCode = useSelector(selectCurrentChannelMeetingCode);
+	const channelClanId = useSelector(selectCurrentChannelClanId);
+	const voiceInfo = useSelector(selectVoiceInfo);
 	const isJoined = useSelector(selectVoiceJoined);
+
+	const isCurrentChannel = isJoined && voiceInfo?.channelId === channelId;
+
+	return (
+		<PreJoinVoiceChannel
+			channel_label={channelLabel}
+			channel_id={channelId as string}
+			roomName={channelMeetingCode}
+			loading={loading}
+			handleJoinRoom={handleJoinRoom}
+			clan_id={channelClanId}
+			isCurrentChannel={isCurrentChannel}
+		/>
+	);
+});
+
+interface VoiceConferenceContainerProps {
+	containerRef: RefObject<HTMLDivElement>;
+	token: string;
+	isOpenPopOut?: boolean;
+	isVoiceFullScreen?: boolean;
+	children: ReactNode;
+}
+
+interface VoiceConferenceContentProps {
+	room: Room;
+	token: string;
+	serverUrl: string;
+	voiceInfo: ReturnType<typeof selectVoiceInfo>;
+	handleLeaveRoom: (self?: boolean) => Promise<void>;
+	handleFullScreen: () => void;
+	handleJoinRoom: () => void;
+	isShowChatVoice: boolean;
+	toggleChat: () => void;
+}
+
+const VoiceConferenceContent = memo(
+	({
+		room,
+		token,
+		serverUrl,
+		voiceInfo,
+		handleLeaveRoom,
+		handleFullScreen,
+		handleJoinRoom,
+		isShowChatVoice,
+		toggleChat
+	}: VoiceConferenceContentProps) => {
+		return (
+			<RoomContext.Provider value={room}>
+				<div className="flex-1 relative flex overflow-hidden">
+					<MyVideoConference
+						token={token}
+						url={serverUrl}
+						channelLabel={voiceInfo?.channelLabel as string}
+						onLeaveRoom={handleLeaveRoom}
+						onFullScreen={handleFullScreen}
+						onJoinRoom={handleJoinRoom}
+						isShowChatVoice={isShowChatVoice}
+						onToggleChat={toggleChat}
+					/>
+					<EmojiSuggestionProvider>
+						{isShowChatVoice && (
+							<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
+								<ChatStream topicChannelId={voiceInfo?.channelId} />
+							</div>
+						)}
+					</EmojiSuggestionProvider>
+				</div>
+			</RoomContext.Provider>
+		);
+	}
+);
+
+const VoiceConferenceContainer = memo(({ containerRef, token, isOpenPopOut, isVoiceFullScreen, children }: VoiceConferenceContainerProps) => {
+	const voiceInfo = useSelector(selectVoiceInfo);
+	const isJoined = useSelector(selectVoiceJoined);
+	const currentChannelId = useSelector(selectCurrentChannelId);
+
+	const isShow = isJoined && voiceInfo?.channelId === currentChannelId;
+
+	return (
+		<div
+			ref={containerRef}
+			id="livekitRoom11"
+			key={token}
+			className={`${!isShow || isOpenPopOut ? '!hidden' : ''} lk-room-container flex ${isVoiceFullScreen ? 'w-full h-full' : ''}`}
+			data-lk-theme="default"
+		>
+			{children}
+		</div>
+	);
+});
+
+const ChannelVoiceInner = () => {
 	const token = useSelector(selectTokenJoinVoice);
 	const voiceInfo = useSelector(selectVoiceInfo);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -49,14 +154,13 @@ const ChannelVoiceInner = () => {
 	const isVoiceFullScreen = useSelector(selectVoiceFullScreen);
 	const isShowChatVoice = useSelector(selectIsShowChatVoice);
 	const currentChannelType = useSelector(selectCurrentChannelType);
-	const currentChannelClanId = useSelector(selectCurrentChannelClanId);
-	const currentChannelId = useSelector(selectCurrentChannelId);
-	const currentChannelLabel = useSelector(selectCurrentChannelLabel);
-	const currentChannelMeetingCode = useSelector(selectCurrentChannelMeetingCode);
-	const currentChannelPrivate = useSelector(selectCurrentChannelPrivate);
 	const isChannelMezonVoice = currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE;
-	const containerRef = useRef<HTMLDivElement | null>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 	const { userProfile } = useAuth();
+
+	const isShowSettingFooter = useSelector(selectIsShowSettingFooter);
+	const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
+	const isOnMenu = useSelector(selectStatusMenu);
 
 	const room = useMemo(() => new Room({ dynacast: true, adaptiveStream: true }), []);
 
@@ -122,9 +226,16 @@ const ChannelVoiceInner = () => {
 		dispatch(voiceActions.setStreamScreen(null));
 		dispatch(voiceActions.setNoiseSuppressionEnabled(false));
 		dispatch(voiceActions.setShowMicrophone(false));
-		const store = getStore();
-		const currentClanId = selectCurrentClanId(store.getState());
-		const currentClanName = selectCurrentClanName(store.getState());
+
+		const storeState = getStore().getState();
+		const currentClanId = selectCurrentClanId(storeState);
+		const currentClanName = selectCurrentClanName(storeState);
+		const currentChannelId = selectCurrentChannelId(storeState);
+		const currentChannelClanId = selectCurrentChannelClanId(storeState);
+		const currentChannelLabel = selectCurrentChannelLabel(storeState);
+		const currentChannelMeetingCode = selectCurrentChannelMeetingCode(storeState);
+		const currentChannelPrivate = selectCurrentChannelPrivate(storeState);
+
 		if (!currentClanId || !currentChannelMeetingCode) return;
 		setLoading(true);
 
@@ -158,16 +269,7 @@ const ChannelVoiceInner = () => {
 		} finally {
 			setLoading(false);
 		}
-	}, [
-		currentChannelClanId,
-		currentChannelId,
-		currentChannelLabel,
-		currentChannelMeetingCode,
-		currentChannelPrivate,
-		dispatch,
-		participantMeetState,
-		room
-	]);
+	}, [dispatch, participantMeetState, room]);
 
 	const handleLeaveRoom = useCallback(
 		async (self?: boolean) => {
@@ -192,17 +294,9 @@ const ChannelVoiceInner = () => {
 		dispatch(voiceActions.setFullScreen(!isVoiceFullScreen));
 	}, [dispatch, isVoiceFullScreen]);
 
-	const isShow = isJoined && voiceInfo?.clanId === currentChannelClanId && voiceInfo?.channelId === currentChannelId;
-
 	const toggleChat = useCallback(() => {
 		dispatch(appActions.setIsShowChatVoice(!isShowChatVoice));
 	}, [isShowChatVoice, dispatch]);
-
-	const isShowSettingFooter = useSelector(selectIsShowSettingFooter);
-	const showModalEvent = useSelector(selectShowModelEvent);
-	const { channelId } = useAppParams();
-	const isOpenPopOut = useSelector(selectVoiceOpenPopOut);
-	const isOnMenu = useSelector(selectStatusMenu);
 
 	useEffect(() => {
 		return () => {
@@ -211,10 +305,11 @@ const ChannelVoiceInner = () => {
 			});
 		};
 	}, [room]);
+
 	return (
 		<Suspense fallback={<div>loading ...</div>}>
 			<div
-				className={`${isOpenPopOut ? 'pointer-events-none' : ''} ${!isChannelMezonVoice || isShowSettingFooter?.status || !channelId ? 'hidden' : ''} ${isVoiceFullScreen ? 'fixed inset-0 z-[100]' : `absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0 ${isOnMenu ? 'max-sbm:z-1 z-30' : 'z-30'}`} ${!isOnMenu && !isVoiceFullScreen ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''}`}
+				className={`${isOpenPopOut ? 'pointer-events-none' : ''} ${!isChannelMezonVoice || isShowSettingFooter?.status ? 'hidden' : ''} ${isVoiceFullScreen ? 'fixed inset-0 z-[100]' : `absolute ${isWindowsDesktop || isLinuxDesktop ? 'bottom-[21px]' : 'bottom-0'} right-0 ${isOnMenu ? 'max-sbm:z-1 z-30' : 'z-30'}`} ${!isOnMenu && !isVoiceFullScreen ? ' max-sbm:left-0 max-sbm:!w-full max-sbm:!h-[calc(100%_-_50px)]' : ''}`}
 				style={
 					!isVoiceFullScreen
 						? { width: 'calc(100% - 72px - 272px)', height: isWindowsDesktop || isLinuxDesktop ? 'calc(100% - 21px)' : '100%' }
@@ -222,55 +317,29 @@ const ChannelVoiceInner = () => {
 				}
 			>
 				{token === '' || !serverUrl || voiceInfo?.clanId === '0' ? (
-					<PreJoinVoiceChannel
-						channel_label={currentChannelLabel}
-						channel_id={currentChannelId as string}
-						roomName={currentChannelMeetingCode}
-						loading={loading}
-						handleJoinRoom={handleJoinRoom}
-						clan_id={currentChannelClanId}
-					/>
+					isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />
 				) : (
 					<>
-						<PreJoinVoiceChannel
-							roomName={currentChannelMeetingCode}
-							channel_id={currentChannelId as string}
-							loading={loading}
-							handleJoinRoom={handleJoinRoom}
-							channel_label={currentChannelLabel}
-							isCurrentChannel={isShow}
-							clan_id={currentChannelClanId}
-						/>
+						{isChannelMezonVoice && <VoicePreJoinWrapper loading={loading} handleJoinRoom={handleJoinRoom} />}
 
-						<div
-							ref={containerRef}
-							id="livekitRoom11"
-							key={token}
-							className={`${!isShow || isOpenPopOut ? '!hidden' : ''} lk-room-container flex ${isVoiceFullScreen ? 'w-full h-full' : ''}`}
-							data-lk-theme="default"
+						<VoiceConferenceContainer
+							containerRef={containerRef}
+							token={token}
+							isOpenPopOut={isOpenPopOut}
+							isVoiceFullScreen={isVoiceFullScreen}
 						>
-							<RoomContext.Provider value={room}>
-								<div className="flex-1 relative flex overflow-hidden">
-									<MyVideoConference
-										token={token}
-										url={serverUrl}
-										channelLabel={currentChannelLabel as string}
-										onLeaveRoom={handleLeaveRoom}
-										onFullScreen={handleFullScreen}
-										onJoinRoom={handleJoinRoom}
-										isShowChatVoice={isShowChatVoice}
-										onToggleChat={toggleChat}
-									/>
-									<EmojiSuggestionProvider>
-										{isShowChatVoice && (
-											<div className=" w-[500px] border-l border-border dark:border-bgTertiary z-40 bg-bgPrimary flex-shrink-0">
-												<ChatStream topicChannelId={voiceInfo?.channelId} />
-											</div>
-										)}
-									</EmojiSuggestionProvider>
-								</div>
-							</RoomContext.Provider>
-						</div>
+							<VoiceConferenceContent
+								room={room}
+								token={token}
+								serverUrl={serverUrl}
+								voiceInfo={voiceInfo}
+								handleLeaveRoom={handleLeaveRoom}
+								handleFullScreen={handleFullScreen}
+								handleJoinRoom={handleJoinRoom}
+								isShowChatVoice={isShowChatVoice}
+								toggleChat={toggleChat}
+							/>
+						</VoiceConferenceContainer>
 					</>
 				)}
 			</div>

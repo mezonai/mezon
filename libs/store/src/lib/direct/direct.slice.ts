@@ -224,7 +224,8 @@ export const fetchDirectMessage = createAsyncThunk(
 						display_names: [userProfile?.display_name || '', channel.display_names?.[0] || ''],
 						usernames: [userProfile?.username || '', channel.usernames?.[0] || ''],
 						onlines: [true, !!channel?.onlines?.[0]],
-						user_ids: [userProfile?.id || '', channel.user_ids?.[0] || '']
+						user_ids: [userProfile?.id || '', channel.user_ids?.[0] || ''],
+						create_time_seconds: channel.create_time_seconds
 					});
 				}
 			});
@@ -481,7 +482,11 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			userChannelsActions.upsert({
 				...listMember,
 				id: channel_desc.channel_id || '',
-				channel_id: channel_desc.channel_id
+				onlines,
+				usernames,
+				user_ids: userIds,
+				channel_id: channel_desc.channel_id,
+				create_time_seconds: Date.now() / 1000
 			})
 		);
 		thunkAPI.dispatch(directActions.upsertOne(directEntity));

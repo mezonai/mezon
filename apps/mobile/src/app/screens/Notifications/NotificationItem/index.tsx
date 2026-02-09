@@ -1,4 +1,3 @@
-import { useTheme } from '@mezon/mobile-ui';
 import { NotificationCategory } from '@mezon/utils';
 import { memo } from 'react';
 import { View } from 'react-native';
@@ -9,8 +8,6 @@ import NotificationWebhookClan from '../NotificationWebhookClan/NotificationWebh
 import type { NotifyProps } from '../types';
 
 const NotificationItem = memo(({ notify, onLongPressNotify, onPressNotify }: NotifyProps) => {
-	const { themeValue } = useTheme();
-
 	return (
 		<View>
 			{notify?.category === NotificationCategory.FOR_YOU && (

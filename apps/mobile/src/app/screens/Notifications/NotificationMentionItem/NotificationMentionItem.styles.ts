@@ -5,47 +5,39 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		notifyContainer: {
 			paddingHorizontal: size.s_10,
+			paddingVertical: size.s_12,
 			marginBottom: size.s_6,
 			borderBottomWidth: size.s_2,
-			borderBottomColor: colors.secondaryLight,
-			paddingVertical: size.s_6
+			borderBottomColor: colors.secondaryLight
 		},
 
 		notifyHeader: {
 			flexDirection: 'row',
 			alignItems: 'flex-start',
 			justifyContent: 'space-between',
-			gap: 10
+			gap: size.s_10
 		},
 
 		notifyContent: {
-			flex: 1,
-			marginLeft: size.s_6
+			flex: 1
 		},
 
 		notifyHeaderTitle: {
 			color: colors.textStrong,
 			fontSize: size.medium,
-			fontWeight: '400',
-			marginBottom: 5
+			fontWeight: '400'
 		},
 
 		notifyDuration: {
+			alignSelf: 'center',
 			color: colors.textStrong
 		},
 
 		boxImage: {
 			width: size.s_40,
 			height: size.s_40,
-			borderRadius: 50,
-			marginBottom: 10,
-			fontSize: size.medium
-		},
-
-		image: {
-			width: '90%',
-			height: '90%',
-			borderRadius: 50
+			borderRadius: size.s_40,
+			overflow: 'hidden'
 		},
 
 		contentMessage: {
@@ -54,11 +46,11 @@ export const style = (colors: Attributes) =>
 			textAlign: 'left',
 			alignItems: 'flex-start',
 			alignSelf: 'flex-start',
-			marginBottom: 10,
 			borderLeftColor: colors.border,
 			borderLeftWidth: 3,
-			paddingLeft: 8,
-			fontSize: size.medium
+			paddingLeft: size.s_8,
+			fontSize: size.medium,
+			marginTop: size.s_4
 		},
 		username: {
 			fontSize: size.medium,
