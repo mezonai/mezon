@@ -22,6 +22,7 @@ import {
 	selectCurrentClanIsOnboarding,
 	selectIsSearchMessage,
 	selectIsShowCanvas,
+	selectIsShowChatVoice,
 	selectIsShowCreateThread,
 	selectIsShowMemberList,
 	selectLastMessageViewportByChannelId,
@@ -159,7 +160,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const { t } = useTranslation('common');
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
 	const isShowMemberList = useSelector(selectIsShowMemberList);
-	const { userId, userProfile } = useAuth();
+	const { userId } = useAuth();
 	const mode =
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ||
@@ -303,6 +304,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const statusMenu = useSelector(selectStatusMenu);
 	const isShowMemberList = useSelector(selectIsShowMemberList);
 	const isShowCanvas = useSelector(selectIsShowCanvas);
+	const isShowChatInVoice = useSelector(selectIsShowChatVoice);
 	const isTimelineView = useAppSelector(selectTimelineViewMode);
 	const [isShowAgeRestricted, setIsShowAgeRestricted] = useState(false);
 
@@ -392,18 +394,20 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 				<div
 					className={`flex flex-row ${closeMenu ? `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBarMobile' : 'h-heightWithoutTopBarMobile'}` : `${isWindowsDesktop || isLinuxDesktop ? 'h-heightTitleBarWithoutTopBar' : 'h-heightWithoutTopBar'}`}`}
 				>
-					{!isShowCanvas && !isShowAgeRestricted && (
-						<div
-							className={`flex flex-col flex-1 min-w-60 ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isShowMemberList && !isTimelineView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
-						>
-							<div className={`relative overflow-y-auto flex-1 min-h-0`}>
-								<ChannelMedia currentChannel={currentChannel} />
+					{!isShowCanvas &&
+						!isShowAgeRestricted &&
+						(isShowChatInVoice || currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
+							<div
+								className={`flex flex-col flex-1 min-w-60 ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isShowMemberList && !isTimelineView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+							>
+								<div className={`relative overflow-y-auto flex-1 min-h-0`}>
+									<ChannelMedia currentChannel={currentChannel} />
+								</div>
+								<div className="flex-shrink-0">
+									<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
+								</div>
 							</div>
-							<div className="flex-shrink-0">
-								<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
-							</div>
-						</div>
-					)}
+						)}
 					{isShowCanvas && !isShowAgeRestricted && !isChannelMezonVoice && !isChannelStream && (
 						<div
 							className={`flex flex-1 justify-center thread-scroll overflow-x-hidden scroll-big ${isElectron() ? 'h-[calc(100%_-_23px)]' : ''}`}
