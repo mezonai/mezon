@@ -54,6 +54,7 @@ import { getDateLocale } from './dateI18n';
 import { Foreman } from './foreman';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
 import { getPlatform } from './windowEnvironment';
+export * from './animateScroll';
 export * from './audio';
 export * from './buildClassName';
 export * from './buildStyle';
