@@ -13,7 +13,7 @@ import { style } from './styles';
 
 export const ItemImageModal = React.memo(
 	({ item, setImageDimensions }: RenderItemInfo<ApiMessageAttachment>) => {
-		const [dims, setDims] = useState(Dimensions.get('window'));
+		const [dims, setDims] = useState(Dimensions.get('screen'));
 		const [ready, setReady] = useState(true);
 		const [isLoading, setIsLoading] = useState(false);
 		const isVideoItem = isVideo(item?.url || '');
@@ -21,14 +21,14 @@ export const ItemImageModal = React.memo(
 		const styles = style();
 
 		useEffect(() => {
-			const sub = Dimensions.addEventListener('change', async ({ window }) => {
+			const sub = Dimensions.addEventListener('change', async ({ screen }) => {
 				setReady(false);
-				setDims(window);
+				setDims(screen);
 				await sleep(100);
 				setReady(true);
 			});
 			return () => sub.remove();
-		}, []);
+		}, [item?.url]);
 
 		const onPlayVideo = () => {
 			const data = {

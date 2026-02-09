@@ -15,9 +15,9 @@
 	"addFriend": {
 		"incomingFriendRequest": "Yêu cầu kết bạn được nhận",
 		"findYourFriend": "Tìm bạn bè",
-		"addByUserName": "Thêm bằng tên người dùng",
+		"addByUserName": "Thêm bằng tên người dùng hoặc số điện thoại",
 		"addByUsername": "Thêm bởi {{username}}",
-		"searchUsernamePlaceholder": "Nhập tên người dùng",
+		"searchUsernamePlaceholder": "Nhập tên người dùng hoặc số điện thoại",
 		"whoYouWantToAddFriend": "Bạn muốn thêm ai làm bạn bè?",
 		"byTheWay": "À nhân tiện, tên người dùng của bạn là",
 		"sendRequestButton": "Gửi yêu cầu kết bạn",
