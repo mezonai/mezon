@@ -17,26 +17,26 @@ const NotificationWebhookClan = ({ notify, onLongPressNotify }: NotifyProps) => 
 	const messageTimeDifference = convertTimestampToTimeAgo(notify?.content?.create_time_seconds);
 	const data = parseObject(notify?.content);
 
+	const priorityName = useMemo(() => {
+		return notify?.content?.display_name || notify?.content?.username || '';
+	}, [notify?.content?.display_name, notify?.content?.username]);
+
 	if (!data?.content && !data?.attachments) {
 		return null;
 	}
-
-	const priorityName = useMemo(() => {
-		return notify?.content?.displayName || notify?.content?.username || '';
-	}, [notify?.content?.displayName, notify?.content?.username]);
 
 	return (
 		<TouchableOpacity onLongPress={() => onLongPressNotify(ENotifyBsToShow.removeNotification, notify)}>
 			<View style={styles.notifyContainer}>
 				<View style={styles.notifyHeader}>
 					<View style={styles.boxImage}>
-						<MezonClanAvatar alt={notify?.content?.username || ''} image={notify?.content?.avatar} />
+						<MezonClanAvatar alt={priorityName} image={notify?.content?.avatar} />
 					</View>
 					<View style={styles.notifyContent}>
 						{clan?.clan_name && (
 							<Text numberOfLines={2} style={styles.notifyHeaderTitle}>
 								<Text style={styles.username}>{priorityName} </Text>
-								{clan?.clan_name}
+								{clan.clan_name}
 							</Text>
 						)}
 						<View style={styles.contentMessage}>{<MessageWebhookClan message={data} />}</View>

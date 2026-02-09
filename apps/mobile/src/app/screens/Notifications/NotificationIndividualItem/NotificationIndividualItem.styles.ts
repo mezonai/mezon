@@ -5,16 +5,15 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		notifyContainer: {
 			paddingHorizontal: size.s_10,
-			marginBottom: size.s_6,
+			paddingVertical: size.s_12,
 			borderBottomWidth: size.s_2,
-			borderBottomColor: colors.secondaryLight,
-			paddingVertical: size.s_6
+			borderBottomColor: colors.secondaryLight
 		},
 		notifyHeader: {
 			flexDirection: 'row',
 			alignItems: 'flex-start',
 			justifyContent: 'space-between',
-			gap: 10
+			gap: size.s_10
 		},
 		notifyContent: {
 			flex: 1,
@@ -24,7 +23,6 @@ export const style = (colors: Attributes) =>
 			color: colors.textStrong,
 			fontSize: size.medium,
 			fontWeight: '400',
-			marginBottom: 5,
 			flex: 1
 		},
 		notifyUserName: {
@@ -33,18 +31,13 @@ export const style = (colors: Attributes) =>
 			fontWeight: 'bold'
 		},
 		notifyDuration: {
-			color: colors.textStrong
+			color: colors.textStrong,
+			alignSelf: 'center'
 		},
 		boxImage: {
 			width: size.s_40,
 			height: size.s_40,
-			borderRadius: 50,
-			marginBottom: 10,
-			fontSize: size.medium
-		},
-		image: {
-			width: '90%',
-			height: '90%',
-			borderRadius: 50
+			borderRadius: size.s_40,
+			overflow: 'hidden'
 		}
 	});
