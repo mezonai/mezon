@@ -92,6 +92,10 @@ export type IRolesClan = ApiRole & {
 	id: string;
 };
 
+export type MessagesEntity = IMessageWithUser & {
+	id: string; // Primary ID
+};
+
 export type INotificationSetting = ApiNotificationUserChannel;
 
 export type INotifiReactMessage = ApiNotifiReactMessage;
