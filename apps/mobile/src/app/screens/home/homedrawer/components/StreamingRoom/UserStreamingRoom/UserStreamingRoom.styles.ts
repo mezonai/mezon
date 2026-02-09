@@ -56,5 +56,9 @@ export const style = (colors: Attributes, isMoreThanMax = false) =>
 		},
 		userItemDynamic: {
 			marginRight: isMoreThanMax ? -15 : 10
+		},
+		flatListContent: {
+			flex: 1,
+			justifyContent: 'center'
 		}
 	});
