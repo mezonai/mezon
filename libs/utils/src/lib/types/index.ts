@@ -1574,3 +1574,8 @@ export enum EDragBorderPosition {
 	TOP = 'top',
 	BOTTOM = 'bottom'
 }
+
+export enum EOgpType {
+	image = 'image',
+	website = 'website'
+}

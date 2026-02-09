@@ -455,18 +455,24 @@ export const MessageLine = ({
 									}
 								}}
 							>
-								<div className="flex flex-col gap-0.5">
-									<a
-										href={url || '#'}
-										onClick={(e) => e.preventDefault()}
-										className="text-[14px] font-bold text-blue-500 hover:text-blue-400 hover:underline transition-colors line-clamp-2 leading-snug"
-									>
-										{element.title}
-									</a>
-									{!!element.description && (
-										<p className="text-[12px] leading-normal text-theme-primary line-clamp-2 opacity-90">{element.description}</p>
-									)}
-								</div>
+								{(!!element.title || !!element.description) && (
+									<div className="flex flex-col gap-0.5">
+										{!!element.title && (
+											<a
+												href={url || '#'}
+												onClick={(e) => e.preventDefault()}
+												className="text-[14px] font-bold text-blue-500 hover:text-blue-400 hover:underline transition-colors line-clamp-2 leading-snug"
+											>
+												{element.title}
+											</a>
+										)}
+										{!!element.description && (
+											<p className="text-[12px] leading-normal text-theme-primary line-clamp-2 opacity-90">
+												{element.description}
+											</p>
+										)}
+									</div>
+								)}
 
 								<div className="relative mt-1 overflow-hidden rounded border border-white/5 bg-theme-setting-primary">
 									<img
