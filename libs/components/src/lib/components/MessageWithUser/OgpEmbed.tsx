@@ -3,7 +3,9 @@ import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import React from 'react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 interface OgpEmbedProps {
 	url: string;
@@ -15,50 +17,63 @@ interface OgpEmbedProps {
 
 const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, messageId }) => {
 	const { clientRef, sessionRef, socketRef } = useMezon();
+	const [loading, setLoading] = useState(false);
+	const { t } = useTranslation('message');
 
 	const handleCloseOgp = async (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.preventDefault();
 		e.stopPropagation();
 
-		const state = getStore().getState();
-		const currentChannel = selectCurrentChannel(state);
-		const currentDM = selectCurrentDM(state);
-		const channelOrDirect = currentChannel || currentDM;
-		const session = sessionRef.current;
-		const client = clientRef.current;
-		const socket = socketRef.current;
-		if (!client || !session || !socket || !channelOrDirect || !messageId) {
-			throw new Error('Client is not initialized');
+		try {
+			const state = getStore().getState();
+			const currentChannel = selectCurrentChannel(state);
+			const currentDM = selectCurrentDM(state);
+			const channelOrDirect = currentChannel || currentDM;
+			const session = sessionRef.current;
+			const client = clientRef.current;
+			const socket = socketRef.current;
+
+			if (!client || !session || !socket || !channelOrDirect || !messageId) {
+				toast.error(t('toast.closeOgpFailed'));
+				return;
+			}
+			setLoading(true);
+
+			const message = selectMessageByMessageId(state, channelOrDirect.channel_id, messageId);
+
+			const mode =
+				channelOrDirect?.type === ChannelType.CHANNEL_TYPE_THREAD
+					? ChannelStreamMode.STREAM_MODE_THREAD
+					: channelOrDirect?.type === ChannelType.CHANNEL_TYPE_DM
+						? ChannelStreamMode.STREAM_MODE_DM
+						: channelOrDirect?.type === ChannelType.CHANNEL_TYPE_GROUP
+							? ChannelStreamMode.STREAM_MODE_GROUP
+							: ChannelStreamMode.STREAM_MODE_CHANNEL;
+
+			const trimContent: IMessageSendPayload = {
+				...(message.content as IMessageSendPayload),
+				t: message.content?.t?.trim(),
+				mk: message.content?.mk?.slice(0, -1)
+			};
+
+			await socket.updateChatMessage(
+				channelOrDirect.clan_id || '0',
+				channelOrDirect.channel_id ?? '0',
+				mode,
+				!channelOrDirect.channel_private,
+				messageId,
+				trimContent,
+				message.mentions,
+				message.attachments,
+				message.hide_editted,
+				message.topic_id || '0',
+				false
+			);
+			setLoading(false);
+		} catch (error) {
+			setLoading(false);
+			toast.error(t('toast.closeOgpFailed'));
 		}
-		const message = selectMessageByMessageId(state, channelOrDirect.channel_id, messageId);
-
-		const mode =
-			channelOrDirect?.type === ChannelType.CHANNEL_TYPE_THREAD
-				? ChannelStreamMode.STREAM_MODE_THREAD
-				: channelOrDirect?.type === ChannelType.CHANNEL_TYPE_DM
-					? ChannelStreamMode.STREAM_MODE_DM
-					: channelOrDirect?.type === ChannelType.CHANNEL_TYPE_GROUP
-						? ChannelStreamMode.STREAM_MODE_GROUP
-						: ChannelStreamMode.STREAM_MODE_CHANNEL;
-
-		const trimContent: IMessageSendPayload = {
-			...(message.content as IMessageSendPayload),
-			t: message.content?.t?.trim(),
-			mk: message.content?.mk?.slice(0, -1)
-		};
-		await socket.updateChatMessage(
-			channelOrDirect.clan_id || '0',
-			channelOrDirect.channel_id ?? '0',
-			mode,
-			!channelOrDirect.channel_private,
-			messageId,
-			trimContent,
-			message.mentions,
-			message.attachments,
-			message.hide_editted,
-			message.topic_id || '0',
-			false
-		);
 	};
 
 	return (
@@ -99,13 +114,16 @@ const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, mes
 						}}
 					/>
 				</div>
-
-				<div
-					className="hover:text-red-500 absolute top-1 right-1 rounded-full aspect-square p-1 cursor-pointer bg-item-theme-hover"
-					onClick={handleCloseOgp}
-				>
-					<Icons.Close defaultSize="w-3 h-3" />
-				</div>
+				{!loading ? (
+					<div
+						className="hover:text-red-500 absolute top-1 right-1 rounded-full aspect-square p-1 cursor-pointer bg-item-theme-hover"
+						onClick={handleCloseOgp}
+					>
+						<Icons.Close defaultSize="w-3 h-3" />
+					</div>
+				) : (
+					<Icons.LoadingSpinner />
+				)}
 			</div>
 		</div>
 	);
