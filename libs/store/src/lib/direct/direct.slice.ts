@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import type { StatusUserArgs } from '../channelmembers/channel.members';
-import { channelsActions, fetchChannelsCached } from '../channels/channels.slice';
+import { channelsActions } from '../channels/channels.slice';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import { messagesActions } from '../messages/messages.slice';
@@ -36,6 +36,8 @@ export interface DirectState extends EntityState<DirectEntity, string> {
 	buzzStateDirect: Record<string, BuzzArgs | null>;
 	updateDmGroupLoading: Record<string, boolean>;
 	updateDmGroupError: Record<string, string | null>;
+	dmCurrentPage: number;
+	dmHasMore: boolean;
 }
 
 export interface DirectRootState {
@@ -162,42 +164,46 @@ export const openDirectMessage = createAsyncThunk(
 );
 
 type fetchDmGroupArgs = {
-	cursor?: string;
 	limit?: number;
-	forward?: number;
 	channelType?: number;
 	noCache?: boolean;
+	page?: number;
 };
 
 export const fetchDirectMessage = createAsyncThunk(
 	'direct/fetchDirectMessage',
-	async ({ channelType = ChannelType.CHANNEL_TYPE_GROUP, noCache }: fetchDmGroupArgs, thunkAPI) => {
+	async ({ channelType = ChannelType.CHANNEL_TYPE_GROUP, page = 1, limit = 100 }: fetchDmGroupArgs, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await fetchChannelsCached(thunkAPI.getState as () => RootState, mezon, 500, 1, '0', channelType, noCache);
-			if (!response.channeldesc) {
-				thunkAPI.dispatch(directActions.setAll([]));
-				return [];
-			}
-			if (Date.now() - response.time < 100) {
-				const listStatusUnreadDM = response.channeldesc.map((channel) => {
-					const status = getStatusUnread(
-						Number(channel.last_seen_message?.timestamp_seconds),
-						Number(channel.last_sent_message?.timestamp_seconds)
-					);
-					return { dmId: channel.channel_id ?? '', isUnread: status };
-				});
-				thunkAPI.dispatch(directActions.setAllStatusDMUnread(listStatusUnreadDM));
+			const response = await withRetry((session) => mezon.client.listChannelDescs(session, limit, 0, page, '0', channelType), {
+				maxRetries: 3,
+				initialDelay: 1000,
+				scope: 'dm-list',
+				mezon
+			});
+
+			if (!response.channeldesc || response.channeldesc.length === 0) {
+				if (page === 1) {
+					thunkAPI.dispatch(directActions.setAll([]));
+				}
+				return { channels: [] as DirectEntity[], hasMore: false, page };
 			}
 
-			if (response.fromCache) {
-				return [];
-			}
+			const listStatusUnreadDM = response.channeldesc.map((channel) => {
+				const status = getStatusUnread(
+					Number(channel.last_seen_message?.timestamp_seconds),
+					Number(channel.last_sent_message?.timestamp_seconds)
+				);
+				return { dmId: channel.channel_id ?? '', isUnread: status };
+			});
+			thunkAPI.dispatch(directActions.setAllStatusDMUnread(listStatusUnreadDM));
+
 			const state = thunkAPI.getState() as RootState;
 			const existingEntities = selectAllDirectMessages(state);
 			const userProfile = selectAllAccount(state)?.user;
 			const listDM: IUserChannel[] = [];
-			const sorted = response.channeldesc.sort((a: ApiChannelDescription, b: ApiChannelDescription) => {
+
+			const sorted = [...response.channeldesc].sort((a: ApiChannelDescription, b: ApiChannelDescription) => {
 				if (
 					a === undefined ||
 					b === undefined ||
@@ -211,11 +217,10 @@ export const fetchDirectMessage = createAsyncThunk(
 				if (a.last_sent_message.id && b.last_sent_message.id && a.last_sent_message.id < b.last_sent_message.id) {
 					return 1;
 				}
-
 				return -1;
 			});
 
-			response.channeldesc.map((channel: ApiChannelDescription) => {
+			response.channeldesc.forEach((channel: ApiChannelDescription) => {
 				if (channel.type === ChannelType.CHANNEL_TYPE_DM) {
 					listDM.push({
 						id: channel.channel_id || '0',
@@ -234,12 +239,19 @@ export const fetchDirectMessage = createAsyncThunk(
 				const existingEntity = existingEntities.find((entity) => entity.id === channelRes.channel_id);
 				return mapDmGroupToEntity(channelRes, existingEntity);
 			});
+
 			thunkAPI.dispatch(directActions.setDirectMetaEntities(channels));
-			thunkAPI.dispatch(directActions.setAll(channels));
+			if (page === 1) {
+				thunkAPI.dispatch(directActions.setAll(channels));
+			} else {
+				thunkAPI.dispatch(directActions.upsertManyDm(channels));
+			}
 			thunkAPI.dispatch(userChannelsActions.upsertMany(listDM));
 			const users = mapChannelsToUsers(sorted);
 			thunkAPI.dispatch(statusActions.updateBulkStatus(users));
-			return channels;
+
+			const hasMore = response.channeldesc.length >= limit;
+			return { channels, hasMore, page };
 		} catch (error) {
 			captureSentryError(error, 'direct/fetchDirectMessage');
 			return thunkAPI.rejectWithValue(error);
@@ -514,7 +526,9 @@ export const initialDirectState: DirectState = directAdapter.getInitialState({
 	statusDMChannelUnread: {},
 	buzzStateDirect: {},
 	updateDmGroupLoading: {},
-	updateDmGroupError: {}
+	updateDmGroupError: {},
+	dmCurrentPage: 0,
+	dmHasMore: true
 });
 
 export const directSlice = createSlice({
@@ -830,6 +844,22 @@ export const directSlice = createSlice({
 				}
 			}
 		},
+		upsertManyDm: (state, action: PayloadAction<DirectEntity[]>) => {
+			const { entities } = state;
+			const dataToUpsert = action.payload.map((item) => {
+				const existLabel = entities[item.id]?.channel_label?.split(',');
+				const existingShowPinBadge = entities[item.id]?.showPinBadge;
+				const data = { ...item };
+				if (existLabel && existLabel.length <= 1) {
+					data.channel_label = entities[item.id]?.channel_label;
+				}
+				if (existingShowPinBadge !== undefined) {
+					data.showPinBadge = existingShowPinBadge;
+				}
+				return data;
+			});
+			directAdapter.upsertMany(state, dataToUpsert);
+		},
 		updateMuteDM: (state, action: PayloadAction<{ channelId: string; isMute: boolean }>) => {
 			const payload = action.payload;
 			directAdapter.updateOne(state, {
@@ -845,8 +875,10 @@ export const directSlice = createSlice({
 			.addCase(fetchDirectMessage.pending, (state: DirectState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchDirectMessage.fulfilled, (state: DirectState, action: PayloadAction<IChannel[]>) => {
+			.addCase(fetchDirectMessage.fulfilled, (state: DirectState, action) => {
 				state.loadingStatus = 'loaded';
+				state.dmCurrentPage = action.payload.page;
+				state.dmHasMore = action.payload.hasMore;
 			})
 			.addCase(fetchDirectMessage.rejected, (state: DirectState, action) => {
 				state.loadingStatus = 'error';
@@ -1112,3 +1144,6 @@ export const selectLastSeenMessageIdDM = createSelector([selectDirectMessageEnti
 });
 
 export const selectDirectLoadingStatus = createSelector(getDirectState, (state) => state.loadingStatus);
+
+export const selectDmCurrentPage = createSelector(getDirectState, (state) => state.dmCurrentPage);
+export const selectDmHasMore = createSelector(getDirectState, (state) => state.dmHasMore);
