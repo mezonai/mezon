@@ -188,7 +188,6 @@ export default class App {
 			</head>
 			<body>
 				<div class="offline-container">
-					<div class="offline-icon">📡</div>
 					<div class="offline-title">Network Error</div>
 					<div class="offline-message">Unable to connect. Please check your internet connection and try again.</div>
 					<div class="status-text" id="status">${errorDescription || ''}</div>
@@ -208,19 +207,16 @@ export default class App {
 						btn.textContent = 'Connecting...';
 						status.textContent = '';
 
-						fetch('https://mezon.ai/assets/favicon.ico', { method: 'HEAD', cache: 'no-cache' })
-							.then(function(res) {
-								if (res.ok) {
-									window.location.href = 'https://mezon.ai/';
-								} else {
-									throw new Error('not ok');
-								}
-							})
-							.catch(function() {
-								btn.disabled = false;
-								btn.textContent = 'Retry';
-								status.textContent = 'Connection failed. Please try again.';
-							});
+						var img = new Image();
+						img.onload = function() {
+							window.location.href = 'https://mezon.ai/';
+						};
+						img.onerror = function() {
+							btn.disabled = false;
+							btn.textContent = 'Retry';
+							status.textContent = 'Connection failed. Please try again.';
+						};
+						img.src = 'https://mezon.ai/assets/favicon.ico?t=' + Date.now();
 					}
 
 					window.addEventListener('online', function() {
