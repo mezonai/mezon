@@ -2,7 +2,6 @@ import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelEvent, ApiListChannelEventsRequest } from 'mezon-js/dist/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { ensureSession, getMezonCtx, type MezonValueContext } from '../helpers';
@@ -11,8 +10,46 @@ export const CHANNEL_MEDIA_FEATURE_KEY = 'channelMedia';
 
 const CHANNEL_MEDIA_CACHED_TIME = 1000 * 60 * 20;
 
+export interface ChannelEventAttachment {
+	id: string;
+	file_name: string;
+	file_url: string;
+	file_type: string;
+	file_size: string;
+	width: number;
+	height: number;
+	thumbnail: string;
+	duration: number;
+	message_id: string;
+}
+
+export interface ChannelEvent {
+	id: string;
+	clan_id: string;
+	channel_id: string;
+	start_time_seconds: number;
+	title: string;
+	description: string;
+	end_time_seconds: number;
+	location: string;
+	status: number;
+	creator_id: string;
+	create_time_seconds: number;
+	update_time_seconds: number;
+	attachments: Array<ChannelEventAttachment>;
+}
+export interface fetchChannelMediaPayload {
+	clan_id: string;
+	channel_id: string;
+	year: number;
+	start_time?: number;
+	end_time?: number;
+	limit?: number;
+	noCache?: boolean;
+}
+
 export interface ChannelMediaChannelState {
-	events: ApiChannelEvent[];
+	events: ChannelEvent[];
 	cache?: CacheMetadata;
 }
 
@@ -22,11 +59,9 @@ export interface ChannelMediaState {
 	eventsByChannel: Record<string, ChannelMediaChannelState>;
 }
 
-type FetchChannelMediaPayload = ApiListChannelEventsRequest & { noCache?: boolean };
-
 type RootState = { [CHANNEL_MEDIA_FEATURE_KEY]: ChannelMediaState };
 
-const fetchChannelMediaCached = async (getState: () => RootState, ensuredMezon: MezonValueContext, payload: FetchChannelMediaPayload) => {
+const fetchChannelMediaCached = async (getState: () => RootState, ensuredMezon: MezonValueContext, payload: fetchChannelMediaPayload) => {
 	const { noCache, ...requestPayload } = payload;
 	const currentState = getState();
 	const channelData = currentState[CHANNEL_MEDIA_FEATURE_KEY].eventsByChannel[payload.channel_id];
@@ -55,7 +90,7 @@ const fetchChannelMediaCached = async (getState: () => RootState, ensuredMezon: 
 	};
 };
 
-export const fetchChannelMedia = createAsyncThunk('channelMedia/fetchChannelMedia', async (payload: FetchChannelMediaPayload, thunkAPI) => {
+export const fetchChannelMedia = createAsyncThunk('channelMedia/fetchChannelMedia', async (payload: fetchChannelMediaPayload, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		return await fetchChannelMediaCached(thunkAPI.getState as () => RootState, mezon, payload);
@@ -86,7 +121,7 @@ export const channelMediaSlice = createSlice({
 			})
 			.addCase(
 				fetchChannelMedia.fulfilled,
-				(state, action: PayloadAction<{ channelId: string; events: ApiChannelEvent[]; fromCache: boolean; time: number }>) => {
+				(state, action: PayloadAction<{ channelId: string; events: ChannelEvent[]; fromCache: boolean; time: number }>) => {
 					const { channelId, events, fromCache } = action.payload;
 
 					if (!state.eventsByChannel[channelId]) {
