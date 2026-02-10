@@ -209,7 +209,7 @@ export const fetchChannelsCached = async (
 				clan_id: clanId || '0'
 			}
 		},
-		(session) => ensuredMezon.client.listChannelDescs(session, limit, state, 0, clanId, channelType),
+		(session) => ensuredMezon.client.listChannelDescs(session, limit, state, '0', clanId, channelType),
 		'channel_desc_list'
 	);
 

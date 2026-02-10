@@ -45,6 +45,7 @@ class TypingUsersService {
 
 		this.rebuildChannelCache(channelId, channelMap);
 		this.notify$.next();
+		console.log('addTypingUser');
 		this.startCleanupIfNeeded();
 	}
 
