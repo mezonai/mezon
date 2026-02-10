@@ -1,5 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { convertTimeString, getPlatformLabel } from '@mezon/utils';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
@@ -37,8 +38,15 @@ const DeviceItem = ({ item }: DeviceItemProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['setting']);
-	const formattedLastActive = formatDeviceDate(new Date(Number(item?.last_active_seconds) * 1000), t);
 	const platformLabel = getPlatformLabel(item?.platform);
+
+	const locationText = useMemo(() => {
+		const formattedLastActive = item?.last_active_seconds ? formatDeviceDate(new Date(Number(item?.last_active_seconds) * 1000), t) : '';
+		if (formattedLastActive) {
+			return `${item?.location} - ${formattedLastActive.toLocaleLowerCase()}`;
+		}
+		return `${item?.location}`;
+	}, [item?.last_active_seconds, item?.location, t]);
 
 	return (
 		<View style={styles.container}>
@@ -54,7 +62,7 @@ const DeviceItem = ({ item }: DeviceItemProps) => {
 					</View>
 				</View>
 				<View style={styles.platformInfo}>
-					<Text style={styles.text}>{`${item?.location} - ${formattedLastActive.toLocaleLowerCase()}`}</Text>
+					<Text style={styles.text}>{locationText}</Text>
 				</View>
 			</View>
 		</View>
