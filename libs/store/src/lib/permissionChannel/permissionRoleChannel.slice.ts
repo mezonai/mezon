@@ -125,7 +125,7 @@ export const setPermissionRoleChannel = createAsyncThunk(
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body = {
 				channel_id: channelId,
-				role_id: roleId,
+				role_id: roleId || '0',
 				permission_update: permission,
 				max_permission_id: maxPermissionId || '0',
 				user_id: userId
