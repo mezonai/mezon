@@ -43,6 +43,7 @@ import type {
 	IRolesClan,
 	MentionDataProps,
 	MentionItem,
+	MessagesEntity,
 	NotificationEntity,
 	SearchItemProps,
 	SenderInfoOptionals,
@@ -53,7 +54,6 @@ import { getDateLocale } from './dateI18n';
 import { Foreman } from './foreman';
 import { isMezonCdnUrl, isTenorUrl } from './urlSanitization';
 import { getPlatform } from './windowEnvironment';
-export * from './animateScroll';
 export * from './audio';
 export * from './buildClassName';
 export * from './buildStyle';
@@ -1206,12 +1206,25 @@ export const getChannelMode = (chatType: number) => {
 
 export const getAttachmentDataForWindow = (
 	imageList: IAttachmentEntity[],
-	currentChatUsersEntities: Record<string, ChannelMembersEntity> | Record<string, UsersClanEntity>
+	currentChatUsersEntities: Record<string, ChannelMembersEntity> | Record<string, UsersClanEntity>,
+	currentChatMessageEntities?: Record<string, MessagesEntity>
 ) => {
 	return imageList.map((image) => {
-		const uploader = currentChatUsersEntities?.[image.uploader as string];
+		let uploader = currentChatUsersEntities?.[image.uploader as string];
 		const isVideo = image?.isVideo || image?.filetype?.startsWith('video') || image.filetype?.includes('mp4') || image?.filetype?.includes('mov');
 
+		if (!uploader && currentChatMessageEntities) {
+			uploader = {
+				clan_nick: currentChatMessageEntities[image?.message_id as string]?.clan_nick,
+				id: image?.uploader as string,
+				clan_avatar: currentChatMessageEntities[image?.message_id as string]?.clan_avatar,
+				user: {
+					display_name: currentChatMessageEntities[image?.message_id as string]?.display_name,
+					username: currentChatMessageEntities[image?.message_id as string]?.username,
+					avatar_url: currentChatMessageEntities[image?.message_id as string]?.avatar
+				}
+			};
+		}
 		return {
 			...image,
 			uploaderData: {
