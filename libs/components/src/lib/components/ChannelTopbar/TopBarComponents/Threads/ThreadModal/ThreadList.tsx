@@ -39,7 +39,7 @@ export default function ThreadList({ isLoading, threads, loadMore, preventCloseP
 	return (
 		<ul
 			ref={ulRef}
-			className={`pb-4 pr-4 pl-4  overflow-y-auto h-[500px] ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
+			className={`pb-4 pr-4 pl-4 overflow-y-auto overflow-x-hidden h-[500px] ${appearanceTheme === 'light' ? 'customScrollLightMode' : 'app-scroll'}`}
 		>
 			<GroupThreads
 				preventClosePannel={preventClosePannel}

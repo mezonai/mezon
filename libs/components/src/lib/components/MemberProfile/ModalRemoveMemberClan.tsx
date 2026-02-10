@@ -42,24 +42,14 @@ const ModalRemoveMemberClan = ({ username, onClose, onRemoveMember }: ModalRemov
 				</div>
 				<div className="px-4 mb-4">
 					<div className="block">
-						<p className="text-theme-primary text-base font-normal flex flex-wrap items-center gap-1">
-							<span>{t('kickMember.description').split('{')[0]}</span>
-							<span className="text-theme-primary-active font-semibold inline-block truncate max-w-[150px]" title={username}>
-								{username}
-							</span>
-							<span>{t('kickMember.description').includes('from') ? 'from' : ''}</span>
-							<span
-								className="text-theme-primary-active font-semibold inline-block truncate max-w-[150px]"
-								title={currentClanName || 'the clan'}
-							>
-								{currentClanName || 'the clan'}
-							</span>
+						<p className="text-theme-primary text-base font-normal">
+							{t('kickMember.description', { username, clanName: currentClanName || 'the clan' })}
 						</p>
 					</div>
 				</div>
 				<div className="px-4">
 					<div className="mb-2 block">
-						<p className="text-theme-primary text-xs uppercase font-semibold">{t('kickMember.reasonLabel')}</p>
+						<p className="text-theme-primary text-xs font-semibold">{t('kickMember.reasonLabel')}</p>
 					</div>
 					<textarea
 						rows={2}

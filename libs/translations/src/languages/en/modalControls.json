@@ -12,7 +12,7 @@
 	},
 	"kickMember": {
 		"title": "Kick {{username}} from {{clanName}}",
-		"description": "Please confirm if you would like to kick @{{username}} from {{clanName}}? They will be able to rejoin again with a new invite.",
+		"description": "Please confirm if you would like to kick @{{username}} from {{clanName}}? They will be able to re-join again with a new invite.",
 		"reasonLabel": "Reason for Kick"
 	}
 }
