@@ -82,8 +82,10 @@ export const NewGroupScreen = ({ navigation, route }: { navigation: any; route: 
 		if (currentDirectMessage?.id) {
 			setSelectedFriendDefault(allUserGroupDM?.user_ids || []);
 			setFriendIdSelectedList([]);
+		} else {
+			setSelectedFriendDefault([currentUser?.user?.id as string]);
 		}
-	}, [currentDirectMessage?.id, allUserGroupDM?.user_ids]);
+	}, [currentDirectMessage?.id, allUserGroupDM?.user_ids, currentUser?.user?.id]);
 
 	const onSelectedChange = useCallback(
 		(friendIdSelected: string[]) => {
