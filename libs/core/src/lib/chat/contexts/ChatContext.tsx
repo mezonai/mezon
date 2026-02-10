@@ -86,6 +86,7 @@ import {
 	threadsActions,
 	toastActions,
 	topicsActions,
+	typingUsersService,
 	updateChannelActions,
 	useAppDispatch,
 	userChannelsActions,
@@ -1379,19 +1380,22 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
-	const onmessagetyping = useCallback(
-		(e: MessageTypingEvent) => {
-			dispatch(
-				messagesActions.updateTypingUsers({
-					channelId: e?.topic_id && e?.topic_id !== '0' ? e?.topic_id : e.channel_id,
-					userId: e.sender_id,
-					isTyping: true,
-					typingName: e.sender_display_name || e.sender_username
-				})
-			);
-		},
-		[dispatch, userId]
-	);
+	const onmessagetyping = useCallback((e: MessageTypingEvent) => {
+		const state = getStore().getState();
+		const currentUserId = selectCurrentUserId(state);
+		if (e.sender_id === currentUserId) return;
+
+		const channelId = e?.topic_id && e?.topic_id !== '0' ? e?.topic_id : e.channel_id;
+		const currentClanId = selectCurrentClanId(state);
+		const isDM = !currentClanId || currentClanId === '0';
+
+		if (!isDM) {
+			const currentChannelId = selectCurrentChannelId(state as unknown as RootState);
+			if (channelId !== currentChannelId) return;
+		}
+
+		typingUsersService.addTypingUser(channelId, e.sender_id, e.sender_display_name || e.sender_username);
+	}, []);
 
 	const onmessagereaction = useCallback(
 		async (e: ApiMessageReaction) => {

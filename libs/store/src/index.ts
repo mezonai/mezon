@@ -55,6 +55,8 @@ export * from './lib/messages/SeenMessagePool';
 export * from './lib/messages/embedMessage.slice';
 export * from './lib/messages/messages.slice';
 export * from './lib/messages/references.slice';
+export { typingUsersService } from './lib/messages/typingUsersService';
+export { useIsUserTyping, useTypingUsersByChannel } from './lib/messages/useTypingUsers';
 export * from './lib/notification/notify.slice';
 export * from './lib/notificationSetting/notificationSettingCategory.slice';
 export * from './lib/notificationSetting/notificationSettingChannel.slice';
