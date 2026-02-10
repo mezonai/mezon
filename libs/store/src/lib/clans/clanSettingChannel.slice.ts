@@ -38,6 +38,17 @@ export const initialSettingClanChannelState: SettingClanChannelState = channelSe
 	listSearchChannel: []
 });
 
+const resetSettingClanChannelState = (state: SettingClanChannelState) => {
+	channelSettingAdapter.removeAll(state);
+	state.loadingStatus = 'not loaded';
+	state.error = null;
+	state.channelCount = 0;
+	state.threadCount = 0;
+	state.threadsByChannel = {};
+	state.listSearchChannel = [];
+	state.cache = undefined;
+};
+
 export enum ETypeFetchChannelSetting {
 	FETCH_CHANNEL = 'FETCH_CHANNEL',
 	MORE_CHANNEL = 'MORE_CHANNEL',
@@ -149,6 +160,9 @@ export const settingClanChannelSlice = createSlice({
 	name: SETTING_CLAN_CHANNEL,
 	initialState: initialSettingClanChannelState,
 	reducers: {
+		resetChannelSettingState: (state) => {
+			resetSettingClanChannelState(state);
+		},
 		addChannelFromSocket: (state, action) => {
 			const channel = action.payload;
 			if (!channel?.id) return;
@@ -230,7 +244,7 @@ export const settingClanChannelSlice = createSlice({
 					const cleanedList = (response.channel_setting_list || []).map(cleanUndefinedFields);
 					switch (typeFetch) {
 						case ETypeFetchChannelSetting.FETCH_CHANNEL:
-							channelSettingAdapter.upsertMany(state, cleanedList);
+							channelSettingAdapter.setAll(state, cleanedList);
 							break;
 						case ETypeFetchChannelSetting.MORE_CHANNEL:
 							channelSettingAdapter.upsertMany(state, cleanedList);
