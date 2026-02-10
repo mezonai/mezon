@@ -244,8 +244,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			attachments?: ApiMessageAttachment[],
 			hide_editted?: boolean,
 			topic_id?: string,
-			isTopic?: boolean,
-			oldMentions?: string
+			isTopic?: boolean
 		) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;

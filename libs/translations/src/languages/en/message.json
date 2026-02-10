@@ -54,7 +54,8 @@
 		"copyImage": "Copied image",
 		"copyImageFailed": "Failed to copy image: {{error}}",
 		"shareImageFailed": "Failed to share image: {{error}}",
-		"shareImageSuccess": "Image shared successfully"
+		"shareImageSuccess": "Image shared successfully",
+		"closeOgpFailed": "Close ogp failed"
 	},
 	"directMessage": {
 		"you": "You",
