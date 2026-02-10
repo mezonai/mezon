@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import type { StatusUserArgs } from '../channelmembers/channel.members';
-import { channelsActions, fetchChannelsCached } from '../channels/channels.slice';
+import { channelsActions } from '../channels/channels.slice';
 import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import { messagesActions } from '../messages/messages.slice';
@@ -26,6 +26,8 @@ export interface DirectEntity extends IChannel {
 
 export type DMMetaEntity = DirectEntity;
 
+export const DM_PAGE_SIZE = 100;
+
 export interface DirectState extends EntityState<DirectEntity, string> {
 	loadingStatus: LoadingStatus;
 	socketStatus: LoadingStatus;
@@ -36,6 +38,9 @@ export interface DirectState extends EntityState<DirectEntity, string> {
 	buzzStateDirect: Record<string, BuzzArgs | null>;
 	updateDmGroupLoading: Record<string, boolean>;
 	updateDmGroupError: Record<string, string | null>;
+	currentPage: number;
+	hasMore: boolean;
+	paginationLoading: boolean;
 }
 
 export interface DirectRootState {
@@ -169,80 +174,139 @@ type fetchDmGroupArgs = {
 	noCache?: boolean;
 };
 
+const processDmChannels = (channelDescs: ApiChannelDescription[], existingEntities: DirectEntity[], userProfile: any, thunkAPI: any) => {
+	const listDM: IUserChannel[] = [];
+	const sorted = channelDescs.sort((a: ApiChannelDescription, b: ApiChannelDescription) => {
+		if (
+			a === undefined ||
+			b === undefined ||
+			a.last_sent_message === undefined ||
+			a.last_seen_message?.id === undefined ||
+			b.last_sent_message === undefined ||
+			b.last_seen_message?.id === undefined
+		) {
+			return 0;
+		}
+		if (a.last_sent_message.id && b.last_sent_message.id && a.last_sent_message.id < b.last_sent_message.id) {
+			return 1;
+		}
+
+		return -1;
+	});
+
+	channelDescs.map((channel: ApiChannelDescription) => {
+		if (channel.type === ChannelType.CHANNEL_TYPE_DM) {
+			listDM.push({
+				id: channel.channel_id || '0',
+				channel_id: channel.channel_id || '0',
+				avatars: [userProfile?.avatar_url || '', channel.avatars?.[0] || ''],
+				display_names: [userProfile?.display_name || '', channel.display_names?.[0] || ''],
+				usernames: [userProfile?.username || '', channel.usernames?.[0] || ''],
+				onlines: [true, !!channel?.onlines?.[0]],
+				user_ids: [userProfile?.id || '', channel.user_ids?.[0] || ''],
+				create_time_seconds: channel.create_time_seconds
+			});
+		}
+	});
+
+	const channels = sorted.map((channelRes) => {
+		const existingEntity = existingEntities.find((entity) => entity.id === channelRes.channel_id);
+		return mapDmGroupToEntity(channelRes, existingEntity);
+	});
+
+	thunkAPI.dispatch(userChannelsActions.upsertMany(listDM));
+	const users = mapChannelsToUsers(sorted);
+	thunkAPI.dispatch(statusActions.updateBulkStatus(users));
+
+	return channels;
+};
+
 export const fetchDirectMessage = createAsyncThunk(
 	'direct/fetchDirectMessage',
-	async ({ channelType = ChannelType.CHANNEL_TYPE_GROUP, noCache }: fetchDmGroupArgs, thunkAPI) => {
+	async ({ channelType = ChannelType.CHANNEL_TYPE_GROUP }: fetchDmGroupArgs, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await fetchChannelsCached(thunkAPI.getState as () => RootState, mezon, 500, 1, '0', channelType, noCache);
-			if (!response.channeldesc) {
+			const response = await mezon.client.listChannelDescs(mezon.session, DM_PAGE_SIZE, 1, 1, '0', channelType);
+			if (!response.channeldesc || response.channeldesc.length === 0) {
 				thunkAPI.dispatch(directActions.setAll([]));
-				return [];
-			}
-			if (Date.now() - response.time < 100) {
-				const listStatusUnreadDM = response.channeldesc.map((channel) => {
-					const status = getStatusUnread(
-						Number(channel.last_seen_message?.timestamp_seconds),
-						Number(channel.last_sent_message?.timestamp_seconds)
-					);
-					return { dmId: channel.channel_id ?? '', isUnread: status };
-				});
-				thunkAPI.dispatch(directActions.setAllStatusDMUnread(listStatusUnreadDM));
+				return { channels: [], hasMore: false, page: 1 };
 			}
 
-			if (response.fromCache) {
-				return [];
-			}
+			const listStatusUnreadDM = response.channeldesc.map((channel) => {
+				const status = getStatusUnread(
+					Number(channel.last_seen_message?.timestamp_seconds),
+					Number(channel.last_sent_message?.timestamp_seconds)
+				);
+				return { dmId: channel.channel_id ?? '', isUnread: status };
+			});
+			thunkAPI.dispatch(directActions.setAllStatusDMUnread(listStatusUnreadDM));
+
 			const state = thunkAPI.getState() as RootState;
 			const existingEntities = selectAllDirectMessages(state);
 			const userProfile = selectAllAccount(state)?.user;
-			const listDM: IUserChannel[] = [];
-			const sorted = response.channeldesc.sort((a: ApiChannelDescription, b: ApiChannelDescription) => {
-				if (
-					a === undefined ||
-					b === undefined ||
-					a.last_sent_message === undefined ||
-					a.last_seen_message?.id === undefined ||
-					b.last_sent_message === undefined ||
-					b.last_seen_message?.id === undefined
-				) {
-					return 0;
-				}
-				if (a.last_sent_message.id && b.last_sent_message.id && a.last_sent_message.id < b.last_sent_message.id) {
-					return 1;
-				}
 
-				return -1;
-			});
+			const channels = processDmChannels(response.channeldesc, existingEntities, userProfile, thunkAPI);
 
-			response.channeldesc.map((channel: ApiChannelDescription) => {
-				if (channel.type === ChannelType.CHANNEL_TYPE_DM) {
-					listDM.push({
-						id: channel.channel_id || '0',
-						channel_id: channel.channel_id || '0',
-						avatars: [userProfile?.avatar_url || '', channel.avatars?.[0] || ''],
-						display_names: [userProfile?.display_name || '', channel.display_names?.[0] || ''],
-						usernames: [userProfile?.username || '', channel.usernames?.[0] || ''],
-						onlines: [true, !!channel?.onlines?.[0]],
-						user_ids: [userProfile?.id || '', channel.user_ids?.[0] || ''],
-						create_time_seconds: channel.create_time_seconds
-					});
-				}
-			});
-
-			const channels = sorted.map((channelRes) => {
-				const existingEntity = existingEntities.find((entity) => entity.id === channelRes.channel_id);
-				return mapDmGroupToEntity(channelRes, existingEntity);
-			});
 			thunkAPI.dispatch(directActions.setDirectMetaEntities(channels));
 			thunkAPI.dispatch(directActions.setAll(channels));
-			thunkAPI.dispatch(userChannelsActions.upsertMany(listDM));
-			const users = mapChannelsToUsers(sorted);
-			thunkAPI.dispatch(statusActions.updateBulkStatus(users));
-			return channels;
+
+			const hasMore = response.channeldesc.length >= DM_PAGE_SIZE;
+			return { channels, hasMore, page: 1 };
 		} catch (error) {
 			captureSentryError(error, 'direct/fetchDirectMessage');
 			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const fetchMoreDirectMessages = createAsyncThunk(
+	'direct/fetchMoreDirectMessages',
+	async ({ channelType = ChannelType.CHANNEL_TYPE_GROUP }: { channelType?: number }, thunkAPI) => {
+		try {
+			const currentState = thunkAPI.getState() as RootState;
+			const { hasMore, currentPage } = currentState[DIRECT_FEATURE_KEY];
+
+			if (!hasMore) {
+				return { channels: [], hasMore: false, page: currentPage };
+			}
+
+			const nextPage = currentPage + 1;
+			console.log(nextPage, 'nextPage');
+
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await mezon.client.listChannelDescs(mezon.session, DM_PAGE_SIZE, 1, nextPage, '0', channelType);
+
+			if (!response.channeldesc || response.channeldesc.length === 0) {
+				return { channels: [], hasMore: false, page: nextPage };
+			}
+
+			const listStatusUnreadDM = response.channeldesc.map((channel) => {
+				const status = getStatusUnread(
+					Number(channel.last_seen_message?.timestamp_seconds),
+					Number(channel.last_sent_message?.timestamp_seconds)
+				);
+				return { dmId: channel.channel_id ?? '', isUnread: status };
+			});
+			thunkAPI.dispatch(directActions.setAllStatusDMUnread(listStatusUnreadDM));
+
+			const state = thunkAPI.getState() as RootState;
+			const existingEntities = selectAllDirectMessages(state);
+			const userProfile = selectAllAccount(state)?.user;
+
+			const channels = processDmChannels(response.channeldesc, existingEntities, userProfile, thunkAPI);
+			thunkAPI.dispatch(directActions.setDirectMetaEntities(channels));
+
+			const hasMoreResult = response.channeldesc.length >= DM_PAGE_SIZE;
+			return { channels, hasMore: hasMoreResult, page: nextPage };
+		} catch (error) {
+			captureSentryError(error, 'direct/fetchMoreDirectMessages');
+			return thunkAPI.rejectWithValue(error);
+		}
+	},
+	{
+		condition: (_, { getState }) => {
+			const state = (getState() as RootState)[DIRECT_FEATURE_KEY];
+			return !state.paginationLoading;
 		}
 	}
 );
@@ -514,7 +578,10 @@ export const initialDirectState: DirectState = directAdapter.getInitialState({
 	statusDMChannelUnread: {},
 	buzzStateDirect: {},
 	updateDmGroupLoading: {},
-	updateDmGroupError: {}
+	updateDmGroupError: {},
+	currentPage: 0,
+	hasMore: true,
+	paginationLoading: false
 });
 
 export const directSlice = createSlice({
@@ -845,12 +912,28 @@ export const directSlice = createSlice({
 			.addCase(fetchDirectMessage.pending, (state: DirectState) => {
 				state.loadingStatus = 'loading';
 			})
-			.addCase(fetchDirectMessage.fulfilled, (state: DirectState, action: PayloadAction<IChannel[]>) => {
+			.addCase(fetchDirectMessage.fulfilled, (state: DirectState, action) => {
 				state.loadingStatus = 'loaded';
+				state.currentPage = action.payload.page;
+				state.hasMore = action.payload.hasMore;
 			})
 			.addCase(fetchDirectMessage.rejected, (state: DirectState, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
+			})
+			.addCase(fetchMoreDirectMessages.pending, (state: DirectState) => {
+				state.paginationLoading = true;
+			})
+			.addCase(fetchMoreDirectMessages.fulfilled, (state: DirectState, action) => {
+				state.paginationLoading = false;
+				state.currentPage = action.payload.page;
+				state.hasMore = action.payload.hasMore;
+				if (action.payload.channels.length > 0) {
+					directAdapter.upsertMany(state, action.payload.channels);
+				}
+			})
+			.addCase(fetchMoreDirectMessages.rejected, (state: DirectState) => {
+				state.paginationLoading = false;
 			})
 			.addCase(updateDmGroup.pending, (state: DirectState, action) => {
 				const channelId = action.meta.arg.channel_id;
@@ -861,14 +944,12 @@ export const directSlice = createSlice({
 				const channelId = action.meta.arg.channel_id;
 				state.updateDmGroupLoading[channelId] = false;
 				state.updateDmGroupError[channelId] = null;
-				// TODO: This toast needs i18n but it's in Redux slice, need to handle differently
 				toast.success('Group updated successfully!');
 			})
 			.addCase(updateDmGroup.rejected, (state: DirectState, action) => {
 				const channelId = action.meta.arg.channel_id;
 				state.updateDmGroupLoading[channelId] = false;
 				state.updateDmGroupError[channelId] = action.error.message || 'Failed to update group';
-				// TODO: This toast needs i18n but it's in Redux slice, need to handle differently
 				toast.error(action.error.message || 'Failed to update group');
 			})
 			.addCase(fetchDirectDetail.fulfilled, (state: DirectState, action) => {
@@ -882,6 +963,7 @@ export const directReducer = directSlice.reducer;
 export const directActions = {
 	...directSlice.actions,
 	fetchDirectMessage,
+	fetchMoreDirectMessages,
 	updateDmGroup,
 	createNewDirectMessage,
 	joinDirectMessage,
@@ -1112,3 +1194,6 @@ export const selectLastSeenMessageIdDM = createSelector([selectDirectMessageEnti
 });
 
 export const selectDirectLoadingStatus = createSelector(getDirectState, (state) => state.loadingStatus);
+
+export const selectDirectHasMore = createSelector(getDirectState, (state) => state.hasMore);
+export const selectDirectPaginationLoading = createSelector(getDirectState, (state) => state.paginationLoading);
