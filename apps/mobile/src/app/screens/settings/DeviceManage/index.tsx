@@ -66,8 +66,10 @@ const DeviceManage = () => {
 						<Flow color={themeValue.textDisabled} />
 					</View>
 				)}
-				{!loading && allDevices?.length > 0 && <DeviceItem item={currentDeviceItem} />}
-				{!loading && !allDevices?.length && <FlatList data={allDevices} keyExtractor={(item) => item?.device_id} renderItem={renderItem} />}
+				{!loading && !allDevices?.length && <DeviceItem item={currentDeviceItem} />}
+				{!loading && allDevices?.length > 0 && (
+					<FlatList data={allDevices} keyExtractor={(item) => item?.device_id} renderItem={renderItem} />
+				)}
 			</View>
 		</View>
 	);
