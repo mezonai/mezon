@@ -9,7 +9,12 @@
 		"title": "Ồ, điều này thật khó xử",
 		"crashMessage": "Có vẻ như Mezon đã gặp sự cố bất ngờ...",
 		"trackedMessage": "Chúng tôi đã theo dõi lỗi và sẽ khắc phục ngay lập tức.",
-		"reload": "Tải lại"
+		"reload": "Tải lại",
+		"networkError": "Lỗi kết nối mạng",
+		"offlineMessage": "Không thể kết nối. Vui lòng kiểm tra kết nối internet và thử lại.",
+		"connecting": "Đang kết nối...",
+		"stillOffline": "Không có kết nối internet. Vui lòng kiểm tra mạng của bạn.",
+		"connectionFailed": "Kết nối thất bại. Vui lòng thử lại."
 	},
 	"newMessage": "Tin nhắn mới",
 	"newMention": "Đề cập mới",
