@@ -55,6 +55,7 @@ const RoomEventManager = memo(({ room, layoutContext, onJoinRoom, onLeaveRoom, t
 	useEffect(() => {
 		const handleDisconnected = async (reason?: DisconnectReason) => {
 			if (reason === DisconnectReason.DUPLICATE_IDENTITY) {
+				dispatch(voiceActions.resetVoiceControl());
 				return;
 			}
 			if (
