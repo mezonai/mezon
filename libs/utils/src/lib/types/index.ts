@@ -1080,7 +1080,8 @@ export enum EUserSettings {
 	VOICE = 'Voice',
 	STREAMER_MODE = 'Streamer Mode',
 	ADVANCED = 'Advanced',
-	LOG_OUT = 'Log Out'
+	LOG_OUT = 'Log Out',
+	START_UP = 'START_UP'
 }
 
 export enum ENotificationTypes {
