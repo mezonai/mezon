@@ -24,7 +24,6 @@ const ButtonAgent = () => {
 		if (!currentVoice) {
 			return;
 		}
-		setOnAgent(!onAgent);
 
 		if (!onAgent) {
 			dispatch(handleAddAgentToVoice({ channel_id: currentVoice.channelId, room_name: currentVoice.roomId || '' }));
