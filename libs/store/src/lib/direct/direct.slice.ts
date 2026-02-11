@@ -546,9 +546,6 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			userChannelsActions.upsert({
 				...listMember,
 				id: channel_desc.channel_id || '',
-				onlines,
-				usernames,
-				user_ids: userIds,
 				channel_id: channel_desc.channel_id,
 				create_time_seconds: Date.now() / 1000
 			})
