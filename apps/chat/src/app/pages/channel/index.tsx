@@ -401,7 +401,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 								className={`flex flex-col flex-1 min-w-60 ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isShowMemberList && !isTimelineView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
 							>
 								<div className={`relative overflow-y-auto flex-1 min-h-0`}>
-									<ChannelMedia currentChannel={currentChannel} accountId={userProfile?.user?.id} />
+									<ChannelMedia currentChannel={currentChannel} />
 								</div>
 								<div className="flex-shrink-0">
 									<ChannelMainContentText canSendMessage={canSendMessage} channelId={currentChannel?.channel_id as string} />
