@@ -15,7 +15,7 @@ import { IconCDN } from '../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get('screen');
 
 const SPRING_CONFIG = {
 	damping: 15,

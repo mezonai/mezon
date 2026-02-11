@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-import type ViewShot from 'react-native-view-shot';
+import ViewShot from 'react-native-view-shot';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
 import { toastConfig } from '../../../../configs/toastConfig';
 import { IconCDN } from '../../../../constants/icon_cdn';
@@ -48,6 +48,7 @@ export const ConfirmSuccessModal: React.FC<ConfirmSuccessModalProps> = ({
 	const dispatch = useAppDispatch();
 
 	const handleShare = async () => {
+		console.log('🚀 ~hoang log handleShare ~hoang log fileShared:', fileShared);
 		try {
 			if (fileShared) {
 				setIsShowModalShare(true);
@@ -94,7 +95,10 @@ export const ConfirmSuccessModal: React.FC<ConfirmSuccessModalProps> = ({
 				return;
 			}
 			await saveMediaToCameraRoll(`file://${dataUri}`, 'png');
+			onConfirm();
 		} catch (error) {
+			dispatch(appActions.setLoadingMainMobile(false));
+		} finally {
 			dispatch(appActions.setLoadingMainMobile(false));
 		}
 	};
@@ -112,7 +116,11 @@ export const ConfirmSuccessModal: React.FC<ConfirmSuccessModalProps> = ({
 			{fileShared && isShowModalShare ? (
 				<Sharing data={fileShared} topUserSuggestionId={directMessageId} onClose={onCloseFileShare} />
 			) : (
-				<View style={styles.modalWrapper}>
+				<ViewShot
+					ref={viewToSnapshotRef}
+					options={{ fileName: 'send_money_success_mobile', format: 'png', quality: 1 }}
+					style={styles.modalWrapper}
+				>
 					<View style={styles.fullscreenModal}>
 						<View style={styles.modalHeader}>
 							<View>
@@ -162,7 +170,7 @@ export const ConfirmSuccessModal: React.FC<ConfirmSuccessModalProps> = ({
 						</View>
 					</View>
 					<Toast config={toastConfig} />
-				</View>
+				</ViewShot>
 			)}
 		</View>
 	);
