@@ -1245,7 +1245,6 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			<div className="w-full h-full relative messages-container select-text bg-theme-chat ">
 				<StickyLoadingIndicator messageCount={messageIds?.length} />
 				<div
-					tabIndex={-1}
 					onScroll={handleScroll}
 					onWheelCapture={handleWheel}
 					onTouchStart={handleTouchStart}

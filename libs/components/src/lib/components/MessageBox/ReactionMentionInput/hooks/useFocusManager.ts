@@ -1,5 +1,6 @@
 import { CHANNEL_INPUT_ID, GENERAL_INPUT_ID } from '@mezon/utils';
-import { RefObject, useEffect } from 'react';
+import type { RefObject } from 'react';
+import { useCallback, useEffect } from 'react';
 
 interface UseFocusManagerProps {
 	editorRef: RefObject<HTMLDivElement>;
@@ -30,21 +31,21 @@ export const useFocusManager = ({
 	currentDmGroupId,
 	hasAttachments
 }: UseFocusManagerProps) => {
-	const getTargetInputId = () => {
+	const getTargetInputId = useCallback(() => {
 		return isTopic ? GENERAL_INPUT_ID : CHANNEL_INPUT_ID;
-	};
+	}, [isTopic]);
 
-	const focusEditor = (isAttachment = false) => {
+	const focusEditor = useCallback(() => {
 		if (editorRef.current && editorRef.current.id === getTargetInputId()) {
 			editorRef.current.focus();
 		}
-	};
+	}, [editorRef, getTargetInputId]);
 
-	const blurEditor = () => {
+	const blurEditor = useCallback(() => {
 		if (editorRef.current) {
 			editorRef.current.blur();
 		}
-	};
+	}, []);
 
 	// Handle focus when reference message changes or edit state changes
 	useEffect(() => {
@@ -56,28 +57,56 @@ export const useFocusManager = ({
 		if (messageRefId || (isEmojiPickerActive && !isReactionRightActive) || (!isEditMessageOpen && !editMessageId)) {
 			focusEditor();
 		}
-	}, [messageRefId, isEditMessageOpen, editMessageId, isEmojiPickerActive, isReactionRightActive, isMenuClosed, isStatusMenuOpen]);
+	}, [
+		messageRefId,
+		isEditMessageOpen,
+		editMessageId,
+		isEmojiPickerActive,
+		isReactionRightActive,
+		isMenuClosed,
+		isStatusMenuOpen,
+		focusEditor,
+		blurEditor
+	]);
 
 	// Handle focus when channel or DM group changes
 	useEffect(() => {
 		if ((currentChannelId !== undefined || currentDmGroupId !== undefined) && !isMenuClosed) {
 			focusEditor();
 		}
-	}, [currentChannelId, currentDmGroupId, isMenuClosed]);
+	}, [currentChannelId, currentDmGroupId, isMenuClosed, focusEditor]);
 
 	// Handle focus when attachments are added
 	useEffect(() => {
 		if (hasAttachments) {
-			focusEditor(true);
+			focusEditor();
 		}
-	}, [hasAttachments]);
+	}, [hasAttachments, focusEditor]);
 
 	// Handle aria-hidden attribute removal
 	useEffect(() => {
 		if (editorRef.current) {
 			editorRef.current.removeAttribute('aria-hidden');
 		}
-	}, []);
+	}, [editorRef]);
+
+	useEffect(() => {
+		const handleEscapeFocus = (e: KeyboardEvent) => {
+			if (e.key !== 'Escape') return;
+
+			const activeElement = document.activeElement;
+			const isNothingFocused = !activeElement || activeElement === document.body;
+
+			if (isNothingFocused) {
+				focusEditor();
+			}
+		};
+
+		document.addEventListener('keydown', handleEscapeFocus);
+		return () => {
+			document.removeEventListener('keydown', handleEscapeFocus);
+		};
+	}, [focusEditor]);
 
 	return {
 		focusEditor,

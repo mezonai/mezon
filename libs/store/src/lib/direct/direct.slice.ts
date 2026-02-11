@@ -26,7 +26,7 @@ export interface DirectEntity extends IChannel {
 
 export type DMMetaEntity = DirectEntity;
 
-export const DM_PAGE_SIZE = 100;
+export const DM_PAGE_SIZE = 500;
 
 export interface DirectState extends EntityState<DirectEntity, string> {
 	loadingStatus: LoadingStatus;
@@ -271,8 +271,6 @@ export const fetchMoreDirectMessages = createAsyncThunk(
 			}
 
 			const nextPage = currentPage + 1;
-			console.log(nextPage, 'nextPage');
-
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.listChannelDescs(mezon.session, DM_PAGE_SIZE, 1, nextPage, '0', channelType);
 
