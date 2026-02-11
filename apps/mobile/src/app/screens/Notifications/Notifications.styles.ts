@@ -88,6 +88,7 @@ export const style = (colors: Attributes) =>
 		itemTabType: {
 			overflow: 'visible',
 			paddingVertical: size.s_6,
+			paddingHorizontal: size.s_2,
 			justifyContent: 'center',
 			alignItems: 'center',
 			borderRadius: size.s_8,
