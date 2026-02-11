@@ -89,7 +89,6 @@ export const ContainerMessageActionModal = React.memo(
 
 		const { t } = useTranslation(['message', 'token']);
 		const [currentMessageActionType, setCurrentMessageActionType] = useState<EMessageActionType | null>(null);
-		const [isShowQuickMenuModal, setIsShowQuickMenuModal] = useState(false);
 
 		const currentChannelId = useSelector(selectCurrentChannelId);
 		const currentDmId = useSelector(selectDmGroupCurrentId);
@@ -110,14 +109,6 @@ export const ContainerMessageActionModal = React.memo(
 
 		const onClose = useCallback(() => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-		}, []);
-
-		const onCloseModalConfirm = useCallback(() => {
-			setCurrentMessageActionType(null);
-		}, []);
-
-		const onCloseQuickMenuModal = useCallback(() => {
-			setIsShowQuickMenuModal(false);
 		}, []);
 
 		const onDeleteMessage = useCallback(
@@ -158,8 +149,6 @@ export const ContainerMessageActionModal = React.memo(
 						onDeleteMessage(message?.id);
 						break;
 					case EMessageActionType.ForwardMessage:
-					case EMessageActionType.PinMessage:
-					case EMessageActionType.UnPinMessage:
 						setCurrentMessageActionType(type);
 						break;
 					default:
@@ -322,13 +311,23 @@ export const ContainerMessageActionModal = React.memo(
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 		};
 
-		const handleActionPinMessage = () => {
-			setCurrentMessageActionType(EMessageActionType.PinMessage);
-		};
+		const handleShowPinModal = useCallback(
+			(actionType: EMessageActionType) => {
+				const data = {
+					children: <ConfirmPinMessageModal message={message} type={actionType} mode={mode} />
+				};
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+			},
+			[message, mode]
+		);
 
-		const handleActionUnPinMessage = () => {
-			setCurrentMessageActionType(EMessageActionType.UnPinMessage);
-		};
+		const handleActionPinMessage = useCallback(() => {
+			handleShowPinModal(EMessageActionType.PinMessage);
+		}, [handleShowPinModal]);
+
+		const handleActionUnPinMessage = useCallback(() => {
+			handleShowPinModal(EMessageActionType.UnPinMessage);
+		}, [handleShowPinModal]);
 
 		const handleResendMessage = async () => {
 			dispatch(
@@ -418,7 +417,10 @@ export const ContainerMessageActionModal = React.memo(
 		};
 
 		const handleActionQuickMenu = () => {
-			setIsShowQuickMenuModal(true);
+			const data = {
+				children: <QuickMenuModal channelId={currentChannelId || '0'} />
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
 		};
 
 		const handleActionMarkMessage = async () => {
@@ -919,19 +921,6 @@ export const ContainerMessageActionModal = React.memo(
 					</View>
 				) : (
 					renderMessageItemActions()
-				)}
-				{[EMessageActionType.PinMessage, EMessageActionType.UnPinMessage].includes(currentMessageActionType) && (
-					<ConfirmPinMessageModal
-						isVisible={[EMessageActionType.PinMessage, EMessageActionType.UnPinMessage].includes(currentMessageActionType)}
-						onClose={onCloseModalConfirm}
-						message={message}
-						type={currentMessageActionType}
-						mode={mode}
-					/>
-				)}
-
-				{isShowQuickMenuModal && (
-					<QuickMenuModal channelId={currentChannelId} isVisible={isShowQuickMenuModal} onClose={onCloseQuickMenuModal} />
 				)}
 			</View>
 		);

@@ -1,8 +1,7 @@
 import type { Attributes } from '@mezon/mobile-ui';
 import { size } from '@mezon/mobile-ui';
-import { Dimensions, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
-const height = Dimensions.get('window').height;
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {

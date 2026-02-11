@@ -3,11 +3,13 @@ import { appActions, DMCallActions, selectCurrentUserId, selectSignalingDataByUs
 import type { WebrtcSignalingFwd } from 'mezon-js';
 import { safeJSONParse, WebrtcSignalingType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useRef } from 'react';
-import { AppState, Modal, NativeModules, Platform } from 'react-native';
+import { AppState, NativeModules, Platform, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { DirectMessageCallMain } from '../../screens/messages/DirectMessageCall';
+import { style } from './styles';
 
 const CallingNativeIOS = () => {
+	const styles = style();
 	const userId = useSelector(selectCurrentUserId);
 	const signalingData = useAppSelector((state) => selectSignalingDataByUserId(state, userId || ''));
 	const dispatch = useAppDispatch();
@@ -110,9 +112,9 @@ const CallingNativeIOS = () => {
 
 	if (!paramsCalling) return null;
 	return (
-		<Modal visible={true} animationType="slide" transparent={false} supportedOrientations={['portrait', 'landscape']}>
+		<View style={styles.container}>
 			<DirectMessageCallMain route={{ params: paramsCalling }} onCloseModal={() => setParamsCalling(null)} />
-		</Modal>
+		</View>
 	);
 };
 

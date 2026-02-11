@@ -3,7 +3,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { useAppSelector } from '@mezon/store';
 import { channelAppActions, selectAppChannelById, useAppDispatch } from '@mezon/store-mobile';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dimensions, Modal, Platform, StatusBar, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Dimensions, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import LinearGradient from 'react-native-linear-gradient';
 import Animated, { clamp, runOnJS, useAnimatedStyle, useSharedValue, withSequence, withSpring, withTiming } from 'react-native-reanimated';
@@ -15,7 +15,7 @@ import { IconCDN } from '../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../hooks/useTabletLandscape';
 import { style } from './styles';
 
-const { width: windowWidth, height: windowHeight } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const SPRING_CONFIG = {
 	damping: 15,
@@ -51,6 +51,8 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 	const translateY = useSharedValue(0);
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	const appChannel = useAppSelector((state) => selectAppChannelById(state, paramsRoute?.channelId || ''));
+	const [windowWidth, setWindowWidth] = useState(width);
+	const [windowHeight, setWindowHeight] = useState(height);
 
 	const insets = useSafeAreaInsets();
 
@@ -96,6 +98,8 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 			} else {
 				StatusBar.setHidden(false, 'fade');
 			}
+			setWindowHeight(height);
+			setWindowWidth(width);
 			setOrientation(width > height ? 'Landscape' : 'Portrait');
 		};
 		const subscription = Platform.OS === 'ios' ? Dimensions.addEventListener('change', handleOrientationChange) : null;
@@ -193,8 +197,8 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 	const gesture = useMemo(() => Gesture.Exclusive(panGesture, tapGesture), [panGesture, tapGesture]);
 
 	return (
-		<Modal style={styles.container} visible={true} transparent={true} supportedOrientations={['portrait', 'landscape']}>
-			<GestureHandlerRootView style={{ height: windowHeight, width: windowWidth }}>
+		<View style={styles.container}>
+			<GestureHandlerRootView style={styles.containerWebview}>
 				{orientation === 'Portrait' && Platform.OS === 'ios' && <StatusBarHeight />}
 				<Animated.View
 					style={[
@@ -263,7 +267,7 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 					onGoBack={onClose}
 				/>
 			</GestureHandlerRootView>
-		</Modal>
+		</View>
 	);
 };
 
