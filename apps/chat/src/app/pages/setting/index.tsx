@@ -8,6 +8,7 @@ import {
 	SettingLanguage,
 	SettingNotifications,
 	SettingRightProfile,
+	SettingStartUp,
 	SettingVoice
 } from '@mezon/components';
 import { useEscapeKeyClose, useSettingFooter } from '@mezon/core';
@@ -78,6 +79,8 @@ const SettingContent = ({ isDM, isShowSettingFooter }: { isDM: boolean; isShowSe
 				{currentSetting === EUserSettings.VOICE && <SettingVoice menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.NOTIFICATIONS && <SettingNotifications menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.ACTIVITY && <SettingActivity menuIsOpen={menuIsOpen} />}
+				{currentSetting === EUserSettings.START_UP && <SettingStartUp menuIsOpen={menuIsOpen} />}
+
 				<ExitSetting onClose={closeSetting} />
 
 				<div className="flex sbm:hidden fixed top-0 left-0 right-0 justify-between items-center z-[60] bg-theme-setting-primary pb-4 pt-4 px-4">

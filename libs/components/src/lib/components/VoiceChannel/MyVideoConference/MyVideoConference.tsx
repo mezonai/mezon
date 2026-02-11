@@ -1,6 +1,7 @@
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-react';
 import { ConnectionStateToast, RoomAudioRenderer, useCreateLayoutContext, usePinnedTracks, useRoomContext } from '@livekit/components-react';
 import { getStore, selectCurrentUserId, useAppDispatch, voiceActions } from '@mezon/store';
+import { useStateRef } from '@mezon/utils';
 import type {
 	LocalParticipant,
 	LocalTrackPublication,
@@ -10,7 +11,7 @@ import type {
 	TrackPublication
 } from 'livekit-client';
 import { DisconnectReason, Track } from 'livekit-client';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { ReactionCallHandler } from './Reaction';
 import { VideoConferenceLayout } from './VideoConferenceLayout';
 import { VoiceContextMenu } from './VoiceContextMenu/VoiceContextMenu';
@@ -43,7 +44,7 @@ interface RoomEventManagerProps {
 	room: ReturnType<typeof useRoomContext>;
 	layoutContext: ReturnType<typeof useCreateLayoutContext>;
 	onJoinRoom?: () => void;
-	onLeaveRoom: (self?: boolean) => void;
+	onLeaveRoom: (self?: boolean) => void | Promise<void>;
 	token?: string;
 	url?: string;
 }
@@ -52,39 +53,49 @@ const RoomEventManager = memo(({ room, layoutContext, onJoinRoom, onLeaveRoom, t
 	const dispatch = useAppDispatch();
 	const focusTrack = usePinnedTracks(layoutContext)?.[0];
 
+	const isHandlingDisconnectRef = useRef(false);
+	const focusTrackRef = useStateRef(focusTrack);
+
 	useEffect(() => {
 		const handleDisconnected = async (reason?: DisconnectReason) => {
-			if (reason === DisconnectReason.DUPLICATE_IDENTITY) {
-				dispatch(voiceActions.resetVoiceControl());
-				return;
-			}
-			if (
-				reason === DisconnectReason.SERVER_SHUTDOWN ||
-				reason === DisconnectReason.PARTICIPANT_REMOVED ||
-				reason === DisconnectReason.SIGNAL_CLOSE ||
-				reason === DisconnectReason.JOIN_FAILURE ||
-				reason === DisconnectReason.CLIENT_INITIATED
-			) {
-				await onLeaveRoom();
-				room?.disconnect();
-			} else if (token) {
-				if (!url) return;
-				const maxAttempts = 3;
+			if (isHandlingDisconnectRef.current) return;
+			isHandlingDisconnectRef.current = true;
+			try {
+				if (reason === DisconnectReason.DUPLICATE_IDENTITY) {
+					dispatch(voiceActions.resetVoiceControl());
+					return;
+				}
+				if (
+					reason === DisconnectReason.SERVER_SHUTDOWN ||
+					reason === DisconnectReason.PARTICIPANT_REMOVED ||
+					reason === DisconnectReason.SIGNAL_CLOSE ||
+					reason === DisconnectReason.JOIN_FAILURE ||
+					reason === DisconnectReason.CLIENT_INITIATED
+				) {
+					await onLeaveRoom();
+				} else if (token) {
+					if (!url) return;
+					const maxAttempts = 3;
 
-				for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-					try {
-						await room?.connect(url, token);
-						return;
-					} catch (error) {
-						if (attempt === maxAttempts) {
-							onLeaveRoom();
-						} else {
-							await new Promise((resolve) => setTimeout(resolve, 2000));
+					for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+						try {
+							await room?.connect(url, token);
+							return;
+						} catch (error) {
+							if (attempt === maxAttempts) {
+								await onLeaveRoom();
+							} else {
+								await new Promise((resolve) => setTimeout(resolve, 2000));
+							}
 						}
 					}
+				} else {
+					await onLeaveRoom();
 				}
-			} else {
-				onLeaveRoom();
+			} catch (error) {
+				console.error('Error handling room disconnect:', error);
+			} finally {
+				isHandlingDisconnectRef.current = false;
 			}
 		};
 
@@ -110,7 +121,8 @@ const RoomEventManager = memo(({ room, layoutContext, onJoinRoom, onLeaveRoom, t
 			if (publication.source === Track.Source.Microphone) {
 				dispatch(voiceActions.setShowMicrophone(false));
 			}
-			if (focusTrack && focusTrack?.participant.sid === participant.sid) {
+			const currentFocusTrack = focusTrackRef.current;
+			if (currentFocusTrack && currentFocusTrack?.participant.sid === participant.sid) {
 				layoutContext.pin.dispatch?.({ msg: 'clear_pin' });
 				if (document.pictureInPictureElement) {
 					await document.exitPictureInPicture();
@@ -118,19 +130,19 @@ const RoomEventManager = memo(({ room, layoutContext, onJoinRoom, onLeaveRoom, t
 			}
 		};
 		const handleReconnectedRoom = () => {
-			if (onJoinRoom) {
-				onJoinRoom();
-			}
+			onJoinRoom?.();
 		};
 
 		const handleUserDisconnect = (participant: RemoteParticipant) => {
-			if (focusTrack && focusTrack?.participant.sid === participant.sid) {
+			const currentFocusTrack = focusTrackRef.current;
+			if (currentFocusTrack && currentFocusTrack?.participant.sid === participant.sid) {
 				layoutContext.pin.dispatch?.({ msg: 'clear_pin' });
 			}
 			dispatch(voiceActions.closeVoiceContextMenu());
 		};
 		const handleTrackUnpublish = async (publication: RemoteTrackPublication, _participant: RemoteParticipant) => {
-			if (focusTrack?.publication?.trackSid === publication?.trackSid && document.pictureInPictureElement) {
+			const currentFocusTrack = focusTrackRef.current;
+			if (currentFocusTrack?.publication?.trackSid === publication?.trackSid && document.pictureInPictureElement) {
 				await document.exitPictureInPicture();
 			}
 		};
@@ -159,7 +171,8 @@ const RoomEventManager = memo(({ room, layoutContext, onJoinRoom, onLeaveRoom, t
 			room?.off('trackUnpublished', handleTrackUnpublish);
 			room?.off('trackMuted', handleTrackMuted);
 		};
-	}, [room, focusTrack, dispatch, layoutContext.pin, onJoinRoom, onLeaveRoom, token, url]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [room, onLeaveRoom, onJoinRoom, token, url]);
 
 	return null;
 });
@@ -168,7 +181,7 @@ interface MyVideoConferenceProps {
 	channelLabel?: string;
 	url?: string;
 	token?: string;
-	onLeaveRoom: (self?: boolean) => void;
+	onLeaveRoom: (self?: boolean) => void | Promise<void>;
 	onFullScreen: () => void;
 	onJoinRoom?: () => void;
 	isExternalCalling?: boolean;
@@ -194,7 +207,8 @@ export const MyVideoConference = memo(
 
 		useScreenSharePublisher(room);
 
-		const layoutContext = useCreateLayoutContext();
+		const rawLayoutContext = useCreateLayoutContext();
+		const layoutContext = useMemo(() => rawLayoutContext, [rawLayoutContext?.pin?.state, rawLayoutContext?.widget?.state]);
 
 		return (
 			<div className="lk-video-conference flex-1">

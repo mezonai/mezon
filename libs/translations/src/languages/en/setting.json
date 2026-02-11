@@ -45,7 +45,8 @@
 		"webBrowser": "Web Browser",
 		"appIcon": "App Icon",
 		"advanced": "Advanced",
-		"appVersion": "App Version"
+		"appVersion": "App Version",
+		"startUp": "Start Up"
 	},
 	"activity": {
 		"title": "Show My Activity",
