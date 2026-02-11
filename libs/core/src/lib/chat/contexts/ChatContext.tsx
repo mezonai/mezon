@@ -1124,6 +1124,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	);
 
 	const onuserclanadded = useCallback(async (userJoinClan: AddClanUserEvent) => {
+		if (!userJoinClan?.clan_id) return;
 		const store = await getStoreAsync();
 
 		const clanMemberStore = selectClanMemberByClanId(store.getState() as unknown as RootState, userJoinClan.clan_id);
@@ -1152,6 +1153,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				} as any)
 			);
 		}
+		dispatch(usersClanActions.fetchUsersClan({ clanId: userJoinClan.clan_id, noCache: true }));
 	}, []);
 
 	const onremovefriend = useCallback(
