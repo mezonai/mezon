@@ -1,10 +1,10 @@
-import { debounce } from '@mezon/mobile-components';
+import { ActionEmitEvent, debounce } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { listQuickMenuAccess, selectQuickMenuLoadingStatus, selectQuickMenusByChannelId, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
 import { QUICK_MENU_TYPE } from '@mezon/utils';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Modal, Pressable, Text, TextInput, View } from 'react-native';
+import { DeviceEventEmitter, FlatList, Pressable, Text, TextInput, View } from 'react-native';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import LoadingModal from '../../../../../components/LoadingModal/LoadingModal';
 import { IconCDN } from '../../../../../constants/icon_cdn';
@@ -12,8 +12,6 @@ import { style } from './styles';
 
 interface QuickMenuModalProps {
 	channelId: string;
-	isVisible: boolean;
-	onClose: () => void;
 }
 
 const QuickMenuItem = memo(({ item, onSelect, styles, themeValue }: { item: any; onSelect: (item: any) => void; styles: any; themeValue: any }) => (
@@ -32,7 +30,7 @@ const EmptyState = memo(({ searchText, styles, themeValue, t }: { searchText: st
 	</View>
 ));
 
-export const QuickMenuModal = React.memo(({ channelId, isVisible, onClose }: QuickMenuModalProps) => {
+export const QuickMenuModal = React.memo(({ channelId }: QuickMenuModalProps) => {
 	const { themeValue } = useTheme();
 	const dispatch = useAppDispatch();
 	const styles = useMemo(() => style(themeValue), [themeValue]);
@@ -60,20 +58,20 @@ export const QuickMenuModal = React.memo(({ channelId, isVisible, onClose }: Qui
 	}, [quickMenus, debouncedSearchText]);
 
 	useEffect(() => {
-		dispatch(listQuickMenuAccess({ channelId: channelId, menuType: QUICK_MENU_TYPE.QUICK_MENU }));
+		dispatch(listQuickMenuAccess({ channelId, menuType: QUICK_MENU_TYPE.QUICK_MENU }));
 	}, [channelId, dispatch]);
-
-	const handleSelectQuickMenu = useCallback(
-		(quickMenu: any) => {
-			onClose();
-		},
-		[onClose]
-	);
 
 	const handleClose = useCallback(() => {
 		debouncedSetSearchText('');
-		onClose();
-	}, [onClose, debouncedSetSearchText]);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+	}, [debouncedSetSearchText]);
+
+	const handleSelectQuickMenu = useCallback(
+		(quickMenu: any) => {
+			handleClose();
+		},
+		[handleClose]
+	);
 
 	const handleClearSearch = useCallback(() => {
 		debouncedSetSearchText('');
@@ -96,68 +94,60 @@ export const QuickMenuModal = React.memo(({ channelId, isVisible, onClose }: Qui
 	);
 
 	return (
-		<Modal
-			visible={isVisible}
-			animationType={'fade'}
-			transparent={true}
-			onRequestClose={handleClose}
-			supportedOrientations={['portrait', 'landscape']}
-		>
-			<View style={styles.quickMenuModalContainer}>
-				<View style={styles.quickMenuModalBox}>
-					<View style={styles.quickMenuModalHeader}>
-						<Text style={styles.quickMenuModalTitle}>
-							{t('quickMenu.title')} ({filteredQuickMenus?.length || 0})
-						</Text>
-						<Pressable onPress={handleClose} style={styles.closeButton}>
-							<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
-						</Pressable>
-					</View>
-
-					<View style={styles.searchContainer}>
-						<View style={styles.searchInputContainer}>
-							<MezonIconCDN icon={IconCDN.magnifyingIcon} width={size.s_12} height={size.s_12} color={themeValue.text} />
-							<TextInput
-								style={styles.searchInput}
-								placeholder={t('quickMenu.searchPlaceholder')}
-								placeholderTextColor={themeValue.text}
-								value={searchText}
-								onChangeText={debouncedSetSearchText}
-								autoCapitalize="none"
-								autoCorrect={false}
-							/>
-							{searchText.length > 0 && (
-								<Pressable onPress={handleClearSearch} style={styles.clearButton}>
-									<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_14} height={size.s_14} color={themeValue.text} />
-								</Pressable>
-							)}
-						</View>
-					</View>
-
-					{isLoading === 'loading' ? (
-						<View style={styles.loadingContainer}>
-							<LoadingModal isVisible={true} />
-						</View>
-					) : filteredQuickMenus && filteredQuickMenus.length > 0 ? (
-						<FlatList
-							data={filteredQuickMenus}
-							renderItem={renderQuickMenuItem}
-							keyExtractor={keyExtractor}
-							getItemLayout={getItemLayout}
-							showsVerticalScrollIndicator={true}
-							contentContainerStyle={styles.quickMenuList}
-							removeClippedSubviews={true}
-							maxToRenderPerBatch={5}
-							windowSize={5}
-							initialNumToRender={5}
-							updateCellsBatchingPeriod={50}
-						/>
-					) : (
-						<EmptyState searchText={searchText} styles={styles} themeValue={themeValue} t={t} />
-					)}
+		<View style={styles.quickMenuModalContainer}>
+			<View style={styles.quickMenuModalBox}>
+				<View style={styles.quickMenuModalHeader}>
+					<Text style={styles.quickMenuModalTitle}>
+						{t('quickMenu.title')} ({filteredQuickMenus?.length || 0})
+					</Text>
+					<Pressable onPress={handleClose} style={styles.closeButton}>
+						<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
+					</Pressable>
 				</View>
-				<Pressable onPress={handleClose} />
+
+				<View style={styles.searchContainer}>
+					<View style={styles.searchInputContainer}>
+						<MezonIconCDN icon={IconCDN.magnifyingIcon} width={size.s_12} height={size.s_12} color={themeValue.text} />
+						<TextInput
+							style={styles.searchInput}
+							placeholder={t('quickMenu.searchPlaceholder')}
+							placeholderTextColor={themeValue.text}
+							value={searchText}
+							onChangeText={debouncedSetSearchText}
+							autoCapitalize="none"
+							autoCorrect={false}
+						/>
+						{searchText.length > 0 && (
+							<Pressable onPress={handleClearSearch} style={styles.clearButton}>
+								<MezonIconCDN icon={IconCDN.closeIcon} width={size.s_14} height={size.s_14} color={themeValue.text} />
+							</Pressable>
+						)}
+					</View>
+				</View>
+
+				{isLoading === 'loading' ? (
+					<View style={styles.loadingContainer}>
+						<LoadingModal isVisible={true} />
+					</View>
+				) : filteredQuickMenus && filteredQuickMenus.length > 0 ? (
+					<FlatList
+						data={filteredQuickMenus}
+						renderItem={renderQuickMenuItem}
+						keyExtractor={keyExtractor}
+						getItemLayout={getItemLayout}
+						showsVerticalScrollIndicator={true}
+						contentContainerStyle={styles.quickMenuList}
+						removeClippedSubviews={true}
+						maxToRenderPerBatch={5}
+						windowSize={5}
+						initialNumToRender={5}
+						updateCellsBatchingPeriod={50}
+					/>
+				) : (
+					<EmptyState searchText={searchText} styles={styles} themeValue={themeValue} t={t} />
+				)}
 			</View>
-		</Modal>
+			<Pressable style={styles.backdrop} onPress={handleClose} />
+		</View>
 	);
 });
