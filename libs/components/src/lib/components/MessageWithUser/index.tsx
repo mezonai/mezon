@@ -65,7 +65,6 @@ export type MessageWithUserProps = {
 	isSelected?: boolean;
 	previousMessage?: MessagesEntity;
 	channelId?: string;
-	accountId?: string;
 };
 
 function MessageWithUser({
@@ -89,8 +88,7 @@ function MessageWithUser({
 	observeIntersectionForLoading,
 	isSelected,
 	previousMessage,
-	channelId,
-	accountId
+	channelId
 }: Readonly<MessageWithUserProps>) {
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
@@ -326,7 +324,6 @@ function MessageWithUser({
 									isInTopic={isTopic}
 									isEphemeral={isEphemeralMessage}
 									onContextMenu={onContextMenu}
-									accountId={accountId}
 								/>
 								{isEphemeralMessage && (
 									<div className="flex items-center gap-1 mt-1 mb-1 text-xs italic text-theme-primary opacity-60">

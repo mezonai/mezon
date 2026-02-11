@@ -28,7 +28,7 @@ interface RenderContentProps {
 	isEphemeral?: boolean;
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
-	canDeleteOgp?: boolean;
+	senderId?: string;
 }
 
 export interface ElementToken {
@@ -210,7 +210,7 @@ export const MessageLine = ({
 	isEphemeral,
 	isSending,
 	onContextMenu,
-	canDeleteOgp
+	senderId
 }: RenderContentProps) => {
 	const { t: translate } = useTranslation('common');
 	mode = mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -447,7 +447,7 @@ export const MessageLine = ({
 					formattedContent.push(
 						<OgpEmbed
 							url={url}
-							canDelete={canDeleteOgp}
+							senderId={senderId}
 							description={element.description}
 							image={element.image}
 							title={element.title}

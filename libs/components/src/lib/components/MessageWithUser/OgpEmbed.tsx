@@ -1,10 +1,11 @@
-import { getStore, selectCurrentChannel, selectCurrentDM, selectMessageByMessageId } from '@mezon/store';
+import { getStore, selectCurrentChannel, selectCurrentDM, selectCurrentUserId, selectMessageByMessageId } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 interface OgpEmbedProps {
@@ -13,10 +14,11 @@ interface OgpEmbedProps {
 	description?: string;
 	image?: string;
 	messageId?: string;
-	canDelete?: boolean;
+	senderId?: string;
 }
 
-const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, messageId, canDelete }) => {
+const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, messageId, senderId }) => {
+	const userId = useSelector(selectCurrentUserId);
 	return (
 		<div className="flex flex-col gap-0.5 max-w-[350px]">
 			<div
@@ -55,7 +57,7 @@ const OgpEmbed: React.FC<OgpEmbedProps> = ({ url, title, description, image, mes
 						}}
 					/>
 				</div>
-				{canDelete && <DeleteOgpButton messageId={messageId} />}
+				{senderId === userId && <DeleteOgpButton messageId={messageId} />}
 			</div>
 		</div>
 	);
