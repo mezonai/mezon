@@ -34,12 +34,11 @@ export const APP_SCREEN = {
 	PROFILE_DETAIL: 'PROFILE_DETAIL',
 	INSTALL_CLAN: 'INSTALL_CLAN',
 	CLAIM_MONEY: 'CLAIM_MONEY',
-
-	SERVERS: {
-		STACK: 'ROUTES.SERVERS.STACK',
-		HOME: 'ROUTES.SERVERS.HOME',
-		UPDATE_GATE: 'UPDATE_GATE'
-	},
+	MEDIA_HIGHLIGHTS_TIMELINE: 'MEDIA_HIGHLIGHTS_TIMELINE',
+	EVENT_DETAIL: 'EVENT_DETAIL',
+	EVENT_DETAIL_SCREEN: 'EVENT_DETAIL_SCREEN',
+	CREATE_MILESTONE: 'CREATE_MILESTONE',
+	FAMILY_EVENTS: 'FAMILY_EVENTS',
 
 	NOTIFICATION: {
 		STACK: 'ROUTES.NOTIFICATION.STACK',
@@ -158,10 +157,6 @@ export const APP_SCREEN = {
 		DEVICES_MANAGEMENT: 'ROUTES.SETTINGS.DEVICES_MANAGEMENT'
 	}
 } as const;
-
-type ServerStackParamList = {
-	[APP_SCREEN.SERVERS.HOME]: undefined;
-};
 
 type NotificationStackParamList = {
 	[APP_SCREEN.NOTIFICATION.HOME]: { initialTab?: string; version?: number };
@@ -372,7 +367,29 @@ export type AppStackParamList = {
 	[APP_SCREEN.HOME]: undefined;
 	[APP_SCREEN.HOME_DEFAULT]: undefined;
 	[APP_SCREEN.PROFILE_DETAIL]: { username?: string; data?: string };
-	[APP_SCREEN.SERVERS.STACK]: NavigatorScreenParams<ServerStackParamList>;
+	[APP_SCREEN.MEDIA_HIGHLIGHTS_TIMELINE]: { channelId?: string; clanId?: string };
+	[APP_SCREEN.EVENT_DETAIL]: {
+		eventId: string;
+		title: string;
+		date: string;
+		startTimeSeconds?: number;
+		attachments?: any[];
+		channelId?: string;
+		clanId?: string;
+	};
+	[APP_SCREEN.EVENT_DETAIL_SCREEN]: {
+		eventId: string;
+		title: string;
+		description: string;
+		date: Date;
+		time?: string;
+		isAllDay?: boolean;
+		image?: string;
+		category: string;
+		location?: string;
+	};
+	[APP_SCREEN.CREATE_MILESTONE]: { channelId?: string; clanId?: string };
+	[APP_SCREEN.FAMILY_EVENTS]: { channelId?: string; clanId?: string };
 	[APP_SCREEN.NOTIFICATION.STACK]: NavigatorScreenParams<NotificationStackParamList>;
 	[APP_SCREEN.MESSAGES.STACK]: NavigatorScreenParams<MessagesStackParamList>;
 	[APP_SCREEN.FRIENDS.STACK]: NavigatorScreenParams<FriendsStackParamList>;

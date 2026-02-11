@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { openPicker } from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
+import Toast from 'react-native-toast-message';
 import ImageNative from '../../components/ImageNative';
 import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
@@ -100,7 +101,11 @@ const CreateMilestone: React.FC = () => {
 			const session = sessionRef?.current;
 
 			if (!client || !session) {
-				Alert.alert(t('createMilestone.errorTitle'), 'Session not available');
+				Toast.show({
+					type: 'error',
+					text1: t('createMilestone.errorTitle'),
+					text2: 'Session not available'
+				});
 				return;
 			}
 
@@ -173,7 +178,11 @@ const CreateMilestone: React.FC = () => {
 					attachmentsRef.current = updated;
 					return updated;
 				});
-				Alert.alert(t('createMilestone.errorTitle'), t('createMilestone.errorMessage'));
+				Toast.show({
+					type: 'error',
+					text1: t('createMilestone.errorTitle'),
+					text2: t('createMilestone.errorMessage')
+				});
 			}
 		} finally {
 			setIsUploading(false);
@@ -190,7 +199,11 @@ const CreateMilestone: React.FC = () => {
 
 	const handleSave = async () => {
 		if (!eventTitle.trim()) {
-			Alert.alert(t('createMilestone.requiredTitle'), t('createMilestone.requiredMessage'));
+			Toast.show({
+				type: 'error',
+				text1: t('createMilestone.requiredTitle'),
+				text2: t('createMilestone.requiredMessage')
+			});
 			return;
 		}
 
@@ -211,9 +224,18 @@ const CreateMilestone: React.FC = () => {
 				})
 			).unwrap();
 
-			Alert.alert(t('createMilestone.successTitle'), t('createMilestone.successMessage'), [{ text: 'OK', onPress: () => navigation.goBack() }]);
+			Toast.show({
+				type: 'success',
+				text1: t('createMilestone.successTitle'),
+				text2: t('createMilestone.successMessage')
+			});
+			navigation.goBack();
 		} catch (error) {
-			Alert.alert(t('createMilestone.errorTitle'), t('createMilestone.errorMessage'));
+			Toast.show({
+				type: 'error',
+				text1: t('createMilestone.errorTitle'),
+				text2: t('createMilestone.errorMessage')
+			});
 		}
 	};
 

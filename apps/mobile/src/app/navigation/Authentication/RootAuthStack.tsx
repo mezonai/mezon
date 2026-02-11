@@ -231,24 +231,6 @@ export const RootAuthStack = memo(
 							animationEnabled: Platform.OS === 'ios'
 						}}
 					/>
-					<RootStack.Screen
-						name={APP_SCREEN.LUCKY_MONEY}
-						component={LuckyMoney}
-						options={{
-							headerShown: false,
-							gestureEnabled: true,
-							gestureDirection: 'horizontal'
-						}}
-					/>
-					<RootStack.Screen
-						name={APP_SCREEN.LUCKY_MONEY_HISTORY}
-						component={LuckyMoneyHistory}
-						options={{
-							headerShown: false,
-							gestureEnabled: true,
-							gestureDirection: 'horizontal'
-						}}
-					/>
 					<RootStack.Screen name={APP_SCREEN.SHOP.STACK} children={(props) => <ShopStack {...props} />} />
 					<RootStack.Screen name={APP_SCREEN.INVITE_CLAN} component={InviteClanScreen} />
 					<RootStack.Screen name={APP_SCREEN.INSTALL_CLAN} component={InstallClanScreen} />
