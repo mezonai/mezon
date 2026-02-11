@@ -45,7 +45,8 @@
 		"webBrowser": "Trình duyệt web",
 		"appIcon": "Biểu tượng",
 		"advanced": "Nâng cao",
-		"appVersion": "Phiên bản ứng dụng"
+		"appVersion": "Phiên bản ứng dụng",
+		"startUp": "Khởi chạy"
 	},
 	"activity": {
 		"title": "Hiển thị hoạt động của tôi",
