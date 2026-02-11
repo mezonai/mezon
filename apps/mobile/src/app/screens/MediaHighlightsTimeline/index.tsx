@@ -1,4 +1,4 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelEvent } from '@mezon/store-mobile';
 import {
 	channelMediaActions,
@@ -9,9 +9,9 @@ import {
 } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import ImageNative from '../../components/ImageNative';
@@ -33,8 +33,20 @@ const MediaHighlightsTimeline: React.FC = () => {
 	const channelName = route.params?.channelName || '';
 	const clanId = route.params?.clanId || '';
 
+	const currentYear = new Date().getFullYear();
+	const [selectedYear, setSelectedYear] = useState(currentYear);
+	const [showYearPicker, setShowYearPicker] = useState(false);
+
 	const events = useAppSelector((state) => selectChannelMediaByChannelId(state, channelId));
 	const loadingStatus = useAppSelector(selectChannelMediaLoadingStatus);
+
+	const yearList = useMemo(() => {
+		const years: number[] = [];
+		for (let y = currentYear; y >= currentYear - 10; y--) {
+			years.push(y);
+		}
+		return years;
+	}, [currentYear]);
 
 	const months = useMemo(() => (t('monthsShort', { returnObjects: true }) as string[]) || [], [t]);
 
@@ -56,12 +68,12 @@ const MediaHighlightsTimeline: React.FC = () => {
 				channelMediaActions.fetchChannelMedia({
 					clan_id: clanId,
 					channel_id: channelId,
-					year: new Date().getFullYear(),
-					limit: 50
+					year: selectedYear,
+					limit: 200
 				})
 			);
 		}
-	}, [dispatch, clanId, channelId]);
+	}, [dispatch, clanId, channelId, selectedYear]);
 
 	const getEventImages = useCallback((event: ChannelEvent) => {
 		return (event.attachments || [])
@@ -101,6 +113,7 @@ const MediaHighlightsTimeline: React.FC = () => {
 			navigation.navigate(APP_SCREEN.EVENT_DETAIL, {
 				eventId: event.id,
 				title: event.title,
+				description: event.description || '',
 				startTimeSeconds: event.start_time_seconds,
 				date: date ? `${date.month} ${date.day}, ${date.year}` : '',
 				attachments: event.attachments || [],
@@ -116,8 +129,13 @@ const MediaHighlightsTimeline: React.FC = () => {
 	};
 
 	const handleOpenCalendar = useCallback(() => {
-		navigation.navigate(APP_SCREEN.FAMILY_EVENTS, { channelId, clanId });
-	}, [navigation, channelId, clanId]);
+		setShowYearPicker(true);
+	}, []);
+
+	const handleSelectYear = useCallback((year: number) => {
+		setSelectedYear(year);
+		setShowYearPicker(false);
+	}, []);
 
 	const renderTimelineItem = useCallback(
 		({ item: event, index }: { item: ChannelEvent; index: number }) => {
@@ -146,8 +164,16 @@ const MediaHighlightsTimeline: React.FC = () => {
 					{/* Event Card */}
 					<View style={[styles.eventCardContainer, position === 'left' ? styles.eventCardLeft : styles.eventCardRight]}>
 						<TouchableOpacity style={styles.eventCard} onPress={() => handleEventPress(event)} activeOpacity={0.8}>
-							{event.title ? <Text style={styles.eventTitle}>{event.title}</Text> : null}
-							{event.description ? <Text style={styles.eventDescription}>{event.description}</Text> : null}
+							{event.title ? (
+								<Text style={styles.eventTitle} numberOfLines={2}>
+									{event.title}
+								</Text>
+							) : null}
+							{event.description ? (
+								<Text style={styles.eventDescription} numberOfLines={3}>
+									{event.description}
+								</Text>
+							) : null}
 
 							{/* Images */}
 							{images.length > 0 && (
@@ -213,8 +239,12 @@ const MediaHighlightsTimeline: React.FC = () => {
 							{t('mediaHighlights.since')} {firstYear}
 						</Text>
 					) : null}
-					<Text style={styles.headerTitle}>{events.length > 0 ? t('mediaHighlights.title') : t('mediaHighlights.familyJourney')}</Text>
-					<Text style={styles.headerDescription}>{events.length > 0 ? channelName : t('mediaHighlights.cherishMoment')}</Text>
+					<Text style={styles.headerTitle} numberOfLines={3}>
+						{events.length > 0 ? t('mediaHighlights.title') : t('mediaHighlights.familyJourney')}
+					</Text>
+					<Text style={styles.headerDescription} numberOfLines={3}>
+						{events.length > 0 ? channelName : t('mediaHighlights.cherishMoment')}
+					</Text>
 				</View>
 				<View style={styles.headerRight}>
 					<TouchableOpacity onPress={handleOpenCalendar}>
@@ -256,8 +286,85 @@ const MediaHighlightsTimeline: React.FC = () => {
 					</TouchableOpacity>
 				</View>
 			)}
+
+			{/* Year Picker Modal */}
+			<Modal visible={showYearPicker} transparent animationType="fade" onRequestClose={() => setShowYearPicker(false)}>
+				<Pressable style={internalStyles.overlay} onPress={() => setShowYearPicker(false)}>
+					<View style={[internalStyles.yearPickerContainer, { backgroundColor: themeValue.secondary }]}>
+						<Text style={[internalStyles.yearPickerTitle, { color: themeValue.textStrong }]}>
+							{t('mediaHighlights.selectYear', { defaultValue: 'Select Year' })}
+						</Text>
+						<FlatList
+							data={yearList}
+							keyExtractor={(item) => String(item)}
+							showsVerticalScrollIndicator={false}
+							style={internalStyles.yearList}
+							renderItem={({ item: year }) => (
+								<TouchableOpacity
+									style={[internalStyles.yearItem, year === selectedYear && internalStyles.yearItemSelected]}
+									onPress={() => handleSelectYear(year)}
+									activeOpacity={0.7}
+								>
+									<Text
+										style={[
+											internalStyles.yearText,
+											{ color: themeValue.text },
+											year === selectedYear && internalStyles.yearTextSelected
+										]}
+									>
+										{year}
+									</Text>
+								</TouchableOpacity>
+							)}
+						/>
+					</View>
+				</Pressable>
+			</Modal>
 		</View>
 	);
 };
+
+const internalStyles = StyleSheet.create({
+	overlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0,0,0,0.5)',
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+	yearPickerContainer: {
+		width: 280,
+		maxHeight: 400,
+		borderRadius: size.s_16,
+		paddingVertical: size.s_16,
+		paddingHorizontal: size.s_8
+	},
+	yearPickerTitle: {
+		fontSize: size.s_18,
+		fontWeight: '700',
+		textAlign: 'center',
+		marginBottom: size.s_12
+	},
+	yearList: {
+		flexGrow: 0
+	},
+	yearItem: {
+		paddingVertical: size.s_12,
+		paddingHorizontal: size.s_16,
+		borderRadius: size.s_10,
+		marginVertical: 2
+	},
+	yearItemSelected: {
+		backgroundColor: baseColor.blurple
+	},
+	yearText: {
+		fontSize: size.s_16,
+		fontWeight: '500',
+		textAlign: 'center'
+	},
+	yearTextSelected: {
+		color: 'white',
+		fontWeight: '700'
+	}
+});
 
 export default MediaHighlightsTimeline;

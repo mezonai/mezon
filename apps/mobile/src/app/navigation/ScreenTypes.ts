@@ -389,7 +389,6 @@ export type AppStackParamList = {
 		location?: string;
 	};
 	[APP_SCREEN.CREATE_MILESTONE]: { channelId?: string; clanId?: string };
-	[APP_SCREEN.FAMILY_EVENTS]: { channelId?: string; clanId?: string };
 	[APP_SCREEN.NOTIFICATION.STACK]: NavigatorScreenParams<NotificationStackParamList>;
 	[APP_SCREEN.MESSAGES.STACK]: NavigatorScreenParams<MessagesStackParamList>;
 	[APP_SCREEN.FRIENDS.STACK]: NavigatorScreenParams<FriendsStackParamList>;

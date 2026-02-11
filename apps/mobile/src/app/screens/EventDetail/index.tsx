@@ -1,4 +1,5 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { ActionEmitEvent } from '@mezon/mobile-components';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelEventAttachment } from '@mezon/store-mobile';
 import { channelMediaActions, useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
@@ -7,10 +8,24 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+	ActivityIndicator,
+	Alert,
+	DeviceEventEmitter,
+	FlatList,
+	Modal,
+	Platform,
+	Pressable,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View
+} from 'react-native';
 import { openPicker } from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { EventImageViewer } from '../../components/EventImageViewer';
 import ImageNative from '../../components/ImageNative';
 import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../constants/icon_cdn';
@@ -19,6 +34,7 @@ import { styles as createStyles } from './styles';
 interface RouteParams {
 	eventId: string;
 	title: string;
+	description?: string;
 	date: string;
 	attachments?: ChannelEventAttachment[];
 	channelId?: string;
@@ -45,13 +61,50 @@ const EventDetail: React.FC = () => {
 	const [attachments, setAttachments] = useState<ChannelEventAttachment[]>(params.attachments || []);
 	const attachmentsRef = useRef<ChannelEventAttachment[]>(params.attachments || []);
 
+	const [title, setTitle] = useState(params.title || '');
+	const [description, setDescription] = useState(params.description || '');
+	const [showEditModal, setShowEditModal] = useState(false);
+	const [editTitle, setEditTitle] = useState(title);
+	const [editDescription, setEditDescription] = useState(description);
+	const [isSaving, setIsSaving] = useState(false);
+
 	const handleBack = () => {
 		navigation.goBack();
 	};
 
-	const handleCamera = () => {
-		Alert.alert('Camera', 'Open camera to take a photo', [{ text: 'OK' }]);
-	};
+	const handleOpenEdit = useCallback(() => {
+		setEditTitle(title);
+		setEditDescription(description);
+		setShowEditModal(true);
+	}, [title, description]);
+
+	const handleSaveEdit = useCallback(async () => {
+		if (!editTitle.trim()) {
+			Alert.alert('Error', 'Title cannot be empty');
+			return;
+		}
+		setIsSaving(true);
+		try {
+			await dispatch(
+				channelMediaActions.updateChannelTimeline({
+					id: params.eventId,
+					clan_id: clanId,
+					channel_id: channelId,
+					title: editTitle.trim(),
+					description: editDescription.trim(),
+					start_time_seconds: startTimeSeconds,
+					attachments: attachmentsRef.current.filter((att) => isUploaded(att))
+				})
+			).unwrap();
+			setTitle(editTitle.trim());
+			setDescription(editDescription.trim());
+			setShowEditModal(false);
+		} catch (error) {
+			Alert.alert('Error', 'Failed to update event');
+		} finally {
+			setIsSaving(false);
+		}
+	}, [editTitle, editDescription, dispatch, params.eventId, clanId, channelId, startTimeSeconds]);
 
 	const handleImagePicker = useCallback(async () => {
 		try {
@@ -162,25 +215,18 @@ const EventDetail: React.FC = () => {
 	}, [clientRef, sessionRef, dispatch, params.eventId, clanId, channelId, startTimeSeconds]);
 
 	const handleUploadPress = useCallback(() => {
-		Alert.alert('Add Photos', 'Choose an option', [
-			{
-				text: 'Take Photo',
-				onPress: handleCamera
-			},
-			{
-				text: 'Choose from Gallery',
-				onPress: handleImagePicker
-			},
-			{
-				text: 'Cancel',
-				style: 'cancel'
-			}
-		]);
+		handleImagePicker();
 	}, [handleImagePicker]);
 
-	const handleImagePress = useCallback((_attachment: ChannelEventAttachment) => {
-		// TODO: Open image viewer/lightbox
-	}, []);
+	const handleImagePress = useCallback(
+		(attachment: ChannelEventAttachment) => {
+			const data = {
+				children: <EventImageViewer images={attachments} imageSelected={attachment} />
+			};
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+		},
+		[attachments]
+	);
 
 	const getAttachmentUri = useCallback((att: ChannelEventAttachment) => att.thumbnail || att.file_url || '', []);
 	const getProxyUri = useCallback((att: ChannelEventAttachment) => {
@@ -262,14 +308,16 @@ const EventDetail: React.FC = () => {
 					<MezonIconCDN icon={IconCDN.backArrowLarge} width={size.s_28} height={size.s_28} color="white" />
 				</TouchableOpacity>
 				<View style={styles.headerContent}>
-					<Text style={styles.headerTitle}>{params.title || 'Event Details'}</Text>
+					<Text style={styles.headerTitle} numberOfLines={2}>
+						{title || 'Event Details'}
+					</Text>
 					<View style={styles.dateContainer}>
 						<MezonIconCDN icon={IconCDN.calendarIcon} width={size.s_14} height={size.s_14} color="white" />
 						<Text style={styles.headerDate}>{params.date || 'Date'}</Text>
 					</View>
 				</View>
-				<TouchableOpacity onPress={handleCamera} style={styles.headerButton}>
-					<MezonIconCDN icon={IconCDN.cameraIcon} width={size.s_28} height={size.s_28} color="white" />
+				<TouchableOpacity onPress={handleOpenEdit} style={styles.headerButton}>
+					<MezonIconCDN icon={IconCDN.pencilIcon} width={size.s_28} height={size.s_20} color="white" />
 				</TouchableOpacity>
 			</View>
 
@@ -297,8 +345,123 @@ const EventDetail: React.FC = () => {
 					<MezonIconCDN icon={IconCDN.uploadPlusIcon} width={size.s_24} height={size.s_24} color="white" />
 				)}
 			</TouchableOpacity>
+
+			{/* Edit Event Modal */}
+			<Modal visible={showEditModal} transparent animationType="fade" onRequestClose={() => setShowEditModal(false)}>
+				<Pressable style={editModalStyles.overlay} onPress={() => setShowEditModal(false)}>
+					<Pressable style={[editModalStyles.container, { backgroundColor: themeValue.secondary }]} onPress={(e) => e.stopPropagation()}>
+						<Text style={[editModalStyles.modalTitle, { color: themeValue.textStrong }]}>Edit Event</Text>
+						<Text style={[editModalStyles.label, { color: themeValue.text }]}>Title</Text>
+						<TextInput
+							style={[
+								editModalStyles.input,
+								{ color: themeValue.textStrong, backgroundColor: themeValue.primary, borderColor: themeValue.border }
+							]}
+							value={editTitle}
+							onChangeText={setEditTitle}
+							placeholder="Event title"
+							placeholderTextColor={themeValue.text}
+							maxLength={100}
+						/>
+						<Text style={[editModalStyles.label, { color: themeValue.text }]}>Description</Text>
+						<TextInput
+							style={[
+								editModalStyles.input,
+								editModalStyles.textArea,
+								{ color: themeValue.textStrong, backgroundColor: themeValue.primary, borderColor: themeValue.border }
+							]}
+							value={editDescription}
+							onChangeText={setEditDescription}
+							placeholder="Event description"
+							placeholderTextColor={themeValue.text}
+							multiline
+							numberOfLines={4}
+							textAlignVertical="top"
+							maxLength={500}
+						/>
+						<View style={editModalStyles.buttonRow}>
+							<TouchableOpacity
+								style={[editModalStyles.button, { backgroundColor: themeValue.primary }]}
+								onPress={() => setShowEditModal(false)}
+							>
+								<Text style={[editModalStyles.buttonText, { color: themeValue.text }]}>Cancel</Text>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={[editModalStyles.button, editModalStyles.saveButton]}
+								onPress={handleSaveEdit}
+								disabled={isSaving}
+							>
+								{isSaving ? (
+									<ActivityIndicator size="small" color="white" />
+								) : (
+									<Text style={editModalStyles.saveButtonText}>Save</Text>
+								)}
+							</TouchableOpacity>
+						</View>
+					</Pressable>
+				</Pressable>
+			</Modal>
 		</View>
 	);
 };
+
+const editModalStyles = StyleSheet.create({
+	overlay: {
+		flex: 1,
+		backgroundColor: 'rgba(0,0,0,0.5)',
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+	container: {
+		width: '85%',
+		borderRadius: size.s_16,
+		padding: size.s_20
+	},
+	modalTitle: {
+		fontSize: size.s_20,
+		fontWeight: '700',
+		textAlign: 'center',
+		marginBottom: size.s_16
+	},
+	label: {
+		fontSize: size.s_14,
+		fontWeight: '600',
+		marginBottom: size.s_6
+	},
+	input: {
+		borderWidth: 1,
+		borderRadius: size.s_10,
+		paddingHorizontal: size.s_12,
+		paddingVertical: size.s_10,
+		fontSize: size.s_16,
+		marginBottom: size.s_14
+	},
+	textArea: {
+		minHeight: 100
+	},
+	buttonRow: {
+		flexDirection: 'row',
+		gap: size.s_10,
+		marginTop: size.s_6
+	},
+	button: {
+		flex: 1,
+		paddingVertical: size.s_12,
+		borderRadius: size.s_10,
+		alignItems: 'center'
+	},
+	buttonText: {
+		fontSize: size.s_16,
+		fontWeight: '600'
+	},
+	saveButton: {
+		backgroundColor: baseColor.blurple
+	},
+	saveButtonText: {
+		fontSize: size.s_16,
+		fontWeight: '600',
+		color: 'white'
+	}
+});
 
 export default EventDetail;
