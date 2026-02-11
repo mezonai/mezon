@@ -9,9 +9,10 @@ import TimelineMessages from './TimelineMessages';
 
 type ChannelMediaProps = {
 	currentChannel: ChannelsEntity | null;
+	accountId?: string;
 };
 
-export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
+export const ChannelMedia = ({ currentChannel, accountId }: ChannelMediaProps) => {
 	const mode =
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
 
@@ -44,6 +45,7 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 						isPrivate={currentChannel.channel_private}
 						type={currentChannel?.type as ChannelType}
 						mode={mode}
+						accountId={accountId}
 					/>
 				)}
 			</>

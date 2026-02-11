@@ -55,6 +55,7 @@ export type MessageProps = {
 	viewMode?: 'default' | 'timeline';
 	timelinePosition?: 'left' | 'right';
 	groupedMessages?: MessagesEntity[];
+	accountId?: string;
 };
 
 export type MessageRef = {
@@ -186,7 +187,8 @@ export const ChannelMessage: ChannelMessageComponent = ({
 	shouldShowUnreadBreak,
 	viewMode = 'default',
 	timelinePosition = 'left',
-	groupedMessages = []
+	groupedMessages = [],
+	accountId
 }: Readonly<MessageProps>) => {
 	const isSameUser = message?.user?.id === previousMessage?.user?.id;
 	const isTimeGreaterThan60Minutes =
@@ -309,6 +311,7 @@ export const ChannelMessage: ChannelMessageComponent = ({
 					user={user}
 					isSelected={isSelected}
 					previousMessage={previousMessage}
+					accountId={accountId}
 				/>
 			)}
 		</>

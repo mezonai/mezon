@@ -108,6 +108,7 @@ type ChannelMessagesProps = {
 	topicId?: string;
 	isDM?: boolean;
 	isPrivate?: number;
+	accountId?: string;
 };
 
 const MESSAGE_LIST_SLICE = 50;
@@ -171,7 +172,8 @@ function ChannelMessages({
 	isTopicBox,
 	isDM,
 	topicId,
-	isPrivate
+	isPrivate,
+	accountId
 }: ChannelMessagesProps) {
 	const effectiveChannelId = topicId || channelId;
 
@@ -466,6 +468,7 @@ function ChannelMessages({
 						onNotchToggle={setIsNotchShown}
 						lastSeenAtBottomRef={lastSeenAtBottomRef}
 						isJumpingToPresentRef={isJumpingToPresentRef}
+						accountId={accountId}
 					/>
 				</DMMessageWrapper>
 			) : (
@@ -499,6 +502,7 @@ function ChannelMessages({
 						onNotchToggle={setIsNotchShown}
 						lastSeenAtBottomRef={lastSeenAtBottomRef}
 						isJumpingToPresentRef={isJumpingToPresentRef}
+						accountId={accountId}
 					/>
 				</ClanMessageWrapper>
 			)}
@@ -702,6 +706,7 @@ type ChatMessageListProps = {
 	onNotchToggle: BooleanToVoidFunction;
 	lastSeenAtBottomRef: React.MutableRefObject<string | null>;
 	isJumpingToPresentRef: React.MutableRefObject<boolean>;
+	accountId?: string;
 };
 
 const ChatMessageList: React.FC<ChatMessageListProps> = memo(
@@ -733,7 +738,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		onScrollDownToggle,
 		onNotchToggle,
 		lastSeenAtBottomRef,
-		isJumpingToPresentRef
+		isJumpingToPresentRef,
+		accountId
 	}) => {
 		const effectiveChannelId = topicId || channelId;
 
@@ -1169,6 +1175,7 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						isSelected={isSelected}
 						isEditing={isEditing}
 						shouldShowUnreadBreak={!!shouldShowUnreadBreak}
+						accountId={accountId}
 					/>
 				);
 			});

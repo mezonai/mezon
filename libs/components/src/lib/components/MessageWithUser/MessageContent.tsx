@@ -39,9 +39,10 @@ type IMessageContentProps = {
 	isInTopic?: boolean;
 	isEphemeral?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
+	accountId?: string;
 };
 
-const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending, onContextMenu }: IMessageContentProps) => {
+const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending, onContextMenu, accountId }: IMessageContentProps) => {
 	const lines = message?.content?.t;
 	const contentUpdatedMention = addMention(message.content, message?.mentions as any);
 	const isOnlyContainEmoji = isValidEmojiData(contentUpdatedMention);
@@ -67,6 +68,7 @@ const MessageContent = ({ message, mode, isSearchMessage, isEphemeral, isSending
 			isEphemeral={isEphemeral}
 			isSending={isSending}
 			onContextMenu={onContextMenu}
+			accountId={accountId}
 		/>
 	);
 };
@@ -136,7 +138,8 @@ const MessageText = ({
 	onCopy,
 	isEphemeral,
 	isSending,
-	onContextMenu
+	onContextMenu,
+	accountId
 }: {
 	message: IMessageWithUser;
 	lines: string;
@@ -148,6 +151,7 @@ const MessageText = ({
 	isEphemeral?: boolean;
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
+	accountId?: string;
 }) => {
 	let patchedContent = content;
 	if ((!content?.mk || content.mk.length === 0) && Array.isArray(content?.lk) && content.lk.length > 0) {
@@ -200,6 +204,7 @@ const MessageText = ({
 					isEphemeral={isEphemeral}
 					isSending={isSending}
 					onContextMenu={onContextMenu}
+					canDeleteOgp={message.sender_id === accountId}
 				/>
 			) : null}
 		</>
