@@ -1,13 +1,24 @@
+import { useRoomContext } from '@livekit/components-react';
 import { usePermissionChecker } from '@mezon/core';
 import { handleAddAgentToVoice, handleKichAgentFromVoice, selectVoiceInfo, useAppDispatch } from '@mezon/store';
 import { EPermission } from '@mezon/utils';
-import { memo, useState } from 'react';
+import type { RemoteParticipant } from 'livekit-client';
+import { memo, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 export const AgentControl = memo(() => {
+	const [hasChannelPermission] = usePermissionChecker([EPermission.manageChannel]);
+
+	if (!hasChannelPermission) {
+		return null;
+	}
+	return <ButtonAgent />;
+});
+
+const ButtonAgent = () => {
+	const room = useRoomContext();
 	const [onAgent, setOnAgent] = useState(false);
 	const currentVoice = useSelector(selectVoiceInfo);
-	const [hasChannelPermission] = usePermissionChecker([EPermission.manageChannel]);
 	const dispatch = useAppDispatch();
 	const handleAddAgent = () => {
 		if (!currentVoice) {
@@ -22,9 +33,36 @@ export const AgentControl = memo(() => {
 		}
 	};
 
-	if (!hasChannelPermission) {
-		return null;
-	}
+	useEffect(() => {
+		if (!room) return;
+
+		const handleJoin = (p: RemoteParticipant) => {
+			if (p.identity === 'KOMU') {
+				setOnAgent(true);
+			}
+		};
+		const handleDisconnect = (p: RemoteParticipant) => {
+			if (p.identity === 'KOMU') {
+				setOnAgent(false);
+			}
+		};
+
+		const onConnected = () => {
+			if (room.remoteParticipants.get('KOMU')) {
+				setOnAgent(true);
+			}
+		};
+
+		room.on('participantConnected', handleJoin);
+		room.on('participantDisconnected', handleDisconnect);
+		room.on?.('connected', onConnected);
+
+		return () => {
+			room.off('participantConnected', handleJoin);
+			room.off('participantDisconnected', handleDisconnect);
+			room.off?.('connected', onConnected);
+		};
+	}, [room]);
 	return (
 		<div className="relative rounded-full bg-gray-300 dark:bg-black" onClick={handleAddAgent}>
 			<div
@@ -51,4 +89,4 @@ export const AgentControl = memo(() => {
 			</div>
 		</div>
 	);
-});
+};
