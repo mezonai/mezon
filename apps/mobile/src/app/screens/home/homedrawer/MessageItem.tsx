@@ -137,7 +137,12 @@ const MessageItem = React.memo(
 		}, [message?.username, message?.user?.username]);
 
 		const messageCreateTime = useMemo(() => {
-			return message?.create_time_seconds || Math.floor(new Date(message?.create_time).getTime() / 1000);
+			try {
+				return message?.create_time_seconds || Math.floor(new Date(message?.create_time).getTime() / 1000);
+			} catch (error) {
+				console.error('Failed to parse message create time: ', error);
+				return 0;
+			}
 		}, [message?.create_time_seconds, message?.create_time]);
 
 		const onReplyMessage = useCallback(() => {
