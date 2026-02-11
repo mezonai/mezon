@@ -4,9 +4,17 @@ import { registerGlobals } from '@livekit/react-native';
 import type { StackCardInterpolatedStyle, StackCardInterpolationProps, StackCardStyleInterpolator } from '@react-navigation/stack';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Dimensions, Platform, View } from 'react-native';
+import BottomSheetRootListener from '../../components/BottomSheetRootListener';
 import CallingModalGroupWrapper from '../../components/CallingModalGroupWrapper';
 import CallingModalWrapper from '../../components/CallingModalWrapper';
 import ModalRootListener from '../../components/ModalRootListener';
+import CreateMilestone from '../../screens/CreateMilestone';
+import EventDetail from '../../screens/EventDetail';
+import EventDetailScreen from '../../screens/EventDetailScreen';
+import FamilyEvents from '../../screens/FamilyEvents';
+import LuckyMoney from '../../screens/LuckyMoney';
+import LuckyMoneyHistory from '../../screens/LuckyMoneyHistory';
+import MediaHighlightsTimeline from '../../screens/MediaHighlightsTimeline';
 import AppBrowser from '../../screens/auth/AppBrowser';
 import { ClaimMoneyScreen } from '../../screens/claimMoney';
 import HomeScreenTablet from '../../screens/home/HomeScreenTablet';
@@ -32,7 +40,6 @@ import { MenuClanStacks } from './stacks/MenuSererStack';
 import { MenuThreadDetailStacks } from './stacks/MenuThreadDetailStacks';
 import { MessagesStacks } from './stacks/MessagesStacks';
 import { NotificationStacks } from './stacks/NotificationStacks';
-import { ServersStacks } from './stacks/ServersStacks';
 import { SettingStacks } from './stacks/SettingStacks';
 import { ShopStack } from './stacks/ShopStack';
 import { styles } from './styles';
@@ -137,7 +144,6 @@ export const RootAuthStack = memo(
 							}
 						}}
 					/>
-					<RootStack.Screen name={APP_SCREEN.SERVERS.STACK} children={(props) => <ServersStacks {...props} />} />
 					<RootStack.Screen
 						name={APP_SCREEN.MESSAGES.STACK}
 						children={(props) => <MessagesStacks {...props} />}
@@ -175,10 +181,79 @@ export const RootAuthStack = memo(
 							gestureDirection: 'horizontal'
 						}}
 					/>
+					<RootStack.Screen
+						name={APP_SCREEN.MEDIA_HIGHLIGHTS_TIMELINE}
+						component={MediaHighlightsTimeline}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							animationEnabled: Platform.OS === 'ios'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.EVENT_DETAIL}
+						component={EventDetail}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							animationEnabled: Platform.OS === 'ios'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.EVENT_DETAIL_SCREEN}
+						component={EventDetailScreen}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							animationEnabled: Platform.OS === 'ios'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.CREATE_MILESTONE}
+						component={CreateMilestone}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							animationEnabled: Platform.OS === 'ios'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.FAMILY_EVENTS}
+						component={FamilyEvents}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal',
+							animationEnabled: Platform.OS === 'ios'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.LUCKY_MONEY}
+						component={LuckyMoney}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal'
+						}}
+					/>
+					<RootStack.Screen
+						name={APP_SCREEN.LUCKY_MONEY_HISTORY}
+						component={LuckyMoneyHistory}
+						options={{
+							headerShown: false,
+							gestureEnabled: true,
+							gestureDirection: 'horizontal'
+						}}
+					/>
 					<RootStack.Screen name={APP_SCREEN.SHOP.STACK} children={(props) => <ShopStack {...props} />} />
 					<RootStack.Screen name={APP_SCREEN.INVITE_CLAN} component={InviteClanScreen} />
 					<RootStack.Screen name={APP_SCREEN.INSTALL_CLAN} component={InstallClanScreen} />
 				</RootStack.Navigator>
+				<BottomSheetRootListener />
 				<ModalRootListener />
 				<FCMNotificationLoader notifyInit={notifyInit} />
 				<AuthenticationLoader />
