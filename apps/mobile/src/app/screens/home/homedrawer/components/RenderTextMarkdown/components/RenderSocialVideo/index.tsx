@@ -5,7 +5,7 @@ import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import type { TextStyle } from 'react-native';
 import { ActivityIndicator, Dimensions, Keyboard, Text, View } from 'react-native';
 import type { WebViewMessageEvent } from 'react-native-webview';
-import WebView from 'react-native-webview';
+import WebviewBase from '../../../../../../../components/WebviewBase';
 import { style } from './styles';
 
 interface IRenderSocialVideoProps {
@@ -152,8 +152,8 @@ const RenderSocialVideo = ({ videoKey, url, platform, contentInElement, onPress,
                             <ActivityIndicator size="large" color={PLATFORM_CONFIG?.[platform]?.borderColor ?? baseColor.redStrong} />
                         </View>
                     )}
-                    <WebView
-                        source={{ uri: embedUrl }}
+                    <WebviewBase
+                        url={embedUrl}
                         style={[styles.webviewContainer, styles.webviewLoading]}
                         androidLayerType='hardware'
                         javaScriptEnabled
@@ -166,7 +166,7 @@ const RenderSocialVideo = ({ videoKey, url, platform, contentInElement, onPress,
                         onTouchStart={() => {
                             Keyboard.dismiss();
                         }}
-                        {...(platform === EBacktickType.LINKFACEBOOK && { injectedJavaScript: INJECTED_JS })}
+                        injectedJavaScript={platform === EBacktickType.LINKFACEBOOK ? INJECTED_JS : undefined}
                         onMessage={handleWebViewMessage}
                         onError={(syntheticEvent) => {
                             const { nativeEvent } = syntheticEvent;
