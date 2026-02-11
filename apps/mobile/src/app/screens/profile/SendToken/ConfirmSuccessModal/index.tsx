@@ -95,7 +95,6 @@ export const ConfirmSuccessModal: React.FC<ConfirmSuccessModalProps> = ({
 				return;
 			}
 			await saveMediaToCameraRoll(`file://${dataUri}`, 'png');
-			onConfirm();
 		} catch (error) {
 			dispatch(appActions.setLoadingMainMobile(false));
 		} finally {
