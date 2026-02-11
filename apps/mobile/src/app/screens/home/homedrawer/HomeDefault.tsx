@@ -13,11 +13,12 @@ import ChannelAppHotbar from './ChannelAppHotbar';
 import ChannelMessages from './ChannelMessages';
 import { ChatBox } from './ChatBox';
 import LicenseAgreement from './components/LicenseAgreement';
+import MediaHighlights from './components/MediaHighlights';
 import DrawerListener from './DrawerListener';
 import HomeDefaultHeader from './HomeDefaultHeader';
 import PanelKeyboard from './PanelKeyboard';
 import { style } from './styles';
-// HomeDefault check
+
 const HomeDefault = React.memo(
 	(props: any) => {
 		const { themeValue } = useTheme();
@@ -81,6 +82,7 @@ const HomeDefault = React.memo(
 				{Platform.OS === 'ios' && <LicenseAgreement />}
 				<DrawerListener channelId={channelId} />
 				<HomeDefaultHeader openBottomSheet={openBottomSheet} navigation={props.navigation} onOpenDrawer={onOpenDrawer} isBanned={isBanned} />
+				<MediaHighlights channelId={channelId} clanId={clanId} />
 				<View style={styles.flexOne}>
 					<ChannelMessages
 						channelId={channelId}

@@ -8,6 +8,7 @@ import { appReducer } from './app/app.slice';
 import { authReducer } from './auth/auth.slice';
 import { categoriesReducer } from './categories/categories.slice';
 import { channelMembersReducer } from './channelmembers/channel.members';
+import { channelMediaReducer } from './channels/channelMedia.slice';
 import { channelsReducer } from './channels/channels.slice';
 import { usersClanReducer } from './clanMembers/clan.members';
 import { userClanProfileReducer } from './clanProfile/clanProfile.slice';
@@ -433,6 +434,7 @@ const reducer = {
 	auth: persistedReducer,
 	attachments: persistedAttachmentReducer,
 	gallery: galleryReducer,
+	channelMedia: channelMediaReducer,
 	clans: persistedClansReducer,
 	channels: persistedChannelReducer,
 	channelmeta: persistedChannelMetaReducer,

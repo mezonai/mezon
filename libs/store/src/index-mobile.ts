@@ -14,6 +14,7 @@ export * from './lib/canvas/canvasAPI.slice';
 export * from './lib/categories/categories.slice';
 export * from './lib/channelmembers/AllUsersChannelByAddChannel.slice';
 export * from './lib/channelmembers/channel.members';
+export * from './lib/channels/channelMedia.slice';
 export * from './lib/channels/channelUser.slice';
 export * from './lib/channels/channelapp.slice';
 export * from './lib/channels/channelmeta.slice';
