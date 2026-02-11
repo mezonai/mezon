@@ -28,55 +28,55 @@
 				"title": "Stream",
 				"description": "Sharing hobbies activity"
 			}
-		},
-		"channelVoiceType": {
-			"title": "Channel Voice Type",
-			"mezon": "MEZON MEET",
-			"gMeet": "GOOGLE MEET"
-		},
-		"mediaHighlights": {
-			"title": "Media & Highlights",
-			"familyJourney": "Channel Events",
-			"cherishMoment": "Track important events.",
-			"since": "SINCE",
-			"viewAlbum": "View Album",
-			"emptyTitle": "Your journey hasn't started yet.",
-			"emptyDescription": "Create your first event to begin capturing memories.",
-			"createFirstMilestone": "Create First Event"
-		},
-		"familyEvents": {
-			"title": "Events",
-			"eventsIn": "Events in",
-			"noEvents": "No events in",
-			"addToGallery": "Add to Gallery",
-			"inDays": "In {{count}} days"
-		},
-		"createMilestone": {
-			"headerTitle": "New Event",
-			"cancel": "Cancel",
-			"cancelAlertTitle": "Cancel",
-			"cancelAlertMessage": "Are you sure you want to discard this event?",
-			"continueEditing": "Continue Editing",
-			"discard": "Discard",
-			"eventTitleLabel": "Event Title",
-			"eventTitlePlaceholder": "e.g., Team Meeting, Project Launch",
-			"dateLabel": "Date",
-			"datePlaceholder": "Select date",
-			"storyLabel": "Description",
-			"storyPlaceholder": "Enter event description...",
-			"memoriesLabel": "Media",
-			"uploadTitle": "Upload Photos or Videos",
-			"uploadSubtitle": "Add media to your event",
-			"addMedia": "Add Media",
-			"tagMembersLabel": "Tag Members",
-			"saveButton": "Save Event",
-			"requiredTitle": "Required",
-			"requiredMessage": "Please enter an event title",
-			"successTitle": "Success",
-			"successMessage": "Event created successfully!",
-			"errorTitle": "Error",
-			"errorMessage": "Failed to pick images"
 		}
+	},
+	"channelVoiceType": {
+		"title": "Channel Voice Type",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "Media & Highlights",
+		"familyJourney": "Channel Events",
+		"cherishMoment": "Track important events.",
+		"since": "SINCE",
+		"viewAlbum": "View Album",
+		"emptyTitle": "Your journey hasn't started yet.",
+		"emptyDescription": "Create your first event to begin capturing memories.",
+		"createFirstMilestone": "Create First Event"
+	},
+	"familyEvents": {
+		"title": "Events",
+		"eventsIn": "Events in",
+		"noEvents": "No events in",
+		"addToGallery": "Add to Gallery",
+		"inDays": "In {{count}} days"
+	},
+	"createMilestone": {
+		"headerTitle": "New Event",
+		"cancel": "Cancel",
+		"cancelAlertTitle": "Cancel",
+		"cancelAlertMessage": "Are you sure you want to discard this event?",
+		"continueEditing": "Continue Editing",
+		"discard": "Discard",
+		"eventTitleLabel": "Event Title",
+		"eventTitlePlaceholder": "e.g., Team Meeting, Project Launch",
+		"dateLabel": "Date",
+		"datePlaceholder": "Select date",
+		"storyLabel": "Description",
+		"storyPlaceholder": "Enter event description...",
+		"memoriesLabel": "Media",
+		"uploadTitle": "Upload Photos or Videos",
+		"uploadSubtitle": "Add media to your event",
+		"addMedia": "Add Media",
+		"tagMembersLabel": "Tag Members",
+		"saveButton": "Save Event",
+		"requiredTitle": "Required",
+		"requiredMessage": "Please enter an event title",
+		"successTitle": "Success",
+		"successMessage": "Event created successfully!",
+		"errorTitle": "Error",
+		"errorMessage": "Failed to pick images"
 	},
 	"monthsShort": ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 }

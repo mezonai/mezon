@@ -53,6 +53,7 @@ export const styles = (theme: Attributes) =>
 			height: size.s_300,
 			position: 'relative',
 			borderRadius: size.s_16,
+			overflow: 'hidden',
 			backgroundColor: theme.secondary
 		},
 		featuredImage: {
@@ -106,13 +107,17 @@ export const styles = (theme: Attributes) =>
 			width: '50%',
 			aspectRatio: 1,
 			padding: size.s_8,
-			position: 'relative'
+			position: 'relative',
+			overflow: 'hidden'
+		},
+		wrapperGridImage: {
+			borderRadius: size.s_16,
+			backgroundColor: theme.secondary,
+			overflow: 'hidden'
 		},
 		gridImage: {
 			width: '100%',
-			height: '100%',
-			borderRadius: size.s_16,
-			backgroundColor: theme.secondary
+			height: '100%'
 		},
 		uploaderAvatarContainer: {
 			position: 'absolute',

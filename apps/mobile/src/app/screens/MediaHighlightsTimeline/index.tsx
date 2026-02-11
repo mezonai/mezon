@@ -11,13 +11,14 @@ import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import ImageNative from '../../components/ImageNative';
 import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
+import { TimelineSkeleton } from './TimelineSkeleton';
 import { styles as createStyles } from './styles';
 
 const MediaHighlightsTimeline: React.FC = () => {
@@ -192,14 +193,6 @@ const MediaHighlightsTimeline: React.FC = () => {
 
 	const keyExtractor = useCallback((item: ChannelEvent) => item.id, []);
 
-	if (loadingStatus === 'loading' && events.length === 0) {
-		return (
-			<View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-				<ActivityIndicator />
-			</View>
-		);
-	}
-
 	return (
 		<View style={styles.container}>
 			{/* Header */}
@@ -231,7 +224,9 @@ const MediaHighlightsTimeline: React.FC = () => {
 			</View>
 
 			{/* Content */}
-			{events.length > 0 ? (
+			{loadingStatus === 'loading' && events.length === 0 ? (
+				<TimelineSkeleton />
+			) : events.length > 0 ? (
 				<>
 					<FlatList
 						data={events}

@@ -206,7 +206,9 @@ const EventDetail: React.FC = () => {
 
 			return (
 				<TouchableOpacity style={styles.gridItem} onPress={() => handleImagePress(item)} activeOpacity={0.8}>
-					<ImageNative url={getProxyUri(item)} urlOriginal={getAttachmentUri(item)} style={styles.gridImage} resizeMode="cover" />
+					<View style={styles.wrapperGridImage}>
+						<ImageNative url={getProxyUri(item)} urlOriginal={getAttachmentUri(item)} style={styles.gridImage} resizeMode="cover" />
+					</View>
 					{!isUploaded(item) && (
 						<View style={styles.uploadingOverlay}>
 							<ActivityIndicator size="small" color="white" />

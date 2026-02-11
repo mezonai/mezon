@@ -1,4 +1,5 @@
 import { size, useTheme } from '@mezon/mobile-ui';
+import type { ChannelEvent } from '@mezon/store-mobile';
 import {
 	channelMediaActions,
 	selectChannelMediaByChannelId,
@@ -7,7 +8,6 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import type { ApiChannelEvent } from 'mezon-js/dist/api';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -82,7 +82,7 @@ const FamilyEvents: React.FC = () => {
 		}
 	}, [dispatch, clanId, channelId, selectedYear]);
 
-	const getEventThumbnail = useCallback((event: ApiChannelEvent): string | undefined => {
+	const getEventThumbnail = useCallback((event: ChannelEvent): string | undefined => {
 		const attachment = event.attachments?.[0];
 		return attachment?.thumbnail || attachment?.file_url;
 	}, []);
@@ -96,7 +96,7 @@ const FamilyEvents: React.FC = () => {
 	};
 
 	const handleEventPress = useCallback(
-		(event: ApiChannelEvent) => {
+		(event: ChannelEvent) => {
 			const thumbnail = getEventThumbnail(event);
 
 			navigation.navigate(APP_SCREEN.EVENT_DETAIL_SCREEN, {
@@ -117,7 +117,7 @@ const FamilyEvents: React.FC = () => {
 	}, []);
 
 	const renderEventItem = useCallback(
-		({ item: event }: { item: ApiChannelEvent }) => {
+		({ item: event }: { item: ChannelEvent }) => {
 			const date = event.start_time_seconds ? formatDate(event.start_time_seconds) : null;
 			const daysUntil = event.start_time_seconds ? getDaysUntil(event.start_time_seconds) : null;
 			const thumbnail = getEventThumbnail(event);
@@ -155,14 +155,6 @@ const FamilyEvents: React.FC = () => {
 
 						{/* Event Description */}
 						{event.description ? <Text style={styles.eventDescription}>{event.description}</Text> : null}
-
-						{/* Action Buttons */}
-						<View style={styles.eventActions}>
-							<TouchableOpacity style={styles.addToGalleryButton}>
-								<MezonIconCDN icon={IconCDN.imageIcon} width={size.s_20} height={size.s_20} color="white" />
-								<Text style={styles.addToGalleryText}>{t('familyEvents.addToGallery')}</Text>
-							</TouchableOpacity>
-						</View>
 					</View>
 				</TouchableOpacity>
 			);
@@ -170,7 +162,7 @@ const FamilyEvents: React.FC = () => {
 		[getEventThumbnail, handleEventPress, styles, formatDate, t]
 	);
 
-	const keyExtractor = useCallback((item: ApiChannelEvent) => item.id || '', []);
+	const keyExtractor = useCallback((item: ChannelEvent) => item.id || '', []);
 
 	const listHeaderComponent = useMemo(
 		() => (

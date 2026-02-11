@@ -12,7 +12,7 @@ export const styles = (theme: Attributes) =>
 			alignItems: 'center',
 			justifyContent: 'space-between',
 			paddingHorizontal: size.s_16,
-			paddingBottom: size.s_16,
+			paddingBottom: size.s_16
 		},
 		headerTitle: {
 			fontSize: size.s_20,
@@ -61,7 +61,7 @@ export const styles = (theme: Attributes) =>
 			marginBottom: size.s_16
 		},
 		eventsSectionTitle: {
-			fontSize: size.s_22,
+			fontSize: size.s_20,
 			fontWeight: '700',
 			color: 'white'
 		},
@@ -73,7 +73,7 @@ export const styles = (theme: Attributes) =>
 			borderColor: '#8B5CF6'
 		},
 		heritageFeedText: {
-			fontSize: size.s_11,
+			fontSize: size.s_12,
 			fontWeight: '700',
 			color: '#8B5CF6',
 			letterSpacing: 0.5
@@ -103,7 +103,7 @@ export const styles = (theme: Attributes) =>
 			borderRadius: size.s_6
 		},
 		eventCategoryText: {
-			fontSize: size.s_11,
+			fontSize: size.s_12,
 			fontWeight: '700',
 			color: 'white',
 			letterSpacing: 0.5
@@ -112,7 +112,7 @@ export const styles = (theme: Attributes) =>
 			padding: size.s_16
 		},
 		eventTitle: {
-			fontSize: size.s_24,
+			fontSize: size.s_18,
 			fontWeight: '700',
 			color: 'white',
 			marginBottom: size.s_10
@@ -120,7 +120,7 @@ export const styles = (theme: Attributes) =>
 		eventDateTime: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			marginBottom: size.s_12,
+			marginBottom: size.s_10,
 			gap: size.s_8
 		},
 		eventDateTimeText: {
