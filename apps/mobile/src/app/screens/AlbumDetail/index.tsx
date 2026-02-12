@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import type { ChannelEventAttachment } from '@mezon/store-mobile';
+import type { ChannelTimelineAttachment } from '@mezon/store-mobile';
 import { channelMediaActions, useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { createImgproxyUrl, getMobileUploadedAttachments } from '@mezon/utils';
@@ -8,6 +8,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
 	ActivityIndicator,
 	Alert,
@@ -31,21 +32,18 @@ import { EventImageViewer } from '../../components/EventImageViewer';
 import ImageNative from '../../components/ImageNative';
 import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../constants/icon_cdn';
+import { AlbumDetailSkeleton } from './AlbumDetailSkeleton';
 import { styles as createStyles } from './styles';
 
 interface RouteParams {
 	eventId: string;
-	title: string;
-	description?: string;
-	date: string;
-	attachments?: ChannelEventAttachment[];
-	channelId?: string;
-	clanId?: string;
-	startTimeSeconds?: number;
+	channelId: string;
+	clanId: string;
+	startTimeSeconds: number;
 }
 
-const isUploaded = (att: ChannelEventAttachment) => att.file_url?.startsWith('https');
-const isVideoFile = (att: ChannelEventAttachment) => att.file_type?.startsWith('video/');
+const isUploaded = (att: ChannelTimelineAttachment) => att.file_url?.startsWith('https');
+const isVideoFile = (att: ChannelTimelineAttachment) => att.file_type?.startsWith('video/');
 
 const VideoThumbnailView: React.FC<{
 	videoUrl: string;
@@ -79,6 +77,7 @@ const VideoThumbnailView: React.FC<{
 });
 
 const AlbumDetail: React.FC = () => {
+	const { t } = useTranslation('channelCreator');
 	const { themeValue } = useTheme();
 	const styles = createStyles(themeValue);
 	const navigation = useNavigation();
@@ -91,12 +90,51 @@ const AlbumDetail: React.FC = () => {
 	const clanId = params.clanId || '';
 	const startTimeSeconds = params?.startTimeSeconds || 0;
 	const [isUploading, setIsUploading] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 
-	const [attachments, setAttachments] = useState<ChannelEventAttachment[]>(params.attachments || []);
-	const attachmentsRef = useRef<ChannelEventAttachment[]>(params.attachments || []);
+	const [attachments, setAttachments] = useState<ChannelTimelineAttachment[]>([]);
+	const attachmentsRef = useRef<ChannelTimelineAttachment[]>([]);
 
-	const [title, setTitle] = useState(params.title || '');
-	const [description, setDescription] = useState(params.description || '');
+	const [title, setTitle] = useState('');
+	const [description, setDescription] = useState('');
+	const [date, setDate] = useState('');
+
+	useEffect(() => {
+		const fetchDetail = async () => {
+			try {
+				setIsLoading(true);
+				const result = await dispatch(
+					channelMediaActions.detailChannelTimeline({
+						id: params.eventId,
+						clan_id: clanId,
+						channel_id: channelId,
+						start_time_seconds: startTimeSeconds
+					})
+				).unwrap();
+				console.log('log => result detailChannelTimeline: ', result);
+				const event = result.event;
+				if (event) {
+					setTitle(event.title || '');
+					setDescription(event.description || '');
+					const imgs = event.attachments || [];
+					setAttachments(imgs);
+					attachmentsRef.current = imgs;
+					if (event.start_time_seconds) {
+						const d = new Date(event.start_time_seconds * 1000);
+						const day = String(d.getDate()).padStart(2, '0');
+						const month = String(d.getMonth() + 1).padStart(2, '0');
+						const year = d.getFullYear();
+						setDate(`${day}/${month}/${year}`);
+					}
+				}
+			} catch {
+				// keep empty state
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchDetail();
+	}, [dispatch, params.eventId, clanId, channelId, startTimeSeconds]);
 
 	const handleBack = () => {
 		navigation.goBack();
@@ -117,8 +155,7 @@ const AlbumDetail: React.FC = () => {
 								channel_id: channelId,
 								title: newTitle,
 								description: newDescription,
-								start_time_seconds: startTimeSeconds,
-								attachments: attachmentsRef.current.filter((att) => isUploaded(att))
+								start_time_seconds: startTimeSeconds
 							})
 						).unwrap();
 						setTitle(newTitle);
@@ -135,7 +172,8 @@ const AlbumDetail: React.FC = () => {
 			const selectedImages = await openPicker({
 				mediaType: 'any',
 				multiple: true,
-				compressImageQuality: 0.8
+				maxFiles: 40,
+				compressImageQuality: 0.9
 			});
 
 			const imageArray = Array.isArray(selectedImages) ? selectedImages : [selectedImages];
@@ -144,12 +182,12 @@ const AlbumDetail: React.FC = () => {
 			const session = sessionRef?.current;
 
 			if (!client || !session) {
-				Alert.alert('Error', 'Session not available');
+				Alert.alert(t('albumDetail.errorTitle'), t('albumDetail.sessionNotAvailable'));
 				return;
 			}
 
 			// Step 1: Create preview items with local URIs and add to grid immediately
-			const previewItems: ChannelEventAttachment[] = imageArray.map((img) => {
+			const previewItems: ChannelTimelineAttachment[] = imageArray.map((img) => {
 				const id = Snowflake.generate();
 				const localUri = Platform.OS === 'ios' ? img.sourceURL || img.path : img.path;
 				return {
@@ -210,15 +248,16 @@ const AlbumDetail: React.FC = () => {
 				return updated;
 			});
 
-			// Step 4: Sync with server
-			const serverAttachments = attachmentsRef.current.filter((att) => isUploaded(att));
+			// Step 4: Sync only new uploads with server
+			const newUploadedIds = new Set(previewItems.map((item) => item.id));
+			const newAttachments = attachmentsRef.current.filter((att) => newUploadedIds.has(att.id) && isUploaded(att));
 			await dispatch(
 				channelMediaActions.updateChannelTimeline({
 					id: params.eventId,
 					clan_id: clanId,
 					channel_id: channelId,
 					start_time_seconds: startTimeSeconds,
-					attachments: serverAttachments
+					attachments: newAttachments
 				})
 			).unwrap();
 		} catch (error: unknown) {
@@ -230,19 +269,19 @@ const AlbumDetail: React.FC = () => {
 					attachmentsRef.current = updated;
 					return updated;
 				});
-				Alert.alert('Error', 'Failed to upload images');
+				Alert.alert(t('albumDetail.errorTitle'), t('albumDetail.uploadFailed'));
 			}
 		} finally {
 			setIsUploading(false);
 		}
-	}, [clientRef, sessionRef, dispatch, params.eventId, clanId, channelId, startTimeSeconds]);
+	}, [clientRef, sessionRef, dispatch, params.eventId, clanId, channelId, startTimeSeconds, t]);
 
 	const handleUploadPress = useCallback(() => {
 		handleImagePicker();
 	}, [handleImagePicker]);
 
 	const handleImagePress = useCallback(
-		(attachment: ChannelEventAttachment) => {
+		(attachment: ChannelTimelineAttachment) => {
 			const data = {
 				children: <EventImageViewer images={attachments} imageSelected={attachment} />
 			};
@@ -251,8 +290,8 @@ const AlbumDetail: React.FC = () => {
 		[attachments]
 	);
 
-	const getAttachmentUri = useCallback((att: ChannelEventAttachment) => att.thumbnail || att.file_url || '', []);
-	const getProxyUri = useCallback((att: ChannelEventAttachment) => {
+	const getAttachmentUri = useCallback((att: ChannelTimelineAttachment) => att.thumbnail || att.file_url || '', []);
+	const getProxyUri = useCallback((att: ChannelTimelineAttachment) => {
 		const originalUrl = att.thumbnail || att.file_url || '';
 		if (!originalUrl || !isUploaded(att)) return originalUrl;
 		return String(createImgproxyUrl(originalUrl, { width: 300, height: 300, resizeType: 'fit' }) || '');
@@ -262,7 +301,7 @@ const AlbumDetail: React.FC = () => {
 	const gridAttachments = attachments.slice(1);
 
 	const renderGridItem = useCallback(
-		({ item }: { item: ChannelEventAttachment | 'upload_placeholder' }) => {
+		({ item }: { item: ChannelTimelineAttachment | 'upload_placeholder' }) => {
 			if (item === 'upload_placeholder') {
 				return (
 					<TouchableOpacity style={styles.uploadPlaceholder} onPress={handleUploadPress} activeOpacity={0.7}>
@@ -343,7 +382,7 @@ const AlbumDetail: React.FC = () => {
 		[featuredAttachment, description, styles, handleImagePress, getAttachmentUri, getProxyUri]
 	);
 
-	const gridData: (ChannelEventAttachment | 'upload_placeholder')[] = [...gridAttachments, 'upload_placeholder'];
+	const gridData: (ChannelTimelineAttachment | 'upload_placeholder')[] = [...gridAttachments, 'upload_placeholder'];
 
 	return (
 		<View style={styles.container}>
@@ -361,11 +400,11 @@ const AlbumDetail: React.FC = () => {
 				</TouchableOpacity>
 				<View style={styles.headerContent}>
 					<Text style={styles.headerTitle} numberOfLines={2}>
-						{title || 'Event Details'}
+						{title || t('albumDetail.eventDetails')}
 					</Text>
 					<View style={styles.dateContainer}>
 						<MezonIconCDN icon={IconCDN.calendarIcon} width={size.s_14} height={size.s_14} color={themeValue.text} />
-						<Text style={styles.headerDate}>{params.date || 'Date'}</Text>
+						<Text style={styles.headerDate}>{date || t('albumDetail.date')}</Text>
 					</View>
 				</View>
 				<TouchableOpacity onPress={handleOpenEdit} style={styles.headerButton}>
@@ -373,21 +412,24 @@ const AlbumDetail: React.FC = () => {
 				</TouchableOpacity>
 			</View>
 
-			{/* Content */}
-			<FlatList
-				data={gridData}
-				renderItem={renderGridItem}
-				keyExtractor={(item) => (item === 'upload_placeholder' ? 'upload_placeholder' : item.id)}
-				numColumns={2}
-				ListHeaderComponent={listHeaderComponent}
-				contentContainerStyle={styles.gridContainer}
-				showsVerticalScrollIndicator={false}
-				initialNumToRender={6}
-				maxToRenderPerBatch={6}
-				windowSize={5}
-				removeClippedSubviews={true}
-				ListFooterComponent={<View style={styles.bottomSpacer} />}
-			/>
+			{isLoading ? (
+				<AlbumDetailSkeleton />
+			) : (
+				<FlatList
+					data={gridData}
+					renderItem={renderGridItem}
+					keyExtractor={(item) => (item === 'upload_placeholder' ? 'upload_placeholder' : item.id)}
+					numColumns={2}
+					ListHeaderComponent={listHeaderComponent}
+					contentContainerStyle={styles.gridContainer}
+					showsVerticalScrollIndicator={false}
+					initialNumToRender={6}
+					maxToRenderPerBatch={6}
+					windowSize={5}
+					removeClippedSubviews={true}
+					ListFooterComponent={<View style={styles.bottomSpacer} />}
+				/>
+			)}
 
 			<TouchableOpacity style={styles.fab} onPress={handleUploadPress} activeOpacity={0.8} disabled={isUploading}>
 				<MezonIconCDN icon={IconCDN.uploadPlusIcon} width={size.s_24} height={size.s_24} color="white" />
@@ -403,6 +445,7 @@ interface EditEventContentProps {
 }
 
 const EditEventContent: React.FC<EditEventContentProps> = ({ initialTitle, initialDescription, onSave }) => {
+	const { t } = useTranslation('channelCreator');
 	const { themeValue } = useTheme();
 	const [editTitle, setEditTitle] = React.useState(initialTitle);
 	const [editDescription, setEditDescription] = React.useState(initialDescription);
@@ -414,7 +457,7 @@ const EditEventContent: React.FC<EditEventContentProps> = ({ initialTitle, initi
 
 	const handleSave = async () => {
 		if (!editTitle.trim()) {
-			Alert.alert('Error', 'Title cannot be empty');
+			Alert.alert(t('albumDetail.errorTitle'), t('albumDetail.titleRequired'));
 			return;
 		}
 		setIsSaving(true);
@@ -422,7 +465,7 @@ const EditEventContent: React.FC<EditEventContentProps> = ({ initialTitle, initi
 			await onSave(editTitle.trim(), editDescription.trim());
 			handleDismiss();
 		} catch {
-			Alert.alert('Error', 'Failed to update event');
+			Alert.alert(t('albumDetail.errorTitle'), t('albumDetail.updateFailed'));
 		} finally {
 			setIsSaving(false);
 		}
@@ -431,18 +474,18 @@ const EditEventContent: React.FC<EditEventContentProps> = ({ initialTitle, initi
 	return (
 		<KeyboardAvoidingView style={editStyles.modalWrapper} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 			<View style={[editStyles.container, { backgroundColor: themeValue.secondary }]}>
-				<Text style={[editStyles.modalTitle, { color: themeValue.textStrong }]}>Edit Event</Text>
-				<Text style={[editStyles.label, { color: themeValue.text }]}>Title</Text>
+				<Text style={[editStyles.modalTitle, { color: themeValue.textStrong }]}>{t('albumDetail.editEvent')}</Text>
+				<Text style={[editStyles.label, { color: themeValue.text }]}>{t('albumDetail.titleLabel')}</Text>
 				<TextInput
 					style={[editStyles.input, { color: themeValue.textStrong, backgroundColor: themeValue.primary, borderColor: themeValue.border }]}
 					value={editTitle}
 					onChangeText={setEditTitle}
-					placeholder="Event title"
+					placeholder={t('albumDetail.titlePlaceholder')}
 					placeholderTextColor={themeValue.text}
 					maxLength={100}
 				/>
 				<Text style={[editStyles.charCount, { color: themeValue.textDisabled }]}>{editTitle.length}/100</Text>
-				<Text style={[editStyles.label, { color: themeValue.text }]}>Description</Text>
+				<Text style={[editStyles.label, { color: themeValue.text }]}>{t('albumDetail.descriptionLabel')}</Text>
 				<TextInput
 					style={[
 						editStyles.input,
@@ -451,7 +494,7 @@ const EditEventContent: React.FC<EditEventContentProps> = ({ initialTitle, initi
 					]}
 					value={editDescription}
 					onChangeText={setEditDescription}
-					placeholder="Event description"
+					placeholder={t('albumDetail.descriptionPlaceholder')}
 					placeholderTextColor={themeValue.text}
 					multiline
 					numberOfLines={4}
@@ -461,10 +504,14 @@ const EditEventContent: React.FC<EditEventContentProps> = ({ initialTitle, initi
 				<Text style={[editStyles.charCount, { color: themeValue.textDisabled }]}>{editDescription.length}/250</Text>
 				<View style={editStyles.buttonRow}>
 					<TouchableOpacity style={[editStyles.button, { backgroundColor: themeValue.primary }]} onPress={handleDismiss}>
-						<Text style={[editStyles.buttonText, { color: themeValue.text }]}>Cancel</Text>
+						<Text style={[editStyles.buttonText, { color: themeValue.text }]}>{t('albumDetail.cancel')}</Text>
 					</TouchableOpacity>
 					<TouchableOpacity style={[editStyles.button, editStyles.saveButton]} onPress={handleSave} disabled={isSaving}>
-						{isSaving ? <ActivityIndicator size="small" color="white" /> : <Text style={editStyles.saveButtonText}>Save</Text>}
+						{isSaving ? (
+							<ActivityIndicator size="small" color="white" />
+						) : (
+							<Text style={editStyles.saveButtonText}>{t('albumDetail.save')}</Text>
+						)}
 					</TouchableOpacity>
 				</View>
 			</View>
