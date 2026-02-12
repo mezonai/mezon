@@ -80,36 +80,32 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				}
 			}
 
-			try {
-				const userIds = uniqueUsers(mentions as ApiMessageMention[], mapToMemberIds, rolesClan, []);
-				if (userIds.length) {
-					await addMemberToThread(thread as ChannelsEntity, userIds as string[]);
-				}
+			await socket.writeChatMessage(
+				currentClanId,
+				thread.channel_id as string,
+				ChannelStreamMode.STREAM_MODE_THREAD,
+				thread.channel_private === 0,
+				content,
+				mentions,
+				uploadedFiles,
+				references
+			);
 
-				await socket.writeChatMessage(
-					currentClanId,
-					thread.channel_id as string,
-					ChannelStreamMode.STREAM_MODE_THREAD,
-					thread.channel_private === 0,
-					content,
-					mentions,
-					uploadedFiles,
-					references
-				);
-
-				const timestamp = Date.now() / 1000;
-				const store = getStore();
-				const lastMessageId = store ? selectLatestMessageId(store.getState(), channelId) : '';
-				dispatch(
-					channelMetaActions.setChannelLastSeenTimestamp({
-						channelId,
-						timestamp,
-						messageId: lastMessageId || undefined
-					})
-				);
-			} catch (error) {
-				console.error('Error sending message thread:', error);
+			const userIds = uniqueUsers(mentions as ApiMessageMention[], mapToMemberIds, rolesClan, []);
+			if (userIds.length) {
+				addMemberToThread(thread as ChannelsEntity, userIds as string[]);
 			}
+
+			const timestamp = Date.now() / 1000;
+			const store = getStore();
+			const lastMessageId = store ? selectLatestMessageId(store.getState(), channelId) : '';
+			dispatch(
+				channelMetaActions.setChannelLastSeenTimestamp({
+					channelId,
+					timestamp,
+					messageId: lastMessageId || undefined
+				})
+			);
 		},
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[sessionRef, clientRef, socketRef, currentClanId, mode, dispatch, channelId]
