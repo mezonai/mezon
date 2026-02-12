@@ -7,12 +7,14 @@ import {
 	getStoreAsync,
 	messagesActions,
 	selectDirectById,
+	selectDirectHasMore,
+	selectDirectPaginationLoading,
 	selectDirectsOpenlistOrder,
 	selectDmGroupCurrentId,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import React, { useCallback, useEffect } from 'react';
-import { AppState, DeviceEventEmitter, FlatList, Pressable, TouchableOpacity, View } from 'react-native';
+import React, { memo, useCallback, useEffect, useMemo } from 'react';
+import { ActivityIndicator, AppState, DeviceEventEmitter, FlatList, Pressable, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
@@ -28,41 +30,45 @@ import { DmListItem } from './DmListItem';
 import MessageHeader from './MessageHeader';
 import { style } from './styles';
 
-const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
+const keyExtractor = (dm: string) => `${dm}_DM_MSG_ITEM`;
+const footerStyle = { paddingVertical: size.s_14 };
+const selectClansLoadingStatus = (state: RootState) => state?.clans?.loadingStatus;
+
+const MessagesScreenTablet = memo(({ navigation }: { navigation: any }) => {
 	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
-	const styles = style(themeValue, isTabletLandscape);
+	const styles = useMemo(() => style(themeValue, isTabletLandscape), [themeValue, isTabletLandscape]);
 	const dmGroupChatList = useSelector(selectDirectsOpenlistOrder);
-	const clansLoadingStatus = useSelector((state: RootState) => state?.clans?.loadingStatus);
+	const clansLoadingStatus = useSelector(selectClansLoadingStatus);
 	const currentDmGroupId = useSelector(selectDmGroupCurrentId);
+	const hasMore = useSelector(selectDirectHasMore);
+	const paginationLoading = useSelector(selectDirectPaginationLoading);
 	const dispatch = useAppDispatch();
 
 	useEffect(() => {
+		const handleAppStateChange = async (state: string) => {
+			if (state === 'active') {
+				try {
+					const store = await getStoreAsync();
+					await store.dispatch(directActions.fetchDirectMessage({ noCache: true }));
+				} catch (error) {
+					console.error('error messageLoaderBackground', error);
+				}
+			}
+		};
 		const appStateSubscription = AppState.addEventListener('change', handleAppStateChange);
-
 		return () => {
 			appStateSubscription.remove();
 		};
 	}, []);
 
-	const handleAppStateChange = async (state: string) => {
-		if (state === 'active') {
-			try {
-				const store = await getStoreAsync();
-				await store.dispatch(directActions.fetchDirectMessage({ noCache: true }));
-			} catch (error) {
-				console.error('error messageLoaderBackground', error);
-			}
-		}
-	};
-
-	const navigateToAddFriendScreen = () => {
+	const navigateToAddFriendScreen = useCallback(() => {
 		navigation.navigate(APP_SCREEN.FRIENDS.STACK, { screen: APP_SCREEN.FRIENDS.ADD_FRIEND });
-	};
+	}, [navigation]);
 
-	const navigateToNewMessageScreen = () => {
+	const navigateToNewMessageScreen = useCallback(() => {
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, { screen: APP_SCREEN.MESSAGES.NEW_MESSAGE });
-	};
+	}, [navigation]);
 
 	useEffect(() => {
 		const dmItemRouter = DeviceEventEmitter.addListener('CHANGE_CHANNEL_DM_DETAIL_TABLET', ({ dmId = '' }) => {
@@ -86,6 +92,11 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	}, []);
 
+	const handleLoadMore = useCallback(() => {
+		if (!hasMore || paginationLoading) return;
+		dispatch(directActions.fetchMoreDirectMessages({}));
+	}, [dispatch, hasMore, paginationLoading]);
+
 	const renderItem = useCallback(
 		({ item }: { item: string }) => {
 			return (
@@ -101,6 +112,16 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 		},
 		[handleLongPress]
 	);
+
+	const ListFooterComponent = useMemo(() => {
+		if (!paginationLoading) return null;
+		return (
+			<View style={footerStyle}>
+				<ActivityIndicator size="small" color={themeValue.textStrong} />
+			</View>
+		);
+	}, [paginationLoading, themeValue.textStrong]);
+
 	return (
 		<View style={styles.containerMessages}>
 			<View style={styles.leftContainer}>
@@ -110,24 +131,23 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 					<View style={styles.container}>
 						<MessageHeader />
 						{clansLoadingStatus === 'loaded' && !dmGroupChatList?.length ? (
-							<UserEmptyMessage
-								onPress={() => {
-									navigateToAddFriendScreen();
-								}}
-							/>
+							<UserEmptyMessage onPress={navigateToAddFriendScreen} />
 						) : (
 							<FlatList
 								data={dmGroupChatList}
 								showsVerticalScrollIndicator={false}
-								keyExtractor={(dm) => `${dm}_DM_MSG_ITEM`}
+								keyExtractor={keyExtractor}
 								initialNumToRender={1}
 								maxToRenderPerBatch={1}
 								windowSize={2}
 								renderItem={renderItem}
+								onEndReachedThreshold={0.3}
+								onEndReached={handleLoadMore}
+								ListFooterComponent={ListFooterComponent}
 							/>
 						)}
 
-						<Pressable style={styles.addMessage} onPress={() => navigateToNewMessageScreen()}>
+						<Pressable style={styles.addMessage} onPress={navigateToNewMessageScreen}>
 							<MezonIconCDN icon={IconCDN.messagePlusIcon} width={size.s_22} height={size.s_22} />
 						</Pressable>
 					</View>
@@ -140,6 +160,6 @@ const MessagesScreenTablet = ({ navigation }: { navigation: any }) => {
 			</View>
 		</View>
 	);
-};
+});
 
 export default MessagesScreenTablet;

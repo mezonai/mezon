@@ -8,26 +8,10 @@ import {
 	createImgproxyUrl,
 	useIsIntersecting
 } from '@mezon/utils';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useMessageContextMenu } from '../ContextMenu';
 
-const loadedMediaUrls = new Map<string, boolean>();
-const urlQueue: string[] = [];
-const MAX_LOADED_CACHE = 500;
-
-const rememberLoadedUrl = (url: string) => {
-	if (loadedMediaUrls.has(url)) return;
-
-	loadedMediaUrls.set(url, true);
-	urlQueue.push(url);
-
-	if (urlQueue.length > MAX_LOADED_CACHE) {
-		const oldestUrl = urlQueue.shift();
-		if (oldestUrl) {
-			loadedMediaUrls.delete(oldestUrl);
-		}
-	}
-};
+let lastSentUrl: string | null = null;
 
 export type OwnProps<T> = {
 	id?: string;
@@ -90,9 +74,12 @@ const Photo = <T,>({
 
 	const isIntersecting = useIsIntersecting(ref, observeIntersection);
 
-	const { setImageURL, setPositionShow } = useMessageContextMenu();
+	const isRecentlySent = !!(photo?.url && photo.url === lastSentUrl);
+	const shouldLoad = canAutoLoad && (isSending || isIntersecting || isRecentlySent);
 
-	const shouldLoad = canAutoLoad && isIntersecting;
+	if (isSending && photo?.url) {
+		lastSentUrl = photo.url;
+	}
 
 	const { width: realWidth, height: realHeight } = photo;
 	const hasZeroDimension = !realWidth || !realHeight;
@@ -126,49 +113,7 @@ const Photo = <T,>({
 		return 'fill';
 	})();
 
-	const [fullMediaData, setFullMediaData] = useState<string | undefined>();
-
-	useEffect(() => {
-		if (!shouldLoad || !photo.url) {
-			return;
-		}
-
-		const targetUrl = createImgproxyUrl(photo.url, { width, height, resizeType });
-		const image = new Image();
-		let canceled = false;
-
-		if (loadedMediaUrls.has(targetUrl)) {
-			setFullMediaData(targetUrl);
-			return () => {
-				canceled = true;
-			};
-		}
-
-		setFullMediaData(undefined);
-
-		image.onload = () => {
-			if (!canceled) {
-				setFullMediaData(targetUrl);
-				rememberLoadedUrl(targetUrl);
-			}
-		};
-
-		image.onerror = () => {
-			if (!canceled) {
-				setFullMediaData(undefined);
-			}
-		};
-
-		image.src = targetUrl;
-
-		return () => {
-			canceled = true;
-			image.onload = null;
-			image.onerror = null;
-		};
-	}, [height, photo.url, resizeType, shouldLoad, width]);
-
-	const shouldRenderSkeleton = !fullMediaData && !isSending;
+	const shouldRenderSkeleton = !shouldLoad && !isSending;
 
 	const componentClassName = buildClassName(
 		'media-inner',
@@ -199,14 +144,6 @@ const Photo = <T,>({
 		return photo?.url?.endsWith('.gif') || photo?.url?.includes('.gif');
 	}, [photo?.url]);
 
-	const handleContextMenu = useCallback((e: React.MouseEvent<HTMLImageElement>) => {
-		setImageURL(photo?.url ?? '');
-		setPositionShow(SHOW_POSITION.NONE);
-		if (typeof onContextMenu === 'function') {
-			onContextMenu(e || {});
-		}
-	}, []);
-
 	return (
 		<div
 			id={id}
@@ -218,14 +155,16 @@ const Photo = <T,>({
 				onClick?.(photo?.url, id);
 			}}
 		>
-			{fullMediaData && (
-				<img
-					onContextMenu={handleContextMenu}
-					src={fullMediaData}
-					className={`max-w-full max-h-full w-full h-full block ${isGif ? 'object-contain' : 'object-cover'} absolute bottom-0 left-0 z-[1] rounded overflow-hidden cursor-pointer`}
-					alt=""
-					style={{ width: displayWidth }}
-					draggable={!isProtected}
+			{shouldLoad && (
+				<PhotoImage
+					url={photo?.url ?? ''}
+					width={width}
+					height={height}
+					resizeType={resizeType}
+					displayWidth={displayWidth}
+					isGif={isGif}
+					isProtected={isProtected}
+					onContextMenu={onContextMenu}
 				/>
 			)}
 			{!isSending && shouldRenderSkeleton && (
@@ -245,5 +184,68 @@ const Photo = <T,>({
 		</div>
 	);
 };
+
+type PhotoImageProps = {
+	url: string;
+	width: number;
+	height: number;
+	resizeType: string;
+	displayWidth: number;
+	isGif?: boolean | string | null;
+	isProtected?: boolean;
+	onContextMenu?: (event: React.MouseEvent<HTMLImageElement>) => void;
+};
+
+const PhotoImage = React.memo(({ url, width, height, resizeType, displayWidth, isGif, isProtected, onContextMenu }: PhotoImageProps) => {
+	const { setImageURL, setPositionShow } = useMessageContextMenu();
+	const [hasError, setHasError] = useState(false);
+
+	const imgSrc = useMemo(() => {
+		return createImgproxyUrl(url, { width, height, resizeType });
+	}, [url, width, height, resizeType]);
+
+	const handleContextMenu = useCallback(
+		(e: React.MouseEvent<HTMLImageElement>) => {
+			setImageURL(url);
+			setPositionShow(SHOW_POSITION.NONE);
+			onContextMenu?.(e);
+		},
+		[url, setImageURL, setPositionShow, onContextMenu]
+	);
+
+	const handleError = useCallback(() => {
+		setHasError(true);
+	}, []);
+
+	if (hasError) {
+		return (
+			<div
+				className="max-w-full max-h-full w-full h-full flex items-center justify-center absolute bottom-0 left-0 z-[1] rounded overflow-hidden bg-bgSecondary"
+				style={{ width: displayWidth, height: height || 150 }}
+			>
+				<svg className="w-8 h-8 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						strokeWidth={2}
+						d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+					/>
+				</svg>
+			</div>
+		);
+	}
+
+	return (
+		<img
+			onContextMenu={handleContextMenu}
+			src={imgSrc}
+			className={`max-w-full max-h-full w-full h-full block ${isGif ? 'object-contain' : 'object-cover'} absolute bottom-0 left-0 z-[1] rounded overflow-hidden cursor-pointer`}
+			alt=""
+			style={{ width: displayWidth }}
+			draggable={!isProtected}
+			onError={handleError}
+		/>
+	);
+});
 
 export default Photo;
