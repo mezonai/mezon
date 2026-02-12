@@ -19,7 +19,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import type { ApiChannelAppResponseExtend, IChannel } from '@mezon/utils';
+import type { ApiChannelAppResponseExtend, ChannelThreads, IChannel } from '@mezon/utils';
 import { ChannelStatusEnum, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { DragEvent } from 'react';
