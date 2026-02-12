@@ -296,6 +296,7 @@ const MessageItem = React.memo(
 							currentChannel={currentChannel}
 							showRole={!isDM}
 							directId={channelId}
+							isFromMessage
 						/>
 					)
 				};
