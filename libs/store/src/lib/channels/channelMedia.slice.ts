@@ -144,7 +144,10 @@ export const updateChannelTimeline = createAsyncThunk(
 	async (payload: updateChannelTimelinePayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.updateChannelTimeline(mezon.session, payload);
+			const response = await mezon.client.updateChannelTimeline(mezon.session, {
+				...payload,
+				start_time_seconds: payload.start_time_seconds || 0
+			});
 			return {
 				channelId: payload.channel_id,
 				event: response.event as ChannelEvent
