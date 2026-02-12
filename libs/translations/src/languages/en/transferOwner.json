@@ -1,9 +1,9 @@
 {
-  "title": "Transfer Clan Ownership",
-  "description": "This will transfer ownership of {clanName} to {memberName}",
-  "confirmation": "I acknowledge that by transferring ownership of this clan to {memberName}, it officially belongs to them.",
-  "buttons": {
-    "transfer": "Transfer Ownership",
-    "cancel": "Cancel"
-  }
+	"title": "Transfer Clan Ownership",
+	"description": "This will transfer ownership of {{clanName}} to {{memberName}}",
+	"confirmation": "I acknowledge that by transferring ownership of this clan to {{memberName}}, it officially belongs to them.",
+	"buttons": {
+		"transfer": "Transfer Ownership",
+		"cancel": "Cancel"
+	}
 }

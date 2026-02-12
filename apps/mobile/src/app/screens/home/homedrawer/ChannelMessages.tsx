@@ -33,6 +33,7 @@ import { MessageUserTyping } from './components/MessageUserTyping';
 import QuickReactionButton from './components/QuickReaction';
 import { style } from './styles';
 
+const scrollPositionCache = new Map<string, number>();
 type ChannelMessagesProps = {
 	channelId: string;
 	lastSeenMessageId?: string;
@@ -88,6 +89,7 @@ const ChannelMessages = React.memo(
 		const userId = useSelector(selectAllAccount)?.user?.id;
 		const [haveScrollToBottom, setHaveScrollToBottom] = useState<boolean>(false);
 		const [listMessageLayout, setListMessageLayout] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
+		const savedScrollOffset = useMemo(() => scrollPositionCache.get(channelId), [channelId]);
 
 		const messagesRef = useRef(messages);
 		messagesRef.current = messages;
@@ -320,6 +322,7 @@ const ChannelMessages = React.memo(
 
 		const handleScroll = useCallback(
 			async ({ nativeEvent }) => {
+				scrollPositionCache.set(channelId, nativeEvent.contentOffset.y);
 				handleSetShowJumpLast(nativeEvent);
 				if (
 					readyToLoadMore?.current &&
@@ -336,7 +339,7 @@ const ChannelMessages = React.memo(
 					await onLoadMore(ELoadMoreDirection.bottom);
 				}
 			},
-			[handleSetShowJumpLast, isDisableLoadMore, isCanLoadMore, onLoadMore]
+			[channelId, handleSetShowJumpLast, isDisableLoadMore, isCanLoadMore, onLoadMore]
 		);
 
 		const handleLayout = useCallback((event) => {
@@ -360,6 +363,7 @@ const ChannelMessages = React.memo(
 						onLoadMore={onLoadMore}
 						isLoadMoreBottom={isLoadMore?.current?.[ELoadMoreDirection.bottom]}
 						initialScrollIndex={initialScrollIndex}
+						savedScrollOffset={initialScrollIndex === undefined ? savedScrollOffset : undefined}
 					/>
 				) : (
 					<View />

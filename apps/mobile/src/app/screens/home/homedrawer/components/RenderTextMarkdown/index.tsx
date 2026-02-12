@@ -23,6 +23,7 @@ import RenderCanvasItem from '../RenderCanvasItem';
 import { HashtagChannel } from './components/HashtagChannel';
 import type { OgpElemnent } from './components/RenderOGPItem';
 import RenderOgpPreview from './components/RenderOGPItem';
+import RenderSocialVideo from './components/RenderSocialVideo';
 import RenderYoutubeVideo from './components/RenderYoutubeVideo';
 import { styles as componentStyles, getMessageReplyMaxHeight } from './index.styles';
 
@@ -507,7 +508,7 @@ export const RenderTextMarkdownContent = ({
 									style={
 										themeValue
 											? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage, isTabletLandscape)
-													.blockSpacing
+												.blockSpacing
 											: {}
 									}
 								>
@@ -548,7 +549,20 @@ export const RenderTextMarkdownContent = ({
 						);
 						break;
 					case EBacktickType.LINKFACEBOOK:
-					case EBacktickType.LINKTIKTOK:
+					case EBacktickType.LINKTIKTOK: {
+						markdownBlackParts.push(
+							<RenderSocialVideo
+								videoKey={`social-embed-${element?.type}-${index}`}
+								url={contentInElement}
+								platform={element?.type}
+								contentInElement={contentInElement}
+								onPress={() => openUrl(contentInElement, null)}
+								onLongPress={() => handleLongPressLink?.(contentInElement)}
+								linkStyle={themeValue ? markdownStyles(themeValue).link : {}}
+							/>
+						);
+						break;
+					}
 					case EBacktickType.VOICE_LINK:
 					case EBacktickType.LINK: {
 						const { clanId, channelId, canvasId } = extractIds(contentInElement);

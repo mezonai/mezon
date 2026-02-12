@@ -30,6 +30,7 @@ import { style } from '../styles';
 const ParticipantItem = memo(
 	({
 		userId,
+		participantName,
 		isMicrophoneEnabled,
 		isSpeaking,
 		screenTrackRef,
@@ -47,7 +48,7 @@ const ParticipantItem = memo(
 		const { t } = useTranslation(['channelVoice']);
 		const member = useAppSelector((state) => selectMemberClanByUserId(state, userId));
 		const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
-		const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || '';
+		const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || participantName || '';
 		const avatar = useMemo(() => {
 			return member?.clan_avatar || member?.user?.avatar_url || '';
 		}, [member]);
@@ -334,7 +335,7 @@ const ParticipantScreen = ({ setFocusedScreenShare, activeSoundReactions, isGrou
 							<ParticipantItem
 								key={participant.identity}
 								userId={participant.identity}
-								participant={participant}
+								participantName={participant?.name}
 								isSpeaking={isSpeaking}
 								isMicrophoneEnabled={isMicrophoneEnabled}
 								videoTrackRef={videoTrackRef}

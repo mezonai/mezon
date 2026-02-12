@@ -19,7 +19,7 @@ import { addAttributesSearchList, compareObjects, normalizeString } from '@mezon
 import { ChannelType } from 'mezon-js';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { InteractionManager, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import { removeDiacritics } from '../../../../utils/helpers';
 import { ChannelsSearchTab } from '../../../ChannelsSearchTab';
@@ -88,7 +88,7 @@ const SearchMessagePage = ({
 			if (!checkListDM.current?.has(user?.id)) {
 				list.push({
 					id: user?.id ?? '',
-					display_name: allClanUsersEntities[user?.id]?.clan_nick ?? user?.display_name ?? '',
+					display_name: user?.display_name ?? allClanUsersEntities[user?.id]?.clan_nick ?? '',
 					username: user?.username ?? '',
 					avatar_url: user?.avatar_url ?? ''
 				});
@@ -115,11 +115,11 @@ const SearchMessagePage = ({
 	const totalResult = useAppSelector((state) => selectTotalResultSearchMessage(state, channelId));
 
 	useEffect(() => {
-		const timeout = setTimeout(() => {
+		const interaction = InteractionManager.runAfterInteractions(() => {
 			setIsContentReady(true);
-		}, 300);
+		});
 
-		return () => clearTimeout(timeout);
+		return () => interaction.cancel();
 	}, []);
 
 	useEffect(() => {
@@ -283,7 +283,7 @@ const SearchMessagePage = ({
 		}
 	}, [TabList, activeTab, onActiveTabChange]);
 
-	const renderContent = () => {
+	const renderContent = useMemo(() => {
 		switch (activeTab) {
 			case ACTIVE_TAB.MESSAGES:
 				return <MessagesSearchTab typeSearch={typeSearch} currentChannel={currentChannel} channelIdFilter={channelIdFilter} />;
@@ -294,12 +294,12 @@ const SearchMessagePage = ({
 			default:
 				return <EmptySearchPage />;
 		}
-	};
+	}, [activeTab, typeSearch, currentChannel, channelIdFilter, membersSearch, dmGroupsSearch, channelsSearch]);
 
 	return (
 		<View style={style.flex}>
 			<HeaderTabSearch tabList={TabList} activeTab={activeTab} onPress={handelHeaderTabChange} />
-			<View style={style.flex}>{isContentReady ? renderContent() : null}</View>
+			<View style={style.flex}>{isContentReady ? renderContent : null}</View>
 		</View>
 	);
 };

@@ -445,18 +445,24 @@ export const voiceSlice = createSlice({
 
 				if (fromCache || !users.length) return;
 
-				state.listInVoiceStatus = {};
 				if (!state.listVoiceMemberByClan[clanId]) {
 					state.listVoiceMemberByClan[clanId] = {};
 				}
+				if (!state.listInVoiceStatus) {
+					state.listInVoiceStatus = {};
+				}
+
 				users.forEach((list) => {
 					const listUser = list.user_ids;
-					if (!listUser || !list.channel_id) return;
-					if (!state.listVoiceMemberByClan[clanId][list.channel_id]) {
-						state.listVoiceMemberByClan[clanId][list.channel_id] = [];
-					}
+					const channelId = list.channel_id;
 
-					state.listVoiceMemberByClan[clanId][list.channel_id] = [...listUser];
+					if (!listUser || !channelId) return;
+
+					state.listVoiceMemberByClan[clanId][channelId] = listUser;
+
+					for (const user of listUser) {
+						state.listInVoiceStatus[user] = { clanId, channelId };
+					}
 				});
 
 				state.cache = createCacheMetadata();

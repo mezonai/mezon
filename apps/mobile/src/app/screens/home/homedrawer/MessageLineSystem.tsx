@@ -111,6 +111,9 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 	};
 
 	const navigateAllThread = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+			isShow: false
+		});
 		navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.CREATE_THREAD });
 	};
 

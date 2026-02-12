@@ -38,6 +38,8 @@ export type ModalParam = {
 const ModalInvite = (props: ModalParam) => {
 	const { t } = useTranslation('invitation');
 	const [modalQR, setModalQR] = useState(false);
+	const [isCopied, setIsCopied] = useState(false);
+	const copiedTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
 	const [urlInvite, setUrlInvite] = useState('');
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -66,6 +68,14 @@ const ModalInvite = (props: ModalParam) => {
 		handleOpenInvite();
 	}, []);
 
+	useEffect(() => {
+		return () => {
+			if (copiedTimeoutRef.current) {
+				clearTimeout(copiedTimeoutRef.current);
+			}
+		};
+	}, []);
+
 	const unsecuredCopyToClipboard = (text: string) => {
 		const textArea = document.createElement('textarea');
 		textArea.value = text;
@@ -80,11 +90,17 @@ const ModalInvite = (props: ModalParam) => {
 		document.body.removeChild(textArea);
 	};
 
-	const handleCopyToClipboard = (content: string) => {
-		if (window.isSecureContext && navigator.clipboard) {
-			navigator.clipboard.writeText(content);
-		} else {
-			unsecuredCopyToClipboard(content);
+	const handleCopyToClipboard = async (content: string) => {
+		try {
+			if (window.isSecureContext && navigator.clipboard) {
+				await navigator.clipboard.writeText(content);
+			} else {
+				unsecuredCopyToClipboard(content);
+			}
+			return true;
+		} catch (err) {
+			console.error(t('errors.copyToClipboard'), err);
+			return false;
 		}
 	};
 
@@ -133,22 +149,30 @@ const ModalInvite = (props: ModalParam) => {
 						<div className="relative">
 							<input
 								type="text"
-								className="w-full h-11 border-theme-primary text-theme-primary-active bg-theme-input rounded-lg px-[16px] py-[13px] text-[14px] outline-none pr-[70px] "
+								className="w-full h-11 border-theme-primary text-theme-primary-active bg-theme-input rounded-lg px-[16px] py-[13px] text-[14px] outline-none pr-[120px] md:pr-[140px] "
 								value={isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite}
 								readOnly
 								data-e2e={generateE2eId('clan_page.modal.invite_people.url_invite')}
 							/>
 							<button
-								className="absolute right-0 top-0 h-11 font-semibold text-sm px-4 md:px-8 py-1.5
+								className={`absolute right-0 top-0 h-11 font-semibold text-sm px-4 md:px-8 py-1.5
 								shadow outline-none focus:outline-none ease-linear transition-all duration-150
-								btn-primary btn-primary-hover text-[14px] md:text-[16px] leading-6 rounded-lg whitespace-nowrap"
-								onClick={() => {
-									handleCopyToClipboard(urlInvite);
-									onClose();
+								text-[14px] md:text-[16px] leading-6 rounded-lg whitespace-nowrap text-center min-w-[90px] md:min-w-[120px] ${isCopied ? '!bg-green-600 text-white' : 'btn-primary btn-primary-hover'}`}
+								onClick={async () => {
+									const copied = await handleCopyToClipboard(
+										isInviteExternalCalling ? (props.privateRoomLink as string) : urlInvite
+									);
+									if (copied) {
+										setIsCopied(true);
+										if (copiedTimeoutRef.current) {
+											clearTimeout(copiedTimeoutRef.current);
+										}
+										copiedTimeoutRef.current = setTimeout(() => setIsCopied(false), 1500);
+									}
 									setShowClanListMenuContext?.();
 								}}
 							>
-								{t('buttons.copy')}
+								{isCopied ? t('buttons.copied') : t('buttons.copy')}
 							</button>
 						</div>
 					</div>

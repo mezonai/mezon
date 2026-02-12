@@ -54,7 +54,8 @@
 		"copyImage": "Đã sao chép Ảnh",
 		"copyImageFailed": "Sao chép không thành công: {{error}}",
 		"shareImageFailed": "Chia sẻ ảnh không thành công: {{error}}",
-		"shareImageSuccess": "Chia sẻ ảnh thành công"
+		"shareImageSuccess": "Chia sẻ ảnh thành công",
+		"closeOgpFailed": "Xóa OGP không thành công"
 	},
 	"directMessage": {
 		"you": "Bạn",

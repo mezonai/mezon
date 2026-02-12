@@ -33,6 +33,7 @@ import { auditLogReducer } from './auditLog/auditLog.slice';
 import { auditLogFilterReducer } from './auditLog/auditLogFilter.slice';
 import { canvasAPIReducer } from './canvas/canvasAPI.slice';
 import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChannel.slice';
+import { channelMediaReducer } from './channels/channelMedia.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
 import { CHANNEL_APP, channelAppReducer } from './channels/channelapp.slice';
 import { channelMetaReducer } from './channels/channelmeta.slice';
@@ -295,6 +296,7 @@ const reducer = {
 	auth: persistedReducer,
 	attachments: attachmentReducer,
 	gallery: galleryReducer,
+	channelMedia: channelMediaReducer,
 	clans: persistedClansReducer,
 	channels: persistedChannelReducer,
 	channelmeta: persistedChannelMetaReducer,

@@ -148,7 +148,7 @@ const ThreadModal = ({ onClose, rootRef }: ThreadsProps) => {
 					)}
 				</div>
 				{showThreadSearch && (
-					<ul className="pb-4 pr-4 pl-4 h-[500px] overflow-y-auto app-scroll">
+					<ul className="pb-4 pr-4 pl-4 h-[500px] overflow-y-auto overflow-x-hidden app-scroll">
 						<GroupThreads preventClosePannel={preventClosePannel} title={t('modals.threads.results')} threads={threadsSearched} />
 					</ul>
 				)}
