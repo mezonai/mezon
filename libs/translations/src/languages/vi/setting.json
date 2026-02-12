@@ -45,7 +45,12 @@
 		"webBrowser": "Trình duyệt web",
 		"appIcon": "Biểu tượng",
 		"advanced": "Nâng cao",
-		"appVersion": "Phiên bản ứng dụng"
+		"appVersion": "Phiên bản ứng dụng",
+		"startUp": "Khởi chạy"
+	},
+	"autoStart": {
+		"title": "Tự động khởi động ứng dụng",
+		"description": "Tự động mở ứng dụng khi máy tính khởi động để bạn có thể sử dụng ngay."
 	},
 	"activity": {
 		"title": "Hiển thị hoạt động của tôi",

@@ -133,9 +133,8 @@ const VoiceInfo = React.memo(() => {
 		if (!btnControl) {
 			return;
 		}
-		const enable = btnControl.dataset.lkEnabled?.toLowerCase() === 'true';
 		btnControl?.click();
-		dispatch(voiceActions.setShowCamera(!enable));
+		dispatch(voiceActions.setShowCamera(btnControl.dataset.lkEnabled?.toLowerCase() === 'true'));
 	}, [dispatch]);
 
 	const handleToggleOpenMicro = useCallback(() => {
@@ -143,9 +142,8 @@ const VoiceInfo = React.memo(() => {
 		if (!btnControl) {
 			return;
 		}
-		const enable = btnControl.dataset.lkEnabled?.toLowerCase() === 'true';
 		btnControl?.click();
-		dispatch(voiceActions.setShowMicrophone(!enable));
+		dispatch(voiceActions.setShowMicrophone(btnControl.dataset.lkEnabled?.toLowerCase() === 'true'));
 	}, [dispatch]);
 
 	const linkVoice = useMemo(() => {

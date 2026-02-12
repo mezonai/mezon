@@ -1,4 +1,4 @@
-import { useChatTypings } from '@mezon/core';
+import { useTypingUsersByChannel } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,8 @@ type ChannelTypingProps = {
 
 export function ChannelTyping({ channelId, mode, isPublic, isDM }: ChannelTypingProps) {
 	const { t } = useTranslation('common');
-	const { typingUsers } = useChatTypings({ channelId, mode, isPublic, isDM });
+	const typingUsers = useTypingUsersByChannel(channelId);
+
 	const typingLabel = useMemo(() => {
 		if (typingUsers.length === 1) {
 			return (

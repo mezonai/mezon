@@ -63,7 +63,7 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 			dispatch(videoStreamActions.stopStream());
 		}
 		disconnect();
-		const idStreamByMe = streamChannelMember?.find((member) => member?.user_id === userId)?.id;
+		const idStreamByMe = streamChannelMember?.find((memberId) => memberId === userId)
 		dispatch(usersStreamActions.remove(idStreamByMe));
 	}, [currentStreamInfo, disconnect, streamChannelMember, dispatch, userId]);
 

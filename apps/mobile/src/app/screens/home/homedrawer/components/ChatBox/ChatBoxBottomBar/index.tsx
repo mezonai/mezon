@@ -53,6 +53,7 @@ import { EMessageActionType } from '../../../enums';
 import type { IMessageActionNeedToResolve } from '../../../types';
 import AttachmentPreview from '../../AttachmentPreview';
 import EmojiSwitcher from '../../EmojiPicker/EmojiSwitcher';
+import OgpPreview from '../../OgpPreview';
 import { RenderTextContent } from '../../RenderTextContent';
 import { ChatBoxListener } from '../ChatBoxListener';
 import type { IChatMessageLeftAreaRef } from '../ChatMessageLeftArea';
@@ -316,7 +317,7 @@ export const ChatBoxBottomBar = memo(
 			});
 			mentionsOnMessage.current = [];
 			hashtagsOnMessage.current = [];
-			onDeleteMessageActionNeedToResolve();
+			onDeleteMessageActionNeedToResolve?.();
 			resetCachedChatbox(topicChannelId || channelId);
 			resetCachedMessageActionNeedToResolve(topicChannelId || channelId);
 			dispatch(
@@ -326,6 +327,7 @@ export const ChatBoxBottomBar = memo(
 					isReset: true
 				})
 			);
+			dispatch(referencesActions.setOgpData(null));
 		}, [onDeleteMessageActionNeedToResolve, topicChannelId, channelId, dispatch]);
 
 		const handleKeyboardBottomSheetMode = useCallback((mode: string) => {
@@ -805,6 +807,7 @@ export const ChatBoxBottomBar = memo(
 				</View>
 				<AttachmentPreview channelId={currentChannelKey} />
 				<ChatBoxListener mode={mode} />
+				<OgpPreview contentText={textChange} />
 				<View style={styles.containerInput}>
 					<ChatMessageLeftArea
 						ref={chatMessageLeftAreaRef}

@@ -200,6 +200,7 @@ const MessageText = ({
 					isEphemeral={isEphemeral}
 					isSending={isSending}
 					onContextMenu={onContextMenu}
+					senderId={message.sender_id}
 				/>
 			) : null}
 		</>

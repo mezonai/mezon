@@ -45,7 +45,12 @@
 		"webBrowser": "Web Browser",
 		"appIcon": "App Icon",
 		"advanced": "Advanced",
-		"appVersion": "App Version"
+		"appVersion": "App Version",
+		"startUp": "Start Up"
+	},
+	"autoStart": {
+		"title": "Auto start application",
+		"description": "Automatically launch the app when your computer starts so it's ready to use right away."
 	},
 	"activity": {
 		"title": "Show My Activity",

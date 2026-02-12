@@ -45,17 +45,19 @@ const ChannelSetting = () => {
 		return listChannel;
 	}, [listChannelSearch, listChannel, searchFilter]);
 	useEffect(() => {
-		async function fetchListChannel() {
-			await dispatch(
-				channelSettingActions.fetchChannelSettingInClan({
-					clanId: selectClanId as string,
-					parentId: '0',
-					typeFetch: ETypeFetchChannelSetting.FETCH_CHANNEL
-				})
-			);
-		}
-		fetchListChannel();
-	}, []);
+		if (!selectClanId) return;
+		setSearchFilter('');
+		debouncedSearchChannel.cancel();
+		dispatch(channelSettingActions.resetChannelSettingState());
+		dispatch(
+			channelSettingActions.fetchChannelSettingInClan({
+				clanId: selectClanId as string,
+				parentId: '0',
+				typeFetch: ETypeFetchChannelSetting.FETCH_CHANNEL,
+				noCache: true
+			})
+		);
+	}, [selectClanId, dispatch, debouncedSearchChannel]);
 
 	return (
 		<div className="p-4 h-[calc(100vh_-_56px)] flex flex-col text-theme-primary ">

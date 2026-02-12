@@ -41,9 +41,7 @@ export const fetchListLoggedDevices = createAsyncThunk('devices/fetchListLoggedD
 			{
 				api_name: 'ListLogedDevice'
 			},
-			(
-				session
-			): Promise<{
+			(): Promise<{
 				devices: Array<IDevice>;
 			}> => {
 				return Promise.resolve({

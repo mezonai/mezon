@@ -1,4 +1,4 @@
-import { selectIsUserTypingInChannel, useAppSelector } from '@mezon/store';
+import { useIsUserTyping } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EUserStatus } from '@mezon/utils';
 import { RenderTypingIndicator, StatusUser } from '../StatusUser';
@@ -53,8 +53,7 @@ export const UserStatusIconClan = ({
 	isShareContact?: boolean;
 }) => {
 	const normalizedStatus = status?.toUpperCase();
-	const isTyping = useAppSelector((state) => selectIsUserTypingInChannel(state, channelId || '', userId || ''));
-
+	const isTyping = useIsUserTyping(channelId || '', userId || '');
 	if (isTyping && !isShareContact) {
 		return RenderTypingIndicator();
 	}

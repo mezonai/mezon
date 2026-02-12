@@ -45,6 +45,10 @@ function MessageVideo({ attachmentData, isMobile = false, isPreview = false }: M
 				},
 				isMobile
 			});
+	const mediaBoxStyle = isPreview
+		? { width: '100%', height: '100%' }
+		: { width: '100%', maxWidth: `${width}px`, aspectRatio: `${width} / ${height}` };
+	const mediaStyle = { width: '100%', height: '100%' };
 	const handleResize = useDebouncedCallback(() => {
 		const video = videoRef.current;
 		if (!video) return;
@@ -144,11 +148,11 @@ function MessageVideo({ attachmentData, isMobile = false, isPreview = false }: M
 	};
 
 	return (
-		<div className="relative overflow-hidden group rounded-lg" style={isPreview ? { width: '100%', height: '100%' } : { width, height }}>
+		<div className="relative overflow-hidden group rounded-lg" style={mediaBoxStyle}>
 			{hasError ? (
 				<div
 					className="flex flex-col items-center justify-center gap-3 p-6 rounded-lg bg-bgLightSecondary dark:bg-bgSecondary"
-					style={isPreview ? { width: '100%', height: '100%' } : { width, height }}
+					style={mediaStyle}
 				>
 					<div className="flex flex-col items-center gap-1">
 						<p className="text-sm font-medium text-textPrimaryLight dark:text-textPrimary text-center">{t('video.error.title')}</p>
@@ -167,7 +171,7 @@ function MessageVideo({ attachmentData, isMobile = false, isPreview = false }: M
 					<video
 						controls={showControl}
 						autoPlay={false}
-						style={isPreview ? { width: '100%', height: '100%' } : { width, height }}
+						style={mediaStyle}
 						ref={videoRef}
 						onCanPlay={(e) => handleOnCanPlay(e)}
 						onError={handleVideoError}

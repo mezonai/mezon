@@ -6,8 +6,8 @@ import { sanitizeUrl } from '../../app/utils';
 import new_window_css from './new-window-css';
 function openNewWindow(url: string, parentWindow: BrowserWindow = App.mainWindow) {
 	const parentBounds = parentWindow.getBounds();
-	const width = Math.floor(parentBounds.width * 0.5);
-	const height = Math.floor(parentBounds.height * 1.0);
+	const width = Math.floor(parentBounds.width * 0.8);
+	const height = Math.floor(parentBounds.height * 0.8);
 	const x = Math.floor(parentBounds.x + (parentBounds.width - width) / 2);
 	const y = Math.floor(parentBounds.y + (parentBounds.height - height) / 2);
 	const popupWindow = new BrowserWindow({

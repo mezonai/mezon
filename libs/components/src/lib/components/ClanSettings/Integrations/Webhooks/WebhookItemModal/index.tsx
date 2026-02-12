@@ -14,6 +14,7 @@ import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons, Menu } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { ChannelIsNotThread, MAX_FILE_SIZE_8MB, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
+import { ChannelType } from 'mezon-js';
 import type { ApiMessageAttachment, ApiWebhook, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
 import type { ChangeEvent, Dispatch, ReactElement, SetStateAction } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -336,7 +337,9 @@ const WebhookItemChannelDropdown = ({
 	const allChannel = useSelector(selectAllChannels);
 	const [parentChannelsInClan, setParentChannelsInClan] = useState<ChannelsEntity[]>([]);
 	useEffect(() => {
-		const normalChannels = allChannel.filter((channel) => channel.parent_id === ChannelIsNotThread.TRUE);
+		const normalChannels = allChannel.filter(
+			(channel) => channel.parent_id === ChannelIsNotThread.TRUE && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL
+		);
 		setParentChannelsInClan(normalChannels);
 	}, [allChannel]);
 

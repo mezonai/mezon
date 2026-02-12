@@ -8,7 +8,7 @@ import { useRoute } from '@react-navigation/native';
 import { ChannelStreamMode } from 'mezon-js';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { useDispatch, useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
@@ -19,15 +19,13 @@ import { EMessageActionType } from '../../enums';
 import { styles } from './styles';
 
 interface IConfirmPinMessageModalProps {
-	isVisible: boolean;
-	onClose: () => void;
 	message: IMessageWithUser;
 	type?: EMessageActionType;
 	mode?: ChannelStreamMode;
 }
 
 export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps) => {
-	const { isVisible, message, onClose, type, mode } = props;
+	const { message, type, mode } = props;
 	const isTabletLandscape = useTabletLandscape();
 	const route = useRoute();
 	const { params } = route;
@@ -35,6 +33,10 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 	const { t } = useTranslation('message');
 	const currentClanId = useSelector(selectCurrentClanId);
 	const { currentChannel, currentDm } = useSelector(getCurrentChannelAndDm);
+
+	const onCloseModalConfirm = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+	};
 
 	const handleConfirmPinMessage = async () => {
 		try {
@@ -100,36 +102,29 @@ export const ConfirmPinMessageModal = memo((props: IConfirmPinMessageModalProps)
 				leadingIcon: <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={baseColor.green} />
 			}
 		});
-		onClose();
+		onCloseModalConfirm();
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	};
 	return (
-		<Modal
-			visible={isVisible}
-			animationType={'fade'}
-			transparent={true}
-			onRequestClose={onClose}
-			supportedOrientations={['portrait', 'landscape']}
-		>
-			<View style={styles.wrapper}>
-				<View style={[styles.container, isTabletLandscape && { maxWidth: '40%' }]}>
-					<View>
-						<Text style={styles.title}>{EMessageActionType.PinMessage === type ? t('pinMessage') : t('unpinMessage')}</Text>
-						<SeparatorWithLine />
-					</View>
-					<Text style={styles.descriptionText}>
-						{EMessageActionType.PinMessage === type ? t('confirmPinMessage') : t('confirmUnPinMessage')}
-					</Text>
-					<View style={styles.buttonsWrapper}>
-						<TouchableOpacity onPress={() => onConfirm()} style={styles.yesButton}>
-							<Text style={styles.buttonText}>{t('Yes')}</Text>
-						</TouchableOpacity>
-						<TouchableOpacity onPress={() => onClose()} style={styles.noButton}>
-							<Text style={styles.buttonText}>{t('No')}</Text>
-						</TouchableOpacity>
-					</View>
+		<View style={styles.wrapper}>
+			<View style={[styles.container, isTabletLandscape && { maxWidth: '40%' }]}>
+				<View>
+					<Text style={styles.title}>{EMessageActionType.PinMessage === type ? t('pinMessage') : t('unpinMessage')}</Text>
+					<SeparatorWithLine />
+				</View>
+				<Text style={styles.descriptionText}>
+					{EMessageActionType.PinMessage === type ? t('confirmPinMessage') : t('confirmUnPinMessage')}
+				</Text>
+				<View style={styles.buttonsWrapper}>
+					<TouchableOpacity onPress={onConfirm} style={styles.yesButton}>
+						<Text style={styles.buttonText}>{t('Yes')}</Text>
+					</TouchableOpacity>
+					<TouchableOpacity onPress={onCloseModalConfirm} style={styles.noButton}>
+						<Text style={styles.buttonText}>{t('No')}</Text>
+					</TouchableOpacity>
 				</View>
 			</View>
-		</Modal>
+			<TouchableOpacity style={styles.backdrop} onPress={onCloseModalConfirm} />
+		</View>
 	);
 });

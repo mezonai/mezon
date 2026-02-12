@@ -10,7 +10,8 @@ import {
 	selectMemberGroupByUserId,
 	selectMessageByMessageId
 } from '@mezon/store-mobile';
-import { convertTimeString, sleep, UsersClanEntity } from '@mezon/utils';
+import type { UsersClanEntity } from '@mezon/utils';
+import { convertTimeString, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { memo, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -56,7 +57,7 @@ export const RenderHeaderModal = memo(
 				if (memberClan) {
 					return memberClan;
 				}
-	
+
 				if (imageSelected?.message_id && imageSelected?.channelId) {
 					const message = selectMessageByMessageId(store.getState(), imageSelected.channelId, imageSelected.message_id);
 					const data = {
@@ -65,15 +66,15 @@ export const RenderHeaderModal = memo(
 						user: {
 							avatar_url: message?.avatar,
 							username: message?.username,
-							display_name: message?.display_name,
+							display_name: message?.display_name
 						}
-					} as UsersClanEntity
-					return data
+					} as UsersClanEntity;
+					return data;
 				}
 				return null;
 			}
 		}, [imageSelected]);
-		
+
 		const onClose = () => {
 			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 		};
@@ -107,19 +108,19 @@ export const RenderHeaderModal = memo(
 			setShowTooltip((prev) => !prev);
 			if (!imageSelected?.url) return;
 
-			onLoading(true);
+			onLoading?.(true);
 			try {
 				const { url, filetype } = imageSelected;
 				const filetypeParts = filetype?.split?.('/');
-				const filePath = await downloadImage(url, filetypeParts?.[1]);
+				const filePath = await downloadImage(url, filetype?.includes('image') ? filetypeParts?.[1] || 'png' : 'png');
 				if (filePath) {
-					await saveMediaToCameraRoll(`file://${filePath}`, filetypeParts?.[0], false);
-					onImageSaved();
+					await saveMediaToCameraRoll(`file://${filePath}`, filetype?.includes('image') ? (filetypeParts?.[0] ?? 'image') : 'image', false);
+					onImageSaved?.();
 				}
 			} catch (error) {
 				console.error('Error downloading image: ', error);
 			} finally {
-				onLoading(false);
+				onLoading?.(false);
 			}
 		};
 
@@ -127,16 +128,16 @@ export const RenderHeaderModal = memo(
 			setShowTooltip((prev) => !prev);
 			if (!imageSelected?.url) return;
 
-			onLoading(true);
+			onLoading?.(true);
 			try {
 				const { url, filetype } = imageSelected;
-				const image = await getImageAsBase64OrFile(url, filetype?.split?.('/')?.[1]);
-				if (image) onImageCopy();
+				const image = await getImageAsBase64OrFile(url, filetype?.includes('image') ? filetype?.split?.('/')?.[1] || 'png' : 'png');
+				if (image) onImageCopy?.();
 			} catch (error) {
 				console.error('Error copying image: ', error);
 				onImageCopy(error);
 			} finally {
-				onLoading(false);
+				onLoading?.(false);
 			}
 		};
 
@@ -144,7 +145,7 @@ export const RenderHeaderModal = memo(
 			setShowTooltip((prev) => !prev);
 			if (!imageSelected?.url) return;
 
-			onLoading(true);
+			onLoading?.(true);
 			try {
 				const { url, filetype, filename } = imageSelected;
 
@@ -153,7 +154,9 @@ export const RenderHeaderModal = memo(
 					return;
 				}
 
-				const imageData = await getImageAsBase64OrFile(url, filetype?.split?.('/')?.[1], { forSharing: true });
+				const imageData = await getImageAsBase64OrFile(url, filetype?.includes('image') ? filetype?.split?.('/')?.[1] || 'png' : 'png', {
+					forSharing: true
+				});
 
 				if (!imageData?.filePath) {
 					onImageShare?.('Failed to process image');
@@ -162,7 +165,7 @@ export const RenderHeaderModal = memo(
 
 				await Share.open({
 					url: `file://${imageData.filePath}`,
-					type: filetype || 'image/png',
+					type: filetype?.includes('image') ? filetype || 'image/png' : 'image/png',
 					filename: filename || 'image',
 					failOnCancel: false
 				});
@@ -170,7 +173,7 @@ export const RenderHeaderModal = memo(
 				onImageShare?.('Unknown error');
 				console.error('Error sharing image: ', error);
 			} finally {
-				onLoading(false);
+				onLoading?.(false);
 				onClose();
 			}
 		};

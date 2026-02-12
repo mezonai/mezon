@@ -147,7 +147,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || usernameString;
 
 	const avatar = useMemo(() => {
-		if (participantId === 'KOMU') {
+		if (trackReference.participant.isAgent) {
 			return 'https://imgproxy.mezon.ai/K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c/rs:fit:100:100:1/mb:2097152/plain/https://cdn.mezon.vn/0/0/1779484387973271600/1737423959329_undefined173740153013517374015248704886401586613166392.png@webp';
 		}
 		return member?.clan_avatar || member?.user?.avatar_url || null;

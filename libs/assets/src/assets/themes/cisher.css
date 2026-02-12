@@ -31,9 +31,9 @@
 	--theme-setting-nav: color-mix(in oklab, hsl(240 calc(1 * 4.348%) 95.49% /1) 100%, rgb(255, 247, 204) 50%);
 	--private-theme: rgb(144, 224, 176);
 
-	--text-theme-primary: oklab(0.474638 0.0328101 -0.0124879);
+	--text-theme-primary: oklab(0.35 0.0328101 -0.0124879);
 
-	--text-theme-message: oklab(0.309184 0.0320113 -0.0102456);
+	--text-theme-message: oklab(0.25 0.0320113 -0.0102456);
 
 	--bg-active-friend-list: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), linear-gradient(rgb(243, 179, 54) 31.1%, rgb(238, 133, 88) 67.09%);
 	--bg-active-button: hsl(240 calc(1 * 4%) 60.784% /0.1607843137254902);
@@ -42,7 +42,7 @@
 	--border-color-primary: oklab(0.776468 -0.000602474 0.0110638 / 0.278431);
 	--bg-theme-direct-message: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), linear-gradient(rgb(243, 179, 54) 31.1%, rgb(238, 133, 88) 67.09%);
 
-	--text-secondary: oklab(0.300269 0.0316806 -0.0090825);
+	--text-secondary: oklab(0.25 0.0316806 -0.0090825);
 	--border-theme-primary: color-mix(in oklab, hsl(240 calc(1 * 4%) 60.784% /0.2) 100%, hsl(0 0% 0% /0.2) 0%);
 	--border-t-theme-primary: color-mix(in oklab, hsl(240 calc(1 * 4%) 60.784% /0.2) 100%, hsl(0 0% 0% /0.2) 0%);
 	--border-r-t-l-theme-primary: color-mix(in oklab, hsl(240 calc(1 * 4%) 60.784% /0.2) 100%, hsl(0 0% 0% /0.2) 0%);
@@ -171,5 +171,6 @@
 	/* notice region */
 	--text-separator-theme-primary: #25252521;
 	--bg-tooltip-app: #19191c;
+	--text-tooltip-app: #ffffff;
 	--bg-unread-message: #fafafa;
 }

@@ -110,12 +110,15 @@ export const ReactionCallHandler = memo(() => {
 						if (firstEmojiId.startsWith('raising-up:')) {
 							const state = getStore().getState();
 							const members = selectMemberClanByUserId(state, senderId);
+							if (!members) {
+								return;
+							}
 							setRaisingList((prev) => [
 								...prev,
 								{
 									id: senderId,
 									avatar: members?.clan_avatar || members?.user?.avatar_url || '',
-									name: members.clan_nick || members.user?.display_name || members.user?.username || ''
+									name: members?.clan_nick || members?.user?.display_name || members?.user?.username || ''
 								}
 							]);
 

@@ -44,14 +44,6 @@ const PanelKeyboard = React.memo((props: IProps) => {
 		return [validHeight, Platform.OS === 'ios' ? '95%' : '100%'];
 	}, [heightKeyboardShow]);
 	const getKeyboardHeightFromMetrics = useCallback(() => {
-		try {
-			const metrics = Keyboard.metrics();
-			if (metrics && metrics.height > 0) {
-				return Math.ceil(metrics.height);
-			}
-		} catch {
-			/* empty */
-		}
 		return lastKnownKeyboardHeight;
 	}, []);
 
@@ -61,23 +53,22 @@ const PanelKeyboard = React.memo((props: IProps) => {
 			if (validHeight > 0) {
 				lastKnownKeyboardHeight = validHeight;
 			}
+			spacerHeightAnim.stopAnimation();
 			Animated.timing(spacerHeightAnim, {
 				toValue: validHeight,
 				duration: 200,
 				useNativeDriver: false
 			}).start();
-			if (heightKeyboardShowRef.current !== validHeight) {
-				heightKeyboardShowRef.current = validHeight;
-				setHeightKeyboardShow(validHeight);
-				if (
-					typeKeyboardBottomSheetRef.current !== 'advanced' &&
-					!!typeKeyboardBottomSheetRef?.current &&
-					typeKeyboardBottomSheetRef.current !== 'emoji' &&
-					typeKeyboardBottomSheetRef.current !== 'attachment'
-				) {
-					bottomPickerRef?.current?.dismiss();
-					bottomPickerRef?.current?.close();
-				}
+			heightKeyboardShowRef.current = validHeight;
+			setHeightKeyboardShow(validHeight);
+			if (
+				typeKeyboardBottomSheetRef.current !== 'advanced' &&
+				!!typeKeyboardBottomSheetRef?.current &&
+				typeKeyboardBottomSheetRef.current !== 'emoji' &&
+				typeKeyboardBottomSheetRef.current !== 'attachment'
+			) {
+				bottomPickerRef?.current?.dismiss();
+				bottomPickerRef?.current?.close();
 			}
 		},
 		[spacerHeightAnim]
@@ -85,6 +76,8 @@ const PanelKeyboard = React.memo((props: IProps) => {
 
 	useFocusEffect(
 		React.useCallback(() => {
+			spacerHeightAnim.stopAnimation();
+			spacerHeightAnim.setValue(0);
 			const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
 			const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
 			let fallbackTimeoutId: NodeJS.Timeout | null = null;
@@ -95,7 +88,9 @@ const PanelKeyboard = React.memo((props: IProps) => {
 					fallbackTimeoutId = null;
 				}
 
-				const height = e?.endCoordinates?.height ? e?.endCoordinates?.height : getKeyboardHeightFromMetrics();
+				const eventHeight = e?.endCoordinates?.height || 0;
+				const cachedHeight = getKeyboardHeightFromMetrics();
+				const height = Math.max(eventHeight, cachedHeight);
 				applyKeyboardHeight(height);
 			};
 
@@ -134,6 +129,11 @@ const PanelKeyboard = React.memo((props: IProps) => {
 				showSub.remove();
 				hideSub.remove();
 				additionalShowSub.remove();
+				spacerHeightAnim.stopAnimation();
+				spacerHeightAnim.setValue(0);
+				heightKeyboardShowRef.current = 0;
+				setHeightKeyboardShow(0);
+				bottomPickerRef?.current?.dismiss();
 			};
 		}, [spacerHeightAnim, applyKeyboardHeight, getKeyboardHeightFromMetrics])
 	);
