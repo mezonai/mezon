@@ -1,11 +1,32 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { acitvitiesActions, directActions, getStore, messagesActions, selectDirectById, useAppDispatch } from '@mezon/store-mobile';
+import {
+	acitvitiesActions,
+	directActions,
+	getStore,
+	messagesActions,
+	selectDirectById,
+	selectDirectHasMore,
+	selectDirectPaginationLoading,
+	useAppDispatch
+} from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
-import { DeviceEventEmitter, FlatList, Keyboard, Platform, Pressable, RefreshControl, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+	ActivityIndicator,
+	DeviceEventEmitter,
+	FlatList,
+	Keyboard,
+	Platform,
+	Pressable,
+	RefreshControl,
+	StyleSheet,
+	TouchableOpacity,
+	View
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
@@ -16,6 +37,13 @@ import MessageActivity from './MessageActivity';
 import MessageHeader from './MessageHeader';
 import MessagesScreenEmpty from './MessagesScreenEmpty';
 import { style } from './styles';
+
+const GRADIENT_START = { x: 1, y: 0 };
+const GRADIENT_END = { x: 0, y: 0 };
+const flexOneStyle = { flex: 1 };
+const contentContainerStyle = { paddingBottom: size.s_100 };
+const footerStyle = { paddingVertical: size.s_14 };
+const keyExtractor = (dm: string) => `${dm}DM_MSG_ITEM`;
 
 const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 	const dmGroupChatList: string[] = useMemo(() => {
@@ -34,9 +62,18 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 	const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 	const navigation = useNavigation<any>();
 	const { themeValue } = useTheme();
-	const styles = style(themeValue);
+	const styles = useMemo(() => style(themeValue), [themeValue]);
 	const dispatch = useAppDispatch();
 	const isTabletLandscape = useTabletLandscape();
+
+	const hasMore = useSelector(selectDirectHasMore);
+	const paginationLoading = useSelector(selectDirectPaginationLoading);
+
+	useFocusEffect(
+		useCallback(() => {
+			dispatch(directActions.fetchDirectMessage({ noCache: true }));
+		}, [dispatch])
+	);
 
 	const navigateToNewMessageScreen = useCallback(() => {
 		navigation.navigate(APP_SCREEN.MESSAGES.STACK, { screen: APP_SCREEN.MESSAGES.NEW_MESSAGE });
@@ -49,6 +86,11 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 		await sleep(500);
 		setIsRefreshing(false);
 	}, [dispatch]);
+
+	const handleLoadMore = useCallback(() => {
+		if (!hasMore || paginationLoading) return;
+		dispatch(directActions.fetchMoreDirectMessages({}));
+	}, [dispatch, hasMore, paginationLoading]);
 
 	useEffect(() => {
 		const dmItemRouter = DeviceEventEmitter.addListener('CHANGE_CHANNEL_DM_DETAIL', ({ dmId = '' }) => {
@@ -95,33 +137,46 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 
 	const HeaderComponent = useMemo(() => <MessageActivity />, []);
 
+	const ListFooterComponent = useMemo(() => {
+		if (!paginationLoading) return null;
+		return (
+			<View style={footerStyle}>
+				<ActivityIndicator size="small" color={themeValue.textStrong} />
+			</View>
+		);
+	}, [paginationLoading, themeValue.textStrong]);
+
+	const gradientColors = useMemo(
+		() => [themeValue.primary, themeValue?.primaryGradiant || themeValue.primary] as [string, string],
+		[themeValue.primary, themeValue.primaryGradiant]
+	);
+
+	const handleMomentumScrollBegin = useCallback(() => Keyboard.dismiss(), []);
+
+	const ListEmptyComponent = useMemo(() => <MessagesScreenEmpty />, []);
+
 	return (
 		<View style={styles.container}>
-			<LinearGradient
-				start={{ x: 1, y: 0 }}
-				end={{ x: 0, y: 0 }}
-				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-				style={[StyleSheet.absoluteFillObject]}
-			/>
+			<LinearGradient start={GRADIENT_START} end={GRADIENT_END} colors={gradientColors} style={StyleSheet.absoluteFillObject} />
 			<MessageHeader />
-			<View style={{ flex: 1 }}>
+			<View style={flexOneStyle}>
 				<FlatList
 					data={dmGroupChatList}
 					renderItem={renderItem}
-					contentContainerStyle={{
-						paddingBottom: size.s_100
-					}}
-					keyExtractor={(dm) => `${dm}DM_MSG_ITEM`}
+					contentContainerStyle={contentContainerStyle}
+					keyExtractor={keyExtractor}
 					showsVerticalScrollIndicator={true}
 					removeClippedSubviews={Platform.OS === 'android'}
 					initialNumToRender={15}
 					windowSize={5}
-					onEndReachedThreshold={0.5}
-					onMomentumScrollBegin={() => Keyboard.dismiss()}
+					onEndReachedThreshold={0.3}
+					onEndReached={handleLoadMore}
+					onMomentumScrollBegin={handleMomentumScrollBegin}
 					ListHeaderComponent={HeaderComponent}
+					ListFooterComponent={ListFooterComponent}
 					keyboardShouldPersistTaps={'handled'}
 					refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
-					ListEmptyComponent={() => <MessagesScreenEmpty />}
+					ListEmptyComponent={ListEmptyComponent}
 				/>
 			</View>
 			<Pressable style={styles.addMessage} onPress={navigateToNewMessageScreen}>

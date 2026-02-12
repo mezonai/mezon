@@ -1,8 +1,16 @@
 import { appActions, useAppDispatch } from '@mezon/store-mobile';
 import { useRef, useState } from 'react';
-import { StyleProp, View, ViewStyle } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import WebView from 'react-native-webview';
-import { WebViewErrorEvent, WebViewMessageEvent } from 'react-native-webview/lib/WebViewTypes';
+import type {
+	AndroidLayerType,
+	ShouldStartLoadRequest,
+	WebViewErrorEvent,
+	WebViewMessageEvent,
+	WebViewNavigationEvent
+} from 'react-native-webview/lib/WebViewTypes';
+import type { GestureResponderEvent } from 'react-native/Libraries/Types/CoreEventTypes';
 import ErrorPage from './ErrorPage';
 
 interface webviewBaseComponentProps {
@@ -15,17 +23,20 @@ interface webviewBaseComponentProps {
 	domStorageEnabled?: boolean;
 	nestedScrollEnabled?: boolean;
 	setSupportMultipleWindows?: boolean;
-	iosTimeoutInMilliseconds?: number;
-	androidTimeoutInMilliseconds?: number;
 	startInLoadingState?: boolean;
+	androidLayerType?: AndroidLayerType;
+	allowsInlineMediaPlayback?: boolean;
+	allowsFullscreenVideo?: boolean;
 	style?: StyleProp<ViewStyle>;
 	onMessage?: (event: WebViewMessageEvent) => void;
-	onLoadEnd?: () => void;
-	onLoadStart?: () => void;
+	onLoadEnd?: (event: WebViewNavigationEvent | WebViewErrorEvent) => void;
+	onLoadStart?: (event: WebViewNavigationEvent) => void;
 	onError?: (error: WebViewErrorEvent) => void;
 	onGoBack?: () => void;
 	onRefresh?: () => void;
-	onShouldStartLoadWithRequest?: (state: any) => boolean;
+	onShouldStartLoadWithRequest?: (event: ShouldStartLoadRequest) => boolean;
+	onStartShouldSetResponder?: (event: GestureResponderEvent) => boolean;
+	onTouchStart?: (event: GestureResponderEvent) => void;
 }
 
 const WebviewBase = (props: webviewBaseComponentProps) => {
@@ -39,9 +50,10 @@ const WebviewBase = (props: webviewBaseComponentProps) => {
 		domStorageEnabled,
 		nestedScrollEnabled,
 		setSupportMultipleWindows,
-		iosTimeoutInMilliseconds,
-		androidTimeoutInMilliseconds,
 		startInLoadingState,
+		androidLayerType,
+		allowsInlineMediaPlayback,
+		allowsFullscreenVideo,
 		style,
 		onMessage,
 		onLoadEnd,
@@ -49,7 +61,9 @@ const WebviewBase = (props: webviewBaseComponentProps) => {
 		onError,
 		onGoBack,
 		onRefresh,
-		onShouldStartLoadWithRequest
+		onShouldStartLoadWithRequest,
+		onStartShouldSetResponder,
+		onTouchStart
 	} = props;
 	const [error, setError] = useState(null);
 	const webviewRef = useRef<WebView>(null);
@@ -67,10 +81,10 @@ const WebviewBase = (props: webviewBaseComponentProps) => {
 		webviewRef?.current?.reload();
 	};
 
-	const handleLoadEnd = () => {
+	const handleLoadEnd = (event: WebViewNavigationEvent | WebViewErrorEvent) => {
 		dispatch(appActions.setLoadingMainMobile(false));
 		setError(null);
-		onLoadEnd && onLoadEnd();
+		onLoadEnd && onLoadEnd(event);
 	};
 
 	return (
@@ -87,6 +101,9 @@ const WebviewBase = (props: webviewBaseComponentProps) => {
 				domStorageEnabled={domStorageEnabled}
 				nestedScrollEnabled={nestedScrollEnabled}
 				startInLoadingState={startInLoadingState}
+				androidLayerType={androidLayerType}
+				allowsInlineMediaPlayback={allowsInlineMediaPlayback}
+				allowsFullscreenVideo={allowsFullscreenVideo}
 				style={style}
 				onMessage={onMessage}
 				onLoadEnd={onLoadEnd}
@@ -94,8 +111,8 @@ const WebviewBase = (props: webviewBaseComponentProps) => {
 				onError={handleError}
 				onLoad={handleLoadEnd}
 				onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
-				iosTimeoutInMilliseconds={iosTimeoutInMilliseconds}
-				androidTimeoutInMilliseconds={androidTimeoutInMilliseconds}
+				onStartShouldSetResponder={onStartShouldSetResponder}
+				onTouchStart={onTouchStart}
 			/>
 		</View>
 	);

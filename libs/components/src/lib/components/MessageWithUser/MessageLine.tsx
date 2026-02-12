@@ -28,6 +28,7 @@ interface RenderContentProps {
 	isEphemeral?: boolean;
 	isSending?: boolean;
 	onContextMenu?: (event: React.MouseEvent<HTMLElement>) => void;
+	senderId?: string;
 }
 
 export interface ElementToken {
@@ -197,10 +198,8 @@ export const MessageLine = ({
 	mode,
 	isSearchMessage,
 	isJumMessageEnabled,
-	parentWidth,
 	isOnlyContainEmoji,
 	isTokenClickAble,
-	isHideLinkOneImage,
 	isEditted,
 	isInPinMsg,
 	code,
@@ -210,7 +209,8 @@ export const MessageLine = ({
 	onClickToMessage,
 	isEphemeral,
 	isSending,
-	onContextMenu
+	onContextMenu,
+	senderId
 }: RenderContentProps) => {
 	const { t: translate } = useTranslation('common');
 	mode = mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -445,7 +445,14 @@ export const MessageLine = ({
 								)
 							: '';
 					formattedContent.push(
-						<OgpEmbed url={url} description={element.description} image={element.image} title={element.title} messageId={messageId} />
+						<OgpEmbed
+							url={url}
+							senderId={senderId}
+							description={element.description}
+							image={element.image}
+							title={element.title}
+							messageId={messageId}
+						/>
 					);
 				} else {
 					let content = contentInElement ?? '';

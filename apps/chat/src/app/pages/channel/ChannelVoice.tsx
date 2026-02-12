@@ -29,12 +29,12 @@ import {
 } from '@mezon/store';
 
 import { MyVideoConference, PreJoinVoiceChannel } from '@mezon/components';
-import { ParticipantMeetState, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
+import { ParticipantMeetState, isLinuxDesktop, isWindowsDesktop, useLastCallback } from '@mezon/utils';
 import type { RoomConnectOptions } from 'livekit-client';
 import { Room } from 'livekit-client';
 import { ChannelType } from 'mezon-js';
 import type { ReactNode, RefObject } from 'react';
-import { Suspense, memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, memo, useCallback, useEffect, useMemo, useRef, useState, type ErrorInfo } from 'react';
 import { useSelector } from 'react-redux';
 import ChatStream from '../chatStream';
 import { useLowCPUOptimizer } from './hooks/useLowCPUOptimizer';
@@ -163,6 +163,7 @@ const ChannelVoiceInner = () => {
 	const isOnMenu = useSelector(selectStatusMenu);
 
 	const room = useMemo(() => new Room({ dynacast: true, adaptiveStream: true }), []);
+	const isDisconnectingRef = useRef(false);
 
 	const connectOptions = useMemo(
 		(): RoomConnectOptions => ({
@@ -207,7 +208,7 @@ const ChannelVoiceInner = () => {
 		[dispatch, userProfile, voiceInfo?.roomId]
 	);
 
-	const handleJoinRoom = useCallback(async () => {
+	const handleJoinRoom = useLastCallback(async () => {
 		try {
 			await room.disconnect();
 		} catch (error) {
@@ -269,30 +270,33 @@ const ChannelVoiceInner = () => {
 		} finally {
 			setLoading(false);
 		}
-	}, [dispatch, participantMeetState, room]);
+	});
 
-	const handleLeaveRoom = useCallback(
-		async (self?: boolean) => {
-			if (!voiceInfo?.clanId || !voiceInfo?.channelId) return;
+	const handleLeaveRoom = useLastCallback(async (self?: boolean) => {
+		if (!voiceInfo?.clanId || !voiceInfo?.channelId) return;
 
-			try {
-				await room.disconnect();
-			} catch (error) {
-				console.error('Failed to disconnect LiveKit room:', error);
-			}
+		if (isDisconnectingRef.current) return;
+		isDisconnectingRef.current = true;
 
-			dispatch(voiceActions.resetVoiceControl());
-			if (userProfile?.user?.id) {
-				dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: voiceInfo.clanId }));
-			}
-			await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId, self);
-		},
-		[dispatch, participantMeetState, room, userProfile?.user?.id, voiceInfo]
-	);
+		try {
+			await room.disconnect();
+		} catch (error) {
+			console.error('Failed to disconnect LiveKit room:', error);
+		}
+
+		dispatch(voiceActions.resetVoiceControl());
+		if (userProfile?.user?.id) {
+			dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: voiceInfo.clanId }));
+		}
+
+		isDisconnectingRef.current = false;
+
+		await participantMeetState(ParticipantMeetState.LEAVE, voiceInfo.clanId, voiceInfo.channelId, self);
+	});
 
 	const handleFullScreen = useCallback(() => {
 		dispatch(voiceActions.setFullScreen(!isVoiceFullScreen));
-	}, [dispatch, isVoiceFullScreen]);
+	}, [isVoiceFullScreen]);
 
 	const toggleChat = useCallback(() => {
 		dispatch(appActions.setIsShowChatVoice(!isShowChatVoice));
@@ -347,6 +351,45 @@ const ChannelVoiceInner = () => {
 	);
 };
 
-const ChannelVoice = memo(ChannelVoiceInner);
+interface VoiceErrorBoundaryState {
+	hasError: boolean;
+}
+
+class VoiceErrorBoundary extends React.Component<{ children: ReactNode }, VoiceErrorBoundaryState> {
+	state: VoiceErrorBoundaryState = { hasError: false };
+
+	static getDerivedStateFromError(): VoiceErrorBoundaryState {
+		return { hasError: true };
+	}
+
+	componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+		console.error('VoiceErrorBoundary caught error:', error, errorInfo);
+	}
+
+	render() {
+		if (this.state.hasError) {
+			return (
+				<div className="flex items-center justify-center h-full text-textSecondary">
+					<div className="text-center">
+						<p>Voice channel encountered an error.</p>
+						<button
+							className="mt-2 px-4 py-2 bg-bgSecondary rounded hover:bg-bgTertiary"
+							onClick={() => this.setState({ hasError: false })}
+						>
+							Retry
+						</button>
+					</div>
+				</div>
+			);
+		}
+		return this.props.children;
+	}
+}
+
+const ChannelVoice = memo(() => (
+	<VoiceErrorBoundary>
+		<ChannelVoiceInner />
+	</VoiceErrorBoundary>
+));
 
 export default ChannelVoice;
