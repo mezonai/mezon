@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import {
 	ACTION_SHOW_IMAGE,
+	AUTO_START_APP,
 	CLEAR_SCREEN_SOURCES_CACHE,
 	GET_APP_VERSION,
 	GET_DEVICE_ID,
@@ -55,5 +56,8 @@ contextBridge.exposeInMainWorld('electron', {
 	setRatioWindow: (ratio: boolean) => ipcRenderer.invoke(SET_RATIO_WINDOW, ratio),
 	launchAppWindow: (props: string) => {
 		return ipcRenderer.invoke(LAUNCH_APP_WINDOW, props);
+	},
+	toggleSettingAutoStart: (auto: boolean) => {
+		return ipcRenderer.invoke(AUTO_START_APP, auto);
 	}
 });
