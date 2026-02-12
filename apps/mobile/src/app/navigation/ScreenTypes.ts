@@ -35,10 +35,8 @@ export const APP_SCREEN = {
 	INSTALL_CLAN: 'INSTALL_CLAN',
 	CLAIM_MONEY: 'CLAIM_MONEY',
 	MEDIA_HIGHLIGHTS_TIMELINE: 'MEDIA_HIGHLIGHTS_TIMELINE',
-	EVENT_DETAIL: 'EVENT_DETAIL',
-	EVENT_DETAIL_SCREEN: 'EVENT_DETAIL_SCREEN',
+	ALBUM_DETAIL: 'ALBUM_DETAIL',
 	CREATE_MILESTONE: 'CREATE_MILESTONE',
-	FAMILY_EVENTS: 'FAMILY_EVENTS',
 
 	NOTIFICATION: {
 		STACK: 'ROUTES.NOTIFICATION.STACK',
@@ -368,7 +366,7 @@ export type AppStackParamList = {
 	[APP_SCREEN.HOME_DEFAULT]: undefined;
 	[APP_SCREEN.PROFILE_DETAIL]: { username?: string; data?: string };
 	[APP_SCREEN.MEDIA_HIGHLIGHTS_TIMELINE]: { channelId?: string; clanId?: string };
-	[APP_SCREEN.EVENT_DETAIL]: {
+	[APP_SCREEN.ALBUM_DETAIL]: {
 		eventId: string;
 		title: string;
 		date: string;
@@ -376,17 +374,6 @@ export type AppStackParamList = {
 		attachments?: any[];
 		channelId?: string;
 		clanId?: string;
-	};
-	[APP_SCREEN.EVENT_DETAIL_SCREEN]: {
-		eventId: string;
-		title: string;
-		description: string;
-		date: Date;
-		time?: string;
-		isAllDay?: boolean;
-		image?: string;
-		category: string;
-		location?: string;
 	};
 	[APP_SCREEN.CREATE_MILESTONE]: { channelId?: string; clanId?: string };
 	[APP_SCREEN.NOTIFICATION.STACK]: NavigatorScreenParams<NotificationStackParamList>;

@@ -28,7 +28,7 @@ export const styles = (theme: Attributes) =>
 		headerTitle: {
 			fontSize: size.s_24,
 			fontWeight: '700',
-			color: 'white',
+			color: theme.text,
 			marginBottom: size.s_6,
 			textAlign: 'center'
 		},
@@ -39,11 +39,21 @@ export const styles = (theme: Attributes) =>
 		},
 		headerDate: {
 			fontSize: size.s_14,
-			color: 'white',
+			color: theme.text,
 			opacity: 0.9
 		},
 		scrollView: {
 			flex: 1
+		},
+		descriptionContainer: {
+			paddingHorizontal: size.s_16,
+			paddingBottom: size.s_12
+		},
+		descriptionText: {
+			fontSize: size.s_14,
+			color: theme.text,
+			opacity: 0.8,
+			lineHeight: 20
 		},
 		wrapperImageContainer: {
 			padding: size.s_8
@@ -152,10 +162,11 @@ export const styles = (theme: Attributes) =>
 		},
 		uploadingOverlay: {
 			...StyleSheet.absoluteFillObject,
-			backgroundColor: 'rgba(0, 0, 0, 0.45)',
+			backgroundColor: 'rgba(0, 0, 0, 0.3)',
 			alignItems: 'center' as const,
 			justifyContent: 'center' as const,
-			borderRadius: size.s_16
+			borderRadius: size.s_16,
+			margin: size.s_8
 		},
 		bottomSpacer: {
 			height: 100

@@ -1,4 +1,4 @@
-import { size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import type { ChannelEventAttachment } from '@mezon/store-mobile';
 import { channelMediaActions, useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
@@ -8,7 +8,7 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, Alert, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { openPicker } from 'react-native-image-crop-picker';
@@ -42,6 +42,10 @@ const CreateMilestone: React.FC = () => {
 	const [isUploading, setIsUploading] = useState(false);
 	const [showDatePicker, setShowDatePicker] = useState(false);
 	const [tempDate, setTempDate] = useState<Date>(selectedDate);
+
+	const isSaveDisabled = useMemo(() => {
+		return isUploading || !eventTitle.trim() || !story.trim();
+	}, [isUploading, eventTitle, story]);
 
 	const formatDate = (date: Date) => {
 		const day = String(date.getDate()).padStart(2, '0');
@@ -251,7 +255,7 @@ const CreateMilestone: React.FC = () => {
 			{/* Header */}
 			<View style={styles.header}>
 				<TouchableOpacity onPress={handleClose} style={styles.closeButton}>
-					<MezonIconCDN icon={IconCDN.backArrowLarge} width={size.s_28} height={size.s_28} color="white" />
+					<MezonIconCDN icon={IconCDN.backArrowLarge} width={size.s_28} height={size.s_28} color={themeValue.text} />
 				</TouchableOpacity>
 				<Text style={styles.headerTitle}>{t('createMilestone.headerTitle')}</Text>
 				<TouchableOpacity onPress={handleCancel}>
@@ -271,7 +275,9 @@ const CreateMilestone: React.FC = () => {
 							onChangeText={setEventTitle}
 							placeholder={t('createMilestone.eventTitlePlaceholder')}
 							placeholderTextColor={themeValue.textDisabled}
+							maxLength={100}
 						/>
+						<Text style={styles.charCount}>{eventTitle.length}/100</Text>
 					</View>
 
 					{/* Date */}
@@ -324,7 +330,9 @@ const CreateMilestone: React.FC = () => {
 							multiline
 							numberOfLines={6}
 							textAlignVertical="top"
+							maxLength={250}
 						/>
+						<Text style={styles.charCount}>{story.length}/250</Text>
 					</View>
 
 					{/* Memories */}
@@ -343,11 +351,16 @@ const CreateMilestone: React.FC = () => {
 											<ImageNative url={proxyUrl} urlOriginal={originalUrl} style={styles.mediaImage} resizeMode="cover" />
 											{!isUploaded(att) && (
 												<View style={styles.uploadingOverlay}>
-													<ActivityIndicator size="small" color="white" />
+													<ActivityIndicator size="small" color={themeValue.text} />
 												</View>
 											)}
 											<TouchableOpacity style={styles.removeMediaButton} onPress={() => handleRemoveAttachment(att.id)}>
-												<MezonIconCDN icon={IconCDN.circleXIcon} width={size.s_24} height={size.s_24} color="white" />
+												<MezonIconCDN
+													icon={IconCDN.circleXIcon}
+													width={size.s_24}
+													height={size.s_24}
+													color={baseColor.white}
+												/>
 											</TouchableOpacity>
 										</View>
 									);
@@ -378,8 +391,8 @@ const CreateMilestone: React.FC = () => {
 
 			{/* Save Button */}
 			<View style={styles.footer}>
-				<TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} width={size.s_24} height={size.s_24} color="white" />
+				<TouchableOpacity style={[styles.saveButton, isSaveDisabled && { opacity: 0.5 }]} onPress={handleSave} disabled={isSaveDisabled}>
+					<MezonIconCDN icon={IconCDN.checkmarkLargeIcon} width={size.s_24} height={size.s_24} color={baseColor.white} />
 					<Text style={styles.saveButtonText}>{t('createMilestone.saveButton')}</Text>
 				</TouchableOpacity>
 			</View>

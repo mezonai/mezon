@@ -5,8 +5,7 @@ import { StyleSheet } from 'react-native';
 export const styles = (theme: Attributes) =>
 	StyleSheet.create({
 		container: {
-			flex: 1,
-			backgroundColor: theme.primary
+			flex: 1
 		},
 		header: {
 			flexShrink: 1,
@@ -51,6 +50,9 @@ export const styles = (theme: Attributes) =>
 			paddingHorizontal: size.s_14
 		},
 		scrollView: {
+			flex: 1
+		},
+		loadingWrapper: {
 			flex: 1
 		},
 		scrollContent: {

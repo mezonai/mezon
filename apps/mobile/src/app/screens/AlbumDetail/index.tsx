@@ -7,15 +7,16 @@ import { createImgproxyUrl, getMobileUploadedAttachments } from '@mezon/utils';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
 	ActivityIndicator,
 	Alert,
 	DeviceEventEmitter,
 	FlatList,
-	Modal,
+	Image,
+	KeyboardAvoidingView,
+	NativeModules,
 	Platform,
-	Pressable,
 	StyleSheet,
 	Text,
 	TextInput,
@@ -24,6 +25,7 @@ import {
 } from 'react-native';
 import { openPicker } from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
+import Entypo from 'react-native-vector-icons/Entypo';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { EventImageViewer } from '../../components/EventImageViewer';
 import ImageNative from '../../components/ImageNative';
@@ -43,8 +45,40 @@ interface RouteParams {
 }
 
 const isUploaded = (att: ChannelEventAttachment) => att.file_url?.startsWith('https');
+const isVideoFile = (att: ChannelEventAttachment) => att.file_type?.startsWith('video/');
 
-const EventDetail: React.FC = () => {
+const VideoThumbnailView: React.FC<{
+	videoUrl: string;
+	style: any;
+	resizeMode?: 'cover' | 'contain';
+}> = React.memo(({ videoUrl, style: imgStyle, resizeMode = 'cover' }) => {
+	const [thumbUri, setThumbUri] = useState('');
+
+	useEffect(() => {
+		if (!videoUrl) return;
+		if (Platform.OS === 'ios') {
+			NativeModules.VideoThumbnailModule?.getThumbnail(videoUrl)
+				.then((result: { uri?: string }) => setThumbUri(result?.uri || ''))
+				.catch(() => setThumbUri(''));
+		} else {
+			NativeModules.VideoThumbnail?.getThumbnail(videoUrl)
+				.then((path: string) => setThumbUri(typeof path === 'string' ? path : ''))
+				.catch(() => setThumbUri(''));
+		}
+	}, [videoUrl]);
+
+	if (!thumbUri) {
+		return (
+			<View style={[imgStyle, { alignItems: 'center', justifyContent: 'center' }]}>
+				<ActivityIndicator size="small" color="#8B5CF6" />
+			</View>
+		);
+	}
+
+	return <Image source={{ uri: thumbUri }} style={imgStyle} resizeMode={resizeMode} />;
+});
+
+const AlbumDetail: React.FC = () => {
 	const { themeValue } = useTheme();
 	const styles = createStyles(themeValue);
 	const navigation = useNavigation();
@@ -63,55 +97,44 @@ const EventDetail: React.FC = () => {
 
 	const [title, setTitle] = useState(params.title || '');
 	const [description, setDescription] = useState(params.description || '');
-	const [showEditModal, setShowEditModal] = useState(false);
-	const [editTitle, setEditTitle] = useState(title);
-	const [editDescription, setEditDescription] = useState(description);
-	const [isSaving, setIsSaving] = useState(false);
 
 	const handleBack = () => {
 		navigation.goBack();
 	};
 
 	const handleOpenEdit = useCallback(() => {
-		setEditTitle(title);
-		setEditDescription(description);
-		setShowEditModal(true);
-	}, [title, description]);
-
-	const handleSaveEdit = useCallback(async () => {
-		if (!editTitle.trim()) {
-			Alert.alert('Error', 'Title cannot be empty');
-			return;
-		}
-		setIsSaving(true);
-		try {
-			await dispatch(
-				channelMediaActions.updateChannelTimeline({
-					id: params.eventId,
-					clan_id: clanId,
-					channel_id: channelId,
-					title: editTitle.trim(),
-					description: editDescription.trim(),
-					start_time_seconds: startTimeSeconds,
-					attachments: attachmentsRef.current.filter((att) => isUploaded(att))
-				})
-			).unwrap();
-			setTitle(editTitle.trim());
-			setDescription(editDescription.trim());
-			setShowEditModal(false);
-		} catch (error) {
-			Alert.alert('Error', 'Failed to update event');
-		} finally {
-			setIsSaving(false);
-		}
-	}, [editTitle, editDescription, dispatch, params.eventId, clanId, channelId, startTimeSeconds]);
+		const data = {
+			heightFitContent: true,
+			children: (
+				<EditEventContent
+					initialTitle={title}
+					initialDescription={description}
+					onSave={async (newTitle, newDescription) => {
+						await dispatch(
+							channelMediaActions.updateChannelTimeline({
+								id: params.eventId,
+								clan_id: clanId,
+								channel_id: channelId,
+								title: newTitle,
+								description: newDescription,
+								start_time_seconds: startTimeSeconds,
+								attachments: attachmentsRef.current.filter((att) => isUploaded(att))
+							})
+						).unwrap();
+						setTitle(newTitle);
+						setDescription(newDescription);
+					}}
+				/>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+	}, [title, description, dispatch, params.eventId, clanId, channelId, startTimeSeconds]);
 
 	const handleImagePicker = useCallback(async () => {
 		try {
 			const selectedImages = await openPicker({
-				mediaType: 'photo',
+				mediaType: 'any',
 				multiple: true,
-				maxFiles: 10,
 				compressImageQuality: 0.8
 			});
 
@@ -250,11 +273,22 @@ const EventDetail: React.FC = () => {
 				);
 			}
 
+			const isVideo = isVideoFile(item);
+
 			return (
 				<TouchableOpacity style={styles.gridItem} onPress={() => handleImagePress(item)} activeOpacity={0.8}>
 					<View style={styles.wrapperGridImage}>
-						<ImageNative url={getProxyUri(item)} urlOriginal={getAttachmentUri(item)} style={styles.gridImage} resizeMode="cover" />
+						{isVideo ? (
+							<VideoThumbnailView videoUrl={item.file_url || ''} style={styles.gridImage} />
+						) : (
+							<ImageNative url={getProxyUri(item)} urlOriginal={getAttachmentUri(item)} style={styles.gridImage} resizeMode="cover" />
+						)}
 					</View>
+					{isVideo && isUploaded(item) && (
+						<View style={videoStyles.playIconOverlay}>
+							<Entypo name="controller-play" size={size.s_30} color="white" />
+						</View>
+					)}
 					{!isUploaded(item) && (
 						<View style={styles.uploadingOverlay}>
 							<ActivityIndicator size="small" color="white" />
@@ -267,28 +301,46 @@ const EventDetail: React.FC = () => {
 	);
 
 	const listHeaderComponent = useCallback(
-		() =>
-			featuredAttachment ? (
-				<View style={styles.wrapperImageContainer}>
-					<TouchableOpacity style={styles.featuredImageContainer} onPress={() => handleImagePress(featuredAttachment)} activeOpacity={0.9}>
-						<ImageNative
-							url={getProxyUri(featuredAttachment)}
-							urlOriginal={getAttachmentUri(featuredAttachment)}
-							style={styles.featuredImage}
-							resizeMode="cover"
-						/>
-						<View style={styles.featuredBadge}>
-							<Text style={styles.featuredBadgeText}>FEATURED</Text>
-						</View>
-						{!isUploaded(featuredAttachment) && (
-							<View style={styles.uploadingOverlay}>
-								<ActivityIndicator size="small" color="white" />
-							</View>
-						)}
-					</TouchableOpacity>
-				</View>
-			) : null,
-		[featuredAttachment, styles, handleImagePress, getAttachmentUri, getProxyUri]
+		() => (
+			<>
+				{description ? (
+					<View style={styles.descriptionContainer}>
+						<Text style={styles.descriptionText}>{description}</Text>
+					</View>
+				) : null}
+				{featuredAttachment ? (
+					<View style={styles.wrapperImageContainer}>
+						<TouchableOpacity
+							style={styles.featuredImageContainer}
+							onPress={() => handleImagePress(featuredAttachment)}
+							activeOpacity={0.9}
+						>
+							{isVideoFile(featuredAttachment) ? (
+								<VideoThumbnailView videoUrl={featuredAttachment.file_url || ''} style={styles.featuredImage} />
+							) : (
+								<ImageNative
+									url={getProxyUri(featuredAttachment)}
+									urlOriginal={getAttachmentUri(featuredAttachment)}
+									style={styles.featuredImage}
+									resizeMode="cover"
+								/>
+							)}
+							{isVideoFile(featuredAttachment) && isUploaded(featuredAttachment) && (
+								<View style={videoStyles.playIconOverlayLarge}>
+									<Entypo name="controller-play" size={size.s_50} color="white" />
+								</View>
+							)}
+							{!isUploaded(featuredAttachment) && (
+								<View style={styles.uploadingOverlay}>
+									<ActivityIndicator size="small" color="white" />
+								</View>
+							)}
+						</TouchableOpacity>
+					</View>
+				) : null}
+			</>
+		),
+		[featuredAttachment, description, styles, handleImagePress, getAttachmentUri, getProxyUri]
 	);
 
 	const gridData: (ChannelEventAttachment | 'upload_placeholder')[] = [...gridAttachments, 'upload_placeholder'];
@@ -305,19 +357,19 @@ const EventDetail: React.FC = () => {
 			{/* Header */}
 			<View style={styles.header}>
 				<TouchableOpacity onPress={handleBack} style={styles.headerButton}>
-					<MezonIconCDN icon={IconCDN.backArrowLarge} width={size.s_28} height={size.s_28} color="white" />
+					<MezonIconCDN icon={IconCDN.backArrowLarge} width={size.s_28} height={size.s_28} color={themeValue.text} />
 				</TouchableOpacity>
 				<View style={styles.headerContent}>
 					<Text style={styles.headerTitle} numberOfLines={2}>
 						{title || 'Event Details'}
 					</Text>
 					<View style={styles.dateContainer}>
-						<MezonIconCDN icon={IconCDN.calendarIcon} width={size.s_14} height={size.s_14} color="white" />
+						<MezonIconCDN icon={IconCDN.calendarIcon} width={size.s_14} height={size.s_14} color={themeValue.text} />
 						<Text style={styles.headerDate}>{params.date || 'Date'}</Text>
 					</View>
 				</View>
 				<TouchableOpacity onPress={handleOpenEdit} style={styles.headerButton}>
-					<MezonIconCDN icon={IconCDN.pencilIcon} width={size.s_28} height={size.s_20} color="white" />
+					<MezonIconCDN icon={IconCDN.pencilIcon} width={size.s_28} height={size.s_20} color={themeValue.text} />
 				</TouchableOpacity>
 			</View>
 
@@ -337,80 +389,95 @@ const EventDetail: React.FC = () => {
 				ListFooterComponent={<View style={styles.bottomSpacer} />}
 			/>
 
-			{/* Floating Action Button */}
 			<TouchableOpacity style={styles.fab} onPress={handleUploadPress} activeOpacity={0.8} disabled={isUploading}>
-				{isUploading ? (
-					<ActivityIndicator size="small" color="white" />
-				) : (
-					<MezonIconCDN icon={IconCDN.uploadPlusIcon} width={size.s_24} height={size.s_24} color="white" />
-				)}
+				<MezonIconCDN icon={IconCDN.uploadPlusIcon} width={size.s_24} height={size.s_24} color="white" />
 			</TouchableOpacity>
-
-			{/* Edit Event Modal */}
-			<Modal visible={showEditModal} transparent animationType="fade" onRequestClose={() => setShowEditModal(false)}>
-				<Pressable style={editModalStyles.overlay} onPress={() => setShowEditModal(false)}>
-					<Pressable style={[editModalStyles.container, { backgroundColor: themeValue.secondary }]} onPress={(e) => e.stopPropagation()}>
-						<Text style={[editModalStyles.modalTitle, { color: themeValue.textStrong }]}>Edit Event</Text>
-						<Text style={[editModalStyles.label, { color: themeValue.text }]}>Title</Text>
-						<TextInput
-							style={[
-								editModalStyles.input,
-								{ color: themeValue.textStrong, backgroundColor: themeValue.primary, borderColor: themeValue.border }
-							]}
-							value={editTitle}
-							onChangeText={setEditTitle}
-							placeholder="Event title"
-							placeholderTextColor={themeValue.text}
-							maxLength={100}
-						/>
-						<Text style={[editModalStyles.label, { color: themeValue.text }]}>Description</Text>
-						<TextInput
-							style={[
-								editModalStyles.input,
-								editModalStyles.textArea,
-								{ color: themeValue.textStrong, backgroundColor: themeValue.primary, borderColor: themeValue.border }
-							]}
-							value={editDescription}
-							onChangeText={setEditDescription}
-							placeholder="Event description"
-							placeholderTextColor={themeValue.text}
-							multiline
-							numberOfLines={4}
-							textAlignVertical="top"
-							maxLength={500}
-						/>
-						<View style={editModalStyles.buttonRow}>
-							<TouchableOpacity
-								style={[editModalStyles.button, { backgroundColor: themeValue.primary }]}
-								onPress={() => setShowEditModal(false)}
-							>
-								<Text style={[editModalStyles.buttonText, { color: themeValue.text }]}>Cancel</Text>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={[editModalStyles.button, editModalStyles.saveButton]}
-								onPress={handleSaveEdit}
-								disabled={isSaving}
-							>
-								{isSaving ? (
-									<ActivityIndicator size="small" color="white" />
-								) : (
-									<Text style={editModalStyles.saveButtonText}>Save</Text>
-								)}
-							</TouchableOpacity>
-						</View>
-					</Pressable>
-				</Pressable>
-			</Modal>
 		</View>
 	);
 };
 
-const editModalStyles = StyleSheet.create({
-	overlay: {
-		flex: 1,
-		backgroundColor: 'rgba(0,0,0,0.5)',
-		justifyContent: 'center',
-		alignItems: 'center'
+interface EditEventContentProps {
+	initialTitle: string;
+	initialDescription: string;
+	onSave: (title: string, description: string) => Promise<void>;
+}
+
+const EditEventContent: React.FC<EditEventContentProps> = ({ initialTitle, initialDescription, onSave }) => {
+	const { themeValue } = useTheme();
+	const [editTitle, setEditTitle] = React.useState(initialTitle);
+	const [editDescription, setEditDescription] = React.useState(initialDescription);
+	const [isSaving, setIsSaving] = React.useState(false);
+
+	const handleDismiss = () => {
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+	};
+
+	const handleSave = async () => {
+		if (!editTitle.trim()) {
+			Alert.alert('Error', 'Title cannot be empty');
+			return;
+		}
+		setIsSaving(true);
+		try {
+			await onSave(editTitle.trim(), editDescription.trim());
+			handleDismiss();
+		} catch {
+			Alert.alert('Error', 'Failed to update event');
+		} finally {
+			setIsSaving(false);
+		}
+	};
+
+	return (
+		<KeyboardAvoidingView style={editStyles.modalWrapper} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+			<View style={[editStyles.container, { backgroundColor: themeValue.secondary }]}>
+				<Text style={[editStyles.modalTitle, { color: themeValue.textStrong }]}>Edit Event</Text>
+				<Text style={[editStyles.label, { color: themeValue.text }]}>Title</Text>
+				<TextInput
+					style={[editStyles.input, { color: themeValue.textStrong, backgroundColor: themeValue.primary, borderColor: themeValue.border }]}
+					value={editTitle}
+					onChangeText={setEditTitle}
+					placeholder="Event title"
+					placeholderTextColor={themeValue.text}
+					maxLength={100}
+				/>
+				<Text style={[editStyles.charCount, { color: themeValue.textDisabled }]}>{editTitle.length}/100</Text>
+				<Text style={[editStyles.label, { color: themeValue.text }]}>Description</Text>
+				<TextInput
+					style={[
+						editStyles.input,
+						editStyles.textArea,
+						{ color: themeValue.textStrong, backgroundColor: themeValue.primary, borderColor: themeValue.border }
+					]}
+					value={editDescription}
+					onChangeText={setEditDescription}
+					placeholder="Event description"
+					placeholderTextColor={themeValue.text}
+					multiline
+					numberOfLines={4}
+					textAlignVertical="top"
+					maxLength={250}
+				/>
+				<Text style={[editStyles.charCount, { color: themeValue.textDisabled }]}>{editDescription.length}/250</Text>
+				<View style={editStyles.buttonRow}>
+					<TouchableOpacity style={[editStyles.button, { backgroundColor: themeValue.primary }]} onPress={handleDismiss}>
+						<Text style={[editStyles.buttonText, { color: themeValue.text }]}>Cancel</Text>
+					</TouchableOpacity>
+					<TouchableOpacity style={[editStyles.button, editStyles.saveButton]} onPress={handleSave} disabled={isSaving}>
+						{isSaving ? <ActivityIndicator size="small" color="white" /> : <Text style={editStyles.saveButtonText}>Save</Text>}
+					</TouchableOpacity>
+				</View>
+			</View>
+		</KeyboardAvoidingView>
+	);
+};
+
+const editStyles = StyleSheet.create({
+	modalWrapper: {
+		width: '100%',
+		height: '100%',
+		alignItems: 'center',
+		justifyContent: 'center'
 	},
 	container: {
 		width: '85%',
@@ -433,11 +500,16 @@ const editModalStyles = StyleSheet.create({
 		borderRadius: size.s_10,
 		paddingHorizontal: size.s_12,
 		paddingVertical: size.s_10,
-		fontSize: size.s_16,
-		marginBottom: size.s_14
+		fontSize: size.s_16
 	},
 	textArea: {
 		minHeight: 100
+	},
+	charCount: {
+		fontSize: size.s_12,
+		textAlign: 'right',
+		marginTop: size.s_4,
+		marginBottom: size.s_10
 	},
 	buttonRow: {
 		flexDirection: 'row',
@@ -464,4 +536,21 @@ const editModalStyles = StyleSheet.create({
 	}
 });
 
-export default EventDetail;
+const videoStyles = StyleSheet.create({
+	playIconOverlay: {
+		...StyleSheet.absoluteFillObject,
+		alignItems: 'center',
+		justifyContent: 'center',
+		margin: size.s_8,
+		borderRadius: size.s_16,
+		backgroundColor: 'rgba(0, 0, 0, 0.2)'
+	},
+	playIconOverlayLarge: {
+		...StyleSheet.absoluteFillObject,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'rgba(0, 0, 0, 0.2)'
+	}
+});
+
+export default AlbumDetail;

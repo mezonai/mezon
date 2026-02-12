@@ -1,5 +1,5 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import type { ChannelEvent } from '@mezon/store-mobile';
+import type { ChannelEvent, ChannelEventAttachment } from '@mezon/store-mobile';
 import {
 	channelMediaActions,
 	selectChannelMediaByChannelId,
@@ -11,8 +11,21 @@ import { createImgproxyUrl } from '@mezon/utils';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+	ActivityIndicator,
+	FlatList,
+	Image,
+	Modal,
+	NativeModules,
+	Platform,
+	Pressable,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import Entypo from 'react-native-vector-icons/Entypo';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import ImageNative from '../../components/ImageNative';
 import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
@@ -20,6 +33,39 @@ import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { TimelineSkeleton } from './TimelineSkeleton';
 import { styles as createStyles } from './styles';
+
+const isVideoFile = (att: ChannelEventAttachment) => att.file_type?.startsWith('video/');
+
+const VideoThumbnailView: React.FC<{
+	videoUrl: string;
+	style: any;
+	resizeMode?: 'cover' | 'contain';
+}> = React.memo(({ videoUrl, style: imgStyle, resizeMode = 'cover' }) => {
+	const [thumbUri, setThumbUri] = useState('');
+
+	useEffect(() => {
+		if (!videoUrl) return;
+		if (Platform.OS === 'ios') {
+			NativeModules.VideoThumbnailModule?.getThumbnail(videoUrl)
+				.then((result: { uri?: string }) => setThumbUri(result?.uri || ''))
+				.catch(() => setThumbUri(''));
+		} else {
+			NativeModules.VideoThumbnail?.getThumbnail(videoUrl)
+				.then((path: string) => setThumbUri(typeof path === 'string' ? path : ''))
+				.catch(() => setThumbUri(''));
+		}
+	}, [videoUrl]);
+
+	if (!thumbUri) {
+		return (
+			<View style={[imgStyle, { alignItems: 'center', justifyContent: 'center' }]}>
+				<ActivityIndicator size="small" color="#8B5CF6" />
+			</View>
+		);
+	}
+
+	return <Image source={{ uri: thumbUri }} style={imgStyle} resizeMode={resizeMode} />;
+});
 
 const MediaHighlightsTimeline: React.FC = () => {
 	const { t } = useTranslation(['channelCreator']);
@@ -37,7 +83,17 @@ const MediaHighlightsTimeline: React.FC = () => {
 	const [selectedYear, setSelectedYear] = useState(currentYear);
 	const [showYearPicker, setShowYearPicker] = useState(false);
 
-	const events = useAppSelector((state) => selectChannelMediaByChannelId(state, channelId));
+	const rawEvents = useAppSelector((state) => selectChannelMediaByChannelId(state, channelId));
+	const events = useMemo(
+		() =>
+			[...rawEvents]
+				.filter((e) => {
+					if (!e.create_time_seconds) return true;
+					return new Date(e.create_time_seconds * 1000)?.getFullYear() === Number(selectedYear);
+				})
+				.sort((a, b) => (b.create_time_seconds || 0) - (a.create_time_seconds || 0)),
+		[rawEvents, selectedYear]
+	);
 	const loadingStatus = useAppSelector(selectChannelMediaLoadingStatus);
 
 	const yearList = useMemo(() => {
@@ -66,6 +122,7 @@ const MediaHighlightsTimeline: React.FC = () => {
 		if (clanId && channelId) {
 			dispatch(
 				channelMediaActions.fetchChannelMedia({
+					noCache: true,
 					clan_id: clanId,
 					channel_id: channelId,
 					year: selectedYear,
@@ -75,32 +132,21 @@ const MediaHighlightsTimeline: React.FC = () => {
 		}
 	}, [dispatch, clanId, channelId, selectedYear]);
 
-	const getEventImages = useCallback((event: ChannelEvent) => {
+	const getEventMedia = useCallback((event: ChannelEvent) => {
 		return (event.attachments || [])
 			.map((att) => {
+				const isVideo = isVideoFile(att);
 				const originalUrl = att.thumbnail || att.file_url || '';
 				if (!originalUrl) return null;
-				const proxyUrl = createImgproxyUrl(originalUrl, {
-					width: 200,
-					height: 200,
-					resizeType: 'fit'
-				}) as string;
-				return { proxyUrl, originalUrl };
+				const proxyUrl = isVideo ? '' : (createImgproxyUrl(originalUrl, { width: 200, height: 200, resizeType: 'fit' }) as string);
+				return { proxyUrl, originalUrl, isVideo, fileUrl: att.file_url || '' };
 			})
-			.filter(Boolean) as { proxyUrl: string; originalUrl: string }[];
+			.filter(Boolean) as { proxyUrl: string; originalUrl: string; isVideo: boolean; fileUrl: string }[];
 	}, []);
 
 	const getPosition = useCallback((index: number): 'left' | 'right' => {
 		return index % 2 === 0 ? 'left' : 'right';
 	}, []);
-
-	const firstYear = useMemo(() => {
-		if (!events.length) return '';
-		const sorted = [...events].sort((a, b) => (a.start_time_seconds || 0) - (b.start_time_seconds || 0));
-		const oldest = sorted[0];
-		if (!oldest?.start_time_seconds) return '';
-		return String(new Date(oldest.start_time_seconds * 1000).getFullYear());
-	}, [events]);
 
 	const handleBack = () => {
 		navigation.goBack();
@@ -110,7 +156,7 @@ const MediaHighlightsTimeline: React.FC = () => {
 		(event: ChannelEvent) => {
 			const date = event.start_time_seconds ? formatEventDate(event.start_time_seconds) : null;
 
-			navigation.navigate(APP_SCREEN.EVENT_DETAIL, {
+			navigation.navigate(APP_SCREEN.ALBUM_DETAIL, {
 				eventId: event.id,
 				title: event.title,
 				description: event.description || '',
@@ -137,22 +183,31 @@ const MediaHighlightsTimeline: React.FC = () => {
 		setShowYearPicker(false);
 	}, []);
 
+	const renderMediaItem = useCallback((media: { proxyUrl: string; originalUrl: string; isVideo: boolean; fileUrl: string }, style: any) => {
+		if (media.isVideo) {
+			return (
+				<View style={{ position: 'relative' }}>
+					<VideoThumbnailView videoUrl={media.fileUrl} style={style} />
+					<View style={videoStyles.playOverlay}>
+						<Entypo name="controller-play" size={size.s_20} color="white" />
+					</View>
+				</View>
+			);
+		}
+		return <ImageNative url={media.proxyUrl} urlOriginal={media.originalUrl} style={style} resizeMode="cover" />;
+	}, []);
+
 	const renderTimelineItem = useCallback(
 		({ item: event, index }: { item: ChannelEvent; index: number }) => {
 			const position = getPosition(index);
 			const date = event.start_time_seconds ? formatEventDate(event.start_time_seconds) : null;
-			const images = getEventImages(event);
-			const isAlbum = images.length > 1;
+			const mediaItems = getEventMedia(event);
+			const isAlbum = mediaItems.length > 1;
 
 			return (
 				<View style={styles.timelineItemWrapper}>
-					{/* Timeline Line Segment */}
 					<View style={styles.timelineLineSegment} />
-
-					{/* Timeline Dot */}
 					<View style={styles.timelineDot} />
-
-					{/* Date on Timeline */}
 					{date && (
 						<View style={[styles.timelineDate, position === 'left' ? styles.timelineDateRight : styles.timelineDateLeft]}>
 							<Text style={styles.dateMonth}>{date.month}</Text>
@@ -160,8 +215,6 @@ const MediaHighlightsTimeline: React.FC = () => {
 							<Text style={styles.dateYear}>{date.year}</Text>
 						</View>
 					)}
-
-					{/* Event Card */}
 					<View style={[styles.eventCardContainer, position === 'left' ? styles.eventCardLeft : styles.eventCardRight]}>
 						<TouchableOpacity style={styles.eventCard} onPress={() => handleEventPress(event)} activeOpacity={0.8}>
 							{event.title ? (
@@ -175,28 +228,16 @@ const MediaHighlightsTimeline: React.FC = () => {
 								</Text>
 							) : null}
 
-							{/* Images */}
-							{images.length > 0 && (
+							{mediaItems.length > 0 && (
 								<View style={styles.eventImages}>
 									{isAlbum ? (
 										<View style={styles.albumGrid}>
-											{images.slice(0, 2).map((img, idx) => (
-												<ImageNative
-													key={idx}
-													url={img.proxyUrl}
-													urlOriginal={img.originalUrl}
-													style={styles.albumImage}
-													resizeMode="cover"
-												/>
+											{mediaItems.slice(0, 2).map((media, idx) => (
+												<View key={idx}>{renderMediaItem(media, styles.albumImage)}</View>
 											))}
 										</View>
 									) : (
-										<ImageNative
-											url={images[0].proxyUrl}
-											urlOriginal={images[0].originalUrl}
-											style={styles.singleImage}
-											resizeMode="cover"
-										/>
+										renderMediaItem(mediaItems[0], styles.singleImage)
 									)}
 								</View>
 							)}
@@ -205,7 +246,7 @@ const MediaHighlightsTimeline: React.FC = () => {
 							{isAlbum && (
 								<View style={styles.viewAlbumButton}>
 									<Text style={styles.viewAlbumText}>
-										{t('mediaHighlights.viewAlbum')} ({images.length})
+										{t('mediaHighlights.viewAlbum')} ({mediaItems.length})
 									</Text>
 								</View>
 							)}
@@ -214,7 +255,7 @@ const MediaHighlightsTimeline: React.FC = () => {
 				</View>
 			);
 		},
-		[styles, getPosition, formatEventDate, getEventImages, handleEventPress, t]
+		[styles, getPosition, formatEventDate, getEventMedia, handleEventPress, renderMediaItem, t]
 	);
 
 	const keyExtractor = useCallback((item: ChannelEvent) => item.id, []);
@@ -234,11 +275,7 @@ const MediaHighlightsTimeline: React.FC = () => {
 					<MezonIconCDN icon={IconCDN.arrowLargeLeftIcon} width={size.s_24} height={size.s_24} color={themeValue.textStrong} />
 				</TouchableOpacity>
 				<View style={styles.headerTitleContainer}>
-					{firstYear ? (
-						<Text style={styles.headerSubtitle}>
-							{t('mediaHighlights.since')} {firstYear}
-						</Text>
-					) : null}
+					<Text style={styles.headerSubtitle}>{selectedYear ? `${t('mediaHighlights.since')} ${selectedYear}` : ''}</Text>
 					<Text style={styles.headerTitle} numberOfLines={3}>
 						{events.length > 0 ? t('mediaHighlights.title') : t('mediaHighlights.familyJourney')}
 					</Text>
@@ -255,11 +292,14 @@ const MediaHighlightsTimeline: React.FC = () => {
 
 			{/* Content */}
 			{loadingStatus === 'loading' && events.length === 0 ? (
-				<TimelineSkeleton />
+				<View style={styles.loadingWrapper}>
+					<TimelineSkeleton />
+				</View>
 			) : events.length > 0 ? (
 				<>
 					<FlatList
 						data={events}
+						extraData={events}
 						renderItem={renderTimelineItem}
 						keyExtractor={keyExtractor}
 						contentContainerStyle={styles.scrollContent}
@@ -364,6 +404,16 @@ const internalStyles = StyleSheet.create({
 	yearTextSelected: {
 		color: 'white',
 		fontWeight: '700'
+	}
+});
+
+const videoStyles = StyleSheet.create({
+	playOverlay: {
+		...StyleSheet.absoluteFillObject,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'rgba(0, 0, 0, 0.25)',
+		borderRadius: size.s_10
 	}
 });
 

@@ -8,12 +8,8 @@ import BottomSheetRootListener from '../../components/BottomSheetRootListener';
 import CallingModalGroupWrapper from '../../components/CallingModalGroupWrapper';
 import CallingModalWrapper from '../../components/CallingModalWrapper';
 import ModalRootListener from '../../components/ModalRootListener';
+import AlbumDetail from '../../screens/AlbumDetail';
 import CreateMilestone from '../../screens/CreateMilestone';
-import EventDetail from '../../screens/EventDetail';
-import EventDetailScreen from '../../screens/EventDetailScreen';
-import FamilyEvents from '../../screens/FamilyEvents';
-import LuckyMoney from '../../screens/LuckyMoney';
-import LuckyMoneyHistory from '../../screens/LuckyMoneyHistory';
 import MediaHighlightsTimeline from '../../screens/MediaHighlightsTimeline';
 import AppBrowser from '../../screens/auth/AppBrowser';
 import { ClaimMoneyScreen } from '../../screens/claimMoney';
@@ -192,18 +188,8 @@ export const RootAuthStack = memo(
 						}}
 					/>
 					<RootStack.Screen
-						name={APP_SCREEN.EVENT_DETAIL}
-						component={EventDetail}
-						options={{
-							headerShown: false,
-							gestureEnabled: true,
-							gestureDirection: 'horizontal',
-							animationEnabled: Platform.OS === 'ios'
-						}}
-					/>
-					<RootStack.Screen
-						name={APP_SCREEN.EVENT_DETAIL_SCREEN}
-						component={EventDetailScreen}
+						name={APP_SCREEN.ALBUM_DETAIL}
+						component={AlbumDetail}
 						options={{
 							headerShown: false,
 							gestureEnabled: true,

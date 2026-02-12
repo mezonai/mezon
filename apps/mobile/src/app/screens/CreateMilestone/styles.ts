@@ -1,5 +1,4 @@
-import type { Attributes } from '@mezon/mobile-ui';
-import { size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = (theme: Attributes) =>
@@ -20,14 +19,14 @@ export const styles = (theme: Attributes) =>
 		headerTitle: {
 			fontSize: size.s_20,
 			fontWeight: '700',
-			color: 'white',
+			color: theme.text,
 			flex: 1,
 			textAlign: 'center',
 			marginHorizontal: size.s_16
 		},
 		cancelText: {
 			fontSize: size.s_16,
-			color: 'white',
+			color: theme.text,
 			fontWeight: '500'
 		},
 		scrollView: {
@@ -58,6 +57,12 @@ export const styles = (theme: Attributes) =>
 		textArea: {
 			minHeight: 120,
 			paddingTop: size.s_14
+		},
+		charCount: {
+			fontSize: size.s_12,
+			color: theme.textDisabled,
+			textAlign: 'right' as const,
+			marginTop: size.s_4
 		},
 		dateInput: {
 			backgroundColor: theme.secondary,
@@ -114,7 +119,7 @@ export const styles = (theme: Attributes) =>
 			borderRadius: size.s_24
 		},
 		addMediaButtonText: {
-			color: 'white',
+			color: baseColor.white,
 			fontSize: size.s_16,
 			fontWeight: '600'
 		},
@@ -226,7 +231,7 @@ export const styles = (theme: Attributes) =>
 			elevation: 8
 		},
 		saveButtonText: {
-			color: 'white',
+			color: baseColor.white,
 			fontSize: size.s_18,
 			fontWeight: '700'
 		},
