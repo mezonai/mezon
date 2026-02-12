@@ -216,6 +216,17 @@ const HomeDefaultHeader = React.memo(
 			});
 		};
 
+		const navigateToChannelHighlight = () => {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_PANEL_KEYBOARD_BOTTOM_SHEET, {
+				isShow: false
+			});
+			navigation.navigate(APP_SCREEN.MEDIA_HIGHLIGHTS_TIMELINE, {
+				channelName: currentChannel?.channel_label,
+				channelId,
+				clanId: currentChannel?.clan_id
+			});
+		};
+
 		const isAgeRestrictedChannel = currentChannel?.age_restricted === 1;
 
 		const navigateToNotifications = () => {
@@ -292,6 +303,7 @@ const HomeDefaultHeader = React.memo(
 						)}
 					</View>
 				</TouchableOpacity>
+
 				{isTabletLandscape && (
 					<TouchableOpacity style={styles.iconBell} onPress={navigateToNotifications}>
 						<MezonIconCDN icon={IconCDN.inbox} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
@@ -308,6 +320,9 @@ const HomeDefaultHeader = React.memo(
 				) : (
 					<View />
 				)}
+				<TouchableOpacity style={styles.iconBell} onPress={() => navigateToChannelHighlight()}>
+					<MezonIconCDN icon={IconCDN.clockIcon} height={size.s_20} width={size.s_20} color={themeValue.text} />
+				</TouchableOpacity>
 				<View style={styles.headerTooltipContainer}>
 					<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />
 				</View>

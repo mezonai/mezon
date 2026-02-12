@@ -34,5 +34,49 @@
 		"title": "Loại kênh thoại",
 		"mezon": "MEZON MEET",
 		"gMeet": "GOOGLE MEET"
-	}
+	},
+	"mediaHighlights": {
+		"title": "Hình ảnh & Nổi bật",
+		"familyJourney": "Sự kiện",
+		"cherishMoment": "Theo dõi các sự kiện quan trọng.",
+		"since": "TỪ",
+		"viewAlbum": "Xem Album",
+		"emptyTitle": "Hành trình của bạn chưa bắt đầu.",
+		"emptyDescription": "Tạo sự kiện đầu tiên của bạn để bắt đầu lưu giữ những kỷ niệm.",
+		"createFirstMilestone": "Tạo sự kiện đầu tiên"
+	},
+	"familyEvents": {
+		"title": "Sự kiện",
+		"eventsIn": "Sự kiện năm",
+		"noEvents": "Không có sự kiện nào trong năm",
+		"addToGallery": "Thêm vào thư viện",
+		"inDays": "Trong {{count}} ngày"
+	},
+	"createMilestone": {
+		"headerTitle": "Sự kiện mới",
+		"cancel": "Hủy",
+		"cancelAlertTitle": "Hủy bỏ",
+		"cancelAlertMessage": "Bạn có chắc chắn muốn hủy sự kiện này không?",
+		"continueEditing": "Tiếp tục chỉnh sửa",
+		"discard": "Hủy bỏ",
+		"eventTitleLabel": "Tên sự kiện",
+		"eventTitlePlaceholder": "VD: Họp nhóm, Ra mắt dự án",
+		"dateLabel": "Ngày",
+		"datePlaceholder": "Chọn ngày",
+		"storyLabel": "Mô tả",
+		"storyPlaceholder": "Nhập mô tả sự kiện...",
+		"memoriesLabel": "Hình ảnh/Video",
+		"uploadTitle": "Tải lên Ảnh hoặc Video",
+		"uploadSubtitle": "Thêm hình ảnh hoặc video vào sự kiện",
+		"addMedia": "Thêm hình ảnh",
+		"tagMembersLabel": "Gắn thẻ thành viên",
+		"saveButton": "Lưu sự kiện",
+		"requiredTitle": "Bắt buộc",
+		"requiredMessage": "Vui lòng nhập tên sự kiện",
+		"successTitle": "Thành công",
+		"successMessage": "Đã tạo sự kiện thành công!",
+		"errorTitle": "Lỗi",
+		"errorMessage": "Không thể chọn hình ảnh"
+	},
+	"monthsShort": ["THG 1", "THG 2", "THG 3", "THG 4", "THG 5", "THG 6", "THG 7", "THG 8", "THG 9", "THG 10", "THG 11", "THG 12"]
 }

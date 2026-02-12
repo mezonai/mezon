@@ -48,6 +48,28 @@ export interface fetchChannelMediaPayload {
 	noCache?: boolean;
 }
 
+export interface createChannelTimelinePayload {
+	clan_id: string;
+	channel_id: string;
+	title: string;
+	description?: string;
+	start_time_seconds: number;
+	end_time_seconds: number;
+	location?: string;
+	attachments?: Array<ChannelEventAttachment>;
+}
+
+export interface updateChannelTimelinePayload {
+	id: string;
+	clan_id: string;
+	channel_id: string;
+	title?: string;
+	description?: string;
+	start_time_seconds?: number;
+	location?: string;
+	attachments?: Array<ChannelEventAttachment>;
+}
+
 export interface ChannelMediaChannelState {
 	events: ChannelEvent[];
 	cache?: CacheMetadata;
@@ -78,7 +100,7 @@ const fetchChannelMediaCached = async (getState: () => RootState, ensuredMezon: 
 		};
 	}
 
-	const response = await ensuredMezon.client.listChannelEvents(ensuredMezon.session, requestPayload);
+	const response = await ensuredMezon.client.listChannelTimeline(ensuredMezon.session, requestPayload);
 
 	markApiFirstCalled(apiKey);
 
@@ -99,6 +121,40 @@ export const fetchChannelMedia = createAsyncThunk('channelMedia/fetchChannelMedi
 		return thunkAPI.rejectWithValue(error);
 	}
 });
+
+export const createChannelTimeline = createAsyncThunk(
+	'channelMedia/createChannelTimeline',
+	async (payload: createChannelTimelinePayload, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await mezon.client.createChannelTimeline(mezon.session, payload);
+			return {
+				channelId: payload.channel_id,
+				event: response.event as ChannelEvent
+			};
+		} catch (error) {
+			captureSentryError(error, 'channelMedia/createChannelTimeline');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const updateChannelTimeline = createAsyncThunk(
+	'channelMedia/updateChannelTimeline',
+	async (payload: updateChannelTimelinePayload, thunkAPI) => {
+		try {
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
+			const response = await mezon.client.updateChannelTimeline(mezon.session, payload);
+			return {
+				channelId: payload.channel_id,
+				event: response.event as ChannelEvent
+			};
+		} catch (error) {
+			captureSentryError(error, 'channelMedia/updateChannelTimeline');
+			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
 
 export const initialChannelMediaState: ChannelMediaState = {
 	loadingStatus: 'not loaded',
@@ -139,6 +195,42 @@ export const channelMediaSlice = createSlice({
 			.addCase(fetchChannelMedia.rejected, (state, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
+			})
+			.addCase(createChannelTimeline.pending, (state) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(createChannelTimeline.fulfilled, (state, action: PayloadAction<{ channelId: string; event: ChannelEvent }>) => {
+				const { channelId, event } = action.payload;
+
+				if (!state.eventsByChannel[channelId]) {
+					state.eventsByChannel[channelId] = { events: [] };
+				}
+
+				state.eventsByChannel[channelId].events.push(event);
+				state.loadingStatus = 'loaded';
+			})
+			.addCase(createChannelTimeline.rejected, (state, action) => {
+				state.loadingStatus = 'error';
+				state.error = action.error.message;
+			})
+			.addCase(updateChannelTimeline.pending, (state) => {
+				state.loadingStatus = 'loading';
+			})
+			.addCase(updateChannelTimeline.fulfilled, (state, action: PayloadAction<{ channelId: string; event: ChannelEvent }>) => {
+				const { channelId, event } = action.payload;
+
+				if (state.eventsByChannel[channelId]) {
+					const index = state.eventsByChannel[channelId].events.findIndex((e) => e.id === event.id);
+					if (index !== -1) {
+						state.eventsByChannel[channelId].events[index] = event;
+					}
+				}
+
+				state.loadingStatus = 'loaded';
+			})
+			.addCase(updateChannelTimeline.rejected, (state, action) => {
+				state.loadingStatus = 'error';
+				state.error = action.error.message;
 			});
 	}
 });
@@ -147,7 +239,9 @@ export const channelMediaReducer = channelMediaSlice.reducer;
 
 export const channelMediaActions = {
 	...channelMediaSlice.actions,
-	fetchChannelMedia
+	fetchChannelMedia,
+	createChannelTimeline,
+	updateChannelTimeline
 };
 
 export const getChannelMediaState = (rootState: any): ChannelMediaState => rootState[CHANNEL_MEDIA_FEATURE_KEY];
