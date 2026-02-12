@@ -1362,8 +1362,10 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 			avatarToUse = undefined;
 		}
 
+		const receiverIds = Array.isArray(receiverId) ? receiverId : [receiverId];
+
 		await socket.writeEphemeralMessage(
-			receiverId,
+			receiverIds,
 			clanId,
 			channelId,
 			mode,
