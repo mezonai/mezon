@@ -1,6 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { referencesActions, useAppDispatch } from '@mezon/store-mobile';
-import { processText, type IMarkdownOnMessage } from '@mezon/utils';
+import { isFacebookLink, isTikTokLink, isYouTubeLink, processText, type IMarkdownOnMessage } from '@mezon/utils';
 import debounce from 'lodash/debounce';
 import { safeJSONParse } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -23,7 +23,7 @@ export type OgpElemnent = {
 	image?: string;
 };
 
-const MEZONAI_PATTERN = /^https:\/\/mezon\.ai\/chat/i;
+const MEZONAI_PATTERN = /^https:\/\/mezon\.ai\/(chat|invite)(\/|$)/i;
 
 const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 	const isTabletLandscape = useTabletLandscape();
@@ -40,7 +40,7 @@ const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 			try {
 				for (const markdown of markdowns) {
 					const link = contentText?.slice(markdown.s, markdown.e);
-					if (!MEZONAI_PATTERN.test(link)) {
+					if (!MEZONAI_PATTERN.test(link) && !isYouTubeLink(link) && !isTikTokLink(link) && !isFacebookLink(link)) {
 						const datafetch = await NativeHttpClient.post(
 							`${process.env.NX_OGP_URL}`,
 							JSON.stringify({
