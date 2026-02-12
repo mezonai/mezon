@@ -48,6 +48,10 @@
 		"appVersion": "Phiên bản ứng dụng",
 		"startUp": "Khởi chạy"
 	},
+	"autoStart": {
+		"title": "Tự động khởi động ứng dụng",
+		"description": "Tự động mở ứng dụng khi máy tính khởi động để bạn có thể sử dụng ngay."
+	},
 	"activity": {
 		"title": "Hiển thị hoạt động của tôi",
 		"description": "Chia sẻ những hoạt động hiện tại của bạn với bạn bè. Điều này giúp họ biết bạn đang làm gì và dễ dàng kết nối hơn!"

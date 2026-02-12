@@ -34,6 +34,7 @@ export type MezonElectronAPI = {
 	clearScreenSourcesCache: (source?: string) => Promise<{ success: boolean }>;
 	setRatioWindow: (ratio: boolean) => void;
 	launchAppWindow: (url: string) => Promise<void>;
+	toggleSettingAutoStart: (auto: boolean) => Promise<void>;
 };
 declare global {
 	interface Window {

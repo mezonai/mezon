@@ -48,6 +48,10 @@
 		"appVersion": "App Version",
 		"startUp": "Start Up"
 	},
+	"autoStart": {
+		"title": "Auto start application",
+		"description": "Automatically launch the app when your computer starts so it's ready to use right away."
+	},
 	"activity": {
 		"title": "Show My Activity",
 		"description": "Show your current activities to friends. This lets them see what you're up to and makes it easier to connect."

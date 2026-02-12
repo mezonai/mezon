@@ -16,6 +16,7 @@ import type { showSettingFooterProps } from '@mezon/store';
 import { selectIsShowSettingFooter } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { EUserSettings } from '@mezon/utils';
+import isElectron from 'is-electron';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -79,7 +80,7 @@ const SettingContent = ({ isDM, isShowSettingFooter }: { isDM: boolean; isShowSe
 				{currentSetting === EUserSettings.VOICE && <SettingVoice menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.NOTIFICATIONS && <SettingNotifications menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.ACTIVITY && <SettingActivity menuIsOpen={menuIsOpen} />}
-				{currentSetting === EUserSettings.START_UP && <SettingStartUp menuIsOpen={menuIsOpen} />}
+				{currentSetting === EUserSettings.START_UP && isElectron() && <SettingStartUp menuIsOpen={menuIsOpen} />}
 
 				<ExitSetting onClose={closeSetting} />
 
