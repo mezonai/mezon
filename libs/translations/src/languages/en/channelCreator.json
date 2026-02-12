@@ -43,7 +43,9 @@
 		"viewAlbum": "View Album",
 		"emptyTitle": "Your journey hasn't started yet.",
 		"emptyDescription": "Create your first event to begin capturing memories.",
-		"createFirstMilestone": "Create First Event"
+		"createFirstMilestone": "Create First Event",
+		"selectYear": "Select Year",
+		"special": "SPECIAL"
 	},
 	"familyEvents": {
 		"title": "Events",
@@ -76,7 +78,26 @@
 		"successTitle": "Success",
 		"successMessage": "Event created successfully!",
 		"errorTitle": "Error",
-		"errorMessage": "Failed to pick images"
+		"errorMessage": "Failed to pick images",
+		"required": "Required",
+		"optional": "Optional",
+		"titleHint": "Give your event a short, descriptive title"
+	},
+	"albumDetail": {
+		"eventDetails": "Event Details",
+		"date": "Date",
+		"editEvent": "Edit Event",
+		"titleLabel": "Title",
+		"titlePlaceholder": "Event title",
+		"descriptionLabel": "Description",
+		"descriptionPlaceholder": "Event description",
+		"cancel": "Cancel",
+		"save": "Save",
+		"errorTitle": "Error",
+		"titleRequired": "Title cannot be empty",
+		"updateFailed": "Failed to update event",
+		"sessionNotAvailable": "Session not available",
+		"uploadFailed": "Failed to upload images"
 	},
 	"monthsShort": ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"]
 }

@@ -1,5 +1,5 @@
 import { baseColor, size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
-import type { ChannelEventAttachment } from '@mezon/store-mobile';
+import type { ChannelTimelineAttachment } from '@mezon/store-mobile';
 import { channelMediaActions, useAppDispatch } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
 import { createImgproxyUrl, getMobileUploadedAttachments } from '@mezon/utils';
@@ -8,9 +8,22 @@ import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ActivityIndicator, Alert, Modal, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+	ActivityIndicator,
+	Alert,
+	Image,
+	Modal,
+	NativeModules,
+	Platform,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	View
+} from 'react-native';
 import { openPicker } from 'react-native-image-crop-picker';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
@@ -20,7 +33,49 @@ import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../constants/icon_cdn';
 import { styles as createStyles } from './styles';
 
-const isUploaded = (att: ChannelEventAttachment) => att.file_url?.startsWith('https');
+const isUploaded = (att: ChannelTimelineAttachment) => att.file_url?.startsWith('https');
+const isVideoFile = (att: ChannelTimelineAttachment) => att.file_type?.startsWith('video/');
+
+const VideoThumbnailView: React.FC<{
+	videoUrl: string;
+	style: any;
+	resizeMode?: 'cover' | 'contain';
+}> = React.memo(({ videoUrl, style: imgStyle, resizeMode = 'cover' }) => {
+	const [thumbUri, setThumbUri] = useState('');
+
+	useEffect(() => {
+		if (!videoUrl) return;
+		if (Platform.OS === 'ios') {
+			NativeModules.VideoThumbnailModule?.getThumbnail(videoUrl)
+				.then((result: { uri?: string }) => setThumbUri(result?.uri || ''))
+				.catch(() => setThumbUri(''));
+		} else {
+			NativeModules.VideoThumbnail?.getThumbnail(videoUrl)
+				.then((path: string) => setThumbUri(typeof path === 'string' ? path : ''))
+				.catch(() => setThumbUri(''));
+		}
+	}, [videoUrl]);
+
+	if (!thumbUri) {
+		return (
+			<View style={[imgStyle, { alignItems: 'center', justifyContent: 'center' }]}>
+				<ActivityIndicator size="small" color="#8B5CF6" />
+			</View>
+		);
+	}
+
+	return <Image source={{ uri: thumbUri }} style={imgStyle} resizeMode={resizeMode} />;
+});
+
+const videoStyles = StyleSheet.create({
+	playIconOverlay: {
+		...StyleSheet.absoluteFillObject,
+		alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'rgba(0, 0, 0, 0.25)',
+		borderRadius: size.s_12
+	}
+});
 
 const CreateMilestone: React.FC = () => {
 	const { t } = useTranslation('channelCreator');
@@ -37,15 +92,15 @@ const CreateMilestone: React.FC = () => {
 	const [eventTitle, setEventTitle] = useState('');
 	const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 	const [story, setStory] = useState('');
-	const [attachments, setAttachments] = useState<ChannelEventAttachment[]>([]);
-	const attachmentsRef = useRef<ChannelEventAttachment[]>([]);
+	const [attachments, setAttachments] = useState<ChannelTimelineAttachment[]>([]);
+	const attachmentsRef = useRef<ChannelTimelineAttachment[]>([]);
 	const [isUploading, setIsUploading] = useState(false);
 	const [showDatePicker, setShowDatePicker] = useState(false);
 	const [tempDate, setTempDate] = useState<Date>(selectedDate);
 
 	const isSaveDisabled = useMemo(() => {
-		return isUploading || !eventTitle.trim() || !story.trim();
-	}, [isUploading, eventTitle, story]);
+		return isUploading || !eventTitle.trim();
+	}, [isUploading, eventTitle]);
 
 	const formatDate = (date: Date) => {
 		const day = String(date.getDate()).padStart(2, '0');
@@ -93,10 +148,10 @@ const CreateMilestone: React.FC = () => {
 	const handleAddMedia = useCallback(async () => {
 		try {
 			const selectedImages = await openPicker({
-				mediaType: 'photo',
+				mediaType: 'any',
 				multiple: true,
-				maxFiles: 10,
-				compressImageQuality: 0.8
+				maxFiles: 40,
+				compressImageQuality: 0.9
 			});
 
 			const imageArray = Array.isArray(selectedImages) ? selectedImages : [selectedImages];
@@ -114,7 +169,7 @@ const CreateMilestone: React.FC = () => {
 			}
 
 			// Step 1: Create preview items with local URIs
-			const previewItems: ChannelEventAttachment[] = imageArray.map((img) => {
+			const previewItems: ChannelTimelineAttachment[] = imageArray.map((img) => {
 				const id = Snowflake.generate();
 				const localUri = Platform.OS === 'ios' ? img.sourceURL || img.path : img.path;
 				return {
@@ -268,7 +323,10 @@ const CreateMilestone: React.FC = () => {
 				<View style={styles.formContainer}>
 					{/* Event Title */}
 					<View style={styles.fieldContainer}>
-						<Text style={styles.fieldLabel}>{t('createMilestone.eventTitleLabel')}</Text>
+						<View style={styles.fieldLabelRow}>
+							<Text style={styles.fieldLabel}>{t('createMilestone.eventTitleLabel')}</Text>
+							<Text style={styles.requiredBadge}>{t('createMilestone.required')}</Text>
+						</View>
 						<TextInput
 							style={styles.input}
 							value={eventTitle}
@@ -277,12 +335,18 @@ const CreateMilestone: React.FC = () => {
 							placeholderTextColor={themeValue.textDisabled}
 							maxLength={100}
 						/>
+						<View style={styles.fieldHintRow}>
+							<MezonIconCDN icon={IconCDN.circleInformation} width={size.s_14} height={size.s_14} color={themeValue.textDisabled} />
+							<Text style={styles.fieldHintText}>{t('createMilestone.titleHint')}</Text>
+						</View>
 						<Text style={styles.charCount}>{eventTitle.length}/100</Text>
 					</View>
 
 					{/* Date */}
 					<View style={styles.fieldContainer}>
-						<Text style={styles.fieldLabel}>{t('createMilestone.dateLabel')}</Text>
+						<View style={styles.fieldLabelRow}>
+							<Text style={styles.fieldLabel}>{t('createMilestone.dateLabel')}</Text>
+						</View>
 						<TouchableOpacity onPress={openDatePicker} style={styles.dateInput}>
 							<Text style={[styles.dateText, { color: themeValue.text }]}>{formatDate(selectedDate)}</Text>
 							<MezonIconCDN icon={IconCDN.calendarIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
@@ -320,7 +384,10 @@ const CreateMilestone: React.FC = () => {
 
 					{/* The Story */}
 					<View style={styles.fieldContainer}>
-						<Text style={styles.fieldLabel}>{t('createMilestone.storyLabel')}</Text>
+						<View style={styles.fieldLabelRow}>
+							<Text style={styles.fieldLabel}>{t('createMilestone.storyLabel')}</Text>
+							<Text style={styles.optionalBadge}>{t('createMilestone.optional')}</Text>
+						</View>
 						<TextInput
 							style={[styles.input, styles.textArea]}
 							value={story}
@@ -337,8 +404,9 @@ const CreateMilestone: React.FC = () => {
 
 					{/* Memories */}
 					<View style={styles.fieldContainer}>
-						<Text style={styles.fieldLabel}>{t('createMilestone.memoriesLabel')}</Text>
-
+						<View style={styles.fieldLabelRow}>
+							<Text style={styles.fieldLabel}>{t('createMilestone.memoriesLabel')}</Text>
+						</View>
 						{attachments.length > 0 ? (
 							<View style={styles.mediaGrid}>
 								{attachments.map((att) => {
@@ -346,9 +414,24 @@ const CreateMilestone: React.FC = () => {
 									const proxyUrl = isUploaded(att)
 										? (createImgproxyUrl(originalUrl, { width: 200, height: 200, resizeType: 'fit' }) as string)
 										: originalUrl;
+									const isVideo = isVideoFile(att);
 									return (
 										<View key={att.id} style={styles.mediaItem}>
-											<ImageNative url={proxyUrl} urlOriginal={originalUrl} style={styles.mediaImage} resizeMode="cover" />
+											{isVideo ? (
+												<VideoThumbnailView videoUrl={att.file_url || ''} style={styles.mediaImage} resizeMode="cover" />
+											) : (
+												<ImageNative url={proxyUrl} urlOriginal={originalUrl} style={styles.mediaImage} resizeMode="cover" />
+											)}
+											{isVideo && (
+												<View style={videoStyles.playIconOverlay}>
+													<MezonIconCDN
+														icon={IconCDN.playIcon}
+														width={size.s_24}
+														height={size.s_24}
+														color={baseColor.white}
+													/>
+												</View>
+											)}
 											{!isUploaded(att) && (
 												<View style={styles.uploadingOverlay}>
 													<ActivityIndicator size="small" color={themeValue.text} />
@@ -370,11 +453,7 @@ const CreateMilestone: React.FC = () => {
 
 						<TouchableOpacity style={styles.uploadContainer} onPress={handleAddMedia} disabled={isUploading}>
 							<View style={styles.uploadIconContainer}>
-								{isUploading ? (
-									<ActivityIndicator size="large" color="#8B5CF6" />
-								) : (
-									<MezonIconCDN icon={IconCDN.uploadPlusIcon} width={size.s_40} height={size.s_40} color="#8B5CF6" />
-								)}
+								<MezonIconCDN icon={IconCDN.uploadPlusIcon} width={size.s_40} height={size.s_40} color="#8B5CF6" />
 							</View>
 							<Text style={styles.uploadTitle}>{t('createMilestone.uploadTitle')}</Text>
 							<Text style={styles.uploadSubtitle}>{t('createMilestone.uploadSubtitle')}</Text>

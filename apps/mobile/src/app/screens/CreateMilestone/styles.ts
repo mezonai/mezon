@@ -38,11 +38,46 @@ export const styles = (theme: Attributes) =>
 		fieldContainer: {
 			marginBottom: size.s_24
 		},
+		fieldLabelRow: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_8,
+			marginBottom: size.s_10
+		},
 		fieldLabel: {
 			fontSize: size.s_16,
 			fontWeight: '600',
-			color: theme.textStrong,
-			marginBottom: size.s_10
+			color: theme.textStrong
+		},
+		requiredBadge: {
+			fontSize: size.s_12,
+			fontWeight: '600',
+			color: '#EF4444',
+			backgroundColor: 'rgba(239, 68, 68, 0.1)',
+			paddingHorizontal: size.s_8,
+			paddingVertical: size.s_2,
+			borderRadius: size.s_4,
+			overflow: 'hidden' as const
+		},
+		optionalBadge: {
+			fontSize: size.s_12,
+			fontWeight: '600',
+			color: theme.textDisabled,
+			backgroundColor: 'rgba(128, 128, 128, 0.1)',
+			paddingHorizontal: size.s_8,
+			paddingVertical: 2,
+			borderRadius: size.s_4,
+			overflow: 'hidden' as const
+		},
+		fieldHintRow: {
+			flexDirection: 'row' as const,
+			alignItems: 'center' as const,
+			gap: size.s_6,
+			marginTop: size.s_6
+		},
+		fieldHintText: {
+			fontSize: size.s_12,
+			color: theme.textDisabled
 		},
 		input: {
 			backgroundColor: theme.secondary,
