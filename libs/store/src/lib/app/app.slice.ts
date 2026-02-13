@@ -417,11 +417,8 @@ export const appSlice = createSlice({
 		setTimelineViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isTimelineViewMode = action.payload;
 		},
-		toggleAutoStart: (state, action: PayloadAction<boolean>) => {
+		toggleAutoStart: (state) => {
 			state.autoStart = !state.autoStart;
-			if (action.payload) {
-				state.isMediaChannelViewMode = false;
-			}
 		},
 		setMediaChannelViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isMediaChannelViewMode = action.payload;
