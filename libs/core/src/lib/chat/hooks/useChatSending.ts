@@ -137,28 +137,26 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				const voiceMembers = selectVoiceChannelMembersByChannelId(state, channelIdOrDirectId ?? '', getClanId || '');
 				const otherMembers = voiceMembers?.filter((userId) => userId !== currentUserId) || [];
 
-				if (otherMembers.length > 0) {
-					let uploadedFiles: ApiMessageAttachment[] = [];
-					if (attachments?.length) {
-						uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
-					}
-
-					await socket.writeEphemeralMessage(
-						otherMembers,
-						getClanId || '',
-						channelIdOrDirectId ?? '',
-						mode,
-						isPublic,
-						moreContent,
-						mentions,
-						uploadedFiles,
-						references,
-						false,
-						false,
-						priorityAvatar || '',
-						code
-					);
+				let uploadedFiles: ApiMessageAttachment[] = [];
+				if (attachments?.length) {
+					uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
 				}
+
+				await socket.writeEphemeralMessage(
+					otherMembers,
+					getClanId || '',
+					channelIdOrDirectId ?? '',
+					mode,
+					isPublic,
+					moreContent,
+					mentions,
+					uploadedFiles,
+					references,
+					false,
+					false,
+					priorityAvatar || '',
+					code
+				);
 				return;
 			}
 
