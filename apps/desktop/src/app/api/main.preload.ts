@@ -12,7 +12,8 @@ import {
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
 	SET_BADGE_COUNT,
-	SET_RATIO_WINDOW
+	SET_RATIO_WINDOW,
+	TOGGLE_HARDWARE_ACCELERATION
 } from '../events/constants';
 
 contextBridge.exposeInMainWorld('electron', {
@@ -59,5 +60,8 @@ contextBridge.exposeInMainWorld('electron', {
 	},
 	toggleSettingAutoStart: (auto: boolean) => {
 		return ipcRenderer.invoke(AUTO_START_APP, auto);
+	},
+	toggleHardwareAcceleration: (enabled: boolean) => {
+		return ipcRenderer.invoke(TOGGLE_HARDWARE_ACCELERATION, enabled);
 	}
 });

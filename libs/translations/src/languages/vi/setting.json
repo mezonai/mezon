@@ -52,6 +52,10 @@
 		"title": "Tự động khởi động ứng dụng",
 		"description": "Tự động mở ứng dụng khi máy tính khởi động để bạn có thể sử dụng ngay."
 	},
+	"hardwareAcceleration": {
+		"title": "Sử dụng gia tốc đồ họa khi có sẵn",
+		"description": "Khi được bật, ứng dụng sẽ tận dụng sức mạnh của GPU (card đồ họa) để xử lý các tác vụ đồ họa chuyên sâu như kết xuất hình ảnh 3D và giải mã video. Điều này giúp tăng tốc độ khung hình và độ phản hồi của giao diện. Trong trường hợp xảy ra lỗi hiển thị hoặc ứng dụng bị treo, hãy thử tắt tính năng này để cải thiện độ ổn định."
+	},
 	"activity": {
 		"title": "Hiển thị hoạt động của tôi",
 		"description": "Chia sẻ những hoạt động hiện tại của bạn với bạn bè. Điều này giúp họ biết bạn đang làm gì và dễ dàng kết nối hơn!"

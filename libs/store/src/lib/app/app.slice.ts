@@ -94,6 +94,7 @@ export interface AppState {
 	isShowUpdateUsername: boolean;
 	isTimelineViewMode: boolean;
 	autoStart: boolean;
+	hardwareAcceleration: boolean;
 }
 
 const getInitialLanguage = (): 'en' | 'vi' => {
@@ -145,7 +146,8 @@ export const initialAppState: AppState = {
 	},
 	isShowUpdateUsername: false,
 	isTimelineViewMode: false,
-	autoStart: true
+	autoStart: true,
+	hardwareAcceleration: true
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
@@ -417,6 +419,9 @@ export const appSlice = createSlice({
 		},
 		toggleAutoStart: (state) => {
 			state.autoStart = !state.autoStart;
+		},
+		toggleHardwareAcceleration: (state) => {
+			state.hardwareAcceleration = !state.hardwareAcceleration;
 		}
 	}
 });
@@ -476,3 +481,5 @@ export const selectIsShowUpdateUsername = createSelector(getAppState, (state: Ap
 export const selectTimelineViewMode = createSelector(getAppState, (state: AppState) => state.isTimelineViewMode);
 
 export const selectAutoStart = createSelector(getAppState, (state: AppState) => state.autoStart);
+
+export const selectHardwareAcceleration = createSelector(getAppState, (state: AppState) => state.hardwareAcceleration);

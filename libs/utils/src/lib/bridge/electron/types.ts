@@ -35,6 +35,7 @@ export type MezonElectronAPI = {
 	setRatioWindow: (ratio: boolean) => void;
 	launchAppWindow: (url: string) => Promise<void>;
 	toggleSettingAutoStart: (auto: boolean) => Promise<void>;
+	toggleHardwareAcceleration: (enabled: boolean) => Promise<void>;
 };
 declare global {
 	interface Window {
