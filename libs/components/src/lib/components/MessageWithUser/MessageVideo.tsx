@@ -376,7 +376,7 @@ function DefaultVideo({ attachmentData, isMobile = false, isPreview = false }: M
 }
 
 function MessageVideo(props: MessageImage) {
-	if (!isElectronMac()) {
+	if (isElectronMac()) {
 		return <MacElectronVideo {...props} />;
 	}
 	return <DefaultVideo {...props} />;
