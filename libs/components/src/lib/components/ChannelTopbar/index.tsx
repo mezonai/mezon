@@ -42,6 +42,7 @@ import {
 	selectIsShowPinBadgeByDmId,
 	selectIsThreadModalVisible,
 	selectIsUseProfileDM,
+	selectMediaChannelViewMode,
 	selectMemberByGroupId,
 	selectNotifiSettingsEntitiesById,
 	selectOpenVoiceCall,
@@ -852,18 +853,18 @@ function CanvasButton({ onClick }: { onClick?: () => void }) {
 function TimelineViewToggleButton() {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
-	const isTimelineView = useAppSelector(selectTimelineViewMode);
+	const isMediaChannelView = useAppSelector(selectMediaChannelViewMode);
 
 	const handleToggle = useCallback(() => {
-		dispatch(appActions.setTimelineViewMode(!isTimelineView));
-	}, [dispatch, isTimelineView]);
+		dispatch(appActions.setMediaChannelViewMode(!isMediaChannelView));
+	}, [dispatch, isMediaChannelView]);
 
 	return (
 		<div className="relative leading-5 h-5">
 			<button
-				title={isTimelineView ? t('tooltips.defaultView') : t('tooltips.timelineView')}
+				title={isMediaChannelView ? t('tooltips.defaultView') : t('tooltips.timelineView')}
 				onClick={handleToggle}
-				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isTimelineView ? 'text-theme-primary-active' : ''}`}
+				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isMediaChannelView ? 'text-theme-primary-active' : ''}`}
 				onContextMenu={(e) => e.preventDefault()}
 			>
 				<Icons.History className="w-5 h-5" />
