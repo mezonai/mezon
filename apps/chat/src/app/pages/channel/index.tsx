@@ -28,6 +28,7 @@ import {
 	selectLastMessageViewportByChannelId,
 	selectLastSeenMessageId,
 	selectLastSentMessageStateByChannelId,
+	selectMediaChannelViewMode,
 	selectMissionDone,
 	selectMissionSum,
 	selectOnboardingByClan,
@@ -172,6 +173,8 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const [canSendMessageDelayed, setCanSendMessageDelayed] = useState<boolean | null>(null);
 	const isAppChannel = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 	const isTimelineViewMode = useAppSelector(selectTimelineViewMode);
+	const isMediaChannelViewMode = useAppSelector(selectMediaChannelViewMode);
+	const isSpecialViewMode = isTimelineViewMode || isMediaChannelViewMode;
 
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanIsOnboarding = useSelector(selectCurrentClanIsOnboarding);
@@ -264,10 +267,10 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	};
 
 	return (
-		<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative ${isShowMemberList && !isTimelineViewMode ? 'w-full' : ''}`}>
+		<div className={`flex-shrink flex flex-col bg-theme-chat h-auto relative ${isShowMemberList && !isSpecialViewMode ? 'w-full' : ''}`}>
 			{showPreviewMode && <OnboardingGuide currentMission={currentMission} missionSum={missionSum} missionDone={missionDone} />}
-			{!isTimelineViewMode && currentChannel && <ChannelMessageBox clanId={currentChannel?.clan_id} channel={currentChannel} mode={mode} />}
-			{!isTimelineViewMode && isAppChannel && (
+			{!isSpecialViewMode && currentChannel && <ChannelMessageBox clanId={currentChannel?.clan_id} channel={currentChannel} mode={mode} />}
+			{!isSpecialViewMode && isAppChannel && (
 				<div className="flex gap-2 px-3 pt-2 text-theme-primary">
 					<div
 						onClick={handleLaunchApp}
@@ -282,7 +285,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 					</div>
 				</div>
 			)}
-			{!isTimelineViewMode && currentChannel && currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE ? (
+			{!isSpecialViewMode && currentChannel && currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE ? (
 				<ChannelTyping channelId={currentChannel?.id} mode={mode} isPublic={currentChannel ? !currentChannel?.channel_private : false} />
 			) : (
 				<div className="h-4"></div>
@@ -306,6 +309,8 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	const isShowCanvas = useSelector(selectIsShowCanvas);
 	const isShowChatInVoice = useSelector(selectIsShowChatVoice);
 	const isTimelineView = useAppSelector(selectTimelineViewMode);
+	const isMediaChannelView = useAppSelector(selectMediaChannelViewMode);
+	const isSpecialView = isTimelineView || isMediaChannelView;
 	const [isShowAgeRestricted, setIsShowAgeRestricted] = useState(false);
 
 	const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
@@ -398,7 +403,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 						!isShowAgeRestricted &&
 						(isShowChatInVoice || currentChannel?.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE) && (
 							<div
-								className={`flex flex-col flex-1 min-w-60 ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isShowMemberList && !isTimelineView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
+								className={`flex flex-col flex-1 min-w-60 ${isWindowsDesktop || isLinuxDesktop ? 'max-h-titleBarMessageViewChatDM' : 'max-h-messageViewChatDM'} ${isShowMemberList && !isSpecialView ? 'w-widthMessageViewChat' : isShowCreateThread ? 'w-widthMessageViewChatThread' : isSearchMessage ? 'w-widthSearchMessage' : 'w-widthThumnailAttachment'} h-full max-h-full overflow-hidden ${closeMenu && !statusMenu && isShowMemberList && !isChannelStream && 'hidden'} z-10`}
 							>
 								<div className={`relative overflow-y-auto flex-1 min-h-0`}>
 									<ChannelMedia currentChannel={currentChannel} />
@@ -421,7 +426,7 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 							<AgeRestricted closeAgeRestricted={closeAgeRestricted} />
 						</div>
 					)}
-					{isShowMemberList && !isChannelMezonVoice && !isChannelStream && !isTimelineView && (
+					{isShowMemberList && !isChannelMezonVoice && !isChannelStream && !isSpecialView && (
 						<div
 							onContextMenu={(event) => event.preventDefault()}
 							className={`border-l border-solid border-color-primary text-theme-primary relative overflow-y-scroll hide-scrollbar flex} ${closeMenu && !statusMenu && isShowMemberList ? 'w-full' : 'w-widthMemberList'}`}

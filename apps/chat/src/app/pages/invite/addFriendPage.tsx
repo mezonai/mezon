@@ -77,17 +77,19 @@ export default function AddFriendPage() {
 	}, []);
 
 	const handleGotoDm = async () => {
-		if (!userProfile?.user?.id || !username) return;
+		const targetUserId = dataEncode?.id;
+
+		if (!userProfile?.user?.id || !targetUserId) return;
 		const bodyCreateDm: ApiCreateChannelDescRequest = {
 			type: ChannelType.CHANNEL_TYPE_DM,
 			channel_private: 1,
-			user_ids: [username],
+			user_ids: [targetUserId],
 			clan_id: '0'
 		};
 		const result = await dispatch(
 			directActions.createNewDirectMessage({
 				body: bodyCreateDm,
-				username: [userProfile?.user?.display_name || userProfile?.user?.username || '', dataEncode?.name || username],
+				username: [userProfile?.user?.display_name || userProfile?.user?.username || '', dataEncode?.name || username || ''],
 				avatar: [userProfile?.user?.avatar_url || '', dataEncode?.avatar || '']
 			})
 		);
