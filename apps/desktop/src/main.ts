@@ -9,6 +9,7 @@ import {
 	CLOSE_APP,
 	CLOSE_IMAGE_WINDOW,
 	DOWNLOAD_FILE,
+	GET_REDUX_STATE,
 	GET_WINDOW_STATE,
 	IMAGE_WINDOW_TITLE_BAR_ACTION,
 	LAUNCH_APP_WINDOW,
@@ -21,6 +22,7 @@ import {
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
 	SET_RATIO_WINDOW,
+	SYNC_REDUX_STATE,
 	TITLE_BAR_ACTION,
 	TOGGLE_HARDWARE_ACCELERATION,
 	UNMAXIMIZE_WINDOW,
@@ -406,7 +408,51 @@ ipcMain.handle(TOGGLE_HARDWARE_ACCELERATION, async (event, enabled) => {
 		app.disableHardwareAcceleration();
 	}
 
+	const { dialog } = require('electron');
+	const response = await dialog.showMessageBox({
+		type: 'info',
+		title: 'Hardware Acceleration',
+		message: 'Hardware acceleration settings have been updated.',
+		detail: 'The application needs to restart for the changes to take effect.',
+		buttons: ['Restart Now', 'Later'],
+		defaultId: 0,
+		cancelId: 1
+	});
+
+	if (response.response === 0) {
+		app.relaunch();
+		app.exit(0);
+	}
+
 	return { success: true, requiresRestart: true };
+});
+
+ipcMain.handle(SYNC_REDUX_STATE, async (event, state) => {
+	const Store = (await import('electron-store')).default;
+	const store = new Store();
+
+	if (state.autoStart !== undefined) {
+		store.set('autoStart', state.autoStart);
+		app.setLoginItemSettings({
+			openAtLogin: state.autoStart
+		});
+	}
+
+	if (state.hardwareAcceleration !== undefined) {
+		store.set('hardwareAcceleration', state.hardwareAcceleration);
+	}
+
+	return { success: true };
+});
+
+ipcMain.handle(GET_REDUX_STATE, async () => {
+	const Store = (await import('electron-store')).default;
+	const store = new Store();
+
+	return {
+		autoStart: store.get('autoStart', true),
+		hardwareAcceleration: store.get('hardwareAcceleration', true)
+	};
 });
 
 ipcMain.on(LOAD_MORE_ATTACHMENTS, (event, { direction }) => {
