@@ -17,6 +17,7 @@ import { useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, Linking, StyleSheet, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
+import { isGoogleMapLink } from '../../../../../utils/helpers';
 import LinkOptionModal from '../LinkOptions/LinkOptionModal';
 import { MentionUser } from '../MarkdownFormatText/MentionUser';
 import RenderCanvasItem from '../RenderCanvasItem';
@@ -508,7 +509,7 @@ export const RenderTextMarkdownContent = ({
 									style={
 										themeValue
 											? markdownStyles(themeValue, isUnReadChannel, isLastMessage, isBuzzMessage, isTabletLandscape)
-												.blockSpacing
+													.blockSpacing
 											: {}
 									}
 								>
@@ -667,7 +668,7 @@ export const RenderTextMarkdownContent = ({
 								? t?.substring(element.index, t?.indexOf(' ', element.index) === -1 ? t.length : t.indexOf(' ', element.index))
 								: '';
 
-						if (url && element?.title && element?.description && element?.image) {
+						if (url && element?.title && element?.description && element?.image && !isGoogleMapLink(url)) {
 							markdownBlackParts.push(<RenderOgpPreview ogpItem={element as OgpElemnent} url={url} />);
 						}
 						break;
