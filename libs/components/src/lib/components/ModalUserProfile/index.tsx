@@ -284,7 +284,7 @@ const ModalUserProfile = ({
 							detail={checkUser ? (userProfile?.user?.about_me as string) : (userById?.user?.about_me as string)}
 						/>
 					)}
-					{mode !== 4 && mode !== 3 && !isFooterProfile && (
+					{mode !== 4 && mode !== 3 && !isFooterProfile && !!createTimeMs && (
 						<UserDescription title={t(`labels.${ETileDetail.MemberSince}`)} detail={timeFormatted} />
 					)}
 

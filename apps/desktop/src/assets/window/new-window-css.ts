@@ -16,12 +16,13 @@ body {
     justify-content: space-between;
     align-items: center;
     color: white;
-    background-color: #1E1F22;
+    background-color: #2f3136;
     width: 100vw;
     z-index: 2;
     position: fixed;
-	padding:4px 0;
+	padding:4px 16px 0 16px;
 	box-sizing : border-box;
+	height:38px;
 }
 
 .footer-bar {
@@ -31,7 +32,7 @@ body {
     justify-content: center;
     align-items: center;
     color: white;
-    background-color: #1E1F22;
+    background-color: #2f3136;
     width: 100vw;
     z-index: 2;
     position: fixed;
@@ -51,7 +52,6 @@ body {
 
 .app-title {
     width: fit-content;
-    margin-left: 12px;
     font-size: 14px;
     font-weight: 600;
     line-height: 26px;
@@ -63,6 +63,8 @@ body {
 .functional-bar {
     display: flex;
     height: 21px;
+	gap : 2px;
+	align-items: center;
 }
 
 .function-button {
@@ -75,7 +77,9 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 0 8px;
+    padding: 4px;
+	aspect-ratio: 1 / 1;
+  	border-radius: 99999px;
 }
 
 .function-button:hover {
@@ -129,7 +133,7 @@ width : 0 !important;
 .main-container {
     display: flex;
     width: 100%;
-    height: calc(100vh - 21px);
+    height: calc(100vh - 38px);
     overflow: hidden;
     flex-direction: column;
     position: relative;

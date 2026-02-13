@@ -1,5 +1,13 @@
 import { getCurrentChatData } from '@mezon/core';
-import { attachmentActions, getStore, selectCurrentChannel, selectCurrentClanId, selectCurrentDM, useAppDispatch } from '@mezon/store';
+import {
+	attachmentActions,
+	getStore,
+	selectCurrentChannel,
+	selectCurrentClanId,
+	selectCurrentDM,
+	selectMessageEntitiesByChannelId,
+	useAppDispatch
+} from '@mezon/store';
 import type { ApiPhoto, IImageWindowProps, IMessageWithUser, ObserveFn } from '@mezon/utils';
 import {
 	EMimeTypes,
@@ -63,6 +71,7 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 			const resultAttach: ApiMessageAttachment & { create_time?: string } = {
 				...attachment,
 				sender_id: message.sender_id,
+				message_id: message.id,
 				create_time: (attachment.create_time_seconds ?? 0) * 1000 || (((message.create_time_seconds ?? 0) * 1000) as any)
 			};
 			images.push(resultAttach);
@@ -219,6 +228,7 @@ const ImageAlbum = memo(
 					).unwrap();
 
 					const currentChatUsersEntities = getCurrentChatData()?.currentChatUsersEntities;
+					const currentChatMessageEntities = selectMessageEntitiesByChannelId(state, channelId);
 					const listAttachmentsByChannel = data?.attachments
 						?.filter(
 							(att) =>
@@ -244,7 +254,20 @@ const ImageAlbum = memo(
 							return 0;
 						});
 
-					const currentImageUploader = currentChatUsersEntities?.[attachmentData.sender_id as string];
+					let currentImageUploader = currentChatUsersEntities?.[attachmentData.sender_id as string];
+
+					if (!currentImageUploader) {
+						currentImageUploader = {
+							clan_nick: currentChatMessageEntities[attachmentData?.message_id as string]?.clan_nick,
+							id: attachmentData?.sender_id as string,
+							clan_avatar: currentChatMessageEntities[attachmentData?.message_id as string]?.clan_avatar,
+							user: {
+								display_name: currentChatMessageEntities[attachmentData?.message_id as string]?.display_name,
+								username: currentChatMessageEntities[attachmentData?.message_id as string]?.username,
+								avatar_url: currentChatMessageEntities[attachmentData?.message_id as string]?.avatar
+							}
+						};
+					}
 
 					window.electron.openImageWindow({
 						...enhancedAttachmentData,
@@ -272,7 +295,11 @@ const ImageAlbum = memo(
 					});
 					if ((currentClanId && currentChannelId) || currentDmGroupId) {
 						if (listAttachmentsByChannel) {
-							const imageListWithUploaderInfo = getAttachmentDataForWindow(listAttachmentsByChannel, currentChatUsersEntities);
+							const imageListWithUploaderInfo = getAttachmentDataForWindow(
+								listAttachmentsByChannel,
+								currentChatUsersEntities,
+								currentChatMessageEntities
+							);
 							const selectedImageIndex = listAttachmentsByChannel.findIndex((image) => image.url === enhancedAttachmentData.url);
 							const channelImagesData: IImageWindowProps = {
 								channelLabel: (currentChannelId ? currentChannel?.channel_label : currentDm.channel_label) as string,

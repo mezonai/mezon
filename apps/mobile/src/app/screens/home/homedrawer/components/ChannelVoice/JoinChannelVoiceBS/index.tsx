@@ -91,7 +91,7 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 					onPress={() => {
 						const data = {
 							snapPoints: ['70%', '90%'],
-							children: <InviteToChannel isUnknownChannel={false} channelId={channelId} />
+							children: <InviteToChannel isUnknownChannel={false} />
 						};
 						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 					}}

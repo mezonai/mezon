@@ -1,13 +1,6 @@
 import { requestMeasure, requestMutation } from '../fasterdom';
-import {
-	FocusDirection,
-	NoneToVoidFunction,
-	SCROLL_MAX_DISTANCE,
-	SCROLL_MAX_DURATION,
-	SCROLL_MIN_DURATION,
-	SCROLL_SHORT_TRANSITION_MAX_DISTANCE,
-	ScrollTargetPosition
-} from '../types';
+import type { NoneToVoidFunction, ScrollTargetPosition } from '../types';
+import { FocusDirection, SCROLL_MAX_DISTANCE, SCROLL_MAX_DURATION, SCROLL_MIN_DURATION, SCROLL_SHORT_TRANSITION_MAX_DISTANCE } from '../types';
 import { animateSingle, cancelSingleAnimation } from './animation';
 import { beginHeavyAnimation } from './heavyAnimation';
 import { IS_ANDROID } from './windowEnvironment';

@@ -63,7 +63,7 @@
 	},
 	"files": {
 		"emptyTitle": "Không có tệp nào.",
-		"emptyDescription": "Tập trung vào cuộc trò chuyện với tệp - một kênh văn bản tạm thời.",
+		"emptyDescription": "Hiện tại không có tệp nào được chia sẻ trong kênh này.",
 		"searchPlaceholder": "Tìm kiếm tên tệp"
 	},
 	"fileItem": {

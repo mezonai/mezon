@@ -1,5 +1,5 @@
 import type { MenuItemConstructorOptions } from 'electron';
-import { BrowserWindow, Menu, Notification, app, dialog, powerMonitor, screen, shell } from 'electron';
+import { BrowserWindow, Menu, Notification, app, dialog, ipcMain, powerMonitor, screen, shell } from 'electron';
 import log from 'electron-log/main';
 import { autoUpdater } from 'electron-updater';
 import activeWindows from 'mezon-active-windows';
@@ -9,7 +9,7 @@ import tray from '../Tray';
 import { EActivityCoding, EActivityGaming, EActivityMusic } from './activities';
 import setupAutoUpdates from './autoUpdates';
 import { rendererAppName, rendererAppPort } from './constants';
-import { ACTIVE_WINDOW, LOCK_SCREEN, TRIGGER_SHORTCUT, UNLOCK_SCREEN } from './events/constants';
+import { ACTIVE_WINDOW, FINISH_RENDER, LOCK_SCREEN, TRIGGER_SHORTCUT, UNLOCK_SCREEN } from './events/constants';
 import setupRequestPermission from './requestPermission';
 import { initBadge } from './services/badge';
 import { forceQuit } from './utils';
@@ -34,8 +34,6 @@ dialog.showOpenDialog = function (...args) {
 };
 
 export default class App {
-	// Keep a global reference of the window object, if you don't, the window will
-	// be closed automatically when the JavaScript object is garbage collected.
 	static mainWindow: Electron.BrowserWindow;
 	static application: Electron.App;
 	static BrowserWindow: typeof Electron.BrowserWindow;
@@ -82,6 +80,7 @@ export default class App {
 				openAtLogin: true,
 				path: process.execPath
 			});
+
 			App.initMainWindow();
 			App.loadMainWindow();
 			App.setupMenu();
@@ -102,7 +101,6 @@ export default class App {
 		autoUpdater.checkForUpdates();
 		const updateCheckTimeInMilliseconds = 60 * 60 * 1000;
 
-		// Store interval reference for cleanup
 		App.updateCheckInterval = setInterval(() => {
 			autoUpdater.checkForUpdates();
 		}, updateCheckTimeInMilliseconds);
@@ -123,6 +121,121 @@ export default class App {
 		}
 	}
 
+	private static showOfflinePage(errorDescription?: string) {
+		if (!App.isWindowValid(App.mainWindow)) return;
+
+		const offlineHTML = `
+			<!DOCTYPE html>
+			<html class="dark">
+			<head>
+				<style>
+					* { margin: 0; padding: 0; box-sizing: border-box; }
+					body {
+						font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+						background-color: #313338;
+						color: #e6e6e6;
+						height: 100vh;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						-webkit-app-region: drag;
+					}
+					.offline-container {
+						text-align: center;
+						max-width: 400px;
+						padding: 40px;
+						-webkit-app-region: no-drag;
+					}
+					.offline-icon {
+						font-size: 48px;
+						margin-bottom: 16px;
+					}
+					.offline-title {
+						font-size: 20px;
+						font-weight: 600;
+						margin-bottom: 8px;
+						color: #ffffff;
+					}
+					.offline-message {
+						font-size: 14px;
+						color: #a0a0a0;
+						margin-bottom: 24px;
+						line-height: 1.5;
+					}
+					.status-text {
+						font-size: 12px;
+						color: #ef4444;
+						margin-bottom: 16px;
+					}
+					.retry-button {
+						background-color: #5864f2;
+						color: #ffffff;
+						border: none;
+						padding: 10px 24px;
+						border-radius: 4px;
+						font-size: 14px;
+						font-weight: 500;
+						cursor: pointer;
+					}
+					.retry-button:hover {
+						background-color: #4752c4;
+					}
+					.retry-button:disabled {
+						background-color: #3b3d5c;
+						cursor: not-allowed;
+					}
+				</style>
+			</head>
+			<body>
+				<div class="offline-container">
+					<div class="offline-title">Network Error</div>
+					<div class="offline-message">Unable to connect. Please check your internet connection and try again.</div>
+					<div class="status-text" id="status">${errorDescription || ''}</div>
+					<button class="retry-button" id="retryBtn" onclick="retryConnection()">Retry</button>
+				</div>
+				<script>
+					function retryConnection() {
+						var btn = document.getElementById('retryBtn');
+						var status = document.getElementById('status');
+
+						if (!navigator.onLine) {
+							status.textContent = 'Still offline. Please check your connection.';
+							return;
+						}
+
+						btn.disabled = true;
+						btn.textContent = 'Connecting...';
+						status.textContent = '';
+
+						var img = new Image();
+						img.onload = function() {
+							window.location.href = 'https://mezon.ai/';
+						};
+						img.onerror = function() {
+							btn.disabled = false;
+							btn.textContent = 'Retry';
+							status.textContent = 'Connection failed. Please try again.';
+						};
+						img.src = 'https://mezon.ai/assets/favicon.ico?t=' + Date.now();
+					}
+
+					window.addEventListener('online', function() {
+						document.getElementById('status').textContent = 'Connection restored. Click Retry.';
+					});
+					window.addEventListener('offline', function() {
+						document.getElementById('status').textContent = 'Still offline.';
+					});
+				</script>
+			</body>
+			</html>
+		`;
+
+		App.mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(offlineHTML)}`);
+		if (!App.mainWindow.isVisible()) {
+			App.mainWindow.show();
+		}
+	}
+
 	private static initMainWindow() {
 		const workAreaSize = screen.getPrimaryDisplay().workAreaSize;
 		const width = Math.min(1280, workAreaSize.width || 1280);
@@ -136,6 +249,7 @@ export default class App {
 			width,
 			height,
 			show: showOnStartup,
+			backgroundColor: '#313338',
 			frame: false,
 			titleBarOverlay: false,
 			titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
@@ -213,9 +327,10 @@ export default class App {
 			// console.log("will-finish-launching");
 		});
 
-		// if main window is ready to show, close the splash window and show the main window
-		App.mainWindow.once('ready-to-show', () => {
-			App.mainWindow.show();
+		ipcMain.once(FINISH_RENDER, () => {
+			if (App.isWindowValid(App.mainWindow) && !App.mainWindow.isVisible()) {
+				App.mainWindow.show();
+			}
 		});
 		// handle all external redirects in a new browser window
 		App.mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -228,6 +343,9 @@ export default class App {
 
 		App.mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
 			log.error(`Failed to load: ${validatedURL}, Error code: ${errorCode}, Description: ${errorDescription}`);
+			if (errorCode !== -3) {
+				App.showOfflinePage(errorDescription);
+			}
 		});
 
 		App.mainWindow.webContents.on('certificate-error', (event, url, error, _certificate, callback) => {
@@ -265,6 +383,7 @@ export default class App {
 				forceQuit.disable();
 				return;
 			}
+			_event.preventDefault();
 			App.mainWindow.hide();
 		});
 
@@ -298,7 +417,6 @@ export default class App {
 	}
 
 	private static loadMainWindow(params?: Record<string, string>) {
-		// load the index.html of the app.
 		if (!App.application.isPackaged) {
 			const baseUrl = `http://localhost:${rendererAppPort}`;
 			const fullUrl = this.generateFullUrl(baseUrl, params);

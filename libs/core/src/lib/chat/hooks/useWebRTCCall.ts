@@ -3,6 +3,7 @@ import { useMezon } from '@mezon/transport';
 import { compress, decompress, IMessageTypeCallLog, requestMediaPermission } from '@mezon/utils';
 import { safeJSONParse, WebrtcSignalingType } from 'mezon-js';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
 const STUN_SERVERS = [
@@ -41,6 +42,7 @@ interface IWebRTCCallParams {
 }
 
 export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerAvatar, isInChannelCalled }: IWebRTCCallParams) {
+	const { t } = useTranslation('channelVoice');
 	const [callState, setCallState] = useState<CallState>({
 		localStream: null,
 		remoteStream: null,
@@ -145,7 +147,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		pc.oniceconnectionstatechange = async () => {
 			if (pc.iceConnectionState === 'connected') {
 				timeStartConnected.current = new Date();
-				dispatch(toastActions.addToast({ message: 'Connection connected', type: 'success', autoClose: 3000 }));
+				dispatch(toastActions.addToast({ message: t('toast.connectionConnected'), type: 'success', autoClose: 3000 }));
 				dispatch(audioCallActions.setIsJoinedCall(true));
 				dispatch(audioCallActions.setIsDialTone(false));
 				await mezon.socketRef.current?.forwardWebrtcSignaling(dmUserId, WebrtcSignalingType.WEBRTC_SDP_INIT, '', channelId, userId);
@@ -159,7 +161,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 			if (pc.iceConnectionState === 'disconnected') {
 				setIsConnected(null);
-				dispatch(toastActions.addToast({ message: 'Connection disconnected', type: 'warning', autoClose: 3000 }));
+				dispatch(toastActions.addToast({ message: t('toast.connectionDisconnected'), type: 'warning', autoClose: 3000 }));
 				dispatch(audioCallActions.setIsJoinedCall(false));
 				handleEndCall();
 				clearCallTimeout();
@@ -186,7 +188,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		if (microphoneGranted !== 'granted') {
 			dispatch(
 				toastActions.addToast({
-					message: 'Microphone permission is required',
+					message: t('toast.microphonePermissionRequired'),
 					type: 'warning',
 					autoClose: 1000
 				})
@@ -267,7 +269,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				callTimeout.current = setTimeout(() => {
 					dispatch(
 						toastActions.addToast({
-							message: 'The recipient did not answer the call.',
+							message: t('toast.recipientDidNotAnswer'),
 							type: 'warning',
 							autoClose: 3000
 						})
@@ -620,7 +622,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		const cameraGranted = await requestMediaPermission('video');
 		const cameraPermission = await navigator.permissions.query({ name: 'camera' as PermissionName });
 		if (cameraGranted !== 'granted' || cameraPermission.state !== 'granted') {
-			dispatch(toastActions.addToast({ message: 'Camera permission is required', type: 'warning', autoClose: 1000 }));
+			dispatch(toastActions.addToast({ message: t('toast.cameraPermissionRequired'), type: 'warning', autoClose: 1000 }));
 			return;
 		}
 

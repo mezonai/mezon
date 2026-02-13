@@ -51,6 +51,9 @@ export const style = (colors: Attributes) =>
 		buttonCircleActive: {
 			backgroundColor: colors.text
 		},
+		buttonAgentActive: {
+			backgroundColor: baseColor.blurple
+		},
 		btnVoice: {
 			backgroundColor: colors.secondary,
 			flexDirection: 'row',

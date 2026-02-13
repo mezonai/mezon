@@ -10,7 +10,7 @@ interface SortIconProps {
 
 function SortIcon({ column, sortBy, sort }: SortIconProps) {
 	const { t } = useTranslation('dashboard');
-	const tooltipText = t('sortIcon.tooltip');
+	const tooltipText = sortBy !== column ? t('sortIcon.tooltip') : sort === 'asc' ? t('sortIcon.sortedAsc') : t('sortIcon.sortedDesc');
 
 	if (sortBy !== column) {
 		// Not sorted - both arrows enabled

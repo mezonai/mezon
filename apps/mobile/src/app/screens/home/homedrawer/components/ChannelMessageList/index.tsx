@@ -16,6 +16,7 @@ interface IChannelListMessageProps {
 	isLoadMoreBottom: boolean;
 	lastSeenMessageId?: string;
 	initialScrollIndex?: number;
+	savedScrollOffset?: number;
 }
 
 export const ViewLoadMore = ({ isLoadMoreTop = false }: { isLoadMoreTop?: boolean }) => {
@@ -38,16 +39,20 @@ const ChannelListMessage = React.memo(
 		onLoadMore,
 		isLoadMoreBottom,
 		lastSeenMessageId: _lastSeenMessageId,
-		initialScrollIndex
+		initialScrollIndex,
+		savedScrollOffset
 	}: IChannelListMessageProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
 		const keyExtractor = useCallback((message: MessagesEntity) => `${message?.id}_${message?.channel_id}`, []);
 		const initialScrollIndexRef = useRef(initialScrollIndex);
+		const savedScrollOffsetRef = useRef(savedScrollOffset);
 		const needsInitialScroll = initialScrollIndexRef.current !== undefined && initialScrollIndexRef.current > 0;
+		const needsRestoreScroll = !needsInitialScroll && savedScrollOffsetRef.current !== undefined && savedScrollOffsetRef.current > 0;
+		const needsDelayedScroll = needsInitialScroll || needsRestoreScroll;
 		const hasScrolled = useRef(false);
-		const [isReady, setIsReady] = useState(!needsInitialScroll);
-		const opacityAnim = useRef(new Animated.Value(needsInitialScroll ? 0 : 1)).current;
+		const [isReady, setIsReady] = useState(!needsDelayedScroll);
+		const opacityAnim = useRef(new Animated.Value(needsDelayedScroll ? 0 : 1)).current;
 
 		const isCannotLoadMore = useMemo(() => {
 			const lastMessage = messages?.[messages?.length - 1];
@@ -68,36 +73,45 @@ const ChannelListMessage = React.memo(
 		}, [isReady, opacityAnim]);
 
 		const handleLayout = useCallback(() => {
-			if (!needsInitialScroll || hasScrolled.current) {
+			if (!needsDelayedScroll || hasScrolled.current) {
 				return;
 			}
 
 			hasScrolled.current = true;
-			const targetIndex = initialScrollIndexRef.current || 0;
 
 			requestAnimationFrame(() => {
 				requestAnimationFrame(() => {
-					if (flatListRef.current && targetIndex > 0) {
-						flatListRef.current.scrollToIndex({
-							index: targetIndex,
-							animated: false,
-							viewPosition: 0.5
-						});
+					if (flatListRef.current) {
+						if (needsInitialScroll) {
+							const targetIndex = initialScrollIndexRef.current || 0;
+							if (targetIndex > 0) {
+								flatListRef.current.scrollToIndex({
+									index: targetIndex,
+									animated: false,
+									viewPosition: 0.5
+								});
+							}
+						} else if (needsRestoreScroll) {
+							flatListRef.current.scrollToOffset({
+								offset: savedScrollOffsetRef.current,
+								animated: false
+							});
+						}
 					}
 					showList();
 				});
 			});
-		}, [needsInitialScroll, flatListRef, showList]);
+		}, [needsDelayedScroll, needsInitialScroll, needsRestoreScroll, flatListRef, showList]);
 
 		useEffect(() => {
-			if (!needsInitialScroll || isReady) return;
+			if (!needsDelayedScroll || isReady) return;
 
 			const timeout = setTimeout(() => {
 				showList();
 			}, 300);
 
 			return () => clearTimeout(timeout);
-		}, [needsInitialScroll, isReady, showList]);
+		}, [needsDelayedScroll, isReady, showList]);
 
 		return (
 			<Animated.View style={{ flex: 1, opacity: opacityAnim }}>
@@ -109,7 +123,7 @@ const ChannelListMessage = React.memo(
 					bounces={false}
 					showsVerticalScrollIndicator={true}
 					contentContainerStyle={styles.listChannels}
-					initialNumToRender={needsInitialScroll ? Math.max((initialScrollIndexRef.current || 0) + 10, 20) : 10}
+					initialNumToRender={needsDelayedScroll ? Math.max((initialScrollIndexRef.current || 0) + 10, 20) : 10}
 					maxToRenderPerBatch={15}
 					windowSize={15}
 					onEndReachedThreshold={0.1}

@@ -138,15 +138,17 @@ const SearchMessageChannel = ({ route }: ISearchMessageChannelProps) => {
 		[searchText.length]
 	);
 
+	const contextValue = useMemo(() => ({ filtersSearch, activeTab }), [filtersSearch, activeTab]);
+
+	const gradientColors = useMemo(
+		() => [themeValue.primary, themeValue?.primaryGradiant || themeValue.primary],
+		[themeValue.primary, themeValue?.primaryGradiant]
+	);
+
 	return (
-		<SearchMessageChannelContext.Provider value={{ filtersSearch, activeTab }}>
-			<View style={{ flex: 1 }}>
-				<LinearGradient
-					start={{ x: 1, y: 0 }}
-					end={{ x: 0, y: 0 }}
-					colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-					style={[StyleSheet.absoluteFillObject]}
-				/>
+		<SearchMessageChannelContext.Provider value={contextValue}>
+			<View style={styles.flex}>
+				<LinearGradient start={gradientStart} end={gradientEnd} colors={gradientColors} style={styles.absoluteFill} />
 				<StatusBarHeight />
 				<InputSearchMessageChannel
 					onKeyPress={handleKeyPress}
@@ -180,5 +182,13 @@ const SearchMessageChannel = ({ route }: ISearchMessageChannelProps) => {
 		</SearchMessageChannelContext.Provider>
 	);
 };
+
+const gradientStart = { x: 1, y: 0 };
+const gradientEnd = { x: 0, y: 0 };
+
+const styles = StyleSheet.create({
+	flex: { flex: 1 },
+	absoluteFill: { ...StyleSheet.absoluteFillObject }
+});
 
 export default memo(SearchMessageChannel);

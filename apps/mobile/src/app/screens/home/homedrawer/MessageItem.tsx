@@ -136,6 +136,15 @@ const MessageItem = React.memo(
 			return message?.username || message?.user?.username || '';
 		}, [message?.username, message?.user?.username]);
 
+		const messageCreateTime = useMemo(() => {
+			try {
+				return message?.create_time_seconds || Math.floor(new Date(message?.create_time).getTime() / 1000);
+			} catch (error) {
+				console.error('Failed to parse message create time: ', error);
+				return 0;
+			}
+		}, [message?.create_time_seconds, message?.create_time]);
+
 		const onReplyMessage = useCallback(() => {
 			const payload: IMessageActionNeedToResolve = {
 				type: EMessageActionType.Reply,
@@ -287,6 +296,7 @@ const MessageItem = React.memo(
 							currentChannel={currentChannel}
 							showRole={!isDM}
 							directId={channelId}
+							isFromMessage
 						/>
 					)
 				};
@@ -355,10 +365,10 @@ const MessageItem = React.memo(
 						isHighlight && styles.highlightMessageMention,
 						isEphemeralMessage && styles.ephemeralMessage,
 						Platform.OS === 'ios' &&
-							pressed && {
-								backgroundColor: themeValue.secondaryWeight,
-								opacity: 0.8
-							}
+						pressed && {
+							backgroundColor: themeValue.secondaryWeight,
+							opacity: 0.8
+						}
 					]}
 				>
 					{!isMessageSystem && !message?.content?.fwd && (
@@ -487,7 +497,7 @@ const MessageItem = React.memo(
 									{message?.attachments?.length > 0 && (
 										<MessageAttachment
 											attachments={message?.attachments}
-											messageCreatTime={message?.create_time_seconds}
+											messageCreatTime={messageCreateTime}
 											clanId={message?.clan_id}
 											channelId={message?.channel_id}
 											onLongPressImage={onLongPressImage}
@@ -538,29 +548,29 @@ const MessageItem = React.memo(
 	(prevProps, nextProps) => {
 		return (
 			prevProps?.message?.id +
-				prevProps?.message?.update_time_seconds +
-				prevProps?.previousMessage?.id +
-				prevProps?.message?.code +
-				prevProps?.isHighlight +
-				prevProps?.message?.reactions +
-				prevProps?.message?.content?.t +
-				prevProps?.message?.attachments?.length +
-				prevProps?.message?.references?.[0]?.content +
-				prevProps?.message?.isError +
-				prevProps?.message?.isErrorRetry +
-				prevProps?.preventAction ===
+			prevProps?.message?.update_time_seconds +
+			prevProps?.previousMessage?.id +
+			prevProps?.message?.code +
+			prevProps?.isHighlight +
+			prevProps?.message?.reactions +
+			prevProps?.message?.content?.t +
+			prevProps?.message?.attachments?.length +
+			prevProps?.message?.references?.[0]?.content +
+			prevProps?.message?.isError +
+			prevProps?.message?.isErrorRetry +
+			prevProps?.preventAction ===
 			nextProps?.message?.id +
-				nextProps?.message?.update_time_seconds +
-				nextProps?.previousMessage?.id +
-				nextProps?.message?.code +
-				nextProps?.isHighlight +
-				nextProps?.message?.reactions +
-				nextProps?.message?.content?.t +
-				nextProps?.message?.attachments?.length +
-				nextProps?.message?.references?.[0]?.content +
-				nextProps?.message?.isError +
-				nextProps?.message?.isErrorRetry +
-				nextProps?.preventAction
+			nextProps?.message?.update_time_seconds +
+			nextProps?.previousMessage?.id +
+			nextProps?.message?.code +
+			nextProps?.isHighlight +
+			nextProps?.message?.reactions +
+			nextProps?.message?.content?.t +
+			nextProps?.message?.attachments?.length +
+			nextProps?.message?.references?.[0]?.content +
+			nextProps?.message?.isError +
+			nextProps?.message?.isErrorRetry +
+			nextProps?.preventAction
 		);
 	}
 );

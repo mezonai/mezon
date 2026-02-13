@@ -85,8 +85,8 @@
     "lodash.isequal": "^4.5.0",
     "lowlight": "^3.3.0",
     "mezon-active-windows": "0.1.38",
-    "mezon-js": "2.14.80",
-    "mezon-js-protobuf": "1.10.9",
+    "mezon-js": "2.14.91",
+    "mezon-js-protobuf": "1.10.20",
     "mmn-client-js": "1.0.16",
     "nx-electron": "^20.0.2",
     "rc-dropdown": "^4.2.1",
@@ -234,8 +234,7 @@
     "qs": "^6.14.1",
     "glob": "^10.5.0",
     "@electron/rebuild": "^3.7.0",
-    "cacache": "^18.0.0",
-    "js-yaml": "^4.1.1"
+    "cacache": "^18.0.0"
   },
   "optionalDependencies": {
     "@nx/nx-darwin-arm64": "18.2.2",

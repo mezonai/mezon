@@ -5,7 +5,7 @@ import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
-			flex: 1,
+			width: '100%',
 			backgroundColor: colors.primary,
 			padding: Metrics.size.xl,
 			flexDirection: 'row',

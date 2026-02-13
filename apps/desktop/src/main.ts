@@ -4,6 +4,7 @@ import fs from 'fs';
 import App from './app/app';
 import {
 	ACTION_SHOW_IMAGE,
+	AUTO_START_APP,
 	CLEAR_SCREEN_SOURCES_CACHE,
 	CLOSE_APP,
 	CLOSE_IMAGE_WINDOW,
@@ -387,6 +388,12 @@ ipcMain.handle(GET_WINDOW_STATE, () => {
 
 ipcMain.on(TITLE_BAR_ACTION, (event, action, _data) => {
 	handleWindowAction(App.mainWindow, action);
+});
+
+ipcMain.handle(AUTO_START_APP, (event, action) => {
+	app.setLoginItemSettings({
+		openAtLogin: action
+	});
 });
 
 ipcMain.on(LOAD_MORE_ATTACHMENTS, (event, { direction }) => {

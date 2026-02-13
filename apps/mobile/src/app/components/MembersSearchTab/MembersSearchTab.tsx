@@ -4,7 +4,7 @@ import type { ChannelMembersEntity, DirectEntity } from '@mezon/store-mobile';
 import { directActions, getStore, selectCurrentDM, useAppDispatch } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useMemo } from 'react';
-import { DeviceEventEmitter, FlatList, Keyboard, View } from 'react-native';
+import { DeviceEventEmitter, FlatList, Keyboard, StyleSheet, View } from 'react-native';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import UserProfile from '../../screens/home/homedrawer/components/UserProfile';
@@ -18,13 +18,17 @@ interface IMembersSearchTabProps {
 	listDMGroupSearch?: DirectEntity[];
 }
 
+const handleScrollBeginDrag = () => Keyboard.dismiss();
+const ListEmpty = memo(() => <EmptySearchPage />);
+
 const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: IMembersSearchTabProps) => {
 	const { themeValue } = useTheme();
 	const navigation = useNavigation<any>();
 	const dispatch = useAppDispatch();
 	const isTabletLandscape = useTabletLandscape();
 	const data = useMemo(() => [...(listMemberSearch ?? []), ...(listDMGroupSearch ?? [])], [listMemberSearch, listDMGroupSearch]);
-	const styles = useMemo(() => style(themeValue, data.length === 0), [themeValue, data]);
+	const isEmpty = data.length === 0;
+	const styles = useMemo(() => style(themeValue, isEmpty), [themeValue, isEmpty]);
 
 	const handleNavigateToDMGroup = useCallback(
 		(id: string) => {
@@ -43,18 +47,12 @@ const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: IMembersSearc
 		const store = getStore();
 		const currentDirect = selectCurrentDM(store.getState());
 		const directId = currentDirect?.id;
-		const data = {
+		const sheetData = {
 			snapPoints: ['60%'],
 			heightFitContent: true,
 			hiddenHeaderIndicator: true,
 			children: (
-				<View
-					style={{
-						borderTopLeftRadius: size.s_14,
-						borderTopRightRadius: size.s_14,
-						overflow: 'hidden'
-					}}
-				>
+				<View style={internalStyles.profileContainer}>
 					<UserProfile
 						userId={user?.user?.id || user?.id}
 						user={user?.user || user}
@@ -68,7 +66,7 @@ const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: IMembersSearc
 				</View>
 			)
 		};
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data: sheetData });
 	}, []);
 
 	const renderItem = useCallback(
@@ -90,20 +88,27 @@ const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: IMembersSearc
 		<FlatList
 			data={data}
 			renderItem={renderItem}
-			onScrollBeginDrag={() => Keyboard.dismiss()}
+			onScrollBeginDrag={handleScrollBeginDrag}
 			keyExtractor={keyExtractor}
-			initialNumToRender={1}
-			maxToRenderPerBatch={1}
-			windowSize={4}
+			initialNumToRender={10}
+			maxToRenderPerBatch={10}
+			windowSize={7}
 			showsVerticalScrollIndicator={false}
 			removeClippedSubviews={true}
 			keyboardShouldPersistTaps={'handled'}
-			disableVirtualization={false}
 			contentContainerStyle={styles.contentContainerStyle}
 			style={styles.boxMembers}
-			ListEmptyComponent={() => <EmptySearchPage />}
+			ListEmptyComponent={ListEmpty}
 		/>
 	);
 };
+
+const internalStyles = StyleSheet.create({
+	profileContainer: {
+		borderTopLeftRadius: size.s_14,
+		borderTopRightRadius: size.s_14,
+		overflow: 'hidden'
+	}
+});
 
 export default memo(MembersSearchTab);

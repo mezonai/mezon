@@ -1,25 +1,47 @@
 import { useTheme } from '@mezon/mobile-ui';
-import type { UsersStreamEntity } from '@mezon/store-mobile';
-import { memo, useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { memo, useCallback, useEffect, useMemo } from 'react';
+import { FlatList, Keyboard, Text, View } from 'react-native';
 import UserItem from './UserItem';
 import { style } from './UserStreamingRoom.styles';
 const MAX_VISIBLE_USERS = 5;
-function UserStreamingRoom({ streamChannelMember }: { streamChannelMember: UsersStreamEntity[] }) {
+
+interface IUserStreamingRoomProps {
+	streamChannelMember: string[];
+}
+
+function UserStreamingRoom({ streamChannelMember }: IUserStreamingRoomProps) {
 	const { themeValue } = useTheme();
 	const isMoreThanMax = streamChannelMember?.length > MAX_VISIBLE_USERS;
 	const styles = useMemo(() => style(themeValue, isMoreThanMax), [themeValue, isMoreThanMax]);
 	const remainingCount = streamChannelMember?.length - MAX_VISIBLE_USERS;
 	const visibleUsers = streamChannelMember?.slice(0, MAX_VISIBLE_USERS);
 
+	useEffect(() => {
+		Keyboard.dismiss();
+	}, []);
+
+	const renderItem = useCallback(({ item }: { item: string }) => (
+		<View style={[styles.userItem, styles.userItemDynamic]}>
+			<UserItem user={item} />
+		</View>
+	), []);
+
 	return (
 		<View style={styles.gridContainer}>
 			{visibleUsers?.length > 0 &&
-				visibleUsers.map((user, index) => (
-					<View style={[styles.userItem, styles.userItemDynamic]} key={index}>
-						<UserItem user={user} />
-					</View>
-				))}
+				<FlatList
+					data={visibleUsers}
+					keyExtractor={(userId) => userId}
+					renderItem={renderItem}
+					horizontal
+					scrollEnabled={false}
+					initialNumToRender={10}
+					windowSize={3}
+					maxToRenderPerBatch={10}
+					removeClippedSubviews
+					style={styles.flatList}
+				/>
+			}
 
 			{remainingCount > 0 && (
 				<View style={styles.remainingCount}>

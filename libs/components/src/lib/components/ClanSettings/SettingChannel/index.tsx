@@ -12,7 +12,7 @@ import { formatDistance } from 'date-fns';
 import { ChannelType } from 'mezon-js';
 import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/api.gen';
 import type { ReactElement } from 'react';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -34,6 +34,10 @@ const ListChannelSetting = ({ listChannel, clanId, countChannel, searchFilter }:
 
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
+
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [clanId]);
 
 	const onPageChange = async (page: number) => {
 		setCurrentPage(page);

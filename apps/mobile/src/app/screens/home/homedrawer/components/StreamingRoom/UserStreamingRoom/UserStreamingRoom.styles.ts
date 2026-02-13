@@ -29,7 +29,6 @@ export const style = (colors: Attributes, isMoreThanMax = false) =>
 		},
 		gridContainer: {
 			flexDirection: 'row',
-			flexWrap: 'wrap',
 			justifyContent: 'center',
 			alignItems: 'center',
 			marginTop: size.s_30
@@ -56,5 +55,9 @@ export const style = (colors: Attributes, isMoreThanMax = false) =>
 		},
 		userItemDynamic: {
 			marginRight: isMoreThanMax ? -15 : 10
+		},
+		flatList: {
+			flexGrow: 0,
+			overflow: 'visible'
 		}
 	});

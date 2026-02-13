@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -10,7 +11,7 @@ export const style = (colors: Attributes) =>
 			gap: size.s_18
 		},
 		groupWrapper: {
-			borderRadius: size.s_12,
+			borderRadius: size.s_8,
 			overflow: 'hidden'
 		},
 		whiteText: {
@@ -19,9 +20,13 @@ export const style = (colors: Attributes) =>
 		},
 		addFriendItem: {
 			padding: size.s_10,
+			flexDirection: 'row',
+			alignItems: 'center',
+			justifyContent: 'space-between',
 			backgroundColor: colors.secondary
 		},
 		addFriendText: {
+			flexShrink: 1,
 			color: colors.textStrong,
 			fontSize: size.medium
 		}

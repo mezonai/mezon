@@ -9,7 +9,12 @@
 		"title": "Well, this is awkward",
 		"crashMessage": "Looks like Mezon has crashed unexpectedly....",
 		"trackedMessage": "We've tracked the error and will get right on it.",
-		"reload": "Reload"
+		"reload": "Reload",
+		"networkError": "Network Error",
+		"offlineMessage": "Unable to connect. Please check your internet connection and try again.",
+		"connecting": "Connecting...",
+		"stillOffline": "No internet connection. Please check your network.",
+		"connectionFailed": "Connection failed. Please try again."
 	},
 	"newMessage": "New",
 	"newMention": "New mention",

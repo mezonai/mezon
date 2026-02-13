@@ -8,6 +8,17 @@ export const style = (colors: Attributes) =>
 			flex: 1,
 			backgroundColor: colors.primary
 		},
+		main: {
+			flex: 1,
+			width: '100%',
+			height: '100%',
+			alignItems: 'center',
+			justifyContent: 'center'
+		},
+		modalWrapper: {
+			width: '100%',
+			height: '100%'
+		},
 		modalContainer: {
 			justifyContent: 'center',
 			alignItems: 'center',
@@ -104,7 +115,8 @@ export const style = (colors: Attributes) =>
 			backgroundColor: colors.primary,
 			justifyContent: 'space-between',
 			paddingHorizontal: size.s_30,
-			paddingVertical: size.s_30
+			paddingVertical: size.s_30,
+			zIndex: 100
 		},
 		modalHeader: {
 			marginTop: size.s_20,
@@ -200,9 +212,6 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_18,
 			fontWeight: 'bold',
 			color: colors.white
-		},
-		viewShotContainer: {
-			flex: 1
 		},
 		wrapperContainer: {
 			flex: 1

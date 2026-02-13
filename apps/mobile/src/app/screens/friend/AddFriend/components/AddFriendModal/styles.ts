@@ -81,7 +81,9 @@ export const style = (colors: Attributes) =>
 			width: size.s_100
 		},
 		titleHeader: {
+			marginHorizontal: size.s_50,
 			top: -size.s_34,
+			alignSelf: 'center',
 			fontWeight: 'bold',
 			fontSize: size.s_18,
 			color: colors.text,

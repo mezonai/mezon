@@ -15,9 +15,9 @@
 	"addFriend": {
 		"incomingFriendRequest": "Incoming Friend Request",
 		"findYourFriend": "Find your friends",
-		"addByUserName": "Add by Username",
+		"addByUserName": "Add by username or phone number",
 		"addByUsername": "Add By {{username}}",
-		"searchUsernamePlaceholder": "Enter a username",
+		"searchUsernamePlaceholder": "Enter a username or phone number",
 		"whoYouWantToAddFriend": "Who would you like to add as a friend?",
 		"byTheWay": "By the way, your username is",
 		"sendRequestButton": "Send Friend Request",

@@ -10,9 +10,10 @@ import { style } from '../styles';
 
 type SendVoiceSoundProps = {
 	channelId: string;
+	onPress?: () => void;
 };
 
-const SendVoiceSound = memo(({ channelId }: SendVoiceSoundProps) => {
+const SendVoiceSound = memo(({ channelId, onPress }: SendVoiceSoundProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { socketRef } = useMezon();
@@ -38,6 +39,7 @@ const SendVoiceSound = memo(({ channelId }: SendVoiceSoundProps) => {
 			backdropStyle: { zIndex: 1000, backgroundColor: 'rgba(0, 0, 0, 0.3)' }
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+		onPress?.();
 	};
 
 	return (

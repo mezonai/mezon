@@ -1,3 +1,4 @@
+import mezonPackage from '@mezon/package-js';
 import { appActions, authActions, selectAllAccount, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
 import { EUserSettings, generateE2eId } from '@mezon/utils';
@@ -139,6 +140,16 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 				>
 					{t('setting:appSettings.voice')}
 				</button>
+				<br />
+				<button
+					className={`p-2 pl-2 ml-[-8px] font-medium ${selectedButton === EUserSettings.START_UP ? 'bg-button-secondary text-theme-primary-active bg-item-theme' : 'text-theme-primary'} mt-1 w-[170px] text-left rounded-[5px]`}
+					onClick={() => {
+						handleButtonClick(EUserSettings.START_UP);
+						onItemClick && onItemClick(EUserSettings.START_UP);
+					}}
+				>
+					{t('setting:appSettings.startUp')}
+				</button>
 				<div className="hidden">
 					<br />
 					<button className="p-2 text-[16px] font-medium w-[170px] rounded-[5px] text-left mt-1 ml-[-8px] ">Accessibility</button>
@@ -172,7 +183,7 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 					{t('setting:logOut')}
 				</button>
 				{openModal && <LogoutModal handleLogOut={handleLogOut} onClose={handleCloseModal} />}
-				<div className="h-9"></div>
+				<div className="mt-4 text-xs text-theme-text-secondary opacity-60">v{mezonPackage.version}</div>
 			</div>
 		</div>
 	);

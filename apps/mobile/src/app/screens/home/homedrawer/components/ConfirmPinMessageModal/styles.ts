@@ -21,7 +21,8 @@ export const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'column',
 		justifyContent: 'space-between',
-		gap: size.s_10
+		gap: size.s_10,
+		zIndex: 100
 	},
 	noButton: {
 		paddingVertical: size.s_10,
@@ -53,5 +54,13 @@ export const styles = StyleSheet.create({
 		paddingVertical: size.s_4,
 		minHeight: size.s_60,
 		maxHeight: size.s_100
+	},
+
+	backdrop: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		width: '100%',
+		height: '100%'
 	}
 });

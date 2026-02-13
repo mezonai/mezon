@@ -9,6 +9,7 @@ import {
 	friendsActions,
 	selectAllAccount,
 	selectAllRolesClan,
+	selectCurrentClanId,
 	selectDirectsOpenlist,
 	selectFriendById,
 	selectMemberClanByUserId,
@@ -62,6 +63,7 @@ interface userProfileProps {
 	currentChannel?: ChannelsEntity;
 	directId?: string;
 	manageVoiceUser?: IManageVoiceUser;
+	isFromMessage?: boolean;
 }
 
 export enum EFriendState {
@@ -88,7 +90,8 @@ const UserProfile = React.memo(
 		showRole = true,
 		currentChannel,
 		directId,
-		manageVoiceUser
+		manageVoiceUser,
+		isFromMessage = false
 	}: userProfileProps) => {
 		const isTabletLandscape = useTabletLandscape();
 		const { themeValue } = useTheme();
@@ -103,6 +106,7 @@ const UserProfile = React.memo(
 		const navigation = useNavigation<any>();
 		const { createDirectMessageWithUser } = useDirect();
 		const listDM = useSelector(selectDirectsOpenlist);
+		const currentClanId = useSelector(selectCurrentClanId);
 		const getStatus = useMemberStatus(userById?.id || '');
 		const [isShowPendingContent, setIsShowPendingContent] = useState(false);
 		const dispatch = useAppDispatch();
@@ -143,6 +147,11 @@ const UserProfile = React.memo(
 		const isBlocked = useMemo(() => {
 			return infoFriend?.state === EStateFriend.BLOCK;
 		}, [infoFriend?.state]);
+
+		const isWebhook = useMemo(() => {
+			const isClanView = !!(currentClanId && currentClanId !== '0')
+			return isClanView && isFromMessage && !userById;
+		}, [currentClanId, isFromMessage, userById]);
 
 		useEffect(() => {
 			if (isShowPendingContent) {
@@ -359,21 +368,21 @@ const UserProfile = React.memo(
 				text: t('userAction.sendMessage'),
 				icon: <MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.text} />,
 				action: navigateToMessageDetail,
-				isShow: !isBlocked
+				isShow: !isBlocked && !isWebhook
 			},
 			{
 				id: 2,
 				text: t('userAction.voiceCall'),
 				icon: <MezonIconCDN icon={IconCDN.phoneCallIcon} color={themeValue.text} />,
 				action: () => handleCallUser(userId || user?.id),
-				isShow: !isBlocked
+				isShow: !isBlocked && !isWebhook
 			},
 			{
 				id: 4,
 				text: t('userAction.addFriend'),
 				icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={baseColor.green} />,
 				action: handleAddFriend,
-				isShow: !infoFriend && !isBlocked,
+				isShow: !infoFriend && !isBlocked && !isWebhook,
 				textStyleName: 'actionTextGreen'
 			},
 			{
@@ -394,10 +403,10 @@ const UserProfile = React.memo(
 		const handleAcceptFriend = () => {
 			const body = infoFriend?.user?.id
 				? {
-						ids: infoFriend?.user?.id || '',
-						usernames: infoFriend?.user?.username || '',
-						isAcceptingRequest: true
-					}
+					ids: infoFriend?.user?.id || '',
+					usernames: infoFriend?.user?.username || '',
+					isAcceptingRequest: true
+				}
 				: { usernames: infoFriend?.user?.username || '', isAcceptingRequest: true };
 			dispatch(friendsActions.sendRequestAddFriend(body));
 		};
@@ -462,7 +471,7 @@ const UserProfile = React.memo(
 		return (
 			<View style={styles.wrapper}>
 				<View style={[styles.backdrop, { backgroundColor: userById || user?.avatar_url ? color : baseColor.gray }]}>
-					{!isCheckOwner && (
+					{!isCheckOwner && !isWebhook && (
 						<View style={styles.rowContainer}>
 							<TouchableOpacity onPress={iconFriend?.action} style={styles.topActionButton}>
 								<MezonIconCDN icon={iconFriend?.icon} color={themeValue.text} width={size.s_20} height={size.s_20} />
@@ -479,10 +488,10 @@ const UserProfile = React.memo(
 							avatarUrl={
 								!isDM
 									? messageAvatar ||
-										userById?.clan_avatar ||
-										userById?.user?.avatar_url ||
-										user?.user?.avatar_url ||
-										user?.avatar_url
+									userById?.clan_avatar ||
+									userById?.user?.avatar_url ||
+									user?.user?.avatar_url ||
+									user?.avatar_url
 									: userById?.user?.avatar_url || user?.user?.avatar_url || user?.avatar_url || messageAvatar
 							}
 							username={user?.user?.username || user?.username}
@@ -540,26 +549,26 @@ const UserProfile = React.memo(
 							{userById
 								? !isDM
 									? userById?.clan_nick ||
-										userById?.user?.display_name ||
-										userById?.user?.username ||
-										user?.clan_nick ||
-										user?.user?.display_name ||
-										user?.user?.username
+									userById?.user?.display_name ||
+									userById?.user?.username ||
+									user?.clan_nick ||
+									user?.user?.display_name ||
+									user?.user?.username
 									: userById?.user?.display_name || userById?.user?.username
 								: user?.display_name ||
-									user?.user?.display_name ||
-									user?.username ||
-									user?.user?.username ||
-									(checkAnonymous ? 'Anonymous' : '')}
+								user?.user?.display_name ||
+								user?.username ||
+								user?.user?.username ||
+								(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						<Text style={[styles.subUserName]}>
 							{userById
 								? userById?.user?.username || userById?.user?.display_name
 								: user?.username ||
-									user?.user?.username ||
-									user?.display_name ||
-									user?.user?.display_name ||
-									(checkAnonymous ? 'Anonymous' : '')}
+								user?.user?.username ||
+								user?.display_name ||
+								user?.user?.display_name ||
+								(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						{isCheckOwner && <EditUserProfileBtn user={userById || (user as any)} />}
 						{!isCheckOwner && !manageVoiceUser && (

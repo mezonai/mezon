@@ -12,6 +12,7 @@ import {
 	selectBuzzStateByChannelId,
 	selectCurrentMission,
 	selectEventsByChannelId,
+	selectIsChannelMuted,
 	selectToCheckAppIsOpening,
 	threadsActions,
 	useAppDispatch,
@@ -94,6 +95,7 @@ const ChannelLinkComponent = ({
 	});
 	const buzzState = useAppSelector((state) => selectBuzzStateByChannelId(state, channel?.channel_id ?? ''));
 	const events = useAppSelector((state) => selectEventsByChannelId(state, channel.clan_id ?? '', channel?.channel_id ?? ''));
+	const isChannelMuted = useAppSelector((state) => selectIsChannelMuted(state, clanId ?? '', channel?.channel_id ?? ''));
 
 	const handleOpenCreate = () => {
 		openSettingModal();
@@ -226,7 +228,7 @@ const ChannelLinkComponent = ({
 				>
 					<span
 						ref={channelLinkRef}
-						className={`flex flex-row items-center rounded relative flex-1 pointer-events-none  ${hightLightTextChannel ? ' font-semibold text-theme-primary-active' : 'font-medium '}`}
+						className={`flex flex-row items-center rounded relative flex-1 pointer-events-none  ${hightLightTextChannel ? ' font-semibold text-theme-primary-active' : 'font-medium '} ${isChannelMuted ? 'opacity-70' : ''}`}
 					>
 						{state === 'inactiveUnread' && <div className="absolute left-0 -ml-2 w-1 h-2 bg-white rounded-r-full"></div>}
 
@@ -251,7 +253,7 @@ const ChannelLinkComponent = ({
 						</div>
 						{events[0] && <EventSchedule event={events[0]} className="ml-0.2 mt-0.5" />}
 						<p
-							className={`ml-2 w-full pointer-events-none text-base focus:bg-bgModifierHover`}
+							className={`ml-2 w-full pointer-events-none text-base focus:bg-bgModifierHover ${isChannelMuted ? 'opacity-70' : ''}`}
 							title={channel.channel_label && channel?.channel_label.length > 20 ? channel?.channel_label : undefined}
 							data-e2e={generateE2eId('clan_page.channel_list.item.name')}
 						>

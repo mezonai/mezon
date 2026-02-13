@@ -92,14 +92,14 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 	return (
 		<div
 			onClick={() => handleLinkThread(thread.channel_id as string, thread.clan_id || '0')}
-			className="relative overflow-y-hidden p-4 mb-2 cursor-pointer rounded-lg h-[72px] bg-item-theme"
+			className="relative overflow-hidden p-4 mb-2 cursor-pointer rounded-lg h-[72px] bg-item-theme"
 			role="button"
 			data-e2e={generateE2eId('chat.channel_message.header.button.thread.item')}
 		>
-			<div className="flex flex-row justify-between items-center">
-				<div className="flex flex-col gap-1">
+			<div className="flex flex-row justify-between items-center gap-3">
+				<div className="flex flex-col gap-1 flex-1 min-w-0">
 					<p className="text-base font-semibold leading-5 one-line">{thread?.channel_label}</p>
-					<div className="flex flex-row items-center h-6">
+					<div className="flex flex-row items-center h-6 min-w-0">
 						<AvatarImage
 							alt={`${senderDisplayName}'s avatar`}
 							username={senderDisplayName}
@@ -114,17 +114,17 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 						<span className="max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap text-[#17AC86] text-sm font-semibold leading-4">
 							{senderDisplayName}:&nbsp;
 						</span>
-						<div className="overflow-hidden max-w-[140px]">
+						<div className="min-w-0 flex-1">
 							<ThreadModalContent message={message} thread={thread as ChannelsEntity} />
 						</div>
-						<div className="overflow-x-hidden">
+						<div className="overflow-x-hidden shrink-0">
 							<p className="text-xs font-medium leading-4 ml-2">
 								<span className="truncate text-theme-primary">•&nbsp;{timeMessage}</span>
 							</p>
 						</div>
 					</div>
 				</div>
-				<div className="w-[120px]">
+				<div className="w-[120px] shrink-0">
 					{threadMembers && (
 						<AvatarGroup className="flex justify-end items-center">
 							{previewAvatarList?.map((avatar, index) => (

@@ -29,7 +29,7 @@ export const MemberProfile = memo(({ user, creatorClanId, isDM, currentChannel, 
 	const { highestPermissionRoleColor } = useColorsRoleById(userId);
 	const getStatus = useMemberStatus(userId);
 	const currentUserProfile = useSelector(selectAllAccount);
-	const userProfile = useAppSelector((state) => selectMemberDMByUserId(state, userId));
+	const dmProfile = useAppSelector((state) => selectMemberDMByUserId(state, userId));
 	const clanProfile = useAppSelector((state) => selectMemberClanByUserId(state, userId));
 
 	const infoMemberStatus = useMemo(() => {
@@ -44,26 +44,26 @@ export const MemberProfile = memo(({ user, creatorClanId, isDM, currentChannel, 
 	}, [currentUserProfile?.user?.id, currentUserProfile?.user?.status, currentUserProfile?.user?.user_status, getStatus, userId]);
 
 	const priorityMemberAvatar = useMemo(() => {
-		const avatar = userProfile?.avatar_url || user?.user?.avatar_url || user?.avatar_url || user?.avatars?.[0] || '';
+		const avatar = dmProfile?.avatar_url || user?.user?.avatar_url || user?.avatar_url || user?.avatars?.[0] || '';
 		if (isDM) {
 			return avatar;
 		}
 
 		return clanProfile?.clan_avatar || user?.clan_avatar || avatar;
-	}, [isDM, userProfile?.avatar_url, user?.user?.avatar_url, user?.avatar_url, user?.avatars?.[0], clanProfile?.clan_avatar, user?.clan_avatar]);
+	}, [dmProfile?.avatar_url, user?.user?.avatar_url, user?.avatar_url, user?.avatars, user?.clan_avatar, isDM, clanProfile?.clan_avatar]);
 
 	const memberUsername = useMemo(() => {
-		return userProfile?.username || user?.username || user?.user?.username || '';
-	}, [userProfile?.username, user?.username, user?.user?.username]);
+		return dmProfile?.username || user?.username || user?.user?.username || '';
+	}, [dmProfile?.username, user?.username, user?.user?.username]);
 
 	const priorityMemberName = useMemo(() => {
-		const name = userProfile?.display_name || user?.display_name || user?.user?.display_name || memberUsername;
+		const name = dmProfile?.display_name || user?.display_name || user?.user?.display_name || memberUsername;
 		if (isDM) {
 			return name;
 		}
 
 		return clanProfile?.clan_nick || user?.clan_nick || name;
-	}, [userProfile?.display_name, user?.display_name, user?.clan_nick, memberUsername, isDM, clanProfile?.clan_nick]);
+	}, [dmProfile?.display_name, user?.display_name, user?.user?.display_name, user?.clan_nick, memberUsername, isDM, clanProfile?.clan_nick]);
 
 	const colorUsername = useMemo(() => {
 		return !isDM
@@ -86,7 +86,7 @@ export const MemberProfile = memo(({ user, creatorClanId, isDM, currentChannel, 
 		<View style={styles.container}>
 			<MezonAvatar
 				avatarUrl={priorityMemberAvatar}
-				username={userProfile?.username || user?.username || user?.user?.username || ''}
+				username={priorityMemberName}
 				userStatus={infoMemberStatus}
 				customStatus={infoMemberStatus?.status}
 				width={size.s_36}

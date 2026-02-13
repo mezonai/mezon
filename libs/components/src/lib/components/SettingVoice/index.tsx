@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceSelector } from './DeviceSelector';
 import { MicTest } from './MicTest';
+import { NoiseSuppressionControl, type NoiseSuppressionControlRef } from './NoiseSuppressionControl';
 import { VolumeSlider } from './VolumeSlider';
 
 const LS_KEYS = {
@@ -21,9 +22,11 @@ const safeParseNumber = (value: string | null, fallback: number) => {
 
 interface ISettingVoiceProps {
 	menuIsOpen: boolean;
+	noiseSuppressionEnabled?: boolean;
+	noiseSuppressionLevel?: number;
 }
 
-export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
+export const SettingVoice = ({ menuIsOpen, noiseSuppressionEnabled = false, noiseSuppressionLevel = 0 }: ISettingVoiceProps) => {
 	const { t } = useTranslation(['setting']);
 	const [permissionState, setPermissionState] = useState<'unknown' | 'granted' | 'denied'>('unknown');
 
@@ -63,6 +66,7 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 	const rafRef = useRef<number | null>(null);
 	const playbackAudioRef = useRef<HTMLAudioElement | null>(null);
 	const playbackStreamRef = useRef<MediaStream | null>(null);
+	const noiseSuppressionControlRef = useRef<NoiseSuppressionControlRef | null>(null);
 
 	const hasSetSinkId = useMemo(() => {
 		try {
@@ -85,8 +89,14 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 		streamRef.current = null;
 	}, []);
 
+	const cleanupNoiseSuppression = useCallback(() => {
+		noiseSuppressionControlRef.current?.cleanup();
+	}, []);
+
 	const cleanupAudioGraph = useCallback(() => {
 		stopLevelMeter();
+		cleanupNoiseSuppression();
+		noiseSuppressionControlRef.current?.cleanupAudioNodes();
 		try {
 			analyserRef.current?.disconnect();
 		} catch {
@@ -103,7 +113,7 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 				// ignore
 			}
 		}
-	}, [stopLevelMeter]);
+	}, [cleanupNoiseSuppression, stopLevelMeter]);
 
 	const refreshDevices = useCallback(async () => {
 		if (!navigator.mediaDevices?.enumerateDevices) return;
@@ -212,41 +222,46 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 			const audioContext = new AudioContext();
 			audioContextRef.current = audioContext;
 
-			const source = audioContext.createMediaStreamSource(stream);
-			const gain = audioContext.createGain();
-			gain.gain.value = currentMicVolume;
-
 			const analyser = audioContext.createAnalyser();
 			analyser.fftSize = 2048;
 			analyserRef.current = analyser;
 
-			const dest = audioContext.createMediaStreamDestination();
-
-			source.connect(gain);
-			gain.connect(analyser);
-			gain.connect(dest);
+			noiseSuppressionControlRef.current?.setupAudioNodes(stream, audioContext, analyser, currentMicVolume);
 
 			startLevelMeter();
+
+			if (noiseSuppressionEnabled) {
+				try {
+					await noiseSuppressionControlRef.current?.applyNoiseSuppression(true);
+				} catch (error) {
+					console.error('Failed to init noise suppression for mic test:', error);
+				}
+			}
 
 			// Live monitor: play mic audio immediately instead of waiting until stop.
 			const audio = playbackAudioRef.current;
 			if (audio) {
-				playbackStreamRef.current = dest.stream;
-				audio.srcObject = dest.stream;
-				audio.volume = speakerVolumeRef.current;
+				const destStream = noiseSuppressionControlRef.current?.getDestinationStream();
+				if (destStream) {
+					playbackStreamRef.current = destStream;
+					audio.srcObject = destStream;
+					audio.volume = speakerVolumeRef.current;
 
-				if (hasSetSinkId && outputDeviceIdRef.current) {
-					try {
-						await (audio as HTMLMediaElement & { setSinkId: (deviceId: string) => Promise<void> }).setSinkId(outputDeviceIdRef.current);
-					} catch {
-						// ignore and fallback to default output
+					if (hasSetSinkId && outputDeviceIdRef.current) {
+						try {
+							await (audio as HTMLMediaElement & { setSinkId: (deviceId: string) => Promise<void> }).setSinkId(
+								outputDeviceIdRef.current
+							);
+						} catch {
+							// ignore and fallback to default output
+						}
 					}
-				}
 
-				try {
-					await audio.play();
-				} catch {
-					// ignore autoplay issues
+					try {
+						await audio.play();
+					} catch {
+						// ignore autoplay issues
+					}
 				}
 			}
 		} catch (e) {
@@ -256,7 +271,7 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 			cleanupAudioGraph();
 			stopStream();
 		}
-	}, [cleanupAudioGraph, hasSetSinkId, startLevelMeter, stopStream, stopTest, t]);
+	}, [cleanupAudioGraph, hasSetSinkId, noiseSuppressionEnabled, startLevelMeter, stopStream, stopTest, t]);
 
 	useEffect(() => {
 		return () => {
@@ -296,6 +311,13 @@ export const SettingVoice = ({ menuIsOpen }: ISettingVoiceProps) => {
 						<VolumeSlider value={speakerVolume} onChange={setSpeakerVolume} label={t('setting:voice.speakerVolume')} />
 					</div>
 				</div>
+				<NoiseSuppressionControl
+					ref={noiseSuppressionControlRef}
+					className="mt-4"
+					noiseSuppressionEnabled={noiseSuppressionEnabled}
+					noiseSuppressionLevel={noiseSuppressionLevel}
+					isTesting={isTesting}
+				/>
 
 				<MicTest
 					permissionState={permissionState}

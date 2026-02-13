@@ -92,6 +92,10 @@ export type IRolesClan = ApiRole & {
 	id: string;
 };
 
+export type MessagesEntity = IMessageWithUser & {
+	id: string; // Primary ID
+};
+
 export type INotificationSetting = ApiNotificationUserChannel;
 
 export type INotifiReactMessage = ApiNotifiReactMessage;
@@ -1076,7 +1080,8 @@ export enum EUserSettings {
 	VOICE = 'Voice',
 	STREAMER_MODE = 'Streamer Mode',
 	ADVANCED = 'Advanced',
-	LOG_OUT = 'Log Out'
+	LOG_OUT = 'Log Out',
+	START_UP = 'START_UP'
 }
 
 export enum ENotificationTypes {
@@ -1573,4 +1578,9 @@ export interface ApiChannelAppResponseExtend extends ApiChannelAppResponse {
 export enum EDragBorderPosition {
 	TOP = 'top',
 	BOTTOM = 'bottom'
+}
+
+export enum EOgpType {
+	image = 'image',
+	website = 'website'
 }

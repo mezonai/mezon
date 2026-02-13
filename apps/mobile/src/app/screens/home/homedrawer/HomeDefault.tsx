@@ -1,4 +1,4 @@
-import { ActionEmitEvent, save, STORAGE_IS_LAST_ACTIVE_TAB_DM } from '@mezon/mobile-components';
+import { ActionEmitEvent, load, save, STORAGE_AGREED_POLICY, STORAGE_IS_LAST_ACTIVE_TAB_DM } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { useNavigation } from '@react-navigation/native';
 import { setTimeout } from '@testing-library/react-native/build/helpers/timers';
@@ -13,11 +13,12 @@ import ChannelAppHotbar from './ChannelAppHotbar';
 import ChannelMessages from './ChannelMessages';
 import { ChatBox } from './ChatBox';
 import LicenseAgreement from './components/LicenseAgreement';
+
 import DrawerListener from './DrawerListener';
 import HomeDefaultHeader from './HomeDefaultHeader';
 import PanelKeyboard from './PanelKeyboard';
 import { style } from './styles';
-// HomeDefault check
+
 const HomeDefault = React.memo(
 	(props: any) => {
 		const { themeValue } = useTheme();
@@ -70,6 +71,27 @@ const HomeDefault = React.memo(
 			};
 		}, []);
 
+		const checkShowLicenseAgreement = async () => {
+			const isAgreed = await load(STORAGE_AGREED_POLICY);
+
+			const data = {
+				children: <LicenseAgreement />
+			};
+
+			if (Platform.OS === 'ios' && isAgreed?.toString() !== 'true') {
+				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isShow: true, data });
+			}
+		};
+
+		useEffect(() => {
+			const timeout = setTimeout(() => {
+				checkShowLicenseAgreement();
+			}, 500);
+			return () => {
+				clearTimeout(timeout);
+			};
+		}, []);
+
 		return (
 			<View style={styles.channelView}>
 				<LinearGradient
@@ -78,7 +100,6 @@ const HomeDefault = React.memo(
 					colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
 					style={styles.absoluteFill}
 				/>
-				{Platform.OS === 'ios' && <LicenseAgreement />}
 				<DrawerListener channelId={channelId} />
 				<HomeDefaultHeader openBottomSheet={openBottomSheet} navigation={props.navigation} onOpenDrawer={onOpenDrawer} isBanned={isBanned} />
 				<View style={styles.flexOne}>

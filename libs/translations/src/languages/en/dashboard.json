@@ -26,6 +26,8 @@
 		"userActivityData": "User Activity Data",
 		"exportCSV": "Export CSV",
 		"exporting": "Exporting...",
+		"includedInExport": "Included in the export file",
+		"notIncludedInExport": "Not included in the export file",
 		"clanName": "Clan Name",
 		"channelName": "Channel name",
 		"userName": "User name",
@@ -65,6 +67,8 @@
 		"reset": "Reset"
 	},
 	"sortIcon": {
-		"tooltip": "Sort ascending/descending by this column"
+		"tooltip": "Sort ascending/descending by this column",
+		"sortedAsc": "Sorted ascending",
+		"sortedDesc": "Sorted descending"
 	}
 }

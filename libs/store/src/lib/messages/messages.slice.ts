@@ -12,6 +12,7 @@ import {
 	Direction_Mode,
 	EBacktickType,
 	EMessageCode,
+	EOgpType,
 	LIMIT_MESSAGE,
 	MessageCrypt,
 	TypeMessage,
@@ -1120,7 +1121,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			mk.push({
 				description: ogpData?.description || '',
 				image: ogpData?.image || '',
-				title: ogpData?.title || '',
+				title: ogpData.type !== EOgpType.image ? ogpData?.title || '' : '',
 				s: content.t?.length || 0,
 				e: (content.t?.length || 0) + 1,
 				type: EBacktickType.OGP_PREVIEW,
@@ -1362,7 +1363,7 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 		}
 
 		await socket.writeEphemeralMessage(
-			receiverId,
+			[receiverId],
 			clanId,
 			channelId,
 			mode,
