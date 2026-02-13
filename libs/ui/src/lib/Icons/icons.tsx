@@ -1165,13 +1165,22 @@ export const Sent: React.FC<IconProps> = () => {
 	);
 };
 
-export function Plus(props: React.HTMLAttributes<SVGElement>) {
+export const Plus: React.FC<IconProps> = ({ defaultSize = 'w-5 h-5' }) => {
 	return (
-		<svg aria-hidden="true" role="img" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24">
+		<svg
+			aria-hidden="true"
+			role="img"
+			xmlns="http://www.w3.org/2000/svg"
+			width="16"
+			height="16"
+			fill="none"
+			viewBox="0 0 24 24"
+			className={defaultSize}
+		>
 			<path fill="currentColor" d="M13 5a1 1 0 1 0-2 0v6H5a1 1 0 1 0 0 2h6v6a1 1 0 1 0 2 0v-6h6a1 1 0 1 0 0-2h-6V5Z"></path>
 		</svg>
 	);
-}
+};
 
 export const Close: React.FC<IconProps> = ({ defaultFill = '#AEAEAE', defaultSize = 'w-4 h-4' }) => {
 	return (

@@ -95,6 +95,7 @@ export interface AppState {
 	isTimelineViewMode: boolean;
 	autoStart: boolean;
 	hardwareAcceleration: boolean;
+	isMediaChannelViewMode: boolean;
 }
 
 const getInitialLanguage = (): 'en' | 'vi' => {
@@ -147,7 +148,8 @@ export const initialAppState: AppState = {
 	isShowUpdateUsername: false,
 	isTimelineViewMode: false,
 	autoStart: true,
-	hardwareAcceleration: true
+	hardwareAcceleration: true,
+	isMediaChannelViewMode: false
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
@@ -422,6 +424,12 @@ export const appSlice = createSlice({
 		},
 		toggleHardwareAcceleration: (state) => {
 			state.hardwareAcceleration = !state.hardwareAcceleration;
+		},
+		setMediaChannelViewMode: (state, action: PayloadAction<boolean>) => {
+			state.isMediaChannelViewMode = action.payload;
+			if (action.payload) {
+				state.isTimelineViewMode = false;
+			}
 		}
 	}
 });
@@ -483,3 +491,4 @@ export const selectTimelineViewMode = createSelector(getAppState, (state: AppSta
 export const selectAutoStart = createSelector(getAppState, (state: AppState) => state.autoStart);
 
 export const selectHardwareAcceleration = createSelector(getAppState, (state: AppState) => state.hardwareAcceleration);
+export const selectMediaChannelViewMode = createSelector(getAppState, (state: AppState) => state.isMediaChannelViewMode);

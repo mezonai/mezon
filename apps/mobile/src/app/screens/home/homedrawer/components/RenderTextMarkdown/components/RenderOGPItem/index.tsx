@@ -39,7 +39,7 @@ const RenderOgpPreview = ({ ogpItem, url }: RenderOgpPreviewProps) => {
 					</Text>
 				</TouchableOpacity>
 				{ogpItem?.description && (
-					<Text numberOfLines={3} style={styles?.description}>
+					<Text numberOfLines={2} style={styles?.description}>
 						{ogpItem.description}
 					</Text>
 				)}

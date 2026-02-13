@@ -288,13 +288,13 @@ const SearchMessagePage = ({
 			case ACTIVE_TAB.MESSAGES:
 				return <MessagesSearchTab typeSearch={typeSearch} currentChannel={currentChannel} channelIdFilter={channelIdFilter} />;
 			case ACTIVE_TAB.MEMBER:
-				return <MembersSearchTab listMemberSearch={membersSearch} listDMGroupSearch={dmGroupsSearch} />;
+				return <MembersSearchTab listMemberSearch={membersSearch} />;
 			case ACTIVE_TAB.CHANNEL:
 				return <ChannelsSearchTab listChannelSearch={channelsSearch} />;
 			default:
 				return <EmptySearchPage />;
 		}
-	}, [activeTab, typeSearch, currentChannel, channelIdFilter, membersSearch, dmGroupsSearch, channelsSearch]);
+	}, [activeTab, typeSearch, currentChannel, channelIdFilter, membersSearch, channelsSearch]);
 
 	return (
 		<View style={style.flex}>

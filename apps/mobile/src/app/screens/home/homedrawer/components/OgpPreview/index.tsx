@@ -8,9 +8,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ImageNative from '../../../../..//components/ImageNative';
 import { IconCDN } from '../../../../..//constants/icon_cdn';
-import { NativeHttpClient } from '../../../../..//utils/NativeHttpClient';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
+import { NativeHttpClient } from '../../../../../utils/NativeHttpClient';
+import { isGoogleMapLink } from '../../../../../utils/helpers';
 import { style } from './styles';
 
 type RenderOgpPreviewProps = {
@@ -40,7 +41,13 @@ const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 			try {
 				for (const markdown of markdowns) {
 					const link = contentText?.slice(markdown.s, markdown.e);
-					if (!MEZONAI_PATTERN.test(link) && !isYouTubeLink(link) && !isTikTokLink(link) && !isFacebookLink(link)) {
+					if (
+						!MEZONAI_PATTERN.test(link) &&
+						!isYouTubeLink(link) &&
+						!isTikTokLink(link) &&
+						!isFacebookLink(link) &&
+						!isGoogleMapLink(link)
+					) {
 						const datafetch = await NativeHttpClient.post(
 							`${process.env.NX_OGP_URL}`,
 							JSON.stringify({
