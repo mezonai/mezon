@@ -1,6 +1,6 @@
-import { ModalInputMessageBuzz } from '@mezon/components';
+import { MediaChannel, ModalInputMessageBuzz } from '@mezon/components';
 import { EmojiSuggestionProvider } from '@mezon/core';
-import { selectBanMeInChannel, selectTimelineViewMode, useAppSelector, type ChannelsEntity } from '@mezon/store';
+import { selectBanMeInChannel, selectMediaChannelViewMode, selectTimelineViewMode, useAppSelector, type ChannelsEntity } from '@mezon/store';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -16,6 +16,7 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
 
 	const isTimelineViewMode = useAppSelector(selectTimelineViewMode);
+	const isMediaChannelViewMode = useAppSelector(selectMediaChannelViewMode);
 
 	if (
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
@@ -24,6 +25,10 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_APP ||
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE
 	) {
+		if (isMediaChannelViewMode) {
+			return <MediaChannel channelId={currentChannel?.id} clanId={currentChannel?.clan_id || '0'} />;
+		}
+
 		return (
 			<>
 				<KeyPressListener currentChannel={currentChannel} mode={mode} />

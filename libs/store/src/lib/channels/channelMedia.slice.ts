@@ -33,6 +33,7 @@ export interface ChannelTimeline {
 	end_time_seconds: number;
 	location: string;
 	status: number;
+	type?: number;
 	creator_id: string;
 	create_time_seconds: number;
 	update_time_seconds: number;
@@ -234,7 +235,13 @@ export const channelMediaSlice = createSlice({
 					state.eventsByChannel[channelId] = { events: [] };
 				}
 
-				state.eventsByChannel[channelId].events.push(event);
+				const events = state.eventsByChannel[channelId].events;
+				const insertIndex = events.findIndex((e) => (e.start_time_seconds || 0) < (event.start_time_seconds || 0));
+				if (insertIndex === -1) {
+					events.push(event);
+				} else {
+					events.splice(insertIndex, 0, event);
+				}
 				state.loadingStatus = 'loaded';
 			})
 			.addCase(createChannelTimeline.rejected, (state, action) => {
