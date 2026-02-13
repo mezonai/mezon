@@ -88,6 +88,7 @@
     "mezon-js": "2.14.91",
     "mezon-js-protobuf": "1.10.20",
     "mmn-client-js": "1.0.16",
+    "mp4box": "^2.3.0",
     "nx-electron": "^20.0.2",
     "rc-dropdown": "^4.2.1",
     "rc-tooltip": "^6.4.0",
