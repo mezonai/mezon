@@ -51,6 +51,7 @@ export * from './components/MessageBox';
 export { MessageBox } from './components/MessageBox';
 export { default as AttachmentLoading } from './components/MessageBox/AttachmentLoading';
 export { default as AttachmentPreviewThumbnail } from './components/MessageBox/AttachmentPreviewThumbnail';
+export { default as PreviewOgp } from './components/MessageBox/PreviewOgp';
 export { MentionReactInput } from './components/MessageBox/ReactionMentionInput';
 export { default as CustomModalMentions } from './components/MessageBox/ReactionMentionInput/CustomModalMentions';
 export { default as SuggestItem } from './components/MessageBox/ReactionMentionInput/SuggestItem';
