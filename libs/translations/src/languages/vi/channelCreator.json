@@ -43,7 +43,9 @@
 		"viewAlbum": "Xem Album",
 		"emptyTitle": "Hành trình của bạn chưa bắt đầu.",
 		"emptyDescription": "Tạo sự kiện đầu tiên của bạn để bắt đầu lưu giữ những kỷ niệm.",
-		"createFirstMilestone": "Tạo sự kiện đầu tiên"
+		"createFirstMilestone": "Tạo sự kiện đầu tiên",
+		"selectYear": "Chọn năm",
+		"special": "Đặc biệt"
 	},
 	"familyEvents": {
 		"title": "Sự kiện",
@@ -76,7 +78,26 @@
 		"successTitle": "Thành công",
 		"successMessage": "Đã tạo sự kiện thành công!",
 		"errorTitle": "Lỗi",
-		"errorMessage": "Không thể chọn hình ảnh"
+		"errorMessage": "Không thể chọn hình ảnh",
+		"required": "Bắt buộc",
+		"optional": "Tùy chọn",
+		"titleHint": "Đặt tiêu đề ngắn gọn, mô tả cho sự kiện"
+	},
+	"albumDetail": {
+		"eventDetails": "Chi tiết sự kiện",
+		"date": "Ngày",
+		"editEvent": "Chỉnh sửa sự kiện",
+		"titleLabel": "Tiêu đề",
+		"titlePlaceholder": "Tiêu đề sự kiện",
+		"descriptionLabel": "Mô tả",
+		"descriptionPlaceholder": "Mô tả sự kiện",
+		"cancel": "Hủy",
+		"save": "Lưu",
+		"errorTitle": "Lỗi",
+		"titleRequired": "Tiêu đề không được để trống",
+		"updateFailed": "Không thể cập nhật sự kiện",
+		"sessionNotAvailable": "Phiên không khả dụng",
+		"uploadFailed": "Không thể tải lên hình ảnh"
 	},
 	"monthsShort": ["THG 1", "THG 2", "THG 3", "THG 4", "THG 5", "THG 6", "THG 7", "THG 8", "THG 9", "THG 10", "THG 11", "THG 12"]
 }
