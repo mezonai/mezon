@@ -2,13 +2,13 @@ import {
 	ExitSetting,
 	SettingAccount,
 	SettingActivity,
+	SettingAdvanced,
 	SettingAppearance,
 	SettingDevices,
 	SettingItem,
 	SettingLanguage,
 	SettingNotifications,
 	SettingRightProfile,
-	SettingStartUp,
 	SettingVoice
 } from '@mezon/components';
 import { useEscapeKeyClose, useSettingFooter } from '@mezon/core';
@@ -80,7 +80,7 @@ const SettingContent = ({ isDM, isShowSettingFooter }: { isDM: boolean; isShowSe
 				{currentSetting === EUserSettings.VOICE && <SettingVoice menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.NOTIFICATIONS && <SettingNotifications menuIsOpen={menuIsOpen} />}
 				{currentSetting === EUserSettings.ACTIVITY && <SettingActivity menuIsOpen={menuIsOpen} />}
-				{currentSetting === EUserSettings.START_UP && isElectron() && <SettingStartUp menuIsOpen={menuIsOpen} />}
+				{currentSetting === EUserSettings.ADVANCED && isElectron() && <SettingAdvanced menuIsOpen={menuIsOpen} />}
 
 				<ExitSetting onClose={closeSetting} />
 

@@ -9,6 +9,7 @@ import {
 	CLOSE_APP,
 	CLOSE_IMAGE_WINDOW,
 	DOWNLOAD_FILE,
+	GET_REDUX_STATE,
 	GET_WINDOW_STATE,
 	IMAGE_WINDOW_TITLE_BAR_ACTION,
 	LAUNCH_APP_WINDOW,
@@ -21,7 +22,9 @@ import {
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
 	SET_RATIO_WINDOW,
+	SYNC_REDUX_STATE,
 	TITLE_BAR_ACTION,
+	TOGGLE_HARDWARE_ACCELERATION,
 	UNMAXIMIZE_WINDOW,
 	UPDATE_ACTIVITY_TRACKING,
 	UPDATE_ATTACHMENTS
@@ -396,6 +399,62 @@ ipcMain.handle(AUTO_START_APP, (event, action) => {
 	});
 });
 
+ipcMain.handle(TOGGLE_HARDWARE_ACCELERATION, async (event, enabled) => {
+	const Store = (await import('electron-store')).default;
+	const store = new Store();
+	store.set('hardwareAcceleration', enabled);
+
+	if (!enabled) {
+		app.disableHardwareAcceleration();
+	}
+
+	const { dialog } = require('electron');
+	const response = await dialog.showMessageBox({
+		type: 'info',
+		title: 'Hardware Acceleration',
+		message: 'Hardware acceleration settings have been updated.',
+		detail: 'The application needs to restart for the changes to take effect.',
+		buttons: ['Restart Now', 'Later'],
+		defaultId: 0,
+		cancelId: 1
+	});
+
+	if (response.response === 0) {
+		app.relaunch();
+		app.exit(0);
+	}
+
+	return { success: true, requiresRestart: true };
+});
+
+ipcMain.handle(SYNC_REDUX_STATE, async (event, state) => {
+	const Store = (await import('electron-store')).default;
+	const store = new Store();
+
+	if (state.autoStart !== undefined) {
+		store.set('autoStart', state.autoStart);
+		app.setLoginItemSettings({
+			openAtLogin: state.autoStart
+		});
+	}
+
+	if (state.hardwareAcceleration !== undefined) {
+		store.set('hardwareAcceleration', state.hardwareAcceleration);
+	}
+
+	return { success: true };
+});
+
+ipcMain.handle(GET_REDUX_STATE, async () => {
+	const Store = (await import('electron-store')).default;
+	const store = new Store();
+
+	return {
+		autoStart: store.get('autoStart', true),
+		hardwareAcceleration: store.get('hardwareAcceleration', true)
+	};
+});
+
 ipcMain.on(LOAD_MORE_ATTACHMENTS, (event, { direction }) => {
 	if (App.mainWindow && !App.mainWindow.isDestroyed()) {
 		App.mainWindow.webContents.send(LOAD_MORE_ATTACHMENTS, { direction });
@@ -526,6 +585,21 @@ ipcMain.handle(SET_RATIO_WINDOW, (event, ratio) => {
 		App.mainWindow.webContents.setZoomFactor(currentZoom + zoomChange);
 	}
 });
+
+(async () => {
+	try {
+		const Store = (await import('electron-store')).default;
+		const store = new Store();
+		const hardwareAcceleration = store.get('hardwareAcceleration', true);
+
+		if (!hardwareAcceleration) {
+			app.disableHardwareAcceleration();
+			log.info('Hardware acceleration disabled by user setting');
+		}
+	} catch (error) {
+		log.error('Failed to load hardware acceleration setting:', error);
+	}
+})();
 
 // handle setup events as quickly as possible
 Main.initialize();

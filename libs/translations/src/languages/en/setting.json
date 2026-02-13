@@ -52,6 +52,10 @@
 		"title": "Auto start application",
 		"description": "Automatically launch the app when your computer starts so it's ready to use right away."
 	},
+	"hardwareAcceleration": {
+		"title": "Use graphics acceleration when available",
+		"description": "When enabled, the app will leverage your GPU (graphics card) to handle intensive graphics tasks like 3D rendering and video decoding. This improves frame rates and interface responsiveness. If you experience display issues or app crashes, try disabling this feature to improve stability."
+	},
 	"activity": {
 		"title": "Show My Activity",
 		"description": "Show your current activities to friends. This lets them see what you're up to and makes it easier to connect."
