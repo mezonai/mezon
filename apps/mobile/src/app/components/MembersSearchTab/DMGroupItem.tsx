@@ -1,5 +1,5 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { DirectEntity } from '@mezon/store-mobile';
+import type { DirectEntity } from '@mezon/store-mobile';
 import React, { memo, useCallback, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
@@ -22,8 +22,8 @@ export const DMGroupItem = memo(({ dmGroupData, navigateToDirectMessage }: IDMGr
 	}, [dmGroupData?.channel_label, dmGroupData?.usernames]);
 
 	const dmAvatar = useMemo(() => {
-		return dmGroupData?.channel_avatar;
-	}, [dmGroupData?.channel_avatar]);
+		return dmGroupData?.channel_avatar || dmGroupData?.avatar_url;
+	}, [dmGroupData?.avatar_url, dmGroupData?.channel_avatar]);
 
 	const renderAvatar = useCallback(() => {
 		if (dmAvatar && !dmAvatar.includes('avatar-group.png')) {
