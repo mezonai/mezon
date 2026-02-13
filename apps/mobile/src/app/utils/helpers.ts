@@ -271,3 +271,12 @@ export const logoutGlobal = async () => {
 	store.dispatch(appActions.setIsShowWelcomeMobile(false));
 	store.dispatch(appActions.setLoadingMainMobile(false));
 };
+
+export const isGoogleMapLink = (url: string): boolean => {
+	try {
+		const host = new URL(url).hostname.toLowerCase();
+		return host.includes('google.com') || host === 'goo.gl' || host === 'maps.app.goo.gl';
+	} catch {
+		return false;
+	}
+};
