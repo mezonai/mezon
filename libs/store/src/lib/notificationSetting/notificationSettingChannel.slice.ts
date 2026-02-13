@@ -22,6 +22,7 @@ export interface NotificationSettingState extends EntityState<INotificationUserC
 		}
 	>;
 	mutedChannels: Record<string, boolean>;
+	mutedChannelsCache: Record<string, CacheMetadata>;
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 }
@@ -37,6 +38,7 @@ const getInitialChannelState = () => ({
 export const initialNotificationSettingState: NotificationSettingState = NotificationSettingsAdapter.getInitialState({
 	byChannels: {},
 	mutedChannels: {},
+	mutedChannelsCache: {},
 	loadingStatus: 'not loaded',
 	error: null
 });
@@ -121,19 +123,46 @@ type FetchMutedChannelsArgs = {
 	noCache?: boolean;
 };
 
+export const fetchMutedChannelsCached = async (getState: () => RootState, mezon: MezonValueContext, clanId: string, noCache = false) => {
+	const currentState = getState();
+	const notiSettingState = currentState[NOTIFICATION_SETTING_FEATURE_KEY];
+
+	const apiKey = createApiKey('fetchMutedChannels', clanId, mezon.session.username || '');
+
+	const shouldForceCall = shouldForceApiCall(apiKey, notiSettingState.mutedChannelsCache[clanId], noCache);
+
+	if (!shouldForceCall) {
+		return {
+			mutedChannelIds: Object.keys(notiSettingState.mutedChannels).filter((channelId) => notiSettingState.mutedChannels[channelId]),
+			fromCache: true
+		};
+	}
+
+	const response = await mezon.client.listMutedChannel(mezon.session, clanId);
+
+	markApiFirstCalled(apiKey);
+
+	return {
+		mutedChannelIds: (response.muted_list || []).map((id) => String(id)),
+		fromCache: false
+	};
+};
+
 export const fetchMutedChannels = createAsyncThunk(
 	'notificationsetting/fetchMutedChannels',
-	async ({ clanId, noCache: _noCache }: FetchMutedChannelsArgs, thunkAPI) => {
+	async ({ clanId, noCache }: FetchMutedChannelsArgs, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.listMutedChannel(mezon.session, clanId);
+			const response = await fetchMutedChannelsCached(thunkAPI.getState as () => RootState, mezon, clanId, Boolean(noCache));
+
 			if (!response) {
 				return thunkAPI.rejectWithValue('Invalid fetchMutedChannels');
 			}
 
 			return {
 				clanId,
-				mutedChannelIds: (response.muted_list || []).map((id) => String(id))
+				mutedChannelIds: response.mutedChannelIds,
+				fromCache: response.fromCache
 			};
 		} catch (error) {
 			captureSentryError(error, 'notificationsetting/fetchMutedChannels');
@@ -156,7 +185,16 @@ export type SetNotificationPayload = {
 export const setNotificationSetting = createAsyncThunk(
 	'notificationsetting/setNotificationSetting',
 	async (
-		{ channel_id, notification_type, mute_time, clan_id, is_current_channel = true, is_direct = false, label, title }: SetNotificationPayload,
+		{
+			channel_id,
+			notification_type,
+			mute_time,
+			clan_id,
+			is_current_channel: _is_current_channel = true,
+			is_direct = false,
+			label,
+			title
+		}: SetNotificationPayload,
 		thunkAPI
 	) => {
 		try {
@@ -355,7 +393,7 @@ export const notificationSettingSlice = createSlice({
 				state.error = action.error.message;
 			})
 			.addCase(setMuteChannel.fulfilled, (state: NotificationSettingState, action: PayloadAction<MuteChannelPayload>) => {
-				const { channel_id, mute_time, active, clan_id: _clan_id } = action.payload;
+				const { channel_id, mute_time, active, clan_id } = action.payload;
 				if (!channel_id) return;
 
 				const channel = state.byChannels[channel_id];
@@ -370,19 +408,27 @@ export const notificationSettingSlice = createSlice({
 						[channel_id]: true
 					};
 				} else if (active === EMuteState.UN_MUTE) {
-					const { [channel_id]: removed, ...rest } = state.mutedChannels;
+					const { [channel_id]: _removed, ...rest } = state.mutedChannels;
 					state.mutedChannels = rest;
+				}
+
+				if (clan_id && state.mutedChannelsCache[clan_id]) {
+					delete state.mutedChannelsCache[clan_id];
 				}
 			})
 			.addCase(
 				fetchMutedChannels.fulfilled,
-				(state: NotificationSettingState, action: PayloadAction<{ clanId: string; mutedChannelIds: Array<string> }>) => {
-					const { mutedChannelIds } = action.payload;
-					const newMutedChannels: Record<string, boolean> = { ...state.mutedChannels };
-					mutedChannelIds.forEach((channelId) => {
-						newMutedChannels[channelId] = true;
-					});
-					state.mutedChannels = newMutedChannels;
+				(state: NotificationSettingState, action: PayloadAction<{ clanId: string; mutedChannelIds: Array<string>; fromCache?: boolean }>) => {
+					const { clanId, mutedChannelIds, fromCache } = action.payload;
+
+					if (!fromCache) {
+						const newMutedChannels: Record<string, boolean> = {};
+						mutedChannelIds.forEach((channelId) => {
+							newMutedChannels[channelId] = true;
+						});
+						state.mutedChannels = newMutedChannels;
+						state.mutedChannelsCache[clanId] = createCacheMetadata();
+					}
 				}
 			);
 	}

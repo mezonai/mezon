@@ -156,6 +156,14 @@ module.exports = {
 				3000: '3000ms'
 			},
 			keyframes: {
+				shimmer: {
+					'0%': {
+						transform: 'translateX(-100%)'
+					},
+					'100%': {
+						transform: 'translateX(100%)'
+					}
+				},
 				rotation: {
 					'0%': {
 						transform: 'rotate3d(0, 1, 0, 0deg)'
@@ -310,6 +318,7 @@ module.exports = {
 			}
 		},
 		animation: {
+			shimmer: 'shimmer 2s infinite',
 			rotation: 'rotation 6s linear infinite',
 			spin: 'spin 1s linear infinite',
 			faded_input: 'faded_input 0.05s ease-in-out forwards',
