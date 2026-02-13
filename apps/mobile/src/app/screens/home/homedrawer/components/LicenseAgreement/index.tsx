@@ -1,6 +1,6 @@
-import { STORAGE_AGREED_POLICY, save } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_AGREED_POLICY, save } from '@mezon/mobile-components';
 import React from 'react';
-import { Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { DeviceEventEmitter, Linking, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { styles } from './styles';
 
@@ -9,6 +9,7 @@ const LicenseAgreement = () => {
 
 	const onClose = () => {
 		save(STORAGE_AGREED_POLICY, 'true');
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	};
 
 	return (
