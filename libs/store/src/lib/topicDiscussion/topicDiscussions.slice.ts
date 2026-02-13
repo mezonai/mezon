@@ -1,6 +1,14 @@
 import { captureSentryError } from '@mezon/logger';
 import type { IMessageSendPayload, IMessageWithUser, LoadingStatus } from '@mezon/utils';
-import { getMobileUploadedAttachments, getWebUploadedAttachments } from '@mezon/utils';
+import {
+	CREATING_TOPIC,
+	EBacktickType,
+	getMobileUploadedAttachments,
+	getWebUploadedAttachments,
+	isFacebookLink,
+	isTikTokLink,
+	isYouTubeLink
+} from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type {
@@ -14,6 +22,7 @@ import type {
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { messagesActions, selectMessageEntitiesByChannelId } from '../messages/messages.slice';
+import { referencesActions, selectOgpData } from '../messages/references.slice';
 import type { RootState } from '../store';
 import { threadsActions } from '../threads/threads.slice';
 
@@ -208,12 +217,40 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		}
 	}
 
+	let topicContent = content;
+	const state = thunkAPI.getState() as RootState;
+	const ogpData = selectOgpData(state);
+	const isSocialMediaLink = ogpData?.url && (isYouTubeLink(ogpData.url) || isFacebookLink(ogpData.url) || isTikTokLink(ogpData.url));
+	const isOgpFromTopicBox =
+		ogpData &&
+		(ogpData.channel_id === topicId || ogpData.channel_id === CREATING_TOPIC || ogpData.channel_id === channelId) &&
+		topicContent?.mk &&
+		topicContent?.mk?.length > 0 &&
+		!isSocialMediaLink;
+
+	if (isOgpFromTopicBox) {
+		const mk = [...(topicContent.mk ?? [])];
+		mk.push({
+			description: ogpData?.description || '',
+			image: ogpData?.image || '',
+			title: ogpData?.title || '',
+			s: topicContent.t?.length || 0,
+			e: (topicContent.t?.length || 0) + 1,
+			type: EBacktickType.OGP_PREVIEW,
+			index: ogpData.index
+		});
+		topicContent = {
+			...topicContent,
+			mk
+		};
+	}
+
 	await socket.writeChatMessage(
 		clanId as string,
 		channelId as string,
 		mode,
 		isPublic,
-		content,
+		topicContent,
 		mentions,
 		uploadedFiles,
 		references,
@@ -223,6 +260,7 @@ export const handleSendTopic = createAsyncThunk('topics/sendTopicMessage', async
 		0,
 		topicId
 	);
+	thunkAPI.dispatch(referencesActions.clearOgpData());
 });
 
 export const topicsSlice = createSlice({

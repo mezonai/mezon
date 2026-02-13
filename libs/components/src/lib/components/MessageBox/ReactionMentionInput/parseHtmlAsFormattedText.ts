@@ -247,8 +247,11 @@ export default function parseHtmlAsFormattedText(html: string, withMarkdownLinks
 		if (node.nodeType === Node.COMMENT_NODE) return;
 		const { index, entity } = getEntityDataFromNode(node, text, textIndex);
 		if (!linkPreview.url && (entity?.type === ApiMessageEntityTypes.Url || entity?.type === ApiMessageEntityTypes.TextUrl)) {
-			if (process.env.NX_DOMAIN_URL && !(entity as unknown as ApiMessageEntityTextUrl).url.includes(process.env.NX_DOMAIN_URL)) {
-				linkPreview.url = (entity as unknown as ApiMessageEntityTextUrl).url;
+			const urlValue = (entity as unknown as ApiMessageEntityTextUrl).url;
+			const isInternal = !!process.env.NX_DOMAIN_URL && urlValue.includes(process.env.NX_DOMAIN_URL);
+			const isInviteLink = /\/invite\/[A-Za-z0-9_-]+/i.test(urlValue);
+			if (!isInternal || isInviteLink) {
+				linkPreview.url = urlValue;
 				linkPreview.index = index;
 			}
 		}

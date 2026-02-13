@@ -3,6 +3,7 @@ import {
 	ChannelMessageThread,
 	FileSelectionButton,
 	MentionReactInput,
+	PreviewOgp,
 	PrivateThread,
 	ThreadNameTextField,
 	UserMentionList
@@ -521,6 +522,7 @@ const ThreadBox = () => {
 					</div>
 				</div>
 			)}
+			<PreviewOgp contextId={currentInputChannelId} />
 			<div
 				className={`flex-shrink-0 flex flex-col ${isElectron() ? 'pb-[36px]' : 'pb-4'} px-3  h-auto relative ${checkAttachment ? 'rounded-t-none' : 'rounded-t-lg'}`}
 			>
