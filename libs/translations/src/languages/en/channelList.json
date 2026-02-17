@@ -17,6 +17,7 @@
 	},
 	"favoriteChannel": "Favorite Channel",
 	"publicChannels": "Public Channels",
+	"channelApps": "Channel Apps",
 	"dragMode": {
 		"enable": "Click to enable drag mode category",
 		"disable": "Click to disable drag mode category"
