@@ -1,5 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
+import { selectIsChannelMuted, useAppSelector } from '@mezon/store-mobile';
 import type { IChannel } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo } from 'react';
@@ -23,10 +24,10 @@ function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue, themeBasic);
 	const countMessageUnread = Number(data?.count_mess_unread) || 0;
-
 	const isUnReadChannel = useMemo(() => {
 		return isUnRead || countMessageUnread > 0;
 	}, [isUnRead, countMessageUnread]);
+	const isChannelMuted = useAppSelector((state) => selectIsChannelMuted(state, data?.clan_id ?? '', data?.channel_id ?? ''));
 
 	const onPress = useCallback(() => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_CHANNEL_ROUTER, { channel: data });
@@ -45,12 +46,12 @@ function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
 	}
 
 	return (
-		<View style={[styles.channelListItemContainer, isActive && styles.channelListItemActive]}>
+		<View style={[styles.channelListItemContainer, isChannelMuted && !isActive && { opacity: 0.6 }, isActive && styles.channelListItemActive]}>
 			<TouchableOpacity
 				activeOpacity={0.7}
 				onPress={onPress}
 				onLongPress={onLongPress}
-				style={[styles.channelListLink, isActive && styles.channelListItemWrapper]}
+				style={[styles.channelListLink, isChannelMuted && !isActive && { opacity: 0.6 }, isActive && styles.channelListItemWrapper]}
 			>
 				{!isActive && (
 					<LinearGradient

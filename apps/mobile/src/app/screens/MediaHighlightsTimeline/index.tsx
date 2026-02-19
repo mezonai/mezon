@@ -1,3 +1,4 @@
+import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { ChannelTimeline, ChannelTimelineAttachment } from '@mezon/store-mobile';
 import {
@@ -13,9 +14,9 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
 	ActivityIndicator,
+	DeviceEventEmitter,
 	FlatList,
 	Image,
-	Modal,
 	NativeModules,
 	Platform,
 	Pressable,
@@ -81,7 +82,6 @@ const MediaHighlightsTimeline: React.FC = () => {
 
 	const currentYear = new Date().getFullYear();
 	const [selectedYear, setSelectedYear] = useState(currentYear);
-	const [showYearPicker, setShowYearPicker] = useState(false);
 
 	const rawEvents = useAppSelector((state) => selectChannelMediaByChannelId(state, channelId));
 	const events = useMemo(
@@ -168,14 +168,49 @@ const MediaHighlightsTimeline: React.FC = () => {
 		navigation.navigate(APP_SCREEN.CREATE_MILESTONE, { channelId, clanId });
 	};
 
-	const handleOpenCalendar = useCallback(() => {
-		setShowYearPicker(true);
-	}, []);
-
 	const handleSelectYear = useCallback((year: number) => {
 		setSelectedYear(year);
-		setShowYearPicker(false);
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	}, []);
+
+	const handleOpenCalendar = useCallback(() => {
+		const data = {
+			children: (
+				<Pressable
+					style={internalStyles.overlay}
+					onPress={() => DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true })}
+				>
+					<View style={[internalStyles.yearPickerContainer, { backgroundColor: themeValue.secondary }]}>
+						<Text style={[internalStyles.yearPickerTitle, { color: themeValue.textStrong }]}>{t('mediaHighlights.selectYear')}</Text>
+						<FlatList
+							data={yearList}
+							keyExtractor={(item) => String(item)}
+							showsVerticalScrollIndicator={false}
+							style={internalStyles.yearList}
+							renderItem={({ item: year }) => (
+								<TouchableOpacity
+									style={[internalStyles.yearItem, year === selectedYear && internalStyles.yearItemSelected]}
+									onPress={() => handleSelectYear(year)}
+									activeOpacity={0.7}
+								>
+									<Text
+										style={[
+											internalStyles.yearText,
+											{ color: themeValue.text },
+											year === selectedYear && internalStyles.yearTextSelected
+										]}
+									>
+										{year}
+									</Text>
+								</TouchableOpacity>
+							)}
+						/>
+					</View>
+				</Pressable>
+			)
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: false, data });
+	}, [yearList, selectedYear, handleSelectYear, themeValue, t]);
 
 	const renderMediaItem = useCallback((media: { proxyUrl: string; originalUrl: string; isVideo: boolean; fileUrl: string }, style: any) => {
 		if (media.isVideo) {
@@ -379,38 +414,6 @@ const MediaHighlightsTimeline: React.FC = () => {
 					</TouchableOpacity>
 				</View>
 			)}
-
-			{/* Year Picker Modal */}
-			<Modal visible={showYearPicker} transparent animationType="fade" onRequestClose={() => setShowYearPicker(false)}>
-				<Pressable style={internalStyles.overlay} onPress={() => setShowYearPicker(false)}>
-					<View style={[internalStyles.yearPickerContainer, { backgroundColor: themeValue.secondary }]}>
-						<Text style={[internalStyles.yearPickerTitle, { color: themeValue.textStrong }]}>{t('mediaHighlights.selectYear')}</Text>
-						<FlatList
-							data={yearList}
-							keyExtractor={(item) => String(item)}
-							showsVerticalScrollIndicator={false}
-							style={internalStyles.yearList}
-							renderItem={({ item: year }) => (
-								<TouchableOpacity
-									style={[internalStyles.yearItem, year === selectedYear && internalStyles.yearItemSelected]}
-									onPress={() => handleSelectYear(year)}
-									activeOpacity={0.7}
-								>
-									<Text
-										style={[
-											internalStyles.yearText,
-											{ color: themeValue.text },
-											year === selectedYear && internalStyles.yearTextSelected
-										]}
-									>
-										{year}
-									</Text>
-								</TouchableOpacity>
-							)}
-						/>
-					</View>
-				</Pressable>
-			</Modal>
 		</View>
 	);
 };
