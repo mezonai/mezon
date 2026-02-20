@@ -84,7 +84,8 @@ export const ChannelListItem = React.memo(
 			prevProps?.data?.channel_id === nextProps?.data?.channel_id &&
 			prevProps?.data?.count_mess_unread === nextProps?.data?.count_mess_unread &&
 			prevProps?.isChannelActive === nextProps?.isChannelActive &&
-			prevProps?.isHaveParentActive === nextProps?.isHaveParentActive
+			prevProps?.isHaveParentActive === nextProps?.isHaveParentActive &&
+			prevProps?.data?.meeting_code === nextProps?.data?.meeting_code
 		);
 	}
 );

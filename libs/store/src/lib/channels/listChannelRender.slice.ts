@@ -179,6 +179,7 @@ export const listChannelRenderSlice = createSlice({
 					e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexUpdate] as IChannel).e2ee,
 					topic: dataUpdate.topic || (state.listChannelRender[clanId][indexUpdate] as IChannel).topic,
 					age_restricted: dataUpdate.age_restricted,
+					meeting_code: dataUpdate?.meeting_code || (state.listChannelRender[clanId][indexUpdate] as IChannel).meeting_code,
 					channel_private: dataUpdate.channel_private
 						? dataUpdate.channel_private || (state.listChannelRender[clanId][indexUpdate] as IChannel).channel_private
 						: 0
