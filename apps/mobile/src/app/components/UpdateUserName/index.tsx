@@ -53,7 +53,11 @@ const UpdateUserName = () => {
 		try {
 			setIsError(false);
 			setIsLoading(true);
-			const responseSession: any = await updateUserName(userName);
+			const sanitizedUserName = userName
+				.normalize('NFD')
+				.replace(/[\u0300-\u036f]/g, '')
+				.replace(/[\s\p{P}]/gu, '');
+			const responseSession: any = await updateUserName(sanitizedUserName);
 			if (responseSession?.token) {
 				dispatch(accountActions.getUserProfile({ noCache: true }));
 				dispatch(appActions.setIsShowUpdateUsername(false));
