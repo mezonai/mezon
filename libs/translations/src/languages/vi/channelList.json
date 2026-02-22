@@ -17,6 +17,7 @@
 	},
 	"favoriteChannel": "Kênh yêu thích",
 	"publicChannels": "Kênh công khai",
+	"channelApps": "Ứng dụng kênh",
 	"dragMode": {
 		"enable": "Nhấn để bật chế độ kéo thả danh mục",
 		"disable": "Nhấn để tắt chế độ kéo thả danh mục"
