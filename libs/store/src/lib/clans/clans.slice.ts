@@ -201,25 +201,31 @@ export const fetchClansCached = async (
 		};
 	}
 
-	const response = await fetchDataWithSocketFallback(
-		ensuredMezon,
-		{
-			api_name: 'ListClanDescs',
-			list_clan_req: {
-				limit,
-				state: 1
-			}
-		},
-		(session) => ensuredMezon.client.listClanDescs(session, limit, state, cursor || ''),
-		'clan_desc_list'
-	);
+	try {
+		const response = await fetchDataWithSocketFallback(
+			ensuredMezon,
+			{
+				api_name: 'ListClanDescs',
+				list_clan_req: {
+					limit,
+					state: 1
+				}
+			},
+			(session) => ensuredMezon.client.listClanDescs(session, limit, state, cursor || ''),
+			'clan_desc_list'
+		);
 
-	markApiFirstCalled(apiKey);
-
-	return {
-		...response,
-		fromCache: false
-	};
+		markApiFirstCalled(apiKey);
+		return {
+			...response,
+			fromCache: false
+		};
+	} catch (error) {
+		return {
+			clandesc: [],
+			fromCache: false
+		};
+	}
 };
 
 export type FetchClansPayload = {
