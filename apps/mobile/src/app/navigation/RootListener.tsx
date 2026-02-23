@@ -104,7 +104,7 @@ const RootListener = () => {
 				];
 				await Promise.allSettled(promise);
 			}
-			dispatch(directActions.fetchDirectMessage({ noCache: true }));
+			dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true }));
 			dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
 			return null;
 		} catch (error) {
@@ -260,7 +260,7 @@ const RootListener = () => {
 			promises.push(dispatch(listChannelsByUserActions.fetchListChannelsByUser({ noCache: true })));
 			promises.push(dispatch(friendsActions.fetchListFriends({ noCache: true })));
 			promises.push(dispatch(clansActions.joinClan({ clanId: '0' })));
-			promises.push(dispatch(directActions.fetchDirectMessage({ noCache: true })));
+			promises.push(dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true })));
 			promises.push(dispatch(emojiSuggestionActions.fetchEmoji({ noCache: true, clanId: currentClanId })));
 			promises.push(dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: currentClanId })));
 			promises.push(dispatch(gifsActions.fetchGifCategories()));
