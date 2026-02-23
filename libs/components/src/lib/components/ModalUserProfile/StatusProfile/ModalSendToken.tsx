@@ -154,7 +154,7 @@ const ModalSendToken = ({
 		searchTerm.length === 0
 			? user.id !== userId
 			: (user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-					user.search_key?.includes(searchTerm.toLowerCase()) ||
+					user.search_key?.toLowerCase().includes(searchTerm.toLowerCase()) ||
 					user.display_name?.toLowerCase().includes(searchTerm.toLowerCase())) &&
 				user.id !== userId
 	);
