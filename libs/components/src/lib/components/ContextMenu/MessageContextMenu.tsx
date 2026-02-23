@@ -702,6 +702,7 @@ function MessageContextMenu({
 
 		builder.when(
 			checkPos &&
+				userId !== message.sender_id &&
 				message?.sender_id !== NX_CHAT_APP_ANNONYMOUS_USER_ID &&
 				message?.sender_id !== SYSTEM_SENDER_ID &&
 				message?.username !== SYSTEM_NAME,
