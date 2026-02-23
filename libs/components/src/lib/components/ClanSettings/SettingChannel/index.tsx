@@ -187,7 +187,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 					creatorId={channelParent.creator_id as string}
 					label={channelParent?.channel_label as string}
 					privateChannel={channelParent?.channel_private as number}
-					isThread={false}
+					isThread={!!channelParent?.parent_id && channelParent.parent_id !== '0'}
 					key={channelParent?.id}
 					userIds={channelParent?.user_ids || []}
 					channelId={channelParent?.id as string}
@@ -213,7 +213,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 								creatorId={thread?.creator_id as string}
 								label={thread?.channel_label as string}
 								privateChannel={thread?.channel_private as number}
-								isThread={thread?.channel_type === ChannelType.CHANNEL_TYPE_THREAD}
+								isThread={!!thread?.parent_id && thread.parent_id !== '0'}
 								key={`${thread?.id}_thread`}
 								userIds={thread?.user_ids || []}
 								channelId={thread?.id as string}

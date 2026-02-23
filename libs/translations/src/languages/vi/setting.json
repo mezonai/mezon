@@ -52,6 +52,10 @@
 		"title": "Tự động khởi động ứng dụng",
 		"description": "Tự động mở ứng dụng khi máy tính khởi động để bạn có thể sử dụng ngay."
 	},
+	"autoHidden": {
+		"title": "Khởi động ẩn cùng hệ điều hành",
+		"description": "App sẽ tự động khởi động ở chế độ ẩn khi chạy cùng hệ điều hành."
+	},
 	"activity": {
 		"title": "Hiển thị hoạt động của tôi",
 		"description": "Chia sẻ những hoạt động hiện tại của bạn với bạn bè. Điều này giúp họ biết bạn đang làm gì và dễ dàng kết nối hơn!"

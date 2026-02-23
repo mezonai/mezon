@@ -74,7 +74,6 @@ export const SendTokenScreen = ({ route }: any) => {
 	const [searchText, setSearchText] = useState<string>('');
 	const { createDirectMessageWithUser } = useDirect();
 	const { sendInviteMessage } = useSendInviteMessage();
-	const [successTime, setSuccessTime] = useState('');
 	const dispatch = useAppDispatch();
 	const listDM = useMemo(() => {
 		const dmGroupChatList = selectDirectsOpenlist(store.getState() as any);
@@ -258,12 +257,11 @@ export const SendTokenScreen = ({ route }: any) => {
 				const formattedTime = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1)
 					.toString()
 					.padStart(2, '0')}/${now.getFullYear()} ${now
-					.getHours()
-					.toString()
-					.padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-				setSuccessTime(formattedTime);
+						.getHours()
+						.toString()
+						.padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 				setDisableButton(false);
-				handleShowSuccessModal();
+				handleShowSuccessModal(formattedTime);
 			}
 		} catch (err) {
 			Toast.show({
@@ -391,7 +389,7 @@ export const SendTokenScreen = ({ route }: any) => {
 		}
 	};
 
-	const handleShowSuccessModal = () => {
+	const handleShowSuccessModal = (successTime: string) => {
 		const data = {
 			children: (
 				<ConfirmSuccessModal
