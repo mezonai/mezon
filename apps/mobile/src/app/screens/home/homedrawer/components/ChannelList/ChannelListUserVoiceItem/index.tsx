@@ -3,6 +3,7 @@ import { selectMemberClanByUserId, useAppSelector } from '@mezon/store-mobile';
 import { memo, useMemo } from 'react';
 import { Text, View } from 'react-native';
 import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
+import { isValidIdString } from '../../../../../../utils/helpers';
 import { style } from './styles';
 
 interface IUserVoiceItemProps {
@@ -40,6 +41,8 @@ const UserVoiceItem = memo(({ userId, isCategoryExpanded, index, totalMembers }:
 			return null;
 		}
 	}
+
+	if (!isValidIdString(userId) || !priorityName) return null;
 
 	return (
 		<View style={styles.userVoiceWrapper}>
