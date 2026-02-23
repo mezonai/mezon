@@ -38,12 +38,12 @@ const RenderOgpPreview = ({ ogpItem, url }: RenderOgpPreviewProps) => {
 						{ogpItem?.title || url}
 					</Text>
 				</TouchableOpacity>
-				{ogpItem?.description && (
+				{!!ogpItem?.description && (
 					<Text numberOfLines={2} style={styles?.description}>
 						{ogpItem.description}
 					</Text>
 				)}
-				{ogpItem?.image && (
+				{!!ogpItem?.image && (
 					<View style={[styles.image, { aspectRatio }]}>
 						<ImageNative url={ogpItem.image} style={styles.nativeImage} resizeMode="cover" />
 					</View>

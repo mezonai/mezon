@@ -1379,7 +1379,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			const channelId = e?.topic_id && e?.topic_id !== '0' ? e?.topic_id : e.channel_id;
 			const currentClanId = selectCurrentClanId(state);
 			const currentDirectId = selectDmGroupCurrentId(state);
-			const isDM = !currentClanId || currentClanId === '0' || (currentDirectId === '0' && isMobile);
+			const isDM = !currentClanId || currentClanId === '0' || (!!currentDirectId && isMobile);
 
 			if (!isDM) {
 				const currentChannelId = selectCurrentChannelId(state as unknown as RootState);
