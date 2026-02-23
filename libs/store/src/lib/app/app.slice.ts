@@ -418,8 +418,17 @@ export const appSlice = createSlice({
 		setTimelineViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isTimelineViewMode = action.payload;
 		},
+		setMediaChannelViewMode: (state, action: PayloadAction<boolean>) => {
+			state.isMediaChannelViewMode = action.payload;
+			if (action.payload) {
+				state.isTimelineViewMode = false;
+			}
+		},
 		toggleAutoStart: (state) => {
-			state.autoStart = !state.autoStart;
+			state.autoStart = state.autoStart === undefined ? false : !state.autoStart;
+		},
+		toggleAutoHidden: (state) => {
+			state.autoHidden = state.autoHidden === undefined ? true : !state.autoHidden;
 		}
 	}
 });
@@ -477,5 +486,6 @@ export const selectHistory = createSelector(getAppState, (state: AppState) => st
 export const selectIsShowUpdateUsername = createSelector(getAppState, (state: AppState) => state.isShowUpdateUsername);
 
 export const selectTimelineViewMode = createSelector(getAppState, (state: AppState) => state.isTimelineViewMode);
-
+export const selectMediaChannelViewMode = createSelector(getAppState, (state: AppState) => state.isMediaChannelViewMode);
 export const selectAutoStart = createSelector(getAppState, (state: AppState) => state.autoStart);
+export const selectAutoHidden = createSelector(getAppState, (state: AppState) => state.autoHidden);
