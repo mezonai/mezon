@@ -1,6 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { referencesActions, useAppDispatch } from '@mezon/store-mobile';
-import { processText, type IMarkdownOnMessage } from '@mezon/utils';
+import { isFacebookLink, isTikTokLink, isYouTubeLink, processText, type IMarkdownOnMessage } from '@mezon/utils';
 import debounce from 'lodash/debounce';
 import { safeJSONParse } from 'mezon-js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -8,9 +8,10 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import ImageNative from '../../../../..//components/ImageNative';
 import { IconCDN } from '../../../../..//constants/icon_cdn';
-import { NativeHttpClient } from '../../../../..//utils/NativeHttpClient';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
+import { NativeHttpClient } from '../../../../../utils/NativeHttpClient';
+import { isGoogleMapLink } from '../../../../../utils/helpers';
 import { style } from './styles';
 
 type RenderOgpPreviewProps = {
@@ -23,7 +24,7 @@ export type OgpElemnent = {
 	image?: string;
 };
 
-const MEZONAI_PATTERN = /^https:\/\/mezon\.ai\/chat/i;
+const MEZONAI_PATTERN = /^https:\/\/mezon\.ai\/(chat|invite)(\/|$)/i;
 
 const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 	const isTabletLandscape = useTabletLandscape();
@@ -40,7 +41,13 @@ const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 			try {
 				for (const markdown of markdowns) {
 					const link = contentText?.slice(markdown.s, markdown.e);
-					if (!MEZONAI_PATTERN.test(link)) {
+					if (
+						!MEZONAI_PATTERN.test(link) &&
+						!isYouTubeLink(link) &&
+						!isTikTokLink(link) &&
+						!isFacebookLink(link) &&
+						!isGoogleMapLink(link)
+					) {
 						const datafetch = await NativeHttpClient.post(
 							`${process.env.NX_OGP_URL}`,
 							JSON.stringify({

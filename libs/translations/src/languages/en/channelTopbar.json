@@ -23,7 +23,7 @@
 		"jump": "Jump",
 		"gallery": "Gallery",
 		"timelineView": "Switch to Timeline View",
-		"defaultView": "Switch to Default View"
+		"defaultView": "Switch to Chat View"
 	},
 	"directMessage": "Direct message",
 	"activeThreads": "Active Threads",

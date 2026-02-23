@@ -36,20 +36,20 @@ const ButtonAgent = () => {
 		if (!room) return;
 
 		const handleJoin = (p: RemoteParticipant) => {
-			if (p.identity === 'KOMU') {
+			if (p.isAgent) {
 				setOnAgent(true);
 			}
 		};
 		const handleDisconnect = (p: RemoteParticipant) => {
-			if (p.identity === 'KOMU') {
+			if (p.isAgent) {
 				setOnAgent(false);
 			}
 		};
 
 		const onConnected = () => {
-			if (room.remoteParticipants.get('KOMU')) {
-				setOnAgent(true);
-			}
+			const hasAgent = [...room.remoteParticipants.values()].some((p) => p.isAgent);
+
+			setOnAgent(hasAgent);
 		};
 
 		room.on('participantConnected', handleJoin);

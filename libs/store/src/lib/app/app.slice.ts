@@ -94,6 +94,7 @@ export interface AppState {
 	isShowUpdateUsername: boolean;
 	isTimelineViewMode: boolean;
 	autoStart: boolean;
+	isMediaChannelViewMode: boolean;
 	autoHidden: boolean;
 }
 
@@ -145,6 +146,7 @@ export const initialAppState: AppState = {
 	},
 	isShowUpdateUsername: false,
 	isTimelineViewMode: false,
+	isMediaChannelViewMode: false,
 	autoStart: true,
 	autoHidden: false
 };
@@ -417,10 +419,7 @@ export const appSlice = createSlice({
 			state.isTimelineViewMode = action.payload;
 		},
 		toggleAutoStart: (state) => {
-			state.autoStart = state.autoStart !== undefined ? !state.autoStart : false;
-		},
-		toggleAutoHidden: (state) => {
-			state.autoHidden = state.autoHidden !== undefined ? !state.autoHidden : true;
+			state.autoStart = !state.autoStart;
 		}
 	}
 });
@@ -480,5 +479,3 @@ export const selectIsShowUpdateUsername = createSelector(getAppState, (state: Ap
 export const selectTimelineViewMode = createSelector(getAppState, (state: AppState) => state.isTimelineViewMode);
 
 export const selectAutoStart = createSelector(getAppState, (state: AppState) => state.autoStart);
-
-export const selectAutoHidden = createSelector(getAppState, (state: AppState) => state.autoHidden);

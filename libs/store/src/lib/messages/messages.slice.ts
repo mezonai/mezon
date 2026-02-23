@@ -1363,7 +1363,7 @@ export const sendEphemeralMessage = createAsyncThunk('messages/sendEphemeralMess
 		}
 
 		await socket.writeEphemeralMessage(
-			receiverId,
+			[receiverId],
 			clanId,
 			channelId,
 			mode,

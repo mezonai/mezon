@@ -8,7 +8,7 @@ import {
 	save
 } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectCurrentClanId, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store-mobile';
+import { getStore, selectChannelById, selectCurrentClanId, selectVoiceChannelMembersByChannelId, useAppSelector } from '@mezon/store-mobile';
 import type { IChannel } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
@@ -39,11 +39,14 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 	const badge = useMemo(() => (voiceChannelMembers?.length > 3 ? voiceChannelMembers.length - 3 : 0), [voiceChannelMembers]);
 
 	const handleJoinVoice = async () => {
-		if (!channel?.meeting_code) return;
+		const store = getStore();
+		const channelStore = selectChannelById(store.getState(), channelId);
+		const meetingCode = channelStore?.meeting_code || channel?.meeting_code;
+		if (!meetingCode) return;
 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_OPEN_MEZON_MEET, {
 			channelId,
-			roomName: channel.meeting_code,
+			roomName: meetingCode,
 			clanId: currentClanId
 		});
 		dismiss();

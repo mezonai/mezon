@@ -714,7 +714,8 @@ export const style = (colors: Attributes) =>
 			paddingVertical: size.s_6
 		},
 		iconBell: {
-			paddingRight: size.s_14,
+			paddingLeft: size.s_8,
+			paddingRight: size.s_6,
 			padding: 0
 		},
 		friendActions: {
