@@ -2,7 +2,7 @@ import type { InvitesEntity } from '@mezon/store';
 import { getStore, inviteActions, selectDirectById, selectInviteById } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { EBacktickType, processText, sleep } from '@mezon/utils';
+import { EBacktickType, INVITE_URL_REGEX, processText, sleep } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -28,7 +28,7 @@ export function useSendInviteMessage() {
 			const mk = [...markdowns, ...linkInMk];
 
 			const store = getStore();
-			const inviteMatch = url.match(/\/invite\/([A-Za-z0-9_-]+)/i);
+			const inviteMatch = url.match(INVITE_URL_REGEX);
 			const inviteId = inviteMatch?.[1] || '';
 			if (inviteId) {
 				let inviteInfo: InvitesEntity | undefined = selectInviteById(inviteId)(store.getState());
@@ -45,7 +45,7 @@ export function useSendInviteMessage() {
 					const end = link?.e ?? 0;
 					if (!end || end <= start) return false;
 					const linkValue = url.substring(start, end);
-					return /\/invite\/([A-Za-z0-9_-]+)/i.test(linkValue);
+					return INVITE_URL_REGEX.test(linkValue);
 				});
 				const inviteIndex = inviteLink?.s ?? 0;
 				const memberCount = Number(inviteInfo?.member_count || 0);

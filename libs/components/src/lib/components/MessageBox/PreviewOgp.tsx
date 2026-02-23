@@ -1,10 +1,21 @@
-import { inviteActions, referencesActions, selectCurrentChannelId, selectCurrentDmId, selectOgpPreview } from '@mezon/store';
+import { useInvite } from '@mezon/core';
+import {
+	clansActions,
+	inviteActions,
+	referencesActions,
+	selectCurrentChannelId,
+	selectCurrentDmId,
+	selectOgpPreview,
+	useAppDispatch
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IInvite } from '@mezon/utils';
-import { isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
+import { INVITE_URL_REGEX, isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { useFetchClanBanner } from '../../hooks';
 import type { InviteBannerData, PreviewData } from './types';
 
@@ -17,8 +28,11 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	const ogpLink = useSelector(selectOgpPreview);
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentDmId = useSelector(selectCurrentDmId);
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+	const { inviteUser } = useInvite();
 	const [loading, setLoading] = useState(false);
+	const [joiningInvite, setJoiningInvite] = useState(false);
 
 	const [data, setData] = useState<PreviewData | null>(null);
 	const { fetchClanBannerById } = useFetchClanBanner();
@@ -49,11 +63,11 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 		const timeoutId = setTimeout(async () => {
 			try {
 				setLoading(true);
-				const inviteMatch = ogpLink.url.match(/\/invite\/([A-Za-z0-9_-]+)/i);
+				const inviteMatch = ogpLink.url.match(INVITE_URL_REGEX);
 				let previewData: PreviewData;
 
 				if (inviteMatch?.[1]) {
-					const resultAction = await dispatch(inviteActions.getLinkInvite({ inviteId: inviteMatch[1] }) as any);
+					const resultAction = await dispatch(inviteActions.getLinkInvite({ inviteId: inviteMatch[1] }));
 					if (!resultAction?.payload) {
 						setLoading(false);
 						return;
@@ -114,10 +128,39 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 			clearTimeout(timeoutId);
 			controller.abort();
 		};
-	}, [ogpLink, dispatch, fetchClanBannerById, resolveInviteBanner, t]);
-	const clearOgpData = () => {
+	}, [ogpLink?.url]);
+
+	const clearOgpData = useCallback(() => {
 		dispatch(referencesActions.clearOgpData());
-	};
+	}, [dispatch]);
+
+	const handleJoinInvite = useCallback(async () => {
+		if (joiningInvite) return;
+
+		const inviteMatch = ogpLink?.url?.match(INVITE_URL_REGEX);
+		const inviteId = inviteMatch?.[1];
+
+		if (!inviteId) {
+			toast.error(t('invalidInviteLink'));
+			return;
+		}
+
+		setJoiningInvite(true);
+		try {
+			const result = await inviteUser(inviteId);
+			if (result?.channel_id && result?.clan_id) {
+				dispatch(clansActions.fetchClans({ noCache: true }));
+				navigate(`/chat/clans/${result.clan_id}/channels/${result.channel_id}`);
+				clearOgpData();
+				toast.success(t('joinedSuccessfully'));
+			}
+		} catch (error) {
+			console.error('Failed to join invite:', error);
+			toast.error(t('failedToJoin'));
+		} finally {
+			setJoiningInvite(false);
+		}
+	}, [clearOgpData, dispatch, inviteUser, joiningInvite, navigate, ogpLink?.url, t]);
 
 	if (loading) {
 		return (
@@ -140,7 +183,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	const memberCount = Number((data.description || '').match(/\d+/)?.[0] || 0);
 	const memberLabel = t('memberCount', { count: memberCount });
 	const isCommunityEnabled = Boolean(data?.is_community);
-	const isInvitePreview = /\/invite\/([A-Za-z0-9_-]+)/i.test(ogpLink?.url || '');
+	const isInvitePreview = INVITE_URL_REGEX.test(ogpLink?.url || '');
 
 	if (isInvitePreview) {
 		return (
@@ -180,8 +223,14 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 								{memberLabel}
 							</span>
 						</div>
-						<button className="mt-4 w-full h-10 rounded-lg bg-green-600 hover:bg-green-500 text-white font-semibold text-base transition-colors">
-							{t('join')}
+						<button
+							onClick={handleJoinInvite}
+							disabled={joiningInvite}
+							className={`mt-4 w-full h-10 rounded-lg text-white font-semibold text-base transition-colors ${
+								joiningInvite ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'
+							}`}
+						>
+							{joiningInvite ? t('joining') : t('join')}
 						</button>
 					</div>
 					<div className="absolute top-2 right-2 p-1 cursor-pointer rounded-full hover:bg-red-400" onClick={clearOgpData}>

@@ -2,7 +2,7 @@
 import { clansActions, getStore, inviteActions, selectCanvasIdsByChannelId, selectClanById, selectInviteById, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { IExtendedMessage } from '@mezon/utils';
-import { EBacktickType, ETokenMessage, TypeMessage, convertMarkdown, getMeetCode } from '@mezon/utils';
+import { EBacktickType, ETokenMessage, INVITE_URL_REGEX, TypeMessage, convertMarkdown, getMeetCode } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { CanvasHashtag, ChannelHashtag, EmojiMarkup, MarkdownContent, MentionUser, PlainText } from '../../components';
 import { useFetchClanBanner } from '../../hooks';
+import type { InviteBannerData } from '../MessageBox/types';
 import OgpEmbed from './OgpEmbed';
 
 interface RenderContentProps {
@@ -62,8 +63,6 @@ export function extractIdsFromUrl(url: string) {
 	const [, clanId, channelId, canvasId] = match;
 	return { clanId, channelId, canvasId };
 }
-
-const INVITE_URL_REGEX = /\/invite\/([A-Za-z0-9_-]+)/i;
 
 const formatMarkdownHeadings = (text: string, isReply: boolean): React.ReactNode[] => {
 	if (!text) return [text];
@@ -180,7 +179,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 	const joinedClan = useSelector(selectClanById(inviteInfo?.clan_id || ''));
 	const { fetchClanBannerById } = useFetchClanBanner();
 
-	const resolveInviteBanner = (invite: any): string => {
+	const resolveInviteBanner = (invite: InviteBannerData): string => {
 		return invite?.banner || invite?.clan_banner || '';
 	};
 
@@ -226,7 +225,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 		try {
 			setJoining(true);
 			setError('');
-			const res = await dispatch(inviteActions.inviteUser({ inviteId }) as any).unwrap();
+			const res = await dispatch(inviteActions.inviteUser({ inviteId })).unwrap();
 			if (res?.clan_id) {
 				dispatch(clansActions.fetchClans({ noCache: true }));
 				navigate(`/chat/clans/${res.clan_id}/channels/${res.channel_id || '0'}`);

@@ -20,6 +20,7 @@ import type { IMessageSendPayload } from '@mezon/utils';
 import {
 	CREATING_THREAD,
 	EBacktickType,
+	INVITE_URL_REGEX,
 	getMobileUploadedAttachments,
 	getWebUploadedAttachments,
 	isFacebookLink,
@@ -122,7 +123,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 					mk
 				};
 			} else if (threadContent?.t) {
-				const inviteUrlRegex = /https?:\/\/[^\s]+\/invite\/([A-Za-z0-9_-]+)/i;
+				const inviteUrlRegex = new RegExp(`https?:\\/\\/[^\\s]+${INVITE_URL_REGEX.source}`, 'i');
 				const inviteExec = inviteUrlRegex.exec(threadContent.t);
 				const inviteId = inviteExec?.[1] || '';
 				const inviteIndex = inviteExec?.index ?? 0;
