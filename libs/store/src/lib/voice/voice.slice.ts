@@ -458,11 +458,14 @@ export const voiceSlice = createSlice({
 
 					if (!listUser || !channelId) return;
 
-					state.listVoiceMemberByClan[clanId][channelId] = listUser;
-
+					const listIdInVoice = [];
 					for (const user of listUser) {
+						if (user.length === 19) {
+							listIdInVoice.push(user);
+						}
 						state.listInVoiceStatus[user] = { clanId, channelId };
 					}
+					state.listVoiceMemberByClan[clanId][channelId] = listIdInVoice;
 				});
 
 				state.cache = createCacheMetadata();
