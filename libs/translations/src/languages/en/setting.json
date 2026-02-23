@@ -52,6 +52,10 @@
 		"title": "Auto start application",
 		"description": "Automatically launch the app when your computer starts so it's ready to use right away."
 	},
+	"autoHidden": {
+		"title": "Hidden start application with os",
+		"description": "Starts hidden when the app launches with the OS.."
+	},
 	"activity": {
 		"title": "Show My Activity",
 		"description": "Show your current activities to friends. This lets them see what you're up to and makes it easier to connect."

@@ -95,6 +95,7 @@ export interface AppState {
 	isTimelineViewMode: boolean;
 	autoStart: boolean;
 	isMediaChannelViewMode: boolean;
+	autoHidden: boolean;
 }
 
 const getInitialLanguage = (): 'en' | 'vi' => {
@@ -118,7 +119,6 @@ const getInitialLanguage = (): 'en' | 'vi' => {
 
 export const initialAppState: AppState = {
 	loadingStatus: 'not loaded',
-
 	themeApp: 'sunrise',
 	currentLanguage: getInitialLanguage(),
 	isShowMemberList: true,
@@ -146,8 +146,9 @@ export const initialAppState: AppState = {
 	},
 	isShowUpdateUsername: false,
 	isTimelineViewMode: false,
+	isMediaChannelViewMode: false,
 	autoStart: true,
-	isMediaChannelViewMode: false
+	autoHidden: false
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
@@ -417,14 +418,17 @@ export const appSlice = createSlice({
 		setTimelineViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isTimelineViewMode = action.payload;
 		},
-		toggleAutoStart: (state) => {
-			state.autoStart = !state.autoStart;
-		},
 		setMediaChannelViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isMediaChannelViewMode = action.payload;
 			if (action.payload) {
 				state.isTimelineViewMode = false;
 			}
+		},
+		toggleAutoStart: (state) => {
+			state.autoStart = state.autoStart === undefined ? false : !state.autoStart;
+		},
+		toggleAutoHidden: (state) => {
+			state.autoHidden = state.autoHidden === undefined ? true : !state.autoHidden;
 		}
 	}
 });
@@ -482,6 +486,6 @@ export const selectHistory = createSelector(getAppState, (state: AppState) => st
 export const selectIsShowUpdateUsername = createSelector(getAppState, (state: AppState) => state.isShowUpdateUsername);
 
 export const selectTimelineViewMode = createSelector(getAppState, (state: AppState) => state.isTimelineViewMode);
-
-export const selectAutoStart = createSelector(getAppState, (state: AppState) => state.autoStart);
 export const selectMediaChannelViewMode = createSelector(getAppState, (state: AppState) => state.isMediaChannelViewMode);
+export const selectAutoStart = createSelector(getAppState, (state: AppState) => state.autoStart);
+export const selectAutoHidden = createSelector(getAppState, (state: AppState) => state.autoHidden);
