@@ -22,6 +22,7 @@ import type {
 	ApiCreateChannelDescRequest,
 	ApiMarkAsReadRequest
 } from 'mezon-js/api.gen';
+import { appActions } from '../app/app.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { categoriesActions, type FetchCategoriesPayload } from '../categories/categories.slice';
@@ -321,6 +322,7 @@ export const joinChannel = createAsyncThunk(
 	'channels/joinChannel',
 	async ({ clanId, channelId, noFetchMembers, messageId, isClearMessage = true, noCache = false }: fetchChannelMembersPayload, thunkAPI) => {
 		try {
+			thunkAPI.dispatch(appActions.setMediaChannelViewMode(false));
 			thunkAPI.dispatch(reactionActions.removeAll());
 			thunkAPI.dispatch(channelsActions.setIdChannelSelected({ clanId, channelId }));
 			thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId }));
