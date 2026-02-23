@@ -57,7 +57,7 @@ contextBridge.exposeInMainWorld('electron', {
 	launchAppWindow: (props: string) => {
 		return ipcRenderer.invoke(LAUNCH_APP_WINDOW, props);
 	},
-	toggleSettingAutoStart: (auto: boolean) => {
+	toggleSettingAutoStart: (auto: { autoStart: boolean; hidden: boolean }) => {
 		return ipcRenderer.invoke(AUTO_START_APP, auto);
 	}
 });

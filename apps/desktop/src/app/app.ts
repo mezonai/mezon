@@ -242,13 +242,14 @@ export default class App {
 		const height = Math.min(720, workAreaSize.height || 720);
 
 		const loginSettings = App.application.getLoginItemSettings();
-		const showOnStartup = !loginSettings.wasOpenedAtLogin;
+		const showOnStartup = loginSettings.wasOpenedAtLogin;
+		const isHidden = process.argv.includes('--hidden');
 
 		// Create the browser window.
 		App.mainWindow = new BrowserWindow({
 			width,
 			height,
-			show: showOnStartup,
+			show: !(showOnStartup && isHidden),
 			backgroundColor: '#313338',
 			frame: false,
 			titleBarOverlay: false,

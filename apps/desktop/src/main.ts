@@ -392,7 +392,9 @@ ipcMain.on(TITLE_BAR_ACTION, (event, action, _data) => {
 
 ipcMain.handle(AUTO_START_APP, (event, action) => {
 	app.setLoginItemSettings({
-		openAtLogin: action
+		openAtLogin: action.autoStart,
+		path: app.getPath('exe'),
+		args: action.hidden ? ['--hidden'] : []
 	});
 });
 
