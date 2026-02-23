@@ -45,11 +45,11 @@ export const Routes = () => {
 			createBrowserRouter([
 				{
 					path: '',
-					element: <Navigate to="/developers" />
+					element: <Navigate to="/developers" replace />
 				},
 				{
 					path: '*',
-					element: <Navigate to="/developers" />
+					element: <Navigate to="/developers" replace />
 				},
 				{
 					path: '/developers',
@@ -65,7 +65,7 @@ export const Routes = () => {
 							children: [
 								{
 									path: '*',
-									element: <Navigate to="/developers/dashboard" />
+									element: <Navigate to="/developers/dashboard" replace />
 								},
 								{
 									path: '',
@@ -91,11 +91,11 @@ export const Routes = () => {
 									children: [
 										{
 											path: '*',
-											element: <Navigate to="/developers/applications" />
+											element: <Navigate to="/developers/applications" replace />
 										},
 										{
 											path: '',
-											element: <Navigate to="information" />
+											element: <Navigate to="information" replace />
 										},
 										{
 											path: 'information',
