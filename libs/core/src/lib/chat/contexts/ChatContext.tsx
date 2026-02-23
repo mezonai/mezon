@@ -1370,22 +1370,26 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
-	const onmessagetyping = useCallback((e: MessageTypingEvent) => {
-		const state = getStore().getState();
-		const currentUserId = selectCurrentUserId(state);
-		if (e.sender_id === currentUserId) return;
+	const onmessagetyping = useCallback(
+		(e: MessageTypingEvent) => {
+			const state = getStore().getState();
+			const currentUserId = selectCurrentUserId(state);
+			if (e.sender_id === currentUserId) return;
 
-		const channelId = e?.topic_id && e?.topic_id !== '0' ? e?.topic_id : e.channel_id;
-		const currentClanId = selectCurrentClanId(state);
-		const isDM = !currentClanId || currentClanId === '0';
+			const channelId = e?.topic_id && e?.topic_id !== '0' ? e?.topic_id : e.channel_id;
+			const currentClanId = selectCurrentClanId(state);
+			const currentDirectId = selectDmGroupCurrentId(state);
+			const isDM = !currentClanId || currentClanId === '0' || (currentDirectId === '0' && isMobile);
 
-		if (!isDM) {
-			const currentChannelId = selectCurrentChannelId(state as unknown as RootState);
-			if (channelId !== currentChannelId) return;
-		}
+			if (!isDM) {
+				const currentChannelId = selectCurrentChannelId(state as unknown as RootState);
+				if (channelId !== currentChannelId) return;
+			}
 
-		typingUsersService.addTypingUser(channelId, e.sender_id, e.sender_display_name || e.sender_username);
-	}, []);
+			typingUsersService.addTypingUser(channelId, e.sender_id, e.sender_display_name || e.sender_username);
+		},
+		[isMobile]
+	);
 
 	const onmessagereaction = useCallback(
 		async (e: ApiMessageReaction) => {

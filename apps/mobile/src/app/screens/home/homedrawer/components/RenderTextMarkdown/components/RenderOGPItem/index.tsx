@@ -43,7 +43,11 @@ const RenderOgpPreview = ({ ogpItem, url }: RenderOgpPreviewProps) => {
 						{ogpItem.description}
 					</Text>
 				)}
-				{ogpItem?.image && <ImageNative url={ogpItem.image} style={[styles.image, { aspectRatio }]} resizeMode="cover" />}
+				{ogpItem?.image && (
+					<View style={[styles.image, { aspectRatio }]}>
+						<ImageNative url={ogpItem.image} style={styles.nativeImage} resizeMode="cover" />
+					</View>
+				)}
 			</View>
 		</View>
 	);
