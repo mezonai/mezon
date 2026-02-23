@@ -495,6 +495,7 @@ export interface IUpdateChannelRequest {
 	category_name?: string;
 	app_id: string;
 	channel_avatar?: string;
+	meeting_code?: string;
 }
 
 export const updateChannel = createAsyncThunk('channels/updateChannel', async (body: IUpdateChannelRequest, thunkAPI) => {

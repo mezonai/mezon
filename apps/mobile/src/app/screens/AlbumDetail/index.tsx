@@ -369,7 +369,7 @@ const AlbumDetail: React.FC = () => {
 								</View>
 							)}
 							{!isUploaded(featuredAttachment) && (
-								<View style={styles.uploadingOverlay}>
+								<View style={[styles.uploadingOverlay, { margin: 0 }]}>
 									<ActivityIndicator size="small" color="white" />
 								</View>
 							)}
