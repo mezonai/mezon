@@ -55,19 +55,6 @@ const trackRefreshAttempt = () => {
 	refreshAttempts.push(Date.now());
 };
 
-export const loadAppSettingsFromStore = createAsyncThunk('app/loadAppSettingsFromStore', async () => {
-	if (isElectron() && window.electron?.getReduxState) {
-		try {
-			const settings = await window.electron.getReduxState();
-			return settings;
-		} catch (error) {
-			console.error('Failed to load app settings from electron-store:', error);
-			return { autoStart: true, hardwareAcceleration: true };
-		}
-	}
-	return { autoStart: true, hardwareAcceleration: true };
-});
-
 export interface showSettingFooterProps {
 	status: boolean;
 	initTab: string;
@@ -434,17 +421,9 @@ export const appSlice = createSlice({
 		},
 		toggleAutoStart: (state) => {
 			state.autoStart = !state.autoStart;
-
-			if (isElectron() && window.electron?.syncReduxState) {
-				window.electron.syncReduxState({ autoStart: state.autoStart });
-			}
 		},
 		toggleHardwareAcceleration: (state) => {
 			state.hardwareAcceleration = !state.hardwareAcceleration;
-
-			if (isElectron() && window.electron?.syncReduxState) {
-				window.electron.syncReduxState({ hardwareAcceleration: state.hardwareAcceleration });
-			}
 		},
 		setMediaChannelViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isMediaChannelViewMode = action.payload;
@@ -452,14 +431,6 @@ export const appSlice = createSlice({
 				state.isTimelineViewMode = false;
 			}
 		}
-	},
-	extraReducers: (builder) => {
-		builder.addCase(loadAppSettingsFromStore.fulfilled, (state, action) => {
-			if (action.payload) {
-				state.autoStart = action.payload.autoStart;
-				state.hardwareAcceleration = action.payload.hardwareAcceleration;
-			}
-		});
 	}
 });
 
@@ -468,7 +439,7 @@ export const appSlice = createSlice({
  */
 export const appReducer = appSlice.reducer;
 
-export const appActions = { ...appSlice.actions, refreshApp, loadAppSettingsFromStore };
+export const appActions = { ...appSlice.actions, refreshApp };
 
 export const getAppState = (rootState: { [APP_FEATURE_KEY]: AppState }): AppState => rootState[APP_FEATURE_KEY];
 

@@ -1,5 +1,6 @@
 import { BrowserWindow, app, clipboard, desktopCapturer, dialog, ipcMain, nativeImage, screen, shell } from 'electron';
 import log from 'electron-log/main';
+import Store from 'electron-store';
 import fs from 'fs';
 import App from './app/app';
 import {
@@ -400,7 +401,6 @@ ipcMain.handle(AUTO_START_APP, (event, action) => {
 });
 
 ipcMain.handle(TOGGLE_HARDWARE_ACCELERATION, async (event, enabled) => {
-	const Store = (await import('electron-store')).default;
 	const store = new Store();
 	store.set('hardwareAcceleration', enabled);
 
@@ -586,20 +586,10 @@ ipcMain.handle(SET_RATIO_WINDOW, (event, ratio) => {
 	}
 });
 
-(async () => {
-	try {
-		const Store = (await import('electron-store')).default;
-		const store = new Store();
-		const hardwareAcceleration = store.get('hardwareAcceleration', true);
-
-		if (!hardwareAcceleration) {
-			app.disableHardwareAcceleration();
-			log.info('Hardware acceleration disabled by user setting');
-		}
-	} catch (error) {
-		log.error('Failed to load hardware acceleration setting:', error);
-	}
-})();
+const store = new Store();
+if (!store.get('hardwareAcceleration', true)) {
+	app.disableHardwareAcceleration();
+}
 
 // handle setup events as quickly as possible
 Main.initialize();
