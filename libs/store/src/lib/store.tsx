@@ -222,14 +222,6 @@ const persistedDefaultNotiCatReducer = persistReducer(
 	defaultNotificationCategoryReducer
 );
 
-const persistedChannelMetaReducer = persistReducer(
-	{
-		key: 'channelmeta',
-		storage
-	},
-	channelMetaReducer
-);
-
 const persistedsettingClanStickerReducer = persistReducer(
 	{
 		key: 'settingSticker',
@@ -299,7 +291,7 @@ const reducer = {
 	channelMedia: channelMediaReducer,
 	clans: persistedClansReducer,
 	channels: persistedChannelReducer,
-	channelmeta: persistedChannelMetaReducer,
+	channelmeta: channelMetaReducer,
 	settingSticker: persistedsettingClanStickerReducer,
 	allUsersByAddChannel: userChannelsReducer,
 	listchannelbyusers: persistedListchannelsByUserReducer,
