@@ -462,8 +462,8 @@ export const voiceSlice = createSlice({
 					for (const user of listUser) {
 						if (user.length === 19) {
 							listIdInVoice.push(user);
+							state.listInVoiceStatus[user] = { clanId, channelId };
 						}
-						state.listInVoiceStatus[user] = { clanId, channelId };
 					}
 					state.listVoiceMemberByClan[clanId][channelId] = listIdInVoice;
 				});
