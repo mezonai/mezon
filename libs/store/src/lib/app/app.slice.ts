@@ -4,6 +4,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
+import { badgeService } from '../badge/badgeService';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelsActions } from '../channels/channels.slice';
@@ -198,12 +199,13 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 			);
 
 		thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }));
-		thunkAPI.dispatch(clansActions.fetchClans({}));
+		const fetchClansPromise = thunkAPI.dispatch(clansActions.fetchClans({}));
 		thunkAPI.dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 
+		let fetchChannelsPromise: ReturnType<typeof thunkAPI.dispatch> | null = null;
 		if (isClanView && currentClanId) {
 			thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId }));
-			thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
+			fetchChannelsPromise = thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
 			thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId }));
 			thunkAPI.dispatch(
 				voiceActions.fetchVoiceChannelMembers({
@@ -215,6 +217,14 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		}
 
 		thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
+
+		const settledPromises = [fetchClansPromise, fetchChannelsPromise].filter(Boolean);
+		await Promise.allSettled(settledPromises);
+
+		badgeService.onReconnect();
+		if (currentClanId && currentClanId !== '0') {
+			badgeService.syncClanBadge(currentClanId);
+		}
 	} catch (error) {
 		captureSentryError(error, 'app/refreshApp');
 		return thunkAPI.rejectWithValue(error);

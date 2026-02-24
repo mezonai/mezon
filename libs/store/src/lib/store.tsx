@@ -410,6 +410,11 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 	});
 	storeInstance = store;
 	storeCreated = true;
+
+	import('./badge/badgeService').then(({ badgeService }) => {
+		badgeService.init(store.dispatch, store.getState);
+	});
+
 	const persistor = persistStore(store);
 
 	if (typeof window !== 'undefined') {
