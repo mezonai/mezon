@@ -47,7 +47,7 @@ export const BlockedUsers = ({ navigation }: SettingScreenProps<BlockedUsersScre
 						alt={item?.user?.username || ''}
 					/>
 				</View>
-				<Text style={styles.username}>{item?.user?.display_name || item?.user?.username}</Text>
+				<Text numberOfLines={1} style={styles.username}>{item?.user?.display_name || item?.user?.username}</Text>
 			</View>
 
 			<TouchableOpacity style={styles.unblockButton} onPress={() => handleUnblockFriend(item)}>

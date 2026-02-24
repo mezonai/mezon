@@ -109,7 +109,7 @@ export const CustomStatusUser = ({ userStatus, handleCustomUserStatus, currentUs
 	return (
 		<View style={styles.container}>
 			<MezonOption title={t('onlineStatus')} data={statusOptions} value={userStatusOption} onChange={handleStatusChange} />
-			<MezonMenu menu={statusMenu} />
+			<MezonMenu menu={statusMenu} marginVertical={0} paddingBottom={size.s_36} />
 		</View>
 	);
 };

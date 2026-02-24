@@ -249,6 +249,7 @@ type MenuClanStackParamList = {
 	};
 	[APP_SCREEN.MENU_CLAN.CREATE_EVENT]: {
 		onGoBack?: () => void;
+		onSuccess?: () => void;
 		eventId?: string;
 	};
 	[APP_SCREEN.MENU_CLAN.CREATE_EVENT_DETAILS]: {
@@ -259,6 +260,7 @@ type MenuClanStackParamList = {
 		isPrivate?: boolean;
 		onGoBack?: () => void;
 		currentEvent?: EventManagementEntity;
+		onSuccess?: () => void;
 	};
 	[APP_SCREEN.MENU_CLAN.CREATE_EVENT_PREVIEW]: {
 		type: OptionEvent;
@@ -274,6 +276,7 @@ type MenuClanStackParamList = {
 		logo?: string;
 		onGoBack?: () => void;
 		currentEvent?: EventManagementEntity;
+		onSuccess?: () => void;
 	};
 	[APP_SCREEN.MENU_CLAN.SETTINGS]: { inviteRef: React.MutableRefObject<any> };
 	[APP_SCREEN.MENU_CLAN.OVERVIEW_SETTING]: undefined;

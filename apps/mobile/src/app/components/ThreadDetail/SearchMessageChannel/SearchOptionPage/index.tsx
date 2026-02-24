@@ -40,9 +40,9 @@ function SearchOptionPage({ searchText, onSelect, optionFilter }: ISeachOptionPa
 		return userListData.map((user) => {
 			return {
 				id: user?.id ?? '',
-				display: user?.username ?? '',
+				display: user?.display ?? '',
 				avatarUrl: user?.avatarUrl ?? '',
-				subDisplay: user?.display
+				subDisplay: user?.username ?? ''
 			};
 		});
 	}, [userListData]);
