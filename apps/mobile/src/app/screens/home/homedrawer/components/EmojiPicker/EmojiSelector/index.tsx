@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react';
 import EmojiSelectorContainer from '../EmojiSelectorContainer';
 
 type EmojiSelectorProps = {
-	onSelected: (emojiId: string, shortname: string) => void;
+	onSelected: (emojiId: string, shortname: string, displayName?: string, avatarUrl?: string) => void;
 	isReactMessage?: boolean;
 	handleBottomSheetExpand?: () => void;
 	handleBottomSheetCollapse?: () => void;
 	currentChannelId?: string;
+	clanId?: string;
 };
 
 export default function EmojiSelector({
@@ -14,7 +15,8 @@ export default function EmojiSelector({
 	isReactMessage = false,
 	handleBottomSheetExpand,
 	handleBottomSheetCollapse,
-	currentChannelId
+	currentChannelId,
+	clanId
 }: EmojiSelectorProps) {
 	const [isReadyForUse, setIsReadyForUse] = useState<boolean>(false);
 	useEffect(() => {
@@ -33,6 +35,7 @@ export default function EmojiSelector({
 			onSelected={onSelected}
 			isReactMessage={isReactMessage}
 			currentChannelId={currentChannelId}
+			clanId={clanId}
 		/>
 	);
 }

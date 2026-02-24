@@ -77,10 +77,11 @@ interface IContainerMessageActionModalProps {
 	senderDisplayName?: string;
 	channelId?: string;
 	onEmojiSelected?: (emojiId: string, shortname: string) => void;
+	clanId?: string;
 }
 
 export const ContainerMessageActionModal = React.memo(
-	({ message, mode, isOnlyEmojiPicker = false, senderDisplayName = '', channelId, onEmojiSelected }: IContainerMessageActionModalProps) => {
+	({ message, mode, isOnlyEmojiPicker = false, senderDisplayName = '', channelId, onEmojiSelected, clanId }: IContainerMessageActionModalProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
 		const dispatch = useAppDispatch();
@@ -897,7 +898,7 @@ export const ContainerMessageActionModal = React.memo(
 		};
 
 		const onSelectEmoji = useCallback(
-			async (emoji_id: string, emoij: string) => {
+			async (emoji_id: string, emoij: string, displayName?: string, avatarUrl?: string) => {
 				if (onEmojiSelected) {
 					onEmojiSelected(emoji_id, emoij);
 					return;
@@ -905,19 +906,19 @@ export const ContainerMessageActionModal = React.memo(
 
 				if (!message && isOnlyEmojiPicker) {
 					if (!socketRef.current || !channelId) return;
-					await socketRef.current.writeVoiceReaction([emoji_id], channelId);
+					await socketRef.current.writeVoiceReaction([emoji_id, displayName || '', avatarUrl || ''], channelId);
 					return;
 				}
 				await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emoji_id, emoij);
 			},
-			[channelId, handleReact, isOnlyEmojiPicker, message, mode, socketRef, onEmojiSelected]
+			[onEmojiSelected, message, isOnlyEmojiPicker, handleReact, mode, socketRef, channelId]
 		);
 
 		return (
 			<View style={[styles.bottomSheetWrapper, { backgroundColor: themeValue.primary }]}>
 				{isOnlyEmojiPicker ? (
 					<View style={styles.emojiPickerContainer}>
-						<EmojiSelector onSelected={onSelectEmoji} isReactMessage />
+						<EmojiSelector onSelected={onSelectEmoji} isReactMessage currentChannelId={channelId || ''} clanId={clanId || ''} />
 					</View>
 				) : (
 					renderMessageItemActions()

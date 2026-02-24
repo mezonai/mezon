@@ -526,6 +526,14 @@ export const getUsersClanState = (rootState: { [USERS_CLANS_FEATURE_KEY]: UsersC
 
 export const selectClanMemberByClanId = createSelector([getUsersClanState, (_, clanId: string) => clanId], (state, clanId) => state.byClans[clanId]);
 
+export const selectMemberByIdAndClanId = createSelector(
+	[getUsersClanState, (_, clanId: string) => clanId, (_, __, userId: string) => userId],
+	(state, clanId, userId) => {
+		const clanState = state.byClans[clanId]?.entities;
+		return clanState ? selectById(clanState, userId) : null;
+	}
+);
+
 export const selectAllUserClans = createSelector([getUsersClanState, (state: RootState) => state.clans.currentClanId as string], (state, clanId) => {
 	const clanState = state.byClans[clanId]?.entities;
 	return clanState ? selectAll(clanState) : [];

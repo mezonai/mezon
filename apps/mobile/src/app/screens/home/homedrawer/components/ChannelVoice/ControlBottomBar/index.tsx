@@ -200,7 +200,7 @@ const ControlBottomBar = ({
 						<MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.textStrong} />
 					</TouchableOpacity>
 				)}
-				{!isGroupCall && <ButtonRaiseHand channelId={channelId} />}
+				{!isGroupCall && <ButtonRaiseHand channelId={channelId} clanId={clanId} />}
 				<ButtonEndCall isGroupCall={isGroupCall} channelId={channelId} clanId={clanId} />
 			</View>
 		</View>
