@@ -229,7 +229,7 @@ const QuestionItem = ({ question, index, tempId }: { question: ApiOnboardingItem
 					...question,
 					title: titleQuestion,
 					answers,
-					task_type: EGuideType.QUESTION
+					guide_type: EGuideType.QUESTION
 				}
 			})
 		);
