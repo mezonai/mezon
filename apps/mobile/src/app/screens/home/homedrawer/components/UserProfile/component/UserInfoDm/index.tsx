@@ -49,7 +49,6 @@ export default function UserInfoDm({
 						type: 'info',
 						text1: t('userInfoDM.menu.removeSuccess')
 					});
-					dispatch(directActions.fetchDirectMessage({ noCache: true }));
 				}
 			} catch (error) {
 				console.error('Error removing member from channel:', error);

@@ -344,7 +344,6 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		}
 		dispatch(directActions.setDmGroupCurrentId(''));
 
-		await dispatch(fetchDirectMessage({ noCache: true }));
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	}, [currentUserId, dispatch, lastOne, messageInfo?.channel_id]);
 
