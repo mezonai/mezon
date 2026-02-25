@@ -37,6 +37,7 @@ export default useProcessedContent;
 const processBold = (inputString: string) => {
 	const bolds: ILinkOnMessage[] = [];
 	const boldPrefix = '**';
+	const starPrefixRegex = /^[\s*]+$/;
 	let i = 0;
 	let cleanedPosition = 0;
 	const getCleanLen = (str: string) => {
@@ -60,13 +61,15 @@ const processBold = (inputString: string) => {
 			const startIndex = cleanedPosition;
 			const endIndex = startIndex + boldTextCleanLen;
 
-			bolds.push({
-				type: EBacktickType.BOLD,
-				s: startIndex,
-				e: endIndex
-			} as ILinkOnMessage);
+			if (boldTextCleanLen > 0 && !starPrefixRegex.test(boldText)) {
+				bolds.push({
+					type: EBacktickType.BOLD,
+					s: startIndex,
+					e: endIndex
+				} as ILinkOnMessage);
 
-			cleanedPosition += boldTextCleanLen;
+				cleanedPosition += boldTextCleanLen;
+			}
 		}
 
 		i = end + boldPrefix.length;
@@ -88,7 +91,6 @@ const processText = (rawInputString: string, emojiObjPicked: any) => {
 	const inputString = rawInputString;
 
 	let shift = 0;
-	const getCleanLenBold = (str: string) => str?.replace(/\*\*(.*?)\*\*/g, '$1')?.length;
 
 	type Handler = {
 		predicate: (i: number) => boolean;
@@ -201,7 +203,7 @@ const processText = (rawInputString: string, emojiObjPicked: any) => {
 					i2 += tripleBacktick.length;
 					const endindex = i2;
 					const content = markdown;
-					const contentCleanLen = getCleanLenBold(content);
+					const contentCleanLen = content?.length;
 
 					const s = startindex - shift;
 					const e = s + contentCleanLen;
@@ -246,7 +248,7 @@ const processText = (rawInputString: string, emojiObjPicked: any) => {
 
 					if (allow && !markdown.includes('``') && markdown.trim().length > 0) {
 						const content = markdown;
-						const contentCleanLen = getCleanLenBold(content);
+						const contentCleanLen = content?.length;
 						const s = startindex - shift;
 						const e = s + contentCleanLen;
 
