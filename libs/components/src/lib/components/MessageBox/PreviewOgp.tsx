@@ -11,7 +11,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IInvite } from '@mezon/utils';
 import { INVITE_URL_REGEX, isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState, type SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -162,6 +162,12 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 		}
 	}, [clearOgpData, dispatch, inviteUser, joiningInvite, navigate, ogpLink?.url, t]);
 
+	const handleErrorImage = (_e: SyntheticEvent<HTMLImageElement, Event>) => {
+		if (!data?.title?.trim() && !data?.description?.trim()) {
+			dispatch(referencesActions.clearOgpData());
+		}
+	};
+
 	if (loading) {
 		return (
 			<div className="space-y-4 animate-pulse pb-2 pt-2 flex bg-theme-input text-theme-primary h-20 items-center gap-2">
@@ -246,15 +252,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 				<Icons.Close defaultSize="w-3 h-3 text-theme-primary" />
 			</div>
 			<div className="aspect-square rounded-md h-full flex items-center">
-				<img
-					src={data.image}
-					className="h-full aspect-square object-cover rounded-md"
-					alt="Preview"
-					onError={(e) => {
-						e.currentTarget.src = '/assets/images/warning.svg';
-						e.currentTarget.classList.add('opacity-30');
-					}}
-				/>
+				<img src={data.image} className="h-full aspect-square object-cover rounded-md" onError={handleErrorImage} />
 			</div>
 			<div className="flex flex-col justify-center gap-2 flex-1 overflow-hidden">
 				<h5 className="text-sm truncate font-semibold">{data.title}</h5>

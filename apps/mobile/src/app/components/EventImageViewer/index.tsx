@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import type { AttachmentEntity, ChannelEventAttachment } from '@mezon/store-mobile';
+import type { AttachmentEntity, ChannelTimelineAttachment } from '@mezon/store-mobile';
 import { sleep } from '@mezon/store-mobile';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -20,14 +20,14 @@ import { style as stylesFn } from '../ImageListModal/styles';
 import LoadingModal from '../LoadingModal/LoadingModal';
 
 interface IEventImageViewerProps {
-	images: ChannelEventAttachment[];
-	imageSelected: ChannelEventAttachment;
+	images: ChannelTimelineAttachment[];
+	imageSelected: ChannelTimelineAttachment;
 }
 
 const ORIGIN_SCALE = 1;
 const TIME_TO_SHOW_SAVE_IMAGE_SUCCESS = 3000;
 
-const mapToAttachmentEntity = (att: ChannelEventAttachment): AttachmentEntity => ({
+const mapToAttachmentEntity = (att: ChannelTimelineAttachment): AttachmentEntity => ({
 	id: att.id,
 	url: att.file_url,
 	filename: att.file_name,

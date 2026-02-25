@@ -1,4 +1,5 @@
-import { Attributes, baseColor, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = (theme: Attributes) =>
@@ -38,11 +39,51 @@ export const styles = (theme: Attributes) =>
 		fieldContainer: {
 			marginBottom: size.s_24
 		},
+		fieldLabelRow: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_8,
+			marginBottom: size.s_10
+		},
 		fieldLabel: {
 			fontSize: size.s_16,
 			fontWeight: '600',
-			color: theme.textStrong,
-			marginBottom: size.s_10
+			color: theme.textStrong
+		},
+		requiredBadge: {
+			fontSize: size.s_12,
+			fontWeight: '600',
+			color: '#EF4444',
+			backgroundColor: 'rgba(239, 68, 68, 0.1)',
+			paddingHorizontal: size.s_8,
+			paddingVertical: size.s_2,
+			borderRadius: size.s_4,
+			overflow: 'hidden' as const
+		},
+		optionalBadge: {
+			fontSize: size.s_12,
+			fontWeight: '600',
+			color: theme.textDisabled,
+			backgroundColor: 'rgba(128, 128, 128, 0.1)',
+			paddingHorizontal: size.s_8,
+			paddingVertical: 2,
+			borderRadius: size.s_4,
+			overflow: 'hidden' as const
+		},
+		wrapperFieldHintRow: {
+			flexDirection: 'row' as const,
+			justifyContent: 'space-between',
+			alignItems: 'center'
+		},
+		fieldHintRow: {
+			flexDirection: 'row' as const,
+			alignItems: 'center' as const,
+			gap: size.s_6,
+			marginTop: size.s_6
+		},
+		fieldHintText: {
+			fontSize: size.s_12,
+			color: theme.textDisabled
 		},
 		input: {
 			backgroundColor: theme.secondary,
@@ -137,8 +178,11 @@ export const styles = (theme: Attributes) =>
 		},
 		mediaImage: {
 			width: '100%',
-			height: '100%',
-			borderRadius: size.s_12
+			height: '100%'
+		},
+		mediaImageWrapper: {
+			borderRadius: size.s_12,
+			overflow: 'hidden'
 		},
 		removeMediaButton: {
 			position: 'absolute',
@@ -211,14 +255,15 @@ export const styles = (theme: Attributes) =>
 		},
 		footer: {
 			padding: size.s_16,
-			paddingBottom: size.s_32
+			paddingBottom: 0,
+			marginBottom: size.s_32
 		},
 		saveButton: {
 			backgroundColor: '#8B5CF6',
 			flexDirection: 'row',
 			alignItems: 'center',
 			justifyContent: 'center',
-			paddingVertical: size.s_16,
+			paddingVertical: size.s_14,
 			borderRadius: size.s_28,
 			gap: size.s_10,
 			shadowColor: '#8B5CF6',
@@ -232,7 +277,7 @@ export const styles = (theme: Attributes) =>
 		},
 		saveButtonText: {
 			color: baseColor.white,
-			fontSize: size.s_18,
+			fontSize: size.s_16,
 			fontWeight: '700'
 		},
 		modalOverlay: {
@@ -241,6 +286,8 @@ export const styles = (theme: Attributes) =>
 			backgroundColor: 'rgba(0, 0, 0, 0.5)'
 		},
 		modalContent: {
+			justifyContent: 'center',
+			alignItems: 'center',
 			backgroundColor: theme.secondary,
 			borderTopLeftRadius: size.s_20,
 			borderTopRightRadius: size.s_20,
@@ -249,6 +296,7 @@ export const styles = (theme: Attributes) =>
 		modalHeader: {
 			flexDirection: 'row',
 			justifyContent: 'space-between',
+			width: '100%',
 			padding: size.s_16,
 			borderBottomWidth: 1,
 			borderBottomColor: theme.border

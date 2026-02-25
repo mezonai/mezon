@@ -1,24 +1,30 @@
 import type BottomSheet from '@gorhom/bottom-sheet';
-import { useThreadMessage, useThreads } from '@mezon/core';
+import { useChannelMembers, useThreads } from '@mezon/core';
 import { ActionEmitEvent, STORAGE_CLAN_ID, STORAGE_DATA_CLAN_CHANNEL_CACHE, getUpdateOrAddClanChannelCache, save } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import type { RootState } from '@mezon/store-mobile';
+import type { ChannelsEntity, RootState } from '@mezon/store-mobile';
 import {
 	appActions,
+	channelMetaActions,
 	channelsActions,
 	createNewChannel,
+	getStore,
 	getStoreAsync,
 	messagesActions,
+	selectAllChannelMembers,
+	selectAllRolesClan,
 	selectChannelById,
 	selectCurrentChannel,
 	selectCurrentChannelId,
 	selectCurrentClanId,
+	selectLatestMessageId,
 	selectOpenThreadMessageState,
 	selectThreadCurrentChannel,
 	useAppDispatch
 } from '@mezon/store-mobile';
+import { useMezon } from '@mezon/transport';
 import type { IChannel, IMessageSendPayload, IMessageWithUser, ThreadValue } from '@mezon/utils';
-import { checkIsThread, isPublicChannel } from '@mezon/utils';
+import { checkIsThread, getMobileUploadedAttachments, isPublicChannel, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -69,9 +75,11 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	const openThreadMessageState = useSelector(selectOpenThreadMessageState);
 	const threadCurrentChannel = useSelector(selectThreadCurrentChannel);
 	const { valueThread } = useThreads();
-	const { sendMessageThread } = useThreadMessage({
-		channelId: channelByChannelId?.id || currentChannelId || '',
-		mode: ChannelStreamMode.STREAM_MODE_THREAD
+
+	const { clientRef, sessionRef, socketRef } = useMezon();
+	const { addMemberToThread } = useChannelMembers({
+		channelId: currentChannelId,
+		mode: ChannelStreamMode.STREAM_MODE_CHANNEL || 0
 	});
 	const bottomPickerRef = useRef<BottomSheet>(null);
 
@@ -80,6 +88,73 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 	}, [channelByChannelId, currentChannel, channelThreads]);
 
 	const sessionUser = useSelector((state: RootState) => state.auth.session);
+
+	const sendMessageThread = useCallback(
+		async (
+			content: IMessageSendPayload,
+			mentions?: Array<ApiMessageMention>,
+			attachments?: Array<ApiMessageAttachment>,
+			references?: Array<ApiMessageRef>,
+			thread?: ApiChannelDescription
+		) => {
+			const session = sessionRef.current;
+			const client = clientRef.current;
+			const socket = socketRef.current;
+
+			if (!client || !session || !socket || !thread || !currentClanId) {
+				throw new Error('Client is not initialized');
+			}
+			let uploadedFiles: ApiMessageAttachment[] = [];
+			if (attachments && attachments.length > 0) {
+				try {
+					uploadedFiles = await getMobileUploadedAttachments({ attachments, client, session });
+				} catch (error: any) {
+					console.error('Error uploading attachments:', error);
+					if (error?.code === 'ENOENT') {
+						uploadedFiles = attachments;
+					}
+				}
+			}
+
+			try {
+				const store = getStore();
+				const membersOfChild = selectAllChannelMembers(store.getState(), channelByChannelId?.id || currentChannelId || '0');
+				const rolesClan = selectAllRolesClan(store.getState());
+
+				const mapToMemberIds = membersOfChild?.map((item) => item.id) || [];
+
+				const userIds = uniqueUsers(mentions as ApiMessageMention[], mapToMemberIds, rolesClan, []);
+				if (userIds.length) {
+					await addMemberToThread(thread as ChannelsEntity, userIds as string[]);
+				}
+
+				await client.sendChannelMessage(
+					session,
+					currentClanId,
+					thread.channel_id as string,
+					ChannelStreamMode.STREAM_MODE_THREAD,
+					thread.channel_private === 0,
+					typeof content === 'object' ? JSON.stringify(content) : content,
+					mentions,
+					uploadedFiles,
+					references
+				);
+
+				const timestamp = Date.now() / 1000;
+				const lastMessageId = store ? selectLatestMessageId(store.getState(), channelByChannelId?.id || currentChannelId || '0') : '';
+				dispatch(
+					channelMetaActions.setChannelLastSeenTimestamp({
+						channelId: channelByChannelId?.id || currentChannelId || '0',
+						timestamp,
+						messageId: lastMessageId || undefined
+					})
+				);
+			} catch (error) {
+				console.error('Error adding members to thread:', error);
+			}
+		},
+		[addMemberToThread, channelByChannelId?.id, clientRef, currentChannelId, currentClanId, dispatch, sessionRef, socketRef]
+	);
 
 	const createThread = useCallback(
 		async (value: ThreadValue) => {
@@ -137,7 +212,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 								channelsActions.joinChat({
 									clanId: currentClanId as string,
 									channelId: thread?.channel_id as string,
-									channelType: thread?.type as number,
+									channelType: ChannelType.CHANNEL_TYPE_THREAD,
 									isPublic: false
 								})
 							);
@@ -148,16 +223,15 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 									messageCreate?.mentions,
 									messageCreate?.attachments,
 									undefined,
-									thread,
-									true
+									thread
 								);
 							}
-							await sendMessageThread(content, mentions, attachments, references, thread, true);
+							await sendMessageThread(content, mentions, attachments, references, thread);
 							await dispatch(
 								messagesActions.fetchMessages({
 									channelId: thread?.channel_id as string,
 									isFetchingLatestMessages: true,
-									clanId: currentClanId
+									clanId: currentClanId || '0'
 								})
 							);
 							dispatch(appActions.setLoadingMainMobile(false));

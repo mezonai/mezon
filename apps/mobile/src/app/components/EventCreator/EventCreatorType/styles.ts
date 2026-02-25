@@ -86,5 +86,9 @@ export const style = (colors: Attributes) =>
 		bottomSheetContent: {
 			flex: 1,
 			borderRadius: size.s_8
-		}
+		},
+		itemsSelected: {
+			borderColor: baseColor.blurple,
+			borderWidth: size.s_2
+		},
 	});

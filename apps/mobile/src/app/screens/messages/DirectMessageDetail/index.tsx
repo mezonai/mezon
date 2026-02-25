@@ -30,7 +30,7 @@ export const DirectMessageDetailScreen = ({ route }: { route: any }) => {
 		dispatch(topicsActions.setCurrentTopicId(''));
 		// When the screen is focused, socket disconnect or some case, we want to fetch the DM group if it is not already available
 		if (!currentDmGroup?.channel_id) {
-			dispatch(directActions.fetchDirectMessage({ noCache: true }));
+			dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true }));
 		}
 	}, [currentDmGroup?.channel_id, dispatch]);
 

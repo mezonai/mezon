@@ -1,4 +1,4 @@
-import { appActions, selectAutoStart, useAppDispatch } from '@mezon/store';
+import { appActions, selectAutoHidden, selectAutoStart, useAppDispatch } from '@mezon/store';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 
@@ -10,9 +10,22 @@ const SettingStartUp = ({ menuIsOpen }: SettingStartUpProps) => {
 	const { t } = useTranslation(['setting', 'common']);
 	const dispatch = useAppDispatch();
 	const autoStart = useSelector(selectAutoStart);
+	const autoHidden = useSelector(selectAutoHidden);
+
 	const handleConfigStart = () => {
 		dispatch(appActions.toggleAutoStart());
-		window.electron.toggleSettingAutoStart(!autoStart);
+		window.electron.toggleSettingAutoStart({
+			autoStart: autoStart === undefined ? false : !autoStart,
+			hidden: Boolean(autoHidden)
+		});
+	};
+
+	const handleConfigHidden = () => {
+		dispatch(appActions.toggleAutoHidden());
+		window.electron.toggleSettingAutoStart({
+			autoStart: Boolean(autoStart),
+			hidden: autoHidden === undefined ? true : !autoHidden
+		});
 	};
 
 	return (
@@ -29,7 +42,27 @@ const SettingStartUp = ({ menuIsOpen }: SettingStartUpProps) => {
 					</div>
 					<div className="ml-4 flex-shrink-0">
 						<label className="relative inline-flex items-center cursor-pointer">
-							<input type="checkbox" checked={autoStart} onChange={handleConfigStart} className="sr-only peer" />
+							<input
+								type="checkbox"
+								checked={autoStart !== undefined ? autoStart : true}
+								onChange={handleConfigStart}
+								className="sr-only peer"
+							/>
+							<div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
+						</label>
+					</div>
+				</div>
+			</div>
+
+			<div className="rounded-lg bg-theme-setting-nav p-4">
+				<div className="flex items-center justify-between mb-2">
+					<div className="flex flex-col">
+						<h2 className="text-base font-medium text-theme-primary-active mb-1">{t('setting:autoHidden.title')}</h2>
+						<p className="text-sm text-theme-primary">{t('setting:autoHidden.description')}</p>
+					</div>
+					<div className="ml-4 flex-shrink-0">
+						<label className="relative inline-flex items-center cursor-pointer">
+							<input type="checkbox" checked={autoHidden} onChange={handleConfigHidden} className="sr-only peer" />
 							<div className="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-500"></div>
 						</label>
 					</div>

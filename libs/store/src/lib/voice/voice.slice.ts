@@ -1,6 +1,6 @@
 import { captureSentryError } from '@mezon/logger';
 import { generateBasePath } from '@mezon/transport';
-import { INITIAL_NOISE_SUPPRESSION_PERCENTAGE, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
+import { INITIAL_NOISE_SUPPRESSION_PERCENTAGE, LENGHT_USER_ID, type IvoiceInfo, type LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelType, VoiceLeavedEvent } from 'mezon-js';
@@ -458,11 +458,14 @@ export const voiceSlice = createSlice({
 
 					if (!listUser || !channelId) return;
 
-					state.listVoiceMemberByClan[clanId][channelId] = listUser;
-
-					for (const user of listUser) {
-						state.listInVoiceStatus[user] = { clanId, channelId };
+					const listIdInVoice = [];
+					for (const id of listUser) {
+						if (id.length === LENGHT_USER_ID) {
+							listIdInVoice.push(id);
+							state.listInVoiceStatus[id] = { clanId, channelId };
+						}
 					}
+					state.listVoiceMemberByClan[clanId][channelId] = listIdInVoice;
 				});
 
 				state.cache = createCacheMetadata();

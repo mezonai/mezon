@@ -1,6 +1,6 @@
 {
   "name": "mezon",
-  "version": "1.4.63",
+  "version": "1.4.65",
   "license": "MIT",
   "description": "Mezon application",
   "productName": "mezon",
@@ -79,15 +79,17 @@
     "i18next-http-backend": "^2.5.1",
     "i18next-resources-to-backend": "^1.2.1",
     "is-electron": "^2.2.2",
+    "lite-youtube-embed": "^0.3.4",
     "livekit-client": "^2.16.1",
     "localforage": "^1.10.0",
     "lodash.debounce": "^4.0.8",
     "lodash.isequal": "^4.5.0",
     "lowlight": "^3.3.0",
     "mezon-active-windows": "0.1.38",
-    "mezon-js": "2.14.88",
-    "mezon-js-protobuf": "1.10.16",
+    "mezon-js": "2.14.91",
+    "mezon-js-protobuf": "1.10.20",
     "mmn-client-js": "1.0.16",
+    "mp4box": "^2.3.0",
     "nx-electron": "^20.0.2",
     "rc-dropdown": "^4.2.1",
     "rc-tooltip": "^6.4.0",
@@ -234,8 +236,7 @@
     "qs": "^6.14.1",
     "glob": "^10.5.0",
     "@electron/rebuild": "^3.7.0",
-    "cacache": "^18.0.0",
-    "js-yaml": "^4.1.1"
+    "cacache": "^18.0.0"
   },
   "optionalDependencies": {
     "@nx/nx-darwin-arm64": "18.2.2",

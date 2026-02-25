@@ -138,7 +138,7 @@ const ModalSendToken = ({
 			if (userId && !userMap.has(userId)) {
 				userMap.set(userId, {
 					id: userId,
-					username: (itemDM?.user?.display_name || itemDM?.user?.username) ?? '',
+					username: itemDM?.user?.username ?? '',
 					avatar_url: itemDM?.user?.avatar_url ?? '',
 					display_name: (itemDM?.user?.display_name || itemDM?.user?.username) ?? ''
 				});
@@ -153,7 +153,9 @@ const ModalSendToken = ({
 	const filteredUsers = mergedUsers.filter((user) =>
 		searchTerm.length === 0
 			? user.id !== userId
-			: (user.username?.toLowerCase().includes(searchTerm.toLowerCase()) || user.search_key?.includes(searchTerm.toLowerCase())) &&
+			: (user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					user.search_key?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+					user.display_name?.toLowerCase().includes(searchTerm.toLowerCase())) &&
 				user.id !== userId
 	);
 

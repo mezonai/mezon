@@ -97,7 +97,7 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	};
 
 	useEffect(() => {
-		if (!listDM?.length) dispatch(directActions.fetchDirectMessage({ noCache: true }));
+		if (!listDM?.length) dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true }));
 		if (data && data?.length === 1 && (data?.[0]?.weblink || data?.[0]?.text)) setDataText(data?.[0]?.weblink || data?.[0]?.text);
 		if (dataMedia?.length) convertFileFormat();
 	}, [data, dispatch, listDM?.length]);

@@ -4,6 +4,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
+import { badgeService } from '../badge/badgeService';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelsActions } from '../channels/channels.slice';
@@ -94,6 +95,8 @@ export interface AppState {
 	isShowUpdateUsername: boolean;
 	isTimelineViewMode: boolean;
 	autoStart: boolean;
+	isMediaChannelViewMode: boolean;
+	autoHidden: boolean;
 }
 
 const getInitialLanguage = (): 'en' | 'vi' => {
@@ -117,7 +120,6 @@ const getInitialLanguage = (): 'en' | 'vi' => {
 
 export const initialAppState: AppState = {
 	loadingStatus: 'not loaded',
-
 	themeApp: 'sunrise',
 	currentLanguage: getInitialLanguage(),
 	isShowMemberList: true,
@@ -145,7 +147,9 @@ export const initialAppState: AppState = {
 	},
 	isShowUpdateUsername: false,
 	isTimelineViewMode: false,
-	autoStart: true
+	isMediaChannelViewMode: false,
+	autoStart: true,
+	autoHidden: false
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
@@ -195,12 +199,13 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 			);
 
 		thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }));
-		thunkAPI.dispatch(clansActions.fetchClans({}));
+		const fetchClansPromise = thunkAPI.dispatch(clansActions.fetchClans({}));
 		thunkAPI.dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 
+		let fetchChannelsPromise: ReturnType<typeof thunkAPI.dispatch> | null = null;
 		if (isClanView && currentClanId) {
 			thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId }));
-			thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
+			fetchChannelsPromise = thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
 			thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId }));
 			thunkAPI.dispatch(
 				voiceActions.fetchVoiceChannelMembers({
@@ -212,6 +217,14 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		}
 
 		thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
+
+		const settledPromises = [fetchClansPromise, fetchChannelsPromise].filter(Boolean);
+		await Promise.allSettled(settledPromises);
+
+		badgeService.onReconnect();
+		if (currentClanId && currentClanId !== '0') {
+			badgeService.syncClanBadge(currentClanId);
+		}
 	} catch (error) {
 		captureSentryError(error, 'app/refreshApp');
 		return thunkAPI.rejectWithValue(error);
@@ -415,8 +428,17 @@ export const appSlice = createSlice({
 		setTimelineViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isTimelineViewMode = action.payload;
 		},
+		setMediaChannelViewMode: (state, action: PayloadAction<boolean>) => {
+			state.isMediaChannelViewMode = action.payload;
+			if (action.payload) {
+				state.isTimelineViewMode = false;
+			}
+		},
 		toggleAutoStart: (state) => {
-			state.autoStart = !state.autoStart;
+			state.autoStart = state.autoStart === undefined ? false : !state.autoStart;
+		},
+		toggleAutoHidden: (state) => {
+			state.autoHidden = state.autoHidden === undefined ? true : !state.autoHidden;
 		}
 	}
 });
@@ -474,5 +496,6 @@ export const selectHistory = createSelector(getAppState, (state: AppState) => st
 export const selectIsShowUpdateUsername = createSelector(getAppState, (state: AppState) => state.isShowUpdateUsername);
 
 export const selectTimelineViewMode = createSelector(getAppState, (state: AppState) => state.isTimelineViewMode);
-
+export const selectMediaChannelViewMode = createSelector(getAppState, (state: AppState) => state.isMediaChannelViewMode);
 export const selectAutoStart = createSelector(getAppState, (state: AppState) => state.autoStart);
+export const selectAutoHidden = createSelector(getAppState, (state: AppState) => state.autoHidden);

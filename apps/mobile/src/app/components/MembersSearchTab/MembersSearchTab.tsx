@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import type { ChannelMembersEntity, DirectEntity } from '@mezon/store-mobile';
+import type { ChannelMembersEntity } from '@mezon/store-mobile';
 import { directActions, getStore, selectCurrentDM, useAppDispatch } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useMemo } from 'react';
@@ -15,18 +15,17 @@ import style from './MembersSearchTab.styles';
 
 interface IMembersSearchTabProps {
 	listMemberSearch: any;
-	listDMGroupSearch?: DirectEntity[];
 }
 
 const handleScrollBeginDrag = () => Keyboard.dismiss();
 const ListEmpty = memo(() => <EmptySearchPage />);
 
-const MembersSearchTab = ({ listMemberSearch, listDMGroupSearch }: IMembersSearchTabProps) => {
+const MembersSearchTab = ({ listMemberSearch }: IMembersSearchTabProps) => {
 	const { themeValue } = useTheme();
 	const navigation = useNavigation<any>();
 	const dispatch = useAppDispatch();
 	const isTabletLandscape = useTabletLandscape();
-	const data = useMemo(() => [...(listMemberSearch ?? []), ...(listDMGroupSearch ?? [])], [listMemberSearch, listDMGroupSearch]);
+	const data = listMemberSearch ?? [];
 	const isEmpty = data.length === 0;
 	const styles = useMemo(() => style(themeValue, isEmpty), [themeValue, isEmpty]);
 
