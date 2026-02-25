@@ -34,10 +34,11 @@ export type MezonElectronAPI = {
 	clearScreenSourcesCache: (source?: string) => Promise<{ success: boolean }>;
 	setRatioWindow: (ratio: boolean) => void;
 	launchAppWindow: (url: string) => Promise<void>;
-	toggleSettingAutoStart: (auto: boolean) => Promise<void>;
+
 	toggleHardwareAcceleration: (enabled: boolean) => Promise<void>;
 	syncReduxState: (state: { autoStart?: boolean; hardwareAcceleration?: boolean }) => Promise<{ success: boolean }>;
 	getReduxState: () => Promise<{ autoStart: boolean; hardwareAcceleration: boolean }>;
+	toggleSettingAutoStart: (auto: { autoStart: boolean; hidden: boolean }) => Promise<void>;
 };
 declare global {
 	interface Window {

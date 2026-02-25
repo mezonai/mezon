@@ -37,7 +37,9 @@ export const style = (colors: Attributes) =>
 		username: {
 			fontSize: size.s_16,
 			fontWeight: '500',
-			color: colors.text
+			color: colors.text,
+			flexShrink: 1,
+			paddingRight: size.s_12
 		},
 		unblockButton: {
 			backgroundColor: baseColor.redStrong,

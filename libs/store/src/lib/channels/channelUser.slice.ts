@@ -173,7 +173,7 @@ export const listChannelsByUserSlice = createSlice({
 			if (state.entities) {
 				const entity = state.entities[channelId];
 				if (entity) {
-					const newCountMessUnread = isReset ? 0 : (entity.count_mess_unread ?? 0) + count;
+					const newCountMessUnread = isReset ? 0 : Math.max(0, (entity.count_mess_unread ?? 0) + count);
 					if (entity.count_mess_unread !== newCountMessUnread || isReset) {
 						const last_sent_message = state.entities[state.ids[state.ids.length - 1]]?.last_sent_message;
 						listChannelsByUserAdapter.updateOne(state, {

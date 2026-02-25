@@ -222,7 +222,13 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 					</TouchableOpacity>
 					<Text style={styles.title}>{appChannel?.app_name}</Text>
 					<TouchableOpacity onPress={hideHeader} style={styles.toggleButton}>
-						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_16} width={size.s_16} color={themeValue.text} />
+						<MezonIconCDN
+							icon={IconCDN.chevronDownSmallIcon}
+							height={size.s_20}
+							width={size.s_20}
+							color={themeValue.text}
+							customStyle={styles.bubbleButton}
+						/>
 					</TouchableOpacity>
 				</Animated.View>
 				<GestureDetector gesture={gesture}>
@@ -249,13 +255,7 @@ const ChannelAppScreen = ({ navigation, route }: { navigation: any; route: any }
 							bubbleAnimatedStyle
 						]}
 					>
-						<MezonIconCDN
-							icon={IconCDN.chevronDownSmallIcon}
-							height={size.s_24}
-							width={size.s_24}
-							color={themeValue.text}
-							customStyle={styles.bubbleButton}
-						/>
+						<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_24} width={size.s_24} color={themeValue.text} />
 					</Animated.View>
 				</GestureDetector>
 				<WebviewBase
