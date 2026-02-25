@@ -29,9 +29,10 @@ type headerProps = {
 	channelId: string;
 	onPressMinimizeRoom: () => void;
 	isGroupCall?: boolean;
+	clanId?: string;
 };
 
-const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = false, isShow }: headerProps) => {
+const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = false, isShow, clanId }: headerProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [currentAudioOutput, setCurrentAudioOutput] = useState<string>('earpiece');
@@ -145,6 +146,7 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 					senderDisplayName={''}
 					isOnlyEmojiPicker={true}
 					channelId={channelId}
+					clanId={clanId}
 				/>
 			),
 			containerStyle: { zIndex: 1001 },

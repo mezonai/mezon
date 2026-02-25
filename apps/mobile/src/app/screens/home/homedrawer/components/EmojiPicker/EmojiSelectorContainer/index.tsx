@@ -2,14 +2,22 @@ import { BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { useEmojiSuggestionContext } from '@mezon/core';
 import { ActionEmitEvent, debounce, isEmpty } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { emojiSuggestionActions, getStore, selectCurrentTopicId, selectDmGroupCurrentId } from '@mezon/store-mobile';
+import {
+	emojiSuggestionActions,
+	getStore,
+	selectAllAccount,
+	selectCurrentTopicId,
+	selectDmGroupCurrentId,
+	selectMemberByIdAndClanId,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
 import type { IEmoji } from '@mezon/utils';
 import { FOR_SALE_CATE, RECENT_EMOJI_CATEGORY } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, StyleSheet, Text, TextInput, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useDispatch } from 'react-redux';
 import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
@@ -20,11 +28,12 @@ import EmojisPanel from './components/EmojisPanel';
 import { style } from './styles';
 
 type EmojiSelectorContainerProps = {
-	onSelected: (emojiId: string, shortname: string) => void;
+	onSelected: (emojiId: string, shortname: string, displayName?: string, avatarUrl?: string) => void;
 	isReactMessage?: boolean;
 	handleBottomSheetExpand?: () => void;
 	handleBottomSheetCollapse?: () => void;
 	currentChannelId?: string;
+	clanId?: string;
 };
 
 const COLUMNS = 9;
@@ -34,7 +43,8 @@ export default function EmojiSelectorContainer({
 	isReactMessage = false,
 	handleBottomSheetExpand,
 	handleBottomSheetCollapse,
-	currentChannelId
+	currentChannelId,
+	clanId
 }: EmojiSelectorContainerProps) {
 	const store = getStore();
 	const { categoryEmoji, categoriesEmoji, emojis } = useEmojiSuggestionContext();
@@ -46,8 +56,9 @@ export default function EmojiSelectorContainer({
 	const flatListRef = useRef(null);
 	const timeoutRef = useRef<any>(null);
 	const { t } = useTranslation('message');
-	const dispatch = useDispatch();
-
+	const dispatch = useAppDispatch();
+	const userProfile = useAppSelector(selectAllAccount);
+	const userClanProfile = useAppSelector((state) => selectMemberByIdAndClanId(state, clanId || '', userProfile?.user?.id || ''));
 	const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set([FOR_SALE_CATE]));
 
 	const toggleCategory = useCallback((categoryName: string) => {
@@ -61,6 +72,14 @@ export default function EmojiSelectorContainer({
 			return next;
 		});
 	}, []);
+
+	const senderName = useMemo(() => {
+		return userClanProfile?.clan_nick || userProfile?.user?.display_name || userProfile?.user?.username || '';
+	}, [userClanProfile, userProfile]);
+
+	const senderAvatar = useMemo(() => {
+		return userClanProfile?.clan_avatar || userProfile?.user?.avatar_url || '';
+	}, [userClanProfile, userProfile]);
 
 	const channelId = useMemo(() => {
 		const currentDirectId = selectDmGroupCurrentId(store.getState());
@@ -144,7 +163,7 @@ export default function EmojiSelectorContainer({
 	const handleEmojiSelect = useCallback(
 		async (emoji: IEmoji) => {
 			const emojiId = getEmojiIdFromSrc(emoji?.src) || emoji?.id;
-			onSelected(emojiId, emoji?.shortname);
+			onSelected(emojiId, emoji?.shortname, senderName, senderAvatar);
 			handleBottomSheetCollapse?.();
 			Keyboard.dismiss();
 			if (!isReactMessage) {
@@ -159,7 +178,7 @@ export default function EmojiSelectorContainer({
 				);
 			}
 		},
-		[dispatch, isReactMessage, onSelected, channelId]
+		[onSelected, senderName, senderAvatar, handleBottomSheetCollapse, isReactMessage, channelId, dispatch]
 	);
 
 	const searchEmojis = useCallback((emojis: IEmoji[], searchTerm: string) => {

@@ -6,7 +6,7 @@ import {
 	selectAllAccount,
 	selectCurrentClanId,
 	selectIsPiPMode,
-	selectMemberClanByUserId,
+	selectMemberByIdAndClanId,
 	useAppDispatch,
 	useAppSelector,
 	voiceActions
@@ -25,7 +25,11 @@ import { IconCDN } from '../../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import type { IManageVoiceUser } from '../../UserProfile';
 import UserProfile, { IActionVoiceUser } from '../../UserProfile';
+import { RAISE_HAND_DOWN_EMOJI_PREFIX, RAISE_HAND_UP_EMOJI_PREFIX } from '../CallReactionHandler';
 import { style } from '../styles';
+
+const AGENT_DEFAULT_AVATAR =
+	'https://imgproxy.mezon.ai/K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c/rs:fit:100:100:1/mb:2097152/plain/https://cdn.mezon.vn/0/0/1779484387973271600/1737423959329_undefined173740153013517374015248704886401586613166392.png@webp';
 
 const ParticipantItem = memo(
 	({
@@ -36,37 +40,46 @@ const ParticipantItem = memo(
 		screenTrackRef,
 		videoTrackRef,
 		setFocusedScreenShare,
-		activeSoundReactions,
+		hasActiveSoundReaction,
+		hasRaisingHand,
 		room,
 		isGroupCall,
 		canMangeVoice,
-		currentUsername
+		currentUsername,
+		clanId,
+		isAgent = false
 	}: any) => {
 		const isTabletLandscape = useTabletLandscape();
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
 		const { t } = useTranslation(['channelVoice']);
-		const member = useAppSelector((state) => selectMemberClanByUserId(state, userId));
+		const member = useAppSelector((state) => selectMemberByIdAndClanId(state, clanId, userId));
 		const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 		const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || participantName || '';
 		const avatar = useMemo(() => {
+			if (isAgent) {
+				return AGENT_DEFAULT_AVATAR;
+			}
 			return member?.clan_avatar || member?.user?.avatar_url || '';
-		}, [member]);
+		}, [isAgent, member?.clan_avatar, member?.user?.avatar_url]);
 		const dispatch = useAppDispatch();
 
 		const handleFocusScreen = () => {
 			setFocusedScreenShare(screenTrackRef);
 		};
 
-		const hasActiveSoundReaction = useMemo(() => {
-			const activeSoundReaction = activeSoundReactions?.get(userId);
-			return Boolean(activeSoundReaction);
-		}, [activeSoundReactions, userId]);
-
 		const renderSoundEffectIcon = () => {
 			return (
 				<View style={styles.soundEffectIcon}>
 					<MezonIconCDN icon={IconCDN.activityIcon} height={size.s_16} width={size.s_16} color="#fff" />
+				</View>
+			);
+		};
+
+		const renderRaisingHandIcon = () => {
+			return (
+				<View style={styles.soundEffectIcon}>
+					<MezonIconCDN icon={IconCDN.raiseHandIcon} height={size.s_20} width={size.s_20} color="#fff" />
 				</View>
 			);
 		};
@@ -144,6 +157,7 @@ const ParticipantItem = memo(
 							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
 						/>
 						{!isPiPMode && hasActiveSoundReaction && renderSoundEffectIcon()}
+						{!isPiPMode && hasRaisingHand && renderRaisingHandIcon()}
 						{!isPiPMode && (
 							<View style={[styles.userName, styles.userNameFullWidth]}>
 								<MezonIconCDN icon={IconCDN.shareScreenIcon} height={size.s_14} />
@@ -177,6 +191,7 @@ const ParticipantItem = memo(
 							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
 						/>
 						{hasActiveSoundReaction && renderSoundEffectIcon()}
+						{hasRaisingHand && renderRaisingHandIcon()}
 						<View style={[styles.userName, styles.userNameCentered]}>
 							{isMicrophoneEnabled ? (
 								<MezonIconCDN icon={IconCDN.microphoneIcon} height={size.s_14} color={themeValue.text} />
@@ -202,6 +217,7 @@ const ParticipantItem = memo(
 						]}
 					>
 						{hasActiveSoundReaction && renderSoundEffectIcon()}
+						{hasRaisingHand && renderRaisingHandIcon()}
 						<View style={styles.avatarContainer}>
 							{!voiceUsername ? (
 								<MezonIconCDN icon={IconCDN.loadingIcon} width={24} height={24} />
@@ -237,7 +253,8 @@ const ParticipantItem = memo(
 			prevProps?.isSpeaking === nextProps?.isSpeaking &&
 			prevProps?.videoTrackRef === nextProps?.videoTrackRef &&
 			prevProps?.screenTrackRef === nextProps?.screenTrackRef &&
-			prevProps?.activeSoundReactions === nextProps?.activeSoundReactions &&
+			prevProps?.hasActiveSoundReaction === nextProps?.hasActiveSoundReaction &&
+			prevProps?.hasRaisingHand === nextProps?.hasRaisingHand &&
 			prevProps?.room === nextProps?.room &&
 			prevProps?.isGroupCall === nextProps?.isGroupCall &&
 			prevProps?.canMangeVoice === nextProps?.canMangeVoice &&
@@ -318,6 +335,12 @@ const ParticipantScreen = ({ setFocusedScreenShare, activeSoundReactions, isGrou
 					sortedParticipants?.map((participant) => {
 						const isSpeaking = participant?.isSpeaking;
 						const isMicrophoneEnabled = participant?.isMicrophoneEnabled;
+						const activeSoundReaction = activeSoundReactions?.get(participant?.identity);
+						const isActiveSoundReaction =
+							Boolean(activeSoundReaction) &&
+							activeSoundReaction?.soundId !== RAISE_HAND_UP_EMOJI_PREFIX &&
+							activeSoundReaction?.soundId !== RAISE_HAND_DOWN_EMOJI_PREFIX;
+						const isRaisingHand = activeSoundReaction?.soundId === RAISE_HAND_UP_EMOJI_PREFIX;
 						const videoTrackRef = tracks.find(
 							(t) =>
 								t.participant.identity === participant.identity &&
@@ -342,11 +365,14 @@ const ParticipantScreen = ({ setFocusedScreenShare, activeSoundReactions, isGrou
 								screenTrackRef={screenTrackRef}
 								tracks={tracks}
 								setFocusedScreenShare={setFocusedScreenShare}
-								activeSoundReactions={activeSoundReactions}
+								hasActiveSoundReaction={isActiveSoundReaction}
+								hasRaisingHand={isRaisingHand}
 								room={name}
 								isGroupCall={isGroupCall}
 								canMangeVoice={userCanManageVoice}
 								currentUsername={currentUsername}
+								clanId={clanId}
+								isAgent={participant?.isAgent}
 							/>
 						);
 					})}
