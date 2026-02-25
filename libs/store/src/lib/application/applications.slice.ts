@@ -243,6 +243,7 @@ export const adminApplicationSlice = createSlice({
 			if (action.payload) {
 				const payload = action.payload as Record<string, unknown>;
 				const appDetailRecord = state.appDetail as Record<string, unknown>;
+				const originalRequest = action.meta.arg.request as Record<string, unknown>;
 
 				const protectedFields = ['id', 'creator_id', 'create_time_seconds', 'disable_time_seconds'];
 
@@ -250,6 +251,8 @@ export const adminApplicationSlice = createSlice({
 					const value = payload[key];
 
 					if (value === undefined) return;
+
+					const wasInRequest = key in originalRequest;
 
 					if (protectedFields.includes(key)) {
 						const currentValue = appDetailRecord[key];
@@ -268,7 +271,7 @@ export const adminApplicationSlice = createSlice({
 						const isEmptyValue = value === '' || value === '0';
 						const isCurrentEmpty = currentValue === '' || currentValue === '0' || !currentValue;
 
-						if (!isEmptyValue || isCurrentEmpty) {
+						if (!isEmptyValue || wasInRequest || isCurrentEmpty) {
 							appDetailRecord[key] = value;
 						}
 						return;
@@ -283,6 +286,8 @@ export const adminApplicationSlice = createSlice({
 
 					appDetailRecord[key] = value;
 				});
+
+				state.appDetail = appDetailRecord as ApiApp;
 			}
 		});
 		builder.addCase(fetchMezonOauthClient.fulfilled, (state, action: PayloadAction<ApiMezonOauthClient>) => {
