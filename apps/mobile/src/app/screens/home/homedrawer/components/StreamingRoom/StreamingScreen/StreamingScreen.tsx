@@ -1,5 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
-import { default as React, memo, useEffect } from 'react';
+import { default as React, memo } from 'react';
 import { style } from './styles';
 
 import { RTCView } from '@livekit/react-native-webrtc';
@@ -7,7 +7,6 @@ import { selectCurrentChannel } from '@mezon/store';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import InCallManager from 'react-native-incall-manager';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { useWebRTCStream } from '../../../../../../components/StreamContext/StreamContext';
@@ -24,9 +23,6 @@ export function StreamingScreen({ isAnimationComplete = true }: IStreamingScreen
 	const { t } = useTranslation(['streamingRoom']);
 	const currentChannel = useSelector(selectCurrentChannel);
 
-	useEffect(() => {
-		InCallManager.setSpeakerphoneOn(true);
-	}, []);
 	return (
 		<View style={styles.container}>
 			{remoteStream && isStream ? (
