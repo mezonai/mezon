@@ -101,14 +101,16 @@
 	<string>We use your location to enhance your experience by showing nearby content and providing location-specific features when you're using the app. Your privacy is important to us, and we only access your location while you’re actively using the app.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Allow Mezon access to your microphone to enable voice chat</string>
+	<key>NSPasteboardUsageDescription</key>
+	<string>Mezon needs access to the clipboard to paste content/images from other apps</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Mezon app needs access to the photo library to select and send images in messages</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Mezon app needs access to the photo library to select and send images in messages</string>
 	<key>PHPhotoLibraryPreventAutomaticLimitedAccessAlert</key>
 	<string>Allow Mezon to select photos so that they can be sent in the chat</string>
-	<key>NSPasteboardUsageDescription</key>
-	<string>Mezon needs access to the clipboard to paste content/images from other apps</string>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 	<key>RTCAppGroupIdentifier</key>
 	<string>group.mezon.mobile.ScreenBroadcast</string>
 	<key>RTCScreenSharingExtension</key>

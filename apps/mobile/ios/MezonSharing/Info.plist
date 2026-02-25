@@ -5,39 +5,34 @@
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
-      <dict>
-          <key>PHSupportedMediaTypes</key>
-             <array>
-                 <string>Video</string>
-
-                 <string>Image</string>
-             </array>
-          <key>NSExtensionActivationRule</key>
-          <dict>
-              <!--TODO: Add this flag, if you want to support sharing text into your app-->
-              <key>NSExtensionActivationSupportsText</key>
-              <true/>
-              <!--TODO: Add this tag, if you want to support sharing urls into your app-->
-            <key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-            <integer>1</integer>
-            <key>NSExtensionJavaScriptPreprocessingFile</key>
-            <string>Action</string>
-            <!--TODO: Add this flag, if you want to support sharing images into your app-->
-              <key>NSExtensionActivationSupportsImageWithMaxCount</key>
-              <integer>100</integer>
-              <!--TODO: Add this flag, if you want to support sharing video into your app-->
-              <key>NSExtensionActivationSupportsMovieWithMaxCount</key>
-              <integer>100</integer>
-              <!--TODO: Add this flag, if you want to support sharing other files into your app-->
-              <!--Change the integer to however many files you want to be able to share at a time-->
-              <key>NSExtensionActivationSupportsFileWithMaxCount</key>
-              <integer>100</integer>
-          </dict>
-      </dict>
+		<dict>
+			<key>NSExtensionActivationRule</key>
+			<dict>
+				<key>NSExtensionActivationSupportsFileWithMaxCount</key>
+				<integer>100</integer>
+				<key>NSExtensionActivationSupportsImageWithMaxCount</key>
+				<integer>100</integer>
+				<key>NSExtensionActivationSupportsMovieWithMaxCount</key>
+				<integer>100</integer>
+				<key>NSExtensionActivationSupportsText</key>
+				<true/>
+				<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
+				<integer>1</integer>
+				<key>NSExtensionJavaScriptPreprocessingFile</key>
+				<string>Action</string>
+			</dict>
+			<key>PHSupportedMediaTypes</key>
+			<array>
+				<string>Video</string>
+				<string>Image</string>
+			</array>
+		</dict>
 		<key>NSExtensionMainStoryboard</key>
 		<string>MainInterface</string>
 		<key>NSExtensionPointIdentifier</key>
 		<string>com.apple.share-services</string>
 	</dict>
+	<key>RCTNewArchEnabled</key>
+	<true/>
 </dict>
 </plist>

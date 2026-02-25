@@ -1,0 +1,41 @@
+diff --git a/node_modules/react-native-view-shot/ios/RNViewShot.mm b/node_modules/react-native-view-shot/ios/RNViewShot.mm
+--- a/node_modules/react-native-view-shot/ios/RNViewShot.mm
++++ b/node_modules/react-native-view-shot/ios/RNViewShot.mm
+@@ -4,8 +4,7 @@
+ #import <React/UIView+React.h>
+ #import <React/RCTUtils.h>
+ #import <React/RCTConvert.h>
+-#import <React/RCTScrollView.h>
+ #import <React/RCTUIManager.h>
+ #if __has_include(<React/RCTUIManagerUtils.h>)
+ #import <React/RCTUIManagerUtils.h>
+ #endif
+@@ -80,13 +79,21 @@
+     UIView* rendered;
+     UIScrollView* scrollView;
+     if (snapshotContentContainer) {
+-      if (![view isKindOfClass:[RCTScrollView class]]) {
+-        reject(RCTErrorUnspecified, [NSString stringWithFormat:@"snapshotContentContainer can only be used on a RCTScrollView. instead got: %@", view], nil);
+-        return;
+-      }
+-      RCTScrollView* rctScrollView = view;
+-      scrollView = rctScrollView.scrollView;
+-      rendered = scrollView;
++      UIScrollView *underlyingScrollView = nil;
++      if ([view isKindOfClass:[UIScrollView class]]) {
++        underlyingScrollView = (UIScrollView *)view;
++      } else if ([view respondsToSelector:@selector(scrollView)]) {
++        id sv = [view performSelector:@selector(scrollView)];
++        if ([sv isKindOfClass:[UIScrollView class]]) {
++          underlyingScrollView = sv;
++        }
++      }
++      if (!underlyingScrollView) {
++        reject(RCTErrorUnspecified, [NSString stringWithFormat:@"snapshotContentContainer can only be used on a ScrollView. instead got: %@", view], nil);
++        return;
++      }
++      scrollView = underlyingScrollView;
++      rendered = scrollView;
+     }
+     else {
+       rendered = view;
