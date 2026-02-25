@@ -83,6 +83,11 @@ const createSlashCommands = (t: (key: string) => string): SlashCommand[] => [
 		id: 'ephemeral',
 		display: 'ephemeral',
 		description: t('slashCommands.ephemeral.description')
+	},
+	{
+		id: 'poll',
+		display: 'poll',
+		description: t('slashCommands.poll.description')
 	}
 ];
 
@@ -934,6 +939,8 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 			if (commandId === 'ephemeral') {
 				setIsEphemeralMode(true);
 				editorRef.current?.insertMentionCommand('@', true);
+			} else if (commandId === 'poll') {
+				editorRef.current?.insertMentionCommand('*poll', true);
 			} else if (commandId.startsWith('quick_menu_')) {
 				const quickMenuItemId = commandId.replace('quick_menu_', '');
 				const store = getStore();

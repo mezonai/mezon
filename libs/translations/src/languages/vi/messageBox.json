@@ -14,6 +14,9 @@
 	"slashCommands": {
 		"ephemeral": {
 			"description": "Gửi tin nhắn tạm thời (chỉ hiển thị cho người dùng được chọn)"
+		},
+		"poll": {
+			"description": "Tạo một cuộc thăm dò ý kiến nhanh với các lựa chọn."
 		}
 	}
 }

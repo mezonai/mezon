@@ -1,19 +1,22 @@
 {
-  "placeholder": "Write your thoughts here...",
-  "ephemeralMessage": "Ephemeral message to {{username}}...",
-  "mentionCategories": {
-    "members": "MEMBERS",
-    "textChannels": "TEXT CHANNELS",
-    "emojiMatching": "EMOJI MATCHING",
-    "commands": "COMMANDS"
-  },
-  "suggestions": {
-    "notifyEveryone": "Notify everyone who has permission to see this channel",
-    "loadingCommands": "Loading commands..."
-  },
-  "slashCommands": {
-    "ephemeral": {
-      "description": "Send an ephemeral message (only visible to selected user)"
-    }
-  }
+	"placeholder": "Write your thoughts here...",
+	"ephemeralMessage": "Ephemeral message to {{username}}...",
+	"mentionCategories": {
+		"members": "MEMBERS",
+		"textChannels": "TEXT CHANNELS",
+		"emojiMatching": "EMOJI MATCHING",
+		"commands": "COMMANDS"
+	},
+	"suggestions": {
+		"notifyEveryone": "Notify everyone who has permission to see this channel",
+		"loadingCommands": "Loading commands..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "Send an ephemeral message (only visible to selected user)"
+		},
+		"poll": {
+			"description": "Create a quick poll with options."
+		}
+	}
 }
