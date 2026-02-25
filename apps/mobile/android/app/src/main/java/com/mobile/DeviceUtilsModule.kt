@@ -59,7 +59,7 @@ class DeviceUtilsModule(reactContext: ReactApplicationContext) : ReactContextBas
                 }
             }
 
-            val currentActivity = currentActivity
+            val currentActivity = reactApplicationContext.currentActivity
             currentActivity?.let { activity ->
                 activity.runOnUiThread {
                     activity.finishAffinity()

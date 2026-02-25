@@ -19,7 +19,7 @@ class PipModule(private val reactContext: ReactApplicationContext) : ReactContex
 
     @ReactMethod
      fun setupDefaultPipMode() {
-         val activity: Activity? = currentActivity
+         val activity: Activity? = reactContext.currentActivity
          if (activity == null) {
              Log.w(TAG, "E_NO_ACTIVITY No active Activity to enter PiP")
              return
@@ -49,7 +49,7 @@ class PipModule(private val reactContext: ReactApplicationContext) : ReactContex
 
      @ReactMethod
      fun enterPipMode() {
-         val activity: Activity? = currentActivity
+         val activity: Activity? = reactContext.currentActivity
          if (activity == null) {
              Log.w(TAG, "E_NO_ACTIVITY No active Activity to enter PiP")
              return
@@ -94,7 +94,7 @@ class PipModule(private val reactContext: ReactApplicationContext) : ReactContex
     @ReactMethod
     fun exitPipMode(promise: Promise) {
         Log.w(TAG, "exitPipMode called")
-        val activity = currentActivity
+        val activity = reactContext.currentActivity
 
         if (activity == null) {
             promise.reject("E_NO_ACTIVITY", "No active Activity to exit PiP.")
@@ -115,7 +115,7 @@ class PipModule(private val reactContext: ReactApplicationContext) : ReactContex
 
     @ReactMethod
     fun showStatusBar(promise: Promise) {
-        val activity = currentActivity
+        val activity = reactContext.currentActivity
         if (activity == null) {
             promise.reject("ERROR", "Activity is null")
             return

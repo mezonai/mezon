@@ -1,6 +1,5 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { Linking, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import { useImageResolution } from 'react-native-zoom-toolkit';
 import ImageNative from '../../../../../../../components/ImageNative';
 import useTabletLandscape from '../../../../../../../hooks/useTabletLandscape';
 import { style } from './styles';
@@ -20,7 +19,6 @@ const RenderOgpPreview = ({ ogpItem, url }: RenderOgpPreviewProps) => {
 	const isTabletLandscape = useTabletLandscape();
 	const { themeValue } = useTheme();
 	const styles = style(themeValue, isTabletLandscape);
-	const { resolution } = useImageResolution({ uri: ogpItem?.image || '' });
 	const { width } = useWindowDimensions();
 	const ogpViewWidth = isTabletLandscape ? width * 0.4 : width * 0.8;
 
@@ -29,7 +27,6 @@ const RenderOgpPreview = ({ ogpItem, url }: RenderOgpPreviewProps) => {
 		Linking.openURL(url);
 	};
 
-	const aspectRatio = (resolution?.width || 1) / (resolution?.height || 1);
 	return (
 		<View style={[styles.wrapper, { width: ogpViewWidth }]}>
 			<View style={styles.container}>
@@ -44,7 +41,7 @@ const RenderOgpPreview = ({ ogpItem, url }: RenderOgpPreviewProps) => {
 					</Text>
 				)}
 				{!!ogpItem?.image && (
-					<View style={[styles.image, { aspectRatio }]}>
+					<View style={[styles.image]}>
 						<ImageNative url={ogpItem.image} style={styles.nativeImage} resizeMode="cover" />
 					</View>
 				)}

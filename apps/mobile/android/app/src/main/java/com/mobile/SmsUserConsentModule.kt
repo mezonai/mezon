@@ -110,7 +110,7 @@ class SmsUserConsentModule(reactContext: ReactApplicationContext) : ReactContext
                                         }
 
                                         if (consentIntent != null) {
-                                            currentActivity?.startActivityForResult(consentIntent, SMS_CONSENT_REQUEST)
+                                            reactApplicationContext.currentActivity?.startActivityForResult(consentIntent, SMS_CONSENT_REQUEST)
                                                 ?: sendError("SMS_CONSENT_ERROR", "Current activity is null")
                                         } else {
                                             sendError("SMS_CONSENT_ERROR", "Consent intent is null")
@@ -161,7 +161,7 @@ class SmsUserConsentModule(reactContext: ReactApplicationContext) : ReactContext
     }
 
     private val activityEventListener = object : BaseActivityEventListener() {
-        override fun onActivityResult(activity: Activity?, requestCode: Int, resultCode: Int, intent: Intent?) {
+        override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, intent: Intent?) {
             try {
                 if (requestCode == SMS_CONSENT_REQUEST) {
                     if (resultCode == Activity.RESULT_OK && intent != null) {

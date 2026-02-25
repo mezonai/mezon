@@ -1,0 +1,12 @@
+diff --git a/node_modules/react-native-audio-recorder-player/android/build.gradle b/node_modules/react-native-audio-recorder-player/android/build.gradle
+index 96d14f6..fd41d08 100644
+--- a/node_modules/react-native-audio-recorder-player/android/build.gradle
++++ b/node_modules/react-native-audio-recorder-player/android/build.gradle
+@@ -34,6 +34,7 @@ android {
+   namespace "com.margelo.nitro.audiorecorderplayer"
+ 
+   compileSdkVersion getExtOrIntegerDefault("compileSdkVersion")
++  ndkVersion getExtOrDefault("ndkVersion")
+ 
+   defaultConfig {
+     minSdkVersion getExtOrIntegerDefault("minSdkVersion")

@@ -88,10 +88,10 @@ const MediaHighlightsTimeline: React.FC = () => {
 		() =>
 			[...rawEvents]
 				.filter((e) => {
-					if (!e.create_time_seconds) return true;
-					return new Date(e.create_time_seconds * 1000)?.getFullYear() === Number(selectedYear);
+					if (!e.start_time_seconds) return true;
+					return new Date(e.start_time_seconds * 1000)?.getFullYear() === Number(selectedYear);
 				})
-				.sort((a, b) => (b.create_time_seconds || 0) - (a.create_time_seconds || 0)),
+				.sort((a, b) => (a.start_time_seconds || 0) - (b.start_time_seconds || 0)),
 		[rawEvents, selectedYear]
 	);
 	const loadingStatus = useAppSelector(selectChannelMediaLoadingStatus);

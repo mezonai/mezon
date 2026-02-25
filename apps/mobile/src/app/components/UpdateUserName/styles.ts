@@ -173,6 +173,15 @@ export const style = () =>
 			fontSize: size.s_14,
 			color: '#000'
 		},
+		usernamePreviewContainer: {
+			minHeight: size.s_20,
+			marginTop: size.s_4,
+			justifyContent: 'center'
+		},
+		usernamePreview: {
+			fontSize: size.s_14,
+			color: '#6b5b95'
+		},
 		errorContainer: {
 			paddingRight: size.s_16,
 			paddingLeft: size.s_2

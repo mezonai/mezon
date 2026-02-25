@@ -1,0 +1,29 @@
+diff --git a/node_modules/react-native-safe-area-context/common/cpp/react/renderer/components/safeareacontext/RNCSafeAreaViewShadowNode.cpp b/node_modules/react-native-safe-area-context/common/cpp/react/renderer/components/safeareacontext/RNCSafeAreaViewShadowNode.cpp
+index f66eab4..2e66418 100644
+--- a/node_modules/react-native-safe-area-context/common/cpp/react/renderer/components/safeareacontext/RNCSafeAreaViewShadowNode.cpp
++++ b/node_modules/react-native-safe-area-context/common/cpp/react/renderer/components/safeareacontext/RNCSafeAreaViewShadowNode.cpp
+@@ -112,19 +112,11 @@ void RNCSafeAreaViewShadowNode::adjustLayoutWithState() {
+     adjustedStyle.setMargin(Edge::Bottom, bottom);
+   }
+ 
+-  auto currentStyle = yogaNode_.style();
+-  if (adjustedStyle.padding(Edge::Top) != currentStyle.padding(Edge::Top) ||
+-      adjustedStyle.padding(Edge::Left) != currentStyle.padding(Edge::Left) ||
+-      adjustedStyle.padding(Edge::Right) != currentStyle.padding(Edge::Right) ||
+-      adjustedStyle.padding(Edge::Bottom) !=
+-          currentStyle.padding(Edge::Bottom) ||
+-      adjustedStyle.margin(Edge::Top) != currentStyle.margin(Edge::Top) ||
+-      adjustedStyle.margin(Edge::Left) != currentStyle.margin(Edge::Left) ||
+-      adjustedStyle.margin(Edge::Right) != currentStyle.margin(Edge::Right) ||
+-      adjustedStyle.margin(Edge::Bottom) != currentStyle.margin(Edge::Bottom)) {
+-    yogaNode_.setStyle(adjustedStyle);
+-    yogaNode_.setDirty(true);
+-  }
++  // Note: Avoid comparing against yogaNode_.style() directly as it may contain
++  // uninitialized StyleValueHandles that crash in RN 0.82+ Yoga's stricter
++  // StyleValuePool::getLength() assertion. Always apply the adjusted style.
++  yogaNode_.setStyle(adjustedStyle);
++  yogaNode_.setDirty(true);
+ }
+ 
+ } // namespace react
