@@ -35,7 +35,7 @@ const RenderAudioItem = memo(({ audioURL }: IRenderAudioItemProps) => {
 			return;
 		}
 
-		const newSound = new Sound(audioURL, '', (error) => {
+		const newSound = new Sound(audioURL, Sound.MAIN_BUNDLE, (error) => {
 			if (error) {
 				console.error('Failed to load sound:', error);
 				setIsPlaying(false);
