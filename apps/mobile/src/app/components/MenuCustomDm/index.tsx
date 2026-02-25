@@ -242,7 +242,6 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 			if (resultLeaveOrDeleteGroup?.meta?.requestStatus === 'rejected') {
 				throw new Error(resultLeaveOrDeleteGroup?.meta?.requestStatus);
 			} else {
-				await dispatch(fetchDirectMessage({ noCache: true }));
 				navigation.navigate(APP_SCREEN.MESSAGES.HOME);
 			}
 		} catch (error) {

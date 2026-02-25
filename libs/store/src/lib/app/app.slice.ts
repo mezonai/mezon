@@ -4,6 +4,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
+import { badgeService } from '../badge/badgeService';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelsActions } from '../channels/channels.slice';
@@ -96,6 +97,7 @@ export interface AppState {
 	autoStart: boolean;
 	hardwareAcceleration: boolean;
 	isMediaChannelViewMode: boolean;
+	autoHidden: boolean;
 }
 
 const getInitialLanguage = (): 'en' | 'vi' => {
@@ -119,7 +121,6 @@ const getInitialLanguage = (): 'en' | 'vi' => {
 
 export const initialAppState: AppState = {
 	loadingStatus: 'not loaded',
-
 	themeApp: 'sunrise',
 	currentLanguage: getInitialLanguage(),
 	isShowMemberList: true,
@@ -147,9 +148,10 @@ export const initialAppState: AppState = {
 	},
 	isShowUpdateUsername: false,
 	isTimelineViewMode: false,
+	isMediaChannelViewMode: false,
 	autoStart: true,
 	hardwareAcceleration: true,
-	isMediaChannelViewMode: false
+	autoHidden: false
 };
 
 export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI) => {
@@ -199,12 +201,13 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 			);
 
 		thunkAPI.dispatch(clansActions.joinClan({ clanId: '0' }));
-		thunkAPI.dispatch(clansActions.fetchClans({}));
+		const fetchClansPromise = thunkAPI.dispatch(clansActions.fetchClans({}));
 		thunkAPI.dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 
+		let fetchChannelsPromise: ReturnType<typeof thunkAPI.dispatch> | null = null;
 		if (isClanView && currentClanId) {
 			thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId: currentClanId }));
-			thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
+			fetchChannelsPromise = thunkAPI.dispatch(channelsActions.fetchChannels({ clanId: currentClanId, noCache: true }));
 			thunkAPI.dispatch(clansActions.joinClan({ clanId: currentClanId }));
 			thunkAPI.dispatch(
 				voiceActions.fetchVoiceChannelMembers({
@@ -216,6 +219,14 @@ export const refreshApp = createAsyncThunk('app/refreshApp', async (_, thunkAPI)
 		}
 
 		thunkAPI.dispatch(directActions.fetchDirectMessage({ noCache: true }));
+
+		const settledPromises = [fetchClansPromise, fetchChannelsPromise].filter(Boolean);
+		await Promise.allSettled(settledPromises);
+
+		badgeService.onReconnect();
+		if (currentClanId && currentClanId !== '0') {
+			badgeService.syncClanBadge(currentClanId);
+		}
 	} catch (error) {
 		captureSentryError(error, 'app/refreshApp');
 		return thunkAPI.rejectWithValue(error);
@@ -380,7 +391,7 @@ export const appSlice = createSlice({
 			if (!state.history || !state.history?.url?.length) return;
 			const filteredHistory = state.history.url.filter((url) => !url.includes(`/clans/${clanId}/`));
 			let countCurrent = state.history?.current !== null ? state.history?.current : 0;
-			state.history.url.map((url, index) => {
+			state.history.url.forEach((url, index) => {
 				if (index <= countCurrent && url.includes(`/clans/${clanId}/`)) {
 					if (!state.history?.current) {
 						return;
@@ -400,7 +411,7 @@ export const appSlice = createSlice({
 				(url) => !(url.includes(`/channels/${channelId}`) || url.includes(`/message/${channelId}/`))
 			);
 			let countCurrent = state.history?.current !== null ? state.history.current : 0;
-			state.history.url.map((url, index) => {
+			state.history.url.forEach((url, index) => {
 				if (index <= countCurrent && (url.includes(`/channels/${channelId}/`) || url.includes(`/message/${channelId}/`))) {
 					if (!state.history.current) {
 						return;
@@ -419,9 +430,6 @@ export const appSlice = createSlice({
 		setTimelineViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isTimelineViewMode = action.payload;
 		},
-		toggleAutoStart: (state) => {
-			state.autoStart = !state.autoStart;
-		},
 		toggleHardwareAcceleration: (state) => {
 			state.hardwareAcceleration = !state.hardwareAcceleration;
 		},
@@ -430,6 +438,12 @@ export const appSlice = createSlice({
 			if (action.payload) {
 				state.isTimelineViewMode = false;
 			}
+		},
+		toggleAutoStart: (state) => {
+			state.autoStart = state.autoStart === undefined ? false : !state.autoStart;
+		},
+		toggleAutoHidden: (state) => {
+			state.autoHidden = state.autoHidden === undefined ? true : !state.autoHidden;
 		}
 	}
 });
@@ -492,3 +506,5 @@ export const selectAutoStart = createSelector(getAppState, (state: AppState) => 
 
 export const selectHardwareAcceleration = createSelector(getAppState, (state: AppState) => state.hardwareAcceleration);
 export const selectMediaChannelViewMode = createSelector(getAppState, (state: AppState) => state.isMediaChannelViewMode);
+
+export const selectAutoHidden = createSelector(getAppState, (state: AppState) => state.autoHidden);

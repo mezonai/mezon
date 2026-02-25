@@ -14,7 +14,10 @@ import { styles } from './styles';
 const AddFriendButton = ({ navigation }: { navigation: any }) => {
 	const { t } = useTranslation(['screen']);
 	return (
-		<Pressable onPress={() => navigation.navigate(APP_SCREEN.FRIENDS.STACK, { screen: APP_SCREEN.FRIENDS.ADD_FRIEND })} style={styles.addFriendButton}>
+		<Pressable
+			onPress={() => navigation.navigate(APP_SCREEN.FRIENDS.STACK, { screen: APP_SCREEN.FRIENDS.ADD_FRIEND })}
+			style={styles.addFriendButton}
+		>
 			<Text style={styles.addFriendText}>{t('headerRight.addFriends')}</Text>
 		</Pressable>
 	);

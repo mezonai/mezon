@@ -22,7 +22,7 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 	const myUser = useAuth();
 	const { createEventManagement } = useEventManagement();
 	const currentClanId = useSelector(selectCurrentClanId);
-	const { type, channelId, location, startTime, endTime, title, description, frequency, eventChannelId, isPrivate, logo, onGoBack, currentEvent } =
+	const { type, channelId, location, startTime, endTime, title, description, frequency, eventChannelId, isPrivate, logo, onGoBack, currentEvent, onSuccess } =
 		route.params || {};
 	const dispatch = useAppDispatch();
 
@@ -89,8 +89,9 @@ export function EventCreatorPreview({ navigation, route }: MenuClanScreenProps<C
 				isPrivate
 			);
 		}
-		onGoBack?.();
+
 		navigation.navigate(APP_SCREEN.HOME);
+		onSuccess?.();
 	}
 
 	return (
