@@ -275,6 +275,12 @@ export const topicsSlice = createSlice({
 		},
 		setInitTopicMessageId: (state, action: PayloadAction<string>) => {
 			state.initTopicMessageId = action.payload;
+		},
+		removeClanTopics: (state, action: PayloadAction<string>) => {
+			const clanId = action.payload;
+			if (clanId) {
+				delete state.channelTopics[clanId];
+			}
 		}
 	},
 	extraReducers: (builder) => {
