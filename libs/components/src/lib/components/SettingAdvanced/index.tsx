@@ -1,6 +1,7 @@
-import { appActions, selectAutoStart, selectHardwareAcceleration, useAppDispatch } from '@mezon/store';
+import { appActions, selectAutoHidden, selectAutoStart, selectHardwareAcceleration, useAppDispatch } from '@mezon/store';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 type SettingAdvancedProps = {
 	menuIsOpen: boolean;
@@ -10,16 +11,30 @@ const SettingAdvanced = ({ menuIsOpen }: SettingAdvancedProps) => {
 	const { t } = useTranslation(['setting', 'common']);
 	const dispatch = useAppDispatch();
 	const autoStart = useSelector(selectAutoStart);
+	const autoHidden = useSelector(selectAutoHidden);
 	const hardwareAcceleration = useSelector(selectHardwareAcceleration);
 
 	const handleConfigStart = () => {
-		dispatch(appActions.toggleAutoStart());
-		window.electron.toggleSettingAutoStart(!autoStart);
+		try {
+			dispatch(appActions.toggleAutoStart());
+			window.electron.toggleSettingAutoStart({
+				autoStart: autoStart === undefined ? false : !autoStart,
+				hidden: Boolean(autoHidden)
+			});
+		} catch (error) {
+			toast.error(t('setting:autoStart.error') || 'Failed to toggle auto start');
+			console.error('Error toggling auto start:', error);
+		}
 	};
 
 	const handleHardwareAcceleration = () => {
-		dispatch(appActions.toggleHardwareAcceleration());
-		window.electron.toggleHardwareAcceleration(!hardwareAcceleration);
+		try {
+			dispatch(appActions.toggleHardwareAcceleration());
+			window.electron.toggleHardwareAcceleration(!hardwareAcceleration);
+		} catch (error) {
+			toast.error(t('setting:hardwareAcceleration.error') || 'Failed to toggle hardware acceleration');
+			console.error('Error toggling hardware acceleration:', error);
+		}
 	};
 
 	return (

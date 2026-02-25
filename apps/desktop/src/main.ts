@@ -410,7 +410,6 @@ ipcMain.handle(TOGGLE_HARDWARE_ACCELERATION, async (event, enabled) => {
 		app.disableHardwareAcceleration();
 	}
 
-	const { dialog } = require('electron');
 	const response = await dialog.showMessageBox({
 		type: 'info',
 		title: 'Hardware Acceleration',
@@ -430,7 +429,6 @@ ipcMain.handle(TOGGLE_HARDWARE_ACCELERATION, async (event, enabled) => {
 });
 
 ipcMain.handle(SYNC_REDUX_STATE, async (event, state) => {
-	const Store = (await import('electron-store')).default;
 	const store = new Store();
 
 	if (state.autoStart !== undefined) {
@@ -448,7 +446,6 @@ ipcMain.handle(SYNC_REDUX_STATE, async (event, state) => {
 });
 
 ipcMain.handle(GET_REDUX_STATE, async () => {
-	const Store = (await import('electron-store')).default;
 	const store = new Store();
 
 	return {
