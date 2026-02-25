@@ -11,7 +11,7 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IInvite } from '@mezon/utils';
 import { INVITE_URL_REGEX, isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
-import { memo, useCallback, useEffect, useState, type SyntheticEvent } from 'react';
+import { memo, useCallback, useEffect, useRef, useState, type SyntheticEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +32,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	const navigate = useNavigate();
 	const { inviteUser } = useInvite();
 	const [loading, setLoading] = useState(false);
+	const joiningRef = useRef(false);
 	const [joiningInvite, setJoiningInvite] = useState(false);
 
 	const [data, setData] = useState<PreviewData | null>(null);
@@ -135,7 +136,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	}, [dispatch]);
 
 	const handleJoinInvite = useCallback(async () => {
-		if (joiningInvite) return;
+		if (joiningRef.current) return;
 
 		const inviteMatch = ogpLink?.url?.match(INVITE_URL_REGEX);
 		const inviteId = inviteMatch?.[1];
@@ -145,6 +146,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 			return;
 		}
 
+		joiningRef.current = true;
 		setJoiningInvite(true);
 		try {
 			const result = await inviteUser(inviteId);
@@ -158,9 +160,10 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 			console.error('Failed to join invite:', error);
 			toast.error(t('failedToJoin'));
 		} finally {
+			joiningRef.current = false;
 			setJoiningInvite(false);
 		}
-	}, [clearOgpData, dispatch, inviteUser, joiningInvite, navigate, ogpLink?.url, t]);
+	}, [clearOgpData, dispatch, inviteUser, navigate, ogpLink?.url, t]);
 
 	const handleErrorImage = (_e: SyntheticEvent<HTMLImageElement, Event>) => {
 		if (!data?.title?.trim() && !data?.description?.trim()) {
@@ -169,6 +172,28 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	};
 
 	if (loading) {
+		const isInviteUrl = INVITE_URL_REGEX.test(ogpLink?.url || '');
+
+		if (isInviteUrl) {
+			return (
+				<div className="px-3 pb-2 pt-2 bg-theme-input text-theme-primary relative animate-pulse">
+					<div className="relative w-full max-w-[320px] rounded-2xl overflow-hidden border dark:border-borderDivider border-borderDividerLight bg-bgLightSecondary dark:bg-bgTertiary">
+						<div className="h-[72px] bg-bgLightTertiary dark:bg-bgTertiary"></div>
+						<div className="px-4 pb-4 pt-10">
+							<div className="flex items-center gap-2">
+								<div className="h-7 bg-bgLightTertiary dark:bg-bgTertiary rounded w-32"></div>
+							</div>
+							<div className="mt-2 flex items-center gap-2">
+								<div className="h-4 bg-bgLightTertiary dark:bg-bgTertiary rounded w-24"></div>
+							</div>
+							<div className="mt-4 h-10 bg-bgLightTertiary dark:bg-bgTertiary rounded"></div>
+						</div>
+						<div className="absolute top-[40px] left-4 w-[72px] h-[72px] rounded-[22px] bg-bgLightTertiary dark:bg-bgTertiary border-4 dark:border-bgPrimary border-bgLightTertiary"></div>
+					</div>
+				</div>
+			);
+		}
+
 		return (
 			<div className="space-y-4 animate-pulse pb-2 pt-2 flex bg-theme-input text-theme-primary h-20 items-center gap-2">
 				<div className="bg-item-theme rounded-lg border-theme-primary p-4 h-[84px] w-full">
@@ -195,7 +220,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 		return (
 			<div className="px-3 pb-2 pt-2 bg-theme-input text-theme-primary relative">
 				<div className="relative w-full max-w-[320px] rounded-2xl overflow-hidden border dark:border-borderDivider border-borderDividerLight bg-bgLightSecondary dark:bg-bgTertiary">
-					<div className="h-[72px] bg-gradient-to-b from-violet-300 to-violet-200 dark:from-violet-400 dark:to-violet-300 relative overflow-hidden">
+					<div className="h-[72px] relative overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
 						{data.banner ? (
 							<img
 								src={data.banner}
@@ -252,7 +277,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 				<Icons.Close defaultSize="w-3 h-3 text-theme-primary" />
 			</div>
 			<div className="aspect-square rounded-md h-full flex items-center">
-				<img src={data.image} className="h-full aspect-square object-cover rounded-md" onError={handleErrorImage} />
+				<img src={data.image} alt={data.title || ''} className="h-full aspect-square object-cover rounded-md" onError={handleErrorImage} />
 			</div>
 			<div className="flex flex-col justify-center gap-2 flex-1 overflow-hidden">
 				<h5 className="text-sm truncate font-semibold">{data.title}</h5>

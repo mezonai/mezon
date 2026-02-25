@@ -256,11 +256,11 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 
 	return (
 		<div className="flex flex-col gap-0.5 max-w-[350px]">
-			<div className="relative rounded-2xl overflow-hidden border border-white/10 bg-[#1f2129]">
-				<div className="h-[76px] bg-gradient-to-b from-[#b89ee7] to-[#d7c9ef] relative overflow-hidden">
+			<div className="relative rounded-2xl overflow-hidden border dark:border-borderDivider border-borderDividerLight bg-bgLightSecondary dark:bg-bgTertiary">
+				<div className="h-[76px] relative overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
 					{banner ? <img src={banner} className="absolute inset-0 w-full h-full object-cover" alt="" /> : null}
 				</div>
-				<div className="absolute top-[40px] left-4 w-[72px] h-[72px] rounded-[22px] overflow-hidden border-4 border-[#2f3340] bg-[#2a2d36] shadow-lg">
+				<div className="absolute top-[40px] left-4 w-[72px] h-[72px] rounded-[22px] overflow-hidden border-4 dark:border-bgPrimary border-bgLightTertiary bg-bgLightMode dark:bg-bgSecondary shadow-lg">
 					<div className="w-full h-full">
 						{clanImage ? (
 							<img src={clanImage} alt={clanTitle} className="w-full h-full object-cover" />
