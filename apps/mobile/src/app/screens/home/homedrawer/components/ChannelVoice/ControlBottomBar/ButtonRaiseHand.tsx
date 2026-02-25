@@ -6,6 +6,7 @@ import { TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
+import { SENDER_AVATAR_PREFIX, SENDER_NAME_PREFIX } from '../CallReactionHandler';
 import { style } from '../styles';
 
 export const RAISE_HAND_COOLDOWN_MS = 10000;
@@ -57,10 +58,16 @@ const ButtonRaiseHand = ({ channelId, clanId }: ButtonRaiseHandProps) => {
 
 		try {
 			if (isCooldown) {
-				await socketRef.current.writeVoiceReaction([`raising-down:${channelId}`, senderName, senderAvatar], channelId);
+				await socketRef.current.writeVoiceReaction(
+					[`raising-down:${channelId}`, `${SENDER_NAME_PREFIX}${senderName}`, `${SENDER_AVATAR_PREFIX}${senderAvatar}`],
+					channelId
+				);
 				setIsCooldown(false);
 			} else {
-				await socketRef.current.writeVoiceReaction([`raising-up:${channelId}`, senderName, senderAvatar], channelId);
+				await socketRef.current.writeVoiceReaction(
+					[`raising-up:${channelId}`, `${SENDER_NAME_PREFIX}${senderName}`, `${SENDER_AVATAR_PREFIX}${senderAvatar}`],
+					channelId
+				);
 				setIsCooldown(true);
 				startAutoLowerTimer();
 			}

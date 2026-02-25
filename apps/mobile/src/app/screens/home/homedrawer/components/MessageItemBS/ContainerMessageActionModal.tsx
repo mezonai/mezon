@@ -62,6 +62,7 @@ import { ConfirmReLoginModal } from '../../../../profile/SendToken/ConfirmReLogi
 import { getMessageActions } from '../../constants';
 import { EMessageActionType } from '../../enums';
 import type { IConfirmActionPayload, IMessageAction, IMessageActionNeedToResolve } from '../../types/message.interface';
+import { SENDER_AVATAR_PREFIX, SENDER_NAME_PREFIX } from '../ChannelVoice/CallReactionHandler';
 import { ConfirmPinMessageModal } from '../ConfirmPinMessageModal';
 import EmojiSelector from '../EmojiPicker/EmojiSelector';
 import type { IReactionMessageProps } from '../MessageReaction';
@@ -906,7 +907,10 @@ export const ContainerMessageActionModal = React.memo(
 
 				if (!message && isOnlyEmojiPicker) {
 					if (!socketRef.current || !channelId) return;
-					await socketRef.current.writeVoiceReaction([emoji_id, displayName || '', avatarUrl || ''], channelId);
+					await socketRef.current.writeVoiceReaction(
+						[emoji_id, `${SENDER_NAME_PREFIX}${displayName || ''}`, `${SENDER_AVATAR_PREFIX}${avatarUrl || ''}`],
+						channelId
+					);
 					return;
 				}
 				await handleReact(mode ?? ChannelStreamMode.STREAM_MODE_CHANNEL, message?.id, emoji_id, emoij);

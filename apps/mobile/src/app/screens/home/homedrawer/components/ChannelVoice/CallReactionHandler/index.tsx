@@ -37,6 +37,8 @@ const ANIMATION_CONFIG = {
 
 export const RAISE_HAND_UP_EMOJI_PREFIX = 'raising-up';
 export const RAISE_HAND_DOWN_EMOJI_PREFIX = 'raising-down';
+export const SENDER_NAME_PREFIX = 'sender-name:';
+export const SENDER_AVATAR_PREFIX = 'sender-avatar:';
 
 interface EmojiItem {
 	id: string;
@@ -331,8 +333,8 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 			try {
 				const emojis = message.emojis || [];
 				const emojiId = emojis[0];
-				const senderName = emojis?.[1] || '';
-				const senderAvatar = emojis?.[2] || '';
+				const senderName = emojis?.[1]?.replace?.(/^sender-name:\s*/, '') || '';
+				const senderAvatar = emojis?.[2]?.replace?.(/^sender-avatar:\s*/, '') || '';
 				const senderId = message.sender_id;
 
 				if (emojiId) {
@@ -341,7 +343,7 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 
 						let displayName = senderName;
 						let avatarUrl = senderAvatar;
-						if (!displayName || !avatarUrl) {
+						if (!displayName) {
 							const members = selectMemberClanByUserId(store.getState?.(), senderId);
 							displayName = members?.clan_nick || members?.user?.display_name || members?.user?.username || '';
 							avatarUrl = members?.clan_avatar || members?.user?.avatar_url || '';
