@@ -222,6 +222,14 @@ const persistedDefaultNotiCatReducer = persistReducer(
 	defaultNotificationCategoryReducer
 );
 
+const persistedChannelMetaReducer = persistReducer(
+	{
+		key: 'channelmeta',
+		storage
+	},
+	channelMetaReducer
+);
+
 const persistedsettingClanStickerReducer = persistReducer(
 	{
 		key: 'settingSticker',
@@ -291,7 +299,7 @@ const reducer = {
 	channelMedia: channelMediaReducer,
 	clans: persistedClansReducer,
 	channels: persistedChannelReducer,
-	channelmeta: channelMetaReducer,
+	channelmeta: persistedChannelMetaReducer,
 	settingSticker: persistedsettingClanStickerReducer,
 	allUsersByAddChannel: userChannelsReducer,
 	listchannelbyusers: persistedListchannelsByUserReducer,
@@ -410,11 +418,6 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 	});
 	storeInstance = store;
 	storeCreated = true;
-
-	import('./badge/badgeService').then(({ badgeService }) => {
-		badgeService.init(store.dispatch, store.getState);
-	});
-
 	const persistor = persistStore(store);
 
 	if (typeof window !== 'undefined') {

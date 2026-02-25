@@ -6,22 +6,18 @@
 // set timeout to 1 second, if no new action comes in, send the latest action to clan
 
 import type { MessagesEntity } from '@mezon/store';
-import { directMetaActions, messagesActions, useAppDispatch } from '@mezon/store';
-import { isBackgroundModeActive } from '@mezon/utils';
+import { channelMetaActions, directMetaActions, messagesActions, useAppDispatch } from '@mezon/store';
+import { TIME_OFFSET, isBackgroundModeActive } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useCallback, useMemo } from 'react';
-
-interface MarkAsReadOptions {
-	isTopic?: boolean;
-	parentChannelId?: string;
-}
 
 export function useSeenMessagePool() {
 	const dispatch = useAppDispatch();
 	const isFocus = !isBackgroundModeActive();
 
 	const markAsReadSeen = useCallback(
-		(message: MessagesEntity, mode: number, badge_count: number, options?: MarkAsReadOptions) => {
+		(message: MessagesEntity, mode: number, badge_count: number) => {
+			// if message is sending, do not mark as seen
 			if (message?.isSending) {
 				return;
 			}
@@ -31,13 +27,23 @@ export function useSeenMessagePool() {
 					channelId: message?.channel_id,
 					messageId: message?.id,
 					mode,
-					badge_count,
-					isTopic: options?.isTopic,
-					parentChannelId: options?.parentChannelId
+					badge_count
 				})
 			);
-			if (isFocus && (mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM)) {
-				dispatch(directMetaActions.updateLastSeenTime(message));
+			if (isFocus) {
+				const timestamp = Date.now() / 1000;
+				if (mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD) {
+					dispatch(
+						channelMetaActions.setChannelLastSeenTimestamp({
+							channelId: message?.channel_id,
+							timestamp: timestamp + TIME_OFFSET,
+							messageId: message?.id
+						})
+					);
+				}
+				if (mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM) {
+					dispatch(directMetaActions.updateLastSeenTime(message));
+				}
 			}
 		},
 		[isFocus]

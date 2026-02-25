@@ -71,7 +71,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 
 	useFocusEffect(
 		useCallback(() => {
-			dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true }));
+			dispatch(directActions.fetchDirectMessage({ noCache: true }));
 		}, [dispatch])
 	);
 
@@ -81,7 +81,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 
 	const handleRefresh = useCallback(async () => {
 		setIsRefreshing(true);
-		dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true }));
+		dispatch(directActions.fetchDirectMessage({ noCache: true }));
 		dispatch(acitvitiesActions.listActivities({ noCache: true }));
 		await sleep(500);
 		setIsRefreshing(false);

@@ -51,7 +51,7 @@ export function EmbedFields({ fields, message_id, senderId, channelId, observeIn
 							key={index}
 							className={`${field.inline ? `col-span-${3 / row.length}` : 'col-span-3'} ${field.button ? 'flex justify-between' : 'flex-col'}`}
 						>
-							<div className="flex flex-col gap-1 break-words">
+							<div className="flex flex-col gap-1 break-all">
 								<div className="font-semibold text-sm">{field.name}</div>
 								<div className=" text-sm">{field.value}</div>
 							</div>

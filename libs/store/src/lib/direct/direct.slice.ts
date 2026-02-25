@@ -172,7 +172,6 @@ type fetchDmGroupArgs = {
 	forward?: number;
 	channelType?: number;
 	noCache?: boolean;
-	isMobile?: boolean;
 };
 
 const processDmChannels = (channelDescs: ApiChannelDescription[], existingEntities: DirectEntity[], userProfile: any, thunkAPI: any) => {
@@ -224,10 +223,10 @@ const processDmChannels = (channelDescs: ApiChannelDescription[], existingEntiti
 
 export const fetchDirectMessage = createAsyncThunk(
 	'direct/fetchDirectMessage',
-	async ({ channelType = ChannelType.CHANNEL_TYPE_GROUP, isMobile = false }: fetchDmGroupArgs, thunkAPI) => {
+	async ({ channelType = ChannelType.CHANNEL_TYPE_GROUP }: fetchDmGroupArgs, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.listChannelDescs(mezon.session, DM_PAGE_SIZE, 1, 1, '0', channelType, isMobile);
+			const response = await mezon.client.listChannelDescs(mezon.session, DM_PAGE_SIZE, 1, 1, '0', channelType);
 			if (!response.channeldesc || response.channeldesc.length === 0) {
 				thunkAPI.dispatch(directActions.setAll([]));
 				return { channels: [], hasMore: false, page: 1 };

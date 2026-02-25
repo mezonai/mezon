@@ -2,7 +2,7 @@ import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { EmitterSubscription } from 'react-native';
 import { Animated, DeviceEventEmitter, Keyboard, Platform, StyleSheet, View } from 'react-native';
 import { LinearGradient } from 'react-native-linear-gradient';
@@ -18,7 +18,6 @@ let lastKnownKeyboardHeight = Platform.OS === 'ios' ? 340 : 300;
 let globalPanelKeyboardListener: EmitterSubscription | null = null;
 let globalShowKeyboardListener: EmitterSubscription | null = null;
 let activeInstanceId: string | null = null;
-let activeKeyboardInstanceId: string | null = null;
 
 interface IProps {
 	directMessageId?: string;
@@ -77,20 +76,13 @@ const PanelKeyboard = React.memo((props: IProps) => {
 
 	useFocusEffect(
 		React.useCallback(() => {
-			const currentInstanceId = instanceIdRef.current;
-			activeKeyboardInstanceId = currentInstanceId;
-
 			spacerHeightAnim.stopAnimation();
 			spacerHeightAnim.setValue(0);
-			heightKeyboardShowRef.current = 0;
-			typeKeyboardBottomSheetRef.current = null;
-
 			const showEvent = Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow';
 			const hideEvent = Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide';
 			let fallbackTimeoutId: NodeJS.Timeout | null = null;
 
-			const handleKeyboardShow = (e: { endCoordinates?: { height?: number } }) => {
-				if (activeKeyboardInstanceId !== currentInstanceId) return;
+			const handleKeyboardShow = (e: any) => {
 				if (fallbackTimeoutId) {
 					clearTimeout(fallbackTimeoutId);
 					fallbackTimeoutId = null;
@@ -103,7 +95,6 @@ const PanelKeyboard = React.memo((props: IProps) => {
 			};
 
 			const handleKeyboardHide = () => {
-				if (activeKeyboardInstanceId !== currentInstanceId) return;
 				if (fallbackTimeoutId) {
 					clearTimeout(fallbackTimeoutId);
 					fallbackTimeoutId = null;
@@ -125,36 +116,15 @@ const PanelKeyboard = React.memo((props: IProps) => {
 			const hideSub = Keyboard.addListener(hideEvent, handleKeyboardHide);
 
 			const additionalShowEvent = Platform.OS === 'ios' ? 'keyboardDidShow' : 'keyboardWillShow';
-			const additionalShowSub = Keyboard.addListener(additionalShowEvent, (e: { endCoordinates?: { height?: number } }) => {
-				if (heightKeyboardShowRef.current === 0 && (e?.endCoordinates?.height ?? 0) > 0) {
+			const additionalShowSub = Keyboard.addListener(additionalShowEvent, (e: any) => {
+				if (heightKeyboardShowRef.current === 0 && e?.endCoordinates?.height > 0) {
 					handleKeyboardShow(e);
 				}
 			});
 
-			let intervalId: NodeJS.Timeout | null = null;
-			if (Platform.OS === 'android') {
-				intervalId = setInterval(() => {
-					try {
-						if (activeKeyboardInstanceId !== currentInstanceId) return;
-						const isVisible = Keyboard.isVisible?.();
-						if (isVisible && heightKeyboardShowRef.current === 0) {
-							const height = getKeyboardHeightFromMetrics();
-							if (height > 0) {
-								applyKeyboardHeight(height);
-							}
-						}
-					} catch {
-						/* empty */
-					}
-				}, 500);
-			}
-
 			return () => {
 				if (fallbackTimeoutId) {
 					clearTimeout(fallbackTimeoutId);
-				}
-				if (intervalId) {
-					clearInterval(intervalId);
 				}
 				showSub.remove();
 				hideSub.remove();
@@ -167,6 +137,34 @@ const PanelKeyboard = React.memo((props: IProps) => {
 			};
 		}, [spacerHeightAnim, applyKeyboardHeight, getKeyboardHeightFromMetrics])
 	);
+
+	useEffect(() => {
+		let intervalId: NodeJS.Timeout | null = null;
+
+		const checkKeyboardVisibility = () => {
+			try {
+				const isVisible = Keyboard.isVisible?.();
+				if (isVisible && heightKeyboardShowRef.current === 0) {
+					const height = getKeyboardHeightFromMetrics();
+					if (height > 0) {
+						applyKeyboardHeight(height);
+					}
+				}
+			} catch {
+				/* empty */
+			}
+		};
+
+		if (Platform.OS === 'android') {
+			intervalId = setInterval(checkKeyboardVisibility, 500);
+		}
+
+		return () => {
+			if (intervalId) {
+				clearInterval(intervalId);
+			}
+		};
+	}, [applyKeyboardHeight, getKeyboardHeightFromMetrics]);
 
 	const onShowKeyboardBottomSheet = useCallback(
 		async (isShow: boolean, type?: string) => {
@@ -197,7 +195,6 @@ const PanelKeyboard = React.memo((props: IProps) => {
 				heightKeyboardShowRef.current = 0;
 				setHeightKeyboardShow(0);
 				setTypeKeyboardBottomSheet('text');
-				typeKeyboardBottomSheetRef.current = 'text';
 			}
 		},
 		[spacerHeightAnim]

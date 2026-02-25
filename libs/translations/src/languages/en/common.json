@@ -365,7 +365,6 @@
 	},
 	"updateUsername": {
 		"enterUsername": "Enter Mezon name",
-		"usernamePreview": "Username: {{username}}",
 		"yourName": "Your name...",
 		"usernamePlaceholder": "Please use your actual name to make it easier for people to identify you.",
 		"update": "Update",

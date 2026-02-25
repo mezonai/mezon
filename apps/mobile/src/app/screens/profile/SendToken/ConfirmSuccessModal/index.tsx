@@ -2,7 +2,7 @@ import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { appActions, useAppDispatch } from '@mezon/store-mobile';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import ViewShot from 'react-native-view-shot';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
@@ -139,9 +139,7 @@ export const ConfirmSuccessModal: React.FC<ConfirmSuccessModalProps> = ({
 
 							<View style={styles.infoRow}>
 								<Text style={styles.label}>{t('note')}</Text>
-								<ScrollView style={styles.noteScrollContainer} showsVerticalScrollIndicator={false}>
-									<Text style={styles.note}>{note?.replace?.(/\s+/g, ' ')?.trim() || ''}</Text>
-								</ScrollView>
+								<Text style={styles.note}>{note?.replace?.(/\s+/g, ' ')?.trim() || ''}</Text>
 							</View>
 
 							<View style={styles.infoRow}>

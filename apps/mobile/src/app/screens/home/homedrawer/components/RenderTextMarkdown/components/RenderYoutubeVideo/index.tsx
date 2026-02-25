@@ -1,9 +1,9 @@
-import { baseColor } from '@mezon/mobile-ui';
-import { memo, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Dimensions, Keyboard, Text, TextStyle, View } from 'react-native';
+import { baseColor, size } from '@mezon/mobile-ui';
+import { memo, useState } from 'react';
+import { ActivityIndicator, Keyboard, StyleSheet, Text, TextStyle, View, useWindowDimensions } from 'react-native';
 import YoutubePlayer from 'react-native-youtube-iframe';
-import { style } from './styles';
-interface IRenderYoutubeVideoProps {
+
+type RenderYoutubeVideoProps = {
 	videoKey: string;
 	videoId: string;
 	contentInElement: string;
@@ -12,38 +12,12 @@ interface IRenderYoutubeVideoProps {
 	linkStyle?: TextStyle;
 };
 
-const RenderYoutubeVideo = ({ videoKey, videoId, contentInElement, onPress, onLongPress, linkStyle }: IRenderYoutubeVideoProps) => {
-	const styles = style()
+const RenderYoutubeVideo = ({ videoKey, videoId, contentInElement, onPress, onLongPress, linkStyle }: RenderYoutubeVideoProps) => {
 	const [isVideoReady, setIsVideoReady] = useState<boolean>(false);
-	const [dimension, setDimension] = useState(() => {
-		const { width, height } = Dimensions.get('screen');
-		return { width, height }
-	});
-
-	const checkOrientation = () => {
-		const { width, height } = Dimensions.get('screen');
-		setDimension({ width, height });
-	};
-
-	useEffect(() => {
-		checkOrientation();
-
-		const subscription = Dimensions.addEventListener('change', () => {
-			checkOrientation();
-		});
-
-		return () => subscription?.remove();
-	}, []);
-
-	const computedDimension = useMemo(() => {
-		if (!dimension?.width) return { width: 0, height: 0 };
-		const isLandscape = dimension.width > dimension?.height;
-		const computedWidth = isLandscape ? dimension.width * 0.4 : dimension.width * 0.8
-		return {
-			width: computedWidth,
-			height: (computedWidth * 9) / 16
-		}
-	}, [dimension?.width, dimension?.height]);
+	const { width, height } = useWindowDimensions();
+	const isLandscape = width > height;
+	const playerWidth = isLandscape ? width * 0.4 : width * 0.8;
+	const playerHeight = (playerWidth * 9) / 16;
 
 	return (
 		<View key={videoKey}>
@@ -58,8 +32,8 @@ const RenderYoutubeVideo = ({ videoKey, videoId, contentInElement, onPress, onLo
 					</View>
 				)}
 				<YoutubePlayer
-					height={computedDimension.height}
-					width={computedDimension.width}
+					height={playerHeight}
+					width={playerWidth}
 					videoId={videoId}
 					play={false}
 					onReady={() => setIsVideoReady(true)}
@@ -79,5 +53,24 @@ const RenderYoutubeVideo = ({ videoKey, videoId, contentInElement, onPress, onLo
 		</View>
 	);
 };
+
+const styles = StyleSheet.create({
+	loadingVideoSpinner: {
+		position: 'absolute',
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		backgroundColor: 'rgba(0,0,0,0.1)',
+		justifyContent: 'center',
+		alignItems: 'center'
+	},
+	borderLeftView: {
+		marginTop: size.s_6,
+		borderLeftWidth: size.s_2,
+		borderLeftColor: baseColor.redStrong,
+		borderRadius: size.s_4
+	}
+});
 
 export default memo(RenderYoutubeVideo);

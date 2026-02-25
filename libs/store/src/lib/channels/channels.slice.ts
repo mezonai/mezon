@@ -22,7 +22,6 @@ import type {
 	ApiCreateChannelDescRequest,
 	ApiMarkAsReadRequest
 } from 'mezon-js/api.gen';
-import { appActions } from '../app/app.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { categoriesActions, type FetchCategoriesPayload } from '../categories/categories.slice';
@@ -322,7 +321,6 @@ export const joinChannel = createAsyncThunk(
 	'channels/joinChannel',
 	async ({ clanId, channelId, noFetchMembers, messageId, isClearMessage = true, noCache = false }: fetchChannelMembersPayload, thunkAPI) => {
 		try {
-			thunkAPI.dispatch(appActions.setMediaChannelViewMode(false));
 			thunkAPI.dispatch(reactionActions.removeAll());
 			thunkAPI.dispatch(channelsActions.setIdChannelSelected({ clanId, channelId }));
 			thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId }));
@@ -497,7 +495,6 @@ export interface IUpdateChannelRequest {
 	category_name?: string;
 	app_id: string;
 	channel_avatar?: string;
-	meeting_code?: string;
 }
 
 export const updateChannel = createAsyncThunk('channels/updateChannel', async (body: IUpdateChannelRequest, thunkAPI) => {
@@ -867,7 +864,6 @@ export const markAsReadProcessing = createAsyncThunk(
 				category_id: category_id || undefined,
 				channel_id
 			});
-
 			if (!response) {
 				return thunkAPI.rejectWithValue([]);
 			}
@@ -887,6 +883,33 @@ export const markAsReadProcessing = createAsyncThunk(
 		} catch (error) {
 			captureSentryError(error, 'channels/markAsRead');
 			return thunkAPI.rejectWithValue(error);
+		}
+	}
+);
+
+export const updateChannelBadgeCountAsync = createAsyncThunk(
+	'channels/updateChannelBadgeCount',
+	async ({ clanId, channelId, count, isReset = false }: { clanId: string; channelId: string; count: number; isReset?: boolean }, thunkAPI) => {
+		const state = thunkAPI.getState() as RootState;
+		const channelState = state.channels.byClans[clanId];
+		if (!channelState) {
+			return;
+		}
+		const entity = channelState.entities.entities[channelId];
+		if (entity || state.channels.byClans[clanId].entities.entities[channelId]) {
+			const updatedEntity = state.channels.byClans[clanId].entities.entities[channelId];
+			const newCountMessUnread = isReset ? 0 : (updatedEntity?.count_mess_unread ?? 0) + count;
+
+			if (updatedEntity?.count_mess_unread !== newCountMessUnread) {
+				thunkAPI.dispatch(
+					channelsActions.updateChannelBadgeCount({
+						clanId,
+						channelId,
+						count: 1
+					})
+				);
+				thunkAPI.dispatch(listChannelRenderAction.addBadgeToChannelRender({ clanId, channelId }));
+			}
 		}
 	}
 );
@@ -1641,6 +1664,7 @@ export const channelsActions = {
 	removeFavoriteChannel,
 	addThreadToChannels,
 	addThreadSocket,
+	updateChannelBadgeCountAsync,
 	changeCategoryOfChannel,
 	updateChannelPrivateSocket,
 	bulkDeleteChannelSocket

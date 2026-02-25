@@ -46,7 +46,7 @@ export const AiAgentSection = () => {
 							className={`absolute inset-0 bg-gradient-to-br from-[#8661df] to-[#7979ed] rounded-2xl transition-opacity duration-300 ${imageLoaded ? 'opacity-0' : 'opacity-100'}`}
 						/>
 						<img
-							src="https://cdn.mezon.ai/landing-page-mezon/ai-agent.webp"
+							src="https://cdn.mezon.ai/landing-page-mezon/section-aiagent.webp"
 							alt="Engage"
 							className="max-w-[68vw] lg:max-w-[35vw] object-contain drop-shadow-2xl rounded-2xl relative z-10"
 							loading="lazy"

@@ -1,8 +1,8 @@
 import { ELoadMoreDirection } from '@mezon/chat-scroll';
 import { size, useTheme } from '@mezon/mobile-ui';
 import type { MessagesEntity } from '@mezon/store-mobile';
-import React, { useCallback, useMemo, useRef } from 'react';
-import { Keyboard, Platform, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Keyboard, Platform, View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
 import { FlatList } from 'react-native-gesture-handler';
 import { style } from './styles';
@@ -51,6 +51,8 @@ const ChannelListMessage = React.memo(
 		const needsRestoreScroll = !needsInitialScroll && savedScrollOffsetRef.current !== undefined && savedScrollOffsetRef.current > 0;
 		const needsDelayedScroll = needsInitialScroll || needsRestoreScroll;
 		const hasScrolled = useRef(false);
+		const [isReady, setIsReady] = useState(!needsDelayedScroll);
+		const opacityAnim = useRef(new Animated.Value(needsDelayedScroll ? 0 : 1)).current;
 
 		const isCannotLoadMore = useMemo(() => {
 			const lastMessage = messages?.[messages?.length - 1];
@@ -62,6 +64,13 @@ const ChannelListMessage = React.memo(
 				onLoadMore(ELoadMoreDirection.top);
 			}
 		}, [messages?.length, isCannotLoadMore, onLoadMore]);
+
+		const showList = useCallback(() => {
+			if (!isReady) {
+				setIsReady(true);
+				opacityAnim.setValue(1);
+			}
+		}, [isReady, opacityAnim]);
 
 		const handleLayout = useCallback(() => {
 			if (!needsDelayedScroll || hasScrolled.current) {
@@ -89,12 +98,23 @@ const ChannelListMessage = React.memo(
 							});
 						}
 					}
+					showList();
 				});
 			});
-		}, [needsDelayedScroll, needsInitialScroll, needsRestoreScroll, flatListRef]);
+		}, [needsDelayedScroll, needsInitialScroll, needsRestoreScroll, flatListRef, showList]);
+
+		useEffect(() => {
+			if (!needsDelayedScroll || isReady) return;
+
+			const timeout = setTimeout(() => {
+				showList();
+			}, 300);
+
+			return () => clearTimeout(timeout);
+		}, [needsDelayedScroll, isReady, showList]);
 
 		return (
-			<View style={{ flex: 1 }}>
+			<Animated.View style={{ flex: 1, opacity: opacityAnim }}>
 				<FlatList
 					data={messages}
 					renderItem={renderItem}
@@ -142,12 +162,15 @@ const ChannelListMessage = React.memo(
 										viewPosition: 0.5
 									});
 								}
+								showList();
 							});
+						} else {
+							showList();
 						}
 					}}
 					disableVirtualization={Platform.OS === 'ios'}
 				/>
-			</View>
+			</Animated.View>
 		);
 	}
 );

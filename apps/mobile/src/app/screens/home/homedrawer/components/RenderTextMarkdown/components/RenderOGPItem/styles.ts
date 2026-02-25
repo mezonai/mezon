@@ -26,9 +26,5 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			width: '98%',
 			marginTop: size.s_10,
 			maxHeight: size.s_150
-		},
-		nativeImage: {
-			width: '100%',
-			height: '100%'
 		}
 	});

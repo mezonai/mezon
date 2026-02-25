@@ -280,8 +280,3 @@ export const isGoogleMapLink = (url: string): boolean => {
 		return false;
 	}
 };
-
-export const isValidIdString = (value: string) => {
-	if (!value.trim()) return false;
-	return !isNaN(Number(value));
-};

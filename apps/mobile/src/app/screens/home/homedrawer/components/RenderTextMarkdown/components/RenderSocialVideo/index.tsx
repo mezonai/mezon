@@ -105,7 +105,7 @@ const RenderSocialVideo = ({ videoKey, url, platform, contentInElement, onPress,
     const handleWebViewMessage = useCallback((event: WebViewMessageEvent) => {
         try {
             const data = JSON.parse(event?.nativeEvent?.data);
-            if (data?.width > 0 && data?.height > 0) {
+            if (platform === EBacktickType.LINKFACEBOOK && data?.width > 0 && data?.height > 0) {
                 if (data.width < data.height) {
                     setFacebookEmbedRatio(9 / 16);
                 } else if (data.width > data.height) {
@@ -115,7 +115,7 @@ const RenderSocialVideo = ({ videoKey, url, platform, contentInElement, onPress,
         } catch (error) {
             console.error("Failed to parse webview message", error);
         }
-    }, []);
+    }, [platform]);
 
     const containerSize = useMemo(() => {
         if (!PLATFORM_CONFIG?.[platform]) return { width: 0, height: 0 };
@@ -167,13 +167,12 @@ const RenderSocialVideo = ({ videoKey, url, platform, contentInElement, onPress,
                             Keyboard.dismiss();
                         }}
                         injectedJavaScript={platform === EBacktickType.LINKFACEBOOK ? INJECTED_JS : undefined}
-                        onMessage={platform === EBacktickType.LINKFACEBOOK ? handleWebViewMessage : undefined}
+                        onMessage={handleWebViewMessage}
                         onError={(syntheticEvent) => {
                             const { nativeEvent } = syntheticEvent;
                             console.error('WebView error: ', nativeEvent);
                             setIsLoading(false);
                         }}
-                        mediaPlaybackRequiresUserAction={false}
                     />
                 </View>
             </View>

@@ -47,14 +47,6 @@ const ChannelListHeader = () => {
 		});
 	};
 
-	const onOpenEvent = () => {
-		const data = {
-			snapPoints: ['50%', '80%'],
-			children: <EventViewer handlePressEventCreate={handlePressEventCreate} />
-		};
-		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
-	};
-
 	const handlePressEventCreate = useCallback(() => {
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 		navigation.navigate(APP_SCREEN.MENU_CLAN.STACK, {
@@ -62,13 +54,18 @@ const ChannelListHeader = () => {
 			params: {
 				onGoBack: () => {
 					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-				},
-				onSuccess: () => {
-					onOpenEvent();
 				}
 			}
 		});
-	}, [navigation, onOpenEvent]);
+	}, [navigation]);
+
+	const onOpenEvent = () => {
+		const data = {
+			snapPoints: ['50%', '80%'],
+			children: <EventViewer handlePressEventCreate={handlePressEventCreate} />
+		};
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
+	};
 
 	const handlePress = () => {
 		const data = {

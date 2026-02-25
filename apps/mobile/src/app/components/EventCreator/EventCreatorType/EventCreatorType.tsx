@@ -32,7 +32,7 @@ type CreateEventScreenType = typeof APP_SCREEN.MENU_CLAN.CREATE_EVENT;
 export const EventCreatorType = memo(function ({ navigation, route }: MenuClanScreenProps<CreateEventScreenType>) {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const { onGoBack, eventId, onSuccess } = route.params || {};
+	const { onGoBack, eventId } = route.params || {};
 
 	const { t } = useTranslation(['eventCreator']);
 	const voicesChannel = useSelector(selectVoiceChannelAll);
@@ -179,8 +179,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 			eventChannelId: eventChannel?.channel_id || '0',
 			isPrivate: eventType === OptionEvent.PRIVATE_EVENT,
 			onGoBack,
-			currentEvent: currentEvent || null,
-			onSuccess
+			currentEvent: currentEvent || null
 		});
 	}
 
@@ -200,7 +199,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 
 	const handleShowBottomSheetChannel = () => {
 		const data = {
-			children: <BottomsheetSelectChannel data={textChannels} onSelect={hanleSelectChannel} selectedChannelId={eventChannel?.channel_id} />
+			children: <BottomsheetSelectChannel data={textChannels} onSelect={hanleSelectChannel} />
 		};
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 	};

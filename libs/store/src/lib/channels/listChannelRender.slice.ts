@@ -179,7 +179,6 @@ export const listChannelRenderSlice = createSlice({
 					e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexUpdate] as IChannel).e2ee,
 					topic: dataUpdate.topic || (state.listChannelRender[clanId][indexUpdate] as IChannel).topic,
 					age_restricted: dataUpdate.age_restricted,
-					meeting_code: dataUpdate?.meeting_code || (state.listChannelRender[clanId][indexUpdate] as IChannel).meeting_code,
 					channel_private: dataUpdate.channel_private
 						? dataUpdate.channel_private || (state.listChannelRender[clanId][indexUpdate] as IChannel).channel_private
 						: 0
@@ -338,6 +337,24 @@ export const listChannelRenderSlice = createSlice({
 				state.listChannelRender[clanId].join();
 			}
 		},
+		addBadgeToChannelRender: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
+			const { channelId, clanId } = action.payload;
+			if (clanId === '0') {
+				return;
+			}
+			if (!state.listChannelRender[clanId]) {
+				return;
+			}
+			state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
+				if (channel.id === channelId) {
+					return {
+						...channel,
+						count_mess_unread: ((channel as IChannel).count_mess_unread || 0) + 1
+					};
+				}
+				return channel;
+			});
+		},
 		updateChannelUnreadCount: (state, action: PayloadAction<{ channelId: string; clanId: string; count: number; isReset?: boolean }>) => {
 			const { channelId, clanId, count, isReset = false } = action.payload;
 			if (clanId === '0') {
@@ -349,7 +366,7 @@ export const listChannelRenderSlice = createSlice({
 			state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
 				if (channel.id === channelId) {
 					const currentCount = (channel as IChannel).count_mess_unread || 0;
-					const newCount = isReset ? 0 : Math.max(0, currentCount + count);
+					const newCount = isReset ? count : Math.max(0, currentCount + count);
 					return {
 						...channel,
 						count_mess_unread: newCount

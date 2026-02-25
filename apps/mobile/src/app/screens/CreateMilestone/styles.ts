@@ -1,5 +1,4 @@
-import type { Attributes } from '@mezon/mobile-ui';
-import { baseColor, size } from '@mezon/mobile-ui';
+import { Attributes, baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const styles = (theme: Attributes) =>
@@ -69,11 +68,6 @@ export const styles = (theme: Attributes) =>
 			paddingVertical: 2,
 			borderRadius: size.s_4,
 			overflow: 'hidden' as const
-		},
-		wrapperFieldHintRow: {
-			flexDirection: 'row' as const,
-			justifyContent: 'space-between',
-			alignItems: 'center'
 		},
 		fieldHintRow: {
 			flexDirection: 'row' as const,
@@ -178,11 +172,8 @@ export const styles = (theme: Attributes) =>
 		},
 		mediaImage: {
 			width: '100%',
-			height: '100%'
-		},
-		mediaImageWrapper: {
-			borderRadius: size.s_12,
-			overflow: 'hidden'
+			height: '100%',
+			borderRadius: size.s_12
 		},
 		removeMediaButton: {
 			position: 'absolute',
@@ -255,15 +246,14 @@ export const styles = (theme: Attributes) =>
 		},
 		footer: {
 			padding: size.s_16,
-			paddingBottom: 0,
-			marginBottom: size.s_32
+			paddingBottom: size.s_32
 		},
 		saveButton: {
 			backgroundColor: '#8B5CF6',
 			flexDirection: 'row',
 			alignItems: 'center',
 			justifyContent: 'center',
-			paddingVertical: size.s_14,
+			paddingVertical: size.s_16,
 			borderRadius: size.s_28,
 			gap: size.s_10,
 			shadowColor: '#8B5CF6',
@@ -277,7 +267,7 @@ export const styles = (theme: Attributes) =>
 		},
 		saveButtonText: {
 			color: baseColor.white,
-			fontSize: size.s_16,
+			fontSize: size.s_18,
 			fontWeight: '700'
 		},
 		modalOverlay: {
@@ -286,8 +276,6 @@ export const styles = (theme: Attributes) =>
 			backgroundColor: 'rgba(0, 0, 0, 0.5)'
 		},
 		modalContent: {
-			justifyContent: 'center',
-			alignItems: 'center',
 			backgroundColor: theme.secondary,
 			borderTopLeftRadius: size.s_20,
 			borderTopRightRadius: size.s_20,
@@ -296,7 +284,6 @@ export const styles = (theme: Attributes) =>
 		modalHeader: {
 			flexDirection: 'row',
 			justifyContent: 'space-between',
-			width: '100%',
 			padding: size.s_16,
 			borderBottomWidth: 1,
 			borderBottomColor: theme.border

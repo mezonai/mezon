@@ -5,8 +5,8 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		sectionTitle: {
 			color: colors.text,
-			fontSize: size.medium,
-			fontWeight: 'bold',
+			fontSize: Fonts.size.small,
+			fontWeight: '600',
 			marginBottom: Fonts.size.s_10
 		},
 

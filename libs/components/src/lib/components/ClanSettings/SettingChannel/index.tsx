@@ -180,10 +180,6 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 		return channelParent.channel_type === ChannelType.CHANNEL_TYPE_STREAMING;
 	}, [channelParent.channel_type]);
 
-	const isAppChannel = useMemo(() => {
-		return channelParent.channel_type === ChannelType.CHANNEL_TYPE_APP;
-	}, [channelParent.channel_type]);
-
 	return (
 		<div className="flex flex-col border-b-theme-primary last:border-b-0 no-divider-last">
 			<div className="relative" onClick={handleFetchThreads}>
@@ -191,7 +187,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 					creatorId={channelParent.creator_id as string}
 					label={channelParent?.channel_label as string}
 					privateChannel={channelParent?.channel_private as number}
-					isThread={!!channelParent?.parent_id && channelParent.parent_id !== '0'}
+					isThread={false}
 					key={channelParent?.id}
 					userIds={channelParent?.user_ids || []}
 					channelId={channelParent?.id as string}
@@ -199,7 +195,6 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 					messageCount={channelParent?.message_count || 0}
 					lastMessage={channelParent?.last_sent_message}
 					isStream={isStreamChannel}
-					isApp={isAppChannel}
 				/>
 				{!isVoiceChannel && !searchFilter && (
 					<div
@@ -218,7 +213,7 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 								creatorId={thread?.creator_id as string}
 								label={thread?.channel_label as string}
 								privateChannel={thread?.channel_private as number}
-								isThread={!!thread?.parent_id && thread.parent_id !== '0'}
+								isThread={thread?.channel_type === ChannelType.CHANNEL_TYPE_THREAD}
 								key={`${thread?.id}_thread`}
 								userIds={thread?.user_ids || []}
 								channelId={thread?.id as string}
@@ -226,7 +221,6 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 								lastMessage={thread.last_sent_message}
 								isVoice={thread?.channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
 								isStream={thread?.channel_type === ChannelType.CHANNEL_TYPE_STREAMING}
-								isApp={thread?.channel_type === ChannelType.CHANNEL_TYPE_APP}
 							/>
 						))
 					) : (
@@ -253,8 +247,7 @@ const ItemInfor = ({
 	isVoice,
 	messageCount,
 	lastMessage,
-	isStream,
-	isApp
+	isStream
 }: {
 	isThread?: boolean;
 	label: string;
@@ -267,7 +260,6 @@ const ItemInfor = ({
 	messageCount?: number | string;
 	lastMessage?: ApiChannelMessageHeader;
 	isStream?: boolean;
-	isApp?: boolean;
 }) => {
 	const { t } = useTranslation('channelSetting');
 	const creatorChannel = useAppSelector((state) => selectMemberClanByUserId(state, creatorId));
@@ -326,7 +318,6 @@ const ItemInfor = ({
 				<div className="h-6 w-6">
 					{!isVoice &&
 						!isStream &&
-						!isApp &&
 						(isThread ? (
 							privateChannel ? (
 								<Icons.ThreadIconLocker className="w-5 h-5 " />
@@ -341,7 +332,6 @@ const ItemInfor = ({
 
 					{isVoice && <Icons.Speaker />}
 					{isStream && <Icons.Stream />}
-					{isApp && (privateChannel ? <Icons.PrivateAppChannelIcon className="w-5 h-5" /> : <Icons.AppChannelIcon className="w-5 h-5" />)}
 				</div>
 				<div className={`flex-1 box-border flex overflow-hidden`}>
 					<span className="truncate pr-8" data-e2e={generateE2eId('clan_page.channel_management.channel_item.channel_name')}>

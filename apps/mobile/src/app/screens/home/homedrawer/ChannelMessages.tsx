@@ -386,7 +386,7 @@ const ChannelMessages = React.memo(
 					/>
 				)}
 
-				<MessageUserTyping channelId={channelId} />
+				<MessageUserTyping channelId={channelId} isDM={isDM} isPublic={isPublic} mode={mode} />
 			</View>
 		);
 	}

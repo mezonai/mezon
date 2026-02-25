@@ -153,8 +153,7 @@ export const style = (colors: Attributes) =>
 		note: {
 			fontSize: size.s_14,
 			color: colors.white,
-			fontWeight: '500',
-			lineHeight: size.s_20
+			fontWeight: '500'
 		},
 		confirmButton: {
 			backgroundColor: colors.white,
@@ -247,8 +246,5 @@ export const style = (colors: Attributes) =>
 			color: colors.textDisabled,
 			marginBottom: size.s_2,
 			marginRight: size.s_2
-		},
-		noteScrollContainer: {
-			maxHeight: size.s_100,
-		},
+		}
 	});

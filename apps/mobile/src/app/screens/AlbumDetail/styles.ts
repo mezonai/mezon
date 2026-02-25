@@ -162,7 +162,7 @@ export const styles = (theme: Attributes) =>
 		},
 		uploadingOverlay: {
 			...StyleSheet.absoluteFillObject,
-			backgroundColor: 'rgba(0, 0, 0, 0.6)',
+			backgroundColor: 'rgba(0, 0, 0, 0.3)',
 			alignItems: 'center' as const,
 			justifyContent: 'center' as const,
 			borderRadius: size.s_16,

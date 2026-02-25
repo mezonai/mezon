@@ -111,6 +111,7 @@ const AlbumDetail: React.FC = () => {
 						start_time_seconds: startTimeSeconds
 					})
 				).unwrap();
+				console.log('log => result detailChannelTimeline: ', result);
 				const event = result.event;
 				if (event) {
 					setTitle(event.title || '');
@@ -369,7 +370,7 @@ const AlbumDetail: React.FC = () => {
 								</View>
 							)}
 							{!isUploaded(featuredAttachment) && (
-								<View style={[styles.uploadingOverlay, { margin: 0 }]}>
+								<View style={styles.uploadingOverlay}>
 									<ActivityIndicator size="small" color="white" />
 								</View>
 							)}

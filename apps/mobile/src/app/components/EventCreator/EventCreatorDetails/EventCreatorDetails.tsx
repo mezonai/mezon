@@ -23,7 +23,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t, i18n } = useTranslation(['eventCreator']);
-	const { type, channelId, location, eventChannelId, isPrivate, onGoBack, currentEvent, onSuccess } = route.params || {};
+	const { type, channelId, location, eventChannelId, isPrivate, onGoBack, currentEvent } = route.params || {};
 
 	const language = useMemo(() => (i18n.language === 'vi' ? 'vi' : 'en'), [i18n]);
 	const today = new Date();
@@ -151,8 +151,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 			isPrivate,
 			logo: eventLogo,
 			onGoBack,
-			currentEvent,
-			onSuccess
+			currentEvent
 		});
 	}
 

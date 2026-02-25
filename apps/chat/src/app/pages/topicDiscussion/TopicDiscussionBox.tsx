@@ -1,5 +1,5 @@
 import { AttachmentPreviewThumbnail, FileSelectionButton, MentionReactInput, ReplyMessageBox, UserMentionList } from '@mezon/components';
-import { useChatSending, useDragAndDrop, useReference, useSeenMessagePool } from '@mezon/core';
+import { useChatSending, useDragAndDrop, useReference } from '@mezon/core';
 import {
 	fetchMessages,
 	referencesActions,
@@ -13,9 +13,6 @@ import {
 	selectCurrentClanId,
 	selectDataReferences,
 	selectInitTopicMessageId,
-	selectLastMessageViewportByChannelId,
-	selectLastSeenMessageId,
-	selectLastSentMessageStateByChannelId,
 	selectSession,
 	selectStatusMenu,
 	selectTopicAnonymousMode,
@@ -31,15 +28,13 @@ import {
 	MAX_FILE_SIZE,
 	UploadLimitReason,
 	generateE2eId,
-	isBackgroundModeActive,
-	processFile,
-	useBackgroundMode
+	processFile
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
 import type { DragEvent } from 'react';
-import React, { Fragment, useCallback, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useThrottledCallback } from 'use-debounce';
@@ -68,13 +63,6 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 	const isDesktop = isElectron();
 	const isBanned = useAppSelector((state) => selectBanMeInChannel(state, currentChannelId));
 	const topicAnonymousMode = useSelector(selectTopicAnonymousMode);
-
-	const lastMessageViewport = useAppSelector((state) => selectLastMessageViewportByChannelId(state, currentTopicId));
-	const lastMessageChannel = useAppSelector((state) => selectLastSentMessageStateByChannelId(state, currentTopicId));
-	const lastSeenMessageId = useAppSelector((state) => selectLastSeenMessageId(state, currentTopicId));
-	const { markAsReadSeen } = useSeenMessagePool();
-	const isTopicMounted = useRef(false);
-	const isWindowFocused = !isBackgroundModeActive();
 
 	const mode =
 		currentChannelType === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
@@ -239,44 +227,6 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 			})
 		);
 	};
-
-	const markTopicAsRead = useCallback(() => {
-		if (!lastMessageViewport || !lastMessageChannel || lastMessageViewport?.isSending) return;
-		const topicOptions = { isTopic: true, parentChannelId: currentChannelId as string };
-		if (lastSeenMessageId && lastMessageViewport?.id) {
-			try {
-				const distance = Math.round(Number((BigInt(lastMessageViewport.id) >> BigInt(22)) - (BigInt(lastSeenMessageId) >> BigInt(22))));
-				if (distance >= 0) {
-					markAsReadSeen(lastMessageViewport, ChannelStreamMode.STREAM_MODE_THREAD, 1, topicOptions);
-					return;
-				}
-			} catch {
-				//
-			}
-		}
-
-		const isLastMessage = lastMessageViewport.id === lastMessageChannel.id;
-		if (isLastMessage) {
-			markAsReadSeen(lastMessageViewport, ChannelStreamMode.STREAM_MODE_THREAD, 1, topicOptions);
-		}
-	}, [lastMessageViewport, lastMessageChannel, lastSeenMessageId, markAsReadSeen, currentChannelId]);
-
-	useEffect(() => {
-		if (lastMessageViewport && isWindowFocused) {
-			markTopicAsRead();
-		}
-	}, [lastMessageViewport, isWindowFocused, markTopicAsRead]);
-
-	useEffect(() => {
-		if (isTopicMounted.current || !lastMessageViewport) return;
-		isTopicMounted.current = true;
-	}, [currentTopicId, lastMessageViewport]);
-
-	useEffect(() => {
-		isTopicMounted.current = false;
-	}, [currentTopicId]);
-
-	useBackgroundMode(undefined, markTopicAsRead);
 
 	useEffect(() => {
 		if (currentTopicId) {

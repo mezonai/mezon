@@ -18,7 +18,7 @@
 		"title": "Kick Member",
 		"kickFromServer": "Kick {{username}} From Clan",
 		"description": "Please confirm if you would like to kick {{username}} from the clan? They will be able to rejoin again with a new invite.",
-		"reasonKick": "Reason for Kick",
+		"reasonKick": "Reason For Kick",
 		"buttonName": "Kick"
 	},
 	"transferOwnershipModal": {

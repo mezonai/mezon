@@ -58,8 +58,7 @@ export const style = (colors: Attributes) =>
 		controlContainerOuter: {
 			borderRadius: size.s_40,
 			marginTop: size.s_20,
-			marginBottom: size.s_10,
-			paddingBottom: size.s_30
+			marginBottom: size.s_10
 		},
 		controlContainerInner: {
 			gap: size.s_20,

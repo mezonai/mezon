@@ -1,7 +1,6 @@
 import { referencesActions, selectCurrentChannelId, selectCurrentDmId, selectOgpPreview } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { isFacebookLink, isTikTokLink, isYouTubeLink } from '@mezon/utils';
-import type { SyntheticEvent } from 'react';
 import { memo, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -86,12 +85,6 @@ function PreviewOgp() {
 		dispatch(referencesActions.clearOgpData());
 	};
 
-	const handleErrorImage = (e: SyntheticEvent<HTMLImageElement, Event>) => {
-		if (!data?.title.trim() && !data?.description.trim()) {
-			dispatch(referencesActions.clearOgpData());
-		}
-	};
-
 	if (loading) {
 		return (
 			<div className="space-y-4 animate-pulse pb-2 pt-2 flex bg-theme-input text-theme-primary h-20 items-center gap-2">
@@ -115,7 +108,14 @@ function PreviewOgp() {
 				<Icons.Close defaultSize="w-3 h-3 text-theme-primary" />
 			</div>
 			<div className="aspect-square rounded-md h-full flex items-center">
-				<img src={data.image} className="h-full aspect-square object-cover rounded-md" onError={handleErrorImage} />
+				<img
+					src={data.image}
+					className="h-full aspect-square object-cover rounded-md"
+					onError={(e) => {
+						e.currentTarget.src = '/assets/images/warning.svg';
+						e.currentTarget.classList.add('opacity-30');
+					}}
+				/>
 			</div>
 			<div className="flex flex-col justify-center gap-2 flex-1 overflow-hidden">
 				<h5 className="text-sm truncate font-semibold">{data.title}</h5>

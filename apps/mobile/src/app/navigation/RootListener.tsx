@@ -1,6 +1,5 @@
 import { ChatContext } from '@mezon/core';
 import { load, save, setCurrentClanLoader, STORAGE_CLAN_ID, STORAGE_IS_DISABLE_LOAD_BACKGROUND, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
-import type { FetchClansPayload } from '@mezon/store-mobile';
 import {
 	accountActions,
 	appActions,
@@ -9,6 +8,7 @@ import {
 	directActions,
 	emojiSuggestionActions,
 	fcmActions,
+	FetchClansPayload,
 	friendsActions,
 	getStore,
 	gifsActions,
@@ -104,7 +104,7 @@ const RootListener = () => {
 				];
 				await Promise.allSettled(promise);
 			}
-			dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true }));
+			dispatch(directActions.fetchDirectMessage({ noCache: true }));
 			dispatch(clansActions.fetchClans({ noCache: true, isMobile: true }));
 			return null;
 		} catch (error) {
@@ -138,31 +138,6 @@ const RootListener = () => {
 		}
 	}, [dispatch]);
 
-	const reRegisterFCMToken = useCallback(async () => {
-		try {
-			const store = getStore();
-			const session = selectSession(store.getState() as any);
-			if (!session?.token) return;
-
-			const sessionMain = new Session(
-				session?.token,
-				session?.refresh_token,
-				session.created,
-				session.api_url,
-				session.ws_url,
-				session.id_token || '',
-				!!session.is_remember
-			);
-			const profileResponse = await dispatch(accountActions.getUserProfile({ noCache: true }));
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-expect-error
-			const { username = '' } = profileResponse?.payload?.user || {};
-			await loadFRMConfig(username, sessionMain);
-		} catch (error) {
-			console.error('Error re-registering FCM token:', error);
-		}
-	}, [dispatch, loadFRMConfig]);
-
 	const handleAppStateChange = useCallback(
 		async (state: string) => {
 			if (state !== 'active') return;
@@ -186,9 +161,8 @@ const RootListener = () => {
 			if (!currentDirectId) {
 				handleReconnect('Initial reconnect attempt timeout');
 			}
-			reRegisterFCMToken();
 		},
-		[activeAgainLoaderBackground, handleReconnect, messageLoaderBackground, reRegisterFCMToken]
+		[activeAgainLoaderBackground, handleReconnect, messageLoaderBackground]
 	);
 
 	const logAppStarted = async () => {
@@ -260,7 +234,7 @@ const RootListener = () => {
 			promises.push(dispatch(listChannelsByUserActions.fetchListChannelsByUser({ noCache: true })));
 			promises.push(dispatch(friendsActions.fetchListFriends({ noCache: true })));
 			promises.push(dispatch(clansActions.joinClan({ clanId: '0' })));
-			promises.push(dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true })));
+			promises.push(dispatch(directActions.fetchDirectMessage({ noCache: true })));
 			promises.push(dispatch(emojiSuggestionActions.fetchEmoji({ noCache: true, clanId: currentClanId })));
 			promises.push(dispatch(settingClanStickerActions.fetchStickerByUserId({ noCache: true, clanId: currentClanId })));
 			promises.push(dispatch(gifsActions.fetchGifCategories()));

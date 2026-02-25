@@ -44,8 +44,7 @@ export const style = (colors: Attributes) =>
 		separatorLine: {
 			width: '60%',
 			marginTop: size.s_6,
-			alignSelf: 'center',
-			backgroundColor: colors.white
+			alignSelf: 'center'
 		},
 		focusDirectMessage: {
 			backgroundColor: baseColor.azureBlue,

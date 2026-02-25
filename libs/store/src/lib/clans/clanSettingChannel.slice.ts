@@ -201,16 +201,10 @@ export const settingClanChannelSlice = createSlice({
 		updateChannelFromSocket: (state, action) => {
 			const channel = action.payload;
 			if (!channel?.id) return;
-
-			const safeChannel = { ...channel };
-			if (safeChannel.channel_type === 0 || safeChannel.channel_type === undefined) {
-				delete safeChannel.channel_type;
-			}
-
 			if (state.entities[channel.id]) {
 				channelSettingAdapter.updateOne(state, {
 					id: channel.id,
-					changes: safeChannel
+					changes: channel
 				});
 				return;
 			}
@@ -218,7 +212,7 @@ export const settingClanChannelSlice = createSlice({
 				const threads = state.threadsByChannel[channel.parent_id];
 				const index = threads.findIndex((t) => t.id === channel.id);
 				if (index !== -1) {
-					threads[index] = { ...threads[index], ...safeChannel };
+					threads[index] = { ...threads[index], ...channel };
 					return;
 				}
 			}
@@ -227,7 +221,7 @@ export const settingClanChannelSlice = createSlice({
 				const threads = state.threadsByChannel[pid];
 				const index = threads.findIndex((t) => t.id === channel.id);
 				if (index !== -1) {
-					threads[index] = { ...threads[index], ...safeChannel };
+					threads[index] = { ...threads[index], ...channel };
 					return;
 				}
 			}

@@ -1,9 +1,12 @@
 import type { ChannelsEntity, RootState } from '@mezon/store';
 import {
-	badgeService,
+	EMarkAsReadType,
 	channelMetaActions,
+	channelsActions,
 	clansActions,
 	getStore,
+	listChannelRenderAction,
+	listChannelsByUserActions,
 	markAsReadProcessing,
 	selectAllChannels,
 	selectChannelThreads,
@@ -16,37 +19,12 @@ import type { ChannelThreads, ICategoryChannel } from '@mezon/utils';
 import type { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
 import { useCallback, useMemo, useState } from 'react';
 
-function buildChannelUpdates(channelIds: string[]): Array<{ channelId: string; messageId?: string }> {
-	const store = getStore();
-	return channelIds.map((channelId) => {
-		let messageId: string | undefined;
-		if (store) {
-			messageId = selectLatestMessageId(store.getState(), channelId);
-			if (!messageId) {
-				const lastSentMsg = selectLastSentMessageStateByChannelId(store.getState(), channelId);
-				messageId = lastSentMsg?.id;
-			}
-		}
-		return { channelId, messageId };
-	});
-}
-
-function collectThreadIds(channels: ChannelThreads[]): string[] {
-	const threadIds: string[] = [];
-	for (const ch of channels) {
-		if (ch.threadIds?.length) {
-			threadIds.push(...ch.threadIds);
-		}
-	}
-	return threadIds;
-}
-
 export function useMarkAsRead() {
 	const dispatch = useAppDispatch();
 	const [statusMarkAsReadChannel, setStatusMarkAsReadChannel] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
 	const [statusMarkAsReadCategory, setStatusMarkAsReadCategory] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
 	const [statusMarkAsReadClan, setStatusMarkAsReadClan] = useState<'idle' | 'pending' | 'success' | 'error'>('idle');
-	const _channelsInClan = useAppSelector(selectAllChannels);
+	const channelsInClan = useAppSelector(selectAllChannels);
 
 	const actionMarkAsRead = useCallback(
 		async (body: ApiMarkAsReadRequest) => {
@@ -55,7 +33,6 @@ export function useMarkAsRead() {
 		},
 		[dispatch]
 	);
-
 	const handleMarkAsReadDM = useCallback(
 		async (channelId: string) => {
 			const body: ApiMarkAsReadRequest = {
@@ -86,34 +63,73 @@ export function useMarkAsRead() {
 
 			try {
 				await actionMarkAsRead(body);
-				setStatusMarkAsReadChannel('success');
 
+				setStatusMarkAsReadChannel('success');
 				const allThreadsInChannel = [channel, ...getThreadWithBadgeCount(channel)];
 				const channelIds = allThreadsInChannel.map((item) => item.id);
-				const channelUpdates = buildChannelUpdates(channelIds);
-
-				badgeService.markAsReadChannel(
-					channel.clan_id as string,
-					channel.id,
-					channelIds,
-					channelUpdates,
-					allThreadsInChannel.map((ch) => ({
-						channelId: ch.id,
-						count: (ch.count_mess_unread ?? 0) * -1
-					}))
+				const store = getStore();
+				const channelUpdates = channelIds.map((channelId) => {
+					let messageId: string | undefined;
+					if (store) {
+						messageId = selectLatestMessageId(store.getState(), channelId);
+						if (!messageId) {
+							const lastSentMsg = selectLastSentMessageStateByChannelId(store.getState(), channelId);
+							messageId = lastSentMsg?.id;
+						}
+					}
+					return { channelId, messageId };
+				});
+				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
+				dispatch(
+					channelsActions.resetChannelsCount({
+						clanId: channel?.clan_id as string,
+						channelIds
+					})
 				);
-
-				const threadIds = collectThreadIds(allThreadsInChannel);
+				dispatch(
+					clansActions.updateClanBadgeCountFromChannels({
+						clanId: channel.clan_id as string,
+						channels: allThreadsInChannel.map((channel) => ({
+							channelId: channel.id,
+							count: (channel.count_mess_unread ?? 0) * -1
+						}))
+					})
+				);
+				dispatch(
+					listChannelRenderAction.handleMarkAsReadListRender({
+						type: EMarkAsReadType.CHANNEL,
+						channelId: channel.id,
+						clanId: channel.clan_id as string
+					})
+				);
+				const threadIds: string[] = [];
+				allThreadsInChannel.map((channel) => {
+					if (channel.threadIds?.length) {
+						threadIds.push(...channel.threadIds);
+					}
+				});
 				if (threadIds.length) {
-					const threadUpdates = buildChannelUpdates(threadIds);
+					const threadUpdates = threadIds.map((channelId) => {
+						let messageId: string | undefined;
+						if (store) {
+							messageId = selectLatestMessageId(store.getState(), channelId);
+							if (!messageId) {
+								const lastSentMsg = selectLastSentMessageStateByChannelId(store.getState(), channelId);
+								messageId = lastSentMsg?.id;
+							}
+						}
+						return { channelId, messageId };
+					});
 					dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
 				}
+
+				dispatch(listChannelsByUserActions.markAsReadChannel([channel.id, ...threadIds]));
 			} catch (error) {
 				console.error('Failed to mark as read:', error);
 				setStatusMarkAsReadChannel('error');
 			}
 		},
-		[actionMarkAsRead, dispatch]
+		[actionMarkAsRead]
 	);
 
 	const handleMarkAsReadCategory = useCallback(
@@ -124,6 +140,7 @@ export function useMarkAsRead() {
 			};
 
 			const store = getStore();
+
 			const channelsInCategory = selectChannelThreads(store.getState() as RootState)?.filter(
 				(channel) => channel.category_id === category.category_id
 			);
@@ -131,13 +148,35 @@ export function useMarkAsRead() {
 			setStatusMarkAsReadCategory('pending');
 			try {
 				await actionMarkAsRead(body);
-				setStatusMarkAsReadCategory('success');
-
 				const allChannelsAndThreads = channelsInCategory.flatMap((channel) => [channel, ...(channel.threads || [])]);
+				setStatusMarkAsReadCategory('success');
 				const channelIds = allChannelsAndThreads.map((item) => item.id);
-				const channelUpdates = buildChannelUpdates(channelIds);
-
-				badgeService.markAsReadCategory(category.clan_id as string, category.category_id ?? '', channelIds, channelUpdates);
+				const channelUpdates = channelIds.map((channelId) => {
+					let messageId: string | undefined;
+					if (store) {
+						messageId = selectLatestMessageId(store.getState(), channelId);
+						if (!messageId) {
+							const lastSentMsg = selectLastSentMessageStateByChannelId(store.getState(), channelId);
+							messageId = lastSentMsg?.id;
+						}
+					}
+					return { channelId, messageId };
+				});
+				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
+				dispatch(
+					channelsActions.resetChannelsCount({
+						clanId: category.clan_id as string,
+						channelIds
+					})
+				);
+				dispatch(
+					listChannelRenderAction.handleMarkAsReadListRender({
+						type: EMarkAsReadType.CATEGORY,
+						clanId: category.clan_id as string,
+						categoryId: category.id
+					})
+				);
+				dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
 
 				dispatch(
 					clansActions.updateHasUnreadBasedOnChannels({
@@ -149,28 +188,16 @@ export function useMarkAsRead() {
 				setStatusMarkAsReadCategory('error');
 			}
 		},
-		[actionMarkAsRead, dispatch]
+		[actionMarkAsRead]
 	);
-
 	const handleMarkAsReadClan = useCallback(
 		async (clanId: string) => {
 			const body: ApiMarkAsReadRequest = {
 				clan_id: clanId ?? ''
 			};
-
-			console.log('handleMarkAsReadClan');
-
 			setStatusMarkAsReadClan('pending');
 			try {
 				await actionMarkAsRead(body);
-
-				const store = getStore();
-				const channels = selectChannelThreads(store.getState() as RootState);
-				const channelIds = channels.map((item) => item.id);
-				const channelUpdates = buildChannelUpdates(channelIds);
-
-				badgeService.markAsReadClan(clanId, channelIds, channelUpdates);
-
 				dispatch(
 					clansActions.setHasUnreadMessage({
 						clanId,
@@ -184,7 +211,7 @@ export function useMarkAsRead() {
 				setStatusMarkAsReadClan('error');
 			}
 		},
-		[actionMarkAsRead, dispatch]
+		[actionMarkAsRead, channelsInClan]
 	);
 
 	return useMemo(

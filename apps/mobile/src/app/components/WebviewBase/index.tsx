@@ -27,7 +27,6 @@ interface webviewBaseComponentProps {
 	androidLayerType?: AndroidLayerType;
 	allowsInlineMediaPlayback?: boolean;
 	allowsFullscreenVideo?: boolean;
-	mediaPlaybackRequiresUserAction?: boolean;
 	style?: StyleProp<ViewStyle>;
 	onMessage?: (event: WebViewMessageEvent) => void;
 	onLoadEnd?: (event: WebViewNavigationEvent | WebViewErrorEvent) => void;
@@ -55,7 +54,6 @@ const WebviewBase = (props: webviewBaseComponentProps) => {
 		androidLayerType,
 		allowsInlineMediaPlayback,
 		allowsFullscreenVideo,
-		mediaPlaybackRequiresUserAction,
 		style,
 		onMessage,
 		onLoadEnd,
@@ -106,7 +104,6 @@ const WebviewBase = (props: webviewBaseComponentProps) => {
 				androidLayerType={androidLayerType}
 				allowsInlineMediaPlayback={allowsInlineMediaPlayback}
 				allowsFullscreenVideo={allowsFullscreenVideo}
-				mediaPlaybackRequiresUserAction={mediaPlaybackRequiresUserAction}
 				style={style}
 				onMessage={onMessage}
 				onLoadEnd={onLoadEnd}

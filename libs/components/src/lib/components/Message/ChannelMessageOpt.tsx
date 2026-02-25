@@ -53,6 +53,7 @@ type ChannelMessageOptProps = {
 	hasPermission: boolean;
 	isTopic: boolean;
 	canSendMessage: boolean;
+	viewMode?: 'default' | 'timeline';
 };
 
 type JsonObject = {
@@ -79,7 +80,8 @@ const ChannelMessageOpt = ({
 	isDifferentDay,
 	hasPermission = true,
 	isTopic,
-	canSendMessage
+	canSendMessage,
+	viewMode = 'default'
 }: ChannelMessageOptProps) => {
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const currentChannelParentId = useSelector(selectCurrentChannelParentId);
@@ -88,16 +90,16 @@ const ChannelMessageOpt = ({
 	const refOpt = useRef<HTMLDivElement>(null);
 	const [canManageThread] = usePermissionChecker([EOverriddenPermission.manageThread], currentChannelId ?? '');
 	const isShowIconThread = !!(currentChannelId && !Snowflake.isValid(currentChannelParentId ?? '') && canManageThread);
-	const replyMenu = useReplyMenuBuilder(message, hasPermission);
-	const editMenu = useEditMenuBuilder(message);
+	const replyMenu = useReplyMenuBuilder(message, hasPermission, viewMode);
+	const editMenu = useEditMenuBuilder(message, viewMode);
 	const reactMenu = useReactMenuBuilder(message);
-	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission, isAppChannel);
+	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission, isAppChannel, viewMode);
 	const optionMenu = useOptionMenuBuilder(handleContextMenu);
 	const giveACoffeeMenu = useGiveACoffeeMenuBuilder(message, isTopic);
 	const checkMessageOnTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.channel_id ?? ''));
 	const checkMessageHasTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.topic_id ?? ''));
 	const doNotAllowCreateTopic = (isTopic && checkMessageOnTopic) || (isTopic && checkMessageHasTopic) || !hasPermission || !canSendMessage;
-	const createTopicMenu = useTopicMenuBuilder(message, doNotAllowCreateTopic);
+	const createTopicMenu = useTopicMenuBuilder(message, doNotAllowCreateTopic, viewMode);
 	const items = useMenuBuilder([createTopicMenu, reactMenu, replyMenu, editMenu, threadMenu, giveACoffeeMenu, optionMenu]);
 
 	if (message?.isError) {
@@ -143,7 +145,7 @@ const ChannelMessageOpt = ({
 
 export default memo(ChannelMessageOpt);
 
-function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: boolean) {
+function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: boolean, viewMode?: 'default' | 'timeline') {
 	const { t } = useTranslation('contextMenu');
 	const currentChannelId = useSelector(selectCurrentChannelId);
 	const realTimeMessage = useAppSelector((state) => selectMessageByMessageId(state, currentChannelId, message?.id || ''));
@@ -186,7 +188,12 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 		const plugin = {
 			setup: (builder: MenuBuilder) => {
 				builder.when(
-					clanId && clanId !== '0' && realTimeMessage?.code !== TypeMessage.Topic && !doNotAllowCreateTopic && notAllowedType,
+					clanId &&
+						clanId !== '0' &&
+						realTimeMessage?.code !== TypeMessage.Topic &&
+						!doNotAllowCreateTopic &&
+						notAllowedType &&
+						viewMode !== 'timeline',
 					(builder: MenuBuilder) => {
 						builder.addMenuItem('topic', t('topic'), handleCreateTopic, <Icons.TopicIconOption className="w-5 h-5 " />);
 					}
@@ -194,7 +201,7 @@ function useTopicMenuBuilder(message: IMessageWithUser, doNotAllowCreateTopic: b
 			}
 		};
 		return plugin;
-	}, [doNotAllowCreateTopic, clanId, handleCreateTopic, realTimeMessage?.code, notAllowedType, t]);
+	}, [doNotAllowCreateTopic, clanId, handleCreateTopic, realTimeMessage?.code, notAllowedType, t, viewMode]);
 
 	return menuPlugin;
 }
@@ -307,7 +314,7 @@ function useGiveACoffeeMenuBuilder(message: IMessageWithUser, isTopic: boolean) 
 
 // Menu items plugins
 // maybe should be moved to separate files
-function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) {
+function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean, viewMode?: 'default' | 'timeline') {
 	const { t } = useTranslation('contextMenu');
 	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
@@ -338,13 +345,13 @@ function useReplyMenuBuilder(message: IMessageWithUser, hasPermission: boolean) 
 	}, [dispatch, messageId]);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.when(userId !== message.sender_id && hasPermission, (builder) => {
+		builder.when(userId !== message.sender_id && hasPermission && viewMode !== 'timeline', (builder) => {
 			builder.addMenuItem('reply', t('reply'), handleItemClick, <Icons.Reply />, null, false, false, 'rotate-180');
 		});
 	});
 }
 
-function useEditMenuBuilder(message: IMessageWithUser) {
+function useEditMenuBuilder(message: IMessageWithUser, viewMode?: 'default' | 'timeline') {
 	const { t } = useTranslation('contextMenu');
 	const dispatch = useAppDispatch();
 	const { userId } = useAuth();
@@ -375,7 +382,8 @@ function useEditMenuBuilder(message: IMessageWithUser) {
 			userId === message.sender_id &&
 				!message?.content?.callLog?.callLogType &&
 				!(message.code === TypeMessage.SendToken) &&
-				!isForwardedMessage,
+				!isForwardedMessage &&
+				viewMode !== 'timeline',
 			(builder) => {
 				builder.addMenuItem('edit', t('editMessage'), handleItemClick, <Icons.PenEdit className={`w-5 h-5`} />);
 			}
@@ -412,7 +420,13 @@ function useReactMenuBuilder(message: IMessageWithUser) {
 	});
 }
 
-function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boolean, hasPermission: boolean, isAppChannel: boolean) {
+function useThreadMenuBuilder(
+	message: IMessageWithUser,
+	isShowIconThread: boolean,
+	hasPermission: boolean,
+	isAppChannel: boolean,
+	viewMode?: 'default' | 'timeline'
+) {
 	const { t } = useTranslation('contextMenu');
 	const [thread, setThread] = useState(false);
 	const dispatch = useAppDispatch();
@@ -448,7 +462,7 @@ function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boole
 	}, [dispatch, message, setIsShowCreateThread, setOpenThreadMessageState, setThread, thread, setValueThread]);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.when(isShowIconThread && hasPermission && !isAppChannel, (builder) => {
+		builder.when(isShowIconThread && hasPermission && !isAppChannel && viewMode !== 'timeline', (builder) => {
 			builder.addMenuItem('thread', t('createThread'), handleItemClick, <Icons.ThreadIcon isWhite={thread} />);
 		});
 	});
