@@ -1,5 +1,5 @@
 import { ModalSaveChanges } from '@mezon/components';
-import { editApplication, fetchApplications, selectAppDetail, useAppDispatch } from '@mezon/store';
+import { editApplication, selectAppDetail, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import type { ApiApp, ApiMessageAttachment, MezonUpdateAppBody } from 'mezon-js/api.gen';
@@ -64,7 +64,6 @@ const GeneralInformation = () => {
 		if (Object.keys(updateRequest).length === 0) return;
 
 		await dispatch(editApplication({ request: updateRequest, appId }));
-		await dispatch(fetchApplications({ noCache: true }));
 		setHasChanges(false);
 	};
 
@@ -273,8 +272,6 @@ const AppDetailRight = ({ appDetail, appId }: IAppDetailRightProps) => {
 		if (response?.token) {
 			setVisibleToken(response.token);
 		}
-
-		await dispatch(fetchApplications({ noCache: true }));
 
 		setNameChanged(false);
 		setUrlChanged(false);
