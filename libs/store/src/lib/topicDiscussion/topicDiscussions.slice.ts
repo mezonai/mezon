@@ -279,7 +279,7 @@ export const topicsSlice = createSlice({
 		removeClanTopics: (state, action: PayloadAction<string>) => {
 			const clanId = action.payload;
 			if (clanId) {
-				delete state.channelTopics[clanId];
+				delete state.clanTopics[clanId];
 			}
 		}
 	},
