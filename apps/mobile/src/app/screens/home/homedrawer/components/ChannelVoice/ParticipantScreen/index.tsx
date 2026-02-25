@@ -28,6 +28,9 @@ import UserProfile, { IActionVoiceUser } from '../../UserProfile';
 import { RAISE_HAND_DOWN_EMOJI_PREFIX, RAISE_HAND_UP_EMOJI_PREFIX } from '../CallReactionHandler';
 import { style } from '../styles';
 
+const AGENT_DEFAULT_AVATAR =
+	'https://imgproxy.mezon.ai/K0YUZRIosDOcz5lY6qrgC6UIXmQgWzLjZv7VJ1RAA8c/rs:fit:100:100:1/mb:2097152/plain/https://cdn.mezon.vn/0/0/1779484387973271600/1737423959329_undefined173740153013517374015248704886401586613166392.png@webp';
+
 const ParticipantItem = memo(
 	({
 		userId,
@@ -43,7 +46,8 @@ const ParticipantItem = memo(
 		isGroupCall,
 		canMangeVoice,
 		currentUsername,
-		clanId
+		clanId,
+		isAgent = false
 	}: any) => {
 		const isTabletLandscape = useTabletLandscape();
 		const { themeValue } = useTheme();
@@ -53,8 +57,11 @@ const ParticipantItem = memo(
 		const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 		const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || participantName || '';
 		const avatar = useMemo(() => {
+			if (isAgent) {
+				return AGENT_DEFAULT_AVATAR;
+			}
 			return member?.clan_avatar || member?.user?.avatar_url || '';
-		}, [member]);
+		}, [isAgent, member?.clan_avatar, member?.user?.avatar_url]);
 		const dispatch = useAppDispatch();
 
 		const handleFocusScreen = () => {
@@ -365,6 +372,7 @@ const ParticipantScreen = ({ setFocusedScreenShare, activeSoundReactions, isGrou
 								canMangeVoice={userCanManageVoice}
 								currentUsername={currentUsername}
 								clanId={clanId}
+								isAgent={participant?.isAgent}
 							/>
 						);
 					})}
