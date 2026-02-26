@@ -33,6 +33,7 @@ export interface MemberContextMenuHandlers {
 	handleRemoveFromThread: () => void;
 	handleBanChat: (isBan: boolean, banTime?: number) => void;
 	handleShareContact: () => void;
+	handleUnBlockFriend: () => void;
 }
 
 export interface MemberContextMenuOptions {

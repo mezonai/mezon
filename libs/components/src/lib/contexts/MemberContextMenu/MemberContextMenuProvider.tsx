@@ -52,7 +52,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 	const [hasClanOwnerPermission, hasAdminPermission] = usePermissionChecker([EPermission.clanOwner, EPermission.administrator]);
 	const isBan = useAppSelector((state) => selectBanMemberCurrentClanById(state, currentChannelId || '', currentUser?.id || ''));
 	const dispatch = useAppDispatch();
-	const { addFriend, deleteFriend } = useFriends();
+	const { addFriend, deleteFriend, unBlockFriend } = useFriends();
 	const { createDirectMessageWithUser } = useDirect();
 	const { toDmGroupPageFromMainApp, navigate } = useAppNavigation();
 
@@ -162,7 +162,8 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 	const isFriend = friendStatus === EStateFriend.FRIEND;
 	const isBlocked = friendInfo?.state === EStateFriend.BLOCK;
 
-	const shouldShowAddFriend = !isSelf && !isFriend && !!currentUser?.user?.id;
+	const shouldShowAddFriend = !isSelf && !isFriend && !isBlocked && !!currentUser?.user?.id;
+	const shouldShowUnblock = !isSelf && isBlocked && !!currentUser?.user?.id;
 	const shouldShowRemoveFriend = !isSelf && isFriend && !!currentUser?.user?.id;
 
 	const shouldShow = (optionName: string) => {
@@ -181,6 +182,8 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 				return !isSelf;
 			case 'addFriend':
 				return shouldShowAddFriend;
+			case 'unblock':
+				return shouldShowUnblock;
 			case 'removeFriend':
 				return shouldShowRemoveFriend;
 			case 'shareContact':
@@ -350,6 +353,11 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 				if (user) {
 					openShareContactModal(user);
 				}
+			},
+			handleUnBlockFriend: () => {
+				if (user?.user?.username && user?.user?.id) {
+					unBlockFriend(user.user.username, user.user.id);
+				}
 			}
 		};
 	};
@@ -443,6 +451,13 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 							<MemberMenuItem
 								label={t('member.addFriend')}
 								onClick={currentHandlers.handleAddFriend}
+								setWarningStatus={setWarningStatus}
+							/>
+						)}
+						{shouldShow('unblock') && (
+							<MemberMenuItem
+								label={t('member.unblock')}
+								onClick={currentHandlers.handleUnBlockFriend}
 								setWarningStatus={setWarningStatus}
 							/>
 						)}

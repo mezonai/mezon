@@ -20,6 +20,7 @@
 		"alreadyFriends": "Bạn đã là bạn bè với người dùng này!",
 		"waitAccept": "Bạn đã gửi yêu cầu kết bạn tới người dùng này rồi!",
 		"invalidInput": "Vui lòng chỉ sử dụng số, chữ cái, dấu gạch dưới _ hoặc dấu chấm.",
+		"blockedUser": "Bạn đã chặn người dùng này. Vui lòng bỏ chặn trước khi gửi lời mời kết bạn.",
 		"waitingMessage": "Mezon đang chờ bạn. Nhưng bạn không cần phải chờ!"
 	},
 	"requestFailedPopup": {
