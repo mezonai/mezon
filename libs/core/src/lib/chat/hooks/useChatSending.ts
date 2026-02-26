@@ -8,6 +8,7 @@ import {
 	selectMemberClanByUserId,
 	selectSearchChannelById,
 	selectTopicAnonymousMode,
+	socketState,
 	topicsActions,
 	useAppDispatch,
 	useAppSelector
@@ -257,19 +258,36 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				t: content.t?.trim()
 			};
 
-			await socket.updateChatMessage(
-				getClanId || '0',
-				channelIdOrDirectId ?? '0',
-				mode,
-				isPublic,
-				messageId,
-				trimContent,
-				mentions,
-				attachments,
-				hide_editted,
-				topic_id || '0',
-				!!isTopic
-			);
+			if (socketState.isConnected) {
+				await socket.updateChatMessage(
+					getClanId || '0',
+					channelIdOrDirectId ?? '0',
+					mode,
+					isPublic,
+					messageId,
+					trimContent,
+					mentions,
+					attachments,
+					hide_editted,
+					topic_id || '0',
+					!!isTopic
+				);
+			} else {
+				await client.updateChannelMessage(
+					session,
+					getClanId || '0',
+					channelIdOrDirectId ?? '0',
+					mode,
+					isPublic,
+					messageId || '0',
+					trimContent,
+					mentions,
+					attachments,
+					hide_editted,
+					topic_id || '0',
+					!!isTopic
+				);
+			}
 		},
 		[sessionRef, clientRef, socketRef, channelOrDirect, getClanId, channelIdOrDirectId, mode, isPublic]
 	);

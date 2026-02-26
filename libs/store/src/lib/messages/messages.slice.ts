@@ -42,7 +42,7 @@ import { clansActions, selectClanExists, selectClanHasUnreadMessage, selectClans
 import { selectCurrentDM, selectDirectMessageEntities } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, socketState, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
 import { referencesActions, selectOgpData } from './references.slice';
@@ -1134,20 +1134,39 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			};
 		}
 
-		const res = await socket.writeChatMessage(
-			clanId,
-			channelId,
-			mode,
-			isPublic,
-			content,
-			mentions,
-			uploadedFiles,
-			references,
-			anonymous,
-			mentionEveryone,
-			'',
-			code
-		);
+		let res;
+		if (socketState.isConnected) {
+			res = await socket.writeChatMessage(
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				content,
+				mentions,
+				uploadedFiles,
+				references,
+				anonymous,
+				mentionEveryone,
+				'',
+				code
+			);
+		} else {
+			res = await client.sendChannelMessage(
+				session,
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				typeof content === 'object' ? JSON.stringify(content) : content,
+				mentions,
+				uploadedFiles,
+				references,
+				anonymous,
+				mentionEveryone,
+				avatar,
+				code
+			);
+		}
 		thunkAPI.dispatch(referencesActions.clearOgpData());
 
 		return res;
