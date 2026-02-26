@@ -1,12 +1,12 @@
-import { themeColors } from '../../themes';
+import type { themeColors } from '../../themes';
 
 export enum ThemeModeBase {
 	LIGHT = 'light',
 	DARK = 'dark',
 	SUNRISE = 'sunrise',
 	REDDARK = 'redDark',
-	PURPLE_HAZE = 'purple_haze',
-	ABYSS_DARK = 'abyss_dark',
+	PURPLE_HAZE = 'purpleHaze',
+	ABYSS_DARK = 'abyssDark',
 	SUNSET = 'sunset'
 }
 
@@ -18,7 +18,7 @@ export type ThemeMode = ThemeModeBase | ThemeModeAuto;
 
 export interface ThemeContextType {
 	themeBasic: ThemeModeBase;
-	theme: ThemeModeAuto;
+	theme: ThemeMode;
 	themeValue: (typeof themeColors)[ThemeModeBase];
 	setTheme: (theme: ThemeMode) => void;
 }
