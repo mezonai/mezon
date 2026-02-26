@@ -95,6 +95,7 @@ export interface AppState {
 	isShowUpdateUsername: boolean;
 	isTimelineViewMode: boolean;
 	autoStart: boolean;
+	hardwareAcceleration: boolean;
 	isMediaChannelViewMode: boolean;
 	autoHidden: boolean;
 }
@@ -149,6 +150,7 @@ export const initialAppState: AppState = {
 	isTimelineViewMode: false,
 	isMediaChannelViewMode: false,
 	autoStart: true,
+	hardwareAcceleration: true,
 	autoHidden: false
 };
 
@@ -389,7 +391,7 @@ export const appSlice = createSlice({
 			if (!state.history || !state.history?.url?.length) return;
 			const filteredHistory = state.history.url.filter((url) => !url.includes(`/clans/${clanId}/`));
 			let countCurrent = state.history?.current !== null ? state.history?.current : 0;
-			state.history.url.map((url, index) => {
+			state.history.url.forEach((url, index) => {
 				if (index <= countCurrent && url.includes(`/clans/${clanId}/`)) {
 					if (!state.history?.current) {
 						return;
@@ -427,6 +429,9 @@ export const appSlice = createSlice({
 		},
 		setTimelineViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isTimelineViewMode = action.payload;
+		},
+		toggleHardwareAcceleration: (state) => {
+			state.hardwareAcceleration = !state.hardwareAcceleration;
 		},
 		setMediaChannelViewMode: (state, action: PayloadAction<boolean>) => {
 			state.isMediaChannelViewMode = action.payload;
@@ -496,6 +501,10 @@ export const selectHistory = createSelector(getAppState, (state: AppState) => st
 export const selectIsShowUpdateUsername = createSelector(getAppState, (state: AppState) => state.isShowUpdateUsername);
 
 export const selectTimelineViewMode = createSelector(getAppState, (state: AppState) => state.isTimelineViewMode);
-export const selectMediaChannelViewMode = createSelector(getAppState, (state: AppState) => state.isMediaChannelViewMode);
+
 export const selectAutoStart = createSelector(getAppState, (state: AppState) => state.autoStart);
+
+export const selectHardwareAcceleration = createSelector(getAppState, (state: AppState) => state.hardwareAcceleration);
+export const selectMediaChannelViewMode = createSelector(getAppState, (state: AppState) => state.isMediaChannelViewMode);
+
 export const selectAutoHidden = createSelector(getAppState, (state: AppState) => state.autoHidden);

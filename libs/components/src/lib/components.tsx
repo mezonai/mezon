@@ -76,6 +76,7 @@ export { default as SearchMessageChannelRender } from './components/SearchMessag
 export { default as SearchModal } from './components/SearchModal';
 export { default as SettingAccount } from './components/SettingAccount';
 export { default as SettingActivity } from './components/SettingActivity';
+export { default as SettingAdvanced } from './components/SettingAdvanced';
 export { default as SettingAppearance } from './components/SettingAppearance';
 export { default as SettingDevices } from './components/SettingDevices';
 export { SettingLanguage } from './components/SettingLanguage';
