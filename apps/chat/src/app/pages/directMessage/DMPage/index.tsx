@@ -153,6 +153,7 @@ const DirectMessage = () => {
 	const directMessage = useAppSelector((state) => selectDirectById(state, directId));
 	const hasKeyE2ee = useSelector(selectHasKeyE2ee);
 	const loadingStatus = useSelector(selectDirectLoadingStatus);
+	const loadedChannelsRef = useRef<Set<string>>(new Set());
 
 	const messagesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -225,7 +226,11 @@ const DirectMessage = () => {
 		}
 	}, [directMessage, dispatch, hasKeyE2ee]);
 
-	if (loadingStatus === 'loading' || loadingStatus === 'not loaded') {
+	if (loadingStatus === 'loaded' && directId) {
+		loadedChannelsRef.current.add(directId);
+	}
+
+	if ((loadingStatus === 'loading' || loadingStatus === 'not loaded') && !loadedChannelsRef.current.has(directId ?? '')) {
 		return null;
 	}
 

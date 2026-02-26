@@ -5,7 +5,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { accountReducer } from './account/account.slice';
 import { appReducer } from './app/app.slice';
-import { authReducer } from './auth/auth.slice';
+import { authReducer, setupSessionSyncListener } from './auth/auth.slice';
 import { categoriesReducer } from './categories/categories.slice';
 import { channelMembersReducer } from './channelmembers/channel.members';
 import { channelsReducer } from './channels/channels.slice';
@@ -457,9 +457,7 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 		window.addEventListener('storage', handleStorageChange);
 	}
 
-	import('./auth/auth.slice').then(({ setupSessionSyncListener }) => {
-		setupSessionSyncListener(store);
-	});
+	setupSessionSyncListener(store);
 
 	return { store, persistor };
 };

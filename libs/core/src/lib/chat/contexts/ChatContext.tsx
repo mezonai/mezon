@@ -8,6 +8,7 @@ import {
 	appActions,
 	attachmentActions,
 	audioCallActions,
+	authActions,
 	badgeService,
 	canvasAPIActions,
 	categoriesActions,
@@ -79,6 +80,7 @@ import {
 	selectUserCallId,
 	selectVoiceInfo,
 	selectWelcomeChannelByClanId,
+	socketState,
 	statusActions,
 	stickerSettingActions,
 	threadsActions,
@@ -183,8 +185,10 @@ import type {
 	ApiWebhook
 } from 'mezon-js/api.gen';
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Subject } from 'rxjs';
+import { debounceTime, exhaustMap, filter } from 'rxjs/operators';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { handleGroupCallSocketEvent } from './groupCallSocketHandler';
@@ -2574,7 +2578,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onchannelpresence = onchannelpresence;
 
 			socket.ondisconnect = ondisconnect;
-
 			socket.onerror = onerror;
 
 			socket.onmessagetyping = onmessagetyping;
@@ -2727,56 +2730,99 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		]
 	);
 
-	const handleReconnect = useCallback(
-		async (socketType: string) => {
-			if (socketRef.current?.isOpen()) {
+	const reconnect$ = useMemo(() => new Subject<string>(), []);
+
+	const executeReconnect = useCallback(
+		async (_socketType: string) => {
+			socketState.status = 'connecting';
+
+			console.log(socketState.status, 'socketState.status');
+
+			const store = getStore();
+			const clanIdActive = selectCurrentClanId(store.getState());
+
+			const socket = await reconnectWithTimeout(clanIdActive ?? '');
+
+			if (socket === 'RECONNECTING') {
 				return;
 			}
 
-			try {
-				const store = getStore();
-				const clanIdActive = selectCurrentClanId(store.getState());
-				const socket = await reconnectWithTimeout(clanIdActive ?? '');
-
-				if (socket === 'RECONNECTING') {
-					return;
-				}
-
-				if (!socket) {
-					dispatch(
-						toastActions.addToast({
-							message: 'Socket reconnecting...',
-							type: 'info',
-							autoClose: 3000,
-							id: 'SOCKET_RECONNECTING'
-						})
-					);
-					return;
-				}
-				setCallbackEventFn(socket as Socket);
-				dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
-				dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
-				dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
-			} catch (error) {
+			if (!socket) {
+				socketState.status = 'disconnected';
 				dispatch(
 					toastActions.addToast({
 						message: 'Socket reconnecting...',
 						type: 'info',
 						autoClose: 3000,
-						id: 'SOCKET_RECONNECTING_ERROR'
+						id: 'SOCKET_RECONNECTING'
 					})
 				);
-				captureSentryError(error, 'SOCKET_RECONNECT');
+				return;
 			}
+			setCallbackEventFn(socket as Socket);
+			dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
+			dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
+			dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
 		},
 		[reconnectWithTimeout, setCallbackEventFn, dispatch]
 	);
 
+	useEffect(() => {
+		const subscription = reconnect$
+			.pipe(
+				filter(() => !socketRef.current?.isOpen()),
+				debounceTime(500),
+				exhaustMap(
+					(socketType) =>
+						new Promise<void>((resolve) => {
+							executeReconnect(socketType)
+								.catch((error) => {
+									dispatch(
+										toastActions.addToast({
+											message: 'Socket reconnecting...',
+											type: 'info',
+											autoClose: 3000,
+											id: 'SOCKET_RECONNECTING_ERROR'
+										})
+									);
+									captureSentryError(error, 'SOCKET_RECONNECT');
+								})
+								.finally(resolve);
+						})
+				)
+			)
+			.subscribe();
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [reconnect$, executeReconnect, dispatch]);
+
+	useEffect(() => {
+		const onSessionExpired = () => {
+			dispatch(authActions.setLogout());
+			dispatch(walletActions.setLogout());
+		};
+		window.addEventListener('mezon:session-expired', onSessionExpired);
+		return () => {
+			window.removeEventListener('mezon:session-expired', onSessionExpired);
+		};
+	}, [dispatch]);
+
+	const handleReconnect = useCallback(
+		(socketType: string) => {
+			reconnect$.next(socketType);
+		},
+		[reconnect$]
+	);
+
 	const ondisconnect = useCallback(() => {
+		socketState.status = 'disconnected';
 		handleReconnect('Socket disconnected, attempting to reconnect...');
 	}, [handleReconnect]);
 
 	const onHeartbeatTimeout = useCallback(() => {
+		socketState.status = 'disconnected';
 		handleReconnect('Socket hearbeat timeout, attempting to reconnect...');
 	}, [handleReconnect]);
 

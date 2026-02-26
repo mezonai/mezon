@@ -22,19 +22,10 @@ export function useAccount() {
 		[dispatch]
 	);
 
-	const updateUserName = React.useCallback(
-		async (username: string) => {
-			const action = await dispatch(clansActions.updateUsername({ username }));
-			return action.payload;
-		},
-		[dispatch]
-	);
-
 	return useMemo(
 		() => ({
-			updateUser,
-			updateUserName
+			updateUser
 		}),
-		[updateUser, updateUserName]
+		[updateUser]
 	);
 }
