@@ -194,6 +194,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(clansActions.joinClan({ clanId: '0' }));
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 	dispatch(listUsersByUserActions.fetchListUsersByUser({}));
+	dispatch(clansActions.fetchClans({}));
 	dispatch(friendsActions.fetchListFriends({}));
 	dispatch(directActions.fetchDirectMessage({}));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));
