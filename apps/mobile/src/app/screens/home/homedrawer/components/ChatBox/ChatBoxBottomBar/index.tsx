@@ -138,7 +138,8 @@ const SuggestionsPanel = memo(
 		channelId,
 		mode,
 		onSelectCommand,
-		modeKeyBoardBottomSheet
+		modeKeyBoardBottomSheet,
+		inputValue
 	}: {
 		triggers: any;
 		listMentions: MentionDataProps[];
@@ -147,6 +148,7 @@ const SuggestionsPanel = memo(
 		mode: ChannelStreamMode;
 		onSelectCommand: (command: any) => void;
 		modeKeyBoardBottomSheet: string;
+		inputValue: string;
 	}) => {
 		const shouldCloseSuggestions = useMemo(() => {
 			const isPanelOpen =
@@ -165,7 +167,7 @@ const SuggestionsPanel = memo(
 				)}
 				{triggers?.hashtag?.keyword !== undefined && <HashtagSuggestions directMessageId={channelId} mode={mode} {...triggers.hashtag} />}
 				{triggers?.emoji?.keyword !== undefined && <EmojiSuggestion {...triggers.emoji} />}
-				{triggers?.slash?.keyword !== undefined && (
+				{triggers?.slash?.keyword !== undefined && inputValue?.trimStart()?.startsWith('/') && (
 					<SlashCommandSuggestions keyword={triggers?.slash?.keyword} channelId={channelId} onSelectCommand={onSelectCommand} />
 				)}
 			</>
@@ -803,6 +805,7 @@ export const ChatBoxBottomBar = memo(
 						mode={mode}
 						onSelectCommand={handleSlashCommandSelect}
 						modeKeyBoardBottomSheet={modeKeyBoardBottomSheet}
+						inputValue={mentionTextValue}
 					/>
 				</View>
 				<AttachmentPreview channelId={currentChannelKey} />

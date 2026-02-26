@@ -31,6 +31,7 @@ import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';
 import { auditLogReducer } from './auditLog/auditLog.slice';
 import { auditLogFilterReducer } from './auditLog/auditLogFilter.slice';
+import { badgeService } from './badge/badgeService';
 import { canvasAPIReducer } from './canvas/canvasAPI.slice';
 import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChannel.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
@@ -565,6 +566,9 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 	});
 	storeInstance = store;
 	storeCreated = true;
+
+	badgeService.init(store.dispatch, store.getState as any);
+
 	const persistor = persistStore(store);
 	return { store, persistor };
 };

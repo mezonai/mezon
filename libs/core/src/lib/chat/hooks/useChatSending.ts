@@ -3,21 +3,19 @@ import {
 	messagesActions,
 	selectAllAccount,
 	selectAnonymousMode,
-	selectChannelById,
 	selectCurrentTopicId,
 	selectInitTopicMessageId,
 	selectMemberClanByUserId,
 	selectSearchChannelById,
 	selectTopicAnonymousMode,
-	selectVoiceChannelMembersByChannelId,
+	socketState,
 	topicsActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { getWebUploadedAttachments } from '@mezon/utils';
-import { ChannelStreamMode, ChannelType } from 'mezon-js';
+import { ChannelStreamMode } from 'mezon-js';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api.gen';
 import React, { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
@@ -120,46 +118,6 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				});
 			}
 
-			const state = getStore().getState();
-			const currentChannel = selectChannelById(state, channelIdOrDirectId ?? '');
-			const isVoiceChannel =
-				currentChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE || currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING;
-
-			if (isVoiceChannel) {
-				const session = sessionRef.current;
-				const client = clientRef.current;
-				const socket = socketRef.current;
-
-				if (!client || !session || !socket) {
-					throw new Error('Client is not initialized');
-				}
-
-				const voiceMembers = selectVoiceChannelMembersByChannelId(state, channelIdOrDirectId ?? '', getClanId || '');
-				const otherMembers = voiceMembers?.filter((userId) => userId !== currentUserId) || [];
-
-				let uploadedFiles: ApiMessageAttachment[] = [];
-				if (attachments?.length) {
-					uploadedFiles = await getWebUploadedAttachments({ attachments, client, session });
-				}
-
-				await socket.writeEphemeralMessage(
-					otherMembers,
-					getClanId || '',
-					channelIdOrDirectId ?? '',
-					mode,
-					isPublic,
-					moreContent,
-					mentions,
-					uploadedFiles,
-					references,
-					false,
-					false,
-					priorityAvatar || '',
-					code
-				);
-				return;
-			}
-
 			if (ephemeralReceiverId) {
 				await dispatch(
 					messagesActions.sendEphemeralMessage({
@@ -168,7 +126,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 						clanId: getClanId || '',
 						mode,
 						isPublic,
-						content: moreContent,
+						content,
 						mentions,
 						attachments,
 						references,
@@ -259,10 +217,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			currentTopicId,
 			createTopic,
 			anonymousMode,
-			topicAnonymousMode,
-			sessionRef,
-			clientRef,
-			socketRef
+			topicAnonymousMode
 		]
 	);
 
@@ -290,8 +245,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 			attachments?: ApiMessageAttachment[],
 			hide_editted?: boolean,
 			topic_id?: string,
-			isTopic?: boolean,
-			_oldMentions?: string
+			isTopic?: boolean
 		) => {
 			const session = sessionRef.current;
 			const client = clientRef.current;
@@ -304,19 +258,36 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				t: content.t?.trim()
 			};
 
-			await socket.updateChatMessage(
-				getClanId || '0',
-				channelIdOrDirectId ?? '0',
-				mode,
-				isPublic,
-				messageId,
-				trimContent,
-				mentions,
-				attachments,
-				hide_editted,
-				topic_id || '0',
-				!!isTopic
-			);
+			if (socketState.isConnected) {
+				await socket.updateChatMessage(
+					getClanId || '0',
+					channelIdOrDirectId ?? '0',
+					mode,
+					isPublic,
+					messageId,
+					trimContent,
+					mentions,
+					attachments,
+					hide_editted,
+					topic_id || '0',
+					!!isTopic
+				);
+			} else {
+				await client.updateChannelMessage(
+					session,
+					getClanId || '0',
+					channelIdOrDirectId ?? '0',
+					mode,
+					isPublic,
+					messageId || '0',
+					trimContent,
+					mentions,
+					attachments,
+					hide_editted,
+					topic_id || '0',
+					!!isTopic
+				);
+			}
 		},
 		[sessionRef, clientRef, socketRef, channelOrDirect, getClanId, channelIdOrDirectId, mode, isPublic]
 	);

@@ -7,12 +7,12 @@ import {
 	getTikTokEmbedSize,
 	getTikTokEmbedUrl,
 	getYouTubeEmbedSize,
-	getYouTubeEmbedUrl
+	type ObserveFn
 } from '@mezon/utils';
 import type { Element, Root } from 'hast';
 import { common, createLowlight } from 'lowlight';
 import { ChannelStreamMode } from 'mezon-js';
-import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -497,35 +497,86 @@ const TripleBackticks: React.FC<BacktickOpt> = ({ contentBacktick, isLightMode: 
 
 type SocialPlatform = EBacktickType.LINKYOUTUBE | EBacktickType.LINKTIKTOK | EBacktickType.LINKFACEBOOK;
 
-const SocialEmbed: React.FC<{ url: string; platform: SocialPlatform; isSearchMessage?: boolean; isInPinMsg?: boolean }> = ({
-	url,
-	platform,
-	isSearchMessage,
-	isInPinMsg
-}) => {
+function extractYouTubeId(url: string): string | null {
+	const patterns = [/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/, /youtube\.com\/embed\/([^?&\s]+)/, /youtube\.com\/v\/([^?&\s]+)/];
+
+	for (const pattern of patterns) {
+		const match = url.match(pattern);
+		if (match) return match[1];
+	}
+	return null;
+}
+
+function EmbedSkeleton({ borderColor }: { borderColor: string }) {
+	return (
+		<div className="flex">
+			<div className="border-l-4 rounded-l" style={{ borderColor }}></div>
+			<div className="p-4 bg-[#2b2d31] rounded flex-1">
+				<div className="relative w-full aspect-video bg-bgLightSecondary dark:bg-bgSecondary rounded-lg flex items-center justify-center">
+					<div className="w-8 h-8 border-2 border-textSecondary800 dark:border-textSecondary border-t-transparent rounded-full animate-spin" />
+				</div>
+			</div>
+		</div>
+	);
+}
+
+const SocialEmbed: React.FC<{
+	url: string;
+	platform: SocialPlatform;
+	isSearchMessage?: boolean;
+	isInPinMsg?: boolean;
+	observeIntersection?: ObserveFn;
+}> = ({ url, platform, isSearchMessage, isInPinMsg, observeIntersection }) => {
+	const containerRef = useRef<HTMLDivElement>(null);
+	const [isIntersecting, setIsIntersecting] = useState(!observeIntersection);
+
+	useEffect(() => {
+		if (!observeIntersection || !containerRef.current) {
+			setIsIntersecting(true);
+			return;
+		}
+
+		const cleanup = observeIntersection(containerRef.current, (entry) => {
+			setIsIntersecting(entry.isIntersecting);
+		});
+
+		return cleanup;
+	}, [observeIntersection]);
+
 	const getEmbedData = () => {
 		switch (platform) {
-			case EBacktickType.LINKYOUTUBE:
+			case EBacktickType.LINKYOUTUBE: {
+				const videoId = extractYouTubeId(url);
+				const size = getYouTubeEmbedSize(url, isSearchMessage);
 				return {
-					embedUrl: getYouTubeEmbedUrl(url),
-					size: getYouTubeEmbedSize(url, isSearchMessage),
-					borderColor: '#ff001f',
-					allowAttributes: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
+					type: 'youtube' as const,
+					videoId,
+					size,
+					borderColor: '#ff001f'
 				};
-			case EBacktickType.LINKTIKTOK:
+			}
+			case EBacktickType.LINKTIKTOK: {
+				const embedUrl = getTikTokEmbedUrl(url);
+				const size = getTikTokEmbedSize();
 				return {
-					embedUrl: getTikTokEmbedUrl(url),
-					size: getTikTokEmbedSize(),
+					type: 'tiktok' as const,
+					embedUrl,
+					size,
 					borderColor: '#ff0050',
-					allowAttributes: 'fullscreen; autoplay; clipboard-write; encrypted-media; picture-in-picture'
+					allowAttributes: 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share'
 				};
-			case EBacktickType.LINKFACEBOOK:
+			}
+			case EBacktickType.LINKFACEBOOK: {
+				const embedUrl = getFacebookEmbedUrl(url);
+				const size = getFacebookEmbedSize();
 				return {
-					embedUrl: getFacebookEmbedUrl(url),
-					size: getFacebookEmbedSize(),
+					type: 'facebook' as const,
+					embedUrl,
+					size,
 					borderColor: '#1877f2',
 					allowAttributes: 'autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share'
 				};
+			}
 			default:
 				return null;
 		}
@@ -533,24 +584,55 @@ const SocialEmbed: React.FC<{ url: string; platform: SocialPlatform; isSearchMes
 
 	const embedData = getEmbedData();
 
-	if (!embedData || !embedData.embedUrl) return null;
+	if (!embedData) return null;
 
-	const { embedUrl, size, borderColor, allowAttributes } = embedData;
+	const { borderColor, size } = embedData;
 	const { width, height } = size;
 
 	return (
-		<div className={`flex ${isInPinMsg ? 'w-full' : ''}`}>
-			<div className="border-l-4 rounded-l" style={{ borderColor }}></div>
-			<div className={`p-4 bg-[#2b2d31] rounded ${isInPinMsg ? 'flex-1 min-w-0' : ''}`}>
-				<iframe
-					allow={allowAttributes}
-					title={url}
-					src={embedUrl}
-					style={{ width, height, border: 'none', maxWidth: '100%' }}
-					allowFullScreen
-					referrerPolicy={'strict-origin-when-cross-origin'}
-				></iframe>
-			</div>
+		<div ref={containerRef} className={`flex ${isInPinMsg ? 'w-full' : ''}`}>
+			{!isIntersecting && <EmbedSkeleton borderColor={borderColor} />}
+
+			{isIntersecting && (
+				<>
+					<div className="border-l-4 rounded-l" style={{ borderColor }}></div>
+					<div className={`p-4 bg-[#2b2d31] rounded ${isInPinMsg ? 'flex-1 min-w-0' : ''}`}>
+						{embedData.type === 'youtube' && embedData.videoId && (
+							<lite-youtube
+								videoid={embedData.videoId}
+								style={{
+									width,
+									height,
+									maxWidth: '100%',
+									borderRadius: '8px'
+								}}
+							/>
+						)}
+
+						{embedData.type === 'tiktok' && embedData.embedUrl && (
+							<iframe
+								allow={embedData.allowAttributes}
+								title={url}
+								src={embedData.embedUrl}
+								style={{ width, height, border: 'none', maxWidth: '100%' }}
+								allowFullScreen
+								referrerPolicy={'strict-origin-when-cross-origin'}
+							/>
+						)}
+
+						{embedData.type === 'facebook' && embedData.embedUrl && (
+							<iframe
+								allow={embedData.allowAttributes}
+								title={url}
+								src={embedData.embedUrl}
+								style={{ width, height, border: 'none', maxWidth: '100%' }}
+								allowFullScreen
+								referrerPolicy={'strict-origin-when-cross-origin'}
+							/>
+						)}
+					</div>
+				</>
+			)}
 		</div>
 	);
 };

@@ -587,6 +587,19 @@ export const onboardingSlice = createSlice({
 				const { clan_id, content, idOnboarding } = action.payload;
 				if (state.listOnboarding[clan_id]) {
 					switch (content.guide_type) {
+						case EGuideType.QUESTION:
+							state.listOnboarding[action.payload.clan_id].question = state.listOnboarding[action.payload.clan_id].question.map(
+								(question) => {
+									if (question.id === idOnboarding) {
+										return {
+											...question,
+											...content
+										};
+									}
+									return question;
+								}
+							);
+							break;
 						case EGuideType.RULE:
 							state.listOnboarding[action.payload.clan_id].rule = state.listOnboarding[action.payload.clan_id].rule.map((rule) => {
 								if (rule.id === idOnboarding) {

@@ -9,7 +9,7 @@ export const SIZE_PAGE_SEARCH = 25;
 export const LIMIT_SIZE_UPLOAD_IMG = 1000000;
 export const MAX_FILE_NAME_EMOJI = 62;
 export const MAX_FILE_ATTACHMENTS = 50; // 50 items
-
+export const LENGHT_USER_ID = 19;
 export const DEBOUNCE_TYPING_TIME = 700;
 export const TIME_OF_SHOWING_FIRST_POPUP = 1000 * 60 * 5;
 export const KEY_KEYBOARD = { BACKSPACE: 8, TAB: 9, ENTER: 13, ESC: 27, UP: 38, DOWN: 40, RIGHT: 39, LEFT: 27 };
@@ -30,6 +30,8 @@ export const MAX_LENGTH_MESSAGE_BUZZ = 160;
 export const ONE_MINUTE_MS = 60000;
 export const GUEST_NAME = 'guest';
 export const FOR_SALE_CATE = 'forsale';
+
+export const INVITE_URL_REGEX = /\/invite\/([A-Za-z0-9_-]+)/i;
 
 export const PREDEFINED_EMOJI_CATEGORIES = [
 	'Recent',

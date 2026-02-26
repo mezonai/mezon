@@ -95,7 +95,6 @@ type MessageContextMenuProps = {
 	openReportMessageModal: () => void;
 	linkContent?: string;
 	isLinkContent?: boolean;
-	viewMode?: 'default' | 'timeline';
 };
 
 type JsonObject = {
@@ -127,8 +126,7 @@ function MessageContextMenu({
 	openDeleteMessageModal,
 	openReportMessageModal,
 	linkContent,
-	isLinkContent,
-	viewMode = 'default'
+	isLinkContent
 }: MessageContextMenuProps) {
 	const { t } = useTranslation('contextMenu');
 	const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
@@ -550,11 +548,11 @@ function MessageContextMenu({
 
 	const [enableEditMessageItem, enableReportMessageItem] = useMemo(() => {
 		if (!checkPos) return [false, false];
-		const enableEdit = isMyMessage && !message?.content?.tp && viewMode !== 'timeline';
+		const enableEdit = isMyMessage && !message?.content?.tp;
 		const enableReport = !isMyMessage;
 
 		return [enableEdit, enableReport];
-	}, [isMyMessage, checkPos, message?.content?.tp, viewMode]);
+	}, [isMyMessage, checkPos, message?.content?.tp]);
 
 	const pinMessageStatus = useMemo(() => {
 		if (!checkPos) return undefined;
@@ -568,15 +566,18 @@ function MessageContextMenu({
 
 	const enableCreateThreadItem = useMemo(() => {
 		if (!checkPos) return false;
-		if (viewMode === 'timeline') return false;
-		if (activeMode === ChannelStreamMode.STREAM_MODE_DM || activeMode === ChannelStreamMode.STREAM_MODE_GROUP) {
+		if (
+			activeMode === ChannelStreamMode.STREAM_MODE_DM ||
+			activeMode === ChannelStreamMode.STREAM_MODE_GROUP ||
+			activeMode === ChannelStreamMode.STREAM_MODE_THREAD
+		) {
 			return false;
 		}
 		if (currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING || currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 			return false;
 		}
 		return canManageThread;
-	}, [checkPos, activeMode, canManageThread, currentChannelType, viewMode]);
+	}, [checkPos, activeMode, canManageThread, currentChannelType]);
 
 	const enableDelMessageItem = useMemo(() => {
 		if (!checkPos || message?.content?.tp) return false;
@@ -775,11 +776,7 @@ function MessageContextMenu({
 		});
 		builder.when(
 			checkPos &&
-				(canSendMessage ||
-					activeMode === ChannelStreamMode.STREAM_MODE_DM ||
-					activeMode === ChannelStreamMode.STREAM_MODE_GROUP ||
-					isTopic) &&
-				viewMode !== 'timeline',
+				(canSendMessage || activeMode === ChannelStreamMode.STREAM_MODE_DM || activeMode === ChannelStreamMode.STREAM_MODE_GROUP || isTopic),
 			(builder) => {
 				builder.addMenuItem(
 					'reply',
@@ -831,7 +828,7 @@ function MessageContextMenu({
 			notAllowedType &&
 			!isTopic &&
 			canSendMessage &&
-			builder.when(checkPos && hasPermissionCreateTopic && viewMode !== 'timeline', (builder) => {
+			builder.when(checkPos && hasPermissionCreateTopic, (builder) => {
 				builder.addMenuItem('topicDiscussion', t('topicDiscussion'), handleCreateTopic, <Icons.TopicIcon defaultSize="w-4 h-4" />);
 			});
 		builder.when(checkPos, (builder) => {
@@ -857,7 +854,7 @@ function MessageContextMenu({
 				</svg>
 			);
 		});
-		builder.when(checkPos && quickMenuItems?.length > 0 && viewMode !== 'timeline', (builder) => {
+		builder.when(checkPos && quickMenuItems?.length > 0, (builder) => {
 			builder.addMenuItem(
 				'quickMenus',
 				t('quickMenus'),

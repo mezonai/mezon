@@ -51,6 +51,7 @@ export * from './components/MessageBox';
 export { MessageBox } from './components/MessageBox';
 export { default as AttachmentLoading } from './components/MessageBox/AttachmentLoading';
 export { default as AttachmentPreviewThumbnail } from './components/MessageBox/AttachmentPreviewThumbnail';
+export { default as PreviewOgp } from './components/MessageBox/PreviewOgp';
 export { MentionReactInput } from './components/MessageBox/ReactionMentionInput';
 export { default as CustomModalMentions } from './components/MessageBox/ReactionMentionInput/CustomModalMentions';
 export { default as SuggestItem } from './components/MessageBox/ReactionMentionInput/SuggestItem';
@@ -75,6 +76,7 @@ export { default as SearchMessageChannelRender } from './components/SearchMessag
 export { default as SearchModal } from './components/SearchModal';
 export { default as SettingAccount } from './components/SettingAccount';
 export { default as SettingActivity } from './components/SettingActivity';
+export { default as SettingAdvanced } from './components/SettingAdvanced';
 export { default as SettingAppearance } from './components/SettingAppearance';
 export { default as SettingDevices } from './components/SettingDevices';
 export { SettingLanguage } from './components/SettingLanguage';

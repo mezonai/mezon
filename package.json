@@ -79,6 +79,7 @@
     "i18next-http-backend": "^2.5.1",
     "i18next-resources-to-backend": "^1.2.1",
     "is-electron": "^2.2.2",
+    "lite-youtube-embed": "^0.3.4",
     "livekit-client": "^2.16.1",
     "localforage": "^1.10.0",
     "lodash.debounce": "^4.0.8",

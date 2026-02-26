@@ -1,3 +1,7 @@
+import { INVITE_URL_REGEX } from '@mezon/utils';
+import type { ApiMessageEntity, ApiMessageEntityTextUrl } from 'mezon-js/api.gen';
+import { ApiMessageEntityTypes } from 'mezon-js/dist/api.gen';
+
 export type ApiMessageEntityDefault = {
 	type: Exclude<
 		`${ApiMessageEntityTypes}`,
@@ -247,8 +251,11 @@ export default function parseHtmlAsFormattedText(html: string, withMarkdownLinks
 		if (node.nodeType === Node.COMMENT_NODE) return;
 		const { index, entity } = getEntityDataFromNode(node, text, textIndex);
 		if (!linkPreview.url && (entity?.type === ApiMessageEntityTypes.Url || entity?.type === ApiMessageEntityTypes.TextUrl)) {
-			if (process.env.NX_DOMAIN_URL && !(entity as unknown as ApiMessageEntityTextUrl).url.includes(process.env.NX_DOMAIN_URL)) {
-				linkPreview.url = (entity as unknown as ApiMessageEntityTextUrl).url;
+			const urlValue = (entity as unknown as ApiMessageEntityTextUrl).url;
+			const isInternal = !!process.env.NX_DOMAIN_URL && urlValue.includes(process.env.NX_DOMAIN_URL);
+			const isInviteLink = INVITE_URL_REGEX.test(urlValue);
+			if (!isInternal || isInviteLink) {
+				linkPreview.url = urlValue;
 				linkPreview.index = index;
 			}
 		}

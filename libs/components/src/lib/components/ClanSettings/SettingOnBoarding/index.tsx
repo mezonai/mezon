@@ -1,5 +1,13 @@
 import { MemberProvider } from '@mezon/core';
-import { onboardingActions, selectCurrentClanId, selectCurrentClanIsOnboarding, selectFormOnboarding, useAppDispatch } from '@mezon/store';
+import {
+	onboardingActions,
+	selectCurrentClanId,
+	selectCurrentClanIsOnboarding,
+	selectFormOnboarding,
+	selectOnboardingByClan,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { handleUploadEmoticon, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
@@ -61,7 +69,17 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 				setTimeout(() => setShowOnboardingHighlight(false), 2000);
 				return;
 			}
-			await handleCreateOnboarding();
+
+			const hasNewData =
+				formOnboarding.questions.length > 0 ||
+				formOnboarding.rules.length > 0 ||
+				formOnboarding.task.length > 0 ||
+				formOnboarding.greeting !== null;
+
+			if (hasNewData) {
+				await handleCreateOnboarding();
+			}
+
 			await dispatch(
 				onboardingActions.enableOnboarding({
 					clan_id: currentClanId as string,
@@ -85,6 +103,7 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 	};
 
 	const formOnboarding = useSelector(selectFormOnboarding);
+	const onboardingByClan = useAppSelector((state) => selectOnboardingByClan(state, currentClanId as string));
 	const { sessionRef, clientRef } = useMezon();
 
 	const handleCreateOnboarding = async () => {
@@ -141,8 +160,20 @@ const SettingOnBoarding = ({ onClose }: { onClose?: () => void }) => {
 	};
 
 	const checkCreateValidate = useMemo(() => {
-		return formOnboarding.questions.length > 0 || formOnboarding.rules.length > 0 || formOnboarding.task.length > 0;
-	}, [formOnboarding]);
+		const hasQuestions = formOnboarding.questions.length > 0;
+		const hasRules = formOnboarding.rules.length > 0;
+		const hasTasks = formOnboarding.task.length > 0;
+		const hasFormData = hasQuestions || hasRules || hasTasks;
+
+		const hasServerQuestions = onboardingByClan.question.length > 0;
+		const hasServerRules = onboardingByClan.rule.length > 0;
+		const hasServerTasks = onboardingByClan.mission.length > 0;
+		const hasServerData = hasServerQuestions || hasServerRules || hasServerTasks;
+
+		const result = hasFormData || hasServerData;
+
+		return result;
+	}, [formOnboarding, onboardingByClan]);
 
 	const handleResetOnboarding = () => {
 		dispatch(onboardingActions.resetOnboarding({}));

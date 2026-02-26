@@ -1,10 +1,13 @@
-import { getStore, selectDirectById } from '@mezon/store';
+import type { InvitesEntity } from '@mezon/store';
+import { getStore, inviteActions, selectDirectById, selectInviteById } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
-import { EBacktickType, processText, sleep } from '@mezon/utils';
+import { EBacktickType, INVITE_URL_REGEX, processText, sleep } from '@mezon/utils';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export function useSendInviteMessage() {
+	const { t } = useTranslation('linkMessageInvite');
 	const { clientRef, sessionRef, socketRef } = useMezon();
 	const client = clientRef.current;
 
@@ -22,9 +25,44 @@ export function useSendInviteMessage() {
 				linkInMk.push(item);
 			});
 
+			const mk = [...markdowns, ...linkInMk];
+
+			const store = getStore();
+			const inviteMatch = url.match(INVITE_URL_REGEX);
+			const inviteId = inviteMatch?.[1] || '';
+			if (inviteId) {
+				let inviteInfo: InvitesEntity | undefined = selectInviteById(inviteId)(store.getState());
+				if (!inviteInfo) {
+					try {
+						inviteInfo = await store.dispatch(inviteActions.getLinkInvite({ inviteId }) as any).unwrap();
+					} catch {
+						inviteInfo = undefined;
+					}
+				}
+
+				const inviteLink = links.find((link) => {
+					const start = link?.s ?? 0;
+					const end = link?.e ?? 0;
+					if (!end || end <= start) return false;
+					const linkValue = url.substring(start, end);
+					return INVITE_URL_REGEX.test(linkValue);
+				});
+				const inviteIndex = inviteLink?.s ?? 0;
+				const memberCount = Number(inviteInfo?.member_count || 0);
+				mk.push({
+					type: EBacktickType.OGP_PREVIEW,
+					s: url.length,
+					e: url.length + 1,
+					index: inviteIndex,
+					title: inviteInfo?.clan_name || t('unknownClan'),
+					description: inviteInfo ? t('memberCount', { count: memberCount }) : '',
+					image: inviteInfo?.clan_logo || ''
+				});
+			}
+
 			const content: IMessageSendPayload = {
 				t: url,
-				mk: [...markdowns, ...linkInMk]
+				mk
 			};
 
 			const session = sessionRef.current;
@@ -36,7 +74,6 @@ export function useSendInviteMessage() {
 				throw new Error('Client is not initialized');
 			}
 
-			const store = getStore();
 			const foundDM = selectDirectById(store.getState(), channel_id);
 			if (!foundDM) {
 				await sleep(100);
@@ -58,7 +95,7 @@ export function useSendInviteMessage() {
 				code
 			);
 		},
-		[sessionRef, clientRef, socketRef]
+		[sessionRef, clientRef, socketRef, t]
 	);
 
 	return useMemo(

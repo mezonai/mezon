@@ -290,7 +290,7 @@ export const writeActiveArchivedThread = createAsyncThunk(
 	'threads/writeActiveArchivedThread',
 	async ({ clanId, channelId }: { clanId: string; channelId: string }, thunkAPI) => {
 		try {
-			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			await mezon.client.activeArchivedThread(mezon.session, clanId, channelId);
 			thunkAPI.dispatch(threadsActions.updateActiveCodeThread({ channelId, activeCode: ThreadStatus.joined }));
 			return { channelId, activeCode: ThreadStatus.joined };

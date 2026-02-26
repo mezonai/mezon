@@ -32,11 +32,12 @@ const StickerItem = memo(({ item, onPress, isAudio, styles }: any) => {
 			{isAudio ? (
 				<TouchableOpacity onPress={() => onPress(item)} style={[styles.audioContent, styles.itemMargin, item?.isEmpty && { opacity: 0 }]}>
 					{item?.source && (
-						<View style={[styles.audioContent, styles.itemMargin]}>
+						<View style={styles.audioRow}>
 							<RenderAudioItem audioURL={item.source} />
 							<Text style={styles.soundName} numberOfLines={1}>
 								{item?.shortname}
 							</Text>
+							<MezonIconCDN icon={IconCDN.sendMessageIcon} color={styles.sendIconColor} width={size.s_20} height={size.s_20} />
 						</View>
 					)}
 				</TouchableOpacity>

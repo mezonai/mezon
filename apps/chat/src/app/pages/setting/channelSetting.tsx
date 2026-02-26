@@ -23,15 +23,21 @@ const ChannelSetting = () => {
 	const selectClanId = useSelector(selectCurrentClanId);
 
 	const handleSearchByNameChannel = (e: ChangeEvent<HTMLInputElement>) => {
-		setSearchFilter(e.target.value);
-		debouncedSearchChannel(e.target.value);
+		const value = e.target.value;
+		setSearchFilter(value);
+
+		if (!value.trim()) {
+			debouncedSearchChannel.cancel();
+			return;
+		}
+		debouncedSearchChannel(value);
 	};
 
 	const debouncedSearchChannel = useDebouncedCallback(async (value: string) => {
 		await dispatch(
 			channelSettingActions.fetchChannelSettingInClan({
 				clanId: selectClanId as string,
-				parentId: '',
+				parentId: '0',
 				typeFetch: ETypeFetchChannelSetting.SEARCH_CHANNEL,
 				keyword: value
 			})

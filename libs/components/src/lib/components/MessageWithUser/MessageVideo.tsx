@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/ui';
-import { calculateMediaDimensions, useResizeObserver } from '@mezon/utils';
+import { calculateMediaDimensions, useIsIntersecting, useResizeObserver, type ObserveFn } from '@mezon/utils';
 import isElectron from 'is-electron';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import type { Movie, Track } from 'mp4box';
@@ -12,6 +12,7 @@ export type MessageImage = {
 	readonly attachmentData: ApiMessageAttachment;
 	isMobile?: boolean;
 	isPreview?: boolean;
+	observeIntersection?: ObserveFn;
 };
 export const MIN_WIDTH_VIDEO_SHOW = 200;
 export const DEFAULT_HEIGHT_VIDEO_SHOW = 150;
@@ -34,6 +35,9 @@ function isElectronMac(): boolean {
 }
 
 async function probeVideoCodec(url: string, signal?: AbortSignal): Promise<VideoCodecInfo | null> {
+	let timeout: ReturnType<typeof setTimeout> | undefined;
+	let mp4boxFile: ReturnType<typeof createFile> | undefined;
+
 	try {
 		const response = await fetch(url, {
 			headers: { Range: `bytes=0-${RANGE_PROBE_SIZE - 1}` },
@@ -47,24 +51,30 @@ async function probeVideoCodec(url: string, signal?: AbortSignal): Promise<Video
 		const arrayBuffer = await response.arrayBuffer();
 
 		return new Promise<VideoCodecInfo | null>((resolve) => {
-			const mp4boxFile = createFile();
+			mp4boxFile = createFile();
 			let resolved = false;
 
 			const cleanup = () => {
-				mp4boxFile.onReady = undefined;
-				mp4boxFile.onError = undefined;
-				mp4boxFile.flush();
+				if (timeout) {
+					clearTimeout(timeout);
+					timeout = undefined;
+				}
+				if (mp4boxFile) {
+					mp4boxFile.onReady = undefined;
+					mp4boxFile.onError = undefined;
+					mp4boxFile.flush();
+					mp4boxFile = undefined;
+				}
 			};
 
 			const finalize = (result: VideoCodecInfo | null) => {
 				if (resolved) return;
 				resolved = true;
-				clearTimeout(timeout);
 				cleanup();
 				resolve(result);
 			};
 
-			const timeout = setTimeout(() => finalize(null), MP4BOX_TIMEOUT_MS);
+			timeout = setTimeout(() => finalize(null), MP4BOX_TIMEOUT_MS);
 
 			mp4boxFile.onReady = (info: Movie) => {
 				const videoTrack: Track | undefined = info.videoTracks?.[0] || info.tracks?.find((t: Track) => t.type === 'video');
@@ -90,10 +100,20 @@ async function probeVideoCodec(url: string, signal?: AbortSignal): Promise<Video
 
 			mp4boxFile.onError = () => finalize(null);
 
-			const mp4Buffer = MP4BoxBuffer.fromArrayBuffer(arrayBuffer, 0);
-			mp4boxFile.appendBuffer(mp4Buffer);
+			try {
+				const mp4Buffer = MP4BoxBuffer.fromArrayBuffer(arrayBuffer, 0);
+				mp4boxFile.appendBuffer(mp4Buffer);
+			} catch {
+				finalize(null);
+			}
 		});
 	} catch {
+		if (timeout) clearTimeout(timeout);
+		if (mp4boxFile) {
+			mp4boxFile.onReady = undefined;
+			mp4boxFile.onError = undefined;
+			mp4boxFile.flush();
+		}
 		return null;
 	}
 }
@@ -105,13 +125,15 @@ function isUnsafeCodec(info: VideoCodecInfo): boolean {
 	return false;
 }
 
-function useVideoProbe(url: string | undefined) {
+function useVideoProbe(url: string | undefined, shouldProbe: boolean) {
 	const [status, setStatus] = useState<VideoProbeStatus>('probing');
 	const [errorMessage, setErrorMessage] = useState('');
 	const [codecInfo, setCodecInfo] = useState<VideoCodecInfo | null>(null);
 	const { t } = useTranslation('media');
 
 	useEffect(() => {
+		if (!shouldProbe) return;
+
 		if (!url) {
 			setStatus('error');
 			setErrorMessage(t('video.error.cannotPlay'));
@@ -150,7 +172,7 @@ function useVideoProbe(url: string | undefined) {
 			cancelled = true;
 			abortController.abort();
 		};
-	}, [url, t]);
+	}, [url, t, shouldProbe]);
 
 	return { status, errorMessage, codecInfo };
 }
@@ -177,12 +199,27 @@ function useVideoMediaDimensions(attachmentData: ApiMessageAttachment, isMobile:
 }
 
 function useDownloadVideo(url?: string, filename?: string) {
+	const abortRef = useRef<AbortController | null>(null);
+
+	useEffect(() => {
+		return () => {
+			abortRef.current?.abort();
+			abortRef.current = null;
+		};
+	}, []);
+
 	return useCallback(async () => {
 		if (!url) return;
+
+		abortRef.current?.abort();
+		const controller = new AbortController();
+		abortRef.current = controller;
+
 		try {
-			const response = await fetch(url, { mode: 'cors' });
-			if (!response.ok) throw new Error('Network response was not ok');
+			const response = await fetch(url, { mode: 'cors', signal: controller.signal });
+			if (!response.ok) return;
 			const blob = await response.blob();
+			if (controller.signal.aborted) return;
 			const blobUrl = URL.createObjectURL(blob);
 			const a = document.createElement('a');
 			a.href = blobUrl;
@@ -192,19 +229,57 @@ function useDownloadVideo(url?: string, filename?: string) {
 			document.body.removeChild(a);
 			URL.revokeObjectURL(blobUrl);
 		} catch {
-			// ignore
+			/* aborted or network error */
 		}
 	}, [url, filename]);
 }
 
-function MacElectronVideo({ attachmentData, isMobile = false, isPreview = false }: MessageImage) {
+function useVideoCleanup(videoRef: React.RefObject<HTMLVideoElement | null>, isActive: boolean) {
+	const prevActiveRef = useRef(isActive);
+
+	useEffect(() => {
+		if (prevActiveRef.current && !isActive && videoRef.current) {
+			const video = videoRef.current;
+			video.pause();
+			video.removeAttribute('src');
+			video.load();
+		}
+		prevActiveRef.current = isActive;
+	}, [isActive, videoRef]);
+
+	useEffect(() => {
+		const video = videoRef.current;
+		return () => {
+			if (video) {
+				video.pause();
+				video.removeAttribute('src');
+				video.load();
+			}
+		};
+	}, [videoRef]);
+}
+
+function VideoSkeleton({ style }: { style: React.CSSProperties }) {
+	return (
+		<div className="flex items-center justify-center bg-bgLightSecondary dark:bg-bgSecondary rounded-lg" style={style}>
+			<div className="w-8 h-8 border-2 border-textSecondary800 dark:border-textSecondary border-t-transparent rounded-full animate-spin" />
+		</div>
+	);
+}
+
+function MacElectronVideo({ attachmentData, isMobile = false, isPreview = false, observeIntersection }: MessageImage) {
 	const { t } = useTranslation('media');
-	const { status: probeStatus, errorMessage, codecInfo } = useVideoProbe(attachmentData.url);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const isIntersecting = useIsIntersecting(containerRef, observeIntersection);
+	const { status: probeStatus, errorMessage, codecInfo } = useVideoProbe(attachmentData.url, isIntersecting);
 	const { mediaBoxStyle, mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
 	const handleDownloadVideo = useDownloadVideo(attachmentData.url, attachmentData.filename);
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [showControl, setShowControl] = useState(true);
+	const shouldRenderVideo = isIntersecting && probeStatus === 'ready';
+
+	useVideoCleanup(videoRef, shouldRenderVideo);
 
 	const handleOnCanPlay = useCallback((e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
 		if (e.currentTarget.offsetWidth < MIN_WIDTH_VIDEO_SHOW) {
@@ -235,14 +310,12 @@ function MacElectronVideo({ attachmentData, isMobile = false, isPreview = false 
 	}, [showControl]);
 
 	return (
-		<div className="relative overflow-hidden group rounded-lg" style={mediaBoxStyle}>
-			{probeStatus === 'probing' && (
-				<div className="flex items-center justify-center bg-bgLightSecondary dark:bg-bgSecondary rounded-lg" style={mediaStyle}>
-					<div className="w-8 h-8 border-2 border-textSecondary800 dark:border-textSecondary border-t-transparent rounded-full animate-spin" />
-				</div>
-			)}
+		<div ref={containerRef} className="relative overflow-hidden group rounded-lg" style={mediaBoxStyle}>
+			{!isIntersecting && <VideoSkeleton style={mediaStyle} />}
 
-			{(probeStatus === 'error' || probeStatus === 'unsupported') && (
+			{isIntersecting && probeStatus === 'probing' && <VideoSkeleton style={mediaStyle} />}
+
+			{isIntersecting && (probeStatus === 'error' || probeStatus === 'unsupported') && (
 				<div
 					className="flex flex-col items-center justify-center gap-3 p-6 rounded-lg bg-bgLightSecondary dark:bg-bgSecondary"
 					style={mediaStyle}
@@ -264,7 +337,7 @@ function MacElectronVideo({ attachmentData, isMobile = false, isPreview = false 
 				</div>
 			)}
 
-			{probeStatus === 'ready' && (
+			{shouldRenderVideo && (
 				<>
 					<video
 						controls={showControl}
@@ -304,13 +377,17 @@ function MacElectronVideo({ attachmentData, isMobile = false, isPreview = false 
 	);
 }
 
-function DefaultVideo({ attachmentData, isMobile = false, isPreview = false }: MessageImage) {
+function DefaultVideo({ attachmentData, isMobile = false, isPreview = false, observeIntersection }: MessageImage) {
 	const { t } = useTranslation('media');
+	const containerRef = useRef<HTMLDivElement>(null);
+	const isIntersecting = useIsIntersecting(containerRef, observeIntersection);
 	const { mediaBoxStyle, mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
 	const handleDownloadVideo = useDownloadVideo(attachmentData.url, attachmentData.filename);
 
 	const videoRef = useRef<HTMLVideoElement>(null);
 	const [showControl, setShowControl] = useState(true);
+
+	useVideoCleanup(videoRef, isIntersecting);
 
 	const handleOnCanPlay = useCallback((e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
 		if (e.currentTarget.offsetWidth < MIN_WIDTH_VIDEO_SHOW) {
@@ -341,36 +418,45 @@ function DefaultVideo({ attachmentData, isMobile = false, isPreview = false }: M
 	}, [showControl]);
 
 	return (
-		<div className="relative overflow-hidden group rounded-lg" style={mediaBoxStyle}>
-			<video
-				controls={showControl}
-				autoPlay={false}
-				style={mediaStyle}
-				ref={videoRef}
-				onCanPlay={handleOnCanPlay}
-				className="object-contain"
-				preload="metadata"
-				playsInline
-			>
-				<source src={attachmentData.url} />
-				{t('video.error.browserNotSupported')}
-			</video>
+		<div ref={containerRef} className="relative overflow-hidden group rounded-lg" style={mediaBoxStyle}>
+			{!isIntersecting && <VideoSkeleton style={mediaStyle} />}
 
-			{!showControl && (
-				<div
-					className="cursor-pointer absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-30 group"
-					onClick={handleShowFullVideo}
-				>
-					<Icons.PlayButton className="w-4 h-4 text-white transition-all duration-150 group-hover:scale-110" />
-				</div>
+			{isIntersecting && (
+				<>
+					<video
+						controls={showControl}
+						autoPlay={false}
+						style={mediaStyle}
+						ref={videoRef}
+						onCanPlay={handleOnCanPlay}
+						className="object-contain"
+						preload="metadata"
+						playsInline
+					>
+						<source src={attachmentData.url} />
+						{t('video.error.browserNotSupported')}
+					</video>
+
+					{!showControl && (
+						<div
+							className="cursor-pointer absolute inset-0 flex items-center justify-center z-20 bg-black bg-opacity-30 group"
+							onClick={handleShowFullVideo}
+						>
+							<Icons.PlayButton className="w-4 h-4 text-white transition-all duration-150 group-hover:scale-110" />
+						</div>
+					)}
+
+					<div
+						className="group-hover:flex hidden top-2 right-1 cursor-pointer absolute bg-bgSurface rounded-md w-6 h-6  items-center justify-center"
+						onClick={handleDownloadVideo}
+					>
+						<Icons.Download
+							defaultSize="!w-4 !h-4 "
+							defaultFill="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black"
+						/>
+					</div>
+				</>
 			)}
-
-			<div
-				className="group-hover:flex hidden top-2 right-1 cursor-pointer absolute bg-bgSurface rounded-md w-6 h-6  items-center justify-center"
-				onClick={handleDownloadVideo}
-			>
-				<Icons.Download defaultSize="!w-4 !h-4 " defaultFill="dark:text-[#AEAEAE] text-[#535353] dark:hover:text-white hover:text-black" />
-			</div>
 		</div>
 	);
 }
