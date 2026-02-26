@@ -74,5 +74,11 @@ export const style = (colors: Attributes) =>
 		},
 		dmMessageStyleText: {
 			fontSize: size.small
+		},
+		avatarWrapper: {
+			width: size.s_20,
+			height: size.s_20,
+			borderRadius: size.s_20,
+			overflow: 'hidden'
 		}
 	});

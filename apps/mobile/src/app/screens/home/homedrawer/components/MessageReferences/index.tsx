@@ -1,13 +1,13 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import type { ChannelMembersEntity } from '@mezon/store-mobile';
 import { getStore, messagesActions, selectMemberClanByUserId, useAppDispatch } from '@mezon/store-mobile';
+import { MEZON_AVATAR_URL } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
 import type { ApiMessageRef } from 'mezon-js/api.gen';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
-import MezonAvatar from '../../../../../componentUI/MezonAvatar';
+import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { DmListItemLastMessage } from '../../../../messages/DMListItemLastMessage';
@@ -28,14 +28,19 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation('message');
 	const avatarSender = useMemo(() => {
-		if (messageReferences?.mesages_sender_avatar) {
-			return messageReferences?.mesages_sender_avatar;
+		const senderId = messageReferences?.message_sender_id
+		const senderAvatar = messageReferences?.mesages_sender_avatar
+		if (senderId === '0') {
+			return MEZON_AVATAR_URL
+		}
+		if (senderAvatar) {
+			return senderAvatar
 		}
 		const store = getStore();
 		const state = store.getState();
-		const messageSender = selectMemberClanByUserId(state, messageReferences?.message_sender_id ?? '') as unknown as ChannelMembersEntity;
+		const messageSender = selectMemberClanByUserId(state, senderId ?? '')
 		return messageSender?.clan_avatar || messageSender?.user?.avatar_url || '';
-	}, [messageReferences]);
+	}, [messageReferences?.message_sender_id, messageReferences?.mesages_sender_avatar]);
 	const isEmbedMessage = useMemo(() => {
 		try {
 			const content = safeJSONParse(messageReferences?.content ?? '{}');
@@ -70,13 +75,10 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 				<MezonIconCDN icon={IconCDN.reply} width={size.s_34} height={size.s_30} useOriginalColor={true} />
 			</View>
 			<View style={styles.repliedMessageWrapper}>
-				<MezonAvatar
-					avatarUrl={avatarSender}
-					username={messageReferences?.message_sender_username}
-					height={size.s_20}
-					width={size.s_20}
-					customFontSizeAvatarCharacter={size.h8}
-				/>
+				<View style={styles.avatarWrapper}>
+					<MezonClanAvatar image={avatarSender} alt={messageReferences?.message_sender_username || ''} customFontSizeAvatarCharacter={size.h8} />
+				</View>
+
 				<View style={styles.replyContentWrapper}>
 					<Text style={styles.replyDisplayName}>
 						{messageReferences?.message_sender_clan_nick ||
