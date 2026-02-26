@@ -48,7 +48,7 @@ export default memo(function ChannelListUserVoice({ channelId, isCategoryExpande
 
 	return (
 		<>
-			<ChannelItem data={data} isUnRead={isUnRead} isActive={isActive} />
+			<ChannelItem data={data} isUnRead={isUnRead} isActive={isActive} isVoiceActive={combinedMembers?.length > 0} />
 			{combinedMembers?.length > 0 && (
 				<View style={[!isCategoryExpanded && styles.channelListUserVoiceWrapper]}>
 					<FlatList

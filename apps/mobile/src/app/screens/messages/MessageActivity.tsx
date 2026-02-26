@@ -86,11 +86,11 @@ function MessageActivity() {
 		}
 	}, [mergeListFriendAndListUserDM, activityMap, userId]);
 
-	const animatedHeight = useRef(new Animated.Value(data.length > 0 ? size.s_60 : 0)).current;
+	const animatedHeight = useRef(new Animated.Value(data.length > 0 ? size.s_50 : 0)).current;
 
 	useEffect(() => {
 		Animated.timing(animatedHeight, {
-			toValue: data.length > 0 ? size.s_60 : 0,
+			toValue: data.length > 0 ? size.s_50 : 0,
 			duration: 300,
 			easing: Easing.linear,
 			useNativeDriver: false

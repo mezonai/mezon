@@ -1,4 +1,4 @@
-import { type Attributes, size } from '@mezon/mobile-ui';
+import { size, type Attributes } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const createStyles = (themeValue: Attributes) =>
@@ -24,6 +24,7 @@ export const createStyles = (themeValue: Attributes) =>
 			height: size.s_20,
 			justifyContent: 'center',
 			alignItems: 'center',
+			backgroundColor: themeValue.primary,
 			zIndex: 1
 		},
 		scrollViewContentFlex: {

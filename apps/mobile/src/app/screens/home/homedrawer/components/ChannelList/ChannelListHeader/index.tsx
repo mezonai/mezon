@@ -9,6 +9,7 @@ import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 're
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../app/componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { EventViewer } from '../../../../../../components/Event';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
@@ -81,9 +82,9 @@ const ChannelListHeader = () => {
 	return (
 		<View style={styles.container}>
 			<LinearGradient
-				start={{ x: 1, y: 0 }}
+				start={{ x: 0, y: 1 }}
 				end={{ x: 0, y: 0 }}
-				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
+				colors={[themeValue?.primaryGradiant || themeValue.secondary, themeValue?.primaryGradiant || themeValue.primary]}
 				style={[StyleSheet.absoluteFillObject]}
 			/>
 			{!!clanName && (
@@ -111,20 +112,17 @@ const ChannelListHeader = () => {
 			)}
 			<View style={styles.navigationBar}>
 				<TouchableOpacity onPressIn={navigateToSearchPage} style={styles.wrapperSearch}>
-					<LinearGradient
-						start={{ x: 1, y: 0 }}
-						end={{ x: 0, y: 0 }}
-						colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-						style={[StyleSheet.absoluteFillObject]}
-					/>
-					<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+					<View style={styles.searchIcon}>
+						<Icons.SearchIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
+					</View>
+
 					<Text style={styles.placeholderSearchBox}>{t('common.search')}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity onPressIn={onOpenScanQR} style={styles.iconWrapper}>
-					<MezonIconCDN icon={IconCDN.myQRcodeIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+					<Icons.QrIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 				</TouchableOpacity>
 				<TouchableOpacity onPressIn={onOpenEvent} style={styles.iconWrapper}>
-					<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+					<Icons.EventIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 				</TouchableOpacity>
 			</View>
 		</View>

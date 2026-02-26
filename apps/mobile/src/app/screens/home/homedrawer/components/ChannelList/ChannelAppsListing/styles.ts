@@ -31,13 +31,14 @@ export const style = (colors: Attributes) =>
 		},
 		itemContainer: {
 			width: size.s_40,
-			marginRight: size.s_10
+			marginRight: size.s_20
 		},
 		itemLogo: {
 			width: size.s_40,
 			height: size.s_40,
-			borderRadius: size.s_8,
+			borderRadius: size.s_20,
 			marginBottom: size.s_2,
+			backgroundColor: colors.primary,
 			borderWidth: 0.5,
 			borderColor: 'transparent',
 			justifyContent: 'center',
@@ -49,16 +50,16 @@ export const style = (colors: Attributes) =>
 			borderColor: colors.textDisabled
 		},
 		itemIcon: {
-			width: size.s_30,
-			height: size.s_30,
+			width: size.s_24,
+			height: size.s_24,
 			borderRadius: size.s_6,
 			justifyContent: 'center',
 			alignItems: 'center',
 			overflow: 'hidden'
 		},
 		itemIconImg: {
-			width: size.s_30,
-			height: size.s_30
+			width: size.s_24,
+			height: size.s_24
 		},
 		itemName: {
 			fontSize: size.s_10,

@@ -18,8 +18,7 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import RNFetchBlob from 'rn-fetch-blob';
 import MezonConfirm from '../../../../../../componentUI/MezonConfirm';
-import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../../../constants/icon_cdn';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { usePermission } from '../../../../../../hooks/useRequestPermission';
 import { style } from '../ChatBoxBottomBar/style';
 
@@ -240,7 +239,7 @@ export const RecordMessageSending = memo(
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-expect-error
 			transform: [{ translateX: translateX.value }, { scale: scale.value }],
-			backgroundColor: isRecording ? baseColor.blurple : isLongPressed.value ? themeValue.tertiary : themeValue.tertiary
+			backgroundColor: isRecording ? baseColor.blurple : isLongPressed.value ? themeValue.secondaryLight : themeValue.secondaryLight
 		}));
 
 		const longPressGesture = Gesture.LongPress()
@@ -294,7 +293,7 @@ export const RecordMessageSending = memo(
 		return (
 			<GestureDetector gesture={composedGesture}>
 				<Animated.View style={[styles.btnIcon, styles.iconVoice, animatedStyle]}>
-					<MezonIconCDN icon={IconCDN.microphoneIcon} width={size.s_18} height={size.s_18} color={themeValue.textStrong} />
+					<Icons.MicIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 				</Animated.View>
 			</GestureDetector>
 		);

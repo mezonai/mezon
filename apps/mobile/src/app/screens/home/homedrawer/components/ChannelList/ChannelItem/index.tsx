@@ -4,8 +4,7 @@ import { selectIsChannelMuted, useAppSelector } from '@mezon/store-mobile';
 import type { IChannel } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { memo, useCallback, useMemo } from 'react';
-import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import BuzzBadge from '../../../../../../components/BuzzBadge/BuzzBadge';
 import ChannelMenu from '../../ChannelMenu';
 import { ChannelBadgeUnread } from '../ChannelBadgeUnread';
@@ -18,9 +17,10 @@ interface IChannelItemProps {
 	data: IChannel;
 	isUnRead?: boolean;
 	isActive?: boolean;
+	isVoiceActive?: boolean;
 }
 
-function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
+function ChannelItem({ data, isUnRead, isActive, isVoiceActive }: IChannelItemProps) {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue, themeBasic);
 	const countMessageUnread = Number(data?.count_mess_unread) || 0;
@@ -53,18 +53,10 @@ function ChannelItem({ data, isUnRead, isActive }: IChannelItemProps) {
 				onLongPress={onLongPress}
 				style={[styles.channelListLink, isChannelMuted && !isActive && { opacity: 0.6 }, isActive && styles.channelListItemWrapper]}
 			>
-				{!isActive && (
-					<LinearGradient
-						start={{ x: 1, y: 0 }}
-						end={{ x: 0, y: 0 }}
-						colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
-						style={[StyleSheet.absoluteFillObject]}
-					/>
-				)}
 				<View style={[styles.channelListItem]}>
 					{isUnReadChannel && <View style={styles.dotIsNew} />}
 
-					<ChannelStatusIcon channel={data} isUnRead={isUnReadChannel} />
+					<ChannelStatusIcon channel={data} isUnRead={isUnReadChannel} isVoiceActive={isVoiceActive} />
 					<EventBadge clanId={data?.clan_id} channelId={data?.channel_id} />
 					<Text style={[styles.channelListItemTitle, isUnReadChannel && styles.channelListItemTitleActive]} numberOfLines={1}>
 						{data?.channel_label || ''}
@@ -84,6 +76,7 @@ export default memo(ChannelItem, (prevProps, nextProps) => {
 		prevProps?.data?.channel_id === nextProps?.data?.channel_id &&
 		prevProps?.data?.count_mess_unread === nextProps?.data?.count_mess_unread &&
 		prevProps?.isUnRead === nextProps?.isUnRead &&
-		prevProps?.isActive === nextProps?.isActive
+		prevProps?.isActive === nextProps?.isActive &&
+		prevProps?.isVoiceActive === nextProps?.isVoiceActive
 	);
 });

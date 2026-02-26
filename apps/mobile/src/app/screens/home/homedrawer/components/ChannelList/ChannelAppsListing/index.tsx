@@ -4,8 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { ApiChannelAppResponse } from 'mezon-js/api.gen';
 import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import ImageNative from '../../../../../../components/ImageNative';
@@ -105,12 +104,6 @@ const ChannelAppsListing = () => {
 
 	return (
 		<View style={[styles.container, styles.channelListSection]}>
-			<LinearGradient
-				start={{ x: 1, y: 0 }}
-				end={{ x: 0, y: 0 }}
-				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
-				style={[StyleSheet.absoluteFillObject]}
-			/>
 			{isCompactView && (
 				<TouchableOpacity activeOpacity={0.8} onPress={toggleExpand} style={styles.channelListHeader}>
 					<View style={styles.channelListHeaderItem}>

@@ -1,4 +1,5 @@
-import { Attributes, size, verticalScale } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -7,7 +8,7 @@ export const style = (colors: Attributes) =>
 			flex: 1
 		},
 		serverItem: {
-			marginBottom: size.s_10
+			marginBottom: size.s_16
 		},
 		serverName: {
 			flexDirection: 'row',
@@ -17,17 +18,17 @@ export const style = (colors: Attributes) =>
 		wrapperPlusClan: {
 			height: size.s_42,
 			width: size.s_42,
-			borderRadius: size.s_42,
+			borderRadius: size.s_8,
 			overflow: 'hidden',
 			alignItems: 'center',
 			justifyContent: 'center',
-			backgroundColor: colors.secondary
+			backgroundColor: colors.tertiary
 		},
 		createClan: {
 			flexDirection: 'row',
 			alignItems: 'center',
 			alignSelf: 'center',
-			marginTop: size.s_10
+			marginTop: size.s_16
 		},
 		clanName: {
 			color: colors.textStrong,
