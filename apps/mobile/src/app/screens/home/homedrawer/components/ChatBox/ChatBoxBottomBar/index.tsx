@@ -30,6 +30,7 @@ import type { IHashtagOnMessage, IMentionOnMessage, MentionDataProps } from '@me
 import { ChannelStatusEnum, MIN_THRESHOLD_CHARS } from '@mezon/utils';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 // eslint-disable-next-line
+import { mentionSerializedRegex } from '@mezon/mobile-components';
 import { useMezon } from '@mezon/transport';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -435,6 +436,20 @@ export const ChatBoxBottomBar = memo(
 
 					return offset;
 				}, 0);
+
+				if (mentionList.length === 0 && text?.includes('{@}[')) {
+					const re = mentionSerializedRegex
+					re.lastIndex = 0;
+					let plainOffset = 0;
+					let m;
+					while ((m = re.exec(text)) !== null) {
+						const fullLen = m[0].length;
+						const plainLen = 1 + m[1].length;
+						const plainStart = m.index - plainOffset;
+						mentionList.push({ user_id: m[2], s: plainStart, e: plainStart + plainLen });
+						plainOffset += fullLen - plainLen;
+					}
+				}
 
 				hashtagsOnMessage.current = hashtagList;
 				mentionsOnMessage.current = mentionList;
