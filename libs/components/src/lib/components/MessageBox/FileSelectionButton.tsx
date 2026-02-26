@@ -4,6 +4,7 @@ import { Icons } from '@mezon/ui';
 import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFile } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useRef, useState } from 'react';
+import { useModal } from 'react-modal-hook';
 import CreatePollModal from './CreatePollModal';
 import FileSelectionModal from './FileSelectionModal';
 
@@ -16,7 +17,6 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 	const uploadedAttachmentsInChannel = useAppSelector((state) => selectAttachmentByChannelId(state, currentChannelId))?.files || [];
 	const { setOverUploadingState } = useDragAndDrop();
 	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [isPollModalOpen, setIsPollModalOpen] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const buttonRef = useRef<HTMLDivElement>(null);
 
@@ -59,18 +59,17 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 		setIsModalOpen(false);
 	};
 
+	const handleSubmitPoll = (pollData: { question: string; answers: string[]; duration: string; allowMultipleAnswers: boolean }) => {
+		handleClosePollModal();
+	};
+
+	const [openPollModal, handleClosePollModal] = useModal(() => {
+		return <CreatePollModal onClose={handleClosePollModal} onSubmit={handleSubmitPoll} />;
+	}, [handleSubmitPoll]);
+
 	const handleOpenPollModal = () => {
 		setIsModalOpen(false);
-		setIsPollModalOpen(true);
-	};
-
-	const handleClosePollModal = () => {
-		setIsPollModalOpen(false);
-	};
-
-	const handleSubmitPoll = (_pollData: { question: string; answers: string[]; duration: string; allowMultipleAnswers: boolean }) => {
-		// TODO: Implement poll submission logic
-		handleClosePollModal();
+		openPollModal();
 	};
 
 	return (
@@ -99,8 +98,6 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 				onCreatePoll={handleOpenPollModal}
 				buttonRef={buttonRef}
 			/>
-
-			<CreatePollModal isOpen={isPollModalOpen} onClose={handleClosePollModal} onSubmit={handleSubmitPoll} />
 		</div>
 	);
 }

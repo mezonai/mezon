@@ -5,7 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 import { EmojiRolePanel } from '../EmojiPicker/EmojiRolePanel';
 
 export type CreatePollModalProps = {
-	isOpen: boolean;
 	onClose: () => void;
 	onSubmit?: (pollData: PollData) => void;
 };
@@ -26,7 +25,7 @@ const DURATION_OPTIONS = [
 	{ label: '1 week', value: '168' }
 ];
 
-function CreatePollModal({ isOpen, onClose, onSubmit }: CreatePollModalProps) {
+function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 	const modalRef = useRef<HTMLDivElement>(null);
 	const durationDropdownRef = useRef<HTMLDivElement>(null);
 	const [question, setQuestion] = useState('');
@@ -52,8 +51,6 @@ function CreatePollModal({ isOpen, onClose, onSubmit }: CreatePollModalProps) {
 		document.addEventListener('mousedown', handleClickOutside);
 		return () => document.removeEventListener('mousedown', handleClickOutside);
 	}, [isDurationDropdownOpen]);
-
-	if (!isOpen) return null;
 
 	const handleAddAnswer = () => {
 		if (answers.length < 10) {
