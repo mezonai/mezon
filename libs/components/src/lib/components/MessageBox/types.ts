@@ -1,5 +1,3 @@
-import type { IInvite } from '@mezon/utils';
-
 export type PreviewData = {
 	title?: string;
 	description?: string;
@@ -9,6 +7,8 @@ export type PreviewData = {
 	type?: string;
 };
 
-export type InviteBannerData = Pick<IInvite, 'banner'> & {
+export type InviteBannerData = {
+	banner?: string;
 	clan_banner?: string;
+	is_community?: boolean;
 };
