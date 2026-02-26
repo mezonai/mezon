@@ -1,4 +1,4 @@
-import type { ChannelsEntity } from '@mezon/store';
+import type { ChannelsEntity, InvitesEntity } from '@mezon/store';
 import {
 	channelMetaActions,
 	getStore,
@@ -129,7 +129,7 @@ export function useThreadMessage({ channelId, mode, username }: UseThreadMessage
 				const inviteIndex = inviteExec?.index ?? 0;
 
 				if (inviteId) {
-					let inviteInfo = selectInviteById(inviteId)(store.getState());
+					let inviteInfo: InvitesEntity | undefined = selectInviteById(inviteId)(store.getState());
 					if (!inviteInfo) {
 						try {
 							inviteInfo = await dispatch(inviteActions.getLinkInvite({ inviteId }) as any).unwrap();

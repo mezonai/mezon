@@ -38,8 +38,9 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 	const [data, setData] = useState<PreviewData | null>(null);
 	const { fetchClanBannerById } = useFetchClanBanner();
 
-	const resolveInviteBanner = useCallback((invite: InviteBannerData): string => {
-		return invite?.banner || invite?.clan_banner || '';
+	const resolveInviteBanner = useCallback((invite: InviteBannerData | IInvite | null | undefined): string => {
+		const b = invite && typeof invite === 'object' ? (invite as InviteBannerData) : null;
+		return b?.banner || b?.clan_banner || '';
 	}, []);
 
 	useEffect(() => {
@@ -83,7 +84,7 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 						description: t('memberCount', { count: Number(invite?.member_count || 0) }),
 						image: invite?.clan_logo || '',
 						banner: resolvedBanner,
-						is_community: Boolean(invite?.is_community),
+						is_community: Boolean((invite as InviteBannerData)?.is_community),
 						type: 'invite'
 					};
 				} else {
