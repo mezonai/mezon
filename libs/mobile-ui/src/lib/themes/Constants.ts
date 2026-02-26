@@ -67,7 +67,8 @@ export const baseColor = {
 	azureBlue: '#4173c3',
 	goldenrodYellow: '#f2b13a',
 	caribbeanGreen: '#1FA07C',
-	pink: '#e148c7'
+	pink: '#e148c7',
+	violetBlue: '#5e65de'
 } satisfies Colors;
 
 export const brandColors = {

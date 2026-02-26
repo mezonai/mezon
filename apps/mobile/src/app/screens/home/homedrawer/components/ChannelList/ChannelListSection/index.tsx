@@ -11,8 +11,7 @@ import {
 import type { ICategoryChannel } from '@mezon/utils';
 import { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import CategoryMenu from '../../CategoryMenu';
@@ -68,12 +67,6 @@ const ChannelListSection = memo(({ data }: IChannelListSectionProps) => {
 
 	return (
 		<View style={styles.channelListSection}>
-			<LinearGradient
-				start={{ x: 1, y: 0 }}
-				end={{ x: 0, y: 0 }}
-				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
-				style={[StyleSheet.absoluteFillObject]}
-			/>
 			<TouchableOpacity
 				activeOpacity={0.8}
 				onPress={() => toggleCollapse(data)}

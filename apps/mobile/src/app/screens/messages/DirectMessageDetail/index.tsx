@@ -42,9 +42,10 @@ export const DirectMessageDetailScreen = ({ route }: { route: any }) => {
 		<View style={{ flex: 1 }}>
 			<StatusBarHeight />
 			<LinearGradient
-				start={{ x: 1, y: 0 }}
+				start={{ x: 0, y: 1 }}
 				end={{ x: 0, y: 0 }}
-				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.primary]}
+				locations={[0, 0.6]}
 				style={[StyleSheet.absoluteFillObject]}
 			/>
 			<DirectMessageDetailListener dmType={dmType} directMessageId={directMessageId} />

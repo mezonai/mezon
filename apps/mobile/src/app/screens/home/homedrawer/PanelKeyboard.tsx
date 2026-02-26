@@ -295,12 +295,6 @@ const PanelKeyboard = React.memo((props: IProps) => {
 				}}
 				handleComponent={() => (
 					<View style={styles.handleIndicatorContainer}>
-						<LinearGradient
-							start={{ x: 1, y: 0 }}
-							end={{ x: 0, y: 0 }}
-							colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-							style={[StyleSheet.absoluteFillObject]}
-						/>
 						<View style={styles.handleIndicator} />
 					</View>
 				)}
@@ -311,8 +305,8 @@ const PanelKeyboard = React.memo((props: IProps) => {
 				onChange={handleSheetChange}
 			>
 				<LinearGradient
-					start={{ x: 1, y: 0 }}
-					end={{ x: 0, y: 0 }}
+					start={{ x: 0, y: 0 }}
+					end={{ x: 0, y: 1 }}
 					colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
 					style={[StyleSheet.absoluteFillObject]}
 				/>
