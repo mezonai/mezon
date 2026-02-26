@@ -5,7 +5,7 @@ import {
 	channelsActions,
 	getStore,
 	messagesActions,
-	selectAllAccount,
+	selectCurrentUserId,
 	selectHasMoreBottomByChannelId,
 	selectHasMoreMessageByChannelId,
 	selectIdMessageToJump,
@@ -51,7 +51,11 @@ type ChannelMessagesProps = {
 
 const getEntitiesArray = (state: any) => {
 	if (!state?.ids) return [];
-	return state.ids.map((id) => state?.entities?.[id])?.reverse();
+	const result = new Array(state.ids.length);
+	for (let i = 0; i < state.ids.length; i++) {
+		result[i] = state.entities[state.ids[state.ids.length - 1 - i]];
+	}
+	return result;
 };
 
 const ChannelMessages = React.memo(
@@ -76,7 +80,7 @@ const ChannelMessages = React.memo(
 		const messages = useMemo(() => getEntitiesArray(selectMessagesByChannelMemoized), [selectMessagesByChannelMemoized]);
 		const isLoadMore = useRef({});
 		const [isDisableLoadMore, setIsDisableLoadMore] = useState<boolean | string>(false);
-		const idMessageToJump = useSelector(selectIdMessageToJump);
+		const idMessageToJump = useAppSelector(selectIdMessageToJump);
 		const isLoadingJumpMessage = useSelector(selectIsLoadingJumpMessage);
 		const flatListRef = useRef(null);
 		const timeOutRef = useRef(null);
@@ -85,8 +89,8 @@ const ChannelMessages = React.memo(
 		const [isShowJumpToPresent, setIsShowJumpToPresent] = useState(false);
 		const navigation = useNavigation<any>();
 		const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, channelId));
-		const lastMessageId = useMemo(() => lastMessage?.id, [lastMessage]);
-		const userId = useSelector(selectAllAccount)?.user?.id;
+		const lastMessageId = lastMessage?.id;
+		const userId = useAppSelector(selectCurrentUserId);
 		const [haveScrollToBottom, setHaveScrollToBottom] = useState<boolean>(false);
 		const [listMessageLayout, setListMessageLayout] = useState<{ width: number; height: number }>({ width: 0, height: 0 });
 		const savedScrollOffset = useMemo(() => scrollPositionCache.get(channelId), [channelId]);

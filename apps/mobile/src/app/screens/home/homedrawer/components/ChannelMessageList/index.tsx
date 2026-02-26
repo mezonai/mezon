@@ -71,25 +71,23 @@ const ChannelListMessage = React.memo(
 			hasScrolled.current = true;
 
 			requestAnimationFrame(() => {
-				requestAnimationFrame(() => {
-					if (flatListRef.current) {
-						if (needsInitialScroll) {
-							const targetIndex = initialScrollIndexRef.current || 0;
-							if (targetIndex > 0) {
-								flatListRef.current.scrollToIndex({
-									index: targetIndex,
-									animated: false,
-									viewPosition: 0.5
-								});
-							}
-						} else if (needsRestoreScroll) {
-							flatListRef.current.scrollToOffset({
-								offset: savedScrollOffsetRef.current,
-								animated: false
+				if (flatListRef.current) {
+					if (needsInitialScroll) {
+						const targetIndex = initialScrollIndexRef.current || 0;
+						if (targetIndex > 0) {
+							flatListRef.current.scrollToIndex({
+								index: targetIndex,
+								animated: false,
+								viewPosition: 0.5
 							});
 						}
+					} else if (needsRestoreScroll) {
+						flatListRef.current.scrollToOffset({
+							offset: savedScrollOffsetRef.current,
+							animated: false
+						});
 					}
-				});
+				}
 			});
 		}, [needsDelayedScroll, needsInitialScroll, needsRestoreScroll, flatListRef]);
 
@@ -145,7 +143,6 @@ const ChannelListMessage = React.memo(
 							});
 						}
 					}}
-					disableVirtualization={Platform.OS === 'ios'}
 				/>
 			</View>
 		);

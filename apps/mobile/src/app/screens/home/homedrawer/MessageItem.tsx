@@ -547,30 +547,18 @@ const MessageItem = React.memo(
 	},
 	(prevProps, nextProps) => {
 		return (
-			prevProps?.message?.id +
-				prevProps?.message?.update_time_seconds +
-				prevProps?.previousMessage?.id +
-				prevProps?.message?.code +
-				prevProps?.isHighlight +
-				prevProps?.message?.reactions +
-				prevProps?.message?.content?.t +
-				prevProps?.message?.attachments?.length +
-				prevProps?.message?.references?.[0]?.content +
-				prevProps?.message?.isError +
-				prevProps?.message?.isErrorRetry +
-				prevProps?.preventAction ===
-			nextProps?.message?.id +
-				nextProps?.message?.update_time_seconds +
-				nextProps?.previousMessage?.id +
-				nextProps?.message?.code +
-				nextProps?.isHighlight +
-				nextProps?.message?.reactions +
-				nextProps?.message?.content?.t +
-				nextProps?.message?.attachments?.length +
-				nextProps?.message?.references?.[0]?.content +
-				nextProps?.message?.isError +
-				nextProps?.message?.isErrorRetry +
-				nextProps?.preventAction
+			prevProps?.message?.id === nextProps?.message?.id &&
+			prevProps?.message?.update_time_seconds === nextProps?.message?.update_time_seconds &&
+			prevProps?.previousMessage?.id === nextProps?.previousMessage?.id &&
+			prevProps?.message?.code === nextProps?.message?.code &&
+			prevProps?.isHighlight === nextProps?.isHighlight &&
+			prevProps?.message?.reactions?.length === nextProps?.message?.reactions?.length &&
+			prevProps?.message?.content?.t === nextProps?.message?.content?.t &&
+			prevProps?.message?.attachments?.length === nextProps?.message?.attachments?.length &&
+			prevProps?.message?.references?.[0]?.content === nextProps?.message?.references?.[0]?.content &&
+			prevProps?.message?.isError === nextProps?.message?.isError &&
+			prevProps?.message?.isErrorRetry === nextProps?.message?.isErrorRetry &&
+			prevProps?.preventAction === nextProps?.preventAction
 		);
 	}
 );
