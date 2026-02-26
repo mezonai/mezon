@@ -3,6 +3,9 @@ import { referencesActions, selectAttachmentByChannelId, useAppDispatch, useAppS
 import { Icons } from '@mezon/ui';
 import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFile } from '@mezon/utils';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import { useRef, useState } from 'react';
+import CreatePollModal from './CreatePollModal';
+import FileSelectionModal from './FileSelectionModal';
 
 export type FileSelectionButtonProps = {
 	currentChannelId: string;
@@ -12,6 +15,11 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 	const dispatch = useAppDispatch();
 	const uploadedAttachmentsInChannel = useAppSelector((state) => selectAttachmentByChannelId(state, currentChannelId))?.files || [];
 	const { setOverUploadingState } = useDragAndDrop();
+	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [isPollModalOpen, setIsPollModalOpen] = useState(false);
+	const fileInputRef = useRef<HTMLInputElement>(null);
+	const buttonRef = useRef<HTMLDivElement>(null);
+
 	const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
 			const fileArr = Array.from(e.target.files);
@@ -38,9 +46,37 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 			e.target.value = '';
 		}
 	};
+
+	const handleUploadFile = () => {
+		fileInputRef.current?.click();
+	};
+
+	const handleOpenModal = () => {
+		setIsModalOpen(true);
+	};
+
+	const handleCloseModal = () => {
+		setIsModalOpen(false);
+	};
+
+	const handleOpenPollModal = () => {
+		setIsModalOpen(false);
+		setIsPollModalOpen(true);
+	};
+
+	const handleClosePollModal = () => {
+		setIsPollModalOpen(false);
+	};
+
+	const handleSubmitPoll = (_pollData: { question: string; answers: string[]; duration: string; allowMultipleAnswers: boolean }) => {
+		// TODO: Implement poll submission logic
+		handleClosePollModal();
+	};
+
 	return (
-		<label className="pl-3 flex items-center h-11" data-e2e={generateE2eId('mention.selected_file')}>
+		<div className="pl-3 flex items-center h-11 relative" data-e2e={generateE2eId('mention.selected_file')}>
 			<input
+				ref={fileInputRef}
 				id="preview_img"
 				type="file"
 				onChange={handleChange}
@@ -48,10 +84,24 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 				multiple
 				data-e2e={generateE2eId('user_setting.profile.user_profile.upload.avatar_input')}
 			/>
-			<div className="flex flex-row h-6 w-6 items-center justify-center cursor-pointer text-theme-primary text-theme-primary-hover">
+			<div
+				ref={buttonRef}
+				onClick={handleOpenModal}
+				className="flex flex-row h-6 w-6 items-center justify-center cursor-pointer text-theme-primary text-theme-primary-hover"
+			>
 				<Icons.AddCircle className="" />
 			</div>
-		</label>
+
+			<FileSelectionModal
+				isOpen={isModalOpen}
+				onClose={handleCloseModal}
+				onUploadFile={handleUploadFile}
+				onCreatePoll={handleOpenPollModal}
+				buttonRef={buttonRef}
+			/>
+
+			<CreatePollModal isOpen={isPollModalOpen} onClose={handleClosePollModal} onSubmit={handleSubmitPoll} />
+		</div>
 	);
 }
 
