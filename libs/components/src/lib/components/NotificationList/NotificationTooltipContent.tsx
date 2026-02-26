@@ -1,4 +1,5 @@
 import {
+	badgeService,
 	fetchListNotification,
 	notificationActions,
 	selectCurrentClanId,
@@ -146,12 +147,13 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 							return (
 								<div key={index}>
 									<button
-										className={`px-2 py-[4px] rounded-[4px] text-base font-medium ${currentTabNotify === tab.value ? 'btn-primary btn-primary-hover' : ''}`}
+										className={`px-2 py-[4px] rounded-[4px] text-base font-medium ${tab.value === InboxType.TOPICS ? 'relative' : ''} ${currentTabNotify === tab.value ? 'btn-primary btn-primary-hover' : ''}`}
 										tabIndex={index}
 										onClick={() => handleChangeTab(tab.value)}
 										data-e2e={generateE2eId('chat.channel_message.inbox.action_tabs')}
 									>
 										{tab.title}
+										{tab.value === InboxType.TOPICS && currentClanId && <BadgeTopic clanId={currentClanId} />}
 									</button>
 								</div>
 							);
@@ -228,3 +230,13 @@ export function NotificationTooltipContent({ onCloseTooltip }: NotificationToolt
 		</div>
 	);
 }
+
+const BadgeTopic = ({ clanId }: { clanId: string }) => {
+	const badgeCount = badgeService.getAllTopicNotiClan(clanId);
+	if (!badgeCount) return null;
+	return (
+		<div className="absolute w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-xs -top-1 -right-1 text-white">
+			{badgeCount > 9 ? '9+' : badgeCount}
+		</div>
+	);
+};

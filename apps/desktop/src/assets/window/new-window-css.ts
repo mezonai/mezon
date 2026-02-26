@@ -137,7 +137,7 @@ width : 0 !important;
     overflow: hidden;
     flex-direction: column;
     position: relative;
-    top: 21px;
+    top: 38px;
 }
 
 .channel-label {

@@ -15,6 +15,7 @@ import { directMetaActions } from '../direct/direct.slice';
 import { selectLatestMessageId } from '../messages/messages.slice';
 import type { AppDispatch, RootState } from '../store';
 
+import EventEmitter from 'events';
 import { EMarkAsReadType } from '../channels/listChannelRender.slice';
 
 type ChannelResetEvent = {
@@ -108,8 +109,11 @@ type BadgeEvent =
 const DEDUP_WINDOW = 3000;
 const BATCH_INTERVAL = 50;
 const MAX_CACHE_SIZE = 500;
+export enum EventName {
+	INCREASE_BADGE_TOPIC = 'increase_badge_topic'
+}
 
-class BadgeService {
+class BadgeService extends EventEmitter {
 	private events$ = new Subject<BadgeEvent>();
 	private subscription: Subscription | null = null;
 	private dispatch: AppDispatch | null = null;
@@ -118,7 +122,7 @@ class BadgeService {
 	private lastResetAt = new Map<string, number>();
 	private processedBadgeMessageIds = new Set<string>();
 	private topicBadgesByParent = new Map<string, number>();
-	private topicParentMap = new Map<string, { clanId: string; parentChannelId: string }>();
+	private topicParentMap = new Map<string, { clanId: string; parentChannelId: string; count: number; messageId?: string }>();
 	private isInitialized = false;
 
 	init(dispatch: AppDispatch, getState: () => RootState) {
@@ -194,9 +198,11 @@ class BadgeService {
 			this.cleanupProcessedMessageIds();
 		}
 
-		this.topicParentMap.set(topicId, { clanId, parentChannelId });
 		const current = this.topicBadgesByParent.get(parentChannelId) ?? 0;
+		const topicBadge = this.topicParentMap.get(topicId)?.count ?? 0;
+		this.topicParentMap.set(topicId, { clanId, parentChannelId, count: topicBadge + 1, messageId });
 		this.topicBadgesByParent.set(parentChannelId, current + 1);
+		this.emit(EventName.INCREASE_BADGE_TOPIC, { topicId, count: topicBadge + 1 });
 
 		if (this.dispatch) {
 			this.dispatch(channelsActions.updateChannelBadgeCount({ clanId, channelId: parentChannelId, count: 1 }));
@@ -403,8 +409,9 @@ class BadgeService {
 			const { clanId: parentClanId, parentChannelId } = topicParent;
 			const parentTopicBadge = this.topicBadgesByParent.get(parentChannelId) ?? 0;
 			if (parentTopicBadge > 0) {
-				const decrement = parentTopicBadge;
+				const decrement = topicParent.count ?? 0;
 				this.topicBadgesByParent.set(parentChannelId, parentTopicBadge - decrement);
+				this.emit(EventName.INCREASE_BADGE_TOPIC, { topicId, count: 0, decrement: parentTopicBadge - decrement });
 				dispatch(channelsActions.updateChannelBadgeCount({ clanId: parentClanId, channelId: parentChannelId, count: -decrement }));
 				dispatch(listChannelRenderAction.updateChannelUnreadCount({ channelId: parentChannelId, clanId: parentClanId, count: -decrement }));
 				dispatch(listChannelsByUserActions.updateChannelBadgeCount({ channelId: parentChannelId, count: -decrement }));
@@ -672,6 +679,32 @@ class BadgeService {
 
 		const isReply = msg.references?.some((ref) => ref.message_sender_id === currentUserId) ?? false;
 		return includesHere || includesUser || includesRole || isReply;
+	}
+
+	public getTopicBadge(topicId: string) {
+		return this.topicParentMap.get(topicId)?.count || 0;
+	}
+	public getAllTopicNotiClan(clanId: string) {
+		let total = 0;
+
+		for (const value of this.topicParentMap.values()) {
+			if (value.clanId === clanId) {
+				total += value.count;
+			}
+		}
+		return total;
+	}
+
+	public getTopicInChannel(channelId: string) {
+		if (!this.topicParentMap) return null;
+
+		for (const [key, value] of this.topicParentMap.entries()) {
+			if (value.parentChannelId === channelId) {
+				return { key, value };
+			}
+		}
+
+		return null;
 	}
 }
 
