@@ -95,9 +95,10 @@ const HomeDefault = React.memo(
 		return (
 			<View style={styles.channelView}>
 				<LinearGradient
-					start={{ x: 1, y: 0 }}
+					start={{ x: 0, y: 1 }}
 					end={{ x: 0, y: 0 }}
-					colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+					colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.primary]}
+					locations={[0, 0.6]}
 					style={styles.absoluteFill}
 				/>
 				<DrawerListener channelId={channelId} />

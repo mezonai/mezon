@@ -8,8 +8,8 @@ export const style = (colors: Attributes, index: number) =>
 			flexDirection: 'row',
 			alignItems: 'center',
 			gap: size.s_10,
-			marginLeft: size.s_30,
-			paddingVertical: size.s_2
+			marginLeft: size.s_40,
+			paddingVertical: size.s_4
 		},
 
 		userVoiceName: {
@@ -38,8 +38,8 @@ export const style = (colors: Attributes, index: number) =>
 			left: -size.s_4 * index
 		},
 		collapsedAvatarImage: {
-			width: size.s_20,
-			height: size.s_20,
+			width: size.s_24,
+			height: size.s_24,
 			borderRadius: size.s_20,
 			overflow: 'hidden'
 		}

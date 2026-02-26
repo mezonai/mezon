@@ -38,8 +38,9 @@ import MessageHeader from './MessageHeader';
 import MessagesScreenEmpty from './MessagesScreenEmpty';
 import { style } from './styles';
 
-const GRADIENT_START = { x: 1, y: 0 };
+const GRADIENT_START = { x: 0, y: 1 };
 const GRADIENT_END = { x: 0, y: 0 };
+const GRADIENT_LOCATIONS = [0, 0.6];
 const flexOneStyle = { flex: 1 };
 const contentContainerStyle = { paddingBottom: size.s_100 };
 const footerStyle = { paddingVertical: size.s_14 };
@@ -147,8 +148,8 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 	}, [paginationLoading, themeValue.textStrong]);
 
 	const gradientColors = useMemo(
-		() => [themeValue.primary, themeValue?.primaryGradiant || themeValue.primary] as [string, string],
-		[themeValue.primary, themeValue.primaryGradiant]
+		() => [themeValue.secondary, themeValue?.primaryGradiant || themeValue.primary] as [string, string],
+		[themeValue.primary, themeValue?.primaryGradiant, themeValue.secondary]
 	);
 
 	const handleMomentumScrollBegin = useCallback(() => Keyboard.dismiss(), []);
@@ -157,7 +158,13 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 
 	return (
 		<View style={styles.container}>
-			<LinearGradient start={GRADIENT_START} end={GRADIENT_END} colors={gradientColors} style={StyleSheet.absoluteFillObject} />
+			<LinearGradient
+				start={GRADIENT_START}
+				end={GRADIENT_END}
+				colors={gradientColors}
+				style={StyleSheet.absoluteFillObject}
+				locations={GRADIENT_LOCATIONS}
+			/>
 			<MessageHeader />
 			<View style={flexOneStyle}>
 				<FlatList

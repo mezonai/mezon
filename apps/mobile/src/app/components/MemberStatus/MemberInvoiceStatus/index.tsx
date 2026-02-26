@@ -5,8 +5,7 @@ import { EUserStatus } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../constants/icon_cdn';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { style } from './styles';
 
 type MemberInvoiceStatusProps = {
@@ -36,7 +35,7 @@ export const MemberInvoiceStatus = ({ userId }: MemberInvoiceStatusProps) => {
 
 	return (
 		<View style={styles.voiceContainer}>
-			<MezonIconCDN icon={IconCDN.channelVoice} color={baseColor.green} width={size.s_10} height={size.s_10} />
+			<Icons.InvoiceIcon color={baseColor.white} width={size.s_12} height={size.s_12} />
 			<Text style={styles.voiceText}>{t('voiceInfo.inVoice')}</Text>
 		</View>
 	);

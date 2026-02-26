@@ -1,17 +1,19 @@
-import { Attributes, baseColor, size, verticalScale } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, size, verticalScale } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		wrapperClanIcon: {
 			alignItems: 'center',
-			marginTop: size.s_10
+			marginTop: size.s_16,
+			paddingHorizontal: size.s_12
 		},
 
 		clanIcon: {
 			height: size.s_42,
 			width: size.s_42,
-			borderRadius: size.s_42,
+			borderRadius: size.s_8,
 			overflow: 'hidden',
 			alignItems: 'center',
 			justifyContent: 'center',
@@ -27,12 +29,12 @@ export const style = (colors: Attributes) =>
 		logoClan: {
 			height: size.s_42,
 			width: size.s_42,
-			borderRadius: size.s_42,
+			borderRadius: size.s_8,
 			overflow: 'hidden'
 		},
 
 		logoClanActive: {
-			borderRadius: verticalScale(15)
+			borderRadius: size.s_8
 		},
 
 		clanIconActive: {
@@ -40,10 +42,10 @@ export const style = (colors: Attributes) =>
 			borderRadius: verticalScale(15)
 		},
 		lineActiveClan: {
-			backgroundColor: baseColor.azureBlue,
-			width: size.s_6,
-			height: '80%',
-			top: '10%',
+			backgroundColor: baseColor.violetBlue,
+			width: size.s_4,
+			height: '90%',
+			top: '5%',
 			left: 0,
 			borderTopRightRadius: 10,
 			borderBottomEndRadius: 10,

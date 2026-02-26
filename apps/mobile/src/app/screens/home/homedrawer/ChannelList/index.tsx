@@ -148,9 +148,10 @@ const ChannelList = () => {
 	return (
 		<View style={styles.mainList}>
 			<LinearGradient
-				start={{ x: 1, y: 0 }}
+				start={{ x: 0, y: 1 }}
 				end={{ x: 0, y: 0 }}
-				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
+				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.primary]}
+				locations={[0, 0.6]}
 				style={styles.absoluteFillGradient}
 			/>
 			<ChannelListScroll data={data} flashListRef={flashListRef} />

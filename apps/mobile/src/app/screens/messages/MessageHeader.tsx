@@ -6,8 +6,7 @@ import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../constants/icon_cdn';
+import { Icons } from '../../componentUI/MobileIcons';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -45,13 +44,13 @@ function MessageHeader() {
 			<View style={styles.headerOptionWrapper}>
 				<TouchableOpacity style={styles.btnSearchWrapper} onPress={() => navigateToSearchPage()}>
 					<View style={styles.btnSearch}>
-						<MezonIconCDN icon={IconCDN.magnifyingIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+						<Icons.SearchIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 					</View>
 				</TouchableOpacity>
 				<TouchableOpacity style={styles.btnAddFriendWrapper} onPress={() => navigateToAddFriendScreen()}>
 					<View style={styles.addFriend}>
 						<View style={styles.btnAddFriend}>
-							<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+							<Icons.AddFriendIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 							<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
 						</View>
 						{!!quantityPendingRequest && (

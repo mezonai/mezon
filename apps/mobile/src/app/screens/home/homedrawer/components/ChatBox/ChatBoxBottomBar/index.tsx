@@ -122,7 +122,7 @@ const DOUBLE_TAP_DELAY = 1000;
 const LONG_PRESS_DELAY = 300;
 const MemoizedGradient = memo(({ themeValue }: { themeValue: any }) => (
 	<LinearGradient
-		start={{ x: 1, y: 0 }}
+		start={{ x: 0, y: 1 }}
 		end={{ x: 0, y: 0 }}
 		colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
 		style={[StyleSheet.absoluteFillObject]}
@@ -794,7 +794,6 @@ export const ChatBoxBottomBar = memo(
 
 		return (
 			<View style={styles.container}>
-				<MemoizedGradient themeValue={themeValue} />
 				<View style={[styles.suggestions]}>
 					<MemoizedGradient themeValue={themeValue} />
 					<SuggestionsPanel
@@ -864,7 +863,7 @@ export const ChatBoxBottomBar = memo(
 								onPressOut={handlePressOut}
 								contextMenuHidden={isShowOptionPaste}
 							/>
-							<View style={styles.iconEmoji}>
+							<View style={[styles.iconEmoji, modeKeyBoardBottomSheet === 'emoji' && { right: 10 }]}>
 								<EmojiSwitcher onChange={handleKeyboardBottomSheetMode} mode={modeKeyBoardBottomSheet} />
 							</View>
 							{showAnonymousIcon && (

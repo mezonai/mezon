@@ -6,7 +6,8 @@ export const style = (colors: Attributes) =>
 	StyleSheet.create({
 		container: {
 			paddingHorizontal: size.s_2,
-			overflow: 'visible'
+			overflow: 'visible',
+			backgroundColor: colors.primary
 		},
 		wrapper: {
 			flexDirection: 'row',
@@ -28,7 +29,7 @@ export const style = (colors: Attributes) =>
 		},
 		iconEmoji: {
 			position: 'absolute',
-			right: 10
+			right: 0
 		},
 		iconSend: {
 			marginLeft: size.s_6,
@@ -72,7 +73,7 @@ export const style = (colors: Attributes) =>
 			fontSize: size.medium,
 			paddingTop: Platform.OS === 'ios' ? size.s_12 : size.s_10,
 			paddingBottom: size.s_12,
-			backgroundColor: colors.tertiary,
+			backgroundColor: colors.secondaryLight,
 			color: colors.textStrong,
 			textAlignVertical: 'center'
 		},

@@ -26,6 +26,7 @@ import { useTranslation } from 'react-i18next';
 import { BackHandler, DeviceEventEmitter, Pressable, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { useSendSignaling } from '../../../components/CallingGroupModal';
 import ImageNative from '../../../components/ImageNative';
 import { MemberInvoiceStatus } from '../../../components/MemberStatus/MemberInvoiceStatus';
@@ -388,12 +389,12 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 							<>
 								{((!isTypeDMGroup && !!currentDmGroup?.user_ids?.[0]) || (isTypeDMGroup && !!currentDmGroup?.meeting_code)) && (
 									<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall()}>
-										<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+										<Icons.CallIcon color={themeValue.text} width={size.s_18} height={size.s_18} />
 									</TouchableOpacity>
 								)}
 								{!isTypeDMGroup && (
 									<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall(true)}>
-										<MezonIconCDN icon={IconCDN.videoIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />
+										<Icons.VideoCallIcon color={themeValue.text} width={size.s_18} height={size.s_18} />
 									</TouchableOpacity>
 								)}
 							</>

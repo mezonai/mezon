@@ -15,15 +15,15 @@ export const style = (colors: Attributes) =>
 			paddingBottom: size.s_4
 		},
 		titleServer: {
-			color: colors.text,
-			fontWeight: 'bold',
-			fontSize: size.s_15,
+			color: colors.textStrong,
+			fontWeight: '500',
+			fontSize: size.s_16,
 			flexShrink: 1
 		},
 		subTitle: {
 			color: colors.textDisabled,
 			fontSize: size.s_12,
-			fontWeight: '600'
+			fontWeight: '400'
 		},
 
 		infoHeader: {
@@ -56,11 +56,10 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center',
 			overflow: 'hidden',
 			alignItems: 'center',
-			height: size.s_36,
+			height: size.s_42,
 			gap: size.s_8,
-			borderRadius: size.s_20,
-			borderWidth: 1,
-			borderColor: colors.secondaryLight
+			borderRadius: size.s_42,
+			backgroundColor: colors.primary
 		},
 		placeholderSearchBox: {
 			color: colors.text,
@@ -70,16 +69,16 @@ export const style = (colors: Attributes) =>
 		iconWrapper: {
 			alignItems: 'center',
 			justifyContent: 'center',
-			borderRadius: size.s_36,
+			borderRadius: size.s_42,
 			backgroundColor: colors.primary,
-			width: size.s_36,
-			height: size.s_36
+			width: size.s_42,
+			height: size.s_42
 		},
 		dot: {
 			width: size.s_4,
 			height: size.s_4,
 			borderRadius: size.s_4,
-			backgroundColor: colors.textDisabled,
+			backgroundColor: baseColor.violetBlue,
 			marginHorizontal: size.s_8
 		},
 		row: {
@@ -90,5 +89,9 @@ export const style = (colors: Attributes) =>
 			marginTop: size.s_10,
 			flexDirection: 'row',
 			gap: size.s_8
+		},
+		searchIcon: {
+			position: 'absolute',
+			left: size.s_12
 		}
 	});
