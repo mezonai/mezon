@@ -24,7 +24,7 @@ import {
 } from '@mezon/store-mobile';
 import { EPermission, MAX_FILE_SIZE_10MB, sleep } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen';
+import type { ApiSystemMessageRequest, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -167,16 +167,13 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 
 	const handleUpdateSystemMessage = useCallback(async () => {
 		if (systemMessage && Object.keys(systemMessage).length > 0 && currentClanId && updateSystemMessageRequest) {
-			const cachedMessageUpdate: ApiSystemMessage = {
-				channel_id: updateSystemMessageRequest?.channel_id === systemMessage?.channel_id ? '' : updateSystemMessageRequest?.channel_id,
-				clan_id: systemMessage?.clan_id,
-				id: systemMessage?.id,
-				hide_audit_log:
-					updateSystemMessageRequest?.hide_audit_log === systemMessage?.hide_audit_log ? '' : updateSystemMessageRequest?.hide_audit_log,
-				welcome_random:
-					updateSystemMessageRequest?.welcome_random === systemMessage?.welcome_random ? '' : updateSystemMessageRequest?.welcome_random,
-				welcome_sticker:
-					updateSystemMessageRequest?.welcome_sticker === systemMessage?.welcome_sticker ? '' : updateSystemMessageRequest?.welcome_sticker
+			const cachedMessageUpdate: MezonUpdateSystemMessageBody = {
+				boost_message: updateSystemMessageRequest?.boost_message ?? systemMessage?.boost_message,
+				channel_id: updateSystemMessageRequest?.channel_id ?? systemMessage?.channel_id,
+				hide_audit_log: updateSystemMessageRequest?.hide_audit_log ?? systemMessage?.hide_audit_log,
+				setup_tips: updateSystemMessageRequest?.setup_tips ?? systemMessage?.setup_tips,
+				welcome_random: updateSystemMessageRequest?.welcome_random ?? systemMessage?.welcome_random,
+				welcome_sticker: updateSystemMessageRequest?.welcome_sticker ?? systemMessage?.welcome_sticker
 			};
 			const request = {
 				clanId: currentClanId,
@@ -386,11 +383,11 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 			component: (
 				<MezonSwitch
 					disabled={disabled}
-					value={systemMessage?.hide_audit_log !== '1'}
+					value={!systemMessage?.hide_audit_log}
 					onValueChange={(value) =>
 						setUpdateSystemMessageRequest((prev) => ({
 							...prev,
-							hide_audit_log: value ? '0' : '1'
+							hide_audit_log: !value
 						}))
 					}
 				/>
