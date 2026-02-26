@@ -179,8 +179,9 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 	const joinedClan = useSelector(selectClanById(inviteInfo?.clan_id || ''));
 	const { fetchClanBannerById } = useFetchClanBanner();
 
-	const resolveInviteBanner = (invite: InviteBannerData): string => {
-		return invite?.banner || invite?.clan_banner || '';
+	const resolveInviteBanner = (invite: InviteBannerData | Record<string, unknown> | null | undefined): string => {
+		const b = invite && typeof invite === 'object' ? (invite as InviteBannerData) : null;
+		return b?.banner || b?.clan_banner || '';
 	};
 
 	useEffect(() => {
@@ -191,7 +192,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 	useEffect(() => {
 		let mounted = true;
 		(async () => {
-			const resolved = resolveInviteBanner(inviteInfo);
+			const resolved = resolveInviteBanner(inviteInfo as InviteBannerData | Record<string, unknown> | null | undefined);
 			if (resolved) {
 				if (mounted) setBanner(resolved);
 				return;
@@ -213,7 +214,7 @@ const InvitePreviewCard = ({ element, url }: InvitePreviewCardProps) => {
 	const isInvalidInvite = element.title === 'Invite Error';
 	const clanImage = inviteInfo?.clan_logo || element.image || '';
 	const clanInitial = (clanTitle || 'M').trim().charAt(0).toUpperCase();
-	const isCommunityEnabled = Boolean(inviteInfo?.is_community);
+	const isCommunityEnabled = Boolean((inviteInfo as { is_community?: boolean })?.is_community);
 
 	const handleJoinOrGoTo = async (event: React.MouseEvent<HTMLButtonElement>) => {
 		event.stopPropagation();
