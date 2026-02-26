@@ -58,7 +58,8 @@ export const style = (colors: Attributes) =>
 			alignItems: 'center',
 			height: size.s_42,
 			gap: size.s_8,
-			borderRadius: size.s_42
+			borderRadius: size.s_42,
+			backgroundColor: colors.primary
 		},
 		placeholderSearchBox: {
 			color: colors.text,

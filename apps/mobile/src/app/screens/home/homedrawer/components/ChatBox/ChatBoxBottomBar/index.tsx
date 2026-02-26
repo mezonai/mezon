@@ -860,7 +860,7 @@ export const ChatBoxBottomBar = memo(
 								onPressOut={handlePressOut}
 								contextMenuHidden={isShowOptionPaste}
 							/>
-							<View style={[styles.iconEmoji, modeKeyBoardBottomSheet === 'emoji' && { right: 0 }]}>
+							<View style={[styles.iconEmoji, modeKeyBoardBottomSheet === 'emoji' && { right: 10 }]}>
 								<EmojiSwitcher onChange={handleKeyboardBottomSheetMode} mode={modeKeyBoardBottomSheet} />
 							</View>
 							{showAnonymousIcon && (

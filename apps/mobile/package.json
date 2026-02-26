@@ -70,6 +70,7 @@
 		"react-native-shimmer-placeholder": "2.0.9",
 		"react-native-sound": "0.13.0",
 		"react-native-store-version": "1.4.1",
+		"react-native-svg": "^15.15.3",
 		"react-native-toast-message": "2.2.0",
 		"react-native-track-player": "4.1.2",
 		"react-native-uuid": "2.0.3",

@@ -29,7 +29,7 @@ export const style = (colors: Attributes) =>
 		},
 		iconEmoji: {
 			position: 'absolute',
-			right: 10
+			right: 0
 		},
 		iconSend: {
 			marginLeft: size.s_6,
