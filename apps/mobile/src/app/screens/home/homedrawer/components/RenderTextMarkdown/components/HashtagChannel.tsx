@@ -26,7 +26,7 @@ export interface HashtagChannelProps {
 	channelEntityOverride?: any;
 }
 
-const renderChannelIcon = (channelType: number, channelId: string, themeValue: Attributes, isThreadPrivate?: boolean) => {
+const renderChannelIcon = (channelType: number, channelId: string, themeValue: Attributes, isThreadPrivate?: boolean, isChannelPrivate?: boolean) => {
 	const iconStyle = componentStyles().channelIcon;
 	if (channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 		return <CustomIcon name="voice" size={size.s_14} color={baseColor.link} style={iconStyle} />;
@@ -40,6 +40,9 @@ const renderChannelIcon = (channelType: number, channelId: string, themeValue: A
 	if (channelType === ChannelType.CHANNEL_TYPE_APP) {
 		return <CustomIcon name="app" size={size.s_14} color={baseColor.link} style={iconStyle} />;
 	}
+	if (channelType === ChannelType.CHANNEL_TYPE_CHANNEL && channelId !== 'undefined') {
+		return <CustomIcon name={isChannelPrivate ? 'channelPrivate' : 'channel'} size={size.s_14} color={baseColor.link} style={iconStyle} />;
+	}
 	if (channelId === 'undefined') {
 		return <Feather name="lock" size={size.s_14} color={themeValue.text} style={iconStyle} />;
 	}
@@ -50,8 +53,13 @@ function parseMarkdownLink(text: string) {
 	const bracketMatch = text.match(/\[(.*?)\]/);
 	const parenthesesMatch = text.match(/\((.*?)\)/);
 
+	let extractedText = bracketMatch?.[1] || '';
+	if (extractedText.startsWith('#')) {
+		extractedText = extractedText.replace(/^#+/, '');
+	}
+
 	return {
-		text: bracketMatch?.[1] || '',
+		text: extractedText,
 		link: parenthesesMatch?.[1] || ''
 	};
 }
@@ -156,7 +164,8 @@ const HashtagChannelComponent = ({
 				channelType,
 				payloadChannel?.channelId,
 				themeValue,
-				(!channelLabel && !payloadChannel?.channelLabel) || channelFound?.channel_private === ChannelStatusEnum.isPrivate
+				(!channelLabel && !payloadChannel?.channelLabel) || channelFound?.channel_private === ChannelStatusEnum.isPrivate,
+				channelFound?.channel_private === ChannelStatusEnum.isPrivate
 			),
 		[channelType, payloadChannel?.channelId, payloadChannel?.channelLabel, themeValue, channelLabel, channelFound?.channel_private]
 	);
