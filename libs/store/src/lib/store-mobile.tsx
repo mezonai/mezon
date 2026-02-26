@@ -26,12 +26,12 @@ import { notificationReducer } from './notification/notify.slice';
 import { POLICIES_FEATURE_KEY, policiesReducer } from './policies/policies.slice';
 import { reactionReducer } from './reactionMessage/reactionMessage.slice';
 
-import { badgeService } from '@mezon/store-mobile';
 import { activitiesAPIReducer } from './activities/activitiesAPI.slice';
 import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';
 import { auditLogReducer } from './auditLog/auditLog.slice';
 import { auditLogFilterReducer } from './auditLog/auditLogFilter.slice';
+import { badgeService } from './badge/badgeService';
 import { canvasAPIReducer } from './canvas/canvasAPI.slice';
 import { userChannelsReducer } from './channelmembers/AllUsersChannelByAddChannel.slice';
 import { listchannelsByUserReducer } from './channels/channelUser.slice';
