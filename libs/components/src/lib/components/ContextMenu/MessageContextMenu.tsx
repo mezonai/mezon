@@ -566,7 +566,11 @@ function MessageContextMenu({
 
 	const enableCreateThreadItem = useMemo(() => {
 		if (!checkPos) return false;
-		if (activeMode === ChannelStreamMode.STREAM_MODE_DM || activeMode === ChannelStreamMode.STREAM_MODE_GROUP) {
+		if (
+			activeMode === ChannelStreamMode.STREAM_MODE_DM ||
+			activeMode === ChannelStreamMode.STREAM_MODE_GROUP ||
+			activeMode === ChannelStreamMode.STREAM_MODE_THREAD
+		) {
 			return false;
 		}
 		if (currentChannelType === ChannelType.CHANNEL_TYPE_STREAMING || currentChannelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
