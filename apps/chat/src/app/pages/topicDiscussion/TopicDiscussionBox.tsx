@@ -1,4 +1,4 @@
-import { AttachmentPreviewThumbnail, FileSelectionButton, MentionReactInput, ReplyMessageBox, UserMentionList } from '@mezon/components';
+import { AttachmentPreviewThumbnail, FileSelectionButton, MentionReactInput, PreviewOgp, ReplyMessageBox, UserMentionList } from '@mezon/components';
 import { useChatSending, useDragAndDrop, useReference, useSeenMessagePool } from '@mezon/core';
 import {
 	fetchMessages,
@@ -355,6 +355,7 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 								</div>
 							</div>
 						)}
+						<PreviewOgp contextId={currentInputChannelId} />
 						<div className="mx-3 relative">
 							{dataReferences.message_ref_id && <ReplyMessageBox channelId={currentTopicId ?? ''} dataReferences={dataReferences} />}
 							<div
