@@ -26,6 +26,7 @@ import { notificationReducer } from './notification/notify.slice';
 import { POLICIES_FEATURE_KEY, policiesReducer } from './policies/policies.slice';
 import { reactionReducer } from './reactionMessage/reactionMessage.slice';
 
+import { badgeService } from '@mezon/store-mobile';
 import { activitiesAPIReducer } from './activities/activitiesAPI.slice';
 import { adminApplicationReducer } from './application/applications.slice';
 import { attachmentReducer } from './attachment/attachments.slice';
@@ -565,6 +566,9 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 	});
 	storeInstance = store;
 	storeCreated = true;
+
+	badgeService.init(store.dispatch, store.getState as any);
+
 	const persistor = persistStore(store);
 	return { store, persistor };
 };
