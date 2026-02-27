@@ -43,7 +43,8 @@
 		"unBanChat": "Bỏ chặn",
 		"kick": "Đuổi",
 		"removeFromThread": "Xóa {{username}} khỏi chủ đề",
-		"shareContact": "Chia sẻ liên hệ này"
+		"shareContact": "Chia sẻ liên hệ này",
+		"unblock": "Bỏ chặn"
 	},
 	"removeLogo": "Xóa logo",
 	"processing": "Đang xử lý...",
