@@ -22,6 +22,7 @@ export const DIRECT_FEATURE_KEY = 'direct';
 export interface DirectEntity extends IChannel {
 	id: string;
 	showPinBadge?: boolean;
+	inviter?: UserProfileRedis;
 }
 
 export type DMMetaEntity = DirectEntity;
@@ -483,11 +484,12 @@ interface AddGroupUserWSPayload {
 	channel_desc: ApiChannelDescription;
 	users: UserProfileRedis[];
 	myId: string;
+	inviter: UserProfileRedis;
 }
 
 export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (payload: AddGroupUserWSPayload, thunkAPI) => {
 	try {
-		const { channel_desc, users, myId } = payload;
+		const { channel_desc, users, myId, inviter } = payload;
 		const userIds: string[] = [];
 		const usernames: string[] = [];
 		const avatars: string[] = [];
@@ -539,7 +541,8 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 			member_count: channel_desc.member_count,
 			last_sent_message: {
 				timestamp_seconds: Date.now() / 1000
-			}
+			},
+			inviter
 		};
 		thunkAPI.dispatch(
 			userChannelsActions.upsert({
