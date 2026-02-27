@@ -293,7 +293,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 	return (
 		<ModalLayout onClose={onClose}>
 			<div
-				className="relative z-10 mx-4 md:!w-[640px] px-6 py-4 rounded-[6px] shadow-shadowBorder bg-modal-theme"
+				className="relative z-10 mx-4 md:!w-[640px] px-6 py-4 rounded-[6px] shadow-shadowBorder bg-modal-theme-search"
 				data-e2e={generateE2eId('modal.search')}
 			>
 				<div className="flex flex-col" data-e2e={generateE2eId('modal.search.input')}>
