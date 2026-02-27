@@ -240,10 +240,55 @@ export const adminApplicationSlice = createSlice({
 			state.appDetail = action.payload;
 		});
 		builder.addCase(editApplication.fulfilled, (state, action) => {
-			state.appDetail = {
-				...state.appDetail,
-				...action.payload
-			};
+			if (action.payload) {
+				const payload = action.payload as Record<string, unknown>;
+				const appDetailRecord = state.appDetail as Record<string, unknown>;
+				const originalRequest = action.meta.arg.request as Record<string, unknown>;
+
+				const protectedFields = ['id', 'creator_id', 'create_time_seconds', 'disable_time_seconds'];
+
+				Object.keys(payload).forEach((key) => {
+					const value = payload[key];
+
+					if (value === undefined) return;
+
+					const wasInRequest = key in originalRequest;
+
+					if (protectedFields.includes(key)) {
+						const currentValue = appDetailRecord[key];
+						if (currentValue !== undefined && currentValue !== null && currentValue !== '') {
+							return;
+						}
+					}
+
+					if (key === 'token' && value) {
+						appDetailRecord[key] = value;
+						return;
+					}
+
+					if (typeof value === 'string') {
+						const currentValue = appDetailRecord[key];
+						const isEmptyValue = value === '' || value === '0';
+						const isCurrentEmpty = currentValue === '' || currentValue === '0' || !currentValue;
+
+						if (!isEmptyValue || wasInRequest || isCurrentEmpty) {
+							appDetailRecord[key] = value;
+						}
+						return;
+					}
+
+					if (typeof value === 'number') {
+						if (value !== 0 || appDetailRecord[key] === 0 || !appDetailRecord[key]) {
+							appDetailRecord[key] = value;
+						}
+						return;
+					}
+
+					appDetailRecord[key] = value;
+				});
+
+				state.appDetail = appDetailRecord as ApiApp;
+			}
 		});
 		builder.addCase(fetchMezonOauthClient.fulfilled, (state, action: PayloadAction<ApiMezonOauthClient>) => {
 			const clientId = action.payload.client_id ?? '';
