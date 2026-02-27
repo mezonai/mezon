@@ -2,7 +2,7 @@
 	"modal": {
 		"title": "Mời bạn bè tham gia {{target}}",
 		"privateEvent": "Sự kiện bên ngoài",
-		"privateRoom": "phòng riêng tư",
+		"privateRoom": "Phòng họp",
 		"clanInvite": "lời mời clan",
 		"sendLinkText": "Hoặc, gửi link {{type}} cho họ",
 		"expiresIn": "Link mời của bạn hết hạn sau {{time}}"
