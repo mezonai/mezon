@@ -28,6 +28,8 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import { MessageLine } from './MessageLine';
+import { PollMessage } from './PollMessage';
+import { parsePollData } from './parsePollData';
 
 type IMessageContentProps = {
 	message: IMessageWithUser;
@@ -205,10 +207,21 @@ const MessageText = ({
 
 	const hasLinkMarkdown = !!linkFromMarkdown;
 
+	// Check if message is a poll
+	const pollData = displayLine ? parsePollData(displayLine) : null;
+
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
 		<>
-			{displayLine?.length > 0 || hasLinkMarkdown ? (
+			{pollData ? (
+				<PollMessage
+					question={pollData.question}
+					answers={pollData.answers}
+					duration={pollData.duration}
+					allowMultipleAnswers={pollData.allowMultipleAnswers}
+					messageId={message.id}
+				/>
+			) : displayLine?.length > 0 || hasLinkMarkdown ? (
 				<MessageLine
 					isEditted={showEditted}
 					isHideLinkOneImage={checkOneLinkImage}
