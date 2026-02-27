@@ -24,6 +24,7 @@ import { DeviceEventEmitter, Platform, Text, TextInput, View } from 'react-nativ
 import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { EMessageActionType } from '../../enums';
 import type { IMessageActionNeedToResolve } from '../../types';
@@ -238,11 +239,10 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 									changeStickerMode();
 								}}
 							>
-								<MezonIconCDN
-									icon={IconCDN.channelVoice}
-									height={size.s_18}
-									width={size.s_18}
+								<Icons.VoiceIcon
 									color={stickerMode === MediaType.STICKER ? themeValue.text : baseColor.white}
+									width={size.s_18}
+									height={size.s_18}
 								/>
 							</Pressable>
 						)}

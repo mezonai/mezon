@@ -20,6 +20,7 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
@@ -217,7 +218,7 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 
 			<View style={styles.actionContainer}>
 				<TouchableOpacity style={styles.actionButton} onPress={handleCallUser} activeOpacity={0.8}>
-					<MezonIconCDN icon={IconCDN.phoneCallIcon} width={size.s_18} height={size.s_18} color={themeValue.textStrong} />
+					<Icons.CallIcon color={baseColor.blurple} width={size.s_18} height={size.s_18} />
 					<Text style={styles.actionText}>{t('call.title')}</Text>
 				</TouchableOpacity>
 

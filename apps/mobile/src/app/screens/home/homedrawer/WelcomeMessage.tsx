@@ -25,6 +25,7 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../componentUI/MobileIcons';
 import ImageNative from '../../../components/ImageNative';
 import WaveButton from '../../../components/WaveWelcome';
 import { IconCDN } from '../../../constants/icon_cdn';
@@ -88,13 +89,17 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 	}, [currenChannel?.type]);
 
 	const iconRender = useMemo(() => {
-		return isChannel
-			? isPrivate && !isMediaChannel
-				? IconCDN.channelTextLock
-				: IconCDN.channelText
-			: isPrivate
-				? IconCDN.threadLockIcon
-				: IconCDN.threadIcon;
+		return isChannel ? (
+			isPrivate && !isMediaChannel ? (
+				<Icons.ClansLockIcon color={themeValue.channelNormal} width={size.s_40} height={size.s_40} />
+			) : (
+				<Icons.ClansOpenIcon color={themeValue.channelNormal} width={size.s_40} height={size.s_40} />
+			)
+		) : isPrivate ? (
+			<Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_40} height={size.s_40} />
+		) : (
+			<Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_40} height={size.s_40} />
+		);
 	}, [isChannel, isPrivate, isMediaChannel]);
 
 	const priorityName = useMemo(() => {
@@ -211,9 +216,7 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 					</View>
 				)
 			) : (
-				<View style={styles.iconWelcomeMessage}>
-					<MezonIconCDN icon={iconRender} width={size.s_50} height={size.s_50} color={themeValue.textStrong} />
-				</View>
+				<View style={styles.iconWelcomeMessage}>{iconRender}</View>
 			)}
 
 			{isDM ? (

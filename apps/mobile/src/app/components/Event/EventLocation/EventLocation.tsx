@@ -7,6 +7,7 @@ import { ChannelType } from 'mezon-js';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Linking, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../constants/icon_cdn';
 import JoinChannelVoiceBS from '../../../screens/home/homedrawer/components/ChannelVoice/JoinChannelVoiceBS';
 import { style } from './styles';
@@ -39,7 +40,7 @@ export function EventLocation({ event }: IEventLocation) {
 		<View style={styles.container}>
 			{option === OptionEvent.OPTION_SPEAKER && (
 				<TouchableOpacity style={styles.inline} onPress={joinVoiceChannel}>
-					<MezonIconCDN icon={IconCDN.channelVoice} height={size.s_16} width={size.s_16} color={themeValue.textStrong} />
+					<Icons.VoiceIcon color={themeValue.textStrong} width={size.s_16} height={size.s_16} />
 					<Text style={styles.smallText}>{channelVoice?.channel_label || t('eventDetail.privateRoom')}</Text>
 				</TouchableOpacity>
 			)}

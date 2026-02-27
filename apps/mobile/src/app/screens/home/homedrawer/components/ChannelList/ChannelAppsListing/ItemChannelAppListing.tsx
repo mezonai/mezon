@@ -2,9 +2,8 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import type { ApiChannelAppResponse } from 'mezon-js/api.gen';
 import { memo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import ImageNative from '../../../../../../components/ImageNative';
-import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from './styles';
 
 const ItemChannelAppListing = ({
@@ -26,7 +25,7 @@ const ItemChannelAppListing = ({
 					</View>
 				) : (
 					<View style={[styles.itemIcon, styles.itemLogoBorder]}>
-						<MezonIconCDN icon={IconCDN.channelApp} width={size.s_30} height={size.s_30} color={themeValue.textDisabled} />
+						<Icons.ChannelappIcon color={themeValue.textDisabled} width={size.s_16} height={size.s_16} />
 					</View>
 				)}
 			</View>

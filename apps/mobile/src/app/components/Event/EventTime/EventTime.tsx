@@ -9,8 +9,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import MezonBadge from '../../../componentUI/MezonBadge';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../constants/icon_cdn';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { style } from './styles';
 
 interface IEventTimeProps {
@@ -51,7 +50,7 @@ export function EventTime({ event, eventStatus, minutes }: IEventTimeProps) {
 	return (
 		<View style={styles.inline}>
 			{isSameDay(moment.unix(event.start_time_seconds).toISOString()) && <MezonBadge title={t('eventDetail.newEvent')} type="success" />}
-			<MezonIconCDN icon={IconCDN.calendarIcon} height={size.s_20} width={size.s_20} color={colorStatusEvent} />
+			<Icons.EventIcon color={colorStatusEvent} width={size.s_20} height={size.s_20} />
 			<Text style={[styles.smallText, { color: colorStatusEvent }]}>{textStatusEvent}</Text>
 		</View>
 	);

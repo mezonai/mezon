@@ -4,8 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import React, { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../constants/icon_cdn';
+import { Icons } from '../../componentUI/MobileIcons';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { style } from './Notifications.styles';
 
@@ -33,7 +32,7 @@ const BadgeFriendRequestNoti = () => {
 				style={{ overflow: 'visible', height: '100%', padding: Metrics.size.m, paddingRight: Metrics.size.l }}
 			>
 				<View style={styles.friendRequestButton}>
-					<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_18} width={size.s_18} color={themeValue.textStrong} />
+					<Icons.AddFriendIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 					<View style={styles.badgeItemTabType}>
 						<Text style={[styles.textBadgeItemTabType, { fontSize: size.s_10 }]}>
 							{quantityPendingRequest > 99 ? '99+' : quantityPendingRequest}

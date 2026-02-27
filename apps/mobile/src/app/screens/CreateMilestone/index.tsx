@@ -33,6 +33,7 @@ import Toast from 'react-native-toast-message';
 import ImageNative from '../../components/ImageNative';
 import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 import { styles as createStyles } from './styles';
 
@@ -406,7 +407,7 @@ const CreateMilestone: React.FC = () => {
 							</View>
 							<TouchableOpacity onPress={openDatePicker} style={styles.dateInput}>
 								<Text style={[styles.dateText, { color: themeValue.text }]}>{formatDate(selectedDate)}</Text>
-								<MezonIconCDN icon={IconCDN.calendarIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
+								<Icons.EventIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 							</TouchableOpacity>
 						</View>
 

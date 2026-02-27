@@ -2,6 +2,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectAllChannels } from '@mezon/store-mobile';
 import { ChannelIsNotThread } from '@mezon/utils';
+import { Icons } from 'apps/mobile/src/app/componentUI/MobileIcons';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -31,7 +32,11 @@ export function WebhookChannelSelectModal({ onConfirm, onCancel, initialChannelI
 		return parentChannelsInClan?.map((channel) => ({
 			title: channel?.channel_label,
 			value: channel?.channel_id,
-			icon: <MezonIconCDN icon={channel?.channel_private ? IconCDN.channelTextLock : IconCDN.channelText} color={themeValue.text} />
+			icon: channel?.channel_private ? (
+				<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+			) : (
+				<Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+			)
 		}));
 	}, [parentChannelsInClan, themeValue.text]);
 

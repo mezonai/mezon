@@ -20,6 +20,7 @@ import { check, PERMISSIONS, request, RESULTS } from 'react-native-permissions';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MezonConfirm from '../../../../../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
@@ -197,7 +198,7 @@ const ControlBottomBar = ({
 				<ToggleMic />
 				{!isGroupCall && (
 					<TouchableOpacity onPress={handleShowChat} style={styles.menuIcon}>
-						<MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.textStrong} />
+						<Icons.MessagesIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 					</TouchableOpacity>
 				)}
 				{!isGroupCall && <ButtonRaiseHand channelId={channelId} clanId={clanId} />}

@@ -28,6 +28,7 @@ import MezonInput from '../../../../../componentUI/MezonInput';
 import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
 import MezonMenu from '../../../../../componentUI/MezonMenu';
 import MezonOption from '../../../../../componentUI/MezonOption';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -58,7 +59,11 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		return parentChannelsInClan?.map((channel) => ({
 			title: channel?.channel_label,
 			value: channel?.channel_id,
-			icon: <MezonIconCDN icon={channel?.channel_private ? IconCDN.channelTextLock : IconCDN.channelText} color={themeValue.text} />
+			icon: channel?.channel_private ? (
+				<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+			) : (
+				<Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+			)
 		}));
 	}, [parentChannelsInClan, themeValue.text]);
 
@@ -204,7 +209,7 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 					Keyboard.dismiss();
 				},
 				expandable: true,
-				icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} />
+				icon: <Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 			}
 		];
 	}, [themeValue.text, webhookChannel?.channel_label, webhookChannel?.channel_id, channel]);

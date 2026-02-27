@@ -13,6 +13,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../componentUI/MobileIcons';
 import StatusBarHeight from '../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { useWebRTCCallMobile } from '../../../hooks/useWebRTCCallMobile';
@@ -295,7 +296,7 @@ export const DirectMessageCallMain = memo(({ route, onCloseModal }: IDirectMessa
 				</View>
 				<View>
 					<TouchableOpacity onPress={onCancelCall} style={styles.endCallButton}>
-						<MezonIconCDN icon={IconCDN.phoneCallIcon} />
+						<Icons.CallIcon width={size.s_24} height={size.s_24} />
 					</TouchableOpacity>
 					<Text style={styles.textDescControl}>{t('end')}</Text>
 				</View>

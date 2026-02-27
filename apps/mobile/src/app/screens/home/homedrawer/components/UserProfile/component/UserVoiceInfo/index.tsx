@@ -4,8 +4,7 @@ import { selectChannelById, selectStatusInVoice } from '@mezon/store-mobile';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../../../../constants/icon_cdn';
+import { Icons } from '../../../../../../../componentUI/MobileIcons';
 import { style } from './styles';
 
 export const UserVoiceInfo = ({ userId }) => {
@@ -28,7 +27,7 @@ export const UserVoiceInfo = ({ userId }) => {
 				{t('voiceInfo.inVoice')}
 			</Text>
 			<View style={styles.wrapManageVoice}>
-				<MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} width={size.s_20} height={size.s_20} />
+				<Icons.VoiceIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 				<Text style={[styles.actionText]} numberOfLines={1}>
 					{voiceChannel.channel_label}
 				</Text>

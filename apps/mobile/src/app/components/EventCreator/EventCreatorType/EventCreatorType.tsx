@@ -22,6 +22,7 @@ import MezonInput from '../../../componentUI/MezonInput';
 import type { IMezonOptionData } from '../../../componentUI/MezonOption';
 import MezonOption from '../../../componentUI/MezonOption';
 import MezonSelect from '../../../componentUI/MezonSelect';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../constants/icon_cdn';
 import type { MenuClanScreenProps } from '../../../navigation/ScreenTypes';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
@@ -79,7 +80,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 						fontWeight: 'bold'
 					},
 					disabled: !voicesChannel?.length || !!currentEvent,
-					icon: <MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} />
+					icon: <Icons.VoiceIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 				},
 				{
 					title: t('fields.channelType.somewhere.title'),
@@ -89,7 +90,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 						fontWeight: 'bold'
 					},
 					disabled: !!currentEvent,
-					icon: <MezonIconCDN icon={IconCDN.locationIcon} color={themeValue.text} />
+					icon: <Icons.LocationIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 				},
 				{
 					title: t('fields.channelType.privateEvent.title'),
@@ -99,7 +100,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 						fontWeight: 'bold'
 					},
 					disabled: !!currentEvent,
-					icon: <MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} />
+					icon: <Icons.VoiceIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 				}
 			] satisfies IMezonOptionData,
 		[]
@@ -108,21 +109,21 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 	const channelIcon = (type: ChannelType, isPrivate: boolean) => {
 		if (type === ChannelType.CHANNEL_TYPE_CHANNEL) {
 			if (isPrivate) {
-				return <MezonIconCDN icon={IconCDN.channelTextLock} height={size.s_24} width={size.s_24} color={themeValue.channelNormal} />;
+				return <Icons.ClansLockIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />;
 			}
-			return <MezonIconCDN icon={IconCDN.channelText} height={size.s_24} width={size.s_24} color={themeValue.channelNormal} />;
+			return <Icons.ClansOpenIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />;
 		} else {
 			if (isPrivate) {
-				return <MezonIconCDN icon={IconCDN.threadLockIcon} height={size.s_24} width={size.s_24} color={themeValue.channelNormal} />;
+				return <Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />;
 			}
-			return <MezonIconCDN icon={IconCDN.threadIcon} height={size.s_24} width={size.s_24} color={themeValue.channelNormal} />;
+			return <Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />;
 		}
 	};
 
 	const channels = voicesChannel?.map((item) => ({
 		title: item.channel_label,
 		value: item.channel_id,
-		icon: <MezonIconCDN icon={IconCDN.channelVoice} height={20} width={20} color={themeValue.text} />
+		icon: <Icons.VoiceIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 	}));
 
 	const [eventType, setEventType] = useState<OptionEvent>();
@@ -218,7 +219,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 
 					{eventType && eventType === OptionEvent.OPTION_SPEAKER && !!voicesChannel?.length && (
 						<MezonSelect
-							prefixIcon={<MezonIconCDN icon={IconCDN.channelVoice} height={20} width={20} color={themeValue.textStrong} />}
+							prefixIcon={<Icons.VoiceIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />}
 							title={t('fields.channel.title')}
 							titleUppercase
 							onChange={handleChannelIDChange}

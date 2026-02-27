@@ -26,6 +26,7 @@ import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import MezonAvatar from '../../../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import ImageNative from '../../../../../components/ImageNative';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { useMixImageColor } from '../../../../../hooks/useMixImageColor';
@@ -354,14 +355,14 @@ const UserProfile = React.memo(
 				{
 					id: 2,
 					text: t('userAction.voiceCall'),
-					icon: <MezonIconCDN icon={IconCDN.phoneCallIcon} color={themeValue.text} />,
+					icon: <Icons.CallIcon color={themeValue.text} width={size.s_24} height={size.s_24} />,
 					action: () => handleCallUser(userId || user?.id),
 					isShow: !isBlocked
 				},
 				{
 					id: 4,
 					text: t('userAction.addFriend'),
-					icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={baseColor.green} />,
+					icon: <Icons.AddFriendIcon color={baseColor.green} width={size.s_20} height={size.s_20} />,
 					action: handleAddFriend,
 					isShow: !infoFriend && !isBlocked,
 					textStyleName: 'actionTextGreen'
@@ -369,7 +370,7 @@ const UserProfile = React.memo(
 				{
 					id: 5,
 					text: t('userAction.pending'),
-					icon: <MezonIconCDN icon={IconCDN.clockIcon} color={baseColor.goldenrodYellow} />,
+					icon: <Icons.ClockIcon color={baseColor.goldenrodYellow} width={size.s_24} height={size.s_24} />,
 					action: () => setIsShowPendingContent(true),
 					isShow:
 						!!infoFriend &&
@@ -384,10 +385,10 @@ const UserProfile = React.memo(
 		const handleAcceptFriend = useCallback(() => {
 			const body = infoFriend?.user?.id
 				? {
-					ids: infoFriend?.user?.id || '',
-					usernames: infoFriend?.user?.username || '',
-					isAcceptingRequest: true
-				}
+						ids: infoFriend?.user?.id || '',
+						usernames: infoFriend?.user?.username || '',
+						isAcceptingRequest: true
+					}
 				: { usernames: infoFriend?.user?.username || '', isAcceptingRequest: true };
 			dispatch(friendsActions.sendRequestAddFriend(body));
 		}, [dispatch, infoFriend?.user?.id, infoFriend?.user?.username]);
@@ -514,26 +515,26 @@ const UserProfile = React.memo(
 							{userById
 								? !isDM
 									? userById?.clan_nick ||
-									userById?.user?.display_name ||
-									userById?.user?.username ||
-									user?.clan_nick ||
-									user?.user?.display_name ||
-									user?.user?.username
+										userById?.user?.display_name ||
+										userById?.user?.username ||
+										user?.clan_nick ||
+										user?.user?.display_name ||
+										user?.user?.username
 									: userById?.user?.display_name || userById?.user?.username
 								: user?.display_name ||
-								user?.user?.display_name ||
-								user?.username ||
-								user?.user?.username ||
-								(checkAnonymous ? 'Anonymous' : '')}
+									user?.user?.display_name ||
+									user?.username ||
+									user?.user?.username ||
+									(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						<Text style={[styles.subUserName]}>
 							{userById
 								? userById?.user?.username || userById?.user?.display_name
 								: user?.username ||
-								user?.user?.username ||
-								user?.display_name ||
-								user?.user?.display_name ||
-								(checkAnonymous ? 'Anonymous' : '')}
+									user?.user?.username ||
+									user?.display_name ||
+									user?.user?.display_name ||
+									(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						{isCheckOwner && <EditUserProfileBtn user={userById || (user as any)} />}
 						{!isCheckOwner && !manageVoiceUser && !isWebhook && (
