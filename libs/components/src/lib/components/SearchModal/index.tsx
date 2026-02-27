@@ -139,18 +139,19 @@ function SearchModal({ onClose }: SearchModalProps) {
 		dmGroupChatList.forEach((itemDM: DirectEntity) => {
 			if (itemDM.active !== 1 && itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
 				const userId = itemDM.user_ids[0];
+				const clanNick = allClanUsersEntities[userId]?.clan_nick;
 				if (!addedUserIds.has(userId) && !checkListDM.current?.has(userId)) {
 					list.push({
 						id: userId,
-						prioritizeName: itemDM?.display_names?.[0] ?? itemDM?.usernames?.[0] ?? '',
+						prioritizeName: clanNick ?? itemDM?.display_names?.[0] ?? itemDM?.usernames?.[0] ?? '',
 						name: itemDM?.usernames?.[0] ?? '',
 						avatarUser: itemDM?.avatars?.[0] ?? '',
 						displayName: itemDM?.display_names?.[0] ?? '',
-						lastSentTimeStamp: '0',
+						lastSentTimeStamp: itemDM?.last_sent_message?.timestamp_seconds || '0',
 						idDM: userId,
 						typeChat: TypeSearch.Dm_Type,
 						type: ChannelType.CHANNEL_TYPE_DM,
-						searchName: [...(itemDM?.usernames || []), ...(itemDM?.display_names || [])].filter(Boolean).join('.')
+						searchName: [...(itemDM?.usernames || []), ...(itemDM?.display_names || []), clanNick].filter(Boolean).join('.')
 					});
 					addedUserIds.add(userId);
 				}
