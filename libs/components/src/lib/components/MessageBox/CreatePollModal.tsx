@@ -1,7 +1,7 @@
 import { EmojiSuggestionProvider, useEscapeKeyClose } from '@mezon/core';
 import { Icons } from '@mezon/ui';
 import { getSrcEmoji } from '@mezon/utils';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { EmojiRolePanel } from '../EmojiPicker/EmojiRolePanel';
 
 export type CreatePollModalProps = {
@@ -27,30 +27,15 @@ const DURATION_OPTIONS = [
 
 function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 	const modalRef = useRef<HTMLDivElement>(null);
-	const durationDropdownRef = useRef<HTMLDivElement>(null);
+
 	const [question, setQuestion] = useState('');
 	const [answers, setAnswers] = useState(['', '']);
 	const [answerEmojiIds, setAnswerEmojiIds] = useState(['', '']);
 	const [emojiPickerIndex, setEmojiPickerIndex] = useState<number | null>(null);
 	const [duration, setDuration] = useState('24');
-	const [isDurationDropdownOpen, setIsDurationDropdownOpen] = useState(false);
 	const [allowMultipleAnswers, setAllowMultipleAnswers] = useState(false);
 
 	useEscapeKeyClose(modalRef, onClose);
-
-	useEffect(() => {
-		if (!isDurationDropdownOpen) return;
-
-		const handleClickOutside = (event: MouseEvent) => {
-			const target = event.target as Node;
-			if (durationDropdownRef.current && !durationDropdownRef.current.contains(target)) {
-				setIsDurationDropdownOpen(false);
-			}
-		};
-
-		document.addEventListener('mousedown', handleClickOutside);
-		return () => document.removeEventListener('mousedown', handleClickOutside);
-	}, [isDurationDropdownOpen]);
 
 	const handleAddAnswer = () => {
 		if (answers.length < 10) {
@@ -101,23 +86,21 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 		}
 	};
 
-	const selectedDurationLabel = DURATION_OPTIONS.find((option) => option.value === duration)?.label || DURATION_OPTIONS[0].label;
-
 	return (
 		<>
 			{/* Backdrop */}
-			<div className="fixed inset-0 z-50 bg-black bg-opacity-80" onClick={onClose} />
+			<div className="fixed inset-0 z-50 bg-modal-overlay" onClick={onClose} />
 
 			{/* Modal */}
 			<div ref={modalRef} tabIndex={-1} className="fixed inset-0 z-50 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
 				<div className="bg-theme-primary rounded-lg w-full max-w-[480px] mx-4 shadow-xl">
 					{/* Header */}
-					<div className="flex items-center justify-between p-4 ">
-						<h2 className="text-xl font-semibold text-textLightTheme dark:text-textDarkTheme">Create a Poll</h2>
+					<div className="flex items-center justify-between p-4">
+						<h2 className="text-xl font-semibold text-theme-primary-active">Create a Poll</h2>
 						<button
 							type="button"
 							onClick={onClose}
-							className="p-2 rounded-md border border-transparent text-textSecondary dark:text-textDarkTheme hover:text-textLightTheme dark:hover:text-white hover:border-theme-primary hover:bg-bgLightModeButton dark:hover:bg-bgTertiary transition-colors"
+							className="p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
 						>
 							<Icons.Close className="w-5 h-5" />
 						</button>
@@ -127,31 +110,29 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 					<div className="p-4 space-y-4">
 						{/* Question */}
 						<div>
-							<label className="block text-sm font-semibold mb-2 text-textLightTheme dark:text-textDarkTheme">Question</label>
-							<div className="relative">
-								<input
-									type="text"
-									value={question}
-									onChange={(e) => setQuestion(e.target.value.slice(0, 300))}
-									placeholder="What question do you want to ask?"
-									className="w-full px-3 py-2 bg-bgLightMode dark:bg-bgPrimary text-textLightTheme dark:text-textDarkTheme rounded border-none outline-none focus:ring-2 focus:ring-blue-500"
-									maxLength={300}
-								/>
-							</div>
-							<div className=" mt-1 text-right text-xs text-textSecondary dark:text-gray-500">{question.length} / 300</div>
+							<label className="block text-sm font-semibold mb-2 text-theme-primary">Question</label>
+							<input
+								type="text"
+								value={question}
+								onChange={(e) => setQuestion(e.target.value.slice(0, 300))}
+								placeholder="What question do you want to ask?"
+								className="w-full px-3 py-2 bg-theme-input text-theme-primary-active rounded border-theme-primary focus-input"
+								maxLength={300}
+							/>
+							<div className="mt-1 text-right text-xs text-theme-primary">{question.length} / 300</div>
 						</div>
 
 						{/* Answers */}
 						<div>
-							<label className="block text-sm font-semibold mb-2 text-textLightTheme dark:text-textDarkTheme">Answers</label>
+							<label className="block text-sm font-semibold mb-2 text-theme-primary">Answers</label>
+
 							<div className="space-y-2">
 								{answers.map((answer, index) => (
 									<div key={index} className="relative">
 										<button
 											type="button"
 											onClick={() => handleToggleEmojiPicker(index)}
-											className="absolute left-3 top-1/2 -translate-y-1/2 text-textSecondary dark:text-gray-500 hover:text-textLightTheme dark:hover:text-white transition-colors"
-											aria-label="Select emoji"
+											className="absolute left-3 top-1/2 -translate-y-1/2 text-theme-primary hover:text-theme-primary-active hover:brightness-200 transition-all"
 										>
 											{answerEmojiIds[index] ? (
 												<img
@@ -163,22 +144,25 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 												<Icons.SmilingFace className="w-5 h-5" />
 											)}
 										</button>
+
 										<input
 											type="text"
 											value={answer}
 											onChange={(e) => handleAnswerChange(index, e.target.value)}
 											placeholder="Type your answer"
-											className="w-full pl-11 pr-11 py-2 bg-bgLightMode dark:bg-bgPrimary text-textLightTheme dark:text-textDarkTheme rounded border-none outline-none focus:ring-2 focus:ring-blue-500"
+											className="w-full pl-11 pr-11 py-2 bg-theme-input text-theme-primary-active rounded border-theme-primary focus-input"
 										/>
+
 										{answers.length > 2 && (
 											<button
 												type="button"
 												onClick={() => handleRemoveAnswer(index)}
-												className="absolute right-3 top-1/2 -translate-y-1/2 text-textSecondary hover:text-red-500 transition-colors"
+												className="absolute right-3 top-1/2 -translate-y-1/2 text-theme-primary hover:text-colorDangerHover transition-colors"
 											>
 												<Icons.TrashIcon className="w-5 h-5" />
 											</button>
 										)}
+
 										{emojiPickerIndex === index && (
 											<div className="absolute left-0 top-full mt-2 z-[60] w-[420px] max-w-[calc(100vw-3rem)] rounded-lg border border-theme-primary bg-theme-setting-primary shadow-xl">
 												<EmojiSuggestionProvider>
@@ -192,10 +176,11 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 									</div>
 								))}
 							</div>
+
 							{answers.length < 10 && (
 								<button
 									onClick={handleAddAnswer}
-									className="mt-2 flex items-center gap-2 text-sm text-textSecondary dark:text-gray-400 hover:text-textLightTheme dark:hover:text-white transition-colors"
+									className="mt-2 flex items-center gap-2 text-sm text-theme-primary hover:text-theme-primary-active transition-colors"
 								>
 									<Icons.AddIcon className="w-4 h-4" />
 									Add another answer
@@ -203,63 +188,52 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 							)}
 						</div>
 
-						{/* Duration */}
+						{/* Duration (Select) */}
 						<div>
-							<label className="block text-sm font-semibold mb-2 text-textLightTheme dark:text-textDarkTheme">Duration</label>
-							<div ref={durationDropdownRef} className="relative">
-								<button
-									type="button"
-									onClick={() => setIsDurationDropdownOpen((current) => !current)}
-									className="w-full pl-3 pr-10 py-2 bg-bgLightMode dark:bg-bgPrimary text-textLightTheme dark:text-textDarkTheme rounded border-none outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer text-left"
+							<label className="block text-sm font-semibold mb-2 text-theme-primary-active">Duration</label>
+
+							<div className="relative">
+								<select
+									value={duration}
+									onChange={(e) => setDuration(e.target.value)}
+									className="w-full pl-3 pr-10 py-2 bg-theme-input text-theme-primary-active rounded border-theme-primary focus-input bg-item-hover appearance-none cursor-pointer"
 								>
-									{selectedDurationLabel}
-								</button>
-								<span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-textSecondary dark:text-gray-500">
-									<Icons.ArrowDown
-										defaultSize="w-6 h-6 transition-transform duration-200"
-										size={isDurationDropdownOpen ? 'rotate-180' : ''}
-									/>
+									{DURATION_OPTIONS.map((option) => (
+										<option
+											key={option.value}
+											value={option.value}
+											className="bg-theme-setting-primary text-theme-primary-active"
+										>
+											{option.label}
+										</option>
+									))}
+								</select>
+
+								<span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-theme-primary">
+									<Icons.ArrowDown className="w-5 h-5" />
 								</span>
-								{isDurationDropdownOpen && (
-									<div className="absolute left-0 right-0 mt-1 z-[60] overflow-hidden rounded bg-bgLightMode dark:bg-bgPrimary shadow-lg border border-theme-primary">
-										{DURATION_OPTIONS.map((option) => (
-											<button
-												key={option.value}
-												type="button"
-												onClick={() => {
-													setDuration(option.value);
-													setIsDurationDropdownOpen(false);
-												}}
-												className={`w-full px-3 py-2 text-left text-textLightTheme dark:text-textDarkTheme transition-colors ${
-													duration === option.value
-														? 'bg-bgLightModeButton dark:bg-bgTertiary'
-														: 'hover:bg-bgLightModeButton dark:hover:bg-bgTertiary'
-												}`}
-											>
-												{option.label}
-											</button>
-										))}
-									</div>
-								)}
 							</div>
 						</div>
 					</div>
 
 					{/* Footer */}
-					<div className="flex items-center justify-between p-4 ">
-						<label className="flex items-center gap-2 cursor-pointer">
-							<input
-								type="checkbox"
-								checked={allowMultipleAnswers}
-								onChange={(e) => setAllowMultipleAnswers(e.target.checked)}
-								className="w-5 h-5 rounded border-gray-300 text-blue-500 focus:ring-blue-500 cursor-pointer"
-							/>
-							<span className="text-sm text-textLightTheme dark:text-textDarkTheme">Allow Multiple Answers</span>
-						</label>
+					<div className="flex items-center justify-between p-4">
+						<div className="flex items-center gap-2">
+							<label className="flex items-center gap-2 cursor-pointer">
+								<input
+									type="checkbox"
+									checked={allowMultipleAnswers}
+									onChange={(e) => setAllowMultipleAnswers(e.target.checked)}
+									className="w-5 h-5 rounded border-theme-primary accent-buttonPrimary cursor-pointer"
+								/>
+							</label>
+							<span className="mb-1 text-sm text-theme-primary-active">Allow Multiple Answers</span>
+						</div>
+
 						<button
 							onClick={handlePost}
 							disabled={!question.trim() || !answers.some((a) => a.trim())}
-							className="px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded font-semibold transition-colors"
+							className="px-6 py-2 rounded font-semibold transition-colors btn-primary btn-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							Post
 						</button>

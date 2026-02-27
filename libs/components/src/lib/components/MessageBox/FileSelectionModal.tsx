@@ -1,6 +1,6 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import { Icons } from '@mezon/ui';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
 export type FileSelectionModalProps = {
 	isOpen: boolean;
@@ -12,6 +12,7 @@ export type FileSelectionModalProps = {
 
 function FileSelectionModal({ isOpen, onClose, onUploadFile, onCreatePoll, buttonRef: _buttonRef }: FileSelectionModalProps) {
 	const modalRef = useRef<HTMLDivElement>(null);
+	const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 	useEscapeKeyClose(modalRef, onClose);
 
 	if (!isOpen) return null;
@@ -50,9 +51,13 @@ function FileSelectionModal({ isOpen, onClose, onUploadFile, onCreatePoll, butto
 						<button
 							key={index}
 							onClick={item.onClick}
-							className="w-full px-4 py-3 flex items-center gap-3 hover:bg-bgLightModeButton dark:hover:bg-bgTertiary transition-colors text-left text-textLightTheme dark:text-textDarkTheme hover:text-textLightTheme dark:hover:text-white rounded-md"
+							onMouseEnter={() => setHoveredIndex(index)}
+							onMouseLeave={() => setHoveredIndex(null)}
+							className={`w-full px-4 py-3 flex items-center gap-3 transition-colors text-left rounded-md ${
+								hoveredIndex === index ? 'bg-theme-input text-theme-primary-active' : 'text-theme-primary'
+							}`}
 						>
-							<span className="text-textSecondary dark:text-textDarkTheme">{item.icon}</span>
+							<span className={hoveredIndex === index ? 'text-theme-primary-active' : 'text-theme-primary'}>{item.icon}</span>
 							<span className="font-medium text-[15px]">{item.label}</span>
 						</button>
 					))}
