@@ -77,7 +77,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 							.join('.')
 					});
 				}
-				if (itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
+				if (itemDM.active === 1 && itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
 					checkListDM.current?.add(itemDM?.user_ids?.[0]);
 				}
 			});
@@ -113,6 +113,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 
 	const listMemberSearch = useMemo(() => {
 		const list: SearchItemProps[] = [];
+		const addedUserIds = new Set<string>();
 
 		for (const userId in allUsesInAllClansEntities) {
 			const user = allUsesInAllClansEntities[userId];
@@ -131,10 +132,33 @@ function SearchModal({ onClose }: SearchModalProps) {
 						.filter(Boolean)
 						.join('.')
 				});
+				addedUserIds.add(user?.id);
 			}
 		}
+
+		dmGroupChatList.forEach((itemDM: DirectEntity) => {
+			if (itemDM.active !== 1 && itemDM.type === ChannelType.CHANNEL_TYPE_DM && itemDM?.user_ids?.[0]) {
+				const userId = itemDM.user_ids[0];
+				if (!addedUserIds.has(userId) && !checkListDM.current?.has(userId)) {
+					list.push({
+						id: userId,
+						prioritizeName: itemDM?.display_names?.[0] ?? itemDM?.usernames?.[0] ?? '',
+						name: itemDM?.usernames?.[0] ?? '',
+						avatarUser: itemDM?.avatars?.[0] ?? '',
+						displayName: itemDM?.display_names?.[0] ?? '',
+						lastSentTimeStamp: '0',
+						idDM: userId,
+						typeChat: TypeSearch.Dm_Type,
+						type: ChannelType.CHANNEL_TYPE_DM,
+						searchName: [...(itemDM?.usernames || []), ...(itemDM?.display_names || [])].filter(Boolean).join('.')
+					});
+					addedUserIds.add(userId);
+				}
+			}
+		});
+
 		return list as SearchItemProps[];
-	}, [allClanUsersEntities, allUsesInAllClansEntities]);
+	}, [allClanUsersEntities, allUsesInAllClansEntities, dmGroupChatList]);
 	const normalizeSearchText = useMemo(() => {
 		return normalizeString(searchText);
 	}, [searchText]);
