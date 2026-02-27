@@ -190,7 +190,7 @@ class BadgeService extends EventEmitter {
 
 	incrementChannelForTopic(clanId: string, parentChannelId: string, topicId: string, messageId?: string) {
 		if (messageId) {
-			const badgeKey = `${parentChannelId}_${messageId}`;
+			const badgeKey = `${topicId}_${messageId}`;
 			if (this.processedBadgeMessageIds.has(badgeKey)) {
 				return;
 			}
@@ -202,7 +202,7 @@ class BadgeService extends EventEmitter {
 		const topicBadge = this.topicParentMap.get(topicId)?.count ?? 0;
 		this.topicParentMap.set(topicId, { clanId, parentChannelId, count: topicBadge + 1, messageId });
 		this.topicBadgesByParent.set(parentChannelId, current + 1);
-		this.emit(EventName.INCREASE_BADGE_TOPIC, { topicId, count: topicBadge + 1 });
+		this.emit(EventName.INCREASE_BADGE_TOPIC, { topicId, count: 1, channelId: parentChannelId });
 
 		if (this.dispatch) {
 			this.dispatch(channelsActions.updateChannelBadgeCount({ clanId, channelId: parentChannelId, count: 1 }));
@@ -411,7 +411,7 @@ class BadgeService extends EventEmitter {
 			if (parentTopicBadge > 0) {
 				const decrement = topicParent.count ?? 0;
 				this.topicBadgesByParent.set(parentChannelId, parentTopicBadge - decrement);
-				this.emit(EventName.INCREASE_BADGE_TOPIC, { topicId, count: 0, decrement: parentTopicBadge - decrement });
+				this.emit(EventName.INCREASE_BADGE_TOPIC, { topicId, count: -decrement, channelId: parentChannelId });
 				dispatch(channelsActions.updateChannelBadgeCount({ clanId: parentClanId, channelId: parentChannelId, count: -decrement }));
 				dispatch(listChannelRenderAction.updateChannelUnreadCount({ channelId: parentChannelId, clanId: parentClanId, count: -decrement }));
 				dispatch(listChannelsByUserActions.updateChannelBadgeCount({ channelId: parentChannelId, count: -decrement }));
@@ -698,13 +698,22 @@ class BadgeService extends EventEmitter {
 	public getTopicInChannel(channelId: string) {
 		if (!this.topicParentMap) return null;
 
+		let totalCount = 0;
+		let firstTopicId: string | null = null;
+
 		for (const [key, value] of this.topicParentMap.entries()) {
 			if (value.parentChannelId === channelId) {
-				return { key, value };
+				if (firstTopicId === null) firstTopicId = key;
+				totalCount += value.count;
 			}
 		}
 
-		return null;
+		if (firstTopicId === null) return null;
+
+		return {
+			topicId: firstTopicId,
+			totalCount
+		};
 	}
 }
 

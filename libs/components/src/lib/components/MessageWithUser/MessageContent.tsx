@@ -124,7 +124,9 @@ const NumberTopicBadge = memo(({ channel_id }: { channel_id: string }) => {
 	useEffect(() => {
 		const onChange = (data: { topicId: string; count: number }) => {
 			if (data?.topicId === channel_id) {
-				setValue(data?.count);
+				setValue((pre) => {
+					return pre + data?.count;
+				});
 			}
 		};
 

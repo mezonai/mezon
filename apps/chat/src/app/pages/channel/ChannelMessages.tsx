@@ -4,6 +4,7 @@ import { MessageContextMenuProvider, MessageWithUser, useMessageContextMenu } fr
 import { useMessageObservers, usePermissionChecker } from '@mezon/core';
 import type { RootState } from '@mezon/store';
 import {
+	EventName,
 	badgeService,
 	channelsActions,
 	getStore,
@@ -674,23 +675,30 @@ const ScrollDownButton = memo(
 
 const NotiTopicButton = memo(({ channelId }: { channelId: string }) => {
 	const badge = badgeService.getTopicInChannel(channelId);
-	const [loading, setLoading] = useState(false);
-	const topicValue = badge?.value;
-	const topicId = badge?.key;
+	const [value, setValue] = useState(badge?.totalCount || 0);
+	const topicId = badge?.topicId;
 	const dispatch = useAppDispatch();
 
 	const handleOpenTopic = () => {
-		if (topicValue?.messageId && topicValue.parentChannelId) {
+		if (topicId) {
 			dispatch(topicsActions.setIsShowCreateTopic(true));
 			dispatch(topicsActions.setCurrentTopicId(topicId || ''));
 		}
-		setLoading(true);
 	};
 	useEffect(() => {
-		setLoading(false);
-	}, [channelId]);
+		const onChange = (data: { topicId: string; count: number; channelId: string }) => {
+			if (data?.channelId === channelId) {
+				setValue((pre) => pre + data?.count);
+			}
+		};
 
-	if (!badge || !topicValue?.count || loading) return null;
+		badgeService.on(EventName.INCREASE_BADGE_TOPIC, onChange);
+		return () => {
+			badgeService.off(EventName.INCREASE_BADGE_TOPIC, onChange);
+		};
+	}, []);
+
+	if (!badge || !badge.totalCount || !value) return null;
 	return (
 		<div
 			className="cursor-pointer absolute left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 py-2 px-4 rounded-full bg-theme-contexify bottom-3"
@@ -701,7 +709,7 @@ const NotiTopicButton = memo(({ channelId }: { channelId: string }) => {
 			</div>
 			<div>New mentions in topic</div>
 			<div className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-xs -top-1 -right-1 text-white">
-				{topicValue?.count > 9 ? '9+' : topicValue?.count}
+				{value > 9 ? '9+' : value}
 			</div>
 		</div>
 	);
