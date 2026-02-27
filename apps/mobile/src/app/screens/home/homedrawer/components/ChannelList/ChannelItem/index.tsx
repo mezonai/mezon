@@ -18,9 +18,10 @@ interface IChannelItemProps {
 	isUnRead?: boolean;
 	isActive?: boolean;
 	isVoiceActive?: boolean;
+	isFirstThread?: boolean;
 }
 
-function ChannelItem({ data, isUnRead, isActive, isVoiceActive }: IChannelItemProps) {
+function ChannelItem({ data, isUnRead, isActive, isVoiceActive, isFirstThread }: IChannelItemProps) {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue, themeBasic);
 	const countMessageUnread = Number(data?.count_mess_unread) || 0;
@@ -42,7 +43,7 @@ function ChannelItem({ data, isUnRead, isActive, isVoiceActive }: IChannelItemPr
 	}, [data]);
 
 	if (data?.type === ChannelType.CHANNEL_TYPE_THREAD) {
-		return <ChannelListThreadItem thread={data} isActive={isActive} onLongPress={onLongPress} />;
+		return <ChannelListThreadItem thread={data} isActive={isActive} onLongPress={onLongPress} isFirstThread={isFirstThread} />;
 	}
 
 	return (

@@ -1,4 +1,5 @@
-import { Attributes, Metrics, baseColor, size, verticalScale } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { Metrics, baseColor, size, verticalScale } from '@mezon/mobile-ui';
 import { Platform, StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -81,10 +82,10 @@ export const style = (colors: Attributes) =>
 		},
 		virtualConnectorLine: {
 			backgroundColor: '#535353',
-			width: 1.2,
-			height: size.s_10,
+			width: 0.7,
+			height: size.s_14,
 			position: 'absolute',
-			top: -5,
-			left: 0.3
+			top: -size.s_14,
+			left: 2.4
 		}
 	});
