@@ -108,6 +108,12 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 			onPress: () => handleMarkAsRead(),
 			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />,
 			isShow: !isStreamOrVoiceChannel
+		},
+		{
+			title: t('menu.manageThreadMenu.copyLink'),
+			onPress: () => handleCopyLink(),
+			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.textStrong} />,
+			isShow: channel?.type === ChannelType.CHANNEL_TYPE_THREAD
 		}
 	];
 
