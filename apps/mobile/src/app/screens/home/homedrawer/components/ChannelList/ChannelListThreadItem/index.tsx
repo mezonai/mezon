@@ -44,7 +44,23 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive, isFirstThread }:
 		<View key={thread?.id} style={[styles.channelListLink]}>
 			<View style={[styles.threadItem]}>
 				<View style={styles.cornerIconWrapper}>
-					<MezonIconCDN icon={IconCDN.longCorner} height={size.s_24} width={size.s_12} color={'#535353'} />
+					{isFirstThread ? (
+						<MezonIconCDN
+							icon={IconCDN.shortCorner}
+							height={size.s_24}
+							width={size.s_14}
+							color={'#535353'}
+							customStyle={styles.shortCorner}
+						/>
+					) : (
+						<MezonIconCDN
+							icon={IconCDN.longCorner}
+							height={size.s_24}
+							width={size.s_14}
+							color={'#535353'}
+							customStyle={styles.longCorner}
+						/>
+					)}
 					{!isFirstThread && <View style={styles.virtualConnectorLine} />}
 				</View>
 				<TouchableOpacity

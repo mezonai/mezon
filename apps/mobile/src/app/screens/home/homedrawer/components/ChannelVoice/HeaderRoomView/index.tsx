@@ -9,6 +9,7 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { DeviceEventEmitter, NativeModules, Platform, Text, TouchableOpacity, View } from 'react-native';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import AudioOutputTooltip from '../../AudioOutputTooltip';
 import { ContainerMessageActionModal } from '../../MessageItemBS/ContainerMessageActionModal';
@@ -192,7 +193,7 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 						content={
 							<View style={{ gap: 8 }}>
 								<TouchableOpacity onPress={handleOpenEmojiPicker} style={[styles.buttonCircle]}>
-									<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_20} width={size.s_20} color={themeValue.white} />
+									<Icons.EmojiIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 								</TouchableOpacity>
 								<SendVoiceSound channelId={channelId} onPress={hideTooltip} />
 							</View>

@@ -33,10 +33,9 @@ import { DeviceEventEmitter, Keyboard, ScrollView, StyleSheet, Text, View } from
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
 import MezonInput from '../../../componentUI/MezonInput';
 import MezonSwitch from '../../../componentUI/MezonSwitch';
-import { IconCDN } from '../../../constants/icon_cdn';
+import { Icons } from '../../../componentUI/MobileIcons';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import type { MenuThreadScreenProps } from '../../../navigation/ScreenTypes';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
@@ -321,7 +320,7 @@ export default function CreateThreadForm({ navigation, route }: MenuThreadScreen
 				<ScrollView contentContainerStyle={styles.scrollview} keyboardShouldPersistTaps="handled">
 					<View style={styles.contentContainer}>
 						<View style={styles.iconContainer}>
-							<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
+							<Icons.ThreadIcon color={themeValue.text} width={size.s_32} height={size.s_32} />
 						</View>
 						<MezonInput
 							label={t('threadName')}

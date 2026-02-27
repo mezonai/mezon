@@ -4,7 +4,6 @@ import type { DirectEntity } from '@mezon/store-mobile';
 import {
 	deleteChannel,
 	directActions,
-	fetchDirectMessage,
 	removeMemberChannel,
 	selectCurrentUserId,
 	selectDmGroupById,
@@ -25,6 +24,7 @@ import MezonConfirm from '../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import MezonMenu from '../../componentUI/MezonMenu';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { ContainerMessageActionModal } from '../../screens/home/homedrawer/components/MessageItemBS/ContainerMessageActionModal';
@@ -137,7 +137,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 		{
 			title: t('common:quickReaction.title'),
 			expandable: false,
-			icon: <MezonIconCDN icon={IconCDN.reactionIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
+			icon: <Icons.EmojiIcon color={themeValue.text} width={size.s_18} height={size.s_18} />,
 			textStyle: styles.label,
 			onPress: handleOpenQuickReactionModal
 		},
@@ -204,7 +204,7 @@ const MenuCustomDm = ({ currentChannel, channelLabel }: { currentChannel: IChann
 				{
 					title: t('common:quickReaction.title'),
 					expandable: false,
-					icon: <MezonIconCDN icon={IconCDN.reactionIcon} width={size.s_18} height={size.s_18} color={themeValue.text} />,
+					icon: <Icons.EmojiIcon color={themeValue.text} width={size.s_18} height={size.s_18} />,
 					textStyle: styles.label,
 					onPress: handleOpenQuickReactionModal
 				},

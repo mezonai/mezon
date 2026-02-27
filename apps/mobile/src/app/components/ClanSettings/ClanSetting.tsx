@@ -1,15 +1,18 @@
 import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { EPermission } from '@mezon/utils';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import MezonMenu, { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonMenu from '../../componentUI/MezonMenu';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import InviteToChannel from '../../screens/home/homedrawer/components/InviteToChannel';
 import StatusBarHeight from '../StatusBarHeight/StatusBarHeight';
 import { LogoClanSelector } from './LogoClanSelector';
@@ -71,7 +74,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.EMOJI_SETTING);
 			},
 			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.reactionIcon} color={themeValue.text} />
+			icon: <Icons.EmojiIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 		},
 		{
 			title: t('menu.settings.sticker'),
@@ -87,7 +90,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.SOUND_STICKER);
 			},
 			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.channelVoice} color={themeValue.text} />
+			icon: <Icons.VoiceIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 		},
 		{
 			title: t('menu.settings.enableCommunity'),

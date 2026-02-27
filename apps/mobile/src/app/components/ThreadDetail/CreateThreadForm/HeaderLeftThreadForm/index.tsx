@@ -1,12 +1,14 @@
 import { size, useTheme } from '@mezon/mobile-ui';
 import { selectOpenThreadMessageState } from '@mezon/store-mobile';
-import { ChannelStatusEnum, ChannelThreads } from '@mezon/utils';
+import type { ChannelThreads } from '@mezon/utils';
+import { ChannelStatusEnum } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import { style } from './HeaderLeftThreadForm.style';
 
@@ -28,9 +30,9 @@ const HeaderLeftThreadForm = ({ currentChannel }: { currentChannel: ChannelThrea
 						<View style={styles.iconContainer}>
 							{currentChannel?.channel_private === ChannelStatusEnum.isPrivate &&
 							currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ? (
-								<MezonIconCDN icon={IconCDN.channelTextLock} width={18} height={18} color={themeValue.textStrong} />
+								<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 							) : (
-								<MezonIconCDN icon={IconCDN.channelText} width={18} height={18} color={themeValue.textStrong} />
+								<Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 							)}
 						</View>
 					)}

@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { ChannelBadgeUnread } from '../../ChannelList/ChannelBadgeUnread';
@@ -100,14 +101,14 @@ function JoinChannelVoiceBS({ channel }: { channel: IChannel }) {
 					}}
 					style={styles.inviteButton}
 				>
-					<MezonIconCDN icon={IconCDN.userPlusIcon} color={themeValue.textStrong} />
+					<Icons.AddFriendIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 				</TouchableOpacity>
 			</View>
 			<View style={styles.centerContent}>
 				<View style={styles.avatarContainer}>
 					{voiceChannelMembers?.length === 0 ? (
 						<View style={styles.iconVoice}>
-							<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_36} height={size.s_36} color={themeValue.textStrong} />
+							<Icons.VoiceIcon color={themeValue.textStrong} width={size.s_36} height={size.s_36} />
 						</View>
 					) : (
 						<View style={styles.avatarRow}>

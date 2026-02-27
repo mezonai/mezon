@@ -7,7 +7,6 @@ import {
 	deleteChannel,
 	directActions,
 	directMetaActions,
-	fetchDirectMessage,
 	fetchUserChannels,
 	getStore,
 	markAsReadProcessing,
@@ -38,6 +37,7 @@ import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
 import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
 import MezonMenu from '../../../../../componentUI/MezonMenu';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import ImageNative from '../../../../../components/ImageNative';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -229,9 +229,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				infoFriend?.state === EStateFriend.FRIEND ? (
 					<MezonIconCDN icon={IconCDN.removeFriend} color={baseColor.redStrong} customStyle={{ marginBottom: size.s_2 }} />
 				) : (
-					<MezonIconCDN icon={IconCDN.userPlusIcon} color={baseColor.redStrong} customStyle={{ marginBottom: size.s_2 }} />
+					<Icons.AddFriendIcon color={baseColor.redStrong} width={size.s_20} height={size.s_20} />
 				),
-			textStyle: [styles.menuTextMarginLeft, styles.redText]
+			textStyle: [styles.menuTextMarginLeft]
 		},
 		{
 			onPress: didIBlockUser ? handleUnblockFriend : handleBlockFriend,

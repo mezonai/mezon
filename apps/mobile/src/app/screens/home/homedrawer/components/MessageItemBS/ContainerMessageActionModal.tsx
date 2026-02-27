@@ -55,6 +55,7 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { useImage } from '../../../../../hooks/useImage';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
@@ -649,7 +650,7 @@ export const ContainerMessageActionModal = React.memo(
 				case EMessageActionType.ForwardAllMessages:
 					return <MezonIconCDN icon={IconCDN.forwardAllIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 				case EMessageActionType.CreateThread:
-					return <MezonIconCDN icon={IconCDN.threadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
+					return <Icons.ThreadIcon color={themeValue.text} width={size.s_20} height={size.s_20} />;
 				case EMessageActionType.CopyText:
 					return <MezonIconCDN icon={IconCDN.copyIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 				case EMessageActionType.DeleteMessage:

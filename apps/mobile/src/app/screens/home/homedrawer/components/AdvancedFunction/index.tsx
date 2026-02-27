@@ -31,7 +31,7 @@ import MezonConfirm from '../../../../../componentUI/MezonConfirm';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
 import { Icons } from '../../../../../componentUI/MobileIcons';
 import ShareLocationConfirmModal from '../../../../../components/ShareLocationConfirmModal/ShareLocationConfirmModal';
-import { IconCDN } from '../../../../../constants/icon_cdn';
+import type { IconCDN } from '../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import type { EMessageActionType } from '../../enums';
 import { ConfirmBuzzMessageModal } from '../ConfirmBuzzMessage';
@@ -135,26 +135,26 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 				!currentTopicId && {
 					id: 'create_thread' as const,
 					label: t('common:threads'),
-					icon: IconCDN.threadPlusIcon,
+					icon: <Icons.ThreadPlusIcon width={size.s_24} height={size.s_24} />,
 					backgroundColor: FUNCTION_COLORS.THREAD
 				},
 			!directMessageId &&
 				!currentClanPreventAnonymous && {
 					id: 'anonymous' as const,
 					label: anonymousMode ? t('message:turnOffAnonymous') : t('common:anonymous'),
-					icon: IconCDN.anonymous,
+					icon: <Icons.AnonymousIcon width={size.s_24} height={size.s_24} />,
 					backgroundColor: FUNCTION_COLORS.ANONYMOUS
 				},
 			{
 				id: 'buzz',
 				label: 'Buzz',
-				icon: <Icons.BuzzIcon color={baseColor.white} width={size.s_24} height={size.s_24} />,
+				icon: <Icons.BuzzIcon width={size.s_24} height={size.s_24} />,
 				backgroundColor: FUNCTION_COLORS.BUZZ
 			},
 			!directMessageId && {
 				id: 'ephemeral' as const,
 				label: 'Ephemeral',
-				icon: IconCDN.bravePermission,
+				icon: <Icons.EphemeralIcon width={size.s_24} height={size.s_24} />,
 				backgroundColor: FUNCTION_COLORS.EPHEMERAL
 			},
 			{
@@ -166,7 +166,7 @@ const AdvancedFunction = memo(({ onClose, currentChannelId, directMessageId, mes
 			!directMessageId && {
 				id: 'poll' as const,
 				label: t('common:poll'),
-				icon: IconCDN.pollIcon,
+				icon: <Icons.PollIcon width={size.s_24} height={size.s_24} />,
 				backgroundColor: FUNCTION_COLORS.POLL
 			},
 			(directMessageId || !anonymousMode) && {

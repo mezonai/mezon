@@ -25,6 +25,7 @@ import { ResumableZoom } from 'react-native-zoom-toolkit';
 import { useSelector } from 'react-redux';
 import { TYPING_DARK_MODE, TYPING_LIGHT_MODE } from '../../../../../../../assets/lottie';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import type { ActiveSoundReaction } from '../../../../../../hooks/useSoundReactions';
 import { ContainerMessageActionModal } from '../../MessageItemBS/ContainerMessageActionModal';
@@ -264,7 +265,7 @@ const RoomView = ({
 				{!isPiPMode && (
 					<View style={[styles.wrapperHeaderFocusSharing]}>
 						<TouchableOpacity style={[styles.focusIcon]} onPress={() => handleOpenEmojiPicker()}>
-							<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_16} width={size.s_24} color={themeValue.white} />
+							<Icons.EmojiIcon color={themeValue.text} width={size.s_16} height={size.s_16} />
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.focusIcon} onPress={() => setFocusedScreenShare(null)}>
 							<MezonIconCDN icon={IconCDN.minimizeIcon} height={size.s_16} color={themeValue.white} />

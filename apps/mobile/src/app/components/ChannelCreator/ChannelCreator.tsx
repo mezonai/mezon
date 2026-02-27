@@ -15,6 +15,7 @@ import type { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import MezonMenu from '../../componentUI/MezonMenu';
 import MezonOption from '../../componentUI/MezonOption';
 import MezonSwitch from '../../componentUI/MezonSwitch';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 import type { MenuClanScreenProps } from '../../navigation/ScreenTypes';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
@@ -141,19 +142,19 @@ export function ChannelCreator({ navigation, route }: MenuClanScreenProps<Create
 			title: t('fields.channelType.text.title'),
 			description: t('fields.channelType.text.description'),
 			value: ChannelType.CHANNEL_TYPE_CHANNEL,
-			icon: <MezonIconCDN icon={IconCDN.channelText} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+			icon: <Icons.ClansOpenIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 		},
 		{
 			title: t('fields.channelType.voice.title'),
 			description: t('fields.channelType.voice.description'),
 			value: ChannelType.CHANNEL_TYPE_MEZON_VOICE,
-			icon: <MezonIconCDN icon={IconCDN.channelVoice} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+			icon: <Icons.VoiceIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 		},
 		{
 			title: t('fields.channelType.stream.title'),
 			description: t('fields.channelType.stream.description'),
 			value: ChannelType.CHANNEL_TYPE_STREAMING,
-			icon: <MezonIconCDN icon={IconCDN.channelStream} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+			icon: <Icons.StreamIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 		}
 	];
 

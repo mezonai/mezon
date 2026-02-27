@@ -8,6 +8,7 @@ import FastImage from 'react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import StatusBarHeight from '../../../../../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
@@ -41,7 +42,7 @@ const ChannelAppShowAll = ({ navigation }: { navigation: any }) => {
 								<FastImage source={{ uri: item?.app_logo }} style={styles.appItemIcon} resizeMode={FastImage.resizeMode.contain} />
 							) : (
 								<View style={[styles.appItemIcon, styles.appItemIconPlaceholder]}>
-									<MezonIconCDN icon={IconCDN.channelApp} width={size.s_32} height={size.s_32} color={themeValue.textDisabled} />
+									<Icons.ChannelappIcon color={themeValue.white} width={size.s_16} height={size.s_16} />
 								</View>
 							)}
 						</View>
@@ -62,7 +63,7 @@ const ChannelAppShowAll = ({ navigation }: { navigation: any }) => {
 	const renderEmptyState = useCallback(() => {
 		return (
 			<View style={styles.emptyStateContainer}>
-				<MezonIconCDN icon={IconCDN.channelApp} width={size.s_60} height={size.s_60} color={themeValue.textDisabled} />
+				<Icons.ChannelappIcon color={themeValue.textDisabled} width={size.s_40} height={size.s_40} />
 				<Text style={styles.emptyStateText}>No channel apps available</Text>
 			</View>
 		);

@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dimensions, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import StatusBarHeight from '../../../../../components/StatusBarHeight/StatusBarHeight';
 import { useWebRTCStream } from '../../../../../components/StreamContext/StreamContext';
 import { IconCDN } from '../../../../../constants/icon_cdn';
@@ -63,7 +64,7 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 			dispatch(videoStreamActions.stopStream());
 		}
 		disconnect();
-		const idStreamByMe = streamChannelMember?.find((memberId) => memberId === userId)
+		const idStreamByMe = streamChannelMember?.find((memberId) => memberId === userId);
 		dispatch(usersStreamActions.remove(idStreamByMe));
 	}, [currentStreamInfo, disconnect, streamChannelMember, dispatch, userId]);
 
@@ -131,7 +132,7 @@ function StreamingRoom({ onPressMinimizeRoom, isAnimationComplete }: { onPressMi
 											onPress={handleEndCall}
 											style={[styles.menuIconEndCall, { backgroundColor: baseColor.redStrong }]}
 										>
-											<MezonIconCDN icon={IconCDN.phoneCallIcon} />
+											<Icons.CallIcon color={baseColor.white} width={size.s_18} height={size.s_18} />
 										</TouchableOpacity>
 									</View>
 								</View>

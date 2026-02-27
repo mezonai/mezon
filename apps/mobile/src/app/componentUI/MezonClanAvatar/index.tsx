@@ -1,4 +1,4 @@
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
 import React, { memo } from 'react';
 import type { StyleProp, TextStyle } from 'react-native';
@@ -6,7 +6,7 @@ import { Text, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Images from '../../../assets/Images';
 import ImageNative from '../../components/ImageNative';
-import { IconCDN } from '../../constants/icon_cdn';
+import { Icons } from '../MobileIcons';
 import { style } from './styles';
 
 interface IMezonClanAvatarProps {
@@ -56,7 +56,11 @@ export default memo(function MezonClanAvatar({
 	return (
 		<View style={[styles.fakeBox, { backgroundColor: defaultColor || themeValue.colorAvatarDefault }]}>
 			{!noDefaultText ? (
-				<FastImage source={alt === 'Anonymous' ? IconCDN.anonymousAvatar : Images.ANONYMOUS_AVATAR} style={styles.defaultImageStyle} />
+				alt === 'Anonymous' ? (
+					<Icons.AnonymousIcon color={themeValue.white} width={size.s_20} height={size.s_20} />
+				) : (
+					<FastImage source={Images.ANONYMOUS_AVATAR} style={styles.defaultImageStyle} />
+				)
 			) : null}
 		</View>
 	);

@@ -8,8 +8,7 @@ import React, { useMemo } from 'react';
 import { DeviceEventEmitter, Pressable, View } from 'react-native';
 import FastImage from 'react-native-fast-image';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../../constants/icon_cdn';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import { emojiFakeData } from '../fakeData';
 import { ContainerMessageActionModal } from './ContainerMessageActionModal';
 import { style } from './styles';
@@ -69,7 +68,7 @@ export const RecentEmojiMessageAction = React.memo((props: IRecentEmojiMessageAc
 				);
 			})}
 			<Pressable onPress={handleShowPicker} style={styles.favouriteIconItem}>
-				<MezonIconCDN icon={IconCDN.reactionIcon} color={themeValue.text} height={size.s_22} width={size.s_22} />
+				<Icons.EmojiIcon color={themeValue.text} width={size.s_22} height={size.s_22} />
 			</Pressable>
 		</View>
 	);

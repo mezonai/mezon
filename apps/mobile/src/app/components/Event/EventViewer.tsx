@@ -6,8 +6,7 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../constants/icon_cdn';
+import { Icons } from '../../componentUI/MobileIcons';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { EventItem } from './EventItem';
 import { EventTab } from './EventTime/EventTab';
@@ -65,7 +64,7 @@ export function EventViewer({ handlePressEventCreate }: { handlePressEventCreate
 			) : (
 				<View style={styles.emptyView}>
 					<View style={styles.iconWrapper}>
-						<MezonIconCDN icon={IconCDN.calendarIcon} height={48} width={48} color={themeValue.text} />
+						<Icons.EventIcon color={themeValue.text} width={48} height={48} />
 					</View>
 					<Text style={styles.emptyText}>{t('dashboard.noEvent')}</Text>
 					<Text style={styles.emptyTextDescription}>{t('dashboard.noEventDescription')}</Text>

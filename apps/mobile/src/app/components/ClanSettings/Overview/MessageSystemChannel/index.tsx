@@ -1,11 +1,10 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ChannelsEntity } from '@mezon/store-mobile';
+import type { ChannelsEntity } from '@mezon/store-mobile';
 import { memo } from 'react';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../constants/icon_cdn';
+import { Icons } from '../../../../componentUI/MobileIcons';
 import { style } from './styles';
 
 interface ChannelsMessageSystemProps {
@@ -27,9 +26,9 @@ const ChannelsMessageSystem = ({ onSelectChannel, listChannelWithoutVoice }: Cha
 			<TouchableOpacity style={styles.channelItem} onPress={() => selectChannel(item)}>
 				<View style={styles.containerIcon}>
 					{item?.channel_private ? (
-						<MezonIconCDN icon={IconCDN.channelTextLock} color={themeValue.text} height={size.s_20} width={size.s_20} />
+						<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 					) : (
-						<MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} height={size.s_20} width={size.s_20} />
+						<Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 					)}
 				</View>
 

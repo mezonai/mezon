@@ -27,6 +27,7 @@ import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import MezonInput from '../../componentUI/MezonInput';
 import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import MezonMenu from '../../componentUI/MezonMenu';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 import type { MenuChannelScreenProps } from '../../navigation/ScreenTypes';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
@@ -206,7 +207,7 @@ export function ChannelSetting({ navigation, route }: MenuChannelScreenProps<Scr
 				{
 					title: t('streamBanner.title'),
 					expandable: true,
-					icon: <MezonIconCDN icon={IconCDN.channelStream} color={themeValue.text} />,
+					icon: <Icons.StreamIcon color={themeValue.text} width={size.s_20} height={size.s_20} />,
 					isShow: isChannel && channel?.type === ChannelType.CHANNEL_TYPE_STREAMING,
 					onPress: () => {
 						navigation.navigate(APP_SCREEN.MENU_CHANNEL.STACK, {

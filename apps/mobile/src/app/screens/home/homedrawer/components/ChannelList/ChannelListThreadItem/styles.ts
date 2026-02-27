@@ -40,7 +40,7 @@ export const style = (colors: Attributes) =>
 		titleThread: {
 			flex: 1,
 			fontSize: size.medium,
-			fontWeight: '600',
+			fontWeight: '400',
 			color: colors.channelNormal,
 			top: verticalScale(3),
 			paddingBottom: size.s_2,
@@ -82,10 +82,17 @@ export const style = (colors: Attributes) =>
 		},
 		virtualConnectorLine: {
 			backgroundColor: '#535353',
-			width: 0.7,
-			height: size.s_14,
+			width: size.s_2 / 3,
+			height: size.s_16,
 			position: 'absolute',
-			top: -size.s_14,
-			left: 2.4
+			top: -size.s_15,
+			left: -size.s_8 / 3
+		},
+		longCorner: {
+			right: size.s_6
+		},
+		shortCorner: {
+			right: size.s_4,
+			top: size.s_10
 		}
 	});

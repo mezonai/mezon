@@ -37,6 +37,7 @@ import MezonClanAvatar from '../../../../../componentUI/MezonClanAvatar';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
 import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
 import MezonMenu from '../../../../../componentUI/MezonMenu';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import NotificationSetting from '../../../../../components/NotificationSetting';
 import { style } from './styles';
 
@@ -215,7 +216,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 					params: { channelThreads: channel }
 				});
 			},
-			icon: <MezonIconCDN icon={IconCDN.threadIcon} color={themeValue.textStrong} />,
+			icon: <Icons.ThreadIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />,
 			isShow: channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL
 		}
 	];

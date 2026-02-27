@@ -12,6 +12,7 @@ import type { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import MezonMenu from '../../componentUI/MezonMenu';
 import type { IMezonOptionData } from '../../componentUI/MezonOption';
 import MezonOption from '../../componentUI/MezonOption';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 import { AddStatusUserModal } from '../AddStatusUserModal';
 import { styles } from './CustomStatusUser.styles';
@@ -92,7 +93,7 @@ export const CustomStatusUser = ({ userStatus, handleCustomUserStatus, currentUs
 					items: [
 						{
 							title: userCustomStatus ? userCustomStatus : t('setCustomStatus'),
-							icon: <MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_20} width={size.s_20} color={themeValue.textDisabled} />,
+							icon: <Icons.EmojiIcon color={themeValue.textDisabled} width={size.s_20} height={size.s_20} />,
 							onPress: () => handlePressSetCustomStatus(),
 							component: userCustomStatus && (
 								<Pressable onPress={() => handleCustomUserStatus('')}>

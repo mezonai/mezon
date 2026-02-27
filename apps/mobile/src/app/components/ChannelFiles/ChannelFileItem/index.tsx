@@ -5,8 +5,7 @@ import { convertTimeHour } from '@mezon/utils';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, Text, TouchableOpacity, View } from 'react-native';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../constants/icon_cdn';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { style } from './styles';
 
 type ChannelFileItemProps = {
@@ -47,7 +46,7 @@ const ChannelFileItem = memo(({ file, isDM }: ChannelFileItemProps) => {
 
 	return (
 		<TouchableOpacity style={styles.container} onPress={onPressItem}>
-			<MezonIconCDN icon={IconCDN.fileIcon} height={size.s_34} width={size.s_34} color={themeValue.bgViolet} />
+			<Icons.FileIcon color={themeValue.text} width={size.s_34} height={size.s_34} />
 			<View style={styles.content}>
 				<Text style={[styles.fileName, { color: themeValue.bgViolet }]} numberOfLines={1} ellipsizeMode="tail">
 					{file?.filename || ''}

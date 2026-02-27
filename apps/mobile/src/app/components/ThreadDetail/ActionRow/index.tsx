@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../constants/icon_cdn';
 import useStatusMuteChannel from '../../../hooks/useStatusMuteChannel';
 import type { AppStackScreenProps } from '../../../navigation/ScreenTypes';
@@ -78,7 +79,7 @@ export const ActionRow = React.memo(() => {
 						});
 					}
 				},
-				icon: <MezonIconCDN icon={IconCDN.magnifyingIcon} width={22} height={22} color={themeValue.text} />,
+				icon: <Icons.SearchIcon color={themeValue.text} width={22} height={22} />,
 				isShow: true,
 				type: EActionRow.Search
 			},
@@ -87,7 +88,7 @@ export const ActionRow = React.memo(() => {
 				action: () => {
 					navigation.navigate(APP_SCREEN.MENU_THREAD.STACK, { screen: APP_SCREEN.MENU_THREAD.CREATE_THREAD });
 				},
-				icon: <MezonIconCDN icon={IconCDN.threadIcon} width={22} height={22} color={themeValue.text} />,
+				icon: <Icons.ThreadIcon color={themeValue.text} width={22} height={22} />,
 				isShow: isChannel,
 				type: EActionRow.Threads
 			},

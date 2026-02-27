@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, DeviceEventEmitter, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ImageNative from '../../../../components/ImageNative';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../constants/icon_cdn';
 
 interface DiscoverDetailScreenProps {
@@ -318,7 +319,7 @@ const DiscoverDetailScreen: React.FC<DiscoverDetailScreenProps> = ({ clanDetail 
 
 						<View style={styles.infoItem}>
 							<View style={styles.iconContainer}>
-								<MezonIconCDN icon={IconCDN.calendarIcon} color={themeValue.text} width={size.s_20} height={size.s_20} />
+								<Icons.EventIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 							</View>
 							<View style={styles.infoContent}>
 								<Text style={styles.infoTitle}>{t('clanCreated')}</Text>

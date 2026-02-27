@@ -256,7 +256,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 					title: 'quickReaction',
 					content: t('quickReaction.title'),
 					value: OptionChannelHeader.QuickReaction,
-					icon: <MezonIconCDN icon={IconCDN.reactionIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />
+					icon: <Icons.EmojiIcon color={themeValue.text} width={size.s_18} height={size.s_18} />
 				},
 				{
 					title: 'removeQuickReaction',
@@ -268,7 +268,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 					title: 'buzz',
 					content: 'Buzz',
 					value: OptionChannelHeader.Buzz,
-					icon: <MezonIconCDN icon={IconCDN.buzz} color={themeValue.text} height={size.s_18} width={size.s_18} />
+					icon: <Icons.BuzzIcon color={themeValue.text} width={size.s_18} height={size.s_18} />
 				}
 			].filter((item) => {
 				if (item.value === OptionChannelHeader.RemoveQuickReaction && !hasQuickReaction) return false;

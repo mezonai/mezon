@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../navigation/ScreenTypes';
 import { useDiscoverMobile } from '../Discover/DiscoverMobileContext';
@@ -68,7 +69,7 @@ const HeaderUserEmptyClan = () => {
 					<MezonIconCDN icon={IconCDN.myQRcodeIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
 				</TouchableOpacity>
 				<TouchableOpacity onPressIn={navigateToAddFriendScreen} style={styles.iconWrapper}>
-					<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+					<Icons.AddFriendIcon color={themeValue.text} width={size.s_18} height={size.s_18} />
 					{quantityPendingRequest > 0 && (
 						<View style={styles.badgeItemTabType}>
 							<Text style={[styles.textBadgeItemTabType, { fontSize: size.s_10 }]}>

@@ -13,6 +13,7 @@ import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import Sound from 'react-native-sound';
 import MezonClanAvatar from '../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import { style } from './styles';
 
@@ -93,7 +94,7 @@ const SoundItemComponent = forwardRef(({ item, onSwipeOpen, isPlaying = false, o
 		return (
 			<Pressable style={styles.audioPlay} onPress={handlePressPlay} disabled={!item?.source}>
 				{isPlaying ? (
-					<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_20} height={size.s_20} color={themeValue.text} />
+					<Icons.VoiceIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 				) : (
 					<MezonIconCDN icon={IconCDN.playCircleIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
 				)}

@@ -8,8 +8,7 @@ import { ChannelType } from 'mezon-js';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
-import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../constants/icon_cdn';
+import { Icons } from '../../componentUI/MobileIcons';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import IconChannel from '../IconChannel';
 import style from './ChannelItem.styles';
@@ -74,7 +73,7 @@ export const ChannelItem = memo(({ channelData, onSelectChannel, isHideClanName 
 						</View>
 					</View>
 					<View style={styles.joinChannelBtn}>
-						<MezonIconCDN icon={IconCDN.channelVoice} width={size.s_20} height={size.s_20} color={'#c7c7c7'} />
+						<Icons.VoiceIcon color={'#c7c7c7'} width={size.s_20} height={size.s_20} />
 						<Text style={styles.joinChannelBtnText}>{t('joinChannel')}</Text>
 					</View>
 				</View>

@@ -11,6 +11,7 @@ export enum IconCDN {
 	magnifyingIcon = require('./iconPNG/magnifying.png'),
 	userPlusIcon = require('./iconPNG/userplus.png'),
 	longCorner = require('./iconPNG/long-corner.png'),
+	shortCorner = require('./iconPNG/shortCorner.png'),
 	bellIcon = require('./iconPNG/bellbell.png'),
 	bellSlashIcon = require('./iconPNG/bellslash.png'),
 	threadIcon = require('./iconPNG/threadIcon.png'),

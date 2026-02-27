@@ -20,6 +20,7 @@ import { DeviceEventEmitter, Keyboard, StyleSheet, Text, TextInput, View } from 
 import LinearGradient from 'react-native-linear-gradient';
 import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import CategoryList from './components/CategoryList';
@@ -129,11 +130,11 @@ export default function EmojiSelectorContainer({
 				)
 			: [];
 		return [
-			<MezonIconCDN icon={IconCDN.clockIcon} color={themeValue.textStrong} />,
+			<Icons.ClockIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />,
 			<MezonIconCDN icon={IconCDN.shopSparkleIcon} color={themeValue.textStrong} />,
 			<MezonIconCDN icon={IconCDN.starIcon} color={themeValue.textStrong} />,
 			...clanEmojis,
-			<MezonIconCDN icon={IconCDN.reactionIcon} height={size.s_24} width={size.s_24} color={themeValue.textStrong} />,
+			<Icons.EmojiIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />,
 			<MezonIconCDN icon={IconCDN.leafIcon} color={themeValue.textStrong} />,
 			<MezonIconCDN icon={IconCDN.bowlIcon} color={themeValue.textStrong} />,
 			<MezonIconCDN icon={IconCDN.gameControllerIcon} color={themeValue.textStrong} />,
