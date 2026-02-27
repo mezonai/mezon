@@ -7,10 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { FlatList, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import ImageNative from '../../../../../../components/ImageNative';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
-import { Icons } from '../../../../../componentUI/MobileIcons';
 import ItemChannelAppListing from './ItemChannelAppListing';
 import { style } from './styles';
 
