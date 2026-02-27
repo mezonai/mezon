@@ -2,7 +2,7 @@
 	"modal": {
 		"title": "Invite friends to {{target}}",
 		"privateEvent": "External Event",
-		"privateRoom": "private room",
+		"privateRoom": "Meeting Room",
 		"clanInvite": "clan invite",
 		"sendLinkText": "Or, send a {{type}} link to a friend",
 		"expiresIn": "Your invite link expires in {{time}}"
