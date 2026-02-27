@@ -1,6 +1,5 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
-import ImageNative from 'apps/mobile/src/app/components/ImageNative';
 import { ChannelType } from 'mezon-js';
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -8,6 +7,8 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import FastImage from 'react-native-fast-image';
 import type { IForwardIObject } from '..';
 import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../../../src/app/componentUI/MobileIcons';
+import ImageNative from '../../../../../../../../src/app/components/ImageNative';
 import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
 import { style } from '../styles';
 import { getCheckboxInnerIconStyle, style as localStyles } from './ForwardMessageItem.styles';
@@ -59,9 +60,9 @@ function ForwardMessageItem({
 				return (
 					<View style={styles.iconTextContainer}>
 						{item?.isChannelPublic ? (
-							<MezonIconCDN icon={IconCDN.channelText} width={16} height={16} color={themeValue.white} />
+							<Icons.ClansOpenIcon color={themeValue.white} width={16} height={16} />
 						) : (
-							<MezonIconCDN icon={IconCDN.channelTextLock} width={16} height={16} color={themeValue.white} />
+							<Icons.ClansLockIcon color={themeValue.white} width={16} height={16} />
 						)}
 					</View>
 				);
@@ -69,9 +70,9 @@ function ForwardMessageItem({
 				return (
 					<View style={styles.iconTextContainer}>
 						{item?.isChannelPublic ? (
-							<MezonIconCDN icon={IconCDN.threadIcon} width={16} height={16} color={themeValue.white} />
+							<Icons.ThreadIcon color={themeValue.white} width={16} height={16} />
 						) : (
-							<MezonIconCDN icon={IconCDN.threadLockIcon} width={16} height={16} color={themeValue.white} />
+							<Icons.ThreadIcon color={themeValue.white} width={16} height={16} />
 						)}
 					</View>
 				);

@@ -9,6 +9,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../componentUI/MobileIcons';
 import WaveButton from '../../../components/WaveWelcome';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
@@ -223,9 +224,7 @@ export const MessageLineSystem = memo(({ message }: { message: MessagesEntity })
 				{message?.code === TypeMessage.Welcome && (
 					<MezonIconCDN icon={IconCDN.auditLog} width={size.s_24} height={size.s_24} color={baseColor.bgSuccess} />
 				)}
-				{message?.code === TypeMessage.CreateThread && (
-					<MezonIconCDN icon={IconCDN.threadIcon} color={themeValue.text} width={size.s_20} height={size.s_20} />
-				)}
+				{message?.code === TypeMessage.CreateThread && <Icons.ThreadIcon color={themeValue.text} width={size.s_20} height={size.s_20} />}
 				{message?.code === TypeMessage.CreatePin && (
 					<MezonIconCDN icon={IconCDN.pinIcon} color={themeValue.text} width={size.s_20} height={size.s_20} />
 				)}

@@ -23,6 +23,7 @@ import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import useTabletLandscape from '../../../../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import { style } from '../styles';
 import ButtonEndCall from './ButtonEndCall';
 import ButtonRaiseHand from './ButtonRaiseHand';
@@ -197,7 +198,7 @@ const ControlBottomBar = ({
 				<ToggleMic />
 				{!isGroupCall && (
 					<TouchableOpacity onPress={handleShowChat} style={styles.menuIcon}>
-						<MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.textStrong} />
+						<Icons.MessagesIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 					</TouchableOpacity>
 				)}
 				{!isGroupCall && <ButtonRaiseHand channelId={channelId} clanId={clanId} />}

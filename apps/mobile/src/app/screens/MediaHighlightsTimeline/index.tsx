@@ -28,6 +28,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { Icons } from '../../componentUI/MobileIcons';
 import ImageNative from '../../components/ImageNative';
 import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
 import { IconCDN } from '../../constants/icon_cdn';
@@ -373,7 +374,7 @@ const MediaHighlightsTimeline: React.FC = () => {
 				</View>
 				<View style={styles.headerRight}>
 					<TouchableOpacity onPress={handleOpenCalendar}>
-						<MezonIconCDN icon={IconCDN.calendarIcon} width={size.s_24} height={size.s_24} color={themeValue.textStrong} />
+						<Icons.EventIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 					</TouchableOpacity>
 				</View>
 			</View>

@@ -1,5 +1,5 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import React, { memo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, StyleSheet, Text, View } from 'react-native';
@@ -15,6 +15,7 @@ import Animated, {
 	withTiming
 } from 'react-native-reanimated';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from '../ChatBoxBottomBar/style';
 
@@ -91,7 +92,7 @@ const RecordingUI = memo(() => {
 				<View style={{ position: 'relative' }}>
 					<Animated.View style={[styles.micIconContainer, micBackgroundAnimatedStyle]} />
 					<View style={[styles.micIconContainer, { position: 'absolute', backgroundColor: 'transparent' }]}>
-						<MezonIconCDN icon={IconCDN.microphoneIcon} width={size.s_26} height={size.s_26} color={baseColor.redStrong} />
+						<Icons.MicIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 					</View>
 				</View>
 				<Text style={[styles.timerText]}>{formatTime(duration)}</Text>

@@ -29,6 +29,7 @@ import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { useWebRTCStream } from '../../../../../../components/StreamContext/StreamContext';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import VoiceChannelAvatar from '../../ChannelVoice/JoinChannelVoiceBS/VoiceChannelAvatar';
 import InviteToChannel from '../../InviteToChannel';
 import { style } from './JoinStreamingRoomBS.styles';
@@ -126,14 +127,14 @@ function JoinStreamingRoomBS({ channel }: { channel: IChannel }) {
 					}}
 					style={styles.btnInviteChannel}
 				>
-					<MezonIconCDN icon={IconCDN.userPlusIcon} color={themeValue.textStrong} />
+					<Icons.AddFriendIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 				</TouchableOpacity>
 			</View>
 			<View style={styles.centerContent}>
 				<View style={styles.avatarContainer}>
 					{memberJoin?.length === 0 ? (
 						<View style={styles.iconVoice}>
-							<MezonIconCDN icon={IconCDN.channelStream} width={size.s_36} height={size.s_36} color={themeValue.textStrong} />
+							<Icons.StreamIcon width={size.s_48} height={size.s_48} />
 						</View>
 					) : (
 						<View style={styles.avatarRow}>

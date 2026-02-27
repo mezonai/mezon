@@ -9,6 +9,7 @@ import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../../componentUI/MezonAvatar';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../constants/icon_cdn';
 import useTabletLandscape from '../../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
@@ -80,24 +81,24 @@ export const ThreadHeader = memo(() => {
 		const isTextOrThreadChannel = [ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD].includes(currentChannel?.type);
 		const isChannelApp = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 		if (currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel) {
-			return <MezonIconCDN icon={IconCDN.channelTextWarning} width={20} height={20} color={themeValue.text} />;
+			return <Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />;
 		}
 		if (isPrivateChannel && isTextOrThreadChannel) {
 			return isChannel ? (
-				<MezonIconCDN icon={IconCDN.channelTextLock} width={size.s_20} height={size.s_20} color={themeValue.text} />
+				<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 			) : (
-				<MezonIconCDN icon={IconCDN.threadLockIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
+				<Icons.ThreadIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 			);
 		}
 
 		if (isChannelApp) {
-			return <MezonIconCDN icon={IconCDN.channelApp} width={size.s_20} height={size.s_20} color={themeValue.text} />;
+			return <Icons.ChannelappIcon color={themeValue.text} width={size.s_20} height={size.s_20} />;
 		}
 
 		return isChannel ? (
-			<MezonIconCDN icon={IconCDN.channelText} width={size.s_20} height={size.s_20} color={themeValue.text} />
+			<Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 		) : (
-			<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
+			<Icons.ThreadIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 		);
 	};
 

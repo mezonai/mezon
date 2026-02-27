@@ -5,6 +5,7 @@ import React, { useMemo } from 'react';
 import { Pressable, Text, TouchableOpacity, View } from 'react-native';
 import BouncyCheckbox from 'react-native-bouncy-checkbox/build/dist/BouncyCheckbox';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 import ImageNative from '../ImageNative';
 import { UserStatus } from '../UserStatus';
@@ -94,7 +95,7 @@ export const FriendItem = React.memo(
 						{isFriend && showAction && !selectMode ? (
 							<View style={styles.friendAction}>
 								<Pressable onPress={() => onPressAction(EFriendItemAction.Call)}>
-									<MezonIconCDN icon={IconCDN.phoneCallIcon} width={24} height={18} color={themeValue.text} />
+									<Icons.CallIcon color={themeValue.text} width={25} height={18} />
 								</Pressable>
 								<Pressable onPress={() => onPressAction(EFriendItemAction.MessageDetail)}>
 									<MezonIconCDN icon={IconCDN.chatIcon} width={25} height={18} color={themeValue.text} />

@@ -5,8 +5,7 @@ import { EOverriddenPermission, EPermission } from '@mezon/utils';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../constants/icon_cdn';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { style } from './EmptyThread.style';
 
 const EmptyThread = ({ onPress }: { onPress: () => void }) => {
@@ -23,7 +22,7 @@ const EmptyThread = ({ onPress }: { onPress: () => void }) => {
 		<View style={styles.emptyThreadContainer}>
 			<View style={styles.emptyThreadContent}>
 				<View style={styles.iconContainer}>
-					<MezonIconCDN icon={IconCDN.threadPlusIcon} width={22} height={22} color={themeValue.textStrong} />
+					<Icons.ThreadPlusIcon width={22} height={22} color={themeValue.textStrong} />
 				</View>
 				<Text style={styles.textNoThread}>{t('emptyThread.textNoThread')}</Text>
 				<Text style={styles.textNotify}>{t('emptyThread.textNotify')}</Text>

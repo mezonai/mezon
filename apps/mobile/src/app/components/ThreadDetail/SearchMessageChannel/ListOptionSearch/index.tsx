@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, View } from 'react-native';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import OptionSearch from '../OptionSearch';
 import { style } from './ListOptionSearch.styles';
@@ -30,7 +31,7 @@ const ListOptionSearch = ({ onPressOption, isSearchGlobal = false }: IListOption
 				title: ITypeOptionSearch.IN,
 				content: t('filterOptions.inChannel'),
 				value: 'channel_id',
-				icon: <MezonIconCDN icon={IconCDN.channelText} color={themeValue.text} width={20} height={20} />
+				icon: <Icons.ClansOpenIcon color={themeValue.text} width={20} height={20} />
 			});
 		} else {
 			options.push({

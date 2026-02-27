@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../navigation/ScreenTypes';
 import { style } from './CategoryChannelItem.styles';
@@ -54,9 +55,7 @@ export const CategoryChannelItem = React.memo(
 		return (
 			<TouchableOpacity onPress={navigateToNotificationDetail} style={[styles.categoryItem, stylesItem]}>
 				<View style={styles.channelTitle}>
-					{typePreviousIcon === ChannelType.CHANNEL_TYPE_CHANNEL && (
-						<MezonIconCDN icon={IconCDN.channelText} width={16} height={16} color={themeValue.channelNormal} />
-					)}
+					{typePreviousIcon === ChannelType.CHANNEL_TYPE_CHANNEL && <Icons.ClansOpenIcon color={themeValue.text} width={16} height={16} />}
 					{typePreviousIcon === EOptionOverridesType.Category && (
 						<MezonIconCDN icon={IconCDN.forderIcon} width={16} height={16} color={themeValue.channelNormal} />
 					)}

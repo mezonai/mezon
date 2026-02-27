@@ -16,9 +16,8 @@ import { ChannelStreamMode } from 'mezon-js';
 import React from 'react';
 import { DeviceEventEmitter, TouchableOpacity } from 'react-native';
 import { useSelector } from 'react-redux';
-import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { useSendSignaling } from '../../../../../../components/CallingGroupModal';
-import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from '../styles';
 
 const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: string; clanId: string; isGroupCall?: boolean }) => {
@@ -133,7 +132,7 @@ const ButtonEndCall = ({ channelId, clanId, isGroupCall = false }: { channelId: 
 
 	return (
 		<TouchableOpacity onPress={handleEndCall} style={[styles.menuIcon, styles.endCallButton]}>
-			<MezonIconCDN icon={IconCDN.phoneCallIcon} />
+			<Icons.CallIcon width={24} height={24} />
 		</TouchableOpacity>
 	);
 };

@@ -10,6 +10,7 @@ import { memo, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, SectionList, Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import InviteToChannel from '../../screens/home/homedrawer/components/InviteToChannel';
@@ -172,7 +173,7 @@ export const MemberListStatus = memo(({ currentChannel, currentUserId }: IMember
 					<View style={styles.inviteBtn}>
 						<View style={styles.iconNameWrapper}>
 							<View style={[styles.iconWrapper, isMaximumMembers && styles.iconWrapperDisabled]}>
-								<MezonIconCDN icon={IconCDN.userPlusIcon} height={size.s_16} width={size.s_16} color={baseColor.white} />
+								<Icons.AddFriendIcon color={baseColor.white} width={size.s_16} height={size.s_16} />
 							</View>
 							<Text style={isMaximumMembers ? styles.textInviteDisabled : styles.textInvite}>
 								{isDM ? actionButtons[EActionButton.AddMembers] : actionButtons[EActionButton.InviteMembers]}

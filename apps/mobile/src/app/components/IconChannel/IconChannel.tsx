@@ -3,6 +3,7 @@ import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 
 function IconChannel({ channelPrivate, type }: { channelPrivate: number; type }) {
@@ -13,24 +14,25 @@ function IconChannel({ channelPrivate, type }: { channelPrivate: number; type })
 		switch (type) {
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
 				return isChannelPrivate ? (
-					<MezonIconCDN icon={IconCDN.channelTextLock} width={size.s_20} height={size.s_20} color={themeValue.text} />
+					<Icons.ClansLockIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />
 				) : (
-					<MezonIconCDN icon={IconCDN.channelText} width={size.s_20} height={size.s_20} color={themeValue.text} />
+					<Icons.ClansOpenIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />
 				);
 			case ChannelType.CHANNEL_TYPE_THREAD:
 				return isChannelPrivate ? (
-					<MezonIconCDN icon={IconCDN.threadLockIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
+					<Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />
 				) : (
-					<MezonIconCDN icon={IconCDN.threadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
+					<Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />
 				);
 
 			case ChannelType.CHANNEL_TYPE_MEZON_VOICE:
-				return <MezonIconCDN icon={IconCDN.channelVoice} width={size.s_20} height={size.s_20} color={themeValue.text} />
+				return <Icons.VoiceIcon color={themeValue.text} width={size.s_20} height={size.s_20} />;
 
 			case ChannelType.CHANNEL_TYPE_STREAMING:
-				return <MezonIconCDN icon={IconCDN.channelStream} width={size.s_20} height={size.s_20} color={themeValue.text} />;
+				return <Icons.StreamIcon color={themeValue.text} width={size.s_20} height={size.s_20} />;
+
 			case ChannelType.CHANNEL_TYPE_APP:
-				return <MezonIconCDN icon={IconCDN.channelApp} width={size.s_20} height={size.s_20} color={themeValue.text} />;
+				return <Icons.ChannelappIcon color={themeValue.text} width={size.s_20} height={size.s_20} />;
 			case ChannelType.CHANNEL_TYPE_ANNOUNCEMENT:
 				return <MezonIconCDN icon={IconCDN.announcementIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 			case ChannelType.CHANNEL_TYPE_FORUM:

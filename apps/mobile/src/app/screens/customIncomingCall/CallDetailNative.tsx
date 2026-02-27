@@ -10,6 +10,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 import { useWebRTCCallMobile } from '../../hooks/useWebRTCCallMobile';
 import { clearOngoingCallNotification, showOngoingCallNotification } from '../../utils/ongoingCallNotification';
@@ -309,14 +310,14 @@ export const CallDetailNative = memo(
 						</View>
 						<View>
 							<TouchableOpacity onPress={onCancelCall} style={styles.endCallButton}>
-								<MezonIconCDN icon={IconCDN.phoneCallIcon} />
+								<Icons.CallIcon color={themeValue.white} width={size.s_24} height={size.s_24} />
 							</TouchableOpacity>
 							<Text style={styles.textDescControl}>{t('end')}</Text>
 						</View>
 						<View>
 							<TouchableOpacity onPress={toggleAudio} style={[styles.menuIcon, localMediaControl?.mic && styles.menuIconActive]}>
 								{localMediaControl?.mic ? (
-									<MezonIconCDN icon={IconCDN.microphoneIcon} width={size.s_24} height={size.s_24} color={themeValue.black} />
+									<Icons.MicIcon color={themeValue.black} width={size.s_18} height={size.s_24} />
 								) : (
 									<MezonIconCDN icon={IconCDN.microphoneDenyIcon} width={size.s_24} height={size.s_24} color={themeValue.text} />
 								)}

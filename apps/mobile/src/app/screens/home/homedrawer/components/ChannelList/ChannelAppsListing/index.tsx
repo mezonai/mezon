@@ -10,6 +10,7 @@ import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import ImageNative from '../../../../../../components/ImageNative';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import ItemChannelAppListing from './ItemChannelAppListing';
 import { style } from './styles';
 
@@ -74,7 +75,7 @@ const ChannelAppsListing = () => {
 							<ImageNative url={item.app_logo} style={styles.appItemIcon} resizeMode="contain" />
 						) : (
 							<View style={[styles.appItemIcon, styles.appItemIconPlaceholder]}>
-								<MezonIconCDN icon={IconCDN.channelApp} width={size.s_28} height={size.s_28} color={themeValue.textDisabled} />
+								<Icons.ChannelappIcon color={themeValue.textDisabled} width={size.s_16} height={size.s_16} />
 							</View>
 						)}
 					</View>

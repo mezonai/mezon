@@ -10,7 +10,7 @@ import {
 	save,
 	STORAGE_KEY_TEMPORARY_INPUT_MESSAGES
 } from '@mezon/mobile-components';
-import { useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import type { RootState } from '@mezon/store-mobile';
 import {
 	emojiSuggestionActions,
@@ -45,8 +45,7 @@ import { useSelector } from 'react-redux';
 import { EmojiSuggestion, HashtagSuggestions, Suggestions } from '../../../../../../components/Suggestions';
 import { SlashCommandSuggestions } from '../../../../../../components/Suggestions/SlashCommandSuggestions';
 import { SlashCommandMessage } from '../../../../../../components/Suggestions/SlashCommandSuggestions/SlashCommandMessage';
-import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../../../constants/icon_cdn';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import { APP_SCREEN } from '../../../../../../navigation/ScreenTypes';
 import { removeBackticks, resetCachedChatbox, resetCachedMessageActionNeedToResolve } from '../../../../../../utils/helpers';
 import { EMessageActionType } from '../../../enums';
@@ -865,7 +864,7 @@ export const ChatBoxBottomBar = memo(
 							</View>
 							{showAnonymousIcon && (
 								<View style={styles.iconAnonymous}>
-									<MezonIconCDN icon={IconCDN.anonymous} color={themeValue.text} />
+									<Icons.AnonymousIcon color={themeValue.textDisabled} width={size.s_20} height={size.s_20} />
 								</View>
 							)}
 						</View>

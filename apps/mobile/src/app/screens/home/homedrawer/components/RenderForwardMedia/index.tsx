@@ -2,6 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import React, { useEffect, useMemo, useState } from 'react';
 import { NativeModules, Platform, Text, View } from 'react-native';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import ImageNative from '../../../../../components/ImageNative';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { checkFileTypeImage, isVideo } from '../../../../../utils/helpers';
@@ -91,7 +92,7 @@ export const RenderForwardMedia = React.memo(({ attachment, count }: any) => {
 
 	return (
 		<View style={styles.fileViewer}>
-			<MezonIconCDN icon={IconCDN.fileIcon} width={size.s_30} height={size.s_30} color={themeValue.bgViolet} />
+			<Icons.FileIcon color={themeValue.bgViolet} width={size.s_30} height={size.s_30} />
 			{!!count && (
 				<View style={styles.countOverlay}>
 					<Text style={styles.countText}>{attachmentCount}</Text>
