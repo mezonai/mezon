@@ -247,9 +247,9 @@ export const themeColors: ThemeColor = {
 		textSuccess: '#00d4aa'
 	},
 	purpleHaze: {
-		primary: '#2F0F42',
-		primaryGradiant: '#41165a',
-		secondary: '#371A55',
+		primary: '#2f2147',
+		primaryGradiant: '#42294e',
+		secondary: '#543e9f',
 		tertiary: '#141319',
 		border: '#2e2f34',
 		borderHighlight: '#27272f',
