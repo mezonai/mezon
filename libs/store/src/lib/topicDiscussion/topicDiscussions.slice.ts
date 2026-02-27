@@ -115,7 +115,18 @@ export const createTopic = createAsyncThunk('topics/createTopic', async (body: A
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.createSdTopic(mezon.session, body);
+
 		if (response) {
+			if (response.channel_id && response.message_id && response.id) {
+				thunkAPI.dispatch(
+					messagesActions.updateToBeTopicMessage({
+						channelId: response.channel_id,
+						messageId: response.message_id,
+						topicId: response.id,
+						creatorId: response.creator_id || ''
+					})
+				);
+			}
 			return response;
 		} else {
 			return thunkAPI.rejectWithValue([]);
