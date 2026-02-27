@@ -103,11 +103,11 @@
 	--text-count-page-active: #ffffff;
 	/* chữ trắng nổi bật */
 	--text-theme-primary-hover: hsl(240 calc(1 * 4%) 60.784% /0.12156862745098039);
-	/* modal */
-	--bg-modal-theme: color-mix(in oklab, hsl(0 calc(1 * 0%) 100% /1) 100%, rgb(255, 247, 204) 50%);
+	/* modal search */
+	--bg-modal-theme-search: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), linear-gradient(rgb(243, 179, 54) 31.1%, rgb(238, 133, 88) 67.09%);
 	/* option  */
 	--bg-option-theme: #fffcef;
-	--bg-option-active: #e6e4dc;
+	--bg-option-active: #e6e4dc; 
 	/* mention */
 	--mention-primary: rgba(67, 97, 238, 0.24);
 	--mention-color: #3298ff;
@@ -158,7 +158,6 @@
 	/* option  */
 	--bg-option-theme: #fffcef;
 	--bg-option-active: #e6e4dc;
-
 	--bg-button-add-friend-active: hsl(240 calc(1 * 4%) 60.784% /0.12156862745098039);
 	--text-button-add-friend-active: color-mix(in oklab, hsl(228.679 calc(1 * 96.364%) 78.431% /1) 100%, #000 0%);
 	--bg-markdown-code: #eee6d5;

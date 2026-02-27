@@ -79,6 +79,8 @@
 	--bg-item-theme-hover: rgba(255, 255, 255, 0.08);
 	/* modal */
 	--bg-modal-theme: color-mix(in oklab, hsl(240 calc(1 * 6.494%) 15.098% /1) 100%, #000 0%);
+	/* modal search */
+	--bg-modal-theme-search: color-mix(in oklab, hsl(240 calc(1 * 6.494%) 15.098% /1) 100%, #000 0%);
 	/* input secondary */
 	--bg-input-secondary: #202225;
 	/* option  */

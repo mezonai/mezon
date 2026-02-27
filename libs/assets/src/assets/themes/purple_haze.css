@@ -145,6 +145,16 @@
 	--text-count-page-active: #ffffff;
 	/* chữ trắng nổi bật */
 	--bg-modal-theme: color-mix(in oklab, hsl(232.5 calc(1 * 6.557%) 23.922% /1) 100%, rgb(0, 14, 26) 50%);
+	--bg-modal-theme-search: linear-gradient(rgb(0 0 0 / 0.8), rgb(0 0 0 / 0.8)) fixed 0 0 / cover,
+		linear-gradient(
+				154.19deg,
+				hsl(183, 44%, 51%) 8%,
+				hsl(258.11 90% 46%) 32%,
+				hsl(298, 86%, 61%) 54%,
+				hsl(264.76 100% 66%) 78%,
+				hsl(207, 82%, 58%) 100%
+			)
+			fixed 0 0 / cover;;
 	/* option  */
 	--bg-option-theme: #252d36;
 	--bg-option-active: #3c424b;

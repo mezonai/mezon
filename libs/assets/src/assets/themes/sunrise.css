@@ -134,7 +134,14 @@
 	/* chữ trắng nổi bật */
 	--text-theme-primary-hover: hsl(240 calc(1 * 4%) 60.784% /0.12156862745098039);
 	/* modal */
-	--bg-modal-theme: color-mix(in oklab, hsl(0 calc(1 * 0%) 100% /1) 100%, rgb(255, 247, 204) 50%);
+	--bg-modal-theme-search: linear-gradient(rgb(255 255 255 / 0.85), rgb(255 255 255 / 0.85)) fixed 0 0 / cover,
+		linear-gradient(
+				154.19deg,
+				hsl(326.809 calc(1 * 41.964%) 43.922% /1) 8.62%,
+				hsl(27.5 calc(1 * 44.86%) 58.039% /1) 48.07%,
+				hsl(50.286 calc(1 * 46.256%) 44.51% /1) 76.04%
+			)
+			fixed 0 0 / cover;
 	/* option  */
 	--bg-option-theme: #fffcef;
 	--bg-option-active: #e6e4dc;
