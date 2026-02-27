@@ -8,7 +8,8 @@ export const createStyles = (themeValue: Attributes) =>
 			bottom: 0,
 			left: 0,
 			right: 0,
-			zIndex: 0
+			zIndex: 0,
+			backgroundColor: themeValue.primary
 		},
 		bottomSheetBackground: {
 			paddingTop: 0

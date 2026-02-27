@@ -16,7 +16,7 @@ const StatusBarHeight = () => {
 				start={{ x: 0, y: 1 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.primaryGradiant || themeValue.primary, themeValue.primary]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 		</View>
 	);

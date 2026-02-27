@@ -72,7 +72,7 @@ const VideoThumbnailView: React.FC<{
 
 const videoStyles = StyleSheet.create({
 	playIconOverlay: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: 'rgba(0, 0, 0, 0.25)',
@@ -354,7 +354,7 @@ const CreateMilestone: React.FC = () => {
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 			{/* Header */}
 			<View style={styles.header}>

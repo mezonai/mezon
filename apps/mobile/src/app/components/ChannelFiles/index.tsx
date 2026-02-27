@@ -83,7 +83,7 @@ const ChannelFiles = memo(({ currentChannelId, isDM }: IChannelFilesProps) => {
 									start={{ x: 1, y: 0 }}
 									end={{ x: 0, y: 0 }}
 									colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-									style={[StyleSheet.absoluteFillObject]}
+									style={[StyleSheet.absoluteFill]}
 								/>
 								{section.isFirstOfYear && <Text style={styles.sectionYearHeaderTitle}>{section.year}</Text>}
 								<Text style={styles.sectionDayHeaderTitle}>{section.titleDay}</Text>

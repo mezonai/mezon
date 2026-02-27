@@ -75,7 +75,7 @@ export const style = (colors: Attributes, isTablet: boolean) =>
 			zIndex: 1
 		},
 		absoluteFillGradient: {
-			...StyleSheet.absoluteFillObject
+			...StyleSheet.absoluteFill
 		},
 		flatListContent: {
 			paddingBottom: size.s_6

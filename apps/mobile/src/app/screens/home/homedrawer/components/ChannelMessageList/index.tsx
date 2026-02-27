@@ -16,12 +16,18 @@ interface IChannelListMessageProps {
 	isLoadMoreBottom: boolean;
 	lastSeenMessageId?: string;
 	initialScrollIndex?: number;
-	savedScrollOffset?: number;
 }
+
+const VIEWABILITY_CONFIG = {
+	minimumViewTime: 0,
+	viewAreaCoveragePercentThreshold: 0,
+	itemVisiblePercentThreshold: 0,
+	waitForInteraction: false
+};
 
 export const ViewLoadMore = ({ isLoadMoreTop = false }: { isLoadMoreTop?: boolean }) => {
 	const { themeValue } = useTheme();
-	const styles = style(themeValue);
+	const styles = useMemo(() => style(themeValue), [themeValue]);
 
 	return (
 		<View style={[styles.wrapperLoadMore, isLoadMoreTop ? { top: 0 } : { bottom: 0 }]}>
@@ -39,17 +45,14 @@ const ChannelListMessage = React.memo(
 		onLoadMore,
 		isLoadMoreBottom,
 		lastSeenMessageId: _lastSeenMessageId,
-		initialScrollIndex,
-		savedScrollOffset
+		initialScrollIndex
 	}: IChannelListMessageProps) => {
 		const { themeValue } = useTheme();
-		const styles = style(themeValue);
+		const styles = useMemo(() => style(themeValue), [themeValue]);
 		const keyExtractor = useCallback((message: MessagesEntity) => `${message?.id}_${message?.channel_id}`, []);
 		const initialScrollIndexRef = useRef(initialScrollIndex);
-		const savedScrollOffsetRef = useRef(savedScrollOffset);
 		const needsInitialScroll = initialScrollIndexRef.current !== undefined && initialScrollIndexRef.current > 0;
-		const needsRestoreScroll = !needsInitialScroll && savedScrollOffsetRef.current !== undefined && savedScrollOffsetRef.current > 0;
-		const needsDelayedScroll = needsInitialScroll || needsRestoreScroll;
+		const needsDelayedScroll = needsInitialScroll;
 		const hasScrolled = useRef(false);
 
 		const isCannotLoadMore = useMemo(() => {
@@ -63,6 +66,10 @@ const ChannelListMessage = React.memo(
 			}
 		}, [messages?.length, isCannotLoadMore, onLoadMore]);
 
+		const handleScrollBeginDrag = useCallback(() => {
+			Keyboard.dismiss();
+		}, []);
+
 		const handleLayout = useCallback(() => {
 			if (!needsDelayedScroll || hasScrolled.current) {
 				return;
@@ -71,25 +78,18 @@ const ChannelListMessage = React.memo(
 			hasScrolled.current = true;
 
 			requestAnimationFrame(() => {
-				if (flatListRef.current) {
-					if (needsInitialScroll) {
-						const targetIndex = initialScrollIndexRef.current || 0;
-						if (targetIndex > 0) {
-							flatListRef.current.scrollToIndex({
-								index: targetIndex,
-								animated: false,
-								viewPosition: 0.5
-							});
-						}
-					} else if (needsRestoreScroll) {
-						flatListRef.current.scrollToOffset({
-							offset: savedScrollOffsetRef.current,
-							animated: false
+				if (flatListRef.current && needsInitialScroll) {
+					const targetIndex = initialScrollIndexRef.current || 0;
+					if (targetIndex > 0) {
+						flatListRef.current.scrollToIndex({
+							index: targetIndex,
+							animated: false,
+							viewPosition: 0.5
 						});
 					}
 				}
 			});
-		}, [needsDelayedScroll, needsInitialScroll, needsRestoreScroll, flatListRef]);
+		}, [needsDelayedScroll, needsInitialScroll, flatListRef]);
 
 		return (
 			<View style={{ flex: 1 }}>
@@ -114,15 +114,8 @@ const ChannelListMessage = React.memo(
 					keyboardShouldPersistTaps={'handled'}
 					keyboardDismissMode={'interactive'}
 					onEndReached={handleEndReached}
-					onScrollBeginDrag={() => {
-						Keyboard.dismiss();
-					}}
-					viewabilityConfig={{
-						minimumViewTime: 0,
-						viewAreaCoveragePercentThreshold: 0,
-						itemVisiblePercentThreshold: 0,
-						waitForInteraction: false
-					}}
+					onScrollBeginDrag={handleScrollBeginDrag}
+					viewabilityConfig={VIEWABILITY_CONFIG}
 					contentInsetAdjustmentBehavior="automatic"
 					onLayout={handleLayout}
 					onScrollToIndexFailed={(info) => {

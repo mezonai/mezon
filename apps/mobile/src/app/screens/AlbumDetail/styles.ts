@@ -161,7 +161,7 @@ export const styles = (theme: Attributes) =>
 			justifyContent: 'center'
 		},
 		uploadingOverlay: {
-			...StyleSheet.absoluteFillObject,
+			...StyleSheet.absoluteFill,
 			backgroundColor: 'rgba(0, 0, 0, 0.6)',
 			alignItems: 'center' as const,
 			justifyContent: 'center' as const,

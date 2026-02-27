@@ -85,7 +85,7 @@ const ChannelListHeader = () => {
 				start={{ x: 0, y: 1 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue?.primaryGradiant || themeValue.secondary, themeValue?.primaryGradiant || themeValue.primary]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 			{!!clanName && (
 				<TouchableOpacity onPressIn={handlePress} style={styles.listHeader}>

@@ -22,7 +22,7 @@ const UserEmptyClan = () => {
 					start={{ x: 1, y: 0 }}
 					end={{ x: 0, y: 0 }}
 					colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-					style={[StyleSheet.absoluteFillObject]}
+					style={[StyleSheet.absoluteFill]}
 				/>
 				<DiscoverMobileProvider>
 					<HeaderUserEmptyClan />

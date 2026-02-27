@@ -125,7 +125,7 @@ const MemoizedGradient = memo(({ themeValue }: { themeValue: any }) => (
 		start={{ x: 0, y: 1 }}
 		end={{ x: 0, y: 0 }}
 		colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-		style={[StyleSheet.absoluteFillObject]}
+		style={[StyleSheet.absoluteFill]}
 	/>
 ));
 MemoizedGradient.displayName = 'MemoizedGradient';

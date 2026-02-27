@@ -31,7 +31,7 @@ export const OnboardingBottomSheet = memo(({ actionList, finishedStep, allSteps 
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-				style={[StyleSheet.absoluteFillObject, { borderRadius: size.s_16 }]}
+				style={[StyleSheet.absoluteFill, { borderRadius: size.s_16 }]}
 			/>
 			<View style={styles.titleGroup}>
 				<View style={styles.image}>

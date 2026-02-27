@@ -188,7 +188,7 @@ const gradientEnd = { x: 0, y: 0 };
 
 const styles = StyleSheet.create({
 	flex: { flex: 1 },
-	absoluteFill: { ...StyleSheet.absoluteFillObject }
+	absoluteFill: { ...StyleSheet.absoluteFill }
 });
 
 export default memo(SearchMessageChannel);

@@ -198,7 +198,7 @@ export const ContactMessageCard = memo(({ data, onLongPress, showUserProfileGrou
 					themeValue.primary,
 					(themeValue?.primaryGradiant ?? themeBasic === ThemeModeBase.LIGHT) ? themeValue.tertiary : themeValue.secondaryLight
 				]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 
 			<View style={styles.avatarWrapper}>

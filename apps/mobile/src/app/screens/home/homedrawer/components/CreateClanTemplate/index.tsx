@@ -204,7 +204,7 @@ const CreateClanTemplate = ({ isProfileSetting = false }: CreateClanTemplateProp
 						start={{ x: 1, y: 0 }}
 						end={{ x: 0, y: 0 }}
 						colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-						style={[StyleSheet.absoluteFillObject]}
+						style={[StyleSheet.absoluteFill]}
 					/>
 					<View style={styles.headerContainer}>
 						<TouchableOpacity style={styles.backButton} onPress={onClose} activeOpacity={0.7}>

@@ -46,7 +46,7 @@ export const DirectMessageDetailScreen = ({ route }: { route: any }) => {
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.primary]}
 				locations={[0, 0.6]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 			<DirectMessageDetailListener dmType={dmType} directMessageId={directMessageId} />
 			<HeaderDirectMessage from={from} styles={styles} themeValue={themeValue} directMessageId={directMessageId} isBlocked={isBlocked} />

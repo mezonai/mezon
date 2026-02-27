@@ -72,6 +72,8 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 	const { t } = useTranslation(['sharing']);
 	const styles = style(themeValue);
 	const mezon = useMezon();
+	const client = mezon.clientRef.current;
+	const session = mezon.sessionRef.current;
 	const [dataText, setDataText] = useState<string>('');
 	const [dataShareTo, setDataShareTo] = useState<any>([]);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -182,15 +184,16 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 				})
 			);
 
-			await mezon.socketRef.current.writeChatMessage(
+			await client.sendChannelMessage(
+				session,
 				'0',
 				channelSelected?.id || '',
 				channelSelected?.type === ChannelType.CHANNEL_TYPE_DM ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP,
 				false,
-				{
+				JSON.stringify({
 					t: dataSend.text,
 					mk: dataSend.links || []
-				},
+				}),
 				[],
 				attachments,
 				[]
@@ -240,8 +243,8 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 				isPublic
 			})
 		);
-
-		await mezon.socketRef.current.writeChatMessage(
+		await client.sendChannelMessage(
+			session,
 			channelSelected?.clan_id,
 			channelSelected?.channel_id,
 			checkIsThread(channelSelected) ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL,
@@ -250,11 +253,11 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 				t: dataSend.text,
 				mk: dataSend.links || []
 			},
-			[], //mentions
-			attachments, //attachments
-			[], //references
-			false, //anonymous
-			false //mentionEveryone
+			[],
+			attachments,
+			[],
+			false,
+			false
 		);
 		const timestamp = Date.now() / 1000;
 		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: channelSelected.channel_id, timestamp }));
@@ -447,9 +450,11 @@ export const Sharing = ({ data, topUserSuggestionId, onClose }: ISharing) => {
 
 		for (let attempt = 1; attempt <= maxRetries; attempt++) {
 			try {
-				const session = mezon.sessionRef.current;
-				const client = mezon.clientRef.current;
 				if (!files || !client || !session) {
+					Toast.show({
+						type: 'error',
+						text1: 'Client or files are not initialized'
+					});
 					throw new Error('Client or files are not initialized');
 				}
 

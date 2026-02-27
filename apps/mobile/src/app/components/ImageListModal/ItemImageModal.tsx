@@ -61,7 +61,7 @@ export const ItemImageModal = React.memo(
 				{Platform.OS === 'ios' ? (
 					<FastImage
 						source={{ uri: item?.url }}
-						style={[StyleSheet.absoluteFillObject, { width: dims.width, height: dims.height }]}
+						style={[StyleSheet.absoluteFill, { width: dims.width, height: dims.height }]}
 						resizeMode="contain"
 						onLoadEnd={() => {
 							setIsLoading(true);
@@ -76,7 +76,7 @@ export const ItemImageModal = React.memo(
 				) : (
 					<Image
 						source={{ uri: item?.url }}
-						style={[StyleSheet.absoluteFillObject, { width: dims.width, height: dims.height }]}
+						style={[StyleSheet.absoluteFill, { width: dims.width, height: dims.height }]}
 						resizeMode="contain"
 						onLoadEnd={() => {
 							setIsLoading(true);

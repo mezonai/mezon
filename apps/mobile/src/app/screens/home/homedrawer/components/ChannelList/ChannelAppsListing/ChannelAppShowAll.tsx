@@ -75,7 +75,7 @@ const ChannelAppShowAll = ({ navigation }: { navigation: any }) => {
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 			<View style={styles.header}>
 				<TouchableOpacity style={styles.backButton} onPress={handleClose}>

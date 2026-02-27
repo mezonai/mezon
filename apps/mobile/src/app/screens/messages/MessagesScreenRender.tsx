@@ -162,7 +162,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 				start={GRADIENT_START}
 				end={GRADIENT_END}
 				colors={gradientColors}
-				style={StyleSheet.absoluteFillObject}
+				style={StyleSheet.absoluteFill}
 				locations={GRADIENT_LOCATIONS}
 			/>
 			<MessageHeader />

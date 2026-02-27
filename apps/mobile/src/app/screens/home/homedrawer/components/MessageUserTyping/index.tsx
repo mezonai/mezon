@@ -33,7 +33,7 @@ export const MessageUserTyping = React.memo(({ channelId }: IProps) => {
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-				style={StyleSheet.absoluteFillObject}
+				style={StyleSheet.absoluteFill}
 			/>
 			<LottieView source={themeBasic === ThemeModeBase.DARK ? TYPING_DARK_MODE : TYPING_LIGHT_MODE} autoPlay loop style={styles.threeDot} />
 			<Text style={styles.typingLabel} numberOfLines={1}>

@@ -1,6 +1,5 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { createImgproxyUrl } from '@mezon/utils';
-import ImageNative from 'apps/mobile/src/app/components/ImageNative';
 import { ChannelType } from 'mezon-js';
 import React, { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -9,6 +8,7 @@ import FastImage from 'react-native-fast-image';
 import type { IForwardIObject } from '..';
 import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
+import ImageNative from '../../../../../../components/ImageNative';
 import { style } from '../styles';
 import { getCheckboxInnerIconStyle, style as localStyles } from './ForwardMessageItem.styles';
 

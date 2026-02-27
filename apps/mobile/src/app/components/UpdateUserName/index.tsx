@@ -86,7 +86,7 @@ const UpdateUserName = () => {
 
 	return (
 		<ScrollView contentContainerStyle={styles.container} bounces={false} keyboardShouldPersistTaps={'handled'}>
-			<LinearGradient colors={['#f0edfd', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFillObject]} />
+			<LinearGradient colors={['#f0edfd', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFill]} />
 
 			<KeyboardAvoidingView
 				style={styles.keyboardAvoidingView}
@@ -138,7 +138,7 @@ const UpdateUserName = () => {
 								start={{ x: 0, y: 0 }}
 								end={{ x: 1, y: 0 }}
 								colors={['#501794', '#3E70A1']}
-								style={[StyleSheet.absoluteFillObject]}
+								style={[StyleSheet.absoluteFill]}
 							/>
 						)}
 					</TouchableOpacity>

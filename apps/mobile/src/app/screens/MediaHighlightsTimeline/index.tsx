@@ -356,7 +356,7 @@ const MediaHighlightsTimeline: React.FC = () => {
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 			<View style={styles.header}>
 				<TouchableOpacity onPress={handleBack} style={styles.backButton}>
@@ -463,7 +463,7 @@ const internalStyles = StyleSheet.create({
 
 const videoStyles = StyleSheet.create({
 	playOverlay: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: 'rgba(0, 0, 0, 0.25)',

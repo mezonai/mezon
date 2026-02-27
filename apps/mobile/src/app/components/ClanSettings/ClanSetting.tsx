@@ -150,7 +150,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 			<View style={styles.headerWrapper}>
 				<Pressable style={styles.backButton} onPress={() => navigation.goBack()}>

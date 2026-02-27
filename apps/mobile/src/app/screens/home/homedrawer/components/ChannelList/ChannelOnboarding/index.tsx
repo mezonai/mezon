@@ -130,7 +130,7 @@ export const ChannelOnboarding = memo(() => {
 							themeValue?.primaryGradiant || themeValue.primary,
 							themeValue?.primaryGradiant || themeValue.primary
 						]}
-						style={[StyleSheet.absoluteFillObject, { borderRadius: size.s_16 }]}
+						style={[StyleSheet.absoluteFill, { borderRadius: size.s_16 }]}
 					/>
 					<View style={styles.contentWrap}>
 						<View style={styles.titleGroup}>

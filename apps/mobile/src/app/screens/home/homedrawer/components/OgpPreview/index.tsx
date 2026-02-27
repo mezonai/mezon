@@ -130,7 +130,7 @@ const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.secondary, themeValue.secondaryLight]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 			{!!ogpItem?.image && <ImageNative url={ogpItem.image} style={styles.image} resizeMode="cover" />}
 			<View style={{ flexShrink: 1 }}>

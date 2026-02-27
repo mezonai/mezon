@@ -64,7 +64,7 @@ export const style = (colors: Attributes) =>
 			textTransform: 'uppercase'
 		},
 		gradientBackground: {
-			...StyleSheet.absoluteFillObject
+			...StyleSheet.absoluteFill
 		},
 		scrollViewContainer: {
 			flex: 1

@@ -390,7 +390,7 @@ const AlbumDetail: React.FC = () => {
 				start={{ x: 1, y: 0 }}
 				end={{ x: 0, y: 0 }}
 				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
-				style={[StyleSheet.absoluteFillObject]}
+				style={[StyleSheet.absoluteFill]}
 			/>
 			{/* Header */}
 			<View style={styles.header}>
@@ -584,7 +584,7 @@ const editStyles = StyleSheet.create({
 
 const videoStyles = StyleSheet.create({
 	playIconOverlay: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		alignItems: 'center',
 		justifyContent: 'center',
 		margin: size.s_8,
@@ -592,7 +592,7 @@ const videoStyles = StyleSheet.create({
 		backgroundColor: 'rgba(0, 0, 0, 0.2)'
 	},
 	playIconOverlayLarge: {
-		...StyleSheet.absoluteFillObject,
+		...StyleSheet.absoluteFill,
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: 'rgba(0, 0, 0, 0.2)'
