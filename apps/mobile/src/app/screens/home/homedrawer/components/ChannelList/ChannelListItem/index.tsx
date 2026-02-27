@@ -14,6 +14,7 @@ interface IChannelListItemProps {
 	data: any;
 	isChannelActive?: boolean;
 	isHaveParentActive?: boolean;
+	isFirstThread?: boolean;
 }
 
 export enum StatusVoiceChannel {
@@ -22,7 +23,7 @@ export enum StatusVoiceChannel {
 }
 
 export const ChannelListItem = React.memo(
-	(props: IChannelListItemProps) => {
+	({ isFirstThread, ...props }: IChannelListItemProps) => {
 		const isUnRead = useAppSelector((state) => selectIsUnreadChannelById(state, props?.data?.id));
 		const isChannelActive = props?.isChannelActive;
 		const isHaveParentActive = props?.isHaveParentActive;
@@ -64,7 +65,7 @@ export const ChannelListItem = React.memo(
 		if (!shouldDisplay && !isChildHaveUnRead) return null;
 		return (
 			<>
-				{!isChannelVoice && <ChannelItem data={props?.data} isUnRead={isUnRead} isActive={isChannelActive} />}
+				{!isChannelVoice && <ChannelItem data={props?.data} isUnRead={isUnRead} isActive={isChannelActive} isFirstThread={isFirstThread} />}
 				{isChannelVoice && (
 					<UserListVoiceChannel
 						channelId={props?.data?.channel_id}
