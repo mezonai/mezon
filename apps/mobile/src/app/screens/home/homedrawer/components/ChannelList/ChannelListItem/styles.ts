@@ -34,7 +34,7 @@ export const style = (colors: Attributes, themeBasic?: ThemeModeBase) =>
 		channelListItem: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			paddingVertical: size.s_12,
+			paddingVertical: size.s_10,
 			borderRadius: 5,
 			flex: 1,
 			paddingLeft: 20
@@ -51,7 +51,7 @@ export const style = (colors: Attributes, themeBasic?: ThemeModeBase) =>
 
 		channelListItemTitle: {
 			fontSize: size.medium,
-			fontWeight: '600',
+			fontWeight: '400',
 			marginLeft: size.s_10,
 			color: colors.channelNormal,
 			maxWidth: '80%'

@@ -10,7 +10,7 @@ import {
 	useAppSelector,
 	voiceActions
 } from '@mezon/store-mobile';
-import type { ICategoryChannel } from '@mezon/utils';
+import type { ICategoryChannel, IChannel } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Platform, RefreshControl, View } from 'react-native';
@@ -103,17 +103,21 @@ const ChannelList = () => {
 			} else {
 				const isActive = item?.id === currentChannelId;
 				const isHaveParentActive = item?.threadIds?.includes(currentChannelId);
+				const prevItem = data?.[index - 1] as IChannel;
+				const isFirstThread =
+					(item as IChannel)?.type === ChannelType.CHANNEL_TYPE_THREAD && prevItem?.type !== ChannelType.CHANNEL_TYPE_THREAD;
 				return (
 					<ChannelListItem
 						key={`${item?.id}_${item?.isFavor}_${index}_ItemChannel}`}
 						data={item}
 						isChannelActive={isActive}
 						isHaveParentActive={isHaveParentActive}
+						isFirstThread={isFirstThread}
 					/>
 				);
 			}
 		},
-		[currentChannelId]
+		[currentChannelId, data]
 	);
 
 	const keyExtractor = useCallback((item, index) => {
