@@ -31,7 +31,8 @@ import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, 
 import type { MessageButtonClicked } from 'mezon-js/socket';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
-import { getCurrentChannelBadgeCount, resetChannelBadgeCount } from '../badge/badgeHelpers';
+import { getCurrentChannelBadgeCount } from '../badge/badgeHelpers';
+import { badgeService } from '../badge/badgeService';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelMetaActions } from '../channels/channelmeta.slice';
@@ -41,7 +42,7 @@ import { clansActions, selectClanExists, selectClanHasUnreadMessage, selectClans
 import { selectCurrentDM, selectDirectMessageEntities } from '../direct/direct.slice';
 import { checkE2EE, selectE2eeByUserIds } from '../e2ee/e2ee.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
+import { ensureSession, ensureSocket, getMezonCtx, socketState, withRetry } from '../helpers';
 import type { ReactionEntity } from '../reactionMessage/reactionMessage.slice';
 import type { AppDispatch, RootState } from '../store';
 import { referencesActions, selectOgpData } from './references.slice';
@@ -683,79 +684,79 @@ type UpdateMessageArgs = {
 	badge_count: number;
 	message_time?: number;
 	updateLast?: boolean;
+	isTopic?: boolean;
+	parentChannelId?: string;
 };
 
 export const updateLastSeenMessage = createAsyncThunk(
 	'messages/updateLastSeenMessage',
-	async ({ clanId, channelId, messageId, mode, badge_count, message_time, updateLast = false }: UpdateMessageArgs, thunkAPI) => {
-		try {
-			// check
-			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-			const now = Math.floor(Date.now() / 1000);
-			const state = thunkAPI.getState() as RootState;
+	async (
+		{ clanId, channelId, messageId, mode, badge_count, message_time, updateLast = false, isTopic = false, parentChannelId }: UpdateMessageArgs,
+		thunkAPI
+	) => {
+		const now = Math.floor(Date.now() / 1000);
+		const state = thunkAPI.getState() as RootState;
 
-			if (clanId !== '0') {
-				const channel = selectChannelById(state, channelId);
-				if (!channel) {
-					return;
-				}
-			} else {
-				const dmEntities = selectDirectMessageEntities(state);
-				if (!dmEntities[channelId]) {
-					return;
-				}
-			}
-
-			const channelsLoadingStatus = selectLoadingStatus(state);
-			const clansLoadingStatus = selectClansLoadingStatus(state);
-			if (clanId !== '0' && (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading')) {
-				thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badge_count, message_time }));
+		if (clanId !== '0') {
+			const lookupChannelId = isTopic && parentChannelId ? parentChannelId : channelId;
+			const channel = selectChannelById(state, lookupChannelId);
+			if (!channel) {
 				return;
 			}
+		} else {
+			const dmEntities = selectDirectMessageEntities(state);
+			if (!dmEntities[channelId]) {
+				return;
+			}
+		}
 
+		const channelsLoadingStatus = selectLoadingStatus(state);
+		const clansLoadingStatus = selectClansLoadingStatus(state);
+		if (clanId !== '0' && (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading')) {
+			thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badge_count, message_time }));
+			return;
+		}
+
+		let badgeCount = badge_count;
+
+		if (clanId !== '0') {
+			const currentChannelBadge = getCurrentChannelBadgeCount({ getState: () => thunkAPI.getState() as RootState }, clanId, channelId);
+			badgeCount = currentChannelBadge;
+		}
+
+		if (clanId !== '0') {
+			badgeService.resetChannel({
+				clanId,
+				channelId,
+				badgeCount,
+				timestamp: message_time ?? now,
+				messageId,
+				isTopic
+			});
+		} else {
+			badgeService.resetDm(channelId, message_time ?? now, messageId);
+		}
+
+		if (clanId && clanId !== '0') {
+			const latestState = thunkAPI.getState() as RootState;
+			const hasUnread = selectClanHasUnreadMessage(clanId)(latestState);
+			if (hasUnread) {
+				requestIdleCallback(() => {
+					thunkAPI.dispatch(clansActions.updateHasUnreadBasedOnChannels({ clanId }));
+				});
+			}
+		}
+
+		try {
+			const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 			const queuedMessages = (thunkAPI.getState() as RootState).messages?.queuedLastSeenMessages;
 			if (queuedMessages.length > 0) {
 				await thunkAPI.dispatch(processQueuedLastSeenMessages()).unwrap();
 			}
-
-			let badgeCount = badge_count;
-
-			if (clanId !== '0') {
-				const currentChannelBadge = getCurrentChannelBadgeCount({ getState: () => thunkAPI.getState() as RootState }, clanId, channelId);
-				badgeCount = currentChannelBadge;
-			}
-
-			const response = await mezon.socketRef.current?.writeLastSeenMessage(clanId, channelId, mode, messageId, message_time ?? now, badgeCount);
-
-			if (response?.channel_id !== channelId) {
-				return;
-			}
-			resetChannelBadgeCount(
-				thunkAPI.dispatch as AppDispatch,
-				{
-					clanId,
-					channelId,
-					badgeCount: badge_count,
-					timestamp: message_time ?? now,
-					messageId
-				},
-				{ getState: () => thunkAPI.getState() as RootState }
-			);
-
-			if (clanId && clanId !== '0') {
-				const state = thunkAPI.getState() as RootState;
-				const hasUnread = selectClanHasUnreadMessage(clanId)(state);
-
-				if (hasUnread) {
-					requestIdleCallback(() => {
-						thunkAPI.dispatch(clansActions.updateHasUnreadBasedOnChannels({ clanId }));
-					});
-				}
-			}
+			await mezon.socketRef.current?.writeLastSeenMessage(clanId, channelId, mode, messageId, message_time ?? now, badgeCount);
 		} catch (e) {
-			console.error(e, 'updateLastSeenMessage');
-			captureSentryError(e, 'messages/updateLastSeenMessage');
-			return thunkAPI.rejectWithValue(e);
+			console.error(e, 'updateLastSeenMessage writeSocket');
+			thunkAPI.dispatch(messagesActions.queueLastSeenMessage({ clanId, channelId, messageId, mode, badge_count: badgeCount, message_time }));
 		}
 	},
 	{
@@ -1133,20 +1134,39 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 			};
 		}
 
-		const res = await socket.writeChatMessage(
-			clanId,
-			channelId,
-			mode,
-			isPublic,
-			content,
-			mentions,
-			uploadedFiles,
-			references,
-			anonymous,
-			mentionEveryone,
-			'',
-			code
-		);
+		let res;
+		if (socketState.isConnected) {
+			res = await socket.writeChatMessage(
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				content,
+				mentions,
+				uploadedFiles,
+				references,
+				anonymous,
+				mentionEveryone,
+				'',
+				code
+			);
+		} else {
+			res = await client.sendChannelMessage(
+				session,
+				clanId,
+				channelId,
+				mode,
+				isPublic,
+				typeof content === 'object' ? JSON.stringify(content) : content,
+				mentions,
+				uploadedFiles,
+				references,
+				anonymous,
+				mentionEveryone,
+				avatar,
+				code
+			);
+		}
 		thunkAPI.dispatch(referencesActions.clearOgpData());
 
 		return res;

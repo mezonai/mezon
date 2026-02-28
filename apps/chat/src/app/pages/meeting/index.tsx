@@ -225,7 +225,7 @@ export default function PreJoinCalling() {
 						token={getExternalToken}
 						url={serverUrl}
 						isExternalCalling={true}
-						channelLabel={'Private Room'}
+						channelLabel={'Meeting Room'}
 						onLeaveRoom={handleLeaveRoom}
 						onFullScreen={handleFullScreen}
 					/>

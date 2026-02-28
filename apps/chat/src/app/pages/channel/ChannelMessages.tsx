@@ -4,6 +4,8 @@ import { MessageContextMenuProvider, MessageWithUser, useMessageContextMenu } fr
 import { useMessageObservers, usePermissionChecker } from '@mezon/core';
 import type { RootState } from '@mezon/store';
 import {
+	EventName,
+	badgeService,
 	channelsActions,
 	getStore,
 	messagesActions,
@@ -32,9 +34,11 @@ import {
 	selectShowScrollDownButton,
 	selectTheme,
 	selectUnreadMessageIdByChannelId,
+	topicsActions,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
+import { Icons } from '@mezon/ui';
 import type { BooleanToVoidFunction, ChannelMembersEntity } from '@mezon/utils';
 import {
 	Direction_Mode,
@@ -514,6 +518,7 @@ function ChannelMessages({
 				isJumpingToPresentRef={isJumpingToPresentRef}
 				setAnchor={setAnchor}
 			/>
+			<NotiTopicButton channelId={channelId} />
 			<HasmoreBottomTracker channelId={channelId} topicId={topicId} />
 			<FirstJoinLoadTracker channelId={channelId} isFirstJoinLoadRef={isFirstJoinLoadRef} />
 		</>
@@ -668,6 +673,47 @@ const ScrollDownButton = memo(
 	}
 );
 
+const NotiTopicButton = memo(({ channelId }: { channelId: string }) => {
+	const badge = badgeService.getTopicInChannel(channelId);
+	const [value, setValue] = useState(badge?.totalCount || 0);
+	const topicId = badge?.topicId;
+	const dispatch = useAppDispatch();
+
+	const handleOpenTopic = () => {
+		if (topicId) {
+			dispatch(topicsActions.setIsShowCreateTopic(true));
+			dispatch(topicsActions.setCurrentTopicId(topicId || ''));
+		}
+	};
+	useEffect(() => {
+		const onChange = (data: { topicId: string; count: number; channelId: string }) => {
+			if (data?.channelId === channelId) {
+				setValue((pre) => pre + data?.count);
+			}
+		};
+
+		badgeService.on(EventName.INCREASE_BADGE_TOPIC, onChange);
+		return () => {
+			badgeService.off(EventName.INCREASE_BADGE_TOPIC, onChange);
+		};
+	}, []);
+
+	if (!badge || !badge.totalCount || !value) return null;
+	return (
+		<div
+			className="cursor-pointer absolute left-1/2 -translate-x-1/2 z-10 flex items-center gap-2 py-2 px-4 rounded-full bg-theme-contexify bottom-3"
+			onClick={handleOpenTopic}
+		>
+			<div>
+				<Icons.TopicIcon />
+			</div>
+			<div>New mentions in topic</div>
+			<div className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-xs -top-1 -right-1 text-white">
+				{value > 9 ? '9+' : value}
+			</div>
+		</div>
+	);
+});
 ChannelMessages.Skeleton = () => {
 	if (ChannelMessage.Skeleton) {
 		return <></>;

@@ -1,7 +1,7 @@
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import { getStore, selectMemberClanByUserId } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
-import { getSrcEmoji, getSrcSound } from '@mezon/utils';
+import { getSrcEmoji } from '@mezon/utils';
 import type { VoiceReactionSend } from 'mezon-js';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, Platform, Text, View } from 'react-native';
@@ -35,6 +35,11 @@ const ANIMATION_CONFIG = {
 	Z_INDEX: 1000
 } as const;
 
+export const RAISE_HAND_UP_EMOJI_PREFIX = 'raising-up';
+export const RAISE_HAND_DOWN_EMOJI_PREFIX = 'raising-down';
+export const SENDER_NAME_PREFIX = 'sender-name:';
+export const SENDER_AVATAR_PREFIX = 'sender-avatar:';
+
 interface EmojiItem {
 	id: string;
 	emojiId: string;
@@ -64,6 +69,8 @@ interface ReactProps {
 
 // Memoized emoji component for better performance
 const AnimatedEmoji = memo(({ item, styles }: { item: EmojiItem; styles: any }) => {
+	const emojiUri = getSrcEmoji(item?.emojiId);
+	if (!emojiUri) return null;
 	return (
 		<Animated.View
 			style={[
@@ -74,7 +81,7 @@ const AnimatedEmoji = memo(({ item, styles }: { item: EmojiItem; styles: any }) 
 				}
 			]}
 		>
-			<FastImage source={{ uri: getSrcEmoji(item.emojiId) }} style={styles.emojiImage} resizeMode="contain" />
+			<FastImage source={{ uri: emojiUri }} style={styles.emojiImage} resizeMode="contain" />
 			{item?.displayName && (
 				<View style={styles.reactionSenderEmojiContainer}>
 					<Text numberOfLines={1} style={styles.senderName}>
@@ -219,8 +226,6 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 					translateY: new Animated.Value(50)
 				};
 
-				
-
 				Animated.parallel([
 					Animated.timing(item.opacity, {
 						toValue: 1,
@@ -283,17 +288,17 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 		[createEmojiAnimation, removeEmoji]
 	);
 
-	const playSound = useCallback((soundUrl: string, soundId: string) => {
+	const playSound = useCallback((soundUrl: string) => {
 		try {
 			if (!soundUrl) {
 				console.warn('Invalid sound URL');
 				return;
 			}
-			const currentSound = soundRefs.current.get(soundId);
+			const currentSound = soundRefs.current.get(soundUrl);
 			if (currentSound) {
 				currentSound.pause();
 				currentSound.setCurrentTime(0);
-				soundRefs?.current?.delete?.(soundId);
+				soundRefs?.current?.delete?.(soundUrl);
 			}
 			Sound.setCategory('Playback', true);
 			const sound = new Sound(soundUrl, null, (error) => {
@@ -306,14 +311,14 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 					sound.setNumberOfLoops(0);
 				}
 				sound.setVolume(1.0);
-				soundRefs.current.set(soundId, sound);
+				soundRefs.current.set(soundUrl, sound);
 
 				sound.play((success) => {
 					if (!success) {
 						console.error('Sound playback failed');
 					}
 					sound.release();
-					soundRefs.current.delete(soundId);
+					soundRefs.current.delete(soundUrl);
 				});
 			});
 		} catch (error) {
@@ -328,34 +333,46 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 			try {
 				const emojis = message.emojis || [];
 				const emojiId = emojis[0];
+				const senderName = emojis?.[1]?.replace?.(/^sender-name:\s*/, '') || '';
+				const senderAvatar = emojis?.[2]?.replace?.(/^sender-avatar:\s*/, '') || '';
 				const senderId = message.sender_id;
 
 				if (emojiId) {
-					if (emojiId?.startsWith('raising-up:')) {
+					if (emojiId?.startsWith(RAISE_HAND_UP_EMOJI_PREFIX)) {
 						const store = getStore();
-						const members = selectMemberClanByUserId(store.getState?.(), senderId);
-						const displayName = members?.clan_nick || members?.user?.display_name || members?.user?.username || '';
-						const avatarUrl = members?.clan_avatar || members?.user?.avatar_url || '';
-						createRaiseHandAnimation(displayName, avatarUrl, senderId);
-					} else if (emojiId?.startsWith('raising-down:')) {
-						removeRaiseHand(senderId);
-					} else if (emojiId.startsWith('sound:')) {
-						const soundId = emojiId.replace('sound:', '');
-						const soundUrl = getSrcSound(soundId);
 
-						playSound(soundUrl, soundId);
+						let displayName = senderName;
+						let avatarUrl = senderAvatar;
+						if (!displayName) {
+							const members = selectMemberClanByUserId(store.getState?.(), senderId);
+							displayName = members?.clan_nick || members?.user?.display_name || members?.user?.username || '';
+							avatarUrl = members?.clan_avatar || members?.user?.avatar_url || '';
+						}
+
+						createRaiseHandAnimation(displayName, avatarUrl, senderId);
+						onSoundReaction?.(senderId, RAISE_HAND_UP_EMOJI_PREFIX);
+					} else if (emojiId?.startsWith(RAISE_HAND_DOWN_EMOJI_PREFIX)) {
+						removeRaiseHand(senderId);
+						onSoundReaction?.(senderId, RAISE_HAND_DOWN_EMOJI_PREFIX);
+					} else if (emojiId.startsWith('sound:')) {
+						const soundUrl = emojiId?.replace('sound:', '');
+
+						playSound(soundUrl);
 						if (onSoundReaction && senderId) {
-							onSoundReaction(senderId, soundId);
+							onSoundReaction(senderId, soundUrl);
 						}
 					} else {
 						const store = getStore();
-						const members = selectMemberClanByUserId(store.getState?.(), senderId);
-						const displayName = members?.clan_nick || members?.user?.display_name || members?.user?.username || '';
+						let displayName = senderName;
+						if (!displayName) {
+							const members = selectMemberClanByUserId(store.getState?.(), senderId);
+							displayName = members?.clan_nick || members?.user?.display_name || members?.user?.username || '';
+						}
 
 						createAndAnimateEmoji(emojiId, displayName);
 					}
 				}
-				if (!emojiId?.startsWith('raising-down:')){
+				if (!emojiId?.startsWith(RAISE_HAND_DOWN_EMOJI_PREFIX)) {
 					displayedCountRef.current = displayedCountRef.current + 1;
 				}
 			} catch (error) {

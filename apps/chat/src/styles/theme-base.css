@@ -154,6 +154,9 @@ button.bg-button-add-friend {
 .bg-modal-theme {
 	background: var(--bg-modal-theme);
 }
+.bg-modal-theme-search {
+	background: var(--bg-modal-theme-search);
+}
 
 .bg-input-secondary {
 	background: var(--bg-input-secondary);

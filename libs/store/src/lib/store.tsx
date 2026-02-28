@@ -5,7 +5,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { accountReducer } from './account/account.slice';
 import { appReducer } from './app/app.slice';
-import { authReducer } from './auth/auth.slice';
+import { authReducer, setupSessionSyncListener } from './auth/auth.slice';
 import { categoriesReducer } from './categories/categories.slice';
 import { channelMembersReducer } from './channelmembers/channel.members';
 import { channelsReducer } from './channels/channels.slice';
@@ -222,14 +222,6 @@ const persistedDefaultNotiCatReducer = persistReducer(
 	defaultNotificationCategoryReducer
 );
 
-const persistedChannelMetaReducer = persistReducer(
-	{
-		key: 'channelmeta',
-		storage
-	},
-	channelMetaReducer
-);
-
 const persistedsettingClanStickerReducer = persistReducer(
 	{
 		key: 'settingSticker',
@@ -299,7 +291,7 @@ const reducer = {
 	channelMedia: channelMediaReducer,
 	clans: persistedClansReducer,
 	channels: persistedChannelReducer,
-	channelmeta: persistedChannelMetaReducer,
+	channelmeta: channelMetaReducer,
 	settingSticker: persistedsettingClanStickerReducer,
 	allUsersByAddChannel: userChannelsReducer,
 	listchannelbyusers: persistedListchannelsByUserReducer,
@@ -418,6 +410,11 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 	});
 	storeInstance = store;
 	storeCreated = true;
+
+	import('./badge/badgeService').then(({ badgeService }) => {
+		badgeService.init(store.dispatch, store.getState);
+	});
+
 	const persistor = persistStore(store);
 
 	if (typeof window !== 'undefined') {
@@ -460,9 +457,7 @@ export const initStore = (mezon: MezonContextValue, preloadedState?: PreloadedRo
 		window.addEventListener('storage', handleStorageChange);
 	}
 
-	import('./auth/auth.slice').then(({ setupSessionSyncListener }) => {
-		setupSessionSyncListener(store);
-	});
+	setupSessionSyncListener(store);
 
 	return { store, persistor };
 };

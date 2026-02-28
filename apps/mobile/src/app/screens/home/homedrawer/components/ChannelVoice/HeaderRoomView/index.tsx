@@ -1,7 +1,9 @@
 import { AudioSession } from '@livekit/react-native';
+import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import { getStore, selectChannelById } from '@mezon/store-mobile';
+import { EPermission } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { DeviceEventEmitter, NativeModules, Platform, Text, TouchableOpacity, View } from 'react-native';
@@ -27,14 +29,16 @@ type headerProps = {
 	channelId: string;
 	onPressMinimizeRoom: () => void;
 	isGroupCall?: boolean;
+	clanId?: string;
 };
 
-const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = false, isShow }: headerProps) => {
+const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = false, isShow, clanId }: headerProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const [currentAudioOutput, setCurrentAudioOutput] = useState<string>('earpiece');
 	const [availableAudioOutputs, setAvailableAudioOutputs] = useState<AudioOutput[]>([]);
 	const [tooltipVisible, setTooltipVisible] = useState(false);
+	const [isCanManageChannel] = usePermissionChecker([EPermission.manageChannel], channelId ?? '');
 
 	// Get available audio outputs
 	const getAvailableAudioOutputs = useCallback(async (isHaveBluetooth?: boolean): Promise<AudioOutput[]> => {
@@ -142,6 +146,7 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 					senderDisplayName={''}
 					isOnlyEmojiPicker={true}
 					channelId={channelId}
+					clanId={clanId}
 				/>
 			),
 			containerStyle: { zIndex: 1001 },
@@ -172,7 +177,7 @@ const HeaderRoomView = memo(({ channelId, onPressMinimizeRoom, isGroupCall = fal
 			</View>
 
 			<View style={styles.headerRowRight}>
-				{!isGroupCall && <AgentControl />}
+				{!isGroupCall && isCanManageChannel && <AgentControl />}
 				<SwitchCamera />
 				<AudioOutputTooltip
 					onSelectOutput={switchAudioOutput}

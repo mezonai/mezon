@@ -1,5 +1,6 @@
 import { BrowserWindow, app, clipboard, desktopCapturer, dialog, ipcMain, nativeImage, screen, shell } from 'electron';
 import log from 'electron-log/main';
+import Store from 'electron-store';
 import fs from 'fs';
 import App from './app/app';
 import {
@@ -9,6 +10,7 @@ import {
 	CLOSE_APP,
 	CLOSE_IMAGE_WINDOW,
 	DOWNLOAD_FILE,
+	GET_REDUX_STATE,
 	GET_WINDOW_STATE,
 	IMAGE_WINDOW_TITLE_BAR_ACTION,
 	LAUNCH_APP_WINDOW,
@@ -21,7 +23,9 @@ import {
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
 	SET_RATIO_WINDOW,
+	SYNC_REDUX_STATE,
 	TITLE_BAR_ACTION,
+	TOGGLE_HARDWARE_ACCELERATION,
 	UNMAXIMIZE_WINDOW,
 	UPDATE_ACTIVITY_TRACKING,
 	UPDATE_ATTACHMENTS
@@ -392,8 +396,62 @@ ipcMain.on(TITLE_BAR_ACTION, (event, action, _data) => {
 
 ipcMain.handle(AUTO_START_APP, (event, action) => {
 	app.setLoginItemSettings({
-		openAtLogin: action
+		openAtLogin: action.autoStart,
+		path: app.getPath('exe'),
+		args: action.hidden ? ['--hidden'] : []
 	});
+});
+
+ipcMain.handle(TOGGLE_HARDWARE_ACCELERATION, async (event, enabled) => {
+	const store = new Store();
+	store.set('hardwareAcceleration', enabled);
+
+	if (!enabled) {
+		app.disableHardwareAcceleration();
+	}
+
+	const response = await dialog.showMessageBox({
+		type: 'info',
+		title: 'Hardware Acceleration',
+		message: 'Hardware acceleration settings have been updated.',
+		detail: 'The application needs to restart for the changes to take effect.',
+		buttons: ['Restart Now', 'Later'],
+		defaultId: 0,
+		cancelId: 1
+	});
+
+	if (response.response === 0) {
+		app.relaunch();
+		app.exit(0);
+	}
+
+	return { success: true, requiresRestart: true };
+});
+
+ipcMain.handle(SYNC_REDUX_STATE, async (event, state) => {
+	const store = new Store();
+
+	if (state.autoStart !== undefined) {
+		store.set('autoStart', state.autoStart);
+		app.setLoginItemSettings({
+			openAtLogin: state.autoStart
+		});
+	}
+
+	if (state.hardwareAcceleration !== undefined) {
+		store.set('hardwareAcceleration', state.hardwareAcceleration);
+	}
+
+	return { success: true };
+});
+
+ipcMain.handle(GET_REDUX_STATE, async () => {
+	const store = new Store();
+
+	return {
+		autoStart: store.get('autoStart', true),
+		hardwareAcceleration: store.get('hardwareAcceleration', true)
+	};
 });
 
 ipcMain.on(LOAD_MORE_ATTACHMENTS, (event, { direction }) => {
@@ -526,6 +584,11 @@ ipcMain.handle(SET_RATIO_WINDOW, (event, ratio) => {
 		App.mainWindow.webContents.setZoomFactor(currentZoom + zoomChange);
 	}
 });
+
+const store = new Store();
+if (!store.get('hardwareAcceleration', true)) {
+	app.disableHardwareAcceleration();
+}
 
 // handle setup events as quickly as possible
 Main.initialize();

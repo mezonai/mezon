@@ -1,4 +1,6 @@
 import {
+	badgeService,
+	EventName,
 	selectIsShowCreateThread,
 	selectIsShowCreateTopic,
 	selectMemberClanByUserId,
@@ -11,17 +13,17 @@ import {
 import { Icons } from '@mezon/ui';
 import type { IExtendedMessage, IMessageWithUser } from '@mezon/utils';
 import {
-	EBacktickType,
-	EMimeTypes,
-	ETypeLinkMedia,
 	addMention,
 	convertTimeMessage,
 	createImgproxyUrl,
+	EBacktickType,
+	EMimeTypes,
+	ETypeLinkMedia,
 	generateE2eId,
 	isValidEmojiData
 } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
-import React, { memo, useCallback } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
@@ -89,7 +91,7 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 
 	return (
 		<div
-			className={`border-theme-primary min-w-250 text-theme-primary bg-item-theme text-theme-primary-hover rounded-lg gap-5 my-1 p-1  flex justify-between items-center cursor-pointer group/view-topic-btn  ${isShowCreateThread || isShowCreateTopic ? '' : 'w-fit'}`}
+			className={`border-theme-primary min-w-250 text-theme-primary bg-item-theme text-theme-primary-hover rounded-lg gap-1 my-1 p-1  flex justify-between items-center cursor-pointer group/view-topic-btn  ${isShowCreateThread || isShowCreateTopic ? '' : 'w-fit'}`}
 			onClick={handleOpenTopic}
 			data-e2e={generateE2eId('chat.topic.button.view_topic')}
 		>
@@ -108,12 +110,34 @@ export const TopicViewButton = ({ message }: { message: IMessageWithUser }) => {
 					</p>
 					{(latestMessage?.content?.lsnt ?? message.content?.lsnt) &&
 						convertTimeMessage(latestMessage?.content?.lsnt ?? message.content?.lsnt ?? 0, i18n.language)}
+					<NumberTopicBadge channel_id={message.content.tp as string} />
 				</div>
 			</div>
 			<Icons.ArrowRight className="flex-shrink-0 text-center" />
 		</div>
 	);
 };
+
+const NumberTopicBadge = memo(({ channel_id }: { channel_id: string }) => {
+	const [value, setValue] = React.useState(badgeService.getTopicBadge(channel_id as string));
+
+	useEffect(() => {
+		const onChange = (data: { topicId: string; count: number }) => {
+			if (data?.topicId === channel_id) {
+				setValue((pre) => {
+					return pre + data?.count;
+				});
+			}
+		};
+
+		badgeService.on(EventName.INCREASE_BADGE_TOPIC, onChange);
+		return () => {
+			badgeService.off(EventName.INCREASE_BADGE_TOPIC, onChange);
+		};
+	}, []);
+	if (!value) return null;
+	return <div className="w-4 h-4 text-xs text-white flex items-center justify-center rounded-full bg-red-600"> {value} </div>;
+});
 
 export default memo(
 	MessageContent,

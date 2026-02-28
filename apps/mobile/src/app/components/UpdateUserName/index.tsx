@@ -27,6 +27,12 @@ const UpdateUserName = () => {
 
 	const { t, i18n } = useTranslation(['common']);
 	const isFormValid = userName?.length >= 1;
+	const sanitizedUserName = userName
+		? userName
+				.normalize('NFD')
+				.replace(/[\u0300-\u036f]/g, '')
+				.replace(/[\s\p{P}]/gu, '')
+		: '';
 
 	const checkOrientation = () => {
 		const { width, height } = Dimensions.get('screen');
@@ -53,7 +59,7 @@ const UpdateUserName = () => {
 		try {
 			setIsError(false);
 			setIsLoading(true);
-			const responseSession: any = await updateUserName(userName);
+			const responseSession: any = await updateUserName(sanitizedUserName);
 			if (responseSession?.token) {
 				dispatch(accountActions.getUserProfile({ noCache: true }));
 				dispatch(appActions.setIsShowUpdateUsername(false));
@@ -108,6 +114,11 @@ const UpdateUserName = () => {
 									underlineColorAndroid="transparent"
 								/>
 							</View>
+						</View>
+						<View style={styles.usernamePreviewContainer}>
+							{sanitizedUserName ? (
+								<Text style={styles.usernamePreview}>{t('updateUsername.usernamePreview', { username: sanitizedUserName })}</Text>
+							) : null}
 						</View>
 						<View style={styles.errorContainer}>{isError && <ErrorInput errorMessage={t('updateUsername.errorDuplicate')} />}</View>
 					</View>

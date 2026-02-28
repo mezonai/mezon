@@ -102,6 +102,8 @@
 	--bg-item-theme-hover: rgba(67, 97, 238, 0.08);
 	/* modal */
 	--bg-modal-theme: #ffffff;
+	/* modal search */
+	--bg-modal-theme-search: #ffffff;
 	/* option  */
 	--bg-option-theme: #ffffff;
 	--bg-option-active: #e6e6e8;

@@ -3,7 +3,7 @@ import type { ChannelsEntity } from '@mezon/store-mobile';
 import { ChannelStatusEnum } from '@mezon/utils';
 import debounce from 'lodash.debounce';
 import { ChannelType } from 'mezon-js';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FlatList, Pressable, Text, View } from 'react-native';
 import MezonIconCDN from '../../../componentUI/MezonIconCDN';
@@ -14,9 +14,10 @@ import { style } from './styles';
 interface IBottomsheetSelectChannelProps {
 	data: ChannelsEntity[];
 	onSelect: (item: ChannelsEntity) => void;
+	selectedChannelId: string;
 }
 
-const BottomsheetSelectChannel: React.FC<IBottomsheetSelectChannelProps> = ({ data, onSelect }) => {
+const BottomsheetSelectChannel = ({ data, onSelect, selectedChannelId }: IBottomsheetSelectChannelProps) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['eventCreator']);
@@ -27,7 +28,7 @@ const BottomsheetSelectChannel: React.FC<IBottomsheetSelectChannelProps> = ({ da
 	}, 500);
 
 	const filteredOptionsChannels = useMemo(() => {
-		return data.filter((user) => user.channel_label.toLowerCase().includes(searchText.toLowerCase()));
+		return data?.filter((user) => user?.channel_label.toLowerCase().includes(searchText.toLowerCase())) || [];
 	}, [searchText, data]);
 
 	const channelIcon = (type: ChannelType, isPrivate: boolean) => {
@@ -46,10 +47,13 @@ const BottomsheetSelectChannel: React.FC<IBottomsheetSelectChannelProps> = ({ da
 
 	const renderItem = ({ item }: { item: ChannelsEntity }) => {
 		return (
-			<Pressable key={`channel_event_${item.channel_id}`} onPress={() => onSelect(item)} style={styles.items}>
-				{channelIcon(item.type, item.channel_private === ChannelStatusEnum.isPrivate)}
+			<Pressable
+				onPress={() => onSelect(item)}
+				style={[styles.items, item?.channel_id === selectedChannelId && styles.itemsSelected]}
+			>
+				{channelIcon(item?.type, item?.channel_private === ChannelStatusEnum.isPrivate)}
 				<Text style={styles.inputValue} numberOfLines={1} ellipsizeMode="tail">
-					{item.channel_label}
+					{item?.channel_label}
 				</Text>
 			</Pressable>
 		);
@@ -64,7 +68,7 @@ const BottomsheetSelectChannel: React.FC<IBottomsheetSelectChannelProps> = ({ da
 				prefixIcon={<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />}
 			/>
 			<View style={styles.bottomSheetContent}>
-				<FlatList data={filteredOptionsChannels} contentContainerStyle={{ flexGrow: 1 }} renderItem={renderItem} />
+				<FlatList keyExtractor={(item) => item?.channel_id} data={filteredOptionsChannels} contentContainerStyle={{ flexGrow: 1 }} renderItem={renderItem} />
 			</View>
 		</View>
 	);

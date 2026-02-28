@@ -1,8 +1,11 @@
 import type { MezonContextValue } from '@mezon/transport';
+import { socketState } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { Client, Session } from 'mezon-js';
 import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import type { GetThunkAPIWithMezon } from './typings';
+
+export { socketState };
 
 export const getMezonCtx = (thunkAPI: GetThunkAPI<unknown>) => {
 	if (!isMezonThunk(thunkAPI)) {

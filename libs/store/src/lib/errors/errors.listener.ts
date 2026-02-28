@@ -33,12 +33,32 @@ let hasDispatchedRefreshOnce = false;
 let isRefreshing = false;
 
 function isUnauthorizedError(payload: unknown): boolean {
-	if (payload && typeof payload === 'object' && 'status' in payload && (payload as { status: number }).status === 401) {
-		return true;
-	}
+	if (!payload) return false;
+
 	if (payload instanceof Response && payload.status === 401) {
 		return true;
 	}
+
+	if (typeof payload === 'object') {
+		const p = payload as Record<string, any>;
+		if (p.status === 401 || p.statusCode === 401 || p.code === 16) {
+			return true;
+		}
+		if (p.error?.status === 401 || p.error?.statusCode === 401) {
+			return true;
+		}
+	}
+
+	const msg =
+		typeof payload === 'string'
+			? payload
+			: typeof payload === 'object'
+				? (payload as any)?.message || (payload as any)?.error?.message || ''
+				: '';
+	if (typeof msg === 'string' && (msg.includes('Unauthenticated') || msg.includes('Refresh token invalid') || msg.includes('token expired'))) {
+		return true;
+	}
+
 	return false;
 }
 

@@ -82,6 +82,9 @@
 
 	/* modal */
 	--bg-modal-theme: color-mix(in oklab, hsl(232.5 calc(1 * 6.557%) 23.922% /1) 100%, rgb(26, 0, 0) 50%);
+	/* modal search */
+	--bg-modal-theme-search: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)), linear-gradient(141.68deg, rgb(72, 40, 140) 27.57%, rgb(219, 127, 75) 71.25%);
+	
 	/* option  */
 	--bg-option-theme: #33272a;
 	--bg-option-active: #473d42;

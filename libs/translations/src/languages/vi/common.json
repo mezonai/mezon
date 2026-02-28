@@ -365,6 +365,7 @@
 	},
 	"updateUsername": {
 		"enterUsername": "Nhập tên Mezon",
+		"usernamePreview": "Tên người dùng: {{username}}",
 		"yourName": "Tên của bạn...",
 		"usernamePlaceholder": "Hãy dùng tên thật để mọi người dễ nhận ra bạn",
 		"update": "Cập nhật",

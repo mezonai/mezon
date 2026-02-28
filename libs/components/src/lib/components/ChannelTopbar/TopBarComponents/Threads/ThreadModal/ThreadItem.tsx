@@ -11,7 +11,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import type { ChannelMembersEntity, IChannelMember } from '@mezon/utils';
+import type { IChannelMember } from '@mezon/utils';
 import { convertTimeMessage, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import type { MutableRefObject } from 'react';
 import { useMemo } from 'react';
@@ -47,24 +47,9 @@ const ThreadItem = ({ thread, setIsShowThread, isPublicThread = false, preventCl
 	const senderDisplayName = user?.clan_nick || user?.user?.display_name || username || user?.user?.username || '';
 	const senderAvatarUrl = user?.clan_avatar || user?.user?.avatar_url || avatarImg || '';
 
-	const getRandomElements = (array: ChannelMembersEntity[], count: number) => {
-		const result: ChannelMembersEntity[] = [];
-		const usedIndices = new Set();
-
-		while (result.length < count && usedIndices.size < array.length) {
-			const randomIndex = Math.floor(Math.random() * array.length);
-			if (!usedIndices.has(randomIndex)) {
-				usedIndices.add(randomIndex);
-				result.push(array[randomIndex]);
-			}
-		}
-
-		return result;
-	};
-
 	const previewAvatarList = useMemo(() => {
 		if (threadMembers && threadMembers.length > 0) {
-			return getRandomElements(threadMembers, 5);
+			return threadMembers.slice(0, 5);
 		}
 		return [];
 	}, [threadMembers]);

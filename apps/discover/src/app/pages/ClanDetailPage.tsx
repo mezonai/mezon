@@ -44,17 +44,7 @@ export default function ClanDetailPage() {
 	}
 
 	const chatty = (clan as any).chatty || 'Like a busy coffee shop';
-
-	let createdAt = '';
-	try {
-		if ((clan as any).create_time) {
-			createdAt = format(new Date((clan as any).create_time * 1000), 'MMMM do, yyyy');
-		}
-	} catch (err) {
-		console.error('Error formatting date:', err);
-		createdAt = 'Unknown';
-	}
-
+	const createdAt = format((clan as any).create_time_seconds * 1000, 'MMMM do, yyyy') || '';
 	const features = [
 		(clan as any).feature1 || 'Try out the official features of this clan!',
 		(clan as any).feature2 || 'Weekly events and updates.',

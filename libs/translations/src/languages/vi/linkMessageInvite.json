@@ -3,6 +3,12 @@
 	"offline": "ngoại tuyến",
 	"online": "trực tuyến",
 	"join": "Tham gia",
+	"joining": "Đang tham gia...",
+	"goToClan": "Đi đến Clan",
+	"unknownClan": "Clan không xác định",
+	"memberCount": "{{count}} Thành viên",
+	"memberCount_plural": "{{count}} Thành viên",
+	"failedToJoin": "Không thể tham gia clan này.",
 	"inviteTo": "MỜI THAM GIA {{clanName}}",
 	"noThanks": "Không cảm ơn",
 	"invalidInvite": {

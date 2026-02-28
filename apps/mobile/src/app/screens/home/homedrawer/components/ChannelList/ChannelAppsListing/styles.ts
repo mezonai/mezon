@@ -7,7 +7,7 @@ export const style = (colors: Attributes) =>
 		container: {
 			width: '100%',
 			zIndex: 1,
-			marginVertical: size.s_4
+			marginTop: size.s_4
 		},
 		containerAll: {
 			flex: 1,
@@ -68,7 +68,7 @@ export const style = (colors: Attributes) =>
 		channelListSection: {
 			width: '100%',
 			zIndex: 1,
-			marginHorizontal: size.s_10
+			marginHorizontal: size.s_8
 		},
 		channelListHeader: {
 			flexDirection: 'row',
@@ -98,7 +98,7 @@ export const style = (colors: Attributes) =>
 		},
 		compactCardContainer: {
 			width: '95%',
-			height: size.s_50,
+			height: size.s_42,
 			flexDirection: 'row',
 			alignItems: 'center',
 			backgroundColor: colors.secondaryLight,
@@ -117,8 +117,8 @@ export const style = (colors: Attributes) =>
 			minWidth: 0
 		},
 		compactCardLogo: {
-			width: size.s_40,
-			height: size.s_40,
+			width: size.s_30,
+			height: size.s_30,
 			borderRadius: size.s_10,
 			justifyContent: 'center',
 			alignItems: 'center',
@@ -133,8 +133,7 @@ export const style = (colors: Attributes) =>
 		compactCardName: {
 			fontSize: size.s_14,
 			fontWeight: '600',
-			color: colors.textStrong,
-			marginBottom: size.s_2
+			color: colors.textStrong
 		},
 		compactCardDescription: {
 			fontSize: size.s_12,

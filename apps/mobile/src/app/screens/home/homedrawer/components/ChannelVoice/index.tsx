@@ -296,6 +296,7 @@ function ChannelVoice({
 						onPressMinimizeRoom={onPressMinimizeRoom}
 						isGroupCall={isGroupCall}
 						isShow={isAnimationComplete && !focusedScreenShare && !isPiPMode}
+						clanId={clanId}
 					/>
 					<ConnectionMonitor />
 					{!isGroupCall && !isPiPMode && isAnimationComplete && (

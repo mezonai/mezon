@@ -3,12 +3,13 @@ import { captureSentryError } from '@mezon/logger';
 import type { ActivitiesEntity, AttachmentEntity, ChannelsEntity, RootState, ThreadsEntity } from '@mezon/store';
 import {
 	DMCallActions,
-	EMarkAsReadType,
 	accountActions,
 	acitvitiesActions,
 	appActions,
 	attachmentActions,
 	audioCallActions,
+	authActions,
+	badgeService,
 	canvasAPIActions,
 	categoriesActions,
 	channelAppSlice,
@@ -20,7 +21,6 @@ import {
 	channelsSlice,
 	clansActions,
 	clansSlice,
-	decreaseChannelBadgeCount,
 	defaultNotificationCategoryActions,
 	directActions,
 	directMetaActions,
@@ -47,7 +47,6 @@ import {
 	pinMessageActions,
 	policiesActions,
 	referencesActions,
-	resetChannelBadgeCount,
 	rolesClanActions,
 	selectAllChannels,
 	selectAllTextChannel,
@@ -81,6 +80,7 @@ import {
 	selectUserCallId,
 	selectVoiceInfo,
 	selectWelcomeChannelByClanId,
+	socketState,
 	statusActions,
 	stickerSettingActions,
 	threadsActions,
@@ -185,8 +185,10 @@ import type {
 	ApiWebhook
 } from 'mezon-js/api.gen';
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Subject } from 'rxjs';
+import { debounceTime, exhaustMap, filter } from 'rxjs/operators';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { handleGroupCallSocketEvent } from './groupCallSocketHandler';
@@ -471,7 +473,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					if (isNotCurrentDirect) {
 						if (message.sender_id !== userId && message.code !== TypeMessage.ChatUpdate && message.code !== TypeMessage.ChatRemove) {
-							dispatch(directMetaActions.setCountMessUnread({ channelId: message.channel_id, isMention: false }));
+							badgeService.incrementDm(message.channel_id, 1, false);
 						}
 					}
 
@@ -490,24 +492,44 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					}
 				} else {
 					if (mess.isMe) {
-						dispatch(
-							channelsActions.updateChannelBadgeCount({
-								channelId: message.channel_id,
-								clanId: message.clan_id || '0',
-								count: 0,
-								isReset: true
-							})
-						);
-						dispatch(
-							listChannelsByUserActions.updateChannelBadgeCount({
-								channelId: message.channel_id,
-								count: 0,
-								isReset: true
-							})
-						);
+						badgeService.resetChannel({
+							clanId: message.clan_id || '0',
+							channelId: message.channel_id,
+							timestamp,
+							messageId: message.id
+						});
 					} else {
 						if (message.clan_id) {
 							dispatch(clansActions.setHasUnreadMessage({ clanId: message.clan_id, hasUnread: true }));
+						}
+
+						const isFocused = !isBackgroundModeActive();
+						const isNewMessage = message.code !== TypeMessage.ChatUpdate && message.code !== TypeMessage.ChatRemove;
+						if (isNewMessage && (!mess.isCurrentChannel || !isFocused)) {
+							const isTopicMessage = message.topic_id && message.topic_id !== '0';
+							const topicId = isTopicMessage ? (message.topic_id ?? message.channel_id) : '';
+
+							const checkChannelId = isTopicMessage ? topicId : message.channel_id;
+							const channelMeta = (store.getState() as RootState)?.channelmeta?.entities?.[checkChannelId];
+							const msgTime = message.create_time_seconds ?? 0;
+							const isAlreadySeen = channelMeta?.lastSeenTimestamp && msgTime > 0 && msgTime <= channelMeta.lastSeenTimestamp;
+
+							if (!isAlreadySeen) {
+								if (isTopicMessage) {
+									const topicMessage = { ...message, channel_id: topicId };
+									const didIncrement = badgeService.incrementChannelIfMentioned(topicMessage, userId as string);
+									if (didIncrement) {
+										badgeService.incrementChannelForTopic(
+											message.clan_id || '0',
+											message.channel_id,
+											topicId,
+											message.message_id
+										);
+									}
+								} else {
+									badgeService.incrementChannelIfMentioned(message, userId as string);
+								}
+							}
 						}
 					}
 					if (message.code !== TypeMessage.ChatUpdate && message.code !== TypeMessage.ChatRemove) {
@@ -533,11 +555,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					}
 				}
 				if (message?.code === TypeMessage.ChatRemove && message.sender_id !== userId) {
-					decreaseChannelBadgeCount(dispatch, {
-						message,
-						userId: userId as string,
-						store
-					});
+					badgeService.handleMessageDeleted(message, userId as string);
 				}
 				// check
 			} catch (error) {
@@ -652,8 +670,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				);
 
 				if (notification.code === NotificationCode.USER_MENTIONED || notification.code === NotificationCode.USER_REPLIED) {
-					dispatch(clansActions.updateClanBadgeCount({ clanId: notification?.clan_id || '0', count: 1 }));
-
 					if (notification?.channel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
 						await dispatch(
 							channelsActions.addThreadSocket({
@@ -666,19 +682,23 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							})
 						);
 					}
-					dispatch(
-						channelsActions.updateChannelBadgeCountAsync({
-							clanId: notification?.clan_id || '0',
-							channelId: notification?.channel_id ?? '',
-							count: 1
-						})
-					);
-					dispatch(
-						listChannelsByUserActions.updateChannelBadgeCount({
-							channelId: notification?.channel_id || '0',
-							count: 1
-						})
-					);
+
+					const isTopicNotification = notification.topic_id && notification.topic_id !== '0';
+					const topicId = isTopicNotification ? (notification.topic_id ?? notification?.channel_id ?? '') : '';
+					const checkChannelId = isTopicNotification ? topicId : (notification?.channel_id ?? '');
+					const channelMeta = (store.getState() as RootState)?.channelmeta?.entities?.[checkChannelId];
+					const msgTime = notification.content?.create_time_seconds ?? 0;
+					const isAlreadySeen = channelMeta?.lastSeenTimestamp && msgTime > 0 && msgTime <= channelMeta.lastSeenTimestamp;
+					if (!isAlreadySeen) {
+						const clanId = notification?.clan_id || '0';
+						const messageId = notification?.content?.message_id;
+						if (isTopicNotification) {
+							badgeService.incrementChannelFromNotification(clanId, topicId, messageId);
+							badgeService.incrementChannelFromNotificationForTopic(clanId, notification?.channel_id ?? '', topicId, messageId);
+						} else {
+							badgeService.incrementChannelFromNotification(clanId, notification?.channel_id ?? '', messageId);
+						}
+					}
 				}
 			}
 
@@ -752,39 +772,33 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
-	const onlastseenupdated = useCallback(
-		async (lastSeenMess: LastSeenMessageEvent) => {
-			const { clan_id, channel_id, message_id } = lastSeenMess;
-			let badge_count = lastSeenMess.badge_count;
+	const onlastseenupdated = useCallback(async (lastSeenMess: LastSeenMessageEvent) => {
+		const { clan_id, channel_id, message_id } = lastSeenMess;
+		let badge_count = lastSeenMess.badge_count;
 
-			const store = getStore();
+		const store = getStore();
 
-			const state = store.getState() as RootState;
-			const channelsLoadingStatus = selectLoadingStatus(state);
-			const clansLoadingStatus = selectClansLoadingStatus(state);
+		const state = store.getState() as RootState;
+		const channelsLoadingStatus = selectLoadingStatus(state);
+		const clansLoadingStatus = selectClansLoadingStatus(state);
 
-			if (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading') {
-				return;
-			}
+		if (channelsLoadingStatus === 'loading' || clansLoadingStatus === 'loading') {
+			return;
+		}
 
-			if (clan_id && clan_id !== '0') {
-				const channel = selectChannelByIdAndClanId(state, clan_id, channel_id);
-				badge_count = channel?.count_mess_unread || 0;
-			}
-
-			resetChannelBadgeCount(
-				dispatch,
-				{
-					clanId: clan_id,
-					channelId: channel_id,
-					badgeCount: badge_count,
-					messageId: message_id
-				},
-				store
-			);
-		},
-		[dispatch]
-	);
+		if (clan_id && clan_id !== '0') {
+			const channel = selectChannelByIdAndClanId(state, clan_id, channel_id);
+			badge_count = channel?.count_mess_unread || 0;
+			badgeService.resetChannel({
+				clanId: clan_id,
+				channelId: channel_id,
+				badgeCount: badge_count,
+				messageId: message_id
+			});
+		} else {
+			badgeService.resetDm(channel_id, undefined, message_id);
+		}
+	}, []);
 
 	const onuserchannelremoved = useCallback(
 		async (user: UserChannelRemovedEvent) => {
@@ -797,8 +811,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			for (let index = 0; index < user?.user_ids.length; index++) {
 				const userID = user.user_ids[index];
-				dispatch(clansActions.updateClanBadgeCount({ clanId: user?.clan_id || '0', count: -user.badge_counts[index] }));
 				if (userID === userId) {
+					const badgeCount = user.badge_counts[index] || 0;
+					if (badgeCount > 0) {
+						badgeService.decrementChannel(user?.clan_id || '0', user.channel_id, badgeCount);
+					}
 					if (isMobile && (channelId === user.channel_id || directId === user.channel_id)) {
 						MobileEventEmitter.emit('@ON_REMOVE_USER_CHANNEL', {
 							channelId: user.channel_id,
@@ -931,6 +948,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					dispatch(clansSlice.actions.removeByClanID(user.clan_id));
 					dispatch(listChannelsByUserActions.remove(id));
 					dispatch(listChannelRenderAction.removeListChannelRenderByClanId({ clanId: user?.clan_id }));
+					dispatch(topicsActions.removeClanTopics(user?.clan_id));
 					dispatch(appActions.cleanHistoryClan(user.clan_id));
 					dispatch(channelsActions.removeByClanId(user.clan_id));
 				}
@@ -1370,22 +1388,26 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[dispatch]
 	);
 
-	const onmessagetyping = useCallback((e: MessageTypingEvent) => {
-		const state = getStore().getState();
-		const currentUserId = selectCurrentUserId(state);
-		if (e.sender_id === currentUserId) return;
+	const onmessagetyping = useCallback(
+		(e: MessageTypingEvent) => {
+			const state = getStore().getState();
+			const currentUserId = selectCurrentUserId(state);
+			if (e.sender_id === currentUserId) return;
 
-		const channelId = e?.topic_id && e?.topic_id !== '0' ? e?.topic_id : e.channel_id;
-		const currentClanId = selectCurrentClanId(state);
-		const isDM = !currentClanId || currentClanId === '0';
+			const channelId = e?.topic_id && e?.topic_id !== '0' ? e?.topic_id : e.channel_id;
+			const currentClanId = selectCurrentClanId(state);
+			const currentDirectId = selectDmGroupCurrentId(state);
+			const isDM = !currentClanId || currentClanId === '0' || (!!currentDirectId && isMobile);
 
-		if (!isDM) {
-			const currentChannelId = selectCurrentChannelId(state as unknown as RootState);
-			if (channelId !== currentChannelId) return;
-		}
+			if (!isDM) {
+				const currentChannelId = selectCurrentChannelId(state as unknown as RootState);
+				if (channelId !== currentChannelId) return;
+			}
 
-		typingUsersService.addTypingUser(channelId, e.sender_id, e.sender_display_name || e.sender_username);
-	}, []);
+			typingUsersService.addTypingUser(channelId, e.sender_id, e.sender_display_name || e.sender_username);
+		},
+		[isMobile]
+	);
 
 	const onmessagereaction = useCallback(
 		async (e: ApiMessageReaction) => {
@@ -1640,6 +1662,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			dispatch(emojiSuggestionActions.invalidateCache());
 			dispatch(stickerSettingActions.invalidateCache());
 			dispatch(channelsActions.removeByClanId(clanDelete.clan_id));
+			dispatch(topicsActions.removeClanTopics(clanDelete?.clan_id));
 			if (clanDelete.deletor !== userId && currentClanId === clanDelete.clan_id) {
 				if (isMobile) {
 					const isVoiceJoined = selectVoiceInfo(store.getState());
@@ -2454,8 +2477,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	const onMarkAsRead = useCallback(async (markAsReadEvent: MarkAsRead) => {
 		const store = getStore();
-
 		const channels = selectChannelThreads(store.getState() as RootState);
+
 		if (markAsReadEvent.category_id === '0') {
 			const channelIds = channels.map((item) => item.id);
 			const channelUpdates = channelIds.map((channelId) => {
@@ -2466,80 +2489,35 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}
 				return { channelId, messageId: messageId || undefined };
 			});
-			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
-			dispatch(
-				channelsActions.resetChannelsCount({
-					clanId: markAsReadEvent.clan_id,
-					channelIds
-				})
-			);
-			dispatch(clansActions.updateClanBadgeCount({ clanId: markAsReadEvent.clan_id ?? '', count: 0, isReset: true }));
-			dispatch(
-				listChannelRenderAction.handleMarkAsReadListRender({
-					type: EMarkAsReadType.CLAN,
-					clanId: markAsReadEvent.clan_id
-				})
-			);
-			dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
+			badgeService.markAsReadClan(markAsReadEvent.clan_id ?? '', channelIds, channelUpdates);
 			return;
 		}
+
 		if (markAsReadEvent.channel_id === '0') {
 			const channelsInCategory = channels.filter((channel) => channel.category_id === markAsReadEvent.category_id);
-
 			const allChannelsAndThreads = channelsInCategory.flatMap((channel) => [channel, ...(channel.threads || [])]);
-
 			const channelIds = allChannelsAndThreads.map((item) => item.id);
-
 			const channelUpdates = channelIds.map((channelId) => ({
 				channelId,
 				messageId: selectLatestMessageId(store.getState(), channelId) || undefined
 			}));
-			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
-			dispatch(
-				channelsActions.resetChannelsCount({
-					clanId: markAsReadEvent.clan_id as string,
-					channelIds
-				})
-			);
-			dispatch(
-				listChannelRenderAction.handleMarkAsReadListRender({
-					type: EMarkAsReadType.CATEGORY,
-					clanId: markAsReadEvent.clan_id as string,
-					categoryId: markAsReadEvent.category_id
-				})
-			);
-			dispatch(listChannelsByUserActions.markAsReadChannel(channelIds));
+			badgeService.markAsReadCategory(markAsReadEvent.clan_id as string, markAsReadEvent.category_id, channelIds, channelUpdates);
 		} else {
 			const relatedChannels = channels.filter((channel) => channel.parent_id === markAsReadEvent.channel_id);
-
 			const channelIds = relatedChannels.map((channel) => channel.id);
-
 			const channelUpdates = channelIds.map((channelId) => ({
 				channelId,
 				messageId: selectLatestMessageId(store.getState(), channelId) || undefined
 			}));
-			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(channelUpdates));
-			dispatch(
-				channelsActions.resetChannelsCount({
-					clanId: markAsReadEvent.clan_id as string,
-					channelIds
-				})
-			);
-			dispatch(
-				clansActions.updateClanBadgeCountFromChannels({
-					clanId: markAsReadEvent.clan_id as string,
-					channels: relatedChannels.map((channel) => ({
-						channelId: channel.id,
-						count: (channel.count_mess_unread ?? 0) * -1
-					}))
-				})
-			);
-			dispatch(
-				listChannelRenderAction.handleMarkAsReadListRender({
-					type: EMarkAsReadType.CHANNEL,
-					clanId: markAsReadEvent.clan_id as string,
-					channelId: markAsReadEvent.channel_id
-				})
+			badgeService.markAsReadChannel(
+				markAsReadEvent.clan_id as string,
+				markAsReadEvent.channel_id,
+				[markAsReadEvent.channel_id, ...channelIds],
+				channelUpdates,
+				relatedChannels.map((channel) => ({
+					channelId: channel.id,
+					count: (channel.count_mess_unread ?? 0) * -1
+				}))
 			);
 
 			const threadIds = relatedChannels.flatMap((channel) => channel.threadIds || []);
@@ -2550,8 +2528,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				}));
 				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
 			}
-
-			dispatch(listChannelsByUserActions.markAsReadChannel([markAsReadEvent.channel_id, ...channelIds]));
 		}
 	}, []);
 
@@ -2602,7 +2578,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onchannelpresence = onchannelpresence;
 
 			socket.ondisconnect = ondisconnect;
-
 			socket.onerror = onerror;
 
 			socket.onmessagetyping = onmessagetyping;
@@ -2755,56 +2730,99 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		]
 	);
 
-	const handleReconnect = useCallback(
-		async (socketType: string) => {
-			if (socketRef.current?.isOpen()) {
+	const reconnect$ = useMemo(() => new Subject<string>(), []);
+
+	const executeReconnect = useCallback(
+		async (_socketType: string) => {
+			socketState.status = 'connecting';
+
+			console.log(socketState.status, 'socketState.status');
+
+			const store = getStore();
+			const clanIdActive = selectCurrentClanId(store.getState());
+
+			const socket = await reconnectWithTimeout(clanIdActive ?? '');
+
+			if (socket === 'RECONNECTING') {
 				return;
 			}
 
-			try {
-				const store = getStore();
-				const clanIdActive = selectCurrentClanId(store.getState());
-				const socket = await reconnectWithTimeout(clanIdActive ?? '');
-
-				if (socket === 'RECONNECTING') {
-					return;
-				}
-
-				if (!socket) {
-					dispatch(
-						toastActions.addToast({
-							message: 'Socket reconnecting...',
-							type: 'info',
-							autoClose: 3000,
-							id: 'SOCKET_RECONNECTING'
-						})
-					);
-					return;
-				}
-				setCallbackEventFn(socket as Socket);
-				dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
-				dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
-				dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
-			} catch (error) {
+			if (!socket) {
+				socketState.status = 'disconnected';
 				dispatch(
 					toastActions.addToast({
 						message: 'Socket reconnecting...',
 						type: 'info',
 						autoClose: 3000,
-						id: 'SOCKET_RECONNECTING_ERROR'
+						id: 'SOCKET_RECONNECTING'
 					})
 				);
-				captureSentryError(error, 'SOCKET_RECONNECT');
+				return;
 			}
+			setCallbackEventFn(socket as Socket);
+			dispatch(toastActions.removeToast('SOCKET_RECONNECTING'));
+			dispatch(toastActions.removeToast('SOCKET_RECONNECTING_ERROR'));
+			dispatch(toastActions.removeToast('SOCKET_CONNECTION_ERROR'));
 		},
 		[reconnectWithTimeout, setCallbackEventFn, dispatch]
 	);
 
+	useEffect(() => {
+		const subscription = reconnect$
+			.pipe(
+				filter(() => !socketRef.current?.isOpen()),
+				debounceTime(500),
+				exhaustMap(
+					(socketType) =>
+						new Promise<void>((resolve) => {
+							executeReconnect(socketType)
+								.catch((error) => {
+									dispatch(
+										toastActions.addToast({
+											message: 'Socket reconnecting...',
+											type: 'info',
+											autoClose: 3000,
+											id: 'SOCKET_RECONNECTING_ERROR'
+										})
+									);
+									captureSentryError(error, 'SOCKET_RECONNECT');
+								})
+								.finally(resolve);
+						})
+				)
+			)
+			.subscribe();
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [reconnect$, executeReconnect, dispatch]);
+
+	useEffect(() => {
+		const onSessionExpired = () => {
+			dispatch(authActions.setLogout());
+			dispatch(walletActions.setLogout());
+		};
+		window.addEventListener('mezon:session-expired', onSessionExpired);
+		return () => {
+			window.removeEventListener('mezon:session-expired', onSessionExpired);
+		};
+	}, [dispatch]);
+
+	const handleReconnect = useCallback(
+		(socketType: string) => {
+			reconnect$.next(socketType);
+		},
+		[reconnect$]
+	);
+
 	const ondisconnect = useCallback(() => {
+		socketState.status = 'disconnected';
 		handleReconnect('Socket disconnected, attempting to reconnect...');
 	}, [handleReconnect]);
 
 	const onHeartbeatTimeout = useCallback(() => {
+		socketState.status = 'disconnected';
 		handleReconnect('Socket hearbeat timeout, attempting to reconnect...');
 	}, [handleReconnect]);
 

@@ -1,11 +1,10 @@
 import { MediaChannel, ModalInputMessageBuzz } from '@mezon/components';
 import { EmojiSuggestionProvider } from '@mezon/core';
-import { selectBanMeInChannel, selectMediaChannelViewMode, selectTimelineViewMode, useAppSelector, type ChannelsEntity } from '@mezon/store';
+import { selectBanMeInChannel, selectMediaChannelViewMode, useAppSelector, type ChannelsEntity } from '@mezon/store';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import { useEffect, useRef } from 'react';
 import { useModal } from 'react-modal-hook';
 import ChannelMessages from './ChannelMessages';
-import TimelineMessages from './TimelineMessages';
 
 type ChannelMediaProps = {
 	currentChannel: ChannelsEntity | null;
@@ -15,7 +14,6 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 	const mode =
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD ? ChannelStreamMode.STREAM_MODE_THREAD : ChannelStreamMode.STREAM_MODE_CHANNEL;
 
-	const isTimelineViewMode = useAppSelector(selectTimelineViewMode);
 	const isMediaChannelViewMode = useAppSelector(selectMediaChannelViewMode);
 
 	if (
@@ -32,25 +30,14 @@ export const ChannelMedia = ({ currentChannel }: ChannelMediaProps) => {
 		return (
 			<>
 				<KeyPressListener currentChannel={currentChannel} mode={mode} />
-				{isTimelineViewMode ? (
-					<TimelineMessages
-						clanId={currentChannel?.clan_id || '0'}
-						channelId={currentChannel?.id}
-						channelLabel={currentChannel.channel_label}
-						isPrivate={currentChannel.channel_private}
-						type={currentChannel?.type as ChannelType}
-						mode={mode}
-					/>
-				) : (
-					<ChannelMessages
-						clanId={currentChannel?.clan_id || '0'}
-						channelId={currentChannel?.id}
-						channelLabel={currentChannel.channel_label}
-						isPrivate={currentChannel.channel_private}
-						type={currentChannel?.type as ChannelType}
-						mode={mode}
-					/>
-				)}
+				<ChannelMessages
+					clanId={currentChannel?.clan_id || '0'}
+					channelId={currentChannel?.id}
+					channelLabel={currentChannel.channel_label}
+					isPrivate={currentChannel.channel_private}
+					type={currentChannel?.type as ChannelType}
+					mode={mode}
+				/>
 			</>
 		);
 	}

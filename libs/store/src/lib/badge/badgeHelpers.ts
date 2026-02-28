@@ -79,7 +79,9 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 
 	const id = channelId + messageId;
 
-	if (clanId !== '0' && isMessageAlreadyProcessed(id)) {
+	const currentChannelBadge = store ? getCurrentChannelBadgeCount(store, clanId, channelId) : 0;
+
+	if (clanId !== '0' && isMessageAlreadyProcessed(id) && currentChannelBadge === 0) {
 		return;
 	}
 
@@ -110,8 +112,9 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 		dispatch(listChannelsByUserActions.resetBadgeCount({ channelId }));
 		dispatch(listChannelsByUserActions.updateLastSeenTime({ channelId }));
 
-		if (badgeCount && badgeCount > 0) {
-			const actualDecrement = Math.min(badgeCount, currentClanBadge);
+		const effectiveBadgeCount = currentChannelBadge || badgeCount || 0;
+		if (effectiveBadgeCount > 0) {
+			const actualDecrement = Math.min(effectiveBadgeCount, currentClanBadge);
 			dispatch(
 				clansActions.updateClanBadgeCount({
 					clanId,

@@ -349,21 +349,21 @@ const UserProfile = React.memo(
 					text: t('userAction.sendMessage'),
 					icon: <MezonIconCDN icon={IconCDN.chatIcon} color={themeValue.text} />,
 					action: navigateToMessageDetail,
-					isShow: !isBlocked && !isWebhook
+					isShow: !isBlocked
 				},
 				{
 					id: 2,
 					text: t('userAction.voiceCall'),
 					icon: <MezonIconCDN icon={IconCDN.phoneCallIcon} color={themeValue.text} />,
 					action: () => handleCallUser(userId || user?.id),
-					isShow: !isBlocked && !isWebhook
+					isShow: !isBlocked
 				},
 				{
 					id: 4,
 					text: t('userAction.addFriend'),
 					icon: <MezonIconCDN icon={IconCDN.userPlusIcon} color={baseColor.green} />,
 					action: handleAddFriend,
-					isShow: !infoFriend && !isBlocked && !isWebhook,
+					isShow: !infoFriend && !isBlocked,
 					textStyleName: 'actionTextGreen'
 				},
 				{
@@ -378,16 +378,16 @@ const UserProfile = React.memo(
 					textStyleName: 'actionTextYellow'
 				}
 			],
-			[handleAddFriend, handleCallUser, infoFriend, isBlocked, isWebhook, navigateToMessageDetail, t, themeValue.text, user?.id, userId]
+			[handleAddFriend, handleCallUser, infoFriend, isBlocked, navigateToMessageDetail, t, themeValue.text, user?.id, userId]
 		);
 
 		const handleAcceptFriend = useCallback(() => {
 			const body = infoFriend?.user?.id
 				? {
-						ids: infoFriend?.user?.id || '',
-						usernames: infoFriend?.user?.username || '',
-						isAcceptingRequest: true
-					}
+					ids: infoFriend?.user?.id || '',
+					usernames: infoFriend?.user?.username || '',
+					isAcceptingRequest: true
+				}
 				: { usernames: infoFriend?.user?.username || '', isAcceptingRequest: true };
 			dispatch(friendsActions.sendRequestAddFriend(body));
 		}, [dispatch, infoFriend?.user?.id, infoFriend?.user?.username]);
@@ -514,29 +514,29 @@ const UserProfile = React.memo(
 							{userById
 								? !isDM
 									? userById?.clan_nick ||
-										userById?.user?.display_name ||
-										userById?.user?.username ||
-										user?.clan_nick ||
-										user?.user?.display_name ||
-										user?.user?.username
+									userById?.user?.display_name ||
+									userById?.user?.username ||
+									user?.clan_nick ||
+									user?.user?.display_name ||
+									user?.user?.username
 									: userById?.user?.display_name || userById?.user?.username
 								: user?.display_name ||
-									user?.user?.display_name ||
-									user?.username ||
-									user?.user?.username ||
-									(checkAnonymous ? 'Anonymous' : '')}
+								user?.user?.display_name ||
+								user?.username ||
+								user?.user?.username ||
+								(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						<Text style={[styles.subUserName]}>
 							{userById
 								? userById?.user?.username || userById?.user?.display_name
 								: user?.username ||
-									user?.user?.username ||
-									user?.display_name ||
-									user?.user?.display_name ||
-									(checkAnonymous ? 'Anonymous' : '')}
+								user?.user?.username ||
+								user?.display_name ||
+								user?.user?.display_name ||
+								(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						{isCheckOwner && <EditUserProfileBtn user={userById || (user as any)} />}
-						{!isCheckOwner && !manageVoiceUser && (
+						{!isCheckOwner && !manageVoiceUser && !isWebhook && (
 							<View style={styles.userAction}>
 								{actionList.map((actionItem) => {
 									const { action, icon, id, isShow, text, textStyleName } = actionItem;

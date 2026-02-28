@@ -294,7 +294,7 @@ const RoomView = ({
 	return (
 		<View style={[styles.roomViewContainer, isPiPMode && styles.roomViewContainerPiP]}>
 			{!isAnimationComplete ? (
-				<FocusedScreenPopup />
+				<FocusedScreenPopup clanId={clanId} />
 			) : (
 				<ParticipantScreen
 					setFocusedScreenShare={setFocusedScreenShareProp}

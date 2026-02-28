@@ -8,24 +8,18 @@ export const style = (colors: Attributes) =>
 			fontSize: size.s_12
 		},
 		currentTime: {
-			color: '#fff',
+			color: baseColor.white,
 			fontSize: size.s_14,
 			fontWeight: 'bold'
 		},
-		playButton: {
-			backgroundColor: baseColor.white,
+		container: {
 			borderRadius: size.s_30,
+			marginVertical: size.s_2,
+			backgroundColor: baseColor.white,
 			padding: size.s_8,
 			alignItems: 'center',
 			gap: size.s_10,
 			justifyContent: 'center'
-		},
-		container: {
-			width: '65%',
-			backgroundColor: baseColor.bgDeepLavender,
-			padding: size.s_6,
-			borderRadius: size.s_30,
-			marginVertical: size.s_2
 		},
 		audioField: {
 			flexDirection: 'row',

@@ -73,7 +73,7 @@ const RefreshSessionWrapper = ({ children }) => {
 					setIsSessionReady(true);
 					if (retries === 0) {
 						await sleep(500);
-						if (response?.payload?.status === 500) {
+						if (response?.payload?.status === 500 || response?.payload?.status === 403) {
 							const responseNetwork = await fetchWithTimeout(`${process.env.NX_CHAT_APP_REDIRECT_URI}/favicon.ico`, 8000);
 							if (!responseNetwork.ok) {
 								return;
@@ -85,7 +85,7 @@ const RefreshSessionWrapper = ({ children }) => {
 					await sleep(1000 * (MAX_RETRIES_SESSION - retries));
 					continue;
 				}
-				dispatch(directActions.fetchDirectMessage({ noCache: true }));
+				dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true }));
 				const currentClanIdCached = await load(STORAGE_CLAN_ID);
 				if (currentClanIdCached) dispatch(channelsActions.fetchChannels({ clanId: currentClanIdCached, noCache: true, isMobile: true }));
 				setIsSessionReady(true);

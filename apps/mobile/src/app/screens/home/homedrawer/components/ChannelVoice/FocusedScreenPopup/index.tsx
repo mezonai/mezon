@@ -1,6 +1,6 @@
 import { useLocalParticipant, useParticipants, useTracks, VideoTrack } from '@livekit/react-native';
 import { size, useTheme } from '@mezon/mobile-ui';
-import { selectMemberClanByUserId, useAppSelector } from '@mezon/store-mobile';
+import { selectMemberByIdAndClanId, useAppSelector } from '@mezon/store-mobile';
 import { RoomEvent, Track } from 'livekit-client';
 import React, { useMemo } from 'react';
 import { Text, View } from 'react-native';
@@ -9,7 +9,7 @@ import MezonAvatar from '../../../../../../componentUI/MezonAvatar';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from '../styles';
 
-const FocusedScreenPopup = () => {
+const FocusedScreenPopup = ({ clanId }: { clanId: string }) => {
 	const { localParticipant } = useLocalParticipant();
 	const participants = useParticipants();
 	const tracks = useTracks(
@@ -27,7 +27,7 @@ const FocusedScreenPopup = () => {
 	const selfParticipant = participants.find((p) => p.identity === localParticipant.identity);
 	const randomParticipant = participants[0];
 	const identity = randomParticipant.identity;
-	const member = useAppSelector((state) => selectMemberClanByUserId(state, identity));
+	const member = useAppSelector((state) => selectMemberByIdAndClanId(state, clanId, identity));
 	const voiceUsername = member?.clan_nick || member?.user?.display_name || member?.user?.username || '';
 	const avatar = useMemo(() => {
 		return member?.clan_avatar || member?.user?.avatar_url || '';

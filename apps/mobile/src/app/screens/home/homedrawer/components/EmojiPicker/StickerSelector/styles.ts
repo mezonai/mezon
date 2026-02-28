@@ -12,15 +12,22 @@ export const style = (colors: Attributes, widthScreen?: number, isTabletLandscap
 		},
 		audioContent: {
 			width: ((isTabletLandscape ? widthScreen * 0.4 : widthScreen) - size.s_30) / 2.01,
-			height: size.s_90,
+			height: size.s_50,
 			borderRadius: 10,
 			overflow: 'hidden',
-			borderWidth: 1,
-			borderColor: colors.border,
+			backgroundColor: colors.secondaryLight,
 			justifyContent: 'center',
 			alignItems: 'center',
-			paddingHorizontal: size.s_10,
+			paddingHorizontal: size.s_8,
 			paddingVertical: size.s_6
+		},
+		audioRow: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			justifyContent: 'space-between',
+			width: '100%',
+			gap: size.s_10,
+			flex: 1
 		},
 		btnEmo: {
 			padding: size.s_4,
@@ -53,8 +60,7 @@ export const style = (colors: Attributes, widthScreen?: number, isTabletLandscap
 		soundName: {
 			fontSize: size.medium,
 			color: colors.text,
-			maxWidth: '80%',
-			marginTop: size.s_6,
+			flexShrink: 1,
 			textAlign: 'center'
 		},
 		wrapperIconLocked: {
@@ -116,6 +122,7 @@ export const style = (colors: Attributes, widthScreen?: number, isTabletLandscap
 			width: '100%'
 		},
 		lockIconColor: '#e1e1e1',
+		sendIconColor: colors.textStrong,
 		columnWrapper: {
 			justifyContent: 'space-between'
 		}

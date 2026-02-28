@@ -50,7 +50,7 @@ const MessagesScreenTablet = memo(({ navigation }: { navigation: any }) => {
 			if (state === 'active') {
 				try {
 					const store = await getStoreAsync();
-					await store.dispatch(directActions.fetchDirectMessage({ noCache: true }));
+					await store.dispatch(directActions.fetchDirectMessage({ noCache: true, isMobile: true }));
 				} catch (error) {
 					console.error('error messageLoaderBackground', error);
 				}

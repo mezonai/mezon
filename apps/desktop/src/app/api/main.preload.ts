@@ -5,6 +5,7 @@ import {
 	CLEAR_SCREEN_SOURCES_CACHE,
 	GET_APP_VERSION,
 	GET_DEVICE_ID,
+	GET_REDUX_STATE,
 	LAUNCH_APP_WINDOW,
 	LOAD_MORE_SCREEN_SOURCES,
 	NOTIFICATION_CLICKED,
@@ -12,7 +13,9 @@ import {
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
 	SET_BADGE_COUNT,
-	SET_RATIO_WINDOW
+	SET_RATIO_WINDOW,
+	SYNC_REDUX_STATE,
+	TOGGLE_HARDWARE_ACCELERATION
 } from '../events/constants';
 
 contextBridge.exposeInMainWorld('electron', {
@@ -57,7 +60,16 @@ contextBridge.exposeInMainWorld('electron', {
 	launchAppWindow: (props: string) => {
 		return ipcRenderer.invoke(LAUNCH_APP_WINDOW, props);
 	},
-	toggleSettingAutoStart: (auto: boolean) => {
+	toggleSettingAutoStart: (auto: { autoStart: boolean; hidden: boolean }) => {
 		return ipcRenderer.invoke(AUTO_START_APP, auto);
+	},
+	toggleHardwareAcceleration: (enabled: boolean) => {
+		return ipcRenderer.invoke(TOGGLE_HARDWARE_ACCELERATION, enabled);
+	},
+	syncReduxState: (state: { autoStart?: boolean; hardwareAcceleration?: boolean }) => {
+		return ipcRenderer.invoke(SYNC_REDUX_STATE, state);
+	},
+	getReduxState: () => {
+		return ipcRenderer.invoke(GET_REDUX_STATE);
 	}
 });

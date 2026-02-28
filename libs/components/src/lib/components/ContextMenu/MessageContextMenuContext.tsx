@@ -67,7 +67,6 @@ export type MessageContextMenuProps = {
 	linkContent?: string;
 	isLinkContent?: boolean;
 	openReportMessageModal?: () => void;
-	viewMode?: 'default' | 'timeline';
 };
 
 export const MessageContextMenuContext = createContext<MessageContextMenuContextValue>({
@@ -132,7 +131,6 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 	const [selectedMessageId, setSelectedMessageId] = useState<string | null>(null);
 	const [linkContent, setLinkContent] = useState<string | undefined>(undefined);
 	const [isLinkContent, setIsLinkContent] = useState<boolean>(false);
-	const [viewMode, setViewMode] = useState<'default' | 'timeline'>('default');
 
 	const [openDeleteMessageModal, closeDeleteMessageModal] = useModal(() => {
 		const store = getStore();
@@ -231,7 +229,6 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 				openReportMessageModal={openReportMessageModal}
 				linkContent={linkContent}
 				isLinkContent={isLinkContent}
-				viewMode={viewMode}
 			/>
 		);
 	}, [
@@ -243,8 +240,7 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 		openDeleteMessageModal,
 		openPinMessageModal,
 		openReportMessageModal,
-		selectedMessageId,
-		viewMode
+		selectedMessageId
 	]);
 
 	const setPositionShow = useCallback((pos: string) => {
@@ -302,7 +298,6 @@ export const MessageContextMenuProvider = ({ children, channelId }: { children: 
 			setSelectedMessageId(messageId);
 			setLinkContent(props?.linkContent);
 			setIsLinkContent(props?.isLinkContent || false);
-			setViewMode(props?.viewMode || 'default');
 
 			const niceProps = {
 				messageId,

@@ -64,7 +64,7 @@ const StickerSelector = ({ onSelected }: StickerSelectorProps) => {
 
 	const handleClickSound = useCallback(
 		(sound: any) => {
-			onSelected(sound?.id);
+			onSelected(sound?.source);
 		},
 		[onSelected]
 	);

@@ -15,5 +15,5 @@
     "src/**/*.spec.jsx",
     "src/**/*.test.jsx"
   ],
-  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.json","../../libs/components/src/lib/components/Message/ChannelMessageOpt.tsx"]
+  "include": ["src/**/*.js", "src/**/*.jsx", "src/**/*.ts", "src/**/*.tsx", "src/**/*.json","../../libs/components/src/lib/components/Message/ChannelMessageOpt.tsx","../../libs/components/src/lib/components/MessageWithUser/lite-embeds.d.ts"]
 }
