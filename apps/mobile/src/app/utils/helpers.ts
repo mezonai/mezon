@@ -246,6 +246,44 @@ export const removeBackticks = (text: string) => {
 	return result;
 };
 
+export const removeBolds = (text: string) => {
+	if (!text) return text;
+	let processed = text;
+	const backtickRanges: Array<{ s: number; e: number }> = [];
+	const tripleBacktick = '```';
+	let idx = 0;
+	while (idx < processed.length) {
+		if (processed.substring(idx, idx + 3) === tripleBacktick) {
+			const start = idx;
+			let j = idx + 3;
+			while (j < processed.length && processed.substring(j, j + 3) !== tripleBacktick) j++;
+			if (j < processed.length) {
+				backtickRanges.push({ s: start, e: j + 3 });
+				idx = j + 3;
+				continue;
+			}
+		} else if (processed[idx] === '`') {
+			const start = idx;
+			let j = idx + 1;
+			while (j < processed.length && processed[j] !== '`') j++;
+			if (j < processed.length) {
+				backtickRanges.push({ s: start, e: j + 1 });
+				idx = j + 1;
+				continue;
+			}
+		}
+		idx++;
+	}
+
+	processed = processed?.replace(/\*\*(?=[^*\n]*[^*\s\n])([^*\n]+)\*\*/g, (match, inner, offset) => {
+		const isBlockedMatch = backtickRanges.some((range) => Math.max(offset, range.s) < Math.min(offset + match.length, range.e));
+		if (isBlockedMatch) return match;
+		return inner;
+	});
+
+	return processed;
+};
+
 export const logoutGlobal = async () => {
 	resetFetchStrategy();
 	const store = getStore();

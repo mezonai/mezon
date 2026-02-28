@@ -41,7 +41,7 @@ import { Pressable } from 'react-native-gesture-handler';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
-import { removeBackticks } from '../../../../../../utils/helpers';
+import { removeBackticks, removeBolds } from '../../../../../../utils/helpers';
 import { EMessageActionType } from '../../../enums';
 import type { IMessageActionNeedToResolve, IPayloadThreadSendMessage } from '../../../types';
 import { style } from '../ChatBoxBottomBar/style';
@@ -138,12 +138,9 @@ export const ChatMessageSending = memo(
 
 		const removeTags = (text: string) => {
 			if (!text) return '';
-			const processed = text
-				?.replace?.(/@\[(.*?)\]/g, '@$1')
-				?.replace?.(/<#(.*?)>/g, '#$1')
-				?.replace(/\*\*([\s\S]*?)\*\*/g, '$1');
-
-			return removeBackticks(processed);
+			const processed = text?.replace?.(/@\[(.*?)\]/g, '@$1')?.replace?.(/<#(.*?)>/g, '#$1');
+			const removeBoldProcess = removeBolds(processed);
+			return removeBackticks(removeBoldProcess);
 		};
 
 		const onEditMessage = useCallback(
