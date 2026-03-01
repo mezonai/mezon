@@ -29,7 +29,7 @@ import { style } from './styles';
 
 interface IRenderFooterModalProps {
 	visible: boolean;
-	imageSelected?: AttachmentEntity & { channelId?: string; clanId?: string };
+	imageSelected?: AttachmentEntity & { channelId?: string; clanId?: string; createTimeSeconds?: number };
 	onImageSaved?: () => void;
 	onLoading?: (isLoading: boolean) => void;
 	onImageCopy?: (error?: string) => void;
@@ -195,6 +195,26 @@ export const RenderHeaderModal = memo(
 							message
 						}
 					});
+				} else {
+					const resp = await dispatch(
+						messagesActions.getMessageDetail({
+							clanId: currentDirectId ? '0' : imageSelected?.clanId,
+							channelId: imageSelected?.channelId,
+							messageId: imageSelected.message_id
+						})
+					);
+					const messageDetail = resp?.payload?.messages?.[0];
+					if (messageDetail) {
+						onClose();
+						DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+						await sleep(500);
+						navigation.navigate(APP_SCREEN.MESSAGES.STACK, {
+							screen: APP_SCREEN.MESSAGES.FORWARD_MESSAGE,
+							params: {
+								message: messageDetail
+							}
+						});
+					}
 				}
 			} catch (error) {
 				console.error('Error forwarding message: ', error);
@@ -245,7 +265,11 @@ export const RenderHeaderModal = memo(
 								{prioritySenderName}
 							</Text>
 							<Text style={styles.dateMessageBox}>
-								{imageSelected?.create_time ? convertTimeString(imageSelected.create_time, t) : ''}
+								{imageSelected?.create_time
+									? convertTimeString(imageSelected.create_time, t)
+									: imageSelected?.create_time_seconds || imageSelected?.createTimeSeconds
+										? convertTimeString(new Date(imageSelected?.create_time_seconds * 1000).toISOString(), t)
+										: ''}
 							</Text>
 						</View>
 					</View>

@@ -8,9 +8,8 @@ import FastImage from 'react-native-fast-image';
 import type { IForwardIObject } from '..';
 import MezonIconCDN from '../../../../../../../../src/app/componentUI/MezonIconCDN';
 import { Icons } from '../../../../../../../../src/app/componentUI/MobileIcons';
-import ImageNative from '../../../../../../../../src/app/components/ImageNative';
-import { IconCDN } from '../../../../../../../../src/app/constants/icon_cdn';
 import ImageNative from '../../../../../../components/ImageNative';
+import { IconCDN } from '../../../../../../constants/icon_cdn';
 import { style } from '../styles';
 import { getCheckboxInnerIconStyle, style as localStyles } from './ForwardMessageItem.styles';
 

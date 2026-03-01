@@ -18,7 +18,7 @@ const WelcomeScreen = ({ navigation }) => {
 
 	return (
 		<View style={styles.welcomeContainer}>
-			<LinearGradient colors={['#f0edfd', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFillObject]} />
+			<LinearGradient colors={['#f0edfd', '#beb5f8', '#9774fa']} style={[StyleSheet.absoluteFill]} />
 			<View />
 			<View style={styles.welcomeContentWrapper}>
 				<Text style={styles.title}>{t('login.welcomeToMezon')}</Text>
@@ -27,7 +27,7 @@ const WelcomeScreen = ({ navigation }) => {
 			</View>
 			<TouchableOpacity style={[styles.otpButton, styles.welcomeButton]} onPress={() => onGetStarted()}>
 				<Text style={[styles.otpButtonText]}>{t('login.getStarted')}</Text>
-				<LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#501794', '#3E70A1']} style={[StyleSheet.absoluteFillObject]} />
+				<LinearGradient start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} colors={['#501794', '#3E70A1']} style={[StyleSheet.absoluteFill]} />
 			</TouchableOpacity>
 		</View>
 	);

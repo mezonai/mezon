@@ -28,10 +28,10 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				tabBarStyle: {
 					position: 'absolute',
 					zIndex: isTabletLandscape ? -1 : 100,
-					height: isTabletLandscape ? 0 : size.s_100 - (isHiddenTab && Platform.OS === 'android' ? size.s_20 : size.s_2),
+					height: isTabletLandscape ? 0 : size.s_80 - (isHiddenTab && Platform.OS === 'android' ? size.s_20 : size.s_2),
 					paddingHorizontal: 0,
 					paddingBottom: isHiddenTab && Platform.OS === 'android' ? size.s_2 : size.s_20,
-					paddingTop: size.s_12,
+					paddingTop: size.s_2,
 					borderTopWidth: 1,
 					elevation: 0,
 					backgroundColor: themeValue.primary,
@@ -49,7 +49,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 					headerShown: false,
 					title: 'Clans',
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
-					tabBarIcon: ({ color }) => <Icons.ClansIcon color={color} width={size.s_30} height={size.s_30} />
+					tabBarIcon: ({ color }) => <Icons.ClansIcon color={color} width={size.s_24} height={size.s_24} />
 				}}
 			/>
 			<TabStack.Screen
@@ -59,7 +59,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 					headerShown: false,
 					title: t('navigationTabs.messages'),
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
-					tabBarIcon: ({ color }) => <Icons.MessagesIcon color={color} width={size.s_30} height={size.s_30} />
+					tabBarIcon: ({ color }) => <Icons.MessagesIcon color={color} width={size.s_24} height={size.s_24} />
 				}}
 			/>
 			<TabStack.Screen
@@ -69,7 +69,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 					headerShown: false,
 					title: t('navigationTabs.notifications'),
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
-					tabBarIcon: ({ color }) => <Icons.NoitificationIcon color={color} width={size.s_30} height={size.s_30} />
+					tabBarIcon: ({ color }) => <Icons.NoitificationIcon color={color} width={size.s_24} height={size.s_24} />
 				}}
 			/>
 			<TabStack.Screen
@@ -79,7 +79,7 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 					headerShown: false,
 					title: t('navigationTabs.profile'),
 					tabBarLabelStyle: { fontWeight: '600', top: -size.s_2 },
-					tabBarIcon: ({ color }) => <Icons.ProfileIcon color={color} width={size.s_30} height={size.s_30} />
+					tabBarIcon: ({ color }) => <Icons.ProfileIcon color={color} width={size.s_24} height={size.s_24} />
 				}}
 			/>
 		</TabStack.Navigator>
