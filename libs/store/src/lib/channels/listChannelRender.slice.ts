@@ -173,22 +173,22 @@ export const listChannelRenderSlice = createSlice({
 				if (indexUpdate === -1) {
 					return;
 				}
+				const existingItem = state.listChannelRender[clanId][indexUpdate] as IChannel;
 				state.listChannelRender[clanId][indexUpdate] = {
-					...state.listChannelRender[clanId][indexUpdate],
-					channel_label: dataUpdate.channel_label || (state.listChannelRender[clanId][indexUpdate] as IChannel).channel_label,
-					e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexUpdate] as IChannel).e2ee,
-					topic: dataUpdate.topic || (state.listChannelRender[clanId][indexUpdate] as IChannel).topic,
-					age_restricted: dataUpdate.age_restricted,
-					channel_private: dataUpdate.channel_private
-						? dataUpdate.channel_private || (state.listChannelRender[clanId][indexUpdate] as IChannel).channel_private
-						: 0
+					...existingItem,
+					channel_label: dataUpdate.channel_label || existingItem.channel_label,
+					e2ee: dataUpdate.e2ee ?? existingItem.e2ee,
+					topic: dataUpdate.topic ?? existingItem.topic,
+					age_restricted: dataUpdate.age_restricted !== undefined ? dataUpdate.age_restricted : existingItem.age_restricted,
+					...(dataUpdate.type !== undefined && { type: dataUpdate.type }),
+					channel_private: dataUpdate.channel_private ? dataUpdate.channel_private || existingItem.channel_private : 0
 				};
-				const existing = state.listChannelRender[clanId][indexUpdate] as IChannel;
+				const currentItem = state.listChannelRender[clanId][indexUpdate] as IChannel;
 				if (state.listChannelRender?.[clanId]?.[indexUpdate]) {
 					const safeAvatar =
 						typeof dataUpdate?.channel_avatar === 'string' && dataUpdate?.channel_avatar?.trim() !== ''
 							? dataUpdate?.channel_avatar
-							: (existing?.channel_avatar ?? '');
+							: (currentItem?.channel_avatar ?? '');
 
 					(state.listChannelRender[clanId][indexUpdate] as IChannel).channel_avatar = safeAvatar;
 				}
@@ -196,21 +196,21 @@ export const listChannelRenderSlice = createSlice({
 					const indexNextUpdate = state.listChannelRender[clanId].findIndex(
 						(channel) => channel.id === channelId && channel.category_id !== FAVORITE_CATEGORY_ID
 					);
-					state.listChannelRender[clanId][indexNextUpdate] = {
-						...state.listChannelRender[clanId][indexNextUpdate],
-						channel_label: dataUpdate.channel_label || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).channel_label,
-						e2ee: dataUpdate.e2ee || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).e2ee,
-						topic: dataUpdate.topic || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).topic,
-						age_restricted: dataUpdate.age_restricted,
-						channel_private: dataUpdate.channel_private
-							? dataUpdate.channel_private || (state.listChannelRender[clanId][indexNextUpdate] as IChannel).channel_private
-							: 0
-					};
 					const existingNext = state.listChannelRender[clanId][indexNextUpdate] as IChannel;
+					state.listChannelRender[clanId][indexNextUpdate] = {
+						...existingNext,
+						channel_label: dataUpdate.channel_label || existingNext.channel_label,
+						e2ee: dataUpdate.e2ee ?? existingNext.e2ee,
+						topic: dataUpdate.topic ?? existingNext.topic,
+						age_restricted: dataUpdate.age_restricted !== undefined ? dataUpdate.age_restricted : existingNext.age_restricted,
+						...(dataUpdate.type !== undefined && { type: dataUpdate.type }),
+						channel_private: dataUpdate.channel_private ? dataUpdate.channel_private || existingNext.channel_private : 0
+					};
+					const nextItem = state.listChannelRender[clanId][indexNextUpdate] as IChannel;
 					const avatarNext =
 						typeof dataUpdate?.channel_avatar === 'string' && dataUpdate?.channel_avatar?.trim() !== ''
 							? dataUpdate?.channel_avatar
-							: (existingNext?.channel_avatar ?? '');
+							: (nextItem?.channel_avatar ?? '');
 
 					(state.listChannelRender[clanId][indexNextUpdate] as IChannel).channel_avatar = avatarNext;
 				}
