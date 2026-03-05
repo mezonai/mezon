@@ -18,7 +18,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			height: '100%',
 			width: '100%',
 			position: 'absolute',
-			zIndex: -1
+			zIndex: 0
 		},
 
 		backgroundListIcon: {
@@ -88,7 +88,8 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			shadowColor: '#000',
 			shadowOffset: { width: 0, height: 4 },
 			shadowOpacity: 0.25,
-			shadowRadius: 6
+			shadowRadius: 6,
+			overflow: 'visible'
 		},
 
 		textAvatar: {
@@ -99,8 +100,9 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		},
 
 		dotStatusUser: {
-			right: isTabletLandscape ? size.s_12 : -size.s_2,
-			bottom: isTabletLandscape ? size.s_4 : -size.s_12
+			right: isTabletLandscape ? size.s_12 : 0,
+			bottom: isTabletLandscape ? size.s_4 : 0,
+			overflow: 'visible'
 		},
 
 		contentContainer: {
