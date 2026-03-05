@@ -1,7 +1,8 @@
 import { useTheme } from '@mezon/mobile-ui';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
-import MezonMenuItem, { IMezonMenuItemProps } from '../MezonMenuItem';
+import type { IMezonMenuItemProps } from '../MezonMenuItem';
+import MezonMenuItem from '../MezonMenuItem';
 import { style } from './styles';
 
 export interface IMezonMenuSectionProps {

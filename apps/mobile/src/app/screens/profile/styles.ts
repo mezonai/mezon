@@ -14,17 +14,22 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			width: '100%',
 			height: '20%'
 		},
+		backgroundImage: {
+			height: '100%',
+			width: '100%'
+		},
 
 		backgroundListIcon: {
 			flexDirection: 'row',
 			gap: size.s_10,
 			paddingTop: size.s_15,
 			justifyContent: 'flex-end',
-			paddingHorizontal: size.s_15
+			paddingHorizontal: size.s_15,
+			top: size.s_150 + size.s_20
 		},
 
 		backgroundSetting: {
-			backgroundColor: colors.secondary,
+			backgroundColor: colors.tertiary,
 			height: size.s_30,
 			width: size.s_30,
 			borderRadius: size.s_50,
@@ -70,16 +75,18 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			position: 'absolute',
 			width: '90%',
 			left: isTabletLandscape ? size.s_30 : size.s_18,
-			bottom: isTabletLandscape ? -size.s_100 : -size.s_50
+			bottom: isTabletLandscape ? -size.s_100 : -size.s_70
 		},
 
 		imageProfile: {
-			width: isTabletLandscape ? size.s_100 * 1.4 : size.s_100,
-			height: isTabletLandscape ? size.s_100 * 1.4 : size.s_100,
-			borderRadius: isTabletLandscape ? size.s_70 : size.s_50,
+			width: isTabletLandscape ? size.s_100 * 1.4 : size.s_90,
+			height: isTabletLandscape ? size.s_100 * 1.4 : size.s_90,
+			borderRadius: isTabletLandscape ? size.s_70 : size.s_24,
 			backgroundColor: colors.secondary,
-			borderWidth: 5,
-			borderColor: colors.secondary
+			shadowColor: '#000',
+			shadowOffset: { width: 0, height: 4 },
+			shadowOpacity: 0.25,
+			shadowRadius: 6
 		},
 
 		textAvatar: {
@@ -90,12 +97,12 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		},
 
 		dotStatusUser: {
-			right: isTabletLandscape ? size.s_12 : size.s_6,
-			bottom: isTabletLandscape ? size.s_4 : size.s_2
+			right: isTabletLandscape ? size.s_12 : -size.s_2,
+			bottom: isTabletLandscape ? size.s_4 : -size.s_12
 		},
 
 		contentContainer: {
-			backgroundColor: colors.primary,
+			backgroundColor: colors.border,
 			borderRadius: size.s_20,
 			padding: size.s_18,
 			marginTop: size.s_10,
@@ -106,11 +113,12 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		viewInfo: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			paddingRight: size.s_10
+			paddingRight: size.s_10,
+			maxWidth: '100%'
 		},
 
 		textName: {
-			fontSize: size.s_20,
+			fontSize: size.s_16,
 			fontWeight: 'bold',
 			color: colors.textStrong,
 			marginRight: size.s_8
@@ -136,7 +144,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		contentWrapper: {
 			paddingHorizontal: isTabletLandscape ? size.s_30 : size.s_18,
 			width: '100%',
-			marginTop: isTabletLandscape ? size.s_40 : size.s_50
+			marginTop: isTabletLandscape ? size.s_50 : size.s_80
 		},
 		imageContainer: {
 			position: 'absolute'
@@ -151,7 +159,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		imgWrapper: {
 			width: '100%',
 			height: '100%',
-			borderRadius: isTabletLandscape ? size.s_70 : size.s_50,
+			borderRadius: isTabletLandscape ? size.s_70 : size.s_20,
 			overlayColor: colors.secondary,
 			overflow: 'hidden'
 		},
@@ -176,33 +184,39 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		},
 		badgeStatusTemp: {
 			position: 'absolute',
-			left: (isTabletLandscape ? size.s_100 * 1.4 : size.s_100) + size.s_12,
-			bottom: size.s_60,
-			width: size.s_12,
-			height: size.s_12,
-			borderRadius: size.s_12,
-			backgroundColor: colors.primary
+			left: 0,
+			top: size.s_24,
+			width: size.s_30,
+			height: size.s_24,
+			borderStyle: 'solid',
+			borderLeftWidth: 0,
+			borderRightWidth: size.s_30,
+			borderTopWidth: size.s_24,
+			borderBottomWidth: 0,
+
+			borderRightColor: 'transparent',
+			borderTopColor: colors.primary
 		},
 		badgeStatus: {
 			position: 'absolute',
 			gap: size.s_6,
 			flexDirection: 'row',
 			left: (isTabletLandscape ? size.s_100 * 1.4 : size.s_100) + size.s_10,
-			bottom: size.s_16,
+			bottom: size.s_100,
 			height: size.s_40,
 			minWidth: size.s_50,
-			borderRadius: size.s_20,
+			borderRadius: size.s_12,
 			maxWidth: isTabletLandscape ? '40%' : '70%',
 			backgroundColor: colors.primary,
 			justifyContent: 'flex-start',
 			alignItems: 'center',
-			paddingHorizontal: size.s_12,
+			paddingHorizontal: size.s_8,
 			overflow: 'visible'
 		},
 		badgeStatusInside: {
 			position: 'absolute',
 			left: size.s_16,
-			top: -size.s_8,
+			top: size.s_30,
 			width: size.s_20,
 			height: size.s_20,
 			borderRadius: size.s_20,
@@ -211,8 +225,8 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		iconAddStatus: {
 			width: size.s_20,
 			height: size.s_20,
-			borderRadius: size.s_20,
-			backgroundColor: colors.text,
+			borderRadius: size.s_4,
+			backgroundColor: '"rgba(148,156,248,1)"',
 			justifyContent: 'center',
 			alignItems: 'center'
 		},
@@ -243,17 +257,20 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			paddingBottom: size.s_100
 		},
 		touchStatusMargin: {
-			marginBottom: size.s_10
+			marginBottom: size.s_10,
+			top: size.s_14,
+			left: size.s_4,
+			maxWidth: '70%'
 		},
 		tokenRow: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			gap: size.s_10
+			gap: size.s_18
 		},
 		tokenRowMargin: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			gap: size.s_10,
+			gap: size.s_18,
 			marginTop: size.s_10
 		},
 		contentGap: {

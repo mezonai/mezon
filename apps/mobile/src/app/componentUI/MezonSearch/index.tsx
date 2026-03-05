@@ -52,7 +52,7 @@ export default function MezonSearch({
 
 	return (
 		<View style={styles.container}>
-			<View style={[styles.inputWrapper, { backgroundColor: hasBackground ? themeValue.primary : themeValue.secondary }]}>
+			<View style={[styles.inputWrapper, { backgroundColor: hasBackground ? themeValue.primary : themeValue.tertiary }]}>
 				<MezonIconCDN icon={IconCDN.magnifyingIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />
 				<TextInput
 					ref={inputRef}

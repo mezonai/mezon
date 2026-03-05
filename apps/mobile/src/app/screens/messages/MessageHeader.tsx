@@ -48,7 +48,7 @@ function MessageHeader() {
 				<TouchableOpacity style={styles.btnAddFriendWrapper} onPress={() => navigateToAddFriendScreen()}>
 					<View style={styles.addFriend}>
 						<View style={styles.btnAddFriend}>
-							<Icons.AddFriendIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
+							<Icons.AddFriendIcon color={themeValue.textStrong} width={size.s_14} height={size.s_14} />
 							<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
 						</View>
 						{!!quantityPendingRequest && (

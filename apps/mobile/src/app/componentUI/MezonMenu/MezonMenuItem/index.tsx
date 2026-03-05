@@ -1,6 +1,7 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ReactNode } from 'react';
-import { StyleProp, Text, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
+import type { ReactNode } from 'react';
+import type { StyleProp, TextStyle, ViewStyle } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { IconCDN } from '../../../constants/icon_cdn';
 import MezonIconCDN from '../../MezonIconCDN';
 import { style } from './styles';
@@ -43,10 +44,10 @@ export default function MezonMenuItem({
 				onPress={() => {
 					onPress && onPress();
 				}}
-				style={[styles.btn, styleBtn]}
+				style={[styles.btn, styleBtn, !isLast && styles.borderBottom]}
 			>
 				{icon}
-				<View style={[styles.btnTitleWrapper, disabled && styles.disable, !isLast && styles.borderBottom]}>
+				<View style={[styles.btnTitleWrapper, disabled && styles.disable]}>
 					<View style={styles.btnTextWrapper}>
 						<Text style={[styles.btnTitle, textStyle]}>{title}</Text>
 						{description && <Text style={[styles.btnDescription]}>{description}</Text>}

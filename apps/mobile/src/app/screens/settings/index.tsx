@@ -4,16 +4,16 @@ import { appActions, getAuthState, getStoreAsync } from '@mezon/store-mobile';
 import { sleep } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DeviceEventEmitter, ScrollView, View } from 'react-native';
+import { DeviceEventEmitter, Pressable, ScrollView, Text, View } from 'react-native';
 import VersionInfo from 'react-native-version-info';
 import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
 import MezonConfirm from '../../componentUI/MezonConfirm';
-import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
 import MezonMenu from '../../componentUI/MezonMenu';
 import MezonSearch from '../../componentUI/MezonSearch';
-import { IconCDN } from '../../constants/icon_cdn';
+import { Icons } from '../../componentUI/MobileIcons';
+import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { logoutGlobal } from '../../utils/helpers';
 import { style } from './styles';
@@ -68,7 +68,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.account'),
-					icon: <MezonIconCDN icon={IconCDN.userCircleIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.AccountIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -78,17 +78,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.friendRequests'),
-					icon: <MezonIconCDN icon={IconCDN.friendIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
-				},
-				{
-					onPress: () => {
-						navigation.navigate(APP_SCREEN.SETTINGS.STACK, {
-							screen: APP_SCREEN.SETTINGS.MY_QR_CODE
-						});
-					},
-					expandable: true,
-					title: t('accountSettings.MyQRCode'),
-					icon: <MezonIconCDN icon={IconCDN.scanQR} color={themeValue.textStrong} width={size.s_24} height={size.s_20} />
+					icon: <Icons.FriendRequestIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -98,7 +88,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.QRScan'),
-					icon: <MezonIconCDN icon={IconCDN.myQRcodeIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.QrIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -108,7 +98,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.devices'),
-					icon: <MezonIconCDN icon={IconCDN.devicesIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.DevideIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[navigation, t, themeValue.textStrong]
@@ -120,7 +110,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 				{
 					title: t('appSettings.appVersion'),
 					previewValue: `${VersionInfo.appVersion}`,
-					icon: <MezonIconCDN icon={IconCDN.logoMezon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.AppIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -130,7 +120,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('appSettings.appearance'),
-					icon: <MezonIconCDN icon={IconCDN.paintPaletteIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.ThemeIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -141,7 +131,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					title: t('appSettings.language'),
 					expandable: true,
 					previewValue: i18n.language,
-					icon: <MezonIconCDN icon={IconCDN.languageIcon} color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.LanguageIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[themeValue.textStrong, i18n.language]
@@ -154,7 +144,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					onPress: () => confirmLogout(),
 					title: t('logOut'),
 					textStyle: { color: baseColor.redStrong },
-					icon: <MezonIconCDN icon={IconCDN.doorExitIcon} color={baseColor.redStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.LogOutIcon color={baseColor.redStrong} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[t]
@@ -231,6 +221,13 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 
 	return (
 		<View style={styles.settingContainer}>
+			<StatusBarHeight />
+			<View style={styles.row}>
+				<Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
+					<Icons.ArrowLeftIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+				</Pressable>
+				<Text style={styles.title}>{t('settingStack.settings', { ns: 'screenStack' })}</Text>
+			</View>
 			<ScrollView contentContainerStyle={styles.settingScroll} keyboardShouldPersistTaps={'handled'}>
 				<MezonSearch value={searchText} onChangeText={handleSearchChange} />
 
