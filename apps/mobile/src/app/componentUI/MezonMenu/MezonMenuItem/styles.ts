@@ -1,4 +1,5 @@
-import { Attributes, Fonts, Metrics, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { Fonts, Metrics, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -8,7 +9,7 @@ export const style = (colors: Attributes) =>
 			flexDirection: 'row',
 			alignItems: 'center',
 			gap: size.s_10,
-			backgroundColor: colors.secondary,
+			backgroundColor: colors.border,
 			paddingLeft: Metrics.size.xl
 		},
 
@@ -30,7 +31,7 @@ export const style = (colors: Attributes) =>
 		},
 
 		btnTitleWrapper: {
-			padding: Metrics.size.l,
+			padding: Metrics.size.xl,
 			paddingLeft: 0,
 			flexGrow: 1,
 			display: 'flex',
@@ -41,7 +42,7 @@ export const style = (colors: Attributes) =>
 			flexBasis: 10
 		},
 		borderBottom: {
-			borderBottomColor: colors.borderDim,
+			borderBottomColor: colors.tertiary,
 			borderBottomWidth: 1
 		},
 

@@ -17,44 +17,44 @@ export const ChannelStatusIcon = memo(
 					!isAgeRestrictedChannel && (
 						<Icons.ClansLockIcon
 							color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
-							width={size.s_14}
-							height={size.s_14}
+							width={size.s_12}
+							height={size.s_12}
 						/>
 					)}
 				{channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && !isVoiceActive && (
-					<Icons.VoiceIcon color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal} width={size.s_14} height={size.s_14} />
+					<Icons.VoiceIcon color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal} width={size.s_12} height={size.s_12} />
 				)}
 				{channel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && isVoiceActive && (
-					<Icons.InvoiceIcon color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal} width={size.s_14} height={size.s_14} />
+					<Icons.InvoiceIcon color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal} width={size.s_12} height={size.s_12} />
 				)}
 				{channel?.channel_private !== ChannelStatusEnum.isPrivate &&
 					channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 					!isAgeRestrictedChannel && (
 						<Icons.ClansOpenIcon
 							color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
-							width={size.s_14}
-							height={size.s_14}
+							width={size.s_12}
+							height={size.s_12}
 						/>
 					)}
 				{channel?.type === ChannelType.CHANNEL_TYPE_STREAMING && (
 					<Icons.StreamIcon
 						color={isVoiceActive ? '' : isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
-						width={size.s_14}
-						height={size.s_14}
+						width={size.s_12}
+						height={size.s_12}
 					/>
 				)}
 				{channel?.channel_private !== ChannelStatusEnum.isPrivate && channel?.type === ChannelType.CHANNEL_TYPE_APP && (
 					<Icons.ChannelappIcon
 						color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
-						width={size.s_14}
-						height={size.s_14}
+						width={size.s_12}
+						height={size.s_12}
 					/>
 				)}
 				{channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
 					<Icons.ClansWarningIcon
 						color={isUnRead ? themeValue.channelUnread : themeValue.channelNormal}
-						width={size.s_14}
-						height={size.s_14}
+						width={size.s_12}
+						height={size.s_12}
 					/>
 				)}
 			</>
