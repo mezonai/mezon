@@ -16,7 +16,9 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		},
 		backgroundImage: {
 			height: '100%',
-			width: '100%'
+			width: '100%',
+			position: 'absolute',
+			zIndex: -1
 		},
 
 		backgroundListIcon: {
