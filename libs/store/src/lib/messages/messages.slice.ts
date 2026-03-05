@@ -1013,6 +1013,7 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			...content,
 			t: content.t?.trim()
 		};
+		const stringifiedContent = JSON.stringify(trimContent);
 
 		const res = await client.updateChannelMessage(
 			session,
@@ -1021,7 +1022,7 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			mode,
 			isPublic,
 			messageId || '0',
-			trimContent,
+			stringifiedContent,
 			mentions,
 			attachments,
 			hideEditted,
