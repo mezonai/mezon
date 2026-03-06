@@ -66,6 +66,7 @@ import { ONBOARDING_FEATURE_KEY, onboardingReducer } from './onboarding/onboardi
 import { permissionRoleChannelReducer } from './permissionChannel/permissionRoleChannel.slice';
 import { pinMessageReducer } from './pinMessages/pinMessage.slice';
 import { OVERRIDDEN_POLICIES_FEATURE_KEY, overriddenPoliciesReducer } from './policies/overriddenPolicies.slice';
+import { POLLS_FEATURE_KEY, pollsReducer } from './polls/polls.slice';
 import { QUICK_MENU_FEATURE_KEY, quickMenuReducer } from './quickMenu/quickMenu.slice';
 import { REPORT_MESSAGE_FEATURE_KEY, reportMessageReducer } from './reportMessage/reportMessage.slice';
 import { IsShowReducer, RolesClanReducer, roleIdReducer } from './roleclan/roleclan.slice';
@@ -360,7 +361,8 @@ const reducer = {
 	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
 	[WALLET_FEATURE_KEY]: persistedWalletStore,
 	[USER_STATUS_FEATURE_KEY]: statusReducer,
-	[DEVICES_FEATURE_KEY]: devicesReducer
+	[DEVICES_FEATURE_KEY]: devicesReducer,
+	[POLLS_FEATURE_KEY]: pollsReducer
 };
 
 let storeInstance = configureStore({

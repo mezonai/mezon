@@ -444,6 +444,16 @@ export interface IMessageSendPayload {
 	isCard?: boolean;
 	rpl?: number;
 	lsnt?: number;
+	question?: string;
+	question_emoji_id?: string;
+	answers?: string[];
+	answer_emoji_ids?: string[];
+	answer_counts?: number[];
+	expire_time?: number;
+	is_closed?: boolean;
+	total_votes?: number;
+	allow_multiple_answers?: boolean;
+	user_votes?: number[];
 }
 
 export type IUser = {
@@ -1206,7 +1216,8 @@ export enum TypeMessage {
 	UpdateEphemeralMsg = 14,
 	DeleteEphemeralMsg = 15,
 	ShareContact = 16,
-	Location = 17
+	Location = 17,
+	Poll = 18
 }
 
 export enum ServerSettingsMenuValue {

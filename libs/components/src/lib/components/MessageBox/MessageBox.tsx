@@ -154,7 +154,7 @@ const MessageBox = (props: MessageBoxProps): ReactElement => {
 			bg-theme-surface rounded-lg relative shadow-md border-theme-primary ${checkAttachment || hasReplyMessage ? 'rounded-t-none' : 'rounded-t-lg'}
 			${closeMenu && !statusMenu ? 'max-w-wrappBoxChatViewMobile' : 'w-wrappBoxChatView'}`}
 			>
-				<FileSelectionButton currentChannelId={currentChannelId || ''} />
+				<FileSelectionButton currentChannelId={currentChannelId || ''} mode={props.mode} />
 				<div className={`w-[calc(100%_-_50px)] bg-theme-surface gap-3 flex items-center rounded-e-md`}>
 					<div className={`w-full rounded-r-lg  gap-3 relative whitespace-pre-wrap`} onContextMenu={handleChildContextMenu}>
 						<MentionReactInput

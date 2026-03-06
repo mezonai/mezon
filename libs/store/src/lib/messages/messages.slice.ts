@@ -1676,6 +1676,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Ephemeral:
 				case TypeMessage.ShareContact:
 				case TypeMessage.Location:
+				case TypeMessage.Poll:
 				case TypeMessage.Chat: {
 					if (topic_id !== '0' && topic_id) {
 						handleAddOneMessage({

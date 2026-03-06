@@ -222,5 +222,37 @@
 	"addAMessage": "Add a message (Optional)",
 	"slideToCancel": "Slide to cancel",
 	"noAccess": "No Access",
-	"unknown": "unknown"
+	"unknown": "unknown",
+	"fileSelection": {
+		"uploadFile": "Upload a File",
+		"createPoll": "Create Poll"
+	},
+	"poll": {
+		"createTitle": "Create a Poll",
+		"question": "Question",
+		"questionPlaceholder": "What question do you want to ask?",
+		"answers": "Answers",
+		"answerPlaceholder": "Type your answer",
+		"addAnotherAnswer": "Add another answer",
+		"duration": "Duration",
+		"allowMultipleAnswers": "Allow Multiple Answers",
+		"post": "Post",
+		"selectedEmoji": "Selected emoji",
+		"duration1Hour": "1 hour",
+		"duration4Hours": "4 hours",
+		"duration8Hours": "8 hours",
+		"duration24Hours": "24 hours",
+		"duration3Days": "3 days",
+		"duration1Week": "1 week",
+		"selectOneOrMore": "Select one or more answers",
+		"selectOne": "Select one answer",
+		"vote": "vote",
+		"votes": "votes",
+		"left": "left",
+		"backToVote": "Back to vote",
+		"showResults": "Show results",
+		"voteButton": "Vote",
+		"removeVote": "Remove Vote",
+		"noVoterDetails": "No voter details"
+	}
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import type { MessagesEntity, RootState } from '@mezon/store';
-import { getStore, selectBanMeInChannel, topicsActions, useAppDispatch } from '@mezon/store';
+import { getPoll, getStore, selectBanMeInChannel, selectPollByMessageId, topicsActions, useAppDispatch, useAppSelector } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { ObserveFn, UsersClanEntity } from '@mezon/utils';
 import {
@@ -13,12 +13,13 @@ import {
 	WIDTH_CLAN_SIDE_BAR,
 	convertDateStringI18n,
 	convertTimeHour,
+	convertTimestampToTimeRemainingI18n,
 	generateE2eId
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import CallLogMessage from '../CallLogMessage/CallLogMessage';
@@ -33,6 +34,7 @@ import MessageHead from './MessageHead';
 import MessageInput from './MessageInput';
 import MessageReaction from './MessageReaction/MessageReaction';
 import MessageReply from './MessageReply/MessageReply';
+import { PollMessage } from './PollMessage';
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
@@ -65,6 +67,41 @@ export type MessageWithUserProps = {
 	isSelected?: boolean;
 	previousMessage?: MessagesEntity;
 	channelId?: string;
+};
+
+const PollMessageWrapper = ({ message }: { message: MessagesEntity }) => {
+	const dispatch = useAppDispatch();
+	const pollData = useAppSelector((state: RootState) => selectPollByMessageId(state, message.id));
+	const { t } = useTranslation();
+
+	useEffect(() => {
+		if (!pollData && message.channel_id) {
+			dispatch(
+				getPoll({
+					message_id: message.id,
+					channel_id: message.channel_id
+				})
+			);
+		}
+	}, [dispatch, message.id, message.channel_id, pollData]);
+
+	if (!pollData) {
+		return null;
+	}
+
+	const answers = pollData.answers?.map((answer) => answer.label || '') || [];
+	const duration = pollData.exp ? convertTimestampToTimeRemainingI18n(parseInt(pollData.exp), t) : '';
+
+	return (
+		<PollMessage
+			question={pollData.question || ''}
+			answers={answers}
+			duration={duration}
+			allowMultipleAnswers={pollData.type === 1}
+			messageId={message.id}
+			channelId={message.channelId || message.channel_id}
+		/>
+	);
 };
 
 function MessageWithUser({
@@ -365,6 +402,7 @@ function MessageWithUser({
 								contentMsg={message?.content?.t || ''}
 							/>
 						)}
+						{message.code === TypeMessage.Poll && <PollMessageWrapper message={message} />}
 						{!!(message.code === TypeMessage.SendToken) && <TokenTransactionMessage message={message} />}
 						{message?.content?.components &&
 							message?.content.components.map((actionRow, index) => (

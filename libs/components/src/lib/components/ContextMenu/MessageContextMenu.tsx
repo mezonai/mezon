@@ -12,8 +12,10 @@ import {
 } from '@mezon/core';
 import {
 	channelMetaActions,
+	closePoll,
 	createEditCanvas,
 	directActions,
+	getPoll,
 	gifsStickerEmojiActions,
 	giveCoffeeActions,
 	messagesActions,
@@ -42,6 +44,7 @@ import {
 	selectMessageIdsByChannelId,
 	selectModeResponsive,
 	selectPinMessageByChannelId,
+	selectPollByMessageId,
 	selectQuickMenuByChannelId,
 	selectTheme,
 	selectThreadCurrentChannel,
@@ -202,6 +205,8 @@ function MessageContextMenu({
 	const isErrorMessage = useMemo(() => {
 		return message?.isError === true && isMyMessage;
 	}, [message?.isError, isMyMessage]);
+
+	const pollData = useAppSelector((state) => selectPollByMessageId(state, messageId || ''));
 
 	const checkMessageHasText = useMemo(() => {
 		return message?.content.t !== '';
@@ -531,6 +536,32 @@ function MessageContextMenu({
 		);
 	}, [dispatch, message?.channel_id, message?.id]);
 
+	const handleClosePoll = useCallback(async () => {
+		if (!pollData || !message?.channel_id || !message?.id) return;
+
+		try {
+			await dispatch(
+				closePoll({
+					poll_id: pollData.poll_id,
+					message_id: message.id,
+					channel_id: message.channel_id
+				})
+			).unwrap();
+
+			await dispatch(
+				getPoll({
+					message_id: message.id,
+					channel_id: message.channel_id
+				})
+			).unwrap();
+
+			showSimpleToast(t('pollEnded'));
+		} catch (error) {
+			console.error('Failed to close poll', error);
+			toast.error(t('errors.failedToClosePoll'));
+		}
+	}, [dispatch, pollData, message?.channel_id, message?.id, t]);
+
 	const checkPos = useMemo(() => {
 		if (posShowMenu === SHOW_POSITION.NONE || posShowMenu === SHOW_POSITION.IN_STICKER || posShowMenu === SHOW_POSITION.IN_EMOJI) {
 			return true;
@@ -827,6 +858,23 @@ function MessageContextMenu({
 		builder.when(!isTopic && pinMessageStatus === true, (builder) => {
 			builder.addMenuItem('pinMessage', t('pinMessage'), openPinMessageModal, <Icons.PinMessageRightClick defaultSize="w-4 h-4" />);
 		});
+
+		builder.when(
+			message?.code === TypeMessage.Poll && pollData && !pollData.is_closed && pollData.creator_id === userId && checkPos,
+			(builder) => {
+				builder.addMenuItem(
+					'endPollNow',
+					t('endPollNow'),
+					handleClosePoll,
+					<svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+						<path
+							d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+							fill="currentColor"
+						/>
+					</svg>
+				);
+			}
+		);
 
 		message?.code !== TypeMessage.Topic &&
 			notAllowedType &&
