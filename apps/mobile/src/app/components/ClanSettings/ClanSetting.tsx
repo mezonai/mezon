@@ -45,7 +45,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.OVERVIEW_SETTING);
 			},
 			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.circleInformation} color={themeValue.text} />,
+			icon: <Icons.OverviewIcon color={themeValue.text} width={size.s_24} height={size.s_24} />,
 			isShow: isShowOverviewOption
 		},
 		{
@@ -54,7 +54,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.AUDIT_LOG);
 			},
 			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.clipboardIcon} color={themeValue.text} />,
+			icon: <Icons.AuditlogIcon color={themeValue.text} width={size.s_24} height={size.s_24} />,
 			isShow: isCanEditRole
 		},
 		{
@@ -65,7 +65,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				});
 			},
 			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.gameControllerIcon} color={themeValue.text} />,
+			icon: <Icons.IntergrationIcon color={themeValue.text} width={size.s_24} height={size.s_24} />,
 			isShow: hasAdminPermission || hasManageClanPermission
 		},
 		{
@@ -74,7 +74,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.EMOJI_SETTING);
 			},
 			expandable: true,
-			icon: <Icons.EmojiIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
+			icon: <Icons.EmojiSettingIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 		},
 		{
 			title: t('menu.settings.sticker'),
@@ -82,7 +82,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.STICKER_SETTING);
 			},
 			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.sticker} color={themeValue.text} />
+			icon: <Icons.StickerIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 		},
 		{
 			title: t('menu.settings.sound'),
@@ -90,7 +90,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.SOUND_STICKER);
 			},
 			expandable: true,
-			icon: <Icons.VoiceIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
+			icon: <Icons.SoundEffectIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 		},
 		{
 			title: t('menu.settings.enableCommunity'),
@@ -99,7 +99,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 			},
 			expandable: true,
 			isShow: hasManageClanPermission,
-			icon: <MezonIconCDN icon={IconCDN.communityIcon} color={themeValue.text} />
+			icon: <Icons.EnableCommunityIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 		}
 	];
 
@@ -110,7 +110,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.MEMBER_SETTING);
 			},
 			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.groupIcon} color={themeValue.text} />
+			icon: <Icons.MemberIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 		},
 		{
 			title: t('menu.userManagement.role'),
@@ -118,7 +118,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				navigation.navigate(APP_SCREEN.MENU_CLAN.ROLE_SETTING);
 			},
 			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.shieldUserIcon} color={themeValue.text} />,
+			icon: <Icons.RolesIcon color={themeValue.text} width={size.s_24} height={size.s_24} />,
 			isShow: isCanEditRole
 		},
 		{
@@ -131,7 +131,7 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
 			expandable: true,
-			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.text} />
+			icon: <Icons.InvitesIcon color={themeValue.text} width={size.s_24} height={size.s_24} />
 		}
 	];
 
