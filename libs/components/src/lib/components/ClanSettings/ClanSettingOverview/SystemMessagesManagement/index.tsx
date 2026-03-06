@@ -85,10 +85,12 @@ const SystemMessagesManagement = ({
 							className="flex flex-row items-center rounded-sm text-sm w-full py-2 px-4 text-left cursor-pointer"
 							onClick={() => handleToggleSetting(true, ETypeUpdateSystemMessage.CHANNEL, channel.id)}
 						>
-							{channel?.channel_private ? (
-								<Icons.HashtagLocked defaultSize="w-4 h-4 dark:text-channelTextLabel" />
+							{channel?.age_restricted === 1 ? (
+								<Icons.HashtagWarning className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0 dark:text-channelTextLabel" />
+							) : channel?.channel_private ? (
+								<Icons.HashtagLocked className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0 dark:text-channelTextLabel" />
 							) : (
-								<Icons.Hashtag defaultSize="w-4 h-4 dark:text-channelTextLabel" />
+								<Icons.Hashtag className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0 dark:text-channelTextLabel" />
 							)}
 							<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.channel_name')}>
 								{channel.channel_label ?? ''}
@@ -114,7 +116,13 @@ const SystemMessagesManagement = ({
 					data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel')}
 				>
 					<div className={' flex flex-row items-center'}>
-						<Icons.Hashtag defaultSize="w-4 h-4 " />
+						{selectedChannel?.age_restricted === 1 ? (
+							<Icons.HashtagWarning className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0" />
+						) : selectedChannel?.channel_private ? (
+							<Icons.HashtagLocked className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0" />
+						) : (
+							<Icons.Hashtag className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0" />
+						)}
 						<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.channel_name')}>
 							{selectedChannel?.channel_label}
 						</p>

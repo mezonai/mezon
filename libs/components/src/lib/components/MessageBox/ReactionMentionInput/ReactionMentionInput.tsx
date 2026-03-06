@@ -729,13 +729,14 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 	});
 
 	const hashtagData = useMemo(() => {
-		return allChannels.reduce<Array<{ id: string; display: string; subText: string }>>((acc, item) => {
+		return allChannels.reduce<Array<{ id: string; display: string; subText: string; age_restricted?: number }>>((acc, item) => {
 			const id = item?.channel_id ?? '';
 			const display = item?.channel_label ?? '';
 			const subText = ((item as ChannelsEntity)?.category_name || item?.clan_name) ?? '';
+			const age_restricted = (item as ChannelsEntity)?.age_restricted ?? 0;
 
 			if (id || display || subText) {
-				acc.push({ id, display, subText });
+				acc.push({ id, display, subText, age_restricted });
 			}
 
 			return acc;
@@ -1106,6 +1107,7 @@ export const MentionReactBase = memo((props: MentionReactBaseProps): ReactElemen
 									symbol="#"
 									subText={suggestion.subText as string}
 									channelId={suggestion.id}
+									ageRestricted={(suggestion as { age_restricted?: number })?.age_restricted}
 								/>
 							</div>
 						)}

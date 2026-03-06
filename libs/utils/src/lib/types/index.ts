@@ -995,6 +995,7 @@ export type SearchItemProps = {
 	parent_id?: string;
 	clanId?: string;
 	searchName?: string;
+	age_restricted?: number;
 };
 
 export enum EEmojiCategory {
