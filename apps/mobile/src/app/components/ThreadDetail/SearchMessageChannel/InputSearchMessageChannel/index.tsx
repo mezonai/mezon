@@ -10,6 +10,7 @@ import { Pressable } from 'react-native-gesture-handler';
 import Tooltip from 'react-native-walkthrough-tooltip';
 import { SearchMessageChannelContext } from '..';
 import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../constants/icon_cdn';
 import ListOptionSearch from '../ListOptionSearch';
 import { style } from './InputSearchMessageChannel.styles';
@@ -109,12 +110,13 @@ const InputSearchMessageChannel = ({
 		<View style={styles.wrapper}>
 			<TouchableOpacity onPress={onGoBack} style={styles.backButton}>
 				<View style={styles.backButtonInner}>
-					<MezonIconCDN icon={IconCDN.backArrowLarge} width={size.s_20} height={size.s_20} color={themeValue.text} />
+					<Icons.ArrowLeftIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+					1123
 				</View>
 			</TouchableOpacity>
 			<View style={styles.searchBox}>
 				<View style={styles.iconWrapper}>
-					<MezonIconCDN icon={IconCDN.magnifyingIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />
+					<Icons.SearchIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 				</View>
 				{shouldShowBadge ? (
 					<View
