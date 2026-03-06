@@ -130,20 +130,20 @@ export const markdownStyles = (
 		},
 		code_block: {
 			color: colors.text,
-			borderColor: colors.secondary,
+			borderColor: colors.tertiary,
 			fontSize: size.h7,
 			lineHeight: size.s_24,
 			paddingHorizontal: size.s_10
 		},
 		code_inline: {
 			color: colors.text,
-			backgroundColor: colors.secondaryLight,
+			backgroundColor: colors.tertiary,
 			fontSize: size.medium
 		},
 		fence: {
 			color: colors.text,
 			width: isTabletLandscape ? '70%' : '100%',
-			backgroundColor: colors.secondaryLight,
+			backgroundColor: colors.tertiary,
 			borderColor: colors.black,
 			borderRadius: size.s_4,
 			overflow: 'hidden',
