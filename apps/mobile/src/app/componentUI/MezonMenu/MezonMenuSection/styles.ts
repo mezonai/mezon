@@ -1,4 +1,5 @@
-import { Attributes, baseColor, Fonts, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { baseColor, Fonts, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -18,7 +19,7 @@ export const style = (colors: Attributes) =>
 
 		section: {
 			backgroundColor: colors.secondary,
-			borderRadius: size.s_10,
+			borderRadius: size.s_16,
 			overflow: 'hidden'
 		}
 	});
