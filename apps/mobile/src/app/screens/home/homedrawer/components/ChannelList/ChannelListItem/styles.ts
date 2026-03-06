@@ -51,7 +51,7 @@ export const style = (colors: Attributes, themeBasic?: ThemeModeBase) =>
 		},
 
 		channelListItemTitle: {
-			fontSize: size.small,
+			fontSize: size.s_14,
 			fontWeight: '400',
 			marginLeft: size.s_10,
 			color: colors.channelNormal,
