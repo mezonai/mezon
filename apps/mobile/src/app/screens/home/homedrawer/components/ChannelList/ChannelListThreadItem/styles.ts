@@ -39,7 +39,7 @@ export const style = (colors: Attributes) =>
 		},
 		titleThread: {
 			flex: 1,
-			fontSize: size.medium,
+			fontSize: size.small,
 			fontWeight: '400',
 			color: colors.channelNormal,
 			top: verticalScale(3),

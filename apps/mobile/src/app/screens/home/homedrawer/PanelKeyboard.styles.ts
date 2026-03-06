@@ -25,13 +25,13 @@ export const createStyles = (themeValue: Attributes) =>
 			height: size.s_20,
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: themeValue.primary,
+			backgroundColor: themeValue.secondary,
 			zIndex: 1
 		},
 		scrollViewContentFlex: {
 			flex: 1
 		},
 		backgroundBottomSheet: {
-			backgroundColor: themeValue.primary
+			backgroundColor: themeValue.secondary
 		}
 	});

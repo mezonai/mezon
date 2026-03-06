@@ -1,5 +1,5 @@
 import { load, STORAGE_IS_LAST_ACTIVE_TAB_DM } from '@mezon/mobile-components';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useNavigationState } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { View } from 'react-native';
 import StatusBarHeight from '../../components/StatusBarHeight/StatusBarHeight';
@@ -10,6 +10,18 @@ import { styles } from './styles';
 const BottomNavigatorWrapper = memo(({ initRouteName = '' }: { initRouteName: string }) => {
 	const [isReadyToRender, setIsReadyToRender] = useState<boolean>(false);
 	const navigation = useNavigation();
+
+	const activeRouteName = useNavigationState((state) => {
+		const bottomBarRoute = state?.routes?.find((r) => r.name === APP_SCREEN.BOTTOM_BAR);
+		if (bottomBarRoute?.state) {
+			const bottomTabState = bottomBarRoute.state;
+			const focusedIndex = bottomTabState.index ?? 0;
+			return (bottomTabState.routes?.[focusedIndex] as { name?: string })?.name;
+		}
+		return undefined;
+	});
+
+	const isClansTabActive = !activeRouteName || activeRouteName === APP_SCREEN.HOME;
 
 	const initLoader = useCallback(async () => {
 		if (isReadyToRender) return;
@@ -59,7 +71,7 @@ const BottomNavigatorWrapper = memo(({ initRouteName = '' }: { initRouteName: st
 	if (!isReadyToRender) return <View style={styles.flexContainer} />;
 	return (
 		<View style={styles.flexContainer}>
-			<StatusBarHeight />
+			<StatusBarHeight isPrimary={isClansTabActive} />
 			<BottomNavigator isLastActiveTabDm={load(STORAGE_IS_LAST_ACTIVE_TAB_DM) === 'true'} />
 		</View>
 	);

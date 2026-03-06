@@ -300,7 +300,7 @@ const PanelKeyboard = React.memo((props: IProps) => {
 				<LinearGradient
 					start={{ x: 0, y: 0 }}
 					end={{ x: 0, y: 1 }}
-					colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+					colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
 					style={[StyleSheet.absoluteFill]}
 				/>
 				<BottomSheetScrollView

@@ -822,7 +822,7 @@ export const LanguageIcon = ({ width, height, ...props }: SvgProps) => (
 	</Svg>
 );
 
-export const SettingIcon = ({ width, height, ...props }: SvgProps) => (
+export const SettingIcon = ({ width, height, color, ...props }: SvgProps) => (
 	<Svg viewBox="0 0 135 155" width={width} height={height} fill={'none'} {...props}>
 		<G>
 			<Path
@@ -831,13 +831,13 @@ export const SettingIcon = ({ width, height, ...props }: SvgProps) => (
 			/>
 			<Path
 				d="M 61.50 152.34 C59.85,151.47 46.58,143.98 32.00,135.71 C7.06,121.56 -0.39,116.66 0.23,114.81 C0.68,113.51 42.07,90.00 43.85,90.04 C44.76,90.06 50.45,92.65 56.50,95.79 L 67.50 101.50 L 67.77 127.75 C68.06,156.91 68.31,155.93 61.50,152.34 Z"
-				fill="rgba(253,253,253,1)"
+				fill={color || 'rgba(253,253,253,1)'}
 			/>
 		</G>
 	</Svg>
 );
 
-export const ShopIcon = ({ width, height, ...props }: SvgProps) => (
+export const ShopIcon = ({ width, height, color, ...props }: SvgProps) => (
 	<Svg viewBox="0 0 162 171" width={width} height={height} {...props}>
 		<G>
 			<Path
@@ -850,7 +850,7 @@ export const ShopIcon = ({ width, height, ...props }: SvgProps) => (
 			/>
 			<Path
 				d="M 110.76 68.43 C107.75,66.80 105.00,62.29 105.00,58.98 C105.00,56.42 106.48,53.48 109.77,49.53 C112.02,46.82 112.19,45.97 111.64,40.07 C110.57,28.55 104.37,19.43 93.80,13.80 C87.57,10.48 73.55,10.49 66.81,13.81 C56.26,19.01 49.79,28.82 49.17,40.56 C48.84,46.85 49.08,48.03 51.40,51.45 C52.83,53.56 54.00,56.36 54.00,57.69 C54.00,63.29 48.44,69.00 43.00,69.00 C37.60,69.00 31.99,63.29 32.00,57.80 C32.01,56.53 32.91,54.03 34.00,52.23 C35.32,50.07 36.00,47.17 36.01,43.73 C36.07,20.09 56.27,0.02 80.00,0.02 C104.33,0.02 123.84,19.95 124.02,45.00 C124.05,48.72 124.68,52.57 125.50,54.00 C128.38,59.04 126.31,65.75 121.03,68.48 C117.38,70.37 114.30,70.35 110.76,68.43 Z"
-				fill="rgba(254,254,254,1)"
+				fill={color || 'rgba(254,254,254,1)'}
 			/>
 		</G>
 	</Svg>
