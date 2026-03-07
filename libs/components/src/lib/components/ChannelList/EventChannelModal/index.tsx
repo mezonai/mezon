@@ -28,7 +28,7 @@ const EventModal = (props: EventModalProps) => {
 		setEventUpdatedId(eventUpdateId || '');
 	}, [eventUpdateId]);
 	return (
-		<ModalLayout onClose={onClose}>
+		<ModalLayout onClose={onClose} closeOnOverlayClick={!openModal}>
 			<div className={`relative w-full px-2 sm:px-0 sm:h-auto rounded-lg ${openModal ? 'max-w-[472px]' : 'max-w-[600px]'}`}>
 				{!openModal ? (
 					<div
