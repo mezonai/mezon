@@ -161,32 +161,59 @@ export const writeMessageReaction = createAsyncThunk(
 					throw new Error('Client is not initialized');
 				}
 
-				await retryWithBackoff(
-					async () => {
-						return await createTimeoutPromise(
-							socket.writeMessageReaction(
-								id || '0',
-								clanId || '0',
-								channelId,
-								mode,
-								isPublic,
-								messageId,
-								emoji_id || '0',
-								emoji,
-								count,
-								messageSenderId,
-								actionDelete,
-								topic_id || '0',
-								emoji_recent_id || '0',
-								sender_name
-							),
-							2000,
-							'Message reaction operation timed out'
+				let socketSuccess = false;
+				if (socket) {
+					try {
+						await retryWithBackoff(
+							async () => {
+								return await createTimeoutPromise(
+									socket.writeMessageReaction(
+										id || '0',
+										clanId || '0',
+										channelId,
+										mode,
+										isPublic,
+										messageId,
+										emoji_id || '0',
+										emoji,
+										count,
+										messageSenderId,
+										actionDelete,
+										topic_id || '0',
+										emoji_recent_id || '0',
+										sender_name
+									),
+									2000,
+									'Message reaction operation timed out'
+								);
+							},
+							1,
+							1000
 						);
-					},
-					1,
-					1000
-				);
+						socketSuccess = true;
+					} catch (socketError) {
+						socketSuccess = false;
+					}
+				}
+
+				if (!socketSuccess) {
+					const result = await client.channelMessageReact(
+						session,
+						clanId || '0',
+						channelId || '0',
+						mode,
+						isPublic,
+						messageId || '0',
+						emoji_id || '0',
+						emoji,
+						count,
+						messageSenderId || '0',
+						actionDelete,
+						topic_id || '0',
+						emoji_recent_id || '0',
+						sender_name
+					);
+				}
 
 				const emojiLastest: EmojiStorage = {
 					emojiId: emoji_id,
