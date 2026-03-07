@@ -1,6 +1,7 @@
 import {
 	categoriesActions,
 	createNewChannel,
+	fetchClans,
 	getApplicationDetail,
 	selectAllAccount,
 	selectAllCategories,
@@ -54,7 +55,9 @@ const ModalAddApp = memo(({ applicationId, handleOpenModal }: ModalAddAppProps) 
 	}, [applicationId, dispatch]);
 
 	const clans = useSelector(selectAllClans);
-
+	useEffect(() => {
+		dispatch(fetchClans({}));
+	}, [dispatch]);
 	const categories = useAppSelector((state) => selectAllCategories(state, clanValue));
 	const clanConfig: SelectFieldConfig<any> = {
 		label: 'Add to clan',

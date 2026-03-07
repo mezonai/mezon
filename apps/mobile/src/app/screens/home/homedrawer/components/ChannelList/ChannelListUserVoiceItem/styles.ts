@@ -38,8 +38,8 @@ export const style = (colors: Attributes, index: number) =>
 			left: -size.s_4 * index
 		},
 		collapsedAvatarImage: {
-			width: size.s_24,
-			height: size.s_24,
+			width: size.s_18,
+			height: size.s_18,
 			borderRadius: size.s_20,
 			overflow: 'hidden'
 		}

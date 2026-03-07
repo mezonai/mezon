@@ -188,6 +188,7 @@ const ParticipantItem = memo(
 						<VideoTrack
 							trackRef={videoTrackRef}
 							style={styles.participantView}
+							mirror
 							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
 						/>
 						{hasActiveSoundReaction && renderSoundEffectIcon()}

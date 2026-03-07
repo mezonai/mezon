@@ -22,10 +22,10 @@ const StatusProfile = () => {
 	const userStatusIcon = useMemo(() => {
 		switch (userStatus) {
 			case EUserStatus.ONLINE:
-				return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#16A34A" width={size.s_20} height={size.s_20} />;
+				return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#16A34A" width={size.s_16} height={size.s_16} />;
 
 			case EUserStatus.IDLE:
-				return <MezonIconCDN icon={IconCDN.idleStatusIcon} color="#F0B232" width={size.s_20} height={size.s_20} />;
+				return <MezonIconCDN icon={IconCDN.idleStatusIcon} color="#F0B232" width={size.s_16} height={size.s_16} />;
 
 			case EUserStatus.DO_NOT_DISTURB:
 				return <MezonIconCDN icon={IconCDN.disturbStatusIcon} color="#F23F43" />;
@@ -34,7 +34,7 @@ const StatusProfile = () => {
 				return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#AEAEAE" width={size.s_16} height={size.s_16} />;
 
 			default:
-				return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#16A34A" width={size.s_20} height={size.s_20} />;
+				return <MezonIconCDN icon={IconCDN.onlineStatusIcon} color="#16A34A" width={size.s_16} height={size.s_16} />;
 		}
 	}, [userStatus]);
 

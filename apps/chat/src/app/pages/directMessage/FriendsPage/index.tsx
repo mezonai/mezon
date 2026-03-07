@@ -145,7 +145,12 @@ const FriendsPage = () => {
 			return normalizedUsername.includes(normalizedSearchText) || normalizedDisplayName.includes(normalizedSearchText);
 		})
 		.sort((start, next) => {
-			return (next?.state || 0) - (start?.state || 0);
+			if (currentTabStatus === 'pending') {
+				return (next?.state || 0) - (start?.state || 0);
+			}
+			const nameStart = (start.user?.display_name || start.user?.username) ?? '';
+			const nameNext = (next.user?.display_name || next.user?.username) ?? '';
+			return nameStart.localeCompare(nameNext);
 		});
 
 	const getEmptyStateMessage = (tab: string) => {

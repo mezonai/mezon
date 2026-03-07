@@ -1013,6 +1013,7 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			...content,
 			t: content.t?.trim()
 		};
+		const stringifiedContent = JSON.stringify(trimContent);
 
 		const res = await client.updateChannelMessage(
 			session,
@@ -1021,7 +1022,7 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			mode,
 			isPublic,
 			messageId || '0',
-			trimContent,
+			stringifiedContent,
 			mentions,
 			attachments,
 			hideEditted,
@@ -1144,7 +1145,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					mode,
 					isPublic,
 					content,
-					mentions,
+					anonymous ? undefined : mentions,
 					uploadedFiles,
 					references,
 					anonymous,
@@ -1163,7 +1164,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				mode,
 				isPublic,
 				typeof content === 'object' ? JSON.stringify(content) : content,
-				mentions,
+				anonymous ? undefined : mentions,
 				uploadedFiles,
 				references,
 				anonymous,

@@ -56,9 +56,9 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center',
 			overflow: 'hidden',
 			alignItems: 'center',
-			height: size.s_42,
+			height: size.s_32,
 			gap: size.s_8,
-			borderRadius: size.s_42,
+			borderRadius: size.s_32,
 			backgroundColor: colors.tertiary
 		},
 		placeholderSearchBox: {
@@ -69,10 +69,10 @@ export const style = (colors: Attributes) =>
 		iconWrapper: {
 			alignItems: 'center',
 			justifyContent: 'center',
-			borderRadius: size.s_42,
+			borderRadius: size.s_32,
 			backgroundColor: colors.tertiary,
-			width: size.s_42,
-			height: size.s_42
+			width: size.s_32,
+			height: size.s_32
 		},
 		dot: {
 			width: size.s_4,

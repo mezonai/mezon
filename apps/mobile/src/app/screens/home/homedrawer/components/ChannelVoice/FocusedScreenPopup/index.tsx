@@ -75,13 +75,12 @@ const FocusedScreenPopup = ({ clanId }: { clanId: string }) => {
 		if (videoTrackRef) {
 			return (
 				<View style={styles.focusedContainer}>
-					<View style={styles.focusedVideoWrapper}>
-						<VideoTrack
-							trackRef={videoTrackRef}
-							style={styles.focusedVideoStyleSmall}
-							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
-						/>
-					</View>
+					<VideoTrack
+						trackRef={videoTrackRef}
+						style={styles.focusedVideoStyleSmall}
+						mirror
+						iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
+					/>
 				</View>
 			);
 		}
@@ -92,13 +91,12 @@ const FocusedScreenPopup = ({ clanId }: { clanId: string }) => {
 		if (videoTrackRef) {
 			return (
 				<View style={styles.focusedContainer}>
-					<View style={styles.focusedVideoWrapperSmall}>
-						<VideoTrack
-							trackRef={videoTrackRef}
-							style={styles.focusedVideoStyleSmall}
-							iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
-						/>
-					</View>
+					<VideoTrack
+						trackRef={videoTrackRef}
+						style={styles.focusedVideoStyleSmall}
+						mirror
+						iosPIP={{ enabled: true, startAutomatically: true, preferredSize: { width: 12, height: 8 } }}
+					/>
 				</View>
 			);
 		}

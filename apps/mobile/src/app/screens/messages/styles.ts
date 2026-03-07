@@ -63,7 +63,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		addFriend: {
 			flexDirection: 'row',
 			gap: size.s_8,
-			height: size.s_42,
+			height: size.s_32,
 			alignItems: 'center',
 			justifyContent: 'center',
 			backgroundColor: colors.tertiary,
@@ -75,7 +75,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		btnAddFriend: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			gap: size.s_8
+			gap: size.s_4
 		},
 
 		addFriendText: {
@@ -235,7 +235,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 			flexWrap: 'nowrap',
 			overflow: 'hidden'
 		},
-		textQuantityPending: { fontSize: size.s_12, color: 'white' },
+		textQuantityPending: { fontSize: size.s_10, color: 'white' },
 		wrapperSearch: {
 			flex: 1,
 			flexDirection: 'row',
@@ -267,9 +267,9 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 		btnSearch: {
 			backgroundColor: colors.tertiary,
-			width: size.s_42,
-			height: size.s_42,
-			borderRadius: size.s_42,
+			width: size.s_32,
+			height: size.s_32,
+			borderRadius: size.s_32,
 			alignItems: 'center',
 			justifyContent: 'center'
 		},
@@ -318,9 +318,9 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 		quantityPendingContainer: {
 			backgroundColor: baseColor.redStrong,
-			minWidth: size.s_20,
+			minWidth: size.s_16,
 			paddingHorizontal: size.s_2,
-			height: size.s_20,
+			height: size.s_16,
 			alignItems: 'center',
 			justifyContent: 'center',
 			borderRadius: size.s_20,

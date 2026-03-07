@@ -268,21 +268,25 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				t: content.t?.trim()
 			};
 
-			if (socketState.isConnected) {
-				await socket.updateChatMessage(
-					getClanId || '0',
-					channelIdOrDirectId ?? '0',
-					mode,
-					isPublic,
-					messageId,
-					trimContent,
-					mentions,
-					attachments,
-					hide_editted,
-					topic_id || '0',
-					!!isTopic
-				);
-			} else {
+			try {
+				if (socketState.isConnected) {
+					await socket.updateChatMessage(
+						getClanId || '0',
+						channelIdOrDirectId ?? '0',
+						mode,
+						isPublic,
+						messageId,
+						trimContent,
+						mentions,
+						attachments,
+						hide_editted,
+						topic_id || '0',
+						!!isTopic
+					);
+				} else {
+					throw new Error('Socket not connected'); // bắt buộc fallback
+				}
+			} catch {
 				await client.updateChannelMessage(
 					session,
 					getClanId || '0',
