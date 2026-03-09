@@ -13,6 +13,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
+import { DIRECT_FEATURE_KEY, directActions } from '../direct/direct.slice';
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
@@ -481,7 +482,6 @@ export const updateUser = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 			if (response) {
-				thunkAPI.dispatch(accountActions.getUserProfile());
 				thunkAPI.dispatch(
 					accountActions.setUpdateAccount({
 						logo,
@@ -498,9 +498,29 @@ export const updateUser = createAsyncThunk(
 					})
 				);
 
+				thunkAPI.dispatch(accountActions.getUserProfile({ noCache: true }));
+
 				if (avatar_url && currentUser?.user?.id && avatar_url !== currentUser?.user?.avatar_url) {
 					setUserAvatarOverride(currentUser.user.id, avatar_url);
 					thunkAPI.dispatch(accountActions.incrementAvatarVersion());
+				}
+
+				const myId = currentUser?.user?.id;
+				if (myId && (display_name !== undefined || avatar_url !== undefined)) {
+					const directState = (thunkAPI.getState() as RootState)[DIRECT_FEATURE_KEY];
+					const entities = directState?.entities ?? {};
+					Object.entries(entities).forEach(([dmId, entity]) => {
+						if (entity?.user_ids?.includes(myId)) {
+							thunkAPI.dispatch(
+								directActions.updateMemberDMGroup({
+									dmId,
+									user_id: myId,
+									avatar: avatar_url ?? '',
+									display_name: display_name ?? ''
+								})
+							);
+						}
+					});
 				}
 
 				thunkAPI.dispatch(messagesActions.invalidateAllCache());

@@ -1,4 +1,4 @@
-import { toChannelPage, useChatSending, useCustomNavigate, useGifsStickersEmoji, useMemberStatus, useMenu, usePathMatch } from '@mezon/core';
+import { toChannelPage, useAuth, useChatSending, useCustomNavigate, useGifsStickersEmoji, useMemberStatus, useMenu, usePathMatch } from '@mezon/core';
 import type { ChannelMembersEntity, DirectEntity, RootState } from '@mezon/store';
 import {
 	DMCallActions,
@@ -145,21 +145,35 @@ const TopBarChannelText = memo(() => {
 		closeMenu();
 	};
 	const currentDmGroup = useSelector(selectCurrentDM);
+	const { userProfile } = useAuth();
+	const currentUserId = userProfile?.user?.id;
+	const isSelfDm =
+		currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM &&
+		currentDmGroup?.user_ids?.length === 1 &&
+		currentUserId &&
+		currentDmGroup.user_ids[0] === currentUserId;
+
 	const channelDmGroupLabel = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return currentDmGroup?.channel_label || currentDmGroup?.usernames?.join(',');
 		}
+		if (isSelfDm && userProfile?.user && !currentDmGroup?.channel_label) {
+			return userProfile.user.display_name || userProfile.user.username || '';
+		}
 		return currentDmGroup?.channel_label;
-	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames]);
+	}, [currentDmGroup?.channel_label, currentDmGroup?.type, currentDmGroup?.usernames, isSelfDm, userProfile?.user]);
 	const dmUserAvatar = useMemo(() => {
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP) {
 			return currentDmGroup?.channel_avatar || '/assets/images/avatar-group.png';
 		}
 
 		if (currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && currentDmGroup?.user_ids) {
-			return currentDmGroup.avatars?.at(-1) || undefined;
+			const fromEntity = currentDmGroup.avatars?.at(-1);
+			if (fromEntity) return fromEntity;
+			if (isSelfDm && userProfile?.user?.avatar_url) return userProfile.user.avatar_url;
+			return undefined;
 		}
-	}, [currentDmGroup]);
+	}, [currentDmGroup, isSelfDm, userProfile?.user?.avatar_url]);
 
 	const updateDmGroupLoading = useAppSelector((state) => selectUpdateDmGroupLoading(currentDmGroup?.channel_id || '0')(state));
 	const updateDmGroupError = useAppSelector((state) => selectUpdateDmGroupError(currentDmGroup?.channel_id || '0')(state));
@@ -246,7 +260,7 @@ const TopBarChannelText = memo(() => {
 						<DmTopbarAvatar
 							isGroup={currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP}
 							avatar={dmUserAvatar}
-							avatarName={currentDmGroup?.channel_label?.at(0)}
+							avatarName={channelDmGroupLabel?.at(0)}
 						/>
 						{currentDmGroup?.type !== ChannelType.CHANNEL_TYPE_GROUP && (
 							<div className="absolute top-6 left-5 w-3 h-3">

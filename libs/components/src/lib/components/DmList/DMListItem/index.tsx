@@ -1,4 +1,4 @@
-import { useMemberStatus } from '@mezon/core';
+import { useAuth, useMemberStatus } from '@mezon/core';
 import type { DirectEntity } from '@mezon/store';
 import {
 	directActions,
@@ -43,8 +43,17 @@ export type directMessageValueProps = {
 function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFriends, isActive }: DirectMessProp) {
 	const { t } = useTranslation('common');
 	const dispatch = useAppDispatch();
+	const { userProfile } = useAuth();
+	const currentUserId = userProfile?.user?.id;
 	const directMessage = useAppSelector((state) => selectDirectById(state, id));
 	const isTypeDMGroup = Number(directMessage.type) === ChannelType.CHANNEL_TYPE_GROUP;
+	const isSelfDm = !isTypeDMGroup && directMessage?.user_ids?.length === 1 && currentUserId && directMessage.user_ids[0] === currentUserId;
+	const resolvedAvatar = isTypeDMGroup
+		? directMessage?.channel_avatar || '/assets/images/avatar-group.png'
+		: isSelfDm && !directMessage?.avatars?.at(-1) && userProfile?.user?.avatar_url
+			? userProfile.user.avatar_url
+			: (directMessage?.avatars?.at(-1) ?? '');
+	const resolvedName = directMessage?.channel_label || (isSelfDm ? userProfile?.user?.display_name || userProfile?.user?.username || '' : '');
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
 	const buzzStateDM = useAppSelector((state) => selectBuzzStateByDirectId(state, directMessage?.channel_id ?? ''));
 
@@ -100,8 +109,8 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 			data-e2e={generateE2eId(`chat.direct_message.chat_list`)}
 		>
 			<DmItemProfile
-				avatar={isTypeDMGroup ? directMessage?.channel_avatar || '/assets/images/avatar-group.png' : (directMessage?.avatars?.at(-1) ?? '')}
-				name={directMessage?.channel_label || ''}
+				avatar={resolvedAvatar}
+				name={resolvedName}
 				number={directMessage?.member_count || 0}
 				isTypeDMGroup={isTypeDMGroup}
 				highlight={isUnReadChannel || currentDmGroupId === id}

@@ -100,8 +100,8 @@ const SettingAccount = ({ onSettingProfile, menuIsOpen }: SettingAccountProps) =
 				<div className="flex justify-between relative -top-5 px-4 flex-col sbm:flex-row sbm:items-center">
 					<div className="flex items-center gap-x-4" data-e2e={generateE2eId(`user_setting.account.info`)}>
 						<AvatarImage
-							alt={userProfile?.user?.username || ''}
-							username={userProfile?.user?.username}
+							alt={userProfile?.user?.display_name || userProfile?.user?.username || ''}
+							username={userProfile?.user?.display_name || userProfile?.user?.username}
 							className="w-[90px] h-[90px] xl:w-[100px] xl:h-[100px] rounded-[50px] border-[6px] border-solid border-user object-cover"
 							srcImgProxy={createImgproxyUrl(urlImg ?? '', { width: 300, height: 300, resizeType: 'fit' })}
 							src={urlImg}

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
+import { useAuth } from '@mezon/core';
 import type { MessagesEntity, RootState } from '@mezon/store';
 import { getStore, selectBanMeInChannel, topicsActions, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
@@ -92,8 +93,17 @@ function MessageWithUser({
 }: Readonly<MessageWithUserProps>) {
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
+	const { userProfile } = useAuth();
+	const currentUserId = userProfile?.user?.id;
 	const userId = user?.user?.id as string;
 	const positionShortUser = useRef<{ top: number; left: number } | null>(null);
+
+	const isDM = mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
+	const isCurrentUserMessage = Boolean(currentUserId && message?.sender_id === currentUserId);
+	const resolvedMessage = useMemo(() => {
+		if (!isDM || !isCurrentUserMessage || !userProfile?.user?.display_name) return message;
+		return { ...message, display_name: userProfile.user.display_name };
+	}, [message, isDM, isCurrentUserMessage, userProfile?.user?.display_name]);
 	const shortUserId = useRef('');
 	const isClickReply = useRef(false);
 	const checkAnonymous = message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
@@ -167,8 +177,6 @@ function MessageWithUser({
 		dispatch(topicsActions.setInitTopicMessageId(message.id));
 	}, [dispatch, message]);
 
-	const isDM = mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
-
 	const [isAnonymousOnModal, setIsAnonymousOnModal] = useState<boolean>(false);
 
 	const [openProfileItem, closeProfileItem] = useModal(() => {
@@ -186,16 +194,20 @@ function MessageWithUser({
 					}}
 					userID={shortUserId.current}
 					classBanner="rounded-tl-lg rounded-tr-lg h-[105px]"
-					message={message}
+					message={resolvedMessage}
 					mode={mode}
 					avatar={isClickReply.current ? message?.references?.[0]?.mesages_sender_avatar : message?.clan_avatar || message?.avatar}
-					name={message?.clan_nick || message?.display_name || message?.username}
+					name={
+						shortUserId.current === currentUserId
+							? userProfile?.user?.display_name || message?.display_name || message?.username
+							: message?.clan_nick || message?.display_name || message?.username
+					}
 					isDM={isDM}
 					checkAnonymous={isAnonymousOnModal}
 				/>
 			</div>
 		);
-	}, [message]);
+	}, [message, resolvedMessage, currentUserId, userProfile?.user?.display_name, isDM, mode]);
 
 	// (message?.content as any)?.isCard
 
@@ -263,7 +275,7 @@ function MessageWithUser({
 						{showMessageHead && (
 							<>
 								<MessageAvatar
-									message={message}
+									message={resolvedMessage}
 									isEditing={isEditing}
 									mode={mode}
 									onClick={
@@ -276,7 +288,7 @@ function MessageWithUser({
 									}
 								/>
 								<MessageHead
-									message={message}
+									message={resolvedMessage}
 									mode={mode}
 									isSearchMessage={isSearchMessage}
 									onClick={
