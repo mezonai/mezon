@@ -5,13 +5,24 @@ import { useState } from 'react';
 
 export type AvatarImageProp = {
 	username?: string;
+	displayName?: string;
 	alt: string;
 	isAnonymous?: boolean;
 	classNameText?: string;
 	srcImgProxy?: string;
 } & DetailedHTMLProps<ImgHTMLAttributes<HTMLImageElement>, HTMLImageElement>;
 
-export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', isAnonymous, classNameText, ...rest }: AvatarImageProp) => {
+export const AvatarImage = ({
+	username,
+	displayName,
+	src,
+	srcImgProxy,
+	alt,
+	className = '',
+	isAnonymous,
+	classNameText,
+	...rest
+}: AvatarImageProp) => {
 	const [isError, setIsError] = useState(false);
 
 	const computedClassName = `size-10 rounded-full object-cover min-w-5 min-h-5 cursor-pointer ${className}`;
@@ -51,7 +62,7 @@ export const AvatarImage = ({ username, src, srcImgProxy, alt, className = '', i
 	}
 
 	if (!src || isError) {
-		const avatarChar = username?.charAt(0)?.toUpperCase() || '';
+		const avatarChar = (displayName || username)?.charAt(0)?.toUpperCase() || '';
 
 		return (
 			<div

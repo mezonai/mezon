@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { BuzzArgs, IChannel, IMessage, IUserChannel, IUserProfileActivity, LoadingStatus } from '@mezon/utils';
 import { ActiveDm } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelMessage, ChannelUpdatedEvent, UserProfile } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import type { ApiChannelDescription, ApiChannelMessageHeader, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api.gen';
@@ -18,6 +18,12 @@ import type { RootState } from '../store';
 import { statusActions } from './status.slice';
 
 export const DIRECT_FEATURE_KEY = 'direct';
+
+export const userProfileUpdated = createAction<{
+	userId: string;
+	avatar_url?: string;
+	display_name?: string;
+}>('user/profileUpdated');
 
 export interface DirectEntity extends IChannel {
 	id: string;
@@ -1011,6 +1017,27 @@ export const directSlice = createSlice({
 			})
 			.addCase(fetchDirectDetail.fulfilled, (state: DirectState, action) => {
 				directAdapter.upsertOne(state, action.payload);
+			})
+			.addCase(userProfileUpdated, (state: DirectState, action) => {
+				const { userId, avatar_url, display_name } = action.payload;
+				Object.entries(state.entities).forEach(([, entity]) => {
+					if (!entity?.user_ids?.includes(userId)) return;
+					const index = entity.user_ids.indexOf(userId);
+					if (index === -1) return;
+
+					if (avatar_url && entity.avatars) {
+						entity.avatars = [...entity.avatars];
+						entity.avatars[index] = avatar_url;
+					}
+					if (display_name && entity.display_names) {
+						entity.display_names[index] = display_name;
+						if (entity.channel_label) {
+							const labels = entity.channel_label.split(',');
+							if (labels[index] !== undefined) labels[index] = display_name;
+							entity.channel_label = labels.join(',');
+						}
+					}
+				});
 			});
 	}
 });

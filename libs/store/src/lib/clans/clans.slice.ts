@@ -13,7 +13,7 @@ import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
-import { DIRECT_FEATURE_KEY, directActions } from '../direct/direct.slice';
+import { userProfileUpdated } from '../direct/direct.slice';
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
@@ -507,20 +507,7 @@ export const updateUser = createAsyncThunk(
 
 				const myId = currentUser?.user?.id;
 				if (myId && (display_name !== undefined || avatar_url !== undefined)) {
-					const directState = (thunkAPI.getState() as RootState)[DIRECT_FEATURE_KEY];
-					const entities = directState?.entities ?? {};
-					Object.entries(entities).forEach(([dmId, entity]) => {
-						if (entity?.user_ids?.includes(myId)) {
-							thunkAPI.dispatch(
-								directActions.updateMemberDMGroup({
-									dmId,
-									user_id: myId,
-									avatar: avatar_url ?? '',
-									display_name: display_name ?? ''
-								})
-							);
-						}
-					});
+					thunkAPI.dispatch(userProfileUpdated({ userId: myId, avatar_url, display_name }));
 				}
 
 				thunkAPI.dispatch(messagesActions.invalidateAllCache());

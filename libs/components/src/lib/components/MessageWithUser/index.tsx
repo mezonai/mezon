@@ -100,10 +100,16 @@ function MessageWithUser({
 
 	const isDM = mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
 	const isCurrentUserMessage = Boolean(currentUserId && message?.sender_id === currentUserId);
-	const resolvedMessage = useMemo(() => {
-		if (!isDM || !isCurrentUserMessage || !userProfile?.user?.display_name) return message;
-		return { ...message, display_name: userProfile.user.display_name };
-	}, [message, isDM, isCurrentUserMessage, userProfile?.user?.display_name]);
+	const overrideDisplayName = useMemo(() => {
+		if (isDM && isCurrentUserMessage && userProfile?.user?.display_name) {
+			return userProfile.user.display_name;
+		}
+		return undefined;
+	}, [isDM, isCurrentUserMessage, userProfile?.user?.display_name]);
+	const resolvedMessage = useMemo(
+		() => (overrideDisplayName != null ? { ...message, display_name: overrideDisplayName } : message),
+		[message, overrideDisplayName]
+	);
 	const shortUserId = useRef('');
 	const isClickReply = useRef(false);
 	const checkAnonymous = message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;

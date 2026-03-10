@@ -48,12 +48,15 @@ function DMListItem({ id, currentDmGroupId, joinToChatAndNavigate, navigateToFri
 	const directMessage = useAppSelector((state) => selectDirectById(state, id));
 	const isTypeDMGroup = Number(directMessage.type) === ChannelType.CHANNEL_TYPE_GROUP;
 	const isSelfDm = !isTypeDMGroup && directMessage?.user_ids?.length === 1 && currentUserId && directMessage.user_ids[0] === currentUserId;
+	const selfDisplay = isSelfDm
+		? { avatar: userProfile?.user?.avatar_url ?? '', name: userProfile?.user?.display_name || userProfile?.user?.username || '' }
+		: null;
 	const resolvedAvatar = isTypeDMGroup
 		? directMessage?.channel_avatar || '/assets/images/avatar-group.png'
-		: isSelfDm && !directMessage?.avatars?.at(-1) && userProfile?.user?.avatar_url
-			? userProfile.user.avatar_url
+		: selfDisplay && !directMessage?.avatars?.at(-1) && selfDisplay.avatar
+			? selfDisplay.avatar
 			: (directMessage?.avatars?.at(-1) ?? '');
-	const resolvedName = directMessage?.channel_label || (isSelfDm ? userProfile?.user?.display_name || userProfile?.user?.username || '' : '');
+	const resolvedName = directMessage?.channel_label || (selfDisplay?.name ?? '');
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
 	const buzzStateDM = useAppSelector((state) => selectBuzzStateByDirectId(state, directMessage?.channel_id ?? ''));
 

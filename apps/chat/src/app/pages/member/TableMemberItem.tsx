@@ -194,6 +194,7 @@ const TableMemberItem = ({ userId, username, avatar, clanJoinTime, mezonJoinTime
 					<AvatarImage
 						alt={username}
 						username={username}
+						displayName={displayName}
 						className="min-w-9 min-h-9 max-w-9 max-h-9"
 						srcImgProxy={createImgproxyUrl(avatar ?? '')}
 						src={avatar}
