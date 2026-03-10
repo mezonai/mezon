@@ -15,6 +15,12 @@ import { authLoader, shouldRevalidateAuth } from '../loader/authLoader';
 import { applicationLoader, shouldRevalidateApplication } from '../loader/applicationLoader';
 import InitialRoutes from './InititalRoutes';
 
+const HydrateFallback = () => (
+	<div className="fixed inset-0 flex items-center justify-center bg-[#313337]" aria-label="Đang tải">
+		<div className="h-10 w-10 rounded-full border-2 border-white border-t-transparent animate-spin" />
+	</div>
+);
+
 const DashboardPage = loadable(() => import('../pages/dashboard'));
 const ApplicationsPage = loadable(() => import('../pages/applications'));
 const TeamsPage = loadable(() => import('../pages/teams'));
@@ -53,6 +59,7 @@ export const Routes = () => {
 				},
 				{
 					path: '/developers',
+					HydrateFallback,
 					loader: loaderWithStore(appLoader),
 					shouldRevalidate: shouldRevalidateApp,
 					element: <AppLayout />,
