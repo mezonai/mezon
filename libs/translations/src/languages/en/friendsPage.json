@@ -21,6 +21,7 @@
 		"waitAccept": "You have already sent a friend request to this user!",
 		"invalidInput": "Please only use numbers, letters, underscores _ or full stops.",
 		"blockedUser": "You have blocked this user. Please unblock them before sending a friend request.",
+		"blockedUserMobile": "You blocked this user. Unblock to send a friend request.",
 		"waitingMessage": "Mezon is waiting on friends. You don't have to, though!"
 	},
 	"requestFailedPopup": {

@@ -39,18 +39,16 @@ function MessageHeader() {
 
 	return (
 		<View style={styles.headerWrapper}>
-			<Text style={styles.headerTitle}>{t('dmMessage:title')}</Text>
+			<View style={styles.headerComponent}>
+				<Icons.IconMessagesIcon color={themeValue.textStrong} width={size.s_36} height={size.s_36} />
+				<Text style={styles.headerTitle}>{t('dmMessage:title')}</Text>
+			</View>
 
 			<View style={styles.headerOptionWrapper}>
-				<TouchableOpacity style={styles.btnSearchWrapper} onPress={() => navigateToSearchPage()}>
-					<View style={styles.btnSearch}>
-						<Icons.SearchIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
-					</View>
-				</TouchableOpacity>
 				<TouchableOpacity style={styles.btnAddFriendWrapper} onPress={() => navigateToAddFriendScreen()}>
 					<View style={styles.addFriend}>
 						<View style={styles.btnAddFriend}>
-							<Icons.AddFriendIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
+							<Icons.AddFriendIcon color={themeValue.textStrong} width={size.s_14} height={size.s_14} />
 							<Text style={styles.addFriendText}>{t('dmMessage:addFriend')}</Text>
 						</View>
 						{!!quantityPendingRequest && (
@@ -58,6 +56,11 @@ function MessageHeader() {
 								<Text style={styles.textQuantityPending}>{quantityPendingRequest}</Text>
 							</View>
 						)}
+					</View>
+				</TouchableOpacity>
+				<TouchableOpacity style={styles.btnSearchWrapper} onPress={() => navigateToSearchPage()}>
+					<View style={styles.btnSearch}>
+						<Icons.SearchIcon color={themeValue.textDisabled} width={size.s_20} height={size.s_20} />
 					</View>
 				</TouchableOpacity>
 			</View>

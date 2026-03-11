@@ -106,11 +106,13 @@ function Login() {
 								<input
 									type="checkbox"
 									id="keepSignedIn"
-									className="mr-2"
+									className="mr-2 cursor-pointer"
 									checked={isRemember}
 									onChange={(e) => setIsRemember(e.target.checked)}
 								/>
-								<label htmlFor="keepSignedIn">{t('login.keepSignedIn')}</label>
+								<label className="cursor-pointer" htmlFor="keepSignedIn">
+									{t('login.keepSignedIn')}
+								</label>
 							</div>
 							{!loginMethod && (
 								<div className="text-sm text-blue-500 hover:underline cursor-pointer" onClick={handleSwitchMethod}>

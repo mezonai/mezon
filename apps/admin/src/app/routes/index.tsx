@@ -1,6 +1,5 @@
-import loadable from '@loadable/component';
 import { selectInitialPath, useAppDispatch } from '@mezon/store';
-import { useCallback, useMemo } from 'react';
+import { lazy, useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import type { LoaderFunctionArgs } from 'react-router-dom';
 import { Navigate, Outlet, RouterProvider, createBrowserRouter } from 'react-router-dom';
@@ -15,15 +14,15 @@ import { authLoader, shouldRevalidateAuth } from '../loader/authLoader';
 import { applicationLoader, shouldRevalidateApplication } from '../loader/applicationLoader';
 import InitialRoutes from './InititalRoutes';
 
-const DashboardPage = loadable(() => import('../pages/dashboard'));
-const ApplicationsPage = loadable(() => import('../pages/applications'));
-const TeamsPage = loadable(() => import('../pages/teams'));
-const DocsPage = loadable(() => import('../pages/docs'));
-const EmbedsPage = loadable(() => import('../pages/embeds'));
-const GeneralInformation = loadable(() => import('../pages/AppGeneralInformation'));
-const Installation = loadable(() => import('../pages/installation'));
-const Install = loadable(() => import('../pages/install'));
-const OAuth2 = loadable(() => import('../pages/OAuth2'));
+const DashboardPage = lazy(() => import('../pages/dashboard'));
+const ApplicationsPage = lazy(() => import('../pages/applications'));
+const TeamsPage = lazy(() => import('../pages/teams'));
+const DocsPage = lazy(() => import('../pages/docs'));
+const EmbedsPage = lazy(() => import('../pages/embeds'));
+const GeneralInformation = lazy(() => import('../pages/AppGeneralInformation'));
+const Installation = lazy(() => import('../pages/installation'));
+const Install = lazy(() => import('../pages/install'));
+const OAuth2 = lazy(() => import('../pages/OAuth2'));
 
 export const Routes = () => {
 	const dispatch = useAppDispatch();

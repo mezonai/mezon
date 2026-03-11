@@ -241,7 +241,7 @@ const HomeDefaultHeader = React.memo(
 
 		const renderChannelIcon = () => {
 			if (currentChannel?.channel_private === ChannelStatusEnum.isPrivate && currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
-				return <Icons.ThreadIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />;
+				return <Icons.ThreadLockIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />;
 			}
 
 			if (!!currentChannel?.channel_label && currentChannel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
@@ -316,13 +316,13 @@ const HomeDefaultHeader = React.memo(
 					</TouchableOpacity>
 				) : currentChannel ? (
 					<TouchableOpacity style={styles.iconBell} onPress={() => navigateToSearchPage()}>
-						<Icons.SearchIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
+						<Icons.SearchIcon color={themeValue.textDisabled} width={size.s_20} height={size.s_20} />
 					</TouchableOpacity>
 				) : (
 					<View />
 				)}
 				<TouchableOpacity style={styles.iconBell} onPress={() => navigateToChannelHighlight()}>
-					<Icons.ClockIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
+					<Icons.ClockIcon color={themeValue.textDisabled} width={size.s_20} height={size.s_20} />
 				</TouchableOpacity>
 				<View style={styles.headerTooltipContainer}>
 					<HeaderTooltip onPressOption={onPressOption} options={headerOptions} />

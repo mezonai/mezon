@@ -1,6 +1,7 @@
 import {
 	addBotChat,
 	fetchChannels,
+	fetchClans,
 	getApplicationDetail,
 	selectAllAccount,
 	selectAllClans,
@@ -52,6 +53,10 @@ const ModalAddBot = memo(({ applicationId, handleOpenModal }: ModalAddBotProps) 
 		);
 		return defaultChannel ? defaultChannel.id : null;
 	}, [clanValue, channels]);
+
+	useEffect(() => {
+		dispatch(fetchClans({}));
+	}, [dispatch]);
 
 	useEffect(() => {
 		if (applicationId) {

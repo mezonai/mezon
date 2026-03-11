@@ -1,6 +1,7 @@
 import type { ChannelsEntity } from '@mezon/store';
 import {
 	getStore,
+	selectChannelById,
 	selectClanView,
 	selectCurrentChannel,
 	selectCurrentDM,
@@ -8,7 +9,6 @@ import {
 	selectMemberClanByUserId,
 	selectMemberDMByUserId,
 	selectMemberGroupByUserId,
-	selectSearchChannelById,
 	useAppSelector
 } from '@mezon/store';
 import type { ChannelMembersEntity } from '@mezon/utils';
@@ -39,7 +39,7 @@ export const useUserByUserId = (userID: string | undefined): ChannelMembersEntit
 export const getTagById = (tagId: string | undefined): ChannelsEntity | undefined => {
 	const store = getStore();
 	if (!tagId) return undefined;
-	return selectSearchChannelById(store.getState(), tagId);
+	return selectChannelById(store.getState(), tagId) || undefined;
 };
 
 export const useCurrentInbox = (): ChannelsEntity | null => {

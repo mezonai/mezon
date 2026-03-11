@@ -227,12 +227,7 @@ export const style = (colors: Attributes) =>
 			alignSelf: 'center'
 		},
 		focusedVideoStyleSmall: {
-			height: 100,
-			width: '100%',
-			alignSelf: 'center'
-		},
-		focusedVideoWrapperSmall: {
-			height: 100,
+			height: size.s_150,
 			width: '100%',
 			alignSelf: 'center'
 		},

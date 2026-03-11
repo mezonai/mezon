@@ -1,6 +1,6 @@
 import { OtpConfirm } from '@mezon/components';
 import { authActions, useAppDispatch } from '@mezon/store';
-import { ButtonLoading, FormError, Icons, Input } from '@mezon/ui';
+import { ButtonLoading, Icons, Input } from '@mezon/ui';
 import { validateEmail } from '@mezon/utils';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -127,7 +127,6 @@ const FormLoginOTP = ({ handleChangeMethod, onStepChange }: { handleChangeMethod
 								readOnly={false}
 							/>
 						</div>
-						{errors.email && <FormError message={errors.email} />}
 					</div>
 					<div className={`flex flex-col w-full shrink-0 ${step === null ? 'hidden' : step ? 'animate-login_otp' : 'animate-login_email'}`}>
 						<p className="text-sm text-gray-700 dark:text-gray-300 text-center mb-6">

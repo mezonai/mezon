@@ -8,7 +8,7 @@ import {
 	selectCurrentChannel,
 	selectCurrentClanId,
 	selectCurrentClanName,
-	selectDefaultNotificationClan,
+	selectDefaultNotificationClanByClanId,
 	selectNotifiSettingsEntitiesById,
 	useAppDispatch,
 	useAppSelector
@@ -80,7 +80,7 @@ const ModalNotificationSetting = (props: ModalParam) => {
 	const notificationTypesListTranslated = createNotificationTypesListTranslated(t);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
-	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
+	const defaultNotificationClan = useAppSelector((state) => selectDefaultNotificationClanByClanId(state, currentClanId || ''));
 	const currentChannel = useSelector(selectCurrentChannel);
 	const notificatonSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannel?.id || ''));
 
@@ -171,7 +171,6 @@ const ModalNotificationSetting = (props: ModalParam) => {
 			const payload: MuteChannelPayload = {
 				channel_id: channelCategoryId || '',
 				mute_time: 0,
-				active,
 				clan_id: currentClanId || ''
 			};
 			dispatch(notificationSettingActions.setMuteChannel(payload));

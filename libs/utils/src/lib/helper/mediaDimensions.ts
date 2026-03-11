@@ -1,12 +1,5 @@
-import {
-	ApiDimensions,
-	ApiMediaExtendedPreview,
-	ApiPhoto,
-	ApiSticker,
-	ApiVideo,
-	STICKER_SIZE_INLINE_DESKTOP_FACTOR,
-	STICKER_SIZE_INLINE_MOBILE_FACTOR
-} from '../types';
+import type { ApiDimensions, ApiMediaExtendedPreview, ApiPhoto, ApiSticker, ApiVideo } from '../types';
+import { STICKER_SIZE_INLINE_DESKTOP_FACTOR, STICKER_SIZE_INLINE_MOBILE_FACTOR } from '../types';
 import { IS_TOUCH_ENV, windowSize } from '../utils';
 import { getPhotoInlineDimensions, getVideoDimensions } from '../utils/messageMedia';
 

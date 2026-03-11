@@ -2,6 +2,7 @@ import type { ChannelTimelineAttachment } from '@mezon/store';
 import { channelMediaActions, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
+import { isImageFileType, isVideoFileType } from '@mezon/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
@@ -117,6 +118,8 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 		[attachments, showImageModal]
 	);
 
+	const isAllowedMedia = (file: File) => isImageFileType(file.type) || isVideoFileType(file.type);
+
 	const handleFileChange = useCallback(
 		async (e: React.ChangeEvent<HTMLInputElement>) => {
 			const files = e.target.files;
@@ -126,9 +129,10 @@ export function EventDetailView({ channelId, clanId, eventId, startTimeSeconds, 
 			const session = sessionRef?.current;
 			if (!client || !session) return;
 
-			setIsUploading(true);
+			const fileArray = Array.from(files).filter(isAllowedMedia);
+			if (fileArray.length === 0) return;
 
-			const fileArray = Array.from(files);
+			setIsUploading(true);
 
 			const previewItems: ChannelTimelineAttachment[] = fileArray.map((file, idx) => ({
 				id: String(Date.now() + idx),

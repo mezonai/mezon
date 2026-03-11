@@ -215,12 +215,12 @@ export const VideoConferenceLayout = memo(
 										/>
 									)}
 								</span>
-								<button className="relative focus-visible:outline-none" title="Chat" onClick={onToggleChatBox}>
-									<Icons.Chat
-										defaultSize="w-5 h-5"
-										defaultFill={isShowMember ? 'text-theme-primary text-theme-primary-hover' : 'text-gray-300 hover:text-white'}
-										className={isShowChatVoice ? 'text-white' : 'text-white hover:text-gray-200'}
-									/>
+								<button
+									className="relative focus-visible:outline-none text-theme-primary text-theme-primary-hover"
+									title="Chat"
+									onClick={onToggleChatBox}
+								>
+									<Icons.Chat defaultSize="w-5 h-5" />
 								</button>
 							</div>
 						</div>

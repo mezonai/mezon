@@ -113,7 +113,7 @@ const SuggestItem = memo(
 						<Icons.ClansLockIcon color={themeValue.channelNormal} width={size.s_14} height={size.s_14} />
 					)}
 					{!isChannelPrivate && isThread && <Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_14} height={size.s_14} />}
-					{isChannelPrivate && isThread && <Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_14} height={size.s_14} />}
+					{isChannelPrivate && isThread && <Icons.ThreadLockIcon color={themeValue.channelNormal} width={size.s_14} height={size.s_14} />}
 					{!isChannelPrivate && isChannelVoice && <Icons.VoiceIcon color={themeValue.channelNormal} width={size.s_14} height={size.s_14} />}
 					{isChannelPrivate && isChannelVoice && <Icons.VoiceIcon color={themeValue.channelNormal} width={size.s_14} height={size.s_14} />}
 					{!isChannelPrivate && isChannelStream && (

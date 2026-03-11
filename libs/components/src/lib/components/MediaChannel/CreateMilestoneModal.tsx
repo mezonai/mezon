@@ -2,7 +2,7 @@ import type { ChannelTimelineAttachment } from '@mezon/store';
 import { channelMediaActions, useAppDispatch } from '@mezon/store';
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
-import { useLastCallback } from '@mezon/utils';
+import { isImageFileType, isVideoFileType, useLastCallback } from '@mezon/utils';
 import { Suspense, lazy, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MediaImage } from './MediaImage';
@@ -73,6 +73,8 @@ export function CreateMilestoneModal({ channelId, clanId, onClose }: CreateMiles
 		};
 	}, [eventTitle, isSaving, handleCancel]);
 
+	const isAllowedMedia = (file: File) => isImageFileType(file.type) || isVideoFileType(file.type);
+
 	const handleAddMedia = useLastCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const files = e.target.files;
 		if (!files || files.length === 0) return;
@@ -81,9 +83,10 @@ export function CreateMilestoneModal({ channelId, clanId, onClose }: CreateMiles
 		const session = sessionRef?.current;
 		if (!client || !session) return;
 
-		setIsUploading(true);
+		const fileArray = Array.from(files).filter(isAllowedMedia);
+		if (fileArray.length === 0) return;
 
-		const fileArray = Array.from(files);
+		setIsUploading(true);
 
 		const previewItems: ChannelTimelineAttachment[] = fileArray.map((file, idx) => ({
 			id: String(Date.now() + idx),
@@ -273,7 +276,7 @@ export function CreateMilestoneModal({ channelId, clanId, onClose }: CreateMiles
 							</div>
 						)}
 
-						<input ref={fileInputRef} type="file" multiple accept="image/*" className="hidden" onChange={handleAddMedia} />
+						<input ref={fileInputRef} type="file" multiple accept="image/*,video/*" className="hidden" onChange={handleAddMedia} />
 
 						<button
 							onClick={() => fileInputRef.current?.click()}

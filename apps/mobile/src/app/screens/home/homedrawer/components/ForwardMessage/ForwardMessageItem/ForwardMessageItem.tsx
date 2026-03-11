@@ -72,7 +72,7 @@ function ForwardMessageItem({
 						{item?.isChannelPublic ? (
 							<Icons.ThreadIcon color={themeValue.white} width={16} height={16} />
 						) : (
-							<Icons.ThreadIcon color={themeValue.white} width={16} height={16} />
+							<Icons.ThreadLockIcon color={themeValue.white} width={16} height={16} />
 						)}
 					</View>
 				);

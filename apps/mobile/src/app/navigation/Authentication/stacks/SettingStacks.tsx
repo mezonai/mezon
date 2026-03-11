@@ -59,7 +59,8 @@ export const SettingStacks = ({}: any) => {
 				name={APP_SCREEN.SETTINGS.HOME}
 				component={Settings}
 				options={{
-					headerTitle: t('settingStack.settings')
+					headerTitle: t('settingStack.settings'),
+					headerShown: false
 				}}
 			/>
 

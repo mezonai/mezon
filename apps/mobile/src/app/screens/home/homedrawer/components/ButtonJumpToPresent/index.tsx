@@ -1,8 +1,7 @@
-import { size, useTheme } from '@mezon/mobile-ui';
+import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import React, { useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
-import { IconCDN } from '../../../../../constants/icon_cdn';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import { style } from './styles';
 
 interface IAudioOutputOptionsProps {
@@ -29,7 +28,7 @@ const AudioOutputOptions = ({ handleJumpToPresent, lastSeenMessageId, lastSentMe
 					<Text style={styles.badgeCountMessageText}>{replyCount >= 99 ? '99+' : replyCount}</Text>
 				</View>
 			)}
-			<MezonIconCDN icon={IconCDN.arrowLargeDownIcon} color={themeValue.text} height={size.s_18} width={size.s_18} />
+			<Icons.ChevronDownIcon color={baseColor.white} height={size.s_22} width={size.s_22} />
 		</TouchableOpacity>
 	);
 };

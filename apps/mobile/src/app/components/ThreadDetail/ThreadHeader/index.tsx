@@ -87,7 +87,7 @@ export const ThreadHeader = memo(() => {
 			return isChannel ? (
 				<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 			) : (
-				<Icons.ThreadIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+				<Icons.ThreadLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 			);
 		}
 

@@ -84,7 +84,7 @@ const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 			if (dataOgp?.data?.title && dataOgp?.data?.image && dataOgp?.data?.description) {
 				dispatch(
 					referencesActions.setOgpData({
-						url: dataOgp?.data?.key,
+						url: dataOgp?.data?.url || dataOgp?.data?.key,
 						image: dataOgp?.data?.image || '',
 						title: dataOgp?.data?.title || '',
 						description: dataOgp?.data?.description || '',
@@ -95,7 +95,7 @@ const OgpPreview = ({ contentText }: RenderOgpPreviewProps) => {
 				);
 			}
 
-			ogpLinkRef.current = dataOgp?.data?.key;
+			ogpLinkRef.current = dataOgp?.data?.url || dataOgp?.data?.key;
 		}
 	}, []);
 

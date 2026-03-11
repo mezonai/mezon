@@ -10,10 +10,10 @@ import {
 import {
 	clansActions,
 	defaultNotificationActions,
-	selectDefaultNotificationClan,
 	selectDefaultNotificationClanByClanId,
 	selectLogoCustom,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store';
 import { Menu } from '@mezon/ui';
 import type { IClan } from '@mezon/utils';
@@ -48,9 +48,7 @@ const PanelClan: React.FC<IPanelClanProps> = ({ coords, clan, setShowClanListMen
 	const isOwnerOfContextClan = useIsClanOwner(clan?.clan_id || clan?.id || '');
 	const dispatch = useAppDispatch();
 
-	const defaultNotificationClan = useSelector((state) =>
-		clan?.clan_id ? selectDefaultNotificationClanByClanId(state as any, clan.clan_id) : selectDefaultNotificationClan(state as any)
-	);
+	const defaultNotificationClan = useAppSelector((state) => selectDefaultNotificationClanByClanId(state, clan?.clan_id || ''));
 	useEffect(() => {
 		const heightPanel = panelRef.current?.clientHeight;
 		if (heightPanel && heightPanel > coords.distanceToBottom) {

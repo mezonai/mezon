@@ -1,4 +1,4 @@
-import { baseColor, size, useTheme } from '@mezon/mobile-ui';
+import { size, useTheme } from '@mezon/mobile-ui';
 import { selectHiddenBottomTabMobile, useAppSelector } from '@mezon/store-mobile';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import React, { memo } from 'react';
@@ -29,17 +29,16 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				tabBarStyle: {
 					position: 'absolute',
 					zIndex: isTabletLandscape ? -1 : 100,
-					height: isTabletLandscape ? 0 : size.s_80 - (isHiddenTab && Platform.OS === 'android' ? size.s_20 : size.s_2),
+					height: isTabletLandscape ? 0 : size.s_80 - (isHiddenTab && Platform.OS === 'android' ? size.s_20 : size.s_10),
 					paddingHorizontal: 0,
-					paddingBottom: isHiddenTab && Platform.OS === 'android' ? size.s_2 : size.s_20,
-					paddingTop: size.s_2,
-					borderTopWidth: 1,
+					paddingBottom: isHiddenTab && Platform.OS === 'android' ? size.s_2 : size.s_6,
+					borderTopWidth: 0.5,
 					elevation: 0,
 					backgroundColor: themeValue.secondaryLight,
 					borderTopColor: themeValue.border
 				},
 				tabBarShowLabel: false,
-				tabBarActiveTintColor: baseColor.white,
+				tabBarActiveTintColor: themeValue.textStrong,
 				tabBarInactiveTintColor: themeValue.textDisabled
 			}}
 			initialRouteName={isLastActiveTabDm ? APP_SCREEN.MESSAGES.HOME : APP_SCREEN.HOME}
@@ -50,13 +49,9 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				options={{
 					headerShown: false,
 					title: 'Clans',
-					tabBarIcon: ({ color, focused }) => (
-						<View style={[styles.tabBarIconContainer, { backgroundColor: focused ? '#717aef' : 'transparent' }]}>
-							{focused ? (
-								<Icons.ChannelSelectIcon color={baseColor.white} width={size.s_24} height={size.s_24} />
-							) : (
-								<Icons.ClansIcon color={baseColor.white} width={size.s_24} height={size.s_24} />
-							)}
+					tabBarIcon: ({ color }) => (
+						<View style={styles.tabBarIconContainer}>
+							<Icons.ClansIcon color={themeValue.borderRadio} primary={themeValue.textNormal} width={size.s_24} height={size.s_24} />
 							<Text style={[{ color }, styles.tabBarText]}>{'Clans'}</Text>
 						</View>
 					)
@@ -68,13 +63,10 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				options={{
 					headerShown: false,
 					title: t('navigationTabs.messages'),
-					tabBarIcon: ({ color, focused }) => (
-						<View style={[styles.tabBarIconContainer, { backgroundColor: focused ? '#717aef' : 'transparent' }]}>
-							{focused ? (
-								<Icons.MassagesSelectIcon color={baseColor.white} width={size.s_24} height={size.s_24} />
-							) : (
-								<Icons.MessagesIcon color={baseColor.white} width={size.s_24} height={size.s_24} />
-							)}
+					tabBarIcon: ({ color }) => (
+						<View style={styles.tabBarIconContainer}>
+							<Icons.MessagesIcon color={themeValue.borderRadio} primary={themeValue.textNormal} width={size.s_24} height={size.s_24} />
+
 							<Text style={[{ color }, styles.tabBarText]}>{t('navigationTabs.messages')}</Text>
 						</View>
 					)
@@ -86,13 +78,14 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				options={{
 					headerShown: false,
 					title: t('navigationTabs.notifications'),
-					tabBarIcon: ({ color, focused }) => (
-						<View style={[styles.tabBarIconContainer, { backgroundColor: focused ? '#717aef' : 'transparent' }]}>
-							{focused ? (
-								<Icons.NoitificationSelectedIcon color={baseColor.white} width={size.s_24} height={size.s_24} />
-							) : (
-								<Icons.NoitificationIcon color={baseColor.white} width={size.s_24} height={size.s_24} />
-							)}
+					tabBarIcon: ({ color }) => (
+						<View style={styles.tabBarIconContainer}>
+							<Icons.NoitificationIcon
+								color={themeValue.borderRadio}
+								primary={themeValue.textNormal}
+								width={size.s_24}
+								height={size.s_24}
+							/>
 							<Text style={[{ color }, styles.tabBarText]}>{t('navigationTabs.notifications')}</Text>
 						</View>
 					)
@@ -104,13 +97,9 @@ const BottomNavigator = memo(({ isLastActiveTabDm = false }: { isLastActiveTabDm
 				options={{
 					headerShown: false,
 					title: t('navigationTabs.profile'),
-					tabBarIcon: ({ color, focused }) => (
-						<View style={[styles.tabBarIconContainer, { backgroundColor: focused ? '#717aef' : 'transparent' }]}>
-							{focused ? (
-								<Icons.ProfileSelectedIcon color={baseColor.white} width={size.s_24} height={size.s_24} />
-							) : (
-								<Icons.ProfileIcon color={baseColor.white} width={size.s_24} height={size.s_24} />
-							)}
+					tabBarIcon: ({ color }) => (
+						<View style={styles.tabBarIconContainer}>
+							<Icons.ProfileIcon color={themeValue.borderRadio} primary={themeValue.textNormal} width={size.s_24} height={size.s_24} />
 							<Text style={[{ color }, styles.tabBarText]}>{t('navigationTabs.profile')}</Text>
 						</View>
 					)

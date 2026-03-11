@@ -44,9 +44,9 @@ export const style = (colors: Attributes) =>
 		},
 		container: {
 			width: '100%',
-			borderBottomWidth: 1,
+			borderBottomWidth: 0.5,
 			paddingVertical: size.s_14,
-			borderBottomColor: colors.border,
+			borderBottomColor: colors.borderDim,
 			paddingHorizontal: size.s_12,
 			zIndex: 2
 		},
@@ -56,10 +56,10 @@ export const style = (colors: Attributes) =>
 			justifyContent: 'center',
 			overflow: 'hidden',
 			alignItems: 'center',
-			height: size.s_42,
+			height: size.s_32,
 			gap: size.s_8,
-			borderRadius: size.s_42,
-			backgroundColor: colors.primary
+			borderRadius: size.s_32,
+			backgroundColor: colors.tertiary
 		},
 		placeholderSearchBox: {
 			color: colors.text,
@@ -69,10 +69,10 @@ export const style = (colors: Attributes) =>
 		iconWrapper: {
 			alignItems: 'center',
 			justifyContent: 'center',
-			borderRadius: size.s_42,
-			backgroundColor: colors.primary,
-			width: size.s_42,
-			height: size.s_42
+			borderRadius: size.s_32,
+			backgroundColor: colors.tertiary,
+			width: size.s_32,
+			height: size.s_32
 		},
 		dot: {
 			width: size.s_4,

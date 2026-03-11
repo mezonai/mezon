@@ -20,7 +20,7 @@ function IconChannel({ channelPrivate, type }: { channelPrivate: number; type })
 				);
 			case ChannelType.CHANNEL_TYPE_THREAD:
 				return isChannelPrivate ? (
-					<Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />
+					<Icons.ThreadLockIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />
 				) : (
 					<Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />
 				);

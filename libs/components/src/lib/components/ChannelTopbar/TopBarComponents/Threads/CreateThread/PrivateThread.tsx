@@ -24,6 +24,7 @@ const PrivateThread = ({ label, title }: PrivateThreadProps) => {
 			<div className="flex items-center gap-2">
 				<input
 					type="checkbox"
+					checked={isPrivate === 1}
 					onChange={handleToggle}
 					id="private"
 					className="w-6 h-6 rounded-lg focus:ring-transparent cursor-pointer"

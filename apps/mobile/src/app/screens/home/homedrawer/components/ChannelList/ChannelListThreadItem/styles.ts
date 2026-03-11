@@ -39,7 +39,7 @@ export const style = (colors: Attributes) =>
 		},
 		titleThread: {
 			flex: 1,
-			fontSize: size.medium,
+			fontSize: size.s_14,
 			fontWeight: '400',
 			color: colors.channelNormal,
 			top: verticalScale(3),
@@ -48,7 +48,8 @@ export const style = (colors: Attributes) =>
 		},
 
 		channelListItemTitleActive: {
-			color: colors.channelUnread
+			color: colors.channelUnread,
+			fontWeight: '500'
 		},
 
 		threadFirstItemActive: {

@@ -249,7 +249,7 @@ const IntegrationsPage = () => {
 					<div className="flex items-center justify-between 2xl:justify-around max-lg:flex-col-reverse max-lg:gap-12 flex-row-reverse gap-8 lg:gap-12 xl:gap-16">
 						<div className="image-animate flex-shrink-0">
 							<img
-								src="https://cdn.mezon.ai/landing-page-mezon/inter3.webp"
+								src="https://cdn.mezon.ai/landing-page-mezon/mznn.png"
 								alt="Bot and App Integration"
 								className="max-w-[74vw] lg:max-w-[37vw] object-contain drop-shadow-2xl rounded-2xl"
 								loading="lazy"

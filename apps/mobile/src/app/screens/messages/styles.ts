@@ -43,27 +43,31 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 
 		headerTitle: {
-			paddingLeft: size.s_18,
+			paddingLeft: size.s_14,
 			fontSize: isTablet ? size.s_16 : size.s_18,
 			color: colors.textStrong,
 			fontWeight: 'bold'
 		},
 
+		headerComponent: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			marginHorizontal: size.s_18
+		},
+
 		btnAddFriendWrapper: {
 			flex: 1,
-			paddingVertical: size.s_16,
-			paddingRight: size.s_18
+			paddingLeft: size.s_18,
+			paddingRight: size.s_10
 		},
 		addFriend: {
 			flexDirection: 'row',
 			gap: size.s_8,
-			height: size.s_42,
+			height: size.s_32,
 			alignItems: 'center',
 			justifyContent: 'center',
-			backgroundColor: colors.primary,
+			backgroundColor: colors.tertiary,
 			borderRadius: size.s_20,
-			borderWidth: 1,
-			borderColor: colors.border,
 			paddingHorizontal: size.s_10,
 			paddingVertical: size.s_6
 		},
@@ -71,7 +75,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		btnAddFriend: {
 			flexDirection: 'row',
 			alignItems: 'center',
-			gap: size.s_8
+			gap: size.s_4
 		},
 
 		addFriendText: {
@@ -231,7 +235,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 			flexWrap: 'nowrap',
 			overflow: 'hidden'
 		},
-		textQuantityPending: { fontSize: size.s_12, color: 'white' },
+		textQuantityPending: { fontSize: size.s_10, color: 'white' },
 		wrapperSearch: {
 			flex: 1,
 			flexDirection: 'row',
@@ -258,19 +262,16 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 			height: size.s_36
 		},
 		btnSearchWrapper: {
-			paddingLeft: size.s_18,
-			paddingRight: size.s_10,
-			paddingVertical: size.s_16
+			paddingRight: size.s_18,
+			paddingVertical: size.s_10
 		},
 		btnSearch: {
-			backgroundColor: colors.primary,
-			width: size.s_42,
-			height: size.s_42,
-			borderRadius: size.s_42,
+			backgroundColor: colors.tertiary,
+			width: size.s_32,
+			height: size.s_32,
+			borderRadius: size.s_32,
 			alignItems: 'center',
-			justifyContent: 'center',
-			borderWidth: 1,
-			borderColor: colors.border
+			justifyContent: 'center'
 		},
 		wrapperItemActivity: {
 			flexDirection: 'row',
@@ -278,9 +279,7 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 			gap: size.s_6,
 			paddingRight: size.s_10,
 			borderRadius: size.s_12,
-			backgroundColor: colors.primary,
-			borderColor: colors.secondaryLight,
-			borderWidth: 1,
+			backgroundColor: colors.tertiary,
 			maxWidth: size.s_220,
 			marginRight: size.s_10
 		},
@@ -319,15 +318,14 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		},
 		quantityPendingContainer: {
 			backgroundColor: baseColor.redStrong,
-			minWidth: size.s_20,
+			minWidth: size.s_16,
 			paddingHorizontal: size.s_2,
-			height: size.s_20,
+			height: size.s_16,
 			alignItems: 'center',
 			justifyContent: 'center',
 			borderRadius: size.s_20,
 			position: 'absolute',
-			right: -size.s_8,
-			top: -size.s_8,
+			right: size.s_12,
 			zIndex: 10
 		}
 	});

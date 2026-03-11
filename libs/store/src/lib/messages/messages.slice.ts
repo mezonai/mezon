@@ -1013,6 +1013,7 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			...content,
 			t: content.t?.trim()
 		};
+		const stringifiedContent = JSON.stringify(trimContent);
 
 		const res = await client.updateChannelMessage(
 			session,
@@ -1021,7 +1022,7 @@ export const editMessageViaApi = createAsyncThunk('messages/editMessageViaApi', 
 			mode,
 			isPublic,
 			messageId || '0',
-			trimContent,
+			stringifiedContent,
 			mentions,
 			attachments,
 			hideEditted,
@@ -1135,22 +1136,27 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 		}
 
 		let res;
-		if (socketState.isConnected) {
-			res = await socket.writeChatMessage(
-				clanId,
-				channelId,
-				mode,
-				isPublic,
-				content,
-				mentions,
-				uploadedFiles,
-				references,
-				anonymous,
-				mentionEveryone,
-				'',
-				code
-			);
-		} else {
+
+		try {
+			if (socketState.isConnected) {
+				res = await socket.writeChatMessage(
+					clanId,
+					channelId,
+					mode,
+					isPublic,
+					content,
+					anonymous ? undefined : mentions,
+					uploadedFiles,
+					references,
+					anonymous,
+					mentionEveryone,
+					'',
+					code
+				);
+			} else {
+				throw new Error('Socket not connected');
+			}
+		} catch (err) {
 			res = await client.sendChannelMessage(
 				session,
 				clanId,
@@ -1158,7 +1164,7 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 				mode,
 				isPublic,
 				typeof content === 'object' ? JSON.stringify(content) : content,
-				mentions,
+				anonymous ? undefined : mentions,
 				uploadedFiles,
 				references,
 				anonymous,

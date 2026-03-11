@@ -9,7 +9,6 @@ import {
 	channelsActions,
 	getStore,
 	gifsStickerEmojiActions,
-	handleParticipantVoiceState,
 	onboardingActions,
 	selectAppChannelById,
 	selectBanMeInChannel,
@@ -52,7 +51,6 @@ import {
 	FOR_24_HOURS_SEC,
 	ONE_MILISECONDS,
 	ONE_MINUTE_MS,
-	ParticipantMeetState,
 	SubPanelName,
 	generateE2eId,
 	isBackgroundModeActive,
@@ -350,15 +348,6 @@ const ChannelMainContent = ({ channelId }: ChannelMainContentProps) => {
 	useEffect(() => {
 		if (currentChannelAppId && currentChannelAppClanId) {
 			dispatch(channelAppActions.setJoinChannelAppData({ dataUpdate: undefined }));
-			dispatch(
-				handleParticipantVoiceState({
-					clan_id: currentChannelAppClanId,
-					channel_id: currentChannelAppId,
-					display_name: userProfile?.user?.display_name ?? '',
-					state: ParticipantMeetState.LEAVE,
-					room_name: currentChannelAppId
-				})
-			);
 		}
 		dispatch(channelAppActions.setRoomId({ channelId, roomId: null }));
 

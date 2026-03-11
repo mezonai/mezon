@@ -20,7 +20,6 @@ import type {
 	ApiNotification,
 	ApiNotificationChannelCategorySetting,
 	ApiNotificationSetting,
-	ApiNotificationUserChannel,
 	ApiPermission,
 	ApiPermissionRoleChannel,
 	ApiPinMessage,
@@ -31,6 +30,7 @@ import type {
 	ClanUserListClanUser,
 	RoleUserListRoleUser
 } from 'mezon-js/api.gen';
+import type { ApiNotificationUserChannel } from 'node_modules/mezon-js/dist/api';
 import type { HTMLInputTypeAttribute } from 'react';
 import type { ILongPressType } from '../hooks';
 import type { CanvasDataResponse } from './htmlCanvas';
@@ -102,9 +102,8 @@ export type INotifiReactMessage = ApiNotifiReactMessage;
 
 export type IDefaultNotificationClan = ApiNotificationSetting;
 
-export type IDefaultNotificationCategory = ApiNotificationSetting & {
-	active?: number;
-	time_mute?: string | null;
+export type IDefaultNotificationCategory = ApiNotificationUserChannel & {
+	time_mute?: number;
 };
 
 export type IDefaultNotification = ApiNotificationSetting & {

@@ -388,7 +388,7 @@ const HeaderDirectMessage: React.FC<HeaderProps> = ({ from, styles, themeValue, 
 							<>
 								{((!isTypeDMGroup && !!currentDmGroup?.user_ids?.[0]) || isTypeDMGroup) && (
 									<TouchableOpacity style={styles.iconHeader} onPress={() => goToCall()}>
-										<Icons.CallIcon color={themeValue.text} width={size.s_18} height={size.s_18} />
+										<Icons.CallIcon color={themeValue.text} width={size.s_16} height={size.s_16} />
 									</TouchableOpacity>
 								)}
 								{!isTypeDMGroup && (

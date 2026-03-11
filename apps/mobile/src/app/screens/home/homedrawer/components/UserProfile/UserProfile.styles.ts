@@ -2,7 +2,7 @@ import type { Attributes } from '@mezon/mobile-ui';
 import { baseColor, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
-export const style = (colors: Attributes, isTabletLandscape: boolean) =>
+export const style = (colors: Attributes, isTabletLandscape: boolean, isBlocked?: boolean) =>
 	StyleSheet.create({
 		wrapper: {
 			width: '100%',
@@ -206,7 +206,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		},
 		transferFundsButton: {
 			position: 'absolute',
-			right: size.s_50,
+			right: isBlocked ? size.s_10 : size.s_50,
 			top: size.s_10,
 			padding: size.s_6,
 			borderRadius: size.s_20,

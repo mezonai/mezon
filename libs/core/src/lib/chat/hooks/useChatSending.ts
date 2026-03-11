@@ -17,7 +17,7 @@ import { useMezon } from '@mezon/transport';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api.gen';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 export type UseChatSendingOptions = {
@@ -57,6 +57,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 	const topicAnonymousMode = useSelector(selectTopicAnonymousMode);
 	const initTopicMessageId = useSelector(selectInitTopicMessageId);
 	const { clientRef, sessionRef, socketRef } = useMezon();
+	const isCreatingTopicRef = useRef(false);
 
 	const createTopic = useCallback(async () => {
 		const body: ApiSdTopicRequest = {
@@ -140,29 +141,38 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 
 			if (fromTopic) {
 				if (!currentTopicId) {
-					const topic = (await createTopic()) as ApiSdTopic;
-					if (!topic) {
+					if (isCreatingTopicRef.current) {
 						return;
 					}
+					isCreatingTopicRef.current = true;
 
-					await dispatch(
-						topicsActions.handleSendTopic({
-							clanId: getClanId as string,
-							channelId: channelIdOrDirectId as string,
-							mode,
-							anonymous: false,
-							attachments,
-							code: 0,
-							content,
-							isMobile,
-							isPublic,
-							mentionEveryone,
-							mentions,
-							references,
-							topicId: topic?.id as string
-						})
-					);
-					return dispatch(topicsActions.setCurrentTopicId(topic?.id as string));
+					try {
+						const topic = (await createTopic()) as ApiSdTopic;
+						if (!topic) {
+							return;
+						}
+
+						await dispatch(
+							topicsActions.handleSendTopic({
+								clanId: getClanId as string,
+								channelId: channelIdOrDirectId as string,
+								mode,
+								anonymous: false,
+								attachments,
+								code: 0,
+								content,
+								isMobile,
+								isPublic,
+								mentionEveryone,
+								mentions,
+								references,
+								topicId: topic?.id as string
+							})
+						);
+						return dispatch(topicsActions.setCurrentTopicId(topic?.id as string));
+					} finally {
+						isCreatingTopicRef.current = false;
+					}
 				}
 
 				dispatch(
@@ -258,21 +268,25 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				t: content.t?.trim()
 			};
 
-			if (socketState.isConnected) {
-				await socket.updateChatMessage(
-					getClanId || '0',
-					channelIdOrDirectId ?? '0',
-					mode,
-					isPublic,
-					messageId,
-					trimContent,
-					mentions,
-					attachments,
-					hide_editted,
-					topic_id || '0',
-					!!isTopic
-				);
-			} else {
+			try {
+				if (socketState.isConnected) {
+					await socket.updateChatMessage(
+						getClanId || '0',
+						channelIdOrDirectId ?? '0',
+						mode,
+						isPublic,
+						messageId,
+						trimContent,
+						mentions,
+						attachments,
+						hide_editted,
+						topic_id || '0',
+						!!isTopic
+					);
+				} else {
+					throw new Error('Socket not connected'); // bắt buộc fallback
+				}
+			} catch {
 				await client.updateChannelMessage(
 					session,
 					getClanId || '0',
@@ -280,7 +294,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					mode,
 					isPublic,
 					messageId || '0',
-					trimContent,
+					JSON.stringify(trimContent),
 					mentions,
 					attachments,
 					hide_editted,

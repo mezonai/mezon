@@ -1,13 +1,5 @@
-import {
-	channelMembersActions,
-	clansActions,
-	getStoreAsync,
-	handleParticipantVoiceState,
-	selectCurrentClanId,
-	selectVoiceInfo,
-	useAppDispatch
-} from '@mezon/store';
-import { ParticipantMeetState, type RemoveChannelUsers, type RemoveClanUsers } from '@mezon/utils';
+import { channelMembersActions, clansActions, selectCurrentClanId, useAppDispatch } from '@mezon/store';
+import type { RemoveChannelUsers, RemoveClanUsers } from '@mezon/utils';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../../auth/hooks/useAuth';
@@ -29,19 +21,6 @@ export function useChannelMembersActions() {
 
 	const removeMemberClan = useCallback(
 		async ({ clanId, channelId, userIds }: RemoveClanUsers) => {
-			const state = (await getStoreAsync()).getState();
-			const currentVoice = selectVoiceInfo(state);
-			if (currentVoice?.clanId === clanId) {
-				await dispatch(
-					handleParticipantVoiceState({
-						clan_id: clanId,
-						channel_id: currentVoice.channelId,
-						display_name: userProfile?.user?.display_name ?? '',
-						state: ParticipantMeetState.LEAVE,
-						room_name: currentVoice.roomId || 'leave'
-					})
-				);
-			}
 			if (userIds.length > 0) {
 				await dispatch(clansActions.removeClanUsers({ clanId, userIds }));
 			} else {

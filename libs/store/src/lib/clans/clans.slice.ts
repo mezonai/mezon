@@ -222,6 +222,38 @@ export const fetchClansCached = async (
 	};
 };
 
+type UpdateUserName = {
+	username?: string;
+};
+
+export const updateUsername = createAsyncThunk('clans/updateUsername', async ({ username }: UpdateUserName, thunkAPI) => {
+	try {
+		const mezon = ensureClient(getMezonCtx(thunkAPI));
+
+		const response = await mezon.client.updateUsername(mezon.session, { username });
+		if (!response) {
+			return thunkAPI.rejectWithValue([]);
+		}
+		const sessionState = mezon?.session;
+		if (response?.refresh_token && response?.token) {
+			return await mezon?.refreshSession(
+				{
+					...sessionState,
+					is_remember: sessionState.is_remember ?? false,
+					username,
+					refresh_token: response.refresh_token,
+					token: response.token
+				},
+				true
+			);
+		}
+		return false;
+	} catch (error) {
+		captureSentryError(error, 'clans/updateUsername');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export type FetchClansPayload = {
 	clans: IClan[];
 	fromCache?: boolean;
@@ -978,6 +1010,7 @@ export const clansActions = {
 	removeClanUsers,
 	changeCurrentClan,
 	updateUser,
+	updateUsername,
 	deleteClan,
 	joinClan,
 	transferClan,

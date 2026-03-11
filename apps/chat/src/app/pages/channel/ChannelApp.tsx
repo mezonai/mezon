@@ -4,7 +4,6 @@ import {
 	generateMeetToken,
 	getStore,
 	giveCoffeeActions,
-	handleParticipantVoiceState,
 	selectAllAccount,
 	selectChannelAppChannelId,
 	selectChannelAppClanId,
@@ -19,9 +18,8 @@ import {
 } from '@mezon/store';
 import { Loading } from '@mezon/ui';
 import type { ApiChannelAppResponseExtend } from '@mezon/utils';
-import { ParticipantMeetState } from '@mezon/utils';
 import { Track } from 'livekit-client';
-import React, { useCallback, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 function AudioConference() {
@@ -86,15 +84,6 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 		const currentChannelAppId = selectChannelAppChannelId(store.getState());
 		if (currentChannelAppId && currentChannelAppClanId) {
 			dispatch(channelAppActions.setJoinChannelAppData({ dataUpdate: undefined }));
-			dispatch(
-				handleParticipantVoiceState({
-					clan_id: currentChannelAppClanId,
-					channel_id: currentChannelAppId,
-					display_name: userProfile?.user?.display_name ?? '',
-					state: ParticipantMeetState.LEAVE,
-					room_name: roomId as string
-				})
-			);
 		}
 		dispatch(channelAppActions.setRoomId({ channelId: appChannel?.channel_id as string, roomId: null }));
 		dispatch(channelAppActions.setChannelId(appChannel?.channel_id || '0'));
@@ -135,39 +124,6 @@ export const ChannelApps = React.memo(({ appChannel }: { appChannel: ApiChannelA
 			handleTokenListerner();
 		}
 	}, [sendTokenEvent]);
-
-	const participantMeetState = useCallback(
-		async (state: ParticipantMeetState, channelId: string) => {
-			try {
-				await dispatch(
-					handleParticipantVoiceState({
-						clan_id: appChannel.clan_id ?? '',
-						channel_id: channelId,
-						display_name: userProfile?.user?.display_name ?? '',
-						state,
-						room_name: roomId as string
-					})
-				);
-			} catch (err) {
-				console.error('Failed to update participant state:', err);
-			}
-		},
-		[dispatch, appChannel, userProfile?.user?.display_name]
-	);
-
-	useEffect(() => {
-		if (!appChannel?.app_url) return;
-
-		const joinRoom = async () => {
-			try {
-				await participantMeetState(ParticipantMeetState.JOIN, appChannel.channel_id as string);
-			} catch (err) {
-				console.error('Failed to join room:', err);
-			}
-		};
-
-		joinRoom();
-	}, [appChannel]);
 
 	return appChannel?.app_url ? (
 		<div className="relative w-full h-full rounded-b-lg">

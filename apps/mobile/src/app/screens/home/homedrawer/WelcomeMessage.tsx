@@ -96,7 +96,7 @@ const WelcomeMessage = React.memo(({ channelId, message }: IWelcomeMessageProps)
 				<Icons.ClansOpenIcon color={themeValue.channelNormal} width={size.s_40} height={size.s_40} />
 			)
 		) : isPrivate ? (
-			<Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_40} height={size.s_40} />
+			<Icons.ThreadLockIcon color={themeValue.channelNormal} width={size.s_40} height={size.s_40} />
 		) : (
 			<Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_40} height={size.s_40} />
 		);

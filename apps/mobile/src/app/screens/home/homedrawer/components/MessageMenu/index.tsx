@@ -213,7 +213,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			},
 			title: t('menu.closeDm'),
 			isShow: !isGroup,
-			icon: <MezonIconCDN icon={IconCDN.closeDMIcon} color={baseColor.redStrong} customStyle={{ marginBottom: size.s_4 }} />,
+			icon: <Icons.CloseDMIcon color={baseColor.redStrong} width={size.s_20} height={size.s_20} />,
 			textStyle: [styles.menuTextMarginLeft, styles.redText]
 		},
 		{
@@ -227,20 +227,20 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				!isChatWithMyself,
 			icon:
 				infoFriend?.state === EStateFriend.FRIEND ? (
-					<MezonIconCDN icon={IconCDN.removeFriend} color={baseColor.redStrong} customStyle={{ marginBottom: size.s_2 }} />
+					<Icons.RemoveFriendIcon color={baseColor.redStrong} width={size.s_20} height={size.s_20} />
 				) : (
-					<Icons.AddFriendIcon color={baseColor.redStrong} width={size.s_20} height={size.s_20} />
+					<Icons.AddFriendIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 				),
-			textStyle: [styles.menuTextMarginLeft]
+			textStyle: [styles.menuTextMarginLeft, infoFriend?.state === EStateFriend.FRIEND && styles.redText]
 		},
 		{
 			onPress: didIBlockUser ? handleUnblockFriend : handleBlockFriend,
 			title: didIBlockUser ? t('menu.unblockUser') : t('menu.blockUser'),
 			isShow: !isGroup && (infoFriend?.state === EStateFriend.FRIEND || didIBlockUser) && !isChatWithMyself,
 			icon: didIBlockUser ? (
-				<MezonIconCDN icon={IconCDN.unblockUser} color={baseColor.redStrong} />
+				<Icons.UnblockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 			) : (
-				<MezonIconCDN icon={IconCDN.blockUser} color={baseColor.redStrong} />
+				<Icons.BlockIcon color={baseColor.redStrong} width={size.s_20} height={size.s_20} />
 			),
 			textStyle: [styles.menuTextMarginLeft, styles.redText]
 		}
@@ -271,7 +271,7 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		{
 			onPress: async () => await handleMarkAsRead(messageInfo?.channel_id ?? ''),
 			title: t('menu.markAsRead'),
-			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />,
+			icon: <Icons.MarkAsReadIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />,
 			isShow: !isChatWithMyself
 		}
 	];
@@ -312,9 +312,9 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 				dismiss();
 			},
 			icon: isDmUnmute ? (
-				<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />
+				<Icons.UnmuteIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 			) : (
-				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.textStrong} />
+				<Icons.MuteChannelIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 			),
 			isShow: !isChatWithMyself
 		}

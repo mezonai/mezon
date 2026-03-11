@@ -100,7 +100,7 @@ const MessageModalImage = () => {
 					direction === 'before'
 						? currentAttachments?.[currentAttachments.length - 1]?.create_time_seconds
 						: currentAttachments?.[0]?.create_time_seconds;
-				const timestampNumber = timestamp ? Math.floor(new Date(timestamp).getTime() / 1000) : undefined;
+				const timestampNumber = timestamp ? Math.floor(Number(timestamp)) : undefined;
 
 				const clanId = currentClanId === '0' ? '0' : currentClanId;
 
@@ -553,7 +553,11 @@ const SenderUser = () => {
 			<div className="flex flex-col justify-between ">
 				<div className="text-[14px] font-semibold text-textDarkTheme truncate max-sm:w-12">{displayName}</div>
 				<div className="text-[12px] text-bgTextarea truncate max-sm:w-12">
-					{attachment?.create_time ? formatDateI18n(new Date(attachment.create_time || ''), 'en', 'dd/MM/yyyy') : 'N/A'}
+					{attachment?.create_time
+						? formatDateI18n(new Date(attachment.create_time), 'en', 'dd/MM/yyyy')
+						: attachment?.create_time_seconds
+							? formatDateI18n(new Date(Number(attachment.create_time_seconds) * 1000), 'en', 'dd/MM/yyyy')
+							: 'N/A'}
 				</div>
 			</div>
 		</div>

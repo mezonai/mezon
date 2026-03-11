@@ -83,27 +83,28 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 	const handleScheduleMute = (duration: number) => {
 		const payload: MuteCatePayload = {
 			id: category?.id,
-			active: EMuteState.MUTED,
-			mute_time: duration !== Infinity ? duration : 0,
+			mute_time: duration !== Infinity ? duration : EMuteState.MUTED_INFINITY,
 			clan_id: currentClanId || ''
 		};
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 	};
 
-	const handleMuteCategory = (active: number) => {
+	const handleMuteCategory = (mute_time: number) => {
 		const payload: MuteCatePayload = {
 			id: category?.id,
-			active,
-			mute_time: 0,
+			mute_time,
 			clan_id: currentClanId || ''
 		};
+		if (mute_time === EMuteState.UN_MUTE) {
+			setMuteUntil('');
+		}
 		dispatch(defaultNotificationCategoryActions.setMuteCategory(payload));
 	};
 
 	useEffect(() => {
 		if (defaultCategoryNotificationSetting?.time_mute) {
-			const muteTime = new Date(defaultCategoryNotificationSetting.time_mute);
-			const now = new Date();
+			const muteTime = defaultCategoryNotificationSetting.time_mute;
+			const now = Date.now();
 			if (muteTime > now) {
 				const formattedTimeDifference = format(muteTime, 'dd/MM, HH:mm');
 				setMuteUntil(t('mutedUntil', { time: formattedTimeDifference }));
@@ -212,7 +213,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 				<ItemPanel onClick={collapseAllCategory}>{t('collapseAllCategories')}</ItemPanel>
 			</GroupPanels>
 			<GroupPanels>
-				{defaultCategoryNotificationSetting?.active === EMuteState.UN_MUTE ? (
+				{!defaultCategoryNotificationSetting?.time_mute ? (
 					<Menu
 						trigger="hover"
 						menu={menuMute}
@@ -223,7 +224,7 @@ const PanelCategory: React.FC<IPanelCategoryProps> = ({
 						onVisibleChange={handleOpenMenuMute}
 					>
 						<div>
-							<ItemPanel dropdown="change here" onClick={() => handleMuteCategory(EMuteState.MUTED)}>
+							<ItemPanel dropdown="change here" onClick={() => handleMuteCategory(EMuteState.MUTED_INFINITY)}>
 								{t('muteCategory')}
 							</ItemPanel>
 						</div>

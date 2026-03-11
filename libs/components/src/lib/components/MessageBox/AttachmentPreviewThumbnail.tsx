@@ -1,6 +1,7 @@
 import { Icons } from '@mezon/ui';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { RenderAttachmentThumbnail } from '../ThumbnailAttachmentRender';
 
 interface AttachmentPreviewThumbnailProps {
@@ -11,6 +12,7 @@ interface AttachmentPreviewThumbnailProps {
 }
 
 const AttachmentPreviewThumbnail: React.FC<AttachmentPreviewThumbnailProps> = ({ attachment, onRemove, indexOfItem, channelId }) => {
+	const { t } = useTranslation('message');
 	const handleRemove = () => {
 		if (onRemove) {
 			onRemove(channelId, indexOfItem);
@@ -22,22 +24,24 @@ const AttachmentPreviewThumbnail: React.FC<AttachmentPreviewThumbnailProps> = ({
 	const thumbnailAttachment = RenderAttachmentThumbnail({ attachment });
 
 	return (
-		<div
-			title={attachment.filename}
-			className="flex justify-center items-center p-2 mb-3 rounded bg-item-theme w-[216px] h-[216px] flex-shrink-0 border-theme-primary   relative"
-		>
-			<div className="cursor-pointer rounded-md flex flex-row justify-center items-center mb-2">
-				<div>{thumbnailAttachment}</div>
-				<div className=" flex flex-row w-21 top-[-1px] right-[-16px] bg-theme-contexify h-8 absolute  shadow-shadowInbox rounded-lg">
-					<button
-						onClick={handleRemove}
-						className="w-8 h-8 flex flex-row justify-center text-theme-primary items-center bg-item-hover text-theme-primary-hover"
-					>
-						<Icons.TrashIcon className="w-5 h-5 text-colorDanger hover:text-colorDangerHover" />
-					</button>
+		<div className="relative w-[216px] flex-shrink-0 mb-3">
+			<div className="absolute top-[-1px] -right-1 z-10 bg-theme-contexify h-8 w-8 rounded-lg shadow-shadowInbox flex items-center justify-center">
+				<button
+					onClick={handleRemove}
+					title={t('deleteMessageModal.removeAttachmentTitle')}
+					className="w-full h-full flex items-center justify-center text-theme-primary hover:bg-item-hover text-theme-primary-hover rounded-lg"
+				>
+					<Icons.TrashIcon className="w-5 h-5 text-colorDanger hover:text-colorDangerHover" />
+				</button>
+			</div>
+
+			<div title={attachment.filename} className="flex flex-col p-2 rounded bg-item-theme w-[216px] h-[216px] border-theme-primary">
+				<div className="relative flex-1 min-h-0 flex items-center justify-center overflow-hidden rounded-md">
+					<div className="min-w-0 min-h-0 w-full h-full flex items-center justify-center overflow-hidden">{thumbnailAttachment}</div>
 				</div>
-				<div className=" absolute bottom-0 mt-2 left-1 text-sm text-theme-primary ">
-					<p className="">{displayedFilename}</p>
+
+				<div className="flex-shrink-0 pt-1.5 pl-0.5 text-left">
+					<p className="text-sm text-theme-primary truncate">{displayedFilename}</p>
 				</div>
 			</div>
 		</div>

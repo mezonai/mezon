@@ -46,7 +46,8 @@ export const style = (colors: Attributes) =>
 			paddingBottom: size.s_100
 		},
 		separatorLine: {
-			width: '60%',
+			width: '50%',
+			height: 0.5,
 			marginTop: size.s_6,
 			alignSelf: 'center',
 			backgroundColor: colors.white

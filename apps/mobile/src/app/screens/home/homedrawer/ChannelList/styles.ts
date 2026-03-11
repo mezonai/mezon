@@ -7,7 +7,8 @@ export const style = (colors: Attributes, isTablet: boolean) =>
 		mainList: {
 			height: '100%',
 			flex: 1,
-			overflow: 'hidden'
+			overflow: 'hidden',
+			borderTopLeftRadius: size.s_20
 		},
 		channelListSearch: {
 			width: '100%',

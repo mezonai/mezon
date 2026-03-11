@@ -8,8 +8,7 @@ export const styles = StyleSheet.create({
 	tabBarIconContainer: {
 		alignItems: 'center',
 		gap: size.s_4,
-		borderRadius: size.s_40,
-		paddingVertical: size.s_6,
+		paddingVertical: size.s_4,
 		paddingHorizontal: size.s_10,
 		width: size.s_90
 	},

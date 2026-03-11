@@ -3,7 +3,7 @@ import type { LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { CacheMetadata } from '../cache-metadata';
-import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { createApiKey, createCacheMetadata, isCacheValid, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { ensureSession, getMezonCtx, type MezonValueContext } from '../helpers';
 
 export const CHANNEL_MEDIA_FEATURE_KEY = 'channelMedia';
@@ -77,6 +77,7 @@ export interface detailChannelTimelinePayload {
 	clan_id: string;
 	channel_id: string;
 	start_time_seconds: number;
+	noCache?: boolean;
 }
 
 export interface ChannelMediaChannelState {
@@ -88,6 +89,7 @@ export interface ChannelMediaState {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	eventsByChannel: Record<string, ChannelMediaChannelState>;
+	eventDetailCache: Record<string, { event: ChannelTimeline; cache: CacheMetadata }>;
 }
 
 type RootState = { [CHANNEL_MEDIA_FEATURE_KEY]: ChannelMediaState };
@@ -100,7 +102,7 @@ const fetchChannelMediaCached = async (getState: () => RootState, ensuredMezon: 
 
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
 
-	if (!shouldForceCall && channelData?.events?.length > 0) {
+	if (!shouldForceCall) {
 		return {
 			channelId: payload.channel_id,
 			events: channelData.events,
@@ -168,16 +170,37 @@ export const updateChannelTimeline = createAsyncThunk(
 	}
 );
 
+const detailChannelTimelineCached = async (getState: () => RootState, ensuredMezon: MezonValueContext, payload: detailChannelTimelinePayload) => {
+	const { noCache, ...requestPayload } = payload;
+	const currentState = getState();
+	const channelMediaState = currentState[CHANNEL_MEDIA_FEATURE_KEY];
+	const cached = channelMediaState.eventDetailCache[payload.id];
+	const apiKey = createApiKey('detailChannelTimeline', payload.id);
+
+	if (!noCache && cached && isCacheValid(cached.cache)) {
+		return {
+			channelId: payload.channel_id,
+			event: cached.event,
+			fromCache: true
+		};
+	}
+
+	const response = await ensuredMezon.client.detailChannelTimeline(ensuredMezon.session, requestPayload);
+	markApiFirstCalled(apiKey);
+
+	return {
+		channelId: payload.channel_id,
+		event: response.event as ChannelTimeline,
+		fromCache: false
+	};
+};
+
 export const detailChannelTimeline = createAsyncThunk(
 	'channelMedia/detailChannelTimeline',
 	async (payload: detailChannelTimelinePayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.detailChannelTimeline(mezon.session, payload);
-			return {
-				channelId: payload.channel_id,
-				event: response.event as ChannelTimeline
-			};
+			return await detailChannelTimelineCached(thunkAPI.getState as () => RootState, mezon, payload);
 		} catch (error) {
 			captureSentryError(error, 'channelMedia/detailChannelTimeline');
 			return thunkAPI.rejectWithValue(error);
@@ -188,7 +211,8 @@ export const detailChannelTimeline = createAsyncThunk(
 export const initialChannelMediaState: ChannelMediaState = {
 	loadingStatus: 'not loaded',
 	error: null,
-	eventsByChannel: {} as Record<string, ChannelMediaChannelState>
+	eventsByChannel: {} as Record<string, ChannelMediaChannelState>,
+	eventDetailCache: {}
 };
 
 export const channelMediaSlice = createSlice({
@@ -196,7 +220,13 @@ export const channelMediaSlice = createSlice({
 	initialState: initialChannelMediaState,
 	reducers: {
 		clearChannelMedia: (state, action: PayloadAction<{ channelId: string }>) => {
-			delete state.eventsByChannel[action.payload.channelId];
+			const channelId = action.payload.channelId;
+			delete state.eventsByChannel[channelId];
+			for (const id of Object.keys(state.eventDetailCache)) {
+				if (state.eventDetailCache[id].event.channel_id === channelId) {
+					delete state.eventDetailCache[id];
+				}
+			}
 		}
 	},
 	extraReducers: (builder) => {
@@ -266,7 +296,27 @@ export const channelMediaSlice = createSlice({
 			.addCase(updateChannelTimeline.rejected, (state, action) => {
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
-			});
+			})
+			.addCase(
+				detailChannelTimeline.fulfilled,
+				(
+					state,
+					action: PayloadAction<{
+						channelId: string;
+						event: ChannelTimeline;
+						fromCache?: boolean;
+					}>
+				) => {
+					const { event, fromCache } = action.payload;
+					if (!fromCache && event?.id) {
+						state.eventDetailCache[event.id] = {
+							event,
+							cache: createCacheMetadata(CHANNEL_MEDIA_CACHED_TIME)
+						};
+					}
+					state.loadingStatus = 'loaded';
+				}
+			);
 	}
 });
 

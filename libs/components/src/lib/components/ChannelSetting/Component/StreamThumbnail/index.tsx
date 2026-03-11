@@ -29,9 +29,11 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 	const channelId = (channel?.channel_id ?? channel?.id ?? '') as string;
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId));
 
-	const clanId = useAppSelector(selectCurrentChannelClanId);
-	const channelLabel = useAppSelector(selectCurrentChannelLabel);
+	const clanIdState = useAppSelector(selectCurrentChannelClanId);
+	const channelLabelState = useAppSelector(selectCurrentChannelLabel);
 
+	const clanId = currentChannel?.clan_id ?? channel?.clan_id ?? clanIdState;
+	const channelLabel = currentChannel?.channel_label ?? channel?.channel_label ?? channelLabelState;
 	const thumbnail = currentChannel?.channel_avatar || null;
 
 	const { sessionRef, clientRef } = useMezon();
@@ -132,7 +134,7 @@ const StreamThumbnailChannel = (props: StreamThumbnailChannelProps) => {
 				channelsActions.updateChannel({
 					channel_id: channelId,
 					channel_label: channelLabel,
-					category_id: undefined,
+					category_id: currentChannel?.category_id,
 					app_id: '0',
 					channel_avatar: attachment.url
 				})

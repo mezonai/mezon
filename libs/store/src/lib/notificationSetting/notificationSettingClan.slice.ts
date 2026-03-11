@@ -202,11 +202,6 @@ export const getDefaultNotificationClanState = (rootState: {
 	[DEFAULT_NOTIFICATION_CLAN_FEATURE_KEY]: DefaultNotificationClanState;
 }): DefaultNotificationClanState => rootState[DEFAULT_NOTIFICATION_CLAN_FEATURE_KEY];
 
-export const selectDefaultNotificationClan = createSelector(
-	[getDefaultNotificationClanState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => state.byClans[clanId]?.defaultNotificationClan
-);
-
 export const selectDefaultNotificationClanByClanId = createSelector(
 	[getDefaultNotificationClanState, (state: RootState, clanId: string) => clanId],
 	(state, clanId) => state.byClans[clanId]?.defaultNotificationClan

@@ -22,6 +22,7 @@ import { useSelector } from 'react-redux';
 import MezonAvatar from '../../componentUI/MezonAvatar';
 import MezonButton from '../../componentUI/MezonButton';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { Icons } from '../../componentUI/MobileIcons';
 import { AddStatusUserModal } from '../../components/AddStatusUserModal';
 import { CustomStatusUser } from '../../components/CustomStatusUser';
 import ImageNative from '../../components/ImageNative';
@@ -186,18 +187,19 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 	return (
 		<View style={styles.container}>
 			<View style={[styles.containerBackground, { backgroundColor: color }]}>
+				<MezonIconCDN icon={IconCDN.streamBanner} customStyle={styles.backgroundImage} useOriginalColor customResizeMode="cover" />
+				{isTabletLandscape && (
+					<TouchableOpacity style={styles.backgroundSetting} onPress={handleBack}>
+						<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+					</TouchableOpacity>
+				)}
 				<View style={[styles.backgroundListIcon, isTabletLandscape && { justifyContent: 'space-between' }]}>
-					{isTabletLandscape && (
-						<TouchableOpacity style={styles.backgroundSetting} onPress={handleBack}>
-							<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
-						</TouchableOpacity>
-					)}
 					<View style={styles.shopSettingRow}>
 						<TouchableOpacity style={styles.backgroundSetting} onPress={() => navigateToShopScreen()}>
-							<MezonIconCDN icon={IconCDN.shopSparkleIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+							<Icons.ShopIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.backgroundSetting} onPress={() => navigateToSettingScreen()}>
-							<MezonIconCDN icon={IconCDN.settingIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
+							<Icons.SettingIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 						</TouchableOpacity>
 					</View>
 				</View>
@@ -228,13 +230,11 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 						<StatusProfile />
 					</TouchableOpacity>
-					<View style={styles.badgeStatusTemp} />
-
 					<View style={styles.badgeStatus}>
-						<View style={styles.badgeStatusInside} />
+						<View style={styles.badgeStatusTemp} />
 						{!userCustomStatus && (
 							<TouchableOpacity activeOpacity={1} onPress={() => showUpdateCustomStatus()} style={styles.iconAddStatus}>
-								<MezonIconCDN icon={IconCDN.plusLargeIcon} height={size.s_12} width={size.s_12} color={themeValue.primary} />
+								<MezonIconCDN icon={IconCDN.plusLargeIcon} height={size.s_12} width={size.s_12} color={baseColor.white} />
 							</TouchableOpacity>
 						)}
 						<TouchableOpacity activeOpacity={1} onPress={() => showUpdateCustomStatus()}>
@@ -243,6 +243,16 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							</Text>
 						</TouchableOpacity>
 					</View>
+
+					<TouchableOpacity onPress={showUserStatusBottomSheet} style={styles.touchStatusMargin}>
+						<View style={styles.viewInfo}>
+							<Text style={styles.textName} numberOfLines={1}>
+								{displayName}
+							</Text>
+							<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
+						</View>
+						<Text style={styles.text}>{userProfile?.user?.username || ''}</Text>
+					</TouchableOpacity>
 				</View>
 			</View>
 
@@ -260,19 +270,10 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 			<ScrollView style={styles.contentWrapper} contentContainerStyle={styles.scrollContentContainer}>
 				<View style={styles.contentContainer}>
-					<TouchableOpacity onPress={showUserStatusBottomSheet} style={styles.touchStatusMargin}>
-						<View style={styles.viewInfo}>
-							<Text style={styles.textName} numberOfLines={1}>
-								{displayName}
-							</Text>
-							<MezonIconCDN icon={IconCDN.chevronDownSmallIcon} height={size.s_18} width={size.s_18} color={themeValue.text} />
-						</View>
-						<Text style={styles.text}>{userProfile?.user?.username || ''}</Text>
-					</TouchableOpacity>
 					{!!walletDetail?.address && (
 						<View>
 							<TouchableOpacity onPress={showSendTokenBottomSheet} style={styles.tokenRow}>
-								<MezonIconCDN icon={IconCDN.checkmarkSmallIcon} width={size.s_20} height={size.s_20} color={baseColor.azureBlue} />
+								<Icons.BalanceIcon color={baseColor.azureBlue} width={size.s_20} height={size.s_20} />
 								<View style={styles.token}>
 									<Text
 										style={styles.text}
@@ -287,7 +288,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 								}}
 								style={styles.tokenRowMargin}
 							>
-								<MezonIconCDN icon={IconCDN.sendMoneyIcon} height={size.s_22} width={size.s_22} color={baseColor.bgSuccess} />
+								<Icons.TransferIcon width={size.s_20} height={size.s_20} />
 								<View style={styles.token}>
 									<Text style={styles.text}>{t('screenStack:settingStack.sendToken')}</Text>
 								</View>
@@ -300,7 +301,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 								}}
 								style={styles.tokenRowMargin}
 							>
-								<MezonIconCDN icon={IconCDN.historyIcon} height={size.s_24} width={size.s_24} color={baseColor.bgSuccess} />
+								<Icons.HistoryTransactionIcon color={baseColor.azureBlue} width={size.s_20} height={size.s_20} />
 								<View style={styles.token}>
 									<Text style={styles.text}>{t('screenStack:settingStack.historyTransaction')}</Text>
 								</View>
@@ -313,7 +314,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							<MezonButton
 								containerStyle={styles.button}
 								onPress={() => navigateToProfileSetting()}
-								icon={<MezonIconCDN icon={IconCDN.pencilIcon} height={size.s_18} width={size.s_18} color={baseColor.white} />}
+								icon={<Icons.EditIcon color={baseColor.white} width={size.s_18} height={size.s_18} />}
 								title={t('editStatus')}
 								titleStyle={styles.whiteText}
 							/>

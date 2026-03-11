@@ -8,12 +8,11 @@ import { useTranslation } from 'react-i18next';
 import ButtonCopy from '../../../ButtonSwitchCustom/CopyButtonComponent';
 
 interface VoiceContextMenuProps {
-	roomName?: string;
 	room?: Room;
 	groupMembers?: UsersClanEntity[];
 }
 
-export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ roomName, room, groupMembers }) => {
+export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ room, groupMembers }) => {
 	const { t } = useTranslation('contextMenu');
 	const dispatch = useAppDispatch();
 	const contextMenu = useAppSelector(selectVoiceContextMenu);
@@ -78,7 +77,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ roomName, ro
 		setIsKicking(true);
 		dispatch(voiceActions.closeVoiceContextMenu());
 
-		if (!roomName) {
+		if (!room?.name) {
 			isKickingRef.current = false;
 			setIsKicking(false);
 			return;
@@ -87,7 +86,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ roomName, ro
 		try {
 			await dispatch(
 				voiceActions.kickVoiceMember({
-					room_name: roomName,
+					room_name: room?.name,
 					username: member?.user?.id
 				})
 			).unwrap();
@@ -97,7 +96,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ roomName, ro
 			isKickingRef.current = false;
 			setIsKicking(false);
 		}
-	}, [roomName, dispatch, member?.user?.id]);
+	}, [dispatch, member?.user?.id, room]);
 
 	const handleMuteMember = useCallback(async () => {
 		if (isMutingRef.current) return;
@@ -106,7 +105,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ roomName, ro
 		setIsMuting(true);
 		dispatch(voiceActions.closeVoiceContextMenu());
 
-		if (!roomName) {
+		if (!room?.name) {
 			isMutingRef.current = false;
 			setIsMuting(false);
 			return;
@@ -115,7 +114,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ roomName, ro
 		try {
 			await dispatch(
 				voiceActions.muteVoiceMember({
-					room_name: roomName,
+					room_name: room?.name,
 					username: member?.user?.id
 				})
 			).unwrap();
@@ -125,7 +124,7 @@ export const VoiceContextMenu: React.FC<VoiceContextMenuProps> = ({ roomName, ro
 			isMutingRef.current = false;
 			setIsMuting(false);
 		}
-	}, [roomName, dispatch, member?.user?.id]);
+	}, [room, dispatch, member?.user?.id]);
 
 	useOnClickOutside(focusRef, () => {
 		if (contextMenu) {

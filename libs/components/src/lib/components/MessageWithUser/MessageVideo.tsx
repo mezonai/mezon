@@ -193,7 +193,7 @@ function useVideoMediaDimensions(attachmentData: ApiMessageAttachment, isMobile:
 	const mediaBoxStyle = isPreview
 		? { width: '100%', height: '100%' }
 		: { width: '100%', maxWidth: `${width}px`, aspectRatio: `${width} / ${height}` };
-	const mediaStyle = { width: '100%', height: '100%' };
+	const mediaStyle: React.CSSProperties = { width, maxWidth: '100%', aspectRatio: `${width} / ${height}` };
 
 	return { width, height, mediaBoxStyle, mediaStyle };
 }
@@ -272,7 +272,7 @@ function MacElectronVideo({ attachmentData, isMobile = false, isPreview = false,
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isIntersecting = useIsIntersecting(containerRef, observeIntersection);
 	const { status: probeStatus, errorMessage, codecInfo } = useVideoProbe(attachmentData.url, isIntersecting);
-	const { mediaBoxStyle, mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
+	const { mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
 	const handleDownloadVideo = useDownloadVideo(attachmentData.url, attachmentData.filename);
 
 	const videoRef = useRef<HTMLVideoElement>(null);
@@ -310,7 +310,7 @@ function MacElectronVideo({ attachmentData, isMobile = false, isPreview = false,
 	}, [showControl]);
 
 	return (
-		<div ref={containerRef} className="relative overflow-hidden group rounded-lg" style={mediaBoxStyle}>
+		<div ref={containerRef} className="relative overflow-hidden group rounded-lg max-w-full">
 			{!isIntersecting && <VideoSkeleton style={mediaStyle} />}
 
 			{isIntersecting && probeStatus === 'probing' && <VideoSkeleton style={mediaStyle} />}
@@ -381,7 +381,7 @@ function DefaultVideo({ attachmentData, isMobile = false, isPreview = false, obs
 	const { t } = useTranslation('media');
 	const containerRef = useRef<HTMLDivElement>(null);
 	const isIntersecting = useIsIntersecting(containerRef, observeIntersection);
-	const { mediaBoxStyle, mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
+	const { mediaStyle } = useVideoMediaDimensions(attachmentData, isMobile, isPreview);
 	const handleDownloadVideo = useDownloadVideo(attachmentData.url, attachmentData.filename);
 
 	const videoRef = useRef<HTMLVideoElement>(null);
@@ -418,7 +418,7 @@ function DefaultVideo({ attachmentData, isMobile = false, isPreview = false, obs
 	}, [showControl]);
 
 	return (
-		<div ref={containerRef} className="relative overflow-hidden group rounded-lg" style={mediaBoxStyle}>
+		<div ref={containerRef} className="relative overflow-hidden group rounded-lg max-w-full">
 			{!isIntersecting && <VideoSkeleton style={mediaStyle} />}
 
 			{isIntersecting && (

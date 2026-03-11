@@ -7,7 +7,6 @@ import {
 	selectAllAccount,
 	selectExternalToken,
 	selectGuestAccessToken,
-	selectGuestUserId,
 	selectJoinCallExtStatus,
 	useAppDispatch,
 	voiceActions
@@ -86,7 +85,6 @@ export default function PreJoinCalling() {
 
 	const getExternalToken = useSelector(selectExternalToken);
 	const getJoinCallExtStatus = useSelector(selectJoinCallExtStatus);
-	const getGuestUserId = useSelector(selectGuestUserId);
 	const getGuestAccessToken = useSelector(selectGuestAccessToken);
 
 	function decodeJWT(token: string) {
@@ -166,7 +164,6 @@ export default function PreJoinCalling() {
 	}, []);
 
 	const isUser = getDisplayName && getAvatar;
-	const isGuest = getGuestAccessToken && getGuestUserId && getGuestUserId !== '0';
 
 	// Handle Join Meeting
 	const joinMeeting = useCallback(async () => {

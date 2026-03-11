@@ -38,7 +38,7 @@ const BottomsheetSelectChannel = ({ data, onSelect, selectedChannelId }: IBottom
 			return <Icons.ClansOpenIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />;
 		} else {
 			if (isPrivate) {
-				return <Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />;
+				return <Icons.ThreadLockIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />;
 			}
 			return <Icons.ThreadIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />;
 		}

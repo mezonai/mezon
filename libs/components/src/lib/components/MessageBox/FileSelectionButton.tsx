@@ -16,6 +16,7 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 		if (e.target.files) {
 			const fileArr = Array.from(e.target.files);
 			if (fileArr.length + uploadedAttachmentsInChannel.length > MAX_FILE_ATTACHMENTS) {
+				e.target.value = '';
 				setOverUploadingState(true, UploadLimitReason.COUNT);
 				return;
 			}
@@ -25,6 +26,7 @@ function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 
 			if (oversizedFile) {
 				const limit = getLimit(oversizedFile);
+				e.target.value = '';
 				setOverUploadingState(true, UploadLimitReason.SIZE, limit);
 				return;
 			}

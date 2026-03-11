@@ -107,13 +107,13 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 		{
 			title: t('menu.watchMenu.markAsRead'),
 			onPress: () => handleMarkAsRead(),
-			icon: <MezonIconCDN icon={IconCDN.eyeIcon} color={themeValue.textStrong} />,
+			icon: <Icons.MarkAsReadIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />,
 			isShow: !isStreamOrVoiceChannel
 		},
 		{
 			title: t('menu.manageThreadMenu.copyLink'),
 			onPress: () => handleCopyLink(),
-			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.textStrong} />,
+			icon: <Icons.CopyLinkIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />,
 			isShow: channel?.type === ChannelType.CHANNEL_TYPE_THREAD
 		}
 	];
@@ -125,21 +125,17 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				isFavorite ? removeFavoriteChannel() : markFavoriteChannel();
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
-			icon: (
-				<MezonIconCDN
-					icon={IconCDN.favoriteFilledIcon}
-					color={themeValue.textStrong}
-					width={30}
-					height={30}
-					customStyle={{ marginLeft: -size.s_2, marginBottom: size.s_2 }}
-				/>
+			icon: isFavorite ? (
+				<Icons.UnfavoriteIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
+			) : (
+				<Icons.FavoriteIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 			),
 			textStyle: { marginLeft: -size.s_2 }
 		},
 		{
 			title: t('menu.inviteMenu.copyLink'),
 			onPress: () => handleCopyLink(),
-			icon: <MezonIconCDN icon={IconCDN.linkIcon} color={themeValue.textStrong} />
+			icon: <Icons.CopyLinkIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 		}
 	];
 
@@ -191,9 +187,9 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 			},
 			icon: isChannelUnmute ? (
-				<MezonIconCDN icon={IconCDN.bellIcon} color={themeValue.textStrong} />
+				<Icons.UnmuteIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 			) : (
-				<MezonIconCDN icon={IconCDN.bellSlashIcon} color={themeValue.text} />
+				<Icons.MuteChannelIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
 			),
 			isShow: true
 		},
@@ -206,7 +202,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 				};
 				DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: false, data });
 			},
-			icon: <MezonIconCDN icon={IconCDN.channelNotificaitionIcon} color={themeValue.textStrong} />,
+			icon: <Icons.NoitifficationSettingsIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />,
 			isShow: true
 		}
 	];
@@ -239,7 +235,7 @@ export default function ChannelMenu({ channel }: IChannelMenuProps) {
 					}
 				});
 			},
-			icon: <MezonIconCDN icon={IconCDN.settingIcon} color={themeValue.textStrong} />,
+			icon: <Icons.SettingIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />,
 			isShow: isCanManageChannel
 		},
 		{

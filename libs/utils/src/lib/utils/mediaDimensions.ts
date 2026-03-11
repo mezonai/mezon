@@ -1,5 +1,5 @@
 import { calculateExtendedPreviewDimensions, calculateInlineImageDimensions, calculateVideoDimensions, REM } from '../helper';
-import { ApiMediaExtendedPreview, ApiPhoto, ApiVideo } from '../types';
+import type { ApiMediaExtendedPreview, ApiPhoto, ApiVideo } from '../types';
 
 const SMALL_IMAGE_THRESHOLD = 12;
 const MIN_MESSAGE_LENGTH_FOR_BLUR = 40;

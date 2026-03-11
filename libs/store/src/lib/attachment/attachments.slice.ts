@@ -324,7 +324,7 @@ export const attachmentSlice = createSlice({
 							const newItems = attachments.filter((att) => !existingUrls.has(att.url));
 							const newAttachments = [...currentAttachments, ...newItems];
 
-							pagination.hasMoreBefore = attachments.length >= limit;
+							pagination.hasMoreBefore = attachments.length >= limit && newItems.length > 0;
 							state.listAttachmentsByChannel[channelId].attachments = newAttachments;
 						}
 					} else if (direction === 'after') {
@@ -336,7 +336,7 @@ export const attachmentSlice = createSlice({
 							const newItems = attachments.filter((att) => !existingUrls.has(att.url));
 							const newAttachments = [...newItems, ...currentAttachments];
 
-							pagination.hasMoreAfter = attachments.length >= limit;
+							pagination.hasMoreAfter = attachments.length >= limit && newItems.length > 0;
 							state.listAttachmentsByChannel[channelId].attachments = newAttachments;
 						}
 					} else {

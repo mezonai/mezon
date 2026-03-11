@@ -94,6 +94,8 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 		fromTopic: true
 	});
 
+	const isSendingRef = useRef(false);
+
 	const handleSend = useCallback(
 		async (
 			content: IMessageSendPayload,
@@ -107,16 +109,23 @@ const TopicDiscussionBox = ({ currentTopicId }: { currentTopicId: string }) => {
 			const isFileOnly = !content?.t && safeAttachments.length > 0;
 			if (!content?.t && safeAttachments.length === 0) return;
 
-			await sendMessage(content, mentions, safeAttachments, references, false, false, false, 0);
+			if (isSendingRef.current) return;
+			isSendingRef.current = true;
 
-			dispatch(
-				referencesActions.setAtachmentAfterUpload({
-					channelId: currentInputChannelId,
-					files: []
-				})
-			);
+			try {
+				await sendMessage(content, mentions, safeAttachments, references, false, false, false, 0);
 
-			setIsFetchMessageDone(true);
+				dispatch(
+					referencesActions.setAtachmentAfterUpload({
+						channelId: currentInputChannelId,
+						files: []
+					})
+				);
+
+				setIsFetchMessageDone(true);
+			} finally {
+				isSendingRef.current = false;
+			}
 		},
 		[sendMessage, sessionUser, dispatch, currentInputChannelId]
 	);

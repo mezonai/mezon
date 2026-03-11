@@ -1,6 +1,6 @@
 import { Icons } from '@mezon/ui';
 import { NOISE_SUPPRESSION_NORMALIZATION_FACTOR } from '@mezon/utils';
-import { DeepFilterNet3Processor, DeepFilterNoiseFilterProcessor } from 'deepfilternet3-noise-filter';
+import { DeepFilterNet3Core, DeepFilterNoiseFilterProcessor } from 'deepfilternet3-noise-filter';
 import type { ChangeEvent } from 'react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 
@@ -38,7 +38,7 @@ export const NoiseSuppressionControl = forwardRef<NoiseSuppressionControlRef, No
 		const destinationNodeRef = useRef<MediaStreamAudioDestinationNode | null>(null);
 		const analyserRef = useRef<AnalyserNode | null>(null);
 		const audioContextRef = useRef<AudioContext | null>(null);
-		const noiseProcessorRef = useRef<DeepFilterNet3Processor | null>(null);
+		const noiseProcessorRef = useRef<DeepFilterNet3Core | null>(null);
 		const noiseWorkletNodeRef = useRef<AudioWorkletNode | null>(null);
 
 		const normalizedNoiseSuppressionLevel = useMemo(
@@ -100,7 +100,7 @@ export const NoiseSuppressionControl = forwardRef<NoiseSuppressionControlRef, No
 			if (!ctx) return false;
 
 			if (!noiseProcessorRef.current) {
-				const processor = new DeepFilterNet3Processor({
+				const processor = new DeepFilterNet3Core({
 					sampleRate: ctx.sampleRate,
 					noiseReductionLevel: 0,
 					assetConfig: {
@@ -227,13 +227,12 @@ export const NoiseSuppressionControl = forwardRef<NoiseSuppressionControlRef, No
 					<button
 						onClick={toggleNoiseSuppression}
 						disabled={!isSupported}
-						className={`w-10 h-10 rounded-md flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed ${
-							isSupported
+						className={`w-10 h-10 rounded-md flex items-center justify-center transition disabled:opacity-50 disabled:cursor-not-allowed ${isSupported
 								? isEnabled
 									? 'bg-item-theme-hover text-theme-primary-active'
 									: 'bg-item-theme-hover text-red-500'
 								: 'bg-item-theme-hover text-theme-primary-hover'
-						}`}
+							}`}
 						aria-label="Toggle noise suppression"
 					>
 						<Icons.NoiseSupressionIcon className="w-5 h-5">

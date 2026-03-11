@@ -49,6 +49,8 @@ const ListAttachment = (props: ListAttachmentProps) => {
 	const isFirstRenderRef = useRef<boolean>(true);
 	const previousIndexRef = useRef<number>(currentIndexAtt);
 	const previousAttachmentsLengthRef = useRef<number>(attachments.length);
+	const lastBeforeTriggerLengthRef = useRef<number>(-1);
+	const lastAfterTriggerLengthRef = useRef<number>(-1);
 
 	const reversedAttachments = useMemo(() => [...attachments].reverse(), [attachments]);
 
@@ -71,6 +73,8 @@ const ListAttachment = (props: ListAttachmentProps) => {
 
 		const firstItem = virtualItemsList[0];
 		if (firstItem && firstItem.index === 0 && hasMoreBefore) {
+			if (lastBeforeTriggerLengthRef.current === reversedAttachments.length) return;
+			lastBeforeTriggerLengthRef.current = reversedAttachments.length;
 			setIsLoadingMore(true);
 			if (scrollContainerRef.current) {
 				previousScrollHeightRef.current = scrollContainerRef.current.scrollHeight;
@@ -82,6 +86,8 @@ const ListAttachment = (props: ListAttachmentProps) => {
 
 		const lastItem = virtualItemsList[virtualItemsList.length - 1];
 		if (lastItem && lastItem.index >= reversedAttachments.length - 1 && hasMoreAfter) {
+			if (lastAfterTriggerLengthRef.current === reversedAttachments.length) return;
+			lastAfterTriggerLengthRef.current = reversedAttachments.length;
 			setIsLoadingMore(true);
 			onLoadMore('after');
 		}

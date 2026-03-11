@@ -46,13 +46,14 @@ import {
 	LoadMoreDirection,
 	animateScroll,
 	buildClassName,
+	debounce,
 	forceMeasure,
 	isAnimatingScroll,
 	isBackgroundModeActive,
 	requestForcedReflow,
 	requestMeasure,
-	requestMutation,
 	resetScroll,
+	toggleDisableHover,
 	useContainerHeight,
 	useLastCallback,
 	useLayoutEffectWithPrevDeps,
@@ -95,6 +96,9 @@ const useSafeTimeout = () => {
 
 	return { setSafeTimeout, clearSafeTimeout };
 };
+
+const WHEEL_DEBOUNCE = 100;
+const runDebouncedForWheel = debounce((cb) => cb(), WHEEL_DEBOUNCE, false);
 
 type ChannelMessagesProps = {
 	clanId: string;
@@ -1083,7 +1087,12 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const jumpHighlightTimeoutRef = useRef<number | null>(null);
 
 		useEffect(() => {
-			if (!idMessageToJump?.id) return;
+			if (!idMessageToJump?.id) {
+				if (skipCalculateScroll.current) {
+					skipCalculateScroll.current = false;
+				}
+				return;
+			}
 
 			const scrollToMessage = (messageId: string) => {
 				const messageElement = chatRef.current?.querySelector(`#msg-${messageId}`);
@@ -1114,7 +1123,17 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 					jumpHighlightTimeoutRef.current = null;
 				}, 1000);
 			}
-		}, [idMessageToJump, effectiveChannelId, clearSafeTimeout, dispatch, setSafeTimeout, chatRef, isScrollTopJustUpdatedRef, setAnchor]);
+		}, [
+			idMessageToJump,
+			effectiveChannelId,
+			clearSafeTimeout,
+			dispatch,
+			setSafeTimeout,
+			chatRef,
+			isScrollTopJustUpdatedRef,
+			setAnchor,
+			skipCalculateScroll
+		]);
 
 		const [canSendMessage] = usePermissionChecker([EOverriddenPermission.sendMessage], channelId);
 
@@ -1189,40 +1208,28 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			const container = chatRef.current;
 			if (!container) return;
 
-			let isHoverDisabled = false;
-
-			const onScroll = () => {
-				if (!isHoverDisabled) {
-					isHoverDisabled = true;
-					requestMutation(() => {
-						container.classList.add('disable-hover');
-					});
-				}
-			};
-
 			const onScrollEnd = () => {
-				isHoverDisabled = false;
-				requestMutation(() => {
-					container.classList.remove('disable-hover');
-				});
 				requestMeasure(() => {
 					if (isScrollTopJustUpdatedRef.current) return;
 					updateScrollPosition();
 				});
 			};
 
-			container.addEventListener('scroll', onScroll);
 			container.addEventListener('scrollend', onScrollEnd);
 			return () => {
-				container.removeEventListener('scroll', onScroll);
 				container.removeEventListener('scrollend', onScrollEnd);
 			};
 		}, [chatRef, isScrollTopJustUpdatedRef, updateScrollPosition]);
 
+		const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
+		const handleWheel = useLastCallback(() => {
+			toggleDisableHover(chatRef.current, scrollTimeoutId2);
+		});
+
 		return (
 			<div className="w-full h-full relative messages-container select-text bg-theme-chat ">
 				<StickyLoadingIndicator messageCount={messageIds?.length} />
-				<div ref={chatRef} className={'messages-scroll outline-none w-full scroll-big'}>
+				<div onWheelCapture={handleWheel} ref={chatRef} className={'messages-scroll outline-none w-full scroll-big'}>
 					<div className="messages-wrap flex flex-col min-h-full mt-auto justify-end">
 						{isTopic && firstMsgOfThisTopic && (
 							<div className={`fullBoxText relative group ${firstMsgOfThisTopic?.references?.[0]?.message_ref_id ? 'pt-3' : ''}`}>

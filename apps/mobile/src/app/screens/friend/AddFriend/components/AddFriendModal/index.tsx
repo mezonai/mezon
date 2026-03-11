@@ -84,6 +84,13 @@ export const AddFriendModal = React.memo(() => {
 			});
 			return;
 		}
+		if (friend?.state === EStateFriend.BLOCK) {
+			Toast.show({
+				type: 'error',
+				text1: t('friendsPage:addFriendModal.blockedUserMobile')
+			});
+			return;
+		}
 		if (friend?.state === EStateFriend.FRIEND) {
 			Toast.show({
 				type: 'error',

@@ -356,15 +356,9 @@ export const authSlice = createSlice({
 			}
 		},
 		setLogout(state) {
-			if (state.session && state.activeAccount && Object.keys(state.session).length >= 2) {
-				delete state.session?.[state.activeAccount];
-				const key = Object.keys(state.session || [])[0];
-				state.activeAccount = key;
-			} else {
-				state.activeAccount = null;
-				state.session = null;
-				state.isLogin = false;
-			}
+			state.activeAccount = null;
+			state.session = null;
+			state.isLogin = false;
 			state.loadingStatus = 'not loaded';
 		},
 		refreshStatus(state) {

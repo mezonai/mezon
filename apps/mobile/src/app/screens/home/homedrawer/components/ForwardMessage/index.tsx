@@ -18,7 +18,7 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { useMezon } from '@mezon/transport';
-import type { ChannelThreads } from '@mezon/utils';
+import type { ChannelThreads, IMessageSendPayload } from '@mezon/utils';
 import { FORWARD_MESSAGE_TIME, isValidEmojiData, normalizeString } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
@@ -221,13 +221,16 @@ const ForwardMessageScreen = ({ route }) => {
 			if (!personalRawMessages?.trim()) return;
 			const session = mezon.sessionRef.current;
 			const client = mezon.clientRef.current;
+			const content: IMessageSendPayload = {
+				t: personalRawMessages
+			};
 			await client.sendChannelMessage(
 				session,
 				clanId || '0',
 				channelIdOrDirectId,
 				mode,
 				isPublic,
-				{ t: personalRawMessages },
+				typeof content === 'object' ? JSON.stringify(content) : content,
 				[],
 				[],
 				[],

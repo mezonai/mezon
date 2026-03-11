@@ -1,6 +1,5 @@
 import { useAppNavigation, useAuth } from '@mezon/core';
 import {
-	handleParticipantVoiceState,
 	selectDmGroupById,
 	selectIsGroupCallActive,
 	selectNoiseSuppressionEnabled,
@@ -13,7 +12,7 @@ import {
 	voiceActions
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
-import { ParticipantMeetState, generateE2eId, useMediaPermissions } from '@mezon/utils';
+import { generateE2eId, useMediaPermissions } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
 import Tooltip from 'rc-tooltip';
@@ -52,18 +51,6 @@ const VoiceInfo = React.memo(() => {
 		}
 	};
 
-	const participantMeetState = async (state: ParticipantMeetState, clanId: string, channelId: string, roomId: string): Promise<void> => {
-		await dispatch(
-			handleParticipantVoiceState({
-				clan_id: clanId,
-				channel_id: channelId,
-				display_name: userProfile?.user?.display_name ?? '',
-				state,
-				room_name: state === ParticipantMeetState.LEAVE ? 'leave' : roomId || ''
-			})
-		);
-	};
-
 	const leaveVoice = async () => {
 		const leaveButton = document.getElementById('btn-meet-leave');
 		if (leaveButton) {
@@ -99,12 +86,6 @@ const VoiceInfo = React.memo(() => {
 			if (userProfile?.user?.id) {
 				dispatch(voiceActions.removeFromClanInvoice({ id: userProfile.user.id, clanId: currentVoiceInfo.clanId }));
 			}
-			await participantMeetState(
-				ParticipantMeetState.LEAVE,
-				currentVoiceInfo.clanId,
-				currentVoiceInfo.channelId,
-				currentVoiceInfo.roomId || ''
-			);
 		}
 	};
 

@@ -6,7 +6,7 @@ import {
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectDefaultNotificationCategory,
-	selectDefaultNotificationClan,
+	selectDefaultNotificationClanByClanId,
 	selectNotifiSettingsEntitiesById,
 	useAppDispatch,
 	useAppSelector
@@ -35,7 +35,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 	const [mutedUntil, setmutedUntil] = useState('');
 	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannelCategoryId as string));
 
-	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
+	const defaultNotificationClan = useAppSelector((state) => selectDefaultNotificationClanByClanId(state, currentClanId || ''));
 
 	useEffect(() => {
 		if (getNotificationChannelSelected?.active === 1) {
@@ -56,8 +56,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 	const handleScheduleMute = (duration: number) => {
 		const body: MuteChannelPayload = {
 			channel_id: currentChannelId || '',
-			mute_time: duration !== Infinity ? duration : 0,
-			active: 0,
+			mute_time: duration !== Infinity ? duration : EMuteState.MUTED_INFINITY,
 			clan_id: currentClanId || ''
 		};
 		dispatch(notificationSettingActions.setMuteChannel(body));
@@ -159,7 +158,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 									children={nameChildren}
 									subText={mutedUntil}
 									dropdown="change here"
-									onClick={() => muteOrUnMuteChannel(EMuteState.MUTED)}
+									onClick={() => muteOrUnMuteChannel(EMuteState.MUTED_INFINITY)}
 								/>
 							</div>
 						</Menu>

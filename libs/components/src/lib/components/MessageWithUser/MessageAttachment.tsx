@@ -39,11 +39,23 @@ type MessageAttachmentProps = {
 	defaultMaxWidth?: number;
 };
 
+const getMessageCreateTimeSeconds = (message: IMessageWithUser): number | undefined => {
+	if (message.create_time_seconds) return message.create_time_seconds;
+	const createTime = (message as any).create_time;
+	if (createTime) {
+		const parsed = new Date(createTime).getTime();
+		if (!isNaN(parsed)) return Math.floor(parsed / 1000);
+	}
+	return undefined;
+};
+
 const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMessageWithUser) => {
 	const videos: ApiMessageAttachment[] = [];
 	const images: (ApiMessageAttachment & { create_time?: string })[] = [];
 	const documents: ApiMessageAttachment[] = [];
 	const audio: ApiMessageAttachment[] = [];
+
+	const messageCreateTimeSeconds = getMessageCreateTimeSeconds(message);
 
 	attachments.forEach((attachment) => {
 		if (isMediaTypeNotSupported(attachment.filetype)) {
@@ -69,11 +81,12 @@ const classifyAttachments = (attachments: ApiMessageAttachment[], message: IMess
 			attachment.filetype?.includes(EMimeTypes.heic) ||
 			attachment.url?.endsWith('.gif')
 		) {
+			const createTimeSeconds = attachment.create_time_seconds || messageCreateTimeSeconds;
 			const resultAttach: ApiMessageAttachment & { create_time?: string } = {
 				...attachment,
 				sender_id: message.sender_id,
 				message_id: message.id,
-				create_time: (attachment.create_time_seconds ?? 0) * 1000 || (((message.create_time_seconds ?? 0) * 1000) as any)
+				create_time: createTimeSeconds ? new Date(Number(createTimeSeconds) * 1000).toISOString() : undefined
 			};
 			images.push(resultAttach);
 			return;
@@ -110,7 +123,7 @@ const Attachments: React.FC<{
 				{videos.length > 0 && (
 					<div className="flex flex-row justify-start flex-wrap w-full gap-2 mt-5">
 						{videos.map((video, index) => (
-							<div key={index} className="gap-y-2">
+							<div key={index} className="gap-y-2 max-w-full min-w-0">
 								<MessageVideo attachmentData={video} isMobile={isMobile} observeIntersection={observeIntersectionForLoading} />
 							</div>
 						))}
@@ -206,11 +219,11 @@ const ImageAlbum = memo(
 
 				if (!attachmentData) return;
 
+				const messageCreateTime = getMessageCreateTimeSeconds(message);
+				const resolvedCreateTimeSeconds = attachmentData?.create_time_seconds || messageCreateTime || Date.now() / 1000;
 				const enhancedAttachmentData = {
 					...attachmentData,
-					create_time_seconds: attachmentData?.create_time_seconds
-						? attachmentData?.create_time_seconds || message.create_time_seconds
-						: Date.now() / 1000
+					create_time_seconds: resolvedCreateTimeSeconds
 				};
 
 				if (isElectron()) {

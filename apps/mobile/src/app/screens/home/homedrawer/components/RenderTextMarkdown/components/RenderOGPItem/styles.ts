@@ -7,7 +7,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			marginTop: size.s_4
 		},
 		container: {
-			backgroundColor: colors.secondaryLight,
+			backgroundColor: colors.border,
 			padding: isTabletLandscape ? size.s_20 : size.s_10,
 			borderRadius: size.s_4,
 			borderLeftWidth: size.s_4,
