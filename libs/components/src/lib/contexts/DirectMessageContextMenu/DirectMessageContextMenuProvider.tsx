@@ -20,6 +20,7 @@ import { Menu, Submenu, useContextMenu } from 'react-contexify';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
+import DeleteGroupModal from '../../components/DeleteGroupModal';
 import LeaveGroupModal from '../../components/LeaveGroupModal';
 import ModalEditGroup from '../../components/ModalEditGroup';
 import ItemPanelMember from '../../components/PanelMember/ItemPanelMember';
@@ -47,6 +48,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const [currentUser, setCurrentUser] = useState<ChannelMembersEntity | any>(null);
 	const [currentHandlers, setCurrentHandlers] = useState<DirectMessageContextMenuHandlers | null>(null);
 	const [isLeaveGroupModalOpen, setIsLeaveGroupModalOpen] = useState(false);
+	const [isDeleteGroupModalOpen, setIsDeleteGroupModalOpen] = useState(false);
 	const dispatch = useAppDispatch();
 
 	const userProfile = useSelector(selectAllAccount);
@@ -85,6 +87,14 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		setIsLeaveGroupModalOpen(false);
 	}, []);
 
+	const openDeleteGroupModal = useCallback(() => {
+		setIsDeleteGroupModalOpen(true);
+	}, []);
+
+	const closeDeleteGroupModal = useCallback(() => {
+		setIsDeleteGroupModalOpen(false);
+	}, []);
+
 	const [showShareContactModal, hideShareContactModal] = useModal(() => {
 		if (!currentUser) return null;
 
@@ -114,6 +124,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		handleMarkAsRead,
 		handleRemoveMemberFromGroup,
 		handleLeaveDmGroup,
+		handleDeleteDmGroup,
 		handleEnableE2ee,
 		addFriend,
 		deleteFriend,
@@ -150,6 +161,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		unBlockFriend,
 		openEditGroupModal: editGroupModal.openEditModal,
 		openLeaveGroupModal,
+		openDeleteGroupModal,
 		openShareContactModal
 	});
 
@@ -181,7 +193,10 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 
 	const shouldShowMuteSubmenu = !isMuted && !hasMuteTime;
 
-	const isOwnerClanOrGroup = userProfile?.user?.id && dataMemberCreate?.createId && userProfile?.user?.id === dataMemberCreate.createId;
+	const isOwnerClanOrGroup =
+		userProfile?.user?.id &&
+		((dataMemberCreate?.createId && userProfile.user.id === dataMemberCreate.createId) ||
+			(currentUser?.creator_id && userProfile.user.id === currentUser.creator_id));
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentUser?.user_ids?.[0] || currentUser?.id || ''));
 	const didIBlockUser = useMemo(() => {
 		return infoFriend?.state === EStateFriend.BLOCK && infoFriend?.source_id === userProfile?.user?.id;
@@ -338,6 +353,9 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 						{contextMenuId !== DMCT_GROUP_CHAT_ID && isDmGroup && (
 							<ItemPanelMember children={t('contextMenu.leaveGroup')} danger onClick={currentHandlers.handleLeaveGroup} />
 						)}
+						{contextMenuId !== DMCT_GROUP_CHAT_ID && isDmGroup && isOwnerClanOrGroup && (
+							<ItemPanelMember children={t('contextMenu.deleteGroup')} danger onClick={currentHandlers.handleDeleteGroup} />
+						)}
 					</>
 				)}
 			</Menu>
@@ -364,6 +382,19 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 					}}
 				/>
 			)}
+
+			{isDeleteGroupModalOpen && currentUser && (
+				<DeleteGroupModal
+					onClose={closeDeleteGroupModal}
+					groupWillBeDeleted={currentUser}
+					onConfirmDelete={() => {
+						const channelId = currentUser?.channelId || currentUser?.channel_id;
+						if (channelId) {
+							handleDeleteDmGroup(channelId);
+						}
+					}}
+				/>
+			)}
 		</DirectMessageContextMenuContext.Provider>
 	);
 };
@@ -377,3 +408,4 @@ export const useDirectMessageContextMenu = () => {
 };
 
 export * from './types';
+

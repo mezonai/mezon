@@ -1,0 +1,6 @@
+{
+	"title": "Xóa '{{groupName}}'",
+	"confirmMessage": "Bạn có chắc chắn muốn xóa {{groupName}}? Hành động này không thể hoàn tác và tất cả tin nhắn sẽ bị mất vĩnh viễn.",
+	"cancel": "Hủy",
+	"deleteGroup": "Xóa nhóm"
+}

@@ -38,6 +38,7 @@ import createThread from './createThread.json';
 import customUserStatus from './customUserStatus.json';
 import dashboard from './dashboard.json';
 import deleteClan from './deleteClan.json';
+import deleteGroup from './deleteGroup.json';
 import directMessage from './directMessage.json';
 import discover from './discover.json';
 import dmMessage from './dmMessage.json';
@@ -171,6 +172,7 @@ export default {
 	memberPage,
 	transferOwner,
 	leaveGroup,
+	deleteGroup,
 	notifications,
 	screenShare,
 	search,

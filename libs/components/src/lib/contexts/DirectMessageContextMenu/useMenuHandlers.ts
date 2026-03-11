@@ -108,6 +108,29 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHa
 		[dispatch, navigate, userProfile?.user?.id, directId]
 	);
 
+	const handleDeleteDmGroup = useCallback(
+		async (channelId: string) => {
+			if (!channelId) return;
+
+			try {
+				const result = await dispatch(deleteChannel({ clanId: '0', channelId, isDmGroup: true }));
+				if (result?.meta?.requestStatus === 'rejected') {
+					return;
+				}
+
+				if (directId === channelId) {
+					dispatch(directActions.setDmGroupCurrentId(''));
+					navigate('/chat/direct/friends');
+				}
+
+				await dispatch(directActions.remove(channelId));
+			} catch {
+				console.error('Failed to delete group');
+			}
+		},
+		[dispatch, navigate, directId]
+	);
+
 	const handleEnableE2ee = useCallback(
 		async (directId?: string, e2ee?: number) => {
 			if (!directId || !currentDirect) return;
@@ -130,6 +153,7 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHa
 		handleMarkAsRead,
 		handleRemoveMemberFromGroup,
 		handleLeaveDmGroup,
+		handleDeleteDmGroup,
 		handleEnableE2ee,
 		addFriend,
 		deleteFriend,

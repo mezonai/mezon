@@ -20,6 +20,7 @@ interface UseDefaultHandlersParams {
 	unBlockFriend: (username: string, userId: string) => Promise<boolean>;
 	openEditGroupModal?: () => void;
 	openLeaveGroupModal?: () => void;
+	openDeleteGroupModal?: () => void;
 	openShareContactModal?: (user?: any) => void;
 }
 
@@ -38,6 +39,7 @@ export function useDefaultHandlers({
 	unBlockFriend,
 	openEditGroupModal,
 	openLeaveGroupModal,
+	openDeleteGroupModal,
 	openShareContactModal
 }: UseDefaultHandlersParams) {
 	const { t } = useTranslation('friendsPage');
@@ -100,6 +102,11 @@ export function useDefaultHandlers({
 						openLeaveGroupModal();
 					}
 				},
+				handleDeleteGroup: () => {
+					if (openDeleteGroupModal) {
+						openDeleteGroupModal();
+					}
+				},
 				handleBlockFriend: async () => {
 					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
 					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
@@ -149,6 +156,7 @@ export function useDefaultHandlers({
 			handleEnableE2ee,
 			handleRemoveMemberFromGroup,
 			openLeaveGroupModal,
+			openDeleteGroupModal,
 			blockFriend,
 			t,
 			unBlockFriend,

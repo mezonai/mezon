@@ -1,0 +1,6 @@
+{
+	"title": "Delete '{{groupName}}'",
+	"confirmMessage": "Are you sure you want to delete {{groupName}}? This action cannot be undone and all messages will be permanently lost.",
+	"cancel": "Cancel",
+	"deleteGroup": "Delete Group"
+}
