@@ -60,7 +60,7 @@ const ChannelSetting = () => {
 			setSearchFilter('');
 			dispatch(channelSettingActions.resetChannelSettingState());
 		}
-		prevClanIdRef.current = selectClanId;
+		prevClanIdRef.current = selectClanId as string;
 	}, [selectClanId, dispatch]);
 
 	const fetchChannels = useCallback(async () => {
@@ -68,7 +68,7 @@ const ChannelSetting = () => {
 
 		await dispatch(
 			channelSettingActions.fetchChannelSettingInClan({
-				clanId: selectClanId,
+				clanId: selectClanId as string,
 				parentId: '0',
 				typeFetch: ETypeFetchChannelSetting.FETCH_CHANNEL,
 				noCache: true

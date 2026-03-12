@@ -541,7 +541,7 @@ export const createFormattedString = (data: IExtendedMessage): string => {
 		if (Array.isArray(itemArray)) {
 			itemArray.forEach((item) => {
 				if (item) {
-					const typedItem: ElementToken = { ...item, kindOf: key as any }; // Casting key as any
+					const typedItem: ElementToken = { ...(item as object), kindOf: key as any }; // Casting key as any
 					elements.push(typedItem);
 				}
 			});

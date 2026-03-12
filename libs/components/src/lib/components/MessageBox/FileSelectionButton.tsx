@@ -81,9 +81,7 @@ function FileSelectionButton({ currentChannelId, mode }: FileSelectionButtonProp
 					question: pollData.question,
 					answers: pollData.answers,
 					expire_hours: expireHours,
-					type: pollData.allowMultipleAnswers ? 1 : 0,
-					question_emoji_id: pollData.questionEmojiId,
-					answer_emoji_ids: pollData.answerEmojiIds
+					type: pollData.allowMultipleAnswers ? 1 : 0
 				})
 			).unwrap();
 
