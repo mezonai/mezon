@@ -6,6 +6,7 @@ import type { ApiSystemMessage, ApiSystemMessageRequest } from 'mezon-js/api.gen
 import type { ReactElement } from 'react';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChannelIcon } from '../../../ChannelIcon';
 
 enum ETypeUpdateSystemMessage {
 	WELCOME_RANDOM = 1,
@@ -85,13 +86,13 @@ const SystemMessagesManagement = ({
 							className="flex flex-row items-center rounded-sm text-sm w-full py-2 px-4 text-left cursor-pointer"
 							onClick={() => handleToggleSetting(true, ETypeUpdateSystemMessage.CHANNEL, channel.id)}
 						>
-							{channel?.age_restricted === 1 ? (
-								<Icons.HashtagWarning className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0 dark:text-channelTextLabel" />
-							) : channel?.channel_private ? (
-								<Icons.HashtagLocked className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0 dark:text-channelTextLabel" />
-							) : (
-								<Icons.Hashtag className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0 dark:text-channelTextLabel" />
-							)}
+							<ChannelIcon
+								type={ChannelType.CHANNEL_TYPE_CHANNEL}
+								isPrivate={!!channel?.channel_private}
+								isAgeRestricted={channel?.age_restricted === 1}
+								size="w-4 h-4 min-w-4 min-h-4 flex-shrink-0"
+								className="dark:text-channelTextLabel"
+							/>
 							<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.item.channel_name')}>
 								{channel.channel_label ?? ''}
 							</p>
@@ -116,13 +117,12 @@ const SystemMessagesManagement = ({
 					data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel')}
 				>
 					<div className={' flex flex-row items-center'}>
-						{selectedChannel?.age_restricted === 1 ? (
-							<Icons.HashtagWarning className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0" />
-						) : selectedChannel?.channel_private ? (
-							<Icons.HashtagLocked className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0" />
-						) : (
-							<Icons.Hashtag className="w-4 h-4 min-w-4 min-h-4 flex-shrink-0" />
-						)}
+						<ChannelIcon
+							type={ChannelType.CHANNEL_TYPE_CHANNEL}
+							isPrivate={!!selectedChannel?.channel_private}
+							isAgeRestricted={selectedChannel?.age_restricted === 1}
+							size="w-4 h-4 min-w-4 min-h-4 flex-shrink-0"
+						/>
 						<p data-e2e={generateE2eId('clan_page.settings.overview.system_messages_channel.selection.selected.channel_name')}>
 							{selectedChannel?.channel_label}
 						</p>

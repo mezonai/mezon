@@ -66,7 +66,7 @@ const SuggestItem = ({
 		return false;
 	}, [channelId, numberMembersVoice, specificChannel?.type]);
 	const channelIcon = useMemo(() => {
-		if (ageRestricted === 1) {
+		if (ageRestricted === 1 && specificChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL) {
 			return <Icons.HashtagWarning className="w-5 h-5 min-w-5 min-h-5 flex-shrink-0" />;
 		}
 		if (!specificChannel) return null;

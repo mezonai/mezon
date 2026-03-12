@@ -5,6 +5,7 @@ import {
 	categoriesActions,
 	channelsActions,
 	directActions,
+	getStore,
 	listChannelsByUserActions,
 	messagesActions,
 	selectAllChannels,
@@ -45,8 +46,6 @@ function SearchModal({ onClose }: SearchModalProps) {
 	const listChannels = listChannelsRef.current;
 	const allUsesInAllClansEntities = allUsesInAllClansEntitiesRef.current;
 	const previousChannels = previousChannelsRef.current;
-
-	const currentClanChannels = useAppSelector(selectAllChannels);
 
 	const { userProfile } = useAuth();
 	const accountId = userProfile?.user?.id ?? '';
@@ -89,6 +88,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return addPropsIntoSearchList;
 	}, [accountId, dmGroupChatList, allUsesInAllClansEntities, allClanUsersEntities]);
 	const listChannelSearch = useMemo(() => {
+		const currentClanChannels = selectAllChannels(getStore().getState());
 		const list: SearchItemProps[] = [];
 		listChannels.forEach((item) => {
 			if (item) {
@@ -114,7 +114,7 @@ function SearchModal({ onClose }: SearchModalProps) {
 			}
 		});
 		return list;
-	}, [listChannels, currentClanChannels]);
+	}, [listChannels]);
 
 	const listMemberSearch = useMemo(() => {
 		const list: SearchItemProps[] = [];

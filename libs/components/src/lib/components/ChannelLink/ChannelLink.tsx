@@ -30,6 +30,7 @@ import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import BuzzBadge from '../BuzzBadge';
+import { ChannelIcon } from '../ChannelIcon';
 import type { IChannelLinkPermission } from '../ChannelList/CategorizedChannels';
 import SettingChannel from '../ChannelSetting';
 import EventSchedule from '../EventSchedule';
@@ -105,8 +106,8 @@ const ChannelLinkComponent = ({
 	);
 	const isAgeRestricted = (channel?.age_restricted ?? (channelFromStore as { age_restricted?: number } | null)?.age_restricted) === 1;
 
-	const isDmIcon = effectiveType === ChannelType.CHANNEL_TYPE_DM || effectiveType === 3;
-	const isGroupIcon = effectiveType === ChannelType.CHANNEL_TYPE_GROUP || effectiveType === 2;
+	const isDmIcon = effectiveType === ChannelType.CHANNEL_TYPE_DM;
+	const isGroupIcon = effectiveType === ChannelType.CHANNEL_TYPE_GROUP;
 
 	const handleOpenCreate = () => {
 		openSettingModal();
@@ -245,14 +246,16 @@ const ChannelLinkComponent = ({
 						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
 							{isDmIcon && <Icons.IconChat className="w-5 h-5" />}
 							{isGroupIcon && <Icons.People className="w-5 h-5" />}
-							{effectiveType === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestricted && <Icons.HashtagWarning className="w-5 h-5 " />}
-							{isPrivate === ChannelStatusEnum.isPrivate && effectiveType === ChannelType.CHANNEL_TYPE_CHANNEL && !isAgeRestricted && (
-								<Icons.HashtagLocked defaultSize="w-5 h-5" />
+							{effectiveType === ChannelType.CHANNEL_TYPE_CHANNEL && (
+								<ChannelIcon
+									type={ChannelType.CHANNEL_TYPE_CHANNEL}
+									isPrivate={isPrivate === ChannelStatusEnum.isPrivate}
+									isAgeRestricted={isAgeRestricted}
+									size="w-5 h-5"
+									data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')}
+								/>
 							)}
 							{effectiveType === ChannelType.CHANNEL_TYPE_MEZON_VOICE && <Icons.Speaker defaultSize="w-5 h-5 " />}
-							{isPrivate !== 1 && effectiveType === ChannelType.CHANNEL_TYPE_CHANNEL && !isAgeRestricted && (
-								<Icons.Hashtag defaultSize="w-5 h-5 " data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')} />
-							)}
 							{effectiveType === ChannelType.CHANNEL_TYPE_STREAMING && (
 								<Icons.Stream defaultSize="w-5 h-5 " data-e2e={generateE2eId('clan_page.channel_list.item.icon.stream')} />
 							)}
