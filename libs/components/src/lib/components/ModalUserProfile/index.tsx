@@ -76,6 +76,7 @@ const ModalUserProfile = ({
 	mode,
 	avatar,
 	positionType,
+	name,
 	isDM,
 	onClose,
 	rootRef,
@@ -240,7 +241,20 @@ const ModalUserProfile = ({
 			<AvatarProfile
 				avatar={avatar || avatarByUserId}
 				username={
-					(isFooterProfile && userProfile?.user?.username) || message?.username || userById?.user?.username || currentUserId?.username
+					isFooterProfile
+						? name ||
+							userProfile?.user?.display_name ||
+							userProfile?.user?.username ||
+							userById?.user?.display_name ||
+							userById?.user?.username ||
+							currentUserId?.username
+						: name ||
+							message?.display_name ||
+							message?.username ||
+							userById?.user?.display_name ||
+							userById?.user?.username ||
+							currentUserId?.display_name ||
+							currentUserId?.username
 				}
 				userToDisplay={isFooterProfile ? userProfile : userById}
 				customStatus={status.user_status}
@@ -261,13 +275,14 @@ const ModalUserProfile = ({
 								? t('labels.unknownUser')
 								: checkAnonymous
 									? t('labels.anonymous')
-									: isFooterProfile
-										? userById?.user?.display_name || userProfile?.user?.display_name || userById?.user?.username
-										: userById?.clan_nick ||
-											userById?.user?.display_name ||
-											userById?.user?.username ||
-											currentUserId?.display_name ||
-											usernameShow}
+									: name ||
+										(isFooterProfile
+											? userById?.user?.display_name || userProfile?.user?.display_name || userById?.user?.username
+											: userById?.clan_nick ||
+												userById?.user?.display_name ||
+												userById?.user?.username ||
+												currentUserId?.display_name ||
+												usernameShow)}
 						</p>
 						<p
 							className="text-base font-semibold tracking-wide text-theme-primary my-0 truncate"
@@ -302,11 +317,13 @@ const ModalUserProfile = ({
 									type="text"
 									className={`w-full border-theme-primary text-theme-primary color-text-secondary rounded-[5px] bg-theme-contexify p-[5px] `}
 									placeholder={t('placeholders.messageUser', {
-										username: isFooterProfile
-											? userById?.user?.display_name || userProfile?.user?.display_name || userById?.user?.username
-											: !isDM
-												? userById?.clan_nick || userById?.user?.display_name || userById?.user?.username || usernameShow
-												: userById?.user?.display_name || userById?.user?.username || usernameShow
+										username:
+											name ||
+											(isFooterProfile
+												? userById?.user?.display_name || userProfile?.user?.display_name || userById?.user?.username
+												: !isDM
+													? userById?.clan_nick || userById?.user?.display_name || userById?.user?.username || usernameShow
+													: userById?.user?.display_name || userById?.user?.username || usernameShow)
 									})}
 									value={content}
 									onKeyPress={handleOnKeyPress}

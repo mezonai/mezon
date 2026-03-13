@@ -149,7 +149,7 @@ const DirectMessage = () => {
 	const isUseProfileDM = useSelector(selectIsUseProfileDM);
 	const isSearchMessage = useAppSelector((state) => selectIsSearchMessage(state, directId));
 	const dispatch = useAppDispatch();
-	const { userId } = useAuth();
+	const { userId, userProfile } = useAuth();
 	const directMessage = useAppSelector((state) => selectDirectById(state, directId));
 	const hasKeyE2ee = useSelector(selectHasKeyE2ee);
 	const loadingStatus = useSelector(selectDirectLoadingStatus);
@@ -209,6 +209,18 @@ const DirectMessage = () => {
 		: 0;
 
 	const isDmChannel = useMemo(() => currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM, [currentDmGroup?.type]);
+	const currentUserId = userProfile?.user?.id;
+	const isSelfDm =
+		currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM &&
+		currentDmGroup?.user_ids?.length === 1 &&
+		currentUserId &&
+		currentDmGroup.user_ids[0] === currentUserId;
+	const resolvedChannelLabel =
+		currentDmGroup?.channel_label || (isSelfDm ? userProfile?.user?.display_name || userProfile?.user?.username || '' : '');
+	const resolvedUsername = isDmChannel ? currentDmGroup?.usernames?.at(-1) || (isSelfDm ? userProfile?.user?.username : undefined) : undefined;
+	const resolvedAvatarDM = isDmChannel
+		? currentDmGroup?.avatars?.at(-1) || (isSelfDm ? userProfile?.user?.avatar_url || '' : '')
+		: '/assets/images/avatar-group.png';
 	const isBlocked = useAppSelector((state) => selectFriendById(state, currentDmGroup?.user_ids?.[0] || ''))?.state === EStateFriend.BLOCK;
 
 	const isDmWithoutParticipants = useMemo(() => {
@@ -257,11 +269,11 @@ const DirectMessage = () => {
 									isDM={true}
 									channelId={directId || currentDirectId || ''}
 									isPrivate={currentDmGroup?.channel_private}
-									channelLabel={currentDmGroup?.channel_label}
-									username={isDmChannel ? currentDmGroup?.usernames?.at(-1) : undefined}
+									channelLabel={resolvedChannelLabel}
+									username={resolvedUsername}
 									type={isDmChannel ? ChannelType.CHANNEL_TYPE_DM : ChannelType.CHANNEL_TYPE_GROUP}
 									mode={isDmChannel ? ChannelStreamMode.STREAM_MODE_DM : ChannelStreamMode.STREAM_MODE_GROUP}
-									avatarDM={isDmChannel ? currentDmGroup?.avatars?.at(-1) : '/assets/images/avatar-group.png'}
+									avatarDM={resolvedAvatarDM}
 								/>
 							}
 						</div>
@@ -367,6 +379,7 @@ const DirectMessage = () => {
 								classBanner="h-[120px]"
 								showNote={true}
 								showPopupLeft={true}
+								name={currentDmGroup?.channel_label ?? undefined}
 								avatar={
 									Number(type) === ChannelType.CHANNEL_TYPE_GROUP
 										? currentDmGroup?.channel_avatar?.[0]

@@ -1,3 +1,4 @@
+import { useAuth } from '@mezon/core';
 import {
 	auditLogList,
 	selectActionAuditLog,
@@ -74,20 +75,32 @@ type AuditLogItemProps = {
 };
 
 const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
+	const { userProfile } = useAuth();
+	const currentUserId = userProfile?.user?.id;
+	const isCurrentUser = Boolean(currentUserId && logItem?.user_id === currentUserId);
+
 	const auditLogTime = logItem?.time_log_seconds ? convertTimeString(logItem.time_log_seconds * 1000) : '';
 	const userAuditLogItem = useAppSelector((state) => selectMemberClanByUserId(state, logItem?.user_id ?? ''));
-	const username = userAuditLogItem?.user?.username;
-	const avatar = getAvatarForPrioritize(userAuditLogItem?.clan_avatar, userAuditLogItem?.user?.avatar_url);
+
+	const displayName =
+		isCurrentUser && userProfile?.user?.display_name != null
+			? userProfile.user.display_name
+			: (userAuditLogItem?.clan_nick ?? userAuditLogItem?.user?.display_name ?? userAuditLogItem?.user?.username ?? '');
+	const username = isCurrentUser && userProfile?.user?.username != null ? userProfile.user.username : (userAuditLogItem?.user?.username ?? '');
+	const avatarFromMember = getAvatarForPrioritize(userAuditLogItem?.clan_avatar, userAuditLogItem?.user?.avatar_url);
+	const avatar = isCurrentUser && userProfile?.user?.avatar_url != null ? userProfile.user.avatar_url : avatarFromMember;
+
 	const channel = useAppSelector((state) => selectChannelById(state, logItem?.channel_id || '0'));
+	const nameForDisplay = displayName || username;
 
 	return (
 		<div className=" p-[10px] flex gap-3 items-center border  rounded-md  mb-4 text-theme-primary border-theme-primary bg-item-theme ">
 			<div className="w-10 h-10 rounded-full">
 				<div className="w-10 h-10">
-					{userAuditLogItem ? (
+					{userAuditLogItem || isCurrentUser ? (
 						<AvatarImage
-							alt={username || ''}
-							username={username}
+							alt={nameForDisplay || ''}
+							username={nameForDisplay}
 							className="min-w-10 min-h-10 max-w-10 max-h-10"
 							srcImgProxy={createImgproxyUrl(avatar ?? '', { width: 300, height: 300, resizeType: 'fit' })}
 							src={avatar}
@@ -101,14 +114,14 @@ const AuditLogItem = ({ logItem }: AuditLogItemProps) => {
 				<div className="">
 					{logItem?.channel_id !== '0' ? (
 						<span>
-							<span>{username}</span> <span className="lowercase">{logItem?.action_log}</span> :{' '}
+							<span>{nameForDisplay}</span> <span className="lowercase">{logItem?.action_log}</span> :{' '}
 							<strong className="text-theme-primary-active font-medium"> {`${logItem?.entity_name} (${logItem?.entity_id})`}</strong> in{' '}
 							{channel?.parent_id !== '0' ? 'thread' : 'channel'}
 							<strong className="text-theme-primary-active font-medium">{` ${logItem?.channel_label} (${logItem?.channel_id})`}</strong>
 						</span>
 					) : (
 						<span>
-							<span>{username}</span> <span className="lowercase">{logItem?.action_log}</span> :{' '}
+							<span>{nameForDisplay}</span> <span className="lowercase">{logItem?.action_log}</span> :{' '}
 							<strong className="text-theme-primary-active font-medium">{`${logItem?.entity_name} (${logItem?.entity_id})`}</strong>
 						</span>
 					)}
