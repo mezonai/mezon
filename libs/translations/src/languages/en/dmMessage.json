@@ -18,13 +18,28 @@
 		"blockUser": "Block User",
 		"unblockUser": "Unblock User",
 		"removeFriend": "Remove Friend",
-		"addFriend": "Add Friend"
+		"addFriend": "Add Friend",
+		"pinConversation": "Pin Conversation",
+		"unpinConversation": "Unpin Conversation"
 	},
 	"confirm": {
 		"title": "Leave {{groupName}}",
 		"content": "Please confirm if you would like to leave {{groupName}}? You won't be able to rejoin this group unless you are re-invited.",
 		"confirmText": "Yes"
 	},
+	"pinConfirm": {
+		"title": "Pin Conversation?",
+		"content": "This conversation will be moved to the top of your messages list for easy access.",
+		"confirmText": "Pin"
+	},
+	"unpinConfirm": {
+		"title": "Unpin Conversation?",
+		"content": "This conversation will be returned to its normal position in the messages list.",
+		"confirmText": "Unpin"
+	},
+	"pinSection": "PINNED",
+	"allMessagesSection": "ALL MESSAGES",
+	"maximumPinnedConversationsReached": "You can only pin up to {{max}} conversations.",
 	"notification": {
 		"blockUser": {
 			"success": "User blocked successfully",

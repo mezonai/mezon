@@ -206,5 +206,6 @@ export enum IconCDN {
 	bgEmptyIcon = require('./iconPNG/bgEmpty.png'),
 	devicesIcon = require('./iconPNG/devices.png'),
 	searchFriendIcon = require('./iconPNG/searchFriend.png'),
-	agentIcon = require('./iconPNG/agent.png')
+	agentIcon = require('./iconPNG/agent.png'),
+	unpinIcon = require('./iconPNG/unpinIcon.png')
 }

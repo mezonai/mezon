@@ -18,13 +18,28 @@
 		"blockUser": "Chặn người dùng",
 		"unblockUser": "Bỏ chặn người dùng",
 		"removeFriend": "Xóa bạn",
-		"addFriend": "Thêm bạn"
+		"addFriend": "Thêm bạn",
+		"pinConversation": "Ghim hội thoại",
+		"unpinConversation": "Bỏ ghim hội thoại"
 	},
 	"confirm": {
 		"title": "Rời khỏi {{groupName}}",
 		"content": "Bạn có chắc chắn muốn rời khỏi {{groupName}} không? Bạn sẽ không thể tham gia lại nhóm này trừ khi được mời lại.",
 		"confirmText": "Vâng"
 	},
+	"pinConfirm": {
+		"title": "Ghim hội thoại?",
+		"content": "Hội thoại này sẽ được chuyển lên đầu danh sách tin nhắn để bạn dễ dàng truy cập.",
+		"confirmText": "Ghim"
+	},
+	"unpinConfirm": {
+		"title": "Bỏ ghim hội thoại?",
+		"content": "Hội thoại này sẽ được trả về vị trí bình thường trong danh sách tin nhắn.",
+		"confirmText": "Bỏ ghim"
+	},
+	"pinSection": "ĐÃ GHIM",
+	"allMessagesSection": "TẤT CẢ TIN NHẮN",
+	"maximumPinnedConversationsReached": "Bạn chỉ có thể ghim tối đa {{max}} cuộc hội thoại.",
 	"notification": {
 		"blockUser": {
 			"success": "Chặn người dùng thành công",

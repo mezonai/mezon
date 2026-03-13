@@ -1,12 +1,12 @@
 import { useFriends } from '@mezon/core';
-import { ActionEmitEvent, ENotificationActive, ENotificationChannelId } from '@mezon/mobile-components';
+import { ActionEmitEvent, ENotificationActive, ENotificationChannelId, load, save, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity } from '@mezon/store-mobile';
 import {
-	EStateFriend,
 	deleteChannel,
 	directActions,
 	directMetaActions,
+	EStateFriend,
 	fetchUserChannels,
 	getStore,
 	markAsReadProcessing,
@@ -22,7 +22,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store-mobile';
-import { EMuteState, createImgproxyUrl, sleep } from '@mezon/utils';
+import { createImgproxyUrl, EMuteState, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import type { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
@@ -34,13 +34,16 @@ import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../../../../../../src/app/componentUI/MezonIconCDN';
 import { IconCDN } from '../../../../../../../src/app/constants/icon_cdn';
+import ImageNative from '../../../../../components/ImageNative';
 import MezonConfirm from '../../../../../componentUI/MezonConfirm';
 import type { IMezonMenuItemProps, IMezonMenuSectionProps } from '../../../../../componentUI/MezonMenu';
 import MezonMenu from '../../../../../componentUI/MezonMenu';
 import { Icons } from '../../../../../componentUI/MobileIcons';
-import ImageNative from '../../../../../components/ImageNative';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
+
+const MAX_PINNED = 10;
+const getPinnedKey = () => `PINNED_DM_${load(STORAGE_MY_USER_ID) || ''}`;
 
 interface IServerMenuProps {
 	// inviteRef: MutableRefObject<any>;
@@ -64,6 +67,10 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			infoFriend?.user?.id === messageInfo?.user_ids?.[0]
 		);
 	}, [infoFriend?.source_id, infoFriend?.state, infoFriend?.user?.id, messageInfo?.user_ids, userProfile?.user?.id]);
+	const isConversationPinned = useMemo(() => {
+		const pinnedList = load(getPinnedKey()) || [];
+		return pinnedList.includes(messageInfo?.channel_id);
+	}, [messageInfo?.channel_id]);
 	const { blockFriend, unBlockFriend, deleteFriend, addFriend } = useFriends();
 	const allUserGroupDM = useSelector((state) => selectRawDataUserGroup(state, messageInfo?.channel_id || '0'));
 
@@ -209,6 +216,13 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			onPress: async () => {
 				await dispatch(directActions.closeDirectMessage({ channel_id: messageInfo?.channel_id }));
 				await dispatch(directActions.setDmGroupCurrentId(''));
+				const stored: string[] = load(getPinnedKey()) || [];
+				if (stored.includes(messageInfo?.channel_id)) {
+					save(
+						getPinnedKey(),
+						stored.filter((id) => id !== messageInfo?.channel_id)
+					);
+				}
 				dismiss();
 			},
 			title: t('menu.closeDm'),
@@ -267,12 +281,56 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 		}
 	};
 
+	const handlePinConversation = useCallback(async () => {
+		dismiss();
+		const onConfirm = () => {
+			const stored: string[] = load(getPinnedKey()) || [];
+			if (isConversationPinned) {
+				save(
+					getPinnedKey(),
+					stored.filter((id) => id !== messageInfo?.channel_id)
+				);
+			} else {
+				if (stored.length >= MAX_PINNED) {
+					Toast.show({
+						type: 'error',
+						text1: t('maximumPinnedConversationsReached', { max: MAX_PINNED })
+					});
+					DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+					return;
+				}
+				save(getPinnedKey(), [...stored, messageInfo?.channel_id]);
+			}
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
+		};
+		const key = isConversationPinned ? 'unpinConfirm' : 'pinConfirm';
+		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, {
+			isDismiss: false,
+			data: {
+				children: (
+					<MezonConfirm
+						onConfirm={onConfirm}
+						title={t(`${key}.title`)}
+						content={t(`${key}.content`)}
+						confirmText={t(`${key}.confirmText`)}
+					/>
+				)
+			}
+		});
+	}, [isConversationPinned, messageInfo?.channel_id, t]);
+
 	const markAsReadMenu: IMezonMenuItemProps[] = [
 		{
 			onPress: async () => await handleMarkAsRead(messageInfo?.channel_id ?? ''),
 			title: t('menu.markAsRead'),
 			icon: <Icons.MarkAsReadIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />,
 			isShow: !isChatWithMyself
+		},
+		{
+			onPress: handlePinConversation,
+			title: isConversationPinned ? t('menu.unpinConversation') : t('menu.pinConversation'),
+			icon: <MezonIconCDN icon={isConversationPinned ? IconCDN.unpinIcon : IconCDN.pinIcon} width={size.s_20} height={size.s_20} />,
+			isShow: true
 		}
 	];
 
@@ -343,6 +401,13 @@ function MessageMenu({ messageInfo }: IServerMenuProps) {
 			return;
 		}
 		dispatch(directActions.setDmGroupCurrentId(''));
+		const stored: string[] = load(getPinnedKey()) || [];
+		if (stored.includes(messageInfo?.channel_id)) {
+			save(
+				getPinnedKey(),
+				stored.filter((id) => id !== messageInfo?.channel_id)
+			);
+		}
 
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_MODAL, { isDismiss: true });
 	}, [currentUserId, dispatch, lastOne, messageInfo?.channel_id]);
