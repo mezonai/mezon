@@ -12,7 +12,7 @@ import {
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
-import { FOR_15_MINUTES_SEC, FOR_1_HOUR_SEC, FOR_24_HOURS_SEC, FOR_3_HOURS_SEC, FOR_8_HOURS_SEC } from '@mezon/utils';
+import { EMuteState, FOR_15_MINUTES_SEC, FOR_1_HOUR_SEC, FOR_24_HOURS_SEC, FOR_3_HOURS_SEC, FOR_8_HOURS_SEC } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { FC } from 'react';
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
@@ -165,21 +165,12 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const isSelf = userProfile?.user?.id === currentUser?.id || currentUser?.user_ids?.includes(userProfile?.user?.id);
 
 	const isDefaultSetting = !notificationSettings?.id || notificationSettings?.id === '0';
-	const isMuted = !isDefaultSetting;
 	const hasMuteTime =
-		!isDefaultSetting && notificationSettings?.time_mute_seconds
-			? (() => {
-					try {
-						const muteDate = new Date(notificationSettings.time_mute_seconds);
-						return !isNaN(muteDate.getTime()) && muteDate > new Date();
-					} catch {
-						return false;
-					}
-				})()
-			: false;
-	const shouldShowUnmute = isMuted || hasMuteTime;
+		(!isDefaultSetting && notificationSettings?.time_mute_seconds && notificationSettings.time_mute_seconds > Date.now() / 1000) ||
+		notificationSettings?.time_mute_seconds === EMuteState.MUTED_INFINITY;
+	const shouldShowUnmute = !isDefaultSetting && hasMuteTime;
 
-	const shouldShowMuteSubmenu = !isMuted && !hasMuteTime;
+	const shouldShowMuteSubmenu = isDefaultSetting || !hasMuteTime;
 
 	const isOwnerClanOrGroup = userProfile?.user?.id && dataMemberCreate?.createId && userProfile?.user?.id === dataMemberCreate.createId;
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentUser?.user_ids?.[0] || currentUser?.id || ''));
@@ -323,7 +314,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 									/>
 									<MemberMenuItem
 										label={t('contextMenu.untilTurnBackOn')}
-										onClick={() => currentHandlers.handleMute()}
+										onClick={() => currentHandlers.handleMute(EMuteState.MUTED_INFINITY)}
 										setWarningStatus={setWarningStatus}
 									/>
 								</Submenu>

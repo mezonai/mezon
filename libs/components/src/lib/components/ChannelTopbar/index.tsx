@@ -916,13 +916,13 @@ function MuteButton() {
 	useEffect(() => {
 		const shouldMuteBell = (): boolean => {
 			if (
-				getNotificationChannelSelected?.active === 1 &&
+				!getNotificationChannelSelected?.time_mute_seconds &&
 				getNotificationChannelSelected?.notification_setting_type === NotificationType.NOTHING_MESSAGE
 			) {
 				return true;
 			}
 
-			if (getNotificationChannelSelected?.id !== '0' && getNotificationChannelSelected?.active !== 1) {
+			if (getNotificationChannelSelected?.id !== '0' && getNotificationChannelSelected?.time_mute_seconds) {
 				return true;
 			}
 

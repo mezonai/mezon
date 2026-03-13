@@ -1,6 +1,6 @@
 import type { MuteChannelPayload } from '@mezon/store';
 import { notificationSettingActions, selectCurrentClanId, useAppDispatch } from '@mezon/store';
-import type { INotificationUserChannel } from '@mezon/utils';
+import { EMuteState, type INotificationUserChannel } from '@mezon/utils';
 import { format } from 'date-fns';
 import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -61,28 +61,18 @@ export function useNotificationSettings({ channelId, notificationSettings, getCh
 	);
 
 	useEffect(() => {
-		const hasActiveMuteTime = !notificationSettings?.time_mute_seconds;
-		setNameChildren(hasActiveMuteTime ? t('contextMenu.unmute') : t('contextMenu.mute'));
-
 		const timeMute = notificationSettings?.time_mute_seconds;
-		const isValidTimeMute = timeMute && timeMute !== null && timeMute !== undefined;
 
-		setMutedUntilText(
-			hasActiveMuteTime && isValidTimeMute
-				? (() => {
-						try {
-							const muteDate = new Date(timeMute);
-							if (isNaN(muteDate.getTime()) || muteDate.getFullYear() === 1) {
-								return '';
-							}
-							return t('contextMenu.mutedUntil', { time: format(muteDate, 'dd/MM, HH:mm') });
-						} catch (error) {
-							console.error('Error formatting mute time:', error);
-							return '';
-						}
-					})()
-				: ''
-		);
+		setNameChildren(timeMute ? t('contextMenu.unmute') : t('contextMenu.mute'));
+
+		const mutedText =
+			timeMute && timeMute !== EMuteState.MUTED_INFINITY
+				? t('contextMenu.mutedUntil', {
+						time: format(new Date(timeMute), 'dd/MM, HH:mm')
+					})
+				: '';
+
+		setMutedUntilText(mutedText);
 	}, [notificationSettings, t]);
 
 	return {
