@@ -16,6 +16,7 @@ import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
+import { renderDescriptionWithLinks } from '../eventHelper';
 import { timeFomat } from '../timeFomatEvent';
 
 enum tabs {
@@ -165,7 +166,8 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 						return (
 							<>
 								<Icons.Location />
-								<p>{event?.address}</p>
+
+								{renderDescriptionWithLinks(event?.address)}
 							</>
 						);
 					}
@@ -223,9 +225,9 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				<Icons.MemberList defaultSize={'w-5 h-5'} />
 				<p>
 					{t(
-						(event?.user_ids?.filter((id) => id !== '0')?.length || 0) > 1
-							? 'eventDetail.personInteresteds'
-							: 'eventDetail.personInterested',
+						(event?.user_ids?.filter((id) => id !== '0')?.length || 0) === 1
+							? 'eventDetail.personInterested'
+							: 'eventDetail.personInteresteds',
 						{ count: event?.user_ids?.filter((id) => id !== '0')?.length || 0 }
 					)}
 				</p>
@@ -240,8 +242,11 @@ const EventInfoDetail = (props: EventInfoDetailProps) => {
 				)}
 				<p>{t('eventDetail.createdBy', { username: userName })}</p>
 			</div>
-			<div className="break-all" data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.description')}>
-				{event?.description}
+			<div
+				className="break-all whitespace-pre-wrap"
+				data-e2e={generateE2eId('clan_page.modal.create_event.event_management.item.modal_detail_item.description')}
+			>
+				{renderDescriptionWithLinks(event?.description)}
 			</div>
 		</div>
 	);
