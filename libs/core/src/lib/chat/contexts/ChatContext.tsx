@@ -1096,7 +1096,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					directActions.addGroupUserWS({
 						channel_desc: { ...channel_desc, create_time_seconds: create_time_second },
 						users,
-						myId: userId || ''
+						myId: userId || '',
+						inviter: caller
 					})
 				);
 				dispatch(
@@ -2994,3 +2995,4 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider, MobileEventEmitter };
+
