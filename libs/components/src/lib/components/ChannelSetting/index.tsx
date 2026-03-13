@@ -39,6 +39,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 	const [menu, setMenu] = useState(true);
 	const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 	const [displayChannelLabel, setDisplayChannelLabel] = useState<string>(currentChannel?.channel_label || '');
+	const [displayAgeRestricted, setDisplayAgeRestricted] = useState<number>(currentChannel?.age_restricted ?? 0);
 
 	const getTabTranslation = useCallback(
 		(tabKey: string) => {
@@ -95,6 +96,10 @@ const SettingChannel = (props: ModalSettingProps) => {
 	}, [currentChannel?.channel_id, currentChannel?.channel_label]);
 
 	useEffect(() => {
+		setDisplayAgeRestricted(currentChannel?.age_restricted ?? 0);
+	}, [currentChannel?.channel_id, currentChannel?.age_restricted]);
+
+	useEffect(() => {
 		const handleResize = () => {
 			if (window.innerWidth >= 480) {
 				setIsSidebarOpen(true);
@@ -149,6 +154,7 @@ const SettingChannel = (props: ModalSettingProps) => {
 							stateClose={closeMenu}
 							stateMenu={menu}
 							displayChannelLabel={displayChannelLabel}
+							displayAgeRestricted={displayAgeRestricted}
 							getTabTranslation={getTabTranslation}
 						/>
 					</div>
@@ -157,7 +163,11 @@ const SettingChannel = (props: ModalSettingProps) => {
 							<div className="w-full max-w-[740px] pl-4 pr-4 sbm:w-auto sbm:max-w-none sbm:pl-0 sbm:pr-0">
 								<div className="relative max-h-full text-theme-primary pt-[70px] sbm:pt-0">
 									{currentSetting === EChannelSettingTab.OVERVIEW && (
-										<OverviewChannel channel={channel} onDisplayLabelChange={setDisplayChannelLabel} />
+										<OverviewChannel
+											channel={channel}
+											onDisplayLabelChange={setDisplayChannelLabel}
+											onDisplayAgeRestrictedChange={setDisplayAgeRestricted}
+										/>
 									)}
 									{currentSetting === EChannelSettingTab.PREMISSIONS && (
 										<PermissionsChannel

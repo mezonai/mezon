@@ -18,6 +18,7 @@ import {
 	selectChannelById,
 	selectCloseMenu,
 	selectCurrentChannel,
+	selectCurrentChannelAgeRestricted,
 	selectCurrentChannelCategoryId,
 	selectCurrentChannelChannelId,
 	selectCurrentChannelClanId,
@@ -115,6 +116,7 @@ const TopBarChannelText = memo(() => {
 	const channelLabel = useSelector(selectCurrentChannelLabel);
 	const channelPrivate = useSelector(selectCurrentChannelPrivate);
 	const channelType = useSelector(selectCurrentChannelType);
+	const channelAgeRestricted = useSelector(selectCurrentChannelAgeRestricted);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const memberPath = `/chat/clans/${currentClanId}/member-safety`;
 	const channelPath = `/chat/clans/${currentClanId}/channel-setting`;
@@ -222,6 +224,7 @@ const TopBarChannelText = memo(() => {
 									<div className="flex gap-1 items-center truncate max-sbm:hidden cursor-pointer" onClick={handleNavigateToParent}>
 										<ChannelTopbarLabel
 											isPrivate={!!channelParent?.channel_private}
+											isAgeRestricted={channelParent?.age_restricted === 1}
 											label={channelParent?.channel_label || ''}
 											type={channelParent?.type || ChannelType.CHANNEL_TYPE_CHANNEL}
 										/>
@@ -230,6 +233,7 @@ const TopBarChannelText = memo(() => {
 								)}
 								<ChannelTopbarLabel
 									isPrivate={!!channelPrivate}
+									isAgeRestricted={channelAgeRestricted === 1}
 									label={channelLabel || ''}
 									type={channelType || ChannelType.CHANNEL_TYPE_CHANNEL}
 									onClick={handleCloseCanvas}
@@ -331,7 +335,19 @@ const TopBarChannelText = memo(() => {
 });
 
 const ChannelTopbarLabel = memo(
-	({ type, label, isPrivate, onClick }: { type: ChannelType; label: string; isPrivate: boolean; onClick?: () => void }) => {
+	({
+		type,
+		label,
+		isPrivate,
+		isAgeRestricted,
+		onClick
+	}: {
+		type: ChannelType;
+		label: string;
+		isPrivate: boolean;
+		isAgeRestricted?: boolean;
+		onClick?: () => void;
+	}) => {
 		const { setStatusMenu } = useMenu();
 
 		const handleClick = () => {
@@ -346,7 +362,7 @@ const ChannelTopbarLabel = memo(
 			if (!isPrivate) {
 				switch (type) {
 					case ChannelType.CHANNEL_TYPE_CHANNEL:
-						return <Icons.Hashtag />;
+						return isAgeRestricted ? <Icons.HashtagWarning className="w-5 h-5" /> : <Icons.Hashtag />;
 					case ChannelType.CHANNEL_TYPE_THREAD:
 						return <Icons.ThreadIcon />;
 					case ChannelType.CHANNEL_TYPE_MEZON_VOICE:
