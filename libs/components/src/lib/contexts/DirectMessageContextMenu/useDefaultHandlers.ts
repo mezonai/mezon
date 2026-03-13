@@ -5,11 +5,16 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import type { DirectMessageContextMenuHandlers } from './types';
 
+type RemoveFriendPayload = {
+	username?: string;
+	userId?: string;
+	displayName?: string;
+};
+
 interface UseDefaultHandlersParams {
 	openUserProfile: () => void;
 	handleDirectMessageWithUser: (user?: any) => Promise<void>;
 	addFriend: (params: requestAddFriendParam) => void;
-	deleteFriend: (username: string, userId: string) => void;
 	handleMarkAsRead: (channelId: string) => void;
 	handleScheduleMute: (channelId: string, duration: number) => void;
 	muteOrUnMuteChannel: (channelId: string, active: number, channelType?: number) => void;
@@ -21,13 +26,13 @@ interface UseDefaultHandlersParams {
 	openEditGroupModal?: () => void;
 	openLeaveGroupModal?: () => void;
 	openShareContactModal?: (user?: any) => void;
+	openRemoveFriendModal?: (payload: RemoveFriendPayload) => void;
 }
 
 export function useDefaultHandlers({
 	openUserProfile,
 	handleDirectMessageWithUser,
 	addFriend,
-	deleteFriend,
 	handleMarkAsRead,
 	handleScheduleMute,
 	muteOrUnMuteChannel,
@@ -38,7 +43,8 @@ export function useDefaultHandlers({
 	unBlockFriend,
 	openEditGroupModal,
 	openLeaveGroupModal,
-	openShareContactModal
+	openShareContactModal,
+	openRemoveFriendModal
 }: UseDefaultHandlersParams) {
 	const { t } = useTranslation('friendsPage');
 	const createDefaultHandlers = useCallback(
@@ -68,9 +74,16 @@ export function useDefaultHandlers({
 
 					const usernames = user?.usernames || (user?.user ? [user.user.username] : []);
 					const ids = user?.user_ids || (user?.user ? [user.user.id] : []);
+					const displayNames = user?.display_names || (user?.user ? [user.user.display_name] : []);
 					if (usernames.length === 0 || ids.length === 0) return;
 
-					deleteFriend(usernames[0], ids[0]);
+					if (openRemoveFriendModal) {
+						openRemoveFriendModal({
+							username: usernames[0],
+							userId: ids[0],
+							displayName: displayNames?.[0]
+						});
+					}
 				},
 				handleMarkAsRead: () => {
 					if (channelId) {
@@ -142,7 +155,6 @@ export function useDefaultHandlers({
 			openUserProfile,
 			handleDirectMessageWithUser,
 			addFriend,
-			deleteFriend,
 			handleMarkAsRead,
 			handleScheduleMute,
 			muteOrUnMuteChannel,
@@ -153,7 +165,8 @@ export function useDefaultHandlers({
 			t,
 			unBlockFriend,
 			openEditGroupModal,
-			openShareContactModal
+			openShareContactModal,
+			openRemoveFriendModal
 		]
 	);
 

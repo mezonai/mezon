@@ -45,6 +45,12 @@
 		"accept": "Accept",
 		"reject": "Reject"
 	},
+	"removeFriendModal": {
+		"title": "Remove '{{username}}'",
+		"description": "Are you sure you want to remove <bold>{{username}}</bold> from your friends?",
+		"cancel": "Cancel",
+		"confirm": "Remove Friend"
+	},
 	"toast": {
 		"userBlockedSuccess": "User blocked successfully",
 		"userBlockedFailed": "Failed to block user",

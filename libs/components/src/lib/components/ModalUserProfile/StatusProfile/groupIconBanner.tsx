@@ -5,8 +5,10 @@ import { Icons } from '@mezon/ui';
 import type { IUser } from '@mezon/utils';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import type { OpenModalProps } from '..';
+import RemoveFriendModal from '../../RemoveFriendModal';
 import { PopupFriend } from './PopupShortUser';
 
 type GroupIconBannerProps = {
@@ -23,6 +25,21 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 	const { t } = useTranslation('common');
 	const transferDetail = useSelector(selectInfoSendToken);
 	const { addFriend, acceptFriend, deleteFriend } = useFriends();
+	const [showRemoveFriendModal, hideRemoveFriendModal] = useModal(
+		() =>
+			user?.user?.username && user?.user?.id ? (
+				<RemoveFriendModal
+					username={user.user.username}
+					displayName={user.user.display_name}
+					onClose={hideRemoveFriendModal}
+					onConfirm={() => {
+						deleteFriend(user.user?.username || '', user.user?.id || '');
+						hideRemoveFriendModal();
+					}}
+				/>
+			) : null,
+		[user, deleteFriend]
+	);
 	const currentUserId = useAppSelector(selectCurrentUserId);
 	const dispatch = useAppDispatch();
 	const isMe = user?.user?.id === currentUserId;
@@ -87,7 +104,7 @@ const GroupIconBanner = (props: GroupIconBannerProps) => {
 						acceptFriend(user.user?.username || '', user.user?.id || '');
 						break;
 					}
-					deleteFriend(user.user?.username || '', user.user?.id || '');
+					showRemoveFriendModal();
 				}
 				break;
 			default: {

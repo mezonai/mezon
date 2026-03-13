@@ -45,6 +45,12 @@
 		"accept": "Chấp nhận",
 		"reject": "Từ chối"
 	},
+	"removeFriendModal": {
+		"title": "Xóa '{{username}}'",
+		"description": "Bạn có chắc chắn muốn xóa <bold>{{username}}</bold> khỏi danh sách bạn bè?",
+		"cancel": "Hủy",
+		"confirm": "Xóa bạn"
+	},
 	"toast": {
 		"userBlockedSuccess": "Đã chặn người dùng thành công",
 		"userBlockedFailed": "Không thể chặn người dùng",

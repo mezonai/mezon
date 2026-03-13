@@ -1,5 +1,7 @@
 import { useFriends } from '@mezon/core';
 import { ChannelMembersEntity } from '@mezon/utils';
+import { useModal } from 'react-modal-hook';
+import RemoveFriendModal from '../RemoveFriendModal';
 
 type PendingFriendProps = {
 	user: ChannelMembersEntity | null;
@@ -8,6 +10,20 @@ type PendingFriendProps = {
 const PendingFriend = (props: PendingFriendProps) => {
 	const { user } = props;
 	const { acceptFriend, deleteFriend } = useFriends();
+	const [showRemoveFriendModal, hideRemoveFriendModal] = useModal(
+		() =>
+			user?.user?.username && user?.user?.id ? (
+				<RemoveFriendModal
+					username={user.user.username}
+					onClose={hideRemoveFriendModal}
+					onConfirm={() => {
+						deleteFriend(user.user?.username || '', user.user?.id || '');
+						hideRemoveFriendModal();
+					}}
+				/>
+			) : null,
+		[user, deleteFriend]
+	);
 	const handleDefault = (event: any) => {
 		event.stopPropagation();
 	};
@@ -30,8 +46,8 @@ const PendingFriend = (props: PendingFriendProps) => {
 					className="rounded bg-bgModifierHover px-2 hover:bg-opacity-85 font-medium text-white"
 					onClick={(e) => {
 						handleDefault(e);
-						if (user) {
-							deleteFriend(user.user?.username || '', user.user?.id || '');
+						if (user?.user?.username && user?.user?.id) {
+							showRemoveFriendModal();
 						}
 					}}
 				>

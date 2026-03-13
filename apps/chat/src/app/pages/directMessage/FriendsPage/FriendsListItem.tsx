@@ -1,11 +1,11 @@
-import { BaseProfile } from '@mezon/components';
+import { BaseProfile, RemoveFriendModal } from '@mezon/components';
 import { useAppNavigation, useDirect, useFriends, useMemberStatus } from '@mezon/core';
 import type { FriendsEntity } from '@mezon/store';
 import { audioCallActions, listUsersByUserActions, selectCurrentTabStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ETabUserStatus, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,7 +25,7 @@ type FriendMenuProps = {
 	friend: FriendsEntity;
 	coords: Coords;
 	onClose: () => void;
-	onDeleteFriend: (username: string, id: string) => void;
+	onDeleteFriend: (friend: FriendsEntity) => void;
 	onBlockFriend: (username: string, id: string) => void;
 	handleCreateDm: () => Promise<string | undefined>;
 };
@@ -85,7 +85,7 @@ const FriendMenu = ({ friend, coords, onClose, onDeleteFriend, onBlockFriend, ha
 				<button
 					className="hover:bg-[#f67e882a] p-2 rounded-[5px] w-full text-colorDanger flex"
 					onClick={() => {
-						onDeleteFriend(friend?.user?.username as string, friend?.user?.id as string);
+						onDeleteFriend(friend);
 						onClose();
 					}}
 				>
@@ -121,6 +121,30 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 		distanceToBottom: 0
 	});
 
+	const [friendPendingRemoval, setFriendPendingRemoval] = useState<FriendsEntity | null>(null);
+
+	const [openConfirmRemoveFriend, closeConfirmRemoveFriend] = useModal(
+		() =>
+			friendPendingRemoval ? (
+				<RemoveFriendModal
+					username={friendPendingRemoval.user?.username}
+					displayName={friendPendingRemoval.user?.display_name}
+					onClose={() => {
+						closeConfirmRemoveFriend();
+						setFriendPendingRemoval(null);
+					}}
+					onConfirm={() => {
+						if (friendPendingRemoval?.user?.username && friendPendingRemoval?.user?.id) {
+							deleteFriend(friendPendingRemoval.user.username, friendPendingRemoval.user.id);
+						}
+						closeConfirmRemoveFriend();
+						setFriendPendingRemoval(null);
+					}}
+				/>
+			) : null,
+		[friendPendingRemoval, deleteFriend]
+	);
+
 	const directMessageWithUser = useCallback(async () => {
 		if (currentTabStatus === ETabUserStatus.PENDING) return;
 		const userID = friend?.user?.id ?? '';
@@ -139,8 +163,9 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 		dispatch(listUsersByUserActions.updateUserInList({ id, avatar_url: avatar, display_name: displayName, username }));
 	};
 
-	const handleDeleteFriend = (username: string, id: string) => {
-		deleteFriend(username, id);
+	const handleDeleteFriend = (selectedFriend: FriendsEntity) => {
+		setFriendPendingRemoval(selectedFriend);
+		openConfirmRemoveFriend();
 	};
 
 	const handleBlockFriend = async (username: string, id: string) => {
@@ -241,7 +266,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 							<button
 								title={t('friendMenu.cancel')}
 								className="  bg-button-secondary  rounded-full w-8 h-8 flex items-center justify-center"
-								onClick={() => handleDeleteFriend(friend?.user?.username as string, friend?.user?.id as string)}
+								onClick={() => handleDeleteFriend(friend)}
 								data-e2e={generateE2eId('friend_page.button.cancel_friend_request')}
 							>
 								✕
@@ -268,7 +293,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 							<button
 								title={t('friendMenu.reject')}
 								className=" bg-button-secondary  text-theme-primary rounded-full w-8 h-8 flex items-center justify-center"
-								onClick={() => handleDeleteFriend(friend?.user?.username as string, friend?.user?.id as string)}
+								onClick={() => handleDeleteFriend(friend)}
 								data-e2e={generateE2eId('friend_page.button.reject_friend_request')}
 							>
 								✕

@@ -30,6 +30,7 @@ import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import ModalRemoveMemberClan from '../../components/MemberProfile/ModalRemoveMemberClan';
 import ItemPanel from '../../components/PanelChannel/ItemPanel';
+import RemoveFriendModal from '../../components/RemoveFriendModal';
 import ShareContactModal from '../../components/ShareContact';
 import { MemberMenuItem } from './MemberMenuItem';
 import type { MemberContextMenuContextType, MemberContextMenuHandlers, MemberContextMenuProps } from './types';
@@ -131,6 +132,42 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 	);
 
 	const [currentHandlers, setCurrentHandlers] = useState<MemberContextMenuHandlers | null>(null);
+	const [friendToRemove, setFriendToRemove] = useState<{ username?: string; id?: string; displayName?: string } | null>(null);
+	const [showRemoveFriendConfirm, hideRemoveFriendConfirm] = useModal(
+		() =>
+			friendToRemove ? (
+				<RemoveFriendModal
+					username={friendToRemove.username}
+					displayName={friendToRemove.displayName}
+					onClose={() => {
+						hideRemoveFriendConfirm();
+						setFriendToRemove(null);
+					}}
+					onConfirm={() => {
+						if (friendToRemove?.username && friendToRemove?.id) {
+							deleteFriend(friendToRemove.username, friendToRemove.id);
+						}
+						hideRemoveFriendConfirm();
+						setFriendToRemove(null);
+					}}
+				/>
+			) : null,
+		[friendToRemove, deleteFriend]
+	);
+
+	const openRemoveFriendConfirm = useCallback(
+		(user?: ChannelMembersEntity) => {
+			if (user?.user?.username && user?.user?.id) {
+				setFriendToRemove({
+					username: user.user.username,
+					id: user.user.id,
+					displayName: user.user.display_name
+				});
+				showRemoveFriendConfirm();
+			}
+		},
+		[showRemoveFriendConfirm]
+	);
 
 	const { show } = useContextMenu({
 		id: MEMBER_CONTEXT_MENU_ID
@@ -326,9 +363,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 				}
 			},
 			handleRemoveFriend: () => {
-				if (user?.user?.username && user?.user?.id) {
-					deleteFriend(user.user.username, user.user.id);
-				}
+				openRemoveFriendConfirm(user);
 			},
 			handleKick: () => {
 				if (user) {
