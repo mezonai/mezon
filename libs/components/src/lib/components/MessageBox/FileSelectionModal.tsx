@@ -27,19 +27,19 @@ function FileSelectionModal({ isOpen, onClose, onUploadFile, onCreatePoll, butto
 				onUploadFile();
 				onClose();
 			}
-		},
-		...(onCreatePoll
-			? [
-					{
-						icon: <Icons.CheckListIcon className="w-5 h-5" />,
-						label: t('fileSelection.createPoll'),
-						onClick: () => {
-							onCreatePoll();
-							onClose();
-						}
-					}
-				]
-			: [])
+		}
+		// ...(onCreatePoll
+		// 	? [
+		// 			{
+		// 				icon: <Icons.CheckListIcon className="w-5 h-5" />,
+		// 				label: t('fileSelection.createPoll'),
+		// 				onClick: () => {
+		// 					onCreatePoll();
+		// 					onClose();
+		// 				}
+		// 			}
+		// 		]
+		// 	: [])
 	];
 
 	return (
