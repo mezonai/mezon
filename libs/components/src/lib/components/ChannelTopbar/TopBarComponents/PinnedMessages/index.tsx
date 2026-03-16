@@ -1,4 +1,4 @@
-import { ColorRoleProvider, useAppParams, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
+import { ColorRoleProvider, useAppParams, useEscapeKeyClose } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
 import { pinMessageActions, selectCurrentChannelClanId, selectCurrentChannelId, useAppDispatch } from '@mezon/store';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
@@ -67,17 +67,6 @@ const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 		});
 		openDeletePinMessage();
 	};
-
-	useOnClickOutside(
-		modalRef,
-		() => {
-			if (modalDeleteRef.current) {
-				return;
-			}
-			onClose();
-		},
-		rootRef
-	);
 
 	useEscapeKeyClose(modalRef, onClose);
 

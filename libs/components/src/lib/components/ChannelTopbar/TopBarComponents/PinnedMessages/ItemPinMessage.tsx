@@ -6,11 +6,20 @@ import {
 	selectCurrentClanId,
 	selectIsShowCanvas,
 	selectMessageByMessageId,
+	selectPollByMessageId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import type { IMessageWithUser } from '@mezon/utils';
-import { convertTimeString, generateE2eId, getShareContactInfo, isImageFileType, isVideoFileType } from '@mezon/utils';
+import {
+	TypeMessage,
+	convertTimeString,
+	convertTimestampToTimeRemainingI18n,
+	generateE2eId,
+	getShareContactInfo,
+	isImageFileType,
+	isVideoFileType
+} from '@mezon/utils';
 import { ChannelStreamMode, decodeAttachments, safeJSONParse } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useMemo } from 'react';
@@ -20,6 +29,7 @@ import type { UnpinMessageObject } from '.';
 import BaseProfile from '../../../MemberProfile/BaseProfile';
 import MessageAttachment from '../../../MessageWithUser/MessageAttachment';
 import { MessageLine } from '../../../MessageWithUser/MessageLine';
+import { PollMessage } from '../../../MessageWithUser/PollMessage';
 import ShareContactCard from '../../../ShareContact/ShareContactCard';
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
@@ -50,6 +60,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 	const message = useAppSelector((state) =>
 		selectMessageByMessageId(state, String(pinMessage?.channel_id || '0'), String(pinMessage?.message_id || '0'))
 	);
+	const pollData = useAppSelector((state) => selectPollByMessageId(state, String(pinMessage?.message_id || '0')));
 	const pinMessageAttachments = message?.attachments || pinMessage?.attachment;
 	const handleJumpMess = () => {
 		if (pinMessage.message_id && pinMessage.channel_id) {
@@ -75,6 +86,13 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 		}
 		return {};
 	}, [pinMessage.content]);
+
+	const isPollMessage = message?.code === TypeMessage.Poll || Boolean(pollData?.poll_id);
+
+	const pollDuration = useMemo(() => {
+		if (!pollData?.exp) return '';
+		return convertTimestampToTimeRemainingI18n(parseInt(pollData.exp as unknown as string, 10), t);
+	}, [pollData?.exp, t]);
 
 	const { isShareContact, shareContactEmbed } = useMemo(() => {
 		const embeds = messageContentObject?.embed || message?.content?.embed || [];
@@ -116,6 +134,21 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 					<div className="leading-6">
 						{isShareContact && shareContactEmbed ? (
 							<ShareContactCard embed={shareContactEmbed} />
+						) : isPollMessage && pollData ? (
+							<div className="mt-1">
+								<PollMessage
+									question={pollData.question || ''}
+									answers={
+										pollData.answers?.map((a) =>
+											typeof a === 'string' ? a : ((a as { label?: string })?.label as string) || ''
+										) ?? []
+									}
+									duration={pollDuration}
+									allowMultipleAnswers={pollData.type === 1}
+									messageId={String(pinMessage.message_id || '')}
+									channelId={String(pinMessage.channel_id || '')}
+								/>
+							</div>
 						) : (
 							contentString && (
 								<MessageLine
@@ -148,11 +181,14 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 									}
 								}
 
-								attachmentsList = Array.isArray(attachment)
-									? (attachment as ApiMessageAttachment[]).filter((att) => att && Object.keys(att).length > 0)
-									: ((attachment as any)?.attachments as ApiMessageAttachment[])?.filter(
-											(att) => att && Object.keys(att).length > 0
-										) || [];
+								if (Array.isArray(attachment)) {
+									attachmentsList = (attachment as ApiMessageAttachment[]).filter((att) => att && Object.keys(att).length > 0);
+								} else if (attachment && typeof attachment === 'object') {
+									const parsedAttachments = (attachment as { attachments?: ApiMessageAttachment[] }).attachments;
+									attachmentsList = (parsedAttachments || []).filter((att) => att && Object.keys(att).length > 0);
+								} else {
+									attachmentsList = [];
+								}
 							}
 
 							if (attachmentsList.length === 0) return null;
@@ -261,7 +297,7 @@ export const ListPinAttachment = ({ attachments }: { attachments: ApiMessageAtta
 	return (
 		<div className={`grid ${gridClass?.classGridParent} gap-1`}>
 			{attachments.map((attach) => {
-				return <img src={attach.url} className={`${gridClass?.classGridChild}`} key={attach.url} />;
+				return <img src={attach.url} alt="" className={`${gridClass?.classGridChild}`} key={attach.url} />;
 			})}
 		</div>
 	);

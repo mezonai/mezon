@@ -1,8 +1,16 @@
 import { useDragAndDrop } from '@mezon/core';
-import { createChannelPoll, referencesActions, selectAttachmentByChannelId, selectChannelById, useAppDispatch, useAppSelector } from '@mezon/store';
+import {
+	createChannelPoll,
+	referencesActions,
+	selectAttachmentByChannelId,
+	selectChannelById,
+	selectDirectById,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { IMAGE_MAX_FILE_SIZE, MAX_FILE_ATTACHMENTS, MAX_FILE_SIZE, UploadLimitReason, generateE2eId, processFile } from '@mezon/utils';
-import { ChannelStreamMode } from 'mezon-js';
+import { ChannelType } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api.gen';
 import { useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
@@ -14,11 +22,14 @@ export type FileSelectionButtonProps = {
 	mode?: number;
 };
 
-function FileSelectionButton({ currentChannelId, mode }: FileSelectionButtonProps) {
-	const isDM = mode === ChannelStreamMode.STREAM_MODE_DM;
+function FileSelectionButton({ currentChannelId }: FileSelectionButtonProps) {
 	const dispatch = useAppDispatch();
 	const uploadedAttachmentsInChannel = useAppSelector((state) => selectAttachmentByChannelId(state, currentChannelId))?.files || [];
 	const currentChannel = useAppSelector((state) => selectChannelById(state, currentChannelId));
+	const currentDirect = useAppSelector((state) => selectDirectById(state, currentChannelId));
+	const channelType = currentChannel?.type ?? currentDirect?.type;
+	const clanId = currentChannel?.clan_id ?? currentDirect?.clan_id ?? '0';
+	const isOneToOneDM = channelType === ChannelType.CHANNEL_TYPE_DM;
 	const { setOverUploadingState } = useDragAndDrop();
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
@@ -67,8 +78,8 @@ function FileSelectionButton({ currentChannelId, mode }: FileSelectionButtonProp
 
 	const handleSubmitPoll = async (pollData: PollData) => {
 		try {
-			if (!currentChannel) {
-				console.error('Current channel not found');
+			if (!channelType) {
+				console.error('Current channel/direct not found');
 				return;
 			}
 
@@ -77,7 +88,7 @@ function FileSelectionButton({ currentChannelId, mode }: FileSelectionButtonProp
 			await dispatch(
 				createChannelPoll({
 					channel_id: currentChannelId,
-					clan_id: currentChannel.clan_id || '0',
+					clan_id: clanId,
 					question: pollData.question,
 					answers: pollData.answers,
 					expire_hours: expireHours,
@@ -123,7 +134,7 @@ function FileSelectionButton({ currentChannelId, mode }: FileSelectionButtonProp
 				isOpen={isModalOpen}
 				onClose={handleCloseModal}
 				onUploadFile={handleUploadFile}
-				onCreatePoll={isDM ? undefined : handleOpenPollModal}
+				onCreatePoll={isOneToOneDM ? undefined : handleOpenPollModal}
 				buttonRef={buttonRef}
 			/>
 		</div>

@@ -5,7 +5,6 @@ import {
 	selectIsShowCreateTopic,
 	selectMemberClanByUserId,
 	selectMessageByMessageId,
-	selectPollEmojiByMessageId,
 	threadsActions,
 	topicsActions,
 	useAppDispatch,
@@ -29,8 +28,8 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import { MessageLine } from './MessageLine';
-import { PollMessage } from './PollMessage';
 import { parsePollData } from './parsePollData';
+import { PollMessage } from './PollMessage';
 
 type IMessageContentProps = {
 	message: IMessageWithUser;
@@ -209,7 +208,6 @@ const MessageText = ({
 	const hasLinkMarkdown = !!linkFromMarkdown;
 
 	const pollData = displayLine ? parsePollData(displayLine) : null;
-	const pollEmoji = useAppSelector((state) => selectPollEmojiByMessageId(state, message.id));
 
 	return (
 		// eslint-disable-next-line react/jsx-no-useless-fragment
@@ -217,9 +215,7 @@ const MessageText = ({
 			{pollData ? (
 				<PollMessage
 					question={pollData.question}
-					questionEmojiId={pollData.questionEmojiId ?? pollEmoji?.questionEmojiId}
 					answers={pollData.answers}
-					answerEmojiIds={pollData.answerEmojiIds ?? pollEmoji?.answerEmojiIds}
 					duration={pollData.duration}
 					allowMultipleAnswers={pollData.allowMultipleAnswers}
 					messageId={message.id}

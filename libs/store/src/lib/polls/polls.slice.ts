@@ -12,11 +12,6 @@ import { ensureSession, getMezonCtx } from '../helpers';
 
 export const POLLS_FEATURE_KEY = 'polls';
 
-export interface PollEmojiByMessage {
-	questionEmojiId?: string;
-	answerEmojiIds?: string[];
-}
-
 export interface PollsState {
 	loadingCreate: boolean;
 	loadingVoteByMessageId: Record<string, boolean>;
@@ -24,7 +19,6 @@ export interface PollsState {
 	loadingGetByMessageId: Record<string, boolean>;
 	error: string | null;
 	pollsByMessageId: Record<string, ApiGetPollResponse>;
-	pollEmojiByMessageId: Record<string, PollEmojiByMessage>;
 }
 
 export const initialPollsState: PollsState = {
@@ -33,8 +27,7 @@ export const initialPollsState: PollsState = {
 	loadingCloseByMessageId: {},
 	loadingGetByMessageId: {},
 	error: null,
-	pollsByMessageId: {},
-	pollEmojiByMessageId: {}
+	pollsByMessageId: {}
 };
 
 export const createChannelPoll = createAsyncThunk<ApiCreatePollResponse, ApiCreatePollRequest>('polls/createPoll', async (payload, thunkAPI) => {
@@ -113,10 +106,30 @@ export const getPoll = createAsyncThunk<ApiGetPollResponse, ApiGetPollRequest>('
 	}
 });
 
+function isPollContentLike(content: unknown): content is Record<string, unknown> {
+	if (!content || typeof content !== 'object' || Array.isArray(content)) return false;
+	const o = content as Record<string, unknown>;
+	return 'message_id' in o || 'poll_id' in o || 'answer_counts' in o;
+}
+
 export const pollsSlice = createSlice({
 	name: POLLS_FEATURE_KEY,
 	initialState: initialPollsState,
-	reducers: {},
+	reducers: {
+		setPollFromMessageContent(state, action: { payload: { message_id: string; content: unknown } }) {
+			const { message_id, content } = action.payload;
+			if (!message_id || !isPollContentLike(content)) return;
+			const existing = state.pollsByMessageId[message_id];
+			const contentObj = content as Record<string, unknown>;
+			const merged = {
+				...(existing || {}),
+				...contentObj,
+				message_id
+			} as ApiGetPollResponse;
+			if (!contentObj.voter_details) delete (merged as Record<string, unknown>).voter_details;
+			state.pollsByMessageId[message_id] = merged;
+		}
+	},
 	extraReducers: (builder) => {
 		builder
 			.addCase(createChannelPoll.pending, (state) => {
@@ -128,15 +141,7 @@ export const pollsSlice = createSlice({
 				const payload = action.payload as { message_id?: string; id?: string } | undefined;
 				const messageId = payload?.message_id ?? payload?.id;
 				if (payload && messageId) {
-					const id = String(messageId);
-					state.pollsByMessageId[id] = action.payload as ApiGetPollResponse;
-					const arg = action.meta.arg as ApiCreatePollRequest & { question_emoji_id?: string; answer_emoji_ids?: string[] };
-					if (arg.question_emoji_id || (arg.answer_emoji_ids?.length ?? 0) > 0) {
-						state.pollEmojiByMessageId[id] = {
-							...(arg.question_emoji_id && { questionEmojiId: arg.question_emoji_id }),
-							...(arg.answer_emoji_ids?.length && { answerEmojiIds: arg.answer_emoji_ids })
-						};
-					}
+					state.pollsByMessageId[String(messageId)] = action.payload as ApiGetPollResponse;
 				}
 			})
 			.addCase(createChannelPoll.rejected, (state, action) => {
@@ -146,16 +151,12 @@ export const pollsSlice = createSlice({
 
 			.addCase(votePoll.pending, (state, action) => {
 				const messageId = action.meta.arg.message_id;
-				if (messageId) {
-					state.loadingVoteByMessageId[messageId] = true;
-				}
+				if (messageId) state.loadingVoteByMessageId[messageId] = true;
 				state.error = null;
 			})
 			.addCase(votePoll.fulfilled, (state, action) => {
 				const messageId = action.meta.arg.message_id;
-				if (messageId) {
-					state.loadingVoteByMessageId[messageId] = false;
-				}
+				if (messageId) state.loadingVoteByMessageId[messageId] = false;
 
 				if (action.payload && action.payload.message_id && Object.keys(action.payload).length > 1) {
 					state.pollsByMessageId[action.payload.message_id] = action.payload;
@@ -163,9 +164,7 @@ export const pollsSlice = createSlice({
 			})
 			.addCase(votePoll.rejected, (state, action) => {
 				const messageId = action.meta.arg.message_id;
-				if (messageId) {
-					state.loadingVoteByMessageId[messageId] = false;
-				}
+				if (messageId) state.loadingVoteByMessageId[messageId] = false;
 				state.error = action.error.message || 'Failed to vote';
 			})
 
@@ -239,8 +238,3 @@ export const selectPollLoadingGet = (rootState: { [POLLS_FEATURE_KEY]: PollsStat
 	messageId ? getPollsState(rootState).loadingGetByMessageId[messageId] || false : false;
 
 export const selectPollError = (rootState: { [POLLS_FEATURE_KEY]: PollsState }): string | null => getPollsState(rootState).error;
-
-export const selectPollEmojiByMessageId = (
-	rootState: { [POLLS_FEATURE_KEY]: PollsState },
-	messageId: string | number
-): PollEmojiByMessage | undefined => getPollsState(rootState).pollEmojiByMessageId[String(messageId)];

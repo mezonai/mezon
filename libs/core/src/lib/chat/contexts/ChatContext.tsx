@@ -30,7 +30,6 @@ import {
 	emojiSuggestionActions,
 	eventManagementActions,
 	friendsActions,
-	getPoll,
 	getStore,
 	getStoreAsync,
 	giveCoffeeActions,
@@ -47,6 +46,7 @@ import {
 	permissionRoleChannelActions,
 	pinMessageActions,
 	policiesActions,
+	pollsActions,
 	referencesActions,
 	resetRefreshState,
 	rolesClanActions,
@@ -433,11 +433,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 					if (message.code === TypeMessage.ChatUpdate && message?.message_id) {
 						const existingMessage = selectMessageEntityById(store.getState(), message.channel_id, message.message_id);
-						if (existingMessage && existingMessage.code === TypeMessage.Poll) {
+						if (existingMessage && existingMessage.code === TypeMessage.Poll && mess.content) {
 							dispatch(
-								getPoll({
+								pollsActions.setPollFromMessageContent({
 									message_id: message.message_id,
-									channel_id: message.channel_id
+									content: mess.content
 								})
 							);
 						}
