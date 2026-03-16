@@ -13,7 +13,7 @@ import type {
 	ApiSearchMessageDocument,
 	ApiSearchMessageRequest,
 	ApiSortParam
-} from 'mezon-js/api.gen';
+} from 'mezon-js/api';
 import { ensureSession, getMezonCtx } from '../helpers';
 export const SEARCH_MESSAGES_FEATURE_KEY = 'searchMessages';
 

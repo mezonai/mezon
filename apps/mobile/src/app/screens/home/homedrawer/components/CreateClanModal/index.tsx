@@ -7,7 +7,7 @@ import { MAX_FILE_SIZE_1MB } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { unwrapResult } from '@reduxjs/toolkit';
 import type { ChannelType } from 'mezon-js';
-import type { ApiCategoryDesc } from 'mezon-js/api.gen';
+import type { ApiCategoryDesc } from 'mezon-js/api';
 import { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';

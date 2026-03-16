@@ -25,7 +25,7 @@ import {
 import { EMuteState, createImgproxyUrl, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import type { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
+import type { ApiMarkAsReadRequest } from 'mezon-js/api';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';

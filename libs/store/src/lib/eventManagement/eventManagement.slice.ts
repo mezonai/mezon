@@ -9,7 +9,7 @@ import type {
 	ApiGenerateMezonMeetResponse,
 	ApiUserEventRequest,
 	MezonUpdateEventBody
-} from 'mezon-js/api.gen';
+} from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';

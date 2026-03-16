@@ -14,7 +14,7 @@ import {
 } from '@mezon/store-mobile';
 import { EBacktickType, type IMessageSendPayload } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 

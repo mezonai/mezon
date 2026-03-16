@@ -1,4 +1,4 @@
-import type { ApiClanDiscover } from 'mezon-js/api.gen';
+import type { ApiClanDiscover } from 'mezon-js/api';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DEFAULT_IMAGES } from '../constants/constants';

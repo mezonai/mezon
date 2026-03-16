@@ -1,5 +1,5 @@
 import { rolesClanActions, selectCurrentClanId, setAddPermissions, setRemovePermissions, useAppDispatch } from '@mezon/store';
-import type { ApiRole } from 'mezon-js/api.gen';
+import type { ApiRole } from 'mezon-js/api';
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useMyRole } from './useMyRole';

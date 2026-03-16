@@ -9,7 +9,7 @@
 			"@mezon/*": ["libs/*/src/index.ts"],
 			"@mezon/transport/*": ["libs/transport/src/*"],
 			"@mezon/utils/*": ["libs/utils/src/*"],
-			"mezon-js/api.gen": ["node_modules/mezon-js/dist/api.gen.d.ts"],
+			"mezon-js/api": ["node_modules/mezon-js/dist/api.d.ts"],
 			"mezon-js/socket": ["node_modules/mezon-js/dist/socket.d.ts"]
 		},
 		"types": ["node", "@nx/react/typings/cssmodule.d.ts", "@nx/react/typings/image.d.ts"],

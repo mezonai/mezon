@@ -3,7 +3,7 @@ import type { EmojiStorage, IReaction } from '@mezon/utils';
 import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageReaction } from 'mezon-js/api.gen';
+import type { ApiMessageReaction } from 'mezon-js/api';
 import { ensureSession, getMezonCtx } from '../helpers';
 import { toastActions } from '../toasts';
 

@@ -256,7 +256,7 @@ function MessageWithUser({
 					classBanner="rounded-tl-lg rounded-tr-lg h-[105px]"
 					message={message}
 					mode={mode}
-					avatar={isClickReply.current ? message?.references?.[0]?.mesages_sender_avatar : message?.clan_avatar || message?.avatar}
+					avatar={isClickReply.current ? message?.references?.[0]?.message_sender_avatar : message?.clan_avatar || message?.avatar}
 					name={message?.clan_nick || message?.display_name || message?.username}
 					isDM={isDM}
 					checkAnonymous={isAnonymousOnModal}

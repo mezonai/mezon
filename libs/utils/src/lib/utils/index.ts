@@ -14,7 +14,7 @@ import {
 import isElectron from 'is-electron';
 import type { Client, Session } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser, RoleUserListRoleUser } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiRole, ClanUserListClanUser, RoleUserListRoleUser } from 'mezon-js/api';
 import type React from 'react';
 import Resizer from 'react-image-file-resizer';
 import { electronBridge } from '../bridge';
@@ -813,7 +813,7 @@ export const blankReferenceObj: ApiMessageRef = {
 	ref_type: 0,
 	message_sender_id: '',
 	message_sender_username: '',
-	mesages_sender_avatar: '',
+	message_sender_avatar: '',
 	message_sender_clan_nick: '',
 	message_sender_display_name: '',
 	content: '',

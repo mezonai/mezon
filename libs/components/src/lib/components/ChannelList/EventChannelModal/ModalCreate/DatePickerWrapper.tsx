@@ -1,5 +1,15 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.min.css';
+
+const LazyDatePicker = lazy(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	(): Promise<{ default: React.ComponentType<any> }> =>
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		import('react-datepicker').then((mod: any) => {
+			const Component = typeof mod.default === 'function' ? mod.default : mod.default?.default;
+			return { default: Component };
+		})
+);
 
 type DatePickerWrapperProps = {
 	selected: Date;
@@ -17,30 +27,13 @@ type DatePickerWrapperProps = {
 };
 
 const DatePickerWrapper = (props: DatePickerWrapperProps) => {
-	const [DatePickerComponent, setDatePickerComponent] = useState<any>(null);
-	const [isLoading, setIsLoading] = useState(true);
 	const [isOpen, setIsOpen] = useState(false);
 	const wrapperRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		const loadDatePicker = async () => {
-			try {
-				const datepickerModule = await import('react-datepicker');
-				setDatePickerComponent(() => datepickerModule.default);
-				setIsLoading(false);
-			} catch (error) {
-				console.error('Failed to load DatePicker:', error);
-			}
-		};
-
-		loadDatePicker();
-	}, []);
-	useEffect(() => {
 		const handleClickOutside = (event: MouseEvent) => {
 			const target = event.target as Node;
-			// Check if click is outside the wrapper
 			if (wrapperRef.current && !wrapperRef.current.contains(target)) {
-				// Also check if click is not on the calendar popup (which might be in a portal)
 				const calendarPopup = document.querySelector('.react-datepicker-popper');
 				if (!calendarPopup || !calendarPopup.contains(target)) {
 					setIsOpen(false);
@@ -49,7 +42,6 @@ const DatePickerWrapper = (props: DatePickerWrapperProps) => {
 		};
 
 		if (isOpen) {
-			// Use capture phase to get the event before stopPropagation
 			document.addEventListener('mousedown', handleClickOutside, true);
 		}
 
@@ -63,21 +55,19 @@ const DatePickerWrapper = (props: DatePickerWrapperProps) => {
 		setIsOpen(false);
 	};
 
-	if (isLoading || !DatePickerComponent) {
-		return <div className="w-full h-[38px] bg-option-theme  animate-pulse rounded"></div>;
-	}
-
 	return (
-		<div ref={wrapperRef}>
-			<DatePickerComponent
-				{...props}
-				onChange={handleChange}
-				open={isOpen}
-				onInputClick={() => setIsOpen(true)}
-				onClickOutside={() => setIsOpen(false)}
-				popperClassName="z-[200]"
-			/>
-		</div>
+		<Suspense fallback={<div className="w-full h-[38px] bg-option-theme  animate-pulse rounded"></div>}>
+			<div ref={wrapperRef}>
+				<LazyDatePicker
+					{...props}
+					onChange={handleChange}
+					open={isOpen}
+					onInputClick={() => setIsOpen(true)}
+					onClickOutside={() => setIsOpen(false)}
+					popperClassName="z-[200]"
+				/>
+			</div>
+		</Suspense>
 	);
 };
 

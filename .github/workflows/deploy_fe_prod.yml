@@ -31,11 +31,6 @@ jobs:
           source ~/.bashrc
           yarn
 
-      - name: Reset Nx cache
-        run: |
-          echo "Resetting Nx cache"
-          yarn nx reset
-
       - name: Remove env
         run: |
           rm -rf apps/chat/.env

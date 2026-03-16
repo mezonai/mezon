@@ -1,6 +1,5 @@
-import { Buffer as BufferMobile } from 'buffer';
 import type { Client, Session } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api';
 
 export class CustomFile extends File {
 	url?: string;
@@ -24,12 +23,11 @@ export const isContainsUrl = (text: string): boolean => {
 	return /(https?:\/\/[^\s]+)/.test(text);
 };
 
-export function uploadImageToMinIO(url: string, stream: Buffer, size: number) {
+export function uploadImageToMinIO(url: string, stream: Blob, size: number) {
 	return fetch(url, { method: 'PUT', body: stream });
 }
 
-export function uploadImageToMinIOMobile(url: string, stream: Buffer, type: string, size: number) {
-	// Add header to upload success on mobile
+export function uploadImageToMinIOMobile(url: string, stream: Blob, type: string, size: number) {
 	return fetch(url, {
 		method: 'PUT',
 		body: stream,
@@ -53,7 +51,7 @@ export async function handleUploadEmoticon(client: Client, session: Session, fil
 
 			const buf = await file?.arrayBuffer();
 
-			resolve(uploadFile(client, session, filename, fileType, file.size, Buffer.from(buf)));
+			resolve(uploadFile(client, session, filename, fileType, file.size, new Blob([buf], { type: fileType })));
 		} catch (error) {
 			reject(new Error(`${error}`));
 		}
@@ -97,7 +95,7 @@ export async function handleUploadFile(
 					filePath,
 					shortFileType,
 					file.size,
-					Buffer.from(buf),
+					new Blob([buf], { type: shortFileType }),
 					false,
 					originalFilename,
 					file.width,
@@ -129,11 +127,12 @@ export async function handleUploadFileMobile(
 				fileType = `text/${fileExtension}`;
 			}
 			if (file?.uri) {
-				const arrayBuffer = BufferMobile.from(file.fileData, 'base64');
-				if (!arrayBuffer) {
-					console.error('Failed to read file data.');
-					return;
+				const binaryStr = atob(file.fileData);
+				const bytes = new Uint8Array(binaryStr.length);
+				for (let i = 0; i < binaryStr.length; i++) {
+					bytes[i] = binaryStr.charCodeAt(i);
 				}
+				const blob = new Blob([bytes], { type: fileType });
 				const { filePath, originalFilename } = createUploadFilePath(filename, true);
 				resolve(
 					uploadFile(
@@ -142,7 +141,7 @@ export async function handleUploadFileMobile(
 						filePath,
 						fileType,
 						file.size,
-						arrayBuffer,
+						blob,
 						true,
 						originalFilename,
 						file?.width,
@@ -176,7 +175,7 @@ export async function uploadFile(
 	filename: string,
 	type: string,
 	size: number,
-	buf: Buffer,
+	buf: Blob,
 	isMobile?: boolean,
 	originalFilename?: string,
 	width?: number,

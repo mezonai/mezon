@@ -4,7 +4,7 @@ import type { LoadingStatus } from '@mezon/utils';
 import { AMOUNT_TOKEN } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiGiveCoffeeEvent, ApiTokenSentEvent } from 'mezon-js/api.gen';
+import type { ApiGiveCoffeeEvent, ApiTokenSentEvent } from 'mezon-js/api';
 import type { AddTxResponse } from 'mmn-client-js';
 import { ETransferType } from 'mmn-client-js';
 import { ensureSession, getMezonCtx } from '../helpers';

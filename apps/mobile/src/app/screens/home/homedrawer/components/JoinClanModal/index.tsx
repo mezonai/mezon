@@ -10,7 +10,7 @@ import {
 import { size, useTheme } from '@mezon/mobile-ui';
 import { clansActions, emojiSuggestionActions, getStoreAsync, inviteActions, settingClanStickerActions } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import type { ApiInviteUserRes } from 'mezon-js/api.gen';
+import type { ApiInviteUserRes } from 'mezon-js/api';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, StyleSheet, Text, TouchableOpacity, View } from 'react-native';

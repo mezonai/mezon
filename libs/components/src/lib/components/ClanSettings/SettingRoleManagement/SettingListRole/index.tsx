@@ -19,7 +19,7 @@ import {
 } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EDragBorderPosition } from '@mezon/utils';
-import { ApiUpdateRoleOrderRequest } from 'mezon-js/api.gen';
+import { ApiUpdateRoleOrderRequest } from 'mezon-js/api';
 import { forwardRef, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';

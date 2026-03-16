@@ -2,7 +2,7 @@ import { size, useTheme } from '@mezon/mobile-ui';
 import { getStore, messagesActions, selectMemberClanByUserId, useAppDispatch } from '@mezon/store-mobile';
 import { MEZON_AVATAR_URL } from '@mezon/utils';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageRef } from 'mezon-js/api';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, Text, View } from 'react-native';
@@ -28,19 +28,19 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation('message');
 	const avatarSender = useMemo(() => {
-		const senderId = messageReferences?.message_sender_id
-		const senderAvatar = messageReferences?.mesages_sender_avatar
+		const senderId = messageReferences?.message_sender_id;
+		const senderAvatar = messageReferences?.message_sender_avatar;
 		if (senderId === '0') {
-			return MEZON_AVATAR_URL
+			return MEZON_AVATAR_URL;
 		}
 		if (senderAvatar) {
-			return senderAvatar
+			return senderAvatar;
 		}
 		const store = getStore();
 		const state = store.getState();
-		const messageSender = selectMemberClanByUserId(state, senderId ?? '')
+		const messageSender = selectMemberClanByUserId(state, senderId ?? '');
 		return messageSender?.clan_avatar || messageSender?.user?.avatar_url || '';
-	}, [messageReferences?.message_sender_id, messageReferences?.mesages_sender_avatar]);
+	}, [messageReferences?.message_sender_id, messageReferences?.message_sender_avatar]);
 	const isEmbedMessage = useMemo(() => {
 		try {
 			const content = safeJSONParse(messageReferences?.content ?? '{}');
@@ -76,7 +76,11 @@ export const MessageReferences = ({ messageReferences, preventAction, channelId,
 			</View>
 			<View style={styles.repliedMessageWrapper}>
 				<View style={styles.avatarWrapper}>
-					<MezonClanAvatar image={avatarSender} alt={messageReferences?.message_sender_username || ''} customFontSizeAvatarCharacter={size.h8} />
+					<MezonClanAvatar
+						image={avatarSender}
+						alt={messageReferences?.message_sender_username || ''}
+						customFontSizeAvatarCharacter={size.h8}
+					/>
 				</View>
 
 				<View style={styles.replyContentWrapper}>

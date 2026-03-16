@@ -2,7 +2,7 @@ import EventEmitter from 'events';
 import type { Socket } from 'mezon-js';
 import { Client, Session } from 'mezon-js';
 import { WebSocketAdapterPb } from 'mezon-js-protobuf';
-import type { ApiConfirmLoginRequest, ApiLinkAccountConfirmRequest, ApiLoginIDResponse, ApiSession } from 'mezon-js/api.gen';
+import type { ApiConfirmLoginRequest, ApiLinkAccountConfirmRequest, ApiLoginIDResponse, ApiSession } from 'mezon-js/api';
 import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import React, { useCallback } from 'react';
 import { firstValueFrom, from, throwError, timer, type Observable } from 'rxjs';

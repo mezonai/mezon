@@ -9,7 +9,7 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import type { ApiGenerateClanWebhookRequest, ApiWebhookCreateRequest } from 'mezon-js/api.gen';
+import type { ApiGenerateClanWebhookRequest, ApiWebhookCreateRequest } from 'mezon-js/api';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, Pressable, Text, View } from 'react-native';

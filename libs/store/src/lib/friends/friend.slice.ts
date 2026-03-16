@@ -3,7 +3,7 @@ import { EUserStatus, type IUserProfileActivity, type LoadingStatus } from '@mez
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { AddFriend } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api.gen';
+import type { ApiFriend } from 'mezon-js/api';
 import { toast } from 'react-toastify';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
@@ -222,20 +222,23 @@ export const sendRequestUnblockFriend = createAsyncThunk('friends/requestUnblock
 	return response;
 });
 
-export const upsertFriendRequest = createAsyncThunk('friends/upsertFriendRequest', async ({ user, myId }: { user: AddFriend; myId: string }, thunkAPI) => {
-	const friend: FriendsEntity = {
-		state: EStateFriend.MY_PENDING,
-		id: user.user_id,
-		source_id: myId,
-		user: {
+export const upsertFriendRequest = createAsyncThunk(
+	'friends/upsertFriendRequest',
+	async ({ user, myId }: { user: AddFriend; myId: string }, thunkAPI) => {
+		const friend: FriendsEntity = {
+			state: EStateFriend.MY_PENDING,
 			id: user.user_id,
-			username: user.username,
-			avatar_url: user.avatar,
-			display_name: user.display_name
-		}
-	};
-	thunkAPI.dispatch(friendsActions.upsertFriend(friend));
-});
+			source_id: myId,
+			user: {
+				id: user.user_id,
+				username: user.username,
+				avatar_url: user.avatar,
+				display_name: user.display_name
+			}
+		};
+		thunkAPI.dispatch(friendsActions.upsertFriend(friend));
+	}
+);
 
 export const initialFriendsState: FriendsState = friendsAdapter.getInitialState({
 	loadingStatus: 'not loaded',

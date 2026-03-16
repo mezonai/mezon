@@ -14,7 +14,7 @@ import {
 	useAppSelector
 } from '@mezon/store';
 import type { ChannelThreads, ICategoryChannel } from '@mezon/utils';
-import type { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
+import type { ApiMarkAsReadRequest } from 'mezon-js/api';
 import { useCallback, useMemo, useState } from 'react';
 
 function buildChannelUpdates(channelIds: string[]): Array<{ channelId: string; messageId?: string }> {

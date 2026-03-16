@@ -1,8 +1,6 @@
-import { isSessionRefreshing } from '@mezon/transport';
 import { LIMIT_CLAN_ITEM, trackError } from '@mezon/utils';
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import * as Sentry from '@sentry/browser';
-import { authActions } from '../auth/auth.slice';
 import type { EErrorType, Toast, ToastPayload } from '../toasts';
 import { toastActions } from '../toasts';
 import { triggerClanLimitModal } from './errors.slice';
@@ -106,33 +104,6 @@ function createErrorToast(error: ErrorAction): ToastPayload {
 errorListenerMiddleware.startListening({
 	predicate: isErrorPredicate,
 	effect: async (action: ErrorAction, listenerApi) => {
-		try {
-			const isRefreshAction = typeof action.type === 'string' && action.type.startsWith('auth/refreshSession');
-
-			if (!isRefreshAction && !hasDispatchedRefreshOnce && !isRefreshing && !isSessionRefreshing()) {
-				let status: number | undefined = action?.payload?.status ?? action?.payload?.error?.status;
-				if (status == null && action?.payload && typeof action.payload === 'object') {
-					status = action?.payload?.status;
-				}
-
-				if (status === 401 || status === 403 || status === 500) {
-					isRefreshing = true;
-					hasDispatchedRefreshOnce = true;
-					try {
-						const result = await listenerApi.dispatch(authActions.refreshSession());
-						const isRejected = result.meta?.requestStatus === 'rejected';
-						if (!isRejected) {
-							hasDispatchedRefreshOnce = false;
-						}
-					} finally {
-						isRefreshing = false;
-					}
-				}
-			}
-		} catch (e) {
-			console.error(e);
-		}
-
 		const error = normalizeError(action);
 
 		if (!error) {

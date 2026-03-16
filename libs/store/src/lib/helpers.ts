@@ -138,6 +138,16 @@ export function checkInternetConnectionCached(): boolean {
 	return isOnline();
 }
 
+function isNetworkError(error: unknown): boolean {
+	if (error instanceof TypeError && error.message.includes('fetch')) return true;
+	if (!isOnline()) return true;
+	const msg = String((error as RetryableError)?.message || '').toLowerCase();
+	const code = (error as RetryableError)?.code || '';
+	const networkPatterns = ['timeout', 'etimedout', 'econnreset', 'enotfound', 'econnrefused', 'socket hang up', 'network error', 'econnaborted'];
+	if (code === 'NETWORK_ERROR' || code === 'ECONNABORTED') return true;
+	return networkPatterns.some((p) => msg.includes(p));
+}
+
 type RequiredRetryConfig = Required<Omit<RetryConfig, 'signal' | 'scope' | 'mezon'>>;
 
 const DEFAULT_RETRY_CONFIG: RequiredRetryConfig = {
@@ -148,17 +158,7 @@ const DEFAULT_RETRY_CONFIG: RequiredRetryConfig = {
 	useExponentialBackoff: true,
 	timeout: 30000,
 	checkOnlineStatus: true,
-	shouldRetry: (error: RetryableError) => {
-		if (error?.code === 'NETWORK_ERROR' || error?.code === 'ECONNABORTED' || error?.message?.includes('Network Error')) {
-			return true;
-		}
-		if (error?.status && error.status >= 500 && error.status < 600) {
-			return true;
-		}
-		const transientErrorPatterns = ['timeout', 'ETIMEDOUT', 'ECONNRESET', 'ENOTFOUND', 'ECONNREFUSED', 'socket hang up', 'Failed to fetch'];
-		const errorMessage = String(error?.message || '').toLowerCase();
-		return transientErrorPatterns.some((pattern) => errorMessage.includes(pattern.toLowerCase()));
-	},
+	shouldRetry: (error: RetryableError) => isNetworkError(error),
 	onRetry: () => {
 		// Default: no-op
 	}
