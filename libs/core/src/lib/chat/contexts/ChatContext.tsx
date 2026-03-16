@@ -175,6 +175,7 @@ import type {
 } from 'mezon-js';
 import { ChannelStreamMode, ChannelType, WebrtcSignalingType, safeJSONParse } from 'mezon-js';
 import type {
+	ApiChannelDescList,
 	ApiChannelMessageHeader,
 	ApiClanEmoji,
 	ApiCreateEventRequest,
@@ -193,7 +194,6 @@ import { useTranslation } from 'react-i18next';
 import { Subject } from 'rxjs';
 import { exhaustMap, filter, throttleTime } from 'rxjs/operators';
 import { useAuth } from '../../auth/hooks/useAuth';
-import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { handleGroupCallSocketEvent } from './groupCallSocketHandler';
 
 const MobileEventEmitter = new EventEmitter();
@@ -216,8 +216,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const { socketRef, mmnRef, reconnectWithTimeout } = useMezon();
 	const { userId } = useAuth();
 	const dispatch = useAppDispatch();
-
-	const navigate = useCustomNavigate();
 	// update later
 	const onvoiceended = useCallback(
 		(voice: VoiceEndedEvent) => {
@@ -843,7 +841,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						if (user.channel_type === ChannelType.CHANNEL_TYPE_THREAD) {
 							const parentChannelId = currentChannel?.parent_id;
 							if (parentChannelId) {
-								navigate(`/chat/clans/${clanId}/channels/${parentChannelId}`, true);
 								return;
 							}
 						}
@@ -853,17 +850,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						const fallbackChannelId = clanChannels.find((ch) => !checkIsThread(ch))?.id;
 
 						const redirectChannelId = defaultChannelId || fallbackChannelId;
-
-						if (redirectChannelId) {
-							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`, true);
-						} else {
-							navigate(`/chat/clans/${clanId}/member-safety`, true);
-						}
 					}
 					if (!isMobile && directId === user.channel_id) {
-						if (!channelId) {
-							navigate(`/chat/direct/friends`, true);
-						}
 						dispatch(directActions.setDmGroupCurrentId(null));
 					}
 					const threadToRemove =
@@ -951,8 +939,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 								channelType: 0,
 								isRemoveClan: true
 							});
-						} else {
-							navigate(`/chat/direct/friends`);
 						}
 					}
 					if (user.clan_id === currentVoice?.clanId) {
@@ -1615,7 +1601,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 				if (isUserInCategoryChannel) {
 					if (!clanId) {
-						navigate(`/chat/direct/friends`);
 						return;
 					}
 
@@ -1624,12 +1609,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					const fallbackChannelId = allChannels.find((ch) => ch.category_id !== categoryEvent.id && !checkIsThread(ch))?.id;
 
 					const redirectChannelId = welcomeChannelId || defaultChannelId || fallbackChannelId;
-
-					if (redirectChannelId) {
-						navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
-					} else {
-						navigate(`/chat/clans/${clanId}/member-safety`);
-					}
 				}
 
 				if (channelsInCategory.length > 0) {
@@ -1711,8 +1690,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						channelType: 0,
 						isRemoveClan: true
 					});
-				} else {
-					navigate(`/chat/direct/friends`);
 				}
 				dispatch(clansSlice.actions.removeByClanID(clanDelete.clan_id));
 			}
@@ -1785,7 +1762,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					}
 
 					if (!clanId) {
-						if (!isMobile) navigate(`/chat/direct/friends`);
 						return;
 					}
 
@@ -1795,14 +1771,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					const fallbackChannelId = allChannels.find((ch) => ch.id !== channelDeleted.channel_id && !checkIsThread(ch))?.id;
 
 					const redirectChannelId = welcomeChannelId || defaultChannelId || fallbackChannelId;
-
-					if (!isMobile) {
-						if (redirectChannelId) {
-							navigate(`/chat/clans/${clanId}/channels/${redirectChannelId}`);
-						} else {
-							navigate(`/chat/clans/${clanId}/member-safety`);
-						}
-					}
 				}
 
 				dispatch(channelsActions.deleteChannelSocket(channelDeleted));
@@ -1925,9 +1893,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						channelType: currentChannel?.type
 					});
 					dispatch(channelsActions.setCurrentChannelId({ clanId: channelUpdated.clan_id as string, channelId: '' }));
-				}
-				if (!isMobile && result && currentChannelId === channelUpdated.channel_id) {
-					navigate(`/chat/clans/${channelUpdated.clan_id}/member-safety`);
 				}
 			} else if (channelExist) {
 				dispatch(
@@ -2582,8 +2547,14 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		}
 	}, []);
 
+	const onchannellisted = useCallback((event: ApiChannelDescList) => {
+		console.warn('event: ', event);
+	}, []);
+
 	const setCallbackEventFn = React.useCallback(
 		(socket: Socket) => {
+			socket.onchannellisted = onchannellisted;
+
 			socket.onvoicejoined = onvoicejoined;
 
 			socket.onvoiceended = onvoiceended;
@@ -2749,7 +2720,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			onsdtopicevent,
 			onUnpinMessageEvent,
 			onblockfriend,
-			onunblockfriend
+			onunblockfriend,
+			onchannellisted
 		]
 	);
 
@@ -2922,6 +2894,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			socket.onunblockfriend = () => {};
 			// eslint-disable-next-line @typescript-eslint/no-empty-function
 			socket.onbanneduser = () => {};
+			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			socket.onchannellisted = () => {};
 		};
 	}, [
 		onchannelmessage,

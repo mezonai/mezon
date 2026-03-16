@@ -19,7 +19,7 @@ import i18n from '@mezon/translations';
 import { clearSessionFromStorage, getMezonConfig, MezonContextProvider, useMezon } from '@mezon/transport';
 
 import { PopupManagerProvider } from '@mezon/components';
-import { getCurrentChatData, PermissionProvider, useActivities, useSettingFooter } from '@mezon/core';
+import { ChatContextProvider, getCurrentChatData, PermissionProvider, useActivities, useSettingFooter } from '@mezon/core';
 import { captureSentryError } from '@mezon/logger';
 import {
 	ACTIVE_WINDOW,
@@ -341,13 +341,15 @@ export function App() {
 		>
 			{showLoading && <LoadingFallbackWrapper />}
 			<MezonStoreProvider store={store} loading={null} persistor={persistor}>
-				<LanguageSyncProvider />
-				<PopupManagerProvider>
-					<PermissionProvider>
-						<AppInitializer />
-						<Routes />
-					</PermissionProvider>
-				</PopupManagerProvider>
+				<ChatContextProvider>
+					<LanguageSyncProvider />
+					<PopupManagerProvider>
+						<PermissionProvider>
+							<AppInitializer />
+							<Routes />
+						</PermissionProvider>
+					</PopupManagerProvider>
+				</ChatContextProvider>
 			</MezonStoreProvider>
 		</LoadingContext.Provider>
 	);

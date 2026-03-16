@@ -1,4 +1,4 @@
-import { ChatContext, ChatContextProvider, ColorRoleProvider, useDragAndDrop, useFriends, useIdleRender } from '@mezon/core';
+import { ChatContext, ColorRoleProvider, useDragAndDrop, useFriends, useIdleRender } from '@mezon/core';
 import {
 	appActions,
 	e2eeActions,
@@ -190,13 +190,11 @@ const MainLayout = memo(
 const MainLayoutWrapper = () => {
 	return (
 		<MezonSuspense>
-			<ChatContextProvider>
-				<WebRTCStreamProvider>
-					<ColorRoleProvider>
-						<MainLayout />
-					</ColorRoleProvider>
-				</WebRTCStreamProvider>
-			</ChatContextProvider>
+			<WebRTCStreamProvider>
+				<ColorRoleProvider>
+					<MainLayout />
+				</ColorRoleProvider>
+			</WebRTCStreamProvider>
 		</MezonSuspense>
 	);
 };
