@@ -285,8 +285,8 @@ const ItemInfor = ({
 	const effectiveChannelType = channelType ?? (channelFromStore as { type?: number } | null)?.type;
 	const effectiveAgeRestricted = ageRestricted ?? (channelFromStore as { age_restricted?: number } | null)?.age_restricted;
 
-	const isDmIcon = effectiveChannelType === ChannelType.CHANNEL_TYPE_DM || effectiveChannelType === 3;
-	const isGroupIcon = effectiveChannelType === ChannelType.CHANNEL_TYPE_GROUP || effectiveChannelType === 10;
+	const isDmIcon = effectiveChannelType === ChannelType.CHANNEL_TYPE_DM;
+	const isGroupIcon = effectiveChannelType === ChannelType.CHANNEL_TYPE_GROUP;
 
 	const handleCopyChannelId = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.stopPropagation();
