@@ -222,7 +222,7 @@ export const fetchMessagesCached = async (
 		}
 	}
 	const channelData = state[MESSAGES_FEATURE_KEY].channelMessages[channelId];
-	const apiKey = createApiKey('fetchMessages', clanId, channelId, direction || 1, topicId || '');
+	const apiKey = createApiKey('fetchMessages', clanId, messageId || '0', channelId, direction || 1, topicId || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
 
 	if (!shouldForceCall && channelData?.ids?.length > 0) {
@@ -375,13 +375,14 @@ export const fetchMessages = createAsyncThunk(
 			if (!currentUser) {
 				currentUser = await thunkAPI.dispatch(accountActions.getUserProfile()).unwrap();
 			}
+			const lastMessageId = selectLastMessageIdByChannelId(state, channelId);
 
 			let response = await fetchMessagesCached(
 				thunkAPI.getState as () => RootState,
 				mezon,
 				clanId,
 				channelId,
-				messageId,
+				messageId || lastMessageId || '0',
 				direction,
 				topicId,
 				noCache,
