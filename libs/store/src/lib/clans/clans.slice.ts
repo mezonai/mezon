@@ -113,7 +113,6 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 			batch(() => {
 				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId as string));
 				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
-				thunkAPI.dispatch(channelsActions.fetchChannels({ clanId }));
 
 				thunkAPI.dispatch(usersClanActions.fetchUsersClan({ clanId }));
 				thunkAPI.dispatch(rolesClanActions.fetchRolesClan({ clanId }));
@@ -521,6 +520,9 @@ export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		await mezon.socketRef.current?.joinClanChat(clanId);
+		if (clanId !== '0') {
+			thunkAPI.dispatch(channelsActions.fetchChannels({ clanId }));
+		}
 	} catch (error) {
 		captureSentryError(error, 'clans/joinClan');
 		return thunkAPI.rejectWithValue(error);
