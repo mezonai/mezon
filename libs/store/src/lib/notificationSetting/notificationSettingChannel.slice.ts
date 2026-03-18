@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { EMuteState, type INotificationUserChannel, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiNotificationUserChannel, ApiSetMuteRequest, ApiSetNotificationRequest } from 'mezon-js/api.gen';
+import type { ApiNotificationUserChannel, ApiSetMuteRequest, ApiSetNotificationRequest } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import { channelsActions } from '../channels/channels.slice';
@@ -227,19 +227,17 @@ export const setNotificationSetting = createAsyncThunk(
 export type MuteChannelPayload = {
 	channel_id?: string;
 	mute_time: number;
-	active?: number;
 	clan_id?: string;
 };
 
 export const setMuteChannel = createAsyncThunk(
 	'notificationsetting/setMuteChannel',
-	async ({ channel_id, mute_time, active, clan_id }: MuteChannelPayload, thunkAPI) => {
+	async ({ channel_id, mute_time, clan_id }: MuteChannelPayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const body: ApiSetMuteRequest = {
 				id: channel_id,
-				mute_time,
-				active
+				mute_time
 			};
 			const response = await mezon.client.setMuteChannel(mezon.session, body);
 
@@ -249,8 +247,7 @@ export const setMuteChannel = createAsyncThunk(
 
 			return {
 				channel_id,
-				mute_time,
-				active,
+				mute_time: mute_time === EMuteState.MUTED_INFINITY ? EMuteState.MUTED_INFINITY : mute_time && Date.now() + (mute_time || 0) * 1000,
 				clan_id
 			};
 		} catch (error) {
@@ -353,7 +350,7 @@ export const notificationSettingSlice = createSlice({
 				notificationSetting.active = active;
 			}
 			if (active === 0) {
-				notificationSetting.time_mute = undefined;
+				notificationSetting.time_mute_seconds = EMuteState.UN_MUTE;
 			}
 		}
 	},
@@ -381,7 +378,14 @@ export const notificationSettingSlice = createSlice({
 						};
 						NotificationSettingsAdapter.upsertOne(state, notificationEntity);
 
-						state.byChannels[channelId].notificationSetting = notifiSetting as INotificationUserChannel;
+						state.byChannels[channelId].notificationSetting = {
+							...notifiSetting,
+							id: channelId,
+							time_mute_seconds:
+								notifiSetting.time_mute_seconds === EMuteState.MUTED_INFINITY
+									? EMuteState.MUTED_INFINITY
+									: notifiSetting.time_mute_seconds && Date.now() + (notifiSetting.time_mute_seconds || 0) * 1000
+						};
 						state.byChannels[channelId].cache = createCacheMetadata();
 					}
 
@@ -393,21 +397,19 @@ export const notificationSettingSlice = createSlice({
 				state.error = action.error.message;
 			})
 			.addCase(setMuteChannel.fulfilled, (state: NotificationSettingState, action: PayloadAction<MuteChannelPayload>) => {
-				const { channel_id, mute_time, active, clan_id } = action.payload;
+				const { channel_id, mute_time, clan_id } = action.payload;
 				if (!channel_id) return;
 
 				const channel = state.byChannels[channel_id];
 				if (channel?.notificationSetting) {
-					channel.notificationSetting.active = active ?? EMuteState.UN_MUTE;
-					channel.notificationSetting.time_mute =
-						active === EMuteState.MUTED && mute_time !== 0 ? new Date(Date.now() + (mute_time || 0) * 1000).toISOString() : undefined;
+					channel.notificationSetting.time_mute_seconds = mute_time;
 				}
-				if (active === EMuteState.MUTED) {
+				if (mute_time > 0) {
 					state.mutedChannels = {
 						...state.mutedChannels,
 						[channel_id]: true
 					};
-				} else if (active === EMuteState.UN_MUTE) {
+				} else if (mute_time === 0) {
 					const { [channel_id]: _removed, ...rest } = state.mutedChannels;
 					state.mutedChannels = rest;
 				}

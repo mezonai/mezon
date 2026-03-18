@@ -1,11 +1,43 @@
-import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin';
 import react from '@vitejs/plugin-react';
 import * as fs from 'fs';
 import * as path from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { defineConfig, loadEnv } from 'vite';
-import { nodePolyfills } from 'vite-plugin-node-polyfills';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
+
+function nodePolyfillsPlugin(): Plugin {
+	return {
+		name: 'node-polyfills',
+		transformIndexHtml() {
+			return [
+				{
+					tag: 'script',
+					attrs: { type: 'module' },
+					children: [
+						"import { Buffer } from 'buffer';",
+						'globalThis.Buffer = globalThis.Buffer || Buffer;',
+						"import process from 'process/browser';",
+						'globalThis.process = globalThis.process || process;',
+						'globalThis.global = globalThis.global || globalThis;'
+					].join('\n'),
+					injectTo: 'head-prepend'
+				}
+			];
+		},
+		config() {
+			return {
+				resolve: {
+					alias: {
+						buffer: 'buffer',
+						process: 'process/browser',
+						stream: 'stream-browserify',
+						util: 'util'
+					}
+				}
+			};
+		}
+	};
+}
 
 const packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../package.json'), 'utf-8'));
 const APP_VERSION = packageJson.version;
@@ -44,16 +76,7 @@ export default defineConfig(({ mode }) => {
 					]
 				}
 			}),
-			nxViteTsPaths(),
-			nodePolyfills({
-				include: ['buffer', 'process', 'stream', 'util'],
-				exclude: ['crypto'],
-				globals: {
-					Buffer: true,
-					global: true,
-					process: true
-				}
-			}),
+			nodePolyfillsPlugin(),
 			viteStaticCopy({
 				targets: [
 					{
@@ -120,10 +143,7 @@ export default defineConfig(({ mode }) => {
 				'@reduxjs/toolkit',
 				'react-redux',
 				'mezon-js'
-			],
-			esbuildOptions: {
-				target: 'esnext'
-			}
+			]
 		},
 
 		resolve: {
@@ -133,10 +153,14 @@ export default defineConfig(({ mode }) => {
 				'@mezon/components': path.resolve(__dirname, '../../libs/components/src/index.ts'),
 				'@mezon/transport': path.resolve(__dirname, '../../libs/transport/src/index.ts'),
 				'@mezon/utils': path.resolve(__dirname, '../../libs/utils/src/index.ts'),
+				'@mezon/ui/lib': path.resolve(__dirname, '../../libs/ui/src/lib'),
 				'@mezon/ui': path.resolve(__dirname, '../../libs/ui/src/index.ts'),
 				'@mezon/themes': path.resolve(__dirname, '../../libs/themes/src/index.ts'),
 				'@mezon/translations': path.resolve(__dirname, '../../libs/translations/src/index.ts'),
 				'@mezon/logger': path.resolve(__dirname, '../../libs/logger/src/index.ts'),
+				'@mezon/assets': path.resolve(__dirname, '../../libs/assets/src/index.ts'),
+				'@mezon/chat-scroll': path.resolve(__dirname, '../../libs/chat-scroll/src/index.ts'),
+				'@mezon/package-js': path.resolve(__dirname, '../../package.json'),
 				'mezon-js-protobuf': path.resolve(__dirname, '../../node_modules/mezon-js-protobuf/dist/mezon-js-protobuf.esm.mjs')
 			},
 			extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
@@ -155,10 +179,7 @@ export default defineConfig(({ mode }) => {
 			outDir: path.resolve(__dirname, '../../dist/apps/discover'),
 			emptyOutDir: true,
 			reportCompressedSize: true,
-			commonjsOptions: {
-				transformMixedEsModules: true
-			},
-			rollupOptions: {
+			rolldownOptions: {
 				output: {
 					entryFileNames: '[name].[hash].js',
 					chunkFileNames: '[name].[hash].chunk.js',
@@ -197,7 +218,7 @@ export default defineConfig(({ mode }) => {
 				}
 			},
 			sourcemap: mode === 'development',
-			minify: mode === 'production' ? 'esbuild' : false,
+			minify: mode === 'production',
 			target: 'esnext',
 			chunkSizeWarningLimit: 1000
 		}

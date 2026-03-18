@@ -17,6 +17,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonAvatar from '../../componentUI/MezonAvatar';
@@ -186,8 +187,19 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 
 	return (
 		<View style={styles.container}>
+			<LinearGradient
+				start={{ x: 1, y: 1 }}
+				end={{ x: 0, y: 0 }}
+				colors={[
+					themeValue.secondary,
+					themeValue?.primaryGradiant || themeValue.secondary,
+					themeValue.secondary,
+					themeValue?.primaryGradiant || themeValue.secondary
+				]}
+				locations={[0.2, 0.4, 0.8, 0.9]}
+				style={styles.absoluteFill}
+			/>
 			<View style={[styles.containerBackground, { backgroundColor: color }]}>
-				<MezonIconCDN icon={IconCDN.streamBanner} customStyle={styles.backgroundImage} useOriginalColor customResizeMode="cover" />
 				{isTabletLandscape && (
 					<TouchableOpacity style={styles.backgroundSetting} onPress={handleBack}>
 						<MezonIconCDN icon={IconCDN.chevronSmallLeftIcon} height={size.s_20} width={size.s_20} color={themeValue.textStrong} />
@@ -196,10 +208,10 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 				<View style={[styles.backgroundListIcon, isTabletLandscape && { justifyContent: 'space-between' }]}>
 					<View style={styles.shopSettingRow}>
 						<TouchableOpacity style={styles.backgroundSetting} onPress={() => navigateToShopScreen()}>
-							<Icons.ShopIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
+							<Icons.ShopIcon color={themeValue.textStrong} primary={themeValue.textDisabled} width={size.s_20} height={size.s_20} />
 						</TouchableOpacity>
 						<TouchableOpacity style={styles.backgroundSetting} onPress={() => navigateToSettingScreen()}>
-							<Icons.SettingIcon color={themeValue.textStrong} width={size.s_20} height={size.s_20} />
+							<Icons.SettingIcon color={themeValue.textStrong} primary={themeValue.textDisabled} width={size.s_20} height={size.s_20} />
 						</TouchableOpacity>
 					</View>
 				</View>
@@ -273,7 +285,12 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 					{!!walletDetail?.address && (
 						<View>
 							<TouchableOpacity onPress={showSendTokenBottomSheet} style={styles.tokenRow}>
-								<Icons.BalanceIcon color={baseColor.azureBlue} width={size.s_20} height={size.s_20} />
+								<Icons.BalanceIcon
+									color={baseColor.azureBlue}
+									primary={themeValue.textDisabled}
+									width={size.s_20}
+									height={size.s_20}
+								/>
 								<View style={styles.token}>
 									<Text
 										style={styles.text}
@@ -288,7 +305,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 								}}
 								style={styles.tokenRowMargin}
 							>
-								<Icons.TransferIcon width={size.s_20} height={size.s_20} />
+								<Icons.TransferIcon primary={themeValue.textDisabled} width={size.s_20} height={size.s_20} />
 								<View style={styles.token}>
 									<Text style={styles.text}>{t('screenStack:settingStack.sendToken')}</Text>
 								</View>
@@ -301,7 +318,12 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 								}}
 								style={styles.tokenRowMargin}
 							>
-								<Icons.HistoryTransactionIcon color={baseColor.azureBlue} width={size.s_20} height={size.s_20} />
+								<Icons.HistoryTransactionIcon
+									color={baseColor.azureBlue}
+									primary={themeValue.textDisabled}
+									width={size.s_20}
+									height={size.s_20}
+								/>
 								<View style={styles.token}>
 									<Text style={styles.text}>{t('screenStack:settingStack.historyTransaction')}</Text>
 								</View>

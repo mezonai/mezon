@@ -110,7 +110,7 @@ const BottomSheetRootListener = () => {
 		ref?.current?.forceClose();
 	}, []);
 
-	const [shouldPresent, setShouldPresent] = useState(false);
+	const [triggerId, setTriggerId] = useState(0);
 
 	const onTriggerBottomSheet = useCallback(
 		(data) => {
@@ -128,20 +128,19 @@ const BottomSheetRootListener = () => {
 			if (data?.maxHeightPercent) updates.maxHeightPercent = data.maxHeightPercent;
 			if (data?.blockDismiss !== undefined) updates.blockDismiss = data.blockDismiss;
 			setAll(updates);
-			setShouldPresent(true);
+			setTriggerId(Date.now());
 		},
 		[setAll]
 	);
 
 	useEffect(() => {
-		if (shouldPresent) {
+		if (triggerId > 0) {
 			const timer = setTimeout(() => {
 				ref?.current?.present();
-				setShouldPresent(false);
 			}, 50);
 			return () => clearTimeout(timer);
 		}
-	}, [shouldPresent]);
+	}, [triggerId]);
 
 	useEffect(() => {
 		const bottomSheetListener = DeviceEventEmitter.addListener(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, ({ isDismiss, data }) => {
@@ -191,6 +190,7 @@ const BottomSheetRootListener = () => {
 
 	return (
 		<OriginalBottomSheet
+			key={`bottomSheet_${triggerId}`}
 			ref={ref}
 			snapPoints={sizeConfig}
 			index={0}

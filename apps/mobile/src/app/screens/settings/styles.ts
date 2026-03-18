@@ -31,5 +31,12 @@ export const style = (colors: Attributes) =>
 			paddingHorizontal: size.s_20,
 			paddingVertical: size.s_6,
 			gap: size.s_10
+		},
+		absoluteFill: {
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			right: 0,
+			bottom: 0
 		}
 	});

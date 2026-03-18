@@ -49,8 +49,12 @@
 		"for8Hours": "Trong vòng 8 Giờ",
 		"for24Hours": "Trong vòng 24 Giờ",
 		"untilTurnBackOn": "Cho đến khi bật lại",
-		"mutedUntil": "Tắt thông báo đến {{time}}"
+		"mutedUntil": "Tắt thông báo đến {{time}}",
+		"pinConversation": "Ghim cuộc trò chuyện",
+		"unpinConversation": "Bỏ ghim cuộc trò chuyện",
+		"pinLimitExceeded": "Bạn chỉ có thể ghim tối đa 10 cuộc trò chuyện. Vui lòng bỏ ghim cuộc trò chuyện khác để ghim cuộc trò chuyện này"
 	},
+	"pinned": "ĐÃ GHIM",
 	"remove": {
 		"content": "Cuộc trò chuyện ở kênh này không còn khả dụng!",
 		"title": "Trò chuyện không khả dụng",

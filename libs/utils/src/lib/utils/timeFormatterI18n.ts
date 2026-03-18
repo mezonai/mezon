@@ -86,3 +86,27 @@ export function convertTimestampToTimeAgoI18n(timestampSeconds: number, t: (key:
 			return t('timeFormat.timeAgo.justNow');
 	}
 }
+
+export function convertTimestampToTimeRemainingI18n(timestampSeconds: number, t: (key: string, options?: any) => string) {
+	const now = Math.floor(Date.now() / 1000);
+	const diff = timestampSeconds - now;
+
+	if (diff <= 0) {
+		return t('timeFormat.timeRemaining.expired', { defaultValue: 'Expired' });
+	}
+
+	const days = Math.floor(diff / (60 * 60 * 24));
+	const hours = Math.floor((diff % (60 * 60 * 24)) / (60 * 60));
+	const minutes = Math.floor((diff % (60 * 60)) / 60);
+
+	switch (true) {
+		case days > 0:
+			return t('timeFormat.timeRemaining.days', { count: days, defaultValue: `${days} day${days > 1 ? 's' : ''}` });
+		case hours > 0:
+			return t('timeFormat.timeRemaining.hours', { count: hours, defaultValue: `${hours} hour${hours > 1 ? 's' : ''}` });
+		case minutes > 0:
+			return t('timeFormat.timeRemaining.minutes', { count: minutes, defaultValue: `${minutes} minute${minutes > 1 ? 's' : ''}` });
+		default:
+			return t('timeFormat.timeRemaining.lessThanMinute', { defaultValue: 'Less than a minute' });
+	}
+}

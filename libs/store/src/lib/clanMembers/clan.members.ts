@@ -3,7 +3,7 @@ import type { LoadingStatus, UsersClanEntity } from '@mezon/utils';
 import { EUserStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js/api.gen';
+import type { ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js/api';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -371,7 +371,7 @@ export const UsersClanSlice = createSlice({
 		) => {
 			const { clanId, channelId, userIds, banner_id, ban_time } = action.payload;
 			const banList: Update<UsersClanEntity, string>[] = userIds.map((id) => {
-				const oldBanList = state.byClans?.[clanId]?.entities?.entities[id].ban_list || {};
+				const oldBanList = state.byClans?.[clanId]?.entities?.entities[id]?.ban_list || {};
 				return {
 					id,
 					changes: {

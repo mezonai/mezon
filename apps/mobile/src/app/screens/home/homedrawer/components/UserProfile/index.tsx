@@ -19,7 +19,7 @@ import {
 import { DEFAULT_ROLE_COLOR, EUserStatus, formatDateI18n } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import type { ApiAddFriendsResponse } from 'mezon-js/api.gen';
+import type { ApiAddFriendsResponse } from 'mezon-js/api';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
@@ -385,10 +385,10 @@ const UserProfile = React.memo(
 		const handleAcceptFriend = useCallback(() => {
 			const body = infoFriend?.user?.id
 				? {
-					ids: infoFriend?.user?.id || '',
-					usernames: infoFriend?.user?.username || '',
-					isAcceptingRequest: true
-				}
+						ids: infoFriend?.user?.id || '',
+						usernames: infoFriend?.user?.username || '',
+						isAcceptingRequest: true
+					}
 				: { usernames: infoFriend?.user?.username || '', isAcceptingRequest: true };
 			dispatch(friendsActions.sendRequestAddFriend(body));
 		}, [dispatch, infoFriend?.user?.id, infoFriend?.user?.username]);
@@ -517,26 +517,26 @@ const UserProfile = React.memo(
 							{userById
 								? !isDM
 									? userById?.clan_nick ||
-									userById?.user?.display_name ||
-									userById?.user?.username ||
-									user?.clan_nick ||
-									user?.user?.display_name ||
-									user?.user?.username
+										userById?.user?.display_name ||
+										userById?.user?.username ||
+										user?.clan_nick ||
+										user?.user?.display_name ||
+										user?.user?.username
 									: userById?.user?.display_name || userById?.user?.username
 								: user?.display_name ||
-								user?.user?.display_name ||
-								user?.username ||
-								user?.user?.username ||
-								(checkAnonymous ? 'Anonymous' : '')}
+									user?.user?.display_name ||
+									user?.username ||
+									user?.user?.username ||
+									(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						<Text style={[styles.subUserName]}>
 							{userById
 								? userById?.user?.username || userById?.user?.display_name
 								: user?.username ||
-								user?.user?.username ||
-								user?.display_name ||
-								user?.user?.display_name ||
-								(checkAnonymous ? 'Anonymous' : '')}
+									user?.user?.username ||
+									user?.display_name ||
+									user?.user?.display_name ||
+									(checkAnonymous ? 'Anonymous' : '')}
 						</Text>
 						{isCheckOwner && <EditUserProfileBtn user={userById || (user as any)} />}
 						{!isCheckOwner && !manageVoiceUser && !isWebhook && (

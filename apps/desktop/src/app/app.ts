@@ -1,5 +1,5 @@
 import type { MenuItemConstructorOptions } from 'electron';
-import { BrowserWindow, Menu, Notification, app, dialog, ipcMain, powerMonitor, screen, shell } from 'electron';
+import { BrowserWindow, Menu, Notification, app, dialog, ipcMain, net, powerMonitor, screen, shell } from 'electron';
 import log from 'electron-log/main';
 import { autoUpdater } from 'electron-updater';
 import activeWindows from 'mezon-active-windows';
@@ -46,6 +46,10 @@ export default class App {
 	private static activityTrackingInterval: NodeJS.Timeout | null = null;
 	private static isActivityTrackingEnabled = true;
 
+	private static networkRetryInterval: NodeJS.Timeout | null = null;
+	private static networkRetryTimeout: NodeJS.Timeout | null = null;
+	private static isShowingConnectingPage = false;
+
 	public static isDevelopmentMode() {
 		return !app.isPackaged;
 	}
@@ -59,6 +63,19 @@ export default class App {
 			clearInterval(App.activityTrackingInterval);
 			App.activityTrackingInterval = null;
 		}
+		App.clearNetworkRetry();
+	}
+
+	private static clearNetworkRetry() {
+		if (App.networkRetryInterval) {
+			clearInterval(App.networkRetryInterval);
+			App.networkRetryInterval = null;
+		}
+		if (App.networkRetryTimeout) {
+			clearTimeout(App.networkRetryTimeout);
+			App.networkRetryTimeout = null;
+		}
+		App.isShowingConnectingPage = false;
 	}
 
 	private static onWindowAllClosed() {
@@ -119,6 +136,112 @@ export default class App {
 		if (App.mainWindow && App.isWindowValid(App.mainWindow) && !App.mainWindow.isVisible()) {
 			App.mainWindow.show();
 		}
+	}
+
+	private static showConnectingPage(errorDescription?: string) {
+		if (!App.isWindowValid(App.mainWindow)) return;
+		if (App.isShowingConnectingPage) return;
+
+		App.isShowingConnectingPage = true;
+
+		const connectingHTML = `
+			<!DOCTYPE html>
+			<html>
+			<head>
+				<meta charset="utf-8">
+				<style>
+					* { margin: 0; padding: 0; box-sizing: border-box; }
+					body {
+						background: #1e1f22;
+						height: 100vh;
+						display: flex;
+						flex-direction: column;
+						align-items: center;
+						justify-content: center;
+						-webkit-app-region: drag;
+					}
+					.logo-img {
+						width: 52px;
+						height: 52px;
+						border-radius: 50%;
+						object-fit: cover;
+						margin-bottom: 24px;
+					}
+					.app-name {
+						font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+						font-size: 22px;
+						font-weight: 700;
+						color: #ffffff;
+						letter-spacing: -0.3px;
+						margin-bottom: 8px;
+					}
+					.dots {
+						display: flex;
+						gap: 6px;
+						margin-top: 4px;
+					}
+					.dots span {
+						width: 6px;
+						height: 6px;
+						border-radius: 50%;
+						background: #5865f2;
+						animation: dot-bounce 1.4s ease-in-out infinite;
+					}
+					.dots span:nth-child(2) { animation-delay: 0.2s; }
+					.dots span:nth-child(3) { animation-delay: 0.4s; }
+					@keyframes dot-bounce {
+						0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+						40%           { opacity: 1;   transform: scale(1.2); }
+					}
+					/* thin progress bar at top */
+					.top-bar {
+						position: fixed;
+						top: 0; left: 0;
+						height: 3px;
+						width: 0%;
+						background: linear-gradient(90deg, #5865f2, #7289da);
+						animation: load-bar 30s linear forwards;
+						border-radius: 0 2px 2px 0;
+					}
+					@keyframes load-bar {
+						0%  { width: 0%; }
+						80% { width: 85%; }
+						100%{ width: 95%; }
+					}
+				</style>
+			</head>
+			<body>
+				<div class="top-bar"></div>
+				<svg class="logo-img" xmlns="http://www.w3.org/2000/svg" viewBox="69.96 139.03 468.28 466.17">
+					<path fill="#CC1FC9" d="M83.98,377.69c1.1-125.83,100.99-226.95,227.46-226.72c125.68,0.22,226.91,99.47,226.8,227.02c-0.11,129.55-102.46,227.5-227.15,227.21C182.57,604.89,85.03,503.08,83.98,377.69z M312.48,187.09c-106.14-1.2-191.04,85.07-191.39,189.54c-0.36,105.8,86.56,190.6,190.4,190.77c101.54,0.16,192.19-83.84,190.1-194.44C499.7,272.54,416.77,186.76,312.48,187.09z"/>
+					<path fill="#E399C3" d="M347.42,147.98c-82.52-11.58-154.52,9.75-210.71,72.12c-56.15,62.33-70.24,136.08-49.81,217c-26.16-56.54-24.97-141.21,24.48-209.03C162.47,158.02,254.29,120.74,347.42,147.98z"/>
+				</svg>
+				<div class="app-name">Mezon</div>
+				<div class="dots">
+					<span></span><span></span><span></span>
+				</div>
+			</body>
+			</html>
+		`;
+
+		App.mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(connectingHTML)}`);
+		if (!App.mainWindow.isVisible()) App.mainWindow.show();
+
+		App.networkRetryInterval = setInterval(() => {
+			net.fetch('https://mezon.ai/favicon.ico')
+				.then(() => {
+					App.clearNetworkRetry();
+					App.loadMainWindow();
+				})
+				.catch(() => {
+					// Still offline, keep retrying
+				});
+		}, 3000);
+
+		App.networkRetryTimeout = setTimeout(() => {
+			App.clearNetworkRetry();
+			App.showOfflinePage(errorDescription);
+		}, 30000);
 	}
 
 	private static showOfflinePage(errorDescription?: string) {
@@ -343,8 +466,16 @@ export default class App {
 
 		App.mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
 			log.error(`Failed to load: ${validatedURL}, Error code: ${errorCode}, Description: ${errorDescription}`);
-			if (errorCode !== -3) {
-				App.showOfflinePage(errorDescription);
+			const isCSPError = errorDescription?.toUpperCase().includes('CSP') || errorDescription?.toUpperCase().includes('CONTENT-SECURITY-POLICY');
+			if (errorCode !== -3 && errorCode !== -21 && !isCSPError) {
+				App.showConnectingPage(errorDescription);
+			}
+		});
+
+		App.mainWindow.webContents.on('did-finish-load', () => {
+			const currentURL = App.mainWindow.webContents.getURL();
+			if (!currentURL.startsWith('data:')) {
+				App.clearNetworkRetry();
 			}
 		});
 

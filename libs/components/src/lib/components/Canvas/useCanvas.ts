@@ -190,7 +190,9 @@ export function useCanvas(): UseCanvasReturn {
 			if (!canEdit) return;
 			setTitle(newTitle);
 			const titleChanged = newTitle !== originalTitle.current;
-			const contentChanged = !isContentEmpty(content) && content !== originalContent.current && !isContentEmpty(originalContent.current);
+			const isCurrentContentEmpty = isContentEmpty(content);
+			const isOriginalEmpty = isContentEmpty(originalContent.current);
+			const contentChanged = isCurrentContentEmpty && isOriginalEmpty ? false : content !== originalContent.current;
 			setHasChanges(titleChanged || contentChanged);
 		},
 		[canEdit, content]
@@ -201,7 +203,9 @@ export function useCanvas(): UseCanvasReturn {
 			if (!canEdit) return;
 			setContent(newContent);
 			const titleChanged = title !== originalTitle.current;
-			const contentChanged = !isContentEmpty(newContent) && newContent !== originalContent.current && !isContentEmpty(originalContent.current);
+			const isNewContentEmpty = isContentEmpty(newContent);
+			const isOriginalEmpty = isContentEmpty(originalContent.current);
+			const contentChanged = isNewContentEmpty && isOriginalEmpty ? false : newContent !== originalContent.current;
 			setHasChanges(titleChanged || contentChanged);
 		},
 		[canEdit, title]

@@ -1,8 +1,8 @@
 import { useFriends } from '@mezon/core';
-import { appActions, selectDirectsOpenlistOrder, useAppDispatch } from '@mezon/store';
+import { appActions, selectDirectsOpenlistOrder, selectPinnedDms, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
-import { memo, useEffect, useRef } from 'react';
+import { memo, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
@@ -17,6 +17,11 @@ function DirectMessageList() {
 	const { t } = useTranslation('directMessage');
 	const dmGroupChatList = useSelector(selectDirectsOpenlistOrder);
 	const { quantityPendingRequest } = useFriends();
+	const pinnedDmIds = useSelector(selectPinnedDms);
+
+	const pinnedDMs = useMemo(() => dmGroupChatList.filter((id) => pinnedDmIds.includes(id)), [dmGroupChatList, pinnedDmIds]);
+	const unpinnedDMs = useMemo(() => dmGroupChatList.filter((id) => !pinnedDmIds.includes(id)), [dmGroupChatList, pinnedDmIds]);
+
 	return (
 		<>
 			<div className="mt-5 px-2 py-1">
@@ -29,6 +34,17 @@ function DirectMessageList() {
 					) : null}
 				</div>
 
+				{pinnedDMs.length > 0 && (
+					<>
+						<div className="text-xs font-semibold tracking-wide left-sp text-theme-primary mt-6 flex flex-row items-center w-content justify-between px-2 pb-0 h-5 cursor-default text-theme-primary-hover">
+							<p>{t('pinned', 'PINNED')}</p>
+						</div>
+						<div className={`messages-scroll font-medium px-2 mt-1 max-h-[215px] overflow-y-auto`}>
+							<ListDMChannel listDM={pinnedDMs} isPinnedList />
+						</div>
+					</>
+				)}
+
 				<div className="text-xs font-semibold tracking-wide left-sp text-theme-primary mt-6 flex flex-row items-center w-full justify-between px-2 pb-0 h-5 cursor-default text-theme-primary-hover">
 					<p>{t('directMessages')}</p>
 					<CreateMessageGroupModal />
@@ -36,7 +52,7 @@ function DirectMessageList() {
 			</div>
 			<div className={`flex-1 font-medium  px-2`}>
 				<div className="flex flex-col gap-1 text-center relative">
-					<ListDMChannel listDM={dmGroupChatList} />
+					<ListDMChannel listDM={unpinnedDMs} />
 				</div>
 			</div>
 		</>

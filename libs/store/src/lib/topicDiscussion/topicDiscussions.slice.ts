@@ -11,14 +11,7 @@ import {
 } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type {
-	ApiChannelMessageHeader,
-	ApiMessageAttachment,
-	ApiMessageMention,
-	ApiMessageRef,
-	ApiSdTopic,
-	ApiSdTopicRequest
-} from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef, ApiSdTopic, ApiSdTopicRequest } from 'mezon-js/api';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
 import { messagesActions, selectMessageEntitiesByChannelId } from '../messages/messages.slice';

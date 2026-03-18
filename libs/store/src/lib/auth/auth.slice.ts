@@ -5,7 +5,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
 import { t } from 'i18next';
 import { Session } from 'mezon-js';
-import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api.gen';
+import type { ApiLinkAccountConfirmRequest } from 'mezon-js/api';
 import { toast } from 'react-toastify';
 import { clearApiCallTracker } from '../cache-metadata';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
@@ -356,15 +356,9 @@ export const authSlice = createSlice({
 			}
 		},
 		setLogout(state) {
-			if (state.session && state.activeAccount && Object.keys(state.session).length >= 2) {
-				delete state.session?.[state.activeAccount];
-				const key = Object.keys(state.session || [])[0];
-				state.activeAccount = key;
-			} else {
-				state.activeAccount = null;
-				state.session = null;
-				state.isLogin = false;
-			}
+			state.activeAccount = null;
+			state.session = null;
+			state.isLogin = false;
 			state.loadingStatus = 'not loaded';
 		},
 		refreshStatus(state) {

@@ -26,7 +26,14 @@ export interface HashtagChannelProps {
 	channelEntityOverride?: any;
 }
 
-const renderChannelIcon = (channelType: number, channelId: string, themeValue: Attributes, isThreadPrivate?: boolean, isChannelPrivate?: boolean) => {
+const renderChannelIcon = (
+	channelType: number,
+	channelId: string,
+	themeValue: Attributes,
+	isThreadPrivate?: boolean,
+	isChannelPrivate?: boolean,
+	isAgeRestricted?: boolean
+) => {
 	const iconStyle = componentStyles().channelIcon;
 	if (channelType === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
 		return <CustomIcon name="voice" size={size.s_14} color={baseColor.link} style={iconStyle} />;
@@ -41,7 +48,14 @@ const renderChannelIcon = (channelType: number, channelId: string, themeValue: A
 		return <CustomIcon name="app" size={size.s_14} color={baseColor.link} style={iconStyle} />;
 	}
 	if (channelType === ChannelType.CHANNEL_TYPE_CHANNEL && channelId !== 'undefined') {
-		return <CustomIcon name={isChannelPrivate ? 'channelPrivate' : 'channel'} size={size.s_14} color={baseColor.link} style={iconStyle} />;
+		return (
+			<CustomIcon
+				name={isAgeRestricted ? 'channelProtected' : isChannelPrivate ? 'channelPrivate' : 'channel'}
+				size={size.s_14}
+				color={baseColor.link}
+				style={iconStyle}
+			/>
+		);
 	}
 	if (channelId === 'undefined') {
 		return <Feather name="lock" size={size.s_14} color={themeValue.text} style={iconStyle} />;
@@ -164,9 +178,18 @@ const HashtagChannelComponent = ({
 				payloadChannel?.channelId,
 				themeValue,
 				(!channelLabel && !payloadChannel?.channelLabel) || channelFound?.channel_private === ChannelStatusEnum.isPrivate,
-				channelFound?.channel_private === ChannelStatusEnum.isPrivate
+				channelFound?.channel_private === ChannelStatusEnum.isPrivate,
+				channelFound?.age_restricted === 1
 			),
-		[channelType, payloadChannel?.channelId, payloadChannel?.channelLabel, themeValue, channelLabel, channelFound?.channel_private]
+		[
+			channelType,
+			payloadChannel?.channelId,
+			payloadChannel?.channelLabel,
+			themeValue,
+			channelLabel,
+			channelFound?.channel_private,
+			channelFound?.age_restricted
+		]
 	);
 
 	const handlePress = useCallback(async () => {

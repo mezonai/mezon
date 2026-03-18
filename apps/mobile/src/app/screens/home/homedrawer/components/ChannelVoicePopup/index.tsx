@@ -4,8 +4,6 @@ import {
 	appActions,
 	generateMeetToken,
 	getStoreAsync,
-	handleParticipantVoiceState,
-	selectAllAccount,
 	selectIsPiPMode,
 	selectVoiceInfo,
 	selectVoiceJoined,
@@ -13,11 +11,10 @@ import {
 	useAppSelector,
 	voiceActions
 } from '@mezon/store-mobile';
-import { ParticipantMeetState, sleep } from '@mezon/utils';
+import { sleep } from '@mezon/utils';
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, BackHandler, DeviceEventEmitter, Dimensions, Keyboard, PanResponder } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { useSelector } from 'react-redux';
 import ChannelVoice from '../ChannelVoice';
 
 const MINIMIZED_WIDTH = size.s_100 * 2;
@@ -35,7 +32,6 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 	const isPiPMode = useAppSelector((state) => selectIsPiPMode(state));
 	const [isGroupCall, setIsGroupCall] = useState(false);
 	const [participantsCount, setParticipantsCount] = useState(0);
-	const userProfile = useSelector(selectAllAccount);
 	const layoutRef = useRef({ width: 0, height: 0 });
 
 	const checkOrientation = () => {
@@ -115,22 +111,8 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 		})
 	).current;
 
-	const participantMeetState = async (state: ParticipantMeetState, clanId: string, channelId: string, roomId = ''): Promise<void> => {
-		if (!clanId || !channelId || !userProfile?.user?.id) return;
-		await dispatch(
-			handleParticipantVoiceState({
-				clan_id: clanId,
-				channel_id: channelId,
-				display_name: userProfile?.user?.display_name ?? '',
-				state,
-				room_name: state === ParticipantMeetState.LEAVE ? 'leave' : roomId || ''
-			})
-		);
-	};
-
-	const handleLeaveRoom = async (clanId: string, channelId: string, roomId: string) => {
+	const handleLeaveRoom = async (channelId: string) => {
 		if (channelId) {
-			await participantMeetState(ParticipantMeetState.LEAVE, clanId, channelId, roomId);
 			dispatch(voiceActions.resetVoiceControl());
 		}
 	};
@@ -155,7 +137,6 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 						channelPrivate: 1
 					})
 				);
-				await participantMeetState(ParticipantMeetState.JOIN, clanId as string, channelId as string, roomName);
 				setToken(result);
 				dispatch(voiceActions.setJoined(true));
 				dispatch(appActions.setLoadingMainMobile(false));
@@ -223,7 +204,7 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 				}
 
 				if (isJoined && !data?.isEndCall && voiceInfo?.channelId !== data?.channelId) {
-					await handleLeaveRoom(voiceInfo?.clanId || '', voiceInfo?.channelId || '', data?.roomId);
+					await handleLeaveRoom(voiceInfo?.channelId || '');
 					setToken('');
 					setVoicePlay(false);
 					dispatch(appActions.setLoadingMainMobile(true));
@@ -231,7 +212,7 @@ const ChannelVoicePopup = ({ isFromNativeCall = false }) => {
 				}
 
 				if (data?.isEndCall) {
-					await handleLeaveRoom(data?.clanId, data?.channelId, data?.roomId);
+					await handleLeaveRoom(data?.channelId || '');
 					dispatch(voiceActions.setFullScreen(false));
 					setIsGroupCall(false);
 					setVoicePlay(false);

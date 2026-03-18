@@ -1,15 +1,17 @@
 import { optionNotification } from '@mezon/mobile-components';
-import { size, useTheme } from '@mezon/mobile-ui';
-import { defaultNotificationActions, selectCurrentClanId, selectDefaultNotificationClan, useAppDispatch } from '@mezon/store-mobile';
+import { useTheme } from '@mezon/mobile-ui';
+import { defaultNotificationActions, selectCurrentClanId, selectDefaultNotificationClanByClanId, useAppDispatch } from '@mezon/store-mobile';
 import { useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Platform, Pressable, ScrollView } from 'react-native';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
-import MezonMenu, { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import type { IMezonMenuSectionProps } from '../../componentUI/MezonMenu';
+import MezonMenu from '../../componentUI/MezonMenu';
 import MezonOption from '../../componentUI/MezonOption';
 import { IconCDN } from '../../constants/icon_cdn';
-import { APP_SCREEN, MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import type { MenuClanScreenProps } from '../../navigation/ScreenTypes';
+import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import { CategoryChannel } from './CategoryChannel';
 import { style } from './ClanNotificationSetting.styles';
 
@@ -17,9 +19,9 @@ type ClanNotificationSettingScreen = typeof APP_SCREEN.MENU_CLAN.NOTIFICATION_SE
 const ClanNotificationSetting = ({ navigation }: MenuClanScreenProps<ClanNotificationSettingScreen>) => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
+	const defaultNotificationClan = useSelector((state) => selectDefaultNotificationClanByClanId(state, currentClanId));
 	const { t } = useTranslation(['clanNotificationsSetting']);
 	useLayoutEffect(() => {
 		navigation.setOptions({

@@ -337,7 +337,8 @@ export const style = (colors: Attributes) =>
 		},
 		// ButtonEndCall styles
 		endCallButton: {
-			backgroundColor: baseColor.redStrong
+			backgroundColor: baseColor.redStrong,
+			borderWidth: 0
 		},
 		// HeaderRoomView styles
 		headerRowLeft: {

@@ -230,7 +230,7 @@ export const GroupVideoConference = memo(
 				</LayoutContextProvider>
 				<RoomAudioRenderer />
 				{!propTracks && <ConnectionStateToast />}
-				<VoiceContextMenu roomName={room?.name} room={room} groupMembers={groupMembers} />
+				<VoiceContextMenu room={room} groupMembers={groupMembers} />
 			</div>
 		);
 	},

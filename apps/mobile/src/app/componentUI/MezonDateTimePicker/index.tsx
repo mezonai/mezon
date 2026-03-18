@@ -2,8 +2,10 @@ import { ActionEmitEvent, getNearTime } from '@mezon/mobile-components';
 import { ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DeviceEventEmitter, StyleProp, Text, View, ViewStyle } from 'react-native';
-import MezonFakeInputBox, { IMezonFakeBoxProps } from '../MezonFakeBox';
+import type { StyleProp, ViewStyle } from 'react-native';
+import { DeviceEventEmitter, Platform, Text, View } from 'react-native';
+import type { IMezonFakeBoxProps } from '../MezonFakeBox';
+import MezonFakeInputBox from '../MezonFakeBox';
 import { style } from './styles';
 
 type IMezonDateTimePicker = Omit<IMezonFakeBoxProps, 'onPress' | 'postfixIcon' | 'value'> & {
@@ -16,7 +18,7 @@ type IMezonDateTimePicker = Omit<IMezonFakeBoxProps, 'onPress' | 'postfixIcon' |
 	error?: string;
 	containerStyle?: StyleProp<ViewStyle>;
 	maximumDate?: Date;
-	display?: string;
+	display?: 'default' | 'compact' | 'inline' | 'spinner' | 'clock' | 'calendar';
 };
 
 export default memo(function MezonDateTimePicker({
@@ -71,52 +73,59 @@ export default memo(function MezonDateTimePicker({
 		DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
 	}
 
-	const ContentBottomSheet = () => {
-		const onChange = (event, selectedDate) => {
+	const ContentBottomSheet = useCallback(() => {
+		const onChangePicker = (event, selectedDate) => {
 			if (event.type === 'dismissed') {
 				setShow(false);
+				return;
 			}
 
 			if (event.type === 'neutralButtonPressed') {
 				setShow(false);
-			} else {
-				dateRef.current = selectedDate;
-				handleChange();
+				return;
+			}
+
+			dateRef.current = selectedDate;
+			handleChange();
+
+			if (Platform.OS === 'android') {
 				setShow(false);
 			}
 		};
 
 		return (
 			<View>
-				{error && (
-					<View style={styles.wrapperError}>
-						<Text style={styles.textError}>{error}</Text>
-						<Text style={styles.textError}>{formatDate(new Date())}</Text>
-					</View>
-				)}
-				{show && (
-					<View style={styles.bsContainer}>
-						<DateTimePicker
-							{...(need24HourFormat && isModeTime ? need24HourFormat : {})}
-							{...(needLocale && isModeTime ? needLocale : {})}
-							value={dateRef?.current || new Date()}
-							display={isModeTime ? 'spinner' : display ? display : 'default'}
-							is24Hour
-							onChange={onChange}
-							mode={mode}
-							themeVariant={themeBasic === ThemeModeBase.DARK ? 'dark' : 'light'}
-							{...(maximumDate ? { maximumDate } : {})}
-							// style={{ backgroundColor: themeValue.primary }}
-							textColor={themeValue.textStrong}
-						/>
-					</View>
-				)}
+				<View style={styles.bsContainer}>
+					<DateTimePicker
+						{...(need24HourFormat && isModeTime ? need24HourFormat : {})}
+						{...(needLocale && isModeTime ? needLocale : {})}
+						value={dateRef?.current || new Date()}
+						display={(isModeTime ? 'spinner' : Platform.OS === 'ios' ? 'spinner' : display ? display : 'default') as any}
+						is24Hour
+						onChange={onChangePicker}
+						mode={mode}
+						themeVariant={themeBasic === ThemeModeBase.DARK ? 'dark' : 'light'}
+						{...(maximumDate ? { maximumDate } : {})}
+						textColor={themeValue.textStrong}
+					/>
+				</View>
 			</View>
 		);
-	};
+	}, [error, styles, need24HourFormat, isModeTime, needLocale, display, mode, themeBasic, maximumDate, themeValue.textStrong, handleChange]);
 
 	function handlePress() {
-		setShow(true);
+		if (Platform.OS === 'ios') {
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, {
+				isDismiss: false,
+				data: {
+					snapPoints: ['40%'],
+					title: props.title,
+					children: <ContentBottomSheet />
+				}
+			});
+		} else {
+			setShow(true);
+		}
 	}
 
 	const formatDate = (date) => {
@@ -154,7 +163,13 @@ export default memo(function MezonDateTimePicker({
 				containerStyle={containerStyle}
 				onPress={handlePress}
 			/>
-			<ContentBottomSheet />
+			{error && (
+				<View style={styles.wrapperError}>
+					<Text style={styles.textError}>{error}</Text>
+					<Text style={styles.textError}>{formatDate(new Date())}</Text>
+				</View>
+			)}
+			{Platform.OS === 'android' && show && <ContentBottomSheet />}
 		</View>
 	);
 });

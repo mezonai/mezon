@@ -2,6 +2,7 @@ import type { requestAddFriendParam } from '@mezon/store';
 import {
 	EStateFriend,
 	friendsActions,
+	selectAddFriendRequestLoading,
 	selectAllFriends,
 	selectCurrentUserId,
 	selectDmGroupCurrentId,
@@ -18,6 +19,7 @@ export function useFriends() {
 	const groupDmMember = useAppSelector((state) => selectMemberByGroupId(state, currentDM as string));
 	const numberMemberInDmGroup = useMemo(() => groupDmMember?.length || 0, [groupDmMember]);
 	const currentUserId = useSelector(selectCurrentUserId);
+	const isAddingFriend = useSelector(selectAddFriendRequestLoading);
 	const dispatch = useAppDispatch();
 
 	const quantityPendingRequest = useMemo(() => {
@@ -140,8 +142,20 @@ export function useFriends() {
 			blockFriend,
 			unBlockFriend,
 			filteredFriends,
-			numberMemberInDmGroup
+			numberMemberInDmGroup,
+			isAddingFriend
 		}),
-		[friends, quantityPendingRequest, addFriend, acceptFriend, deleteFriend, blockFriend, unBlockFriend, filteredFriends, numberMemberInDmGroup]
+		[
+			friends,
+			quantityPendingRequest,
+			addFriend,
+			acceptFriend,
+			deleteFriend,
+			blockFriend,
+			unBlockFriend,
+			filteredFriends,
+			numberMemberInDmGroup,
+			isAddingFriend
+		]
 	);
 }

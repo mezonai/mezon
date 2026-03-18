@@ -1,11 +1,12 @@
 import { isEqualTrackRef } from '@livekit/components-core';
 import type { TrackReferenceOrPlaceholder } from '@livekit/components-react';
 import { isTrackReference, LayoutContextProvider, usePinnedTracks, useTracks, type useCreateLayoutContext } from '@livekit/components-react';
-import { useAppDispatch, voiceActions } from '@mezon/store';
+import { selectOpenExternalChatBox, useAppDispatch, voiceActions } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { Room } from 'livekit-client';
 import { RoomEvent, Track } from 'livekit-client';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { NotificationTooltip } from '../../NotificationList/NotificationTooltip';
 import ControlBar from '../ControlBar/ControlBar';
 import { CarouselLayout } from './FocusLayout/CarouselLayout/CarouselLayout';
@@ -73,6 +74,7 @@ export const VideoConferenceLayout = memo(
 		onFullScreen
 	}: VideoConferenceLayoutProps) => {
 		const dispatch = useAppDispatch();
+		const openChatBox = useSelector(selectOpenExternalChatBox);
 		const [isShowMember, setIsShowMember] = useState<boolean>(true);
 		const lastAutoFocusedScreenShareTrack = useRef<TrackReferenceOrPlaceholder | null>(null);
 
@@ -216,7 +218,11 @@ export const VideoConferenceLayout = memo(
 									)}
 								</span>
 								<button
-									className="relative focus-visible:outline-none text-theme-primary text-theme-primary-hover"
+									className={`relative focus-visible:outline-none ${
+										(isExternalCalling ? openChatBox : isShowChatVoice)
+											? 'text-theme-primary-active text-theme-primary-hover'
+											: 'text-theme-primary text-theme-primary-hover'
+									}`}
 									title="Chat"
 									onClick={onToggleChatBox}
 								>

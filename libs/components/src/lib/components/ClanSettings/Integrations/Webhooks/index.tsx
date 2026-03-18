@@ -2,7 +2,8 @@ import { generateWebhook, selectCurrentClanId, useAppDispatch } from '@mezon/sto
 import { Image } from '@mezon/ui';
 import type { IChannel } from '@mezon/utils';
 import { generateE2eId } from '@mezon/utils';
-import type { ApiWebhook, ApiWebhookCreateRequest } from 'mezon-js/api.gen';
+import type { ApiWebhook, ApiWebhookCreateRequest } from 'mezon-js/api';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import WebhookItemModal from './WebhookItemModal';
@@ -16,6 +17,7 @@ interface IWebhooksProps {
 const Webhooks = ({ allWebhooks, currentChannel, isClanSetting }: IWebhooksProps) => {
 	const { t } = useTranslation('integrations');
 	const dispatch = useAppDispatch();
+	const [expandedWebhookId, setExpandedWebhookId] = useState<string | null>(null);
 	const webhookNames = ['Captain hook', 'Spidey bot', 'Komu Knight'];
 	const getRandomWebhookName = (): string => {
 		const randomIndex = Math.floor(Math.random() * webhookNames.length);
@@ -67,7 +69,14 @@ const Webhooks = ({ allWebhooks, currentChannel, isClanSetting }: IWebhooksProps
 					</div>
 					{allWebhooks &&
 						allWebhooks.map((webhook) => (
-							<WebhookItemModal isClanSetting={isClanSetting} currentChannel={currentChannel} webhookItem={webhook} key={webhook.id} />
+							<WebhookItemModal
+								isClanSetting={isClanSetting}
+								currentChannel={currentChannel}
+								webhookItem={webhook}
+								key={webhook.id}
+								isExpanded={expandedWebhookId === webhook.id}
+								onToggleExpand={() => setExpandedWebhookId(expandedWebhookId === webhook.id ? null : (webhook.id ?? null))}
+							/>
 						))}
 				</>
 			) : (

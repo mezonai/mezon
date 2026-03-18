@@ -176,8 +176,15 @@ export default function PreJoinCalling() {
 		setAvatar(avatar as string);
 		const fullStringNameAndAvatar = isUser ? JSON.stringify({ extName: username, extAvatar: getAvatar }) : JSON.stringify({ extName: username });
 
-		await dispatch(generateMeetTokenExternal({ token: code as string, displayName: fullStringNameAndAvatar, isGuest: !isUser as boolean }));
-	}, [dispatch, username, getDisplayName, code]);
+		await dispatch(
+			generateMeetTokenExternal({
+				token: code as string,
+				username: account?.user?.id || username,
+				metadata: fullStringNameAndAvatar,
+				isGuest: !isUser as boolean
+			})
+		);
+	}, [dispatch, username, account?.user?.id, getDisplayName, code]);
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
 

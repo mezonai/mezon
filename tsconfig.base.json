@@ -37,7 +37,7 @@
 			"@mezon/utils": ["libs/utils/src/index.ts"],
 			"@mezon/chat-scroll": ["libs/chat-scroll/src/index.ts"],
 			"@mezon/package-js": ["package.json"],
-			"mezon-js/api.gen": ["node_modules/mezon-js/dist/api.gen.d.ts"],
+			"mezon-js/api": ["node_modules/mezon-js/dist/api.d.ts"],
 			"mezon-js/socket": ["node_modules/mezon-js/dist/socket.d.ts"],
 			"react": ["./node_modules/@types/react"]
 		}

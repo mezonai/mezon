@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import MezonClanAvatar from '../../../../../../componentUI/MezonClanAvatar';
 import MezonIconCDN from '../../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../../componentUI/MobileIcons';
 import ImageNative from '../../../../../../components/ImageNative';
 import { IconCDN } from '../../../../../../constants/icon_cdn';
 import type { IContactData } from '../../ContactMessageCard';
@@ -64,7 +65,7 @@ const TopicHeader = memo(({ currentChannelId, handleBack }: ITopicHeaderProps) =
 				</Pressable>
 				<View style={styles.titlePanel}>
 					<Pressable>
-						<MezonIconCDN icon={IconCDN.discussionIcon} color={themeValue.text} height={size.s_20} width={size.s_20} />
+						<Icons.TopicIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 					</Pressable>
 					<Text style={styles.title}>{t('actions.topicDiscussion')}</Text>
 				</View>

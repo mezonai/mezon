@@ -1,4 +1,5 @@
-import { Attributes, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 export const style = (colors: Attributes) =>
 	StyleSheet.create({
@@ -8,10 +9,12 @@ export const style = (colors: Attributes) =>
 			color: colors.white
 		},
 		description: {
-			fontSize: size.label,
-			fontWeight: '400',
+			fontSize: size.medium,
+			fontWeight: '300',
 			color: colors.text,
-			textAlign: 'center'
+			textAlign: 'center',
+			maxWidth: '80%',
+			marginBottom: size.s_20
 		},
 		container: {
 			position: 'relative',
@@ -22,7 +25,7 @@ export const style = (colors: Attributes) =>
 			position: 'absolute',
 			left: size.s_10,
 			right: size.s_10,
-			top: '20%',
+			top: '8%',
 			flexDirection: 'column',
 			alignItems: 'center',
 			gap: size.s_10

@@ -12,7 +12,7 @@ const StatusBarHeight = ({ isPrimary = false }: IStatusBarHeightProps) => {
 	const insets = useSafeAreaInsets();
 	const { themeValue } = useTheme();
 
-	const PRIMARY_GRADIANT = [themeValue.primary, themeValue?.primaryGradiant || themeValue.primary];
+	const PRIMARY_GRADIANT = [themeValue?.primaryGradiant || themeValue.primary, themeValue.primary];
 	const SECONDARY_GRADIANT = [themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary];
 
 	const statusBarHeight = Platform.OS === 'android' ? 0 : insets.top || size.s_50;

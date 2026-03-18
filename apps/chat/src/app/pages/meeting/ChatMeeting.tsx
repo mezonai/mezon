@@ -1,4 +1,5 @@
-import { ChatProps, ReceivedChatMessage, useChat } from '@livekit/components-react';
+import type { ChatProps, ReceivedChatMessage } from '@livekit/components-react';
+import { useChat } from '@livekit/components-react';
 import { selectOpenExternalChatBox } from '@mezon/store';
 import { safeJSONParse } from 'mezon-js';
 import React, { useMemo } from 'react';
@@ -13,9 +14,10 @@ const ChatStreamExternal = () => {
 	const openChatBox = useSelector(selectOpenExternalChatBox);
 	const handleSendMessage = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (!event.shiftKey && event.key === 'Enter') {
-			send((event.target as HTMLInputElement).value);
+			const value = (event.target as HTMLInputElement).value.trim();
+			if (!value) return;
+			send(value);
 			(event.target as HTMLInputElement).value = '';
-			// console.log('event: ', (event.target as HTMLInputElement).value);
 		}
 	};
 	return (
@@ -41,23 +43,34 @@ const ChatStreamExternal = () => {
 };
 
 const MessageItem = ({ message }: { message: ReceivedChatMessage }) => {
-	const nameSender = safeJSONParse(message.from?.identity || `{ extName: 'Guest' }`).extName || '';
+	const parsed = safeJSONParse(message.from?.metadata || `{ "extName": "Guest" }`);
+	const nameSender = parsed.extName || message.from?.name || 'Guest';
+	const avatarUrl = parsed.extAvatar || '';
 	const time = useMemo(() => {
-		const timestamp = message.timestamp; // Example timestamp in milliseconds
+		const timestamp = message?.timestamp;
 		const date = new Date(timestamp);
-
-		// Extract hours and minutes
-		const hours = date.getHours().toString().padStart(2, '0'); // Ensures two-digit format
+		const hours = date.getHours().toString().padStart(2, '0');
 		const minutes = date.getMinutes().toString().padStart(2, '0');
 		return `${hours}:${minutes}`;
 	}, []);
 	return (
-		<div className={`flex flex-col p-2`}>
-			<p className="text-base font-semibold leading-4">
-				{nameSender}
-				<span className="font-normal text-xs leading-4 ml-4">{time}</span>
-			</p>
-			<p className="text-sm">{message.message}</p>
+		<div className="flex flex-row gap-2 p-2">
+			<div className="flex-shrink-0 pt-1">
+				{avatarUrl ? (
+					<img src={avatarUrl} alt={nameSender} className="w-8 h-8 rounded-full object-cover" />
+				) : (
+					<div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-semibold">
+						{nameSender.charAt(0).toUpperCase()}
+					</div>
+				)}
+			</div>
+			<div className="flex flex-col min-w-0">
+				<p className="text-base font-semibold leading-5">
+					{nameSender}
+					<span className="font-normal text-xs text-gray-400 ml-2">{time}</span>
+				</p>
+				<p className="text-sm break-words">{message.message}</p>
+			</div>
 		</div>
 	);
 };

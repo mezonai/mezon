@@ -302,7 +302,7 @@ export default function EmojiSelectorContainer({
 								<LinearGradient
 									start={{ x: 1, y: 0 }}
 									end={{ x: 0, y: 0 }}
-									colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+									colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
 									style={[StyleSheet.absoluteFill]}
 								/>
 							)}

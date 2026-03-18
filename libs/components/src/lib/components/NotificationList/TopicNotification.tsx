@@ -1,4 +1,4 @@
-import type { ApiSdTopic } from 'mezon-js/api.gen';
+import type { ApiSdTopic } from 'mezon-js/api';
 import TopicNotificationItem from './TopicNotificationItem';
 
 type TopicNotificationProps = {

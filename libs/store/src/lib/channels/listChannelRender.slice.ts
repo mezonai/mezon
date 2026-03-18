@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { ICategoryChannel, IChannel } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelDescription, ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiUpdateCategoryDescRequest } from 'mezon-js/api';
 import type { CategoriesEntity } from '../categories/categories.slice';
 import { clansActions } from '../clans/clans.slice';
 import type { RootState } from '../store';

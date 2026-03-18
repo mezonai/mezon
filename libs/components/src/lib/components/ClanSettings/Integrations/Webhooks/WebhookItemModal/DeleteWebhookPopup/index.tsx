@@ -1,7 +1,7 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import { deleteWebhookById, hasGrandchildModal, selectCurrentClanId, settingClanStickerActions, useAppDispatch } from '@mezon/store';
 import type { IChannel } from '@mezon/utils';
-import type { ApiWebhook } from 'mezon-js/api.gen';
+import type { ApiWebhook } from 'mezon-js/api';
 import { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -11,9 +11,11 @@ interface IDeleteWebhookPopupProps {
 	webhookItem: ApiWebhook;
 	currentChannel?: IChannel;
 	isClanSetting?: boolean;
+	displayName?: string;
 }
 
-const DeleteWebhookPopup = ({ webhookItem, currentChannel, closeShowPopup, isClanSetting }: IDeleteWebhookPopupProps) => {
+const DeleteWebhookPopup = ({ webhookItem, currentChannel, closeShowPopup, isClanSetting, displayName }: IDeleteWebhookPopupProps) => {
+	const webhookDisplayName = (displayName?.trim() || webhookItem.webhook_name) ?? '';
 	const { t } = useTranslation('clanIntegrationsSetting');
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -48,8 +50,10 @@ const DeleteWebhookPopup = ({ webhookItem, currentChannel, closeShowPopup, isCla
 			<div className="fixed inset-0 bg-black opacity-80" />
 			<div className="relative z-10 w-[440px] px-4 md:px-0">
 				<div className="bg-theme-setting-primary pt-[16px] px-[16px]">
-					<div className=" text-[20px] font-semibold pb-[16px]">{t('webhooksEdit.deleteCaptionHook')}</div>
-					<div className=" pb-[20px]">{t('webhooksEdit.deleteWebhookConfirmation', { webhookName: webhookItem.webhook_name })}</div>
+					<div className=" text-[20px] font-semibold pb-[16px]">
+						{t('webhooksEdit.deleteWebhookTitle', { webhookName: webhookDisplayName })}
+					</div>
+					<div className=" pb-[20px]">{t('webhooksEdit.deleteWebhookConfirmation', { webhookName: webhookDisplayName })}</div>
 				</div>
 				<div className="bg-theme-setting-nav  flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium">
 					<div onClick={closeShowPopup} className="hover:underline cursor-pointer">

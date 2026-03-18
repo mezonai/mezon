@@ -3,7 +3,7 @@ import type { EntityState } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 
 import { captureSentryError } from '@mezon/logger';
-import type { ApiChannelSettingItem } from 'mezon-js/api.gen';
+import type { ApiChannelSettingItem } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -73,15 +73,19 @@ export const fetchChannelSettingInClanCached = async (
 	const shouldForceCall = shouldForceApiCall(apiKey, channelSettingState.cache, noCache);
 
 	if (!shouldForceCall) {
-		return {
-			channel_setting_list: Object.values(channelSettingState.entities),
-			channel_count: channelSettingState.channelCount,
-			thread_count: channelSettingState.threadCount,
-			fromCache: true,
-			time: channelSettingState.cache?.lastFetched || Date.now()
-		};
-	}
+		const cachedList =
+			parentId && parentId !== '0' ? channelSettingState.threadsByChannel[parentId] : Object.values(channelSettingState.entities);
 
+		if (cachedList) {
+			return {
+				channel_setting_list: cachedList,
+				channel_count: channelSettingState.channelCount,
+				thread_count: channelSettingState.threadCount,
+				fromCache: true,
+				time: channelSettingState.cache?.lastFetched || Date.now()
+			};
+		}
+	}
 	const response = await mezon.client.getChannelSettingInClan(
 		mezon.session,
 		clanId,
@@ -163,6 +167,7 @@ export const settingClanChannelSlice = createSlice({
 		resetChannelSettingState: (state) => {
 			resetSettingClanChannelState(state);
 		},
+
 		addChannelFromSocket: (state, action) => {
 			const channel = action.payload;
 			if (!channel?.id) return;
@@ -213,14 +218,6 @@ export const settingClanChannelSlice = createSlice({
 					changes: safeChannel
 				});
 				return;
-			}
-			if (channel.parent_id && state.threadsByChannel[channel.parent_id]) {
-				const threads = state.threadsByChannel[channel.parent_id];
-				const index = threads.findIndex((t) => t.id === channel.id);
-				if (index !== -1) {
-					threads[index] = { ...threads[index], ...safeChannel };
-					return;
-				}
 			}
 
 			for (const pid in state.threadsByChannel) {
@@ -291,7 +288,10 @@ export const getChannelSettingState = (rootState: { [SETTING_CLAN_CHANNEL]: Sett
 const { selectAll, selectById } = channelSettingAdapter.getSelectors();
 export const selectAllChannelSuggestion = createSelector(getChannelSettingState, selectAll);
 export const selectOneChannelInfor = (channelId: string) => createSelector(getChannelSettingState, (state) => selectById(state, channelId));
-export const selectThreadsListByParentId = (parentId: string) => createSelector(getChannelSettingState, (state) => state.threadsByChannel[parentId]);
+export const selectThreadsListByParentId = (parentId: string) =>
+	createSelector(getChannelSettingState, (state) => {
+		return state.threadsByChannel[parentId];
+	});
 export const settingChannelReducer = settingClanChannelSlice.reducer;
 export const selectNumberChannelCount = createSelector(getChannelSettingState, (state) => state.channelCount);
 

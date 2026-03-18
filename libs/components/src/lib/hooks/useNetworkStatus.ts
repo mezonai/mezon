@@ -1,20 +1,13 @@
+import { isOnline, isOnline$ } from '@mezon/transport';
 import { useEffect, useState } from 'react';
 
 export const useNetworkStatus = () => {
-	const [isOnline, setIsOnline] = useState(navigator.onLine);
+	const [online, setOnline] = useState(isOnline());
 
 	useEffect(() => {
-		const handleOnline = () => setIsOnline(true);
-		const handleOffline = () => setIsOnline(false);
-
-		window.addEventListener('online', handleOnline);
-		window.addEventListener('offline', handleOffline);
-
-		return () => {
-			window.removeEventListener('online', handleOnline);
-			window.removeEventListener('offline', handleOffline);
-		};
+		const sub = isOnline$().subscribe(setOnline);
+		return () => sub.unsubscribe();
 	}, []);
 
-	return { isOnline, isOffline: !isOnline };
+	return { isOnline: online, isOffline: !online };
 };

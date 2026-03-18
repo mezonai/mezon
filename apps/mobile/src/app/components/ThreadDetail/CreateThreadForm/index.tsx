@@ -26,7 +26,7 @@ import { useMezon } from '@mezon/transport';
 import type { IChannel, IMessageSendPayload, IMessageWithUser, ThreadValue } from '@mezon/utils';
 import { checkIsThread, getMobileUploadedAttachments, isPublicChannel, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, ScrollView, StyleSheet, Text, View } from 'react-native';

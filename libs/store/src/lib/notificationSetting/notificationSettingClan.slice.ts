@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { IDefaultNotification, IDefaultNotificationClan, LoadingStatus } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiNotificationSetting } from 'mezon-js/api.gen';
+import type { ApiNotificationSetting } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -201,11 +201,6 @@ export const defaultNotificationActions = { ...defaultNotificationClanSlice.acti
 export const getDefaultNotificationClanState = (rootState: {
 	[DEFAULT_NOTIFICATION_CLAN_FEATURE_KEY]: DefaultNotificationClanState;
 }): DefaultNotificationClanState => rootState[DEFAULT_NOTIFICATION_CLAN_FEATURE_KEY];
-
-export const selectDefaultNotificationClan = createSelector(
-	[getDefaultNotificationClanState, (state: RootState) => state.clans.currentClanId as string],
-	(state, clanId) => state.byClans[clanId]?.defaultNotificationClan
-);
 
 export const selectDefaultNotificationClanByClanId = createSelector(
 	[getDefaultNotificationClanState, (state: RootState, clanId: string) => clanId],

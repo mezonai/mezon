@@ -1,8 +1,8 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
-import type { ChannelUsersEntity } from '@mezon/store-mobile';
+import type { ChannelUsersEntity, ChannelsEntity } from '@mezon/store-mobile';
 import { clansActions, getStore, selectChannelById, selectCurrentClanId, useAppSelector } from '@mezon/store-mobile';
-import { sleep } from '@mezon/utils';
+import { ChannelStatusEnum, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
 import { memo, useMemo } from 'react';
@@ -13,13 +13,17 @@ import useTabletLandscape from '../../hooks/useTabletLandscape';
 import IconChannel from '../IconChannel';
 import style from './ChannelItem.styles';
 
-type ChannelItemProps = {
-	channelData?: ChannelUsersEntity;
-	onSelectChannel?: (channel: ChannelUsersEntity) => void;
-	isHideClanName?: boolean;
+type ChannelUsersEntityMapped = ChannelUsersEntity & {
+	age_restricted?: number;
 };
 
-export const ChannelItem = memo(({ channelData, onSelectChannel, isHideClanName = false }: ChannelItemProps) => {
+interface IChannelItemProps {
+	channelData?: ChannelUsersEntityMapped | ChannelsEntity;
+	onSelectChannel?: (channel: ChannelUsersEntityMapped | ChannelsEntity) => void;
+	isHideClanName?: boolean;
+}
+
+export const ChannelItem = memo(({ channelData, onSelectChannel, isHideClanName = false }: IChannelItemProps) => {
 	const { t } = useTranslation(['searchMessageChannel']);
 	const { themeValue } = useTheme();
 	const parentChannel = useAppSelector((state) => selectChannelById(state, channelData?.parent_id || ''));
@@ -50,7 +54,11 @@ export const ChannelItem = memo(({ channelData, onSelectChannel, isHideClanName 
 		<TouchableOpacity onPress={handleOnPress} style={styles.channelItemContainer}>
 			{[ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD, ChannelType.CHANNEL_TYPE_APP].includes(channelData?.type) ? (
 				<View style={styles.channelRow}>
-					<IconChannel channelPrivate={channelData?.channel_private} type={channelData?.type} />
+					<IconChannel
+						isChannelPrivate={channelData?.channel_private === ChannelStatusEnum.isPrivate}
+						isChannelAgeRestricted={channelData?.age_restricted === 1}
+						type={channelData?.type}
+					/>
 					<View>
 						<View style={styles.channelInfo}>
 							<Text style={styles.channelName} numberOfLines={1}>{`${channelData?.channel_label} ${parentLabel}`}</Text>
@@ -62,7 +70,7 @@ export const ChannelItem = memo(({ channelData, onSelectChannel, isHideClanName 
 			{[ChannelType.CHANNEL_TYPE_STREAMING, ChannelType.CHANNEL_TYPE_MEZON_VOICE].includes(channelData?.type) ? (
 				<View style={styles.voiceChannelContainer}>
 					<View style={styles.channelRow}>
-						<IconChannel channelPrivate={channelData?.channel_private} type={channelData?.type} />
+						<IconChannel isChannelPrivate={channelData?.channel_private === ChannelStatusEnum.isPrivate} type={channelData?.type} />
 						<View style={styles.channelNameWrapper}>
 							<View style={styles.channelInfo}>
 								<Text style={styles.channelName} numberOfLines={1}>

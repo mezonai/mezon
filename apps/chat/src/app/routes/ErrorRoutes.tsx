@@ -1,4 +1,5 @@
 import { restoreLocalStorage } from '@mezon/store';
+import { isOnline, isOnline$ } from '@mezon/transport';
 import { Image } from '@mezon/ui';
 import isElectron from 'is-electron';
 import { useCallback, useEffect, useState } from 'react';
@@ -8,20 +9,14 @@ import { useRouteError } from 'react-router-dom';
 const ErrorRoutes = () => {
 	const { t } = useTranslation('common');
 	const error = useRouteError();
-	const [isOffline, setIsOffline] = useState(!navigator.onLine);
+	const [isOffline, setIsOffline] = useState(!isOnline());
 	const [retrying, setRetrying] = useState(false);
 	const [toastMessage, setToastMessage] = useState('');
 	console.error(error);
 
 	useEffect(() => {
-		const handleOnline = () => setIsOffline(false);
-		const handleOffline = () => setIsOffline(true);
-		window.addEventListener('online', handleOnline);
-		window.addEventListener('offline', handleOffline);
-		return () => {
-			window.removeEventListener('online', handleOnline);
-			window.removeEventListener('offline', handleOffline);
-		};
+		const sub = isOnline$().subscribe((online) => setIsOffline(!online));
+		return () => sub.unsubscribe();
 	}, []);
 
 	const navigateReload = useCallback(() => {
@@ -46,39 +41,21 @@ const ErrorRoutes = () => {
 		}
 	}, []);
 
-	const checkConnection = useCallback((): Promise<boolean> => {
-		return fetch(`${window.origin}/assets/favicon.ico`, {
-			method: 'HEAD',
-			cache: 'no-cache',
-			signal: AbortSignal.timeout(5000)
-		})
-			.then((res) => res.ok)
-			.catch(() => false);
-	}, []);
-
 	const showToast = useCallback((message: string) => {
 		setToastMessage(message);
 		setTimeout(() => setToastMessage(''), 3000);
 	}, []);
 
 	const handleClick = useCallback(() => {
-		if (!navigator.onLine) {
+		if (!isOnline()) {
 			setIsOffline(true);
 			showToast(t('errorBoundary.stillOffline', 'No internet connection. Please check your network.'));
 			return;
 		}
 
 		setRetrying(true);
-		checkConnection().then((online) => {
-			if (online) {
-				navigateReload();
-			} else {
-				setRetrying(false);
-				setIsOffline(true);
-				showToast(t('errorBoundary.connectionFailed', 'Connection failed. Please try again.'));
-			}
-		});
-	}, [navigateReload, checkConnection, showToast, t]);
+		navigateReload();
+	}, [navigateReload, showToast, t]);
 
 	return (
 		<div

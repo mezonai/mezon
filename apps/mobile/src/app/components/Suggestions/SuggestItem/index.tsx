@@ -31,8 +31,9 @@ const SuggestItem = memo(
 		const styles = style(themeValue);
 		const emojiSrc = emojiSrcUnlock ? emojiSrcUnlock : getSrcEmoji(emojiId) || '';
 		const { t } = useTranslation(['clan']);
-		const { isChannelPrivate, isChannelText, isThread, isChannelVoice, isChannelStream, isChannelApp } = useMemo(() => {
+		const { isChannelPrivate, isChannelAgeRestricted, isChannelText, isThread, isChannelVoice, isChannelStream, isChannelApp } = useMemo(() => {
 			const isChannelPrivate = channel?.channel_private === ChannelStatusEnum.isPrivate;
+			const isChannelAgeRestricted = channel?.age_restricted === 1;
 			const isChannelText = channel?.type === ChannelType.CHANNEL_TYPE_CHANNEL;
 
 			const isThread = channel?.type === ChannelType.CHANNEL_TYPE_THREAD;
@@ -42,6 +43,7 @@ const SuggestItem = memo(
 
 			return {
 				isChannelPrivate,
+				isChannelAgeRestricted,
 				isChannelText,
 				isThread,
 				isChannelVoice,
@@ -106,8 +108,11 @@ const SuggestItem = memo(
 						)
 					)}
 					{!!emojiSrc && !!emojiId && <FastImage style={styles.emojiImage} source={{ uri: emojiSrc }} />}
-					{!isChannelPrivate && isChannelText && !isThread && (
+					{!isChannelPrivate && isChannelText && !isThread && !isChannelAgeRestricted && (
 						<Icons.ClansOpenIcon color={themeValue.channelNormal} width={size.s_14} height={size.s_14} />
+					)}
+					{isChannelAgeRestricted && isChannelText && !isThread && (
+						<Icons.ClansWarningIcon color={themeValue.channelNormal} width={size.s_14} height={size.s_14} />
 					)}
 					{isChannelPrivate && isChannelText && !isThread && (
 						<Icons.ClansLockIcon color={themeValue.channelNormal} width={size.s_14} height={size.s_14} />

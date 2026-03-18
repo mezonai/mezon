@@ -49,8 +49,12 @@
 		"for8Hours": "For 8 Hours",
 		"for24Hours": "For 24 Hours",
 		"untilTurnBackOn": "Until I turn it back on",
-		"mutedUntil": "Muted until {{time}}"
+		"mutedUntil": "Muted until {{time}}",
+		"pinConversation": "Pin Conversation",
+		"unpinConversation": "Unpin Conversation",
+		"pinLimitExceeded": "You can only pin up to 10 conversations. Please unpin another conversation to pin this one"
 	},
+	"pinned": "PINNED",
 	"remove": {
 		"content": "This conversation is no longer available!",
 		"title": "Chat Unavailable",

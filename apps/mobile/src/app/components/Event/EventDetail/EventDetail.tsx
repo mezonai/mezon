@@ -13,7 +13,7 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { EEventStatus, EPermission, sleep } from '@mezon/utils';
-import type { ApiUserEventRequest } from 'mezon-js/api.gen';
+import type { ApiUserEventRequest } from 'mezon-js/api';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Text, View } from 'react-native';

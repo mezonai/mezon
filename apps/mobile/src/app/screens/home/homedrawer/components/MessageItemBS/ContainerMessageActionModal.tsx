@@ -672,7 +672,7 @@ export const ContainerMessageActionModal = React.memo(
 				case EMessageActionType.MarkUnRead:
 					return <MezonIconCDN icon={IconCDN.markUnreadIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
 				case EMessageActionType.TopicDiscussion:
-					return <MezonIconCDN icon={IconCDN.discussionIcon} width={size.s_20} height={size.s_20} color={themeValue.text} />;
+					return <Icons.TopicIcon color={themeValue.text} height={size.s_20} width={size.s_20} />;
 				case EMessageActionType.MarkMessage:
 					return <MezonIconCDN icon={IconCDN.starIcon} width={size.s_20} height={size.s_18} color={themeValue.text} />;
 				case EMessageActionType.QuickMenu:

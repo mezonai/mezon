@@ -6,7 +6,7 @@ import {
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectDefaultNotificationCategory,
-	selectDefaultNotificationClan,
+	selectDefaultNotificationClanByClanId,
 	selectNotifiSettingsEntitiesById,
 	useAppDispatch,
 	useAppSelector
@@ -35,20 +35,21 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 	const [mutedUntil, setmutedUntil] = useState('');
 	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannelCategoryId as string));
 
-	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
+	const defaultNotificationClan = useAppSelector((state) => selectDefaultNotificationClanByClanId(state, currentClanId || ''));
 
 	useEffect(() => {
-		if (getNotificationChannelSelected?.active === 1) {
+		if (!getNotificationChannelSelected?.time_mute_seconds) {
 			setNameChildren(t('notificationSetting.muteChannel'));
-		} else {
-			setNameChildren(t('notificationSetting.unmuteChannel'));
-			if (getNotificationChannelSelected?.time_mute) {
-				const timeMute = new Date(getNotificationChannelSelected.time_mute);
-				const currentTime = new Date();
-				if (timeMute > currentTime) {
-					const formattedDate = format(timeMute, 'dd/MM, HH:mm');
-					setmutedUntil(t('notificationSetting.mutedUntil', { date: formattedDate }));
-				}
+			setmutedUntil('');
+			return;
+		}
+		setNameChildren(t('notificationSetting.unmuteChannel'));
+		if (getNotificationChannelSelected?.time_mute_seconds) {
+			const timeMute = new Date(getNotificationChannelSelected.time_mute_seconds);
+			const currentTime = new Date();
+			if (timeMute > currentTime) {
+				const formattedDate = format(timeMute, 'dd/MM, HH:mm');
+				setmutedUntil(t('notificationSetting.mutedUntil', { date: formattedDate }));
 			}
 		}
 	}, [getNotificationChannelSelected, defaultNotificationCategory, defaultNotificationClan]);
@@ -56,8 +57,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 	const handleScheduleMute = (duration: number) => {
 		const body: MuteChannelPayload = {
 			channel_id: currentChannelId || '',
-			mute_time: duration !== Infinity ? duration : 0,
-			active: 0,
+			mute_time: duration !== Infinity ? duration : EMuteState.MUTED_INFINITY,
 			clan_id: currentClanId || ''
 		};
 		dispatch(notificationSettingActions.setMuteChannel(body));
@@ -67,8 +67,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 		const body = {
 			channel_id: currentChannelId || '',
 			clan_id: currentClanId || '',
-			active,
-			mute_time: 0
+			mute_time: active
 		};
 		dispatch(notificationSettingActions.setMuteChannel(body));
 	};
@@ -147,7 +146,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 		>
 			<div className="flex flex-col rounded-[4px] w-[202px] shadow-sm overflow-hidden py-[6px] px-[8px]">
 				<div className="flex flex-col pb-1 mb-1 border-b-theme-primary last:border-b-0 last:mb-0 last:pb-0 ">
-					{getNotificationChannelSelected?.active === 1 ? (
+					{!getNotificationChannelSelected?.time_mute_seconds ? (
 						<Menu
 							trigger="hover"
 							menu={menu}
@@ -159,7 +158,7 @@ const NotificationSetting = ({ onClose, rootRef }: { onClose: () => void; rootRe
 									children={nameChildren}
 									subText={mutedUntil}
 									dropdown="change here"
-									onClick={() => muteOrUnMuteChannel(EMuteState.MUTED)}
+									onClick={() => muteOrUnMuteChannel(EMuteState.MUTED_INFINITY)}
 								/>
 							</div>
 						</Menu>

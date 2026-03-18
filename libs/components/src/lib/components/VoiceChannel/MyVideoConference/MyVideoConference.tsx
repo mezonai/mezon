@@ -237,7 +237,7 @@ export const MyVideoConference = memo(
 				/>
 				<RoomAudioRenderer />
 				{!propTracks && <ConnectionStateToast />}
-				<VoiceContextMenu roomName={room?.name} room={room} />
+				<VoiceContextMenu room={room} />
 			</div>
 		);
 	},

@@ -114,4 +114,5 @@ function Canvas() {
 	);
 }
 
+export { Canvas };
 export default Canvas;

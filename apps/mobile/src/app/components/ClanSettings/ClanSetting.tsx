@@ -150,9 +150,15 @@ export function ClanSetting({ navigation }: MenuClanScreenProps<ClanSettingsScre
 		<View style={styles.rootContainer}>
 			<StatusBarHeight />
 			<LinearGradient
-				start={{ x: 1, y: 0 }}
+				start={{ x: 1, y: 1 }}
 				end={{ x: 0, y: 0 }}
-				colors={[themeValue.primary, themeValue?.primaryGradiant || themeValue.primary]}
+				colors={[
+					themeValue.secondary,
+					themeValue?.primaryGradiant || themeValue.secondary,
+					themeValue.secondary,
+					themeValue?.primaryGradiant || themeValue.secondary
+				]}
+				locations={[0.2, 0.4, 0.8, 0.9]}
 				style={[StyleSheet.absoluteFill]}
 			/>
 			<View style={styles.headerWrapper}>

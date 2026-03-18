@@ -19,6 +19,8 @@
 	"resendMessage": "Resend Message",
 	"deleteMessage": "Delete Message",
 	"reportMessage": "Report Message",
+	"endPollNow": "End Poll Now",
+	"pollEnded": "Poll ended successfully",
 	"copyLink": "Copy Link",
 	"openLink": "Open Link",
 	"copyImage": "Copy Image",
@@ -117,6 +119,7 @@
 		"failedToSaveImage": "Failed to save image:",
 		"failedToGiveCoffee": "Failed to give coffee message",
 		"errorSendingQuickMenu": "Error sending quick menu message:",
-		"failedToResendMessage": "Failed to resend message"
+		"failedToResendMessage": "Failed to resend message",
+		"failedToClosePoll": "Failed to close poll"
 	}
 }

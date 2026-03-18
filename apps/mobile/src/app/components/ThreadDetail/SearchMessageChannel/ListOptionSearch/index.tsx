@@ -44,7 +44,7 @@ const ListOptionSearch = ({ onPressOption, isSearchGlobal = false }: IListOption
 				title: ITypeOptionSearch.MENTIONS,
 				content: t('filterOptions.mentionUser'),
 				value: 'mention',
-				icon: <MezonIconCDN icon={IconCDN.atIcon} color={themeValue.text} width={20} height={20} />
+				icon: <Icons.MentionIcon color={themeValue.text} width={20} height={20} />
 			});
 		}
 		return options;

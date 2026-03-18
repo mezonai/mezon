@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { sleep } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, DeviceEventEmitter, Dimensions, Image, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
 import type { RenderItemInfo } from 'react-native-awesome-gallery';

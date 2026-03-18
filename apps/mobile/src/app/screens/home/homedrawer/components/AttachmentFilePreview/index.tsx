@@ -1,6 +1,6 @@
 import { abbreviateText } from '@mezon/mobile-components';
 import { useTheme, verticalScale } from '@mezon/mobile-ui';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api';
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Icons } from '../../../../../componentUI/MobileIcons';

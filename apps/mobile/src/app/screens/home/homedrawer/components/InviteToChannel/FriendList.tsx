@@ -18,7 +18,7 @@ import {
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiSystemMessage } from 'mezon-js/api.gen';
+import type { ApiSystemMessage } from 'mezon-js/api';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, Text, TouchableOpacity, View } from 'react-native';

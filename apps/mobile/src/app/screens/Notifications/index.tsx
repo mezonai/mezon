@@ -29,6 +29,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
+import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
@@ -399,25 +400,25 @@ const Notifications = ({ navigation, route }) => {
 			{
 				type: InboxType.MENTIONS,
 				title: t('tabNotify.mention'),
-				icon: IconCDN.atIcon,
+				icon: <Icons.MentionIcon height={size.s_16} width={size.s_16} />,
 				onPress: () => handleTabChange(InboxType.MENTIONS)
 			},
 			{
 				type: InboxType.MESSAGES,
 				title: t('tabNotify.messages'),
-				icon: IconCDN.chatIcon,
+				icon: <Icons.MessagesBoxIcon height={size.s_16} width={size.s_16} />,
 				onPress: () => handleTabChange(InboxType.MESSAGES)
 			},
 			{
 				type: InboxType.TOPICS,
 				title: t('tabNotify.topics'),
-				icon: IconCDN.discussionIcon,
+				icon: <Icons.TopicIcon height={size.s_16} width={size.s_16} />,
 				onPress: () => handleTabChange(InboxType.TOPICS)
 			},
 			{
 				type: InboxType.INDIVIDUAL,
 				title: t('tabNotify.forYou'),
-				icon: IconCDN.bellIcon,
+				icon: <Icons.ForYouIcon height={size.s_16} width={size.s_16} />,
 				onPress: () => handleTabChange(InboxType.INDIVIDUAL)
 			}
 		],
@@ -426,9 +427,15 @@ const Notifications = ({ navigation, route }) => {
 	return (
 		<View style={styles.notifications}>
 			<LinearGradient
-				start={{ x: 1, y: 0 }}
+				start={{ x: 1, y: 1 }}
 				end={{ x: 0, y: 0 }}
-				colors={[themeValue.secondary, themeValue?.primaryGradiant || themeValue.secondary]}
+				colors={[
+					themeValue.secondary,
+					themeValue?.primaryGradiant || themeValue.secondary,
+					themeValue.secondary,
+					themeValue?.primaryGradiant || themeValue.secondary
+				]}
+				locations={[0.2, 0.4, 0.8, 0.9]}
 				style={[StyleSheet.absoluteFill]}
 			/>
 			<View>
@@ -462,12 +469,7 @@ const Notifications = ({ navigation, route }) => {
 							]}
 						>
 							<View style={{ flexDirection: 'row', alignItems: 'center', gap: size.s_4 }}>
-								<MezonIconCDN
-									icon={item.icon}
-									color={selectedTabs === item.type ? 'white' : themeValue.text}
-									width={size.s_16}
-									height={size.s_16}
-								/>
+								{item.icon}
 								<Text
 									style={[
 										styles.textTabType,

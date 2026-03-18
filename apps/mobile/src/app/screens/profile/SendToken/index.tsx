@@ -23,7 +23,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import { useNavigation } from '@react-navigation/native';
 import debounce from 'lodash.debounce';
 import { ChannelStreamMode, ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiTokenSentEvent } from 'mezon-js/api.gen';
+import type { ApiTokenSentEvent } from 'mezon-js/api';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Platform, Pressable, StatusBar, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -257,9 +257,9 @@ export const SendTokenScreen = ({ route }: any) => {
 				const formattedTime = `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth() + 1)
 					.toString()
 					.padStart(2, '0')}/${now.getFullYear()} ${now
-						.getHours()
-						.toString()
-						.padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+					.getHours()
+					.toString()
+					.padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 				setDisableButton(false);
 				handleShowSuccessModal(formattedTime);
 			}

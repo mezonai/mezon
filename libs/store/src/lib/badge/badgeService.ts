@@ -2,7 +2,7 @@ import type { IChannel } from '@mezon/utils';
 import { ID_MENTION_HERE, TypeMessage } from '@mezon/utils';
 import type { ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
-import type { ApiMessageMention } from 'mezon-js/api.gen';
+import type { ApiMessageMention } from 'mezon-js/api';
 import { Subject, merge, type Subscription } from 'rxjs';
 import { bufferTime, distinctUntilChanged, filter, groupBy, map, mergeMap } from 'rxjs/operators';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
@@ -212,8 +212,8 @@ class BadgeService extends EventEmitter {
 	}
 
 	incrementChannelFromNotification(clanId: string, channelId: string, messageId?: string) {
-		const badgeKey = messageId ? `${channelId}_${messageId}` : '';
-		if (badgeKey && this.processedBadgeMessageIds.has(badgeKey)) {
+		const badgeKey = messageId && messageId !== '0' ? `${channelId}_${messageId}` : '';
+		if (!badgeKey || this.processedBadgeMessageIds.has(badgeKey)) {
 			return;
 		}
 		if (badgeKey) {
@@ -224,8 +224,8 @@ class BadgeService extends EventEmitter {
 	}
 
 	incrementChannelFromNotificationForTopic(clanId: string, parentChannelId: string, topicId: string, messageId?: string) {
-		const badgeKey = messageId ? `${parentChannelId}_${messageId}` : '';
-		if (badgeKey && this.processedBadgeMessageIds.has(badgeKey)) {
+		const badgeKey = messageId && messageId !== '0' ? `${parentChannelId}_${messageId}` : '';
+		if (!badgeKey || this.processedBadgeMessageIds.has(badgeKey)) {
 			return;
 		}
 		if (badgeKey) {

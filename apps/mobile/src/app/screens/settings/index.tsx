@@ -5,6 +5,7 @@ import { sleep } from '@mezon/utils';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Pressable, ScrollView, Text, View } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import VersionInfo from 'react-native-version-info';
 import WebView from 'react-native-webview';
 import { useSelector } from 'react-redux';
@@ -68,7 +69,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.account'),
-					icon: <Icons.AccountIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.AccountIcon color={themeValue.textStrong} primary={themeValue.textDisabled} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -78,7 +79,14 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.friendRequests'),
-					icon: <Icons.FriendRequestIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: (
+						<Icons.FriendRequestIcon
+							color={themeValue.textStrong}
+							primary={themeValue.textDisabled}
+							width={size.s_24}
+							height={size.s_24}
+						/>
+					)
 				},
 				{
 					onPress: () => {
@@ -88,7 +96,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.QRScan'),
-					icon: <Icons.QrIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.QrIcon color={themeValue.textStrong} primary={themeValue.textDisabled} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -98,7 +106,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('accountSettings.devices'),
-					icon: <Icons.DevideIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.DevideIcon color={themeValue.textStrong} primary={themeValue.textDisabled} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[navigation, t, themeValue.textStrong]
@@ -110,7 +118,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 				{
 					title: t('appSettings.appVersion'),
 					previewValue: `${VersionInfo.appVersion}`,
-					icon: <Icons.AppIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.AppIcon color={themeValue.textStrong} primary={themeValue.textDisabled} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -120,7 +128,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					},
 					expandable: true,
 					title: t('appSettings.appearance'),
-					icon: <Icons.ThemeIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.ThemeIcon color={themeValue.textStrong} primary={themeValue.textDisabled} width={size.s_24} height={size.s_24} />
 				},
 				{
 					onPress: () => {
@@ -131,7 +139,7 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 					title: t('appSettings.language'),
 					expandable: true,
 					previewValue: i18n.language,
-					icon: <Icons.LanguageIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />
+					icon: <Icons.LanguageIcon color={themeValue.textStrong} primary={themeValue.textDisabled} width={size.s_24} height={size.s_24} />
 				}
 			] satisfies IMezonMenuItemProps[],
 		[themeValue.textStrong, i18n.language]
@@ -221,7 +229,19 @@ export const Settings = ({ navigation }: { navigation: any }) => {
 
 	return (
 		<View style={styles.settingContainer}>
-			<StatusBarHeight />
+			<StatusBarHeight isPrimary />
+			<LinearGradient
+				start={{ x: 1, y: 1 }}
+				end={{ x: 0, y: 0 }}
+				colors={[
+					themeValue.secondary,
+					themeValue?.primaryGradiant || themeValue.secondary,
+					themeValue.secondary,
+					themeValue?.primaryGradiant || themeValue.secondary
+				]}
+				locations={[0.2, 0.4, 0.8, 0.9]}
+				style={styles.absoluteFill}
+			/>
 			<View style={styles.row}>
 				<Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
 					<Icons.ArrowLeftIcon color={themeValue.textStrong} width={size.s_24} height={size.s_24} />

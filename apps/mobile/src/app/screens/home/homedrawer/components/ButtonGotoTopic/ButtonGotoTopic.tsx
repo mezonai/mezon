@@ -6,6 +6,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonIconCDN from '../../../../../componentUI/MezonIconCDN';
+import { Icons } from '../../../../../componentUI/MobileIcons';
 import { IconCDN } from '../../../../../constants/icon_cdn';
 import { APP_SCREEN } from '../../../../../navigation/ScreenTypes';
 import { style } from './styles';
@@ -29,7 +30,7 @@ const ButtonGotoTopic = ({ message }: { message: MessagesEntity }) => {
 	return (
 		<View style={styles.wrapper}>
 			<TouchableOpacity onPress={handleOpenTopic} style={styles.container}>
-				<MezonIconCDN icon={IconCDN.discussionIcon} width={size.s_16} height={size.s_16} color={themeValue.text} />
+				<Icons.TopicIcon color={themeValue.text} width={size.s_16} height={size.s_16} />
 				<Text style={styles.title}>{t('goToTopic')}</Text>
 				<MezonIconCDN icon={IconCDN.chevronSmallRightIcon} width={size.s_16} height={size.s_16} color={themeValue.text} />
 			</TouchableOpacity>

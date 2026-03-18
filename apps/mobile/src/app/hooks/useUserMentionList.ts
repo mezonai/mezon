@@ -4,7 +4,7 @@ import { channelMembersActions, getStore, selectAllChannelMembers, selectAllRole
 import type { MentionDataProps } from '@mezon/utils';
 import { ID_MENTION_HERE, getNameForPrioritize } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiRole } from 'mezon-js/api.gen';
+import type { ApiRole } from 'mezon-js/api';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 

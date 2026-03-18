@@ -181,7 +181,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 			logo: currentEvent.logo ?? '',
 			description: currentEvent.description ?? '',
 			textChannelId: currentEvent.channel_id ?? '',
-			repeatType: currentEvent.repeat_type
+			repeatType: currentEvent.repeat_type || ERepeatType.DOES_NOT_REPEAT
 		};
 
 		const submittedContent = {
@@ -248,7 +248,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 				title: contentSubmit.topic === currentEvent.title ? undefined : contentSubmit.topic,
 				start_time_seconds: timeStart === currentStartMs ? undefined : timeStart,
 				end_time_seconds: timeEnd === currentEndMs ? undefined : timeEnd,
-				repeat_type: contentSubmit.repeatType === currentEvent.repeat_type ? ERepeatType.DOES_NOT_REPEAT : contentSubmit.repeatType
+				repeat_type:
+					contentSubmit.repeatType === (currentEvent.repeat_type || ERepeatType.DOES_NOT_REPEAT) ? undefined : contentSubmit.repeatType
 			};
 
 			const additionalFields: Partial<Record<string, string | number | undefined>> = {

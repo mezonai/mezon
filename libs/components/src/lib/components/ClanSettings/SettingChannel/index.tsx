@@ -10,7 +10,7 @@ import { Icons, Menu, Pagination } from '@mezon/ui';
 import { createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { formatDistance } from 'date-fns';
 import { ChannelType } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiChannelSettingItem } from 'mezon-js/api';
 import type { ReactElement } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -151,10 +151,14 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 	const { t } = useTranslation('channelSetting');
 	const dispatch = useAppDispatch();
 	const threadsList = useSelector(selectThreadsListByParentId(channelParent.id as string));
+	const [showThreadsList, setShowThreadsList] = useState(false);
+	const [isLoadingThreads, setIsLoadingThreads] = useState(false);
+	const shouldAutoOpenRef = useRef(false);
 
 	const handleFetchThreads = () => {
 		if (!threadsList) {
-			dispatch(
+			shouldAutoOpenRef.current = true;
+			return dispatch(
 				channelSettingActions.fetchChannelSettingInClan({
 					clanId,
 					parentId: channelParent.id as string,
@@ -166,9 +170,29 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 		}
 	};
 
-	const [showThreadsList, setShowThreadsList] = useState(false);
+	useEffect(() => {
+		setShowThreadsList(false);
+		setIsLoadingThreads(false);
+		shouldAutoOpenRef.current = false;
+	}, [clanId, channelParent.id]);
 
-	const toggleThreadsList = () => {
+	useEffect(() => {
+		if (threadsList && threadsList.length > 0 && shouldAutoOpenRef.current) {
+			setShowThreadsList(true);
+			shouldAutoOpenRef.current = false;
+		}
+	}, [threadsList]);
+
+	const toggleThreadsList = async () => {
+		if (!threadsList) {
+			setIsLoadingThreads(true);
+			try {
+				await handleFetchThreads();
+			} finally {
+				setIsLoadingThreads(false);
+			}
+			return;
+		}
 		setShowThreadsList(!showThreadsList);
 	};
 
@@ -204,9 +228,13 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 				{!isVoiceChannel && !searchFilter && (
 					<div
 						onClick={toggleThreadsList}
-						className={`absolute top-4 right-2 cursor-pointer transition duration-100 ease-in-out ${showThreadsList ? '' : '-rotate-90'}`}
+						className={`absolute top-4 right-2 cursor-pointer transition duration-100 ease-in-out flex items-center justify-center h-6 w-6 ${showThreadsList ? '' : '-rotate-90'}`}
 					>
-						<Icons.ArrowDown defaultSize="h-6 w-6 dark:text-[#b5bac1] text-black" />
+						{isLoadingThreads ? (
+							<Icons.LoadingSpinner className="h-6 w-6 dark:text-[#b5bac1] text-black" />
+						) : (
+							<Icons.ArrowDown defaultSize="h-6 w-6 dark:text-[#b5bac1] text-black" />
+						)}
 					</div>
 				)}
 			</div>

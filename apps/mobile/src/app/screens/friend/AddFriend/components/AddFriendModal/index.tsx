@@ -3,7 +3,7 @@ import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import type { requestAddFriendParam } from '@mezon/store-mobile';
 import { EStateFriend, selectCurrentUsername } from '@mezon/store-mobile';
-import type { ApiAddFriendsResponse } from 'mezon-js/api.gen';
+import type { ApiAddFriendsResponse } from 'mezon-js/api';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Platform, Pressable, StatusBar, Text, TextInput, View } from 'react-native';

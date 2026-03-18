@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { EMuteState, type IChannelCategorySetting, type IDefaultNotificationCategory, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiNotificationChannelCategorySetting, ApiSetNotificationRequest } from 'mezon-js/api.gen';
+import type { ApiNotificationChannelCategorySetting, ApiSetNotificationRequest } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';
@@ -113,7 +113,10 @@ export const getDefaultNotificationCategory = createAsyncThunk(
 				id: response.id,
 				notification_setting_type: response.notification_setting_type,
 				active: response.active,
-				time_mute: response.time_mute
+				time_mute:
+					response.time_mute_seconds === EMuteState.MUTED_INFINITY
+						? EMuteState.MUTED_INFINITY
+						: response.time_mute_seconds && Date.now() + (response.time_mute_seconds || 0) * 1000
 			};
 
 			return { ...apiNotificationSetting, categoryId, clanId };
@@ -184,11 +187,10 @@ export type MuteCatePayload = {
 };
 export const setMuteCategory = createAsyncThunk(
 	'defaultnotificationcategory/setMuteCategory',
-	async ({ id, active, mute_time, clan_id }: MuteCatePayload, thunkAPI) => {
+	async ({ id, mute_time, clan_id }: MuteCatePayload, thunkAPI) => {
 		try {
 			const mezon = await ensureSession(getMezonCtx(thunkAPI));
 			const response = await mezon.client.setMuteCategory(mezon.session, {
-				active,
 				id,
 				mute_time,
 				clan_id
@@ -198,9 +200,8 @@ export const setMuteCategory = createAsyncThunk(
 			}
 
 			return {
-				active,
 				id,
-				mute_time,
+				mute_time: mute_time === EMuteState.MUTED_INFINITY ? EMuteState.MUTED_INFINITY : mute_time && Date.now() + (mute_time || 0) * 1000,
 				clan_id
 			};
 		} catch (error) {
@@ -224,8 +225,7 @@ export const defaultNotificationCategorySlice = createSlice({
 		unmuteCate: (state, action: PayloadAction<{ categoryId: string; clanId: string }>) => {
 			const { categoryId, clanId } = action.payload;
 			if (state.byClans[clanId]?.categoriesSettings[categoryId]) {
-				state.byClans[clanId].categoriesSettings[categoryId].active = EMuteState.UN_MUTE;
-				state.byClans[clanId].categoriesSettings[categoryId].time_mute = null;
+				state.byClans[clanId].categoriesSettings[categoryId].time_mute = EMuteState.UN_MUTE;
 			}
 		}
 	},
@@ -271,7 +271,7 @@ export const defaultNotificationCategorySlice = createSlice({
 				}
 			})
 			.addCase(setMuteCategory.fulfilled, (state, action) => {
-				const { id, active, mute_time, clan_id } = action.payload;
+				const { id, mute_time, clan_id } = action.payload;
 				if (!id) {
 					return;
 				}
@@ -279,9 +279,7 @@ export const defaultNotificationCategorySlice = createSlice({
 					state.byClans[clan_id] = getInitialClanState();
 				}
 				if (state.byClans[clan_id]?.categoriesSettings[id]) {
-					state.byClans[clan_id].categoriesSettings[id].active = active ? EMuteState.UN_MUTE : EMuteState.MUTED;
-					state.byClans[clan_id].categoriesSettings[id].time_mute =
-						mute_time === 0 && active === EMuteState.MUTED ? null : new Date(Date.now() + (mute_time || 0) * 1000).toISOString();
+					state.byClans[clan_id].categoriesSettings[id].time_mute = mute_time;
 				}
 			});
 	}
@@ -462,13 +460,19 @@ export const channelCategorySettingSlice = createSlice({
 							notification_setting_type: notification_type
 						}
 					});
-				} else {
+				}
+				if (!state.byClans[clan_id]) {
+					state.byClans[clan_id] = {
+						loadingStatus: 'not loaded',
+						list: channelCategorySettingAdapter.getInitialState()
+					};
 					channelCategorySettingAdapter.addOne(state.byClans[clan_id].list, {
 						id: channel_category_id,
 						notification_setting_type: notification_type,
 						channel_category_label: label,
 						channel_category_title: title
 					});
+					state.byClans[clan_id].cache = createCacheMetadata(CHANNEL_CATEGORY_SETTING_CACHE_TIME);
 				}
 			})
 			.addCase(setNotificationSetting.fulfilled, (state: ChannelCategorySettingState, action) => {

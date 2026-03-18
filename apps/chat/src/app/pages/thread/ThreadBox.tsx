@@ -47,7 +47,7 @@ import {
 } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -430,7 +430,7 @@ const ThreadBox = () => {
 	return (
 		<div
 			ref={threadBoxRef}
-			className="flex flex-col flex-1 justify-end border-l border-color-primary bg-theme-chat pt-4"
+			className="flex flex-col flex-1 justify-end border-l border-color-primary bg-theme-chat"
 			data-e2e={generateE2eId('discussion.box.thread')}
 		>
 			{threadCurrentChannel && (

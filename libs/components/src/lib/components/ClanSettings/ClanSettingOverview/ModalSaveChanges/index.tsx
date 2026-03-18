@@ -25,13 +25,16 @@ const ModalSaveChanges = ({ onSave, onReset, isLoading: _isLoading, disableSave 
 					<button onClick={onReset} className="rounded px-4 py-1.5 hover:underline" data-e2e={generateE2eId('button.base')}>
 						{t('modalSaveChanges.reset')}
 					</button>
-					{!disableSave && (
-						<ButtonLoading
-							label={t('modalSaveChanges.saveChanges')}
-							onClick={handleSaveChanges}
-							className="ml-auto bg-indigo-600 dark:bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-700 text-white rounded-lg px-4 py-1.5 text-nowrap  w-28"
-						/>
-					)}
+					<ButtonLoading
+						label={t('modalSaveChanges.saveChanges')}
+						onClick={handleSaveChanges}
+						disabled={disableSave}
+						className={`ml-auto rounded-lg px-4 py-1.5 text-nowrap w-28 ${
+							disableSave
+								? 'opacity-50 cursor-not-allowed bg-indigo-600 dark:bg-indigo-600 text-white'
+								: 'bg-indigo-600 dark:bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-700 text-white'
+						}`}
+					/>
 				</div>
 			</div>
 		</div>

@@ -17,6 +17,7 @@ import {
 	selectAllAccount,
 	selectChannelById,
 	selectCloseMenu,
+	selectCurrentChannel,
 	selectCurrentChannelCategoryId,
 	selectCurrentChannelChannelId,
 	selectCurrentChannelClanId,
@@ -28,7 +29,7 @@ import {
 	selectCurrentClanId,
 	selectCurrentDM,
 	selectDefaultNotificationCategory,
-	selectDefaultNotificationClan,
+	selectDefaultNotificationClanByClanId,
 	selectFriendById,
 	selectGalleryAttachmentsByChannel,
 	selectIsInCall,
@@ -63,7 +64,7 @@ import { Icons } from '@mezon/ui';
 import type { IMessageSendPayload } from '@mezon/utils';
 import { IMessageTypeCallLog, SubPanelName, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType, NotificationType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -920,22 +921,22 @@ function ThreadButton() {
 function MuteButton() {
 	const { t } = useTranslation('channelTopbar');
 	const [isMuteBell, setIsMuteBell] = useState<boolean>(false);
-	const currentChannelObjectId = useSelector(selectCurrentChannelId);
+	const currentChannelObject = useSelector(selectCurrentChannel);
 	const currentChannelCategoryId = useSelector(selectCurrentChannelCategoryId);
-	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannelObjectId || ''));
+	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, currentChannelObject?.id || ''));
 	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, currentChannelCategoryId as string));
-	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
+	const defaultNotificationClan = useAppSelector((state) => selectDefaultNotificationClanByClanId(state, currentChannelObject?.id || ''));
 
 	useEffect(() => {
 		const shouldMuteBell = (): boolean => {
 			if (
-				getNotificationChannelSelected?.active === 1 &&
+				!getNotificationChannelSelected?.time_mute_seconds &&
 				getNotificationChannelSelected?.notification_setting_type === NotificationType.NOTHING_MESSAGE
 			) {
 				return true;
 			}
 
-			if (getNotificationChannelSelected?.id !== '0' && getNotificationChannelSelected?.active !== 1) {
+			if (getNotificationChannelSelected?.id !== '0' && getNotificationChannelSelected?.time_mute_seconds) {
 				return true;
 			}
 

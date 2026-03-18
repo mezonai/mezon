@@ -7,9 +7,9 @@ export const styles = StyleSheet.create({
 	},
 	tabBarIconContainer: {
 		alignItems: 'center',
+		justifyContent: 'center',
 		gap: size.s_4,
 		paddingVertical: size.s_4,
-		paddingHorizontal: size.s_10,
 		width: size.s_90
 	},
 	tabBarText: {

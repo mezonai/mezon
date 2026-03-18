@@ -9,9 +9,9 @@ import {
 import { handleUploadFile, useMezon } from '@mezon/transport';
 import { Icons } from '@mezon/ui';
 import { MAX_FILE_SIZE_8MB, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
-import type { ApiClanWebhook, ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiClanWebhook, ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api';
 import type { ChangeEvent } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -128,6 +128,8 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		setHasChange(computeHasChanges);
 	}, [dataForUpdate.webhookNameInput, dataForUpdate.webhookAvatarUrl, webhookItem.webhook_name, webhookItem.avatar]);
 
+	const isNameValid = useMemo(() => (dataForUpdate.webhookNameInput?.trim() ?? '').length > 0, [dataForUpdate.webhookNameInput]);
+
 	const handleChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
 			const file = e.target.files[0];
@@ -159,7 +161,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 	const handleEditWebhook = async () => {
 		const request: MezonUpdateClanWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
-			webhook_name: dataForUpdate.webhookNameInput,
+			webhook_name: dataForUpdate.webhookNameInput?.trim() ?? '',
 			clan_id: clanId
 		};
 		await dispatch(
@@ -291,7 +293,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 					</div>
 				</div>
 			</div>
-			{hasChange && <ModalSaveChanges onSave={handleEditWebhook} onReset={handleResetChange} />}
+			{hasChange && <ModalSaveChanges onSave={handleEditWebhook} onReset={handleResetChange} disableSave={!isNameValid} />}
 			{isShowPopup && <DeleteClanWebhookPopup webhookItem={webhookItem} closeShowPopup={handleCloseDeletePopup} />}
 			<ModalErrorTypeUpload open={openTypeModal} onClose={() => setOpenTypeModal(false)} />
 

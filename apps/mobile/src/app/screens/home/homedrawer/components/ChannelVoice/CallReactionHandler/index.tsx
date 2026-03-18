@@ -300,7 +300,7 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 				currentSound.setCurrentTime(0);
 				soundRefs?.current?.delete?.(soundUrl);
 			}
-			Sound.setCategory('Playback', true);
+			Platform.OS === 'android' && Sound.setCategory('Playback', true);
 			const sound = new Sound(soundUrl, null, (error) => {
 				if (error) {
 					console.error('Failed to load sound reaction:', error);
@@ -389,6 +389,7 @@ export const CallReactionHandler = memo(({ channelId, isAnimatedCompleted, onSou
 		if (!currentSocket) return;
 
 		currentSocket.onvoicereactionmessage = handleVoiceReactionMessage;
+		Platform.OS === 'ios' && Sound.setCategory('PlayAndRecord', true);
 
 		return () => {
 			if (currentSocket) {

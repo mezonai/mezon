@@ -97,8 +97,13 @@ const HomeDefault = React.memo(
 				<LinearGradient
 					start={{ x: 1, y: 1 }}
 					end={{ x: 0, y: 0 }}
-					colors={[themeValue?.primaryGradiant || themeValue.secondary, themeValue.secondary]}
-					locations={[0, 0.3]}
+					colors={[
+						themeValue.secondary,
+						themeValue?.primaryGradiant || themeValue.secondary,
+						themeValue.secondary,
+						themeValue?.primaryGradiant || themeValue.secondary
+					]}
+					locations={[0.2, 0.4, 0.8, 0.9]}
 					style={styles.absoluteFill}
 				/>
 				<DrawerListener channelId={channelId} />

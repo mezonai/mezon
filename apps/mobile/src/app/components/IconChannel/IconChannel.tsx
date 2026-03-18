@@ -1,18 +1,24 @@
 import { size, useTheme } from '@mezon/mobile-ui';
-import { ChannelStatusEnum } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import React, { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { Icons } from '../../componentUI/MobileIcons';
 import { IconCDN } from '../../constants/icon_cdn';
 
-function IconChannel({ channelPrivate, type }: { channelPrivate: number; type }) {
-	const isChannelPrivate = useMemo(() => channelPrivate === ChannelStatusEnum.isPrivate, [channelPrivate]);
-	const { themeValue } = useTheme();
+interface IIconChannelProps {
+	isChannelPrivate: boolean;
+	isChannelAgeRestricted?: boolean;
+	type: ChannelType;
+}
 
-	const renderIcon = () => {
+function IconChannel({ isChannelPrivate, isChannelAgeRestricted, type }: IIconChannelProps) {
+	const { themeValue } = useTheme();
+	const renderIcon = useMemo(() => {
 		switch (type) {
 			case ChannelType.CHANNEL_TYPE_CHANNEL:
+				if (isChannelAgeRestricted) {
+					return <Icons.ClansWarningIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />;
+				}
 				return isChannelPrivate ? (
 					<Icons.ClansLockIcon color={themeValue.channelNormal} width={size.s_20} height={size.s_20} />
 				) : (
@@ -41,8 +47,8 @@ function IconChannel({ channelPrivate, type }: { channelPrivate: number; type })
 			default:
 				return null;
 		}
-	};
+	}, [isChannelAgeRestricted, isChannelPrivate, type]);
 
-	return renderIcon();
+	return renderIcon;
 }
-export default React.memo(IconChannel);
+export default memo(IconChannel);

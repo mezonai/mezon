@@ -27,7 +27,7 @@ import type { EntityState, GetThunkAPI, PayloadAction, Update } from '@reduxjs/t
 import { createAsyncThunk, createEntityAdapter, createSelector, createSelectorCreator, createSlice, weakMapMemoize } from '@reduxjs/toolkit';
 import { Snowflake } from '@theinternetfolks/snowflake';
 import type { ChannelMessage } from 'mezon-js';
-import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiChannelMessageHeader, ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import type { MessageButtonClicked } from 'mezon-js/socket';
 import { accountActions, selectAllAccount } from '../account/account.slice';
 import { getUserAvatarOverride, getUserClanAvatarOverride } from '../avatarOverride/avatarOverride';
@@ -222,7 +222,7 @@ export const fetchMessagesCached = async (
 		}
 	}
 	const channelData = state[MESSAGES_FEATURE_KEY].channelMessages[channelId];
-	const apiKey = createApiKey('fetchMessages', clanId, channelId, direction || 1, topicId || '');
+	const apiKey = createApiKey('fetchMessages', clanId, messageId || '0', channelId, direction || 1, topicId || '');
 	const shouldForceCall = shouldForceApiCall(apiKey, channelData?.cache, noCache);
 
 	if (!shouldForceCall && channelData?.ids?.length > 0) {
@@ -375,13 +375,14 @@ export const fetchMessages = createAsyncThunk(
 			if (!currentUser) {
 				currentUser = await thunkAPI.dispatch(accountActions.getUserProfile()).unwrap();
 			}
+			const lastMessageId = selectLastMessageIdByChannelId(state, channelId);
 
 			let response = await fetchMessagesCached(
 				thunkAPI.getState as () => RootState,
 				mezon,
 				clanId,
 				channelId,
-				messageId,
+				messageId || lastMessageId || '0',
 				direction,
 				topicId,
 				noCache,
@@ -1677,6 +1678,7 @@ export const messagesSlice = createSlice({
 				case TypeMessage.Ephemeral:
 				case TypeMessage.ShareContact:
 				case TypeMessage.Location:
+				case TypeMessage.Poll:
 				case TypeMessage.Chat: {
 					if (topic_id !== '0' && topic_id) {
 						handleAddOneMessage({
