@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
-import { useAuth } from '@mezon/core';
 import type { MessagesEntity, RootState } from '@mezon/store';
 import {
 	getPoll,
@@ -77,6 +76,8 @@ export type MessageWithUserProps = {
 	isSelected?: boolean;
 	previousMessage?: MessagesEntity;
 	channelId?: string;
+	currentUserId?: string;
+	currentUserDisplayName?: string;
 };
 
 const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { message: MessagesEntity; observeIntersectionForLoading?: ObserveFn }) => {
@@ -137,7 +138,7 @@ const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { messag
 function MessageWithUser({
 	message,
 	mode,
-	isMention,
+	isMention: _isMention,
 	onContextMenu,
 	isEditing,
 	isHighlight,
@@ -155,23 +156,23 @@ function MessageWithUser({
 	observeIntersectionForLoading,
 	isSelected,
 	previousMessage,
-	channelId
+	channelId,
+	currentUserId,
+	currentUserDisplayName
 }: Readonly<MessageWithUserProps>) {
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
-	const { userProfile } = useAuth();
-	const currentUserId = userProfile?.user?.id;
 	const userId = user?.user?.id as string;
 	const positionShortUser = useRef<{ top: number; left: number } | null>(null);
 
 	const isDM = mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
 	const isCurrentUserMessage = Boolean(currentUserId && message?.sender_id === currentUserId);
 	const overrideDisplayName = useMemo(() => {
-		if (isDM && isCurrentUserMessage && userProfile?.user?.display_name) {
-			return userProfile.user.display_name;
+		if (isDM && isCurrentUserMessage && currentUserDisplayName) {
+			return currentUserDisplayName;
 		}
 		return undefined;
-	}, [isDM, isCurrentUserMessage, userProfile?.user?.display_name]);
+	}, [isDM, isCurrentUserMessage, currentUserDisplayName]);
 	const resolvedMessage = useMemo(
 		() => (overrideDisplayName != null ? { ...message, display_name: overrideDisplayName } : message),
 		[message, overrideDisplayName]
@@ -217,31 +218,6 @@ function MessageWithUser({
 
 	const shouldRenderMessageReply = checkMessageHasReply && !isEphemeralMessage;
 
-	const handleOpenShortUser = useCallback(
-		(e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string, isClickOnReply = false) => {
-			if (!allowDisplayShortProfile) return;
-			setIsAnonymousOnModal(isClickOnReply);
-			shortUserId.current = userId;
-			const heightPanel =
-				mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
-					? HEIGHT_PANEL_PROFILE
-					: HEIGHT_PANEL_PROFILE_DM;
-			if (window.innerHeight - e.clientY > heightPanel) {
-				positionShortUser.current = {
-					top: e.clientY,
-					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
-				};
-			} else {
-				positionShortUser.current = {
-					top: window.innerHeight - heightPanel,
-					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
-				};
-			}
-			openProfileItem();
-		},
-		[mode, allowDisplayShortProfile]
-	);
-
 	const handleLeaveComment = useCallback(() => {
 		dispatch(topicsActions.setIsShowCreateTopic(true));
 		dispatch(topicsActions.setCurrentTopicInitMessage(message));
@@ -271,7 +247,7 @@ function MessageWithUser({
 					avatar={isClickReply.current ? message?.references?.[0]?.message_sender_avatar : message?.clan_avatar || message?.avatar}
 					name={
 						shortUserId.current === currentUserId
-							? userProfile?.user?.display_name || message?.display_name || message?.username
+							? currentUserDisplayName || message?.display_name || message?.username
 							: message?.clan_nick || message?.display_name || message?.username
 					}
 					isDM={isDM}
@@ -279,7 +255,32 @@ function MessageWithUser({
 				/>
 			</div>
 		);
-	}, [message, resolvedMessage, currentUserId, userProfile?.user?.display_name, isDM, mode]);
+	}, [message, resolvedMessage, currentUserId, currentUserDisplayName, isDM, mode]);
+
+	const handleOpenShortUser = useCallback(
+		(e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string, isClickOnReply = false) => {
+			if (!allowDisplayShortProfile) return;
+			setIsAnonymousOnModal(isClickOnReply);
+			shortUserId.current = userId;
+			const heightPanel =
+				mode === ChannelStreamMode.STREAM_MODE_CHANNEL || mode === ChannelStreamMode.STREAM_MODE_THREAD
+					? HEIGHT_PANEL_PROFILE
+					: HEIGHT_PANEL_PROFILE_DM;
+			if (window.innerHeight - e.clientY > heightPanel) {
+				positionShortUser.current = {
+					top: e.clientY,
+					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
+				};
+			} else {
+				positionShortUser.current = {
+					top: window.innerHeight - heightPanel,
+					left: WIDTH_CLAN_SIDE_BAR + WIDTH_CHANNEL_LIST_BOX + e.currentTarget.offsetWidth + 24
+				};
+			}
+			openProfileItem();
+		},
+		[mode, allowDisplayShortProfile, openProfileItem]
+	);
 
 	// (message?.content as any)?.isCard
 

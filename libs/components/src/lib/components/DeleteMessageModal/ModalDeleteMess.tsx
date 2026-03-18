@@ -33,7 +33,10 @@ type ModalDeleteMessProps = {
 const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 	const { mess, closeModal, mode, isRemoveAttachmentNoContent, attachmentData, isRemoveAttachmentAction = false, isTopic } = props;
 	const { t } = useTranslation('message');
-	const userId = useSelector(selectAllAccount)?.user?.id;
+	const account = useSelector(selectAllAccount);
+	const userId = account?.user?.id;
+	const currentUserId = account?.user?.id as string | undefined;
+	const currentUserDisplayName = account?.user?.display_name as string | undefined;
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, userId as string));
 	const dispatch = useDispatch();
 	const current = useCurrentInbox() || undefined;
@@ -151,6 +154,8 @@ const ModalDeleteMess = (props: ModalDeleteMessProps) => {
 									isShowFull={true}
 									user={currentClanUser}
 									isSearchMessage={false}
+									currentUserId={currentUserId}
+									currentUserDisplayName={currentUserDisplayName}
 								/>
 							)}
 						</ColorRoleProvider>
