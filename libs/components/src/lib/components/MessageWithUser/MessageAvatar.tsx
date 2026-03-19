@@ -41,14 +41,16 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 			message?.avatar) ??
 		'';
 
+	const displayNameForAvatar = message?.display_name ?? message?.username ?? '';
+
 	return (
 		<AvatarImage
 			onContextMenu={(e) => {
 				e.preventDefault();
 				e.stopPropagation();
 			}}
-			alt={message.username ?? ''}
-			username={message.username}
+			alt={displayNameForAvatar}
+			username={displayNameForAvatar}
 			data-popover-target="popover-content"
 			srcImgProxy={createImgproxyUrl(avatarUrl, { width: 100, height: 100, resizeType: 'fit' })}
 			src={avatarUrl}
@@ -62,5 +64,8 @@ const MessageAvatar = ({ message, mode, onClick }: IMessageAvatarProps) => {
 
 export default memo(
 	MessageAvatar,
-	(prev, curr) => prev.message.clan_avatar === curr.message.clan_avatar && prev.message.avatar === curr.message.avatar
+	(prev, curr) =>
+		prev.message.clan_avatar === curr.message.clan_avatar &&
+		prev.message.avatar === curr.message.avatar &&
+		(prev.message.display_name ?? prev.message.username) === (curr.message.display_name ?? curr.message.username)
 );

@@ -22,8 +22,8 @@ const TestThemeBlock = () => {
 							className="aspect-square w-[45px] h-[45px] rounded-full object-cover"
 							src={avatarUrl}
 							srcImgProxy={imgproxyUrl}
-							alt=""
-							username={userProfile?.user?.username}
+							alt={userProfile?.user?.display_name || userProfile?.user?.username || ''}
+							username={userProfile?.user?.display_name || userProfile?.user?.username}
 						/>
 					</div>
 					<div className="test-right ml-3">
@@ -42,8 +42,8 @@ const TestThemeBlock = () => {
 							className="aspect-square w-[45px] h-[45px] rounded-full object-cover"
 							src={avatarUrl}
 							srcImgProxy={imgproxyUrl}
-							alt=""
-							username={userProfile?.user?.username}
+							alt={userProfile?.user?.display_name || userProfile?.user?.username || ''}
+							username={userProfile?.user?.display_name || userProfile?.user?.username}
 						/>
 					</div>
 					<div className="test-right ml-3">
@@ -62,8 +62,8 @@ const TestThemeBlock = () => {
 							className="aspect-square w-[45px] h-[45px] rounded-full object-cover"
 							src={avatarUrl}
 							srcImgProxy={imgproxyUrl}
-							alt=""
-							username={userProfile?.user?.username}
+							alt={userProfile?.user?.display_name || userProfile?.user?.username || ''}
+							username={userProfile?.user?.display_name || userProfile?.user?.username}
 						/>
 					</div>
 					<div className="test-right ml-3">

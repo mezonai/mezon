@@ -41,7 +41,8 @@ type GroupedMessages = {
 const SearchMessageChannelRender = ({ searchMessages, currentPage, totalResult, channelId, isDm, isLoading }: searchMessagesProps) => {
 	const { t } = useTranslation('searchMessageChannel');
 	const dispatch = useAppDispatch();
-	const userId = useSelector(selectAllAccount)?.user?.id;
+	const account = useSelector(selectAllAccount);
+	const userId = account?.user?.id;
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, userId as string));
 	const messageContainerRef = useRef<HTMLDivElement>(null);
 	const onPageChange = (page: number) => {
@@ -178,6 +179,9 @@ const SearchedItem = ({ searchMessage, searchChannel, user }: ISearchedItemProps
 	const { t } = useTranslation('searchMessageChannel');
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+	const account = useSelector(selectAllAccount);
+	const currentUserId = account?.user?.id as string | undefined;
+	const currentUserDisplayName = account?.user?.display_name as string | undefined;
 
 	const convertedMessage = {
 		...searchMessage
@@ -213,6 +217,8 @@ const SearchedItem = ({ searchMessage, searchChannel, user }: ISearchedItemProps
 				}
 				isSearchMessage={true}
 				user={user}
+				currentUserId={currentUserId}
+				currentUserDisplayName={currentUserDisplayName}
 			/>
 		</div>
 	);

@@ -26,6 +26,8 @@ export type MessageProps = {
 	canSendMessage: boolean;
 	wrapperClassName?: string;
 	user: UsersClanEntity;
+	currentUserId?: string;
+	currentUserDisplayName?: string;
 	observeIntersectionForLoading?: ObserveFn;
 	showMessageContextMenu: (
 		event: React.MouseEvent<HTMLElement>,
@@ -70,7 +72,9 @@ export const ChannelMessage: ChannelMessageComponent = ({
 	showMessageContextMenu,
 	isSelected,
 	isEditing,
-	shouldShowUnreadBreak
+	shouldShowUnreadBreak,
+	currentUserId,
+	currentUserDisplayName
 }: Readonly<MessageProps>) => {
 	const isSameUser = message?.user?.id === previousMessage?.user?.id;
 	const isTimeGreaterThan60Minutes =
@@ -158,6 +162,8 @@ export const ChannelMessage: ChannelMessageComponent = ({
 					user={user}
 					isSelected={isSelected}
 					previousMessage={previousMessage}
+					currentUserId={currentUserId}
+					currentUserDisplayName={currentUserDisplayName}
 				/>
 			)}
 		</>

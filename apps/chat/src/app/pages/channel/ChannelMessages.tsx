@@ -780,6 +780,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 		const { setSafeTimeout, clearSafeTimeout } = useSafeTimeout();
 		const removeForceScrollTimeoutRef = useRef<number | null>(null);
 		const user = useSelector(selectAllAccount);
+		const currentUserId = user?.user?.id as string | undefined;
+		const currentUserDisplayName = user?.user?.display_name as string | undefined;
 		const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, user?.user?.id as string));
 		const lastMessage = useAppSelector((state) => selectLastMessageByChannelId(state, effectiveChannelId));
 		const idMessageToJump = useSelector(selectIdMessageToJump);
@@ -1176,6 +1178,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 						canSendMessage={canSendMessage}
 						observeIntersectionForLoading={observeIntersectionForLoading}
 						user={currentClanUser || user}
+						currentUserId={currentUserId}
+						currentUserDisplayName={currentUserDisplayName}
 						showMessageContextMenu={showMessageContextMenu}
 						isSelected={isSelected}
 						isEditing={isEditing}
@@ -1203,6 +1207,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 			forceRender,
 			currentClanUser,
 			user,
+			currentUserId,
+			currentUserDisplayName,
 			observeIntersectionForLoading,
 			showMessageContextMenu,
 			isPrivate
@@ -1243,6 +1249,8 @@ const ChatMessageList: React.FC<ChatMessageListProps> = memo(
 									message={firstMsgOfThisTopic}
 									mode={mode}
 									user={currentClanUser || user}
+									currentUserId={currentUserId}
+									currentUserDisplayName={currentUserDisplayName}
 								/>
 							</div>
 						)}

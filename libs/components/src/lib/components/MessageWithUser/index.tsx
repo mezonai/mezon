@@ -76,6 +76,8 @@ export type MessageWithUserProps = {
 	isSelected?: boolean;
 	previousMessage?: MessagesEntity;
 	channelId?: string;
+	currentUserId?: string;
+	currentUserDisplayName?: string;
 };
 
 const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { message: MessagesEntity; observeIntersectionForLoading?: ObserveFn }) => {
@@ -136,7 +138,7 @@ const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { messag
 function MessageWithUser({
 	message,
 	mode,
-	isMention,
+	isMention: _isMention,
 	onContextMenu,
 	isEditing,
 	isHighlight,
@@ -154,12 +156,27 @@ function MessageWithUser({
 	observeIntersectionForLoading,
 	isSelected,
 	previousMessage,
-	channelId
+	channelId,
+	currentUserId,
+	currentUserDisplayName
 }: Readonly<MessageWithUserProps>) {
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
 	const userId = user?.user?.id as string;
 	const positionShortUser = useRef<{ top: number; left: number } | null>(null);
+
+	const isDM = mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
+	const isCurrentUserMessage = Boolean(currentUserId && message?.sender_id === currentUserId);
+	const overrideDisplayName = useMemo(() => {
+		if (isDM && isCurrentUserMessage && currentUserDisplayName) {
+			return currentUserDisplayName;
+		}
+		return undefined;
+	}, [isDM, isCurrentUserMessage, currentUserDisplayName]);
+	const resolvedMessage = useMemo(
+		() => (overrideDisplayName != null ? { ...message, display_name: overrideDisplayName } : message),
+		[message, overrideDisplayName]
+	);
 	const shortUserId = useRef('');
 	const isClickReply = useRef(false);
 	const checkAnonymous = message?.sender_id === NX_CHAT_APP_ANNONYMOUS_USER_ID;
@@ -201,6 +218,45 @@ function MessageWithUser({
 
 	const shouldRenderMessageReply = checkMessageHasReply && !isEphemeralMessage;
 
+	const handleLeaveComment = useCallback(() => {
+		dispatch(topicsActions.setIsShowCreateTopic(true));
+		dispatch(topicsActions.setCurrentTopicInitMessage(message));
+		dispatch(topicsActions.setCurrentTopicId(''));
+		dispatch(topicsActions.setInitTopicMessageId(message.id));
+	}, [dispatch, message]);
+
+	const [isAnonymousOnModal, setIsAnonymousOnModal] = useState<boolean>(false);
+
+	const [openProfileItem, closeProfileItem] = useModal(() => {
+		return (
+			<div
+				className={`fixed z-50 max-[480px]:!left-16 max-[700px]:!left-9  w-[300px] max-w-[89vw] rounded-lg flex flex-col duration-300 ease-in-out animate-fly_in border-theme-primary bg-outside-footer `}
+				style={{
+					top: `${positionShortUser.current?.top}px`,
+					left: `${positionShortUser.current?.left}px`
+				}}
+			>
+				<ModalUserProfile
+					onClose={() => {
+						closeProfileItem();
+					}}
+					userID={shortUserId.current}
+					classBanner="rounded-tl-lg rounded-tr-lg h-[105px]"
+					message={resolvedMessage}
+					mode={mode}
+					avatar={isClickReply.current ? message?.references?.[0]?.message_sender_avatar : message?.clan_avatar || message?.avatar}
+					name={
+						shortUserId.current === currentUserId
+							? currentUserDisplayName || message?.display_name || message?.username
+							: message?.clan_nick || message?.display_name || message?.username
+					}
+					isDM={isDM}
+					checkAnonymous={isAnonymousOnModal}
+				/>
+			</div>
+		);
+	}, [message, resolvedMessage, currentUserId, currentUserDisplayName, isDM, mode]);
+
 	const handleOpenShortUser = useCallback(
 		(e: React.MouseEvent<HTMLImageElement, MouseEvent>, userId: string, isClickOnReply = false) => {
 			if (!allowDisplayShortProfile) return;
@@ -223,45 +279,8 @@ function MessageWithUser({
 			}
 			openProfileItem();
 		},
-		[mode, allowDisplayShortProfile]
+		[mode, allowDisplayShortProfile, openProfileItem]
 	);
-
-	const handleLeaveComment = useCallback(() => {
-		dispatch(topicsActions.setIsShowCreateTopic(true));
-		dispatch(topicsActions.setCurrentTopicInitMessage(message));
-		dispatch(topicsActions.setCurrentTopicId(''));
-		dispatch(topicsActions.setInitTopicMessageId(message.id));
-	}, [dispatch, message]);
-
-	const isDM = mode === ChannelStreamMode.STREAM_MODE_GROUP || mode === ChannelStreamMode.STREAM_MODE_DM;
-
-	const [isAnonymousOnModal, setIsAnonymousOnModal] = useState<boolean>(false);
-
-	const [openProfileItem, closeProfileItem] = useModal(() => {
-		return (
-			<div
-				className={`fixed z-50 max-[480px]:!left-16 max-[700px]:!left-9  w-[300px] max-w-[89vw] rounded-lg flex flex-col duration-300 ease-in-out animate-fly_in border-theme-primary bg-outside-footer `}
-				style={{
-					top: `${positionShortUser.current?.top}px`,
-					left: `${positionShortUser.current?.left}px`
-				}}
-			>
-				<ModalUserProfile
-					onClose={() => {
-						closeProfileItem();
-					}}
-					userID={shortUserId.current}
-					classBanner="rounded-tl-lg rounded-tr-lg h-[105px]"
-					message={message}
-					mode={mode}
-					avatar={isClickReply.current ? message?.references?.[0]?.message_sender_avatar : message?.clan_avatar || message?.avatar}
-					name={message?.clan_nick || message?.display_name || message?.username}
-					isDM={isDM}
-					checkAnonymous={isAnonymousOnModal}
-				/>
-			</div>
-		);
-	}, [message]);
 
 	// (message?.content as any)?.isCard
 
@@ -325,7 +344,7 @@ function MessageWithUser({
 						{showMessageHead && (
 							<>
 								<MessageAvatar
-									message={message}
+									message={resolvedMessage}
 									isEditing={isEditing}
 									mode={mode}
 									onClick={
@@ -338,7 +357,7 @@ function MessageWithUser({
 									}
 								/>
 								<MessageHead
-									message={message}
+									message={resolvedMessage}
 									mode={mode}
 									isSearchMessage={isSearchMessage}
 									onClick={

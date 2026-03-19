@@ -18,7 +18,10 @@ type ModalAddPinMessProps = {
 export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 	const { mess, channelLabel, closeModal, handlePinMessage, mode } = props;
 	const { t } = useTranslation('pinMessage');
-	const userId = useSelector(selectAllAccount)?.user?.id;
+	const account = useSelector(selectAllAccount);
+	const userId = account?.user?.id;
+	const currentUserId = account?.user?.id as string | undefined;
+	const currentUserDisplayName = account?.user?.display_name as string | undefined;
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, userId as string));
 
 	const isDM = mode === ChannelStreamMode.STREAM_MODE_DM || mode === ChannelStreamMode.STREAM_MODE_GROUP;
@@ -74,6 +77,8 @@ export const ModalAddPinMess = (props: ModalAddPinMessProps) => {
 								isMention={true}
 								isShowFull={true}
 								user={currentClanUser}
+								currentUserId={currentUserId}
+								currentUserDisplayName={currentUserDisplayName}
 							/>
 						</ColorRoleProvider>
 					</div>

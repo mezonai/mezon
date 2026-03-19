@@ -1,4 +1,5 @@
-import { IMessageWithUser, TypeMessage, UsersClanEntity } from '@mezon/utils';
+import type { IMessageWithUser, UsersClanEntity } from '@mezon/utils';
+import { TypeMessage } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import MessageWithSystem from '../../MessageWithSystem';
 import MessageWithUser from '../../MessageWithUser';
@@ -29,6 +30,8 @@ const ChannelMessageThread = (props: ChannelMessageThreadProps) => {
 					isMention={true}
 					isShowFull={true}
 					user={user}
+					currentUserId={user?.user?.id as string | undefined}
+					currentUserDisplayName={(user as any)?.user?.display_name as string | undefined}
 				/>
 			)}
 		</div>

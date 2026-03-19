@@ -14,6 +14,7 @@ import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCa
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
 import { usersClanActions } from '../clanMembers/clan.members';
+import { userProfileUpdated } from '../direct/direct.slice';
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
@@ -477,7 +478,6 @@ export const updateUser = createAsyncThunk(
 				return thunkAPI.rejectWithValue([]);
 			}
 			if (response) {
-				thunkAPI.dispatch(accountActions.getUserProfile());
 				thunkAPI.dispatch(
 					accountActions.setUpdateAccount({
 						logo,
@@ -494,9 +494,16 @@ export const updateUser = createAsyncThunk(
 					})
 				);
 
+				thunkAPI.dispatch(accountActions.getUserProfile({ noCache: true }));
+
 				if (avatar_url && currentUser?.user?.id && avatar_url !== currentUser?.user?.avatar_url) {
 					setUserAvatarOverride(currentUser.user.id, avatar_url);
 					thunkAPI.dispatch(accountActions.incrementAvatarVersion());
+				}
+
+				const myId = currentUser?.user?.id;
+				if (myId && (display_name !== undefined || avatar_url !== undefined)) {
+					thunkAPI.dispatch(userProfileUpdated({ userId: myId, avatar_url, display_name }));
 				}
 
 				thunkAPI.dispatch(messagesActions.invalidateAllCache());

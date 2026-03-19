@@ -27,7 +27,10 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 	const { mess, closeModal, mode } = props;
 	const { t } = useTranslation('contextMenu');
 	const dispatch = useAppDispatch();
-	const userId = useSelector(selectAllAccount)?.user?.id;
+	const account = useSelector(selectAllAccount);
+	const userId = account?.user?.id;
+	const currentUserId = account?.user?.id as string | undefined;
+	const currentUserDisplayName = account?.user?.display_name as string | undefined;
 	const currentClanUser = useAppSelector((state) => selectMemberClanByUserId(state, userId as string));
 	const friendStatus = useAppSelector((state) => selectFriendStatus(mess?.sender_id || '')(state));
 	const modalRef = useRef<HTMLDivElement>(null);
@@ -182,6 +185,8 @@ export const ReportMessageModal = (props: ReportMessageModalProps) => {
 								isMention={true}
 								isShowFull={true}
 								user={currentClanUser}
+								currentUserId={currentUserId}
+								currentUserDisplayName={currentUserDisplayName}
 							/>
 						</ColorRoleProvider>
 					</div>
