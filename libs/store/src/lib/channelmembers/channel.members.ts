@@ -1,5 +1,5 @@
 import { captureSentryError } from '@mezon/logger';
-import { EOverriddenPermission, type BanClanUsers, type IChannelMember, type LoadingStatus, type RemoveChannelUsers } from '@mezon/utils';
+import { EOverriddenPermission, type IChannelMember, type LoadingStatus, type RemoveChannelUsers } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelPresenceEvent, StatusPresenceEvent } from 'mezon-js';
@@ -292,41 +292,6 @@ export const updateCustomStatus = createAsyncThunk(
 	}
 );
 
-export const banUserChannel = createAsyncThunk(
-	'channelMembers/banUserChannel',
-	async ({ clanId, channelId, userIds, banTime }: BanClanUsers & { banTime?: number }, thunkAPI) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.banClanUsers(mezon.session, clanId, channelId, userIds, banTime);
-			if (!response) {
-				return;
-			}
-			thunkAPI.dispatch(usersClanActions.addBannedUser({ clanId, channelId, userIds, banner_id: '', ban_time: banTime }));
-			return true;
-		} catch (error) {
-			captureSentryError(error, 'channelMembers/banUserChannel');
-			return thunkAPI.rejectWithValue(error);
-		}
-	}
-);
-
-export const unbanUserChannel = createAsyncThunk(
-	'channelMembers/unbanUserChannel',
-	async ({ clanId, channelId, userIds }: BanClanUsers, thunkAPI) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-			const response = await mezon.client.unbanClanUsers(mezon.session, clanId, channelId, userIds);
-			if (!response) {
-				return;
-			}
-			thunkAPI.dispatch(usersClanActions.removeBannedUser({ clanId, channelId, userIds }));
-			return true;
-		} catch (error) {
-			captureSentryError(error, 'channelMembers/unbanUserChannel');
-			return thunkAPI.rejectWithValue(error);
-		}
-	}
-);
 export const checkBanInChannelCached = async (
 	getState: () => RootState,
 	ensuredMezon: MezonValueContext,
@@ -582,8 +547,6 @@ export const channelMembersActions = {
 	updateStatusUser,
 	removeMemberChannel,
 	updateCustomStatus,
-	banUserChannel,
-	unbanUserChannel,
 	checkBanInChannel
 };
 

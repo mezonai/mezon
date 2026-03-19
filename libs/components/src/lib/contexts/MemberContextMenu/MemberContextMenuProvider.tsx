@@ -2,7 +2,6 @@ import { useAppNavigation, useDirect, useFriends, usePermissionChecker } from '@
 import type { ChannelMembersEntity } from '@mezon/store';
 import {
 	EStateFriend,
-	channelMembersActions,
 	channelUsersActions,
 	clansActions,
 	selectAllAccount,
@@ -19,7 +18,6 @@ import {
 	useAppSelector,
 	usersClanActions
 } from '@mezon/store';
-import { Menu as MenuDropdown } from '@mezon/ui';
 import { EPermission, FOR_15_MINUTES_SEC, FOR_1_HOUR_SEC, FOR_24_HOURS_SEC, FOR_3_HOURS_SEC, FOR_8_HOURS_SEC } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import type { CSSProperties, FC } from 'react';
@@ -241,57 +239,6 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 		[dispatch, currentClanId, currentChannelId, isThread]
 	);
 
-	const handleBanChatUser = useCallback(
-		async (userId: string, banTime: number) => {
-			if (!userId || !currentChannelId || !currentClanId) return;
-
-			try {
-				await dispatch(
-					channelMembersActions.banUserChannel({
-						channelId: currentChannelId,
-						userIds: [userId],
-						clanId: currentClanId,
-						banTime: banTime !== Infinity ? banTime : undefined
-					})
-				);
-			} catch (error) {
-				dispatch({
-					type: 'ERROR_NOTIFICATION',
-					payload: {
-						message: 'Failed to ban chat member',
-						error
-					}
-				});
-			}
-		},
-		[dispatch, currentClanId, currentChannelId, isThread]
-	);
-
-	const handleUnBanChatUser = useCallback(
-		async (userId?: string) => {
-			if (!userId || !currentChannelId || !currentClanId) return;
-
-			try {
-				await dispatch(
-					channelMembersActions.unbanUserChannel({
-						channelId: currentChannelId,
-						userIds: [userId],
-						clanId: currentClanId
-					})
-				);
-			} catch (error) {
-				dispatch({
-					type: 'ERROR_NOTIFICATION',
-					payload: {
-						message: 'Failed to ban chat member',
-						error
-					}
-				});
-			}
-		},
-		[dispatch, currentClanId, currentChannelId, isThread]
-	);
-
 	const createDefaultHandlers = (user?: ChannelMembersEntity): MemberContextMenuHandlers => {
 		return {
 			handleEnableE2EE: () => {},
@@ -338,15 +285,6 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 			handleRemoveFromThread: () => {
 				if (user?.user?.id) {
 					handleRemoveMemberFromThread(user.user.id);
-				}
-			},
-			handleBanChat: (isBan: boolean, banTime?: number) => {
-				if (user?.user?.id) {
-					if (isBan) {
-						handleUnBanChatUser(user.user.id);
-					} else if (banTime) {
-						handleBanChatUser(user.user.id, banTime);
-					}
 				}
 			},
 			handleShareContact: () => {
@@ -484,7 +422,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 								setWarningStatus={setWarningStatus}
 							/>
 						)}
-						{shouldShow('banChat') && !isBan && (
+						{/* {shouldShow('banChat') && !isBan && (
 							<MenuDropdown
 								trigger="hover"
 								menu={menuBan}
@@ -506,7 +444,7 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 								isWarning={true}
 								setWarningStatus={setWarningStatus}
 							/>
-						)}
+						)} */}
 
 						{!!shouldShow('kick') && (
 							<MemberMenuItem
