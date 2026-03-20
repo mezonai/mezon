@@ -152,7 +152,7 @@ const ChannelMainContentText = ({ channelId, canSendMessage }: ChannelMainConten
 	const { t } = useTranslation('common');
 	const currentChannel = useAppSelector((state) => selectChannelById(state, channelId ?? '')) || {};
 	const isShowMemberList = useSelector(selectIsShowMemberList);
-	useAuth();
+	const { userId } = useAuth();
 	const mode =
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL ||
 		currentChannel?.type === ChannelType.CHANNEL_TYPE_STREAMING ||

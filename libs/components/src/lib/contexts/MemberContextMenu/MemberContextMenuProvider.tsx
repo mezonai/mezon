@@ -422,29 +422,6 @@ export const MemberContextMenuProvider: FC<MemberContextMenuProps> = ({ children
 								setWarningStatus={setWarningStatus}
 							/>
 						)}
-						{/* {shouldShow('banChat') && !isBan && (
-							<MenuDropdown
-								trigger="hover"
-								menu={menuBan}
-								align={{
-									points: ['bl', 'br']
-								}}
-								className="bg-theme-contexify text-theme-primary border-theme-primary ml-[3px] py-[6px] px-[8px] w-[200px]"
-							>
-								<div>
-									<MemberMenuItem label={t('member.banChat')} isWarning={true} setWarningStatus={setWarningStatus} />
-								</div>
-							</MenuDropdown>
-						)}
-
-						{shouldShow('banChat') && isBan && (
-							<MemberMenuItem
-								label={t('member.unBanChat')}
-								onClick={() => currentHandlers.handleBanChat(true)}
-								isWarning={true}
-								setWarningStatus={setWarningStatus}
-							/>
-						)} */}
 
 						{!!shouldShow('kick') && (
 							<MemberMenuItem
