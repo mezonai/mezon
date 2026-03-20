@@ -56,7 +56,7 @@ const FriendsPage = () => {
 
 	useEffect(() => {
 		dispatch(channelsActions.setCurrentChannelId({ clanId: '0', channelId: '' }));
-	}, []);
+	}, [dispatch]);
 
 	const handleChange = (key: string, value: string) => {
 		const isValidInput = /^[\p{L}0-9+\-_.]+$/u.test(value);
@@ -94,7 +94,8 @@ const FriendsPage = () => {
 	};
 
 	const handleAddFriend = async () => {
-		const username = requestAddFriend?.usernames?.[0] || requestAddFriend?.usernames;
+		const rawUsernames = requestAddFriend?.usernames;
+		const username = (Array.isArray(rawUsernames) ? rawUsernames[0] : rawUsernames)?.trim();
 		if (!username) return;
 
 		const isBlocked = blockedUsers.some((u) => u.user?.username === requestAddFriend.usernames);
@@ -103,7 +104,7 @@ const FriendsPage = () => {
 			return;
 		}
 
-		const friend = friends?.find((u) => u?.user?.username === username);
+		const friend = friends?.find((u) => u?.user?.username?.toLowerCase() === username.toLowerCase());
 
 		if (friend) {
 			if (friend.state === EStateFriend.MY_PENDING) {
@@ -293,7 +294,7 @@ const FriendsPage = () => {
 											}
 										}}
 										type="text"
-										className={`mb-2 bg-input-secondary rounded-lg mt-1 py-3 pr-[90px] md:pr-[140px] ${isAlreadyFriend || isBlockedUser ? 'border border-red-600 outline-none' : 'focus:outline focus:outline-1 dark:outline-[#00a8fc] outline-[#006ce7]'}`}
+										className={`mb-2 bg-input-secondary rounded-lg mt-1 py-3 pr-[90px] md:pr-[140px] ${isAlreadyFriend !== null || isBlockedUser ? 'border border-red-600 outline-none' : 'focus:outline focus:outline-1 dark:outline-[#00a8fc] outline-[#006ce7]'}`}
 										value={requestAddFriend.usernames}
 										placeholder={t('addFriendModal.placeholder')}
 										needOutline={true}
@@ -325,7 +326,13 @@ const FriendsPage = () => {
 									)}
 									<Button
 										className="absolute btn-primary btn-primary-hover rounded-lg px-2 top-3 right-2 text-[14px] py-[5px] min-w-[80px] md:min-w-[130px]"
-										disabled={!requestAddFriend.usernames?.length || isInvalidInput || isBlockedUser || isAddingFriend}
+										disabled={
+											!requestAddFriend.usernames?.length ||
+											isInvalidInput ||
+											isBlockedUser ||
+											isAlreadyFriend !== null ||
+											isAddingFriend
+										}
 										onClick={handleAddFriend}
 										data-e2e={generateE2eId('friend_page.button.send_friend_request')}
 									>
@@ -354,7 +361,7 @@ const FriendsPage = () => {
 	);
 };
 
-const RequestFailedPopup = ({ togglePopup }: { togglePopup: () => void }) => {
+const _RequestFailedPopup = ({ togglePopup }: { togglePopup: () => void }) => {
 	const { t } = useTranslation('friendsPage');
 	const modalRef = useRef<HTMLDivElement>(null);
 	useEscapeKeyClose(modalRef, togglePopup);
