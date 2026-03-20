@@ -126,6 +126,7 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(listChannelsByUserActions.fetchListChannelsByUser({}));
 	dispatch(listUsersByUserActions.fetchListUsersByUser({}));
 	dispatch(clansActions.fetchClans({}));
+	dispatch(clansActions.listClanBadgeCount());
 	dispatch(friendsActions.fetchListFriends({}));
 	dispatch(directActions.fetchDirectMessage({}));
 	dispatch(emojiRecentActions.fetchEmojiRecent({}));

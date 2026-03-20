@@ -6,7 +6,7 @@ import { DOWNLOAD_FILE, EFailAttachment, EMimeTypes, electronBridge } from '@mez
 import isElectron from 'is-electron';
 import type { ChannelStreamMode } from 'mezon-js';
 import type { ApiMessageAttachment } from 'mezon-js/api';
-import { Suspense, lazy, useState } from 'react';
+import { Suspense, lazy, useRef, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { ModalDeleteMess, RenderAttachmentThumbnail } from '../../components';
@@ -61,6 +61,8 @@ const PDFLoadingFallback = () => {
 };
 
 function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
+	const [isDownloading, setIsDownloading] = useState(false);
+	const downloadingRef = useRef(false);
 	const handleDownload = async () => {
 		// window.open(attachmentData.);
 		const store = getStore();
@@ -70,26 +72,42 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 		if (isBanned) {
 			return;
 		}
-		const response = await fetch(attachmentData.url as string);
-		if (!response.ok) {
-			return;
-		}
-		if (isElectron()) {
-			try {
+
+		const url = attachmentData.url as string | undefined;
+		if (!url) return;
+
+		const filename = (attachmentData.filename as string | undefined) ?? 'attachment';
+
+		if (downloadingRef.current) return;
+		downloadingRef.current = true;
+		setIsDownloading(true);
+
+		try {
+			if (isElectron()) {
 				await electronBridge.invoke(DOWNLOAD_FILE, {
-					url: attachmentData.url as string,
-					defaultFileName: attachmentData.filename as string
+					url: url as string,
+					defaultFileName: filename
 				});
-			} catch (error) {
-				console.error('Error during download:', error);
+			} else {
+				const response = await fetch(url);
+				if (!response.ok) {
+					return;
+				}
+
+				const blob = await response.blob();
+				const dataUrl = URL.createObjectURL(blob);
+				const a = document.createElement('a');
+				a.href = dataUrl;
+				a.download = filename;
+				a.click();
+
+				URL.revokeObjectURL(dataUrl);
 			}
-		} else {
-			const blob = await response.blob();
-			const dataUrl = URL.createObjectURL(blob);
-			const a = document.createElement('a');
-			a.href = dataUrl;
-			a.download = attachmentData.filename as string;
-			a.click();
+		} catch (error) {
+			console.error('Error during download:', error);
+		} finally {
+			downloadingRef.current = false;
+			setIsDownloading(false);
 		}
 	};
 	const thumbnailAttachment = RenderAttachmentThumbnail({ attachment: attachmentData, size: 'w-8 h-10' });
@@ -115,11 +133,11 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 		return isPDF ? <PDFHeader filename={attachmentData.filename || 'Document'} onClose={closePopup} onMaximize={maximizeToggle} /> : undefined;
 	};
 
-	const createPDFFooter = (closePopup: () => void, maximizeToggle: () => void) => {
+	const createPDFFooter = (_closePopup: () => void, _maximizeToggle: () => void) => {
 		return isPDF ? <PDFFooter filename={attachmentData.filename || 'Document'} /> : undefined;
 	};
 
-	const [openPDFViewer, closePDFViewer] = usePopup(
+	const [openPDFViewer] = usePopup(
 		({ closePopup }: { closePopup: () => void }) => {
 			if (isPDF && attachmentData.url) {
 				return (
@@ -186,10 +204,20 @@ function MessageLinkFile({ attachmentData, mode, message }: MessageImage) {
 							<div className="flex space-x-2 absolute right-4">
 								<button
 									onClick={handleDownload}
-									className="rounded-md w-8 h-8 flex justify-center  bg-theme-contexify bg-secondary-button-hover border-theme-primary text-theme-primary-hover text-theme-primary items-center cursor-pointer "
+									disabled={isDownloading}
+									className={`rounded-md w-8 h-8 flex justify-center bg-theme-contexify bg-secondary-button-hover border-theme-primary text-theme-primary-hover text-theme-primary items-center cursor-pointer ${
+										isDownloading ? 'opacity-60 cursor-not-allowed' : ''
+									}`}
 									title="Download"
 								>
-									<Icons.Download defaultSize="w-4 h-4" />
+									{isDownloading ? (
+										<div
+											className="w-4 h-4 shrink-0 animate-spin rounded-full border-2 border-current border-t-transparent text-theme-secondary"
+											aria-hidden
+										/>
+									) : (
+										<Icons.Download defaultSize="w-4 h-4" />
+									)}
 								</button>
 								{isOwner && (
 									<button

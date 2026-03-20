@@ -740,7 +740,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 
 		if (clanId && clanId !== '0') {
 			const latestState = thunkAPI.getState() as RootState;
-			const hasUnread = selectClanHasUnreadMessage(clanId)(latestState);
+			const hasUnread = selectClanHasUnreadMessage(latestState, clanId);
 			if (hasUnread) {
 				requestIdleCallback(() => {
 					thunkAPI.dispatch(clansActions.updateHasUnreadBasedOnChannels({ clanId }));

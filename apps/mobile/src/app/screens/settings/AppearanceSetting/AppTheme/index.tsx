@@ -1,11 +1,12 @@
 import type { ThemeMode } from '@mezon/mobile-ui';
-import { ThemeModeAuto, ThemeModeBase, themeColors, useTheme } from '@mezon/mobile-ui';
+import { size, themeColors, ThemeModeAuto, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View } from 'react-native';
+import { useColorScheme, View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import type { IMezonSlideOptionsData } from '../../../../componentUI/MezonSlideOption';
 import MezonSlideOption from '../../../../componentUI/MezonSlideOption';
+import { Icons } from '../../../../componentUI/MobileIcons';
 import type { APP_SCREEN, SettingScreenProps } from '../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
@@ -14,6 +15,11 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 	const { themeValue, setTheme, theme } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['appThemeSetting']);
+	const colorScheme = useColorScheme();
+	const isDarkMode = colorScheme === 'dark';
+	const systemColor = isDarkMode ? themeColors.dark.primary : themeColors.light.primary;
+	const systemBorder = isDarkMode ? themeColors.dark.border : themeColors.light.border;
+	const systemTextColor = isDarkMode ? themeColors.dark.text : themeColors.light.text;
 
 	const BoxSelector = useCallback(
 		({ color = 'transparent', border = 'transparent' }: { color?: string; border?: string }) => (
@@ -24,11 +30,8 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 
 	const SystemBoxSelector = useCallback(
 		({ border = 'transparent' }: { color?: string; border?: string }) => (
-			<View style={[styles.box, { borderColor: border, overflow: 'hidden' }]}>
-				<View style={styles.row}>
-					<View style={[styles.container, { backgroundColor: themeColors.light.primary }]} />
-					<View style={[styles.container, { backgroundColor: themeColors.dark.primary }]} />
-				</View>
+			<View style={[styles.box, { backgroundColor: systemColor, borderColor: border }]}>
+				<Icons.SyncIcon color={systemTextColor} height={size.s_30} width={size.s_30} />
 			</View>
 		),
 		[]
@@ -51,7 +54,7 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 		() =>
 			[
 				{
-					element: <SystemBoxSelector border={themeColors.dark.border} />,
+					element: <SystemBoxSelector border={systemBorder} />,
 					value: ThemeModeAuto.AUTO,
 					title: t('fields.system')
 				},

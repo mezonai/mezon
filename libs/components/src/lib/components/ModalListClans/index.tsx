@@ -3,7 +3,7 @@ import {
 	appActions,
 	defaultNotificationActions,
 	getStore,
-	selectBadgeCountByClanId,
+	selectBadgeClanById,
 	selectClanHasUnreadMessage,
 	selectIsUseProfileDM,
 	useAppDispatch
@@ -29,8 +29,8 @@ export type SidebarClanItemProps = {
 
 const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanClick }: SidebarClanItemProps) => {
 	const [_, startTransition] = useTransition();
-	const badgeCountClan = useSelector(selectBadgeCountByClanId(option?.clan_id ?? '')) || 0;
-	const hasUnreadMessage = useSelector(selectClanHasUnreadMessage(option?.clan_id ?? ''));
+	const badgeCountClan = useSelector((state) => selectBadgeClanById(state, option?.clan_id ?? '')) || 0;
+	const hasUnreadMessage = useSelector((state) => selectClanHasUnreadMessage(state, option?.clan_id ?? ''));
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 

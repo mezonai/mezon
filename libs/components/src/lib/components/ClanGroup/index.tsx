@@ -2,7 +2,7 @@ import { useExpandedGroupDragAndDrop } from '@mezon/core';
 import type { ClanGroup as ClanGroupType, RootState } from '@mezon/store';
 import {
 	clansActions,
-	selectBadgeCountByClanId,
+	selectBadgeClanById,
 	selectClanHasUnreadMessage,
 	selectClanView,
 	selectClansEntities,
@@ -54,14 +54,14 @@ const ClanGroup = ({ group, onMouseDown, onMouseEnter, className = '', isGroupIn
 	// recheck
 	const totalBadgeCount = useSelector((state: RootState) => {
 		return group.clanIds.reduce((total, clanId) => {
-			const badgeCount = selectBadgeCountByClanId(clanId)(state) || 0;
+			const badgeCount = selectBadgeClanById(state, clanId) || 0;
 			return total + badgeCount;
 		}, 0);
 	});
 
 	const hasUnreadInGroup = useSelector((state: RootState) => {
 		return group.clanIds.some((clanId) => {
-			return selectClanHasUnreadMessage(clanId)(state);
+			return selectClanHasUnreadMessage(state, clanId);
 		});
 	});
 

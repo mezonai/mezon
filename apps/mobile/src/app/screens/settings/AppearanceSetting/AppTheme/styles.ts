@@ -15,7 +15,9 @@ export const style = (colors: Attributes) =>
 			height: 80,
 			width: 55,
 			borderRadius: 10,
-			borderWidth: 1
+			borderWidth: 1,
+			justifyContent: 'center',
+			alignItems: 'center'
 		},
 
 		row: {

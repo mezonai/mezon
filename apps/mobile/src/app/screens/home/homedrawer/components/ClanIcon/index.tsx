@@ -1,6 +1,6 @@
 import { useTheme } from '@mezon/mobile-ui';
 import type { ClansEntity } from '@mezon/store-mobile';
-import { selectBadgeCountByClanId, selectClanHasUnreadMessage } from '@mezon/store-mobile';
+import { selectBadgeClanById, selectClanHasUnreadMessage } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { memo, useCallback } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -23,8 +23,8 @@ export const ClanIcon = memo(
 	(props: IClanIconProps) => {
 		const { themeValue } = useTheme();
 		const styles = style(themeValue);
-		const badgeCountClan = useSelector(selectBadgeCountByClanId(props?.data?.clan_id ?? '')) || 0;
-		const isHaveUnreadMessage = useSelector(selectClanHasUnreadMessage(props?.data?.clan_id ?? '')) || false;
+		const badgeCountClan = useSelector((state) => selectBadgeClanById(state, props?.data?.clan_id ?? '')) || 0;
+		const isHaveUnreadMessage = useSelector((state) => selectClanHasUnreadMessage(state, props?.data?.clan_id ?? '')) || false;
 
 		const onIconLayout = useCallback(
 			(event: any) => {
