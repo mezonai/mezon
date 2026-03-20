@@ -1,24 +1,25 @@
 import { useEscapeKeyClose } from '@mezon/core';
 import { Icons } from '@mezon/ui';
-import { createImgproxyUrl, getSrcEmoji } from '@mezon/utils';
+import { createImgproxyUrl } from '@mezon/utils';
 import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { AvatarImage } from '../AvatarImage/AvatarImage';
 import type { PollVoter } from './PollMessage';
+import { renderPollTextWithEmoji } from './PollMessage';
 
 export type PollDetailModalProps = {
 	open: boolean;
 	onClose: () => void;
 	question: string;
 	answers: string[];
-	answerEmojiIds?: string[];
 	voteCounts: number[];
 	totalVotes: number;
 	votersByOption?: PollVoter[][];
 	initialSelectedIndex?: number;
 	votedAnswers?: number[];
+	loading?: boolean;
 };
 
 export const PollDetailModal = ({
@@ -26,12 +27,12 @@ export const PollDetailModal = ({
 	onClose,
 	question,
 	answers,
-	answerEmojiIds,
 	voteCounts,
 	totalVotes,
 	votersByOption,
 	initialSelectedIndex = 0,
-	votedAnswers = []
+	votedAnswers = [],
+	loading = false
 }: PollDetailModalProps): ReactNode => {
 	const { t } = useTranslation('message');
 	const [selectedIndex, setSelectedIndex] = useState(initialSelectedIndex);
@@ -92,7 +93,6 @@ export const PollDetailModal = ({
 									const count = voteCounts[index];
 									const isSelected = selectedIndex === index;
 									const isVoted = votedAnswers.includes(index);
-									const answerEmoji = answerEmojiIds?.[index];
 									return (
 										<button
 											key={index}
@@ -106,10 +106,7 @@ export const PollDetailModal = ({
 														: 'text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover border-transparent transition-colors'
 											}`}
 										>
-											{answerEmoji && (
-												<img src={getSrcEmoji(answerEmoji)} alt="" className="w-5 h-5 object-contain flex-shrink-0" />
-											)}
-											<span className="text-lg font-medium truncate flex-1 min-w-0">{answer}</span>
+											<span className="text-lg font-medium truncate flex-1 min-w-0">{renderPollTextWithEmoji(answer)}</span>
 											<span className="text-xs text-theme-muted flex-shrink-0">({count})</span>
 										</button>
 									);
@@ -119,7 +116,9 @@ export const PollDetailModal = ({
 
 						<div className="flex-1 flex flex-col overflow-hidden">
 							<div className="overflow-y-auto overflow-x-hidden p-3 pr-2 thread-scroll">
-								{detailVoters.length === 0 ? (
+								{loading ? (
+									<p className="text-lg text-theme-primary">{t('poll.loadingVoterDetails', { defaultValue: 'Loading...' })}</p>
+								) : detailVoters.length === 0 ? (
 									<p className="text-lg text-theme-primary">{t('poll.noVoterDetails')}</p>
 								) : (
 									<ul className="space-y-2">

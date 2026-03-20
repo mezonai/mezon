@@ -1,8 +1,6 @@
 export type ParsedPollData = {
 	question: string;
-	questionEmojiId?: string;
 	answers: string[];
-	answerEmojiIds?: string[];
 	duration: string;
 	allowMultipleAnswers: boolean;
 };
@@ -31,30 +29,9 @@ export const parsePollData = (messageContent: string): ParsedPollData | null => 
 
 		const allowMultipleAnswers = messageContent.includes('☑️ Multiple answers allowed');
 
-		let questionEmojiId: string | undefined;
-		let answerEmojiIds: string[] | undefined;
-
-		const emojiLine = lines.find((line) => line.startsWith('🔖'));
-		if (emojiLine) {
-			const emojiData = emojiLine.replace('🔖', '').trim();
-			const parts = emojiData.split('|').map((p) => p.trim());
-
-			for (const part of parts) {
-				if (part.startsWith('q:')) {
-					questionEmojiId = part.substring(2).trim();
-				} else if (part.startsWith('a:')) {
-					const emojiStr = part.substring(2).trim();
-
-					answerEmojiIds = emojiStr.split(',').map((e) => e.trim());
-				}
-			}
-		}
-
 		return {
 			question,
-			questionEmojiId,
 			answers,
-			answerEmojiIds,
 			duration,
 			allowMultipleAnswers
 		};

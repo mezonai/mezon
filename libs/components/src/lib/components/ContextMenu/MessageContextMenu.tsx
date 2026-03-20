@@ -15,7 +15,6 @@ import {
 	closePoll,
 	createEditCanvas,
 	directActions,
-	getPoll,
 	gifsStickerEmojiActions,
 	giveCoffeeActions,
 	messagesActions,
@@ -547,14 +546,6 @@ function MessageContextMenu({
 					channel_id: message.channel_id
 				})
 			).unwrap();
-
-			await dispatch(
-				getPoll({
-					message_id: message.id,
-					channel_id: message.channel_id
-				})
-			).unwrap();
-
 			showSimpleToast(t('pollEnded'));
 		} catch (error) {
 			console.error('Failed to close poll', error);
@@ -576,6 +567,10 @@ function MessageContextMenu({
 	const isClickedEmoji = useMemo(() => {
 		return posShowMenu === SHOW_POSITION.IN_EMOJI;
 	}, [posShowMenu]);
+
+	const isPollMessage = useMemo(() => {
+		return message?.code === TypeMessage.Poll;
+	}, [message?.code]);
 
 	const [enableEditMessageItem, enableReportMessageItem] = useMemo(() => {
 		if (!checkPos) return [false, false];
@@ -838,10 +833,10 @@ function MessageContextMenu({
 				<Icons.ForwardAllRightClick defaultSize="w-4 h-4" />
 			);
 		});
-		builder.when(enableCreateThreadItem, (builder) => {
+		builder.when(enableCreateThreadItem && !isPollMessage, (builder) => {
 			builder.addMenuItem('createThread', t('createThread'), () => handleCreateThread(), <Icons.ThreadIconRightClick defaultSize="w-4 h-4" />);
 		});
-		builder.when(checkPos, (builder) => {
+		builder.when(checkPos && !isPollMessage, (builder) => {
 			builder.addMenuItem(
 				'copyText',
 				t('copyText'),
@@ -877,6 +872,7 @@ function MessageContextMenu({
 		);
 
 		message?.code !== TypeMessage.Topic &&
+			!isPollMessage &&
 			notAllowedType &&
 			!isTopic &&
 			canSendMessage &&

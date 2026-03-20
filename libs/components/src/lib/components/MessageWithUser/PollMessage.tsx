@@ -3,18 +3,116 @@ import {
 	getStore,
 	selectCurrentUserId,
 	selectMemberClanByUserId,
+	selectMemberDMByUserId,
 	selectPollByMessageId,
 	selectPollLoadingClose,
+	selectPollLoadingGet,
 	selectPollLoadingVote,
 	useAppDispatch,
 	useAppSelector,
 	votePoll
 } from '@mezon/store';
 import { getSrcEmoji } from '@mezon/utils';
-import { useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PollDetailModal } from './PollDetailModal';
 import './PollMessage.scss';
+
+const POLL_EMOJI_REGEX = /\[e:([^\]]+)\]/g;
+
+export type RenderPollTextWithEmojiOptions = {
+	className?: string;
+
+	textPartClassName?: string;
+
+	emojiPartClassName?: string;
+};
+
+function renderPollTextWithEmoji(text: string, classNameOrOptions?: string | RenderPollTextWithEmojiOptions): ReactNode {
+	if (!text) return null;
+	const options: RenderPollTextWithEmojiOptions =
+		typeof classNameOrOptions === 'string' ? { className: classNameOrOptions } : (classNameOrOptions ?? {});
+	const { className, textPartClassName, emojiPartClassName } = options;
+
+	const parts: ReactNode[] = [];
+	let lastIndex = 0;
+	let match: RegExpExecArray | null;
+	const re = new RegExp(POLL_EMOJI_REGEX.source, 'g');
+	while ((match = re.exec(text)) !== null) {
+		if (match.index > lastIndex) {
+			const segment = text.slice(lastIndex, match.index);
+			parts.push(
+				textPartClassName ? (
+					<span key={`t-${match.index}`} className={textPartClassName}>
+						{segment}
+					</span>
+				) : (
+					segment
+				)
+			);
+		}
+		const emoji = (
+			<img
+				key={`e-${match.index}`}
+				src={getSrcEmoji(match[1])}
+				alt=""
+				className="w-5 h-5 object-contain inline-block align-middle flex-shrink-0"
+				draggable={false}
+			/>
+		);
+		parts.push(
+			emojiPartClassName ? (
+				<span key={`w-${match.index}`} className={emojiPartClassName}>
+					{emoji}
+				</span>
+			) : (
+				emoji
+			)
+		);
+		lastIndex = match.index + match[0].length;
+	}
+	if (lastIndex < text.length) {
+		const segment = text.slice(lastIndex);
+		parts.push(
+			textPartClassName ? (
+				<span key="t-end" className={textPartClassName}>
+					{segment}
+				</span>
+			) : (
+				segment
+			)
+		);
+	}
+	return <span className={className}>{parts}</span>;
+}
+
+export { renderPollTextWithEmoji };
+
+const POLL_MY_VOTES_KEY = 'mezon_poll_my_votes';
+
+function getMyVoteFromStorage(messageId: string): number[] {
+	try {
+		const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(POLL_MY_VOTES_KEY) : null;
+		if (!raw) return [];
+		const data = JSON.parse(raw) as Record<string, number[]>;
+		return Array.isArray(data[messageId]) ? data[messageId] : [];
+	} catch {
+		return [];
+	}
+}
+
+function setMyVoteToStorage(messageId: string, indices: number[]) {
+	try {
+		const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(POLL_MY_VOTES_KEY) : null;
+		const data = (raw ? JSON.parse(raw) : {}) as Record<string, number[]>;
+		if (indices.length === 0) delete data[messageId];
+		else data[messageId] = indices;
+		localStorage.setItem(POLL_MY_VOTES_KEY, JSON.stringify(data));
+	} catch {
+		// ignore
+	}
+}
 
 export type PollVoter = {
 	displayName: string;
@@ -24,9 +122,7 @@ export type PollVoter = {
 
 export type PollMessageProps = {
 	question: string;
-	questionEmojiId?: string;
 	answers: string[];
-	answerEmojiIds?: string[];
 	duration: string;
 	allowMultipleAnswers: boolean;
 	messageId?: string;
@@ -34,28 +130,35 @@ export type PollMessageProps = {
 	votersByOption?: PollVoter[][];
 };
 
-export const PollMessage = ({
-	question,
-	questionEmojiId,
-	answers,
-	answerEmojiIds,
-	duration,
-	allowMultipleAnswers,
-	messageId,
-	channelId,
-	votersByOption
-}: PollMessageProps) => {
+export const PollMessage = ({ question, answers, duration, allowMultipleAnswers, messageId, channelId, votersByOption }: PollMessageProps) => {
 	const { t, i18n } = useTranslation('message');
 	const dispatch = useAppDispatch();
 	const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
 	const [showResults, setShowResults] = useState(false);
 	const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 	const [detailModalSelectedIndex, setDetailModalSelectedIndex] = useState(0);
+	const [uiVotedIndices, setUiVotedIndices] = useState<number[] | null>(null);
 
 	const pollData = useAppSelector((state) => (messageId ? selectPollByMessageId(state, messageId) : undefined));
 	const isVoting = useAppSelector((state) => selectPollLoadingVote(state, messageId));
 	const isClosing = useAppSelector((state) => selectPollLoadingClose(state, messageId));
+	const isLoadingPollDetail = useAppSelector((state) => selectPollLoadingGet(state, messageId));
 	const currentUserId = useAppSelector(selectCurrentUserId);
+
+	useEffect(() => {
+		if (!messageId || !pollData || !currentUserId) return;
+		const pd = pollData as Record<string, unknown>;
+		const details = pd.voter_details;
+		if (!Array.isArray(details)) return;
+		setUiVotedIndices(null);
+		const myIndices: number[] = [];
+		details.forEach((d: unknown, idx: number) => {
+			const o = d as Record<string, unknown>;
+			const ids = o.user_ids;
+			if (Array.isArray(ids) && ids.includes(currentUserId)) myIndices.push((o.answer_index as number) ?? idx);
+		});
+		setMyVoteToStorage(messageId, myIndices);
+	}, [messageId, pollData, currentUserId]);
 
 	const isClosed = useMemo(() => {
 		const pollDataAny = pollData as Record<string, unknown>;
@@ -79,21 +182,21 @@ export const PollMessage = ({
 	}, [pollData, answers.length]);
 
 	const votedAnswers = useMemo(() => {
+		if (uiVotedIndices !== null) return uiVotedIndices;
 		const pollDataAny = pollData as Record<string, unknown>;
-		if (!pollDataAny?.voter_details || !currentUserId) return [];
-
-		const userVotes: number[] = [];
-		const voterDetails = pollDataAny.voter_details;
-		if (Array.isArray(voterDetails)) {
-			voterDetails.forEach((detail: unknown, index: number) => {
+		if (currentUserId && pollDataAny?.voter_details && Array.isArray(pollDataAny.voter_details)) {
+			const userVotes: number[] = [];
+			pollDataAny.voter_details.forEach((detail: unknown, index: number) => {
 				const detailObj = detail as Record<string, unknown>;
 				if (detailObj.user_ids && Array.isArray(detailObj.user_ids) && detailObj.user_ids.includes(currentUserId)) {
 					userVotes.push((detailObj.answer_index as number) ?? index);
 				}
 			});
+			if (userVotes.length > 0) return userVotes;
 		}
-		return userVotes;
-	}, [pollData, currentUserId]);
+
+		return messageId ? getMyVoteFromStorage(messageId) : [];
+	}, [pollData, currentUserId, uiVotedIndices, messageId]);
 
 	const votersByOptionFromApi = useMemo(() => {
 		const pollDataAny = pollData as Record<string, unknown>;
@@ -104,8 +207,6 @@ export const PollMessage = ({
 
 		const result: PollVoter[][] = Array.from({ length: answers.length }, () => []);
 
-		const state = getStore().getState();
-
 		voterDetails.forEach((detail: unknown) => {
 			const detailObj = detail as Record<string, unknown>;
 			const answerIndex = (detailObj.answer_index as number) ?? 0;
@@ -115,12 +216,23 @@ export const PollMessage = ({
 				const voters: PollVoter[] = [];
 
 				userIds.forEach((userId) => {
+					const state = getStore().getState();
+
 					const member = selectMemberClanByUserId(state, userId);
+
+					const dmProfile = selectMemberDMByUserId(state, userId);
+
 					if (member) {
 						voters.push({
 							displayName: member.clan_nick || member.user?.display_name || member.user?.username || 'Unknown',
 							username: member.user?.username || 'unknown',
 							avatar: member.clan_avatar || member.user?.avatar_url
+						});
+					} else if (dmProfile) {
+						voters.push({
+							displayName: dmProfile.display_name || dmProfile.username || 'Unknown',
+							username: dmProfile.username || 'unknown',
+							avatar: dmProfile.avatar_url
 						});
 					}
 				});
@@ -147,6 +259,13 @@ export const PollMessage = ({
 		if (!match) return duration;
 		const count = Number(match[1]);
 		const unit = match[2].toLowerCase();
+
+		if (i18n.language.startsWith('en')) {
+			if (unit.startsWith('day')) return `${count} day${count === 1 ? '' : 's'}`;
+			if (unit.startsWith('hour')) return `${count} hour${count === 1 ? '' : 's'}`;
+			if (unit.startsWith('minute')) return `${count} minute${count === 1 ? '' : 's'}`;
+		}
+
 		if (unit.startsWith('day')) return t('poll.durationDays', { count });
 		if (unit.startsWith('hour')) return t('poll.durationHours', { count });
 		if (unit.startsWith('minute')) return t('poll.durationMinutes', { count });
@@ -177,14 +296,8 @@ export const PollMessage = ({
 					answer_indices: selectedAnswers
 				})
 			).unwrap();
-
-			await dispatch(
-				getPoll({
-					message_id: messageId,
-					channel_id: channelId
-				})
-			).unwrap();
-
+			setMyVoteToStorage(messageId, selectedAnswers);
+			setUiVotedIndices(selectedAnswers);
 			setSelectedAnswers([]);
 			setShowResults(false);
 		} catch (error) {
@@ -204,14 +317,8 @@ export const PollMessage = ({
 					answer_indices: []
 				})
 			).unwrap();
-
-			await dispatch(
-				getPoll({
-					message_id: messageId,
-					channel_id: channelId
-				})
-			).unwrap();
-
+			setMyVoteToStorage(messageId, []);
+			setUiVotedIndices([]);
 			setSelectedAnswers([]);
 			setShowResults(false);
 		} catch (error) {
@@ -227,21 +334,16 @@ export const PollMessage = ({
 	const openDetailModal = (optionIndex: number) => {
 		setDetailModalSelectedIndex(optionIndex);
 		setIsDetailModalOpen(true);
+		if (messageId && channelId) {
+			dispatch(getPoll({ message_id: messageId, channel_id: channelId }));
+		}
 	};
 
 	return (
 		<div className="block w-full">
 			<div className="max-w-[420px] rounded bg-item-theme p-3 border-theme-primary">
-				{/* Question */}
 				<div className="flex items-center gap-2 mb-1">
-					{questionEmojiId && (
-						<img
-							src={getSrcEmoji(questionEmojiId)}
-							alt={t('poll.selectedEmoji')}
-							className="w-5 h-5 object-contain flex-shrink-0 mt-0.5"
-						/>
-					)}
-					<h3 className="text-[15px] font-semibold text-theme-primary break-all flex-1 min-w-0">{question}</h3>
+					<h3 className="text-[15px] font-semibold text-theme-primary-active break-all flex-1 min-w-0">{question}</h3>
 					{(isClosed || isExpired) && (
 						<span className="px-2 py-0.5 text-xs font-semibold rounded bg-red-500/10 text-red-500 flex-shrink-0">
 							{t('poll.ended', { defaultValue: 'Poll Ended' })}
@@ -264,7 +366,6 @@ export const PollMessage = ({
 						const voteCount = voteCounts[index];
 						const percentage = getPercentage(voteCount);
 						const isVoted = votedAnswers.includes(index);
-						const answerEmoji = answerEmojiIds?.[index];
 
 						return (
 							<div
@@ -279,31 +380,27 @@ export const PollMessage = ({
 								}`}
 							>
 								{shouldShowResults && (
-									<div className="absolute inset-y-0 left-0 rounded-l min-w-0 overflow-hidden" style={{ width: `${percentage}%` }}>
+									<div className="absolute inset-y-0 left-0 rounded-l min-w-0 overflow-hidden " style={{ width: `${percentage}%` }}>
 										<div
-											className="poll-bar-inner absolute inset-0 origin-left scale-x-0 rounded-l bg-blue-700/80"
+											className="poll-bar-inner absolute inset-0 origin-left scale-x-0 rounded-l bg-blue-600"
 											style={{ animationDelay: `${index * 0.2}s` }}
 										/>
 									</div>
 								)}
-								<div className="relative z-10 flex items-center gap-2 min-w-0 flex-1">
-									{answerEmoji && (
-										<img
-											src={getSrcEmoji(answerEmoji)}
-											alt={t('poll.selectedEmoji')}
-											className="w-5 h-5 object-contain flex-shrink-0 mt-0.5"
-										/>
-									)}
+								<div className="relative z-10 flex items-center gap-2 min-w-0 flex-1 justify-center">
 									<span
-										className={`text-sm font-medium ${hasVoted && isVoted ? 'text-theme-primary' : 'text-theme-primary-active'} break-all min-w-0 flex-1 truncate`}
+										className={`text-sm font-medium ${hasVoted && isVoted ? 'text-theme-primary-active' : 'text-theme-primary-active'} break-all min-w-0 flex-1 truncate`}
 									>
-										{answer}
+										{renderPollTextWithEmoji(answer, {
+											textPartClassName: 'poll-option-text ml-1 ',
+											emojiPartClassName: 'poll-option-emoji '
+										})}
 									</span>
 								</div>
 								<div className="relative z-10 flex items-center gap-3 flex-shrink-0 pl-2">
 									{shouldShowResults && (
 										<span
-											className={`poll-percent-text text-xs font-semibold ${isVoted ? 'text-theme-primary' : 'text-theme-primary-active'}`}
+											className={`poll-percent-text text-xs font-semibold ${isVoted ? 'text-theme-primary-active' : 'text-theme-primary-active'}`}
 											style={{ animationDelay: `${index * 0.1 + 0.25}s` }}
 										>
 											{percentage}% {voteCount} {voteCount < 2 ? t('poll.vote') : t('poll.votes')}
@@ -313,12 +410,12 @@ export const PollMessage = ({
 										<div
 											className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 border-[var(--text-theme-primary)]`}
 										>
-											{selectedAnswers.includes(index) && <div className="w-2.5 h-2.5 rounded-full bg-theme-primary" />}
+											{selectedAnswers.includes(index) && <div className="w-2.5 h-2.5 rounded-full bg-blue-500" />}
 										</div>
 									)}
 									{hasVoted && isVoted && (
 										<div className="w-5 h-5 rounded-full bg-theme-primary flex items-center justify-center flex-shrink-0">
-											<svg className="w-3 h-3 text-theme-primary" viewBox="0 0 12 12" fill="none">
+											<svg className="w-3 h-3 text-theme-primary-active" viewBox="0 0 12 12" fill="none">
 												<path
 													d="M2 6L5 9L10 3"
 													stroke="currentColor"
@@ -399,12 +496,12 @@ export const PollMessage = ({
 				onClose={() => setIsDetailModalOpen(false)}
 				question={question}
 				answers={answers}
-				answerEmojiIds={answerEmojiIds}
 				voteCounts={voteCounts}
 				totalVotes={totalVotes}
 				votersByOption={votersByOptionFromApi ?? votersByOption}
 				initialSelectedIndex={detailModalSelectedIndex}
 				votedAnswers={votedAnswers}
+				loading={isLoadingPollDetail}
 			/>
 		</div>
 	);

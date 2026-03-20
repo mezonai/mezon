@@ -88,8 +88,7 @@ import { WINDOW_CONTROLS_FEATURE_KEY, windowControlsReducer } from './windowCont
 const persistedPollsReducer = persistReducer(
 	{
 		key: 'polls',
-		storage,
-		whitelist: ['pollEmojiByMessageId']
+		storage
 	},
 	pollsReducer
 );

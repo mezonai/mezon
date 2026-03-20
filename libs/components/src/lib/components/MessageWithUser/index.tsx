@@ -3,9 +3,9 @@ import type { MessagesEntity, RootState } from '@mezon/store';
 import {
 	getPoll,
 	getStore,
+	pollsActions,
 	selectBanMeInChannel,
 	selectPollByMessageId,
-	selectPollEmojiByMessageId,
 	topicsActions,
 	useAppDispatch,
 	useAppSelector
@@ -81,10 +81,14 @@ export type MessageWithUserProps = {
 const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { message: MessagesEntity; observeIntersectionForLoading?: ObserveFn }) => {
 	const dispatch = useAppDispatch();
 	const pollData = useAppSelector((state: RootState) => selectPollByMessageId(state, message.id));
-	const pollEmoji = useAppSelector((state: RootState) => selectPollEmojiByMessageId(state, message.id));
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLDivElement>(null);
 	const hasFetched = useRef(false);
+
+	useEffect(() => {
+		if (message.code !== TypeMessage.Poll || !message.id || !message.content || pollData) return;
+		dispatch(pollsActions.setPollFromMessageContent({ message_id: message.id, content: message.content }));
+	}, [dispatch, message.code, message.id, message.content, pollData]);
 
 	useEffect(() => {
 		if (pollData || hasFetched.current || !message.channel_id) return;
@@ -116,15 +120,13 @@ const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { messag
 		return <div ref={containerRef} style={{ minHeight: `${placeholderHeight}px` }} />;
 	}
 
-	const answers = pollData.answers?.map((answer) => answer.label || '') || [];
+	const answers = pollData.answers?.map((a) => (typeof a === 'string' ? a : ((a as { label?: string })?.label ?? ''))) ?? [];
 	const duration = pollData.exp ? convertTimestampToTimeRemainingI18n(parseInt(pollData.exp), t) : '';
 
 	return (
 		<PollMessage
 			question={pollData.question || ''}
-			questionEmojiId={pollEmoji?.questionEmojiId}
 			answers={answers}
-			answerEmojiIds={pollEmoji?.answerEmojiIds}
 			duration={duration}
 			allowMultipleAnswers={pollData.type === 1}
 			messageId={message.id}
