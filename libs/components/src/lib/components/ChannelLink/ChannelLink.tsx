@@ -30,6 +30,7 @@ import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import BuzzBadge from '../BuzzBadge';
+import { ChannelIcon } from '../ChannelIcon';
 import type { IChannelLinkPermission } from '../ChannelList/CategorizedChannels';
 import SettingChannel from '../ChannelSetting';
 import EventSchedule from '../EventSchedule';
@@ -86,6 +87,15 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 	const events = useAppSelector((state) => selectEventsByChannelId(state, channel.clan_id ?? '', channel?.channel_id ?? ''));
 	const isChannelMuted = useAppSelector((state) => selectIsChannelMuted(state, clanId ?? '', channel?.channel_id ?? ''));
 
+	const effectiveType = useMemo(
+		() => channel?.type ?? (channel as { channel_type?: number }).channel_type,
+		[channel?.type, (channel as { channel_type?: number }).channel_type]
+	);
+	const isAgeRestricted = channel?.age_restricted === 1;
+
+	const isDmIcon = effectiveType === ChannelType.CHANNEL_TYPE_DM;
+	const isGroupIcon = effectiveType === ChannelType.CHANNEL_TYPE_GROUP;
+
 	const handleOpenCreate = () => {
 		openSettingModal();
 		closeProfileItem();
@@ -132,7 +142,8 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 			navigate(link);
 		}
 		const store = getStore();
-		const isChannelApp = channel.type === ChannelType.CHANNEL_TYPE_APP;
+		const typeForNav = effectiveType ?? channel.type;
+		const isChannelApp = typeForNav === ChannelType.CHANNEL_TYPE_APP;
 		const appIsOpening = selectToCheckAppIsOpening(store.getState(), channel.channel_id as string);
 		if (channel.category_id === FAVORITE_CATEGORY_ID) {
 			dispatch(categoriesActions.setCtrlKFocusChannel({ id: channel?.id, parentId: channel?.parent_id ?? '' }));
@@ -140,7 +151,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 
 		setTurnOffThreadMessage();
 		setStatusMenu(false);
-		if (channel.type !== ChannelType.CHANNEL_TYPE_STREAMING) {
+		if (typeForNav !== ChannelType.CHANNEL_TYPE_STREAMING) {
 			dispatch(
 				channelsActions.setCurrentChannelId({
 					clanId: channel.clan_id as string,
@@ -160,10 +171,11 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 
 	const isShowSettingChannel = isClanOwner || hasAdminPermission || hasClanPermission || hasChannelManagePermission;
 
+	const typeForLogic = effectiveType ?? channel.type;
 	const notVoiceOrAppOrStreamChannel =
-		channel.type !== ChannelType.CHANNEL_TYPE_APP &&
-		channel.type !== ChannelType.CHANNEL_TYPE_STREAMING &&
-		channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE;
+		typeForLogic !== ChannelType.CHANNEL_TYPE_APP &&
+		typeForLogic !== ChannelType.CHANNEL_TYPE_STREAMING &&
+		typeForLogic !== ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 	const showWhiteDot = isUnReadChannel && !isActive && notVoiceOrAppOrStreamChannel;
 	const hightLightTextChannel = (isActive || isUnReadChannel) && notVoiceOrAppOrStreamChannel;
 
@@ -221,21 +233,23 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 						{state === 'inactiveUnread' && <div className="absolute left-0 -ml-2 w-1 h-2 bg-white rounded-r-full"></div>}
 
 						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
-							{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
-								<Icons.HashtagWarning className="w-5 h-5 " />
+							{isDmIcon && <Icons.IconChat className="w-5 h-5" />}
+							{isGroupIcon && <Icons.People className="w-5 h-5" />}
+							{effectiveType === ChannelType.CHANNEL_TYPE_CHANNEL && (
+								<ChannelIcon
+									type={ChannelType.CHANNEL_TYPE_CHANNEL}
+									isPrivate={isPrivate === ChannelStatusEnum.isPrivate}
+									isAgeRestricted={isAgeRestricted}
+									size="w-5 h-5"
+									data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')}
+								/>
 							)}
-							{isPrivate === ChannelStatusEnum.isPrivate &&
-								channel.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
-								!isAgeRestrictedChannel && <Icons.HashtagLocked defaultSize="w-5 h-5" />}
-							{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && <Icons.Speaker defaultSize="w-5 h-5 " />}
-							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !isAgeRestrictedChannel && (
-								<Icons.Hashtag defaultSize="w-5 h-5 " data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')} />
-							)}
-							{channel.type === ChannelType.CHANNEL_TYPE_STREAMING && (
+							{effectiveType === ChannelType.CHANNEL_TYPE_MEZON_VOICE && <Icons.Speaker defaultSize="w-5 h-5 " />}
+							{effectiveType === ChannelType.CHANNEL_TYPE_STREAMING && (
 								<Icons.Stream defaultSize="w-5 h-5 " data-e2e={generateE2eId('clan_page.channel_list.item.icon.stream')} />
 							)}
-							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_APP && <Icons.AppChannelIcon className={'w-5 h-5'} />}
-							{isPrivate && channel.type === ChannelType.CHANNEL_TYPE_APP ? (
+							{isPrivate !== 1 && effectiveType === ChannelType.CHANNEL_TYPE_APP && <Icons.AppChannelIcon className={'w-5 h-5'} />}
+							{isPrivate && effectiveType === ChannelType.CHANNEL_TYPE_APP ? (
 								<Icons.PrivateAppChannelIcon className={'w-5 h-5'} />
 							) : null}
 						</div>

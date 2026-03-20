@@ -1,4 +1,5 @@
-import { SearchItemProps, TypeSearch } from '@mezon/utils';
+import type { SearchItemProps } from '@mezon/utils';
+import { TypeSearch } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useContext, useMemo } from 'react';
 import { SuggestItem } from '../../components';
@@ -35,17 +36,18 @@ const ListSearchModal = (props: ListSearchModalProps) => {
 				>
 					{isChannel ? (
 						<SuggestItem
-							display={item?.prioritizeName}
+							display={item?.prioritizeName ?? item?.name}
 							symbol={item.icon}
 							subText={item.subText}
 							channelId={item.channelId}
-							valueHightLight={searchText}
+							valueHightLight={searchText.startsWith('#') ? searchText.slice(1) : searchText}
 							subTextStyle="uppercase"
 							isOpenSearchModal
 							emojiId=""
 							channel={item}
 							count={item.count_messsage_unread}
 							isUnread={isUnread}
+							ageRestricted={item?.age_restricted}
 						/>
 					) : (
 						<SuggestItem

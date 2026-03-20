@@ -17,11 +17,12 @@ export type ChannelSettingItemProps = {
 	stateMenu: boolean;
 	onCloseModal: () => void;
 	displayChannelLabel?: string;
+	displayAgeRestricted?: number;
 	getTabTranslation?: (tabKey: string) => string;
 };
 
 const ChannelSettingItem = (props: ChannelSettingItemProps) => {
-	const { onItemClick, channel, stateMenu, stateClose, displayChannelLabel, getTabTranslation } = props;
+	const { onItemClick, channel, stateMenu, stateClose, displayChannelLabel, displayAgeRestricted, getTabTranslation } = props;
 	const { t } = useTranslation('channelSetting');
 	const isPrivate = channel.channel_private;
 	const [selectedButton, setSelectedButton] = useState<string | null>('Overview');
@@ -52,6 +53,8 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 		}
 	};
 
+	const isAgeRestrictedChannel = (displayAgeRestricted ?? currentChannel?.age_restricted) === 1;
+
 	const renderIcon = () => {
 		if (channel.type === ChannelType.CHANNEL_TYPE_THREAD) {
 			if (isPrivate) {
@@ -61,6 +64,9 @@ const ChannelSettingItem = (props: ChannelSettingItemProps) => {
 		}
 
 		if (channel.type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+			if (isAgeRestrictedChannel) {
+				return <Icons.HashtagWarning className="w-5 h-5 -mt-1 min-w-5 block" />;
+			}
 			if (isPrivate) {
 				return <Icons.HashtagLocked defaultSize="w-5 h-5 -mt-1 min-w-5" />;
 			}

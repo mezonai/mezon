@@ -26,6 +26,7 @@ type SuggestItemProps = {
 	count?: number;
 	isUnread?: boolean;
 	color?: string;
+	ageRestricted?: number;
 };
 
 const SuggestItem = ({
@@ -43,7 +44,8 @@ const SuggestItem = ({
 	channel,
 	count,
 	isUnread,
-	color
+	color,
+	ageRestricted
 }: SuggestItemProps) => {
 	const allChannels = useSelector(selectAllChannelsByUser);
 	const getChannel = allChannels.find((channel) => {
@@ -51,6 +53,11 @@ const SuggestItem = ({
 	});
 
 	const [specificChannel, setSpecificChannel] = useState<ChannelsEntity | HashtagDm | null>(null);
+	const channelLabel =
+		display ??
+		(channel as SearchItemProps)?.prioritizeName ??
+		(channel as SearchItemProps)?.name ??
+		(getChannel as { channel_label?: string })?.channel_label;
 	const numberMembersVoice = useAppSelector((state) => selectNumberMemberVoiceChannel(state, channelId as string, getChannel?.clan_id as string));
 	const checkVoiceStatus = useMemo(() => {
 		if (channelId !== undefined && numberMembersVoice && specificChannel?.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE) {
@@ -59,6 +66,9 @@ const SuggestItem = ({
 		return false;
 	}, [channelId, numberMembersVoice, specificChannel?.type]);
 	const channelIcon = useMemo(() => {
+		if (ageRestricted === 1 && specificChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL) {
+			return <Icons.HashtagWarning className="w-5 h-5 min-w-5 min-h-5 flex-shrink-0" />;
+		}
 		if (!specificChannel) return null;
 
 		const { channel_private, type } = specificChannel;
@@ -97,7 +107,7 @@ const SuggestItem = ({
 		}
 
 		return null;
-	}, [specificChannel]);
+	}, [specificChannel, ageRestricted]);
 
 	useEffect(() => {
 		if (channel) {
@@ -138,13 +148,13 @@ const SuggestItem = ({
 				)}
 				{channelIcon}
 
-				{display && (
-					<span className={`text-[15px] font-thin text-theme-primary one-line flex items-center`}>
+				{channelLabel && (
+					<span className={`text-[15px] font-thin text-theme-primary one-line flex items-center min-w-0 flex-1`}>
 						<span
 							className={`${isUnread || (count && count > 0) ? 'text-theme-primary-active font-semibold' : 'font-medium text-theme-primary '}`}
 							style={{ color }}
 						>
-							{isHightLight ? HighlightMatchBold(display ?? '', valueHightLight ?? '') : display}
+							{isHightLight ? HighlightMatchBold(channelLabel, valueHightLight ?? '') : channelLabel}
 						</span>
 						{Number(count) > 0 && (
 							<span className="h-8 px-2 bg-red-500 rounded-sm font-semibold text-white ml-2">

@@ -224,6 +224,8 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 					lastMessage={channelParent?.last_sent_message}
 					isStream={isStreamChannel}
 					isApp={isAppChannel}
+					channelType={channelParent?.channel_type}
+					ageRestricted={(channelParent as { age_restricted?: number })?.age_restricted}
 				/>
 				{!isVoiceChannel && !searchFilter && (
 					<div
@@ -255,6 +257,8 @@ const RenderChannelAndThread = ({ channelParent, clanId, currentPage, pageSize, 
 								isVoice={thread?.channel_type === ChannelType.CHANNEL_TYPE_MEZON_VOICE}
 								isStream={thread?.channel_type === ChannelType.CHANNEL_TYPE_STREAMING}
 								isApp={thread?.channel_type === ChannelType.CHANNEL_TYPE_APP}
+								channelType={thread?.channel_type}
+								ageRestricted={(thread as { age_restricted?: number })?.age_restricted}
 							/>
 						))
 					) : (
@@ -282,7 +286,9 @@ const ItemInfor = ({
 	messageCount,
 	lastMessage,
 	isStream,
-	isApp
+	isApp,
+	channelType,
+	ageRestricted
 }: {
 	isThread?: boolean;
 	label: string;
@@ -296,9 +302,18 @@ const ItemInfor = ({
 	lastMessage?: ApiChannelMessageHeader;
 	isStream?: boolean;
 	isApp?: boolean;
+	channelType?: number;
+	ageRestricted?: number;
 }) => {
 	const { t } = useTranslation('channelSetting');
 	const creatorChannel = useAppSelector((state) => selectMemberClanByUserId(state, creatorId));
+
+	const effectiveChannelType = channelType;
+	const effectiveAgeRestricted = ageRestricted;
+
+	const isDmIcon = effectiveChannelType === ChannelType.CHANNEL_TYPE_DM;
+	const isGroupIcon = effectiveChannelType === ChannelType.CHANNEL_TYPE_GROUP;
+
 	const handleCopyChannelId = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		e.stopPropagation();
 		e.preventDefault();
@@ -341,6 +356,7 @@ const ItemInfor = ({
 
 	const creatorDisplayName = creatorChannel?.clan_nick || creatorChannel?.user?.display_name || creatorChannel?.user?.username || '';
 	const creatorAvatar = creatorChannel?.clan_avatar || creatorChannel?.user?.avatar_url || '';
+	const isPlainChannel = !isVoice && !isStream && !isApp;
 
 	return (
 		<div
@@ -352,9 +368,15 @@ const ItemInfor = ({
 				data-e2e={generateE2eId('clan_page.channel_management.channel_item')}
 			>
 				<div className="h-6 w-6">
-					{!isVoice &&
-						!isStream &&
-						!isApp &&
+					{isPlainChannel && isDmIcon && <Icons.IconChat className="w-5 h-5" />}
+					{isPlainChannel && isGroupIcon && <Icons.People className="w-5 h-5" />}
+					{isPlainChannel && effectiveChannelType === ChannelType.CHANNEL_TYPE_CHANNEL && effectiveAgeRestricted === 1 && (
+						<Icons.HashtagWarning className="w-5 h-5" />
+					)}
+					{isPlainChannel &&
+						!isDmIcon &&
+						!isGroupIcon &&
+						!(effectiveChannelType === ChannelType.CHANNEL_TYPE_CHANNEL && effectiveAgeRestricted === 1) &&
 						(isThread ? (
 							privateChannel ? (
 								<Icons.ThreadIconLocker className="w-5 h-5 " />

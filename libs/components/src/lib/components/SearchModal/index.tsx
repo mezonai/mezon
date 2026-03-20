@@ -5,8 +5,10 @@ import {
 	categoriesActions,
 	channelsActions,
 	directActions,
+	getStore,
 	listChannelsByUserActions,
 	messagesActions,
+	selectAllChannels,
 	selectAllChannelsByUser,
 	selectAllDirectMessages,
 	selectAllUsesInAllClansEntities,
@@ -86,9 +88,12 @@ function SearchModal({ onClose }: SearchModalProps) {
 		return addPropsIntoSearchList;
 	}, [accountId, dmGroupChatList, allUsesInAllClansEntities, allClanUsersEntities]);
 	const listChannelSearch = useMemo(() => {
+		const currentClanChannels = selectAllChannels(getStore().getState());
 		const list: SearchItemProps[] = [];
-		listChannels.map((item) => {
+		listChannels.forEach((item) => {
 			if (item) {
+				const channelInCurrentClan = currentClanChannels.find((ch) => ch.channel_id === item.channel_id);
+				const ageRestricted = channelInCurrentClan?.age_restricted ?? (item as { age_restricted?: number })?.age_restricted ?? 0;
 				list.push({
 					id: item?.channel_id ?? '',
 					name: item?.channel_label ?? '',
@@ -103,7 +108,8 @@ function SearchModal({ onClose }: SearchModalProps) {
 					type: item?.type,
 					parent_id: item?.parent_id,
 					count_messsage_unread: item?.count_mess_unread,
-					lastSeenTimeStamp: Number(item?.last_seen_message?.timestamp_seconds || 0)
+					lastSeenTimeStamp: Number(item?.last_seen_message?.timestamp_seconds || 0),
+					age_restricted: ageRestricted
 				});
 			}
 		});

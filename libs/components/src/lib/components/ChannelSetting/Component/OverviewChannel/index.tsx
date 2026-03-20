@@ -27,10 +27,11 @@ import { useDebouncedCallback } from 'use-debounce';
 export type OverviewChannelProps = {
 	channel: IChannel;
 	onDisplayLabelChange?: (label: string) => void;
+	onDisplayAgeRestrictedChange?: (value: number) => void;
 };
 
 const OverviewChannel = (props: OverviewChannelProps) => {
-	const { channel, onDisplayLabelChange } = props;
+	const { channel, onDisplayLabelChange, onDisplayAgeRestrictedChange } = props;
 	const { t } = useTranslation('channelSetting');
 	const appearanceTheme = useSelector(selectTheme);
 
@@ -74,11 +75,21 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 		setIsAgeRestricted(currentChannel.age_restricted);
 		setE2eeInit(currentChannel.e2ee);
 		setIsE2ee(currentChannel.e2ee);
-	}, [currentChannel?.channel_id, currentChannel?.channel_label, currentChannel?.topic, currentChannel?.age_restricted, currentChannel?.e2ee]);
+		onDisplayAgeRestrictedChange?.(currentChannel.age_restricted ?? 0);
+	}, [
+		currentChannel?.channel_id,
+		currentChannel?.channel_label,
+		currentChannel?.topic,
+		currentChannel?.age_restricted,
+		currentChannel?.e2ee,
+		onDisplayAgeRestrictedChange
+	]);
 
 	const handleCheckboxAgeRestricted = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const checked = event.target.checked;
-		setIsAgeRestricted(checked ? 1 : 0);
+		const value = checked ? 1 : 0;
+		setIsAgeRestricted(value);
+		onDisplayAgeRestrictedChange?.(value);
 	};
 
 	const handleCheckboxE2ee = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,7 +193,8 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 		setIsAgeRestricted(ageRestrictedInit);
 		setIsE2ee(e2eeInit);
 		onDisplayLabelChange?.(channelLabelInit);
-	}, [topicInit, channelLabelInit, appUrlInit, ageRestrictedInit, e2eeInit, onDisplayLabelChange]);
+		onDisplayAgeRestrictedChange?.(ageRestrictedInit ?? 0);
+	}, [topicInit, channelLabelInit, appUrlInit, ageRestrictedInit, e2eeInit, onDisplayLabelChange, onDisplayAgeRestrictedChange]);
 
 	const handleSave = useCallback(async () => {
 		const updatedAppUrl = appUrl === appUrlInit ? '' : appUrl;
@@ -219,7 +231,8 @@ const OverviewChannel = (props: OverviewChannelProps) => {
 			age_restricted: isAgeRestricted,
 			e2ee: isE2ee,
 			parent_id: currentChannel?.parent_id,
-			channel_private: currentChannel?.channel_private
+			channel_private: currentChannel?.channel_private,
+			...(currentChannel?.type !== undefined && { type: currentChannel.type })
 		} as IUpdateChannelRequest;
 
 		await dispatch(channelsActions.updateChannel(updateChannel));
