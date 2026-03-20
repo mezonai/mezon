@@ -1,0 +1,59 @@
+{
+    "directMessages": "MENSAJES DIRECTOS",
+    "createDM": "Crear DM",
+    "friends": "Amigos",
+    "yourMessages": "Tus mensajes",
+    "selectConversation": "Selecciona una conversación para empezar a enviar mensajes",
+    "createMessageGroup": {
+        "selectFriends": "Seleccionar amigos",
+        "canAddMoreFriends": "Puedes añadir {{count}} amigos más.",
+        "searchPlaceholder": "Escribe el nombre de usuario de un amigo",
+        "addToGroupChat": "Añadir al chat grupal",
+        "createDMOrGroupChat": "Crear DM o chat grupal",
+        "createDM": "Crear DM",
+        "createGroupChat": "Crear chat grupal",
+        "noFriendsFound": "No se encontraron amigos que no estén ya en este DM.",
+        "creating": "Creando..."
+    },
+    "editGroup": {
+        "title": "Editar grupo",
+        "uploadImageText": "Haz clic para subir una imagen",
+        "removeAvatar": "Eliminar avatar",
+        "groupNameLabel": "Nombre del grupo",
+        "groupNamePlaceholder": "Introduce el nombre del grupo",
+        "validationError": "Introduce un nombre de grupo válido (solo palabras, números, _ o -).",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "saving": "Guardando..."
+    },
+    "contextMenu": {
+        "editGroup": "Editar grupo",
+        "addFriend": "Añadir amigo",
+        "leaveGroup": "Salir del grupo",
+        "closeDM": "Cerrar DM",
+        "markAsRead": "Marcar como leído",
+        "invitePeople": "Invitar personas",
+        "hideConversation": "Ocultar conversación",
+        "profile": "Perfil",
+        "message": "Mensaje",
+        "removeFriend": "Eliminar amigo",
+        "block": "Bloquear",
+        "unblock": "Desbloquear",
+        "removeFromGroup": "Eliminar del grupo",
+        "shareContact": "Compartir este contacto",
+        "mute": "Silenciar",
+        "unmute": "Desactivar silencio",
+        "for15Minutes": "Durante 15 minutos",
+        "for1Hour": "Durante 1 hora",
+        "for3Hours": "Durante 3 horas",
+        "for8Hours": "Durante 8 horas",
+        "for24Hours": "Durante 24 horas",
+        "untilTurnBackOn": "Hasta que vuelva a encenderlo",
+        "mutedUntil": "Silenciado hasta {{time}}"
+    },
+    "remove": {
+        "content": "¡Esta conversación ya no está disponible!",
+        "title": "Chat no disponible",
+        "button": "Confirmar"
+    }
+}

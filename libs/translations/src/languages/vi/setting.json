@@ -85,7 +85,8 @@
 		"description": "Chọn ngôn ngữ.",
 		"english": "English",
 		"vietnamese": "Tiếng Việt",
-		"russian": "Русский"
+		"russian": "Русский",
+		"spanish": "Español"
 	},
 	"voice": {
 		"title": "Giọng nói",

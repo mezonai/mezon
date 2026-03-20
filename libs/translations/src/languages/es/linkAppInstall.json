@@ -1,0 +1,11 @@
+{
+  "description": "Una aplicación externa",
+  "subDescription": "quiere acceder a tu cuenta de Mezon",
+  "addToClan": "Añadir al clán",
+  "invite": "Autorizar",
+  "back": "Atrás",
+  "successInstall": "Aplicación añadida al clan con éxito",
+  "errorInstall": "Error al añadir la aplicación al clan",
+  "selectClan": "Buscar clán",
+  "placeholder": "Selecciona un clán para invitar a tu bot/aplicación"
+}

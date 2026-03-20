@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import enTranslations from './languages/en/index';
+import esTranslations from './languages/es/index';
 import ruTranslations from './languages/ru/index';
 import viTranslations from './languages/vi/index';
 
@@ -12,7 +13,7 @@ const timezoneDetector = {
 	lookup() {
 		const storedLang = localStorage.getItem('i18nextLng');
 
-		if (storedLang && (storedLang === 'vi' || storedLang === 'en' || storedLang === 'ru')) {
+		if (storedLang && (storedLang === 'vi' || storedLang === 'en' || storedLang === 'ru' || storedLang === 'es')) {
 			return undefined;
 		}
 
@@ -29,12 +30,15 @@ const timezoneDetector = {
 			if (languageCode.startsWith('ru')) {
 				return 'ru';
 			}
+			if (languageCode.startsWith('es')) {
+				return 'es';
+			}
 		}
 
 		return undefined;
 	},
 	cacheUserLanguage(lng: string) {
-		if (lng && (lng === 'vi' || lng === 'en' || lng === 'ru')) {
+		if (lng && (lng === 'vi' || lng === 'en' || lng === 'ru' || lng === 'es')) {
 			localStorage.setItem('i18nextLng', lng);
 		}
 	}
@@ -48,11 +52,12 @@ i18n.use(languageDetector)
 	.init({
 		defaultNS,
 		fallbackLng: 'en',
-		supportedLngs: ['en', 'vi', 'ru'],
+		supportedLngs: ['en', 'vi', 'ru', 'es'],
 		resources: {
 			en: enTranslations,
 			vi: viTranslations,
-			ru: ruTranslations
+			ru: ruTranslations,
+			es: esTranslations
 		},
 		detection: {
 			order: ['timezone', 'localStorage', 'navigator', 'htmlTag'],

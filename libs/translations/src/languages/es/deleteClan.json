@@ -1,0 +1,15 @@
+{
+  "deleteClanModal": {
+    "title": "Eliminar clan",
+    "description": "Por favor confirma si deseas eliminar {{currentClan}}? Esta acción no se puede deshacer.",
+    "confirm": "Sí",
+    "cancel": "No",
+    "titleLeaveClan": "Abandonar clan",
+    "descriptionLeaveClan": "Por favor confirma si deseas abandonar {{currentClan}}? No podrás volver a unirte a este clan a menos que seas re-invitado.",
+    "error": "Ocurrió un error al intentar eliminar/abandonar el clan"
+  },
+  "confirmMessage": "Por favor confirma si deseas eliminar este clan? Esta acción no se puede deshacer.",
+  "enterClanName": "Introduce el nombre del clan",
+  "incorrectName": "No has introducido el nombre del clan correctamente",
+  "cancel": "Cancelar"
+}

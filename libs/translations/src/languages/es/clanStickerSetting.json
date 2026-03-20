@@ -1,0 +1,43 @@
+{
+  "addReaction": "Añadir reacción",
+  "titlebtn": {
+    "upload": "Subir pegatina",
+    "delete": "Eliminar"
+  },
+  "modal": {
+    "uploadAFile": "Cargar un archivo",
+    "fileShouldBeAPNGPNGOrGIF256KBMax": "El archivo debe ser PNG o GIF, 512 KB máximo",
+    "preview": "Vista previa",
+    "file": "Archivo",
+    "thisCannotBeEdited": "No se puede editar",
+    "browse": "Buscar",
+    "chooseAFile": "Seleccionar un archivo",
+    "stickerName": "Nombre de la pegatina",
+    "exCatHug": "Ej: cat_hug",
+    "thisIsForSale": "Está a la venta",
+    "neverMind": "Olvídalo",
+    "characters": "El nombre debe tener entre 3 y 64 caracteres"
+  },
+  "content": {
+    "description": "Añade hasta 250 pegatinas personalizadas que cualquiera pueda usar en este clan.",
+    "requirements": "Requisitos de carga",
+    "reqType": "•  Puede ser estática (PNG) o animada (APNG, GIF).",
+    "reqDim": "•  Debe medir exactamente 320 × 320 píxeles.",
+    "reqSize": "•  No mayor a 512 KB.",
+    "available": "FALTAN {{left}} LUGARES DE PEGATINAS"
+  },
+  "toast": {
+    "errorUpdating": "Error al actualizar",
+    "errorSizeLimit": "Límite de tamaño de imagen superado 512 KB",
+    "validateName": "La longitud debe ser entre {{min}} y {{max}} caracteres. Sólo se permiten letras, números, _ y -."
+  },
+  "empty": {
+    "tip": "SUGERENCIA",
+    "voiceSticker": {
+      "title": "No se ha encontrado efecto de sonido"
+    },
+    "sticker": {
+      "title": "No se ha encontrado pegatina"
+    }
+  }
+}

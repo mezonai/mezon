@@ -1,0 +1,25 @@
+{
+  "inbox": "Bandeja de entrada",
+  "tabs": {
+    "forYou": "Para ti",
+    "messages": "Mensajes",
+    "mentions": "Menciones",
+    "topics": "Temas"
+  },
+  "empty": {
+    "forYou": {
+      "title": "Nada aquí todavía",
+      "description": "Vuelve para recibir notificaciones sobre eventos, transmisiones y más."
+    },
+    "messages": {
+      "title": "¡Estás al día!",
+      "protip": "Protip:",
+      "description": "Abre la Bandeja de entrada pulsando CTRL+I, y marca tu mensaje principal como leído con CTRL+Shift+E."
+    },
+    "mentions": {
+      "title": "¡Has visto todo!",
+      "protip": "Protip:",
+      "description": "Cada vez que alguien te mencione se guardará aquí durante 7 días."
+    }
+  }
+}

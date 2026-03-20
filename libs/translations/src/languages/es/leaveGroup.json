@@ -1,0 +1,7 @@
+{
+    "title": "Salir de '{{groupName}}'",
+    "confirmMessage": "Por favor confirma si deseas salir de {{groupName}}. No podrás volver a unirte a este grupo a menos que te re‑invites.",
+    "leaveWithoutNotifying": "Salir sin notificar a los demás miembros",
+    "cancel": "Cancelar",
+    "leaveGroup": "Salir del grupo"
+}

@@ -1,0 +1,35 @@
+{
+    "title": {
+        "placeholder": "Título del lienzo"
+    },
+    "editor": {
+        "placeholder": "Empieza a escribir…",
+        "uploadingImage": "Cargando imagen…"
+    },
+    "actions": {
+        "save": "Guardar",
+        "saving": "Guardando…",
+        "discardChanges": "Descartar cambios"
+    },
+    "error": {
+        "title": "Error"
+    },
+    "toolbar": {
+        "blockFormat": "Formato de bloque",
+        "addLink": "Añadir enlace",
+        "removeLink": "Eliminar enlace",
+        "codeBlock": "Bloque de código",
+        "cancel": "Cancelar",
+        "apply": "Aplicar"
+    },
+    "blocks": {
+        "paragraph": "Párrafo",
+        "h1": "Encabezado H1 (gran)",
+        "h2": "Encabezado H2 (mediano)",
+        "h3": "Encabezado H3 (pequeño)",
+        "checkedList": "Lista con casillas",
+        "orderedList": "Lista numerada",
+        "bulletedList": "Lista con viñetas",
+        "blockquote": "Cita"
+    }
+}

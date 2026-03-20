@@ -1,0 +1,18 @@
+{
+  "titledeleteRole": {
+    "title": "Eliminar rol",
+    "message": "Por favor, confirma si deseas eliminar este rol. Esta acción no se puede deshacer.",
+    "confirm": "Eliminar",
+    "cancel": "Cancelar"
+  },
+  "common": {
+    "areYouSure": "¿Estás seguro?",
+    "cannotUndo": "Esta acción no se puede deshacer",
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "remove": "Quitar",
+    "yes": "Sí",
+    "no": "No"
+  }
+}

@@ -1,0 +1,31 @@
+{
+    "muteClan": "Al silenciar un clan, se evitan los indicadores de mensajes sin leer y las notificaciones a menos que te mencionen",
+    "notifySettingOption": {
+        "title": "Configuración de notificaciones de clan",
+        "allMessage": "Todos los mensajes",
+        "onlyMentions": "Solo @mención",
+        "nothing": "Nada"
+    },
+    "suppressOption": {
+        "suppressEveryone": "Suprimir @everyone y @here",
+        "suppressAllRole": "Suprimir todas las @mention de rol",
+        "suppressHighlights": "Suprimir destacados",
+        "subText": "Los destacados ofrecen actualizaciones ocasionales cuando tus amigos están charlando en el clan y más."
+    },
+    "muteEventOptions": {
+        "muteNewEvents": "Silenciar nuevos eventos",
+        "mobilePushNotifications": "Notificaciones push móviles"
+    },
+    "notificationOverrides": {
+        "title": "Sobrescribir notificaciones",
+        "addChannelsAllCategory": "Añadir una categoría de todos los canales"
+    },
+    "clanNotificationSettingDetail": {
+        "muteChannelSubText": "No recibirás notificaciones de los canales silenciados, y aparecerán en tu lista de canales. Esta configuración se aplica en todos tus dispositivos.",
+        "youHaveMuted": "Has silenciado este canal hasta"
+    },
+    "clanNotificationBS": {
+        "title": "Silenciar este clan"
+    },
+    "resetOverrides": "Restablecer sobrescritura"
+}

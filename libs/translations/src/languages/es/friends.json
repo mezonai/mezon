@@ -1,0 +1,35 @@
+{
+  "friendRequest": {
+    "title": "Solicitudes de amistad",
+    "received": "Recibidas",
+    "sent": "Enviadas",
+    "emptyReceived": {
+      "title": "No hay solicitudes de amistad entrantes",
+      "description": "Aquí verás todas las solicitudes de amistad que la gente envía a ti."
+    },
+    "emptySent": {
+      "title": "No hay solicitudes de amistad salientes",
+      "description": "Aquí verás todas las solicitudes de amistad que has enviado a otros."
+    }
+  },
+  "addFriend": {
+    "incomingFriendRequest": "Solicitud de amistad entrante",
+    "findYourFriend": "Busca a tus amigos",
+    "addByUserName": "Añadir por nombre de usuario o número de teléfono",
+    "addByUsername": "Añadir por {{username}}",
+    "searchUsernamePlaceholder": "Introduce un nombre de usuario o número de teléfono",
+    "whoYouWantToAddFriend": "¿A quién te gustaría añadir como amigo?",
+    "byTheWay": "Por cierto, tu nombre de usuario es",
+    "sendRequestButton": "Enviar solicitud de amistad",
+    "addFriendToast": "Solicitud de amistad enviada"
+  },
+  "friends": "Amigos",
+  "noFriendsResultsFound": "No se encontraron resultados de amigos",
+  "toast": {
+    "sendAddFriendSuccess": "¡Solicitud de amistad enviada con éxito!",
+    "acceptAddFriendSuccess": "¡Aceptar solicitud de amistad!",
+    "sendAddFriendFail": "Hm, no funcionó. Comprueba que el nombre de usuario sea correcto.",
+    "somethingWentWrong": "Algo salió mal"
+  },
+  "you": "tú"
+}

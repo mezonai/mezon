@@ -1,0 +1,10 @@
+{
+    "addReaction": "Añadir reacción",
+    "title": "Transferir la propiedad del clan",
+    "description": "Esto transferirá la propiedad de {{clanName}} a {{memberName}}",
+    "confirmation": "Reconozco que al transferir la propiedad de este clan a {{memberName}}, le pertenece oficialmente.",
+    "buttons": {
+        "transfer": "Transferir la propiedad",
+        "cancel": "Cancelar"
+    }
+}

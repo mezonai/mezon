@@ -1,0 +1,14 @@
+{
+  "title": "Canal con restricción de edad",
+  "description": "Este canal contiene contenido para adultos marcado como restringido por edad. ¿Deseas continuar?",
+  "continue": "Continuar",
+  "nope": "No",
+  "confirmBirthdayTitle": "Por favor confirma tu fecha de nacimiento",
+  "confirmBirthdayMessage": "Para mantener seguros a nuestros usuarios, necesitamos verificar tu edad. Solo te preguntaremos esto una vez.",
+  "submit": "Enviar",
+  "ageRestrictedForm": {
+    "title": "Por favor confirma tu fecha de nacimiento",
+    "description": "Para mantener seguros a nuestros usuarios, necesitamos verificar tu edad. Solo te preguntaremos esto una vez.",
+    "submit": "Enviar"
+  }
+}
