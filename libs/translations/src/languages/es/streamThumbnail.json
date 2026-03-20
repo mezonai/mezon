@@ -1,0 +1,50 @@
+{
+    "title": "Miniatura de la transmisión",
+    "uploadThumbnail": "Subir miniatura",
+    "currentThumbnail": "Miniatura actual",
+    "requirementsTitle": "Requisitos",
+    "buttons": {
+        "change": "Cambiar",
+        "remove": "Eliminar",
+        "selectFile": "Seleccionar archivo",
+        "uploading": "Subiendo...",
+        "cancel": "Cancelar",
+        "confirmUpload": "Confirmar subida",
+        "removing": "Eliminando...",
+        "removeThumbnail": "Eliminar miniatura"
+    },
+    "upload": {
+        "title": "Sube tu miniatura",
+        "description": "Haz clic para buscar o arrastra y suelta tu imagen"
+    },
+    "confirmModal": {
+        "uploadTitle": "Confirmar subida",
+        "uploadDescription": "¿Quieres usar esta imagen como miniatura de tu transmisión?",
+        "uploadMessage": "Esta miniatura se mostrará cuando tu transmisión esté fuera de línea. Todos los miembros verán la actualización inmediatamente.",
+        "removeTitle": "Eliminar miniatura",
+        "removeQuestion": "¿Estás seguro?",
+        "removeMessage": "Esto eliminará la miniatura de tu transmisión. En su lugar se mostrará la pantalla de inicio por defecto cuando la transmisión esté fuera de línea.",
+        "removeWarning": "Esta acción no se puede deshacer."
+    },
+    "requirements": {
+        "format": {
+            "title": "Formato",
+            "value": "JPG, PNG, GIF, WEBP"
+        },
+        "resolution": {
+            "title": "Resolución",
+            "value": "1920 x 1080 recomendado"
+        },
+        "sizeLimit": {
+            "title": "Límite de tamaño",
+            "value": "Máximo 10 MB"
+        }
+    },
+    "errors": {
+        "channelNotFound": "Canal no encontrado",
+        "clientNotReady": "Cliente/sesión no listo",
+        "uploadFailed": "Error al subir la miniatura. Por favor, inténtalo de nuevo.",
+        "removeFailed": "Error al eliminar la miniatura. Por favor, inténtalo de nuevo."
+    },
+    "saved": "Miniatura guardada"
+}

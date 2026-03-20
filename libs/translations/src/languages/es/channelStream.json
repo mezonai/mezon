@@ -1,0 +1,10 @@
+{
+    "streamThumbnail": "Miniatura del stream",
+    "videoError": "No se puede reproducir el vídeo. Inténtalo de nuevo más tarde.",
+    "everyoneWaiting": "Todos están esperando a que entren.",
+    "noOneInStream": "Nadie está actualmente en el stream.",
+    "joinStream": "Unirse al stream",
+    "noStreamToday": "No hay stream hoy",
+    "hideMembers": "Ocultar miembros",
+    "showMembers": "Mostrar miembros"
+}

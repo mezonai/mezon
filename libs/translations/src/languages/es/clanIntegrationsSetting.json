@@ -1,0 +1,64 @@
+{
+    "addReaction": "Añadir reacción",
+    "integration": {
+        "channelWebhooks": "Webhooks",
+        "clanWebhooks": "Webhooks del clan",
+        "automatedMessage": "Mensajes y actualizaciones automáticas",
+        "description": "Personaliza tu clan con integraciones.",
+        "learnMore": "Aprende más sobre la gestión de integraciones."
+    },
+    "webhooks": {
+        "description": "Los Webhooks son una forma sencilla de recibir mensajes automáticos y actualizaciones de datos enviados al canal de texto del clan mediante magia de Internet.",
+        "learnMore": "Aprende más",
+        "try": "o prueba",
+        "buildOne": "constrúyelo tú mismo."
+    },
+    "clanWebhooks": {
+        "description": "Los Webhooks del clan son una forma sencilla de publicar mensajes desde otras aplicaciones y sitios web para cada usuario de Mezon usando tecnología de Internet.",
+        "tips": "Consejo: Si consideras que el token en tu URL está comprometido o desactualizado, restablécelo y copia la nueva URL."
+    },
+    "webhooksEdit": {
+        "title": "Edición de Webhooks",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "channel": "Canal",
+        "nameLabel": "Nombre",
+        "recommendImage": "Recomendamos una imagen de al menos 128x128 píxeles",
+        "webhookURL": "URL del Webhook",
+        "copy": "Copiar",
+        "copied": "Copiado",
+        "delete": "Eliminar",
+        "selectAChannel": "selecciona un canal",
+        "yes": "Sí",
+        "deleteCaptionHook": "Eliminar gancho de subtítulo",
+        "deleteWebhookConfirmation": "Confirme si desea eliminar el webhook {{webhookName}}. Esta acción no se puede deshacer.",
+        "resetToken": "Restablecer token",
+        "name": "Nombre del webhook"
+    },
+    "webhooksEmpty": {
+        "noWebhooks": "Sin webhooks"
+    },
+    "webhooksItem": {
+        "createdBy": "Creado el {{webhookCreateTime}} por {{webhookUserOwnerName}}"
+    },
+    "webhookChannelSelect": {
+        "title": "Selecciona canal",
+        "description": "Elija un canal donde desea crear el webhook",
+        "selectChannel": "Canal",
+        "placeholder": "Selecciona un canal",
+        "create": "Crear"
+    },
+    "toast": {
+        "addSuccess": "Webhook generado con éxito!",
+        "addError": "Error al generar el webhook",
+        "saveSuccess": "¡Guardado con éxito!",
+        "saveError": "Error al guardar",
+        "deleteSuccess": "Webhook eliminado con éxito!",
+        "deleteError": "Error al eliminar el webhook",
+        "resetTokenSuccess": "Token restablecido con éxito!",
+        "resetTokenError": "Error al restablecer el token",
+        "copyError": "Error al copiar la URL",
+        "webhookGeneratedSuccess": "¡{{webhookName}} generado con éxito!",
+        "webhookDeletedSuccess": "¡{{webhookName}} eliminado con éxito!"
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "header": {
+        "save": "Guardar"
+    },
+    "toast": {
+        "saveSuccess": "Guardado con éxito",
+        "reject": "Rechazar",
+        "errorSizeLimit": "Límite de tamaño de imagen excedido (256 KB)",
+        "validateName": "La longitud debe ser entre {{min}} y {{max}} caracteres. Solo se permiten letras, números, _ y -."
+    },
+    "button": {
+        "upload": "Subir Emoji"
+    },
+    "description": {
+        "descriptions": "Añade un emoji personalizado que cualquier persona pueda usar en este clan. Los emojis GIF animados pueden ser utilizados por miembros con Mezon",
+        "requirements": "REQUISITOS DE SUBIDA",
+        "requireList": "•  Tipo de archivo: JPEG, PNG, GIF\n•  Tamaño de archivo recomendado: 256 KB\n•  Dimensiones recomendadas: 128x128\n•  Nomenclatura: Los nombres de los emojis deben tener al menos 3 caracteres y solo pueden contener caracteres alfanuméricos y guiones bajos"
+    },
+    "emojiList": {
+        "slotsDetails": "LISTA DE EMOJIS",
+        "delete": "Eliminar"
+    },
+    "image": "IMAGEN",
+    "name": "NOMBRE",
+    "uploadedBy": "SUBIDO POR",
+    "header": {
+        "save": "Guardar"
+    },
+    "toast": {
+        "saveSuccess": "Guardado con éxito",
+        "reject": "Rechazar",
+        "errorSizeLimit": "Límite de tamaño de imagen excedido (256 KB)",
+        "validateName": "La longitud debe ser entre {{min}} y {{max}} caracteres. Solo se permiten letras, números, _ y -."
+    },
+    "button": {
+        "upload": "Subir Emoji"
+    },
+    "description": {
+        "descriptions": "Añade un emoji personalizado que cualquier persona pueda usar en este clan. Los emojis GIF animados pueden ser utilizados por miembros con Mezon",
+        "requirements": "REQUISITOS DE SUBIDA",
+        "requireList": "•  Tipo de archivo: JPEG, PNG, GIF\n•  Tamaño de archivo recomendado: 256 KB\n•  Dimensiones recomendadas: 128x128\n•  Nomenclatura: Los nombres de los emojis deben tener al menos 3 caracteres y solo pueden contener caracteres alfanuméricos y guiones bajos"
+    },
+    "emojiList": {
+        "slotsDetails": "LISTA DE EMOJIS",
+        "delete": "Eliminar"
+    },
+    "image": "IMAGEN",
+    "name": "NOMBRE",
+    "uploadedBy": "SUBIDO POR"
+}

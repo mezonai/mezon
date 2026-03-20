@@ -1,0 +1,17 @@
+{
+    "fields": {
+        "dark": "Oscuro",
+        "darker": "Más oscuro",
+        "light": "Claro",
+        "midnight": "Medianoche",
+        "system": "Automático",
+        "sunrise": "Amanecer",
+        "redDark": "Rojo oscuro",
+        "purpleHaze": "Neblina morada",
+        "purple_haze": "Neblina morada",
+        "abyssDark": "Abismo oscuro",
+        "abyss_dark": "Abismo oscuro",
+        "sunset": "Atardecer"
+    },
+    "desc": "¡Puedes cambiarlo en cualquier momento!"
+}

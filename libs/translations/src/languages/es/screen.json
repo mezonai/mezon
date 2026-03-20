@@ -1,0 +1,26 @@
+{
+    "headerTitle": {
+        "settings": "Configuración",
+        "Friends": "Amigos",
+        "addFriends": "Añadir amigos",
+        "requestFriend": "Solicitudes de amistad",
+        "friendRequestSettings": "Configuración de solicitudes de amistad",
+        "language": "Idioma",
+        "profile": "Perfil",
+        "newMessage": "Nuevo mensaje",
+        "newGroup": "Nuevo grupo",
+        "addMembers": "Añadir miembros",
+        "share": "Compartir",
+        "appearance": "Apariencia",
+        "chat": "Chat",
+        "topic": "Tema"
+    },
+    "headerRight": {
+        "addFriends": "Añadir amigos"
+    },
+    "navigationTabs": {
+        "messages": "Mensajes",
+        "notifications": "Notificaciones",
+        "profile": "Perfil"
+    }
+}

@@ -1,0 +1,62 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "Marcar como leído",
+            "browseChannels": "Explorar canales"
+        },
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "Crear canal",
+            "createCategory": "Crear categoría",
+            "createEvent": "Crear evento"
+        },
+        "optionsMenu": {
+            "title": "",
+            "editServerProfile": "Editar perfil de clan",
+            "showAllChannels": "Mostrar todos los canales",
+            "hideMutedChannels": "Ocultar canales silenciados",
+            "allowDirectMessage": "Permitir mensaje directo",
+            "allowMessageRequest": "Permitir solicitud de mensaje",
+            "reportServer": "Reportar clan",
+            "leaveServer": "Salir del clan",
+            "deleteClan": "Eliminar clan",
+            "auditLog": "Registro de auditoría"
+        },
+        "optionShowEmptyCategories": {
+            "title": "Mostrar categorías vacías",
+            "show": "Mostrar",
+            "hide": "Ocultar"
+        },
+        "devMode": {
+            "title": "Modo de desarrollo",
+            "copyServerID": "Copiar ID del clan",
+            "serverIDCopied": "ID del clan copiado"
+        }
+    },
+    "actions": {
+        "boot": "Arranque",
+        "invite": "Invitar",
+        "notifications": "Notificaciones",
+        "settings": "Configuración"
+    },
+    "info": {
+        "online": "En línea",
+        "members": "Miembros"
+    },
+    "common": {
+        "search": "Buscar",
+        "community": "Comunidad",
+        "searchMembers": "Buscar miembros"
+    },
+    "modalPanel": {
+        "createCategory": "Crear categoría",
+        "markAsRead": "Marcar como leído",
+        "processing": "Procesando...",
+        "invitePeople": "Invitar personas",
+        "clanSettings": "Configuración del clan",
+        "notificationSettings": "Configuración de notificaciones",
+        "showEmptyCategories": "Mostrar categorías vacías",
+        "leaveClan": "Salir del clan"
+    }
+}

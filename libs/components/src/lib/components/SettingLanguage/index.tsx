@@ -28,6 +28,11 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				title: `${t('setting:language.russian')}`,
 				value: 'ru',
 				contributed: 'tsruber'
+			},
+			{
+				title: `${t('setting:language.spanish')}`,
+				value: 'es',
+				contributed: 'español'
 			}
 		];
 	}, [t]);

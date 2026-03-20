@@ -171,38 +171,46 @@ export default defineConfig(({ mode }) => {
 						return 'assets/[name].[hash][ext]';
 					},
 					manualChunks: (id) => {
-						if (id.includes('node_modules')) {
-							if (id.includes('@tiptap')) {
+						const normalizedId = id.replace(/\\/g, '/');
+
+						if (normalizedId.includes('node_modules')) {
+							if (normalizedId.includes('@tiptap')) {
 								return 'vendor-tiptap';
 							}
-							if (id.includes('react-datepicker')) {
+							if (normalizedId.includes('react-datepicker')) {
 								return 'vendor-datepicker';
 							}
-							if (id.includes('react-pdf') || id.includes('pdfjs-dist')) {
+							if (normalizedId.includes('react-pdf') || normalizedId.includes('pdfjs-dist')) {
 								return 'vendor-pdf';
 							}
-							if (id.includes('react') || id.includes('react-dom') || id.includes('scheduler')) {
+							if (normalizedId.includes('react') || normalizedId.includes('react-dom') || normalizedId.includes('scheduler')) {
 								return 'vendor-react';
 							}
-							if (id.includes('react-router')) {
+							if (normalizedId.includes('react-router')) {
 								return 'vendor-router';
 							}
-							if (id.includes('@reduxjs') || id.includes('redux') || id.includes('react-redux')) {
+							if (normalizedId.includes('@reduxjs') || normalizedId.includes('redux') || normalizedId.includes('react-redux')) {
 								return 'vendor-redux';
 							}
-							if (id.includes('mezon-js')) {
+							if (normalizedId.includes('mezon-js')) {
 								return 'vendor-mezon';
 							}
-							if (id.includes('mezon-protobuf')) {
+							if (normalizedId.includes('mezon-protobuf')) {
 								return 'vendor-protobuf';
 							}
 						}
 
-						if (id.includes('libs/translations/src/languages/en')) {
+						if (normalizedId.includes('libs/translations/src/languages/en')) {
 							return 'i18n-en';
 						}
-						if (id.includes('libs/translations/src/languages/vi')) {
+						if (normalizedId.includes('libs/translations/src/languages/vi')) {
 							return 'i18n-vi';
+						}
+						if (normalizedId.includes('libs/translations/src/languages/es')) {
+							return 'i18n-es';
+						}
+						if (normalizedId.includes('libs/translations/src/languages/ru')) {
+							return 'i18n-ru';
 						}
 					}
 				}

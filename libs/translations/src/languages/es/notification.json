@@ -1,0 +1,45 @@
+{
+  "headerTitle": "Notificaciones",
+  "tabNotify": {
+    "forYou": "Para ti",
+    "mention": "Mención",
+    "messages": "Mensajes",
+    "topics": "Temas",
+    "notificationSettings": "Configuración de notificaciones"
+  },
+  "removeNotification": "Eliminar notificación",
+  "nothingHere": "Aún no hay nada aquí",
+  "comeBackNotify": "Regresa para recibir notificaciones sobre eventos, transmisiones y más",
+  "repliedTo": "Respondido a: ",
+  "sender": "Remitente: ",
+  "seeWhenAnswersAppear": "Ver cuando aparezcan las respuestas",
+  "enablePushNotifications": "Activar notificaciones push",
+  "permissionAlert": {
+    "turnOnNotifications": "Activa las notificaciones",
+    "permissionDescription": "Por favor, permite que Mezon te envíe notificaciones para mantenerte en contacto con tus amigos y familia.",
+    "openSettings": "Abrir ajustes",
+    "features": {
+      "newMessages": {
+        "title": "Recibe notificaciones sobre nuevos mensajes",
+        "description": "Mantente actualizado cuando tus amigos te envíen mensajes"
+      },
+      "mentions": {
+        "title": "Saber cuándo te mencionan en grupos",
+        "description": "Nunca te pierdas cuando alguien te mencione"
+      },
+      "muteControl": {
+        "title": "Silenciar chats y tipos de chats específicos",
+        "description": "Controla qué notificaciones recibes"
+      }
+    }
+  },
+  "permissionRequest": {
+    "title": "Permiso de notificación",
+    "permissionDenied": "Permiso de notificación denegado.",
+    "cancel": "Cancelar",
+    "ok": "Aceptar"
+  },
+  "andYou": "y tú",
+  "topicAndYou": "Tema y tú",
+  "unknowClan": "Ya no eres miembro de esta conversación"
+}
