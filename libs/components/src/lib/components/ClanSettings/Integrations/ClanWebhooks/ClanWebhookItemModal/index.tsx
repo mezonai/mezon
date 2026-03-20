@@ -11,13 +11,15 @@ import { Icons } from '@mezon/ui';
 import { MAX_FILE_SIZE_8MB, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
 import type { ApiClanWebhook, ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api';
 import type { ChangeEvent } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { ELimitSize } from '../../../../ModalValidateFile';
 import { ModalErrorTypeUpload, ModalOverData } from '../../../../ModalValidateFile/ModalOverData';
 import ModalSaveChanges from '../../../ClanSettingOverview/ModalSaveChanges';
+import WebhookNameError from '../../WebhookNameError';
+import { WEBHOOK_NAME_MAX_LENGTH } from '../../webhookNameConstraints';
 import DeleteClanWebhookPopup from './DeleteWebhookPopup';
 
 interface IClanWebhookItemModalProps {
@@ -123,12 +125,16 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 
 	useEffect(() => {
 		const computeHasChanges =
-			dataForUpdate.webhookNameInput !== webhookItem.webhook_name || dataForUpdate.webhookAvatarUrl !== webhookItem.avatar;
+			(dataForUpdate.webhookNameInput ?? '').trim() !== (webhookItem.webhook_name ?? '').trim() ||
+			dataForUpdate.webhookAvatarUrl !== webhookItem.avatar;
 
 		setHasChange(computeHasChanges);
 	}, [dataForUpdate.webhookNameInput, dataForUpdate.webhookAvatarUrl, webhookItem.webhook_name, webhookItem.avatar]);
 
-	const isNameValid = useMemo(() => (dataForUpdate.webhookNameInput?.trim() ?? '').length > 0, [dataForUpdate.webhookNameInput]);
+	const trimmedWebhookName = (dataForUpdate.webhookNameInput ?? '').trim();
+	const webhookNameLength = trimmedWebhookName.length;
+	const isWebhookNameTooLong = webhookNameLength > WEBHOOK_NAME_MAX_LENGTH;
+	const isNameValid = webhookNameLength > 0 && webhookNameLength <= WEBHOOK_NAME_MAX_LENGTH;
 
 	const handleChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
@@ -161,7 +167,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 	const handleEditWebhook = async () => {
 		const request: MezonUpdateClanWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
-			webhook_name: dataForUpdate.webhookNameInput?.trim() ?? '',
+			webhook_name: trimmedWebhookName,
 			clan_id: clanId
 		};
 		await dispatch(
@@ -177,7 +183,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 	const handleResetToken = async () => {
 		const request: MezonUpdateClanWebhookByIdBody = {
 			avatar: dataForUpdate.webhookAvatarUrl,
-			webhook_name: dataForUpdate.webhookNameInput,
+			webhook_name: trimmedWebhookName,
 			clan_id: clanId,
 			reset_token: true
 		};
@@ -250,8 +256,11 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 									}
 									type="text"
 									value={dataForUpdate.webhookNameInput}
-									className="w-full bg-theme-setting-primary text-theme-primary rounded-sm outline-none h-[50px] px-[10px]"
+									className={`w-full bg-theme-setting-primary text-theme-primary rounded-sm outline-none h-[50px] px-[10px] ${
+										isWebhookNameTooLong ? 'border border-colorTextError' : ''
+									}`}
 								/>
+								{isWebhookNameTooLong ? <WebhookNameError message={t('webhooksEdit.nameMaxLengthError')} /> : null}
 							</div>
 							<div className="w-1/2 dark:text-[#b5bac1] text-textLightTheme">
 								<div

@@ -23,6 +23,8 @@ import { useSelector } from 'react-redux';
 import { ELimitSize } from '../../../../ModalValidateFile';
 import { ModalErrorTypeUpload, ModalOverData } from '../../../../ModalValidateFile/ModalOverData';
 import ModalSaveChanges from '../../../ClanSettingOverview/ModalSaveChanges';
+import WebhookNameError from '../../WebhookNameError';
+import { WEBHOOK_NAME_MAX_LENGTH } from '../../webhookNameConstraints';
 import DeleteWebhookPopup from './DeleteWebhookPopup';
 
 interface IWebhookItemModalProps {
@@ -128,7 +130,7 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 
 	const hasChange = useMemo(() => {
 		return (
-			dataForUpdate.webhookNameInput !== webhookItem.webhook_name ||
+			(dataForUpdate.webhookNameInput ?? '').trim() !== (webhookItem.webhook_name ?? '').trim() ||
 			dataForUpdate.webhookAvatarUrl !== webhookItem.avatar ||
 			dataForUpdate.channelIdForUpdate !== webhookItem.channel_id
 		);
@@ -141,7 +143,10 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 		webhookItem.channel_id
 	]);
 
-	const isNameValid = useMemo(() => (dataForUpdate.webhookNameInput?.trim() ?? '').length > 0, [dataForUpdate.webhookNameInput]);
+	const trimmedWebhookName = (dataForUpdate.webhookNameInput ?? '').trim();
+	const webhookNameLength = trimmedWebhookName.length;
+	const isWebhookNameTooLong = webhookNameLength > WEBHOOK_NAME_MAX_LENGTH;
+	const isNameValid = webhookNameLength > 0 && webhookNameLength <= WEBHOOK_NAME_MAX_LENGTH;
 
 	useEffect(() => {
 		if (!hasChange) {
@@ -260,8 +265,11 @@ const ExpendedWebhookModal = ({ webhookItem, currentChannel, isClanSetting }: IE
 									}
 									type="text"
 									value={dataForUpdate.webhookNameInput}
-									className="w-full bg-theme-setting-primary text-theme-primary rounded-sm outline-none h-[50px] px-[10px]"
+									className={`w-full bg-theme-setting-primary text-theme-primary rounded-sm outline-none h-[50px] px-[10px] ${
+										isWebhookNameTooLong ? 'border border-colorTextError' : ''
+									}`}
 								/>
+								{isWebhookNameTooLong ? <WebhookNameError message={t('webhooksEdit.nameMaxLengthError')} /> : null}
 							</div>
 							<div className="w-1/2 dark:text-[#b5bac1] text-textLightTheme">
 								<div className="text-[12px] mb-[10px]">
