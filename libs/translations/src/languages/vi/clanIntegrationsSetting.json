@@ -32,7 +32,8 @@
 		"deleteWebhookTitle": "Xóa {{webhookName}}",
 		"deleteWebhookConfirmation": "Bạn có chắc chắn muốn xóa webhook {{webhookName}}? Hành động này không thể hoàn tác.",
 		"resetToken": "Đặt lại token",
-		"name": "Tên webhook"
+		"name": "Tên webhook",
+		"nameMaxLengthError": "Độ dài phải từ 64 ký tự trở xuống."
 	},
 	"webhooksEmpty": {
 		"noWebhooks": "Không có webhook"

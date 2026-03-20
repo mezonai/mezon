@@ -1,0 +1,1 @@
+export const WEBHOOK_NAME_MAX_LENGTH = 64;

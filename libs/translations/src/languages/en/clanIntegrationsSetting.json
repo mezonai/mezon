@@ -33,7 +33,8 @@
 		"deleteWebhookTitle": "Delete {{webhookName}}",
 		"deleteWebhookConfirmation": "Please confirm if you would like to delete the {{webhookName}} webhook? This action cannot be undone.",
 		"resetToken": "Reset Token",
-		"name": "Webhook name"
+		"name": "Webhook name",
+		"nameMaxLengthError": "Must be 64 characters or fewer in length."
 	},
 	"webhooksEmpty": {
 		"noWebhooks": "No webhooks"

@@ -11,13 +11,14 @@ import { Icons } from '@mezon/ui';
 import { MAX_FILE_SIZE_8MB, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
 import type { ApiClanWebhook, ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api';
 import type { ChangeEvent } from 'react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { ELimitSize } from '../../../../ModalValidateFile';
 import { ModalErrorTypeUpload, ModalOverData } from '../../../../ModalValidateFile/ModalOverData';
 import ModalSaveChanges from '../../../ClanSettingOverview/ModalSaveChanges';
+import { WEBHOOK_NAME_MAX_LENGTH } from '../../webhookNameConstraints';
 import DeleteClanWebhookPopup from './DeleteWebhookPopup';
 
 interface IClanWebhookItemModalProps {
@@ -128,7 +129,9 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		setHasChange(computeHasChanges);
 	}, [dataForUpdate.webhookNameInput, dataForUpdate.webhookAvatarUrl, webhookItem.webhook_name, webhookItem.avatar]);
 
-	const isNameValid = useMemo(() => (dataForUpdate.webhookNameInput?.trim() ?? '').length > 0, [dataForUpdate.webhookNameInput]);
+	const webhookNameLength = (dataForUpdate.webhookNameInput ?? '').length;
+	const isWebhookNameTooLong = webhookNameLength > WEBHOOK_NAME_MAX_LENGTH;
+	const isNameValid = (dataForUpdate.webhookNameInput?.trim() ?? '').length > 0 && webhookNameLength <= WEBHOOK_NAME_MAX_LENGTH;
 
 	const handleChooseFile = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files) {
@@ -250,8 +253,21 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 									}
 									type="text"
 									value={dataForUpdate.webhookNameInput}
-									className="w-full bg-theme-setting-primary text-theme-primary rounded-sm outline-none h-[50px] px-[10px]"
+									className={`w-full bg-theme-setting-primary text-theme-primary rounded-sm outline-none h-[50px] px-[10px] ${
+										isWebhookNameTooLong ? 'border border-[#e44141]' : ''
+									}`}
 								/>
+								{isWebhookNameTooLong ? (
+									<div className="mt-2 flex items-start gap-2 text-[#e44141] text-xs">
+										<span
+											className="mt-0.5 inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded-full bg-[#e44141] text-[10px] font-bold leading-none text-white"
+											aria-hidden
+										>
+											!
+										</span>
+										<span>{t('webhooksEdit.nameMaxLengthError')}</span>
+									</div>
+								) : null}
 							</div>
 							<div className="w-1/2 dark:text-[#b5bac1] text-textLightTheme">
 								<div
