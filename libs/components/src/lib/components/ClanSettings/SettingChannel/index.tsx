@@ -1,7 +1,6 @@
 import {
 	ETypeFetchChannelSetting,
 	channelSettingActions,
-	selectChannelById,
 	selectMemberClanByUserId,
 	selectThreadsListByParentId,
 	useAppDispatch,
@@ -308,10 +307,9 @@ const ItemInfor = ({
 }) => {
 	const { t } = useTranslation('channelSetting');
 	const creatorChannel = useAppSelector((state) => selectMemberClanByUserId(state, creatorId));
-	const channelFromStore = useAppSelector((state) => selectChannelById(state, channelId));
 
-	const effectiveChannelType = channelType ?? (channelFromStore as { type?: number } | null)?.type;
-	const effectiveAgeRestricted = ageRestricted ?? (channelFromStore as { age_restricted?: number } | null)?.age_restricted;
+	const effectiveChannelType = channelType;
+	const effectiveAgeRestricted = ageRestricted;
 
 	const isDmIcon = effectiveChannelType === ChannelType.CHANNEL_TYPE_DM;
 	const isGroupIcon = effectiveChannelType === ChannelType.CHANNEL_TYPE_GROUP;
@@ -358,6 +356,7 @@ const ItemInfor = ({
 
 	const creatorDisplayName = creatorChannel?.clan_nick || creatorChannel?.user?.display_name || creatorChannel?.user?.username || '';
 	const creatorAvatar = creatorChannel?.clan_avatar || creatorChannel?.user?.avatar_url || '';
+	const isPlainChannel = !isVoice && !isStream && !isApp;
 
 	return (
 		<div
@@ -369,14 +368,12 @@ const ItemInfor = ({
 				data-e2e={generateE2eId('clan_page.channel_management.channel_item')}
 			>
 				<div className="h-6 w-6">
-					{!isVoice && !isStream && !isApp && isDmIcon && <Icons.IconChat className="w-5 h-5" />}
-					{!isVoice && !isStream && !isApp && isGroupIcon && <Icons.People className="w-5 h-5" />}
-					{!isVoice && !isStream && !isApp && effectiveChannelType === ChannelType.CHANNEL_TYPE_CHANNEL && effectiveAgeRestricted === 1 && (
+					{isPlainChannel && isDmIcon && <Icons.IconChat className="w-5 h-5" />}
+					{isPlainChannel && isGroupIcon && <Icons.People className="w-5 h-5" />}
+					{isPlainChannel && effectiveChannelType === ChannelType.CHANNEL_TYPE_CHANNEL && effectiveAgeRestricted === 1 && (
 						<Icons.HashtagWarning className="w-5 h-5" />
 					)}
-					{!isVoice &&
-						!isStream &&
-						!isApp &&
+					{isPlainChannel &&
 						!isDmIcon &&
 						!isGroupIcon &&
 						!(effectiveChannelType === ChannelType.CHANNEL_TYPE_CHANNEL && effectiveAgeRestricted === 1) &&
