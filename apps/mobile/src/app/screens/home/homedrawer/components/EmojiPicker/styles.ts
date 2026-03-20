@@ -1,4 +1,5 @@
-import { Attributes, Fonts, size } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { Fonts, size } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -37,7 +38,7 @@ export const style = (colors: Attributes) =>
 			paddingHorizontal: 10,
 			borderRadius: 10,
 			gap: 10,
-			backgroundColor: colors.secondary
+			backgroundColor: colors.tertiary
 		},
 		tabFlexContainer: {
 			flex: 1,

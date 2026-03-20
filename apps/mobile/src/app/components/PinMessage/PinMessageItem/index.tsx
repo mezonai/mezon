@@ -4,7 +4,7 @@ import { messagesActions, selectMemberClanByUserId, selectMessageByMessageId, us
 import { SHARE_CONTACT_KEY, type IExtendedMessage, type IMessageWithUser } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { decodeAttachments, safeJSONParse } from 'mezon-js';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api';
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import MezonClanAvatar from '../../../componentUI/MezonClanAvatar';

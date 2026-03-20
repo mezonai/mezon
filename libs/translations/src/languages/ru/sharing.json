@@ -1,0 +1,17 @@
+{
+	"filterOptions": "Варианты фильтрации",
+	"users": "Пользователи",
+	"channels": "Каналы",
+	"all": "Все",
+	"selectChannelPlaceholder": "Выберите канал или пользователя...",
+	"selectChannel": "Выберите канал",
+	"selectUser": "Выберите пользователя",
+	"share": "Поделиться",
+	"suggestions": "Предложения",
+	"addCommentPlaceholder": "Добавить комментарий (опционально)",
+	"fileTooLarge": "Файл слишком большой",
+	"fileSizeExceeded": "{{fileType}} размер не может превышать {{maxSize}} МБ!",
+	"bannedChannel": "Вы заблокированы в канале {{channelName}}.",
+	"empty": "Нет данных"
+}
+

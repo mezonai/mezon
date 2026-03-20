@@ -1,0 +1,20 @@
+{
+  "headers": {
+    "name": "Имя",
+    "memberSince": "Участник с",
+    "joinedMezon": "Присоединился в Mezon",
+    "roles": "Роли",
+    "signals": "Сигналы"
+  },
+  "topBar": {
+    "recentMembers": "Недавние участники",
+    "searchPlaceholder": "Поиск по названию клана, отображаемому имени или имени пользователя",
+    "sort": "Сортировать"
+  },
+  "error": "Ошибка",
+  "profile": "Профиль",
+  "message": "Сообщение",
+  "transferOwnership": "Передать права",
+  "removeMember": "Убрать участника"
+}
+

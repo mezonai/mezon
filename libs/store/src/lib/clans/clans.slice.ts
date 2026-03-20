@@ -5,18 +5,19 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ClanUpdatedEvent } from 'mezon-js';
 import { ChannelType } from 'mezon-js';
-import type { ApiClanDesc, ApiUpdateAccountRequest, MezonUpdateClanDescBody } from 'mezon-js/api.gen';
+import type { ApiClanDesc, ApiUpdateAccountRequest, MezonUpdateClanDescBody } from 'mezon-js/api';
 import { batch } from 'react-redux';
 import { accountActions } from '../account/account.slice';
 import { setUserAvatarOverride } from '../avatarOverride/avatarOverride';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
-import { usersClanActions } from '../clanMembers/clan.members';
+import { listOnlineUserClan, usersClanActions } from '../clanMembers/clan.members';
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
-import { ensureClient, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx, sleep } from '../helpers';
+import { ensureClient, ensureSession, ensureSocket, fetchDataWithSocketFallback, getMezonCtx } from '../helpers';
 import { messagesActions, processQueuedLastSeenMessages } from '../messages/messages.slice';
 import { notificationSettingActions } from '../notificationSetting/notificationSettingChannel.slice';
 import { defaultNotificationActions } from '../notificationSetting/notificationSettingClan.slice';
@@ -91,6 +92,7 @@ export interface ClansState extends EntityState<ClansEntity, string> {
 	clanGroups: EntityState<ClanGroup, string>;
 	clanGroupOrder: ClanGroupItem[];
 	cache?: CacheMetadata;
+	checkJoinList: Record<string, true>;
 }
 
 export const clansAdapter = createEntityAdapter<ClansEntity>();
@@ -104,12 +106,6 @@ export const changeCurrentClan = createAsyncThunk<void, ChangeCurrentClanArgs>(
 	'clans/changeCurrentClan',
 	async ({ clanId, noCache = false }: ChangeCurrentClanArgs, thunkAPI) => {
 		try {
-			const state = thunkAPI.getState() as RootState;
-			const targetClan = state.clans.entities[clanId];
-			const hasUnreadCount = (targetClan?.badge_count ?? 0) > 0;
-			if (hasUnreadCount && !noCache) {
-				thunkAPI.dispatch(listClanBadgeCount({ clanId }));
-			}
 			batch(() => {
 				thunkAPI.dispatch(clansActions.setCurrentClanId(clanId as string));
 				thunkAPI.dispatch(channelsActions.setCurrentChannelId({ clanId, channelId: '' }));
@@ -149,30 +145,36 @@ const selectCachedClans = createSelector([(state: RootState) => state[CLANS_FEAT
 	return clansAdapter.getSelectors().selectAll(clansState);
 });
 
-export const listClanBadgeCount = createAsyncThunk<void, { clanId: string }>('clans/listClanBadgeCount', async ({ clanId }, thunkAPI) => {
+export const listClanBadgeCount = createAsyncThunk('clans/listClanBadgeCount', async ({ clanId }: { clanId?: string }, thunkAPI) => {
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+		const currentClanId = selectCurrentClanId(thunkAPI.getState() as RootState);
 
 		const response = await fetchDataWithSocketFallback(
 			mezon,
 			{
 				api_name: 'ListClanBadgeCount',
 				list_clan_badge_count_req: {
-					clan_id: clanId
+					clan_id: currentClanId
 				}
 			},
 			(session) => (mezon.client as any).listClanBadgeCount?.(session, clanId),
 			'clan_badge_count'
 		);
 
-		if (response && (response as any).badge_count !== undefined) {
+		if (response && (response as any).badge_count !== undefined && currentClanId) {
 			thunkAPI.dispatch(
 				clansActions.setClanBadgeCount({
-					clanId,
+					clanId: currentClanId,
 					badgeCount: (response as any).badge_count
 				})
 			);
 		}
+		const state = thunkAPI.getState() as RootState;
+		if ((response as any)?.channeldesc && currentClanId && !state.clans.checkJoinList[currentClanId]) {
+			thunkAPI.dispatch(channelMetaActions.updateBulkChannelMetadata((response as any)?.channeldesc));
+		}
+		return currentClanId;
 	} catch (error) {
 		captureSentryError(error, 'clans/listClanBadgeCount');
 		return thunkAPI.rejectWithValue(error);
@@ -259,9 +261,6 @@ export type FetchClansPayload = {
 	fromCache?: boolean;
 };
 
-let lastUnreadIndicatorCall = 0;
-const UNREAD_DEBOUNCE_MS = 2000;
-
 export const fetchClans = createAsyncThunk(
 	'clans/fetchClans',
 	async ({ noCache = false, isMobile = false }: { noCache?: boolean; isMobile?: boolean }, thunkAPI) => {
@@ -279,22 +278,6 @@ export const fetchClans = createAsyncThunk(
 			const queuedMessages = state.messages.queuedLastSeenMessages;
 			if (queuedMessages.length > 0) {
 				thunkAPI.dispatch(processQueuedLastSeenMessages());
-			}
-
-			if (!response.fromCache && clans.length > 0 && !fetchListClanUnreadMsgIndicator) {
-				if (isMobile) {
-					const now = Date.now();
-					if (now - lastUnreadIndicatorCall > UNREAD_DEBOUNCE_MS) {
-						lastUnreadIndicatorCall = now;
-						const clanIds = clans.filter((clan) => clan?.id).map((clan) => clan.id);
-						queueMicrotask(() => {
-							thunkAPI.dispatch(listClanUnreadMsgIndicator({ clanIds }));
-						});
-					}
-				} else {
-					const clanIds = clans.filter((clan) => clan?.id).map((clan) => clan.id);
-					thunkAPI.dispatch(listClanUnreadMsgIndicator({ clanIds }));
-				}
 			}
 
 			const payload: FetchClansPayload = {
@@ -521,6 +504,11 @@ export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan
 	try {
 		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
 		await mezon.socketRef.current?.joinClanChat(clanId);
+		const state = thunkAPI.getState() as RootState;
+		if (!state.clans?.checkJoinList?.[clanId]) {
+			thunkAPI.dispatch(listClanBadgeCount({ clanId }));
+			thunkAPI.dispatch(listOnlineUserClan({ clanId }));
+		}
 	} catch (error) {
 		captureSentryError(error, 'clans/joinClan');
 		return thunkAPI.rejectWithValue(error);
@@ -562,50 +550,6 @@ export const updateHasUnreadBasedOnChannels = createAsyncThunk<{ clanId: string;
 	}
 );
 
-let fetchListClanUnreadMsgIndicator = false;
-
-export const listClanUnreadMsgIndicator = createAsyncThunk<void, { clanIds: string[]; isMobile?: boolean }>(
-	'clans/listClanUnreadMsgIndicator',
-	async ({ clanIds }, thunkAPI) => {
-		try {
-			const mezon = await ensureSession(getMezonCtx(thunkAPI));
-
-			for (const clanId of clanIds) {
-				try {
-					await sleep(1000);
-					const response = await fetchDataWithSocketFallback(
-						mezon,
-						{
-							api_name: 'ListClanUnreadMsgIndicator',
-							list_unread_msg_indicator_req: {
-								clan_id: clanId
-							}
-						},
-						(session) => mezon.client.listClanUnreadMsgIndicator?.(session, clanId),
-						'unread_msg_indicator'
-					);
-
-					if (response && response.has_unread_message !== undefined) {
-						const hasUnread = response.has_unread_message || false;
-						thunkAPI.dispatch(
-							clansActions.setHasUnreadMessage({
-								clanId,
-								hasUnread
-							})
-						);
-					}
-				} catch (error) {
-					console.warn(`Failed to get unread indicator for clan ${clanId}:`, error);
-				}
-			}
-			fetchListClanUnreadMsgIndicator = true;
-		} catch (error) {
-			captureSentryError(error, 'clans/listClanUnreadMsgIndicator');
-			return thunkAPI.rejectWithValue(error);
-		}
-	}
-);
-
 export const initialClansState: ClansState = clansAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	clans: [],
@@ -617,7 +561,8 @@ export const initialClansState: ClansState = clansAdapter.getInitialState({
 	inviteClanId: undefined,
 	clansOrder: [],
 	clanGroups: clanGroupAdapter.getInitialState(),
-	clanGroupOrder: []
+	clanGroupOrder: [],
+	checkJoinList: {}
 });
 
 type UpdateClanBadgeCountPayload = {
@@ -976,6 +921,12 @@ export const clansSlice = createSlice({
 				});
 			}
 		});
+		builder.addCase(listClanBadgeCount.fulfilled, (state: ClansState, action: PayloadAction<string | null | undefined>) => {
+			if (action.payload) {
+				state.checkJoinList[action.payload] = true;
+			}
+			state.loadingStatus = 'loaded';
+		});
 	}
 });
 
@@ -1014,8 +965,7 @@ export const clansActions = {
 	deleteClan,
 	joinClan,
 	transferClan,
-	updateHasUnreadBasedOnChannels,
-	listClanUnreadMsgIndicator
+	updateHasUnreadBasedOnChannels
 };
 
 /*

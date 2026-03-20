@@ -142,7 +142,8 @@
 	},
 	"errorMessages": {
 		"startTimeFuture": "The start time must be in the future.",
-		"endTimeAfterStart": "The end time must be bigger than start time."
+		"endTimeAfterStart": "The end time must be bigger than start time.",
+		"invalidTopic": "Invalid event topic. Characters '`', '<', '>', ',', '/', '\"', '\\', and ''' are not allowed."
 	},
 	"selectUser": "Select channel or thread to create event",
 	"emptyState": {

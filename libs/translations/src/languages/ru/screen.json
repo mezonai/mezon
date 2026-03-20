@@ -1,0 +1,27 @@
+{
+    "headerTitle": {
+        "settings": "Настройки",
+        "friends": "Друзья",
+        "addFriends": "Добавить друзей",
+        "requestFriend": "Запросы дружбы",
+        "friendRequestSettings": "Настройки запросов дружбы",
+        "language": "Язык",
+        "profile": "Профиль",
+        "newMessage": "Новое сообщение",
+        "newGroup": "Новая группа",
+        "addMembers": "Добавить участников",
+        "share": "Поделиться",
+        "appearance": "Внешний вид",
+        "chat": "Чат",
+        "topic": "Тема"
+    },
+    "headerRight": {
+        "addFriends": "Добавить друзей"
+    },
+    "navigationTabs": {
+        "messages": "Сообщения",
+        "notifications": "Уведомления",
+        "profile": "Профиль"
+    }
+}
+

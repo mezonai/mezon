@@ -21,6 +21,7 @@ import DMListItem from './DMListItem';
 
 type ListDMChannelProps = {
 	listDM: string[];
+	isPinnedList?: boolean;
 };
 
 const heightAroundComponent = 232;
@@ -43,7 +44,7 @@ const PaginationLoadingIndicator = memo(({ isFetchingRef }: { isFetchingRef: Mut
 	);
 });
 
-const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
+const ListDMChannel = ({ listDM, isPinnedList }: ListDMChannelProps) => {
 	const navigate = useNavigate();
 	const dispatch = useAppDispatch();
 	const { directId: currentDmGroupId } = useAppParams();
@@ -116,6 +117,27 @@ const ListDMChannel = ({ listDM }: ListDMChannelProps) => {
 	}, [dispatch]);
 
 	const scrollTimeoutId2 = useRef<NodeJS.Timeout | null>(null);
+
+	if (isPinnedList) {
+		return (
+			<div className="flex flex-col w-full">
+				{listDM.map((id) => {
+					const isActive = currentDmGroupId === id;
+					return (
+						<div key={id} className="dm-wrap" style={{ height: '43px' }}>
+							<DMListItem
+								currentDmGroupId={currentDmGroupId as string}
+								id={id}
+								isActive={isActive}
+								navigateToFriends={() => navigate(`/chat/direct/friends`)}
+								joinToChatAndNavigate={isActive ? () => {} : joinToChatAndNavigate}
+							/>
+						</div>
+					);
+				})}
+			</div>
+		);
+	}
 
 	return (
 		<div

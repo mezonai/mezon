@@ -1,0 +1,25 @@
+{
+	"modal": {
+		"title": "Перенаправить сообщение",
+		"searchPlaceholder": "Поиск",
+		"noResults": "Не можете найти то, что вы искали?",
+		"searchFriendsUsers": "Найти друга и пользователей",
+		"searchingChannel": "Поиск канала",
+		"sharedContent": "Общий контент",
+		"cancel": "Отменить",
+		"send": "Отправить",
+		"sending": "Отправка...",
+		"sendingProgress": "Отправка ({{current}}/{{total}})...",
+		"image": "изображение",
+		"images": "изображения",
+		"video": "видео",
+		"videos": "видео",
+		"file": "файл",
+		"files": "файлы",
+		"additionalMessage": "Дополнительное сообщение (необязательно)",
+		"additionalMessagePlaceholder": "Введите сообщение, которое хотите отправить вместе с..."
+	},
+	"successMessage": "Сообщение успешно перенаправлено",
+	"errorMessage": "Не удалось перенаправить сообщение"
+}
+

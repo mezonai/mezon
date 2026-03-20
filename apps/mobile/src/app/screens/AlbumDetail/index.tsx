@@ -6,7 +6,7 @@ import { useMezon } from '@mezon/transport';
 import { createImgproxyUrl, getMobileUploadedAttachments } from '@mezon/utils';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Snowflake } from '@theinternetfolks/snowflake';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {

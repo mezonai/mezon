@@ -2,7 +2,7 @@ import { ENotificationActive, ENotificationChannelId } from '@mezon/mobile-compo
 import {
 	selectCurrentChannel,
 	selectDefaultNotificationCategory,
-	selectDefaultNotificationClan,
+	selectDefaultNotificationClanByClanId,
 	selectDmGroupCurrentId,
 	selectNotifiSettingsEntitiesById,
 	useAppSelector
@@ -20,7 +20,7 @@ const useStatusMuteChannel = () => {
 		selectNotifiSettingsEntitiesById(state, currentDmId || currentChannel?.id || '')
 	);
 
-	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
+	const defaultNotificationClan = useSelector((state) => selectDefaultNotificationClanByClanId(state, currentChannel?.clan_id || '0'));
 	useEffect(() => {
 		if (
 			getNotificationChannelSelected?.active === ENotificationActive.ON &&

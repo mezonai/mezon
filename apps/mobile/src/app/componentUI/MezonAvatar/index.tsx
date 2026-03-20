@@ -24,6 +24,7 @@ interface IMezonAvatarProps {
 	isShow?: boolean;
 	statusUserStyles?: ViewStyle;
 	customFontSizeAvatarCharacter?: number;
+	customImageStyle?: ViewStyle;
 }
 const MezonAvatar = memo((props: IMezonAvatarProps) => {
 	const { themeValue } = useTheme();
@@ -40,7 +41,8 @@ const MezonAvatar = memo((props: IMezonAvatarProps) => {
 		isCountBadge,
 		countBadge,
 		statusUserStyles,
-		customFontSizeAvatarCharacter
+		customFontSizeAvatarCharacter,
+		customImageStyle
 	} = props;
 	const styles = style(themeValue, height, width, stacks?.length);
 
@@ -51,7 +53,10 @@ const MezonAvatar = memo((props: IMezonAvatarProps) => {
 			<View style={styles.listImageFriend}>
 				{stacks.map((user, idx) => {
 					return (
-						<View key={idx} style={[styles.imageContainer, styles.borderBoxImage, styles.sizedContainer, createPositionStyle(idx)]}>
+						<View
+							key={idx}
+							style={[styles.imageContainer, styles.borderBoxImage, styles.sizedContainer, createPositionStyle(idx), customImageStyle]}
+						>
 							<MezonClanAvatar
 								alt={user.username}
 								image={user.avatarUrl}
@@ -63,7 +68,7 @@ const MezonAvatar = memo((props: IMezonAvatarProps) => {
 				})}
 
 				{isCountBadge && (
-					<View style={[styles.imageContainer, styles.borderBoxImage, styles.sizedContainer, createPositionStyle(3)]}>
+					<View style={[styles.imageContainer, styles.borderBoxImage, styles.sizedContainer, createPositionStyle(3), customImageStyle]}>
 						<View style={styles.countBadge}>
 							<Text style={styles.countBadgeText}>+{countBadge}</Text>
 						</View>
@@ -75,7 +80,7 @@ const MezonAvatar = memo((props: IMezonAvatarProps) => {
 
 	return (
 		<View style={[styles.containerItem, styles.sizedContainer]}>
-			<View style={[styles.boxImage, styles.sizedContainer, isBorderBoxImage && styles.borderBoxImage]}>
+			<View style={[styles.boxImage, styles.sizedContainer, isBorderBoxImage && styles.borderBoxImage, customImageStyle]}>
 				<MezonClanAvatar alt={username} image={avatarUrl} customFontSizeAvatarCharacter={customFontSizeAvatarCharacter} lightMode />
 			</View>
 

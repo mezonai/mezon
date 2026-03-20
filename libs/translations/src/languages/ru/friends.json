@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Запросы на дружбу",
+		"received": "Полученные",
+		"sent": "Отправленные",
+		"emptyReceived": {
+			"title": "Нет входящих запросов на дружбу",
+			"description": "Здесь Вы увидите все запросы на дружбу, которые люди отправили Вам."
+		},
+		"emptySent": {
+			"title": "Нет исходящих запросов на дружбу",
+			"description": "Здесь Вы увидите все запросы на дружбу, которые Вы отправили другим."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Входящий запрос на дружбу",
+		"findYourFriend": "Найти друзей",
+		"addByUserName": "Добавить по имени пользователя или номеру телефона",
+		"addByUsername": "Добавить {{username}}",
+		"searchUsernamePlaceholder": "Введите имя пользователя или номер телефона",
+		"whoYouWantToAddFriend": "Кого Вы хотите сделать другом?",
+		"byTheWay": "Кстати, Ваше имя пользователя — это",
+		"sendRequestButton": "Отправить запрос на дружбу",
+		"addFriendToast": "Запрос на дружбу отправлен"
+	},
+	"friends": "Друзья",
+	"noFriendsResultsFound": "Результаты по друзьям не найдены",
+	"toast": {
+		"sendAddFriendSuccess": "Запрос в друзья успешно отправлен!",
+		"acceptAddFriendSuccess": "Запрос на дружбу принят!",
+		"sendAddFriendFail": "Хм, не сработало. Проверьте, правильно ли указано имя пользователя.",
+		"somethingWentWrong": "Что-то пошло не так"
+	},
+	"you": "Вы"
+}
+

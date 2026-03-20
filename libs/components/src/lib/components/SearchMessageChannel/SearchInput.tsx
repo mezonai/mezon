@@ -215,7 +215,7 @@ const SearchInput = ({
 				style={MentionsInputStyle}
 			/>
 
-			{isClanMode && (
+			{isClanMode ? (
 				<Mention
 					markup="#[__display__](__id__)"
 					appendSpaceOnAdd={true}
@@ -233,7 +233,7 @@ const SearchInput = ({
 					)}
 					style={MentionsInputStyle}
 				/>
-			)}
+			) : null}
 		</MentionsInput>
 	);
 };

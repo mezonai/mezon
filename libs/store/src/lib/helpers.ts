@@ -1,5 +1,5 @@
 import type { MezonContextValue } from '@mezon/transport';
-import { socketState } from '@mezon/transport';
+import { isOnline, socketState } from '@mezon/transport';
 import type { GetThunkAPI } from '@reduxjs/toolkit';
 import type { Client, Session } from 'mezon-js';
 import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
@@ -113,10 +113,6 @@ export interface RetryConfig {
 	mezon?: MezonValueContext;
 }
 
-let sharedConnectionCheckPromise: Promise<boolean> | null = null;
-let lastConnectionCheckTime = 0;
-const CONNECTION_CHECK_CACHE_MS = 2000;
-
 const activeScopeControllers = new Map<string, AbortController>();
 
 export function cancelPreviousRequestsInScope(scope: string): void {
@@ -138,39 +134,18 @@ export function createScopeAbortController(scope?: string): AbortController | un
 	return controller;
 }
 
-async function checkInternetConnectionCached(): Promise<boolean> {
-	const now = Date.now();
+export function checkInternetConnectionCached(): boolean {
+	return isOnline();
+}
 
-	if (now - lastConnectionCheckTime < CONNECTION_CHECK_CACHE_MS) {
-		if (typeof navigator !== 'undefined' && typeof navigator.onLine !== 'undefined') {
-			return navigator.onLine;
-		}
-	}
-
-	if (sharedConnectionCheckPromise) {
-		return sharedConnectionCheckPromise;
-	}
-
-	sharedConnectionCheckPromise = (async () => {
-		try {
-			const response = await fetch(`${window.origin}/assets/favicon.ico`, {
-				method: 'HEAD',
-				cache: 'no-cache',
-				signal: AbortSignal.timeout(5000)
-			});
-			lastConnectionCheckTime = Date.now();
-			return response.ok;
-		} catch {
-			lastConnectionCheckTime = Date.now();
-			return false;
-		} finally {
-			setTimeout(() => {
-				sharedConnectionCheckPromise = null;
-			}, 100);
-		}
-	})();
-
-	return sharedConnectionCheckPromise;
+function isNetworkError(error: unknown): boolean {
+	if (error instanceof TypeError && error.message.includes('fetch')) return true;
+	if (!isOnline()) return true;
+	const msg = String((error as RetryableError)?.message || '').toLowerCase();
+	const code = (error as RetryableError)?.code || '';
+	const networkPatterns = ['timeout', 'etimedout', 'econnreset', 'enotfound', 'econnrefused', 'socket hang up', 'network error', 'econnaborted'];
+	if (code === 'NETWORK_ERROR' || code === 'ECONNABORTED') return true;
+	return networkPatterns.some((p) => msg.includes(p));
 }
 
 type RequiredRetryConfig = Required<Omit<RetryConfig, 'signal' | 'scope' | 'mezon'>>;
@@ -183,17 +158,7 @@ const DEFAULT_RETRY_CONFIG: RequiredRetryConfig = {
 	useExponentialBackoff: true,
 	timeout: 30000,
 	checkOnlineStatus: true,
-	shouldRetry: (error: RetryableError) => {
-		if (error?.code === 'NETWORK_ERROR' || error?.code === 'ECONNABORTED' || error?.message?.includes('Network Error')) {
-			return true;
-		}
-		if (error?.status && error.status >= 500 && error.status < 600) {
-			return true;
-		}
-		const transientErrorPatterns = ['timeout', 'ETIMEDOUT', 'ECONNRESET', 'ENOTFOUND', 'ECONNREFUSED', 'socket hang up', 'Failed to fetch'];
-		const errorMessage = String(error?.message || '').toLowerCase();
-		return transientErrorPatterns.some((pattern) => errorMessage.includes(pattern.toLowerCase()));
-	},
+	shouldRetry: (error: RetryableError) => isNetworkError(error),
 	onRetry: () => {
 		// Default: no-op
 	}
@@ -316,7 +281,7 @@ export interface SocketDataRequest {
 	[key: string]: unknown;
 }
 
-const SOCKET_ONLY_APIS = ['ListClanBadgeCount', 'ListClanUnreadMsgIndicator', 'ListLogedDevice'];
+const SOCKET_ONLY_APIS = ['ListClanBadgeCount', 'ListUserOnline', 'ListLogedDevice'];
 
 export async function fetchDataWithSocketFallback<T>(
 	mezon: MezonValueContext,

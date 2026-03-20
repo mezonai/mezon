@@ -22,10 +22,11 @@ export type EventInfoModalProps = {
 	setErrorTime: (status: boolean) => void;
 	setContentSubmit: React.Dispatch<React.SetStateAction<ContenSubmitEventProps>>;
 	onClose: () => void;
+	errorTopic: boolean;
 };
 
 const EventInfoModal = (props: EventInfoModalProps) => {
-	const { contentSubmit, setErrorTime, setContentSubmit, onClose } = props;
+	const { contentSubmit, setErrorTime, setContentSubmit, onClose, errorTopic } = props;
 	const { t } = useTranslation('eventCreator');
 	const { t: tCommon } = useTranslation('common');
 	const [countCharacterDescription, setCountCharacterDescription] = useState(255);
@@ -180,10 +181,11 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 					placeholder={t('fields.eventName.placeholder')}
 					onChange={(e) => setContentSubmit((prev) => ({ ...prev, topic: e.target.value }))}
 					value={contentSubmit.topic}
-					className={`font-[400] rounded w-full  outline-none text-[15px]border border-theme-primary p-2 focus:outline-none focus:border-white-500 bg-theme-input ${appearanceTheme === 'light' ? 'lightEventInputAutoFill' : ''}`}
+					className={`font-[400] rounded w-full  outline-none text-[15px] p-2 focus:outline-none focus:border-white-500 bg-theme-input ${appearanceTheme === 'light' ? 'lightEventInputAutoFill' : ''} ${errorTopic ? 'border border-[#e44141]' : 'border border-theme-primary'}`}
 					maxLength={Number(process.env.NX_MAX_LENGTH_NAME_ALLOWED) * 2}
 					data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.event_topic')}
 				/>
+				{errorTopic && <p className="text-[#e44141]  text-xs italic font-thin mt-1">{t('errorMessages.invalidTopic')}</p>}
 			</div>
 			<div className="mb-4 flex gap-x-4">
 				<div className="w-1/2" data-e2e={generateE2eId('clan_page.modal.create_event.event_info.input.start_date')}>
@@ -255,9 +257,9 @@ const EventInfoModal = (props: EventInfoModalProps) => {
 					))}
 				</select>
 				{errorStart && selectedFrequency === ERepeatType.DOES_NOT_REPEAT ? (
-					<p className="text-[#e44141] text-xs font-thin">{t('errorMessages.startTimeFuture')}</p>
+					<p className="text-[#e44141] text-xs italic font-thin">{t('errorMessages.startTimeFuture')}</p>
 				) : null}
-				{errorEnd && <p className="text-[#e44141] text-xs font-thin">{t('errorMessages.endTimeAfterStart')}</p>}
+				{errorEnd && <p className="text-[#e44141] text-xs italic font-thin">{t('errorMessages.endTimeAfterStart')}</p>}
 			</div>
 			<div className="mb-4">
 				<h3 className="uppercase text-[11px] font-semibold">{t('fields.description.title')}</h3>

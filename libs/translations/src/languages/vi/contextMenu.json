@@ -19,6 +19,8 @@
 	"resendMessage": "Gửi lại tin nhắn",
 	"deleteMessage": "Xóa tin nhắn",
 	"reportMessage": "Báo cáo tin nhắn",
+	"endPollNow": "Kết thúc bình chọn ngay",
+	"pollEnded": "Đã kết thúc bình chọn thành công",
 	"copyLink": "Sao chép liên kết",
 	"openLink": "Mở liên kết",
 	"copyImage": "Sao chép hình ảnh",
@@ -116,6 +118,7 @@
 		"failedToSaveImage": "Không thể lưu hình ảnh:",
 		"failedToGiveCoffee": "Không thể tặng coffee tin nhắn",
 		"errorSendingQuickMenu": "Lỗi gửi tuỳ chọn nhanh",
-		"failedToResendMessage": "Không thể gửi lại tin nhắn"
+		"failedToResendMessage": "Không thể gửi lại tin nhắn",
+		"failedToClosePoll": "Không thể kết thúc bình chọn"
 	}
 }

@@ -30,6 +30,7 @@ import {
 	emojiSuggestionActions,
 	eventManagementActions,
 	friendsActions,
+	getPoll,
 	getStore,
 	getStoreAsync,
 	giveCoffeeActions,
@@ -47,6 +48,7 @@ import {
 	pinMessageActions,
 	policiesActions,
 	referencesActions,
+	resetRefreshState,
 	rolesClanActions,
 	selectAllChannels,
 	selectAllTextChannel,
@@ -75,6 +77,7 @@ import {
 	selectLastSentMessageStateByChannelId,
 	selectLatestMessageId,
 	selectLoadingStatus,
+	selectMessageEntityById,
 	selectOrderedClans,
 	selectStreamMembersByChannelId,
 	selectUserCallId,
@@ -97,7 +100,7 @@ import {
 	walletActions,
 	webhookActions
 } from '@mezon/store';
-import { useMezon } from '@mezon/transport';
+import { resetSessionRefreshManager, useMezon } from '@mezon/transport';
 import type { IMessageSendPayload, IUserProfileActivity, NotificationCategory } from '@mezon/utils';
 import {
 	ADD_ROLE_CHANNEL_STATUS,
@@ -183,12 +186,12 @@ import type {
 	ApiTokenSentEvent,
 	ApiUpdateCategoryDescRequest,
 	ApiWebhook
-} from 'mezon-js/api.gen';
+} from 'mezon-js/api';
 import type { ChannelCanvas, DeleteAccountEvent, RemoveFriend, SdTopicEvent } from 'mezon-js/socket';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Subject } from 'rxjs';
-import { debounceTime, exhaustMap, filter } from 'rxjs/operators';
+import { exhaustMap, filter, throttleTime } from 'rxjs/operators';
 import { useAuth } from '../../auth/hooks/useAuth';
 import { useCustomNavigate } from '../hooks/useCustomNavigate';
 import { handleGroupCallSocketEvent } from './groupCallSocketHandler';
@@ -427,6 +430,18 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					message.code === TypeMessage.DeleteEphemeralMsg
 				) {
 					dispatch(messagesActions.newMessage(mess));
+
+					if (message.code === TypeMessage.ChatUpdate && message?.message_id) {
+						const existingMessage = selectMessageEntityById(store.getState(), message.channel_id, message.message_id);
+						if (existingMessage && existingMessage.code === TypeMessage.Poll) {
+							dispatch(
+								getPoll({
+									message_id: message.message_id,
+									channel_id: message.channel_id
+								})
+							);
+						}
+					}
 
 					if (message.code === TypeMessage.ChatRemove && message.topic_id && message.topic_id !== '0' && message?.message_id) {
 						dispatch(
@@ -704,8 +719,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 			if (notification.code === NotificationCode.FRIEND_REQUEST || notification.code === NotificationCode.FRIEND_ACCEPT) {
 				dispatch(toastActions.addToast({ message: notification.subject, type: 'info', id: 'ACTION_FRIEND' }));
-				if (notification.code === NotificationCode.FRIEND_ACCEPT) {
-					dispatch(friendsActions.acceptFriend(`${userId}_${notification.sender_id}`));
+				if (notification.code === NotificationCode.FRIEND_ACCEPT && notification.sender_id) {
+					dispatch(friendsActions.acceptFriend(notification.sender_id));
 				}
 			}
 
@@ -1075,14 +1090,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 						);
 					}
 				}
-				dispatch(
-					channelsActions.joinChat({
-						clanId: clan_id,
-						channelId: channel_desc.channel_id as string,
-						channelType: channel_desc.type as number,
-						isPublic: !channel_desc.channel_private
-					})
-				);
 			}
 
 			if (channel_desc.type === ChannelType.CHANNEL_TYPE_GROUP || channel_desc.type === ChannelType.CHANNEL_TYPE_DM) {
@@ -1514,15 +1521,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				last_sent_message: { timestamp_seconds: now }
 			};
 
-			const isPublic = channelCreated.parent_id !== '' && channelCreated.parent_id !== '0' ? false : !channelCreated.channel_private;
-			dispatch(
-				channelsActions.joinChat({
-					clanId: channelCreated.clan_id,
-					channelId: channelCreated.channel_id,
-					channelType: channelCreated.channel_type,
-					isPublic
-				})
-			);
 			dispatch(
 				channelMetaActions.updateBulkChannelMetadata([
 					{
@@ -2504,7 +2502,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const channels = selectChannelThreads(store.getState() as RootState);
 
 		if (markAsReadEvent.category_id === '0') {
-			const channelIds = channels.map((item) => item.id);
+			const clanChannels = selectChannelsByClanId(store.getState() as RootState, markAsReadEvent.clan_id);
+			const channelIds = clanChannels.map((item) => item.id);
 			const channelUpdates = channelIds.map((channelId) => {
 				let messageId = selectLatestMessageId(store.getState(), channelId);
 				if (!messageId) {
@@ -2526,32 +2525,32 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				messageId: selectLatestMessageId(store.getState(), channelId) || undefined
 			}));
 			badgeService.markAsReadCategory(markAsReadEvent.clan_id as string, markAsReadEvent.category_id, channelIds, channelUpdates);
-		} else {
-			const relatedChannels = channels.filter((channel) => channel.parent_id === markAsReadEvent.channel_id);
-			const channelIds = relatedChannels.map((channel) => channel.id);
-			const channelUpdates = channelIds.map((channelId) => ({
+			return;
+		}
+		const relatedChannels = channels.filter((channel) => channel.parent_id === markAsReadEvent.channel_id);
+		const channelIds = relatedChannels.map((channel) => channel.id);
+		const channelUpdates = channelIds.map((channelId) => ({
+			channelId,
+			messageId: selectLatestMessageId(store.getState(), channelId) || undefined
+		}));
+		badgeService.markAsReadChannel(
+			markAsReadEvent.clan_id as string,
+			markAsReadEvent.channel_id,
+			[markAsReadEvent.channel_id, ...channelIds],
+			channelUpdates,
+			relatedChannels.map((channel) => ({
+				channelId: channel.id,
+				count: (channel.count_mess_unread ?? 0) * -1
+			}))
+		);
+
+		const threadIds = relatedChannels.flatMap((channel) => channel.threadIds || []);
+		if (threadIds.length) {
+			const threadUpdates = threadIds.map((channelId) => ({
 				channelId,
 				messageId: selectLatestMessageId(store.getState(), channelId) || undefined
 			}));
-			badgeService.markAsReadChannel(
-				markAsReadEvent.clan_id as string,
-				markAsReadEvent.channel_id,
-				[markAsReadEvent.channel_id, ...channelIds],
-				channelUpdates,
-				relatedChannels.map((channel) => ({
-					channelId: channel.id,
-					count: (channel.count_mess_unread ?? 0) * -1
-				}))
-			);
-
-			const threadIds = relatedChannels.flatMap((channel) => channel.threadIds || []);
-			if (threadIds.length) {
-				const threadUpdates = threadIds.map((channelId) => ({
-					channelId,
-					messageId: selectLatestMessageId(store.getState(), channelId) || undefined
-				}));
-				dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
-			}
+			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
 		}
 	}, []);
 
@@ -2759,9 +2758,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 	const executeReconnect = useCallback(
 		async (_socketType: string) => {
 			socketState.status = 'connecting';
-
-			console.log(socketState.status, 'socketState.status');
-
 			const store = getStore();
 			const clanIdActive = selectCurrentClanId(store.getState());
 
@@ -2795,7 +2791,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		const subscription = reconnect$
 			.pipe(
 				filter(() => !socketRef.current?.isOpen()),
-				debounceTime(500),
+				throttleTime(500),
 				exhaustMap(
 					(socketType) =>
 						new Promise<void>((resolve) => {
@@ -2824,6 +2820,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 
 	useEffect(() => {
 		const onSessionExpired = () => {
+			console.error('Session expired, logging out');
+			resetSessionRefreshManager();
+			resetRefreshState();
 			dispatch(authActions.setLogout());
 			dispatch(walletActions.setLogout());
 		};
@@ -2997,3 +2996,4 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider, MobileEventEmitter };
+

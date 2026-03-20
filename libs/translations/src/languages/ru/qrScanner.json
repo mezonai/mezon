@@ -1,0 +1,18 @@
+{
+	"cameraPermissionDenied": "Доступ к камере запрещён",
+	"pleaseAllowCamera": "Пожалуйста, разрешите доступ к камере в настройках Вашего устройства.",
+	"cancel": "Отменить",
+	"openSettings": "Открыть настройки",
+	"anErrorOccurred": "Произошла ошибка, пожалуйста, попробуйте ещё раз.",
+	"youAreIn": "Авторизован!",
+	"logInOnNewDevice": "Войти на новом устройстве?",
+	"youAreLoggedInOnDesktop": "Вы вошли в систему на компьютере",
+	"neverScanALoginQRCodeFromAnotherUser": "Никогда не сканируйте QR-код для входа в систему, предоставленный другим пользователем.",
+	"startTalking": "Начать говорить",
+	"logIn": "Войти",
+	"requestCameraPermission": "Запросить разрешение на использование камеры",
+	"myQRCode": "Мой QR-код",
+	"selectPhotoWithQRCode": "Выберите фотографию, содержащую QR-код",
+	"qrCodeNotValid": "QR-код недействителен"
+}
+

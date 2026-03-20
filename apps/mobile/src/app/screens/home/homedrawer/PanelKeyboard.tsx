@@ -1,5 +1,5 @@
 import { BottomSheetModal, BottomSheetScrollView } from '@gorhom/bottom-sheet';
-import { ActionEmitEvent } from '@mezon/mobile-components';
+import { ActionEmitEvent, STORAGE_KEYBOARH_HEIGHT, load, save } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
 import { useFocusEffect } from '@react-navigation/native';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -45,7 +45,7 @@ const PanelKeyboard = React.memo((props: IProps) => {
 		return [validHeight, Platform.OS === 'ios' ? '95%' : '100%'];
 	}, [heightKeyboardShow]);
 	const getKeyboardHeightFromMetrics = useCallback(() => {
-		return lastKnownKeyboardHeight;
+		return load(STORAGE_KEYBOARH_HEIGHT) || lastKnownKeyboardHeight;
 	}, []);
 
 	const applyKeyboardHeight = useCallback(
@@ -97,6 +97,7 @@ const PanelKeyboard = React.memo((props: IProps) => {
 				}
 
 				const eventHeight = e?.endCoordinates?.height || 0;
+				save(STORAGE_KEYBOARH_HEIGHT, eventHeight);
 				const cachedHeight = getKeyboardHeightFromMetrics();
 				const height = Math.max(eventHeight, cachedHeight);
 				applyKeyboardHeight(height);

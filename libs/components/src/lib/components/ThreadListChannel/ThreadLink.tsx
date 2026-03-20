@@ -4,6 +4,7 @@ import {
 	notificationSettingActions,
 	referencesActions,
 	selectBuzzStateByChannelId,
+	selectChannelBadgeById,
 	selectCloseMenu,
 	selectEventsByChannelId,
 	selectIsUnreadChannelById,
@@ -40,7 +41,7 @@ export type ThreadLinkRef = {
 
 const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, hasLine, isActive, currentChannelId }: ThreadLinkProps, ref) => {
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadChannelById(state, thread.id));
-	const numberNotification = thread.count_mess_unread ? thread.count_mess_unread : 0;
+	const numberNotification = useAppSelector((state) => selectChannelBadgeById(state, thread.id));
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const threadLinkRef = useRef<HTMLAnchorElement | null>(null);
 

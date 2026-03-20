@@ -1,0 +1,10 @@
+{
+	"show": "Показать",
+	"membersOf": "участников из {{count}}",
+	"addedBy": "Добавлен {{name}}",
+	"you": "Вы",
+	"inVoice": "В звонке",
+	"onlineCount": "Онлайн - {{count}}",
+	"offlineCount": "Оффлайн - {{count}}"
+}
+

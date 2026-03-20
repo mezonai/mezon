@@ -1,0 +1,75 @@
+{
+	"activityOverview": {
+		"title": "Обзор активности",
+		"timePeriod": "Период времени",
+		"totalActiveUsers": "Общее количество активных пользователей",
+		"totalActiveUsersTooltip": "Уникальные пользователи, которые были активны хотя бы раз.",
+		"totalActiveChannels": "Общее количество активных каналов",
+		"totalActiveChannelsTooltip": "Уникальные каналы, которые были активны хотя бы раз.",
+		"totalMessages": "Общее количество сообщений",
+		"totalMessagesTooltip": "Общее количество сообщений, отправленных за выбранный период."
+	},
+	"pagination": {
+		"showing": "Показано",
+		"of": "или",
+		"clans": "кланы",
+		"previous": "Предыдущие",
+		"next": "Следующие"
+	},
+	"chart": {
+		"loadingChartData": "Загрузка данных графика...",
+		"metricsAvailableForOwnersOnly": "Метрики доступны только для владельцев клана."
+	},
+	"table": {
+		"detailedActivityData": "Подробные данные активности",
+		"channelsActivityData": "Данные активности каналов",
+		"userActivityData": "Данные активности пользователей",
+		"exportCSV": "Экспортировать в файл CSV",
+		"exporting": "Экспорт...",
+		"includedInExport": "Включено в файл экспорта",
+		"notIncludedInExport": "Не включено в файл экспорта",
+		"clanName": "Название клана",
+		"channelName": "Название канала",
+		"userName": "Имя пользователя",
+		"activeUsers": "Активные пользователи",
+		"activeChannels": "Активные каналы",
+		"messages": "Сообщения",
+		"noOwnedClans": "У вас нет клана, чтобы сгенерировать аналитику.",
+		"noActiveChannels": "В данный момент в этом клане нет активных каналов.",
+		"noActiveUsers": "В данный момент в этом канале нет активных пользователей.",
+		"selectColumnTooltip": "Выберите/снимите выбор, чтобы включить этот столбец в экспорт файла CSV",
+		"selectAtLeastOneColumn": "Вы должны выбрать хотя бы один столбец для экспорта в CSV."
+	},
+	"page": {
+		"backToOverview": "Назад к обзору использования клана",
+		"clanUsageStatisticsReport": "Отчет о статистике использования клана",
+		"dashboardReport": "Панель активностей",
+		"report": "Пожаловаться"
+	},
+	"state": {
+		"loadingData": "Загрузка данных...",
+		"noDataFound": "Данные не найдены",
+		"noDataDescription": "Данные использования недоступны за выбранный период."
+	},
+	"reportControls": {
+		"timePeriod": "Временной период",
+		"rangeType": "Тип ранжирования",
+		"startDate": "Дата начала",
+		"endDate": "Дата конца",
+		"last7Days": "Последние 7 дней",
+		"last30Days": "Последние 30 дней",
+		"last90Days": "Последние 90 дней",
+		"customDateRange": "Кастомный диапазон даты",
+		"daily": "Ежедневно",
+		"weekly": "Еженедельно",
+		"monthly": "Ежемесячно",
+		"runReport": "Запустить отчет",
+		"reset": "Сбросить"
+	},
+	"sortIcon": {
+		"tooltip": "Сортировать по возрастанию/убыванию по этому столбцу",
+		"sortedAsc": "Отсортировано по возрастанию",
+		"sortedDesc": "Отсортировано по убыванию"
+	}
+}
+

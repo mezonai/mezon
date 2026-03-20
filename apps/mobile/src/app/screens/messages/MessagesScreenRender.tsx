@@ -39,7 +39,7 @@ import { style } from './styles';
 
 const GRADIENT_START = { x: 1, y: 1 };
 const GRADIENT_END = { x: 0, y: 0 };
-const GRADIENT_LOCATIONS = [0, 0.3];
+const GRADIENT_LOCATIONS = [0.2, 0.4, 0.8, 0.9];
 const flexOneStyle = { flex: 1 };
 const contentContainerStyle = { paddingBottom: size.s_100 };
 const footerStyle = { paddingVertical: size.s_14 };
@@ -147,7 +147,12 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 	}, [paginationLoading, themeValue.textStrong]);
 
 	const gradientColors = useMemo(
-		() => [themeValue?.primaryGradiant || themeValue.secondary, themeValue.secondary] as [string, string],
+		() => [
+			themeValue.secondary,
+			themeValue?.primaryGradiant || themeValue.secondary,
+			themeValue.secondary,
+			themeValue?.primaryGradiant || themeValue.secondary
+		],
 		[themeValue?.primaryGradiant, themeValue.secondary]
 	);
 

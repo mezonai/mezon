@@ -1,0 +1,39 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Отметить как прочитанное"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Пригласить"
+		},
+		"notification": {
+			"title": "",
+			"muteCategory": "Заглушить категорию",
+			"notification": "Настройки уведомлений"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Создать канал",
+			"edit": "Редактировать категорию",
+			"delete": "Удалить категорию"
+		},
+		"devMode": {
+			"title": "Режим разработки",
+			"copyServerID": "Копировать идентификатор клана"
+		},
+		"modalConfirm": {
+			"title": "Удалить категорию",
+			"content": "Пожалуйста, подтвердите, хотите ли вы удалить категорию? Это нельзя отменить.",
+			"confirmText": "Удалить"
+		},
+		"toast": {
+			"systemChannel": "Ошибка: {{categoryName}} имеет системный канал",
+			"error": "Ошибка удаления категории: {{error}}"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "Скопирован идентификатор клана"
+	}
+}

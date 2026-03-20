@@ -1,6 +1,7 @@
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import type { ApiChannelDescription } from 'mezon-js/api';
 import { selectAllAccount } from '../account/account.slice';
 export const CHANNELMETA_FEATURE_KEY = 'channelmeta';
 
@@ -14,6 +15,20 @@ export interface ChannelMetaEntity {
 	isMute: boolean;
 	senderId: string;
 	lastSeenMessageId?: string;
+	count_mess_unread?: number;
+}
+
+function extractChannelMeta(channel: ApiChannelDescription): ChannelMetaEntity {
+	return {
+		id: channel.channel_id || '0',
+		lastSeenTimestamp: Number(channel.last_seen_message?.timestamp_seconds) ?? 0,
+		lastSentTimestamp: Number(channel.last_sent_message?.timestamp_seconds),
+		clanId: channel.clan_id ?? '0',
+		isMute: channel.is_mute ?? false,
+		senderId: channel.last_sent_message?.sender_id ?? '0',
+		lastSeenMessageId: channel.last_seen_message?.id,
+		count_mess_unread: channel.count_mess_unread ?? 0
+	};
 }
 
 export interface ChannelMetaState extends EntityState<ChannelMetaEntity, string> {
@@ -67,7 +82,22 @@ export const channelMetaSlice = createSlice({
 			channelMetaAdapter.updateMany(state, updates);
 		},
 		updateBulkChannelMetadata: (state, action: PayloadAction<ChannelMetaEntity[]>) => {
-			channelMetaAdapter.upsertMany(state, action.payload);
+			const meta = (action.payload as ApiChannelDescription[]).map((ch) => extractChannelMeta(ch));
+			channelMetaAdapter.upsertMany(state, meta);
+		},
+		updateChannelBadgeCount: (state, action: PayloadAction<{ clanId: string; channelId: string; count: number; isReset?: boolean }>) => {
+			const { clanId, channelId, count, isReset = false } = action.payload;
+			const entity = state.entities[channelId];
+			if (!entity) return;
+			const newCountMessUnread = isReset ? 0 : (entity.count_mess_unread ?? 0) + count;
+			const finalCount = Math.max(0, newCountMessUnread);
+			if ((entity.count_mess_unread || 0) === finalCount) return;
+			channelMetaAdapter.updateOne(state, {
+				id: channelId,
+				changes: {
+					count_mess_unread: finalCount
+				}
+			});
 		}
 	}
 });
@@ -116,7 +146,7 @@ import { remove } from '@mezon/mobile-components';
  *
  * See: https://react-redux.js.org/next/api/hooks#useselector
  */
-const { selectEntities } = channelMetaAdapter.getSelectors();
+const { selectEntities, selectById } = channelMetaAdapter.getSelectors();
 
 export const getChannelMetaState = (rootState: { [CHANNELMETA_FEATURE_KEY]: ChannelMetaState }): ChannelMetaState =>
 	rootState[CHANNELMETA_FEATURE_KEY];
@@ -175,4 +205,9 @@ export const selectIsUnreadThreadInChannel = createSelector(
 		}
 		return false;
 	}
+);
+
+export const selectChannelBadgeById = createSelector(
+	[getChannelMetaState, (state, channelId: string) => channelId],
+	(state, channelId) => selectById(state, channelId)?.count_mess_unread || 0
 );

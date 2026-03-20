@@ -1,0 +1,15 @@
+{
+	"selectScreen": "Выберите экран для демонстрации",
+	"entireScreen": "Весь экран",
+	"applicationWindow": "Окно приложения",
+	"shareAudio": "Поделиться аудио",
+	"share": "Поделиться",
+	"cancel": "Отменить",
+	"chooseWhatToShare": "Выберите, чем поделиться",
+	"window": "Окно",
+	"alsoShareSystemAudio": "Также можно поделиться системным звуком",
+	"loadingMore": "Подгрузка...",
+	"loadMore": "Загрузить больше",
+	"remaining": "Осталось"
+}
+

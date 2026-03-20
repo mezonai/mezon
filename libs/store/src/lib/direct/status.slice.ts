@@ -1,8 +1,8 @@
-import { EUserStatus, type IUserProfileActivity, type UsersClanEntity } from '@mezon/utils';
+import { EUserStatus, type IUserProfileActivity } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { UserStatusEvent } from 'mezon-js';
-import type { ApiAllUsersAddChannelResponse } from 'mezon-js/api.gen';
+import type { ApiAllUsersAddChannelResponse, ApiUser } from 'mezon-js/api';
 import type { RootState } from '../store';
 
 export const USER_STATUS_FEATURE_KEY = 'USER_STATUS_FEATURE_KEY';
@@ -16,15 +16,15 @@ const statusAdapter = createEntityAdapter({
 	selectId: (user: IUserProfileActivity) => user.id
 });
 
-export function convertStatusClan(user: UsersClanEntity, state: RootState): IUserProfileActivity {
-	const isMe = state?.account?.userProfile?.user?.id === user?.user?.id;
-	const isUserInvisible = user?.user?.user_status === EUserStatus.INVISIBLE;
+export function convertStatusClan(user: ApiUser & { id: string }, state: RootState): IUserProfileActivity {
+	const isMe = state?.account?.userProfile?.user?.id === user?.id;
+	const isUserInvisible = user?.user_status === EUserStatus.INVISIBLE;
 	return {
 		id: user.id,
-		online: (!isUserInvisible && !!user?.user?.online) || isMe,
-		is_mobile: !isUserInvisible && !!user?.user?.is_mobile,
-		status: user?.user?.online ? user?.user?.status : EUserStatus.INVISIBLE,
-		user_status: user?.user?.user_status
+		online: (!isUserInvisible && !!user?.online) || isMe,
+		is_mobile: !isUserInvisible && !!user?.is_mobile,
+		status: user?.online ? user?.status : EUserStatus.INVISIBLE,
+		user_status: user?.user_status
 	};
 }
 

@@ -1,0 +1,55 @@
+{
+	"joinChannel": "Присоединиться",
+	"textChannels": "Текстовые каналы",
+	"voiceChannels": "Голосовые каналы",
+	"streamingChannels": "Стриминговые каналы",
+	"search": "Поиск",
+	"filterResults": "Фильтровать результаты...",
+	"members": "Участники",
+	"channels": "Каналы",
+	"media": "Медиа",
+	"pins": "Закреплённые",
+	"in": "в:",
+	"messages": "Сообщения",
+	"filterOptions": {
+		"fromUser": "От конкретного пользователя",
+		"mentionUser": "Упомянуть кого-то",
+		"inChannel": "В конкретном канале"
+	},
+	"cancel": "Отменить",
+	"searchPlaceholder": "Поиск",
+	"searchFor": "Искать:",
+	"enter": "Введите",
+	"searchOptions": "Опции поиска",
+	"fromUser": "От пользователя",
+	"mentionsUser": "Упоминания",
+	"hasContent": "Содержит",
+	"inChannel": "В канале",
+	"emptySearch": {
+		"title": "Мы искали по всем направлениям. К сожалению, результаты не найдены."
+	},
+	"learnMore": "Узнать больше",
+	"searchOptionsData": {
+		"fromUserShort": "поиск по отправителю сообщения",
+		"mentionsUserShort": "поиск по упомянутому пользователю",
+		"hasContentShort": "поиск по контенту с вложениями",
+		"channelShort": "поиск в канале"
+	},
+	"prefixes": {
+		"from": "от:",
+		"mentions": "упоминания:",
+		"has": "имеет:",
+		"in": "в:"
+	},
+	"allChannels": "Все каналы",
+	"searching": "Поиск...",
+	"noResults": "Нет результатов",
+	"resultsCount": "{{count}} результатов",
+	"jump": "Перейти",
+	"hasOptions": {
+		"video": "видео",
+		"link": "ссылка",
+		"image": "изображение"
+	}
+}
+

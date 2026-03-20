@@ -12,7 +12,7 @@ import { IS_SAFARI, MessageCrypt, UploadLimitReason, throttle } from '@mezon/uti
 
 import { TooManyUpload, WebRTCStreamProvider, useClanLimitModalErrorHandler } from '@mezon/components';
 import { selectTotalUnreadDM, useAppSelector } from '@mezon/store';
-import { MezonSuspense } from '@mezon/transport';
+import { MezonSuspense, isOnline$, socketState } from '@mezon/transport';
 import { SubPanelName, electronBridge, isLinuxDesktop, isWindowsDesktop } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { memo, useContext, useEffect, useMemo } from 'react';
@@ -62,22 +62,26 @@ const GlobalEventListener = () => {
 			}
 
 			timeoutId = setTimeout(() => {
-				if (document.visibilityState === 'visible' && !document.hidden) {
+				if (document.visibilityState === 'visible' && !document.hidden && !socketState.isConnected) {
 					handleReconnect('Window focus/online event, attempting to reconnect...');
 				}
 			}, 3000);
 		};
 
+		const sub = isOnline$().subscribe((online) => {
+			if (online) {
+				reconnectSocket();
+			}
+		});
 		window.addEventListener('focus', reconnectSocket);
-		window.addEventListener('online', reconnectSocket);
 		document.addEventListener('visibilitychange', reconnectSocket);
 
 		return () => {
 			if (timeoutId) {
 				clearTimeout(timeoutId);
 			}
+			sub.unsubscribe();
 			window.removeEventListener('focus', reconnectSocket);
-			window.removeEventListener('online', reconnectSocket);
 			document.removeEventListener('visibilitychange', reconnectSocket);
 		};
 	}, []);

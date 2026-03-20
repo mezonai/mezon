@@ -11,7 +11,7 @@ import {
 	getShareContactInfo
 } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiDirectFcmProto } from 'mezon-js/api.gen';
+import type { ApiDirectFcmProto } from 'mezon-js/api';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNotificationJump } from '../../hooks/useNotificationJump';

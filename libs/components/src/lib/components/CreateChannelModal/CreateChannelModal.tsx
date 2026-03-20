@@ -14,7 +14,7 @@ import {
 } from '@mezon/store';
 import { AlertTitleTextWarning, Icons } from '@mezon/ui';
 import { ChannelType } from 'mezon-js';
-import type { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiApp, ApiCreateChannelDescRequest } from 'mezon-js/api';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';

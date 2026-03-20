@@ -1,0 +1,60 @@
+{
+	"directMessages": "Личные сообщения",
+	"createDM": "Создать личное сообщение",
+	"friends": "Друзья",
+	"yourMessages": "Ваши сообщения",
+	"selectConversation": "Выберите разговор, чтобы начать переписку",
+	"createMessageGroup": {
+		"selectFriends": "Выбрать друзей",
+		"canAddMoreFriends": "Вы можете добавить ещё {{count}} друзей.",
+		"searchPlaceholder": "Введите имя пользователя друга",
+		"addToGroupChat": "Добавить в группу",
+		"createDMOrGroupChat": "Написать или создать групповой чат",
+		"createDM": "Создать личное сообщение",
+		"createGroupChat": "Создать групповой чат",
+		"noFriendsFound": "Не найдено друзей, которые ещё не находятся в этом личном сообщении.",
+		"creating": "Создание..."
+	},
+	"editGroup": {
+		"title": "Редактировать группу",
+		"uploadImageText": "Кликните для загрузки изображения",
+		"removeAvatar": "Убрать аватар",
+		"groupNameLabel": "Название группы",
+		"groupNamePlaceholder": "Введите название группы",
+		"validationError": "Пожалуйста, введите корректное имя группы (только буквы, цифры, _ или -).",
+		"cancel": "Отменить",
+		"save": "Сохранить",
+		"saving": "Сохранение..."
+	},
+	"contextMenu": {
+		"editGroup": "Редактировать группу",
+		"addFriend": "Добавить друга",
+		"leaveGroup": "Покинуть группу",
+		"closeDM": "Закрыть личное сообщение",
+		"markAsRead": "Пометить как прочитанное",
+		"invitePeople": "Пригласить",
+		"hideConversation": "Скрыть диалог",
+		"profile": "Профиль",
+		"message": "Сообщение",
+		"removeFriend": "Убрать друга",
+		"block": "Заблокировать",
+		"unblock": "Разблокировать",
+		"removeFromGroup": "Убрать из группы",
+		"shareContact": "Поделиться контактом",
+		"mute": "Заглушить",
+		"unmute": "Разглушить",
+		"for15Minutes": "На 15 минут",
+		"for1Hour": "На 1 час",
+		"for3Hours": "На 3 часа",
+		"for8Hours": "На 8 часов",
+		"for24Hours": "На 24 часа",
+		"untilTurnBackOn": "Пока я не включу это обратно",
+		"mutedUntil": "Заглушён до {{time}}"
+	},
+	"remove": {
+		"content": "Этот разговор больше недоступен!",
+		"title": "Чат недоступен",
+		"button": "Подтвердить"
+	}
+}
+

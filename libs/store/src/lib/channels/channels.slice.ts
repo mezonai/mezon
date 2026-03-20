@@ -21,7 +21,7 @@ import type {
 	ApiChannelDescription,
 	ApiCreateChannelDescRequest,
 	ApiMarkAsReadRequest
-} from 'mezon-js/api.gen';
+} from 'mezon-js/api';
 import { appActions } from '../app/app.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -817,9 +817,6 @@ export const fetchChannels = createAsyncThunk(
 						isMobile
 					})
 				);
-
-				const meta = channels.map((ch) => extractChannelMeta(ch));
-				thunkAPI.dispatch(channelMetaActions.updateBulkChannelMetadata(meta));
 
 				const currentState = thunkAPI.getState() as RootState;
 				const queuedMessages = currentState.messages.queuedLastSeenMessages;

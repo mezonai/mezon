@@ -30,6 +30,7 @@
 		"selectAChannel": "select a channel",
 		"yes": "Yes",
 		"deleteCaptionHook": "Delete Caption Hook",
+		"deleteWebhookTitle": "Delete {{webhookName}}",
 		"deleteWebhookConfirmation": "Please confirm if you would like to delete the {{webhookName}} webhook? This action cannot be undone.",
 		"resetToken": "Reset Token",
 		"name": "Webhook name"

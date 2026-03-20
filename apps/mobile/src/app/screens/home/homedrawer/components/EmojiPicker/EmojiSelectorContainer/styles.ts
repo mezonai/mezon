@@ -39,7 +39,7 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 		},
 		textInputWrapper: {
 			flexDirection: 'row',
-			backgroundColor: colors.secondary,
+			backgroundColor: colors.tertiary,
 			marginVertical: 10,
 			alignItems: 'center',
 			paddingHorizontal: 10,
@@ -61,7 +61,7 @@ export const style = (colors: Attributes, isTabletLandscape?: boolean) =>
 		clanLogoText: {
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: colors.secondary,
+			backgroundColor: colors.tertiary,
 			borderRadius: size.s_20,
 			height: size.s_27,
 			width: size.s_27

@@ -1,10 +1,12 @@
 import EventEmitter from 'events';
-import type { Client, Socket } from 'mezon-js';
-import { Session } from 'mezon-js';
+import type { Socket } from 'mezon-js';
+import { Client, Session } from 'mezon-js';
 import { WebSocketAdapterPb } from 'mezon-js-protobuf';
-import type { ApiConfirmLoginRequest, ApiLinkAccountConfirmRequest, ApiLoginIDResponse, ApiSession } from 'mezon-js/api.gen';
+import type { ApiConfirmLoginRequest, ApiLinkAccountConfirmRequest, ApiLoginIDResponse, ApiSession } from 'mezon-js/api';
 import type { DongClient, IndexerClient, MmnClient, ZkClient } from 'mmn-client-js';
 import React, { useCallback } from 'react';
+import { firstValueFrom, from, throwError, timer, type Observable } from 'rxjs';
+import { catchError, finalize, shareReplay, switchMap, take, timeout } from 'rxjs/operators';
 import type { CreateMezonClientOptions } from '../mezon';
 import {
 	createClient as createMezonClient,
@@ -13,6 +15,7 @@ import {
 	createMmnClient as createMezonMmnClient,
 	createZkClient as createMezonZkClient
 } from '../mezon';
+import { isOnline, waitForOnline$ } from '../network';
 import { socketState } from '../socketState';
 
 const MAX_WEBSOCKET_FAILS = 6;
@@ -20,74 +23,155 @@ const MIN_WEBSOCKET_RETRY_TIME = 1000;
 const MAX_WEBSOCKET_RETRY_TIME = 30000;
 const JITTER_RANGE = 1000;
 const FAST_RETRY_ATTEMPTS = 5;
-const MAX_REFRESH_RETRIES_SAME_TOKEN = 5;
+const MAX_REFRESH_RETRIES = 3;
+const MAX_REFRESH_TIMEOUT_MS = 10000;
+const SESSION_EXPIRY_BUFFER_SEC = 60;
+const originalIsExpired = Session.prototype.isexpired;
+Session.prototype.isexpired = function (currenttime: number): boolean {
+	return originalIsExpired.call(this, currenttime + SESSION_EXPIRY_BUFFER_SEC);
+};
 
-const sessionRefreshManager = {
-	_activePromise: null as Promise<Session> | null,
-	_lastRefreshToken: '',
-	_failCount: 0,
+const MAX_SESSION_REFRESH_FAILS = 4;
+let sessionRefreshFailCount = 0;
+let sessionRefreshBlocked = false;
 
-	async refresh(client: Client, session: Session): Promise<Session> {
-		if (this._activePromise) {
-			return this._activePromise;
+const originalSessionRefresh = Client.prototype.sessionRefresh;
+Client.prototype.sessionRefresh = async function (session: Session, vars?: Record<string, string>): Promise<Session> {
+	if (sessionRefreshBlocked) {
+		fireSessionExpired();
+		throw new Error('Session refresh blocked after repeated auth failures');
+	}
+
+	try {
+		const result = await originalSessionRefresh.call(this, session, vars);
+		sessionRefreshFailCount = 0;
+		return result;
+	} catch (error: unknown) {
+		const status = error && typeof error === 'object' && 'status' in error ? (error as { status: number }).status : 0;
+		if (status === 401 || status === 403) {
+			sessionRefreshBlocked = true;
+			fireSessionExpired();
+			throw error;
 		}
-
-		this._activePromise = this._doRefresh(client, session);
-		return this._activePromise;
-	},
-
-	async _doRefresh(client: Client, session: Session): Promise<Session> {
-		try {
-			const isSameToken = this._lastRefreshToken === session.refresh_token;
-			if (isSameToken) {
-				this._failCount++;
-			} else {
-				this._lastRefreshToken = session.refresh_token;
-				this._failCount = 0;
+		if (status === 500) {
+			sessionRefreshFailCount++;
+			if (sessionRefreshFailCount >= MAX_SESSION_REFRESH_FAILS) {
+				sessionRefreshBlocked = true;
+				fireSessionExpired();
 			}
-
-			if (this._failCount >= MAX_REFRESH_RETRIES_SAME_TOKEN) {
-				this._reset();
-				if (typeof window !== 'undefined') {
-					window.dispatchEvent(new CustomEvent('mezon:session-expired'));
-				}
-				throw new Error('Session refresh failed: max retries with same token');
-			}
-
-			const newSession = await client.sessionRefresh(session);
-			this._lastRefreshToken = newSession.refresh_token;
-			this._failCount = 0;
-			return newSession;
-		} finally {
-			this._activePromise = null;
 		}
-	},
-
-	_reset() {
-		this._activePromise = null;
-		this._lastRefreshToken = '';
-		this._failCount = 0;
+		throw error;
 	}
 };
+
+export function resetSessionRefreshBlock() {
+	sessionRefreshFailCount = 0;
+	sessionRefreshBlocked = false;
+}
+
+function isNetworkError(error: unknown): boolean {
+	if (error instanceof TypeError && error.message.includes('fetch')) return true;
+	if (error instanceof DOMException && error.name === 'AbortError') return true;
+	if (!isOnline()) return true;
+	return false;
+}
+
+function isAuthError(error: unknown): boolean {
+	if (error && typeof error === 'object' && 'status' in error) {
+		const status = (error as { status: number }).status;
+		return status === 401 || status === 403 || status === 500;
+	}
+	if (error instanceof Response) {
+		return error.status === 401 || error.status === 403 || error.status === 500;
+	}
+	return false;
+}
+
+function fireSessionExpired() {
+	if (typeof window !== 'undefined') {
+		window.dispatchEvent(new CustomEvent('mezon:session-expired'));
+	}
+}
+
+const sessionRefreshManager = {
+	_current$: null as Observable<Session> | null,
+
+	refresh(client: Client, session: Session): Promise<Session> {
+		if (this._current$) {
+			return firstValueFrom(this._current$);
+		}
+
+		this._current$ = this._createRefresh$(client, session).pipe(
+			shareReplay({ bufferSize: 1, refCount: true }),
+			finalize(() => {
+				this._current$ = null;
+			})
+		);
+
+		return firstValueFrom(this._current$);
+	},
+
+	_createRefresh$(client: Client, session: Session): Observable<Session> {
+		let serverRetryCount = 0;
+
+		const jitterDelay = (base: number) => base + Math.random() * Math.min(base, 3000);
+
+		const refreshWithTimeout$ = () =>
+			from(client.sessionRefresh(session)).pipe(
+				timeout(MAX_REFRESH_TIMEOUT_MS),
+				catchError((error: unknown) => {
+					if (error && typeof error === 'object' && 'name' in error && (error as { name: string }).name === 'TimeoutError') {
+						return throwError(() => new Error('Session refresh timed out'));
+					}
+					return throwError(() => error);
+				})
+			);
+
+		const attempt$ = (): Observable<Session> =>
+			waitForOnline$().pipe(
+				switchMap(() => refreshWithTimeout$()),
+				catchError((error: unknown) => {
+					if (isNetworkError(error)) {
+						return waitForOnline$().pipe(switchMap(() => timer(jitterDelay(2000)).pipe(switchMap(() => attempt$()))));
+					}
+
+					serverRetryCount++;
+					if (serverRetryCount >= MAX_REFRESH_RETRIES) {
+						if (isAuthError(error)) {
+							fireSessionExpired();
+						}
+						return throwError(() => error);
+					}
+
+					return timer(jitterDelay(1000 * serverRetryCount)).pipe(switchMap(() => attempt$()));
+				})
+			);
+
+		return attempt$();
+	},
+
+	reset() {
+		this._current$ = null;
+	}
+};
+
+export const isSessionRefreshing = () => sessionRefreshManager._current$ !== null;
+
+export const resetSessionRefreshManager = () => {
+	sessionRefreshManager.reset();
+};
+
 export const DEFAULT_WS_URL = 'sock.mezon.ai';
 export const SESSION_STORAGE_KEY = 'mezon_session';
 export const MobileEventSessionEmitter = new EventEmitter();
 
-const waitForNetworkAndDelay = async (delayMs: number): Promise<void> => {
-	if (!navigator.onLine) {
-		return new Promise((resolve) => {
-			const handleOnline = () => {
-				window.removeEventListener('online', handleOnline);
-				resolve();
-			};
-			window.addEventListener('online', handleOnline);
-		});
-	}
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			resolve();
-		}, delayMs);
-	});
+const waitForNetworkAndDelay = (delayMs: number): Promise<void> => {
+	return firstValueFrom(
+		waitForOnline$().pipe(
+			switchMap(() => timer(delayMs)),
+			take(1)
+		)
+	).then(() => undefined);
 };
 
 type MezonContextProviderProps = {
@@ -440,6 +524,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 			if (!clientRef.current) {
 				throw new Error('Mezon client not initialized');
 			}
+			resetSessionRefreshBlock();
 			const session = await clientRef.current.authenticateMezon(token, undefined, undefined, isFromMobile ? true : (isRemember ?? false));
 			sessionRef.current = session;
 
@@ -542,6 +627,9 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 	const logOutMezon = useCallback(
 		async (device_id?: string, platform?: string, clearSession?: boolean) => {
+			sessionRefreshManager.reset();
+			resetSessionRefreshBlock();
+			reconnectingRef.current = false;
 			clearSessionRefreshFromStorage();
 			if (socketRef.current) {
 				socketRef.current.ondisconnect = () => {
@@ -659,6 +747,10 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 				while (failCount < MAX_WEBSOCKET_FAILS) {
 					try {
+						if (!clientRef.current || !sessionRef.current) {
+							return null;
+						}
+
 						if (socketRef.current && socketRef.current.isOpen()) {
 							return socketRef.current;
 						}
@@ -669,18 +761,29 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 
 						let newSession = null;
 						if (sessionRef.current.refresh_token && sessionRef.current.isexpired(Date.now() / 1000)) {
-							newSession = await sessionRefreshManager.refresh(
-								clientRef.current,
-								new Session(
-									sessionRef.current.token,
-									sessionRef.current.refresh_token,
-									sessionRef.current.created,
-									sessionRef.current.api_url,
-									wsUrl,
-									sessionRef.current.id_token,
-									sessionRef.current.is_remember ?? false
-								)
-							);
+							try {
+								newSession = await sessionRefreshManager.refresh(
+									clientRef.current,
+									new Session(
+										sessionRef.current.token,
+										sessionRef.current.refresh_token,
+										sessionRef.current.created,
+										sessionRef.current.api_url,
+										wsUrl,
+										sessionRef.current.id_token,
+										sessionRef.current.is_remember ?? false
+									)
+								);
+							} catch (refreshError) {
+								if (!sessionRef.current) {
+									return null;
+								}
+								throw refreshError;
+							}
+						}
+
+						if (socketRef.current && socketRef.current.isOpen()) {
+							return socketRef.current;
 						}
 
 						await socket.connect(newSession || sessionRef.current, true, isFromMobile ? '1' : '0');
@@ -692,7 +795,7 @@ const MezonContextProvider: React.FC<MezonContextProviderProps> = ({ children, m
 						failCount++;
 
 						if (failCount >= MAX_WEBSOCKET_FAILS) {
-							throw new Error('Socket reconnecting...');
+							throw new Error('Socket reconnection failed');
 						}
 
 						let retryTime: number;

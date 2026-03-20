@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import { FOR_15_MINUTES_SEC, type IPSystemMessage, type LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiSystemMessage, ApiSystemMessagesList, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
+import type { ApiSystemMessage, ApiSystemMessagesList, MezonUpdateSystemMessageBody } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
 import type { MezonValueContext } from '../helpers';

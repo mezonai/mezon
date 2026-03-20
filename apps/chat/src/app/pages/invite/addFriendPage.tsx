@@ -1,11 +1,12 @@
 import { useAuth } from '@mezon/core';
-import { checkMutableRelationship, directActions, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
+import { checkMutableRelationship, directActions, selectAddFriendRequestLoading, sendRequestAddFriend, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ChannelType, safeJSONParse } from 'mezon-js';
-import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiCreateChannelDescRequest, ApiIsFollowerResponse } from 'mezon-js/api';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'react-qr-code';
+import { useSelector } from 'react-redux';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -45,6 +46,7 @@ export default function AddFriendPage() {
 
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+	const isAddingFriend = useSelector(selectAddFriendRequestLoading);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -108,10 +110,10 @@ export default function AddFriendPage() {
 		}
 	};
 
-	const handleAddFriend = () => {
-		if (!userProfile?.user?.id || !username) return;
+	const handleAddFriend = async () => {
+		if (!userProfile?.user?.id || !username || isAddingFriend) return;
 
-		dispatch(
+		await dispatch(
 			sendRequestAddFriend({
 				usernames: username
 			})
@@ -184,7 +186,8 @@ export default function AddFriendPage() {
 									{error === ErrorTypeMutable.NOT_MUTABLE && (
 										<button
 											onClick={handleAddFriend}
-											className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98]"
+											disabled={isAddingFriend}
+											className="w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold rounded-xl transition-all duration-200 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
 										>
 											{t('invite.addFriend')}
 										</button>

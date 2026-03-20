@@ -3,7 +3,7 @@ import type { RolesClanEntity } from '@mezon/store';
 import { getStore, rolesClanActions, selectCurrentClanId, selectUserMaxPermissionLevel, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { DEFAULT_ROLE_COLOR, EDragBorderPosition, SlugPermission, generateE2eId } from '@mezon/utils';
-import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js/api.gen';
+import type { ApiPermission, ApiUpdateRoleOrderRequest } from 'mezon-js/api';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';

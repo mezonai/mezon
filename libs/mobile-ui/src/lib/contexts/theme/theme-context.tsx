@@ -1,6 +1,6 @@
 import { appActions, selectTheme, useAppDispatch } from '@mezon/store-mobile';
 import React, { createContext, useCallback, useMemo } from 'react';
-import { Appearance } from 'react-native';
+import { Appearance, useColorScheme } from 'react-native';
 import { useSelector } from 'react-redux';
 import { themeColors } from '../../themes';
 import type { ThemeContextType, ThemeMode } from './types';
@@ -22,7 +22,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 	const rawTheme = useSelector(selectTheme);
 	const appearanceTheme = normalizeTheme(rawTheme);
 
-	const systemTheme = useMemo(() => (Appearance.getColorScheme() === 'dark' ? ThemeModeBase.DARK : ThemeModeBase.LIGHT), []);
+	const colorScheme = useColorScheme();
+	const systemTheme = useMemo(() => (colorScheme === 'dark' ? ThemeModeBase.DARK : ThemeModeBase.LIGHT), [colorScheme]);
 
 	const setTheme = useCallback(
 		(value: ThemeMode) => {
@@ -44,11 +45,11 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 	const value = useMemo(() => {
 		return {
 			themeBasic: themeBasicMode,
-			theme: currentTheme,
+			theme: appearanceTheme,
 			themeValue: currentThemeColors,
 			setTheme
 		};
-	}, [currentTheme, currentThemeColors, setTheme]);
+	}, [themeBasicMode, appearanceTheme, currentThemeColors, setTheme]);
 
 	return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 };

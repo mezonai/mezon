@@ -128,7 +128,7 @@ export const EventCreatorType = memo(function ({ navigation, route }: MenuClanSc
 
 	const [eventType, setEventType] = useState<OptionEvent>();
 	const [channelID, setChannelID] = useState<string>(channels?.[0]?.value || '');
-	const [location, setLocation] = useState<string>('');
+	const [location, setLocation] = useState<string>(currentEvent?.address || '');
 	const [eventChannel, setEventChannel] = useState<ChannelsEntity>();
 
 	const isExistChannelVoice = Boolean(currentEvent?.channel_voice_id);

@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { ICategoryChannel, IChannel } from '@mezon/utils';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiChannelDescription, ApiUpdateCategoryDescRequest } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiUpdateCategoryDescRequest } from 'mezon-js/api';
 import type { CategoriesEntity } from '../categories/categories.slice';
 import { clansActions } from '../clans/clans.slice';
 import type { RootState } from '../store';
@@ -337,49 +337,6 @@ export const listChannelRenderSlice = createSlice({
 				state.listChannelRender[clanId].join();
 			}
 		},
-		updateChannelUnreadCount: (state, action: PayloadAction<{ channelId: string; clanId: string; count: number; isReset?: boolean }>) => {
-			const { channelId, clanId, count, isReset = false } = action.payload;
-			if (clanId === '0') {
-				return;
-			}
-			if (!state.listChannelRender[clanId]) {
-				return;
-			}
-			state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
-				if (channel.id === channelId) {
-					const currentCount = (channel as IChannel).count_mess_unread || 0;
-					const newCount = isReset ? 0 : Math.max(0, currentCount + count);
-					return {
-						...channel,
-						count_mess_unread: newCount
-					};
-				}
-				return channel;
-			});
-		},
-		removeBadgeFromChannel: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
-			const { channelId, clanId } = action.payload;
-			const channels = state.listChannelRender[clanId];
-
-			if (channels) {
-				let hasChanged = false;
-
-				const updatedChannels = channels.map((channel) => {
-					if (channel.id === channelId && (channel as any)?.count_mess_unread !== 0) {
-						hasChanged = true;
-						return {
-							...channel,
-							count_mess_unread: 0
-						};
-					}
-					return channel;
-				});
-
-				if (hasChanged) {
-					state.listChannelRender[clanId] = updatedChannels;
-				}
-			}
-		},
 		leaveChannelListRender: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
 			const { channelId, clanId } = action.payload;
 			if (state.listChannelRender[clanId]) {
@@ -389,55 +346,6 @@ export const listChannelRenderSlice = createSlice({
 				}
 				state.listChannelRender[clanId]?.splice(indexRemove, 1);
 				state.listChannelRender[clanId].join();
-			}
-		},
-		handleMarkAsReadListRender: (
-			state,
-			action: PayloadAction<{ channelId?: string; clanId?: string; categoryId?: string; type: EMarkAsReadType }>
-		) => {
-			const { channelId, clanId, categoryId, type } = action.payload;
-			switch (type) {
-				case EMarkAsReadType.CHANNEL:
-					if (!clanId || !channelId || !state.listChannelRender[clanId]) {
-						return;
-					}
-					state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
-						if (channel.id === channelId || (channel as IChannel).parent_id === channelId) {
-							return {
-								...channel,
-								count_mess_unread: 0
-							};
-						}
-						return channel;
-					});
-					break;
-				case EMarkAsReadType.CLAN:
-					if (!clanId || !state.listChannelRender[clanId]) {
-						return;
-					}
-					state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
-						return {
-							...channel,
-							count_mess_unread: 0
-						};
-					});
-					break;
-				case EMarkAsReadType.CATEGORY:
-					if (!clanId || !categoryId || !state.listChannelRender[clanId]) {
-						return;
-					}
-					state.listChannelRender[clanId] = state.listChannelRender[clanId].map((channel) => {
-						if ((channel as IChannel).category_id === categoryId) {
-							return {
-								...channel,
-								count_mess_unread: 0
-							};
-						}
-						return channel;
-					});
-					break;
-				default:
-					break;
 			}
 		},
 		handleMarkFavor: (state, action: PayloadAction<{ channelId: string; clanId: string; mark: boolean }>) => {

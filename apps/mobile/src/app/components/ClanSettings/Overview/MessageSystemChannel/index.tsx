@@ -25,8 +25,8 @@ const ChannelsMessageSystem = ({ onSelectChannel, listChannelWithoutVoice }: Cha
 		return (
 			<TouchableOpacity style={styles.channelItem} onPress={() => selectChannel(item)}>
 				<View style={styles.containerIcon}>
-					{item?.channel_private ? (
-						<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+					{item?.age_restricted === 1 ? (
+						<Icons.ClansWarningIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 					) : (
 						<Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
 					)}

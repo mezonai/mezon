@@ -1,4 +1,5 @@
-import { Attributes, Metrics } from '@mezon/mobile-ui';
+import type { Attributes } from '@mezon/mobile-ui';
+import { Metrics } from '@mezon/mobile-ui';
 import { StyleSheet } from 'react-native';
 
 export const style = (colors: Attributes) =>
@@ -15,5 +16,10 @@ export const style = (colors: Attributes) =>
 			width: 55,
 			borderRadius: 10,
 			borderWidth: 1
+		},
+
+		row: {
+			flexDirection: 'row',
+			flex: 1
 		}
 	});

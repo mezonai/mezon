@@ -16,7 +16,7 @@ import { Icons } from '@mezon/ui';
 import { EEventStatus, EPermission, ONE_MINUTE_MS, OptionEvent, createImgproxyUrl, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { ChannelType } from 'mezon-js';
-import type { ApiUserEventRequest } from 'mezon-js/api.gen';
+import type { ApiUserEventRequest } from 'mezon-js/api';
 import Tooltip from 'rc-tooltip';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +26,7 @@ import { toast } from 'react-toastify';
 import { AvatarImage } from '../../../AvatarImage/AvatarImage';
 import type { Coords } from '../../../ChannelLink';
 import ModalInvite from '../../../ListMemberInvite/modalInvite';
+import { renderDescriptionWithLinks } from '../eventHelper';
 import { createI18nTimeFormatter } from '../timeFomatEvent';
 import ModalDelEvent from './modalDelEvent';
 import ModalShareEvent from './modalShareEvent';
@@ -287,9 +288,12 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								/>
 								<div
 									className="flex items-center gap-x-1 w-full justify-end px-2 py-1 rounded-full bg-theme-primary text-theme-primary-active"
-									title={t('eventCreator:eventDetail.personInterested', {
-										count: (event?.user_ids?.filter((id) => id !== '0')?.length || '') as any
-									})}
+									title={t(
+										(event?.user_ids?.filter((id) => id !== '0')?.length || 0) === 1
+											? 'eventCreator:eventDetail.personInterested'
+											: 'eventCreator:eventDetail.personInteresteds',
+										{ count: event?.user_ids?.filter((id) => id !== '0')?.length || 0 }
+									)}
 								>
 									<span className="text-md">{event?.user_ids?.filter((id) => id !== '0')?.length || '0'}</span>
 									<Icons.MemberList defaultSize="h-4 w-4" />
@@ -312,7 +316,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 								className="break-all max-h-[75px] eventDescriptionTruncate whitespace-pre-wrap"
 								data-e2e={generateE2eId('clan_page.modal.create_event.review.description')}
 							>
-								{isReviewEvent ? reviewDescription : event?.description}
+								{renderDescriptionWithLinks(isReviewEvent ? reviewDescription : event?.description)}
 							</div>
 						</div>
 					</div>
@@ -356,7 +360,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 					{checkOptionLocation && (
 						<>
 							<Icons.Location />
-							<p data-e2e={generateE2eId('clan_page.modal.create_event.review.location_name')}>{address}</p>
+							{renderDescriptionWithLinks(address)}
 						</>
 					)}
 					{option === '' && !address && !channelVoice && (

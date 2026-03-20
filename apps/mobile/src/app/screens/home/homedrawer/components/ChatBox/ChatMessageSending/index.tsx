@@ -33,7 +33,7 @@ import type {
 } from '@mezon/utils';
 import { SHARE_CONTACT_KEY, THREAD_ARCHIVE_DURATION_SECONDS, ThreadStatus, checkIsThread, filterEmptyArrays, uniqueUsers } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import type { MutableRefObject } from 'react';
 import React, { memo, useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, View } from 'react-native';
@@ -309,7 +309,7 @@ export const ChatMessageSending = memo(
 							ref_type: 0,
 							message_sender_id: targetMessage?.sender_id || '0',
 							message_sender_username: targetMessage?.username,
-							mesages_sender_avatar: targetMessage.clan_avatar ? targetMessage.clan_avatar : targetMessage.avatar,
+							message_sender_avatar: targetMessage.clan_avatar ? targetMessage.clan_avatar : targetMessage.avatar,
 							message_sender_clan_nick: targetMessage?.clan_nick,
 							message_sender_display_name: targetMessage?.display_name,
 							content: JSON.stringify(targetMessage.content),

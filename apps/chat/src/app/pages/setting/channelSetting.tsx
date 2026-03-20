@@ -9,7 +9,7 @@ import {
 	useAppDispatch
 } from '@mezon/store';
 import type { ChangeEvent } from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
 import ChannelTopBar from './ChannelTopBar';
@@ -21,17 +21,7 @@ const ChannelSetting = () => {
 	const countChannel = useSelector(selectNumberChannelCount);
 	const dispatch = useAppDispatch();
 	const selectClanId = useSelector(selectCurrentClanId);
-
-	const handleSearchByNameChannel = (e: ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.value;
-		setSearchFilter(value);
-
-		if (!value.trim()) {
-			debouncedSearchChannel.cancel();
-			return;
-		}
-		debouncedSearchChannel(value);
-	};
+	const prevClanIdRef = useRef<string | null>(null);
 
 	const debouncedSearchChannel = useDebouncedCallback(async (value: string) => {
 		await dispatch(
@@ -44,18 +34,39 @@ const ChannelSetting = () => {
 		);
 	}, 300);
 
+	const handleSearchByNameChannel = useCallback(
+		(e: ChangeEvent<HTMLInputElement>) => {
+			const value = e.target.value;
+			setSearchFilter(value);
+
+			if (!value.trim()) {
+				debouncedSearchChannel.cancel();
+				return;
+			}
+			debouncedSearchChannel(value);
+		},
+		[debouncedSearchChannel]
+	);
+
 	const listChannelBySearch = useMemo(() => {
 		if (searchFilter) {
 			return listChannelSearch;
 		}
 		return listChannel;
 	}, [listChannelSearch, listChannel, searchFilter]);
+
 	useEffect(() => {
+		if (selectClanId && prevClanIdRef.current && prevClanIdRef.current !== selectClanId) {
+			setSearchFilter('');
+			dispatch(channelSettingActions.resetChannelSettingState());
+		}
+		prevClanIdRef.current = selectClanId as string;
+	}, [selectClanId, dispatch]);
+
+	const fetchChannels = useCallback(async () => {
 		if (!selectClanId) return;
-		setSearchFilter('');
-		debouncedSearchChannel.cancel();
-		dispatch(channelSettingActions.resetChannelSettingState());
-		dispatch(
+
+		await dispatch(
 			channelSettingActions.fetchChannelSettingInClan({
 				clanId: selectClanId as string,
 				parentId: '0',
@@ -63,7 +74,11 @@ const ChannelSetting = () => {
 				noCache: true
 			})
 		);
-	}, [selectClanId, dispatch, debouncedSearchChannel]);
+	}, [selectClanId, dispatch]);
+
+	useEffect(() => {
+		fetchChannels();
+	}, [fetchChannels]);
 
 	return (
 		<div className="p-4 h-[calc(100vh_-_56px)] flex flex-col text-theme-primary ">

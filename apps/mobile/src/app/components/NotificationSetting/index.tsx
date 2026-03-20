@@ -7,7 +7,7 @@ import {
 	selectCurrentChannelId,
 	selectCurrentClanId,
 	selectDefaultNotificationCategory,
-	selectDefaultNotificationClan,
+	selectDefaultNotificationClanByClanId,
 	selectNotifiSettingsEntitiesById,
 	useAppDispatch,
 	useAppSelector
@@ -58,7 +58,7 @@ export default function NotificationSetting({ channel }: { channel?: ChannelThre
 	const currentClanId = useSelector(selectCurrentClanId);
 	const getNotificationChannelSelected = useAppSelector((state) => selectNotifiSettingsEntitiesById(state, channel?.id || currentChannelId || ''));
 	const defaultNotificationCategory = useAppSelector((state) => selectDefaultNotificationCategory(state, channel?.category_id as string));
-	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
+	const defaultNotificationClan = useSelector((state) => selectDefaultNotificationClanByClanId(state, currentClanId));
 	const [defaultNotifyName, setDefaultNotifyName] = useState('');
 
 	useEffect(() => {

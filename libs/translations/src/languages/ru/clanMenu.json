@@ -1,0 +1,63 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "Пометить как прочитанное",
+            "browseChannels": "Просмотр каналов"
+        },
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "Создать канал",
+            "createCategory": "Создать категорию",
+            "createEvent": "Создать событие"
+        },
+        "optionsMenu": {
+            "title": "",
+            "editServerProfile": "Редактировать профиль клана",
+            "showAllChannels": "Показать все каналы",
+            "hideMutedChannels": "Скрыть заглушённые каналы",
+            "allowDirectMessage": "Разрешить прямые сообщения",
+            "allowMessageRequest": "Разрешить запрос на общение",
+            "reportServer": "Пожаловаться на клан",
+            "leaveServer": "Покинуть клан",
+            "deleteClan": "Удалить клан",
+            "auditLog": "Журнал аудита"
+        },
+        "optionShowEmptyCategories": {
+            "title": "Показать пустые категории",
+            "show": "Показать",
+            "hide": "Скрыть"
+        },
+        "devMode": {
+            "title": "Режим разработки",
+            "copyServerID": "Скопировать идентификатор клана",
+            "serverIDCopied": "Идентификатор клана скопирован"
+        }
+    },
+    "actions": {
+        "boot": "Бут",
+        "invite": "Пригласить",
+        "notifications": "Уведомления",
+        "settings": "Настройки"
+    },
+    "info": {
+        "online": "Онлайн",
+        "members": "Участники"
+    },
+    "common": {
+        "search": "Поиск",
+        "community": "Сообщество",
+        "searchMembers": "Поиск участников"
+    },
+    "modalPanel": {
+        "createCategory": "Создать категорию",
+        "markAsRead": "Пометить как прочитанное",
+        "processing": "Обработка...",
+        "invitePeople": "Пригласить людей",
+        "clanSettings": "Настройки клана", 
+        "notificationSettings": "Настройки уведомлений",
+        "showEmptyCategories": "Показать пустые категории",
+        "leaveClan": "Покинуть клан"
+    }
+}
+

@@ -94,7 +94,7 @@ export function EventCreatorDetails({ navigation, route }: MenuClanScreenProps<C
 			},
 			{
 				title: t('fields.eventFrequency.everyWeekday'),
-				value: ERepeatType.WEEKLY_ON_DAY
+				value: ERepeatType.EVERY_WEEKDAY
 			}
 		],
 		[combinedStartDateTime]

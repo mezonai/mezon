@@ -171,7 +171,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		return pc;
 	};
 
-	const getConstraintsLocal = async (isVideoCall: boolean) => {
+	const getConstraintsLocal = async (isVideoCall: boolean, isAnswer?: boolean) => {
 		let permissionCameraGranted = false;
 		let permissionMicroGranted = false;
 
@@ -193,8 +193,11 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					autoClose: 1000
 				})
 			);
-			await handleEndCall(true);
-			return;
+			if (!isAnswer) await handleEndCall(true);
+			return {
+				audio: false,
+				video: isVideoCall && permissionCameraGranted
+			};
 		} else {
 			permissionMicroGranted = true;
 			const devices = await navigator.mediaDevices.enumerateDevices();
@@ -218,7 +221,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			callTimeout?.current && clearTimeout(callTimeout.current);
 			if (!isAnswer) {
 				isMyCaller.current = true;
-				const constraints = await getConstraintsLocal(isVideoCall);
+				const constraints = await getConstraintsLocal(isVideoCall, isAnswer);
 				const stream = await navigator.mediaDevices.getUserMedia(constraints);
 				const pc = initializePeerConnection();
 				if (isVideoCall) {
@@ -300,6 +303,11 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 					remoteScreenStream: null
 				});
 				peerConnection.current = pc;
+			} else {
+				const constraints = await getConstraintsLocal(isVideoCall, isAnswer);
+				if (constraints?.audio) {
+					dispatch(DMCallActions.setIsInCall(true));
+				}
 			}
 		} catch (error) {
 			console.error('Error starting call:', error);
@@ -334,7 +342,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			);
 		} else {
 			// Initial call: Setup new connection and streams
-			const constraints = await getConstraintsLocal(isShowMeetDM);
+			const constraints = await getConstraintsLocal(isShowMeetDM, true);
 			const stream = await navigator.mediaDevices.getUserMedia(constraints);
 			const newPc = pc || initializePeerConnection();
 
@@ -411,7 +419,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		try {
 			if (data) {
 				const candidate = new RTCIceCandidate(data);
-				await peerConnection?.current?.addIceCandidate(candidate);
+				if (peerConnection?.current?.remoteDescription) {
+					await peerConnection?.current?.addIceCandidate(candidate);
+				}
 				if (pendingCandidatesRef?.current?.length && peerConnection?.current?.remoteDescription?.type === 'offer') {
 					for (const candidateItem of pendingCandidatesRef.current) {
 						await mezon.socketRef.current?.forwardWebrtcSignaling(
@@ -422,6 +432,15 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 							userId
 						);
 					}
+					pendingCandidatesRef.current = [];
+				} else {
+					await mezon.socketRef.current?.forwardWebrtcSignaling(
+						dmUserId,
+						WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
+						JSON.stringify(candidate),
+						channelId,
+						userId
+					);
 					pendingCandidatesRef.current = [];
 				}
 			} else {

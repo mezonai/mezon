@@ -11,7 +11,6 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			backgroundColor: colors.secondaryLight,
 			padding: isTabletLandscape ? size.s_20 : size.s_10,
 			flexDirection: 'row',
-			justifyContent: 'space-between',
 			gap: size.s_10
 		},
 		title: {
@@ -32,5 +31,9 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		image: {
 			width: size.s_50,
 			height: size.s_50
+		},
+		contentContainer: {
+			flex: 1,
+			alignItems: 'flex-start'
 		}
 	});

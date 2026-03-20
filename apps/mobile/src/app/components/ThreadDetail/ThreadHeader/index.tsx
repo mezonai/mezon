@@ -81,7 +81,7 @@ export const ThreadHeader = memo(() => {
 		const isTextOrThreadChannel = [ChannelType.CHANNEL_TYPE_CHANNEL, ChannelType.CHANNEL_TYPE_THREAD].includes(currentChannel?.type);
 		const isChannelApp = currentChannel?.type === ChannelType.CHANNEL_TYPE_APP;
 		if (currentChannel?.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel) {
-			return <Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />;
+			return <Icons.ClansWarningIcon color={themeValue.text} width={size.s_20} height={size.s_20} />;
 		}
 		if (isPrivateChannel && isTextOrThreadChannel) {
 			return isChannel ? (

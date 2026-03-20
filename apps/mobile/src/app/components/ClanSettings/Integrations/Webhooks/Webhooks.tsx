@@ -9,14 +9,14 @@ import {
 	useAppSelector
 } from '@mezon/store-mobile';
 import { useNavigation } from '@react-navigation/native';
-import MezonIconCDN from 'apps/mobile/src/app/componentUI/MezonIconCDN';
-import { IconCDN } from 'apps/mobile/src/app/constants/icon_cdn';
-import { APP_SCREEN } from 'apps/mobile/src/app/navigation/ScreenTypes';
-import { ApiGenerateClanWebhookRequest, ApiWebhookCreateRequest } from 'mezon-js/api.gen';
+import type { ApiGenerateClanWebhookRequest, ApiWebhookCreateRequest } from 'mezon-js/api';
 import React, { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, FlatList, Pressable, Text, View } from 'react-native';
 import Toast from 'react-native-toast-message';
+import MezonIconCDN from '../../../../componentUI/MezonIconCDN';
+import { IconCDN } from '../../../../constants/icon_cdn';
+import { APP_SCREEN } from '../../../../navigation/ScreenTypes';
 import { CHANNEL_WEBHOOK_DOCS_URL, CLAN_WEBHOOK_DOCS_URL } from '../Integrations';
 import { WebhookChannelSelectModal } from './WebhookChannelSelectModal';
 import { WebhooksEmpty } from './WebhooksEmpty';

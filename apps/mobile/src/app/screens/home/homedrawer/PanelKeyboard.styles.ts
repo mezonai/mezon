@@ -9,7 +9,7 @@ export const createStyles = (themeValue: Attributes) =>
 			left: 0,
 			right: 0,
 			zIndex: 0,
-			backgroundColor: themeValue.primary
+			backgroundColor: themeValue.secondary
 		},
 		bottomSheetBackground: {
 			paddingTop: 0

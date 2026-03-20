@@ -1,0 +1,35 @@
+{
+    "menu": {
+        "settings": {
+            "title": "Настройки",
+            "overview": "Обзор",
+            "moderation": "Модерация",
+            "auditLog": "Журнал аудита",
+            "channels": "Каналы",
+            "integrations": "Интеграции",
+            "emoji": "Эмодзи",
+            "sticker": "Стикеры",
+            "webhooks": "Вебхуки",
+            "security": "Безопасность",
+            "permissionDenied": "У Вас нет разрешений на редактирование.",
+            "sound": "Звуковой эффект",
+            "enableCommunity": "Активировать сообщество"
+        },
+        "community": {
+            "title": "Сообщество",
+            "enableCommunity": "Активировать сообщество"
+        },
+        "subscriptions": {
+            "title": "Подписки клана",
+            "getStarted": "Начнём"
+        },
+        "userManagement": {
+            "title": "Управление пользователями",
+            "members": "Участники",
+            "role": "Роли",
+            "invite": "Приглашения",
+            "bans": "Баны"
+        }
+    }
+}
+

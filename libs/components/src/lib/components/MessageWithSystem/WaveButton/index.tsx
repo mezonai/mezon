@@ -4,7 +4,7 @@ import { getStore, selectBanMeInChannel, selectCurrentChannel, selectCurrentDM }
 import type { IMessage, IMessageSendPayload } from '@mezon/utils';
 import { EMimeTypes, MEZON_AVATAR_URL, STICKER_WAVE, WAVE_SENDER_NAME } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
-import type { ApiChannelDescription } from 'mezon-js/api.gen';
+import type { ApiChannelDescription } from 'mezon-js/api';
 import { memo, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -52,7 +52,7 @@ const WaveButton = ({ message }: IWaveButtonProps) => {
 				ref_type: 0,
 				message_sender_id: message?.sender_id,
 				message_sender_username: WAVE_SENDER_NAME,
-				mesages_sender_avatar: MEZON_AVATAR_URL,
+				message_sender_avatar: MEZON_AVATAR_URL,
 				message_sender_clan_nick: WAVE_SENDER_NAME,
 				message_sender_display_name: WAVE_SENDER_NAME,
 				content: JSON.stringify(message.content),

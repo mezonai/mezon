@@ -16,7 +16,7 @@ import {
 import type { IMessageSendPayload } from '@mezon/utils';
 import { checkIsThread } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment, ApiMessageMention, ApiMessageRef } from 'mezon-js/api';
 import type { MutableRefObject } from 'react';
 import React, { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -125,7 +125,7 @@ function EmojiPicker({ onDone, bottomSheetRef, directMessageId = '', messageActi
 				ref_type: 0,
 				message_sender_id: targetMessage?.sender_id,
 				message_sender_username: targetMessage?.username,
-				mesages_sender_avatar: targetMessage?.clan_avatar ? targetMessage?.clan_avatar : targetMessage?.avatar,
+				message_sender_avatar: targetMessage?.clan_avatar ? targetMessage?.clan_avatar : targetMessage?.avatar,
 				message_sender_clan_nick: targetMessage?.clan_nick,
 				message_sender_display_name: targetMessage?.display_name,
 				content: JSON.stringify(targetMessage?.content),

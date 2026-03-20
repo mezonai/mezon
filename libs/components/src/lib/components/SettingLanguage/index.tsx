@@ -16,11 +16,18 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 		return [
 			{
 				title: t('setting:language.english'),
-				value: 'en'
+				value: 'en',
+				contributed: ''
 			},
 			{
 				title: t('setting:language.vietnamese'),
-				value: 'vi'
+				value: 'vi',
+				contributed: ''
+			},
+			{
+				title: `${t('setting:language.russian')}`,
+				value: 'ru',
+				contributed: 'tsruber'
 			}
 		];
 	}, [t]);
@@ -53,7 +60,10 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 							}`}
 							onClick={() => changeLanguage(language.value)}
 						>
-							<span className="text-theme-primary font-medium">{language.title}</span>
+							<span className="text-theme-primary font-medium">
+								{language.title}
+								{language.contributed && <span className="italic ml-1">{language.contributed}</span>}
+							</span>
 						</div>
 					))}
 				</div>

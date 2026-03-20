@@ -5,7 +5,7 @@ import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { ChannelMessage, ChannelUpdatedEvent, UserProfile } from 'mezon-js';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
-import type { ApiChannelDescription, ApiChannelMessageHeader, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api.gen';
+import type { ApiChannelDescription, ApiChannelMessageHeader, ApiCreateChannelDescRequest, ApiDeleteChannelDescRequest } from 'mezon-js/api';
 import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
@@ -41,6 +41,7 @@ export interface DirectState extends EntityState<DirectEntity, string> {
 	currentPage: number;
 	hasMore: boolean;
 	paginationLoading: boolean;
+	pinnedDms?: string[];
 }
 
 export interface DirectRootState {
@@ -577,7 +578,8 @@ export const initialDirectState: DirectState = directAdapter.getInitialState({
 	updateDmGroupError: {},
 	currentPage: 0,
 	hasMore: true,
-	paginationLoading: false
+	paginationLoading: false,
+	pinnedDms: []
 });
 
 export const directSlice = createSlice({
@@ -756,6 +758,9 @@ export const directSlice = createSlice({
 			const dmGroup = state.entities?.[dmId];
 			if (!dmGroup) return;
 			state.entities[dmId].active = isActive ? 1 : 0;
+			if (!isActive && state.pinnedDms) {
+				state.pinnedDms = state.pinnedDms.filter((id) => id !== dmId);
+			}
 		},
 		addBadgeDirect: (state, action: PayloadAction<{ channelId: string }>) => {
 			const channelId = action.payload.channelId;
@@ -901,6 +906,17 @@ export const directSlice = createSlice({
 					is_mute: payload.isMute
 				}
 			});
+		},
+		togglePinDm: (state, action: PayloadAction<{ dmId: string }>) => {
+			if (!state.pinnedDms) {
+				state.pinnedDms = [];
+			}
+			const index = state.pinnedDms.indexOf(action.payload.dmId);
+			if (index > -1) {
+				state.pinnedDms.splice(index, 1);
+			} else {
+				state.pinnedDms.push(action.payload.dmId);
+			}
 		}
 	},
 	extraReducers: (builder) => {
@@ -1189,3 +1205,4 @@ export const selectDirectLoadingStatus = createSelector(getDirectState, (state) 
 
 export const selectDirectHasMore = createSelector(getDirectState, (state) => state.hasMore);
 export const selectDirectPaginationLoading = createSelector(getDirectState, (state) => state.paginationLoading);
+export const selectPinnedDms = createSelector(getDirectState, (state) => state.pinnedDms || []);

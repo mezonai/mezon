@@ -349,6 +349,9 @@ input.bg-theme-input-primary::placeholder {
 	border-bottom-right-radius: var(--border-r-b-l-theme-primary);
 }
 
+.border-r-theme-primary {
+	border-right: 1px solid var(--border-primary);
+}
 .bg-count-page {
 	background-color: var(--bg-count-page);
 	color: var(--text-count-page);

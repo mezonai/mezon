@@ -4,7 +4,7 @@ import { createClient } from '@mezon/transport';
 import type { IInvite, LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiInviteUserRes, ApiLinkInviteUser } from 'mezon-js/api.gen';
+import type { ApiInviteUserRes, ApiLinkInviteUser } from 'mezon-js/api';
 import { ensureSession, getMezonCtx } from '../helpers';
 
 export const INVITE_FEATURE_KEY = 'invite';

@@ -1,0 +1,226 @@
+{
+	"userAction": {
+		"transferFunds": "Перевести средства",
+		"sendMessage": "Сообщение",
+		"voiceCall": "Вызов",
+		"videoCall": "Видеозвонок",
+		"addFriend": "Добавить друга",
+		"pending": "В ожидании",
+		"removeFriend": "Удалить друга"
+	},
+	"aboutMe": {
+		"headerTitle": "О себе",
+		"roles": {
+			"headerTitle": "Роли"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "Исключить участника",
+		"kickFromServer": "Исключить {{username}} из клана",
+		"description": "Пожалуйста, подтвердите, хотите ли Вы исключить {{username}} из клана? Они смогут снова присоединиться с новым приглашением.",
+		"reasonKick": "Причина исключения",
+		"buttonName": "Исключить"
+	},
+	"transferOwnershipModal": {
+		"warning": "Это передаст право собственности на <highlightClan>{{clanName}}</highlightClan> <highlightUser>{{username}}</highlightUser>. Это действие нельзя отменить!",
+		"sectionTitle": "Передача права собственности",
+		"acknowledgment": "Я подтверждаю, что, передавая право собственности на этот клан {{username}}, он официально принадлежит им.",
+		"transferButton": "Передать",
+		"confirmTitle": "Передать право собственности?",
+		"confirmDescription": "Пожалуйста, подтвердите, хотите ли Вы передать право собственности на {{clanName}} {{username}}? Это действие нельзя отменить.",
+		"confirmButton": "Передать"
+	},
+	"pendingContent": {
+		"block": "Заблокировать",
+		"unblock": "Разблокировать",
+		"reportUserProfile": "Пожаловаться на профиль пользователя",
+		"acceptFriend": "Принять друга",
+		"rejectFriend": "Игнорировать запрос дружбы",
+		"cancelFriendRequest": "Отменить запрос дружбы",
+		"copyUsername": "Скопировать имя пользователя",
+		"copiedUserName": "Скопирован {{username}}",
+		"removeFriend": "Удалить друга",
+		"viewFullProfile": "Просмотреть полный профиль"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "Удалить из группы",
+			"removeSuccess": "Удалено из группы",
+			"removeFailed": "Не удалось удалить из группы"
+		},
+		"mezonMemberSince": "Член Mezon с"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "Пользователь успешно заблокирован",
+			"error": "Не удалось заблокировать пользователя"
+		},
+		"unblockUser": {
+			"success": "Пользователь успешно разблокирован",
+			"error": "Не удалось разблокировать пользователя"
+		}
+	},
+	"incomingFriendRequest": "Входящий запрос дружбы",
+	"sendAddFriendSuccess": "Запрос дружбы отправлен",
+	"accept": "Принять",
+	"ignore": "Игнорировать",
+	"labels": {
+		"aboutMe": "Обо мне",
+		"memberSince": "Член с",
+		"activity": "Активность",
+		"unknownUser": "Неизвестный пользователь",
+		"anonymous": "Анонимный",
+		"editProfile": "Редактировать профиль",
+		"note": "Заметка",
+		"addNote": "Нажмите, чтобы добавить заметку",
+		"showLess": "Показать меньше",
+		"addRole": "Добавить роль",
+		"addRoles": "Добавить роли",
+		"removeRole": "Удалить роль",
+		"role": "Роль",
+		"nope": "Нет!",
+		"typoError": "Вы сделали опечатку?",
+		"userNotFound": "Пользователь не в клане"
+	},
+	"placeholders": {
+		"messageUser": "Сообщение @{{username}}"
+	},
+	"statusProfile": {
+		"balance": "Баланс",
+		"transferFunds": "Перевести средства",
+		"editCustomStatus": "Редактировать пользовательский статус",
+		"setCustomStatus": "Установить пользовательский статус",
+		"manageAccounts": "Управлять аккаунтами",
+		"switchAccounts": "Переключить аккаунты",
+		"copyUserId": "Скопировать ID пользователя",
+		"statusOptions": {
+			"online": "В сети",
+			"idle": "Неактивен",
+			"doNotDisturb": "Не беспокоить",
+			"invisible": "Невидимый"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "Вы не получите уведомлений на рабочем столе",
+			"invisible": "Вы будете выглядеть оффлайн"
+		},
+		"statusDuration": {
+			"for30Minutes": "На 30 минут",
+			"for1Hour": "На 1 час",
+			"for3Hours": "На 3 часа",
+			"for8Hours": "На 8 часов",
+			"for24Hours": "На 24 часа",
+			"forever": "Навсегда"
+		},
+		"addAccountModal": {
+			"email": "Электронная почта",
+			"password": "Пароль",
+			"emailPlaceholder": "Введите Вашу электронную почту",
+			"passwordPlaceholder": "Введите Ваш пароль",
+			"cancel": "Отмена",
+			"logIn": "Войти"
+		},
+		"sendTokenModal": {
+			"title": "Отправить токены",
+			"description": "Перевести токены другому пользователю",
+			"fields": {
+				"to": "Кому",
+				"amount": "Сумма",
+				"note": "Заметка (опционально)"
+			},
+			"placeholders": {
+				"searchUsers": "Поиск пользователей...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "Добавьте заметку..."
+			},
+			"noUsersFound": "Пользователи не найдены",
+			"currency": "VND",
+			"buttons": {
+				"cancel": "Отмена",
+				"sendTokens": "Отправить токены"
+			},
+			"errors": {
+				"exceedWalletBalance": "Сумма превышает баланс кошелька",
+				"maximumLimit": "Максимум 100,000,000"
+			}
+		},
+		"historyTransaction": {
+			"title": "История транзакций",
+			"subtitle": "Просмотрите все свои транзакционные действия",
+			"tabs": {
+				"all": "Все транзакции",
+				"sent": "Отправленные транзакции",
+				"received": "Полученные транзакции"
+			},
+			"transactionTypes": {
+				"sent": "Отправлено",
+				"received": "Получено"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "Не удается найти ни одной транзакции",
+					"description": "Вы еще не сделали ни одной транзакции. Ваша история транзакций появится здесь, как только Вы начнете отправлять или получать токены."
+				},
+				"noFilteredTransactions": {
+					"title": "Не удается найти ни одной транзакции",
+					"description": "Транзакции не найдены для выбранного фильтра. Пожалуйста, попробуйте другой фильтр или проверьте позже."
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "Транзакция #"
+			},
+			"loading": {
+				"fetching": "Загружаем транзакции...",
+				"fetchingMore": "Загружаем дополнительные транзакции...",
+				"scrollMore": "Прокрутите вниз, чтобы показать больше",
+				"allLoaded": "Вы загрузили все {{count}} транзакции"
+			}
+		},
+		"customStatusModal": {
+			"title": "Установите пользовательский статус",
+			"whatsCookin": "Что нового, {{name}}?",
+			"placeholder": "Что у Вас на уме?",
+			"clearAfter": "Очистить через",
+			"timeOptions": {
+				"today": "Сегодня",
+				"fourHours": "4 часа",
+				"oneHour": "1 час",
+				"thirtyMinutes": "30 минут",
+				"dontClear": "Не очищать"
+			},
+			"buttons": {
+				"cancel": "Отмена",
+				"save": "Сохранить"
+			}
+		}
+	},
+	"channelVoiceSettings": "Настройки голосового канала",
+	"muteVoice": "Отключить звук",
+	"kickVoice": "Исключить",
+	"voiceInfo": {
+		"inVoice": "В голосе",
+		"joinVoice": "Присоединиться к голосу"
+	},
+	"ban": {
+		"title": "Заблокировать пользователя",
+		"unbanTitle": "Разблокировать пользователя",
+		"content": "Пожалуйста, подтвердите, хотите ли Вы заблокировать \"{{userName}}\"?",
+		"banButton": "Заблокировать",
+		"unBanButton": "Разблокировать",
+		"reasonBan": "Причина блокировки",
+		"unBanDescription": "Пожалуйста, подтвердите, хотите ли Вы разблокировать \"{{userName}}\"?",
+		"time": {
+			"title": "Длительность",
+			"tenMinutes": "10 минут",
+			"thirtyMinutes": "30 минут",
+			"oneHour": "1 час",
+			"sixHours": "6 часов",
+			"twelveHours": "12 часов",
+			"oneDay": "1 день",
+			"threeDays": "3 дня"
+		},
+		"banList": "Список заблокированных",
+		"search": "Поиск заблокированных пользователей",
+		"banListEmpty": "Заблокированных пользователей не найдено"
+	}
+}
+

@@ -220,5 +220,40 @@
 	"addAMessage": "Thêm một tin nhắn (Không bắt buộc)",
 	"slideToCancel": "Vuốt để hủy",
 	"noAccess": "Không có quyền",
-	"unknown": "Không xác định"
+	"unknown": "Không xác định",
+	"fileSelection": {
+		"uploadFile": "Tải tệp lên",
+		"createPoll": "Tạo bình chọn"
+	},
+	"poll": {
+		"createTitle": "Tạo bình chọn",
+		"question": "Câu hỏi",
+		"questionPlaceholder": "Bạn muốn hỏi điều gì?",
+		"answers": "Câu trả lời",
+		"answerPlaceholder": "Nhập câu trả lời",
+		"addAnotherAnswer": "Thêm câu trả lời",
+		"duration": "Thời gian",
+		"allowMultipleAnswers": "Cho phép chọn nhiều đáp án",
+		"post": "Đăng",
+		"selectedEmoji": "Biểu tượng đã chọn",
+		"duration1Hour": "1 giờ",
+		"duration4Hours": "4 giờ",
+		"duration8Hours": "8 giờ",
+		"duration24Hours": "24 giờ",
+		"duration3Days": "3 ngày",
+		"duration1Week": "1 tuần",
+		"durationDays": "{{count}} ngày",
+		"durationHours": "{{count}} giờ",
+		"durationMinutes": "{{count}} phút",
+		"selectOneOrMore": "Chọn một hoặc nhiều đáp án",
+		"selectOne": "Chọn một đáp án",
+		"vote": "bình chọn",
+		"votes": "bình chọn",
+		"left": "còn lại",
+		"backToVote": "Quay lại bình chọn",
+		"showResults": "Xem kết quả",
+		"voteButton": "Bình chọn",
+		"removeVote": "Bỏ bình chọn",
+		"noVoterDetails": "Không có chi tiết người bình chọn"
+	}
 }

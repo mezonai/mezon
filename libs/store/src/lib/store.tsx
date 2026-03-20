@@ -66,6 +66,7 @@ import { ONBOARDING_FEATURE_KEY, onboardingReducer } from './onboarding/onboardi
 import { permissionRoleChannelReducer } from './permissionChannel/permissionRoleChannel.slice';
 import { pinMessageReducer } from './pinMessages/pinMessage.slice';
 import { OVERRIDDEN_POLICIES_FEATURE_KEY, overriddenPoliciesReducer } from './policies/overriddenPolicies.slice';
+import { POLLS_FEATURE_KEY, pollsReducer } from './polls/polls.slice';
 import { QUICK_MENU_FEATURE_KEY, quickMenuReducer } from './quickMenu/quickMenu.slice';
 import { REPORT_MESSAGE_FEATURE_KEY, reportMessageReducer } from './reportMessage/reportMessage.slice';
 import { IsShowReducer, RolesClanReducer, roleIdReducer } from './roleclan/roleclan.slice';
@@ -84,6 +85,14 @@ import { TRANSACTION_HISTORY_FEATURE_KEY, transactionHistoryReducer } from './wa
 import { WALLET_FEATURE_KEY, walletReducer } from './wallet/wallet.slice';
 import { integrationWebhookReducer } from './webhook/webhook.slice';
 import { WINDOW_CONTROLS_FEATURE_KEY, windowControlsReducer } from './windowControls/windowControls.slice';
+const persistedPollsReducer = persistReducer(
+	{
+		key: 'polls',
+		storage,
+		whitelist: ['pollEmojiByMessageId']
+	},
+	pollsReducer
+);
 
 const persistedReducer = persistReducer(
 	{
@@ -97,7 +106,7 @@ const persistedClansReducer = persistReducer(
 	{
 		key: 'clans',
 		storage,
-		blacklist: ['invitePeople']
+		blacklist: ['invitePeople', 'checkJoinList']
 	},
 	clansReducer
 );
@@ -281,6 +290,23 @@ const persistedActivitiesReducer = persistReducer(
 	activitiesAPIReducer
 );
 
+const persistedDirectReducer = persistReducer(
+	{
+		key: 'direct',
+		storage,
+		whitelist: ['pinnedDms']
+	},
+	directReducer
+);
+
+const persistedFcmReducer = persistReducer(
+	{
+		key: 'fcm',
+		storage
+	},
+	fcmReducer
+);
+
 const reducer = {
 	app: persistedAppReducer,
 	dashboard: dashboardReducer,
@@ -309,7 +335,7 @@ const reducer = {
 	[POLICIES_FEATURE_KEY]: policiesReducer,
 	userClanProfile: userClanProfileReducer,
 	friends: friendsReducer,
-	direct: directReducer,
+	direct: persistedDirectReducer,
 	roleId: roleIdReducer,
 	[OVERRIDDEN_POLICIES_FEATURE_KEY]: overriddenPoliciesReducer,
 	notificationsetting: notificationSettingReducer,
@@ -329,7 +355,7 @@ const reducer = {
 	activitiesapi: persistedActivitiesReducer,
 	auditlog: auditLogReducer,
 	audiocall: audioCallReducer,
-	fcm: fcmReducer,
+	fcm: persistedFcmReducer,
 	auditlogfilter: auditLogFilterReducer,
 	references: referencesReducer,
 	reaction: reactionReducer,
@@ -360,7 +386,8 @@ const reducer = {
 	[TRANSACTION_HISTORY_FEATURE_KEY]: transactionHistoryReducer,
 	[WALLET_FEATURE_KEY]: persistedWalletStore,
 	[USER_STATUS_FEATURE_KEY]: statusReducer,
-	[DEVICES_FEATURE_KEY]: devicesReducer
+	[DEVICES_FEATURE_KEY]: devicesReducer,
+	[POLLS_FEATURE_KEY]: persistedPollsReducer
 };
 
 let storeInstance = configureStore({

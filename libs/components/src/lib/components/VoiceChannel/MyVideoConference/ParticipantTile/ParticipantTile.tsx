@@ -129,7 +129,7 @@ export const ParticipantTile: (props: ParticipantTileProps & React.RefAttributes
 	);
 	const participantId = trackReference.participant.identity;
 
-	const parsedUsername = isExtCalling ? safeJSONParse(participantId as string) : undefined;
+	const parsedUsername = isExtCalling ? safeJSONParse(trackReference.participant.metadata as string) : undefined;
 
 	const usernameString = parsedUsername?.extName ? parsedUsername?.extName : trackReference.participant.name || participantId;
 

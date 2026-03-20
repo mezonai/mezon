@@ -3,7 +3,7 @@ import i18n from '@mezon/translations';
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiWebhook, ApiWebhookCreateRequest, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiWebhook, ApiWebhookCreateRequest, MezonUpdateWebhookByIdBody } from 'mezon-js/api';
 import { toast } from 'react-toastify';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx } from '../helpers';
@@ -157,13 +157,10 @@ export const integrationWebhookSlice = createSlice({
 				if (fromCache) return;
 				if (webhooks && clanId) {
 					if (!state.webhookList[clanId]) {
-						state.webhookList[clanId] = webhookAdapter.getInitialState({
-							id: clanId
-						});
+						state.webhookList[clanId] = webhookAdapter.setAll(webhookAdapter.getInitialState({ id: clanId }), webhooks);
+					} else {
+						state.webhookList[clanId] = webhookAdapter.upsertMany(state.webhookList[clanId], webhooks);
 					}
-
-					const updatedChannelWebhook = webhookAdapter.setAll(state.webhookList[clanId], webhooks);
-					state.webhookList[clanId] = updatedChannelWebhook;
 				}
 			})
 			.addCase(fetchWebhooks.rejected, (state) => {
@@ -193,6 +190,7 @@ export const selectWebhooksByChannelId = createSelector(
 		if (channelId === '0') {
 			return selectAll(state.webhookList[clanId]);
 		}
-		return selectAll(state.webhookList?.[clanId] || []).filter((entity) => entity.channel_id === channelId);
+
+		return selectAll(state.webhookList[clanId]).filter((entity) => entity.channel_id === channelId);
 	}
 );

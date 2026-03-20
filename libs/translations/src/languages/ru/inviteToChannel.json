@@ -1,0 +1,47 @@
+{
+	"title": "Пригласить друга",
+	"iconTitle": {
+		"shareInvite": "Поделиться приглашением",
+		"copyLink": "Скопировать ссылку",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "QR-код"
+	},
+	"copyLink": "Ссылка скопирована!",
+	"unknownChannel": "Неизвестный канал",
+	"yourLinkInvite": "Срок действия Вашей пригласительной ссылки истекает через",
+	"inviteFriendToChannel": "Пригласить друга в канал",
+	"inviteFriendToClan": "Пригласить друга в клан",
+	"editInviteLink": "Изменить пригласительную ссылку",
+	"inviteChannel": "Пригласить в канал",
+	"advancedSettings": "Расширенные настройки",
+	"expireAfter": "Истекает через",
+	"maxUsers": "Максимальное количество пользователей",
+	"temporaryMembership": "Временное партнёрство",
+	"memberAutoKick": "Участники автоматически будут выгнаны при отключении, если им не назначена роль.",
+	"btnInvite": "Пригласить",
+	"btnSent": "Отправленные",
+	"qrModal": {
+		"title": "QR-код",
+		"scanToJoin": "Отсканируйте этот код, чтобы присоединиться к {{clanName}}!",
+		"scanToJoinDefault": "Отсканируйте этот код, чтобы вступить в клан!",
+		"generating": "Генерация QR-кода...",
+		"errorGenerating": "Ошибка при генерации QR-кода",
+		"downloadSuccess": "QR-код сохранен в галерею",
+		"downloadError": "Ошибка при загрузке QR-кода",
+		"shareError": "Ошибка при отправке QR-кода",
+		"clanDefaultName": "Клан"
+	},
+	"share": {
+		"title": "Поделиться",
+		"message": "Присоединяйтесь к Mezon вместе со мной: ",
+		"error": "Ошибка при отправке ссылки-приглашения",
+		"errorCreateLink": "Ошибка при создании ссылки-приглашения"
+	},
+	"noFriendsToInvite": "Нет друзей, которых можно пригласить",
+	"addFriendsToInvite": "Добавьте друзей, чтобы пригласить их в этот клан.",
+	"addSomeFriends": "Добавить некоторых друзей",
+	"loadingInviteLink": "Загрузка пригласительной ссылки..."
+}
+

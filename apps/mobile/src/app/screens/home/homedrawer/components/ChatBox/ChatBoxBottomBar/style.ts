@@ -67,14 +67,15 @@ export const style = (colors: Attributes) =>
 		},
 		inputStyle: {
 			maxHeight: size.s_40 * 3,
+			minHeight: size.s_40,
 			width: '100%',
 			borderBottomWidth: 0,
 			borderRadius: size.s_20,
 			paddingLeft: Platform.OS === 'ios' ? size.s_16 : size.s_20,
 			paddingRight: size.s_40,
 			fontSize: size.medium,
-			paddingTop: Platform.OS === 'ios' ? size.s_12 : size.s_10,
-			paddingBottom: size.s_12,
+			paddingTop: Platform.OS === 'ios' ? size.s_12 : size.s_8,
+			paddingBottom: Platform.OS === 'ios' ? size.s_10 : size.s_12,
 			backgroundColor: colors.tertiary,
 			color: colors.textStrong,
 			textAlignVertical: 'center'
@@ -83,7 +84,7 @@ export const style = (colors: Attributes) =>
 			height: size.s_40,
 			textAlignVertical: 'center',
 			paddingTop: Platform.OS === 'ios' ? size.s_12 : size.s_10,
-			paddingBottom: size.s_10
+			paddingBottom: Platform.OS === 'ios' ? size.s_10 : size.s_12
 		},
 		suggestions: {
 			position: 'absolute',

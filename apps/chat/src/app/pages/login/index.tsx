@@ -1,8 +1,8 @@
-import { QRSection } from '@mezon/components';
 import { useAppNavigation, useAuth } from '@mezon/core';
 import { authActions, selectIsLogin, toastActions } from '@mezon/store';
 import { useMezon } from '@mezon/transport';
 
+import { QRSection } from '@mezon/components';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';

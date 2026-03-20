@@ -1,0 +1,20 @@
+{
+  "placeholder": "Напишите свои мысли здесь...",
+  "ephemeralMessage": "Временное сообщение для {{username}}...",
+  "mentionCategories": {
+    "members": "Участники",
+    "textChannels": "Текстовые каналы",
+    "emojiMatching": "Сопоставление эмодзи",
+    "commands": "Команды"
+  },
+  "suggestions": {
+    "notifyEveryone": "Уведомить всех, у кого есть разрешение просматривать этот канал",
+    "loadingCommands": "Загрузка команд..."
+  },
+  "slashCommands": {
+    "ephemeral": {
+      "description": "Отправить временное сообщение (видимо только выбранному пользователю)"
+    }
+  }
+}
+

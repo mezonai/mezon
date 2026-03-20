@@ -88,7 +88,6 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 		hasUnread ||
 		currentChannelId === channel.id ||
 		currentChannelParentId === channel.id ||
-		channel?.count_mess_unread ||
 		hasMembersInVoice;
 
 	const renderChannelContent = useMemo(() => {

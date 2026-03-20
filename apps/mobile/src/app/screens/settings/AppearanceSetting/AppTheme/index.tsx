@@ -1,21 +1,35 @@
-import { ThemeMode, ThemeModeBase, themeColors, useTheme } from '@mezon/mobile-ui';
+import type { ThemeMode } from '@mezon/mobile-ui';
+import { ThemeModeAuto, ThemeModeBase, themeColors, useTheme } from '@mezon/mobile-ui';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import MezonSlideOption, { IMezonSlideOptionsData } from '../../../../componentUI/MezonSlideOption';
-import { APP_SCREEN, SettingScreenProps } from '../../../../navigation/ScreenTypes';
+import type { IMezonSlideOptionsData } from '../../../../componentUI/MezonSlideOption';
+import MezonSlideOption from '../../../../componentUI/MezonSlideOption';
+import type { APP_SCREEN, SettingScreenProps } from '../../../../navigation/ScreenTypes';
 import { style } from './styles';
 
 type AppThemeScreen = typeof APP_SCREEN.SETTINGS.APP_THEME;
 export default function AppThemeSetting({ navigation }: SettingScreenProps<AppThemeScreen>) {
-	const { themeValue, setTheme, themeBasic } = useTheme();
+	const { themeValue, setTheme, theme } = useTheme();
 	const styles = style(themeValue);
 	const { t } = useTranslation(['appThemeSetting']);
 
 	const BoxSelector = useCallback(
 		({ color = 'transparent', border = 'transparent' }: { color?: string; border?: string }) => (
 			<View style={[styles.box, { backgroundColor: color, borderColor: border }]}></View>
+		),
+		[]
+	);
+
+	const SystemBoxSelector = useCallback(
+		({ border = 'transparent' }: { color?: string; border?: string }) => (
+			<View style={[styles.box, { borderColor: border, overflow: 'hidden' }]}>
+				<View style={styles.row}>
+					<View style={[styles.container, { backgroundColor: themeColors.light.primary }]} />
+					<View style={[styles.container, { backgroundColor: themeColors.dark.primary }]} />
+				</View>
+			</View>
 		),
 		[]
 	);
@@ -36,6 +50,11 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 	const themeOptions = useMemo(
 		() =>
 			[
+				{
+					element: <SystemBoxSelector border={themeColors.dark.border} />,
+					value: ThemeModeAuto.AUTO,
+					title: t('fields.system')
+				},
 				{
 					element: <BoxSelector color={themeColors.dark.primary} border={themeColors.dark.border} />,
 					value: ThemeModeBase.DARK,
@@ -106,7 +125,7 @@ export default function AppThemeSetting({ navigation }: SettingScreenProps<AppTh
 	);
 
 	const themeIndex = useMemo(() => {
-		return themeOptions.findIndex((t) => t.value === themeBasic);
+		return themeOptions.findIndex((t) => t.value === theme);
 	}, []);
 
 	function handleThemeChange(value: string) {

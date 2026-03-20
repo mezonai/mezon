@@ -1,0 +1,27 @@
+{
+	"threads": "Ветки",
+	"emptyThread": {
+		"textNoThread": "Веток нет",
+		"textNotify": "Сосредоточьтесь на разговоре с ветками — временным текстовым каналом.",
+		"createThreads": "Создать ветку"
+	},
+	"otherThreads": "Старые ветки",
+	"errorMessage": "Введите корректное имя ветки (макс. 64 символа, только буквы, цифры, _ или -).",
+	"threadName": "Название ветки",
+	"privateThread": "Приватная ветка",
+	"onlyPeopleInviteThread": "Эту ветку видят только приглашённые вами и модераторы",
+	"newThread": "Новая ветка",
+	"joinedThreads": "вступившие в ветку",
+	"joinedThread": "вступившая в ветку",
+	"otherActiveThreads": "другие активные ветки",
+	"otherActiveThread": "другая активная ветка",
+	"olderThreads": "старые ветки",
+	"olderThread": "старая ветка",
+	"searchThreads": "искать ветки",
+	"searchThread": "искать ветку",
+	"threadFailed": {
+		"title": "Не удалось создать ветку",
+		"content": "Ветка не найдена или у вас нет прав на обновление"
+	}
+}
+

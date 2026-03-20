@@ -1,0 +1,168 @@
+{
+	"pageTitle": {
+		"channels": "Каналы",
+		"members": "Участники",
+		"guideClan": "Руководство по клану"
+	},
+	"tooltips": {
+		"clickToEdit": "Нажмите для редактирования группы",
+		"startVoiceCall": "Начать голосовой вызов",
+		"startVideoCall": "Начать видео-звонок",
+		"showMemberList": "Показать список участников",
+		"hideMemberList": "Скрыть список участников",
+		"showUserProfile": "Показать профиль пользователя",
+		"hideUserProfile": "Скрыть профиль пользователя",
+		"files": "Файлы",
+		"canvas": "Холст",
+		"threads": "Ветки",
+		"notificationSettings": "Настройки уведомлений",
+		"pinnedMessages": "Закреплённые сообщения",
+		"members": "Участники",
+		"showChat": "Показать чат",
+		"addFriendsToDM": "Добавить друга в личные сообщения",
+		"jump": "Перейти",
+		"gallery": "Галерея",
+		"timelineView": "Переключиться к временной шкале",
+		"defaultView": "Переключиться к чату"
+	},
+	"directMessage": "Личное сообщение",
+	"activeThreads": "Активные ветки",
+	"joinedThreadsLast30Days": "Мои ветки (последние 30 дней)",
+	"olderThreads": "Старые ветки",
+	"loading": "Загрузка...",
+	"topic": "Тема",
+	"reactions": "Реакции",
+	"invoice": "В звонке",
+	"callMessages": {
+		"startedVoiceCall": "Начал голосовой вызов",
+		"startedVideoCall": "Начал видео-звонок"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "Идентификатор группового канала отсутствует",
+		"dmChannelIdMissing": "Идентификатор канала для личных сообщений отсутствует",
+		"youAreOnAnotherCall": "Вы уже в другом звонке"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "В этом канале нет закреплённых сообщений... пока что.",
+		"protip": "ПРОСОВЕТ",
+		"emptyDescription": "Пользователи с разрешением \"Управление сообщениями\" могут закреплять сообщения из контекстного меню.",
+		"unpinMessage": "Открепить сообщение",
+		"unpinConfirmation": "Вы действительно хотите убрать это закреплённое сообщение?",
+		"cancel": "Отменить",
+		"unpinIt": "Открепить его"
+	},
+	"threads": {
+		"emptyTitle": "Нет никаких веток.",
+		"emptyDescription": "Сосредоточьтесь на общении с помощью ветки — временного текстового канала.",
+		"createThread": "Создать ветку"
+	},
+	"canvas": {
+		"emptyTitle": "Нет никаких холстов.",
+		"emptyDescription": "Сосредоточьтесь на общении с помощью холста — временного текстового канала.",
+		"createCanvas": "Создать холст"
+	},
+	"files": {
+		"emptyTitle": "Нет никаких файлов.",
+		"emptyDescription": "Отсутствуют файлы в данном канале.",
+		"searchPlaceholder": "Найти файл по названию"
+	},
+	"fileItem": {
+		"download": "Скачать",
+		"sharedBy": "Поделился {{username}} {{time}}",
+		"attachmentFailed": "Не удалось загрузить вложение."
+	},
+	"notificationSetting": {
+		"muteChannel": "Заглушить канал",
+		"unmuteChannel": "Разглушить канал",
+		"mutedUntil": "Заглушен до {{date}}",
+		"useCategoryDefault": "По умолчанию",
+		"muteOptions": {
+			"for15Minutes": "На 15 минут",
+			"for1Hour": "На 1 час",
+			"for3Hours": "На 3 часа",
+			"for8Hours": "На 8 часов",
+			"for24Hours": "На 24 часа",
+			"untilTurnedBackOn": "Пока я обратно не включу"
+		}
+	},
+	"gallery": {
+		"title": "Галерея",
+		"sentDate": "Дата отправки",
+		"fromDate": "От даты",
+		"toDate": "К дате",
+		"filters": {
+			"all": "Все",
+			"images": "Изображения",
+			"videos": "Видео"
+		},
+		"dateRange": {
+			"from": "От {{date}}",
+			"to": "К {{date}}",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "Дата начала должна быть ранней или равна дате окончания"
+		},
+		"buttons": {
+			"clearAll": "Очистить всё",
+			"apply": "Применить",
+			"clearDateFilter": "Очистить фильтр по дате"
+		},
+		"emptyState": {
+			"noMediaFiles": "Нет найденных медиафайлов",
+			"noMediaFilesDateRange": "Для выбранного диапазона данных не найдены файлы медиа",
+			"noImages": "Отсутствуют изображения",
+			"noVideos": "Не найдено видео"
+		},
+		"loading": {
+			"olderImages": "Загрузка старых изображений...",
+			"newerImages": "Загрузка новых изображений...",
+			"filterChange": "Загрузка медиа..."
+		},
+		"filesCount": "{{count}} файлов",
+		"imageError": "Ошибка"
+	},
+	"modals": {
+		"threads": {
+			"title": "Ветки",
+			"create": "Создать",
+			"results": "Результаты"
+		},
+		"canvas": {
+			"title": "Холст",
+			"create": "Создать"
+		},
+		"files": {
+			"title": "Файл"
+		},
+		"pinnedMessages": {
+			"title": "Закреплённые сообщения"
+		}
+	},
+	"createThread": {
+		"newThread": "Новая ветка",
+		"inviteMessage": "Вы можете приглашать новых людей, упомянув их.",
+		"validation": {
+			"invalidChannelName": "Пожалуйста, введите допустимое имя канала (не более 64 символов, только слова, числа, _ или -).",
+			"threadNameRequired": "Необходимо название ветки",
+			"starterMessageRequired": "Требуется приветственное сообщение"
+		},
+		"threadName": "Название ветки",
+		"enterThreadName": "Введите название ветки",
+		"privateThread": "Приватная ветка",
+		"privateThreadDescription": "Только приглашённые пользователи и модераторы могут видеть",
+		"toast": {
+			"threadNameTooShort": "Название ветки должно быть больше 3 символов",
+			"threadNameExists": "Это название ветки уже существует",
+			"initialMessageRequired": "Начальное сообщение необходимо для запуска ветки.",
+			"messageTooLong": "Сообщение превышает ограничение в 4000 символов.",
+			"messageLimitExceeded": "Сообщение превышает ограничение на {{limit}} символов."
+		},
+		"placeholder": {
+			"threadName": "Введите название ветки"
+		}
+	},
+	"moreFile": "новый файл",
+	"moreFiles": "новые файлы"
+}
+

@@ -84,7 +84,8 @@
 		"title": "Language",
 		"description": "Select your preferred language.",
 		"english": "English",
-		"vietnamese": "Tiếng Việt"
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский"
 	},
 	"voice": {
 		"title": "Voice",

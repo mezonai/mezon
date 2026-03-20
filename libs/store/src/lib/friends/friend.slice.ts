@@ -3,7 +3,7 @@ import { EUserStatus, type IUserProfileActivity, type LoadingStatus } from '@mez
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { AddFriend } from 'mezon-js';
-import type { ApiFriend } from 'mezon-js/api.gen';
+import type { ApiFriend } from 'mezon-js/api';
 import { toast } from 'react-toastify';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
@@ -57,6 +57,7 @@ const mapFriendToStatus = (friends: ApiFriend[]): IUserProfileActivity[] => {
 };
 export interface FriendsState extends EntityState<FriendsEntity, string> {
 	loadingStatus: LoadingStatus;
+	addFriendRequestLoading: boolean;
 	error?: string | null;
 	currentTabStatus: string;
 	cache?: CacheMetadata;
@@ -226,9 +227,14 @@ export const upsertFriendRequest = createAsyncThunk(
 	async ({ user, myId }: { user: AddFriend; myId: string }, thunkAPI) => {
 		const state = thunkAPI.getState() as RootState;
 		const currentFriendApi = friendsAdapter.getSelectors().selectById(state.friends, `${user.user_id}`);
-
+		if (currentFriendApi) {
+			if (currentFriendApi.state === EStateFriend.OTHER_PENDING) {
+				thunkAPI.dispatch(friendsActions.acceptFriend(user.user_id));
+			}
+			return;
+		}
 		const friend: FriendsEntity = {
-			state: currentFriendApi ? EStateFriend.FRIEND : EStateFriend.MY_PENDING,
+			state: EStateFriend.MY_PENDING,
 			id: user.user_id,
 			source_id: myId,
 			user: {
@@ -244,6 +250,7 @@ export const upsertFriendRequest = createAsyncThunk(
 
 export const initialFriendsState: FriendsState = friendsAdapter.getInitialState({
 	loadingStatus: 'not loaded',
+	addFriendRequestLoading: false,
 	friends: [],
 	error: null,
 	currentTabStatus: 'all',
@@ -344,10 +351,18 @@ export const friendsSlice = createSlice({
 				state.loadingStatus = 'error';
 				state.error = action.error.message;
 			});
-		builder.addCase(sendRequestAddFriend.rejected, (state: FriendsState, action) => {
-			state.loadingStatus = 'error';
-			state.error = action.error.message ?? 'No valid ID or username was provided.';
-		});
+		builder
+			.addCase(sendRequestAddFriend.pending, (state: FriendsState) => {
+				state.addFriendRequestLoading = true;
+			})
+			.addCase(sendRequestAddFriend.fulfilled, (state: FriendsState) => {
+				state.addFriendRequestLoading = false;
+			})
+			.addCase(sendRequestAddFriend.rejected, (state: FriendsState, action) => {
+				state.addFriendRequestLoading = false;
+				state.loadingStatus = 'error';
+				state.error = action.error.message ?? 'No valid ID or username was provided.';
+			});
 	}
 });
 
@@ -383,3 +398,4 @@ export const selectBlockedUsersForMessage = createSelector([selectAllFriends], (
 export const selectFriendById = createSelector([getFriendsState, (state, userId: string) => userId], (state, userId) => selectById(state, userId));
 export const selectCurrentTabStatus = createSelector(getFriendsState, (state) => state.currentTabStatus);
 export const selectLoadingStatusFriend = createSelector(getFriendsState, (state) => state.loadingStatus);
+export const selectAddFriendRequestLoading = createSelector(getFriendsState, (state) => state.addFriendRequestLoading);

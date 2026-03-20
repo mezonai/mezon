@@ -1,11 +1,11 @@
 import { usePermissionChecker } from '@mezon/core';
 import { ActionEmitEvent, optionNotification } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
-import { clansActions, selectCurrentClanPreventAnonymous, useAppSelector } from '@mezon/store';
 import type { ChannelsEntity } from '@mezon/store-mobile';
 import {
 	appActions,
 	checkDuplicateNameClan,
+	clansActions,
 	defaultNotificationActions,
 	fetchSystemMessageByClanId,
 	getStoreAsync,
@@ -17,14 +17,16 @@ import {
 	selectCurrentClanIsOnboarding,
 	selectCurrentClanLogo,
 	selectCurrentClanName,
+	selectCurrentClanPreventAnonymous,
 	selectCurrentClanWelcomeChannelId,
-	selectDefaultNotificationClan,
+	selectDefaultNotificationClanByClanId,
 	updateSystemMessage,
-	useAppDispatch
+	useAppDispatch,
+	useAppSelector
 } from '@mezon/store-mobile';
 import { EPermission, MAX_FILE_SIZE_10MB, sleep } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
-import type { ApiSystemMessageRequest, MezonUpdateSystemMessageBody } from 'mezon-js/api.gen';
+import type { ApiSystemMessageRequest, MezonUpdateSystemMessageBody } from 'mezon-js/api';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Dimensions, Platform, Pressable, ScrollView, Text, View } from 'react-native';
@@ -75,7 +77,7 @@ export function ClanOverviewSetting({ navigation }: MenuClanScreenProps<ClanSett
 	const [selectedChannelMessage, setSelectedChannelMessage] = useState<ChannelsEntity>(null);
 	const [updateSystemMessageRequest, setUpdateSystemMessageRequest] = useState<ApiSystemMessageRequest | null>(null);
 	const [anonymousPrevented, setAnonymousPrevented] = useState<boolean>(currentClanPreventAnonymous);
-	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
+	const defaultNotificationClan = useSelector((state) => selectDefaultNotificationClanByClanId(state, currentClanId));
 	const [notificationSetting, setNotificationSetting] = useState<number>(defaultNotificationClan?.notification_setting_type);
 
 	const dispatch = useAppDispatch();

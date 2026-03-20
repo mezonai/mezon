@@ -66,7 +66,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			alignItems: 'center',
 			justifyContent: 'center',
 			gap: size.s_8,
-			backgroundColor: colors.bgViolet,
+			backgroundColor: colors.buttonSecondary,
 			borderRadius: 50,
 			flex: 1,
 			paddingVertical: size.s_10,
@@ -282,5 +282,12 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 		},
 		customStyleIcon: {
 			marginLeft: size.s_4
+		},
+		absoluteFill: {
+			position: 'absolute',
+			top: 0,
+			left: 0,
+			right: 0,
+			bottom: 0
 		}
 	});

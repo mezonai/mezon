@@ -1,0 +1,105 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Отметить как прочитанное"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Пригласить",
+			"markFavorite": "Отметить как избранное",
+			"unMarkFavorite": "Удалить из избранного",
+			"copyLink": "Скопировать ссылку"
+		},
+		"notification": {
+			"title": "",
+			"muteChannel": "Заглушить канал",
+			"unMuteChannel": "Разглушить канал",
+			"muteThread": "Заглушить ветку",
+			"unMuteThread": "Разглушить ветку",
+			"notification": "Настройки уведомлений",
+			"for15Minutes": "На 15 минут",
+			"for1Hour": "На 1 час",
+			"for3Hours": "На 3 часа",
+			"for8Hours": "На 8 часов",
+			"for24Hours": "На 24 часа",
+			"untilTurnedBackOn": "Пока я не включу обратно",
+			"useCategoryDefault": "По умолчанию",
+			"all": "Все",
+			"onlyMention": "Только @упоминание",
+			"nothing": "Ничего",
+			"processing": "Обработка...",
+			"muteChannelStatus": "Канал заглушён",
+			"muteThreadStatus": "Ветка заглушена",
+			"unmuteChannelStatus": "Канал разглушён",
+			"unmuteThreadStatus": "Ветка разглушена",
+			"mutedUntil": "Заглушён до",
+			"muteSuccess": "Канал успешно заглушён!",
+			"unMuteSuccess": "Канал успешно разглушён!",
+			"muteFailed": "Не удалось заглушить канал!",
+			"unMuteFailed": "Не удалось разглушить канал!"
+		},
+		"thread": {
+			"title": "",
+			"threads": "Ветки",
+			"searchThreads": "Найти название ветки",
+			"searchFiles": "Найти файлы",
+			"searchCanvas": "Найти название холста"
+		},
+		"organizationMenu": {
+			"title": "",
+			"edit": "Редактировать канал",
+			"deleteChannel": "Удалить канал",
+			"duplicateChannel": "Дублировать категорию",
+			"leaveChannel": "Покинуть канал",
+			"createTextChannel": "Создать текстовый канал",
+			"createVoiceChannel": "Создать голосовой канал",
+			"openChat": "Открыть чат",
+			"hideNames": "Спрятать имена",
+			"createThread": "Создать ветку"
+		},
+		"devMode": {
+			"title": "Режим разработки",
+			"copyChannelID": "Скопировать идентификатор канала"
+		},
+		"manageThreadMenu": {
+			"editThread": "Редактировать ветку",
+			"deleteThread": "Удалить ветку",
+			"leaveThread": "Покинуть ветку",
+			"closeThread": "Закрыть ветку",
+			"lockThread": "Заблокировать ветку",
+			"copyLink": "Скопировать ссылку"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "Идентификатор канала скопирован"
+	},
+	"modalConfirm": {
+		"thread": {
+			"title": "Удалить ветку {{threadName}}",
+			"content": "Пожалуйста, подтвердите, хотите ли Вы удалить эту ветку?",
+			"confirmText": "Да"
+		},
+		"channel": {
+			"title": "Удалить канал {{channelName}}",
+			"content": "Пожалуйста, подтвердите, хотите ли Вы удалить этот канал?",
+			"confirmText": "Да",
+			"systemChannel": "Невозможно удалить системный канал",
+			"error": "Ошибка удаления канала: {{error}}"
+		}
+	},
+	"modalConfirmLeaveThread": {
+		"title": "Покинуть ветку",
+		"yesButton": "Покинуть ветку",
+		"textConfirm": "Пожалуйста, подтвердите, хотите ли Вы покинуть ветку? Вы не сможете получать сообщения из этой ветки, когда её покинете."
+	},
+	"modalConfirmLeaveChannel": {
+		"title": "Покинуть канал",
+		"yesButton": "Покинуть канал",
+		"textConfirm": "Пожалуйста, подтвердите, хотите ли Вы покинуть канал? Вы не сможете получать сообщения из этого канала, когда его покинете.",
+		"error": "Ошибка выхода из канала: {{error}}"
+	},
+	"btnBadgeCount": "Новый",
+	"favoriteChannel": "ИЗБРАННЫЙ КАНАЛ"
+}
+

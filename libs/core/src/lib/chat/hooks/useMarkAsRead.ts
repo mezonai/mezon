@@ -7,13 +7,14 @@ import {
 	markAsReadProcessing,
 	selectAllChannels,
 	selectChannelThreads,
+	selectChannelsByClanId,
 	selectLastSentMessageStateByChannelId,
 	selectLatestMessageId,
 	useAppDispatch,
 	useAppSelector
 } from '@mezon/store';
 import type { ChannelThreads, ICategoryChannel } from '@mezon/utils';
-import type { ApiMarkAsReadRequest } from 'mezon-js/api.gen';
+import type { ApiMarkAsReadRequest } from 'mezon-js/api';
 import { useCallback, useMemo, useState } from 'react';
 
 function buildChannelUpdates(channelIds: string[]): Array<{ channelId: string; messageId?: string }> {
@@ -158,14 +159,12 @@ export function useMarkAsRead() {
 				clan_id: clanId ?? ''
 			};
 
-			console.log('handleMarkAsReadClan');
-
 			setStatusMarkAsReadClan('pending');
 			try {
 				await actionMarkAsRead(body);
 
 				const store = getStore();
-				const channels = selectChannelThreads(store.getState() as RootState);
+				const channels = selectChannelsByClanId(store.getState() as RootState, clanId);
 				const channelIds = channels.map((item) => item.id);
 				const channelUpdates = buildChannelUpdates(channelIds);
 

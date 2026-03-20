@@ -1,5 +1,5 @@
 import { Icons } from '@mezon/ui';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { RenderAttachmentThumbnail } from '../ThumbnailAttachmentRender';

@@ -13,9 +13,9 @@ import {
 	updateWebhookBySpecificId,
 	useAppDispatch
 } from '@mezon/store-mobile';
-import { ChannelIsNotThread, MAX_FILE_SIZE_8MB } from '@mezon/utils';
+import { ChannelIsNotThread, ChannelStatusEnum, MAX_FILE_SIZE_8MB } from '@mezon/utils';
 import Clipboard from '@react-native-clipboard/clipboard';
-import type { ApiWebhook, MezonUpdateClanWebhookByIdBody, MezonUpdateWebhookByIdBody } from 'mezon-js/api.gen';
+import type { ApiWebhook, MezonUpdateClanWebhookByIdBody, MezonUpdateWebhookByIdBody } from 'mezon-js/api';
 import React, { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DeviceEventEmitter, Keyboard, Platform, Pressable, Text, TouchableOpacity, View } from 'react-native';
@@ -59,11 +59,14 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		return parentChannelsInClan?.map((channel) => ({
 			title: channel?.channel_label,
 			value: channel?.channel_id,
-			icon: channel?.channel_private ? (
-				<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
-			) : (
-				<Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
-			)
+			icon:
+				channel?.age_restricted === 1 ? (
+					<Icons.ClansWarningIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+				) : channel?.channel_private === ChannelStatusEnum.isPrivate ? (
+					<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+				) : (
+					<Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+				)
 		}));
 	}, [parentChannelsInClan, themeValue.text]);
 
@@ -196,6 +199,16 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		});
 	}, [hasChange, handleEditWebhook, t, handleResetChange, navigation, webhookName]);
 
+	const handleChangeOption = useCallback(
+		(value) => {
+			setHasChange(true);
+			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
+			const channelSelect = getChannelSelect(value);
+			setWebhookChannel(channelSelect);
+		},
+		[getChannelSelect]
+	);
+
 	const channelMenu: IMezonMenuItemProps[] = useMemo(() => {
 		return [
 			{
@@ -209,10 +222,25 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 					Keyboard.dismiss();
 				},
 				expandable: true,
-				icon: <Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+				icon:
+					webhookChannel?.age_restricted === 1 ? (
+						<Icons.ClansWarningIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+					) : webhookChannel?.channel_private === ChannelStatusEnum.isPrivate ? (
+						<Icons.ClansLockIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+					) : (
+						<Icons.ClansOpenIcon color={themeValue.text} width={size.s_20} height={size.s_20} />
+					)
 			}
 		];
-	}, [themeValue.text, webhookChannel?.channel_label, webhookChannel?.channel_id, channel]);
+	}, [
+		webhookChannel?.channel_label,
+		webhookChannel?.age_restricted,
+		webhookChannel?.channel_private,
+		webhookChannel?.channel_id,
+		themeValue.text,
+		channel,
+		handleChangeOption
+	]);
 
 	const menu: IMezonMenuSectionProps[] = useMemo(
 		() => [
@@ -233,16 +261,6 @@ export function WebhooksEdit({ route, navigation }: { route: any; navigation: an
 		setHasChange(true);
 		setWebhookName(value);
 	}, []);
-
-	const handleChangeOption = useCallback(
-		(value) => {
-			setHasChange(true);
-			DeviceEventEmitter.emit(ActionEmitEvent.ON_TRIGGER_BOTTOM_SHEET, { isDismiss: true });
-			const channelSelect = getChannelSelect(value);
-			setWebhookChannel(channelSelect);
-		},
-		[getChannelSelect]
-	);
 
 	const handleResetToken = useCallback(async () => {
 		await updateClanWebhookProcess(webhook?.id, true);

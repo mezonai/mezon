@@ -1,0 +1,77 @@
+{
+	"header": {
+		"save": "Сохранить"
+	},
+	"switch": {
+		"userProfile": "Профиль пользователя",
+		"serverProfile": "Профили клана"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Отображаемое имя",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Псевдоним клана",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Местоимения",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "О себе",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Отменить несохранённые изменения?",
+		"description": "У Вас есть несохранённые изменения. Пожалуйста, подтвердите, хотите ли Вы их отменить?",
+		"discard": "Отменить",
+		"keepEditing": "Продолжить редактирование"
+	},
+	"selectAClan": "Выбрать клан",
+	"searchClanPlaceholder": "Поиск клана",
+	"updateProfileSuccess": "Профиль успешно обновлён",
+	"updateProfileError": "Не удалось обновить профиль",
+	"updateClanProfileSuccess": "Профиль клана успешно обновлён",
+	"emptyUsername": "Отображаемое имя не может быть пустым!",
+	"duplicateClannick": "Псевдоним клана уже существует!",
+	"clanNickname": "Псевдоним клана",
+	"changeAvatar": "Изменить аватар",
+	"removeAvatar": "Удалить аватар",
+	"avatar": "Аватар",
+	"preview": "Предпросмотр",
+	"nickNameExistsError": "Такой псевдоним уже существует в клане. Пожалуйста, введите другой псевдоним.",
+	"unsavedChangesWarning": "Внимание - у Вас есть несохранённые изменения!",
+	"reset": "Сбросить",
+	"saveChanges": "Сохранить изменения",
+	"showProfilesDescription": "Показывайте, кто Вы есть, с помощью разных профилей для каждого из Ваших кланов",
+	"chooseAClan": "Выбрать клан",
+	"editImage": "Редактировать изображение",
+	"close": "Закрыть",
+	"resetChanges": "Сбросить изменения",
+	"cancelEditing": "Отменить редактирование",
+	"cancel": "Отменить",
+	"applyChanges": "Применить изменения",
+	"apply": "Применить",
+	"moveImage": "Переместить изображение",
+	"adjustZoom": "Регулировать увеличение",
+	"profiles": "Профили",
+	"userProfile": "Профиль пользователя",
+	"clanProfiles": "Профили клана",
+	"directMessageIcon": "Иконка прямого сообщения",
+	"directMessageIconAction": {
+		"remove": "Удалить",
+		"removeTitle": "Удалить иконку прямого сообщения",
+		"removeDescription": "Вы уверены, что хотите удалить иконку прямого сообщения?"
+	},
+	"displayName": "Отображаемое имя",
+	"emptyClanProfile": {
+		"title": "У Вас нет никакого клана",
+		"description": "Создайте или присоединитесь к клану, чтобы начать!",
+		"createClan": "Создать клан",
+		"joinClan": "Присоединиться к клану"
+	}
+}
+

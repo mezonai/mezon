@@ -1,0 +1,10 @@
+{
+  "searchMembers": "Найти участников",
+  "searchActions": "Найти действия",
+  "allUsers": "Все пользователи",
+  "noResults": {
+    "title": "Нет результатов!",
+    "description": "Вы сделали опечатку?"
+  }
+}
+

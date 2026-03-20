@@ -1,6 +1,6 @@
 import type { ApiPhoto, IAlbum, IAlbumLayout, ObserveFn } from '@mezon/utils';
 import { AlbumRectPart, generateAttachmentId } from '@mezon/utils';
-import type { ApiMessageAttachment } from 'mezon-js/api.gen';
+import type { ApiMessageAttachment } from 'mezon-js/api';
 import type { FC } from 'react';
 import Photo from './Photo';
 
@@ -74,6 +74,7 @@ const Album: FC<OwnProps> = ({
 					onClick={onClick}
 					onContextMenu={onContextMenu}
 					isSending={isSending}
+					isInSearchMessage={isInSearchMessage}
 				/>
 			);
 		} else if (video) {

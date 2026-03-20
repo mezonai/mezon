@@ -1,0 +1,183 @@
+{
+	"actions": {
+		"create": "Создать"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Название канала",
+			"placeholder": "новый-канал",
+			"errorMessage": "Пожалуйста, введите допустимое имя канала (не более 64 символов, только слова, числа, _ или -).",
+			"duplicateChannelName": "Имя канала уже существует в этом клане. Пожалуйста, введите другое имя."
+		},
+		"channelPrivate": {
+			"title": "Приватный канал",
+			"descriptionText": "При создании приватного канала только отдельные участники и роли смогут просматривать этот канал.",
+			"descriptionVoice": "При создании голосового канала только избранные участники и роли будут иметь доступ к просмотру или подключению к этому каналу."
+		},
+		"channelType": {
+			"title": "Тип канала",
+			"text": {
+				"title": "Текст",
+				"description": "Публикуйте изображения, GIF-файлы, наклейки, мнения и шутки"
+			},
+			"voice": {
+				"title": "Голос",
+				"description": "Голосовое общение, видео и демонстрация экрана"
+			},
+			"stream": {
+				"title": "Поток",
+				"description": "Делитесь увлечениями"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Тип голосового канала",
+			"mezon": "ВСТРЕЧИ MEZON",
+			"gMeet": "ВСТРЕЧИ GOOGLE"
+		},
+		"mediaHighlights": {
+			"title": "Медиа и яркие моменты",
+			"eventsTitle": "События",
+			"familyJourney": "События канала",
+			"cherishMoment": "Отслеживайте важные события",
+			"since": "ПОСЛЕ",
+			"viewAlbum": "Просмотреть альбом",
+			"emptyTitle": "Ваше путешествие еще не началось.",
+			"emptyDescription": "Создайте Ваше первое запоминающееся событие.",
+			"createFirstMilestone": "Создайте Ваше первое событие",
+			"selectYear": "Выберите год",
+			"special": "СПЕЦИАЛЬНО"
+		},
+		"familyEvents": {
+			"title": "События",
+			"eventsIn": "Событий в",
+			"noEvents": "Нет событий в",
+			"addToGallery": "Добавить в галерею",
+			"inDays": "Через {{count}} дней"
+		},
+		"createMilestone": {
+			"headerTitle": "Новое событие",
+			"cancel": "Отменить",
+			"cancelAlertTitle": "Отменить",
+			"cancelAlertMessage": "Вы уверены, что хотите отказаться от этого события?",
+			"continueEditing": "Продолжить редактирование",
+			"discard": "Отказаться",
+			"eventTitleLabel": "Название события",
+			"eventTitlePlaceholder": "например, встреча в команде, запуск проекта",
+			"dateLabel": "Дата",
+			"datePlaceholder": "Выберите дату",
+			"storyLabel": "Описание",
+			"storyPlaceholder": "Введите описание события",
+			"memoriesLabel": "Медиа",
+			"uploadTitle": "Загрузить фото или видео",
+			"uploadSubtitle": "Добавить медиа в Ваше событие",
+			"addMedia": "Добавить медиа",
+			"tagMembersLabel": "Тегнуть участников",
+			"saveButton": "Сохранить событие",
+			"requiredTitle": "Требуется",
+			"requiredMessage": "Пожалуйста, введите название события",
+			"successTitle": "Успешно",
+			"successMessage": "Событие было успешно создано!",
+			"errorTitle": "Ошибка",
+			"errorMessage": "Не удалось выбрать изображения",
+			"required": "Требуется",
+			"optional": "Опционально",
+			"titleHint": "Дайте Вашему событию чёткое и понятное название"
+		},
+		"eventDetail": {
+			"defaultTitle": "Детали события",
+			"featured": "ПРЕДСТАВЛЕННЫЙ",
+			"calendar": "Календарь",
+			"descriptionPlaceholder": "Добавить описание для этого события...",
+			"addDescription": "Добавить описание",
+			"cancel": "Отменить",
+			"save": "Сохранить"
+		},
+		"albumDetail": {
+			"eventDetails": "Детали события",
+			"date": "Дата",
+			"editEvent": "Редактировать событие",
+			"titleLabel": "Название",
+			"titlePlaceholder": "Название события",
+			"descriptionLabel": "Описание",
+			"descriptionPlaceholder": "Описание события",
+			"cancel": "Отменить",
+			"save": "Сохранить",
+			"errorTitle": "Ошибка",
+			"titleRequired": "Название не может быть пустым",
+			"updateFailed": "Не удалось обновить событие",
+			"sessionNotAvailable": "Сессия недоступна",
+			"uploadFailed": "Не удалось загрузить изображения"
+		}
+	},
+	"channelVoiceType": {
+		"title": "Тип голосового канала",
+		"mezon": "ВСТРЕЧИ MEZON",
+		"gMeet": "ВСТРЕЧИ GOOGLE"
+	},
+	"mediaHighlights": {
+		"title": "Медиа и яркие моменты",
+		"familyJourney": "События канала",
+		"cherishMoment": "Отслеживайте важные события.",
+		"since": "ПОСЛЕ",
+		"viewAlbum": "Просмотреть альбом",
+		"emptyTitle": "Ваше путешествие еще не началось.",
+		"emptyDescription": "Создайте Ваше первое запоминающееся событие.",
+		"createFirstMilestone": "Создайте Ваше первое событие",
+		"selectYear": "Выберите год",
+		"special": "СПЕЦИАЛЬНО"
+	},
+	"familyEvents": {
+		"title": "События",
+		"eventsIn": "События в",
+		"noEvents": "Нет событий в",
+		"addToGallery": "Добавить в галерею",
+		"inDays": "Через {{count}} дней"
+	},
+	"createMilestone": {
+		"headerTitle": "Новое событие",
+		"cancel": "Отменить",
+		"cancelAlertTitle": "Отменить",
+		"cancelAlertMessage": "Вы уверены, что хотите отказаться от этого события?",
+		"continueEditing": "Продолжить редактирование",
+		"discard": "Отказаться",
+		"eventTitleLabel": "Название события",
+		"eventTitlePlaceholder": "например, встреча в команде, запуск проекта",
+		"dateLabel": "Дата",
+		"datePlaceholder": "Выберите дату",
+		"storyLabel": "Описание",
+		"storyPlaceholder": "Введите описание события",
+		"memoriesLabel": "Медиа",
+		"uploadTitle": "Загрузить фото или видео",
+		"uploadSubtitle": "Добавить медиа в Ваше событие",
+		"addMedia": "Добавить медиа",
+		"tagMembersLabel": "Тегнуть участников",
+		"saveButton": "Сохранить событие",
+		"requiredTitle": "Требуется",
+		"requiredMessage": "Пожалуйста, введите название события",
+		"successTitle": "Успешно",
+		"successMessage": "Событие было успешно создано!",
+		"errorTitle": "Ошибка",
+		"errorMessage": "Не удалось выбрать изображения",
+		"required": "Требуется",
+		"optional": "Опционально",
+		"titleHint": "Дайте Вашему событию чёткое и понятное название"
+	},
+	"albumDetail": {
+		"eventDetails": "Детали события",
+		"date": "Дата",
+		"editEvent": "Редактировать событие",
+		"titleLabel": "Название",
+		"titlePlaceholder": "Название события",
+		"descriptionLabel": "Описание",
+		"descriptionPlaceholder": "Описание события",
+		"cancel": "Отменить",
+		"save": "Сохранить",
+		"errorTitle": "Ошибка",
+		"titleRequired": "Название не может быть пустым",
+		"updateFailed": "Не удалось обновить событие",
+		"sessionNotAvailable": "Сессия недоступна",
+		"uploadFailed": "Не удалось загрузить изображения"
+	},
+	"monthsShort": ["ЯНВ", "ФЕВ", "МАР", "АПР", "МАЙ", "ИЮН", "ИЮЛ", "АВГ", "СЕН", "ОКТ", "НОЯ", "ДЕК"]
+}
+

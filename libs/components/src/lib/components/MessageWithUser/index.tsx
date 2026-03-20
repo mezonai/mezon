@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import type { MessagesEntity, RootState } from '@mezon/store';
-import { getStore, selectBanMeInChannel, topicsActions, useAppDispatch } from '@mezon/store';
+import {
+	getPoll,
+	getStore,
+	selectBanMeInChannel,
+	selectPollByMessageId,
+	selectPollEmojiByMessageId,
+	topicsActions,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import type { ObserveFn, UsersClanEntity } from '@mezon/utils';
 import {
@@ -13,12 +22,13 @@ import {
 	WIDTH_CLAN_SIDE_BAR,
 	convertDateStringI18n,
 	convertTimeHour,
+	convertTimestampToTimeRemainingI18n,
 	generateE2eId
 } from '@mezon/utils';
 import classNames from 'classnames';
 import { ChannelStreamMode } from 'mezon-js';
 import type { ReactNode } from 'react';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import CallLogMessage from '../CallLogMessage/CallLogMessage';
@@ -33,6 +43,7 @@ import MessageHead from './MessageHead';
 import MessageInput from './MessageInput';
 import MessageReaction from './MessageReaction/MessageReaction';
 import MessageReply from './MessageReply/MessageReply';
+import { PollMessage } from './PollMessage';
 
 const NX_CHAT_APP_ANNONYMOUS_USER_ID = process.env.NX_CHAT_APP_ANNONYMOUS_USER_ID || 'anonymous';
 
@@ -65,6 +76,61 @@ export type MessageWithUserProps = {
 	isSelected?: boolean;
 	previousMessage?: MessagesEntity;
 	channelId?: string;
+};
+
+const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { message: MessagesEntity; observeIntersectionForLoading?: ObserveFn }) => {
+	const dispatch = useAppDispatch();
+	const pollData = useAppSelector((state: RootState) => selectPollByMessageId(state, message.id));
+	const pollEmoji = useAppSelector((state: RootState) => selectPollEmojiByMessageId(state, message.id));
+	const { t } = useTranslation();
+	const containerRef = useRef<HTMLDivElement>(null);
+	const hasFetched = useRef(false);
+
+	useEffect(() => {
+		if (pollData || hasFetched.current || !message.channel_id) return;
+
+		const el = containerRef.current;
+		if (!el || !observeIntersectionForLoading) {
+			hasFetched.current = true;
+			dispatch(getPoll({ message_id: message.id, channel_id: message.channel_id }));
+			return;
+		}
+
+		return observeIntersectionForLoading(el, (entry) => {
+			if (entry.isIntersecting && !hasFetched.current) {
+				hasFetched.current = true;
+				dispatch(getPoll({ message_id: message.id, channel_id: message.channel_id }));
+			}
+		});
+	}, [dispatch, message.id, message.channel_id, pollData, observeIntersectionForLoading]);
+
+	const answerCount = useMemo(() => {
+		const content = message?.content?.t;
+		if (!content) return 2;
+		const lines = content.split('\n');
+		return lines.filter((line: string) => /^\d+\.\s/.test(line.trim())).length || 2;
+	}, [message?.content?.t]);
+
+	if (!pollData) {
+		const placeholderHeight = 80 + answerCount * 44;
+		return <div ref={containerRef} style={{ minHeight: `${placeholderHeight}px` }} />;
+	}
+
+	const answers = pollData.answers?.map((answer) => answer.label || '') || [];
+	const duration = pollData.exp ? convertTimestampToTimeRemainingI18n(parseInt(pollData.exp), t) : '';
+
+	return (
+		<PollMessage
+			question={pollData.question || ''}
+			questionEmojiId={pollEmoji?.questionEmojiId}
+			answers={answers}
+			answerEmojiIds={pollEmoji?.answerEmojiIds}
+			duration={duration}
+			allowMultipleAnswers={pollData.type === 1}
+			messageId={message.id}
+			channelId={message.channel_id}
+		/>
+	);
 };
 
 function MessageWithUser({
@@ -188,7 +254,7 @@ function MessageWithUser({
 					classBanner="rounded-tl-lg rounded-tr-lg h-[105px]"
 					message={message}
 					mode={mode}
-					avatar={isClickReply.current ? message?.references?.[0]?.mesages_sender_avatar : message?.clan_avatar || message?.avatar}
+					avatar={isClickReply.current ? message?.references?.[0]?.message_sender_avatar : message?.clan_avatar || message?.avatar}
 					name={message?.clan_nick || message?.display_name || message?.username}
 					isDM={isDM}
 					checkAnonymous={isAnonymousOnModal}
@@ -219,11 +285,7 @@ function MessageWithUser({
 						},
 						{
 							'bg-highlight-no-hover':
-								(hasIncludeMention || checkReplied) &&
-								!messageReplyHighlight &&
-								!checkMessageTargetToMoved &&
-								!isEphemeralMessage &&
-								!isTopic
+								(hasIncludeMention || checkReplied) && !messageReplyHighlight && !checkMessageTargetToMoved && !isEphemeralMessage
 						},
 						{ '!bg-bgMessageReplyHighline': messageReplyHighlight },
 						{ 'bg-highlight': isHighlight },
@@ -364,6 +426,9 @@ function MessageWithUser({
 								callLog={message?.content?.callLog}
 								contentMsg={message?.content?.t || ''}
 							/>
+						)}
+						{message.code === TypeMessage.Poll && (
+							<PollMessageWrapper message={message} observeIntersectionForLoading={observeIntersectionForLoading} />
 						)}
 						{!!(message.code === TypeMessage.SendToken) && <TokenTransactionMessage message={message} />}
 						{message?.content?.components &&

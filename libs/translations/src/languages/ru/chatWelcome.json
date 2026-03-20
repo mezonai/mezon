@@ -1,0 +1,33 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "Нажмите на запуск приложения для начала",
+		"inviteFriends": "Пригласите Ваших друзей",
+		"sendFirstMessage": "Отправьте Ваше первое сообщение",
+		"downloadApp": "Скачать Mezon",
+		"createChannel": "Создать канал"
+	},
+	"welcome": {
+		"welcomeToChannel": "Добро пожаловать в #{{channelName}}",
+		"startOfChannel": "Это начало #{{channelName}} {{channelType}} канала",
+		"startOfThread": "Начал {{username}}",
+		"welcomeToGroup": "Добро пожаловать в {{groupName}} группу.",
+		"beginningOfDM": "Это только начало Вашего легендарного разговора с {{userName}}",
+		"editGroup": "Редактировать группу",
+		"private": "приватный",
+		"friendRequestSent": "Отправил Вам запрос на дружбу:",
+		"addFriend": "Добавить друга",
+		"removeFriend": "Удалить друга",
+		"accept": "Принять",
+		"ignore": "Игнорировать",
+		"friendRequestSentButton": "Запрос дружбы отправлен",
+		"block": "Заблокировать",
+		"unblock": "Разблокировать"
+	},
+	"toast": {
+		"userBlockedSuccess": "Пользователь был успешно заблокирован",
+		"failedToBlock": "Не удалось заблокировать пользователя",
+		"userUnblockedSuccess": "Пользователь был успешно разблокирован",
+		"failedToUnblock": "Не удалось разблокировать пользователя"
+	}
+}
+

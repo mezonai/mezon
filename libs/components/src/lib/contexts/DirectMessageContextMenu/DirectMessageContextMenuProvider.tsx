@@ -7,6 +7,7 @@ import {
 	selectFriendById,
 	selectHasKeyE2ee,
 	selectNotifiSettingsEntitiesById,
+	selectPinnedDms,
 	selectUpdateDmGroupError,
 	selectUpdateDmGroupLoading,
 	useAppDispatch,
@@ -20,6 +21,7 @@ import { Menu, Submenu, useContextMenu } from 'react-contexify';
 import { useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import LeaveGroupModal from '../../components/LeaveGroupModal';
 import ModalEditGroup from '../../components/ModalEditGroup';
 import ItemPanelMember from '../../components/PanelMember/ItemPanelMember';
@@ -35,9 +37,8 @@ import { useMenuHandlers } from './useMenuHandlers';
 import { useMenuStyles } from './useMenuStyles';
 import { useNotificationSettings } from './useNotificationSettings';
 import { useProfileModal } from './useProfileModal';
-
 const DirectMessageContextMenuContext = createContext<DirectMessageContextMenuContextType | undefined>(undefined);
-
+const MAX_PINNED_DM = 10;
 export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps> = ({
 	children,
 	contextMenuId = DIRECT_MESSAGE_CONTEXT_MENU_ID,
@@ -60,6 +61,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const isDmGroup = getChannelType === ChannelType.CHANNEL_TYPE_GROUP;
 	const isDm = getChannelType === ChannelType.CHANNEL_TYPE_DM;
 	const channelId = getChannelId;
+	const pinnedDms = useAppSelector(selectPinnedDms);
 
 	const isLastOne = (currentUser?.user_id?.length || 0) <= 1;
 	const [warningStatus, setWarningStatus] = useState<string>('var(--bg-item-hover)');
@@ -165,21 +167,12 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 	const isSelf = userProfile?.user?.id === currentUser?.id || currentUser?.user_ids?.includes(userProfile?.user?.id);
 
 	const isDefaultSetting = !notificationSettings?.id || notificationSettings?.id === '0';
-	const isMuted = !isDefaultSetting && notificationSettings?.active === EMuteState.MUTED;
 	const hasMuteTime =
-		!isDefaultSetting && notificationSettings?.time_mute
-			? (() => {
-					try {
-						const muteDate = new Date(notificationSettings.time_mute);
-						return !isNaN(muteDate.getTime()) && muteDate > new Date();
-					} catch {
-						return false;
-					}
-				})()
-			: false;
-	const shouldShowUnmute = isMuted || hasMuteTime;
+		(!isDefaultSetting && notificationSettings?.time_mute_seconds && notificationSettings.time_mute_seconds > Date.now() / 1000) ||
+		notificationSettings?.time_mute_seconds === EMuteState.MUTED_INFINITY;
+	const shouldShowUnmute = !isDefaultSetting && hasMuteTime;
 
-	const shouldShowMuteSubmenu = !isMuted && !hasMuteTime;
+	const shouldShowMuteSubmenu = isDefaultSetting || !hasMuteTime;
 
 	const isOwnerClanOrGroup = userProfile?.user?.id && dataMemberCreate?.createId && userProfile?.user?.id === dataMemberCreate.createId;
 	const infoFriend = useAppSelector((state: RootState) => selectFriendById(state, currentUser?.user_ids?.[0] || currentUser?.id || ''));
@@ -227,6 +220,29 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 							<MemberMenuItem
 								label={t('contextMenu.markAsRead')}
 								onClick={currentHandlers.handleMarkAsRead}
+								setWarningStatus={setWarningStatus}
+							/>
+						)}
+
+						{channelId && (
+							<MemberMenuItem
+								label={
+									pinnedDms.includes(channelId)
+										? t('contextMenu.unpinConversation', 'Unpin Conversation')
+										: t('contextMenu.pinConversation', 'Pin Conversation')
+								}
+								onClick={() => {
+									if (!pinnedDms.includes(channelId) && pinnedDms.length >= MAX_PINNED_DM) {
+										toast.error(
+											t(
+												'contextMenu.pinLimitExceeded',
+												'You can only pin up to 10 conversations. Please unpin another conversation to pin this one'
+											)
+										);
+										return;
+									}
+									dispatch(directActions.togglePinDm({ dmId: channelId }));
+								}}
 								setWarningStatus={setWarningStatus}
 							/>
 						)}
@@ -323,7 +339,7 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 									/>
 									<MemberMenuItem
 										label={t('contextMenu.untilTurnBackOn')}
-										onClick={() => currentHandlers.handleMute()}
+										onClick={() => currentHandlers.handleMute(EMuteState.MUTED_INFINITY)}
 										setWarningStatus={setWarningStatus}
 									/>
 								</Submenu>

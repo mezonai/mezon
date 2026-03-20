@@ -17,6 +17,7 @@ import {
 	usersClanActions,
 	walletActions
 } from '@mezon/store';
+import { isOnline, waitForOnline } from '@mezon/transport';
 import type { IWithError } from '@mezon/utils';
 import { notificationService } from '@mezon/utils';
 import type { CustomLoaderFunction } from './appLoader';
@@ -42,9 +43,6 @@ function getRedirectTo(initialPath?: string): string {
 	return '';
 }
 
-let connectionCheckPromise: Promise<void> | null = null;
-let isCheckingConnection = false;
-
 const connectNotification = async (dispatch: AppDispatch) => {
 	try {
 		const response = await dispatch(fcmActions.connectNotificationService());
@@ -57,37 +55,6 @@ const connectNotification = async (dispatch: AppDispatch) => {
 	}
 };
 
-const waitForInternetConnection = async (delayMs: number): Promise<void> => {
-	const hasConnection = await checkInternetConnection();
-
-	if (!hasConnection) {
-		if (isCheckingConnection && connectionCheckPromise) {
-			await connectionCheckPromise;
-		} else {
-			isCheckingConnection = true;
-			connectionCheckPromise = new Promise<void>((resolve) => {
-				const intervalId = setInterval(async () => {
-					const isConnected = await checkInternetConnection();
-					if (isConnected) {
-						clearInterval(intervalId);
-						isCheckingConnection = false;
-						connectionCheckPromise = null;
-						resolve();
-					}
-				}, 2000);
-			});
-			await connectionCheckPromise;
-		}
-		return;
-	}
-
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			resolve();
-		}, delayMs);
-	});
-};
-
 const handleLogoutWithRedirect = (dispatch: AppDispatch, initialPath: string): IAuthLoaderData => {
 	const redirectTo = getRedirectTo(initialPath);
 	dispatch(authActions.setLogout());
@@ -95,18 +62,6 @@ const handleLogoutWithRedirect = (dispatch: AppDispatch, initialPath: string): I
 	const redirect = redirectTo ? `/desktop/login?redirect=${redirectTo}` : '/desktop/login';
 	return { isLogin: false, redirect } as IAuthLoaderData;
 };
-
-async function checkInternetConnection() {
-	try {
-		const response = await fetch(`${window.origin}/favicon.ico`, {
-			method: 'HEAD',
-			cache: 'no-cache'
-		});
-		return response.ok;
-	} catch (error) {
-		return false;
-	}
-}
 
 const isUnauthorizedError = (errorPayload: any): boolean => {
 	if (errorPayload && typeof errorPayload === 'object' && 'status' in errorPayload && errorPayload.status === 401) {
@@ -119,64 +74,40 @@ const isUnauthorizedError = (errorPayload: any): boolean => {
 };
 
 const refreshSession = async ({ dispatch, initialPath }: { dispatch: AppDispatch; initialPath: string }) => {
-	let retries = 6;
-	let attempt = 0;
-	let isRedirectLogin = false;
 	const store = getStore();
 	const sessionUser = selectSession(store?.getState());
 
 	if (!sessionUser?.token) {
-		return { isLogin: !isRedirectLogin } as IAuthLoaderData;
+		return { isLogin: false } as IAuthLoaderData;
 	}
 
-	while (retries > 0) {
-		try {
-			const response = await dispatch(authActions.refreshSession());
+	try {
+		const response = await dispatch(authActions.refreshSession());
 
-			if (response?.payload === 'Redirect Login') {
-				isRedirectLogin = true;
-			}
+		if (response?.payload === 'Redirect Login') {
+			return handleLogoutWithRedirect(dispatch, initialPath);
+		}
 
-			if ((response as unknown as IWithError).error) {
-				const errorPayload = response.payload;
-				if (isUnauthorizedError(errorPayload)) {
-					console.error('Unauthorized (401), logging out immediately');
-					return handleLogoutWithRedirect(dispatch, initialPath);
-				}
-
-				throw new Error('Session refresh failed');
-			} else {
-				const profileResponse = await dispatch(accountActions.getUserProfile());
-				if (!(profileResponse as unknown as IWithError).error) {
-					return { isLogin: true } as IAuthLoaderData;
-				}
-				throw new Error('Session expired');
-			}
-		} catch (error) {
-			if ((await checkInternetConnection()) && error instanceof Error && !error.message.includes('Session expired')) {
-				console.error('Non-retryable error, logging out:', error);
+		if ((response as unknown as IWithError).error) {
+			const errorPayload = response.payload;
+			if (isUnauthorizedError(errorPayload)) {
+				console.error('Unauthorized (401), logging out immediately');
 				return handleLogoutWithRedirect(dispatch, initialPath);
 			}
-
-			console.error(`Error in refreshSession, retrying... (${6 - retries + 1}/6)`, error);
+			console.error('Session refresh failed:', errorPayload);
+			return handleLogoutWithRedirect(dispatch, initialPath);
 		}
 
-		retries -= 1;
-		attempt += 1;
-
-		if (retries > 0) {
-			const delayMs = Math.min(1000 * Math.pow(2, attempt - 1), 16000);
-
-			console.error(`Session expired, retrying in ${delayMs}ms... (${6 - retries + 1}/6)`);
-			await waitForInternetConnection(delayMs);
-		} else {
-			console.error('Session expired after 6 retries');
-			const redirectTo = getRedirectTo(initialPath);
-			dispatch(authActions.setLogout());
-			dispatch(walletActions.setLogout());
-			const redirect = redirectTo ? `/desktop/login?redirect=${redirectTo}` : '/desktop/login';
-			return { isLogin: !isRedirectLogin, redirect: isRedirectLogin ? redirect : '' } as IAuthLoaderData;
+		const profileResponse = await dispatch(accountActions.getUserProfile());
+		if ((profileResponse as unknown as IWithError).error) {
+			console.error('getUserProfile failed after refresh');
+			return handleLogoutWithRedirect(dispatch, initialPath);
 		}
+
+		return { isLogin: true } as IAuthLoaderData;
+	} catch (error) {
+		console.error('refreshSession error:', error);
+		return handleLogoutWithRedirect(dispatch, initialPath);
 	}
 };
 
@@ -201,23 +132,16 @@ export const authLoader: CustomLoaderFunction = async ({ dispatch, initialPath }
 	dispatch(emojiSuggestionActions.fetchEmoji({ clanId: '0' }));
 
 	connectNotification(dispatch);
-	// check network not connect
-	if (!navigator.onLine) {
+
+	if (!isOnline()) {
 		const splashScreen = document.getElementById('splash-screen');
 		const title = splashScreen?.querySelector('#splash-title') as HTMLSpanElement;
 		title && (title.textContent = 'Connecting ...');
-		await new Promise<void>((resolve) => {
-			const handleOnline = () => {
-				window.removeEventListener('online', handleOnline);
-				setTimeout(() => {
-					if (splashScreen) {
-						splashScreen.style.display = 'none';
-					}
-					resolve();
-				}, 3000);
-			};
-			window.addEventListener('online', handleOnline);
-		});
+		await waitForOnline();
+		await new Promise((resolve) => setTimeout(resolve, 3000));
+		if (splashScreen) {
+			splashScreen.style.display = 'none';
+		}
 	}
 
 	return session;

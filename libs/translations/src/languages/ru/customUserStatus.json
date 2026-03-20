@@ -1,0 +1,23 @@
+{
+  "editStatus": "Редактировать статус",
+  "save": "Сохранить",
+  "statusDuration": {
+    "label": "Длительность статуса",
+    "today": "Сегодня",
+    "fourHours": "4 часа",
+    "oneHour": "1 час",
+    "thirtyMinutes": "30 минут",
+    "dontClear": "Не убирать"
+  },
+  "placeholder": "Чем занимаетесь?",
+  "userStatus": {
+    "online": "Онлайн",
+    "idle": "В простое",
+    "doNotDisturb": "Не беспокоить",
+    "invisible": "Невидимка"
+  },
+  "setCustomStatus": "Поставить кастомный статус",
+  "onlineStatus": "Онлайн статус",
+  "changeOnlineStatus": "Сменить онлайн статус"
+}
+

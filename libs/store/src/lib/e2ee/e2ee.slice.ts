@@ -2,7 +2,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { LoadingStatus } from '@mezon/utils';
 import type { EntityState, GetThunkAPI } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ApiPubKey, GetPubKeysResponseUserPubKey } from 'mezon-js/api.gen';
+import type { ApiPubKey, GetPubKeysResponseUserPubKey } from 'mezon-js/api';
 import { selectDirectById } from '../direct/direct.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, getMezonCtx } from '../helpers';

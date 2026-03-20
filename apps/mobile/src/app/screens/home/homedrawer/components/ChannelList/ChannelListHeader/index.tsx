@@ -82,10 +82,10 @@ const ChannelListHeader = () => {
 	return (
 		<View style={styles.container}>
 			<LinearGradient
-				start={{ x: 0, y: 1 }}
-				end={{ x: 1, y: 0 }}
-				colors={[themeValue.secondary, themeValue.primaryGradiant || themeValue.secondary]}
-				locations={[0.7, 1]}
+				start={{ x: 0, y: 0 }}
+				end={{ x: 1, y: 4 }}
+				colors={[themeValue.primaryGradiant || themeValue.secondary, themeValue.secondary]}
+				locations={[0.1, 0.4]}
 				style={[StyleSheet.absoluteFill]}
 			/>
 			{!!clanName && (
@@ -114,16 +114,21 @@ const ChannelListHeader = () => {
 			<View style={styles.navigationBar}>
 				<TouchableOpacity onPressIn={navigateToSearchPage} style={styles.wrapperSearch}>
 					<View style={styles.searchIcon}>
-						<Icons.SearchIcon color={themeValue.textDisabled} width={size.s_18} height={size.s_18} />
+						<Icons.SearchIcon color={themeValue.iconPrimary || themeValue.textDisabled} width={size.s_18} height={size.s_18} />
 					</View>
 
 					<Text style={styles.placeholderSearchBox}>{t('common.search')}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity onPressIn={onOpenScanQR} style={styles.iconWrapper}>
-					<Icons.QrIcon color={themeValue.text} width={size.s_16} height={size.s_16} />
+					<Icons.QrIcon
+						color={themeValue.borderRadio}
+						primary={themeValue.iconPrimary || themeValue.textDisabled}
+						width={size.s_16}
+						height={size.s_16}
+					/>
 				</TouchableOpacity>
 				<TouchableOpacity onPressIn={onOpenEvent} style={styles.iconWrapper}>
-					<Icons.EventIcon color={themeValue.text} width={size.s_18} height={size.s_18} />
+					<Icons.EventIcon color={themeValue.iconPrimary || themeValue.textDisabled} width={size.s_18} height={size.s_18} />
 				</TouchableOpacity>
 			</View>
 		</View>

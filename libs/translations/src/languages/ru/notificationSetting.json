@@ -1,0 +1,57 @@
+{
+	"bottomSheet": {
+		"title": "Настройки уведомлений",
+		"muteUntil": "Вы отключили уведомления для этого канала до",
+		"unMute": "Включить уведомления",
+		"mute": "Отключить уведомления",
+		"labelOptions": {
+			"reactionMessage": "Сообщение реакции",
+			"categoryDefault": "Использовать значение по умолчанию категории",
+			"allMessage": "Все",
+			"notThingMessage": "Ничего",
+			"mentionMessage": "Только @упоминания"
+		},
+		"muteCategoryUntil": "Вы отключили уведомления для этой категории до"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Отключить уведомления для этой темы",
+		"headerTitleMuteChannel": "Отключить уведомления для этого канала",
+		"muteThisConversation": "Отключить уведомления для этого разговора",
+		"muteDuration": {
+			"forFifteenMinutes": "На 15 минут",
+			"forOneHour": "На 1 час",
+			"forThreeHours": "На 3 часа",
+			"forEightHours": "На 8 часов",
+			"forTwentyFourHours": "На 24 часа",
+			"untilTurnItBackOn": "До повторного включения"
+		},
+		"description": "Вы получаете уведомления от всех сообщений в этом клане, но Вы можете изменить это здесь",
+		"muteSuccess": "Уведомления отключены успешно!",
+		"unMuteSuccess": "Уведомления включены успешно!",
+		"muteFailed": "Не удалось отключить уведомления!",
+		"unMuteFailed": "Не удалось включить уведомления!"
+	},
+	"toast": {
+		"error": "Ошибка обновления уведомления: {{error}}"
+	},
+	"title": "Настройки уведомлений",
+	"clanNotificationSettings": "Настройки уведомлений клана",
+	"notificationOverrides": "Переопределения уведомлений",
+	"addChannelOverride": "Добавить канал для переопределения его настроек уведомлений по умолчанию",
+	"selectOrCreateOption": "Выберите или создайте вариант...",
+	"headers": {
+		"channelOrCategory": "Канал или категория",
+		"all": "Все",
+		"mentions": "Упоминания",
+		"nothing": "Ничего",
+		"mute": "Отключить"
+	},
+	"menu": {
+		"notification": {
+			"all": "Все",
+			"onlyMention": "Только @упоминания",
+			"nothing": "Ничего"
+		}
+	}
+}
+

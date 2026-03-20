@@ -29,6 +29,7 @@ import ProtectedRoutes from './ProtectedRoutes';
 import ThreadsRoutes from './ThreadsRoutes';
 
 import { Canvas } from '@mezon/components';
+import { externalLoader } from '../loaders/externalLoader';
 
 const AppLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/AppLayout'));
 const GuessLayout = lazy(() => import(/* webpackChunkName: "layouts" */ '../layouts/GuessLayout'));
@@ -171,7 +172,7 @@ export const Routes = memo(() => {
 								<PreJoinCalling />
 							</Suspense>
 						),
-						loader: loaderWithStore(authLoader)
+						loader: loaderWithStore(externalLoader)
 					},
 					{
 						path: 'meet',

@@ -1,0 +1,31 @@
+@keyframes poll-bar-fill {
+	from {
+		transform: scaleX(0);
+		opacity: 0.6;
+	}
+	to {
+		transform: scaleX(1);
+		opacity: 1;
+	}
+}
+
+@keyframes poll-percent-pop {
+	from {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+.poll-bar-inner {
+	transform-origin: left;
+	animation: poll-bar-fill 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.poll-percent-text {
+	opacity: 0;
+	animation: poll-percent-pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}

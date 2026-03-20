@@ -1,0 +1,26 @@
+{
+	"navigation": {
+		"clanGuide": "Руководство клана",
+		"events": "События",
+		"events_one": "{{count}} Событие",
+		"events_other": "{{count}} События",
+		"members": "Участники",
+		"channels": "Каналы"
+	},
+	"ongoingEvent": {
+		"title": "Предстоящее событие",
+		"eventDetail": "Детали события"
+	},
+	"onboarding": {
+		"getStarted": "Начнём",
+		"of": "из"
+	},
+	"favoriteChannel": "Избранный канал",
+	"publicChannels": "Публичные каналы",
+	"channelApps": "Приложения канала",
+	"dragMode": {
+		"enable": "Нажмите, чтобы включить \"Режим перетаскивания\" в категориях",
+		"disable": "Нажмите, чтобы выключить \"Режим перетаскивания\" в категориях"
+	}
+}
+

@@ -1,0 +1,15 @@
+{
+  "customiseGroup": "Кастомизировать группу",
+  "inviteLinks": "Пригласительные ссылки",
+  "leaveGroup": "Покинуть группу",
+  "closeDM": "Закрыть личные сообщения",
+  "groupName": "Название группы",
+  "save": "Сохранить",
+  "removeAvatar": "Убрать аватар",
+  "invalidGroupName": "Недопустимое имя группы",
+  "uploadImage": "Загрузить изображение",
+  "toast": {
+    "leaveGroupError": "Ошибка при выходе из группы: {{error}}"
+  }
+}
+

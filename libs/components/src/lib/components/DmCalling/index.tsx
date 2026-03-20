@@ -140,7 +140,7 @@ const DmCalling = forwardRef<{ triggerCall: (isVideoCall?: boolean, isAnswer?: b
 	};
 
 	const onStartCall = async ({ isVideoCall = false, isAnswer = false }) => {
-		dispatch(DMCallActions.setIsInCall(true));
+		if (!isAnswer) dispatch(DMCallActions.setIsInCall(true));
 		dispatch(audioCallActions.setIsRingTone(false));
 		dispatch(DMCallActions.setIsShowMeetDM(isVideoCall));
 

@@ -1,0 +1,60 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Голосовая комната",
+		"joinVoice": "Присоединиться к звонку"
+	},
+	"chat": "Чат",
+	"membersWillBeNotified": "{{participantsCount}} участника будут уведомлены",
+	"noDisplay": "Нет отображения голосового индикатора в канале",
+	"videoConnected": "Видео подключено",
+	"voiceConnected": "Голосовая связь подключена",
+	"turnOffMicrophone": "Выключить микрофон",
+	"turnOnMicrophone": "Включить микрофон",
+	"turnOffCamera": "Выключить камеру",
+	"turnOnCamera": "Включить камеру",
+	"stopScreenShare": "Остановить показ экрана",
+	"shareYourScreen": "Поделиться экраном",
+	"disconnect": "Отключиться",
+	"muteModal": {
+		"title": "Заглушить участника",
+		"content": "Пожалуйста, подтвердите, если Вы хотите заглушить \"{{userName}}\"?",
+		"mute": "Заглушить"
+	},
+	"kickModal": {
+		"title": "Выгнать участника",
+		"content": "Пожалуйста, подтвердите, если Вы хотите выгнать \"{{userName}}\"?",
+		"kick": "Выгнать"
+	},
+	"disconnectModal": {
+		"title": "Голосовая связь отключена",
+		"content": {
+			"removed": "Вы были удалены из голосового канала",
+			"duplicate": "Вы были отключены из-за другого присоединения",
+			"default": "Вы были отключены от голосового канала",
+			"deleted": "Голосовой канал был удалён"
+		},
+		"confirm": "Подтвердить"
+	},
+	"permission": {
+		"cameraTitle": "Предоставить разрешение к камере",
+		"cameraBody": "У нас нет доступа к Вашей камере. Пожалуйста, включите доступ к камере в настройках Вашей системы.",
+		"microphoneTitle": "Предоставить разрешение на микрофон",
+		"microphoneBody": "У нас нет доступа к Вашему микрофону. Пожалуйста, включите доступ к микрофону в настройках Вашей системы.",
+		"cancel": "Отменить",
+		"deviceSettings": "Настройки устройства"
+	},
+	"device": {
+		"inputDevice": "Устройство ввода",
+		"outputDevice": "Устройство вывода",
+		"camera": "Камера"
+	},
+	"toast": {
+		"connectionConnected": "Соединение установлено",
+		"connectionDisconnected": "Соединение разорвано",
+		"microphonePermissionRequired": "Требуется доступ к микрофону",
+		"cameraPermissionRequired": "Требуется доступ к камере",
+		"recipientDidNotAnswer": "Получатель не ответил на звонок."
+	},
+	"usernameScreen": "{{username}} экран"
+}
+

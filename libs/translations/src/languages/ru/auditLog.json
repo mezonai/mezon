@@ -1,0 +1,27 @@
+{
+	"auditLogComponent": {
+		"title": "Журнал аудита",
+		"filterByUser": "Фильтрация по пользователю",
+		"filterByAction": "Фильтрация по действию",
+		"filterBtn": "Фильтрация"
+	},
+	"auditLogItem": {
+		"performedAnAction": "выполнил действие",
+		"toChannel": "в канале",
+		"remove": "Убрать",
+		"add": "Добавить"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Все действия",
+		"placeholder": "Поиск действий"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Все пользователи",
+		"placeholder": "Найти пользователей"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "ПОКА ЧТО НЕТ ЛОГОВ",
+		"description": "После того как модераторы начнут модерировать, Вы сможете модерировать модерацию здесь."
+	}
+}
+

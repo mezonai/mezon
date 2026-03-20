@@ -8,7 +8,7 @@ import {
 	selectCurrentClanId,
 	selectCurrentClanLogo,
 	selectCurrentClanName,
-	selectDefaultNotificationClan,
+	selectDefaultNotificationClanByClanId,
 	selectIsShowEmptyCategory,
 	useAppDispatch
 } from '@mezon/store-mobile';
@@ -45,10 +45,10 @@ export default function ClanMenu() {
 	const { t } = useTranslation(['clanMenu']);
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
-	const defaultNotificationClan = useSelector(selectDefaultNotificationClan);
 	const currentClanLogo = useSelector(selectCurrentClanLogo);
 	const currentClanId = useSelector(selectCurrentClanId);
 	const currentClanName = useSelector(selectCurrentClanName);
+	const defaultNotificationClan = useSelector((state) => selectDefaultNotificationClanByClanId(state, currentClanId));
 	const navigation = useNavigation<AppStackScreenProps['navigation']>();
 	const dispatch = useAppDispatch();
 	const { handleMarkAsReadClan, statusMarkAsReadClan } = useMarkAsRead();

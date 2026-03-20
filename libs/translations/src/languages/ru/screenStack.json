@@ -1,0 +1,57 @@
+{
+	"menuClanStack": {
+		"categoryCreator": "Создать категорию",
+		"clanSetting": "Настройки клана",
+		"channelCreator": "Создать канал",
+		"clanOverviewSetting": "Общие настройки",
+		"clanEmojiSetting": "Эмодзи",
+		"categorySetting": "Настройки категории",
+		"emoji": "Эмодзи",
+		"sticker": "Стикер",
+		"member": "Участники",
+		"eventCreator": "Создать событие",
+		"serverRoles": "Роли клана",
+		"notificationSetting": "Настройки уведомлений",
+		"newOverride": "Новое переопределение",
+		"webhooks": "Вебхуки",
+		"clanWebhooks": "Вебхуки клана",
+		"integrations": "Интеграции",
+		"webhooksEdit": "Редактирование вебхука",
+		"auditLog": "Журнал аудита",
+		"filterByUser": "Фильтр по пользователю",
+		"filterByAction": "Фильтр по действию",
+		"sound": "Звуковой эффект",
+		"createSound": "Создать звуковой эффект",
+		"transferOwnership": "Передать право собственности",
+		"manageUser": "Управление пользователем",
+		"enableCommunity": "Включить сообщество"
+	},
+	"menuChannelStack": {
+		"channelSetting": "Настройки канала",
+		"threadSetting": "Настройки темы",
+		"permissionOverrides": "Переопределение разрешений"
+	},
+	"settingStack": {
+		"settings": "Настройки",
+		"appearance": "Настройки внешнего вида",
+		"appTheme": "Тема приложения",
+		"language": "Настройки языка",
+		"profile": "Настройки профиля",
+		"account": "Учетная запись",
+		"blockedUsers": "Заблокированные пользователи",
+		"sendToken": "Перевести средства",
+		"withdrawToken": "Вывести",
+		"historyTransaction": "История транзакций",
+		"quit": "Выйти",
+		"menu": "Меню",
+		"walletManagement": "Управление кошельком",
+		"setPassword": "Установить пароль",
+		"myQRCode": "Мой QR-код",
+		"updatePhoneNumber": "Обновить номер телефона",
+		"verifyPhoneNumber": "Подтвердить номер телефона",
+		"updateEmail": "Обновить адрес электронной почты",
+		"verifyEmail": "Подтвердить электронную почту",
+		"devices": "Устройства"
+	}
+}
+
