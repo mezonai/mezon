@@ -144,7 +144,7 @@
 		"newThread": "New Thread",
 		"inviteMessage": "You can invite new people by @mentioning them.",
 		"validation": {
-			"invalidChannelName": "Please enter a valid channel name (max 64 characters, only words, numbers, _ or -).",
+			"invalidChannelName": "Please enter a channel name (max 64 characters, only words, numbers, _ or -).",
 			"threadNameRequired": "Thread name is required.",
 			"starterMessageRequired": "Starter message is required."
 		},

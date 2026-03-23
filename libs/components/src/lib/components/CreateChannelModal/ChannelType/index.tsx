@@ -5,12 +5,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 interface ChannelTypeProps {
 	type: ChannelType;
+	selectedType?: number;
 	onChange: (value: number) => void;
 	error?: string;
 	disable?: boolean;
 }
 
-export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, onChange, error, disable }) => {
+export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, selectedType, onChange, error, disable }) => {
 	const { t } = useTranslation('createChannel');
 
 	const labelMap: Partial<Record<ChannelType, string>> = {
@@ -58,7 +59,7 @@ export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, onChang
 			htmlFor={type?.toString()}
 			data-e2e={generateE2eId('clan_page.modal.create_channel.type')}
 		>
-			<div className={type === ChannelType.CHANNEL_TYPE_CHANNEL ? 'w-6 h-9' : 'w-6 h-6'}>{iconMap[type]}</div>
+			<div className="w-6 h-6">{iconMap[type]}</div>
 			<div className="Frame402 grow shrink basis-0 flex-col justify-start items-start gap-1 inline-flex ">
 				<div className="Text self-stretch text-sm font-bold leading-normal text-[10px]">
 					<p className="">{labelMap[type]}</p>
@@ -76,6 +77,7 @@ export const ChannelTypeComponent: React.FC<ChannelTypeProps> = ({ type, onChang
 						value={type}
 						id={type.toString()}
 						name="drone"
+						checked={selectedType === type}
 						onChange={onValueChange}
 					/>
 				</div>

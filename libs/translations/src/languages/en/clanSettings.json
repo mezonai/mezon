@@ -26,7 +26,7 @@
 		"uploadImage": "Upload Image",
 		"clanName": "Clan Name",
 		"namePlaceholder": "Support has arrived!",
-		"validationError": "Please enter a valid channel name (max 64 characters, only words, numbers, _ or -).",
+		"validationError": "Please enter a  channel name (max 64 characters, only words, numbers, _ or -).",
 		"modal": {
 			"title": "Only image files are allowed",
 			"content": "Just upload type file (JPEG, PNG), please!"

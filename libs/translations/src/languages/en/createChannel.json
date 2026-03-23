@@ -1,47 +1,47 @@
 {
-    "header": {
-        "title": "CREATE A NEW CHANNEL IN"
-    },
-    "channelType": {
-        "text": "Text",
-        "voice": "Voice", 
-        "forum": "Forum",
-        "announcement": "Announcement",
-        "apps": "Apps",
-        "stream": "Stream",
-        "descriptions": {
-            "text": "Send messages, images, GIFs, emoji, opinions, and puns",
-            "voice": "Hang out together with voice, video, and screen share", 
-            "forum": "Create a space for organized discussions",
-            "announcement": "Important updates for people in and out of the clan",
-            "apps": "Apps",
-            "stream": "Sharing hobbies activity"
-        }
-    },
-    "validation": {
-        "invalidName": "Please enter a valid channel name (max 64 characters, only words, numbers, _ or -).",
-        "duplicateName": "The channel name already exists in the category. Please enter another name."
-    },
-    "privacy": {
-        "private": "Private Channel",
-        "description": "Only selected members and roles will be able to view this channel."
-    },
-    "labels": {
-        "description": "Kindly set up a channel of your choice.",
-        "chooseType": "Choose channel's type:",
-        "channelName": "What is channel's name?",
-        "isPrivate": "Is private channel?",
-        "placeholder": "Enter the channel's name"
-    },
-    "errors": {
-        "typeRequired": "Channel's type is required",
-        "nameRequired": "Channel's name is required",
-        "selectApp": "Please select an application",
-        "validName": "Please enter a valid channel name"
-    },
-    "buttons": {
-        "cancel": "Cancel",
-        "create": "Create Channel",
-        "creating": "Creating"
-    }
+	"header": {
+		"title": "CREATE A NEW CHANNEL IN"
+	},
+	"channelType": {
+		"text": "Text",
+		"voice": "Voice",
+		"forum": "Forum",
+		"announcement": "Announcement",
+		"apps": "Apps",
+		"stream": "Stream",
+		"descriptions": {
+			"text": "Send messages, images, GIFs, emoji, opinions, and puns",
+			"voice": "Hang out together with voice, video, and screen share",
+			"forum": "Create a space for organized discussions",
+			"announcement": "Important updates for people in and out of the clan",
+			"apps": "Apps",
+			"stream": "Sharing hobbies activity"
+		}
+	},
+	"validation": {
+		"invalidName": "Please enter a  channel name (max 64 characters, only words, numbers, _ or -).",
+		"duplicateName": "The channel name already exists in the category. Please enter another name."
+	},
+	"privacy": {
+		"private": "Private Channel",
+		"description": "Only selected members and roles will be able to view this channel."
+	},
+	"labels": {
+		"description": "Kindly set up a channel of your choice.",
+		"chooseType": "Choose channel's type:",
+		"channelName": "What is channel's name?",
+		"isPrivate": "Is private channel?",
+		"placeholder": "Enter the channel's name"
+	},
+	"errors": {
+		"typeRequired": "Channel's type is required",
+		"nameRequired": "Channel's name is required",
+		"selectApp": "Please select an application",
+		"validName": "Please enter a valid channel name"
+	},
+	"buttons": {
+		"cancel": "Cancel",
+		"create": "Create Channel",
+		"creating": "Creating"
+	}
 }

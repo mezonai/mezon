@@ -6,7 +6,7 @@
 		"channelName": {
 			"title": "Channel Name",
 			"placeholder": "new-channel",
-			"errorMessage": "Please enter a valid channel name (max 64 characters, only words, numbers, _ or -).",
+			"errorMessage": "Please enter a channel name (max 64 characters, only words, numbers, _ or -).",
 			"duplicateChannelName": "The Channel name already exists in this Clan. Please enter another name."
 		},
 		"channelPrivate": {
