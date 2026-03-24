@@ -617,7 +617,8 @@ export default class App {
 		const usageThreshold = 30 * 60 * 1000;
 
 		const fetchActiveWindow = (): void => {
-			const window = activeWindows?.getActiveWindow();
+			const activeWindowProvider = typeof activeWindows === 'function' ? (activeWindows as any)() : activeWindows;
+			const window = activeWindowProvider?.getActiveWindow?.();
 			if (!window) return;
 
 			const { windowClass, windowName } = window;

@@ -1,6 +1,7 @@
 import {
 	appActions,
 	attachmentActions,
+	directActions,
 	getStore,
 	initStore,
 	MezonStoreProvider,
@@ -12,6 +13,7 @@ import {
 	selectCurrentLanguage,
 	selectIsActivityTrackingEnabled,
 	selectIsLogin,
+	selectPinnedDms,
 	setIsElectronDownloading,
 	setIsElectronUpdateAvailable
 } from '@mezon/store';
@@ -36,7 +38,7 @@ import {
 	UPDATE_ERROR
 } from '@mezon/utils';
 import isElectron from 'is-electron';
-import { createContext, Suspense, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, Suspense, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import 'react-contexify/ReactContexify.css';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
@@ -293,9 +295,35 @@ const AppInitializer = () => {
 		}
 	}
 
+	const isPinnedLoaded = useRef(false);
+
 	useEffect(() => {
-		isElectron() && isLogin && electronBridge.invoke('APP::CHECK_UPDATE');
-	}, [isLogin]);
+		if (isElectron() && isLogin) {
+			electronBridge.invoke('APP::CHECK_UPDATE');
+			if (window.electron?.getPinnedDms) {
+				window.electron.getPinnedDms().then((pinnedDmsFromStore: string[]) => {
+					if (pinnedDmsFromStore?.length > 0) {
+						dispatch(directActions.setPinnedDms(pinnedDmsFromStore));
+					}
+					isPinnedLoaded.current = true;
+				});
+			} else {
+				isPinnedLoaded.current = true;
+			}
+		}
+	}, [isLogin, dispatch]);
+
+	const pinnedDms = useSelector(selectPinnedDms);
+
+	useEffect(() => {
+		if (isPinnedLoaded.current && isElectron() && typeof window !== 'undefined' && window.electron?.setPinnedDms) {
+			try {
+				window.electron.setPinnedDms(pinnedDms);
+			} catch (error) {
+				console.error('Failed to sync pinned DMs with electron:', error);
+			}
+		}
+	}, [pinnedDms]);
 
 	useEffect(() => {
 		if (isElectron() && typeof window !== 'undefined' && window.electron) {

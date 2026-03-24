@@ -5,6 +5,7 @@ import {
 	CLEAR_SCREEN_SOURCES_CACHE,
 	GET_APP_VERSION,
 	GET_DEVICE_ID,
+	GET_PINNED_DMS,
 	GET_REDUX_STATE,
 	LAUNCH_APP_WINDOW,
 	LOAD_MORE_SCREEN_SOURCES,
@@ -13,6 +14,7 @@ import {
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
 	SET_BADGE_COUNT,
+	SET_PINNED_DMS,
 	SET_RATIO_WINDOW,
 	SYNC_REDUX_STATE,
 	TOGGLE_HARDWARE_ACCELERATION
@@ -71,5 +73,11 @@ contextBridge.exposeInMainWorld('electron', {
 	},
 	getReduxState: () => {
 		return ipcRenderer.invoke(GET_REDUX_STATE);
+	},
+	setPinnedDms: (pinnedDms: string[]) => {
+		return ipcRenderer.invoke(SET_PINNED_DMS, pinnedDms);
+	},
+	getPinnedDms: () => {
+		return ipcRenderer.invoke(GET_PINNED_DMS);
 	}
 });

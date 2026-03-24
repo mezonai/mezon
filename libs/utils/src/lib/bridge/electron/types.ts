@@ -38,6 +38,8 @@ export type MezonElectronAPI = {
 	toggleHardwareAcceleration: (enabled: boolean) => Promise<void>;
 	syncReduxState: (state: { autoStart?: boolean; hardwareAcceleration?: boolean }) => Promise<{ success: boolean }>;
 	getReduxState: () => Promise<{ autoStart: boolean; hardwareAcceleration: boolean }>;
+	setPinnedDms: (pinnedDms: string[]) => Promise<{ success: boolean }>;
+	getPinnedDms: () => Promise<string[]>;
 	toggleSettingAutoStart: (auto: { autoStart: boolean; hidden: boolean }) => Promise<void>;
 };
 declare global {

@@ -586,7 +586,15 @@ export const directSlice = createSlice({
 	name: DIRECT_FEATURE_KEY,
 	initialState: initialDirectState,
 	reducers: {
-		remove: directAdapter.removeOne,
+		remove: (state, action: PayloadAction<string>) => {
+			directAdapter.removeOne(state, action.payload);
+			if (state.pinnedDms) {
+				const index = state.pinnedDms.indexOf(action.payload);
+				if (index > -1) {
+					state.pinnedDms.splice(index, 1);
+				}
+			}
+		},
 		upsertOne: (state, action: PayloadAction<DirectEntity>) => {
 			const { entities } = state;
 			const existLabel = entities[action.payload.id]?.channel_label?.split(',');
@@ -603,14 +611,20 @@ export const directSlice = createSlice({
 		},
 		update: directAdapter.updateOne,
 		setAll: (state, action) => {
+			const newPayloadIds = new Set(action.payload.map((e: DirectEntity) => e.id));
+			const pinnedDmsSet = new Set(state.pinnedDms || []);
 			const entitiesWithPreservedBadges = action.payload.map((newEntity: DirectEntity) => {
 				const existingEntity = state.entities[newEntity.id];
 				return {
 					...newEntity,
-					showPinBadge: existingEntity?.showPinBadge || newEntity.showPinBadge
+					showPinBadge: existingEntity?.showPinBadge || newEntity.showPinBadge,
+					active: pinnedDmsSet.has(newEntity.id) ? ActiveDm.OPEN_DM : newEntity.active
 				};
 			});
-			directAdapter.setAll(state, entitiesWithPreservedBadges);
+			const pinnedEntitiesToPreserve = (state.pinnedDms || [])
+				.filter((id) => !newPayloadIds.has(id) && !!state.entities[id])
+				.map((id) => ({ ...state.entities[id], active: ActiveDm.OPEN_DM }) as DirectEntity);
+			directAdapter.setAll(state, [...entitiesWithPreservedBadges, ...pinnedEntitiesToPreserve]);
 		},
 		updateOne: (state, action: PayloadAction<Partial<ChannelUpdatedEvent & { currentUserId: string }>>) => {
 			if (!action.payload?.channel_id) return;
@@ -670,6 +684,12 @@ export const directSlice = createSlice({
 		},
 		removeByDirectID: (state, action: PayloadAction<string>) => {
 			directAdapter.removeOne(state, action.payload);
+			if (state.pinnedDms) {
+				const index = state.pinnedDms.indexOf(action.payload);
+				if (index > -1) {
+					state.pinnedDms.splice(index, 1);
+				}
+			}
 		},
 		setActiveDirect: (state, action: PayloadAction<{ directId: string }>) => {
 			const existingDirect = state.entities[action.payload.directId];
@@ -917,10 +937,39 @@ export const directSlice = createSlice({
 			} else {
 				state.pinnedDms.push(action.payload.dmId);
 			}
+		},
+		setPinnedDms: (state, action: PayloadAction<string[]>) => {
+			state.pinnedDms = action.payload;
 		}
 	},
 	extraReducers: (builder) => {
 		builder
+			.addCase('persist/REHYDRATE' as any, (state: DirectState, action: any) => {
+				if (action.key !== 'direct' || !action.payload) return;
+				const payload = action.payload;
+
+				if (Array.isArray(payload.pinnedDms)) {
+					state.pinnedDms = payload.pinnedDms;
+				}
+
+				if (payload.entities && typeof payload.entities === 'object') {
+					const restoredEntities = payload.entities as Record<string, DirectEntity>;
+					Object.keys(restoredEntities).forEach((id) => {
+						if (!state.entities[id]) {
+							state.entities[id] = restoredEntities[id];
+						}
+					});
+				}
+
+				if (Array.isArray(payload.ids)) {
+					const existingIdSet = new Set(state.ids as string[]);
+					(payload.ids as string[]).forEach((id) => {
+						if (!existingIdSet.has(id)) {
+							(state.ids as string[]).push(id);
+						}
+					});
+				}
+			})
 			.addCase(fetchDirectMessage.pending, (state: DirectState) => {
 				state.loadingStatus = 'loading';
 			})
@@ -965,7 +1014,12 @@ export const directSlice = createSlice({
 				toast.error(action.error.message || 'Failed to update group');
 			})
 			.addCase(fetchDirectDetail.fulfilled, (state: DirectState, action) => {
-				directAdapter.upsertOne(state, action.payload);
+				const existingActive = state.entities[action.payload.id]?.active;
+				const isPinned = (state.pinnedDms || []).includes(action.payload.id);
+				directAdapter.upsertOne(state, {
+					...action.payload,
+					active: existingActive ?? (isPinned ? ActiveDm.OPEN_DM : action.payload.active)
+				});
 			});
 	}
 });

@@ -10,6 +10,7 @@ import {
 	CLOSE_APP,
 	CLOSE_IMAGE_WINDOW,
 	DOWNLOAD_FILE,
+	GET_PINNED_DMS,
 	GET_REDUX_STATE,
 	GET_WINDOW_STATE,
 	IMAGE_WINDOW_TITLE_BAR_ACTION,
@@ -22,6 +23,7 @@ import {
 	OPEN_NEW_WINDOW,
 	REQUEST_PERMISSION_SCREEN,
 	SENDER_ID,
+	SET_PINNED_DMS,
 	SET_RATIO_WINDOW,
 	SYNC_REDUX_STATE,
 	TITLE_BAR_ACTION,
@@ -458,6 +460,17 @@ ipcMain.handle(GET_REDUX_STATE, async () => {
 		autoStart: store.get('autoStart', true),
 		hardwareAcceleration: store.get('hardwareAcceleration', true)
 	};
+});
+
+ipcMain.handle(SET_PINNED_DMS, async (event, pinnedDms) => {
+	const store = new Store();
+	store.set('pinnedDms', pinnedDms);
+	return { success: true };
+});
+
+ipcMain.handle(GET_PINNED_DMS, async () => {
+	const store = new Store();
+	return store.get('pinnedDms', []);
 });
 
 ipcMain.on(LOAD_MORE_ATTACHMENTS, (event, { direction }) => {
