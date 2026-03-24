@@ -1,4 +1,4 @@
-import { ActionEmitEvent, load, remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID } from '@mezon/mobile-components';
+import { ActionEmitEvent, remove, save, STORAGE_CHANNEL_CURRENT_CACHE, STORAGE_CLAN_ID } from '@mezon/mobile-components';
 import { baseColor, size, useTheme } from '@mezon/mobile-ui';
 import {
 	clansActions,
@@ -265,8 +265,6 @@ export const ListClanPopup = React.memo(({ hideActive = false }: { hideActive?: 
 	const handleChangeClan = useCallback(
 		async (clanId: string) => {
 			const store = await getStoreAsync();
-			const clanPreviousId = await load(STORAGE_CLAN_ID);
-			store.dispatch(clansActions.listClanUnreadMsgIndicator({ clanIds: [clanPreviousId] }));
 			if (isTabletLandscape) {
 				navigation.navigate(APP_SCREEN.HOME as never);
 				store.dispatch(directActions.setDmGroupCurrentId(''));

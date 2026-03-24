@@ -18,7 +18,7 @@
 		"namePlaceholder": "Enter the category's name",
 		"privateCategory": "Private Category",
 		"privateDescription": "By making a category private, only select members and roles will be able to view this category. Synced channels in this category will automatically match to this setting",
-		"invalidName": "Please enter a valid category name (max 64 characters, only words, numbers, _ or -).",
+		"invalidName": "Please enter a category name (max 64 characters, only letters, numbers, _ or -).",
 		"duplicateName": "The category name already exists in the clan. Please enter another name.",
 		"cancel": "Cancel",
 		"create": "Create Category"

@@ -13,21 +13,25 @@ import {
 import { sleep } from '@mezon/utils';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
 	ActivityIndicator,
 	DeviceEventEmitter,
-	FlatList,
 	Keyboard,
 	Platform,
 	Pressable,
 	RefreshControl,
+	SectionList,
 	StyleSheet,
+	Text,
 	TouchableOpacity,
 	View
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSelector } from 'react-redux';
+import MezonIconCDN from '../../componentUI/MezonIconCDN';
 import { Icons } from '../../componentUI/MobileIcons';
+import { IconCDN } from '../../constants/icon_cdn';
 import useTabletLandscape from '../../hooks/useTabletLandscape';
 import { APP_SCREEN } from '../../navigation/ScreenTypes';
 import MessageMenu from '../home/homedrawer/components/MessageMenu';
@@ -45,19 +49,34 @@ const contentContainerStyle = { paddingBottom: size.s_100 };
 const footerStyle = { paddingVertical: size.s_14 };
 const keyExtractor = (dm: string) => `${dm}DM_MSG_ITEM`;
 
-const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
-	const dmGroupChatList: string[] = useMemo(() => {
-		try {
-			if (!chatList || typeof chatList !== 'string') {
-				return [];
-			}
-			const parsed = JSON.parse(chatList);
-			return Array.isArray(parsed) ? parsed : [];
-		} catch (error) {
-			console.error('Error parsing chat list:', error);
+interface ISectionData {
+	title: string;
+	data: string[];
+	isPinned: boolean;
+}
+
+interface IMessagesScreenRenderProps {
+	pinnedList: string;
+	chatList: string;
+}
+
+function parseList(json: string): string[] {
+	try {
+		if (!json || typeof json !== 'string') {
 			return [];
 		}
-	}, [chatList]);
+		const parsed = JSON.parse(json);
+		return Array.isArray(parsed) ? parsed : [];
+	} catch (error) {
+		console.error('Error parsing chat list:', error);
+		return [];
+	}
+}
+
+const MessagesScreenRender = memo(({ pinnedList, chatList }: IMessagesScreenRenderProps) => {
+	const { t } = useTranslation(['dmMessage']);
+	const pinnedIds = useMemo(() => parseList(pinnedList), [pinnedList]);
+	const unpinnedIds = useMemo(() => parseList(chatList), [chatList]);
 
 	const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
 	const navigation = useNavigation<any>();
@@ -135,6 +154,26 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 		[handleLongPress]
 	);
 
+	const sections: ISectionData[] = useMemo(() => {
+		if (pinnedIds.length === 0) {
+			return [{ title: '', data: unpinnedIds, isPinned: false }];
+		}
+		return [
+			{ title: t('pinSection'), data: pinnedIds, isPinned: true },
+			{ title: t('allMessagesSection'), data: unpinnedIds, isPinned: false }
+		];
+	}, [pinnedIds, unpinnedIds, t]);
+
+	const renderSectionHeader = useCallback(({ section }: { section: ISectionData }) => {
+		if (!section.title) return null;
+		return (
+			<View style={styles.sectionHeader}>
+				{section.isPinned && <MezonIconCDN icon={IconCDN.pinIcon} width={size.s_14} height={size.s_14} />}
+				<Text style={styles.sectionHeaderText}>{section.title}</Text>
+			</View>
+		);
+	}, []);
+
 	const HeaderComponent = useMemo(() => <MessageActivity />, []);
 
 	const ListFooterComponent = useMemo(() => {
@@ -171,9 +210,10 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 			/>
 			<MessageHeader />
 			<View style={flexOneStyle}>
-				<FlatList
-					data={dmGroupChatList}
+				<SectionList
+					sections={sections}
 					renderItem={renderItem}
+					renderSectionHeader={renderSectionHeader}
 					contentContainerStyle={contentContainerStyle}
 					keyExtractor={keyExtractor}
 					showsVerticalScrollIndicator={true}
@@ -188,6 +228,7 @@ const MessagesScreenRender = memo(({ chatList }: { chatList: string }) => {
 					keyboardShouldPersistTaps={'handled'}
 					refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
 					ListEmptyComponent={ListEmptyComponent}
+					stickySectionHeadersEnabled={false}
 				/>
 			</View>
 			<Pressable style={styles.addMessage} onPress={navigateToNewMessageScreen}>

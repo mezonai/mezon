@@ -83,7 +83,6 @@ export const ChannelListItem = React.memo(
 			prevProps?.data?.channel_label === nextProps?.data?.channel_label &&
 			prevProps?.data?.channel_private === nextProps?.data?.channel_private &&
 			prevProps?.data?.channel_id === nextProps?.data?.channel_id &&
-			prevProps?.data?.count_mess_unread === nextProps?.data?.count_mess_unread &&
 			prevProps?.isChannelActive === nextProps?.isChannelActive &&
 			prevProps?.isHaveParentActive === nextProps?.isHaveParentActive
 		);

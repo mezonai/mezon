@@ -1,0 +1,10 @@
+{
+  "addReaction": "Añadir reacción",
+  "show": "Mostrar",
+  "membersOf": "Miembros de {{count}}",
+  "addedBy": "Añadido por {{name}}",
+  "you": "tú",
+  "inVoice": "En voz",
+  "onlineCount": "En línea - {{count}}",
+  "offlineCount": "Desconectado - {{count}}"
+}

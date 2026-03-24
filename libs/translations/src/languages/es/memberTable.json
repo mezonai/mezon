@@ -1,0 +1,20 @@
+{
+  "addReaction": "Añadir reacción",
+  "headers": {
+    "name": "Nombre",
+    "memberSince": "Miembro desde",
+    "joinedMezon": "Se unió a Mezon",
+    "roles": "Roles",
+    "signals": "Señales"
+  },
+  "topBar": {
+    "recentMembers": "Miembros recientes",
+    "searchPlaceholder": "Buscar por clannick, nombre de pantalla o nombre de usuario",
+    "sort": "Ordenar"
+  },
+  "error": "Error",
+  "profile": "Perfil",
+  "message": "Mensaje",
+  "transferOwnership": "Transferir la propiedad",
+  "removeMember": "Eliminar miembro"
+}

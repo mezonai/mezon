@@ -3,7 +3,7 @@ import {
 	appActions,
 	defaultNotificationActions,
 	getStore,
-	selectBadgeCountByClanId,
+	selectBadgeClanById,
 	selectClanHasUnreadMessage,
 	selectIsUseProfileDM,
 	useAppDispatch
@@ -29,8 +29,8 @@ export type SidebarClanItemProps = {
 
 const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanClick }: SidebarClanItemProps) => {
 	const [_, startTransition] = useTransition();
-	const badgeCountClan = useSelector(selectBadgeCountByClanId(option?.clan_id ?? '')) || 0;
-	const hasUnreadMessage = useSelector(selectClanHasUnreadMessage(option?.clan_id ?? ''));
+	const badgeCountClan = useSelector((state) => selectBadgeClanById(state, option?.clan_id ?? '')) || 0;
+	const hasUnreadMessage = useSelector((state) => selectClanHasUnreadMessage(state, option?.clan_id ?? ''));
 	const navigate = useCustomNavigate();
 	const dispatch = useAppDispatch();
 
@@ -106,8 +106,7 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 					)}
 				</NavLinkComponent>
 			</button>
-
-			{badgeCountClan > 0 && (
+			{badgeCountClan > 0 ? (
 				<div
 					className={`flex items-center justify-center text-[12px] font-bold rounded-full bg-colorDanger absolute bottom-[-1px] right-[-2px] outline outline-[1px] outline-white  ${
 						badgeCountClan >= 10 ? 'w-[22px] h-[16px]' : 'w-[16px] h-[16px]'
@@ -116,11 +115,10 @@ const SidebarClanItem = ({ option, active, onMouseDown, className = '', onClanCl
 				>
 					{badgeCountClan >= 100 ? '99+' : badgeCountClan}
 				</div>
-			)}
-
-			{hasUnreadMessage && badgeCountClan === 0 && !active && (
+			) : null}
+			{hasUnreadMessage && badgeCountClan === 0 && !active ? (
 				<div className="before:content-[''] before:w-1 before:h-2 before:rounded-[0px_4px_4px_0px] before:absolute before:top-3 before:left-[-14px] before:bg-[var(--bg-unread-message)] "></div>
-			)}
+			) : null}
 		</div>
 	);
 };

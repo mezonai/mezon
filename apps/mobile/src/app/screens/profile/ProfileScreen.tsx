@@ -336,7 +336,7 @@ const ProfileScreen = ({ navigation }: { navigation: any }) => {
 							<MezonButton
 								containerStyle={styles.button}
 								onPress={() => navigateToProfileSetting()}
-								icon={<Icons.EditIcon color={baseColor.white} width={size.s_18} height={size.s_18} />}
+								icon={<Icons.EditIcon color={themeValue?.iconTertiary} width={size.s_18} height={size.s_18} />}
 								title={t('editStatus')}
 								titleStyle={styles.whiteText}
 							/>

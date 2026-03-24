@@ -1,10 +1,10 @@
 import { useAppNavigation, useDirect, useFriends, useMarkAsRead } from '@mezon/core';
 import {
+	channelMetaActions,
 	channelUsersActions,
 	channelsActions,
 	deleteChannel,
 	directActions,
-	directMetaActions,
 	getStore,
 	removeMemberChannel,
 	selectDirectById,
@@ -55,7 +55,7 @@ export function useMenuHandlers({ userProfile, hasKeyE2ee, directId }: UseMenuHa
 			const timestamp = Date.now() / 1000;
 			const store = getStore();
 			const messageId = store ? selectLatestMessageId(store.getState(), directId) : undefined;
-			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: directId, timestamp, messageId }));
+			dispatch(channelMetaActions.setDirectLastSeenTimestamp({ channelId: directId, timestamp, messageId }));
 			handleMarkAsReadDM(directId);
 		},
 		[dispatch, handleMarkAsReadDM]

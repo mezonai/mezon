@@ -111,7 +111,7 @@ export const DmListItem = React.memo((props: { id: string }) => {
 				<MessagePreviewLastest
 					isUnReadChannel={isUnReadChannel}
 					type={directMessage?.type}
-					senderName={directMessage?.display_names?.[0] || directMessage.usernames?.[0]}
+					senderName={directMessage?.display_names?.[0] || directMessage?.usernames?.[0]}
 					userId={directMessage?.user_ids?.[0] || ''}
 					senderId={directMessage?.last_sent_message?.sender_id}
 					lastSentMessageStr={JSON.stringify(directMessage?.last_sent_message)}

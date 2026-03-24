@@ -71,10 +71,20 @@ const ModalCreateCategory = ({ onClose, onCreateCategory }: ModalCreateCategoryP
 		[debouncedSetCategoryName]
 	);
 
-	const handleCreateCate = () => {
+	const handleCreateCate = useCallback(() => {
 		onCreateCategory(nameCate);
 		setNameCate('');
-	};
+	}, [nameCate, onCreateCategory]);
+
+	const handleKeyDown = useCallback(
+		(e: React.KeyboardEvent<HTMLInputElement>) => {
+			if (e.key === 'Enter' && !checkCategoryName) {
+				e.preventDefault();
+				handleCreateCate();
+			}
+		},
+		[checkCategoryName, handleCreateCate]
+	);
 
 	return (
 		<ModalLayout onClose={onClose}>
@@ -91,6 +101,7 @@ const ModalCreateCategory = ({ onClose, onCreateCategory }: ModalCreateCategoryP
 						<InputField
 							type="text"
 							onChange={handleInputChange}
+							onKeyDown={handleKeyDown}
 							placeholder={t('createCategoryModal.namePlaceholder')}
 							className="py-[8px] border-theme-primary bg-theme-input-primary text-[14px] mt-2 mb-0 border-blue-600 border"
 							value={nameCate}

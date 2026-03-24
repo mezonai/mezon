@@ -9,8 +9,8 @@ import {
 	selectDirectById,
 	selectDirectHasMore,
 	selectDirectPaginationLoading,
-	selectDirectsOpenlistOrder,
 	selectDmGroupCurrentId,
+	selectDmSort,
 	useAppDispatch
 } from '@mezon/store-mobile';
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
@@ -38,7 +38,7 @@ const MessagesScreenTablet = memo(({ navigation }: { navigation: any }) => {
 	const { themeValue } = useTheme();
 	const isTabletLandscape = useTabletLandscape();
 	const styles = useMemo(() => style(themeValue, isTabletLandscape), [themeValue, isTabletLandscape]);
-	const dmGroupChatList = useSelector(selectDirectsOpenlistOrder);
+	const dmGroupChatList = useSelector(selectDmSort);
 	const clansLoadingStatus = useSelector(selectClansLoadingStatus);
 	const currentDmGroupId = useSelector(selectDmGroupCurrentId);
 	const hasMore = useSelector(selectDirectHasMore);

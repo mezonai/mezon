@@ -66,7 +66,7 @@ export const style = (colors: Attributes, isTabletLandscape: boolean) =>
 			alignItems: 'center',
 			justifyContent: 'center',
 			gap: size.s_8,
-			backgroundColor: colors.bgViolet,
+			backgroundColor: colors.buttonSecondary,
 			borderRadius: 50,
 			flex: 1,
 			paddingVertical: size.s_10,

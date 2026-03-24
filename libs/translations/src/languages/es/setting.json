@@ -1,0 +1,126 @@
+{
+	"accountSettings": {
+		"title": "Configuración de la cuenta",
+		"account": "Cuenta",
+		"profiles": "Perfiles",
+		"privacySafety": "Privacidad y Seguridad",
+		"familyCenter": "Centro familiar",
+		"authorizedApp": "Aplicaciones autorizadas",
+		"device": "Dispositivos",
+		"connection": "Conexiones",
+		"clip": "Clips",
+		"friendRequests": "Solicitudes de amistad",
+		"QRScan": "Escanear código QR",
+		"MyQRCode": "Mi código QR",
+		"devices": "Dispositivos"
+	},
+	"deviceSettings": {
+		"description1": "Aquí tienes todos los dispositivos que están actualmente conectados con tu cuenta. Puedes cerrar sesión en cada uno de forma individual.",
+		"description2": "Si ves un dispositivo que no reconoces, cierra sesión en él y cambia la contraseña de tu cuenta de inmediato.",
+		"currentDevice": "Dispositivo actual",
+		"otherDevices": "Otros dispositivos",
+		"noDevices": "No se encontraron dispositivos",
+		"loggedIn": "Conectado",
+		"current": "Actual",
+		"unknown": "Desconocido",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Escritorio",
+		"platformWeb": "Web",
+		"removeDevice": "Cerrar sesión en este dispositivo"
+	},
+	"paymentSettings": {
+		"title": "Configuración de pagos",
+		"restoreSubscription": "Restaurar suscripción"
+	},
+	"appSettings": {
+		"title": "Configuración de la aplicación",
+		"voice": "Voz",
+		"appearance": "Apariencia",
+		"accessibility": "Accesibilidad",
+		"language": "Idioma",
+		"activity": "Actividad",
+		"notifications": "Notificaciones",
+		"chat": "Chat",
+		"webBrowser": "Navegador web",
+		"appIcon": "Icono de la aplicación",
+		"advanced": "Avanzado",
+		"appVersion": "Versión de la aplicación",
+		"startUp": "Arranque"
+	},
+	"autoStart": {
+		"title": "Inicio automático de la aplicación",
+		"description": "Inicia automáticamente la aplicación cuando arranca tu ordenador para que esté lista para usar de inmediato."
+	},
+	"hardwareAcceleration": {
+		"title": "Usar aceleración gráfica cuando esté disponible",
+		"description": "Cuando está activado, la aplicación aprovechará tu GPU (tarjeta gráfica) para manejar tareas gráficas intensas como renderizado 3D y decodificación de vídeo. Esto mejora las tasas de fotogramas y la reactividad de la interfaz. Si experimentas problemas de visualización o caídas de la aplicación, prueba desactivando esta función para mejorar la estabilidad."
+	},
+	"autoHidden": {
+		"title": "Inicio oculto de la aplicación con el sistema operativo",
+		"description": "Se inicia oculta cuando la aplicación se lanza con el sistema operativo."
+	},
+	"activity": {
+		"title": "Mostrar mi actividad",
+		"description": "Muestra tus actividades actuales a tus amigos. Esto les permite ver en qué estás ocupado y facilita la conexión."
+	},
+	"supportSettings": {
+		"title": "Soporte",
+		"support": "Soporte",
+		"uploadLog": "Subir registros de depuración a Mezon Soporte",
+		"acknowledgement": "Reconocimiento"
+	},
+	"whatsNew": {
+		"title": "Novedades",
+		"whatsNew": "Novedades"
+	},
+	"updateGate": {
+		"outOfDateVersion": "Nueva versión disponible",
+		"updateExperience": "Se necesita una actualización rápida para seguir usando nuestras últimas funciones familiares.",
+		"updateNow": "Actualizar ahora",
+		"versionInfo": "VERSIÓN"
+	},
+	"language": {
+		"title": "Idioma",
+		"description": "Selecciona tu idioma preferido.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español"
+	},
+	"voice": {
+		"title": "Voz",
+		"description": "Configura la configuración de tu voz.",
+		"microphone": "Micrófono",
+		"speaker": "Altavoz",
+		"microphoneVolume": "Volumen del micrófono",
+		"speakerVolume": "Volumen del altavoz",
+		"unnamedDevice": "Dispositivo sin nombre",
+		"noDevices": "No se encontraron dispositivos",
+		"micTest": {
+			"title": "Prueba de micrófono",
+			"description": "¿Tienes problemas con el micrófono? Inicia una prueba y di algo divertido — reproduciremos tu voz.",
+			"letsCheck": "Vamos a comprobar",
+			"stop": "Detener prueba"
+		},
+		"errors": {
+			"permissionDenied": "Se requiere permiso de micrófono para ejecutar la prueba.",
+			"micPermission": "No se puede acceder al micrófono."
+		},
+		"warnings": {
+			"outputNotSupported": "Tu navegador no soporta la selección de dispositivo de salida. La selección del altavoz puede ser ignorada."
+		}
+	},
+	"logOut": "Cerrar sesión",
+	"logOutPopup": {
+		"description": "¿Confirmas que deseas cerrar sesión?",
+		"noConfirm": "No",
+		"yesConfirm": "Sí"
+	},
+	"removeAccount": "Eliminar cuenta",
+	"channelSetting": {
+		"recentChannels": "Canales recientes",
+		"searchByChannelLabel": "Buscar por etiqueta de canal"
+	},
+	"setting": "Configuración"
+}

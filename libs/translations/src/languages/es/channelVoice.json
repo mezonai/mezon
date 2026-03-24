@@ -1,0 +1,60 @@
+{
+  "addReaction": "Añadir reacción",
+  "joinChannelVoiceBS": {
+    "channelVoice": "Sala de voz",
+    "joinVoice": "Unirse a la voz"
+  },
+  "chat": "Chat",
+  "membersWillBeNotified": "{{participantsCount}} miembros serán notificados",
+  "noDisplay": "Sin canal de voz de visualización",
+  "videoConnected": "Vídeo conectado",
+  "voiceConnected": "Voz conectada",
+  "turnOffMicrophone": "Apagar micrófono",
+  "turnOnMicrophone": "Encender micrófono",
+  "turnOffCamera": "Apagar cámara",
+  "turnOnCamera": "Encender cámara",
+  "stopScreenShare": "Detener compartir pantalla",
+  "shareYourScreen": "Compartir tu pantalla",
+  "disconnect": "Desconectar",
+  "muteModal": {
+    "title": "Silenciar miembro",
+    "content": "Confirma si quieres silenciar a \"{{userName}}\"?",
+    "mute": "Silenciar"
+  },
+  "kickModal": {
+    "title": "Expulsar miembro",
+    "content": "Confirma si quieres expulsar a \"{{userName}}\"?",
+    "kick": "Expulsar"
+  },
+  "disconnectModal": {
+    "title": "Voz desconectada",
+    "content": {
+      "removed": "Has sido removido del canal de voz",
+      "duplicate": "Has sido desconectado por otra unión",
+      "default": "Has sido desconectado del canal de voz",
+      "deleted": "El canal de voz ha sido eliminado"
+    },
+    "confirm": "Confirmar"
+  },
+  "permission": {
+    "cameraTitle": "Conceder permiso de cámara",
+    "cameraBody": "No tenemos acceso a tu cámara. Activa el acceso a la cámara en la configuración del sistema.",
+    "microphoneTitle": "Conceder permiso de micrófono",
+    "microphoneBody": "No tenemos acceso a tu micrófono. Activa el acceso al micrófono en la configuración del sistema.",
+    "cancel": "Cancelar",
+    "deviceSettings": "Configuración del dispositivo"
+  },
+  "device": {
+    "inputDevice": "Dispositivo de entrada",
+    "outputDevice": "Dispositivo de salida",
+    "camera": "Cámara"
+  },
+  "toast": {
+    "connectionConnected": "Conexión establecida",
+    "connectionDisconnected": "Conexión desconectada",
+    "microphonePermissionRequired": "Se requiere permiso de micrófono",
+    "cameraPermissionRequired": "Se requiere permiso de cámara",
+    "recipientDidNotAnswer": "El destinatario no respondió la llamada."
+  },
+  "usernameScreen": "Pantalla de {{username}}"
+}

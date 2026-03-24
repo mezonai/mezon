@@ -1,0 +1,44 @@
+{
+    "sections": {
+        "section1": {
+            "title": "Transparente, Seguro, Gratis",
+            "description": "Mezon Dong se creó para hacer las transacciones digitales más sencillas y transparentes, la base de un nuevo tipo de economía comunitaria."
+        },
+        "section2": {
+            "title": "Rápido, Ininterrumpido",
+            "description": "Enviar Mezon Dong es tan fácil como enviar un mensaje. Regala a amigos, contribuye a la comunidad o compra; todo sucede instantáneamente y sin comisiones."
+        },
+        "section3": {
+            "title": "Eleva el lugar de trabajo con Mezon Dong",
+            "description": "Mezon no solo es para negocios; también pueden usarlo como una plataforma interna de comunicación y pagos. Recompensa a los empleados, gestiona beneficios y crea incentivos internos, todo de forma fluida y flexible con Mezon Dong."
+        },
+        "section4": {
+            "title": "Comercio Integrado",
+            "description": "Las marcas asociadas pueden aceptar Mezon Dong por sus productos y servicios. Desde bienes digitales hasta productos físicos, la comunidad puede comprar directamente con solo un clic."
+        }
+    },
+    "faq": {
+        "title": "¿Necesitas más ayuda?",
+        "seeAll": "Ver todas las preguntas frecuentes",
+        "learnMore": "Aprende más",
+        "questions": [
+            {
+                "question": "¿Qué es Mezon Dong?",
+                "answer": "Mezon Dong es una unidad de valor digital utilizada como herramienta de intercambio interna dentro de la plataforma Mezon. Es un sistema de pagos digital incorporado que te ayuda a enviar y transferir dinero de manera sencilla, transparente y segura."
+            },
+            {
+                "question": "¿Cómo enviar y transferir Mezon Dong?",
+                "answer": "Mezon Dong no es solo para gastar, también para compartir. Puedes enviar tokens a amigos, colegas o miembros del Clan en solo unos pasos sencillos. Enviar Mezon Dong es tan fácil como enviar un mensaje: abre una conversación, toca el icono de Mezon Dong, introduce la cantidad y confirma. Las transacciones se procesan instantáneamente y sin comisiones."
+            },
+            {
+                "question": "¿Cómo pueden las empresas usar Mezon Dong?",
+                "answer": "Las empresas pueden usar Mezon como una plataforma interna de comunicación y pagos. Puedes premiar a los empleados, gestionar beneficios o crear programas de incentivos internos. Todo se maneja de forma fluida y flexible con Mezon Dong."
+            },
+            {
+                "question": "¿Cómo aceptar pagos con Mezon Dong en mi tienda?",
+                "answer": "Las marcas asociadas pueden aceptar Mezon Dong por sus productos y servicios. Desde bienes digitales hasta artículos físicos, la comunidad puede comprar directamente con solo un clic. Contacta al equipo de Mezon para configurar una cuenta de comerciante e integrar Mezon Dong en tu tienda."
+            }
+        ]
+    },
+    "download": "Descargar"
+}

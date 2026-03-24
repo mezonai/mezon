@@ -1258,34 +1258,6 @@ export const channelsSlice = createSlice({
 			});
 		},
 
-		resetChannelsCount: (
-			state: ChannelsState,
-			action: PayloadAction<{
-				clanId: string;
-				channelIds: string[];
-			}>
-		) => {
-			const { clanId, channelIds } = action.payload;
-			const clanChannels = state.byClans[clanId];
-
-			if (!clanChannels) return;
-
-			const updates = channelIds.reduce<Array<{ id: string; changes: { count_mess_unread: number } }>>((acc, channelId) => {
-				const entity = clanChannels.entities.entities[channelId];
-				if (!entity || entity.count_mess_unread === 0) return acc;
-				acc.push({
-					id: channelId,
-					changes: {
-						count_mess_unread: 0
-					}
-				});
-				return acc;
-			}, []);
-			if (updates.length > 0) {
-				channelsAdapter.updateMany(state.byClans[clanId].entities, updates);
-			}
-		},
-
 		updateAppChannel: (state, action: PayloadAction<{ clanId: string; channelId: string; changes: Partial<ApiChannelAppResponse> }>) => {
 			const { clanId, channelId, changes } = action.payload;
 			if (!state.byClans[clanId]) {

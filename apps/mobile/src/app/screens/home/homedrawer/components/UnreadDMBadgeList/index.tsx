@@ -1,10 +1,19 @@
+import { isEmpty } from '@mezon/mobile-components';
 import { size, useTheme } from '@mezon/mobile-ui';
 import type { DirectEntity } from '@mezon/store-mobile';
-import { directActions, selectDirectById, selectDirectsUnreadlist, selectIsLoadDMData, useAppDispatch, useAppSelector } from '@mezon/store-mobile';
+import {
+	directActions,
+	selectDirectById,
+	selectDirectMessageEntities,
+	selectDirectsUnreadlist,
+	selectIsLoadDMData,
+	useAppDispatch,
+	useAppSelector
+} from '@mezon/store-mobile';
 import { createImgproxyUrl, sleep } from '@mezon/utils';
 import { useNavigation } from '@react-navigation/native';
 import { ChannelType } from 'mezon-js';
-import React, { memo, useEffect, useRef, useState } from 'react';
+import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Text, TouchableOpacity, View } from 'react-native';
 import { Flow } from 'react-native-animated-spinkit';
 import FastImage from 'react-native-fast-image';
@@ -83,6 +92,10 @@ const UnreadDMBadgeItem = memo(({ dmId, numUnread }: { dmId: string; numUnread: 
 		}
 	};
 
+	if (isEmpty(dm)) {
+		return null;
+	}
+
 	return (
 		<TouchableOpacity onPress={navigateToDirectMessageMDetail} style={[styles.mt10]}>
 			<View>{getBadge(dm)}</View>
@@ -94,12 +107,19 @@ const UnreadDMLoading = memo(() => {
 	const { themeValue } = useTheme();
 	const styles = style(themeValue);
 	const unReadDM = useSelector(selectDirectsUnreadlist);
+	const directEntities = useSelector(selectDirectMessageEntities);
 	const isLoading = useSelector(selectIsLoadDMData);
 	const opacity = useRef(new Animated.Value(!isLoading ? 1 : 0)).current;
 	const containerHeight = useRef(new Animated.Value(!isLoading ? size.s_50 : 0)).current;
 	const listOpacity = useRef(new Animated.Value(0)).current;
 	const listTranslateY = useRef(new Animated.Value(20)).current;
 	const [showData, setShowData] = useState(false);
+
+	const validUnreadDM = useMemo(() => {
+		return unReadDM.filter((dm) => {
+			return dm?.id && directEntities[dm.id];
+		});
+	}, [unReadDM, directEntities]);
 
 	useEffect(() => {
 		Animated.timing(opacity, {
@@ -144,18 +164,18 @@ const UnreadDMLoading = memo(() => {
 	}, [showData, listOpacity, listTranslateY]);
 
 	return (
-		<View style={[styles.container, !!unReadDM?.length && styles.containerBottom]}>
+		<View style={[styles.container, !!validUnreadDM?.length && styles.containerBottom]}>
 			<Animated.View style={[styles.animatedContainer, { height: containerHeight }]}>
 				<Animated.View style={[styles.animatedInner, { opacity }]}>
 					<Flow color={themeValue.textDisabled} size={size.s_30} />
 				</Animated.View>
 			</Animated.View>
 			{showData &&
-				!!unReadDM?.length &&
-				unReadDM?.map((dm: DirectEntity, index) => {
+				!!validUnreadDM?.length &&
+				validUnreadDM?.map((dm: DirectEntity, index) => {
 					return <UnreadDMBadgeItem key={`${dm?.id}_${index}`} dmId={dm?.id} numUnread={dm?.count_mess_unread || 0} />;
 				})}
-			{showData && !!unReadDM?.length && <View style={styles.lineBottom} />}
+			{showData && !!validUnreadDM?.length && <View style={styles.lineBottom} />}
 		</View>
 	);
 });

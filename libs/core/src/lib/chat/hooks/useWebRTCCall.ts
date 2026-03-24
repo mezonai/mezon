@@ -63,6 +63,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 	const localVideoRef = useRef<HTMLVideoElement>(null);
 	const remoteVideoRef = useRef<HTMLVideoElement>(null);
 	const pendingCandidatesRef = useRef<(RTCIceCandidate | null)[]>([]);
+	const remoteIceCandidatesRef = useRef<RTCIceCandidate[]>([]);
 
 	const callTimeout = useRef<NodeJS.Timeout | null>(null);
 	const [audioInputDevicesList, setAudioInputDevicesList] = useState<MediaDeviceInfo[]>([]);
@@ -84,6 +85,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			}
 			timeStartConnected.current = null;
 			pendingCandidatesRef.current = [];
+			remoteIceCandidatesRef.current = [];
 			if (callTimeout.current) {
 				clearTimeout(callTimeout.current);
 				callTimeout.current = null;
@@ -117,7 +119,17 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 
 		pc.onicecandidate = async (event) => {
 			if (event.candidate) {
-				pendingCandidatesRef.current = [...(pendingCandidatesRef?.current || []), event.candidate];
+				if (pc.remoteDescription) {
+					await mezon.socketRef.current?.forwardWebrtcSignaling(
+						dmUserId,
+						WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
+						JSON.stringify(event.candidate),
+						channelId,
+						userId
+					);
+				} else {
+					pendingCandidatesRef.current = [...(pendingCandidatesRef?.current || []), event.candidate];
+				}
 			}
 		};
 
@@ -315,6 +327,30 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		}
 	};
 
+	const sendPendingLocalCandidates = async () => {
+		if (pendingCandidatesRef?.current?.length) {
+			for (const candidateItem of pendingCandidatesRef.current) {
+				await mezon.socketRef.current?.forwardWebrtcSignaling(
+					dmUserId,
+					WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
+					JSON.stringify(candidateItem),
+					channelId,
+					userId
+				);
+			}
+			pendingCandidatesRef.current = [];
+		}
+	};
+
+	const drainRemoteIceCandidates = async (pc: RTCPeerConnection) => {
+		if (remoteIceCandidatesRef.current.length > 0) {
+			for (const candidate of remoteIceCandidatesRef.current) {
+				await pc.addIceCandidate(candidate);
+			}
+			remoteIceCandidatesRef.current = [];
+		}
+	};
+
 	// Handle offer (both initial and renegotiation)
 	const handleOffer = async (signalingData: any) => {
 		const offer = new RTCSessionDescription({
@@ -328,6 +364,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		if (isRenegotiation) {
 			// Renegotiation: Just update remote description and create answer
 			await pc.setRemoteDescription(offer);
+			await drainRemoteIceCandidates(pc);
 
 			// Create and send answer
 			const answer = await pc.createAnswer();
@@ -340,6 +377,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				channelId,
 				userId
 			);
+			await sendPendingLocalCandidates();
 		} else {
 			// Initial call: Setup new connection and streams
 			const constraints = await getConstraintsLocal(isShowMeetDM, true);
@@ -366,6 +404,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 			});
 
 			await newPc.setRemoteDescription(new RTCSessionDescription(offer));
+			await drainRemoteIceCandidates(newPc);
 			// Create and send answer
 			const answer = await newPc.createAnswer();
 			await newPc.setLocalDescription(answer);
@@ -377,6 +416,7 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				channelId,
 				userId
 			);
+			await sendPendingLocalCandidates();
 
 			if (localVideoRef.current) {
 				localVideoRef.current.srcObject = stream;
@@ -400,18 +440,8 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 		if (!peerConnection?.current) return;
 
 		await peerConnection?.current.setRemoteDescription(signalingData);
-		if (pendingCandidatesRef?.current?.length) {
-			for (const candidateItem of pendingCandidatesRef.current) {
-				await mezon.socketRef.current?.forwardWebrtcSignaling(
-					dmUserId,
-					WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-					JSON.stringify(candidateItem),
-					channelId,
-					userId
-				);
-			}
-			pendingCandidatesRef.current = [];
-		}
+		await drainRemoteIceCandidates(peerConnection.current);
+		await sendPendingLocalCandidates();
 	};
 
 	const handleICECandidate = async (data: any) => {
@@ -421,27 +451,9 @@ export function useWebRTCCall({ dmUserId, channelId, userId, callerName, callerA
 				const candidate = new RTCIceCandidate(data);
 				if (peerConnection?.current?.remoteDescription) {
 					await peerConnection?.current?.addIceCandidate(candidate);
-				}
-				if (pendingCandidatesRef?.current?.length && peerConnection?.current?.remoteDescription?.type === 'offer') {
-					for (const candidateItem of pendingCandidatesRef.current) {
-						await mezon.socketRef.current?.forwardWebrtcSignaling(
-							dmUserId,
-							WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-							JSON.stringify(candidateItem),
-							channelId,
-							userId
-						);
-					}
-					pendingCandidatesRef.current = [];
 				} else {
-					await mezon.socketRef.current?.forwardWebrtcSignaling(
-						dmUserId,
-						WebrtcSignalingType.WEBRTC_ICE_CANDIDATE,
-						JSON.stringify(candidate),
-						channelId,
-						userId
-					);
-					pendingCandidatesRef.current = [];
+					// Queue candidate if remote description is not set yet
+					remoteIceCandidatesRef.current.push(candidate);
 				}
 			} else {
 				console.error('Invalid ICE candidate data:', data);

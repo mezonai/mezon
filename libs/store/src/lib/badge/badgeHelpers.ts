@@ -46,7 +46,7 @@ const isMessageAlreadyProcessed = (id: string): boolean => {
 const getCurrentClanBadgeCount = (store: { getState?: () => RootState }, clanId: string): number => {
 	try {
 		const state = store?.getState?.();
-		return state?.clans?.entities?.[clanId]?.badge_count ?? 0;
+		return state?.clans?.clanUnreadStates?.entities?.[clanId]?.badge ?? 0;
 	} catch (error) {
 		console.warn('Failed to get clan badge count:', error);
 		return 0;
@@ -124,7 +124,7 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 	} else {
 		dispatch(listChannelsByUserActions.resetBadgeCount({ channelId }));
 		const messageId = store?.getState ? selectLatestMessageId(store.getState(), channelId) : undefined;
-		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: now, messageId }));
+		dispatch(channelMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: now, messageId }));
 	}
 };
 
@@ -210,7 +210,7 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 	} else {
 		const state = store.getState();
 		const channelMeta = state.channelmeta?.entities?.[message.channel_id];
-		const currentClanBadge = state.clans?.entities?.[message.clan_id]?.badge_count ?? 0;
+		const currentClanBadge = state.clans?.clanUnreadStates?.entities?.[message.clan_id]?.badge ?? 0;
 		const lastSeenTimestamp = channelMeta?.lastSeenTimestamp;
 
 		const shouldDecrease =

@@ -23,6 +23,14 @@ export const LanguageSetting = () => {
 			{
 				title: 'Tiếng Việt',
 				value: 'vi'
+			},
+			{
+				title: 'rусский',
+				value: 'ru'
+			},
+			{
+				title: 'español',
+				value: 'es'
 			}
 		];
 	}, []);

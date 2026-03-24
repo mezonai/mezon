@@ -1,0 +1,68 @@
+{
+	"addReaction": "Añadir reacción",
+	"sections": {
+		"section1": {
+			"title": "Construye tu comunidad con más diversión",
+			"description": "Más que un simple chat: aquí organizas, conectas con equipos, amigos y comunidades mientras te diviertes."
+		},
+		"section2": {
+			"title": "La mejor experiencia de trabajo desde casa para tu organización",
+			"description": "Trabajar desde casa no significa trabajar solo. Colabora, comunica y celebra juntos, aunque a veces estén separados. La mejor experiencia de trabajo desde casa para tu organización."
+		},
+		"section3": {
+			"title": "Orientado a las relaciones entre miembros",
+			"description": "Creemos que las relaciones sólidas construyen organizaciones sólidas. Cada función está diseñada para acercar a los miembros. Relaciones entre miembros, amplificadas."
+		},
+		"section4": {
+			"title": "Contribuye para ganar",
+			"description": "Participa, gana créditos y recibe tokens mientras ayudas a la comunidad a crecer. Tu voz es tu valor. Contribuye para ganar."
+		},
+		"section5": {
+			"title": "Informes ricos y claros",
+			"description": "Sigue el crecimiento y la participación de tu comunidad con análisis y reportes detallados. Mantente informado, toma mejores decisiones."
+		}
+	},
+	"features": [
+		{
+			"title": "Sube tus propias reacciones, pegatinas y sonidos",
+			"description": "Completamente gratuito para personalizar tus propias reacciones, pegatinas y efectos de sonido y expresarte en cada conversación."
+		},
+		{
+			"title": "Asigna roles y permisos en tu clan",
+			"description": "Gestiona fácilmente los roles y permisos de los miembros dentro de tu clan para asegurar que todos tengan una experiencia segura y adecuada."
+		},
+		{
+			"title": "Conecta con miembros que comparten tus intereses",
+			"description": "Los miembros pueden unirse a tu clan a través de invitaciones o descubrimiento público, creando una comunidad diversa y vibrante."
+		},
+		{
+			"title": "Crear un clan nunca ha sido tan fácil",
+			"description": "Responde rápidamente a los mensajes con emojis sin tener que escribir una palabra."
+		}
+	],
+	"featuresTitle": "Construye tu comunidad con más diversión",
+	"download": "Descargar",
+	"faq": {
+		"title": "¿Necesitas más ayuda?",
+		"seeAll": "Ver todas las preguntas frecuentes",
+		"learnMore": "Más información",
+		"questions": [
+			{
+				"question": "¿Qué es un Clan en Mezon?",
+				"answer": "Un Clan es el corazón de Mezon — donde las personas se conectan, colaboran y comparten a través de comunidades construidas alrededor de intereses, objetivos o pasiones comunes. Un Clan puede ser un pequeño grupo de amigos o una comunidad a gran escala con miles de miembros. Dentro de un Clan, puedes chatear a través de canales organizados, organizar eventos mediante canales de voz y mejorar tu comunidad usando Bots, Apps y Mezon Tokens."
+			},
+			{
+				"question": "¿Cómo me uno a un Clan en Mezon?",
+				"answer": "Puedes descubrir y unirte a Clans de dos maneras: a través del botón Descubrir dentro de la aplicación o mediante el sitio web de Clans en mezon.ai/clans, o usando un enlace de invitación compartido por amigos, compañeros de equipo o administradores. Haz clic en \"Join\" para formar parte de la comunidad. Cada usuario puede unirse a un máximo de 50 Clans a la vez. Explora Clans destacados como Student Clan, Gamer Clan y Business Clan."
+			},
+			{
+				"question": "¿Cómo creo mi propio Clan?",
+				"answer": "Crear un Clan es simple y muy flexible. Navega a la sección Clans y crea un nuevo Clan con solo unos pocos clics. Puedes establecer un nombre, icono y ajustes básicos para personalizar tu comunidad. Una vez creado, puedes invitar a amigos y compañeros de equipo para iniciar conversaciones, compartir ideas o colaborar juntos. También puedes gestionar canales, establecer permisos y transferir la propiedad si lo necesitas."
+			},
+			{
+				"question": "¿Puedo abandonar un Clan si ya no quiero participar?",
+				"answer": "Sí. Si ya no quieres formar parte de un Clan, puedes seleccionar \"Leave Clan\" en la configuración del Clan. Una vez que te retires, todo el historial de mensajes y el acceso a los canales de ese Clan se eliminarán de tu cuenta. Siempre puedes volver a unirte al Clan más tarde si tienes un enlace de invitación o si el Clan es descubridible públicamente."
+			}
+		]
+	}
+}

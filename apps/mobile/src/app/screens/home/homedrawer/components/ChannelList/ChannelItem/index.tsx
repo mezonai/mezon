@@ -1,10 +1,11 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { selectIsChannelMuted, useAppSelector } from '@mezon/store-mobile';
+import { selectChannelBadgeById, selectIsChannelMuted, useAppSelector } from '@mezon/store-mobile';
 import type { IChannel } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { memo, useCallback, useMemo } from 'react';
 import { DeviceEventEmitter, Text, TouchableOpacity, View } from 'react-native';
+import { useSelector } from 'react-redux';
 import BuzzBadge from '../../../../../../components/BuzzBadge/BuzzBadge';
 import ChannelMenu from '../../ChannelMenu';
 import { ChannelBadgeUnread } from '../ChannelBadgeUnread';
@@ -24,7 +25,7 @@ interface IChannelItemProps {
 function ChannelItem({ data, isUnRead, isActive, isVoiceActive, isFirstThread }: IChannelItemProps) {
 	const { themeValue, themeBasic } = useTheme();
 	const styles = style(themeValue, themeBasic);
-	const countMessageUnread = Number(data?.count_mess_unread) || 0;
+	const countMessageUnread = useSelector((state) => selectChannelBadgeById(state, data?.channel_id ?? ''));
 	const isUnReadChannel = useMemo(() => {
 		return isUnRead || countMessageUnread > 0;
 	}, [isUnRead, countMessageUnread]);

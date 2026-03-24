@@ -9,7 +9,6 @@ import {
 	channelMetaActions,
 	clansActions,
 	directActions,
-	directMetaActions,
 	getStore,
 	giveCoffeeActions,
 	messagesActions,
@@ -460,7 +459,7 @@ export const ContainerMessageActionModal = React.memo(
 					})
 				);
 				if (message?.clan_id === '0') {
-					dispatch(directMetaActions.setDirectLastSeenTimestamp(payloadSetLastSeenTimestamp));
+					dispatch(channelMetaActions.setDirectLastSeenTimestamp(payloadSetLastSeenTimestamp));
 				} else {
 					dispatch(channelMetaActions.setChannelLastSeenTimestamp(payloadSetLastSeenTimestamp));
 				}
@@ -771,7 +770,7 @@ export const ContainerMessageActionModal = React.memo(
 			const mediaList =
 				(message?.attachments?.length > 0 &&
 					message.attachments?.every((att) => att?.filetype?.includes('image') || att?.filetype?.includes('video'))) ||
-					message?.content?.embed?.some((embed) => embed?.image)
+				message?.content?.embed?.some((embed) => embed?.image)
 					? [EMessageActionType.SaveMedia, EMessageActionType.CopyMediaLink, EMessageActionType.ShareImage, EMessageActionType.CopyImage]
 					: [];
 

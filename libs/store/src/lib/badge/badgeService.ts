@@ -1,4 +1,3 @@
-import type { IChannel } from '@mezon/utils';
 import { ID_MENTION_HERE, TypeMessage } from '@mezon/utils';
 import type { ChannelMessage } from 'mezon-js';
 import { safeJSONParse } from 'mezon-js';
@@ -7,7 +6,6 @@ import { Subject, merge, type Subscription } from 'rxjs';
 import { bufferTime, distinctUntilChanged, filter, groupBy, map, mergeMap } from 'rxjs/operators';
 import { listChannelsByUserActions } from '../channels/channelUser.slice';
 import { channelMetaActions } from '../channels/channelmeta.slice';
-import { channelsActions } from '../channels/channels.slice';
 import { selectMemberClanByUserId } from '../clanMembers/clan.members';
 import { clansActions } from '../clans/clans.slice';
 import { directMetaActions } from '../direct/direct.slice';
@@ -360,7 +358,7 @@ class BadgeService extends EventEmitter {
 		const { clanId, channelId, messageId, timestamp } = event;
 		const now = timestamp || Date.now() / 1000;
 		const currentChannelBadge = this.getChannelBadgeCount(state, clanId, channelId);
-		const currentClanBadge = state.clans?.entities?.[clanId]?.badge_count ?? 0;
+		const currentClanBadge = state.clans?.clanUnreadStates?.entities?.[clanId]?.badge ?? 0;
 		const topicBadgeCount = this.topicBadgesByParent.get(channelId) ?? 0;
 
 		if (topicBadgeCount > 0) {
@@ -437,7 +435,7 @@ class BadgeService extends EventEmitter {
 		if (!dispatch || !state) return;
 
 		const { clanId, channelId, count } = event;
-		const currentClanBadge = state.clans?.entities?.[clanId]?.badge_count ?? 0;
+		const currentClanBadge = state.clans?.clanUnreadStates?.entities?.[clanId]?.badge ?? 0;
 
 		dispatch(channelMetaActions.updateChannelBadgeCount({ clanId, channelId, count: -count }));
 		dispatch(listChannelsByUserActions.updateChannelBadgeCount({ channelId, count: -count }));
@@ -456,13 +454,15 @@ class BadgeService extends EventEmitter {
 
 		dispatch(listChannelsByUserActions.resetBadgeCount({ channelId }));
 		const latestMessageId = selectLatestMessageId(state, channelId);
-		dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: now, messageId: event.messageId || latestMessageId }));
+		dispatch(channelMetaActions.setDirectLastSeenTimestamp({ channelId, timestamp: now, messageId: event.messageId || latestMessageId }));
 	}
 
 	private executeDmIncrement(event: DmIncrementEvent) {
 		const dispatch = this.dispatch;
 		if (!dispatch) return;
 		dispatch(directMetaActions.setCountMessUnread({ channelId: event.channelId, count: event.count, isMention: event.isMention }));
+		dispatch(channelMetaActions.updateChannelBadgeCount({ clanId: '0', channelId: event.channelId, count: event.count }));
+		dispatch(channelMetaActions.setDirectLastSentTimestamp({ channelId: event.channelId, timestamp: Date.now() / 1000 }));
 	}
 
 	private executeMarkAsRead(event: MarkAsReadClanEvent | MarkAsReadCategoryEvent | MarkAsReadChannelEvent) {
@@ -475,7 +475,7 @@ class BadgeService extends EventEmitter {
 		}
 
 		dispatch(channelMetaActions.setChannelsLastSeenTimestamp(event.channelUpdates));
-		dispatch(channelsActions.resetChannelsCount({ clanId: event.clanId, channelIds: event.channelIds }));
+		dispatch(channelMetaActions.resetChannelsCount({ channelIds: event.channelIds }));
 		dispatch(listChannelsByUserActions.markAsReadChannel(event.channelIds));
 
 		switch (event.type) {
@@ -485,7 +485,7 @@ class BadgeService extends EventEmitter {
 
 			case 'MARK_AS_READ_CATEGORY': {
 				if (categoryBadgeTotal > 0) {
-					const currentClanBadge = this.getState?.()?.clans?.entities?.[event.clanId]?.badge_count ?? 0;
+					const currentClanBadge = this.getState?.()?.clans?.clanUnreadStates?.entities?.[event.clanId]?.badge ?? 0;
 					const decrement = Math.min(categoryBadgeTotal, currentClanBadge);
 					dispatch(clansActions.updateClanBadgeCount({ clanId: event.clanId, count: -decrement, isReset: decrement >= currentClanBadge }));
 				}
@@ -504,11 +504,17 @@ class BadgeService extends EventEmitter {
 		const dispatch = this.dispatch;
 		if (!state || !dispatch) return;
 
-		const channelEntities = state.channels?.byClans?.[clanId]?.entities?.entities;
-		if (!channelEntities) return;
+		const channelEntities = state.channelmeta?.entities;
+		const channelsIdsInClan = state.channels?.byClans?.[clanId]?.entities.ids;
 
-		const totalChannelBadge = Object.values(channelEntities).reduce((sum, ch) => sum + (ch?.count_mess_unread ?? 0), 0);
-		const currentClanBadge = state.clans?.entities?.[clanId]?.badge_count ?? 0;
+		if (!channelEntities || !channelsIdsInClan?.length) return;
+
+		const totalChannelBadge = channelsIdsInClan.reduce((sum, channelId) => {
+			const ch = channelEntities[channelId];
+			if (!ch) return sum;
+			return sum + (ch.count_mess_unread ?? 0);
+		}, 0);
+		const currentClanBadge = state.clans?.clanUnreadStates?.entities?.[clanId]?.badge ?? 0;
 
 		if (totalChannelBadge !== currentClanBadge) {
 			dispatch(clansActions.setClanBadgeCount({ clanId, badgeCount: totalChannelBadge }));
@@ -590,12 +596,7 @@ class BadgeService extends EventEmitter {
 	}
 
 	private getChannelBadgeCount(state: RootState, clanId: string, channelId: string): number {
-		const listChannelRender = state?.CHANNEL_LIST_RENDER?.listChannelRender?.[clanId];
-		if (listChannelRender) {
-			const channel = listChannelRender.find((ch) => ch.id === channelId) as IChannel;
-			if (channel) return channel?.count_mess_unread ?? 0;
-		}
-		return state?.channels?.byClans?.[clanId]?.entities?.entities?.[channelId]?.count_mess_unread ?? 0;
+		return state?.channelmeta?.entities?.[channelId]?.count_mess_unread ?? 0;
 	}
 
 	private sumChannelBadges(clanId: string, channelIds: string[]): number {

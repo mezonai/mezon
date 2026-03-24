@@ -3,7 +3,7 @@
 		"categoryName": {
 			"title": "Category Name",
 			"placeholder": "Text Channels",
-			"errorMessage": "Please enter a valid category name (max 64 characters, only words, numbers, _ or -)."
+			"errorMessage": "Please enter a category name (max 64 characters, only letters, numbers, _ or -)."
 		},
 		"categoryPermission": {
 			"title": "",

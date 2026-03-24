@@ -1,5 +1,5 @@
 import { useFriends } from '@mezon/core';
-import { appActions, selectDirectMessageEntities, selectDirectsOpenlistOrder, selectPinnedDms, useAppDispatch } from '@mezon/store';
+import { appActions, selectDirectMessageEntities, selectDmSort, selectPinnedDms, useAppDispatch } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import { memo, useEffect, useMemo, useRef } from 'react';
@@ -15,14 +15,16 @@ export type CategoriesState = Record<string, boolean>;
 
 function DirectMessageList() {
 	const { t } = useTranslation('directMessage');
-	const dmGroupChatList = useSelector(selectDirectsOpenlistOrder);
+	const dmGroupChatList = useSelector(selectDmSort);
+	const directEntities = useSelector(selectDirectMessageEntities);
 	const { quantityPendingRequest } = useFriends();
 	const pinnedDmIds = useSelector(selectPinnedDms);
 
-	const directEntities = useSelector(selectDirectMessageEntities);
-
-	const pinnedDMs = useMemo(() => pinnedDmIds.filter((id) => !!directEntities[id]), [pinnedDmIds, directEntities]);
-	const unpinnedDMs = useMemo(() => dmGroupChatList.filter((id) => !pinnedDmIds.includes(id)), [dmGroupChatList, pinnedDmIds]);
+	const pinnedDMs = useMemo(() => dmGroupChatList.filter((id) => directEntities[id] && pinnedDmIds.includes(id)), [dmGroupChatList, pinnedDmIds]);
+	const unpinnedDMs = useMemo(
+		() => dmGroupChatList.filter((id) => directEntities[id] && !pinnedDmIds.includes(id)),
+		[dmGroupChatList, pinnedDmIds]
+	);
 
 	return (
 		<>

@@ -32,7 +32,8 @@
 		"deleteCaptionHook": "Удалить ключ заголовка",
 		"deleteWebhookConfirmation": "Пожалуйста, подтвердите, хотите ли Вы удалить веб-хук {{webhookName}}? Это действие не может быть отменено.",
 		"resetToken": "Сбросить токен",
-		"name": "Название вебхука"
+		"name": "Название вебхука",
+		"nameMaxLengthError": "Длина не должна превышать 64 символа."
 	},
 	"webhooksEmpty": {
 		"noWebhooks": "Вебхуков нет"
@@ -61,4 +62,3 @@
 		"webhookDeletedSuccess": "Удалён {{webhookName}} успешно!"
 	}
 }
-

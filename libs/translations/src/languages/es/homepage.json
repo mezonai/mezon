@@ -1,0 +1,142 @@
+{
+    "description": {
+        "part1": "Es excelente para jugar y pasar el rato con amigos o incluso construir una comunidad a nivel mundial.",
+        "part2": "Personaliza tu propio espacio para",
+        "talk": "Hablar",
+        "play": "Jugar",
+        "and": "Y",
+        "hangOut": "Pasa el rato"
+    },
+    "download": {
+        "getItFrom": "Descárgalo de",
+        "cdnUrl": "URL de CDN"
+    },
+    "header": {
+        "home": "Inicio",
+        "overview": "Resumen",
+        "features": "Funciones",
+        "developers": "Desarrolladores",
+        "botsApps": "Bots/Apps",
+        "documents": "Documentos",
+        "discover": "Descubrir",
+        "blogs": "Blogs",
+        "openMezon": "Abrir Mezon",
+        "login": "Iniciar sesión"
+    },
+    "layout": {
+        "overview": {
+            "title": "Resumen",
+            "subtitle": "Es una nueva forma de comunicarte con tu equipo.",
+            "description": "Es más rápido, mejor organizado, mejor para trabajar desde casa."
+        },
+        "features": {
+            "title": "Nuestras Funciones",
+            "subtitle": "Herramientas de Comunicación Completa"
+        },
+        "cards": {
+            "workstation": {
+                "title": "Estación de Trabajo",
+                "description": "Un espacio de trabajo digital que agiliza la comunicación, la colaboración y la gestión de tareas al integrarse con diversos sistemas y herramientas. Proporciona espacios estructurados para equipos, proyectos y departamentos, garantizando un acceso fluido a la información y los flujos de trabajo."
+            },
+            "ecosystem": {
+                "title": "Ecosistema",
+                "description": "Un entorno digital dinámico que combina elementos laborales y sociales, ofreciendo características interactivas y recreativas. Apoya transacciones virtuales, actividades de compromiso y la construcción de comunidad para mejorar la experiencia del usuario."
+            },
+            "aiAgent": {
+                "title": "Agente IA",
+                "description": "Un sistema inteligente que automatiza tareas, ayuda con la gestión de información y optimiza los flujos de trabajo. Mejora la productividad con funciones como recordatorios, monitoreo y comunicación automatizada."
+            }
+        },
+        "featureCards": {
+            "mezonMainnet": {
+                "title": "Mezon Mainnet",
+                "subtitle": "La capa 1 de alta velocidad sin tarifas",
+                "description": "Blockchain"
+            },
+            "developerApi": {
+                "title": "Desarrollador Avanzado",
+                "subtitle": "Plataforma API"
+            },
+            "gaming": {
+                "title": "Juegos",
+                "subtitle": "& Entretenimiento"
+            },
+            "customizable": {
+                "title": "Personalizable",
+                "subtitle": "& Plataforma escalable"
+            }
+        }
+    },
+    "sections": {
+        "hero": {
+            "title": {
+                "your": "Tu",
+                "live": "En vivo",
+                "work": "Trabajo",
+                "play": "Jugar",
+                "platform": "Plataforma.",
+                "theBest": "Lo Mejor",
+                "yourCommunity": "Para tu Comunidad"
+            },
+            "description": "Es excelente para jugar y pasar el rato con amigos o incluso construir una comunidad a nivel mundial. Personaliza tu propio espacio para",
+            "talk": "Hablar",
+            "play": "Jugar",
+            "and": "Y",
+            "hangOut": "Pasa el rato",
+            "tryButton": "¡Prueba Mezon gratis!",
+            "choosePlatform": "Elige tu plataforma"
+        },
+        "textChannel": {
+            "titlesuper": "Ultra-rápido",
+            "titlemessage": "Mensajería",
+            "description": "Diseñado para chat, colaboración y conexión.",
+            "description2": "Mensajería ultra-rápida. Sin límites. Entrega instantánea.",
+            "learnMore": "Más información"
+        },
+        "clanDiscover": {
+            "title": "Tu clan, tu mundo",
+            "description": "Desde pasatiempos y discusiones hasta noticias y tendencias, hay un clan para todo.",
+            "learnMore": "Más información"
+        },
+        "aiAgent": {
+            "title": "Agentes de IA para clanes y asistencia siempre activa",
+            "description": "Agentes de IA para clanes y asistencia siempre activa: agente de voz que resume conversaciones del canal de voz o actúa como entrevistador, modo asistente y modo sombra de bot que resume contenido del canal de texto.",
+            "learnMore": "Más información"
+        },
+        "communityPayments": {
+            "title": "Pagos dentro de la comunidad",
+            "description": "Envía dinero instantáneamente, recompensa a los creadores y compra con marcas asociadas, todo sin comisiones de plataforma. Construido sobre transparencia y seguridad.",
+            "learnMore": "Más información"
+        },
+        "enterpriseIntegrations": {
+            "title": "Integraciones empresariales",
+            "description": "Mezon te permite conectar con clientes a nivel mundial y ofrecer experiencias cautivadoras a gran escala.",
+            "learnMore": "Más información"
+        }
+    },
+    "footer": {
+        "description": "Mezon es excelente para jugar y pasar el rato con amigos o incluso construir una comunidad a nivel mundial.",
+        "getTheApp": "Descarga la App",
+        "copyright": "© 2024 Mezon. Todos los derechos reservados.",
+        "links": {
+            "executiveSummary": "Resumen ejecutivo",
+            "problemStatement": "Declaración del problema",
+            "solution": "Solución",
+            "blockchainEconomy": "Blockchain y economía token",
+            "developerApi": "Integración API para desarrolladores",
+            "technicalArchitecture": "Arquitectura técnica",
+            "productRoadmap": "Hoja de ruta del producto",
+            "tokenomics": "Tokenómica",
+            "team": "Equipo"
+        }
+    },
+    "externalMeet": {
+        "title": "Reunión externa de Mezon",
+        "creatingMeeting": "¡Reunión creada con éxito!",
+        "invite": "Invitar",
+        "joinMeeting": "Unirse a la reunión",
+        "copyLink": "Copiar enlace",
+        "toastSuccess": "¡Enlace de la reunión copiado al portapapeles!",
+        "toastFail": "Error al copiar el enlace."
+    }
+}

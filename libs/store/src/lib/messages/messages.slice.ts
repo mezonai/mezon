@@ -740,7 +740,7 @@ export const updateLastSeenMessage = createAsyncThunk(
 
 		if (clanId && clanId !== '0') {
 			const latestState = thunkAPI.getState() as RootState;
-			const hasUnread = selectClanHasUnreadMessage(clanId)(latestState);
+			const hasUnread = selectClanHasUnreadMessage(latestState, clanId);
 			if (hasUnread) {
 				requestIdleCallback(() => {
 					thunkAPI.dispatch(clansActions.updateHasUnreadBasedOnChannels({ clanId }));
@@ -786,7 +786,7 @@ export const processQueuedLastSeenMessages = createAsyncThunk('messages/processQ
 	thunkAPI.dispatch(messagesActions.clearQueuedLastSeenMessages());
 
 	for (const queuedMessage of queuedMessages) {
-		const channelEntity = state.channels.byClans[queuedMessage.clanId]?.entities?.entities?.[queuedMessage.channelId];
+		const channelEntity = state.channelmeta?.entities?.[queuedMessage.channelId];
 		const actualBadgeCount = channelEntity?.count_mess_unread || queuedMessage.badge_count;
 		await thunkAPI.dispatch(
 			updateLastSeenMessage({
@@ -1744,17 +1744,19 @@ export const messagesSlice = createSlice({
 				case TypeMessage.ChatUpdate:
 				case TypeMessage.UpdateEphemeralMsg: {
 					const updateTimeSeconds = action.payload.update_time_seconds;
+					let changes: Partial<MessagesEntity> = {
+						content: action.payload.content,
+						mentions: action.payload.mentions,
+						hide_editted: action.payload.hide_editted,
+						update_time_seconds: updateTimeSeconds,
+						update_time: action.payload.update_time || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
+					};
+					if (!action.payload.attachments?.length) {
+						changes.attachments = action.payload.attachments;
+					}
 					channelMessagesAdapter.updateOne(channelEntity, {
 						id: action.payload.id,
-						changes: {
-							content: action.payload.content,
-							mentions: action.payload.mentions,
-							attachments: action.payload.attachments,
-							hide_editted: action.payload.hide_editted,
-							update_time_seconds: updateTimeSeconds,
-							update_time:
-								action.payload.update_time || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
-						}
+						changes
 					});
 					const replyList = handleUpdateReplyMessage(channelEntity, action.payload.id);
 					if (replyList.length > 0) {

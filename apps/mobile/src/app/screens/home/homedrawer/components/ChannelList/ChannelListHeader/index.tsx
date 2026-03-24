@@ -114,16 +114,21 @@ const ChannelListHeader = () => {
 			<View style={styles.navigationBar}>
 				<TouchableOpacity onPressIn={navigateToSearchPage} style={styles.wrapperSearch}>
 					<View style={styles.searchIcon}>
-						<Icons.SearchIcon color={themeValue.textDisabled} width={size.s_18} height={size.s_18} />
+						<Icons.SearchIcon color={themeValue.iconPrimary || themeValue.textDisabled} width={size.s_18} height={size.s_18} />
 					</View>
 
 					<Text style={styles.placeholderSearchBox}>{t('common.search')}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity onPressIn={onOpenScanQR} style={styles.iconWrapper}>
-					<Icons.QrIcon color={themeValue.text} primary={themeValue.textDisabled} width={size.s_16} height={size.s_16} />
+					<Icons.QrIcon
+						color={themeValue.borderRadio}
+						primary={themeValue.iconPrimary || themeValue.textDisabled}
+						width={size.s_16}
+						height={size.s_16}
+					/>
 				</TouchableOpacity>
 				<TouchableOpacity onPressIn={onOpenEvent} style={styles.iconWrapper}>
-					<Icons.EventIcon color={themeValue.textDisabled} width={size.s_18} height={size.s_18} />
+					<Icons.EventIcon color={themeValue.iconPrimary || themeValue.textDisabled} width={size.s_18} height={size.s_18} />
 				</TouchableOpacity>
 			</View>
 		</View>

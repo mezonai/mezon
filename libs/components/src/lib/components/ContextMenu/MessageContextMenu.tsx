@@ -597,6 +597,7 @@ function MessageContextMenu({
 
 	const enableCreateThreadItem = useMemo(() => {
 		if (!checkPos) return false;
+		if (isTopic) return false;
 		if (
 			activeMode === ChannelStreamMode.STREAM_MODE_DM ||
 			activeMode === ChannelStreamMode.STREAM_MODE_GROUP ||
@@ -612,7 +613,7 @@ function MessageContextMenu({
 			return false;
 		}
 		return canManageThread;
-	}, [checkPos, activeMode, canManageThread, currentChannelType]);
+	}, [checkPos, activeMode, canManageThread, currentChannelType, isTopic]);
 
 	const enableDelMessageItem = useMemo(() => {
 		if (!checkPos || message?.content?.tp) return false;

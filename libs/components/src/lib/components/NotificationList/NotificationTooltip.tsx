@@ -1,4 +1,4 @@
-import { selectCurrentClanBadgeCount } from '@mezon/store';
+import { selectBadgeClanById, selectCurrentClanId } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { generateE2eId } from '@mezon/utils';
 import Tooltip from 'rc-tooltip';
@@ -13,7 +13,8 @@ interface NotificationTooltipProps {
 }
 
 export const NotificationTooltip = memo(({ isGridView, isShowMember }: NotificationTooltipProps) => {
-	const badgeCount = useSelector(selectCurrentClanBadgeCount);
+	const currentClanId = useSelector(selectCurrentClanId);
+	const badgeCount = useSelector((state) => selectBadgeClanById(state, currentClanId || ''));
 	const [visible, setVisible] = useState(false);
 
 	const handleVisibleChange = (visible: boolean) => {

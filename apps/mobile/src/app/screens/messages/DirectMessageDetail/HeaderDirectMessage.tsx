@@ -5,7 +5,7 @@ import { ActionEmitEvent, STORAGE_USERS_QUICK_REACTION, load, save } from '@mezo
 import { size } from '@mezon/mobile-ui';
 import {
 	DMCallActions,
-	directMetaActions,
+	directActions,
 	getStore,
 	groupCallActions,
 	messagesActions,
@@ -72,7 +72,7 @@ export const ChannelSeen = memo(({ channelId }: { channelId: string }) => {
 
 	useEffect(() => {
 		if (lastMessage) {
-			dispatch(directMetaActions.updateLastSeenTime(lastMessage));
+			dispatch(directActions.updateLastSeenTime(lastMessage));
 			markMessageAsRead();
 		}
 	}, [lastMessage, markMessageAsRead, dispatch, channelId]);

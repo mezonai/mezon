@@ -1,0 +1,17 @@
+{
+  "addReaction": "Añadir reacción",
+  "emptyDescription": "Buscamos por todas partes. Lamentablemente, no se encontraron resultados",
+  "video": {
+    "error": {
+      "title": "Vídeo no disponible",
+      "cannotPlay": "El vídeo no se puede reproducir",
+      "loadingAborted": "Carga del vídeo cancelada",
+      "networkError": "Error de red al cargar el vídeo",
+      "codecNotSupported": "El códec de vídeo no es compatible con esta plataforma",
+      "codecNotSupportedElectron": "El códec de vídeo no es compatible con esta plataforma. Intenta descargar el vídeo para reproducirlo con el reproductor del sistema.",
+      "formatNotSupported": "El formato de vídeo no es compatible",
+      "downloadButton": "Descargar vídeo",
+      "browserNotSupported": "Tu navegador no soporta la etiqueta de vídeo."
+    }
+  }
+}

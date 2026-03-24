@@ -39,16 +39,19 @@ export function useChannelMembers({ channelId, mode }: useChannelMembersOptions)
 		try {
 			await dispatch(channelUsersActions.addChannelUsers(body));
 			dispatch(
-				channelMetaActions.updateBulkChannelMetadata([
-					{
-						id: currentChannel?.channel_id ?? '',
-						lastSeenTimestamp: timestamp,
-						lastSentTimestamp: timestamp,
-						clanId: currentChannel?.clan_id ?? '',
-						isMute: false,
-						senderId: currentChannel?.last_sent_message?.sender_id || ''
-					}
-				])
+				channelMetaActions.updateBulkChannelMetadata({
+					data: [
+						{
+							id: currentChannel?.channel_id ?? '',
+							lastSeenTimestamp: timestamp,
+							lastSentTimestamp: timestamp,
+							clanId: currentChannel?.clan_id ?? '',
+							isMute: false,
+							senderId: currentChannel?.last_sent_message?.sender_id || ''
+						}
+					],
+					clanId: currentChannel?.clan_id ?? ''
+				})
 			);
 			dispatch(channelMembersActions.addNewMember({ channel_id: currentChannel?.channel_id ?? '', user_ids: userIds }));
 		} catch (error) {

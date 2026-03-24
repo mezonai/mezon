@@ -1,0 +1,27 @@
+{
+    "fields": {
+        "DMMessagePreview": {
+            "title": "Vista previa de mensajes DM",
+            "AllMessages": "Todos los mensajes",
+            "UnreadDMOnly": "Solo DMs sin leer",
+            "None": "Ninguno"
+        }
+    },
+    "menu": {
+        "theme": {
+            "title": "Tema",
+            "theme": "Tema",
+            "syncAcrossClients": {
+                "title": "Sincronizar entre clientes",
+                "description": "Al activar esto sobrescribirá los ajustes de apariencia anteriores en todos los demás clientes, incluidos desktop anf browser"
+            }
+        },
+        "search": {
+            "title": "Buscar",
+            "showResultCount": {
+                "title": "Mostrar conteo exacto de resultados",
+                "description": "Al activar, puede aumentar el tiempo que tarda en mostrar los resultados de búsqueda"
+            }
+        }
+    }
+}

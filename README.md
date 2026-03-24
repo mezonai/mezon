@@ -31,7 +31,7 @@
 Mezon is a Live, Work, and Play platform. It’s perfect for gaming and chilling with friends, or even building a global community. Customize your own space to talk, play, and hang out. Mezon also delivers enterprise-grade performance with sub-millisecond response times and support for millions of concurrent connections.
 
 <div align="center">
-  <img src="docs/mezon_header_bot_battle.png" alt="Mezon Platform Overview" width="100%">
+  <img width="851" height="315" alt="Mezon Platform Overview" src="https://github.com/user-attachments/assets/0cbc29c7-b8eb-4810-9e88-9efa88e7b43d" />
 </div>
 
 ### ✨ Key Features

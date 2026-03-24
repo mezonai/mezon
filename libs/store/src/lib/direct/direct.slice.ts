@@ -11,7 +11,7 @@ import { selectAllAccount } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import type { StatusUserArgs } from '../channelmembers/channel.members';
 import { channelsActions } from '../channels/channels.slice';
-import { ensureSession, ensureSocket, getMezonCtx, withRetry } from '../helpers';
+import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import { messagesActions } from '../messages/messages.slice';
 import type { RootState } from '../store';
@@ -56,6 +56,14 @@ export const mapDmGroupToEntity = (channelRes: ApiChannelDescription, existingEn
 		mapped.channel_avatar = existingEntity.channel_avatar;
 	} else if (!mapped.channel_avatar) {
 		mapped.channel_avatar = '/assets/images/avatar-group.png';
+	}
+
+	if (existingEntity?.last_sent_message && !mapped?.last_sent_message) {
+		mapped.last_sent_message = existingEntity?.last_sent_message;
+	}
+
+	if (existingEntity?.last_seen_message && !mapped?.last_seen_message) {
+		mapped.last_seen_message = existingEntity?.last_seen_message;
 	}
 
 	return mapped;
@@ -559,15 +567,6 @@ export const addGroupUserWS = createAsyncThunk('direct/addGroupUserWS', async (p
 	}
 });
 
-export const follower = createAsyncThunk('direct/follower', async (_, thunkAPI) => {
-	try {
-		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
-		await mezon.socketRef.current?.follower();
-	} catch (error) {
-		return thunkAPI.rejectWithValue(error);
-	}
-});
-
 export const initialDirectState: DirectState = directAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	socketStatus: 'not loaded',
@@ -855,25 +854,6 @@ export const directSlice = createSlice({
 				});
 			}
 		},
-		setDirectLastSeenTimestamp: (state, action: PayloadAction<{ channelId: string; timestamp: number; messageId?: string }>) => {
-			const { channelId, timestamp, messageId } = action.payload;
-			const entity = state.entities[channelId];
-			const lastSeenMessage: ApiChannelMessageHeader = {
-				...((entity?.last_seen_message as ApiChannelMessageHeader) || {}),
-				timestamp_seconds: Math.floor(timestamp)
-			};
-			if (messageId) {
-				lastSeenMessage.id = messageId;
-			}
-
-			directAdapter.updateOne(state, {
-				id: channelId,
-				changes: {
-					count_mess_unread: 0,
-					last_seen_message: lastSeenMessage
-				}
-			});
-		},
 		updateLastSeenTime: (state, action: PayloadAction<MessagesEntity>) => {
 			const payload = action.payload;
 			const entity = state.entities[payload.channel_id];
@@ -1037,7 +1017,6 @@ export const directActions = {
 	openDirectMessage,
 	addGroupUserWS,
 	addDirectByMessageWS,
-	follower,
 	fetchDirectDetail
 };
 
@@ -1170,16 +1149,6 @@ export const selectDirectsOpenlist = createSelector(selectAllDirectMessages, (di
 	});
 });
 
-export const selectDirectsOpenlistOrder = createSelector(selectDirectsOpenlist, (data) => {
-	return data
-		.sort((a, b) => {
-			const timestampA = a.last_sent_message?.timestamp_seconds || a.create_time_seconds || 0;
-			const timestampB = b.last_sent_message?.timestamp_seconds || b.create_time_seconds || 0;
-			return timestampB - timestampA;
-		})
-		.map((dm) => dm.id);
-});
-
 export const selectDirectById = createSelector([selectDirectMessageEntities, (state, id) => id], (clansEntities, id) => clansEntities?.[id]);
 
 export const selectAllUserDM = createSelector(selectAllDirectMessages, (directMessages) => {
@@ -1217,37 +1186,6 @@ export const selectBuzzStateByDirectId = createSelector(
 export const selectIsShowPinBadgeByDmId = createSelector([getDirectState, (state, dmId: string) => dmId], (state, dmId) => {
 	const result = state?.entities[dmId]?.showPinBadge;
 	return result;
-});
-
-export const selectDirectsUnreadlist = createSelector(selectAllDirectMessages, (state) => {
-	return state.filter((item) => {
-		return item?.count_mess_unread && item?.is_mute !== true;
-	});
-});
-
-export const selectIsUnreadDMById = createSelector([selectDirectMessageEntities, (state, channelId: string) => channelId], (entities, channelId) => {
-	const channel = entities?.[channelId];
-
-	if (!channel) {
-		return false;
-	}
-
-	const lastSeen = Number(channel.last_seen_message?.timestamp_seconds ?? Number.NaN);
-	const lastSent = Number(channel.last_sent_message?.timestamp_seconds ?? Number.NaN);
-
-	if (Number.isNaN(lastSent)) {
-		return false;
-	}
-
-	if (Number.isNaN(lastSeen)) {
-		return lastSent > 0;
-	}
-
-	return lastSeen < lastSent;
-});
-
-export const selectTotalUnreadDM = createSelector(selectDirectsUnreadlist, (listUnreadDM) => {
-	return listUnreadDM.reduce((total, count) => total + (count?.count_mess_unread ?? 0), 0);
 });
 
 export const selectLastSeenMessageIdDM = createSelector([selectDirectMessageEntities, (state, dmId: string) => dmId], (entities, channelId) => {

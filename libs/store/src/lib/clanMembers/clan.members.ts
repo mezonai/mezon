@@ -1,9 +1,9 @@
 import { captureSentryError } from '@mezon/logger';
-import type { LoadingStatus, UsersClanEntity } from '@mezon/utils';
+import type { IUserProfileActivity, LoadingStatus, UsersClanEntity } from '@mezon/utils';
 import { EUserStatus } from '@mezon/utils';
 import type { EntityState, PayloadAction, Update } from '@reduxjs/toolkit';
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
-import type { ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js/api';
+import type { ApiUser, ChannelUserListChannelUser, ClanUserListClanUser } from 'mezon-js/api';
 import { selectAllAccount, selectCurrentUserId } from '../account/account.slice';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
@@ -92,15 +92,46 @@ export const fetchUsersClan = createAsyncThunk('UsersClan/fetchUsersClan', async
 	try {
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await fetchUsersClanCached(thunkAPI.getState as () => RootState, mezon, clanId, noCache);
-		const { users, fromCache } = response;
-		if (!fromCache) {
-			const state = thunkAPI.getState() as RootState;
-			thunkAPI.dispatch(statusActions.updateBulkStatus(users.map((item) => convertStatusClan(item, state))));
-		}
 
-		return { users, fromCache, clanId };
+		return { users: response?.users, fromCache: response.fromCache, clanId };
 	} catch (error) {
 		captureSentryError(error, 'UsersClan/fetchUsersClan');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
+export const listOnlineUserClan = createAsyncThunk('UsersClan/listOnlineUserClan', async ({ clanId }: { clanId?: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureSession(getMezonCtx(thunkAPI));
+
+		const response = await fetchDataWithSocketFallback(
+			mezon,
+			{
+				api_name: 'ListUserOnline',
+				list_user_online_req: {
+					clan_id: clanId
+				}
+			},
+			(session) => Promise.resolve([]),
+			'user_online_list'
+		);
+
+		const result: IUserProfileActivity[] = [];
+		const state = thunkAPI.getState() as RootState;
+
+		if ((response as any)?.users) {
+			const list_users = (response as any)?.users as ApiUser[];
+			for (const user of list_users) {
+				if (user?.id) {
+					result.push(convertStatusClan({ ...user, id: user.id }, state));
+				}
+			}
+			thunkAPI.dispatch(statusActions.updateBulkStatus(result));
+		}
+
+		return clanId;
+	} catch (error) {
+		captureSentryError(error, 'UsersClan/listOnlineUserClan');
 		return thunkAPI.rejectWithValue(error);
 	}
 });

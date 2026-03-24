@@ -1,8 +1,8 @@
 import type { DirectEntity } from '@mezon/store';
 import {
 	channelMembersActions,
+	channelMetaActions,
 	directActions,
-	directMetaActions,
 	getStore,
 	selectAllAccount,
 	selectDmGroupCurrentId,
@@ -45,7 +45,7 @@ function LeaveGroupModal({ groupWillBeLeave, onClose, navigateToFriends }: Leave
 			const timestamp = Date.now() / 1000;
 			const store = getStore();
 			const messageId = store ? selectLatestMessageId(store.getState(), groupWillBeLeave.channel_id) : undefined;
-			dispatch(directMetaActions.setDirectLastSeenTimestamp({ channelId: groupWillBeLeave.channel_id, timestamp, messageId }));
+			dispatch(channelMetaActions.setDirectLastSeenTimestamp({ channelId: groupWillBeLeave.channel_id, timestamp, messageId }));
 			if (groupWillBeLeave.channel_id === currentDmGroupId) {
 				dispatch(directActions.setDmGroupCurrentId(''));
 				navigateToFriends();

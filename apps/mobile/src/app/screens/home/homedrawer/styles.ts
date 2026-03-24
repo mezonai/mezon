@@ -861,7 +861,7 @@ export const style = (colors: Attributes) =>
 			flex: 1,
 			justifyContent: 'center',
 			alignItems: 'center',
-			backgroundColor: colors.secondary,
+			backgroundColor: colors.tertiary,
 			paddingVertical: size.s_10,
 			marginBottom: size.s_6,
 			borderRadius: size.s_10

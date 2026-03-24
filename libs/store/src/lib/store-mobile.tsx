@@ -98,7 +98,7 @@ const persistedClansReducer = persistReducer(
 	{
 		key: 'clans',
 		storage,
-		blacklist: ['invitePeople', 'loadingStatus']
+		blacklist: ['invitePeople', 'loadingStatus', 'checkJoinList']
 	},
 	clansReducer
 );

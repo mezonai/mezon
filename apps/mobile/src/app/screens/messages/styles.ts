@@ -305,6 +305,20 @@ export const style = (colors: Attributes, isTablet?: boolean) =>
 		activeDMGroupBackground: {
 			backgroundColor: colors.secondaryLight
 		},
+		sectionHeader: {
+			flexDirection: 'row',
+			alignItems: 'center',
+			gap: size.s_4,
+			paddingHorizontal: size.s_18,
+			paddingTop: size.s_14,
+			paddingBottom: size.s_4
+		},
+		sectionHeaderText: {
+			fontSize: size.s_12,
+			fontWeight: '700',
+			color: colors.textDisabled,
+			letterSpacing: 0.5
+		},
 		imageFullSize: {
 			width: '100%',
 			height: '100%'

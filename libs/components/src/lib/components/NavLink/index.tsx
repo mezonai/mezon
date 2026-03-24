@@ -17,7 +17,7 @@ function NavLinkComponent({ active, children }: NavLinkProps) {
 				<div
 					className={`${
 						active ? 'scale-y-100 h-8' : 'h-8 scale-y-0 opacity-0 group-hover:opacity-100'
-						} rounded-xl w-1 transition-all duration-200 ease-out transform origin-center bg-control-nav`}
+					} rounded-xl w-1 transition-all duration-200 ease-out transform origin-center bg-control-nav`}
 				></div>
 			</div>
 

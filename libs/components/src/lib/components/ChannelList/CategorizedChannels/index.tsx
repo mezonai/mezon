@@ -88,7 +88,7 @@ const CategorizedItem: React.FC<CategorizedChannelsProps> = ({ category }) => {
 				closeDeleteModal={closeDeleteModal}
 			/>
 		);
-	});
+	}, [category]);
 
 	const [isShowCategorySetting, setIsShowCategorySetting] = useState<boolean>(false);
 
