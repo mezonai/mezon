@@ -70,9 +70,6 @@ const ModalCustomStatus = ({ name, status, onClose, time_reset = 0 }: ModalCusto
 
 	const handleSaveCustomStatus = () => {
 		const trimmedStatus = customStatus.trim();
-		if (!trimmedStatus) {
-			return;
-		}
 		dispatch(
 			channelMembersActions.updateCustomStatus({
 				clanId: currentClanId ?? '',

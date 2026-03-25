@@ -47,12 +47,12 @@ const WebhookItemModal = ({ webhookItem, currentChannel, isClanSetting, isExpand
 		<div className="bg-theme-setting-nav border-theme-primary p-[20px]  rounded-md mb-[20px]">
 			<div className="flex gap-[20px] items-center">
 				<img src={webhookItem.avatar} alt="Webhook avatar" className="aspect-square w-[50px] rounded-full" />
-				<div className="flex w-full justify-between items-center text-theme-primary-active">
-					<div className="">
-						<div>{webhookItem.webhook_name}</div>
-						<div className="flex gap-1 items-center">
-							<Icons.ClockIcon className="text-theme-primary" />
-							<div className="text-theme-primary text-[13px]">
+				<div className="flex w-full min-w-0 justify-between items-center text-theme-primary-active">
+					<div className="min-w-0 flex-1 overflow-hidden">
+						<div className="break-words">{webhookItem.webhook_name}</div>
+						<div className="flex gap-1 items-center min-w-0">
+							<Icons.ClockIcon className="text-theme-primary shrink-0" />
+							<div className="text-theme-primary text-[13px] break-words">
 								{t('webhooksItem.createdBy', {
 									webhookCreateTime: timeFormatI18n(
 										webhookItem.create_time_seconds ?? Math.floor(new Date(webhookItem.update_time || '').getTime() / 1000),

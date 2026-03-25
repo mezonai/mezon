@@ -46,7 +46,8 @@
 		"appIcon": "App Icon",
 		"advanced": "Advanced",
 		"appVersion": "App Version",
-		"startUp": "Start Up"
+		"startUp": "Start Up",
+		"quitApp": "Quit App"
 	},
 	"autoStart": {
 		"title": "Auto start application",

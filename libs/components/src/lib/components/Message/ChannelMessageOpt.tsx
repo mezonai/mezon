@@ -91,7 +91,7 @@ const ChannelMessageOpt = ({
 	const replyMenu = useReplyMenuBuilder(message, hasPermission);
 	const editMenu = useEditMenuBuilder(message);
 	const reactMenu = useReactMenuBuilder(message);
-	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission, isAppChannel);
+	const threadMenu = useThreadMenuBuilder(message, isShowIconThread, hasPermission, isAppChannel, isTopic);
 	const optionMenu = useOptionMenuBuilder(handleContextMenu);
 	const giveACoffeeMenu = useGiveACoffeeMenuBuilder(message, isTopic);
 	const checkMessageOnTopic = useAppSelector((state) => selectIsMessageChannelIdMatched(state, message?.channel_id ?? ''));
@@ -412,7 +412,7 @@ function useReactMenuBuilder(message: IMessageWithUser) {
 	});
 }
 
-function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boolean, hasPermission: boolean, isAppChannel: boolean) {
+function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boolean, hasPermission: boolean, isAppChannel: boolean, isTopic: boolean) {
 	const { t } = useTranslation('contextMenu');
 	const [thread, setThread] = useState(false);
 	const dispatch = useAppDispatch();
@@ -448,7 +448,7 @@ function useThreadMenuBuilder(message: IMessageWithUser, isShowIconThread: boole
 	}, [dispatch, message, setIsShowCreateThread, setOpenThreadMessageState, setThread, thread, setValueThread]);
 
 	return useMenuBuilderPlugin((builder) => {
-		builder.when(isShowIconThread && hasPermission && !isAppChannel, (builder) => {
+		builder.when(isShowIconThread && hasPermission && !isAppChannel && !isTopic, (builder) => {
 			builder.addMenuItem('thread', t('createThread'), handleItemClick, <Icons.ThreadIcon isWhite={thread} />);
 		});
 	});

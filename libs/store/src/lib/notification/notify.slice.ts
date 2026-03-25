@@ -334,7 +334,7 @@ export const notificationSlice = createSlice({
 								mention_ids,
 								position_s,
 								position_e,
-								attachment_type: '',
+								attachment_type: message.attachments?.[0].filetype || '',
 								has_more_attachment: (message.attachments?.length || 0) > 2,
 								is_mention_role,
 								message_id: message.message_id

@@ -299,6 +299,14 @@ const persistedDirectReducer = persistReducer(
 	directReducer
 );
 
+const persistedChannelMetaReducer = persistReducer(
+	{
+		key: 'channelmeta',
+		storage
+	},
+	channelMetaReducer
+);
+
 const persistedFcmReducer = persistReducer(
 	{
 		key: 'fcm',
@@ -317,7 +325,7 @@ const reducer = {
 	channelMedia: channelMediaReducer,
 	clans: persistedClansReducer,
 	channels: persistedChannelReducer,
-	channelmeta: channelMetaReducer,
+	channelmeta: persistedChannelMetaReducer,
 	settingSticker: persistedsettingClanStickerReducer,
 	allUsersByAddChannel: userChannelsReducer,
 	listchannelbyusers: persistedListchannelsByUserReducer,

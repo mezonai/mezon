@@ -46,7 +46,8 @@
 		"appIcon": "Biểu tượng",
 		"advanced": "Nâng cao",
 		"appVersion": "Phiên bản ứng dụng",
-		"startUp": "Khởi chạy"
+		"startUp": "Khởi chạy",
+		"quitApp": "Thoát ứng dụng"
 	},
 	"autoStart": {
 		"title": "Tự động khởi động ứng dụng",

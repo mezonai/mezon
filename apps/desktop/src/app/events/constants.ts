@@ -59,3 +59,4 @@ export const SYNC_REDUX_STATE = 'APP::SYNC_REDUX_STATE';
 export const GET_REDUX_STATE = 'APP::GET_REDUX_STATE';
 export const SET_PINNED_DMS = 'APP::SET_PINNED_DMS';
 export const GET_PINNED_DMS = 'APP::GET_PINNED_DMS';
+export const QUIT_APP = 'APP::QUIT_APP';

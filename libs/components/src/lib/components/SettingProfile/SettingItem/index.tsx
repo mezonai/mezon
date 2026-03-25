@@ -1,7 +1,7 @@
 import mezonPackage from '@mezon/package-js';
 import { appActions, authActions, selectAllAccount, useAppDispatch } from '@mezon/store';
 import { LogoutModal } from '@mezon/ui';
-import { EUserSettings, generateE2eId } from '@mezon/utils';
+import { EUserSettings, QUIT_APP, generateE2eId } from '@mezon/utils';
 import isElectron from 'is-electron';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -187,6 +187,19 @@ const SettingItem = ({ onItemClick, initSetting }: { onItemClick?: (settingName:
 					{t('setting:logOut')}
 				</button>
 				{openModal && <LogoutModal handleLogOut={handleLogOut} onClose={handleCloseModal} />}
+				{isElectron() && (
+					<>
+						<br />
+						<button
+							className={`p-2 text-[16px] font-medium text-red-500 mt-1 w-[170px] text-left rounded-[5px] ml-[-8px]`}
+							onClick={() => {
+								window.electron.send(QUIT_APP);
+							}}
+						>
+							{t('setting:appSettings.quitApp')}
+						</button>
+					</>
+				)}
 				<div className="mt-4 text-xs text-theme-text-secondary opacity-60">v{mezonPackage.version}</div>
 			</div>
 		</div>

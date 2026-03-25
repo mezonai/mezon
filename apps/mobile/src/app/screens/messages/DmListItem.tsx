@@ -1,6 +1,6 @@
 import { convertTimestampToTimeAgo, load, STORAGE_MY_USER_ID } from '@mezon/mobile-components';
 import { useTheme } from '@mezon/mobile-ui';
-import { selectDirectById, selectIsUnreadDMById, useAppSelector } from '@mezon/store-mobile';
+import { selectDirectById, selectDmLastSentMessage, selectIsUnreadDMById, useAppSelector } from '@mezon/store-mobile';
 import { createImgproxyUrl } from '@mezon/utils';
 import { ChannelStreamMode, ChannelType } from 'mezon-js';
 import React, { useMemo } from 'react';
@@ -20,12 +20,13 @@ export const DmListItem = React.memo((props: { id: string }) => {
 	const { id } = props;
 	const directMessage = useAppSelector((state) => selectDirectById(state, id));
 	const isUnreadDMById = useAppSelector((state) => selectIsUnreadDMById(state, directMessage?.id as string));
+	const lastSentMessage = useAppSelector((state) => selectDmLastSentMessage(state, id));
 
 	const isUnReadChannel = useMemo(() => {
 		const myUserId = load(STORAGE_MY_USER_ID);
 
-		return isUnreadDMById && directMessage?.last_sent_message?.sender_id !== myUserId;
-	}, [isUnreadDMById, directMessage?.last_sent_message?.sender_id]);
+		return isUnreadDMById && lastSentMessage?.sender_id !== myUserId;
+	}, [isUnreadDMById, lastSentMessage?.sender_id]);
 	const { t } = useTranslation(['message', 'common']);
 
 	const isTypeDMGroup = useMemo(() => {
@@ -33,12 +34,12 @@ export const DmListItem = React.memo((props: { id: string }) => {
 	}, [directMessage?.type]);
 
 	const lastMessageTime = useMemo(() => {
-		if (directMessage?.last_sent_message?.timestamp_seconds) {
-			const timestamp = Number(directMessage?.last_sent_message?.timestamp_seconds);
+		if (lastSentMessage?.timestamp_seconds) {
+			const timestamp = Number(lastSentMessage?.timestamp_seconds);
 			return convertTimestampToTimeAgo(timestamp, t);
 		}
 		return null;
-	}, [directMessage?.last_sent_message, t]);
+	}, [lastSentMessage?.timestamp_seconds, t]);
 
 	return (
 		<View style={[styles.messageItem]}>
@@ -110,11 +111,11 @@ export const DmListItem = React.memo((props: { id: string }) => {
 				</View>
 				<MessagePreviewLastest
 					isUnReadChannel={isUnReadChannel}
-					type={directMessage?.type}
-					senderName={directMessage?.display_names?.[0] || directMessage?.usernames?.[0]}
+					type={directMessage?.type || ChannelType.CHANNEL_TYPE_DM}
+					senderName={directMessage?.display_names?.[0] || directMessage?.usernames?.[0] || ''}
 					userId={directMessage?.user_ids?.[0] || ''}
-					senderId={directMessage?.last_sent_message?.sender_id}
-					lastSentMessageStr={JSON.stringify(directMessage?.last_sent_message)}
+					senderId={lastSentMessage?.sender_id || ''}
+					lastSentMessageStr={JSON.stringify(lastSentMessage || {})}
 				/>
 			</View>
 		</View>

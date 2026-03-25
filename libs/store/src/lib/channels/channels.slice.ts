@@ -514,9 +514,6 @@ export const updateChannel = createAsyncThunk('channels/updateChannel', async (b
 						}
 					})
 				);
-				thunkAPI.dispatch(
-					listChannelRenderAction.updateChannelInListRender({ channelId: body.channel_id, clanId: clanId as string, dataUpdate: body })
-				);
 			}
 		}
 	} catch (error) {

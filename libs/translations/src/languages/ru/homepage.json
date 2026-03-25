@@ -21,7 +21,8 @@
 		"discover": "Исследовать",
 		"blogs": "Блоги",
 		"openMezon": "Открыть Mezon",
-		"login": "Войти"
+		"login": "Войти",
+		"quickMeeting": "Mezon Meet"
 	},
 	"layout": {
 		"overview": {
@@ -140,4 +141,3 @@
 		"toastFail": "Не удалось скопировать ссылку."
 	}
 }
-

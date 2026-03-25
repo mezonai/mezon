@@ -471,6 +471,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					const isContentMutation = message.code === TypeMessage.ChatUpdate || message.code === TypeMessage.ChatRemove;
 					if (!isContentMutation) {
 						await dispatch(directActions.addDirectByMessageWS(mess)).unwrap();
+						dispatch(channelMetaActions.updateDmLastSentMessage({ channelId: message.channel_id, message: mess }));
 					}
 
 					const isClanView = selectClanView(store.getState());
@@ -700,7 +701,11 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					})
 				);
 
-				if (notification.code === NotificationCode.USER_MENTIONED || notification.code === NotificationCode.USER_REPLIED) {
+				if (
+					notification.channel_type !== ChannelType.CHANNEL_TYPE_APP &&
+					notification.channel_type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE &&
+					(notification.code === NotificationCode.USER_MENTIONED || notification.code === NotificationCode.USER_REPLIED)
+				) {
 					if (notification?.channel?.type === ChannelType.CHANNEL_TYPE_THREAD) {
 						await dispatch(
 							channelsActions.addThreadSocket({

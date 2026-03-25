@@ -18,19 +18,23 @@ export const LanguageSetting = () => {
 		return [
 			{
 				title: 'English',
-				value: 'en'
+				value: 'en',
+				contributed: ''
 			},
 			{
 				title: 'Tiếng Việt',
-				value: 'vi'
+				value: 'vi',
+				contributed: ''
 			},
 			{
-				title: 'rусский',
-				value: 'ru'
+				title: 'Русский',
+				value: 'ru',
+				contributed: 'tsruber'
 			},
 			{
-				title: 'español',
-				value: 'es'
+				title: 'Español',
+				value: 'es',
+				contributed: 'español'
 			}
 		];
 	}, []);
@@ -52,7 +56,10 @@ export const LanguageSetting = () => {
 				ItemSeparatorComponent={() => <View style={themeStyles.itemSeparator} />}
 				renderItem={({ item }) => (
 					<Pressable onPress={() => changeLanguage(item.value)} style={[themeStyles.languageItem]}>
-						<Text style={themeStyles.optionText}>{item.title}</Text>
+						<Text style={themeStyles.optionText}>
+							{`${item.title}  `}
+							<Text style={[themeStyles.optionText, themeStyles.contributeText]}>{item.contributed}</Text>
+						</Text>
 						{currentLanguage === item.value ? <MezonIconCDN icon={IconCDN.checkmarkSmallIcon} color={themeValue.bgViolet} /> : null}
 					</Pressable>
 				)}

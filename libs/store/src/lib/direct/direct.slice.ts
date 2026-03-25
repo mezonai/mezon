@@ -10,7 +10,10 @@ import { toast } from 'react-toastify';
 import { selectAllAccount } from '../account/account.slice';
 import { userChannelsActions } from '../channelmembers/AllUsersChannelByAddChannel.slice';
 import type { StatusUserArgs } from '../channelmembers/channel.members';
+import type { ChannelMetaEntity } from '../channels/channelmeta.slice';
+import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
+import { listChannelBadgeCount } from '../clans/clans.slice';
 import { ensureSession, getMezonCtx, withRetry } from '../helpers';
 import type { MessagesEntity } from '../messages/messages.slice';
 import { messagesActions } from '../messages/messages.slice';
@@ -34,7 +37,6 @@ export interface DirectState extends EntityState<DirectEntity, string> {
 	error?: string | null;
 	currentDirectMessageId?: string | null;
 	currentDirectMessageType?: number;
-	statusDMChannelUnread: Record<string, boolean>;
 	buzzStateDirect: Record<string, BuzzArgs | null>;
 	updateDmGroupLoading: Record<string, boolean>;
 	updateDmGroupError: Record<string, string | null>;
@@ -242,16 +244,26 @@ export const fetchDirectMessage = createAsyncThunk(
 				return { channels: [], hasMore: false, page: 1 };
 			}
 
-			const listStatusUnreadDM = response.channeldesc.map((channel) => {
-				const status = getStatusUnread(
-					Number(channel.last_seen_message?.timestamp_seconds),
-					Number(channel.last_sent_message?.timestamp_seconds)
-				);
-				return { dmId: channel.channel_id ?? '', isUnread: status };
-			});
-			thunkAPI.dispatch(directActions.setAllStatusDMUnread(listStatusUnreadDM));
-
 			const state = thunkAPI.getState() as RootState;
+			const checkJoinDM = state.clans?.checkJoinList?.['0'];
+			if (!checkJoinDM) {
+				try {
+					const res = await thunkAPI.dispatch(listChannelBadgeCount({ clanId: '0' })).unwrap();
+					const listBadgeDM = res.channeldesc;
+
+					if (!listBadgeDM?.length) {
+						throw new Error('Empty badge list');
+					}
+				} catch (err) {
+					thunkAPI.dispatch(
+						channelMetaActions.updateBulkChannelMetadata({
+							data: response?.channeldesc as ChannelMetaEntity[],
+							clanId: '0'
+						})
+					);
+				}
+			}
+
 			const existingEntities = selectAllDirectMessages(state);
 			const userProfile = selectAllAccount(state)?.user;
 
@@ -287,15 +299,6 @@ export const fetchMoreDirectMessages = createAsyncThunk(
 			if (!response.channeldesc || response.channeldesc.length === 0) {
 				return { channels: [], hasMore: false, page: nextPage };
 			}
-
-			const listStatusUnreadDM = response.channeldesc.map((channel) => {
-				const status = getStatusUnread(
-					Number(channel.last_seen_message?.timestamp_seconds),
-					Number(channel.last_sent_message?.timestamp_seconds)
-				);
-				return { dmId: channel.channel_id ?? '', isUnread: status };
-			});
-			thunkAPI.dispatch(directActions.setAllStatusDMUnread(listStatusUnreadDM));
 
 			const state = thunkAPI.getState() as RootState;
 			const existingEntities = selectAllDirectMessages(state);
@@ -571,7 +574,6 @@ export const initialDirectState: DirectState = directAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	socketStatus: 'not loaded',
 	error: null,
-	statusDMChannelUnread: {},
 	buzzStateDirect: {},
 	updateDmGroupLoading: {},
 	updateDmGroupError: {},
@@ -675,11 +677,6 @@ export const directSlice = createSlice({
 		},
 		setDmGroupCurrentType: (state, action: PayloadAction<number>) => {
 			state.currentDirectMessageType = action.payload;
-		},
-		setAllStatusDMUnread: (state, action: PayloadAction<StatusDMUnreadArgs[]>) => {
-			for (const i of action.payload) {
-				state.statusDMChannelUnread[i.dmId] = i.isUnread;
-			}
 		},
 		removeByDirectID: (state, action: PayloadAction<string>) => {
 			directAdapter.removeOne(state, action.payload);
@@ -1147,6 +1144,10 @@ export const selectDirectsOpenlist = createSelector(selectAllDirectMessages, (di
 	return directMessages.filter((dm) => {
 		return dm?.active === 1;
 	});
+});
+
+export const selectDirectOpenListIds = createSelector(selectAllDirectMessages, (directMessages) => {
+	return directMessages.map((dm) => dm.id);
 });
 
 export const selectDirectById = createSelector([selectDirectMessageEntities, (state, id) => id], (clansEntities, id) => clansEntities?.[id]);

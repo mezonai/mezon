@@ -1,6 +1,6 @@
 import { ActionEmitEvent } from '@mezon/mobile-components';
 import { size, ThemeModeBase, useTheme } from '@mezon/mobile-ui';
-import { selectIsUnreadChannelById, useAppSelector } from '@mezon/store-mobile';
+import { selectChannelBadgeById, selectIsUnreadChannelById, useAppSelector } from '@mezon/store-mobile';
 import type { ChannelThreads } from '@mezon/utils';
 import { ChannelStreamMode } from 'mezon-js';
 import { useMemo } from 'react';
@@ -22,7 +22,7 @@ const ChannelListThreadItem = ({ onLongPress, thread, isActive, isFirstThread }:
 	const styles = style(themeValue);
 
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadChannelById(state, thread?.id));
-	const numberNotification = thread?.count_mess_unread ? thread.count_mess_unread : 0;
+	const numberNotification = useAppSelector((state) => selectChannelBadgeById(state, thread?.id ?? ''));
 
 	const isHideThread = useMemo(() => {
 		return thread?.active !== 1 && !isActive && !isUnReadChannel;

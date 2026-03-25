@@ -21,7 +21,8 @@
 		"discover": "Discover",
 		"blogs": "Blogs",
 		"openMezon": "Open Mezon",
-		"login": "Login"
+		"login": "Login",
+		"quickMeeting": "Mezon Meet"
 	},
 	"layout": {
 		"overview": {

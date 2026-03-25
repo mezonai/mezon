@@ -33,7 +33,8 @@
         "deleteCaptionHook": "Eliminar gancho de subtítulo",
         "deleteWebhookConfirmation": "Confirme si desea eliminar el webhook {{webhookName}}. Esta acción no se puede deshacer.",
         "resetToken": "Restablecer token",
-        "name": "Nombre del webhook"
+        "name": "Nombre del webhook",
+        "nameMaxLengthError": "Debe tener 64 caracteres o menos."
     },
     "webhooksEmpty": {
         "noWebhooks": "Sin webhooks"

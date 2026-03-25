@@ -29,7 +29,7 @@ const ModalSaveChanges = ({ onSave, onReset, isLoading: _isLoading, disableSave 
 						label={t('modalSaveChanges.saveChanges')}
 						onClick={handleSaveChanges}
 						disabled={disableSave}
-						className={`ml-auto rounded-lg px-4 py-1.5 text-nowrap w-28 ${
+						className={`ml-auto rounded-lg px-4 py-1.5 text-nowrap ${
 							disableSave
 								? 'opacity-50 cursor-not-allowed bg-indigo-600 dark:bg-indigo-600 text-white'
 								: 'bg-indigo-600 dark:bg-indigo-600 hover:bg-indigo-700 dark:hover:bg-indigo-700 text-white'

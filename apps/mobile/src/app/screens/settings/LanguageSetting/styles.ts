@@ -21,6 +21,10 @@ export const styles = (theme: Attributes) =>
 			color: theme.text,
 			fontSize: size.s_14
 		},
+		contributeText: {
+			fontStyle: 'italic',
+			fontSize: size.s_12
+		},
 		itemSeparator: {
 			height: 1
 		}
