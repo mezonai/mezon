@@ -104,7 +104,8 @@ const performReset = (dispatch: AppDispatch, params: ResetBadgeParams, store?: {
 			channelMetaActions.setChannelLastSeenTimestamp({
 				channelId,
 				timestamp: now + TIME_OFFSET,
-				messageId
+				messageId,
+				clanId
 			})
 		);
 		dispatch(listChannelsByUserActions.resetBadgeCount({ channelId }));
@@ -209,7 +210,7 @@ export const decreaseChannelBadgeCount = (dispatch: AppDispatch, params: Decreas
 		}
 	} else {
 		const state = store.getState();
-		const channelMeta = state.channelmeta?.entities?.[message.channel_id];
+		const channelMeta = state.channelmeta?.clanEntities?.[message?.clan_id]?.entities?.[message.channel_id];
 		const currentClanBadge = state.clans?.clanUnreadStates?.entities?.[message.clan_id]?.badge ?? 0;
 		const lastSeenTimestamp = channelMeta?.lastSeenTimestamp;
 

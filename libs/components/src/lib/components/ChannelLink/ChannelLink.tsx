@@ -269,7 +269,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 				/>
 			)}
 
-			<ChannelBadge channelId={channel.id} />
+			<ChannelBadge channelId={channel.id} clanId={channel.clan_id as string} />
 		</div>
 	);
 };
@@ -313,8 +313,8 @@ const ModalConfirmComponent: React.FC<ModalConfirmComponentProps> = ({ handleCan
 	);
 };
 
-const ChannelBadge = memo(({ channelId }: { channelId: string }) => {
-	const badgeChannel = useSelector((state) => selectChannelBadgeById(state, channelId));
+const ChannelBadge = memo(({ channelId, clanId }: { channelId: string; clanId: string }) => {
+	const badgeChannel = useSelector((state) => selectChannelBadgeById(state, channelId, clanId));
 	const countNumberNotification = badgeChannel && badgeChannel > 99 ? '99+' : (badgeChannel ?? 0);
 
 	if (!badgeChannel) {

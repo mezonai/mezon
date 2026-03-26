@@ -74,7 +74,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 		);
 	};
 
-	const hasUnread = useAppSelector((state) => selectIsUnreadThreadInChannel(state, channel.threadIds || []));
+	const hasUnread = useAppSelector((state) => selectIsUnreadThreadInChannel(state, channel.clan_id || '', channel.threadIds || []));
 	const isVoiceOrStreamingChannel =
 		channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE ||
 		channel.type === ChannelType.CHANNEL_TYPE_STREAMING ||
