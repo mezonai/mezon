@@ -107,7 +107,7 @@ export function useMarkAsRead() {
 				const threadIds = collectThreadIds(allThreadsInChannel);
 				if (threadIds.length) {
 					const threadUpdates = buildChannelUpdates(threadIds);
-					dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
+					dispatch(channelMetaActions.setChannelsLastSeenTimestamp({ data: threadUpdates, clanId: channel.clan_id as string }));
 				}
 			} catch (error) {
 				console.error('Failed to mark as read:', error);

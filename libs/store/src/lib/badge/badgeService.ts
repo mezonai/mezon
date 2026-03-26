@@ -384,7 +384,7 @@ class BadgeService extends EventEmitter {
 			}
 		}
 
-		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId, timestamp: now, messageId }));
+		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId, timestamp: now, messageId, clanId }));
 		dispatch(listChannelsByUserActions.updateLastSeenTime({ channelId }));
 		this.markResetProcessed(channelId, messageId);
 	}
@@ -412,7 +412,7 @@ class BadgeService extends EventEmitter {
 			this.topicParentMap.delete(topicId);
 		}
 
-		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: topicId, timestamp: now, messageId }));
+		dispatch(channelMetaActions.setChannelLastSeenTimestamp({ channelId: topicId, timestamp: now, messageId, clanId }));
 		dispatch(listChannelsByUserActions.updateLastSeenTime({ channelId: topicId }));
 		this.markResetProcessed(topicId, messageId);
 	}
@@ -474,8 +474,8 @@ class BadgeService extends EventEmitter {
 			categoryBadgeTotal = this.sumChannelBadges(event.clanId, event.channelIds);
 		}
 
-		dispatch(channelMetaActions.setChannelsLastSeenTimestamp(event.channelUpdates));
-		dispatch(channelMetaActions.resetChannelsCount({ channelIds: event.channelIds }));
+		dispatch(channelMetaActions.setChannelsLastSeenTimestamp({ data: event.channelUpdates, clanId: event.clanId }));
+		dispatch(channelMetaActions.resetChannelsCount({ channelIds: event.channelIds, clanId: event.clanId }));
 		dispatch(listChannelsByUserActions.markAsReadChannel(event.channelIds));
 
 		switch (event.type) {
@@ -504,7 +504,7 @@ class BadgeService extends EventEmitter {
 		const dispatch = this.dispatch;
 		if (!state || !dispatch) return;
 
-		const channelEntities = state.channelmeta?.entities;
+		const channelEntities = state.channelmeta?.clanEntities?.[clanId]?.entities;
 		const channelsIdsInClan = state.channels?.byClans?.[clanId]?.entities.ids;
 
 		if (!channelEntities || !channelsIdsInClan?.length) return;
@@ -596,13 +596,13 @@ class BadgeService extends EventEmitter {
 	}
 
 	private getChannelBadgeCount(state: RootState, clanId: string, channelId: string): number {
-		return state?.channelmeta?.entities?.[channelId]?.count_mess_unread ?? 0;
+		return state?.channelmeta?.clanEntities?.[clanId]?.entities?.[channelId]?.count_mess_unread ?? 0;
 	}
 
 	private sumChannelBadges(clanId: string, channelIds: string[]): number {
 		const state = this.getState?.();
 		if (!state) return 0;
-		const channelEntities = state.channelmeta.entities;
+		const channelEntities = state.channelmeta?.clanEntities?.[clanId]?.entities;
 		if (!channelEntities) return 0;
 		return channelIds.reduce((sum, id) => {
 			const entity = channelEntities[id];
@@ -625,8 +625,8 @@ class BadgeService extends EventEmitter {
 	}
 
 	private handleChannelMessageDeleted(state: RootState, message: ChannelMessage, messageTimestamp: number, userId: string) {
-		const channelMeta = state.channelmeta?.entities?.[message.channel_id];
 		const clanId = message.clan_id || '';
+		const channelMeta = state.channelmeta?.clanEntities?.[clanId]?.entities?.[message.channel_id];
 		const lastSeenTimestamp = channelMeta?.lastSeenTimestamp;
 
 		const shouldDecrease =

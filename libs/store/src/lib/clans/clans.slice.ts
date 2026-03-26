@@ -534,7 +534,7 @@ export const updateHasUnreadBasedOnChannels = createAsyncThunk<{ clanId: string;
 	async ({ clanId }, thunkAPI) => {
 		try {
 			const state = thunkAPI.getState() as RootState;
-			const channelMeta = state.channelmeta.entities;
+			const channelMeta = state.channelmeta?.clanEntities?.[clanId]?.entities;
 
 			const clanChannelState = state.channels.byClans?.[clanId];
 			if (!clanChannelState?.entities) {

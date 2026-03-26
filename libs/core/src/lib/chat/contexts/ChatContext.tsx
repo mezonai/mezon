@@ -3,6 +3,7 @@ import { captureSentryError } from '@mezon/logger';
 import type { ActivitiesEntity, AttachmentEntity, ChannelsEntity, RootState, ThreadsEntity } from '@mezon/store';
 import {
 	DMCallActions,
+	EStateFriend,
 	accountActions,
 	acitvitiesActions,
 	appActions,
@@ -28,7 +29,6 @@ import {
 	e2eeActions,
 	emojiRecentActions,
 	emojiSuggestionActions,
-	EStateFriend,
 	eventManagementActions,
 	friendsActions,
 	getStore,
@@ -430,9 +430,6 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				) {
 					dispatch(messagesActions.newMessage(mess));
 
-					if (message.code === TypeMessage.ChatUpdate && message?.message_id) {
-					}
-
 					if (message.code === TypeMessage.ChatRemove && message.topic_id && message.topic_id !== '0' && message?.message_id) {
 						dispatch(
 							messagesActions.updateTopicRplCount({
@@ -520,7 +517,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 							const topicId = isTopicMessage ? (message.topic_id ?? message.channel_id) : '';
 
 							const checkChannelId = isTopicMessage ? topicId : message.channel_id;
-							const channelMeta = (store.getState() as RootState)?.channelmeta?.entities?.[checkChannelId];
+							const channelMeta = (store.getState() as RootState)?.channelmeta?.clanEntities?.[message?.clan_id || ''].entities?.[
+								checkChannelId
+							];
 							const msgTime = message.create_time_seconds ?? 0;
 							const isAlreadySeen = channelMeta?.lastSeenTimestamp && msgTime > 0 && msgTime <= channelMeta.lastSeenTimestamp;
 
@@ -705,7 +704,9 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 					const isTopicNotification = notification.topic_id && notification.topic_id !== '0';
 					const topicId = isTopicNotification ? (notification.topic_id ?? notification?.channel_id ?? '') : '';
 					const checkChannelId = isTopicNotification ? topicId : (notification?.channel_id ?? '');
-					const channelMeta = (store.getState() as RootState)?.channelmeta?.entities?.[checkChannelId];
+					const channelMeta = (store.getState() as RootState)?.channelmeta?.clanEntities?.[notification?.clan_id || ''].entities?.[
+						checkChannelId
+					];
 					const msgTime = notification.content?.create_time_seconds ?? 0;
 					const isAlreadySeen = channelMeta?.lastSeenTimestamp && msgTime > 0 && msgTime <= channelMeta.lastSeenTimestamp;
 					if (!isAlreadySeen) {
@@ -2562,7 +2563,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				channelId,
 				messageId: selectLatestMessageId(store.getState(), channelId) || undefined
 			}));
-			dispatch(channelMetaActions.setChannelsLastSeenTimestamp(threadUpdates));
+			dispatch(channelMetaActions.setChannelsLastSeenTimestamp({ data: threadUpdates, clanId: markAsReadEvent.clan_id as string }));
 		}
 	}, []);
 

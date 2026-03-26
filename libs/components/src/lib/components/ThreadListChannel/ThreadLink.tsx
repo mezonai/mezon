@@ -41,7 +41,7 @@ export type ThreadLinkRef = {
 
 const ThreadLink = React.forwardRef<ThreadLinkRef, ThreadLinkProps>(({ thread, hasLine, isActive, currentChannelId }: ThreadLinkProps, ref) => {
 	const isUnReadChannel = useAppSelector((state) => selectIsUnreadChannelById(state, thread.id));
-	const numberNotification = useAppSelector((state) => selectChannelBadgeById(state, thread.id));
+	const numberNotification = useAppSelector((state) => selectChannelBadgeById(state, thread.id, thread.clan_id as string));
 	const panelRef = useRef<HTMLDivElement | null>(null);
 	const threadLinkRef = useRef<HTMLAnchorElement | null>(null);
 

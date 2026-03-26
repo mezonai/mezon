@@ -4,8 +4,8 @@ import {
 	e2eeActions,
 	gifsStickerEmojiActions,
 	selectAllAccount,
-	selectAnyUnreadChannel,
 	selectBadgeCountAllClan,
+	selectClanUnreadStates,
 	useAppDispatch
 } from '@mezon/store';
 import { IS_SAFARI, MessageCrypt, UploadLimitReason, throttle } from '@mezon/utils';
@@ -33,7 +33,7 @@ const GlobalEventListener = () => {
 
 	const { quantityPendingRequest } = useFriends();
 
-	const hasUnreadChannel = useAppSelector((state) => selectAnyUnreadChannel(state));
+	const clanEntities = useAppSelector((state) => selectClanUnreadStates(state));
 
 	const handleReconnectSuccess = useMemo(
 		() =>
@@ -101,6 +101,7 @@ const GlobalEventListener = () => {
 		const displayCountBrowser = notificationCount > 99 ? '99+' : notificationCount.toString();
 
 		if (isElectron()) {
+			const hasUnreadChannel = Object.values(clanEntities).some((clan) => clan.has_unread);
 			if (hasUnreadChannel && !notificationCount) {
 				electronBridge?.setBadgeCount(null);
 				return;
@@ -109,7 +110,7 @@ const GlobalEventListener = () => {
 		} else {
 			document.title = notificationCount > 0 ? `(${displayCountBrowser}) Mezon` : 'Mezon';
 		}
-	}, [allNotificationReplyMentionAllClan, totalUnreadMessages, quantityPendingRequest, hasUnreadChannel]);
+	}, [allNotificationReplyMentionAllClan, totalUnreadMessages, quantityPendingRequest, clanEntities]);
 
 	useEffect(() => {
 		if (user?.encrypt_private_key) {

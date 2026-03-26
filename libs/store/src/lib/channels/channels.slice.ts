@@ -1012,7 +1012,7 @@ export const channelsSlice = createSlice({
 			if (!state.byClans[clanId]) {
 				state.byClans[clanId] = getInitialClanState();
 			}
-			channelMetaActions.add(extractChannelMeta(channel));
+			channelMetaActions.add({ data: extractChannelMeta(channel), clanId });
 			channelsAdapter.addOne(state.byClans[clanId].entities, channel);
 		},
 

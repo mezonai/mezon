@@ -478,7 +478,8 @@ function MessageContextMenu({
 				channelMetaActions.setChannelLastSeenTimestamp({
 					channelId: message?.channel_id as string,
 					timestamp: message.create_time_seconds || Date.now(),
-					messageId: message?.id
+					messageId: message?.id,
+					clanId: message?.clan_id || '0'
 				})
 			);
 		} catch (error) {

@@ -786,7 +786,7 @@ export const processQueuedLastSeenMessages = createAsyncThunk('messages/processQ
 	thunkAPI.dispatch(messagesActions.clearQueuedLastSeenMessages());
 
 	for (const queuedMessage of queuedMessages) {
-		const channelEntity = state.channelmeta?.entities?.[queuedMessage.channelId];
+		const channelEntity = state.channelmeta?.clanEntities?.[queuedMessage.clanId]?.entities?.[queuedMessage.channelId];
 		const actualBadgeCount = channelEntity?.count_mess_unread || queuedMessage.badge_count;
 		await thunkAPI.dispatch(
 			updateLastSeenMessage({
@@ -965,7 +965,8 @@ export const sendMessageViaApi = createAsyncThunk('messages/sendMessageViaApi', 
 					channelMetaActions.setChannelLastSeenTimestamp({
 						channelId,
 						timestamp,
-						messageId: messageResult.channel_id
+						messageId: messageResult.channel_id,
+						clanId
 					})
 				);
 			}
@@ -1280,7 +1281,8 @@ export const sendMessage = createAsyncThunk('messages/sendMessage', async (paylo
 					channelMetaActions.setChannelLastSeenTimestamp({
 						channelId,
 						timestamp,
-						messageId: messageResult.message_id
+						messageId: messageResult.message_id,
+						clanId
 					})
 				);
 			}
