@@ -86,6 +86,8 @@ function renderPollTextWithEmoji(text: string, classNameOrOptions?: string | Ren
 
 export { renderPollTextWithEmoji };
 
+const POLL_ANSWERS_SCROLL_AFTER = 5;
+
 const POLL_MY_VOTES_KEY = 'mezon_poll_my_votes';
 
 function getMyVoteFromStorage(messageId: string): number[] {
@@ -125,9 +127,19 @@ export type PollMessageProps = {
 	messageId?: string;
 	channelId?: string;
 	votersByOption?: PollVoter[][];
+	interactionDisabled?: boolean;
 };
 
-export const PollMessage = ({ question, answers, duration, allowMultipleAnswers, messageId, channelId, votersByOption }: PollMessageProps) => {
+export const PollMessage = ({
+	question,
+	answers,
+	duration,
+	allowMultipleAnswers,
+	messageId,
+	channelId,
+	votersByOption,
+	interactionDisabled = false
+}: PollMessageProps) => {
 	const { t } = useTranslation('message');
 	const dispatch = useAppDispatch();
 	const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
@@ -249,12 +261,34 @@ export const PollMessage = ({ question, answers, duration, allowMultipleAnswers,
 		return votedAnswers.length > 0;
 	}, [votedAnswers]);
 
-	const canSelectAnswers = !hasVoted && !showResults && !isClosed && !isExpired;
-	const shouldShowResults = hasVoted || showResults || isClosed || isExpired;
+	const canSelectAnswers = !interactionDisabled && !hasVoted && !showResults && !isClosed && !isExpired;
+	const shouldShowResults = interactionDisabled || hasVoted || showResults || isClosed || isExpired;
 
 	const totalVotes = useMemo(() => voteCounts.reduce((sum, count) => sum + count, 0), [voteCounts]);
 
-	const formattedDuration = duration;
+	const timeRemainingLabel = useMemo(() => {
+		const pollDataAny = pollData as Record<string, unknown> | undefined;
+		const expireRaw = pollDataAny?.expire_at;
+		if (expireRaw === undefined || expireRaw === null) {
+			return duration.trim();
+		}
+		const ts = Number(expireRaw);
+		if (!Number.isFinite(ts)) {
+			return duration.trim();
+		}
+		const now = Math.floor(Date.now() / 1000);
+		const diff = ts - now;
+		if (diff <= 0) {
+			return '';
+		}
+		const days = Math.floor(diff / (60 * 60 * 24));
+		const hours = Math.floor((diff % (60 * 60 * 24)) / (60 * 60));
+		const minutes = Math.floor((diff % (60 * 60)) / 60);
+		if (days > 0) return t('poll.durationDays', { count: days });
+		if (hours > 0) return t('poll.durationHours', { count: hours });
+		if (minutes > 0) return t('poll.durationMinutes', { count: minutes });
+		return t('poll.durationLessThanMinute');
+	}, [pollData, duration, t]);
 
 	const handleAnswerToggle = (index: number) => {
 		if (!canSelectAnswers) return;
@@ -267,7 +301,7 @@ export const PollMessage = ({ question, answers, duration, allowMultipleAnswers,
 	};
 
 	const handleVote = async () => {
-		if (selectedAnswers.length === 0 || !messageId || !channelId) {
+		if (interactionDisabled || selectedAnswers.length === 0 || !messageId || !channelId) {
 			return;
 		}
 
@@ -292,7 +326,7 @@ export const PollMessage = ({ question, answers, duration, allowMultipleAnswers,
 	};
 
 	const handleRemoveVote = async () => {
-		if (!messageId || !channelId) return;
+		if (interactionDisabled || !messageId || !channelId) return;
 
 		try {
 			setIsClosing(true);
@@ -320,6 +354,7 @@ export const PollMessage = ({ question, answers, duration, allowMultipleAnswers,
 	};
 
 	const openDetailModal = (optionIndex: number) => {
+		if (interactionDisabled) return;
 		setDetailModalSelectedIndex(optionIndex);
 		setIsDetailModalOpen(true);
 		if (messageId && channelId) {
@@ -381,31 +416,42 @@ export const PollMessage = ({ question, answers, duration, allowMultipleAnswers,
 				</div>
 
 				{/* Subtitle */}
-				<p className="text-xs text-theme-primary mb-3">
-					{isClosed || isExpired
-						? t('poll.finalResults', { defaultValue: 'Final results' })
-						: allowMultipleAnswers
-							? t('poll.selectOneOrMore')
-							: t('poll.selectOne')}
-				</p>
+				{!interactionDisabled && (
+					<p className="text-xs text-theme-primary mb-3">
+						{isClosed || isExpired
+							? t('poll.finalResults', { defaultValue: 'Final results' })
+							: allowMultipleAnswers
+								? t('poll.selectOneOrMore')
+								: t('poll.selectOne')}
+					</p>
+				)}
 
 				{/* Answers */}
-				<div className="space-y-2 mb-3">
+				<div
+					className={
+						answers.length > POLL_ANSWERS_SCROLL_AFTER
+							? 'space-y-2 mb-3 max-h-[280px] overflow-y-auto overflow-x-hidden pr-1 thread-scroll'
+							: 'space-y-2 mb-3'
+					}
+				>
 					{answers.map((answer, index) => {
 						const voteCount = voteCounts[index];
 						const percentage = getPercentage(voteCount);
 						const isVoted = votedAnswers.includes(index);
 
+						const canToggleAnswer = !shouldShowResults && !interactionDisabled;
 						return (
 							<div
 								key={index}
-								onClick={shouldShowResults ? undefined : () => handleAnswerToggle(index)}
+								onClick={canToggleAnswer ? () => handleAnswerToggle(index) : undefined}
 								className={`relative flex items-center justify-between px-3 py-2.5 rounded border overflow-hidden transition-colors ${
 									shouldShowResults
 										? 'border-theme-primary cursor-default pointer-events-none'
-										: selectedAnswers.includes(index)
-											? '[background:var(--bg-item-hover)] border-[var(--text-theme-primary)] hover:[background:var(--bg-active-member-channel)] hover:brightness-105 cursor-pointer'
-											: '[background:var(--bg-item-hover)] border-transparent cursor-pointer'
+										: interactionDisabled
+											? '[background:var(--bg-item-hover)] border-transparent cursor-default pointer-events-none'
+											: selectedAnswers.includes(index)
+												? '[background:var(--bg-item-hover)] border-[var(--text-theme-primary)] hover:[background:var(--bg-active-member-channel)] hover:brightness-105 cursor-pointer'
+												: '[background:var(--bg-item-hover)] border-transparent cursor-pointer'
 								}`}
 							>
 								{shouldShowResults && (
@@ -462,66 +508,77 @@ export const PollMessage = ({ question, answers, duration, allowMultipleAnswers,
 				</div>
 
 				{/* Footer */}
-				<div className="flex items-center justify-between pt-1">
-					<span className="text-xs text-theme-primary">
-						<span
-							role="button"
-							tabIndex={0}
-							onClick={(e) => {
-								e.preventDefault();
-								e.stopPropagation();
-								openDetailModal(0);
-							}}
-							onKeyDown={(e) => {
-								if (e.key === 'Enter' || e.key === ' ') {
+				<div className="flex items-start justify-between gap-2 pt-1 min-w-0">
+					<span className="text-xs text-theme-primary min-w-0 flex-1 break-words">
+						{interactionDisabled ? (
+							<span>
+								{totalVotes} {totalVotes < 2 ? t('poll.vote') : t('poll.votes')}
+							</span>
+						) : (
+							<span
+								role="button"
+								tabIndex={0}
+								onClick={(e) => {
 									e.preventDefault();
+									e.stopPropagation();
 									openDetailModal(0);
-								}
-							}}
-							className="cursor-pointer hover:underline"
-						>
-							{totalVotes} {totalVotes < 2 ? t('poll.vote') : t('poll.votes')}
-						</span>
-						{!isClosed && !isExpired && (
+								}}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										openDetailModal(0);
+									}
+								}}
+								className="cursor-pointer hover:underline"
+							>
+								{totalVotes} {totalVotes < 2 ? t('poll.vote') : t('poll.votes')}
+							</span>
+						)}
+						{!isClosed && !isExpired && (timeRemainingLabel || duration) && (
 							<>
 								{' '}
-								• {formattedDuration || duration} {t('poll.left')}
+								• {timeRemainingLabel || duration} {t('poll.left')}
 							</>
 						)}
 					</span>
-					<div className="flex gap-2">
-						{!hasVoted && !isClosed && !isExpired && (
-							<button
-								onClick={() => setShowResults((prev) => !prev)}
-								className="px-1 py-1.5 text-sm font-medium border-theme-primary text-theme-primary hover:text-theme-primary-active rounded transition-colors"
-							>
-								{showResults ? t('poll.backToVote') : t('poll.showResults')}
-							</button>
-						)}
-						{!hasVoted && !showResults && !isClosed && !isExpired && (
-							<button
-								onClick={handleVote}
-								disabled={selectedAnswers.length === 0 || isVoting || isClosing}
-								className="px-4 py-1.5 text-sm font-medium rounded transition-colors btn-primary btn-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
-							>
-								{t('poll.voteButton')}
-							</button>
-						)}
-						{hasVoted && !isClosed && !isExpired && (
-							<button
-								onClick={handleRemoveVote}
-								disabled={isVoting || isClosing}
-								className="px-4 py-1.5 text-sm font-medium text-theme-primary rounded transition-colors border-theme-primary bg-button-secondary bg-secondary-button-hover disabled:opacity-50"
-							>
-								{t('poll.removeVote')}
-							</button>
-						)}
-					</div>
+					{!interactionDisabled && (
+						<div className="flex flex-shrink-0 gap-2">
+							{!hasVoted && !isClosed && !isExpired && (
+								<button
+									type="button"
+									onClick={() => setShowResults((prev) => !prev)}
+									className="px-1 py-1.5 text-sm font-medium border-theme-primary text-theme-primary hover:text-theme-primary-active rounded transition-colors"
+								>
+									{showResults ? t('poll.backToVote') : t('poll.showResults')}
+								</button>
+							)}
+							{!hasVoted && !showResults && !isClosed && !isExpired && (
+								<button
+									type="button"
+									onClick={handleVote}
+									disabled={selectedAnswers.length === 0 || isVoting || isClosing}
+									className="px-4 py-1.5 text-sm font-medium rounded transition-colors btn-primary btn-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
+								>
+									{t('poll.voteButton')}
+								</button>
+							)}
+							{hasVoted && !isClosed && !isExpired && (
+								<button
+									type="button"
+									onClick={handleRemoveVote}
+									disabled={isVoting || isClosing}
+									className="px-4 py-1.5 text-sm font-medium text-theme-primary rounded transition-colors border-theme-primary bg-button-secondary bg-secondary-button-hover disabled:opacity-50"
+								>
+									{t('poll.removeVote')}
+								</button>
+							)}
+						</div>
+					)}
 				</div>
 			</div>
 
 			<PollDetailModal
-				open={isDetailModalOpen}
+				open={!interactionDisabled && isDetailModalOpen}
 				onClose={() => setIsDetailModalOpen(false)}
 				question={question}
 				answers={answers}

@@ -241,6 +241,7 @@
     "durationDays": "{{count}} días",
     "durationHours": "{{count}} horas",
     "durationMinutes": "{{count}} minutos",
+    "durationLessThanMinute": "Menos de un minuto",
     "selectOneOrMore": "Selecciona una o más respuestas",
     "selectOne": "Selecciona una respuesta",
     "vote": "voto",
@@ -255,7 +256,8 @@
     "loadMore": "Cargar {{count}} opciones más",
     "loadMore1Option": "Cargar 1 opción más",
     "showLess": "Mostrar menos",
-    "noVotesYet": "Aún no hay votos"
+    "noVotesYet": "Aún no hay votos",
+    "pollLabel": "[Encuesta]"
   },
   "unknown": "desconocido"
 }

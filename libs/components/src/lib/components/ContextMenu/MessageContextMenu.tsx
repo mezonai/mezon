@@ -572,11 +572,11 @@ function MessageContextMenu({
 
 	const [enableEditMessageItem, enableReportMessageItem] = useMemo(() => {
 		if (!checkPos) return [false, false];
-		const enableEdit = isMyMessage && !message?.content?.tp;
+		const enableEdit = isMyMessage && !message?.content?.tp && !isPollMessage;
 		const enableReport = !isMyMessage;
 
 		return [enableEdit, enableReport];
-	}, [isMyMessage, checkPos, message?.content?.tp]);
+	}, [isMyMessage, checkPos, message?.content?.tp, isPollMessage]);
 
 	const pinMessageStatus = useMemo(() => {
 		if (!checkPos) return undefined;
@@ -816,7 +816,7 @@ function MessageContextMenu({
 				);
 			}
 		);
-		builder.when(checkPos, (builder) => {
+		builder.when(checkPos && !isPollMessage, (builder) => {
 			builder.addMenuItem(
 				'forwardMessage',
 				t('forwardMessage'),
@@ -824,7 +824,7 @@ function MessageContextMenu({
 				<Icons.ForwardRightClick defaultSize="w-4 h-4" />
 			);
 		});
-		builder.when(checkPos && isShowForwardAll, (builder) => {
+		builder.when(checkPos && isShowForwardAll && !isPollMessage, (builder) => {
 			builder.addMenuItem(
 				'forwardAll',
 				t('forwardAllMessage'),

@@ -220,6 +220,7 @@ const MessageText = ({
 					allowMultipleAnswers={pollData.allowMultipleAnswers}
 					messageId={message.id}
 					channelId={message.channel_id}
+					interactionDisabled={!!isSearchMessage}
 				/>
 			) : displayLine?.length > 0 || hasLinkMarkdown ? (
 				<MessageLine

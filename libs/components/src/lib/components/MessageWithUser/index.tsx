@@ -69,7 +69,15 @@ export type MessageWithUserProps = {
 	channelId?: string;
 };
 
-const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { message: MessagesEntity; observeIntersectionForLoading?: ObserveFn }) => {
+const PollMessageWrapper = ({
+	message,
+	observeIntersectionForLoading,
+	interactionDisabled
+}: {
+	message: MessagesEntity;
+	observeIntersectionForLoading?: ObserveFn;
+	interactionDisabled?: boolean;
+}) => {
 	const dispatch = useAppDispatch();
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLDivElement>(null);
@@ -96,7 +104,6 @@ const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { messag
 		});
 	}, [dispatch, message.id, message.channel_id, hasPollData, observeIntersectionForLoading]);
 
-
 	const answerCount = useMemo(() => {
 		const content = message?.content?.t;
 		if (!content) return 2;
@@ -121,6 +128,7 @@ const PollMessageWrapper = ({ message, observeIntersectionForLoading }: { messag
 			allowMultipleAnswers={pollContent?.type === 1}
 			messageId={message.id}
 			channelId={message.channel_id}
+			interactionDisabled={interactionDisabled}
 		/>
 	);
 };
@@ -420,7 +428,11 @@ function MessageWithUser({
 							/>
 						)}
 						{message.code === TypeMessage.Poll && (
-							<PollMessageWrapper message={message} observeIntersectionForLoading={observeIntersectionForLoading} />
+							<PollMessageWrapper
+								message={message}
+								observeIntersectionForLoading={observeIntersectionForLoading}
+								interactionDisabled={!!isSearchMessage}
+							/>
 						)}
 						{!!(message.code === TypeMessage.SendToken) && <TokenTransactionMessage message={message} />}
 						{message?.content?.components &&

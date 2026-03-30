@@ -28,6 +28,7 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 	const content = safeJSONParse(message?.references?.[0]?.content ?? '{}');
 	const hasAttachmentInMessageRef = message?.references?.[0]?.has_attachment;
 	const isEmbedMessage = !content?.t && content?.embed;
+	const isPollMessageRef = !!(content?.poll_id || content?.question && content?.answers);
 
 	const dispatch = useAppDispatch();
 
@@ -115,6 +116,14 @@ const MessageReply: React.FC<MessageReplyProps> = ({ message, onClick, isTopic, 
 										{t('clickToSeeAttachment')}
 									</div>
 									<Icons.ImageThumbnail />
+								</div>
+							) : isPollMessageRef ? (
+								<div
+									onClick={getIdMessageToJump}
+									className="flex flex-row items-center gap-1 text-theme-primary opacity-60 cursor-pointer italic text-[14px]"
+								>
+									<span>📊</span>
+									<span>{t('poll.pollLabel', { defaultValue: '[Poll]' })}</span>
 								</div>
 							) : (
 								<div className="h-6 overflow-hidden flex-1">
