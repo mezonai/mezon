@@ -72,20 +72,20 @@
 	"emoji": {
 		"uploadInstructions": "UPLOAD INSTRUCTIONS",
 		"title": "Emoji",
-		"description": "Add up to 250 custom emoji that anyone can use in this clan.",
+		"description": "Add up to 250 custom emojis that anyone can use in this clan.",
 		"uploadRequirements": "UPLOAD REQUIREMENTS",
 		"requirements": {
 			"fileType": "File type: JPEG, PNG, GIF",
 			"fileSize": "Recommended file size: 256 KB",
 			"dimensions": "Recommended dimensions: 128x128",
-			"naming": "Naming: Emoji names must be at least 2 characters long and can only contain alphanumeric characters and underscores"
+			"naming": "Naming: Emoji names must be at least 3 characters long and can only contain alphanumeric characters, underscores (_), and hyphens (-)."
 		},
 		"uploadEmoji": "Upload emoji"
 	},
 	"stickers": {
 		"uploadInstructions": "UPLOAD INSTRUCTIONS",
 		"title": "Image Stickers",
-		"description": "Stickers can be static (PNG) or animated (APNG, GIF). Stickers must be exactly 320 x 320 pixels and no larger than 512KB. We will automatically resize static PNG and animated GIF stickers for you.",
+		"description": "Stickers can be static (PNG,JPG) or animated (APNG, GIF). Stickers must be exactly 320 x 320 pixels and no larger than 512KB. We will automatically resize static (PNG,JPG) and animated GIF stickers for you.",
 		"uploadHere": "Upload it here!",
 		"customizeMessage": "Let's customize the amazing stickers with your interest",
 		"uploadSticker": "upload sticker"

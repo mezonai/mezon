@@ -28,7 +28,7 @@
 	"description": {
 		"descriptions": "Add custom emoji that anyone can use in this clan. Animated GIF emoji may be used by members with Mezon",
 		"requirements": "UPLOAD REQUIREMENTS",
-		"requireList": "•  File type: JPEG, PNG, GIF\n•  Recommended file size: 256 KB\n•  Recommended dimensions: 128x128\n•  Naming: Emoji names must be at least 3 characters long and can only contain alphanumeric characters and underscores"
+		"requireList": "•  File type: JPEG, PNG, GIF\n•  Recommended file size: 256 KB\n•  Recommended dimensions: 128x128\n•  Naming: Emoji names must be at least 3 characters long and can only contain alphanumeric characters, underscores (_), and hyphens (-)."
 	},
 	"emojiList": {
 		"slotsDetails": "LIST EMOJIS",

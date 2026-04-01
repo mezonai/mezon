@@ -26,7 +26,7 @@
 		"uploadImage": "Subir imagen",
 		"clanName": "Nombre del clan",
 		"namePlaceholder": "¡El soporte ha llegado!",
-		"validationError": "Por favor, introduce un nombre de clan (máx 64 caracteres, solo palabras, números, _ o -).",
+		"validationError": "Por favor, introduce un nombre de canal válido (máx 64 caracteres, solo palabras, números, _ o -).",
 		"modal": {
 			"title": "Solo se permiten archivos de imagen",
 			"content": "¡Solo sube archivos de tipo JPEG o PNG, por favor!"
@@ -77,14 +77,14 @@
 			"fileType": "Tipo de archivo: JPEG, PNG, GIF",
 			"fileSize": "Tamaño de archivo recomendado: 256 KB",
 			"dimensions": "Dimensiones recomendadas: 128x128",
-			"naming": "Nomenclatura: Los nombres de emoji deben tener al menos 2 caracteres y solo pueden contener caracteres alfanuméricos y guiones bajos."
+			"naming": "Nomenclatura: Los nombres de los emojis deben tener al menos 3 caracteres y solo pueden contener caracteres alfanuméricos, guiones bajos (_) y guiones (-)."
 		},
 		"uploadEmoji": "Subir emoji"
 	},
 	"stickers": {
 		"uploadInstructions": "INSTRUCCIONES DE SUBIDA",
 		"title": "Pegatinas de imagen",
-		"description": "Las pegatinas pueden ser estáticas (PNG) o animadas (APNG, GIF). Deben medir exactamente 320 x 320 píxeles y no superar los 512 KB. Redimensionaremos automáticamente las pegatinas PNG estáticas y GIF animadas.",
+		"description": "Las pegatinas pueden ser estáticas (PNG,JPG) o animadas (APNG, GIF). Deben medir exactamente 320 x 320 píxeles y no superar los 512 KB. Redimensionaremos automáticamente las pegatinas (PNG,JPG) y animadas (GIF).",
 		"uploadHere": "¡Sube aquí!",
 		"customizeMessage": "Personalicemos las increíbles pegatinas con tu interés",
 		"uploadSticker": "subir pegatina"
