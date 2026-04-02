@@ -245,6 +245,9 @@ export const pinMessageSlice = createSlice({
 		togglePinModal: (state: PinMessageState) => {
 			state.isPinModalVisible = !state.isPinModalVisible;
 		},
+		closePinModal: (state: PinMessageState) => {
+			state.isPinModalVisible = false;
+		},
 		clearChannelCache: (state: PinMessageState, action: PayloadAction<string>) => {
 			const channelId = action.payload;
 			if (state.byChannels[channelId]) {

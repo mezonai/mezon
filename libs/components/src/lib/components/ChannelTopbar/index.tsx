@@ -1,4 +1,13 @@
-import { toChannelPage, useChatSending, useCustomNavigate, useGifsStickersEmoji, useMemberStatus, useMenu, usePathMatch } from '@mezon/core';
+import {
+	toChannelPage,
+	useAppParams,
+	useChatSending,
+	useCustomNavigate,
+	useGifsStickersEmoji,
+	useMemberStatus,
+	useMenu,
+	usePathMatch
+} from '@mezon/core';
 import type { ChannelMembersEntity, DirectEntity, RootState } from '@mezon/store';
 import {
 	DMCallActions,
@@ -16,6 +25,7 @@ import {
 	searchMessagesActions,
 	selectAllAccount,
 	selectChannelById,
+	selectClanView,
 	selectCloseMenu,
 	selectCurrentChannel,
 	selectCurrentChannelCategoryId,
@@ -963,19 +973,32 @@ function MuteButton() {
 	);
 }
 
+let lastPinModalConversationKey: string | undefined;
+
 function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mode?: number; isDMView?: boolean }) {
 	const { t } = useTranslation('channelTopbar');
+	const { directId } = useAppParams();
 	const dispatch = useAppDispatch();
 	const isShowPinMessage = useSelector(selectIsPinModalVisible);
+	const isClanView = useSelector(selectClanView);
 	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
 	const currentDM = useSelector(selectCurrentDM) ?? '';
+	const dmId = (currentDM as { id?: string } | null)?.id ?? '';
+	const conversationKey = isClanView ? `c:${currentChannelId}` : `d:${directId ?? dmId}`;
 	const isShowPinBadge = useAppSelector(selectIsShowPinBadgeByChannelId(currentChannelId));
 	const isShowPinDMBadge = useAppSelector((state) => selectIsShowPinBadgeByDmId(state, (currentDM as { id?: string })?.id || ''));
 	const isShowPinBadgeFinal = isDMView ? isShowPinDMBadge : isShowPinBadge;
 
 	const pinRef = useRef<HTMLDivElement | null>(null);
 
-	const handleTogglePinMessage = async () => {
+	useEffect(() => {
+		if (lastPinModalConversationKey !== undefined && lastPinModalConversationKey !== conversationKey) {
+			dispatch(pinMessageActions.closePinModal());
+		}
+		lastPinModalConversationKey = conversationKey;
+	}, [conversationKey, dispatch]);
+
+	const handleTogglePinMessage = useCallback(async () => {
 		const store = getStore();
 		const state = store.getState();
 		const currentClanId = selectCurrentClanId(state) as string;
@@ -993,7 +1016,7 @@ function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mod
 		if (!isDMView && currentChannelId && isShowPinBadge) {
 			dispatch(channelsActions.setShowPinBadgeOfChannel({ clanId: currentClanId, channelId: currentChannelId, isShow: false }));
 		}
-	};
+	}, [currentChannelId, dispatch, isDMView, isShowPinBadge, isShowPinDMBadge]);
 
 	return (
 		<div className="relative leading-5 h-5" ref={pinRef} data-e2e={generateE2eId('chat.channel_message.header.button.pin')}>
