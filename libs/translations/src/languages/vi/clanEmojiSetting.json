@@ -11,7 +11,8 @@
 		"exCatHug": "VD: cat_hug",
 		"thisIsForSale": "Đây là sản phẩm bán",
 		"neverMind": "Bỏ qua",
-		"characters": "Tên phải từ 3 đến 64 ký tự"
+		"characters": "Tên phải từ 3 đến 64 ký tự",
+		"required": "Trường này là bắt buộc"
 	},
 	"header": {
 		"save": "Lưu"

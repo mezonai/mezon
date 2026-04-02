@@ -298,12 +298,13 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 				}
 			>
 				<div className="flex-1 flex items-center justify-end border-b-theme-primary rounded-t p-4">
-					<Button
-						className="rounded-full aspect-square w-6 h-6 text-5xl leading-3 !p-0 opacity-50 text-theme-primary-hover"
+					<button
+						type="button"
+						className="p-2 rounded-md border border-transparent text-theme-primary hover:text-theme-primary-active hover:border-theme-primary bg-item-theme-hover transition-colors"
 						onClick={handleCloseModal}
 					>
-						×
-					</Button>
+						<Icons.Close className="w-5 h-5" />
+					</button>
 				</div>
 				<div className={`w-full flex-1 flex flex-col  overflow-y-auto gap-4 relative px-5 py-4 bg-transparent hide-scrollbar`}>
 					<div className={`flex flex-col gap-2 items-center select-none `}>
@@ -333,7 +334,7 @@ const ModalSticker = ({ graphic, handleCloseModal, type }: ModalEditStickerProps
 						<div className={'w-1/2 flex flex-col gap-2'}>
 							<p className={`text-xs font-bold uppercase select-none text-theme-primary-active`}>
 								{t('file')}{' '}
-								<span title={t('characters')} className="text-red-500 cursor-pointer">
+								<span title={t('required')} className="text-red-500 cursor-pointer">
 									*
 								</span>{' '}
 								{graphic && ` (${t('thisCannotBeEdited')})`}

@@ -1,43 +1,44 @@
 {
 	"addReaction": "Añadir reacción",
 	"titlebtn": {
-		"upload": "Subir Sticker",
+		"upload": "Subir pegatina",
 		"delete": "Eliminar"
 	},
 	"modal": {
-		"uploadAFile": "Subir un archivo",
-		"fileShouldBeAPNGPNGOrGIF256KBMax": "El archivo debe ser PNG o GIF, máximo 512KB",
+		"uploadAFile": "Cargar un archivo",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "El archivo debe ser PNG o GIF, 512 KB máximo",
 		"preview": "Vista previa",
 		"file": "Archivo",
-		"thisCannotBeEdited": "Esto no se puede editar",
-		"browse": "Examinar",
-		"chooseAFile": "Elegir un archivo",
-		"stickerName": "Nombre del Sticker",
-		"exCatHug": "Ej: gato_abrazo",
-		"thisIsForSale": "Esto está a la venta",
-		"neverMind": "Nada más",
-		"characters": "El nombre debe tener entre 3 y 64 caracteres"
+		"thisCannotBeEdited": "No se puede editar",
+		"browse": "Buscar",
+		"chooseAFile": "Seleccionar un archivo",
+		"stickerName": "Nombre de la pegatina",
+		"exCatHug": "Ej: cat_hug",
+		"thisIsForSale": "Está a la venta",
+		"neverMind": "Olvídalo",
+		"characters": "El nombre debe tener entre 3 y 64 caracteres",
+		"required": "Este campo es obligatorio"
 	},
 	"content": {
-		"description": "Añade hasta 250 stickers personalizados que cualquiera pueda usar en este clan.",
-		"requirements": "REQUISITOS DE CARGA",
-		"reqType": "• Puede ser estático (PNG) o animado (APNG, GIF).",
-		"reqDim": "• Debe medir exactamente 320 x 320 píxeles.",
-		"reqSize": "• No mayor a 512KB.",
-		"available": "{{left}} PLAZOS DISPONIBLES DE STICKER"
+		"description": "Añade hasta 250 pegatinas personalizadas que cualquiera pueda usar en este clan.",
+		"requirements": "Requisitos de carga",
+		"reqType": "•  Puede ser estática (PNG) o animada (APNG, GIF).",
+		"reqDim": "•  Debe medir exactamente 320 × 320 píxeles.",
+		"reqSize": "•  No mayor a 512 KB.",
+		"available": "FALTAN {{left}} LUGARES DE PEGATINAS"
 	},
 	"toast": {
 		"errorUpdating": "Error al actualizar",
-		"errorSizeLimit": "Límite de tamaño de imagen superado 512KB",
-		"validateName": "Longitud debe ser {{min}} - {{max}} caracteres. Solo letras, números, _ y - son permitidos."
+		"errorSizeLimit": "Límite de tamaño de imagen superado 512 KB",
+		"validateName": "La longitud debe ser entre {{min}} y {{max}} caracteres. Sólo se permiten letras, números, _ y -."
 	},
 	"empty": {
-		"tip": "CONSEJO",
+		"tip": "SUGERENCIA",
 		"voiceSticker": {
-			"title": "No se encontró efecto de sonido"
+			"title": "No se ha encontrado efecto de sonido"
 		},
 		"sticker": {
-			"title": "No se encontró sticker"
+			"title": "No se ha encontrado pegatina"
 		}
 	}
 }
