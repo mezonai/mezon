@@ -27,7 +27,7 @@
 		"uploadImage": "Tải lên hình ảnh",
 		"clanName": "Tên Clan",
 		"namePlaceholder": "Tên clan...",
-		"validationError": "Vui lòng nhập tên kênh (tối đa 64 ký tự, chỉ bao gồm từ, số, _ hoặc -).",
+		"validationError": "Vui lòng nhập tên bang hội (tối đa 64 ký tự, chỉ bao gồm từ, số, _ hoặc -).",
 		"modal": {
 			"title": "Chỉ cho phép tệp hình ảnh",
 			"content": "Chỉ tải lên tệp có định dạng (JPEG, PNG), xin cảm ơn!"

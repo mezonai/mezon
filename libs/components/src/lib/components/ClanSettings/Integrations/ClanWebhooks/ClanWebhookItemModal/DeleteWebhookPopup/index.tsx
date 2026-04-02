@@ -8,9 +8,11 @@ import { useSelector } from 'react-redux';
 interface IDeleteClanWebhookPopupProps {
 	closeShowPopup: () => void;
 	webhookItem: ApiWebhook;
+	displayName?: string;
 }
 
-const DeleteClanWebhookPopup = ({ webhookItem, closeShowPopup }: IDeleteClanWebhookPopupProps) => {
+const DeleteClanWebhookPopup = ({ webhookItem, closeShowPopup, displayName }: IDeleteClanWebhookPopupProps) => {
+	const webhookDisplayName = (displayName?.trim() || webhookItem.webhook_name) ?? '';
 	const { t } = useTranslation('clanIntegrationsSetting');
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
@@ -44,9 +46,9 @@ const DeleteClanWebhookPopup = ({ webhookItem, closeShowPopup }: IDeleteClanWebh
 			<div className="relative z-10 w-[440px]">
 				<div className="bg-theme-setting-primary pt-[16px] px-[16px]">
 					<div className=" text-[20px] font-semibold pb-[16px]">
-						{t('webhooksEdit.deleteCaptionHook', { webhookName: webhookItem.webhook_name })}
+						{t('webhooksEdit.deleteCaptionHook', { webhookName: webhookDisplayName })}
 					</div>
-					<div className=" pb-[20px]">{t('webhooksEdit.deleteWebhookConfirmation', { webhookName: webhookItem.webhook_name })}</div>
+					<div className=" pb-[20px]">{t('webhooksEdit.deleteWebhookConfirmation', { webhookName: webhookDisplayName })}</div>
 				</div>
 				<div className="bg-theme-setting-nav  flex justify-end items-center gap-4 p-[16px] text-[14px] font-medium">
 					<div onClick={closeShowPopup} className="hover:underline cursor-pointer">

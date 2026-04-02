@@ -2,6 +2,7 @@ import {
 	selectCurrentClanId,
 	selectMemberClanByUserId,
 	settingClanStickerActions,
+	toastActions,
 	updateClanWebhookById,
 	useAppDispatch,
 	useAppSelector
@@ -11,10 +12,9 @@ import { Icons } from '@mezon/ui';
 import { MAX_FILE_SIZE_8MB, fileTypeImage, generateE2eId, timeFormatI18n } from '@mezon/utils';
 import type { ApiClanWebhook, ApiMessageAttachment, MezonUpdateClanWebhookByIdBody } from 'mezon-js/api';
 import type { ChangeEvent } from 'react';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import { ELimitSize } from '../../../../ModalValidateFile';
 import { ModalErrorTypeUpload, ModalOverData } from '../../../../ModalValidateFile/ModalOverData';
 import ModalSaveChanges from '../../../ClanSettingOverview/ModalSaveChanges';
@@ -24,26 +24,33 @@ import DeleteClanWebhookPopup from './DeleteWebhookPopup';
 
 interface IClanWebhookItemModalProps {
 	webhookItem: ApiClanWebhook;
+	isExpanded?: boolean;
+	onToggleExpand?: () => void;
 }
 
-const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
+const ClanWebhookItemModal = ({ webhookItem, isExpanded, onToggleExpand }: IClanWebhookItemModalProps) => {
 	const { t } = useTranslation('clanIntegrationsSetting');
 	const { t: tCommon } = useTranslation('common');
 	const [isExpand, setIsExpand] = useState(false);
+
+	const isItemExpanded = typeof isExpanded === 'boolean' ? isExpanded : isExpand;
+
 	const webhookOwner = useAppSelector((state) => selectMemberClanByUserId(state, webhookItem.creator_id as string));
 	return (
-		<div className="bg-theme-setting-nav border-theme-primary p-[20px] border  rounded-md mb-[20px]">
+		<div className="bg-theme-setting-nav border-theme-primary p-[20px]  rounded-md mb-[20px]">
 			<div className="flex gap-[20px] items-center" data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item')}>
 				<img src={webhookItem.avatar} alt="Webhook avatar" className="aspect-square w-[50px] rounded-full" />
-				<div className="flex w-full justify-between items-center text-theme-primary-active">
-					<div className="">
-						<div data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_title')}>{webhookItem.webhook_name}</div>
+				<div className="flex w-full min-w-0 justify-between items-center text-theme-primary-active">
+					<div className="min-w-0 flex-1 overflow-hidden">
+						<div className="break-words" data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_title')}>
+							{webhookItem.webhook_name}
+						</div>
 						<div
-							className="flex gap-1 items-center"
+							className="flex gap-1 items-center min-w-0"
 							data-e2e={generateE2eId('clan_page.settings.integrations.webhook_item.webhook_description')}
 						>
-							<Icons.ClockIcon className="text-theme-primary" />
-							<div className="text-theme-primary text-[13px]">
+							<Icons.ClockIcon className="text-theme-primary shrink-0" />
+							<div className="text-theme-primary text-[13px] break-words">
 								{t('webhooksItem.createdBy', {
 									webhookCreateTime: timeFormatI18n(
 										webhookItem.create_time_seconds ?? Math.floor(new Date(webhookItem.update_time || '').getTime() / 1000),
@@ -55,15 +62,15 @@ const ClanWebhookItemModal = ({ webhookItem }: IClanWebhookItemModalProps) => {
 						</div>
 					</div>
 					<div
-						onClick={() => setIsExpand(!isExpand)}
-						className={`cursor-pointer transition duration-100 ease-in-out ${isExpand ? '' : '-rotate-90'}`}
-						data-e2e={generateE2eId('clan_page.settings.integrations.navigate_webhook_button')}
+						onClick={() => (onToggleExpand ? onToggleExpand() : setIsExpand(!isItemExpanded))}
+						className={`cursor-pointer transition duration-100 ease-in-out ${isItemExpanded ? '' : '-rotate-90'}`}
+						data-e2e={generateE2eId('channel_setting_page.webhook.button.view_webhook')}
 					>
 						<Icons.ArrowDown defaultSize="h-[30px] w-[30px] dark:text-[#b5bac1] text-black" />
 					</div>
 				</div>
 			</div>
-			{isExpand && <ExpendedClanWebhookModal webhookItem={webhookItem} />}
+			{isItemExpanded && <ExpendedClanWebhookModal webhookItem={webhookItem} />}
 		</div>
 	);
 };
@@ -81,30 +88,27 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 	const { t } = useTranslation('clanIntegrationsSetting');
 	const dispatch = useAppDispatch();
 	const [isShowPopup, setIsShowPopup] = useState(false);
+	const [openModal, setOpenModal] = useState<boolean>(false);
+	const [openTypeModal, setOpenTypeModal] = useState<boolean>(false);
 	const openShowPopup = () => {
 		dispatch(settingClanStickerActions.openModalInChild());
 		setIsShowPopup(true);
 	};
 
-	const [openModal, setOpenModal] = useState<boolean>(false);
-	const [openTypeModal, setOpenTypeModal] = useState<boolean>(false);
-
 	const handleCloseDeletePopup = useCallback(() => {
 		setIsShowPopup(false);
 		modalRef?.current?.focus();
 		dispatch(settingClanStickerActions.closeModalInChild());
-	}, []);
+	}, [dispatch]);
 
 	const handleCopyUrl = (url: string) => {
-		navigator.clipboard
-			.writeText(url)
-			.then(() => {
-				toast.success(t('webhooksEdit.copied'));
+		navigator.clipboard.writeText(url);
+		dispatch(
+			toastActions.addToast({
+				message: t('webhooksEdit.copied'),
+				type: 'success'
 			})
-			.catch((error) => {
-				toast.error(t('toast.copyError'));
-				console.error('Copy failed:', error);
-			});
+		);
 	};
 	const { sessionRef, clientRef } = useMezon();
 	const avatarRef = useRef<HTMLInputElement>(null);
@@ -114,22 +118,21 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 		webhookNameInput: webhookItem.webhook_name
 	});
 
-	useEffect(() => {
-		setDataForUpdate({
-			webhookAvatarUrl: webhookItem.avatar,
-			webhookNameInput: webhookItem.webhook_name
-		});
-	}, []);
-
-	const [hasChange, setHasChange] = useState<boolean>(false);
-
-	useEffect(() => {
-		const computeHasChanges =
+	const hasChange = useMemo(() => {
+		return (
 			(dataForUpdate.webhookNameInput ?? '').trim() !== (webhookItem.webhook_name ?? '').trim() ||
-			dataForUpdate.webhookAvatarUrl !== webhookItem.avatar;
-
-		setHasChange(computeHasChanges);
+			dataForUpdate.webhookAvatarUrl !== webhookItem.avatar
+		);
 	}, [dataForUpdate.webhookNameInput, dataForUpdate.webhookAvatarUrl, webhookItem.webhook_name, webhookItem.avatar]);
+
+	useEffect(() => {
+		if (!hasChange) {
+			setDataForUpdate({
+				webhookAvatarUrl: webhookItem.avatar,
+				webhookNameInput: webhookItem.webhook_name
+			});
+		}
+	}, [hasChange, webhookItem.avatar, webhookItem.webhook_name]);
 
 	const trimmedWebhookName = (dataForUpdate.webhookNameInput ?? '').trim();
 	const webhookNameLength = trimmedWebhookName.length;
@@ -177,7 +180,6 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 				clanId
 			})
 		);
-		setHasChange(false);
 	};
 
 	const handleResetToken = async () => {
@@ -197,9 +199,19 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 				})
 			);
 
-			toast.success(t('toast.resetTokenSuccess'));
+			dispatch(
+				toastActions.addToast({
+					message: t('toast.resetTokenSuccess'),
+					type: 'success'
+				})
+			);
 		} catch (error) {
-			toast.error(t('toast.resetTokenError'));
+			dispatch(
+				toastActions.addToast({
+					message: t('toast.resetTokenError'),
+					type: 'error'
+				})
+			);
 		}
 	};
 
@@ -208,7 +220,6 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 			webhookAvatarUrl: webhookItem.avatar,
 			webhookNameInput: webhookItem.webhook_name
 		});
-		setHasChange(false);
 	};
 
 	const modalRef = useRef<HTMLDivElement>(null);
@@ -245,7 +256,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 						<div className="flex gap-6 w-full">
 							<div className="w-1/2">
 								<div className="dark:text-[#b5bac1] text-textLightTheme text-[12px] mb-[10px]">
-									<b>{t('webhooksEdit.name')}</b>
+									<b>{t('webhooksEdit.nameLabel').toUpperCase()}</b>
 								</div>
 								<input
 									onChange={(e) =>
@@ -278,7 +289,7 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 									onClick={() => handleCopyUrl(webhookItem.url as string)}
 									className="font-medium px-4 py-2 btn-primary btn-primary-hover rounded-lg  cursor-pointer "
 								>
-									{t('webhooksEdit.copy')} Webhook URL
+									{t('webhooksEdit.copy')} {t('webhooksEdit.webhookURL')}
 								</div>
 								<div onClick={openShowPopup} className="font-medium text-red-500 hover:underline cursor-pointer">
 									{t('webhooksEdit.delete')} Webhook
@@ -294,16 +305,22 @@ const ExpendedClanWebhookModal = ({ webhookItem }: IExpendedClanWebhookModal) =>
 							onClick={() => handleCopyUrl(webhookItem.url as string)}
 							className="font-medium px-4 py-2 btn-primary btn-primary-hover rounded-lg  cursor-pointer"
 						>
-							{t('webhooksEdit.copy')} Clan Webhook URL
+							{t('webhooksEdit.copy')} {t('webhooksEdit.webhookURL')}
 						</div>
 						<div onClick={openShowPopup} className="font-medium text-red-500 hover:underline cursor-pointer">
-							{t('webhooksEdit.delete')} Clan Webhook
+							{t('webhooksEdit.delete')} Webhook
 						</div>
 					</div>
 				</div>
 			</div>
 			{hasChange && <ModalSaveChanges onSave={handleEditWebhook} onReset={handleResetChange} disableSave={!isNameValid} />}
-			{isShowPopup && <DeleteClanWebhookPopup webhookItem={webhookItem} closeShowPopup={handleCloseDeletePopup} />}
+			{isShowPopup && (
+				<DeleteClanWebhookPopup
+					webhookItem={webhookItem}
+					closeShowPopup={handleCloseDeletePopup}
+					displayName={dataForUpdate.webhookNameInput}
+				/>
+			)}
 			<ModalErrorTypeUpload open={openTypeModal} onClose={() => setOpenTypeModal(false)} />
 
 			<ModalOverData open={openModal} onClose={() => setOpenModal(false)} size={ELimitSize.MB_8} />
