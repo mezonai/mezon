@@ -949,6 +949,8 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 				if (id === userId) {
 					dispatch(emojiSuggestionActions.invalidateCache());
 					dispatch(stickerSettingActions.invalidateCache());
+					dispatch(emojiSuggestionActions.fetchEmoji({ noCache: true, clanId: '0' }));
+					dispatch(stickerSettingActions.fetchStickerByUserId({ noCache: true, clanId: '0' }));
 
 					if (clanId === user.clan_id) {
 						if (isMobile) {
@@ -1163,36 +1165,44 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 		[userId, dispatch]
 	);
 
-	const onuserclanadded = useCallback(async (userJoinClan: AddClanUserEvent) => {
-		const store = await getStoreAsync();
+	const onuserclanadded = useCallback(
+		async (userJoinClan: AddClanUserEvent) => {
+			const store = await getStoreAsync();
 
-		const clanMemberStore = selectClanMemberByClanId(store.getState() as unknown as RootState, userJoinClan.clan_id);
+			const clanMemberStore = selectClanMemberByClanId(store.getState() as unknown as RootState, userJoinClan.clan_id);
 
-		if (userJoinClan?.user && clanMemberStore) {
-			const accountCreateTime = new Date(userJoinClan?.user?.create_time_second * 1000).toISOString();
-			const joinTime = Date.now() / 1000;
-			dispatch(
-				usersClanActions.add({
-					user: {
-						...userJoinClan,
-						id: userJoinClan.user.user_id,
+			if (userJoinClan?.user && clanMemberStore) {
+				const accountCreateTime = new Date(userJoinClan?.user?.create_time_second * 1000).toISOString();
+				const joinTime = Date.now() / 1000;
+				dispatch(
+					usersClanActions.add({
 						user: {
-							...userJoinClan.user,
-							avatar_url: userJoinClan.user.avatar,
+							...userJoinClan,
 							id: userJoinClan.user.user_id,
-							display_name: userJoinClan.user.display_name,
-							metadata: userJoinClan.user.custom_status,
-							username: userJoinClan.user.username,
-							create_time: accountCreateTime,
-							create_time_seconds: userJoinClan?.user?.create_time_second,
-							join_time_seconds: joinTime
-						}
-					},
-					clanId: userJoinClan.clan_id
-				} as any)
-			);
-		}
-	}, []);
+							user: {
+								...userJoinClan.user,
+								avatar_url: userJoinClan.user.avatar,
+								id: userJoinClan.user.user_id,
+								display_name: userJoinClan.user.display_name,
+								metadata: userJoinClan.user.custom_status,
+								username: userJoinClan.user.username,
+								create_time: accountCreateTime,
+								create_time_seconds: userJoinClan?.user?.create_time_second,
+								join_time_seconds: joinTime
+							}
+						},
+						clanId: userJoinClan.clan_id
+					} as any)
+				);
+			}
+
+			if (userJoinClan?.user?.user_id === userId) {
+				dispatch(emojiSuggestionActions.fetchEmoji({ noCache: true, clanId: '0' }));
+				dispatch(stickerSettingActions.fetchStickerByUserId({ noCache: true, clanId: '0' }));
+			}
+		},
+		[userId]
+	);
 
 	const onremovefriend = useCallback(
 		(removeFriend: RemoveFriend) => {
@@ -1706,6 +1716,7 @@ const ChatContextProvider: React.FC<ChatContextProviderProps> = ({ children, isM
 			dispatch(stickerSettingActions.removeStickersByClanId(clanDelete.clan_id));
 			dispatch(emojiSuggestionActions.invalidateCache());
 			dispatch(stickerSettingActions.invalidateCache());
+			dispatch(emojiSuggestionActions.fetchEmoji({ noCache: true, clanId: '0' }));
 			dispatch(channelsActions.removeByClanId(clanDelete.clan_id));
 			dispatch(topicsActions.removeClanTopics(clanDelete?.clan_id));
 			if (clanDelete.deletor !== userId && currentClanId === clanDelete.clan_id) {
@@ -3034,4 +3045,3 @@ const ChatContextConsumer = ChatContext.Consumer;
 ChatContextProvider.displayName = 'ChatContextProvider';
 
 export { ChatContext, ChatContextConsumer, ChatContextProvider, MobileEventEmitter };
-

@@ -1,93 +1,93 @@
 {
-    "sidebar": {
-        "communityOverview": "Resumen de la comunidad",
-        "deleteClan": "Eliminar clan",
-        "sectionTitles": {
-            "apps": "Aplicaciones",
-            "moderation": "Moderación",
-            "emotions": "Emociones"
-        },
-        "items": {
-            "overview": "Resumen",
-            "roles": "Roles",
-            "emoji": "Emoji",
-            "imageStickers": "Pegatinas de imagen",
-            "voiceStickers": "Efecto de sonido",
-            "categoryOrder": "Orden de categorías",
-            "integrations": "Integraciones",
-            "auditLog": "Registro de auditoría",
-            "onboarding": "Introducción",
-            "enableCommunity": "Habilitar comunidad"
-        }
-    },
-    "clanLogo": {
-        "minimumSize": "Tamaño mínimo: 128x128",
-        "recommendedSize": "Recomendamos una imagen de al menos 512x512 para el clan.",
-        "uploadImage": "Subir imagen",
-        "clanName": "Nombre del clan",
-        "namePlaceholder": "¡El soporte ha llegado!",
-        "validationError": "Por favor, introduce un nombre de canal válido (máx 64 caracteres, solo palabras, números, _ o -).",
-        "modal": {
-            "title": "Solo se permiten archivos de imagen",
-            "content": "¡Solo sube archivos de tipo JPEG o PNG, por favor!"
-        }
-    },
-    "modalSaveChanges": {
-        "title": "Cuidado — tienes cambios sin guardar!",
-        "reset": "Restablecer",
-        "saveChanges": "Guardar cambios"
-    },
-    "clanBanner": {
-        "title": "Fondo de banner del clan",
-        "description": "Esta imagen se mostrará en la parte superior de la lista de tus canales.",
-        "recommendedSize": "El tamaño mínimo recomendado es 960x540 y la relación de aspecto recomendada es 16:9.",
-        "uploadBackground": "Subir fondo",
-        "chooseImage": "Elegir una imagen",
-        "modal": {
-            "title": "Solo se permiten archivos de imagen",
-            "content": "¡Solo sube archivos de tipo JPEG o PNG, por favor!"
-        }
-    },
-    "systemMessages": {
-        "title": "Canal de mensajes del sistema",
-        "description": "Este es el canal al que enviamos mensajes de eventos del sistema. Puedes desactivarlo en cualquier momento.",
-        "welcomeRandom": "Enviar un mensaje de bienvenida aleatorio cuando alguien se une al clan.",
-        "welcomeSticker": "Invitar a los miembros a responder a los mensajes de bienvenida con una pegatina.",
-        "boostMessage": "Enviar un mensaje cuando alguien haga un boost al clan.",
-        "setupTips": "Enviar consejos útiles para la configuración del clan.",
-        "auditLog": "Enviar un registro cuando se aplique una acción al clan",
-        "anoTitle": "Prevenir anonimato",
-        "anoDesc": "Prevenir que los usuarios usen el modo anónimo"
-    },
-    "appDirectory": {
-        "categories": {
-            "gamingCompanion": "Aplicaciones de acompañamiento para juegos",
-            "popularTrending": "Aplicaciones populares y de tendencia",
-            "serverMiniGames": "Mini-juegos del clan",
-            "rolePlayingFavorites": "Favoritos de rol"
-        },
-        "inServers": "en {{count}} clanes"
-    },
-    "emoji": {
-        "uploadInstructions": "INSTRUCCIONES DE SUBIDA",
-        "title": "Emoji",
-        "description": "Añade hasta 250 emojis personalizados que cualquiera pueda usar en este clan.",
-        "uploadRequirements": "REQUISITOS DE SUBIDA",
-        "requirements": {
-            "fileType": "Tipo de archivo: JPEG, PNG, GIF",
-            "fileSize": "Tamaño de archivo recomendado: 256 KB",
-            "dimensions": "Dimensiones recomendadas: 128x128",
-            "naming": "Nomenclatura: Los nombres de emoji deben tener al menos 2 caracteres y solo pueden contener caracteres alfanuméricos y guiones bajos."
-        },
-        "uploadEmoji": "Subir emoji"
-    },
-    "stickers": {
-        "uploadInstructions": "INSTRUCCIONES DE SUBIDA",
-        "title": "Pegatinas de imagen",
-        "description": "Las pegatinas pueden ser estáticas (PNG) o animadas (APNG, GIF). Deben medir exactamente 320 x 320 píxeles y no superar los 512 KB. Redimensionaremos automáticamente las pegatinas PNG estáticas y GIF animadas.",
-        "uploadHere": "¡Sube aquí!",
-        "customizeMessage": "Personalicemos las increíbles pegatinas con tu interés",
-        "uploadSticker": "subir pegatina"
-    },
-    "deleteClanTitle": "Eliminar '{{clanName}}'"
+	"sidebar": {
+		"communityOverview": "Resumen de la comunidad",
+		"deleteClan": "Eliminar clan",
+		"sectionTitles": {
+			"apps": "Aplicaciones",
+			"moderation": "Moderación",
+			"emotions": "Emociones"
+		},
+		"items": {
+			"overview": "Resumen",
+			"roles": "Roles",
+			"emoji": "Emoji",
+			"imageStickers": "Pegatinas de imagen",
+			"voiceStickers": "Efecto de sonido",
+			"categoryOrder": "Orden de categorías",
+			"integrations": "Integraciones",
+			"auditLog": "Registro de auditoría",
+			"onboarding": "Introducción",
+			"enableCommunity": "Habilitar comunidad"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "Tamaño mínimo: 128x128",
+		"recommendedSize": "Recomendamos una imagen de al menos 512x512 para el clan.",
+		"uploadImage": "Subir imagen",
+		"clanName": "Nombre del clan",
+		"namePlaceholder": "¡El soporte ha llegado!",
+		"validationError": "Por favor, introduce un nombre de canal válido (máx 64 caracteres, solo palabras, números, _ o -).",
+		"modal": {
+			"title": "Solo se permiten archivos de imagen",
+			"content": "¡Solo sube archivos de tipo JPEG o PNG, por favor!"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "Cuidado — tienes cambios sin guardar!",
+		"reset": "Restablecer",
+		"saveChanges": "Guardar cambios"
+	},
+	"clanBanner": {
+		"title": "Fondo de banner del clan",
+		"description": "Esta imagen se mostrará en la parte superior de la lista de tus canales.",
+		"recommendedSize": "El tamaño mínimo recomendado es 960x540 y la relación de aspecto recomendada es 16:9.",
+		"uploadBackground": "Subir fondo",
+		"chooseImage": "Elegir una imagen",
+		"modal": {
+			"title": "Solo se permiten archivos de imagen",
+			"content": "¡Solo sube archivos de tipo JPEG o PNG, por favor!"
+		}
+	},
+	"systemMessages": {
+		"title": "Canal de mensajes del sistema",
+		"description": "Este es el canal al que enviamos mensajes de eventos del sistema. Puedes desactivarlo en cualquier momento.",
+		"welcomeRandom": "Enviar un mensaje de bienvenida aleatorio cuando alguien se une al clan.",
+		"welcomeSticker": "Invitar a los miembros a responder a los mensajes de bienvenida con una pegatina.",
+		"boostMessage": "Enviar un mensaje cuando alguien haga un boost al clan.",
+		"setupTips": "Enviar consejos útiles para la configuración del clan.",
+		"auditLog": "Enviar un registro cuando se aplique una acción al clan",
+		"anoTitle": "Prevenir anonimato",
+		"anoDesc": "Prevenir que los usuarios usen el modo anónimo"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "Aplicaciones de acompañamiento para juegos",
+			"popularTrending": "Aplicaciones populares y de tendencia",
+			"serverMiniGames": "Mini-juegos del clan",
+			"rolePlayingFavorites": "Favoritos de rol"
+		},
+		"inServers": "en {{count}} clanes"
+	},
+	"emoji": {
+		"uploadInstructions": "INSTRUCCIONES DE SUBIDA",
+		"title": "Emoji",
+		"description": "Añade hasta 250 emojis personalizados que cualquiera pueda usar en este clan.",
+		"uploadRequirements": "REQUISITOS DE SUBIDA",
+		"requirements": {
+			"fileType": "Tipo de archivo: JPEG, PNG, GIF",
+			"fileSize": "Tamaño de archivo recomendado: 256 KB",
+			"dimensions": "Dimensiones recomendadas: 128x128",
+			"naming": "Nomenclatura: Los nombres de los emojis deben tener al menos 3 caracteres y solo pueden contener caracteres alfanuméricos, guiones bajos (_) y guiones (-)."
+		},
+		"uploadEmoji": "Subir emoji"
+	},
+	"stickers": {
+		"uploadInstructions": "INSTRUCCIONES DE SUBIDA",
+		"title": "Pegatinas de imagen",
+		"description": "Las pegatinas pueden ser estáticas (PNG,JPG) o animadas (APNG, GIF). Deben medir exactamente 320 x 320 píxeles y no superar los 512 KB. Redimensionaremos automáticamente las pegatinas (PNG,JPG) y animadas (GIF).",
+		"uploadHere": "¡Sube aquí!",
+		"customizeMessage": "Personalicemos las increíbles pegatinas con tu interés",
+		"uploadSticker": "subir pegatina"
+	},
+	"deleteClanTitle": "Eliminar '{{clanName}}'"
 }

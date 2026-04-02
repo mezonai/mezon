@@ -16,7 +16,8 @@
     "exCatHug": "Ej: cat_hug",
     "thisIsForSale": "Está a la venta",
     "neverMind": "Olvídalo",
-    "characters": "El nombre debe tener entre 3 y 64 caracteres"
+    "characters": "El nombre debe tener entre 3 y 64 caracteres",
+    "required": "Este campo es obligatorio"
   },
   "content": {
     "description": "Añade hasta 250 pegatinas personalizadas que cualquiera pueda usar en este clan.",
