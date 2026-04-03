@@ -140,7 +140,8 @@
 	"errorMessages": {
 		"startTimeFuture": "Thời gian bắt đầu phải ở tương lai.",
 		"endTimeAfterStart": "Thời gian kết thúc phải lớn hơn thời gian bắt đầu.",
-		"invalidTopic": "Chủ đề sự kiện không hợp lệ. Các ký tự '`', '<', '>', ',', '/', '\"', '\\', và ''' không được phép."
+		"invalidTopic": "Chủ đề sự kiện không hợp lệ. Các ký tự '`', '<', '>', ',', '/', '\"', '\\', và ''' không được phép.",
+		"locationMaxLength": "Độ dài phải từ 100 ký tự trở xuống."
 	},
 	"selectUser": "Chọn kênh hoặc chủ đề để tạo sự kiện",
 	"emptyState": {

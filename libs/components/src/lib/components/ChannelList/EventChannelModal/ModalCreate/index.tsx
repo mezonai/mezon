@@ -339,7 +339,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 	}, []);
 
 	const errorTopic = REGEX_INVALID_EVENT_TOPIC.test(contentSubmit.topic || '');
-	const isDisabled = option === '' || errorOption || !isEventChanged || errorTopic;
+	const locationTooLong = choiceLocation && (contentSubmit.address?.length ?? 0) > 100;
+	const isDisabled = option === '' || errorOption || !isEventChanged || errorTopic || locationTooLong;
 
 	return (
 		<div className="bg-theme-setting-primary rounded-lg text-sm p-4 text-theme-primary">
@@ -405,8 +406,8 @@ const ModalCreate = (props: ModalCreateProps) => {
 							</button>
 						) : (
 							<button
-								disabled={createStatus === 'loading' || errorTopic}
-								className={`px-4 py-2 rounded font-semibold text-white bg-primary ${option === '' || errorOption || errorTopic ? 'bg-opacity-50 cursor-not-allowed' : ''}`}
+								disabled={createStatus === 'loading' || errorTopic || locationTooLong}
+								className={`px-4 py-2 rounded font-semibold text-white bg-primary ${option === '' || errorOption || errorTopic || locationTooLong ? 'bg-opacity-50 cursor-not-allowed' : ''}`}
 								onClick={() => handleSubmit()}
 								data-e2e={generateE2eId('clan_page.modal.create_event.button_create')}
 							>
@@ -415,9 +416,9 @@ const ModalCreate = (props: ModalCreateProps) => {
 						)
 					) : (
 						<button
-							className={`px-4 py-2 rounded font-semibold text-white bg-primary ${!buttonWork || errorTime || errorOption || !option || errorTopic ? 'bg-opacity-50 cursor-not-allowed' : ''}`}
+							className={`px-4 py-2 rounded font-semibold text-white bg-primary ${!buttonWork || errorTime || errorOption || !option || errorTopic || locationTooLong ? 'bg-opacity-50 cursor-not-allowed' : ''}`}
 							onClick={() => handleNext(currentModal)}
-							disabled={!option || !buttonWork || errorTime || errorOption || errorTopic}
+							disabled={!option || !buttonWork || errorTime || errorOption || errorTopic || locationTooLong}
 							data-e2e={generateE2eId('clan_page.modal.create_event.next')}
 						>
 							{t('actions.next')}

@@ -333,7 +333,7 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 				className="px-4 py-3 flex items-center gap-x-2 justify-between cursor-default"
 			>
 				<div
-					className="flex gap-x-2"
+					className="flex gap-x-2 overflow-hidden min-w-0"
 					onClick={(e) => {
 						handleStopPropagation(e);
 					}}
@@ -358,10 +358,10 @@ const ItemEventManagement = (props: ItemEventManagementProps) => {
 							</a>
 						))}
 					{checkOptionLocation && (
-						<>
-							<Icons.Location />
-							{renderDescriptionWithLinks(address)}
-						</>
+						<span className="flex gap-x-2 items-start min-w-0">
+							<span className="mt-0.5 shrink-0"><Icons.Location /></span>
+							<span className="break-all">{renderDescriptionWithLinks(address)}</span>
+						</span>
 					)}
 					{option === '' && !address && !channelVoice && (
 						<>

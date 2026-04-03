@@ -142,7 +142,8 @@
 	},
 	"errorMessages": {
 		"startTimeFuture": "La hora de inicio debe ser posterior a la hora actual.",
-		"endTimeAfterStart": "La hora de fin debe ser posterior a la hora de inicio."
+		"endTimeAfterStart": "La hora de fin debe ser posterior a la hora de inicio.",
+		"locationMaxLength": "Debe tener 100 caracteres o menos."
 	},
 	"selectUser": "Selecciona canal o hilo para crear evento",
 	"emptyState": {
