@@ -1,0 +1,24 @@
+{
+	"threads": "Thread",
+	"emptyThread": {
+		"textNoThread": "Nessun thread",
+		"textNotify": "Concentrati sulla conversazione con un thread - un canale testuale temporaneo.",
+		"createThreads": "Crea thread"
+	},
+	"otherThreads": "THREAD PIÙ VECCHI",
+	"errorMessage": "Inserisci un nome thread valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+	"threadName": "Nome del thread",
+	"privateThread": "Thread privato",
+	"onlyPeopleInviteThread": "Solo le persone invitate e i moderatori possono vedere questo thread",
+	"newThread": "Nuovo thread",
+	"joinedThreads": "thread a cui ti sei unito",
+	"joinedThread": "thread a cui ti sei unito",
+	"otherActiveThreads": "altri thread attivi",
+	"olderThreads": "thread più vecchi",
+	"searchThreads": "cerca thread",
+	"searchThread": "cerca thread",
+	"threadFailed": {
+		"title": "Creazione thread fallita",
+		"content": "Thread non trovato o non hai i permessi per aggiornarlo"
+	}
+}

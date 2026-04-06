@@ -1,50 +1,40 @@
 {
-    "header": {
-        "save": "Guardar"
-    },
-    "toast": {
-        "saveSuccess": "Guardado con éxito",
-        "reject": "Rechazar",
-        "errorSizeLimit": "Límite de tamaño de imagen excedido (256 KB)",
-        "validateName": "La longitud debe ser entre {{min}} y {{max}} caracteres. Solo se permiten letras, números, _ y -."
-    },
-    "button": {
-        "upload": "Subir Emoji"
-    },
-    "description": {
-        "descriptions": "Añade un emoji personalizado que cualquier persona pueda usar en este clan. Los emojis GIF animados pueden ser utilizados por miembros con Mezon",
-        "requirements": "REQUISITOS DE SUBIDA",
-        "requireList": "•  Tipo de archivo: JPEG, PNG, GIF\n•  Tamaño de archivo recomendado: 256 KB\n•  Dimensiones recomendadas: 128x128\n•  Nomenclatura: Los nombres de los emojis deben tener al menos 3 caracteres y solo pueden contener caracteres alfanuméricos y guiones bajos"
-    },
-    "emojiList": {
-        "slotsDetails": "LISTA DE EMOJIS",
-        "delete": "Eliminar"
-    },
-    "image": "IMAGEN",
-    "name": "NOMBRE",
-    "uploadedBy": "SUBIDO POR",
-    "header": {
-        "save": "Guardar"
-    },
-    "toast": {
-        "saveSuccess": "Guardado con éxito",
-        "reject": "Rechazar",
-        "errorSizeLimit": "Límite de tamaño de imagen excedido (256 KB)",
-        "validateName": "La longitud debe ser entre {{min}} y {{max}} caracteres. Solo se permiten letras, números, _ y -."
-    },
-    "button": {
-        "upload": "Subir Emoji"
-    },
-    "description": {
-        "descriptions": "Añade un emoji personalizado que cualquier persona pueda usar en este clan. Los emojis GIF animados pueden ser utilizados por miembros con Mezon",
-        "requirements": "REQUISITOS DE SUBIDA",
-        "requireList": "•  Tipo de archivo: JPEG, PNG, GIF\n•  Tamaño de archivo recomendado: 256 KB\n•  Dimensiones recomendadas: 128x128\n•  Nomenclatura: Los nombres de los emojis deben tener al menos 3 caracteres y solo pueden contener caracteres alfanuméricos y guiones bajos"
-    },
-    "emojiList": {
-        "slotsDetails": "LISTA DE EMOJIS",
-        "delete": "Eliminar"
-    },
-    "image": "IMAGEN",
-    "name": "NOMBRE",
-    "uploadedBy": "SUBIDO POR"
+	"modal": {
+		"uploadAFile": "Subir un archivo",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "El archivo debe ser PNG o GIF, máximo 256KB",
+		"preview": "Vista previa",
+		"file": "Archivo",
+		"thisCannotBeEdited": "Esto no se puede editar",
+		"browse": "Examinar",
+		"chooseAFile": "Elegir un archivo",
+		"stickerName": "Nombre del emoji",
+		"exCatHug": "Ej: gato_abrazo",
+		"thisIsForSale": "Esto está a la venta",
+		"neverMind": "Nada más",
+		"characters": "El nombre debe tener entre 3 y 64 caracteres"
+	},
+	"header": {
+		"save": "Guardar"
+	},
+	"toast": {
+		"saveSuccess": "Guardado con éxito",
+		"reject": "Rechazar",
+		"errorSizeLimit": "Límite de tamaño de imagen superado 256KB",
+		"validateName": "Longitud debe ser entre {{min}} - {{max}} caracteres. Solo letras, números, _ y - son permitidos."
+	},
+	"button": {
+		"upload": "Subir Emoji"
+	},
+	"description": {
+		"descriptions": "Añade emojis personalizados que cualquier miembro puede usar en este clan. Los emojis GIF animados pueden ser usados por miembros con Mezon",
+		"requirements": "REQUISITOS DE CARGA",
+		"requireList": "• Tipo de archivo: JPEG, PNG, GIF\n• Tamaño de archivo recomendado: 256 KB\n• Dimensiones recomendadas: 128x128\n• Nomenclatura: Los nombres de los emojis deben tener al menos 3 caracteres y solo pueden contener caracteres alfanuméricos y guiones bajos"
+	},
+	"emojiList": {
+		"slotsDetails": "LISTA DE EMOJIS",
+		"delete": "Eliminar"
+	},
+	"image": "IMAGEN",
+	"name": "NOMBRE",
+	"uploadedBy": "CARGADO POR"
 }

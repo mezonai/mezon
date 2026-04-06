@@ -148,7 +148,7 @@ export const closeDirectMessage = createAsyncThunk('direct/closeDirectMessage', 
 		const mezon = await ensureSession(getMezonCtx(thunkAPI));
 		const response = await mezon.client.closeDirectMess(mezon.session, body);
 		if (response) {
-			thunkAPI.dispatch(directActions.setDmActiveStatus({ dmId: body.channel_id as string, isActive: false }));
+			thunkAPI.dispatch(directActions.remove(body?.channel_id || ''));
 			return response;
 		} else {
 			captureSentryError('no reponse', 'direct/createNewDirectMessage');
@@ -169,6 +169,12 @@ export const openDirectMessage = createAsyncThunk(
 			const dmChannel = selectDirectById(state, channelId) || {};
 			if (dmChannel?.active !== ActiveDm.OPEN_DM && clanId === '0') {
 				await mezon.client.openDirectMess(mezon.session, { channel_id: channelId });
+				thunkAPI.dispatch(
+					channelMetaActions.dmMetaAdd({
+						channelId,
+						clanId: '0'
+					})
+				);
 			}
 		} catch (error) {
 			captureSentryError(error, 'direct/openDirectMessage');

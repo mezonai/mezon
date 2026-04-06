@@ -1,9 +1,9 @@
 {
     "fields": {
         "DMMessagePreview": {
-            "title": "Vista previa de mensajes DM",
+            "title": "Vista previa de mensajes directos",
             "AllMessages": "Todos los mensajes",
-            "UnreadDMOnly": "Solo DMs sin leer",
+            "UnreadDMOnly": "Solo mensajes directos sin leer",
             "None": "Ninguno"
         }
     },
@@ -12,16 +12,16 @@
             "title": "Tema",
             "theme": "Tema",
             "syncAcrossClients": {
-                "title": "Sincronizar entre clientes",
-                "description": "Al activar esto sobrescribirá los ajustes de apariencia anteriores en todos los demás clientes, incluidos desktop anf browser"
+                "title": "Sincronizar entre dispositivos",
+                "description": "Al activarlo, se sobrescribirá la configuración de apariencia anterior en todos los otros dispositivos, incluido el escritorio y el navegador"
             }
         },
         "search": {
-            "title": "Buscar",
-            "showResultCount": {
-                "title": "Mostrar conteo exacto de resultados",
-                "description": "Al activar, puede aumentar el tiempo que tarda en mostrar los resultados de búsqueda"
+                "title": "Búsqueda",
+                "showResultCount": {
+                    "title": "Mostrar conteo exacto de resultados",
+                    "description": "Al activarlo, podría aumentar el tiempo que tarda en mostrar los resultados de búsqueda"
+                }
             }
-        }
     }
 }

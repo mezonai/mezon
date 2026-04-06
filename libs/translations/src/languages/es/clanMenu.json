@@ -3,39 +3,39 @@
         "watchMenu": {
             "title": "",
             "markAsRead": "Marcar como leído",
-            "browseChannels": "Explorar canales"
+            "browseChannels": "Explorar Canales"
         },
         "organizationMenu": {
             "title": "",
-            "createChannel": "Crear canal",
-            "createCategory": "Crear categoría",
-            "createEvent": "Crear evento"
+            "createChannel": "Crear Canal",
+            "createCategory": "Crear Categoría",
+            "createEvent": "Crear Evento"
         },
         "optionsMenu": {
             "title": "",
-            "editServerProfile": "Editar perfil de clan",
-            "showAllChannels": "Mostrar todos los canales",
-            "hideMutedChannels": "Ocultar canales silenciados",
-            "allowDirectMessage": "Permitir mensaje directo",
-            "allowMessageRequest": "Permitir solicitud de mensaje",
-            "reportServer": "Reportar clan",
-            "leaveServer": "Salir del clan",
-            "deleteClan": "Eliminar clan",
-            "auditLog": "Registro de auditoría"
+            "editServerProfile": "Editar Perfil del Clan",
+            "showAllChannels": "Mostrar Todos los Canales",
+            "hideMutedChannels": "Ocultar Canales Silenciados",
+            "allowDirectMessage": "Permitir Mensaje Directo",
+            "allowMessageRequest": "Permitir Solicitud de Mensaje",
+            "reportServer": "Informar Clan",
+            "leaveServer": "Salir del Clan",
+            "deleteClan": "Eliminar Clan",
+            "auditLog": "Registro de Auditoría"
         },
         "optionShowEmptyCategories": {
-            "title": "Mostrar categorías vacías",
+            "title": "Mostrar Categorías Vacías",
             "show": "Mostrar",
             "hide": "Ocultar"
         },
         "devMode": {
-            "title": "Modo de desarrollo",
-            "copyServerID": "Copiar ID del clan",
-            "serverIDCopied": "ID del clan copiado"
+            "title": "Modo Desarrollo",
+            "copyServerID": "Copiar ID del Clan",
+            "serverIDCopied": "ID del Clan copiado"
         }
     },
     "actions": {
-        "boot": "Arranque",
+        "boot": "Boots",
         "invite": "Invitar",
         "notifications": "Notificaciones",
         "settings": "Configuración"
@@ -47,16 +47,16 @@
     "common": {
         "search": "Buscar",
         "community": "Comunidad",
-        "searchMembers": "Buscar miembros"
+        "searchMembers": "Buscar Miembros"
     },
     "modalPanel": {
-        "createCategory": "Crear categoría",
+        "createCategory": "Crear Categoría",
         "markAsRead": "Marcar como leído",
         "processing": "Procesando...",
-        "invitePeople": "Invitar personas",
-        "clanSettings": "Configuración del clan",
-        "notificationSettings": "Configuración de notificaciones",
-        "showEmptyCategories": "Mostrar categorías vacías",
-        "leaveClan": "Salir del clan"
+        "invitePeople": "Invitar Personas",
+        "clanSettings": "Configuración del Clan",
+        "notificationSettings": "Configuración de Notificaciones",
+        "showEmptyCategories": "Mostrar Categorías Vacías",
+        "leaveClan": "Salir del Clan"
     }
 }

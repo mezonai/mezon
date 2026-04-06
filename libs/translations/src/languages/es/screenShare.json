@@ -1,14 +1,14 @@
 {
-    "selectScreen": "Seleccionar pantalla para compartir",
-    "entireScreen": "Pantalla completa",
-    "applicationWindow": "Ventana de la aplicación",
-    "shareAudio": "Compartir audio",
-    "share": "Compartir",
-    "cancel": "Cancelar",
-    "chooseWhatToShare": "Elige lo que quieres compartir",
-    "window": "Ventana",
-    "alsoShareSystemAudio": "Compartir también el audio del sistema",
-    "loadingMore": "Cargando más...",
-    "loadMore": "Cargar más",
-    "remaining": "restantes"
+	"selectScreen": "Seleccionar pantalla para compartir",
+	"entireScreen": "Pantalla completa",
+	"applicationWindow": "Ventana de la aplicación",
+	"shareAudio": "Compartir audio",
+	"share": "Compartir",
+	"cancel": "Cancelar",
+	"chooseWhatToShare": "Elige qué compartir",
+	"window": "Ventana",
+	"alsoShareSystemAudio": "Compartir también el audio del sistema",
+	"loadingMore": "Cargando más...",
+	"loadMore": "Cargar más",
+	"remaining": "Restante"
 }

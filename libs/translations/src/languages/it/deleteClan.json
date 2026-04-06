@@ -1,0 +1,15 @@
+{
+  "deleteClanModal": {
+    "title": "Elimina clan",
+    "description": "Sei sicuro di voler eliminare {{currentClan}}? Questa azione non può essere annullata.",
+    "confirm": "Sì",
+    "cancel": "No",
+    "titleLeaveClan": "Esci dal clan",
+    "descriptionLeaveClan": "Sei sicuro di voler uscire da {{currentClan}}? Non potrai più rientrare in questo clan a meno che tu non venga invitato di nuovo.",
+    "error": "Si è verificato un errore durante il tentativo di eliminare o uscire dal clan"
+  },
+  "confirmMessage": "Sei sicuro di voler eliminare questo clan? Questa azione non può essere annullata.",
+  "enterClanName": "Inserisci il nome del clan",
+  "incorrectName": "Hai inserito un nome clan errato",
+  "cancel": "Annulla"
+}

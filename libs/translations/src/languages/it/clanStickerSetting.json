@@ -1,0 +1,42 @@
+{
+	"btn": {
+		"upload": "Carica sticker",
+		"delete": "Elimina"
+	},
+	"modal": {
+		"uploadAFile": "Carica file",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Il file deve essere PNG o GIF, massimo 512KB",
+		"preview": "Anteprima",
+		"file": "File",
+		"thisCannotBeEdited": "Non modificabile",
+		"browse": "Sfoglia",
+		"chooseAFile": "Scegli un file",
+		"stickerName": "Nome sticker",
+		"exCatHug": "Es: cat_hug",
+		"thisIsForSale": "Questo è un prodotto in vendita",
+		"neverMind": "Ignora",
+		"characters": "Il nome deve avere da 3 a 64 caratteri"
+	},
+	"content": {
+		"description": "Aggiungi fino a 250 sticker personalizzati che chiunque può usare in questo clan.",
+		"requirements": "Requisiti per il caricamento",
+		"reqType": "• Possono essere statici (PNG) o animati (GIF).",
+		"reqDim": "• Devono essere esattamente 320 x 320 pixel.",
+		"reqSize": "• Non devono superare i 512KB.",
+		"available": "Sono disponibili {{left}} slot sticker"
+	},
+	"toast": {
+		"errorUpdating": "Errore durante l'aggiornamento",
+		"errorSizeLimit": "Dimensione immagine superiore a 512KB",
+		"validateName": "La lunghezza deve essere compresa tra {{min}} e {{max}} caratteri. Sono consentiti solo lettere, numeri, _ e -"
+	},
+	"empty": {
+		"tip": "TRUCCO",
+		"voiceSticker": {
+			"title": "Nessun effetto sonoro disponibile"
+		},
+		"sticker": {
+			"title": "Nessun sticker disponibile"
+		}
+	}
+}

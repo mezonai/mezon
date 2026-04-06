@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "Canale vocale",
+		"joinVoice": "Partecipa alla chiamata"
+	},
+	"chat": "Chat",
+	"membersWillBeNotified": "{{participantsCount}} membri saranno avvisati",
+	"noDisplay": "Non mostra i canali vocali",
+	"videoConnected": "Video connesso",
+	"voiceConnected": "Voce connessa",
+	"turnOffMicrophone": "Disattiva microfono",
+	"turnOnMicrophone": "Attiva microfono",
+	"turnOffCamera": "Disattiva fotocamera",
+	"turnOnCamera": "Attiva fotocamera",
+	"stopScreenShare": "Interrompi condivisione schermo",
+	"shareYourScreen": "Condividi schermo",
+	"disconnect": "Disconnetti",
+	"muteModal": {
+		"title": "Silenzia membro",
+		"content": "Sei sicuro di voler silenziare \"{{userName}}\"?",
+		"mute": "Silenzia"
+	},
+	"kickModal": {
+		"title": "Rimuovi dal canale vocale",
+		"content": "Sei sicuro di voler rimuovere \"{{userName}}\" dal canale vocale?",
+		"kick": "Rimuovi"
+	},
+	"disconnectModal": {
+		"title": "Disconnessione vocale",
+		"content": {
+			"removed": "Sei stato rimosso dal canale vocale",
+			"duplicate": "Sei stato disconnesso perché sei già in una chiamata altrove",
+			"default": "Sei stato disconnesso dal canale vocale",
+			"deleted": "Il canale vocale è stato eliminato"
+		},
+		"confirm": "Conferma"
+	},
+	"permission": {
+		"cameraTitle": "Autorizza fotocamera",
+		"cameraBody": "L'applicazione non ha l'autorizzazione per la fotocamera. Attivala nelle impostazioni di sistema.",
+		"microphoneTitle": "Autorizza microfono",
+		"microphoneBody": "L'applicazione non ha l'autorizzazione per il microfono. Attivala nelle impostazioni di sistema.",
+		"cancel": "Annulla",
+		"deviceSettings": "Impostazioni dispositivo"
+	},
+	"device": {
+		"inputDevice": "Microfono",
+		"outputDevice": "Audio",
+		"camera": "Fotocamera"
+	},
+	"toast": {
+		"connectionConnected": "Connessione riuscita",
+		"connectionDisconnected": "Connessione interrotta",
+		"microphonePermissionRequired": "Autorizzazione microfono richiesta",
+		"cameraPermissionRequired": "Autorizzazione fotocamera richiesta",
+		"recipientDidNotAnswer": "Il destinatario non ha risposto alla chiamata."
+	},
+	"usernameScreen": "Schermo di {{username}}"
+}

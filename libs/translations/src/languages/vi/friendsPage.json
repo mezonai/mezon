@@ -51,6 +51,18 @@
 		"cancel": "Hủy",
 		"confirm": "Xóa bạn"
 	},
+	"cancelRequestModal": {
+		"title": "Hủy yêu cầu '{{username}}'",
+		"description": "Bạn có chắc chắn muốn hủy yêu cầu kết bạn tới <bold>{{username}}</bold>?",
+		"cancel": "Hủy",
+		"confirm": "Hủy yêu cầu"
+	},
+	"rejectRequestModal": {
+		"title": "Từ chối '{{username}}'",
+		"description": "Bạn có chắc chắn muốn từ chối yêu cầu kết bạn từ <bold>{{username}}</bold>?",
+		"cancel": "Hủy",
+		"confirm": "Từ chối"
+	},
 	"toast": {
 		"userBlockedSuccess": "Đã chặn người dùng thành công",
 		"userBlockedFailed": "Không thể chặn người dùng",

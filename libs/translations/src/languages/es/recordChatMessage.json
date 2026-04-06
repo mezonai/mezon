@@ -1,9 +1,9 @@
 {
 	"addReaction": "Añadir reacción",
-	"uploading": "Cargando...",
+	"uploading": "Subiendo...",
 	"handsFreeMode": "Modo manos libres",
 	"deleteRecording": "Eliminar grabación",
-	"goBack": "Volver",
+	"goBack": "Volver atrás",
 	"confirmDeleteRecording": "¿Eliminar grabación?",
 	"hintRecording": "Mantén pulsado para grabar."
 }

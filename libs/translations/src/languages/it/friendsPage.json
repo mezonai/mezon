@@ -1,0 +1,84 @@
+{
+	"friend": "Amico",
+	"addFriend": "Aggiungi amico",
+	"friends": "Amici",
+	"clearSearch": "Cancella ricerca",
+	"search": "Cerca",
+	"tabs": {
+		"all": "Tutti",
+		"online": "Online",
+		"pending": "In attesa",
+		"block": "Bloccati"
+	},
+	"addFriendModal": {
+		"title": "AGGIUNGI AMICO",
+		"description": "Puoi aggiungere amici tramite il loro nome utente Mezon",
+		"placeholder": "Inserisci nome utente",
+		"tooltip": "Puoi aggiungere amici tramite il loro nome utente Mezon",
+		"sendRequest": "Invia richiesta di amicizia",
+		"add": "Aggiungi",
+		"alreadyFriends": "Sei già amico di questo utente!",
+		"waitAccept": "Hai già inviato una richiesta di amicizia a questo utente!",
+		"invalidInput": "Usa solo numeri, lettere, trattino basso (_) o punto.",
+		"blockedUser": "Hai bloccato questo utente. Sbloccalo per inviare una richiesta di amicizia.",
+		"blockedUserMobile": "Hai bloccato questo utente. Sbloccalo per inviare una richiesta.",
+		"waitingMessage": "Mezon ti sta aspettando. Ma non c'è bisogno di aspettare!"
+	},
+	"requestFailedPopup": {
+		"title": "Invio richiesta fallito",
+		"message": "Sei già amico di questo utente!",
+		"okay": "Ok"
+	},
+	"activity": {
+		"coding": "Attività - Lavoro",
+		"music": "Attività - Tempo libero",
+		"gaming": "Attività - Svago"
+	},
+	"friendMenu": {
+		"startVideoCall": "Avvia videochiamata",
+		"startVoiceCall": "Avvia chiamata vocale",
+		"removeFriend": "Rimuovi amico",
+		"block": "Blocca",
+		"unblock": "Sblocca",
+		"more": "Altro",
+		"cancel": "Annulla",
+		"accept": "Accetta",
+		"reject": "Rifiuta"
+	},
+	"removeFriendModal": {
+		"title": "Rimuovi '{{username}}'",
+		"description": "Sei sicuro di voler rimuovere <bold>{{username}}</bold> dai tuoi amici?",
+		"cancel": "Annulla",
+		"confirm": "Rimuovi amico"
+	},
+	"cancelRequestModal": {
+		"title": "Annulla richiesta a '{{username}}'",
+		"description": "Sei sicuro di voler annullare la richiesta di amicizia a <bold>{{username}}</bold>?",
+		"cancel": "Annulla",
+		"confirm": "Annulla richiesta"
+	},
+	"rejectRequestModal": {
+		"title": "Rifiuta '{{username}}'",
+		"description": "Sei sicuro di voler rifiutare la richiesta di amicizia da <bold>{{username}}</bold>?",
+		"cancel": "Annulla",
+		"confirm": "Rifiuta"
+	},
+	"toast": {
+		"userBlockedSuccess": "Utente bloccato con successo",
+		"userBlockedFailed": "Impossibile bloccare l'utente",
+		"userUnblockedSuccess": "Utente sbloccato con successo",
+		"userUnblockedFailed": "Impossibile sbloccare l'utente"
+	},
+	"statusTapListFriends": {
+		"all": "Sembra vuoto! Inizia a invitare qualche amico per cominciare a chattare.",
+		"online": "Tutto tranquillo! Perché non inizi una conversazione per vedere chi è online?",
+		"pending": "Qui troverai le richieste di amicizia inviate e ricevute.",
+		"block": "Non hai ancora bloccato nessuno."
+	},
+	"statusTapSearchFriends": {
+		"all": "Nessun amico trovato per la tua ricerca. Prova un altro nome.",
+		"online": "Nessuno online trovato per la tua ricerca. Prova un altro nome.",
+		"pending": "Nessuna richiesta di amicizia trovata. Controlla il nome o riprova.",
+		"block": "Nessun utente bloccato trovato per la tua ricerca. Prova un altro nome."
+	}
+}

@@ -1,147 +1,147 @@
 {
-  "myAccount": "Mi cuenta",
-  "editUserProfile": "Editar perfil de usuario",
-  "noDisplayName": "No has añadido todavía un nombre de visualización.",
-  "edit": "Editar",
-  "password": "Contraseña",
-  "phoneNumber": "Número de teléfono",
-  "username": "Nombre de usuario",
-  "displayName": "Nombre de visualización",
-  "users": "Usuarios",
-  "accountManagement": "Gestión de la cuenta",
-  "blockedUsers": "Usuarios bloqueados",
-  "disableAccount": "Desactivar cuenta",
-  "deleteAccount": "Eliminar cuenta",
-  "accountInformation": "Información de la cuenta",
-  "doNotHaveBlockedUser": "No tienes usuarios bloqueados",
-  "setPassword": "Establecer contraseña",
-  "setEmail": "Establecer correo electrónico",
-  "changePassword": "Cambiar contraseña",
-  "changeEmail": "Cambiar correo electrónico",
-  "setPhoneNumber": "Establecer número de teléfono",
-  "disableAccountAlert": {
-    "title": "Desactivar cuenta",
-    "description": "¿Confirmas que quieres desactivar tu cuenta?",
-    "noConfirm": "No",
-    "yesConfirm": "Sí"
-  },
-  "deleteAccountAlert": {
-    "title": "Eliminar cuenta",
-    "description": "¿Confirmas que quieres eliminar tu cuenta?",
-    "noConfirm": "No",
-    "yesConfirm": "Sí"
-  },
-  "setPasswordAccount": {
-    "linkEmailRequiredTitle": "Se requiere enlazar correo electrónico",
-    "linkEmailRequiredDescription": "Debes enlazar tu correo electrónico antes de establecer una contraseña",
-    "goTo": "Ir a",
-    "title": "Establecer contraseña",
-    "email": "Correo electrónico",
-    "password": "Contraseña",
-    "currentPassword": "Contraseña actual",
-    "confirmPassword": "Confirmar contraseña",
-    "confirm": "Guardar",
-    "changePassword": "Cambiar contraseña",
-    "description": "Tu contraseña debe tener al menos 8 caracteres e incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial (p. ej., !@#$%^&*).",
-    "error": {
-      "characters": "La contraseña debe tener al menos 8 caracteres",
-      "uppercase": "La contraseña debe contener al menos 1 letra mayúscula",
-      "lowercase": "La contraseña debe contener al menos 1 letra minúscula",
-      "number": "La contraseña debe contener al menos 1 número",
-      "symbol": "La contraseña debe contener al menos 1 carácter especial",
-      "notEqual": "La confirmación de la contraseña no coincide",
-      "samePass": "La nueva contraseña no puede ser igual a la antigua",
-      "fillOldPass": "Introduce tu contraseña actual.",
-      "updateFail": "No se pudo actualizar tu cuenta.",
-      "createFail": "No se pudo crear tu contraseña.",
-      "incorrectCurrent": "Contraseña incorrecta. Por favor, inténtalo de nuevo"
-    },
-    "toast": {
-      "success": "Contraseña actualizada correctamente",
-      "error": "Error al actualizar la contraseña"
-    },
-    "placeholder": {
-      "currentPassword": "Introduce tu contraseña actual",
-      "password": "Introduce tu nueva contraseña",
-      "confirmPassword": "Confirma tu nueva contraseña"
-    }
-  },
-  "setPasswordModal": {
-    "title": "Establecer contraseña",
-    "description": "Por favor, crea una nueva contraseña para tu cuenta",
-    "emailPlaceholder": "tu.email@ejemplo.com",
-    "loading": "Cargando...",
-    "close": "Cerrar"
-  },
-  "setPhoneModal": {
-    "title": "Establecer contraseña",
-    "phoneNumber": "Número de teléfono",
-    "description": "Recibirás un mensaje de texto con un código de verificación.",
-    "emailPlaceholder": "tu.email@ejemplo.com",
-    "loading": "Cargando...",
-    "close": "Cerrar",
-    "sendOTP": "Enviar OTP",
-    "otp": "Verifica tu número",
-    "countryCode": "Código de país",
-    "country": "País",
-    "confirmOtp": "Confirmar OTP",
-    "invalidPhone": "Número de teléfono inválido",
-    "updatePhoneSuccess": "Actualización del número de teléfono exitosa",
-    "updatePhoneFail": "Algo salió mal. ¡Inténtalo más tarde!",
-    "emptyOtp": "¡OTP inválido!",
-    "resendOtp": "Reenviar OTP",
-    "tooFast": "Muy rápido. Por favor, espera {{seconds}} segundos antes de enviar OTP de nuevo.",
-    "alreadyLinked": "El número de teléfono ya está vinculado a tu cuenta",
-    "alreadyLinkedToAnother": "El número de teléfono ya está vinculado a otra cuenta",
-    "verifyOtpMessage": "Por favor, verifica el código OTP enviado a",
-    "otpSentMessage": "Por favor, revisa el código OTP enviado a {{phone}}",
-    "backToPhoneInput": "¿Cambiar número de teléfono?"
-  },
-  "toast": {
-    "deleteAccount": {
-      "success": "Cuenta eliminada correctamente",
-      "error": "Eres el propietario del clan"
-    }
-  },
-  "phoneNumberSetting": {
-    "title": "Teléfono",
-    "updatePhoneNumber": {
-      "newPhoneNumber": "Nuevo número de teléfono",
-      "nextButton": "Siguiente",
-      "removeButton": "Eliminar número de teléfono",
-      "failed": "Error al actualizar el número de teléfono",
-      "invalidPhoneNumber": "Número de teléfono inválido"
-    },
-    "verifyPhoneNumber": {
-      "description": "Introduce el código de 6 dígitos que enviamos a",
-      "verifyButton": "Verificar",
-      "success": "Número de teléfono actualizado correctamente"
-    }
-  },
-  "emailSetting": {
-    "cancel": "Cancelar",
-    "currentEmail": "Correo electrónico actual",
-    "description": "Introduce la dirección de correo electrónico de tu cuenta.",
-    "otpDescription": "Tu OTP ha sido enviado a tu nuevo correo electrónico",
-    "fillOTP": "Introducir OTP",
-    "send": "Enviar OTP",
-    "resendOtp": "Reenviar OTP",
-    "error": {
-      "notEqual": "La confirmación de la contraseña no coincide",
-      "required": "El correo electrónico es obligatorio",
-      "invalid": "Por favor, introduce una dirección de correo válida"
-    },
-    "updateEmail": {
-      "newEmail": "Nuevo correo electrónico",
-      "nextButton": "Siguiente",
-      "failed": "Error al actualizar el correo electrónico",
-      "invalidEmail": "Correo electrónico inválido",
-      "emailAlreadyLinked": "Este correo electrónico ya está vinculado"
-    },
-    "verifyEmail": {
-      "description": "Introduce el código de 6 dígitos que enviamos a",
-      "verifyButton": "Verificar",
-      "success": "Correo electrónico actualizado correctamente"
-    }
-  }
+	"myAccount": "Mi Cuenta",
+	"editUserProfile": "Editar Perfil de Usuario",
+	"noDisplayName": "Aún no has añadido un nombre de visualización.",
+	"edit": "Editar",
+	"password": "Contraseña",
+	"phoneNumber": "Número de teléfono",
+	"username": "Nombre de usuario",
+	"displayName": "Nombre de visualización",
+	"users": "Usuarios",
+	"accountManagement": "Gestión de Cuenta",
+	"blockedUsers": "Usuarios Bloqueados",
+	"disableAccount": "Desactivar Cuenta",
+	"deleteAccount": "Eliminar Cuenta",
+	"accountInformation": "Información de Cuenta",
+	"doNotHaveBlockedUser": "No tienes ningún usuario bloqueado",
+	"setPassword": "Establecer Contraseña",
+	"setEmail": "Establecer Email",
+	"changePassword": "Cambiar Contraseña",
+	"changeEmail": "Cambiar Email",
+	"setPhoneNumber": "Establecer Número de Teléfono",
+	"disableAccountAlert": {
+		"title": "Desactivar Cuenta",
+		"description": "¿Confirmas que deseas desactivar tu cuenta?",
+		"noConfirm": "No",
+		"yesConfirm": "Sí"
+	},
+	"deleteAccountAlert": {
+		"title": "Eliminar Cuenta",
+		"description": "¿Confirmas que deseas eliminar tu cuenta?",
+		"noConfirm": "No",
+		"yesConfirm": "Sí"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "Email Vinculado Requerido",
+		"linkEmailRequiredDescription": "Necesitas vincular tu email antes de establecer una contraseña",
+		"goTo": "Ir a",
+		"title": "Establecer Contraseña",
+		"email": "Email",
+		"password": "Contraseña",
+		"currentPassword": "Contraseña Actual",
+		"confirmPassword": "Confirmar Contraseña",
+		"confirm": "Guardar",
+		"changePassword": "Cambiar Contraseña",
+		"description": "Tu contraseña debe tener al menos 8 caracteres e incluir al menos una letra mayúscula, una minúscula, un número y un carácter especial (ej. !@#$%^&*).",
+		"error": {
+			"characters": "La contraseña debe tener al menos 8 caracteres",
+			"uppercase": "La contraseña debe contener al menos 1 letra mayúscula",
+			"lowercase": "La contraseña debe contener al menos 1 letra minúscula",
+			"number": "La contraseña debe contener al menos 1 número",
+			"symbol": "La contraseña debe contener al menos 1 carácter especial",
+			"notEqual": "La contraseña de confirmación no coincide",
+			"samePass": "La nueva contraseña no puede ser igual a la anterior",
+			"fillOldPass": "Por favor, introduce la contraseña actual.",
+			"updateFail": "No se pudo actualizar tu cuenta.",
+			"createFail": "No se pudo crear tu contraseña.",
+			"incorrectCurrent": "Contraseña incorrecta. Inténtalo de nuevo"
+		},
+		"toast": {
+			"success": "Contraseña actualizada correctamente",
+			"error": "Error al actualizar la contraseña"
+		},
+		"placeholder": {
+			"currentPassword": "Introduce tu contraseña actual",
+			"password": "Introduce tu nueva contraseña",
+			"confirmPassword": "Confirma tu nueva contraseña"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Establecer Contraseña",
+		"description": "Por favor, crea una nueva contraseña para tu cuenta",
+		"emailPlaceholder": "tu.email@ejemplo.com",
+		"loading": "Cargando...",
+		"close": "Cerrar"
+	},
+	"setPhoneModal": {
+		"title": "Establecer Contraseña",
+		"phoneNumber": "Número de Teléfono",
+		"description": "Recibirás un mensaje de texto con el código de verificación.",
+		"emailPlaceholder": "tu.email@ejemplo.com",
+		"loading": "Cargando...",
+		"close": "Cerrar",
+		"sendOTP": "Enviar OTP",
+		"otp": "Verifica tu número",
+		"countryCode": "Código de País",
+		"country": "País",
+		"confirmOtp": "Confirmar OTP",
+		"invalidPhone": "Número de teléfono inválido",
+		"updatePhoneSuccess": "Número de teléfono actualizado correctamente",
+		"updatePhoneFail": "Algo salió mal. ¡Prueba más tarde!",
+		"emptyOtp": "¡OTP inválido!",
+		"resendOtp": "Reenviar OTP",
+		"tooFast": "Muy rápido. Espera {{seconds}} segundos antes de enviar OTP de nuevo.",
+		"alreadyLinked": "El número de teléfono ya está vinculado a tu cuenta",
+		"alreadyLinkedToAnother": "El número de teléfono ya está vinculado a otra cuenta",
+		"verifyOtpMessage": "Por favor, verifica el código OTP enviado a",
+		"otpSentMessage": "Por favor, revisa el código OTP enviado a {{phone}}",
+		"backToPhoneInput": "¿Cambiar número de teléfono?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Cuenta eliminada correctamente",
+			"error": "Eres el propietario del clan"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Teléfono",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Nuevo Número de Teléfono",
+			"nextButton": "Siguiente",
+			"removeButton": "Eliminar Número de Teléfono",
+			"failed": "Actualización de número de teléfono fallida",
+			"invalidPhoneNumber": "Número de teléfono inválido"
+		},
+		"verifyPhoneNumber": {
+			"description": "Introduce el código de 6 dígitos que enviamos a",
+			"verifyButton": "Verificar",
+			"success": "Número de teléfono actualizado correctamente"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Cancelar",
+		"currentEmail": "Email Actual",
+		"description": "Por favor, introduce tu dirección de email para tu cuenta.",
+		"otpDescription": "Tu OTP ha sido enviado a tu nuevo email",
+		"fillOTP": "Introduce OTP",
+		"send": "Enviar OTP",
+		"resendOtp": "Reenviar OTP",
+		"error": {
+			"notEqual": "La contraseña de confirmación no coincide",
+			"required": "El email es requerido",
+			"invalid": "Por favor, introduce un email válido"
+		},
+		"updateEmail": {
+			"newEmail": "Nuevo Email",
+			"nextButton": "Siguiente",
+			"failed": "Actualización de email fallida",
+			"invalidEmail": "Email inválido",
+			"emailAlreadyLinked": "Este email que estás usando"
+		},
+		"verifyEmail": {
+			"description": "Introduce el código de 6 dígitos que enviamos a",
+			"verifyButton": "Verificar",
+			"success": "Email actualizado correctamente"
+		}
+	}
 }

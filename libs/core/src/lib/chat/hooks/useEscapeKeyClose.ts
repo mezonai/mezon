@@ -1,6 +1,10 @@
-import { RefObject, useEffect } from 'react';
+import type { RefObject } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const useEscapeKeyClose = (ref: RefObject<HTMLElement> | undefined, onClose: () => void) => {
+	const onCloseRef = useRef(onClose);
+	onCloseRef.current = onClose;
+
 	useEffect(() => {
 		const element = ref?.current;
 		if (!element) return;
@@ -8,7 +12,7 @@ export const useEscapeKeyClose = (ref: RefObject<HTMLElement> | undefined, onClo
 			if (event.key === 'Escape' || event.key === 'Esc') {
 				if (document.activeElement === element || element.contains(document.activeElement)) {
 					event.stopPropagation();
-					onClose();
+					onCloseRef.current();
 				}
 			}
 		};
@@ -21,5 +25,5 @@ export const useEscapeKeyClose = (ref: RefObject<HTMLElement> | undefined, onClo
 		return () => {
 			element.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [ref, onClose]);
+	}, [ref]);
 };

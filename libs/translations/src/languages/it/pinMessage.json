@@ -1,0 +1,11 @@
+{
+	"emptyTitle": "Non ci sono ancora messaggi fissati in questo canale... ma lo saranno presto.",
+	"PROTIP": "SUGGERIMENTO:",
+	"modal": {
+		"title": "Fissalo. Fissalo per sicurezza.",
+		"description": "Ehi, volevo solo confermare un'ultima volta: vuoi fissare questo messaggio in #{{channelLabel}} per conservarlo per sempre?",
+		"descriptionDM": "Ehi, volevo solo confermare un'ultima volta: vuoi fissare questo messaggio in questa conversazione per conservarlo per sempre?",
+		"cancel": "Annulla",
+		"confirm": "Fissa subito"
+	}
+}

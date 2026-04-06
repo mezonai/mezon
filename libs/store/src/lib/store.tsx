@@ -302,7 +302,8 @@ const persistedDirectReducer = persistReducer(
 const persistedChannelMetaReducer = persistReducer(
 	{
 		key: 'channelmeta',
-		storage
+		storage,
+		blacklist: ['entities']
 	},
 	channelMetaReducer
 );

@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Salva"
+	},
+	"switch": {
+		"userProfile": "Personale",
+		"serverProfile": "Clan"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Nome visualizzato",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Nickname del Clan",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Pronomi",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Bio",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Eliminare le modifiche non salvate?",
+		"description": "Ci sono modifiche non salvate. Sei sicuro di volerle eliminare?",
+		"discard": "Scarta",
+		"keepEditing": "Continua a modificare"
+	},
+	"selectAClan": "Seleziona un clan",
+	"searchClanPlaceholder": "Cerca clan",
+	"updateProfileSuccess": "Profilo personale aggiornato con successo",
+	"updateProfileError": "Errore durante l'aggiornamento del profilo personale",
+	"updateClanProfileSuccess": "Profilo clan aggiornato con successo",
+	"emptyUsername": "Il nome visualizzato non può essere vuoto!",
+	"duplicateClannick": "Nickname del clan duplicato",
+	"clanNickname": "NICKNAME DEL CLAN",
+	"changeAvatar": "Cambia avatar",
+	"removeAvatar": "Rimuovi",
+	"avatar": "Avatar",
+	"preview": "ANTEPRIMA",
+	"nickNameExistsError": "Nickname già esistente nel clan. Inseriscine uno diverso.",
+	"unsavedChangesWarning": "Attenzione: hai modifiche non salvate!",
+	"reset": "Reimposta",
+	"saveChanges": "Salva modifiche",
+	"showProfilesDescription": "Esprimi te stesso con profili diversi per ogni tuo clan",
+	"chooseAClan": "SELEZIONA UN CLAN",
+	"editImage": "Modifica immagine",
+	"close": "Chiudi",
+	"resetChanges": "Ripristina modifiche",
+	"cancelEditing": "Annulla modifica",
+	"cancel": "Annulla",
+	"applyChanges": "Applica modifiche",
+	"apply": "Applica",
+	"moveImage": "Sposta immagine",
+	"adjustZoom": "Regola zoom",
+	"profiles": "Profili",
+	"userProfile": "Profilo utente",
+	"clanProfiles": "Profili Clan",
+	"directMessageIcon": "Icona messaggi diretti",
+	"directMessageIconAction": {
+		"remove": "Rimuovi",
+		"removeTitle": "Rimuovi icona messaggi diretti",
+		"removeDescription": "Sei sicuro di voler rimuovere l'icona dei messaggi diretti?"
+	},
+	"displayName": "NOME VISUALIZZATO",
+	"emptyClanProfile": {
+		"title": "Non fai parte di alcun clan",
+		"description": "Crea o unisciti a un clan per impostare il tuo profilo clan.",
+		"createClan": "Crea clan",
+		"joinClan": "Unisciti al clan"
+	}
+}

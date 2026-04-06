@@ -1,56 +1,56 @@
 {
-  "bottomSheet": {
-    "title": "Configuración de notificaciones",
-    "muteUntil": "Has silenciado este canal hasta",
-    "unMute": "Desactivar silencio",
-    "mute": "Silenciar",
-    "labelOptions": {
-      "reactionMessage": "Mensaje de reacción",
-      "categoryDefault": "Usar categoría por defecto",
-      "allMessage": "Todo",
-      "notThingMessage": "Nada",
-      "mentionMessage": "Solo @mención"
-    },
-    "muteCategoryUntil": "Has silenciado esta categoría hasta"
-  },
-  "notifySettingThreadModal": {
-    "headerTitleMuteThread": "Silenciar este hilo",
-    "headerTitleMuteChannel": "Silenciar este canal",
-    "muteThisConversation": "Silenciar esta conversación",
-    "muteDuration": {
-      "forFifteenMinutes": "Durante 15 minutos",
-      "forOneHour": "Durante 1 hora",
-      "forThreeHours": "Durante 3 horas",
-      "forEightHours": "Durante 8 horas",
-      "forTwentyFourHours": "Durante 24 horas",
-      "untilTurnItBackOn": "Hasta volver a activar"
-    },
-    "description": "Estás recibiendo notificaciones de todos los mensajes en este clan, pero puedes anularlo aquí",
-    "muteSuccess": "Silenciado correctamente!",
-    "unMuteSuccess": "Desactivado correctamente!",
-    "muteFailed": "¡Falló al silenciar!",
-    "unMuteFailed": "¡Falló al desactivar!"
-  },
-  "toast": {
-    "error": "Error al actualizar la notificación: {{error}}"
-  },
-  "title": "Configuración de notificación",
-  "clanNotificationSettings": "CONFIGURACIÓN DE NOTIFICACIÓN DEL CLAN",
-  "notificationOverrides": "ANULACIONES DE NOTIFICACIÓN",
-  "addChannelOverride": "Añadir un canal para anular su configuración de notificación predeterminada",
-  "selectOrCreateOption": "Selecciona o crea una opción...",
-  "headers": {
-    "channelOrCategory": "CANAL O CATEGORÍA",
-    "all": "TODO",
-    "mentions": "MENCIÓN",
-    "nothing": "NADA",
-    "mute": "Silenciar"
-  },
-  "menu": {
-    "notification": {
-      "all": "Todo",
-      "onlyMention": "Solo @mención",
-      "nothing": "Nada"
-    }
-  }
+	"bottomSheet": {
+		"title": "Configuración de notificaciones",
+		"muteUntil": "Has silenciado este canal hasta",
+		"unMute": "Desilenciar",
+		"mute": "Silenciar",
+		"labelOptions": {
+			"reactionMessage": "Reacciones de mensajes",
+			"categoryDefault": "Usar configuración predeterminada de categoría",
+			"allMessage": "Todo",
+			"notThingMessage": "Nada",
+			"mentionMessage": "Solo @mención"
+		},
+		"muteCategoryUntil": "Has silenciado esta categoría hasta"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Silenciar este hilo",
+		"headerTitleMuteChannel": "Silenciar este canal",
+		"muteThisConversation": "Silenciar esta conversación",
+		"muteDuration": {
+			"forFifteenMinutes": "Por 15 minutos",
+			"forOneHour": "Por 1 hora",
+			"forThreeHours": "Por 3 horas",
+			"forEightHours": "Por 8 horas",
+			"forTwentyFourHours": "Por 24 horas",
+			"untilTurnItBackOn": "Hasta volver a activar"
+		},
+		"description": "Estás recibiendo notificaciones de todos los mensajes en este clan, pero puedes cambiarlo aquí",
+		"muteSuccess": "¡Silenciado con éxito!",
+		"unMuteSuccess": "¡Desilenciado con éxito!",
+		"muteFailed": "Error al silenciar",
+		"unMuteFailed": "Error al desilenciar"
+	},
+	"toast": {
+		"error": "Error al actualizar notificación: {{error}}"
+	},
+	"title": "Configuración de notificación",
+	"clanNotificationSettings": "CONFIGURACIÓN DE NOTIFICACIONES DEL CLAN",
+	"notificationOverrides": "SOBRESATOS DE NOTIFICACIONES",
+	"addChannelOverride": "Añade un canal para sobrescribir su configuración de notificación predeterminada",
+	"selectOrCreateOption": "Selecciona o crea una opción...",
+	"headers": {
+		"channelOrCategory": "CANAL O CATEGORÍA",
+		"all": "TODO",
+		"mentions": "MENCIONES",
+		"nothing": "NADA",
+		"mute": "Silenciar"
+	},
+	"menu": {
+		"notification": {
+			"all": "Todo",
+			"onlyMention": "Solo @mención",
+			"nothing": "Nada"
+		}
+	}
 }

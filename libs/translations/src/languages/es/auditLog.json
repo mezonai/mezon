@@ -1,26 +1,26 @@
 {
-    "auditLogComponent": {
-        "title": "Registro de auditoría",
-        "filterByUser": "Filtrar por usuario",
-        "filterByAction": "Filtrar por acción",
-        "filterBtn": "Filtrar"
-    },
-    "auditLogItem": {
-        "performedAnAction": "realizó una acción",
-        "toChannel": "al canal",
-        "remove": "eliminar",
-        "add": "añadir"
-    },
-    "filterActionAuditLog": {
-        "allActions": "Todas las acciones",
-        "placeholder": "Buscar acción"
-    },
-    "filterUserAuditLog": {
-        "allUsers": "Todos los usuarios",
-        "placeholder": "Buscar usuarios"
-    },
-    "emptyAuditLog": {
-        "noLogsYet": "AÚN NO HAY REGISTROS",
-        "description": "Una vez que los moderadores comiencen a moderar, podrás administrar la moderación aquí."
-    }
+	"auditLogComponent": {
+		"title": "Registro de Auditoría",
+		"filterByUser": "Filtrar por Usuario",
+		"filterByAction": "Filtrar por Acción",
+		"filterBtn": "Filtrar"
+	},
+	"auditLogItem": {
+		"performedAnAction": "realizó una acción",
+		"toChannel": "en el canal",
+		"remove": "eliminar",
+		"add": "añadir"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Todas las Acciones",
+		"placeholder": "Buscar Acción"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Todos los Usuarios",
+		"placeholder": "Buscar Usuarios"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "SIN REGISTROS AÚN",
+		"description": "Una vez que los moderadores comiencen a moderar, podrás moderar las moderaciones aquí."
+	}
 }

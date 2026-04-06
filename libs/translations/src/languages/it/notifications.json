@@ -1,0 +1,25 @@
+{
+  "inbox": "Inbox",
+  "tabs": {
+		"forYou": "Per te",
+		"messages": "Messaggi",
+		"mentions": "Menzioni",
+		"topics": "Discussioni"
+  },
+  "empty": {
+    "forYou": {
+      "title": "Non c'è nulla qui",
+      "description": "Torna per ricevere notifiche su eventi, dirette e molto altro."
+    },
+    "messages": {
+      "title": "Hai visto tutto!",
+      "protip": "Suggerimento:",
+      "description": "Apri l'inbox premendo CTRL+I e segna il primo messaggio come letto con CTRL+Shift+E."
+    },
+    "mentions": {
+      "title": "Hai visto tutto!",
+      "protip": "Suggerimento:",
+      "description": "Ogni volta che qualcuno ti menziona, la notifica verrà salvata qui per 7 giorni."
+    }
+  }
+}

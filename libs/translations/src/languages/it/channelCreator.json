@@ -1,0 +1,182 @@
+{
+	"actions": {
+		"create": "Crea"
+	},
+	"fields": {
+		"channelName": {
+			"title": "Nome del canale",
+			"placeholder": "nuovo-canale",
+			"errorMessage": "Inserisci un nome canale valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+			"duplicateChannelName": "Questo nome canale esiste già nel clan. Inseriscine un altro."
+		},
+		"channelPrivate": {
+			"title": "Canale privato",
+			"descriptionText": "Creando un canale privato, solo i membri e i ruoli selezionati potranno visualizzarlo.",
+			"descriptionVoice": "Creando un canale vocale privato, solo i membri e i ruoli selezionati potranno visualizzarlo o connettersi ad esso."
+		},
+		"channelType": {
+			"title": "Tipo di canale",
+			"text": {
+				"title": "Testuale",
+				"description": "Pubblica immagini, GIF, badge, opinioni e giochi di parole"
+			},
+			"voice": {
+				"title": "Vocale",
+				"description": "Incontra altri con voce, video e condivisione dello schermo"
+			},
+			"stream": {
+				"title": "Streaming",
+				"description": "Condividi i tuoi hobby"
+			}
+		},
+		"channelVoiceType": {
+			"title": "Tipo di canale vocale",
+			"mezon": "MEZON MEET",
+			"gMeet": "GOOGLE MEET"
+		},
+		"mediaHighlights": {
+			"title": "Immagini & In evidenza",
+			"eventsTitle": "Eventi",
+			"familyJourney": "Eventi",
+			"cherishMoment": "Segui gli eventi importanti.",
+			"since": "DA",
+			"viewAlbum": "Visualizza Album",
+			"emptyTitle": "Il tuo percorso non è ancora iniziato.",
+			"emptyDescription": "Crea il tuo primo evento per iniziare a conservare i ricordi.",
+			"createFirstMilestone": "Crea il primo evento",
+			"selectYear": "Seleziona l'anno",
+			"special": "Speciale"
+		},
+		"familyEvents": {
+			"title": "Eventi",
+			"eventsIn": "Eventi dell'anno",
+			"noEvents": "Nessun evento quest'anno",
+			"addToGallery": "Aggiungi alla galleria",
+			"inDays": "Tra {{count}} giorni"
+		},
+		"createMilestone": {
+			"headerTitle": "Nuovo evento",
+			"cancel": "Annulla",
+			"cancelAlertTitle": "Annulla",
+			"cancelAlertMessage": "Sei sicuro di voler annullare questo evento?",
+			"continueEditing": "Continua a modificare",
+			"discard": "Scarta",
+			"eventTitleLabel": "Nome dell'evento",
+			"eventTitlePlaceholder": "Es: Riunione di gruppo, Lancio progetto",
+			"dateLabel": "Data",
+			"datePlaceholder": "Seleziona la data",
+			"storyLabel": "Descrizione",
+			"storyPlaceholder": "Inserisci la descrizione dell'evento...",
+			"memoriesLabel": "Immagini/Video",
+			"uploadTitle": "Carica foto o video",
+			"uploadSubtitle": "Aggiungi immagini o video all'evento",
+			"addMedia": "Aggiungi immagini",
+			"tagMembersLabel": "Tagga i membri",
+			"saveButton": "Salva evento",
+			"requiredTitle": "Obbligatorio",
+			"requiredMessage": "Inserisci il nome dell'evento",
+			"successTitle": "Successo",
+			"successMessage": "Evento creato con successo!",
+			"errorTitle": "Errore",
+			"errorMessage": "Impossibile selezionare l'immagine",
+			"required": "Obbligatorio",
+			"optional": "Opzionale",
+			"titleHint": "Inserisci un titolo breve e descrittivo per l'evento"
+		},
+		"eventDetail": {
+			"defaultTitle": "Dettagli dell'evento",
+			"featured": "IN EVIDENZA",
+			"calendar": "Calendario",
+			"descriptionPlaceholder": "Aggiungi una descrizione per questo evento...",
+			"addDescription": "Aggiungi descrizione",
+			"cancel": "Annulla",
+			"save": "Salva"
+		},
+		"albumDetail": {
+			"eventDetails": "Dettagli dell'evento",
+			"date": "Data",
+			"editEvent": "Modifica evento",
+			"titleLabel": "Titolo",
+			"titlePlaceholder": "Titolo dell'evento",
+			"descriptionLabel": "Descrizione",
+			"descriptionPlaceholder": "Descrizione dell'evento",
+			"cancel": "Annulla",
+			"save": "Salva",
+			"errorTitle": "Errore",
+			"titleRequired": "Il titolo non può essere vuoto",
+			"updateFailed": "Impossibile aggiornare l'evento",
+			"sessionNotAvailable": "Sessione non disponibile",
+			"uploadFailed": "Impossibile caricare l'immagine"
+		}
+	},
+	"channelVoiceType": {
+		"title": "Tipo di canale vocale",
+		"mezon": "MEZON MEET",
+		"gMeet": "GOOGLE MEET"
+	},
+	"mediaHighlights": {
+		"title": "Immagini & In evidenza",
+		"familyJourney": "Eventi",
+		"cherishMoment": "Segui gli eventi importanti.",
+		"since": "DA",
+		"viewAlbum": "Visualizza Album",
+		"emptyTitle": "Il tuo percorso non è ancora iniziato.",
+		"emptyDescription": "Crea il tuo primo evento per iniziare a conservare i ricordi.",
+		"createFirstMilestone": "Crea il primo evento",
+		"selectYear": "Seleziona l'anno",
+		"special": "Speciale"
+	},
+	"familyEvents": {
+		"title": "Eventi",
+		"eventsIn": "Eventi dell'anno",
+		"noEvents": "Nessun evento quest'anno",
+		"addToGallery": "Aggiungi alla galleria",
+		"inDays": "Tra {{count}} giorni"
+	},
+	"createMilestone": {
+		"headerTitle": "Nuovo evento",
+		"cancel": "Annulla",
+		"cancelAlertTitle": "Annulla",
+		"cancelAlertMessage": "Sei sicuro di voler annullare questo evento?",
+		"continueEditing": "Continua a modificare",
+		"discard": "Scarta",
+		"eventTitleLabel": "Nome dell'evento",
+		"eventTitlePlaceholder": "Es: Riunione di gruppo, Lancio progetto",
+		"dateLabel": "Data",
+		"datePlaceholder": "Seleziona la data",
+		"storyLabel": "Descrizione",
+		"storyPlaceholder": "Inserisci la descrizione dell'evento...",
+		"memoriesLabel": "Immagini/Video",
+		"uploadTitle": "Carica foto o video",
+		"uploadSubtitle": "Aggiungi immagini o video all'evento",
+		"addMedia": "Aggiungi immagini",
+		"tagMembersLabel": "Tagga i membri",
+		"saveButton": "Salva evento",
+		"requiredTitle": "Obbligatorio",
+		"requiredMessage": "Inserisci il nome dell'evento",
+		"successTitle": "Successo",
+		"successMessage": "Evento creato con successo!",
+		"errorTitle": "Errore",
+		"errorMessage": "Impossibile selezionare l'immagine",
+		"required": "Obbligatorio",
+		"optional": "Opzionale",
+		"titleHint": "Inserisci un titolo breve e descrittivo per l'evento"
+	},
+	"albumDetail": {
+		"eventDetails": "Dettagli dell'evento",
+		"date": "Data",
+		"editEvent": "Modifica evento",
+		"titleLabel": "Titolo",
+		"titlePlaceholder": "Titolo dell'evento",
+		"descriptionLabel": "Descrizione",
+		"descriptionPlaceholder": "Descrizione dell'evento",
+		"cancel": "Annulla",
+		"save": "Salva",
+		"errorTitle": "Errore",
+		"titleRequired": "Il titolo non può essere vuoto",
+		"updateFailed": "Impossibile aggiornare l'evento",
+		"sessionNotAvailable": "Sessione non disponibile",
+		"uploadFailed": "Impossibile caricare l'immagine"
+	},
+	"monthsShort": ["GEN", "FEB", "MAR", "APR", "MAG", "GIU", "LUG", "AGO", "SET", "OTT", "NOV", "DIC"]
+}

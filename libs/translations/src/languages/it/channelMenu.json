@@ -1,0 +1,105 @@
+{
+  "menu": {
+      "watchMenu": {
+          "title": "",
+          "markAsRead": "Segna come letto"
+      },
+      "inviteMenu": {
+          "title": "",
+          "invite": "Invita",
+          "markFavorite": "Aggiungi ai preferiti",
+          "unMarkFavorite": "Rimuovi dai preferiti",
+          "copyLink": "Copia link"
+      },
+      "notification": {
+          "title": "",
+          "muteChannel": "Silenzia canale",
+          "unMuteChannel": "Riattiva notifiche canale",
+          "muteThread": "Silenzia thread",
+          "unMuteThread": "Riattiva notifiche thread",
+          "notification": "Impostazioni notifiche",
+          "for15Minutes": "Per 15 minuti",
+          "for1Hour": "Per 1 ora",
+          "for3Hours": "Per 3 ore",
+          "for8Hours": "Per 8 ore",
+          "for24Hours": "Per 24 ore",
+          "untilTurnedBackOn": "Fino a quando non lo riattiverò",
+          "useCategoryDefault": "Usa impostazioni predefinite della categoria",
+          "all": "Tutti",
+          "onlyMention": "Solo @menzioni",
+          "nothing": "Nessuna",
+          "processing": "In corso...",
+          "muteChannelStatus": "Canale silenziato",
+          "muteThreadStatus": "Thread silenziato",
+          "unmuteChannelStatus": "Canale con notifiche attive",
+          "unmuteThreadStatus": "Thread con notifiche attive",
+          "mutedUntil": "Silenziato fino al",
+          "muteSuccess": "Silenziato con successo!",
+          "unMuteSuccess": "Notifiche riattivate con successo!",
+          "muteFailed": "Impossibile silenziare il canale!",
+          "unMuteFailed": "Impossibile riattivare le notifiche!"
+      },
+      "thread": {
+        "title": "",
+        "threads": "Thread",
+        "searchThreads": "Cerca nome thread",
+        "searchFiles": "Cerca file",
+        "searchCanvas": "Cerca nome canvas"
+
+      },
+      "organizationMenu": {
+          "title": "",
+          "edit": "Modifica canale",
+          "deleteChannel": "Elimina canale",
+          "duplicateChannel": "Duplica canale",
+          "leaveChannel": "Esci dal canale",
+          "createTextChannel": "Crea canale testuale",
+          "createVoiceChannel": "Crea canale vocale",
+          "openChat": "Apri chat",
+          "hideNames": "Nascondi nomi",
+          "createThread": "Crea thread"
+      },
+      "devMode": {
+          "title": "Modalità sviluppo",
+          "copyChannelID": "Copia ID canale"
+      },
+      "manageThreadMenu": {
+          "editThread": "Modifica thread",
+          "deleteThread": "Elimina thread",
+          "leaveThread": "Esci dal thread",
+          "closeThread": "Chiudi thread",
+          "lockThread": "Blocca thread",
+          "copyLink": "Copia link"
+      }
+  },
+  "notify": {
+      "serverIDCopied": "ID canale copiato"
+  },
+  "modalConfirm": {
+      "thread": {
+          "title": "Elimina thread {{threadName}}",
+          "content": "Sei sicuro di voler eliminare questo thread?",
+          "confirmText": "Sì"
+      },
+      "channel": {
+          "title": "Elimina canale {{channelName}}",
+          "content": "Sei sicuro di voler eliminare questo canale?",
+          "confirmText": "Sì",
+          "systemChannel": "Impossibile eliminare un canale di sistema",
+          "error": "Errore durante l'eliminazione del canale: {{error}}"
+      }
+  },
+  "modalConFirmLeaveThread": {
+    "title": "Esci dal thread",
+    "yesButton": "Esci dal thread",
+    "textConfirm": "Sei sicuro di voler uscire da questo thread? Una volta uscito, non potrai più ricevere messaggi da questo thread."
+  },
+  "modalConFirmLeaveChannel": {
+    "title": "Esci dal canale",
+    "yesButton": "Esci dal canale",
+    "textConfirm": "Sei sicuro di voler uscire da questo canale? Una volta uscito, non potrai più ricevere messaggi da questo canale.",
+    "error": "Errore durante l'uscita dal canale: {{error}}"
+  },
+  "btnBadgeCount": "Nuovo",
+  "favoriteChannel": "CANALI PREFERITI"
+}

@@ -1,9 +1,9 @@
 {
-    "newPost": "Crear nuevo mensaje",
-    "titlePlaceholder": "Introduce el título...",
-    "descriptionPlaceholder": "Introduce la descripción (opcional)...",
-    "addMedia": "Añadir medios",
-    "post": "Publicar",
-    "noMessagesYet": "Aún no hay mensajes",
-    "beTheFirst": "Sé el primero en enviar un mensaje en este canal"
+	"newPost": "Crear nueva publicación",
+	"titlePlaceholder": "Introduce un título...",
+	"descriptionPlaceholder": "Introduce una descripción (opcional)...",
+	"addMedia": "Añadir multimedia",
+	"post": "Publicar",
+	"noMessagesYet": "Aún no hay mensajes",
+	"beTheFirst": "Sé el primero en enviar un mensaje en este canal"
 }

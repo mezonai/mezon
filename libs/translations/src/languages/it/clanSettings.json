@@ -1,0 +1,92 @@
+{
+	"sidebar": {
+		"communityOverview": "Panoramica community",
+		"deleteClan": "Elimina clan",
+		"sectionTitles": {
+			"apps": "App",
+			"moderation": "Moderazione",
+			"emotions": "Emoji"
+		},
+		"items": {
+			"overview": "Panoramica",
+			"roles": "Ruoli",
+			"emoji": "Emoji",
+			"imageStickers": "Sticker immagine",
+			"voiceStickers": "Effetti sonori",
+			"categoryOrder": "Ordine categorie",
+			"integrations": "Integrazioni",
+			"auditLog": "Registro attività",
+			"onboarding": "Guida",
+			"enableCommunity": "Attiva community"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "Dimensione minima: 128x128",
+		"recommendedSize": "Si consiglia di utilizzare un'immagine di almeno 512x512 per il clan.",
+		"uploadImage": "Carica immagine",
+		"clanName": "Nome del Clan",
+		"namePlaceholder": "Nome del clan...",
+		"validationError": "Inserisci un nome canale valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+		"modal": {
+			"title": "Sono ammessi solo file immagine",
+			"content": "Carica solo file in formato (JPEG, PNG), grazie!"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "Attenzione — hai modifiche non salvate!",
+		"reset": "Ripristina",
+		"saveChanges": "Salva modifiche"
+	},
+	"clanBanner": {
+		"title": "Banner del Clan",
+		"description": "Questa immagine verrà visualizzata in cima all'elenco dei tuoi canali.",
+		"recommendedSize": "La dimensione minima consigliata è 960x540 con un rapporto d'aspetto di 16:9.",
+		"uploadBackground": "Carica sfondo",
+		"chooseImage": "Scegli immagine",
+		"modal": {
+			"title": "Sono ammessi solo file immagine",
+			"content": "Carica solo file in formato (JPEG, PNG), grazie!"
+		}
+	},
+	"systemMessages": {
+		"title": "Canale messaggi di sistema",
+		"description": "Questo è il canale in cui inviamo i messaggi di sistema. Può essere disattivato in qualsiasi momento.",
+		"welcomeRandom": "Invia un messaggio di benvenuto casuale quando qualcuno si unisce a questo server.",
+		"welcomeSticker": "Ricorda ai membri di rispondere al messaggio di benvenuto con uno sticker.",
+		"boostMessage": "Invia un messaggio quando qualcuno potenzia questo server.",
+		"setupTips": "Invia suggerimenti utili per la configurazione del server.",
+		"auditLog": "Invia un log quando viene eseguita un'azione nel clan",
+		"anoTitle": "Modalità anonima",
+		"anoDesc": "Impedisci agli utenti di utilizzare la modalità anonima"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "App per il gaming",
+			"popularTrending": "App popolari e di tendenza",
+			"serverMiniGames": "Mini-giochi del server",
+			"rolePlayingFavorites": "Preferiti per il gioco di ruolo"
+		},
+		"inServers": "in {{count}} server"
+	},
+	"emoji": {
+		"uploadInstructions": "ISTRUZIONI PER IL CARICAMENTO",
+		"title": "Emoji",
+		"description": "Aggiungi fino a 250 emoji personalizzate che tutti possono usare in questo server.",
+		"uploadRequirements": "REQUISITI PER IL CARICAMENTO",
+		"requirements": {
+			"fileType": "Tipo di file: JPEG, PNG, GIF",
+			"fileSize": "Dimensione file consigliata: 256 KB",
+			"dimensions": "Dimensioni consigliate: 128x128",
+			"naming": "Naming: Il nome dell'emoji deve avere almeno 2 caratteri e può contenere solo lettere, numeri e underscore (_)"
+		},
+		"uploadEmoji": "Carica emoji"
+	},
+	"stickers": {
+		"uploadInstructions": "ISTRUZIONI PER IL CARICAMENTO",
+		"description": "Gli sticker possono essere statici (PNG) o animati (APNG, GIF). Gli sticker devono avere dimensioni esatte di 320 x 320 pixel e non superare i 512KB. Ridimensioneremo automaticamente gli sticker PNG statici e GIF animati per te.",
+		"uploadHere": "Carica qui!",
+		"customizeMessage": "Personalizza i tuoi fantastici sticker secondo i tuoi gusti",
+		"uploadSticker": "Carica sticker"
+	},
+	"deleteClanTitle": "Elimina '{{clanName}}'"
+}

@@ -1,0 +1,50 @@
+{
+	"title": "Copertina dello streaming",
+	"uploadThumbnail": "Carica copertina",
+	"currentThumbnail": "Copertina attuale",
+	"requirementsTitle": "Requisiti",
+	"buttons": {
+		"change": "Cambia",
+		"remove": "Rimuovi",
+		"selectFile": "Seleziona file",
+		"uploading": "Caricamento in corso...",
+		"cancel": "Annulla",
+		"confirmUpload": "Conferma",
+		"removing": "Rimozione in corso...",
+		"removeThumbnail": "Rimuovi copertina"
+	},
+	"upload": {
+		"title": "Carica la tua copertina",
+		"description": "Clicca per sfogliare o trascina e rilascia l'immagine"
+	},
+	"confirmModal": {
+		"uploadTitle": "Conferma caricamento",
+		"uploadDescription": "Vuoi impostare questa immagine come copertina dello streaming?",
+		"uploadMessage": "Questa copertina verrà mostrata quando lo streaming sarà offline. Tutti i membri vedranno immediatamente l'aggiornamento.",
+		"removeTitle": "Rimuovi copertina",
+		"removeQuestion": "Sei sicuro?",
+		"removeMessage": "Questa azione rimuoverà la copertina dello streaming. Verrà mostrata la schermata di splash predefinita quando lo streaming sarà offline.",
+		"removeWarning": "Questa azione non può essere annullata."
+	},
+	"requirements": {
+		"format": {
+			"title": "Formato",
+			"value": "JPG, PNG, GIF, WEBP"
+		},
+		"resolution": {
+			"title": "Risoluzione",
+			"value": "Consigliata 1920 x 1080"
+		},
+		"sizeLimit": {
+			"title": "Limite dimensione",
+			"value": "Massimo 10 MB"
+		}
+	},
+	"errors": {
+		"channelNotFound": "Canale non trovato",
+		"clientNotReady": "Client/sessione non pronta",
+		"uploadFailed": "Caricamento copertina fallito. Riprova.",
+		"removeFailed": "Rimozione copertina fallita. Riprova."
+	},
+	"saved": "Copertina salvata"
+}

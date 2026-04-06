@@ -1,0 +1,24 @@
+{
+  "joinClan": {
+    "joinExistClan": "Unisciti a un clan esistente",
+    "enterInvite": "Inserisci il codice d'invito qui sotto per unirti a un clan esistente.",
+    "labelInput": "Link d'invito",
+    "linkInviteEx": "Il link d'invito dovrebbe essere simile a https://mezon.ai/invite/1813407038846046912",
+    "joinInviteLink": "Unisciti con un link d'invito",
+    "errorMessage": "Inserisci un link o un codice d'invito valido."
+  },
+  "emptyClans": {
+    "clans": "Clan",
+    "readyChat": "Pronto per portare le chat di gruppo al livello successivo?",
+    "buildYourCommunity": "Costruisci la tua community con chat organizzate, incontri spontanei e potenti funzionalità di personalizzazione!",
+    "createClan": "Crea il tuo clan",
+    "joinClan": "Unisciti a un clan",
+    "joinChannel": "Unisciti a un canale",
+    "findChannel": "Ti senti in un posto sconosciuto. Non hai accesso ad alcun canale di testo."
+  },
+  "emptyMessage": {
+    "dMsWith": "Messaggi diretti con molte funzioni utili",
+    "inviteYourFriends": "Invita i tuoi amici per giocare, ascoltare musica insieme e molto altro.",
+    "addFriend": "Aggiungi amici"
+  }
+}

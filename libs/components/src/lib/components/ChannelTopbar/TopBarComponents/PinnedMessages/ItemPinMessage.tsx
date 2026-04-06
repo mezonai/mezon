@@ -154,6 +154,7 @@ const ItemPinMessage = (props: ItemPinMessageProps) => {
 									allowMultipleAnswers={pollData.type === 1}
 									messageId={String(pinMessage.message_id || '')}
 									channelId={String(pinMessage.channel_id || '')}
+									interactionDisabled
 								/>
 							</div>
 						) : (

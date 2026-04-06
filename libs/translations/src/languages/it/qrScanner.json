@@ -1,0 +1,17 @@
+{
+	"cameraPermissionDenied": "Accesso alla fotocamera negato",
+	"pleaseAllowCamera": "Per favore, consenti l'accesso alla fotocamera nelle impostazioni del dispositivo.",
+	"cancel": "Annulla",
+	"openSettings": "Apri impostazioni",
+	"anErrorOccurred": "Si è verificato un errore, riprova",
+	"youAreIn": "Hai effettuato l'accesso!",
+	"logInOnNewDevice": "Accedere da un nuovo dispositivo?",
+	"youAreLoggedInOnDesktop": "Ora hai effettuato l'accesso da desktop",
+	"neverScanALoginQRCodeFromAnotherUser": "Non scansionare mai un codice QR di accesso fornito da un altro utente.",
+	"startTalking": "Inizia a parlare",
+	"logIn": "Accedi",
+	"requestCameraPermission": "Richiedi l'accesso alla fotocamera",
+	"myQRCode": "Il mio codice QR",
+	"selectPhotoWithQRCode": "Seleziona una foto che contenga un codice QR",
+	"qrCodeNotValid": "Codice QR non valido"
+}

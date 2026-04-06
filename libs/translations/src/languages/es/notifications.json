@@ -8,18 +8,18 @@
   },
   "empty": {
     "forYou": {
-      "title": "Nada aquí todavía",
-      "description": "Vuelve para recibir notificaciones sobre eventos, transmisiones y más."
+      "title": "Aún no hay nada aquí",
+      "description": "Vuelve para ver notificaciones de eventos, transmisiones y más."
     },
     "messages": {
       "title": "¡Estás al día!",
-      "protip": "Protip:",
-      "description": "Abre la Bandeja de entrada pulsando CTRL+I, y marca tu mensaje principal como leído con CTRL+Shift+E."
+      "protip": "Consejo extra:",
+      "description": "Abre la Bandeja de entrada presionando CTRL+I, y marca tu mensaje superior como leído con CTRL+Shift+E."
     },
     "mentions": {
-      "title": "¡Has visto todo!",
-      "protip": "Protip:",
-      "description": "Cada vez que alguien te mencione se guardará aquí durante 7 días."
+      "title": "¡Has revisado todo!",
+      "protip": "Consejo extra:",
+      "description": "Cada vez que alguien te menciona, se guardará aquí durante 7 días."
     }
   }
 }

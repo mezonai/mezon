@@ -1,8 +1,8 @@
 {
 	"joinStreamingRoomBS": {
-		"stream": "Sala de streaming",
-		"joinStream": "Unirse a la transmisión"
+		"stream": "Sala de retransmisión",
+		"joinStream": "Unirse a la retransmisión"
 	},
 	"chat": "Chat",
-	"noDisplay": "No se muestra la transmisión"
+	"noDisplay": "Sin visualización de retransmisión"
 }

@@ -1,0 +1,79 @@
+{
+	"header": {
+		"save": "Salva"
+	},
+	"toast": {
+		"saveSuccess": "Salvataggio riuscito",
+		"notBlank": "Non può essere vuoto",
+		"saveError": "Si è verificato un errore durante il salvataggio"
+	},
+	"menu": {
+		"serverName": {
+			"title": "Nome del clan",
+			"errorMessage": "Inserisci un nome clan valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+			"duplicateNameMessage": "Questo nome clan esiste già. Scegline un altro.",
+			"permissionDenied": "Non hai i permessi per modificare lo sfondo del clan"
+		},
+		"inactive": {
+			"title": "Impostazioni inattività",
+			"description": "Sposta automaticamente i membri in questo canale e disattiva il loro microfono quando rimangono inattivi per un tempo prestabilito. Questa funzione non è disponibile per la versione web.",
+			"inactiveChannel": "Canale inattività",
+			"inactiveTimeout": "Timeout inattività"
+		},
+		"systemMessage": {
+			"title": "Impostazioni notifiche di sistema",
+			"description": "Questo è il canale in cui inviamo le notifiche di sistema. Puoi disattivarle in qualsiasi momento.",
+			"channel": "Canale",
+			"selectChannel": "Seleziona canale notifiche",
+			"channelDescription": "Questo è il canale in cui verranno inviati i messaggi di sistema",
+			"welcomeRandom": "Invia un messaggio di benvenuto casuale quando qualcuno si unisce a questo clan",
+			"welcomeSticker": "Richiedi ai membri di rispondere al messaggio di benvenuto con uno sticker",
+			"boostMessage": "Invia un messaggio quando qualcuno potenzia questo clan",
+			"setupTips": "Invia suggerimenti utili per la configurazione del clan",
+			"hideAuditLog": "Invia un log quando viene eseguita un'azione nel clan",
+			"anonymousTitle": "Blocca modalità anonima",
+			"anonymousDescription": "Impedisci agli utenti di utilizzare la modalità anonima"
+		},
+		"deleteServer": {
+			"title": "Elimina clan",
+			"delete": "Elimina clan"
+		}
+	},
+	"fields": {
+		"defaultNotification": {
+			"title": "Impostazioni notifiche predefinite",
+			"description": "Questa impostazione determina se i membri che non hanno impostato esplicitamente le proprie notifiche riceveranno avvisi per ogni messaggio inviato in questo clan. Per le community, consigliamo di impostare le notifiche su @menzioni.",
+			"allMessages": "Tutti i messaggi",
+			"onlyMentions": "Solo @menzioni"
+		}
+	},
+	"permissions": {
+		"toast": {
+			"kickMemberSuccess": "Membro espulso con successo",
+			"kickMemberFailed": "Impossibile espellere il membro",
+			"removeMemberThreadSuccess": "Membro rimosso con successo",
+			"removeMemberThreadFailed": "Impossibile rimuovere il membro",
+			"transferOwnershipSuccess": "Trasferimento proprietà riuscito",
+			"transferOwnershipFailed": "Trasferimento proprietà fallito"
+		}
+	},
+	"action": {
+		"kick": "Espelli",
+		"removeFromThread": "Rimuovi dal thread",
+		"manage": "Gestisci",
+		"transferOwnership": "Trasferisci proprietà",
+		"ban": "Banna",
+		"unban": "Sblocca"
+	},
+	"threadRemoveModal": {
+		"title": "Rimuovi dal thread?",
+		"description": "Sei sicuro di voler rimuovere {{username}} da questo thread?",
+		"remove": "Rimuovi",
+		"cancel": "Annulla"
+	},
+	"modal": {
+		"kickUserClan": {
+			"title": "Sei sicuro?"
+		}
+	}
+}

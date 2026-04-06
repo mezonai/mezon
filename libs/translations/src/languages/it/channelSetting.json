@@ -1,0 +1,290 @@
+{
+	"fields": {
+		"channelName": {
+			"title": "Nome del canale",
+			"placeholder": "Inserisci nome canale",
+			"errorMessage": "Inserisci un nome canale valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+			"duplicateError": "Questo nome canale esiste già nella categoria. Inseriscine un altro."
+		},
+		"threadName": {
+			"title": "Nome del thread",
+			"placeholder": "Inserisci nome thread",
+			"errorMessage": "Inserisci un nome thread valido (massimo 65 caratteri, solo lettere, numeri, _ o -).",
+			"emptyError": "Inserisci il nome del thread (massimo 65 caratteri, solo lettere, numeri, _ o -).",
+			"duplicateError": "Questo nome thread esiste già nel canale. Inseriscine un altro."
+		},
+		"channelDescription": {
+			"title": "Descrizione del canale",
+			"placeholder": "Fai sapere a tutti come usare questo canale!"
+		},
+		"threadDescription": {
+			"title": "Descrizione del thread",
+			"placeholder": "Fai sapere a tutti come usare questo thread!"
+		},
+		"appUrl": {
+			"title": "URL dell'app",
+			"invalidError": "Inserisci un URL valido (es: https://example.com)."
+		},
+		"channelCategory": {
+			"title": "Categoria del canale"
+		},
+		"channelPermission": {
+			"title": "",
+			"permission": "Permessi del canale",
+			"description": "Cambia le impostazioni sulla privacy e personalizza il modo in cui i membri possono interagire con questo canale."
+		},
+		"quickAction": {
+			"title": "Azioni"
+		},
+		"privateChannelInvite": {
+			"addMember": "Aggiungi membro"
+		},
+		"channelNotifications": {
+			"title": "",
+			"notification": "Impostazioni notifiche",
+			"pinned": "Messaggi fissati",
+			"invite": "Inviti"
+		},
+		"channelSlowMode": {
+			"title": "Modalità lenta",
+			"description": "I membri saranno limitati a inviare un messaggio ogni intervallo di tempo specificato, a meno che non abbiano permessi di gestione canale o gestione messaggi.",
+			"_5seconds": "5 secondi",
+			"_10seconds": "10 secondi",
+			"_15seconds": "15 secondi",
+			"_30seconds": "30 secondi",
+			"_1minute": "1 minuto",
+			"_2minutes": "2 minuti",
+			"_5minutes": "5 minuti",
+			"_10minutes": "10 minuti",
+			"_15minutes": "15 minuti",
+			"_30minutes": "30 minuti",
+			"_1hour": "1 ora",
+			"_2hours": "2 ore",
+			"_6hours": "6 ore"
+		},
+		"channelHideInactivity": {
+			"title": "Nascondi dopo inattività",
+			"description": "I nuovi thread non verranno mostrati nell'elenco dei canali dopo un periodo di inattività specificato.",
+			"_1hour": "1 Ora",
+			"_24hours": "24 Ore",
+			"_3days": "3 Giorni",
+			"_1Week": "1 Settimana"
+		},
+		"channelWebhooks": {
+			"title": "",
+			"webhook": "Webhook"
+		},
+		"channelDelete": {
+			"title": "",
+			"delete": "Elimina canale"
+		},
+		"threadDelete": {
+			"title": "",
+			"delete": "Elimina thread"
+		},
+		"threadLeave": {
+			"title": "",
+			"leave": "Esci dal thread"
+		}
+	},
+	"confirm": {
+		"delete": {
+			"content": "Sei sicuro di voler eliminare #{{channelName}}? Questa azione non può essere annullata.",
+			"confirmText": "Elimina",
+			"title": "Elimina canale",
+			"systemChannel": "Impossibile eliminare un canale di sistema",
+			"error": "Errore durante l'eliminazione del canale: {{error}}"
+		},
+		"deleteThread": {
+			"content": "Sei sicuro di voler eliminare {{channelName}}? Questa azione non può essere annullata.",
+			"confirmText": "Elimina thread",
+			"title": "Elimina thread"
+		},
+		"deleteChannel": {
+			"content": "Sei sicuro di voler eliminare {{channelName}}? Questa azione non può essere annullata.",
+			"confirmText": "Elimina canale",
+			"title": "Elimina canale"
+		},
+		"cancel": "Annulla",
+		"leave": {
+			"content": "Sei sicuro di voler uscire dal canale #{{channelName}}? Questa azione non può essere annullata.",
+			"confirmText": "Esci",
+			"title": "Esci dal canale"
+		},
+		"save": "Salva"
+	},
+	"toast": {
+		"updated": "Aggiornato con successo"
+	},
+	"channelPermission": {
+		"permissionOverrides": "Sovrascrittura permessi",
+		"save": "Salva",
+		"generalChannelPermission": "PERMESSI GENERALI DEL CANALE",
+		"title": "Accesso",
+		"basicView": "Base",
+		"advancedView": "Avanzata",
+		"roles": "Ruoli",
+		"members": "Membri",
+		"edit": "Modifica",
+		"done": "Fatto",
+		"addRole": "Aggiungi ruolo",
+		"addMember": "Aggiungi membro",
+		"privateChannel": "Canale privato",
+		"basicViewDescription": "Quando sposti il canale in modalità privata, solo i membri e i ruoli selezionati potranno visualizzarlo.",
+		"ChannelCreator": "Creatore",
+		"addMemberAndRoles": "Aggiungi membri o ruoli",
+		"whoCanAccess": "Chi può accedere",
+		"warningModal": {
+			"publicChannelTitle": "Aprire questo canale a tutti?",
+			"privateChannelTitle": "Rendere questo canale privato?",
+			"publicChannelContent": "{{channelLabel}} sarà disponibile per tutti i membri.",
+			"privateChannelContent": "{{channelLabel}} diventerà privato e sarà visibile solo ai membri e ai ruoli selezionati.",
+			"confirm": "Conferma"
+		},
+		"warningChangeSettingModal": {
+			"title": "Hai impostazioni non salvate",
+			"content": "Vuoi salvare le modifiche?",
+			"confirm": "Sì, Salva"
+		},
+		"description": {
+			"viewChannel": "Consente ai membri di vedere questo canale per impostazione predefinita. Disabilitando questa opzione per @everyone, il canale diventerà privato.",
+			"manageChannel": "Consente ai membri di cambiare il nome del canale, la descrizione e le impostazioni testuali. Possono anche eliminare il canale.",
+			"manageThread": "Consente ai membri di rinominare, eliminare, chiudere e attivare la modalità lenta per i thread in questo canale. Possono anche vedere i thread privati.",
+			"sendMessage": "Consente ai membri di inviare messaggi in questo canale.",
+			"deleteMessage": "Consente ai membri di eliminare messaggi in questo canale."
+		},
+		"bottomSheet": {
+			"addMembersOrRoles": "Aggiungi membri o ruoli",
+			"add": "Aggiungi",
+			"roles": "Ruoli",
+			"members": "Membri",
+			"rolesMembers": "Ruoli/Membri",
+			"roleMemberPlaceholder": "Ruolo/Membro"
+		},
+		"toast": {
+			"success": "Salvataggio riuscito",
+			"failed": "Salvataggio fallito"
+		},
+		"roleAndMemberEmpty": "Nessun ruolo o membro presente per impostare i permessi privati",
+		"header": {
+			"title": "Permessi del canale",
+			"description": "Usa i permessi per personalizzare chi può fare cosa in questo canale.",
+			"syncedWithCategory": "Permessi sincronizzati con la categoria:"
+		}
+	},
+	"quickAction": {
+		"title": "Menu rapido",
+		"description": "Gestisci messaggi rapidi e menu rapidi per questo canale",
+		"keyTitle": "Inserisci parola chiave (es: ciao): ",
+		"valueTitle": "Inserisci contenuto (es: Buongiorno, spero che tu abbia una splendida giornata!)",
+		"save": "Salva",
+		"cancel": "Annulla",
+		"create": "Crea",
+		"update": "Aggiorna",
+		"delete": "Elimina",
+		"deleteModal": "Elimina menu rapido",
+		"deleteTitle": "Sei sicuro di voler eliminare {{command}}? Questa azione non può essere annullata.",
+		"flashMessage": "Messaggio flash",
+		"flashMessages": "Messaggi flash",
+		"quickMenu": "Menu rapido",
+		"quickMenus": "Menu rapidi",
+		"menuName": "Nome del menu",
+		"commandName": "Nome del comando",
+		"menuNameHelper": "Nome per questa voce di menu rapido",
+		"commandNameHelper": "Nome che l'utente digiterà dopo lo slash",
+		"botEventTrigger": "Attiva evento Bot",
+		"botEventDescription": "Questo menu rapido attiverà automaticamente un evento bot quando selezionato.",
+		"createQuickMenu": "Crea Menu Rapido",
+		"createFlashMessage": "Crea Messaggio Flash",
+		"editQuickMenu": "Modifica Menu Rapido",
+		"editFlashMessage": "Modifica Messaggio Flash",
+		"emptyFlashMessage": "Nessun messaggio flash",
+		"emptyFlashMessageDescription": "Inizia creando il tuo primo comando messaggio flash",
+		"emptyQuickMenu": "Nessun menu rapido",
+		"emptyQuickMenuDescription": "Inizia creando il tuo primo menu rapido",
+		"addFlashMessage": "Aggiungi Messaggio Flash",
+		"addQuickMenu": "Aggiungi Menu Rapido",
+		"editCommand": "Modifica comando",
+		"deleteCommand": "Elimina comando",
+		"triggersBot": "Attiva evento bot",
+		"messageContent": "Contenuto del messaggio",
+		"messageContentPlaceholder": "Il messaggio verrà inviato rapidamente",
+		"messageContentDescription": "Il contenuto del messaggio che verrà inviato quando si usa questo comando messaggio flash",
+		"menuAction": "Azione del menu",
+		"menuActionPlaceholder": "L'azione che verrà eseguita",
+		"menuActionDescription": "L'azione che verrà eseguita quando viene selezionato questo menu rapido"
+	},
+	"changeCategory": {
+		"title": "Cambia categoria",
+		"label": "SPOSTA DA {{currentChannel}} A",
+		"confirmFirstContent": "Sei sicuro di voler spostare",
+		"confirmLastContent": "alla categoria",
+		"confirm": "Conferma",
+		"error": "Errore durante il cambio di categoria"
+	},
+	"overview": {
+		"title": "Panoramica",
+		"ageRestricted": {
+			"title": "Canale con restrizioni di età",
+			"description": "Gli utenti dovranno confermare di avere l'età legale per vedere i contenuti in questo canale. I canali con restrizioni di età sono esclusi dai filtri per contenuti sensibili."
+		},
+		"e2ee": {
+			"title": "Crittografia end-to-end",
+			"description": "Attiva la crittografia end-to-end per questo canale per proteggere tutti i messaggi."
+		}
+	},
+	"tabs": {
+		"overview": "Panoramica",
+		"permissions": "Permessi",
+		"invites": "Inviti",
+		"integrations": "Integrazioni",
+		"category": "Categoria",
+		"quickMenu": "Menu rapido"
+	},
+	"categoryManagement": {
+		"title": "Categoria",
+		"channelName": "Nome canale",
+		"category": "Categoria"
+	},
+	"unsavedChanges": {
+		"warning": "Attenzione - hai modifiche non salvate!",
+		"reset": "Ripristina",
+		"saveChanges": "Salva modifiche"
+	},
+	"addMembersRoles": {
+		"title": "Aggiungi membri o ruoli",
+		"placeholder": "Es: Amministratore, @wumpus",
+		"instruction": "Aggiungi singoli membri iniziando con @ o inserendo il nome del ruolo",
+		"roles": "Ruoli",
+		"members": "Membri",
+		"cancel": "Annulla",
+		"done": "Fatto",
+		"searchPlaceholder": "Cerca Ruoli & Membri"
+	},
+	"table": {
+		"columnHeaders": {
+			"name": "Nome",
+			"members": "Membri",
+			"messagesCount": "Messaggi",
+			"lastSent": "Ultimo inviato",
+			"creator": "Creatore"
+		},
+		"pagination": {
+			"show": "Mostra",
+			"channelOf": "canali su"
+		},
+		"memberModal": {
+			"listMember": "Elenco membri"
+		},
+		"threads": {
+			"noThreads": "Nessun thread in questo canale"
+		},
+		"members": {
+			"allMembers": "(Tutti i membri)"
+		}
+	},
+	"streamBanner": {
+		"title": "Immagine di copertina Stream"
+	},
+	"banList": "Lista ban"
+}

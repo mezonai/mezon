@@ -35,10 +35,10 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 	const listUserDM = useSelector(selectAllUserDM);
 	const mergeListFriendAndListUserDM = useMemo(() => {
 		return [
-			...listFriend.map((friend) => ({
+			...listFriend.map<IUserProfileActivity>((friend) => ({
 				avatar_url: friend?.user?.avatar_url,
 				display_name: friend?.user?.display_name,
-				id: friend?.user?.id,
+				id: friend?.user?.id || '',
 				username: friend?.user?.username,
 				online: friend?.user?.online
 			})),
@@ -46,13 +46,17 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 		];
 	}, [listFriend, listUserDM]);
 
-	const listUser = Array.from(new Map(mergeListFriendAndListUserDM.map((item) => [item?.id, item])).values());
-	const userIds = listUser?.filter((user) => user?.online).map((item) => item?.id);
+	const listUser = useMemo(() => {
+		return Array.from(new Map(mergeListFriendAndListUserDM.map((item) => [item.id, item])).values()).filter(
+			(item): item is IUserProfileActivity => Boolean(item.id)
+		);
+	}, [mergeListFriendAndListUserDM]);
 
 	const activities = useSelector(selectAllActivities);
-
-	const activitiesByUserId = activities?.filter((item) => userIds?.includes(item?.id));
 	const listActivities = useMemo(() => {
+		const userIds = new Set(listUser.map((item) => item?.id).filter((id): id is string => Boolean(id)));
+		const activitiesByUserId = (activities || []).filter((activity) => activity?.user_id && userIds.has(activity.user_id));
+
 		if (activitiesByUserId?.length === 0) {
 			return {
 				users: [{ visualCodeSeparate: true }, { spotifySeparate: true }, { lOLSeparate: true }],
@@ -65,15 +69,15 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 		const userMap = new Map(listUser.map((user) => [user?.id, user]));
 
 		const visualCodes = activitiesByUserId
-			.filter((activity) => activity?.activity_type === 1 && activity?.user_id && userMap.has(activity?.user_id))
+			.filter((activity) => activity?.activity_type === 1 && activity?.user_id && userMap.has(activity.user_id))
 			.map((activity) => ({ ...activity, user: userMap.get(activity?.user_id as string) }));
 
 		const spotifys = activitiesByUserId
-			.filter((activity) => activity?.activity_type === 2 && activity?.user_id && userMap.has(activity?.user_id))
+			.filter((activity) => activity?.activity_type === 2 && activity?.user_id && userMap.has(activity.user_id))
 			.map((activity) => ({ ...activity, user: userMap.get(activity?.user_id as string) }));
 
 		const lol = activitiesByUserId
-			.filter((activity) => activity?.activity_type === 3 && activity?.user_id && userMap.has(activity?.user_id))
+			.filter((activity) => activity?.activity_type === 3 && activity?.user_id && userMap.has(activity.user_id))
 			.map((activity) => ({ ...activity, user: userMap.get(activity?.user_id as string) }));
 
 		return {
@@ -82,7 +86,7 @@ const ActivityList = ({ listFriend }: ListActivityProps) => {
 			spotifyCount: spotifys.length,
 			lolCount: lol.length
 		};
-	}, [activitiesByUserId, listUser]);
+	}, [activities, listUser]);
 
 	const [height, setHeight] = useState(window.innerHeight - heightTopBar - titleBarHeight);
 

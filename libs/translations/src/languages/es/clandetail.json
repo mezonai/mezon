@@ -3,18 +3,18 @@
 	"sections": {
 		"section1": {
 			"title": "Construye tu Comunidad con Más Diversión",
-			"description": "Más que solo chat - este es el lugar donde organizas, conectas con equipos, amigos y comunidades mientras pasas un buen rato."
+			"description": "Más que solo chat: aquí organizas, conectas con equipos, amigos y comunidades mientras pasas buen rato."
 		},
 		"section2": {
 			"title": "La Mejor Experiencia WFH para tu Organización",
-			"description": "Trabajar desde casa no significa trabajar solo. Colabora, comunica y celebra juntos — a veces separados. La mejor experiencia de trabajo desde casa para tu organización."
+			"description": "Trabajar desde casa no significa trabajar solo. Colabora, comunica y celebra juntos — a veces separados. La mejor experiencia WFH para tu organización."
 		},
 		"section3": {
-			"title": "Orientado a las Relaciones entre Miembros",
-			"description": "Creemos que las relaciones fuertes construyen organizaciones fuertes. Cada función está diseñada para acercar a los miembros. Relaciones entre miembros, amplificadas."
+			"title": "Orientado a Relaciones con Miembros",
+			"description": "Creemos que las relaciones fuertes construyen organizaciones fuertes. Cada función está diseñada para acercar a los miembros. Relaciones con miembros, potenciadas."
 		},
 		"section4": {
-			"title": "Contribuye para Ganar",
+			"title": "Contribuye y Gana",
 			"description": "Participa, gana créditos y recibe tokens mientras ayudas a que la comunidad crezca. Tu voz es tu valor. Contribuye para ganar."
 		},
 		"section5": {
@@ -24,12 +24,12 @@
 	},
 	"features": [
 		{
-			"title": "Sube tus Propias Reacciones, Pegatinas y Sonidos",
-			"description": "Completamente gratis para personalizar tus propias reacciones, pegatinas y efectos de sonido para expresarte en cada conversación."
+			"title": "Carga tus Propias Reacciones, Stickers y Sonidos",
+			"description": "Totalmente gratis para personalizar tus propias reacciones, stickers y efectos de sonido para expresarte en cada conversación."
 		},
 		{
 			"title": "Asigna Roles y Permisos en tu Clan",
-			"description": "Gestiona fácilmente los roles y permisos de los miembros dentro de tu clan para asegurar que todos tengan una experiencia segura y adecuada."
+			"description": "Gestiona fácilmente roles y permisos de miembros dentro de tu clan para asegurar que todos tengan una experiencia segura y adecuada."
 		},
 		{
 			"title": "Conéctate con Miembros que Comparten tus Intereses",
@@ -37,31 +37,31 @@
 		},
 		{
 			"title": "Crear un Clan Nunca Fue Tan Fácil",
-			"description": "Responde rápidamente a los mensajes con emojis sin tener que escribir una palabra."
+			"description": "Responde rápidamente a mensajes con emojis sin necesidad de escribir una palabra."
 		}
 	],
 	"featuresTitle": "Construye tu Comunidad con Más Diversión",
 	"download": "Descargar",
 	"faq": {
 		"title": "¿Necesitas Más Ayuda?",
-		"seeAll": "Ver Todas las Preguntas Frecuentes",
+		"seeAll": "Ver todos los FAQs",
 		"learnMore": "Saber más",
 		"questions": [
 			{
-				"question": "¿Qué es un Clan en Mezon?",
-				"answer": "Un Clan es el corazón de Mezon — donde las personas se conectan, colaboran y comparten a través de comunidades construidas alrededor de intereses, objetivos o pasiones compartidas. Un Clan puede ser un pequeño grupo de amigos o una comunidad a gran escala con miles de miembros. Dentro de un Clan, puedes chatear a través de Canales organizados, organizar eventos mediante Canales de Voz, y mejorar tu comunidad usando Bots, Apps y Tokens de Mezon."
+				"question": "¿Qué Es un Clan en Mezon?",
+				"answer": "Un Clan es el corazón de Mezon — donde las personas se conectan, colaboran y comparten a través de comunidades construidas alrededor de intereses, objetivos o pasiones compartidas. Un Clan puede ser un pequeño grupo de amigos o una comunidad a gran escala con miles de miembros. Dentro de un Clan, puedes chatear a través de Canales organizados, organizar eventos por Canales de Voz, y potenciar tu comunidad usando Bots, Apps y Tokens de Mezon."
 			},
 			{
-				"question": "¿Cómo me uno a un Clan en Mezon?",
-				"answer": "Puedes descubrir y unirte a Clans de dos maneras: a través del botón Descubrir dentro de la aplicación o mediante el sitio web de Clans en mezon.ai/clans, o usando un enlace de invitación compartido por amigos, compañeros o administradores. Simplemente haz clic en \"Unirse\" para convertirte en parte de la comunidad. Cada usuario puede unirse hasta 50 Clans a la vez. Explora Clans destacados como Clan de Estudiantes, Clan de Gamers y Clan de Negocios."
+				"question": "¿Cómo Me Uno a un Clan en Mezon?",
+				"answer": "Puedes descubrir y unirte a Clans de dos formas: a través del botón Descubrir dentro de la app o mediante el Sitio de Clans en mezon.ai/clans, o usando un enlace de invitación compartido por amigos, compañeros de equipo o admins. Simplemente haz clic en \"Unirse\" para convertirte en parte de la comunidad. Cada usuario puede unirse hasta 50 Clans a la vez. Explora Clans destacados como Clan Estudiante, Clan Gamer y Clan Empresarial."
 			},
 			{
-				"question": "¿Cómo creo mi propio Clan?",
-				"answer": "Crear un Clan es simple y altamente flexible. Navega a la sección de Clanes y crea un nuevo Clan con solo unos pocos clics. Puedes establecer un nombre, icono y configuración básica para personalizar tu comunidad. Una vez creado, puedes invitar a amigos y compañeros para empezar conversaciones, compartir ideas o colaborar juntos. También puedes gestionar canales, establecer permisos y transferir la propiedad si es necesario."
+				"question": "¿Cómo Creo mi Propio Clan?",
+				"answer": "Crear un Clan es simple y altamente flexible. Navega a la sección Clanes y crea un nuevo Clan con solo unos pocos clics. Puedes establecer un nombre, icono y configuraciones básicas para personalizar tu comunidad. Una vez creado, puedes invitar amigos y compañeros de equipo para iniciar conversaciones, compartir ideas o colaborar juntos. También puedes gestionar canales, establecer permisos y transferir propiedad si es necesario."
 			},
 			{
-				"question": "¿Puedo dejar un Clan si ya no quiero participar?",
-				"answer": "Sí. Si ya no deseas ser parte de un Clan, puedes seleccionar \"Salir del Clan\" desde la configuración del Clan. Una vez que sales, todo el historial de mensajes y acceso a los canales de ese Clan se eliminarán de tu cuenta. Siempre puedes volver a unirte al Clan más tarde si tienes un enlace de invitación o si el Clan es públicamente descubrible."
+				"question": "¿Puedo Salir de un Clan si ya no quiero Participar?",
+				"answer": "Sí. Si ya no deseas ser parte de un Clan, puedes seleccionar \"Salir del Clan\" desde la configuración del Clan. Una vez que sales, todo el historial de mensajes y acceso a los canales de ese Clan se eliminan de tu cuenta. Siempre puedes volver a unirte más tarde si tienes un enlace de invitación o si el Clan es públicamente descubrible."
 			}
 		]
 	}

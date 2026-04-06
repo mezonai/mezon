@@ -1,0 +1,39 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Segna come letto"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Invita"
+		},
+		"notification": {
+			"title": "",
+			"muteCategory": "Silenzia categoria",
+			"notification": "Impostazioni notifiche"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Crea canale",
+			"edit": "Modifica categoria",
+			"delete": "Elimina categoria"
+		},
+		"devMode": {
+			"title": "Modalità sviluppo",
+			"copyServerID": "Copia ID Clan"
+		},
+		"modalConfirm": {
+			"title": "Elimina categoria",
+			"content": "Sei sicuro di voler eliminare questa categoria? Questa azione non può essere annullata.",
+			"confirmText": "Elimina"
+		},
+		"toast": {
+			"systemChannel": "Errore: {{categoryName}} contiene un canale di sistema",
+			"error": "Errore durante l'eliminazione della categoria: {{error}}"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "ID Clan copiato"
+	}
+}

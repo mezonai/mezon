@@ -1,50 +1,50 @@
 {
-  "button": {
-    "upload": "Subir sonido",
-    "delete": "Eliminar",
-    "uploadDetailScreen": "Subir"
-  },
-  "content": {
-    "description": "•  Sólo se aceptan archivos .mp3, .wav, máximo 1 MB. \n•  Usa nombres fáciles de recordar para los efectos de voz. \n•  Los efectos de voz se usarán en las notificaciones del clan o eventos.",
-    "requirements": "REQUISITOS DE SUBIDA",
-    "reqSize": "- No mayor de 1024 KB.",
-    "audioFile": "Archivo de audio",
-    "audioName": "Nombre de la voz",
-    "preview": "Vista previa",
-    "chooseAudioFile": "Elige un archivo de audio"
-  },
-  "toast": {
-    "errorSizeLimit": "Se ha superado el límite de tamaño del archivo 1 MB",
-    "errorFileType": "Tipo de archivo no válido. Sólo se permiten archivos .mp3, .mpeg y .wav."
-  },
-  "main": {
-    "uploadInstructions": "INSTRUCCIONES DE SUBIDA",
-    "fileRequirements": "Sólo se aceptan archivos .mp3, .wav, máximo 1 MB. Usa nombres fáciles de recordar para las pegatinas de voz. Las pegatinas de voz se usarán en las notificaciones del clan o eventos.",
-    "uploadHere": "¡Sube aquí!",
-    "personalizeDescription": "¡Personaliza las pegatinas de voz para tu clan!",
-    "uploadSound": "Subir pegatina de voz",
-    "soundEffectList": "Lista de pegatinas de voz",
-    "noSoundEffects": "Aún no hay pegatinas de voz. Haz clic en \"Subir pegatina de voz\" para añadir."
-  },
-  "modal": {
-    "titleEdit": "Editar efecto de voz",
-    "titleUpload": "Subir efecto de voz",
-    "subtitle": "Soporta formatos MP3, WAV • Máx 1 MB",
-    "preview": "Vista previa",
-    "audioFile": "Archivo de audio",
-    "soundName": "Nombre de la voz",
-    "soundVolume": "Volumen del sonido",
-    "chooseOrDrop": "Selecciona o suelta un archivo",
-    "browse": "Examinar",
-    "placeholder": "Ex.cat abrazo",
-    "cancel": "Cancelar",
-    "uploading": "Subiendo...",
-    "update": "Actualizar",
-    "upload": "Subir",
-    "errorFileType": "Archivos compatibles: .mp3 o .wav",
-    "errorFileSize": "Archivo demasiado grande, máx 1 MB",
-    "errorUploadFailed": "Error al subir la voz",
-    "characters": "El nombre debe tener entre 3 y 64 caracteres",
-    "errorName": "El nombre de la voz debe tener entre {{min}} y {{max}} caracteres, sólo se permiten letras, números, _ y -"
-  }
+	"button": {
+		"upload": "Subir",
+		"delete": "Eliminar",
+		"uploadDetailScreen": "Subir"
+	},
+	"content": {
+		"description": "• Solo acepta archivos .mp3, .wav, máximo 1MB. \n• Usa nombres memorables para efectos de voz. \n• Los efectos de voz se usarán en notificaciones o eventos del clan.",
+		"requirements": "REQUISITOS DE CARGA",
+		"reqSize": "- No mayor a 1024KB.",
+		"audioFile": "Archivo de Audio",
+		"audioName": "Nombre de Voz",
+		"preview": "Vista previa",
+		"chooseAudioFile": "Elegir un archivo de audio"
+	},
+	"toast": {
+		"errorSizeLimit": "Límite de tamaño de archivo superado 1MB",
+		"errorFileType": "Tipo de archivo inválido. Solo se permiten archivos .mp3, .mpeg y .wav."
+	},
+	"main": {
+		"uploadInstructions": "INSTRUCCIONES DE CARGA",
+		"fileRequirements": "Solo acepta .mp3, .wav, máximo 1MB. Usa nombres memorables para stickers de voz. Los stickers de voz se usarán en notificaciones o eventos del clan.",
+		"uploadHere": "¡Súbelo aquí!",
+		"personalizeDescription": "¡Personaliza stickers de voz para tu clan!",
+		"uploadSound": "Subir sticker de voz",
+		"soundEffectList": "Lista de Stickers de Voz",
+		"noSoundEffects": "Aún no hay stickers de voz. ¡Haz clic en \"Subir sticker de voz\" para añadir!"
+	},
+	"modal": {
+		"titleEdit": "Editar Efecto de Voz",
+		"titleUpload": "Subir Efecto de Voz",
+		"subtitle": "Soporta formatos MP3, WAV • Máx 1MB",
+		"preview": "Vista previa",
+		"audioFile": "Archivo de Audio",
+		"soundName": "Nombre de Voz",
+		"soundVolume": "Volumen del sonido",
+		"chooseOrDrop": "Elige o arrastra un archivo",
+		"browse": "Examinar",
+		"placeholder": "Ej: gato_abrazo",
+		"cancel": "Cancelar",
+		"uploading": "Cargando...",
+		"update": "Actualizar",
+		"upload": "Subir",
+		"errorFileType": "Archivo compatible .mp3 o .wav",
+		"errorFileSize": "Archivo muy grande, máx 1MB",
+		"errorUploadFailed": "Error al subir efecto de voz",
+		"characters": "El nombre debe tener entre 3 y 64 caracteres",
+		"errorName": "El nombre de voz debe tener entre {{min}} y {{max}} caracteres, solo letras, números, _ y - son permitidos"
+	}
 }

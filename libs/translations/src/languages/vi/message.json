@@ -246,6 +246,7 @@
 		"durationDays": "{{count}} ngày",
 		"durationHours": "{{count}} giờ",
 		"durationMinutes": "{{count}} phút",
+		"durationLessThanMinute": "Chưa đầy một phút",
 		"selectOneOrMore": "Chọn một hoặc nhiều đáp án",
 		"selectOne": "Chọn một đáp án",
 		"vote": "bình chọn",
@@ -260,6 +261,7 @@
 		"loadMore": "Xem thêm {{count}} câu trả lời",
 		"loadMore1Option": "Xem thêm 1 câu trả lời",
 		"showLess": "Thu gọn",
-		"noVotesYet": "Chưa có người bình chọn"
+		"noVotesYet": "Chưa có người bình chọn",
+		"pollLabel": "[Bình chọn]"
 	}
 }

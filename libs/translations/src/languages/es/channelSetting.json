@@ -1,53 +1,53 @@
 {
 	"fields": {
 		"channelName": {
-			"title": "Nombre del canal",
-			"placeholder": "Introduce el nombre del canal",
-			"errorMessage": "Introduce un nombre de canal válido (máx. 64 caracteres, solo palabras, números, _ o -).",
-			"duplicateError": "El nombre de canal ya existe en la categoría. Introduce otro nombre."
+			"title": "Nombre del Canal",
+			"placeholder": "Introducir Nombre del Canal",
+			"errorMessage": "Introduce un nombre de canal válido (máximo 64 caracteres, solo letras, números, _ o -).",
+			"duplicateError": "El nombre del canal ya existe en la categoría. Introduce otro nombre."
 		},
 		"threadName": {
-			"title": "Nombre del hilo",
-			"placeholder": "Introduce el nombre del hilo",
-			"errorMessage": "Introduce un nombre de hilo válido (máx. 64 caracteres, solo palabras, números, _ o -).",
+			"title": "Nombre del Hilo",
+			"placeholder": "Introducir Nombre del Hilo",
+			"errorMessage": "Introduce un nombre de hilo válido (máximo 64 caracteres, solo letras, números, _ o -).",
 			"emptyError": "Por favor introduce un nombre de hilo válido (máx. 65 caracteres, solo palabras, números, _ o -).",
 			"duplicateError": "El nombre del hilo ya existe en el canal. Introduce otro nombre."
 		},
 		"channelDescription": {
-			"title": "Tema del canal",
-			"placeholder": "¡Haz saber a todos cómo usar este canal!"
+			"title": "Tema del Canal",
+			"placeholder": "¡Haz que todos sepan cómo usar este canal!"
 		},
 		"threadDescription": {
-			"title": "Tema del hilo",
-			"placeholder": "¡Haz saber a todos cómo usar este hilo!"
+			"title": "Tema del Hilo",
+			"placeholder": "¡Haz que todos sepan cómo usar este hilo!"
 		},
 		"appUrl": {
-			"title": "URL de la app",
-			"invalidError": "Introduce una URL válida (ej.: https://ejemplo.com)."
+			"title": "URL de la App",
+			"invalidError": "Introduce una URL válida (ej. https://example.com)."
 		},
 		"channelCategory": {
 			"title": "Categoría"
 		},
 		"channelPermission": {
 			"title": "",
-			"permission": "Permisos del canal",
+			"permission": "Permisos del Canal",
 			"description": "Cambia la configuración de privacidad y personaliza cómo los miembros pueden interactuar con este canal."
 		},
 		"quickAction": {
-			"title": "Acción rápida"
+			"title": "Acción Rápida"
 		},
 		"privateChannelInvite": {
-			"addMember": "Añadir miembro"
+			"addMember": "Añadir Miembro"
 		},
 		"channelNotifications": {
 			"title": "",
-			"notification": "Configuración de notificaciones",
-			"pinned": "Mensajes fijados",
+			"notification": "Configuración de Notificaciones",
+			"pinned": "Mensajes Fijados",
 			"invite": "Invitaciones"
 		},
 		"channelSlowMode": {
-			"title": "Tiempo de espera de slowmode",
-			"description": "Los miembros estarán restringidos a enviar un mensaje y crear un hilo cada intervalo, a menos que tengan permisos Gestionar canal o Gestionar mensajes.",
+			"title": "Tiempo de Espera Slowmode",
+			"description": "Los miembros estarán restringidos a enviar un mensaje y crear un hilo por este intervalo, a menos que tengan permisos de Administrar Canal o Administrar Mensajes.",
 			"slowModeOff": "Slowmode desactivado",
 			"_5seconds": "5 segundos",
 			"_10seconds": "10 segundos",
@@ -64,12 +64,12 @@
 			"_6hours": "6 horas"
 		},
 		"channelHideInactivity": {
-			"title": "Ocultar después de inactividad",
-			"description": "Los hilos nuevos no se mostrarán en la lista de canales tras estar inactivos durante el período especificado",
-			"_1hour": "1 hora",
-			"_24hours": "24 horas",
-			"_3days": "3 días",
-			"_1Week": "1 semana"
+			"title": "Ocultar tras Inactividad",
+			"description": "Los nuevos hilos no aparecerán en la lista de canales tras estar inactivos durante la duración especificada",
+			"_1hour": "1 Hora",
+			"_24hours": "24 Horas",
+			"_3days": "3 Días",
+			"_1Week": "1 Semana"
 		},
 		"channelWebhooks": {
 			"title": "",
@@ -77,39 +77,39 @@
 		},
 		"channelDelete": {
 			"title": "",
-			"delete": "Eliminar canal",
-			"leave": "Salir del canal"
+			"delete": "Eliminar Canal",
+			"leave": "Salir del Canal"
 		},
 		"threadDelete": {
 			"title": "",
-			"delete": "Eliminar hilo"
+			"delete": "Eliminar Hilo"
 		},
 		"threadLeave": {
 			"title": "",
-			"leave": "Salir del hilo"
+			"leave": "Salir del Hilo"
 		}
 	},
 	"confirm": {
 		"delete": {
-			"content": "Por favor confirma si deseas eliminar #{{channelName}}?. ¡No se podrá deshacer!",
+			"content": "¿Confirmas que deseas eliminar #{{channelName}}? ¡Esto no tiene vuelta atrás!",
 			"confirmText": "Eliminar",
 			"title": "Eliminar canal",
 			"systemChannel": "No puedes eliminar el canal del sistema",
-			"error": "Error al eliminar el canal: {{error}}"
+			"error": "Error al eliminar canal: {{error}}"
 		},
 		"deleteThread": {
-			"content": "Por favor confirma si deseas eliminar {{channelName}}?. No se podrá deshacer.",
-			"confirmText": "Eliminar hilo",
-			"title": "Eliminar hilo"
+			"content": "¿Confirmas que deseas eliminar {{channelName}}? Esto no tiene vuelta atrás.",
+			"confirmText": "Eliminar Hilo",
+			"title": "Eliminar Hilo"
 		},
 		"deleteChannel": {
-			"content": "Por favor confirma si deseas eliminar {{channelName}}?. No se podrá deshacer.",
-			"confirmText": "Eliminar canal",
-			"title": "Eliminar canal"
+			"content": "¿Confirmas que deseas eliminar {{channelName}}? Esto no tiene vuelta atrás.",
+			"confirmText": "Eliminar Canal",
+			"title": "Eliminar Canal"
 		},
 		"cancel": "Cancelar",
 		"leave": {
-			"content": "Por favor confirma si deseas salir de #{{channelName}}?. ¡No se podrá deshacer!",
+			"content": "¿Confirmas que deseas salir de #{{channelName}}? ¡Esto no tiene vuelta atrás!",
 			"confirmText": "Salir",
 			"title": "Salir del canal"
 		},
@@ -119,39 +119,39 @@
 		"updated": "Actualizado correctamente"
 	},
 	"channelPermission": {
-		"permissionOverrides": "Sobrescritura de permisos",
+		"permissionOverrides": "Sobrescrituras de Permiso",
 		"save": "Guardar",
-		"generalChannelPermission": "PERMISOS GENERALES DEL CANAL",
+		"generalChannelPermission": "PERMISOS GENERALES DE CANAL",
 		"title": "Permisos",
-		"basicView": "Vista básica",
-		"advancedView": "Vista avanzada",
+		"basicView": "Vista Básica",
+		"advancedView": "Vista Avanzada",
 		"roles": "Roles",
 		"members": "Miembros",
 		"edit": "Editar",
-		"done": "Hecho",
-		"addRole": "Añadir rol",
-		"addMember": "Añadir miembro",
-		"privateChannel": "Canal privado",
-		"basicViewDescription": "Al hacer el canal privado, solo los miembros y roles seleccionados podrán ver este canal",
+		"done": "Listo",
+		"addRole": "Añadir Rol",
+		"addMember": "Añadir Miembro",
+		"privateChannel": "Canal Privado",
+		"basicViewDescription": "Al hacer un canal privado, solo los miembros y roles seleccionados podrán ver este canal",
 		"addMemberAndRoles": "Añadir miembros o roles",
 		"ChannelCreator": "Creador",
 		"whoCanAccess": "Quién puede acceder",
 		"warningModal": {
-			"publicChannelTitle": "¿Hacer que este canal sea abierto a todos?",
-			"privateChannelTitle": "¿Hacer que este canal sea privado?",
-			"publicChannelContent": "{{channelLabel}} quedará disponible para todos los miembros",
-			"privateChannelContent": "{{channelLabel}} quedará privado y visible solo para los miembros y roles seleccionados",
+			"publicChannelTitle": "¿Hacer este canal abierto para todos?",
+			"privateChannelTitle": "¿Hacer este canal privado?",
+			"publicChannelContent": "{{channelLabel}} estará disponible para todos los miembros",
+			"privateChannelContent": "{{channelLabel}} se volverá privado y visible para miembros y roles seleccionados",
 			"confirm": "Sí"
 		},
 		"warningChangeSettingModal": {
-			"title": "Tienes ajustes no guardados",
+			"title": "Tienes ajustes sin guardar",
 			"content": "¿Quieres guardar los cambios?",
-			"confirm": "Sí, guardar"
+			"confirm": "Sí, Guardar"
 		},
 		"description": {
-			"viewChannel": "Permite a los miembros ver este canal por defecto. Desactivarlo para @everyone hará que el canal sea privado.",
-			"manageChannel": "Permite a los miembros cambiar el nombre, descripción y configuraciones de texto del canal. También pueden eliminar el canal.",
-			"manageThread": "Permite a los miembros renombrar, eliminar, cerrar y activar slowmode en hilos de este canal. También pueden ver hilos privados.",
+			"viewChannel": "Permite a los miembros ver este canal por defecto. Desactivar esto para @todos hará este canal privado.",
+			"manageChannel": "Permite a los miembros cambiar el nombre, descripción y ajustes de texto de este canal. También pueden eliminar el canal.",
+			"manageThread": "Permite a los miembros renombrar, eliminar, cerrar y activar slowmode para los hilos en este canal. También pueden ver hilos privados.",
 			"sendMessage": "Permite a los miembros enviar mensajes en este canal",
 			"deleteMessage": "Permite a los miembros eliminar mensajes en este canal"
 		},
@@ -164,75 +164,75 @@
 			"roleMemberPlaceholder": "Rol/Miembro"
 		},
 		"toast": {
-			"success": "Guardado correctamente",
-			"failed": "Error al guardar"
+			"success": "Guardado con éxito",
+			"failed": "Guardado fallido"
 		},
-		"roleAndMemberEmpty": "No hay roles ni miembros para sobreescribir permisos",
+		"roleAndMemberEmpty": "No hay roles ni miembros para sobrescribir permisos",
 		"header": {
-			"title": "Permisos del canal",
-			"description": "Utiliza permisos para personalizar quién puede hacer qué en este canal.",
-			"syncedWithCategory": "Permisos sincronizados con la categoría:"
+			"title": "Permisos del Canal",
+			"description": "Usa los permisos para personalizar qué puede hacer cada uno en este canal.",
+			"syncedWithCategory": "Permisos sincronizados con categoría:"
 		}
 	},
 	"quickAction": {
-		"title": "Acciones rápidas",
-		"description": "Gestiona mensajes instantáneos y menús rápidos para este canal",
-		"keyTitle": "Clave (ej.: hola)",
-		"valueTitle": "Contenido (ej.: Buenos días, ¡Que tengas un buen día!)",
+		"title": "Acciones Rápidas",
+		"description": "Gestionar mensajes flash y menús rápidos para este canal",
+		"keyTitle": "Clave (Ejemplo: hola)",
+		"valueTitle": "Contenido (Ejemplo: Buenos días, ¡Que tengas un buen día!)",
 		"save": "Guardar",
 		"cancel": "Cancelar",
 		"create": "Crear",
 		"update": "Actualizar",
 		"delete": "Eliminar",
 		"deleteModal": "Eliminar Acción Rápida",
-		"deleteTitle": "¿Quieres eliminar {{command}}? Esta acción no se puede deshacer.",
-		"flashMessage": "Mensaje instantáneo",
-		"flashMessages": "Mensajes instantáneos",
-		"quickMenu": "Menú rápido",
-		"quickMenus": "Menús rápidos",
-		"menuName": "Nombre del menú",
-		"commandName": "Nombre del comando",
+		"deleteTitle": "¿Confirmas que deseas eliminar {{command}}? Esta acción no tiene vuelta atrás.",
+		"flashMessage": "Mensaje Flash",
+		"flashMessages": "Mensajes Flash",
+		"quickMenu": "Menú Rápido",
+		"quickMenus": "Menús Rápidos",
+		"menuName": "Nombre del Menú",
+		"commandName": "Nombre del Comando",
 		"menuNameHelper": "El nombre para este elemento de menú rápido",
-		"commandNameHelper": "El nombre que introducirán los usuarios tras la barra inclinada",
-		"botEventTrigger": "Disparador de evento de bot",
-		"botEventDescription": "Este menú rápido disparará automáticamente un evento de bot cuando se seleccione.",
+		"commandNameHelper": "El nombre que los usuarios escribirán después de la barra",
+		"botEventTrigger": "Activador de Evento de Bot",
+		"botEventDescription": "Este menú rápido activará automáticamente un evento de bot cuando se selecciona.",
 		"createQuickMenu": "Crear Menú Rápido",
-		"createFlashMessage": "Crear Mensaje Instantáneo",
+		"createFlashMessage": "Crear Mensaje Flash",
 		"editQuickMenu": "Editar Menú Rápido",
-		"editFlashMessage": "Editar Mensaje Instantáneo",
-		"emptyFlashMessage": "Aún no hay mensajes instantáneos",
-		"emptyFlashMessageDescription": "Crea tu primer comando de mensaje instantáneo",
+		"editFlashMessage": "Editar Mensaje Flash",
+		"emptyFlashMessage": "Aún no hay mensajes flash",
+		"emptyFlashMessageDescription": "Comienza creando tu primer comando de mensaje flash",
 		"emptyQuickMenu": "Aún no hay menús rápidos",
-		"emptyQuickMenuDescription": "Crea tu primer menú rápido",
-		"addFlashMessage": "Añadir Mensaje Instantáneo",
+		"emptyQuickMenuDescription": "Comienza creando tu primer menú rápido",
+		"addFlashMessage": "Añadir Mensaje Flash",
 		"addQuickMenu": "Añadir Menú Rápido",
 		"editCommand": "Editar comando",
 		"deleteCommand": "Eliminar comando",
-		"triggersBot": "Dispara evento de bot",
-		"messageContent": "Contenido del mensaje",
-		"messageContentPlaceholder": "Mensaje a enviar rápidamente",
-		"messageContentDescription": "Contenido del mensaje que se enviará cuando se utilice este comando",
-		"menuAction": "Acción del menú",
+		"triggersBot": "Activa evento de bot",
+		"messageContent": "Contenido del Mensaje",
+		"messageContentPlaceholder": "Mensaje para enviar rápidamente",
+		"messageContentDescription": "Contenido del mensaje que se enviará cuando se use este comando de mensaje flash",
+		"menuAction": "Acción del Menú",
 		"menuActionPlaceholder": "Acción a ejecutar",
 		"menuActionDescription": "Acción que se ejecutará cuando se seleccione este menú rápido"
 	},
 	"changeCategory": {
-		"title": "Cambiar categoría",
-		"label": "MOVER DE {{currentChannel}} A",
-		"confirmFirstContent": "Por favor confirma si deseas mover",
+		"title": "Cambiar Categoría",
+		"label": "MOVER DESDE {{currentChannel}} A",
+		"confirmFirstContent": "Por favor, confirma que deseas mover",
 		"confirmLastContent": "a la categoría",
 		"confirm": "Confirmar",
-		"error": "Error al cambiar la categoría"
+		"error": "Cambio de categoría fallido"
 	},
 	"overview": {
 		"title": "Resumen",
 		"ageRestricted": {
-			"title": "Canal restringido por edad",
-			"description": "Los usuarios tendrán que confirmar que son mayores de edad legal para ver el contenido en este canal. Los canales restringidos por edad están exentos del filtro de contenido explícito."
+			"title": "Canal Restringido por Edad",
+			"description": "Los usuarios necesitarán confirmar que tienen más de la edad legal para ver el contenido de este canal. Los canales restringidos por edad están exentos del filtro de contenido explícito."
 		},
 		"e2ee": {
-			"title": "Cifrado de extremo a extremo",
-			"description": "Activa el cifrado de extremo a extremo para este canal para asegurar todos los mensajes."
+			"title": "Cifrado End-to-End",
+			"description": "Habilitar cifrado end-to-end para este canal para asegurar todos los mensajes."
 		}
 	},
 	"tabs": {
@@ -245,30 +245,30 @@
 	},
 	"categoryManagement": {
 		"title": "Categoría",
-		"channelName": "Nombre del canal",
+		"channelName": "Nombre del Canal",
 		"category": "Categoría"
 	},
 	"unsavedChanges": {
 		"warning": "Cuidado - ¡tienes cambios sin guardar!",
 		"reset": "Reiniciar",
-		"saveChanges": "Guardar cambios"
+		"saveChanges": "Guardar Cambios"
 	},
 	"addMembersRoles": {
 		"title": "Añadir miembros o roles",
-		"placeholder": "p.ej. Moderadores, @wumpus",
-		"instruction": "Añade miembros individuales empezando por @ o escribe un nombre de rol",
+		"placeholder": "e.g. Moderadores, @wumpus",
+		"instruction": "Añadir miembros individuales empezando con @ o escribiendo el nombre de un rol",
 		"roles": "Roles",
 		"members": "Miembros",
 		"cancel": "Cancelar",
-		"done": "Hecho",
-		"searchPlaceholder": "Buscar roles y miembros"
+		"done": "Listo",
+		"searchPlaceholder": "Buscar Roles & Miembros"
 	},
 	"table": {
 		"columnHeaders": {
 			"name": "Nombre",
 			"members": "Miembros",
-			"messagesCount": "Cantidad de mensajes",
-			"lastSent": "Último enviado",
+			"messagesCount": "Conteo de Mensajes",
+			"lastSent": "Último Enviado",
 			"creator": "Creador"
 		},
 		"pagination": {
@@ -276,17 +276,17 @@
 			"channelOf": "canal de"
 		},
 		"memberModal": {
-			"listMember": "Listar miembro"
+			"listMember": "Lista de Miembros"
 		},
 		"threads": {
 			"noThreads": "No hay hilos en este canal"
 		},
 		"members": {
-			"allMembers": "(Todos los miembros)"
+			"allMembers": "(Todos los Miembros)"
 		}
 	},
 	"streamBanner": {
-		"title": "Banner de transmisión"
+		"title": "Banner de Transmisión"
 	},
-	"banList": "Lista de baneos"
+	"banList": "Lista de Baneados"
 }

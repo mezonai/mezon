@@ -213,7 +213,7 @@ export const channelMetaSlice = createSlice({
 		},
 		dmMetaAdd: (state, action: PayloadAction<{ channelId: string; clanId: string }>) => {
 			const { channelId, clanId } = action.payload;
-			dmMetaAdapter.addOne(state.dmEntities, {
+			dmMetaAdapter.upsertOne(state.dmEntities, {
 				clanId,
 				id: channelId,
 				isMute: false,

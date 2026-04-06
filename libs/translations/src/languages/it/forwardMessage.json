@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "Inoltra messaggio",
+		"searchPlaceholder": "Cerca",
+		"noResults": "Non trovi quello che cerchi?",
+		"searchFriendsUsers": "Cerca amici e utenti",
+		"searchingChannel": "Cerca canali",
+		"sharedContent": "Contenuto condiviso",
+		"cancel": "Annulla",
+		"send": "Invia",
+		"sending": "Invio in corso...",
+		"sendingProgress": "Invio in corso ({{current}}/{{total}})...",
+		"image": "immagine",
+		"images": "immagini",
+		"video": "video",
+		"videos": "video",
+		"file": "file",
+		"files": "file",
+		"additionalMessage": "Messaggio aggiuntivo (opzionale)",
+		"additionalMessagePlaceholder": "Inserisci un messaggio da allegare..."
+	},
+	"successMessage": "Messaggio inoltrato con successo",
+	"errorMessage": "Impossibile inoltrare il messaggio"
+}

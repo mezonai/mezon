@@ -1,76 +1,76 @@
 {
-  "header": {
-    "save": "Guardar"
-  },
-  "switch": {
-    "userProfile": "Perfil de usuario",
-    "serverProfile": "Perfiles de clan"
-  },
-  "fields": {
-    "displayName": {
-      "label": "Nombre para mostrar",
-      "placeholder": ""
-    },
-    "clanNickname": {
-      "label": "Apodo del clan",
-      "placeholder": ""
-    },
-    "pronouns": {
-      "label": "Pronombres",
-      "placeholder": ""
-    },
-    "bio": {
-      "label": "Acerca de mí",
-      "placeholder": ""
-    }
-  },
-  "changedAlert": {
-    "title": "¿Descartar cambios no guardados?",
-    "description": "Tienes cambios sin guardar. Por favor confirma si quieres descartarlos.",
-    "discard": "Descartar",
-    "keepEditing": "Seguir editando"
-  },
-  "selectAClan": "Selecciona un clan",
-  "searchClanPlaceholder": "Buscar clan",
-  "updateProfileSuccess": "Perfil actualizado correctamente",
-  "updateProfileError": "Error al actualizar el perfil",
-  "updateClanProfileSuccess": "Perfil del clan actualizado correctamente",
-  "emptyUsername": "¡El nombre para mostrar no puede estar vacío!",
-  "duplicateClannick": "¡El apodo del clan está duplicado!",
-  "clanNickname": "APODO DEL CLAN",
-  "changeAvatar": "Cambiar avatar",
-  "removeAvatar": "Eliminar avatar",
-  "avatar": "AVATAR",
-  "preview": "PREVIEW",
-  "nickNameExistsError": "El apodo ya existe en el clan. Por favor introduce otro apodo.",
-  "unsavedChangesWarning": "¡Cuidado! Tienes cambios sin guardar.",
-  "reset": "Reiniciar",
-  "saveChanges": "Guardar cambios",
-  "showProfilesDescription": "Muestra quién eres con diferentes perfiles para cada uno de tus clanes",
-  "chooseAClan": "ELIGE UN CLAN",
-  "editImage": "Editar imagen",
-  "close": "Cerrar",
-  "resetChanges": "Reiniciar cambios",
-  "cancelEditing": "Cancelar edición",
-  "cancel": "Cancelar",
-  "applyChanges": "Aplicar cambios",
-  "apply": "Aplicar",
-  "moveImage": "Mover imagen",
-  "adjustZoom": "Ajustar zoom",
-  "profiles": "Perfiles",
-  "userProfile": "Perfil de usuario",
-  "clanProfiles": "Perfiles de clan",
-  "directMessageIcon": "Icono de mensaje directo",
-  "directMessageIconAction": {
-    "remove": "Eliminar",
-    "removeTitle": "Eliminar icono de mensaje directo",
-    "removeDescription": "¿Estás seguro de que quieres eliminar el icono de mensaje directo?"
-  },
-  "displayName": "NOMBRE PARA MOSTRAR",
-  "emptyClanProfile": {
-    "title": "No tienes ningún clan",
-    "description": "¡Crea o únete a un clan para empezar!",
-    "createClan": "Crear un clan",
-    "joinClan": "Unirse a un clan"
-  }
+	"header": {
+		"save": "Guardar"
+	},
+	"switch": {
+		"userProfile": "Perfil de Usuario",
+		"serverProfile": "Perfiles de Clan"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Nombre de visualización",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Apodo del Clan",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Pronombres",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Biografía",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "¿Descartar cambios sin guardar?",
+		"description": "Tienes cambios sin guardar. ¿Confirmas que quieres descartarlos?",
+		"discard": "Descartar",
+		"keepEditing": "Seguir editando"
+	},
+	"selectAClan": "Seleccionar un Clan",
+	"searchClanPlaceholder": "Buscar Clan",
+	"updateProfileSuccess": "Perfil actualizado correctamente",
+	"updateProfileError": "Error al actualizar perfil",
+	"updateClanProfileSuccess": "Perfil del clan actualizado correctamente",
+	"emptyUsername": "¡El nombre de visualización no puede estar vacío!",
+	"duplicateClannick": "¡El apodo del clan ya está en uso!",
+	"clanNickname": "CLAN APODO",
+	"changeAvatar": "Cambiar avatar",
+	"removeAvatar": "Eliminar avatar",
+	"avatar": "AVATAR",
+	"preview": "VISTA PREVIA",
+	"nickNameExistsError": "El apodo ya existe en el clan. Por favor, introduce otro apodo.",
+	"unsavedChangesWarning": "¡Cuidado! Tienes cambios sin guardar!",
+	"reset": "Reiniciar",
+	"saveChanges": "Guardar cambios",
+	"showProfilesDescription": "Muestra quién eres con perfiles distintos para cada uno de tus clanes",
+	"chooseAClan": "ELIGE UN CLAN",
+	"editImage": "Editar imagen",
+	"close": "Cerrar",
+	"resetChanges": "Reiniciar cambios",
+	"cancelEditing": "Cancelar edición",
+	"cancel": "Cancelar",
+	"applyChanges": "Aplicar cambios",
+	"apply": "Aplicar",
+	"moveImage": "Mover imagen",
+	"adjustZoom": "Ajustar zoom",
+	"profiles": "Perfiles",
+	"userProfile": "Perfil de Usuario",
+	"clanProfiles": "Perfiles de Clan",
+	"directMessageIcon": "Icono de DM",
+	"directMessageIconAction": {
+		"remove": "Eliminar",
+		"removeTitle": "Eliminar Icono de DM",
+		"removeDescription": "¿Estás seguro de que quieres eliminar el icono de DM?"
+	},
+	"displayName": "NOMBRE DE VISUALIZACIÓN",
+	"emptyClanProfile": {
+		"title": "No tienes ningún clan",
+		"description": "¡Crea o únete a un clan para empezar!",
+		"createClan": "Crear un clan",
+		"joinClan": "Unirse a un clan"
+	}
 }

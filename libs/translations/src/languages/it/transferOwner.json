@@ -1,0 +1,9 @@
+{
+	"title": "Trasferimento proprietà del Clan",
+	"description": "Questo trasferirà la proprietà di {{clanName}} a {{memberName}}",
+	"confirmation": "Confermo che, trasferendo la proprietà di questo clan a {{memberName}}, esso ne diventerà ufficialmente il proprietario.",
+	"buttons": {
+		"transfer": "Trasferisci proprietà",
+		"cancel": "Annulla"
+	}
+}

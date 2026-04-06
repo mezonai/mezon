@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "Carica effetto sonoro",
+		"delete": "Elimina",
+		"uploadDetailScreen": "Carica"
+	},
+	"content": {
+		"description": "• Sono accettati solo file .mp3, .wav, con una dimensione massima di 1MB. \n• Dai un nome facile da ricordare all'effetto sonoro. \n• L'effetto sonoro verrà utilizzato nelle notifiche o negli eventi del clan.",
+		"requirements": "REQUISITI PER IL CARICAMENTO",
+		"reqSize": "- Non superiore a 1024KB.",
+		"audioFile": "File audio",
+		"audioName": "Nome audio",
+		"preview": "Anteprima",
+		"chooseAudioFile": "Scegli un file audio"
+	},
+	"toast": {
+		"errorSizeLimit": "Limite dimensione superato (1MB)",
+		"errorFileType": "Formato file non valido. Sono accettati solo file .mp3, .mpeg e .wav."
+	},
+	"main": {
+		"uploadInstructions": "ISTRUZIONI PER IL CARICAMENTO",
+		"fileRequirements": "Sono accettati solo file .mp3, .wav, con una dimensione massima di 1MB. Dai un nome facile da ricordare all'effetto sonoro. L'effetto sonoro verrà utilizzato nelle notifiche o negli eventi del clan.",
+		"uploadHere": "Carica qui!",
+		"personalizeDescription": "Personalizza gli effetti sonori per il tuo clan!",
+		"uploadSound": "Carica audio",
+		"soundEffectList": "Elenco effetti sonori",
+		"noSoundEffects": "Nessun effetto sonoro disponibile. Clicca su \"Carica audio\" per aggiungerne uno!"
+	},
+	"modal": {
+		"titleEdit": "Modifica effetto sonoro",
+		"titleUpload": "Carica effetto sonoro",
+		"subtitle": "Supporta formati MP3, WAV • Massimo 1MB",
+		"preview": "Anteprima",
+		"audioFile": "File audio",
+		"soundName": "Nome audio",
+		"soundVolume": "Volume",
+		"chooseOrDrop": "Scegli o trascina un file",
+		"browse": "Sfoglia",
+		"placeholder": "Es: miagolio",
+		"cancel": "Annulla",
+		"uploading": "Caricamento in corso...",
+		"update": "Aggiorna",
+		"upload": "Carica",
+		"errorFileType": "Supportati solo file .mp3 o .wav",
+		"errorFileSize": "File troppo grande, massimo 1MB",
+		"errorUploadFailed": "Impossibile caricare l'audio",
+		"characters": "Il nome deve avere da 3 a 64 caratteri",
+		"errorName": "Il nome dell'effetto sonoro deve avere tra {{min}} e {{max}} caratteri e contenere solo lettere, numeri, _ e -"
+	}
+}

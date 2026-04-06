@@ -51,6 +51,18 @@
 		"cancel": "Cancel",
 		"confirm": "Remove Friend"
 	},
+	"cancelRequestModal": {
+		"title": "Cancel '{{username}}'",
+		"description": "Are you sure you want to cancel your friend request to <bold>{{username}}</bold>?",
+		"cancel": "Cancel",
+		"confirm": "Cancel Request"
+	},
+	"rejectRequestModal": {
+		"title": "Reject '{{username}}'",
+		"description": "Are you sure you want to reject the friend request from <bold>{{username}}</bold>?",
+		"cancel": "Cancel",
+		"confirm": "Reject Request"
+	},
 	"toast": {
 		"userBlockedSuccess": "User blocked successfully",
 		"userBlockedFailed": "Failed to block user",

@@ -3,7 +3,7 @@
   "searchActions": "Buscar acciones",
   "allUsers": "Todos los usuarios",
   "noResults": {
-    "title": "¡Nope!",
-    "description": "¿Has cometido un error tipográfico?"
+    "title": "¡Nada!",
+    "description": "¿Escribiste mal?"
   }
 }

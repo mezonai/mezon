@@ -3,6 +3,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import enTranslations from './languages/en/index';
 import esTranslations from './languages/es/index';
+import itTranslations from './languages/it/index';
 import ruTranslations from './languages/ru/index';
 import viTranslations from './languages/vi/index';
 
@@ -13,7 +14,7 @@ const timezoneDetector = {
 	lookup() {
 		const storedLang = localStorage.getItem('i18nextLng');
 
-		if (storedLang && (storedLang === 'vi' || storedLang === 'en' || storedLang === 'ru' || storedLang === 'es')) {
+		if (storedLang && (storedLang === 'vi' || storedLang === 'en' || storedLang === 'ru' || storedLang === 'es' || storedLang === 'it')) {
 			return undefined;
 		}
 
@@ -33,12 +34,15 @@ const timezoneDetector = {
 			if (languageCode.startsWith('es')) {
 				return 'es';
 			}
+			if (languageCode.startsWith('it')) {
+				return 'it';
+			}
 		}
 
 		return undefined;
 	},
 	cacheUserLanguage(lng: string) {
-		if (lng && (lng === 'vi' || lng === 'en' || lng === 'ru' || lng === 'es')) {
+		if (lng && (lng === 'vi' || lng === 'en' || lng === 'ru' || lng === 'es' || lng === 'it')) {
 			localStorage.setItem('i18nextLng', lng);
 		}
 	}
@@ -52,12 +56,13 @@ i18n.use(languageDetector)
 	.init({
 		defaultNS,
 		fallbackLng: 'en',
-		supportedLngs: ['en', 'vi', 'ru', 'es'],
+		supportedLngs: ['en', 'vi', 'ru', 'es', 'it'],
 		resources: {
 			en: enTranslations,
 			vi: viTranslations,
 			ru: ruTranslations,
-			es: esTranslations
+			es: esTranslations,
+			it: itTranslations
 		},
 		detection: {
 			order: ['timezone', 'localStorage', 'navigator', 'htmlTag'],

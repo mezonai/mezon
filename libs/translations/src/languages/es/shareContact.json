@@ -1,23 +1,23 @@
 {
-    "modal": {
-        "title": "Compartir contacto",
-        "searchPlaceholder": "Buscar...",
-        "noResults": "No se encontraron resultados",
-        "noFriends": "No hay amigos ni canales disponibles",
-        "contactPreview": "Contacto a compartir",
-        "cancel": "Cancelar",
-        "share": "Compartir",
-        "sharing": "Compartiendo...",
-        "group": "Grupo",
-        "channel": "Canal",
-        "thread": "Hilo"
-    },
-    "card": {
-        "call": "Llamar",
-        "message": "Mensaje",
-        "blockedAction": "No puedes realizar esta acción.",
-        "cannotCallSelf": "No puedes llamarte a ti mismo."
-    },
-    "contactSharedSuccess": "Contacto compartido con éxito",
-    "contactSharedError": "Error al compartir el contacto"
+	"modal": {
+		"title": "Compartir contacto",
+		"searchPlaceholder": "Buscar...",
+		"noResults": "No se encontraron resultados",
+		"noFriends": "No hay amigos ni canales disponibles",
+		"contactPreview": "Contacto a compartir",
+		"cancel": "Cancelar",
+		"share": "Compartir",
+		"sharing": "Compartiendo...",
+		"group": "Grupo",
+		"channel": "Canal",
+		"thread": "Hilo"
+	},
+	"card": {
+		"call": "Llamada",
+		"message": "Mensaje",
+		"blockedAction": "No puedes realizar esta acción",
+		"cannotCallSelf": "No puedes llamarte a ti mismo"
+	},
+	"contactSharedSuccess": "Contacto compartido correctamente",
+	"contactSharedError": "Error al compartir contacto"
 }

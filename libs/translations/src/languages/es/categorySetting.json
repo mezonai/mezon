@@ -1,29 +1,29 @@
 {
-    "fields": {
-        "categoryName": {
-            "title": "Nombre de la categoría",
-            "placeholder": "Canales de texto",
-            "errorMessage": "Por favor, introduce un nombre de categoría válido (máximo 64 caracteres, solo palabras, números, _ o -)."
-        },
-        "categoryPermission": {
-            "title": "",
-            "permission": "Permisos de la categoría",
-            "description": "Cambia la configuración de privacidad y personaliza cómo los miembros pueden interactuar con este canal."
-        },
-        "categoryDelete": {
-            "title": "",
-            "delete": "Eliminar categoría"
-        }
-    },
-    "confirm": {
-        "delete": {
-            "content": "Por favor confirma si deseas eliminar {{categoryName}}?. No se puede deshacer.",
-            "confirmText": "Eliminar",
-            "title": "Eliminar categoría"
-        },
-        "save": "Guardar"
-    },
-    "toast": {
-        "updated": "Actualizado con éxito"
-    }
+	"fields": {
+		"categoryName": {
+			"title": "Nombre de Categoría",
+			"placeholder": "Canales de Texto",
+			"errorMessage": "Introduce un nombre de categoría válido (máximo 64 caracteres, solo letras, números, _ o -)."
+		},
+		"categoryPermission": {
+			"title": "",
+			"permission": "Permisos de Categoría",
+			"description": "Cambia la configuración de privacidad y personaliza cómo pueden interactuar los miembros con este canal."
+		},
+		"categoryDelete": {
+			"title": "",
+			"delete": "Eliminar Categoría"
+		}
+	},
+	"confirm": {
+		"delete": {
+			"content": "¿Confirmas que deseas eliminar {{categoryName}}? Esto no se puede deshacer",
+			"confirmText": "Eliminar",
+			"title": "Eliminar categoría"
+		},
+		"save": "Guardar"
+	},
+	"toast": {
+		"updated": "Actualizado correctamente"
+	}
 }

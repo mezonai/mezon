@@ -1,11 +1,11 @@
 {
-    "emptyTitle": "Este canal todavía no tiene mensajes fijados...",
-    "PROTIP": "CONSEJO PRO:",
-    "modal": {
-        "title": "Anclalo. Anclalo bien.",
-        "description": "Hola, solo confirmando que quieres anclar este mensaje en #{{channelLabel}} para la posteridad y la grandeza?",
-        "descriptionDM": "Hola, solo confirmando que quieres anclar este mensaje en el canal actual para la posteridad y la grandeza?",
-        "cancel": "Cancelar",
-        "confirm": "Oh sí. Anclalo"
-    }
+  "emptyTitle": "Este canal aún no tiene mensajes fijados... todavía.",
+  "PROTIP": "CONSEJO EXTRA:",
+  "modal": {
+    "title": "Fíjalo. Fíjalo bien.",
+    "description": "Oye, solo comprobando que quieras fijar este mensaje en #{{channelLabel}} para la posteridad y la grandeza?",
+    "descriptionDM": "Oye, solo comprobando que quieras fijar este mensaje en el canal actual para la posteridad y la grandeza?",
+    "cancel": "Cancelar",
+    "confirm": "Oh sí. Fíjalo"
+  }
 }

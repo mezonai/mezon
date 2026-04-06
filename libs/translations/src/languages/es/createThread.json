@@ -1,26 +1,26 @@
 {
-  "threads": "Hilos",
-  "emptyThread": {
-    "textNoThread": "No hay hilos",
-    "textNotify": "Mantén el enfoque en la conversación con un hilo: un canal de texto temporal.",
-    "createThreads": "Crear hilo"
-  },
-  "otherThreads": "HILOS MÁS ANTIGUOS",
-  "errorMessage": "Introduce un nombre de hilo válido (máx. 64 caracteres, solo palabras, números, _ o -).",
-  "threadName": "Nombre del hilo",
-  "privateThread": "Hilo privado",
-  "onlyPeopleInviteThread": "Solo las personas que invites y los moderadores pueden ver este hilo",
-  "newThread": "Nuevo hilo",
-  "joinedThreads": "hilos unidos",
-  "joinedThread": "hilo unido",
-  "otherActiveThreads": "otros hilos activos",
-  "otherActiveThread": "otro hilo activo",
-  "olderThreads": "hilos más antiguos",
-  "olderThread": "hilo más antiguo",
-  "searchThreads": "buscar hilos",
-  "searchThread": "buscar hilo",
-  "threadFailed": {
-    "title": "Creación de hilo fallida",
-    "content": "Hilo no encontrado o no tienes permiso para actualizar"
-  }
+	"threads": "Hilos",
+	"emptyThread": {
+		"textNoThread": "No hay hilos",
+		"textNotify": "Mantén el enfoque en la conversación con un hilo - un canal de texto temporal.",
+		"createThreads": "Crear Hilo"
+	},
+	"otherThreads": "HILOS ANTERIORES",
+	"errorMessage": "Introduce un nombre de hilo válido (máximo 64 caracteres, solo letras, números, _ o -).",
+	"threadName": "Nombre del Hilo",
+	"privateThread": "Hilo Privado",
+	"onlyPeopleInviteThread": "Solo las personas que invitas y los moderadores pueden ver este hilo",
+	"newThread": "Nuevo Hilo",
+	"joinedThreads": "Hilos unidos",
+	"joinedThread": "Hilo unido",
+	"otherActiveThreads": "otros hilos activos",
+	"otherActiveThread": "otro hilo activo",
+	"olderThreads": "hilos anteriores",
+	"olderThread": "hilo anterior",
+	"searchThreads": "buscar hilos",
+	"searchThread": "buscar hilo",
+	"threadFailed": {
+		"title": "Error al crear hilo",
+		"content": "Hilo no encontrado o no tienes permiso para actualizar"
+	}
 }

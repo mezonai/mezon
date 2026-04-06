@@ -1,0 +1,18 @@
+{
+  "deleteRole": {
+    "title": "ELIMINA RUOLO",
+    "message": "Sei sicuro di voler eliminare questo ruolo? Questa azione non può essere annullata.",
+    "confirm": "Elimina",
+    "cancel": "Annulla"
+  },
+  "common": {
+    "areYouSure": "Sei sicuro?",
+    "cannotUndo": "Questa azione non può essere annullata",
+    "confirm": "Conferma",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "remove": "Rimuovi",
+    "yes": "Sì",
+    "no": "No"
+  }
+}

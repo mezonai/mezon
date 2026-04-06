@@ -5,9 +5,12 @@ import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } fr
 import type { ApiMessageAttachment, ApiPinMessage, ApiPinMessageRequest } from 'mezon-js/api';
 import type { CacheMetadata } from '../cache-metadata';
 import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCall } from '../cache-metadata';
+import { channelsActions, selectCurrentChannelId } from '../channels/channels.slice';
+import { selectCurrentClanId } from '../clans/clans.slice';
+import { directActions, selectCurrentDM } from '../direct/direct.slice';
 import type { MezonValueContext } from '../helpers';
 import { ensureSession, ensureSocket, getMezonCtx } from '../helpers';
-import type { RootState } from '../store';
+import type { AppDispatch, RootState } from '../store';
 
 export const PIN_MESSAGE_FEATURE_KEY = 'pinmessages';
 
@@ -29,6 +32,7 @@ export interface PinMessageState extends EntityState<PinMessageEntity, string> {
 	loadingStatus: LoadingStatus;
 	error?: string | null;
 	isPinModalVisible?: boolean;
+	pinModalChannelId?: string;
 }
 
 export const pinMessageAdapter = createEntityAdapter<PinMessageEntity>();
@@ -232,7 +236,8 @@ export const initialPinMessageState: PinMessageState = pinMessageAdapter.getInit
 	loadingStatus: 'not loaded',
 	error: null,
 	jumpPinMessageId: '',
-	isPinModalVisible: false
+	isPinModalVisible: false,
+	pinModalChannelId: undefined
 });
 
 export const pinMessageSlice = createSlice({
@@ -242,8 +247,18 @@ export const pinMessageSlice = createSlice({
 		add: pinMessageAdapter.addOne,
 		addMany: pinMessageAdapter.addMany,
 		remove: pinMessageAdapter.removeOne,
-		togglePinModal: (state: PinMessageState) => {
-			state.isPinModalVisible = !state.isPinModalVisible;
+		togglePinModal: (state: PinMessageState, action: PayloadAction<string | undefined>) => {
+			const newChannelId = action.payload;
+			if (state.isPinModalVisible && state.pinModalChannelId !== newChannelId) {
+				state.pinModalChannelId = newChannelId;
+			} else {
+				state.isPinModalVisible = !state.isPinModalVisible;
+				state.pinModalChannelId = state.isPinModalVisible ? newChannelId : undefined;
+			}
+		},
+		closePinModal: (state: PinMessageState) => {
+			state.isPinModalVisible = false;
+			state.pinModalChannelId = undefined;
 		},
 		clearChannelCache: (state: PinMessageState, action: PayloadAction<string>) => {
 			const channelId = action.payload;
@@ -342,12 +357,32 @@ export const pinMessageReducer = pinMessageSlice.reducer;
  *
  * See: https://react-redux.js.org/next/api/hooks#usedispatch
  */
+export const setIsShowPinBadge = (isShow: boolean) => (dispatch: AppDispatch, getState: () => RootState) => {
+	const state = getState();
+	const currentClanId = selectCurrentClanId(state) as string;
+	const currentChannelId = selectCurrentChannelId(state) as string;
+	if (currentClanId && currentChannelId) {
+		dispatch(channelsActions.setShowPinBadgeOfChannel({ clanId: currentClanId, channelId: currentChannelId, isShow }));
+	}
+};
+
+export const setIsShowPinDMBadge = (isShow: boolean) => (dispatch: AppDispatch, getState: () => RootState) => {
+	const state = getState();
+	const currentDM = selectCurrentDM(state);
+	const dmId = (currentDM as { id?: string })?.id;
+	if (dmId) {
+		dispatch(directActions.setShowPinBadgeOfDM({ dmId, isShow }));
+	}
+};
+
 export const pinMessageActions = {
 	...pinMessageSlice.actions,
 	fetchChannelPinMessages,
 	setChannelPinMessage,
 	deleteChannelPinMessage,
-	joinPinMessage
+	joinPinMessage,
+	setIsShowPinBadge,
+	setIsShowPinDMBadge
 };
 
 /*
@@ -375,3 +410,5 @@ export const selectPinMessageByChannelId = createSelector(
 );
 
 export const selectIsPinModalVisible = createSelector(getPinMessageState, (state: PinMessageState) => state.isPinModalVisible);
+
+export const selectPinModalChannelId = createSelector(getPinMessageState, (state: PinMessageState) => state.pinModalChannelId);

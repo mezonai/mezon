@@ -1,0 +1,30 @@
+{
+  "missions": {
+    "sendMessage": {
+      "description": "Un membro invia un messaggio in un canale",
+      "name": "mission1"
+    },
+    "visit": {
+      "description": "Un membro visita un canale",
+      "name": "mission2"
+    },
+    "doSomething": {
+      "description": "Leggi questa missione",
+      "name": "mission3"
+    }
+  },
+  "form": {
+    "title": "Cosa dovrebbero fare i nuovi membri?",
+    "placeholder": "Esempio: Pubblica una foto del tuo animale domestico",
+    "channelTitle": "Dove dovrebbero farlo?",
+    "channelNote": "Il canale deve essere visibile a @everyone (canale pubblico)",
+    "completeWhen": "Questa missione viene completata quando:",
+    "required": "Questo campo è obbligatorio.",
+    "minCharacters": "L'azione deve contenere almeno 7 caratteri"
+  },
+  "buttons": {
+    "remove": "Rimuovi",
+    "save": "Salva",
+    "add": "Aggiungi"
+  }
+}

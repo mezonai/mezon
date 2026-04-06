@@ -1,19 +1,19 @@
 {
-  "addReaction": "Añadir reacción",
-  "title": "INVITAR A UNIRSE A UN CLAN",
-  "offline": "desconectado",
-  "online": "en línea",
-  "join": "Unirse",
-  "joining": "Uniéndose...",
-  "goToClan": "Ir al clan",
-  "unknownClan": "Clan desconocido",
-  "memberCount": "{{count}} Miembro",
-  "memberCount_plural": "{{count}} Miembros",
-  "failedToJoin": "No se pudo unir a este clan.",
-  "inviteTo": "INVITAR A {{clanName}}",
-  "noThanks": "No, gracias",
-  "invalidInvite": {
-    "title": "Invitación inválida",
-    "message": "¡Intenta enviar una nueva invitación!"
-  }
+	"addReaction": "Añadir reacción",
+	"title": "INVITAR A UNIRSE AL CLAN",
+	"offline": "Desconectado",
+	"online": "En línea",
+	"join": "Unirse",
+	"joining": "Uniéndose...",
+	"goToClan": "Ir al Clan",
+	"unknownClan": "Clan Desconocido",
+	"memberCount": "{{count}} Miembro",
+	"memberCount_plural": "{{count}} Miembros",
+	"failedToJoin": "Error al unirse al clan",
+	"inviteTo": "INVITAR A {{clanName}}",
+	"noThanks": "No, gracias",
+	"invalidInvite": {
+		"title": "Invitación inválida",
+		"message": "Prueba con una nueva invitación"
+	}
 }

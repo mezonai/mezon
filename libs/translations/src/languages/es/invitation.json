@@ -1,67 +1,67 @@
 {
-    "modal": {
-        "title": "Invita a amigos a {{target}}",
-        "privateEvent": "Evento externo",
-        "privateRoom": "Sala de reuniones",
-        "clanInvite": "Invitación al clán",
-        "sendLinkText": "O envía un enlace {{type}} a un amigo",
-        "expiresIn": "El enlace de invitación caduca en {{time}}"
-    },
-    "expiration": {
-        "30minutes": "30 minutos",
-        "1hour": "1 hora",
-        "6hours": "6 horas",
-        "12hours": "12 horas",
-        "1day": "1 día",
-        "7days": "7 días",
-        "never": "Nunca"
-    },
-    "maxUses": {
-        "noLimit": "Sin límite",
-        "1use": "1 uso",
-        "5uses": "5 usos",
-        "10uses": "10 usos",
-        "25uses": "25 usos",
-        "50uses": "50 usos",
-        "100uses": "100 usos"
-    },
-    "generateLink": {
-        "expireAfter": "Caduca después de",
-        "maxNumberOfUses": "Número máximo de usos"
-    },
-    "buttons": {
-        "copy": "Copiar",
-        "copied": "Copiado",
-        "copyQR": "Copiar QR",
-        "editInviteLink": "Editar enlace de invitación.",
-        "cancel": "Cancelar",
-        "generateNewLink": "Generar un nuevo enlace",
-        "invite": "Invitar",
-        "sent": "Enviado"
-    },
-    "searchPlaceholder": "Buscar amigos",
-    "privateChannelDescription": "Este canal es privado, solo ciertos miembros y roles pueden verlo.",
-    "noResults": "Sin resultados",
-    "messages": {
-        "qrCopiedSuccess": "QR copiado con éxito!"
-    },
-    "errors": {
-        "createInviteLink": "Error al crear el enlace de invitación",
-        "copyToClipboard": "No se pudo copiar al portapapeles",
-        "copyFailed": "Error al copiar"
-    },
-    "acceptModal": {
-        "title": "Unirse al clán",
-        "invitedToJoin": "Has sido invitado a unirte",
-        "memberCount": "{{count}} Miembro",
-        "memberCount_plural": "{{count}} Miembros",
-        "clanSettings": "Configuración del clán",
-        "customizeAnytime": "Puedes personalizar esto en cualquier momento",
-        "noThanks": "No, gracias",
-        "acceptInvite": "Aceptar invitación",
-        "joining": "Uniéndose...",
-        "toast": {
-            "alreadyMember": "¡Ya eres miembro!"
-        }
-    }
+	"modal": {
+		"title": "Invita amigos a {{target}}",
+		"privateEvent": "Evento Externo",
+		"privateRoom": "Sala de Reunión",
+		"clanInvite": "invitación al clan",
+		"sendLinkText": "O, envía un enlace de {{type}} a un amigo",
+		"expiresIn": "Tu enlace de invitación caduca en {{time}}"
+	},
+	"expiration": {
+		"30minutes": "30 minutos",
+		"1hour": "1 hora",
+		"6hours": "6 horas",
+		"12hours": "12 horas",
+		"1day": "1 día",
+		"7days": "7 días",
+		"never": "Nunca"
+	},
+	"maxUses": {
+		"noLimit": "Sin límite",
+		"1use": "1 uso",
+		"5uses": "5 usos",
+		"10uses": "10 usos",
+		"25uses": "25 usos",
+		"50uses": "50 usos",
+		"100uses": "100 usos"
+	},
+	"generateLink": {
+		"expireAfter": "Caducar después",
+		"maxNumberOfUses": "Número máximo de usos"
+	},
+	"buttons": {
+		"copy": "Copiar",
+		"copied": "Copiado",
+		"copyQR": "Copiar QR",
+		"editInviteLink": "Editar enlace de invitación.",
+		"cancel": "Cancelar",
+		"generateNewLink": "Generar un nuevo enlace",
+		"invite": "Invitar",
+		"sent": "Enviado"
+	},
+	"searchPlaceholder": "Buscar amigos",
+	"privateChannelDescription": "Este canal es privado, solo los miembros y roles seleccionados pueden verlo.",
+	"noResults": "Sin resultados",
+	"messages": {
+		"qrCopiedSuccess": "¡QR copiado correctamente!"
+	},
+	"errors": {
+		"createInviteLink": "Error al crear enlace de invitación",
+		"copyToClipboard": "Incapaz de copiar al portapapeles",
+		"copyFailed": "Copia fallida"
+	},
+	"acceptModal": {
+		"title": "Unirse al Clan",
+		"invitedToJoin": "Has sido invitado a unirte",
+		"memberCount": "{{count}} Miembro",
+		"memberCount_plural": "{{count}} Miembros",
+		"clanSettings": "Configuración del Clan",
+		"customizeAnytime": "Puedes personalizarlas en cualquier momento",
+		"noThanks": "No, gracias",
+		"acceptInvite": "Aceptar invitación",
+		"joining": "Uniéndose...",
+		"toast": {
+			"alreadyMember": "¡Ya eres miembro!"
+		}
+	}
 }

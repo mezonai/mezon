@@ -1,76 +1,76 @@
 {
-    "title": "Personaliza tu clan",
-    "subTitle": "Dale a tu nuevo clan una personalidad con un nombre e icono. Siempre podrás cambiarlo después.",
-    "clanName": "Nombre del clan",
-    "createServer": "Crear clan",
-    "byCreatingClan": "Al crear un clan, aceptas",
-    "upload": "SUBIR",
-    "addClan": "Añadir clan",
-    "placeholderClan": "Introduce el nombre del clan",
-    "errorMessage": "Introduce un nombre de clan válido (máx. 64 caracteres, solo palabras, números, _ o -).",
-    "duplicateNameMessage": "El nombre del clan ya existe. Introduce otro nombre.",
-    "commutityGuide": "Directrices de la comunidad de Mezon.",
-    "busy": "Ocupado",
-    "findOrStartConversation": "Buscar o iniciar una conversación",
-    "createCategoryModal": {
-        "title": "Crear categoría",
-        "nameLabel": "¿Cuál es el nombre de la categoría?",
-        "namePlaceholder": "Introduce el nombre de la categoría",
-        "privateCategory": "Categoría privada",
-        "privateDescription": "Al marcar la categoría como privada, solo los miembros y roles seleccionados podrán verla. Los canales sincronizados en esta categoría se ajustarán automáticamente a esta configuración",
-        "invalidName": "Introduce un nombre de categoría válido (máx. 64 caracteres, solo palabras, números, _ o -).",
-        "duplicateName": "El nombre de la categoría ya existe en el clan. Introduce otro nombre.",
-        "cancel": "Cancelar",
-        "create": "Crear categoría"
-    },
-    "leaveClanModal": {
-        "title": "Salir de {{clanName}}",
-        "description": "¿Confirma que desea abandonar <strong>{{clanName}}</strong>? No podrá volver a unirse a este clan a menos que sea re-invitado.",
-        "cancel": "Cancelar"
-    },
-    "leaveClan": "Salir del clan",
-    "leaveClanTitle": "Salir",
-    "categoryOverview": {
-        "categoryName": "Nombre de la categoría",
-        "categoryNamePlaceholder": "Introduce aquí el nombre de tu categoría...",
-        "hasWelcomeChannelError": "Esta categoría tiene un canal de bienvenida",
-        "deleteCategory": "Eliminar categoría",
-        "deleteCategoryTitle": "Eliminar categoría",
-        "deleteCategoryButton": "Eliminar categoría",
-        "cannotBeUndone": "Esto no se puede deshacer",
-        "categoryLabel": "Categoría"
-    },
-    "createClanModal": {
-        "title": "Personaliza tu clan",
-        "description": "Dale a tu nuevo clan una personalidad con un nombre e icono. Siempre podrás cambiarlo después.",
-        "upload": "Subir",
-        "clanName": "NOMBRE DEL CLAN",
-        "placeholder": "Introduce el nombre del clan",
-        "invalidName": "Introduce un nombre de clan válido (máx. 64 caracteres, solo palabras, números, _ o -).",
-        "duplicateName": "El nombre del clan ya existe. Introduce otro nombre.",
-        "agreement": "Al crear un clan, aceptas los",
-        "communityGuidelines": "Directrices de la comunidad",
-        "back": "Atrás",
-        "create": "Crear",
-        "toast": {
-            "limitImageSize": "El tamaño de la imagen debe ser inferior a {{size}} MB"
-        }
-    },
-    "clanTemplateModal": {
-        "title": "Crea tu clan",
-        "description": "Crea tu propio espacio para conectar con amigos. Construye tu clan e inicia la conversación hoy.",
-        "createMyOwn": "Crear el mío",
-        "startFromTemplate": "Comenzar a partir de una plantilla",
-        "gamingTemplate": "Videojuegos",
-        "friendsTemplate": "Amigos",
-        "studyGroupTemplate": "Grupo de estudio",
-        "schoolClubTemplate": "Club escolar",
-        "localCommunityTemplate": "Comunidad local",
-        "artistsCreatorsTemplate": "Artistas y Creadores"
-    },
-    "limitModal": {
-        "title": "¡Límite alcanzado!",
-        "message": "Ya estás en 50 clanes. Necesitarás abandonar uno antes de poder unirte o crear otro.",
-        "okayButton": "Aceptar"
-    }
+	"title": "Personaliza tu Clan",
+	"subTitle": "Dale personalidad a tu nuevo clan con un nombre y un icono. Siempre puedes cambiarlo después.",
+	"clanName": "Nombre del Clan",
+	"createServer": "Crear Clan",
+	"byCreatingClan": "Al crear un clan, aceptas",
+	"upload": "CARGAR",
+	"addClan": "Añadir Clan",
+	"placeholderClan": "Introduce el nombre del clan",
+	"errorMessage": "Introduce un nombre de clan válido (máximo 64 caracteres, solo letras, números, _ o -).",
+	"duplicateNameMessage": "El nombre del clan ya existe. Introduce otro nombre.",
+	"commutityGuide": "Las Directrices de la Comunidad de Mezon.",
+	"busy": "Ocupado",
+	"findOrStartConversation": "Encuentra o inicia una conversación",
+	"createCategoryModal": {
+		"title": "Crear Categoría",
+		"nameLabel": "¿Cuál es el nombre de la categoría?",
+		"namePlaceholder": "Introduce el nombre de la categoría",
+		"privateCategory": "Categoría Privada",
+		"privateDescription": "Al hacer una categoría privada, solo los miembros y roles seleccionados podrán ver esta categoría. Los canales sincronizados en esta categoría coincidirán automáticamente con esta configuración",
+		"invalidName": "Introduce un nombre de categoría válido (máximo 64 caracteres, solo letras, números, _ o -).",
+		"duplicateName": "El nombre de la categoría ya existe en el clan. Introduce otro nombre.",
+		"cancel": "Cancelar",
+		"create": "Crear Categoría"
+	},
+	"leaveClanModal": {
+		"title": "Salir de {{clanName}}",
+		"description": "¿Confirmas que deseas salir de <strong>{{clanName}}</strong>? No podrás volver a unirte a este Clan a menos que seas reinvitado.",
+		"cancel": "Cancelar"
+	},
+	"leaveClan": "Salir del Clan",
+	"leaveClanTitle": "Salir",
+	"categoryOverview": {
+		"categoryName": "Nombre de Categoría",
+		"categoryNamePlaceholder": "Introduce el nombre de la categoría aquí...",
+		"hasWelcomeChannelError": "Esta categoría tiene un canal de bienvenida",
+		"deleteCategory": "Eliminar Categoría",
+		"deleteCategoryTitle": "Eliminar Categoría",
+		"deleteCategoryButton": "Eliminar categoría",
+		"cannotBeUndone": "Esto no se puede deshacer",
+		"categoryLabel": "Categoría"
+	},
+	"createClanModal": {
+		"title": "Personaliza tu Clan",
+		"description": "Dale personalidad a tu nuevo clan con un nombre y un icono. Siempre puedes cambiarlo después.",
+		"upload": "Cargar",
+		"clanName": "NOMBRE DEL CLAN",
+		"placeholder": "Introduce el nombre del clan",
+		"invalidName": "Introduce un nombre de clan válido (máximo 64 caracteres, solo letras, números, _ o -).",
+		"duplicateName": "El nombre del clan ya existe. Introduce otro nombre.",
+		"agreement": "Al crear un clan, aceptas las Directrices de",
+		"communityGuidelines": "Directrices de la Comunidad",
+		"back": "Atrás",
+		"create": "Crear",
+		"toast": {
+			"limitImageSize": "El tamaño de la imagen debe ser menor a {{size}}MB"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "Crea tu Clan",
+		"description": "Crea tu propio espacio para conectar con amigos. Construye tu clan y comienza a chatear hoy.",
+		"createMyOwn": "Crea el mío",
+		"startFromTemplate": "Comenzar desde una plantilla",
+		"gamingTemplate": "Gaming",
+		"friendsTemplate": "Amigos",
+		"studyGroupTemplate": "Grupo de Estudio",
+		"schoolClubTemplate": "Club Escolar",
+		"localCommunityTemplate": "Comunidad Local",
+		"artistsCreatorsTemplate": "Artistas y Creadores"
+	},
+	"limitModal": {
+		"title": "¡Límite Alcanzado!",
+		"message": "Ya estás en 50 clanes. Necesitas salir de uno antes de unirte o crear otro.",
+		"okayButton": "De acuerdo"
+	}
 }

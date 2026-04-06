@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Registro attività",
+		"filterByUser": "Filtra per utente",
+		"filterByAction": "Filtra per azione",
+		"filterBtn": "Filtra"
+	},
+	"auditLogItem": {
+		"performedAnAction": "ha eseguito un'azione",
+		"toChannel": "al canale",
+		"remove": "ha rimosso",
+		"add": "ha aggiunto"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Tutte le azioni",
+		"placeholder": "Cerca azione"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Tutti gli utenti",
+		"placeholder": "Cerca utente"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "NESSUNA ATTIVITÀ REGISTRATA",
+		"description": "Una volta che i moderatori avranno svolto i loro compiti, potrai monitorare le loro attività qui."
+	}
+}

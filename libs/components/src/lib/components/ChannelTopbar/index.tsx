@@ -1,4 +1,13 @@
-import { toChannelPage, useChatSending, useCustomNavigate, useGifsStickersEmoji, useMemberStatus, useMenu, usePathMatch } from '@mezon/core';
+import {
+	toChannelPage,
+	useAppParams,
+	useChatSending,
+	useCustomNavigate,
+	useGifsStickersEmoji,
+	useMemberStatus,
+	useMenu,
+	usePathMatch
+} from '@mezon/core';
 import type { ChannelMembersEntity, DirectEntity, RootState } from '@mezon/store';
 import {
 	DMCallActions,
@@ -16,6 +25,7 @@ import {
 	searchMessagesActions,
 	selectAllAccount,
 	selectChannelById,
+	selectClanView,
 	selectCloseMenu,
 	selectCurrentChannel,
 	selectCurrentChannelCategoryId,
@@ -47,6 +57,7 @@ import {
 	selectMemberByGroupId,
 	selectNotifiSettingsEntitiesById,
 	selectOpenVoiceCall,
+	selectPinModalChannelId,
 	selectSession,
 	selectStatusInVoice,
 	selectStatusMenu,
@@ -1004,17 +1015,30 @@ function MuteButton() {
 
 function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mode?: number; isDMView?: boolean }) {
 	const { t } = useTranslation('channelTopbar');
+	const { directId } = useAppParams();
 	const dispatch = useAppDispatch();
 	const isShowPinMessage = useSelector(selectIsPinModalVisible);
+	const pinModalChannelId = useSelector(selectPinModalChannelId);
+	const isClanView = useSelector(selectClanView);
 	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
 	const currentDM = useSelector(selectCurrentDM) ?? '';
+	const dmId = (currentDM as { id?: string } | null)?.id ?? '';
+	const conversationKey = isClanView ? `c:${currentChannelId}` : `d:${directId ?? dmId}`;
 	const isShowPinBadge = useAppSelector(selectIsShowPinBadgeByChannelId(currentChannelId));
 	const isShowPinDMBadge = useAppSelector((state) => selectIsShowPinBadgeByDmId(state, (currentDM as { id?: string })?.id || ''));
 	const isShowPinBadgeFinal = isDMView ? isShowPinDMBadge : isShowPinBadge;
 
 	const pinRef = useRef<HTMLDivElement | null>(null);
 
-	const handleTogglePinMessage = async () => {
+	const shouldShowPinMessage = isShowPinMessage && pinModalChannelId === conversationKey;
+
+	const handleClosePinMessage = useCallback(() => {
+		if (isShowPinBadge) dispatch(pinMessageActions.setIsShowPinBadge(false));
+		if (isShowPinDMBadge) dispatch(pinMessageActions.setIsShowPinDMBadge(false));
+		dispatch(pinMessageActions.closePinModal());
+	}, [dispatch, isShowPinBadge, isShowPinDMBadge]);
+
+	const handleTogglePinMessage = useCallback(async () => {
 		const store = getStore();
 		const state = store.getState();
 		const currentClanId = selectCurrentClanId(state) as string;
@@ -1024,7 +1048,7 @@ function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mod
 			return;
 		}
 		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: currentChannelId || currentDmGroup.id, clanId: currentClanId }));
-		dispatch(pinMessageActions.togglePinModal());
+		dispatch(pinMessageActions.togglePinModal(conversationKey));
 
 		if (isDMView && currentDmGroup?.id && isShowPinDMBadge) {
 			dispatch(directActions.setShowPinBadgeOfDM({ dmId: currentDmGroup.id, isShow: false }));
@@ -1032,21 +1056,21 @@ function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mod
 		if (!isDMView && currentChannelId && isShowPinBadge) {
 			dispatch(channelsActions.setShowPinBadgeOfChannel({ clanId: currentClanId, channelId: currentChannelId, isShow: false }));
 		}
-	};
+	}, [conversationKey, currentChannelId, dispatch, isDMView, isShowPinBadge, isShowPinDMBadge]);
 
 	return (
 		<div className="relative leading-5 h-5" ref={pinRef} data-e2e={generateE2eId('chat.channel_message.header.button.pin')}>
 			<button
 				title={t('tooltips.pinnedMessages')}
 				className={`${styleCss} focus-visible:outline-none relative text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
-					isShowPinMessage ? 'text-[var(--bg-icon-theme-active)]' : ''
+					shouldShowPinMessage ? 'text-[var(--bg-icon-theme-active)]' : ''
 				}`}
 				onClick={handleTogglePinMessage}
 				onContextMenu={(e) => e.preventDefault()}
 			>
 				<Icons.PinRight
 					className={` ${
-						isShowPinMessage
+						shouldShowPinMessage
 							? 'text-[var(--bg-icon-theme-active)]'
 							: 'text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]'
 					}`}
@@ -1060,7 +1084,7 @@ function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mod
 					></div>
 				)}
 			</button>
-			{isShowPinMessage && <PinnedMessages mode={mode} rootRef={pinRef} onClose={handleTogglePinMessage} />}
+			{shouldShowPinMessage && <PinnedMessages mode={mode} rootRef={pinRef} onClose={handleClosePinMessage} />}
 		</div>
 	);
 }

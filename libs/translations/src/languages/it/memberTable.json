@@ -1,0 +1,20 @@
+{
+	"headers": {
+		"name": "Nome",
+		"memberSince": "Membro dal",
+		"joinedMezon": "Iscritto a Mezon",
+		"roles": "Ruoli",
+		"signals": "Segnali"
+	},
+	"topBar": {
+		"recentMembers": "Membri recenti",
+		"searchPlaceholder": "Cerca",
+		"sort": "Ordina"
+	},
+	"error": "Errore",
+	"profile": "Profilo",
+	"message": "Messaggio",
+	"timeAgo": "{{time}} fa",
+	"transferOwnership": "Trasferisci la proprietà",
+	"removeMember": "Rimuovi membro"
+}

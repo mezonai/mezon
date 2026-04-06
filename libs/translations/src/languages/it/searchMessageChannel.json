@@ -1,0 +1,60 @@
+{
+	"joinChannel": "Unisciti",
+	"textChannels": "Canali testo",
+	"voiceChannels": "Canali vocali",
+	"streamingChannels": "Canali streaming",
+	"search": "Cerca",
+	"filterResults": "Filtra risultati...",
+	"members": "Membri",
+	"channels": "Canali",
+	"media": "Media",
+	"pins": "Fissati",
+	"in": "in:",
+	"Messages": "Messaggi",
+	"filterOptions": {
+		"fromUser": "Da un utente specifico",
+		"mentionUser": "Menziona qualcuno",
+		"inChannel": "In un canale specifico"
+	},
+	"cancel": "Annulla",
+	"searchPlaceholder": "Cerca",
+	"searchFor": "Cerca:",
+	"enter": "Invio",
+	"searchOptions": "Opzioni di ricerca",
+	"fromUser": "Da utente",
+	"inChannel": "Nel canale",
+	"hasContent": "Contiene contenuti",
+	"mentionsUser": "Menziona qualcuno",
+	"emptySearch": {
+		"title": "Abbiamo cercato ovunque, ma purtroppo non abbiamo trovato alcun risultato."
+	},
+	"learnMore": "Scopri di più",
+	"searchOptionsData": {
+		"fromUserShort": "cerca per mittente",
+		"mentionsUserShort": "cerca per menzione",
+		"hasContentShort": "cerca con allegati",
+		"channelShort": "cerca nel canale"
+	},
+	"prefixes": {
+		"from": "da:",
+		"mentions": "menziona:",
+		"has": "contiene:",
+		"in": "in:"
+	},
+	"mentionPrefixes": {
+		"from": "da:",
+		"mentions": "menziona:",
+		"has": "contiene:",
+		"in": "in:"
+	},
+	"allChannels": "Tutti i canali",
+	"searching": "Ricerca in corso...",
+	"noResults": "Nessun risultato",
+	"resultsCount": "{{count}} risultati",
+	"jump": "Vai a",
+	"hasOptions": {
+		"video": "video",
+		"link": "link",
+		"image": "immagine"
+	}
+}

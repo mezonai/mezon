@@ -7,16 +7,16 @@
     "fourHours": "4 horas",
     "oneHour": "1 hora",
     "thirtyMinutes": "30 minutos",
-    "dontClear": "No borrar"
+    "dontClear": "Sin caducidad"
   },
-  "placeholder": "¿Qué haces?",
+  "placeholder": "¿Qué estás haciendo?",
   "userStatus": {
     "online": "En línea",
     "idle": "Inactivo",
     "doNotDisturb": "No molestar",
     "invisible": "Invisible"
   },
-  "setCustomStatus": "Establecer un estado personalizado",
+  "setCustomStatus": "Establecer estado personalizado",
   "onlineStatus": "Estado en línea",
   "changeOnlineStatus": "Cambiar estado en línea"
 }

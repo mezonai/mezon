@@ -1,104 +1,104 @@
 {
-  "menu": {
-    "watchMenu": {
-      "title": "",
-      "markAsRead": "Marcar como leído"
-    },
-    "inviteMenu": {
-      "title": "",
-      "invite": "Invitar",
-      "markFavorite": "Marcar favorito",
-      "unMarkFavorite": "Desmarcar favorito",
-      "copyLink": "Copiar enlace"
-    },
-    "notification": {
-      "title": "",
-      "muteChannel": "Silenciar canal",
-      "unMuteChannel": "Reactivar canal",
-      "muteThread": "Silenciar hilo",
-      "unMuteThread": "Reactivar hilo",
-      "notification": "Configuración de notificaciones",
-      "for15Minutes": "Durante 15 minutos",
-      "for1Hour": "Durante 1 hora",
-      "for3Hours": "Durante 3 horas",
-      "for8Hours": "Durante 8 horas",
-      "for24Hours": "Durante 24 horas",
-      "untilTurnedBackOn": "Hasta que lo vuelva a activar",
-      "useCategoryDefault": "Usar por defecto de la categoría",
-      "all": "Todo",
-      "onlyMention": "Solo @mención",
-      "nothing": "Ninguno",
-      "processing": "Procesando...",
-      "muteChannelStatus": "Silenciar canal",
-      "muteThreadStatus": "Silenciar hilo",
-      "unmuteChannelStatus": "Reactivar canal",
-      "unmuteThreadStatus": "Reactivar hilo",
-      "mutedUntil": "Silenciado hasta",
-      "muteSuccess": "Silenciado con éxito!",
-      "unMuteSuccess": "Reactivado con éxito!",
-      "muteFailed": "Error al silenciar!",
-      "unMuteFailed": "Error al reactivar!"
-    },
-    "thread": {
-      "title": "",
-      "threads": "Hilos",
-      "searchThreads": "Buscar nombre de hilo",
-      "searchFiles": "Buscar archivos",
-      "searchCanvas": "Buscar nombre de lienzo"
-    },
-    "organizationMenu": {
-      "title": "",
-      "edit": "Editar canal",
-      "deleteChannel": "Eliminar canal",
-      "duplicateChannel": "Duplicar categoría",
-      "leaveChannel": "Salir del canal",
-      "createTextChannel": "Crear canal de texto",
-      "createVoiceChannel": "Crear canal de voz",
-      "openChat": "Abrir chat",
-      "hideNames": "Ocultar nombres",
-      "createThread": "Crear hilo"
-    },
-    "devMode": {
-      "title": "Modo de desarrollo",
-      "copyChannelID": "Copiar ID de canal"
-    },
-    "manageThreadMenu": {
-      "editThread": "Editar hilo",
-      "deleteThread": "Eliminar hilo",
-      "leaveThread": "Salir del hilo",
-      "closeThread": "Cerrar hilo",
-      "lockThread": "Bloquear hilo",
-      "copyLink": "Copiar enlace"
-    }
-  },
-  "notify": {
-    "serverIDCopied": "ID del canal copiado"
-  },
-  "modalConfirm": {
-    "thread": {
-      "title": "Eliminar hilo {{threadName}}",
-      "content": "¿Confirma que desea eliminar este hilo?",
-      "confirmText": "Sí"
-    },
-    "channel": {
-      "title": "Eliminar canal {{channelName}}",
-      "content": "¿Confirma que desea eliminar este canal?",
-      "confirmText": "Sí",
-      "systemChannel": "No se puede eliminar el canal del sistema",
-      "error": "Error al eliminar el canal: {{error}}"
-    }
-  },
-  "modalConFirmLeaveThread": {
-    "title": "Salir del hilo",
-    "yesButton": "Salir del hilo",
-    "textConfirm": "¿Confirma que desea salir del hilo? No podrá recibir mensajes de este hilo tras abandonarlo."
-  },
-  "modalConFirmLeaveChannel": {
-    "title": "Salir del canal",
-    "yesButton": "Salir del canal",
-    "textConfirm": "¿Confirma que desea salir del canal? No podrá recibir mensajes de este canal tras abandonarlo.",
-    "error": "Error al salir del canal: {{error}}"
-  },
-  "btnBadgeCount": "Nuevo",
-  "favoriteChannel": "CANAL FAVORITO"
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Marcar como leído"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Invitar",
+			"markFavorite": "Marcar como favorito",
+			"unMarkFavorite": "Quitar de favoritos",
+			"copyLink": "Copiar enlace"
+		},
+		"notification": {
+			"title": "",
+			"muteChannel": "Silenciar Canal",
+			"unMuteChannel": "Desilenciar Canal",
+			"muteThread": "Silenciar Hilo",
+			"unMuteThread": "Desilenciar Hilo",
+			"notification": "Configuración de Notificaciones",
+			"for15Minutes": "Durante 15 minutos",
+			"for1Hour": "Durante 1 hora",
+			"for3Hours": "Durante 3 horas",
+			"for8Hours": "Durante 8 horas",
+			"for24Hours": "Durante 24 horas",
+			"untilTurnedBackOn": "Hasta que lo vuelvas a activar",
+			"useCategoryDefault": "Usar configuración predeterminada de categoría",
+			"all": "Todo",
+			"onlyMention": "Solo @mención",
+			"nothing": "Nada",
+			"processing": "Procesando...",
+			"muteChannelStatus": "Canal silenciado",
+			"muteThreadStatus": "Hilo silenciado",
+			"unmuteChannelStatus": "Canal desilenciado",
+			"unmuteThreadStatus": "Hilo desilenciado",
+			"mutedUntil": "Silenciado hasta",
+			"muteSuccess": "¡Silenciado con éxito!",
+			"unMuteSuccess": "¡Desilenciado con éxito!",
+			"muteFailed": "Error al silenciar",
+			"unMuteFailed": "Error al desilenciar"
+		},
+		"thread": {
+			"title": "",
+			"threads": "Hilos",
+			"searchThreads": "Buscar por nombre de hilo",
+			"searchFiles": "Buscar archivos",
+			"searchCanvas": "Buscar por nombre de Canvas"
+		},
+		"organizationMenu": {
+			"title": "",
+			"edit": "Editar Canal",
+			"deleteChannel": "Eliminar Canal",
+			"duplicateChannel": "Duplicar Categoría",
+			"leaveChannel": "Salir del Canal",
+			"createTextChannel": "Crear Canal de Texto",
+			"createVoiceChannel": "Crear Canal de Voz",
+			"openChat": "Abrir Chat",
+			"hideNames": "Ocultar Nombres",
+			"createThread": "Crear Hilo"
+		},
+		"devMode": {
+			"title": "Modo Desarrollo",
+			"copyChannelID": "Copiar ID del Canal"
+		},
+		"manageThreadMenu": {
+			"editThread": "Editar Hilo",
+			"deleteThread": "Eliminar Hilo",
+			"leaveThread": "Salir del Hilo",
+			"closeThread": "Cerrar Hilo",
+			"lockThread": "Bloquear Hilo",
+			"copyLink": "Copiar Enlace"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "ID del Canal copiado"
+	},
+	"modalConfirm": {
+		"thread": {
+			"title": "Eliminar Hilo {{threadName}}",
+			"content": "¿Confirmas que deseas eliminar este Hilo?",
+			"confirmText": "Sí"
+		},
+		"channel": {
+			"title": "Eliminar Canal {{channelName}}",
+			"content": "¿Confirmas que deseas eliminar este canal?",
+			"confirmText": "Sí",
+			"systemChannel": "No puedes eliminar el canal del sistema",
+			"error": "Error al eliminar canal: {{error}}"
+		}
+	},
+	"modalConFirmLeaveThread": {
+		"title": "Salir del Hilo",
+		"yesButton": "Salir del Hilo",
+		"textConfirm": "¿Confirmas que deseas salir del Hilo? Cuando salgas, ya no recibirás mensajes de este hilo"
+	},
+	"modalConFirmLeaveChannel": {
+		"title": "Salir del Canal",
+		"yesButton": "Salir del Canal",
+		"textConfirm": "¿Confirmas que deseas salir del Canal? Cuando salgas, ya no recibirás mensajes de este canal",
+		"error": "Error al salir del canal: {{error}}"
+	},
+	"btnBadgeCount": "Nuevos",
+	"favoriteChannel": "CANAL FAVORITO"
 }

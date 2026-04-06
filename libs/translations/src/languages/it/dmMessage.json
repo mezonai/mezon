@@ -1,0 +1,63 @@
+{
+	"title": "Messaggi",
+	"addFriend": "Aggiungi amico",
+	"friends": "Amici",
+	"blockedUserMessage": "Messaggio bloccato",
+	"menu": {
+		"leaveGroup": "Esci dal gruppo",
+		"deleteGroup": "Elimina gruppo",
+		"profile": "Profilo",
+		"closeDm": "Chiudi messaggio",
+		"markAsRead": "Segna come letto",
+		"favorite": "Preferiti",
+		"muteConversation": "Silenzia conversazione",
+		"unMuteConversation": "Riattiva notifiche",
+		"notificationSettings": "Impostazioni notifiche",
+		"disableE2EE": "Disattiva E2EE",
+		"enableE2EE": "Attiva E2EE",
+		"blockUser": "Blocca utente",
+		"unblockUser": "Sblocca utente",
+		"removeFriend": "Rimuovi amico",
+		"addFriend": "Aggiungi amico",
+		"pinConversation": "Fissa conversazione",
+		"unpinConversation": "Rimuovi conversazione fissata"
+	},
+	"confirm": {
+		"title": "Esci da {{groupName}}",
+		"content": "Sei sicuro di voler uscire da {{groupName}}? Non potrai rientrare nel gruppo a meno che tu non venga invitato di nuovo.",
+		"confirmText": "Sì"
+	},
+	"pinConfirm": {
+		"title": "Fissa conversazione?",
+		"content": "Questa conversazione verrà spostata in cima alla lista dei messaggi per un accesso rapido.",
+		"confirmText": "Fissa"
+	},
+	"unpinConfirm": {
+		"title": "Rimuovi conversazione fissata?",
+		"content": "Questa conversazione tornerà alla sua posizione normale nella lista dei messaggi.",
+		"confirmText": "Rimuovi"
+	},
+	"pinSection": "FISSIATI",
+	"allMessagesSection": "TUTTI I MESSAGGI",
+	"maximumPinnedConversationsReached": "Puoi fissare al massimo {{max}} conversazioni.",
+	"notification": {
+		"blockUser": {
+			"success": "Utente bloccato con successo",
+			"error": "Impossibile bloccare l'utente"
+		},
+		"unblockUser": {
+			"success": "Utente sbloccato con successo",
+			"error": "Impossibile sbloccare l'utente"
+		},
+		"muteSuccess": "Conversazione silenziata!",
+		"unMuteSuccess": "Notifiche riattivate!",
+		"muteFailed": "Impossibile silenziare la conversazione!",
+		"unMuteFailed": "Impossibile riattivare le notifiche!"
+	},
+	"waveWelcome": "Fai un saluto!",
+	"waveWelcomeDM": "Saluta {{username}}",
+	"members": "membri",
+	"speaker": "Altoparlante",
+	"end": "Termina",
+	"turnedMicOff": "ha disattivato il microfono"
+}

@@ -1,60 +1,60 @@
 {
-    "joinChannel": "Unirse",
-    "textChannels": "Canales de texto",
-    "voiceChannels": "Canales de voz",
-    "streamingChannels": "Canales de streaming",
-    "search": "Buscar",
-    "filterResults": "Filtrar resultados...",
-    "members": "Miembros",
-    "channels": "Canales",
-    "media": "Media",
-    "pins": "Pins",
-    "in": "en:",
-    "Messages": "Mensajes",
-    "filterOptions": {
-        "fromUser": "Desde un usuario específico",
-        "mentionUser": "Mencionar a alguien",
-        "inChannel": "En un canal específico"
-    },
-    "cancel": "Cancelar",
-    "searchPlaceholder": "Buscar",
-    "searchFor": "Buscar:",
-    "enter": "Entrar",
-    "searchOptions": "Opciones de búsqueda",
-    "fromUser": "De usuario",
-    "mentionsUser": "Menciones",
-    "hasContent": "Tiene",
-    "inChannel": "En canal",
-    "emptySearch": {
-        "title": "Buscamos en todas partes. Lamentablemente, no se encontraron resultados."
-    },
-    "learnMore": "Más información",
-    "searchOptionsData": {
-        "fromUserShort": "buscar por remitente del mensaje",
-        "mentionsUserShort": "buscar por usuario mencionado",
-        "hasContentShort": "buscar por contenido con adjuntos",
-        "channelShort": "buscar en canal"
-    },
-    "prefixes": {
-        "from": "de:",
-        "mentions": "menciones:",
-        "has": "tiene:",
-        "in": "en:"
-    },
-    "mentionPrefixes": {
-        "from": "de:",
-        "mentions": "menciones:",
-        "has": "tiene:",
-        "in": "en:"
-    },
-    "allChannels": "Todos los canales",
-    "searching": "Buscando...",
-    "noResults": "No hay resultados",
-    "resultsCount": "{{count}} Resultados",
-    "jump": "Saltar",
-    "hasOptions": {
-        "video": "video",
-        "link": "enlace",
-        "image": "imagen"
-    }
+	"joinChannel": "Unirse",
+	"textChannels": "Canales de texto",
+	"voiceChannels": "Canales de voz",
+	"streamingChannels": "Canales de retransmisión",
+	"search": "Buscar",
+	"filterResults": "Filtrar resultados...",
+	"members": "Miembros",
+	"channels": "Canales",
+	"media": "Multimedia",
+	"pins": "Fijos",
+	"in": "en:",
+	"Messages": "Mensajes",
+	"filterOptions": {
+		"fromUser": "De un usuario específico",
+		"mentionUser": "Mencionar a alguien",
+		"inChannel": "En un canal específico"
+	},
+	"cancel": "Cancelar",
+	"searchPlaceholder": "Búsqueda",
+	"searchFor": "Buscar en:",
+	"enter": "Ingresar",
+	"searchOptions": "Opciones de búsqueda",
+	"fromUser": "De usuario",
+	"mentionsUser": "Menciones",
+	"hasContent": "Contiene",
+	"inChannel": "En canal",
+	"emptySearch": {
+		"title": "Hemos buscado a fondo. Desafortunadamente, no se encontraron resultados."
+	},
+	"learnMore": "Saber más",
+	"searchOptionsData": {
+		"fromUserShort": "buscar por remitente del mensaje",
+		"mentionsUserShort": "buscar por usuario mencionado",
+		"hasContentShort": "buscar por contenido con adjuntos",
+		"channelShort": "buscar en canal"
+	},
+	"prefixes": {
+		"from": "from:",
+		"mentions": "menciones:",
+		"has": "tiene:",
+		"in": "en:"
+	},
+	"mentionPrefixes": {
+		"from": "from:",
+		"mentions": "mentions:",
+		"has": "has:",
+		"in": "in:"
+	},
+	"allChannels": "Todos los canales",
+	"searching": "Buscando...",
+	"noResults": "Sin resultados",
+	"resultsCount": "{{count}} resultados",
+	"jump": "Ir a",
+	"hasOptions": {
+		"video": "video",
+		"link": "enlace",
+		"image": "imagen"
+	}
 }

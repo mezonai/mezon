@@ -1,65 +1,65 @@
 {
-    "friend": "Amigo",
-    "addFriend": "Añadir amigo",
-    "friends": "Amigos",
-    "clearSearch": "Limpiar búsqueda",
-    "search": "Buscar",
-    "tabs": {
-        "all": "Todos",
-        "online": "Conectados",
-        "pending": "Pendientes",
-        "block": "Bloqueados"
-    },
-    "addFriendModal": {
-        "title": "Añadir amigo",
-        "description": "Puedes añadir amigos con sus nombres de usuario de Mezon",
-        "placeholder": "Introduce el nombre de usuario",
-        "tooltip": "Puedes añadir amigos con sus nombres de usuario de Mezon",
-        "sendRequest": "Enviar solicitud de amistad",
-        "add": "Añadir",
-        "alreadyFriends": "¡Ya eres amigo de ese usuario!",
-        "waitAccept": "¡Ya has enviado una solicitud de amistad a este usuario!",
-        "invalidInput": "Solo se pueden usar números, letras, guiones bajos _ o puntos.",
-        "blockedUser": "Has bloqueado a este usuario. Por favor, desbloquéalo antes de enviar una solicitud de amistad.",
-        "waitingMessage": "Mezon está esperando a amigos. ¡Pero no tienes que hacerlo!"
-    },
-    "requestFailedPopup": {
-        "title": "Solicitud de amistad fallida",
-        "message": "¡Ya eres amigo de ese usuario!",
-        "okay": "Vale"
-    },
-    "activity": {
-        "coding": "Actividad - Trabajo",
-        "music": "Actividad - En directo",
-        "gaming": "Actividad - Jugar"
-    },
-    "friendMenu": {
-        "startVideoCall": "Iniciar videollamada",
-        "startVoiceCall": "Iniciar llamada de voz",
-        "removeFriend": "Eliminar amigo",
-        "block": "Bloquear",
-        "unblock": "Desbloquear",
-        "more": "Más",
-        "cancel": "Cancelar",
-        "accept": "Aceptar",
-        "reject": "Rechazar"
-    },
-    "toast": {
-        "userBlockedSuccess": "Usuario bloqueado con éxito",
-        "userBlockedFailed": "Error al bloquear el usuario",
-        "userUnblockedSuccess": "Usuario desbloqueado con éxito",
-        "userUnblockedFailed": "Error al desbloquear el usuario"
-    },
-    "statusTapListFriends": {
-        "all": "¡Parece algo vacío aquí! ¡Vamos a iniciar la fiesta añadiendo unos cuantos amigos!",
-        "online": "¡Está tranquilo ahora! ¿Por qué no empiezas una conversación y ves quién está cerca?",
-        "pending": "Aquí es donde encontrarás las solicitudes de amistad que has enviado y recibido.",
-        "block": "Todavía no has bloqueado a nadie."
-    },
-    "statusTapSearchFriends": {
-        "all": "No hay amigos que coincidan con tu búsqueda. Prueba otro nombre.",
-        "online": "Nadie conectado coincide con tu búsqueda. Prueba otro nombre.",
-        "pending": "No hay solicitudes que coincidan con tu búsqueda. Comprueba el nombre o inténtalo de nuevo.",
-        "block": "No hay usuarios bloqueados que coincidan con tu búsqueda. Prueba otro nombre."
-    }
+	"friend": "Amigo",
+	"addFriend": "Añadir amigo",
+	"friends": "Amigos",
+	"clearSearch": "Borrar búsqueda",
+	"search": "Buscar",
+	"tabs": {
+		"all": "Todos",
+		"online": "En línea",
+		"pending": "Pendientes",
+		"block": "Bloqueados"
+	},
+	"addFriendModal": {
+		"title": "AÑADIR AMIGO",
+		"description": "Puedes añadir amigos con su nombre de usuario de Mezon",
+		"placeholder": "Introduce nombre de usuario",
+		"tooltip": "Puedes añadir amigos con su nombre de usuario de Mezon",
+		"sendRequest": "Enviar solicitud de amistad",
+		"add": "Añadir",
+		"alreadyFriends": "¡Ya eres amigo de ese usuario!",
+		"waitAccept": "¡Ya has enviado una solicitud de amistad a este usuario!",
+		"invalidInput": "Usa solo números, letras, guiones bajos _ o puntos.",
+		"blockedUser": "Has bloqueado a este usuario. Desbloquéalo antes de enviar la solicitud.",
+		"waitingMessage": "Mezon está esperando a amigos. ¡Tú no tienes que!"
+	},
+	"requestFailedPopup": {
+		"title": "Solicitud de amistad fallida",
+		"message": "¡Ya eres amigo de ese usuario!",
+		"okay": "De acuerdo"
+	},
+	"activity": {
+		"coding": "Actividad - Trabajo",
+		"music": "Actividad - En directo",
+		"gaming": "Actividad - Jugar"
+	},
+	"friendMenu": {
+		"startVideoCall": "Iniciar videollamada",
+		"startVoiceCall": "Iniciar llamada de voz",
+		"removeFriend": "Quitar amigo",
+		"block": "Bloquear",
+		"unblock": "Desbloquear",
+		"more": "Más",
+		"cancel": "Cancelar",
+		"accept": "Aceptar",
+		"reject": "Rechazar"
+	},
+	"toast": {
+		"userBlockedSuccess": "Usuario bloqueado correctamente",
+		"userBlockedFailed": "Error al bloquear usuario",
+		"userUnblockedSuccess": "Usuario desbloqueado correctamente",
+		"userUnblockedFailed": "Error al desbloquear usuario"
+	},
+	"statusTapListFriends": {
+		"all": "¡Parece un poco vacío aquí! Empecemos a añadir amigos.",
+		"online": "¡Está tranquilo por ahora! ¿Por qué no iniciar una conversación?",
+		"pending": "Aquí encontrarás las solicitudes de amistad que has enviado y recibido.",
+		"block": "Aún no has bloqueado a nadie."
+	},
+	"statusTapSearchFriends": {
+		"all": "Ningún amigo coincide con tu búsqueda. Prueba otro nombre.",
+		"online": "Nadie en línea coincide con tu búsqueda. Prueba otro nombre.",
+		"pending": "Ninguna solicitud coincide con tu búsqueda. Revisa el nombre o inténtalo de nuevo.",
+		"block": "Ningún usuario bloqueado coincide con tu búsqueda. Prueba otro nombre."
+	}
 }

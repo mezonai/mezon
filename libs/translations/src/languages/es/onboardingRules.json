@@ -1,12 +1,12 @@
 {
   "editResources": "Editar recursos",
   "form": {
-    "nameTitle": "Asigna un nombre a este recurso",
-    "namePlaceholder": "#reglas podrían ser Reglas",
-    "descriptionTitle": "Asigna una descripción a este recurso",
-    "descriptionPlaceholder": "Ejemplo: Regla para el clan",
-    "imageTitle": "Imagen de la regla",
-    "browse": "Buscar",
+    "nameTitle": "Dale un nombre a este recurso",
+    "namePlaceholder": "#rules podría ser Reglas",
+    "descriptionTitle": "Dale una descripción a este recurso",
+    "descriptionPlaceholder": "Ej. Regla del clan",
+    "imageTitle": "Imagen de Reglas",
+    "browse": "Explorar",
     "required": "Este campo es obligatorio.",
     "minCharacters": "El título de la regla debe tener al menos 7 caracteres"
   },

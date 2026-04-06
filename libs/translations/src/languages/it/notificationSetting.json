@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Impostazioni notifiche",
+		"muteUntil": "Hai disattivato le notifiche per questo canale fino a",
+		"unMute": "Attiva notifiche",
+		"mute": "Disattiva notifiche",
+		"labelOptions": {
+			"reactionMessage": "Reazioni ai messaggi",
+			"categoryDefault": "Usa impostazioni predefinite",
+			"allMessage": "Tutto",
+			"notThingMessage": "Niente",
+			"mentionMessage": "Solo @menzioni"
+		},
+		"muteCategoryUntil": "Hai disattivato le notifiche per questa categoria fino a"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Disattiva notifiche per questa discussione",
+		"headerTitleMuteChannel": "Disattiva notifiche per questo canale",
+		"muteThisConversation": "Disattiva notifiche per questa conversazione",
+		"muteDuration": {
+			"forFifteenMinutes": "Per 15 minuti",
+			"forOneHour": "Per 1 ora",
+			"forThreeHours": "Per 3 ore",
+			"forEightHours": "Per 8 ore",
+			"forTwentyFourHours": "Per 24 ore",
+			"untilTurnItBackOn": "Fino a riattivazione"
+		},
+		"description": "Stai ricevendo notifiche per tutti i messaggi in questo clan, ma puoi modificare le impostazioni qui",
+		"muteSuccess": "Notifiche disattivate con successo!",
+		"unMuteSuccess": "Notifiche attivate con successo!",
+		"muteFailed": "Errore durante la disattivazione delle notifiche!",
+		"unMuteFailed": "Errore durante l'attivazione delle notifiche!"
+	},
+	"toast": {
+		"error": "Errore durante l'aggiornamento delle notifiche: {{error}}"
+	},
+	"title": "Impostazioni notifiche",
+	"clanNotificationSettings": "IMPOSTAZIONI NOTIFICHE CLAN",
+	"notificationOverrides": "SOVRASCRITTURA NOTIFICHE",
+	"addChannelOverride": "Aggiungi un canale per personalizzare le impostazioni di notifica predefinite",
+	"selectOrCreateOption": "Seleziona o crea un'opzione...",
+	"headers": {
+		"channelOrCategory": "CANALE O CATEGORIA",
+		"all": "TUTTO",
+		"mentions": "MENZIONI",
+		"nothing": "NIENTE",
+		"mute": "DISATTIVA NOTIFICHE"
+	},
+	"menu": {
+		"notification": {
+			"all": "Tutto",
+			"onlyMention": "Solo @menzioni",
+			"nothing": "Niente"
+		}
+	}
+}

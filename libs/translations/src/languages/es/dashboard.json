@@ -1,74 +1,74 @@
 {
-  "activityOverview": {
-    "title": "Resumen de actividad",
-    "timePeriod": "Periodo de tiempo",
-    "totalActiveUsers": "Usuarios activos totales",
-    "totalActiveUsersTooltip": "Usuarios únicos que estuvieron activos al menos una vez",
-    "totalActiveChannels": "Canales activos totales",
-    "totalActiveChannelsTooltip": "Canales únicos que estuvieron activos al menos una vez",
-    "totalMessages": "Mensajes totales",
-    "totalMessagesTooltip": "Mensajes totales enviados durante el periodo seleccionado"
-  },
-  "pagination": {
-    "showing": "Mostrando",
-    "of": "de",
-    "clans": "clanes",
-    "previous": "Anterior",
-    "next": "Siguiente"
-  },
-  "chart": {
-    "loadingChartData": "Cargando datos del gráfico...",
-    "metricsAvailableForOwnersOnly": "Las métricas están disponibles solo para los propietarios del clan."
-  },
-  "table": {
-    "detailedActivityData": "Datos de actividad detallados",
-    "channelsActivityData": "Datos de actividad de canales",
-    "userActivityData": "Datos de actividad de usuarios",
-    "exportCSV": "Exportar CSV",
-    "exporting": "Exportando...",
-    "includedInExport": "Incluido en el archivo de exportación",
-    "notIncludedInExport": "No incluido en el archivo de exportación",
-    "clanName": "Nombre del clan",
-    "channelName": "Nombre del canal",
-    "userName": "Nombre del usuario",
-    "activeUsers": "Usuarios activos",
-    "activeChannels": "Canales activos",
-    "messages": "Mensajes",
-    "noOwnedClans": "No tienes ningún clan propio para generar análisis.",
-    "noActiveChannels": "Actualmente no hay canales activos en este clan.",
-    "noActiveUsers": "Actualmente no hay usuarios activos en este canal.",
-    "selectColumnTooltip": "Seleccionar/deseleccionar para incluir esta columna en la exportación CSV.",
-    "selectAtLeastOneColumn": "Debes seleccionar al menos una columna para exportar CSV."
-  },
-  "page": {
-    "backToOverview": "Volver a la vista general de uso del clan",
-    "clanUsageStatisticsReport": "Informe de estadísticas de uso del clan",
-    "dashboardReport": "Panel de control",
-    "report": "Informe"
-  },
-  "state": {
-    "loadingData": "Cargando datos...",
-    "noDataFound": "No se encontraron datos",
-    "noDataDescription": "No hay datos de uso disponibles para el periodo seleccionado."
-  },
-  "reportControls": {
-    "timePeriod": "Periodo de tiempo",
-    "rangeType": "Tipo de rango",
-    "startDate": "Fecha de inicio",
-    "endDate": "Fecha de fin",
-    "last7Days": "Últimos 7 días",
-    "last30Days": "Últimos 30 días",
-    "last90Days": "Últimos 90 días",
-    "customDateRange": "Rango de fechas personalizado",
-    "daily": "Diario",
-    "weekly": "Semanal",
-    "monthly": "Mensual",
-    "runReport": "Ejecutar informe",
-    "reset": "Reiniciar"
-  },
-  "sortIcon": {
-    "tooltip": "Ordenar ascendente/descendente por esta columna",
-    "sortedAsc": "Ordenado ascendente",
-    "sortedDesc": "Ordenado descendente"
-  }
+	"activityOverview": {
+		"title": "Resumen de Actividad",
+		"timePeriod": "Período de tiempo",
+		"totalActiveUsers": "Total de usuarios activos",
+		"totalActiveUsersTooltip": "Usuarios únicos que estuvieron activos al menos una vez",
+		"totalActiveChannels": "Total de canales activos",
+		"totalActiveChannelsTooltip": "Canales únicos que estuvieron activos al menos una vez",
+		"totalMessages": "Total de mensajes",
+		"totalMessagesTooltip": "Total de mensajes enviados durante el período seleccionado"
+	},
+	"pagination": {
+		"showing": "Mostrando",
+		"of": "de",
+		"clans": "clanes",
+		"previous": "Anterior",
+		"next": "Siguiente"
+	},
+	"chart": {
+		"loadingChartData": "Cargando datos del gráfico...",
+		"metricsAvailableForOwnersOnly": "Las métricas están disponibles solo para propietarios del clan."
+	},
+	"table": {
+		"detailedActivityData": "Datos detallados de actividad",
+		"channelsActivityData": "Datos de actividad de canales",
+		"userActivityData": "Datos de actividad de usuario",
+		"exportCSV": "Exportar CSV",
+		"exporting": "Exportando...",
+		"includedInExport": "Incluido en el archivo de exportación",
+		"notIncludedInExport": "No incluido en el archivo de exportación",
+		"clanName": "Nombre del clan",
+		"channelName": "Nombre del canal",
+		"userName": "Nombre de usuario",
+		"activeUsers": "Usuarios activos",
+		"activeChannels": "Canales activos",
+		"messages": "Mensajes",
+		"noOwnedClans": "No eres propietario de ningún clan para generar análisis.",
+		"noActiveChannels": "Actualmente no hay canales activos en este clan.",
+		"noActiveUsers": "Actualmente no hay usuarios activos en este canal.",
+		"selectColumnTooltip": "Seleccionar/deseleccionar para incluir esta columna en la exportación CSV",
+		"selectAtLeastOneColumn": "Debes seleccionar al menos una columna para exportar CSV"
+	},
+	"page": {
+		"backToOverview": "Volver al resumen de uso del clan",
+		"clanUsageStatisticsReport": "Informe de estadísticas de uso del clan",
+		"dashboardReport": "Panel",
+		"report": "Informe"
+	},
+	"state": {
+		"loadingData": "Cargando datos...",
+		"noDataFound": "No se encontraron datos",
+		"noDataDescription": "No hay datos de uso disponibles para el período seleccionado."
+	},
+	"reportControls": {
+		"timePeriod": "Período de tiempo",
+		"rangeType": "Tipo de rango",
+		"startDate": "Fecha de inicio",
+		"endDate": "Fecha de fin",
+		"last7Days": "Últimos 7 días",
+		"last30Days": "Últimos 30 días",
+		"last90Days": "Últimos 90 días",
+		"customDateRange": "Rango de fechas personalizado",
+		"daily": "Diario",
+		"weekly": "Semanal",
+		"monthly": "Mensual",
+		"runReport": "Ejecutar informe",
+		"reset": "Reiniciar"
+	},
+	"sortIcon": {
+		"tooltip": "Ordenar ascendente/descendente por esta columna",
+		"sortedAsc": "Ordenado ascendente",
+		"sortedDesc": "Ordenado descendente"
+	}
 }

@@ -9,6 +9,8 @@ import { AvatarImage } from '../AvatarImage/AvatarImage';
 import type { PollVoter } from './PollMessage';
 import { renderPollTextWithEmoji } from './PollMessage';
 
+const POLL_DETAIL_OPTIONS_SCROLL_AFTER = 5;
+
 export type PollDetailModalProps = {
 	open: boolean;
 	onClose: () => void;
@@ -87,8 +89,14 @@ export const PollDetailModal = ({
 					</div>
 
 					<div className="flex flex-1 min-h-0 py-4 border-theme-primary">
-						<div className="w-[35%] border-r-theme-primary flex flex-col overflow-hidden">
-							<div className="overflow-y-auto overflow-x-hidden px-4 pr-2 thread-scroll">
+						<div className="w-[35%] min-h-0 border-r-theme-primary flex flex-col overflow-hidden">
+							<div
+								className={
+									answers.length > POLL_DETAIL_OPTIONS_SCROLL_AFTER
+										? 'max-h-[280px] overflow-y-auto overflow-x-hidden px-4 pr-2 thread-scroll'
+										: 'overflow-y-auto overflow-x-hidden px-4 pr-2 thread-scroll'
+								}
+							>
 								{answers.map((answer, index) => {
 									const count = voteCounts[index];
 									const isSelected = selectedIndex === index;

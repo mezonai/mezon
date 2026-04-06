@@ -2,42 +2,42 @@
   "headerTitle": "Notificaciones",
   "tabNotify": {
     "forYou": "Para ti",
-    "mention": "Mención",
+    "mention": "Menciones",
     "messages": "Mensajes",
     "topics": "Temas",
     "notificationSettings": "Configuración de notificaciones"
   },
   "removeNotification": "Eliminar notificación",
   "nothingHere": "Aún no hay nada aquí",
-  "comeBackNotify": "Regresa para recibir notificaciones sobre eventos, transmisiones y más",
-  "repliedTo": "Respondido a: ",
+  "comeBackNotify": "Vuelve para ver notificaciones de eventos, transmisiones y más",
+  "repliedTo": "Respondió a: ",
   "sender": "Remitente: ",
-  "seeWhenAnswersAppear": "Ver cuando aparezcan las respuestas",
+  "seeWhenAnswersAppear": "Ver cuándo aparecen las respuestas",
   "enablePushNotifications": "Activar notificaciones push",
   "permissionAlert": {
-    "turnOnNotifications": "Activa las notificaciones",
-    "permissionDescription": "Por favor, permite que Mezon te envíe notificaciones para mantenerte en contacto con tus amigos y familia.",
-    "openSettings": "Abrir ajustes",
+    "turnOnNotifications": "Activar notificaciones",
+    "permissionDescription": "Permite que Mezon te envíe notificaciones para mantener contacto con tus amigos y familia.",
+    "openSettings": "Abrir Configuración",
     "features": {
       "newMessages": {
-        "title": "Recibe notificaciones sobre nuevos mensajes",
-        "description": "Mantente actualizado cuando tus amigos te envíen mensajes"
+        "title": "Recibe notificaciones de nuevos mensajes",
+        "description": "Mantente al corriente cuando amigos te envían mensajes"
       },
       "mentions": {
-        "title": "Saber cuándo te mencionan en grupos",
-        "description": "Nunca te pierdas cuando alguien te mencione"
+        "title": "Saber cuándo eres mencionado en grupos",
+        "description": "Que nunca pierdas cuándo alguien te menciona"
       },
       "muteControl": {
-        "title": "Silenciar chats y tipos de chats específicos",
+        "title": "Silencia chats específicos y tipos de chat",
         "description": "Controla qué notificaciones recibes"
       }
     }
   },
   "permissionRequest": {
-    "title": "Permiso de notificación",
+    "title": "Permiso de Notificaciones",
     "permissionDenied": "Permiso de notificación denegado.",
     "cancel": "Cancelar",
-    "ok": "Aceptar"
+    "ok": "OK"
   },
   "andYou": "y tú",
   "topicAndYou": "Tema y tú",

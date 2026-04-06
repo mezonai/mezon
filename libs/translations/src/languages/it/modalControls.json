@@ -1,0 +1,18 @@
+{
+  "buttons": {
+    "cancel": "Annulla",
+    "save": "Salva",
+    "reset": "Reimposta",
+    "close": "Chiudi",
+    "kick": "Espelli"
+  },
+  "form": {
+    "required": "Campo obbligatorio",
+    "error": "Errore"
+  },
+  "kickMember": {
+    "title": "Espelli {{username}} da {{clanName}}",
+    "description": "Sei sicuro di voler espellere @{{username}} da {{clanName}}? Potrà rientrare tramite un nuovo invito.",
+    "reasonLabel": "Motivo dell'espulsione"
+  }
+}

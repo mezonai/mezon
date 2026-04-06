@@ -1,20 +1,20 @@
 {
-  "addReaction": "Añadir reacción:",
-  "placeholder": "Escribe tus pensamientos aquí…",
-  "ephemeralMessage": "Mensaje efímero a {{username}}…",
-  "mentionCategories": {
-    "members": "MIEMBROS",
-    "textChannels": "CANALES DE TEXTO",
-    "emojiMatching": "COINCIDENCIA DE EMOJIS",
-    "commands": "COMANDOS"
-  },
-  "suggestions": {
-    "notifyEveryone": "Notificar a todos con permiso de ver este canal",
-    "loadingCommands": "Cargando comandos…"
-  },
-  "slashCommands": {
-    "ephemeral": {
-      "description": "Enviar un mensaje efímero (solo visible para el usuario seleccionado)"
-    }
-  }
+	"addReaction": "Añadir reacción:",
+	"placeholder": "Escribe tus pensamientos aquí...",
+	"ephemeralMessage": "Mensaje efímero para {{username}}...",
+	"mentionCategories": {
+		"members": "MIEMBROS",
+		"textChannels": "CANALES DE TEXTO",
+		"emojiMatching": "COINCIDENCIAS DE EMOJIS",
+		"commands": "COMANDOS"
+	},
+	"suggestions": {
+		"notifyEveryone": "Notificar a todos los que tienen permiso para ver este canal",
+		"loadingCommands": "Cargando comandos..."
+	},
+	"slashCommands": {
+		"ephemeral": {
+			"description": "Enviar un mensaje efímero (solo visible para el usuario seleccionado)"
+		}
+	}
 }

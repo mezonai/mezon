@@ -64,7 +64,6 @@ function PreviewOgp({ contextId }: PreviewOgpProps) {
 
 		const timeoutId = setTimeout(async () => {
 			try {
-				setLoading(true);
 				const inviteMatch = ogpLink.url.match(INVITE_URL_REGEX);
 				let previewData: PreviewData;
 

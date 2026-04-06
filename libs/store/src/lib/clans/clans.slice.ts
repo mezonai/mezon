@@ -14,6 +14,7 @@ import { createApiKey, createCacheMetadata, markApiFirstCalled, shouldForceApiCa
 import { channelMetaActions } from '../channels/channelmeta.slice';
 import { channelsActions } from '../channels/channels.slice';
 import { listOnlineUserClan, usersClanActions } from '../clanMembers/clan.members';
+import { statusActions } from '../direct/status.slice';
 import { emojiSuggestionSlice } from '../emojiSuggestion/emojiSuggestion.slice';
 import { eventManagementActions } from '../eventManagement/eventManagement.slice';
 import type { MezonValueContext } from '../helpers';
@@ -161,7 +162,7 @@ export const listChannelBadgeCount = createAsyncThunk('clans/listChannelBadgeCou
 					clan_id: clanId
 				}
 			},
-			(session) => Promise.resolve([]),
+			(session) => mezon.client.listChannelBadgeCount(session, clanId),
 			'channel_badge_count'
 		);
 
@@ -502,6 +503,7 @@ export const joinClan = createAsyncThunk<void, JoinClanPayload>('direct/joinClan
 		if (!state.clans?.checkJoinList?.[clanId] && clanId !== '0') {
 			thunkAPI.dispatch(listChannelBadgeCount({ clanId }));
 			thunkAPI.dispatch(listOnlineUserClan({ clanId }));
+			thunkAPI.dispatch(statusActions.fetchListStatusClanUser({ clanId }));
 		}
 	} catch (error) {
 		captureSentryError(error, 'clans/joinClan');

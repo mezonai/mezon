@@ -8,7 +8,6 @@ import {
 	selectMemberClanByUserId,
 	selectSearchChannelById,
 	selectTopicAnonymousMode,
-	socketState,
 	topicsActions,
 	useAppDispatch,
 	useAppSelector
@@ -267,26 +266,7 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 				...content,
 				t: content.t?.trim()
 			};
-
 			try {
-				if (socketState.isConnected) {
-					await socket.updateChatMessage(
-						getClanId || '0',
-						channelIdOrDirectId ?? '0',
-						mode,
-						isPublic,
-						messageId,
-						trimContent,
-						mentions,
-						attachments,
-						hide_editted,
-						topic_id || '0',
-						!!isTopic
-					);
-				} else {
-					throw new Error('Socket not connected'); // bắt buộc fallback
-				}
-			} catch {
 				await client.updateChannelMessage(
 					session,
 					getClanId || '0',
@@ -301,6 +281,8 @@ export function useChatSending({ mode, channelOrDirect, fromTopic = false }: Use
 					topic_id || '0',
 					!!isTopic
 				);
+			} catch (e) {
+				console.error(e);
 			}
 		},
 		[sessionRef, clientRef, socketRef, channelOrDirect, getClanId, channelIdOrDirectId, mode, isPublic]

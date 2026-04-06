@@ -1,49 +1,49 @@
 {
-  "addReaction": "Añadir reacción",
-  "title": "Mensajes",
-  "addFriend": "Añadir amigo",
-  "friends": "Amigos",
-  "blockedUserMessage": "Mensaje bloqueado",
-  "menu": {
-    "leaveGroup": "Salir del grupo",
-    "deleteGroup": "Eliminar grupo",
-    "profile": "Perfil",
-    "closeDm": "Cerrar DM",
-    "markAsRead": "Marcar como leído",
-    "favorite": "Favorito",
-    "muteConversation": "Silenciar conversación",
-    "unMuteConversation": "Desactivar silencio",
-    "notificationSettings": "Configuración de notificaciones",
-    "disableE2EE": "Desactivar cifrado de extremo a extremo",
-    "enableE2EE": "Activar cifrado de extremo a extremo",
-    "blockUser": "Bloquear usuario",
-    "unblockUser": "Desbloquear usuario",
-    "removeFriend": "Eliminar amigo",
-    "addFriend": "Añadir amigo"
-  },
-  "confirm": {
-    "title": "Salir de {{groupName}}",
-    "content": "Por favor, confirma si quieres salir de {{groupName}}. No podrás volver a unirte a este grupo a menos que te vuelvan a invitar.",
-    "confirmText": "Sí"
-  },
-  "notification": {
-    "blockUser": {
-      "success": "Usuario bloqueado con éxito",
-      "error": "Error al bloquear el usuario"
-    },
-    "unblockUser": {
-      "success": "Usuario desbloqueado con éxito",
-      "error": "Error al desbloquear el usuario"
-    },
-    "muteSuccess": "Silenciado con éxito!",
-    "unMuteSuccess": "Desactivado con éxito!",
-    "muteFailed": "Error al silenciar!",
-    "unMuteFailed": "Error al desactivar el silencio!"
-  },
-  "waveWelcome": "¡Saluda con la mano!",
-  "waveWelcomeDM": "Saluda a {{username}}",
-  "members": "miembros",
-  "speaker": "Altavoz",
-  "end": "Fin",
-  "turnedMicOff": "micrófono apagado"
+	"addReaction": "Añadir reacción",
+	"title": "Mensajes",
+	"addFriend": "Añadir Amigo",
+	"friends": "Amigos",
+	"blockedUserMessage": "Mensaje bloqueado",
+	"menu": {
+		"leaveGroup": "Salir del grupo",
+		"deleteGroup": "Eliminar grupo",
+		"profile": "Perfil",
+		"closeDm": "Cerrar DM",
+		"markAsRead": "Marcar como leído",
+		"favorite": "Favorito",
+		"muteConversation": "Silenciar conversación",
+		"unMuteConversation": "Desilenciar conversación",
+		"notificationSettings": "Configuración de notificaciones",
+		"disableE2EE": "Desactivar E2EE",
+		"enableE2EE": "Activar E2EE",
+		"blockUser": "Bloquear usuario",
+		"unblockUser": "Desbloquear usuario",
+		"removeFriend": "Eliminar amigo",
+		"addFriend": "Añadir amigo"
+	},
+	"confirm": {
+		"title": "Salir de {{groupName}}",
+		"content": "¿Confirmas que deseas salir de {{groupName}}? No podrás volver a unirte a este grupo a menos que seas reinvitado.",
+		"confirmText": "Sí"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "Usuario bloqueado con éxito",
+			"error": "Error al bloquear usuario"
+		},
+		"unblockUser": {
+			"success": "Usuario desbloqueado con éxito",
+			"error": "Error al desbloquear usuario"
+		},
+		"muteSuccess": "¡Silenciado con éxito!",
+		"unMuteSuccess": "¡Desilenciado con éxito!",
+		"muteFailed": "Error al silenciar",
+		"unMuteFailed": "Error al desilenciar"
+	},
+	"waveWelcome": "¡Saluda para decir hola!",
+	"waveWelcomeDM": "Saluda a {{username}}",
+	"members": "miembros",
+	"speaker": "Altavoz",
+	"end": "Terminar",
+	"turnedMicOff": "micrófono desactivado"
 }

@@ -119,6 +119,9 @@ const ChannelMessageOpt = ({
 							if (message?.content?.tp && item.id === 'edit') {
 								return false;
 							}
+							if (message?.code === TypeMessage.Poll && (item.id === 'edit' || item.id === EMessageOpt.THREAD)) {
+								return false;
+							}
 							return true;
 						})
 						.map((item, index) => (

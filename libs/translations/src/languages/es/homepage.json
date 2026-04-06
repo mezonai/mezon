@@ -1,70 +1,70 @@
 {
 	"description": {
-		"part1": "Es excelente para jugar y pasar el rato con amigos o incluso construir una comunidad a nivel mundial.",
+		"part1": "Es ideal para jugar a videojuegos y relajarse con amigos, o incluso construir una comunidad mundial.",
 		"part2": "Personaliza tu propio espacio para",
 		"talk": "Hablar",
-		"play": "Jugar",
-		"and": "Y",
-		"hangOut": "Pasa el rato"
+		"play": "Jugar ",
+		"and": "Y ",
+		"hangOut": "Quedar"
 	},
 	"download": {
-		"getItFrom": "Descárgalo de",
-		"cdnUrl": "URL de CDN"
+		"getItFrom": "Consíguelo en",
+		"cdnUrl": "CDN Url"
 	},
 	"header": {
 		"home": "Inicio",
-		"overview": "Resumen",
-		"features": "Funciones",
+		"overview": "Visión general",
+		"features": "Características",
 		"developers": "Desarrolladores",
 		"botsApps": "Bots/Apps",
 		"documents": "Documentación",
 		"discover": "Descubrir",
-		"blogs": "Blogs",
+		"blogs": "Blog",
 		"openMezon": "Abrir Mezon",
-		"login": "Iniciar sesión",
+		"login": "Acceder",
 		"quickMeeting": "Mezon Meet"
 	},
 	"layout": {
 		"overview": {
-			"title": "Resumen",
-			"subtitle": "Es una nueva forma de comunicarte con tu equipo.",
-			"description": "Es más rápido, mejor organizado, mejor para trabajar desde casa."
+			"title": "Visión general",
+			"subtitle": "Es una nueva forma de comunicarse con tu equipo.",
+			"description": "Más rápido, mejor organizado, ideal para el trabajo en casa."
 		},
 		"features": {
-			"title": "Nuestras Funciones",
-			"subtitle": "Herramientas de Comunicación Completa"
+			"title": "Nuestras características",
+			"subtitle": "Herramientas de comunicación integrales"
 		},
 		"cards": {
 			"workstation": {
-				"title": "Estación de Trabajo",
-				"description": "Un espacio de trabajo digital que agiliza la comunicación, la colaboración y la gestión de tareas al integrarse con diversos sistemas y herramientas. Proporciona espacios estructurados para equipos, proyectos y departamentos, garantizando un acceso fluido a la información y los flujos de trabajo."
+				"title": "Espacio de trabajo digital",
+				"description": "Un espacio de trabajo digital que optimiza la comunicación, colaboración y gestión de tareas mediante integración con diversos sistemas y herramientas. Ofrece espacios estructurados para equipos, proyectos y departamentos, garantizando acceso fluido a información y flujos de trabajo."
 			},
 			"ecosystem": {
 				"title": "Ecosistema",
-				"description": "Un entorno digital dinámico que combina elementos laborales y sociales, ofreciendo características interactivas y recreativas. Apoya transacciones virtuales, actividades de compromiso y la construcción de comunidad para mejorar la experiencia del usuario."
+				"description": "Un entorno digital dinámico que combina trabajo y elementos sociales, ofreciendo funciones interactivas y recreativas. Soporta transacciones virtuales, actividades de engagement y construcción de comunidad para mejorar la experiencia del usuario."
 			},
 			"aiAgent": {
 				"title": "Agente IA",
-				"description": "Un sistema inteligente que automatiza tareas, ayuda con la gestión de información y optimiza los flujos de trabajo. Mejora la productividad con funciones como recordatorios, monitoreo y comunicación automatizada."
+				"description": "Un sistema inteligente que automatiza tareas, gestiona información y optimiza flujos de trabajo. Aumenta la productividad mediante funciones como recordatorios, monitoreo y comunicación automatizada."
 			}
 		},
 		"featureCards": {
 			"mezonMainnet": {
 				"title": "Mezon Mainnet",
-				"subtitle": "La capa 1 de alta velocidad sin tarifas",
+				"subtitle": "La capa 1 de alta velocidad y sin comisiones",
 				"description": "Blockchain"
 			},
 			"developerApi": {
-				"title": "Desarrollador Avanzado",
-				"subtitle": "Plataforma API"
+				"title": "API avanzada para desarrolladores",
+				"subtitle": "Plataforma"
 			},
 			"gaming": {
 				"title": "Juegos",
-				"subtitle": "& Entretenimiento"
+				"subtitle": "y entretenimiento"
 			},
 			"customizable": {
 				"title": "Personalizable",
-				"subtitle": "& Plataforma escalable"
+				"subtitle": "y escalable"
 			}
 		}
 	},
@@ -72,61 +72,59 @@
 		"hero": {
 			"title": {
 				"your": "Tu",
-				"platform": "Plataforma",
-				"live": "En vivo",
-				"work": "Trabajo",
-				"play": "Y Juegosr",
-				"platform": "Plataforma.",
-
-				"theBest": "Lo Mejor",
-				"yourCommunity": "Para tu Comunidad"
+				"live": "en directo",
+				"work": "trabajo",
+				"play": "juego",
+				"platform": "plataforma.",
+				"theBest": "La mejor",
+				"yourCommunity": "para tu comunidad"
 			},
-			"description": "Es excelente para jugar y pasar el rato con amigos o incluso construir una comunidad a nivel mundial. Personaliza tu propio espacio para",
+			"description": "Es ideal para jugar a videojuegos y relajarse con amigos, o incluso construir una comunidad mundial. Personaliza tu propio espacio para",
 			"talk": "Hablar",
 			"play": "Jugar",
 			"and": "Y",
-			"hangOut": "Pasar el rato",
-			"tryButton": "¡Prueba Mezon gratis!",
+			"hangOut": "Quedar",
+			"tryButton": "¡Pruébalo gratis!",
 			"choosePlatform": "Elige tu plataforma"
 		},
 		"textChannel": {
+			"titlesuper": "Súper rápido",
 			"titlemessage": "Mensajería",
-			"titlesuper": "Ultra-rápida",
 			"description": "Diseñado para chat, colaboración y conexión.",
-			"description2": "Mensajería ultra-rápida. Sin límites. Entrega instantánea.",
-			"learnMore": "Más información"
+			"description2": "Mensajería súper rápida. Sin límites. Entrega instantánea.",
+			"learnMore": "Saber más"
 		},
 		"clanDiscover": {
-			"title": "Tu clan, tu mundo",
-			"description": "Desde pasatiempos y discusiones hasta noticias y tendencias, hay un clan para todo.",
-			"learnMore": "Más información"
+			"title": "Tu Clan, Tu Mundo",
+			"description": "Desde pasatiempos y debates hasta noticias y tendencias, hay un clan para todo.",
+			"learnMore": "Saber más"
 		},
 		"aiAgent": {
-			"title": "Agentes de IA para clanes y asistencia siempre activa",
-			"description": "Agentes de IA para clanes y asistencia siempre activa: agente de voz que resume conversaciones del canal de voz o actúa como entrevistador, modo asistente y modo sombra de bot que resume contenido del canal de texto.",
-			"learnMore": "Más información"
+			"title": "Agentes de IA para Clanes y Asistencia Constante",
+			"description": "Agentes de IA para clanes y asistencia continua: Agente de IA de voz (resume conversaciones de canales de voz o actúa como entrevistador), Modo Asistente y Modo Sombra del Bot (resume contenido de canales de texto).",
+			"learnMore": "Saber más"
 		},
 		"communityPayments": {
-			"title": "Pagos dentro de la comunidad",
-			"description": "Envía dinero instantáneamente, recompensa a los creadores y compra con marcas asociadas, todo sin comisiones de plataforma. Construido sobre transparencia y seguridad.",
-			"learnMore": "Más información"
+			"title": "Pagos en la Comunidad",
+			"description": "Envía dinero al instante, recompensa a creadores y compra con marcas asociadas: todo sin comisiones de plataforma. Basado en transparencia y seguridad.",
+			"learnMore": "Saber más"
 		},
 		"enterpriseIntegrations": {
-			"title": "Integraciones empresariales",
-			"description": "Mezon te permite conectar con clientes a nivel mundial y ofrecer experiencias cautivadoras a gran escala.",
-			"learnMore": "Más información"
+			"title": "Integraciones Empresariales",
+			"description": "Mezon te permite conectar con clientes de todo el mundo y ofrecer experiencias cautivadoras a gran escala.",
+			"learnMore": "Saber más"
 		}
 	},
 	"footer": {
-		"description": "Mezon es excelente para jugar y pasar el rato con amigos o incluso construir una comunidad a nivel mundial.",
-		"getTheApp": "Descarga la App",
+		"description": "Mezon es ideal para jugar a videojuegos y relajarse con amigos, o incluso construir una comunidad mundial.",
+		"getTheApp": "Consigue la App",
 		"copyright": "© 2024 Mezon. Todos los derechos reservados.",
 		"links": {
-			"executiveSummary": "Resumen ejecutivo",
-			"problemStatement": "Declaración del problema",
+			"executiveSummary": "Resumen Ejecutivo",
+			"problemStatement": "Planteamiento del problema",
 			"solution": "Solución",
-			"blockchainEconomy": "Blockchain y economía token",
-			"developerApi": "Integración API para desarrolladores",
+			"blockchainEconomy": "Blockchain y economía de tokens",
+			"developerApi": "Integración de API para desarrolladores",
 			"technicalArchitecture": "Arquitectura técnica",
 			"productRoadmap": "Hoja de ruta del producto",
 			"tokenomics": "Tokenómica",
@@ -134,12 +132,12 @@
 		}
 	},
 	"externalMeet": {
-		"title": "Reunión externa de Mezon",
+		"title": "Reunión Externa Mezon",
 		"creatingMeeting": "¡Reunión creada con éxito!",
 		"invite": "Invitar",
 		"joinMeeting": "Unirse a la reunión",
 		"copyLink": "Copiar enlace",
-		"toastSuccess": "¡Enlace de la reunión copiado al portapapeles!",
+		"toastSuccess": "¡Enlace copiado al portapapeles!",
 		"toastFail": "Error al copiar el enlace."
 	}
 }

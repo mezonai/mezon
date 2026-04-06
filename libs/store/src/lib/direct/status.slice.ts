@@ -1,8 +1,10 @@
+import { captureSentryError } from '@mezon/logger';
 import { EUserStatus, type IUserProfileActivity } from '@mezon/utils';
 import type { EntityState, PayloadAction } from '@reduxjs/toolkit';
-import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit';
 import type { UserStatusEvent } from 'mezon-js';
 import type { ApiAllUsersAddChannelResponse, ApiUser } from 'mezon-js/api';
+import { ensureSocket, getMezonCtx } from '../helpers';
 import type { RootState } from '../store';
 
 export const USER_STATUS_FEATURE_KEY = 'USER_STATUS_FEATURE_KEY';
@@ -44,6 +46,20 @@ export function convertStatusGroup(users: ApiAllUsersAddChannelResponse): IUserP
 	return listGroup;
 }
 
+export const fetchListStatusClanUser = createAsyncThunk('status/fetchListStatusClanUser', async ({ clanId }: { clanId: string }, thunkAPI) => {
+	try {
+		const mezon = await ensureSocket(getMezonCtx(thunkAPI));
+		const response = await mezon.client?.listClanUsersStatus(mezon.session, clanId);
+		if (response.clan_user_statuses && response.clan_user_statuses.length) {
+			return response.clan_user_statuses;
+		}
+		return null;
+	} catch (error) {
+		captureSentryError(error, 'clans/joinClan');
+		return thunkAPI.rejectWithValue(error);
+	}
+});
+
 export const initialUsetStatusState: UserStatusState = statusAdapter.getInitialState({
 	loadingStatus: 'not loaded',
 	error: null
@@ -67,6 +83,29 @@ export const statusSlice = createSlice({
 			});
 		},
 		updateMany: statusAdapter.updateMany
+	},
+	extraReducers: (builder) => {
+		builder.addCase(fetchListStatusClanUser.fulfilled, (state, action) => {
+			if (!action.payload) {
+				return;
+			}
+			const data = action.payload.reduce(
+				(acc, status) => {
+					if (status.user_id) {
+						acc.push({
+							id: status.user_id,
+							changes: {
+								user_status: status.user_status
+							}
+						});
+					}
+					return acc;
+				},
+				[] as { id: string; changes: Partial<IUserProfileActivity> }[]
+			);
+
+			statusAdapter.updateMany(state, data);
+		});
 	}
 });
 
@@ -79,7 +118,8 @@ export const statusReducer = statusSlice.reducer;
  * Export action creators to be dispatched. For use with the `useDispatch` hook.
  */
 export const statusActions = {
-	...statusSlice.actions
+	...statusSlice.actions,
+	fetchListStatusClanUser
 };
 
 /*

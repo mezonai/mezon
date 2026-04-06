@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "Guida",
+		"events": "Eventi",
+		"events_one": "{{count}} Evento",
+		"events_other": "{{count}} Eventi",
+		"members": "Membri",
+		"channels": "Canali"
+	},
+	"ongoingEvent": {
+		"title": "Evento in corso",
+		"eventDetail": "Dettagli dell'evento"
+	},
+	"onboarding": {
+		"getStarted": "Inizia",
+		"of": "di"
+	},
+	"favoriteChannel": "Canale preferito",
+	"publicChannels": "Canali pubblici",
+	"channelApps": "App del canale",
+	"dragMode": {
+		"enable": "Tocca per attivare la modalità trascina e rilascia categorie",
+		"disable": "Tocca per disattivare la modalità trascina e rilascia categorie"
+	}
+}

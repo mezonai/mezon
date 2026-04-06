@@ -176,7 +176,9 @@ export const DirectMessageContextMenuProvider: FC<DirectMessageContextMenuProps>
 		openUserProfile
 	});
 
-	const isSelf = userProfile?.user?.id === currentUser?.id || currentUser?.user_ids?.includes(userProfile?.user?.id);
+	const isSelf =
+		(userProfile?.user?.id === currentUser?.id || currentUser?.user_ids?.includes(userProfile?.user?.id)) &&
+		currentUser?.type === ChannelType.CHANNEL_TYPE_DM;
 
 	const isDefaultSetting = !notificationSettings?.id || notificationSettings?.id === '0';
 	const hasMuteTime =
@@ -405,4 +407,3 @@ export const useDirectMessageContextMenu = () => {
 };
 
 export * from './types';
-

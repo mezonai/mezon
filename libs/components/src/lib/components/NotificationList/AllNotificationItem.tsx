@@ -73,10 +73,11 @@ function AllNotificationItem({ notify, onCloseTooltip }: NotifyMentionProps) {
 		deleteNotify(notificationId, category);
 	};
 
+	const contentSenderId = notify?.content?.sender_id;
 	const allTabProps = {
 		subject: notify.subject,
 		category: notify.category,
-		senderId: notify?.content?.sender_id || notify.sender_id,
+		senderId: contentSenderId && contentSenderId !== '0' ? contentSenderId : notify.sender_id,
 		embed: notify?.content?.embed as IEmbedProps[] | undefined
 	};
 

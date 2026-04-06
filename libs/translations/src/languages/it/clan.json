@@ -1,0 +1,76 @@
+{
+	"title": "Personalizza il tuo clan",
+	"subTitle": "Dai un tocco unico al tuo nuovo clan con un nome e un'icona. Potrai sempre cambiarli in seguito.",
+	"clanName": "Nome del clan",
+	"createServer": "Crea clan",
+	"byCreatingClan": "Creando un clan, accetti i",
+	"upload": "CARICA",
+	"addClan": "Crea clan",
+	"placeholderClan": "Inserisci il nome del clan",
+	"errorMessage": "Inserisci un nome clan valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+	"duplicateNameMessage": "Questo nome clan esiste già. Scegline un altro.",
+	"commutityGuide": "Linee guida della community di Mezon.",
+	"busy": "Occupato",
+	"findOrStartConversation": "Cerca o inizia una conversazione",
+	"createCategoryModal": {
+		"title": "Crea categoria",
+		"nameLabel": "Qual è il nome della categoria?",
+		"namePlaceholder": "Inserisci il nome della categoria",
+		"privateCategory": "Categoria privata",
+		"privateDescription": "Creando una categoria privata, solo i membri e i ruoli selezionati potranno visualizzarla. I canali sincronizzati in questa categoria si adatteranno automaticamente a questa impostazione.",
+		"invalidName": "Inserisci un nome categoria valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+		"duplicateName": "Questa categoria esiste già nel clan. Inseriscine una con un nome diverso.",
+		"cancel": "Annulla",
+		"create": "Crea categoria"
+	},
+	"leaveClanModal": {
+		"title": "Esci da {{clanName}}",
+		"description": "Sei sicuro di voler uscire da <strong>{{clanName}}</strong>? Non potrai più rientrare in questo server a meno che tu non venga invitato di nuovo.",
+		"cancel": "Annulla"
+	},
+	"leaveClan": "Esci dal Clan",
+	"leaveClanTitle": "Esci",
+	"categoryOverview": {
+		"categoryName": "Nome della categoria",
+		"categoryNamePlaceholder": "Inserisci qui il nome della categoria...",
+		"hasWelcomeChannelError": "Questa categoria ha un canale di benvenuto",
+		"deleteCategory": "Elimina categoria",
+		"deleteCategoryTitle": "Elimina categoria",
+		"deleteCategoryButton": "Elimina categoria",
+		"cannotBeUndone": "Questa azione non può essere annullata",
+		"categoryLabel": "Categoria"
+	},
+	"createClanModal": {
+		"title": "Personalizza il tuo Clan",
+		"description": "Dai un tocco unico al tuo nuovo clan scegliendo un nome e un'icona! Potrai cambiarli in seguito se lo desideri!",
+		"upload": "Carica",
+		"clanName": "NOME DEL CLAN",
+		"placeholder": "Inserisci il nome del clan",
+		"invalidName": "Inserisci un nome clan valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+		"duplicateName": "Questo nome clan esiste già. Scegline un altro.",
+		"agreement": "Creando un clan, accetti i",
+		"communityGuidelines": "Linee guida della community di Mezon",
+		"back": "Indietro",
+		"create": "Crea",
+		"toast": {
+			"limitImageSize": "La dimensione dell'immagine deve essere inferiore a {{size}}MB"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "Crea il tuo Clan",
+		"description": "Il tuo clan è il posto dove interagire con i tuoi amici. Crea il tuo clan personale e inizia a chattare.",
+		"createMyOwn": "Crea il mio modello",
+		"startFromTemplate": "Inizia da un modello",
+		"gamingTemplate": "Gaming",
+		"friendsTemplate": "Amici",
+		"studyGroupTemplate": "Gruppo di studio",
+		"schoolClubTemplate": "Club scolastico",
+		"localCommunityTemplate": "Comunità locale",
+		"artistsCreatorsTemplate": "Artisti & Creatori"
+	},
+	"limitModal": {
+		"title": "Limite raggiunto!",
+		"message": "Sei già in 50 clan. Devi uscire da un clan prima di poterne unire o crearne un altro.",
+		"okayButton": "Ok"
+	}
+}

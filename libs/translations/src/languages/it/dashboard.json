@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "Panoramica attività",
+		"timePeriod": "Periodo di tempo",
+		"totalActiveUsers": "Totale utenti attivi",
+		"totalActiveUsersTooltip": "Numero di utenti unici attivi almeno una volta",
+		"totalActiveChannels": "Totale canali attivi",
+		"totalActiveChannelsTooltip": "Numero di canali unici attivi almeno una volta",
+		"totalMessages": "Totale messaggi",
+		"totalMessagesTooltip": "Numero totale di messaggi inviati nel periodo selezionato"
+	},
+	"pagination": {
+		"showing": "Mostra",
+		"of": "di",
+		"clans": "clan",
+		"previous": "Precedente",
+		"next": "Successivo"
+	},
+	"chart": {
+		"loadingChartData": "Caricamento dati grafico...",
+		"metricsAvailableForOwnersOnly": "Le metriche sono disponibili solo per i proprietari del clan."
+	},
+	"table": {
+		"detailedActivityData": "Dati attività dettagliati",
+		"channelsActivityData": "Dati attività canali",
+		"userActivityData": "Dati attività utenti",
+		"exportCSV": "Esporta CSV",
+		"exporting": "Esportazione in corso...",
+		"includedInExport": "Questa colonna verrà esportata nel file CSV",
+		"notIncludedInExport": "Questa colonna non verrà esportata nel file CSV",
+		"clanName": "Nome Clan",
+		"channelName": "Nome canale",
+		"userName": "Nome utente",
+		"activeUsers": "Utenti attivi",
+		"activeChannels": "Canali attivi",
+		"messages": "Messaggi",
+		"noOwnedClans": "Non possiedi alcun clan per generare analisi.",
+		"noActiveChannels": "Al momento non ci sono canali attivi in questo clan.",
+		"noActiveUsers": "Al momento non ci sono utenti attivi in questo canale.",
+		"selectColumnTooltip": "Seleziona/deseleziona per esportare questa colonna in CSV",
+		"selectAtLeastOneColumn": "Devi selezionare almeno una colonna per l'esportazione CSV"
+	},
+	"page": {
+		"backToOverview": "Torna alla panoramica dell'utilizzo del Clan",
+		"clanUsageStatisticsReport": "Rapporto statistiche utilizzo Clan",
+		"dashboardReport": "Dashboard",
+		"report": "Rapporto"
+	},
+	"state": {
+		"loadingData": "Caricamento dati...",
+		"noDataFound": "Nessun dato trovato",
+		"noDataDescription": "Nessun dato di utilizzo per il periodo selezionato."
+	},
+	"reportControls": {
+		"timePeriod": "Periodo di tempo",
+		"rangeType": "Tipo di intervallo",
+		"startDate": "Data di inizio",
+		"endDate": "Data di fine",
+		"last7Days": "Ultimi 7 giorni",
+		"last30Days": "Ultimi 30 giorni",
+		"last90Days": "Ultimi 90 giorni",
+		"customDateRange": "Intervallo date personalizzato",
+		"daily": "Giornaliero",
+		"weekly": "Settimanale",
+		"monthly": "Mensile",
+		"runReport": "Genera rapporto",
+		"reset": "Ripristina"
+	},
+	"sortIcon": {
+		"tooltip": "Ordina in modo crescente/decrescente per questa colonna",
+		"sortedAsc": "Ordinato in modo crescente",
+		"sortedDesc": "Ordinato in modo decrescente"
+	}
+}

@@ -1,80 +1,80 @@
 {
-  "addReaction": "Añadir reacción",
-  "header": {
-    "save": "Guardar"
-  },
-  "toast": {
-    "saveSuccess": "Guardado con éxito",
-    "notBlank": "No se puede dejar vacío",
-    "saveError": "Error al guardar"
-  },
-  "menu": {
-    "serverName": {
-      "title": "Nombre del clan",
-      "errorMessage": "Por favor, introduce un nombre válido para el clan (máx. 64 caracteres, solo palabras, números, _ o -).",
-      "duplicateNameMessage": "El nombre del clan ya existe. Por favor, introduce otro nombre.",
-      "permissionDenied": "No tienes permiso para editar el banner del clan"
-    },
-    "inactive": {
-      "title": "Configuración de inactividad",
-      "description": "Mover automáticamente a los miembros a este canal y silenciarlos cuando hayan estado inactivos durante más tiempo que el tiempo de espera de inactividad. Esto no afecta a los navegadores.",
-      "inactiveChannel": "Canal inactivo",
-      "inactiveTimeout": "Tiempo de inactividad"
-    },
-    "systemMessage": {
-      "title": "Configuración de mensajes del sistema",
-      "description": "Este es el canal al que enviamos mensajes de eventos del sistema. Se pueden desactivar en cualquier momento.",
-      "channel": "Canal",
-      "selectChannel": "Selecciona el canal de notificación",
-      "channelDescription": "Este es el canal donde se enviarán los mensajes del sistema",
-      "welcomeRandom": "Enviar mensajes de bienvenida aleatorios cuando alguien se una al clan",
-      "welcomeSticker": "Solicitar a los miembros que respondan a los mensajes de bienvenida con un sticker",
-      "boostMessage": "Enviar un mensaje cuando alguien potencia el clan",
-      "setupTips": "Enviar consejos útiles para la configuración del clan",
-      "hideAuditLog": "Enviar un registro cuando se aplique una acción al clan",
-      "anonymousTitle": "Evitar anónimo",
-      "anonymousDescription": "Evitar que los usuarios usen el modo anónimo"
-    },
-    "deleteServer": {
-      "title": "Eliminar clan",
-      "delete": "Eliminar clan"
-    }
-  },
-  "fields": {
-    "defaultNotification": {
-      "title": "Configuración de notificaciones predeterminadas",
-      "description": "Esto determinará si los miembros que no hayan configurado explícitamente sus ajustes de notificación recibirán notificaciones por cada mensaje enviado en este servidor o no. Recomendamos encarecidamente establecerlo en solo @mención para clanes comunitarios",
-      "allMessages": "Todos los mensajes",
-      "onlyMentions": "Solo @mención"
-    }
-  },
-  "permissions": {
-    "toast": {
-      "kickMemberSuccess": "Miembro expulsado con éxito",
-      "kickMemberFailed": "Error al expulsar al miembro",
-      "removeMemberThreadSuccess": "Miembro eliminado con éxito",
-      "removeMemberThreadFailed": "Error al eliminar al miembro",
-      "transferOwnershipSuccess": "Transferido con éxito",
-      "transferOwnershipFailed": "Transferencia fallida"
-    }
-  },
-  "action": {
-    "kick": "Expulsar",
-    "removeFromThread": "Eliminar de hilo",
-    "manage": "Gestionar",
-    "transferOwnership": "Transferir propiedad",
-    "ban": "Banear",
-    "unban": "Desbanear"
-  },
-  "threadRemoveModal": {
-    "title": "¿Eliminar de hilo?",
-    "description": "Por favor confirma si deseas eliminar a {{username}} de este hilo?",
-    "remove": "Eliminar",
-    "cancel": "Cancelar"
-  },
-  "modal": {
-    "kickUserClan": {
-      "title": "¿Estás seguro?"
-    }
-  }
+	"addReaction": "Añadir reacción",
+	"header": {
+		"save": "Guardar"
+	},
+	"toast": {
+		"saveSuccess": "Guardado con éxito",
+		"notBlank": "No puede dejar en blanco",
+		"saveError": "Error al guardar"
+	},
+	"menu": {
+		"serverName": {
+			"title": "Nombre del Clan",
+			"errorMessage": "Introduce un nombre de clan válido (máximo 64 caracteres, solo letras, números, _ o -).",
+			"duplicateNameMessage": "El nombre del clan ya existe. Introduce otro nombre.",
+			"permissionDenied": "No tienes permiso para editar el banner del Clan"
+		},
+		"inactive": {
+			"title": "Configuración de Inactividad",
+			"description": "Mueve automáticamente miembros a este canal y silencia cuando han estado inactivos más tiempo que el timeout de inactividad. Esto no afecta a navegadores.",
+			"inactiveChannel": "Canal Inactivo",
+			"inactiveTimeout": "Tiempo de espera de Inactividad"
+		},
+		"systemMessage": {
+			"title": "Configuración de Mensajes del Sistema",
+			"description": "Este es el canal donde enviamos mensajes de eventos del sistema. Estos pueden desactivarse en cualquier momento.",
+			"channel": "Canal",
+			"selectChannel": "Seleccionar Canal de Notificaciones",
+			"channelDescription": "Este es el canal donde se enviarán los mensajes del sistema",
+			"welcomeRandom": "Enviar un mensaje de bienvenida aleatorio cuando alguien se une a este clan",
+			"welcomeSticker": "Solicitar a miembros que respondan los mensajes de bienvenida con un sticker",
+			"boostMessage": "Enviar un mensaje cuando alguien hace boost a este clan",
+			"setupTips": "Enviar consejos útiles para la configuración del clan",
+			"hideAuditLog": "Enviar un registro cuando una acción se aplica al clan",
+			"anonymousTitle": "Prevenir Modo Anónimo",
+			"anonymousDescription": "Prevenir que los usuarios usen el modo anónimo"
+		},
+		"deleteServer": {
+			"title": "Eliminar Clan",
+			"delete": "Eliminar Clan"
+		}
+	},
+	"fields": {
+		"defaultNotification": {
+			"title": "Configuración de Notificación Predeterminada",
+			"description": "Esto determinará si los miembros que no han establecido sus notificaciones reciben notificaciones para cada mensaje enviado en este servidor. Recomendamos establecer esto solo en @mención para clanes comunitarios",
+			"allMessages": "Todos los mensajes",
+			"onlyMentions": "Solo @mención"
+		}
+	},
+	"permissions": {
+		"toast": {
+			"kickMemberSuccess": "Miembro expulsado con éxito",
+			"kickMemberFailed": "Error al expulsar al miembro",
+			"removeMemberThreadSuccess": "Miembro eliminado con éxito",
+			"removeMemberThreadFailed": "Error al eliminar al miembro",
+			"transferOwnershipSuccess": "Transferencia realizada con éxito",
+			"transferOwnershipFailed": "Error al transferir"
+		}
+	},
+	"action": {
+		"kick": "Expulsar",
+		"removeFromThread": "Eliminar del Hilo",
+		"manage": "Gestionar",
+		"transferOwnership": "Transferir Propiedad",
+		"ban": "Banear",
+		"unban": "Desbanear"
+	},
+	"threadRemoveModal": {
+		"title": "¿Eliminar del Hilo?",
+		"description": "¿Confirmas que deseas eliminar a {{username}} de este Hilo?",
+		"remove": "Eliminar",
+		"cancel": "Nada más"
+	},
+	"modal": {
+		"kickUserClan": {
+			"title": "¿Estás seguro?"
+		}
+	}
 }

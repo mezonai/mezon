@@ -2,13 +2,13 @@
   "customiseGroup": "Personalizar grupo",
   "inviteLinks": "Enlaces de invitación",
   "leaveGroup": "Salir del grupo",
-  "closeDM": "Cerrar mensaje directo",
+  "closeDM": "Cerrar DM",
   "groupName": "Nombre del grupo",
   "save": "Guardar",
   "removeAvatar": "Eliminar avatar",
-  "invalidGroupName": "Nombre de grupo inválido",
+  "invalidGroupName": "Nombre de grupo no válido",
   "uploadImage": "Subir una imagen",
   "toast": {
-    "leaveGroupError": "Error al abandonar el grupo: {{error}}"
+    "leaveGroupError": "Error al salir del grupo: {{error}}"
   }
 }

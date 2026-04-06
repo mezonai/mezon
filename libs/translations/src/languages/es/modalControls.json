@@ -1,18 +1,18 @@
 {
-    "buttons": {
-        "cancel": "Cancelar",
-        "save": "Guardar",
-        "reset": "Restablecer",
-        "close": "Cerrar",
-        "kick": "Expulsar"
-    },
-    "form": {
-        "required": "Campo obligatorio",
-        "error": "Error"
-    },
-    "kickMember": {
-        "title": "Expulsar {{username}} de {{clanName}}",
-        "description": "¿Confirma que desea expulsar a @{{username}} de {{clanName}}? Podrá volver a unirse con una nueva invitación.",
-        "reasonLabel": "Motivo de la expulsión"
-    }
+	"buttons": {
+		"cancel": "Cancelar",
+		"save": "Guardar",
+		"reset": "Restablecer",
+		"close": "Cerrar",
+		"kick": "Expulsar"
+	},
+	"form": {
+		"required": "Campo obligatorio",
+		"error": "Error"
+	},
+	"kickMember": {
+		"title": "Expulsar a {{username}} de {{clanName}}",
+		"description": "¿Confirmas que deseas expulsar a @{{username}} de {{clanName}}? Podrán volver a unirse con una nueva invitación.",
+		"reasonLabel": "Motivo de la expulsión"
+	}
 }

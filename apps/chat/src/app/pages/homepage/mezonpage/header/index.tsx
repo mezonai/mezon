@@ -24,7 +24,7 @@ const NavItem = memo(({ href, section, label, onClick }: NavLinkProps) => (
 	<a
 		href={href}
 		onClick={(event) => onClick(section, event)}
-		className="relative text-[14px] xl:text-[16px] leading-[24px] text-white font-semibold flex flex-row items-center px-2 xl:px-4 py-2 rounded-lg transition-all duration-300 group overflow-hidden whitespace-nowrap"
+		className="relative text-[13px] lg:text-[14px] xl:text-[16px] leading-[24px] text-white font-semibold flex flex-row items-center px-1 lg:px-2 xl:px-3 py-2 rounded-lg transition-all duration-300 group overflow-hidden whitespace-nowrap"
 		data-e2e={generateE2eId('homepage.header.link')}
 	>
 		<span className="relative z-10 group-hover:text-white transition-colors duration-300">{label}</span>
@@ -33,7 +33,7 @@ const NavItem = memo(({ href, section, label, onClick }: NavLinkProps) => (
 ));
 
 const HeaderMezon = memo((props: HeaderProps) => {
-    const { t } = useTranslation('homepage');
+	const { t } = useTranslation('homepage');
 	const isLogin = useSelector(selectIsLogin);
 	const dispatch = useAppDispatch();
 	const { sideBarIsOpen, toggleSideBar, scrollToSection } = props;
@@ -57,7 +57,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 		[]
 	);
 
-    useEffect(() => {
+	useEffect(() => {
 		window.addEventListener('scroll', handleScroll);
 		handleScroll();
 		return () => window.removeEventListener('scroll', handleScroll);
@@ -74,7 +74,7 @@ const HeaderMezon = memo((props: HeaderProps) => {
 				data-e2e={generateE2eId('homepage.header.container.navigation')}
 			>
 				<div className="flex items-center justify-between md:px-[10px] xl:px-[32px] h-full gap-2">
-					<div className="hidden lg:flex items-center flex-shrink-0 min-w-[280px] xl:min-w-[320px]">
+					<div className="hidden lg:flex items-center flex-shrink-0 min-w-[200px] lg:min-w-[220px] xl:min-w-[260px]">
 						<Link to="/" className="flex items-center hover:scale-110 transition-transform duration-300 active:scale-95">
 							<Image
 								src="https://cdn.mezon.ai/landing-page-mezon/mezonlogonew.png"
@@ -99,14 +99,14 @@ const HeaderMezon = memo((props: HeaderProps) => {
 								href={link.href}
 								target="_blank"
 								rel="noopener noreferrer"
-								className="relative text-[14px] xl:text-[16px] leading-[24px] text-white font-semibold flex flex-row items-center px-2 xl:px-4 py-2 rounded-lg transition-all duration-300 group overflow-hidden whitespace-nowrap"
+								className="relative text-[13px] lg:text-[14px] xl:text-[16px] leading-[24px] text-white font-semibold flex flex-row items-center px-1 lg:px-2 xl:px-3 py-2 rounded-lg transition-all duration-300 group overflow-hidden whitespace-nowrap"
 							>
 								<span className="relative z-10">{link.label}</span>
 								<span className="absolute inset-0 bg-[#de82e6] translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
 							</a>
 						))}
 					</nav>
-					<div className="flex items-center justify-end gap-2 xl:gap-4 flex-shrink-0 min-w-fit lg:min-w-[280px] xl:min-w-[320px]">
+					<div className="flex items-center justify-end gap-1.5 lg:gap-2 xl:gap-4 flex-shrink-0 min-w-fit lg:min-w-[220px] xl:min-w-[260px] ml-auto">
 						<Link
 							to={isLogin ? '/meet' : '/mezon'}
 							className="hidden lg:flex items-center px-3 xl:px-[20px] py-[10px] bg-white/10 border border-white/20 backdrop-blur-sm rounded-xl text-white text-[14px] xl:text-[16px] font-bold whitespace-nowrap hover:bg-[#de82e6] hover:border-[#de82e6] hover:scale-105 active:scale-95 transition-all duration-300 shadow-sm"

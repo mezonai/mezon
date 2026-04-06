@@ -84,7 +84,7 @@ const ChannelLinkContent: React.FC<ChannelLinkContentProps> = ({ channel, isActi
 
 	const shouldShowChannel =
 		isCategoryExpanded ||
-		isUnreadChannel ||
+		(isUnreadChannel && !isVoiceOrStreamingChannel) ||
 		hasUnread ||
 		currentChannelId === channel.id ||
 		currentChannelParentId === channel.id ||

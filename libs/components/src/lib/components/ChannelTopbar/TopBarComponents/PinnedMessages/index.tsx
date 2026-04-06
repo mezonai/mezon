@@ -1,4 +1,4 @@
-import { ColorRoleProvider, useAppParams, useEscapeKeyClose } from '@mezon/core';
+import { ColorRoleProvider, useAppParams, useEscapeKeyClose, useOnClickOutside } from '@mezon/core';
 import type { PinMessageEntity } from '@mezon/store';
 import { pinMessageActions, selectCurrentChannelClanId, selectCurrentChannelId, useAppDispatch } from '@mezon/store';
 import type { ApiMessageAttachment } from 'mezon-js/api';
@@ -69,6 +69,7 @@ const PinnedMessages = ({ onClose, rootRef, mode }: PinnedMessagesProps) => {
 	};
 
 	useEscapeKeyClose(modalRef, onClose);
+	useOnClickOutside(modalRef, onClose, rootRef);
 
 	return (
 		<div ref={modalRef} tabIndex={-1} className="absolute top-8 right-0 shadow z-50 origin-top-right text-theme-primary">

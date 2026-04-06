@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "Cronologia transazioni",
+		"subtitle": "Visualizza tutta la tua attività di transazione"
+	},
+	"footers": {
+		"noti": "Hai caricato tutte le {{count}} transazioni",
+		"fetching": "Caricamento altre transazioni..."
+	},
+	"filters": {
+		"all": "Tutte le transazioni",
+		"sent": "Transazioni inviate",
+		"received": "Transazioni ricevute"
+	},
+	"transactionTypes": {
+		"sent": "Inviato",
+		"received": "Ricevuto"
+	},
+	"currency": {
+		"code": "it-IT",
+		"symbol": "Đồng"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "Nessuna transazione trovata",
+			"description": "Non hai ancora effettuato transazioni. La tua cronologia apparirà qui quando inizierai a inviare o ricevere token."
+		},
+		"noFilteredTransactions": {
+			"title": "Nessuna transazione trovata",
+			"description": "Nessuna transazione trovata per il filtro selezionato. Prova un altro filtro o riprova più tardi."
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "ID transazione",
+			"sender": "Mittente",
+			"amount": "Importo",
+			"receiver": "Destinatario",
+			"note": "Nota",
+			"created": "Data di creazione"
+		},
+		"defaultNote": "Nessuna nota",
+		"unknownUser": "Utente sconosciuto"
+	},
+	"transactionItem": {
+		"idPrefix": "Transazione #"
+	}
+}

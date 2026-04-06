@@ -1,25 +1,25 @@
 {
-  "addReaction": "Añadir reacción",
-  "modal": {
-    "title": "Reenviar mensaje",
-    "searchPlaceholder": "Buscar",
-    "noResults": "¿No parece encontrar lo que buscas?",
-    "searchFriendsUsers": "Buscar amigos y usuarios",
-    "searchingChannel": "Buscando canal",
-    "sharedContent": "Contenido compartido",
-    "cancel": "Cancelar",
-    "send": "Enviar",
-    "sending": "Enviando…",
-    "sendingProgress": "Enviando ({{current}}/{{total}})…",
-    "image": "imagen",
-    "images": "imágenes",
-    "video": "video",
-    "videos": "videos",
-    "file": "archivo",
-    "files": "archivos",
-    "additionalMessage": "Mensaje adicional (opcional)",
-    "additionalMessagePlaceholder": "Introduce el mensaje a enviar con…"
-  },
-  "successMessage": "Mensaje reenviado correctamente",
-  "errorMessage": "Error al reenviar el mensaje"
+	"addReaction": "Añadir reacción",
+	"modal": {
+		"title": "Reenviar Mensaje",
+		"searchPlaceholder": "Buscar",
+		"noResults": "¿Parece que no encuentras lo que buscas?",
+		"searchFriendsUsers": "Buscar amigos y usuarios",
+		"searchingChannel": "Buscando en canal",
+		"sharedContent": "Contenido compartido",
+		"cancel": "Cancelar",
+		"send": "Enviar",
+		"sending": "Enviando...",
+		"sendingProgress": "Enviando ({{current}}/{{total}})...",
+		"image": "imagen",
+		"images": "imágenes",
+		"video": "video",
+		"videos": "videos",
+		"file": "archivo",
+		"files": "archivos",
+		"additionalMessage": "Mensaje adicional (opcional)",
+		"additionalMessagePlaceholder": "Introduce un mensaje para enviar junto con..."
+	},
+	"successMessage": "Mensaje reenviado con éxito",
+	"errorMessage": "Error al reenviar mensaje"
 }

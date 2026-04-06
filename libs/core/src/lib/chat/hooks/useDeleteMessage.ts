@@ -23,12 +23,12 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 	const dispatch = useAppDispatch();
 	const currentClanId = useSelector(selectCurrentClanId);
 	const isClanView = useSelector(selectClanView);
-	const { socketRef } = useMezon();
+	const { clientRef, sessionRef } = useMezon();
 	const channelMessages = useSelector((state: any) => selectMessagesByChannel(state, channelId));
 	const deleteSendMessage = React.useCallback(
 		async (messageId: string) => {
-			const socket = socketRef.current;
-			if (!socket) return;
+			const client = clientRef.current;
+			if (!client || !sessionRef.current) return;
 			const store = getStore();
 
 			const channel = selectCurrentChannel(store.getState());
@@ -53,7 +53,8 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				});
 
 				if (isTopic) {
-					await socket.removeChatMessage(
+					await client.deleteChannelMessage(
+						sessionRef.current,
 						payload.clan_id,
 						channel?.channel_id || '0',
 						mode,
@@ -68,7 +69,8 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 					return;
 				}
 
-				await socket.removeChatMessage(
+				await client.deleteChannelMessage(
+					sessionRef.current,
 					payload.clan_id || '0',
 					channelId,
 					mode,
@@ -83,7 +85,7 @@ export function useDeleteMessage({ channelId, mode, hasAttachment, isTopic }: Us
 				console.error(e);
 			}
 		},
-		[socketRef, channelMessages?.entities, dispatch, channelId, currentClanId, isClanView, isTopic, mode, hasAttachment]
+		[channelMessages?.entities, dispatch, channelId, currentClanId, isClanView, isTopic, mode, hasAttachment]
 	);
 
 	return useMemo(

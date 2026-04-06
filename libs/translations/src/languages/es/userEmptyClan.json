@@ -1,24 +1,24 @@
 {
   "joinClan": {
     "joinExistClan": "Unirse a un clan existente",
-    "enterInvite": "Introduce una invitación a continuación para unirte a un clan existente.",
+    "enterInvite": "Introduce un enlace de invitación abajo para unirte a un clan existente.",
     "labelInput": "Enlace de invitación",
-    "linkInviteEx": "Las invitaciones deben verse como https://mezon.ai/invite/1813407038846046912",
+    "linkInviteEx": "Las invitaciones deben parecerse a https://mezon.ai/invite/1813407038846046912",
     "joinInviteLink": "Unirse con enlace de invitación",
-    "errorMessage": "Introduce un enlace de invitación válido o un código de invitación."
+    "errorMessage": "Por favor, introduce un enlace de invitación o código de invitación válido."
   },
   "emptyClans": {
     "clans": "Clanes",
-    "readyChat": "¿Listo para una conversación grupal de otro nivel?",
-    "buildYourCommunity": "Construye tu comunidad con conversaciones organizadas, encuentros espontáneos y potentes funciones de personalización!",
+    "readyChat": "¿Listo para un chat grupal de siguiente nivel?",
+    "buildYourCommunity": "¡Construye tu comunidad con conversaciones organizadas, encuentros espontáneos y potentes funciones de personalización!",
     "createClan": "Crea tu clan",
-    "joinClan": "Únete a un clan",
-    "joinChannel": "Únete a un canal",
-    "findChannel": "Te encuentras en un lugar extraño. No tienes acceso a ningún canal de texto."
+    "joinClan": "Unirse a un clan",
+    "joinChannel": "Unirse a un canal",
+    "findChannel": "Te encuentras en un lugar extraño. No tienes acceso a ningún canal de texto"
   },
   "emptyMessage": {
     "dMsWith": "Mensajes directos con superpoderes",
-    "inviteYourFriends": "Invita a tus amigos a jugar, escuchar música juntos y más.",
+    "inviteYourFriends": "Invita a tus amigos a jugar juegos, escuchar música juntos, y más.",
     "addFriend": "Añadir amigos"
   }
 }

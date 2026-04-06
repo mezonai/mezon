@@ -1,0 +1,63 @@
+{
+	"directMessages": "MESSAGGI DIRETTI",
+	"createDM": "Crea messaggio",
+	"friends": "Amici",
+	"yourMessages": "I tuoi messaggi",
+	"selectConversation": "Seleziona una conversazione per iniziare a scrivere",
+	"createMessageGroup": {
+		"selectFriends": "Seleziona amici",
+		"canAddMoreFriends": "Puoi aggiungere altri {{count}} amici.",
+		"searchPlaceholder": "Cerca un amico per nome utente",
+		"addToGroupChat": "Aggiungi alla chat di gruppo",
+		"createDMOrGroupChat": "Crea un messaggio o un gruppo chat",
+		"createDM": "Crea messaggio",
+		"createGroupChat": "Crea gruppo chat",
+		"noFriendsFound": "Nessun amico trovato che non sia già presente in questa conversazione.",
+		"creating": "Creazione in corso..."
+	},
+	"editGroup": {
+		"title": "Modifica gruppo",
+		"uploadImageText": "Clicca per caricare un'immagine",
+		"removeAvatar": "Rimuovi avatar",
+		"groupNameLabel": "Nome del gruppo",
+		"groupNamePlaceholder": "Inserisci il nome del gruppo",
+		"validationError": "Inserisci un nome di gruppo valido (solo lettere, numeri, _ o -).",
+		"cancel": "Annulla",
+		"save": "Salva",
+		"saving": "Salvataggio in corso..."
+	},
+	"contextMenu": {
+		"editGroup": "Modifica gruppo",
+		"addFriend": "Aggiungi amico",
+		"leaveGroup": "Esci dal gruppo",
+		"closeDM": "Chiudi messaggio",
+		"markAsRead": "Segna come letto",
+		"invitePeople": "Invita persone",
+		"hideConversation": "Nascondi conversazione",
+		"profile": "Profilo",
+		"message": "Invia messaggio",
+		"removeFriend": "Rimuovi amico",
+		"block": "Blocca",
+		"unblock": "Sblocca",
+		"removeFromGroup": "Rimuovi dal gruppo",
+		"shareContact": "Condividi contatto",
+		"mute": "Silenzia",
+		"unmute": "Riattiva notifiche",
+		"for15Minutes": "Per 15 minuti",
+		"for1Hour": "Per 1 ora",
+		"for3Hours": "Per 3 ore",
+		"for8Hours": "Per 8 ore",
+		"for24Hours": "Per 24 ore",
+		"untilTurnBackOn": "Fino a quando non riattivi le notifiche",
+		"mutedUntil": "Silenzia fino alle {{time}}",
+		"pinConversation": "Fissa conversazione",
+		"unpinConversation": "Rimuovi conversazione fissata",
+		"pinLimitExceeded": "Puoi fissare al massimo 10 conversazioni. Rimuovi una conversazione fissata per fissare questa."
+	},
+	"pinned": "FISSIATO",
+	"remove": {
+		"content": "La conversazione in questo canale non è più disponibile!",
+		"title": "Conversazione non disponibile",
+		"button": "Conferma"
+	}
+}

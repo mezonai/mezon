@@ -405,6 +405,7 @@ class BadgeService extends EventEmitter {
 				const decrement = topicParent.count ?? 0;
 				this.topicBadgesByParent.set(parentChannelId, parentTopicBadge - decrement);
 				this.emit(EventName.INCREASE_BADGE_TOPIC, { topicId, count: -decrement, channelId: parentChannelId });
+				dispatch(channelMetaActions.updateChannelBadgeCount({ clanId: parentClanId, channelId: topicId, count: -decrement }));
 				dispatch(channelMetaActions.updateChannelBadgeCount({ clanId: parentClanId, channelId: parentChannelId, count: -decrement }));
 				dispatch(listChannelsByUserActions.updateChannelBadgeCount({ channelId: parentChannelId, count: -decrement }));
 				dispatch(clansActions.updateClanBadgeCount({ clanId, count: -parentTopicBadge, isReset: false }));

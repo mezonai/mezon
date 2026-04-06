@@ -1,0 +1,144 @@
+{
+	"myAccount": "Il mio account",
+	"editUserProfile": "Modifica profilo utente",
+	"noDisplayName": "Non hai ancora aggiunto un nome visualizzato.",
+	"edit": "Modifica",
+	"password": "Password",
+	"phoneNumber": "Numero di telefono",
+	"username": "Nome utente",
+	"displayName": "Nome visualizzato",
+	"users": "Utenti",
+	"accountManagement": "Gestione account",
+	"blockedUsers": "Utenti bloccati",
+	"disableAccount": "Disabilita account",
+	"deleteAccount": "Elimina account",
+	"accountInformation": "Informazioni account",
+	"doNotHaveBlockedUser": "Nessun utente bloccato",
+	"setPassword": "Imposta password",
+	"changePassword": "Cambia password",
+	"setEmail": "Imposta email",
+	"changeEmail": "Cambia email",
+	"setPhoneNumber": "Imposta numero di telefono",
+	"disableAccountAlert": {
+		"title": "Disabilita account",
+		"description": "Sei sicuro di voler disabilitare l'account?",
+		"noConfirm": "No",
+		"yesConfirm": "Sì"
+	},
+	"deleteAccountAlert": {
+		"title": "Elimina account",
+		"description": "Sei sicuro di voler eliminare l'account?",
+		"noConfirm": "No",
+		"yesConfirm": "Sì"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "Collegamento email richiesto",
+		"linkEmailRequiredDescription": "Devi collegare un'email prima di impostare la password",
+		"goTo": "Vai a",
+		"title": "Imposta password",
+		"email": "Email",
+		"password": "Password",
+		"currentPassword": "Password attuale",
+		"confirmPassword": "Conferma password",
+		"confirm": "Salva",
+		"changePassword": "Cambia password",
+		"description": "La password deve contenere almeno 8 caratteri e includere almeno una lettera maiuscola, una lettera minuscola, un numero e un carattere speciale (es: !@#$%^&*).",
+		"error": {
+			"characters": "La password deve avere almeno 8 caratteri",
+			"uppercase": "La password deve contenere almeno una lettera maiuscola",
+			"lowercase": "La password deve contenere almeno una lettera minuscola",
+			"number": "La password deve contenere almeno un numero",
+			"symbol": "La password deve contenere almeno un carattere speciale",
+			"notEqual": "Le password non corrispondono",
+			"samePass": "La nuova password non può essere uguale alla precedente",
+			"fillOldPass": "Inserisci la password attuale.",
+			"updateFail": "Aggiornamento account fallito.",
+			"createFail": "Impostazione password fallita.",
+			"incorrectCurrent": "La password attuale non è corretta. Riprova."
+		},
+		"toast": {
+			"success": "Password aggiornata con successo",
+			"error": "Aggiornamento password fallito"
+		},
+		"placeholder": {
+			"currentPassword": "Inserisci la password attuale",
+			"password": "Inserisci la nuova password",
+			"confirmPassword": "Conferma la nuova password"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Imposta password",
+		"description": "Crea una nuova password per il tuo account",
+		"emailPlaceholder": "la.tua.email@esempio.com",
+		"loading": "Caricamento...",
+		"close": "Chiudi"
+	},
+	"setPhoneModal": {
+		"title": "Imposta numero di telefono",
+		"phoneNumber": "Numero di telefono",
+		"description": "Riceverai un messaggio con un codice di verifica.",
+		"loading": "Caricamento...",
+		"close": "Chiudi",
+		"sendOTP": "Invia codice OTP",
+		"countryCode": "Prefisso internazionale",
+		"confirmOtp": "Conferma codice OTP",
+		"invalidPhone": "Numero di telefono non valido",
+		"updatePhoneSuccess": "Numero di telefono aggiornato con successo",
+		"updatePhoneFail": "Si è verificato un errore. Riprova più tardi.",
+		"emptyOtp": "Codice OTP non valido!",
+		"resendOtp": "Invia di nuovo il codice OTP!",
+		"tooFast": "Troppo veloce. Attendi {{seconds}} secondi prima di richiedere un nuovo codice OTP.",
+		"alreadyLinked": "Questo numero è già associato al tuo account",
+		"alreadyLinkedToAnother": "Questo numero è già associato a un altro account",
+		"country": "Paese",
+		"otpSentMessage": "Controlla il codice OTP inviato al numero {{phone}}",
+		"backToPhoneInput": "Cambia numero di telefono?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Account eliminato con successo",
+			"error": "Sei il proprietario del clan"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Numero di telefono",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Nuovo numero di telefono",
+			"nextButton": "Avanti",
+			"removeButton": "Rimuovi numero di telefono",
+			"failed": "Aggiornamento numero di telefono fallito",
+			"invalidPhoneNumber": "Numero di telefono non valido"
+		},
+		"verifyPhoneNumber": {
+			"description": "Inserisci il codice di 6 cifre che ti abbiamo inviato",
+			"verifyButton": "Conferma",
+			"success": "Numero di telefono aggiornato con successo"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Annulla",
+		"currentEmail": "Email attuale",
+		"description": "Inserisci l'email per il tuo account",
+		"otpDescription": "Il codice OTP è stato inviato alla tua nuova email",
+		"fillOTP": "Inserisci il codice OTP",
+		"send": "Invia OTP",
+		"resendOtp": "Invia di nuovo il codice OTP!",
+		"error": {
+			"notEqual": "Le password non corrispondono",
+			"required": "L'email è obbligatoria",
+			"invalid": "Inserisci un indirizzo email valido"
+		},
+		"updateEmail": {
+			"newEmail": "Nuova email",
+			"nextButton": "Avanti",
+			"failed": "Aggiornamento email fallito",
+			"invalidEmail": "Email non valida",
+			"emailAlreadyLinked": "Questa email è già in uso"
+		},
+		"verifyEmail": {
+			"description": "Inserisci il codice di 6 cifre che ti abbiamo inviato",
+			"verifyButton": "Conferma",
+			"success": "Email aggiornata con successo"
+		}
+	}
+}

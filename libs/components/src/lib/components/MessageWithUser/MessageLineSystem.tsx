@@ -126,7 +126,8 @@ const RenderContentSystem = ({ message, data, mode, isSearchMessage, isJumMessag
 
 	const handleShowPinMessage = async () => {
 		await dispatch(pinMessageActions.fetchChannelPinMessages({ channelId: message?.channel_id, clanId: message.clan_id || '0' }));
-		dispatch(pinMessageActions.togglePinModal());
+		const prefix = mode === ChannelStreamMode.STREAM_MODE_CHANNEL ? 'c:' : 'd:';
+		dispatch(pinMessageActions.togglePinModal(`${prefix}${message?.channel_id}`));
 	};
 
 	return (

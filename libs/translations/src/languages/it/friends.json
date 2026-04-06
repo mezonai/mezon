@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Richiesta di amicizia",
+		"received": "Ricevute",
+		"sent": "Inviate",
+		"emptyReceived": {
+			"title": "Nessuna richiesta ricevuta",
+			"description": "Qui vedrai tutte le richieste di amicizia che gli altri utenti ti hanno inviato."
+		},
+		"emptySent": {
+			"title": "Nessuna richiesta inviata",
+			"description": "Qui vedrai tutte le richieste di amicizia che hai inviato ad altri utenti."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Richiesta di amicizia ricevuta",
+		"findYourFriend": "Trova amici",
+		"addByUserName": "Aggiungi tramite nome utente o numero di telefono",
+		"addByUsername": "Aggiunto da {{username}}",
+		"searchUsernamePlaceholder": "Inserisci nome utente o numero di telefono",
+		"whoYouWantToAddFriend": "Chi vuoi aggiungere agli amici?",
+		"byTheWay": "A proposito, il tuo nome utente è",
+		"sendRequestButton": "Invia richiesta di amicizia",
+		"addFriendToast": "Richiesta di amicizia inviata"
+	},
+	"friends": "Amici",
+	"noFriendsResultsFound": "Nessun risultato trovato",
+	"toast": {
+		"sendAddFriendSuccess": "Richiesta di amicizia inviata con successo!",
+		"acceptAddFriendSuccess": "Richiesta di amicizia accettata!",
+		"sendAddFriendFail": "Ops, si è verificato un errore. Controlla che il nome utente sia corretto.",
+		"somethingWentWrong": "Si è verificato un errore",
+		"friendRequestAlreadySent": "Richiesta di amicizia già inviata, in attesa di accettazione."
+	},
+	"you": "tu"
+}

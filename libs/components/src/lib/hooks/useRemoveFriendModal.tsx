@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { useCallback, useState } from 'react';
 import { useModal } from 'react-modal-hook';
 import RemoveFriendModal from '../components/RemoveFriendModal';
@@ -6,6 +7,9 @@ export type RemoveFriendPayload = {
 	username?: string;
 	id?: string;
 	displayName?: string;
+	titleText?: string;
+	descriptionText?: string | ReactNode;
+	confirmText?: string;
 };
 
 type UseRemoveFriendModalReturn = {
@@ -21,6 +25,9 @@ export const useRemoveFriendModal = (onConfirmRemove: (username: string, userId:
 				<RemoveFriendModal
 					username={friendToRemove.username}
 					displayName={friendToRemove.displayName}
+					titleText={friendToRemove.titleText}
+					descriptionText={friendToRemove.descriptionText}
+					confirmText={friendToRemove.confirmText}
 					onClose={() => {
 						hideRemoveFriendModal();
 						setFriendToRemove(null);

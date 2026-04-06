@@ -5,13 +5,13 @@
     },
     "fields": {
         "cateName": {
-            "title": "Nombre de la categoría",
-            "placeholder": "Nueva categoría",
-            "errorMessage": "Por favor, introduce un nombre de categoría válido (máx 64 caracteres, solo palabras, números, _ o -)."
+            "title": "Nombre de Categoría",
+            "placeholder": "Nueva Categoría",
+            "errorMessage": "Introduce un nombre de categoría válido (máximo 64 caracteres, solo letras, números, _ o -)."
         },
         "catePrivate": {
-            "title": "Categoría privada",
-            "description": "Al hacer una categoría privada, solo los miembros y roles seleccionados podrán ver esta categoría. Los canales sincronizados en esta categoría se ajustarán automáticamente a esta configuración."
+            "title": "Categoría Privada",
+            "description": "Al hacer una categoría privada, solo los miembros y roles seleccionados podrán ver esta categoría. Los canales sincronizados en esta categoría coincidirán automáticamente con esta configuración."
         }
     }
 }

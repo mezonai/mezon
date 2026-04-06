@@ -248,6 +248,7 @@
 		"durationDays": "{{count}} days",
 		"durationHours": "{{count}} hours",
 		"durationMinutes": "{{count}} minutes",
+		"durationLessThanMinute": "Less than a minute",
 		"selectOneOrMore": "Select one or more answers",
 		"selectOne": "Select one answer",
 		"vote": "vote",
@@ -262,6 +263,7 @@
 		"loadMore": "Load more {{count}} options",
 		"loadMore1Option": "Load more 1 option",
 		"showLess": "Show less",
-		"noVotesYet": "No votes yet"
+		"noVotesYet": "No votes yet",
+		"pollLabel": "[Poll]"
 	}
 }

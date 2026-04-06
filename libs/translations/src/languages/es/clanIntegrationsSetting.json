@@ -1,39 +1,39 @@
 {
 	"addReaction": "Añadir reacción",
 	"integration": {
-		"channelWebhooks": "Webhooks",
-		"clanWebhooks": "Webhooks del clan",
-		"automatedMessage": "Mensajes y actualizaciones automáticas",
+		"channelWebhooks": "Webhooks de Canal",
+		"clanWebhooks": "Webhooks del Clan",
+		"automatedMessage": "Mensajes y actualizaciones automatizados",
 		"description": "Personaliza tu clan con integraciones.",
-		"learnMore": "Aprende más sobre la gestión de integraciones."
+		"learnMore": "Saber más sobre la gestión de integraciones."
 	},
 	"webhooks": {
-		"description": "Los Webhooks son una forma sencilla de recibir mensajes automáticos y actualizaciones de datos enviados al canal de texto del clan mediante magia de Internet.",
-		"learnMore": "Aprende más",
+		"description": "Los Webhooks son una forma fácil de enviar mensajes y actualizaciones de datos automatizados al canal de texto del clan usando tecnología web.",
+		"learnMore": "Saber más",
 		"try": "o prueba",
-		"buildOne": "constrúyelo tú mismo."
+		"buildOne": "crear uno tú mismo."
 	},
 	"clanWebhooks": {
-		"description": "Los Webhooks del clan son una forma sencilla de publicar mensajes desde otras aplicaciones y sitios web para cada usuario de Mezon usando tecnología de Internet.",
-		"tips": "Consejo: Si consideras que el token en tu URL está comprometido o desactualizado, restablécelo y copia la nueva URL."
+		"description": "Los Webhooks del Clan son una forma sencilla de publicar mensajes de otras aplicaciones y sitios web para cada usuario de Mezon usando tecnología web.",
+		"tips": "Consejo: Si sientes que el token en tu URL está comprometido o desactualizado, restáralo y copia la nueva URL."
 	},
 	"webhooksEdit": {
-		"title": "Edición de Webhooks",
+		"title": "Editar Webhook",
 		"save": "Guardar",
 		"cancel": "Cancelar",
 		"channel": "Canal",
 		"nameLabel": "Nombre",
-		"recommendImage": "Recomendamos una imagen de al menos 128x128 píxeles",
+		"recommendImage": "Recomendamos una imagen de al menos 128x128",
 		"webhookURL": "URL del Webhook",
 		"copy": "Copiar",
 		"copied": "Copiado",
 		"delete": "Eliminar",
-		"selectAChannel": "selecciona un canal",
+		"selectAChannel": "seleccionar un canal",
 		"yes": "Sí",
-		"deleteCaptionHook": "Eliminar {{webhookName}}",
-		"deleteWebhookConfirmation": "Confirme si desea eliminar el webhook {{webhookName}}. Esta acción no se puede deshacer.",
-		"resetToken": "Restablecer token",
-		"name": "Nombre del webhook",
+		"deleteCaptionHook": "Eliminar Webhook de Caption",
+		"deleteWebhookConfirmation": "¿Confirmas que deseas eliminar el webhook {{webhookName}}? Esta acción no tiene vuelta atrás.",
+		"resetToken": "Restablecer Token",
+		"name": "Nombre del Webhook",
 		"nameMaxLengthError": "Debe tener 64 caracteres o menos."
 	},
 	"webhooksEmpty": {
@@ -43,22 +43,22 @@
 		"createdBy": "Creado el {{webhookCreateTime}} por {{webhookUserOwnerName}}"
 	},
 	"webhookChannelSelect": {
-		"title": "Selecciona canal",
-		"description": "Elija un canal donde desea crear el webhook",
+		"title": "Seleccionar Canal",
+		"description": "Elige un canal donde quieres crear el webhook",
 		"selectChannel": "Canal",
-		"placeholder": "Selecciona un canal",
+		"placeholder": "Seleccionar un canal",
 		"create": "Crear"
 	},
 	"toast": {
-		"addSuccess": "Webhook generado con éxito!",
-		"addError": "Error al generar el webhook",
+		"addSuccess": "¡Webhook generado con éxito!",
+		"addError": "Error al generar webhook",
 		"saveSuccess": "¡Guardado con éxito!",
 		"saveError": "Error al guardar",
 		"deleteSuccess": "Webhook eliminado con éxito!",
-		"deleteError": "Error al eliminar el webhook",
-		"resetTokenSuccess": "Token restablecido con éxito!",
-		"resetTokenError": "Error al restablecer el token",
-		"copyError": "Error al copiar la URL",
+		"deleteError": "Error al eliminar webhook",
+		"resetTokenSuccess": "¡Token restablecido con éxito!",
+		"resetTokenError": "Error al restablecer token",
+		"copyError": "Error al copiar URL",
 		"webhookGeneratedSuccess": "¡{{webhookName}} generado con éxito!",
 		"webhookDeletedSuccess": "¡{{webhookName}} eliminado con éxito!"
 	}

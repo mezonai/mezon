@@ -1,39 +1,39 @@
 {
-    "menu": {
-        "watchMenu": {
-            "title": "",
-            "markAsRead": "Marcar como leído"
-        },
-        "inviteMenu": {
-            "title": "",
-            "invite": "Invitar"
-        },
-        "notification": {
-            "title": "",
-            "muteCategory": "Silenciar categoría",
-            "notification": "Configuración de notificaciones"
-        },
-        "organizationMenu": {
-            "title": "",
-            "createChannel": "Crear canal",
-            "edit": "Editar categoría",
-            "delete": "Eliminar categoría"
-        },
-        "devMode": {
-            "title": "Modo de desarrollo",
-            "copyServerID": "Copiar ID del clan"
-        },
-        "modalConfirm": {
-            "title": "Eliminar categoría",
-            "content": "Por favor confirma si deseas eliminar la categoría. No se puede deshacer.",
-            "confirmText": "Eliminar"
-        },
-        "toast": {
-            "systemChannel": "Error: {{categoryName}} tiene canal del sistema",
-            "error": "Error al eliminar categoría: {{error}}"
-        }
-    },
-    "notify": {
-        "serverIDCopied": "ID del clan copiado"
-    }
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "Marcar como leído"
+		},
+		"inviteMenu": {
+			"title": "",
+			"invite": "Invitar"
+		},
+		"notification": {
+			"title": "",
+			"muteCategory": "Silenciar Categoría",
+			"notification": "Configuración de Notificaciones"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "Crear Canal",
+			"edit": "Editar Categoría",
+			"delete": "Eliminar Categoría"
+		},
+		"devMode": {
+			"title": "Modo Desarrollo",
+			"copyServerID": "Copiar ID del Clan"
+		},
+		"modalConfirm": {
+			"title": "Eliminar categoría",
+			"content": "¿Confirmas que deseas eliminar la categoría? Esto no se puede deshacer",
+			"confirmText": "Eliminar"
+		},
+		"toast": {
+			"systemChannel": "Error: {{categoryName}} tiene un canal del sistema",
+			"error": "Error al eliminar la categoría: {{error}}"
+		}
+	},
+	"notify": {
+		"serverIDCopied": "ID del Clan copiado"
+	}
 }

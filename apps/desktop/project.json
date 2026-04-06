@@ -87,8 +87,7 @@
 				"publisher": "CN=877DCBF5-53BD-4E9B-82DE-DA6D88F92FF3",
 				"publisherDisplayName": "NCCPLUS",
 				"identityName": "MEZON.Mezon",
-				"displayName": "MEZON",
-				"addAutoLaunchExtension": true
+				"displayName": "MEZON"
 			},
 			"linux": {
 				"icon": "apps/desktop/src/assets/linux-icon.icns",

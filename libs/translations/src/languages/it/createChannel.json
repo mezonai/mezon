@@ -1,0 +1,47 @@
+{
+	"header": {
+		"title": "CREA NUOVO CANALE IN"
+	},
+	"channelType": {
+		"text": "Testuale",
+		"voice": "Vocale",
+		"forum": "Forum",
+		"announcement": "Annuncio",
+		"apps": "App",
+		"stream": "Streaming",
+		"descriptions": {
+			"text": "Invia messaggi, immagini, GIF, emoji, opinioni e scherzi",
+			"voice": "Chiacchiera con voce, video e condivisione dello schermo",
+			"forum": "Crea spazi per discussioni organizzate",
+			"announcement": "Aggiornamenti importanti per tutti, all'interno e all'esterno del clan",
+			"apps": "Applicazioni",
+			"stream": "Condividi le tue attività e hobby"
+		}
+	},
+	"validation": {
+		"invalidName": "Inserisci un nome canale valido (massimo 64 caratteri, solo lettere, numeri, _ o -).",
+		"duplicateName": "Questo nome canale esiste già nella categoria. Inseriscine un altro."
+	},
+	"privacy": {
+		"private": "Canale privato",
+		"description": "Solo i membri e i ruoli selezionati possono visualizzare questo canale."
+	},
+	"labels": {
+		"description": "Configura il canale secondo le tue preferenze.",
+		"chooseType": "Seleziona il tipo di canale:",
+		"channelName": "Qual è il nome del canale?",
+		"isPrivate": "Canale privato?",
+		"placeholder": "Inserisci il nome del canale"
+	},
+	"errors": {
+		"typeRequired": "Il tipo di canale è obbligatorio",
+		"nameRequired": "Il nome del canale è obbligatorio",
+		"selectApp": "Seleziona un'applicazione",
+		"validName": "Inserisci un nome canale valido"
+	},
+	"buttons": {
+		"cancel": "Annulla",
+		"create": "Crea canale",
+		"creating": "Creazione in corso..."
+	}
+}

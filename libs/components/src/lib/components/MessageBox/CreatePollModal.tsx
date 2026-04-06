@@ -1,7 +1,7 @@
 import { EmojiSuggestionProvider, useEscapeKeyClose } from '@mezon/core';
 import { Icons } from '@mezon/ui';
 import { getSrcEmoji } from '@mezon/utils';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmojiRolePanel } from '../EmojiPicker/EmojiRolePanel';
 
@@ -41,8 +41,19 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 	const [allowMultipleAnswers, setAllowMultipleAnswers] = useState(false);
 	const [durationDropdownOpen, setDurationDropdownOpen] = useState(false);
 	const durationDropdownRef = useRef<HTMLDivElement>(null);
+	const answersScrollRef = useRef<HTMLDivElement>(null);
+	const prevAnswersLengthRef = useRef<number | null>(null);
 
 	useEscapeKeyClose(modalRef, onClose);
+
+	useLayoutEffect(() => {
+		const prev = prevAnswersLengthRef.current;
+		prevAnswersLengthRef.current = answers.length;
+		if (prev !== null && answers.length > prev && answersScrollRef.current) {
+			const el = answersScrollRef.current;
+			el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+		}
+	}, [answers.length]);
 
 	useEffect(() => {
 		if (!durationDropdownOpen) return;
@@ -101,20 +112,22 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 		setEmojiPickerIndex(null);
 	};
 
+	const nonEmptyAnswerCount = answers.filter((a) => a.trim()).length;
+	const canPost = Boolean(question.trim()) && nonEmptyAnswerCount >= 2;
+
 	const handlePost = () => {
-		if (question.trim() && answers.some((a) => a.trim())) {
-			const filteredAnswers = answers.filter((a) => a.trim());
-			const filteredEmojiIds = answerEmojiIds.filter((_, i) => answers[i].trim());
-			const questionStr = question.trim();
-			const answersStr = filteredAnswers.map((a, i) => (filteredEmojiIds[i] ? `[e:${filteredEmojiIds[i]}] ${a.trim()}` : a.trim()));
-			onSubmit?.({
-				question: questionStr,
-				answers: answersStr,
-				duration,
-				allowMultipleAnswers
-			});
-			onClose();
-		}
+		if (!canPost) return;
+		const filteredAnswers = answers.filter((a) => a.trim());
+		const filteredEmojiIds = answerEmojiIds.filter((_, i) => answers[i].trim());
+		const questionStr = question.trim();
+		const answersStr = filteredAnswers.map((a, i) => (filteredEmojiIds[i] ? `[e:${filteredEmojiIds[i]}] ${a.trim()}` : a.trim()));
+		onSubmit?.({
+			question: questionStr,
+			answers: answersStr,
+			duration,
+			allowMultipleAnswers
+		});
+		onClose();
 	};
 
 	return (
@@ -157,7 +170,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 						<div className="relative">
 							<label className="block text-sm font-semibold mb-2 text-theme-primary">{t('poll.answers')}</label>
 
-							<div className="max-h-[280px] overflow-y-auto overflow-x-hidden space-y-2 pr-2 thread-scroll">
+							<div ref={answersScrollRef} className="max-h-[280px] overflow-y-auto overflow-x-hidden space-y-2 pr-2 thread-scroll">
 								{answers.map((answer, index) => (
 									<div key={index} className="relative">
 										<button
@@ -199,6 +212,7 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 
 							{answers.length < 20 && (
 								<button
+									type="button"
 									onClick={handleAddAnswer}
 									className="mt-2 flex items-center gap-2 text-sm text-theme-primary hover:text-theme-primary-active transition-colors"
 								>
@@ -260,8 +274,9 @@ function CreatePollModal({ onClose, onSubmit }: CreatePollModalProps) {
 						</div>
 
 						<button
+							type="button"
 							onClick={handlePost}
-							disabled={!question.trim() || !answers.some((a) => a.trim())}
+							disabled={!canPost}
 							className="px-6 py-2 rounded font-semibold transition-colors btn-primary btn-primary-hover disabled:opacity-50 disabled:cursor-not-allowed"
 						>
 							{t('poll.post')}

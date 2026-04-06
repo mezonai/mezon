@@ -1,10 +1,10 @@
 {
 	"header": {
 		"title": "Historial de transacciones",
-		"subtitle": "Ver toda la actividad de transacción"
+		"subtitle": "Ver todas tus actividades de transacción"
 	},
 	"footers": {
-		"noti": "Has cargado todas tus {{count}} transacciones",
+		"noti": "Has cargado todas las {{count}} transacciones",
 		"fetching": "Cargando más transacciones..."
 	},
 	"filters": {
@@ -17,17 +17,17 @@
 		"received": "Recibido"
 	},
 	"currency": {
-		"code": "en-US",
-		"symbol": "Đồng"
+		"code": "es-ES",
+		"symbol": "₫"
 	},
 	"emptyStates": {
 		"noTransactions": {
-			"title": "No se encontró ninguna transacción",
-			"description": "Aún no has realizado ninguna transacción. Tu historial de transacciones aparecerá aquí una vez empieces a enviar o recibir tokens."
+			"title": "No se encuentra ninguna transacción",
+			"description": "Aún no has realizado ninguna transacción. El historial de transacciones aparecerá aquí una vez que comiences a enviar o recibir tokens."
 		},
 		"noFilteredTransactions": {
-			"title": "No se encontró ninguna transacción",
-			"description": "No se encontraron transacciones para el filtro seleccionado. Prueba con otro filtro o vuelve a comprobar más tarde."
+			"title": "No se encuentra ninguna transacción",
+			"description": "No se encontraron transacciones para el filtro seleccionado. Por favor, intenta con un filtro diferente o vuelve más tarde."
 		}
 	},
 	"transactionDetail": {
@@ -35,7 +35,7 @@
 			"transactionId": "ID de transacción",
 			"sender": "Remitente",
 			"amount": "Cantidad",
-			"receiver": "Destinatario",
+			"receiver": "Receptor",
 			"note": "Nota",
 			"created": "Creado"
 		},

@@ -1,12 +1,12 @@
 import { BaseProfile, useRemoveFriendModal } from '@mezon/components';
 import { useAppNavigation, useDirect, useFriends, useMemberStatus } from '@mezon/core';
 import type { FriendsEntity } from '@mezon/store';
-import { audioCallActions, listUsersByUserActions, selectCurrentTabStatus } from '@mezon/store';
+import { EStateFriend, audioCallActions, listUsersByUserActions, selectCurrentTabStatus } from '@mezon/store';
 import { Icons } from '@mezon/ui';
 import { ETabUserStatus, generateE2eId } from '@mezon/utils';
 import { ChannelType } from 'mezon-js';
 import { useCallback, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useModal } from 'react-modal-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -141,10 +141,42 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 	};
 
 	const handleDeleteFriend = (selectedFriend: FriendsEntity) => {
+		const displayUsername = selectedFriend.user?.display_name || selectedFriend.user?.username || t('friend');
+		let titleText;
+		let descriptionText;
+		let confirmText;
+
+		if (selectedFriend.state === EStateFriend.OTHER_PENDING) {
+			titleText = t('cancelRequestModal.title', { username: displayUsername });
+			descriptionText = (
+				<Trans
+					i18nKey="cancelRequestModal.description"
+					ns="friendsPage"
+					values={{ username: displayUsername }}
+					components={{ bold: <span className="font-semibold text-theme-primary-active" /> }}
+				/>
+			);
+			confirmText = t('cancelRequestModal.confirm');
+		} else if (selectedFriend.state === EStateFriend.MY_PENDING) {
+			titleText = t('rejectRequestModal.title', { username: displayUsername });
+			descriptionText = (
+				<Trans
+					i18nKey="rejectRequestModal.description"
+					ns="friendsPage"
+					values={{ username: displayUsername }}
+					components={{ bold: <span className="font-semibold text-theme-primary-active" /> }}
+				/>
+			);
+			confirmText = t('rejectRequestModal.confirm');
+		}
+
 		openRemoveFriendModal({
 			username: selectedFriend.user?.username,
 			id: selectedFriend.user?.id,
-			displayName: selectedFriend.user?.display_name
+			displayName: selectedFriend.user?.display_name,
+			titleText,
+			descriptionText,
+			confirmText
 		});
 	};
 
@@ -227,7 +259,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 					/>
 				</div>
 				<div className="flex-shrink-0 w-auto min-w-fit" onClick={(e) => e.stopPropagation()}>
-					{friend?.state === 0 && (
+					{friend?.state === EStateFriend.FRIEND && (
 						<div className="flex gap-3 items-center">
 							<button onClick={handleNavigateDM} className=" bg-button-secondary rounded-full p-2 text-theme-primary-hover">
 								<Icons.IconChat />
@@ -241,7 +273,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 							</button>
 						</div>
 					)}
-					{friend?.state === 1 && (
+					{friend?.state === EStateFriend.OTHER_PENDING && (
 						<div className="flex gap-3 items-center">
 							<button
 								title={t('friendMenu.cancel')}
@@ -253,7 +285,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 							</button>
 						</div>
 					)}
-					{friend?.state === 2 && (
+					{friend?.state === EStateFriend.MY_PENDING && (
 						<div className="flex gap-3 items-center">
 							<button
 								title={t('friendMenu.accept')}
@@ -280,7 +312,7 @@ const FriendsListItem = ({ friend }: FriendProps) => {
 							</button>
 						</div>
 					)}
-					{friend?.state === 3 && (
+					{friend?.state === EStateFriend.BLOCK && (
 						<div className="flex gap-3 items-center">
 							<button
 								className="bg-bgTertiary text-contentSecondary rounded-[6px] text-[14px] p-2 flex items-center justify-center hover:bg-bgPrimary"

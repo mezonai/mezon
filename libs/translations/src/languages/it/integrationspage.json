@@ -1,0 +1,46 @@
+{
+	"download": "Scarica",
+	"sections": {
+		"section1": {
+			"title": "Tutto ciò che ti serve, in un unico posto",
+			"description": "Con Mezon, l'applicazione centralizza tutti gli strumenti necessari in un unico spazio. Non dovrai più passare da una risorsa all'altra: solo produttività ed efficienza."
+		},
+		"section2": {
+			"title": "Sblocca il potenziale della tua azienda con un'integrazione low-code senza interruzioni",
+			"description": "Riducendo costi e tempi, ottimizziamo l'integrazione per le aziende che desiderano abbattere i costi di sviluppo: solo velocità e flessibilità."
+		},
+		"section3": {
+			"title": "Automatizza i processi per individui e organizzazioni: ",
+			"titleHighlight": "Integrazione Bot/App",
+			"titleEnd": "",
+			"description": "Collega bot e applicazioni per automatizzare i compiti, dal personale alla produzione. Più velocemente, con maggiore precisione e senza dover gestire algoritmi complessi."
+		},
+		"section4": {
+			"title": "Sistema ERP",
+			"description": "Grazie a moduli e funzionalità facilmente personalizzabili, l'ERP risponde appieno alle esigenze aziendali, automatizzando le attività legate alle risorse per ridurre i tempi di elaborazione e ottimizzare la gestione."
+		}
+	},
+	"faq": {
+		"title": "Domande frequenti",
+		"seeAll": "Vedi tutte le FAQ",
+		"learnMore": "Scopri di più",
+		"questions": [
+			{
+				"question": "Come posso iniziare a integrare i miei strumenti con Mezon?",
+				"answer": "È semplicissimo. Vai alla pagina delle integrazioni, seleziona il servizio desiderato e segui le istruzioni passo dopo passo."
+			},
+			{
+				"question": "Quali tipi di integrazione sono supportati?",
+				"answer": "Mezon supporta diversi tipi di integrazione, tra cui webhook, bot, app di terze parti e sistemi ERP. Consulta la nostra documentazione per l'elenco completo."
+			},
+			{
+				"question": "Posso creare integrazioni personalizzate?",
+				"answer": "Certamente! La nostra piattaforma offre API e SDK che ti permettono di costruire integrazioni su misura per le tue esigenze specifiche."
+			},
+			{
+				"question": "C'è un limite al numero di integrazioni che posso aggiungere?",
+				"answer": "Il numero di integrazioni dipende dal tuo piano. I piani Enterprise offrono integrazioni illimitate."
+			}
+		]
+	}
+}

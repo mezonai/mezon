@@ -1,0 +1,16 @@
+{
+	"emptyDescription": "Abbiamo cercato ovunque, ma purtroppo non sono stati trovati risultati.",
+	"video": {
+		"error": {
+			"title": "Video non disponibile",
+			"cannotPlay": "Impossibile riprodurre il video",
+			"loadingAborted": "Caricamento del video annullato",
+			"networkError": "Errore di rete durante il caricamento del video",
+			"codecNotSupported": "Il codec video non è supportato su questa piattaforma",
+			"codecNotSupportedElectron": "Il codec video non è supportato su questa piattaforma. Prova a scaricare il video per riprodurlo con il player di sistema.",
+			"formatNotSupported": "Formato video non supportato",
+			"downloadButton": "Scarica video",
+			"browserNotSupported": "Il tuo browser non supporta il tag video."
+		}
+	}
+}

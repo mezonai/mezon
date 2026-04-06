@@ -1,10 +1,10 @@
 {
-    "streamThumbnail": "Miniatura del stream",
-    "videoError": "No se puede reproducir el vídeo. Inténtalo de nuevo más tarde.",
-    "everyoneWaiting": "Todos están esperando a que entren.",
-    "noOneInStream": "Nadie está actualmente en el stream.",
-    "joinStream": "Unirse al stream",
-    "noStreamToday": "No hay stream hoy",
-    "hideMembers": "Ocultar miembros",
-    "showMembers": "Mostrar miembros"
+	"streamThumbnail": "Miniatura de la Transmisión",
+	"videoError": "Error al reproducir el video. Por favor, intenta de nuevo más tarde.",
+	"everyoneWaiting": "Todos te están esperando adentro",
+	"noOneInStream": "Nadie está actualmente en la transmisión",
+	"joinStream": "Unirse a la transmisión",
+	"noStreamToday": "Sin transmisión hoy",
+	"hideMembers": "Ocultar Miembros",
+	"showMembers": "Mostrar Miembros"
 }

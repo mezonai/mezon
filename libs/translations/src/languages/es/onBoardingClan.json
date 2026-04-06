@@ -1,165 +1,165 @@
 {
-    "title": "Progreso de onboarding",
-    "description": "Paso {{step}} de {{total}}",
-    "action": {
-        "title": "Finaliza la incorporación de tu clan",
-        "description": "Has finalizado {{step}} de {{total}} paso",
-        "createChannel": "Crea tu canal",
-        "invite": "Invita a tus amigos",
-        "sendMessage": "Envía tu primer mensaje"
-    },
-    "modal": {
-        "title": "Configuración de onboarding"
-    },
-    "buttons": {
-        "back": "Atrás",
-        "cancel": "Cancelar",
-        "confirm": "Confirmar",
-        "save": "Guardar",
-        "saving": "Guardando...",
-        "setup": "Instalar",
-        "edit": "Editar",
-        "preview": "Previsualizar",
-        "disable": "Desactivar Onboarding"
-    },
-    "onboarding": {
-        "title": "Onboarding",
-        "description": "Ofrece a tus miembros una experiencia de inicio sencilla con canales, roles y primeros pasos personalizados.",
-        "enabledTitle": "Onboarding activado",
-        "enabledDescription": "Los cambios no surtirán efecto hasta que los guardes.",
-        "featuresEnabled": "Las funciones de onboarding están activadas"
-    },
-    "questions": {
-        "title": "Preguntas",
-        "description": "Los canales públicos se pueden asignar a través de las Preguntas."
-    },
-    "clanGuide": {
-        "title": "Guía del clan",
-        "description": "Tu mensaje de bienvenida, banner, tareas pendientes y recursos están configurados"
-    },
-    "messages": {
-        "communityEnabledSuccess": "Comunidad activada con éxito",
-        "changesSavedSuccess": "Cambios guardados con éxito"
-    },
-    "errors": {
-        "needAtLeastOneItem": "Necesitas al menos un elemento para activar onboarding",
-        "failedToEnableCommunity": "No se pudo activar la comunidad",
-        "failedToSaveChanges": "No se pudieron guardar los cambios",
-        "questionRequired": "Se requiere una pregunta."
-    },
-    "questionsPage": {
-        "title": "Preguntas",
-        "description": "Crea preguntas para ayudar a los miembros a elegir canales y roles adicionales. Su lista de canales se personalizará según sus respuestas.",
-        "noChannelsMissing": "No faltan canales públicos en Preguntas y Canales Predeterminados.",
-        "channelNotAssigned": "Canal no asignado",
-        "noChannelsHere": "No hay canales aquí",
-        "preJoinQuestions": {
-            "title": "Preguntas previas a la incorporación",
-            "description": "Los miembros recibirán estas preguntas antes de unirse a tu clan. Úsalas para asignar canales y roles importantes. Las Preguntas previas a la incorporación también estarán disponibles en la página Canales y Roles."
-        },
-        "addQuestion": "Añadir una Pregunta",
-        "questionNumber": "Pregunta {{number}}",
-        "enterQuestion": "Introduce una pregunta...",
-        "availableAnswers": "Respuestas disponibles - {{count}} de 50",
-        "addAnswer": "Añadir una respuesta",
-        "questionPlaceholder": "Cuál es tu pregunta",
-        "answerTitle": "Añadir título de respuesta",
-        "answerDescription": "Añadir descripción de respuesta",
-        "enterAnswer": "Introduce una respuesta...",
-        "enterDescription": "Introduce una descripción... (opcional)",
-        "titleRequired": "Se requiere título",
-        "remove": "Eliminar"
-    },
-    "enableOnboarding": {
-        "title": "¿Quieres habilitar el onboarding?",
-        "description": "Activa el onboarding para acceder a herramientas administrativas adicionales",
-        "subtitle": "que te ayudan a moderar y hacer crecer tu clan eficazmente.",
-        "button": "Habilitar Onboarding",
-        "note": "Esta acción desbloqueará funciones avanzadas de onboarding"
-    },
-    "enableCommunity": {
-        "title": "¿Habilitar Comunidad?",
-        "description": "Convierte tu comunidad en una experiencia completa de comunidad.",
-        "subtitle": "Accede a potentes herramientas administrativas para moderar y hacer crecer tu clan eficazmente.",
-        "button": "Habilitar Comunidad",
-        "note": "Esta acción desbloqueará funciones avanzadas de comunidad"
-    },
-    "communitySettings": {
-        "warnningEmptyField": "Los campos con * son obligatorios",
-        "title": "Configuración de la Comunidad",
-        "subtitle": "Gestiona la información de tu comunidad",
-        "enableTitle": "Habilitar Comunidad",
-        "enableSubtitle": "Crea un espacio genial para que tus miembros se conecten",
-        "loading": "Cargando la configuración de la comunidad...",
-        "banner": {
-            "title": "Banner de la Comunidad",
-            "uploadTitle": "Subir Banner",
-            "uploadDescription": "Arrastra y suelta o haz clic para seleccionar una imagen",
-            "changeBanner": "Cambiar Banner",
-            "removeBanner": "Eliminar Banner"
-        },
-        "description": {
-            "title": "Descripción de la Comunidad",
-            "placeholder": "Introduce una breve descripción de tu comunidad..."
-        },
-        "about": {
-            "title": "Acerca de la Comunidad",
-            "placeholder": "Cuéntanos sobre tu comunidad... ¿Qué la hace especial?"
-        },
-        "vanityUrl": {
-            "title": "URL personalizada",
-            "description": "Crea una URL personalizada para tu comunidad. Usa únicamente letras minúsculas, números y guiones.",
-            "placeholder": "my-awesome-community",
-            "previewLabel": "URL de vista previa:"
-        },
-        "buttons": {
-            "enableAndSave": "Habilitar y Guardar",
-            "saving": "Guardando...",
-            "save": "Guardar cambios",
-            "disable": "Desactivar Comunidad",
-            "reset": "Restablecer"
-        },
-        "messages": {
-            "aboutUpdated": "¡Acerca actualizado!",
-            "aboutUpdateFailed": "¡Falló la actualización de Acerca!",
-            "descriptionUpdated": "¡Descripción actualizada!",
-            "descriptionUpdateFailed": "¡Falló la actualización de la descripción!",
-            "vanityUrlUpdated": "¡URL personalizada actualizada!",
-            "vanityUrlUpdateFailed": "¡Falló la actualización de la URL personalizada!",
-            "communityEnabledAndSaved": "¡Comunidad activada y guardada!",
-            "saveFailed": "¡Guardado fallido!",
-            "changesSaved": "¡Cambios guardados!",
-            "communityDisabled": "Comunidad desactivada.",
-            "disableFailed": "¡Desactivación fallida!",
-            "bannerRemoved": "¡Banner eliminado!",
-            "fillAllRequiredFields": "¡Por favor, rellena todos los campos obligatorios: Banner, Acerca, Descripción, URL personalizada!",
-            "bannerUpdateFailed": "¡Falló la actualización del banner!"
-        }
-    },
-    "clanGuideSetting": {
-        "welcomeSign": {
-            "title": "Señal de bienvenida",
-            "description": "Dile a los nuevos miembros qué hace especial a tu comunidad y por qué te entusiasma verlos!"
-        },
-        "newMemberToDos": {
-            "title": "Tareas pendientes de los nuevos miembros",
-            "description": "Establece 3-5 tareas que tus nuevos miembros deben hacer. Haz que <strong>hablen y participen en tus canales.</strong>"
-        },
-        "dontDoThis": "No hagas esto: demasiado general",
-        "exampleTask": {
-            "title": "charla con la comunidad",
-            "description": "en #general"
-        },
-        "readTheRules": "Lee las reglas",
-        "addTask": "Añadir una tarea",
-        "resourcePages": {
-            "title": "Páginas de recursos",
-            "description": "Convierte canales de solo lectura en páginas de recursos elegantes en tu Guía del Servidor. Ya no aparecerán en la lista de canales a menos que habilites Todos los Canales. Los recursos tienen algunas ventajas:",
-            "perk1": "Los miembros comienzan en la parte superior de las páginas en lugar de en la parte inferior de un hilo de mensajes",
-            "perk2": "Se eliminan las barras de chat y los avatares para que se vea más limpio",
-            "perk3": "Todo el contenido, inserciones, medios y formato se mantendrán igual"
-        },
-        "addResource": "Añadir un recurso",
-        "ownerGreeting": "Hola, este es el saludo del clan del propietario. ¡Verás este mensaje la primera vez que te unas al clan!"
-    }
+	"title": "Progreso del onboarding",
+	"description": "Paso {{step}} de {{total}}",
+	"action": {
+		"title": "Termina el onboarding de tu clan",
+		"description": "Has completado {{step}} de {{total}} pasos",
+		"createChannel": "Crea tu canal",
+		"invite": "Invita a tus amigos",
+		"sendMessage": "Envía tu primer mensaje"
+	},
+	"modal": {
+		"title": "Configuración del onboarding"
+	},
+	"buttons": {
+		"back": "Atrás",
+		"cancel": "Cancelar",
+		"confirm": "Confirmar",
+		"save": "Guardar",
+		"saving": "Guardando...",
+		"setup": "Configurar",
+		"edit": "Editar",
+		"preview": "Vista previa",
+		"disable": "Desactivar Onboarding"
+	},
+	"onboarding": {
+		"title": "Onboarding",
+		"description": "Ofrece a tus miembros una experiencia de inicio simple con canales personalizados, roles y primeros pasos.",
+		"enabledTitle": "Onboarding activado",
+		"enabledDescription": "Los cambios surtirán efecto hasta que guardes.",
+		"featuresEnabled": "Funciones de onboarding activadas"
+	},
+	"questions": {
+		"title": "Preguntas",
+		"description": "Los canales públicos se pueden asignar a través de Preguntas."
+	},
+	"clanGuide": {
+		"title": "Guía del Clan",
+		"description": "Tu Mensaje de Bienvenida, Banner, Tareas To-Do y Recursos están configurados"
+	},
+	"messages": {
+		"communityEnabledSuccess": "Comunidad activada con éxito",
+		"changesSavedSuccess": "Cambios guardados con éxito"
+	},
+	"errors": {
+		"needAtLeastOneItem": "Necesitas al menos un elemento para activar el onboarding",
+		"failedToEnableCommunity": "Error al activar comunidad",
+		"failedToSaveChanges": "Error al guardar cambios",
+		"questionRequired": "La pregunta es obligatoria."
+	},
+	"questionsPage": {
+		"title": "Preguntas",
+		"description": "Crea preguntas para ayudar a los miembros a elegir canales y roles adicionales. Su lista de canales se personalizará según sus respuestas.",
+		"noChannelsMissing": "No faltan canales públicos en Preguntas y Canales Predeterminados.",
+		"channelNotAssigned": "Canal no asignado",
+		"noChannelsHere": "No hay canales aquí",
+		"preJoinQuestions": {
+			"title": "Preguntas Previas al Ingreso",
+			"description": "Se les preguntará a los miembros estas preguntas antes de que se unan a tu clan. Úsalas para asignar canales y roles importantes. Las Preguntas Previas al Ingreso también estarán disponibles en la página de Canales & Roles."
+		},
+		"addQuestion": "Añadir una pregunta",
+		"questionNumber": "Pregunta {{number}}",
+		"enterQuestion": "Ingresa una pregunta...",
+		"availableAnswers": "Respuestas disponibles - {{count}} de 50",
+		"addAnswer": "Añadir una respuesta",
+		"questionPlaceholder": "¿Cuál es tu pregunta?",
+		"answerTitle": "Añadir título de respuesta",
+		"answerDescription": "Añadir descripción de respuesta",
+		"enterAnswer": "Ingresa una respuesta...",
+		"enterDescription": "Ingresa una descripción... (opcional)",
+		"titleRequired": "El título es obligatorio",
+		"remove": "Eliminar"
+	},
+	"enableOnboarding": {
+		"title": "¿Estás activando el Onboarding?",
+		"description": "Conviértete en Onboarding para acceder a herramientas administrativas adicionales",
+		"subtitle": "que te ayudarán a moderar y hacer crecer tu Clan de manera efectiva.",
+		"button": "Activar Onboarding",
+		"note": "Esta acción desbloqueará características avanzadas de onboarding"
+	},
+	"enableCommunity": {
+		"title": "¿Activar Comunidad?",
+		"description": "Transforma tu comunidad en una experiencia de Comunidad totalmente funcional.",
+		"subtitle": "Accede a poderosas herramientas administrativas para moderar y hacer crecer tu Clan de manera efectiva.",
+		"button": "Activar Comunidad",
+		"note": "Esta acción desbloqueará características avanzadas de comunidad"
+	},
+	"communitySettings": {
+		"warnningEmptyField": "Los campos con * son obligatorios",
+		"title": "Configuración de Comunidad",
+		"subtitle": "Gestiona la información de tu comunidad",
+		"enableTitle": "Activar Comunidad",
+		"enableSubtitle": "Crea un gran espacio para que tus miembros se conecten",
+		"loading": "Cargando configuración de comunidad...",
+		"banner": {
+			"title": "Banner de Comunidad",
+			"uploadTitle": "Subir Banner",
+			"uploadDescription": "Arrastra & suelta o haz clic para seleccionar una imagen",
+			"changeBanner": "Cambiar Banner",
+			"removeBanner": "Eliminar Banner"
+		},
+		"description": {
+			"title": "Descripción de Comunidad",
+			"placeholder": "Ingresa una descripción breve para tu comunidad..."
+		},
+		"about": {
+			"title": "Acerca de la Comunidad",
+			"placeholder": "Cuéntanos sobre tu comunidad... ¿Qué la hace especial?"
+		},
+		"vanityUrl": {
+			"title": "URL Personalizada",
+			"description": "Crea una URL personalizada para tu comunidad. Usa solo letras minúsculas, números y guiones.",
+			"placeholder": "mi-comunidad-genial",
+			"previewLabel": "Vista previa de URL:"
+		},
+		"buttons": {
+			"enableAndSave": "Activar & Guardar",
+			"saving": "Guardando...",
+			"save": "Guardar Cambios",
+			"disable": "Desactivar Comunidad",
+			"reset": "Restablecer"
+		},
+		"messages": {
+			"aboutUpdated": "¡Acerca actualizado!",
+			"aboutUpdateFailed": "¡Error al actualizar Acerca!",
+			"descriptionUpdated": "¡Descripción actualizada!",
+			"descriptionUpdateFailed": "¡Error al actualizar descripción!",
+			"vanityUrlUpdated": "¡URL personalizada actualizada!",
+			"vanityUrlUpdateFailed": "¡Error al actualizar URL personalizada!",
+			"communityEnabledAndSaved": "¡Comunidad activada y guardada!",
+			"saveFailed": "¡Error al guardar!",
+			"changesSaved": "¡Cambios guardados!",
+			"communityDisabled": "Comunidad desactivada.",
+			"disableFailed": "¡Error al desactivar!",
+			"bannerRemoved": "¡Banner eliminado!",
+			"fillAllRequiredFields": "Por favor completa todos los campos requeridos: Banner, Acerca, Descripción, URL Personalizada!",
+			"bannerUpdateFailed": "¡Error al actualizar banner!"
+		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "Cartel de Bienvenida",
+			"description": "Cuéntale a los nuevos miembros qué hace especial a tu comunidad y por qué estás emocionado de verlos!"
+		},
+		"newMemberToDos": {
+			"title": "Tareas Nuevos Miembros",
+			"description": "Establece 3-5 tareas para que tus nuevos miembros las hagan. Haz que <strong>hablen y participen en tus canales.</strong>"
+		},
+		"dontDoThis": "No hagas esto: demasiado general",
+		"exampleTask": {
+			"title": "chatear con la comunidad",
+			"description": "en #general"
+		},
+		"readTheRules": "Lee las Reglas",
+		"addTask": "Añadir una tarea",
+		"resourcePages": {
+			"title": "Páginas de Recursos",
+			"description": "Convierte canales de solo lectura en páginas de recursos elegantes en tu Guía del Clan. Ya no aparecerán en la lista de canales a menos que actives Todos los Canales. Los recursos vienen con algunos beneficios:",
+			"perk1": "Los miembros comienzan en la parte superior de las páginas en lugar del final de un hilo de mensaje",
+			"perk2": "Las barras de chat y avatares se eliminan para que se vea más limpio",
+			"perk3": "Todo el contenido, incrustaciones, medios y formato se mantendrán igual"
+		},
+		"addResource": "Añadir un recurso",
+		"ownerGreeting": "Hola, este es el saludo del clan de su propietario. ¡Verás este mensaje la primera vez que te unes al clan!"
+	}
 }

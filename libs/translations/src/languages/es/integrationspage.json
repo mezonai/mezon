@@ -4,43 +4,43 @@
 	"sections": {
 		"section1": {
 			"title": "Todo lo que necesitas, en un solo lugar",
-			"description": "Con Mezon, una aplicación centralizada que consolida todas las herramientas que necesitas en un espacio unificado. Sin más cambios entre múltiples recursos: solo eficiencia y efectividad."
+			"description": "Con Mezon, una aplicación centralizada que consolida todas las herramientas que necesitas en un espacio unificado. No más cambiar entre múltiples recursos: solo eficiencia y efectividad."
 		},
 		"section2": {
-			"title": "Desata el Poder de Tu Empresa con una Integración Low-Code Fluida",
-			"description": "Con menores costos y tiempos, mejoramos la integración para empresas que quieren minimizar gastos de desarrollo: solo velocidad y flexibilidad."
+			"title": "Potencia tu negocio con integración Low-Code perfecta",
+			"description": "Con costes y tiempo reducidos, mejoramos la integración para empresas que quieren minimizar gastos de desarrollo: solo velocidad y flexibilidad."
 		},
 		"section3": {
-			"title": "Automatizar Procesos para Individuos y Organizaciones:",
-			"titleHighlight": "Integración de Bots y Apps",
+			"title": "Automatiza procesos para personas y organizaciones:",
+			"titleHighlight": "Integración de Bots/Apps",
 			"titleEnd": "",
-			"description": "Conecta bots y aplicaciones para automatizar tareas de empleados y producción. Más rápido, más preciso y sin necesidad de resolver algoritmos complejos."
+			"description": "Conecta bots y apps para automatizar tareas de empleados y producción. Más rápido, más preciso, sin necesidad de resolver algoritmos complejos."
 		},
 		"section4": {
 			"title": "Sistema ERP",
-			"description": "Con módulos y características fáciles de personalizar, el ERP cumplirá plenamente las necesidades de cualquier negocio y podrá automatizar actividades relacionadas con la gestión de recursos empresariales para reducir el tiempo de procesamiento y optimizar la gestión de recursos."
+			"description": "Con módulos y funciones fáciles de personalizar, ERP satisfará completamente las necesidades de cualquier empresa y automatizará actividades de recursos empresariales para reducir tiempo de procesamiento y optimizar la gestión."
 		}
 	},
 	"faq": {
 		"title": "Preguntas Frecuentes",
-		"seeAll": "Ver todas las preguntas frecuentes",
+		"seeAll": "Ver todas las preguntas",
 		"learnMore": "Saber más",
 		"questions": [
 			{
 				"question": "¿Cómo empiezo a integrar mis herramientas con Mezon?",
-				"answer": "Comenzar es sencillo. Navega a la página de integraciones, selecciona tu servicio deseado y sigue la guía de configuración paso a paso."
+				"answer": "Empezar es sencillo. Navega a la página de integraciones, selecciona el servicio deseado y sigue la guía paso a paso."
 			},
 			{
-				"question": "¿Qué tipos de integraciones se soportan?",
-				"answer": "Mezon soporta una amplia gama de integraciones, incluyendo webhooks, bots, aplicaciones de terceros y sistemas ERP. Consulta nuestra documentación para la lista completa."
+				"question": "¿Qué tipos de integraciones son soportadas?",
+				"answer": "Mezon soporta una amplia variedad de integraciones: webhooks, bots, apps de terceros y sistemas ERP. Consulta nuestra documentación para la lista completa."
 			},
 			{
 				"question": "¿Puedo crear integraciones personalizadas?",
-				"answer": "¡Sí! Nuestra plataforma ofrece APIs y SDKs que te permiten construir integraciones personalizadas adaptadas a tus necesidades específicas."
+				"answer": "¡Sí! Nuestra plataforma proporciona APIs y SDKs que te permiten construir integraciones a medida para tus necesidades específicas."
 			},
 			{
-				"question": "¿Hay un límite a cuántas integraciones puedo agregar?",
-				"answer": "El número de integraciones que puedes agregar depende de tu plan. Los planes Enterprise ofrecen integraciones ilimitadas."
+				"question": "¿Hay límite en cuántas integraciones puedo añadir?",
+				"answer": "El número de integraciones que puedes añadir depende de tu plan. Los planes Enterprise ofrecen integraciones ilimitadas."
 			}
 		]
 	}
