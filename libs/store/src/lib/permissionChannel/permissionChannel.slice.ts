@@ -26,6 +26,13 @@ export const addChannelUsers = createAsyncThunk(
 			}
 			if (channelId && channelType) {
 				thunkAPI.dispatch(userChannelsActions.addUserChannel({ channelId, userAdds: userIds }));
+				await thunkAPI.dispatch(
+					userChannelsActions.fetchUserChannels({
+						channelId,
+						noCache: true,
+						isGroup: channelType === ChannelType.CHANNEL_TYPE_GROUP
+					})
+				);
 			}
 			if (channelType !== ChannelType.CHANNEL_TYPE_THREAD) return response;
 
