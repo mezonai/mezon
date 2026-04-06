@@ -208,7 +208,7 @@ const TopBarChannelText = memo(() => {
 	return (
 		<>
 			<div className="flex relative flex-1 min-w-0 items-center gap-2  text-theme-primary mr-5">
-				<div className="flex sbm:hidden pl-3 px-2 text-theme-primary" onClick={openMenu} role="button">
+				<div className="flex sbm:hidden pl-3 px-2 text-[var(--bg-icon-theme)]" onClick={openMenu} role="button">
 					<Icons.OpenMenu />
 				</div>
 
@@ -456,7 +456,7 @@ const ChannelTopbarTools = memo(
 							<PinButton
 								isDMView={false}
 								mode={ChannelStreamMode.STREAM_MODE_CHANNEL}
-								styleCss={'text-theme-primary text-theme-primary-hover'}
+								styleCss={'text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]'}
 							/>
 							{!isTimelineView && (
 								<div onClick={setTurnOffThreadMessage}>
@@ -695,6 +695,8 @@ const DmTopbarTools = memo(() => {
 		dispatch(audioCallActions.setIsBusyTone(false));
 	};
 	const canShowCallButtons = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM;
+	const phoneFillClass =
+		'[--phone-fill-1:var(--bg-icon-theme)] [--phone-fill-2:var(--bg-theme-secounnd)] hover:[--phone-fill-1:var(--bg-icon-theme-active)] hover:[--phone-fill-2:var(--bg-theme-secounnd)]';
 
 	const setIsUseProfileDM = useCallback(
 		async (status: boolean) => {
@@ -733,22 +735,22 @@ const DmTopbarTools = memo(() => {
 							<button
 								title={t('tooltips.startVoiceCall')}
 								onClick={() => handleStartCall()}
-								className="text-theme-primary-hover"
+								className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${phoneFillClass}`}
 								data-e2e={generateE2eId(`chat.direct_message.header.right_container.call`)}
 							>
-								<Icons.IconPhoneDM defaultSize="size-5" />
+								<Icons.IconPhoneDM defaultSize="size-5" defaultFill1="var(--phone-fill-1)" defaultFill2="var(--phone-fill-2)" />
 							</button>
 							<button
 								title={t('tooltips.startVideoCall')}
 								onClick={() => handleStartCall(true)}
-								className="text-theme-primary-hover"
+								className="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]"
 								data-e2e={generateE2eId(`chat.direct_message.header.right_container.video_call`)}
 							>
 								<Icons.IconMeetDM defaultSize="size-5" />
 							</button>
 						</>
 					)}
-					<PinButton isDMView mode={mode} styleCss="text-theme-primary-hover" />
+					<PinButton isDMView mode={mode} styleCss="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]" />
 
 					{!isBlockUser && !isMe && <AddMemberToGroupDm currentDmGroup={currentDmGroup} />}
 					{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
@@ -756,7 +758,9 @@ const DmTopbarTools = memo(() => {
 							title={!isShowMemberListDM ? t('tooltips.showMemberList') : t('tooltips.hideMemberList')}
 							onClick={() => setIsShowMemberListDM(!isShowMemberListDM)}
 							data-e2e={generateE2eId(`chat.direct_message.member_list.button`)}
-							className={`text-theme-primary-hover ${isShowMemberListDM ? 'text-theme-primary-active' : ''}`}
+							className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+								isShowMemberListDM ? 'text-[var(--bg-icon-theme-active)]' : ''
+							}`}
 						>
 							<span>
 								<Icons.MemberList defaultSize="size-5" />
@@ -768,7 +772,9 @@ const DmTopbarTools = memo(() => {
 							title={!isUseProfileDM ? t('tooltips.showUserProfile') : t('tooltips.hideUserProfile')}
 							onClick={() => setIsUseProfileDM(!isUseProfileDM)}
 							data-e2e={generateE2eId(`chat.direct_message.header.right_container.user_profile`)}
-							className={`text-theme-primary-hover ${isUseProfileDM ? 'text-theme-primary-active' : ''}`}
+							className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+								isUseProfileDM ? 'text-[var(--bg-icon-theme-active)]' : ''
+							}`}
 						>
 							<span>
 								<Icons.IconUserProfileDM defaultSize="size-5" />
@@ -798,6 +804,9 @@ const DmTopbarTools = memo(() => {
 function FileButton() {
 	const { t } = useTranslation('channelTopbar');
 	const [isShowFile, setIsShowFile] = useState<boolean>(false);
+	const fileFillClass = isShowFile
+		? '[--file-fill-1:var(--bg-icon-theme-active)] [--file-fill-2:var(--bg-icon-theme-active)] [--file-fill-3:var(--bg-theme-secounnd)]'
+		: '[--file-fill-1:var(--bg-icon-theme)] [--file-fill-2:var(--bg-icon-theme)] [--file-fill-3:var(--bg-theme-secounnd)] hover:[--file-fill-1:var(--bg-icon-theme-active)] hover:[--file-fill-2:var(--bg-icon-theme-active)]';
 
 	const fileRef = useRef<HTMLDivElement | null>(null);
 
@@ -813,11 +822,18 @@ function FileButton() {
 		<div className="relative leading-5 h-5" ref={fileRef} data-e2e={generateE2eId('chat.channel_message.header.button.file')}>
 			<button
 				title={t('tooltips.files')}
-				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowFile ? 'text-theme-primary-active' : ''}`}
+				className={`focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					isShowFile ? 'text-[var(--bg-icon-theme-active)]' : ''
+				} ${fileFillClass}`}
 				onClick={handleShowFile}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.FileIcon defaultSize="size-5" />
+				<Icons.FileIcon
+					defaultSize="size-5"
+					defaultFill1="var(--file-fill-1)"
+					defaultFill2="var(--file-fill-2)"
+					defaultFill3="var(--file-fill-3)"
+				/>
 			</button>
 			{isShowFile && <FileModal onClose={handleClose} rootRef={fileRef} />}
 		</div>
@@ -828,6 +844,9 @@ function CanvasButton({ onClick }: { onClick?: () => void }) {
 	const { t } = useTranslation('channelTopbar');
 	const [isShowCanvas, setIsShowCanvas] = useState<boolean>(false);
 	const canvasRef = useRef<HTMLDivElement | null>(null);
+	const canvasFillClass = isShowCanvas
+		? '[--canvas-fill-1:var(--bg-icon-theme-active)] [--canvas-fill-2:var(--bg-theme-secounnd)]'
+		: '[--canvas-fill-1:var(--bg-icon-theme)] [--canvas-fill-2:var(--bg-theme-secounnd)] hover:[--canvas-fill-1:var(--bg-icon-theme-active)] hover:[--canvas-fill-2:var(--bg-theme-secounnd)]';
 
 	const handleShowCanvas = async () => {
 		setIsShowCanvas(!isShowCanvas);
@@ -842,11 +861,13 @@ function CanvasButton({ onClick }: { onClick?: () => void }) {
 		<div className="relative leading-5 h-5" ref={canvasRef} data-e2e={generateE2eId('chat.channel_message.header.button.canvas')}>
 			<button
 				title={t('tooltips.canvas')}
-				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowCanvas ? 'text-theme-primary-active' : ''}`}
+				className={`group focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					isShowCanvas ? 'text-[var(--bg-icon-theme-active)]' : ''
+				} ${canvasFillClass}`}
 				onClick={handleShowCanvas}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.CanvasIcon defaultSize="size-5" />
+				<Icons.CanvasIcon className="w-5 h-5" defaultFill1="var(--canvas-fill-1)" defaultFill2="var(--canvas-fill-2)" />
 			</button>
 			{isShowCanvas && <CanvasModal onClose={handleClose} rootRef={canvasRef} />}
 		</div>
@@ -857,6 +878,9 @@ function TimelineViewToggleButton() {
 	const { t } = useTranslation('channelTopbar');
 	const dispatch = useAppDispatch();
 	const isMediaChannelView = useAppSelector(selectMediaChannelViewMode);
+	const historyFillClass = isMediaChannelView
+		? '[--history-fill-1:var(--bg-icon-theme-active)] [--history-fill-2:var(--bg-icon-theme-active)] [--history-fill-3:var(--bg-theme-secounnd)]'
+		: '[--history-fill-1:var(--bg-icon-theme)] [--history-fill-2:var(--bg-icon-theme)] [--history-fill-3:var(--bg-theme-secounnd)] hover:[--history-fill-1:var(--bg-icon-theme-active)] hover:[--history-fill-2:var(--bg-icon-theme-active)] hover:[--history-fill-3:var(--bg-theme-secounnd)]';
 
 	const handleToggle = useCallback(() => {
 		dispatch(appActions.setMediaChannelViewMode(!isMediaChannelView));
@@ -867,10 +891,17 @@ function TimelineViewToggleButton() {
 			<button
 				title={isMediaChannelView ? t('tooltips.defaultView') : t('tooltips.timelineView')}
 				onClick={handleToggle}
-				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isMediaChannelView ? 'text-theme-primary-active' : ''}`}
+				className={`group focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					isMediaChannelView ? 'text-[var(--bg-icon-theme-active)]' : ''
+				} ${historyFillClass}`}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.History className="w-5 h-5" />
+				<Icons.History
+					className="h-5 w-5"
+					defaultFill1="var(--history-fill-1)"
+					defaultFill2="var(--history-fill-2)"
+					defaultFill3="var(--history-fill-3)"
+				/>
 			</button>
 		</div>
 	);
@@ -892,11 +923,13 @@ function ThreadButton() {
 		<div className="relative leading-5 h-5" ref={threadRef} data-e2e={generateE2eId('chat.channel_message.header.button.thread')}>
 			<button
 				title={t('tooltips.threads')}
-				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowThread ? 'text-theme-primary-active' : ''}`}
+				className={`focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					isShowThread ? 'text-[var(--bg-icon-theme-active)]' : ''
+				}`}
 				onClick={handleToggleThreads}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.ThreadIcon defaultSize="size-5" />
+				<Icons.ThreadIcon className="w-6 h-6" />
 			</button>
 			{isShowThread && <ThreadModal onClose={handleToggleThreads} rootRef={threadRef} />}
 		</div>
@@ -952,11 +985,17 @@ function MuteButton() {
 		<div className="relative leading-5 h-5" ref={notiRef} data-e2e={generateE2eId('chat.channel_message.header.button.mute')}>
 			<button
 				title={t('tooltips.notificationSettings')}
-				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowNotificationSetting ? 'text-theme-primary-active' : ''}`}
+				className={`focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					isShowNotificationSetting ? 'text-[var(--bg-icon-theme-active)]' : ''
+				}`}
 				onClick={handleShowNotificationSetting}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				{isMuteBell ? <Icons.MuteBell defaultSize="size-5" /> : <Icons.UnMuteBell defaultSize="size-5" />}
+				{isMuteBell ? (
+					<Icons.MuteBell defaultSize="size-5" defaultFill1="currentColor" defaultFill3="currentColor" />
+				) : (
+					<Icons.Bell defaultSize="size-5" />
+				)}
 			</button>
 			{isShowNotificationSetting && <NotificationSetting onClose={handleClose} rootRef={notiRef} />}
 		</div>
@@ -999,11 +1038,19 @@ function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mod
 		<div className="relative leading-5 h-5" ref={pinRef} data-e2e={generateE2eId('chat.channel_message.header.button.pin')}>
 			<button
 				title={t('tooltips.pinnedMessages')}
-				className={`${styleCss} focus-visible:outline-none relative text-theme-primary text-theme-primary-hover ${isShowPinMessage ? 'text-theme-primary-active' : ''}`}
+				className={`${styleCss} focus-visible:outline-none relative text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					isShowPinMessage ? 'text-[var(--bg-icon-theme-active)]' : ''
+				}`}
 				onClick={handleTogglePinMessage}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.PinRight defaultSize="size-5" />
+				<Icons.PinRight
+					className={` ${
+						isShowPinMessage
+							? 'text-[var(--bg-icon-theme-active)]'
+							: 'text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]'
+					}`}
+				/>
 				{isShowPinBadgeFinal && (
 					<div
 						className="absolute border-theme-primary
@@ -1021,7 +1068,7 @@ function PinButton({ styleCss, mode, isDMView = false }: { styleCss: string; mod
 export function InboxButton() {
 	return (
 		<div
-			className="focus-visible:outline-none text-theme-primary text-theme-primary-hover"
+			className="focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]"
 			data-e2e={generateE2eId('chat.channel_message.header.button.inbox')}
 		>
 			<NotificationTooltip />
@@ -1063,10 +1110,12 @@ function ChannelListButton() {
 			<button
 				title={t('tooltips.members')}
 				onClick={handleClick}
-				className={`text-theme-primary text-theme-primary-hover ${isActive ? 'text-theme-primary-active' : ''}`}
+				className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					isActive ? 'text-[var(--bg-icon-theme-active)]' : ''
+				}`}
 				data-e2e={generateE2eId('chat.channel_message.header.button.member')}
 			>
-				<Icons.MemberList defaultSize="size-5" />
+				<Icons.MemberList className="size-5" />
 			</button>
 		</div>
 	);
@@ -1087,7 +1136,9 @@ function ChatButton({ closeMenuOnMobile }: { closeMenuOnMobile?: () => void }) {
 			<button
 				title={isShowChatStream ? t('tooltips.hideChat') : t('tooltips.showChat')}
 				onClick={handleClick}
-				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowChatStream ? 'text-theme-primary-active' : ''}`}
+				className={`focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					isShowChatStream ? 'text-[var(--bg-icon-theme-active)]' : ''
+				}`}
 			>
 				<Icons.Chat defaultSize="size-5" />
 			</button>
@@ -1121,11 +1172,13 @@ const AddMemberToGroupDm = memo(({ currentDmGroup }: { currentDmGroup: DirectEnt
 				</div>
 			)}
 			<span
-				className={`text-theme-primary-hover ${openAddToGroup ? 'text-theme-primary-active' : ''}`}
+				className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					openAddToGroup ? 'text-[var(--bg-icon-theme-active)]' : ''
+				}`}
 				title={t('tooltips.addFriendsToDM')}
 				data-e2e={generateE2eId(`chat.direct_message.button.add_user`)}
 			>
-				<Icons.IconAddFriendDM defaultSize="size-5" />
+				<Icons.IconAddFriendDM defaultSize="size-5" defaultFill1="currentColor" defaultFill2="currentColor" />
 			</span>
 		</div>
 	);
@@ -1138,6 +1191,9 @@ function GalleryButton() {
 	const currentChannelId = useSelector(selectCurrentChannelId) ?? '';
 	const currentClanId = useSelector(selectCurrentClanId) ?? '';
 	const attachments = useAppSelector((state) => selectGalleryAttachmentsByChannel(state, currentChannelId));
+	const galleryFillClass = isShowGallery
+		? '[--gallery-fill-1:var(--bg-icon-theme-active)] [--gallery-fill-2:var(--bg-theme-secounnd)]'
+		: '[--gallery-fill-1:var(--bg-icon-theme)] [--gallery-fill-2:var(--bg-theme-secounnd)] hover:[--gallery-fill-1:var(--bg-icon-theme-active)] hover:[--gallery-fill-2:var(--bg-theme-secounnd)]';
 
 	const galleryRef = useRef<HTMLDivElement | null>(null);
 
@@ -1163,11 +1219,13 @@ function GalleryButton() {
 		<div className="relative leading-5 h-5" ref={galleryRef} data-e2e={generateE2eId('chat.channel_message.header.button.gallery')}>
 			<button
 				title={t('tooltips.gallery')}
-				className={`focus-visible:outline-none text-theme-primary text-theme-primary-hover ${isShowGallery ? 'text-theme-primary-active' : ''}`}
+				className={`group focus-visible:outline-none text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${
+					isShowGallery ? 'text-[var(--bg-icon-theme-active)]' : ''
+				} ${galleryFillClass}`}
 				onClick={handleShowGallery}
 				onContextMenu={(e) => e.preventDefault()}
 			>
-				<Icons.ImageThumbnail defaultSize="size-5" />
+				<Icons.ImageThumbnail className="w-5 h-5" defaultFill1="var(--gallery-fill-1)" defaultFill2="var(--gallery-fill-2)" />
 			</button>
 			{isShowGallery && <GalleryModal onClose={handleClose} rootRef={galleryRef} />}
 		</div>
