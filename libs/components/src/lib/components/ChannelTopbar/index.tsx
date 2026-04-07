@@ -707,7 +707,7 @@ const DmTopbarTools = memo(() => {
 	};
 	const canShowCallButtons = currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM;
 	const phoneFillClass =
-		'[--phone-fill-1:var(--bg-icon-theme)] [--phone-fill-2:var(--bg-theme-secounnd)] hover:[--phone-fill-1:var(--bg-icon-theme-active)] hover:[--phone-fill-2:var(--bg-theme-secounnd)]';
+		'[--phone-fill-1:var(--bg-icon-theme)] [--phone-fill-2:var(--bg-icon-theme)] hover:[--phone-fill-1:var(--bg-icon-theme-active)] hover:[--phone-fill-2:var(--bg-icon-theme-active)]';
 
 	const setIsUseProfileDM = useCallback(
 		async (status: boolean) => {
@@ -749,7 +749,7 @@ const DmTopbarTools = memo(() => {
 								className={`text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)] ${phoneFillClass}`}
 								data-e2e={generateE2eId(`chat.direct_message.header.right_container.call`)}
 							>
-								<Icons.IconPhoneDM defaultSize="size-5" defaultFill1="var(--phone-fill-1)" defaultFill2="var(--phone-fill-2)" />
+								<Icons.IconPhoneDM className="w-5 h-5" defaultFill1="var(--phone-fill-1)" defaultFill2="var(--phone-fill-2)" />
 							</button>
 							<button
 								title={t('tooltips.startVideoCall')}
@@ -757,7 +757,7 @@ const DmTopbarTools = memo(() => {
 								className="text-[var(--bg-icon-theme)] hover:text-[var(--bg-icon-theme-active)]"
 								data-e2e={generateE2eId(`chat.direct_message.header.right_container.video_call`)}
 							>
-								<Icons.IconMeetDM defaultSize="size-5" />
+								<Icons.IconMeetDM className="w-5 h-5" />
 							</button>
 						</>
 					)}
@@ -774,7 +774,7 @@ const DmTopbarTools = memo(() => {
 							}`}
 						>
 							<span>
-								<Icons.MemberList defaultSize="size-5" />
+								<Icons.MemberList className="w-5 h-5" />
 							</span>
 						</button>
 					)}
@@ -788,7 +788,7 @@ const DmTopbarTools = memo(() => {
 							}`}
 						>
 							<span>
-								<Icons.IconUserProfileDM defaultSize="size-5" />
+								<Icons.IconUserProfileDM className="w-5 h-5" />
 							</span>
 						</button>
 					)}
@@ -797,14 +797,14 @@ const DmTopbarTools = memo(() => {
 			{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_GROUP && (
 				<button title={t('tooltips.showMemberList')} onClick={() => setIsShowMemberListDM(!isShowMemberListDM)} className="sbm:hidden">
 					<span>
-						<Icons.MemberList defaultSize="size-5" />
+						<Icons.MemberList className="w-5 h-5" />
 					</span>
 				</button>
 			)}
 			{currentDmGroup?.type === ChannelType.CHANNEL_TYPE_DM && (
 				<button title={t('tooltips.showUserProfile')} onClick={() => setIsUseProfileDM(!isUseProfileDM)} className="sbm:hidden">
 					<span>
-						<Icons.IconUserProfileDM defaultSize="size-5" />
+						<Icons.IconUserProfileDM className="w-5 h-5" />
 					</span>
 				</button>
 			)}
@@ -816,8 +816,8 @@ function FileButton() {
 	const { t } = useTranslation('channelTopbar');
 	const [isShowFile, setIsShowFile] = useState<boolean>(false);
 	const fileFillClass = isShowFile
-		? '[--file-fill-1:var(--bg-icon-theme-active)] [--file-fill-2:var(--bg-icon-theme-active)] [--file-fill-3:var(--bg-theme-secounnd)]'
-		: '[--file-fill-1:var(--bg-icon-theme)] [--file-fill-2:var(--bg-icon-theme)] [--file-fill-3:var(--bg-theme-secounnd)] hover:[--file-fill-1:var(--bg-icon-theme-active)] hover:[--file-fill-2:var(--bg-icon-theme-active)]';
+		? '[--file-fill-1:var(--bg-icon-theme-active)] [--file-fill-2:var(--bg-icon-theme-active)] [--file-fill-3:var(--bg-icon-theme)]'
+		: '[--file-fill-1:var(--bg-icon-theme)] [--file-fill-2:var(--bg-icon-theme-active)] [--file-fill-3:var(--bg-icon-theme-active)] hover:[--file-fill-1:var(--bg-icon-theme-active)] hover:[--file-fill-2:var(--bg-icon-theme-active)]';
 
 	const fileRef = useRef<HTMLDivElement | null>(null);
 
@@ -840,7 +840,7 @@ function FileButton() {
 				onContextMenu={(e) => e.preventDefault()}
 			>
 				<Icons.FileIcon
-					defaultSize="size-5"
+					className="w-5 h-5"
 					defaultFill1="var(--file-fill-1)"
 					defaultFill2="var(--file-fill-2)"
 					defaultFill3="var(--file-fill-3)"
@@ -1003,9 +1003,9 @@ function MuteButton() {
 				onContextMenu={(e) => e.preventDefault()}
 			>
 				{isMuteBell ? (
-					<Icons.MuteBell defaultSize="size-5" defaultFill1="currentColor" defaultFill3="currentColor" />
+					<Icons.MuteBell className="w-5 h-5" defaultFill1="currentColor" defaultFill3="currentColor" />
 				) : (
-					<Icons.Bell defaultSize="size-5" />
+					<Icons.Bell className="w-5 h-5" />
 				)}
 			</button>
 			{isShowNotificationSetting && <NotificationSetting onClose={handleClose} rootRef={notiRef} />}
@@ -1164,7 +1164,7 @@ function ChatButton({ closeMenuOnMobile }: { closeMenuOnMobile?: () => void }) {
 					isShowChatStream ? 'text-[var(--bg-icon-theme-active)]' : ''
 				}`}
 			>
-				<Icons.Chat defaultSize="size-5" />
+				<Icons.Chat className="w-5 h-5" />
 			</button>
 		</div>
 	);

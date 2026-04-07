@@ -184,8 +184,8 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 		? '[--stream-fill-1:var(--bg-icon-theme-active)] [--stream-fill-2:var(--bg-icon-theme-active)]'
 		: '[--stream-fill-1:var(--bg-icon-theme)] [--stream-fill-2:var(--bg-icon-theme)] group-hover:[--stream-fill-1:var(--bg-icon-theme-active)] group-hover:[--stream-fill-2:var(--bg-icon-theme-active)]';
 	const appFillClass = isActive
-		? '[--app-fill-1:var(--bg-icon-theme-active)] [--app-fill-2:var(--bg-icon-theme)]'
-		: '[--app-fill-1:var(--bg-icon-theme)] [--app-fill-2:var(--bg-icon-theme-active)] group-hover:[--app-fill-1:var(--bg-icon-theme-active)] group-hover:[--app-fill-2:var(--bg-icon-theme)]';
+		? '[--app-fill-1:var(--bg-icon-theme-active)] [--app-fill-2:var(--bg-theme-secounnd)]'
+		: '[--app-fill-1:var(--bg-icon-theme)] [--app-fill-2:var(--bg-theme-secounnd)] group-hover:[--app-fill-1:var(--bg-icon-theme-active)] group-hover:[--app-fill-2:var(--bg-theme-secounnd)]';
 	const privateAppFillClass = isActive
 		? '[--private-app-fill-1:var(--bg-icon-theme-active)] [--private-app-fill-2:var(--bg-icon-theme)]'
 		: '[--private-app-fill-1:var(--bg-icon-theme)] [--private-app-fill-2:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-1:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-2:var(--bg-icon-theme)]';
