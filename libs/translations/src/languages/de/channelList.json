@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "Leitfaden",
+		"events": "Events",
+		"events_one": "{{count}} Event",
+		"events_other": "{{count}} Events",
+		"members": "Mitglieder",
+		"channels": "Kanäle"
+	},
+	"ongoingEvent": {
+		"title": "Laufendes Event",
+		"eventDetail": "Event-Details"
+	},
+	"onboarding": {
+		"getStarted": "Loslegen",
+		"of": "von"
+	},
+	"favoriteChannel": "Favoritenkanal",
+	"publicChannels": "Öffentliche Kanäle",
+	"channelApps": "Kanal-Apps",
+	"dragMode": {
+		"enable": "Tippen, um den Drag-and-Drop-Modus für Kategorien zu aktivieren",
+		"disable": "Tippen, um den Drag-and-Drop-Modus für Kategorien zu deaktivieren"
+	}
+}

@@ -215,6 +215,9 @@ export default defineConfig(({ mode }) => {
 						if (normalizedId.includes('libs/translations/src/languages/tt')) {
 							return 'i18n-tt';
 						}
+						if (normalizedId.includes('libs/translations/src/languages/de')) {
+							return 'i18n-de';
+						}
 					}
 				}
 			},

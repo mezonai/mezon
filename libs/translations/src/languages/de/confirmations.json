@@ -1,0 +1,18 @@
+{
+  "deleteRole": {
+    "title": "ROLLE LÖSCHEN",
+    "message": "Bist du sicher, dass du diese Rolle löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden",
+    "confirm": "Löschen",
+    "cancel": "Abbrechen"
+  },
+  "common": {
+    "areYouSure": "Bist du sicher?",
+    "cannotUndo": "Diese Aktion kann nicht rückgängig gemacht werden",
+    "confirm": "Bestätigen",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "remove": "Entfernen",
+    "yes": "Ja",
+    "no": "Nein"
+  }
+}

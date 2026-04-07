@@ -1,0 +1,18 @@
+{
+	"title": "CLAN-EINLADUNG",
+	"offline": "offline",
+	"online": "online",
+	"join": "Beitreten",
+	"joining": "Tritt bei...",
+	"goToClan": "Zum Clan gehen",
+	"unknownClan": "Unbekannter Clan",
+	"memberCount": "{{count}} Mitglieder",
+	"memberCount_plural": "{{count}} Mitglieder",
+	"failedToJoin": "Dem Clan konnte nicht beigetreten werden.",
+	"inviteTo": "EINLADUNG ZUM CLAN {{clanName}}",
+	"noThanks": "Nein, danke",
+	"invalidInvite": {
+		"title": "Ungültige Einladung",
+		"message": "Bitte versuche es mit einer anderen Einladung!"
+	}
+}

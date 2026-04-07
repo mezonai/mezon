@@ -1,0 +1,27 @@
+{
+    "fields": {
+        "DMMessagePreview": {
+            "title": "DM-Nachrichtenvorschau",
+            "AllMessages": "Alle Nachrichten",
+            "UnreadDMOnly": "Nur ungelesene DMs",
+            "None": "Keine"
+        }
+    },
+    "menu": {
+        "theme": {
+            "title": "Design",
+            "theme": "Design",
+            "syncAcrossClients": {
+                "title": "Auf allen Geräten synchronisieren",
+                "description": "Wenn du diese Funktion aktivierst, werden die oben genannten Design-Einstellungen auf allen anderen Geräten überschrieben, einschließlich Desktop und Browser."
+            }
+        },
+        "search": {
+            "title": "Suche",
+            "showResultCount": {
+                "title": "Genaue Anzahl der Suchergebnisse anzeigen",
+                "description": "Wenn aktiviert, kann dies die Anzeigezeit der Suchergebnisse verlängern."
+            }
+        }
+    }
+}

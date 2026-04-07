@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Speichern"
+	},
+	"switch": {
+		"userProfile": "Persönlich",
+		"serverProfile": "Clan"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Anzeigename",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Clan-Spitzname",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Pronomen",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Bio",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Ungespeicherte Änderungen verwerfen?",
+		"description": "Es gibt ungespeicherte Änderungen. Möchtest du sie wirklich verwerfen?",
+		"discard": "Verwerfen",
+		"keepEditing": "Weiter bearbeiten"
+	},
+	"selectAClan": "Wähle einen Clan",
+	"searchClanPlaceholder": "Clan suchen",
+	"updateProfileSuccess": "Persönliches Profil erfolgreich aktualisiert",
+	"updateProfileError": "Aktualisierung des persönlichen Profils fehlgeschlagen",
+	"updateClanProfileSuccess": "Clan-Profil erfolgreich aktualisiert",
+	"emptyUsername": "Anzeigename darf nicht leer sein!",
+	"duplicateClannick": "Clan-Spitzname bereits vergeben",
+	"clanNickname": "CLAN-SPITZNAME",
+	"changeAvatar": "Profilbild ändern",
+	"removeAvatar": "Entfernen",
+	"avatar": "Profilbild",
+	"preview": "VORSCHAU",
+	"nickNameExistsError": "Dieser Spitzname existiert bereits im Clan. Bitte wähle einen anderen.",
+	"unsavedChangesWarning": "Achtung – du hast ungespeicherte Änderungen!",
+	"reset": "Zurücksetzen",
+	"saveChanges": "Änderungen speichern",
+	"showProfilesDescription": "Präsentiere dich selbst mit unterschiedlichen Profilen für jeden deiner Clans",
+	"chooseAClan": "WÄHLE EINEN CLAN",
+	"editImage": "Bild bearbeiten",
+	"close": "Schließen",
+	"resetChanges": "Änderungen zurücksetzen",
+	"cancelEditing": "Bearbeitung abbrechen",
+	"cancel": "Abbrechen",
+	"applyChanges": "Änderungen anwenden",
+	"apply": "Anwenden",
+	"moveImage": "Bild verschieben",
+	"adjustZoom": "Zoom anpassen",
+	"profiles": "Profile",
+	"userProfile": "Benutzerprofil",
+	"clanProfiles": "Clan-Profile",
+	"directMessageIcon": "Direktnachrichten-Icon",
+	"directMessageIconAction": {
+		"remove": "Entfernen",
+		"removeTitle": "Direktnachrichten-Icon entfernen",
+		"removeDescription": "Möchtest du das Direktnachrichten-Icon wirklich entfernen?"
+	},
+	"displayName": "ANZEIGENAME",
+	"emptyClanProfile": {
+		"title": "Du bist noch keinem Clan beigetreten",
+		"description": "Erstelle oder tritt einem Clan bei, um dein Clan-Profil einzurichten.",
+		"createClan": "Clan erstellen",
+		"joinClan": "Clan beitreten"
+	}
+}

@@ -38,6 +38,11 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				title: `${t('setting:language.tatar')}`,
 				value: 'tt',
 				contributedBy: 'reburst'
+			},
+			{
+				title: `${t('setting:language.german')}`,
+				value: 'de',
+				contributedBy: 'robits'
 			}
 		];
 	}, [t]);

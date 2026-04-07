@@ -1,0 +1,63 @@
+{
+	"directMessages": "DIREKTNACHRICHTEN",
+	"createDM": "Nachricht erstellen",
+	"friends": "Freunde",
+	"yourMessages": "Deine Nachrichten",
+	"selectConversation": "Wähle einen Chat aus, um Nachrichten zu schreiben",
+	"createMessageGroup": {
+		"selectFriends": "Freunde auswählen",
+		"canAddMoreFriends": "Du kannst noch {{count}} weitere Freunde hinzufügen.",
+		"searchPlaceholder": "Benutzernamen deiner Freunde eingeben",
+		"addToGroupChat": "Zum Gruppenchat hinzufügen",
+		"createDMOrGroupChat": "Direktnachricht oder Gruppenchat erstellen",
+		"createDM": "Direktnachricht erstellen",
+		"createGroupChat": "Gruppenchat erstellen",
+		"noFriendsFound": "Keine Freunde gefunden, die nicht bereits Teil dieses Chats sind.",
+		"creating": "Wird erstellt..."
+	},
+	"editGroup": {
+		"title": "Gruppe bearbeiten",
+		"uploadImageText": "Klicke, um ein Bild hochzuladen",
+		"removeAvatar": "Profilbild entfernen",
+		"groupNameLabel": "Gruppenname",
+		"groupNamePlaceholder": "Gruppennamen eingeben",
+		"validationError": "Bitte gib einen gültigen Gruppennamen ein (nur Wörter, Zahlen, _ oder -).",
+		"cancel": "Abbrechen",
+		"save": "Speichern",
+		"saving": "Wird gespeichert..."
+	},
+	"contextMenu": {
+		"editGroup": "Gruppe bearbeiten",
+		"addFriend": "Freund hinzufügen",
+		"leaveGroup": "Gruppe verlassen",
+		"closeDM": "Chat schließen",
+		"markAsRead": "Als gelesen markieren",
+		"invitePeople": "Andere einladen",
+		"hideConversation": "Chat ausblenden",
+		"profile": "Profil",
+		"message": "Nachricht senden",
+		"removeFriend": "Freund entfernen",
+		"block": "Blockieren",
+		"unblock": "Entsperren",
+		"removeFromGroup": "Aus der Gruppe entfernen",
+		"shareContact": "Kontakt teilen",
+		"mute": "Stummschalten",
+		"unmute": "Stummschaltung aufheben",
+		"for15Minutes": "Für 15 Minuten",
+		"for1Hour": "Für 1 Stunde",
+		"for3Hours": "Für 3 Stunden",
+		"for8Hours": "Für 8 Stunden",
+		"for24Hours": "Für 24 Stunden",
+		"untilTurnBackOn": "Bis ich es wieder einschalte",
+		"mutedUntil": "Stummschaltung bis {{time}}",
+		"pinConversation": "Chat anpinnen",
+		"unpinConversation": "Anpinnen aufheben",
+		"pinLimitExceeded": "Du kannst maximal 10 Chats anpinnen. Bitte hebe einen anderen Chat vom Anpinnen ab, um diesen anzuheften."
+	},
+	"pinned": "ANGEPINNT",
+	"remove": {
+		"content": "Der Chat in diesem Kanal ist nicht mehr verfügbar!",
+		"title": "Chat nicht verfügbar",
+		"button": "Bestätigen"
+	}
+}

@@ -1,0 +1,50 @@
+{
+	"title": "Stream-Cover",
+	"uploadThumbnail": "Cover hochladen",
+	"currentThumbnail": "Aktuelles Cover",
+	"requirementsTitle": "Anforderungen",
+	"buttons": {
+		"change": "Ändern",
+		"remove": "Entfernen",
+		"selectFile": "Datei auswählen",
+		"uploading": "Wird hochgeladen...",
+		"cancel": "Abbrechen",
+		"confirmUpload": "Bestätigen",
+		"removing": "Wird entfernt...",
+		"removeThumbnail": "Cover entfernen"
+	},
+	"upload": {
+		"title": "Lade dein Cover hoch",
+		"description": "Klicke zum Durchsuchen oder ziehe dein Bild per Drag & Drop hierher"
+	},
+	"confirmModal": {
+		"uploadTitle": "Upload bestätigen",
+		"uploadDescription": "Dieses Bild als dein Stream-Cover festlegen?",
+		"uploadMessage": "Dieses Cover wird angezeigt, wenn dein Stream offline ist. Alle Mitglieder sehen diese Änderung sofort.",
+		"removeTitle": "Cover entfernen",
+		"removeQuestion": "Bist du sicher?",
+		"removeMessage": "Dadurch wird dein Stream-Cover entfernt. Wenn dein Stream offline ist, wird stattdessen der Standard-Splash-Screen angezeigt.",
+		"removeWarning": "Diese Aktion kann nicht rückgängig gemacht werden."
+	},
+	"requirements": {
+		"format": {
+			"title": "Format",
+			"value": "JPG, PNG, GIF, WEBP"
+		},
+		"resolution": {
+			"title": "Auflösung",
+			"value": "Empfohlen: 1920 x 1080"
+		},
+		"sizeLimit": {
+			"title": "Größenbeschränkung",
+			"value": "Maximal 10 MB"
+		}
+	},
+	"errors": {
+		"channelNotFound": "Kanal nicht gefunden",
+		"clientNotReady": "Client/Session ist noch nicht bereit",
+		"uploadFailed": "Cover-Upload fehlgeschlagen. Bitte versuche es erneut.",
+		"removeFailed": "Cover konnte nicht entfernt werden. Bitte versuche es erneut."
+	},
+	"saved": "Cover gespeichert"
+}

@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "Gruppe anpassen",
+  "inviteLinks": "Einladungslinks",
+  "leaveGroup": "Gruppe verlassen",
+  "closeDM": "Chat schließen",
+  "groupName": "Gruppenname",
+  "save": "Speichern",
+  "removeAvatar": "Profilbild entfernen",
+  "invalidGroupName": "Ungültiger Gruppenname",
+  "uploadImage": "Bild hochladen",
+  "toast": {
+    "leaveGroupError": "Fehler beim Verlassen der Gruppe: {{error}}"
+  }
+}

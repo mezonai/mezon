@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "Transaktionsverlauf",
+		"subtitle": "Sieh dir alle deine Transaktionsaktivitäten an"
+	},
+	"footers": {
+		"noti": "Du hast alle {{count}} Transaktionen geladen",
+		"fetching": "Weitere Transaktionen werden geladen..."
+	},
+	"filters": {
+		"all": "Alle Transaktionen",
+		"sent": "Gesendete Transaktionen",
+		"received": "Empfangene Transaktionen"
+	},
+	"transactionTypes": {
+		"sent": "Gesendet",
+		"received": "Empfangen"
+	},
+	"currency": {
+		"code": "de-DE",
+		"symbol": "€"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "Keine Transaktionen gefunden",
+			"description": "Du hast noch keine Transaktionen durchgeführt. Dein Transaktionsverlauf wird hier erscheinen, sobald du beginnst, Token zu senden oder zu empfangen."
+		},
+		"noFilteredTransactions": {
+			"title": "Keine Transaktionen gefunden",
+			"description": "Für den gewählten Filter wurden keine Transaktionen gefunden. Bitte versuche einen anderen Filter oder schau später noch einmal vorbei."
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "Transaktions-ID",
+			"sender": "Absender",
+			"amount": "Betrag",
+			"receiver": "Empfänger",
+			"note": "Notiz",
+			"created": "Erstellt am"
+		},
+		"defaultNote": "Keine Notiz",
+		"unknownUser": "Unbekannter Benutzer"
+	},
+	"transactionItem": {
+		"idPrefix": "Transaktion #"
+	}
+}
