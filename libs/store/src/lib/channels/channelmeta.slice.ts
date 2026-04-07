@@ -119,10 +119,10 @@ export const channelMetaSlice = createSlice({
 				}
 			}
 			if (action?.payload?.clanId === '0') {
-				dmMetaAdapter.setAll(state.dmEntities, meta);
+				dmMetaAdapter.setMany(state.dmEntities, meta);
 				return;
 			}
-			channelMetaAdapter.setAll(state, meta);
+			channelMetaAdapter.setMany(state, meta);
 		},
 		updateChannelBadgeCount: (state, action: PayloadAction<{ clanId: string; channelId: string; count: number; isReset?: boolean }>) => {
 			const { clanId, channelId, count, isReset = false } = action.payload;
