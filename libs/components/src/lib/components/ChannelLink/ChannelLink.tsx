@@ -92,7 +92,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 	};
 
 	const channelPath = `/chat/clans/${clanId}/channels/${channel.id}`;
-	const state = isActive ? 'active' : channel?.unread ? 'inactiveUnread' : 'inactiveRead';
+	const state = isActive ? 'active' : isUnReadChannel ? 'inactiveUnread' : 'inactiveRead';
 
 	const handleMouseClick = async (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
 		const mouseX = event.clientX;
@@ -211,7 +211,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 					to={channelPath}
 					id={`${channel.category_id}-${channel.id}`}
 					onClick={handleClick}
-					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${numberNotification ? 'text-theme-primary-active' : ''}`}
+					className={`channel-link block  rounded-lg mt-[0.2rem] text-theme-primary-hover  ${classes[state]} ${isActive ? 'bg-item-theme text-theme-primary-active' : 'text-theme-primary'} ${numberNotification || isUnReadChannel ? 'text-theme-primary-active' : ''}`}
 					draggable="false"
 				>
 					<span
