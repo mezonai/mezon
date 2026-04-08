@@ -22,8 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          echo $USER
-          source ~/.bashrc
+          export PATH="$HOME/.nvm/versions/node/v24.5.0/bin:$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
           echo "Environments"
           echo "NODE_ENV: ${{ env.NODE_ENV }}"
           export nv=$(node -v)
