@@ -22,6 +22,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo $USER
           source ~/.bashrc
           echo "Environments"
           echo "NODE_ENV: ${{ env.NODE_ENV }}"
