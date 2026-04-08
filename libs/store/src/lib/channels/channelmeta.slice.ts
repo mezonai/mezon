@@ -27,7 +27,10 @@ function extractChannelMeta(channel: ApiChannelDescription, clanId: string): Cha
 			Number.isNaN(channel.last_seen_message?.timestamp_seconds) || !channel.last_seen_message?.timestamp_seconds
 				? 0
 				: channel.last_seen_message?.timestamp_seconds,
-		lastSentTimestamp: Number(channel.last_sent_message?.timestamp_seconds) ?? 0,
+		lastSentTimestamp:
+			Number.isNaN(channel.last_sent_message?.timestamp_seconds) || !channel.last_sent_message?.timestamp_seconds
+				? 0
+				: channel.last_sent_message?.timestamp_seconds,
 		clanId: (clanId || channel.clan_id) ?? '0',
 		isMute: channel.is_mute ?? false,
 		senderId: channel.last_sent_message?.sender_id ?? '0',
