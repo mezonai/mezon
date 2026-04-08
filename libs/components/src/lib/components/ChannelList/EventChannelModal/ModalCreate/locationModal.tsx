@@ -175,7 +175,10 @@ const LocationModal = (props: LocationModalProps) => {
 						desc={t('fields.channelType.voiceChannel.description')}
 						choose={choiceSpeaker}
 						id="Speaker"
-						onChange={() => handleOption(OptionEvent.OPTION_SPEAKER)}
+						onChange={() => {
+							handleOption(OptionEvent.OPTION_SPEAKER);
+							setContentSubmit((prev) => ({ ...prev, isPrivate: false }));
+						}}
 						disabled={voicesChannel.length === 0}
 					/>
 				)}
@@ -187,7 +190,10 @@ const LocationModal = (props: LocationModalProps) => {
 						desc={t('fields.channelType.somewhere.description')}
 						choose={choiceLocation}
 						id="Hashtag"
-						onChange={() => handleOption(OptionEvent.OPTION_LOCATION)}
+						onChange={() => {
+							handleOption(OptionEvent.OPTION_LOCATION);
+							setContentSubmit((prev) => ({ ...prev, isPrivate: false }));
+						}}
 					/>
 				)}
 
@@ -231,9 +237,7 @@ const LocationModal = (props: LocationModalProps) => {
 						className={`font-[400] rounded w-full outline-none text-[15px] border px-4 py-3 focus:outline-none bg-theme-input ${locationTooLong ? 'border-red-500' : 'border-theme-primary focus:border-white-500'} ${appearanceTheme === 'light' ? 'lightEventInputAutoFill' : ''}`}
 						data-e2e={generateE2eId('clan_page.modal.create_event.location.input')}
 					/>
-					{locationTooLong && (
-						<p className="text-red-500 text-xs mt-1">{t('errorMessages.locationMaxLength')}</p>
-					)}
+					{locationTooLong && <p className="text-red-500 text-xs mt-1">{t('errorMessages.locationMaxLength')}</p>}
 				</div>
 			)}
 			{displaySelectAudiences && (
