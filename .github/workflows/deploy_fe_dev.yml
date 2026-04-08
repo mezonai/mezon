@@ -19,10 +19,19 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: '24.5.0'
-          cache: yarn
           
+
       - name: Install dependencies
-        run: yarn
+        run: |
+          echo "Environments"
+          echo "NODE_ENV: ${{ env.NODE_ENV }}"
+          export nv=$(node -v)
+          echo "Node version: $nv"
+          echo "Installing dependencies"
+          yarn config set nodedir ~/.cache/node-gyp/24.5.0/
+          echo "Node directory: ${nv:1}"
+          source ~/.bashrc
+          yarn
 
       # - name: Reset Nx cache
       #   run: |
