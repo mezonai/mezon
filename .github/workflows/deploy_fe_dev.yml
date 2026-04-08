@@ -21,16 +21,7 @@ jobs:
           node-version: '24.5.0'
 
       - name: Install dependencies
-        run: |
-          echo "Environments"
-          echo "NODE_ENV: ${{ env.NODE_ENV }}"
-          export nv=$(node -v)
-          echo "Node version: $nv"
-          echo "Installing dependencies"
-          yarn config set nodedir ~/.cache/node-gyp/20.18.1/
-          echo "Node directory: ${nv:1}"
-          source ~/.bashrc
-          yarn
+        run: yarn
 
       # - name: Reset Nx cache
       #   run: |
