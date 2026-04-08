@@ -218,8 +218,6 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 						ref={channelLinkRef}
 						className={`flex flex-row items-center rounded relative flex-1 pointer-events-none  ${hightLightTextChannel ? ' font-semibold text-theme-primary-active' : 'font-medium '} ${isChannelMuted ? 'opacity-70' : ''}`}
 					>
-						{state === 'inactiveUnread' && <div className="absolute left-0 -ml-2 w-1 h-2 bg-white rounded-r-full"></div>}
-
 						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
 							{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
 								<Icons.HashtagWarning className="w-5 h-5 " />
