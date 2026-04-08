@@ -114,7 +114,7 @@ const StreamInfo = ({ type }: StreamInfoProps) => {
 	return (
 		<div
 			className={`border-b dark:border-borderDefault border-gray-300 px-4 py-2 hover:bg-gray-550/[0.16] shadow-sm transition
-			${isLightMode ? 'bg-channelTextareaLight lightMode' : 'dark:bg-bgSecondary600'} w-full group`}
+			bg-item-theme w-full group`}
 		>
 			<div className="flex justify-between items-center">
 				<div className="flex flex-col max-w-[200px]">
