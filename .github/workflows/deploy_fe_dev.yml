@@ -41,6 +41,7 @@ jobs:
         env:
           NODE_ENV: 'production'
         run: |
+          export PATH="$HOME/.nvm/versions/node/v24.5.0/bin:$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
           echo "Build"
           echo NX_CHAT_APP_API_GW_HOST="${{ secrets.NX_CHAT_APP_API_GW_HOST_DEV }}" >> apps/chat/.env
           echo NX_CHAT_APP_API_GW_PORT="${{ secrets.NX_CHAT_APP_API_GW_PORT_DEV }}" >> apps/chat/.env
