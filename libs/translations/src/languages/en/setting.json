@@ -89,7 +89,9 @@
 		"russian": "Русский",
 		"spanish": "Español",
 		"tatar": "Tatarça",
-		"german": "Deutsch"
+		"german": "Deutsch",
+		"portuguese": "Português",
+		"italian": "Italiano"
 	},
 	"voice": {
 		"title": "Voice",

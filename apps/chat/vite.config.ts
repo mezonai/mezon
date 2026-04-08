@@ -218,6 +218,12 @@ export default defineConfig(({ mode }) => {
 						if (normalizedId.includes('libs/translations/src/languages/de')) {
 							return 'i18n-de';
 						}
+						if (normalizedId.includes('libs/translations/src/languages/pt')) {
+							return 'i18n-pt';
+						}
+						if (normalizedId.includes('libs/translations/src/languages/it')) {
+							return 'i18n-it';
+						}
 					}
 				}
 			},
