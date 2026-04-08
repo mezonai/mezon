@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "保存"
+	},
+	"switch": {
+		"userProfile": "個人",
+		"serverProfile": "クラン"
+	},
+	"fields": {
+		"displayName": {
+			"label": "表示名",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "クランニックネーム",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "代名詞",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "バイオ",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "未保存の変更を破棄しますか?",
+		"description": "未保存の変更があります、本当に破棄しますか?",
+		"discard": "破棄",
+		"keepEditing": "編集を続ける"
+	},
+	"selectAClan": "クランを選択",
+	"searchClanPlaceholder": "クランを検索",
+	"updateProfileSuccess": "個人プロフィールの更新に成功しました",
+	"updateProfileError": "個人プロフィールの更新に失敗しました",
+	"updateClanProfileSuccess": "クランプロフィールの更新に成功しました",
+	"emptyUsername": "表示名は空にできません!",
+	"duplicateClannick": "クランニックネームが重複しています",
+	"clanNickname": "クランニックネーム",
+	"changeAvatar": "アバターを変更",
+	"removeAvatar": "削除",
+	"avatar": "アバター",
+	"preview": "プレビュー",
+	"nickNameExistsError": "クランにニックネームがすでに存在します。別のニックネームを入力してください。",
+	"unsavedChangesWarning": "注意 - 未保存の変更があります!",
+	"reset": "リセット",
+	"saveChanges": "変更を保存",
+	"showProfilesDescription": " クランごとに異なるプロフィールで自分を表現しましょう",
+	"chooseAClan": "クランを選択",
+	"editImage": "画像を編集",
+	"close": "閉じる",
+	"resetChanges": "変更をリセット",
+	"cancelEditing": "編集をキャンセル",
+	"cancel": "キャンセル",
+	"applyChanges": "変更を適用",
+	"apply": "適用",
+	"moveImage": "画像を移動",
+	"adjustZoom": "ズームを調整",
+	"profiles": "プロフィール",
+	"userProfile": "ユーザープロフィール",
+	"clanProfiles": "クランプロフィール",
+	"directMessageIcon": "ダイレクトメッセージアイコン",
+	"directMessageIconAction": {
+		"remove": "削除",
+		"removeTitle": "ダイレクトメッセージアイコンを削除",
+		"removeDescription": "ダイレクトメッセージアイコンを削除してもよろしいですか?"
+	},
+	"displayName": "表示名",
+	"emptyClanProfile": {
+		"title": "クランに参加していません",
+		"description": "クランプロフィールを設定するためにクランを作成または参加しましょう。",
+		"createClan": "クランを作成",
+		"joinClan": "クランに参加"
+	}
+}

@@ -1,0 +1,22 @@
+{
+  "editStatus": "ステータス",
+  "save": "保存",
+  "statusDuration": {
+    "label": "ステータス期間",
+    "today": "今日",
+    "fourHours": "4時間",
+    "oneHour": "1時間",
+    "thirtyMinutes": "30分",
+    "dontClear": "クリアしない"
+  },
+  "placeholder": "何を考えていますか?",
+  "userStatus": {
+    "online": "オンライン",
+    "idle": "アイドル",
+    "doNotDisturb": "留守中",
+    "invisible": "オフライン (隠し)"
+  },
+  "setCustomStatus": "カスタムステータスを設定",
+  "onlineStatus": "オンラインステータス",
+  "changeOnlineStatus": "オンラインステータスを変更"
+}

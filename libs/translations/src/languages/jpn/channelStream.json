@@ -1,0 +1,10 @@
+{
+	"streamThumbnail": "ストームサムネイル",
+	"videoError": "ビデオを再生できません。後で再試行してください。",
+	"everyoneWaiting": "みんなあなたが内側で待っています",
+	"noOneInStream": "現在ストリーム内に誰もいません",
+	"joinStream": "ストリームに参加",
+	"noStreamToday": "今日ストリームはありません",
+	"hideMembers": "メンバーを非表示",
+	"showMembers": "メンバーを表示"
+}

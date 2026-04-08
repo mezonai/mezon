@@ -1,0 +1,59 @@
+{
+	"joinChannelVoiceBS": {
+		"channelVoice": "ボイスルーム",
+		"joinVoice": "ボイスに参加"
+	},
+	"chat": "チャット",
+	"membersWillBeNotified": "{{participantsCount}} メンバーが通知されます",
+	"noDisplay": "ボイスチャンネルを表示しない",
+	"videoConnected": "ビデオ接続済み",
+	"voiceConnected": "ボイス接続済み",
+	"turnOffMicrophone": "マイクをオフ",
+	"turnOnMicrophone": "マイクをオン",
+	"turnOffCamera": "カメラをオフ",
+	"turnOnCamera": "カメラをオン",
+	"stopScreenShare": "スクリーン共有を停止",
+	"shareYourScreen": "スクリーンを共有",
+	"disconnect": "切断",
+	"muteModal": {
+		"title": "メンバーをミュート",
+		"content": "本当に\"{{userName}}\"をミュートしますか？",
+		"mute": "ミュート"
+	},
+	"kickModal": {
+		"title": "ボイスチャンネルから削除",
+		"content": "本当に\"{{userName}}\"をボイスチャンネルから削除しますか？",
+		"kick": "削除"
+	},
+	"disconnectModal": {
+		"title": "ボイス切断",
+		"content": {
+			"removed": "ボイスチャンネルから削除されました",
+			"duplicate": "他の場所で参加したため切断されました",
+			"default": "ボイスチャンネルから切断されました",
+			"deleted": "ボイスチャンネルが削除されました"
+		},
+		"confirm": "確認"
+	},
+	"permission": {
+		"cameraTitle": "カメラ権限を付与",
+		"cameraBody": "アプリにカメラへのアクセス権限が付与されていません。システム設定でカメラ権限をオンにしてください。",
+		"microphoneTitle": "マイク権限を付与",
+		"microphoneBody": "アプリにマイクへのアクセス権限が付与されていません。システム設定でマイク権限をオンにしてください。",
+		"cancel": "キャンセル",
+		"deviceSettings": "デバイス設定"
+	},
+	"device": {
+		"inputDevice": "マイク",
+		"outputDevice": "オーディオ",
+		"camera": "カメラ"
+	},
+	"toast": {
+		"connectionConnected": "接続に成功しました",
+		"connectionDisconnected": "接続が切断されました",
+		"microphonePermissionRequired": "マイク権限が必要です",
+		"cameraPermissionRequired": "カメラ権限が必要です",
+		"recipientDidNotAnswer": "相手が通話に応答しませんでした。"
+	},
+	"usernameScreen": "{{username}}のスクリーン"
+}

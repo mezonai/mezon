@@ -1,0 +1,24 @@
+{
+	"threads": "スレッド",
+	"emptyThread": {
+		"textNoThread": "スレッドはありません",
+		"textNotify": "スレッド - 一時的なテキストチャンネル - で会話に集中しましょう。",
+		"createThreads": "スレッドを作成"
+	},
+	"otherThreads": "古いスレッド",
+	"errorMessage": "有効なスレッド名を入力してください（最大64文字、文字、数字、_または-のみ）。",
+	"threadName": "スレッド名",
+	"privateThread": "プライベートスレッド",
+	"onlyPeopleInviteThread": "招待された人々とモデレーターのみがこのスレッドを見ることができます",
+	"newThread": "新しいスレッド",
+	"joinedThreads": "参加したスレッド",
+	"joinedThread": "参加したスレッド",
+	"otherActiveThreads": "他のアクティブスレッド",
+	"olderThreads": "古いスレッド",
+	"searchThreads": "スレッドを検索",
+	"searchThread": "スレッドを検索",
+	"threadFailed": {
+		"title": "スレッドの作成に失敗",
+		"content": "スレッドが見つかりません、または更新する権限がありません"
+	}
+}

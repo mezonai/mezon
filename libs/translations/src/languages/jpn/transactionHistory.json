@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "取引履歴",
+		"subtitle": "すべての取引アクティビティを表示"
+	},
+	"footers": {
+		"noti": "すべての{{count}} トランザクションをダウンロードしました",
+		"fetching": "さらにトランザクションを読み込んでいます..."
+	},
+	"filters": {
+		"all": "すべてのトランザクション",
+		"sent": "送信トランザクション",
+		"received": "受信トランザクション"
+	},
+	"transactionTypes": {
+		"sent": "送信済み",
+		"received": "受信済み"
+	},
+	"currency": {
+		"code": "ja-JP",
+		"symbol": "円"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "トランザクションが見つかりません",
+			"description": "まだトランザクションを実行していません。送金またはトークンを受信し始めると、ここにトランザクション履歴が表示されます。"
+		},
+		"noFilteredTransactions": {
+			"title": "トランザクションが見つかりません",
+			"description": "選択したフィルターでトランザクションが見つかりません。別のフィルターを試すか、後で再試行してください。"
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "トランザクションID",
+			"sender": "送信者",
+			"amount": "金額",
+			"receiver": "受信者",
+			"note": "メモ",
+			"created": "作成日時"
+		},
+		"defaultNote": "メモなし",
+		"unknownUser": "不明なユーザー"
+	},
+	"transactionItem": {
+		"idPrefix": "トランザクション #"
+	}
+}

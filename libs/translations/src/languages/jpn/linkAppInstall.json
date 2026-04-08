@@ -1,0 +1,11 @@
+{
+  "description": "外部アプリ",
+  "subDescription": "があなたのMezonアカウントにアクセスしようとしています",
+  "addToClan": "クランに追加",
+  "invite": "許可",
+  "back": "戻る",
+  "successInstall": "アプリをクランに追加しました",
+  "errorInstall": "アプリをクランに追加できませんでした",
+  "selectClan": "クランを検索",
+  "placeholder": "ボット/アプリを招待するクランを選択"
+}

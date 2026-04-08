@@ -1,0 +1,18 @@
+{
+  "buttons": {
+    "cancel": "キャンセル",
+    "save": "保存",
+    "reset": "リセット",
+    "close": "閉じる",
+    "kick": "キック"
+  },
+  "form": {
+    "required": "必須フィールド",
+    "error": "エラー"
+  },
+  "kickMember": {
+    "title": "{{username}} を{{clanName}} からキック",
+    "description": "本当に@{{username}} を{{clanName}} からキックしますか？新しい招待で再参加できます。",
+    "reasonKick": "キック理由"
+  }
+}

@@ -1,0 +1,290 @@
+{
+	"fields": {
+		"channelName": {
+			"title": "チャンネル名",
+			"placeholder": "チャンネル名を入力",
+			"errorMessage": "有効なチャンネル名を入力してください（最大64文字、文字、数字、_または-のみ）。",
+			"duplicateError": "このカテゴリに同じチャンネル名があります。別の名前を入力してください。"
+		},
+		"threadName": {
+			"title": "スレッド名",
+			"placeholder": "スレッド名を入力",
+			"errorMessage": "有効なスレッド名を入力してください（最大65文字、文字、数字、_または-のみ）。",
+			"emptyError": "スレッド名を入力してください（最大65文字、文字、数字、_または-のみ）。",
+			"duplicateError": "このチャンネルに同じスレッド名があります。別の名前を入力してください。"
+		},
+		"channelDescription": {
+			"title": "チャンネルのトピック",
+			"placeholder": "このチャンネルの使い方をみんなに教えてください!"
+		},
+		"threadDescription": {
+			"title": "スレッドの説明",
+			"placeholder": "このスレッドの使い方をみんなに教えてください!"
+		},
+		"appUrl": {
+			"title": "アプリのパス",
+			"invalidError": "有効なURLを入力してください（例：https://example.com）。"
+		},
+		"channelCategory": {
+			"title": "チャンネルカテゴリ"
+		},
+		"channelPermission": {
+			"title": "",
+			"permission": "チャンネル権限",
+			"description": "プライバシー権限設定を変更し、メンバーがこのチャンネルとどのように相互作用できるかをカスタマイズします。"
+		},
+		"quickAction": {
+			"title": "クイックアクション"
+		},
+		"privateChannelInvite": {
+			"addMember": "メンバーを追加"
+		},
+		"channelNotifications": {
+			"title": "",
+			"notification": "通知設定",
+			"pinned": "ピン留めメッセージ",
+			"invite": "招待"
+		},
+		"channelSlowMode": {
+			"title": "スローモード",
+			"description": "メンバーは、この期間中に1回のみメッセージを送信できるよう制限されます。ただし、チャンネル管理またはメッセージ管理権限を持つメンバーは除外されます。",
+			"_5seconds": "5秒",
+			"_10seconds": "10秒",
+			"_15seconds": "15秒",
+			"_30seconds": "30秒",
+			"_1minute": "1分",
+			"_2minutes": "2分",
+			"_5minutes": "5分",
+			"_10minutes": "10分",
+			"_15minutes": "15分",
+			"_30minutes": "30分",
+			"_1hour": "1時間",
+			"_2hours": "2時間",
+			"_6hours": "6時間"
+		},
+		"channelHideInactivity": {
+			"title": "アクティビティなしで非表示",
+			"description": "指定された期間アクティビティがないと、新しいスレッドはチャンネルリストに表示されなくなります",
+			"_1hour": "1時間",
+			"_24hours": "24時間",
+			"_3days": "3日",
+			"_1Week": "1週間"
+		},
+		"channelWebhooks": {
+			"title": "",
+			"webhook": "Webhook"
+		},
+		"channelDelete": {
+			"title": "",
+			"delete": "チャンネルを削除"
+		},
+		"threadDelete": {
+			"title": "",
+			"delete": "スレッドを削除"
+		},
+		"threadLeave": {
+			"title": "",
+			"leave": "スレッドを退出"
+		}
+	},
+	"confirm": {
+		"delete": {
+			"content": "#{{channelName}}を削除してもよろしいですか？この操作は元に戻せません。",
+			"confirmText": "削除",
+			"title": "チャンネルを削除",
+			"systemChannel": "システムチャンネルは削除できません",
+			"error": "チャンネル削除エラー：{{error}}"
+		},
+		"deleteThread": {
+			"content": "{{channelName}}を削除してもよろしいですか？この操作は元に戻せません。",
+			"confirmText": "スレッドを削除",
+			"title": "スレッドを削除"
+		},
+		"deleteChannel": {
+			"content": "#{{channelName}}を削除してもよろしいですか？この操作は元に戻せません。",
+			"confirmText": "チャンネルを削除",
+			"title": "チャンネルを削除"
+		},
+		"cancel": "キャンセル",
+		"leave": {
+			"content": "#{{channelName}}を退出してもよろしいですか？この操作は元に戻せません。",
+			"confirmText": "退出",
+			"title": "チャンネルを退出"
+		},
+		"save": "保存"
+	},
+	"toast": {
+		"updated": "正常に更新されました"
+	},
+	"channelPermission": {
+		"permissionOverrides": "権限のオーバーライド",
+		"save": "保存",
+		"generalChannelPermission": "一般チャンネル権限",
+		"title": "アクセス権",
+		"basicView": "基本",
+		"advancedView": "詳細",
+		"roles": "ロール",
+		"members": "メンバー",
+		"edit": "編集",
+		"done": "完了",
+		"addRole": "ロールを追加",
+		"addMember": "メンバーを追加",
+		"privateChannel": "プライベートチャンネル",
+		"basicViewDescription": "チャンネルをプライベートモードにすると、選択されたメンバーとロールのみがこのチャンネルを表示できます",
+		"ChannelCreator": "クリエーター",
+		"addMemberAndRoles": "メンバーまたはロールを追加",
+		"whoCanAccess": "誰がアクセスできる",
+		"warningModal": {
+			"publicChannelTitle": "このチャンネルを全員に公開しますか？",
+			"privateChannelTitle": "このチャンネルをプライベートに転換しますか？",
+			"publicChannelContent": "{{channelLabel}}はすべてのメンバーに利用可能になります",
+			"privateChannelContent": "{{channelLabel}}はプライベートになり、選択されたメンバーとロールのみに表示されます",
+			"confirm": "同意"
+		},
+		"warningChangeSettingModal": {
+			"title": "未保存の設定があります",
+			"content": "変更を保存しますか？",
+			"confirm": "はい、保存"
+		},
+		"description": {
+			"viewChannel": "メンバーがこのチャンネルをデフォルトで表示できるようにします。@everyoneに対してこれを無効にすると、このチャンネルがプライベートになります。",
+			"manageChannel": "メンバーがこのチャンネルの名前、説明、テキスト設定を変更できるようにします。彼らはまた、チャンネルを削除することもできます。",
+			"manageThread": "メンバーがこのチャンネルのスレッドの名前変更、削除、終了、スローモードを有効化できるようにします。彼らはまた、プライベートスレッドを表示することもできます。",
+			"sendMessage": "メンバーがこのチャンネルにメッセージを送信できるようにします。",
+			"deleteMessage": "メンバーがこのチャンネルのメッセージを削除できるようにします。"
+		},
+		"bottomSheet": {
+			"addMembersOrRoles": "メンバーまたはロールを追加",
+			"add": "追加",
+			"roles": "ロール",
+			"members": "メンバー",
+			"rolesMembers": "ロール/メンバー",
+			"roleMemberPlaceholder": "ロール/メンバー"
+		},
+		"toast": {
+			"success": "正常に保存されました",
+			"failed": "保存に失敗しました"
+		},
+		"roleAndMemberEmpty": "ロールとメンバーの個別権限を設定するためのロールとメンバーはありません",
+		"header": {
+			"title": "チャンネル権限",
+			"description": "権限を使用して、このチャンネルで誰が何ができるかをカスタマイズします。",
+			"syncedWithCategory": "カテゴリと同期された権限:"
+		}
+	},
+	"quickAction": {
+		"title": "クイックメニュー",
+		"description": "このチャンネルのクイックメッセージとクイックメニューを管理",
+		"keyTitle": "キーワードを入力（例：こんにちは）:",
+		"valueTitle": "内容を入力（例：おはようございます、良い一日をお過ごしください!）",
+		"save": "保存",
+		"cancel": "キャンセル",
+		"create": "作成",
+		"update": "更新",
+		"delete": "削除",
+		"deleteModal": "クイックメニューを削除",
+		"deleteTitle": "{{command}}を削除してもよろしいですか？この操作は元に戻せません。",
+		"flashMessage": "フラッシュメッセージ",
+		"flashMessages": "フラッシュメッセージ",
+		"quickMenu": "クイックメニュー",
+		"quickMenus": "クイックメニュー",
+		"menuName": "メニュー名",
+		"commandName": "コマンド名",
+		"menuNameHelper": "このクイックメニューアイテムの名前",
+		"commandNameHelper": "ユーザーがスラッシュの後に入力する名前",
+		"botEventTrigger": "ボットイベントトリガー",
+		"botEventDescription": "このクイックメニューは、選択されるとボットイベントを自動的にトリガーします。",
+		"createQuickMenu": "クイックメニューを作成",
+		"createFlashMessage": "フラッシュメッセージを作成",
+		"editQuickMenu": "クイックメニューを編集",
+		"editFlashMessage": "フラッシュメッセージを編集",
+		"emptyFlashMessage": "まだフラッシュメッセージはありません",
+		"emptyFlashMessageDescription": "最初のフラッシュメッセージコマンドを作成して始めましょう",
+		"emptyQuickMenu": "まだクイックメニューはありません",
+		"emptyQuickMenuDescription": "最初のクイックメニューを作成して始めましょう",
+		"addFlashMessage": "フラッシュメッセージを追加",
+		"addQuickMenu": "クイックメニューを追加",
+		"editCommand": "コマンドを編集",
+		"deleteCommand": "コマンドを削除",
+		"triggersBot": "ボットをトリガー",
+		"messageContent": "メッセージ内容",
+		"messageContentPlaceholder": "クイックで送信されるメッセージ",
+		"messageContentDescription": "このフラッシュメッセージコマンドを使用するときに送信されるメッセージ内容",
+		"menuAction": "メニューアクション",
+		"menuActionPlaceholder": "実行されるアクション",
+		"menuActionDescription": "このクイックメニューが選択されたときに実行されるアクション"
+	},
+	"changeCategory": {
+		"title": "カテゴリを変更",
+		"label": "{{currentChannel}}から",
+		"confirmFirstContent": "本当に転換してもよろしいですか",
+		"confirmLastContent": "カテゴリへ",
+		"confirm": "同意",
+		"error": "カテゴリの変更に失敗しました"
+	},
+	"overview": {
+		"title": "概要",
+		"ageRestricted": {
+			"title": "年齢制限チャンネル",
+			"description": "ユーザーは、このチャンネル内のコンテンツを表示する法的に年齢に達していることを確認する必要があります。年齢制限チャンネルは、敏感なコンテンツフィルターからの免除の対象となります。"
+		},
+		"e2ee": {
+			"title": "エンドツーエンド暗号化",
+			"description": "このチャンネルのエンドツーエンド暗号化をオンにして、すべてのメッセージを保護します。"
+		}
+	},
+	"tabs": {
+		"overview": "概要",
+		"permissions": "権限",
+		"invites": "招待",
+		"integrations": "統合",
+		"category": "カテゴリ",
+		"quickMenu": "クイックメニュー"
+	},
+	"categoryManagement": {
+		"title": "カテゴリ",
+		"channelName": "チャンネル名",
+		"category": "カテゴリ"
+	},
+	"unsavedChanges": {
+		"warning": "注意 - 未保存の変更があります!",
+		"reset": "リセット",
+		"saveChanges": "変更を保存"
+	},
+	"addMembersRoles": {
+		"title": "メンバーまたはロールを追加",
+		"placeholder": "例：管理者、@wumpus",
+		"instruction": "@から始めて個別のメンバーを追加するか、ロール名を入力",
+		"roles": "ロール",
+		"members": "メンバー",
+		"cancel": "キャンセル",
+		"done": "完了",
+		"searchPlaceholder": "ロールとメンバーを検索"
+	},
+	"table": {
+		"columnHeaders": {
+			"name": "名前",
+			"members": "メンバー",
+			"messagesCount": "メッセージ数",
+			"lastSent": "最後に送信",
+			"creator": "クリエーター"
+		},
+		"pagination": {
+			"show": "表示",
+			"channelOf": "のチャンネル"
+		},
+		"memberModal": {
+			"listMember": "メンバーリスト"
+		},
+		"threads": {
+			"noThreads": "このチャンネルにスレッドはありません"
+		},
+		"members": {
+			"allMembers": "(すべてのメンバー)"
+		}
+	},
+	"streamBanner": {
+		"title": "ストリームバナー"
+	},
+	"banList": "禁止リスト"
+}

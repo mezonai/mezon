@@ -1,0 +1,42 @@
+{
+	"btn": {
+		"upload": "スタンプをアップロード",
+		"delete": "削除"
+	},
+	"modal": {
+		"uploadAFile": "ファイルをアップロード",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "ファイルはPNGまたはGIFである必要があります、最大512KB",
+		"preview": "プレビュー",
+		"file": "ファイル",
+		"thisCannotBeEdited": "編集できません",
+		"browse": "参照",
+		"chooseAFile": "ファイルを選択",
+		"stickerName": "スタンプ名",
+		"exCatHug": "例：cat_hug",
+		"thisIsForSale": "これは販売用です",
+		"neverMind": "なし",
+		"characters": "名前は3〜64文字である必要があります"
+	},
+	"content": {
+		"description": "このクランで誰が使用できるカスタムスタンプを最大250個追加しましょう。",
+		"requirements": "アップロード要件",
+		"reqType": "• 静的画像（PNG）またはアニメーション画像（GIF）である可能性があります。",
+		"reqDim": "• 正確に320 x 320ピクセルである必要があります。",
+		"reqSize": "• 512KBを超えてはなりません。",
+		"available": "{{left}} スロットのスタンプが利用可能"
+	},
+	"toast": {
+		"errorUpdating": "更新エラー",
+		"errorSizeLimit": "画像サイズが512KBを超えています",
+		"validateName": "長さは{{min}}から{{max}}文字である必要があります。文字、数字、_および-のみ許可されます"
+	},
+	"empty": {
+		"tip": "ヒント",
+		"voiceSticker": {
+			"title": "まだ音声スタンプはありません"
+		},
+		"sticker": {
+			"title": "まだスタンプはありません"
+		}
+	}
+}

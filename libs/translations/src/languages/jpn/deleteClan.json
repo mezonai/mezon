@@ -1,0 +1,15 @@
+{
+  "deleteClanModal": {
+    "title": "クランを削除",
+    "description": "本当に{{currentClan}}を削除してもよろしいですか？この操作は元に戻せません。",
+    "confirm": "はい",
+    "cancel": "なし",
+     "titleLeaveClan": "クランから退出",
+    "descriptionLeaveClan": "本当に{{currentClan}}から退出しますか？招待されない限り、このクランに再参加できません。",
+    "error": "クランを削除/退出しようとする際にエラーが発生しました"
+  },
+  "confirmMessage": "本当にこのクランを削除してもよろしいですか？この操作は元に戻せません。",
+  "enterClanName": "クラン名を入力",
+  "incorrectName": "クラン名が正しくありません",
+  "cancel": "キャンセル"
+}

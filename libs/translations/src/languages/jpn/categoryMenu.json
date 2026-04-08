@@ -1,0 +1,39 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "既読にする"
+        },
+        "inviteMenu": {
+            "title": "",
+            "invite": "招待"
+        },
+        "notification": {
+            "title": "",
+            "muteCategory": "カテゴリの通知をミュート",
+            "notification": "通知設定"
+        },
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "チャンネルを作成",
+            "edit": "カテゴリを編集",
+            "delete": "カテゴリを削除"
+        },
+        "devMode": {
+            "title": "開発者モード",
+            "copyServerID": "サーバーIDをコピー"
+        },
+        "modalConfirm": {
+            "title": "カテゴリを削除",
+            "content": "このカテゴリを削除してもよろしいですか？この操作は元に戻せません。",
+            "confirmText": "削除"
+        },
+        "toast": {
+            "systemChannel": "エラー：{{categoryName}}にはシステムチャンネルが含まれています",
+            "error": "カテゴリ削除エラー：{{error}}"
+        }
+    },
+    "notify": {
+        "serverIDCopied": "サーバーIDをコピーしました"
+    }
+}

@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "監査ログ",
+		"filterByUser": "ユーザーでフィルター",
+		"filterByAction": "アクションでフィルター",
+		"filterBtn": "フィルター"
+	},
+	"auditLogItem": {
+		"performedAnAction": "アクションを実行",
+		"toChannel": "チャンネルに",
+		"remove": "削除",
+		"add": "追加"
+	},
+	"filterActionAuditLog": {
+		"allActions": "すべてのアクション",
+		"placeholder": "アクションを検索"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "すべてのユーザー",
+		"placeholder": "ユーザーを検索"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "まだログがありません",
+		"description": "モデレーターがタスクを実行した後、彼らのアクティビティをここで追跡できます。"
+	}
+}

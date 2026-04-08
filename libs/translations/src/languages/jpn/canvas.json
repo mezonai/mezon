@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "キャンバスのタイトル"
+	},
+	"editor": {
+		"placeholder": "入力開始...",
+		"uploadingImage": "画像をアップロード中..."
+	},
+	"actions": {
+		"save": "保存",
+		"saving": "保存中...",
+		"discardChanges": "変更を破棄"
+	},
+	"error": {
+		"title": "エラー"
+	},
+	"toolbar": {
+		"blockFormat": "ブロック形式",
+		"addLink": "リンクを追加",
+		"removeLink": "リンクを削除",
+		"codeBlock": "コードブロック",
+		"cancel": "キャンセル",
+		"apply": "適用"
+	},
+	"blocks": {
+		"paragraph": "段落",
+		"h1": "H1 見出し",
+		"h2": "H2 見出し",
+		"h3": "H3 見出し",
+		"checkedList": "チェックリスト",
+		"orderedList": "番号付きリスト",
+		"bulletedList": "箇条書きリスト",
+		"blockquote": "引用"
+	}
+}

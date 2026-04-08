@@ -1,0 +1,16 @@
+{
+	"emptyDescription": "私たちは遠くまで検索しました。残念ながら、結果は見つかりませんでした",
+	"video": {
+		"error": {
+			"title": "ビデオが利用できません",
+			"cannotPlay": "ビデオを再生できません",
+			"loadingAborted": "ビデオのロードが取り消されました",
+			"networkError": "ビデオをロードする際のネットワークエラー",
+			"codecNotSupported": "このプラットフォームではビデオコーデックがサポートされていません",
+			"codecNotSupportedElectron": "このプラットフォームではビデオコーデックがサポートされていません。システムプレーヤーでビデオをダウンロードして再生してください。",
+			"formatNotSupported": "ビデオ形式がサポートされていません",
+			"downloadButton": "ビデオをダウンロード",
+			"browserNotSupported": "ブラウザはビデオタグをサポートしていません。"
+		}
+	}
+}

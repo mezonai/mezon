@@ -1,0 +1,18 @@
+{
+	"title": "クランに参加する",
+	"offline": "オフライン",
+	"online": "オンライン",
+	"join": "参加",
+	"joining": "参加中...",
+	"goToClan": "クランに移動",
+	"unknownClan": "不明なクラン",
+	"memberCount": "{{count}} メンバー",
+	"memberCount_plural": "{{count}} メンバー",
+	"failedToJoin": "このクランに参加できません。",
+	"inviteTo": "{{clanName}}に参加する",
+	"noThanks": "なし、ありがとう",
+	"invalidInvite": {
+		"title": "無効な招待",
+		"message": "別の招待を送信してください!"
+	}
+}

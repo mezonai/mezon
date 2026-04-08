@@ -1,0 +1,63 @@
+{
+	"title": "メッセージ",
+	"addFriend": "友達を追加",
+	"friends": "友達",
+	"blockedUserMessage": "ブロックされたメッセージ",
+	"menu": {
+		"leaveGroup": "グループを退出",
+		"deleteGroup": "グループを削除",
+		"profile": "プロフィール",
+		"closeDm": "メッセージを閉じる",
+		"markAsRead": "既読にする",
+		"favorite": "お気に入りに追加",
+		"muteConversation": "会話をミュート",
+		"unMuteConversation": "会話をミュート解除",
+		"notificationSettings": "通知設定",
+		"disableE2EE": "E2EEを無効化",
+		"enableE2EE": "E2EEを有効化",
+		"blockUser": "ユーザーをブロック",
+		"unblockUser": "ユーザーのブロックを解除",
+		"removeFriend": "友達を削除",
+		"addFriend": "友達を追加",
+		"pinConversation": "会話をピン留め",
+		"unpinConversation": "会話をピン留め解除"
+	},
+	"confirm": {
+		"title": "{{groupName}}から退出",
+		"content": "本当に{{groupName}}から退出しますか？招待されない限り、このグループに再参加できません。",
+		"confirmText": "はい"
+	},
+	"pinConfirm": {
+		"title": "会話をピン留めしますか?",
+		"content": "この会話は、アクセスしやすくするためにメッセージリストの先頭に移動します。",
+		"confirmText": "ピン留め"
+	},
+	"unpinConfirm": {
+		"title": "会話をピン留め解除しますか?",
+		"content": "この会話はメッセージリストの通常の位置に戻ります。",
+		"confirmText": "ピン留め解除"
+	},
+	"pinSection": "ピン留め済み",
+	"allMessagesSection": "すべてのメッセージ",
+	"maximumPinnedConversationsReached": "最大{{max}}の会話をピン留めできます。",
+	"notification": {
+		"blockUser": {
+			"success": "ユーザーをブロックしました",
+			"error": "ユーザーをブロックできません"
+		},
+		"unblockUser": {
+			"success": "ユーザーのブロックを解除しました",
+			"error": "ユーザーのブロックを解除できません"
+		},
+		"muteSuccess": "通知をミュートしました!",
+		"unMuteSuccess": "通知をミュート解除しました!",
+		"muteFailed": "通知をミュートできませんでした!",
+		"unMuteFailed": "通知をミュート解除できませんでした!"
+	},
+	"waveWelcome": "挨拶のために手を振って!",
+	"waveWelcomeDM": "{{username}}に手を振って",
+	"members": "メンバー",
+	"speaker": "スピーカー",
+	"end": "終了",
+	"turnedMicOff": "マイクをオフにしました"
+}

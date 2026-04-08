@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "既読にする",
+			"browseChannels": "チャンネルを閲覧"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "チャンネルを作成",
+			"createCategory": "カテゴリを作成",
+			"createEvent": "イベントを作成"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "クランプロフィールを編集",
+			"showAllChannels": "すべてのチャンネルを表示",
+			"hideMutedChannels": "すべてのミュートされたチャンネルを非表示",
+			"allowDirectMessage": "ダイレクトメッセージを許可",
+			"allowMessageRequest": "メッセージリクエストを許可",
+			"reportServer": "クランを報告",
+			"leaveServer": "クランから退出",
+			"deleteClan": "クランを削除",
+			"auditLog": "監査ログ"
+		},
+		"optionShowEmptyCategories": {
+			"title": "空のカテゴリを表示",
+			"show": "表示",
+			"hide": "非表示"
+		},
+		"devMode": {
+			"title": "開発者モード",
+			"copyServerID": "クランIDをコピー",
+			"serverIDCopied": "クランIDをコピーしました"
+		}
+	},
+	"actions": {
+		"boot": "アップグレード",
+		"invite": "招待",
+		"notifications": "通知",
+		"settings": "設定"
+	},
+	"info": {
+		"online": "オンライン",
+		"members": "メンバー"
+	},
+	"common": {
+		"search": "検索",
+		"community": "コミュニティ",
+		"searchMembers": "メンバーを検索"
+	},
+	"modalPanel": {
+		"createCategory": "カテゴリを作成",
+		"markAsRead": "既読にする",
+		"processing": "処理中...",
+		"invitePeople": "人を招待",
+		"clanSettings": "クラン設定",
+		"notificationSettings": "通知設定",
+		"showEmptyCategories": "空のカテゴリを表示",
+		"leaveClan": "クランから退出"
+	}
+}

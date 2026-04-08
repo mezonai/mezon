@@ -1,0 +1,63 @@
+{
+	"directMessages": "ダイレクトメッセージ",
+	"createDM": "メッセージを作成",
+	"friends": "友達",
+	"yourMessages": "あなたのメッセージ",
+	"selectConversation": "チャットを開始するには会話を選択",
+	"createMessageGroup": {
+		"selectFriends": "友達を選択",
+		"canAddMoreFriends": "あと{{count}}人の友達を追加できます。",
+		"searchPlaceholder": "友達の名前を入力",
+		"addToGroupChat": "グループチャットに追加",
+		"createDMOrGroupChat": "メッセージまたはグループチャットを作成",
+		"createDM": "メッセージを作成",
+		"createGroupChat": "グループチャットを作成",
+		"noFriendsFound": "この会話に含まれていない友達が見つかりません。",
+		"creating": "作成中..."
+	},
+	"editGroup": {
+		"title": "グループを編集",
+		"uploadImageText": "画像をアップロードするにはクリック",
+		"removeAvatar": "アバターを削除",
+		"groupNameLabel": "グループ名",
+		"groupNamePlaceholder": "グループ名を入力",
+		"validationError": "有効なグループ名を入力してください（文字、数字、_または-のみ）。",
+		"cancel": "キャンセル",
+		"save": "保存",
+		"saving": "保存中..."
+	},
+	"contextMenu": {
+		"editGroup": "グループを編集",
+		"addFriend": "友達を追加",
+		"leaveGroup": "グループを退出",
+		"closeDM": "メッセージを閉じる",
+		"markAsRead": "既読にする",
+		"invitePeople": "人を招待",
+		"hideConversation": "会話を非表示",
+		"profile": "プロフィール",
+		"message": "メッセージ",
+		"removeFriend": "友達を削除",
+		"block": "ブロック",
+		"unblock": "ブロックを解除",
+		"removeFromGroup": "グループから削除",
+		"shareContact": "連絡先を共有",
+		"mute": "ミュート",
+		"unmute": "ミュート解除",
+		"for15Minutes": "15分間",
+		"for1Hour": "1時間",
+		"for3Hours": "3時間",
+		"for8Hours": "8時間",
+		"for24Hours": "24時間",
+		"untilTurnBackOn": "再度オンにするまで",
+		"mutedUntil": "{{time}}までミュート",
+		"pinConversation": "会話をピン留め",
+		"unpinConversation": "会話をピン留め解除",
+		"pinLimitExceeded": "最大10の会話をピン留めできます。この会話をピン留めするには、他の会話をピン留め解除してください"
+	},
+	"pinned": "ピン留め済み",
+	"remove": {
+		"content": "このチャンネルの会話は利用できません!",
+		"title": "会話が利用できません",
+		"button": "確認"
+	}
+}

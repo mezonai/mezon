@@ -1,0 +1,165 @@
+{
+	"title": "オンボーディングを完了",
+	"description": "ステップ {{step}}/{{total}}",
+	"action": {
+		"title": "クランのオンボーディングを完了",
+		"description": "{{step}}/{{total}} ステップ完了",
+		"createChannel": "チャンネルを作成",
+		"invite": "いくつかの友達を招待",
+		"sendMessage": "最初のメッセージを送信"
+	},
+	"modal": {
+		"title": "オンボーディング設定"
+	},
+	"buttons": {
+		"back": "戻る",
+		"cancel": "キャンセル",
+		"confirm": "確認",
+		"save": "保存",
+		"saving": "保存中...",
+		"setup": "セットアップ",
+		"edit": "編集",
+		"preview": "プレビュー",
+		"disable": "オンボーディングを無効化"
+	},
+	"onboarding": {
+		"title": "オンボーディング",
+		"description": "チャンネル、ロール、カスタマイズされたステップで、メンバーのための簡単なスタート体験を作成しましょう。",
+		"enabledTitle": "オンボーディングが有効化されました",
+		"enabledDescription": "変更は保存されるまで有効になりません。",
+		"featuresEnabled": "オンボーディング機能が有効化されました"
+	},
+	"questions": {
+		"title": "質問",
+		"description": "パブリックチャンネルは質問を介して割り当てられます。"
+	},
+	"clanGuide": {
+		"title": "クランガイド",
+		"description": "ウェルカムメッセージ、バナー、やるべきミッション、およびリソースがすべて設定されています"
+	},
+	"messages": {
+		"communityEnabledSuccess": "コミュニティが正常に有効化されました",
+		"changesSavedSuccess": "変更が正常に保存されました"
+	},
+	"errors": {
+		"needAtLeastOneItem": "オンボーディングを有効にするには少なくとも1つのアイテムが必要です",
+		"failedToEnableCommunity": "コミュニティを有効化できません",
+		"failedToSaveChanges": "変更を保存できません",
+		"questionRequired": "質問は必須です。"
+	},
+	"questionsPage": {
+		"title": "質問",
+		"description": "メンバーが追加のチャンネルとロールを選択できるようにするために質問を作成しましょう。彼らのチャンネルリストは、回答に基づいてカスタマイズされます。",
+		"noChannelsMissing": "質問とデフォルトチャンネルからパブリックチャンネルが不足していません。",
+		"channelNotAssigned": "チャンネルが割り当てられていません",
+		"noChannelsHere": "ここにチャンネルはありません",
+		"preJoinQuestions": {
+			"title": "参加前の質問",
+			"description": "メンバーは、あなたのサーバーに参加する前にこれらの質問に答えます。それらを使用して、重要なチャンネルとロールを割り当てましょう。参加前の質問は、チャンネルとロールページでも利用可能です。"
+		},
+		"addQuestion": "質問を追加",
+		"questionNumber": "質問 {{number}}",
+		"enterQuestion": "質問を入力...",
+		"availableAnswers": "利用可能な答え - {{count}}/50",
+		"addAnswer": "答えを追加",
+		"questionPlaceholder": "あなたの質問は何ですか",
+		"answerTitle": "答えのタイトルを追加",
+		"answerDescription": "答えの説明を追加",
+		"enterAnswer": "答えを入力...",
+		"enterDescription": "説明を入力...（オプション）",
+		"titleRequired": "タイトルは必須",
+		"remove": "削除"
+	},
+	"enableOnboarding": {
+		"title": "オンボーディングを有効化しますか?",
+		"description": "オンボーディングに切り替えて、追加の管理ツールにアクセス",
+		"subtitle": "クランを効果的にモデレートおよび成長させる。",
+		"button": "オンボーディングを有効化",
+		"note": "この操作は、高度なオンボーディング機能をアンロックします"
+	},
+	"enableCommunity": {
+		"title": "コミュニティを有効化しますか?",
+		"description": "コミュニティをフル機能のコミュニティ体験に変換。",
+		"subtitle": "クランを効果的にモデレートおよび成長させるための強力な管理ツールにアクセス。",
+		"button": "コミュニティを有効化",
+		"note": "この操作は、高度なコミュニティ機能をアンロックします"
+	},
+	"communitySettings": {
+		"warnningEmptyField": "* つきのフィールドは必須です",
+		"title": "コミュニティ設定",
+		"subtitle": "コミュニティ情報を管理",
+		"enableTitle": "コミュニティを有効化",
+		"enableSubtitle": "メンバーが交流するための素晴らしいスペースを作成",
+		"loading": "コミュニティ設定を読み込んでいます...",
+		"banner": {
+			"title": "コミュニティバナー",
+			"uploadTitle": "バナーをアップロード",
+			"uploadDescription": "ドラッグ＆ドロップまたはクリックして画像を選択",
+			"changeBanner": "バナーを変更",
+			"removeBanner": "バナーを削除"
+		},
+		"description": {
+			"title": "コミュニティ説明",
+			"placeholder": "コミュニティの短い説明を入力..."
+		},
+		"about": {
+			"title": "コミュニティについて",
+			"placeholder": "私たちのコミュニティについて教えてください。何が特別ですか?"
+		},
+		"vanityUrl": {
+			"title": "カスタムURL",
+			"description": "コミュニティのためのカスタムURLを作成。小文字、数字、およびハイフンのみを使用。",
+			"placeholder": "great-community-of-mine",
+			"previewLabel": "URLプレビュー:"
+		},
+		"buttons": {
+			"enableAndSave": "有効化 & 保存",
+			"saving": "保存中...",
+			"save": "変更を保存",
+			"disable": "コミュニティを無効化",
+			"reset": "リセット"
+		},
+		"messages": {
+			"aboutUpdated": "情報を更新しました!",
+			"aboutUpdateFailed": "情報の更新に失敗しました!",
+			"descriptionUpdated": "説明を更新しました!",
+			"descriptionUpdateFailed": "説明の更新に失敗しました!",
+			"vanityUrlUpdated": "カスタムURLを更新しました!",
+			"vanityUrlUpdateFailed": "カスタムURLの更新に失敗しました!",
+			"communityEnabledAndSaved": "コミュニティが有効化され、保存されました!",
+			"saveFailed": "保存に失敗しました!",
+			"changesSaved": "変更が保存されました!",
+			"communityDisabled": "コミュニティが無効化されました。",
+			"disableFailed": "無効化に失敗しました!",
+			"bannerRemoved": "バナーを削除しました!",
+			"fillAllRequiredFields": "すべての必須フィールド（バナー、紹介、説明、カスタムURL）を埋めてください!",
+			"bannerUpdateFailed": "バナーの更新に失敗しました!"
+		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "ウェルカム",
+			"description": "新しいメンバーにコミュニティの特別なことと、彼らに会えて嬉しく思う理由を教えてください!"
+		},
+		"newMemberToDos": {
+			"title": "新しいメンバーのやるべきこと",
+			"description": "新しいメンバーが実行する3-5のタスクを設定しましょう。彼らを<強>チャットし、チャンネルに参加</強>させましょう。"
+		},
+		"dontDoThis": "これを行わないでください：一般的すぎる",
+		"exampleTask": {
+			"title": "コミュニティとチャット",
+			"description": "#generalで"
+		},
+		"readTheRules": "ルールを読む",
+		"addTask": "タスクを追加",
+		"resourcePages": {
+			"title": "リソースページ",
+			"description": "リードオンリーチャンネルを、オンボーディングサーバーの美しいリソースページに変えましょう。それらは、すべてチャンネルをオンにしない限り、チャンネルリストに表示されなくなります。リソースは次のようないくつかの利点を提供します:",
+			"perk1": "メンバーはメッセージチェーンの末尾ではなく、ページの先頭から始まります",
+			"perk2": "チャットバーとアバターが削除され、よりクリーンに見えるようになります",
+			"perk3": "すべてのコンテンツ、埋め込み、メディア、およびフォーマットは維持されます"
+		},
+		"addResource": "リソースを追加",
+		"ownerGreeting": "こんにちは、これはクランオーナーからの挨拶です。クランに参加した初回にこのメッセージが表示されます!"
+	}
+}

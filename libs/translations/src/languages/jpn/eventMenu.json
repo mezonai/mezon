@@ -1,0 +1,50 @@
+{
+    "menu": {
+      "startEvent": "イベントを開始",
+      "markAsNotInterested": "興味なしとしてマーク",
+      "markAsInterested": "興味ありとしてマーク",
+      "editEvent": "イベントを編集",
+      "cancelEvent": "イベントをキャンセル",
+      "reportEvent": "イベントを報告",
+      "copyEventLink": "イベントリンクをコピー",
+      "copyEventID": "イベントIDをコピー"
+    },
+    "confirm": {
+        "title": "イベントをキャンセル",
+        "content": "本当にこのイベントをキャンセルしますか?"
+    },
+    "dashboard": {
+        "title": "イベント",
+        "event_one": "イベント",
+        "noEvent": "イベントはありません",
+        "noEventDescription": "他のメンバーが今後のイベントのアイデアを提供することを許可しましょう。",
+        "createButton": "作成",
+        "noti": "このイベントはクランのすべての人に公開されています。",
+        "endEvent": "イベントを終了",
+        "UnInterested": "興味なし",
+        "Interested": "興味あり"
+    },
+    "item": {
+      "interested": "興味あり",
+      "uninterested": "興味なし"
+    },
+    "detail": {
+        "eventInfo": "イベント情報",
+        "interested": "興味あり",
+        "personInterested": "{{count}} 人が興味あり",
+        "onePersonInterested": "1人が興味あり",
+        "noOneInterested": "このイベントに興味を持っている人はいません。",
+        "createdBy": "によって作成 "
+    },
+    "share": {
+        "title": "友達にイベントを共有",
+        "search": "検索",
+        "share": "共有",
+        "copied": "リンクがコピーされました!"
+    },
+     "countdown": {
+        "joinIn_other": "{{count}} 分後に開始",
+        "joinNow": "イベントが進行中!",
+        "joinIn_one": "1分後に開始"
+    }
+  }

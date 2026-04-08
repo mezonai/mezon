@@ -1,0 +1,14 @@
+{
+	"selectScreen": "共有するスクリーンを選択",
+	"entireScreen": "全画面",
+	"applicationWindow": "アプリケーションウィンドウ",
+	"shareAudio": "オーディオを共有",
+	"share": "共有",
+	"cancel": "キャンセル",
+	"chooseWhatToShare": "共有する内容を選択",
+	"window": "ウィンドウ",
+	"alsoShareSystemAudio": "システムオーディオも共有",
+	"loadingMore": "さらに読み込んでいます...",
+	"loadMore": "さらに読み込む",
+	"remaining": "残り"
+}

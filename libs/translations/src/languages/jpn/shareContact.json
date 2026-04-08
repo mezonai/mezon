@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "連絡先を共有",
+		"searchPlaceholder": "検索...",
+		"noResults": "結果が見つかりません",
+		"noFriends": "友達もチャンネルもありません",
+		"contactPreview": "共有される連絡先",
+		"cancel": "キャンセル",
+		"share": "共有",
+		"sharing": "送信中...",
+		"group": "グループ",
+		"channel": "チャンネル",
+		"thread": "スレッド"
+	},
+	"card": {
+		"call": "通話",
+		"message": "メッセージ",
+		"blockedAction": "このアクションを実行する権限がありません。",
+		"cannotCallSelf": "自分自身に通話することはできません。"
+	},
+	"contactSharedSuccess": "正常に共有しました",
+	"contactSharedError": "共有できません"
+}

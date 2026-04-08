@@ -1,0 +1,32 @@
+{
+	"onboard": {
+		"clickLaunchToStart": "開始するにはアプリを起動をクリック",
+		"inviteFriends": "友達を招待",
+		"sendFirstMessage": "最初のメッセージを送信",
+		"downloadApp": "Mezonアプリをダウンロード",
+		"createChannel": "チャンネルを作成"
+	},
+	"welcome": {
+		"welcomeToChannel": "#{{channelName}}へようこそ",
+		"startOfChannel": "#{{channelName}} {{channelType}}の始まりです",
+		"startOfThread": "{{username}}によって開始",
+		"welcomeToGroup": "{{groupName}}グループへようこそ。",
+		"beginningOfDM": "これはあなたと{{userName}}の会話の始まりです",
+		"editGroup": "グループを編集",
+		"private": "プライベート",
+		"friendRequestSent": "友達招待を送信しました:",
+		"addFriend": "友達を追加",
+		"removeFriend": "友達を削除",
+		"accept": "承認",
+		"ignore": "無視",
+		"friendRequestSentButton": "友達招待を送信しました",
+		"block": "ブロック",
+		"unblock": "ブロックを解除"
+	},
+	"toast": {
+		"userBlockedSuccess": "ユーザーをブロックしました",
+		"failedToBlock": "ユーザーをブロックできません",
+		"userUnblockedSuccess": "ユーザーのブロックを解除しました",
+		"failedToUnblock": "ユーザーのブロックを解除できません"
+	}
+}

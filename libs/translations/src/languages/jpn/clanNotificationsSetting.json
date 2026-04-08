@@ -1,0 +1,31 @@
+{
+	"muteClan": "クランの通知をミュートすると、未読インジケーターが非表示になり、@メンションされない限り通知が表示されなくなります",
+	"notifySettingOption": {
+		"title": "クラン通知設定",
+		"allMessage": "すべてのメッセージ",
+		"onlyMentions": "@メンションのみ",
+		"nothing": "なし"
+	},
+	"suppressOption": {
+		"suppressEveryone": "@everyoneと@hereの通知をミュート",
+		"suppressAllRole": "すべてのロールの@メンションをミュート",
+		"suppressHighlights": "ハイライト通知をミュート",
+		"subText": "ハイライトは、友人がクラン内でチャットしている場合やそれ以上のときに時折のアップデートを提供します。"
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "新しいイベントの通知をミュート",
+		"mobilePushNotifications": "モバイルプッシュ通知"
+	},
+	"notificationOverrides": {
+		"title": "通知のオーバーライド",
+		"addChannelsAllCategory": "すべてのチャンネルをカテゴリに追加"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "ミュートされたチャンネルからの通知は受け取りません。この設定はあなたのすべてのデバイスに適用されます。",
+		"youHaveMuted": "このチャンネルの通知をミュートしました"
+	},
+	"clanNotificationBS": {
+		"title": "このクランの通知をミュート"
+	},
+	"resetOverrides": "オーバーライドをリセット"
+}

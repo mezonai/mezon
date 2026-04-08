@@ -48,6 +48,11 @@ export const SettingLanguage = ({ menuIsOpen }: ISettingLanguageProps) => {
 				title: `${t('setting:language.portuguese')}`,
 				value: 'pt',
 				contributedBy: 'robits'
+			},
+			{
+				title: `${t('setting:language.japanese')}`,
+				value: 'jpn',
+				contributedBy: 'robits'
 			}
 		];
 	}, [t]);

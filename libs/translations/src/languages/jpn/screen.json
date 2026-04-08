@@ -1,0 +1,25 @@
+{
+    "headerTitle": {
+		"settings": "設定",
+		"Friends": "友達",
+		"addFriends": "友達を追加",
+		"requestFriend": "友達招待",
+		"friendRequestSettings": "友達招待設定",
+		"language": "言語",
+		"profile": "プロフィール",
+		"newMessage": "新しいメッセージ",
+		"newGroup": "新しいグループ",
+		"addMembers": "メンバーを追加",
+		"appearance": "外観",
+		"topic": "短いディスカッション",
+		"chat": "チャット"
+	},
+    "headerRight": {
+        "addFriends": "友達を追加"
+    },
+    "navigationTabs": {
+        "messages": "メッセージ",
+        "notifications": "通知",
+        "profile": "プロフィール"
+    }
+}

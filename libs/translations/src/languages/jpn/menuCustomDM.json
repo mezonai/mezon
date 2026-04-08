@@ -1,0 +1,14 @@
+{
+  "customiseGroup": "グループをカスタマイズ",
+  "inviteLinks": "招待リンク",
+  "leaveGroup": "グループを退出",
+  "closeDM": "メッセージを閉じる",
+  "groupName": "グループ名",
+  "save": "保存",
+  "removeAvatar": "画像を削除",
+  "invalidGroupName": "無効なグループ名",
+  "uploadImage": "画像をアップロード",
+  "toast": {
+    "leaveGroupError": "グループを退出する際のエラー：{{error}}"
+  }
+}

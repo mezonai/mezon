@@ -1,0 +1,143 @@
+{
+	"description": {
+		"part1": "ゲームをプレイし、友達とチャットしたり、世界的なコミュニティを構築するための素晴らしい場所です。",
+		"part2": "あなたの独自のスペースをカスタマイズして",
+		"talk": "チャット",
+		"play": "遊ぶ",
+		"and": "そして",
+		"hangOut": "交流"
+	},
+	"download": {
+		"getItFrom": "入手先",
+		"cdnUrl": "CDN URL"
+	},
+	"header": {
+		"home": "ホーム",
+		"overview": "概要",
+		"features": "機能",
+		"developers": "開発者",
+		"botsApps": "ボット/アプリ",
+		"documents": "ドキュメント",
+		"discover": "発見",
+		"blogs": "ブログ",
+		"openMezon": "Mezonを開く",
+		"login": "ログイン",
+		"quickMeeting": "Mezon Meet"
+	},
+	"layout": {
+		"overview": {
+			"title": "概要",
+			"subtitle": "チームとのコミュニケーションの新しい方法です。",
+			"description": "より速く、より整理され、リモートワークに最適。"
+		},
+		"features": {
+			"title": "私たちの機能",
+			"subtitle": "包括的なコミュニケーションツール"
+		},
+		"cards": {
+			"workstation": {
+				"title": "ワークステーション",
+				"description": "さまざまなシステムとツールとの統合により、コミュニケーション、協力、および仕事管理を最適化するデジタル作業スペース。グループ、プロジェクト、部署に構造化されたスペースを提供し、情報へのアクセスとワークフローをシームレスに確保します。"
+			},
+			"ecosystem": {
+				"title": "エコシステム",
+				"description": "仕事と社会の要素を組み合わせ、豊かでインタラクティブなエンターテインメント機能を提供する動的なデジタル環境。バーチャル取引、コミュニティ活動、および関係構築をサポートし、ユーザー体験を向上させます。"
+			},
+			"aiAgent": {
+				"title": "AIエージェント",
+				"description": "タスクを自動化し、情報管理を支援し、ワークフローを最適化するインテリジェントシステム。リマインド、監視、および自動コミュニケーションなどの機能を通じて生産性を向上させます。"
+			}
+		},
+		"featureCards": {
+			"mezonMainnet": {
+				"title": "Mezon Mainnet",
+				"subtitle": "高速レイヤー1、無料",
+				"description": "ブロックチェーン"
+			},
+			"developerApi": {
+				"title": "開発者API",
+				"subtitle": "開発者のための高度な"
+			},
+			"gaming": {
+				"title": "ゲーム",
+				"subtitle": "& エンターテインメント"
+			},
+			"customizable": {
+				"title": "カスタマイズ可能な",
+				"subtitle": "柔軟かつ拡張容易"
+			}
+		}
+	},
+	"sections": {
+		"hero": {
+			"title": {
+				"your": "あなたの",
+				"live": "つながり",
+				"work": "仕事",
+				"play": "遊ぶ ",
+				"platform": "プラットフォーム",
+				"theBest": "最高の",
+				"yourCommunity": "コミュニティ"
+			},
+			"description": "ゲームをプレイし、友達とチャットしたり、世界的なコミュニティを構築するための素晴らしい場所です。あなたの独自のスペースをカスタマイズして",
+			"talk": "チャット",
+			"play": "遊ぶ ",
+			"and": "そして",
+			"hangOut": "交流",
+			"tryButton": "Mezonを無料でお試しください!",
+			"choosePlatform": "プラットフォームを選択"
+		},
+		"textChannel": {
+			"titlesuper": "チャット ",
+			"titlemessage": "超高速",
+			"description": "チャット、協力、および接続のために構築されました。",
+			"description2": "制限なしの超高速チャット。即座に送信。",
+			"learnMore": "詳しく学ぶ"
+		},
+		"clanDiscover": {
+			"title": "あなたのクラン、あなたの世界",
+			"description": "趣味、議論、ニュース、トレンドから、すべてのことのためにクランがあります。",
+			"learnMore": "詳しく学ぶ"
+		},
+		"aiAgent": {
+			"title": "クランと24/7サポートのためのAIエージェント",
+			"description": "音声AIエージェント（ボイスチャンネル内の会話コンテンツの要約、またはインタビュアーとして機能）、AIアシスタント、シャドウモードボット（テキストチャンネル内のコンテンツの要約）。",
+			"learnMore": "詳しく学ぶ"
+		},
+		"communityPayments": {
+			"title": "コミュニティ内支払い",
+			"description": "Mezon Đồng を送信し、クリエイターに報酬を与え、パートナーブランドでショッピング - プラットフォーム手数料なしで。透明性とセキュリティに基づいて構築。",
+			"learnMore": "詳しく学ぶ"
+		},
+		"enterpriseIntegrations": {
+			"title": "エンタープライズ統合",
+			"description": "Mezonは、グローバルな顧客と接続し、魅力的なスケールエクスペリエンスをもたらすことを可能にします。",
+			"learnMore": "詳しく学ぶ"
+		}
+	},
+	"footer": {
+		"description": "Mezonはゲームをプレイし、友達とリラックスしたり、世界的なコミュニティを構築するための素晴らしい場所です。",
+		"getTheApp": "アプリを取得",
+		"copyright": "© 2024 Mezon。全著作権所有。",
+		"links": {
+			"executiveSummary": "エグゼクティブサマリー",
+			"problemStatement": "問題提示",
+			"solution": "解決策",
+			"blockchainEconomy": "ブロックチェーン & トークンエコノミー",
+			"developerApi": "開発者統合API",
+			"technicalArchitecture": "技術アーキテクチャ",
+			"productRoadmap": "製品ロードマップ",
+			"tokenomics": "トークノミクス",
+			"team": "チーム"
+		}
+	},
+	"externalMeet": {
+		"title": "会議",
+		"creatingMeeting": "会議が正常に作成されました!",
+		"invite": "招待",
+		"joinMeeting": "会議に参加",
+		"copyLink": "リンクをコピー",
+		"toastSuccess": "リンクがコピーされました!",
+		"toastFail": "コピーに失敗しました。"
+	}
+}

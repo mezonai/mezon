@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "通知設定",
+		"muteUntil": "このチャンネルの通知を{{until}}までミュートしました",
+		"unMute": "通知をミュート解除",
+		"mute": "通知をミュート",
+		"labelOptions": {
+			"reactionMessage": "メッセージリアクション",
+			"categoryDefault": "デフォルト設定を使用",
+			"allMessage": "すべて",
+			"notThingMessage": "なし",
+			"mentionMessage": "@メンションのみ"
+		},
+		"muteCategoryUntil": "このカテゴリの通知を{{until}}までミュートしました"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "このスレッドの通知をミュート",
+		"headerTitleMuteChannel": "このチャンネルの通知をミュート",
+		"muteThisConversation": "この会話の通知をミュート",
+		"muteDuration": {
+			"forFifteenMinutes": "15分間",
+			"forOneHour": "1時間",
+			"forThreeHours": "3時間",
+			"forEightHours": "8時間",
+			"forTwentyFourHours": "24時間",
+			"untilTurnItBackOn": "再度オンにするまで"
+		},
+		"description": "このクラン内のすべてのメッセージから通知を受け取っていますが、ここで設定を変更できます",
+		"muteSuccess": "通知をミュートしました!",
+		"unMuteSuccess": "通知をミュート解除しました!",
+		"muteFailed": "通知をミュートできませんでした!",
+		"unMuteFailed": "通知をミュート解除できませんでした!"
+	},
+	"toast": {
+		"error": "通知更新エラー：{{error}}"
+	},
+	"title": "通知設定",
+	"clanNotificationSettings": "クラン通知設定",
+	"notificationOverrides": "通知のオーバーライド",
+	"addChannelOverride": "デフォルト通知設定をオーバーライドするチャンネルを追加",
+	"selectOrCreateOption": "オプションを選択または作成...",
+	"headers": {
+		"channelOrCategory": "チャンネルまたはカテゴリ",
+		"all": "すべて",
+		"mentions": "メンション",
+		"nothing": "なし",
+		"mute": "ミュート"
+	},
+	"menu": {
+		"notification": {
+			"all": "すべて",
+			"onlyMention": "@メンションのみ",
+			"nothing": "なし"
+		}
+	}
+}

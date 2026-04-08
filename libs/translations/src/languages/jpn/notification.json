@@ -1,0 +1,45 @@
+{
+	"headerTitle": "通知",
+	"tabNotify": {
+		"forYou": "あなた向け",
+		"mention": "メンション",
+		"messages": "メッセージ",
+		"topics": "短いディスカッション",
+		"notificationSettings": "通知設定"
+	},
+	"removeNotification": "通知を削除",
+	"nothingHere": "まだここには何もない",
+	"comeBackNotify": "イベントとそれ以上の通知を受け取るために戻ってきてください",
+	"repliedTo": "返信: ",
+	"sender": "送信者: ",
+	"seeWhenAnswersAppear": "答えが表示されたときに見る",
+	"enablePushNotifications": "プッシュ通知を有効化",
+	"permissionAlert": {
+		"turnOnNotifications": "通知をオン",
+		"permissionDescription": "友達や家族と連絡を保つために、Mezonが通知を送信できるようにしてください。",
+		"openSettings": "設定を開く",
+		"features": {
+			"newMessages": {
+				"title": "新しいメッセージの通知を受け取る",
+				"description": "友達があなたにメッセージを送信したときに更新"
+			},
+			"mentions": {
+				"title": "グループであなたがメンションされたことを把握",
+				"description": "誰かがあなたをメンションしても決して見逃さない"
+			},
+			"muteControl": {
+				"title": "特定の会話と会話タイプからの通知をミュート",
+				"description": "受け取る通知を制御"
+			}
+		}
+	},
+	"permissionRequest": {
+		"title": "通知権限",
+		"permissionDenied": "通知へのアクセスが拒否されました。",
+		"cancel": "キャンセル",
+		"ok": "OK"
+	},
+	"andYou": "とあなた",
+	"topicAndYou": "短いディスカッションとあなた",
+	"unknowClan": "あなたはもはやこの会話のメンバーではありません"
+}
