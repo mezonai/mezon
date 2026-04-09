@@ -166,29 +166,34 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 		channel.type !== ChannelType.CHANNEL_TYPE_MEZON_VOICE;
 	const showWhiteDot = isUnReadChannel && !isActive && notVoiceOrAppOrStreamChannel;
 	const hightLightTextChannel = (isActive || isUnReadChannel) && notVoiceOrAppOrStreamChannel;
-	const hashtagWarningFillClass = isActive
-		? '[--hashtag-warning-fill-1:var(--bg-icon-theme-active)]'
-		: '[--hashtag-warning-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-warning-fill-1:var(--bg-icon-theme-active)]';
-	const hashtagLockedFillClass = `w-5 h-5 ${
-		isActive
-			? '[--hashtag-locked-fill-1:var(--bg-icon-theme-active)]'
-			: '[--hashtag-locked-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-locked-fill-1:var(--bg-icon-theme-active)]'
-	}`;
-	const hashtagFillClass = isActive
-		? '[--hashtag-fill-1:var(--bg-icon-theme-active)]'
-		: '[--hashtag-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-fill-1:var(--bg-icon-theme-active)]';
-	const speakerFillClass = isActive
-		? '[--speaker-fill-1:var(--bg-icon-theme-active)] [--speaker-fill-2:var(--bg-icon-theme-active)]'
-		: '[--speaker-fill-1:var(--bg-icon-theme)] [--speaker-fill-2:var(--bg-icon-theme)] group-hover:[--speaker-fill-1:var(--bg-icon-theme-active)] group-hover:[--speaker-fill-2:var(--bg-icon-theme-active)]';
-	const streamFillClass = isActive
-		? '[--stream-fill-1:var(--bg-icon-theme-active)] [--stream-fill-2:var(--bg-icon-theme-active)]'
-		: '[--stream-fill-1:var(--bg-icon-theme)] [--stream-fill-2:var(--bg-icon-theme)] group-hover:[--stream-fill-1:var(--bg-icon-theme-active)] group-hover:[--stream-fill-2:var(--bg-icon-theme-active)]';
-	const appFillClass = isActive
-		? '[--app-fill-1:var(--bg-icon-theme-active)] [--app-fill-2:var(--bg-theme-secounnd)]'
-		: '[--app-fill-1:var(--bg-icon-theme)] [--app-fill-2:var(--bg-theme-secounnd)] group-hover:[--app-fill-1:var(--bg-icon-theme-active)] group-hover:[--app-fill-2:var(--bg-theme-secounnd)]';
-	const privateAppFillClass = isActive
-		? '[--private-app-fill-1:var(--bg-icon-theme-active)] [--private-app-fill-2:var(--bg-icon-theme)]'
-		: '[--private-app-fill-1:var(--bg-icon-theme)] [--private-app-fill-2:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-1:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-2:var(--bg-icon-theme)]';
+	const iconFillClasses = useMemo(() => {
+		const isIconActive = isActive || isUnReadChannel || Boolean(numberNotification);
+		return {
+			hashtagWarning: isIconActive
+				? '[--hashtag-warning-fill-1:var(--bg-icon-theme-active)]'
+				: '[--hashtag-warning-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-warning-fill-1:var(--bg-icon-theme-active)]',
+			hashtagLocked: `w-5 h-5 ${
+				isIconActive
+					? '[--hashtag-locked-fill-1:var(--bg-icon-theme-active)]'
+					: '[--hashtag-locked-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-locked-fill-1:var(--bg-icon-theme-active)]'
+			}`,
+			hashtag: isIconActive
+				? '[--hashtag-fill-1:var(--bg-icon-theme-active)]'
+				: '[--hashtag-fill-1:var(--bg-icon-theme)] group-hover:[--hashtag-fill-1:var(--bg-icon-theme-active)]',
+			speaker: isIconActive
+				? '[--speaker-fill-1:var(--bg-icon-theme-active)] [--speaker-fill-2:var(--bg-icon-theme-active)]'
+				: '[--speaker-fill-1:var(--bg-icon-theme)] [--speaker-fill-2:var(--bg-icon-theme)] group-hover:[--speaker-fill-1:var(--bg-icon-theme-active)] group-hover:[--speaker-fill-2:var(--bg-icon-theme-active)]',
+			stream: isIconActive
+				? '[--stream-fill-1:var(--bg-icon-theme-active)] [--stream-fill-2:var(--bg-icon-theme-active)]'
+				: '[--stream-fill-1:var(--bg-icon-theme)] [--stream-fill-2:var(--bg-icon-theme)] group-hover:[--stream-fill-1:var(--bg-icon-theme-active)] group-hover:[--stream-fill-2:var(--bg-icon-theme-active)]',
+			app: isIconActive
+				? '[--app-fill-1:var(--bg-icon-theme-active)] [--app-fill-2:var(--bg-theme-secounnd)]'
+				: '[--app-fill-1:var(--bg-icon-theme)] [--app-fill-2:var(--bg-theme-secounnd)] group-hover:[--app-fill-1:var(--bg-icon-theme-active)] group-hover:[--app-fill-2:var(--bg-theme-secounnd)]',
+			privateApp: isIconActive
+				? '[--private-app-fill-1:var(--bg-icon-theme-active)] [--private-app-fill-2:var(--bg-icon-theme)]'
+				: '[--private-app-fill-1:var(--bg-icon-theme)] [--private-app-fill-2:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-1:var(--bg-icon-theme-active)] group-hover:[--private-app-fill-2:var(--bg-icon-theme)]'
+		};
+	}, [isActive, isUnReadChannel, numberNotification]);
 
 	const [openProfileItem, closeProfileItem] = useModal(() => {
 		return (
@@ -243,17 +248,20 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 					>
 						<div className={`relative`} data-e2e={generateE2eId('clan_page.channel_list.item.icon')}>
 							{channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && isAgeRestrictedChannel && (
-								<Icons.HashtagWarning className={`w-5 h-5 ${hashtagWarningFillClass}`} defaultFill1="var(--hashtag-warning-fill-1)" />
+								<Icons.HashtagWarning
+									className={`w-5 h-5 ${iconFillClasses.hashtagWarning}`}
+									defaultFill1="var(--hashtag-warning-fill-1)"
+								/>
 							)}
 							{isPrivate === ChannelStatusEnum.isPrivate &&
 								channel.type === ChannelType.CHANNEL_TYPE_CHANNEL &&
 								!isAgeRestrictedChannel && (
-									<Icons.HashtagLocked className={hashtagLockedFillClass} defaultFill1="var(--hashtag-locked-fill-1)" />
+									<Icons.HashtagLocked className={iconFillClasses.hashtagLocked} defaultFill1="var(--hashtag-locked-fill-1)" />
 								)}
 							{channel.type === ChannelType.CHANNEL_TYPE_MEZON_VOICE && (
 								<Icons.Speaker
 									defaultSize="w-5 h-5 "
-									className={speakerFillClass}
+									className={iconFillClasses.speaker}
 									defaultFill1="var(--speaker-fill-1)"
 									defaultFill2="var(--speaker-fill-2)"
 									defaultFill3="var(--speaker-fill-2)"
@@ -262,7 +270,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_CHANNEL && !isAgeRestrictedChannel && (
 								<Icons.Hashtag
 									defaultSize="w-5 h-5 "
-									className={hashtagFillClass}
+									className={iconFillClasses.hashtag}
 									defaultFill1="var(--hashtag-fill-1)"
 									data-e2e={generateE2eId('clan_page.channel_list.item.icon.hashtag')}
 								/>
@@ -270,7 +278,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 							{channel.type === ChannelType.CHANNEL_TYPE_STREAMING && (
 								<Icons.Stream
 									defaultSize="w-5 h-5 "
-									className={streamFillClass}
+									className={iconFillClasses.stream}
 									defaultFill1="var(--stream-fill-1)"
 									defaultFill2="var(--stream-fill-2)"
 									data-e2e={generateE2eId('clan_page.channel_list.item.icon.stream')}
@@ -278,7 +286,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 							)}
 							{isPrivate !== 1 && channel.type === ChannelType.CHANNEL_TYPE_APP && (
 								<Icons.AppChannelIcon
-									className={`w-5 h-5 ${appFillClass}`}
+									className={`w-5 h-5 ${iconFillClasses.app}`}
 									defaultFill1="var(--app-fill-1)"
 									defaultFill2="var(--app-fill-2)"
 									defaultFill3="var(--app-fill-1)"
@@ -287,7 +295,7 @@ const ChannelLinkComponent = ({ clanId, channel, isPrivate, isUnReadChannel, num
 							)}
 							{isPrivate && channel.type === ChannelType.CHANNEL_TYPE_APP ? (
 								<Icons.PrivateAppChannelIcon
-									className={`w-5 h-5 text-[var(--private-app-fill-1)] ${privateAppFillClass}`}
+									className={`w-5 h-5 text-[var(--private-app-fill-1)] ${iconFillClasses.privateApp}`}
 									defaultFill2="var(--private-app-fill-2)"
 									defaultFill3="var(--private-app-fill-2)"
 									defaultFill4="var(--private-app-fill-2)"

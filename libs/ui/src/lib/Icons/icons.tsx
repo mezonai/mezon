@@ -532,7 +532,7 @@ export const ThreadIcon: React.FC<IconProps> = ({ defaultSize = 'w-5 h-5', ...pr
 
 export const CanvasIcon: React.FC<IconProps> = ({
 	defaultSize = 'w-5 h-5 ',
-	defaultFill1 = 'curentColor',
+	defaultFill1 = 'currentColor',
 	defaultFill2 = 'currentColor',
 	...props
 }: IconProps) => {
