@@ -1,0 +1,79 @@
+{
+  "header": {
+    "save": "Sauvegarder"
+  },
+  "toast": {
+    "saveSuccess": "Sauvegarde réussie",
+    "notBlank": "Ne peut pas être vide",
+    "saveError": "Erreur lors de la sauvegarde"
+  },
+  "menu": {
+    "serverName": {
+      "title": "Nom du clan",
+      "errorMessage": "Veuillez entrer un nom de clan valide (maximum 64 caractères, uniquement des lettres, chiffres, _ ou -).",
+      "duplicateNameMessage": "Ce nom de clan existe déjà. Veuillez choisir un autre nom.",
+      "permissionDenied": "Vous n'avez pas la permission de modifier l'image de fond du clan"
+    },
+    "inactive": {
+      "title": "Paramètres d'inactivité",
+      "description": "Déplace automatiquement les membres vers ce canal et coupe leur micro lorsqu'ils sont inactifs pendant une durée spécifiée. Cette fonctionnalité ne s'applique pas à la version web.",
+      "inactiveChannel": "Canal d'inactivité",
+      "inactiveTimeout": "Délai d'inactivité"
+    },
+    "systemMessage": {
+      "title": "Paramètres des messages système",
+      "description": "Ceci est le canal où nous envoyons les notifications d'événements système. Vous pouvez les désactiver à tout moment.",
+      "channel": "Canal",
+      "selectChannel": "Sélectionner le canal de notification",
+      "channelDescription": "Ceci est le canal où les messages système seront envoyés",
+      "welcomeRandom": "Envoyer un message de bienvenue aléatoire lorsqu'une personne rejoint ce clan",
+      "welcomeSticker": "Demander aux membres de répondre aux messages de bienvenue avec un autocollant",
+      "boostMessage": "Envoyer un message lorsqu'une personne booste ce clan",
+      "setupTips": "Envoyer des conseils utiles pour configurer le clan",
+      "hideAuditLog": "Envoyer le journal lorsqu'une action est effectuée avec le clan",
+      "anonymousTitle": "Empêcher le mode anonyme",
+      "anonymousDescription": "Empêcher les utilisateurs d'utiliser le mode anonyme"
+    },
+    "deleteServer": {
+      "title": "Supprimer le clan",
+      "delete": "Supprimer le clan"
+    }
+  },
+  "fields": {
+    "defaultNotification": {
+      "title": "Paramètres de notification par défaut",
+      "description": "Ce paramètre détermine si les membres qui n'ont pas configuré explicitement leurs paramètres de notification recevront des notifications pour tous les messages envoyés dans ce clan. Nous recommandons aux communautés de clan de ne définir les notifications que pour @mention.",
+      "allMessages": "Tous les messages",
+      "onlyMentions": "Seulement @mention"
+    }
+  },
+  "permissions": {
+    "toast": {
+      "kickMemberSuccess": "Membre expulsé avec succès",
+      "kickMemberFailed": "Impossible d'expulser le membre",
+      "removeMemberThreadSuccess": "Membre supprimé avec succès",
+      "removeMemberThreadFailed": "Impossible de supprimer le membre",
+      "transferOwnershipSuccess": "Propriété transférée avec succès",
+      "transferOwnershipFailed": "Échec du transfert de propriété"
+    }
+  },
+  "action": {
+    "kick": "Expulser",
+    "removeFromThread": "Supprimer du fil",
+    "manage": "Gérer",
+    "transferOwnership": "Transférer la propriété",
+    "ban": "Bannir",
+    "unban": "Débannir"
+  },
+  "threadRemoveModal": {
+    "title": "Supprimer du fil ?",
+    "description": "Êtes-vous sûr de vouloir supprimer {{username}} de ce fil ?",
+    "remove": "Supprimer",
+    "cancel": "Annuler"
+  },
+  "modal": {
+    "kickUserClan": {
+      "title": "Êtes-vous sûr ?"
+    }
+  }
+}

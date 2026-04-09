@@ -1,0 +1,72 @@
+{
+	"sections": {
+		"section1": {
+			"title": "Détendez-vous Avec Vos Amis, Rassemblez-vous Dans Un Canal Vocal",
+			"description": "Mezon est formidable pour que vos amis se réunissent et passent du temps ensemble, que ce soit pendant une pause café ou en soirée tardive."
+		},
+		"section2": {
+			"title": "Connectez-vous Facilement, Discutez Fluidement Avec Un Canal Vocal",
+			"description": "Vous pouvez facilement vous connecter à vos amis en ouvrant un canal vocal – et tout cela gratuitement à vie. Plus vous utilisez Mezon, plus vous réaliserez à quel point il est facile de rester en contact toute la journée."
+		},
+		"section3": {
+			"title": "Streaming Et Notifications Pour Que Tout Le Monde Suive",
+			"description": "Mises à jour et streaming en direct au plus vite. Rejoignez le streaming en direct à tout moment ou réagissez aux nouvelles importantes depuis le canal ou le groupe."
+		},
+		"section4": {
+			"title": "L'Application Canal Rend Votre Vie Plus Facile",
+			"description": "L'application Canal vous tient au courant de tout – des notifications, des notes, des calendriers à la gestion des tâches. Mezon offre un système d'application unique avec de nombreuses options adaptées à tous les styles de vie."
+		},
+		"section5": {
+			"title": "Un Bot Hyper Intelligent Pour Tout Le Clan",
+			"description": "Le bot vous aide à accomplir vos tâches rapidement et efficacement, de la gestion des calendriers aux réponses rapides. Mezon Bot est construit pour servir tout le clan, rendant le travail plus facile et mieux organisé."
+		}
+	},
+	"discover": {
+		"title": "Découvrez Plus De Fonctionnalités Mezon",
+		"description": "Découvrez les autres fonctionnalités Mezon. Discutez avec vos amis, Canaux Vocaux, Streaming, Applications, Bots... et bien plus encore",
+		"viewAll": "Voir Tout",
+		"buttonText": "Découvrir",
+		"slides": [
+			{
+				"title": "Mettez Les Relations En Premier – Connectez Votre Équipe Via Clan, Événements, Chat & Vocal",
+				"description": "Maintenez les connexions avec ceux qui comptent le plus via des conversations"
+			},
+			{
+				"title": "Créez Une Culture – Créez Un Environnement De Travail Avec Votre Propre Empreinte",
+				"description": "Créez une culture de travail unique avec des canaux et intégrations personnalisés"
+			},
+			{
+				"title": "Travaillez À Tout Moment, N'importe Où, Sans Limites",
+				"description": "Travaillez de manière transparente sur tous les appareils et emplacements"
+			},
+			{
+				"title": "Protégez La Vie Privée – Messagerie Anonyme",
+				"description": "Votre vie privée est protégée avec un chiffrement de bout en bout"
+			}
+		]
+	},
+	"faq": {
+		"title": "Besoin d'aide supplémentaire ?",
+		"seeAll": "Voir Toutes Les Questions",
+		"learnMore": "En savoir plus",
+		"questions": [
+			{
+				"question": "Comment Ajouter Des Amis Sur Mezon ?",
+				"answer": "Pour ajouter des amis sur Mezon, allez à la page Amis et saisissez le Nom d'Utilisateur Mezon dans la section 'Ajouter un Ami'. Vous pouvez gérer votre liste d'amis avec des filtres comme Tous, En Ligne, En Attente (demandes d'ami) et Bloqués (utilisateurs bloqués). Vous pouvez également voir le statut en direct de vos amis en temps réel et voir ce qu'ils font via la section Activité, qui affiche s'ils codent, écoutent de la musique ou jouent."
+			},
+			{
+				"question": "Quelles Fonctionnalités De Messagerie Mezon Fournit-Il ?",
+				"answer": "Mezon fournit des fonctionnalités de messagerie complètes incluant : envoyer du texte, émojis, autocollants, images, vidéos, fichiers et enregistrements audio ; épinglez des messages importants pour un accès rapide ; créez des petits groupes de chat avec jusqu'à 10 membres ; passez des appels vocaux et vidéo 1-1 ou de groupe en qualité HD ; partagez l'écran pendant un appel ; et recherchez des messages. Toutes les fonctionnalités de communication sont entièrement gratuites et sans limite."
+			},
+			{
+				"question": "Comment Fonctionnent Les Appels Vocaux Et Vidéo Sur Mezon ?",
+				"answer": "Mezon vous permet de passer des appels vocaux et vidéo 1-1 ou de petits groupes directement dans l'application. Pendant l'appel, vous pouvez activer/désactiver le micro ou la caméra à tout moment, partager l'écran et profiter d'une connexion stable avec vidéo HD et son à faible latence. Quand quelqu'un vous appelle, votre téléphone ou ordinateur sonne comme un appel normal. Tous les appels sont gratuits et utilisent votre connexion Internet."
+			},
+			{
+				"question": "La Communication Sur Mezon Est-Elle Privée Et Sécurisée ?",
+				"answer": "Oui, Mezon place toujours la vie privée et la sécurité au premier plan. Vous ne pouvez envoyer de messages qu'à des personnes qui sont vos amis ou qui participent au moins à un même Clan que vous, aidant à empêcher le spam et garantissant un espace privé. Les messages sont synchronisés en temps réel sur Web, Bureau et Mobile, vous aidant à ne rien manquer. Quand votre groupe devient plus dynamique, vous pouvez passer à un Clan pour débloquer des fonctionnalités supplémentaires comme des canaux multiples et des permissions d'administrateur."
+			}
+		]
+	},
+	"download": "Télécharger"
+}

@@ -1,0 +1,42 @@
+{
+	"btn": {
+		"upload": "Télécharger un autocollant",
+		"delete": "Supprimer"
+	},
+	"modal": {
+		"uploadAFile": "Télécharger un fichier",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Le fichier doit être PNG ou GIF, maximum 512 Ko",
+		"preview": "Aperçu",
+		"file": "Fichier",
+		"thisCannotBeEdited": "Non modifiable",
+		"browse": "Parcourir",
+		"chooseAFile": "Choisir un fichier",
+		"stickerName": "Nom de l'autocollant",
+		"exCatHug": "Ex: chat_câlin",
+		"thisIsForSale": "Ceci est en vente",
+		"neverMind": "Bof",
+		"characters": "Le nom doit contenir entre 3 et 64 caractères"
+	},
+	"content": {
+		"description": "Ajoutez jusqu'à 250 autocollants personnalisés que tout le monde peut utiliser dans ce clan.",
+		"requirements": "Exigences de téléchargement",
+		"reqType": "•  Peut être une image statique (PNG) ou animée (GIF).",
+		"reqDim": "•  Doit être exactement 320 x 320 pixels.",
+		"reqSize": "•  Ne pas dépasser 512 Ko.",
+		"available": "{{left}} EMPLACEMENTS D'AUTOCOLLANTS DISPONIBLES"
+	},
+	"toast": {
+		"errorUpdating": "Erreur de mise à jour",
+		"errorSizeLimit": "La taille de l'image dépasse 512 Ko",
+		"validateName": "La longueur doit être comprise entre {{min}} et {{max}} caractères. Seules les lettres, chiffres, _ et - sont autorisés"
+	},
+	"empty": {
+		"tip": "ASTUCE",
+		"voiceSticker": {
+			"title": "Aucun effet sonore pour le moment"
+		},
+		"sticker": {
+			"title": "Aucun autocollant pour le moment"
+		}
+	}
+}

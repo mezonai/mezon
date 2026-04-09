@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "Aperçu de l'activité",
+		"timePeriod": "Période",
+		"totalActiveUsers": "Total des utilisateurs actifs",
+		"totalActiveUsersTooltip": "Nombre d'utilisateurs uniques ayant été actifs au moins une fois",
+		"totalActiveChannels": "Total des canaux actifs",
+		"totalActiveChannelsTooltip": "Nombre de canaux uniques ayant été actifs au moins une fois",
+		"totalMessages": "Total des messages",
+		"totalMessagesTooltip": "Nombre total de messages envoyés pendant la période sélectionnée"
+	},
+	"pagination": {
+		"showing": "Affichage",
+		"of": "sur",
+		"clans": "clans",
+		"previous": "Précédent",
+		"next": "Suivant"
+	},
+	"chart": {
+		"loadingChartData": "Chargement des données du graphique...",
+		"metricsAvailableForOwnersOnly": "Les métriques sont réservées aux propriétaires de clan."
+	},
+	"table": {
+		"detailedActivityData": "Données d'activité détaillées",
+		"channelsActivityData": "Données d'activité des canaux",
+		"userActivityData": "Données d'activité des utilisateurs",
+		"exportCSV": "Exporter CSV",
+		"exporting": "Exportation en cours...",
+		"includedInExport": "Cette colonne sera incluse dans le fichier CSV exporté",
+		"notIncludedInExport": "Cette colonne ne sera pas incluse dans le fichier CSV exporté",
+		"clanName": "Nom du Clan",
+		"channelName": "Nom du canal",
+		"userName": "Nom de l'utilisateur",
+		"activeUsers": "Utilisateurs actifs",
+		"activeChannels": "Canaux actifs",
+		"messages": "Messages",
+		"noOwnedClans": "Vous ne possédez aucun clan pour créer une analyse.",
+		"noActiveChannels": "Aucun canal actif présent dans ce clan pour le moment.",
+		"noActiveUsers": "Aucun utilisateur actif présent dans ce canal pour le moment.",
+		"selectColumnTooltip": "Sélectionnez/désélectionnez pour exporter le CSV par cette colonne",
+		"selectAtLeastOneColumn": "Vous devez sélectionner au moins 1 colonne pour exporter le CSV"
+	},
+	"page": {
+		"backToOverview": "Retour à l'aperçu de l'utilisation du Clan",
+		"clanUsageStatisticsReport": "Rapport de Statistiques d'Utilisation du Clan",
+		"dashboardReport": "Tableau de bord",
+		"report": "Rapport"
+	},
+	"state": {
+		"loadingData": "Chargement des données...",
+		"noDataFound": "Aucune donnée trouvée",
+		"noDataDescription": "Aucune donnée d'utilisation pour la période sélectionnée."
+	},
+	"reportControls": {
+		"timePeriod": "Période",
+		"rangeType": "Type de plage",
+		"startDate": "Date de début",
+		"endDate": "Date de fin",
+		"last7Days": "7 derniers jours",
+		"last30Days": "30 derniers jours",
+		"last90Days": "90 derniers jours",
+		"customDateRange": "Plage de dates personnalisée",
+		"daily": "Quotidien",
+		"weekly": "Hebdomadaire",
+		"monthly": "Mensuel",
+		"runReport": "Exécuter le rapport",
+		"reset": "Réinitialiser"
+	},
+	"sortIcon": {
+		"tooltip": "Trier par ordre croissant/décroissant selon cette colonne",
+		"sortedAsc": "Trié croissant",
+		"sortedDesc": "Trié décroissant"
+	}
+}

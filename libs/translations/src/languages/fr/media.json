@@ -1,0 +1,16 @@
+{
+	"emptyDescription": "Nous avons cherché très loin. Malheureusement, aucun résultat n'a été trouvé",
+	"video": {
+		"error": {
+			"title": "Vidéo non disponible",
+			"cannotPlay": "Impossible de lire la vidéo",
+			"loadingAborted": "Chargement de la vidéo annulé",
+			"networkError": "Erreur réseau lors du chargement de la vidéo",
+			"codecNotSupported": "Codec vidéo non pris en charge sur cette plateforme",
+			"codecNotSupportedElectron": "Codec vidéo non pris en charge sur cette plateforme. Essayez de télécharger la vidéo pour la lire avec le lecteur système.",
+			"formatNotSupported": "Format vidéo non pris en charge",
+			"downloadButton": "Télécharger la vidéo",
+			"browserNotSupported": "Votre navigateur ne prend pas en charge la balise vidéo."
+		}
+	}
+}

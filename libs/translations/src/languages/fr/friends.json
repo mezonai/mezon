@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "Demandes d'ami",
+		"received": "Reçues",
+		"sent": "Envoyées",
+		"emptyReceived": {
+			"title": "Aucune demande d'ami reçue",
+			"description": "Ici, vous verrez toutes les demandes d'ami que les gens vous ont envoyées."
+		},
+		"emptySent": {
+			"title": "Aucune demande d'ami envoyée",
+			"description": "Ici, vous verrez toutes les demandes d'ami que vous avez envoyées à d'autres personnes."
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "Demande d'ami reçue",
+		"findYourFriend": "Trouver des amis",
+		"addByUserName": "Ajouter par nom d'utilisateur ou numéro de téléphone",
+		"addByUsername": "Ajouter par {{username}}",
+		"searchUsernamePlaceholder": "Entrez le nom d'utilisateur ou le numéro de téléphone",
+		"whoYouWantToAddFriend": "Qui voulez-vous ajouter comme ami ?",
+		"byTheWay": "Au fait, votre nom d'utilisateur est",
+		"sendRequestButton": "Envoyer une demande d'ami",
+		"addFriendToast": "Demande d'ami envoyée"
+	},
+	"friends": "Amis",
+	"noFriendsResultsFound": "Aucun résultat d'ami trouvé",
+	"toast": {
+		"sendAddFriendSuccess": "Demande d'ami envoyée avec succès !",
+		"acceptAddFriendSuccess": "Demande d'ami acceptée !",
+		"sendAddFriendFail": "Hum, une erreur s'est produite. Veuillez vérifier si le nom d'utilisateur est correct.",
+		"somethingWentWrong": "Une erreur s'est produite",
+		"friendRequestAlreadySent": "Demande d'ami déjà envoyée, en attente d'acceptation."
+	},
+	"you": "vous"
+}

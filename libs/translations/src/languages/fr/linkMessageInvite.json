@@ -1,0 +1,18 @@
+{
+	"title": "INVITER À REJOINDRE LE CLAN",
+	"offline": "hors ligne",
+	"online": "en ligne",
+	"join": "Rejoindre",
+	"joining": "Rejoindre...",
+	"goToClan": "Aller au Clan",
+	"unknownClan": "Clan inconnu",
+	"memberCount": "{{count}} Membre",
+	"memberCount_plural": "{{count}} Membres",
+	"failedToJoin": "Impossible de rejoindre ce clan.",
+	"inviteTo": "INVITER À REJOINDRE {{clanName}}",
+	"noThanks": "Non, merci",
+	"invalidInvite": {
+		"title": "Invitation invalide",
+		"message": "Essayez d'envoyer une autre invitation !"
+	}
+}

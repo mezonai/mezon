@@ -1,0 +1,31 @@
+{
+	"muteClan": "Couper les notifications du clan masquera les indicateurs de messages non lus et n'affichera pas les notifications, sauf si vous êtes mentionné",
+	"notifySettingOption": {
+		"title": "Paramètres de notification du clan",
+		"allMessage": "Tous les messages",
+		"onlyMentions": "Seulement @mention",
+		"nothing": "Rien"
+	},
+	"suppressOption": {
+		"suppressEveryone": "Couper les notifications @everyone et @here",
+		"suppressAllRole": "Couper les notifications @mention tous les rôles",
+		"suppressHighlights": "Couper les notifications de points saillants",
+		"subText": "Les points saillants fournissent des mises à jour occasionnelles lorsque vos amis discutent dans le clan achat et plus encore."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "Couper les notifications des nouveaux événements",
+		"mobilePushNotifications": "Notifications push mobiles"
+	},
+	"notificationOverrides": {
+		"title": "Réécriture des notifications",
+		"addChannelsAllCategory": "Ajouter tous les canaux à la catégorie"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "Vous ne recevrez pas de notifications des canaux silencieux. Ce paramètre s'applique sur tous vos appareils.",
+		"youHaveMuted": "Vous avez coupé les notifications de ce canal jusqu'au"
+	},
+	"clanNotificationBS": {
+		"title": "Couper les notifications de ce clan"
+	},
+	"resetOverrides": "Réinitialiser les réécritures"
+}

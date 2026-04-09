@@ -1,0 +1,9 @@
+{
+	"newPost": "Créer un nouveau message",
+	"titlePlaceholder": "Entrez le titre...",
+	"descriptionPlaceholder": "Entrez la description (facultatif)...",
+	"addMedia": "Ajouter des médias",
+	"post": "Publier",
+	"noMessagesYet": "Aucun message pour le moment",
+	"beTheFirst": "Soyez le premier à envoyer un message dans ce canal"
+}

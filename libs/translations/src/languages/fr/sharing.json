@@ -1,0 +1,16 @@
+{
+	"filterOptions": "Options de filtrage",
+	"users": "Utilisateurs",
+	"channels": "Canaux",
+	"all": "Tous",
+	"selectChannelPlaceholder": "Sélectionnez un canal ou un utilisateur...",
+	"selectChannel": "Sélectionner un canal",
+	"selectUser": "Sélectionner un utilisateur",
+	"share": "Partager",
+	"suggestions": "Suggestions",
+	"addCommentPlaceholder": "Ajouter un commentaire (facultatif)",
+	"fileTooLarge": "Fichier trop volumineux",
+	"fileSizeExceeded": "{{fileType}} ne peut pas dépasser {{maxSize}} Mo !",
+	"bannedChannel": "Vous êtes banni du canal {{channelName}}.",
+	"empty": "Données vides"
+}

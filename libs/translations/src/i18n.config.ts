@@ -3,6 +3,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import enTranslations from './languages/en/index';
 import esTranslations from './languages/es/index';
+import frTranslations from './languages/fr/index';
 import itTranslations from './languages/it/index';
 import jpnTranslations from './languages/jpn/index';
 import ptTranslations from './languages/pt/index';
@@ -26,6 +27,7 @@ const timezoneDetector = {
 				storedLang === 'tt' ||
 				storedLang === 'pt' ||
 				storedLang === 'jpn' ||
+				storedLang === 'fr' ||
 				storedLang === 'it')
 		) {
 			return undefined;
@@ -59,12 +61,26 @@ const timezoneDetector = {
 			if (languageCode.startsWith('jpn')) {
 				return 'jpn';
 			}
+			if (languageCode.startsWith('fr')) {
+				return 'fr';
+			}
 		}
 
 		return undefined;
 	},
 	cacheUserLanguage(lng: string) {
-		if (lng && (lng === 'vi' || lng === 'en' || lng === 'ru' || lng === 'es' || lng === 'tt' || lng === 'pt' || lng === 'it' || lng === 'jpn')) {
+		if (
+			lng &&
+			(lng === 'vi' ||
+				lng === 'en' ||
+				lng === 'ru' ||
+				lng === 'es' ||
+				lng === 'tt' ||
+				lng === 'pt' ||
+				lng === 'it' ||
+				lng === 'jpn' ||
+				lng === 'fr')
+		) {
 			localStorage.setItem('i18nextLng', lng);
 		}
 	}
@@ -78,7 +94,7 @@ i18n.use(languageDetector)
 	.init({
 		defaultNS,
 		fallbackLng: 'en',
-		supportedLngs: ['en', 'vi', 'ru', 'es', 'tt', 'pt', 'it', 'jpn'],
+		supportedLngs: ['en', 'vi', 'ru', 'es', 'tt', 'pt', 'it', 'jpn', 'fr'],
 		resources: {
 			en: enTranslations,
 			vi: viTranslations,
@@ -87,7 +103,8 @@ i18n.use(languageDetector)
 			tt: ttTranslations,
 			pt: ptTranslations,
 			it: itTranslations,
-			jpn: jpnTranslations
+			jpn: jpnTranslations,
+			fr: frTranslations
 		},
 		detection: {
 			order: ['timezone', 'localStorage', 'navigator', 'htmlTag'],

@@ -1,0 +1,40 @@
+{
+	"modal": {
+		"uploadAFile": "Télécharger un fichier",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "Le fichier doit être PNG ou GIF, maximum 256Ko",
+		"preview": "Aperçu",
+		"file": "Fichier",
+		"thisCannotBeEdited": "Non modifiable",
+		"browse": "Parcourir",
+		"chooseAFile": "Choisir un fichier",
+		"stickerName": "Nom de l'emoji",
+		"exCatHug": "Ex: chat_câlin",
+		"thisIsForSale": "Ceci est en vente",
+		"neverMind": "Bof",
+		"characters": "Le nom doit contenir entre 3 et 64 caractères"
+	},
+	"header": {
+		"save": "Sauvegarder"
+	},
+	"toast": {
+		"saveSuccess": "Sauvegarde réussie",
+		"reject": "Rejeté",
+		"errorSizeLimit": "La taille de l'image dépasse 256 Ko",
+		"validateName": "La longueur doit être comprise entre {{min}} et {{max}} caractères. Seules les lettres, chiffres, _ et - sont autorisés"
+	},
+	"button": {
+		"upload": "Télécharger un emoji"
+	},
+	"description": {
+		"descriptions": "Ajoutez des émojis personnalisés que tous les utilisateurs du clan peuvent utiliser. Tous les membres de Mezon peuvent utiliser les émojis GIF animés.",
+		"requirements": "EXIGENCES DE TÉLÉCHARGEMENT",
+		"requireList": "• Type de fichier: JPEG, PNG, GIF.\\n• Taille recommandée: 256 Ko.\\n• Taille d'image recommandée: 128x128.\\n• Nommer: Le nom de l'emoji doit comporter au moins 3 caractères et ne contenir que des caractères alphabétiques, numériques et des underscores."
+	},
+	"emojiList": {
+		"slotsDetails": "LISTE DES ÉMOJIS",
+		"delete": "Supprimer"
+	},
+	"image": "IMAGE",
+	"name": "NOM",
+	"uploadedBy": "TÉLÉCHARGÉ PAR"
+}

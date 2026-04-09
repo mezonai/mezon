@@ -1,0 +1,7 @@
+{
+	"joinStreamingRoomBS": {
+		"stream": "Salle de streaming",
+		"joinStream": "Rejoindre le streaming"
+	},
+	"noDisplay": "Ne pas afficher le streaming"
+}

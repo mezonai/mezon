@@ -1,0 +1,225 @@
+{
+	"userAction": {
+		"transferFunds": "Transférer des fonds",
+		"sendMessage": "Envoyer un message",
+		"voiceCall": "Appel vocal",
+		"videoCall": "Appel vidéo",
+		"addFriend": "Ajouter un ami",
+		"pending": "En attente",
+		"removeFriend": "Supprimer l'ami"
+	},
+	"aboutMe": {
+		"headerTitle": "À PROPOS DE MOI",
+		"roles": {
+			"headerTitle": "RÔLES"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "Expulser le membre",
+		"kickFromServer": "Expulser {{username}} du clan",
+		"description": "Êtes-vous sûr de vouloir expulser {{username}} du clan ? Il pourra rejoindre avec une nouvelle invitation.",
+		"reasonKick": "Raison de l'expulsion",
+		"buttonName": "Expulser"
+	},
+	"transferOwnershipModal": {
+		"warning": "Ceci transférera la propriété de <highlightClan>{{clanName}}</highlightClan> à <highlightUser>{{username}}</highlightUser>. Cette action ne peut pas être annulée !",
+		"sectionTitle": "Transférer la propriété",
+		"acknowledgment": "Je confirme qu'en transférant la propriété de ce clan à {{username}}, il lui appartiendra désormais.",
+		"transferButton": "Transférer",
+		"confirmTitle": "Transférer la propriété ?",
+		"confirmDescription": "Êtes-vous sûr de vouloir transférer la propriété de {{clanName}} à {{username}} ? Cette action ne peut pas être annulée.",
+		"confirmButton": "Transférer"
+	},
+	"pendingContent": {
+		"block": "Bloquer",
+		"unblock": "Débloquer",
+		"reportUserProfile": "Signaler le profil utilisateur",
+		"acceptFriend": "Accepter l'ami",
+		"rejectFriend": "Rejeter la demande d'ami",
+		"cancelFriendRequest": "Annuler la demande d'ami",
+		"copyUsername": "Copier le nom d'utilisateur",
+		"copiedUserName": "{{username}} copié",
+		"removeFriend": "Supprimer l'ami",
+		"viewFullProfile": "Voir le profil complet"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "Supprimer du groupe",
+			"removeSuccess": "Membre supprimé du groupe",
+			"removeFailed": "Échec de la suppression du membre du groupe"
+		},
+		"mezonMemberSince": "Membre Mezon depuis"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "Utilisateur bloqué avec succès",
+			"error": "Impossible de bloquer l'utilisateur"
+		},
+		"unblockUser": {
+			"success": "Utilisateur débloqué avec succès",
+			"error": "Impossible de débloquer l'utilisateur"
+		}
+	},
+	"incomingFriendRequest": "DEMANDE D'AMI EN ATTENTE",
+	"sendAddFriendSuccess": "Demande d'ami envoyée",
+	"accept": "Accepter",
+	"ignore": "Ignorer",
+	"labels": {
+		"aboutMe": "À propos de moi",
+		"memberSince": "Membre depuis",
+		"activity": "Activité",
+		"unknownUser": "Utilisateur inconnu",
+		"anonymous": "Anonyme",
+		"editProfile": "Modifier le profil",
+		"note": "NOTE",
+		"addNote": "Cliquez pour ajouter une note",
+		"showLess": "Afficher moins",
+		"addRole": "Ajouter un rôle",
+		"addRoles": "Ajouter des rôles",
+		"removeRole": "Supprimer le rôle",
+		"role": "Rôle",
+		"nope": "Aucun !",
+		"typoError": "Avez-vous fait une erreur de frappe ?",
+		"userNotFound": "L'utilisateur n'est pas dans le Clan"
+	},
+	"placeholders": {
+		"messageUser": "Envoyer un message à @{{username}}"
+	},
+	"statusProfile": {
+		"balance": "Solde",
+		"transferFunds": "Transférer des fonds",
+		"editCustomStatus": "Modifier le statut personnalisé",
+		"setCustomStatus": "Définir un statut personnalisé",
+		"manageAccounts": "Gérer les comptes",
+		"switchAccounts": "Changer de compte",
+		"copyUserId": "Copier l'ID utilisateur",
+		"statusOptions": {
+			"online": "En ligne",
+			"idle": "Absent",
+			"doNotDisturb": "Ne pas déranger",
+			"invisible": "Invisible"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "Vous ne recevrez pas de notifications sur votre ordinateur",
+			"invisible": "Vous afficherez un statut hors ligne"
+		},
+		"statusDuration": {
+			"for30Minutes": "30 minutes",
+			"for1Hour": "1 heure",
+			"for3Hours": "3 heures",
+			"for8Hours": "8 heures",
+			"for24Hours": "24 heures",
+			"forever": "À jamais"
+		},
+		"addAccountModal": {
+			"email": "Email",
+			"password": "Mot de passe",
+			"emailPlaceholder": "Entrez votre email",
+			"passwordPlaceholder": "Entrez votre mot de passe",
+			"cancel": "Annuler",
+			"logIn": "Se connecter"
+		},
+		"sendTokenModal": {
+			"title": "Envoyer des Tokens",
+			"description": "Transférez des tokens à un autre utilisateur",
+			"fields": {
+				"to": "À",
+				"amount": "Quantité",
+				"note": "Note (facultatif)"
+			},
+			"placeholders": {
+				"searchUsers": "Rechercher des utilisateurs...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "Ajouter une note..."
+			},
+			"noUsersFound": "Aucun utilisateur trouvé",
+			"currency": "VND",
+			"buttons": {
+				"cancel": "Annuler",
+				"sendTokens": "Envoyer des Tokens"
+			},
+			"errors": {
+				"exceedWalletBalance": "Le montant dépasse le solde du portefeuille",
+				"maximumLimit": "Maximum 100 000 000"
+			}
+		},
+		"historyTransaction": {
+			"title": "Historique des transactions",
+			"subtitle": "Voir toutes vos activités de transaction",
+			"tabs": {
+				"all": "Toutes les transactions",
+				"sent": "Transactions envoyées",
+				"received": "Transactions reçues"
+			},
+			"transactionTypes": {
+				"sent": "Envoyé",
+				"received": "Reçu"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "Aucune transaction trouvée",
+					"description": "Vous n'avez effectué aucune transaction. Votre historique de transactions apparaîtra ici lorsque vous commencerez à envoyer ou recevoir des tokens."
+				},
+				"noFilteredTransactions": {
+					"title": "Aucune transaction trouvée",
+					"description": "Aucune transaction trouvée pour le filtre sélectionné. Veuillez essayer un autre filtre ou vérifier à nouveau plus tard."
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "Transaction #"
+			},
+			"loading": {
+				"fetching": "Chargement des transactions...",
+				"fetchingMore": "Chargement de transactions supplémentaires...",
+				"scrollMore": "Défilez vers le bas pour voir plus",
+				"allLoaded": "Vous avez chargé toutes les {{count}} transactions"
+			}
+		},
+		"customStatusModal": {
+			"title": "Définir un statut personnalisé",
+			"whatsCookin": "Quoi de neuf, {{name}}",
+			"placeholder": "Que pensez-vous ?",
+			"clearAfter": "Effacer après",
+			"timeOptions": {
+				"today": "Aujourd'hui",
+				"fourHours": "4 heures",
+				"oneHour": "1 heure",
+				"thirtyMinutes": "30 minutes",
+				"dontClear": "Ne pas effacer"
+			},
+			"buttons": {
+				"cancel": "Annuler",
+				"save": "Sauvegarder"
+			}
+		}
+	},
+	"channelVoiceSettings": "Paramètres du canal vocal",
+	"muteVoice": "Couper le son",
+	"kickVoice": "Supprimer du canal vocal",
+	"voiceInfo": {
+		"inVoice": "Dans le canal vocal",
+		"joinVoice": "Rejoindre la voix"
+	},
+	"ban": {
+		"title": "Bannir l'utilisateur",
+		"unbanTitle": "Débannir l'utilisateur",
+		"content": "Bannir l'utilisateur « {{userName}} » ?",
+		"banButton": "Bannir",
+		"unBanButton": "Débannir",
+		"reasonBan": "Raison du bannissement",
+		"unBanDescription": "Voulez-vous débannir l'utilisateur « {{userName}} » ?",
+		"time": {
+			"title": "Période",
+			"tenMinutes": "10 minutes",
+			"thirtyMinutes": "30 minutes",
+			"oneHour": "1 heure",
+			"sixHours": "6 heures",
+			"twelveHours": "12 heures",
+			"oneDay": "1 jour",
+			"threeDays": "3 jours"
+		},
+		"banList": "Liste des bannis",
+		"search": "Rechercher des utilisateurs bannis",
+		"banListEmpty": "Aucun utilisateur banni trouvé"
+	}
+}
