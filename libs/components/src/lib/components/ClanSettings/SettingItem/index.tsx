@@ -23,8 +23,8 @@ const SettingItem = ({ name, active = false, onClick, handleMenu, setting }: Set
 	};
 
 	const baseClasses =
-		'relative w-full py-2 px-[10px] mb-1 text-[16px] font-medium rounded text-left transition-colors flex items-center justify-between gap-2';
-	const activeClasses = active ? 'bg-item-theme text-theme-primary-active' : 'hover:bg-item-hover';
+		'relative w-full py-2 px-[10px] mb-1 text-[16px] font-medium rounded text-left transition-colors flex items-center justify-between gap-2 bg-item-hover';
+	const activeClasses = active ? 'bg-item-theme text-theme-primary-active' : '';
 
 	return (
 		<button className={`${baseClasses} ${activeClasses}`} onClick={handleItemClick} data-e2e={generateE2eId('clan_page.settings.sidebar.item')}>

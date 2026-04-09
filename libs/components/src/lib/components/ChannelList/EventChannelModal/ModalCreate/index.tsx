@@ -117,6 +117,9 @@ const ModalCreate = (props: ModalCreateProps) => {
 	}, [isExistChannelVoice, isExistAddress, isExistPrivateEvent, option]);
 
 	const handleNext = (currentModal: number) => {
+		if (currentModal === EventTabIndex.EVENTINFO && !contentSubmit.topic?.trim()) {
+			return;
+		}
 		if (buttonWork && currentModal < tabs.length - 1 && !errorTime && !errorOption) {
 			setCurrentModal(currentModal + 1);
 		}
@@ -139,7 +142,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 			return;
 		}
 
-		if (currentModal === EventTabIndex.LOCATION && number === EventTabIndex.REVIEW && !contentSubmit.topic) {
+		if (currentModal === EventTabIndex.LOCATION && number === EventTabIndex.REVIEW && !contentSubmit.topic?.trim()) {
 			return;
 		}
 
@@ -308,7 +311,7 @@ const ModalCreate = (props: ModalCreateProps) => {
 			setButtonWork(true);
 		}
 
-		if (contentSubmit.topic) {
+		if (contentSubmit.topic?.trim()) {
 			setButtonWork(true);
 		}
 	}, [currentModal, contentSubmit.topic]);
@@ -416,9 +419,27 @@ const ModalCreate = (props: ModalCreateProps) => {
 						)
 					) : (
 						<button
-							className={`px-4 py-2 rounded font-semibold text-white bg-primary ${!buttonWork || errorTime || errorOption || !option || errorTopic || locationTooLong ? 'bg-opacity-50 cursor-not-allowed' : ''}`}
+							className={`px-4 py-2 rounded font-semibold text-white bg-primary ${
+								!buttonWork ||
+								errorTime ||
+								errorOption ||
+								!option ||
+								errorTopic ||
+								locationTooLong ||
+								(currentModal === EventTabIndex.EVENTINFO && !contentSubmit.topic)
+									? 'bg-opacity-50 cursor-not-allowed'
+									: ''
+							}`}
 							onClick={() => handleNext(currentModal)}
-							disabled={!option || !buttonWork || errorTime || errorOption || errorTopic || locationTooLong}
+							disabled={
+								!option ||
+								!buttonWork ||
+								errorTime ||
+								errorOption ||
+								errorTopic ||
+								locationTooLong ||
+								(currentModal === EventTabIndex.EVENTINFO && !contentSubmit.topic)
+							}
 							data-e2e={generateE2eId('clan_page.modal.create_event.next')}
 						>
 							{t('actions.next')}

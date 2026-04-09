@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "アクティビティ概要",
+		"timePeriod": "期間",
+		"totalActiveUsers": "アクティブユーザーの合計",
+		"totalActiveUsersTooltip": "少なくとも1回アクティブになった一意のユーザー数",
+		"totalActiveChannels": "アクティブチャンネルの合計",
+		"totalActiveChannelsTooltip": "少なくとも1回アクティブになった一意のチャンネル数",
+		"totalMessages": "メッセージの合計",
+		"totalMessagesTooltip": "選択した期間内に送信されたメッセージの総数"
+	},
+	"pagination": {
+		"showing": "表示中",
+		"of": "の",
+		"clans": "クラン",
+		"previous": "前へ",
+		"next": "次へ"
+	},
+	"chart": {
+		"loadingChartData": "チャートデータを読み込んでいます...",
+		"metricsAvailableForOwnersOnly": "メトリクスはオーナーのみ利用可能です。"
+	},
+	"table": {
+		"detailedActivityData": "詳細アクティビティデータ",
+		"channelsActivityData": "チャンネルアクティビティデータ",
+		"userActivityData": "ユーザーアクティビティデータ",
+		"exportCSV": "CSVをエクスポート",
+		"exporting": "エクスポート中...",
+		"includedInExport": "この列はCSVファイルにエクスポートされます",
+		"notIncludedInExport": "この列はCSVファイルにエクスポートされません",
+		"clanName": "クラン名",
+		"channelName": "チャンネル名",
+		"userName": "ユーザー名",
+		"activeUsers": "アクティブユーザー",
+		"activeChannels": "アクティブチャンネル",
+		"messages": "メッセージ",
+		"noOwnedClans": "分析を作成するための所有クランがありません。",
+		"noActiveChannels": "このクランには現在アクティブなチャンネルがありません。",
+		"noActiveUsers": "このチャンネルには現在アクティブなユーザーがありません。",
+		"selectColumnTooltip": "この列でCSVをエクスポートするには選択/選択解除",
+		"selectAtLeastOneColumn": "CSVをエクスポートするには少なくとも1つの列を選択する必要があります"
+	},
+	"page": {
+		"backToOverview": "クラン使用量概要に戻る",
+		"clanUsageStatisticsReport": "クラン使用量統計レポート",
+		"dashboardReport": "ダッシュボード",
+		"report": "レポート"
+	},
+	"state": {
+		"loadingData": "データを読み込んでいます...",
+		"noDataFound": "データが見つかりません",
+		"noDataDescription": "選択した期間の使用量データはありません。"
+	},
+	"reportControls": {
+		"timePeriod": "期間",
+		"rangeType": "範囲タイプ",
+		"startDate": "開始日",
+		"endDate": "終了日",
+		"last7Days": "過去7日間",
+		"last30Days": "過去30日間",
+		"last90Days": "過去90日間",
+		"customDateRange": "カスタム日付範囲",
+		"daily": "毎日",
+		"weekly": "毎週",
+		"monthly": "毎月",
+		"runReport": "レポートを実行",
+		"reset": "リセット"
+	},
+	"sortIcon": {
+		"tooltip": "この列で昇順/降順にソート",
+		"sortedAsc": "昇順にソート済み",
+		"sortedDesc": "降順にソート済み"
+	}
+}

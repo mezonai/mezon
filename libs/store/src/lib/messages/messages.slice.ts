@@ -1758,7 +1758,7 @@ export const messagesSlice = createSlice({
 						update_time_seconds: updateTimeSeconds,
 						update_time: action.payload.update_time || (updateTimeSeconds ? new Date(updateTimeSeconds * 1000).toISOString() : undefined)
 					};
-					if (!action.payload.attachments?.length) {
+					if (action.payload.attachments?.length !== channelEntity?.entities?.[messageId]?.attachments?.length) {
 						changes.attachments = action.payload.attachments;
 					}
 					channelMessagesAdapter.updateOne(channelEntity, {

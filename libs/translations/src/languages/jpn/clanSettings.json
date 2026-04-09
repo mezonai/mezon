@@ -1,0 +1,92 @@
+{
+	"sidebar": {
+		"communityOverview": "コミュニティ概要",
+		"deleteClan": "クランを削除",
+		"sectionTitles": {
+			"apps": "アプリ",
+			"moderation": "モデレーション",
+			"emotions": "感情"
+		},
+		"items": {
+			"overview": "概要",
+			"roles": "ロール",
+			"emoji": "絵文字",
+			"imageStickers": "画像スタンプ",
+			"voiceStickers": "音声スタンプ",
+			"categoryOrder": "カテゴリ順序",
+			"integrations": "統合",
+			"auditLog": "監査ログ",
+			"onboarding": "オンボーディング",
+			"enableCommunity": "コミュニティを有効化"
+		}
+	},
+	"clanLogo": {
+		"minimumSize": "最小サイズ：128x128",
+		"recommendedSize": "クランには少なくとも512x512の画像を使用することを推奨します。",
+		"uploadImage": "画像をアップロード",
+		"clanName": "クラン名",
+		"namePlaceholder": "クラン名...",
+		"validationError": "有効なチャンネル名を入力してください（最大64文字、文字、数字、_または-のみ）。",
+		"modal": {
+			"title": "画像ファイルのみ許可",
+			"content": "（JPEG、PNG）形式のファイルのみアップロードしてください、ありがとうございます!"
+		}
+	},
+	"modalSaveChanges": {
+		"title": "注意 - 未保存の変更があります!",
+		"reset": "リセット",
+		"saveChanges": "変更を保存"
+	},
+	"clanBanner": {
+		"title": "クランバナー背景",
+		"description": "この画像はチャンネルリストの先頭に表示されます。",
+		"recommendedSize": "推奨最小サイズは960x540で、アスペクト比は16:9です。",
+		"uploadBackground": "背景をアップロード",
+		"chooseImage": "画像を選択",
+		"modal": {
+			"title": "画像ファイルのみ許可",
+			"content": "（JPEG、PNG）形式のファイルのみアップロードしてください、ありがとうございます!"
+		}
+	},
+	"systemMessages": {
+		"title": "システムメッセージチャンネル",
+		"description": "これはシステムイベントメッセージが送信されるチャンネルです。いつでもオフにできます",
+		"welcomeRandom": "誰かがこのサーバーに参加したときにランダムウェルカムメッセージを送信。",
+		"welcomeSticker": "メンバーにスタンプでウェルカムメッセージに返信するようリマインド。",
+		"boostMessage": "誰かがこのサーバーをブーストしたときにメッセージを送信。",
+		"setupTips": "サーバー設定のためのヒントを送信。",
+		"auditLog": "クランに対してアクションが適用されたときにログを送信",
+		"anoTitle": "匿名モード",
+		"anoDesc": "ユーザーが匿名モードを使用するのを防ぐ"
+	},
+	"appDirectory": {
+		"categories": {
+			"gamingCompanion": "ゲーミングコンパニオンアプリ",
+			"popularTrending": "人気 & トレンドアプリ",
+			"serverMiniGames": "サーバーミニゲーム",
+			"rolePlayingFavorites": "RPGのお気に入り"
+		},
+		"inServers": "{{count}} サーバー内"
+	},
+	"emoji": {
+		"uploadInstructions": "アップロードガイドライン",
+		"title": "絵文字",
+		"description": "このサーバーで誰が使用できるカスタム絵文字を最大250個追加しましょう。",
+		"uploadRequirements": "アップロード要件",
+		"requirements": {
+			"fileType": "ファイルタイプ：JPEG、PNG、GIF",
+			"fileSize": "推奨ファイルサイズ：256 KB",
+			"dimensions": "推奨サイズ：128x128",
+			"naming": "命名：絵文字名は少なくとも2文字で、文字、数字、およびアンダースコアのみを含めることができます"
+		},
+		"uploadEmoji": "絵文字をアップロード"
+	},
+	"stickers": {
+		"uploadInstructions": "アップロードガイドライン",
+		"description": "スタンプは静的（PNG）またはアニメーション（APNG、GIF）である可能性があります。スタンプは正確に320 x 320ピクセルであり、512KBを超えてはなりません。静的PNGスタンプとアニメーションGIFスタンプのサイズを自動的に変更します。",
+		"uploadHere": "ここでアップロード!",
+		"customizeMessage": "あなたの好みに合わせてこれらの素晴らしいスタンプをカスタマイズしましょう",
+		"uploadSticker": "スタンプをアップロード"
+	},
+	"deleteClanTitle": "'{{clanName}}'を削除"
+}

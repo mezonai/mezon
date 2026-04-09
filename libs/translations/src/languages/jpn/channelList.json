@@ -1,0 +1,25 @@
+{
+	"navigation": {
+		"clanGuide": "ガイド",
+		"events": "イベント",
+		"events_one": "{{count}} イベント",
+		"events_other": "{{count}} イベント",
+		"members": "メンバー",
+		"channels": "チャンネル"
+	},
+	"ongoingEvent": {
+		"title": "進行中のイベント",
+		"eventDetail": "イベントの詳細"
+	},
+	"onboarding": {
+		"getStarted": "始める",
+		"of": "の"
+	},
+	"favoriteChannel": "お気に入りチャンネル",
+	"publicChannels": "パブリックチャンネル",
+	"channelApps": "チャンネルアプリ",
+	"dragMode": {
+		"enable": "カテゴリのドラッグ＆ドロップモードをオンにするにはクリック",
+		"disable": "カテゴリのドラッグ＆ドロップモードをオフにするにはクリック"
+	}
+}

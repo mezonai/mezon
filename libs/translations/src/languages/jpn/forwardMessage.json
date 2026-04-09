@@ -1,0 +1,24 @@
+{
+	"modal": {
+		"title": "メッセージを転送",
+		"searchPlaceholder": "検索",
+		"noResults": "お探しのものが見つかりませんか?",
+		"searchFriendsUsers": "友達とユーザーを検索",
+		"searchingChannel": "チャンネルを検索",
+		"sharedContent": "共有されたコンテンツ",
+		"cancel": "キャンセル",
+		"send": "送信",
+		"sending": "送信中...",
+		"sendingProgress": "送信中（{{current}}/{{total}}）...",
+		"image": "画像",
+		"images": "画像",
+		"video": "ビデオ",
+		"videos": "ビデオ",
+		"file": "ファイル",
+		"files": "ファイル",
+		"additionalMessage": "添付メッセージ（オプション）",
+		"additionalMessagePlaceholder": "送信する添付メッセージを入力..."
+	},
+	"successMessage": "メッセージの転送に成功しました",
+	"errorMessage": "メッセージを転送できません"
+}

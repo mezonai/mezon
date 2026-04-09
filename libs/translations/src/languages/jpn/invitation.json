@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "{{target}}に友達を招待",
+		"privateEvent": "外部イベント",
+		"privateRoom": "会議室",
+		"clanInvite": "クラン招待",
+		"sendLinkText": "または、{{type}}リンクを彼らに送信",
+		"expiresIn": "招待リンクは{{time}}後に期限切れになります"
+	},
+	"expiration": {
+		"30minutes": "30分",
+		"1hour": "1時間",
+		"6hours": "6時間",
+		"12hours": "12時間",
+		"1day": "1日",
+		"7days": "7日",
+		"never": "永遠に"
+	},
+	"maxUses": {
+		"noLimit": "制限なし",
+		"1use": "1回使用",
+		"5uses": "5回使用",
+		"10uses": "10回使用",
+		"25uses": "25回使用",
+		"50uses": "50回使用",
+		"100uses": "100回使用"
+	},
+	"generateLink": {
+		"expireAfter": "期限切れ",
+		"maxNumberOfUses": "最大使用回数"
+	},
+	"buttons": {
+		"copy": "コピー",
+		"copied": "コピーしました",
+		"copyQR": "QRをコピー",
+		"editInviteLink": "招待リンクを編集。",
+		"cancel": "キャンセル",
+		"generateNewLink": "新しいリンクを生成",
+		"invite": "招待",
+		"sent": "送信済み"
+	},
+	"searchPlaceholder": "友達を検索",
+	"privateChannelDescription": "このチャンネルはプライベートで、選択されたメンバーとロールのみがこのチャンネルを表示できます。",
+	"noResults": "結果がありません",
+	"messages": {
+		"qrCopiedSuccess": "QRを正常にコピーしました!"
+	},
+	"errors": {
+		"createInviteLink": "招待リンクの作成中にエラーが発生しました",
+		"copyToClipboard": "クリップボードにコピーできません",
+		"copyFailed": "コピーに失敗しました"
+	},
+	"acceptModal": {
+		"title": "クランに参加",
+		"invitedToJoin": "招待されました",
+		"memberCount": "{{count}} メンバー",
+		"memberCount_plural": "{{count}} メンバー",
+		"clanSettings": "クラン設定",
+		"customizeAnytime": "これらの設定はいつでもカスタマイズできます",
+		"noThanks": "なし、ありがとう",
+		"acceptInvite": "招待を承認",
+		"joining": "参加中...",
+		"toast": {
+			"alreadyMember": "すでにメンバーです!"
+		}
+	}
+}

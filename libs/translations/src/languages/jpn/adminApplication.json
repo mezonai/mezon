@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "新しいアプリケーションを作成",
+			"bot": "新しいボットを作成"
+		},
+		"form": {
+			"type": {
+				"label": "タイプ",
+				"options": {
+					"createApplication": "アプリケーションを作成",
+					"createBot": "ボットを作成"
+				}
+			},
+			"name": {
+				"label": "名前"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "シャドウボット",
+			"agreement": {
+				"text": "作成をクリックすることで、あなたは同意します",
+				"termsOfService": "開発者サービス利用規約",
+				"policy": "開発者ポリシー",
+				"and": "および"
+			}
+		},
+		"buttons": {
+			"cancel": "キャンセル",
+			"create": "作成",
+			"creating": "作成中...",
+			"confirm": "確認"
+		},
+		"errors": {
+			"nameRequired": "新しい{type}を作成するには名前が必要です。",
+			"urlRequired": "新しいアプリケーションを作成するにはURLが必要です。",
+			"invalidUrl": "有効なURLを入力してください（例：https://example.com）。",
+			"createFailed": "アプリケーションを作成できませんでした。またはレスポンスにIDが不足しています",
+			"unexpectedError": "予期しないエラーが発生しました。{message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "シャドウモードでは、ボットは作成者に送信されたすべてのメッセージを受信できますが、メッセージを送信することはできません。"
+		},
+		"shadowConfirm": {
+			"title": "シャドウボットモードを有効にしてもよろしいですか？",
+			"message": "このモードでは、ボットは作成者に送信されたすべてのメッセージを受信できますが、メッセージを送信することはできません。"
+		}
+	},
+	"sidebar": {
+		"menu": "メニュー",
+		"closeMenu": "メニューを閉じる"
+	},
+	"tabs": {
+		"generalInformation": "一般情報",
+		"installation": "インストール",
+		"oauth2": "OAuth2"
+	},
+	"generalInformation": {
+		"title": "一般情報",
+		"subtitle": "あなたの製品に何と呼びたいですか？どのような素晴らしいことをしますか？Mezonでそれを表すアイコンは何ですか？ここに教えてください！",
+		"agreement": {
+			"text": "作成をクリックすることで、あなたは同意します",
+			"adminTerms": "管理者サービス利用規約",
+			"adminPolicy": "管理者ポリシー",
+			"and": "および"
+		},
+		"appIcon": {
+			"label": "アプリケーションアイコン",
+			"remove": "削除",
+			"size": "サイズ：{size}"
+		},
+		"form": {
+			"name": "名前",
+			"url": "URL",
+			"botShadow": "シャドウボット",
+			"description": {
+				"label": "説明（最大400文字）",
+				"subtitle": "あなたの説明はボット紹介に表示されます",
+				"placeholder": "ボットの簡単な説明を書く"
+			},
+			"appId": "ボットID",
+			"appToken": "トークン"
+		},
+		"token": {
+			"newTokenWarning": "これがあなたの新しいトークンです。安全にコピーして保存してください。もう二度と表示されることはありません。",
+			"securityInfo": "セキュリティの理由上、トークンは作成時だけ一度だけ表示できます。トークンを忘れたりアクセスできなくなった場合は、新しいトークンを再作成してください。"
+		},
+		"buttons": {
+			"copy": "コピー",
+			"copied": "コピーしました!",
+			"copyToken": "トークンをコピー",
+			"resetToken": "トークンをリセット",
+			"delete": "削除"
+		},
+		"errors": {
+			"invalidUrl": "有効なURLを入力してください（例：https://example.com）。",
+			"clientNotInitialized": "クライアントまたはファイルが初期化されていません",
+			"resetTokenFailed": "トークンのリセットに失敗しました:"
+		}
+	},
+	"installation": {
+		"title": "インストール",
+		"subtitle": "ユーザーがあなたのアプリケーションをインストールする方法を選択します。インストールリンクを作成し、サポートするインストールコンテキストを選択し、要求するスコープと権限を特定します。",
+		"installLink": {
+			"title": "インストールリンク",
+			"description": "提供されたインストールリンクを使用するか、カスタムリンクを登録します。カスタムリンクを選択した場合、あなたのアプリケーションを追加するユーザーは、Mezon内のアプリケーション追加プロセスではなく、あなたのURLにリダイレクトされます。",
+			"option": "Mezonが提供するリンク"
+		},
+		"buttons": {
+			"copy": "コピー",
+			"copied": "コピーしました!"
+		},
+		"loading": "アプリケーションデータをロード中...",
+		"notFound": "アプリケーションデータが見つかりません"
+	},
+	"clientInformation": {
+		"title": "クライアント情報",
+		"clientId": "クライアントID",
+		"clientSecret": "クライアントシークレット",
+		"hiddenForSecurity": "セキュリティの理由で非表示",
+		"resetSecret": "シークレットをリセット",
+		"publicClient": {
+			"title": "パブリッククライアント",
+			"description": "パブリッククライアントは、クライアントの認証情報（つまり、サーバーを介して要求を実行しないデスクトップ/モバイルアプリ）の機密性を維持することはできません"
+		},
+		"buttons": {
+			"copy": "コピー",
+			"copied": "コピーしました!"
+		},
+		"resetSecretPopup": {
+			"title": "シークレットキーを再生成しますか？",
+			"warning": "あなたのアプリケーションは、アプリケーションコード内のシークレットキーを更新するまで動作しなくなります。",
+			"nevermind": "なし",
+			"confirm": "同意!"
+		},
+		"toasts": {
+			"addRedirectUri": "シークレットキーをリセットする前に少なくとも1つのリダイレクトURIを追加してください!"
+		}
+	},
+	"sidebarTabs": {
+		"dashboard": "ダッシュボード",
+		"applications": "アプリケーション",
+		"teams": "チーム",
+		"embedDebugger": "埋め込みデバッガー",
+		"document": "ドキュメント"
+	},
+	"applicationsPage": {
+		"title": "アプリケーション",
+		"newApplicationButton": "新しいアプリケーションまたはボットを作成",
+		"develop": "開発",
+		"subtitle": " 数百万のユーザーのためにMezonをカスタマイズおよび拡張します。",
+		"appsLinkText": "アプリケーション",
+		"sortBy": "ソート:",
+		"sortOptions": {
+			"dateOfCreation": "作成日",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "小",
+			"large": "大"
+		},
+		"sections": {
+			"myApplications": "私のアプリケーション",
+			"myBots": "私のボット"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Mezonを認証システムとして使用する、またはあなたのユーザーの代わりにAPIを使用します。リダイレクトURIを追加し、スコープを選択し、D20サイコロを振って幸運を願い、始めましょう!",
+		"learnMore": "OAuth2について詳しく学ぶ",
+		"generator": {
+			"title": "OAuth2 URLジェネレーター",
+			"description": "アプリケーションに必要なスコープと権限を選択して、招待リンクを作成します。その後、他の人とURLを共有しましょう!",
+			"scopes": "スコープ"
+		},
+		"redirects": {
+			"title": "リダイレクト",
+			"description": "認証が機能するには少なくとも1つのURIを指定する必要があります。OAuth要求でURIを渡した場合、それはここで入力したURIのいずれかと正確に一致する必要があります。",
+			"addRedirect": "リダイレクトを追加",
+			"toasts": {
+				"fillAllInputs": "すべてのフィールドに有効なURIを入力してください!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "空の入力があります!",
+			"invalidUris": "URIは有効である必要があります!",
+			"redirectUriRequired": "リダイレクトURIは必須です!"
+		}
+	},
+	"backToApps": "アプリケーションに戻る",
+	"selectLabel": "{{type}}を選択",
+	"settings": "設定",
+	"flows": {
+		"title": "チャットフロー",
+		"hasTokenInfo": "新しいボットフローを作成する前にトークンを設定する必要があります。",
+		"setToken": "トークンを設定",
+		"addFlow": "フローを追加",
+		"appTokenModal": {
+			"title": "アプリケーショントークン",
+			"saveButton": "保存"
+		},
+		"toasts": {
+			"errorLoading": "フローリストのロード中にエラーが発生しました"
+		}
+	},
+	"teams": {
+		"title": "チーム"
+	},
+	"embed": {
+		"title": "埋め込みデバッガー"
+	},
+	"small": "小",
+	"large": "大"
+}

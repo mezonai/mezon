@@ -1,0 +1,225 @@
+{
+	"userAction": {
+		"transferFunds": "トークンを転送",
+		"sendMessage": "メッセージを送信",
+		"voiceCall": "音声通話",
+		"videoCall": "ビデオ通話",
+		"addFriend": "友達を追加",
+		"pending": "保留中",
+		"removeFriend": "友達を削除"
+	},
+	"aboutMe": {
+		"headerTitle": "概要",
+		"roles": {
+			"headerTitle": "ロール"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "メンバーをキック",
+		"kickFromServer": "{{username}} をクランからキック",
+		"description": "本当に{{username}} をクランからキックしますか？新しい招待で再参加できます。",
+		"reasonKick": "キック理由",
+		"buttonName": "キック"
+	},
+	"transferOwnershipModal": {
+		"warning": "これにより、<強調クラン>{{clanName}}</強調クラン> の所有権が<強調ユーザー>{{username}}</強調ユーザー> に転送されます。この操作は元に戻せません!",
+		"sectionTitle": "所有権を転送",
+		"acknowledgment": "私は、このクランの所有権を{{username}} に転送することで、正式に彼らのものになることを確認します。",
+		"transferButton": "転送",
+		"confirmTitle": "所有権を転送しますか?",
+		"confirmDescription": "本当に{{clanName}} の所有権を{{username}} に転送しますか? この操作は元に戻せません。",
+		"confirmButton": "転送"
+	},
+	"pendingContent": {
+		"block": "ブロック",
+		"unblock": "ブロックを解除",
+		"reportUserProfile": "ユーザープロフィールを報告",
+		"acceptFriend": "友達を承認",
+		"rejectFriend": "友達招待を拒否",
+		"cancelFriendRequest": "友達招待をキャンセル",
+		"copyUsername": "ユーザー名をコピー",
+		"copiedUserName": "{{username}} をコピーしました",
+		"removeFriend": "友達を削除",
+		"viewFullProfile": "完全プロフィールを表示"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "グループから削除",
+			"removeSuccess": "グループからメンバーを削除しました",
+			"removeFailed": "グループからメンバーを削除できませんでした"
+		},
+		"mezonMemberSince": "Mezonメンバー desde"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "ユーザーをブロックしました",
+			"error": "ユーザーをブロックできません"
+		},
+		"unblockUser": {
+			"success": "ユーザーのブロックを解除しました",
+			"error": "ユーザーのブロックを解除できません"
+		}
+	},
+	"incomingFriendRequest": "受信した友達招待",
+	"sendAddFriendSuccess": "友達招待を送信しました",
+	"accept": "承認",
+	"ignore": "無視",
+	"labels": {
+		"aboutMe": "概要",
+		"memberSince": "メンバー desde",
+		"activity": "アクティビティ",
+		"unknownUser": "不明なユーザー",
+		"anonymous": "匿名",
+		"editProfile": "プロフィールを編集",
+		"note": "メモ",
+		"addNote": "メモを追加するにはクリック",
+		"showLess": "隠す",
+		"addRole": "ロールを追加",
+		"addRoles": "ロールを追加",
+		"removeRole": "ロールを削除",
+		"role": "ロール",
+		"nope": "なし!",
+		"typoError": "タイプミスしましたか?",
+		"userNotFound": "ユーザーはクランにいません"
+	},
+	"placeholders": {
+		"messageUser": "@{{username}} にメッセージを送信"
+	},
+	"statusProfile": {
+		"balance": "残高",
+		"transferFunds": "トークンを転送",
+		"editCustomStatus": "カスタムステータスを編集",
+		"setCustomStatus": "カスタムステータスを設定",
+		"manageAccounts": "アカウントを管理",
+		"switchAccounts": "アカウントを切り替え",
+		"copyUserId": "ユーザーIDをコピー",
+		"statusOptions": {
+			"online": "オンライン",
+			"idle": "アイドル",
+			"doNotDisturb": "留守中",
+			"invisible": "隠し"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "コンピュータで通知を受け取りません",
+			"invisible": "オフラインとして表示されます"
+		},
+		"statusDuration": {
+			"for30Minutes": "30分",
+			"for1Hour": "1時間",
+			"for3Hours": "3時間",
+			"for8Hours": "8時間",
+			"for24Hours": "24時間",
+			"forever": "永遠"
+		},
+		"addAccountModal": {
+			"email": "メール",
+			"password": "パスワード",
+			"emailPlaceholder": "メールを入力",
+			"passwordPlaceholder": "パスワードを入力",
+			"cancel": "キャンセル",
+			"logIn": "ログイン"
+		},
+		"sendTokenModal": {
+			"title": "トークンを送信",
+			"description": "他のユーザーにトークンを転送",
+			"fields": {
+				"to": "宛先",
+				"amount": "数量",
+				"note": "メモ（オプション）"
+			},
+			"placeholders": {
+				"searchUsers": "ユーザーを検索...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "メモを追加..."
+			},
+			"noUsersFound": "ユーザーが見つかりません",
+			"currency": "JPY",
+			"buttons": {
+				"cancel": "キャンセル",
+				"sendTokens": "トークンを送信"
+			},
+			"errors": {
+				"exceedWalletBalance": "送金金額がウォレット残高を超えています",
+				"maximumLimit": "最大 100,000,000"
+			}
+		},
+		"historyTransaction": {
+			"title": "取引履歴",
+			"subtitle": "すべての取引アクティビティを表示",
+			"tabs": {
+				"all": "すべてのトランザクション",
+				"sent": "送信トランザクション",
+				"received": "受信トランザクション"
+			},
+			"transactionTypes": {
+				"sent": "送信済み",
+				"received": "受信済み"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "トランザクションが見つかりません",
+					"description": "まだトランザクションを実行していません。送金またはトークンを受信し始めると、ここにトランザクション履歴が表示されます。"
+				},
+				"noFilteredTransactions": {
+					"title": "トランザクションが見つかりません",
+					"description": "選択したフィルターでトランザクションが見つかりません。別のフィルターを試すか、後で再試行してください。"
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "トランザクション #"
+			},
+			"loading": {
+				"fetching": "トランザクションを読み込んでいます...",
+				"fetchingMore": "さらにトランザクションを読み込んでいます...",
+				"scrollMore": "さらに見るにはスクロール",
+				"allLoaded": "すべての{{count}} トランザクションをダウンロードしました"
+			}
+		},
+		"customStatusModal": {
+			"title": "カスタムステータスを設定",
+			"whatsCookin": "何を考えています、{{name}}",
+			"placeholder": "何を考えていますか?",
+			"clearAfter": "後にクリア",
+			"timeOptions": {
+				"today": "今日",
+				"fourHours": "4時間",
+				"oneHour": "1時間",
+				"thirtyMinutes": "30分",
+				"dontClear": "クリアしない"
+			},
+			"buttons": {
+				"cancel": "キャンセル",
+				"save": "保存"
+			}
+		}
+	},
+	"channelVoiceSettings": "ボイスチャンネル設定",
+	"muteVoice": "ミュート",
+	"kickVoice": "ボイスチャンネルから削除",
+	"voiceInfo": {
+		"inVoice": "ボイスチャンネル内",
+		"joinVoice": "ボイスに参加"
+	},
+	"ban": {
+		"title": "ユーザーを禁止",
+		"unbanTitle": "ユーザーの禁止を解除",
+		"content": "ユーザー\"{{userName}}\"を禁止しますか?",
+		"banButton": "禁止",
+		"unBanButton": "禁止を解除",
+		"reasonBan": "禁止理由",
+		"unBanDescription": "本当にユーザー\"{{userName}}\"の禁止を解除しますか?",
+		"time": {
+			"title": "期間",
+			"tenMinutes": "10分",
+			"thirtyMinutes": "30分",
+			"oneHour": "1時間",
+			"sixHours": "6時間",
+			"twelveHours": "12時間",
+			"oneDay": "1日",
+			"threeDays": "3日"
+		},
+		"banList": "禁止リスト",
+		"search": "禁止されたユーザーを検索",
+		"banListEmpty": "禁止されたユーザーが見つかりません"
+	}
+}

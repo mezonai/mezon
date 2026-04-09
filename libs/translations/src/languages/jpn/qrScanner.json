@@ -1,0 +1,17 @@
+{
+	"cameraPermissionDenied": "カメラへのアクセスが拒否されました",
+	"pleaseAllowCamera": "デバイス設定でカメラへのアクセスを許可してください。",
+	"cancel": "キャンセル",
+	"openSettings": "設定を開く",
+	"anErrorOccurred": "エラーが発生しました、再試行してください",
+	"youAreIn": "ログインしています!",
+	"logInOnNewDevice": "新しいデバイスでログインしますか?",
+	"youAreLoggedInOnDesktop": "これでデスクトップにログインしました",
+	"neverScanALoginQRCodeFromAnotherUser": "他のユーザーからログインQRコードを決してスキャンしないでください。",
+	"startTalking": "話し始める",
+	"logIn": "ログイン",
+	"requestCameraPermission": "カメラへのアクセスを要求",
+	"myQRCode": "私のQRコード",
+	"selectPhotoWithQRCode": "QRコードを含む画像を選択してください",
+	"qrCodeNotValid": "無効なQRコード"
+}

@@ -1,0 +1,7 @@
+{
+	"joinStreamingRoomBS": {
+		"stream": "ストリームルーム",
+		"joinStream": "ストリームに参加"
+	},
+	"noDisplay": "ストリームを表示しない"
+}

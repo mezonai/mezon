@@ -1,0 +1,18 @@
+{
+  "editResources": "リソースを編集",
+  "form": {
+    "nameTitle": "このリソースに名前を付ける",
+    "namePlaceholder": "#rules はルールとして",
+    "descriptionTitle": "このリソースを説明",
+    "descriptionPlaceholder": "例：クランのルール",
+    "imageTitle": "ルール画像",
+    "browse": "参照",
+    "required": "このフィールドは必須です。",
+    "minCharacters": "ルールのタイトルは少なくとも7文字である必要があります"
+  },
+  "buttons": {
+    "remove": "削除",
+    "save": "保存",
+    "add": "追加"
+  }
+}

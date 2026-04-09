@@ -1,0 +1,36 @@
+{
+	"friendRequest": {
+		"title": "友達招待",
+		"received": "受信",
+		"sent": "送信",
+		"emptyReceived": {
+			"title": "友達招待はありません",
+			"description": "ここで、他人があなたに送ったすべての友達招待を見ることができます。"
+		},
+		"emptySent": {
+			"title": "友達招待はありません",
+			"description": "ここで、他人に送ったすべての友達招待を見ることができます。"
+		}
+	},
+	"addFriend": {
+		"incomingFriendRequest": "受信した友達招待",
+		"findYourFriend": "友達を見つける",
+		"addByUserName": "ユーザー名または電話番号で追加",
+		"addByUsername": "{{username}}で追加",
+		"searchUsernamePlaceholder": "ユーザー名または電話番号を入力",
+		"whoYouWantToAddFriend": "誰を友達に追加しますか?",
+		"byTheWay": "そういえば、あなたのユーザー名は",
+		"sendRequestButton": "友達招待を送信",
+		"addFriendToast": "友達招待を送信しました"
+	},
+	"friends": "友達",
+	"noFriendsResultsFound": "友達の結果が見つかりません",
+	"toast": {
+		"sendAddFriendSuccess": "友達招待が正常に送信されました!",
+		"acceptAddFriendSuccess": "友達招待を承認しました!",
+		"sendAddFriendFail": " Hmm、エラーが発生しました。ユーザー名が正しいか確認してください。",
+		"somethingWentWrong": "エラーが発生しました",
+		"friendRequestAlreadySent": "友達招待が送信されました、承認を待っています。"
+	},
+	"you": "あなた"
+}

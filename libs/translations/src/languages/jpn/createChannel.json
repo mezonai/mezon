@@ -1,0 +1,47 @@
+{
+	"header": {
+		"title": "新しいチャンネルを作成"
+	},
+	"channelType": {
+		"text": "テキスト",
+		"voice": "ボイス",
+		"forum": "フォーラム",
+		"announcement": "アナウンス",
+		"apps": "アプリ",
+		"stream": "ストリーム",
+		"descriptions": {
+			"text": "メッセージ、画像、GIF、絵文字、コメント、駄洒落を送信",
+			"voice": "ボイス、ビデオ、スクリーン共有で集まる",
+			"forum": "整理されたディスカッションのスペースを作成",
+			"announcement": "クラン内外のすべての人に重要なアップデート",
+			"apps": "アプリ",
+			"stream": "趣味の活動を紹介"
+		}
+	},
+	"validation": {
+		"invalidName": "有効なチャンネル名を入力してください（最大64文字、文字、数字、_または-のみ）。",
+		"duplicateName": "このカテゴリに同じチャンネル名があります。別の名前を入力してください。"
+	},
+	"privacy": {
+		"private": "プライベートチャンネル",
+		"description": "選択されたメンバーとロールのみがこのチャンネルを表示できます。"
+	},
+	"labels": {
+		"description": "あなたの好みでチャンネルを設定しましょう。",
+		"chooseType": "チャンネルタイプを選択:",
+		"channelName": "チャンネル名は何ですか?",
+		"isPrivate": "プライベートチャンネル?",
+		"placeholder": "チャンネル名を入力"
+	},
+	"errors": {
+		"typeRequired": "チャンネルタイプは必須",
+		"nameRequired": "チャンネル名は必須",
+		"selectApp": "アプリを選択してください",
+		"validName": "有効なチャンネル名を入力してください"
+	},
+	"buttons": {
+		"cancel": "キャンセル",
+		"create": "チャンネルを作成",
+		"creating": "作成中"
+	}
+}

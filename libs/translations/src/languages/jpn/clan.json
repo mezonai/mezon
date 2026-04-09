@@ -1,0 +1,76 @@
+{
+	"title": "あなたのクランをカスタマイズ",
+	"subTitle": "名前とアイコンで新しいクランに独自のスタイルを作りましょう。いつでも後で変更できます。",
+	"clanName": "クラン名",
+	"createServer": "クランを作成",
+	"byCreatingClan": "クランを作成することで、あなたは同意します",
+	"upload": "アップロード",
+	"addClan": "クランを追加",
+	"placeholderClan": "クラン名を入力",
+	"errorMessage": "有効なクラン名を入力してください（最大64文字、文字、数字、_または-のみ）。",
+	"duplicateNameMessage": "クラン名はすでに存在します。別の名前を選択してください。",
+	"commutityGuide": "Mezonコミュニティガイドライン。",
+	"busy": "混雑中",
+	"findOrStartConversation": "会話を見つけるまたは開始",
+	"createCategoryModal": {
+		"title": "カテゴリを作成",
+		"nameLabel": "カテゴリ名は何ですか？",
+		"namePlaceholder": "カテゴリ名を入力",
+		"privateCategory": "プライベートカテゴリ",
+		"privateDescription": "プライベートカテゴリを作成すると、選択されたメンバーとロールのみがこのカテゴリを表示できます。このカテゴリ内の同期されたチャンネルは自動的にこの設定にマッチします",
+		"invalidName": "有効なカテゴリ名を入力してください（最大64文字、文字、数字、_または-のみ）。",
+		"duplicateName": "このクランに同じカテゴリ名があります。別の名前を入力してください。",
+		"cancel": "キャンセル",
+		"create": "カテゴリを作成"
+	},
+	"leaveClanModal": {
+		"title": "{{clanName}}から退出",
+		"description": "本当に<強>{{clanName}}</強>から退出しますか？招待されない限り、このサーバーに再参加できません。",
+		"cancel": "キャンセル"
+	},
+	"leaveClan": "クランから退出",
+	"leaveClanTitle": "退出",
+	"categoryOverview": {
+		"categoryName": "カテゴリ名",
+		"categoryNamePlaceholder": "ここにカテゴリ名を入力...",
+		"hasWelcomeChannelError": "このカテゴリにはウェルカムチャンネルがあります",
+		"deleteCategory": "カテゴリを削除",
+		"deleteCategoryTitle": "カテゴリを削除",
+		"deleteCategoryButton": "カテゴリを削除",
+		"cannotBeUndone": "この操作は元に戻せません",
+		"categoryLabel": "カテゴリ"
+	},
+	"createClanModal": {
+		"title": "あなたのクランをカスタマイズ",
+		"description": "名前とアイコンを選んで、新しいクランに色をつけたら？気に入らなければいつでも変更できます!",
+		"upload": "アップロード",
+		"clanName": "クラン名",
+		"placeholder": "クラン名を入力",
+		"invalidName": "有効なクラン名を入力してください（最大64文字、文字、数字、_または-のみ）。",
+		"duplicateName": "クラン名はすでに存在します。別の名前を選択してください。",
+		"agreement": "クランを作成することで、あなたは同意します",
+		"communityGuidelines": "Mezonコミュニティガイドライン",
+		"back": "戻る",
+		"create": "作成",
+		"toast": {
+			"limitImageSize": "画像サイズは{{size}}MB未満である必要があります"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "あなたのクランを作成",
+		"description": "クランはあなたとお気に入りの人々と交流する場所です。あなたのクランを作成してチャットを始めましょう。",
+		"createMyOwn": "独自テンプレートを作成",
+		"startFromTemplate": "テンプレートから始める",
+		"gamingTemplate": "ゲーム",
+		"friendsTemplate": "友達",
+		"studyGroupTemplate": "勉強グループ",
+		"schoolClubTemplate": "学校クラブ",
+		"localCommunityTemplate": "ローカルコミュニティ",
+		"artistsCreatorsTemplate": "アーティスト & クリエイター"
+	},
+	"limitModal": {
+		"title": "制限に達しました!",
+		"message": "50クランに参加しました。別のクランに参加または作成する前に、1つのクランから退出する必要があります。",
+		"okayButton": "OK"
+	}
+}

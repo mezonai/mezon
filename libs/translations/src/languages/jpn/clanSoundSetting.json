@@ -1,0 +1,50 @@
+{
+	"button": {
+		"upload": "サウンドエフェクトをアップロード",
+		"delete": "削除",
+		"uploadDetailScreen": "アップロード"
+	},
+	"content": {
+		"description": "• .mp3、.wavファイルのみ許可、最大1MB。 \n• サウンドエフェクトに覚えやすい名前をつけましょう。 \n• サウンドエフェクトはクランの通知またはイベントで使用されます。",
+		"requirements": "アップロード要件",
+		"reqSize": "- 1024KBを超えてはなりません。",
+		"audioFile": "オーディオファイル",
+		"audioName": "サウンド名",
+		"preview": "プレビュー",
+		"chooseAudioFile": "オーディオファイルを選択"
+	},
+	"toast": {
+		"errorSizeLimit": "1MBのサイズ制限を超えています",
+		"errorFileType": "無効なファイル形式。.mp3、.mpeg、および.wavファイルのみ許可されます。"
+	},
+	"main": {
+		"uploadInstructions": "アップロードガイドライン",
+		"fileRequirements": ".mp3、.wavファイルのみ許可、最大1MB。サウンドエフェクトに覚えやすい名前をつけましょう。サウンドエフェクトはクランの通知またはイベントで使用されます。",
+		"uploadHere": "ここでアップロード!",
+		"personalizeDescription": "クランのサウンドエフェクトをパーソナライズしましょう!",
+		"uploadSound": "サウンドをアップロード",
+		"soundEffectList": "サウンドエフェクトリスト",
+		"noSoundEffects": "まだサウンドエフェクトはありません。\"サウンドをアップロード\"をクリックして追加しましょう!"
+	},
+	"modal": {
+		"titleEdit": "サウンドエフェクトを編集",
+		"titleUpload": "サウンドエフェクトをアップロード",
+		"subtitle": "MP3、WAV形式をサポート • 最大1MB",
+		"preview": "プレビュー",
+		"audioFile": "オーディオファイル",
+		"soundName": "サウンド名",
+		"soundVolume": "音量",
+		"chooseOrDrop": "ファイルを選択またはドラッグ＆ドロップ",
+		"browse": "参照",
+		"placeholder": "例：猫の鳴き声",
+		"cancel": "キャンセル",
+		"uploading": "アップロード中...",
+		"update": "更新",
+		"upload": "アップロード",
+		"errorFileType": ".mp3または.wavファイルをサポート",
+		"errorFileSize": "ファイルが大きすぎます、最大1MB",
+		"errorUploadFailed": "サウンドをアップロードできません",
+		"characters": "名前は3〜64文字である必要があります",
+		"errorName": "サウンドエフェクト名は{{min}}から{{max}}文字、文字、数字、_および-のみを含む必要があります"
+	}
+}

@@ -1,0 +1,9 @@
+{
+  "searchMembers": "メンバーを検索",
+  "searchActions": "アクションを検索",
+  "allUsers": "すべてのユーザー",
+  "noResults": {
+    "title": "なし!",
+    "description": "タイプミスしましたか?"
+  }
+}

@@ -1,0 +1,20 @@
+{
+	"headers": {
+		"name": "名前",
+		"memberSince": "メンバー desde",
+		"joinedMezon": "Mezonに参加",
+		"roles": "ロール",
+		"signals": "シグナル"
+	},
+	"topBar": {
+		"recentMembers": "最近のメンバー",
+		"searchPlaceholder": "検索",
+		"sort": "ソート"
+	},
+	"error": "エラー",
+	"profile": "プロフィール",
+	"message": "メッセージ",
+	"timeAgo": "{{time}}前",
+	"transferOwnership": "所有権を転送",
+	"removeMember": "メンバーを削除"
+}
