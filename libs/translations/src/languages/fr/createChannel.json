@@ -1,0 +1,47 @@
+{
+	"header": {
+		"title": "CRÉER UN NOUVEAU CANAL DANS"
+	},
+	"channelType": {
+		"text": "Texte",
+		"voice": "Vocal",
+		"forum": "Forum",
+		"announcement": "Annonces",
+		"apps": "Applications",
+		"stream": "Streaming",
+		"descriptions": {
+			"text": "Envoyer des messages, images, GIFs, émojis, commentaires et blagues",
+			"voice": "Discuter ensemble par voix, vidéo et partage d'écran",
+			"forum": "Créer un espace pour des discussions organisées",
+			"announcement": "Mises à jour importantes pour tous les membres du clan",
+			"apps": "Applications",
+			"stream": "Partagez vos activités de loisirs"
+		}
+	},
+	"validation": {
+		"invalidName": "Veuillez entrer un nom de canal valide (maximum 64 caractères, uniquement des lettres, chiffres, _ ou -).",
+		"duplicateName": "Ce nom de canal existe déjà dans la catégorie. Veuillez entrer un autre nom."
+	},
+	"privacy": {
+		"private": "Canal privé",
+		"description": "Seuls les membres et rôles sélectionnés peuvent voir ce canal."
+	},
+	"labels": {
+		"description": "Veuillez configurer le canal selon vos préférences.",
+		"chooseType": "Choisissez le type de canal :",
+		"channelName": "Quel est le nom du canal ?",
+		"isPrivate": "Canal privé ?",
+		"placeholder": "Entrez le nom du canal"
+	},
+	"errors": {
+		"typeRequired": "Le type de canal est requis",
+		"nameRequired": "Le nom du canal est requis",
+		"selectApp": "Veuillez sélectionner une application",
+		"validName": "Veuillez entrer un nom de canal valide"
+	},
+	"buttons": {
+		"cancel": "Annuler",
+		"create": "Créer le canal",
+		"creating": "Création en cours"
+	}
+}

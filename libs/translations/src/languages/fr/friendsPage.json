@@ -1,0 +1,84 @@
+{
+	"friend": "Amis",
+	"addFriend": "Ajouter un ami",
+	"friends": "Amis",
+	"clearSearch": "Effacer la recherche",
+	"search": "Rechercher",
+	"tabs": {
+		"all": "Tous",
+		"online": "En ligne",
+		"pending": "En attente",
+		"block": "Bloqués"
+	},
+	"addFriendModal": {
+		"title": "AJOUTER DES AMIS",
+		"description": "Vous pouvez ajouter des amis par leur nom d'utilisateur Mezon",
+		"placeholder": "Entrez le nom d'utilisateur",
+		"tooltip": "Vous pouvez ajouter des amis par leur nom d'utilisateur Mezon",
+		"sendRequest": "Envoyer une demande d'ami",
+		"add": "Ajouter",
+		"alreadyFriends": "Vous êtes déjà amis avec cet utilisateur !",
+		"waitAccept": "Vous avez déjà envoyé une demande d'ami à cet utilisateur !",
+		"invalidInput": "Veuillez n'utiliser que des chiffres, des lettres, des underscores _ ou des points.",
+		"blockedUser": "Vous avez bloqué cet utilisateur. Veuillez le débloquer pour envoyer une demande d'ami.",
+		"blockedUserMobile": "Vous avez bloqué cet utilisateur. Débloquez pour envoyer une demande d'ami.",
+		"waitingMessage": "Mezon vous attend. Mais vous n'avez pas besoin d'attendre !"
+	},
+	"requestFailedPopup": {
+		"title": "Échec de l'envoi de la demande d'ami",
+		"message": "Vous êtes déjà amis avec cet utilisateur !",
+		"okay": "D'accord"
+	},
+	"activity": {
+		"coding": "Activité - Travail",
+		"music": "Activité - Vie",
+		"gaming": "Activité - Loisirs"
+	},
+	"friendMenu": {
+		"startVideoCall": "Commencer un appel vidéo",
+		"startVoiceCall": "Commencer un appel vocal",
+		"removeFriend": "Supprimer l'ami",
+		"block": "Bloquer",
+		"unblock": "Débloquer",
+		"more": "Plus",
+		"cancel": "Annuler",
+		"accept": "Accepter",
+		"reject": "Rejeter"
+	},
+	"removeFriendModal": {
+		"title": "Supprimer '{{username}}'",
+		"description": "Êtes-vous sûr de vouloir supprimer <bold>{{username}}</bold> de votre liste d'amis ?",
+		"cancel": "Annuler",
+		"confirm": "Supprimer l'ami"
+	},
+	"cancelRequestModal": {
+		"title": "Annuler la demande '{{username}}'",
+		"description": "Êtes-vous sûr de vouloir annuler la demande d'ami envoyée à <bold>{{username}}</bold> ?",
+		"cancel": "Annuler",
+		"confirm": "Annuler la demande"
+	},
+	"rejectRequestModal": {
+		"title": "Rejeter '{{username}}'",
+		"description": "Êtes-vous sûr de vouloir rejeter la demande d'ami de <bold>{{username}}</bold> ?",
+		"cancel": "Annuler",
+		"confirm": "Rejeter"
+	},
+	"toast": {
+		"userBlockedSuccess": "Utilisateur bloqué avec succès",
+		"userBlockedFailed": "Impossible de bloquer l'utilisateur",
+		"userUnblockedSuccess": "Utilisateur débloqué avec succès",
+		"userUnblockedFailed": "Impossible de débloquer l'utilisateur"
+	},
+	"statusTapListFriends": {
+		"all": "Il semble que ce soit vide ici ! Commencez avec quelques amis pour démarrer la conversation.",
+		"online": "C'est tranquille ! Pourquoi ne pas démarrer une conversation et voir qui est là ?",
+		"pending": "C'est ici que vous trouverez les demandes d'ami que vous avez envoyées et reçues.",
+		"block": "Vous n'avez bloqué personne."
+	},
+	"statusTapSearchFriends": {
+		"all": "Aucun ami ne correspond à votre recherche. Essayez un autre nom.",
+		"online": "Aucun utilisateur en ligne ne correspond à votre recherche. Essayez un autre nom.",
+		"pending": "Aucune demande d'ami ne correspond à votre recherche. Vérifiez à nouveau le nom ou réessayez.",
+		"block": "Aucun utilisateur bloqué ne correspond à votre recherche. Essayez un autre nom."
+	}
+}

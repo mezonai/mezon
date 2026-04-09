@@ -1,0 +1,144 @@
+{
+	"myAccount": "Mon compte",
+	"editUserProfile": "Modifier le profil utilisateur",
+	"noDisplayName": "Vous n'avez pas ajouté de nom d'affichage.",
+	"edit": "Modifier",
+	"password": "Mot de passe",
+	"phoneNumber": "Numéro de téléphone",
+	"username": "Nom d'utilisateur",
+	"displayName": "Nom d'affichage",
+	"users": "Utilisateurs",
+	"accountManagement": "Gestion du compte",
+	"blockedUsers": "Utilisateurs bloqués",
+	"disableAccount": "Désactiver le compte",
+	"deleteAccount": "Supprimer le compte",
+	"accountInformation": "Informations du compte",
+	"doNotHaveBlockedUser": "Aucun utilisateur bloqué",
+	"setPassword": "Définir un mot de passe",
+	"changePassword": "Changer le mot de passe",
+	"setEmail": "Définir l'email",
+	"changeEmail": "Changer l'email",
+	"setPhoneNumber": "Définir le numéro de téléphone",
+	"disableAccountAlert": {
+		"title": "Désactiver le compte",
+		"description": "Êtes-vous sûr de vouloir désactiver le compte ?",
+		"noConfirm": "Non",
+		"yesConfirm": "Oui"
+	},
+	"deleteAccountAlert": {
+		"title": "Supprimer le compte",
+		"description": "Êtes-vous sûr de vouloir supprimer le compte ?",
+		"noConfirm": "Non",
+		"yesConfirm": "Oui"
+	},
+	"setPasswordAccount": {
+		"linkEmailRequiredTitle": "Liaison d'email requise",
+		"linkEmailRequiredDescription": "Vous devez lier un email avant de définir un mot de passe",
+		"goTo": "Aller à",
+		"title": "Définir un mot de passe",
+		"email": "Email",
+		"password": "Mot de passe",
+		"currentPassword": "Mot de passe actuel",
+		"confirmPassword": "Confirmer le mot de passe",
+		"confirm": "Sauvegarder",
+		"changePassword": "Changer le mot de passe",
+		"description": "Votre mot de passe doit contenir au moins 8 caractères et inclure au moins une lettre majuscule, une lettre minuscule, un chiffre et un caractère spécial (par exemple : !@#$%^&*).",
+		"error": {
+			"characters": "Le mot de passe doit contenir au moins 8 caractères",
+			"uppercase": "Le mot de passe doit contenir au moins 1 lettre majuscule",
+			"lowercase": "Le mot de passe doit contenir au moins 1 lettre minuscule",
+			"number": "Le mot de passe doit contenir au moins 1 chiffre",
+			"symbol": "Le mot de passe doit contenir au moins 1 caractère spécial",
+			"notEqual": "La confirmation du mot de passe ne correspond pas",
+			"samePass": "Le nouveau mot de passe ne peut pas être identique à l'ancien",
+			"fillOldPass": "Veuillez entrer le mot de passe actuel.",
+			"updateFail": "Échec de la mise à jour du compte.",
+			"createFail": "Échec de la définition du mot de passe.",
+			"incorrectCurrent": "Le mot de passe actuel est incorrect. Veuillez réessayer."
+		},
+		"toast": {
+			"success": "Mot de passe mis à jour avec succès",
+			"error": "Échec de la mise à jour du mot de passe"
+		},
+		"placeholder": {
+			"currentPassword": "Entrez le mot de passe actuel",
+			"password": "Entrez le nouveau mot de passe",
+			"confirmPassword": "Confirmez le nouveau mot de passe"
+		}
+	},
+	"setPasswordModal": {
+		"title": "Définir un mot de passe",
+		"description": "Veuillez créer un nouveau mot de passe pour votre compte",
+		"emailPlaceholder": "votre.email@exemple.com",
+		"loading": "Chargement...",
+		"close": "Fermer"
+	},
+	"setPhoneModal": {
+		"title": "Définir le numéro de téléphone",
+		"phoneNumber": "Numéro de téléphone",
+		"description": "Vous recevrez un message contenant le code de vérification.",
+		"loading": "Chargement...",
+		"close": "Fermer",
+		"sendOTP": "Envoyer le code OTP",
+		"countryCode": "Indicatif pays",
+		"confirmOtp": "Confirmer le code OTP",
+		"invalidPhone": "Numéro de téléphone invalide",
+		"updatePhoneSuccess": "Numéro de téléphone mis à jour avec succès",
+		"updatePhoneFail": "Une erreur s'est produite. Veuillez réessayer plus tard",
+		"emptyOtp": "Code OTP invalide !",
+		"resendOtp": "Renvoyer le code OTP !",
+		"tooFast": "Trop rapide. Veuillez attendre {{seconds}} secondes avant de renvoyer le code OTP.",
+		"alreadyLinked": "Ce numéro est déjà lié à votre compte",
+		"alreadyLinkedToAnother": "Ce numéro est déjà lié à un autre compte",
+		"country": "Pays",
+		"otpSentMessage": "Veuillez vérifier le code OTP envoyé au numéro {{phone}}",
+		"backToPhoneInput": "Changer de numéro de téléphone ?"
+	},
+	"toast": {
+		"deleteAccount": {
+			"success": "Compte supprimé avec succès",
+			"error": "Vous êtes le propriétaire du clan"
+		}
+	},
+	"phoneNumberSetting": {
+		"title": "Numéro de téléphone",
+		"updatePhoneNumber": {
+			"newPhoneNumber": "Nouveau numéro de téléphone",
+			"nextButton": "Suivant",
+			"removeButton": "Supprimer le numéro de téléphone",
+			"failed": "Échec de la mise à jour du numéro de téléphone",
+			"invalidPhoneNumber": "Numéro de téléphone invalide"
+		},
+		"verifyPhoneNumber": {
+			"description": "Entrez le code à 6 chiffres que nous avons envoyé",
+			"verifyButton": "Vérifier",
+			"success": "Numéro de téléphone mis à jour avec succès"
+		}
+	},
+	"emailSetting": {
+		"cancel": "Annuler",
+		"currentEmail": "Email actuel",
+		"description": "Veuillez entrer votre email pour votre compte",
+		"otpDescription": "Le code OTP a été envoyé à votre nouvel email",
+		"fillOTP": "Entrez le code OTP",
+		"send": "Envoyer OTP",
+		"resendOtp": "Renvoyer le code OTP !",
+		"error": {
+			"notEqual": "La confirmation ne correspond pas",
+			"required": "L'email est requis",
+			"invalid": "Veuillez entrer une adresse email valide"
+		},
+		"updateEmail": {
+			"newEmail": "Nouvel email",
+			"nextButton": "Suivant",
+			"failed": "Échec de la mise à jour de l'email",
+			"invalidEmail": "Email invalide",
+			"emailAlreadyLinked": "Cet email que vous utilisez déjà"
+		},
+		"verifyEmail": {
+			"description": "Entrez le code à 6 chiffres que nous avons envoyé",
+			"verifyButton": "Vérifier",
+			"success": "Email mis à jour avec succès"
+		}
+	}
+}

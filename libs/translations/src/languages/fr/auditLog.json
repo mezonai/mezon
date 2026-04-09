@@ -1,0 +1,26 @@
+{
+	"auditLogComponent": {
+		"title": "Journal d'audit",
+		"filterByUser": "Filtrer par utilisateur",
+		"filterByAction": "Filtrer par action",
+		"filterBtn": "Filtrer"
+	},
+	"auditLogItem": {
+		"performedAnAction": "a effectué une action",
+		"toChannel": "vers le canal",
+		"remove": "supprimer",
+		"add": "ajouter"
+	},
+	"filterActionAuditLog": {
+		"allActions": "Toutes les actions",
+		"placeholder": "Rechercher une action"
+	},
+	"filterUserAuditLog": {
+		"allUsers": "Tous les utilisateurs",
+		"placeholder": "Rechercher un utilisateur"
+	},
+	"emptyAuditLog": {
+		"noLogsYet": "AUCUN JOURNAL POUR LE MOMENT",
+		"description": "Une fois que les modérateurs effectuent leurs tâches, vous pouvez suivre leurs activités ici."
+	}
+}

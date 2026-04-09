@@ -1,0 +1,17 @@
+{
+	"cameraPermissionDenied": "Accès à la caméra refusé",
+	"pleaseAllowCamera": "Veuillez autoriser l'accès à la caméra dans les paramètres de votre appareil.",
+	"cancel": "Annuler",
+	"openSettings": "Ouvrir les paramètres",
+	"anErrorOccurred": "Une erreur s'est produite, veuillez réessayer",
+	"youAreIn": "Vous êtes connecté !",
+	"logInOnNewDevice": "Se connecter sur un nouvel appareil ?",
+	"youAreLoggedInOnDesktop": "Vous êtes maintenant connecté sur le bureau",
+	"neverScanALoginQRCodeFromAnotherUser": "Ne jamais scanner un code QR de connexion provenant d'un autre utilisateur.",
+	"startTalking": "Commencer à discuter",
+	"logIn": "Se connecter",
+	"requestCameraPermission": "Demander l'autorisation d'accès à la caméra",
+	"myQRCode": "Mon code QR",
+	"selectPhotoWithQRCode": "Veuillez sélectionner une image contenant un code QR",
+	"qrCodeNotValid": "Code QR non valide"
+}

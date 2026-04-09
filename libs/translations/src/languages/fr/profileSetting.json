@@ -1,0 +1,76 @@
+{
+	"header": {
+		"save": "Sauvegarder"
+	},
+	"switch": {
+		"userProfile": "Personnel",
+		"serverProfile": "Clan"
+	},
+	"fields": {
+		"displayName": {
+			"label": "Nom d'affichage",
+			"placeholder": ""
+		},
+		"clanNickname": {
+			"label": "Surnom du Clan",
+			"placeholder": ""
+		},
+		"pronouns": {
+			"label": "Pronoms",
+			"placeholder": ""
+		},
+		"bio": {
+			"label": "Biographie",
+			"placeholder": ""
+		}
+	},
+	"changedAlert": {
+		"title": "Abandonner les modifications non sauvegardées ?",
+		"description": "Il y a des modifications non sauvegardées, êtes-vous sûr de vouloir les abandonner ?",
+		"discard": "Abandonner",
+		"keepEditing": "Continuer à modifier"
+	},
+	"selectAClan": "Sélectionnez un clan",
+	"searchClanPlaceholder": "Rechercher un clan",
+	"updateProfileSuccess": "Profil personnel mis à jour avec succès",
+	"updateProfileError": "Échec de la mise à jour du profil personnel",
+	"updateClanProfileSuccess": "Profil du clan mis à jour avec succès",
+	"emptyUsername": "Le nom d'affichage ne peut pas être vide !",
+	"duplicateClannick": "Surnom de clan dupliqué",
+	"clanNickname": "SURNAME DU CLAN",
+	"changeAvatar": "Changer l'avatar",
+	"removeAvatar": "Supprimer",
+	"avatar": "Avatar",
+	"preview": "APERÇU",
+	"nickNameExistsError": "Le surnom existe déjà dans le clan. Veuillez entrer un autre surnom.",
+	"unsavedChangesWarning": "Attention - vous avez des modifications non sauvegardées !",
+	"reset": "Réinitialiser",
+	"saveChanges": "Sauvegarder les modifications",
+	"showProfilesDescription": " Montrez-vous avec des profils différents pour chaque clan",
+	"chooseAClan": "CHOISIR UN CLAN",
+	"editImage": "Modifier l'image",
+	"close": "Fermer",
+	"resetChanges": "Réinitialiser les modifications",
+	"cancelEditing": "Annuler la modification",
+	"cancel": "Annuler",
+	"applyChanges": "Appliquer les modifications",
+	"apply": "Appliquer",
+	"moveImage": "Déplacer l'image",
+	"adjustZoom": "Ajuster le zoom",
+	"profiles": "Profils",
+	"userProfile": "Profil utilisateur",
+	"clanProfiles": "Profils du clan",
+	"directMessageIcon": "Icône de message privé",
+	"directMessageIconAction": {
+		"remove": "Supprimer",
+		"removeTitle": "Supprimer l'icône de message privé",
+		"removeDescription": "Êtes-vous sûr de vouloir supprimer l'icône de message privé ?"
+	},
+	"displayName": "NOM D'AFFICHAGE",
+	"emptyClanProfile": {
+		"title": "Vous ne faites partie d'aucun clan",
+		"description": "Créez ou rejoignez un clan pour configurer votre profil de clan.",
+		"createClan": "Créer un clan",
+		"joinClan": "Rejoindre un clan"
+	}
+}

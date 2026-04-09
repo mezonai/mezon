@@ -1,0 +1,131 @@
+{
+	"accountSettings": {
+		"title": "Paramètres du compte",
+		"account": "Compte",
+		"profiles": "Profils",
+		"privacySafety": "Confidentialité et sécurité",
+		"familyCenter": "Centre familial",
+		"authorizedApp": "Applications autorisées",
+		"device": "Appareil",
+		"connection": "Connexion",
+		"clip": "Clip",
+		"friendRequests": "Demandes d'ami",
+		"QRScan": "Scanner le code QR",
+		"MyQRCode": "Mon code QR",
+		"devices": "Appareils"
+	},
+	"deviceSettings": {
+		"description1": "Voici tous les appareils connectés à votre compte. Vous pouvez vous déconnecter de chaque appareil.",
+		"description2": "Si vous voyez une connexion que vous ne reconnaissez, déconnectez-vous de cet appareil et changez immédiatement le mot de passe de votre compte.",
+		"currentDevice": "Appareil actuel",
+		"otherDevices": "Autres appareils",
+		"noDevices": "Aucun appareil trouvé",
+		"loggedIn": "Connecté le",
+		"current": "Actuel",
+		"unknown": "Inconnu",
+		"platformIOS": "iOS",
+		"platformAndroid": "Android",
+		"platformDesktop": "Ordinateur",
+		"platformWeb": "Web",
+		"removeDevice": "Se déconnecter de cet appareil"
+	},
+	"paymentSettings": {
+		"title": "Paramètres de paiement",
+		"restoreSubscription": "Restaurer l'abonnement"
+	},
+	"appSettings": {
+		"title": "Paramètres de l'application",
+		"voice": "Voix",
+		"appearance": "Apparence",
+		"accessibility": "Accessibilité",
+		"language": "Langue",
+		"activity": "Activité",
+		"notifications": "Notifications",
+		"chat": "Conversation",
+		"webBrowser": "Navigateur web",
+		"appIcon": "Icône",
+		"advanced": "Avancé",
+		"appVersion": "Version de l'application",
+		"startUp": "Démarrage",
+		"quitApp": "Quitter l'application"
+	},
+	"autoStart": {
+		"title": "Démarrer l'application automatiquement",
+		"description": "Ouvrez automatiquement l'application au démarrage de l'ordinateur pour que vous puissiez l'utiliser immédiatement."
+	},
+	"hardwareAcceleration": {
+		"title": "Utiliser l'accélération graphique si disponible",
+		"description": "Lorsqu'activé, l'application exploitera la puissance du GPU (carte graphique) pour traiter les tâches graphiques intensives comme le rendu d'images 3D et le décodage vidéo. Cela augmente les taux de rafraîchissement et la réactivité de l'interface. En cas d'erreurs d'affichage ou de plantements de l'application, essayez de désactiver cette fonctionnalité pour améliorer la stabilité."
+	},
+	"autoHidden": {
+		"title": "Démarrer caché avec le système d'exploitation",
+		"description": "L'application démarrera automatiquement en mode caché lors de l'exécution avec le système d'exploitation."
+	},
+	"activity": {
+		"title": "Afficher mon activité",
+		"description": "Partagez vos activités actuelles avec vos amis. Cela les aide à savoir ce que vous faites et facilite la connexion !"
+	},
+	"supportSettings": {
+		"title": "Assistance",
+		"support": "Assistance",
+		"uploadLog": "Télécharger le journal de débogage",
+		"acknowledgement": "Remerciements"
+	},
+	"whatsNew": {
+		"title": "Quoi de neuf",
+		"whatsNew": "Quoi de neuf"
+	},
+	"updateGate": {
+		"outOfDateVersion": "NOUVELLE VERSION PRÊTE",
+		"updateExperience": "Une mise à jour rapide est nécessaire pour continuer à utiliser nos dernières fonctionnalités familiales.",
+		"updateNow": "Mettre à jour maintenant",
+		"versionInfo": "VERSION"
+	},
+	"language": {
+		"title": "Langue",
+		"description": "Sélectionnez la langue.",
+		"english": "English",
+		"vietnamese": "Tiếng Việt",
+		"russian": "Русский",
+		"spanish": "Español"
+	},
+	"voice": {
+		"title": "Voix",
+		"description": "Configurez vos paramètres vocaux.",
+		"microphone": "Microphone",
+		"speaker": "Haut-parleur",
+		"microphoneVolume": "Volume du microphone",
+		"speakerVolume": "Volume du haut-parleur",
+		"noiseSuppression": {
+			"title": "Suppression du bruit",
+			"toggleAriaLabel": "Activer ou désactiver la suppression du bruit"
+		},
+		"unnamedDevice": "Appareil non nommé",
+		"noDevices": "Aucun appareil trouvé",
+		"micTest": {
+			"title": "Test du microphone",
+			"description": "Des problèmes avec le micro ? Commencez un test et essayez de parler — nous diffuserons votre voix.",
+			"letsCheck": "Vérifier",
+			"stop": "Arrêter"
+		},
+		"errors": {
+			"permissionDenied": "Autorisation du microphone requise pour tester le micro.",
+			"micPermission": "Impossible d'accéder au microphone."
+		},
+		"warnings": {
+			"outputNotSupported": "Le navigateur ne prend pas en charge la sélection d'appareil de sortie. La sélection du haut-parleur peut être ignorée."
+		}
+	},
+	"logOut": "Déconnexion",
+	"logOutPopup": {
+		"description": "Êtes-vous sûr de vouloir vous déconnecter ?",
+		"noConfirm": "Non",
+		"yesConfirm": "Oui"
+	},
+	"removeAccount": "Supprimer le compte",
+	"channelSetting": {
+		"recentChannels": "Canaux récents",
+		"searchByChannelLabel": "Rechercher par étiquette de canal"
+	},
+	"setting": "Paramètres"
+}

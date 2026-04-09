@@ -1,0 +1,56 @@
+{
+	"bottomSheet": {
+		"title": "Paramètres de notification",
+		"muteUntil": "Vous avez coupé les notifications pour ce canal jusqu'au",
+		"unMute": "Réactiver les notifications",
+		"mute": "Couper les notifications",
+		"labelOptions": {
+			"reactionMessage": "Réactions des messages",
+			"categoryDefault": "Utiliser les paramètres par défaut",
+			"allMessage": "Tous",
+			"notThingMessage": "Rien",
+			"mentionMessage": "Seulement @mention"
+		},
+		"muteCategoryUntil": "Vous avez coupé les notifications pour cette catégorie jusqu'au"
+	},
+	"notifySettingThreadModal": {
+		"headerTitleMuteThread": "Couper les notifications pour ce fil",
+		"headerTitleMuteChannel": "Couper les notifications pour ce canal",
+		"muteThisConversation": "Couper les notifications pour cette conversation",
+		"muteDuration": {
+			"forFifteenMinutes": "Pendant 15 minutes",
+			"forOneHour": "Pendant 1 heure",
+			"forThreeHours": "Pendant 3 heures",
+			"forEightHours": "Pendant 8 heures",
+			"forTwentyFourHours": "Pendant 24 heures",
+			"untilTurnItBackOn": "Jusqu'à ce que je le réactive"
+		},
+		"description": "Vous recevez des notifications pour tous les messages dans ce clan, mais vous pouvez modifier les paramètres ici",
+		"muteSuccess": "Notifications coupées avec succès !",
+		"unMuteSuccess": "Notifications réactivées avec succès !",
+		"muteFailed": "Échec de la coupure des notifications !",
+		"unMuteFailed": "Échec de la réactivation des notifications !"
+	},
+	"toast": {
+		"error": "Erreur de mise à jour des notifications: {{error}}"
+	},
+	"title": "Paramètres de notification",
+	"clanNotificationSettings": "PARAMÈTRES DE NOTIFICATION DU CLAN",
+	"notificationOverrides": "RÉÉCRITURE DES NOTIFICATIONS",
+	"addChannelOverride": "Ajouter un canal pour écraser les paramètres de notification par défaut",
+	"selectOrCreateOption": "Sélectionner ou créer une option...",
+	"headers": {
+		"channelOrCategory": "CANAL OU CATÉGORIE",
+		"all": "TOUS",
+		"mentions": "MENTIONS",
+		"nothing": "RIEN",
+		"mute": "Couper les notifications"
+	},
+	"menu": {
+		"notification": {
+			"all": "Tous",
+			"onlyMention": "Seulement @mention",
+			"nothing": "Rien"
+		}
+	}
+}

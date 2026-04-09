@@ -1,0 +1,35 @@
+{
+	"title": {
+		"placeholder": "Titre de votre canvas"
+	},
+	"editor": {
+		"placeholder": "Commencez à taper...",
+		"uploadingImage": "Téléchargement de l'image..."
+	},
+	"actions": {
+		"save": "Enregistrer",
+		"saving": "Enregistrement en cours...",
+		"discardChanges": "Annuler les modifications"
+	},
+	"error": {
+		"title": "Erreur"
+	},
+	"toolbar": {
+		"blockFormat": "Format de bloc",
+		"addLink": "Ajouter un lien",
+		"removeLink": "Supprimer le lien",
+		"codeBlock": "Bloc de code",
+		"cancel": "Annuler",
+		"apply": "Appliquer"
+	},
+	"blocks": {
+		"paragraph": "Paragraphe",
+		"h1": "Titre H1",
+		"h2": "Titre H2",
+		"h3": "Titre H3",
+		"checkedList": "Liste cochée",
+		"orderedList": "Liste numérotée",
+		"bulletedList": "Liste à puces",
+		"blockquote": "Citation"
+	}
+}

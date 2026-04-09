@@ -1,0 +1,168 @@
+{
+	"pageTitle": {
+		"channels": "Canaux",
+		"members": "Membres",
+		"guideClan": "Guide"
+	},
+	"tooltips": {
+		"clickToEdit": "Cliquez pour modifier le groupe",
+		"startVoiceCall": "Commencer un appel vocal",
+		"startVideoCall": "Commencer un appel vidéo",
+		"showMemberList": "Afficher la liste des membres",
+		"hideMemberList": "Masquer la liste des membres",
+		"showUserProfile": "Afficher le profil utilisateur",
+		"hideUserProfile": "Masquer le profil utilisateur",
+		"files": "Fichiers",
+		"canvas": "Canvas",
+		"threads": "Fils de discussion",
+		"notificationSettings": "Paramètres de notification",
+		"pinnedMessages": "Messages épinglés",
+		"members": "Membres",
+		"showChat": "Afficher la conversation",
+		"hideChat": "Masquer la conversation",
+		"addFriendsToDM": "Ajouter des amis aux DM",
+		"jump": "Aller à",
+		"gallery": "Galerie",
+		"timelineView": "Passer en Mode Chronologie",
+		"defaultView": "Passer en Mode Conversation"
+	},
+	"directMessage": "Message direct",
+	"activeThreads": "Fils actifs",
+	"joinedThreadsLast30Days": "Fils joints (30 derniers jours)",
+	"olderThreads": "Fils plus anciens",
+	"loading": "Chargement...",
+	"topic": "Sujet",
+	"invoice": "Dans le canal vocal",
+	"reactions": "Réactions",
+	"callMessages": {
+		"startedVoiceCall": "Appel vocal commencé",
+		"startedVideoCall": "Appel vidéo commencé"
+	},
+	"toastMessages": {
+		"groupChannelIdMissing": "ID du canal de groupe manquant",
+		"dmChannelIdMissing": "ID du canal de message direct manquant",
+		"youAreOnAnotherCall": "Vous êtes déjà dans un autre appel"
+	},
+	"pinnedMessages": {
+		"emptyTitle": "Aucun message épinglé dans ce canal.",
+		"protip": "ASTUCE :",
+		"emptyDescription": "Les utilisateurs avec la permission 'Gérer les messages' peuvent épingler des messages depuis le menu contextuel.",
+		"unpinMessage": "Désépingler le message",
+		"unpinConfirmation": "Êtes-vous sûr de vouloir supprimer ce message épinglé ?",
+		"cancel": "Annuler",
+		"unpinIt": "Désépingler"
+	},
+	"threads": {
+		"emptyTitle": "Aucun fil.",
+		"emptyDescription": "Concentrez-vous sur la conversation avec un fil - un canal texte temporaire.",
+		"createThread": "Créer un fil"
+	},
+	"canvas": {
+		"emptyTitle": "Aucun canvas.",
+		"emptyDescription": "Concentrez-vous sur la conversation avec un canvas - un canal texte temporaire.",
+		"createCanvas": "Créer un Canvas"
+	},
+	"files": {
+		"emptyTitle": "Aucun fichier.",
+		"emptyDescription": "Aucun fichier n'a été partagé dans ce canal pour le moment.",
+		"searchPlaceholder": "Rechercher un nom de fichier"
+	},
+	"fileItem": {
+		"download": "Télécharger",
+		"sharedBy": "Partagé par {{username}} {{time}}",
+		"attachmentFailed": "Échec du téléchargement de la pièce jointe."
+	},
+	"notificationSetting": {
+		"muteChannel": "Couper les notifications du canal",
+		"unmuteChannel": "Réactiver les notifications du canal",
+		"mutedUntil": "Notifications coupées jusqu'au {{date}}",
+		"useCategoryDefault": "Utiliser le défaut de la catégorie",
+		"muteOptions": {
+			"for15Minutes": "Pendant 15 minutes",
+			"for1Hour": "Pendant 1 heure",
+			"for3Hours": "Pendant 3 heures",
+			"for8Hours": "Pendant 8 heures",
+			"for24Hours": "Pendant 24 heures",
+			"untilTurnedBackOn": "Jusqu'à ce que je le réactive"
+		}
+	},
+	"gallery": {
+		"title": "Galerie",
+		"sentDate": "Date d'envoi",
+		"fromDate": "Du",
+		"toDate": "Au",
+		"filters": {
+			"all": "Tous",
+			"images": "Images",
+			"videos": "Vidéos"
+		},
+		"dateRange": {
+			"from": "Du {{date}}",
+			"to": "Au {{date}}",
+			"range": "{{startDate}} - {{endDate}}"
+		},
+		"validation": {
+			"startDateBeforeEnd": "La date de début doit être antérieure ou égale à la date de fin"
+		},
+		"buttons": {
+			"clearAll": "Tout effacer",
+			"apply": "Appliquer",
+			"clearDateFilter": "Effacer le filtre de date"
+		},
+		"emptyState": {
+			"noMediaFiles": "Aucun fichier média trouvé",
+			"noMediaFilesDateRange": "Aucun fichier média trouvé pour la plage de dates sélectionnée",
+			"noImages": "Aucune image trouvée",
+			"noVideos": "Aucune vidéo trouvée"
+		},
+		"loading": {
+			"olderImages": "Chargement des images plus anciennes...",
+			"newerImages": "Chargement des images plus récentes...",
+			"filterChange": "Chargement des médias..."
+		},
+		"filesCount": "{{count}} fichiers",
+		"imageError": "Erreur"
+	},
+	"modals": {
+		"threads": {
+			"title": "Fils de discussion",
+			"create": "Créer",
+			"results": "Résultats"
+		},
+		"canvas": {
+			"title": "Canvas",
+			"create": "Créer"
+		},
+		"files": {
+			"title": "Fichiers"
+		},
+		"pinnedMessages": {
+			"title": "Messages épinglés"
+		}
+	},
+	"createThread": {
+		"newThread": "Nouveau fil",
+		"inviteMessage": "Vous pouvez inviter de nouveaux membres en les @mentionnant.",
+		"validation": {
+			"invalidChannelName": "Veuillez entrer un nom de fil valide (maximum 65 caractères, uniquement des lettres, chiffres, _ ou -).",
+			"threadNameRequired": "Le nom du fil est requis.",
+			"starterMessageRequired": "Le message d'amorçage est requis."
+		},
+		"threadName": "Nom du fil",
+		"enterThreadName": "Entrez le nom du fil",
+		"privateThread": "Fil privé",
+		"privateThreadDescription": "Seuls les membres invités et les modérateurs peuvent voir",
+		"toast": {
+			"threadNameTooShort": "Le nom du fil doit faire plus de 3 caractères",
+			"threadNameExists": "Le nom du fil existe déjà",
+			"initialMessageRequired": "Un message initial est nécessaire pour démarrer le fil.",
+			"messageTooLong": "Le message dépasse la limite de 4000 caractères",
+			"messageLimitExceeded": "Le message dépasse la limite de {{limit}} caractères"
+		},
+		"placeholder": {
+			"threadName": "Entrez le nom du fil"
+		}
+	},
+	"moreFile": "autre fichier",
+	"moreFiles": "autres fichiers"
+}

@@ -1,0 +1,50 @@
+{
+	"title": "Bannière du Stream",
+	"uploadThumbnail": "Télécharger la bannière",
+	"currentThumbnail": "Bannière actuelle",
+	"requirementsTitle": "Exigences",
+	"buttons": {
+		"change": "Changer",
+		"remove": "Supprimer",
+		"selectFile": "Sélectionner un fichier",
+		"uploading": "Téléchargement en cours...",
+		"cancel": "Annuler",
+		"confirmUpload": "Confirmer",
+		"removing": "Suppression en cours...",
+		"removeThumbnail": "Supprimer la bannière"
+	},
+	"upload": {
+		"title": "Téléchargez votre bannière",
+		"description": "Cliquez pour parcourir ou glissez-déposez votre image"
+	},
+	"confirmModal": {
+		"uploadTitle": "Confirmer le téléchargement",
+		"uploadDescription": "Définir cette image comme bannière de votre stream ?",
+		"uploadMessage": "Cette bannière sera affichée lorsque votre stream sera hors ligne. Tous les membres verront cette mise à jour immédiatement.",
+		"removeTitle": "Supprimer la bannière",
+		"removeQuestion": "Êtes-vous sûr ?",
+		"removeMessage": "Cela supprimera votre bannière de stream. L'écran d'accueil par défaut sera affiché à la place lorsque votre stream sera hors ligne.",
+		"removeWarning": "Cette action ne peut pas être annulée."
+	},
+	"requirements": {
+		"format": {
+			"title": "Format",
+			"value": "JPG, PNG, GIF, WEBP"
+		},
+		"resolution": {
+			"title": "Résolution",
+			"value": "Recommandé 1920 x 1080"
+		},
+		"sizeLimit": {
+			"title": "Limite de taille",
+			"value": "Maximum 10 Mo"
+		}
+	},
+	"errors": {
+		"channelNotFound": "Canal introuvable",
+		"clientNotReady": "Client/session pas prêt",
+		"uploadFailed": "Échec du téléchargement de la bannière. Veuillez réessayer.",
+		"removeFailed": "Échec de la suppression de la bannière. Veuillez réessayer."
+	},
+	"saved": "Bannière sauvegardée"
+}

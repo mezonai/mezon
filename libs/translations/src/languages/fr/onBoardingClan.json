@@ -1,0 +1,165 @@
+{
+	"title": "Terminer l'initialisation",
+	"description": "Étape {{step}} sur {{total}}",
+	"action": {
+		"title": "Terminer l'initialisation pour votre clan",
+		"description": "{{step}} sur {{total}} étapes terminées",
+		"createChannel": "Créer votre canal",
+		"invite": "Invitez quelques amis",
+		"sendMessage": "Envoyez votre premier message"
+	},
+	"modal": {
+		"title": "Paramètres d'initialisation"
+	},
+	"buttons": {
+		"back": "Retour",
+		"cancel": "Annuler",
+		"confirm": "Confirmer",
+		"save": "Sauvegarder",
+		"saving": "Sauvegarde en cours...",
+		"setup": "Configuration",
+		"edit": "Modifier",
+		"preview": "Aperçu",
+		"disable": "Désactiver l'initialisation"
+	},
+	"onboarding": {
+		"title": "Initialisation",
+		"description": "Créez une expérience de démarrage simple pour les membres avec des canaux, rôles et étapes initiales personnalisés.",
+		"enabledTitle": "Initialisation activée",
+		"enabledDescription": "Les modifications ne prendront effet qu'après sauvegarde.",
+		"featuresEnabled": "Fonctionnalités d'initialisation activées"
+	},
+	"questions": {
+		"title": "Questions",
+		"description": "Les canaux publics peuvent être attribués via des Questions."
+	},
+	"clanGuide": {
+		"title": "Guide du Clan",
+		"description": "Votre message de bienvenue, bannière, tâches à faire et ressources sont tous configurés"
+	},
+	"messages": {
+		"communityEnabledSuccess": "Communauté activée avec succès",
+		"changesSavedSuccess": "Modifications sauvegardées avec succès"
+	},
+	"errors": {
+		"needAtLeastOneItem": "Au moins un élément est requis pour activer l'initialisation",
+		"failedToEnableCommunity": "Échec de l'activation de la communauté",
+		"failedToSaveChanges": "Échec de la sauvegarde des modifications",
+		"questionRequired": "Une question est requise."
+	},
+	"questionsPage": {
+		"title": "Questions",
+		"description": "Créez des questions pour aider les membres à sélectionner des canaux et rôles supplémentaires. Leur liste de canaux sera personnalisée en fonction de leurs réponses.",
+		"noChannelsMissing": "Aucun canal public manquant des Questions et des Canaux par défaut.",
+		"channelNotAssigned": "Canal non attribué",
+		"noChannelsHere": "Aucun canal ici",
+		"preJoinQuestions": {
+			"title": "Questions Avant Rejoindre",
+			"description": "Les membres seront interrogés sur ces questions avant de rejoindre votre serveur. Utilisez-les pour attribuer des canaux et rôles importants. Les questions Avant Rejoindre seront également disponibles sur la page Canaux & Rôles."
+		},
+		"addQuestion": "Ajouter une question",
+		"questionNumber": "Question {{number}}",
+		"enterQuestion": "Entrez la question...",
+		"availableAnswers": "Réponses disponibles - {{count}} sur 50",
+		"addAnswer": "Ajouter une réponse",
+		"questionPlaceholder": "Quelle est votre question",
+		"answerTitle": "Ajouter un titre de réponse",
+		"answerDescription": "Ajouter une description de réponse",
+		"enterAnswer": "Entrez la réponse...",
+		"enterDescription": "Entrez la description... (facultatif)",
+		"titleRequired": "Le titre est requis",
+		"remove": "Supprimer"
+	},
+	"enableOnboarding": {
+		"title": "Voulez-vous activer l'initialisation ?",
+		"description": "Passez à l'initialisation pour accéder à des outils d'administration supplémentaires",
+		"subtitle": "vous aident à modérer et faire grandir votre clan efficacement.",
+		"button": "Activer l'initialisation",
+		"note": "Cette action débloquera les fonctionnalités d'initialisation avancées"
+	},
+	"enableCommunity": {
+		"title": "Activer la communauté ?",
+		"description": "Transformez votre communauté en expérience Communauté complète.",
+		"subtitle": "Accédez à des outils d'administration puissants pour modérer et faire grandir votre clan efficacement.",
+		"button": "Activer la communauté",
+		"note": "Cette action débloquera les fonctionnalités communautaires avancées"
+	},
+	"communitySettings": {
+		"warnningEmptyField": "Les champs avec * sont requis",
+		"title": "Paramètres de la communauté",
+		"subtitle": "Gérez les informations de votre communauté",
+		"enableTitle": "Activer la communauté",
+		"enableSubtitle": "Créez un espace formidable pour que les membres se connectent",
+		"loading": "Chargement des paramètres de la communauté...",
+		"banner": {
+			"title": "Bannière de la communauté",
+			"uploadTitle": "Télécharger la bannière",
+			"uploadDescription": "Glissez-déposez ou cliquez pour sélectionner une image",
+			"changeBanner": "Changer la bannière",
+			"removeBanner": "Supprimer la bannière"
+		},
+		"description": {
+			"title": "Description de la communauté",
+			"placeholder": "Entrez une courte description pour votre communauté..."
+		},
+		"about": {
+			"title": "À propos de la communauté",
+			"placeholder": "Parlez-nous de votre communauté... Qu'est-ce qui la rend spéciale ?"
+		},
+		"vanityUrl": {
+			"title": "URL personnalisée",
+			"description": "Créez une URL personnalisée pour votre communauté. Utilisez uniquement des lettres minuscules, des chiffres et des tirets.",
+			"placeholder": "ma-communaute-magnifique",
+			"previewLabel": "Aperçu de l'URL :"
+		},
+		"buttons": {
+			"enableAndSave": "Activer & Sauvegarder",
+			"saving": "Sauvegarde en cours...",
+			"save": "Sauvegarder les modifications",
+			"disable": "Désactiver la communauté",
+			"reset": "Réinitialiser"
+		},
+		"messages": {
+			"aboutUpdated": "Informations mises à jour !",
+			"aboutUpdateFailed": "Échec de la mise à jour des informations !",
+			"descriptionUpdated": "Description mise à jour !",
+			"descriptionUpdateFailed": "Échec de la mise à jour de la description !",
+			"vanityUrlUpdated": "URL personnalisée mise à jour !",
+			"vanityUrlUpdateFailed": "Échec de la mise à jour de l'URL personnalisée !",
+			"communityEnabledAndSaved": "Communauté activée et sauvegardée !",
+			"saveFailed": "Échec de la sauvegarde !",
+			"changesSaved": "Modifications sauvegardées !",
+			"communityDisabled": "Communauté désactivée.",
+			"disableFailed": "Échec de la désactivation !",
+			"bannerRemoved": "Bannière supprimée !",
+			"fillAllRequiredFields": "Veuillez remplir tous les champs requis : Bannière, À propos, Description, URL personnalisée !",
+			"bannerUpdateFailed": "Échec de la mise à jour de la bannière !"
+		}
+	},
+	"clanGuideSetting": {
+		"welcomeSign": {
+			"title": "Bienvenue",
+			"description": "Faites savoir aux nouveaux membres ce qui rend votre communauté spéciale et pourquoi vous êtes heureux de les rencontrer !"
+		},
+		"newMemberToDos": {
+			"title": "Tâches des nouveaux membres",
+			"description": "Définissez 3-5 tâches que vos nouveaux membres doivent accomplir. Faites-leur <strong>discuter et participer à vos canaux.</strong>"
+		},
+		"dontDoThis": "Ne faites pas comme ça : trop général",
+		"exampleTask": {
+			"title": "discuter avec la communauté",
+			"description": "dans #general"
+		},
+		"readTheRules": "Lire les règles",
+		"addTask": "Ajouter une tâche",
+		"resourcePages": {
+			"title": "Pages de ressources",
+			"description": "Transformez les canaux en lecture seule en belles pages de ressources dans votre Guide de Clan. Ils n'apparaîtront plus dans la liste des canaux sauf si vous activez Tous les canaux. Les ressources viennent avec quelques avantages :",
+			"perk1": "Les membres commencent au début de la page au lieu de la fin de la chaîne de messages",
+			"perk2": "La barre de discussion et les avatars sont supprimés pour une apparence plus propre",
+			"perk3": "Tout le contenu, embeds, médias et mise en forme seront conservés"
+		},
+		"addResource": "Ajouter une ressource",
+		"ownerGreeting": "Bonjour, ceci est un message de bienvenue du propriétaire du clan. Vous verrez ce message la première fois que vous rejoindrez le clan !"
+	}
+}

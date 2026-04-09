@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "Créer une nouvelle application",
+			"bot": "Créer un nouveau bot"
+		},
+		"form": {
+			"type": {
+				"label": "TYPE",
+				"options": {
+					"createApplication": "Créer une application",
+					"createBot": "Créer un bot"
+				}
+			},
+			"name": {
+				"label": "NOM"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "Bot Furtif",
+			"agreement": {
+				"text": "En cliquant sur Créer, vous acceptez les",
+				"termsOfService": "Conditions d'utilisation des développeurs",
+				"policy": "Politique des développeurs",
+				"and": "et"
+			}
+		},
+		"buttons": {
+			"cancel": "Annuler",
+			"create": "Créer",
+			"creating": "Création en cours...",
+			"confirm": "Confirmer"
+		},
+		"errors": {
+			"nameRequired": "Le nom est requis pour créer votre nouveau {type}.",
+			"urlRequired": "L'URL est requise pour créer votre nouvelle application.",
+			"invalidUrl": "Veuillez entrer une URL valide (par exemple: https://exemple.com).",
+			"createFailed": "Impossible de créer l'application ou ID manquant dans la réponse",
+			"unexpectedError": "Une erreur inattendue s'est produite.{message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "En mode furtif, le bot peut recevoir tous les messages envoyés au créateur, mais ne peut pas envoyer de messages."
+		},
+		"shadowConfirm": {
+			"title": "Êtes-vous sûr de vouloir activer le mode Bot Furtif ?",
+			"message": "Dans ce mode, le bot peut recevoir tous les messages envoyés au créateur mais ne peut pas envoyer de messages."
+		}
+	},
+	"sidebar": {
+		"menu": "Menu",
+		"closeMenu": "Fermer le menu"
+	},
+	"tabs": {
+		"generalInformation": "Informations générales",
+		"installation": "Installation",
+		"oauth2": "OAuth2"
+	},
+	"generalInformation": {
+		"title": "Informations générales",
+		"subtitle": "Comment devrions-nous appeler votre produit ? Quelles merveilles fait-il ? Quel icône devrait le représenter sur Mezon ? Dites-nous tout ici !",
+		"agreement": {
+			"text": "En cliquant sur Créer, vous acceptez les",
+			"adminTerms": "Conditions d'utilisation des administrateurs",
+			"adminPolicy": "Politique des administrateurs",
+			"and": "et"
+		},
+		"appIcon": {
+			"label": "Icône d'application",
+			"remove": "Supprimer",
+			"size": "Taille: {size}"
+		},
+		"form": {
+			"name": "Nom",
+			"url": "URL",
+			"botShadow": "Bot Furtif",
+			"description": {
+				"label": "Description (maximum 400 caractères)",
+				"subtitle": "Votre description apparaîtra dans la section À propos du Bot ",
+				"placeholder": "Écrivez une courte description de votre Bot"
+			},
+			"appId": "ID Bot",
+			"appToken": "Token "
+		},
+		"token": {
+			"newTokenWarning": "Ceci est votre nouveau token. Veuillez le copier et le conserver en sécurité, vous ne pourrez plus le voir.",
+			"securityInfo": "Pour des raisons de sécurité, le token ne peut être consulté qu'une seule fois, lors de sa création. Si vous oubliez ou perdez l'accès au token, veuillez en recréer un nouveau."
+		},
+		"buttons": {
+			"copy": "Copier",
+			"copied": "Copié !",
+			"copyToken": "Copier le Token",
+			"resetToken": "Réinitialiser le Token",
+			"delete": "Supprimer "
+		},
+		"errors": {
+			"invalidUrl": "Veuillez entrer une URL valide (par exemple: https://exemple.com).",
+			"clientNotInitialized": "Le client ou le fichier n'a pas été initialisé",
+			"resetTokenFailed": "Impossible de réinitialiser le token:"
+		}
+	},
+	"installation": {
+		"title": "Installation",
+		"subtitle": "Choisissez comment les utilisateurs installeront votre application. Créez un lien d'installation, sélectionnez le contexte d'installation à prendre en charge, et définissez les portées ainsi que les permissions que vous souhaitez demander.",
+		"installLink": {
+			"title": "Lien d'installation",
+			"description": "Utilisez le lien d'installation fourni ou enregistrez un lien personnalisé. Si vous choisissez un lien personnalisé, les utilisateurs ajoutant votre application seront redirigés vers votre URL au lieu du processus d'ajout d'application dans Mezon.",
+			"option": "Lien fourni par Mezon"
+		},
+		"buttons": {
+			"copy": "Copier",
+			"copied": "Copié !"
+		},
+		"loading": "Chargement des données de l'application...",
+		"notFound": "Données de l'application non trouvées"
+	},
+	"clientInformation": {
+		"title": "Informations Client",
+		"clientId": "ID Client",
+		"clientSecret": "Secret Client",
+		"hiddenForSecurity": "Masqué pour des raisons de sécurité",
+		"resetSecret": "Réinitialiser le secret",
+		"publicClient": {
+			"title": "Client public",
+			"description": "Un client public ne peut pas maintenir la confidentialité des identifiants client (c'est-à-dire les applications desktop/mobile qui n'utilisent pas de serveur pour effectuer des requêtes)"
+		},
+		"buttons": {
+			"copy": "Copier",
+			"copied": "Copié !"
+		},
+		"resetSecretPopup": {
+			"title": "Recréer la clé secrète ?",
+			"warning": "Votre application cessera de fonctionner jusqu'à ce que vous mettiez à jour la clé secrète dans le code de l'application.",
+			"nevermind": "Non",
+			"confirm": "D'accord !"
+		},
+		"toasts": {
+			"addRedirectUri": "Veuillez ajouter au moins un URI de redirection avant de réinitialiser la clé secrète !"
+		}
+	},
+	"sidebarTabs": {
+		"dashboard": "Tableau de bord",
+		"applications": "Applications",
+		"teams": "Équipes",
+		"embedDebugger": "Débogueur Embed",
+		"document": "Documentation"
+	},
+	"applicationsPage": {
+		"title": "Applications",
+		"newApplicationButton": "Créer une nouvelle application ou bot",
+		"develop": "Développer",
+		"subtitle": "pour personnaliser et étendre Mezon pour des millions d'utilisateurs.",
+		"appsLinkText": "applications",
+		"sortBy": "Trier par :",
+		"sortOptions": {
+			"dateOfCreation": "Date de création",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "Petit",
+			"large": "Grand"
+		},
+		"sections": {
+			"myApplications": "Mes applications",
+			"myBots": "Mes bots"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Utilisez Mezon comme système d'autorisation ou utilisez notre API en votre nom. Ajoutez un URI de redirection, sélectionnez la portée, lancez un dé D20 pour la chance, et commencez !",
+		"learnMore": "En savoir plus sur OAuth2",
+		"generator": {
+			"title": "Générateur d'URL OAuth2",
+			"description": "Créez un lien d'invitation pour votre application en sélectionnant les portées et permissions nécessaires pour son fonctionnement. Ensuite, partagez l'URL avec d'autres !",
+			"scopes": "Portées"
+		},
+		"redirects": {
+			"title": "Redirections",
+			"description": "Vous devez spécifier au moins un URI pour que l'authentification fonctionne. Si vous transmettez un URI dans la requête OAuth, il doit correspondre exactement à l'un des URIs que vous entrez ici.",
+			"addRedirect": "Ajouter une redirection",
+			"toasts": {
+				"fillAllInputs": "Veuillez remplir tous les champs avec des URIs valides !"
+			}
+		},
+		"toasts": {
+			"emptyInput": "Il y a des champs de saisie vides !",
+			"invalidUris": "Les URIs doivent être valides !",
+			"redirectUriRequired": "L'URI de redirection est requis !"
+		}
+	},
+	"backToApps": "Retour aux Applications",
+	"selectLabel": "SÉLECTIONNER {{type}}",
+	"settings": "PARAMÈTRES",
+	"flows": {
+		"title": "Flux de Chat",
+		"hasTokenInfo": "Vous devez configurer le Token avant de créer un nouveau flux Bot.",
+		"setToken": "Définir le Token",
+		"addFlow": "Ajouter un flux",
+		"appTokenModal": {
+			"title": "Token d'application",
+			"saveButton": "Sauvegarder"
+		},
+		"toasts": {
+			"errorLoading": "Erreur lors du chargement de la liste des flux"
+		}
+	},
+	"teams": {
+		"title": "Équipes"
+	},
+	"embed": {
+		"title": "Débogueur Embed"
+	},
+	"small": "Petit",
+	"large": "Grand"
+}

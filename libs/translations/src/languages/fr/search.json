@@ -1,0 +1,9 @@
+{
+  "searchMembers": "Rechercher des membres",
+  "searchActions": "Rechercher des actions",
+  "allUsers": "Tous les utilisateurs",
+  "noResults": {
+    "title": "Aucun !",
+    "description": "Avez-vous fait une erreur de frappe ?"
+  }
+}

@@ -1,0 +1,48 @@
+{
+	"header": {
+		"title": "Historique des transactions",
+		"subtitle": "Voir toutes vos activités de transaction"
+	},
+	"footers": {
+		"noti": "Vous avez chargé toutes les {{count}} transactions",
+		"fetching": "Chargement de transactions supplémentaires..."
+	},
+	"filters": {
+		"all": "Toutes les transactions",
+		"sent": "Transactions envoyées",
+		"received": "Transactions reçues"
+	},
+	"transactionTypes": {
+		"sent": "Envoyé",
+		"received": "Reçu"
+	},
+	"currency": {
+		"code": "vi-VN",
+		"symbol": "Coins Mezon"
+	},
+	"emptyStates": {
+		"noTransactions": {
+			"title": "Aucune transaction trouvée",
+			"description": "Vous n'avez effectué aucune transaction. Votre historique de transactions apparaîtra ici lorsque vous commencerez à envoyer ou recevoir des tokens."
+		},
+		"noFilteredTransactions": {
+			"title": "Aucune transaction trouvée",
+			"description": "Aucune transaction trouvée pour le filtre sélectionné. Veuillez essayer un autre filtre ou vérifier à nouveau plus tard."
+		}
+	},
+	"transactionDetail": {
+		"fields": {
+			"transactionId": "ID de transaction",
+			"sender": "Expéditeur",
+			"amount": "Montant",
+			"receiver": "Destinataire",
+			"note": "Note",
+			"created": "Date de création"
+		},
+		"defaultNote": "Pas de note",
+		"unknownUser": "Utilisateur inconnu"
+	},
+	"transactionItem": {
+		"idPrefix": "Transaction #"
+	}
+}

@@ -1,0 +1,11 @@
+{
+  "description": "Une application tierce",
+  "subDescription": "veut accéder à votre compte Mezon",
+  "addToClan": "Ajouter au Clan",
+  "invite": "Autoriser",
+  "back": "Retour",
+  "successInstall": "Application ajoutée au clan avec succès",
+  "errorInstall": "Erreur lors de l'ajout de l'application au clan",
+  "selectClan": "Rechercher un Clan",
+  "placeholder": "Sélectionnez un clan pour inviter votre bot/application"
+}

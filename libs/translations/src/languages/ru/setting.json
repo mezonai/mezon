@@ -86,7 +86,12 @@
 		"english": "English",
 		"vietnamese": "Tiếng Việt",
 		"russian": "Русский",
-		"portuguese": "Português"
+		"portuguese": "Português",
+		"italian": "Italiano",
+		"tatar": "Tatarça",
+		"spanish": "Español",
+		"japanese": "日本語",
+		"french": "Français"
 	},
 	"voice": {
 		"title": "Голос",
