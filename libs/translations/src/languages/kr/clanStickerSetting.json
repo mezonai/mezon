@@ -1,0 +1,42 @@
+{
+	"btn": {
+		"upload": "스티커 업로드",
+		"delete": "삭제"
+	},
+	"modal": {
+		"uploadAFile": "파일 업로드",
+		"fileShouldBeAPNGPNGOrGIF256KBMax": "파일은 PNG 또는 GIF 여야 하며 최대 512KB",
+		"preview": "미리보기",
+		"file": "파일",
+		"thisCannotBeEdited": "수정 불가",
+		"browse": "찾아보기",
+		"chooseAFile": "파일 선택",
+		"stickerName": "스티커 이름",
+		"exCatHug": "예: cat_hug",
+		"thisIsForSale": "판매 중입니다",
+		"neverMind": "괜찮음",
+		"characters": "이름은 3~64 자여야 합니다"
+	},
+	"content": {
+		"description": "이 클랜에서 누구나 사용할 수 있는 최대 250 개의 커스터마이징 스티커를 추가하세요.",
+		"requirements": "업로드 요구사항",
+		"reqType": "•  정적 이미지 (PNG) 또는 애니메이션 이미지 (GIF) 일 수 있습니다.",
+		"reqDim": "•  정확히 320 x 320 픽셀이어야 합니다.",
+		"reqSize": "•  512KB 미만.",
+		"available": "{{left}} 개의 스티커 슬롯 사용 가능"
+	},
+	"toast": {
+		"errorUpdating": "업데이트 오류",
+		"errorSizeLimit": "이미지 크기가 512KB 초과",
+		"validateName": "길이는 {{min}}~{{max}} 자여야 합니다. 문자, 숫자, _ 및 - 만 허용됨"
+	},
+	"empty": {
+		"tip": "팁",
+		"voiceSticker": {
+			"title": "사운드 스티커가 없습니다"
+		},
+		"sticker": {
+			"title": "스티커가 없습니다"
+		}
+	}
+}

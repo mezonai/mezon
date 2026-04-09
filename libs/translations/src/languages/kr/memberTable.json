@@ -1,0 +1,20 @@
+{
+	"headers": {
+		"name": "이름",
+		"memberSince": "참여",
+		"joinedMezon": "Mezon 참여",
+		"roles": "역할",
+		"signals": "신호"
+	},
+	"topBar": {
+		"recentMembers": "최근 멤버",
+		"searchPlaceholder": "검색",
+		"sort": "정렬"
+	},
+	"error": "오류",
+	"profile": "프로필",
+	"message": "메시지",
+	"timeAgo": "{{time}} 전",
+	"transferOwnership": "소유권 이전",
+	"removeMember": "멤버 제거"
+}

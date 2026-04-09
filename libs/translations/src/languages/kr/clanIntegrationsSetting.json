@@ -1,0 +1,64 @@
+{
+	"integration": {
+		"title": "웹훅",
+		"automatedMessage": "자동 메시지와 업데이트",
+		"description": "웹훅, 모니터링 채널 및 애플리케이션을 관리하고, 크리에이터를 위한 Twitch 와 YouTube 설정을 통해 클랜을 커스터마이징하세요.",
+		"learnMore": "통합 관리에 대해 자세히 알아보기."
+	},
+	"webhooks": {
+		"description": "웹훅은 인터넷 기술을 사용하여 클랜의 텍스트 채널로 자동 메시지와 데이터 업데이트를 받는 도구입니다.",
+		"learnMore": "자세히 알아보기",
+		"try": "또는 시도",
+		"buildOne": "내 것을 만들어 보세요."
+	},
+	"clanWebhooks": {
+		"description": "클랜 웹훅은 인터넷 기술을 사용하여 각 Mezon 사용자에게 다른 애플리케이션과 웹사이트의 메시지를 게시하는 간단한 방법입니다.",
+		"tips": "팁: URL 의 토큰이 손상되었거나 구식이 된 것으로 느껴지면 재설정하고 새 URL 을 복사하세요."
+	},
+	"webhooksEdit": {
+		"title": "웹훅 수정",
+		"save": "저장",
+		"cancel": "취소",
+		"channel": "채널",
+		"nameLabel": "이름",
+		"recommendImage": "최소 128x128 px 크기의 이미지를 사용하는 것이 좋습니다",
+		"webhookURL": "웹훅 URL",
+		"copy": "복사",
+		"copied": "복사됨",
+		"delete": "삭제",
+		"selectAChannel": "채널 선택",
+		"yes": "네",
+		"deleteCaptionHook": "{{webhookName}} 삭제",
+		"deleteWebhookTitle": "{{webhookName}} 삭제",
+		"deleteWebhookConfirmation": "{{webhookName}} 웹훅을 삭제하시겠습니까? 이 작업은 되돌릴 수 있습니다.",
+		"resetToken": "토큰 재설정",
+		"name": "웹훅 이름",
+		"nameMaxLengthError": "길이는 64 자 이하여야 합니다."
+	},
+	"webhooksEmpty": {
+		"noWebhooks": "웹훅 없음"
+	},
+	"webhooksItem": {
+		"createdBy": "{{webhookCreateTime}} 에 {{webhookUserOwnerName}} 님이 생성함"
+	},
+	"webhookChannelSelect": {
+		"title": "채널 선택",
+		"description": "웹훅을 만들 채널을 선택하세요",
+		"selectChannel": "채널",
+		"placeholder": "채널 선택",
+		"create": "만들기"
+	},
+	"toast": {
+		"addSuccess": "웹훅 성공적으로 생성!",
+		"addError": "웹훅 생성 중 오류 발생",
+		"saveSuccess": "성공적으로 저장!",
+		"saveError": "저장 중 오류 발생",
+		"deleteSuccess": "웹훅 성공적으로 삭제!",
+		"deleteError": "웹훅 삭제 중 오류 발생",
+		"resetTokenSuccess": "토큰 성공적으로 재설정!",
+		"resetTokenError": "토큰 재설정 중 오류 발생",
+		"copyError": "URL 복사 실패",
+		"webhookGeneratedSuccess": "{{webhookName}} 성공적으로 생성!",
+		"webhookDeletedSuccess": "{{webhookName}} 성공적으로 삭제!"
+	}
+}

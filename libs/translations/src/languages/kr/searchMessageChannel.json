@@ -1,0 +1,60 @@
+{
+	"joinChannel": "참가",
+	"textChannels": "텍스트 채널",
+	"voiceChannels": "음성 채널",
+	"streamingChannels": "스트리밍 채널",
+	"search": "검색",
+	"filterResults": "결과 필터링...",
+	"members": "멤버",
+	"channels": "채널",
+	"media": "미디어",
+	"pins": "고정",
+	"in": "중:",
+	"Messages": "메시지",
+	"filterOptions": {
+		"fromUser": "특정 사람",
+		"mentionUser": "누군가 언급",
+		"inChannel": "특정 채널"
+	},
+	"cancel": "취소",
+	"searchPlaceholder": "검색",
+	"searchFor": "검색:",
+	"enter": "Enter",
+	"searchOptions": "검색 옵션",
+	"fromUser": "사용자",
+	"inChannel": "채널",
+	"hasContent": "콘텐츠 있음",
+	"mentionsUser": "누군가 언급",
+	"emptySearch": {
+		"title": "우리는 모든 곳을 검색했습니다. 불행히도 결과가 없습니다."
+	},
+	"learnMore": "자세히 알아보기",
+	"searchOptionsData": {
+		"fromUserShort": "발신자 검색",
+		"mentionsUserShort": "참조된 사람 검색",
+		"hasContentShort": "첨부 파일이 있는 콘텐츠 검색",
+		"channelShort": "채널에서 검색"
+	},
+	"prefixes": {
+		"from": "이전:",
+		"mentions": "참조:",
+		"has": "있음:",
+		"in": "중:"
+	},
+	"mentionPrefixes": {
+		"from": "이전:",
+		"mentions": "참조:",
+		"has": "있음:",
+		"in": "중:"
+	},
+	"allChannels": "모든 채널",
+	"searching": "검색 중...",
+	"noResults": "결과 없음",
+	"resultsCount": "{{count}} 결과",
+	"jump": "점프",
+	"hasOptions": {
+		"video": "비디오",
+		"link": "링크",
+		"image": "이미지"
+	}
+}

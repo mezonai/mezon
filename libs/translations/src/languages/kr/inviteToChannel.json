@@ -1,0 +1,46 @@
+{
+	"title": "친구 초대",
+	"iconTitle": {
+		"shareInvite": "공유",
+		"copyLink": "복사",
+		"facebook": "Facebook",
+		"youtube": "YouTube",
+		"twitter": "X",
+		"qrcode": "QR 코드"
+	},
+	"copyLink": "링크 복사됨!",
+	"unknownChannel": "알 수 없는 채널",
+	"yourLinkInvite": "링크가 다음에 만료됩니다",
+	"inviteFriendToChannel": "친구를 채널에 초대",
+	"inviteFriendToClan": "친구를 클랜에 초대",
+	"editInviteLink": "초대 링크 수정",
+	"inviteChannel": "채널 초대",
+	"advancedSettings": "고급 설정",
+	"expireAfter": "만료",
+	"maxUsers": "최대 사용자",
+	"temporaryMembership": "임시 멤버",
+	"memberAutoKick": "멤버가 연결 해제되면 역할이 할당될 때까지 자동으로 킥됩니다.",
+	"btnInvite": "초대",
+	"btnSent": "보냄",
+	"qrModal": {
+		"title": "QR 코드",
+		"scanToJoin": "이 QR 코드를 스캔하여 {{clanName}} 에 참여하세요!",
+		"scanToJoinDefault": "이 QR 코드를 스캔하여 클랜에 참여하세요!",
+		"generating": "QR 코드 생성 중...",
+		"errorGenerating": "QR 코드 생성 오류",
+		"downloadSuccess": "QR 코드를 라이브러리에 저장했습니다",
+		"downloadError": "QR 코드 다운로드 오류",
+		"shareError": "QR 코드 공유 오류",
+		"clanDefaultName": "클랜"
+	},
+	"share": {
+		"title": "공유",
+		"message": "저와 함께 Mezon 에 참여하세요:",
+		"error": "초대 링크 공유 오류",
+		"errorCreateLink": "초대 링크 생성 오류"
+	},
+	"noFriendsToInvite": "초대할 친구가 없습니다",
+	"addFriendsToInvite": "이 클랜에 초대하려면 친구 목록에 친구를 추가하세요.",
+	"addSomeFriends": "몇 명의 친구 추가",
+	"loadingInviteLink": "초대 링크 생성 중..."
+}

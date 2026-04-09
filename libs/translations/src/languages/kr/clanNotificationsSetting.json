@@ -1,0 +1,31 @@
+{
+	"muteClan": "클랜 알림을 끄면 읽지 않은 메시지 표시가 숨겨지고 @mention 될 때까지 알림이 표시되지 않습니다",
+	"notifySettingOption": {
+		"title": "클랜 알림 설정",
+		"allMessage": "모든 메시지",
+		"onlyMentions": "@mention 만",
+		"nothing": "없음"
+	},
+	"suppressOption": {
+		"suppressEveryone": "@everyone 및 @here 알림 끄기",
+		"suppressAllRole": "모든 역할 @mention 알림 끄기",
+		"suppressHighlights": "하이라이트 알림 끄기",
+		"subText": "하이라이트는 친구가 클랜에서 대화할 때 가끔 업데이트를 제공합니다."
+	},
+	"muteEventOptions": {
+		"muteNewEvents": "새 이벤트 알림 끄기",
+		"mobilePushNotifications": "모바일 푸시 알림"
+	},
+	"notificationOverrides": {
+		"title": "알림 오버라이드",
+		"addChannelsAllCategory": "모든 채널을 카테고리에 추가"
+	},
+	"clanNotificationSettingDetail": {
+		"muteChannelSubText": "알림 꺼진 채널에서 알림을 받지 못합니다. 이 설정은 모든 기기에서 적용됩니다.",
+		"youHaveMuted": "이 채널의 알림을 다음까지 끄셨습니다"
+	},
+	"clanNotificationBS": {
+		"title": "이 클랜의 알림 끄기"
+	},
+	"resetOverrides": "오버라이드 재설정"
+}

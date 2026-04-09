@@ -1,0 +1,67 @@
+{
+	"modal": {
+		"title": "{{target}} 에 친구 초대",
+		"privateEvent": "외부 이벤트",
+		"privateRoom": "회의실",
+		"clanInvite": "클랜 초대",
+		"sendLinkText": "또는, 그들에게 {{type}} 링크 보내기",
+		"expiresIn": "초대 링크가 {{time}} 후에 만료됩니다"
+	},
+	"expiration": {
+		"30minutes": "30 분",
+		"1hour": "1 시간",
+		"6hours": "6 시간",
+		"12hours": "12 시간",
+		"1day": "1 일",
+		"7days": "7 일",
+		"never": "영원히"
+	},
+	"maxUses": {
+		"noLimit": "무제한",
+		"1use": "1 회 사용",
+		"5uses": "5 회 사용",
+		"10uses": "10 회 사용",
+		"25uses": "25 회 사용",
+		"50uses": "50 회 사용",
+		"100uses": "100 회 사용"
+	},
+	"generateLink": {
+		"expireAfter": "만료",
+		"maxNumberOfUses": "최대 사용 횟수"
+	},
+	"buttons": {
+		"copy": "복사",
+		"copied": "복사됨",
+		"copyQR": "QR 복사",
+		"editInviteLink": "초대 링크 수정.",
+		"cancel": "취소",
+		"generateNewLink": "새 링크 생성",
+		"invite": "초대",
+		"sent": "보냄"
+	},
+	"searchPlaceholder": "친구 검색",
+	"privateChannelDescription": "이 채널은 비공개로, 선택된 멤버와 역할만 이 채널을 볼 수 있습니다.",
+	"noResults": "결과 없음",
+	"messages": {
+		"qrCopiedSuccess": "QR 성공적으로 복사!"
+	},
+	"errors": {
+		"createInviteLink": "초대 링크 생성 오류",
+		"copyToClipboard": "클립보드 복사 실패",
+		"copyFailed": "복사 실패"
+	},
+	"acceptModal": {
+		"title": "클랜 참가",
+		"invitedToJoin": "초대받음",
+		"memberCount": "{{count}} 멤버",
+		"memberCount_plural": "{{count}} 멤버",
+		"clanSettings": "클랜 설정",
+		"customizeAnytime": "이것들을 언제든지 커스터마이징할 수 있습니다",
+		"noThanks": "아니요, 감사합니다",
+		"acceptInvite": "초대 수락",
+		"joining": "참가 중...",
+		"toast": {
+			"alreadyMember": "이미 멤버입니다!"
+		}
+	}
+}

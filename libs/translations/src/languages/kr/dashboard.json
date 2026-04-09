@@ -1,0 +1,74 @@
+{
+	"activityOverview": {
+		"title": "활동 개요",
+		"timePeriod": "기간",
+		"totalActiveUsers": "총 활성 사용자",
+		"totalActiveUsersTooltip": "최소 한 번 이상 활동한 고유 사용자 수",
+		"totalActiveChannels": "총 활성 채널",
+		"totalActiveChannelsTooltip": "최소 한 번 이상 활동한 고유 채널 수",
+		"totalMessages": "총 메시지",
+		"totalMessagesTooltip": "선택한 기간 동안 전송된 총 메시지 수"
+	},
+	"pagination": {
+		"showing": "표시 중",
+		"of": "중",
+		"clans": "클랜",
+		"previous": "이전",
+		"next": "다음"
+	},
+	"chart": {
+		"loadingChartData": "차트 데이터 로딩 중...",
+		"metricsAvailableForOwnersOnly": "수치는 클랜 소유자만 사용 가능."
+	},
+	"table": {
+		"detailedActivityData": "상세 활동 데이터",
+		"channelsActivityData": "채널 활동 데이터",
+		"userActivityData": "사용자 활동 데이터",
+		"exportCSV": "CSV 내보내기",
+		"exporting": "내보내는 중...",
+		"includedInExport": "이 열은 CSV 파일로 내보내집니다",
+		"notIncludedInExport": "이 열은 CSV 파일로 내보내지지 않습니다",
+		"clanName": "클랜 이름",
+		"channelName": "채널 이름",
+		"userName": "사용자 이름",
+		"activeUsers": "활성 사용자",
+		"activeChannels": "활성 채널",
+		"messages": "메시지",
+		"noOwnedClans": "분석을 만들 클랜이 없습니다.",
+		"noActiveChannels": "현재 이 클랜에 활성 채널이 없습니다.",
+		"noActiveUsers": "현재 이 채널에 활성 사용자가 없습니다.",
+		"selectColumnTooltip": "이 열로 CSV 를 내보내려면 선택/선택 해제",
+		"selectAtLeastOneColumn": "csv 를 내보내려면 최소 1 열을 선택해야 함"
+	},
+	"page": {
+		"backToOverview": "클랜 사용 개요로 돌아가기",
+		"clanUsageStatisticsReport": "클랜 사용 통계 보고서",
+		"dashboardReport": "대시보드",
+		"report": "보고서"
+	},
+	"state": {
+		"loadingData": "데이터 로딩 중...",
+		"noDataFound": "데이터 찾지 못함",
+		"noDataDescription": "선택한 기간에 대한 사용 데이터가 없습니다."
+	},
+	"reportControls": {
+		"timePeriod": "기간",
+		"rangeType": "구간 종류",
+		"startDate": "시작일",
+		"endDate": "종료일",
+		"last7Days": "지난 7 일",
+		"last30Days": "지난 30 일",
+		"last90Days": "지난 90 일",
+		"customDateRange": "사용자 정의 날짜 범위",
+		"daily": "일별",
+		"weekly": "주별",
+		"monthly": "월별",
+		"runReport": "보고서 실행",
+		"reset": "재설정"
+	},
+	"sortIcon": {
+		"tooltip": "이 열로 정렬 증가/감소",
+		"sortedAsc": "오름차순 정렬됨",
+		"sortedDesc": "내림차순 정렬됨"
+	}
+}

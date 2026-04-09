@@ -1,0 +1,63 @@
+{
+	"directMessages": "다이렉트 메시지",
+	"createDM": "메시지 만들기",
+	"friends": "친구",
+	"yourMessages": "내 메시지",
+	"selectConversation": "메시지를 시작하려면 대화를 선택하세요",
+	"createMessageGroup": {
+		"selectFriends": "친구 선택",
+		"canAddMoreFriends": "{{count}} 명의 친구를 더 추가할 수 있습니다.",
+		"searchPlaceholder": "친구의 사용자 이름 입력",
+		"addToGroupChat": "그룹 채팅에 추가",
+		"createDMOrGroupChat": "메시지 또는 그룹 채팅 만들기",
+		"createDM": "메시지 만들기",
+		"createGroupChat": "그룹 채팅 만들기",
+		"noFriendsFound": "이 대화에 없는 친구를 찾지 못했습니다.",
+		"creating": "만드는 중..."
+	},
+	"editGroup": {
+		"title": "그룹 수정",
+		"uploadImageText": "이미지를 클릭하여 업로드",
+		"removeAvatar": "아바타 제거",
+		"groupNameLabel": "그룹 이름",
+		"groupNamePlaceholder": "그룹 이름 입력",
+		"validationError": "유효한 그룹 이름을 입력하세요 (문자, 숫자, _ 또는 - 만 포함).",
+		"cancel": "취소",
+		"save": "저장",
+		"saving": "저장 중..."
+	},
+	"contextMenu": {
+		"editGroup": "그룹 수정",
+		"addFriend": "친구 추가",
+		"leaveGroup": "그룹 나가기",
+		"closeDM": "메시지 닫기",
+		"markAsRead": "읽음으로 표시",
+		"invitePeople": "사람 초대",
+		"hideConversation": "대화 숨기기",
+		"profile": "프로필",
+		"message": "메시지",
+		"removeFriend": "친구 제거",
+		"block": "차단",
+		"unblock": "차단 해제",
+		"removeFromGroup": "그룹에서 제거",
+		"shareContact": "연락처 공유",
+		"mute": "알림 끄기",
+		"unmute": "알림 켜기",
+		"for15Minutes": "15 분 동안",
+		"for1Hour": "1 시간 동안",
+		"for3Hours": "3 시간 동안",
+		"for8Hours": "8 시간 동안",
+		"for24Hours": "24 시간 동안",
+		"untilTurnBackOn": "다시 켜질 때까지",
+		"mutedUntil": "{{time}} 까지 알림 끔",
+		"pinConversation": "대화 고정",
+		"unpinConversation": "대화 고정 해제",
+		"pinLimitExceeded": "최대 10 개 대화만 고정할 수 있습니다. 이 대화를 고정하려면 다른 대화를 고정 해제하세요"
+	},
+	"pinned": "고정됨",
+	"remove": {
+		"content": "이 채널의 대화가 사용 가능하지 않습니다!",
+		"title": "대화 사용 가능",
+		"button": "확인"
+	}
+}

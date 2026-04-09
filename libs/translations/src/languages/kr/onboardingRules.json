@@ -1,0 +1,18 @@
+{
+  "editResources": "리소스 수정",
+  "form": {
+    "nameTitle": "이 리소스에 이름 붙이기",
+    "namePlaceholder": "#rules 는 규칙일 수 있음",
+    "descriptionTitle": "이 리소스 설명",
+    "descriptionPlaceholder": "예: 클랜 규칙",
+    "imageTitle": "규칙 이미지",
+    "browse": "찾아보기",
+    "required": "이 필드는 필수입니다.",
+    "minCharacters": "규칙 제목은 최소 7 자여야 합니다"
+  },
+  "buttons": {
+    "remove": "제거",
+    "save": "저장",
+    "add": "추가"
+  }
+}

@@ -224,6 +224,9 @@ export default defineConfig(({ mode }) => {
 						if (normalizedId.includes('libs/translations/src/languages/jpn')) {
 							return 'i18n-jpn';
 						}
+						if (normalizedId.includes('libs/translations/src/languages/kr')) {
+							return 'i18n-kr';
+						}
 					}
 				}
 			},

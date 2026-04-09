@@ -1,0 +1,39 @@
+{
+    "menu": {
+        "watchMenu": {
+            "title": "",
+            "markAsRead": "읽음으로 표시"
+        },
+        "inviteMenu": {
+            "title": "",
+            "invite": "초대"
+        },
+        "notification": {
+			"title": "",
+			"muteCategory": "카테고리 알림 끄기",
+			"notification": "알림 설정"
+		},
+        "organizationMenu": {
+            "title": "",
+            "createChannel": "채널 만들기",
+            "edit": "카테고리 수정",
+            "delete": "카테고리 삭제"
+        },
+        "devMode": {
+            "title": "개발자 모드",
+            "copyServerID": "클랜 ID 복사"
+        },
+        "modalConfirm": {
+            "title": "카테고리 삭제",
+            "content": "이 카테고리를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+            "confirmText": "삭제"
+        },
+        "toast": {
+            "systemChannel": "오류: {{categoryName}} 에 시스템 채널이 포함되어 있습니다",
+            "error": "카테고리 삭제 오류: {{error}}"
+        }
+    },
+    "notify": {
+        "serverIDCopied": "클랜 ID 복사됨"
+    }
+}

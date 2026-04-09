@@ -1,0 +1,225 @@
+{
+	"userAction": {
+		"transferFunds": "토큰 전송",
+		"sendMessage": "메시지 보내기",
+		"voiceCall": "음성 통화",
+		"videoCall": "영상 통화",
+		"addFriend": "친구 추가",
+		"pending": "대기 중",
+		"removeFriend": "친구 제거"
+	},
+	"aboutMe": {
+		"headerTitle": "소개",
+		"roles": {
+			"headerTitle": "역할"
+		}
+	},
+	"kickUserClanModal": {
+		"title": "멤버 킥",
+		"kickFromServer": "{{username}} 을(를) 클랜에서 킥",
+		"description": "{{username}} 을(를) 클랜에서 킥하시겠습니까? 새 초대와 함께 다시 참가할 수 있습니다.",
+		"reasonKick": "킥 이유",
+		"buttonName": "킥"
+	},
+	"transferOwnershipModal": {
+		"warning": "이것은 <highlightClan>{{clanName}}</highlightClan> 의 소유권을 <highlightUser>{{username}}</highlightUser> 님으로 이전합니다. 이 작업은 되돌릴 수 있습니다!",
+		"sectionTitle": "소유권 이전",
+		"acknowledgment": "{{username}} 님에게 이 클랜의 소유권을 이전하면 그들의 것이 됩니다.",
+		"transferButton": "전환",
+		"confirmTitle": "소유권 이전?",
+		"confirmDescription": "{{clanName}} 의 소유권을 {{username}} 님으로 이전하시겠습니까? 이 작업은 되돌릴 수 있습니다.",
+		"confirmButton": "전환"
+	},
+	"pendingContent": {
+		"block": "차단",
+		"unblock": "차단 해제",
+		"reportUserProfile": "사용자 프로필 신고",
+		"acceptFriend": "친구 수락",
+		"rejectFriend": "친구 요청 거부",
+		"cancelFriendRequest": "친구 요청 취소",
+		"copyUsername": "사용자 이름 복사",
+		"copiedUserName": "{{username}} 복사됨",
+		"removeFriend": "친구 제거",
+		"viewFullProfile": "전체 프로필 보기"
+	},
+	"userInfoDM": {
+		"menu": {
+			"removeFromGroup": "그룹에서 제거",
+			"removeSuccess": "그룹에서 멤버 성공적으로 제거",
+			"removeFailed": "그룹에서 멤버 제거 실패"
+		},
+		"mezonMemberSince": "Mezon 멤버"
+	},
+	"notification": {
+		"blockUser": {
+			"success": "사용자 성공적으로 차단",
+			"error": "사용자 차단 실패"
+		},
+		"unblockUser": {
+			"success": "사용자 성공적으로 차단 해제",
+			"error": "사용자 차단 해제 실패"
+		}
+	},
+	"incomingFriendRequest": "들어오는 친구 요청",
+	"sendAddFriendSuccess": "친구 요청이 전송됨",
+	"accept": "수락",
+	"ignore": "무시",
+	"labels": {
+		"aboutMe": "소개",
+		"memberSince": "참여",
+		"activity": "활동",
+		"unknownUser": "알 수 없는 사용자",
+		"anonymous": "익명",
+		"editProfile": "프로필 수정",
+		"note": "메모",
+		"addNote": "클릭하여 메모 추가",
+		"showLess": "덜 표시",
+		"addRole": "역할 추가",
+		"addRoles": "역할 추가",
+		"removeRole": "역할 제거",
+		"role": "역할",
+		"nope": "없어요!",
+		"typoError": "오타가 있나요?",
+		"userNotFound": "클랜에 없는 사용자"
+	},
+	"placeholders": {
+		"messageUser": "@{{username}} 에게 메시지 보내기"
+	},
+	"statusProfile": {
+		"balance": "잔액",
+		"transferFunds": "토큰 전송",
+		"editCustomStatus": "커스터마이징 상태 수정",
+		"setCustomStatus": "커스터마이징 상태 설정",
+		"manageAccounts": "계정 관리",
+		"switchAccounts": "계정 전환",
+		"copyUserId": "사용자 ID 복사",
+		"statusOptions": {
+			"online": "온라인",
+			"idle": "대기 중",
+			"doNotDisturb": "주먹질",
+			"invisible": "숨김"
+		},
+		"statusOptionsDescriptions": {
+			"doNotDisturb": "컴퓨터에서 알림을 받지 못합니다",
+			"invisible": "오프라인 상태로 표시됩니다"
+		},
+		"statusDuration": {
+			"for30Minutes": "30 분",
+			"for1Hour": "1 시간",
+			"for3Hours": "3 시간",
+			"for8Hours": "8 시간",
+			"for24Hours": "24 시간",
+			"forever": "영원히"
+		},
+		"addAccountModal": {
+			"email": "이메일",
+			"password": "비밀번호",
+			"emailPlaceholder": "이메일 입력",
+			"passwordPlaceholder": "비밀번호 입력",
+			"cancel": "취소",
+			"logIn": "로그인"
+		},
+		"sendTokenModal": {
+			"title": "토큰 보내기",
+			"description": "다른 사용자에게 토큰 전송",
+			"fields": {
+				"to": "까지",
+				"amount": "수량",
+				"note": "메모 (선택)"
+			},
+			"placeholders": {
+				"searchUsers": "사용자 검색...",
+				"amountPlaceholder": "0",
+				"notePlaceholder": "메모 추가..."
+			},
+			"noUsersFound": "사용자 찾지 못함",
+			"currency": "VND",
+			"buttons": {
+				"cancel": "취소",
+				"sendTokens": "토큰 보내기"
+			},
+			"errors": {
+				"exceedWalletBalance": "지갑 잔액을 초과하는 금액",
+				"maximumLimit": "최대 100,000,000"
+			}
+		},
+		"historyTransaction": {
+			"title": "거래 내역",
+			"subtitle": "모든 거래 활동 보기",
+			"tabs": {
+				"all": "모든 거래",
+				"sent": "보낸 거래",
+				"received": "받은 거래"
+			},
+			"transactionTypes": {
+				"sent": "보냄",
+				"received": "받음"
+			},
+			"emptyStates": {
+				"noTransactions": {
+					"title": "거래 찾지 못함",
+					"description": "거래가 없습니다. 토큰을 보내거나 받기 시작하면 거래 내역이 여기에 표시됩니다."
+				},
+				"noFilteredTransactions": {
+					"title": "거래 찾지 못함",
+					"description": "선택한 필터에 대한 거래가 없습니다. 다른 필터를 시도하거나 나중에 확인하세요."
+				}
+			},
+			"transactionItem": {
+				"idPrefix": "거래 #"
+			},
+			"loading": {
+				"fetching": "거래 로딩 중...",
+				"fetchingMore": "거래 더 로딩 중...",
+				"scrollMore": "더 보려면 스크롤",
+				"allLoaded": "모든 {{count}} 거래를 로드했습니다"
+			}
+		},
+		"customStatusModal": {
+			"title": "커스터마이징 상태 설정",
+			"whatsCookin": "무엇을 생각하고 계신가요, {{name}}",
+			"placeholder": "무엇을 생각하고 있나요?",
+			"clearAfter": "제거 후",
+			"timeOptions": {
+				"today": "오늘",
+				"fourHours": "4 시간",
+				"oneHour": "1 시간",
+				"thirtyMinutes": "30 분",
+				"dontClear": "제거 안 함"
+			},
+			"buttons": {
+				"cancel": "취소",
+				"save": "저장"
+			}
+		}
+	},
+	"channelVoiceSettings": "음성 채널 설정",
+	"muteVoice": "음성ミュート",
+	"kickVoice": "음성 채널에서 킥",
+	"voiceInfo": {
+		"inVoice": "음성 채널에서",
+		"joinVoice": "음성 참여"
+	},
+	"ban": {
+		"title": "사용자 밴",
+		"unbanTitle": "사용자 언밴",
+		"content": "사용자 \"{{userName}}\" 를(를) 밴하시겠습니까?",
+		"banButton": "밴",
+		"unBanButton": "언밴",
+		"reasonBan": "밴 이유",
+		"unBanDescription": "사용자 \"{{userName}}\" 를(를) 언밴하시겠습니까?",
+		"time": {
+			"title": "기간",
+			"tenMinutes": "10 분",
+			"thirtyMinutes": "30 분",
+			"oneHour": "1 시간",
+			"sixHours": "6 시간",
+			"twelveHours": "12 시간",
+			"oneDay": "1 일",
+			"threeDays": "3 일"
+		},
+		"banList": "밴 목록",
+		"search": "밴된 사용자 검색",
+		"banListEmpty": "밴된 사용자 찾지 못함"
+	}
+}

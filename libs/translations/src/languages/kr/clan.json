@@ -1,0 +1,76 @@
+{
+	"title": "클랜 커스터마이징",
+	"subTitle": "이름과 아이콘으로 새 클랜에 고유한 스타일을 만들어보세요. 언제든지 나중에 변경할 수 있습니다.",
+	"clanName": "클랜 이름",
+	"createServer": "클랜 만들기",
+	"byCreatingClan": "클랜을 만들면 다음에 동의하게 됩니다",
+	"upload": "업로드",
+	"addClan": "클랜 만들기",
+	"placeholderClan": "클랜 이름 입력",
+	"errorMessage": "유효한 클랜 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함).",
+	"duplicateNameMessage": "클랜 이름이 이미 존재합니다. 다른 이름을 선택하세요.",
+	"commutityGuide": "Mezon 의 커뮤니티 가이드라인.",
+	"busy": "바쁨",
+	"findOrStartConversation": "대화 찾기 또는 시작",
+	"createCategoryModal": {
+		"title": "카테고리 만들기",
+		"nameLabel": "카테고리 이름은 무엇인가요?",
+		"namePlaceholder": "카테고리 이름 입력",
+		"privateCategory": "비공개 카테고리",
+		"privateDescription": "비공개 카테고리를 만들면 선택된 멤버와 역할만 이 카테고리를 볼 수 있습니다. 이 카테고리에 동기화된 채널은 자동으로 이 설정에 맞춰집니다",
+		"invalidName": "유효한 카테고리 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함).",
+		"duplicateName": "클랜에 이미 카테고리 이름이 있습니다. 다른 이름을 입력하세요.",
+		"cancel": "취소",
+		"create": "카테고리 만들기"
+	},
+	"leaveClanModal": {
+		"title": "{{clanName}} 에서 나가기",
+		"description": "<strong>{{clanName}}</strong> 에서 떠나시겠습니까? 다시 초대될 때까지 이 서버에 다시 참가할 수 없습니다.",
+		"cancel": "취소"
+	},
+	"leaveClan": "클랜 나가기",
+	"leaveClanTitle": "나가기",
+	"categoryOverview": {
+		"categoryName": "카테고리 이름",
+		"categoryNamePlaceholder": "여기에 카테고리 이름을 입력하세요...",
+		"hasWelcomeChannelError": "이 카테고리에는 환영 채널이 있습니다",
+		"deleteCategory": "카테고리 삭제",
+		"deleteCategoryTitle": "카테고리 삭제",
+		"deleteCategoryButton": "카테고리 삭제",
+		"cannotBeUndone": "이 작업은 되돌릴 수 없습니다",
+		"categoryLabel": "카테고리"
+	},
+	"createClanModal": {
+		"title": "클랜 커스터마이징",
+		"description": "이름과 아이콘을 선택하여 새 클랜에 색상을 입히세요! 원하면 나중에 변경할 수 있습니다!",
+		"upload": "업로드",
+		"clanName": "클랜 이름",
+		"placeholder": "클랜 이름 입력",
+		"invalidName": "유효한 클랜 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함).",
+		"duplicateName": "클랜 이름이 이미 존재합니다. 다른 이름을 선택하세요.",
+		"agreement": "클랜을 만들면 다음에 동의하게 됩니다",
+		"communityGuidelines": "Mezon 의 커뮤니티 가이드라인",
+		"back": "뒤로",
+		"create": "만들기",
+		"toast": {
+			"limitImageSize": "이미지 크기는 {{size}}MB 보다 작아야 합니다"
+		}
+	},
+	"clanTemplateModal": {
+		"title": "클랜 만들기",
+		"description": "클랜은 친구와 교류하는 곳입니다. 당신만의 클랜을 만들고 대화를 시작하세요.",
+		"createMyOwn": "내 템플릿 만들기",
+		"startFromTemplate": "템플릿에서 시작",
+		"gamingTemplate": "게임",
+		"friendsTemplate": "친구",
+		"studyGroupTemplate": "스터디 그룹",
+		"schoolClubTemplate": "학교 동아리",
+		"localCommunityTemplate": "지역 커뮤니티",
+		"artistsCreatorsTemplate": "예술가 & 크리에이터"
+	},
+	"limitModal": {
+		"title": "제한 도달!",
+		"message": "50 개의 클랜에 참여했습니다. 다른 클랜에 참여하거나 만들려면 클랜을 떠나야 합니다.",
+		"okayButton": "확인"
+	}
+}

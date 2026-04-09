@@ -1,0 +1,27 @@
+{
+    "fields": {
+        "DMMessagePreview": {
+            "title": "DM 메시지 미리보기",
+            "AllMessages": "모든 메시지",
+            "UnreadDMOnly": "읽지 않은 DM 만",
+            "None": "없음"
+        }
+    },
+    "menu": {
+        "theme": {
+            "title": "외관",
+            "theme": "테마",
+            "syncAcrossClients": {
+                "title": "모든 기기에서 동기화",
+                "description": "이 기능을 켜면 데스크톱과 브라우저 포함 모든 기기에서 위의 테마 설정을 재정의합니다."
+            }
+        },
+        "search": {
+            "title": "검색",
+            "showResultCount": {
+                "title": "검색 결과 수 표시",
+                "description": "켜면 검색 결과 표시 시간이 늘어날 수 있습니다."
+            }
+        }
+    }
+}

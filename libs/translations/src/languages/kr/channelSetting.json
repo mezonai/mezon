@@ -1,0 +1,290 @@
+{
+	"fields": {
+		"channelName": {
+			"title": "채널 이름",
+			"placeholder": "채널 이름을 입력하세요",
+			"errorMessage": "채널 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함).",
+			"duplicateError": "카테고리에 이미 채널 이름이 있습니다. 다른 이름을 입력하세요."
+		},
+		"threadName": {
+			"title": "스레드 이름",
+			"placeholder": "스레드 이름을 입력하세요",
+			"errorMessage": "유효한 스레드 이름을 입력하세요 (최대 65 자, 문자, 숫자, _ 또는 - 만 포함).",
+			"emptyError": "스레드 이름을 입력하세요 (최대 65 자, 문자, 숫자, _ 또는 - 만 포함).",
+			"duplicateError": "채널에 이미 스레드 이름이 있습니다. 다른 이름을 입력하세요."
+		},
+		"channelDescription": {
+			"title": "채널 주제",
+			"placeholder": "이 채널을 사용하는 방법을 모두에게 알려주세요!"
+		},
+		"threadDescription": {
+			"title": "스레드 설명",
+			"placeholder": "이 스레드를 사용하는 방법을 모두에게 알려주세요!"
+		},
+		"appUrl": {
+			"title": "애플리케이션 경로",
+			"invalidError": "유효한 URL 을 입력하세요 (예: https://example.com)."
+		},
+		"channelCategory": {
+			"title": "채널 카테고리"
+		},
+		"channelPermission": {
+			"title": "",
+			"permission": "채널 권한",
+			"description": "비밀권 설정을 변경하고 멤버가 이 채널과 상호 작용하는 방법을 사용자 정의합니다."
+		},
+		"quickAction": {
+			"title": "작업"
+		},
+		"privateChannelInvite": {
+			"addMember": "멤버 추가"
+		},
+		"channelNotifications": {
+			"title": "",
+			"notification": "알림 설정",
+			"pinned": "고정된 메시지",
+			"invite": "초대"
+		},
+		"channelSlowMode": {
+			"title": "슬로우 모드",
+			"description": "멤버는 이 시간 동안 한 번에 하나의 메시지만 보낼 수 있습니다. 채널 관리 또는 메시지 관리 권한이 있는 멤버는 예외입니다.",
+			"_5seconds": "5 초",
+			"_10seconds": "10 초",
+			"_15seconds": "15 초",
+			"_30seconds": "30 초",
+			"_1minute": "1 분",
+			"_2minutes": "2 분",
+			"_5minutes": "5 분",
+			"_10minutes": "10 분",
+			"_15minutes": "15 분",
+			"_30minutes": "30 분",
+			"_1hour": "1 시간",
+			"_2hours": "2 시간",
+			"_6hours": "6 시간"
+		},
+		"channelHideInactivity": {
+			"title": "비활성 기간 후 숨기기",
+			"description": "지정된 시간 동안 비활성 상태인 경우 새로운 스레드가 채널 목록에서 숨겨집니다",
+			"_1hour": "1 시간",
+			"_24hours": "24 시간",
+			"_3days": "3 일",
+			"_1Week": "1 주"
+		},
+		"channelWebhooks": {
+			"title": "",
+			"webhook": "웹훅"
+		},
+		"channelDelete": {
+			"title": "",
+			"delete": "채널 삭제"
+		},
+		"threadDelete": {
+			"title": "",
+			"delete": "스레드 삭제"
+		},
+		"threadLeave": {
+			"title": "",
+			"leave": "스레드 나가기"
+		}
+	},
+	"confirm": {
+		"delete": {
+			"content": "#{{channelName}} 을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"confirmText": "삭제",
+			"title": "채널 삭제",
+			"systemChannel": "시스템 채널을 삭제할 수 없음",
+			"error": "채널 삭제 오류: {{error}}"
+		},
+		"deleteThread": {
+			"content": "{{channelName}} 을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"confirmText": "스레드 삭제",
+			"title": "스레드 삭제"
+		},
+		"deleteChannel": {
+			"content": "{{channelName}} 을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"confirmText": "채널 삭제",
+			"title": "채널 삭제"
+		},
+		"cancel": "취소",
+		"leave": {
+			"content": "#{{channelName}} 채널을 떠나시겠습니까? 이 작업은 되돌릴 수 없습니다.",
+			"confirmText": "나가기",
+			"title": "채널 나가기"
+		},
+		"save": "저장"
+	},
+	"toast": {
+		"updated": "성공적으로 업데이트됨"
+	},
+	"channelPermission": {
+		"permissionOverrides": "권한 오버라이드",
+		"save": "저장",
+		"generalChannelPermission": "채널 일반 권한",
+		"title": "액세스",
+		"basicView": "기본",
+		"advancedView": "고급",
+		"roles": "역할",
+		"members": "멤버",
+		"edit": "수정",
+		"done": "완료",
+		"addRole": "역할 추가",
+		"addMember": "멤버 추가",
+		"privateChannel": "비공개 채널",
+		"basicViewDescription": "채널을 비공개 모드로 전환하면 선택된 멤버와 역할만 이 채널을 볼 수 있습니다",
+		"ChannelCreator": "채널 생성자",
+		"addMemberAndRoles": "멤버 또는 역할 추가",
+		"whoCanAccess": "누가 액세스할 수 있습니까",
+		"warningModal": {
+			"publicChannelTitle": "이 채널을 모두에게 열까요?",
+			"privateChannelTitle": "이 채널을 비공개로 변경할까요?",
+			"publicChannelContent": "{{channelLabel}} 이(가) 모든 멤버에게 사용 가능하게 됩니다",
+			"privateChannelContent": "{{channelLabel}} 이(가) 비공개가 되어 선택된 멤버와 역할만 표시됩니다",
+			"confirm": "동의함"
+		},
+		"warningChangeSettingModal": {
+			"title": "저장되지 않은 설정이 있습니다",
+			"content": "변경사항을 저장하시겠습니까?",
+			"confirm": "네, 저장"
+		},
+		"description": {
+			"viewChannel": "기본적으로 멤버가 이 채널을 볼 수 있게 합니다. @everyone 에 대한 이 기능을 비활성화하면 이 채널이 비공개가 됩니다.",
+			"manageChannel": "멤버가 이 채널의 채널 이름, 설명 및 텍스트 채널 설정을 변경할 수 있게 합니다. 또한 채널을 삭제할 수도 있습니다.",
+			"manageThread": "멤버가 이 채널의 스레드 이름을 변경하고, 닫고, 슬로우 모드를 켜고, 삭제할 수 있게 합니다. 또한 비공개 스레드를 볼 수도 있습니다.",
+			"sendMessage": "멤버가 이 채널에 메시지를 보낼 수 있게 합니다.",
+			"deleteMessage": "멤버가 이 채널의 메시지를 삭제할 수 있게 합니다."
+		},
+		"bottomSheet": {
+			"addMembersOrRoles": "멤버 또는 역할 추가",
+			"add": "추가",
+			"roles": "역할",
+			"members": "멤버",
+			"rolesMembers": "역할/멤버",
+			"roleMemberPlaceholder": "역할/멤버"
+		},
+		"toast": {
+			"success": "성공적으로 저장됨",
+			"failed": "저장 실패"
+		},
+		"roleAndMemberEmpty": "고유 권한을 설정할 역할과 멤버가 없습니다",
+		"header": {
+			"title": "채널 권한",
+			"description": "권한을 사용하여 이 채널에서 누가 무엇을 할 수 있는지 사용자 정의합니다.",
+			"syncedWithCategory": "카테고리와 동기화된 권한:"
+		}
+	},
+	"quickAction": {
+		"title": "빠른 메뉴",
+		"description": "이 채널을 위한 빠른 메시지 관리 및 빠른 메뉴 관리",
+		"keyTitle": "키워드 입력 (예: xinchao): ",
+		"valueTitle": "내용 입력 (예: 좋은 아침, 좋은 하루 되세요!)",
+		"save": "저장",
+		"cancel": "취소",
+		"create": "만들기",
+		"update": "업데이트",
+		"delete": "삭제",
+		"deleteModal": "빠른 메뉴 삭제",
+		"deleteTitle": "{{command}} 을(를) 삭제하시겠습니까? 이 작업은 되돌릴 수 있습니다.",
+		"flashMessage": "플래시 메시지",
+		"flashMessages": "플래시 메시지",
+		"quickMenu": "빠른 메뉴",
+		"quickMenus": "빠른 메뉴",
+		"menuName": "메뉴 이름",
+		"commandName": "명령 이름",
+		"menuNameHelper": "이 빠른 메뉴 항목의 이름",
+		"commandNameHelper": "사용자가 슬래시 뒤에 입력할 이름",
+		"botEventTrigger": "봇 이벤트 트리거",
+		"botEventDescription": "이 빠른 메뉴가 선택되면 봇 이벤트가 자동으로 트리거됩니다.",
+		"createQuickMenu": "빠른 메뉴 만들기",
+		"createFlashMessage": "플래시 메시지 만들기",
+		"editQuickMenu": "빠른 메뉴 수정",
+		"editFlashMessage": "플래시 메시지 수정",
+		"emptyFlashMessage": "플래시 메시지가 없습니다",
+		"emptyFlashMessageDescription": "첫 빠른 메시지 명령을 만들어 시작하세요",
+		"emptyQuickMenu": "빠른 메뉴가 없습니다",
+		"emptyQuickMenuDescription": "첫 빠른 메뉴를 만들어 시작하세요",
+		"addFlashMessage": "플래시 메시지 추가",
+		"addQuickMenu": "빠른 메뉴 추가",
+		"editCommand": "명령 수정",
+		"deleteCommand": "명령 삭제",
+		"triggersBot": "봇 이벤트 트리거",
+		"messageContent": "메시지 내용",
+		"messageContentPlaceholder": "빠르게 전송될 메시지",
+		"messageContentDescription": "이 빠른 메시지 명령을 사용할 때 전송될 메시지 내용",
+		"menuAction": "메뉴 작업",
+		"menuActionPlaceholder": "수행될 작업",
+		"menuActionDescription": "이 빠른 메뉴가 선택될 때 수행될 작업"
+	},
+	"changeCategory": {
+		"title": "카테고리 변경",
+		"label": "{{currentChannel}} 에서 {{toChannel}} 으로 전환",
+		"confirmFirstContent": "이 카테고리로 전환하시겠습니까",
+		"confirmLastContent": "으로",
+		"confirm": "동의함",
+		"error": "카테고리 변경 실패"
+	},
+	"overview": {
+		"title": "개요",
+		"ageRestricted": {
+			"title": "연령 제한 채널",
+			"description": "사용자가 이 채널의 콘텐츠를 보려면 합법적인 연령을 확인해야 합니다. 연령 제한 채널은 민감한 콘텐츠 필터에서 예외입니다."
+		},
+		"e2ee": {
+			"title": "종단간 암호화",
+			"description": "이 채널의 종단간 암호화를 켜서 모든 메시지를 보안합니다."
+		}
+	},
+	"tabs": {
+		"overview": "개요",
+		"permissions": "권한",
+		"invites": "초대",
+		"integrations": "통합",
+		"category": "카테고리",
+		"quickMenu": "빠른 메뉴"
+	},
+	"categoryManagement": {
+		"title": "카테고리",
+		"channelName": "채널 이름",
+		"category": "카테고리"
+	},
+	"unsavedChanges": {
+		"warning": "주의 - 저장되지 않은 변경사항이 있습니다!",
+		"reset": "재설정",
+		"saveChanges": "변경사항 저장"
+	},
+	"addMembersRoles": {
+		"title": "멤버 또는 역할 추가",
+		"placeholder": "예: 관리자, @wumpus",
+		"instruction": "@ 로 시작하거나 역할 이름을 입력하여 개별 멤버를 추가하세요",
+		"roles": "역할",
+		"members": "멤버",
+		"cancel": "취소",
+		"done": "완료",
+		"searchPlaceholder": "역할 & 멤버 검색"
+	},
+	"table": {
+		"columnHeaders": {
+			"name": "이름",
+			"members": "멤버",
+			"messagesCount": "메시지 수",
+			"lastSent": "최근 발송",
+			"creator": "생성자"
+		},
+		"pagination": {
+			"show": "표시",
+			"channelOf": "중 채널"
+		},
+		"memberModal": {
+			"listMember": "멤버 목록"
+		},
+		"threads": {
+			"noThreads": "이 채널에 스레드가 없습니다"
+		},
+		"members": {
+			"allMembers": "(전체 멤버)"
+		}
+	},
+	"streamBanner": {
+		"title": "스트림 배너"
+	},
+	"banList": "밴 목록"
+}

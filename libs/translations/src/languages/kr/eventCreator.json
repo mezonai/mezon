@@ -1,0 +1,152 @@
+{
+	"screens": {
+		"eventType": {
+			"headerTitle": "3 단계 중 1 단계",
+			"title": "이벤트가 어디에 있나요?",
+			"subtitle": "누가 장소에 헤매지 않도록",
+			"description": "클랜 > 설정 > 역할에서 이벤트 생성 권한을 부여할 수 있습니다"
+		},
+		"eventDetails": {
+			"headerTitle": "3 단계 중 2 단계",
+			"title": "이벤트가 무엇에 관한 것인가요?",
+			"subtitle": "이벤트에 대한 세부 정보를 입력하세요"
+		},
+		"eventPreview": {
+			"headerTitle": "3 단계 중 3 단계",
+			"title": "아래에 이벤트 미리보기가 있습니다",
+			"subtitle": "이벤트는 지정된 시간에 자동으로 시작됩니다",
+			"subtitleVoice": "시간이 되면 음성 채널로 이동하여 이벤트를 시작하세요!"
+		},
+		"channelSelection": {
+			"title": "관객은 누구인가요?",
+			"description": "지정된 채널의 멤버를 선택하세요.",
+			"channel": "관객은 다음 멤버로 구성됨 {{channel}}: "
+		},
+		"isPrivate": "초대된 사람만 참가 가능"
+	},
+	"fields": {
+		"channelType": {
+			"voiceChannel": {
+				"title": "음성 채널",
+				"description": "대화, 비디오, 화면 공유 및 스트리밍."
+			},
+			"somewhere": {
+				"title": "다른 곳",
+				"description": "텍스트 채널, 외부 링크 또는 직접 위치."
+			},
+			"privateEvent": {
+				"title": "외부 이벤트 만들기",
+				"description": "사용자는 로그인 없이 링크로 회의에 참가할 수 있습니다."
+			}
+		},
+		"channel": {
+			"title": "채널 선택"
+		},
+		"address": {
+			"title": "위치",
+			"placeholder": "위치, 링크 또는 무언가 추가"
+		},
+		"eventName": {
+			"title": "이벤트 제목",
+			"placeholder": "이벤트가 무엇인가요?",
+			"errorMessage": "이벤트에 제목이 필요합니다"
+		},
+		"startDate": {
+			"title": "시작일",
+			"errorMessage": "현재 또는 미래 날짜를 선택하세요"
+		},
+		"startTime": {
+			"title": "시작 시간",
+			"errorMessage": "유효한 시작 시간을 선택하세요"
+		},
+		"endDate": {
+			"title": "종료일",
+			"errorMessage": "현재 또는 미래 날짜를 선택하세요"
+		},
+		"endTime": {
+			"title": "종료 시간",
+			"errorMessage": "유효한 종료 시간을 선택하세요"
+		},
+		"eventFrequency": {
+			"title": "이벤트 빈도",
+			"noRepeat": "반복 안 함",
+			"weeklyOn": "매주 {{name}} 에",
+			"everyOther": "隔週 {{name}} 에",
+			"monthlyOn": "매월 {{name}} 에",
+			"annuallyOn": "매년 {{name}} 에",
+			"everyWeekday": "매 평일 (월요일~금요일)"
+		},
+		"description": {
+			"title": "설명",
+			"description": "이벤트에 대해 조금 더 알려주세요."
+		},
+		"cover": "표지"
+	},
+	"actions": {
+		"next": "다음",
+		"create": "이벤트 만들기",
+		"edit": "이벤트 업데이트",
+		"event_one": "1 이벤트",
+		"event_other": "{{count}} 이벤트",
+		"noEvent": "이벤트",
+		"clearAudiences": "관객 지우기",
+		"startEvent": "이벤트 시작",
+		"editEvent": "이벤트 수정",
+		"cancelEvent": "이벤트 취소",
+		"copyEventLink": "이벤트 링크 복사",
+		"uploadImage": "표지 업로드",
+		"neverMind": "괜찮음",
+		"cancelEventQuestion": "이벤트 취소?",
+		"confirmCancelEvent": "이 이벤트를 취소하시겠습니까?",
+		"back": "되돌아",
+		"cancel": "취소"
+	},
+	"tabs": {
+		"location": "위치",
+		"eventInfo": "이벤트 정보",
+		"review": "확인"
+	},
+	"notify": {
+		"locationBlank": "장소가 필요합니다",
+		"titleBlank": "이벤트에 제목이 필요합니다",
+		"time": "시작 또는 종료 시간이 유효하지 않음",
+		"type": "이벤트 종류를 선택해야 합니다"
+	},
+	"eventDetail": {
+		"eventIsTaking": "이벤트가 진행 중입니다!",
+		"tenMinutesLeft": "{{minutes}} 분 남았습니다. 지금 참여하세요!",
+		"eventInfo": "이벤트 정보",
+		"interested": "{{count}} 관심",
+		"personInterested": "{{count}} 명 관심",
+		"personInteresteds": "{{count}} 명 관심",
+		"createdBy": "{{username}} 님이 생성함",
+		"inviteFriends": "친구를 이벤트에 초대하시겠습니까?",
+		"shareLink": "서버 액세스 권한을 부여하려면 이 링크를 다른 사람과 공유하세요",
+		"onlyInvitedMembers": "사용자는 로그인 없이 링크로 회의에 참가할 수 있습니다.",
+		"openLink": "링크 열기",
+		"invite": "초대",
+		"copyLink": "링크 복사",
+		"audienceConsists": "관객은 다음으로부터 구성됨",
+		"thread": "토론 스트림:",
+		"channel": "채널:",
+		"clanEvent": "클랜 이벤트",
+		"channelEvent": "채널 이벤트",
+		"privateEvent": "외부 이벤트",
+		"privateRoom": "외부 회의실",
+		"newEvent": "새로",
+		"share": "공유",
+		"noOneInterested": "이 이벤트에 관심 있는 사람이 없습니다."
+	},
+	"errorMessages": {
+		"startTimeFuture": "시작 시간은 미래여야 합니다.",
+		"endTimeAfterStart": "종료 시간은 시작 시간보다 커야 합니다.",
+		"invalidTopic": "이벤트 제목이 유효하지 않습니다. '`', '<', '>', ',', '/', '\"', '\\', 및 ''' 문자이 허용되지 않습니다."
+	},
+	"selectUser": "이벤트를 만들 채널 또는 스레드를 선택하세요",
+	"emptyState": {
+		"title": "예정된 이벤트이 없습니다.",
+		"description1": "활동에 대한 이벤트 일정을",
+		"clan": "클랜",
+		"description2": "다른 멤버에게 다가오는 이벤트 아이디어를 기여하도록 초대하세요."
+	}
+}

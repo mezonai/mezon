@@ -1,0 +1,79 @@
+{
+  "header": {
+    "save": "저장"
+  },
+  "toast": {
+    "saveSuccess": "성공적으로 저장됨",
+    "notBlank": "비어있지 않아야 함",
+    "saveError": "저장 중 오류 발생"
+  },
+  "menu": {
+    "serverName": {
+      "title": "클랜 이름",
+      "errorMessage": "유효한 클랜 이름을 입력하세요 (최대 64 자, 문자, 숫자, _ 또는 - 만 포함).",
+      "duplicateNameMessage": "클랜 이름이 이미 존재합니다. 다른 이름을 선택하세요.",
+      "permissionDenied": "클랜 배경을 수정할 권한이 없습니다"
+    },
+    "inactive": {
+      "title": "비활성 설정",
+      "description": "지정된 시간 동안 비활성 상태인 경우 멤버를 이 채널로 자동 전환하고 마이크를 끕니다. 이 기능은 웹 버전에는 적용되지 않습니다.",
+      "inactiveChannel": "비활성 채널",
+      "inactiveTimeout": "비활성 타임아웃"
+    },
+    "systemMessage": {
+      "title": "시스템 알림 설정",
+      "description": "시스템 이벤트 알림을 보내는 채널입니다. 언제든지 끌 수 있습니다.",
+      "channel": "채널",
+      "selectChannel": "알림 채널 선택",
+      "channelDescription": "시스템 메시지가 전송되는 채널입니다",
+      "welcomeRandom": "누가 이 클랜에 참여할 때 랜덤 환영 메시지 보내기",
+      "welcomeSticker": "멤버에게 환영 메시지에 스티커로 답장하도록 요청",
+      "boostMessage": "누가 이 클랜을 부스트할 때 메시지 보내기",
+      "setupTips": "클랜 설정을 위한 유용한 팁 보내기",
+      "hideAuditLog": "클랜에 작업이 수행되면 로그 보내기",
+      "anonymousTitle": "익명 모드 방지",
+      "anonymousDescription": "멤버가 익명 모드 사용 방지"
+    },
+    "deleteServer": {
+      "title": "클랜 삭제",
+      "delete": "클랜 삭제"
+    }
+  },
+  "fields": {
+    "defaultNotification": {
+      "title": "기본 알림 설정",
+      "description": "이 설정은 명확하게 알림 설정을 설정하지 않은 멤버가 이 클랜에서 전송된 모든 메시지에 대해 알림을 받을지 여부를 결정합니다. 클랜 커뮤니티에는 @mention 만 알림하는 것이 좋습니다.",
+      "allMessages": "모든 메시지",
+      "onlyMentions": "@mention 만"
+    }
+  },
+  "permissions": {
+    "toast": {
+      "kickMemberSuccess": "멤버 성공적으로 킥",
+      "kickMemberFailed": "멤버 킥 실패",
+      "removeMemberThreadSuccess": "멤버 성공적으로 제거",
+      "removeMemberThreadFailed": "멤버 제거 실패",
+      "transferOwnershipSuccess": "소유권 성공적으로 이전",
+      "transferOwnershipFailed": "소유권 이전 실패"
+    }
+  },
+  "action": {
+    "kick": "킥",
+    "removeFromThread": "스레드에서 제거",
+    "manage": "관리",
+    "transferOwnership": "소유권 이전",
+    "ban": "밴",
+    "unban": "언밴"
+  },
+  "threadRemoveModal": {
+    "title": "스레드에서 제거?",
+    "description": "{{username}} 을(를) 이 스레드에서 제거하시겠습니까?",
+    "remove": "제거",
+    "cancel": "괜찮음"
+  },
+  "modal": {
+    "kickUserClan": {
+      "title": "확실하십니까?"
+    }
+  }
+}

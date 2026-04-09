@@ -1,0 +1,9 @@
+{
+  "searchMembers": "멤버 검색",
+  "searchActions": "작업 검색",
+  "allUsers": "모든 사용자",
+  "noResults": {
+    "title": "없어요!",
+    "description": "오타가 있나요?"
+  }
+}

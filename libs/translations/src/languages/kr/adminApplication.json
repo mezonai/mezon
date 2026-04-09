@@ -1,0 +1,215 @@
+{
+	"createPopup": {
+		"title": {
+			"application": "새 애플리케이션 만들기",
+			"bot": "새 봇 만들기"
+		},
+		"form": {
+			"type": {
+				"label": "종류",
+				"options": {
+					"createApplication": "애플리케이션 만들기",
+					"createBot": "봇 만들기"
+				}
+			},
+			"name": {
+				"label": "이름"
+			},
+			"url": {
+				"label": "URL"
+			},
+			"shadowBot": "잠복 봇",
+			"agreement": {
+				"text": "만들기를 클릭하면 다음에 동의하게 됩니다",
+				"termsOfService": "개발자 서비스 약관",
+				"policy": "개발자 정책",
+				"and": "및"
+			}
+		},
+		"buttons": {
+			"cancel": "취소",
+			"create": "만들기",
+			"creating": "만드는 중...",
+			"confirm": "확인"
+		},
+		"errors": {
+			"nameRequired": "새 {type} 를 만들려면 이름이 필요합니다.",
+			"urlRequired": "새 애플리케이션을 만들려면 URL 이 필요합니다.",
+			"invalidUrl": "유효한 URL 을 입력하세요 (예: https://example.com).",
+			"createFailed": "애플리케이션을 만들지 못하거나 응답에 ID 가 누락되었습니다",
+			"unexpectedError": "예상치 못한 오류가 발생했습니다.{message}"
+		},
+		"notifications": {
+			"shadowModeInfo": "잠복 모드에서 봇은 작성자에게 보낸 모든 메시지를 받을 수 있지만 메시지를 보낼 수는 없습니다."
+		},
+		"shadowConfirm": {
+			"title": "잠복 봇 모드를 켜시겠습니까?",
+			"message": "이 모드에서 봇은 작성자에게 보낸 모든 메시지를 받을 수 있지만 메시지를 보낼 수는 없습니다."
+		}
+	},
+	"sidebar": {
+		"menu": "메뉴",
+		"closeMenu": "메뉴 닫기"
+	},
+	"tabs": {
+		"generalInformation": "일반 정보",
+		"installation": "설치",
+		"oauth2": "OAuth2"
+	},
+	"generalInformation": {
+		"title": "일반 정보",
+		"subtitle": "제품의 이름을 무엇이라고 불러야 할까요? 어떤 멋진 일을 하나요? Mezon 에서 이를 나타내는 아이콘은 무엇이어야 할까요? 여기서 알려주세요!",
+		"agreement": {
+			"text": "만들기를 클릭하면 다음에 동의하게 됩니다",
+			"adminTerms": "관리자 서비스 약관",
+			"adminPolicy": "관리자 정책",
+			"and": "및"
+		},
+		"appIcon": {
+			"label": "애플리케이션 아이콘",
+			"remove": "제거",
+			"size": "크기: {size}"
+		},
+		"form": {
+			"name": "이름",
+			"url": "URL",
+			"botShadow": "잠복 봇",
+			"description": {
+				"label": "설명 (최대 400 자)",
+				"subtitle": "설명이 봇 소개 섹션에 표시됩니다",
+				"placeholder": "봇에 대한 짧은 설명을 작성하세요"
+			},
+			"appId": "봇 ID",
+			"appToken": "토큰 "
+		},
+		"token": {
+			"newTokenWarning": "이것이 새 토큰입니다. 복사하여 안전하게 보관하세요, 다시 보지 못할 것입니다.",
+			"securityInfo": "보안상 이유로 토큰은 생성 시 한 번만 볼 수 있습니다. 토큰을 잃어버리거나 액세스 권한을 잃으면 새 토큰을 생성하세요."
+		},
+		"buttons": {
+			"copy": "복사",
+			"copied": "복사 완료!",
+			"copyToken": "토큰 복사",
+			"resetToken": "토큰 재설정",
+			"delete": "삭제 "
+		},
+		"errors": {
+			"invalidUrl": "유효한 URL 을 입력하세요 (예: https://example.com).",
+			"clientNotInitialized": "클라이언트 또는 파일이 초기화되지 않았습니다",
+			"resetTokenFailed": "토큰 재설정 실패:"
+		}
+	},
+	"installation": {
+		"title": "설치",
+		"subtitle": "사용자가 애플리케이션을 설치하는 방법을 선택합니다. 설치 링크를 생성하고 설치 컨텍스트를 선택하여 지원을 추가하며 요청하려는 범위와 권한을 정의합니다.",
+		"installLink": {
+			"title": "설치 링크",
+			"description": "제공된 설치 링크를 사용하거나 사용자 정의 링크를 등록합니다. 사용자 정의 링크를 선택하면 Mezon 의 애플리케이션 추가 프로세스 대신 사용자를 귀하의 URL 로 리디렉션합니다.",
+			"option": "Mezon 제공 링크"
+		},
+		"buttons": {
+			"copy": "복사",
+			"copied": "복사 완료!"
+		},
+		"loading": "애플리케이션 데이터 로딩 중...",
+		"notFound": "애플리케이션 데이터 찾기"
+	},
+	"clientInformation": {
+		"title": "클라이언트 정보",
+		"clientId": "클라이언트 ID",
+		"clientSecret": "클라이언트 시크릿",
+		"hiddenForSecurity": "보안상 이유로 숨겨짐",
+		"resetSecret": "시크릿 재설정",
+		"publicClient": {
+			"title": "퍼블릭 클라이언트",
+			"description": "퍼블릭 클라이언트는 클라이언트 자격 증명의 보안을 유지할 수 있습니다 (예: 서버를 사용하여 요청을 수행하는 데스크톱/모바일 애플리케이션)"
+		},
+		"buttons": {
+			"copy": "복사",
+			"copied": "복사 완료!"
+		},
+		"resetSecretPopup": {
+			"title": "시크릿 키 다시 만들기?",
+			"warning": "애플리케이션이 코드에서 시크릿 키를 업데이트할 때까지 작동이 중단됩니다.",
+			"nevermind": "괜찮음",
+			"confirm": "동의함!"
+		},
+		"toasts": {
+			"addRedirectUri": "시크릿 키를 재설정하기 전에 최소 하나의 리디렉션 URI 를 추가하세요!"
+		}
+	},
+	"sidebarTabs": {
+		"dashboard": "대시보드",
+		"applications": "애플리케이션",
+		"teams": "팀",
+		"embedDebugger": "임베디 디버거",
+		"document": "문서"
+	},
+	"applicationsPage": {
+		"title": "애플리케이션",
+		"newApplicationButton": "새 애플리케이션 또는 봇 만들기",
+		"develop": "개발",
+		"subtitle": "수백만 명의 사용자를 위해 Mezon 을 사용자 정의하고 확장합니다.",
+		"appsLinkText": "애플리케이션",
+		"sortBy": "정렬:",
+		"sortOptions": {
+			"dateOfCreation": "생성 날짜",
+			"alphabetical": "A-Z"
+		},
+		"viewOptions": {
+			"small": "작게",
+			"large": "크게"
+		},
+		"sections": {
+			"myApplications": "내 애플리케이션",
+			"myBots": "내 봇"
+		}
+	},
+	"oauth2": {
+		"title": "OAuth2",
+		"subtitle": "Mezon 을 인증 시스템으로 사용하거나 사용자의 대리 API 를 사용합니다. 리디렉션 URI 를 추가하고, 범위를 선택하고, D20 주사위를 던져 행운을 빌고 시작하세요!",
+		"learnMore": "OAuth2 에 대해 자세히 알아보기",
+		"generator": {
+			"title": "OAuth2 URL 생성기",
+			"description": "작동에 필요한 범위와 권한을 선택하여 애플리케이션에 초대 링크를 만듭니다. 그런 다음 URL 을 공유하세요!",
+			"scopes": "범위"
+		},
+		"redirects": {
+			"title": "리디렉션",
+			"description": "작동을 위해 최소 하나의 URI 를 지정해야 합니다. 요청에서 URI 를 전송하면 여기에 입력한 URI 중 하나와 정확히 일치해야 합니다.",
+			"addRedirect": "리디렉션 추가",
+			"toasts": {
+				"fillAllInputs": "모든 필드에 유효한 URI 로 채우세요!"
+			}
+		},
+		"toasts": {
+			"emptyInput": "빈 입력 필드가 있습니다!",
+			"invalidUris": "URI 가 유효해야 합니다!",
+			"redirectUriRequired": "리디렉션 URI 가 필요합니다!"
+		}
+	},
+	"backToApps": "애플리케이션으로 돌아가기",
+	"selectLabel": "{{type}} 선택",
+	"settings": "설정",
+	"flows": {
+		"title": "채팅 플로우",
+		"hasTokenInfo": "새 봇 플로우를 생성하기 전에 토큰을 설정해야 합니다.",
+		"setToken": "토큰 설정",
+		"addFlow": "플로우 추가",
+		"appTokenModal": {
+			"title": "애플리케이션 토큰",
+			"saveButton": "저장"
+		},
+		"toasts": {
+			"errorLoading": "플로우 목록 로딩 오류"
+		}
+	},
+	"teams": {
+		"title": "팀"
+	},
+	"embed": {
+		"title": "임베디 디버거"
+	},
+	"small": "작게",
+	"large": "크게"
+}

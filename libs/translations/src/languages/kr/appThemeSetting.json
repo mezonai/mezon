@@ -1,0 +1,15 @@
+{
+	"fields": {
+		"dark": "다크",
+		"darker": "더 다크",
+		"midnight": "미드나잇",
+		"light": "라이트",
+		"system": "시스템",
+		"sunrise": "선라이즈",
+		"redDark": "레드 다크",
+		"purpleHaze": "퍼플 헤이즈",
+		"abyssDark": "abyss 다크",
+		"sunset": "썬셋"
+	},
+	"desc": "이것은 언제든지 변경할 수 있습니다!"
+}

@@ -1,0 +1,10 @@
+{
+	"streamThumbnail": "스트림 썸네일",
+	"videoError": "비디오 재생 실패. 나중에 다시 시도하세요.",
+	"everyoneWaiting": "모두가 방 안으로 기다리고 있습니다",
+	"noOneInStream": "스트림에 현재没有人",
+	"joinStream": "스트림 참여",
+	"noStreamToday": "오늘 스트림이 없습니다",
+	"hideMembers": "멤버 숨기기",
+	"showMembers": "멤버 표시"
+}

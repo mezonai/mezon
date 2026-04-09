@@ -1,0 +1,16 @@
+{
+	"emptyDescription": "우리는 멀리 검색했습니다. 불행히도 결과가 없습니다",
+	"video": {
+		"error": {
+			"title": "비디오 사용 가능",
+			"cannotPlay": "비디오 재생 실패",
+			"loadingAborted": "비디오 로딩 취소됨",
+			"networkError": "비디오 로딩 중 네트워크 오류",
+			"codecNotSupported": "이 플랫폼에서 비디오 코덱 지원",
+			"codecNotSupportedElectron": "이 플랫폼에서 비디오 코덱 지원. 시스템 플레이어에서 재생하려면 비디오를 다운로드하세요.",
+			"formatNotSupported": "비디오 형식 지원",
+			"downloadButton": "비디오 다운로드",
+			"browserNotSupported": "브라우저가 비디오 태그를 지원합니다."
+		}
+	}
+}

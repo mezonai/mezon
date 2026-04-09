@@ -1,0 +1,7 @@
+{
+	"title": "'{{groupName}}'에서 나가기",
+	"confirmMessage": "{{groupName}} 에서 떠나시겠습니까? 다시 초대될 때까지 이 그룹에 다시 참가할 수 없습니다.",
+	"leaveWithoutNotifying": "다른 멤버에게 알리지 않고 나가기",
+	"cancel": "취소",
+	"leaveGroup": "그룹 나가기"
+}

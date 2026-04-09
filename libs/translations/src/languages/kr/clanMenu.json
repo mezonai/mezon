@@ -1,0 +1,62 @@
+{
+	"menu": {
+		"watchMenu": {
+			"title": "",
+			"markAsRead": "읽음으로 표시",
+			"browseChannels": "채널 탐색"
+		},
+		"organizationMenu": {
+			"title": "",
+			"createChannel": "채널 만들기",
+			"createCategory": "카테고리 만들기",
+			"createEvent": "이벤트 만들기"
+		},
+		"optionsMenu": {
+			"title": "",
+			"editServerProfile": "클랜 프로필 수정",
+			"showAllChannels": "모든 채널 표시",
+			"hideMutedChannels": "모든 알림 꺼진 채널 숨기기",
+			"allowDirectMessage": "다이렉트 메시지 허용",
+			"allowMessageRequest": "메시지 요청 허용",
+			"reportServer": "클랜 신고",
+			"leaveServer": "클랜 나가기",
+			"deleteClan": "클랜 삭제",
+			"auditLog": "감사 로그"
+		},
+		"optionShowEmptyCategories": {
+			"title": "빈 카테고리 표시",
+			"show": "표시",
+			"hide": "숨기기"
+		},
+		"devMode": {
+			"title": "개발자 모드",
+			"copyServerID": "클랜 ID 복사",
+			"serverIDCopied": "클랜 ID 복사됨"
+		}
+	},
+	"actions": {
+		"boot": "부팅",
+		"invite": "초대",
+		"notifications": "알림",
+		"settings": "설정"
+	},
+	"info": {
+		"online": "온라인",
+		"members": "멤버"
+	},
+	"common": {
+		"search": "검색",
+		"community": "커뮤니티",
+		"searchMembers": "멤버 검색"
+	},
+	"modalPanel": {
+		"createCategory": "카테고리 만들기",
+		"markAsRead": "읽음으로 표시",
+		"processing": "처리 중...",
+		"invitePeople": "참가자 초대",
+		"clanSettings": "클랜 설정",
+		"notificationSettings": "알림 설정",
+		"showEmptyCategories": "빈 카테고리 표시",
+		"leaveClan": "클랜 나가기"
+	}
+}

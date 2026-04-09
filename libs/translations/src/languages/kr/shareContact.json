@@ -1,0 +1,23 @@
+{
+	"modal": {
+		"title": "연락처 공유",
+		"searchPlaceholder": "검색...",
+		"noResults": "결과 없음",
+		"noFriends": "친구 또는 채널이 없습니다",
+		"contactPreview": "공유할 연락처",
+		"cancel": "취소",
+		"share": "공유",
+		"sharing": "전송 중...",
+		"group": "그룹",
+		"channel": "채널",
+		"thread": "스레드"
+	},
+	"card": {
+		"call": "통화",
+		"message": "메시지",
+		"blockedAction": "이 행동을 수행할 수 있습니다.",
+		"cannotCallSelf": "자신에게 전화할 수 있습니다."
+	},
+	"contactSharedSuccess": "성공적으로 공유",
+	"contactSharedError": "공유 실패"
+}
